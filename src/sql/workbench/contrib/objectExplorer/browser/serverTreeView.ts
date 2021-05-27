@@ -19,12 +19,11 @@ import { append, $, hide, show } from 'vs/base/browser/dom';
 import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import * as ConnectionUtils from 'sql/platform/connection/common/utils';
-import { ActiveConnectionsFilterAction } from 'sql/workbench/services/objectExplorer/browser/connectionTreeAction';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { TreeCreationUtils } from 'sql/workbench/services/objectExplorer/browser/treeCreationUtils';
 import { TreeUpdateUtils } from 'sql/workbench/services/objectExplorer/browser/treeUpdateUtils';
 import { TreeSelectionHandler } from 'sql/workbench/services/objectExplorer/browser/treeSelectionHandler';
-import { IObjectExplorerService, IServerTreeView } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
+import { IObjectExplorerService, IServerTreeView, ServerTreeViewView } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { Button } from 'sql/base/browser/ui/button/button';
 import { TreeNode, TreeItemCollapsibleState } from 'sql/workbench/services/objectExplorer/common/treeNode';
@@ -42,6 +41,10 @@ import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { AsyncServerTree, ServerTreeElement } from 'sql/workbench/services/objectExplorer/browser/asyncServerTree';
 import { coalesce } from 'vs/base/common/arrays';
 import { CONNECTIONS_SORT_BY_CONFIG_KEY } from 'sql/platform/connection/common/connectionConfig';
+import { IContextKey, IContextKeyService, RawContextKey } from 'vs/platform/contextkey/common/contextkey';
+
+export const CONTEXT_SERVER_TREE_VIEW = new RawContextKey<ServerTreeViewView>('serverTreeView.view', ServerTreeViewView.all);
+export const CONTEXT_SERVER_TREE_HAS_CONNECTIONS = new RawContextKey<boolean>('serverTreeView.hasConnections', false);
 
 /**
  * ServerTreeview implements the dynamic tree view.
@@ -51,10 +54,11 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 	public messages?: HTMLElement;
 	private _buttonSection?: HTMLElement;
 	private _treeSelectionHandler: TreeSelectionHandler;
-	private _activeConnectionsFilterAction: ActiveConnectionsFilterAction;
 	private _tree?: ITree | AsyncServerTree;
 	private _onSelectionOrFocusChange: Emitter<void>;
 	private _actionProvider: ServerTreeActionProvider;
+	private _viewKey: IContextKey<ServerTreeViewView>;
+	private _hasConnectionsKey: IContextKey<boolean>;
 
 	constructor(
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
@@ -65,14 +69,12 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 		@IConfigurationService private _configurationService: IConfigurationService,
 		@ICapabilitiesService capabilitiesService: ICapabilitiesService,
 		@IContextMenuService private _contextMenuService: IContextMenuService,
-		@IKeybindingService private _keybindingService: IKeybindingService
+		@IKeybindingService private _keybindingService: IKeybindingService,
+		@IContextKeyService contextKeyService: IContextKeyService
 	) {
 		super();
-		this._activeConnectionsFilterAction = this._instantiationService.createInstance(
-			ActiveConnectionsFilterAction,
-			ActiveConnectionsFilterAction.ID,
-			ActiveConnectionsFilterAction.LABEL,
-			this);
+		this._hasConnectionsKey = CONTEXT_SERVER_TREE_HAS_CONNECTIONS.bindTo(contextKeyService);
+		this._viewKey = CONTEXT_SERVER_TREE_VIEW.bindTo(contextKeyService);
 		this._treeSelectionHandler = this._instantiationService.createInstance(TreeSelectionHandler);
 		this._onSelectionOrFocusChange = new Emitter();
 		this._actionProvider = this._instantiationService.createInstance(ServerTreeActionProvider);
@@ -93,11 +95,8 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 		this.registerCommands();
 	}
 
-	/**
-	 * Get active connections filter action
-	 */
-	public get activeConnectionsFilterAction(): ActiveConnectionsFilterAction {
-		return this._activeConnectionsFilterAction;
+	public get view(): ServerTreeViewView {
+		return this._viewKey.get();
 	}
 
 	/**
@@ -146,7 +145,6 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 		hide(this.messages);
 
 		if (!this._connectionManagementService.hasRegisteredServers()) {
-			this._activeConnectionsFilterAction.enabled = false;
 			this._buttonSection = append(container, $('.button-section'));
 			const connectButton = new Button(this._buttonSection);
 			connectButton.label = localize('serverTree.addConnection', "Add Connection");
@@ -248,7 +246,6 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 	private async handleAddConnectionProfile(newProfile?: IConnectionProfile): Promise<void> {
 		if (this._buttonSection) {
 			hide(this._buttonSection);
-			this._activeConnectionsFilterAction.enabled = true;
 		}
 
 		if (this._tree instanceof AsyncServerTree) {
@@ -369,7 +366,8 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 
 	public async refreshTree(): Promise<void> {
 		hide(this.messages!);
-		this.clearOtherActions();
+		this._viewKey.set(ServerTreeViewView.all);
+		this._hasConnectionsKey.set(this._connectionManagementService.hasRegisteredServers());
 		return TreeUpdateUtils.registeredServerUpdate(this._tree!, this._connectionManagementService);
 	}
 
@@ -419,10 +417,9 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 	/**
 	 * Set tree elements based on the view (recent/active)
 	 */
-	public showFilteredTree(view: string): void {
+	public showFilteredTree(view: ServerTreeViewView): void {
 		hide(this.messages!);
-		// Clear other action views if user switched between two views
-		this.clearOtherActions(view);
+		this._viewKey.set(view);
 		const root = TreeUpdateUtils.getTreeInput(this._connectionManagementService);
 		let treeInput: ConnectionProfileGroup | undefined = undefined;
 		if (root) {
@@ -466,7 +463,7 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 		}
 		hide(this.messages!);
 		// Clear other actions if user searched during other views
-		this.clearOtherActions();
+		this._viewKey.set(ServerTreeViewView.all);
 		// Filter connections based on search
 		const filteredResults = this.searchConnections(searchString);
 		if (!filteredResults || filteredResults.length === 0) {
@@ -531,18 +528,6 @@ export class ServerTreeView extends Disposable implements IServerTreeView {
 			return candidate.toLocaleUpperCase().indexOf(searchString) > -1;
 		}
 		return false;
-	}
-
-	/**
-	 * Clears the toggle icons for active and recent
-	 */
-	private clearOtherActions(view?: string) {
-		if (!view) {
-			this._activeConnectionsFilterAction.isSet = false;
-		}
-		if (view === 'recent') {
-			this._activeConnectionsFilterAction.isSet = false;
-		}
 	}
 
 	private onSelected(event: any): void {

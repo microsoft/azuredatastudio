@@ -72,20 +72,14 @@ export class OEManageConnectionAction extends Action {
 		super(id, label);
 	}
 
-	run(actionContext: ObjectExplorerActionsContext): Promise<any> {
+	async run(actionContext: ObjectExplorerActionsContext): Promise<void> {
 		this._treeSelectionHandler = this._instantiationService.createInstance(TreeSelectionHandler);
 		this._treeSelectionHandler.onTreeActionStateChange(true);
-		let self = this;
-		let promise = new Promise<boolean>((resolve, reject) => {
-			self.doManage(actionContext).then((success) => {
-				self.done();
-				resolve(success);
-			}, error => {
-				self.done();
-				reject(error);
-			});
-		});
-		return promise;
+		try {
+			await this.doManage(actionContext);
+		} finally {
+			this.done();
+		}
 	}
 
 	private async doManage(actionContext: ObjectExplorerActionsContext): Promise<boolean> {

@@ -20,7 +20,6 @@ import { entries } from 'sql/base/common/collections';
 import { values } from 'vs/base/common/collections';
 import { startsWith } from 'vs/base/common/strings';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
-import { IAction } from 'vs/base/common/actions';
 import { ServerTreeActionProvider } from 'sql/workbench/services/objectExplorer/browser/serverTreeActionProvider';
 import { ITree } from 'vs/base/parts/tree/browser/tree';
 import { AsyncServerTree, ServerTreeElement } from 'sql/workbench/services/objectExplorer/browser/asyncServerTree';
@@ -31,6 +30,11 @@ export const IObjectExplorerService = createDecorator<IObjectExplorerService>(SE
 
 export interface NodeExpandInfoWithProviderId extends azdata.ObjectExplorerExpandInfo {
 	providerId: string;
+}
+
+export const enum ServerTreeViewView {
+	all = 'all',
+	active = 'active'
 }
 
 export interface IServerTreeView {
@@ -47,9 +51,10 @@ export interface IServerTreeView {
 	setExpandedState(node: ServerTreeElement, state?: TreeItemCollapsibleState): Promise<void>;
 	setSelected(node: ServerTreeElement, selected?: boolean, clearOtherSelections?: boolean): Promise<void>;
 	refreshTree(): Promise<void>;
-	readonly activeConnectionsFilterAction: IAction;
 	renderBody(container: HTMLElement): Promise<void>;
 	layout(size: number): void;
+	showFilteredTree(view: ServerTreeViewView): void;
+	view: ServerTreeViewView;
 }
 
 export interface IObjectExplorerService {

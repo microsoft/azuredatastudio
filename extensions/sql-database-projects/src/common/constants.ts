@@ -361,6 +361,9 @@ export const targetPlatformToVersion: Map<string, string> = new Map<string, stri
 	[sqlDW, 'Dw']
 ]);
 
+// DW is special since the system dacpac folder has a different name from the target platform
+export const AzureDwFolder = 'AzureDw';
+
 export function getTargetPlatformFromVersion(version: string): string {
 	return Array.from(targetPlatformToVersion.keys()).filter(k => targetPlatformToVersion.get(k) === version)[0];
 }

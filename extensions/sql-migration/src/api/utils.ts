@@ -4,6 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { DAYS, HRS, MINUTE, SEC } from '../constants/strings';
+import { AdsMigrationStatus } from '../dialog/migrationStatus/migrationStatusDialogModel';
+import { MigrationContext } from '../models/migrationLocalStorage';
 
 export function deepClone<T>(obj: T): T {
 	if (!obj || typeof obj !== 'object') {
@@ -82,4 +84,39 @@ export function convertTimeDifferenceToDuration(startTime: Date, endTime: Date):
 	else {
 		return DAYS(parseFloat(days));
 	}
+}
+
+export function filterMigrations(databaseMigrations: MigrationContext[], statusFilter: string, databaseNameFilter?: string): MigrationContext[] {
+	let filteredMigration: MigrationContext[] = [];
+	if (statusFilter === AdsMigrationStatus.ALL) {
+		filteredMigration = databaseMigrations;
+	} else if (statusFilter === AdsMigrationStatus.ONGOING) {
+		filteredMigration = databaseMigrations.filter((value) => {
+			const status = value.migrationContext.properties.migrationStatus;
+			const provisioning = value.migrationContext.properties.provisioningState;
+			return status === 'InProgress' || status === 'Creating' || provisioning === 'Creating';
+		});
+	} else if (statusFilter === AdsMigrationStatus.SUCCEEDED) {
+		filteredMigration = databaseMigrations.filter((value) => {
+			const status = value.migrationContext.properties.migrationStatus;
+			return status === 'Succeeded';
+		});
+	} else if (statusFilter === AdsMigrationStatus.FAILED) {
+		filteredMigration = databaseMigrations.filter((value) => {
+			const status = value.migrationContext.properties.migrationStatus;
+			const provisioning = value.migrationContext.properties.provisioningState;
+			return status === 'Failed' || provisioning === 'Failed';
+		});
+	} else if (statusFilter === AdsMigrationStatus.COMPLETING) {
+		filteredMigration = databaseMigrations.filter((value) => {
+			const status = value.migrationContext.properties.migrationStatus;
+			return status === 'Completing';
+		});
+	}
+	if (databaseNameFilter) {
+		filteredMigration = filteredMigration.filter((value) => {
+			return value.migrationContext.name.toLowerCase().includes(databaseNameFilter.toLowerCase());
+		});
+	}
+	return filteredMigration;
 }

@@ -9,7 +9,7 @@ import { localize } from 'vs/nls';
 import { Action } from 'vs/base/common/actions';
 
 import { IAccountManagementService } from 'sql/platform/accounts/common/interfaces';
-import { IDialogService, IConfirmation, IConfirmationResult } from 'vs/platform/dialogs/common/dialogs';
+import { IDialogService, IConfirmation } from 'vs/platform/dialogs/common/dialogs';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import Severity from 'vs/base/common/severity';
 import { ILogService } from 'vs/platform/log/common/log';
@@ -45,21 +45,18 @@ export class AddAccountAction extends Action {
 		this._addAccountStartEmitter = new Emitter<void>();
 	}
 
-	public run(): Promise<boolean> {
+	public async run(): Promise<void> {
 
 		// Fire the event that we've started adding accounts
 		this._addAccountStartEmitter.fire();
-
-		return Promise.resolve(this._accountManagementService.addAccount(this._providerId)
-			.then(() => {
-				this._addAccountCompleteEmitter.fire();
-				return true;
-			}, err => {
-				this.logService.error(`Error while adding account: ${err}`);
-				this._addAccountErrorEmitter.fire(err);
-				this._addAccountCompleteEmitter.fire();
-				return false;
-			}));
+		try {
+			await this._accountManagementService.addAccount(this._providerId);
+			this._addAccountCompleteEmitter.fire();
+		} catch (err) {
+			this.logService.error(`Error while adding account: ${err}`);
+			this._addAccountErrorEmitter.fire(err);
+			this._addAccountCompleteEmitter.fire();
+		}
 	}
 }
 
@@ -79,7 +76,7 @@ export class RemoveAccountAction extends Action {
 		super(RemoveAccountAction.ID, RemoveAccountAction.LABEL, 'remove-account-action codicon remove');
 	}
 
-	public run(): Promise<boolean> {
+	public async run(): Promise<void> {
 		// Ask for Confirm
 		const confirm: IConfirmation = {
 			message: localize('confirmRemoveUserAccountMessage', "Are you sure you want to remove '{0}'?", this._account.displayInfo.displayName),
@@ -88,20 +85,17 @@ export class RemoveAccountAction extends Action {
 			type: 'question'
 		};
 
-		return this._dialogService.confirm(confirm).then((result: IConfirmationResult) => {
-			if (!result || !result.confirmed) {
-				return Promise.resolve(false);
-			} else {
-				return Promise.resolve(this._accountManagementService.removeAccount(this._account.key)).catch(err => {
-					// Must handle here as this is an independent action
-					this._notificationService.notify({
-						severity: Severity.Error,
-						message: localize('removeAccountFailed', "Failed to remove account")
-					});
-					return false;
+		const result = await this._dialogService.confirm(confirm);
+		if (result?.confirmed) {
+			try {
+				await this._accountManagementService.removeAccount(this._account.key);
+			} catch (err) {
+				this._notificationService.notify({
+					severity: Severity.Error,
+					message: localize('removeAccountFailed', "Failed to remove account")
 				});
 			}
-		});
+		}
 	}
 }
 
@@ -119,9 +113,8 @@ export class ApplyFilterAction extends Action {
 		super(id, label, 'apply-filters-action codicon filter');
 	}
 
-	public run(): Promise<boolean> {
+	public async run(): Promise<void> {
 		// Todo: apply filter to the account
-		return Promise.resolve(true);
 	}
 }
 
@@ -139,18 +132,16 @@ export class RefreshAccountAction extends Action {
 	) {
 		super(RefreshAccountAction.ID, RefreshAccountAction.LABEL, 'refresh-account-action codicon refresh');
 	}
-	public run(): Promise<boolean> {
+	public async run(): Promise<void> {
 		if (this.account) {
-			return Promise.resolve(this._accountManagementService.refreshAccount(this.account)
-				.then(() => true,
-					err => {
-						this.logService.error(`Error while refreshing account: ${err}`);
-						return Promise.reject(err);
-					}
-				));
+			try {
+				await this._accountManagementService.refreshAccount(this.account);
+			} catch (err) {
+				this.logService.error(`Error while refreshing account: ${err}`);
+			}
 		} else {
 			const errorMessage = localize('NoAccountToRefresh', "There is no account to refresh");
-			return Promise.reject(errorMessage);
+			throw new Error(errorMessage);
 		}
 	}
 }

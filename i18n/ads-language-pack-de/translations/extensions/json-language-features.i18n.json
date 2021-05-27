@@ -11,7 +11,7 @@
 		"package": {
 			"displayName": "JSON-Sprachfeatures",
 			"description": "Bietet umfangreiche Sprachunterstützung für JSON-Dateien.",
-			"json.schemas.desc": "Hiermit werden Schemas zu JSON-Dateien im aktuellen Projekt zugeordnet.",
+			"json.schemas.desc": "Hiermit werden Schemas JSON-Dateien im aktuellen Projekt zugeordnet.",
 			"json.schemas.url.desc": "Eine URL zu einem Schema oder ein relativer Pfad zu einem Schema im aktuellen Verzeichnis",
 			"json.schemas.fileMatch.desc": "Ein Array von Dateimustern für den Abgleich, wenn JSON-Dateien in Schemas aufgelöst werden. * kann als Platzhalterzeichen verwendet werden. Zudem können Ausschlussmuster definiert werden (mit ! beginnend). Eine Datei gilt als Übereinstimmung, wenn mindestens ein übereinstimmendes Muster vorhanden ist und das letzte übereinstimmende Muster kein Ausschlussmuster ist.",
 			"json.schemas.fileMatch.item.desc": "Ein Dateimuster, das \"*\" enthalten kann, zum Abgleich beim Auflösen von JSON-Dateien in Schemas",

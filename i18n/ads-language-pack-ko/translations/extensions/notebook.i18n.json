@@ -8,7 +8,7 @@
 	],
 	"version": "1.0.0",
 	"contents": {
-		"extensions/notebook/package": {
+		"package": {
 			"displayName": "Notebook 코어 확장",
 			"description": "데이터 프로토콜 기반 Notebook 기여와 많은 Notebook 명령 및 기여를 정의합니다.",
 			"notebook.configuration.title": "Notebook 구성",
@@ -16,7 +16,11 @@
 			"notebook.useExistingPython.description": "Notebook에서 사용하는 기존 python 설치의 로컬 경로입니다.",
 			"notebook.overrideEditorTheming.description": "Notebook 편집기에서 편집기 기본 설정을 재정의합니다. 설정에는 배경색, 현재 선 색 및 테두리가 포함됩니다.",
 			"notebook.maxTableRows.description": "Notebook 편집기에서 테이블당 반환된 최대 행 수",
+			"notebook.trustedBooks.description": "Notebooks contained in these books will automatically be trusted.",
 			"notebook.maxBookSearchDepth.description": "책을 검색할 하위 디렉터리의 최대 깊이(무한의 경우 0 입력)",
+			"notebook.collapseBookItems.description": "Collapse Book items at root level in the Notebooks Viewlet",
+			"notebook.remoteBookDownloadTimeout.description": "Download timeout in milliseconds for GitHub books",
+			"notebook.pinnedNotebooks.description": "Notebooks that are pinned by the user for the current workspace",
 			"notebook.command.new": "새 Notebook",
 			"notebook.command.open": "Notebook 열기",
 			"notebook.analyzeJupyterNotebook": "Notebook에서 분석",
@@ -40,20 +44,109 @@
 			"title.SQL19PreviewBook": "SQL Server 2019 가이드",
 			"books-preview-category": "Jupyter Book",
 			"title.saveJupyterBook": "책 저장",
+			"title.trustBook": "Trust Book",
 			"title.searchJupyterBook": "책 검색",
-			"title.SavedBooks": "저장된 책",
-			"title.UntitledBooks": "제목 없는 책"
+			"title.SavedBooks": "Notebooks",
+			"title.ProvidedBooks": "Provided Books",
+			"title.PinnedBooks": "Pinned notebooks",
+			"title.PreviewLocalizedBook": "Get localized SQL Server 2019 guide",
+			"title.openJupyterBook": "Open Jupyter Book",
+			"title.closeJupyterBook": "Close Jupyter Book",
+			"title.closeJupyterNotebook": "Close Jupyter Notebook",
+			"title.revealInBooksViewlet": "Reveal in Books",
+			"title.createJupyterBook": "Create Book (Preview)",
+			"title.openNotebookFolder": "Open Notebooks in Folder",
+			"title.openRemoteJupyterBook": "Add Remote Jupyter Book",
+			"title.pinNotebook": "Pin Notebook",
+			"title.unpinNotebook": "Unpin Notebook",
+			"title.moveTo": "Move to ..."
 		},
-		"extensions/notebook/dist/common/utils": {
-			"mkdirOutputMsg": "... {0}을(를) 만드는 중",
-			"executeCommandProcessExited": "프로세스가 {0} 코드로 종료됨"
+		"dist/common/utils": {
+			"ensureDirOutputMsg": "... Ensuring {0} exists",
+			"executeCommandProcessExited": "Process exited with error code: {0}. StdErr Output: {1}"
 		},
-		"extensions/notebook/dist/common/localizedConstants": {
+		"dist/common/constants": {
+			"managePackages.localhost": "localhost",
+			"managePackages.packageNotFound": "Could not find the specified package"
+		},
+		"dist/common/localizedConstants": {
 			"msgYes": "예",
 			"msgNo": "아니요",
-			"msgSampleCodeDataFrame": "이 샘플 코드는 파일을 데이터 프레임에 로드하고 처음 10개의 결과를 표시합니다."
+			"msgSampleCodeDataFrame": "이 샘플 코드는 파일을 데이터 프레임에 로드하고 처음 10개의 결과를 표시합니다.",
+			"noBDCConnectionError": "Spark kernels require a connection to a SQL Server Big Data Cluster master instance.",
+			"providerNotValidError": "Non-MSSQL providers are not supported for spark kernels.",
+			"allFiles": "All Files",
+			"labelSelectFolder": "Select Folder",
+			"labelBookFolder": "Select Book",
+			"confirmReplace": "Folder already exists. Are you sure you want to delete and replace this folder?",
+			"openNotebookCommand": "Open Notebook",
+			"openMarkdownCommand": "Open Markdown",
+			"openExternalLinkCommand": "Open External Link",
+			"msgBookTrusted": "Book is now trusted in the workspace.",
+			"msgBookAlreadyTrusted": "Book is already trusted in this workspace.",
+			"msgBookUntrusted": "Book is no longer trusted in this workspace",
+			"msgBookAlreadyUntrusted": "Book is already untrusted in this workspace.",
+			"msgBookPinned": "Book {0} is now pinned in the workspace.",
+			"msgBookUnpinned": "Book {0} is no longer pinned in this workspace",
+			"bookInitializeFailed": "Failed to find a Table of Contents file in the specified book.",
+			"noBooksSelected": "No books are currently selected in the viewlet.",
+			"labelBookSection": "Select Book Section",
+			"labelAddToLevel": "Add to this level",
+			"missingFileError": "Missing file : {0} from {1}",
+			"InvalidError.tocFile": "Invalid toc file",
+			"Invalid toc.yml": "Error: {0} has an incorrect toc.yml file",
+			"configFileError": "Configuration file missing",
+			"openBookError": "Open book {0} failed: {1}",
+			"readBookError": "Failed to read book {0}: {1}",
+			"openNotebookError": "Open notebook {0} failed: {1}",
+			"openMarkdownError": "Open markdown {0} failed: {1}",
+			"openUntitledNotebookError": "Open untitled notebook {0} as untitled failed: {1}",
+			"openExternalLinkError": "Open link {0} failed: {1}",
+			"closeBookError": "Close book {0} failed: {1}",
+			"duplicateFileError": "File {0} already exists in the destination folder {1} \r\n The file has been renamed to {2} to prevent data loss.",
+			"editBookError": "Error while editing book {0}: {1}",
+			"selectBookError": "Error while selecting a book or a section to edit: {0}",
+			"url": "URL",
+			"repoUrl": "Repository URL",
+			"location": "Location",
+			"addRemoteBook": "Add Remote Book",
+			"onGitHub": "GitHub",
+			"onsharedFile": "Shared File",
+			"releases": "Releases",
+			"book": "Book",
+			"version": "Version",
+			"language": "Language",
+			"booksNotFound": "No books are currently available on the provided link",
+			"urlGithubError": "The url provided is not a Github release url",
+			"search": "Search",
+			"add": "Add",
+			"close": "Close",
+			"invalidTextPlaceholder": "-",
+			"msgRemoteBookDownloadProgress": "Remote Book download is in progress",
+			"msgRemoteBookDownloadComplete": "Remote Book download is complete",
+			"msgRemoteBookDownloadError": "Error while downloading remote Book",
+			"msgRemoteBookUnpackingError": "Error while decompressing remote Book",
+			"msgRemoteBookDirectoryError": "Error while creating remote Book directory",
+			"msgTaskName": "Downloading Remote Book",
+			"msgResourceNotFound": "Resource not Found",
+			"msgBookNotFound": "Books not Found",
+			"msgReleaseNotFound": "Releases not Found",
+			"msgUndefinedAssetError": "The selected book is not valid",
+			"httpRequestError": "Http Request failed with error: {0} {1}",
+			"msgDownloadLocation": "Downloading to {0}",
+			"newGroup": "New Group",
+			"groupDescription": "Groups are used to organize Notebooks.",
+			"locationBrowser": "Browse locations...",
+			"selectContentFolder": "Select content folder",
+			"browse": "Browse",
+			"create": "Create",
+			"name": "Name",
+			"saveLocation": "Save location",
+			"contentFolder": "Content folder (Optional)",
+			"msgContentFolderError": "Content folder path does not exist",
+			"msgSaveFolderError": "Save location path does not exist"
 		},
-		"extensions/notebook/dist/jupyter/jupyterServerInstallation": {
+		"dist/jupyter/jupyterServerInstallation": {
 			"msgInstallPkgProgress": "Notebook 종속성 설치가 진행 중입니다.",
 			"msgPythonDownloadComplete": "Python 다운로드가 완료되었습니다.",
 			"msgPythonDownloadError": "Python 설정을 다운로드하는 동안 오류가 발생했습니다.",
@@ -65,79 +158,96 @@
 			"msgInstallPkgStart": "Notebook 종속성을 설치하는 중입니다. 자세한 내용은 작업 보기를 참조하세요.",
 			"msgInstallPkgFinish": "Notebook 종속성 설치를 완료했습니다.",
 			"msgPythonRunningError": "Python이 실행되는 동안 기존 Python 설치를 덮어쓸 수 없습니다. 계속하기 전에 활성 Notebook을 닫으세요.",
-			"msgSkipPythonInstall": "Python이 특정 위치에 이미 있습니다. 설치를 건너뜁니다.",
 			"msgWaitingForInstall": "현재 다른 Python 설치를 진행 중입니다. 완료될 때까지 기다립니다.",
 			"msgDependenciesInstallationFailed": "오류: {0}(을) 나타내며 Notebook 종속성 설치에 실패했습니다.",
 			"msgDownloadPython": "{0} 플랫폼용 로컬 python을 {1}(으)로 다운로드하는 중",
-			"confirmPackageUpgrade": "설치된 일부 Python 패키지를 업그레이드해야 합니다. 지금 업그레이드하시겠습니까?",
-			"upgradePackages.pipInstall": "{0} 설치 중",
-			"msgInstallStart": "Notebook을 실행하는 데 필요한 패키지를 설치하는 중...",
-			"msgJupyterInstallDone": "... Jupyter 설치가 완료되었습니다."
+			"msgPackageRetrievalFailed": "Encountered an error when trying to retrieve list of installed packages: {0}",
+			"msgGetPythonUserDirFailed": "Encountered an error when getting Python user path: {0}"
 		},
-		"extensions/notebook/dist/dialog/configurePythonDialog": {
-			"configurePython.dialogName": "Notebook용 Python 구성",
-			"configurePython.okButtonText": "설치",
-			"configurePython.cancelButtonText": "취소",
-			"configurePython.browseButtonText": "찾아보기",
-			"configurePython.locationTextBoxText": "Python 설치 위치",
-			"configurePython.selectFileLabel": "선택",
-			"configurePython.installNote": "이 설치에는 다소 시간이 걸릴 수 있습니다. 설치가 완료될 때까지 애플리케이션을 닫지 않는 것이 좋습니다.",
-			"configurePython.invalidLocationMsg": "지정된 설치 위치가 잘못되었습니다.",
-			"configurePython.pythonNotFoundMsg": "지정된 위치에서 Python 설치를 찾을 수 없습니다.",
-			"configurePython.pythonInstallDeclined": "Python 설치가 거부되었습니다.",
-			"configurePython.installationType": "설치 유형",
-			"configurePython.newInstall": "새 Python 설치",
-			"configurePython.existingInstall": "기존 Python 설치 사용"
+		"dist/dialog/configurePython/configurePythonWizard": {
+			"configurePython.okButtonText": "Install",
+			"configurePython.invalidLocationMsg": "The specified install location is invalid.",
+			"configurePython.pythonNotFoundMsg": "No Python installation was found at the specified location.",
+			"configurePython.wizardNameWithKernel": "Configure Python to run {0} kernel",
+			"configurePython.wizardNameWithoutKernel": "Configure Python to run kernels",
+			"configurePython.page0Name": "Configure Python Runtime",
+			"configurePython.page1Name": "Install Dependencies",
+			"configurePython.pythonInstallDeclined": "Python installation was declined."
 		},
-		"extensions/notebook/dist/extension": {
-			"msgSampleCodeDataFrame": "이 샘플 코드는 파일을 데이터 프레임에 로드하고 처음 10개의 결과를 표시합니다.",
-			"noNotebookVisible": "Notebook 편집기가 활성 상태가 아님",
+		"dist/extension": {
 			"codeCellName": "코드",
 			"textCellName": "텍스트",
-			"selectCellType": "어떤 유형의 셀을 추가하시겠습니까?",
-			"notebookFiles": "Notebook"
+			"selectCellType": "어떤 유형의 셀을 추가하시겠습니까?"
 		},
-		"extensions/notebook/dist/jupyter/jupyterController": {
+		"dist/jupyter/jupyterController": {
 			"notebookFileType": "Notebook",
 			"unsupportedFileType": ".ipynb Notebook만 지원됩니다.",
 			"confirmReinstall": "다시 설치하시겠습니까?"
 		},
-		"extensions/notebook/dist/jupyter/jupyterServerManager": {
+		"dist/dialog/configurePython/configurePathPage": {
+			"configurePython.browseButtonText": "Browse",
+			"configurePython.selectFileLabel": "Select",
+			"configurePython.descriptionWithKernel": "The {0} kernel requires a Python runtime to be configured and dependencies to be installed.",
+			"configurePython.descriptionWithoutKernel": "Notebook kernels require a Python runtime to be configured and dependencies to be installed.",
+			"configurePython.installationType": "Installation Type",
+			"configurePython.locationTextBoxText": "Python Install Location",
+			"configurePython.pythonConfigured": "Python runtime configured!",
+			"configurePythyon.dropdownPathLabel": "{0} (Python {1})",
+			"configurePythyon.noVersionsFound": "No supported Python versions found.",
+			"configurePythyon.defaultPathLabel": "{0} (Default)",
+			"configurePython.newInstall": "New Python installation",
+			"configurePython.existingInstall": "Use existing Python installation",
+			"configurePythyon.customPathLabel": "{0} (Custom)"
+		},
+		"dist/dialog/configurePython/pickPackagesPage": {
+			"configurePython.pkgNameColumn": "Name",
+			"configurePython.existingVersionColumn": "Existing Version",
+			"configurePython.requiredVersionColumn": "Required Version",
+			"configurePython.kernelLabel": "Kernel",
+			"configurePython.requiredDependencies": "Install required kernel dependencies",
+			"msgUnsupportedKernel": "Could not retrieve packages for kernel {0}"
+		},
+		"dist/jupyter/jupyterServerManager": {
 			"shutdownError": "Notebook 서버 종료 실패: {0}"
 		},
-		"extensions/notebook/dist/jupyter/serverInstance": {
+		"dist/jupyter/serverInstance": {
 			"serverStopError": "Notebook 서버 중지 오류: {0}",
-			"notebookStartProcessExitPremature": "오류 {0}을(를) 나타내며 Notebook 프로세스가 조기에 종료되었습니다. StdErr 출력: {1}",
+			"notebookStartProcessExitPremature": "Notebook process exited prematurely with error code: {0}. StdErr Output: {1}",
 			"jupyterError": "Jupyter에서 보낸 오류: {0}",
 			"jupyterOutputMsgStartSuccessful": "... Jupyter가 {0}에서 실행되고 있습니다.",
 			"jupyterOutputMsgStart": "... Notebook 서버 시작 중"
 		},
-		"extensions/notebook/dist/jupyter/jupyterNotebookProvider": {
+		"dist/jupyter/jupyterNotebookProvider": {
 			"errNotebookUriMissing": "Notebook 경로는 필수입니다."
 		},
-		"extensions/notebook/dist/jupyter/jupyterSessionManager": {
+		"dist/jupyter/jupyterSessionManager": {
 			"errorStartBeforeReady": "세션을 시작할 수 없습니다. 관리자가 아직 초기화되지 않았습니다.",
-			"connectionNotValid": "Spark 커널을 SQL Server 빅 데이터 클러스터 마스터 인스턴스에 연결해야 합니다."
+			"notebook.couldNotFindKnoxGateway": "Could not find Knox gateway endpoint",
+			"promptBDCUsername": "{0}Please provide the username to connect to the BDC Controller:",
+			"promptBDCPassword": "Please provide the password to connect to the BDC Controller",
+			"bdcConnectError": "Error: {0}. ",
+			"clusterControllerConnectionRequired": "A connection to the cluster controller is required to run Spark jobs"
 		},
-		"extensions/notebook/dist/dialog/managePackages/managePackagesDialog": {
+		"dist/dialog/managePackages/managePackagesDialog": {
 			"managePackages.dialogName": "패키지 관리",
 			"managePackages.cancelButtonText": "닫기"
 		},
-		"extensions/notebook/dist/dialog/managePackages/installedPackagesTab": {
+		"dist/dialog/managePackages/installedPackagesTab": {
 			"managePackages.installedTabTitle": "설치됨",
 			"managePackages.pkgNameColumn": "이름",
 			"managePackages.newPkgVersionColumn": "버전",
+			"managePackages.deleteColumn": "Delete",
 			"managePackages.uninstallButtonText": "선택한 패키지 제거",
 			"managePackages.packageType": "패키지 유형",
+			"managePackages.location": "Location",
 			"managePackages.packageCount": "{0} {1}개의 패키지 찾음",
 			"managePackages.confirmUninstall": "지정된 패키지를 제거하시겠습니까?",
 			"managePackages.backgroundUninstallStarted": "{0} 제거 중",
 			"managePackages.backgroundUninstallComplete": "{0}의 제거를 완료했습니다.",
 			"managePackages.backgroundUninstallFailed": "{0}을(를) 제거하지 못했습니다. 오류: {1}"
 		},
-		"extensions/notebook/dist/dialog/managePackages/addNewPackageTab": {
+		"dist/dialog/managePackages/addNewPackageTab": {
 			"managePackages.invalidTextPlaceholder": "해당 없음",
-			"managePackages.packageNotFound": "지정된 패키지를 찾을 수 없습니다.",
 			"managePackages.searchBarPlaceholder": "{0} 패키지 검색",
 			"managePackages.addNewTabTitle": "새로 추가",
 			"managePackages.searchButtonLabel": "검색",
@@ -146,37 +256,24 @@
 			"managePackages.packageVersionTitle": "패키지 버전",
 			"managePackages.packageSummaryTitle": "패키지 요약",
 			"managePackages.noVersionsFound": "지정된 패키지의 유효한 버전을 찾을 수 없습니다.",
-			"managePackages.packageRequestError": "{0} {1} 오류를 나타내며 패키지 정보 요청 실패",
 			"managePackages.backgroundInstallStarted": "{0} {1} 설치 중",
 			"managePackages.backgroundInstallComplete": "{0} {1} 설치 완료",
 			"managePackages.backgroundInstallFailed": "{0} {1}을(를) 설치하지 못했습니다. 오류: {2}"
 		},
-		"extensions/notebook/dist/protocol/notebookUriHandler": {
+		"dist/jupyter/pypiClient": {
+			"managePackages.packageRequestError": "Package info request failed with error: {0} {1}"
+		},
+		"dist/common/notebookUtils": {
+			"msgSampleCodeDataFrame": "This sample code loads the file into a data frame and shows the first 10 results.",
+			"noNotebookVisible": "No notebook editor is active",
+			"notebookFiles": "Notebooks"
+		},
+		"dist/protocol/notebookUriHandler": {
 			"notebook.unsupportedAction": "이 처리기에는 {0} 작업이 지원되지 않습니다.",
 			"unsupportedScheme": "HTTP 및 HTTPS 링크만 지원되기 때문에 {0} 링크를 열 수 없습니다.",
 			"notebook.confirmOpen": "'{0}'을(를) 다운로드하고 여시겠습니까?",
 			"notebook.fileNotFound": "지정한 파일을 찾을 수 없습니다.",
 			"notebook.fileDownloadError": "{0} {1} 오류를 나타내며 파일 열기 요청 실패"
-		},
-		"extensions/notebook/dist/book/bookTreeView": {
-			"openBookError": "{0} 책을 열지 못함: {1}",
-			"openNotebookError": "{0} Notebook을 열지 못함: {1}",
-			"openMarkdownError": "{0} Markdown을 열지 못함: {1}",
-			"openUntitledNotebookError": "제목 없는 Notebook {0}을(를) 제목 없음으로 열지 못함: {1}",
-			"allFiles": "모든 파일",
-			"labelPickFolder": "폴더 선택",
-			"openExternalLinkError": "링크 {0} 열기 실패: {1}",
-			"confirmReplace": "폴더가 이미 있습니다. 이 폴더를 삭제하고 바꾸시겠습니까?"
-		},
-		"extensions/notebook/dist/book/bookModel": {
-			"missingFileError": "누락된 파일: {0}",
-			"InvalidError.tocFile": "{0}",
-			"Invalid toc.yml": "오류: {0}에 잘못된 toc.yml 파일이 있음"
-		},
-		"extensions/notebook/dist/book/bookTreeItem": {
-			"openNotebookCommand": "Notebook 열기",
-			"openMarkdownCommand": "Markdown 열기",
-			"openExternalLinkCommand": "외부 링크 열기"
 		}
 	}
 }

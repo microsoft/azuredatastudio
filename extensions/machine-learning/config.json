@@ -3,7 +3,7 @@
 		"requiredPythonPackages": [
 			{
 				"name": "sqlmlutils",
-				"version": "1.0.3"
+				"version": "1.1.0"
 			}
 		],
 		"requiredRPackages": [
@@ -17,20 +17,20 @@
 			},
 			{
 				"name": "sqlmlutils",
-				"fileName": "sqlmlutils_0.7.3.zip",
-				"downloadUrl": "https://github.com/microsoft/sqlmlutils/releases/download/R-0.7.3/sqlmlutils_0.7.3.zip",
+				"fileName": "sqlmlutils_1.0.0.zip",
+				"downloadUrl": "https://github.com/microsoft/sqlmlutils/releases/download/R-1.0.0/sqlmlutils_1.0.0.zip",
 				"platform" : "win32"
 			},
 			{
 				"name": "sqlmlutils",
-				"fileName": "sqlmlutils_0.7.3.tar.gz",
-				"downloadUrl": "https://github.com/microsoft/sqlmlutils/releases/download/R-0.7.3/sqlmlutils_0.7.3.tar.gz",
+				"fileName": "sqlmlutils_1.0.0.tar.gz",
+				"downloadUrl": "https://github.com/microsoft/sqlmlutils/releases/download/R-1.0.0/sqlmlutils_1.0.0.tar.gz",
 				"platform" : "darwin"
 			},
 			{
 				"name": "sqlmlutils",
-				"fileName": "sqlmlutils_0.7.3.tar.gz",
-				"downloadUrl": "https://github.com/microsoft/sqlmlutils/releases/download/R-0.7.3/sqlmlutils_0.7.3.tar.gz",
+				"fileName": "sqlmlutils_1.0.0.tar.gz",
+				"downloadUrl": "https://github.com/microsoft/sqlmlutils/releases/download/R-1.0.0/sqlmlutils_1.0.0.tar.gz",
 				"platform" : "linux"
 			}
 		],

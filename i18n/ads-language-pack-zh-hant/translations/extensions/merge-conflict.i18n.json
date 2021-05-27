@@ -30,24 +30,6 @@
 			"config.diffViewPosition.current": "在目前的編輯器群組開啟 diff 檢視。",
 			"config.diffViewPosition.beside": "在目前的編輯器群組旁開啟 diff 檢視。",
 			"config.diffViewPosition.below": "在目前的編輯器群組下開啟 diff 檢視。"
-		},
-		"dist/codelensProvider": {
-			"acceptCurrentChange": "接受目前變更",
-			"acceptIncomingChange": "接受來源變更",
-			"acceptBothChanges": "接受兩者變更",
-			"compareChanges": "比較變更"
-		},
-		"dist/commandHandler": {
-			"cursorNotInConflict": "編輯器游標不在衝突合併範圍之內",
-			"compareChangesTitle": "{0}: 目前變更⟷ 即將到來的變更",
-			"cursorOnCommonAncestorsRange": "編輯器游標在共同上階區塊內，請移動至「當前項目」或「來源項目」區塊",
-			"cursorOnSplitterRange": "編輯器游標在衝突合併工具範圍內,請移動至\"當前項目\"或來源項目\"區塊",
-			"noConflicts": "檔案內找不到需要合併衝突項目",
-			"noOtherConflictsInThisFile": "此檔案內沒有其他的衝突合併項目"
-		},
-		"dist/mergeDecorator": {
-			"currentChange": "(目前變更)",
-			"incomingChange": "(來源變更)"
 		}
 	}
 }

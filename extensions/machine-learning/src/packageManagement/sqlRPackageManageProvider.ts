@@ -69,7 +69,7 @@ export class SqlRPackageManageProvider extends SqlPackageManageProviderBase impl
 		let connectionParts: string[] = [];
 
 		if (connection) {
-			connectionParts.push(utils.getKeyValueString('driver', constants.supportedODBCDriver));
+			connectionParts.push(utils.getKeyValueString('driver', `"${constants.supportedODBCDriver}"`));
 			let server = connection.serverName.replace('\\', '\\\\');
 			if (databaseName) {
 				connectionParts.push(utils.getKeyValueString('database', `"${databaseName}"`));

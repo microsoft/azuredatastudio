@@ -110,7 +110,7 @@
 			"config.autoRepositoryDetection.subFolders": "Buscar por subcarpetas de la carpeta actualmente abierta.",
 			"config.autoRepositoryDetection.openEditors": "Buscar por carpetas padre de los archivos abiertos.",
 			"config.autorefresh": "Si la actualización automática es habilitada.",
-			"config.autofetch": "Cuando se establece en true, se aplica \"fetch\" a los \"commits\" de forma automática para recuperar los cambios del elemento remoto predeterminado del repositorio GIT actual. Si se establece en \"all\" se recuperan los cambios con \"fetch\" de todos los remotos.",
+			"config.autofetch": "Cuando se establece en true, se aplica \"fetch\" a los \"commits\" de forma automática para recuperar los cambios del elemento remoto predeterminado del repositorio GIT actual. Si se establece en \"all\" se recuperan los cambios con \"fetch\" de todos los elementos remotos.",
 			"config.autofetchPeriod": "Duración en segundos entre cada búsqueda de GIT automática, cuando se habilita \"git.autofetch\".",
 			"config.confirmSync": "Confirmar antes de sincronizar repositorios GIT.",
 			"config.countBadge": "Controla la insignia de recuento de Git.",
@@ -136,7 +136,7 @@
 			"config.suggestSmartCommit": "Sugiere habilitar la confirmación inteligente (confirmar todos los cambios cuando no hay cambios \"staged\").",
 			"config.enableCommitSigning": "Habilita la firma de \"commit\" con GPG o X.509.",
 			"config.discardAllScope": "Controla qué cambios son descartados por el comando 'Descartar todos los cambios'. 'all' descarta todos los cambios. 'tracked' descarta sólo los ficheros en seguimiento. 'prompt' muestra un cuadro de diálogo para confirmar cada vez la acción ejecutada.",
-			"config.decorations.enabled": "Controla si GIT aporta colores y distintivos al explorador y a la vista de editores abiertos.",
+			"config.decorations.enabled": "Controla si GIT aporta colores y distintivos al explorador y a la vista Editores abiertos.",
 			"config.enableStatusBarSync": "Controla si el comando Git Sync aparece en la barra de estado.",
 			"config.followTagsWhenSync": "Siga el envío de cambios mediante \"push\" de todas las etiquetas al ejecutar el comando de sincronización.",
 			"config.promptToSaveFilesBeforeStash": "Controla si GIT debe comprobar los archivos no guardados antes de guardar los cambios provisionalmente con \"stash\". ",
@@ -190,7 +190,7 @@
 			"config.requireGitUserConfig": "Controla si se va a requerir una configuración de usuario de GIT explícita o se va a permitir a GIT que la adivine si falta.",
 			"config.showCommitInput": "Controla si se va a mostrar la entrada de confirmación en el panel de control de código fuente de GIT.",
 			"config.terminalAuthentication": "Controla si debe habilitarse VS Code como controlador de autenticación para los procesos GIT que se generan en el terminal integrado. Nota: Los terminales deben reiniciarse para recoger el cambio en esta configuración.",
-			"config.timeline.showAuthor": "Controla si se va a mostrar el autor de la confirmación en la vista Escala de tiempo.",
+			"config.timeline.showAuthor": "Controla si se va a mostrar el autor del \"commit\" en la vista Escala de tiempo.",
 			"config.timeline.date": "Controla la fecha que se va a usar para los elementos de la vista Escala de tiempo.",
 			"config.timeline.date.committed": "Usar la fecha de confirmación",
 			"config.timeline.date.authored": "Usar la fecha de creación",
@@ -221,7 +221,8 @@
 			"view.workbench.scm.folder": "La carpeta abierta actualmente no tiene un repositorio git. Puede inicializar un repositorio que habilitará características de control de código fuente con tecnología de git.\r\n[Inicializar repositorio](command:git.init?%5Btrue%5D)\r\nPara obtener más información sobre cómo usar git y el control de código fuente en VS Code [lea nuestra documentación](https://aka.ms/vscode-scm).",
 			"view.workbench.scm.workspace": "El área de trabajo abierta actualmente no tiene ninguna carpeta que contenga repositorios de git. Puede inicializar un repositorio en una carpeta, lo que habilitará las características de control de código con tecnología de git.\r\n[Inicializar repositorio] (command:git.init)\r\nPara obtener más información sobre cómo usar git y el control de código fuente en VS Code [lea nuestra documentación] (https://aka.ms/vscode-scm).",
 			"view.workbench.scm.emptyWorkspace": "El área de trabajo abierta actualmente no tiene ninguna carpeta que contenga repositorios GIT.\r\n[Agregar carpeta al área de trabajo](command:workbench.action.addRootFolder)\r\nPara obtener más información sobre cómo usar GIT y el control de código fuente en VS Code [lea nuestra documentación](https://aka.ms/vscode-scm).",
-			"view.workbench.cloneRepository": "También puede clonar un repositorio desde una dirección URL. Para obtener más información sobre cómo usar GIT y el control de código fuente en VS Code [lea nuestra documentación](https://aka.ms/vscode-scm).\r\n[Clonar repositorio](command:git.clone \"Clonar un repositorio una vez que la extensión GIT se ha activado\")"
+			"view.workbench.cloneRepository": "Puede clonar un repositorio de forma local.\r\n[Clonar repositorio](command:git.clone \"Clonar un repositorio una vez que la extensión GIT se haya activado\")",
+			"view.workbench.learnMore": "Para obtener más información sobre cómo usar GIT y el control de código fuente en VS Code, [lea nuestra documentación](https://aka.ms/vscode-scm)."
 		},
 		"dist/repository": {
 			"index modified": "Índice modificado",

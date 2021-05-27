@@ -4,6 +4,7 @@
 	"notebook.configuration.title": "Notebook configuration",
 	"notebook.pythonPath.description": "Local path to python installation used by Notebooks.",
 	"notebook.useExistingPython.description": "Local path to a preexisting python installation used by Notebooks.",
+	"notebook.dontPromptPythonUpdate.description": "Do not show prompt to update Python.",
 	"notebook.overrideEditorTheming.description": "Override editor default settings in the Notebook editor. Settings include background color, current line color and border",
 	"notebook.maxTableRows.description": "Maximum number of rows returned per table in the Notebook editor",
 	"notebook.trustedBooks.description": "Notebooks contained in these books will automatically be trusted.",

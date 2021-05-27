@@ -32,6 +32,7 @@ import { URI } from 'vs/base/common/uri';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
+import { KernelsLanguage } from 'sql/workbench/services/notebook/common/notebookConstants';
 
 const msgLoading = localize('loading', "Loading kernels...");
 export const msgChanging = localize('changing', "Changing kernel...");
@@ -45,6 +46,7 @@ const msgLocalHost = localize('localhost', "localhost");
 export const noKernel: string = localize('noKernel', "No Kernel");
 const baseIconClass = 'codicon';
 const maskedIconClass = 'masked-icon';
+export const kernelNotSupported: string = localize('kernelNotSupported', "This notebook cannot run with parameters as the kernel is not supported. Please use the supported kernels and format. [Learn more](https://docs.microsoft.com/sql/azure-data-studio/notebooks/notebooks-parameterization).");
 export const noParameterCell: string = localize('noParametersCell', "This notebook cannot run with parameters until a parameter cell is added. [Learn more](https://docs.microsoft.com/sql/azure-data-studio/notebooks/notebooks-parameterization).");
 export const noParametersInCell: string = localize('noParametersInCell', "This notebook cannot run with parameters until there are parameters added to the parameter cell. [Learn more](https://docs.microsoft.com/sql/azure-data-studio/notebooks/notebooks-parameterization).");
 
@@ -126,9 +128,9 @@ export class ClearAllOutputsAction extends TooltipFromLabelAction {
 		});
 	}
 
-	public run(context: URI): Promise<boolean> {
+	public async run(context: URI): Promise<void> {
 		const editor = this._notebookService.findNotebookEditor(context);
-		return editor.clearAllOutputs();
+		await editor.clearAllOutputs();
 	}
 }
 
@@ -208,11 +210,10 @@ export class TrustedAction extends ToggleableAction {
 		this.toggle(value);
 	}
 
-	public async run(context: URI): Promise<boolean> {
+	public async run(context: URI): Promise<void> {
 		const editor = this._notebookService.findNotebookEditor(context);
 		this.trusted = !this.trusted;
 		editor.model.trustedMode = this.trusted;
-		return true;
 	}
 }
 
@@ -226,15 +227,13 @@ export class RunAllCellsAction extends Action {
 	) {
 		super(id, label, cssClass);
 	}
-	public async run(context: URI): Promise<boolean> {
+	public async run(context: URI): Promise<void> {
 		try {
 			this._telemetryService.sendActionEvent(TelemetryKeys.TelemetryView.Notebook, TelemetryKeys.NbTelemetryAction.RunAll);
 			const editor = this._notebookService.findNotebookEditor(context);
 			await editor.runAllCells();
-			return true;
 		} catch (e) {
 			this.notificationService.error(getErrorMessage(e));
-			return false;
 		}
 	}
 }
@@ -270,13 +269,12 @@ export class CollapseCellsAction extends ToggleableAction {
 		this.expanded = !value;
 	}
 
-	public async run(context: URI): Promise<boolean> {
+	public async run(context: URI): Promise<void> {
 		const editor = this._notebookService.findNotebookEditor(context);
 		this.setCollapsed(!this.isCollapsed);
 		editor.cells.forEach(cell => {
 			cell.isCollapsed = this.isCollapsed;
 		});
-		return true;
 	}
 }
 
@@ -308,6 +306,16 @@ export class RunParametersAction extends TooltipFromLabelAction {
 	*/
 	public async run(context: URI): Promise<void> {
 		const editor = this._notebookService.findNotebookEditor(context);
+		// Only run action for kernels that are supported (Python, PySpark, PowerShell)
+		let supportedKernels: string[] = [KernelsLanguage.Python, KernelsLanguage.PowerShell];
+		if (!supportedKernels.includes(editor.model.languageInfo.name)) {
+			// If the kernel is not supported indicate to user to use supported kernels
+			this.notificationService.notify({
+				severity: Severity.Info,
+				message: kernelNotSupported,
+			});
+			return;
+		}
 		// Set defaultParameters to the parameter values in parameter cell
 		let defaultParameters = new Map<string, string>();
 		for (let cell of editor?.cells) {
