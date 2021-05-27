@@ -817,6 +817,13 @@ declare module 'azdata' {
 		Informational = 'Informational'
 	}
 
+	export interface InputBoxProperties {
+		/**
+		 * The maximum number of characters allowed in the input box.
+		 */
+		maxLength?: number;
+	}
+
 	export namespace workspace {
 		/**
 		 * Creates and enters a workspace at the specified location
