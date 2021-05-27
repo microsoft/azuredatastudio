@@ -30,6 +30,7 @@ import { CodeComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/
 import { NotebookRange, ICellEditorProvider, INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
 import { HTMLMarkdownConverter } from 'sql/workbench/contrib/notebook/browser/htmlMarkdownConverter';
 import { NotebookInput } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
+import { IResourceUndoRedoElement, UndoRedoElementType } from 'vs/platform/undoRedo/common/undoRedo';
 
 export const TEXT_SELECTOR: string = 'text-cell-component';
 const USER_SELECT_CLASS = 'actionselect';
@@ -472,4 +473,37 @@ function preventDefaultAndExecCommand(e: KeyboardEvent, commandId: string) {
 	// use preventDefault() to avoid invoking the editor's select all
 	e.preventDefault();
 	document.execCommand(commandId);
+}
+
+class RichTextCellEdit implements IResourceUndoRedoElement {
+	private readonly _label: string = 'RichText Cell Edit';
+
+	constructor(
+		private readonly _changeText: string,
+		private readonly _cellModel: ICellModel) {
+	}
+
+	public get type(): UndoRedoElementType.Resource {
+		return UndoRedoElementType.Resource;
+	}
+
+	public get resource(): URI {
+		return this._cellModel.cellRichTextUri;
+	}
+
+	public get label(): string {
+		return this._label;
+	}
+
+	public get confirmBeforeUndo(): boolean | undefined {
+		return false;
+	}
+
+	public async undo(): Promise<void> {
+		throw new Error('Method not implemented.');
+	}
+
+	public async redo(): Promise<void> {
+		throw new Error('Method not implemented.');
+	}
 }
