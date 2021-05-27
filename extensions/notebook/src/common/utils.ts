@@ -435,7 +435,7 @@ export async function getRandomToken(size: number = 24): Promise<string> {
 }
 
 export function isBookItemPinned(notebookPath: string): boolean {
-	let pinnedNotebooks: INotebook[] = getPinnedNotebooks();
+	let pinnedNotebooks: IPinnedNotebook[] = getPinnedNotebooks();
 	if (pinnedNotebooks?.find(x => x.notebookPath === notebookPath)) {
 		return true;
 	}
@@ -451,7 +451,7 @@ export function getNotebookType(book: BookTreeItemFormat): BookTreeItemType {
 	}
 }
 
-export function getPinnedNotebooks(): INotebook[] {
+export function getPinnedNotebooks(): IPinnedNotebook[] {
 	let config: vscode.WorkspaceConfiguration = vscode.workspace.getConfiguration(notebookConfigKey);
 	let pinnedNotebooks: [] = config.get(pinnedBooksConfigKey);
 	let updateFormat: boolean = false;
@@ -460,7 +460,7 @@ export function getPinnedNotebooks(): INotebook[] {
 			updateFormat = true;
 			return { notebookPath: elem, bookPath: '', title: '' };
 		} else {
-			return elem as INotebook;
+			return elem as IPinnedNotebook;
 		}
 	});
 	if (updateFormat) {
@@ -475,7 +475,7 @@ function hasWorkspaceFolders(): boolean {
 	return workspaceFolders && workspaceFolders.length > 0;
 }
 
-export async function setPinnedBookPathsInConfig(pinnedNotebookPaths: INotebook[]): Promise<void> {
+export async function setPinnedBookPathsInConfig(pinnedNotebookPaths: IPinnedNotebook[]): Promise<void> {
 	let config: vscode.WorkspaceConfiguration = vscode.workspace.getConfiguration(notebookConfigKey);
 	let storeInWorspace: boolean = hasWorkspaceFolders();
 
@@ -483,7 +483,7 @@ export async function setPinnedBookPathsInConfig(pinnedNotebookPaths: INotebook[
 }
 
 
-export interface INotebook {
+export interface IPinnedNotebook {
 	bookPath?: string;
 	title?: string;
 	notebookPath: string;

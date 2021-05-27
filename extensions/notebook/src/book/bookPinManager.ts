@@ -6,7 +6,7 @@ import * as path from 'path';
 import * as vscode from 'vscode';
 import * as constants from './../common/constants';
 import { BookTreeItem } from './bookTreeItem';
-import { getPinnedNotebooks, setPinnedBookPathsInConfig, INotebook } from '../common/utils';
+import { getPinnedNotebooks, setPinnedBookPathsInConfig, IPinnedNotebook } from '../common/utils';
 
 export interface IBookPinManager {
 	pinNotebook(notebook: BookTreeItem): Promise<boolean>;
@@ -51,14 +51,14 @@ export class BookPinManager implements IBookPinManager {
 		let modifiedPinnedBooks = false;
 		let bookPathToChange: string = notebook.book.contentPath;
 
-		let pinnedBooks: INotebook[] = getPinnedNotebooks();
+		let pinnedBooks: IPinnedNotebook[] = getPinnedNotebooks();
 		let existingBookIndex = pinnedBooks.map(pinnedBookPath => path.normalize(pinnedBookPath?.notebookPath)).indexOf(path.normalize(bookPathToChange));
 
 		if (existingBookIndex !== -1 && operation === PinBookOperation.Unpin) {
 			pinnedBooks.splice(existingBookIndex, 1);
 			modifiedPinnedBooks = true;
 		} else if (existingBookIndex === -1 && operation === PinBookOperation.Pin) {
-			let addNotebook: INotebook = { notebookPath: bookPathToChange, bookPath: notebook.book.root, title: notebook.book.title };
+			let addNotebook: IPinnedNotebook = { notebookPath: bookPathToChange, bookPath: notebook.book.root, title: notebook.book.title };
 			pinnedBooks.push(addNotebook);
 			modifiedPinnedBooks = true;
 		}

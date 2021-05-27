@@ -13,7 +13,7 @@ import * as fs from 'fs-extra';
 import * as loc from '../common/localizedConstants';
 import { IJupyterBookToc, JupyterBookSection } from '../contracts/content';
 import { convertFrom, getContentPath, BookVersion } from './bookVersionHandler';
-import { debounce, INotebook } from '../common/utils';
+import { debounce, IPinnedNotebook } from '../common/utils';
 import { Deferred } from '../common/promise';
 const fsPromises = fileServices.promises;
 const content = 'content';
@@ -39,7 +39,7 @@ export class BookModel {
 		public readonly isNotebook: boolean,
 		private _extensionContext: vscode.ExtensionContext,
 		private _onDidChangeTreeData: vscode.EventEmitter<BookTreeItem | undefined>,
-		public readonly notebookDetails?: INotebook) { }
+		public readonly pinnedNotebookDetails?: IPinnedNotebook) { }
 
 	public unwatchTOC(): void {
 		fs.unwatchFile(this.tableOfContentsPath);
@@ -141,9 +141,9 @@ export class BookModel {
 
 		let pathDetails = path.parse(this.bookPath);
 		let notebookItem = new BookTreeItem({
-			title: this.notebookDetails?.title ?? pathDetails.name,
+			title: this.pinnedNotebookDetails?.title ?? pathDetails.name,
 			contentPath: this.bookPath,
-			root: this.notebookDetails?.bookPath ?? pathDetails.dir,
+			root: this.pinnedNotebookDetails?.bookPath ?? pathDetails.dir,
 			tableOfContents: { sections: undefined },
 			page: { sections: undefined },
 			type: BookTreeItemType.Notebook,

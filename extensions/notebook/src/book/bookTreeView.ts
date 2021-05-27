@@ -16,7 +16,7 @@ import { Deferred } from '../common/promise';
 import { IBookTrustManager, BookTrustManager } from './bookTrustManager';
 import * as loc from '../common/localizedConstants';
 import * as glob from 'fast-glob';
-import { getPinnedNotebooks, confirmMessageDialog, getNotebookType, FileExtension, INotebook } from '../common/utils';
+import { getPinnedNotebooks, confirmMessageDialog, getNotebookType, FileExtension, IPinnedNotebook } from '../common/utils';
 import { IBookPinManager, BookPinManager } from './bookPinManager';
 import { BookTocManager, IBookTocManager, quickPickResults } from './bookTocManager';
 import { CreateBookDialog } from '../dialog/createBookDialog';
@@ -254,7 +254,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	async addNotebookToPinnedView(bookItem: BookTreeItem): Promise<void> {
 		let notebookPath: string = bookItem.book.contentPath;
 		if (notebookPath) {
-			let notebookDetails: INotebook = bookItem.book.root ? { bookPath: bookItem.book.root, notebookPath: notebookPath, title: bookItem.book.title } : { notebookPath: notebookPath };
+			let notebookDetails: IPinnedNotebook = bookItem.book.root ? { bookPath: bookItem.book.root, notebookPath: notebookPath, title: bookItem.book.title } : { notebookPath: notebookPath };
 			await this.createAndAddBookModel(notebookPath, true, notebookDetails);
 		}
 	}
@@ -318,7 +318,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	 * @param isNotebook A boolean value to know we are creating a model for a notebook or a book
 	 * @param notebookBookRoot For pinned notebooks we need to know if the notebook is part of a book or it's a standalone notebook
 	 */
-	private async createAndAddBookModel(bookPath: string, isNotebook: boolean, notebookDetails?: INotebook): Promise<void> {
+	private async createAndAddBookModel(bookPath: string, isNotebook: boolean, notebookDetails?: IPinnedNotebook): Promise<void> {
 		if (!this.books.find(x => x.bookPath === bookPath)) {
 			const book: BookModel = new BookModel(bookPath, this._openAsUntitled, isNotebook, this._extensionContext, this._onDidChangeTreeData, notebookDetails);
 			await book.initializeContents();
