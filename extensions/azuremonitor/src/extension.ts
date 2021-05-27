@@ -61,7 +61,7 @@ function getServerOptions(executablePath: string): ServerOptions {
 
 function getClientOptions(): ClientOptions {
 	return {
-		documentSelector: ['kusto'],
+		documentSelector: ['loganalytics'],
 		providerId: Constants.providerId,
 		errorHandler: new ClientErrorHandler(),
 		synchronize: {

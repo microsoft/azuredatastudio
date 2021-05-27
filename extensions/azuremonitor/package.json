@@ -10,7 +10,7 @@
     "type": "git",
     "url": "https://github.com/Microsoft/azuredatastudio.git"
   },
-  "typings": "./src/kusto",
+  "typings": "./src/azuremonitor",
   "categories": [
     "Other"
   ],
@@ -24,7 +24,7 @@
   "contributes": {
     "connectionProvider": {
       "providerId": "LogAnalytics",
-      "languageMode": "kusto",
+      "languageMode": "loganalytics",
       "displayName": "Azure Monitor Logs",
       "notebookKernelAlias": "Kusto",
       "azureResource": "AzureLogAnalytics",
@@ -165,11 +165,24 @@
           ]
         }
       ]
-    }
+    },
+    "languages": [
+      {
+        "id": "loganalytics",
+        "aliases": [
+          "LogAnalytics",
+          "loganalytics"
+        ],
+        "extensions": [
+          ".loganalytics"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ]
   },
   "scripts": {
     "compile": "gulp compile-extension:azuremonitor-client",
-    "update-grammar": "node ../../build/npm/update-grammar.js Microsoft/vscode-kusto ./syntaxes/kusto.tmLanguage"
+    "update-grammar": "node ../../build/npm/update-grammar.js Microsoft/vscode-azuremonitor ./syntaxes/azuremonitor.tmLanguage"
   },
   "dependencies": {
     "dataprotocol-client": "github:Microsoft/sqlops-dataprotocolclient#1.2.2",
