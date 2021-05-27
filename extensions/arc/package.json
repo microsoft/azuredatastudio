@@ -572,6 +572,7 @@
                             "source": {
                               "providerId": "arc.controllers",
                               "variableNames": {
+                                "namespace": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_NAMESPACE",
                                 "endpoint": "AZDATA_NB_VAR_CONTROLLER_ENDPOINT",
                                 "username": "AZDATA_NB_VAR_CONTROLLER_USERNAME",
                                 "kubeConfig": "AZDATA_NB_VAR_CONTROLLER_KUBECONFIG",
@@ -772,7 +773,7 @@
               },
               {
                 "name": "azdata",
-                "version": "20.3.2"
+                "version": "20.3.4"
               }
             ],
             "when": "true"
