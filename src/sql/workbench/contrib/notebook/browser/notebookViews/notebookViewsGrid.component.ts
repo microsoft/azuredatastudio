@@ -9,7 +9,6 @@ import { NotebookViewsCardComponent } from 'sql/workbench/contrib/notebook/brows
 import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
 import { GridStack, GridStackEvent, GridStackNode } from 'gridstack';
-import 'gridstack/dist/h5/gridstack-dd-native';
 import { localize } from 'vs/nls';
 import { NotebookViewsExtension } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViewsExtension';
 import { CellChangeEvent, INotebookViewCell } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViews';
