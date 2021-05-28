@@ -440,11 +440,12 @@ export const FEEDBACK_DIALOG_SUBMIT_BUTTON = localize('sql.migration.feedback.su
 export const FEEDBACK_DIALOG_CANCEL_BUTTON = localize('sql.migration.feedback.cancel.button', "Cancel");
 export const FEEDBACK_DIALOG_TITLE = localize('sql.migration.feedback.title', "Submit Feedback");
 export const FEEDBACK_DIALOG_HEADING = localize('sql.migration.feedback.heading', "Overall, how satisfied or dissatisfied are you with Azure SQL Migration experience?");
-export const FEEDBACK_DIALOG_PLACEHOLDER = localize('sql.migration.feedback.placeholder', "We appreciate your feedback. How can we improve? (optional).");
 export const FEEDBACK_DIALOG_RATING_1 = localize('sql.migration.feedback.rating.one', "Rating one out of five");
 export const FEEDBACK_DIALOG_RATING_2 = localize('sql.migration.feedback.rating.two', "Rating two out of five");
 export const FEEDBACK_DIALOG_RATING_3 = localize('sql.migration.feedback.rating.three', "Rating three out of five");
 export const FEEDBACK_DIALOG_RATING_4 = localize('sql.migration.feedback.rating.four', "Rating four out of five");
 export const FEEDBACK_DIALOG_RATING_5 = localize('sql.migration.feedback.rating.five', 'Rating five out of five');
 export const FEEDBACK_DIALOG_SENT_MESSAGE = localize('sql.migration.feedback.sent.message', 'Thank you for the feedback!  Your feedback was submitted successfully.');
-export const FEEDBACK_DIALOG_PRIVACY_LINK = localize('sql.migration.feedback.privacy.link', 'Privacy policy');
+export const FEEDBACK_DIALOG_PRIVACY_LINK = localize('sql.migration.feedback.privacy.link', 'Microsoft privacy policy');
+export const FEEDBACK_DIALOG_PLACEHOLDER = (length: number): string =>
+	localize('sql.migration.feedback.placeholder', "We appreciate your feedback. How can we improve? ({0} max)", length);

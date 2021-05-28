@@ -12,6 +12,7 @@ import { sendSqlMigrationActionEvent, TelemetryActions, TelemetryViews } from '.
 export class FeedbackDialog {
 
 	private static readonly DialogName: string = 'SqlMigrationFeedbackDialog';
+	private readonly maxLength: number = 500;
 
 	private _dialog!: azdata.window.Dialog;
 	private _buttonGroup!: azdata.FlexContainer;
@@ -28,7 +29,7 @@ export class FeedbackDialog {
 			this._dialog = azdata.window.createModelViewDialog(
 				'',
 				FeedbackDialog.DialogName,
-				440,
+				394,
 				'normal');
 
 			this._dialog.registerContent(async view => {
@@ -87,10 +88,12 @@ export class FeedbackDialog {
 				const feedbackInputBox = view.modelBuilder
 					.inputBox()
 					.withProperties<azdata.InputBoxProperties>({
-						rows: 3,
 						inputType: 'text',
+						height: '62px',
 						multiline: true,
-						placeHolder: loc.FEEDBACK_DIALOG_PLACEHOLDER,
+						rows: 3,
+						placeHolder: loc.FEEDBACK_DIALOG_PLACEHOLDER(this.maxLength),
+						maxLength: this.maxLength,
 						CSSStyles: {
 							'white-space': 'normal!important',
 						},
@@ -151,7 +154,7 @@ export class FeedbackDialog {
 			TelemetryActions.SendFeedback,
 			{
 				'FeedbackRating': this._feedbackRating?.toString() || '',
-				'FeedbackMessage': this._feedbackText?.substr(0, 500) || '',
+				'FeedbackMessage': this._feedbackText?.substr(0, this.maxLength) || '',
 			});
 
 		await vscode.window.showInformationMessage(loc.FEEDBACK_DIALOG_SENT_MESSAGE);
