@@ -233,11 +233,11 @@ describe('Project: sqlproj content operations', function (): void {
 		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
 		const project = await Project.openProject(projFilePath);
 
-		should(project.databaseReferences.length).equal(0, 'There should be no datbase references to start with');
+		should(project.databaseReferences.length).equal(0, 'There should be no database references to start with');
 		await project.addSystemDatabaseReference({ databaseName: 'master', systemDb: SystemDatabase.master, suppressMissingDependenciesErrors: false });
 		should(project.databaseReferences.length).equal(1, 'There should be one database reference after adding a reference to master');
 		should(project.databaseReferences[0].databaseName).equal(constants.master, 'The database reference should be master');
-		should(project.databaseReferences[0].suppressMissingDependenciesErrors).equal(false, 'project.databaseReferences[1].suppressMissingDependenciesErrors should be false');
+		should(project.databaseReferences[0].suppressMissingDependenciesErrors).equal(false, 'project.databaseReferences[0].suppressMissingDependenciesErrors should be false');
 		// make sure reference to ADS master dacpac and SSDT master dacpac was added
 		let projFileText = (await fs.readFile(projFilePath)).toString();
 		should(projFileText).containEql(convertSlashesForSqlProj(project.getSystemDacpacUri(constants.master).fsPath.substring(1)));
@@ -751,6 +751,55 @@ describe('Project: add SQLCMD Variables', function (): void {
 
 		const projFileText = (await fs.readFile(projFilePath)).toString();
 		should(projFileText).equal(baselines.openSqlProjectWithAdditionalSqlCmdVariablesBaseline.trim());
+	});
+});
+
+describe('Project: properties', function (): void {
+	before(async function (): Promise<void> {
+		await baselines.loadBaselines();
+	});
+
+	it('Should read target database version', async function (): Promise<void> {
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.openProjectFileBaseline);
+		const project = await Project.openProject(projFilePath);
+
+		should(project.getProjectTargetVersion()).equal('150');
+	});
+
+	it('Should throw on missing target database version', async function (): Promise<void> {
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.sqlProjectMissingVersionBaseline);
+		const project = await Project.openProject(projFilePath);
+
+		should(() => project.getProjectTargetVersion()).throw("Invalid DSP in .sqlproj file");
+	});
+
+	it('Should throw on invalid target database version', async function (): Promise<void> {
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.sqlProjectInvalidVersionBaseline);
+		const project = await Project.openProject(projFilePath);
+
+		should(() => project.getProjectTargetVersion()).throw("Invalid DSP in .sqlproj file");
+	});
+
+	it('Should read default database collation', async function (): Promise<void> {
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.sqlProjectCustomCollationBaseline);
+		const project = await Project.openProject(projFilePath);
+
+		should(project.getDatabaseDefaultCollation()).equal('SQL_Latin1_General_CP1255_CS_AS');
+	});
+
+	it('Should return default value when database collation is not specified', async function (): Promise<void> {
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
+		const project = await Project.openProject(projFilePath);
+
+		should(project.getDatabaseDefaultCollation()).equal('SQL_Latin1_General_CP1_CI_AS');
+	});
+
+	it('Should throw on invalid default database collation', async function (): Promise<void> {
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.sqlProjectInvalidCollationBaseline);
+		const project = await Project.openProject(projFilePath);
+
+		should(() => project.getDatabaseDefaultCollation())
+			.throw("Invalid value specified for the property 'DefaultCollation' in .sqlproj file");
 	});
 });
 
