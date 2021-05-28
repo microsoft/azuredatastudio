@@ -225,9 +225,7 @@ describe('Project: sqlproj content operations', function (): void {
 		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
 		const project = await Project.openProject(projFilePath);
 
-		// We use `changeTargetPlatform` to update the DSP value in the project for the purpose of this test.
-		// Even though it throws an error, it still updates the value before bailing out.
-		await testUtils.shouldThrowSpecificError(async () => await project.changeTargetPlatform('invalidPlatform'), constants.invalidDataSchemaProvider);
+		await project.changeTargetPlatform('invalidPlatform');
 		await testUtils.shouldThrowSpecificError(async () => await project.getSystemDacpacUri(constants.masterDacpac), constants.invalidDataSchemaProvider);
 	});
 
@@ -235,11 +233,11 @@ describe('Project: sqlproj content operations', function (): void {
 		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
 		const project = await Project.openProject(projFilePath);
 
-		should(project.databaseReferences.length).equal(0, 'There should be no datbase references to start with');
+		should(project.databaseReferences.length).equal(0, 'There should be no database references to start with');
 		await project.addSystemDatabaseReference({ databaseName: 'master', systemDb: SystemDatabase.master, suppressMissingDependenciesErrors: false });
 		should(project.databaseReferences.length).equal(1, 'There should be one database reference after adding a reference to master');
 		should(project.databaseReferences[0].databaseName).equal(constants.master, 'The database reference should be master');
-		should(project.databaseReferences[0].suppressMissingDependenciesErrors).equal(false, 'project.databaseReferences[1].suppressMissingDependenciesErrors should be false');
+		should(project.databaseReferences[0].suppressMissingDependenciesErrors).equal(false, 'project.databaseReferences[0].suppressMissingDependenciesErrors should be false');
 		// make sure reference to ADS master dacpac and SSDT master dacpac was added
 		let projFileText = (await fs.readFile(projFilePath)).toString();
 		should(projFileText).containEql(convertSlashesForSqlProj(project.getSystemDacpacUri(constants.master).fsPath.substring(1)));
