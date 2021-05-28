@@ -245,7 +245,11 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 			this.setLoading(false);
 			if (this._previewMode) {
 				let outputElement = <HTMLElement>this.output.nativeElement;
+
+				let oldHtml = outputElement.innerHTML;
 				outputElement.innerHTML = this.markdownResult.element.innerHTML;
+				this._undoRedoService.pushElement(new RichTextCellEdit(oldHtml, outputElement.innerHTML, this.cellModel.cellRichTextUri, outputElement, () => this.updateCellSource(false)));
+
 				outputElement.style.lineHeight = this.markdownPreviewLineHeight.toString();
 				this.cellModel.renderedOutputTextContent = this.getRenderedTextOutput();
 				outputElement.focus();
@@ -254,8 +258,11 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		}
 	}
 
-	private updateCellSource(): void {
+	private updateCellSource(addChangeToUndo: boolean): void {
 		let textOutputElement = <HTMLElement>this.output.nativeElement;
+		if (addChangeToUndo) {
+			this._undoRedoService.pushElement(new RichTextCellEdit(undefined, textOutputElement.innerHTML, this.cellModel.cellRichTextUri, textOutputElement, () => this.updateCellSource(false)));
+		}
 		let newCellSource: string = this._htmlMarkdownConverter.convert(textOutputElement.innerHTML);
 		this.cellModel.source = newCellSource;
 		this._changeRef.detectChanges();
@@ -285,7 +292,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	}
 
 	public handleHtmlChanged(): void {
-		this.updateCellSource();
+		this.updateCellSource(true);
 	}
 
 	public toggleEditMode(editMode?: boolean): void {
@@ -480,8 +487,11 @@ class RichTextCellEdit implements IResourceUndoRedoElement {
 	private readonly _label: string = 'RichText Cell Edit';
 
 	constructor(
-		private readonly _changeText: string,
-		private readonly _cellModel: ICellModel) {
+		private readonly _oldHtmlText: string,
+		private readonly _newHtmlText: string,
+		private readonly _cellUri: URI,
+		private readonly _textCellOutputElement: HTMLElement,
+		private readonly _handleHtmlUpdated: () => void) {
 	}
 
 	public get type(): UndoRedoElementType.Resource {
@@ -489,7 +499,7 @@ class RichTextCellEdit implements IResourceUndoRedoElement {
 	}
 
 	public get resource(): URI {
-		return this._cellModel.cellRichTextUri;
+		return this._cellUri;
 	}
 
 	public get label(): string {
@@ -501,10 +511,12 @@ class RichTextCellEdit implements IResourceUndoRedoElement {
 	}
 
 	public async undo(): Promise<void> {
-		throw new Error('Method not implemented.');
+		this._textCellOutputElement.innerHTML = this._oldHtmlText;
+		this._handleHtmlUpdated();
 	}
 
 	public async redo(): Promise<void> {
-		throw new Error('Method not implemented.');
+		this._textCellOutputElement.innerHTML = this._newHtmlText;
+		this._handleHtmlUpdated();
 	}
 }
