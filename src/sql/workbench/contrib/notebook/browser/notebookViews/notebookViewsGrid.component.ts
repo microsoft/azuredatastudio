@@ -46,7 +46,7 @@ export class NotebookViewsGridComponent extends AngularDisposable implements OnI
 	}
 
 	public get hiddenItems(): NotebookViewsCardComponent[] {
-		return this._items.filter(item => !item.display);
+		return this._items?.filter(item => !item.display) ?? [];
 	}
 
 	public get emptyText(): String {
