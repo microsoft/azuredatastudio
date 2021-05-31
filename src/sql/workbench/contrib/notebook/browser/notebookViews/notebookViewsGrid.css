@@ -421,12 +421,27 @@
 	padding: 0px 0px 0px;
 }
 
-.nb-grid-stack.grid-stack .modal{
-	display: block;
+.modal{
 	position: absolute;
-	z-index: 999;
-	height: 100%;
-	width: 100%;
+	background: rgba(244, 244, 244, .3);
+}
+
+.modal{
+	position: absolute;
+	background: rgba(244, 244, 244, .3);
+}
+
+.modal .content {
+	height: calc(100% - 60px);
+	width: calc(100% - 60px);
+	position: absolute;
+	top: 30px;
+	left: 30px;
 	background: #fff;
-	border: 1px solid rgb(244, 244, 244);
+	border: 1px solid;
+}
+
+.modal .content .title {
+	padding: 10px;
+	border-bottom: 1px solid;
 }
