@@ -224,18 +224,17 @@ steps:
     displayName: 'Signing Extensions and Langpacks'
     condition: and(succeeded(), eq(variables['signed'], true))
 
-  # - script: |
-  #     set -e
-  #     cd ./extensions/mssql/node_modules/@microsoft/ads-kerberos
-  #     # npx node-gyp rebuild
-  #     yarn install
-  #   displayName: Recompile native node modules
+  - script: |
+      set -e
+      cd ./extensions/mssql/node_modules/@microsoft/ads-kerberos
+      npx node-gyp rebuild --python=python2 --target=$(node --version)
+    displayName: Recompile native node modules
 
-  # - script: |
-  #     set -e
-  #     VSCODE_MIXIN_PASSWORD="$(github-distro-mixin-password)" \
-  #         yarn gulp vscode-reh-web-linux-x64-min
-  #   displayName: Build web server
+  - script: |
+      set -e
+      VSCODE_MIXIN_PASSWORD="$(github-distro-mixin-password)" \
+          yarn gulp vscode-reh-web-linux-x64-min
+    displayName: Build web server
 
   - script: |
       set -e
