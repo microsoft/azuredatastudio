@@ -166,6 +166,11 @@ escape-string-regexp@^1.0.5:
   resolved "https://registry.yarnpkg.com/escape-string-regexp/-/escape-string-regexp-1.0.5.tgz#1b61c0562190a8dff6ae3bb2cf0200ca130b86d4"
   integrity sha1-G2HAViGQqN/2rjuyzwIAyhMLhtQ=
 
+gridstack@^3.1.3:
+  version "3.3.0"
+  resolved "https://registry.yarnpkg.com/gridstack/-/gridstack-3.3.0.tgz#e324de1acbe59b812293117783c398ca83e2d1ca"
+  integrity sha512-xF8EF/CvUYRSaq0KRHA6ROHRuAxObqAVByBLyZfOPWOJBJTbg5GvPUj8HABEBYZWKxQeFkONcZwNflZLhHEi4g==
+
 has-flag@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/has-flag/-/has-flag-3.0.0.tgz#b5d454dc2199ae225699f3467e5a07f3b955bafd"

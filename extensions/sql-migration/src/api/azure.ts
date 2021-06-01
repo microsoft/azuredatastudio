@@ -32,7 +32,12 @@ export async function getLocations(account: azdata.Account, subscription: Subscr
 		throw new Error(response.errors.toString());
 	}
 	sortResourceArrayByName(response.locations);
-	const supportedLocations = ['eastus2', 'eastus2euap'];
+	const supportedLocations = [
+		'eastus2',
+		'eastus2euap',
+		'eastus',
+		'canadacentral'
+	];
 	const filteredLocations = response.locations.filter(loc => {
 		return supportedLocations.includes(loc.name);
 	});
@@ -377,8 +382,8 @@ export interface DatabaseMigration {
 }
 export interface DatabaseMigrationProperties {
 	scope: string;
-	provisioningState: string;
-	migrationStatus: string;
+	provisioningState: 'Succeeded' | 'Failed' | 'Creating';
+	migrationStatus: 'InProgress' | 'Failed' | 'Succeeded' | 'Creating' | 'Completing' | 'Cancelling';
 	migrationStatusDetails?: MigrationStatusDetails;
 	startedOn: string;
 	endedOn: string;
