@@ -104,6 +104,9 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	public doubleClickEditEnabled: boolean;
 	private _highlightRange: NotebookRange;
 
+	private readonly _undoStack = new RichTextEditStack();
+	private readonly _redoStack = new RichTextEditStack();
+
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
 		@Inject(IInstantiationService) private _instantiationService: IInstantiationService,
@@ -246,7 +249,10 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 			if (this._previewMode) {
 				let outputElement = <HTMLElement>this.output.nativeElement;
 				outputElement.innerHTML = this.markdownResult.element.innerHTML;
-				this._undoRedoService.pushElement(new RichTextCellEdit(undefined, outputElement.innerHTML, this.cellModel.cellRichTextUri, outputElement, () => this.updateCellSource(false)));
+
+				this._undoStack.push(outputElement.innerHTML);
+				this._redoStack.clear();
+				this._undoRedoService.pushElement(new RichTextCellEdit(this._undoStack, this._redoStack, this.cellModel.cellRichTextUri, outputElement, () => this.updateCellSource(false)));
 
 				outputElement.style.lineHeight = this.markdownPreviewLineHeight.toString();
 				this.cellModel.renderedOutputTextContent = this.getRenderedTextOutput();
@@ -259,7 +265,9 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	private updateCellSource(addChangeToUndo: boolean): void {
 		let textOutputElement = <HTMLElement>this.output.nativeElement;
 		if (addChangeToUndo) {
-			this._undoRedoService.pushElement(new RichTextCellEdit(undefined, textOutputElement.innerHTML, this.cellModel.cellRichTextUri, textOutputElement, () => this.updateCellSource(false)));
+			this._undoStack.push(textOutputElement.innerHTML);
+			this._redoStack.clear();
+			this._undoRedoService.pushElement(new RichTextCellEdit(this._undoStack, this._redoStack, this.cellModel.cellRichTextUri, textOutputElement, () => this.updateCellSource(false)));
 		}
 		let newCellSource: string = this._htmlMarkdownConverter.convert(textOutputElement.innerHTML);
 		this.cellModel.source = newCellSource;
@@ -485,8 +493,8 @@ class RichTextCellEdit implements IResourceUndoRedoElement {
 	private readonly _label: string = 'RichText Cell Edit';
 
 	constructor(
-		private readonly _oldHtmlText: string,
-		private readonly _newHtmlText: string,
+		private readonly _undoStack: RichTextEditStack,
+		private readonly _redoStack: RichTextEditStack,
 		private readonly _cellUri: URI,
 		private readonly _textCellOutputElement: HTMLElement,
 		private readonly _handleHtmlUpdated: () => void) {
@@ -509,12 +517,47 @@ class RichTextCellEdit implements IResourceUndoRedoElement {
 	}
 
 	public async undo(): Promise<void> {
-		this._textCellOutputElement.innerHTML = this._oldHtmlText;
-		this._handleHtmlUpdated();
+		if (this._undoStack.length > 0) {
+			let text = this._undoStack.pop();
+			this._redoStack.push(text);
+
+			this._textCellOutputElement.innerHTML = text;
+			this._handleHtmlUpdated();
+		}
 	}
 
 	public async redo(): Promise<void> {
-		this._textCellOutputElement.innerHTML = this._newHtmlText;
-		this._handleHtmlUpdated();
+		if (this._redoStack.length > 0) {
+			let text = this._redoStack.pop();
+			this._undoStack.push(text);
+
+			this._textCellOutputElement.innerHTML = text;
+			this._handleHtmlUpdated();
+		}
 	}
 }
+
+class RichTextEditStack {
+	private _list: string[] = [];
+
+	constructor() {
+	}
+
+	public push(element: string): void {
+		this._list.unshift(element);
+	}
+
+	public pop(): string {
+		return this._list.shift();
+	}
+
+	public clear(): void {
+		this._list = [];
+	}
+
+	public get length(): number {
+		return this._list.length;
+	}
+}
+
+
