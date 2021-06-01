@@ -544,11 +544,11 @@ class RichTextEditStack {
 	}
 
 	public push(element: string): void {
-		this._list.unshift(element);
+		this._list.push(element);
 	}
 
 	public pop(): string {
-		return this._list.shift();
+		return this._list.pop();
 	}
 
 	public clear(): void {
