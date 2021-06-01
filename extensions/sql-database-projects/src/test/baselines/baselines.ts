@@ -22,6 +22,10 @@ export let publishProfileSqlLoginBaseline: string;
 export let openProjectWithProjectReferencesBaseline: string;
 export let openSqlProjectWithPrePostDeploymentError: string;
 export let openSqlProjectWithAdditionalSqlCmdVariablesBaseline: string;
+export let sqlProjectMissingVersionBaseline: string;
+export let sqlProjectInvalidVersionBaseline: string;
+export let sqlProjectCustomCollationBaseline: string;
+export let sqlProjectInvalidCollationBaseline: string;
 
 const baselineFolderPath = __dirname;
 
@@ -41,6 +45,10 @@ export async function loadBaselines() {
 	openProjectWithProjectReferencesBaseline = await loadBaseline(baselineFolderPath, 'openSqlProjectWithProjectReferenceBaseline.xml');
 	openSqlProjectWithPrePostDeploymentError = await loadBaseline(baselineFolderPath, 'openSqlProjectWithPrePostDeploymentError.xml');
 	openSqlProjectWithAdditionalSqlCmdVariablesBaseline = await loadBaseline(baselineFolderPath, 'openSqlProjectWithAdditionalSqlCmdVariablesBaseline.xml');
+	sqlProjectMissingVersionBaseline = await loadBaseline(baselineFolderPath, 'sqlProjectMissingVersionBaseline.xml');
+	sqlProjectInvalidVersionBaseline = await loadBaseline(baselineFolderPath, 'sqlProjectInvalidVersionBaseline.xml');
+	sqlProjectCustomCollationBaseline = await loadBaseline(baselineFolderPath, 'sqlProjectCustomCollationBaseline.xml');
+	sqlProjectInvalidCollationBaseline = await loadBaseline(baselineFolderPath, 'sqlProjectInvalidCollationBaseline.xml');
 }
 
 async function loadBaseline(baselineFolderPath: string, fileName: string): Promise<string> {
