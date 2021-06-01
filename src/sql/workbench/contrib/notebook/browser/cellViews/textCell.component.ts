@@ -250,9 +250,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 				let outputElement = <HTMLElement>this.output.nativeElement;
 				outputElement.innerHTML = this.markdownResult.element.innerHTML;
 
-				this._undoStack.push(outputElement.innerHTML);
-				this._redoStack.clear();
-				this._undoRedoService.pushElement(new RichTextCellEdit(this._undoStack, this._redoStack, this.cellModel.cellRichTextUri, outputElement, () => this.updateCellSource(false)));
+				this.addUndoElement(outputElement.innerHTML);
 
 				outputElement.style.lineHeight = this.markdownPreviewLineHeight.toString();
 				this.cellModel.renderedOutputTextContent = this.getRenderedTextOutput();
@@ -264,14 +262,18 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 
 	private updateCellSource(addChangeToUndo: boolean): void {
 		let textOutputElement = <HTMLElement>this.output.nativeElement;
-		if (addChangeToUndo) {
-			this._undoStack.push(textOutputElement.innerHTML);
-			this._redoStack.clear();
-			this._undoRedoService.pushElement(new RichTextCellEdit(this._undoStack, this._redoStack, this.cellModel.cellRichTextUri, textOutputElement, () => this.updateCellSource(false)));
-		}
+		this.addUndoElement(textOutputElement.innerHTML);
 		let newCellSource: string = this._htmlMarkdownConverter.convert(textOutputElement.innerHTML);
 		this.cellModel.source = newCellSource;
 		this._changeRef.detectChanges();
+	}
+
+	private addUndoElement(newText: string) {
+		if (newText !== this._undoStack.peek()) {
+			this._undoStack.push(newText);
+			this._redoStack.clear();
+			this._undoRedoService.pushElement(new RichTextCellEdit(this._undoStack, this._redoStack, this.cellModel.cellRichTextUri, this.output.nativeElement, () => this.updateCellSource(false)));
+		}
 	}
 
 	//Sanitizes the content based on trusted mode of Cell Model
@@ -517,11 +519,14 @@ class RichTextCellEdit implements IResourceUndoRedoElement {
 	}
 
 	public async undo(): Promise<void> {
-		if (this._undoStack.length > 0) {
-			let text = this._undoStack.pop();
-			this._redoStack.push(text);
+		if (this._undoStack.length > 1) {
+			// The most recent change is at the top of the undo stack, so we want to
+			// update the text so that it's the change just before that.
+			let redoText = this._undoStack.pop();
+			this._redoStack.push(redoText);
+			let undoText = this._undoStack.peek();
 
-			this._textCellOutputElement.innerHTML = text;
+			this._textCellOutputElement.innerHTML = undoText;
 			this._handleHtmlUpdated();
 		}
 	}
@@ -549,6 +554,14 @@ class RichTextEditStack {
 
 	public pop(): string {
 		return this._list.pop();
+	}
+
+	public peek(): string {
+		if (this._list.length > 0) {
+			return this._list[this._list.length - 1];
+		} else {
+			return undefined;
+		}
 	}
 
 	public clear(): void {
