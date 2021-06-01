@@ -37,9 +37,9 @@ export class AccountsSelectionPage extends MigrationWizardPage {
 
 		const azureAccountLabel = view.modelBuilder.text().withProps({
 			value: constants.ACCOUNTS_SELECTION_PAGE_TITLE,
-			requiredIndicator: true,
 			CSSStyles: {
-				'margin': '0px'
+				'font-size': '13px',
+				'font-weight': 'bold',
 			}
 		}).component();
 
@@ -48,23 +48,26 @@ export class AccountsSelectionPage extends MigrationWizardPage {
 				width: WIZARD_INPUT_COMPONENT_WIDTH
 			})
 			.withValidation((c) => {
-				if ((<azdata.CategoryValue>c.value).displayName === constants.ACCOUNT_SELECTION_PAGE_NO_LINKED_ACCOUNTS_ERROR) {
+				if (c.value) {
+					if ((<azdata.CategoryValue>c.value)?.displayName === constants.ACCOUNT_SELECTION_PAGE_NO_LINKED_ACCOUNTS_ERROR) {
+						this.wizard.message = {
+							text: constants.ACCOUNT_SELECTION_PAGE_NO_LINKED_ACCOUNTS_ERROR,
+							level: azdata.window.MessageLevel.Error
+						};
+						return false;
+					}
+					if (this.migrationStateModel._azureAccount?.isStale) {
+						this.wizard.message = {
+							text: constants.ACCOUNT_STALE_ERROR(this.migrationStateModel._azureAccount)
+						};
+						return false;
+					}
 					this.wizard.message = {
-						text: constants.ACCOUNT_SELECTION_PAGE_NO_LINKED_ACCOUNTS_ERROR,
-						level: azdata.window.MessageLevel.Error
+						text: ''
 					};
-					return false;
+					return true;
 				}
-				if (this.migrationStateModel._azureAccount?.isStale) {
-					this.wizard.message = {
-						text: constants.ACCOUNT_STALE_ERROR(this.migrationStateModel._azureAccount)
-					};
-					return false;
-				}
-				this.wizard.message = {
-					text: ''
-				};
-				return true;
+				return false;
 			}).component();
 
 		this._azureAccountsDropdown.onValueChanged(async (value) => {
@@ -93,7 +96,10 @@ export class AccountsSelectionPage extends MigrationWizardPage {
 		const linkAccountButton = view.modelBuilder.hyperlink()
 			.withProps({
 				label: constants.ACCOUNT_LINK_BUTTON_LABEL,
-				url: ''
+				url: '',
+				CSSStyles: {
+					'font-size': '13px',
+				}
 			})
 			.component();
 
@@ -127,9 +133,9 @@ export class AccountsSelectionPage extends MigrationWizardPage {
 
 		const azureTenantDropdownLabel = view.modelBuilder.text().withProps({
 			value: constants.AZURE_TENANT,
-			requiredIndicator: true,
 			CSSStyles: {
-				'margin': '0px'
+				'font-size': '13px',
+				'font-weight': 'bold'
 			}
 		}).component();
 
@@ -182,7 +188,7 @@ export class AccountsSelectionPage extends MigrationWizardPage {
 
 	public async onPageEnter(): Promise<void> {
 		this.wizard.registerNavigationValidator(pageChangeInfo => {
-			if (this.migrationStateModel._azureAccount.isStale === true) {
+			if (this.migrationStateModel._azureAccount?.isStale === true) {
 				this.wizard.message = {
 					text: constants.ACCOUNT_STALE_ERROR(this.migrationStateModel._azureAccount)
 				};

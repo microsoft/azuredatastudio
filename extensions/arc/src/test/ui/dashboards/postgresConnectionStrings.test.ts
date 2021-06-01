@@ -16,90 +16,7 @@ import { PostgresConnectionStringsPage } from '../../../ui/dashboards/postgres/p
 import { AzureArcTreeDataProvider } from '../../../ui/tree/azureArcTreeDataProvider';
 import { FakeControllerModel } from '../../mocks/fakeControllerModel';
 import { FakeAzdataApi } from '../../mocks/fakeAzdataApi';
-
-export const FakePostgresServerShowOutput: azdataExt.AzdataOutput<azdataExt.PostgresServerShowResult> = {
-	logs: [],
-	stdout: [],
-	stderr: [],
-	result: {
-		apiVersion: 'version',
-		kind: 'postgresql',
-		metadata: {
-			creationTimestamp: '',
-			generation: 1,
-			name: 'pgt',
-			namespace: 'ns',
-			resourceVersion: '',
-			selfLink: '',
-			uid: '',
-		},
-		spec: {
-			engine: {
-				extensions: [{ name: '' }],
-				settings: {
-					default: { ['']: '' }
-				},
-				version: '12'
-			},
-			scale: {
-				shards: 0,
-				workers: 0
-			},
-			scheduling: {
-				default: {
-					resources: {
-						requests: {
-							cpu: '',
-							memory: ''
-						},
-						limits: {
-							cpu: '',
-							memory: ''
-						}
-					}
-				}
-			},
-			service: {
-				type: '',
-				port: 0
-			},
-			storage: {
-				data: {
-					className: '',
-					size: ''
-				},
-				logs: {
-					className: '',
-					size: ''
-				},
-				backups: {
-					className: '',
-					size: ''
-				}
-			}
-		},
-		status: {
-			externalEndpoint: '127.0.0.1:5432',
-			readyPods: '',
-			state: '',
-			logSearchDashboard: '',
-			metricsDashboard: '',
-			podsStatus: [{
-				conditions: [{
-					lastTransitionTime: '',
-					message: '',
-					reason: '',
-					status: '',
-					type: '',
-				}],
-				name: '',
-				role: '',
-			}]
-		}
-	}
-};
-
-
+import { FakePostgresServerShowOutput } from '../../models/postgresModel.test';
 
 describe('postgresConnectionStringsPage', function (): void {
 	let controllerModel: ControllerModel;
@@ -150,7 +67,7 @@ describe('postgresConnectionStringsPage', function (): void {
 			// Call to provide external endpoint
 			await postgresModel.refresh();
 
-			let endpoint = FakePostgresServerShowOutput.result.status.externalEndpoint.split(':');
+			let endpoint = FakePostgresServerShowOutput.result.status.primaryEndpoint.split(':');
 
 			postgresConnectionStrings['getConnectionStrings']().forEach(k => {
 				should(k.value.includes(endpoint[0])).be.True();

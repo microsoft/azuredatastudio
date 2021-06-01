@@ -73,4 +73,5 @@ export interface ResultSetSubset {
 export interface ICellValue {
 	displayValue: string;
 	isNull?: boolean;
+	invariantCultureDisplayValue?: string;
 }

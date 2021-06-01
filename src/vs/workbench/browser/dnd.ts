@@ -582,7 +582,7 @@ export class CompositeDragAndDropObserver extends Disposable {
 			const id = e.dragAndDropData.getData().id;
 			const type = e.dragAndDropData.getData().type;
 			const data = this.readDragData(type);
-			if (data && data.getData().id === id) {
+			if (data?.getData().id === id) {
 				this.transferData.clearData(type === 'view' ? DraggedViewIdentifier.prototype : DraggedCompositeIdentifier.prototype);
 			}
 		}));
@@ -737,7 +737,7 @@ export class CompositeDragAndDropObserver extends Disposable {
 		if (callbacks.onDragEnd) {
 			this._onDragEnd.event(e => {
 				callbacks.onDragEnd!(e);
-			});
+			}, this, disposableStore);
 		}
 		return this._register(disposableStore);
 	}

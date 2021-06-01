@@ -3,6 +3,10 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { DAYS, HRS, MINUTE, SEC } from '../constants/strings';
+import { AdsMigrationStatus } from '../dialog/migrationStatus/migrationStatusDialogModel';
+import { MigrationContext } from '../models/migrationLocalStorage';
+
 export function deepClone<T>(obj: T): T {
 	if (!obj || typeof obj !== 'object') {
 		return obj;
@@ -39,4 +43,80 @@ export function getSqlServerName(majorVersion: number): string | undefined {
 		default:
 			return undefined;
 	}
+}
+
+export interface IPackageInfo {
+	name: string;
+	version: string;
+	aiKey: string;
+}
+
+export function getPackageInfo(packageJson: any): IPackageInfo | undefined {
+	if (packageJson) {
+		return {
+			name: packageJson.name,
+			version: packageJson.version,
+			aiKey: packageJson.aiKey
+		};
+	}
+	return undefined;
+}
+
+/**
+ * Generates a wordy time difference between start and end time.
+ * @returns stringified duration like '10.0 days', '12.0 hrs', '1.0 min'
+ */
+export function convertTimeDifferenceToDuration(startTime: Date, endTime: Date): string {
+	const time = endTime.getTime() - startTime.getTime();
+	let seconds = (time / 1000).toFixed(1);
+	let minutes = (time / (1000 * 60)).toFixed(1);
+	let hours = (time / (1000 * 60 * 60)).toFixed(1);
+	let days = (time / (1000 * 60 * 60 * 24)).toFixed(1);
+	if (time / 1000 < 60) {
+		return SEC(parseFloat(seconds));
+	}
+	else if (time / (1000 * 60) < 60) {
+		return MINUTE(parseFloat(minutes));
+	}
+	else if (time / (1000 * 60 * 60) < 24) {
+		return HRS(parseFloat(hours));
+	}
+	else {
+		return DAYS(parseFloat(days));
+	}
+}
+
+export function filterMigrations(databaseMigrations: MigrationContext[], statusFilter: string, databaseNameFilter?: string): MigrationContext[] {
+	let filteredMigration: MigrationContext[] = [];
+	if (statusFilter === AdsMigrationStatus.ALL) {
+		filteredMigration = databaseMigrations;
+	} else if (statusFilter === AdsMigrationStatus.ONGOING) {
+		filteredMigration = databaseMigrations.filter((value) => {
+			const status = value.migrationContext.properties.migrationStatus;
+			const provisioning = value.migrationContext.properties.provisioningState;
+			return status === 'InProgress' || status === 'Creating' || provisioning === 'Creating';
+		});
+	} else if (statusFilter === AdsMigrationStatus.SUCCEEDED) {
+		filteredMigration = databaseMigrations.filter((value) => {
+			const status = value.migrationContext.properties.migrationStatus;
+			return status === 'Succeeded';
+		});
+	} else if (statusFilter === AdsMigrationStatus.FAILED) {
+		filteredMigration = databaseMigrations.filter((value) => {
+			const status = value.migrationContext.properties.migrationStatus;
+			const provisioning = value.migrationContext.properties.provisioningState;
+			return status === 'Failed' || provisioning === 'Failed';
+		});
+	} else if (statusFilter === AdsMigrationStatus.COMPLETING) {
+		filteredMigration = databaseMigrations.filter((value) => {
+			const status = value.migrationContext.properties.migrationStatus;
+			return status === 'Completing';
+		});
+	}
+	if (databaseNameFilter) {
+		filteredMigration = filteredMigration.filter((value) => {
+			return value.migrationContext.name.toLowerCase().includes(databaseNameFilter.toLowerCase());
+		});
+	}
+	return filteredMigration;
 }

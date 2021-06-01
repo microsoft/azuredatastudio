@@ -9,17 +9,13 @@ require('events').EventEmitter.defaultMaxListeners = 100;
 const gulp = require('gulp');
 const path = require('path');
 const nodeUtil = require('util');
-const tsb = require('gulp-tsb');
 const es = require('event-stream');
 const filter = require('gulp-filter');
-const webpack = require('webpack');
 const util = require('./lib/util');
 const task = require('./lib/task');
 const watcher = require('./lib/watch');
 const createReporter = require('./lib/reporter').createReporter;
 const glob = require('glob');
-const sourcemaps = require('gulp-sourcemaps');
-const nlsDev = require('vscode-nls-dev');
 const root = path.dirname(__dirname);
 const commit = util.getVersion(root);
 const plumber = require('gulp-plumber');
@@ -30,8 +26,17 @@ const ext = require('./lib/extensions');
 const extensionsPath = path.join(path.dirname(__dirname), 'extensions');
 // {{SQL CARBON EDIT}}
 const sqlLocalizedExtensions = [
+	'admin-tool-ext-win',
+	'agent',
+	'cms',
 	'dacpac',
-	'schema-compare'
+	'import',
+	'machine-learning',
+	'profiler',
+	'schema-compare',
+	'server-report',
+	'sql-assessment',
+	'sql-database-projects'
 ];
 // {{SQL CARBON EDIT}}
 
@@ -70,6 +75,10 @@ const tasks = compilations.map(function (tsconfigFile) {
 	}
 
 	function createPipeline(build, emitError) {
+		const nlsDev = require('vscode-nls-dev');
+		const tsb = require('gulp-tsb');
+		const sourcemaps = require('gulp-sourcemaps');
+
 		const reporter = createReporter('extensions');
 
 		overrideOptions.inlineSources = Boolean(build);
@@ -176,6 +185,8 @@ const compileExtensionsBuildTask = task.define('compile-extensions-build', task.
 ));
 
 gulp.task(compileExtensionsBuildTask);
+gulp.task(task.define('extensions-ci', task.series(compileExtensionsBuildTask)));
+
 exports.compileExtensionsBuildTask = compileExtensionsBuildTask;
 
 const compileWebExtensionsTask = task.define('compile-web', () => buildWebExtensions(false));
@@ -187,6 +198,7 @@ gulp.task(watchWebExtensionsTask);
 exports.watchWebExtensionsTask = watchWebExtensionsTask;
 
 async function buildWebExtensions(isWatch) {
+	const webpack = require('webpack');
 
 	const webpackConfigLocations = await nodeUtil.promisify(glob)(
 		path.join(extensionsPath, '**', 'extension-browser.webpack.config.js'),

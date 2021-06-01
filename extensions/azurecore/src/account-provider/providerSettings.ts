@@ -17,7 +17,8 @@ const enum SettingIds {
 	sql = 'sql',
 	ossrdbms = 'ossrdbms',
 	vault = 'vault',
-	ado = 'ado'
+	ado = 'ado',
+	ala = 'ala'
 }
 
 const publicAzureSettings: ProviderSettings = {
@@ -68,6 +69,11 @@ const publicAzureSettings: ProviderSettings = {
 				endpoint: '499b84ac-1321-427f-aa17-267ca6975798',
 				azureResourceId: AzureResource.AzureDevOps,
 			},
+			azureLogAnalyticsResource: {
+				id: SettingIds.ala,
+				endpoint: 'https://api.loganalytics.io',
+				azureResourceId: AzureResource.AzureLogAnalytics,
+			},
 			redirectUri: 'https://vscode-redirect.azurewebsites.net/',
 			scopes: [
 				'openid', 'email', 'profile', 'offline_access',
@@ -117,6 +123,11 @@ const usGovAzureSettings: ProviderSettings = {
 				endpoint: 'https://vault.usgovcloudapi.net',
 				azureResourceId: AzureResource.AzureKeyVault
 			},
+			azureLogAnalyticsResource: {
+				id: SettingIds.ala,
+				endpoint: 'https://api.loganalytics.us',
+				azureResourceId: AzureResource.AzureLogAnalytics,
+			},
 			redirectUri: 'https://vscode-redirect.azurewebsites.net/',
 			scopes: [
 				'openid', 'email', 'profile', 'offline_access',
@@ -164,6 +175,11 @@ const usNatAzureSettings: ProviderSettings = {
 				id: SettingIds.vault,
 				endpoint: 'https://vault.cloudapi.eaglex.ic.gov',
 				azureResourceId: AzureResource.AzureKeyVault
+			},
+			azureLogAnalyticsResource: {
+				id: SettingIds.ala,
+				endpoint: 'https://api.loganalytics.azure.eaglex.ic.gov',
+				azureResourceId: AzureResource.AzureLogAnalytics,
 			},
 			redirectUri: 'https://vscode-redirect.azurewebsites.net/',
 			scopes: [
@@ -236,6 +252,11 @@ const chinaAzureSettings: ProviderSettings = {
 				id: SettingIds.vault,
 				endpoint: 'https://vault.azure.cn',
 				azureResourceId: AzureResource.AzureKeyVault
+			},
+			azureLogAnalyticsResource: {
+				id: SettingIds.ala,
+				endpoint: 'https://api.loganalytics.azure.cn',
+				azureResourceId: AzureResource.AzureLogAnalytics,
 			},
 			redirectUri: 'https://vscode-redirect.azurewebsites.net/'
 

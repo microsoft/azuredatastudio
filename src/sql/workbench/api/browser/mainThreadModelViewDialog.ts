@@ -20,9 +20,10 @@ import { assign } from 'vs/base/common/objects';
 import { TelemetryView, TelemetryAction } from 'sql/platform/telemetry/common/telemetryKeys';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { IEditorInput, IEditorPane } from 'vs/workbench/common/editor';
+import { Disposable } from 'vs/base/common/lifecycle';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadModelViewDialog)
-export class MainThreadModelViewDialog implements MainThreadModelViewDialogShape {
+export class MainThreadModelViewDialog extends Disposable implements MainThreadModelViewDialogShape {
 	private readonly _proxy: ExtHostModelViewDialogShape;
 	private readonly _dialogs = new Map<number, Dialog>();
 	private readonly _tabs = new Map<number, DialogTab>();
@@ -40,12 +41,9 @@ export class MainThreadModelViewDialog implements MainThreadModelViewDialogShape
 		@IEditorService private _editorService: IEditorService,
 		@IAdsTelemetryService private _telemetryService: IAdsTelemetryService
 	) {
+		super();
 		this._proxy = context.getProxy(SqlExtHostContext.ExtHostModelViewDialog);
 		this._dialogService = new CustomDialogService(_instatiationService);
-	}
-
-	public dispose(): void {
-		throw new Error('Method not implemented.');
 	}
 
 	public $openEditor(handle: number, modelViewId: string, title: string, name?: string, options?: azdata.ModelViewEditorOptions, position?: vscode.ViewColumn): Thenable<void> {

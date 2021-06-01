@@ -527,7 +527,7 @@ export interface ICellModel {
 	isEditMode: boolean;
 	showPreview: boolean;
 	showMarkdown: boolean;
-	defaultToWYSIWYG: boolean;
+	defaultTextEditMode: string;
 	readonly onCellPreviewModeChanged: Event<boolean>;
 	readonly onCellMarkdownModeChanged: Event<boolean>;
 	sendChangeToNotebook(change: NotebookChangeType): void;
@@ -535,6 +535,7 @@ export interface ICellModel {
 	readonly savedConnectionName: string | undefined;
 	readonly attachments: nb.ICellAttachments;
 	readonly currentMode: CellEditModes;
+	addAttachment(mimeType: string, base64Encoding: string, name: string): void;
 }
 
 export interface IModelFactory {

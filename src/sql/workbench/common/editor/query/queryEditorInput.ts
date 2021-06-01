@@ -156,6 +156,10 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 			}
 		}));
 
+		this._register(this.connectionManagementService.onConnectionChanged(e => {
+			this._onDidChangeLabel.fire();
+		}));
+
 		this._register(this.configurationService.onDidChangeConfiguration(e => {
 			if (e.affectedKeys.indexOf('queryEditor') > -1) {
 				this._onDidChangeLabel.fire();

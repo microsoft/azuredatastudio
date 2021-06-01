@@ -42,7 +42,7 @@ suite('ConnectionDialogWidget tests', () => {
 	setup(() => {
 		const viewInstantiationService: TestInstantiationService = <TestInstantiationService>workbenchInstantiationService();
 		const viewDescriptorService = viewInstantiationService.createInstance(ViewDescriptorService);
-		container = Registry.as<IViewContainersRegistry>(Extensions.ViewContainersRegistry).registerViewContainer({ id: 'testContainer', name: 'test', ctorDescriptor: new SyncDescriptor(<any>{}) }, ViewContainerLocation.Sidebar);
+		container = Registry.as<IViewContainersRegistry>(Extensions.ViewContainersRegistry).registerViewContainer({ id: 'testContainer', title: 'test', ctorDescriptor: new SyncDescriptor(<any>{}) }, ViewContainerLocation.Sidebar);
 		viewInstantiationService.stub(IViewDescriptorService, viewDescriptorService);
 		const viewDescriptor: ITreeViewDescriptor = {
 			id: testTreeViewId,

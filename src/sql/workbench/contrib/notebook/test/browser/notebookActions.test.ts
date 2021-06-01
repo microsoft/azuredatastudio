@@ -7,7 +7,7 @@ import * as assert from 'assert';
 import * as azdata from 'azdata';
 import * as sinon from 'sinon';
 import { TestConfigurationService } from 'sql/platform/connection/test/common/testConfigurationService';
-import { AddCellAction, ClearAllOutputsAction, CollapseCellsAction, KernelsDropdown, msgChanging, NewNotebookAction, noKernelName, RunAllCellsAction, RunParametersAction, TrustedAction } from 'sql/workbench/contrib/notebook/browser/notebookActions';
+import { AddCellAction, ClearAllOutputsAction, CollapseCellsAction, kernelNotSupported, KernelsDropdown, msgChanging, NewNotebookAction, noKernelName, noParameterCell, noParametersInCell, RunAllCellsAction, RunParametersAction, TrustedAction } from 'sql/workbench/contrib/notebook/browser/notebookActions';
 import { ClientSessionStub, ContextViewProviderStub, NotebookComponentStub, NotebookModelStub, NotebookServiceStub } from 'sql/workbench/contrib/notebook/test/stubs';
 import { NotebookEditorStub } from 'sql/workbench/contrib/notebook/test/testCommon';
 import { ICellModel, INotebookModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
@@ -20,14 +20,12 @@ import { TestCommandService } from 'vs/editor/test/browser/editorTestServices';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { IConfigurationChangeEvent, IConfigurationOverrides, IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
-import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
+import { INotificationService } from 'vs/platform/notification/common/notification';
 import { TestNotificationService } from 'vs/platform/notification/test/common/testNotificationService';
 import { workbenchInstantiationService } from 'vs/workbench/test/browser/workbenchTestServices';
 import { URI } from 'vs/base/common/uri';
 import { NullAdsTelemetryService } from 'sql/platform/telemetry/common/adsTelemetryService';
 import { MockQuickInputService } from 'sql/workbench/contrib/notebook/test/common/quickInputServiceMock';
-import { localize } from 'vs/nls';
-//import { INotebookViews } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViews';
 
 class TestClientSession extends ClientSessionStub {
 	private _errorState: boolean = false;
@@ -153,16 +151,14 @@ suite('Notebook Actions', function (): void {
 		// Normal use case
 		mockNotebookEditor.setup(c => c.clearAllOutputs()).returns(() => Promise.resolve(true));
 
-		let result = await action.run(testUri);
-		assert.ok(result, 'Clear All Outputs Action should succeed');
+		await action.run(testUri);
 		mockNotebookEditor.verify(c => c.clearAllOutputs(), TypeMoq.Times.once());
 
 		// Handle failure case
 		mockNotebookEditor.reset();
 		mockNotebookEditor.setup(c => c.clearAllOutputs()).returns(() => Promise.resolve(false));
 
-		result = await action.run(testUri);
-		assert.strictEqual(result, false, 'Clear All Outputs Action should have failed');
+		await action.run(testUri);
 		mockNotebookEditor.verify(c => c.clearAllOutputs(), TypeMoq.Times.once());
 	});
 
@@ -179,14 +175,12 @@ suite('Notebook Actions', function (): void {
 
 		mockNotebookEditor.setup(x => x.model).returns(() => testNotebookModel);
 		// Normal use case
-		let result = await action.run(testUri);
-		assert.ok(result, 'Trusted Action should succeed');
+		await action.run(testUri);
 		assert.strictEqual(action.trusted, true, 'Should be trusted after toggling trusted state');
 		assert.strictEqual(testNotebookModel.trustedMode, true, 'Model should be true after toggling trusted state');
 
 		// Should toggle trusted to false on subsequent action
-		result = await action.run(testUri);
-		assert.ok(result, 'Trusted Action should succeed again');
+		await action.run(testUri);
 		assert.strictEqual(action.trusted, false, 'Should toggle trusted to false');
 		assert.strictEqual(testNotebookModel.trustedMode, false, 'Model should be false again after toggling trusted state');
 	});
@@ -200,16 +194,14 @@ suite('Notebook Actions', function (): void {
 		// Normal use case
 		mockNotebookEditor.setup(c => c.runAllCells()).returns(() => Promise.resolve(true));
 
-		let result = await action.run(testUri);
-		assert.ok(result, 'Run All Cells Action should succeed');
+		await action.run(testUri);
 		mockNotebookEditor.verify(c => c.runAllCells(), TypeMoq.Times.once());
 
 		// Handle errors
 		mockNotebookEditor.reset();
 		mockNotebookEditor.setup(c => c.runAllCells()).throws(new Error('Test Error'));
 
-		result = await action.run(testUri);
-		assert.strictEqual(result, false, 'Run All Cells Action should fail on error');
+		await action.run(testUri);
 	});
 
 	test('Collapse Cells Action', async function (): Promise<void> {
@@ -227,8 +219,7 @@ suite('Notebook Actions', function (): void {
 		mockNotebookEditor.setup(x => x.cells).returns(() => testCells);
 
 		// Collapse cells case
-		let result = await action.run(testUri);
-		assert.ok(result, 'Collapse Cells Action should succeed');
+		await action.run(testUri);
 
 		assert.strictEqual(action.isCollapsed, true, 'Action should be collapsed after first toggle');
 		testCells.forEach(cell => {
@@ -236,8 +227,7 @@ suite('Notebook Actions', function (): void {
 		});
 
 		// Toggle cells to uncollapsed
-		result = await action.run(testUri);
-		assert.ok(result, 'Collapse Cells Action should succeed');
+		await action.run(testUri);
 
 		assert.strictEqual(action.isCollapsed, false, 'Action should not be collapsed after second toggle');
 		testCells.forEach(cell => {
@@ -256,12 +246,12 @@ suite('Notebook Actions', function (): void {
 			});
 
 		let action = new NewNotebookAction('TestId', 'TestLabel', mockCommandService.object, undefined, new NullAdsTelemetryService());
-		action.run(undefined);
+		await action.run(undefined);
 
 		assert.strictEqual(actualCmdId, NewNotebookAction.INTERNAL_NEW_NOTEBOOK_CMD_ID);
 	});
 
-	test('Run with Parameters Action', async function (): Promise<void> {
+	test('Should Run with Parameters Action', async function (): Promise<void> {
 		const testContents: azdata.nb.INotebookContents = {
 			cells: [{
 				cell_type: CellTypes.Code,
@@ -283,8 +273,10 @@ suite('Notebook Actions', function (): void {
 		let mockNotification = TypeMoq.Mock.ofType<INotificationService>(TestNotificationService);
 		mockNotification.setup(n => n.notify(TypeMoq.It.isAny()));
 		let quickInputService = new MockQuickInputService;
-		let mockNotebookModel = new NotebookModelStub(undefined, undefined, testContents);
-
+		let testLanguageInfo: azdata.nb.ILanguageInfo = {
+			name: 'python',
+		};
+		let mockNotebookModel = new NotebookModelStub(testLanguageInfo, undefined, testContents);
 		let action = new RunParametersAction('TestId', true, testUri, quickInputService, mockNotebookService.object, mockNotification.object);
 
 		const testCells = [<ICellModel>{
@@ -303,7 +295,7 @@ suite('Notebook Actions', function (): void {
 		assert.call(mockNotebookService.object.openNotebook(testUri, testShowOptions), 'Should Open Parameterized Notebook');
 	});
 
-	test('Run with Parameters Action with no parameters in notebook', async function (): Promise<void> {
+	test('Should inform user to add a parameter cell if Run with Parameters Action has no parameter cell', async function (): Promise<void> {
 		const testContents: azdata.nb.INotebookContents = {
 			cells: [{
 				cell_type: CellTypes.Code,
@@ -321,11 +313,7 @@ suite('Notebook Actions', function (): void {
 			nbformat: 4,
 			nbformat_minor: 5
 		};
-		let expectedMsg: string = localize('noParametersCell', "This notebook cannot run with parameters until a parameter cell is added. [Learn more](https://docs.microsoft.com/sql/azure-data-studio/notebooks/notebooks-parameterization).");
-		let notification = {
-			severity: Severity.Info,
-			message: expectedMsg,
-		};
+		let expectedMsg: string = noParameterCell;
 
 		let actualMsg: string;
 		let mockNotification = TypeMoq.Mock.ofType<INotificationService>(TestNotificationService);
@@ -334,7 +322,192 @@ suite('Notebook Actions', function (): void {
 			return undefined;
 		});
 		let quickInputService = new MockQuickInputService;
-		let mockNotebookModel = new NotebookModelStub(undefined, undefined, testContents);
+		let testLanguageInfo: azdata.nb.ILanguageInfo = {
+			name: 'python',
+		};
+		let mockNotebookModel = new NotebookModelStub(testLanguageInfo, undefined, testContents);
+		let action = new RunParametersAction('TestId', true, testUri, quickInputService, mockNotebookService.object, mockNotification.object);
+
+		mockNotebookEditor.setup(x => x.model).returns(() => mockNotebookModel);
+
+		// Run Parameters Action
+		await action.run(testUri);
+
+		assert.strictEqual(actualMsg, expectedMsg);
+	});
+
+	test('Should inform user to add parameters if Run with Parameters Action contains empty string parameter cell', async function (): Promise<void> {
+		const testContents: azdata.nb.INotebookContents = {
+			cells: [{
+				cell_type: CellTypes.Code,
+				source: [' '],
+				metadata: { language: 'python' },
+				execution_count: 1
+			}],
+			metadata: {
+				kernelspec: {
+					name: 'python',
+					language: 'python',
+					display_name: 'Python 3'
+				}
+			},
+			nbformat: 4,
+			nbformat_minor: 5
+		};
+		let expectedMsg: string = noParametersInCell;
+
+		let actualMsg: string;
+		let mockNotification = TypeMoq.Mock.ofType<INotificationService>(TestNotificationService);
+		mockNotification.setup(n => n.notify(TypeMoq.It.isAny())).returns(notification => {
+			actualMsg = notification.message;
+			return undefined;
+		});
+		let quickInputService = new MockQuickInputService;
+		let testLanguageInfo: azdata.nb.ILanguageInfo = {
+			name: 'python',
+		};
+		let mockNotebookModel = new NotebookModelStub(testLanguageInfo, undefined, testContents);
+		let action = new RunParametersAction('TestId', true, testUri, quickInputService, mockNotebookService.object, mockNotification.object);
+		const testCells = [<ICellModel>{
+			isParameter: true,
+			source: [' ']
+		}];
+		mockNotebookEditor.setup(x => x.model).returns(() => mockNotebookModel);
+		mockNotebookEditor.setup(x => x.cells).returns(() => testCells);
+
+		// Run Parameters Action
+		await action.run(testUri);
+
+		assert.strictEqual(actualMsg, expectedMsg);
+	});
+
+	test('Should inform user to add parameters if Run with Parameters Action contains empty array string parameter cell', async function (): Promise<void> {
+		const testContents: azdata.nb.INotebookContents = {
+			cells: [{
+				cell_type: CellTypes.Code,
+				source: [' ', ' '],
+				metadata: { language: 'python' },
+				execution_count: 1
+			}],
+			metadata: {
+				kernelspec: {
+					name: 'python',
+					language: 'python',
+					display_name: 'Python 3'
+				}
+			},
+			nbformat: 4,
+			nbformat_minor: 5
+		};
+		let expectedMsg: string = noParametersInCell;
+
+		let actualMsg: string;
+		let mockNotification = TypeMoq.Mock.ofType<INotificationService>(TestNotificationService);
+		mockNotification.setup(n => n.notify(TypeMoq.It.isAny())).returns(notification => {
+			actualMsg = notification.message;
+			return undefined;
+		});
+		let quickInputService = new MockQuickInputService;
+		let testLanguageInfo: azdata.nb.ILanguageInfo = {
+			name: 'python',
+		};
+		let mockNotebookModel = new NotebookModelStub(testLanguageInfo, undefined, testContents);
+		let action = new RunParametersAction('TestId', true, testUri, quickInputService, mockNotebookService.object, mockNotification.object);
+
+		const testCells = [<ICellModel>{
+			isParameter: true,
+			source: [' ', ' ']
+		}];
+		mockNotebookEditor.setup(x => x.model).returns(() => mockNotebookModel);
+		mockNotebookEditor.setup(x => x.cells).returns(() => testCells);
+
+		// Run Parameters Action
+		await action.run(testUri);
+
+		assert.strictEqual(actualMsg, expectedMsg);
+	});
+
+	test('Should inform user to add parameters if Run with Parameters Action contains empty parameter cell', async function (): Promise<void> {
+		const testContents: azdata.nb.INotebookContents = {
+			cells: [{
+				cell_type: CellTypes.Code,
+				source: [],
+				metadata: { language: 'python' },
+				execution_count: 1
+			}],
+			metadata: {
+				kernelspec: {
+					name: 'python',
+					language: 'python',
+					display_name: 'Python 3'
+				}
+			},
+			nbformat: 4,
+			nbformat_minor: 5
+		};
+		let expectedMsg: string = noParametersInCell;
+
+		let actualMsg: string;
+		let mockNotification = TypeMoq.Mock.ofType<INotificationService>(TestNotificationService);
+		mockNotification.setup(n => n.notify(TypeMoq.It.isAny())).returns(notification => {
+			actualMsg = notification.message;
+			return undefined;
+		});
+		let quickInputService = new MockQuickInputService;
+		let testLanguageInfo: azdata.nb.ILanguageInfo = {
+			name: 'python',
+		};
+		let mockNotebookModel = new NotebookModelStub(testLanguageInfo, undefined, testContents);
+
+		let action = new RunParametersAction('TestId', true, testUri, quickInputService, mockNotebookService.object, mockNotification.object);
+
+		const testCells = [<ICellModel>{
+			isParameter: true,
+			source: []
+		}];
+		mockNotebookEditor.setup(x => x.model).returns(() => mockNotebookModel);
+		mockNotebookEditor.setup(x => x.cells).returns(() => testCells);
+
+		// Run Parameters Action
+		await action.run(testUri);
+
+		assert.strictEqual(actualMsg, expectedMsg);
+	});
+
+	test('Should inform user kernel is not supported if Run with Parameters Action is run with unsupported kernels', async function (): Promise<void> {
+		// Kernels that are supported (Python, PySpark, PowerShell)
+
+		const testContents: azdata.nb.INotebookContents = {
+			cells: [{
+				cell_type: CellTypes.Code,
+				source: [],
+				metadata: { language: 'sql' },
+				execution_count: 1
+			}],
+			metadata: {
+				kernelspec: {
+					name: 'sql',
+					language: 'sql',
+					display_name: 'SQL'
+				}
+			},
+			nbformat: 4,
+			nbformat_minor: 5
+		};
+		let expectedMsg: string = kernelNotSupported;
+
+		let actualMsg: string;
+		let mockNotification = TypeMoq.Mock.ofType<INotificationService>(TestNotificationService);
+		mockNotification.setup(n => n.notify(TypeMoq.It.isAny())).returns(notification => {
+			actualMsg = notification.message;
+			return undefined;
+		});
+
+		let quickInputService = new MockQuickInputService;
+		let testLanguageInfo: azdata.nb.ILanguageInfo = {
+			name: 'sql',
+		};
+		let mockNotebookModel = new NotebookModelStub(testLanguageInfo, undefined, testContents);
 
 		let action = new RunParametersAction('TestId', true, testUri, quickInputService, mockNotebookService.object, mockNotification.object);
 
@@ -343,8 +516,6 @@ suite('Notebook Actions', function (): void {
 		// Run Parameters Action
 		await action.run(testUri);
 
-		assert.ok(actualMsg !== undefined, 'Should have received a notification');
-		assert.call(mockNotification.object.notify(notification), 'Should notify user there is no parameter cell');
 		assert.strictEqual(actualMsg, expectedMsg);
 	});
 

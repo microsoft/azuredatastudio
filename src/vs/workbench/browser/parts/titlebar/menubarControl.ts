@@ -4,14 +4,14 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as nls from 'vs/nls';
-import { IMenuService, MenuId, IMenu, SubmenuItemAction, registerAction2, Action2 } from 'vs/platform/actions/common/actions';
-import { registerThemingParticipant, IColorTheme, ICssStyleCollector, IThemeService } from 'vs/platform/theme/common/themeService';
+import { IMenuService, MenuId, IMenu, SubmenuItemAction, registerAction2, Action2, MenuRegistry, MenuItemAction } from 'vs/platform/actions/common/actions';
+import { registerThemingParticipant, IThemeService } from 'vs/platform/theme/common/themeService';
 import { MenuBarVisibility, getTitleBarStyle, IWindowOpenable, getMenuBarVisibility } from 'vs/platform/windows/common/windows';
-import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
+import { ContextKeyExpr, IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IAction, Action, SubmenuAction, Separator } from 'vs/base/common/actions';
 import * as DOM from 'vs/base/browser/dom';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
-import { isMacintosh, isWeb, isIOS } from 'vs/base/common/platform';
+import { isMacintosh, isWeb, isIOS, isNative } from 'vs/base/common/platform';
 import { IConfigurationService, IConfigurationChangeEvent } from 'vs/platform/configuration/common/configuration';
 import { Event, Emitter } from 'vs/base/common/event';
 import { Disposable } from 'vs/base/common/lifecycle';
@@ -37,6 +37,7 @@ import { BrowserFeatures } from 'vs/base/browser/canIUse';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import { KeybindingWeight } from 'vs/platform/keybinding/common/keybindingsRegistry';
 import { IsWebContext } from 'vs/platform/contextkey/common/contextkeys';
+import { ICommandService } from 'vs/platform/commands/common/commands';
 
 export abstract class MenubarControl extends Disposable {
 
@@ -91,7 +92,8 @@ export abstract class MenubarControl extends Disposable {
 		protected readonly preferencesService: IPreferencesService,
 		protected readonly environmentService: IWorkbenchEnvironmentService,
 		protected readonly accessibilityService: IAccessibilityService,
-		protected readonly hostService: IHostService
+		protected readonly hostService: IHostService,
+		protected readonly commandService: ICommandService
 	) {
 
 		super();
@@ -200,13 +202,27 @@ export abstract class MenubarControl extends Disposable {
 		if (event.affectsConfiguration('editor.accessibilitySupport')) {
 			this.notifyUserOfCustomMenubarAccessibility();
 		}
+
+		// Since we try not update when hidden, we should
+		// try to update the recently opened list on visibility changes
+		if (event.affectsConfiguration('window.menuBarVisibility')) {
+			this.onRecentlyOpenedChange();
+		}
+	}
+
+	private get menubarHidden(): boolean {
+		return isMacintosh && isNative ? false : getMenuBarVisibility(this.configurationService) === 'hidden';
 	}
 
 	protected onRecentlyOpenedChange(): void {
-		this.workspacesService.getRecentlyOpened().then(recentlyOpened => {
-			this.recentlyOpened = recentlyOpened;
-			this.updateMenubar();
-		});
+
+		// Do not update recently opened when the menubar is hidden #108712
+		if (!this.menubarHidden) {
+			this.workspacesService.getRecentlyOpened().then(recentlyOpened => {
+				this.recentlyOpened = recentlyOpened;
+				this.updateMenubar();
+			});
+		}
 	}
 
 	private createOpenRecentMenuAction(recent: IRecent): IAction & { uri: URI } {
@@ -295,23 +311,10 @@ export class CustomMenubarControl extends MenubarControl {
 		@IAccessibilityService accessibilityService: IAccessibilityService,
 		@IThemeService private readonly themeService: IThemeService,
 		@IWorkbenchLayoutService private readonly layoutService: IWorkbenchLayoutService,
-		@IHostService protected readonly hostService: IHostService
+		@IHostService protected readonly hostService: IHostService,
+		@ICommandService commandService: ICommandService
 	) {
-		super(
-			menuService,
-			workspacesService,
-			contextKeyService,
-			keybindingService,
-			configurationService,
-			labelService,
-			updateService,
-			storageService,
-			notificationService,
-			preferencesService,
-			environmentService,
-			accessibilityService,
-			hostService
-		);
+		super(menuService, workspacesService, contextKeyService, keybindingService, configurationService, labelService, updateService, storageService, notificationService, preferencesService, environmentService, accessibilityService, hostService, commandService);
 
 		this._onVisibilityChange = this._register(new Emitter<boolean>());
 		this._onFocusStateChange = this._register(new Emitter<boolean>());
@@ -324,7 +327,17 @@ export class CustomMenubarControl extends MenubarControl {
 
 		this.registerActions();
 
-		registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) => {
+		// Register web menu actions to the file menu when its in the title
+		this.getWebNavigationMenuItemActions().forEach(actionItem => {
+			this._register(MenuRegistry.appendMenuItem(MenuId.MenubarFileMenu, {
+				command: actionItem.item,
+				title: actionItem.item.title,
+				group: 'z_Web',
+				when: ContextKeyExpr.and(IsWebContext, ContextKeyExpr.notEquals('config.window.menuBarVisibility', 'compact'))
+			}));
+		});
+
+		registerThemingParticipant((theme, collector) => {
 			const menubarActiveWindowFgColor = theme.getColor(TITLE_BAR_ACTIVE_FOREGROUND);
 			if (menubarActiveWindowFgColor) {
 				collector.addRule(`
@@ -343,7 +356,6 @@ export class CustomMenubarControl extends MenubarControl {
 					color: ${activityBarInactiveFgColor};
 				}
 				`);
-
 			}
 
 			const activityBarFgColor = theme.getColor(ACTIVITY_BAR_FOREGROUND);
@@ -369,7 +381,6 @@ export class CustomMenubarControl extends MenubarControl {
 					}
 				`);
 			}
-
 
 			const menubarSelectedFgColor = theme.getColor(MENUBAR_SELECTION_FOREGROUND);
 			if (menubarSelectedFgColor) {
@@ -595,6 +606,12 @@ export class CustomMenubarControl extends MenubarControl {
 
 				for (let action of actions) {
 					this.insertActionsBefore(action, target);
+
+					// use mnemonicTitle whenever possible
+					const title = typeof action.item.title === 'string'
+						? action.item.title
+						: action.item.title.mnemonicTitle ?? action.item.title.value;
+
 					if (action instanceof SubmenuItemAction) {
 						let submenu = this.menus[action.item.submenu.id];
 						if (!submenu) {
@@ -612,10 +629,12 @@ export class CustomMenubarControl extends MenubarControl {
 
 						const submenuActions: SubmenuAction[] = [];
 						updateActions(submenu, submenuActions, topLevelTitle);
-						target.push(new SubmenuAction(action.id, mnemonicMenuLabel(action.label), submenuActions));
+						target.push(new SubmenuAction(action.id, mnemonicMenuLabel(title), submenuActions));
 					} else {
-						action.label = mnemonicMenuLabel(this.calculateActionLabel(action));
-						target.push(action);
+						const newAction = new Action(action.id, mnemonicMenuLabel(title), action.class, action.enabled, () => this.commandService.executeCommand(action.id));
+						newAction.tooltip = action.tooltip;
+						newAction.checked = action.checked;
+						target.push(newAction);
 					}
 				}
 
@@ -654,6 +673,27 @@ export class CustomMenubarControl extends MenubarControl {
 		}
 	}
 
+	private getWebNavigationMenuItemActions(): MenuItemAction[] {
+		if (!isWeb) {
+			return []; // only for web
+		}
+
+		const webNavigationActions = [];
+		const webNavigationMenu = this.menuService.createMenu(MenuId.MenubarHomeMenu, this.contextKeyService);
+		for (const groups of webNavigationMenu.getActions()) {
+			const [, actions] = groups;
+			for (const action of actions) {
+				if (action instanceof MenuItemAction) {
+					webNavigationActions.push(action);
+				}
+			}
+		}
+
+		webNavigationMenu.dispose();
+
+		return webNavigationActions;
+	}
+
 	private getMenuBarOptions(): IMenuBarOptions {
 		return {
 			enableMnemonics: this.currentEnableMenuBarMnemonics,
@@ -661,7 +701,35 @@ export class CustomMenubarControl extends MenubarControl {
 			visibility: this.currentMenubarVisibility,
 			getKeybinding: (action) => this.keybindingService.lookupKeybinding(action.id),
 			alwaysOnMnemonics: this.alwaysOnMnemonics,
-			compactMode: this.currentCompactMenuMode
+			compactMode: this.currentCompactMenuMode,
+			getCompactMenuActions: () => {
+				if (!isWeb) {
+					return []; // only for web
+				}
+
+				const webNavigationActions: IAction[] = [];
+				const href = this.environmentService.options?.homeIndicator?.href;
+				if (href) {
+					webNavigationActions.push(new Action('goHome', nls.localize('goHome', "Go Home"), undefined, true,
+						async (event?: MouseEvent) => {
+							if ((!isMacintosh && event?.ctrlKey) || (isMacintosh && event?.metaKey)) {
+								window.open(href, '_blank');
+							} else {
+								window.location.href = href;
+							}
+						}));
+				}
+
+				const otherActions = this.getWebNavigationMenuItemActions().map(action => {
+					const title = typeof action.item.title === 'string'
+						? action.item.title
+						: action.item.title.mnemonicTitle ?? action.item.title.value;
+					return new Action(action.id, mnemonicMenuLabel(title), action.class, action.enabled, () => this.commandService.executeCommand(action.id));
+				});
+
+				webNavigationActions.push(...otherActions);
+				return webNavigationActions;
+			}
 		};
 	}
 

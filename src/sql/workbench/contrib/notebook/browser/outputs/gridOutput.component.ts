@@ -209,13 +209,14 @@ class DataResourceTable extends GridTableBase<any> {
 		@IConfigurationService configurationService: IConfigurationService,
 		@IQueryModelService queryModelService: IQueryModelService,
 		@IThemeService themeService: IThemeService,
-		@IContextViewService contextViewService: IContextViewService
+		@IContextViewService contextViewService: IContextViewService,
+		@INotificationService notificationService: INotificationService
 	) {
 		super(state, createResultSet(source), {
 			actionOrientation: ActionsOrientation.HORIZONTAL,
 			//displayActions: cellOutput?.metadata?.displayActionBar,
 			inMemoryDataProcessing: true
-		}, contextMenuService, instantiationService, editorService, untitledEditorService, configurationService, queryModelService, themeService, contextViewService);
+		}, contextMenuService, instantiationService, editorService, untitledEditorService, configurationService, queryModelService, themeService, contextViewService, notificationService);
 		this._gridDataProvider = this.instantiationService.createInstance(DataResourceDataProvider, source, this.resultSet, this.cellModel);
 		this._chart = this.instantiationService.createInstance(ChartView, false);
 
@@ -558,7 +559,7 @@ export class NotebookChartAction extends ToggleableAction {
 		});
 	}
 
-	public async run(context: IGridActionContext): Promise<boolean> {
+	public async run(context: IGridActionContext): Promise<void> {
 		this.resourceTable.toggleChartVisibility();
 		this.toggle(!this.state.isOn);
 		if (this.state.isOn) {
@@ -574,6 +575,5 @@ export class NotebookChartAction extends ToggleableAction {
 			).send();
 			this.resourceTable.updateChartData(Math.min(rowCount, maxRowCount), columnCount, context.gridDataProvider);
 		}
-		return true;
 	}
 }

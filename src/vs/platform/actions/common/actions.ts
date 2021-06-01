@@ -16,22 +16,36 @@ import { ThemeIcon } from 'vs/platform/theme/common/themeService';
 import { UriDto } from 'vs/base/common/types';
 import { Iterable } from 'vs/base/common/iterator';
 import { LinkedList } from 'vs/base/common/linkedList';
+import { CSSIcon } from 'vs/base/common/codicons';
 
 export interface ILocalizedString {
+	/**
+	 * The localized value of the string.
+	 */
 	value: string;
+	/**
+	 * The original (non localized value of the string)
+	 */
 	original: string;
+}
+
+export interface ICommandActionTitle extends ILocalizedString {
+	/**
+	 * The title with a mnemonic designation. && precedes the mnemonic.
+	 */
+	mnemonicTitle?: string;
 }
 
 export type Icon = { dark?: URI; light?: URI; } | ThemeIcon;
 
 export interface ICommandAction {
 	id: string;
-	title: string | ILocalizedString;
+	title: string | ICommandActionTitle;
 	category?: string | ILocalizedString;
-	tooltip?: string | ILocalizedString;
+	tooltip?: string;
 	icon?: Icon;
 	precondition?: ContextKeyExpression;
-	toggled?: ContextKeyExpression | { condition: ContextKeyExpression, icon?: Icon, tooltip?: string | ILocalizedString };
+	toggled?: ContextKeyExpression | { condition: ContextKeyExpression, icon?: Icon, tooltip?: string; };
 }
 
 export type ISerializableCommandAction = UriDto<ICommandAction>;
@@ -45,7 +59,7 @@ export interface IMenuItem {
 }
 
 export interface ISubmenuItem {
-	title: string | ILocalizedString;
+	title: string | ICommandActionTitle;
 	submenu: MenuId;
 	icon?: Icon;
 	when?: ContextKeyExpression;
@@ -112,6 +126,7 @@ export class MenuId {
 	static readonly TunnelInline = new MenuId('TunnelInline');
 	static readonly TunnelTitle = new MenuId('TunnelTitle');
 	static readonly ViewItemContext = new MenuId('ViewItemContext');
+	static readonly ViewContainerTitle = new MenuId('ViewContainerTitle');
 	static readonly ViewContainerTitleContext = new MenuId('ViewContainerTitleContext');
 	static readonly ViewTitle = new MenuId('ViewTitle');
 	static readonly ViewTitleContext = new MenuId('ViewTitleContext');
@@ -141,6 +156,7 @@ export class MenuId {
 	static readonly TimelineTitle = new MenuId('TimelineTitle');
 	static readonly TimelineTitleContext = new MenuId('TimelineTitleContext');
 	static readonly AccountsContext = new MenuId('AccountsContext');
+	static readonly PanelTitle = new MenuId('PanelTitle');
 
 	readonly id: number;
 	readonly _debugName: string;
@@ -157,7 +173,7 @@ export interface IMenuActionOptions {
 }
 
 export interface IMenu extends IDisposable {
-	readonly onDidChange: Event<IMenu | undefined>;
+	readonly onDidChange: Event<IMenu>;
 	getActions(options?: IMenuActionOptions): [string, Array<MenuItemAction | SubmenuItemAction>][];
 }
 
@@ -182,7 +198,7 @@ export interface IMenuRegistry {
 	addCommand(userCommand: ICommandAction): IDisposable;
 	getCommand(id: string): ICommandAction | undefined;
 	getCommands(): ICommandsMap;
-	appendMenuItems(items: Iterable<{ id: MenuId, item: IMenuItem | ISubmenuItem }>): IDisposable;
+	appendMenuItems(items: Iterable<{ id: MenuId, item: IMenuItem | ISubmenuItem; }>): IDisposable;
 	appendMenuItem(menu: MenuId, item: IMenuItem | ISubmenuItem): IDisposable;
 	getMenuItems(loc: MenuId): Array<IMenuItem | ISubmenuItem>;
 }
@@ -233,7 +249,7 @@ export const MenuRegistry: IMenuRegistry = new class implements IMenuRegistry {
 		return this.appendMenuItems(Iterable.single({ id, item }));
 	}
 
-	appendMenuItems(items: Iterable<{ id: MenuId, item: IMenuItem | ISubmenuItem }>): IDisposable {
+	appendMenuItems(items: Iterable<{ id: MenuId, item: IMenuItem | ISubmenuItem; }>): IDisposable {
 
 		const changedIds = new Set<MenuId>();
 		const toRemove = new LinkedList<Function>();
@@ -343,62 +359,76 @@ export class SubmenuItemAction extends SubmenuAction {
 	}
 }
 
-export class MenuItemAction extends ExecuteCommandAction {
+// implements IAction, does NOT extend Action, so that no one
+// subscribes to events of Action or modified properties
+export class MenuItemAction implements IAction {
 
 	readonly item: ICommandAction;
 	readonly alt: MenuItemAction | undefined;
+	private readonly _options: IMenuActionOptions | undefined;
 
-	private _options: IMenuActionOptions;
+	readonly id: string;
+
+	// {{SQL CARBON EDIT}} -- remove readonly since notebook component sets these
+	label: string;
+	tooltip: string;
+	readonly class: string | undefined;
+	readonly enabled: boolean;
+	readonly checked: boolean;
+	readonly expanded: boolean = false;
 
 	constructor(
 		item: ICommandAction,
 		alt: ICommandAction | undefined,
-		options: IMenuActionOptions,
+		options: IMenuActionOptions | undefined,
 		@IContextKeyService contextKeyService: IContextKeyService,
-		@ICommandService commandService: ICommandService
+		@ICommandService private _commandService: ICommandService
 	) {
-		typeof item.title === 'string' ? super(item.id, item.title, commandService) : super(item.id, item.title.value, commandService);
-
-		this._cssClass = undefined;
-		this._enabled = !item.precondition || contextKeyService.contextMatchesRules(item.precondition);
-		this._tooltip = item.tooltip ? typeof item.tooltip === 'string' ? item.tooltip : item.tooltip.value : undefined;
+		this.id = item.id;
+		this.label = typeof item.title === 'string' ? item.title : item.title.value;
+		this.tooltip = item.tooltip ?? '';
+		this.enabled = !item.precondition || contextKeyService.contextMatchesRules(item.precondition);
+		this.checked = false;
 
 		if (item.toggled) {
-			const toggled = ((item.toggled as { condition: ContextKeyExpression }).condition ? item.toggled : { condition: item.toggled }) as {
-				condition: ContextKeyExpression, icon?: Icon, tooltip?: string | ILocalizedString
+			const toggled = ((item.toggled as { condition: ContextKeyExpression; }).condition ? item.toggled : { condition: item.toggled }) as {
+				condition: ContextKeyExpression, icon?: Icon, tooltip?: string | ILocalizedString;
 			};
-			this._checked = contextKeyService.contextMatchesRules(toggled.condition);
-			if (this._checked && toggled.tooltip) {
-				this._tooltip = typeof toggled.tooltip === 'string' ? toggled.tooltip : toggled.tooltip.value;
+			this.checked = contextKeyService.contextMatchesRules(toggled.condition);
+			if (this.checked && toggled.tooltip) {
+				this.tooltip = typeof toggled.tooltip === 'string' ? toggled.tooltip : toggled.tooltip.value;
 			}
 		}
 
-		this._options = options || {};
-
 		this.item = item;
-		this.alt = alt ? new MenuItemAction(alt, undefined, this._options, contextKeyService, commandService) : undefined;
+		this.alt = alt ? new MenuItemAction(alt, undefined, options, contextKeyService, _commandService) : undefined;
+		this._options = options;
+		if (ThemeIcon.isThemeIcon(item.icon)) {
+			this.class = CSSIcon.asClassName(item.icon);
+		}
 	}
 
 	dispose(): void {
-		if (this.alt) {
-			this.alt.dispose();
-		}
-		super.dispose();
+		// there is NOTHING to dispose and the MenuItemAction should
+		// never have anything to dispose as it is a convenience type
+		// to bridge into the rendering world.
 	}
 
 	run(...args: any[]): Promise<any> {
 		let runArgs: any[] = [];
 
-		if (this._options.arg) {
+		if (this._options?.arg) {
 			runArgs = [...runArgs, this._options.arg];
 		}
 
-		if (this._options.shouldForwardArgs) {
+		if (this._options?.shouldForwardArgs) {
 			runArgs = [...runArgs, ...args];
 		}
 
-		return super.run(...runArgs);
+		return this._commandService.executeCommand(this.id, ...runArgs);
 	}
+
+
 }
 
 export class SyncActionDescriptor {
@@ -411,7 +441,7 @@ export class SyncActionDescriptor {
 	private readonly _keybindingContext: ContextKeyExpression | undefined;
 	private readonly _keybindingWeight: number | undefined;
 
-	public static create<Services extends BrandedService[]>(ctor: { new(id: string, label: string, ...services: Services): Action },
+	public static create<Services extends BrandedService[]>(ctor: { new(id: string, label: string, ...services: Services): Action; },
 		id: string, label: string | undefined, keybindings?: IKeybindings, keybindingContext?: ContextKeyExpression, keybindingWeight?: number
 	): SyncActionDescriptor {
 		return new SyncActionDescriptor(ctor as IConstructorSignature2<string, string | undefined, Action>, id, label, keybindings, keybindingContext, keybindingWeight);
@@ -478,7 +508,7 @@ export interface IAction2Options extends ICommandAction {
 	/**
 	 * One or many menu items.
 	 */
-	menu?: OneOrN<{ id: MenuId } & Omit<IMenuItem, 'command'>>;
+	menu?: OneOrN<{ id: MenuId; } & Omit<IMenuItem, 'command'>>;
 
 	/**
 	 * One keybinding.
@@ -497,7 +527,7 @@ export abstract class Action2 {
 	abstract run(accessor: ServicesAccessor, ...args: any[]): any;
 }
 
-export function registerAction2(ctor: { new(): Action2 }): IDisposable {
+export function registerAction2(ctor: { new(): Action2; }): IDisposable {
 	const disposables = new DisposableStore();
 	const action = new ctor();
 

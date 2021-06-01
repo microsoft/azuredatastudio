@@ -10,16 +10,19 @@ import { MigrationMode, MigrationStateModel, StateChangeEvent } from '../models/
 import * as constants from '../constants/strings';
 
 export class MigrationModePage extends MigrationWizardPage {
+	private _view!: azdata.ModelView;
+
 	constructor(wizard: azdata.window.Wizard, migrationStateModel: MigrationStateModel) {
 		super(wizard, azdata.window.createWizardPage(constants.DATABASE_BACKUP_MIGRATION_MODE_LABEL, 'MigrationModePage'), migrationStateModel);
 		this.wizardPage.description = constants.DATABASE_BACKUP_MIGRATION_MODE_DESCRIPTION;
 	}
 
 	protected async registerContent(view: azdata.ModelView): Promise<void> {
+		this._view = view;
 		const form = view.modelBuilder.formContainer()
 			.withFormItems(
 				[
-					this.migrationModeContainer(view),
+					this.migrationModeContainer(),
 				]
 			);
 		await view.initializeModel(form.component());
@@ -38,21 +41,23 @@ export class MigrationModePage extends MigrationWizardPage {
 	protected async handleStateChange(e: StateChangeEvent): Promise<void> {
 	}
 
-	private migrationModeContainer(view: azdata.ModelView): azdata.FormComponent {
+	private migrationModeContainer(): azdata.FormComponent {
 		const buttonGroup = 'cutoverContainer';
 
-		const onlineButton = view.modelBuilder.radioButton().withProps({
+		const onlineButton = this._view.modelBuilder.radioButton().withProps({
 			label: constants.DATABASE_BACKUP_MIGRATION_MODE_ONLINE_LABEL,
 			name: buttonGroup,
 			CSSStyles: {
+				'font-size': '13px',
 				'font-weight': 'bold'
 			},
 			checked: true
 		}).component();
 
-		const onlineDescription = view.modelBuilder.text().withProps({
+		const onlineDescription = this._view.modelBuilder.text().withProps({
 			value: constants.DATABASE_BACKUP_MIGRATION_MODE_ONLINE_DESCRIPTION,
 			CSSStyles: {
+				'font-size': '13px',
 				'margin': '0 0 10px 20px'
 			}
 		}).component();
@@ -65,17 +70,19 @@ export class MigrationModePage extends MigrationWizardPage {
 			}
 		});
 
-		const offlineButton = view.modelBuilder.radioButton().withProps({
+		const offlineButton = this._view.modelBuilder.radioButton().withProps({
 			label: constants.DATABASE_BACKUP_MIGRATION_MODE_OFFLINE_LABEL,
 			name: buttonGroup,
 			CSSStyles: {
+				'font-size': '13px',
 				'font-weight': 'bold'
 			},
 		}).component();
 
-		const offlineDescription = view.modelBuilder.text().withProps({
+		const offlineDescription = this._view.modelBuilder.text().withProps({
 			value: constants.DATABASE_BACKUP_MIGRATION_MODE_OFFLINE_DESCRIPTION,
 			CSSStyles: {
+				'font-size': '13px',
 				'margin': '0 0 10px 20px'
 			}
 		}).component();
@@ -89,7 +96,7 @@ export class MigrationModePage extends MigrationWizardPage {
 			}
 		});
 
-		const flexContainer = view.modelBuilder.flexContainer().withItems(
+		const flexContainer = this._view.modelBuilder.flexContainer().withItems(
 			[
 				onlineButton,
 				onlineDescription,

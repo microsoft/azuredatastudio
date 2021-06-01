@@ -18,7 +18,7 @@ export namespace cssStyles {
 	export const addDatabaseReferenceInputboxWidth = '220px';
 
 	export const createProjectFromDatabaseLabelWidth = '110px';
-	export const createProjectFromDatabaseTextboxWidth = '320px';
+	export const createProjectFromDatabaseTextboxWidth = '310px';
 
 	// font-styles
 	export namespace fontStyle {

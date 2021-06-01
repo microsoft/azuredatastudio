@@ -176,6 +176,10 @@ export class HTMLMarkdownConverter {
 			replacement: function (content, node, options) {
 				// For elements that aren't lists, convert <br> into its markdown equivalent
 				if (node.parentElement?.nodeName !== 'LI') {
+					// Keeps <br> in table cell/head in order to keep new linehow
+					if (node.parentElement?.nodeName === 'TD' || node.parentElement?.nodeName === 'TH') {
+						return '<br>';
+					}
 					return options.br + '\n';
 				}
 				// One (and only one) line break is ignored when it's inside of a list item
@@ -266,6 +270,15 @@ export class HTMLMarkdownConverter {
 				return delimiter + leadingSpace + content + trailingSpace + delimiter;
 			}
 		});
+
+		this.turndownService.addRule('p', {
+			filter: 'p',
+			replacement: function (content, node) {
+				// If inside of a table cell, extra newlines would break table rendering
+				return isInsideTable(node) ? content : '\n\n' + content + '\n\n';
+			}
+		});
+
 		this.turndownService.escape = escapeMarkdown;
 	}
 }
@@ -281,8 +294,14 @@ function blankReplacement(content, node) {
 	// When outdenting a nested list, an empty list will still remain. Need to handle this case.
 	if (node.nodeName === 'UL' || node.nodeName === 'OL') {
 		return '\n';
+	} else if (isInsideTable(node)) {
+		return '  ';
 	}
 	return node.isBlock ? '\n\n' : '';
+}
+
+function isInsideTable(node): boolean {
+	return node.parentNode?.nodeName === 'TH' || node.parentNode?.nodeName === 'TD';
 }
 
 export function findPathRelativeToContent(notebookFolder: string, contentPath: URI | undefined): string {

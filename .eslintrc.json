@@ -829,42 +829,49 @@
                 ]
             },
             {
+                "target": "**/test/monaco/**",
+                "restrictions": [
+                    "**/test/monaco/**",
+                    "*" // node modules
+                ]
+            },
+            {
                 "target": "**/api/**.test.ts",
                 "restrictions": [
                     "**/{vs,sql}/**",
                     "assert",
                     "sinon",
                     "crypto",
-					"vscode",
-					"typemoq",
-					"azdata"
-				]
-			},
-			{
-				"target": "**/{node,electron-browser,electron-main}/**/*.test.ts",
-				"restrictions": [
-					"**/{vs,sql}/**",
-					"**" // node modules
-				]
-			},
-			{
-				"target": "**/{node,electron-browser,electron-main}/**/test/**",
-				"restrictions": [
-					"**/{vs,sql}/**",
-					"*" // node modules
-				]
-			},
-			{
-				"target": "**/test/{node,electron-browser,electron-main}/**",
-				"restrictions": [
-					"**/{vs,sql}/**",
-					"*" // node modules
-				]
-			},
-			{
-				"target": "**/**.test.ts",
-				"restrictions": [
-					"**/{vs,sql}/**",
+                    "vscode",
+                    "typemoq",
+                    "azdata"
+                ]
+            },
+            {
+                "target": "**/{node,electron-browser,electron-main}/**/*.test.ts",
+                "restrictions": [
+                    "**/{vs,sql}/**",
+                    "**" // node modules
+                ]
+            },
+            {
+                "target": "**/{node,electron-browser,electron-main}/**/test/**",
+                "restrictions": [
+                    "**/{vs,sql}/**",
+                    "*" // node modules
+                ]
+            },
+            {
+                "target": "**/test/{node,electron-browser,electron-main}/**",
+                "restrictions": [
+                    "**/{vs,sql}/**",
+                    "*" // node modules
+                ]
+            },
+            {
+                "target": "**/**.test.ts",
+                "restrictions": [
+                    "**/{vs,sql}/**",
 					"assert",
 					"typemoq",
 					"sinon",

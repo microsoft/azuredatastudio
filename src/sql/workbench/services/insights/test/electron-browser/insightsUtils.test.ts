@@ -9,6 +9,7 @@ import * as os from 'os';
 import { resolveQueryFilePath } from 'sql/workbench/services/insights/common/insightsUtils';
 
 import * as path from 'vs/base/common/path';
+import * as fs from 'fs';
 
 import { Workspace, toWorkspaceFolder, IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
 import { ConfigurationResolverService, BaseConfigurationResolverService } from 'vs/workbench/services/configurationResolver/browser/configurationResolverService';
@@ -45,7 +46,9 @@ suite('Insights Utils tests', function () {
 		// Create test file - just needs to exist for verifying the path resolution worked correctly
 		testRootPath = path.join(os.tmpdir(), 'adstests');
 		queryFileDir = getRandomTestPath(testRootPath, 'insightsutils');
-		await pfs.mkdirp(queryFileDir);
+
+		await fs.promises.mkdir(queryFileDir, { recursive: true });
+
 		queryFilePath = path.join(queryFileDir, 'test.sql');
 		await pfs.writeFile(queryFilePath, '');
 	});

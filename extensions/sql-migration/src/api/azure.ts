@@ -32,7 +32,12 @@ export async function getLocations(account: azdata.Account, subscription: Subscr
 		throw new Error(response.errors.toString());
 	}
 	sortResourceArrayByName(response.locations);
-	const supportedLocations = ['eastus2', 'eastus2euap'];
+	const supportedLocations = [
+		'eastus2',
+		'eastus2euap',
+		'eastus',
+		'canadacentral'
+	];
 	const filteredLocations = response.locations.filter(loc => {
 		return supportedLocations.includes(loc.name);
 	});
@@ -291,7 +296,7 @@ function sortResourceArrayByName(resourceArray: SortableAzureResources[]): void 
 	});
 }
 
-function getResourceGroupFromId(id: string): string {
+export function getResourceGroupFromId(id: string): string {
 	return id.replace(RegExp('^(.*?)/resourceGroups/'), '').replace(RegExp('/providers/.*'), '').toLowerCase();
 }
 
@@ -347,22 +352,11 @@ export interface StartDatabaseMigrationRequest {
 		sourceDatabaseName: string,
 		migrationService: string,
 		backupConfiguration: {
-			targetLocation: {
+			targetLocation?: {
 				storageAccountResourceId: string,
 				accountKey: string,
-			}
-			sourceLocation: {
-				fileShare?: {
-					path: string,
-					username: string,
-					password: string,
-				},
-				azureBlob?: {
-					storageAccountResourceId: string,
-					accountKey: string,
-					blobContainerName: string
-				}
 			},
+			sourceLocation?: SourceLocation
 		},
 		sourceSqlConnection: {
 			authentication: string,
@@ -388,8 +382,8 @@ export interface DatabaseMigration {
 }
 export interface DatabaseMigrationProperties {
 	scope: string;
-	provisioningState: string;
-	migrationStatus: string;
+	provisioningState: 'Succeeded' | 'Failed' | 'Creating';
+	migrationStatus: 'InProgress' | 'Failed' | 'Succeeded' | 'Creating' | 'Completing' | 'Cancelling';
 	migrationStatusDetails?: MigrationStatusDetails;
 	startedOn: string;
 	endedOn: string;
@@ -427,8 +421,8 @@ export interface SqlConnectionInfo {
 }
 
 export interface BackupConfiguration {
-	sourceLocation: SourceLocation;
-	targetLocation: TargetLocation;
+	sourceLocation?: SourceLocation;
+	targetLocation?: TargetLocation;
 }
 
 export interface AutoCutoverConfiguration {
@@ -454,8 +448,8 @@ export interface BackupSetInfo {
 }
 
 export interface SourceLocation {
-	fileShare: DatabaseMigrationFileShare;
-	azureBlob: DatabaseMigrationAzureBlob;
+	fileShare?: DatabaseMigrationFileShare;
+	azureBlob?: DatabaseMigrationAzureBlob;
 }
 
 export interface TargetLocation {
@@ -465,7 +459,7 @@ export interface TargetLocation {
 
 export interface BackupFileInfo {
 	fileName: string;
-	status: string;
+	status: 'Arrived' | 'Uploading' | 'Uploaded' | 'Restoring' | 'Restored' | 'Cancelled' | 'Ignored';
 }
 
 export interface DatabaseMigrationFileShare {

@@ -7,11 +7,12 @@ import 'mocha';
 import * as assert from 'assert';
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
-import { sqlNotebookContent, writeNotebookToFile, sqlKernelMetadata, getFileName, pySparkNotebookContent, pySparkKernelMetadata, pythonKernelMetadata, sqlNotebookMultipleCellsContent, notebookContentForCellLanguageTest, sqlKernelSpec, pythonKernelSpec, pySparkKernelSpec, CellTypes } from './notebook.util';
+import * as path from 'path';
+import { sqlNotebookContent, writeNotebookToFile, sqlKernelMetadata, getTempFilePath, pySparkNotebookContent, pySparkKernelMetadata, pythonKernelMetadata, sqlNotebookMultipleCellsContent, notebookContentForCellLanguageTest, sqlKernelSpec, pythonKernelSpec, pySparkKernelSpec, CellTypes } from './notebook.util';
 import { getConfigValue, EnvironmentVariable_PYTHON_PATH, TestServerProfile, getStandaloneServer } from './testConfig';
 import { connectToServer, sleep, testServerProfileToIConnectionProfile } from './utils';
 import * as fs from 'fs';
-import { isNullOrUndefined, promisify } from 'util';
+import { promisify } from 'util';
 
 suite('Notebook integration test suite', function () {
 	setup(async function () {
@@ -23,7 +24,7 @@ suite('Notebook integration test suite', function () {
 
 	teardown(async function () {
 		try {
-			let fileName = getFileName(this.test.title + this.invocationCount++);
+			let fileName = getTempFilePath(this.test.title);
 			if (await promisify(fs.exists)(fileName)) {
 				await fs.promises.unlink(fileName);
 				console.log(`"${fileName}" is deleted.`);
@@ -39,7 +40,7 @@ suite('Notebook integration test suite', function () {
 	});
 
 	test('Sql NB test @UNSTABLE@', async function () {
-		let notebook = await openNotebook(sqlNotebookContent, sqlKernelMetadata, this.test.title + this.invocationCount++);
+		let notebook = await openNotebook(sqlNotebookContent, sqlKernelMetadata, this.test.title);
 		await runCell(notebook);
 		const expectedOutput0 = '(1 row affected)';
 		let cellOutputs = notebook.document.cells[0].contents.outputs;
@@ -56,36 +57,19 @@ suite('Notebook integration test suite', function () {
 	});
 
 	test('Sql NB multiple cells test', async function () {
-		let notebook = await openNotebook(sqlNotebookMultipleCellsContent, sqlKernelMetadata, this.test.title + this.invocationCount++);
-		await runCells(notebook);
-		const expectedOutput0 = '(1 row affected)';
-		for (let i = 0; i < 3; i++) {
-			let cellOutputs = notebook.document.cells[i].contents.outputs;
-			console.log(`Got cell outputs --- ${i}`);
+		await multipleCellsTest(this.test.title);
+	});
 
-			if (cellOutputs) {
-				cellOutputs.forEach(console.log);
-			}
+	test('Sql NB multiple cells test - Path with spaces', async function () {
+		await multipleCellsTest(path.join('folder with spaces', this.test.title));
+	});
 
-			assert(cellOutputs.length === 3, `Expected length: 3, Actual: '${cellOutputs.length}'`);
-			let actualOutput0 = (<azdata.nb.IDisplayData>cellOutputs[0]).data['text/html'];
-			console.log('Got first output');
-			assert(actualOutput0 === expectedOutput0, `Expected row count: '${expectedOutput0}', Actual: '${actualOutput0}'`);
-
-			const executeResult = cellOutputs[2] as azdata.nb.IExecuteResult;
-			assert(Object.keys(executeResult).includes('data'), `Execute result did not include data key. It included ${Object.keys(executeResult)}`);
-			const applicationDataResource = executeResult.data['application/vnd.dataresource+json'];
-
-			assert(Object.keys(applicationDataResource).includes('data'), `Execute result did not include data key. It included ${Object.keys(applicationDataResource)}`);
-			const actualOutput2 = applicationDataResource.data[0];
-
-			assert(actualOutput2[0] === i.toString(), `Expected result: ${i.toString()}, Actual: '${actualOutput2[0]}'`);
-			console.log('Sql multiple cells NB done');
-		}
+	test('Sql NB multiple cells test - Path with encoded spaces', async function () {
+		await multipleCellsTest(path.join('folder%20with%20encoded%20spaces', this.test.title));
 	});
 
 	test('Sql NB run cells above and below test', async function () {
-		let notebook = await openNotebook(sqlNotebookMultipleCellsContent, sqlKernelMetadata, this.test.title + this.invocationCount++);
+		let notebook = await openNotebook(sqlNotebookMultipleCellsContent, sqlKernelMetadata, this.test.title);
 		// When running all cells above a cell, ensure that only cells preceding current cell have output
 		await runCells(notebook, true, undefined, notebook.document.cells[1]);
 		assert(notebook.document.cells[0].contents.outputs.length === 3, `Expected length: '3', Actual: '${notebook.document.cells[0].contents.outputs.length}'`);
@@ -102,20 +86,20 @@ suite('Notebook integration test suite', function () {
 	});
 
 	test('Clear cell output - SQL notebook', async function () {
-		let notebook = await openNotebook(sqlNotebookContent, sqlKernelMetadata, this.test.title + this.invocationCount++);
+		let notebook = await openNotebook(sqlNotebookContent, sqlKernelMetadata, this.test.title);
 		await runCell(notebook);
 		await verifyClearOutputs(notebook);
 	});
 
 	test('Clear all outputs - SQL notebook', async function () {
-		let notebook = await openNotebook(sqlNotebookContent, sqlKernelMetadata, this.test.title + this.invocationCount++);
+		let notebook = await openNotebook(sqlNotebookContent, sqlKernelMetadata, this.test.title);
 		await runCell(notebook);
 		await verifyClearAllOutputs(notebook);
 	});
 
 	test('sql language test', async function () {
 		let language = 'sql';
-		await cellLanguageTest(notebookContentForCellLanguageTest, this.test.title + this.invocationCount++, language, {
+		await cellLanguageTest(notebookContentForCellLanguageTest, this.test.title, language, {
 			'kernelspec': {
 				'name': language,
 				'display_name': language.toUpperCase()
@@ -165,7 +149,7 @@ suite('Notebook integration test suite', function () {
 
 	if (process.env['RUN_PYTHON3_TEST'] === '1') {
 		test('Python3 notebook test', async function () {
-			let notebook = await openNotebook(pySparkNotebookContent, pythonKernelMetadata, this.test.title + this.invocationCount++);
+			let notebook = await openNotebook(pySparkNotebookContent, pythonKernelMetadata, this.test.title);
 			await runCell(notebook);
 			let cellOutputs = notebook.document.cells[0].contents.outputs;
 			console.log('Got cell outputs ---');
@@ -177,14 +161,14 @@ suite('Notebook integration test suite', function () {
 		});
 
 		test('Clear all outputs - Python3 notebook ', async function () {
-			let notebook = await openNotebook(pySparkNotebookContent, pythonKernelMetadata, this.test.title + this.invocationCount++);
+			let notebook = await openNotebook(pySparkNotebookContent, pythonKernelMetadata, this.test.title);
 			await runCell(notebook);
 			await verifyClearAllOutputs(notebook);
 		});
 
 		test('python language test', async function () {
 			let language = 'python';
-			await cellLanguageTest(notebookContentForCellLanguageTest, this.test.title + this.invocationCount++, language, {
+			await cellLanguageTest(notebookContentForCellLanguageTest, this.test.title, language, {
 				'kernelspec': {
 					'name': 'python3',
 					'display_name': 'Python 3'
@@ -245,7 +229,7 @@ suite('Notebook integration test suite', function () {
 
 	if (process.env['RUN_PYSPARK_TEST'] === '1') {
 		test('PySpark notebook test', async function () {
-			let notebook = await openNotebook(pySparkNotebookContent, pySparkKernelMetadata, this.test.title + this.invocationCount++);
+			let notebook = await openNotebook(pySparkNotebookContent, pySparkKernelMetadata, this.test.title);
 			await runCell(notebook);
 			let cellOutputs = notebook.document.cells[0].contents.outputs;
 			let sparkResult = (<azdata.nb.IStreamResult>cellOutputs[3]).text;
@@ -256,7 +240,7 @@ suite('Notebook integration test suite', function () {
 	/* After https://github.com/microsoft/azuredatastudio/issues/5598 is fixed, enable these tests.
 	test('scala language test', async function () {
 		let language = 'scala';
-		await cellLanguageTest(notebookContentForCellLanguageTest, this.test.title + this.invocationCount++, language, {
+		await cellLanguageTest(notebookContentForCellLanguageTest, this.test.title, language, {
 			'kernelspec': {
 				'name': '',
 				'display_name': ''
@@ -271,7 +255,7 @@ suite('Notebook integration test suite', function () {
 
 	test('empty language test', async function () {
 		let language = '';
-		await cellLanguageTest(notebookContentForCellLanguageTest, this.test.title + this.invocationCount++, language, {
+		await cellLanguageTest(notebookContentForCellLanguageTest, this.test.title, language, {
 			'kernelspec': {
 				'name': language,
 				'display_name': ''
@@ -286,7 +270,7 @@ suite('Notebook integration test suite', function () {
 
 	test('cplusplus language test', async function () {
 		let language = 'cplusplus';
-		await cellLanguageTest(notebookContentForCellLanguageTest, this.test.title + this.invocationCount++, language, {
+		await cellLanguageTest(notebookContentForCellLanguageTest, this.test.title, language, {
 			'kernelspec': {
 				'name': '',
 				'display_name': ''
@@ -301,7 +285,36 @@ suite('Notebook integration test suite', function () {
 	*/
 });
 
-async function openNotebook(content: azdata.nb.INotebookContents, kernelMetadata: any, testName: string, connectToDifferentServer?: boolean): Promise<azdata.nb.NotebookEditor> {
+async function multipleCellsTest(relativeFilePath: string): Promise<void> {
+	let notebook = await openNotebook(sqlNotebookMultipleCellsContent, sqlKernelMetadata, relativeFilePath);
+	await runCells(notebook);
+	const expectedOutput0 = '(1 row affected)';
+	for (let i = 0; i < 3; i++) {
+		let cellOutputs = notebook.document.cells[i].contents.outputs;
+		console.log(`Got cell outputs --- ${i}`);
+
+		if (cellOutputs) {
+			cellOutputs.forEach(console.log);
+		}
+
+		assert(cellOutputs.length === 3, `Expected length: 3, Actual: '${cellOutputs.length}'`);
+		let actualOutput0 = (<azdata.nb.IDisplayData>cellOutputs[0]).data['text/html'];
+		console.log('Got first output');
+		assert(actualOutput0 === expectedOutput0, `Expected row count: '${expectedOutput0}', Actual: '${actualOutput0}'`);
+
+		const executeResult = cellOutputs[2] as azdata.nb.IExecuteResult;
+		assert(Object.keys(executeResult).includes('data'), `Execute result did not include data key. It included ${Object.keys(executeResult)}`);
+		const applicationDataResource = executeResult.data['application/vnd.dataresource+json'];
+
+		assert(Object.keys(applicationDataResource).includes('data'), `Execute result did not include data key. It included ${Object.keys(applicationDataResource)}`);
+		const actualOutput2 = applicationDataResource.data[0];
+
+		assert(actualOutput2[0] === i.toString(), `Expected result: ${i.toString()}, Actual: '${actualOutput2[0]}'`);
+		console.log('Sql multiple cells NB done');
+	}
+}
+
+async function openNotebook(content: azdata.nb.INotebookContents, kernelMetadata: azdata.nb.INotebookMetadata, relativeFilePath: string, connectToDifferentServer?: boolean): Promise<azdata.nb.NotebookEditor> {
 	let notebookConfig = vscode.workspace.getConfiguration('notebook');
 	notebookConfig.update('pythonPath', getConfigValue(EnvironmentVariable_PYTHON_PATH), 1);
 	let server: TestServerProfile;
@@ -311,7 +324,7 @@ async function openNotebook(content: azdata.nb.INotebookContents, kernelMetadata
 		await connectToServer(server, 6000);
 	}
 	let notebookJson = Object.assign({}, content, { metadata: kernelMetadata });
-	let uri = writeNotebookToFile(notebookJson, testName);
+	let uri = writeNotebookToFile(notebookJson, relativeFilePath);
 	console.log('Notebook uri ' + uri);
 	let nbShowOptions: azdata.nb.NotebookShowOptions;
 	if (server) {
@@ -335,7 +348,7 @@ async function runCells(notebook: azdata.nb.NotebookEditor, runCellsAbove?: bool
 }
 
 async function runCell(notebook: azdata.nb.NotebookEditor, cell?: azdata.nb.NotebookCell) {
-	if (isNullOrUndefined(cell)) {
+	if (!cell) {
 		cell = notebook.document.cells[0];
 	}
 	let ran = await notebook.runCell(cell);
@@ -364,9 +377,9 @@ async function verifyClearOutputs(notebook: azdata.nb.NotebookEditor): Promise<v
 	assert(clearedOutputs, 'Outputs of requested code cell should be cleared');
 }
 
-async function cellLanguageTest(content: azdata.nb.INotebookContents, testName: string, languageConfigured: string, metadataInfo: any) {
+async function cellLanguageTest(content: azdata.nb.INotebookContents, relativeFilePath: string, languageConfigured: string, metadataInfo: azdata.nb.INotebookMetadata) {
 	let notebookJson = Object.assign({}, content, { metadata: metadataInfo });
-	let uri = writeNotebookToFile(notebookJson, testName);
+	let uri = writeNotebookToFile(notebookJson, relativeFilePath);
 	let notebook = await azdata.nb.showNotebookDocument(uri);
 	await notebook.document.save();
 	let languageInNotebook = notebook.document.cells[0].contents.metadata.language;

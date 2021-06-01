@@ -23,7 +23,6 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { CommandsRegistry, ICommandHandler } from 'vs/platform/commands/common/commands';
 import { MenuRegistry, MenuId } from 'vs/platform/actions/common/actions';
 import { ActiveGroupEditorsByMostRecentlyUsedQuickAccess } from 'vs/workbench/browser/parts/editor/editorQuickAccess';
-import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
 import { ITextEditorOptions } from 'vs/platform/editor/common/editor';
 import { openEditorWith } from 'vs/workbench/services/editor/common/editorOpenWith';
@@ -40,7 +39,7 @@ export const CLOSE_OTHER_EDITORS_IN_GROUP_COMMAND_ID = 'workbench.action.closeOt
 export const MOVE_ACTIVE_EDITOR_COMMAND_ID = 'moveActiveEditor';
 export const LAYOUT_EDITOR_GROUPS_COMMAND_ID = 'layoutEditorGroups';
 export const KEEP_EDITOR_COMMAND_ID = 'workbench.action.keepEditor';
-export const KEEP_EDITORS_COMMAND_ID = 'workbench.action.keepEditors';
+export const TOGGLE_KEEP_EDITORS_COMMAND_ID = 'workbench.action.toggleKeepEditors';
 export const SHOW_EDITORS_IN_GROUP = 'workbench.action.showEditorsInGroup';
 
 export const PIN_EDITOR_COMMAND_ID = 'workbench.action.pinEditor';
@@ -484,7 +483,6 @@ function registerOpenEditorAPICommands(): void {
 		const editorService = accessor.get(IEditorService);
 		const editorGroupsService = accessor.get(IEditorGroupsService);
 		const configurationService = accessor.get(IConfigurationService);
-		const quickInputService = accessor.get(IQuickInputService);
 
 		const [columnArg, optionsArg] = columnAndOptions ?? [];
 		let group: IEditorGroup | undefined = undefined;
@@ -504,7 +502,7 @@ function registerOpenEditorAPICommands(): void {
 		const textOptions: ITextEditorOptions = optionsArg ? { ...optionsArg, override: false } : { override: false };
 
 		const input = editorService.createEditorInput({ resource: URI.revive(resource) });
-		return openEditorWith(input, id, textOptions, group, editorService, configurationService, quickInputService);
+		return openEditorWith(accessor, input, id, textOptions, group);
 	});
 }
 
@@ -899,23 +897,13 @@ function registerOtherEditorCommands(): void {
 	});
 
 	CommandsRegistry.registerCommand({
-		id: KEEP_EDITORS_COMMAND_ID,
+		id: TOGGLE_KEEP_EDITORS_COMMAND_ID,
 		handler: accessor => {
 			const configurationService = accessor.get(IConfigurationService);
-			const notificationService = accessor.get(INotificationService);
-			const openerService = accessor.get(IOpenerService);
 
-			// Update setting
-			configurationService.updateValue('workbench.editor.enablePreview', false);
-
-			// Inform user
-			notificationService.prompt(
-				Severity.Info,
-				nls.localize('disablePreview', "Preview editors have been disabled in settings."),
-				[{
-					label: nls.localize('learnMode', "Learn More"), run: () => openerService.open('https://go.microsoft.com/fwlink/?linkid=2147473')
-				}]
-			);
+			const currentSetting = configurationService.getValue<boolean>('workbench.editor.enablePreview');
+			const newSetting = currentSetting === true ? false : true;
+			configurationService.updateValue('workbench.editor.enablePreview', newSetting);
 		}
 	});
 

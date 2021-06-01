@@ -9,7 +9,7 @@ import { RawContextKey } from 'vs/platform/contextkey/common/contextkey';
 import { EditorPane } from 'vs/workbench/browser/parts/editor/editorPane';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { BareFontInfo } from 'vs/editor/common/config/fontInfo';
-import { getZoomLevel } from 'vs/base/browser/browser';
+import { getPixelRatio, getZoomLevel } from 'vs/base/browser/browser';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import * as DOM from 'vs/base/browser/dom';
 import * as types from 'vs/base/common/types';
@@ -34,8 +34,7 @@ export class BareResultsGridInfo extends BareFontInfo {
 		cellPadding?: number | number[];
 	}, zoomLevel: number): BareResultsGridInfo {
 		let cellPadding = !types.isUndefinedOrNull(opts.cellPadding) ? opts.cellPadding : RESULTS_GRID_DEFAULTS.cellPadding;
-
-		return new BareResultsGridInfo(BareFontInfo.createFromRawSettings(opts, zoomLevel), { cellPadding });
+		return new BareResultsGridInfo(BareFontInfo.createFromRawSettings(opts, zoomLevel, getPixelRatio()), { cellPadding });
 	}
 
 	readonly cellPadding: number | number[];

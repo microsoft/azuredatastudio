@@ -91,7 +91,7 @@ suite('workspaceTreeDataProvider Tests', function (): void {
 			createProject: (name: string, location: vscode.Uri): Promise<vscode.Uri> => {
 				return Promise.resolve(location);
 			},
-			projectActions: [{
+			projectToolbarActions: [{
 				id: 'Add',
 				run: async (): Promise<any> => { return Promise.resolve(); }
 			},

@@ -28,6 +28,7 @@ import { QueryEditors } from './sql/queryEditors';
 import { QueryEditor } from './sql/queryEditor';
 import { Notebook as SqlNotebook } from './sql/notebook';
 import { ConfigurePythonDialog } from './sql/configurePythonDialog';
+import { NotificationToast } from './sql/notificationToast';
 // {{END}}
 
 export interface Commands {
@@ -60,6 +61,7 @@ export class Workbench {
 	readonly queryEditor: QueryEditor;
 	readonly sqlNotebook: SqlNotebook;
 	readonly configurePythonDialog: ConfigurePythonDialog;
+	readonly notificationToast: NotificationToast;
 	// {{END}}
 
 	constructor(code: Code, userDataPath: string) {
@@ -79,6 +81,7 @@ export class Workbench {
 		this.keybindingsEditor = new KeybindingsEditor(code);
 		this.terminal = new Terminal(code, this.quickaccess);
 		// {{SQL CARBON EDIT}}
+		this.notificationToast = new NotificationToast(code);
 		this.connectionDialog = new ConnectionDialog(code);
 		this.profiler = new Profiler(code, this.quickaccess);
 		this.queryEditors = new QueryEditors(code, this.editors);

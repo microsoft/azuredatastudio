@@ -19,6 +19,11 @@ import { AzureArcTreeDataProvider } from '../../ui/tree/azureArcTreeDataProvider
 import { FakeControllerModel } from '../mocks/fakeControllerModel';
 import { FakeAzdataApi } from '../mocks/fakeAzdataApi';
 
+export const FakeStorageVolume:  azdataExt.StorageVolume[] = [{
+	className: '',
+	size: ''
+}];
+
 export const FakePostgresServerShowOutput: azdataExt.AzdataOutput<azdataExt.PostgresServerShowResult> = {
 	logs: [],
 	stdout: [],
@@ -39,7 +44,11 @@ export const FakePostgresServerShowOutput: azdataExt.AzdataOutput<azdataExt.Post
 			engine: {
 				extensions: [{ name: '' }],
 				settings: {
-					default: { ['']: '' }
+					default: { ['']: '' },
+					roles: {
+						coordinator: { ['']: '' },
+						worker: { ['']: '' }
+					}
 				},
 				version: ''
 			},
@@ -59,29 +68,69 @@ export const FakePostgresServerShowOutput: azdataExt.AzdataOutput<azdataExt.Post
 							memory: ''
 						}
 					}
+				},
+				roles: {
+					coordinator: {
+						resources: {
+							requests: {
+								cpu: '',
+								memory: ''
+							},
+							limits: {
+								cpu: '',
+								memory: ''
+							}
+						}
+					},
+					worker: {
+						resources: {
+							requests: {
+								cpu: '',
+								memory: ''
+							},
+							limits: {
+								cpu: '',
+								memory: ''
+							}
+						}
+					}
 				}
 			},
-			service: {
-				type: '',
-				port: 0
+			services: {
+				primary: {
+					type: '',
+					port: 0
+				}
 			},
 			storage: {
 				data: {
-					className: '',
-					size: ''
+					volumes: [
+						{
+							className: '',
+							size: ''
+						}
+					]
 				},
 				logs: {
-					className: '',
-					size: ''
+					volumes: [
+						{
+							className: '',
+							size: ''
+						}
+					]
 				},
 				backups: {
-					className: '',
-					size: ''
+					volumes: [
+						{
+							className: '',
+							size: ''
+						}
+					]
 				}
 			}
 		},
 		status: {
-			externalEndpoint: '127.0.0.1:5432',
+			primaryEndpoint: '127.0.0.1:5432',
 			readyPods: '',
 			state: '',
 			logSearchDashboard: '',
@@ -422,29 +471,6 @@ describe('PostgresModel', function (): void {
 			should(postgresModel.engineSettingsLastUpdated).be.Date();
 		});
 
-		it('Calls onEngineSettingsUpdated event after populating engine settings', async function (): Promise<void> {
-			const connectionResultMock = TypeMoq.Mock.ofType<azdata.ConnectionResult>();
-			connectionResultMock.setup(x => x.connected).returns(() => true);
-			connectionResultMock.setup((x: any) => x.then).returns(() => undefined);
-			sinon.stub(azdata.connection, 'connect').returns(Promise.resolve(connectionResultMock.object));
-
-			const array: azdata.DbCellValue[][] = [];
-
-			const executeMock = TypeMoq.Mock.ofType<azdata.SimpleExecuteResult>();
-			executeMock.setup(x => x.rows).returns(() => array);
-			executeMock.setup((x: any) => x.then).returns(() => undefined);
-
-			const providerMock = TypeMoq.Mock.ofType<azdata.QueryProvider>();
-			providerMock.setup(x => x.runQueryAndReturn(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(async () => executeMock.object);
-			providerMock.setup((x: any) => x.then).returns(() => undefined);
-			sinon.stub(azdata.dataprotocol, 'getProvider').returns(providerMock.object);
-
-			const onEngineSettingsUpdated = sinon.spy(vscode.EventEmitter.prototype, 'fire');
-
-			await postgresModel.getEngineSettings();
-			sinon.assert.calledOnceWithExactly(onEngineSettingsUpdated, postgresModel.workerNodesEngineSettings);
-		});
-
 		it('Populating engine settings skips certain parameters', async function (): Promise<void> {
 			const connectionResultMock = TypeMoq.Mock.ofType<azdata.ConnectionResult>();
 			connectionResultMock.setup(x => x.connected).returns(() => true);
@@ -536,7 +562,7 @@ describe('PostgresModel', function (): void {
 			sinon.stub(azdata.dataprotocol, 'getProvider').returns(providerMock.object);
 
 			await postgresModel.getEngineSettings();
-			should(postgresModel.workerNodesEngineSettings.pop()).be.match(engineSettingsModelCompare);
+			should(postgresModel.coordinatorNodeEngineSettings.pop()).be.match(engineSettingsModelCompare);
 		});
 
 	});

@@ -46,11 +46,11 @@ import { IWorkbenchContributionsRegistry, Extensions as WorkbenchExtensions } fr
 import { NotebookThemingContribution } from 'sql/workbench/contrib/notebook/browser/notebookThemingContribution';
 import { LifecyclePhase } from 'vs/workbench/services/lifecycle/common/lifecycle';
 import { ToggleTabFocusModeAction } from 'vs/editor/contrib/toggleTabFocusMode/toggleTabFocusMode';
-import { NotebookExplorerViewletViewsContribution, OpenNotebookExplorerViewletAction } from 'sql/workbench/contrib/notebook/browser/notebookExplorer/notebookExplorerViewlet';
+import { NotebookExplorerViewletViewsContribution } from 'sql/workbench/contrib/notebook/browser/notebookExplorer/notebookExplorerViewlet';
 import 'vs/css!./media/notebook.contribution';
 import { isMacintosh } from 'vs/base/common/platform';
 import { SearchSortOrder } from 'vs/workbench/services/search/common/search';
-import { ImageMimeTypes } from 'sql/workbench/services/notebook/common/contracts';
+import { ImageMimeTypes, TextCellEditModes } from 'sql/workbench/services/notebook/common/contracts';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { NotebookInput } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
 import { INotebookModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
@@ -174,7 +174,7 @@ const RESTART_JUPYTER_NOTEBOOK_SESSIONS = 'notebook.action.restartJupyterNoteboo
 
 CommandsRegistry.registerCommand({
 	id: RESTART_JUPYTER_NOTEBOOK_SESSIONS,
-	handler: async (accessor: ServicesAccessor) => {
+	handler: async (accessor: ServicesAccessor, restartJupyterServer: boolean = true) => {
 		const editorService: IEditorService = accessor.get(IEditorService);
 		const editors: readonly IEditorInput[] = editorService.editors;
 		let jupyterServerRestarted: boolean = false;
@@ -184,7 +184,7 @@ CommandsRegistry.registerCommand({
 				let model: INotebookModel = editor.notebookModel;
 				if (model.providerId === 'jupyter' && model.clientSession.isReady) {
 					// Jupyter server needs to be restarted so that the correct Python installation is used
-					if (!jupyterServerRestarted) {
+					if (!jupyterServerRestarted && restartJupyterServer) {
 						let jupyterNotebookManager: INotebookManager = model.notebookManagers.find(x => x.providerId === 'jupyter');
 						// Shutdown all current Jupyter sessions before stopping the server
 						await jupyterNotebookManager.sessionManager.shutdownAll();
@@ -198,6 +198,29 @@ CommandsRegistry.registerCommand({
 
 					// Start a new session for each Jupyter notebook
 					await model.restartSession();
+				}
+			}
+		}
+	}
+});
+
+const STOP_JUPYTER_NOTEBOOK_SESSIONS = 'notebook.action.stopJupyterNotebookSessions';
+
+CommandsRegistry.registerCommand({
+	id: STOP_JUPYTER_NOTEBOOK_SESSIONS,
+	handler: async (accessor: ServicesAccessor) => {
+		const editorService: IEditorService = accessor.get(IEditorService);
+		const editors: readonly IEditorInput[] = editorService.editors;
+
+		for (let editor of editors) {
+			if (editor instanceof NotebookInput) {
+				let model: INotebookModel = editor.notebookModel;
+				if (model?.providerId === 'jupyter') {
+					let jupyterNotebookManager: INotebookManager = model.notebookManagers.find(x => x.providerId === 'jupyter');
+					await jupyterNotebookManager.sessionManager.shutdownAll();
+					jupyterNotebookManager.sessionManager.dispose();
+					await jupyterNotebookManager.serverManager.stopServer();
+					return;
 				}
 			}
 		}
@@ -274,10 +297,16 @@ configurationRegistry.registerConfiguration({
 			'default': true,
 			'description': localize('notebook.enableDoubleClickEdit', "Enable double click to edit for text cells in notebooks")
 		},
-		'notebook.setRichTextViewByDefault': {
-			'type': 'boolean',
-			'default': true,
-			'description': localize('notebook.setRichTextViewByDefault', "Set Rich Text View mode by default for text cells")
+		'notebook.defaultTextEditMode': {
+			'type': 'string',
+			'enum': [TextCellEditModes.RichText, TextCellEditModes.SplitView, TextCellEditModes.Markdown],
+			'enumDescriptions': [
+				localize('notebook.richTextModeDescription', 'Text is displayed as Rich Text (also known as WYSIWYG).'),
+				localize('notebook.splitViewModeDescription', 'Markdown is displayed on the left, with a preview of the rendered text on the right.'),
+				localize('notebook.markdownModeDescription', 'Text is displayed as Markdown.')
+			],
+			'default': TextCellEditModes.RichText,
+			'description': localize('notebook.defaultTextEditMode', "The default editing mode used for text cells")
 		},
 		'notebook.saveConnectionName': {
 			'type': 'boolean',
@@ -452,16 +481,6 @@ registerCellComponent(TextCellComponent);
 
 const workbenchRegistry = Registry.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench);
 workbenchRegistry.registerWorkbenchContribution(NotebookExplorerViewletViewsContribution, LifecyclePhase.Starting);
-const registry = Registry.as<IWorkbenchActionRegistry>(WorkbenchActionsExtensions.WorkbenchActions);
-registry.registerWorkbenchAction(
-	SyncActionDescriptor.create(
-		OpenNotebookExplorerViewletAction,
-		OpenNotebookExplorerViewletAction.ID,
-		OpenNotebookExplorerViewletAction.LABEL,
-		{ primary: KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.KEY_B }),
-	'View: Show Notebook Explorer',
-	localize('notebookExplorer.view', "View")
-);
 
 // Configuration
 configurationRegistry.registerConfiguration({

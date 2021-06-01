@@ -71,7 +71,7 @@ export class SaveResultAction extends Action {
 		super(id, label, icon);
 	}
 
-	public async run(context: IGridActionContext): Promise<boolean> {
+	public async run(context: IGridActionContext): Promise<void> {
 
 		const activeEditor = this.editorService.activeEditorPane as unknown as IEncodingSupport;
 		if (typeof activeEditor.getEncoding === 'function' && activeEditor.getEncoding() !== 'utf8') {
@@ -84,15 +84,14 @@ export class SaveResultAction extends Action {
 
 		if (!context.gridDataProvider.canSerialize) {
 			this.notificationService.warn(localize('saveToFileNotSupported', "Save to file is not supported by the backing data source"));
-			return false;
+			return;
 		}
 		try {
 			await context.gridDataProvider.serializeResults(this.format, mapForNumberColumn(context.selection));
 		} catch (error) {
 			this.notificationService.error(getErrorMessage(error));
-			return false;
+			return;
 		}
-		return true;
 	}
 }
 
@@ -112,10 +111,9 @@ export class CopyResultAction extends Action {
 		super(id, label);
 	}
 
-	public async run(context: IGridActionContext): Promise<boolean> {
+	public async run(context: IGridActionContext): Promise<void> {
 		const selection = this.accountForNumberColumn ? mapForNumberColumn(context.selection) : context.selection;
-		context.gridDataProvider.copyResults(selection, this.copyHeader, context.table.getData());
-		return true;
+		await context.gridDataProvider.copyResults(selection, this.copyHeader, context.table.getData());
 	}
 }
 
@@ -127,9 +125,8 @@ export class SelectAllGridAction extends Action {
 		super(SelectAllGridAction.ID, SelectAllGridAction.LABEL);
 	}
 
-	public run(context: IGridActionContext): Promise<boolean> {
+	public async run(context: IGridActionContext): Promise<void> {
 		context.selectionModel.setSelectedRanges([new Slick.Range(0, 0, context.table.getData().getLength() - 1, context.table.columns.length - 1)]);
-		return Promise.resolve(true);
 	}
 }
 
@@ -142,9 +139,8 @@ export class MaximizeTableAction extends Action {
 		super(MaximizeTableAction.ID, MaximizeTableAction.LABEL, MaximizeTableAction.ICON);
 	}
 
-	public run(context: IGridActionContext): Promise<boolean> {
+	public async run(context: IGridActionContext): Promise<void> {
 		context.tableState.maximized = true;
-		return Promise.resolve(true);
 	}
 }
 
@@ -157,9 +153,8 @@ export class RestoreTableAction extends Action {
 		super(RestoreTableAction.ID, RestoreTableAction.LABEL, RestoreTableAction.ICON);
 	}
 
-	public run(context: IGridActionContext): Promise<boolean> {
+	public async run(context: IGridActionContext): Promise<void> {
 		context.tableState.maximized = false;
-		return Promise.resolve(true);
 	}
 }
 
@@ -179,7 +174,7 @@ export class ChartDataAction extends Action {
 		super(ChartDataAction.ID, ChartDataAction.LABEL, ChartDataAction.ICON);
 	}
 
-	public run(context: IGridActionContext): Promise<boolean> {
+	public async run(context: IGridActionContext): Promise<void> {
 		// show the visualizer extension recommendation notification
 		this.extensionTipsService.promptRecommendedExtensionsByScenario(Constants.visualizerExtensions);
 		const maxRowCount = getChartMaxRowCount(this.configurationService);
@@ -188,12 +183,14 @@ export class ChartDataAction extends Action {
 		if (maxRowCountExceeded) {
 			notifyMaxRowCountExceeded(this.storageService, this.notificationService, this.configurationService);
 		}
-		this.adsTelemetryService.createActionEvent(TelemetryKeys.TelemetryView.ResultsPanel, TelemetryKeys.TelemetryAction.ShowChart).withAdditionalProperties(
-			{ [TelemetryKeys.TelemetryPropertyName.ChartMaxRowCountExceeded]: maxRowCountExceeded }
-		).send();
+		this.adsTelemetryService.createActionEvent(TelemetryKeys.TelemetryView.ResultsPanel, TelemetryKeys.TelemetryAction.ShowChart)
+			.withAdditionalProperties(
+				{
+					[TelemetryKeys.TelemetryPropertyName.ChartMaxRowCountExceeded]: maxRowCountExceeded
+				})
+			.send();
 		const activeEditor = this.editorService.activeEditorPane as QueryEditor;
 		activeEditor.chart({ batchId: context.batchId, resultId: context.resultId });
-		return Promise.resolve(true);
 	}
 }
 
@@ -209,7 +206,7 @@ export class VisualizerDataAction extends Action {
 		super(VisualizerDataAction.ID, VisualizerDataAction.LABEL, VisualizerDataAction.ICON);
 	}
 
-	public run(context: IGridActionContext): Promise<boolean> {
+	public async run(context: IGridActionContext): Promise<void> {
 		this.adsTelemetryService.sendActionEvent(
 			TelemetryKeys.TelemetryView.ResultsPanel,
 			TelemetryKeys.TelemetryAction.Click,
@@ -217,6 +214,5 @@ export class VisualizerDataAction extends Action {
 			'VisualizerDataAction'
 		);
 		this.runner.notifyVisualizeRequested(context.batchId, context.resultId);
-		return Promise.resolve(true);
 	}
 }

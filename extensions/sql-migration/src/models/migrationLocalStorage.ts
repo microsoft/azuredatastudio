@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 import * as vscode from 'vscode';
 import { azureResource } from 'azureResource';
-import { DatabaseMigration, SqlMigrationService, SqlManagedInstance, getMigrationStatus, AzureAsyncOperationResource, getMigrationAsyncOperationDetails } from '../api/azure';
+import { DatabaseMigration, SqlMigrationService, SqlManagedInstance, getMigrationStatus, AzureAsyncOperationResource, getMigrationAsyncOperationDetails, SqlVMServer } from '../api/azure';
 import * as azdata from 'azdata';
 
 
@@ -27,11 +27,15 @@ export class MigrationLocalStorage {
 			if (migration.sourceConnectionProfile.serverName === connectionProfile.serverName) {
 				if (refreshStatus) {
 					try {
+						const backupConfiguration = migration.migrationContext.properties.backupConfiguration;
+						const sourceDatabase = migration.migrationContext.properties.sourceDatabaseName;
 						migration.migrationContext = await getMigrationStatus(
 							migration.azureAccount,
 							migration.subscription,
 							migration.migrationContext
 						);
+						migration.migrationContext.properties.sourceDatabaseName = sourceDatabase;
+						migration.migrationContext.properties.backupConfiguration = backupConfiguration;
 						if (migration.asyncUrl) {
 							migration.asyncOperationResult = await getMigrationAsyncOperationDetails(
 								migration.azureAccount,
@@ -60,7 +64,7 @@ export class MigrationLocalStorage {
 	public static saveMigration(
 		connectionProfile: azdata.connection.ConnectionProfile,
 		migrationContext: DatabaseMigration,
-		targetMI: SqlManagedInstance,
+		targetMI: SqlManagedInstance | SqlVMServer,
 		azureAccount: azdata.Account,
 		subscription: azureResource.AzureResourceSubscription,
 		controller: SqlMigrationService,
@@ -91,7 +95,7 @@ export class MigrationLocalStorage {
 export interface MigrationContext {
 	sourceConnectionProfile: azdata.connection.ConnectionProfile,
 	migrationContext: DatabaseMigration,
-	targetManagedInstance: SqlManagedInstance,
+	targetManagedInstance: SqlManagedInstance | SqlVMServer,
 	azureAccount: azdata.Account,
 	subscription: azureResource.AzureResourceSubscription,
 	controller: SqlMigrationService,

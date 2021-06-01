@@ -89,6 +89,7 @@ export class NotebookViewsGridComponent extends AngularDisposable implements OnI
 
 			if (e.cell && e.event === 'insert') {
 				const component = this._items.find(x => x.cell.cellGuid === e.cell.cellGuid);
+				// Prevent an awkward movement on the grid by moving this out of view first
 				currentView.moveCell(e.cell, 9999, 0);
 				currentView.insertCell(e.cell);
 

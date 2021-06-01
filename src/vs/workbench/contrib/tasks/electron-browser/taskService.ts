@@ -121,7 +121,7 @@ export class TaskService extends AbstractTaskService {
 			viewDescriptorService,
 			logService,
 			sqlTaskService); // {{SQL CARBON EDIT}}
-		this._register(lifecycleService.onBeforeShutdown(event => event.veto(this.beforeShutdown())));
+		this._register(lifecycleService.onBeforeShutdown(event => event.veto(this.beforeShutdown(), 'veto.tasks')));
 	}
 
 	protected getTaskSystem(): ITaskSystem {

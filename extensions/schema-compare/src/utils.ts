@@ -55,6 +55,9 @@ export function getEndpointName(endpoint: mssql.SchemaCompareEndpointInfo): stri
 		if (!endpoint.databaseName && endpoint.connectionDetails) {
 			endpoint.databaseName = endpoint.connectionDetails['databaseName'];
 		}
+		if (endpoint.connectionName && endpoint.databaseName) {
+			return `${endpoint.connectionName}.${endpoint.databaseName}`;
+		}
 		if (endpoint.serverName && endpoint.databaseName) {
 			return `${endpoint.serverName}.${endpoint.databaseName}`;
 		} else {

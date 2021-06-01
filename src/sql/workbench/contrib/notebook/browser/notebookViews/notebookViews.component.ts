@@ -12,7 +12,6 @@ import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/no
 import * as notebookUtils from 'sql/workbench/services/notebook/browser/models/notebookUtils';
 import { IBootstrapParams } from 'sql/workbench/services/bootstrap/common/bootstrapParams';
 import { Action, IActionViewItem } from 'vs/base/common/actions';
-import { LabeledMenuItemActionItem } from 'vs/platform/actions/browser/menuEntryActionViewItem';
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { MenuItemAction } from 'vs/platform/actions/common/actions';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
@@ -36,6 +35,7 @@ import { DropdownMenuActionViewItem } from 'sql/base/browser/ui/buttonMenu/butto
 import { NotebookViewsOptions as NotebookViewsDropdownSelectionProvider, AddCellAction, RunAllCellsAction } from 'sql/workbench/contrib/notebook/browser/notebookActions';
 import * as DOM from 'vs/base/browser/dom';
 import { AnchorAlignment } from 'vs/base/browser/ui/contextview/contextview';
+import { LabeledMenuItemActionItem } from 'sql/platform/actions/browser/menuEntryActionViewItem';
 
 export const NOTEBOOKVIEWS_SELECTOR: string = 'notebook-view-component';
 
@@ -69,9 +69,9 @@ export class NotebookViewComponent extends AngularDisposable implements INoteboo
 		@Inject(IKeybindingService) private keybindingService: IKeybindingService,
 		@Inject(IContextMenuService) private contextMenuService: IContextMenuService,
 		@Inject(IContextViewService) private contextViewService: IContextViewService,
-		@Inject(INotificationService) private notificationService: INotificationService,
+		@Inject(INotificationService) private _notificationService: INotificationService,
 		@Inject(INotebookService) private notebookService: INotebookService,
-		@Inject(IConnectionManagementService) private connectionManagementService: IConnectionManagementService,
+		@Inject(IConnectionManagementService) private _connectionManagementService: IConnectionManagementService,
 		@Inject(IConfigurationService) private _configurationService: IConfigurationService,
 		@Inject(IEditorService) private _editorService: IEditorService,
 		@Inject(ViewContainerRef) private _containerRef: ViewContainerRef,
@@ -109,9 +109,9 @@ export class NotebookViewComponent extends AngularDisposable implements INoteboo
 		let uriString = cell.cellUri.toString();
 		if (this.model.cells.findIndex(c => c.cellUri.toString() === uriString) > -1) {
 			this.selectCell(cell);
-			return cell.runCell(this.notificationService, this.connectionManagementService);
+			return cell.runCell(this._notificationService, this._connectionManagementService);
 		} else {
-			return Promise.reject(new Error(localize('cellNotFound', "cell with URI {0} was not found in this model", uriString)));
+			throw new Error(localize('cellNotFound', "cell with URI {0} was not found in this model", uriString));
 		}
 	}
 
@@ -128,14 +128,14 @@ export class NotebookViewComponent extends AngularDisposable implements INoteboo
 			if (!isUndefinedOrNull(endCell)) {
 				endIndex = codeCells.findIndex(c => c.id === endCell.id);
 			}
-			let statusNotification = this.notificationService.notify({ severity: Severity.Info, message: localize('startingExecution', "Starting execution"), progress: { total: endIndex + 1, worked: 0 } });
+			let statusNotification = this._notificationService.notify({ severity: Severity.Info, message: localize('startingExecution', "Starting execution"), progress: { total: endIndex + 1, worked: 0 } });
 			for (let i = startIndex; i < endIndex; i++) {
 				statusNotification.updateMessage(localize('runningCell', "Running cell {0} of {1}", (i + 1), (endIndex)));
 				statusNotification.progress.worked(i);
 				let cellStatus = await this.runCell(codeCells[i]);
 				if (!cellStatus) {
 					statusNotification.close();
-					return Promise.reject(new Error(localize('cellRunFailed', "Run Cells failed - See error in output of the currently selected cell for more information.")));
+					throw new Error(localize('cellRunFailed', "Run Cells failed - See error in output of the currently selected cell for more information."));
 				}
 			}
 			statusNotification.close();
@@ -228,7 +228,9 @@ export class NotebookViewComponent extends AngularDisposable implements INoteboo
 		}
 	}
 
-	//Saves scrollTop value on scroll change
+	/**
+	 * Saves scrollTop value on scroll change
+	 */
 	public scrollHandler(event: Event) {
 		this._scrollTop = (<HTMLElement>event.srcElement).scrollTop;
 	}
@@ -305,7 +307,7 @@ export class NotebookViewComponent extends AngularDisposable implements INoteboo
 				action.tooltip = action.label;
 				action.label = '';
 			}
-			return new LabeledMenuItemActionItem(action, this.keybindingService, this.notificationService, 'notebook-button fixed-width');
+			return new LabeledMenuItemActionItem(action, this.keybindingService, this._notificationService, 'notebook-button fixed-width');
 		}
 		return undefined;
 	}

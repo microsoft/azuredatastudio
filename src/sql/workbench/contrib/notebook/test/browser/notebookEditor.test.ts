@@ -81,6 +81,10 @@ class NotebookModelStub extends stubs.NotebookModelStub {
 		// When relevant a mock is used to intercept this call to do any verifications or run
 		// any code relevant for testing in the context of the test.
 	}
+
+	get activeCell(): ICellModel {
+		return <ICellModel>{};
+	}
 }
 
 suite('Test class NotebookEditor:', () => {

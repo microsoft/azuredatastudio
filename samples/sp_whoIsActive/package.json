@@ -246,7 +246,7 @@
   },
   "dependencies": {
     "fs-extra": "^5.0.0",
-    "handlebars": "^4.5.3",
+    "handlebars": "^4.7.7",
     "openurl": "^1.1.1"
   },
   "devDependencies": {

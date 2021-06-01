@@ -108,11 +108,7 @@ suite('Job Management Actions', () => {
 
 	test('Edit Job Action', async () => {
 		mockEditJobAction = TypeMoq.Mock.ofType(EditJobAction, TypeMoq.MockBehavior.Strict, EditJobAction.ID, EditJobAction.LABEL);
-		let commandServiceCalled: boolean = false;
-		mockEditJobAction.setup(s => s.run(TypeMoq.It.isAny())).returns(() => {
-			commandServiceCalled = true;
-			return Promise.resolve(commandServiceCalled);
-		});
+		mockEditJobAction.setup(s => s.run(TypeMoq.It.isAny()));
 		mockEditJobAction.setup(s => s.id).returns(() => EditJobAction.ID);
 		mockEditJobAction.setup(s => s.label).returns(() => EditJobAction.LABEL);
 		assert.equal(mockEditJobAction.object.id, EditJobAction.ID);
@@ -120,14 +116,13 @@ suite('Job Management Actions', () => {
 
 		// Edit Job Action from Jobs View should open a dialog
 		await mockEditJobAction.object.run(null);
-		assert(commandServiceCalled);
+		mockEditJobAction.verify(s => s.run(TypeMoq.It.isAny()), TypeMoq.Times.once());
 	});
 
 	test('Run Job Action', async () => {
 		mockRunJobAction = TypeMoq.Mock.ofType(RunJobAction, TypeMoq.MockBehavior.Strict, RunJobAction.ID, RunJobAction.LABEL, null, null, mockJobManagementService);
 		mockRunJobAction.setup(s => s.run(TypeMoq.It.isAny())).returns(async () => {
-			let result = await mockJobManagementService.object.jobAction(null, null, null).then((result) => result.success);
-			return result;
+			await mockJobManagementService.object.jobAction(null, null, null);
 		});
 
 		mockRunJobAction.setup(s => s.id).returns(() => RunJobAction.ID);
@@ -143,8 +138,7 @@ suite('Job Management Actions', () => {
 	test('Stop Job Action', async () => {
 		mockStopJobAction = TypeMoq.Mock.ofType(StopJobAction, TypeMoq.MockBehavior.Strict, StopJobAction.ID, StopJobAction.LABEL, null, null, mockJobManagementService);
 		mockStopJobAction.setup(s => s.run(TypeMoq.It.isAny())).returns(async () => {
-			let result = await mockJobManagementService.object.jobAction(null, null, null).then((result) => result.success);
-			return result;
+			await mockJobManagementService.object.jobAction(null, null, null);
 		});
 
 		mockStopJobAction.setup(s => s.id).returns(() => RunJobAction.ID);
@@ -160,8 +154,7 @@ suite('Job Management Actions', () => {
 	test('Delete Job Action', async () => {
 		mockDeleteJobAction = TypeMoq.Mock.ofType(DeleteJobAction, TypeMoq.MockBehavior.Strict, DeleteJobAction.ID, DeleteJobAction.LABEL, null, null, mockJobManagementService);
 		mockDeleteJobAction.setup(s => s.run(TypeMoq.It.isAny())).returns(async () => {
-			let result = await mockJobManagementService.object.jobAction(null, null, null).then((result) => result.success);
-			return result;
+			await mockJobManagementService.object.jobAction(null, null, null);
 		});
 
 		mockDeleteJobAction.setup(s => s.id).returns(() => DeleteJobAction.ID);
@@ -177,11 +170,7 @@ suite('Job Management Actions', () => {
 	// Step Actions
 	test('New Step Action', async () => {
 		mockNewStepAction = TypeMoq.Mock.ofType(NewStepAction, TypeMoq.MockBehavior.Strict, NewJobAction.ID, NewJobAction.LABEL);
-		let commandServiceCalled = false;
-		mockNewStepAction.setup(s => s.run(TypeMoq.It.isAny())).returns(() => {
-			commandServiceCalled = true;
-			return Promise.resolve(commandServiceCalled);
-		});
+		mockNewStepAction.setup(s => s.run(TypeMoq.It.isAny()));
 		mockNewStepAction.setup(s => s.id).returns(() => NewJobAction.ID);
 		mockNewStepAction.setup(s => s.label).returns(() => NewJobAction.LABEL);
 		assert.equal(mockNewStepAction.object.id, NewJobAction.ID);
@@ -189,16 +178,13 @@ suite('Job Management Actions', () => {
 
 		// New Step Action should called command service
 		await mockNewStepAction.object.run(null);
-		assert(commandServiceCalled);
+		mockNewStepAction.verify(s => s.run(TypeMoq.It.isAny()), TypeMoq.Times.once());
 	});
 
 	test('Delete Step Action', async () => {
 		mockDeleteStepAction = TypeMoq.Mock.ofType(DeleteStepAction, TypeMoq.MockBehavior.Strict, DeleteStepAction.ID, DeleteStepAction.LABEL);
-		let commandServiceCalled = false;
 		mockDeleteStepAction.setup(s => s.run(TypeMoq.It.isAny())).returns(async () => {
-			commandServiceCalled = true;
-			await mockJobManagementService.object.deleteJobStep(null, null).then((result) => result.success);
-			return commandServiceCalled;
+			await mockJobManagementService.object.deleteJobStep(null, null);
 		});
 		mockDeleteStepAction.setup(s => s.id).returns(() => DeleteStepAction.ID);
 		mockDeleteStepAction.setup(s => s.label).returns(() => DeleteStepAction.LABEL);
@@ -207,7 +193,6 @@ suite('Job Management Actions', () => {
 
 		// Delete Step Action should called command service
 		await mockDeleteStepAction.object.run(null);
-		assert(commandServiceCalled);
 		mockJobManagementService.verify(s => s.deleteJobStep(null, null), TypeMoq.Times.once());
 	});
 
@@ -227,11 +212,7 @@ suite('Job Management Actions', () => {
 
 	test('Edit Alert Action', async () => {
 		mockEditAlertAction = TypeMoq.Mock.ofType(EditAlertAction, TypeMoq.MockBehavior.Strict, EditAlertAction.ID, EditAlertAction.LABEL);
-		let commandServiceCalled: boolean = false;
-		mockEditAlertAction.setup(s => s.run(TypeMoq.It.isAny())).returns(() => {
-			commandServiceCalled = true;
-			return Promise.resolve(commandServiceCalled);
-		});
+		mockEditAlertAction.setup(s => s.run(TypeMoq.It.isAny()));
 		mockEditAlertAction.setup(s => s.id).returns(() => EditAlertAction.ID);
 		mockEditAlertAction.setup(s => s.label).returns(() => EditAlertAction.LABEL);
 		assert.equal(mockEditAlertAction.object.id, EditAlertAction.ID);
@@ -239,16 +220,13 @@ suite('Job Management Actions', () => {
 
 		// Edit Alert Action from Jobs View should open a dialog
 		await mockEditAlertAction.object.run(null);
-		assert(commandServiceCalled);
+		mockEditAlertAction.verify(s => s.run(TypeMoq.It.isAny()), TypeMoq.Times.once());
 	});
 
 	test('Delete Alert Action', async () => {
 		mockDeleteAlertAction = TypeMoq.Mock.ofType(DeleteAlertAction, TypeMoq.MockBehavior.Strict, DeleteAlertAction.ID, DeleteAlertAction.LABEL, null, null, mockJobManagementService);
-		let commandServiceCalled = false;
 		mockDeleteAlertAction.setup(s => s.run(TypeMoq.It.isAny())).returns(async () => {
-			commandServiceCalled = true;
-			await mockJobManagementService.object.deleteAlert(null, null).then((result) => result.success);
-			return commandServiceCalled;
+			await mockJobManagementService.object.deleteAlert(null, null);
 		});
 		mockDeleteAlertAction.setup(s => s.id).returns(() => DeleteAlertAction.ID);
 		mockDeleteAlertAction.setup(s => s.label).returns(() => DeleteAlertAction.LABEL);
@@ -257,7 +235,6 @@ suite('Job Management Actions', () => {
 
 		// Delete Alert Action should call job management service
 		await mockDeleteAlertAction.object.run(null);
-		assert(commandServiceCalled);
 		mockJobManagementService.verify(s => s.deleteAlert(null, null), TypeMoq.Times.once());
 	});
 
@@ -277,11 +254,7 @@ suite('Job Management Actions', () => {
 
 	test('Edit Operator Action', async () => {
 		mockEditOperatorAction = TypeMoq.Mock.ofType(EditOperatorAction, TypeMoq.MockBehavior.Strict, EditOperatorAction.ID, EditOperatorAction.LABEL);
-		let commandServiceCalled: boolean = false;
-		mockEditOperatorAction.setup(s => s.run(TypeMoq.It.isAny())).returns(() => {
-			commandServiceCalled = true;
-			return Promise.resolve(commandServiceCalled);
-		});
+		mockEditOperatorAction.setup(s => s.run(TypeMoq.It.isAny()));
 		mockEditOperatorAction.setup(s => s.id).returns(() => EditOperatorAction.ID);
 		mockEditOperatorAction.setup(s => s.label).returns(() => EditOperatorAction.LABEL);
 		assert.equal(mockEditOperatorAction.object.id, EditOperatorAction.ID);
@@ -289,16 +262,13 @@ suite('Job Management Actions', () => {
 
 		// Edit Operator Action from Jobs View should open a dialog
 		await mockEditOperatorAction.object.run(null);
-		assert(commandServiceCalled);
+		mockEditOperatorAction.verify(s => s.run(TypeMoq.It.isAny()), TypeMoq.Times.once());
 	});
 
 	test('Delete Operator Action', async () => {
-		mockDeleteOperatorAction = TypeMoq.Mock.ofType(DeleteOperatorAction, TypeMoq.MockBehavior.Strict, DeleteOperatorAction.ID, DeleteOperatorAction.LABEL, null, null, mockJobManagementService);
-		let commandServiceCalled = false;
+		mockDeleteOperatorAction = TypeMoq.Mock.ofType(DeleteOperatorAction, TypeMoq.MockBehavior.Strict, null, null, mockJobManagementService);
 		mockDeleteOperatorAction.setup(s => s.run(TypeMoq.It.isAny())).returns(async () => {
-			commandServiceCalled = true;
-			await mockJobManagementService.object.deleteOperator(null, null).then((result) => result.success);
-			return commandServiceCalled;
+			await mockJobManagementService.object.deleteOperator(null, null);
 		});
 		mockDeleteOperatorAction.setup(s => s.id).returns(() => DeleteOperatorAction.ID);
 		mockDeleteOperatorAction.setup(s => s.label).returns(() => DeleteOperatorAction.LABEL);
@@ -307,7 +277,6 @@ suite('Job Management Actions', () => {
 
 		// Delete Operator Action should call job management service
 		await mockDeleteOperatorAction.object.run(null);
-		assert(commandServiceCalled);
 		mockJobManagementService.verify(s => s.deleteOperator(null, null), TypeMoq.Times.once());
 	});
 
@@ -327,11 +296,7 @@ suite('Job Management Actions', () => {
 
 	test('Edit Proxy Action', async () => {
 		mockEditProxyAction = TypeMoq.Mock.ofType(EditProxyAction, TypeMoq.MockBehavior.Strict, EditProxyAction.ID, EditProxyAction.LABEL);
-		let commandServiceCalled: boolean = false;
-		mockEditProxyAction.setup(s => s.run(TypeMoq.It.isAny())).returns(() => {
-			commandServiceCalled = true;
-			return Promise.resolve(commandServiceCalled);
-		});
+		mockEditProxyAction.setup(s => s.run(TypeMoq.It.isAny()));
 		mockEditProxyAction.setup(s => s.id).returns(() => EditProxyAction.ID);
 		mockEditProxyAction.setup(s => s.label).returns(() => EditProxyAction.LABEL);
 		assert.equal(mockEditProxyAction.object.id, EditProxyAction.ID);
@@ -339,16 +304,13 @@ suite('Job Management Actions', () => {
 
 		// Edit Proxy Action from Proxies View should open a dialog
 		await mockEditProxyAction.object.run(null);
-		assert(commandServiceCalled);
+		mockEditProxyAction.verify(s => s.run(TypeMoq.It.isAny()), TypeMoq.Times.once());
 	});
 
 	test('Delete Proxy Action', async () => {
 		mockDeleteProxyAction = TypeMoq.Mock.ofType(DeleteProxyAction, TypeMoq.MockBehavior.Strict, DeleteProxyAction.ID, DeleteProxyAction.LABEL, null, null, mockJobManagementService);
-		let commandServiceCalled = false;
 		mockDeleteProxyAction.setup(s => s.run(TypeMoq.It.isAny())).returns(async () => {
-			commandServiceCalled = true;
-			await mockJobManagementService.object.deleteProxy(null, null).then((result) => result.success);
-			return commandServiceCalled;
+			await mockJobManagementService.object.deleteProxy(null, null);
 		});
 		mockDeleteProxyAction.setup(s => s.id).returns(() => DeleteProxyAction.ID);
 		mockDeleteProxyAction.setup(s => s.label).returns(() => DeleteProxyAction.LABEL);
@@ -357,7 +319,6 @@ suite('Job Management Actions', () => {
 
 		// Delete Proxy Action should call job management service
 		await mockDeleteProxyAction.object.run(null);
-		assert(commandServiceCalled);
 		mockJobManagementService.verify(s => s.deleteProxy(null, null), TypeMoq.Times.once());
 	});
 });

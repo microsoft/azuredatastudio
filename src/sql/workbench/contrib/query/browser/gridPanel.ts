@@ -51,6 +51,7 @@ import { Orientation } from 'vs/base/browser/ui/splitview/splitview';
 import { IQueryModelService } from 'sql/workbench/services/query/common/queryModel';
 import { HeaderFilter } from 'sql/base/browser/ui/table/plugins/headerFilter.plugin';
 import { HybridDataProvider } from 'sql/base/browser/ui/table/hybridDataProvider';
+import { INotificationService } from 'vs/platform/notification/common/notification';
 
 const ROW_HEIGHT = 29;
 const HEADER_HEIGHT = 26;
@@ -387,7 +388,8 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		@IConfigurationService protected readonly configurationService: IConfigurationService,
 		@IQueryModelService private readonly queryModelService: IQueryModelService,
 		@IThemeService private readonly themeService: IThemeService,
-		@IContextViewService private readonly contextViewService: IContextViewService
+		@IContextViewService private readonly contextViewService: IContextViewService,
+		@INotificationService private readonly notificationService: INotificationService
 	) {
 		super();
 		let config = this.configurationService.getValue<{ rowHeight: number }>('resultsGrid');
@@ -529,7 +531,9 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 			this.table.rerenderGrid();
 		}));
 		if (this.enableFilteringFeature) {
-			this.filterPlugin = new HeaderFilter(this.contextViewService);
+			this.filterPlugin = new HeaderFilter(this.contextViewService, this.notificationService, {
+				disabledFilterMessage: localize('resultsGrid.maxRowCountExceeded', "Max row count for filtering/sorting has been exceeded. To update it, you can go to User Settings and change the setting: 'queryEditor.results.inMemoryDataProcessingThreshold'")
+			});
 			this._register(attachTableFilterStyler(this.filterPlugin, this.themeService));
 			this.table.registerPlugin(this.filterPlugin);
 		}
@@ -622,11 +626,14 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		}
 
 		if (this.state.sortState) {
+			const sortAsc = this.state.sortState.sortAsc;
+			const sortCol = this.columns.find((column) => column.field === this.state.sortState.field);
+			this.table.grid.setSortColumn(sortCol.id, sortAsc);
 			await this.dataProvider.sort({
 				multiColumnSort: false,
 				grid: this.table.grid,
-				sortAsc: this.state.sortState.sortAsc,
-				sortCol: this.columns.find((column) => column.field === this.state.sortState.field)
+				sortAsc: sortAsc,
+				sortCol: sortCol
 			});
 		}
 
@@ -655,17 +662,25 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 	}
 
 	private async notifyTableSelectionChanged() {
-		const selectedValues = [];
+		const selectedCells = [];
 		for (const range of this.state.selection) {
-			const subset = await this.gridDataProvider.getRowData(range.fromRow, range.toRow - range.fromRow + 1);
-			subset.rows.forEach(row => {
+			let subset;
+			if (this.dataProvider.isDataInMemory) {
+				// handle the scenario when the data is sorted/filtered,
+				// we need to use the data that is being displayed
+				const data = await this.dataProvider.getRangeAsync(range.fromRow, range.toRow - range.fromRow + 1);
+				subset = data.map(item => Object.keys(item).map(key => item[key]));
+			} else {
+				subset = (await this.gridDataProvider.getRowData(range.fromRow, range.toRow - range.fromRow + 1)).rows;
+			}
+			subset.forEach(row => {
 				// start with range.fromCell -1 because we have row number column which is not available in the actual data
 				for (let i = range.fromCell - 1; i < range.toCell; i++) {
-					selectedValues.push(row[i]?.displayValue);
+					selectedCells.push(row[i]);
 				}
 			});
 		}
-		this.queryModelService.notifyCellSelectionChanged(selectedValues);
+		this.queryModelService.notifyCellSelectionChanged(selectedCells);
 	}
 
 	private onTableClick(event: ITableMouseEvent) {
@@ -774,7 +789,8 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 					dataWithSchema[this.columns[i].field] = {
 						displayValue: r[i - 1].displayValue,
 						ariaLabel: escape(r[i - 1].displayValue),
-						isNull: r[i - 1].isNull
+						isNull: r[i - 1].isNull,
+						invariantCultureDisplayValue: r[i - 1].invariantCultureDisplayValue
 					};
 				}
 				return dataWithSchema as T;
@@ -875,13 +891,14 @@ class GridTable<T> extends GridTableBase<T> {
 		@IConfigurationService configurationService: IConfigurationService,
 		@IQueryModelService queryModelService: IQueryModelService,
 		@IThemeService themeService: IThemeService,
-		@IContextViewService contextViewService: IContextViewService
+		@IContextViewService contextViewService: IContextViewService,
+		@INotificationService notificationService: INotificationService
 	) {
 		super(state, resultSet, {
 			actionOrientation: ActionsOrientation.VERTICAL,
 			inMemoryDataProcessing: true,
 			inMemoryDataCountThreshold: configurationService.getValue<IQueryEditorConfiguration>('queryEditor').results.inMemoryDataProcessingThreshold,
-		}, contextMenuService, instantiationService, editorService, untitledEditorService, configurationService, queryModelService, themeService, contextViewService);
+		}, contextMenuService, instantiationService, editorService, untitledEditorService, configurationService, queryModelService, themeService, contextViewService, notificationService);
 		this._gridDataProvider = this.instantiationService.createInstance(QueryGridDataProvider, this._runner, resultSet.batchId, resultSet.id);
 	}
 

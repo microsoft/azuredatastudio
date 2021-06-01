@@ -8,7 +8,7 @@
 	],
 	"version": "1.0.0",
 	"contents": {
-		"extensions/notebook/package": {
+		"package": {
 			"displayName": "Extensiones principales de Notebook",
 			"description": "Define la contribución de Notebook basada en el protocolo de datos y muchos comandos y contribuciones de Notebook.",
 			"notebook.configuration.title": "Configuración de Notebook",
@@ -16,7 +16,11 @@
 			"notebook.useExistingPython.description": "Ruta de acceso local a una instalación de Python preexistente utilizada por Notebooks.",
 			"notebook.overrideEditorTheming.description": "Invalide la configuración predeterminada del editor en el editor de Notebook. Los ajustes incluyen el color de fondo, el color de la línea actual y el borde",
 			"notebook.maxTableRows.description": "Número máximo de filas devueltas por tabla en el editor de Notebook",
+			"notebook.trustedBooks.description": "Los cuadernos incluidos en estos libros serán de confianza automáticamente.",
 			"notebook.maxBookSearchDepth.description": "Profundidad máxima de subdirectorios para buscar Books (especifique 0 para infinito)",
+			"notebook.collapseBookItems.description": "Contraer elementos del libro en el nivel de raíz del viewlet de Notebooks",
+			"notebook.remoteBookDownloadTimeout.description": "Tiempo de espera en milisegundos para la descarga de libros de GitHub",
+			"notebook.pinnedNotebooks.description": "Cuadernos anclados por el usuario para el área de trabajo actual",
 			"notebook.command.new": "Nuevo Notebook",
 			"notebook.command.open": "Abrir Notebook",
 			"notebook.analyzeJupyterNotebook": "Analizar en Notebook",
@@ -40,20 +44,109 @@
 			"title.SQL19PreviewBook": "Guía de SQL Server 2019",
 			"books-preview-category": "Jupyter Books",
 			"title.saveJupyterBook": "Guardar libro",
+			"title.trustBook": "Libro de confianza",
 			"title.searchJupyterBook": "Buscar libro",
-			"title.SavedBooks": "Libros guardados",
-			"title.UntitledBooks": "Libros sin título"
+			"title.SavedBooks": "Cuadernos",
+			"title.ProvidedBooks": "Libros proporcionados",
+			"title.PinnedBooks": "Cuadernos anclados",
+			"title.PreviewLocalizedBook": "Obtención de la guía de SQL Server 2019 traducida",
+			"title.openJupyterBook": "Apertura de libros de Jupyter",
+			"title.closeJupyterBook": "Cierre del libro de Jupyter",
+			"title.closeJupyterNotebook": "Cierre del cuaderno de Jupyter",
+			"title.revealInBooksViewlet": "Visualización en libros",
+			"title.createJupyterBook": "Creación de un libro (versión preliminar)",
+			"title.openNotebookFolder": "Apertura de cuadernos en la carpeta",
+			"title.openRemoteJupyterBook": "Adición de libro de Jupyter remoto",
+			"title.pinNotebook": "Anclado de cuadernos",
+			"title.unpinNotebook": "Desanclado de cuadernos",
+			"title.moveTo": "Mover a..."
 		},
-		"extensions/notebook/dist/common/utils": {
-			"mkdirOutputMsg": "... Creando {0}",
-			"executeCommandProcessExited": "Proceso cerrado con el código {0}"
+		"dist/common/utils": {
+			"ensureDirOutputMsg": "... Se está comprobando que {0} existe.",
+			"executeCommandProcessExited": "El proceso se ha cerrado con el código de error {0}. Salida de StdErr: {1}."
 		},
-		"extensions/notebook/dist/common/localizedConstants": {
+		"dist/common/constants": {
+			"managePackages.localhost": "localhost",
+			"managePackages.packageNotFound": "No se pudo encontrar el paquete especificado"
+		},
+		"dist/common/localizedConstants": {
 			"msgYes": "Sí",
 			"msgNo": "No",
-			"msgSampleCodeDataFrame": "Este código de ejemplo carga el archivo en un marco de datos y muestra los primeros 10 resultados."
+			"msgSampleCodeDataFrame": "Este código de ejemplo carga el archivo en un marco de datos y muestra los primeros 10 resultados.",
+			"noBDCConnectionError": "Los kernels de Spark requieren una conexión a una instancia maestra del clúster de macrodatos de SQL Server.",
+			"providerNotValidError": "No se admiten proveedores que no sean MSSQL para los kernels de Spark.",
+			"allFiles": "Todos los archivos",
+			"labelSelectFolder": "Seleccionar carpeta",
+			"labelBookFolder": "Seleccionar libro",
+			"confirmReplace": "La carpeta ya existe. ¿Seguro que desea eliminar y reemplazar esta carpeta?",
+			"openNotebookCommand": "Abrir cuaderno",
+			"openMarkdownCommand": "Abrir Markdown",
+			"openExternalLinkCommand": "Abrir vínculo externo",
+			"msgBookTrusted": "El libro ahora es de confianza en el área de trabajo.",
+			"msgBookAlreadyTrusted": "El libro ya se ha marcado como que es de confianza en esta área de trabajo.",
+			"msgBookUntrusted": "El libro ya no es de confianza en esta área de trabajo.",
+			"msgBookAlreadyUntrusted": "El libro ya se ha marcado como que no es de confianza en esta área de trabajo.",
+			"msgBookPinned": "El libro {0} está ahora anclado en el área de trabajo.",
+			"msgBookUnpinned": "El libro {0} ya no está anclado en esta área de trabajo.",
+			"bookInitializeFailed": "No se pudo encontrar un archivo de tabla de contenido en el libro especificado.",
+			"noBooksSelected": "Actualmente no hay ningún libro seleccionado en viewlet.",
+			"labelBookSection": "Seleccionar sección de libro",
+			"labelAddToLevel": "Agregar a este nivel",
+			"missingFileError": "Falta el archivo {0} de {1}.",
+			"InvalidError.tocFile": "Archivo de TDC no válido",
+			"Invalid toc.yml": "Error: {0} tiene un archivo toc.yml incorrecto",
+			"configFileError": "Falta el archivo de configuración.",
+			"openBookError": "Error al abrir el libro {0}: {1}",
+			"readBookError": "No se pudo leer el libro {0}: {1}.",
+			"openNotebookError": "Error al abrir el cuaderno {0}: {1}",
+			"openMarkdownError": "Error en la apertura de Markdown {0}: {1}",
+			"openUntitledNotebookError": "Error al abrir el cuaderno sin título {0} como sin título: {1}",
+			"openExternalLinkError": "Error al abrir el vínculo {0}: {1}",
+			"closeBookError": "Error al cerrar el libro {0}: {1}",
+			"duplicateFileError": "El archivo {0} ya existe en la carpeta de destino {1}. \r\n Se ha cambiado el nombre del archivo a {2} para evitar la pérdida de datos.",
+			"editBookError": "Error al editar el libro {0}: {1}.",
+			"selectBookError": "Error al seleccionar un libro o una sección para editarlo: {0}.",
+			"url": "Dirección URL",
+			"repoUrl": "Dirección URL del repositorio",
+			"location": "Ubicación",
+			"addRemoteBook": "Agregar libro remoto",
+			"onGitHub": "GitHub",
+			"onsharedFile": "Archivo compartido",
+			"releases": "Versiones",
+			"book": "Libro",
+			"version": "Versión",
+			"language": "Idioma",
+			"booksNotFound": "Actualmente no hay ningún libro disponible en el vínculo proporcionado.",
+			"urlGithubError": "La dirección URL proporcionada no es la URL de una versión de GitHub.",
+			"search": "Buscar",
+			"add": "Agregar",
+			"close": "Cerrar",
+			"invalidTextPlaceholder": "-",
+			"msgRemoteBookDownloadProgress": "La descarga del libro remoto está en curso.",
+			"msgRemoteBookDownloadComplete": "La descarga del libro remoto se ha completado.",
+			"msgRemoteBookDownloadError": "Error al descargar el libro remoto.",
+			"msgRemoteBookUnpackingError": "Error al descomprimir el libro remoto.",
+			"msgRemoteBookDirectoryError": "Error al crear el directorio de libros remotos.",
+			"msgTaskName": "Descarga de libro remoto en curso",
+			"msgResourceNotFound": "No se encuentra el recurso.",
+			"msgBookNotFound": "No se ha encontrado ningún libro.",
+			"msgReleaseNotFound": "Versiones no encontradas",
+			"msgUndefinedAssetError": "El libro seleccionado no es válido.",
+			"httpRequestError": "Error de la solicitud HTTP: {0} {1}",
+			"msgDownloadLocation": "Descarga en {0} en curso",
+			"newGroup": "Nuevo grupo",
+			"groupDescription": "Los grupos se usan para organizar los cuadernos.",
+			"locationBrowser": "Examinar ubicaciones...",
+			"selectContentFolder": "Seleccionar carpeta de contenido",
+			"browse": "Examinar",
+			"create": "Crear",
+			"name": "Nombre",
+			"saveLocation": "Guardar ubicación",
+			"contentFolder": "Carpeta de contenido (opcional)",
+			"msgContentFolderError": "La ruta de acceso a la carpeta de contenido no existe.",
+			"msgSaveFolderError": "La ruta de acceso a la ubicación de guardado no existe."
 		},
-		"extensions/notebook/dist/jupyter/jupyterServerInstallation": {
+		"dist/jupyter/jupyterServerInstallation": {
 			"msgInstallPkgProgress": "La instalación de dependencias de Notebook está en curso",
 			"msgPythonDownloadComplete": "La descarga de Python está completa",
 			"msgPythonDownloadError": "Error al descargar la configuración de Python",
@@ -65,79 +158,96 @@
 			"msgInstallPkgStart": "Instalando dependencias de Notebook, consulte la vista Tareas para obtener más información",
 			"msgInstallPkgFinish": "La instalación de las dependencias de Notebook se ha completado",
 			"msgPythonRunningError": "No se puede sobrescribir una instalación de Python existente mientras Python se está ejecutando. Cierre los cuadernos activos antes de continuar.",
-			"msgSkipPythonInstall": "Python ya existe en la ubicación específica. Omitiendo la instalación.",
 			"msgWaitingForInstall": "Otra instalación de Python está actualmente en curso. Esperando a que se complete.",
 			"msgDependenciesInstallationFailed": "Error al instalar las dependencias de Notebook: {0}",
 			"msgDownloadPython": "Descargando Python local para la plataforma: {0} a {1}",
-			"confirmPackageUpgrade": "Es necesario actualizar algunos paquetes de Python instalados. ¿Quiere hacerlo ahora?",
-			"upgradePackages.pipInstall": "Instalando {0}",
-			"msgInstallStart": "Instalando paquetes necesarios para ejecutar Notebooks...",
-			"msgJupyterInstallDone": "... Instalación de Jupyter completa."
+			"msgPackageRetrievalFailed": "Se ha encontrado un error al intentar recuperar la lista de paquetes instalados: {0}",
+			"msgGetPythonUserDirFailed": "Se ha encontrado un error al obtener la ruta de acceso del usuario de Python: {0}"
 		},
-		"extensions/notebook/dist/dialog/configurePythonDialog": {
-			"configurePython.dialogName": "Configurar Python para Notebooks",
+		"dist/dialog/configurePython/configurePythonWizard": {
 			"configurePython.okButtonText": "Instalar",
-			"configurePython.cancelButtonText": "Cancelar",
-			"configurePython.browseButtonText": "Examinar",
-			"configurePython.locationTextBoxText": "Ubicación de instalación de Python",
-			"configurePython.selectFileLabel": "Seleccionar",
-			"configurePython.installNote": "Esta instalación llevará algún tiempo. Se recomienda no cerrar la aplicación hasta que se complete la instalación.",
 			"configurePython.invalidLocationMsg": "La ubicación de instalación especificada no es válida.",
-			"configurePython.pythonNotFoundMsg": "No se encontró ninguna instalación de Python en la ubicación especificada.",
-			"configurePython.pythonInstallDeclined": "La instalación de Python se rechazó.",
-			"configurePython.installationType": "Tipo de instalación",
-			"configurePython.newInstall": "Nueva instalación de Python",
-			"configurePython.existingInstall": "Usar la instalación de Python existente"
+			"configurePython.pythonNotFoundMsg": "No se encuentra ninguna instalación de Python en la ubicación especificada.",
+			"configurePython.wizardNameWithKernel": "Configurar Python para ejecutar {0} kernel",
+			"configurePython.wizardNameWithoutKernel": "Configurar Python para ejecutar kernels",
+			"configurePython.page0Name": "Configurar entorno de ejecución de Python",
+			"configurePython.page1Name": "Instalar dependencias",
+			"configurePython.pythonInstallDeclined": "La instalación de Python se rechazó."
 		},
-		"extensions/notebook/dist/extension": {
-			"msgSampleCodeDataFrame": "Este código de ejemplo carga el archivo en un marco de datos y muestra los primeros 10 resultados.",
-			"noNotebookVisible": "Ningún editor de cuadernos está activo",
+		"dist/extension": {
 			"codeCellName": "Código",
 			"textCellName": "Texto",
-			"selectCellType": "¿Qué tipo de celda desea agregar?",
-			"notebookFiles": "Notebooks"
+			"selectCellType": "¿Qué tipo de celda desea agregar?"
 		},
-		"extensions/notebook/dist/jupyter/jupyterController": {
+		"dist/jupyter/jupyterController": {
 			"notebookFileType": "Notebooks",
 			"unsupportedFileType": "Solo se admiten los Notebooks de tipo .ipynb",
 			"confirmReinstall": "¿Está seguro de que desea volver a instalar?"
 		},
-		"extensions/notebook/dist/jupyter/jupyterServerManager": {
+		"dist/dialog/configurePython/configurePathPage": {
+			"configurePython.browseButtonText": "Examinar",
+			"configurePython.selectFileLabel": "Seleccionar",
+			"configurePython.descriptionWithKernel": "El kernel de {0} requiere que se configure un entorno de ejecución de Python y que se instalen dependencias.",
+			"configurePython.descriptionWithoutKernel": "Los kernel del cuaderno requieren que se configure un entorno de ejecución de Python y que se instalen dependencias.",
+			"configurePython.installationType": "Tipo de instalación",
+			"configurePython.locationTextBoxText": "Ubicación de la instalación de Python",
+			"configurePython.pythonConfigured": "El entorno de ejecución de Python se ha configurado.",
+			"configurePythyon.dropdownPathLabel": "{0} ({1} de Python)",
+			"configurePythyon.noVersionsFound": "No se ha encontrado ninguna versión de Python compatible.",
+			"configurePythyon.defaultPathLabel": "{0} (predeterminada)",
+			"configurePython.newInstall": "Nueva instalación de Python",
+			"configurePython.existingInstall": "Usar la instalación de Python existente",
+			"configurePythyon.customPathLabel": "{0} (personalizada)"
+		},
+		"dist/dialog/configurePython/pickPackagesPage": {
+			"configurePython.pkgNameColumn": "Nombre",
+			"configurePython.existingVersionColumn": "Versión existente",
+			"configurePython.requiredVersionColumn": "Versión necesaria",
+			"configurePython.kernelLabel": "Kernel",
+			"configurePython.requiredDependencies": "Instalar dependencias de kernel necesarias",
+			"msgUnsupportedKernel": "No se pueden recuperar los paquetes para el kernel {0}."
+		},
+		"dist/jupyter/jupyterServerManager": {
 			"shutdownError": "Error en el apagado del servidor de Notebook: {0}"
 		},
-		"extensions/notebook/dist/jupyter/serverInstance": {
+		"dist/jupyter/serverInstance": {
 			"serverStopError": "Error al detener el servidor de Notebook: {0}",
-			"notebookStartProcessExitPremature": "El proceso de Notebook se cerró prematuramente con el error: {0}, resultado de StdErr: {1}",
+			"notebookStartProcessExitPremature": "El proceso del cuaderno se ha cerrado prematuramente con el error {0}. Salida de StdErr: {1}.",
 			"jupyterError": "Error enviado desde Jupyter: {0}",
 			"jupyterOutputMsgStartSuccessful": "... Jupyter se está ejecutando en {0}",
 			"jupyterOutputMsgStart": "... Iniciando el servidor de Notebook"
 		},
-		"extensions/notebook/dist/jupyter/jupyterNotebookProvider": {
+		"dist/jupyter/jupyterNotebookProvider": {
 			"errNotebookUriMissing": "Se requiere una ruta de acceso del cuaderno"
 		},
-		"extensions/notebook/dist/jupyter/jupyterSessionManager": {
+		"dist/jupyter/jupyterSessionManager": {
 			"errorStartBeforeReady": "No se puede iniciar una sesión, el administrador aún no está inicializado",
-			"connectionNotValid": "Los kernels de Spark requieren una conexión a una instancia maestra del clúster de macrodatos de SQL Server."
+			"notebook.couldNotFindKnoxGateway": "No se encuentra el punto de conexión de la puerta de enlace de Knox.",
+			"promptBDCUsername": "{0}Especifique el nombre de usuario para conectarse al controlador de BDC:",
+			"promptBDCPassword": "Proporcione la contraseña para conectarse al controlador de BDC.",
+			"bdcConnectError": "Error: {0}.",
+			"clusterControllerConnectionRequired": "Se necesita una conexión al controlador del clúster para ejecutar trabajos de Spark."
 		},
-		"extensions/notebook/dist/dialog/managePackages/managePackagesDialog": {
+		"dist/dialog/managePackages/managePackagesDialog": {
 			"managePackages.dialogName": "Administrar paquetes",
 			"managePackages.cancelButtonText": "Cerrar"
 		},
-		"extensions/notebook/dist/dialog/managePackages/installedPackagesTab": {
+		"dist/dialog/managePackages/installedPackagesTab": {
 			"managePackages.installedTabTitle": "Instalado",
 			"managePackages.pkgNameColumn": "Nombre",
 			"managePackages.newPkgVersionColumn": "Versión",
+			"managePackages.deleteColumn": "Eliminar",
 			"managePackages.uninstallButtonText": "Desinstalar los paquetes seleccionados",
 			"managePackages.packageType": "Tipo de paquete",
+			"managePackages.location": "Ubicación",
 			"managePackages.packageCount": "Se han encontrado {0} {1} paquetes",
 			"managePackages.confirmUninstall": "¿Está seguro de que desea desinstalar los paquetes especificados?",
 			"managePackages.backgroundUninstallStarted": "Desinstalando {0}",
 			"managePackages.backgroundUninstallComplete": "Desinstalación completada para {0}",
 			"managePackages.backgroundUninstallFailed": "No se ha podido desinstalar {0}. Error: {1}"
 		},
-		"extensions/notebook/dist/dialog/managePackages/addNewPackageTab": {
+		"dist/dialog/managePackages/addNewPackageTab": {
 			"managePackages.invalidTextPlaceholder": "N/D",
-			"managePackages.packageNotFound": "No se pudo encontrar el paquete especificado",
 			"managePackages.searchBarPlaceholder": "Buscar {0} paquetes",
 			"managePackages.addNewTabTitle": "Añadir nuevos",
 			"managePackages.searchButtonLabel": "Buscar",
@@ -146,37 +256,24 @@
 			"managePackages.packageVersionTitle": "Versión de paquete",
 			"managePackages.packageSummaryTitle": "Resumen del paquete",
 			"managePackages.noVersionsFound": "No se pudo encontrar ninguna versión válida para el paquete especificado",
-			"managePackages.packageRequestError": "Error en la solicitud de información del paquete: {0} {1}",
 			"managePackages.backgroundInstallStarted": "Instalando {0} {1}",
 			"managePackages.backgroundInstallComplete": "Instalación completada para {0} {1}",
 			"managePackages.backgroundInstallFailed": "No se pudo instalar {0} {1}. Error: {2}"
 		},
-		"extensions/notebook/dist/protocol/notebookUriHandler": {
+		"dist/jupyter/pypiClient": {
+			"managePackages.packageRequestError": "Error en la solicitud de información del paquete: {0} {1}"
+		},
+		"dist/common/notebookUtils": {
+			"msgSampleCodeDataFrame": "Este código de ejemplo carga el archivo en un marco de datos y muestra los primeros 10 resultados.",
+			"noNotebookVisible": "Ningún editor de cuadernos está activo",
+			"notebookFiles": "Cuadernos"
+		},
+		"dist/protocol/notebookUriHandler": {
 			"notebook.unsupportedAction": "No se admite la acción {0} para este controlador",
 			"unsupportedScheme": "No se puede abrir el vínculo {0} porque solo se admiten los vínculos HTTP y HTTPS",
 			"notebook.confirmOpen": "¿Descargar y abrir \"{0}\"?",
 			"notebook.fileNotFound": "No se pudo encontrar el archivo especificado",
 			"notebook.fileDownloadError": "Error en la solicitud de apertura de archivo: {0} {1}"
-		},
-		"extensions/notebook/dist/book/bookTreeView": {
-			"openBookError": "Error al abrir el libro {0}: {1}",
-			"openNotebookError": "Error al abrir el cuaderno {0}: {1}",
-			"openMarkdownError": "Error en la apertura de Markdown {0}: {1}",
-			"openUntitledNotebookError": "Error al abrir el cuaderno sin título {0} como sin título: {1}",
-			"allFiles": "Todos los archivos",
-			"labelPickFolder": "Seleccionar carpeta",
-			"openExternalLinkError": "Error al abrir el vínculo {0}: {1}",
-			"confirmReplace": "La carpeta ya existe. ¿Seguro que desea eliminar y reemplazar esta carpeta?"
-		},
-		"extensions/notebook/dist/book/bookModel": {
-			"missingFileError": "Falta el archivo: {0}",
-			"InvalidError.tocFile": "{0}",
-			"Invalid toc.yml": "Error: {0} tiene un archivo toc.yml incorrecto"
-		},
-		"extensions/notebook/dist/book/bookTreeItem": {
-			"openNotebookCommand": "Abrir Notebook",
-			"openMarkdownCommand": "Abrir Markdown",
-			"openExternalLinkCommand": "Abrir vínculo externo"
 		}
 	}
 }

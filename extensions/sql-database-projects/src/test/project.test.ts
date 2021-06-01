@@ -155,17 +155,23 @@ describe('Project: sqlproj content operations', function (): void {
 		should.equal(uri.fsPath, Uri.parse(path.join('$(NETCoreTargetsPath)', 'SystemDacpacs', '150', constants.masterDacpac)).fsPath);
 		should.equal(ssdtUri.fsPath, Uri.parse(path.join('$(DacPacRootPath)', 'Extensions', 'Microsoft', 'SQLDB', 'Extensions', 'SqlServer', '150', 'SqlSchemas', constants.masterDacpac)).fsPath);
 
-		project.changeTargetPlatform(constants.targetPlatformToVersion.get(constants.sqlServer2016)!);
+		await project.changeTargetPlatform(constants.targetPlatformToVersion.get(constants.sqlServer2016)!);
 		uri = project.getSystemDacpacUri(constants.masterDacpac);
 		ssdtUri = project.getSystemDacpacSsdtUri(constants.masterDacpac);
 		should.equal(uri.fsPath, Uri.parse(path.join('$(NETCoreTargetsPath)', 'SystemDacpacs', '130', constants.masterDacpac)).fsPath);
 		should.equal(ssdtUri.fsPath, Uri.parse(path.join('$(DacPacRootPath)', 'Extensions', 'Microsoft', 'SQLDB', 'Extensions', 'SqlServer', '130', 'SqlSchemas', constants.masterDacpac)).fsPath);
 
-		project.changeTargetPlatform(constants.targetPlatformToVersion.get(constants.sqlAzure)!);
+		await project.changeTargetPlatform(constants.targetPlatformToVersion.get(constants.sqlAzure)!);
 		uri = project.getSystemDacpacUri(constants.masterDacpac);
 		ssdtUri = project.getSystemDacpacSsdtUri(constants.masterDacpac);
 		should.equal(uri.fsPath, Uri.parse(path.join('$(NETCoreTargetsPath)', 'SystemDacpacs', 'AzureV12', constants.masterDacpac)).fsPath);
 		should.equal(ssdtUri.fsPath, Uri.parse(path.join('$(DacPacRootPath)', 'Extensions', 'Microsoft', 'SQLDB', 'Extensions', 'SqlServer', 'AzureV12', 'SqlSchemas', constants.masterDacpac)).fsPath);
+
+		await project.changeTargetPlatform(constants.targetPlatformToVersion.get(constants.sqlDW)!);
+		uri = project.getSystemDacpacUri(constants.masterDacpac);
+		ssdtUri = project.getSystemDacpacSsdtUri(constants.masterDacpac);
+		should.equal(uri.fsPath, Uri.parse(path.join('$(NETCoreTargetsPath)', 'SystemDacpacs', 'AzureDw', constants.masterDacpac)).fsPath);
+		should.equal(ssdtUri.fsPath, Uri.parse(path.join('$(DacPacRootPath)', 'Extensions', 'Microsoft', 'SQLDB', 'Extensions', 'SqlServer', 'AzureDw', 'SqlSchemas', constants.masterDacpac)).fsPath);
 	});
 
 
@@ -192,6 +198,11 @@ describe('Project: sqlproj content operations', function (): void {
 		projFileText = await fs.readFile(projFilePath);
 		should(projFileText.includes(convertSlashesForSqlProj(Uri.file(path.join('$(NETCoreTargetsPath)', 'SystemDacpacs', 'AzureV12', constants.masterDacpac)).fsPath.substring(1)))).be.true('System db reference path should have been updated to AzureV12');
 		should(projFileText.includes(convertSlashesForSqlProj(Uri.file(path.join('$(DacPacRootPath)', 'Extensions', 'Microsoft', 'SQLDB', 'Extensions', 'SqlServer', 'AzureV12', 'SqlSchemas', constants.masterDacpac)).fsPath.substring(1)))).be.true('System db SSDT reference path should be AzureV12');
+
+		await project.changeTargetPlatform(constants.targetPlatformToVersion.get(constants.sqlDW)!);
+		projFileText = await fs.readFile(projFilePath);
+		should(projFileText.includes(convertSlashesForSqlProj(Uri.file(path.join('$(NETCoreTargetsPath)', 'SystemDacpacs', 'AzureDw', constants.masterDacpac)).fsPath.substring(1)))).be.true('System db reference path should have been updated to AzureDw');
+		should(projFileText.includes(convertSlashesForSqlProj(Uri.file(path.join('$(DacPacRootPath)', 'Extensions', 'Microsoft', 'SQLDB', 'Extensions', 'SqlServer', 'AzureDw', 'SqlSchemas', constants.masterDacpac)).fsPath.substring(1)))).be.true('System db SSDT reference path should be AzureDw');
 	});
 
 	it('Should choose correct msdb dacpac', async function (): Promise<void> {
@@ -203,7 +214,7 @@ describe('Project: sqlproj content operations', function (): void {
 		should.equal(uri.fsPath, Uri.parse(path.join('$(NETCoreTargetsPath)', 'SystemDacpacs', '150', constants.msdbDacpac)).fsPath);
 		should.equal(ssdtUri.fsPath, Uri.parse(path.join('$(DacPacRootPath)', 'Extensions', 'Microsoft', 'SQLDB', 'Extensions', 'SqlServer', '150', 'SqlSchemas', constants.msdbDacpac)).fsPath);
 
-		project.changeTargetPlatform(constants.targetPlatformToVersion.get(constants.sqlServer2016)!);
+		await project.changeTargetPlatform(constants.targetPlatformToVersion.get(constants.sqlServer2016)!);
 		uri = project.getSystemDacpacUri(constants.msdbDacpac);
 		ssdtUri = project.getSystemDacpacSsdtUri(constants.msdbDacpac);
 		should.equal(uri.fsPath, Uri.parse(path.join('$(NETCoreTargetsPath)', 'SystemDacpacs', '130', constants.msdbDacpac)).fsPath);
@@ -214,7 +225,7 @@ describe('Project: sqlproj content operations', function (): void {
 		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
 		const project = await Project.openProject(projFilePath);
 
-		project.changeTargetPlatform('invalidPlatform');
+		await project.changeTargetPlatform('invalidPlatform');
 		await testUtils.shouldThrowSpecificError(async () => await project.getSystemDacpacUri(constants.masterDacpac), constants.invalidDataSchemaProvider);
 	});
 
@@ -222,11 +233,11 @@ describe('Project: sqlproj content operations', function (): void {
 		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
 		const project = await Project.openProject(projFilePath);
 
-		should(project.databaseReferences.length).equal(0, 'There should be no datbase references to start with');
+		should(project.databaseReferences.length).equal(0, 'There should be no database references to start with');
 		await project.addSystemDatabaseReference({ databaseName: 'master', systemDb: SystemDatabase.master, suppressMissingDependenciesErrors: false });
 		should(project.databaseReferences.length).equal(1, 'There should be one database reference after adding a reference to master');
 		should(project.databaseReferences[0].databaseName).equal(constants.master, 'The database reference should be master');
-		should(project.databaseReferences[0].suppressMissingDependenciesErrors).equal(false, 'project.databaseReferences[1].suppressMissingDependenciesErrors should be false');
+		should(project.databaseReferences[0].suppressMissingDependenciesErrors).equal(false, 'project.databaseReferences[0].suppressMissingDependenciesErrors should be false');
 		// make sure reference to ADS master dacpac and SSDT master dacpac was added
 		let projFileText = (await fs.readFile(projFilePath)).toString();
 		should(projFileText).containEql(convertSlashesForSqlProj(project.getSystemDacpacUri(constants.master).fsPath.substring(1)));
@@ -570,25 +581,151 @@ describe('Project: sqlproj content operations', function (): void {
 
 	});
 
-	it('Should not allow adding duplicate file/folder entries in sqlproj', async function (): Promise<void> {
+	it('Should not allow adding duplicate file/folder entries in new sqlproj by default', async function (): Promise<void> {
 		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
 		const project: Project = await Project.openProject(projFilePath);
 		const fileList = await testUtils.createListOfFiles(path.dirname(projFilePath));
 
-		// verify first entry in list is a folder
-		const existingFolderUri = fileList[0];
+		// 1. Add a folder to the project
+		const existingFolderUri = fileList[2];
 		const folderStats =  await fs.stat(existingFolderUri.fsPath);
-		should(folderStats.isDirectory()).equal(true, 'First entry in fileList should be a folder');
+		should(folderStats.isDirectory()).equal(true, 'Third entry in fileList should be a subfolder');
 		await project.addToProject([existingFolderUri]);
-		const folderRelativePath = trimChars(trimUri(Uri.file(projFilePath), existingFolderUri), '');
-		testUtils.shouldThrowSpecificError(async () => await project.addToProject([existingFolderUri]), constants.folderAlreadyAddedToProject(folderRelativePath));
 
-		// verify duplicate file can't be added
-		const existingFileUri = fileList[1];
-		const fileStats = await fs.stat(existingFileUri.fsPath);
+		// Try adding the folder to the project again
+		const folderRelativePath = trimChars(trimUri(Uri.file(projFilePath), existingFolderUri), '');
+		await testUtils.shouldThrowSpecificError(async () => await project.addToProject([existingFolderUri]), constants.folderAlreadyAddedToProject(folderRelativePath));
+
+		// 2. Add a file to the project
+		let existingFileUri = fileList[1];
+		let fileStats = await fs.stat(existingFileUri.fsPath);
 		should(fileStats.isFile()).equal(true, 'Second entry in fileList should be a file');
+		await project.addToProject([existingFileUri]);
+
+		// Try adding the file to the project again
+		let fileRelativePath = trimChars(trimUri(Uri.file(projFilePath), existingFileUri), '/');
+		await testUtils.shouldThrowSpecificError(async () => await project.addToProject([existingFileUri]), constants.fileAlreadyAddedToProject(fileRelativePath));
+
+		// 3. Add a file from subfolder to the project
+		existingFileUri = fileList[3];
+		fileStats = await fs.stat(existingFileUri.fsPath);
+		should(fileStats.isFile()).equal(true, 'Fourth entry in fileList should be a file');
+		await project.addToProject([existingFileUri]);
+
+		// Try adding the file from subfolder to the project again
+		fileRelativePath = trimChars(trimUri(Uri.file(projFilePath), existingFileUri), '/');
+		await testUtils.shouldThrowSpecificError(async () => await project.addToProject([existingFileUri]), constants.fileAlreadyAddedToProject(fileRelativePath));
+	});
+
+	it('Should ignore duplicate file/folder entries in new sqlproj if requested', async function (): Promise<void> {
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
+		const project: Project = await Project.openProject(projFilePath);
+		const fileList = await testUtils.createListOfFiles(path.dirname(projFilePath));
+
+		// 1. Add a folder to the project
+		const existingFolderUri = fileList[2];
+		const folderStats =  await fs.stat(existingFolderUri.fsPath);
+		should(folderStats.isDirectory()).equal(true, 'Third entry in fileList should be a subfolder');
+
+		const folderEntry = await project.addToProject([existingFolderUri]);
+		should(project.files.length).equal(1, 'New folder entry should be added to the project');
+
+		// Add the folder to the project again
+		should(await project.addToProject([existingFolderUri], true))
+			.equal(folderEntry, 'Original folder entry should be returned when adding same folder for a second time');
+		should(project.files.length).equal(1, 'No new entries should be added to the project when adding same folder for a second time');
+
+		// 2. Add a file to the project
+		let existingFileUri = fileList[1];
+		let fileStats = await fs.stat(existingFileUri.fsPath);
+		should(fileStats.isFile()).equal(true, 'Second entry in fileList should be a file');
+
+		let fileEntry = await project.addToProject([existingFileUri]);
+		should(project.files.length).equal(2, 'New file entry should be added to the project');
+
+		// Add the file to the project again
+		should(await project.addToProject([existingFileUri], true))
+			.equal(fileEntry, 'Original file entry should be returned when adding same file for a second time');
+		should(project.files.length).equal(2, 'No new entries should be added to the project when adding same file for a second time');
+
+		// 3. Add a file from subfolder to the project
+		existingFileUri = fileList[3];
+		fileStats = await fs.stat(existingFileUri.fsPath);
+		should(fileStats.isFile()).equal(true, 'Fourth entry in fileList should be a file');
+
+		fileEntry = await project.addToProject([existingFileUri]);
+		should(project.files.length).equal(3, 'New file entry should be added to the project');
+
+		// Add the file from subfolder to the project again
+		should(await project.addToProject([existingFileUri], true))
+			.equal(fileEntry, 'Original file entry should be returned when adding same file for a second time');
+		should(project.files.length).equal(3, 'No new entries should be added to the project when adding same file for a second time');
+	});
+
+	it('Should not allow adding duplicate file entries in existing sqlproj by default', async function (): Promise<void> {
+		// Create new sqlproj
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
+		const fileList = await testUtils.createListOfFiles(path.dirname(projFilePath));
+
+		let project: Project = await Project.openProject(projFilePath);
+
+		// Add a file to the project
+		let existingFileUri = fileList[3];
+		let fileStats = await fs.stat(existingFileUri.fsPath);
+		should(fileStats.isFile()).equal(true, 'Fourth entry in fileList should be a file');
+		await project.addToProject([existingFileUri]);
+
+		// Reopen existing project
+		project = await Project.openProject(projFilePath);
+
+		// Try adding the same file to the project again
 		const fileRelativePath = trimChars(trimUri(Uri.file(projFilePath), existingFileUri), '/');
-		testUtils.shouldThrowSpecificError(async () => await project.addToProject([existingFileUri]), constants.fileAlreadyAddedToProject(fileRelativePath));
+		await testUtils.shouldThrowSpecificError(async () => await project.addToProject([existingFileUri]), constants.fileAlreadyAddedToProject(fileRelativePath));
+	});
+
+	it('Should ignore duplicate file entries in existing sqlproj if requested', async function (): Promise<void> {
+		// Create new sqlproj
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
+		const fileList = await testUtils.createListOfFiles(path.dirname(projFilePath));
+
+		let project: Project = await Project.openProject(projFilePath);
+
+		// Add a file to the project
+		let existingFileUri = fileList[3];
+		let fileStats = await fs.stat(existingFileUri.fsPath);
+		should(fileStats.isFile()).equal(true, 'Fourth entry in fileList should be a file');
+		await project.addToProject([existingFileUri]);
+
+		// Reopen existing project
+		project = await Project.openProject(projFilePath);
+
+		// Try adding the same file to the project again
+		await project.addToProject([existingFileUri], true);
+	});
+
+	it('Project entry relative path should not change after round-trip', async function (): Promise<void> {
+		// Create new sqlproj
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
+		const fileList = await testUtils.createListOfFiles(path.dirname(projFilePath));
+
+		let project: Project = await Project.openProject(projFilePath);
+
+		// Add a file to the project
+		let existingFileUri = fileList[3];
+		let fileStats = await fs.stat(existingFileUri.fsPath);
+		should(fileStats.isFile()).equal(true, 'Fourth entry in fileList should be a file');
+		await project.addToProject([existingFileUri]);
+
+		// Store the original `relativePath` of the project entry
+		should(project.files.length).equal(1, 'An entry should be created in the project');
+		const originalRelativePath = project.files[0].relativePath;
+
+		// Reopen existing project
+		project = await Project.openProject(projFilePath);
+
+		// Try adding the same file to the project again
+		should(project.files.length).equal(1, 'Single entry is expected in the loaded project');
+		should(project.files[0].relativePath).equal(originalRelativePath, 'Relative path should match after a round-trip');
 	});
 });
 
@@ -614,6 +751,55 @@ describe('Project: add SQLCMD Variables', function (): void {
 
 		const projFileText = (await fs.readFile(projFilePath)).toString();
 		should(projFileText).equal(baselines.openSqlProjectWithAdditionalSqlCmdVariablesBaseline.trim());
+	});
+});
+
+describe('Project: properties', function (): void {
+	before(async function (): Promise<void> {
+		await baselines.loadBaselines();
+	});
+
+	it('Should read target database version', async function (): Promise<void> {
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.openProjectFileBaseline);
+		const project = await Project.openProject(projFilePath);
+
+		should(project.getProjectTargetVersion()).equal('150');
+	});
+
+	it('Should throw on missing target database version', async function (): Promise<void> {
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.sqlProjectMissingVersionBaseline);
+		const project = await Project.openProject(projFilePath);
+
+		should(() => project.getProjectTargetVersion()).throw("Invalid DSP in .sqlproj file");
+	});
+
+	it('Should throw on invalid target database version', async function (): Promise<void> {
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.sqlProjectInvalidVersionBaseline);
+		const project = await Project.openProject(projFilePath);
+
+		should(() => project.getProjectTargetVersion()).throw("Invalid DSP in .sqlproj file");
+	});
+
+	it('Should read default database collation', async function (): Promise<void> {
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.sqlProjectCustomCollationBaseline);
+		const project = await Project.openProject(projFilePath);
+
+		should(project.getDatabaseDefaultCollation()).equal('SQL_Latin1_General_CP1255_CS_AS');
+	});
+
+	it('Should return default value when database collation is not specified', async function (): Promise<void> {
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
+		const project = await Project.openProject(projFilePath);
+
+		should(project.getDatabaseDefaultCollation()).equal('SQL_Latin1_General_CP1_CI_AS');
+	});
+
+	it('Should throw on invalid default database collation', async function (): Promise<void> {
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.sqlProjectInvalidCollationBaseline);
+		const project = await Project.openProject(projFilePath);
+
+		should(() => project.getDatabaseDefaultCollation())
+			.throw("Invalid value specified for the property 'DefaultCollation' in .sqlproj file");
 	});
 });
 

@@ -440,6 +440,9 @@ export class BackupComponent extends AngularDisposable {
 
 			// Set backup type
 			this.backupTypeSelectBox!.setOptions(this.backupTypeOptions, 0);
+			// The above call does not set the private variable for selectedOption variable in select box
+			// Doing a point fix for backup since select box changes have wider unwanted impact
+			this.backupTypeSelectBox!.select(0);
 
 			this.setDefaultBackupName();
 			this.backupNameBox!.focus();
@@ -740,9 +743,10 @@ export class BackupComponent extends AngularDisposable {
 	}
 
 	private setDefaultBackupName(): void {
-		if (this.backupNameBox && (!this.backupNameBox.value || this.backupNameBox.value.trim().length === 0)) {
+		const suggestedNamePrefix = this.databaseName + '-' + this.getSelectedBackupType().replace(' ', '-');
+		if (this.backupNameBox && (!this.backupNameBox.value || this.backupNameBox.value.trim().length === 0 || !this.backupNameBox.value.startsWith(suggestedNamePrefix))) {
 			let utc = new Date().toJSON().slice(0, 19);
-			this.backupNameBox.value = this.databaseName + '-' + this.getSelectedBackupType() + '-' + utc;
+			this.backupNameBox.value = suggestedNamePrefix + '-' + utc;
 		}
 	}
 

@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import QueryRunner from 'sql/workbench/services/query/common/queryRunner';
-import { IQueryMessage, ResultSetSubset } from 'sql/workbench/services/query/common/query';
+import { ICellValue, IQueryMessage, ResultSetSubset } from 'sql/workbench/services/query/common/query';
 import { DataService } from 'sql/workbench/services/query/common/dataService';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { Event } from 'vs/base/common/event';
@@ -48,8 +48,8 @@ export interface IQueryEvent {
 export interface IQueryModelService {
 	_serviceBrand: undefined;
 
-	onCellSelectionChanged: Event<string[]>;
-	notifyCellSelectionChanged(selectedValues: string[]): void;
+	onCellSelectionChanged: Event<ICellValue[]>;
+	notifyCellSelectionChanged(selectedValues: ICellValue[]): void;
 
 	getQueryRunner(uri: string): QueryRunner | undefined;
 

@@ -41,7 +41,7 @@ import { createErrorWithActions } from 'vs/base/common/errorsWithActions';
 import { toErrorMessage } from 'vs/base/common/errorMessage';
 import { ILogService } from 'vs/platform/log/common/log';
 import { ITextFileService } from 'vs/workbench/services/textfile/common/textfiles';
-import { MaskedLabeledMenuItemActionItem, fillInActions } from 'vs/platform/actions/browser/menuEntryActionViewItem';
+import { fillInActions } from 'vs/platform/actions/browser/menuEntryActionViewItem';
 import { Button } from 'sql/base/browser/ui/button/button';
 import { isUndefinedOrNull } from 'vs/base/common/types';
 import { IBootstrapParams } from 'sql/workbench/services/bootstrap/common/bootstrapParams';
@@ -53,6 +53,7 @@ import { IColorTheme } from 'vs/platform/theme/common/themeService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { CellToolbarComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/cellToolbar.component';
 import { NotebookViewsExtension } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViewsExtension';
+import { MaskedLabeledMenuItemActionItem } from 'sql/platform/actions/browser/menuEntryActionViewItem';
 
 export const NOTEBOOK_SELECTOR: string = 'notebook-component';
 
@@ -263,7 +264,13 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 					let errorWithAction = createErrorWithActions(toErrorMessage(error), {
 						actions: [
 							new Action('workbench.files.action.createMissingFile', localize('createFile', "Create File"), undefined, true, () => {
-								return this.textFileService.create(this.notebookParams.notebookUri).then(() => this.editorService.openEditor({
+								let operations = new Array(1);
+								operations[0] = {
+									resource: this.notebookParams.notebookUri,
+									value: undefined,
+									options: undefined
+								};
+								return this.textFileService.create(operations).then(() => this.editorService.openEditor({
 									resource: this.notebookParams.notebookUri,
 									options: {
 										pinned: true // new file gets pinned by default

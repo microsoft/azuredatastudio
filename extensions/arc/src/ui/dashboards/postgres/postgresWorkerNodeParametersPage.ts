@@ -16,13 +16,11 @@ export class PostgresWorkerNodeParametersPage extends PostgresParametersPage {
 	}
 
 	protected get title(): string {
-		// TODO update to loc.workerNodeParameters
-		return loc.nodeParameters;
+		return loc.workerNodeParameters;
 	}
 
 	protected get id(): string {
-		// TODO update to 'postgres-worker-node-parameters'
-		return 'postgres-nodes-parameters';
+		return 'postgres-worker-node-parameters';
 	}
 
 	protected get icon(): { dark: string; light: string; } {
@@ -30,8 +28,7 @@ export class PostgresWorkerNodeParametersPage extends PostgresParametersPage {
 	}
 
 	protected get description(): string {
-		// TODO update to loc.workerNodesParametersDescription
-		return loc.nodeParametersDescription;
+		return loc.workerNodesParametersDescription;
 	}
 
 
@@ -42,7 +39,7 @@ export class PostgresWorkerNodeParametersPage extends PostgresParametersPage {
 	protected async saveParameterEdits(engineSettings: string): Promise<void> {
 		await this._azdataApi.azdata.arc.postgres.server.edit(
 			this._postgresModel.info.name,
-			{ engineSettings: engineSettings },
+			{ workerEngineSettings: engineSettings },
 			this._postgresModel.controllerModel.azdataAdditionalEnvVars,
 			this._postgresModel.controllerModel.controllerContext);
 	}
@@ -50,7 +47,7 @@ export class PostgresWorkerNodeParametersPage extends PostgresParametersPage {
 	protected async resetAllParameters(): Promise<void> {
 		await this._azdataApi.azdata.arc.postgres.server.edit(
 			this._postgresModel.info.name,
-			{ engineSettings: `''`, replaceEngineSettings: true },
+			{ workerEngineSettings: `''`, replaceEngineSettings: true },
 			this._postgresModel.controllerModel.azdataAdditionalEnvVars,
 			this._postgresModel.controllerModel.controllerContext);
 	}
@@ -58,7 +55,7 @@ export class PostgresWorkerNodeParametersPage extends PostgresParametersPage {
 	protected async resetParameter(parameterName: string): Promise<void> {
 		await this._azdataApi.azdata.arc.postgres.server.edit(
 			this._postgresModel.info.name,
-			{ engineSettings: parameterName + '=' },
+			{ workerEngineSettings: parameterName + '=' },
 			this._postgresModel.controllerModel.azdataAdditionalEnvVars,
 			this._postgresModel.controllerModel.controllerContext);
 	}

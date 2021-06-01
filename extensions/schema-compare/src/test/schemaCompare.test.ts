@@ -93,7 +93,7 @@ let showErrorMessageSpy: any;
 let showWarningMessageStub: any;
 let showOpenDialogStub: any;
 
-describe('SchemaCompareMainWindow.results', function (): void {
+describe('SchemaCompareMainWindow.results @DacFx@', function (): void {
 	before(() => {
 		mockExtensionContext = TypeMoq.Mock.ofType<vscode.ExtensionContext>();
 		mockExtensionContext.setup(x => x.extensionPath).returns(() => '');
@@ -370,7 +370,7 @@ describe('SchemaCompareMainWindow.results', function (): void {
 });
 
 let showErrorMessageStub: any;
-describe('SchemaCompareMainWindow.execute', function (): void {
+describe('SchemaCompareMainWindow.execute @DacFx@', function (): void {
 	before(() => {
 		mockExtensionContext = TypeMoq.Mock.ofType<vscode.ExtensionContext>();
 		mockExtensionContext.setup(x => x.extensionPath).returns(() => '');
@@ -507,7 +507,7 @@ describe('SchemaCompareMainWindow.execute', function (): void {
 
 });
 
-describe('SchemaCompareMainWindow.updateSourceAndTarget', function (): void {
+describe('SchemaCompareMainWindow.updateSourceAndTarget @DacFx@', function (): void {
 	before(() => {
 		mockExtensionContext = TypeMoq.Mock.ofType<vscode.ExtensionContext>();
 		mockExtensionContext.setup(x => x.extensionPath).returns(() => '');
@@ -602,7 +602,7 @@ describe('SchemaCompareMainWindow.updateSourceAndTarget', function (): void {
 
 });
 
-describe('SchemaCompareMainWindow: Button clicks', function (): void {
+describe('SchemaCompareMainWindow: Button clicks @DacFx@', function (): void {
 	before(() => {
 		mockExtensionContext = TypeMoq.Mock.ofType<vscode.ExtensionContext>();
 		mockExtensionContext.setup(x => x.extensionPath).returns(() => '');

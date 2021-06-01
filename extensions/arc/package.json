@@ -2,7 +2,7 @@
   "name": "arc",
   "displayName": "%arc.displayName%",
   "description": "%arc.description%",
-  "version": "0.9.2",
+  "version": "0.9.4",
   "publisher": "Microsoft",
   "preview": true,
   "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt",
@@ -572,6 +572,7 @@
                             "source": {
                               "providerId": "arc.controllers",
                               "variableNames": {
+                                "namespace": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_NAMESPACE",
                                 "endpoint": "AZDATA_NB_VAR_CONTROLLER_ENDPOINT",
                                 "username": "AZDATA_NB_VAR_CONTROLLER_USERNAME",
                                 "kubeConfig": "AZDATA_NB_VAR_CONTROLLER_KUBECONFIG",

@@ -722,6 +722,8 @@
 .ads-homepage .header-bottom-nav-tiles {
 	display: flex;
 	flex-wrap: wrap;
+	column-gap: normal;
+	row-gap: normal;
 }
 
 .ads-homepage:not(.XS) .header-bottom-nav-tiles .col{

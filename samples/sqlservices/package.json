@@ -91,12 +91,11 @@
   },
   "dependencies": {
     "fs-extra": "^5.0.0",
-    "handlebars": "^4.5.3",
+    "handlebars": "^4.7.7",
     "vscode-nls": "^4.0.0"
   },
   "devDependencies": {
     "@types/node": "^7.0.43",
-    "@types/azdata": "^1.0.0",
     "@types/vscode": "^1.0.0",
     "braces": "^2.3.2",
     "child-process-promise": "^2.2.1",
@@ -108,7 +107,7 @@
     "gulp-typescript": "^3.2.4",
     "tslint": "^3.14.0",
     "typescript": "^4.1.0-dev.20200824",
-    "url-parse": "^1.4.4",
+    "url-parse": "^1.5.0",
     "vsce": "^1.57.1"
   },
   "repository": {

@@ -162,9 +162,11 @@ export const pythonKernelSpec: azdata.nb.IKernelSpec = {
 	display_name: 'Python 3'
 };
 
-export function writeNotebookToFile(pythonNotebook: azdata.nb.INotebookContents, testName: string): vscode.Uri {
-	let fileName = getFileName(testName);
+export function writeNotebookToFile(pythonNotebook: azdata.nb.INotebookContents, relativeFilePath: string): vscode.Uri {
+	let fileName = getTempFilePath(relativeFilePath);
 	let notebookContentString = JSON.stringify(pythonNotebook);
+	// eslint-disable-next-line no-sync
+	fs.mkdirSync(path.dirname(fileName), { recursive: true });
 	// eslint-disable-next-line no-sync
 	fs.writeFileSync(fileName, notebookContentString);
 	console.log(`Local file is created: '${fileName}'`);
@@ -172,9 +174,11 @@ export function writeNotebookToFile(pythonNotebook: azdata.nb.INotebookContents,
 	return uri;
 }
 
-export function getFileName(testName: string): string {
-	if (testName) {
-		return path.join(os.tmpdir(), testName + '.ipynb');
-	}
-	return undefined;
+/**
+ * Creates the path of a file in the temp directory
+ * @param relativeFilePath The relative path of the file in the temp directory
+ * @returns The full path of the file
+ */
+export function getTempFilePath(relativeFilePath: string): string {
+	return path.join(os.tmpdir(), relativeFilePath + '.ipynb');
 }

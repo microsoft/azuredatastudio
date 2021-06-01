@@ -11,6 +11,7 @@ import * as loc from '../../constants/strings';
 import { getSqlServerName } from '../../api/utils';
 import { EOL } from 'os';
 import * as vscode from 'vscode';
+import { ConfirmCutoverDialog } from './confirmCutoverDialog';
 
 export class MigrationCutoverDialog {
 	private _dialogObject!: azdata.window.Dialog;
@@ -32,6 +33,7 @@ export class MigrationCutoverDialog {
 	private _targetVersion!: azdata.TextComponent;
 	private _migrationStatus!: azdata.TextComponent;
 	private _fullBackupFile!: azdata.TextComponent;
+	private _backupLocation!: azdata.TextComponent;
 	private _lastAppliedLSN!: azdata.TextComponent;
 	private _lastAppliedBackupFile!: azdata.TextComponent;
 	private _lastAppliedBackupTakenOn!: azdata.TextComponent;
@@ -40,11 +42,9 @@ export class MigrationCutoverDialog {
 
 	private fileTable!: azdata.TableComponent;
 
-	private _startCutover!: boolean;
-
 	constructor(migration: MigrationContext) {
 		this._model = new MigrationCutoverDialogModel(migration);
-		this._dialogObject = azdata.window.createModelViewDialog(loc.MIGRATION_CUTOVER, 'MigrationCutoverDialog', 1000);
+		this._dialogObject = azdata.window.createModelViewDialog('', 'MigrationCutoverDialog', 1000);
 	}
 
 	async initialize(): Promise<void> {
@@ -65,17 +65,17 @@ export class MigrationCutoverDialog {
 
 			flexServer.addItem(sourceDatabase.flexContainer, {
 				CSSStyles: {
-					'width': '150px'
+					'width': '200px'
 				}
 			});
 			flexServer.addItem(sourceDetails.flexContainer, {
 				CSSStyles: {
-					'width': '150px'
+					'width': '200px'
 				}
 			});
 			flexServer.addItem(sourceVersion.flexContainer, {
 				CSSStyles: {
-					'width': '150px'
+					'width': '200px'
 				}
 			});
 
@@ -93,26 +93,28 @@ export class MigrationCutoverDialog {
 
 			flexTarget.addItem(targetDatabase.flexContainer, {
 				CSSStyles: {
-					'width': '230px'
+					'width': '200px'
 				}
 			});
 			flexTarget.addItem(targetServer.flexContainer, {
 				CSSStyles: {
-					'width': '230px'
+					'width': '200px'
 				}
 			});
 			flexTarget.addItem(targetVersion.flexContainer, {
 				CSSStyles: {
-					'width': '230px'
+					'width': '200px'
 				}
 			});
 
 			const migrationStatus = this.createInfoField(loc.MIGRATION_STATUS, '');
 			const fullBackupFileOn = this.createInfoField(loc.FULL_BACKUP_FILES, '');
+			const backupLocation = this.createInfoField(loc.BACKUP_LOCATION, '');
 
 
 			this._migrationStatus = migrationStatus.text;
 			this._fullBackupFile = fullBackupFileOn.text;
+			this._backupLocation = backupLocation.text;
 
 			const flexStatus = view.modelBuilder.flexContainer().withLayout({
 				flexFlow: 'column'
@@ -120,18 +122,24 @@ export class MigrationCutoverDialog {
 
 			flexStatus.addItem(migrationStatus.flexContainer, {
 				CSSStyles: {
-					'width': '180px'
+					'width': '200px'
 				}
 			});
 			flexStatus.addItem(fullBackupFileOn.flexContainer, {
 				CSSStyles: {
-					'width': '180px'
+					'width': '200px'
+				}
+			});
+			flexStatus.addItem(backupLocation.flexContainer, {
+				CSSStyles: {
+					'width': '200px'
 				}
 			});
 
 			const lastSSN = this.createInfoField(loc.LAST_APPLIED_LSN, '');
 			const lastAppliedBackup = this.createInfoField(loc.LAST_APPLIED_BACKUP_FILES, '');
 			const lastAppliedBackupOn = this.createInfoField(loc.LAST_APPLIED_BACKUP_FILES_TAKEN_ON, '');
+
 
 			this._lastAppliedLSN = lastSSN.text;
 			this._lastAppliedBackupFile = lastAppliedBackup.text;
@@ -142,22 +150,22 @@ export class MigrationCutoverDialog {
 			}).component();
 			flexFile.addItem(lastSSN.flexContainer, {
 				CSSStyles: {
-					'width': '230px'
+					'width': '200px'
 				}
 			});
 			flexFile.addItem(lastAppliedBackup.flexContainer, {
 				CSSStyles: {
-					'width': '230px'
+					'width': '200px'
 				}
 			});
 			flexFile.addItem(lastAppliedBackupOn.flexContainer, {
 				CSSStyles: {
-					'width': '230px'
+					'width': '200px'
 				}
 			});
 			const flexInfo = view.modelBuilder.flexContainer().withProps({
 				CSSStyles: {
-					'width': '700px'
+					'width': '800px',
 				}
 			}).component();
 
@@ -165,7 +173,7 @@ export class MigrationCutoverDialog {
 				flex: '0',
 				CSSStyles: {
 					'flex': '0',
-					'width': '150px'
+					'width': '200px'
 				}
 			});
 
@@ -173,7 +181,7 @@ export class MigrationCutoverDialog {
 				flex: '0',
 				CSSStyles: {
 					'flex': '0',
-					'width': '230px'
+					'width': '200px'
 				}
 			});
 
@@ -181,7 +189,7 @@ export class MigrationCutoverDialog {
 				flex: '0',
 				CSSStyles: {
 					'flex': '0',
-					'width': '180px'
+					'width': '200px'
 				}
 			});
 
@@ -240,10 +248,16 @@ export class MigrationCutoverDialog {
 			const formBuilder = view.modelBuilder.formContainer().withFormItems(
 				[
 					{
-						component: await this.migrationContainerHeader()
+						component: this.migrationContainerHeader()
+					},
+					{
+						component: this._view.modelBuilder.separator().withProps({ width: '800px' }).component()
 					},
 					{
 						component: flexInfo
+					},
+					{
+						component: this._view.modelBuilder.separator().withProps({ width: '800px' }).component()
 					},
 					{
 						component: this._fileCount
@@ -267,51 +281,72 @@ export class MigrationCutoverDialog {
 
 
 	private migrationContainerHeader(): azdata.FlexContainer {
-		const header = this._view.modelBuilder.flexContainer().withLayout({
+		const sqlDatbaseLogo = this._view.modelBuilder.image().withProps({
+			iconPath: IconPathHelper.sqlDatabaseLogo,
+			iconHeight: '32px',
+			iconWidth: '32px',
+			width: '32px',
+			height: '32px'
 		}).component();
 
 		this._databaseTitleName = this._view.modelBuilder.text().withProps({
 			CSSStyles: {
-				'font-size': 'large',
-				'width': '400px'
+				'font-size': '16px',
+				'font-weight': 'bold',
+				'margin': '0px'
 			},
-			value: this._model._migration.migrationContext.name
+			value: this._model._migration.migrationContext.properties.sourceDatabaseName
 		}).component();
 
-		header.addItem(this._databaseTitleName, {
-			flex: '0',
+		const databaseSubTitle = this._view.modelBuilder.text().withProps({
 			CSSStyles: {
-				'width': '500px'
+				'font-size': '10px',
+				'margin': '5px 0px'
+			},
+			value: loc.DATABASE
+		}).component();
+
+		const titleContainer = this._view.modelBuilder.flexContainer().withItems([
+			this._databaseTitleName,
+			databaseSubTitle
+		]).withLayout({
+			'flexFlow': 'column'
+		}).component();
+
+
+		const titleLogoContainer = this._view.modelBuilder.flexContainer().component();
+
+		titleLogoContainer.addItem(sqlDatbaseLogo, {
+			flex: '0'
+		});
+		titleLogoContainer.addItem(titleContainer, {
+			CSSStyles: {
+				'margin-left': '5px'
 			}
 		});
+
+		const headerActions = this._view.modelBuilder.flexContainer().withLayout({
+		}).component();
 
 		this._cutoverButton = this._view.modelBuilder.button().withProps({
 			iconPath: IconPathHelper.cutover,
 			iconHeight: '14px',
 			iconWidth: '12px',
-			label: 'Start Cutover',
-			height: '55px',
-			width: '100px',
+			label: loc.COMPLETE_CUTOVER,
+			height: '20px',
+			width: '130px',
 			enabled: false
 		}).component();
 
 		this._cutoverButton.onDidClick(async (e) => {
-			if (this._startCutover) {
-				await this._model.startCutover();
-				this.refreshStatus();
-			} else {
-				this._dialogObject.message = {
-					text: loc.CANNOT_START_CUTOVER_ERROR,
-					level: azdata.window.MessageLevel.Error
-				};
-			}
+			await this.refreshStatus();
+			const dialog = new ConfirmCutoverDialog(this._model);
+			await dialog.initialize();
+			await this.refreshStatus();
 		});
 
-		header.addItem(this._cutoverButton, {
-			flex: '0',
-			CSSStyles: {
-				'width': '100px'
-			}
+		headerActions.addItem(this._cutoverButton, {
+			flex: '0'
 		});
 
 		this._cancelButton = this._view.modelBuilder.button().withProps({
@@ -319,19 +354,21 @@ export class MigrationCutoverDialog {
 			iconHeight: '16px',
 			iconWidth: '16px',
 			label: loc.CANCEL_MIGRATION,
-			height: '55px',
-			width: '130px'
+			height: '20px',
+			width: '120px'
 		}).component();
 
 		this._cancelButton.onDidClick((e) => {
-			this.cancelMigration();
+			vscode.window.showInformationMessage(loc.CANCEL_MIGRATION_CONFIRMATION, loc.YES, loc.NO).then(async (v) => {
+				if (v === loc.YES) {
+					await this.cancelMigration();
+					await this.refreshStatus();
+				}
+			});
 		});
 
-		header.addItem(this._cancelButton, {
-			flex: '0',
-			CSSStyles: {
-				'width': '130px'
-			}
+		headerActions.addItem(this._cancelButton, {
+			flex: '0'
 		});
 
 
@@ -340,19 +377,16 @@ export class MigrationCutoverDialog {
 			iconHeight: '16px',
 			iconWidth: '16px',
 			label: 'Refresh',
-			height: '55px',
-			width: '100px'
+			height: '20px',
+			width: '65px'
 		}).component();
 
 		this._refreshButton.onDidClick((e) => {
 			this.refreshStatus();
 		});
 
-		header.addItem(this._refreshButton, {
+		headerActions.addItem(this._refreshButton, {
 			flex: '0',
-			CSSStyles: {
-				'width': '100px'
-			}
 		});
 
 		this._copyDatabaseMigrationDetails = this._view.modelBuilder.button().withProps({
@@ -360,8 +394,8 @@ export class MigrationCutoverDialog {
 			iconHeight: '16px',
 			iconWidth: '16px',
 			label: loc.COPY_MIGRATION_DETAILS,
-			height: '55px',
-			width: '100px'
+			height: '20px',
+			width: '150px'
 		}).component();
 
 		this._copyDatabaseMigrationDetails.onDidClick(async (e) => {
@@ -378,22 +412,34 @@ export class MigrationCutoverDialog {
 			vscode.window.showInformationMessage(loc.DETAILS_COPIED);
 		});
 
-		header.addItem(this._copyDatabaseMigrationDetails, {
+		headerActions.addItem(this._copyDatabaseMigrationDetails, {
 			flex: '0',
 			CSSStyles: {
-				'width': '100px'
+				'margin-left': '5px'
 			}
 		});
 
 		this._refreshLoader = this._view.modelBuilder.loadingComponent().withProps({
 			loading: false,
-			height: '55px'
+			height: '15px'
 		}).component();
 
-		header.addItem(this._refreshLoader, {
+		headerActions.addItem(this._refreshLoader, {
 			flex: '0',
 			CSSStyles: {
-				'margin-top': '15px'
+				'margin-left': '16px'
+			}
+		});
+
+		const header = this._view.modelBuilder.flexContainer().withItems([
+			titleLogoContainer
+		]).withLayout({
+			flexFlow: 'column'
+		}).component();
+
+		header.addItem(headerActions, {
+			'CSSStyles': {
+				'margin-top': '16px'
 			}
 		});
 
@@ -461,19 +507,32 @@ export class MigrationCutoverDialog {
 
 			this._sourceDatabase.value = sourceDatabaseName;
 			this._serverName.value = sqlServerName;
-			this._serverVersion.value = `${sqlServerVersion}
-			${sqlServerInfo.serverVersion}`;
+			this._serverVersion.value = `${sqlServerVersion} ${sqlServerInfo.serverVersion}`;
 
 			this._targetDatabase.value = targetDatabaseName;
 			this._targetServer.value = targetServerName;
 			this._targetVersion.value = targetServerVersion;
 
-			this._migrationStatus.value = migrationStatusTextValue;
-			this._fullBackupFile.value = fullBackupFileName!;
+			this._migrationStatus.value = migrationStatusTextValue ?? '---';
+			this._fullBackupFile.value = fullBackupFileName! ?? '-';
+			let backupLocation;
 
-			this._lastAppliedLSN.value = lastAppliedSSN!;
-			this._lastAppliedBackupFile.value = this._model.migrationStatus.properties.migrationStatusDetails?.lastRestoredFilename;
-			this._lastAppliedBackupTakenOn.value = lastAppliedBackupFileTakenOn! ? new Date(lastAppliedBackupFileTakenOn).toLocaleString() : '';
+			const isBlobMigration = this._model._migration.migrationContext.properties.backupConfiguration.sourceLocation?.azureBlob !== undefined;
+			// Displaying storage accounts and blob container for azure blob backups.
+			if (isBlobMigration) {
+				backupLocation = `${this._model._migration.migrationContext.properties.backupConfiguration.sourceLocation?.azureBlob?.storageAccountResourceId.split('/').pop()} - ${this._model._migration.migrationContext.properties.backupConfiguration.sourceLocation?.azureBlob?.blobContainerName}`;
+				this._fileCount.display = 'none';
+				this.fileTable.updateCssStyles({
+					'display': 'none'
+				});
+			} else {
+				backupLocation = this._model._migration.migrationContext.properties.backupConfiguration?.sourceLocation?.fileShare?.path! ?? '-';
+			}
+			this._backupLocation.value = backupLocation ?? '-';
+
+			this._lastAppliedLSN.value = lastAppliedSSN! ?? '-';
+			this._lastAppliedBackupFile.value = this._model.migrationStatus.properties.migrationStatusDetails?.lastRestoredFilename ?? '-';
+			this._lastAppliedBackupTakenOn.value = lastAppliedBackupFileTakenOn! ? new Date(lastAppliedBackupFileTakenOn).toLocaleString() : '-';
 
 			this._fileCount.value = loc.ACTIVE_BACKUP_FILES_ITEMS(tableData.length);
 
@@ -490,13 +549,12 @@ export class MigrationCutoverDialog {
 					row.lastLSN
 				];
 			});
-			if (this._model.migrationStatus.properties.migrationStatusDetails?.isFullBackupRestored) {
-				this._startCutover = true;
-			}
 
 			if (migrationStatusTextValue === MigrationStatus.InProgress) {
-				const fileNotRestored = await tableData.some(file => file.status !== 'Restored');
-				this._cutoverButton.enabled = !fileNotRestored;
+				const restoredCount = (this._model.migrationStatus.properties.migrationStatusDetails?.activeBackupSets?.filter(a => a.listOfBackupFiles[0].status === 'Restored'))?.length ?? 0;
+				if (restoredCount > 0 || isBlobMigration) {
+					this._cutoverButton.enabled = true;
+				}
 				this._cancelButton.enabled = true;
 			} else {
 				this._cutoverButton.enabled = false;

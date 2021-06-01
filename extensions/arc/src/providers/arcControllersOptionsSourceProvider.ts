@@ -30,6 +30,7 @@ export class ArcControllersOptionsSourceProvider implements rd.IOptionsSourcePro
 		const controller = (await getRegisteredDataControllers(this._treeProvider)).find(ci => ci.label === controllerLabel);
 		throwUnless(controller !== undefined, loc.noControllerInfoFound(controllerLabel));
 		switch (variableName) {
+			case 'namespace': return controller.info.namespace || '';
 			case 'endpoint': return controller.info.endpoint || '';
 			case 'username': return controller.info.username;
 			case 'kubeConfig': return controller.info.kubeConfigFilePath;
@@ -50,6 +51,7 @@ export class ArcControllersOptionsSourceProvider implements rd.IOptionsSourcePro
 
 	public getIsPassword(variableName: string): boolean {
 		switch (variableName) {
+			case 'namespace': return false;
 			case 'endpoint': return false;
 			case 'username': return false;
 			case 'kubeConfig': return false;

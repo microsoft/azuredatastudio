@@ -789,6 +789,13 @@ declare module 'azdata' {
 		delete?: boolean;
 	}
 
+	export enum AzureResource {
+		/**
+		 * Azure Log Analytics
+		 */
+		AzureLogAnalytics = 8
+	}
+
 	export interface ButtonProperties {
 		/**
 		* Specifies whether to use expanded layout or not.
@@ -808,6 +815,13 @@ declare module 'azdata' {
 		File = 'File',
 		Normal = 'Normal',
 		Informational = 'Informational'
+	}
+
+	export interface InputBoxProperties {
+		/**
+		 * The maximum number of characters allowed in the input box.
+		 */
+		maxLength?: number;
 	}
 
 	export namespace workspace {

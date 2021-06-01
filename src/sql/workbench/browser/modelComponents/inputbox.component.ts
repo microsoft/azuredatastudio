@@ -222,6 +222,7 @@ export default class InputBoxComponent extends ComponentBase<azdata.InputBoxProp
 		input.setAriaLabel(this.ariaLabel);
 		input.setPlaceHolder(this.placeHolder);
 		input.setEnabled(this.enabled);
+		input.setMaxLength(this.maxLength);
 		this.layoutInputBox();
 		if (this.multiline) {
 			if (isNumber(this.rows)) {
@@ -345,6 +346,10 @@ export default class InputBoxComponent extends ComponentBase<azdata.InputBoxProp
 
 	public set stopEnterPropagation(newValue: boolean) {
 		this.setPropertyFromUI<boolean>((props, value) => props.stopEnterPropagation = value, newValue);
+	}
+
+	public get maxLength(): number | undefined {
+		return this.getPropertyOrDefault<number | undefined>((props) => props.maxLength, undefined);
 	}
 
 	public focus(): void {

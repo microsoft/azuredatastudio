@@ -10,15 +10,10 @@ import { IContextMenuService } from 'vs/platform/contextview/browser/contextView
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IViewletViewOptions } from 'vs/workbench/browser/parts/views/viewsViewlet';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { IAction } from 'vs/base/common/actions';
 import { ServerTreeView } from 'sql/workbench/contrib/objectExplorer/browser/serverTreeView';
-import {
-	ActiveConnectionsFilterAction,
-	AddServerAction, AddServerGroupAction
-} from 'sql/workbench/services/objectExplorer/browser/connectionTreeAction';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
-import { ViewPane, IViewPaneOptions } from 'vs/workbench/browser/parts/views/viewPaneContainer';
+import { ViewPane, IViewPaneOptions } from 'vs/workbench/browser/parts/views/viewPane';
 import { IViewDescriptorService } from 'vs/workbench/common/views';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
@@ -33,9 +28,6 @@ export class ConnectionViewletPanel extends ViewPane {
 
 	private _root?: HTMLElement;
 	private _serverTreeView: ServerTreeView;
-	private _addServerAction: IAction;
-	private _addServerGroupAction: IAction;
-	private _activeConnectionsFilterAction: ActiveConnectionsFilterAction;
 
 	constructor(
 		private options: IViewletViewOptions,
@@ -52,18 +44,11 @@ export class ConnectionViewletPanel extends ViewPane {
 		@ITelemetryService telemetryService: ITelemetryService,
 	) {
 		super({ ...(options as IViewPaneOptions) }, keybindingService, contextMenuService, configurationService, contextKeyService, viewDescriptorService, instantiationService, opener, themeService, telemetryService);
-		this._addServerAction = this.instantiationService.createInstance(AddServerAction,
-			AddServerAction.ID,
-			AddServerAction.LABEL);
-		this._addServerGroupAction = this.instantiationService.createInstance(AddServerGroupAction,
-			AddServerGroupAction.ID,
-			AddServerGroupAction.LABEL);
-		this._serverTreeView = <any>this.objectExplorerService.getServerTreeView() as ServerTreeView;
+		this._serverTreeView = this.objectExplorerService.getServerTreeView() as ServerTreeView;
 		if (!this._serverTreeView) {
 			this._serverTreeView = this.instantiationService.createInstance(ServerTreeView);
 			this.objectExplorerService.registerServerTreeView(this._serverTreeView);
 		}
-		this._activeConnectionsFilterAction = this._serverTreeView.activeConnectionsFilterAction;
 	}
 
 	protected renderHeader(container: HTMLElement): void {
@@ -112,14 +97,6 @@ export class ConnectionViewletPanel extends ViewPane {
 
 	count(): number {
 		return 0;
-	}
-
-	public getActions(): IAction[] {
-		return [
-			this._addServerAction,
-			this._addServerGroupAction,
-			this._activeConnectionsFilterAction
-		];
 	}
 
 	public clearSearch() {

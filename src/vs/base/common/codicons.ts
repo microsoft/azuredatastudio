@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { SqlIconId } from 'sql/base/common/codicons';
 import { codiconStartMarker } from 'vs/base/common/codicon';
 import { Emitter, Event } from 'vs/base/common/event';
 import { localize } from 'vs/nls';
@@ -61,8 +62,57 @@ export class Codicon implements CSSIcon {
 	public get cssSelector() { return '.codicon.codicon-' + this.id; }
 }
 
+export function getClassNamesArray(id: string, modifier?: string) {
+	const classNames = ['codicon', 'codicon-' + id];
+	if (modifier) {
+		classNames.push('codicon-modifier-' + modifier);
+	}
+	return classNames;
+}
+
 export interface CSSIcon {
-	readonly classNames: string;
+	readonly id: string;
+}
+
+
+export namespace CSSIcon {
+	export const iconNameExpression = '[A-Za-z0-9\\-]+';
+	export const iconModifierExpression = '~[A-Za-z]+';
+
+	const cssIconIdRegex = new RegExp(`^(${iconNameExpression})(${iconModifierExpression})?$`);
+
+	export function asClassNameArray(icon: CSSIcon): string[] {
+		if (icon instanceof Codicon) {
+			return ['codicon', 'codicon-' + icon.id];
+		}
+		const match = cssIconIdRegex.exec(icon.id);
+		if (!match) {
+			return asClassNameArray(Codicon.error);
+		}
+		let [, id, modifier] = match;
+
+		// {{SQL CARBON EDIT}} Modifying method to not add 'codicon' in front of sql carbon icons.
+		let sqlCarbonIcons: string[] = [SqlIconId.book, SqlIconId.dataExplorer, SqlIconId.activeConnectionsAction, SqlIconId.addServerAction, SqlIconId.addServerGroupAction, SqlIconId.serverPage];
+		if (sqlCarbonIcons.includes(id)) {
+			return ['codicon', id];
+			// {{SQL CARBON EDIT}} End of edit
+		} else {
+			const classNames = ['codicon', 'codicon-' + id];
+			if (modifier) {
+				classNames.push('codicon-modifier-' + modifier.substr(1));
+			}
+			return classNames;
+		}
+
+	}
+
+	export function asClassName(icon: CSSIcon): string {
+		return asClassNameArray(icon).join(' ');
+	}
+
+	export function asCSSSelector(icon: CSSIcon): string {
+		return '.' + asClassNameArray(icon).join('.');
+	}
 }
 
 
@@ -498,6 +548,14 @@ export namespace Codicon {
 	export const passFilled = new Codicon('pass-filled', { character: '\\ebb3' });
 	export const circleLargeFilled = new Codicon('circle-large-filled', { character: '\\ebb4' });
 	export const circleLargeOutline = new Codicon('circle-large-outline', { character: '\\ebb5' });
+	export const combine = new Codicon('combine', { character: '\\ebb6' });
+	export const gather = new Codicon('gather', { character: '\\ebb6' });
+	export const table = new Codicon('table', { character: '\\ebb7' });
+	export const variableGroup = new Codicon('variable-group', { character: '\\ebb8' });
+	export const typeHierarchy = new Codicon('type-hierarchy', { character: '\\ebb9' });
+	export const typeHierarchySub = new Codicon('type-hierarchy-sub', { character: '\\ebba' });
+	export const typeHierarchySuper = new Codicon('type-hierarchy-super', { character: '\\ebbb' });
+	export const gitPullRequestCreate = new Codicon('git-pull-request-create', { character: '\\ebbc' });
 
 	export const dropDownButton = new Codicon('drop-down-button', Codicon.chevronDown.definition, localize('dropDownButton', 'Icon for drop down buttons.'));
 }

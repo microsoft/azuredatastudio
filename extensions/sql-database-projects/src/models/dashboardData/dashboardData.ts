@@ -19,6 +19,17 @@ export class DashboardData {
 	}
 }
 
+export class PublishData extends DashboardData {
+	public targetServer: string;
+	public targetDatabase: string;
+
+	constructor(projectFile: string, status: Status, target: string, startDate: string, targetDatabase: string, targetServer: string) {
+		super(projectFile, status, target, startDate);
+		this.targetDatabase = targetDatabase;
+		this.targetServer = targetServer;
+	}
+}
+
 export enum Status {
 	success,
 	failed,

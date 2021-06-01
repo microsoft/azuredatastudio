@@ -26,6 +26,7 @@ export const enum WebviewMessageChannels {
 	didLoad = 'did-load',
 	doUpdateState = 'do-update-state',
 	doReload = 'do-reload',
+	setConfirmBeforeClose = 'set-confirm-before-close',
 	loadResource = 'load-resource',
 	loadLocalhost = 'load-localhost',
 	webviewReady = 'webview-ready',
@@ -80,7 +81,7 @@ export abstract class BaseWebview<T extends HTMLElement> extends Disposable {
 
 	constructor(
 		public readonly id: string,
-		options: WebviewOptions,
+		private readonly options: WebviewOptions,
 		contentOptions: WebviewContentOptions,
 		public extension: WebviewExtensionDescription | undefined,
 		private readonly webviewThemeDataProvider: WebviewThemeDataProvider,
@@ -312,7 +313,11 @@ export abstract class BaseWebview<T extends HTMLElement> extends Disposable {
 	}
 
 	protected style(): void {
-		const { styles, activeTheme, themeLabel } = this.webviewThemeDataProvider.getWebviewThemeData();
+		let { styles, activeTheme, themeLabel } = this.webviewThemeDataProvider.getWebviewThemeData();
+		if (this.options.transformCssVariables) {
+			styles = this.options.transformCssVariables(styles);
+		}
+
 		this._send('styles', { styles, activeTheme, themeName: themeLabel });
 	}
 

@@ -10,7 +10,7 @@ import { URI } from 'vs/base/common/uri';
 import { localize } from 'vs/nls';
 
 import * as notebookUtils from 'sql/workbench/services/notebook/browser/models/notebookUtils';
-import { CellTypes, CellType, NotebookChangeType } from 'sql/workbench/services/notebook/common/contracts';
+import { CellTypes, CellType, NotebookChangeType, TextCellEditModes } from 'sql/workbench/services/notebook/common/contracts';
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
 import { ICellModel, IOutputChangedEvent, CellExecutionState, ICellModelOptions, ITableUpdatedEvent, CellEditModes } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
@@ -34,7 +34,7 @@ import { IInsightOptions } from 'sql/workbench/common/editor/query/chartState';
 
 let modelId = 0;
 const ads_execute_command = 'ads_execute_command';
-
+const validBase64OctetStreamRegex = /^data:application\/octet-stream;base64,(?:[A-Za-z0-9+\/]{4})*(?:[A-Za-z0-9+\/]{2}==|[A-Za-z0-9+\/]{3}=|[A-Za-z0-9+\/]{4})/;
 export interface QueryResultId {
 	batchId: number;
 	id: number;
@@ -77,7 +77,7 @@ export class CellModel extends Disposable implements ICellModel {
 	private _showPreview: boolean = true;
 	private _showMarkdown: boolean = false;
 	private _cellSourceChanged: boolean = false;
-	private _defaultToWYSIWYG: boolean;
+	private _defaultTextEditMode: string;
 	private _isParameter: boolean;
 	private _onParameterStateChanged = new Emitter<boolean>();
 	private _isInjectedParameter: boolean;
@@ -149,6 +149,27 @@ export class CellModel extends Disposable implements ICellModel {
 		return this._attachments;
 	}
 
+	addAttachment(mimeType: string, base64Encoding: string, name: string): void {
+		// base64Encoded value looks like: data:application/octet-stream;base64,<base64Value>
+		// get the <base64Value> from the string
+		let index = base64Encoding.indexOf('base64,');
+		if (this.isValidBase64OctetStream(base64Encoding)) {
+			base64Encoding = base64Encoding.substring(index + 7);
+			let attachment: nb.ICellAttachment = {};
+			attachment[mimeType] = base64Encoding;
+			if (!this._attachments) {
+				this._attachments = {};
+			}
+			// TO DO: Check if name already exists and message the user?
+			this._attachments[name] = attachment;
+			this.sendChangeToNotebook(NotebookChangeType.CellMetadataUpdated);
+		}
+	}
+
+	private isValidBase64OctetStream(base64Image: string): boolean {
+		return base64Image && validBase64OctetStreamRegex.test(base64Image);
+	}
+
 	public get isEditMode(): boolean {
 		return this._isEditMode;
 	}
@@ -195,7 +216,8 @@ export class CellModel extends Disposable implements ICellModel {
 	public set isEditMode(isEditMode: boolean) {
 		this._isEditMode = isEditMode;
 		if (this._isEditMode) {
-			this.showMarkdown = !this._defaultToWYSIWYG;
+			this.showPreview = this._defaultTextEditMode !== TextCellEditModes.Markdown;
+			this.showMarkdown = this._defaultTextEditMode !== TextCellEditModes.RichText;
 		}
 		this._onCellModeChanged.fire(this._isEditMode);
 		// Note: this does not require a notebook update as it does not change overall state
@@ -362,8 +384,8 @@ export class CellModel extends Disposable implements ICellModel {
 		this._onCellMarkdownChanged.fire(this._showMarkdown);
 	}
 
-	public get defaultToWYSIWYG(): boolean {
-		return this._defaultToWYSIWYG;
+	public get defaultTextEditMode(): string {
+		return this._defaultTextEditMode;
 	}
 
 	public get cellSourceChanged(): boolean {
@@ -1038,18 +1060,16 @@ export class CellModel extends Disposable implements ICellModel {
 
 	private populatePropertiesFromSettings() {
 		if (this._configurationService) {
-			const enableWYSIWYGByDefaultKey = 'notebook.setRichTextViewByDefault';
-			this._defaultToWYSIWYG = this._configurationService.getValue(enableWYSIWYGByDefaultKey);
-			if (!this._defaultToWYSIWYG) {
-				this.showMarkdown = true;
-			}
+			const defaultTextModeKey = 'notebook.defaultTextEditMode';
+			this._defaultTextEditMode = this._configurationService.getValue(defaultTextModeKey);
+
 			const allowADSCommandsKey = 'notebook.allowAzureDataStudioCommands';
 			this._isCommandExecutionSettingEnabled = this._configurationService.getValue(allowADSCommandsKey);
 			this._register(this._configurationService.onDidChangeConfiguration(e => {
 				if (e.affectsConfiguration(allowADSCommandsKey)) {
 					this._isCommandExecutionSettingEnabled = this._configurationService.getValue(allowADSCommandsKey);
-				} else if (e.affectsConfiguration(enableWYSIWYGByDefaultKey)) {
-					this._defaultToWYSIWYG = this._configurationService.getValue(enableWYSIWYGByDefaultKey);
+				} else if (e.affectsConfiguration(defaultTextModeKey)) {
+					this._defaultTextEditMode = this._configurationService.getValue(defaultTextModeKey);
 				}
 			}));
 		}

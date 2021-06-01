@@ -9,7 +9,8 @@ import { MigrationContext, MigrationLocalStorage } from '../models/migrationLoca
 import * as loc from '../constants/strings';
 import { IconPath, IconPathHelper } from '../constants/iconPathHelper';
 import { MigrationStatusDialog } from '../dialog/migrationStatus/migrationStatusDialog';
-import { MigrationCategory } from '../dialog/migrationStatus/migrationStatusDialogModel';
+import { AdsMigrationStatus } from '../dialog/migrationStatus/migrationStatusDialogModel';
+import { filterMigrations } from '../api/utils';
 
 interface IActionMetadata {
 	title?: string,
@@ -39,6 +40,8 @@ export class DashboardWidget {
 	private _inProgressMigrationButton!: StatusCard;
 	private _inProgressWarningMigrationButton!: StatusCard;
 	private _successfulMigrationButton!: StatusCard;
+	private _failedMigrationButton!: StatusCard;
+	private _completingMigrationButton!: StatusCard;
 	private _notStartedMigrationCard!: StatusCard;
 	private _migrationStatusMap: Map<string, MigrationContext[]> = new Map();
 	private _viewAllMigrationsButton!: azdata.ButtonComponent;
@@ -212,7 +215,7 @@ export class DashboardWidget {
 			height: maxHeight,
 			iconHeight: 32,
 			iconPath: taskMetaData.iconPath,
-			iconWidth: 36,
+			iconWidth: 32,
 			label: taskMetaData.title,
 			title: taskMetaData.title,
 			width: maxWidth,
@@ -233,15 +236,9 @@ export class DashboardWidget {
 		this._migrationStatusCardLoadingContainer.loading = true;
 		try {
 			this.setCurrentMigrations(await this.getMigrations());
-			const migrationStatus = await this.getCurrentMigrations();
-			const inProgressMigrations = migrationStatus.filter((value) => {
-				const status = value.migrationContext.properties.migrationStatus;
-				const provisioning = value.migrationContext.properties.provisioningState;
-				return status === 'InProgress' || status === 'Creating' || status === 'Completing' || provisioning === 'Creating';
-			});
-
+			const migrations = await this.getCurrentMigrations();
+			const inProgressMigrations = filterMigrations(migrations, AdsMigrationStatus.ONGOING);
 			let warningCount = 0;
-
 			for (let i = 0; i < inProgressMigrations.length; i++) {
 				if (
 					inProgressMigrations[i].asyncOperationResult?.error?.message ||
@@ -252,7 +249,6 @@ export class DashboardWidget {
 					warningCount += 1;
 				}
 			}
-
 			if (warningCount > 0) {
 				this._inProgressWarningMigrationButton.warningText!.value = loc.MIGRATION_INPROGRESS_WARNING(warningCount);
 				this._inProgressMigrationButton.container.display = 'none';
@@ -261,22 +257,32 @@ export class DashboardWidget {
 				this._inProgressMigrationButton.container.display = 'inline';
 				this._inProgressWarningMigrationButton.container.display = 'none';
 			}
+
 			this._inProgressMigrationButton.count.value = inProgressMigrations.length.toString();
 			this._inProgressWarningMigrationButton.count.value = inProgressMigrations.length.toString();
 
-			const successfulMigration = migrationStatus.filter((value) => {
-				const status = value.migrationContext.properties.migrationStatus;
-				return status === 'Succeeded';
-			});
+			const successfulMigration = filterMigrations(migrations, AdsMigrationStatus.SUCCEEDED);
 
 			this._successfulMigrationButton.count.value = successfulMigration.length.toString();
-			const currentConnection = (await azdata.connection.getCurrentConnection());
-			const migrationDatabases = new Set(
-				migrationStatus.map((value) => {
-					return value.migrationContext.properties.sourceDatabaseName;
-				}));
-			const serverDatabases = await azdata.connection.listDatabases(currentConnection.connectionId);
-			this._notStartedMigrationCard.count.value = (serverDatabases.length - migrationDatabases.size).toString();
+
+			const failedMigrations = filterMigrations(migrations, AdsMigrationStatus.FAILED);
+			const failedCount = failedMigrations.length;
+			if (failedCount > 0) {
+				this._failedMigrationButton.container.display = 'inline';
+				this._failedMigrationButton.count.value = failedMigrations.length.toString();
+			} else {
+				this._failedMigrationButton.container.display = 'none';
+			}
+
+			const completingCutoverMigrations = filterMigrations(migrations, AdsMigrationStatus.COMPLETING);
+			const cutoverCount = completingCutoverMigrations.length;
+			if (cutoverCount > 0) {
+				this._completingMigrationButton.container.display = 'inline';
+				this._completingMigrationButton.count.value = cutoverCount.toString();
+			} else {
+				this._completingMigrationButton.container.display = 'none';
+			}
+
 		} catch (error) {
 			console.log(error);
 		} finally {
@@ -498,7 +504,7 @@ export class DashboardWidget {
 		const statusContainer = view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'column',
 			width: '400px',
-			height: '280px',
+			height: '350px',
 			justifyContent: 'flex-start',
 		}).withProps({
 			CSSStyles: {
@@ -527,7 +533,7 @@ export class DashboardWidget {
 
 		this._viewAllMigrationsButton.onDidClick(async (e) => {
 			const migrationStatus = await this.getCurrentMigrations();
-			new MigrationStatusDialog(migrationStatus ? migrationStatus : await this.getMigrations(), MigrationCategory.ALL).initialize();
+			new MigrationStatusDialog(migrationStatus ? migrationStatus : await this.getMigrations(), AdsMigrationStatus.ALL).initialize();
 		});
 
 		const refreshButton = view.modelBuilder.hyperlink().withProps({
@@ -581,7 +587,7 @@ export class DashboardWidget {
 			loc.MIGRATION_IN_PROGRESS
 		);
 		this._inProgressMigrationButton.container.onDidClick(async (e) => {
-			const dialog = new MigrationStatusDialog(await this.getCurrentMigrations(), MigrationCategory.ONGOING);
+			const dialog = new MigrationStatusDialog(await this.getCurrentMigrations(), AdsMigrationStatus.ONGOING);
 			dialog.initialize();
 		});
 
@@ -595,7 +601,7 @@ export class DashboardWidget {
 			''
 		);
 		this._inProgressWarningMigrationButton.container.onDidClick(async (e) => {
-			const dialog = new MigrationStatusDialog(await this.getCurrentMigrations(), MigrationCategory.ONGOING);
+			const dialog = new MigrationStatusDialog(await this.getCurrentMigrations(), AdsMigrationStatus.ONGOING);
 			dialog.initialize();
 		});
 
@@ -608,11 +614,36 @@ export class DashboardWidget {
 			loc.MIGRATION_COMPLETED
 		);
 		this._successfulMigrationButton.container.onDidClick(async (e) => {
-			const dialog = new MigrationStatusDialog(await this.getCurrentMigrations(), MigrationCategory.SUCCEEDED);
+			const dialog = new MigrationStatusDialog(await this.getCurrentMigrations(), AdsMigrationStatus.SUCCEEDED);
 			dialog.initialize();
 		});
 		this._migrationStatusCardsContainer.addItem(
 			this._successfulMigrationButton.container
+		);
+
+
+		this._completingMigrationButton = this.createStatusCard(
+			IconPathHelper.completingCutover,
+			loc.MIGRATION_CUTOVER_CARD
+		);
+		this._completingMigrationButton.container.onDidClick(async (e) => {
+			const dialog = new MigrationStatusDialog(await this.getCurrentMigrations(), AdsMigrationStatus.COMPLETING);
+			dialog.initialize();
+		});
+		this._migrationStatusCardsContainer.addItem(
+			this._completingMigrationButton.container
+		);
+
+		this._failedMigrationButton = this.createStatusCard(
+			IconPathHelper.error,
+			loc.MIGRATION_FAILED
+		);
+		this._failedMigrationButton.container.onDidClick(async (e) => {
+			const dialog = new MigrationStatusDialog(await this.getCurrentMigrations(), AdsMigrationStatus.FAILED);
+			dialog.initialize();
+		});
+		this._migrationStatusCardsContainer.addItem(
+			this._failedMigrationButton.container
 		);
 
 		this._notStartedMigrationCard = this.createStatusCard(
@@ -650,7 +681,7 @@ export class DashboardWidget {
 		const linksContainer = view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'column',
 			width: '400px',
-			height: '280px',
+			height: '350px',
 			justifyContent: 'flex-start',
 		}).withProps({
 			CSSStyles: {

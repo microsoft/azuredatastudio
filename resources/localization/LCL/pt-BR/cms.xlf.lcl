@@ -80,10 +80,13 @@
       </Item>
       <Item ItemId=";extensions/cms/out/cmsResource/cmsResourceCommands.cms.errors.azureNotAllowed" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Azure SQL Database Servers cannot be used as Central Management Servers]]></Val>
+          <Val><![CDATA[Azure SQL Servers cannot be used as Central Management Servers]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Os Servidores de Banco de Dados SQL do Azure não podem ser usados como Servidores de Gerenciamento Central]]></Val>
+            <Val><![CDATA[Os Servidores SQL do Azure não podem ser usados como Servidores de Gerenciamento Central]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Azure SQL Database Servers cannot be used as Central Management Servers]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -137,6 +140,15 @@
           <Val><![CDATA[No resources found]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Nenhum recurso encontrado]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/cms/out/cmsResource/tree/treeProvider.cms.resource.tree.treeProvider.loadError" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Unexpected error occurred while loading saved servers {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Erro inesperado durante o carregamento de servidores salvos {0}]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

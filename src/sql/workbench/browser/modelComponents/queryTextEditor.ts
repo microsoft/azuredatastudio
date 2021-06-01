@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IEditorOptions, EditorOption, InDiffEditorState } from 'vs/editor/common/config/editorOptions';
+import { IEditorOptions, EditorOption } from 'vs/editor/common/config/editorOptions';
 import * as nls from 'vs/nls';
 import * as DOM from 'vs/base/browser/dom';
 import { ResourceEditorModel } from 'vs/workbench/common/editor/resourceEditorModel';
@@ -58,7 +58,7 @@ export class QueryTextEditor extends BaseTextEditor {
 	protected getConfigurationOverrides(): IEditorOptions {
 		const options = super.getConfigurationOverrides();
 		if (this.input) {
-			options.inDiffEditor = InDiffEditorState.None;
+			options.inDiffEditor = false;
 			options.scrollBeyondLastLine = false;
 			options.folding = false;
 			options.renderIndentGuides = false;

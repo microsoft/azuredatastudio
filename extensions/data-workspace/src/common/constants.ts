@@ -18,12 +18,14 @@ export const OpenWorkspace = localize('dataworkspace.openWorkspace', "Open Works
 export const CreateWorkspaceConfirmation = localize('dataworkspace.createWorkspaceConfirmation', "A workspace will be created and opened in order to open project. Azure Data Studio will restart and if there is a folder currently open, it will be closed.");
 export const EnterWorkspaceConfirmation = localize('dataworkspace.enterWorkspaceConfirmation', "To open this workspace, Azure Data Studio will restart. If there is a workspace or folder currently open, it will be closed.");
 export const WorkspaceContainsNotAddedProjects = localize('dataworkspace.workspaceContainsNotAddedProjects', "The current workspace contains one or more projects that have not been added to the workspace. Use the 'Open existing' dialog to add projects to the projects pane.");
-export const LaunchOpenExisitingDialog = localize('dataworkspace.launchOpenExistingDialog', "Launch Open existing dialog");
-export const DoNotShowAgain = localize('dataworkspace.doNotShowAgain', "Do not show again");
-export const ProjectsFailedToLoad = localize('dataworkspace.projectsFailedToLoad', "Some projects failed to load. Please open console for more information");
+export const LaunchOpenExisitingDialog = localize('dataworkspace.launchOpenExistingDialog', "Launch 'Open Existing' Dialog");
+export const DoNotAskAgain = localize('dataworkspace.doNotAskAgain', "Don't Ask Again");
+export const ProjectsFailedToLoad = localize('dataworkspace.projectsFailedToLoad', "Some projects failed to load. To view more details, [open the developer console](command:workbench.action.toggleDevTools)");
 export const fileDoesNotExist = (name: string): string => { return localize('fileDoesNotExist', "File '{0}' doesn't exist", name); };
 export const projectNameNull = localize('projectNameNull', "Project name is null");
 export const noPreviousData = (tableName: string): string => { return localize('noPreviousData', "Prior {0} for the current project will appear here, please run to see the results.", tableName); };
+export const gitCloneMessage = (url: string): string => { return localize('gitCloneMessage', "Cloning git repository '{0}'...", url); };
+export const gitCloneError = localize('gitCloneError', "Error during git clone. View git output for more details");
 
 // config settings
 export const projectsConfigurationKey = 'projects';

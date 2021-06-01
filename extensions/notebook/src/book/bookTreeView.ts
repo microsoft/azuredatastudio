@@ -16,7 +16,7 @@ import { Deferred } from '../common/promise';
 import { IBookTrustManager, BookTrustManager } from './bookTrustManager';
 import * as loc from '../common/localizedConstants';
 import * as glob from 'fast-glob';
-import { getPinnedNotebooks, confirmMessageDialog, getNotebookType, FileExtension } from '../common/utils';
+import { getPinnedNotebooks, confirmMessageDialog, getNotebookType, FileExtension, IPinnedNotebook } from '../common/utils';
 import { IBookPinManager, BookPinManager } from './bookPinManager';
 import { BookTocManager, IBookTocManager, quickPickResults } from './bookTocManager';
 import { CreateBookDialog } from '../dialog/createBookDialog';
@@ -68,7 +68,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 				book && // The notebook is part of a book in the viewlet (otherwise nothing to reveal)
 				(this._openAsUntitled ? notebookPath?.scheme === 'untitled' : notebookPath?.scheme !== 'untitled')) // The notebook is of the correct type for this tree view
 			{
-				await this.revealDocumentInTreeView(notebookPath);
+				await this.revealDocumentInTreeView(notebookPath, true, true);
 			}
 		});
 		this._extensionContext.subscriptions.push(azdata.nb.registerNavigationProvider(this));
@@ -78,7 +78,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		if (this.viewId === constants.PINNED_BOOKS_VIEWID) {
 			await Promise.all(getPinnedNotebooks().map(async (notebook) => {
 				try {
-					await this.createAndAddBookModel(notebook.notebookPath, true, notebook.bookPath);
+					await this.createAndAddBookModel(notebook.notebookPath, true, notebook);
 				} catch {
 					// no-op, not all workspace folders are going to be valid books
 				}
@@ -254,8 +254,8 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	async addNotebookToPinnedView(bookItem: BookTreeItem): Promise<void> {
 		let notebookPath: string = bookItem.book.contentPath;
 		if (notebookPath) {
-			let rootPath: string = bookItem.book.root ? bookItem.book.root : '';
-			await this.createAndAddBookModel(notebookPath, true, rootPath);
+			let notebookDetails: IPinnedNotebook = bookItem.book.root ? { bookPath: bookItem.book.root, notebookPath: notebookPath, title: bookItem.book.title } : { notebookPath: notebookPath };
+			await this.createAndAddBookModel(notebookPath, true, notebookDetails);
 		}
 	}
 
@@ -318,9 +318,9 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	 * @param isNotebook A boolean value to know we are creating a model for a notebook or a book
 	 * @param notebookBookRoot For pinned notebooks we need to know if the notebook is part of a book or it's a standalone notebook
 	 */
-	private async createAndAddBookModel(bookPath: string, isNotebook: boolean, notebookBookRoot?: string): Promise<void> {
+	private async createAndAddBookModel(bookPath: string, isNotebook: boolean, notebookDetails?: IPinnedNotebook): Promise<void> {
 		if (!this.books.find(x => x.bookPath === bookPath)) {
-			const book: BookModel = new BookModel(bookPath, this._openAsUntitled, isNotebook, this._extensionContext, this._onDidChangeTreeData, notebookBookRoot);
+			const book: BookModel = new BookModel(bookPath, this._openAsUntitled, isNotebook, this._extensionContext, this._onDidChangeTreeData, notebookDetails);
 			await book.initializeContents();
 			this.books.push(book);
 			if (!this.currentBook) {
@@ -391,7 +391,13 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		}
 	}
 
-	async revealDocumentInTreeView(uri?: vscode.Uri, shouldReveal: boolean = true): Promise<BookTreeItem | undefined> {
+	/**
+	 * Reveals the given uri in the tree view.
+	 * @param uri The path to the notebook. If it's undefined then the current active notebook is revealed in the Tree View.
+	 * @param shouldReveal A boolean to expand the parent node.
+	 * @param shouldFocus A boolean to focus on the tree item.
+	 */
+	async revealDocumentInTreeView(uri: vscode.Uri | undefined, shouldReveal: boolean, shouldFocus: boolean): Promise<BookTreeItem | undefined> {
 		let bookItem: BookTreeItem;
 		let notebookPath: string;
 		// If no uri is passed in, try to use the current active notebook editor
@@ -405,17 +411,18 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		}
 
 		if (shouldReveal || this._bookViewer?.visible) {
-			bookItem = notebookPath ? await this.findAndExpandParentNode(notebookPath) : undefined;
+			bookItem = notebookPath ? await this.findAndExpandParentNode(notebookPath, shouldFocus) : undefined;
 			// Select + focus item in viewlet if books viewlet is already open, or if we pass in variable
 			if (bookItem?.contextValue && bookItem.contextValue !== 'pinnedNotebook') {
 				// Note: 3 is the maximum number of levels that the vscode APIs let you expand to
-				await this._bookViewer.reveal(bookItem, { select: true, focus: true, expand: true });
+				await this._bookViewer.reveal(bookItem, { select: true, focus: shouldFocus, expand: true });
 			}
 		}
+
 		return bookItem;
 	}
 
-	async findAndExpandParentNode(notebookPath: string): Promise<BookTreeItem | undefined> {
+	async findAndExpandParentNode(notebookPath: string, shouldFocus: boolean): Promise<BookTreeItem | undefined> {
 		notebookPath = notebookPath.replace(/\\/g, '/');
 		const parentBook = this.books.find(b => notebookPath.indexOf(b.bookPath) > -1);
 		if (!parentBook) {
@@ -470,7 +477,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			}
 			try {
 				// TO DO: Check why the reveal fails during initial load with 'TreeError [bookTreeView] Tree element not found'
-				await this._bookViewer.reveal(bookItemToExpand, { select: false, focus: true, expand: true });
+				await this._bookViewer.reveal(bookItemToExpand, { select: false, focus: shouldFocus, expand: true });
 			}
 			catch (e) {
 				console.error(e);

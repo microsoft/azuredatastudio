@@ -16,6 +16,7 @@ import { SqlConnectionDataSource } from '../dataSources/sqlConnectionStringSourc
 // only reading db name, connection string, and SQLCMD vars from profile for now
 export interface PublishProfile {
 	databaseName: string;
+	serverName: string;
 	connectionId: string;
 	connection: string;
 	sqlCmdVariables: Record<string, string>;
@@ -45,6 +46,7 @@ export async function load(profileUri: Uri, dacfxService: mssql.IDacFxService): 
 
 	return {
 		databaseName: targetDbName,
+		serverName: connectionInfo.server,
 		connectionId: connectionInfo.connectionId,
 		connection: connectionInfo.connection,
 		sqlCmdVariables: sqlCmdVariables,
@@ -52,14 +54,14 @@ export async function load(profileUri: Uri, dacfxService: mssql.IDacFxService): 
 	};
 }
 
-async function readConnectionString(xmlDoc: any): Promise<{ connectionId: string, connection: string }> {
+async function readConnectionString(xmlDoc: any): Promise<{ connectionId: string, connection: string, server: string }> {
 	let targetConnection: string = '';
 	let connId: string = '';
+	let server: string = '';
 
 	if (xmlDoc.documentElement.getElementsByTagName(constants.targetConnectionString).length > 0) {
 		const targetConnectionString = xmlDoc.documentElement.getElementsByTagName(constants.TargetConnectionString)[0].textContent;
 		const dataSource = new SqlConnectionDataSource('', targetConnectionString);
-		let server: string = '';
 		let username: string = '';
 		const connectionProfile = dataSource.getConnectionProfile();
 
@@ -86,6 +88,7 @@ async function readConnectionString(xmlDoc: any): Promise<{ connectionId: string
 
 	return {
 		connectionId: connId,
-		connection: targetConnection
+		connection: targetConnection,
+		server: server
 	};
 }

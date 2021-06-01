@@ -9,7 +9,7 @@ import * as styler from 'vs/platform/theme/common/styler';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import * as constants from 'sql/workbench/contrib/notebook/browser/calloutDialog/common/constants';
 import { URI } from 'vs/base/common/uri';
-import { Modal, IDialogProperties } from 'sql/workbench/browser/modal/modal';
+import { Modal, IDialogProperties, DialogPosition, DialogWidth } from 'sql/workbench/browser/modal/modal';
 import { IFileDialogService, IOpenDialogOptions } from 'vs/platform/dialogs/common/dialogs';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
@@ -24,9 +24,8 @@ import { Deferred } from 'sql/base/common/promise';
 import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox';
 import { RadioButton } from 'sql/base/browser/ui/radioButton/radioButton';
-import { DialogPosition, DialogWidth } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { attachCalloutDialogStyler } from 'sql/workbench/common/styler';
-import { escapeUrl } from 'sql/workbench/contrib/notebook/browser/calloutDialog/common/utils';
+import * as path from 'vs/base/common/path';
 
 export interface IImageCalloutDialogOptions {
 	insertTitle?: string,
@@ -37,6 +36,7 @@ export interface IImageCalloutDialogOptions {
 
 const DEFAULT_DIALOG_WIDTH: DialogWidth = 452;
 
+const IMAGE_Extensions: string[] = ['jpg', 'jpeg', 'png', 'gif'];
 export class ImageCalloutDialog extends Modal {
 	private _selectionComplete: Deferred<IImageCalloutDialogOptions> = new Deferred<IImageCalloutDialogOptions>();
 	private _imageLocationLabel: HTMLElement;
@@ -163,16 +163,6 @@ export class ImageCalloutDialog extends Modal {
 			}
 		}, true));
 
-		this._register(this._imageRemoteRadioButton.onClicked(e => {
-			this._imageBrowseButton.style.display = 'none';
-			this._imageUrlLabel.innerText = constants.urlPlaceholder;
-			this._imageUrlInputBox.setPlaceHolder(constants.urlPlaceholder);
-		}));
-		this._register(this._imageLocalRadioButton.onClicked(e => {
-			this._imageBrowseButton.style.display = 'block';
-			this._imageUrlLabel.innerText = constants.pathPlaceholder;
-			this._imageUrlInputBox.setPlaceHolder(constants.pathPlaceholder);
-		}));
 		DOM.append(pathRow, inputContainer);
 
 		let embedRow = DOM.$('.row');
@@ -187,6 +177,19 @@ export class ImageCalloutDialog extends Modal {
 				ariaLabel: constants.embedImageLabel
 			});
 		DOM.append(embedRow, this._imageEmbedLabel);
+
+		this._register(this._imageRemoteRadioButton.onClicked(e => {
+			this._imageBrowseButton.style.display = 'none';
+			this._imageEmbedCheckbox.enabled = false;
+			this._imageUrlLabel.innerText = constants.urlPlaceholder;
+			this._imageUrlInputBox.setPlaceHolder(constants.urlPlaceholder);
+		}));
+		this._register(this._imageLocalRadioButton.onClicked(e => {
+			this._imageBrowseButton.style.display = 'block';
+			this._imageEmbedCheckbox.enabled = true;
+			this._imageUrlLabel.innerText = constants.pathPlaceholder;
+			this._imageUrlInputBox.setPlaceHolder(constants.pathPlaceholder);
+		}));
 	}
 
 	private registerListeners(): void {
@@ -196,10 +199,14 @@ export class ImageCalloutDialog extends Modal {
 
 	public insert(): void {
 		this.hide('ok');
+		let imgPath = this._imageUrlInputBox.value;
+		let imageName = path.basename(imgPath);
 		this._selectionComplete.resolve({
-			insertEscapedMarkdown: `![](${escapeUrl(this._imageUrlInputBox.value)})`,
-			imagePath: this._imageUrlInputBox.value,
-			embedImage: this._imageEmbedCheckbox.checked
+			embedImage: this._imageEmbedCheckbox.checked,
+			// check for spaces and remove them in imageName.
+			// if spaces in image path replace with &#32; as per https://github.com/microsoft/vscode/issues/11933#issuecomment-249987377
+			insertEscapedMarkdown: this._imageEmbedCheckbox.checked ? `![${imageName}](attachment:${imageName.replace(/\s/g, '')})` : `![](${imgPath.replace(/\s/g, '&#32;')})`,
+			imagePath: imgPath
 		});
 		this.dispose();
 	}
@@ -225,7 +232,8 @@ export class ImageCalloutDialog extends Modal {
 			canSelectFolders: false,
 			canSelectMany: false,
 			defaultUri: URI.file(await this.getUserHome()),
-			title: undefined
+			title: undefined,
+			filters: [{ extensions: IMAGE_Extensions, name: 'images' }]
 		};
 		let imageUri: URI[] = await this._fileDialogService.showOpenDialog(options);
 		if (imageUri.length > 0) {
@@ -233,5 +241,13 @@ export class ImageCalloutDialog extends Modal {
 		} else {
 			return undefined;
 		}
+	}
+
+	public set imagePath(val: string) {
+		this._imageUrlInputBox.value = val;
+	}
+
+	public set embedImage(val: boolean) {
+		this._imageEmbedCheckbox.checked = val;
 	}
 }

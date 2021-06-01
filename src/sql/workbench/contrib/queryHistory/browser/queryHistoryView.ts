@@ -21,7 +21,7 @@ import { IQueryHistoryService } from 'sql/workbench/services/queryHistory/common
 import { QueryHistoryNode } from 'sql/workbench/contrib/queryHistory/browser/queryHistoryNode';
 import { QueryHistoryInfo } from 'sql/workbench/services/queryHistory/common/queryHistoryInfo';
 import { IAction } from 'vs/base/common/actions';
-import { ViewPane, IViewPaneOptions } from 'vs/workbench/browser/parts/views/viewPaneContainer';
+import { ViewPane, IViewPaneOptions } from 'vs/workbench/browser/parts/views/viewPane';
 import { IViewDescriptorService } from 'vs/workbench/common/views';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
