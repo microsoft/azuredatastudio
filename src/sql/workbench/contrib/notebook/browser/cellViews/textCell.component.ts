@@ -262,7 +262,9 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 
 	private updateCellSource(addChangeToUndo: boolean): void {
 		let textOutputElement = <HTMLElement>this.output.nativeElement;
-		this.addUndoElement(textOutputElement.innerHTML);
+		if (addChangeToUndo) {
+			this.addUndoElement(textOutputElement.innerHTML);
+		}
 		let newCellSource: string = this._htmlMarkdownConverter.convert(textOutputElement.innerHTML);
 		this.cellModel.source = newCellSource;
 		this._changeRef.detectChanges();
