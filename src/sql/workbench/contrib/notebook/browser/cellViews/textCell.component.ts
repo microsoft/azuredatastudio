@@ -245,10 +245,8 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 			this.setLoading(false);
 			if (this._previewMode) {
 				let outputElement = <HTMLElement>this.output.nativeElement;
-
-				let oldHtml = outputElement.innerHTML;
 				outputElement.innerHTML = this.markdownResult.element.innerHTML;
-				this._undoRedoService.pushElement(new RichTextCellEdit(oldHtml, outputElement.innerHTML, this.cellModel.cellRichTextUri, outputElement, () => this.updateCellSource(false)));
+				this._undoRedoService.pushElement(new RichTextCellEdit(undefined, outputElement.innerHTML, this.cellModel.cellRichTextUri, outputElement, () => this.updateCellSource(false)));
 
 				outputElement.style.lineHeight = this.markdownPreviewLineHeight.toString();
 				this.cellModel.renderedOutputTextContent = this.getRenderedTextOutput();
