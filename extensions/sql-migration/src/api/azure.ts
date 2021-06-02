@@ -36,7 +36,10 @@ export async function getLocations(account: azdata.Account, subscription: Subscr
 		'eastus2',
 		'eastus2euap',
 		'eastus',
-		'canadacentral'
+		'canadacentral',
+		'canadaeast',
+		'centralus',
+		'westeurope'
 	];
 	const filteredLocations = response.locations.filter(loc => {
 		return supportedLocations.includes(loc.name);
