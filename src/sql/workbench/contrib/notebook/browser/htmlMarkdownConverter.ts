@@ -176,6 +176,10 @@ export class HTMLMarkdownConverter {
 			replacement: function (content, node, options) {
 				// For elements that aren't lists, convert <br> into its markdown equivalent
 				if (node.parentElement?.nodeName !== 'LI') {
+					// Keeps <br> in table cell/head in order to keep new linehow
+					if (node.parentElement?.nodeName === 'TD' || node.parentElement?.nodeName === 'TH') {
+						return '<br>';
+					}
 					return options.br + '\n';
 				}
 				// One (and only one) line break is ignored when it's inside of a list item
