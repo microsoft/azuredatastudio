@@ -12,6 +12,7 @@ import * as os from 'os';
 import { azureResource } from 'azureResource';
 import { IntergrationRuntimePage } from '../../wizard/integrationRuntimePage';
 import { IconPathHelper } from '../../constants/iconPathHelper';
+import { selectiDropDownIndex } from '../../api/utils';
 
 export class CreateSqlMigrationServiceDialog {
 
@@ -174,7 +175,9 @@ export class CreateSqlMigrationServiceDialog {
 		}).component();
 
 		this.migrationServiceResourceGroupDropdown = this._view.modelBuilder.dropDown().withProps({
-			required: true
+			required: true,
+			editable: true,
+			fireOnTextChange: true,
 		}).component();
 
 		const migrationServiceNameLabel = this._view.modelBuilder.text().withProps({
@@ -252,7 +255,7 @@ export class CreateSqlMigrationServiceDialog {
 	private async populateSubscriptions(): Promise<void> {
 		this.migrationServiceResourceGroupDropdown.loading = true;
 		this.migrationServiceSubscription.value = this.migrationStateModel._targetSubscription.name;
-		this.populateResourceGroups();
+		await this.populateResourceGroups();
 	}
 
 	private async populateResourceGroups(): Promise<void> {
@@ -276,6 +279,7 @@ export class CreateSqlMigrationServiceDialog {
 			];
 		}
 		this.migrationServiceResourceGroupDropdown.values = resourceGroupDropdownValues;
+		selectiDropDownIndex(this.migrationServiceResourceGroupDropdown, 0);
 		this.migrationServiceResourceGroupDropdown.loading = false;
 	}
 

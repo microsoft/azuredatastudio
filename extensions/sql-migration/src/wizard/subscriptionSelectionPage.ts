@@ -9,6 +9,7 @@ import { MigrationStateModel, StateChangeEvent } from '../models/stateMachine';
 import { SUBSCRIPTION_SELECTION_PAGE_TITLE, SUBSCRIPTION_SELECTION_AZURE_ACCOUNT_TITLE, SUBSCRIPTION_SELECTION_AZURE_PRODUCT_TITLE, SUBSCRIPTION_SELECTION_AZURE_SUBSCRIPTION_TITLE } from '../constants/strings';
 import { Disposable } from 'vscode';
 import { getSubscriptions, Subscription, getAvailableManagedInstanceProducts, AzureProduct, getAvailableSqlServers } from '../api/azure';
+import { selectiDropDownIndex } from '../api/utils';
 
 interface GenericValue<T> extends azdata.CategoryValue {
 	value: T;
@@ -37,7 +38,7 @@ export class SubscriptionSelectionPage extends MigrationWizardPage {
 	private async initialState(view: azdata.ModelView) {
 		this.accountDropDown = this.createAccountDropDown(view);
 		this.subscriptionDropDown = this.createSubscriptionDropDown(view);
-		this.productDropDown = this.createProdcutDropDown(view);
+		this.productDropDown = this.createProductDropDown(view);
 
 		const form = view.modelBuilder.formContainer().withFormItems(
 			[
@@ -53,10 +54,12 @@ export class SubscriptionSelectionPage extends MigrationWizardPage {
 	private createAccountDropDown(view: azdata.ModelView): azdata.FormComponent<azdata.DropDownComponent> {
 		const dropDown = view.modelBuilder.dropDown().withProperties<azdata.DropDownProperties>({
 			values: [],
+			editable: true,
+			fireOnTextChange: true,
 		});
 
-		this.disposables.push(dropDown.component().onValueChanged(() => {
-			this.accountValueChanged().catch(console.error);
+		this.disposables.push(dropDown.component().onValueChanged(async () => {
+			await this.accountValueChanged().catch(console.error);
 		}));
 
 		return {
@@ -68,10 +71,12 @@ export class SubscriptionSelectionPage extends MigrationWizardPage {
 	private createSubscriptionDropDown(view: azdata.ModelView): azdata.FormComponent<azdata.DropDownComponent> {
 		const dropDown = view.modelBuilder.dropDown().withProperties<azdata.DropDownProperties>({
 			values: [],
+			editable: true,
+			fireOnTextChange: true,
 		});
 
-		this.disposables.push(dropDown.component().onValueChanged(() => {
-			this.subscriptionValueChanged().catch(console.error);
+		this.disposables.push(dropDown.component().onValueChanged(async () => {
+			await this.subscriptionValueChanged().catch(console.error);
 		}));
 
 		return {
@@ -80,9 +85,11 @@ export class SubscriptionSelectionPage extends MigrationWizardPage {
 		};
 	}
 
-	private createProdcutDropDown(view: azdata.ModelView): azdata.FormComponent<azdata.DropDownComponent> {
+	private createProductDropDown(view: azdata.ModelView): azdata.FormComponent<azdata.DropDownComponent> {
 		const dropDown = view.modelBuilder.dropDown().withProperties<azdata.DropDownProperties>({
 			values: [],
+			editable: true,
+			fireOnTextChange: true,
 		});
 
 		return {
@@ -132,6 +139,7 @@ export class SubscriptionSelectionPage extends MigrationWizardPage {
 		});
 
 		this.accountDropDown!.component.values = values;
+		selectiDropDownIndex(this.accountDropDown!.component, 0);
 		await this.accountValueChanged();
 	}
 
@@ -145,6 +153,7 @@ export class SubscriptionSelectionPage extends MigrationWizardPage {
 		});
 
 		this.subscriptionDropDown!.component.values = values;
+		selectiDropDownIndex(this.subscriptionDropDown!.component, 0);
 		await this.subscriptionValueChanged();
 	}
 
@@ -158,6 +167,7 @@ export class SubscriptionSelectionPage extends MigrationWizardPage {
 		});
 
 		this.productDropDown!.component.values = values;
+		selectiDropDownIndex(this.productDropDown!.component, 0);
 	}
 
 	public async onPageEnter(): Promise<void> {
