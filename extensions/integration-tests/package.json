@@ -10,7 +10,6 @@
   },
   "activationEvents": [
 		"onFileSystem:memfs",
-    "onDebug",
     "onCommand:integration-tests.onboarding.showDevelopers"
   ],
   "main": "./out/main",

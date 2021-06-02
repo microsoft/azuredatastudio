@@ -242,6 +242,11 @@ export class ExtensionsActivator {
 		}]);
 	}
 
+	// {{SQL CARBON EDIT}} Remove the jupyter notebook extension dependency
+	private isJupyterExtensionDependency(dependencyName: string): boolean {
+		return dependencyName === 'ms-toolsai.jupyter';
+	}
+
 	/**
 	 * Handle semantics related to dependencies for `currentExtension`.
 	 * semantics: `redExtensions` must wait for `greenExtensions`.
@@ -266,6 +271,11 @@ export class ExtensionsActivator {
 
 		for (let j = 0, lenJ = depIds.length; j < lenJ; j++) {
 			const depId = depIds[j];
+
+			// {{SQL CARBON EDIT}}
+			if (this.isJupyterExtensionDependency(depId)) {
+				continue;
+			}
 
 			if (this._resolvedExtensionsSet.has(ExtensionIdentifier.toKey(depId))) {
 				// This dependency is already resolved

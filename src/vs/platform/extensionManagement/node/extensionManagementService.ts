@@ -150,6 +150,11 @@ export class ExtensionManagementService extends Disposable implements IExtension
 		return files.map(f => (<IFile>{ path: `extension/${path.relative(extension.location.fsPath, f)}`, localPath: f }));
 	}
 
+	// {{SQL CARBON EDIT}} Exception for Python extension
+	private isPythonExtension(extensionName: string): boolean {
+		return extensionName === 'python';
+	}
+
 	async install(vsix: URI, options: InstallOptions = {}): Promise<ILocalExtension> {
 		// {{SQL CARBON EDIT}}
 		let startTime = new Date().getTime();
@@ -163,7 +168,7 @@ export class ExtensionManagementService extends Disposable implements IExtension
 			const identifier = { id: getGalleryExtensionId(manifest.publisher, manifest.name) };
 			// let operation: InstallOperation = InstallOperation.Install; {{SQL CARBON EDIT}}
 			// {{SQL CARBON EDIT}}
-			if (manifest.engines?.vscode && !isEngineValid(manifest.engines.vscode, product.vscodeVersion)) {
+			if (manifest.engines?.vscode && !isEngineValid(manifest.engines.vscode, product.vscodeVersion) && !this.isPythonExtension(manifest.name)) {
 				throw new Error(nls.localize('incompatible', "Unable to install extension '{0}' as it is not compatible with the current VS Code engine version '{1}'.", identifier.id, product.vscodeVersion));
 			}
 			if (manifest.engines?.azdata && !isEngineValid(manifest.engines.azdata, product.version)) {

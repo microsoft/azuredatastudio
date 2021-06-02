@@ -282,8 +282,16 @@ export class ActivitybarPart extends Part implements IActivityBarService {
 		let disposables = this._register(new DisposableStore());
 
 		// {{SQL CARBON EDIT}}
-		// check if any extension contributes debugging capabilities
+		// check if any extension contributes debugging capabilities (installed extensions)
 		this._register(this.extensionService.onDidRegisterExtensions(async () => {
+			disposables.clear();
+			await this.onDidRegisterExtensions();
+			this.compositeBar.onDidChange(() => this.saveCachedViewContainers(), this, disposables);
+			this.storageService.onDidChangeValue(e => this.onDidStorageValueChange(e), this, disposables);
+		}));
+
+		// check when extension with debugging is installed (new installation)
+		this._register(this.extensionService.onDidChangeExtensions(async () => {
 			disposables.clear();
 			await this.onDidRegisterExtensions();
 			this.compositeBar.onDidChange(() => this.saveCachedViewContainers(), this, disposables);
@@ -333,9 +341,23 @@ export class ActivitybarPart extends Part implements IActivityBarService {
 		}
 	}
 
-	//{{SQL CARBON EDIT}}
+	// {{SQL CARBON EDIT}}
+	private async checkDebuggerContributingExtensions(): Promise<void> {
+		// Set flag for debugger viewlet based on debugging contributed extensions
+		const extensions = await this.extensionService.getExtensions();
+		this.hasDebuggerContributedExtensions = false;
+		for (let extension of extensions) {
+			if (extension.contributes?.debuggers) {
+				this.hasDebuggerContributedExtensions = true;
+				break;
+			}
+		}
+		this.showOrHideViewContainer(this.debugViewContainer);
+	}
+
 	private async onDidRegisterExtensions(): Promise<void> {
 		this.hasExtensionsRegistered = true;
+
 		// show/hide/remove composites
 		for (const { id } of this.cachedViewContainers) {
 			const viewContainer = this.getViewContainer(id);
@@ -351,16 +373,7 @@ export class ActivitybarPart extends Part implements IActivityBarService {
 		}
 
 		this.saveCachedViewContainers();
-
-		// Set flag for debugger viewlet based on debugging contributed extensions
-		const extensions = await this.extensionService.getExtensions();
-		for (let extension of extensions) {
-			if (extension.contributes?.debuggers) {
-				this.hasDebuggerContributedExtensions = true;
-				break;
-			}
-		}
-		this.showOrHideViewContainer(this.debugViewContainer);
+		await this.checkDebuggerContributingExtensions();
 	}
 
 	private onDidViewContainerVisible(id: string): void {
@@ -718,8 +731,7 @@ export class ActivitybarPart extends Part implements IActivityBarService {
 		for (const viewContainer of viewContainers) {
 			this.addComposite(viewContainer);
 
-			// {{SQL CARBON EDIT}}
-			// set the debuger view model
+			// {{SQL CARBON EDIT}} Save the debug view container for reference
 			if (viewContainer.id === ActivitybarPart.DEBUG_VIEWLET_ID) {
 				this.debugViewContainer = viewContainer;
 			}
