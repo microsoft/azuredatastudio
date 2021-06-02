@@ -263,7 +263,7 @@ suite('notebookUtils', function (): void {
 		assert.strictEqual(result, '<a target="_blank" href="https://storage-0-0.storage-0-svc.mssql-cluster.svc.cluster.local:8044/node/containerlogs/container_7/root“>Link</a>', 'Target URL should not have been edited');
 	});
 
-	test('Edit Stack test', async function (): Promise<void> {
+	test('EditStack test', async function (): Promise<void> {
 		let stack = new RichTextEditStack();
 		assert.strictEqual(stack.length, 0);
 
