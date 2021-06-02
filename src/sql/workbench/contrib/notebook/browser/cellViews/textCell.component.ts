@@ -274,7 +274,18 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		if (newText !== this._undoStack.peek()) {
 			this._undoStack.push(newText);
 			this._redoStack.clear();
-			this._undoRedoService.pushElement(new RichTextCellEdit(this._undoStack, this._redoStack, this.cellModel.cellRichTextUri, this.output.nativeElement, () => this.updateCellSource(false)));
+
+			let updateDisplayText = (text: string) => {
+				// The output field's underlying HTMLElement gets re-created when switching back and
+				// forth between rich text and markdown, so we need to keep a reference to the output
+				// field in order to update the displayed HTML properly.
+				let textOutputElement = <HTMLElement>this.output.nativeElement;
+				textOutputElement.innerHTML = text;
+			};
+			let handleHtmlUpdated = () => {
+				this.updateCellSource(false);
+			};
+			this._undoRedoService.pushElement(new RichTextCellEdit(this._undoStack, this._redoStack, this.cellModel.cellRichTextUri, updateDisplayText, handleHtmlUpdated));
 		}
 	}
 
@@ -500,7 +511,7 @@ class RichTextCellEdit implements IResourceUndoRedoElement {
 		private readonly _undoStack: RichTextEditStack,
 		private readonly _redoStack: RichTextEditStack,
 		private readonly _cellUri: URI,
-		private readonly _textCellOutputElement: HTMLElement,
+		private readonly _updateDisplayHtml: (string) => void,
 		private readonly _handleHtmlUpdated: () => void) {
 	}
 
@@ -528,7 +539,7 @@ class RichTextCellEdit implements IResourceUndoRedoElement {
 			this._redoStack.push(redoText);
 			let undoText = this._undoStack.peek();
 
-			this._textCellOutputElement.innerHTML = undoText;
+			this._updateDisplayHtml(undoText);
 			this._handleHtmlUpdated();
 		}
 	}
@@ -538,7 +549,7 @@ class RichTextCellEdit implements IResourceUndoRedoElement {
 			let text = this._redoStack.pop();
 			this._undoStack.push(text);
 
-			this._textCellOutputElement.innerHTML = text;
+			this._updateDisplayHtml(text);
 			this._handleHtmlUpdated();
 		}
 	}
