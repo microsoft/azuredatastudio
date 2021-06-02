@@ -230,7 +230,7 @@ export class CreateProjectFromDatabaseDialog {
 			this.sourceDatabaseDropDown!.loading = true;
 			const databaseValues = (await azdata.connection.listDatabases(connectionId))
 				// filter out system dbs
-				.filter(db => constants.systemDbs.find(systemdb => db === systemdb) === undefined);
+				.filter(db => !constants.systemDbs.includes(db));
 
 			this.sourceDatabaseDropDown!.values = databaseValues;
 			this.sourceDatabaseDropDown!.loading = false;
