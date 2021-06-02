@@ -28,21 +28,17 @@ export async function getSubscriptions(account: azdata.Account): Promise<Subscri
 export async function getLocations(account: azdata.Account, subscription: Subscription): Promise<azureResource.AzureLocation[]> {
 	const api = await getAzureCoreAPI();
 	const response = await api.getLocations(account, subscription, true);
+	const dataMigrationResourceProvider = (await api.makeAzureRestRequest(account, subscription, `/subscriptions/${subscription.id}/providers/Microsoft.DataMigration?api-version=2021-04-01`, azurecore.HttpRequestMethod.GET)).response.data;
+	const sqlMigratonResource = dataMigrationResourceProvider.resourceTypes.find((r: any) => r.resourceType === 'SqlMigrationServices');
+	const sqlMigrationResourceLocations = sqlMigratonResource.locations;
+
 	if (response.errors.length > 0) {
 		throw new Error(response.errors.toString());
 	}
 	sortResourceArrayByName(response.locations);
-	const supportedLocations = [
-		'eastus2',
-		'eastus2euap',
-		'eastus',
-		'canadacentral',
-		'canadaeast',
-		'centralus',
-		'westeurope'
-	];
+
 	const filteredLocations = response.locations.filter(loc => {
-		return supportedLocations.includes(loc.name);
+		return sqlMigrationResourceLocations.includes(loc.displayName);
 	});
 	return filteredLocations;
 }
