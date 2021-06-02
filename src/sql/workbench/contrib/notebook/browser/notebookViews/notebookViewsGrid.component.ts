@@ -5,7 +5,7 @@
 import 'vs/css!./cellToolbar';
 import { Component, OnInit, ViewChildren, QueryList, Input, Inject, forwardRef, ChangeDetectorRef, ViewEncapsulation, } from '@angular/core';
 import { NotebookViewsCardComponent } from 'sql/workbench/contrib/notebook/browser/notebookViews/notebookViewsCard.component';
-import { ICellModel, NotebookContentChange } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
+import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
 import { GridStack, GridStackEvent, GridStackNode } from 'gridstack';
 import 'gridstack/dist/h5/gridstack-dd-native';
@@ -37,9 +37,11 @@ export class NotebookViewsGridComponent extends AngularDisposable implements OnI
 		this.loaded = false;
 	}
 
+	/*
 	private handleContentChanged(change: NotebookContentChange): void {
 		this.detectChanges();
 	}
+	*/
 
 	public get empty(): boolean {
 		return !this._items || !this._items.find(item => item.display);
@@ -69,7 +71,7 @@ export class NotebookViewsGridComponent extends AngularDisposable implements OnI
 			self._grid.on('removed', function (e: Event, items: GridStackNode[]) { self.persist('removed', items, self._grid, self._items); });
 			self._grid.on('change', function (e: Event, items: GridStackNode[]) { self.persist('change', items, self._grid, self._items); });
 		}, 100);
-		this._register(this.model.contentChanged((e) => this.handleContentChanged(e)));
+		//this._register(this.model.contentChanged((e) => this.handleContentChanged(e)));
 	}
 
 	private detectChanges(): void {
