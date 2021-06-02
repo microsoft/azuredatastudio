@@ -544,7 +544,7 @@ class RichTextCellEdit implements IResourceUndoRedoElement {
 	}
 }
 
-class RichTextEditStack {
+export class RichTextEditStack {
 	private _list: string[] = [];
 
 	constructor() {
