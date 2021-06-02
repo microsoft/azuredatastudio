@@ -15,6 +15,8 @@ import { RunCellAction, HideCellAction, ViewCellToggleMoreActions } from 'sql/wo
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { CellTypes } from 'sql/workbench/services/notebook/common/contracts';
 import { AngularDisposable } from 'sql/base/browser/lifecycle';
+import { IColorTheme, ICssStyleCollector, registerThemingParticipant } from 'vs/platform/theme/common/themeService';
+import { cellBorder, notebookToolbarSelectBackground } from 'sql/platform/theme/common/colorRegistry';
 
 @Component({
 	selector: 'view-card-component',
@@ -172,3 +174,17 @@ export class NotebookViewsCardComponent extends AngularDisposable implements OnI
 		return this.cell.active;
 	}
 }
+
+registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) => {
+	const cellBorderColor = theme.getColor(cellBorder);
+	if (cellBorderColor) {
+		collector.addRule(`.notebookEditor .notebook-cell.active .actionbar { border-color: ${cellBorderColor};}`);
+		collector.addRule(`.notebookEditor .notebook-cell.active .actionbar .codicon:before { background-color: ${cellBorderColor};}`);
+	}
+
+	// Cell toolbar background
+	const notebookToolbarSelectBackgroundColor = theme.getColor(notebookToolbarSelectBackground);
+	if (notebookToolbarSelectBackgroundColor) {
+		collector.addRule(`.notebookEditor .notebook-cell.active .actionbar { background-color: ${notebookToolbarSelectBackgroundColor};}`);
+	}
+});
