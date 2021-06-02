@@ -26,7 +26,7 @@
       "providerId": "LogAnalytics",
       "languageMode": "loganalytics",
       "displayName": "Azure Monitor Logs",
-      "notebookKernelAlias": "Kusto",
+      "notebookKernelAlias": "LogAnalytics",
       "azureResource": "AzureLogAnalytics",
       "iconPath": [
         {
