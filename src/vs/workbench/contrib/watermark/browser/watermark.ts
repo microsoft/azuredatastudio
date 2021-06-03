@@ -25,6 +25,8 @@ import { CommandsRegistry } from 'vs/platform/commands/common/commands';
 import { assertIsDefined } from 'vs/base/common/types';
 import { workbenchConfigurationNodeBase } from 'vs/workbench/common/configuration';
 import { NEW_UNTITLED_FILE_COMMAND_ID } from 'vs/workbench/contrib/files/browser/fileCommands';
+import { IThemeService } from 'vs/platform/theme/common/themeService';
+import { attachKeybindingLabelStyler } from 'vs/platform/theme/common/styler';
 
 // {{SQL CARBON EDIT}}
 import { NewNotebookAction } from 'sql/workbench/contrib/notebook/browser/notebookActions';
@@ -81,7 +83,8 @@ export class WatermarkContribution extends Disposable implements IWorkbenchContr
 		@IKeybindingService private readonly keybindingService: IKeybindingService,
 		@IWorkspaceContextService private readonly contextService: IWorkspaceContextService,
 		@IConfigurationService private readonly configurationService: IConfigurationService,
-		@IEditorGroupsService private readonly editorGroupsService: IEditorGroupsService
+		@IEditorGroupsService private readonly editorGroupsService: IEditorGroupsService,
+		@IThemeService private readonly themeService: IThemeService
 	) {
 		super();
 
@@ -133,14 +136,18 @@ export class WatermarkContribution extends Disposable implements IWorkbenchContr
 			.filter(entry => !('mac' in entry) || entry.mac === isMacintosh)
 			.filter(entry => !!CommandsRegistry.getCommand(entry.id));
 
+		const keybindingLabelStylers = this.watermarkDisposable.add(new DisposableStore());
+
 		const update = () => {
 			dom.clearNode(box);
+			keybindingLabelStylers.clear();
 			selected.map(entry => {
 				const dl = dom.append(box, $('dl'));
 				const dt = dom.append(dl, $('dt'));
 				dt.textContent = entry.text;
 				const dd = dom.append(dl, $('dd'));
 				const keybinding = new KeybindingLabel(dd, OS, { renderUnboundKeybindings: true });
+				keybindingLabelStylers.add(attachKeybindingLabelStyler(keybinding, this.themeService));
 				keybinding.set(this.keybindingService.lookupKeybinding(entry.id));
 			});
 		};
