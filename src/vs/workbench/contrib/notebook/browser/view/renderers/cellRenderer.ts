@@ -554,11 +554,9 @@ class EditorTextRenderer {
 
 		const colorMap = this.getDefaultColorMap();
 		const fontInfo = editor.getOptions().get(EditorOption.fontInfo);
-
 		const fontFamilyVar = '--notebook-editor-font-family';
 		const fontSizeVar = '--notebook-editor-font-size';
 		const fontWeightVar = '--notebook-editor-font-weight';
-
 
 		const style = ``
 			+ `color: ${colorMap[modes.ColorId.DefaultForeground]};`
