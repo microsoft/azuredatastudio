@@ -585,5 +585,3 @@ export class RichTextEditStack {
 		return this._list.length;
 	}
 }
-
-
