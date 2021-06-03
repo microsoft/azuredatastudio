@@ -117,12 +117,12 @@ export class FileConfigPage extends ImportPage {
 		return r1 && r2 && r3;
 	}
 
-	async onPageLeave(): Promise<boolean> {
+	async override onPageLeave(): Promise<boolean> {
 		delete this.model.serverId;
 		return true;
 	}
 
-	public async cleanup(): Promise<boolean> {
+	public async override cleanup(): Promise<boolean> {
 		delete this.model.filePath;
 		delete this.model.table;
 
@@ -409,7 +409,7 @@ export class FileConfigPage extends ImportPage {
 		return values;
 	}
 
-	protected deleteServerValues() {
+	protected override deleteServerValues() {
 		delete this.model.server;
 		delete this.model.serverId;
 		delete this.model.database;

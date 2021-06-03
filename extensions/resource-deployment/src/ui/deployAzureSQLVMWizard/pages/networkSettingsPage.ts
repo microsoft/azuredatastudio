@@ -45,7 +45,7 @@ export class NetworkSettingsPage extends BasePage {
 		);
 	}
 
-	public async initialize() {
+	public async override initialize() {
 		this.pageObject.registerContent(async (view: azdata.ModelView) => {
 
 			await Promise.all([
@@ -84,7 +84,7 @@ export class NetworkSettingsPage extends BasePage {
 		});
 	}
 
-	public async onEnter(): Promise<void> {
+	public async override onEnter(): Promise<void> {
 		this.populateVirtualNetworkDropdown();
 		this.populatePublicIpkDropdown();
 		this.liveValidation = false;
@@ -102,7 +102,7 @@ export class NetworkSettingsPage extends BasePage {
 		});
 	}
 
-	public async onLeave(): Promise<void> {
+	public async override onLeave(): Promise<void> {
 		this._model.wizard.wizardObject.registerNavigationValidator((pcInfo) => {
 			return true;
 		});
@@ -448,7 +448,7 @@ export class NetworkSettingsPage extends BasePage {
 		return dropdownValues;
 	}
 
-	protected async validatePage(): Promise<string> {
+	protected async override validatePage(): Promise<string> {
 		const errorMessages = [];
 		if (this._model.newVirtualNetwork === 'True') {
 			if (this._model.virtualNetworkName.length < 2 || this._model.virtualNetworkName.length > 64) {

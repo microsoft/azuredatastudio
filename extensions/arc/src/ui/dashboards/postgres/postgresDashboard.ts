@@ -24,7 +24,7 @@ export class PostgresDashboard extends Dashboard {
 		super(loc.postgresDashboard(_postgresModel.info.name), 'ArcPgDashboard');
 	}
 
-	public async showDashboard(): Promise<void> {
+	public async override showDashboard(): Promise<void> {
 		await super.showDashboard();
 
 		// Kick off the model refresh but don't wait on it since that's all handled with callbacks anyways

@@ -135,12 +135,12 @@ export class ModifyColumnsPage extends ImportPage {
 		return true;
 	}
 
-	async onPageLeave(): Promise<boolean> {
+	async override onPageLeave(): Promise<boolean> {
 		this.instance.changeNextButtonLabel(constants.nextText);
 		return undefined;
 	}
 
-	async cleanup(): Promise<boolean> {
+	async override cleanup(): Promise<boolean> {
 		delete this.model.proseColumns;
 		this.instance.changeNextButtonLabel(constants.nextText);
 

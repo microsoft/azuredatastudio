@@ -92,7 +92,7 @@ export class OpenExistingDialog extends DialogBase {
 		}
 	}
 
-	async onComplete(): Promise<void> {
+	async override onComplete(): Promise<void> {
 		try {
 			if (this.targetTypeRadioCardGroup?.selectedCardId === constants.Workspace) {
 				// capture that workspace was selected, also if there's already an open workspace that's being replaced

@@ -25,7 +25,7 @@ export class AzureSQLVMSummaryPage extends BasePage {
 
 	}
 
-	public async initialize() {
+	public async override initialize() {
 		this.pageObject.registerContent(async (view: azdata.ModelView) => {
 			this._view = view;
 			this._form = view.modelBuilder.formContainer();
@@ -33,7 +33,7 @@ export class AzureSQLVMSummaryPage extends BasePage {
 		});
 	}
 
-	public async onEnter(): Promise<void> {
+	public async override onEnter(): Promise<void> {
 
 		this.formItems.forEach(item => {
 			this._form.removeFormItem(item);
@@ -297,7 +297,7 @@ export class AzureSQLVMSummaryPage extends BasePage {
 		});
 	}
 
-	public async onLeave(): Promise<void> {
+	public async override onLeave(): Promise<void> {
 		this.wizard.wizardObject.registerNavigationValidator((pcInfo) => {
 			return true;
 		});

@@ -85,7 +85,7 @@ export class DatabaseSettingsPage extends BasePage {
 		});
 	}
 
-	public async onEnter(): Promise<void> {
+	public async override onEnter(): Promise<void> {
 		this.wizard.wizardObject.registerNavigationValidator(async (pcInfo) => {
 			if (pcInfo.newPage < pcInfo.lastPage) {
 				return true;
@@ -99,7 +99,7 @@ export class DatabaseSettingsPage extends BasePage {
 		});
 	}
 
-	public async onLeave(): Promise<void> {
+	public async override onLeave(): Promise<void> {
 		this.wizard.wizardObject.registerNavigationValidator((pcInfo) => {
 			return true;
 		});

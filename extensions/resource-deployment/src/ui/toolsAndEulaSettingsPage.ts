@@ -45,7 +45,7 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 		this._resourceType = wizard.resourceType;
 	}
 
-	public async onEnter(): Promise<void> {
+	public async override onEnter(): Promise<void> {
 		this.wizard.wizardObject.generateScriptButton.hidden = true;
 		this.wizard.wizardObject.registerNavigationValidator(async (pcInfo) => {
 			for (let i = 0; i < this._tools.length; i++) {
@@ -415,7 +415,7 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 		this.wizard.wizardObject.cancelButton.enabled = enable;
 	}
 
-	public async onLeave(): Promise<void> {
+	public async override onLeave(): Promise<void> {
 		this.toolsService.toolsForCurrentProvider = this._tools;
 	}
 

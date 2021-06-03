@@ -64,7 +64,7 @@ export class AzdataToolOld extends ToolBase {
 		}
 		return version;
 	}
-	protected async getSearchPaths(): Promise<string[]> {
+	protected async override getSearchPaths(): Promise<string[]> {
 		switch (this.osDistribution) {
 			case OsDistribution.win32:
 				return [win32InstallationRoot];
@@ -103,7 +103,7 @@ export class AzdataToolOld extends ToolBase {
 		[OsDistribution.others, '']
 	]);
 
-	protected dependenciesByOsType: Map<OsDistribution, dependencyType[]> = new Map<OsDistribution, dependencyType[]>([
+	protected override dependenciesByOsType: Map<OsDistribution, dependencyType[]> = new Map<OsDistribution, dependencyType[]>([
 		[OsDistribution.debian, []],
 		[OsDistribution.win32, []],
 		[OsDistribution.darwin, [dependencyType.Brew]],

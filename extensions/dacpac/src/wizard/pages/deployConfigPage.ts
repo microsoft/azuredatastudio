@@ -160,7 +160,7 @@ export class DeployConfigPage extends DacFxConfigPage {
 		};
 	}
 
-	protected async populateDatabaseDropdown(): Promise<boolean> {
+	protected async override populateDatabaseDropdown(): Promise<boolean> {
 		this.databaseLoader.loading = true;
 		this.databaseDropdown.updateProperties({ values: [] });
 		if (!this.model.server) {

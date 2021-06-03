@@ -45,7 +45,7 @@ export class AzdataTool extends ToolBase {
 		return 'https://docs.microsoft.com/sql/big-data-cluster/deploy-install-azdata';
 	}
 
-	public async isEulaAccepted(): Promise<boolean> {
+	public async override isEulaAccepted(): Promise<boolean> {
 		if (!this.azdataApi) {
 			return false;
 		}
@@ -57,7 +57,7 @@ export class AzdataTool extends ToolBase {
 		}
 	}
 
-	public async promptForEula(): Promise<boolean> {
+	public async override promptForEula(): Promise<boolean> {
 		const eulaAccepted = await this.azdataApi.promptForEula();
 		if (!eulaAccepted) {
 			this.setStatusDescription(loc.azdataEulaDeclined);
@@ -82,7 +82,7 @@ export class AzdataTool extends ToolBase {
 	/**
 	 * updates the version and status for the tool.
 	 */
-	protected async updateVersionAndStatus(): Promise<void> {
+	protected async override updateVersionAndStatus(): Promise<void> {
 		this.azdataApi = await vscode.extensions.getExtension(azdataExt.extension.name)?.activate();
 		if (!this.azdataApi) {
 			this.setInstallationPathOrAdditionalInformation(localize('deploy.azdataExtMissing', "The Azure Data CLI extension must be installed to deploy this resource. Please install it through the extension gallery and try again."));
@@ -113,7 +113,7 @@ export class AzdataTool extends ToolBase {
 
 	}
 
-	protected async getSearchPaths(): Promise<string[]> {
+	protected async override getSearchPaths(): Promise<string[]> {
 		switch (this.osDistribution) {
 			case OsDistribution.win32:
 				return [win32InstallationRoot];

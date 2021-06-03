@@ -73,14 +73,14 @@ export class NotebookWizardPage extends ResourceTypePage {
 		});
 	}
 
-	public async onLeave(): Promise<void> {
+	public async override onLeave(): Promise<void> {
 		// The following callback registration clears previous navigation validators.
 		this.wizard.wizardObject.registerNavigationValidator((pcInfo) => {
 			return true;
 		});
 	}
 
-	public async onEnter(pageInfo: WizardPageInfo): Promise<void> {
+	public async override onEnter(pageInfo: WizardPageInfo): Promise<void> {
 		if (pageInfo.isLastPage) {
 			// on the last page either one or both of done button and generateScript button are visible depending on configuration of 'runNotebook' in wizard info
 			this.wizard.wizardObject.doneButton.hidden = !this.isDoneButtonVisible;

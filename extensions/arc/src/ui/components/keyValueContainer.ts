@@ -88,7 +88,7 @@ export class TextKeyValue extends KeyValue {
 		this.container.addItem(this.text, this.valueFlex);
 	}
 
-	public setValue(newValue: string) {
+	public override setValue(newValue: string) {
 		super.setValue(newValue);
 		this.text.value = newValue;
 	}
@@ -125,7 +125,7 @@ export abstract class BaseInputKeyValue extends KeyValue {
 		this.container.addItem(inputContainer, this.valueFlex);
 	}
 
-	public setValue(newValue: string) {
+	public override setValue(newValue: string) {
 		super.setValue(newValue);
 		this.input.value = newValue;
 	}
@@ -161,7 +161,7 @@ export class LinkKeyValue extends KeyValue {
 		this.container.addItem(this.link, this.valueFlex);
 	}
 
-	public setValue(newValue: string) {
+	public override setValue(newValue: string) {
 		super.setValue(newValue);
 		this.link.label = newValue;
 	}

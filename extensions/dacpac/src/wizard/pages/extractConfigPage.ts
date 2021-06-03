@@ -46,12 +46,12 @@ export class ExtractConfigPage extends DacFxConfigPage {
 		return r1 && r2;
 	}
 
-	async onPageLeave(): Promise<boolean> {
+	async override onPageLeave(): Promise<boolean> {
 		this.appendFileExtensionIfNeeded();
 		return true;
 	}
 
-	public setupNavigationValidator(): void {
+	public override setupNavigationValidator(): void {
 		this.instance.registerNavigationValidator(() => {
 			if (this.databaseLoader.loading) {
 				return false;

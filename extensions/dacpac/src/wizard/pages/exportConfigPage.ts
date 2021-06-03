@@ -44,12 +44,12 @@ export class ExportConfigPage extends DacFxConfigPage {
 	}
 
 
-	async onPageLeave(): Promise<boolean> {
+	async override onPageLeave(): Promise<boolean> {
 		this.appendFileExtensionIfNeeded();
 		return true;
 	}
 
-	public setupNavigationValidator() {
+	public override setupNavigationValidator() {
 		this.instance.registerNavigationValidator(() => {
 			if (this.databaseLoader.loading) {
 				return false;

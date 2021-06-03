@@ -134,12 +134,12 @@ export class ProsePreviewPage extends ImportPage {
 		}
 	}
 
-	async onPageLeave(): Promise<boolean> {
+	async override onPageLeave(): Promise<boolean> {
 		await this.emptyTable();
 		return true;
 	}
 
-	async cleanup(): Promise<boolean> {
+	async override cleanup(): Promise<boolean> {
 		delete this.model.proseDataPreview;
 		return true;
 	}

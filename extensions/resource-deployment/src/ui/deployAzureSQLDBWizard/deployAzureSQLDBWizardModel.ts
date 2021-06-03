@@ -177,7 +177,7 @@ export class DeployAzureSQLDBWizardModel extends ResourceTypeModel {
 		}
 	}
 
-	public getCodeCellContentForNotebook(): string[] {
+	public override getCodeCellContentForNotebook(): string[] {
 		const statements: string[] = [];
 
 		statements.push(`azure_sqldb_subscription = '${this.azureSubscription}'`);

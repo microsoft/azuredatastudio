@@ -29,7 +29,7 @@ export class SummaryPage extends ResourceTypePage {
 		});
 	}
 
-	public async onEnter(): Promise<void> {
+	public async override onEnter(): Promise<void> {
 		this._model.showCustomButtons();
 		this.formItems.forEach(item => {
 			this.form!.removeFormItem(item);
@@ -325,7 +325,7 @@ export class SummaryPage extends ResourceTypePage {
 		this.form.addFormItems(this.formItems);
 	}
 
-	public async onLeave(): Promise<void> {
+	public async override onLeave(): Promise<void> {
 		this._model.hideCustomButtons();
 		this.wizard.wizardObject.message = { text: '' };
 	}
