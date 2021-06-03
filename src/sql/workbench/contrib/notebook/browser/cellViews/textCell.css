@@ -11,6 +11,9 @@ text-cell-component .notebook-text {
 	outline: none;
 	min-height: 50px;
 }
+text-cell-component .notebook-text.show-preview.show-markdown{
+	display: flex;
+}
 text-cell-component code-component {
 	flex-direction: column;
 }

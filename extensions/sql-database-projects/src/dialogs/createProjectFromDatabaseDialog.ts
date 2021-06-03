@@ -228,7 +228,9 @@ export class CreateProjectFromDatabaseDialog {
 		// populate database dropdown with the databases for this connection
 		if (connectionId) {
 			this.sourceDatabaseDropDown!.loading = true;
-			const databaseValues = await azdata.connection.listDatabases(connectionId);
+			const databaseValues = (await azdata.connection.listDatabases(connectionId))
+				// filter out system dbs
+				.filter(db => !constants.systemDbs.includes(db));
 
 			this.sourceDatabaseDropDown!.values = databaseValues;
 			this.sourceDatabaseDropDown!.loading = false;

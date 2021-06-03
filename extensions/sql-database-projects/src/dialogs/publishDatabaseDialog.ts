@@ -521,7 +521,7 @@ export class PublishDatabaseDialog {
 		if (connectionId) {
 			const databaseValues = (await azdata.connection.listDatabases(connectionId))
 				// filter out system dbs
-				.filter(db => constants.systemDbs.find(systemdb => db === systemdb) === undefined);
+				.filter(db => !constants.systemDbs.includes(db));
 
 			this.targetDatabaseDropDown!.values = databaseValues;
 		}
