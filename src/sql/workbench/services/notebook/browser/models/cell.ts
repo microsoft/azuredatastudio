@@ -145,7 +145,7 @@ export class CellModel extends Disposable implements ICellModel {
 		return this._metadata;
 	}
 
-	public get attachments() {
+	public get attachments(): nb.ICellAttachments | undefined {
 		return this._attachments;
 	}
 
@@ -162,9 +162,9 @@ export class CellModel extends Disposable implements ICellModel {
 			}
 			// Check if name already exists and get a unique name
 			if (this._attachments[name] && this._attachments[name][mimeType] !== attachment[mimeType]) {
-				name = this.getUniqueImageName(name.substring(0, name.indexOf('.')), name.substring(name.indexOf('.') + 1));
+				name = this.getUniqueAttachmentName(name.substring(0, name.lastIndexOf('.')), name.substring(name.lastIndexOf('.') + 1));
 			}
-			if (!this.attachments || !this._attachments[name]) {
+			if (!this._attachments[name]) {
 				this._attachments[name] = attachment;
 				this.sendChangeToNotebook(NotebookChangeType.CellMetadataUpdated);
 			}
@@ -323,8 +323,13 @@ export class CellModel extends Disposable implements ICellModel {
 		}
 		return newSource;
 	}
-
-	private getUniqueImageName(imgName?: string, imgExtension?: string): string {
+	/**
+	 * Gets unique attachment name to add to cell metadata
+	 * @param imgName a string defining name of the image.
+	 * @param imgExtension extension of the image
+	 * Returns the unique name
+	 */
+	private getUniqueAttachmentName(imgName?: string, imgExtension?: string): string {
 		let nextVal = 0;
 		// Note: this will go forever if it's coded wrong, or you have infinite images in a notebook!
 		while (true) {
