@@ -9,7 +9,7 @@ import { MigrationStateModel, StateChangeEvent } from '../models/stateMachine';
 import { SUBSCRIPTION_SELECTION_PAGE_TITLE, SUBSCRIPTION_SELECTION_AZURE_ACCOUNT_TITLE, SUBSCRIPTION_SELECTION_AZURE_PRODUCT_TITLE, SUBSCRIPTION_SELECTION_AZURE_SUBSCRIPTION_TITLE } from '../constants/strings';
 import { Disposable } from 'vscode';
 import { getSubscriptions, Subscription, getAvailableManagedInstanceProducts, AzureProduct, getAvailableSqlServers } from '../api/azure';
-import { selectiDropDownIndex } from '../api/utils';
+import { selectDropDownIndex } from '../api/utils';
 
 interface GenericValue<T> extends azdata.CategoryValue {
 	value: T;
@@ -139,7 +139,7 @@ export class SubscriptionSelectionPage extends MigrationWizardPage {
 		});
 
 		this.accountDropDown!.component.values = values;
-		selectiDropDownIndex(this.accountDropDown!.component, 0);
+		selectDropDownIndex(this.accountDropDown!.component, 0);
 		await this.accountValueChanged();
 	}
 
@@ -153,7 +153,7 @@ export class SubscriptionSelectionPage extends MigrationWizardPage {
 		});
 
 		this.subscriptionDropDown!.component.values = values;
-		selectiDropDownIndex(this.subscriptionDropDown!.component, 0);
+		selectDropDownIndex(this.subscriptionDropDown!.component, 0);
 		await this.subscriptionValueChanged();
 	}
 
@@ -167,7 +167,7 @@ export class SubscriptionSelectionPage extends MigrationWizardPage {
 		});
 
 		this.productDropDown!.component.values = values;
-		selectiDropDownIndex(this.productDropDown!.component, 0);
+		selectDropDownIndex(this.productDropDown!.component, 0);
 	}
 
 	public async onPageEnter(): Promise<void> {

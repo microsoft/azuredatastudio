@@ -122,7 +122,7 @@ export function filterMigrations(databaseMigrations: MigrationContext[], statusF
 	return filteredMigration;
 }
 
-export function selectiDropDownIndex(dropDown: DropDownComponent, index: number) {
+export function selectDropDownIndex(dropDown: DropDownComponent, index: number): void {
 	if (dropDown?.values && dropDown!.values?.length >= index - 1 && index >= 0) {
 		const value = dropDown.values[index];
 		dropDown.value = value as CategoryValue;

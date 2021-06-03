@@ -11,7 +11,7 @@ import { Blob, MigrationSourceAuthenticationType, MigrationStateModel, Migration
 import * as constants from '../constants/strings';
 import { IconPathHelper } from '../constants/iconPathHelper';
 import { WIZARD_INPUT_COMPONENT_WIDTH } from './wizardController';
-import { findDropDownItemIndex, selectiDropDownIndex } from '../api/utils';
+import { findDropDownItemIndex, selectDropDownIndex } from '../api/utils';
 
 export class DatabaseBackupPage extends MigrationWizardPage {
 	private _view!: azdata.ModelView;
@@ -971,7 +971,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 		this._networkShareStorageAccountResourceGroupDropdown.loading = true;
 		try {
 			this._networkShareStorageAccountResourceGroupDropdown.values = await this.migrationStateModel.getAzureResourceGroupDropdownValues(this.migrationStateModel._databaseBackup.subscription);
-			selectiDropDownIndex(this._networkShareStorageAccountResourceGroupDropdown, 0);
+			selectDropDownIndex(this._networkShareStorageAccountResourceGroupDropdown, 0);
 		} catch (error) {
 			console.log(error);
 		} finally {
@@ -984,7 +984,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 		this._networkShareContainerStorageAccountDropdown.loading = true;
 		try {
 			this._networkShareContainerStorageAccountDropdown.values = await this.migrationStateModel.getStorageAccountValues(this.migrationStateModel._databaseBackup.subscription, this.migrationStateModel._databaseBackup.networkShare.resourceGroup);
-			selectiDropDownIndex(this._networkShareContainerStorageAccountDropdown, 0);
+			selectDropDownIndex(this._networkShareContainerStorageAccountDropdown, 0);
 		} catch (error) {
 			console.log(error);
 		} finally {
@@ -998,7 +998,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			const resourceGroupValues = await this.migrationStateModel.getAzureResourceGroupDropdownValues(this.migrationStateModel._databaseBackup.subscription);
 			this._blobContainerResourceGroupDropdowns.forEach(dropDown => {
 				dropDown.values = resourceGroupValues;
-				selectiDropDownIndex(dropDown, 0);
+				selectDropDownIndex(dropDown, 0);
 			});
 		} catch (error) {
 			console.log(error);
@@ -1011,7 +1011,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 		this._blobContainerStorageAccountDropdowns[index].loading = true;
 		try {
 			this._blobContainerStorageAccountDropdowns[index].values = await this.migrationStateModel.getStorageAccountValues(this.migrationStateModel._databaseBackup.subscription, this.migrationStateModel._databaseBackup.blobs[index].resourceGroup);
-			selectiDropDownIndex(this._blobContainerStorageAccountDropdowns[index], 0);
+			selectDropDownIndex(this._blobContainerStorageAccountDropdowns[index], 0);
 		} catch (error) {
 			console.log(error);
 		} finally {
@@ -1024,7 +1024,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 		try {
 			const blobContainerValues = await this.migrationStateModel.getBlobContainerValues(this.migrationStateModel._databaseBackup.subscription, this.migrationStateModel._databaseBackup.blobs[index].storageAccount);
 			this._blobContainerDropdowns[index].values = blobContainerValues;
-			selectiDropDownIndex(this._blobContainerDropdowns[index], 0);
+			selectDropDownIndex(this._blobContainerDropdowns[index], 0);
 		} catch (error) {
 			console.log(error);
 		} finally {

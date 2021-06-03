@@ -12,7 +12,7 @@ import * as os from 'os';
 import { azureResource } from 'azureResource';
 import { IntergrationRuntimePage } from '../../wizard/integrationRuntimePage';
 import { IconPathHelper } from '../../constants/iconPathHelper';
-import { selectiDropDownIndex } from '../../api/utils';
+import { selectDropDownIndex } from '../../api/utils';
 
 export class CreateSqlMigrationServiceDialog {
 
@@ -279,7 +279,7 @@ export class CreateSqlMigrationServiceDialog {
 			];
 		}
 		this.migrationServiceResourceGroupDropdown.values = resourceGroupDropdownValues;
-		selectiDropDownIndex(this.migrationServiceResourceGroupDropdown, 0);
+		selectDropDownIndex(this.migrationServiceResourceGroupDropdown, 0);
 		this.migrationServiceResourceGroupDropdown.loading = false;
 	}
 

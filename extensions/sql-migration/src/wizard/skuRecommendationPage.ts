@@ -12,7 +12,7 @@ import * as vscode from 'vscode';
 import { EOL } from 'os';
 import { IconPath, IconPathHelper } from '../constants/iconPathHelper';
 import { WIZARD_INPUT_COMPONENT_WIDTH } from './wizardController';
-import { findDropDownItemIndex, selectiDropDownIndex } from '../api/utils';
+import { findDropDownItemIndex, selectDropDownIndex } from '../api/utils';
 
 export interface Product {
 	type: MigrationTargetType;
@@ -436,7 +436,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			this._resourceDropdown.loading = true;
 			try {
 				this._managedInstanceSubscriptionDropdown.values = await this.migrationStateModel.getSubscriptionsDropdownValues();
-				selectiDropDownIndex(this._managedInstanceSubscriptionDropdown, 0);
+				selectDropDownIndex(this._managedInstanceSubscriptionDropdown, 0);
 			} catch (e) {
 				console.log(e);
 			} finally {
@@ -451,9 +451,9 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		this._azureLocationDropdown.loading = true;
 		try {
 			this._azureResourceGroupDropdown.values = await this.migrationStateModel.getAzureResourceGroupDropdownValues(this.migrationStateModel._targetSubscription);
-			selectiDropDownIndex(this._azureResourceGroupDropdown, 0);
+			selectDropDownIndex(this._azureResourceGroupDropdown, 0);
 			this._azureLocationDropdown.values = await this.migrationStateModel.getAzureLocationDropdownValues(this.migrationStateModel._targetSubscription);
-			selectiDropDownIndex(this._azureLocationDropdown, 0);
+			selectDropDownIndex(this._azureLocationDropdown, 0);
 		} catch (e) {
 			console.log(e);
 		} finally {
@@ -474,7 +474,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 				this._resourceDropdown.values = await this.migrationStateModel.getManagedInstanceValues(this.migrationStateModel._targetSubscription, this.migrationStateModel._location, this.migrationStateModel._resourceGroup);
 			}
 
-			selectiDropDownIndex(this._resourceDropdown, 0);
+			selectDropDownIndex(this._resourceDropdown, 0);
 		} catch (e) {
 			console.log(e);
 		} finally {

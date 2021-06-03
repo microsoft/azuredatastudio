@@ -9,7 +9,7 @@ import { MigrationWizardPage } from '../models/migrationWizardPage';
 import { MigrationStateModel, StateChangeEvent } from '../models/stateMachine';
 import * as constants from '../constants/strings';
 import { WIZARD_INPUT_COMPONENT_WIDTH } from './wizardController';
-import { deepClone, findDropDownItemIndex, selectiDropDownIndex } from '../api/utils';
+import { deepClone, findDropDownItemIndex, selectDropDownIndex } from '../api/utils';
 
 export class AccountsSelectionPage extends MigrationWizardPage {
 	private _azureAccountsDropdown!: azdata.DropDownComponent;
@@ -81,7 +81,7 @@ export class AccountsSelectionPage extends MigrationWizardPage {
 				if (this.migrationStateModel._azureAccount.properties.tenants.length > 1) {
 					this.migrationStateModel._accountTenants = selectedAzureAccount.properties.tenants;
 					this._accountTenantDropdown.values = await this.migrationStateModel.getTenantValues();
-					selectiDropDownIndex(this._accountTenantDropdown, 0);
+					selectDropDownIndex(this._accountTenantDropdown, 0);
 					this._accountTenantFlexContainer.updateCssStyles({
 						'display': 'inline'
 					});
@@ -192,7 +192,7 @@ export class AccountsSelectionPage extends MigrationWizardPage {
 			this._azureAccountsDropdown.loading = false;
 		}
 
-		selectiDropDownIndex(this._azureAccountsDropdown, 0);
+		selectDropDownIndex(this._azureAccountsDropdown, 0);
 	}
 
 	public async onPageEnter(): Promise<void> {
