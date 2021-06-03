@@ -42,7 +42,7 @@ export class FileNotebookInput extends NotebookInput {
 		this.textInput.setPreferredMode(mode);
 	}
 
-	public getTypeId(): string {
+	override get typeId(): string {
 		return FileNotebookInput.ID;
 	}
 

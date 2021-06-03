@@ -449,7 +449,7 @@ export class EditorGroupView extends Themable implements IEditorGroupView {
 
 	private restoreEditors(from: IEditorGroupView | ISerializedEditorGroup | null): Promise<void> | undefined {
 		if (this._group.count === 0) {
-			return; // nothing to show
+			return undefined; // nothing to show {{SQL CARBON EDIT}} strict nulls
 		}
 
 		// Determine editor options
@@ -462,7 +462,7 @@ export class EditorGroupView extends Themable implements IEditorGroupView {
 
 		const activeEditor = this._group.activeEditor;
 		if (!activeEditor) {
-			return;
+			return undefined; // {{SQL CARBON EDIT}} strict nulls
 		}
 
 		options.pinned = this._group.isPinned(activeEditor);	// preserve pinned state

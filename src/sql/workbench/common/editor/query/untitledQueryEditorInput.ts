@@ -49,7 +49,7 @@ export class UntitledQueryEditorInput extends QueryEditorInput implements IEncod
 		return this.text.getMode();
 	}
 
-	public getTypeId(): string {
+	override get typeId(): string {
 		return UntitledQueryEditorInput.ID;
 	}
 

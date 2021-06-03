@@ -117,7 +117,7 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 		return this._sessionName;
 	}
 
-	public getTypeId(): string {
+	override get typeId(): string {
 		return ProfilerInput.ID;
 	}
 

@@ -50,7 +50,7 @@ export class QueryResultsInput extends EditorInput {
 		super();
 	}
 
-	getTypeId(): string {
+	override get typeId(): string {
 		return QueryResultsInput.ID;
 	}
 

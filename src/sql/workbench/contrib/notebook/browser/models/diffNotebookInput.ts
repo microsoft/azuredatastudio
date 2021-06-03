@@ -32,7 +32,7 @@ export class DiffNotebookInput extends SideBySideEditorInput {
 		this.setupScrollListeners(originalInput, modifiedInput);
 	}
 
-	public getTypeId(): string {
+	override get typeId(): string {
 		return DiffNotebookInput.ID;
 	}
 

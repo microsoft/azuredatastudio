@@ -45,7 +45,7 @@ export class EditDataResultsInput extends EditorInput {
 		this._editDataGridPanel = gridPanel;
 	}
 
-	getTypeId(): string {
+	override get typeId(): string {
 		return EditDataResultsInput.ID;
 	}
 

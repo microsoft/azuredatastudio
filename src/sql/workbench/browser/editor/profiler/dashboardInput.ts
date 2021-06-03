@@ -68,7 +68,7 @@ export class DashboardInput extends EditorInput {
 		this._uniqueSelector = uniqueSelector;
 	}
 
-	public getTypeId(): string {
+	override get typeId(): string {
 		return DashboardInput.ID;
 	}
 

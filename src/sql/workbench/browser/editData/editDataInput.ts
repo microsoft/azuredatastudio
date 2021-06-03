@@ -114,7 +114,7 @@ export class EditDataInput extends EditorInput implements IConnectableInput {
 	public showResultsEditor(): void { this._showResultsEditor.fire(undefined); }
 	public isDirty(): boolean { return false; }
 	public save(): Promise<IEditorInput | undefined> { return Promise.resolve(undefined); }
-	public getTypeId(): string { return EditDataInput.ID; }
+	public override get typeId(): string { return EditDataInput.ID; }
 	public setBootstrappedTrue(): void { this._hasBootstrapped = true; }
 	public get resource(): URI { return this._uri; }
 	public supportsSplitEditor(): boolean { return false; }

@@ -77,7 +77,7 @@ export class ModelViewInput extends EditorInput {
 		return this._model.modelViewId;
 	}
 
-	public getTypeId(): string {
+	override get typeId(): string {
 		return 'ModelViewEditorInput';
 	}
 

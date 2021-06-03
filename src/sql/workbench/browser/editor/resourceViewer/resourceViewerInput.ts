@@ -49,7 +49,7 @@ export class ResourceViewerInput extends EditorInput {
 		this.refresh().catch(err => onUnexpectedError(err));
 	}
 
-	public getTypeId(): string {
+	override get typeId(): string {
 		return ResourceViewerInput.ID;
 	}
 

@@ -39,7 +39,7 @@ export class UntitledNotebookInput extends NotebookInput {
 		return true;
 	}
 
-	public getTypeId(): string {
+	override get typeId(): string {
 		return UntitledNotebookInput.ID;
 	}
 

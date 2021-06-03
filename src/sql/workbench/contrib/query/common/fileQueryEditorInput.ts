@@ -38,7 +38,7 @@ export class FileQueryEditorInput extends QueryEditorInput {
 		return this._text as FileEditorInput;
 	}
 
-	public getTypeId(): string {
+	override get typeId(): string {
 		return FileQueryEditorInput.ID;
 	}
 

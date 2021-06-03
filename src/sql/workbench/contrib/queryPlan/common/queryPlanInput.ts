@@ -45,7 +45,7 @@ export class QueryPlanInput extends EditorInput {
 		super();
 	}
 
-	public getTypeId(): string {
+	override get typeId(): string {
 		return UntitledTextEditorInput.ID;
 	}
 

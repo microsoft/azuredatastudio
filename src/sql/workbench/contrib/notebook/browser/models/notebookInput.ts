@@ -362,8 +362,6 @@ export abstract class NotebookInput extends EditorInput implements INotebookInpu
 		this._layoutChanged.fire();
 	}
 
-	public abstract getTypeId(): string;
-
 	get resource(): URI {
 		return this._resource;
 	}
