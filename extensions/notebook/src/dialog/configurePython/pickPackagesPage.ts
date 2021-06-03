@@ -110,7 +110,7 @@ export class PickPackagesPage extends BasePage {
 
 	public async onPageEnter(): Promise<void> {
 		this.packageVersionMap.clear();
-		let pythonExe = JupyterServerInstallation.getPythonExePath(this.model.pythonLocation, this.model.useExistingPython);
+		let pythonExe = JupyterServerInstallation.getPythonExePath(this.model.pythonLocation);
 		this.packageVersionRetrieval = this.model.installation.getInstalledPipPackages(pythonExe)
 			.then(installedPackages => {
 				if (installedPackages) {

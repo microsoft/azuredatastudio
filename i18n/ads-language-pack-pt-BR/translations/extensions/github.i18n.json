@@ -17,18 +17,26 @@
 		},
 		"dist/publish": {
 			"pick folder": "Selecionar uma pasta para publicar no GitHub",
-			"ignore": "Selecionar quais arquivos devem ser incluídos no repositório."
+			"ignore": "Selecionar quais arquivos devem ser incluídos no repositório.",
+			"publishing_private": "Fazendo a publicação em um repositório privado do GitHub",
+			"publishing_public": "Fazendo a publicação em um repositório público do GitHub",
+			"publishing_firstcommit": "Criando o primeiro commit",
+			"publishing_uploading": "Carregando os arquivos",
+			"openingithub": "Abrir no GitHub",
+			"publishing_done": "O repositório '{0}' foi publicado com êxito no GitHub."
 		},
 		"dist/pushErrorHandler": {
+			"ok": "OK",
+			"fork unable": "Você não tem permissões para efetuar push para '{0}/{1}' no GitHub.",
 			"create a fork": "Criar Bifurcação",
 			"no": "Não",
 			"fork": "Você não tem permissões para enviar por push para '{0}/{1}' no GitHub. Deseja criar uma bifurcação e enviá-la por push?",
 			"create fork": "Criar bifurcação do GitHub",
 			"forking": "Bifurcando '{0}/{1}'...",
-			"pushing": "Enviando alterações por push...",
+			"forking_pushing": "Enviando alterações por push...",
 			"openingithub": "Abrir no GitHub",
 			"createpr": "Criar PR",
-			"done": "A bifurcação '{0}' foi criada com êxito no GitHub.",
+			"forking_done": "A bifurcação '{0}' foi criada com êxito no GitHub.",
 			"createghpr": "Criando Solicitação de Pull do GitHub...",
 			"openpr": "Abrir PR",
 			"donepr": "O PR '{0}/{1}#{2}' foi criado com êxito no GitHub."

@@ -36,6 +36,7 @@ export enum CellOutputKind {
 	Rich = 3
 }
 
+
 export const NOTEBOOK_DISPLAY_ORDER = [
 	'application/json',
 	'application/javascript',

@@ -9,6 +9,7 @@ const path = require("path");
 const es = require("event-stream");
 const fs = require("fs");
 const files = [
+    '.build/langpacks/**/*.vsix',
     '.build/extensions/**/*.vsix',
     '.build/win32-x64/**/*.{exe,zip}',
     '.build/linux/sha256hashes.txt',

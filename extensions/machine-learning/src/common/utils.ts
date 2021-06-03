@@ -64,13 +64,6 @@ export function getPythonInstallationLocation(rootFolder: string) {
 	return path.join(rootFolder, 'python');
 }
 
-export function getPythonExePath(rootFolder: string): string {
-	return path.join(
-		getPythonInstallationLocation(rootFolder),
-		constants.pythonBundleVersion,
-		process.platform === constants.winPlatform ? 'python.exe' : 'bin/python3');
-}
-
 export function getPackageFilePath(rootFolder: string, packageName: string): string {
 	return path.join(
 		rootFolder,
@@ -272,7 +265,6 @@ export function getFileName(filePath: string) {
 export function getDefaultPythonLocation(): string {
 
 	return path.join(getUserHome() || '', 'azuredatastudio-python',
-		constants.adsPythonBundleVersion,
 		getPythonExeName());
 }
 

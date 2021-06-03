@@ -515,7 +515,20 @@ export class MigrationCutoverDialog {
 
 			this._migrationStatus.value = migrationStatusTextValue ?? '---';
 			this._fullBackupFile.value = fullBackupFileName! ?? '-';
-			this._backupLocation.value = this._model._migration.migrationContext.properties.backupConfiguration?.sourceLocation?.fileShare?.path! ?? '-';
+			let backupLocation;
+
+			const isBlobMigration = this._model._migration.migrationContext.properties.backupConfiguration.sourceLocation?.azureBlob !== undefined;
+			// Displaying storage accounts and blob container for azure blob backups.
+			if (isBlobMigration) {
+				backupLocation = `${this._model._migration.migrationContext.properties.backupConfiguration.sourceLocation?.azureBlob?.storageAccountResourceId.split('/').pop()} - ${this._model._migration.migrationContext.properties.backupConfiguration.sourceLocation?.azureBlob?.blobContainerName}`;
+				this._fileCount.display = 'none';
+				this.fileTable.updateCssStyles({
+					'display': 'none'
+				});
+			} else {
+				backupLocation = this._model._migration.migrationContext.properties.backupConfiguration?.sourceLocation?.fileShare?.path! ?? '-';
+			}
+			this._backupLocation.value = backupLocation ?? '-';
 
 			this._lastAppliedLSN.value = lastAppliedSSN! ?? '-';
 			this._lastAppliedBackupFile.value = this._model.migrationStatus.properties.migrationStatusDetails?.lastRestoredFilename ?? '-';
@@ -538,8 +551,8 @@ export class MigrationCutoverDialog {
 			});
 
 			if (migrationStatusTextValue === MigrationStatus.InProgress) {
-				const restoredCount = (this._model.migrationStatus.properties.migrationStatusDetails?.activeBackupSets.filter(a => a.listOfBackupFiles[0].status === 'Restored'))?.length!;
-				if (restoredCount > 0) {
+				const restoredCount = (this._model.migrationStatus.properties.migrationStatusDetails?.activeBackupSets?.filter(a => a.listOfBackupFiles[0].status === 'Restored'))?.length ?? 0;
+				if (restoredCount > 0 || isBlobMigration) {
 					this._cutoverButton.enabled = true;
 				}
 				this._cancelButton.enabled = true;

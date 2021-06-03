@@ -18,20 +18,43 @@
 	height: 100%;
 }
 
-.monaco-table .slick-sort-indicator-asc {
-	background: url('sort-asc.gif');
+.monaco-table .slick-sort-indicator {
+	background-size: 8px;
+	background-repeat: no-repeat;
 }
 
-.monaco-table .slick-sort-indicator-desc {
-	background: url('sort-desc.gif');
+.vs .slick-header-menuicon.ascending,
+.vs .monaco-table .slick-sort-indicator-asc {
+	background-image: url('sort_asc.svg');
+}
+
+.vs-dark .slick-header-menuicon.ascending,
+.hc-black .slick-header-menuicon.ascending,
+.vs-dark .monaco-table .slick-sort-indicator-asc,
+.hc-black .monaco-table .slick-sort-indicator-asc {
+	background-image: url('sort_asc_inverse.svg');
+}
+
+.vs .slick-header-menuicon.descending,
+.vs .monaco-table .slick-sort-indicator-desc {
+	background-image: url('sort_desc.svg');
+}
+
+.vs-dark .slick-header-menuicon.descending,
+.hc-black .slick-header-menuicon.descending,
+.vs-dark .monaco-table .slick-sort-indicator-desc,
+.hc-black .monaco-table .slick-sort-indicator-desc {
+	background-image: url('sort_desc_inverse.svg');
 }
 
 .monaco-table .slick-sort-indicator {
 	display: inline-block;
 	width: 8px;
-	height: 5px;
+	height: 8px;
 	margin-left: 4px;
+	margin-right: 4px;
 	margin-top: 6px;
+	flex: 0 0 auto;
 }
 
 .slick-header-menubutton {
@@ -182,14 +205,7 @@
 	width: 100%;
 	padding: 0 0 0 18px;
 	margin: 0px;
-}
-
-.slick-header-menuicon.ascending {
-	background-image: url('sort-asc.gif');
-}
-
-.slick-header-menuicon.descending {
-	background-image: url('sort-desc.gif');
+	background-size: 10px;
 }
 
 .slick-header-menucontent {

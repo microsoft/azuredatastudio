@@ -963,7 +963,7 @@ class MultipleSelectionActionRunner extends ActionRunner {
 		}));
 	}
 
-	runAction(action: IAction, context: TreeViewItemHandleArg): Promise<void> {
+	async runAction(action: IAction, context: TreeViewItemHandleArg): Promise<void> {
 		const selection = this.getSelectedResources();
 		let selectionHandleArgs: TreeViewItemHandleArg[] | undefined = undefined;
 		let actionInSelected: boolean = false;
@@ -980,7 +980,7 @@ class MultipleSelectionActionRunner extends ActionRunner {
 			selectionHandleArgs = undefined;
 		}
 
-		return action.run(...[context, selectionHandleArgs]);
+		await action.run(...[context, selectionHandleArgs]);
 	}
 }
 

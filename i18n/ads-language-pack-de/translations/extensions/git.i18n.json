@@ -190,8 +190,8 @@
 			"config.requireGitUserConfig": "Steuert, ob eine explizite Git-Benutzerkonfiguration erforderlich ist oder ob Git Annahmen treffen soll, falls die Konfiguration fehlt.",
 			"config.showCommitInput": "Steuert, ob die Commiteingabe im Panel für die Git-Quellcodeverwaltung angezeigt wird.",
 			"config.terminalAuthentication": "Steuert, ob VS Code als Authentifizierungshandler für git-Prozesse aktiviert werden soll, die im integrierten Terminal erzeugt werden. Hinweis: Terminals müssen neu gestartet werden, damit eine Änderung dieser Einstellung wirksam wird.",
-			"config.timeline.showAuthor": "Steuert, ob der Commitautor in der Zeitachsenansicht angezeigt wird",
-			"config.timeline.date": "Steuert, welches Datum für Elemente in der Zeitachsenansicht verwendet werden soll",
+			"config.timeline.showAuthor": "Steuert, ob der Commitautor in der Zeitachsenansicht angezeigt wird.",
+			"config.timeline.date": "Steuert, welches Datum für Elemente in der Zeitachsenansicht verwendet werden soll.",
 			"config.timeline.date.committed": "Commitdatum verwenden",
 			"config.timeline.date.authored": "Erstellungsdatum verwenden",
 			"config.useCommitInputAsStashMessage": "Steuert, ob die Nachricht aus dem Commiteingabefeld als Standardstashnachricht verwendet wird.",
@@ -221,7 +221,8 @@
 			"view.workbench.scm.folder": "Der aktuell geöffnete Ordner enthält kein Git-Repository. Sie können ein Repository initialisieren, wodurch die Git-Features zur Quellcodeverwaltung aktiviert werden.\r\n[Repository initialisieren](command:git.init?%5Btrue%5D)\r\nWeitere Informationen zur Verwendung von Git und der Quellcodeverwaltung in VS Code finden Sie in unserer [Dokumentation](https://aka.ms/vscode-scm).",
 			"view.workbench.scm.workspace": "Der aktuell geöffnete Arbeitsbereich enthält keine Ordner mit Git-Repositorys. Sie können ein Repository für einen Ordner initialisieren, wodurch die Git-Features zur Quellcodeverwaltung aktiviert werden.\r\n[Repository initialisieren](command:git.init)\r\nWeitere Informationen zur Verwendung von Git und der Quellcodeverwaltung in VS Code finden Sie in unserer [Dokumentation](https://aka.ms/vscode-scm).",
 			"view.workbench.scm.emptyWorkspace": "Der aktuell geöffnete Arbeitsbereich weist keine Ordner auf, die Git-Repositorys enthalten.\r\n[Ordner zum Arbeitsbereich hinzufügen](command:workbench.action.addRootFolder)\r\nWeitere Informationen zur Verwendung von Git und Quellcodeverwaltung in VS Code [finden Sie in unserer Dokumentation](https://aka.ms/vscode-scm).",
-			"view.workbench.cloneRepository": "Sie können auch ein Repository aus einer URL klonen. Weitere Informationen zur Verwendung von Git und Quellcodeverwaltung in VS Code [finden Sie in unserer Dokumentation](https://aka.ms/vscode-scm).\r\n[Repository klonen](command:git.clone 'Clone a repository once the git extension has activated')"
+			"view.workbench.cloneRepository": "Sie können ein Repository lokal klonen.\r\n[Repository klonen](command:git.clone 'Clone a repository once the git extension has activated')",
+			"view.workbench.learnMore": "Weitere Informationen zur Verwendung von Git und Quellcodeverwaltung in VS Code [finden Sie in unserer Dokumentation](https://aka.ms/vscode-scm)."
 		},
 		"dist/repository": {
 			"index modified": "Index geändert",

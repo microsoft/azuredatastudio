@@ -26,8 +26,8 @@ export class ScriptSelectAction extends Action {
 		super(id, label);
 	}
 
-	public async run(actionContext: BaseActionContext): Promise<boolean> {
-		return scriptSelect(
+	public async run(actionContext: BaseActionContext): Promise<void> {
+		await scriptSelect(
 			actionContext.profile!,
 			actionContext.object!,
 			this._connectionManagementService,
@@ -51,8 +51,8 @@ export class ScriptExecuteAction extends Action {
 		super(id, label);
 	}
 
-	public async run(actionContext: BaseActionContext): Promise<boolean> {
-		return script(
+	public async run(actionContext: BaseActionContext): Promise<void> {
+		await script(
 			actionContext.profile!,
 			actionContext.object!,
 			this._connectionManagementService,
@@ -78,8 +78,8 @@ export class ScriptAlterAction extends Action {
 		super(id, label);
 	}
 
-	public async run(actionContext: BaseActionContext): Promise<boolean> {
-		return script(
+	public async run(actionContext: BaseActionContext): Promise<void> {
+		await script(
 			actionContext.profile!,
 			actionContext.object!,
 			this._connectionManagementService,
@@ -104,8 +104,8 @@ export class EditDataAction extends Action {
 		super(id, label);
 	}
 
-	public async run(actionContext: BaseActionContext): Promise<boolean> {
-		return scriptEditSelect(
+	public async run(actionContext: BaseActionContext): Promise<void> {
+		await scriptEditSelect(
 			actionContext.profile!,
 			actionContext.object!,
 			this._connectionManagementService,
@@ -129,8 +129,8 @@ export class ScriptCreateAction extends Action {
 		super(id, label);
 	}
 
-	public async run(actionContext: BaseActionContext): Promise<boolean> {
-		return script(
+	public async run(actionContext: BaseActionContext): Promise<void> {
+		await script(
 			actionContext.profile!,
 			actionContext.object!,
 			this._connectionManagementService,
@@ -156,8 +156,8 @@ export class ScriptDeleteAction extends Action {
 		super(id, label);
 	}
 
-	public async run(actionContext: BaseActionContext): Promise<boolean> {
-		return script(
+	public async run(actionContext: BaseActionContext): Promise<void> {
+		await script(
 			actionContext.profile!,
 			actionContext.object!,
 			this._connectionManagementService,

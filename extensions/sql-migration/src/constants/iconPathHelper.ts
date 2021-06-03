@@ -29,6 +29,9 @@ export class IconPathHelper {
 	public static sqlDatabaseWarningLogo: IconPath;
 	public static cancel: IconPath;
 	public static warning: IconPath;
+	public static info: IconPath;
+	public static error: IconPath;
+	public static completingCutover: IconPath;
 
 	public static setExtensionContext(context: vscode.ExtensionContext) {
 		IconPathHelper.copy = {
@@ -102,6 +105,18 @@ export class IconPathHelper {
 		IconPathHelper.warning = {
 			light: context.asAbsolutePath('images/warning.svg'),
 			dark: context.asAbsolutePath('images/warning.svg')
+		};
+		IconPathHelper.info = {
+			light: context.asAbsolutePath('images/info.svg'),
+			dark: context.asAbsolutePath('images/infoBox.svg')
+		};
+		IconPathHelper.error = {
+			light: context.asAbsolutePath('images/error.svg'),
+			dark: context.asAbsolutePath('images/error.svg')
+		};
+		IconPathHelper.completingCutover = {
+			light: context.asAbsolutePath('images/completingCutover.svg'),
+			dark: context.asAbsolutePath('images/completingCutover.svg')
 		};
 	}
 }
