@@ -725,9 +725,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				}
 			} catch (e) {
 				vscode.window.showErrorMessage(
-					localize('sql.migration.starting.migration.error', "Error message: '{0}'.  stack:'{1}'",
-						e.message,
-						e.stack));
+					localize('sql.migration.starting.migration.error', "An error occurred while starting the migration: '{0}'", e.message));
 				console.log(e);
 			}
 
