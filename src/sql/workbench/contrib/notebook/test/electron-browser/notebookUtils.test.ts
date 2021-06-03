@@ -265,12 +265,12 @@ suite('notebookUtils', function (): void {
 
 	test('EditStack test', async function (): Promise<void> {
 		let stack = new RichTextEditStack();
-		assert.strictEqual(stack.length, 0);
+		assert.strictEqual(stack.count, 0);
 
 		stack.push('1');
 		stack.push('2');
 		stack.push('3');
-		assert.strictEqual(stack.length, 3);
+		assert.strictEqual(stack.count, 3);
 
 		assert.strictEqual(stack.peek(), '3');
 
@@ -281,12 +281,12 @@ suite('notebookUtils', function (): void {
 		assert.strictEqual(topElement, '2');
 
 		stack.push('4');
-		assert.strictEqual(stack.length, 2);
+		assert.strictEqual(stack.count, 2);
 		topElement = stack.pop();
 		assert.strictEqual(topElement, '4');
 
 		stack.clear();
-		assert.strictEqual(stack.length, 0);
+		assert.strictEqual(stack.count, 0);
 		topElement = stack.pop();
 		assert.strictEqual(topElement, undefined);
 		assert.strictEqual(stack.peek(), undefined);

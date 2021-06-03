@@ -532,7 +532,7 @@ class RichTextCellEdit implements IResourceUndoRedoElement {
 	}
 
 	public async undo(): Promise<void> {
-		if (this._undoStack.length > 1) {
+		if (this._undoStack.count > 1) {
 			// The most recent change is at the top of the undo stack, so we want to
 			// update the text so that it's the change just before that.
 			let redoText = this._undoStack.pop();
@@ -545,7 +545,7 @@ class RichTextCellEdit implements IResourceUndoRedoElement {
 	}
 
 	public async redo(): Promise<void> {
-		if (this._redoStack.length > 0) {
+		if (this._redoStack.count > 0) {
 			let text = this._redoStack.pop();
 			this._undoStack.push(text);
 
@@ -581,7 +581,7 @@ export class RichTextEditStack {
 		this._list = [];
 	}
 
-	public get length(): number {
+	public get count(): number {
 		return this._list.length;
 	}
 }
