@@ -33,7 +33,6 @@ export interface StatusPipeArgs {
 	type: 'status';
 }
 
-
 export interface ExtensionManagementPipeArgs {
 	type: 'extensionManagement';
 	list?: { showVersions?: boolean, category?: string; };
@@ -42,7 +41,7 @@ export interface ExtensionManagementPipeArgs {
 	force?: boolean;
 }
 
-export type PipeCommand = OpenCommandPipeArgs | StatusPipeArgs | OpenExternalCommandPipeArgs;
+export type PipeCommand = OpenCommandPipeArgs | StatusPipeArgs | OpenExternalCommandPipeArgs | ExtensionManagementPipeArgs;
 
 export interface ICommandsExecuter {
 	executeCommand<T>(id: string, ...args: any[]): Promise<T>;
