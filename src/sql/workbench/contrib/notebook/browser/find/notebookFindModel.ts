@@ -518,7 +518,7 @@ export class NotebookFindModel extends Disposable implements INotebookFindModel 
 
 	public get findMatches(): NotebookFindMatch[] {
 		let findMatches: NotebookFindMatch[] = [];
-		this._findArray.forEach(element => {
+		this._findArray?.forEach(element => {
 			findMatches = findMatches.concat(new NotebookFindMatch(element, null));
 		});
 		return findMatches;
