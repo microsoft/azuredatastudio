@@ -31,11 +31,11 @@ function getFocusedWebviewDelegate(accessor: ServicesAccessor): Webview | undefi
 	const editorService = accessor.get(IEditorService);
 	const editor = getNotebookEditorFromEditorPane(editorService.activeEditorPane);
 	if (!editor?.hasFocus()) {
-		return;
+		return undefined; // {{SQL CARBON EDIT}} strict nulls
 	}
 
 	if (!editor?.hasWebviewFocus()) {
-		return;
+		return undefined; // {{SQL CARBON EDIT}} strict nulls
 	}
 
 	const webview = editor?.getInnerWebview();
