@@ -557,18 +557,15 @@ class RichTextCellEdit implements IResourceUndoRedoElement {
 export class RichTextEditStack {
 	private _list: string[] = [];
 
-	constructor() {
-	}
-
 	public push(element: string): void {
 		this._list.push(element);
 	}
 
-	public pop(): string {
+	public pop(): string | undefined {
 		return this._list.pop();
 	}
 
-	public peek(): string {
+	public peek(): string | undefined {
 		if (this._list.length > 0) {
 			return this._list[this._list.length - 1];
 		} else {
