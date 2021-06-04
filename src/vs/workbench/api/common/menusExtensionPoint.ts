@@ -215,6 +215,11 @@ const apiMenus: IAPIMenu[] = [
 		id: MenuId.TunnelOriginInline,
 		description: localize('view.tunnelOriginInline', "The Ports view item origin inline menu")
 	},
+	{
+		key: 'ports/item/port/inline',
+		id: MenuId.TunnelPortInline,
+		description: localize('view.tunnelPortInline', "The Ports view item port inline menu")
+	},
 	// {{SQL CARBON EDIT}} start menu entries
 	{
 		key: 'dashboard/toolbar',
@@ -255,12 +260,7 @@ const apiMenus: IAPIMenu[] = [
 		key: 'connectionDialog/browseTree',
 		id: MenuId.ConnectionDialogBrowseTreeContext,
 		description: localize('connectionDialogBrowseTree.context', "The connection dialog's browse tree context menu")
-	},
-	{
-		key: 'dataGrid/item/context',
-		id: MenuId.DataGridItemContext,
-		description: localize('dataGrid.context', "The data grid item context menu")
-	},
+	}
 	// {{SQL CARBON EDIT}} end menu entries
 ];
 

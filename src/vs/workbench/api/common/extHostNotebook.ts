@@ -500,12 +500,12 @@ export class ExtHostNotebookController implements ExtHostNotebookShape {
 		const revivedUri = URI.revive(uri);
 		const document = this._documents.get(revivedUri);
 		if (!document || !provider) {
-			return;
+			return undefined; // {{SQL CARBON EDIT}} Strict nulls
 		}
 
 		const cell = document.getCellFromIndex(index);
 		if (!cell) {
-			return;
+			return undefined; // {{SQL CARBON EDIT}} Strict nulls
 		}
 
 		const result = await provider.provideCellStatusBarItems(cell.cell, token);

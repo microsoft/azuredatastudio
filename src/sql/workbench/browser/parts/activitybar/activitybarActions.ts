@@ -12,6 +12,7 @@ import { IContextMenuService } from 'vs/platform/contextview/browser/contextView
 import { IColorTheme, IThemeService } from 'vs/platform/theme/common/themeService';
 import { ActivityAction, ActivityActionViewItem, ICompositeBarColors } from 'vs/workbench/browser/parts/compositeBarActions';
 import { IAccountManagementService } from 'sql/platform/accounts/common/interfaces';
+import { IHoverService } from 'vs/workbench/services/hover/browser/hover';
 
 export class AccountsActionViewItem extends ActivityActionViewItem {
 	constructor(
@@ -20,9 +21,10 @@ export class AccountsActionViewItem extends ActivityActionViewItem {
 		@IThemeService themeService: IThemeService,
 		@IContextMenuService protected contextMenuService: IContextMenuService,
 		@IMenuService protected menuService: IMenuService,
-		@IAccountManagementService private readonly accountManagementService: IAccountManagementService
+		@IAccountManagementService private readonly accountManagementService: IAccountManagementService,
+		@IHoverService hoverService: IHoverService
 	) {
-		super(action, { draggable: false, colors, icon: true }, themeService);
+		super(action, { draggable: false, colors, icon: true }, themeService, hoverService);
 	}
 
 	render(container: HTMLElement): void {
