@@ -273,7 +273,7 @@ suite.skip('EditorsObserver', function () {
 
 		const storage = new TestStorageService();
 		const observer = disposables.add(new EditorsObserver(part, storage));
-		await part.whenCreated;
+		await part.whenReady;
 
 		let currentEditorsMRU = observer.editors;
 		assert.strictEqual(currentEditorsMRU.length, 3);
@@ -290,7 +290,7 @@ suite.skip('EditorsObserver', function () {
 		storage.emitWillSaveState(WillSaveStateReason.SHUTDOWN);
 
 		const restoredObserver = disposables.add(new EditorsObserver(part, storage));
-		await part.whenCreated;
+		await part.whenReady;
 
 		currentEditorsMRU = restoredObserver.editors;
 		assert.strictEqual(currentEditorsMRU.length, 3);
@@ -322,7 +322,7 @@ suite.skip('EditorsObserver', function () {
 
 		const storage = new TestStorageService();
 		const observer = disposables.add(new EditorsObserver(part, storage));
-		await part.whenCreated;
+		await part.whenReady;
 
 		let currentEditorsMRU = observer.editors;
 		assert.strictEqual(currentEditorsMRU.length, 3);
@@ -339,7 +339,7 @@ suite.skip('EditorsObserver', function () {
 		storage.emitWillSaveState(WillSaveStateReason.SHUTDOWN);
 
 		const restoredObserver = disposables.add(new EditorsObserver(part, storage));
-		await part.whenCreated;
+		await part.whenReady;
 
 		currentEditorsMRU = restoredObserver.editors;
 		assert.strictEqual(currentEditorsMRU.length, 3);
@@ -365,7 +365,7 @@ suite.skip('EditorsObserver', function () {
 
 		const storage = new TestStorageService();
 		const observer = disposables.add(new EditorsObserver(part, storage));
-		await part.whenCreated;
+		await part.whenReady;
 
 		let currentEditorsMRU = observer.editors;
 		assert.strictEqual(currentEditorsMRU.length, 1);
@@ -376,7 +376,7 @@ suite.skip('EditorsObserver', function () {
 		storage.emitWillSaveState(WillSaveStateReason.SHUTDOWN);
 
 		const restoredObserver = disposables.add(new EditorsObserver(part, storage));
-		await part.whenCreated;
+		await part.whenReady;
 
 		currentEditorsMRU = restoredObserver.editors;
 		assert.strictEqual(currentEditorsMRU.length, 0);
