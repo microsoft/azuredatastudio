@@ -205,13 +205,13 @@ export class SettingsEditor2 extends EditorPane {
 			}
 		}));
 
-		this._register(workspaceTrustManagementService.onDidChangeTrustState(() => {
+		this._register(workspaceTrustManagementService.onDidChangeTrust(() => {
 			if (this.searchResultModel) {
-				this.searchResultModel.updateWorkspaceTrustState(workspaceTrustManagementService.getWorkspaceTrustState());
+				this.searchResultModel.updateWorkspaceTrust(workspaceTrustManagementService.isWorkpaceTrusted());
 			}
 
 			if (this.settingsTreeModel) {
-				this.settingsTreeModel.updateWorkspaceTrustState(workspaceTrustManagementService.getWorkspaceTrustState());
+				this.settingsTreeModel.updateWorkspaceTrust(workspaceTrustManagementService.isWorkpaceTrusted());
 			}
 		}));
 
@@ -1018,7 +1018,7 @@ export class SettingsEditor2 extends EditorPane {
 			this.refreshTOCTree();
 			this.renderTree(undefined, forceRefresh);
 		} else {
-			this.settingsTreeModel = this.instantiationService.createInstance(SettingsTreeModel, this.viewState, this.workspaceTrustManagementService.getWorkspaceTrustState());
+			this.settingsTreeModel = this.instantiationService.createInstance(SettingsTreeModel, this.viewState, this.workspaceTrustManagementService.isWorkpaceTrusted());
 			this.settingsTreeModel.update(resolvedSettingsRoot);
 			this.tocTreeModel.settingsTreeRoot = this.settingsTreeModel.root as SettingsTreeGroupElement;
 
@@ -1211,7 +1211,7 @@ export class SettingsEditor2 extends EditorPane {
 	 * Return a fake SearchResultModel which can hold a flat list of all settings, to be filtered (@modified etc)
 	 */
 	private createFilterModel(): SearchResultModel {
-		const filterModel = this.instantiationService.createInstance(SearchResultModel, this.viewState, this.workspaceTrustManagementService.getWorkspaceTrustState());
+		const filterModel = this.instantiationService.createInstance(SearchResultModel, this.viewState, this.workspaceTrustManagementService.isWorkpaceTrusted());
 
 		const fullResult: ISearchResult = {
 			filterMatches: []
@@ -1317,7 +1317,7 @@ export class SettingsEditor2 extends EditorPane {
 			}
 
 			if (!this.searchResultModel) {
-				this.searchResultModel = this.instantiationService.createInstance(SearchResultModel, this.viewState, this.workspaceTrustManagementService.getWorkspaceTrustState());
+				this.searchResultModel = this.instantiationService.createInstance(SearchResultModel, this.viewState, this.workspaceTrustManagementService.isWorkpaceTrusted());
 				this.searchResultModel.setResult(type, result);
 				this.tocTreeModel.currentSearchModel = this.searchResultModel;
 				this.onSearchModeToggled();
