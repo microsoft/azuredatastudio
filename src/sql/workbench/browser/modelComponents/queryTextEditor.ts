@@ -63,7 +63,7 @@ export class QueryTextEditor extends BaseTextEditor {
 			options.folding = false;
 			options.renderIndentGuides = false;
 			options.rulers = [];
-			options.glyphMargin = true;
+			options.glyphMargin = false;
 			options.minimap = {
 				enabled: false
 			};
