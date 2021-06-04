@@ -30,7 +30,6 @@ import { CodeComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/
 import { NotebookRange, ICellEditorProvider, INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
 import { HTMLMarkdownConverter } from 'sql/workbench/contrib/notebook/browser/htmlMarkdownConverter';
 import { NotebookInput } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
-import { IResourceUndoRedoElement, IUndoRedoService, UndoRedoElementType } from 'vs/platform/undoRedo/common/undoRedo';
 
 export const TEXT_SELECTOR: string = 'text-cell-component';
 const USER_SELECT_CLASS = 'actionselect';
@@ -75,9 +74,9 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 			if ((e.ctrlKey || e.metaKey) && e.key === 'a') {
 				preventDefaultAndExecCommand(e, 'selectAll');
 			} else if ((e.metaKey && e.shiftKey && e.key === 'z') || (e.ctrlKey && e.key === 'y') && !this.markdownMode) {
-				this._undoRedoService.redo(this.cellModel.cellRichTextUri);
+				this.redoChange();
 			} else if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
-				this._undoRedoService.undo(this.cellModel.cellRichTextUri);
+				this.undoChange();
 			} else if (e.shiftKey && e.key === 'Tab') {
 				preventDefaultAndExecCommand(e, 'outdent');
 			} else if (e.key === 'Tab') {
@@ -112,8 +111,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		@Inject(IInstantiationService) private _instantiationService: IInstantiationService,
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
 		@Inject(IConfigurationService) private _configurationService: IConfigurationService,
-		@Inject(INotebookService) private _notebookService: INotebookService,
-		@Inject(IUndoRedoService) private _undoRedoService: IUndoRedoService
+		@Inject(INotebookService) private _notebookService: INotebookService
 	) {
 		super();
 		this.markdownRenderer = this._instantiationService.createInstance(NotebookMarkdownRenderer);
@@ -271,20 +269,35 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 
 	private addUndoElement(newText: string) {
 		if (newText !== this._undoStack.peek()) {
-			this._undoStack.push(newText);
 			this._redoStack.clear();
+			this._undoStack.push(newText);
+		}
+	}
 
-			let updateDisplayText = (text: string) => {
-				// The output field's underlying HTMLElement gets re-created when switching back and
-				// forth between rich text and markdown, so we need to keep a reference to the output
-				// field in order to update the displayed HTML properly.
-				let textOutputElement = <HTMLElement>this.output.nativeElement;
-				textOutputElement.innerHTML = text;
-			};
-			let handleHtmlUpdated = () => {
-				this.updateCellSource(false);
-			};
-			this._undoRedoService.pushElement(new RichTextCellEdit(this._undoStack, this._redoStack, this.cellModel.cellRichTextUri, updateDisplayText, handleHtmlUpdated));
+	private undoChange(): void {
+		if (this._undoStack.count > 1) {
+			// The most recent change is at the top of the undo stack, so we want to
+			// update the text so that it's the change just before that.
+			let redoText = this._undoStack.pop();
+			this._redoStack.push(redoText);
+			let undoText = this._undoStack.peek();
+
+			let textOutputElement = <HTMLElement>this.output.nativeElement;
+			textOutputElement.innerHTML = undoText;
+
+			this.updateCellSource(false);
+		}
+	}
+
+	private redoChange(): void {
+		if (this._redoStack.count > 0) {
+			let text = this._redoStack.pop();
+			this._undoStack.push(text);
+
+			let textOutputElement = <HTMLElement>this.output.nativeElement;
+			textOutputElement.innerHTML = text;
+
+			this.updateCellSource(false);
 		}
 	}
 
@@ -501,57 +514,6 @@ function preventDefaultAndExecCommand(e: KeyboardEvent, commandId: string) {
 	// use preventDefault() to avoid invoking the editor's select all
 	e.preventDefault();
 	document.execCommand(commandId);
-}
-
-class RichTextCellEdit implements IResourceUndoRedoElement {
-	private readonly _label: string = 'RichText Cell Edit';
-
-	constructor(
-		private readonly _undoStack: RichTextEditStack,
-		private readonly _redoStack: RichTextEditStack,
-		private readonly _cellUri: URI,
-		private readonly _updateDisplayHtml: (string) => void,
-		private readonly _handleHtmlUpdated: () => void) {
-	}
-
-	public get type(): UndoRedoElementType.Resource {
-		return UndoRedoElementType.Resource;
-	}
-
-	public get resource(): URI {
-		return this._cellUri;
-	}
-
-	public get label(): string {
-		return this._label;
-	}
-
-	public get confirmBeforeUndo(): boolean | undefined {
-		return false;
-	}
-
-	public async undo(): Promise<void> {
-		if (this._undoStack.count > 1) {
-			// The most recent change is at the top of the undo stack, so we want to
-			// update the text so that it's the change just before that.
-			let redoText = this._undoStack.pop();
-			this._redoStack.push(redoText);
-			let undoText = this._undoStack.peek();
-
-			this._updateDisplayHtml(undoText);
-			this._handleHtmlUpdated();
-		}
-	}
-
-	public async redo(): Promise<void> {
-		if (this._redoStack.count > 0) {
-			let text = this._redoStack.pop();
-			this._undoStack.push(text);
-
-			this._updateDisplayHtml(text);
-			this._handleHtmlUpdated();
-		}
-	}
 }
 
 export class RichTextEditStack {

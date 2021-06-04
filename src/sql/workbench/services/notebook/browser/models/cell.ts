@@ -62,7 +62,6 @@ export class CellModel extends Disposable implements ICellModel {
 	private _hover: boolean;
 	private _executionCount: number | undefined;
 	private _cellUri: URI;
-	private _cellRichTextUri: URI;
 	private _connectionManagementService: IConnectionManagementService;
 	private _stdInHandler: nb.MessageHandler<nb.IStdinMessage>;
 	private _onCellLoaded = new Emitter<string>();
@@ -114,7 +113,6 @@ export class CellModel extends Disposable implements ICellModel {
 		// if the fromJson() method was already called and _cellGuid was previously set, don't generate another UUID unnecessarily
 		this._cellGuid = this._cellGuid || generateUuid();
 		this.createUri();
-		this.createRichTextUri();
 		this.populatePropertiesFromSettings();
 	}
 
@@ -269,10 +267,6 @@ export class CellModel extends Disposable implements ICellModel {
 
 	public get cellUri(): URI {
 		return this._cellUri;
-	}
-
-	public get cellRichTextUri(): URI {
-		return this._cellRichTextUri;
 	}
 
 	public get notebookModel(): NotebookModel {
@@ -982,12 +976,6 @@ export class CellModel extends Disposable implements ICellModel {
 		let uri = URI.from({ scheme: Schemas.untitled, path: `notebook-editor-${this.id}` });
 		// Use this to set the internal (immutable) and public (shared with extension) uri properties
 		this.cellUri = uri;
-	}
-
-	// Rich text editors are separate from the expected CodeComponent, so they need a separate URI for change tracking
-	private createRichTextUri(): void {
-		let uri = URI.from({ scheme: Schemas.untitled, path: `notebook-rich-text-editor-${this.id}` });
-		this._cellRichTextUri = uri;
 	}
 
 	// Get Knox endpoint from IConnectionProfile
