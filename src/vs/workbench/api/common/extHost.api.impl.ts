@@ -1125,6 +1125,10 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 			createNotebookController(options) {
 				checkProposedApiEnabled(extension);
 				return extHostNotebookKernels.createKernel(extension, options);
+			},
+			createNotebookRendererCommunication(rendererId) {
+				checkProposedApiEnabled(extension);
+				return extHostNotebook.createNotebookCommunication(rendererId);
 			}
 		};
 
