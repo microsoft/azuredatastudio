@@ -865,7 +865,7 @@ export interface INotebookDocumentShowOptions {
 	position?: EditorGroupColumn;
 	preserveFocus?: boolean;
 	pinned?: boolean;
-	selection?: ICellRange;
+	selections?: ICellRange[];
 }
 
 export type INotebookCellStatusBarEntryDto = Dto<INotebookCellStatusBarEntry>;
@@ -915,7 +915,7 @@ export interface INotebookKernelDto2 {
 	supportedLanguages: string[];
 	supportsInterrupt?: boolean;
 	hasExecutionOrder?: boolean;
-	preloads?: UriComponents[];
+	preloads?: { uri: UriComponents; provides: string[] }[];
 }
 
 export interface MainThreadNotebookKernelsShape extends IDisposable {
@@ -1915,7 +1915,7 @@ export interface INotebookKernelInfoDto2 {
 	description?: string;
 	detail?: string;
 	isPreferred?: boolean;
-	preloads?: UriComponents[];
+	preloads?: { uri: UriComponents; provides: string[] }[];
 	supportedLanguages?: string[]
 	implementsInterrupt?: boolean;
 }
@@ -1957,7 +1957,7 @@ export interface ExtHostNotebookEditorsShape {
 }
 
 export interface ExtHostNotebookKernelsShape {
-	$acceptSelection(handle: number, value: boolean): void;
+	$acceptSelection(handle: number, uri: UriComponents, value: boolean): void;
 	$executeCells(handle: number, uri: UriComponents, ranges: ICellRange[]): void;
 	$cancelCells(handle: number, uri: UriComponents, ranges: ICellRange[]): void;
 }
