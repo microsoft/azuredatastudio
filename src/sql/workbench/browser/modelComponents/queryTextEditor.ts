@@ -63,6 +63,8 @@ export class QueryTextEditor extends BaseTextEditor {
 			options.folding = false;
 			options.renderIndentGuides = false;
 			options.rulers = [];
+			// glyphMargin sets the option to set breakpoints
+			// switched off for SQL and Notebooks
 			options.glyphMargin = false;
 			options.minimap = {
 				enabled: false
