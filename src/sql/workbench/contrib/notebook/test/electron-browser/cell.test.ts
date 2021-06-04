@@ -1175,7 +1175,7 @@ suite('Cell Model', function (): void {
 		let imageFilebase64Value = 'data:application/octet-stream;base64,iVBORw0KGgoAAAANSU';
 		let index = imageFilebase64Value.indexOf('base64,');
 		const testImageAttachment: nb.ICellAttachment = { ['image/png']: imageFilebase64Value.substring(index + 7) };
-		const attachments: nb.ICellAttachments = { 'test.png': testImageAttachment };
+		let attachments: nb.ICellAttachments = { 'test.png': testImageAttachment };
 		let notebookModel = new NotebookModelStub({
 			name: '',
 			version: '',
@@ -1189,6 +1189,9 @@ suite('Cell Model', function (): void {
 		let model = factory.createCell(contents, { notebook: notebookModel, isTrusted: false });
 		model.addAttachment('image/png', imageFilebase64Value, 'test.png');
 		assert.deepEqual(model.attachments, attachments);
+		attachments = { 'test.png': testImageAttachment, 'test1.png': testImageAttachment };
+		model.addAttachment('image/png', imageFilebase64Value, 'test1.png');
+		assert.deepEqual(model.attachments, attachments, 'addAttachment should add unique images');
 	});
 
 	test('addAttachment should not add an invalid attachment to cell', async function () {
@@ -1206,5 +1209,27 @@ suite('Cell Model', function (): void {
 		let cellModel = factory.createCell(contents, { notebook: notebookModel, isTrusted: false });
 		cellModel.addAttachment('image/png', imageFilebase64Value, 'test.png');
 		assert.equal(cellModel.attachments, undefined);
+	});
+
+	test('addAttachment should not add a duplicate attachment to cell', async function () {
+		let imageFilebase64Value = 'data:application/octet-stream;base64,iVBORw0KGgoAAAANSU';
+		let index = imageFilebase64Value.indexOf('base64,');
+		const testImageAttachment: nb.ICellAttachment = { ['image/png']: imageFilebase64Value.substring(index + 7) };
+		let attachments: nb.ICellAttachments = { 'test.png': testImageAttachment };
+		let notebookModel = new NotebookModelStub({
+			name: '',
+			version: '',
+			mimetype: ''
+		});
+		let contents: nb.ICellContents = {
+			cell_type: CellTypes.Code,
+			source: '',
+			metadata: {}
+		};
+		let cellModel = factory.createCell(contents, { notebook: notebookModel, isTrusted: false });
+		cellModel.addAttachment('image/png', imageFilebase64Value, 'test.png');
+		assert.deepEqual(cellModel.attachments, attachments);
+		cellModel.addAttachment('image/png', imageFilebase64Value, 'test.png');
+		assert.deepEqual(cellModel.attachments, attachments, 'addAttachment should not add duplicate images');
 	});
 });
