@@ -318,7 +318,7 @@
       <source xml:lang="en">Azure location</source>
     </trans-unit>
     <trans-unit id="arc.postgres.wizard.title">
-      <source xml:lang="en">Deploy an Azure Arc enabled PostgreSQL Hyperscale server group (Preview)</source>
+      <source xml:lang="en">Deploy an Azure Arc-enabled PostgreSQL Hyperscale server group (Preview)</source>
     </trans-unit>
     <trans-unit id="arc.postgres.wizard.page1.title">
       <source xml:lang="en">Provide Azure enabled PostgreSQL Hyperscale server group parameters</source>
@@ -405,7 +405,7 @@
       <source xml:lang="en">Azure SQL managed instance - Azure Arc terms and conditions</source>
     </trans-unit>
     <trans-unit id="arc.agreement.postgres.terms.conditions">
-      <source xml:lang="en">Azure Arc enabled PostgreSQL Hyperscale terms and conditions</source>
+      <source xml:lang="en">Azure Arc-enabled PostgreSQL Hyperscale terms and conditions</source>
     </trans-unit>
     <trans-unit id="should.be.integer">
       <source xml:lang="en">Value must be an integer</source>
@@ -423,7 +423,7 @@
       <source xml:lang="en">Memory limit must be greater than or equal to requested memory</source>
     </trans-unit>
     <trans-unit id="arc.agreement.sql.help.text">
-      <source xml:lang="en">Azure Arc enabled Managed Instance provides SQL Server access and feature compatibility that can be deployed on the infrastructure of your choice. While this service is in preview, it has some feature limitations compared to SQL Managed Instance on Azure. {0}</source>
+      <source xml:lang="en">Azure Arc-enabled Managed Instance provides SQL Server access and feature compatibility that can be deployed on the infrastructure of your choice. While this service is in preview, it has some feature limitations compared to SQL Managed Instance on Azure. {0}</source>
     </trans-unit>
     <trans-unit id="arc.agreement.sql.help.text.learn.more">
       <source xml:lang="en">Learn more</source>
@@ -836,7 +836,7 @@
       <source xml:lang="en"> These server parameters of the Worker nodes can be set to custom (non-default) values. Search to find parameters.</source>
     </trans-unit>
     <trans-unit id="arc.learnAboutNodeParameters">
-      <source xml:lang="en">Learn more about database engine settings for Azure Arc enabled PostgreSQL Hyperscale</source>
+      <source xml:lang="en">Learn more about database engine settings for Azure Arc-enabled PostgreSQL Hyperscale</source>
     </trans-unit>
     <trans-unit id="arc.noNodeParametersFound">
       <source xml:lang="en">No worker server parameters found...</source>
@@ -848,7 +848,7 @@
       <source xml:lang="en">scaling compute vCores and memory.</source>
     </trans-unit>
     <trans-unit id="arc.postgresComputeAndStorageDescriptionPartOne">
-      <source xml:lang="en">You can scale your Azure Arc enabled</source>
+      <source xml:lang="en">You can scale your Azure Arc-enabled</source>
     </trans-unit>
     <trans-unit id="arc.miaaComputeAndStorageDescriptionPartOne">
       <source xml:lang="en">You can scale your Azure SQL managed instance - Azure Arc by</source>

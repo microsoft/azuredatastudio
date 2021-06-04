@@ -379,7 +379,7 @@
         <target state="translated">SQL Server - Azure Arc</target>
       </trans-unit>
       <trans-unit id="azurecore.azureArcPostgres">
-        <source xml:lang="en">Azure Arc enabled PostgreSQL Hyperscale</source>
+        <source xml:lang="en">Azure Arc-enabled PostgreSQL Hyperscale</source>
         <target state="translated">已啟用 Azure Arc 的 PostgreSQL 超大規模資料庫</target>
       </trans-unit>
       <trans-unit id="azure.unableToOpenAzureLink">
