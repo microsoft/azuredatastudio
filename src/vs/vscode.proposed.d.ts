@@ -962,10 +962,12 @@ declare module 'vscode' {
 
 	export class NotebookCellMetadata {
 		/**
+		 * todo@API this can be renamed to `contentEditable`.
 		 * Controls whether a cell's editor is editable/readonly.
 		 */
 		readonly editable?: boolean;
 		/**
+		 * todo@API this can be removed and only kept internally? It's a UI thing and should be controlled by detecting wether there is a debugging session, or through a user setting (like line numbers)
 		 * Controls if the cell has a margin to support the breakpoint UI.
 		 * This metadata is ignored for markdown cell.
 		 */
@@ -1011,11 +1013,13 @@ declare module 'vscode' {
 	export class NotebookDocumentMetadata {
 
 		/**
+		 * todo@API. If it's called `editable` then this should also control if a cell is edtiable or not (through UI at least).
 		 * Controls if users can add or delete cells
 		 * Defaults to true
 		 */
 		readonly editable: boolean;
 		/**
+		 * todo@API maybe removed?
 		 * Default value for [cell editable metadata](#NotebookCellMetadata.editable).
 		 * Defaults to true.
 		 */
@@ -1222,11 +1226,13 @@ declare module 'vscode' {
 
 	// todo@API support ids https://github.com/jupyter/enhancement-proposals/blob/master/62-cell-id/cell-id.md
 	export class NotebookCellData {
+		// todo@API should they all be readonly?
 		kind: NotebookCellKind;
 		// todo@API better names: value? text?
 		source: string;
 		// todo@API how does language and MD relate?
 		language: string;
+		// todo@API ReadonlyArray?
 		outputs?: NotebookCellOutput[];
 		metadata?: NotebookCellMetadata;
 		latestExecutionSummary?: NotebookCellExecutionSummary;
@@ -1234,6 +1240,7 @@ declare module 'vscode' {
 	}
 
 	export class NotebookData {
+		// todo@API should they all be readonly?
 		cells: NotebookCellData[];
 		metadata: NotebookDocumentMetadata;
 		constructor(cells: NotebookCellData[], metadata?: NotebookDocumentMetadata);
