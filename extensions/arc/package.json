@@ -708,13 +708,13 @@
                         {
                           "label": "%arc.postgres.server.group.coordinator.cores.request.label%",
                           "description": "%arc.postgres.server.group.coordinator.cores.request.description%",
-                          "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_CORES_REQUEST",
+                          "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_COORDINATOR_CORES_REQUEST",
                           "type": "number",
                           "min": 1,
                           "validations": [
                             {
                               "type": "<=",
-                              "target": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_CORES_LIMIT",
+                              "target": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_COORDINATOR_CORES_LIMIT",
                               "description": "%requested.cores.less.than.or.equal.to.cores.limit%"
                             }
                           ]
@@ -722,13 +722,13 @@
                         {
                           "label": "%arc.postgres.server.group.coordinator.cores.limit.label%",
                           "description": "%arc.postgres.server.group.coordinator.cores.limit.description%",
-                          "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_CORES_LIMIT",
+                          "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_COORDINATOR_CORES_LIMIT",
                           "type": "number",
                           "min": 1,
                           "validations": [
                             {
                               "type": ">=",
-                              "target": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_CORES_REQUEST",
+                              "target": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_COORDINATOR_CORES_REQUEST",
                               "description": "%cores.limit.greater.than.or.equal.to.requested.cores%"
                             }
                           ]
@@ -736,13 +736,13 @@
                         {
                           "label": "%arc.postgres.server.group.coordinator.memory.request.label%",
                           "description": "%arc.postgres.server.group.coordinator.memory.request.description%",
-                          "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_MEMORY_REQUEST",
+                          "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_COORDINATOR_MEMORY_REQUEST",
                           "type": "number",
                           "min": 0.25,
                           "validations": [
                             {
                               "type": "<=",
-                              "target": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_MEMORY_LIMIT",
+                              "target": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_COORDINATOR_MEMORY_LIMIT",
                               "description": "%requested.memory.less.than.or.equal.to.memory.limit%"
                             }
                           ]
@@ -750,31 +750,27 @@
                         {
                           "label": "%arc.postgres.server.group.coordinator.memory.limit.label%",
                           "description": "%arc.postgres.server.group.coordinator.memory.limit.description%",
-                          "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_MEMORY_LIMIT",
+                          "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_COORDINATOR_MEMORY_LIMIT",
                           "type": "number",
                           "min": 0.25,
                           "validations": [
                             {
                               "type": ">=",
-                              "target": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_MEMORY_REQUEST",
+                              "target": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_COORDINATOR_MEMORY_REQUEST",
                               "description": "%memory.limit.greater.than.or.equal.to.requested.memory%"
                             }
                           ]
                         },
-
-
-
-
                         {
                           "label": "%arc.postgres.server.group.workers.cores.request.label%",
                           "description": "%arc.postgres.server.group.workers.cores.request.description%",
-                          "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_CORES_REQUEST",
+                          "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_WORKERS_CORES_REQUEST",
                           "type": "number",
                           "min": 1,
                           "validations": [
                             {
                               "type": "<=",
-                              "target": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_CORES_LIMIT",
+                              "target": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_WORKERS_CORES_LIMIT",
                               "description": "%requested.cores.less.than.or.equal.to.cores.limit%"
                             }
                           ]
@@ -782,13 +778,13 @@
                         {
                           "label": "%arc.postgres.server.group.workers.cores.limit.label%",
                           "description": "%arc.postgres.server.group.workers.cores.limit.description%",
-                          "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_CORES_LIMIT",
+                          "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_WORKERS_CORES_LIMIT",
                           "type": "number",
                           "min": 1,
                           "validations": [
                             {
                               "type": ">=",
-                              "target": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_CORES_REQUEST",
+                              "target": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_WORKERS_CORES_REQUEST",
                               "description": "%cores.limit.greater.than.or.equal.to.requested.cores%"
                             }
                           ]
@@ -796,13 +792,13 @@
                         {
                           "label": "%arc.postgres.server.group.workers.memory.request.label%",
                           "description": "%arc.postgres.server.group.workers.memory.request.description%",
-                          "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_MEMORY_REQUEST",
+                          "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_WORKERS_MEMORY_REQUEST",
                           "type": "number",
                           "min": 0.25,
                           "validations": [
                             {
                               "type": "<=",
-                              "target": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_MEMORY_LIMIT",
+                              "target": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_WORKERS_MEMORY_LIMIT",
                               "description": "%requested.memory.less.than.or.equal.to.memory.limit%"
                             }
                           ]
@@ -810,13 +806,13 @@
                         {
                           "label": "%arc.postgres.server.group.workers.memory.limit.label%",
                           "description": "%arc.postgres.server.group.workers.memory.limit.description%",
-                          "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_MEMORY_LIMIT",
+                          "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_WORKERS_MEMORY_LIMIT",
                           "type": "number",
                           "min": 0.25,
                           "validations": [
                             {
                               "type": ">=",
-                              "target": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_MEMORY_REQUEST",
+                              "target": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_WORKERS_MEMORY_REQUEST",
                               "description": "%memory.limit.greater.than.or.equal.to.requested.memory%"
                             }
                           ]
