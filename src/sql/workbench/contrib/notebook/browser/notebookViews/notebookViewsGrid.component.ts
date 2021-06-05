@@ -13,6 +13,7 @@ import { localize } from 'vs/nls';
 import { NotebookViewsExtension } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViewsExtension';
 import { CellChangeEvent, INotebookView, INotebookViewCell } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViews';
 import { AngularDisposable } from 'sql/base/browser/lifecycle';
+import { AutoDash } from 'sql/workbench/services/notebook/browser/notebookViews/autodash';
 
 @Component({
 	selector: 'notebook-views-grid-component',
@@ -58,6 +59,12 @@ export class NotebookViewsGridComponent extends AngularDisposable implements OnI
 	ngOnInit() {
 		const self = this;
 		setTimeout(() => {
+			const activeView = this.views.getActiveView();
+			if (activeView.isNew) {
+				this.runAutoLayout(activeView);
+				activeView.markAsViewed();
+			}
+
 			self._grid = GridStack.init({
 				alwaysShowResizeHandle: false,
 				styleInHead: true,
@@ -72,6 +79,31 @@ export class NotebookViewsGridComponent extends AngularDisposable implements OnI
 			self._grid.on('change', function (e: Event, items: GridStackNode[]) { self.persist('change', items, self._grid, self._items); });
 		}, 100);
 		//this._register(this.model.contentChanged((e) => this.handleContentChanged(e)));
+	}
+
+	private resizeCells(): void {
+		this._items.forEach((i: NotebookViewsCardComponent) => {
+			if (i.elementRef) {
+				const cellHeight = 60;
+
+				const naturalHeight = i.elementRef.nativeElement.clientHeight;
+				const heightInCells = Math.ceil(naturalHeight / cellHeight);
+
+				const activeView = this.views.getActiveView();
+				const update: INotebookViewCell = {
+					height: heightInCells
+				};
+
+				this.views.updateCell(i.cell, activeView, update);
+			}
+		});
+	}
+
+	private runAutoLayout(view: INotebookView): void {
+		const autodash = new AutoDash();
+
+		this.resizeCells();
+		autodash.generateLayout(view);
 	}
 
 	private detectChanges(): void {

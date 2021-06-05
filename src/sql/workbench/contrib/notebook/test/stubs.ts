@@ -790,6 +790,7 @@ export class NotebookViewStub implements INotebookView {
 	hiddenCells: readonly ICellModel[];
 	displayedCells: readonly ICellModel[];
 	name: string;
+	isNew: boolean;
 
 	initialize(): void {
 		throw new Error('Method not implemented.');
@@ -816,6 +817,9 @@ export class NotebookViewStub implements INotebookView {
 		throw new Error('Method not implemented.');
 	}
 	compactCells() {
+		throw new Error('Method not implemented.');
+	}
+	markAsViewed(): void {
 		throw new Error('Method not implemented.');
 	}
 	save(): void {

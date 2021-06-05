@@ -6,7 +6,7 @@
 import * as azdata from 'azdata';
 import * as path from 'vs/base/common/path';
 
-import { Action, IAction } from 'vs/base/common/actions';
+import { Action, IAction, Separator } from 'vs/base/common/actions';
 import { localize } from 'vs/nls';
 import { IContextViewProvider } from 'vs/base/browser/ui/contextview/contextview';
 import { INotificationService, Severity, INotificationActions } from 'vs/platform/notification/common/notification';
@@ -184,20 +184,19 @@ export abstract class ToggleableAction extends Action {
 
 export class NotebookViewsOptions implements IActionProvider {
 	private _options: Action[];
-	private model: NotebookModel;
 	private views: NotebookViewsExtension;
 	private readonly _optionsUpdated = new Emitter<boolean>();
 
 	constructor(
 		container: HTMLElement,
-		contextViewProvider: IContextViewProvider,
+		views: NotebookViewsExtension,
 		modelReady: Promise<INotebookModel>,
 		@INotebookService private _notebookService: INotebookService,
 		@IInstantiationService private instantiationService: IInstantiationService) {
 
 		if (modelReady) {
 			modelReady
-				.then((model) => this.updateModel(model))
+				.then((model) => { this.views = views; this.updateView(); })
 				.catch((err) => {
 					// No-op for now
 				});
@@ -207,12 +206,6 @@ export class NotebookViewsOptions implements IActionProvider {
 	}
 	getActions(): IAction[] {
 		return this._options;
-	}
-
-	updateModel(model: INotebookModel): void {
-		this.model = model as NotebookModel;
-		this.views = new NotebookViewsExtension(this.model);
-		this.updateView();
 	}
 
 	public get options(): Action[] {
@@ -226,10 +219,12 @@ export class NotebookViewsOptions implements IActionProvider {
 		))];
 
 		const backToNotebookButton = this.instantiationService.createInstance(NotebookViewAction, 'notebookView.backToNotebook', localize('notebookViewLabel', 'Editor'), 'notebook-button');
-		const newViewButton = this.instantiationService.createInstance(CreateNotebookViewAction, 'notebookView.newView', localize('newViewLabel', 'Create New View'), 'notebook-button');
+		const newViewButton = this.instantiationService.createInstance(CreateNotebookViewAction, 'notebookView.newView', localize('newViewLabel', 'Create New View'), 'notebook-button notebook-button-newview');
+		const separator = this.instantiationService.createInstance(Separator);
 
+		this._options.unshift(separator);
+		this._options.unshift(newViewButton);
 		this._options.unshift(backToNotebookButton);
-		this._options.push(newViewButton);
 
 		this._optionsUpdated.fire(true);
 	}
@@ -869,3 +864,5 @@ export class NotebookFindPreviousAction implements IEditorAction {
 		return true;
 	}
 }
+
+

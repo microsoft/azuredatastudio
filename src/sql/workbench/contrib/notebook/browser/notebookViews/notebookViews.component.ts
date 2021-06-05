@@ -16,7 +16,7 @@ import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { MenuItemAction } from 'vs/platform/actions/common/actions';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
-import { IContextMenuService, IContextViewService } from 'vs/platform/contextview/browser/contextView';
+import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { localize } from 'vs/nls';
 import { Deferred } from 'sql/base/common/promise';
@@ -68,7 +68,6 @@ export class NotebookViewComponent extends AngularDisposable implements INoteboo
 		@Inject(IInstantiationService) private instantiationService: IInstantiationService,
 		@Inject(IKeybindingService) private keybindingService: IKeybindingService,
 		@Inject(IContextMenuService) private contextMenuService: IContextMenuService,
-		@Inject(IContextViewService) private contextViewService: IContextViewService,
 		@Inject(INotificationService) private _notificationService: INotificationService,
 		@Inject(INotebookService) private notebookService: INotebookService,
 		@Inject(IConnectionManagementService) private _connectionManagementService: IConnectionManagementService,
@@ -266,7 +265,7 @@ export class NotebookViewComponent extends AngularDisposable implements INoteboo
 		let viewOptions = this.instantiationService.createInstance(ViewSettingsAction, this.views);
 
 		let viewsContainer = document.createElement('li');
-		let viewsActionsProvider = new NotebookViewsDropdownSelectionProvider(viewsContainer, this.contextViewService, this.modelReady, this.notebookService, this.instantiationService);
+		let viewsActionsProvider = new NotebookViewsDropdownSelectionProvider(viewsContainer, this.views, this.modelReady, this.notebookService, this.instantiationService);
 		let viewsButton = this.instantiationService.createInstance(AddCellAction, 'notebook.OpenViews', undefined, 'notebook-button masked-pseudo code');
 		let viewsDropdownContainer = DOM.$('li.action-item');
 		viewsDropdownContainer.setAttribute('role', 'presentation');

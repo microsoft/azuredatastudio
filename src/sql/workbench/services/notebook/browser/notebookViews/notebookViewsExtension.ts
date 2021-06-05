@@ -10,7 +10,6 @@ import { localize } from 'vs/nls';
 import { NotebookViewModel } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViewModel';
 import { NotebookExtension } from 'sql/workbench/services/notebook/browser/models/notebookExtension';
 import { INotebookView, INotebookViewCell, INotebookViewCellMetadata, INotebookViewMetadata, INotebookViews } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViews';
-import { AutoDash } from 'sql/workbench/services/notebook/browser/notebookViews/autodash';
 
 export class NotebookViewsExtension extends NotebookExtension<INotebookViewMetadata, INotebookViewCellMetadata> implements INotebookViews {
 	static readonly defaultViewName = localize('notebookView.untitledView', "Untitled View");
@@ -68,9 +67,6 @@ export class NotebookViewsExtension extends NotebookExtension<INotebookViewMetad
 
 		const view = new NotebookViewModel(viewName, this);
 		view.initialize();
-
-		const service = new AutoDash();
-		service.generateLayout(view);
 
 		this._metadata.views.push(view);
 

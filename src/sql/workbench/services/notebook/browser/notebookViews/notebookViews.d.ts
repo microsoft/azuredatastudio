@@ -25,6 +25,7 @@ export interface INotebookViews {
 export interface INotebookView {
 	readonly guid: string;
 	readonly onDeleted: Event<INotebookView>;
+	isNew: boolean;
 
 	cells: Readonly<ICellModel[]>;
 	hiddenCells: Readonly<ICellModel[]>;
@@ -39,6 +40,7 @@ export interface INotebookView {
 	resizeCell(cell: ICellModel, width: number, height: number): void;
 	getCell(guid: string): Readonly<ICellModel>;
 	insertCell(cell: ICellModel): void;
+	markAsViewed(): void;
 	save(): void;
 	delete(): void;
 }

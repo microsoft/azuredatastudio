@@ -17,6 +17,7 @@ export class ViewNameTakenError extends Error { }
 
 export class NotebookViewModel implements INotebookView {
 	private _onDeleted = new Emitter<INotebookView>();
+	private _isNew: boolean = false;
 
 	public readonly guid: string;
 	public readonly onDeleted = this._onDeleted.event;
@@ -35,6 +36,7 @@ export class NotebookViewModel implements INotebookView {
 	}
 
 	public initialize(): void {
+		this._isNew = true;
 		const cells = this._notebookViews.notebook.cells;
 		cells.forEach((cell, idx) => { this.initializeCell(cell, idx); });
 	}
@@ -119,6 +121,11 @@ export class NotebookViewModel implements INotebookView {
 		this._notebookViews.updateCell(cell, this, data);
 	}
 
+	public getCellSize(cell: ICellModel): any {
+		const meta = this.getCellMetadata(cell);
+		return { width: meta.width, height: meta.height };
+	}
+
 	public compactCells() {
 		let cellsPlaced: INotebookViewCell[] = [];
 
@@ -153,6 +160,14 @@ export class NotebookViewModel implements INotebookView {
 	public delete() {
 		this._notebookViews.removeView(this.guid);
 		this._onDeleted.fire(this);
+	}
+
+	public get isNew(): boolean {
+		return this._isNew;
+	}
+
+	public markAsViewed() {
+		this._isNew = false;
 	}
 
 	public toJSON() {

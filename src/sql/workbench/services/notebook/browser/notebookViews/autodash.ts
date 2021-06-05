@@ -30,10 +30,10 @@ abstract class DisplayGroup<T> {
 
 	constructor() { }
 
-	addCell(cell: T) {
+	addCell(cell: T, initialView: INotebookView) {
 		const dCell = new DisplayCell<T>(cell);
 		this._displayCells.push(dCell);
-		this._visInfos.push(this.evaluateCell(cell));
+		this._visInfos.push(this.evaluateCell(cell, initialView));
 	}
 
 	get visInfos(): VisInfo<T>[] {
@@ -44,11 +44,12 @@ abstract class DisplayGroup<T> {
 		return this._displayCells;
 	}
 
-	abstract evaluateCell(cell: T): VisInfo<T>;
+	abstract evaluateCell(cell: T, view: INotebookView): VisInfo<T>;
 }
 
 class CellDisplayGroup extends DisplayGroup<ICellModel> {
-	evaluateCell(cell: ICellModel): VisInfo<ICellModel> {
+	evaluateCell(cell: ICellModel, view: INotebookView): VisInfo<ICellModel> {
+		let meta = view.getCellMetadata(cell);
 		let visInfo = new VisInfo<ICellModel>();
 		visInfo.cell = cell;
 
@@ -65,17 +66,17 @@ class CellDisplayGroup extends DisplayGroup<ICellModel> {
 		//For graphs
 		if (this.hasGraph(cell)) {
 			visInfo.width = 6;
+			visInfo.height = Math.min(meta?.height, 4);
 		}
-
 		//For tables
-		if (this.hasTable(cell)) {
-			visInfo.height = 3;
+		else if (this.hasTable(cell)) {
+			visInfo.height = Math.min(meta?.height, 3);
 		}
-
 		//For headers
-		if (this.isHeader(cell)) {
-			visInfo.display = false;
-			return visInfo;
+		else if (this.isHeader(cell)) {
+			visInfo.height = 1;
+		} else {
+			visInfo.height = Math.min(meta?.height, 3);
 		}
 
 		visInfo.display = true;
@@ -117,7 +118,7 @@ export class AutoDash extends Disposable {
 		const cells = initialView.cells;
 
 		cells.forEach((cell, idx) => {
-			this._displayGroup.addCell(cell);
+			this._displayGroup.addCell(cell, initialView);
 		});
 
 		this._displayGroup.visInfos.forEach((v) => {
