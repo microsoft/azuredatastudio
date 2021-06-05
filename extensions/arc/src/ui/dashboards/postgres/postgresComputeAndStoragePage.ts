@@ -244,6 +244,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		// Worker node count
 		this.workerCountBox = this.modelView.modelBuilder.inputBox().withProps({
 			readOnly: false,
+			min: 0,
 			inputType: 'number',
 			placeHolder: loc.loading,
 			required: true
@@ -544,7 +545,6 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		let scale = this._postgresModel.config?.spec.scale;
 		this.currentConfiguration.workers = scale?.workers ?? scale?.shards ?? 0;
 
-		this.workerCountBox.min = this.currentConfiguration.workers;
 		this.workerCountBox.placeHolder = '';
 		this.workerCountBox.value = this.currentConfiguration.workers.toString();
 		this.saveArgs.workers = undefined;

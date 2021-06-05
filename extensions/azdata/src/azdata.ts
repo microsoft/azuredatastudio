@@ -151,7 +151,7 @@ export class AzdataTool implements azdataExt.IAzdataApi {
 					if (args.port) { argsArray.push('--port', args.port.toString()); }
 					if (args.replaceEngineSettings) { argsArray.push('--replace-engine-settings'); }
 					if (args.workerEngineSettings) { argsArray.push('--worker-engine-settings', args.workerEngineSettings); }
-					if (args.workers) { argsArray.push('--workers', args.workers.toString()); }
+					if (args.workers !== undefined) { argsArray.push('--workers', args.workers.toString()); }
 					return this.executeCommand<void>(argsArray, additionalEnvVars, azdataContext);
 				}
 			}
