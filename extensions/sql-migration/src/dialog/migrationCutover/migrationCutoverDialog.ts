@@ -330,8 +330,8 @@ export class MigrationCutoverDialog {
 
 		this._cutoverButton = this._view.modelBuilder.button().withProps({
 			iconPath: IconPathHelper.cutover,
-			iconHeight: '14px',
-			iconWidth: '12px',
+			iconHeight: '16px',
+			iconWidth: '16px',
 			label: loc.COMPLETE_CUTOVER,
 			height: '20px',
 			width: '130px',
