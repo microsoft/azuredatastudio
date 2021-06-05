@@ -441,6 +441,13 @@ export class Project implements ISqlProject {
 	 */
 	public async changeTargetPlatform(compatLevel: string): Promise<void> {
 		if (this.getProjectTargetVersion() !== compatLevel) {
+			TelemetryReporter.createActionEvent(TelemetryViews.ProjectTree, TelemetryActions.changePlatformType)
+				.withAdditionalProperties({
+					from: this.getProjectTargetVersion(),
+					to: compatLevel
+				})
+				.send();
+
 			const newDSP = `${constants.MicrosoftDatatoolsSchemaSqlSql}${compatLevel}${constants.databaseSchemaProvider}`;
 			this.projFileXmlDoc.getElementsByTagName(constants.DSP)[0].childNodes[0].data = newDSP;
 			this.projFileXmlDoc.getElementsByTagName(constants.DSP)[0].childNodes[0].nodeValue = newDSP;
@@ -462,13 +469,6 @@ export class Project implements ISqlProject {
 			}
 
 			await this.serializeToProjFile(this.projFileXmlDoc);
-
-			TelemetryReporter.createActionEvent(TelemetryViews.ProjectTree, TelemetryActions.changePlatformType)
-				.withAdditionalProperties({
-					from: this.getProjectTargetVersion(),
-					to: compatLevel
-				})
-				.send();
 		}
 	}
 
@@ -498,13 +498,21 @@ export class Project implements ISqlProject {
 	}
 
 	public getSystemDacpacUri(dacpac: string): Uri {
-		let version = this.getProjectTargetVersion();
-		return Uri.parse(path.join('$(NETCoreTargetsPath)', 'SystemDacpacs', version, dacpac));
+		const versionFolder = this.getSystemDacpacFolderName();
+		return Uri.parse(path.join('$(NETCoreTargetsPath)', 'SystemDacpacs', versionFolder, dacpac));
 	}
 
 	public getSystemDacpacSsdtUri(dacpac: string): Uri {
-		let version = this.getProjectTargetVersion();
-		return Uri.parse(path.join('$(DacPacRootPath)', 'Extensions', 'Microsoft', 'SQLDB', 'Extensions', 'SqlServer', version, 'SqlSchemas', dacpac));
+		const versionFolder = this.getSystemDacpacFolderName();
+		return Uri.parse(path.join('$(DacPacRootPath)', 'Extensions', 'Microsoft', 'SQLDB', 'Extensions', 'SqlServer', versionFolder, 'SqlSchemas', dacpac));
+	}
+
+	public getSystemDacpacFolderName(): string {
+		const version = this.getProjectTargetVersion();
+
+		// DW is special because the target version is DW, but the folder name for system dacpacs is AzureDW in SSDT
+		// the other target versions have the same version name and folder name
+		return version === constants.targetPlatformToVersion.get(constants.sqlDW) ? constants.AzureDwFolder : version;
 	}
 
 	public getProjectTargetVersion(): string {
