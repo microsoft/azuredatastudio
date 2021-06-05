@@ -120,3 +120,15 @@ export function filterMigrations(databaseMigrations: MigrationContext[], statusF
 	}
 	return filteredMigration;
 }
+
+export function convertByteSizeToReadableUnit(size: number): string {
+	const units = ['B', 'KB', 'MB', 'GB', 'TB'];
+	for (let i = 1; i < units.length; i++) {
+		const higherUnit = size / 1024;
+		if (higherUnit < 0.1) {
+			return `${size.toFixed(2)} ${units[i - 1]}`;
+		}
+		size = higherUnit;
+	}
+	return '';
+}

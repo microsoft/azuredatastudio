@@ -66,6 +66,8 @@ export class MigrationStatusDialog {
 			return view.initializeModel(form);
 		});
 		this._dialogObject.content = [tab];
+		this._dialogObject.cancelButton.hidden = true;
+		this._dialogObject.okButton.label = loc.CLOSE;
 		azdata.window.openDialog(this._dialogObject);
 	}
 

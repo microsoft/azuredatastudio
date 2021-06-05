@@ -73,7 +73,7 @@ export class ConfirmCutoverDialog {
 			}).component();
 
 
-			const pendingBackupCount = this.migrationCutoverModel.migrationStatus.properties.migrationStatusDetails?.activeBackupSets?.filter(f => f.listOfBackupFiles[0].status !== 'Restored' && f.listOfBackupFiles[0].status !== 'Ignored').length ?? 0;
+			const pendingBackupCount = this.migrationCutoverModel.migrationStatus.properties.migrationStatusDetails?.pendingLogBackupsCount ?? 0;
 			const pendingText = this._view.modelBuilder.text().withProps({
 				CSSStyles: {
 					'font-size': '13px',

@@ -408,6 +408,8 @@ export interface MigrationStatusDetails {
 	fileUploadBlockingErrors: string[];
 	currentRestoringFileName: string;
 	lastRestoredFilename: string;
+	pendingLogBackupsCount: number;
+	invalidFiles: string[];
 }
 
 export interface SqlConnectionInfo {
@@ -444,6 +446,8 @@ export interface BackupSetInfo {
 	isBackupRestored: boolean;
 	backupSize: number;
 	compressedBackupSize: number;
+	hasBackupChecksums: boolean;
+	familyCount: number;
 }
 
 export interface SourceLocation {
@@ -459,6 +463,12 @@ export interface TargetLocation {
 export interface BackupFileInfo {
 	fileName: string;
 	status: 'Arrived' | 'Uploading' | 'Uploaded' | 'Restoring' | 'Restored' | 'Cancelled' | 'Ignored';
+	totalSize: number;
+	dataRead: number;
+	dataWritten: number;
+	copyThroughput: number;
+	copyDuration: number;
+	familySequenceNumber: number;
 }
 
 export interface DatabaseMigrationFileShare {

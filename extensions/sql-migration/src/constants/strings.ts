@@ -227,6 +227,9 @@ export const USER_ACCOUNT = localize('sql.migration.path.user.account', "User Ac
 export const VIEW_ALL = localize('sql.migration.view.all', "View All");
 export const TARGET = localize('sql.migration.target', "Target");
 export const AZURE_SQL = localize('sql.migration.azure.sql', "Azure SQL");
+export const CLOSE = localize('sql.migration.close', "Close");
+export const DATA_UPLOADED = localize('sql.migraiton.data.uploaded.size', "Data Uploaded/Size");
+export const COPY_THROUGHPUT = localize('sql.migration.copy.throughput', "Copy Throughput (MBPS)");
 
 //Summary Page
 export const SUMMARY_PAGE_TITLE = localize('sql.migration.summary.page.title', "Summary");
