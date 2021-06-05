@@ -1,3 +1,6 @@
+pool:
+  vmImage: 'Ubuntu-18.04'
+
 trigger:
   branches:
     include: ["main", "release/*"]
