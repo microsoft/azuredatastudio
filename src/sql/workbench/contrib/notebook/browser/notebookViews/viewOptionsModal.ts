@@ -97,7 +97,7 @@ export class ViewOptionsModal extends Modal {
 		super.render();
 
 		this._submitButton = this.addFooterButton(localize('save', "Save"), () => this.onSubmitHandler());
-		this._cancelButton = this.addFooterButton(localize('cancel', "Cancel"), () => this.onCancelHandler());
+		this._cancelButton = this.addFooterButton(localize('cancel', "Cancel"), () => this.onCancelHandler(), 'right', true);
 
 		this._register(attachInputBoxStyler(this._viewNameInput!, this._themeService));
 		this._register(attachButtonStyler(this._submitButton, this._themeService));

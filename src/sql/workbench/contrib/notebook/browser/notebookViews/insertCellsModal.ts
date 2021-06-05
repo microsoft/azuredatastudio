@@ -75,7 +75,6 @@ export class CellOptionsModel {
 				const activeView = this._context.getActiveView();
 				const cellToInsert = activeView.getCell(optionElement.optionMetadata.name);
 				if (cellToInsert) {
-					//activeView.insertCell(cellToInsert);
 					this.onInsert(cellToInsert);
 				}
 			}
@@ -140,6 +139,8 @@ export class InsertCellsModal extends Modal {
 		grid.style.gridTemplateColumns = '1fr 1fr';
 		grid.style.gap = '10px';
 		grid.style.padding = '10px';
+		grid.style.overflowY = 'auto';
+		grid.style.maxHeight = 'calc(100% - 40px)';
 
 		const gridTitle = DOM.$<HTMLHeadElement>('h2.grid-title');
 		gridTitle.title = localize("insertCellsModal.selectCells", "Select cell sources");
@@ -214,7 +215,7 @@ export class InsertCellsModal extends Modal {
 		super.render();
 
 		this._submitButton = this.addFooterButton(localize('insertCellsModal.Insert', "Insert"), () => this.onSubmitHandler());
-		this._cancelButton = this.addFooterButton(localize('insertCellsModal.Cancel', "Cancel"), () => this.onCancelHandler());
+		this._cancelButton = this.addFooterButton(localize('insertCellsModal.Cancel', "Cancel"), () => this.onCancelHandler(), 'right', true);
 
 		this._register(attachButtonStyler(this._submitButton, this._themeService));
 		this._register(attachButtonStyler(this._cancelButton, this._themeService));
