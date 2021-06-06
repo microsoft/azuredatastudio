@@ -111,8 +111,8 @@ jobs:
       #   uses: actions/cache@v2
       #   with:
       #     path: "**/node_modules"
-      #     key: ${{ runner.os }}-cacheNodeModules11-${{ steps.nodeModulesCacheKey.outputs.value }}
-      #     restore-keys: ${{ runner.os }}-cacheNodeModules11-
+      #     key: ${{ runner.os }}-cacheNodeModules13-${{ steps.nodeModulesCacheKey.outputs.value }}
+      #     restore-keys: ${{ runner.os }}-cacheNodeModules13-
       # - name: Get yarn cache directory path
       #   id: yarnCacheDirPath
       #   if: ${{ steps.cacheNodeModules.outputs.cache-hit != 'true' }}
@@ -181,8 +181,8 @@ jobs:
       #   uses: actions/cache@v2
       #   with:
       #     path: "**/node_modules"
-      #     key: ${{ runner.os }}-cacheNodeModules11-${{ steps.nodeModulesCacheKey.outputs.value }}
-      #     restore-keys: ${{ runner.os }}-cacheNodeModules11-
+      #     key: ${{ runner.os }}-cacheNodeModules13-${{ steps.nodeModulesCacheKey.outputs.value }}
+      #     restore-keys: ${{ runner.os }}-cacheNodeModules13-
       # - name: Get yarn cache directory path
       #   id: yarnCacheDirPath
       #   if: ${{ steps.cacheNodeModules.outputs.cache-hit != 'true' }}
@@ -194,7 +194,6 @@ jobs:
       #     path: ${{ steps.yarnCacheDirPath.outputs.dir }}
       #     key: ${{ runner.os }}-yarnCacheDir-${{ steps.nodeModulesCacheKey.outputs.value }}
       #     restore-keys: ${{ runner.os }}-yarnCacheDir-
-      # Increase timeout to get around latency issues when fetching certain packages
       - name: Execute yarn
         if: ${{ steps.cacheNodeModules.outputs.cache-hit != 'true' }}
         env:
@@ -235,8 +234,8 @@ jobs:
         uses: actions/cache@v2
         with:
           path: "**/node_modules"
-          key: ${{ runner.os }}-cacheNodeModules11-${{ steps.nodeModulesCacheKey.outputs.value }}
-          restore-keys: ${{ runner.os }}-cacheNodeModules11-
+          key: ${{ runner.os }}-cacheNodeModules13-${{ steps.nodeModulesCacheKey.outputs.value }}
+          restore-keys: ${{ runner.os }}-cacheNodeModules13-
       - name: Get yarn cache directory path
         id: yarnCacheDirPath
         if: ${{ steps.cacheNodeModules.outputs.cache-hit != 'true' }}

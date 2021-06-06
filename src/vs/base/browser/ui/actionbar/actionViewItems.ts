@@ -179,6 +179,10 @@ export class BaseActionViewItem extends Disposable implements IActionViewItem {
 		}
 	}
 
+	isFocused(): boolean {
+		return !!this.element?.classList.contains('focused');
+	}
+
 	blur(): void {
 		if (this.element) {
 			this.element.blur();
@@ -291,6 +295,10 @@ export class ActionViewItem extends BaseActionViewItem {
 			this.label.tabIndex = 0;
 			this.label.focus();
 		}
+	}
+
+	override isFocused(): boolean {
+		return !!this.label && this.label?.tabIndex === 0;
 	}
 
 	override blur(): void {
