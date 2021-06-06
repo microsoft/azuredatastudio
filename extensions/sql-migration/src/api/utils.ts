@@ -132,3 +132,8 @@ export function convertByteSizeToReadableUnit(size: number): string {
 	}
 	return '';
 }
+
+export function convertIsoTimeToLocalTime(isoTime: string): Date {
+	let isoDate = new Date(isoTime);
+	return new Date(isoDate.getTime() + (isoDate.getTimezoneOffset() * 60000));
+}

@@ -8,7 +8,7 @@ import { IconPathHelper } from '../../constants/iconPathHelper';
 import { MigrationContext } from '../../models/migrationLocalStorage';
 import { MigrationCutoverDialogModel, MigrationStatus } from './migrationCutoverDialogModel';
 import * as loc from '../../constants/strings';
-import { convertByteSizeToReadableUnit, getSqlServerName } from '../../api/utils';
+import { convertByteSizeToReadableUnit, convertIsoTimeToLocalTime, getSqlServerName } from '../../api/utils';
 import { EOL } from 'os';
 import * as vscode from 'vscode';
 import { ConfirmCutoverDialog } from './confirmCutoverDialog';
@@ -560,7 +560,7 @@ export class MigrationCutoverDialog {
 
 			this._lastAppliedLSN.value = lastAppliedSSN! ?? '-';
 			this._lastAppliedBackupFile.value = this._model.migrationStatus.properties.migrationStatusDetails?.lastRestoredFilename ?? '-';
-			this._lastAppliedBackupTakenOn.value = lastAppliedBackupFileTakenOn! ? new Date(lastAppliedBackupFileTakenOn).toLocaleString() : '-';
+			this._lastAppliedBackupTakenOn.value = lastAppliedBackupFileTakenOn! ? convertIsoTimeToLocalTime(lastAppliedBackupFileTakenOn).toLocaleString() : '-';
 
 			this._fileCount.value = loc.ACTIVE_BACKUP_FILES_ITEMS(tableData.length);
 
@@ -574,7 +574,7 @@ export class MigrationCutoverDialog {
 					row.status,
 					row.dataUploaded,
 					row.copyThroughput,
-					new Date(row.backupStartTime).toLocaleString(),
+					convertIsoTimeToLocalTime(row.backupStartTime).toLocaleString(),
 					row.firstLSN,
 					row.lastLSN
 				];

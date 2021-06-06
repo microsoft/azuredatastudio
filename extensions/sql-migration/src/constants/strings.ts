@@ -331,15 +331,16 @@ export const YES = localize('sql.migration.yes', "Yes");
 export const NO = localize('sql.migration.no', "No");
 
 //Migration confirm cutover dialog
+export const COMPLETING_CUTOVER_WARNING = localize('sql.migration.completing.cutover.warning', "Completing cutover without restoring all the backup(s) may result in loss of data.");
 export const BUSINESS_CRITICAL_INFO = localize('sql.migration.bc.info', "Managed Instance migration cutover for Business Critical service tier can take significantly longer than General Purpose as three secondary replicas have to be seeded for Always On High Availability group. This operation duration depends on the size of data. Seeding speed in 90% of cases is 220 GB/hour or higher.");
 export const CUTOVER_HELP_MAIN = localize('sql.migration.cutover.help.main', "When you are ready to do the migration cutover, perform the following steps to complete the database migration. Please note that the database is ready for cutover only after a full backup has been restored on the target Azure SQL Database Managed Instance.");
 export const CUTOVER_HELP_STEP1 = localize('sql.migration.cutover.step.1', "1. Stop all the incoming transactions coming to the source database.");
-export const CUTOVER_HELP_STEP2 = localize('sql.migration.cutover.step.2', "2. Take the final transaction log backup and provide backup file in the SMB network share.");
-export const CUTOVER_HELP_STEP3 = localize('sql.migration.cutover.step.3', "3. Make sure all the pending log backups are restored on the target. At that point, “Pending log backups” counter shows zero and then perform the cutover. Performing cutover operation without applying all the transaction log backup files may result in loss of data.");
+export const CUTOVER_HELP_STEP2 = localize('sql.migration.cutover.step.2', "2. Take final transaction log backup and provide it in the network share location.");
+export const CUTOVER_HELP_STEP3 = localize('sql.migration.cutover.step.3', "3. Make sure all the log backups are restored on target database. The \"Log backups(s) pending restore\" should be zero.");
 export function PENDING_BACKUPS(count: number): string {
 	return localize('sql.migartion.cutover.pending.backup', "Pending log backups: {0}", count);
 }
-export const CONFIRM_CUTOVER_CHECKBOX = localize('sql.migration.confirm.checkbox.message', "Confirm all pending log backups are restored");
+export const CONFIRM_CUTOVER_CHECKBOX = localize('sql.migration.confirm.checkbox.message', "I confirm there are no additional log backup(s) to provide and want to complete cutover.");
 export function CUTOVER_IN_PROGRESS(dbName: string): string {
 	return localize('sql.migration.cutover.in.progress', "Cutover in progress for database '{0}'", dbName);
 }
