@@ -7,10 +7,11 @@ import * as nls from 'vs/nls';
 import { Event } from 'vs/base/common/event';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { RawContextKey } from 'vs/platform/contextkey/common/contextkey';
-import { OperatingSystem } from 'vs/base/common/platform';
+import { IProcessEnvironment, OperatingSystem, Platform } from 'vs/base/common/platform';
 import { IExtensionPointDescriptor } from 'vs/workbench/services/extensions/common/extensionsRegistry';
 import { IProcessDataEvent, IShellLaunchConfig, ITerminalDimensions, ITerminalDimensionsOverride, ITerminalEnvironment, ITerminalLaunchError, TerminalShellType } from 'vs/platform/terminal/common/terminal';
 import { IEnvironmentVariableInfo } from 'vs/workbench/contrib/terminal/common/environmentVariable';
+import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 
 export const TERMINAL_VIEW_ID = 'terminal';
 
@@ -77,6 +78,21 @@ export const DEFAULT_FONT_WEIGHT = 'normal';
 export const DEFAULT_BOLD_FONT_WEIGHT = 'bold';
 export const SUGGESTIONS_FONT_WEIGHT = ['normal', 'bold', '100', '200', '300', '400', '500', '600', '700', '800', '900'];
 
+export const ITerminalProfileResolverService = createDecorator<ITerminalProfileResolverService>('terminalProfileResolverService');
+export interface ITerminalProfileResolverService {
+	readonly _serviceBrand: undefined;
+	resolveShellLaunchConfig(shellLaunchConfig: IShellLaunchConfig, options: IShellLaunchConfigResolveOptions): Promise<void>;
+	getDefaultProfile(options: IShellLaunchConfigResolveOptions): Promise<ITerminalProfile>;
+	getDefaultShell(options: IShellLaunchConfigResolveOptions): Promise<string>;
+	getDefaultShellArgs(options: IShellLaunchConfigResolveOptions): Promise<string | string[]>;
+	getShellEnvironment(): Promise<IProcessEnvironment>;
+}
+
+export interface IShellLaunchConfigResolveOptions {
+	platform: Platform;
+	allowAutomationShell: boolean;
+}
+
 export type FontWeight = 'normal' | 'bold' | number;
 
 export interface ITerminalProfiles {
@@ -102,6 +118,11 @@ export interface ITerminalConfiguration {
 		windows: string[];
 	};
 	profiles: ITerminalProfiles;
+	defaultProfile: {
+		// linux: string | null;
+		osx: string | null;
+		// windows: string | null;
+	};
 	useWslProfiles: boolean;
 	showTabs: boolean;
 	tabsLocation: 'left' | 'right';

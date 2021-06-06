@@ -11,6 +11,7 @@ import { IConfigurationResolverService } from 'vs/workbench/services/configurati
 import { sanitizeProcessEnvironment } from 'vs/base/common/processes';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IShellLaunchConfig, ITerminalEnvironment } from 'vs/platform/terminal/common/terminal';
+import { IConfigurationOverrides } from 'vs/platform/configuration/common/configuration';
 
 /**
  * This module contains utility functions related to the environment, cwd and paths.
@@ -270,6 +271,9 @@ export function createVariableResolver(lastActiveWorkspace: IWorkspaceFolder | u
 	return (str) => configurationResolverService.resolve(lastActiveWorkspace, str);
 }
 
+/**
+ * @deprecated Use ITerminalProfileResolverService
+ */
 export function getDefaultShell(
 	fetchSetting: (key: TerminalShellSetting) => { userValue?: string | string[], value?: string | string[], defaultValue?: string | string[] },
 	isWorkspaceShellAllowed: boolean,
@@ -317,6 +321,9 @@ export function getDefaultShell(
 	return executable;
 }
 
+/**
+ * @deprecated Use ITerminalProfileResolverService
+ */
 export function getDefaultShellArgs(
 	fetchSetting: (key: TerminalShellSetting | TerminalShellArgsSetting) => { userValue?: string | string[], value?: string | string[], defaultValue?: string | string[] },
 	isWorkspaceShellAllowed: boolean,
@@ -411,4 +418,19 @@ export function createTerminalEnvironment(
 		addTerminalEnvironmentKeys(env, version, platform.locale, detectLocale);
 	}
 	return env;
+}
+
+// namespace Profile {
+export interface IResolvedProfile {
+	shell: string;
+	shellArgs: string;
+	env: ITerminalEnvironment;
+}
+
+export function resolveDefaultProfile(configProvider: IConfigProvider) {
+}
+// }
+
+interface IConfigProvider {
+	inspect<T>(key: string, overrides?: IConfigurationOverrides): { userValue: T | undefined, value: T | undefined, defaultValue: T | undefined };
 }
