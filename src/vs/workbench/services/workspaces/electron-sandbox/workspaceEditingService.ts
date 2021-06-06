@@ -11,7 +11,8 @@ import { IJSONEditingService } from 'vs/workbench/services/configuration/common/
 import { IWorkspacesService, isUntitledWorkspace, IWorkspaceIdentifier, hasWorkspaceFileExtension, isWorkspaceIdentifier } from 'vs/platform/workspaces/common/workspaces';
 import { WorkspaceService } from 'vs/workbench/services/configuration/browser/configurationService';
 import { IStorageService } from 'vs/platform/storage/common/storage';
-import { IBackupFileService } from 'vs/workbench/services/backup/common/backup';
+// import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions'; {{SQL CARBON EDIT}} Remove unused
+import { IWorkingCopyBackupService } from 'vs/workbench/services/workingCopy/common/workingCopyBackup';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { basename } from 'vs/base/common/resources';
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
@@ -28,7 +29,7 @@ import { AbstractWorkspaceEditingService } from 'vs/workbench/services/workspace
 import { INativeHostService } from 'vs/platform/native/electron-sandbox/native';
 import { isMacintosh } from 'vs/base/common/platform';
 import { mnemonicButtonLabel } from 'vs/base/common/labels';
-import { BackupFileService } from 'vs/workbench/services/backup/common/backupFileService';
+import { WorkingCopyBackupService } from 'vs/workbench/services/workingCopy/common/workingCopyBackupService';
 import { IUriIdentityService } from 'vs/workbench/services/uriIdentity/common/uriIdentity';
 
 export class NativeWorkspaceEditingService extends AbstractWorkspaceEditingService {
@@ -39,7 +40,8 @@ export class NativeWorkspaceEditingService extends AbstractWorkspaceEditingServi
 		@INativeHostService private nativeHostService: INativeHostService,
 		@IConfigurationService configurationService: IConfigurationService,
 		@IStorageService private storageService: IStorageService,
-		@IBackupFileService private backupFileService: IBackupFileService,
+		// @IExtensionService private extensionService: IExtensionService, {{SQL CARBON EDIT}} Remove unused
+		@IWorkingCopyBackupService private workingCopyBackupService: IWorkingCopyBackupService,
 		@INotificationService notificationService: INotificationService,
 		@ICommandService commandService: ICommandService,
 		@IFileService fileService: IFileService,
@@ -163,9 +165,9 @@ export class NativeWorkspaceEditingService extends AbstractWorkspaceEditingServi
 			await this.migrateStorage(result.workspace);
 
 			// Reinitialize backup service
-			if (this.backupFileService instanceof BackupFileService) {
+			if (this.workingCopyBackupService instanceof WorkingCopyBackupService) {
 				const newBackupWorkspaceHome = result.backupPath ? URI.file(result.backupPath).with({ scheme: this.environmentService.userRoamingDataHome.scheme }) : undefined;
-				this.backupFileService.reinitialize(newBackupWorkspaceHome);
+				this.workingCopyBackupService.reinitialize(newBackupWorkspaceHome);
 			}
 		}
 
