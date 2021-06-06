@@ -37,7 +37,6 @@ import { IFileService } from 'vs/platform/files/common/files';
 import { IExtensionManifest, ExtensionType, IExtension as IPlatformExtension, ExtensionsPolicyKey, ExtensionsPolicy } from 'vs/platform/extensions/common/extensions'; // {{SQL CARBON EDIT}}
 import { IModeService } from 'vs/editor/common/services/modeService';
 import { IProductService } from 'vs/platform/product/common/productService';
-import { ExtensionKindController } from 'vs/workbench/services/extensions/common/extensionsUtil';
 import { FileAccess } from 'vs/base/common/network';
 import { IIgnoredExtensionsManagementService } from 'vs/platform/userDataSync/common/ignoredExtensions';
 import { IUserDataAutoSyncService } from 'vs/platform/userDataSync/common/userDataSync';
@@ -46,6 +45,7 @@ import { isEngineValid } from 'vs/platform/extensions/common/extensionValidator'
 import { IOpenerService } from 'vs/platform/opener/common/opener'; // {{SQL CARBON EDIT}}
 import { IContextKey, IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { isBoolean } from 'vs/base/common/types';
+import { IExtensionManifestPropertiesService } from 'vs/workbench/services/extensions/common/extensionManifestPropertiesService';
 
 interface IExtensionStateProvider<T> {
 	(extension: Extension): T;
@@ -543,8 +543,6 @@ export class ExtensionsWorkbenchService extends Disposable implements IExtension
 
 	private installing: IExtension[] = [];
 
-	private readonly extensionKindController: ExtensionKindController;
-
 	constructor(
 		@IInstantiationService private readonly instantiationService: IInstantiationService,
 		@IEditorService private readonly editorService: IEditorService,
@@ -565,7 +563,8 @@ export class ExtensionsWorkbenchService extends Disposable implements IExtension
 		@IProductService private readonly productService: IProductService,
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@IOpenerService private readonly openerService: IOpenerService, // {{SQL CARBON EDIT}}
-		@IExtensionManagementService private readonly extensionService: IExtensionManagementService
+		@IExtensionManagementService private readonly extensionService: IExtensionManagementService,
+		@IExtensionManifestPropertiesService private readonly extensionManifestPropertiesService: IExtensionManifestPropertiesService,
 	) {
 		super();
 		this.hasOutdatedExtensionsContextKey = HasOutdatedExtensionsContext.bindTo(contextKeyService);
@@ -616,8 +615,6 @@ export class ExtensionsWorkbenchService extends Disposable implements IExtension
 			this.updateContexts();
 			this.updateActivity();
 		}));
-
-		this.extensionKindController = new ExtensionKindController(productService, configurationService);
 	}
 
 	get local(): IExtension[] {
@@ -744,7 +741,7 @@ export class ExtensionsWorkbenchService extends Disposable implements IExtension
 			return extensionsToChoose[0];
 		}
 
-		const extensionKinds = this.extensionKindController.getExtensionKind(manifest);
+		const extensionKinds = this.extensionManifestPropertiesService.getExtensionKind(manifest);
 
 		let extension = extensionsToChoose.find(extension => {
 			for (const extensionKind of extensionKinds) {
