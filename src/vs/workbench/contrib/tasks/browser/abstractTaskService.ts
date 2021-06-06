@@ -931,6 +931,8 @@ export abstract class AbstractTaskService extends Disposable implements ITaskSer
 		});
 	}
 
+	// runTaskPromise is used for queueing calls to run so that we don't end up with the same task runnin
+	private runTaskPromise: Promise<ITaskSummary | undefined> = Promise.resolve(undefined);
 	public async run(task: Task | undefined, options?: ProblemMatcherRunOptions, runSource: TaskRunSource = TaskRunSource.System): Promise<ITaskSummary | undefined> {
 		if (!(await this.trust())) {
 			return undefined; // {{SQL CARBON EDIT}} Strict null
@@ -939,7 +941,8 @@ export abstract class AbstractTaskService extends Disposable implements ITaskSer
 		if (!task) {
 			throw new TaskError(Severity.Info, nls.localize('TaskServer.noTask', 'Task to execute is undefined'), TaskErrors.TaskNotFound);
 		}
-		return new Promise<ITaskSummary | undefined>(async (resolve) => {
+
+		return this.runTaskPromise = this.runTaskPromise.then(() => new Promise<ITaskSummary | undefined>(async (resolve) => {
 			let resolver = this.createResolver();
 			if (options && options.attachProblemMatcher && this.shouldAttachProblemMatcher(task) && !InMemoryTask.is(task)) {
 				const toExecute = await this.attachProblemMatcher(task);
@@ -961,7 +964,7 @@ export abstract class AbstractTaskService extends Disposable implements ITaskSer
 		}, (error) => {
 			this.handleError(error);
 			return Promise.reject(error);
-		});
+		}));
 	}
 
 	private isProvideTasksEnabled(): boolean {
