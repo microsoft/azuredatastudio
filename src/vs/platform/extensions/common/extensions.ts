@@ -138,6 +138,14 @@ export interface IWalkthrough {
 	readonly when?: string;
 }
 
+export interface IStartEntry {
+	readonly title: string;
+	readonly description: string;
+	readonly command: string;
+	readonly type?: 'sample-folder' | 'sample-notebook' | string;
+	readonly when?: string;
+}
+
 export interface IExtensionContributions {
 	commands?: ICommand[];
 	configuration?: IConfiguration | IConfiguration[];
@@ -159,6 +167,7 @@ export interface IExtensionContributions {
 	readonly codeActions?: readonly ICodeActionContribution[];
 	authentication?: IAuthenticationContribution[];
 	walkthroughs?: IWalkthrough[];
+	startEntries?: IStartEntry[];
 }
 
 export type ExtensionKind = 'ui' | 'workspace' | 'web';
