@@ -95,6 +95,10 @@ export function getLogFileName(prefix: string, pid: number): string {
 
 export function getCommonLaunchArgsAndCleanupOldLogFiles(logPath: string, fileName: string, executablePath: string): string[] {
 	let launchArgs = [];
+
+	console.log('environment language is ' + vscode.env.language);
+	//launchArgs.push('--locale ' + vscode.env.language);
+
 	launchArgs.push('--log-file');
 	let logFile = path.join(logPath, fileName);
 	launchArgs.push(logFile);
@@ -106,9 +110,6 @@ export function getCommonLaunchArgsAndCleanupOldLogFiles(logPath: string, fileNa
 	console.log(`Old log files deletion report: ${JSON.stringify(deletedLogFiles)}`);
 	launchArgs.push('--tracing-level');
 	launchArgs.push(getConfigTracingLevel());
-
-	console.log('environment language is ' + vscode.env.language);
-	//launchArgs.push('--locale ' + vscode.env.language);
 	return launchArgs;
 }
 
