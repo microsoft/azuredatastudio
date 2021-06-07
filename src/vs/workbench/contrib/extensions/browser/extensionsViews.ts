@@ -1046,6 +1046,7 @@ export class ExtensionsListView extends ViewPane {
 			|| this.isBuiltInExtensionsQuery(query)
 			|| this.isSearchBuiltInExtensionsQuery(query)
 			|| this.isBuiltInGroupExtensionsQuery(query)
+			|| this.isSearchTrustRequiredExtensionsQuery(query)
 			|| this.isTrustRequiredExtensionsQuery(query)
 			|| this.isTrustRequiredGroupExtensionsQuery(query);
 	}
@@ -1060,6 +1061,10 @@ export class ExtensionsListView extends ViewPane {
 
 	static isBuiltInGroupExtensionsQuery(query: string): boolean {
 		return /^\s*@builtin:.+$/i.test(query.trim());
+	}
+
+	static isSearchTrustRequiredExtensionsQuery(query: string): boolean {
+		return /@trustRequired\s.+/i.test(query);
 	}
 
 	static isTrustRequiredExtensionsQuery(query: string): boolean {
