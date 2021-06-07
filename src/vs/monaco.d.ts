@@ -6659,7 +6659,11 @@ declare namespace monaco.languages {
 declare namespace monaco.worker {
 
 
-	export interface IMirrorModel {
+	export interface IMirrorTextModel {
+		readonly version: number;
+	}
+
+	export interface IMirrorModel extends IMirrorTextModel {
 		readonly uri: Uri;
 		readonly version: number;
 		getValue(): string;
