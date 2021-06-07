@@ -74,9 +74,9 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 			if ((e.ctrlKey || e.metaKey) && e.key === 'a') {
 				preventDefaultAndExecCommand(e, 'selectAll');
 			} else if ((e.metaKey && e.shiftKey && e.key === 'z') || (e.ctrlKey && e.key === 'y') && !this.markdownMode) {
-				this.redoChange();
+				this.redoRichTextChange();
 			} else if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
-				this.undoChange();
+				this.undoRichTextChange();
 			} else if (e.shiftKey && e.key === 'Tab') {
 				preventDefaultAndExecCommand(e, 'outdent');
 			} else if (e.key === 'Tab') {
@@ -274,7 +274,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		}
 	}
 
-	private undoChange(): void {
+	private undoRichTextChange(): void {
 		if (this._undoStack.count > 1) {
 			// The most recent change is at the top of the undo stack, so we want to
 			// update the text so that it's the change just before that.
@@ -289,7 +289,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		}
 	}
 
-	private redoChange(): void {
+	private redoRichTextChange(): void {
 		if (this._redoStack.count > 0) {
 			let text = this._redoStack.pop();
 			this._undoStack.push(text);
