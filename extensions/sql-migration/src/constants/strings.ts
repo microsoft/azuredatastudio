@@ -5,6 +5,7 @@
 
 import { AzureAccount } from 'azurecore';
 import * as nls from 'vscode-nls';
+import { SupportedAutoRefreshIntervals } from '../api/utils';
 import { MigrationSourceAuthenticationType } from '../models/stateMachine';
 const localize = nls.loadMessageBundle();
 
@@ -437,3 +438,21 @@ export function WARNINGS_COUNT(totalCount: number): string {
 export const AUTHENTICATION_TYPE = localize('sql.migration.authentication.type', "Authentication Type");
 export const SQL_LOGIN = localize('sql.migration.sql.login', "SQL Login");
 export const WINDOWS_AUTHENTICATION = localize('sql.migration.windows.auth', "Windows Authentication");
+
+//AutoRefresh
+export function AUTO_REFRESH_BUTTON_TEXT(interval: SupportedAutoRefreshIntervals): string {
+	switch (interval) {
+		case -1:
+			return localize('sql.migration.auto.refresh.off', 'Auto Refresh: Off');
+		case 15000:
+			return localize('sql.migration.auto.refresh.15.seconds', 'Auto Refresh: 15 secs');
+		case 30000:
+			return localize('sql.migration.auto.refresh.30.seconds', 'Auto Refresh: 30 secs');
+		case 60000:
+			return localize('sql.migration.auto.refresh.1.min', 'Auto Refresh: 1 min');
+		case 180000:
+			return localize('sql.migration.auto.refresh.3.min', 'Auto Refresh: 3 mins');
+		case 300000:
+			return localize('sql.migration.auto.refresh.5.min', 'Auto Refresh: 5 mins');
+	}
+}

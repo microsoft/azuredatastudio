@@ -137,3 +137,5 @@ export function convertIsoTimeToLocalTime(isoTime: string): Date {
 	let isoDate = new Date(isoTime);
 	return new Date(isoDate.getTime() + (isoDate.getTimezoneOffset() * 60000));
 }
+
+export type SupportedAutoRefreshIntervals = -1 | 15000 | 30000 | 60000 | 180000 | 300000;

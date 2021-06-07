@@ -5,13 +5,14 @@
 
 import * as azdata from 'azdata';
 import { IconPathHelper } from '../../constants/iconPathHelper';
-import { MigrationContext } from '../../models/migrationLocalStorage';
+import { MigrationContext, MigrationLocalStorage } from '../../models/migrationLocalStorage';
 import { MigrationCutoverDialogModel, MigrationStatus } from './migrationCutoverDialogModel';
 import * as loc from '../../constants/strings';
-import { convertByteSizeToReadableUnit, convertIsoTimeToLocalTime, getSqlServerName } from '../../api/utils';
+import { convertByteSizeToReadableUnit, convertIsoTimeToLocalTime, getSqlServerName, SupportedAutoRefreshIntervals } from '../../api/utils';
 import { EOL } from 'os';
 import * as vscode from 'vscode';
 import { ConfirmCutoverDialog } from './confirmCutoverDialog';
+import { AutoRefreshSettingsDialog } from '../autoRefreshSettingsDialog/autoRefreshSettingsDialog';
 
 export class MigrationCutoverDialog {
 	private _dialogObject!: azdata.window.Dialog;
@@ -41,6 +42,8 @@ export class MigrationCutoverDialog {
 	private _fileCount!: azdata.TextComponent;
 
 	private fileTable!: azdata.TableComponent;
+	private _autoRefreshHandle!: any;
+
 
 	constructor(migration: MigrationContext) {
 		this._model = new MigrationCutoverDialogModel(migration);
@@ -65,17 +68,17 @@ export class MigrationCutoverDialog {
 
 			flexServer.addItem(sourceDatabase.flexContainer, {
 				CSSStyles: {
-					'width': '300px'
+					'width': '250px'
 				}
 			});
 			flexServer.addItem(sourceDetails.flexContainer, {
 				CSSStyles: {
-					'width': '300px'
+					'width': '250px'
 				}
 			});
 			flexServer.addItem(sourceVersion.flexContainer, {
 				CSSStyles: {
-					'width': '300px'
+					'width': '250px'
 				}
 			});
 
@@ -93,17 +96,17 @@ export class MigrationCutoverDialog {
 
 			flexTarget.addItem(targetDatabase.flexContainer, {
 				CSSStyles: {
-					'width': '350px'
+					'width': '250px'
 				}
 			});
 			flexTarget.addItem(targetServer.flexContainer, {
 				CSSStyles: {
-					'width': '350px'
+					'width': '250px'
 				}
 			});
 			flexTarget.addItem(targetVersion.flexContainer, {
 				CSSStyles: {
-					'width': '350px'
+					'width': '250px'
 				}
 			});
 
@@ -122,17 +125,17 @@ export class MigrationCutoverDialog {
 
 			flexStatus.addItem(migrationStatus.flexContainer, {
 				CSSStyles: {
-					'width': '300px'
+					'width': '250px'
 				}
 			});
 			flexStatus.addItem(fullBackupFileOn.flexContainer, {
 				CSSStyles: {
-					'width': '300px'
+					'width': '250px'
 				}
 			});
 			flexStatus.addItem(backupLocation.flexContainer, {
 				CSSStyles: {
-					'width': '300px'
+					'width': '250px'
 				}
 			});
 
@@ -150,30 +153,28 @@ export class MigrationCutoverDialog {
 			}).component();
 			flexFile.addItem(lastSSN.flexContainer, {
 				CSSStyles: {
-					'width': '350px'
+					'width': '250px'
 				}
 			});
 			flexFile.addItem(lastAppliedBackup.flexContainer, {
 				CSSStyles: {
-					'width': '350px'
+					'width': '250px'
 				}
 			});
 			flexFile.addItem(lastAppliedBackupOn.flexContainer, {
 				CSSStyles: {
-					'width': '350px'
+					'width': '250px'
 				}
 			});
 			const flexInfo = view.modelBuilder.flexContainer().withProps({
-				CSSStyles: {
-					'width': '1200px',
-				}
+				width: 1000
 			}).component();
 
 			flexInfo.addItem(flexServer, {
 				flex: '0',
 				CSSStyles: {
 					'flex': '0',
-					'width': '300px'
+					'width': '250px'
 				}
 			});
 
@@ -181,7 +182,7 @@ export class MigrationCutoverDialog {
 				flex: '0',
 				CSSStyles: {
 					'flex': '0',
-					'width': '300px'
+					'width': '250px'
 				}
 			});
 
@@ -189,7 +190,7 @@ export class MigrationCutoverDialog {
 				flex: '0',
 				CSSStyles: {
 					'flex': '0',
-					'width': '300px'
+					'width': '250px'
 				}
 			});
 
@@ -197,7 +198,7 @@ export class MigrationCutoverDialog {
 				flex: '0',
 				CSSStyles: {
 					'flex': '0',
-					'width': '300px'
+					'width': '250px'
 				}
 			});
 
@@ -255,7 +256,7 @@ export class MigrationCutoverDialog {
 				data: [],
 				width: '1100px',
 				height: '300px',
-				fontSize: '13px'
+				fontSize: '12px'
 			}).component();
 
 			const formBuilder = view.modelBuilder.formContainer().withFormItems(
@@ -264,13 +265,13 @@ export class MigrationCutoverDialog {
 						component: this.migrationContainerHeader()
 					},
 					{
-						component: this._view.modelBuilder.separator().withProps({ width: '800px' }).component()
+						component: this._view.modelBuilder.separator().withProps({ width: 1000 }).component()
 					},
 					{
 						component: flexInfo
 					},
 					{
-						component: this._view.modelBuilder.separator().withProps({ width: '800px' }).component()
+						component: this._view.modelBuilder.separator().withProps({ width: 1000 }).component()
 					},
 					{
 						component: this._fileCount
@@ -292,6 +293,10 @@ export class MigrationCutoverDialog {
 
 		this._dialogObject.cancelButton.hidden = true;
 		this._dialogObject.okButton.label = loc.CLOSE;
+
+		this._dialogObject.okButton.onClick(e => {
+			clearInterval(this._autoRefreshHandle);
+		});
 		azdata.window.openDialog(this._dialogObject);
 	}
 
@@ -311,6 +316,7 @@ export class MigrationCutoverDialog {
 				'font-weight': 'bold',
 				'margin': '0px'
 			},
+			width: 950,
 			value: this._model._migration.migrationContext.properties.sourceDatabaseName
 		}).component();
 
@@ -319,6 +325,7 @@ export class MigrationCutoverDialog {
 				'font-size': '10px',
 				'margin': '5px 0px'
 			},
+			width: 950,
 			value: loc.DATABASE
 		}).component();
 
@@ -327,21 +334,51 @@ export class MigrationCutoverDialog {
 			databaseSubTitle
 		]).withLayout({
 			'flexFlow': 'column'
+		}).withProps({
+			width: 950
 		}).component();
 
+		const refreshInterval = MigrationLocalStorage.getRefreshInterval('MigrationCutover') ?? 30000;
+		const refreshButton = this._view.modelBuilder.button().withProps({
+			label: loc.AUTO_REFRESH_BUTTON_TEXT(refreshInterval),
+			secondary: true,
+			width: '150px',
+		}).component();
+		refreshButton.onDidClick(async (e) => {
+			const refreshInterval = MigrationLocalStorage.getRefreshInterval('MigrationCutover') ?? 180000;
+			const refreshDialog = new AutoRefreshSettingsDialog(refreshInterval);
+			const setting = await refreshDialog.initialize();
+			MigrationLocalStorage.saveRefreshInterval('MigrationCutover', setting.interval);
+			this.setAutoRefresh(setting.interval);
+			refreshButton.label = setting.buttonText;
+		});
+		this.setAutoRefresh(refreshInterval);
 
-		const titleLogoContainer = this._view.modelBuilder.flexContainer().component();
+		const titleLogoContainer = this._view.modelBuilder.flexContainer().withProps({
+			width: 1000
+		}).component();
 
 		titleLogoContainer.addItem(sqlDatbaseLogo, {
 			flex: '0'
 		});
 		titleLogoContainer.addItem(titleContainer, {
+			flex: '0',
 			CSSStyles: {
-				'margin-left': '5px'
+				'margin-left': '5px',
+				'width': '930px'
+			}
+		});
+		titleLogoContainer.addItem(refreshButton, {
+			flex: '0',
+			CSSStyles: {
+				'margin-left': '5px',
+				'width': '150px'
 			}
 		});
 
 		const headerActions = this._view.modelBuilder.flexContainer().withLayout({
+		}).withProps({
+			width: 1000
 		}).component();
 
 		this._cutoverButton = this._view.modelBuilder.button().withProps({
@@ -463,6 +500,10 @@ export class MigrationCutoverDialog {
 			titleLogoContainer
 		]).withLayout({
 			flexFlow: 'column'
+		}).withProps({
+			CSSStyles: {
+				width: 1000
+			}
 		}).component();
 
 		header.addItem(headerActions, {
@@ -472,6 +513,14 @@ export class MigrationCutoverDialog {
 		});
 
 		return header;
+	}
+
+	private setAutoRefresh(interval: SupportedAutoRefreshIntervals): void {
+		const classVariable = this;
+		clearInterval(this._autoRefreshHandle);
+		if (interval !== -1) {
+			this._autoRefreshHandle = setInterval(function () { classVariable.refreshStatus(); }, interval);
+		}
 	}
 
 
@@ -609,7 +658,7 @@ export class MigrationCutoverDialog {
 			CSSStyles: {
 				'font-weight': 'bold',
 				'margin-bottom': '0',
-				'font-size': '13px'
+				'font-size': '12px'
 			}
 		}).component();
 		flexContainer.addItem(labelComponent);
@@ -622,7 +671,7 @@ export class MigrationCutoverDialog {
 				'width': '100%',
 				'overflow': 'hidden',
 				'text-overflow': 'ellipses',
-				'font-size': '13px'
+				'font-size': '12px'
 			}
 		}).component();
 		flexContainer.addItem(textComponent);
