@@ -334,7 +334,7 @@ export function attachMenuStyler(widget: IThemable, themeService: IThemeService,
 	return attachStyler(themeService, { ...defaultMenuStyles, ...style }, widget);
 }
 
-export interface IDialogStyleOverrides extends IButtonStyleOverrides {
+export interface IDialogStyleOverrides extends IButtonStyleOverrides, ILinkStyleOverrides {
 	dialogForeground?: ColorIdentifier;
 	dialogBackground?: ColorIdentifier;
 	dialogShadow?: ColorIdentifier;
@@ -357,6 +357,8 @@ export const defaultDialogStyles = <IDialogStyleOverrides>{
 	dialogBorder: contrastBorder,
 	buttonForeground: buttonForeground,
 	buttonBackground: buttonBackground,
+	buttonSecondaryBackground: buttonSecondaryBackground,
+	buttonSecondaryForeground: buttonSecondaryForeground,
 	buttonHoverBackground: buttonHoverBackground,
 	buttonBorder: buttonBorder,
 	checkboxBorder: simpleCheckboxBorder,
@@ -367,7 +369,8 @@ export const defaultDialogStyles = <IDialogStyleOverrides>{
 	infoIconForeground: problemsInfoIconForeground,
 	inputBackground: inputBackground,
 	inputForeground: inputForeground,
-	inputBorder: inputBorder
+	inputBorder: inputBorder,
+	textLinkForeground: textLinkForeground
 };
 
 

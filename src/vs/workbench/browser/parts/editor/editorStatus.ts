@@ -979,7 +979,7 @@ class ShowCurrentMarkerInStatusbarContribution extends Disposable {
 		return this.markers.find(marker => Range.containsPosition(marker, position)) || null;
 	}
 
-	private onMarkerChanged(changedResources: ReadonlyArray<URI>): void {
+	private onMarkerChanged(changedResources: readonly URI[]): void {
 		if (!this.editor) {
 			return;
 		}

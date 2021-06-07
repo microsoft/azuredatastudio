@@ -149,10 +149,6 @@ import 'vs/workbench/contrib/externalTerminal/node/externalTerminal.contribution
 // CLI
 import 'vs/workbench/contrib/cli/node/cli.contribution';
 
-// Tasks
-import 'vs/workbench/contrib/tasks/electron-browser/taskService';
-
-
 
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 //

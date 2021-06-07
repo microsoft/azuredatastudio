@@ -1118,9 +1118,9 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 				checkProposedApiEnabled(extension);
 				return extHostNotebook.createNotebookCellExecution(uri, index, kernelId);
 			},
-			createNotebookController(id, selector, label, executeHandler, preloads) {
+			createNotebookController(id, viewType, label, executeHandler, preloads) {
 				checkProposedApiEnabled(extension);
-				return extHostNotebookKernels.createNotebookController(extension, id, selector, label, executeHandler, preloads);
+				return extHostNotebookKernels.createNotebookController(extension, id, viewType, label, executeHandler, preloads);
 			}
 		};
 
@@ -1271,6 +1271,7 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 			NotebookCellOutput: extHostTypes.NotebookCellOutput,
 			NotebookCellOutputItem: extHostTypes.NotebookCellOutputItem,
 			NotebookCellStatusBarItem: extHostTypes.NotebookCellStatusBarItem,
+			NotebookControllerAffinity: extHostTypes.NotebookControllerAffinity,
 			LinkedEditingRanges: extHostTypes.LinkedEditingRanges,
 			TestItemStatus: extHostTypes.TestItemStatus,
 			TestResultState: extHostTypes.TestResultState,

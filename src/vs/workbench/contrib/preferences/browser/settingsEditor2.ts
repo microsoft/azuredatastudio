@@ -55,6 +55,7 @@ import { tocData } from 'sql/workbench/contrib/preferences/browser/sqlSettingsLa
 import { preferencesClearInputIcon } from 'vs/workbench/contrib/preferences/browser/preferencesIcons';
 import { IWorkspaceTrustManagementService } from 'vs/platform/workspace/common/workspaceTrust';
 import { IWorkbenchConfigurationService } from 'vs/workbench/services/configuration/common/configuration';
+import { isIPad } from 'vs/base/browser/browser';
 
 export const enum SettingsFocusContext {
 	Search,
@@ -343,8 +344,8 @@ export class SettingsEditor2 extends EditorPane {
 		if (!options) {
 			return;
 		}
-
-		if (options.focusSearch) {
+		if (options.focusSearch && !isIPad) {
+			// isIPad - #122044
 			this.focusSearch();
 		}
 
@@ -384,7 +385,10 @@ export class SettingsEditor2 extends EditorPane {
 
 	override focus(): void {
 		if (this._currentFocusContext === SettingsFocusContext.Search) {
-			this.focusSearch();
+			if (!isIPad) {
+				// #122044
+				this.focusSearch();
+			}
 		} else if (this._currentFocusContext === SettingsFocusContext.SettingControl) {
 			const element = this.focusedSettingDOMElement;
 			if (element) {

@@ -282,7 +282,7 @@ export class ActivitybarPart extends Part implements IActivityBarService {
 		}));
 	}
 
-	private onDidChangeViewContainers(added: ReadonlyArray<{ container: ViewContainer, location: ViewContainerLocation; }>, removed: ReadonlyArray<{ container: ViewContainer, location: ViewContainerLocation; }>) {
+	private onDidChangeViewContainers(added: readonly { container: ViewContainer, location: ViewContainerLocation; }[], removed: readonly { container: ViewContainer, location: ViewContainerLocation; }[]) {
 		removed.filter(({ location }) => location === ViewContainerLocation.Sidebar).forEach(({ container }) => this.onDidDeregisterViewContainer(container));
 		this.onDidRegisterViewContainers(added.filter(({ location }) => location === ViewContainerLocation.Sidebar).map(({ container }) => container));
 	}
@@ -611,7 +611,7 @@ export class ActivitybarPart extends Part implements IActivityBarService {
 		return compositeActions;
 	}
 
-	private onDidRegisterViewContainers(viewContainers: ReadonlyArray<ViewContainer>): void {
+	private onDidRegisterViewContainers(viewContainers: readonly ViewContainer[]): void {
 		for (const viewContainer of viewContainers) {
 			this.addComposite(viewContainer);
 
@@ -827,7 +827,7 @@ export class ActivitybarPart extends Part implements IActivityBarService {
 		return viewContainer && this.viewDescriptorService.getViewContainerLocation(viewContainer) === this.location ? viewContainer : undefined;
 	}
 
-	private getViewContainers(): ReadonlyArray<ViewContainer> {
+	private getViewContainers(): readonly ViewContainer[] {
 		return this.viewDescriptorService.getViewContainersByLocation(this.location);
 	}
 
