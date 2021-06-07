@@ -278,7 +278,7 @@ export class ProgressService extends Disposable implements IProgressService {
 							super(`progress.button.${button}`, button, undefined, true);
 						}
 
-						async override run(): Promise<void> {
+						override async run(): Promise<void> {
 							progressStateModel.cancel(index);
 						}
 					};
@@ -294,7 +294,7 @@ export class ProgressService extends Disposable implements IProgressService {
 						super('progress.cancel', localize('cancel', "Cancel"), undefined, true);
 					}
 
-					async override run(): Promise<void> {
+					override async run(): Promise<void> {
 						progressStateModel.cancel();
 					}
 				};

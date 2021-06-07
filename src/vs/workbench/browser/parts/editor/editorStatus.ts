@@ -1047,7 +1047,7 @@ export class ShowLanguageExtensionsAction extends Action {
 		this.enabled = galleryService.isEnabled();
 	}
 
-	async override run(): Promise<void> {
+	override async run(): Promise<void> {
 		await this.commandService.executeCommand('workbench.extensions.action.showExtensionsForLanguage', this.fileExtension);
 	}
 }
@@ -1072,7 +1072,7 @@ export class ChangeModeAction extends Action {
 		super(actionId, actionLabel);
 	}
 
-	async override run(event: unknown, data?: ITelemetryData): Promise<void> {
+	override async run(event: unknown, data?: ITelemetryData): Promise<void> {
 		const activeTextEditorControl = getCodeEditor(this.editorService.activeTextEditorControl);
 		if (!activeTextEditorControl) {
 			await this.quickInputService.pick([{ label: localize('noEditor', "No text editor active at this time") }]);
@@ -1266,7 +1266,7 @@ export class ChangeEOLAction extends Action {
 		super(actionId, actionLabel);
 	}
 
-	async override run(): Promise<void> {
+	override async run(): Promise<void> {
 		const activeTextEditorControl = getCodeEditor(this.editorService.activeTextEditorControl);
 		if (!activeTextEditorControl) {
 			await this.quickInputService.pick([{ label: localize('noEditor', "No text editor active at this time") }]);
@@ -1319,7 +1319,7 @@ export class ChangeEncodingAction extends Action {
 		super(actionId, actionLabel);
 	}
 
-	async override run(): Promise<void> {
+	override async run(): Promise<void> {
 		const activeTextEditorControl = getCodeEditor(this.editorService.activeTextEditorControl);
 		if (!activeTextEditorControl) {
 			await this.quickInputService.pick([{ label: localize('noEditor', "No text editor active at this time") }]);

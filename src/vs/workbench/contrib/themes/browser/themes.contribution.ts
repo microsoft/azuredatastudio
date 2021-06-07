@@ -204,7 +204,7 @@ class SelectFileIconThemeAction extends AbstractIconThemeAction {
 		return this.themeService.setFileIconTheme(id, settingsTarget);
 	}
 
-	async override run(): Promise<void> {
+	override async run(): Promise<void> {
 		this.pick(await this.themeService.getFileIconThemes(), this.themeService.getFileIconTheme());
 	}
 }
@@ -235,7 +235,7 @@ class SelectProductIconThemeAction extends AbstractIconThemeAction {
 		return this.themeService.setProductIconTheme(id, settingsTarget);
 	}
 
-	async override run(): Promise<void> {
+	override async run(): Promise<void> {
 		this.pick(await this.themeService.getProductIconThemes(), this.themeService.getProductIconTheme());
 	}
 }

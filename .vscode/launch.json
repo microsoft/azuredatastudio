@@ -197,7 +197,16 @@
 			"type": "pwa-chrome",
 			"request": "attach",
 			"name": "Attach to azuredatastudio",
-			"port": 9222
+			"browserAttachLocation": "workspace",
+			"port": 9222,
+			"trace": true,
+			"outFiles": [
+				"${workspaceFolder}/out/**/*.js"
+			],
+			"resolveSourceMapLocations": [
+				"${workspaceFolder}/out/**/*.js"
+			],
+			"perScriptSourcemaps": "yes"
 		},
 		{
 			"type": "pwa-chrome",
