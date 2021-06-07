@@ -113,6 +113,21 @@
           "categoryValues": null,
           "isRequired": true,
           "isArray": false
+        },
+        {
+          "specialValueType": "databaseName",
+          "isIdentity": true,
+          "name": "database",
+          "displayName": "%azuremonitor.connectionOptions.databaseName.displayName%",
+          "description": "%azuremonitor.connectionOptions.databaseName.description%",
+          "groupName": "Source",
+          "valueType": "string",
+          "defaultValue": null,
+          "objectType": null,
+          "categoryValues": null,
+          "isRequired": false,
+          "isArray": false,
+          "hide": true
         }
       ]
     },
