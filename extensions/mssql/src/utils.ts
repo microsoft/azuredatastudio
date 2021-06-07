@@ -5,6 +5,7 @@
 
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
+
 import * as bdc from 'bdc';
 import * as path from 'path';
 import * as crypto from 'crypto';
@@ -105,6 +106,9 @@ export function getCommonLaunchArgsAndCleanupOldLogFiles(logPath: string, fileNa
 	console.log(`Old log files deletion report: ${JSON.stringify(deletedLogFiles)}`);
 	launchArgs.push('--tracing-level');
 	launchArgs.push(getConfigTracingLevel());
+
+	console.log('environment language is ' + vscode.env.language);
+	//launchArgs.push('--locale ' + vscode.env.language);
 	return launchArgs;
 }
 
