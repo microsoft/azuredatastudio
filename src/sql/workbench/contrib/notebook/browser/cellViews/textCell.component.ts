@@ -275,6 +275,9 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	}
 
 	private undoRichTextChange(): void {
+		// The first element in the undo stack is the initial cell text,
+		// which is the hard stop for undoing text changes. So we can only
+		// undo text changes after that one.
 		if (this._undoStack.count > 1) {
 			// The most recent change is at the top of the undo stack, so we want to
 			// update the text so that it's the change just before that.
