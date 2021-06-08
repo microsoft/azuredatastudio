@@ -257,11 +257,8 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		}
 	}
 
-	private updateCellSource(addChangeToUndo: boolean): void {
+	private updateCellSource(): void {
 		let textOutputElement = <HTMLElement>this.output.nativeElement;
-		if (addChangeToUndo) {
-			this.addUndoElement(textOutputElement.innerHTML);
-		}
 		let newCellSource: string = this._htmlMarkdownConverter.convert(textOutputElement.innerHTML);
 		this.cellModel.source = newCellSource;
 		this._changeRef.detectChanges();
@@ -288,7 +285,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 			let textOutputElement = <HTMLElement>this.output.nativeElement;
 			textOutputElement.innerHTML = undoText;
 
-			this.updateCellSource(false);
+			this.updateCellSource();
 		}
 	}
 
@@ -300,7 +297,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 			let textOutputElement = <HTMLElement>this.output.nativeElement;
 			textOutputElement.innerHTML = text;
 
-			this.updateCellSource(false);
+			this.updateCellSource();
 		}
 	}
 
@@ -328,7 +325,10 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	}
 
 	public handleHtmlChanged(): void {
-		this.updateCellSource(true);
+		let textOutputElement = <HTMLElement>this.output.nativeElement;
+		this.addUndoElement(textOutputElement.innerHTML);
+
+		this.updateCellSource();
 	}
 
 	public toggleEditMode(editMode?: boolean): void {
