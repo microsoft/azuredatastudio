@@ -519,17 +519,30 @@ function preventDefaultAndExecCommand(e: KeyboardEvent, commandId: string) {
 	document.execCommand(commandId);
 }
 
+/**
+ * A string stack used to track changes to Undo and Redo for the Rich Text editor in text cells.
+ */
 export class RichTextEditStack {
 	private _list: string[] = [];
 
+	/**
+	 * Adds an element to the top of the stack.
+	 * @param element The string element to add to the stack.
+	 */
 	public push(element: string): void {
 		this._list.push(element);
 	}
 
+	/**
+	 * Removes the topmost element of the stack and returns it.
+	 */
 	public pop(): string | undefined {
 		return this._list.pop();
 	}
 
+	/**
+	 * Returns the topmost element of the stack without removing it.
+	 */
 	public peek(): string | undefined {
 		if (this._list.length > 0) {
 			return this._list[this._list.length - 1];
@@ -538,10 +551,16 @@ export class RichTextEditStack {
 		}
 	}
 
+	/**
+	 * Removes all elements from the stack.
+	 */
 	public clear(): void {
 		this._list = [];
 	}
 
+	/**
+	 * Returns the number of elements in the stack.
+	 */
 	public get count(): number {
 		return this._list.length;
 	}
