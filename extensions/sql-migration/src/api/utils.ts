@@ -130,5 +130,7 @@ export function selectDropDownIndex(dropDown: DropDownComponent, index: number):
 }
 
 export function findDropDownItemIndex(dropDown: DropDownComponent, value: string): number {
-	return dropDown.values!.findIndex((v: any) => ((v as CategoryValue)?.displayName?.toLowerCase() === value?.toLowerCase()));
+	return dropDown.values &&
+		dropDown.values.findIndex((v: any) => ((v as CategoryValue)?.displayName?.toLowerCase() === value?.toLowerCase())) ||
+		-1;
 }
