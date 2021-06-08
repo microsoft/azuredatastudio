@@ -96,7 +96,7 @@ MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
 	},
 	when: ContextKeyExpr.and(
 		ConnectionContextKey.Provider.notEqualsTo('KUSTO'),
-		ConnectionContextKey.Provider.notEqualsTo('LogAnalytics'),
+		ConnectionContextKey.Provider.notEqualsTo('LOGANALYTICS'),
 		ContextKeyExpr.or(
 			TreeNodeContextKey.NodeType.isEqualTo('Table'),
 			TreeNodeContextKey.NodeType.isEqualTo('View')
@@ -113,7 +113,7 @@ MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
 	},
 	when: ContextKeyExpr.or(
 		ContextKeyExpr.and(ConnectionContextKey.Provider.isEqualTo('KUSTO'), TreeNodeContextKey.NodeType.isEqualTo('Table')),
-		ContextKeyExpr.and(ConnectionContextKey.Provider.isEqualTo('LogAnalytics'), TreeNodeContextKey.NodeType.isEqualTo('Table')))
+		ContextKeyExpr.and(ConnectionContextKey.Provider.isEqualTo('LOGANALYTICS'), TreeNodeContextKey.NodeType.isEqualTo('Table')))
 });
 
 MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
@@ -123,7 +123,7 @@ MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
 		id: commands.OE_EDIT_DATA_COMMAND_ID,
 		title: localize('editData', "Edit Data")
 	},
-	when: ContextKeyExpr.and(TreeNodeContextKey.NodeType.isEqualTo('Table'), ConnectionContextKey.Provider.notEqualsTo('KUSTO'), ConnectionContextKey.Provider.notEqualsTo('LogAnalytics'), MssqlNodeContext.EngineEdition.notEqualsTo(DatabaseEngineEdition.SqlOnDemand.toString()))
+	when: ContextKeyExpr.and(TreeNodeContextKey.NodeType.isEqualTo('Table'), ConnectionContextKey.Provider.notEqualsTo('KUSTO'), ConnectionContextKey.Provider.notEqualsTo('LOGANALYTICS'), MssqlNodeContext.EngineEdition.notEqualsTo(DatabaseEngineEdition.SqlOnDemand.toString()))
 });
 
 MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
@@ -136,7 +136,7 @@ MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
 	when:
 		ContextKeyExpr.and(
 			ConnectionContextKey.Provider.notEqualsTo('KUSTO'),
-			ConnectionContextKey.Provider.notEqualsTo('LogAnalytics'),
+			ConnectionContextKey.Provider.notEqualsTo('LOGANALYTICS'),
 			ContextKeyExpr.or(
 				TreeNodeContextKey.NodeType.isEqualTo('Table'),
 				TreeNodeContextKey.NodeType.isEqualTo('View'),
@@ -208,7 +208,7 @@ MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
 	when:
 		ContextKeyExpr.and(
 			ConnectionContextKey.Provider.notEqualsTo('KUSTO'),
-			ConnectionContextKey.Provider.notEqualsTo('LogAnalytics'),
+			ConnectionContextKey.Provider.notEqualsTo('LOGANALYTICS'),
 			ContextKeyExpr.or(
 				TreeNodeContextKey.NodeType.isEqualTo(NodeType.Table),
 				TreeNodeContextKey.NodeType.isEqualTo(NodeType.View),

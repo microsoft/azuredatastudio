@@ -273,7 +273,7 @@ export class QueryEditor extends EditorPane {
 			this.connectionManagementService.getDefaultProviderId();
 		// TODO: Make it more generic, some way for extensions to register the commands it supports
 		if ((providerId === 'KUSTO') || this.modeService.getExtensions('Kusto').indexOf(fileExtension) > -1 ||
-			providerId === 'LogAnalytics' || this.modeService.getExtensions('LogAnalytics').indexOf(fileExtension) > -1) {
+			providerId === 'LOGANALYTICS' || this.modeService.getExtensions('LogAnalytics').indexOf(fileExtension) > -1) {
 			if (this.input instanceof UntitledQueryEditorInput) {		// Sets proper language mode for untitled query editor based on the connection selected by user.
 				let mode = providerId === 'KUSTO' ? 'kusto' : 'loganalytics';
 				this.input.setMode(mode);

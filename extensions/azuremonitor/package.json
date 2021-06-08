@@ -23,7 +23,7 @@
   },
   "contributes": {
     "connectionProvider": {
-      "providerId": "LogAnalytics",
+      "providerId": "LOGANALYTICS",
       "languageMode": "loganalytics",
       "displayName": "Azure Monitor Logs",
       "notebookKernelAlias": "LogAnalytics",
@@ -132,7 +132,7 @@
       ]
     },
     "dashboard": {
-      "provider": "LogAnalytics",
+      "provider": "LOGANALYTICS",
       "flavors": [
         {
           "flavor": "cloud",
