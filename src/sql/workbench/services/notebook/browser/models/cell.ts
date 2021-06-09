@@ -149,6 +149,10 @@ export class CellModel extends Disposable implements ICellModel {
 		return this._attachments;
 	}
 
+	public set attachments(imageData: nb.ICellAttachments) {
+		this._attachments = imageData ?? {};
+	}
+
 	addAttachment(mimeType: string, base64Encoding: string, name: string): string {
 		// base64Encoded value looks like: data:application/octet-stream;base64,<base64Value>
 		// get the <base64Value> from the string
@@ -313,8 +317,6 @@ export class CellModel extends Disposable implements ICellModel {
 	}
 
 	private attachImageFromSource(newSource: string | string[]): string | string[] {
-		// reset attachments to remove unused image data since we're going to go through each of them again
-		this._attachments = {};
 		if (!Array.isArray(newSource) && this.isValidBase64OctetStream(newSource)) {
 			let results;
 			while ((results = validBase64OctetStreamRegex.exec(newSource)) !== null) {

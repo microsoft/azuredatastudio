@@ -258,6 +258,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	private updateCellSource(): void {
 		let textOutputElement = <HTMLElement>this.output.nativeElement;
 		let newCellSource: string = this._htmlMarkdownConverter.convert(textOutputElement.innerHTML);
+		this.cellModel.attachments = {};
 		this.cellModel.source = newCellSource;
 		this._changeRef.detectChanges();
 	}
