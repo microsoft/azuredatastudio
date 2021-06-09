@@ -32,6 +32,8 @@ export class IconPathHelper {
 	public static info: IconPath;
 	public static error: IconPath;
 	public static completingCutover: IconPath;
+	public static migrationService: IconPath;
+	public static infoBalloon: IconPath;
 
 	public static setExtensionContext(context: vscode.ExtensionContext) {
 		IconPathHelper.copy = {
@@ -117,6 +119,14 @@ export class IconPathHelper {
 		IconPathHelper.completingCutover = {
 			light: context.asAbsolutePath('images/completingCutover.svg'),
 			dark: context.asAbsolutePath('images/completingCutover.svg')
+		};
+		IconPathHelper.migrationService = {
+			light: context.asAbsolutePath('images/migrationService.svg'),
+			dark: context.asAbsolutePath('images/migrationService.svg')
+		};
+		IconPathHelper.infoBalloon = {
+			light: context.asAbsolutePath('images/infoBalloon.svg'),
+			dark: context.asAbsolutePath('images/infoBalloon.svg')
 		};
 	}
 }

@@ -389,6 +389,14 @@ export function SEC(sec: number): string {
 	return localize('sql.migration.sec', "{0} sec", sec);
 }
 
+// SQL Migration Service Details page.
+export const SQL_MIGRATION_SERVICE_DETAILS_SUB_TITLE = localize('sql.migration.service.details.dialog.title', "Azure Database Migration Service");
+export const SQL_MIGRATION_SERVICE_DETAILS_BUTTON_LABEL = localize('sql.migration.service.details.button.label', "Close");
+export const SQL_MIGRATION_SERVICE_DETAILS_IR_LABEL = localize('sql.migration.service.details.ir.label', "Self-hosted Integration Runtime node");
+export const SQL_MIGRATION_SERVICE_DETAILS_AUTH_KEYS_LABEL = localize('sql.migration.service.details.authkeys.label', "Authentication keys");
+export const SQL_MIGRATION_SERVICE_DETAILS_AUTH_KEYS_TITLE = localize('sql.migration.service.details.authkeys.title', "Authentication keys used to connect to the Self-hosted Integration Runtime node");
+export const SQL_MIGRATION_SERVICE_DETAILS_STATUS_UNAVAILABLE = localize('sql.migration.service.details.status.unavailable', "-- unavailable --");
+
 //Source Credentials page.
 export const SOURCE_CONFIGURATION = localize('sql.migration.source.configuration', "Source Configuration");
 export const SOURCE_CREDENTIALS = localize('sql.migration.source.credentials', "Source Credentials");
