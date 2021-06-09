@@ -19,7 +19,7 @@
 	"azuremonitor.connectionProperties.proxyUserId.description": "User name of the proxy user.",
 	"azuremonitor.connectionProperties.proxyUserPassword.label": "Proxy Password",
 	"azuremonitor.connectionProperties.proxyUserPassword.description": "Password of the proxy user.",
-	"azuremonitor.connectionProperties.serverName.displayName": "Workspace",
+	"azuremonitor.connectionProperties.serverName.displayName": "Workspace ID",
 	"azuremonitor.connectionProperties.serverName.description": "Log Analytics Workspace ID",
 	"azuremonitor.connectionOptions.databaseName.displayName": "Database",
 	"azuremonitor.connectionOptions.databaseName.description": "The name of the initial catalog or database in the data source",
