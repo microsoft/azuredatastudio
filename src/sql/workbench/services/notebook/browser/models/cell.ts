@@ -313,7 +313,7 @@ export class CellModel extends Disposable implements ICellModel {
 	}
 
 	private attachImageFromSource(newSource: string | string[]): string | string[] {
-		// reset images to remove unused since we're going to go through each of them again
+		// reset attachments to remove unused image data since we're going to go through each of them again
 		this._attachments = {};
 		if (!Array.isArray(newSource) && this.isValidBase64OctetStream(newSource)) {
 			let results;
