@@ -116,7 +116,7 @@ export function validateInputs(optionsMap: { [optionName: string]: IOptionElemen
 			optionElement.option.valueType === ServiceOptionType.number);
 
 		if (isInputBox) {
-			if (!widget.validate()) {
+			if (widget.validate() !== undefined) {
 				isValid = false;
 				if (!isFocused) {
 					isFocused = true;

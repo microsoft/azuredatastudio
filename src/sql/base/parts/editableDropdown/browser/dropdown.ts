@@ -139,7 +139,7 @@ export class Dropdown extends Disposable implements IListVirtualDelegate<string>
 		this._register(DOM.addStandardDisposableListener(this._input.inputElement, DOM.EventType.KEY_DOWN, (e: StandardKeyboardEvent) => {
 			switch (e.keyCode) {
 				case KeyCode.Enter:
-					if (this._input.validate()) {
+					if (this._input.validate() === undefined) {
 						this._onValueChange.fire(this._input.value);
 					}
 					e.stopPropagation();
