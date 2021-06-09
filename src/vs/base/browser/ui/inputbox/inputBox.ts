@@ -425,7 +425,7 @@ export class InputBox extends Widget {
 		return !!this.validation && !this.validation(this.value);
 	}
 
-	public validate(): boolean { // {{SQL CARBON EDIT}}
+	public validate(): MessageType | undefined {
 		let errorMsg: IMessage | null = null;
 
 		if (this.validation) {
@@ -449,8 +449,7 @@ export class InputBox extends Widget {
 			}
 		}
 
-		// {{SQL CARBON EDIT}} Candidate for addition to vscode
-		return errorMsg ? errorMsg.type !== MessageType.ERROR : true;
+		return errorMsg?.type;
 	}
 
 	public stylesForType(type: MessageType | undefined): { border: Color | undefined; background: Color | undefined; foreground: Color | undefined } {
