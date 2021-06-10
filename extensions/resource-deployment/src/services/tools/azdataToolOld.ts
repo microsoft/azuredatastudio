@@ -64,7 +64,7 @@ export class AzdataToolOld extends ToolBase {
 		}
 		return version;
 	}
-	protected async override getSearchPaths(): Promise<string[]> {
+	protected override async getSearchPaths(): Promise<string[]> {
 		switch (this.osDistribution) {
 			case OsDistribution.win32:
 				return [win32InstallationRoot];

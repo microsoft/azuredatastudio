@@ -49,7 +49,7 @@ export class QueryPlanInput extends EditorInput {
 		return UntitledTextEditorInput.ID;
 	}
 
-	public getName(): string {
+	public override getName(): string {
 		return 'Query Plan';
 	}
 
@@ -65,7 +65,7 @@ export class QueryPlanInput extends EditorInput {
 		return false;
 	}
 
-	public async resolve(refresh?: boolean): Promise<EditorModel | null> {
+	public override async resolve(refresh?: boolean): Promise<EditorModel | null> {
 		if (!this._xml) {
 			this._xml = (await this.fileService.read(this._uri, { acceptTextOnly: true })).value;
 		}

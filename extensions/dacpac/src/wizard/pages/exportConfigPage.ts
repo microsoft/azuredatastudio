@@ -44,7 +44,7 @@ export class ExportConfigPage extends DacFxConfigPage {
 	}
 
 
-	async override onPageLeave(): Promise<boolean> {
+	override async onPageLeave(): Promise<boolean> {
 		this.appendFileExtensionIfNeeded();
 		return true;
 	}

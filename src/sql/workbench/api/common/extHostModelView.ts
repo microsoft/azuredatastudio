@@ -1586,7 +1586,7 @@ class DeclarativeTableWrapper extends ComponentWrapper implements azdata.Declara
 		return emitter && emitter.event;
 	}
 
-	protected notifyPropertyChanged(): Thenable<void> {
+	protected override notifyPropertyChanged(): Thenable<void> {
 		return this._proxy.$setProperties(this._handle, this._id, this.getPropertiesForMainThread());
 	}
 
@@ -1602,7 +1602,7 @@ class DeclarativeTableWrapper extends ComponentWrapper implements azdata.Declara
 		this._proxy.$doAction(this._handle, this._id, ModelViewAction.Filter, rowIndexes);
 	}
 
-	public toComponentShape(): IComponentShape {
+	public override toComponentShape(): IComponentShape {
 		// Overridden to ensure we send the correct properties mapping.
 		return <IComponentShape>{
 			id: this.id,

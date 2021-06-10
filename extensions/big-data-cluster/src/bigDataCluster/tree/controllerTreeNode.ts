@@ -98,7 +98,7 @@ export class ControllerRootNode extends ControllerTreeNode {
 		super('root', undefined, treeChangeHandler, undefined, BdcItemType.controllerRoot);
 	}
 
-	public async override getChildren(): Promise<ControllerNode[]> {
+	public override async getChildren(): Promise<ControllerNode[]> {
 		return this.children as ControllerNode[];
 	}
 
@@ -168,7 +168,7 @@ export class ControllerNode extends ControllerTreeNode {
 		this.description = description;
 	}
 
-	public async override getChildren(): Promise<ControllerTreeNode[] | undefined> {
+	public override async getChildren(): Promise<ControllerTreeNode[] | undefined> {
 		if (this.children && this.children.length > 0) {
 			this.clearChildren();
 		}

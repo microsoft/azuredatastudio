@@ -18,7 +18,7 @@ export class MiaaDashboard extends Dashboard {
 		super(loc.miaaDashboard(_miaaModel.info.name), 'ArcMiaaDashboard');
 	}
 
-	public async override showDashboard(): Promise<void> {
+	public override async showDashboard(): Promise<void> {
 		await super.showDashboard();
 		// Kick off the model refreshes but don't wait on it since that's all handled with callbacks anyways
 		this._controllerModel.refresh().catch(err => console.log(`Error refreshing controller model for MIAA dashboard ${err}`));

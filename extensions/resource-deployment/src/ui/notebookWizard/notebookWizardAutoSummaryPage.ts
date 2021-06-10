@@ -33,11 +33,11 @@ export class NotebookWizardAutoSummaryPage extends NotebookWizardPage {
 		});
 	}
 
-	public async override onLeave(): Promise<void> {
+	public override async onLeave(): Promise<void> {
 		this.wizard.wizardObject.message = { text: '' };
 	}
 
-	public async override onEnter(): Promise<void> {
+	public override async onEnter(): Promise<void> {
 		this.formItems.forEach(item => {
 			this.form!.removeFormItem(item);
 		});

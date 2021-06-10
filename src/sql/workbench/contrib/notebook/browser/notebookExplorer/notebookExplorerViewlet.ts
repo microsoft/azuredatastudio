@@ -102,7 +102,7 @@ export class NotebookExplorerViewPaneContainer extends ViewPaneContainer {
 		this.queryBuilder = this.instantiationService.createInstance(QueryBuilder);
 	}
 
-	create(parent: HTMLElement): void {
+	override create(parent: HTMLElement): void {
 		this.root = parent;
 		super.create(parent);
 		parent.classList.add('notebookExplorer-viewlet');
@@ -375,22 +375,17 @@ export class NotebookExplorerViewPaneContainer extends ViewPaneContainer {
 		}));
 	}
 
-
-	public updateStyles(): void {
-		super.updateStyles();
-	}
-
-	focus(): void {
+	override focus(): void {
 		super.focus();
 		this.searchWidget.focus(undefined, this.searchConfig.seedOnFocus);
 	}
 
-	layout(dimension: Dimension): void {
+	override layout(dimension: Dimension): void {
 		toggleClass(this.root, 'narrow', dimension.width <= 300);
 		super.layout(new Dimension(dimension.width, dimension.height - getTotalHeight(this.searchWidgetsContainerElement)));
 	}
 
-	getOptimalWidth(): number {
+	override getOptimalWidth(): number {
 		return 400;
 	}
 
@@ -406,7 +401,7 @@ export class NotebookExplorerViewPaneContainer extends ViewPaneContainer {
 		return actions;
 	}
 
-	protected createView(viewDescriptor: IViewDescriptor, options: IViewletViewOptions): ViewPane {
+	protected override createView(viewDescriptor: IViewDescriptor, options: IViewletViewOptions): ViewPane {
 		let viewletPanel = this.instantiationService.createInstance(viewDescriptor.ctorDescriptor.ctor, options) as ViewPane;
 		this._register(viewletPanel);
 		return viewletPanel;

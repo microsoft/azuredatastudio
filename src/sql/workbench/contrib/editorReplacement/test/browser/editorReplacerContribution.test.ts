@@ -216,7 +216,7 @@ class MockEditorService extends TestEditorService {
 	}
 	readonly overridenOpens: IOpenEditorOverrideHandler[] = [];
 
-	overrideOpenEditor(_handler: IOpenEditorOverrideHandler): IDisposable {
+	override overrideOpenEditor(_handler: IOpenEditorOverrideHandler): IDisposable {
 		this.overridenOpens.push(_handler);
 		return toDisposable(() => {
 			const index = this.overridenOpens.findIndex(v => v === _handler);
@@ -236,11 +236,11 @@ class MockEditorService extends TestEditorService {
 		return undefined;
 	}
 
-	openEditor(_editor: any, _options?: any, _group?: any): Promise<any> {
+	override openEditor(_editor: any, _options?: any, _group?: any): Promise<any> {
 		return Promise.resolve(_editor);
 	}
 
-	createEditorInput(_input: IUntitledTextResourceEditorInput): EditorInput {
+	override createEditorInput(_input: IUntitledTextResourceEditorInput): EditorInput {
 		const accessor = this.instantiationService.createInstance(ServiceAccessor);
 		const service = accessor.untitledTextEditorService;
 		return this.instantiationService.createInstance(UntitledTextEditorInput, service.create());

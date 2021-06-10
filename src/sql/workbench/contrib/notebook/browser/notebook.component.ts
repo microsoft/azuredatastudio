@@ -124,7 +124,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		this.initNavSection();
 	}
 
-	ngOnDestroy() {
+	override ngOnDestroy() {
 		this.dispose();
 		if (this.notebookService) {
 			this.notebookService.removeNotebookEditor(this);

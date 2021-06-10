@@ -420,7 +420,7 @@ export class QueryResultsView extends Disposable {
 		this.dynamicModelViewTabs = [];
 	}
 
-	public dispose() {
+	public override dispose() {
 		this.runnerDisposables.dispose();
 		this.runnerDisposables = new DisposableStore();
 		super.dispose();

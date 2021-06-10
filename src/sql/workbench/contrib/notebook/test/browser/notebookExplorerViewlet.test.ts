@@ -19,7 +19,7 @@ suite('Notebook Explorer Views', () => {
 			super('notebookExplorer', undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined);
 		}
 
-		public layout(dimension: any): void {
+		public override layout(dimension: any): void {
 			throw new Error('Method not implemented.');
 		}
 

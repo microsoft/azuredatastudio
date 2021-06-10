@@ -883,7 +883,7 @@ export class TerminalService implements ITerminalService {
 
 		const value = await this._quickInputService.pick(quickPickItems, options);
 		if (!value) {
-			return;
+			return undefined; // {{SQL CARBON EDIT}} Strict nulls
 		}
 		if (type === 'createInstance') {
 			// TODO: How to support alt here?
@@ -908,7 +908,7 @@ export class TerminalService implements ITerminalService {
 			}
 		} else { // setDefault
 			if ('command' in value.profile) {
-				return; // Should never happen
+				return undefined; // Should never happen {{SQL CARBON EDIT}} Strict nulls
 			}
 			// Add the profile to settings if necessary
 			if (value.profile.isAutoDetected) {
@@ -982,7 +982,7 @@ export class TerminalService implements ITerminalService {
 		// Shell launch config was provided
 		if (shellLaunchConfigOrProfile) {
 			if (cwd) {
-				shellLaunchConfigOrProfile.cwd = cwd;
+				(shellLaunchConfigOrProfile as IShellLaunchConfig).cwd = cwd; // {{SQL CARBON EDIT}} Fix compile
 			}
 			return shellLaunchConfigOrProfile;
 		}

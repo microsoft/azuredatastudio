@@ -3220,7 +3220,7 @@ export abstract class AbstractTaskService extends Disposable implements ITaskSer
 
 	private upgradeTask(task: Task, suppressTaskName: boolean, globalConfig: { windows?: CommandUpgrade, osx?: CommandUpgrade, linux?: CommandUpgrade }): TaskConfig.CustomTask | TaskConfig.ConfiguringTask | undefined {
 		if (!CustomTask.is(task)) {
-			return;
+			return undefined; // {{SQL CARBON EDIT}} Strict nulls
 		}
 		const configElement: any = {
 			label: task._label
@@ -3266,7 +3266,7 @@ export abstract class AbstractTaskService extends Disposable implements ITaskSer
 		if (configTask) {
 			return configTask;
 		}
-		return;
+		return undefined; // {{SQL CARBON EDIT}} Strict nulls
 	}
 
 	private async upgrade(): Promise<void> {

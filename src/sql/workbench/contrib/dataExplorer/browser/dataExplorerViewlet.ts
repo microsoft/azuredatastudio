@@ -74,26 +74,22 @@ export class DataExplorerViewPaneContainer extends ViewPaneContainer {
 		super(VIEWLET_ID, { mergeViewWithContainerWhenSingleView: true }, instantiationService, configurationService, layoutService, contextMenuService, telemetryService, extensionService, themeService, storageService, contextService, viewDescriptorService);
 	}
 
-	create(parent: HTMLElement): void {
+	override create(parent: HTMLElement): void {
 		this.root = parent;
 
 		super.create(parent);
 		parent.classList.add('dataExplorer-viewlet');
 	}
 
-	public updateStyles(): void {
-		super.updateStyles();
+	override focus(): void {
 	}
 
-	focus(): void {
-	}
-
-	layout(dimension: Dimension): void {
+	override layout(dimension: Dimension): void {
 		toggleClass(this.root!, 'narrow', dimension.width <= 300);
 		super.layout(new Dimension(dimension.width, dimension.height));
 	}
 
-	getOptimalWidth(): number {
+	override getOptimalWidth(): number {
 		return 400;
 	}
 
@@ -109,7 +105,7 @@ export class DataExplorerViewPaneContainer extends ViewPaneContainer {
 		return actions;
 	}
 
-	protected createView(viewDescriptor: IViewDescriptor, options: IViewletViewOptions): ViewPane {
+	protected override createView(viewDescriptor: IViewDescriptor, options: IViewletViewOptions): ViewPane {
 		let viewletPanel = this.instantiationService.createInstance(viewDescriptor.ctorDescriptor.ctor, options) as ViewPane;
 		this._register(viewletPanel);
 		return viewletPanel;

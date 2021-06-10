@@ -26,7 +26,7 @@ export class FileNotebookInput extends NotebookInput {
 		super(title, resource, textInput, textModelService, instantiationService, notebookService, extensionService);
 	}
 
-	public get textInput(): FileEditorInput {
+	public override get textInput(): FileEditorInput {
 		return super.textInput as FileEditorInput;
 	}
 

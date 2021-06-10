@@ -98,7 +98,7 @@ export class KubeCtlTool extends ToolBase {
 			command: this.discoveryCommandString('kubectl')
 		};
 	}
-	protected async override getSearchPaths(): Promise<string[]> {
+	protected override async getSearchPaths(): Promise<string[]> {
 		switch (this.osDistribution) {
 			case OsDistribution.win32:
 				return [this.storagePath];

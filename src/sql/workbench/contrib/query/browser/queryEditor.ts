@@ -122,12 +122,12 @@ export class QueryEditor extends EditorPane {
 		}
 	}
 
-	protected getEditorMemento<T>(editorGroupService: IEditorGroupsService, key: string, limit: number = 10): IEditorMemento<T> {
+	protected override getEditorMemento<T>(editorGroupService: IEditorGroupsService, key: string, limit: number = 10): IEditorMemento<T> {
 		return new EditorMemento(this.getId(), key, Object.create(null), limit, editorGroupService); // do not persist in storage as results are never persisted
 	}
 
 	// PUBLIC METHODS ////////////////////////////////////////////////////////////
-	public get input(): QueryEditorInput | null {
+	public override get input(): QueryEditorInput | null {
 		return this._input as QueryEditorInput;
 	}
 
@@ -321,7 +321,7 @@ export class QueryEditor extends EditorPane {
 		this.taskbar.setContent(content);
 	}
 
-	public async setInput(newInput: QueryEditorInput, options: EditorOptions, context: IEditorOpenContext, token: CancellationToken): Promise<void> {
+	public override async setInput(newInput: QueryEditorInput, options: EditorOptions, context: IEditorOpenContext, token: CancellationToken): Promise<void> {
 		const oldInput = this.input;
 
 		if (newInput.matches(oldInput)) {
@@ -403,7 +403,7 @@ export class QueryEditor extends EditorPane {
 		return this.group ? this.editorMemento.loadEditorState(this.group, resource) : undefined;
 	}
 
-	protected saveState(): void {
+	protected override saveState(): void {
 
 		// Update/clear editor view State
 		this.saveQueryEditorViewState(this.input);
@@ -422,7 +422,7 @@ export class QueryEditor extends EditorPane {
 	/**
 	 * Sets this editor and the 2 sub-editors to visible.
 	 */
-	public setEditorVisible(visible: boolean, group: IEditorGroup): void {
+	public override setEditorVisible(visible: boolean, group: IEditorGroup): void {
 		this.textFileEditor.setVisible(visible, group);
 		this.textResourceEditor.setVisible(visible, group);
 		this.resultsEditor.setVisible(visible, group);
@@ -455,7 +455,7 @@ export class QueryEditor extends EditorPane {
 	 * Called to indicate to the editor that the input should be cleared and resources associated with the
 	 * input should be freed.
 	 */
-	public clearInput(): void {
+	public override clearInput(): void {
 
 		this.saveQueryEditorViewState(this.input);
 
@@ -467,7 +467,7 @@ export class QueryEditor extends EditorPane {
 	/**
 	 * Sets focus on this editor. Specifically, it sets the focus on the hosted text editor.
 	 */
-	public focus(): void {
+	public override focus(): void {
 		this.currentTextEditor.focus();
 	}
 
@@ -493,11 +493,11 @@ export class QueryEditor extends EditorPane {
 	/**
 	 * Returns the editor control for the text editor.
 	 */
-	public getControl(): IEditorControl {
+	public override getControl(): IEditorControl {
 		return this.currentTextEditor.getControl();
 	}
 
-	public setOptions(options: EditorOptions): void {
+	public override setOptions(options: EditorOptions): void {
 		this.currentTextEditor.setOptions(options);
 	}
 

@@ -540,7 +540,7 @@ export class ActivitybarPart extends Part implements IActivityBarService {
 				}
 
 				if (action.id === 'workbench.actions.accounts') {
-					return this.instantiationService.createInstance(AccountsActionViewItem, action as ActivityAction, (theme: IColorTheme) => this.getActivitybarItemColors(theme)); // {{ SQL CARBON EDIT }} Use our own Accounts action
+					return this.instantiationService.createInstance(AccountsActionViewItem, action as ActivityAction, (theme: IColorTheme) => this.getActivitybarItemColors(theme), this.getActivityHoverOptions()); // {{ SQL CARBON EDIT }} Use our own Accounts action
 				}
 
 				throw new Error(`No view item for action '${action.id}'`);

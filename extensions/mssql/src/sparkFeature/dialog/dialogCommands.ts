@@ -30,7 +30,7 @@ export class OpenSparkJobSubmissionDialogCommand extends Command {
 		super(constants.mssqlClusterLivySubmitSparkJobCommand, appContext);
 	}
 
-	protected async override preExecute(context: ICommandUnknownContext | ICommandObjectExplorerContext, args: object = {}): Promise<any> {
+	protected override async preExecute(context: ICommandUnknownContext | ICommandObjectExplorerContext, args: object = {}): Promise<any> {
 		return this.execute(context, args);
 	}
 
@@ -118,7 +118,7 @@ export class OpenSparkJobSubmissionDialogFromFileCommand extends Command {
 		super(constants.mssqlClusterLivySubmitSparkJobFromFileCommand, appContext);
 	}
 
-	protected async override preExecute(context: ICommandViewContext | ICommandObjectExplorerContext, args: object = {}): Promise<any> {
+	protected override async preExecute(context: ICommandViewContext | ICommandObjectExplorerContext, args: object = {}): Promise<any> {
 		return this.execute(context, args);
 	}
 

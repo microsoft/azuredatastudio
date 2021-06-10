@@ -155,7 +155,7 @@ export class NotebookViewComponent extends AngularDisposable implements INoteboo
 		this.doLoad().catch(e => onUnexpectedError(e));
 	}
 
-	ngOnDestroy() {
+	override ngOnDestroy() {
 		this.dispose();
 	}
 

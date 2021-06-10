@@ -79,7 +79,7 @@ export class DashboardInput extends EditorInput {
 		});
 	}
 
-	public getName(): string {
+	public override getName(): string {
 		if (!this.connectionProfile) {
 			return '';
 		}
@@ -102,7 +102,7 @@ export class DashboardInput extends EditorInput {
 		return this._uri;
 	}
 
-	public dispose(): void {
+	public override dispose(): void {
 		this._disposeContainer();
 		if (this._onConnectionChanged) {
 			this._onConnectionChanged.dispose();
@@ -147,7 +147,7 @@ export class DashboardInput extends EditorInput {
 		return this._uniqueSelector;
 	}
 
-	public matches(otherinput: any): boolean {
+	public override matches(otherinput: any): boolean {
 		return otherinput instanceof DashboardInput
 			&& DashboardInput.profileMatches(this.connectionProfile, otherinput.connectionProfile);
 	}

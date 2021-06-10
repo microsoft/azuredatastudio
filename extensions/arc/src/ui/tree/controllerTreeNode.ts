@@ -37,7 +37,7 @@ export class ControllerTreeNode extends TreeNode {
 		});
 	}
 
-	public async override getChildren(): Promise<TreeNode[]> {
+	public override async getChildren(): Promise<TreeNode[]> {
 		try {
 			await this.model.refresh(false);
 			this.updateChildren(this.model.registrations);
@@ -60,7 +60,7 @@ export class ControllerTreeNode extends TreeNode {
 		return this._children.length > 0 ? this._children : [new NoInstancesTreeNode()];
 	}
 
-	public async override openDashboard(): Promise<void> {
+	public override async openDashboard(): Promise<void> {
 		const controllerDashboard = new ControllerDashboard(this.model);
 		await controllerDashboard.showDashboard();
 	}

@@ -294,7 +294,7 @@ export class TestingOutputPeekController extends Disposable implements IEditorCo
 
 		const test = this.testResults.getResult(parts.resultId)?.getStateById(parts.testExtId);
 		if (!test || !test.tasks[parts.taskIndex]) {
-			return;
+			return undefined; // {{SQL CARBON EDIT}} Strict nulls
 		}
 
 		return test && {

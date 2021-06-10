@@ -44,7 +44,7 @@ export default class PropertiesContainerComponent extends ComponentBase<azdata.P
 		this.layout();
 	}
 
-	public setProperties(properties: { [key: string]: any; }): void {
+	public override setProperties(properties: { [key: string]: any; }): void {
 		super.setProperties(properties);
 		this._propertiesContainer.propertyItems = this.propertyItems;
 	}

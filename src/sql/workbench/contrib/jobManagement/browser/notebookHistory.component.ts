@@ -262,7 +262,7 @@ export class NotebookHistoryComponent extends JobManagementView implements OnIni
 		}
 	}
 
-	protected initActionBar() {
+	protected override initActionBar() {
 		this._runJobAction = this.instantiationService.createInstance(RunJobAction);
 		this._stopJobAction = this.instantiationService.createInstance(StopJobAction);
 		this._editNotebookJobAction = this.instantiationService.createInstance(EditNotebookJobAction);
@@ -494,7 +494,7 @@ export class NotebookHistoryComponent extends JobManagementView implements OnIni
 		}
 	}
 
-	public refreshJobs() {
+	public override refreshJobs() {
 		this._agentViewComponent.refresh = true;
 		this.loadHistory();
 	}

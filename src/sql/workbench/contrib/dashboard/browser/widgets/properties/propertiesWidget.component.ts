@@ -34,10 +34,11 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 		@Inject(forwardRef(() => CommonServiceInterface)) private _bootstrap: CommonServiceInterface,
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
 		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef,
-		@Inject(WIDGET_CONFIG) protected _config: WidgetConfig,
+		@Inject(WIDGET_CONFIG) _config: WidgetConfig,
 		@Inject(ILogService) private logService: ILogService
 	) {
 		super(changeRef);
+		this._config = _config;
 		this.init();
 	}
 

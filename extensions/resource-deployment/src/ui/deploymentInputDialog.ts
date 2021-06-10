@@ -94,7 +94,7 @@ export class DeploymentInputDialog extends DialogBase {
 		});
 	}
 
-	protected async override onComplete(): Promise<void> {
+	protected override async onComplete(): Promise<void> {
 		const model: Model = new Model();
 		await setModelValues(this.inputComponents, model);
 		if (instanceOfNotebookBasedDialogInfo(this.dialogInfo)) {

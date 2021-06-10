@@ -311,7 +311,7 @@ export class GridPanel extends Disposable {
 		return this._state;
 	}
 
-	public dispose() {
+	public override dispose() {
 		dispose(this.tables);
 		this.tables = undefined;
 		super.dispose();
@@ -852,7 +852,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		}
 	}
 
-	public dispose() {
+	public override dispose() {
 		this.container.remove();
 		if (this.table) {
 			this.table.dispose();

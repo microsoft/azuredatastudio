@@ -53,7 +53,7 @@ export class ResourceViewerInput extends EditorInput {
 		return ResourceViewerInput.ID;
 	}
 
-	public getName(): string {
+	public override getName(): string {
 		return this._dataGridProvider.title || nls.localize('resourceViewerInput.resourceViewer', "Resource Viewer");
 	}
 
@@ -70,7 +70,7 @@ export class ResourceViewerInput extends EditorInput {
 		return this._columns;
 	}
 
-	isDirty(): boolean {
+	override isDirty(): boolean {
 		return false;
 	}
 

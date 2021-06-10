@@ -42,7 +42,7 @@ export interface ProfilerTableViewState {
 export class ProfilerTableEditor extends EditorPane implements IProfilerController, ITableController {
 
 	public static ID: string = 'workbench.editor.profiler.table';
-	protected _input: ProfilerInput;
+	protected override _input: ProfilerInput;
 	private _profilerTable: Table<Slick.SlickData>;
 	private _columnListener: IDisposable;
 	private _stateListener: IDisposable;
@@ -121,7 +121,7 @@ export class ProfilerTableEditor extends EditorPane implements IProfilerControll
 		);
 	}
 
-	public setInput(input: ProfilerInput): Promise<void> {
+	public override setInput(input: ProfilerInput): Promise<void> {
 		this._showStatusBarItem = true;
 		this._input = input;
 
@@ -219,7 +219,7 @@ export class ProfilerTableEditor extends EditorPane implements IProfilerControll
 		return this._actionMap[id];
 	}
 
-	public focus(): void {
+	public override focus(): void {
 		this._profilerTable.focus();
 	}
 

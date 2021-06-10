@@ -219,7 +219,7 @@ export class OverflowActionBar extends ActionBar {
 		this._focusedItem = this._actionsList.childElementCount - 1;
 	}
 
-	protected updateFocusedItem(): void {
+	protected override updateFocusedItem(): void {
 		let actionIndex = 0;
 		for (let i = 0; i < this._actionsList.children.length; i++) {
 			let elem = this._actionsList.children[i];
@@ -255,7 +255,7 @@ export class OverflowActionBar extends ActionBar {
 	 * Push an HTML Element onto the action bar UI in the position specified by options.
 	 * Pushes to the last position if no options are provided.
 	 */
-	public pushElement(element: HTMLElement, options: IActionOptions = {}): void {
+	public override pushElement(element: HTMLElement, options: IActionOptions = {}): void {
 		super.pushElement(element, options);
 		this.resizeToolbar();
 	}
@@ -264,12 +264,12 @@ export class OverflowActionBar extends ActionBar {
 	 * Push an action onto the action bar UI in the position specified by options.
 	 * Pushes to the last position if no options are provided.
 	 */
-	public pushAction(arg: IAction | IAction[], options: IActionOptions = {}): void {
+	public override pushAction(arg: IAction | IAction[], options: IActionOptions = {}): void {
 		super.pushAction(arg, options);
 		this.resizeToolbar();
 	}
 
-	protected focusNext(): void {
+	protected override focusNext(): void {
 		if (typeof this._focusedItem === 'undefined') {
 			this._focusedItem = this._items.length - 1;
 		}
@@ -289,7 +289,7 @@ export class OverflowActionBar extends ActionBar {
 		this.updateFocus();
 	}
 
-	protected focusPrevious(): void {
+	protected override focusPrevious(): void {
 		if (typeof this._focusedItem === 'undefined') {
 			this._focusedItem = 0;
 		}
@@ -314,7 +314,7 @@ export class OverflowActionBar extends ActionBar {
 		this.updateFocus();
 	}
 
-	protected updateFocus(): void {
+	protected override updateFocus(): void {
 		if (typeof this._focusedItem === 'undefined') {
 			this._domNode.focus();
 			return;
@@ -341,7 +341,7 @@ export class OverflowActionBar extends ActionBar {
 		}
 	}
 
-	protected cancel(): void {
+	protected override cancel(): void {
 		super.cancel();
 
 		if (this._overflow) {
@@ -349,7 +349,7 @@ export class OverflowActionBar extends ActionBar {
 		}
 	}
 
-	public run(action: IAction, context?: any): Promise<any> {
+	public override run(action: IAction, context?: any): Promise<any> {
 		this.hideOverflowDisplay();
 		return this._actionRunner.run(action, context);
 	}

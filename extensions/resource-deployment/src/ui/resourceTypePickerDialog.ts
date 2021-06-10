@@ -189,7 +189,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 		this._selectedResourceType = resourceType;
 	}
 
-	protected async override onComplete(): Promise<void> {
+	protected override async onComplete(): Promise<void> {
 		this.resourceTypeService.startDeployment(this._selectedResourceType, this._optionValuesFilter, this._initialVariableValues);
 	}
 

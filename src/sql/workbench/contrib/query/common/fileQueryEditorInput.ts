@@ -10,9 +10,9 @@ import { IQueryModelService } from 'sql/workbench/services/query/common/queryMod
 
 import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { EncodingMode, IMoveResult, GroupIdentifier } from 'vs/workbench/common/editor';
+import { IMoveResult, GroupIdentifier } from 'vs/workbench/common/editor';
 import { BinaryEditorModel } from 'vs/workbench/common/editor/binaryEditorModel';
-import { ITextFileEditorModel } from 'vs/workbench/services/textfile/common/textfiles';
+import { EncodingMode, ITextFileEditorModel } from 'vs/workbench/services/textfile/common/textfiles';
 import { URI } from 'vs/base/common/uri';
 
 export class FileQueryEditorInput extends QueryEditorInput {
@@ -30,11 +30,11 @@ export class FileQueryEditorInput extends QueryEditorInput {
 		super(description, text, results, connectionManagementService, queryModelService, configurationService);
 	}
 
-	public resolve(): Promise<ITextFileEditorModel | BinaryEditorModel> {
+	public override resolve(): Promise<ITextFileEditorModel | BinaryEditorModel> {
 		return this.text.resolve();
 	}
 
-	public get text(): FileEditorInput {
+	public override get text(): FileEditorInput {
 		return this._text as FileEditorInput;
 	}
 
@@ -82,7 +82,7 @@ export class FileQueryEditorInput extends QueryEditorInput {
 		return this.text.isResolved();
 	}
 
-	public rename(group: GroupIdentifier, target: URI): IMoveResult {
+	public override rename(group: GroupIdentifier, target: URI): IMoveResult {
 		return this.text.rename(group, target);
 	}
 }

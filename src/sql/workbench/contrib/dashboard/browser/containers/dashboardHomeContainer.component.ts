@@ -53,7 +53,7 @@ export class DashboardHomeContainer extends DashboardWidgetContainer {
 		super(_cd);
 	}
 
-	ngAfterContentInit() {
+	override ngAfterContentInit() {
 		this.updateTheme(this.themeService.getColorTheme());
 		this._register(this.themeService.onDidColorThemeChange((event: IColorTheme) => {
 			this.updateTheme(event);
@@ -90,7 +90,7 @@ export class DashboardHomeContainer extends DashboardWidgetContainer {
 		}
 	}
 
-	public refresh(): void {
+	public override refresh(): void {
 		super.refresh();
 		this._propertiesClass.refresh();
 	}

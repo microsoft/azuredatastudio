@@ -294,7 +294,7 @@ export class ClusterSettingsPage extends ResourceTypePage {
 		});
 	}
 
-	public async override onLeave(): Promise<void> {
+	public override async onLeave(): Promise<void> {
 		await setModelValues(this.inputComponents, this.wizard.model);
 		if (this._model.authenticationMode === AuthenticationMode.ActiveDirectory) {
 			const variableDNSPrefixMapping: { [s: string]: string } = {};
@@ -315,7 +315,7 @@ export class ClusterSettingsPage extends ResourceTypePage {
 		});
 	}
 
-	public async override onEnter(): Promise<void> {
+	public override async onEnter(): Promise<void> {
 		getInputBoxComponent(VariableNames.DockerRegistry_VariableName, this.inputComponents).value = this.wizard.model.getStringValue(VariableNames.DockerRegistry_VariableName);
 		getInputBoxComponent(VariableNames.DockerRepository_VariableName, this.inputComponents).value = this.wizard.model.getStringValue(VariableNames.DockerRepository_VariableName);
 		getInputBoxComponent(VariableNames.DockerImageTag_VariableName, this.inputComponents).value = this.wizard.model.getStringValue(VariableNames.DockerImageTag_VariableName);

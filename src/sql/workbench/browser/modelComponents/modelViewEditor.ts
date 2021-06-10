@@ -41,10 +41,10 @@ export class ModelViewEditor extends EditorPane {
 	/**
 	 * Sets focus on this editor. Specifically, it sets the focus on the hosted text editor.
 	 */
-	public focus(): void {
+	public override focus(): void {
 	}
 
-	public clearInput() {
+	public override clearInput() {
 		this.hideOrRemoveModelViewContainer();
 		super.clearInput();
 	}
@@ -62,7 +62,7 @@ export class ModelViewEditor extends EditorPane {
 		}
 	}
 
-	async setInput(input: ModelViewInput, options?: EditorOptions, context?: IEditorOpenContext): Promise<void> {
+	override async setInput(input: ModelViewInput, options?: EditorOptions, context?: IEditorOpenContext): Promise<void> {
 		if (this.input && this.input.matches(input)) {
 			return Promise.resolve(undefined);
 		}

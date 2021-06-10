@@ -169,7 +169,7 @@ export class AsmtResultsViewComponent extends TabChild implements IAssessmentCom
 		this._telemetryService.sendViewEvent(TelemetryView.SqlAssessment);
 	}
 
-	ngOnDestroy(): void {
+	override ngOnDestroy(): void {
 		this.isVisible = false;
 		this.rowDetail?.destroy();
 		this.filterPlugin.destroy();

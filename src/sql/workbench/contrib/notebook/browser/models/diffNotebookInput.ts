@@ -13,7 +13,7 @@ import { Deferred } from 'sql/base/common/promise';
 import { ILogService } from 'vs/platform/log/common/log';
 
 export class DiffNotebookInput extends SideBySideEditorInput {
-	public static ID: string = 'workbench.editorinputs.DiffNotebookInput';
+	public static override ID: string = 'workbench.editorinputs.DiffNotebookInput';
 	private _notebookService: INotebookService;
 	private _logService: ILogService;
 

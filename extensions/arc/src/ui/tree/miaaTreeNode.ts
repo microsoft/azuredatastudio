@@ -19,7 +19,7 @@ export class MiaaTreeNode extends ResourceTreeNode<MiaaModel> {
 		super(model.info.name, vscode.TreeItemCollapsibleState.None, ResourceType.sqlManagedInstances, model);
 	}
 
-	public async override openDashboard(): Promise<void> {
+	public override async openDashboard(): Promise<void> {
 		const miaaDashboard = new MiaaDashboard(this._controllerModel, this.model);
 		await miaaDashboard.showDashboard();
 	}

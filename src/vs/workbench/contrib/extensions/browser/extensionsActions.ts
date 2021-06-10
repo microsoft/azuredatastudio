@@ -1594,7 +1594,7 @@ export class ShowInstalledExtensionsAction extends Action {
 		super(id, label, undefined, true);
 	}
 
-	run(): Promise<void> {
+	override run(): Promise<void> {
 		return this.viewletService.openViewlet(VIEWLET_ID, true)
 			.then(viewlet => viewlet?.getViewPaneContainer() as IExtensionsViewPaneContainer)
 			.then(viewlet => {
@@ -2251,11 +2251,11 @@ export class DisableAllAction extends Action {
 		return this.extensionsWorkbenchService.local.filter(e => !e.isBuiltin && !!e.local && this.extensionEnablementService.isEnabled(e.local) && this.extensionEnablementService.canChangeEnablement(e.local));
 	}
 
-	get enabled(): boolean {
+	override get enabled(): boolean {
 		return this.getExtensionsToDisable().length > 0;
 	}
 
-	run(): Promise<any> {
+	override run(): Promise<any> {
 		return this.extensionsWorkbenchService.setEnablement(this.getExtensionsToDisable(), EnablementState.DisabledGlobally);
 	}
 }
@@ -2281,11 +2281,11 @@ export class DisableAllWorkspaceAction extends Action {
 		return this.extensionsWorkbenchService.local.filter(e => !e.isBuiltin && !!e.local && this.extensionEnablementService.isEnabled(e.local) && this.extensionEnablementService.canChangeEnablement(e.local));
 	}
 
-	get enabled(): boolean {
+	override get enabled(): boolean {
 		return this.getExtensionsToDisable().length > 0;
 	}
 
-	run(): Promise<any> {
+	override run(): Promise<any> {
 		return this.extensionsWorkbenchService.setEnablement(this.getExtensionsToDisable(), EnablementState.DisabledWorkspace);
 	}
 }
@@ -2310,11 +2310,11 @@ export class EnableAllAction extends Action {
 		return this.extensionsWorkbenchService.local.filter(e => !!e.local && this.extensionEnablementService.canChangeEnablement(e.local) && !this.extensionEnablementService.isEnabled(e.local));
 	}
 
-	get enabled(): boolean {
+	override get enabled(): boolean {
 		return this.getExtensionsToEnable().length > 0;
 	}
 
-	run(): Promise<any> {
+	override run(): Promise<any> {
 		return this.extensionsWorkbenchService.setEnablement(this.getExtensionsToEnable(), EnablementState.EnabledGlobally);
 	}
 }
@@ -2340,11 +2340,11 @@ export class EnableAllWorkspaceAction extends Action {
 		return this.extensionsWorkbenchService.local.filter(e => !!e.local && this.extensionEnablementService.canChangeEnablement(e.local) && !this.extensionEnablementService.isEnabled(e.local));
 	}
 
-	get enabled(): boolean {
+	override get enabled(): boolean {
 		return this.getExtensionsToEnable().length > 0;
 	}
 
-	run(): Promise<any> {
+	override run(): Promise<any> {
 		return this.extensionsWorkbenchService.setEnablement(this.getExtensionsToEnable(), EnablementState.EnabledWorkspace);
 	}
 }

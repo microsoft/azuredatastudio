@@ -100,7 +100,7 @@ class ExecutionStateCellStatusBarHelper extends Disposable {
 	 */
 	private _getItemsForCell(cell: ICellViewModel): INotebookCellStatusBarItem[] | undefined {
 		if (this._currentExecutingStateTimer) {
-			return;
+			return undefined; // {{SQL CARBON EDIT}} Strict nulls
 		}
 
 		const item = this._getItemForState(cell.metadata?.runState, cell.metadata?.lastRunSuccess);
@@ -151,7 +151,7 @@ class ExecutionStateCellStatusBarHelper extends Disposable {
 			};
 		}
 
-		return;
+		return undefined; // {{SQL CARBON EDIT}} Strict nulls
 	}
 
 	override dispose() {

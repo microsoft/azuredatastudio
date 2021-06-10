@@ -83,10 +83,10 @@ export class EditorOverrideService extends Disposable implements IEditorOverride
 		// Always ensure inputs have populated resource fields
 		if (editor instanceof DiffEditorInput) {
 			if ((!editor.modifiedInput.resource || !editor.originalInput.resource)) {
-				return;
+				return undefined; // {{SQL CARBON EDIT}} Strict nulls
 			}
 		} else if (!editor.resource) {
-			return;
+			return undefined; // {{SQL CARBON EDIT}} Strict nulls
 		}
 
 		let override = typeof options?.override === 'string' ? options.override : undefined;
@@ -97,7 +97,7 @@ export class EditorOverrideService extends Disposable implements IEditorOverride
 			const picked = await this.doPickEditorOverride(editor, options, group);
 			// If the picker was cancelled we will stop resolving the override
 			if (!picked) {
-				return;
+				return undefined; // {{SQL CARBON EDIT}} Strict nulls
 			}
 			// Deconstruct the return picked options and overrides if the user selected something
 			override = picked[0].override as string | undefined;
@@ -109,17 +109,17 @@ export class EditorOverrideService extends Disposable implements IEditorOverride
 		const { contributionPoint, conflictingDefault } = this.getContributionPoint(editor instanceof DiffEditorInput ? editor.modifiedInput.resource! : editor.resource!, override);
 		const selectedContribution = contributionPoint;
 		if (!selectedContribution) {
-			return;
+			return undefined; // {{SQL CARBON EDIT}} Strict nulls
 		}
 
 		const handlesDiff = typeof selectedContribution.options?.canHandleDiff === 'function' ? selectedContribution.options.canHandleDiff() : selectedContribution.options?.canHandleDiff;
 		if (editor instanceof DiffEditorInput && handlesDiff === false) {
-			return;
+			return undefined; // {{SQL CARBON EDIT}} Strict nulls
 		}
 
 		// If it's the currently active editor we shouldn't do anything
 		if (selectedContribution.editorInfo.describes(editor)) {
-			return;
+			return undefined; // {{SQL CARBON EDIT}} Strict nulls
 		}
 		const input = await this.doOverrideEditorInput(editor, options, group, selectedContribution);
 		if (conflictingDefault && input) {
@@ -242,7 +242,7 @@ export class EditorOverrideService extends Disposable implements IEditorOverride
 		// If it's a diff editor we trigger the create diff editor input
 		if (editor instanceof DiffEditorInput) {
 			if (!selectedContribution.createDiffEditorInput) {
-				return;
+				return undefined; // {{SQL CARBON EDIT}} Strict nulls
 			}
 			const inputWithOptions = selectedContribution.createDiffEditorInput(editor, options, group);
 			return inputWithOptions;
@@ -415,7 +415,7 @@ export class EditorOverrideService extends Disposable implements IEditorOverride
 		const resource = EditorResourceAccessor.getOriginalUri(editor);
 
 		if (!resource) {
-			return;
+			return undefined; // {{SQL CARBON EDIT}} Strict nulls
 		}
 
 		// Text editor has the lowest priority because we

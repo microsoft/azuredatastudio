@@ -66,11 +66,6 @@ export abstract class QueryTaskbarAction extends Action {
 		this._setCssClass(enabledClass);
 	}
 
-	/**
-	 * This method is executed when the button is clicked.
-	 */
-	public abstract run(): Promise<void>;
-
 	protected updateCssClass(enabledClass: string): void {
 		// set the class, useful on change of label or icon
 		this._setCssClass(enabledClass);
@@ -208,7 +203,7 @@ export class RunQueryAction extends QueryTaskbarAction {
 		this.label = nls.localize('runQueryLabel', "Run");
 	}
 
-	public async run(): Promise<void> {
+	public override async run(): Promise<void> {
 		if (!this.editor.isSelectionEmpty()) {
 			if (this.isConnected(this.editor)) {
 				// If we are already connected, run the query
@@ -280,7 +275,7 @@ export class CancelQueryAction extends QueryTaskbarAction {
 		this.label = nls.localize('cancelQueryLabel', "Cancel");
 	}
 
-	public async run(): Promise<void> {
+	public override async run(): Promise<void> {
 		if (this.isConnected(this.editor)) {
 			if (!this.editor.input) {
 				this.logService.error('editor input was null');
@@ -307,7 +302,7 @@ export class EstimatedQueryPlanAction extends QueryTaskbarAction {
 		this.label = nls.localize('estimatedQueryPlan', "Explain");
 	}
 
-	public async run(): Promise<void> {
+	public override async run(): Promise<void> {
 		if (!this.editor.isSelectionEmpty()) {
 			if (this.isConnected(this.editor)) {
 				// If we are already connected, run the query
@@ -346,7 +341,7 @@ export class ActualQueryPlanAction extends QueryTaskbarAction {
 		this.label = nls.localize('actualQueryPlan', "Actual");
 	}
 
-	public async run(): Promise<void> {
+	public override async run(): Promise<void> {
 		if (!this.editor.isSelectionEmpty()) {
 			if (this.isConnected(this.editor)) {
 				// If we are already connected, run the query
@@ -393,7 +388,7 @@ export class DisconnectDatabaseAction extends QueryTaskbarAction {
 		this.label = nls.localize('disconnectDatabaseLabel', "Disconnect");
 	}
 
-	public async run(): Promise<void> {
+	public override async run(): Promise<void> {
 		// Call disconnectEditor regardless of the connection state and let the ConnectionManagementService
 		// determine if we need to disconnect, cancel an in-progress conneciton, or do nothing
 		this.connectionManagementService.disconnectEditor(this.editor.input);
@@ -431,7 +426,7 @@ export class ConnectDatabaseAction extends QueryTaskbarAction {
 		this.label = label;
 	}
 
-	public async run(): Promise<void> {
+	public override async run(): Promise<void> {
 		this.connectEditor(this.editor);
 		return;
 	}
@@ -479,7 +474,7 @@ export class ToggleConnectDatabaseAction extends QueryTaskbarAction {
 	}
 
 
-	public async run(): Promise<void> {
+	public override async run(): Promise<void> {
 		if (!this.editor.input.isSharedSession) {
 			if (this.connected) {
 				// Call disconnectEditor regardless of the connection state and let the ConnectionManagementService
@@ -510,7 +505,7 @@ export class ListDatabasesAction extends QueryTaskbarAction {
 		this.class = ListDatabasesAction.EnabledClass;
 	}
 
-	public async run(): Promise<void> {
+	public override async run(): Promise<void> {
 		return;
 	}
 }
@@ -552,7 +547,7 @@ export class ToggleSqlCmdModeAction extends QueryTaskbarAction {
 		this.isSqlCmdMode ? this.updateCssClass(ToggleSqlCmdModeAction.DisableSqlcmdClass) : this.updateCssClass(ToggleSqlCmdModeAction.EnableSqlcmdClass);
 	}
 
-	public async run(): Promise<void> {
+	public override async run(): Promise<void> {
 		const toSqlCmdState = !this.isSqlCmdMode; // input.state change triggers event that changes this.isSqlCmdMode, so store it before using
 		this.editor.input.state.isSqlCmdMode = toSqlCmdState;
 
@@ -845,7 +840,7 @@ export class ExportAsNotebookAction extends QueryTaskbarAction {
 		this.label = nls.localize('queryEditor.exportSqlAsNotebook', "Export as Notebook");
 	}
 
-	public async run(): Promise<void> {
+	public override async run(): Promise<void> {
 		this._commandService.executeCommand('mssql.exportSqlAsNotebook', this.editor.input.uri);
 	}
 }

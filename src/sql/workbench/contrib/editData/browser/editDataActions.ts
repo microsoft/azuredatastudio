@@ -33,11 +33,6 @@ export abstract class EditDataAction extends Action {
 		this.setClass(enabledClass);
 	}
 
-	/**
-	 * This method is executed when the button is clicked.
-	 */
-	public abstract run(): Promise<void>;
-
 	protected setClass(enabledClass: string): void {
 		this._classes = [];
 
@@ -74,7 +69,7 @@ export class RefreshTableAction extends EditDataAction {
 		this.label = nls.localize('editData.run', "Run");
 	}
 
-	public run(): Promise<void> {
+	public override run(): Promise<void> {
 		if (this.isConnected(this.editor)) {
 			let input = this.editor.editDataInput;
 
@@ -117,7 +112,7 @@ export class StopRefreshTableAction extends EditDataAction {
 		this.label = nls.localize('editData.stop', "Stop");
 	}
 
-	public run(): Promise<void> {
+	public override run(): Promise<void> {
 		let input = this.editor.editDataInput;
 		this._queryModelService.disposeEdit(input.uri);
 		return Promise.resolve(null);
@@ -140,7 +135,7 @@ export class ChangeMaxRowsAction extends EditDataAction {
 		this.class = ChangeMaxRowsAction.EnabledClass;
 	}
 
-	public run(): Promise<void> {
+	public override run(): Promise<void> {
 
 		return Promise.resolve(null);
 	}
@@ -250,7 +245,7 @@ export class ShowQueryPaneAction extends EditDataAction {
 		}
 	}
 
-	public run(): Promise<void> {
+	public override run(): Promise<void> {
 		this.editor.toggleQueryPane();
 		this.updateLabel(this.editor.queryPaneEnabled());
 		return Promise.resolve(null);

@@ -46,7 +46,7 @@ export class AzureSettingsPage extends BasePage {
 		this._subscriptionsMap = new Map();
 	}
 
-	public async override initialize() {
+	public override async initialize() {
 		this.pageObject.registerContent(async (view: azdata.ModelView) => {
 
 			await Promise.all([
@@ -86,13 +86,13 @@ export class AzureSettingsPage extends BasePage {
 		});
 	}
 
-	public async override onEnter(): Promise<void> {
+	public override async onEnter(): Promise<void> {
 		this._model.wizard.wizardObject.registerNavigationValidator((pcInfo) => {
 			return true;
 		});
 	}
 
-	public async override onLeave(): Promise<void> {
+	public override async onLeave(): Promise<void> {
 		this._model.wizard.wizardObject.registerNavigationValidator((pcInfo) => {
 			return true;
 		});

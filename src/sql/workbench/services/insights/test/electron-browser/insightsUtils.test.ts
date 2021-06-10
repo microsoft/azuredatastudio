@@ -56,7 +56,6 @@ suite('Insights Utils tests', function () {
 	test('resolveQueryFilePath resolves path correctly with fully qualified path', async () => {
 		const configurationResolverService = new ConfigurationResolverService(
 			undefined,
-			new MockWorkbenchEnvironmentService({}),
 			undefined,
 			undefined,
 			new TestContextService(),
@@ -64,7 +63,7 @@ suite('Insights Utils tests', function () {
 			undefined);
 
 		const fileService = new class extends TestFileService {
-			exists(uri: URI): Promise<boolean> {
+			override exists(uri: URI): Promise<boolean> {
 				return pfs.exists(uri.fsPath);
 			}
 		};
@@ -89,7 +88,6 @@ suite('Insights Utils tests', function () {
 			));
 		const configurationResolverService = new ConfigurationResolverService(
 			undefined,
-			new MockWorkbenchEnvironmentService({}),
 			undefined,
 			undefined,
 			contextService,
@@ -97,7 +95,7 @@ suite('Insights Utils tests', function () {
 			undefined);
 
 		const fileService = new class extends TestFileService {
-			exists(uri: URI): Promise<boolean> {
+			override exists(uri: URI): Promise<boolean> {
 				return pfs.exists(uri.fsPath);
 			}
 		};
@@ -122,7 +120,6 @@ suite('Insights Utils tests', function () {
 		);
 		const configurationResolverService = new ConfigurationResolverService(
 			undefined,
-			new MockWorkbenchEnvironmentService({}),
 			undefined,
 			undefined,
 			contextService,
@@ -130,7 +127,7 @@ suite('Insights Utils tests', function () {
 			undefined);
 
 		const fileService = new class extends TestFileService {
-			exists(uri: URI): Promise<boolean> {
+			override exists(uri: URI): Promise<boolean> {
 				return pfs.exists(uri.fsPath);
 			}
 		};
@@ -157,7 +154,6 @@ suite('Insights Utils tests', function () {
 				undefined, undefined, undefined));
 		const configurationResolverService = new ConfigurationResolverService(
 			undefined,
-			new MockWorkbenchEnvironmentService({}),
 			undefined,
 			undefined,
 			contextService,
@@ -165,7 +161,7 @@ suite('Insights Utils tests', function () {
 			undefined);
 
 		const fileService = new class extends TestFileService {
-			exists(uri: URI): Promise<boolean> {
+			override exists(uri: URI): Promise<boolean> {
 				return pfs.exists(uri.fsPath);
 			}
 		};
@@ -191,8 +187,7 @@ suite('Insights Utils tests', function () {
 		const environmentService = new MockWorkbenchEnvironmentService({ TEST_PATH: queryFileDir });
 
 		// Create mock window service with env variable containing test folder for resolution
-		const configurationResolverService = new TestConfigurationResolverService({ getAppRoot: () => undefined, getExecPath: () => undefined }, environmentService.userEnv,
-			undefined,
+		const configurationResolverService = new TestConfigurationResolverService({ getAppRoot: () => undefined, getExecPath: () => undefined }, Promise.resolve(environmentService.userEnv),
 			undefined,
 			undefined,
 			undefined,
@@ -201,7 +196,7 @@ suite('Insights Utils tests', function () {
 			undefined);
 
 		const fileService = new class extends TestFileService {
-			exists(uri: URI): Promise<boolean> {
+			override exists(uri: URI): Promise<boolean> {
 				return pfs.exists(uri.fsPath);
 			}
 		};
@@ -222,8 +217,7 @@ suite('Insights Utils tests', function () {
 		const environmentService = new MockWorkbenchEnvironmentService({ TEST_PATH: queryFileDir });
 
 		// Create mock window service with env variable containing test folder for resolution
-		const configurationResolverService = new TestConfigurationResolverService({ getAppRoot: () => undefined, getExecPath: () => undefined }, environmentService.userEnv,
-			undefined,
+		const configurationResolverService = new TestConfigurationResolverService({ getAppRoot: () => undefined, getExecPath: () => undefined }, Promise.resolve(environmentService.userEnv),
 			undefined,
 			undefined,
 			undefined,
@@ -232,7 +226,7 @@ suite('Insights Utils tests', function () {
 			undefined);
 
 		const fileService = new class extends TestFileService {
-			exists(uri: URI): Promise<boolean> {
+			override exists(uri: URI): Promise<boolean> {
 				return pfs.exists(uri.fsPath);
 			}
 		};
@@ -250,7 +244,6 @@ suite('Insights Utils tests', function () {
 		const invalidPath = path.join('${INVALID}', 'test.sql');
 		const configurationResolverService = new ConfigurationResolverService(
 			undefined,
-			new MockWorkbenchEnvironmentService({}),
 			undefined,
 			undefined,
 			undefined,
@@ -258,7 +251,7 @@ suite('Insights Utils tests', function () {
 			undefined);
 
 		const fileService = new class extends TestFileService {
-			exists(uri: URI): Promise<boolean> {
+			override exists(uri: URI): Promise<boolean> {
 				return pfs.exists(uri.fsPath);
 			}
 		};

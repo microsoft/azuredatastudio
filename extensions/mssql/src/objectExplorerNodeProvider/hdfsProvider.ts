@@ -192,17 +192,17 @@ export class ConnectionNode extends FolderNode {
 		return this.displayName;
 	}
 
-	public async override delete(): Promise<void> {
+	public override async delete(): Promise<void> {
 		throw new Error(localize('errDeleteConnectionNode', "Cannot delete a connection. Only subfolders and files can be deleted."));
 	}
 
-	async override getTreeItem(): Promise<vscode.TreeItem> {
+	override async getTreeItem(): Promise<vscode.TreeItem> {
 		let item = await super.getTreeItem();
 		item.contextValue = this._nodeType;
 		return item;
 	}
 
-	public async override getFileSource(): Promise<IFileSource | undefined> {
+	public override async getFileSource(): Promise<IFileSource | undefined> {
 		// The node is initially created without a filesource and then one is created only once an action is
 		// taken that requires a connection
 		const fileSource = await super.getFileSource();

@@ -640,6 +640,8 @@
 					"**/{vs,sql}/workbench/services/**",
 					"**/{vs,sql}/workbench/contrib/**",
 					"**/{vs,sql}/workbench/test/**",
+					"@angular/*", // {{SQL CARBON EDIT}}
+					"rxjs/**", // {{SQL CARBON EDIT}}
 					"*"
 				]
 			},

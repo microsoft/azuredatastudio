@@ -47,7 +47,7 @@ export class DropdownMenuActionViewItem extends BaseActionViewItem {
 		this.anchorAlignmentProvider = anchorAlignmentProvider;
 	}
 
-	render(container: HTMLElement): void {
+	override render(container: HTMLElement): void {
 		const labelRenderer: ILabelRenderer = (el: HTMLElement): IDisposable | null => {
 			this.element = append(el, $('a.action-label.button-menu'));
 			if (this.cssClass) {
@@ -93,7 +93,7 @@ export class DropdownMenuActionViewItem extends BaseActionViewItem {
 		}
 	}
 
-	setActionContext(newContext: unknown): void {
+	override setActionContext(newContext: unknown): void {
 		super.setActionContext(newContext);
 
 		if (this.dropdownMenu) {

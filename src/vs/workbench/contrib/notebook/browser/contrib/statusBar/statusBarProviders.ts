@@ -33,21 +33,21 @@ class CellStatusBarPlaceholderProvider implements INotebookCellStatusBarItemProv
 		const doc = this._notebookService.getNotebookTextModel(uri);
 		const cell = doc?.cells[index];
 		if (!cell || typeof cell.metadata.runState !== 'undefined' || typeof cell.metadata.lastRunSuccess !== 'undefined') {
-			return;
+			return undefined; // {{SQL CARBON EDIT}} Strict nulls
 		}
 
 		let text: string;
 		if (cell.cellKind === CellKind.Code) {
 			const keybinding = this._keybindingService.lookupKeybinding(EXECUTE_CELL_COMMAND_ID)?.getLabel();
 			if (!keybinding) {
-				return;
+				return undefined; // {{SQL CARBON EDIT}} Strict nulls
 			}
 
 			text = localize('notebook.cell.status.codeExecuteTip', "Press {0} to execute cell", keybinding);
 		} else {
 			const keybinding = this._keybindingService.lookupKeybinding(QUIT_EDIT_CELL_COMMAND_ID)?.getLabel();
 			if (!keybinding) {
-				return;
+				return undefined; // {{SQL CARBON EDIT}} Strict nulls
 			}
 
 			text = localize('notebook.cell.status.markdownExecuteTip', "Press {0} to stop editing", keybinding);
@@ -80,7 +80,7 @@ class CellStatusBarLanguagePickerProvider implements INotebookCellStatusBarItemP
 		const doc = this._notebookService.getNotebookTextModel(uri);
 		const cell = doc?.cells[index];
 		if (!cell) {
-			return;
+			return undefined; // {{SQL CARBON EDIT}} Strict nulls
 		}
 
 		const modeId = cell.cellKind === CellKind.Markdown ?

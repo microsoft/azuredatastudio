@@ -26,7 +26,7 @@ export class UntitledNotebookInput extends NotebookInput {
 		super(title, resource, textInput, textModelService, instantiationService, notebookService, extensionService);
 	}
 
-	public get textInput(): UntitledTextEditorInput {
+	public override get textInput(): UntitledTextEditorInput {
 		return super.textInput as UntitledTextEditorInput;
 	}
 
@@ -34,7 +34,7 @@ export class UntitledNotebookInput extends NotebookInput {
 		this.textInput.setMode(mode);
 	}
 
-	isUntitled(): boolean {
+	override isUntitled(): boolean {
 		// Subclasses need to explicitly opt-in to being untitled.
 		return true;
 	}

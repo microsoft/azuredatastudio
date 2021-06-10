@@ -5,38 +5,38 @@
 
 import * as os from 'os';
 import * as fs from 'fs';
-import { isLinux } from 'vs/base/common/platform';
+import { IProcessEnvironment, isLinux, isMacintosh, isWindows, Platform } from 'vs/base/common/platform';
 import { SymlinkSupport } from 'vs/base/node/pfs';
 import { LinuxDistro } from 'vs/workbench/contrib/terminal/common/terminal';
 import * as processes from 'vs/base/node/processes'; // {{SQL CARBON EDIT}} - Add back getSystemShell for web build
 
-export function getSystemShell(p: platform.Platform, environment: platform.IProcessEnvironment = process.env as platform.IProcessEnvironment): string { // {{SQL CARBON EDIT}} - Add back getSystemShell for web build
-	if (p === platform.Platform.Windows) {
-		if (platform.isWindows) {
+export function getSystemShell(p: Platform, environment: IProcessEnvironment = process.env as IProcessEnvironment): string { // {{SQL CARBON EDIT}} - Add back getSystemShell for web build
+	if (p === Platform.Windows) {
+		if (isWindows) {
 			return getSystemShellWindows(environment);
 		}
 		// Don't detect Windows shell when not on Windows
 		return processes.getWindowsShell(environment);
 	}
 	// Only use $SHELL for the current OS
-	if (platform.isLinux && p === platform.Platform.Mac || platform.isMacintosh && p === platform.Platform.Linux) {
+	if (isLinux && p === Platform.Mac || isMacintosh && p === Platform.Linux) {
 		return '/bin/bash';
 	}
 	return getSystemShellUnixLike(environment);
 }
 
 let _TERMINAL_DEFAULT_SHELL_UNIX_LIKE: string | null = null; // {{SQL CARBON EDIT}} - Add back getSystemShell for web build
-function getSystemShellUnixLike(environment: platform.IProcessEnvironment): string {
+function getSystemShellUnixLike(environment: IProcessEnvironment): string {
 	if (!_TERMINAL_DEFAULT_SHELL_UNIX_LIKE) {
 		let unixLikeTerminal = 'sh';
-		if (!platform.isWindows && environment.SHELL) {
+		if (!isWindows && environment.SHELL) {
 			unixLikeTerminal = environment.SHELL;
 			// Some systems have $SHELL set to /bin/false which breaks the terminal
 			if (unixLikeTerminal === '/bin/false') {
 				unixLikeTerminal = '/bin/bash';
 			}
 		}
-		if (platform.isWindows) {
+		if (isWindows) {
 			unixLikeTerminal = '/bin/bash'; // for WSL
 		}
 		_TERMINAL_DEFAULT_SHELL_UNIX_LIKE = unixLikeTerminal;
@@ -45,9 +45,9 @@ function getSystemShellUnixLike(environment: platform.IProcessEnvironment): stri
 }
 
 let _TERMINAL_DEFAULT_SHELL_WINDOWS: string | null = null;
-function getSystemShellWindows(environment: platform.IProcessEnvironment): string {
+function getSystemShellWindows(environment: IProcessEnvironment): string {
 	if (!_TERMINAL_DEFAULT_SHELL_WINDOWS) {
-		const isAtLeastWindows10 = platform.isWindows && parseFloat(os.release()) >= 10;
+		const isAtLeastWindows10 = isWindows && parseFloat(os.release()) >= 10;
 		const is32ProcessOn64Windows = environment.hasOwnProperty('PROCESSOR_ARCHITEW6432');
 		const powerShellPath = `${environment.windir}\\${is32ProcessOn64Windows ? 'Sysnative' : 'System32'}\\WindowsPowerShell\\v1.0\\powershell.exe`;
 		_TERMINAL_DEFAULT_SHELL_WINDOWS = isAtLeastWindows10 ? powerShellPath : processes.getWindowsShell(environment);

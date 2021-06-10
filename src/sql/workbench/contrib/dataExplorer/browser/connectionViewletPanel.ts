@@ -38,8 +38,8 @@ export class ConnectionViewletPanel extends ViewPane {
 		@IObjectExplorerService private readonly objectExplorerService: IObjectExplorerService,
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@IViewDescriptorService viewDescriptorService: IViewDescriptorService,
-		@IOpenerService protected openerService: IOpenerService,
-		@IThemeService protected themeService: IThemeService,
+		@IOpenerService openerService: IOpenerService,
+		@IThemeService themeService: IThemeService,
 		@ILogService private readonly logService: ILogService,
 		@ITelemetryService telemetryService: ITelemetryService,
 	) {
@@ -51,15 +51,15 @@ export class ConnectionViewletPanel extends ViewPane {
 		}
 	}
 
-	protected renderHeader(container: HTMLElement): void {
+	protected override renderHeader(container: HTMLElement): void {
 		super.renderHeader(container);
 	}
 
-	renderHeaderTitle(container: HTMLElement): void {
+	override renderHeaderTitle(container: HTMLElement): void {
 		super.renderHeaderTitle(container, this.options.title);
 	}
 
-	renderBody(container: HTMLElement): void {
+	override renderBody(container: HTMLElement): void {
 		const viewletContainer = DOM.append(container, DOM.$('div.server-explorer-viewlet'));
 		const viewContainer = DOM.append(viewletContainer, DOM.$('div.object-explorer-view'));
 		this._serverTreeView.renderBody(viewContainer).then(undefined, error => {
@@ -72,7 +72,7 @@ export class ConnectionViewletPanel extends ViewPane {
 		return this._serverTreeView.tree;
 	}
 
-	layoutBody(size: number): void {
+	override layoutBody(size: number): void {
 		this._serverTreeView.layout(size);
 		DOM.toggleClass(this._root!, 'narrow', this._root!.clientWidth < 300);
 	}
@@ -111,11 +111,11 @@ export class ConnectionViewletPanel extends ViewPane {
 		}
 	}
 
-	dispose(): void {
+	override dispose(): void {
 		super.dispose();
 	}
 
-	focus(): void {
+	override focus(): void {
 		super.focus();
 		this._serverTreeView.tree.domFocus();
 	}

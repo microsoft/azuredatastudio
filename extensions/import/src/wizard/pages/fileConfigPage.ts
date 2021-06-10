@@ -117,12 +117,12 @@ export class FileConfigPage extends ImportPage {
 		return r1 && r2 && r3;
 	}
 
-	async override onPageLeave(): Promise<boolean> {
+	override async onPageLeave(): Promise<boolean> {
 		delete this.model.serverId;
 		return true;
 	}
 
-	public async override cleanup(): Promise<boolean> {
+	public override async cleanup(): Promise<boolean> {
 		delete this.model.filePath;
 		delete this.model.table;
 

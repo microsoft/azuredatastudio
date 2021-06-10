@@ -39,7 +39,7 @@ export class AzCliTool extends ToolBase {
 		return 'https://docs.microsoft.com/cli/azure/install-azure-cli';
 	}
 
-	protected async override getSearchPaths(): Promise<string[]> {
+	protected override async getSearchPaths(): Promise<string[]> {
 		switch (this.osDistribution) {
 			case OsDistribution.win32:
 				return [win32InstallationRoot];

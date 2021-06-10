@@ -80,7 +80,7 @@ export class SummaryPage extends ImportPage {
 		return true;
 	}
 
-	async override onPageLeave(): Promise<boolean> {
+	override async onPageLeave(): Promise<boolean> {
 		this.instance.setImportAnotherFileVisibility(false);
 
 		return true;

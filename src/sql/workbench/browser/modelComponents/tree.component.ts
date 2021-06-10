@@ -73,16 +73,16 @@ export default class TreeComponent extends ComponentBase<azdata.TreeProperties> 
 		this.baseInit();
 	}
 
-	ngOnDestroy(): void {
+	override ngOnDestroy(): void {
 		this.baseDestroy();
 	}
 
-	public setDataProvider(handle: number, componentId: string, context: any): any {
+	public override setDataProvider(handle: number, componentId: string, context: any): any {
 		this._dataProvider = new TreeViewDataProvider(handle, componentId, context, this._notificationService);
 		this.createTreeControl();
 	}
 
-	public refreshDataProvider(itemsToRefreshByHandle: { [treeItemHandle: string]: ITreeComponentItem }): void {
+	public override refreshDataProvider(itemsToRefreshByHandle: { [treeItemHandle: string]: ITreeComponentItem }): void {
 		if (this._dataProvider) {
 			this._dataProvider.getItemsToRefresh(itemsToRefreshByHandle);
 		}
@@ -135,7 +135,7 @@ export default class TreeComponent extends ComponentBase<azdata.TreeProperties> 
 
 	/// IComponent implementation
 
-	public layout(): void {
+	public override layout(): void {
 		if (this._tree) {
 			this.layoutTree();
 			this._tree.refresh();
@@ -157,7 +157,7 @@ export default class TreeComponent extends ComponentBase<azdata.TreeProperties> 
 		this.layout();
 	}
 
-	public setProperties(properties: { [key: string]: any; }): void {
+	public override setProperties(properties: { [key: string]: any; }): void {
 		super.setProperties(properties);
 		if (this._treeRenderer) {
 			this._treeRenderer.options.withCheckbox = this.withCheckbox;
@@ -172,7 +172,7 @@ export default class TreeComponent extends ComponentBase<azdata.TreeProperties> 
 		this.setPropertyFromUI<boolean>((properties, value) => { properties.withCheckbox = value; }, newValue);
 	}
 
-	public get CSSStyles(): azdata.CssStyles {
+	public override get CSSStyles(): azdata.CssStyles {
 		return this.mergeCss(super.CSSStyles, {
 			'width': '100%',
 			'height': '100%'
