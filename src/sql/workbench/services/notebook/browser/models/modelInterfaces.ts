@@ -533,7 +533,7 @@ export interface ICellModel {
 	sendChangeToNotebook(change: NotebookChangeType): void;
 	cellSourceChanged: boolean;
 	readonly savedConnectionName: string | undefined;
-	attachments: nb.ICellAttachments;
+	attachments: nb.ICellAttachments | undefined;
 	readonly currentMode: CellEditModes;
 	/**
 	 * Adds image as an attachment to cell metadata
