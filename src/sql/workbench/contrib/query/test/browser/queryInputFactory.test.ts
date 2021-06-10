@@ -171,7 +171,7 @@ class ServiceAccessor {
 
 class MockEditorService extends TestEditorService {
 	private __activeEditor: IEditorInput | undefined = undefined;
-	public get activeEditor(): IEditorInput | undefined {
+	public override get activeEditor(): IEditorInput | undefined {
 		return this.__activeEditor;
 	}
 
@@ -188,14 +188,14 @@ class MockEditorService extends TestEditorService {
 }
 
 class MockObjectExplorerService extends TestObjectExplorerService {
-	public getSelectedProfileAndDatabase(): { profile: ConnectionProfile, databaseName: string } {
+	public override getSelectedProfileAndDatabase(): { profile: ConnectionProfile, databaseName: string } {
 		return {
 			profile: <ConnectionProfile>{}, // Not actually used so fine to cast
 			databaseName: ''
 		};
 	}
 
-	public isFocused(): boolean {
+	public override isFocused(): boolean {
 		return true;
 	}
 }
@@ -204,16 +204,16 @@ class MockConnectionManagementService extends TestConnectionManagementService {
 
 	public numberConnects = 0;
 
-	public isProfileConnected(connectionProfile: IConnectionProfile): boolean {
+	public override isProfileConnected(connectionProfile: IConnectionProfile): boolean {
 		return true;
 	}
 
-	public connect(connection: IConnectionProfile, uri: string, options?: IConnectionCompletionOptions, callbacks?: IConnectionCallbacks): Promise<IConnectionResult> {
+	public override connect(connection: IConnectionProfile, uri: string, options?: IConnectionCompletionOptions, callbacks?: IConnectionCallbacks): Promise<IConnectionResult> {
 		this.numberConnects++;
 		return Promise.resolve(undefined);
 	}
 
-	public getConnectionProfile(fileUri: string): IConnectionProfile {
+	public override getConnectionProfile(fileUri: string): IConnectionProfile {
 		return <IConnectionProfile>{}; // Not actually used so fine to cast
 	}
 }

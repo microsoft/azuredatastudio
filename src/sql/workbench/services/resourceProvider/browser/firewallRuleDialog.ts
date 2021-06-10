@@ -101,7 +101,7 @@ export class FirewallRuleDialog extends Modal {
 		this.viewModel = this._instantiationService.createInstance(FirewallRuleViewModel);
 	}
 
-	public render() {
+	public override render() {
 		super.render();
 		attachModalDialogStyler(this, this._themeService);
 		this.backButton!.onDidClick(() => this.cancel());
@@ -254,12 +254,12 @@ export class FirewallRuleDialog extends Modal {
 	}
 
 	/* Overwrite esapce key behavior */
-	protected onClose() {
+	protected override onClose() {
 		this.cancel();
 	}
 
 	/* Overwrite enter key behavior */
-	protected onAccept() {
+	protected override onAccept() {
 		this.createFirewallRule();
 	}
 

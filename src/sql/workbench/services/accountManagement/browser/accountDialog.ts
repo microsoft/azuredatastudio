@@ -80,7 +80,7 @@ class AccountPanel extends ViewPane {
 		super(options, keybindingService, contextMenuService, configurationService, contextKeyService, viewDescriptorService, instantiationService, openerService, themeService, telemetryService);
 	}
 
-	protected renderBody(container: HTMLElement): void {
+	protected override renderBody(container: HTMLElement): void {
 		this.accountList = new List<azdata.Account>('AccountList', container, new AccountListDelegate(AccountDialog.ACCOUNTLIST_HEIGHT), [this.instantiationService.createInstance(AccountListRenderer)]);
 		this.tenantList = new List<Tenant>('TenantList', container, new TenantListDelegate(AccountDialog.ACCOUNTLIST_HEIGHT), [this.instantiationService.createInstance(TenantListRenderer)]);
 		this._register(attachListStyler(this.accountList, this.themeService));
@@ -90,7 +90,7 @@ class AccountPanel extends ViewPane {
 		this.tenantList.getHTMLElement().tabIndex = -1;
 	}
 
-	protected layoutBody(size: number): void {
+	protected override layoutBody(size: number): void {
 		this.accountList?.layout(size);
 		this.tenantList?.layout(size);
 	}
@@ -99,7 +99,7 @@ class AccountPanel extends ViewPane {
 		return this.accountList!.length;
 	}
 
-	public focus() {
+	public override focus() {
 		this.accountList!.domFocus();
 	}
 
@@ -206,7 +206,7 @@ export class AccountDialog extends Modal {
 		this._splitView!.layout(DOM.getContentHeight(this._container!));
 	}
 
-	public render() {
+	public override render() {
 		super.render();
 		attachModalDialogStyler(this, this._themeService);
 		this._closeButton = this.addFooterButton(localize('accountDialog.close', "Close"), () => this.close());
@@ -270,12 +270,12 @@ export class AccountDialog extends Modal {
 	}
 
 	/* Overwrite escape key behavior */
-	protected onClose() {
+	protected override onClose() {
 		this.close();
 	}
 
 	/* Overwrite enter key behavior */
-	protected onAccept() {
+	protected override onAccept() {
 		this.close('ok');
 	}
 
@@ -322,7 +322,7 @@ export class AccountDialog extends Modal {
 		return true;
 	}
 
-	public dispose(): void {
+	public override dispose(): void {
 		super.dispose();
 		for (const provider of this._providerViewsMap.values()) {
 			if (provider.addAccountAction) {

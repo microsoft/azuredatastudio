@@ -19,7 +19,7 @@ export class ResolvableTreeComponentItem extends ResolvableTreeItem implements I
 	checked?: boolean;
 	enabled?: boolean;
 	onCheckedChanged?: (checked: boolean) => void;
-	children?: ITreeComponentItem[];
+	override children?: ITreeComponentItem[];
 
 	constructor(treeItem: ITreeComponentItem, resolve?: (() => Promise<ITreeComponentItem | undefined>)) {
 		super(treeItem, resolve);
@@ -29,7 +29,7 @@ export class ResolvableTreeComponentItem extends ResolvableTreeItem implements I
 		this.children = deepClone(treeItem.children);
 	}
 
-	asTreeItem(): ITreeComponentItem {
+	override asTreeItem(): ITreeComponentItem {
 		const item = super.asTreeItem() as ITreeComponentItem;
 		item.checked = this.checked;
 		item.enabled = this.enabled;
@@ -63,7 +63,7 @@ export class TreeViewDataProvider extends vsTreeView.TreeViewDataProvider implem
 	 * @override
 	 * @param elements The elements to map
 	 */
-	protected async postGetChildren(elements: ITreeComponentItem[]): Promise<ResolvableTreeComponentItem[]> {
+	protected override async postGetChildren(elements: ITreeComponentItem[]): Promise<ResolvableTreeComponentItem[]> {
 		const result: ResolvableTreeComponentItem[] = [];
 		const hasResolve = await this.hasResolve;
 		if (elements) {

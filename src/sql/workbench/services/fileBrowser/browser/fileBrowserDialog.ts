@@ -72,7 +72,7 @@ export class FileBrowserDialog extends Modal {
 		this._body = DOM.append(container, DOM.$('.file-browser-dialog'));
 	}
 
-	public render() {
+	public override render() {
 		super.render();
 		attachModalDialogStyler(this, this._themeService);
 
@@ -131,7 +131,7 @@ export class FileBrowserDialog extends Modal {
 	}
 
 	/* enter key */
-	protected onAccept() {
+	protected override onAccept() {
 		if (this._okButton.enabled === true) {
 			this.ok();
 		}

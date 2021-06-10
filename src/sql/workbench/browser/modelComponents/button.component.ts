@@ -65,7 +65,7 @@ export default class ButtonComponent extends ComponentWithIconBase<azdata.Button
 		this.baseInit();
 	}
 
-	ngOnDestroy(): void {
+	override ngOnDestroy(): void {
 		this.baseDestroy();
 	}
 
@@ -118,7 +118,7 @@ export default class ButtonComponent extends ComponentWithIconBase<azdata.Button
 		}));
 	}
 
-	public setProperties(properties: { [key: string]: any; }): void {
+	public override setProperties(properties: { [key: string]: any; }): void {
 		super.setProperties(properties);
 		if (this._currentButtonType !== this.buttonType) {
 			this.initButton();
@@ -168,11 +168,11 @@ export default class ButtonComponent extends ComponentWithIconBase<azdata.Button
 		this._changeRef.detectChanges();
 	}
 
-	public focus(): void {
+	public override focus(): void {
 		this._button.focus();
 	}
 
-	protected updateIcon() {
+	protected override updateIcon() {
 		if (this.iconPath) {
 			if (!this._iconClass) {
 				super.updateIcon();
@@ -200,11 +200,11 @@ export default class ButtonComponent extends ComponentWithIconBase<azdata.Button
 		}
 	}
 
-	protected get defaultIconHeight(): number {
+	protected override get defaultIconHeight(): number {
 		return 15;
 	}
 
-	protected get defaultIconWidth(): number {
+	protected override get defaultIconWidth(): number {
 		return 15;
 	}
 

@@ -31,7 +31,7 @@ export class TransformMarkdownAction extends Action {
 		super(id, label, cssClass);
 		this._tooltip = tooltip;
 	}
-	public async run(context: any): Promise<void> {
+	public override async run(context: any): Promise<void> {
 		if (!context?.cellModel?.showMarkdown && context?.cellModel?.showPreview) {
 			this.transformDocumentCommand();
 		} else {
@@ -606,7 +606,7 @@ export class ToggleViewAction extends Action {
 		this._tooltip = tooltip;
 	}
 
-	public async run(context: MarkdownToolbarComponent): Promise<void> {
+	public override async run(context: MarkdownToolbarComponent): Promise<void> {
 		context.removeActiveClassFromModeActions();
 		this.class += ' active';
 		context.cellModel.showPreview = this.showPreview;

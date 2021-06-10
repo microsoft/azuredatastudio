@@ -216,7 +216,7 @@ export class NotebookService extends Disposable implements INotebookService {
 
 				if (isUntitled) {
 					let untitledModel = await fileInput.resolve();
-					await untitledModel.load();
+					await untitledModel.resolve();
 					if (options.initialDirtyState === false) {
 						fileInput.setDirty(false);
 					}

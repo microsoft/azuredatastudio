@@ -30,7 +30,7 @@ import { IDisposable } from 'vs/base/common/lifecycle';
 import * as nls from 'vs/nls';
 import * as objects from 'vs/base/common/objects';
 import { Event, Emitter } from 'vs/base/common/event';
-import { Action, IAction, IActionViewItem } from 'vs/base/common/actions';
+import { Action, IAction, SubmenuAction } from 'vs/base/common/actions';
 import { ConfigurationTarget } from 'vs/platform/configuration/common/configuration';
 import Severity from 'vs/base/common/severity';
 import { INotificationService } from 'vs/platform/notification/common/notification';
@@ -47,11 +47,13 @@ import { fillInActions } from 'vs/platform/actions/browser/menuEntryActionViewIt
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { NAV_SECTION } from 'sql/workbench/contrib/dashboard/browser/containers/dashboardNavSection.contribution';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
-import { DASHBOARD_BORDER, EDITOR_PANE_BACKGROUND, TOOLBAR_OVERFLOW_SHADOW } from 'vs/workbench/common/theme';
+import { EDITOR_PANE_BACKGROUND } from 'vs/workbench/common/theme';
 import { IColorTheme, registerThemingParticipant, ICssStyleCollector } from 'vs/platform/theme/common/themeService';
 import { attachTabbedPanelStyler } from 'sql/workbench/common/styler';
 import { focusBorder } from 'vs/platform/theme/common/colorRegistry';
 import { LabeledMenuItemActionItem } from 'sql/platform/actions/browser/menuEntryActionViewItem';
+import { DASHBOARD_BORDER, TOOLBAR_OVERFLOW_SHADOW } from 'sql/workbench/common/theme';
+import { IActionViewItem } from 'vs/base/browser/ui/actionbar/actionbar';
 
 const dashboardRegistry = Registry.as<IDashboardRegistry>(DashboardExtensions.DashboardContributions);
 const homeTabGroupId = 'home';
@@ -179,7 +181,7 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 			let secondary: IAction[] = [];
 			const menu = this.menuService.createMenu(MenuId.DashboardToolbar, this.contextKeyService);
 			let groups = menu.getActions({ arg: this.connectionManagementService.connectionInfo.connectionProfile.toIConnectionProfile(), shouldForwardArgs: true });
-			fillInActions(groups, { primary, secondary }, false, (group: string) => group === undefined || group === '');
+			fillInActions(groups, { primary, secondary }, false, 'navigation', Number.MAX_SAFE_INTEGER, (action: SubmenuAction, group: string, groupSize: number) => group === undefined || group === '');
 
 			primary.forEach(a => {
 				if (a instanceof MenuItemAction) {

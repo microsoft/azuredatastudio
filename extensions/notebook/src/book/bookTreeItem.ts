@@ -43,8 +43,8 @@ export class BookTreeItem extends vscode.TreeItem {
 	private _uri: string | undefined;
 	private _previousUri: string;
 	private _nextUri: string;
-	public command: vscode.Command;
-	public resourceUri: vscode.Uri;
+	public override command: vscode.Command;
+	public override resourceUri: vscode.Uri;
 	private _rootContentPath: string;
 	private _tableOfContentsPath: string;
 
@@ -192,7 +192,7 @@ export class BookTreeItem extends vscode.TreeItem {
 		return this._nextUri;
 	}
 
-	public readonly tooltip: string;
+	public override readonly tooltip: string;
 
 	public set uri(uri: string) {
 		this._uri = uri;

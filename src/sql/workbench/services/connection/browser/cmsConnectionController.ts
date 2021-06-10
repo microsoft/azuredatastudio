@@ -41,7 +41,7 @@ export class CmsConnectionController extends ConnectionController {
 		}, providerName);
 	}
 
-	public showUiComponent(container: HTMLElement, authTypeChanged: boolean = false): void {
+	public override showUiComponent(container: HTMLElement, authTypeChanged: boolean = false): void {
 		this._databaseCache = new Map<string, string[]>();
 		this._connectionWidget.createConnectionWidget(container, authTypeChanged);
 	}

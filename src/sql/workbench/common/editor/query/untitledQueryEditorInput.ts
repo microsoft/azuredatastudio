@@ -8,11 +8,11 @@ import { QueryResultsInput } from 'sql/workbench/common/editor/query/queryResult
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { IQueryModelService } from 'sql/workbench/services/query/common/queryModel';
 
-import { IEncodingSupport, EncodingMode } from 'vs/workbench/common/editor';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IResolvedTextEditorModel } from 'vs/editor/common/services/resolverService';
 import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
 import { IUntitledTextEditorModel } from 'vs/workbench/services/untitled/common/untitledTextEditorModel';
+import { EncodingMode, IEncodingSupport } from 'vs/workbench/services/textfile/common/textfiles';
 
 export class UntitledQueryEditorInput extends QueryEditorInput implements IEncodingSupport {
 
@@ -29,11 +29,11 @@ export class UntitledQueryEditorInput extends QueryEditorInput implements IEncod
 		super(description, text, results, connectionManagementService, queryModelService, configurationService);
 	}
 
-	public resolve(): Promise<IUntitledTextEditorModel & IResolvedTextEditorModel> {
+	public override resolve(): Promise<IUntitledTextEditorModel & IResolvedTextEditorModel> {
 		return this.text.resolve();
 	}
 
-	public get text(): UntitledTextEditorInput {
+	public override get text(): UntitledTextEditorInput {
 		return this._text as UntitledTextEditorInput;
 	}
 
@@ -49,7 +49,7 @@ export class UntitledQueryEditorInput extends QueryEditorInput implements IEncod
 		return this.text.getMode();
 	}
 
-	public getTypeId(): string {
+	override get typeId(): string {
 		return UntitledQueryEditorInput.ID;
 	}
 
@@ -57,11 +57,11 @@ export class UntitledQueryEditorInput extends QueryEditorInput implements IEncod
 		return this.text.getEncoding();
 	}
 
-	public setEncoding(encoding: string, mode: EncodingMode): void {
-		this.text.setEncoding(encoding, mode);
+	public setEncoding(encoding: string, mode: EncodingMode): Promise<void> {
+		return this.text.setEncoding(encoding, mode);
 	}
 
-	isUntitled(): boolean {
+	override isUntitled(): boolean {
 		// Subclasses need to explicitly opt-in to being untitled.
 		return true;
 	}

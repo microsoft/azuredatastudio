@@ -419,14 +419,14 @@ class Uri extends URI {
 	_formatted: string | null = null;
 	_fsPath: string | null = null;
 
-	get fsPath(): string {
+	override get fsPath(): string {
 		if (!this._fsPath) {
 			this._fsPath = uriToFsPath(this, false);
 		}
 		return this._fsPath;
 	}
 
-	toString(skipEncoding: boolean = false): string {
+	override toString(skipEncoding: boolean = false): string {
 		if (!skipEncoding) {
 			if (!this._formatted) {
 				this._formatted = _asFormatted(this, false);
@@ -438,7 +438,7 @@ class Uri extends URI {
 		}
 	}
 
-	toJSON(): UriComponents {
+	override toJSON(): UriComponents {
 		const res = <UriState>{
 			$mid: 1
 		};

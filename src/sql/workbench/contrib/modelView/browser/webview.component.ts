@@ -105,7 +105,7 @@ export default class WebViewComponent extends ComponentBase<WebViewProperties> i
 		}).catch(onUnexpectedError);
 	}
 
-	ngOnDestroy(): void {
+	override ngOnDestroy(): void {
 		this.baseDestroy();
 	}
 
@@ -145,7 +145,7 @@ export default class WebViewComponent extends ComponentBase<WebViewProperties> i
 
 	/// IComponent implementation
 
-	public layout(): void {
+	public override layout(): void {
 		if (this._ready) {
 			this._ready.then(() => {
 				let element = <HTMLElement>this._el.nativeElement;
@@ -159,7 +159,7 @@ export default class WebViewComponent extends ComponentBase<WebViewProperties> i
 		this.layout();
 	}
 
-	public setProperties(properties: { [key: string]: any; }): void {
+	public override setProperties(properties: { [key: string]: any; }): void {
 		if (this._ready) {
 			this._ready.then(() => {
 				super.setProperties(properties);

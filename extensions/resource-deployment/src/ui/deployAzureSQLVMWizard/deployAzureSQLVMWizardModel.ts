@@ -240,7 +240,7 @@ export class DeployAzureSQLVMWizardModel extends ResourceTypeModel {
 	}
 
 
-	public getCodeCellContentForNotebook(): string[] {
+	public override getCodeCellContentForNotebook(): string[] {
 
 		const statements: string[] = [];
 		statements.push('import os');

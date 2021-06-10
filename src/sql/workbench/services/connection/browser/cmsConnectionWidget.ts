@@ -62,14 +62,14 @@ export class CmsConnectionWidget extends ConnectionWidget {
 		}
 	}
 
-	protected registerListeners(): void {
+	protected override registerListeners(): void {
 		super.registerListeners();
 		if (this._serverDescriptionInputBox) {
 			this._register(styler.attachInputBoxStyler(this._serverDescriptionInputBox, this._themeService));
 		}
 	}
 
-	protected fillInConnectionForm(authTypeChanged: boolean = false): void {
+	protected override fillInConnectionForm(authTypeChanged: boolean = false): void {
 		// Server Name
 		this.addServerNameOption();
 
@@ -89,7 +89,7 @@ export class CmsConnectionWidget extends ConnectionWidget {
 		this.addAdvancedOptions();
 	}
 
-	protected addAuthenticationTypeOption(authTypeChanged: boolean = false): void {
+	protected override addAuthenticationTypeOption(authTypeChanged: boolean = false): void {
 		super.addAuthenticationTypeOption(authTypeChanged);
 		let authTypeOption = this._optionsMaps[ConnectionOptionSpecialType.authType];
 		let newAuthTypes = authTypeOption.categoryValues;
@@ -124,7 +124,7 @@ export class CmsConnectionWidget extends ConnectionWidget {
 		}
 	}
 
-	public createConnectionWidget(container: HTMLElement, authTypeChanged: boolean = false): void {
+	public override createConnectionWidget(container: HTMLElement, authTypeChanged: boolean = false): void {
 		this._container = DOM.append(container, DOM.$('div.connection-table'));
 		this._tableContainer = DOM.append(this._container, DOM.$('table.connection-table-content'));
 		this.fillInConnectionForm(authTypeChanged);
@@ -138,14 +138,14 @@ export class CmsConnectionWidget extends ConnectionWidget {
 		});
 	}
 
-	public handleOnConnecting(): void {
+	public override handleOnConnecting(): void {
 		super.handleOnConnecting();
 		if (this._serverDescriptionInputBox) {
 			this._serverDescriptionInputBox.disable();
 		}
 	}
 
-	public handleResetConnection(): void {
+	public override handleResetConnection(): void {
 		super.handleResetConnection();
 		if (this._serverDescriptionInputBox) {
 			this._serverDescriptionInputBox.enable();
@@ -156,7 +156,7 @@ export class CmsConnectionWidget extends ConnectionWidget {
 		return this._serverDescriptionInputBox.value;
 	}
 
-	public connect(model: IConnectionProfile): boolean {
+	public override connect(model: IConnectionProfile): boolean {
 		let validInputs = super.connect(model);
 		if (this._serverDescriptionInputBox) {
 			model.options.registeredServerDescription = this._serverDescriptionInputBox.value;
@@ -165,7 +165,7 @@ export class CmsConnectionWidget extends ConnectionWidget {
 		return validInputs;
 	}
 
-	public fillInConnectionInputs(connectionInfo: IConnectionProfile) {
+	public override fillInConnectionInputs(connectionInfo: IConnectionProfile) {
 		super.fillInConnectionInputs(connectionInfo);
 		if (connectionInfo) {
 			let description = connectionInfo.options.registeredServerDescription ? connectionInfo.options.registeredServerDescription : '';
