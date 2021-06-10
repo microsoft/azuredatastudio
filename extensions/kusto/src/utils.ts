@@ -60,7 +60,6 @@ export function getLogFileName(prefix: string, pid: number): string {
 
 export function getCommonLaunchArgsAndCleanupOldLogFiles(logPath: string, fileName: string, executablePath: string): string[] {
 	let launchArgs: string[] = [];
-
 	launchArgs.push('--locale');
 	console.log('Environment language is ' + vscode.env.language);
 	launchArgs.push(vscode.env.language);

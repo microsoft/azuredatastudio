@@ -5,7 +5,6 @@
 
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
-
 import * as bdc from 'bdc';
 import * as path from 'path';
 import * as crypto from 'crypto';
@@ -95,7 +94,6 @@ export function getLogFileName(prefix: string, pid: number): string {
 
 export function getCommonLaunchArgsAndCleanupOldLogFiles(logPath: string, fileName: string, executablePath: string): string[] {
 	let launchArgs = [];
-
 	launchArgs.push('--locale');
 	console.log('Environment language is ' + vscode.env.language);
 	launchArgs.push(vscode.env.language);
