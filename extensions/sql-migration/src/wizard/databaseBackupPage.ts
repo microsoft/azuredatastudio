@@ -13,6 +13,8 @@ import { IconPathHelper } from '../constants/iconPathHelper';
 import { WIZARD_INPUT_COMPONENT_WIDTH } from './wizardController';
 import { findDropDownItemIndex, selectDropDownIndex } from '../api/utils';
 
+const WIZARD_TABLE_COLUMN_WIDTH = '200px';
+
 export class DatabaseBackupPage extends MigrationWizardPage {
 	private _view!: azdata.ModelView;
 
@@ -394,7 +396,6 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 
 
 	private createTargetDatabaseContainer(): azdata.FlexContainer {
-		const WIZARD_INPUT_COMPONENT_WIDTH = '200px';
 		const headerCssStyles: azdata.CssStyles = {
 			'border': 'none',
 			'font-size': '13px',
@@ -436,7 +437,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 					rowCssStyles: rowCssStyle,
 					headerCssStyles: headerCssStyles,
 					isReadOnly: true,
-					width: WIZARD_INPUT_COMPONENT_WIDTH
+					width: WIZARD_TABLE_COLUMN_WIDTH,
 				},
 				{
 					displayName: constants.TARGET_DATABASE_NAME,
@@ -444,7 +445,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 					rowCssStyles: rowCssStyle,
 					headerCssStyles: headerCssStyles,
 					isReadOnly: true,
-					width: WIZARD_INPUT_COMPONENT_WIDTH
+					width: WIZARD_TABLE_COLUMN_WIDTH
 				},
 				{
 					displayName: constants.RESOURCE_GROUP,
@@ -452,7 +453,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 					rowCssStyles: rowCssStyle,
 					headerCssStyles: headerCssStyles,
 					isReadOnly: true,
-					width: WIZARD_INPUT_COMPONENT_WIDTH
+					width: WIZARD_TABLE_COLUMN_WIDTH
 				},
 				{
 					displayName: constants.STORAGE_ACCOUNT,
@@ -460,7 +461,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 					rowCssStyles: rowCssStyle,
 					headerCssStyles: headerCssStyles,
 					isReadOnly: true,
-					width: WIZARD_INPUT_COMPONENT_WIDTH
+					width: WIZARD_TABLE_COLUMN_WIDTH
 				},
 				{
 					displayName: constants.BLOB_CONTAINER,
@@ -468,7 +469,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 					rowCssStyles: rowCssStyle,
 					headerCssStyles: headerCssStyles,
 					isReadOnly: true,
-					width: WIZARD_INPUT_COMPONENT_WIDTH
+					width: WIZARD_TABLE_COLUMN_WIDTH
 				}
 			]
 		}).component();
@@ -637,7 +638,6 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 	public async onPageEnter(): Promise<void> {
 
 		if (this.migrationStateModel.refreshDatabaseBackupPage) {
-			const WIZARD_INPUT_COMPONENT_WIDTH = '200px';
 			const connectionProfile = await this.migrationStateModel.getSourceConnectionProfile();
 			const queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>((await this.migrationStateModel.getSourceConnectionProfile()).providerId, azdata.DataProviderType.QueryProvider);
 			const query = 'select SUSER_NAME()';
@@ -666,7 +666,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				const targetDatabaseInput = this._view.modelBuilder.inputBox().withProps({
 					required: true,
 					value: db,
-					width: WIZARD_INPUT_COMPONENT_WIDTH
+					width: WIZARD_TABLE_COLUMN_WIDTH
 				}).withValidation(c => {
 					if (this._networkShareTargetDatabaseNames.filter(t => t.value === c.value).length > 1) { //Making sure no databases have duplicate values.
 						c.validationErrorMessage = constants.DUPLICATE_NAME_ERROR;
@@ -690,7 +690,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				const blobtargetDatabaseInput = this._view.modelBuilder.inputBox().withProps({
 					required: true,
 					value: db,
-					width: WIZARD_INPUT_COMPONENT_WIDTH
+					width: WIZARD_TABLE_COLUMN_WIDTH
 				}).withValidation(c => {
 					if (this._blobContainerTargetDatabaseNames.filter(t => t.value === c.value).length > 1) { //Making sure no databases have duplicate values.
 						c.validationErrorMessage = constants.DUPLICATE_NAME_ERROR;
@@ -712,7 +712,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				this._blobContainerTargetDatabaseNames.push(blobtargetDatabaseInput);
 
 				const blobContainerResourceDropdown = this._view.modelBuilder.dropDown().withProps({
-					width: WIZARD_INPUT_COMPONENT_WIDTH,
+					width: WIZARD_TABLE_COLUMN_WIDTH,
 					editable: true,
 					fireOnTextChange: true,
 				}).component();
@@ -728,7 +728,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 
 				const blobContainerStorageAccountDropdown = this._view.modelBuilder.dropDown()
 					.withProps({
-						width: WIZARD_INPUT_COMPONENT_WIDTH,
+						width: WIZARD_TABLE_COLUMN_WIDTH,
 						editable: true,
 						fireOnTextChange: true,
 					}).component();
@@ -744,7 +744,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 
 				const blobContainerDropdown = this._view.modelBuilder.dropDown()
 					.withProps({
-						width: WIZARD_INPUT_COMPONENT_WIDTH,
+						width: WIZARD_TABLE_COLUMN_WIDTH,
 						editable: true,
 						fireOnTextChange: true,
 					}).component();
