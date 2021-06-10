@@ -25,6 +25,7 @@ if (fs.existsSync(yarnrcPath)) {
 	const properties = yarnrc.split(/\r?\n/).map(r => r.split(' '));
 	if (properties.find(r => r[0] === 'runtime')[1] === '"node"') {
 		externals['ws'] = 'commonjs ws';
+		externals['async-limiter'] = 'commonjs async-limiter';
 	}
 }
 
