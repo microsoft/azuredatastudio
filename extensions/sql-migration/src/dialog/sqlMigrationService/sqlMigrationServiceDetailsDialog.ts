@@ -194,7 +194,7 @@ export class SqlMigrationServiceDetailsDialog {
 		};
 	}
 
-	private async _regenrateAuthKey(view: azdata.ModelView, migrationContext: MigrationContext, keyName: string): Promise<void> {
+	private async _regenerateAuthKey(view: azdata.ModelView, migrationContext: MigrationContext, keyName: string): Promise<void> {
 		const keys = await regenerateSqlMigrationServiceAuthKey(
 			migrationContext.azureAccount,
 			migrationContext.subscription,
@@ -264,7 +264,7 @@ export class SqlMigrationServiceDetailsDialog {
 			})
 			.component();
 		refreshKey1Button.onDidClick(
-			async (e) => await this._regenrateAuthKey(view, migrationContext, AUTH_KEY1));
+			async (e) => await this._regenerateAuthKey(view, migrationContext, AUTH_KEY1));
 
 		const refreshKey2Button = view.modelBuilder
 			.button()
@@ -275,7 +275,7 @@ export class SqlMigrationServiceDetailsDialog {
 			})
 			.component();
 		refreshKey2Button.onDidClick(
-			async (e) => await this._regenrateAuthKey(view, migrationContext, AUTH_KEY2));
+			async (e) => await this._regenerateAuthKey(view, migrationContext, AUTH_KEY2));
 
 		this._migrationServiceAuthKeyTable.updateProperties({
 			dataValues: [
