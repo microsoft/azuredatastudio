@@ -1219,7 +1219,7 @@ export class WindowsMainService extends Disposable implements IWindowsMainServic
 
 			// Create the window
 			mark('code/willCreateCodeWindow');
-			const createdWindow = window = this.instantiationService.createInstance(CodeWindow, {
+			const createdWindow = window = this.instantiationService.createInstance(<any>CodeWindow, { // {{SQL CARBON EDIT}} Fix weird compile error...
 				state,
 				extensionDevelopmentPath: configuration.extensionDevelopmentPath,
 				isExtensionTestHost: !!configuration.extensionTestsPath
