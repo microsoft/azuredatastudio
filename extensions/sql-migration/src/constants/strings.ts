@@ -190,6 +190,9 @@ export const SERVICE_KEY_COPIED_HELP = localize('sql.migration.key.copied', "Key
 export const REFRESH_KEYS = localize('sql.migration.refresh.keys', "Refresh keys");
 export const COPY_KEY = localize('sql.migration.copy.key', "Copy key");
 export const AUTH_KEY_COLUMN_HEADER = localize('sql.migration.authkeys.header', "Authentication key");
+export function AUTH_KEY_REFRESHED(keyName: string): string {
+	return localize('sql.migration.authkeys.refresh.message', "Authentication key '{0}' has been refreshed.", keyName);
+}
 export function SERVICE_NOT_READY(serviceName: string): string {
 	return localize('sql.migration.service.not.ready', "Azure Database Migration Service is not registered. Azure Database Migration Service '{0}' needs to be registered with self-hosted Integration Runtime on any node.", serviceName);
 }

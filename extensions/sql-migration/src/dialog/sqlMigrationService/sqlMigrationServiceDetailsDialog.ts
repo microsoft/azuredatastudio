@@ -5,24 +5,26 @@
 
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
-import { getSqlMigrationServiceAuthKeys, getSqlMigrationServiceMonitoringData } from '../../api/azure';
+import { getSqlMigrationServiceAuthKeys, getSqlMigrationServiceMonitoringData, regenerateSqlMigrationServiceAuthKey } from '../../api/azure';
 import { IconPathHelper } from '../../constants/iconPathHelper';
 import * as constants from '../../constants/strings';
 import { MigrationContext } from '../../models/migrationLocalStorage';
 
-const INFO_BALLOON_SIZE = '12px';
-const INFO_BALLOON_MARGIN = '3px 0 0 3px';
 const CONTROL_MARGIN = '10px';
 const COLUMN_WIDTH = '50px';
 const STRETCH_WIDTH = '100%';
 const LABEL_MARGIN = '0 10px 0 10px';
 const VALUE_MARGIN = '0 10px 10px 10px';
+const INFO_VALUE_MARGIN = '0 10px 0 0';
 const NO_MARGIN = '0';
 const ICON_SIZE = '28px';
+const IMAGE_SIZE = '21px';
 const TITLE_FONT_SIZE = '14px';
 const DESCRIPTION_FONT_SIZE = '10px';
 const FONT_SIZE = '13px';
 const FONT_WEIGHT_BOLD = 'bold';
+const AUTH_KEY1 = 'authKey1';
+const AUTH_KEY2 = 'authKey2';
 
 export class SqlMigrationServiceDetailsDialog {
 
@@ -46,7 +48,6 @@ export class SqlMigrationServiceDetailsDialog {
 		this._dialog.okButton.label = constants.SQL_MIGRATION_SERVICE_DETAILS_BUTTON_LABEL;
 		this._dialog.okButton.focused = true;
 		this._dialog.cancelButton.hidden = true;
-
 		azdata.window.openDialog(this._dialog);
 	}
 
@@ -68,7 +69,7 @@ export class SqlMigrationServiceDetailsDialog {
 				this._createHeading(view, migrationContext),
 				view.modelBuilder
 					.separator()
-					.withProps({ width: STRETCH_WIDTH, })
+					.withProps({ width: STRETCH_WIDTH })
 					.component(),
 				this._createTextItem(view, constants.SUBSCRIPTION, LABEL_MARGIN),
 				this._createTextItem(view, migrationContext.subscription.name, VALUE_MARGIN),
@@ -78,11 +79,11 @@ export class SqlMigrationServiceDetailsDialog {
 				this._createTextItem(view, migrationContext.controller.properties.resourceGroup, VALUE_MARGIN),
 				this._createTextItem(view, constants.SQL_MIGRATION_SERVICE_DETAILS_IR_LABEL, LABEL_MARGIN),
 				this._createTextItem(view, serviceNodeName, VALUE_MARGIN),
-				this._createInfoTextItem(
+				this._createTextItem(
 					view,
 					constants.SQL_MIGRATION_SERVICE_DETAILS_AUTH_KEYS_LABEL,
-					constants.SQL_MIGRATION_SERVICE_DETAILS_AUTH_KEYS_TITLE,
-					LABEL_MARGIN),
+					INFO_VALUE_MARGIN,
+					constants.SQL_MIGRATION_SERVICE_DETAILS_AUTH_KEYS_TITLE),
 				this._migrationServiceAuthKeyTable,
 			])
 			.withLayout({ flexFlow: 'column' })
@@ -139,7 +140,7 @@ export class SqlMigrationServiceDetailsDialog {
 					})
 					.component(),
 			])
-			.withLayout({ flexFlow: 'row', })
+			.withLayout({ flexFlow: 'row' })
 			.withProps({
 				display: 'inline-flex',
 				CSSStyles: { 'margin': LABEL_MARGIN },
@@ -147,46 +148,12 @@ export class SqlMigrationServiceDetailsDialog {
 			.component();
 	}
 
-	private _createInfoTextItem(view: azdata.ModelView, value: string, title: string, margin: string): azdata.FlexContainer {
-		return view.modelBuilder
-			.flexContainer()
-			.withItems([
-				view.modelBuilder
-					.text()
-					.withProps({
-						value: value,
-						CSSStyles: {
-							'font-size': FONT_SIZE,
-							'margin': NO_MARGIN,
-						}
-					})
-					.component(),
-				view.modelBuilder
-					.image()
-					.withProps({
-						iconPath: IconPathHelper.info,
-						height: INFO_BALLOON_SIZE,
-						width: INFO_BALLOON_SIZE,
-						iconHeight: INFO_BALLOON_SIZE,
-						iconWidth: INFO_BALLOON_SIZE,
-						title: value,
-						CSSStyles: { 'margin': INFO_BALLOON_MARGIN },
-					})
-					.component(),
-			])
-			.withLayout({ flexFlow: 'row' })
-			.withProps({
-				display: 'inline-flex',
-				CSSStyles: { 'margin': margin },
-			})
-			.component();
-	}
-
-	private _createTextItem(view: azdata.ModelView, value: string, margin: string): azdata.TextComponent {
+	private _createTextItem(view: azdata.ModelView, value: string, margin: string, description?: string): azdata.TextComponent {
 		return view.modelBuilder
 			.text()
 			.withProps({
 				value: value,
+				description: description,
 				title: value,
 				CSSStyles: {
 					'font-size': FONT_SIZE,
@@ -227,6 +194,31 @@ export class SqlMigrationServiceDetailsDialog {
 		};
 	}
 
+	private async _regenrateAuthKey(view: azdata.ModelView, migrationContext: MigrationContext, keyName: string): Promise<void> {
+		const keys = await regenerateSqlMigrationServiceAuthKey(
+			migrationContext.azureAccount,
+			migrationContext.subscription,
+			migrationContext.controller.properties.resourceGroup,
+			migrationContext.controller.location.toUpperCase(),
+			migrationContext.controller.name,
+			keyName);
+
+		if (keys?.authKey1 && keyName === AUTH_KEY1) {
+			await this._updateTableCell(this._migrationServiceAuthKeyTable, 0, 1, keys.authKey1, constants.SERVICE_KEY1_LABEL);
+		}
+		else if (keys?.authKey2 && keyName === AUTH_KEY2) {
+			await this._updateTableCell(this._migrationServiceAuthKeyTable, 1, 1, keys.authKey2, constants.SERVICE_KEY2_LABEL);
+		}
+	}
+
+	private async _updateTableCell(table: azdata.DeclarativeTableComponent, row: number, col: number, value: string, keyName: string): Promise<void> {
+		const dataValues = table.dataValues;
+		dataValues![row][col].value = value;
+		table.dataValues = [];
+		table.dataValues = dataValues;
+		await vscode.window.showInformationMessage(constants.AUTH_KEY_REFRESHED(keyName));
+	}
+
 	private async _refreshAuthTable(view: azdata.ModelView, migrationContext: MigrationContext): Promise<void> {
 		const keys = await getSqlMigrationServiceAuthKeys(
 			migrationContext.azureAccount,
@@ -237,7 +229,11 @@ export class SqlMigrationServiceDetailsDialog {
 
 		const copyKey1Button = view.modelBuilder
 			.button()
-			.withProps({ iconPath: IconPathHelper.copy })
+			.withProps({
+				iconPath: IconPathHelper.copy,
+				height: IMAGE_SIZE,
+				width: IMAGE_SIZE,
+			})
 			.component();
 
 		copyKey1Button.onDidClick((e) => {
@@ -247,7 +243,11 @@ export class SqlMigrationServiceDetailsDialog {
 
 		const copyKey2Button = view.modelBuilder
 			.button()
-			.withProps({ iconPath: IconPathHelper.copy })
+			.withProps({
+				iconPath: IconPathHelper.copy,
+				height: IMAGE_SIZE,
+				width: IMAGE_SIZE,
+			})
 			.component();
 
 		copyKey2Button.onDidClick((e) => {
@@ -259,17 +259,23 @@ export class SqlMigrationServiceDetailsDialog {
 			.button()
 			.withProps({
 				iconPath: IconPathHelper.refresh,
-				enabled: false,
+				height: IMAGE_SIZE,
+				width: IMAGE_SIZE,
 			})
 			.component();
+		refreshKey1Button.onDidClick(
+			async (e) => await this._regenrateAuthKey(view, migrationContext, AUTH_KEY1));
 
 		const refreshKey2Button = view.modelBuilder
 			.button()
 			.withProps({
 				iconPath: IconPathHelper.refresh,
-				enabled: false,
+				height: IMAGE_SIZE,
+				width: IMAGE_SIZE,
 			})
 			.component();
+		refreshKey2Button.onDidClick(
+			async (e) => await this._regenrateAuthKey(view, migrationContext, AUTH_KEY2));
 
 		this._migrationServiceAuthKeyTable.updateProperties({
 			dataValues: [

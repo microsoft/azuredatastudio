@@ -175,6 +175,24 @@ export async function getSqlMigrationServiceAuthKeys(account: azdata.Account, su
 	};
 }
 
+export async function regenerateSqlMigrationServiceAuthKey(account: azdata.Account, subscription: Subscription, resourceGroupName: string, regionName: string, sqlMigrationServiceName: string, keyName: string): Promise<SqlMigrationServiceAuthenticationKeys> {
+	const api = await getAzureCoreAPI();
+	const path = `/subscriptions/${subscription.id}/resourceGroups/${resourceGroupName}/providers/Microsoft.DataMigration/sqlMigrationServices/${sqlMigrationServiceName}/regenerateAuthKeys?api-version=2020-09-01-preview`;
+	const requestBody = {
+		'location': regionName,
+		'keyName': keyName,
+	};
+
+	const response = await api.makeAzureRestRequest(account, subscription, path, azurecore.HttpRequestMethod.POST, requestBody, true);
+	if (response.errors.length > 0) {
+		throw new Error(response.errors.toString());
+	}
+	return {
+		authKey1: response?.response?.data?.authKey1 ?? '',
+		authKey2: response?.response?.data?.authKey2 ?? ''
+	};
+}
+
 export async function getStorageAccountAccessKeys(account: azdata.Account, subscription: Subscription, storageAccount: StorageAccount): Promise<GetStorageAccountAccessKeysResult> {
 	const api = await getAzureCoreAPI();
 	const path = `/subscriptions/${subscription.id}/resourceGroups/${storageAccount.resourceGroup}/providers/Microsoft.Storage/storageAccounts/${storageAccount.name}/listKeys?api-version=2019-06-01`;
