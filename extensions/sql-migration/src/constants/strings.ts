@@ -190,6 +190,9 @@ export const SERVICE_KEY_COPIED_HELP = localize('sql.migration.key.copied', "Key
 export const REFRESH_KEYS = localize('sql.migration.refresh.keys', "Refresh keys");
 export const COPY_KEY = localize('sql.migration.copy.key', "Copy key");
 export const AUTH_KEY_COLUMN_HEADER = localize('sql.migration.authkeys.header', "Authentication key");
+export function AUTH_KEY_REFRESHED(keyName: string): string {
+	return localize('sql.migration.authkeys.refresh.message', "Authentication key '{0}' has been refreshed.", keyName);
+}
 export function SERVICE_NOT_READY(serviceName: string): string {
 	return localize('sql.migration.service.not.ready', "Azure Database Migration Service is not registered. Azure Database Migration Service '{0}' needs to be registered with self-hosted Integration Runtime on any node.", serviceName);
 }
@@ -388,6 +391,14 @@ export function MINUTE(mins: number): string {
 export function SEC(sec: number): string {
 	return localize('sql.migration.sec', "{0} sec", sec);
 }
+
+// SQL Migration Service Details page.
+export const SQL_MIGRATION_SERVICE_DETAILS_SUB_TITLE = localize('sql.migration.service.details.dialog.title', "Azure Database Migration Service");
+export const SQL_MIGRATION_SERVICE_DETAILS_BUTTON_LABEL = localize('sql.migration.service.details.button.label', "Close");
+export const SQL_MIGRATION_SERVICE_DETAILS_IR_LABEL = localize('sql.migration.service.details.ir.label', "Self-hosted Integration Runtime node");
+export const SQL_MIGRATION_SERVICE_DETAILS_AUTH_KEYS_LABEL = localize('sql.migration.service.details.authkeys.label', "Authentication keys");
+export const SQL_MIGRATION_SERVICE_DETAILS_AUTH_KEYS_TITLE = localize('sql.migration.service.details.authkeys.title', "Authentication keys used to connect to the Self-hosted Integration Runtime node");
+export const SQL_MIGRATION_SERVICE_DETAILS_STATUS_UNAVAILABLE = localize('sql.migration.service.details.status.unavailable', "-- unavailable --");
 
 //Source Credentials page.
 export const SOURCE_CONFIGURATION = localize('sql.migration.source.configuration', "Source Configuration");
