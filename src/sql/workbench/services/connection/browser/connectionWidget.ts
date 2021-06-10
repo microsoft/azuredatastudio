@@ -887,27 +887,27 @@ export class ConnectionWidget extends lifecycle.Disposable {
 
 	private validateInputs(): boolean {
 		let isFocused = false;
-		let validateServerName = this._serverNameInputBox.validate();
-		if (!validateServerName) {
+		const isServerNameValid = this._serverNameInputBox.validate() === undefined;
+		if (!isServerNameValid) {
 			this._serverNameInputBox.focus();
 			isFocused = true;
 		}
-		let validateUserName = this._userNameInputBox.validate();
-		if (!validateUserName && !isFocused) {
+		const isUserNameValid = this._userNameInputBox.validate() === undefined;
+		if (!isUserNameValid && !isFocused) {
 			this._userNameInputBox.focus();
 			isFocused = true;
 		}
-		let validatePassword = this._passwordInputBox.validate();
-		if (!validatePassword && !isFocused) {
+		const isPasswordValid = this._passwordInputBox.validate() === undefined;
+		if (!isPasswordValid && !isFocused) {
 			this._passwordInputBox.focus();
 			isFocused = true;
 		}
-		let validateAzureAccount = this.validateAzureAccountSelection();
-		if (!validateAzureAccount && !isFocused) {
+		const isAzureAccountValid = this.validateAzureAccountSelection();
+		if (!isAzureAccountValid && !isFocused) {
 			this._azureAccountDropdown.focus();
 			isFocused = true;
 		}
-		return validateServerName && validateUserName && validatePassword && validateAzureAccount;
+		return isServerNameValid && isUserNameValid && isPasswordValid && isAzureAccountValid;
 	}
 
 	public connect(model: IConnectionProfile): boolean {

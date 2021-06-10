@@ -307,11 +307,11 @@ export class ServerGroupDialog extends Modal {
 
 	private validateInputs(): boolean {
 		const renderedDialog = this.withRenderedDialog;
-		let validate = renderedDialog.groupNameInputBox.validate();
-		if (!validate) {
+		const isNameValid = renderedDialog.groupNameInputBox.validate() === undefined;
+		if (!isNameValid) {
 			renderedDialog.groupNameInputBox.focus();
 		}
-		return <any>validate;
+		return isNameValid;
 	}
 
 	// initialize the view based on the current state of the view model
