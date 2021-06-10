@@ -226,8 +226,10 @@ steps:
 
   - script: |
       set -e
-      cd ./extensions/mssql/node_modules/@microsoft/ads-kerberos
-      npx node-gyp rebuild --python=python2 --target=$(node --version)
+      cd $(Build.SourcesDirectory)/extensions/mssql/node_modules/@microsoft/ads-kerberos
+      npx node-gyp rebuild --target=$(node --version)
+      cd $(Build.SourcesDirectory)/extensions/big-data-cluster/node_modules/@microsoft/ads-kerberos
+      npx node-gyp rebuild --target=$(node --version)
     displayName: Recompile native node modules
 
   - script: |
