@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { CategoryValue, DropDownComponent } from 'azdata';
 import { DAYS, HRS, MINUTE, SEC } from '../constants/strings';
 import { AdsMigrationStatus } from '../dialog/migrationStatus/migrationStatusDialogModel';
 import { MigrationContext } from '../models/migrationLocalStorage';
@@ -119,4 +120,17 @@ export function filterMigrations(databaseMigrations: MigrationContext[], statusF
 		});
 	}
 	return filteredMigration;
+}
+
+export function selectDropDownIndex(dropDown: DropDownComponent, index: number): void {
+	if (index >= 0 && dropDown.values && index <= dropDown.values.length - 1) {
+		const value = dropDown.values[index];
+		dropDown.value = value as CategoryValue;
+	}
+}
+
+export function findDropDownItemIndex(dropDown: DropDownComponent, value: string): number {
+	return dropDown.values &&
+		dropDown.values.findIndex((v: any) => ((v as CategoryValue)?.displayName?.toLowerCase() === value?.toLowerCase())) ||
+		-1;
 }
