@@ -79,7 +79,7 @@ export function convertTo(version: string, section: JupyterBookSection): Jupyter
 	if (version === BookVersion.v1) {
 		if (section.sections && section.sections.length > 0) {
 			let temp: JupyterBookSection = {};
-			temp.title = section.title;
+			temp.title = JSON.stringify(section.title);
 			temp.url = section.url ? section.url : section.file;
 			temp.expand_sections = section.expand_sections;
 			temp.not_numbered = convertNotNumbered(section);
@@ -95,7 +95,7 @@ export function convertTo(version: string, section: JupyterBookSection): Jupyter
 			return temp;
 		} else {
 			let newSection: JupyterBookSection = {};
-			newSection.title = section.title;
+			newSection.title = JSON.stringify(section.title);
 			newSection.url = section.url ? section.url : section.file;
 			newSection.sections = section.sections;
 			newSection.not_numbered = convertNotNumbered(section);
@@ -110,7 +110,7 @@ export function convertTo(version: string, section: JupyterBookSection): Jupyter
 	else if (version === BookVersion.v2) {
 		if (section.sections && section.sections.length > 0) {
 			let temp: JupyterBookSection = {};
-			temp.title = section.title;
+			temp.title = JSON.stringify(section.title);
 			temp.file = section.file;
 			temp.expand_sections = section.expand_sections;
 			temp.header = section.header;
@@ -126,7 +126,7 @@ export function convertTo(version: string, section: JupyterBookSection): Jupyter
 			return temp;
 		} else {
 			let newSection: JupyterBookSection = {};
-			newSection.title = section.title;
+			newSection.title = JSON.stringify(section.title);
 			newSection.file = section.file;
 			newSection.sections = section.sections;
 			newSection.expand_sections = section.expand_sections;
