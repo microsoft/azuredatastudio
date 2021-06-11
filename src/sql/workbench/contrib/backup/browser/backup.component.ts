@@ -826,7 +826,7 @@ export class BackupComponent extends AngularDisposable {
 
 	private enableBackupButton(): void {
 		if (!this.backupButton!.enabled) {
-			if (this.pathListBox!.count > 0 && (!this.isFormatChecked || this.mediaNameBox!.value) && this.backupRetainDaysBox!.validate()) {
+			if (this.pathListBox!.count > 0 && (!this.isFormatChecked || this.mediaNameBox!.value) && this.backupRetainDaysBox!.validate() === undefined) {
 				this.backupEnabled = true;
 			}
 		}
@@ -851,7 +851,7 @@ export class BackupComponent extends AngularDisposable {
 	}
 
 	private backupRetainDaysChanged(days: string): void {
-		if (!this.backupRetainDaysBox!.validate()) {
+		if (this.backupRetainDaysBox!.validate() !== undefined) {
 			this.backupEnabled = false;
 		} else {
 			this.enableBackupButton();

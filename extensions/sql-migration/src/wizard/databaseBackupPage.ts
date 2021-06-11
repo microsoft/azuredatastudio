@@ -11,6 +11,10 @@ import { Blob, MigrationSourceAuthenticationType, MigrationStateModel, Migration
 import * as constants from '../constants/strings';
 import { IconPathHelper } from '../constants/iconPathHelper';
 import { WIZARD_INPUT_COMPONENT_WIDTH } from './wizardController';
+import { findDropDownItemIndex, selectDropDownIndex } from '../api/utils';
+
+const WIZARD_TABLE_COLUMN_WIDTH = '200px';
+
 export class DatabaseBackupPage extends MigrationWizardPage {
 	private _view!: azdata.ModelView;
 
@@ -433,7 +437,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 					rowCssStyles: rowCssStyle,
 					headerCssStyles: headerCssStyles,
 					isReadOnly: true,
-					width: '200px'
+					width: WIZARD_TABLE_COLUMN_WIDTH,
 				},
 				{
 					displayName: constants.TARGET_DATABASE_NAME,
@@ -441,7 +445,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 					rowCssStyles: rowCssStyle,
 					headerCssStyles: headerCssStyles,
 					isReadOnly: true,
-					width: '200px'
+					width: WIZARD_TABLE_COLUMN_WIDTH
 				},
 				{
 					displayName: constants.RESOURCE_GROUP,
@@ -449,7 +453,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 					rowCssStyles: rowCssStyle,
 					headerCssStyles: headerCssStyles,
 					isReadOnly: true,
-					width: '200px'
+					width: WIZARD_TABLE_COLUMN_WIDTH
 				},
 				{
 					displayName: constants.STORAGE_ACCOUNT,
@@ -457,7 +461,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 					rowCssStyles: rowCssStyle,
 					headerCssStyles: headerCssStyles,
 					isReadOnly: true,
-					width: '200px'
+					width: WIZARD_TABLE_COLUMN_WIDTH
 				},
 				{
 					displayName: constants.BLOB_CONTAINER,
@@ -465,7 +469,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 					rowCssStyles: rowCssStyle,
 					headerCssStyles: headerCssStyles,
 					isReadOnly: true,
-					width: '200px'
+					width: WIZARD_TABLE_COLUMN_WIDTH
 				}
 			]
 		}).component();
@@ -551,12 +555,15 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				}
 			}).component();
 		this._networkShareStorageAccountResourceGroupDropdown = this._view.modelBuilder.dropDown().withProps({
-			width: WIZARD_INPUT_COMPONENT_WIDTH
+			width: WIZARD_INPUT_COMPONENT_WIDTH,
+			editable: true,
+			fireOnTextChange: true,
 		}).component();
-		this._networkShareStorageAccountResourceGroupDropdown.onValueChanged(e => {
-			if (e.selected) {
-				this.migrationStateModel._databaseBackup.networkShare.resourceGroup = this.migrationStateModel.getAzureResourceGroup(e.index);
-				this.loadNetworkShareStorageDropdown();
+		this._networkShareStorageAccountResourceGroupDropdown.onValueChanged(async (value) => {
+			const selectedIndex = findDropDownItemIndex(this._networkShareStorageAccountResourceGroupDropdown, value);
+			if (selectedIndex > -1) {
+				this.migrationStateModel._databaseBackup.networkShare.resourceGroup = this.migrationStateModel.getAzureResourceGroup(selectedIndex);
+				await this.loadNetworkShareStorageDropdown();
 			}
 		});
 
@@ -572,11 +579,14 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 		this._networkShareContainerStorageAccountDropdown = this._view.modelBuilder.dropDown()
 			.withProps({
 				required: true,
-				width: WIZARD_INPUT_COMPONENT_WIDTH
+				width: WIZARD_INPUT_COMPONENT_WIDTH,
+				editable: true,
+				fireOnTextChange: true,
 			}).component();
 		this._networkShareContainerStorageAccountDropdown.onValueChanged((value) => {
-			if (value.selected) {
-				this.migrationStateModel._databaseBackup.networkShare.storageAccount = this.migrationStateModel.getStorageAccount(value.index);
+			const selectedIndex = findDropDownItemIndex(this._networkShareContainerStorageAccountDropdown, value);
+			if (selectedIndex > -1) {
+				this.migrationStateModel._databaseBackup.networkShare.storageAccount = this.migrationStateModel.getStorageAccount(selectedIndex);
 			}
 		});
 
@@ -587,8 +597,8 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			height: 25
 		}).component();
 
-		this._networkShareContainerStorageAccountRefreshButton.onDidClick((e) => {
-			this.loadNetworkShareStorageDropdown();
+		this._networkShareContainerStorageAccountRefreshButton.onDidClick(async (value) => {
+			await this.loadNetworkShareStorageDropdown();
 		});
 
 		const storageAccountContainer = this._view.modelBuilder.flexContainer().component();
@@ -656,7 +666,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				const targetDatabaseInput = this._view.modelBuilder.inputBox().withProps({
 					required: true,
 					value: db,
-					width: '200px'
+					width: WIZARD_TABLE_COLUMN_WIDTH
 				}).withValidation(c => {
 					if (this._networkShareTargetDatabaseNames.filter(t => t.value === c.value).length > 1) { //Making sure no databases have duplicate values.
 						c.validationErrorMessage = constants.DUPLICATE_NAME_ERROR;
@@ -681,7 +691,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				const blobtargetDatabaseInput = this._view.modelBuilder.inputBox().withProps({
 					required: true,
 					value: db,
-					width: '200px'
+					width: WIZARD_TABLE_COLUMN_WIDTH
 				}).withValidation(c => {
 					if (this._blobContainerTargetDatabaseNames.filter(t => t.value === c.value).length > 1) { //Making sure no databases have duplicate values.
 						c.validationErrorMessage = constants.DUPLICATE_NAME_ERROR;
@@ -703,24 +713,31 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				this._blobContainerTargetDatabaseNames.push(blobtargetDatabaseInput);
 
 				const blobContainerResourceDropdown = this._view.modelBuilder.dropDown().withProps({
-					width: '200px'
+					width: WIZARD_TABLE_COLUMN_WIDTH,
+					editable: true,
+					fireOnTextChange: true,
 				}).component();
-				blobContainerResourceDropdown.onValueChanged(e => {
-					if (e.selected && e.selected !== constants.RESOURCE_GROUP_NOT_FOUND) {
-						this.migrationStateModel._databaseBackup.blobs[index].resourceGroup = this.migrationStateModel.getAzureResourceGroup(e.index);
+				blobContainerResourceDropdown.onValueChanged(async (value) => {
+					const selectedIndex = findDropDownItemIndex(blobContainerResourceDropdown, value);
+					if (selectedIndex > -1 && value !== constants.RESOURCE_GROUP_NOT_FOUND) {
+						this.migrationStateModel._databaseBackup.blobs[index].resourceGroup = this.migrationStateModel.getAzureResourceGroup(selectedIndex);
 					}
-					this.loadblobStorageDropdown(index);
+
+					await this.loadblobStorageDropdown(index);
 				});
 				this._blobContainerResourceGroupDropdowns.push(blobContainerResourceDropdown);
 
 				const blobContainerStorageAccountDropdown = this._view.modelBuilder.dropDown()
 					.withProps({
-						width: '200px'
+						width: WIZARD_TABLE_COLUMN_WIDTH,
+						editable: true,
+						fireOnTextChange: true,
 					}).component();
 
 				blobContainerStorageAccountDropdown.onValueChanged(async (value) => {
-					if (value.selected && value.selected !== constants.NO_STORAGE_ACCOUNT_FOUND) {
-						this.migrationStateModel._databaseBackup.blobs[index].storageAccount = this.migrationStateModel.getStorageAccount(value.index);
+					const selectedIndex = findDropDownItemIndex(blobContainerStorageAccountDropdown, value);
+					if (selectedIndex > -1 && value !== constants.NO_STORAGE_ACCOUNT_FOUND) {
+						this.migrationStateModel._databaseBackup.blobs[index].storageAccount = this.migrationStateModel.getStorageAccount(selectedIndex);
 					}
 					await this.loadBlobContainerDropdown(index);
 				});
@@ -728,11 +745,14 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 
 				const blobContainerDropdown = this._view.modelBuilder.dropDown()
 					.withProps({
-						width: '200px'
+						width: WIZARD_TABLE_COLUMN_WIDTH,
+						editable: true,
+						fireOnTextChange: true,
 					}).component();
-				blobContainerDropdown.onValueChanged(async (value) => {
-					if (value.selected && value.selected !== constants.NO_BLOBCONTAINERS_FOUND) {
-						this.migrationStateModel._databaseBackup.blobs[index].blobContainer = this.migrationStateModel.getBlobContainer(value.index);
+				blobContainerDropdown.onValueChanged(value => {
+					const selectedIndex = findDropDownItemIndex(blobContainerStorageAccountDropdown, value);
+					if (selectedIndex > -1 && value !== constants.NO_BLOBCONTAINERS_FOUND) {
+						this.migrationStateModel._databaseBackup.blobs[index].blobContainer = this.migrationStateModel.getBlobContainer(selectedIndex);
 					}
 				});
 				this._blobContainerDropdowns.push(blobContainerDropdown);
@@ -955,11 +975,12 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 		this._networkShareStorageAccountResourceGroupDropdown.loading = true;
 		try {
 			this._networkShareStorageAccountResourceGroupDropdown.values = await this.migrationStateModel.getAzureResourceGroupDropdownValues(this.migrationStateModel._databaseBackup.subscription);
+			selectDropDownIndex(this._networkShareStorageAccountResourceGroupDropdown, 0);
 		} catch (error) {
 			console.log(error);
 		} finally {
 			this._networkShareStorageAccountResourceGroupDropdown.loading = false;
-			this.loadNetworkShareStorageDropdown();
+			await this.loadNetworkShareStorageDropdown();
 		}
 	}
 
@@ -967,6 +988,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 		this._networkShareContainerStorageAccountDropdown.loading = true;
 		try {
 			this._networkShareContainerStorageAccountDropdown.values = await this.migrationStateModel.getStorageAccountValues(this.migrationStateModel._databaseBackup.subscription, this.migrationStateModel._databaseBackup.networkShare.resourceGroup);
+			selectDropDownIndex(this._networkShareContainerStorageAccountDropdown, 0);
 		} catch (error) {
 			console.log(error);
 		} finally {
@@ -978,7 +1000,10 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 		this._blobContainerResourceGroupDropdowns.forEach(v => v.loading = true);
 		try {
 			const resourceGroupValues = await this.migrationStateModel.getAzureResourceGroupDropdownValues(this.migrationStateModel._databaseBackup.subscription);
-			this._blobContainerResourceGroupDropdowns.forEach(v => v.values = resourceGroupValues);
+			this._blobContainerResourceGroupDropdowns.forEach(dropDown => {
+				dropDown.values = resourceGroupValues;
+				selectDropDownIndex(dropDown, 0);
+			});
 		} catch (error) {
 			console.log(error);
 		} finally {
@@ -990,6 +1015,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 		this._blobContainerStorageAccountDropdowns[index].loading = true;
 		try {
 			this._blobContainerStorageAccountDropdowns[index].values = await this.migrationStateModel.getStorageAccountValues(this.migrationStateModel._databaseBackup.subscription, this.migrationStateModel._databaseBackup.blobs[index].resourceGroup);
+			selectDropDownIndex(this._blobContainerStorageAccountDropdowns[index], 0);
 		} catch (error) {
 			console.log(error);
 		} finally {
@@ -1002,6 +1028,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 		try {
 			const blobContainerValues = await this.migrationStateModel.getBlobContainerValues(this.migrationStateModel._databaseBackup.subscription, this.migrationStateModel._databaseBackup.blobs[index].storageAccount);
 			this._blobContainerDropdowns[index].values = blobContainerValues;
+			selectDropDownIndex(this._blobContainerDropdowns[index], 0);
 		} catch (error) {
 			console.log(error);
 		} finally {

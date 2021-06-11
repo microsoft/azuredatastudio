@@ -535,7 +535,14 @@ export interface ICellModel {
 	readonly savedConnectionName: string | undefined;
 	readonly attachments: nb.ICellAttachments;
 	readonly currentMode: CellEditModes;
-	addAttachment(mimeType: string, base64Encoding: string, name: string): void;
+	/**
+	 * Adds image as an attachment to cell metadata
+	 * @param mimeType a string defining mimeType of the image. Examples: image/png, image/jpeg
+	 * @param base64Encoding the base64 encoded value of the image
+	 * @param name the name of the image.
+	 * Returns the name of the attachment added to metadata.
+	 */
+	addAttachment(mimeType: string, base64Encoding: string, name: string): string;
 }
 
 export interface IModelFactory {

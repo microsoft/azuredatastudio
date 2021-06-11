@@ -3875,6 +3875,14 @@ declare module 'azdata' {
 		export function createModelViewDialog(title: string, dialogName?: string, isWide?: boolean): Dialog;
 
 		/**
+		 * Create a dialog with the given title
+		 * @param title Title of the dialog, displayed at the top.
+		 * @param dialogName Name of the dialog.
+		 * @param width Width of the dialog, default is 'narrow'.
+		 */
+		export function createModelViewDialog(title: string, dialogName?: string, width?: DialogWidth): Dialog;
+
+		/**
 		 * Create a dialog tab which can be included as part of the content of a dialog
 		 * @param title The title of the page, displayed on the tab to select the page
 		 */

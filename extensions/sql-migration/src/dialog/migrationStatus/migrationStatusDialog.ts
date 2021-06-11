@@ -12,6 +12,8 @@ import { AdsMigrationStatus, MigrationStatusDialogModel } from './migrationStatu
 import * as loc from '../../constants/strings';
 import { convertTimeDifferenceToDuration, filterMigrations, SupportedAutoRefreshIntervals } from '../../api/utils';
 import { AutoRefreshSettingsDialog } from '../autoRefreshSettingsDialog/autoRefreshSettingsDialog';
+import { SqlMigrationServiceDetailsDialog } from '../sqlMigrationService/sqlMigrationServiceDetailsDialog';
+
 export class MigrationStatusDialog {
 	private _model: MigrationStatusDialogModel;
 	private _dialogObject!: azdata.window.Dialog;
@@ -221,7 +223,7 @@ export class MigrationStatusDialog {
 					url: ''
 				}).component();
 				dms.onDidClick((e) => {
-					vscode.window.showInformationMessage(loc.COMING_SOON);
+					(new SqlMigrationServiceDetailsDialog(migration)).initialize();
 				});
 
 				migrationRow.push({

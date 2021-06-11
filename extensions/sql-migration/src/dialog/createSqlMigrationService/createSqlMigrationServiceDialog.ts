@@ -228,7 +228,9 @@ export class CreateSqlMigrationServiceDialog {
 		}).component();
 
 		this.migrationServiceResourceGroupDropdown = this._view.modelBuilder.dropDown().withProps({
-			required: true
+			required: true,
+			editable: true,
+			fireOnTextChange: true,
 		}).component();
 
 		const migrationServiceNameLabel = this._view.modelBuilder.text().withProps({
@@ -306,7 +308,7 @@ export class CreateSqlMigrationServiceDialog {
 	private async populateSubscriptions(): Promise<void> {
 		this.migrationServiceResourceGroupDropdown.loading = true;
 		this.migrationServiceSubscription.value = this._model._targetSubscription.name;
-		this.populateResourceGroups();
+		await this.populateResourceGroups();
 	}
 
 	private async populateResourceGroups(): Promise<void> {

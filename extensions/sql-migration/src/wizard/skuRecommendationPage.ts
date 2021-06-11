@@ -12,6 +12,7 @@ import * as vscode from 'vscode';
 import { EOL } from 'os';
 import { IconPath, IconPathHelper } from '../constants/iconPathHelper';
 import { WIZARD_INPUT_COMPONENT_WIDTH } from './wizardController';
+import { findDropDownItemIndex, selectDropDownIndex } from '../api/utils';
 
 export interface Product {
 	type: MigrationTargetType;
@@ -291,15 +292,16 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		}).component();
 		this._managedInstanceSubscriptionDropdown = this._view.modelBuilder.dropDown().withProps({
 			width: WIZARD_INPUT_COMPONENT_WIDTH,
-			editable: true
+			editable: true,
+			fireOnTextChange: true,
 		}).component();
-		this._managedInstanceSubscriptionDropdown.onValueChanged((e) => {
-			if (e) {
-				const selectedIndex = (<azdata.CategoryValue[]>this._managedInstanceSubscriptionDropdown.values)?.findIndex(v => v.displayName === e);
+		this._managedInstanceSubscriptionDropdown.onValueChanged(async (value) => {
+			const selectedIndex = findDropDownItemIndex(this._managedInstanceSubscriptionDropdown, value);
+			if (selectedIndex > -1) {
 				this.migrationStateModel._targetSubscription = this.migrationStateModel.getSubscription(selectedIndex);
 				this.migrationStateModel._targetServerInstance = undefined!;
 				this.migrationStateModel._sqlMigrationService = undefined!;
-				this.populateLocationAndResourceGroupDropdown();
+				await this.populateLocationAndResourceGroupDropdown();
 			}
 		});
 
@@ -312,12 +314,15 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			}
 		}).component();
 		this._azureLocationDropdown = this._view.modelBuilder.dropDown().withProps({
-			width: WIZARD_INPUT_COMPONENT_WIDTH
+			width: WIZARD_INPUT_COMPONENT_WIDTH,
+			editable: true,
+			fireOnTextChange: true,
 		}).component();
-		this._azureLocationDropdown.onValueChanged((e) => {
-			if (e.selected) {
-				this.migrationStateModel._location = this.migrationStateModel.getLocation(e.index);
-				this.populateResourceInstanceDropdown();
+		this._azureLocationDropdown.onValueChanged(async (value) => {
+			const selectedIndex = findDropDownItemIndex(this._azureLocationDropdown, value);
+			if (selectedIndex > -1) {
+				this.migrationStateModel._location = this.migrationStateModel.getLocation(selectedIndex);
+				await this.populateResourceInstanceDropdown();
 			}
 		});
 
@@ -330,12 +335,15 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			}
 		}).component();
 		this._azureResourceGroupDropdown = this._view.modelBuilder.dropDown().withProps({
-			width: WIZARD_INPUT_COMPONENT_WIDTH
+			width: WIZARD_INPUT_COMPONENT_WIDTH,
+			editable: true,
+			fireOnTextChange: true,
 		}).component();
-		this._azureResourceGroupDropdown.onValueChanged((e) => {
-			if (e.selected) {
-				this.migrationStateModel._resourceGroup = this.migrationStateModel.getAzureResourceGroup(e.index);
-				this.populateResourceInstanceDropdown();
+		this._azureResourceGroupDropdown.onValueChanged(async (value) => {
+			const selectedIndex = findDropDownItemIndex(this._azureResourceGroupDropdown, value);
+			if (selectedIndex > -1) {
+				this.migrationStateModel._resourceGroup = this.migrationStateModel.getAzureResourceGroup(selectedIndex);
+				await this.populateResourceInstanceDropdown();
 			}
 		});
 		this._resourceDropdownLabel = this._view.modelBuilder.text().withProps({
@@ -348,17 +356,20 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		}).component();
 
 		this._resourceDropdown = this._view.modelBuilder.dropDown().withProps({
-			width: WIZARD_INPUT_COMPONENT_WIDTH
+			width: WIZARD_INPUT_COMPONENT_WIDTH,
+			editable: true,
+			fireOnTextChange: true,
 		}).component();
-		this._resourceDropdown.onValueChanged((e) => {
-			if (e?.selected &&
-				e.selected !== constants.NO_MANAGED_INSTANCE_FOUND &&
-				e.selected !== constants.NO_VIRTUAL_MACHINE_FOUND) {
+		this._resourceDropdown.onValueChanged(value => {
+			const selectedIndex = findDropDownItemIndex(this._resourceDropdown, value);
+			if (selectedIndex > -1 &&
+				value !== constants.NO_MANAGED_INSTANCE_FOUND &&
+				value !== constants.NO_VIRTUAL_MACHINE_FOUND) {
 				this.migrationStateModel._sqlMigrationServices = undefined!;
 				if (this._rbg.selectedCardId === MigrationTargetType.SQLVM) {
-					this.migrationStateModel._targetServerInstance = this.migrationStateModel.getVirtualMachine(e.index);
+					this.migrationStateModel._targetServerInstance = this.migrationStateModel.getVirtualMachine(selectedIndex);
 				} else {
-					this.migrationStateModel._targetServerInstance = this.migrationStateModel.getManagedInstance(e.index);
+					this.migrationStateModel._targetServerInstance = this.migrationStateModel.getManagedInstance(selectedIndex);
 				}
 			}
 		});
@@ -425,11 +436,12 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			this._resourceDropdown.loading = true;
 			try {
 				this._managedInstanceSubscriptionDropdown.values = await this.migrationStateModel.getSubscriptionsDropdownValues();
-				this._managedInstanceSubscriptionDropdown.value = this._managedInstanceSubscriptionDropdown.values[0];
+				selectDropDownIndex(this._managedInstanceSubscriptionDropdown, 0);
 			} catch (e) {
 				console.log(e);
 			} finally {
 				this._managedInstanceSubscriptionDropdown.loading = false;
+				this._resourceDropdown.loading = false;
 			}
 		}
 	}
@@ -439,7 +451,9 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		this._azureLocationDropdown.loading = true;
 		try {
 			this._azureResourceGroupDropdown.values = await this.migrationStateModel.getAzureResourceGroupDropdownValues(this.migrationStateModel._targetSubscription);
+			selectDropDownIndex(this._azureResourceGroupDropdown, 0);
 			this._azureLocationDropdown.values = await this.migrationStateModel.getAzureLocationDropdownValues(this.migrationStateModel._targetSubscription);
+			selectDropDownIndex(this._azureLocationDropdown, 0);
 		} catch (e) {
 			console.log(e);
 		} finally {
@@ -449,8 +463,8 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	}
 
 	private async populateResourceInstanceDropdown(): Promise<void> {
-		this._resourceDropdown.loading = true;
 		try {
+			this._resourceDropdown.loading = true;
 			if (this._rbg.selectedCardId === MigrationTargetType.SQLVM) {
 				this._resourceDropdownLabel.value = constants.AZURE_SQL_DATABASE_VIRTUAL_MACHINE;
 				this._resourceDropdown.values = await this.migrationStateModel.getSqlVirtualMachineValues(this.migrationStateModel._targetSubscription, this.migrationStateModel._location, this.migrationStateModel._resourceGroup);
@@ -459,6 +473,8 @@ export class SKURecommendationPage extends MigrationWizardPage {
 				this._resourceDropdownLabel.value = constants.AZURE_SQL_DATABASE_MANAGED_INSTANCE;
 				this._resourceDropdown.values = await this.migrationStateModel.getManagedInstanceValues(this.migrationStateModel._targetSubscription, this.migrationStateModel._location, this.migrationStateModel._resourceGroup);
 			}
+
+			selectDropDownIndex(this._resourceDropdown, 0);
 		} catch (e) {
 			console.log(e);
 		} finally {

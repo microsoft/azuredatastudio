@@ -862,6 +862,8 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 
 	private async createInstallPipPackagesHelpNotebook(userInstalledPipPackages: PythonPkgDetails[]): Promise<void> {
 		let packagesList: string[] = userInstalledPipPackages.map(pkg => { return pkg.name; });
+		// Filter out prose-codeaccelerator since we no longer ship it and it is not on Pypi.
+		packagesList = packagesList.filter(pkg => pkg !== 'prose-codeaccelerator');
 		let installPackagesCode = `import sys\n!{sys.executable} -m pip install --user ${packagesList.join(' ')}`;
 		let initialContent: azdata.nb.INotebookContents = {
 			cells: [{
