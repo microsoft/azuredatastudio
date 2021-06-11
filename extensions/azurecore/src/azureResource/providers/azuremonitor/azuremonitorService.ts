@@ -11,6 +11,7 @@ export interface AzureMonitorGraphData extends GraphData {
 		fullyQualifiedDomainName: string;
 		administratorLogin: string;
 		uri: string;
+		customerId: string
 	};
 }
 
@@ -26,7 +27,7 @@ export class AzureMonitorResourceService extends ResourceServiceBase<AzureMonito
 		return {
 			id: resource.id,
 			name: resource.name,
-			fullName: resource.name,
+			fullName: resource.properties.customerId,
 			loginName: '',
 			defaultDatabaseName: '',
 			subscription: {
