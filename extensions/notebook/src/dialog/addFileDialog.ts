@@ -10,7 +10,7 @@ import { IBookTocManager } from '../book/bookTocManager';
 import { confirmMessageDialog, FileExtension } from '../common/utils';
 import { IPrompter } from '../prompts/question';
 import CodeAdapter from '../prompts/adapter';
-import { BookTreeItem, BookTreeItemType } from '../book/bookTreeItem';
+import { NotebookTreeviewItem, NotebookTreeviewItemType } from '../book/bookTreeItem';
 import { TocEntryPathHandler } from '../book/tocEntryPathHandler';
 
 export class AddFileDialog {
@@ -23,7 +23,7 @@ export class AddFileDialog {
 	private _saveLocationInputBox: azdata.TextComponent;
 	private _prompter: IPrompter;
 
-	constructor(private _tocManager: IBookTocManager, private _bookItem: BookTreeItem, private _extension: FileExtension) {
+	constructor(private _tocManager: IBookTocManager, private _bookItem: NotebookTreeviewItem, private _extension: FileExtension) {
 		this._prompter = new CodeAdapter();
 	}
 
@@ -59,7 +59,7 @@ export class AddFileDialog {
 
 			this._saveLocationInputBox = this.view.modelBuilder.inputBox()
 				.withProperties({
-					value: this._bookItem.contextValue === BookTreeItemType.savedBook ? this._bookItem.rootContentPath : path.dirname(this._bookItem.resourceUri.fsPath),
+					value: this._bookItem.contextValue === NotebookTreeviewItemType.savedBook ? this._bookItem.rootContentPath : path.dirname(this._bookItem.resourceUri.fsPath),
 					enabled: false,
 					width: '400px'
 				}).component();
@@ -94,7 +94,7 @@ export class AddFileDialog {
 
 	private async createFile(): Promise<boolean> {
 		try {
-			const dirPath = this._bookItem.contextValue === BookTreeItemType.savedBook ? this._bookItem.rootContentPath : path.dirname(this._bookItem.book.contentPath);
+			const dirPath = this._bookItem.contextValue === NotebookTreeviewItemType.savedBook ? this._bookItem.rootContentPath : path.dirname(this._bookItem.book.contentPath);
 			const filePath = path.posix.join(dirPath, this._fileNameInputBox.value).concat(this._extension);
 			await this.validatePath(dirPath, this._fileNameInputBox.value.concat(this._extension));
 			const pathDetails = new TocEntryPathHandler(filePath, this._bookItem.rootContentPath, this._titleInputBox.value);

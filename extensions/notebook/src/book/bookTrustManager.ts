@@ -5,7 +5,7 @@
 import * as path from 'path';
 import * as vscode from 'vscode';
 import * as constants from './../common/constants';
-import { BookTreeItem } from './bookTreeItem';
+import { NotebookTreeviewItem } from './bookTreeItem';
 import { BookModel } from './bookModel';
 import { BookVersion } from './bookVersionHandler';
 
@@ -24,7 +24,7 @@ export class BookTrustManager implements IBookTrustManager {
 
 	isNotebookTrustedByDefault(notebookUri: string): boolean {
 		let normalizedNotebookUri: string = path.normalize(notebookUri);
-		let treeBookItems: BookTreeItem[] = this.getBookTreeItems();
+		let treeBookItems: NotebookTreeviewItem[] = this.getBookTreeItems();
 		let trustableBookPaths = this.getTrustableBookPaths();
 		let hasTrustedBookPath: boolean = treeBookItems
 			.filter(bookItem => trustableBookPaths.some(trustableBookPath => trustableBookPath === path.join(bookItem.book.root, path.sep)))
@@ -52,7 +52,7 @@ export class BookTrustManager implements IBookTrustManager {
 		return trustablePaths;
 	}
 
-	getBookTreeItems(): BookTreeItem[] {
+	getBookTreeItems(): NotebookTreeviewItem[] {
 		return this.books
 			.map(book => book.bookItems) // select all the books
 			.reduce((accumulator, currentBookItemList) => accumulator.concat(currentBookItemList), []);

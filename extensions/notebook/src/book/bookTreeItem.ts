@@ -10,7 +10,7 @@ import * as loc from '../common/localizedConstants';
 import { isBookItemPinned, getNotebookType } from '../common/utils';
 import { BookVersion, getContentPath, getTocPath } from './bookVersionHandler';
 
-export enum BookTreeItemType {
+export enum NotebookTreeviewItemType {
 	Book = 'Book',
 	Notebook = 'Notebook',
 	Markdown = 'Markdown',
@@ -30,15 +30,15 @@ export interface BookTreeItemFormat {
 	root: string;
 	tableOfContents: IJupyterBookToc;
 	page: any;
-	type: BookTreeItemType;
+	type: NotebookTreeviewItemType;
 	treeItemCollapsibleState: number;
 	isUntitled: boolean;
 	version?: BookVersion;
-	parent?: BookTreeItem;
-	children?: BookTreeItem[];
+	parent?: NotebookTreeviewItem;
+	children?: NotebookTreeviewItem[];
 }
 
-export class BookTreeItem extends vscode.TreeItem {
+export class NotebookTreeviewItem extends vscode.TreeItem {
 	private _sections: JupyterBookSection[] | undefined;
 	private _uri: string | undefined;
 	private _previousUri: string;
@@ -50,28 +50,28 @@ export class BookTreeItem extends vscode.TreeItem {
 
 	constructor(public book: BookTreeItemFormat, icons: any) {
 		super(book.title, book.treeItemCollapsibleState);
-		if (book.type === BookTreeItemType.Book) {
+		if (book.type === NotebookTreeviewItemType.Book) {
 			this.collapsibleState = book.treeItemCollapsibleState;
 			this._sections = book.page;
 			if (book.isUntitled) {
-				this.contextValue = BookTreeItemType.providedBook;
+				this.contextValue = NotebookTreeviewItemType.providedBook;
 			} else {
-				this.contextValue = BookTreeItemType.savedBook;
+				this.contextValue = NotebookTreeviewItemType.savedBook;
 			}
 		} else {
 			if (book.page && book.page.sections && book.page.sections.length > 0) {
-				this.contextValue = BookTreeItemType.section;
-			} else if (book.type === BookTreeItemType.Notebook && !book.tableOfContents.sections) {
+				this.contextValue = NotebookTreeviewItemType.section;
+			} else if (book.type === NotebookTreeviewItemType.Notebook && !book.tableOfContents.sections) {
 				if (book.isUntitled) {
-					this.contextValue = BookTreeItemType.unsavedNotebook;
+					this.contextValue = NotebookTreeviewItemType.unsavedNotebook;
 				} else {
-					this.contextValue = isBookItemPinned(book.contentPath) ? BookTreeItemType.pinnedNotebook : getNotebookType(book);
+					this.contextValue = isBookItemPinned(book.contentPath) ? NotebookTreeviewItemType.pinnedNotebook : getNotebookType(book);
 				}
-			} else if (book.type === BookTreeItemType.ExternalLink) {
-				this.contextValue = BookTreeItemType.ExternalLink;
+			} else if (book.type === NotebookTreeviewItemType.ExternalLink) {
+				this.contextValue = NotebookTreeviewItemType.ExternalLink;
 
 			} else {
-				this.contextValue = book.type === BookTreeItemType.Notebook ? (isBookItemPinned(book.contentPath) ? BookTreeItemType.pinnedNotebook : getNotebookType(book)) : BookTreeItemType.Markdown;
+				this.contextValue = book.type === NotebookTreeviewItemType.Notebook ? (isBookItemPinned(book.contentPath) ? NotebookTreeviewItemType.pinnedNotebook : getNotebookType(book)) : NotebookTreeviewItemType.Markdown;
 			}
 			this.setPageVariables();
 			this.setCommand();
@@ -79,17 +79,17 @@ export class BookTreeItem extends vscode.TreeItem {
 		this.iconPath = icons;
 		this._tableOfContentsPath = undefined;
 
-		if (this.book.type === BookTreeItemType.ExternalLink) {
+		if (this.book.type === NotebookTreeviewItemType.ExternalLink) {
 			this.tooltip = `${this._uri}`;
 		}
 		else {
 			// if it's a section, book or a notebook's book then we set the table of contents path.
-			if (this.book.type === BookTreeItemType.Book || this.contextValue === BookTreeItemType.section || this.contextValue === BookTreeItemType.savedBookNotebook || book.tableOfContents.sections && book.type === BookTreeItemType.Markdown) {
+			if (this.book.type === NotebookTreeviewItemType.Book || this.contextValue === NotebookTreeviewItemType.section || this.contextValue === NotebookTreeviewItemType.savedBookNotebook || book.tableOfContents.sections && book.type === NotebookTreeviewItemType.Markdown) {
 				this._tableOfContentsPath = getTocPath(this.book.version, this.book.root);
 			}
 			this._rootContentPath = getContentPath(this.book.version, this.book.root, '');
-			this.tooltip = this.book.type === BookTreeItemType.Book ? this._rootContentPath : this.book.contentPath;
-			this.resourceUri = this.book.type === BookTreeItemType.Book ? vscode.Uri.file(this.book.root) : vscode.Uri.file(this.book.contentPath);
+			this.tooltip = this.book.type === NotebookTreeviewItemType.Book ? this._rootContentPath : this.book.contentPath;
+			this.resourceUri = this.book.type === NotebookTreeviewItemType.Book ? vscode.Uri.file(this.book.root) : vscode.Uri.file(this.book.contentPath);
 		}
 	}
 
@@ -110,12 +110,12 @@ export class BookTreeItem extends vscode.TreeItem {
 	}
 
 	private setCommand(): void {
-		if (this.book.type === BookTreeItemType.Notebook) {
+		if (this.book.type === NotebookTreeviewItemType.Notebook) {
 			// The Notebook editor expects a posix path for the resource (it will still resolve to the correct fsPath based on OS)
 			this.command = { command: this.book.isUntitled ? 'bookTreeView.openUntitledNotebook' : 'bookTreeView.openNotebook', title: loc.openNotebookCommand, arguments: [this.book.contentPath], };
-		} else if (this.book.type === BookTreeItemType.Markdown) {
+		} else if (this.book.type === NotebookTreeviewItemType.Markdown) {
 			this.command = { command: 'bookTreeView.openMarkdown', title: loc.openMarkdownCommand, arguments: [this.book.contentPath], };
-		} else if (this.book.type === BookTreeItemType.ExternalLink) {
+		} else if (this.book.type === NotebookTreeviewItemType.ExternalLink) {
 			this.command = { command: 'bookTreeView.openExternalLink', title: loc.openExternalLinkCommand, arguments: [this._uri], };
 		}
 	}
@@ -206,19 +206,19 @@ export class BookTreeItem extends vscode.TreeItem {
 		this._tableOfContentsPath = tocPath;
 	}
 
-	public get children(): BookTreeItem[] | undefined {
+	public get children(): NotebookTreeviewItem[] | undefined {
 		return this.book.children;
 	}
 
-	public set children(children: BookTreeItem[] | undefined) {
+	public set children(children: NotebookTreeviewItem[] | undefined) {
 		this.book.children = children;
 	}
 
-	public get parent(): BookTreeItem {
+	public get parent(): NotebookTreeviewItem {
 		return this.book.parent;
 	}
 
-	public set parent(parent: BookTreeItem) {
+	public set parent(parent: NotebookTreeviewItem) {
 		this.book.parent = parent;
 	}
 

@@ -5,7 +5,7 @@
 import * as should from 'should';
 import * as path from 'path';
 import { BookTocManager, hasSections, quickPickResults } from '../../book/bookTocManager';
-import { BookTreeItem, BookTreeItemFormat, BookTreeItemType } from '../../book/bookTreeItem';
+import { NotebookTreeviewItem, BookTreeItemFormat, NotebookTreeviewItemType } from '../../book/bookTreeItem';
 import * as sinon from 'sinon';
 import { IJupyterBookSectionV1, IJupyterBookSectionV2, JupyterBookSection } from '../../contracts/content';
 import * as fs from 'fs-extra';
@@ -44,7 +44,7 @@ export function equalSections(actualSection: JupyterBookSection, expectedSection
 	return true;
 }
 
-function BookModelStub(root: string, bookItem: BookTreeItem, extension: MockExtensionContext): BookModel {
+function BookModelStub(root: string, bookItem: NotebookTreeviewItem, extension: MockExtensionContext): BookModel {
 	const bookModel = new BookModel(root, false, false, extension, undefined);
 	sinon.stub(bookModel, 'bookItems').value([bookItem]);
 	sinon.stub(bookModel, 'unwatchTOC').returns();
@@ -54,12 +54,12 @@ function BookModelStub(root: string, bookItem: BookTreeItem, extension: MockExte
 }
 
 function createBookTreeItemFormat(item: any, root: string, version: BookVersion): BookTreeItemFormat {
-	const pageFormat = item.type === BookTreeItemType.section ? {
+	const pageFormat = item.type === NotebookTreeviewItemType.section ? {
 		title: item.sectionName,
 		file: item.uri,
 		sections: item.sectionFormat
 	} : item.sectionFormat;
-	const sections = item.type === BookTreeItemType.section ? item.sectionFormat : [item.sectionFormat];
+	const sections = item.type === NotebookTreeviewItemType.section ? item.sectionFormat : [item.sectionFormat];
 	return {
 		title: item.sectionName,
 		contentPath: item.contentPath,
@@ -148,12 +148,12 @@ describe('BookTocManagerTests', function () {
 		let bookTocManager: BookTocManager;
 		let sourceBookModel: BookModel;
 		let targetBookModel: BookModel;
-		let targetBook: BookTreeItem;
-		let sectionC: BookTreeItem;
-		let sectionA: BookTreeItem;
-		let sectionB: BookTreeItem;
-		let notebook: BookTreeItem;
-		let duplicatedNotebook: BookTreeItem;
+		let targetBook: NotebookTreeviewItem;
+		let sectionC: NotebookTreeviewItem;
+		let sectionA: NotebookTreeviewItem;
+		let sectionB: NotebookTreeviewItem;
+		let notebook: NotebookTreeviewItem;
+		let duplicatedNotebook: NotebookTreeviewItem;
 		let sourceBookFolderPath: string = path.join(os.tmpdir(), uuid.v4(), 'sourceBook');
 		let targetBookFolderPath: string = path.join(os.tmpdir(), uuid.v4(), 'targetBook');
 		let duplicatedNotebookPath: string = path.join(os.tmpdir(), uuid.v4(), 'duplicatedNotebook');
@@ -176,7 +176,7 @@ describe('BookTocManagerTests', function () {
 							'file': path.posix.join(path.posix.sep, 'sectionA', 'notebook2')
 						}
 					],
-					'type': BookTreeItemType.savedBook
+					'type': NotebookTreeviewItemType.savedBook
 				},
 				sectionA: {
 					'contentPath': path.posix.join(sourceBookFolderPath, 'content', 'sectionA', 'readme.md'),
@@ -195,7 +195,7 @@ describe('BookTocManagerTests', function () {
 							'file': path.posix.join(path.posix.sep, 'sectionA', 'notebook2')
 						}
 					],
-					'type': BookTreeItemType.section
+					'type': NotebookTreeviewItemType.section
 				},
 				sectionB: {
 					'contentPath': path.posix.join(sourceBookFolderPath, 'content', 'sectionB', 'readme.md'),
@@ -214,7 +214,7 @@ describe('BookTocManagerTests', function () {
 							'file': path.posix.join(path.posix.sep, 'sectionB', 'notebook4')
 						}
 					],
-					'type': BookTreeItemType.section
+					'type': NotebookTreeviewItemType.section
 				},
 				notebook5: {
 					'contentPath': path.posix.join(sourceBookFolderPath, 'content', 'notebook5.ipynb'),
@@ -222,7 +222,7 @@ describe('BookTocManagerTests', function () {
 						'title': 'Notebook 5',
 						'file': path.posix.join(path.posix.sep, 'notebook5')
 					},
-					'type': BookTreeItemType.Notebook
+					'type': NotebookTreeviewItemType.Notebook
 				},
 				duplicatedNotebook: {
 					'contentPath': path.posix.join(duplicatedNotebookPath, 'notebook5.ipynb'),
@@ -230,7 +230,7 @@ describe('BookTocManagerTests', function () {
 						'title': 'Notebook 5',
 						'file': path.posix.join(path.posix.sep, 'notebook5')
 					},
-					'type': BookTreeItemType.Notebook
+					'type': NotebookTreeviewItemType.Notebook
 				},
 				targetBook: {
 					'rootBookFolderPath': targetBookFolderPath,
@@ -253,7 +253,7 @@ describe('BookTocManagerTests', function () {
 							]
 						}
 					],
-					'type': BookTreeItemType.Book
+					'type': NotebookTreeviewItemType.Book
 				},
 				sectionC: {
 					'contentPath': path.posix.join(targetBookFolderPath, 'content', 'sectionC', 'readme.md'),
@@ -267,7 +267,7 @@ describe('BookTocManagerTests', function () {
 							'file': path.posix.join(path.posix.sep, 'sectionC', 'notebook6')
 						}
 					],
-					'type': BookTreeItemType.section
+					'type': NotebookTreeviewItemType.section
 				}
 			}, {
 				it: 'using the jupyter-book legacy version >= 0.7.0',
@@ -295,7 +295,7 @@ describe('BookTocManagerTests', function () {
 							'file': path.posix.join(path.posix.sep, 'sectionA', 'notebook2')
 						}
 					],
-					'type': BookTreeItemType.section
+					'type': NotebookTreeviewItemType.section
 				},
 				sectionB: {
 					'contentPath': path.posix.join(sourceBookFolderPath, 'sectionB', 'readme.md'),
@@ -314,7 +314,7 @@ describe('BookTocManagerTests', function () {
 							'file': path.posix.join(path.posix.sep, 'sectionB', 'notebook4')
 						}
 					],
-					'type': BookTreeItemType.section
+					'type': NotebookTreeviewItemType.section
 				},
 				notebook5: {
 					'contentPath': path.posix.join(sourceBookFolderPath, 'notebook5.ipynb'),
@@ -322,7 +322,7 @@ describe('BookTocManagerTests', function () {
 						'title': 'Notebook 5',
 						'file': path.posix.join(path.posix.sep, 'notebook5')
 					},
-					'type': BookTreeItemType.Notebook
+					'type': NotebookTreeviewItemType.Notebook
 				},
 				duplicatedNotebook: {
 					'contentPath': path.posix.join(duplicatedNotebookPath, 'notebook5.ipynb'),
@@ -330,7 +330,7 @@ describe('BookTocManagerTests', function () {
 						'title': 'Notebook 5',
 						'file': path.posix.join(path.posix.sep, 'notebook5')
 					},
-					'type': BookTreeItemType.Notebook
+					'type': NotebookTreeviewItemType.Notebook
 				},
 				targetBook: {
 					'rootBookFolderPath': targetBookFolderPath,
@@ -353,7 +353,7 @@ describe('BookTocManagerTests', function () {
 							]
 						}
 					],
-					'type': BookTreeItemType.Book
+					'type': NotebookTreeviewItemType.Book
 				},
 				sectionC: {
 					'contentPath': path.posix.join(targetBookFolderPath, 'sectionC', 'readme.md'),
@@ -367,7 +367,7 @@ describe('BookTocManagerTests', function () {
 							'file': path.posix.join(path.posix.sep, 'sectionC', 'notebook6')
 						}
 					],
-					'type': BookTreeItemType.section
+					'type': NotebookTreeviewItemType.section
 				}
 			}
 		];
@@ -384,7 +384,7 @@ describe('BookTocManagerTests', function () {
 						isUntitled: undefined,
 						title: 'Target Book',
 						treeItemCollapsibleState: undefined,
-						type: BookTreeItemType.Book,
+						type: NotebookTreeviewItemType.Book,
 						version: run.version,
 						page: run.targetBook.toc
 					};
@@ -394,12 +394,12 @@ describe('BookTocManagerTests', function () {
 					const notebookTreeItemFormat = createBookTreeItemFormat(run.notebook5, run.sourceBook.rootBookFolderPath, run.version);
 					const duplicatedNbTreeItemFormat = createBookTreeItemFormat(run.duplicatedNotebook, duplicatedNotebookPath, undefined);
 
-					targetBook = new BookTreeItem(targetBookTreeItemFormat, undefined);
-					sectionC = new BookTreeItem(sectionCTreeItemFormat, undefined);
-					sectionA = new BookTreeItem(sectionATreeItemFormat, undefined);
-					sectionB = new BookTreeItem(sectionBTreeItemFormat, undefined);
-					notebook = new BookTreeItem(notebookTreeItemFormat, undefined);
-					duplicatedNotebook = new BookTreeItem(duplicatedNbTreeItemFormat, undefined);
+					targetBook = new NotebookTreeviewItem(targetBookTreeItemFormat, undefined);
+					sectionC = new NotebookTreeviewItem(sectionCTreeItemFormat, undefined);
+					sectionA = new NotebookTreeviewItem(sectionATreeItemFormat, undefined);
+					sectionB = new NotebookTreeviewItem(sectionBTreeItemFormat, undefined);
+					notebook = new NotebookTreeviewItem(notebookTreeItemFormat, undefined);
+					duplicatedNotebook = new NotebookTreeviewItem(duplicatedNbTreeItemFormat, undefined);
 
 
 					sectionC.uri = path.posix.join('sectionC', 'readme');

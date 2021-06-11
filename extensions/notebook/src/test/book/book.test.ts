@@ -12,7 +12,7 @@ import * as rimraf from 'rimraf';
 import * as os from 'os';
 import * as uuid from 'uuid';
 import { BookTreeViewProvider } from '../../book/bookTreeView';
-import { BookTreeItem, BookTreeItemType } from '../../book/bookTreeItem';
+import { NotebookTreeviewItem, NotebookTreeviewItemType } from '../../book/bookTreeItem';
 import { promisify } from 'util';
 import { MockExtensionContext } from '../common/stubs';
 import { exists } from '../../common/utils';
@@ -33,7 +33,7 @@ export interface IExpectedBookItem {
 	nextUri?: string | undefined;
 }
 
-export function equalBookItems(book: BookTreeItem, expectedBook: IExpectedBookItem, errorMsg?: string): void {
+export function equalBookItems(book: NotebookTreeviewItem, expectedBook: IExpectedBookItem, errorMsg?: string): void {
 	should(book.title).equal(expectedBook.title, `Book titles do not match, expected ${expectedBook?.title} and got ${book?.title}`);
 	if (expectedBook.file) {
 		should(path.posix.parse(book.uri)).deepEqual(path.posix.parse(expectedBook.file));
@@ -164,9 +164,9 @@ describe('BooksTreeViewTests', function () {
 
 		describe('bookTreeViewProvider', function (): void {
 			let bookTreeViewProvider: BookTreeViewProvider;
-			let book: BookTreeItem;
-			let notebook1: BookTreeItem;
-			let notebook2: BookTreeItem;
+			let book: NotebookTreeviewItem;
+			let notebook1: NotebookTreeviewItem;
+			let notebook2: NotebookTreeviewItem;
 
 			this.beforeAll(async () => {
 				bookTreeViewProvider = appContext.bookTreeViewProvider;
@@ -212,7 +212,7 @@ describe('BooksTreeViewTests', function () {
 
 			it('should set notebooks trusted to true on trustBook', async () => {
 				let notebook1Path = notebook1.tooltip;
-				let bookTrustManager: BookTrustManager = new BookTrustManager(bookTreeViewProvider.books);
+				let bookTrustManager: BookTrustManager = new BookTrustManager(bookTreeViewProvider.books as BookModel[]);
 				let isTrusted = bookTrustManager.isNotebookTrustedByDefault(notebook1Path);
 				should(isTrusted).equal(false, 'Notebook should not be trusted by default');
 
@@ -273,8 +273,8 @@ describe('BooksTreeViewTests', function () {
 
 		describe('providedBookTreeViewProvider', function (): void {
 			let providedbookTreeViewProvider: BookTreeViewProvider;
-			let book: BookTreeItem;
-			let notebook1: BookTreeItem;
+			let book: NotebookTreeviewItem;
+			let notebook1: NotebookTreeviewItem;
 
 			this.beforeAll(async () => {
 				providedbookTreeViewProvider = appContext.providedBookTreeViewProvider;
@@ -357,7 +357,7 @@ describe('BooksTreeViewTests', function () {
 		describe('pinnedBookTreeViewProvider', function (): void {
 			let pinnedTreeViewProvider: BookTreeViewProvider;
 			let bookTreeViewProvider: BookTreeViewProvider;
-			let bookItem: BookTreeItem;
+			let bookItem: NotebookTreeviewItem;
 
 			this.beforeAll(async () => {
 				pinnedTreeViewProvider = appContext.pinnedBookTreeViewProvider;
@@ -654,7 +654,7 @@ describe('BooksTreeViewTests', function () {
 				});
 
 				it('should show error if notebook or markdown file is missing', async function (): Promise<void> {
-					let books: BookTreeItem[] = bookTreeViewProvider.currentBook.bookItems;
+					let books: NotebookTreeviewItem[] = bookTreeViewProvider.currentBook.bookItems;
 					let children = await bookTreeViewProvider.currentBook.getSections(books[0]);
 					should(bookTreeViewProvider.currentBook.errorMessage).equal('Missing file : Notebook1 from '.concat(bookTreeViewProvider.currentBook.bookItems[0].title));
 					// rest of book should be detected correctly even with a missing file
@@ -926,22 +926,22 @@ describe('BooksTreeViewTests', function () {
 					await bookTreeViewProvider.loadNotebooksInFolder(rootFolderPath);
 					should(bookTreeViewProvider.books.length).equal(2, 'Should have loaded a book and a notebook');
 
-					validateIsBook(bookTreeViewProvider.books[0]);
-					validateIsNotebook(bookTreeViewProvider.books[1]);
+					validateIsBook(bookTreeViewProvider.books[0] as BookModel);
+					validateIsNotebook(bookTreeViewProvider.books[1] as BookModel);
 				});
 
 				it('should include only books when opening books folder', async () => {
 					await bookTreeViewProvider.loadNotebooksInFolder(run.folderPaths.bookFolderPath);
 					should(bookTreeViewProvider.books.length).equal(1, 'Should have loaded only one book');
 
-					validateIsBook(bookTreeViewProvider.books[0]);
+					validateIsBook(bookTreeViewProvider.books[0] as BookModel);
 				});
 
 				it('should include only notebooks when opening notebooks folder', async () => {
 					await bookTreeViewProvider.loadNotebooksInFolder(run.folderPaths.notebookFolderPath);
 					should(bookTreeViewProvider.books.length).equal(1, 'Should have loaded only one notebook');
 
-					validateIsNotebook(bookTreeViewProvider.books[0]);
+					validateIsNotebook(bookTreeViewProvider.books[0] as BookModel);
 				});
 
 				afterEach(async function (): Promise<void> {
@@ -962,7 +962,7 @@ describe('BooksTreeViewTests', function () {
 					let bookItem = book.bookItems[0];
 
 					let bookDetails = bookItem.book;
-					should(bookDetails.type).equal(BookTreeItemType.Book);
+					should(bookDetails.type).equal(NotebookTreeviewItemType.Book);
 					should(bookDetails.title).equal(run.contents.bookTitle);
 					should(bookDetails.contentPath).equal(run.folderPaths.tableOfContentsFile.replace(/\\/g, '/'));
 					should(bookDetails.root).equal(run.folderPaths.bookFolderPath.replace(/\\/g, '/'));
@@ -978,7 +978,7 @@ describe('BooksTreeViewTests', function () {
 					should(book.getAllNotebooks().get(vscode.Uri.file(run.folderPaths.standaloneNotebookFile).fsPath)).equal(bookItem);
 
 					let bookDetails = bookItem.book;
-					should(bookDetails.type).equal(BookTreeItemType.Notebook);
+					should(bookDetails.type).equal(NotebookTreeviewItemType.Notebook);
 					should(bookDetails.title).equal(run.contents.standaloneNotebookTitle);
 					should(bookDetails.contentPath).equal(run.folderPaths.standaloneNotebookFile.replace(/\\/g, '/'));
 					should(bookDetails.root).equal(run.folderPaths.notebookFolderPath.replace(/\\/g, '/'));

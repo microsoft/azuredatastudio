@@ -18,7 +18,7 @@ import { RemoteBookDialog } from './dialog/remoteBookDialog';
 import { RemoteBookDialogModel } from './dialog/remoteBookDialogModel';
 import { IconPathHelper } from './common/iconHelper';
 import { ExtensionContextHelper } from './common/extensionContextHelper';
-import { BookTreeItem } from './book/bookTreeItem';
+import { NotebookTreeviewItem } from './book/bookTreeItem';
 
 const localize = nls.loadMessageBundle();
 
@@ -42,27 +42,27 @@ export async function activate(extensionContext: vscode.ExtensionContext): Promi
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('bookTreeView.openMarkdown', (resource: string) => bookTreeViewProvider.openMarkdown(resource)));
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('bookTreeView.openExternalLink', (resource: string) => bookTreeViewProvider.openExternalLink(resource)));
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.saveBook', () => providedBookTreeViewProvider.saveJupyterBooks()));
-	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.trustBook', (item: BookTreeItem) => bookTreeViewProvider.trustBook(item)));
-	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.searchBook', (item: BookTreeItem) => bookTreeViewProvider.searchJupyterBooks(item)));
+	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.trustBook', (item: NotebookTreeviewItem) => bookTreeViewProvider.trustBook(item)));
+	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.searchBook', (item: NotebookTreeviewItem) => bookTreeViewProvider.searchJupyterBooks(item)));
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.searchProvidedBook', () => providedBookTreeViewProvider.searchJupyterBooks()));
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.openBook', () => bookTreeViewProvider.openNewBook()));
-	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.closeBook', (book: BookTreeItem) => bookTreeViewProvider.closeBook(book)));
-	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.closeNotebook', (notebook: BookTreeItem) => bookTreeViewProvider.closeBook(notebook)));
-	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.removeNotebook', (book: BookTreeItem) => bookTreeViewProvider.removeNotebook(book)));
-	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.addNotebook', (book: BookTreeItem) => bookTreeViewProvider.createNotebook(book)));
-	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.addMarkdown', (book: BookTreeItem) => bookTreeViewProvider.createMarkdownFile(book)));
+	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.closeBook', (book: NotebookTreeviewItem) => bookTreeViewProvider.closeBook(book)));
+	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.closeNotebook', (notebook: NotebookTreeviewItem) => bookTreeViewProvider.closeBook(notebook)));
+	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.removeNotebook', (book: NotebookTreeviewItem) => bookTreeViewProvider.removeNotebook(book)));
+	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.addNotebook', (book: NotebookTreeviewItem) => bookTreeViewProvider.createNotebook(book)));
+	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.addMarkdown', (book: NotebookTreeviewItem) => bookTreeViewProvider.createMarkdownFile(book)));
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.createBook', () => bookTreeViewProvider.createBook()));
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.openNotebookFolder', (folderPath?: string, urlToOpen?: string, showPreview?: boolean) => bookTreeViewProvider.openNotebookFolder(folderPath, urlToOpen, showPreview)));
-	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.pinNotebook', async (book: BookTreeItem) => {
+	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.pinNotebook', async (book: NotebookTreeviewItem) => {
 		await bookTreeViewProvider.pinNotebook(book);
 		await pinnedBookTreeViewProvider.addNotebookToPinnedView(book);
 	}));
-	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.unpinNotebook', async (book: BookTreeItem) => {
+	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.unpinNotebook', async (book: NotebookTreeviewItem) => {
 		await bookTreeViewProvider.unpinNotebook(book);
 		await pinnedBookTreeViewProvider.removeNotebookFromPinnedView(book);
 	}));
 
-	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.moveTo', async (book: BookTreeItem) => {
+	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.moveTo', async (book: NotebookTreeviewItem) => {
 		await bookTreeViewProvider.editBook(book);
 	}));
 

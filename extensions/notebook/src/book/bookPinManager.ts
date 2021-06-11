@@ -5,12 +5,12 @@
 import * as path from 'path';
 import * as vscode from 'vscode';
 import * as constants from './../common/constants';
-import { BookTreeItem } from './bookTreeItem';
+import { NotebookTreeviewItem } from './bookTreeItem';
 import { getPinnedNotebooks, setPinnedBookPathsInConfig, IPinnedNotebook } from '../common/utils';
 
 export interface IBookPinManager {
-	pinNotebook(notebook: BookTreeItem): Promise<boolean>;
-	unpinNotebook(notebook: BookTreeItem): Promise<boolean>;
+	pinNotebook(notebook: NotebookTreeviewItem): Promise<boolean>;
+	unpinNotebook(notebook: NotebookTreeviewItem): Promise<boolean>;
 }
 
 enum PinBookOperation {
@@ -39,15 +39,15 @@ export class BookPinManager implements IBookPinManager {
 		return false;
 	}
 
-	async pinNotebook(notebook: BookTreeItem): Promise<boolean> {
+	async pinNotebook(notebook: NotebookTreeviewItem): Promise<boolean> {
 		return this.isNotebookPinned(notebook.book.contentPath) ? false : await this.updatePinnedBooks(notebook, PinBookOperation.Pin);
 	}
 
-	async unpinNotebook(notebook: BookTreeItem): Promise<boolean> {
+	async unpinNotebook(notebook: NotebookTreeviewItem): Promise<boolean> {
 		return await this.updatePinnedBooks(notebook, PinBookOperation.Unpin);
 	}
 
-	async updatePinnedBooks(notebook: BookTreeItem, operation: PinBookOperation): Promise<boolean> {
+	async updatePinnedBooks(notebook: NotebookTreeviewItem, operation: PinBookOperation): Promise<boolean> {
 		let modifiedPinnedBooks = false;
 		let bookPathToChange: string = notebook.book.contentPath;
 

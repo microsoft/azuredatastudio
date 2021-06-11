@@ -5,7 +5,7 @@
 
 import * as vscode from 'vscode';
 import * as yaml from 'js-yaml';
-import { BookTreeItem, BookTreeItemType, BookTreeItemFormat } from './bookTreeItem';
+import { NotebookTreeviewItem, NotebookTreeviewItemType, BookTreeItemFormat } from './bookTreeItem';
 import * as constants from '../common/constants';
 import * as path from 'path';
 import * as fileServices from 'fs';
@@ -15,31 +15,28 @@ import { IJupyterBookToc, JupyterBookSection } from '../contracts/content';
 import { convertFrom, getContentPath, BookVersion } from './bookVersionHandler';
 import { debounce, IPinnedNotebook } from '../common/utils';
 import { Deferred } from '../common/promise';
+import { NotebookTreeModel } from './models/notebookTreeItemModel';
 const fsPromises = fileServices.promises;
 const content = 'content';
 
-export class BookModel {
-	private _bookItems: BookTreeItem[] = [];
-	private _allNotebooks = new Map<string, BookTreeItem>();
+export class BookModel extends NotebookTreeModel {
+	private _allNotebooks = new Map<string, NotebookTreeviewItem>();
 	private _tableOfContentsPath: string;
 	private _contentFolderPath: string;
 	private _configPath: string;
 	private _bookVersion: BookVersion;
-	private _errorMessage: string;
 	private _activePromise: Deferred<void> | undefined = undefined;
 	private _queuedPromises: Deferred<void>[] = [];
-	/**
-	 * The root tree item for this model
-	 */
-	private _rootNode: BookTreeItem;
 
 	constructor(
 		public readonly bookPath: string,
 		public readonly openAsUntitled: boolean,
 		public readonly isNotebook: boolean,
-		private _extensionContext: vscode.ExtensionContext,
-		private _onDidChangeTreeData: vscode.EventEmitter<BookTreeItem | undefined>,
-		public readonly pinnedNotebookDetails?: IPinnedNotebook) { }
+		_extensionContext: vscode.ExtensionContext,
+		private _onDidChangeTreeData: vscode.EventEmitter<NotebookTreeviewItem | undefined>,
+		public readonly pinnedNotebookDetails?: IPinnedNotebook) {
+		super(bookPath, openAsUntitled, isNotebook, _extensionContext, pinnedNotebookDetails);
+	}
 
 	public unwatchTOC(): void {
 		fs.unwatchFile(this.tableOfContentsPath);
@@ -70,14 +67,14 @@ export class BookModel {
 			await deferred.promise;
 		}
 		try {
-			this._bookItems = [];
-			this._allNotebooks = new Map<string, BookTreeItem>();
+			this.bookItems = [];
+			this._allNotebooks = new Map<string, NotebookTreeviewItem>();
 			if (this.isNotebook) {
-				this.readNotebook();
+				//this.readNotebook();
 			} else {
 				await this.readBookStructure();
 				await this.loadTableOfContentFiles();
-				await this.readBooks();
+				await this.readBook();
 			}
 		}
 		finally {
@@ -112,11 +109,11 @@ export class BookModel {
 		}
 	}
 
-	public getAllNotebooks(): Map<string, BookTreeItem> {
+	public getAllNotebooks(): Map<string, NotebookTreeviewItem> {
 		return this._allNotebooks;
 	}
 
-	public getNotebook(uri: string): BookTreeItem | undefined {
+	public getNotebook(uri: string): NotebookTreeviewItem | undefined {
 		return this._allNotebooks.get(this.openAsUntitled ? path.basename(uri) : uri);
 	}
 
@@ -129,47 +126,12 @@ export class BookModel {
 			vscode.commands.executeCommand('setContext', 'bookOpened', true);
 			this.watchTOC();
 		} else {
-			this._errorMessage = loc.missingTocError;
+			this.errorMessage = loc.missingTocError;
 			throw new Error(loc.missingTocError);
 		}
 	}
 
-	public readNotebook(): BookTreeItem {
-		if (!this.isNotebook) {
-			return undefined;
-		}
-
-		let pathDetails = path.parse(this.bookPath);
-		let notebookItem = new BookTreeItem({
-			title: this.pinnedNotebookDetails?.title ?? pathDetails.name,
-			contentPath: this.bookPath,
-			root: this.pinnedNotebookDetails?.bookPath ?? pathDetails.dir,
-			tableOfContents: { sections: undefined },
-			page: { sections: undefined },
-			type: BookTreeItemType.Notebook,
-			treeItemCollapsibleState: vscode.TreeItemCollapsibleState.Expanded,
-			isUntitled: this.openAsUntitled,
-		},
-			{
-				light: this._extensionContext.asAbsolutePath('resources/light/notebook.svg'),
-				dark: this._extensionContext.asAbsolutePath('resources/dark/notebook_inverse.svg')
-			}
-		);
-		this._bookItems.push(notebookItem);
-		this._rootNode = notebookItem;
-		if (this.openAsUntitled && !this._allNotebooks.get(pathDetails.base)) {
-			this._allNotebooks.set(pathDetails.base, notebookItem);
-		} else {
-			// convert to URI to avoid causing issue with drive letters when getting navigation links
-			let uriToNotebook: vscode.Uri = vscode.Uri.file(this.bookPath);
-			if (!this._allNotebooks.get(uriToNotebook.fsPath)) {
-				this._allNotebooks.set(uriToNotebook.fsPath, notebookItem);
-			}
-		}
-		return notebookItem;
-	}
-
-	public async readBooks(): Promise<BookTreeItem[]> {
+	public async readBook(): Promise<NotebookTreeviewItem[]> {
 		if (this.isNotebook) {
 			return undefined;
 		}
@@ -186,14 +148,14 @@ export class BookModel {
 				const config = yaml.safeLoad(fileContents.toString());
 				fileContents = await fsPromises.readFile(this._tableOfContentsPath, 'utf-8');
 				let tableOfContents: any = yaml.safeLoad(fileContents.toString());
-				let book: BookTreeItem = new BookTreeItem({
+				let book: NotebookTreeviewItem = new NotebookTreeviewItem({
 					version: this._bookVersion,
 					title: config.title,
 					contentPath: this._tableOfContentsPath,
 					root: this.bookPath,
 					tableOfContents: { sections: this.parseJupyterSections(this._bookVersion, tableOfContents) },
 					page: tableOfContents,
-					type: BookTreeItemType.Book,
+					type: NotebookTreeviewItemType.Book,
 					treeItemCollapsibleState: collapsibleState,
 					isUntitled: this.openAsUntitled,
 				},
@@ -202,44 +164,31 @@ export class BookModel {
 						dark: this._extensionContext.asAbsolutePath('resources/dark/book_inverse.svg')
 					}
 				);
-				this._rootNode = book;
-				this._bookItems.push(book);
+				this.rootNode = book;
+				this.bookItems.push(book);
 			} catch (e) {
-				this._errorMessage = loc.readBookError(this.bookPath, e instanceof Error ? e.message : e);
-				throw new Error(this._errorMessage);
+				this.errorMessage = loc.readBookError(this.bookPath, e instanceof Error ? e.message : e);
+				throw new Error(this.errorMessage);
 			}
 		}
-		return this._bookItems;
+		return this.bookItems;
 	}
 
-	public get bookItems(): BookTreeItem[] {
-		return this._bookItems;
-	}
-
-	public set bookItems(bookItems: BookTreeItem[]) {
-		bookItems.forEach(b => {
-			// only add unique notebooks
-			if (!this._bookItems.includes(b)) {
-				this._bookItems.push(b);
-			}
-		});
-	}
-
-	public async getSections(element: BookTreeItem): Promise<BookTreeItem[]> {
+	public async getSections(element: NotebookTreeviewItem): Promise<NotebookTreeviewItem[]> {
 		let tableOfContents: IJupyterBookToc = element.tableOfContents;
 		let sections: JupyterBookSection[] = element.sections;
 		let root: string = element.root;
 		let book: BookTreeItemFormat = element.book;
-		let treeItems: BookTreeItem[] = [];
+		let treeItems: NotebookTreeviewItem[] = [];
 		for (let i = 0; i < sections.length; i++) {
 			if (sections[i].url) {
-				let externalLink: BookTreeItem = new BookTreeItem({
+				let externalLink: NotebookTreeviewItem = new NotebookTreeviewItem({
 					title: sections[i].title,
 					contentPath: undefined,
 					root: root,
 					tableOfContents: tableOfContents,
 					page: sections[i],
-					type: BookTreeItemType.ExternalLink,
+					type: NotebookTreeviewItemType.ExternalLink,
 					treeItemCollapsibleState: vscode.TreeItemCollapsibleState.Collapsed,
 					isUntitled: this.openAsUntitled,
 					version: book.version,
@@ -259,13 +208,13 @@ export class BookModel {
 				// Note: Currently, if there is an ipynb and a md file with the same name, Jupyter Books only shows the notebook.
 				// Following Jupyter Books behavior for now
 				if (await fs.pathExists(pathToNotebook)) {
-					let notebook = new BookTreeItem({
+					let notebook = new NotebookTreeviewItem({
 						title: sections[i].title ? sections[i].title : sections[i].file,
 						contentPath: pathToNotebook,
 						root: root,
 						tableOfContents: tableOfContents,
 						page: sections[i],
-						type: BookTreeItemType.Notebook,
+						type: NotebookTreeviewItemType.Notebook,
 						treeItemCollapsibleState: vscode.TreeItemCollapsibleState.Collapsed,
 						isUntitled: this.openAsUntitled,
 						version: book.version,
@@ -291,13 +240,13 @@ export class BookModel {
 						treeItems.push(notebook);
 					}
 				} else if (await fs.pathExists(pathToMarkdown)) {
-					let markdown: BookTreeItem = new BookTreeItem({
+					let markdown: NotebookTreeviewItem = new NotebookTreeviewItem({
 						title: sections[i].title ? sections[i].title : sections[i].file,
 						contentPath: pathToMarkdown,
 						root: root,
 						tableOfContents: tableOfContents,
 						page: sections[i],
-						type: BookTreeItemType.Markdown,
+						type: NotebookTreeviewItemType.Markdown,
 						treeItemCollapsibleState: vscode.TreeItemCollapsibleState.Collapsed,
 						isUntitled: this.openAsUntitled,
 						version: book.version,
@@ -321,8 +270,8 @@ export class BookModel {
 					}
 					treeItems.push(markdown);
 				} else {
-					this._errorMessage = loc.missingFileError(sections[i].title, book.title);
-					vscode.window.showErrorMessage(this._errorMessage);
+					this.errorMessage = loc.missingFileError(sections[i].title, book.title);
+					vscode.window.showErrorMessage(this.errorMessage);
 				}
 			}
 		}
@@ -340,11 +289,11 @@ export class BookModel {
 			return section.reduce((acc, val) => Array.isArray(val.sections) ?
 				acc.concat(convertFrom(version, val)).concat(this.parseJupyterSections(version, val.sections)) : acc.concat(convertFrom(version, val)), []);
 		} catch (e) {
-			this._errorMessage = loc.invalidTocFileError();
+			this.errorMessage = loc.invalidTocFileError();
 			if (section.length > 0) {
-				this._errorMessage = loc.invalidTocError(section[0].title);
+				this.errorMessage = loc.invalidTocError(section[0].title);
 			}
-			throw new Error(this._errorMessage);
+			throw new Error(this.errorMessage);
 		}
 	}
 
@@ -360,14 +309,7 @@ export class BookModel {
 		return this._configPath;
 	}
 
-	public get errorMessage(): string {
-		return this._errorMessage;
-	}
-
 	public get version(): BookVersion {
 		return this._bookVersion;
-	}
-	public get rootNode(): BookTreeItem {
-		return this._rootNode;
 	}
 }

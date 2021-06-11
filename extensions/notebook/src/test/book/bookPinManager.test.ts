@@ -8,7 +8,7 @@ import * as path from 'path';
 import * as TypeMoq from 'typemoq';
 import * as constants from '../../common/constants';
 import { IBookPinManager, BookPinManager } from '../../book/bookPinManager';
-import { BookTreeItem, BookTreeItemFormat, BookTreeItemType } from '../../book/bookTreeItem';
+import { NotebookTreeviewItem, BookTreeItemFormat, NotebookTreeviewItemType } from '../../book/bookTreeItem';
 import * as vscode from 'vscode';
 import { BookModel } from '../../book/bookModel';
 import * as sinon from 'sinon';
@@ -70,7 +70,7 @@ describe('BookPinManagerTests', function () {
 				page: undefined,
 				title: undefined,
 				treeItemCollapsibleState: undefined,
-				type: BookTreeItemType.Book
+				type: NotebookTreeviewItemType.Book
 			};
 
 			let bookTreeItemFormat2: BookTreeItemFormat = {
@@ -87,7 +87,7 @@ describe('BookPinManagerTests', function () {
 				page: undefined,
 				title: undefined,
 				treeItemCollapsibleState: undefined,
-				type: BookTreeItemType.Book
+				type: NotebookTreeviewItemType.Book
 			};
 
 			let bookTreeItemFormat3: BookTreeItemFormat = {
@@ -104,19 +104,19 @@ describe('BookPinManagerTests', function () {
 				page: undefined,
 				title: undefined,
 				treeItemCollapsibleState: undefined,
-				type: BookTreeItemType.Book
+				type: NotebookTreeviewItemType.Book
 			};
 
 			let bookModel1Mock: TypeMoq.IMock<BookModel> = TypeMoq.Mock.ofType<BookModel>();
-			bookModel1Mock.setup(model => model.bookItems).returns(() => [new BookTreeItem(bookTreeItemFormat1, undefined), new BookTreeItem(bookTreeItemFormat2, undefined)]);
-			bookModel1Mock.setup(model => model.getNotebook(TypeMoq.It.isValue(path.join(path.sep, 'temp', 'SubFolder', 'content', 'sample', 'notebook.ipynb')))).returns((uri: string) => TypeMoq.Mock.ofType<BookTreeItem>().object);
-			bookModel1Mock.setup(model => model.getNotebook(TypeMoq.It.isValue(path.join(path.sep, 'temp', 'SubFolder', 'content', 'sample', 'notebook2.ipynb')))).returns((uri: string) => TypeMoq.Mock.ofType<BookTreeItem>().object);
-			bookModel1Mock.setup(model => model.getNotebook(TypeMoq.It.isValue(path.join(path.sep, 'temp', 'SubFolder2', 'content', 'sample', 'notebook.ipynb')))).returns((uri: string) => TypeMoq.Mock.ofType<BookTreeItem>().object);
+			bookModel1Mock.setup(model => model.bookItems).returns(() => [new NotebookTreeviewItem(bookTreeItemFormat1, undefined), new NotebookTreeviewItem(bookTreeItemFormat2, undefined)]);
+			bookModel1Mock.setup(model => model.getNotebook(TypeMoq.It.isValue(path.join(path.sep, 'temp', 'SubFolder', 'content', 'sample', 'notebook.ipynb')))).returns((uri: string) => TypeMoq.Mock.ofType<NotebookTreeviewItem>().object);
+			bookModel1Mock.setup(model => model.getNotebook(TypeMoq.It.isValue(path.join(path.sep, 'temp', 'SubFolder', 'content', 'sample', 'notebook2.ipynb')))).returns((uri: string) => TypeMoq.Mock.ofType<NotebookTreeviewItem>().object);
+			bookModel1Mock.setup(model => model.getNotebook(TypeMoq.It.isValue(path.join(path.sep, 'temp', 'SubFolder2', 'content', 'sample', 'notebook.ipynb')))).returns((uri: string) => TypeMoq.Mock.ofType<NotebookTreeviewItem>().object);
 			bookModel1Mock.setup(model => model.getNotebook(TypeMoq.It.isAnyString())).returns((uri: string) => undefined);
 
 			let bookModel2Mock: TypeMoq.IMock<BookModel> = TypeMoq.Mock.ofType<BookModel>();
-			bookModel2Mock.setup(model => model.bookItems).returns(() => [new BookTreeItem(bookTreeItemFormat3, undefined)]);
-			bookModel2Mock.setup(model => model.getNotebook(TypeMoq.It.isValue(path.join(path.sep, 'temp2', 'SubFolder', 'content', 'sample', 'notebook.ipynb')))).returns((uri: string) => TypeMoq.Mock.ofType<BookTreeItem>().object);
+			bookModel2Mock.setup(model => model.bookItems).returns(() => [new NotebookTreeviewItem(bookTreeItemFormat3, undefined)]);
+			bookModel2Mock.setup(model => model.getNotebook(TypeMoq.It.isValue(path.join(path.sep, 'temp2', 'SubFolder', 'content', 'sample', 'notebook.ipynb')))).returns((uri: string) => TypeMoq.Mock.ofType<NotebookTreeviewItem>().object);
 			bookModel2Mock.setup(model => model.getNotebook(TypeMoq.It.isAnyString())).returns((uri: string) => undefined);
 
 			books = [bookModel1Mock.object, bookModel2Mock.object];

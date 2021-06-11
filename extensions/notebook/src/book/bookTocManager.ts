@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import * as path from 'path';
-import { BookTreeItem } from './bookTreeItem';
+import { NotebookTreeviewItem } from './bookTreeItem';
 import * as yaml from 'js-yaml';
 import * as fs from 'fs-extra';
 import { JupyterBookSection } from '../contracts/content';
@@ -15,16 +15,16 @@ import { TocEntryPathHandler } from './tocEntryPathHandler';
 import { FileExtension } from '../common/utils';
 
 export interface IBookTocManager {
-	updateBook(element: BookTreeItem, book: BookTreeItem, targetSection?: JupyterBookSection): Promise<void>;
-	removeNotebook(element: BookTreeItem): Promise<void>;
+	updateBook(element: NotebookTreeviewItem, book: NotebookTreeviewItem, targetSection?: JupyterBookSection): Promise<void>;
+	removeNotebook(element: NotebookTreeviewItem): Promise<void>;
 	createBook(bookContentPath: string, contentFolder: string): Promise<void>;
-	addNewFile(pathDetails: TocEntryPathHandler, bookItem: BookTreeItem): Promise<void>;
+	addNewFile(pathDetails: TocEntryPathHandler, bookItem: NotebookTreeviewItem): Promise<void>;
 	recovery(): Promise<void>;
 }
 
 export interface quickPickResults {
 	quickPickSection?: vscode.QuickPickItem,
-	book?: BookTreeItem
+	book?: NotebookTreeviewItem
 }
 
 const allowedFileExtensions: string[] = [FileExtension.Markdown, FileExtension.Notebook];
@@ -316,7 +316,7 @@ export class BookTocManager implements IBookTocManager {
 	 * @param section The section that's been moved.
 	 * @param book The target book.
 	*/
-	async moveSectionFiles(section: BookTreeItem, bookItem: BookTreeItem): Promise<void> {
+	async moveSectionFiles(section: NotebookTreeviewItem, bookItem: NotebookTreeviewItem): Promise<void> {
 		const uri = path.posix.join(path.posix.sep, path.relative(section.rootContentPath, section.book.contentPath));
 		let moveFile = path.join(path.parse(uri).dir, path.parse(uri).name);
 		let fileName = undefined;
@@ -361,7 +361,7 @@ export class BookTocManager implements IBookTocManager {
 	 * @param element Notebook, Markdown File, or book's notebook that will be added to the book.
 	 * @param targetBook Book that will be modified.
 	*/
-	async moveFile(file: BookTreeItem, book: BookTreeItem): Promise<void> {
+	async moveFile(file: NotebookTreeviewItem, book: NotebookTreeviewItem): Promise<void> {
 		const rootPath = book.rootContentPath;
 		const filePath = path.parse(file.book.contentPath);
 		let fileName = undefined;
@@ -397,7 +397,7 @@ export class BookTocManager implements IBookTocManager {
 	 * @param targetBook Book that will be modified.
 	 * @param targetSection Book section that'll be modified.
 	*/
-	public async updateBook(element: BookTreeItem, targetItem: BookTreeItem, targetSection?: JupyterBookSection): Promise<void> {
+	public async updateBook(element: NotebookTreeviewItem, targetItem: NotebookTreeviewItem, targetSection?: JupyterBookSection): Promise<void> {
 		try {
 			if (element.contextValue === 'section') {
 				// modify the sourceBook toc and remove the section
@@ -436,7 +436,7 @@ export class BookTocManager implements IBookTocManager {
 		}
 	}
 
-	public async addNewFile(pathDetails: TocEntryPathHandler, bookItem: BookTreeItem): Promise<void> {
+	public async addNewFile(pathDetails: TocEntryPathHandler, bookItem: NotebookTreeviewItem): Promise<void> {
 		let findSection: JupyterBookSection | undefined = undefined;
 		await fs.writeFile(pathDetails.filePath, '');
 		if (bookItem.contextValue === 'section') {
@@ -463,7 +463,7 @@ export class BookTocManager implements IBookTocManager {
 		}
 	}
 
-	public async removeNotebook(element: BookTreeItem): Promise<void> {
+	public async removeNotebook(element: NotebookTreeviewItem): Promise<void> {
 		const findSection = { file: element.book.page.file, title: element.book.page.title };
 		await this.updateTOC(element.book.version, element.tableOfContentsPath, findSection, undefined);
 		await this._sourceBook.reinitializeContents();
