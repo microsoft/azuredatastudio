@@ -31,5 +31,36 @@
 	"ban-worker-calls": [
 		"vs/base/worker/defaultWorkerFactory.ts",
 		"vs/workbench/services/extensions/browser/webWorkerExtensionHost.ts"
+	],
+	"ban-element-innerhtml-assignments": [
+		"sql/workbench/browser/modal/modal.ts",
+		"sql/base/browser/ui/panel/panel.ts",
+		"sql/base/browser/ui/selectBox/selectBox.ts",
+		"sql/base/browser/ui/panel/panel.component.ts",
+		"sql/workbench/services/dialog/browser/dialogModal.ts",
+		"sql/workbench/services/dialog/browser/wizardModal.ts",
+		"sql/base/browser/ui/taskbar/taskbar.ts",
+		"sql/workbench/contrib/notebook/browser/outputs/notebookMarkdown.ts",
+		"sql/workbench/contrib/notebook/browser/cellViews/textCell.component.ts",
+		"sql/workbench/contrib/notebook/browser/notebookViews/notebookViews.component.ts",
+		"sql/workbench/contrib/query/browser/messagePanel.ts",
+		"sql/base/browser/ui/table/table.ts",
+		"sql/base/browser/ui/table/highPerf/tableWidget.ts",
+		"sql/workbench/contrib/query/browser/queryResultsEditor.ts",
+		"sql/workbench/services/objectExplorer/browser/iconRenderer.ts",
+		"sql/workbench/services/resourceProvider/browser/firewallRuleDialog.ts",
+		"sql/workbench/contrib/welcome/page/browser/welcomePage.ts",
+		"sql/workbench/contrib/editData/browser/editDataResultsEditor.ts",
+		"sql/workbench/contrib/jobManagement/browser/jobHistoryTree.ts",
+		"sql/workbench/contrib/notebook/browser/outputs/mimeRenderer.component.ts",
+		"sql/workbench/contrib/notebook/browser/outputs/markdownOutput.component.ts",
+		"sql/workbench/contrib/notebook/browser/outputs/renderers.ts",
+		"vs/base/parts/tree/browser/treeDefaults.ts"
+	],
+	"ban-script-content-assignments": [
+		"sql/workbench/contrib/notebook/browser/outputs/renderers.ts"
+	],
+	"ban-domparser-parsefromstring": [
+		"sql/workbench/contrib/queryPlan/browser/planXmlParser.ts"
 	]
 }
