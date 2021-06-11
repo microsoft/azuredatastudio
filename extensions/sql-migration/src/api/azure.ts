@@ -173,7 +173,7 @@ export async function createSqlMigrationService(account: azdata.Account, subscri
 		}
 		await new Promise(resolve => setTimeout(resolve, 3000)); //adding  3 sec delay before getting creation status
 	}
-	if (i === 6) {
+	if (i === maxRetry) {
 		throw new Error(constants.DMS_PROVISIONING_FAILED);
 	}
 	return response.response.data;

@@ -131,7 +131,7 @@ export function convertByteSizeToReadableUnit(size: number): string {
 		}
 		size = higherUnit;
 	}
-	return '';
+	return size.toString();
 }
 
 export function convertIsoTimeToLocalTime(isoTime: string): Date {
