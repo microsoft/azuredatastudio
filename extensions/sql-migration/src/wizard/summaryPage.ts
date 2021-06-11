@@ -61,10 +61,13 @@ export class SummaryPage extends MigrationWizardPage {
 				createInformationRow(this._view, constants.LOCATION, this.migrationStateModel._sqlMigrationService.location),
 				createInformationRow(this._view, constants.SUBSCRIPTION, this.migrationStateModel._sqlMigrationService.properties.resourceGroup),
 				createInformationRow(this._view, constants.IR_PAGE_TITLE, this.migrationStateModel._targetSubscription.name),
-				createInformationRow(this._view, constants.SUBSCRIPTION, this.migrationStateModel._sqlMigrationService.name),
-				createInformationRow(this._view, constants.SHIR, this.migrationStateModel._nodeNames[0]),
+				createInformationRow(this._view, constants.SUBSCRIPTION, this.migrationStateModel._sqlMigrationService.name)
 			]
 		);
+
+		if (this.migrationStateModel._databaseBackup.networkContainerType === NetworkContainerType.BLOB_CONTAINER) {
+			this._flexContainer.addItem(createInformationRow(this._view, constants.SHIR, this.migrationStateModel._nodeNames[0]));
+		}
 	}
 
 	public async onPageLeave(): Promise<void> {

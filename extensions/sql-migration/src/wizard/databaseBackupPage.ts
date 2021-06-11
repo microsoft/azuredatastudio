@@ -750,7 +750,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 						fireOnTextChange: true,
 					}).component();
 				blobContainerDropdown.onValueChanged(value => {
-					const selectedIndex = findDropDownItemIndex(blobContainerStorageAccountDropdown, value);
+					const selectedIndex = findDropDownItemIndex(blobContainerDropdown, value);
 					if (selectedIndex > -1 && value !== constants.NO_BLOBCONTAINERS_FOUND) {
 						this.migrationStateModel._databaseBackup.blobs[index].blobContainer = this.migrationStateModel.getBlobContainer(selectedIndex);
 					}
