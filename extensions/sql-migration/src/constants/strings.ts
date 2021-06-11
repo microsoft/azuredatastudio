@@ -183,7 +183,7 @@ export const SERVICE_CONTAINER_DESCRIPTION2 = localize('sql.migration.service.co
 export const SERVICE_STEP1 = localize('sql.migration.ir.setup.step1', "Step 1: {0}");
 export const SERVICE_STEP1_LINK = localize('sql.migration.option', "Download and install integration runtime");
 export const SERVICE_STEP2 = localize('sql.migration.ir.setup.step2', "Step 2: Use this key to register your integration runtime");
-export const SERVICE_STEP3 = localize('sql.migration.ir.setup.step3', "Step 3: Check connection between Azure Database Migration Service and Integration Runtime");
+export const SERVICE_STEP3 = localize('sql.migration.ir.setup.step3', "Step 3: Click on 'Test connection' button to check the connection between Azure Database Migration Service and Integration Runtime");
 export const SERVICE_CONNECTION_STATUS = localize('sql.migration.connection.status', "Connection Status");
 export const SERVICE_KEY1_LABEL = localize('sql.migration.key1.label', "Key 1");
 export const SERVICE_KEY2_LABEL = localize('sql.migration.key2.label', "Key 2");
@@ -207,7 +207,9 @@ export const MANAGED_INSTANCE = localize('sql.migration.managed.instance', "Azur
 export const NO_MANAGED_INSTANCE_FOUND = localize('sql.migration.no.managedInstance.found', "No managed instance found");
 export const NO_VIRTUAL_MACHINE_FOUND = localize('sql.migration.no.virtualMachine.found', "No virtual machine found");
 export const TARGET_SELECTION_PAGE_TITLE = localize('sql.migration.target.page.title', "Choose the target Azure SQL");
-
+export const TEST_CONNECTION = localize('sql.migration.test.connection', "Test connection");
+export const DATA_MIGRATION_SERVICE_CREATED_SUCCESSFULLY = localize('sql.migration.database.migration.service.created.successfully', "Database migration service has been created successfully");
+export const DMS_PROVISIONING_FAILED = localize('sql.migration.dms.provision.failed', "Database migration service has failed to provision. Please try again after some time.");
 // common strings
 export const LEARN_MORE = localize('sql.migration.learn.more', "Learn more");
 export const SUBSCRIPTION = localize('sql.migration.subscription', "Subscription");

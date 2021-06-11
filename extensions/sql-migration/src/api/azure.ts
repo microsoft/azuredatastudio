@@ -7,6 +7,7 @@ import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import * as azurecore from 'azurecore';
 import { azureResource } from 'azureResource';
+import * as constants from '../constants/strings';
 
 async function getAzureCoreAPI(): Promise<azurecore.IExtension> {
 	const api = (await vscode.extensions.getExtension(azurecore.extension.name)?.activate()) as azurecore.IExtension;
@@ -158,6 +159,22 @@ export async function createSqlMigrationService(account: azdata.Account, subscri
 	const response = await api.makeAzureRestRequest(account, subscription, path, azurecore.HttpRequestMethod.PUT, requestBody, true);
 	if (response.errors.length > 0) {
 		throw new Error(response.errors.toString());
+	}
+	const asyncUrl = response.response.headers['azure-asyncoperation'];
+	const maxRetry = 5;
+	let i = 0;
+	for (i = 0; i < maxRetry; i++) {
+		const asyncResponse = await api.makeAzureRestRequest(account, subscription, asyncUrl.replace('https://management.azure.com/', ''), azurecore.HttpRequestMethod.GET, undefined, true);
+		const creationStatus = asyncResponse.response.data.status;
+		if (creationStatus === 'Succeeded') {
+			break;
+		} else if (creationStatus === 'Failed') {
+			throw new Error(asyncResponse.errors.toString());
+		}
+		await new Promise(resolve => setTimeout(resolve, 3000)); //adding  3 sec delay before getting creation status
+	}
+	if (i === 6) {
+		throw new Error(constants.DMS_PROVISIONING_FAILED);
 	}
 	return response.response.data;
 }

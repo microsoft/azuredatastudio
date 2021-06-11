@@ -674,6 +674,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				}).component();
 				targetDatabaseInput.onTextChanged((value) => {
 					this.migrationStateModel._targetDatabaseNames[index] = value.trim();
+					this.validateFields();
 				});
 				this._networkShareTargetDatabaseNames.push(targetDatabaseInput);
 
@@ -810,22 +811,23 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 						}
 					});
 
-					const duplicates: Map<string, number[]> = new Map();
-					for (let i = 0; i < this.migrationStateModel._targetDatabaseNames.length; i++) {
-						const blobContainerId = this.migrationStateModel._databaseBackup.blobs[i].blobContainer.id;
-						if (duplicates.has(blobContainerId)) {
-							duplicates.get(blobContainerId)?.push(i);
-						} else {
-							duplicates.set(blobContainerId, [i]);
+					if (errors.length > 0) {
+						const duplicates: Map<string, number[]> = new Map();
+						for (let i = 0; i < this.migrationStateModel._targetDatabaseNames.length; i++) {
+							const blobContainerId = this.migrationStateModel._databaseBackup.blobs[i].blobContainer?.id;
+							if (duplicates.has(blobContainerId)) {
+								duplicates.get(blobContainerId)?.push(i);
+							} else {
+								duplicates.set(blobContainerId, [i]);
+							}
 						}
+						duplicates.forEach((d) => {
+							if (d.length > 1) {
+								const dupString = `${d.map(index => this.migrationStateModel._migrationDbs[index]).join(', ')}`;
+								errors.push(constants.PROVIDE_UNIQUE_CONTAINERS + dupString);
+							}
+						});
 					}
-
-					duplicates.forEach((d) => {
-						if (d.length > 1) {
-							const dupString = `${d.map(index => this.migrationStateModel._migrationDbs[index]).join(', ')}`;
-							errors.push(constants.PROVIDE_UNIQUE_CONTAINERS + dupString);
-						}
-					});
 
 					break;
 			}
