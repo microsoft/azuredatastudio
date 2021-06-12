@@ -152,12 +152,12 @@ gulp.task('package-rebuild-extensions', task.series(
 gulp.task('external-extension-translations-import', function () {
 	return new Promise(function(resolve) {
 		[...i18n.defaultLanguages, ...i18n.extraLanguages].forEach(language => {
-			[...ext.externalExtensions].forEach(extensionName => {
-				console.log('extensionName is ' + extensionName);
-				gulp.src(`i18n/${language.folderName}/extensions/${extensionName}/**/*.json`)
-					.pipe(vfs.dest(`./extensions/${extensionName}/i18n/${language.folderName}`));
+	//		[...ext.externalExtensions].forEach(extensionName => {
+				//console.log('source string is ' + `i18n/${language.folderName}/extensions/${extensionName}/**/*.i18n.json`);
+				gulp.src(`i18n/${language.folderName}/extensions/agent/**/*.json`)
+					.pipe(vfs.dest(`./extensions/agent/i18n/${language.folderName}`));
 				resolve();
-			});
+	//		});
 		});
 	});
 });
