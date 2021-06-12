@@ -10,10 +10,12 @@ const es = require('event-stream');
 const filter = require('gulp-filter');
 const path = require('path');
 const ext = require('./lib/extensions');
+const i18n = require('./lib/i18n');
 const loc = require('./lib/locFunc');
 const task = require('./lib/task');
 const glob = require('glob');
 const vsce = require('vsce');
+const vfs = require('vinyl-fs');
 const mkdirp = require('mkdirp');
 
 gulp.task('fmt', () => formatStagedFiles());
@@ -145,3 +147,18 @@ gulp.task('package-rebuild-extensions', task.series(
 	task.define('clean-rebuild-extensions', () => ext.cleanRebuildExtensions('.build/extensions')),
 	task.define('rebuild-extensions-build', () => ext.packageRebuildExtensionsStream().pipe(gulp.dest('.build'))),
 ));
+
+
+gulp.task('external-extension-translations-import', function () {
+	return new Promise(function(resolve) {
+		[...i18n.defaultLanguages, ...i18n.extraLanguages].forEach(language => {
+			[...ext.externalExtensions].forEach(extensionName => {
+				console.log('extensionName is ' + extensionName);
+				gulp.src(`i18n/${language.folderName}/extensions/${extensionName}/**/*.json`)
+					.pipe(vfs.dest(`./extensions/${extensionName}/i18n/${language.folderName}`));
+				resolve();
+			});
+		});
+	});
+});
+
