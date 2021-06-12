@@ -458,14 +458,21 @@ export function AUTO_REFRESH_BUTTON_TEXT(interval: SupportedAutoRefreshIntervals
 		case -1:
 			return localize('sql.migration.auto.refresh.off', 'Auto Refresh: Off');
 		case 15000:
-			return localize('sql.migration.auto.refresh.15.seconds', 'Auto Refresh: 15 secs');
+			return localize('sql.migration.auto.refresh.15.seconds', 'Auto refresh: 15 seconds');
 		case 30000:
-			return localize('sql.migration.auto.refresh.30.seconds', 'Auto Refresh: 30 secs');
+			return localize('sql.migration.auto.refresh.30.seconds', 'Auto refresh: 30 seconds');
 		case 60000:
-			return localize('sql.migration.auto.refresh.1.min', 'Auto Refresh: 1 min');
+			return localize('sql.migration.auto.refresh.1.min', 'Auto refresh: 1 minute');
 		case 180000:
-			return localize('sql.migration.auto.refresh.3.min', 'Auto Refresh: 3 mins');
+			return localize('sql.migration.auto.refresh.3.min', 'Auto refresh: 3 minutes');
 		case 300000:
-			return localize('sql.migration.auto.refresh.5.min', 'Auto Refresh: 5 mins');
+			return localize('sql.migration.auto.refresh.5.min', 'Auto refresh: 5 minutes');
 	}
 }
+
+export const SELECT_THE_REFRESH_INTERVAL = localize('sql.migration.select.the.refresh.interval', "Select the refresh interval");
+export const OFF = localize('sql.migration.off', "Off");
+export const EVERY_30_SECOND = localize('sql.migration.every.30.second', "Every 30 seconds");
+export const EVERY_1_MINUTE = localize('sql.migration.every.1.minute', "Every 1 minute");
+export const EVERY_3_MINUTES = localize('sql.migration.every.3.minutes', "Every 3 minutes");
+export const EVERY_5_MINUTES = localize('sql.migration.every.5.minutes', "Every 5 minutes");

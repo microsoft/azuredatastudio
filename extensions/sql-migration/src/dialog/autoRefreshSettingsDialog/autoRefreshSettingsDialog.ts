@@ -33,7 +33,7 @@ export class AutoRefreshSettingsDialog {
 		await tab.registerContent(async (view: azdata.ModelView) => {
 			this._view = view;
 			const selectRefreshLabel = view.modelBuilder.text().withProps({
-				value: 'Select the refresh interval',
+				value: loc.SELECT_THE_REFRESH_INTERVAL,
 				CSSStyles: {
 					'font-size': '13px',
 					'font-weight': 'bold',
@@ -43,7 +43,7 @@ export class AutoRefreshSettingsDialog {
 			const buttonGroup = 'refreshButtonGroup';
 
 			const option0 = view.modelBuilder.radioButton().withProps({
-				label: 'Off',
+				label: loc.OFF,
 				name: buttonGroup,
 				checked: this._selectedInterval === -1
 			}).component();
@@ -52,7 +52,7 @@ export class AutoRefreshSettingsDialog {
 			});
 
 			const option1 = view.modelBuilder.radioButton().withProps({
-				label: 'Every 30 seconds',
+				label: loc.EVERY_30_SECOND,
 				name: buttonGroup,
 				checked: this._selectedInterval === 30000
 			}).component();
@@ -60,7 +60,7 @@ export class AutoRefreshSettingsDialog {
 				this._selectionEvent.emit('done', 30000);
 			});
 			const option2 = view.modelBuilder.radioButton().withProps({
-				label: 'Every 1 minute',
+				label: loc.EVERY_1_MINUTE,
 				name: buttonGroup,
 				checked: this._selectedInterval === 60000
 			}).component();
@@ -68,7 +68,7 @@ export class AutoRefreshSettingsDialog {
 				this._selectionEvent.emit('done', 60000);
 			});
 			const option3 = view.modelBuilder.radioButton().withProps({
-				label: 'Every 3 minutes',
+				label: loc.EVERY_3_MINUTES,
 				name: buttonGroup,
 				checked: this._selectedInterval === 180000
 			}).component();
@@ -76,7 +76,7 @@ export class AutoRefreshSettingsDialog {
 				this._selectionEvent.emit('done', 180000);
 			});
 			const option4 = view.modelBuilder.radioButton().withProps({
-				label: 'Every 5 minutes',
+				label: loc.EVERY_5_MINUTES,
 				name: buttonGroup,
 				checked: this._selectedInterval === 300000
 			}).component();
