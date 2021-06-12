@@ -6,7 +6,8 @@ node_modules/
 .build/
 extensions/**/dist/
 /out*/
-/extensions/*/out/
+extensions/**/out/
+!extensions/*/i18n/**/out/
 src/vs/server
 resources/server
 build/node_modules
