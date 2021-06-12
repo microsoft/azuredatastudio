@@ -21,6 +21,6 @@ export class AzureMonitorProvider implements azureResource.IAzureResourceProvide
 	}
 
 	public get providerId(): string {
-		return 'azure.resource.providers.alertsManagement';
+		return 'azure.resource.providers.azureMonitor';
 	}
 }
