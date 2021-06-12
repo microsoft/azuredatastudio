@@ -470,7 +470,7 @@ export class CreateSqlMigrationServiceDialog {
 		const location = this._model._targetServerInstance.location;
 
 		const maxRetries = 5;
-		let migrationServiceStatus: SqlMigrationService;
+		let migrationServiceStatus!: SqlMigrationService;
 		for (let i = 0; i < maxRetries; i++) {
 			try {
 				migrationServiceStatus = await getSqlMigrationService(this._model._azureAccount, subscription, resourceGroup, location, this._createdMigrationService.name);
@@ -484,7 +484,7 @@ export class CreateSqlMigrationServiceDialog {
 		this.irNodes = migrationServiceMonitoringStatus.nodes.map((node) => {
 			return node.nodeName;
 		});
-		if (migrationServiceStatus!) {
+		if (migrationServiceStatus) {
 			const state = migrationServiceStatus.properties.integrationRuntimeState;
 
 			if (state === 'Online') {
