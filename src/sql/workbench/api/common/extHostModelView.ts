@@ -1602,6 +1602,16 @@ class DeclarativeTableWrapper extends ComponentWrapper implements azdata.Declara
 		this._proxy.$doAction(this._handle, this._id, ModelViewAction.Filter, rowIndexes);
 	}
 
+	public get selectedRow(): number {
+		return this.properties['selectedRow'] ?? -1;
+	}
+
+	public set selectedRow(v: number) {
+		this.setProperty('selectedRow', v);
+		const emitter = this._emitterMap.get(ComponentEventType.onDidClick);
+		emitter?.fire({ row: v });
+	}
+
 	public toComponentShape(): IComponentShape {
 		// Overridden to ensure we send the correct properties mapping.
 		return <IComponentShape>{

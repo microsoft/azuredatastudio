@@ -38,7 +38,6 @@ export default class DeclarativeTableComponent extends ContainerBase<any, azdata
 	private _data: azdata.DeclarativeTableCellValue[][] = [];
 	private _filteredRowIndexes: number[] | undefined = undefined;
 	private columns: azdata.DeclarativeTableColumn[] = [];
-	private _selectedRow: number;
 	private _colorTheme: IColorTheme;
 	private _hasFocus: boolean;
 
@@ -258,49 +257,51 @@ export default class DeclarativeTableComponent extends ContainerBase<any, azdata
 
 	private static ACCEPTABLE_VALUES = new Set<string>(['number', 'string', 'boolean']);
 	public setProperties(properties: azdata.DeclarativeTableProperties): void {
-		const basicData: any[][] = properties.data ?? [];
-		const complexData: azdata.DeclarativeTableCellValue[][] = properties.dataValues ?? [];
-		let finalData: azdata.DeclarativeTableCellValue[][];
+		if ('data' in properties || 'dataValues' in properties) {
+			const basicData: any[][] = properties.data ?? [];
+			const complexData: azdata.DeclarativeTableCellValue[][] = properties.dataValues ?? [];
+			let finalData: azdata.DeclarativeTableCellValue[][];
 
-		finalData = basicData.map(row => {
-			return row.map((value): azdata.DeclarativeTableCellValue => {
-				if (DeclarativeTableComponent.ACCEPTABLE_VALUES.has(typeof (value))) {
-					return {
-						value: value
-					};
-				} else {
-					return {
-						value: JSON.stringify(value)
-					};
-				}
+			finalData = basicData.map(row => {
+				return row.map((value): azdata.DeclarativeTableCellValue => {
+					if (DeclarativeTableComponent.ACCEPTABLE_VALUES.has(typeof (value))) {
+						return {
+							value: value
+						};
+					} else {
+						return {
+							value: JSON.stringify(value)
+						};
+					}
+				});
 			});
-		});
 
-		if (finalData.length <= 0) {
-			finalData = complexData;
-		}
+			if (finalData.length <= 0) {
+				finalData = complexData;
+			}
 
-		this.columns = properties.columns ?? [];
+			this.columns = properties.columns ?? [];
 
-		// check whether the data property is changed before actually setting the properties.
-		const isDataPropertyChanged = !arrayEquals(this.data, finalData ?? [], (a, b) => {
-			return arrayEquals(a, b);
-		});
+			// check whether the data property is changed before actually setting the properties.
+			const isDataPropertyChanged = !arrayEquals(this.data, finalData ?? [], (a, b) => {
+				return arrayEquals(a, b);
+			});
 
-		// the angular is using reference compare to determine whether the data is changed or not
-		// so we are only updating it when the actual data has changed by doing the deep comparison.
-		// if the data property is changed, we need add child components to the container,
-		// so that the events can be passed upwards through the control hierarchy.
-		if (isDataPropertyChanged) {
-			this.clearContainer();
-			this._data = finalData;
+			// the angular is using reference compare to determine whether the data is changed or not
+			// so we are only updating it when the actual data has changed by doing the deep comparison.
+			// if the data property is changed, we need add child components to the container,
+			// so that the events can be passed upwards through the control hierarchy.
+			if (isDataPropertyChanged) {
+				this.clearContainer();
+				this._data = finalData;
+			}
 		}
 		super.setProperties(properties);
 	}
 
 	public clearContainer(): void {
 		super.clearContainer();
-		this._selectedRow = -1;
+		this.selectedRow = -1;
 	}
 
 	public get data(): azdata.DeclarativeTableCellValue[][] {
@@ -311,7 +312,7 @@ export default class DeclarativeTableComponent extends ContainerBase<any, azdata
 		if (!this.enableRowSelection) {
 			return false;
 		}
-		return this._selectedRow === row;
+		return this.selectedRow === row;
 	}
 
 	public onRowSelected(row: number) {
@@ -319,7 +320,7 @@ export default class DeclarativeTableComponent extends ContainerBase<any, azdata
 			return;
 		}
 		if (this._rowSelectionFocusFlag || !this.isRowSelected(row)) {
-			this._selectedRow = row;
+			this.selectedRow = row;
 			this._rowSelectionFocusFlag = false;
 			this._changeRef.detectChanges();
 
@@ -395,5 +396,13 @@ export default class DeclarativeTableComponent extends ContainerBase<any, azdata
 
 	public get enableRowSelection(): boolean {
 		return this.getPropertyOrDefault<boolean>((props) => props.enableRowSelection, false);
+	}
+
+	public get selectedRow(): number {
+		return this.getPropertyOrDefault<number>((props) => props.selectedRow, -1);
+	}
+
+	public set selectedRow(row: number) {
+		this.setPropertyFromUI<number>((properties, value) => { properties.selectedRow = value; }, row);
 	}
 }
