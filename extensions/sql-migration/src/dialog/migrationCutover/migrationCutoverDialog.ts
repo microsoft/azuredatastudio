@@ -43,6 +43,7 @@ export class MigrationCutoverDialog {
 
 	private fileTable!: azdata.TableComponent;
 	private _autoRefreshHandle!: any;
+	readonly _infoFieldWidth: string = '250px';
 
 
 	constructor(migration: MigrationContext) {
@@ -68,17 +69,17 @@ export class MigrationCutoverDialog {
 
 			flexServer.addItem(sourceDatabase.flexContainer, {
 				CSSStyles: {
-					'width': '250px'
+					'width': this._infoFieldWidth
 				}
 			});
 			flexServer.addItem(sourceDetails.flexContainer, {
 				CSSStyles: {
-					'width': '250px'
+					'width': this._infoFieldWidth
 				}
 			});
 			flexServer.addItem(sourceVersion.flexContainer, {
 				CSSStyles: {
-					'width': '250px'
+					'width': this._infoFieldWidth
 				}
 			});
 
@@ -96,17 +97,17 @@ export class MigrationCutoverDialog {
 
 			flexTarget.addItem(targetDatabase.flexContainer, {
 				CSSStyles: {
-					'width': '250px'
+					'width': this._infoFieldWidth
 				}
 			});
 			flexTarget.addItem(targetServer.flexContainer, {
 				CSSStyles: {
-					'width': '250px'
+					'width': this._infoFieldWidth
 				}
 			});
 			flexTarget.addItem(targetVersion.flexContainer, {
 				CSSStyles: {
-					'width': '250px'
+					'width': this._infoFieldWidth
 				}
 			});
 
@@ -125,17 +126,17 @@ export class MigrationCutoverDialog {
 
 			flexStatus.addItem(migrationStatus.flexContainer, {
 				CSSStyles: {
-					'width': '250px'
+					'width': this._infoFieldWidth
 				}
 			});
 			flexStatus.addItem(fullBackupFileOn.flexContainer, {
 				CSSStyles: {
-					'width': '250px'
+					'width': this._infoFieldWidth
 				}
 			});
 			flexStatus.addItem(backupLocation.flexContainer, {
 				CSSStyles: {
-					'width': '250px'
+					'width': this._infoFieldWidth
 				}
 			});
 
@@ -153,17 +154,17 @@ export class MigrationCutoverDialog {
 			}).component();
 			flexFile.addItem(lastSSN.flexContainer, {
 				CSSStyles: {
-					'width': '250px'
+					'width': this._infoFieldWidth
 				}
 			});
 			flexFile.addItem(lastAppliedBackup.flexContainer, {
 				CSSStyles: {
-					'width': '250px'
+					'width': this._infoFieldWidth
 				}
 			});
 			flexFile.addItem(lastAppliedBackupOn.flexContainer, {
 				CSSStyles: {
-					'width': '250px'
+					'width': this._infoFieldWidth
 				}
 			});
 			const flexInfo = view.modelBuilder.flexContainer().withProps({
@@ -174,7 +175,7 @@ export class MigrationCutoverDialog {
 				flex: '0',
 				CSSStyles: {
 					'flex': '0',
-					'width': '250px'
+					'width': this._infoFieldWidth
 				}
 			});
 
@@ -182,7 +183,7 @@ export class MigrationCutoverDialog {
 				flex: '0',
 				CSSStyles: {
 					'flex': '0',
-					'width': '250px'
+					'width': this._infoFieldWidth
 				}
 			});
 
@@ -190,7 +191,7 @@ export class MigrationCutoverDialog {
 				flex: '0',
 				CSSStyles: {
 					'flex': '0',
-					'width': '250px'
+					'width': this._infoFieldWidth
 				}
 			});
 
@@ -198,7 +199,7 @@ export class MigrationCutoverDialog {
 				flex: '0',
 				CSSStyles: {
 					'flex': '0',
-					'width': '250px'
+					'width': this._infoFieldWidth
 				}
 			});
 
