@@ -193,11 +193,15 @@ export class RowCountStatusBarContributions extends Disposable implements IWorkb
 		}
 	}
 
-	private _displayValue(runner: QueryRunner) {
+	private _displayValue(runner: QueryRunner): void {
+		if (!runner.batchSets) {
+			return;
+		}
 		const rowCount = runner.batchSets.reduce((p, c) => {
-			return p + c.resultSetSummaries.reduce((rp, rc) => {
+			const cnt = c.resultSetSummaries ? c.resultSetSummaries.reduce((rp, rc) => {
 				return rp + rc.rowCount;
-			}, 0);
+			}, 0) : 0;
+			return p + cnt;
 		}, 0);
 		const text = localize('rowCount', "{0} rows", rowCount.toLocaleString());
 		this.statusItem.update({ text, ariaLabel: text });
