@@ -54,7 +54,8 @@ function updateExtensionPackageJSON(input: Stream, update: (data: any) => any): 
 		.pipe(packageJsonFilter.restore);
 }
 
-function fromLocal(extensionPath: string, forWeb: boolean): Stream {
+// {{SQL CARBON EDIT}} - Needed in locFunc
+export function fromLocal(extensionPath: string, forWeb: boolean): Stream {
 	const webpackConfigFileName = forWeb ? 'extension-browser.webpack.config.js' : 'extension.webpack.config.js';
 
 	const isWebPacked = fs.existsSync(path.join(extensionPath, webpackConfigFileName));
@@ -171,7 +172,8 @@ function fromLocalWebpack(extensionPath: string, webpackConfigFileName: string):
 	return result.pipe(createStatsStream(path.basename(extensionPath)));
 }
 
-function fromLocalNormal(extensionPath: string): Stream {
+// {{SQL CARBON EDIT}} - Needed in locFunc
+export function fromLocalNormal(extensionPath: string): Stream {
 	const result = es.through();
 
 	const vsce = require('vsce') as typeof import('vsce');

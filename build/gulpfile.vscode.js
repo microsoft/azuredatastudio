@@ -31,7 +31,7 @@ const { getProductionDependencies } = require('./lib/dependencies');
 const { config } = require('./lib/electron');
 const createAsar = require('./lib/asar').createAsar;
 const { compileBuildTask } = require('./gulpfile.compile');
-const { compileExtensionsBuildTask, compileLocalizationExtensionsBuildTask } = require('./gulpfile.extensions');
+const { compileExtensionsBuildTask, compileLocalizationExtensionsBuildTask } = require('./gulpfile.extensions');  // {{SQL CARBON EDIT}} Must handle localization code.
 
 // Build
 const vscodeEntryPoints = _.flatten([
@@ -463,7 +463,7 @@ gulp.task(task.define(
 		compileLocalizationExtensionsBuildTask,
 		optimizeVSCodeTask,
 		function () {
-			const pathToExtensions = ['.build/builtInExtensions/*', '.build/extensions/*'];
+			const pathToExtensions = '.locbuild/extensions/*';
 			return es.merge(
 				gulp.src(pathToExtensions).pipe(locFunc.createXlfFilesForExtensions())
 			).pipe(vfs.dest('../export-xlfs'));

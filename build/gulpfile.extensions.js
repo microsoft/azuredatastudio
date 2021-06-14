@@ -192,9 +192,9 @@ exports.compileExtensionsBuildTask = compileExtensionsBuildTask;
 
 // {{SQL CARBON EDIT}} Need to handle localization unlike above.
 const compileLocalizationExtensionsBuildTask = task.define('compile-localization-extensions-build', task.series(
-	task.define('clean-localization-build', util.rimraf('.build/extensions')),
+	task.define('clean-localization-build', util.rimraf('.locbuild')),
 	task.define('bundle-marketplace-extensions-build', () => ext.packageMarketplaceExtensionsStream(false).pipe(gulp.dest('.locbuild'))),
-	task.define('external-extensions-build', () => loc.packageADSExtensionsStream().pipe(gulp.dest('.locbuild'))),
+	task.define('external-extensions-build', () => locFunc.packageADSExtensionsStream().pipe(gulp.dest('.locbuild'))),
 ));
 
 gulp.task(compileLocalizationExtensionsBuildTask);
