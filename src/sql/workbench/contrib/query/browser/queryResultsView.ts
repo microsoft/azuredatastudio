@@ -201,7 +201,7 @@ export class QueryResultsView extends Disposable {
 	private hasResults(runner: QueryRunner): boolean {
 		let hasResults = false;
 		for (const batch of runner.batchSets) {
-			if (batch.resultSetSummaries.length > 0) {
+			if (batch.resultSetSummaries?.length > 0) {
 				hasResults = true;
 				break;
 			}
