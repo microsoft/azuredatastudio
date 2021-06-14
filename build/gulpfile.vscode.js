@@ -26,11 +26,12 @@ const packageJson = require('../package.json');
 const product = require('../product.json');
 const crypto = require('crypto');
 const i18n = require('./lib/i18n');
+const locFunc = require('./lib/locFunc');
 const { getProductionDependencies } = require('./lib/dependencies');
 const { config } = require('./lib/electron');
 const createAsar = require('./lib/asar').createAsar;
 const { compileBuildTask } = require('./gulpfile.compile');
-const { compileExtensionsBuildTask } = require('./gulpfile.extensions');
+const { compileExtensionsBuildTask, compileLocalizationExtensionsBuildTask } = require('./gulpfile.extensions');
 
 // Build
 const vscodeEntryPoints = _.flatten([
@@ -450,6 +451,22 @@ gulp.task(task.define(
 				gulp.src(pathToSetup).pipe(i18n.createXlfFilesForIsl()),
 				gulp.src(pathToExtensions).pipe(i18n.createXlfFilesForExtensions())
 			).pipe(vfs.dest('../vscode-translations-export'));
+		}
+	)
+));
+
+// {{SQL CARBON EDIT}} Localization gulp task, based on above task.
+gulp.task(task.define(
+	'export-xlfs',
+	task.series(
+		compileBuildTask,
+		compileLocalizationExtensionsBuildTask,
+		optimizeVSCodeTask,
+		function () {
+			const pathToExtensions = ['.build/builtInExtensions/*', '.build/extensions/*'];
+			return es.merge(
+				gulp.src(pathToExtensions).pipe(locFunc.createXlfFilesForExtensions())
+			).pipe(vfs.dest('../export-xlfs'));
 		}
 	)
 ));

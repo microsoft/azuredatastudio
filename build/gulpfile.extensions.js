@@ -22,6 +22,7 @@ const plumber = require('gulp-plumber');
 const fancyLog = require('fancy-log');
 const ansiColors = require('ansi-colors');
 const ext = require('./lib/extensions');
+const locFunc = require('./lib/locFunc'); // {{SQL CARBON EDIT}}
 
 const extensionsPath = path.join(path.dirname(__dirname), 'extensions');
 // {{SQL CARBON EDIT}}
@@ -188,6 +189,17 @@ gulp.task(compileExtensionsBuildTask);
 gulp.task(task.define('extensions-ci', task.series(compileExtensionsBuildTask)));
 
 exports.compileExtensionsBuildTask = compileExtensionsBuildTask;
+
+// {{SQL CARBON EDIT}} Need to handle localization unlike above.
+const compileLocalizationExtensionsBuildTask = task.define('compile-localization-extensions-build', task.series(
+	task.define('clean-localization-build', util.rimraf('.build/extensions')),
+	task.define('bundle-marketplace-extensions-build', () => ext.packageMarketplaceExtensionsStream(false).pipe(gulp.dest('.locbuild'))),
+	task.define('external-extensions-build', () => loc.packageADSExtensionsStream().pipe(gulp.dest('.locbuild'))),
+));
+
+gulp.task(compileLocalizationExtensionsBuildTask);
+exports.compileLocalizationExtensionsBuildTask = compileLocalizationExtensionsBuildTask;
+
 
 const compileWebExtensionsTask = task.define('compile-web', () => buildWebExtensions(false));
 gulp.task(compileWebExtensionsTask);
