@@ -22,7 +22,7 @@ export class ConfigurePythonDialog extends Dialog {
 		const dialog = '.modal .modal-dialog';
 		await this.code.waitAndClick(dialog);
 
-		const newPythonInstallation = '.modal .modal-body input[aria-label="New Python installation"]';
+		const newPythonInstallation = `${dialog} .modal-body input[aria-label="New Python installation"]`;
 		await this.code.waitAndClick(newPythonInstallation);
 
 		// Wait for the python install location to be loaded before clicking the next button.
@@ -31,11 +31,15 @@ export class ConfigurePythonDialog extends Dialog {
 		const pythonInstallLocationDropdownValue = `${dialog} select[aria-label="Python Install Location"] option`;
 		await this.code.waitForElement(pythonInstallLocationDropdownValue);
 
-		const nextButton = '.modal-dialog .modal-content .modal-footer .right-footer .footer-button a[aria-label="Next"][aria-disabled="false"]';
+		const nextButton = `${dialog} .modal-content .modal-footer .right-footer .footer-button a[aria-label="Next"][aria-disabled="false"]:not(.dialogModal-hidden)`;
 		await this.code.waitAndClick(dialog);
 		await this.code.waitAndClick(nextButton);
 
-		const installButton = '.modal-dialog .modal-content .modal-footer .right-footer .footer-button a[aria-label="Install"][aria-disabled="false"]';
+		// wait up to 1 minute for the required kernel dependencies to load
+		const requiredKernelDependencies = `${dialog} table[class="declarative-table"][aria-label="Install required kernel dependencies"]`;
+		await this.code.waitForElement(requiredKernelDependencies, undefined, 600);
+
+		const installButton = `${dialog} .modal-content .modal-footer .right-footer .footer-button a[aria-label="Install"][aria-disabled="false"]:not(.dialogModal-hidden)`;
 		await this.code.waitAndClick(dialog);
 		await this.code.waitAndClick(installButton);
 
