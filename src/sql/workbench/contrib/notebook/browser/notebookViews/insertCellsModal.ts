@@ -19,17 +19,15 @@ import { attachCheckboxStyler } from 'sql/platform/theme/common/styler';
 import { ServiceOptionType } from 'sql/platform/connection/common/interfaces';
 import { ServiceOption } from 'azdata';
 import * as DialogHelper from 'sql/workbench/browser/modal/dialogHelper';
-import * as _html2canvas from 'html2canvas';
 import { TextCellComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/textCell.component';
 import { ComponentFactoryResolver, ViewContainerRef } from '@angular/core';
 import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
-import { inputBorder, inputValidationInfoBorder } from 'vs/platform/theme/common/colorRegistry';
+import { inputBorder, inputValidationInfoBorder, editorBackground } from 'vs/platform/theme/common/colorRegistry';
 import { localize } from 'vs/nls';
 import { NotebookViewsExtension } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViewsExtension';
 import { attachButtonStyler } from 'vs/platform/theme/common/styler';
-
-const html2canvas: any = _html2canvas;
+import { toJpeg } from 'html-to-image';
 
 export class CellOptionsModel {
 	private _optionsMap: { [name: string]: any } = {};
@@ -151,12 +149,15 @@ export class InsertCellsModal extends Modal {
 	}
 
 	protected layout(height: number): void {
-
+		// No-op for now. No need to relayout.
 	}
 
-	private createOptions(container: HTMLElement): void {
+	private async createOptions(container: HTMLElement): Promise<void> {
 		const activeView = this._context.getActiveView();
 		const cellsAvailableToInsert = activeView.hiddenCells;
+
+		this._themeService.getColorTheme().getColor(editorBackground);
+
 		cellsAvailableToInsert.forEach(async (cell) => {
 			const optionWidget = this.createCheckBoxHelper(
 				container,
@@ -245,7 +246,7 @@ export class InsertCellsModal extends Modal {
 		return this.hide();
 	}
 
-	public open(): void {
+	public async open(): Promise<void> {
 		this.show();
 	}
 
@@ -258,7 +259,7 @@ export class InsertCellsModal extends Modal {
 		}
 	}
 
-	public async generateScreenshot(cell: ICellModel): Promise<any> {
+	public async generateScreenshot(cell: ICellModel, screenshotWidth: number = 300, screenshowHeight: number = 300, backgroundColor: string = '#ffffff'): Promise<any> {
 		let componentFactory = this._componentFactoryResolver.resolveComponentFactory(TextCellComponent);
 		let component = this._containerRef.createComponent(componentFactory);
 
@@ -267,8 +268,13 @@ export class InsertCellsModal extends Modal {
 
 		component.instance.handleContentChanged();
 
-		const canvas = await html2canvas(component.instance.outputRef.nativeElement);
-		return canvas ? canvas.toDataURL() : undefined;
+		const element: HTMLElement = component.instance.outputRef.nativeElement;
+
+		const scale = element.clientWidth / screenshotWidth;
+		const canvasWidth = element.clientWidth / scale;
+		const canvasHeight = element.clientHeight / scale;
+
+		return toJpeg(component.instance.outputRef.nativeElement, { quality: .6, canvasWidth, canvasHeight, backgroundColor });
 	}
 }
 
@@ -290,6 +296,7 @@ registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) =
 		#insert-dialog-cell-grid input[type="checkbox"] {
 			display: flex;
 			-webkit-appearance: none;
+			outline: none !important;
 		}
 	`);
 
@@ -297,7 +304,7 @@ registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) =
 	if (inputBorderColor) {
 		collector.addRule(`
 		#insert-dialog-cell-grid input[type="checkbox"] + label {
-			border: 1px solid;
+			border: 2px solid;
 			border-color: ${inputBorderColor.toString()};
 			display: flex;
 			height: 125px;
