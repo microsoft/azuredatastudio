@@ -133,7 +133,7 @@ export class NotebookViewsGridComponent extends AngularDisposable implements OnI
 				this._grid.resizable(el, true);
 				this._grid.movable(el, true);
 
-				component.detectChanges();
+				component.initialize();
 			}
 			this.detectChanges();
 		}

@@ -94,6 +94,10 @@ export class NotebookViewsCardComponent extends AngularDisposable implements OnI
 	}
 
 	ngAfterViewInit() {
+		this.initialize();
+	}
+
+	public initialize(): void {
 		this.initActionBar();
 		this.detectChanges();
 	}
