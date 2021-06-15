@@ -455,7 +455,7 @@ gulp.task(task.define(
 	)
 ));
 
-// {{SQL CARBON EDIT}} Localization gulp task, based on above task.
+// {{SQL CARBON EDIT}} Localization gulp task, similar to vscode-translations-export but only for ADS only extensions.
 gulp.task(task.define(
 	'export-xlfs',
 	task.series(
@@ -463,9 +463,9 @@ gulp.task(task.define(
 		compileLocalizationExtensionsBuildTask,
 		optimizeVSCodeTask,
 		function () {
-			const pathToExtensions = '.locbuild/extensions/*';
+			const pathToExtensions = '.build/extensions/*';
 			return es.merge(
-				gulp.src(pathToExtensions).pipe(locFunc.createXlfFilesForExtensions())
+				gulp.src(pathToExtensions).pipe(i18n.createXlfFilesForExtensions())
 			).pipe(vfs.dest('../export-xlfs'));
 		}
 	)

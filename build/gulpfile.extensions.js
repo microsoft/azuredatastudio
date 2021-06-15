@@ -190,11 +190,11 @@ gulp.task(task.define('extensions-ci', task.series(compileExtensionsBuildTask)))
 
 exports.compileExtensionsBuildTask = compileExtensionsBuildTask;
 
-// {{SQL CARBON EDIT}} Need to handle localization unlike above.
+// {{SQL CARBON EDIT}} Builds any extension that need to have XLFs built, including external/excluded extensions (only for creating XLF files, not for compiling extensions for shipping)
 const compileLocalizationExtensionsBuildTask = task.define('compile-localization-extensions-build', task.series(
-	task.define('clean-localization-build', util.rimraf('.locbuild')),
-	task.define('bundle-marketplace-extensions-build', () => ext.packageMarketplaceExtensionsStream(false).pipe(gulp.dest('.locbuild'))),
-	task.define('external-extensions-build', () => locFunc.packageADSExtensionsStream().pipe(gulp.dest('.locbuild'))),
+	cleanExtensionsBuildTask,
+	task.define('bundle-marketplace-extensions-build', () => ext.packageMarketplaceExtensionsStream(false).pipe(gulp.dest('.build'))),
+	task.define('external-extensions-build', () => locFunc.packageADSExtensionsStream().pipe(gulp.dest('.build'))),
 ));
 
 gulp.task(compileLocalizationExtensionsBuildTask);
