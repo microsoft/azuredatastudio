@@ -22,7 +22,6 @@ const plumber = require('gulp-plumber');
 const fancyLog = require('fancy-log');
 const ansiColors = require('ansi-colors');
 const ext = require('./lib/extensions');
-
 const extensionsPath = path.join(path.dirname(__dirname), 'extensions');
 // {{SQL CARBON EDIT}}
 const sqlLocalizedExtensions = [
@@ -38,10 +37,7 @@ const sqlLocalizedExtensions = [
 	'sql-assessment',
 	'sql-database-projects'
 ];
-
-const languages = [
-	{ folderName: 'deu', id: 'de' }
-];
+exports.sqlLocalizedExtensions = sqlLocalizedExtensions;
 // {{SQL CARBON EDIT}}
 
 const compilations = glob.sync('**/tsconfig.json', {
@@ -79,6 +75,7 @@ const tasks = compilations.map(function (tsconfigFile) {
 	}
 
 	function createPipeline(build, emitError) {
+		const { defaultLanguages, extraLanguages } = require('./lib/i18n'); // {{SQL CARBON EDIT}}
 		const nlsDev = require('vscode-nls-dev');
 		const tsb = require('gulp-tsb');
 		const sourcemaps = require('gulp-sourcemaps');
@@ -105,7 +102,7 @@ const tasks = compilations.map(function (tsconfigFile) {
 				.pipe(util.loadSourcemaps())
 				.pipe(compilation())
 				.pipe(build ? nlsDev.rewriteLocalizeCalls() : es.through())
-				.pipe(build ? nlsDev.createAdditionalLanguageFiles(languages, path.join(root, 'i18n'), 'out') : es.through()) // {{SQL CARBON EDIT}}
+				.pipe(build ? nlsDev.createAdditionalLanguageFiles([...i18n.defaultLanguages, ...i18n.extraLanguages], path.join(root, 'i18n'), 'out') : es.through()) // {{SQL CARBON EDIT}}
 				.pipe(build ? util.stripSourceMappingURL() : es.through())
 				.pipe(sourcemaps.write('.', {
 					sourceMappingURL: !build ? null : f => `${baseUrl}/${f.relative}.map`,

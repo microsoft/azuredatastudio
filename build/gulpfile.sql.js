@@ -17,6 +17,8 @@ const glob = require('glob');
 const vsce = require('vsce');
 const vfs = require('vinyl-fs');
 const mkdirp = require('mkdirp');
+const { sqlLocalizedExtensions } = require('./gulpfile.extensions');
+const nlsDev = require('vscode-nls-dev');
 
 gulp.task('fmt', () => formatStagedFiles());
 const formatFiles = (some) => {
@@ -152,10 +154,12 @@ gulp.task('package-rebuild-extensions', task.series(
 gulp.task('external-translations-import', function () {
 	return new Promise(function(resolve) {
 		[...i18n.defaultLanguages, ...i18n.extraLanguages].forEach(language => {
-			[...ext.externalExtensions].forEach(extensionName => {
-
-				gulp.src(`i18n/${language.folderName}/extensions/${extensionName}/**/*.json`)
+			sqlLocalizedExtensions.forEach(extensionName => {
+				gulp.src(`i18n/${language.folderName}/extensions/${extensionName}/**/*.json`, { allowEmpty: true })
 					.pipe(vfs.dest(`./extensions/${extensionName}/i18n/${language.folderName}`));
+				gulp.src(`extensions/${extensionName}/package.nls.json`, { allowEmpty: true })
+					.pipe(nlsDev.createAdditionalLanguageFiles([language], `extensions/${extensionName}/i18n`))
+					.pipe(vfs.dest(`./extensions/${extensionName}`));
 				resolve();
 			});
 		});
