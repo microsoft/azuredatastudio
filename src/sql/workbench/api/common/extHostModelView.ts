@@ -1581,7 +1581,7 @@ class DeclarativeTableWrapper extends ComponentWrapper implements azdata.Declara
 		return emitter && emitter.event;
 	}
 
-	public get onRowSelected(): vscode.Event<any> {
+	public get onRowSelected(): vscode.Event<azdata.DeclarativeTableRowSelectedEvent> {
 		let emitter = this._emitterMap.get(ComponentEventType.onSelectedRowChanged);
 		return emitter && emitter.event;
 	}
