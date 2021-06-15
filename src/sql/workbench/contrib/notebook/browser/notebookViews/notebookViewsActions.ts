@@ -111,14 +111,13 @@ export class InsertCellAction extends Action {
 		super(InsertCellAction.ID, InsertCellAction.LABEL, InsertCellAction.ICON);
 	}
 
-	run(): Promise<boolean> {
+	async run(): Promise<void> {
 		try {
 			const optionsModal = this._instantiationService.createInstance(InsertCellsModal, this.onInsert, this._context, this._containerRef, this._componentFactoryResolver);
 			optionsModal.render();
 			optionsModal.open();
-			return Promise.resolve(true);
 		} catch (e) {
-			return Promise.resolve(false);
+			throw new Error();
 		}
 	}
 }
