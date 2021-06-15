@@ -19,6 +19,8 @@ export function setup() {
 		let tmpDir = '';
 		it('can create new book with default content folder', async function () {
 			const app = this.app as Application;
+			// Add timeout for giving time for the SQL Tools Service to start (it'll error if it's not started yet)
+			// TODO @chgagnon - Figure out better way to have tests wait for STS
 			await new Promise(r => setTimeout(r, 10000));
 			// eslint-disable-next-line no-sync
 			tmpDir = tmp.dirSync().name;
