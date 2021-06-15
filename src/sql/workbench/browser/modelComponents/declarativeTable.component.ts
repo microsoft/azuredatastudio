@@ -18,6 +18,7 @@ import { localize } from 'vs/nls';
 import { ILogService } from 'vs/platform/log/common/log';
 import * as colorRegistry from 'vs/platform/theme/common/colorRegistry';
 import { IColorTheme, IThemeService } from 'vs/platform/theme/common/themeService';
+import { equals } from 'vs/base/common/objects';
 
 export enum DeclarativeDataType {
 	string = 'string',
@@ -257,45 +258,56 @@ export default class DeclarativeTableComponent extends ContainerBase<any, azdata
 
 	private static ACCEPTABLE_VALUES = new Set<string>(['number', 'string', 'boolean']);
 	public setProperties(properties: azdata.DeclarativeTableProperties): void {
-		if ('data' in properties || 'dataValues' in properties) {
-			const basicData: any[][] = properties.data ?? [];
-			const complexData: azdata.DeclarativeTableCellValue[][] = properties.dataValues ?? [];
-			let finalData: azdata.DeclarativeTableCellValue[][];
+		const basicData: any[][] = properties.data ?? [];
+		const complexData: azdata.DeclarativeTableCellValue[][] = properties.dataValues ?? [];
+		let finalData: azdata.DeclarativeTableCellValue[][];
 
-			finalData = basicData.map(row => {
-				return row.map((value): azdata.DeclarativeTableCellValue => {
-					if (DeclarativeTableComponent.ACCEPTABLE_VALUES.has(typeof (value))) {
-						return {
-							value: value
-						};
-					} else {
-						return {
-							value: JSON.stringify(value)
-						};
-					}
-				});
+		finalData = basicData.map(row => {
+			return row.map((value): azdata.DeclarativeTableCellValue => {
+				if (DeclarativeTableComponent.ACCEPTABLE_VALUES.has(typeof (value))) {
+					return {
+						value: value
+					};
+				} else {
+					return {
+						value: JSON.stringify(value)
+					};
+				}
 			});
+		});
 
-			if (finalData.length <= 0) {
-				finalData = complexData;
-			}
-
-			this.columns = properties.columns ?? [];
-
-			// check whether the data property is changed before actually setting the properties.
-			const isDataPropertyChanged = !arrayEquals(this.data, finalData ?? [], (a, b) => {
-				return arrayEquals(a, b);
-			});
-
-			// the angular is using reference compare to determine whether the data is changed or not
-			// so we are only updating it when the actual data has changed by doing the deep comparison.
-			// if the data property is changed, we need add child components to the container,
-			// so that the events can be passed upwards through the control hierarchy.
-			if (isDataPropertyChanged) {
-				this.clearContainer();
-				this._data = finalData;
-			}
+		if (finalData.length <= 0) {
+			finalData = complexData;
 		}
+
+		this.columns = properties.columns ?? [];
+
+		// check whether the data property is changed before actually setting the properties.
+		const isDataPropertyChanged = !arrayEquals(this.data, finalData ?? [], (a, b) => {
+			return arrayEquals(a, b, (cell1, cell2) => {
+				return equals(cell1, cell2);
+			});
+		});
+
+		// the angular is using reference compare to determine whether the data is changed or not
+		// so we are only updating it when the actual data has changed by doing the deep comparison.
+		// if the data property is changed, we need add child components to the container,
+		// so that the events can be passed upwards through the control hierarchy.
+		if (isDataPropertyChanged) {
+			this.clearContainer();
+			this._data = finalData;
+		}
+
+		const newSelectedRow = properties.selectedRow ?? -1;
+		if (newSelectedRow !== this.selectedRow && properties.enableRowSelection) {
+			this.fireEvent({
+				eventType: ComponentEventType.onSelectedRowChanged,
+				args: {
+					row: properties.selectedRow
+				}
+			});
+		}
+
 		super.setProperties(properties);
 	}
 
@@ -325,7 +337,7 @@ export default class DeclarativeTableComponent extends ContainerBase<any, azdata
 			this._changeRef.detectChanges();
 
 			this.fireEvent({
-				eventType: ComponentEventType.onDidClick,
+				eventType: ComponentEventType.onSelectedRowChanged,
 				args: {
 					row
 				}
@@ -403,6 +415,8 @@ export default class DeclarativeTableComponent extends ContainerBase<any, azdata
 	}
 
 	public set selectedRow(row: number) {
-		this.setPropertyFromUI<number>((properties, value) => { properties.selectedRow = value; }, row);
+		if (row !== this.selectedRow) {
+			this.setPropertyFromUI<number>((properties, value) => { properties.selectedRow = value; }, row);
+		}
 	}
 }

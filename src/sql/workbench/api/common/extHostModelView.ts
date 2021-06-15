@@ -1544,7 +1544,7 @@ class DeclarativeTableWrapper extends ComponentWrapper implements azdata.Declara
 		super(proxy, handle, ModelComponentTypes.DeclarativeTable, id, logService);
 		this.properties = {};
 		this._emitterMap.set(ComponentEventType.onDidChange, new Emitter<any>());
-		this._emitterMap.set(ComponentEventType.onDidClick, new Emitter<any>());
+		this._emitterMap.set(ComponentEventType.onSelectedRowChanged, new Emitter<any>());
 
 	}
 
@@ -1582,7 +1582,7 @@ class DeclarativeTableWrapper extends ComponentWrapper implements azdata.Declara
 	}
 
 	public get onRowSelected(): vscode.Event<any> {
-		let emitter = this._emitterMap.get(ComponentEventType.onDidClick);
+		let emitter = this._emitterMap.get(ComponentEventType.onSelectedRowChanged);
 		return emitter && emitter.event;
 	}
 
@@ -1608,8 +1608,6 @@ class DeclarativeTableWrapper extends ComponentWrapper implements azdata.Declara
 
 	public set selectedRow(v: number) {
 		this.setProperty('selectedRow', v);
-		const emitter = this._emitterMap.get(ComponentEventType.onDidClick);
-		emitter?.fire({ row: v });
 	}
 
 	public toComponentShape(): IComponentShape {
