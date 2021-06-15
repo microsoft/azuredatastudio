@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { nb } from 'azdata';
-import { ChangeDetectorRef, Component, forwardRef, Inject, Input, OnChanges, SimpleChange } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, forwardRef, Inject, Input, OnChanges, SimpleChange } from '@angular/core';
 import { CodeCellComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/codeCell.component';
 import { localize } from 'vs/nls';
 import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
@@ -14,6 +14,7 @@ export const CODE_SELECTOR: string = 'views-code-cell-component';
 
 @Component({
 	selector: CODE_SELECTOR,
+	changeDetection: ChangeDetectionStrategy.OnPush,
 	templateUrl: decodeURI(require.toUrl('./notebookViewsCodeCell.component.html'))
 })
 
@@ -77,7 +78,6 @@ export class NotebookViewsCellModel extends CellModel {
 	public get outputs(): Array<nb.ICellOutput> {
 		return super.outputs
 			.filter((output: nb.IDisplayResult) => output.data === undefined || output?.data['text/plain'] !== '<IPython.core.display.HTML object>')
-			.filter((output: nb.IDisplayResult) => output.output_type !== 'execute_result')
 			.map((output: nb.ICellOutput) => ({ ...output }))
 			.map((output: nb.ICellOutput) => { output.metadata = { ...output.metadata, displayActionBar: false }; return output; });
 	}
