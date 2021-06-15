@@ -159,11 +159,15 @@ export class NotebookViewsCardComponent extends AngularDisposable implements OnI
 	}
 
 	public get display(): boolean {
-		if (!this._metadata || !this._activeView) {
+		if (!this._activeView) {
 			return true;
 		}
 
-		return !this.data?.hidden;
+		if (!this._metadata) { //Means not initialized
+			return false;
+		}
+
+		return this.data?.hidden === false;
 	}
 
 	public get awaitingInput(): boolean {
