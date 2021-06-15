@@ -7,7 +7,6 @@
 <div style="overflow: hidden; width: 100%; height: 100%; display: flex; flex-flow: column">
 	<div #viewsToolbar class="editor-toolbar actionbar-container" style="flex: 0 0 auto; display: flex; flex-flow: row; width: 100%; align-items: center;"></div>
 	<div #container class="scrollable" style="flex: 1 1 auto; position: relative; outline: none" (click)="unselectActiveCell()" (scroll)="scrollHandler($event)">
-		<loading-spinner [loading]="isLoading"></loading-spinner>
 		<notebook-views-grid-component #gridstack [views]="views" activeView=[activeView] [cells]="cells" [model]="model"></notebook-views-grid-component>
 
 		<ng-container *ngFor="let cell of cellsAwaitingInput">
