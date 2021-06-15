@@ -102,7 +102,7 @@ const tasks = compilations.map(function (tsconfigFile) {
 				.pipe(util.loadSourcemaps())
 				.pipe(compilation())
 				.pipe(build ? nlsDev.rewriteLocalizeCalls() : es.through())
-				.pipe(build ? nlsDev.createAdditionalLanguageFiles([...i18n.defaultLanguages, ...i18n.extraLanguages], path.join(root, 'i18n'), 'out') : es.through()) // {{SQL CARBON EDIT}}
+				.pipe(build ? nlsDev.createAdditionalLanguageFiles([...defaultLanguages, ...extraLanguages], path.join(root, 'i18n'), 'out') : es.through()) // {{SQL CARBON EDIT}}
 				.pipe(build ? util.stripSourceMappingURL() : es.through())
 				.pipe(sourcemaps.write('.', {
 					sourceMappingURL: !build ? null : f => `${baseUrl}/${f.relative}.map`,
