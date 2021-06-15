@@ -20,5 +20,5 @@ export const azdataFound = 'azdata.found';
 export const azdataHostname = 'https://aka.ms';
 export const azdataUri = 'azdata-msi';
 export const azdataReleaseJson = 'azdata/release.json';
-export const microsoftPrivacyStatementUrl = 'https://privacy.microsoft.com/en-us/privacystatement';
+export const microsoftPrivacyStatementUrl = 'https://privacy.microsoft.com/privacystatement';
 export const eulaUrl = 'https://aka.ms/eula-azdata-en';
