@@ -8,7 +8,7 @@ import { ICommandHandlerDescription } from 'vs/platform/commands/common/commands
 import * as extHostTypes from 'vs/workbench/api/common/extHostTypes';
 import * as extHostTypeConverter from 'vs/workbench/api/common/extHostTypeConverters';
 import { cloneAndChange } from 'vs/base/common/objects';
-import { MainContext, MainThreadCommandsShape, ExtHostCommandsShape, ObjectIdentifier, ICommandDto, MainThreadTelemetryShape } from './extHost.protocol';
+import { MainContext, MainThreadCommandsShape, ExtHostCommandsShape, ObjectIdentifier, ICommandDto, MainThreadTelemetryShape } from './extHost.protocol'; // {{SQL CARBON EDIT}} Log extension contributed actions
 import { isNonEmptyArray } from 'vs/base/common/arrays';
 import * as modes from 'vs/editor/common/modes';
 import type * as vscode from 'vscode';
@@ -21,7 +21,7 @@ import { DisposableStore, toDisposable } from 'vs/base/common/lifecycle';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { IExtHostRpcService } from 'vs/workbench/api/common/extHostRpcService';
 import { ISelection } from 'vs/editor/common/core/selection';
-import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
+import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys'; // {{SQL CARBON EDIT}} Log extension contributed actions
 
 interface CommandHandler {
 	callback: Function;
@@ -52,7 +52,7 @@ export class ExtHostCommands implements ExtHostCommandsShape {
 		@ILogService logService: ILogService
 	) {
 		this._proxy = extHostRpc.getProxy(MainContext.MainThreadCommands);
-		this._mainThreadTelemetryProxy = extHostRpc.getProxy(MainContext.MainThreadTelemetry);
+		this._mainThreadTelemetryProxy = extHostRpc.getProxy(MainContext.MainThreadTelemetry); // {{SQL CARBON EDIT}} Log extension contributed actions
 		this._logService = logService;
 		this.converter = new CommandsConverter(
 			this,
@@ -203,7 +203,6 @@ export class ExtHostCommands implements ExtHostCommandsShape {
 		if (!command) {
 			throw new Error('Unknown command');
 		}
-
 		let { callback, thisArg, description } = command;
 		if (description) {
 			for (let i = 0; i < description.args.length; i++) {
