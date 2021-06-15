@@ -34,7 +34,7 @@ export interface BatchStartSummary {
 
 export interface BatchSummary extends BatchStartSummary {
 	hasError: boolean;
-	resultSetSummaries: ResultSetSummary[];
+	resultSetSummaries?: ResultSetSummary[];
 }
 
 export interface CompleteBatchSummary extends BatchSummary {

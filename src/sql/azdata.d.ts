@@ -948,7 +948,7 @@ declare module 'azdata' {
 		hasError: boolean;
 		id: number;
 		selection: ISelectionData;
-		resultSetSummaries: ResultSetSummary[];
+		resultSetSummaries?: ResultSetSummary[];
 		executionElapsed: string;
 		executionEnd: string;
 		executionStart: string;
