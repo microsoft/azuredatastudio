@@ -1544,7 +1544,7 @@ class DeclarativeTableWrapper extends ComponentWrapper implements azdata.Declara
 		super(proxy, handle, ModelComponentTypes.DeclarativeTable, id, logService);
 		this.properties = {};
 		this._emitterMap.set(ComponentEventType.onDidChange, new Emitter<any>());
-		this._emitterMap.set(ComponentEventType.onSelectedRowChanged, new Emitter<any>());
+		this._emitterMap.set(ComponentEventType.onSelectedRowChanged, new Emitter<azdata.DeclarativeTableRowSelectedEvent>());
 
 	}
 
