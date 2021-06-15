@@ -22,6 +22,8 @@ export function setup() {
 
 			await app.workbench.sqlNotebook.runActiveCell();
 			await app.workbench.sqlNotebook.waitForActiveCellResults();
+
+			await app.workbench.quickaccess.runCommand('workbench.action.revertAndCloseActiveEditor');
 		});
 
 		it('can open ipynb file, run all, and save notebook with outputs', async function () {
@@ -60,7 +62,7 @@ export function setup() {
 			await app.workbench.quickaccess.runCommand('workbench.action.closeActiveEditor');
 		});
 
-		it.skip('can perform basic text cell functionality', async function () {
+		it('can perform basic text cell functionality', async function () {
 			const app = this.app as Application;
 			await app.workbench.sqlNotebook.newUntitledNotebook();
 			await app.workbench.sqlNotebook.addCellFromPlaceholder('Markdown');
@@ -95,4 +97,6 @@ async function openAndRunNotebook(app: Application, filename: string): Promise<v
 	await app.workbench.sqlNotebook.openFile(filename);
 	await app.workbench.sqlNotebook.waitForKernel('Python 3');
 	await app.workbench.sqlNotebook.waitForAllResults();
+
+	await app.workbench.quickaccess.runCommand('workbench.action.revertAndCloseActiveEditor');
 }
