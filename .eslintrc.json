@@ -624,7 +624,7 @@
 					"chart.js",
 					"plotly.js-dist-min",
 					"angular2-grid",
-					"html2canvas",
+					"html-to-image",
 					"html-query-plan",
 					"turndown",
 					"gridstack",
