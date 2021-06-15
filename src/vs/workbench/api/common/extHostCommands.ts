@@ -8,7 +8,7 @@ import { ICommandHandlerDescription } from 'vs/platform/commands/common/commands
 import * as extHostTypes from 'vs/workbench/api/common/extHostTypes';
 import * as extHostTypeConverter from 'vs/workbench/api/common/extHostTypeConverters';
 import { cloneAndChange } from 'vs/base/common/objects';
-import { MainContext, MainThreadCommandsShape, ExtHostCommandsShape, ObjectIdentifier, ICommandDto } from './extHost.protocol';
+import { MainContext, MainThreadCommandsShape, ExtHostCommandsShape, ObjectIdentifier, ICommandDto, MainThreadTelemetryShape } from './extHost.protocol';
 import { isNonEmptyArray } from 'vs/base/common/arrays';
 import * as modes from 'vs/editor/common/modes';
 import type * as vscode from 'vscode';
@@ -21,6 +21,7 @@ import { DisposableStore, toDisposable } from 'vs/base/common/lifecycle';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { IExtHostRpcService } from 'vs/workbench/api/common/extHostRpcService';
 import { ISelection } from 'vs/editor/common/core/selection';
+import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 
 interface CommandHandler {
 	callback: Function;
@@ -40,6 +41,7 @@ export class ExtHostCommands implements ExtHostCommandsShape {
 	private readonly _apiCommands = new Map<string, ApiCommand>();
 
 	private readonly _proxy: MainThreadCommandsShape;
+	protected readonly _mainThreadTelemetryProxy: MainThreadTelemetryShape; // {{SQL CARBON EDIT}} Log extension contributed actions
 	private readonly _logService: ILogService;
 	private readonly _argumentProcessors: ArgumentProcessor[];
 
@@ -50,6 +52,7 @@ export class ExtHostCommands implements ExtHostCommandsShape {
 		@ILogService logService: ILogService
 	) {
 		this._proxy = extHostRpc.getProxy(MainContext.MainThreadCommands);
+		this._mainThreadTelemetryProxy = extHostRpc.getProxy(MainContext.MainThreadTelemetry);
 		this._logService = logService;
 		this.converter = new CommandsConverter(
 			this,
@@ -157,6 +160,7 @@ export class ExtHostCommands implements ExtHostCommandsShape {
 	private async _doExecuteCommand<T>(id: string, args: any[], retry: boolean): Promise<T> {
 
 		if (this._commands.has(id)) {
+			this._mainThreadTelemetryProxy.$publicLog(TelemetryKeys.EventName.Action, { properties: { action: TelemetryKeys.TelemetryAction.adsCommandExecuted, view: TelemetryKeys.TelemetryView.ExtensionHost, target: id } }); // {{SQL CARBON EDIT}} Log ext-contributed commands. Only logging here to avoid double-logging for command executions coming from core (which are already logged)
 			// we stay inside the extension host and support
 			// to pass any kind of parameters around
 			return this._executeContributedCommand<T>(id, args);
@@ -199,6 +203,7 @@ export class ExtHostCommands implements ExtHostCommandsShape {
 		if (!command) {
 			throw new Error('Unknown command');
 		}
+
 		let { callback, thisArg, description } = command;
 		if (description) {
 			for (let i = 0; i < description.args.length; i++) {
