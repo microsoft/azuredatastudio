@@ -239,7 +239,7 @@ export class QueryResultsView extends Disposable {
 			}
 			// Currently we only need to support visualization options for the first result set.
 			const batchSet = runner.batchSets[0];
-			const resultSet = batchSet?.resultSetSummaries ? batchSet.resultSetSummaries[0] : undefined;
+			const resultSet = batchSet?.resultSetSummaries?.[0];
 			if (resultSet?.visualization) {
 				this.chartData({
 					resultId: batchSet.id,
