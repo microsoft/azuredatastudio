@@ -15,7 +15,6 @@ export class Notebook {
 
 	public readonly toolbar: NotebookToolbar;
 	public readonly view: NotebookView;
-	private newNotebookCount: number = 0;
 
 	constructor(private code: Code, private quickAccess: QuickAccess, private quickInput: QuickInput, private editors: Editors) {
 		this.toolbar = new NotebookToolbar(code);
@@ -32,9 +31,8 @@ export class Notebook {
 
 	async newUntitledNotebook(): Promise<void> {
 		await this.code.dispatchKeybinding(winOrCtrl + '+alt+n');
-		await this.editors.waitForActiveTab(`Notebook-${this.newNotebookCount}`);
+		await this.editors.waitForActiveTab(`Notebook-0`);
 		await this.code.waitForElement('.notebookEditor');
-		this.newNotebookCount++;
 	}
 
 	// Notebook Toolbar Actions

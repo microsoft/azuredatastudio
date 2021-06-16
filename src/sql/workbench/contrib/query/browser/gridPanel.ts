@@ -125,9 +125,9 @@ export class GridPanel extends Disposable {
 		}));
 		this.addResultSet(this.runner.batchSets.reduce<ResultSetSummary[]>((p, e) => {
 			if (this.configurationService.getValue<IQueryEditorConfiguration>('queryEditor').results.streaming) {
-				p = p.concat(e.resultSetSummaries);
+				p = p.concat(e.resultSetSummaries ?? []);
 			} else {
-				p = p.concat(e.resultSetSummaries.filter(c => c.complete));
+				p = p.concat(e.resultSetSummaries?.filter(c => c.complete) ?? []);
 			}
 			return p;
 		}, []));

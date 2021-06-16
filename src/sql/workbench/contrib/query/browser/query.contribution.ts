@@ -396,6 +396,11 @@ const queryEditorConfiguration: IConfigurationNode = {
 			'default': 5000,
 			'description': localize('queryEditor.inMemoryDataProcessingThreshold', "Controls the max number of rows allowed to do filtering and sorting in memory. If the number is exceeded, sorting and filtering will be disabled. Warning: Increasing this may impact performance.")
 		},
+		'queryEditor.results.openAfterSave': {
+			'type': 'boolean',
+			'description': localize('queryEditor.results.openAfterSave', "Whether to open the file in Azure Data Studio after the result is saved."),
+			'default': true
+		},
 		'queryEditor.messages.showBatchTime': {
 			'type': 'boolean',
 			'description': localize('queryEditor.messages.showBatchTime', "Should execution time be shown for individual batches"),

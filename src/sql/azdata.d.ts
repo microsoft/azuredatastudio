@@ -948,7 +948,7 @@ declare module 'azdata' {
 		hasError: boolean;
 		id: number;
 		selection: ISelectionData;
-		resultSetSummaries: ResultSetSummary[];
+		resultSetSummaries: ResultSetSummary[] | null;
 		executionElapsed: string;
 		executionEnd: string;
 		executionStart: string;
@@ -3873,6 +3873,14 @@ declare module 'azdata' {
 		 * @param isWide Indicates whether the dialog is wide or normal
 		 */
 		export function createModelViewDialog(title: string, dialogName?: string, isWide?: boolean): Dialog;
+
+		/**
+		 * Create a dialog with the given title
+		 * @param title Title of the dialog, displayed at the top.
+		 * @param dialogName Name of the dialog.
+		 * @param width Width of the dialog, default is 'narrow'.
+		 */
+		export function createModelViewDialog(title: string, dialogName?: string, width?: DialogWidth): Dialog;
 
 		/**
 		 * Create a dialog tab which can be included as part of the content of a dialog

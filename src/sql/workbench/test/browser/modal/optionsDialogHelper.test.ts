@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as OptionsDialogHelper from 'sql/workbench/browser/modal/optionsDialogHelper';
-import { InputBox } from 'vs/base/browser/ui/inputbox/inputBox';
+import { InputBox, MessageType } from 'vs/base/browser/ui/inputbox/inputBox';
 import * as azdata from 'azdata';
 import * as TypeMoq from 'typemoq';
 import * as assert from 'assert';
@@ -100,7 +100,7 @@ suite('Advanced options helper tests', () => {
 
 		inputBox = TypeMoq.Mock.ofType(InputBox, TypeMoq.MockBehavior.Loose, $('div'), null, null);
 		inputBox.callBase = true;
-		inputBox.setup(x => x.validate()).returns(() => isValid);
+		inputBox.setup(x => x.validate()).returns(() => isValid ? undefined : MessageType.ERROR);
 		inputBox.setup(x => x.value).returns(() => inputValue);
 	});
 

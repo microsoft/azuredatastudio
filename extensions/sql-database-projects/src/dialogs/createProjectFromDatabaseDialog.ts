@@ -228,7 +228,16 @@ export class CreateProjectFromDatabaseDialog {
 		// populate database dropdown with the databases for this connection
 		if (connectionId) {
 			this.sourceDatabaseDropDown!.loading = true;
-			const databaseValues = await azdata.connection.listDatabases(connectionId);
+			let databaseValues;
+			try {
+				databaseValues = (await azdata.connection.listDatabases(connectionId))
+					// filter out system dbs
+					.filter(db => !constants.systemDbs.includes(db));
+			} catch (e) {
+				// if the user doesn't have access to master, just set the database of the connection profile
+				databaseValues = [databaseName!];
+				console.warn(e);
+			}
 
 			this.sourceDatabaseDropDown!.values = databaseValues;
 			this.sourceDatabaseDropDown!.loading = false;

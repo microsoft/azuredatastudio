@@ -472,7 +472,7 @@ export class FutureStub implements nb.IFuture {
 export class NotebookComponentStub implements INotebookEditor {
 	cellEditors: ICellEditorProvider[];
 	viewMode: string;
-	deltaDecorations(newDecorationRange: NotebookRange, oldDecorationRange: NotebookRange): void {
+	deltaDecorations(newDecorationsRange: NotebookRange | NotebookRange[], oldDecorationsRange: NotebookRange | NotebookRange[]): void {
 		throw new Error('Method not implemented.');
 	}
 	get notebookParams(): INotebookParams {
@@ -715,7 +715,7 @@ export class NotebookEditorStub implements INotebookEditor {
 	navigateToSection(sectionId: string): void {
 		throw new Error('Method not implemented.');
 	}
-	deltaDecorations(newDecorationRange: NotebookRange, oldDecorationRange: NotebookRange): void {
+	deltaDecorations(newDecorationsRange: NotebookRange | NotebookRange[], oldDecorationsRange: NotebookRange | NotebookRange[]): void {
 		throw new Error('Method not implemented.');
 	}
 	addCell(cellType: CellType, index?: number, event?: UIEvent) {
@@ -733,7 +733,7 @@ export class CellEditorProviderStub implements ICellEditorProvider {
 	getEditor(): QueryTextEditor {
 		throw new Error('Method not implemented.');
 	}
-	deltaDecorations(newDecorationRange: NotebookRange, oldDecorationRange: NotebookRange): void {
+	deltaDecorations(newDecorationsRange: NotebookRange | NotebookRange[], oldDecorationsRange: NotebookRange | NotebookRange[]): void {
 		throw new Error('Method not implemented.');
 	}
 }

@@ -12,6 +12,7 @@ import * as constants from '../constants/strings';
 import { WIZARD_INPUT_COMPONENT_WIDTH } from './wizardController';
 import { getLocationDisplayName, getSqlMigrationService, getSqlMigrationServiceAuthKeys, getSqlMigrationServiceMonitoringData, SqlManagedInstance, SqlMigrationService } from '../api/azure';
 import { IconPathHelper } from '../constants/iconPathHelper';
+import { findDropDownItemIndex } from '../api/utils';
 
 export class IntergrationRuntimePage extends MigrationWizardPage {
 
@@ -174,12 +175,14 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 		}).component();
 		this._resourceGroupDropdown = this._view.modelBuilder.dropDown().withProps({
 			width: WIZARD_INPUT_COMPONENT_WIDTH,
-			editable: true
+			editable: true,
+			fireOnTextChange: true,
 		}).component();
 
 		this._resourceGroupDropdown.onValueChanged(async (value) => {
-			if (value) {
-				this.populateDms(value);
+			const selectedIndex = findDropDownItemIndex(this._resourceGroupDropdown, value);
+			if (selectedIndex > -1) {
+				await this.populateDms(value);
 			}
 		});
 
@@ -193,7 +196,8 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 
 		this._dmsDropdown = this._view.modelBuilder.dropDown().withProps({
 			width: WIZARD_INPUT_COMPONENT_WIDTH,
-			editable: true
+			editable: true,
+			fireOnTextChange: true,
 		}).component();
 
 		this._dmsDropdown.onValueChanged(async (value) => {
@@ -201,9 +205,11 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 				this.wizard.message = {
 					text: ''
 				};
-				const selectedIndex = (<azdata.CategoryValue[]>this._dmsDropdown.values)?.findIndex((v) => v.displayName === value);
-				this.migrationStateModel._sqlMigrationService = this.migrationStateModel.getMigrationService(selectedIndex);
-				this.loadMigrationServiceStatus();
+				const selectedIndex = findDropDownItemIndex(this._dmsDropdown, value);
+				if (selectedIndex > -1) {
+					this.migrationStateModel._sqlMigrationService = this.migrationStateModel.getMigrationService(selectedIndex);
+					await this.loadMigrationServiceStatus();
+				}
 			}
 		});
 
@@ -395,10 +401,11 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 
 			let index = 0;
 			if (resourceGroupName) {
-				index = (<azdata.CategoryValue[]>this._resourceGroupDropdown.values).findIndex(v => v.displayName.toLowerCase() === resourceGroupName.toLowerCase());
+				index = findDropDownItemIndex(this._resourceGroupDropdown, resourceGroupName);
 			}
+
 			if ((<azdata.CategoryValue>this._resourceGroupDropdown.value)?.displayName.toLowerCase() === (<azdata.CategoryValue>this._resourceGroupDropdown.values[index])?.displayName.toLowerCase()) {
-				this.populateDms((<azdata.CategoryValue>this._resourceGroupDropdown.value)?.displayName);
+				await this.populateDms((<azdata.CategoryValue>this._resourceGroupDropdown.value)?.displayName);
 			} else {
 				this._resourceGroupDropdown.value = this._resourceGroupDropdown.values[index];
 			}
@@ -407,7 +414,6 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 		} finally {
 			this._resourceGroupDropdown.loading = false;
 		}
-
 	}
 
 	public async populateDms(resourceGroupName: string): Promise<void> {
@@ -419,9 +425,9 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 			this._dmsDropdown.values = await this.migrationStateModel.getSqlMigrationServiceValues(this.migrationStateModel._targetSubscription, <SqlManagedInstance>this.migrationStateModel._targetServerInstance, resourceGroupName);
 			let index = -1;
 			if (this.migrationStateModel._sqlMigrationService) {
-				index = (<azdata.CategoryValue[]>this._dmsDropdown.values).findIndex(v => v.displayName.toLowerCase() === this.migrationStateModel._sqlMigrationService.name.toLowerCase());
+				index = findDropDownItemIndex(this._dmsDropdown, this.migrationStateModel._sqlMigrationService.name);
 			}
-			if (index !== -1) {
+			if (index > -1) {
 				this._dmsDropdown.value = this._dmsDropdown.values[index];
 			} else {
 				this._dmsDropdown.value = this._dmsDropdown.values[0];
