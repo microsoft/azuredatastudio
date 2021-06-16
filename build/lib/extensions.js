@@ -52,7 +52,6 @@ function updateExtensionPackageJSON(input, update) {
     }))
         .pipe(packageJsonFilter.restore);
 }
-// {{SQL CARBON EDIT}} - Needed in locFunc
 function fromLocal(extensionPath, forWeb) {
     const webpackConfigFileName = forWeb ? 'extension-browser.webpack.config.js' : 'extension.webpack.config.js';
     const isWebPacked = fs.existsSync(path.join(extensionPath, webpackConfigFileName));
@@ -147,7 +146,6 @@ function fromLocalWebpack(extensionPath, webpackConfigFileName) {
     });
     return result.pipe(stats_1.createStatsStream(path.basename(extensionPath)));
 }
-// {{SQL CARBON EDIT}} - Needed in locFunc
 function fromLocalNormal(extensionPath) {
     const result = es.through();
     const vsce = require('vsce');
