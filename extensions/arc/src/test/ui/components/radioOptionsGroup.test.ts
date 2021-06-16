@@ -5,10 +5,10 @@
 
 import * as azdata from 'azdata';
 import * as should from 'should';
-import { getErrorMessage } from '../../../common/utils';
 import { RadioOptionsGroup, RadioOptionsInfo } from '../../../ui/components/radioOptionsGroup';
 import { createModelViewMock } from '@microsoft/azdata-test/out/mocks/modelView/modelViewMock';
 import { StubRadioButton } from '@microsoft/azdata-test/out/stubs/modelView/stubRadioButton';
+import * as loc from '../../../localizedConstants';
 
 
 const loadingError = new Error('Error loading options');
@@ -51,7 +51,7 @@ describe('radioOptionsGroup', function (): void {
 		radioOptionsGroup.items.length.should.equal(1, 'There is should be only one element in the divContainer when loading error happens');
 		const label = radioOptionsGroup.items[0] as azdata.TextComponent;
 		should(label.value).not.be.undefined();
-		label.value!.should.deepEqual(getErrorMessage(loadingError));
+		label.value!.should.deepEqual(loc.loadingClusterContextsError(loadingError));
 		should(label.CSSStyles).not.be.undefined();
 		should(label.CSSStyles!.color).not.be.undefined();
 		label.CSSStyles!.color.should.equal('Red');
