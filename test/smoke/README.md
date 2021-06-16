@@ -63,7 +63,7 @@ the web server folder which includes the web client bits (e.g. `vscode-server-da
 ### Debug
 
 - `--verbose` logs all the low level driver calls made to Code;
-- `-f PATTERN` (alias `-g PATTERN`) filters the tests to be run. You can also use pretty much any mocha argument;
+- `-f PATTERN` (alias `-g PATTERN`) filters the tests to be run. This is sent to Mocha as the [grep](https://mochajs.org/api/mocha#grep) option, typically you can just use a simple string of the test name to filter down to just that test (e.g. `test -f "My Test Name"`)
 - `--screenshots SCREENSHOT_DIR` captures screenshots when tests fail.
 
 ### Develop

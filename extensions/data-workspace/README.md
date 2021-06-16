@@ -4,7 +4,7 @@ This project has adopted the [Microsoft Open Source Code of Conduct](https://ope
 
 ## Privacy Statement
 
-The [Microsoft Enterprise and Developer Privacy Statement](https://privacy.microsoft.com/en-us/privacystatement) describes the privacy statement of this software.
+The [Microsoft Enterprise and Developer Privacy Statement](https://privacy.microsoft.com/privacystatement) describes the privacy statement of this software.
 
 ## License
 
