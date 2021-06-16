@@ -116,11 +116,17 @@ export class CreateBookDialog {
 			}).component();
 
 			browseFolderButton.onDidClick(async () => {
-				this.saveLocationInputBox.value = await this.selectFolder();
+				const selectedFolder = await this.selectFolder();
+				if (selectedFolder) {
+					this.saveLocationInputBox.value = selectedFolder;
+				}
 			});
 
 			browseContentFolderButton.onDidClick(async () => {
-				this.contentFolderInputBox.value = await this.selectFolder();
+				const selectedFolder = await this.selectFolder();
+				if (selectedFolder) {
+					this.contentFolderInputBox.value = selectedFolder;
+				}
 			});
 
 			this.formModel = this.view.modelBuilder.formContainer()
