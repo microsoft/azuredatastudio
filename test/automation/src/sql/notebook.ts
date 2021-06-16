@@ -269,13 +269,11 @@ export class NotebookView {
 	}
 
 	async pinNotebook(): Promise<void> {
-		await this.code.dispatchKeybinding('escape');
 		await this.code.waitAndClick(NotebookView.firstNotebookTreeItem);
 		await this.code.waitAndClick(`${NotebookView.firstNotebookTreeItem} .codicon-pinned`);
 	}
 
 	async unpinNotebook(): Promise<void> {
-		await this.code.dispatchKeybinding('escape');
 		await this.code.waitAndClick(NotebookView.pinnedNotebooksSelector);
 		await this.code.waitAndClick(`${NotebookView.pinnedNotebooksSelector} .actions a[title="Unpin Notebook"]`);
 	}
