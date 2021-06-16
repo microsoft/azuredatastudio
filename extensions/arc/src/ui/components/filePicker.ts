@@ -18,12 +18,15 @@ export class FilePicker {
 	public readonly filePickerButton: azdata.ButtonComponent;
 	constructor(
 		modelBuilder: azdata.ModelBuilder,
-		initialPath: string, onNewDisposableCreated: (disposable: vscode.Disposable) => void
+		initialPath: string,
+		onNewDisposableCreated: (disposable: vscode.Disposable) => void,
+		ariaLabel: string
 	) {
 		const buttonWidth = 80;
 		this.filePathInputBox = modelBuilder.inputBox()
 			.withProperties<azdata.InputBoxProperties>({
 				value: initialPath,
+				ariaLabel: ariaLabel,
 				width: 350
 			}).component();
 
