@@ -5,14 +5,15 @@
 
 import * as azdata from 'azdata';
 import { IconPathHelper } from '../../constants/iconPathHelper';
-import { MigrationContext, MigrationLocalStorage } from '../../models/migrationLocalStorage';
+import { MigrationContext } from '../../models/migrationLocalStorage';
 import { MigrationCutoverDialogModel, MigrationStatus } from './migrationCutoverDialogModel';
 import * as loc from '../../constants/strings';
 import { convertByteSizeToReadableUnit, convertIsoTimeToLocalTime, getSqlServerName, SupportedAutoRefreshIntervals } from '../../api/utils';
 import { EOL } from 'os';
 import * as vscode from 'vscode';
 import { ConfirmCutoverDialog } from './confirmCutoverDialog';
-import { AutoRefreshSettingsDialog } from '../autoRefreshSettingsDialog/autoRefreshSettingsDialog';
+
+const refreshFrequency: SupportedAutoRefreshIntervals = 30000;
 
 export class MigrationCutoverDialog {
 	private _dialogObject!: azdata.window.Dialog;
@@ -339,21 +340,7 @@ export class MigrationCutoverDialog {
 			width: 950
 		}).component();
 
-		const refreshInterval = MigrationLocalStorage.getRefreshInterval('MigrationCutover') ?? 30000;
-		const refreshButton = this._view.modelBuilder.button().withProps({
-			label: loc.AUTO_REFRESH_BUTTON_TEXT(refreshInterval),
-			secondary: true,
-			width: '150px',
-		}).component();
-		refreshButton.onDidClick(async (e) => {
-			const refreshInterval = MigrationLocalStorage.getRefreshInterval('MigrationCutover') ?? 180000;
-			const refreshDialog = new AutoRefreshSettingsDialog(refreshInterval);
-			const setting = await refreshDialog.initialize();
-			MigrationLocalStorage.saveRefreshInterval('MigrationCutover', setting.interval);
-			this.setAutoRefresh(setting.interval);
-			refreshButton.label = setting.buttonText;
-		});
-		this.setAutoRefresh(refreshInterval);
+		this.setAutoRefresh(refreshFrequency);
 
 		const titleLogoContainer = this._view.modelBuilder.flexContainer().withProps({
 			width: 1000
@@ -367,13 +354,6 @@ export class MigrationCutoverDialog {
 			CSSStyles: {
 				'margin-left': '5px',
 				'width': '930px'
-			}
-		});
-		titleLogoContainer.addItem(refreshButton, {
-			flex: '0',
-			CSSStyles: {
-				'margin-left': '5px',
-				'width': '150px'
 			}
 		});
 

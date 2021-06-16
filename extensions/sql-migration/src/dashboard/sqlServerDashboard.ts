@@ -11,7 +11,6 @@ import { IconPath, IconPathHelper } from '../constants/iconPathHelper';
 import { MigrationStatusDialog } from '../dialog/migrationStatus/migrationStatusDialog';
 import { AdsMigrationStatus } from '../dialog/migrationStatus/migrationStatusDialogModel';
 import { filterMigrations, SupportedAutoRefreshIntervals } from '../api/utils';
-import { AutoRefreshSettingsDialog } from '../dialog/autoRefreshSettingsDialog/autoRefreshSettingsDialog';
 
 interface IActionMetadata {
 	title?: string,
@@ -22,6 +21,7 @@ interface IActionMetadata {
 }
 
 const maxWidth = 800;
+const refreshFrequency: SupportedAutoRefreshIntervals = 180000;
 
 interface StatusCard {
 	container: azdata.DivContainer;
@@ -114,28 +114,10 @@ export class DashboardWidget {
 			}
 		}).component();
 
-		const refreshInterval = MigrationLocalStorage.getRefreshInterval('Dashboard') ?? 180000;
-		const refreshButton = view.modelBuilder.button().withProps({
-			label: loc.AUTO_REFRESH_BUTTON_TEXT(refreshInterval),
-			secondary: true,
-			width: '150px',
-			CSSStyles: {
-				'margin-top': '20px'
-			}
-		}).component();
-		refreshButton.onDidClick(async (e) => {
-			const refreshInterval = MigrationLocalStorage.getRefreshInterval('Dashboard') ?? 180000;
-			const refreshDialog = new AutoRefreshSettingsDialog(refreshInterval);
-			const setting = await refreshDialog.initialize();
-			MigrationLocalStorage.saveRefreshInterval('Dashboard', setting.interval);
-			this.setAutoRefresh(setting.interval);
-			refreshButton.label = setting.buttonText;
-		});
-		this.setAutoRefresh(refreshInterval);
+		this.setAutoRefresh(refreshFrequency);
 
 		const container = view.modelBuilder.flexContainer().withItems([
 			titleComponent,
-			refreshButton
 		]).component();
 
 		const descComponent = view.modelBuilder.text().withProps({

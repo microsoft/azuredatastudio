@@ -11,8 +11,9 @@ import { MigrationCutoverDialog } from '../migrationCutover/migrationCutoverDial
 import { AdsMigrationStatus, MigrationStatusDialogModel } from './migrationStatusDialogModel';
 import * as loc from '../../constants/strings';
 import { convertTimeDifferenceToDuration, filterMigrations, SupportedAutoRefreshIntervals } from '../../api/utils';
-import { AutoRefreshSettingsDialog } from '../autoRefreshSettingsDialog/autoRefreshSettingsDialog';
 import { SqlMigrationServiceDetailsDialog } from '../sqlMigrationService/sqlMigrationServiceDetailsDialog';
+
+const refreshFrequency: SupportedAutoRefreshIntervals = 180000;
 
 export class MigrationStatusDialog {
 	private _model: MigrationStatusDialogModel;
@@ -132,39 +133,14 @@ export class MigrationStatusDialog {
 				'margin-left': '20px'
 			}
 		});
-
-
-		const refreshInterval = MigrationLocalStorage.getRefreshInterval('MigrationStatus') ?? 180000;
-		const refreshButton = this._view.modelBuilder.button().withProps({
-			label: loc.AUTO_REFRESH_BUTTON_TEXT(refreshInterval),
-			secondary: true,
-			width: '150px'
-		}).component();
-		refreshButton.onDidClick(async (e) => {
-			const refreshInterval = MigrationLocalStorage.getRefreshInterval('MigrationStatus') ?? 180000;
-			const refreshDialog = new AutoRefreshSettingsDialog(refreshInterval);
-			const setting = await refreshDialog.initialize();
-			MigrationLocalStorage.saveRefreshInterval('MigrationStatus', setting.interval);
-			this.setAutoRefresh(setting.interval);
-			refreshButton.label = setting.buttonText;
-		});
-		this.setAutoRefresh(refreshInterval);
-
+		this.setAutoRefresh(refreshFrequency);
 		const container = this._view.modelBuilder.flexContainer().withProps({
 			width: 1000
 		}).component();
-
 		container.addItem(flexContainer, {
 			flex: '0 0 auto',
 			CSSStyles: {
 				'width': '980px'
-			}
-		});
-
-		container.addItem(refreshButton, {
-			flex: '0 0 auto',
-			CSSStyles: {
-				'width': '150px'
 			}
 		});
 		return container;

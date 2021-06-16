@@ -6,8 +6,6 @@ import * as vscode from 'vscode';
 import { azureResource } from 'azureResource';
 import { DatabaseMigration, SqlMigrationService, SqlManagedInstance, getMigrationStatus, AzureAsyncOperationResource, getMigrationAsyncOperationDetails, SqlVMServer } from '../api/azure';
 import * as azdata from 'azdata';
-import { SupportedAutoRefreshIntervals } from '../api/utils';
-
 
 export class MigrationLocalStorage {
 	private static context: vscode.ExtensionContext;
@@ -90,15 +88,6 @@ export class MigrationLocalStorage {
 
 	public static clearMigrations() {
 		this.context.globalState.update(this.mementoToken, ([] as MigrationContext[]));
-	}
-
-
-	public static getRefreshInterval(viewName: 'Dashboard' | 'MigrationStatus' | 'MigrationCutover'): SupportedAutoRefreshIntervals | undefined {
-		return this.context.globalState.get('sql.migration' + viewName);
-	}
-
-	public static saveRefreshInterval(viewName: 'Dashboard' | 'MigrationStatus' | 'MigrationCutover', interval: SupportedAutoRefreshIntervals): void {
-		this.context.globalState.update('sql.migration' + viewName, interval);
 	}
 }
 
