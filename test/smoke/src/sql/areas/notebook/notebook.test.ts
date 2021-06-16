@@ -78,7 +78,7 @@ export function setup() {
 			await app.workbench.sqlNotebook.waitForTypeInEditor(sampleText);
 			await app.code.dispatchKeybinding('escape');
 			await app.workbench.sqlNotebook.waitForTextCellPreviewContent(sampleText, 'p');
-
+			await app.code.dispatchKeybinding('escape');
 			await app.workbench.quickaccess.runCommand('workbench.action.revertAndCloseActiveEditor');
 		});
 	});

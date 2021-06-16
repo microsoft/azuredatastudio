@@ -244,7 +244,7 @@ export class NotebookToolbar {
 export class NotebookView {
 	private static readonly inputBox = '.notebookExplorer-viewlet .search-widget .input-box';
 	private static searchResult = '.search-view .result-messages';
-	private static firstNotebookTreeItem = '.split-view-view .tree-explorer-viewlet-tree-view .monaco-list-row';
+	private static firstNotebookTreeItem = '.split-view-view .tree-explorer-viewlet-tree-view .monaco-list-row[data-index="0"]';
 	private static pinnedNotebooksSelector = '.split-view-view .tree-explorer-viewlet-tree-view .monaco-list[aria-label="Pinned notebooks"] .monaco-list-row';
 
 	constructor(private code: Code, private quickAccess: QuickAccess) { }
