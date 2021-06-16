@@ -28,7 +28,7 @@ import { ProcessItem } from 'vs/base/common/processes';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { ILog, Translations } from 'vs/workbench/services/extensions/common/extensionPoints';
 import { ITelemetryAppender } from 'vs/platform/telemetry/common/telemetryUtils';
-import { IBuiltInExtension } from 'vs/platform/product/common/productService';
+import { IBuiltInExtension } from 'vs/base/common/product';
 import { IExtensionManagementCLIService } from 'vs/platform/extensionManagement/common/extensionManagement';
 import { cwd } from 'vs/base/common/process';
 

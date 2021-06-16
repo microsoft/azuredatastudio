@@ -7,7 +7,7 @@ import * as fs from 'fs';
 import * as http from 'http';
 import * as net from 'net';
 import * as url from 'url';
-// import { release, hostname } from 'os';
+import { release, hostname } from 'os';
 import * as perf from 'vs/base/common/performance';
 import { performance } from 'perf_hooks';
 import { VSBuffer } from 'vs/base/common/buffer';
@@ -22,7 +22,7 @@ import { ConnectionType, ConnectionTypeRequest, ErrorMessage, HandshakeMessage, 
 import { ExtensionHostConnection } from 'vs/server/extensionHostConnection';
 import { ManagementConnection } from 'vs/server/remoteExtensionManagement';
 import { createRemoteURITransformer } from 'vs/server/remoteUriTransformer';
-import { ILogService, LogLevel, AbstractLogService, DEFAULT_LOG_LEVEL, MultiplexLogService, getLogLevel } from 'vs/platform/log/common/log';
+import { ILogService, LogLevel, AbstractLogger, DEFAULT_LOG_LEVEL, MultiplexLogService, getLogLevel, LogService } from 'vs/platform/log/common/log';
 import { FileAccess, Schemas } from 'vs/base/common/network';
 import product from 'vs/platform/product/common/product';
 import { IEnvironmentService, INativeEnvironmentService } from 'vs/platform/environment/common/environment';
@@ -44,8 +44,8 @@ import { ILocalizationsService } from 'vs/platform/localizations/common/localiza
 import { LocalizationsService } from 'vs/platform/localizations/node/localizations';
 import { AppInsightsAppender } from 'vs/platform/telemetry/node/appInsightsAppender';
 import { ITelemetryServiceConfig, TelemetryService } from 'vs/platform/telemetry/common/telemetryService';
-//import { resolveCommonProperties } from 'vs/platform/telemetry/common/commonProperties';
-//import { getMachineId } from 'vs/base/node/id';
+import { resolveCommonProperties } from 'vs/platform/telemetry/common/commonProperties';
+import { getMachineId } from 'vs/base/node/id';
 import { FileService } from 'vs/platform/files/common/fileService';
 import { DiskFileSystemProvider } from 'vs/platform/files/node/diskFileSystemProvider';
 import { IFileService } from 'vs/platform/files/common/files';
@@ -60,22 +60,21 @@ import { RequestChannel } from 'vs/platform/request/common/requestIpc';
 import { ExtensionManagementChannel } from 'vs/platform/extensionManagement/common/extensionManagementIpc';
 import ErrorTelemetry from 'vs/platform/telemetry/node/errorTelemetry';
 import { ExtensionHostDebugBroadcastChannel } from 'vs/platform/debug/common/extensionHostDebugIpc';
-import { LoggerChannel } from 'vs/platform/log/common/logIpc';
+import { LogLevelChannel } from 'vs/platform/log/common/logIpc';
 import { IURITransformer } from 'vs/base/common/uriIpc';
 import { WebClientServer, serveError, serveFile } from 'vs/server/webClientServer';
 import { URI } from 'vs/base/common/uri';
 import { isEqualOrParent } from 'vs/base/common/extpath';
-import { ServerEnvironmentService, ServerParsedArgs } from 'vs/server/serverEnvironmentService';
+import { IServerEnvironmentService, ServerEnvironmentService, ServerParsedArgs } from 'vs/server/serverEnvironmentService';
 import { basename, dirname, join } from 'vs/base/common/path';
 import { REMOTE_TERMINAL_CHANNEL_NAME } from 'vs/workbench/contrib/terminal/common/remoteTerminalChannel';
 import { RemoteTerminalChannel } from 'vs/server/remoteTerminalChannel';
 import { LoaderStats } from 'vs/base/common/amd';
 import { RemoteExtensionLogFileName } from 'vs/workbench/services/remote/common/remoteAgentService';
 import { ExtensionManagementCLIService } from 'vs/platform/extensionManagement/common/extensionManagementCLIService';
-import { SpdLogService } from 'vs/platform/log/node/spdlogService';
-// import { SpdLogLogger } from 'vs/platform/log/node/spdlogLog';
-// import { IPtyService } from 'vs/platform/terminal/common/terminal';
-// import { PtyHostService } from 'vs/platform/terminal/node/ptyHostService';
+import { SpdLogLogger } from 'vs/platform/log/node/spdlogLog';
+import { IPtyService } from 'vs/platform/terminal/common/terminal';
+import { PtyHostService } from 'vs/platform/terminal/node/ptyHostService';
 
 const SHUTDOWN_TIMEOUT = 5 * 60 * 1000;
 const license = `
@@ -118,7 +117,7 @@ function now(): string {
 	return `${twodigits(date.getHours())}:${twodigits(date.getMinutes())}:${twodigits(date.getSeconds())}`;
 }
 
-class ServerLogService extends AbstractLogService implements ILogService {
+class ServerLogService extends AbstractLogger implements ILogService {
 	_serviceBrand: undefined;
 	private useColors: boolean;
 
@@ -188,7 +187,7 @@ class ServerLogService extends AbstractLogService implements ILogService {
 		}
 	}
 
-	dispose(): void {
+	override dispose(): void {
 		// noop
 	}
 
@@ -211,7 +210,7 @@ export class RemoteExtensionHostAgentServer extends Disposable {
 	private shutdownTimer: NodeJS.Timer | undefined;
 
 	constructor(
-		private readonly _environmentService: ServerEnvironmentService,
+		private readonly _environmentService: IServerEnvironmentService,
 		private readonly _productService: IProductService,
 		private readonly _connectionToken: string,
 		private readonly _connectionTokenIsMandatory: boolean,
@@ -253,7 +252,7 @@ export class RemoteExtensionHostAgentServer extends Disposable {
 
 		// TODO: @Sandy @Joao need dynamic context based router
 		const router = new StaticRouter<RemoteAgentConnectionContext>(ctx => ctx.clientId === 'renderer');
-		this._socketServer.registerChannel('logger', new LoggerChannel(this._logService));
+		this._socketServer.registerChannel('logger', new LogLevelChannel(this._logService));
 
 		services.set(IEnvironmentService, this._environmentService);
 		services.set(INativeEnvironmentService, this._environmentService);
@@ -276,10 +275,10 @@ export class RemoteExtensionHostAgentServer extends Disposable {
 				this._register(toDisposable(() => appInsightsAppender!.flush())); // Ensure the AI appender is disposed so that it flushes remaining data
 			}
 
-			// const machineId = await getMachineId();
+			const machineId = await getMachineId();
 			const config: ITelemetryServiceConfig = {
 				appender: appInsightsAppender,
-				commonProperties: undefined, // resolveCommonProperties(fileService, release(), hostname(), process.arch, product.commit, product.version + '-remote', machineId, product.msftInternalDomains, this._environmentService.installSourcePath, 'remoteAgent'),
+				commonProperties: resolveCommonProperties(fileService, release(), hostname(), process.arch, product.commit, product.version + '-remote', machineId, product.msftInternalDomains, this._environmentService.installSourcePath, 'remoteAgent'),
 				piiPaths: [this._environmentService.appRoot]
 			};
 
@@ -301,14 +300,14 @@ export class RemoteExtensionHostAgentServer extends Disposable {
 		const extensionManagementCLIService = instantiationService.createInstance(ExtensionManagementCLIService);
 		services.set(IExtensionManagementCLIService, extensionManagementCLIService);
 
-		// const ptyService = instantiationService.createInstance(PtyHostService);
-		// services.set(IPtyService, ptyService);
+		const ptyService = instantiationService.createInstance(PtyHostService);
+		services.set(IPtyService, ptyService);
 
 		return instantiationService.invokeFunction(accessor => {
 			const remoteExtensionEnvironmentChannel = new RemoteAgentEnvironmentChannel(this._connectionToken, this._environmentService, extensionManagementCLIService, this._logService, accessor.get(ITelemetryService), appInsightsAppender);
 			this._socketServer.registerChannel('remoteextensionsenvironment', remoteExtensionEnvironmentChannel);
 
-			this._socketServer.registerChannel(REMOTE_TERMINAL_CHANNEL_NAME, new RemoteTerminalChannel(this._logService, this._environmentService));
+			this._socketServer.registerChannel(REMOTE_TERMINAL_CHANNEL_NAME, new RemoteTerminalChannel(this._logService, this._environmentService, ptyService));
 
 			const remoteFileSystemChannel = new RemoteAgentFileSystemChannel(this._logService, this._environmentService);
 			this._socketServer.registerChannel(REMOTE_FILE_SYSTEM_CHANNEL_NAME, remoteFileSystemChannel);
@@ -898,7 +897,7 @@ export interface IServerAPI {
 
 export async function createServer(address: string | net.AddressInfo | null, args: ServerParsedArgs, REMOTE_DATA_FOLDER: string): Promise<IServerAPI> {
 	const productService = { _serviceBrand: undefined, ...product };
-	const environmentService = new ServerEnvironmentService(args);
+	const environmentService = new ServerEnvironmentService(args, productService);
 
 	//
 	// On Windows, exit early with warning message to users about potential security issue
@@ -986,11 +985,11 @@ export async function createServer(address: string | net.AddressInfo | null, arg
 	return remoteExtensionHostAgentServer;
 }
 
-const getOrCreateSpdLogService: (environmentService: ServerEnvironmentService) => ILogService = (function () {
+const getOrCreateSpdLogService: (environmentService: IServerEnvironmentService) => ILogService = (function () {
 	let _logService: ILogService | null;
-	return function getLogService(environmentService: ServerEnvironmentService): ILogService {
+	return function getLogService(environmentService: IServerEnvironmentService): ILogService {
 		if (!_logService) {
-			_logService = new SpdLogService(RemoteExtensionLogFileName, environmentService.logsPath, getLogLevel(environmentService));
+			_logService = new LogService(new SpdLogLogger(RemoteExtensionLogFileName, join(environmentService.logsPath, `${RemoteExtensionLogFileName}.log`), true, getLogLevel(environmentService)));
 		}
 		return _logService;
 	};

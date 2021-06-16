@@ -67,7 +67,7 @@ class CliMain extends Disposable {
 		const productService = { _serviceBrand: undefined, ...product };
 		services.set(IProductService, productService);
 
-		const environmentService = new ServerEnvironmentService(this.args);
+		const environmentService = new ServerEnvironmentService(this.args, productService);
 		// services.set(IServerEnvironmentService, environmentService);
 		const logService: ILogService = new NullLogService();
 		services.set(ILogService, logService);

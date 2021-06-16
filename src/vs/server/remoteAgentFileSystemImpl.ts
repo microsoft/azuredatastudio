@@ -79,7 +79,7 @@ class SessionFileWatcher extends Disposable {
 		});
 	}
 
-	dispose(): void {
+	override dispose(): void {
 		super.dispose();
 
 		this.watcherRequests.forEach(disposable => dispose(disposable));
@@ -288,7 +288,7 @@ export class RemoteAgentFileSystemChannel extends Disposable implements IServerC
 		}
 	}
 
-	dispose(): void {
+	override dispose(): void {
 		super.dispose();
 
 		this.watchRequests.forEach(disposable => dispose(disposable));

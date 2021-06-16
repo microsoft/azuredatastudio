@@ -111,7 +111,7 @@ export interface ServerParsedArgs {
 }
 
 export class ServerEnvironmentService extends NativeEnvironmentService {
-	get args(): ServerParsedArgs { return super.args as ServerParsedArgs; }
+	override get args(): ServerParsedArgs { return super.args as ServerParsedArgs; }
 }
 
 export interface IServerEnvironmentService extends INativeEnvironmentService {
