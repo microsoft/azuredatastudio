@@ -1,4 +1,6 @@
 src/**
+.gitignore
+*.vsix
 out/**
 tsconfig.json
 extension.webpack.config.js
