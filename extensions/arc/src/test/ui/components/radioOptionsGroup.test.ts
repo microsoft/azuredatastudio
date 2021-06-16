@@ -25,7 +25,7 @@ let radioOptionsGroup: RadioOptionsGroup;
 describe('radioOptionsGroup', function (): void {
 	beforeEach(async () => {
 		const { modelBuilderMock } = createModelViewMock();
-		radioOptionsGroup = new RadioOptionsGroup(modelBuilderMock.object, (_disposable) => { });
+		radioOptionsGroup = new RadioOptionsGroup(modelBuilderMock.object, (_disposable) => { }, undefined, '', () => '');
 		await radioOptionsGroup.load(async () => radioOptionsInfo);
 	});
 

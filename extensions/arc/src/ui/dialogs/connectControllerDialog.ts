@@ -97,13 +97,14 @@ abstract class ControllerDialogBase extends InitializingComponent {
 			this.modelBuilder,
 			controllerInfo?.kubeConfigFilePath || getDefaultKubeConfigPath(),
 			(disposable) => this._toDispose.push(disposable),
-			loc.controllerKubeConfig
+			loc.controllerKubeConfig,
+			loc.invalidConfigPath
 		);
 		this.modelBuilder.inputBox()
 			.withProps({
 				value: controllerInfo?.kubeConfigFilePath || getDefaultKubeConfigPath()
 			}).component();
-		this.clusterContextRadioGroup = new RadioOptionsGroup(this.modelBuilder, (disposable) => this._toDispose.push(disposable));
+		this.clusterContextRadioGroup = new RadioOptionsGroup(this.modelBuilder, (disposable) => this._toDispose.push(disposable), undefined, loc.loadingClusterContextCompleted, loc.loadingClusterContextsError);
 		this.loadRadioGroup(controllerInfo?.kubeClusterContext);
 		this._toDispose.push(this.clusterContextRadioGroup.onRadioOptionChanged(newContext => this.updateNamespace(newContext)));
 		this._toDispose.push(this.kubeConfigInputBox.onTextChanged(() => this.loadRadioGroup(controllerInfo?.kubeClusterContext)));
