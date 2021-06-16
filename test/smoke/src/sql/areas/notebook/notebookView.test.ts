@@ -8,6 +8,18 @@ import { Application } from '../../../../../automation';
 
 export function setup() {
 	describe('NotebookView', () => {
+		it('Pin a notebook', async function () {
+			const app = this.app as Application;
+			await app.workbench.sqlNotebook.view.focus();
+			await app.workbench.sqlNotebook.view.pinNotebook();
+			await app.workbench.sqlNotebook.view.waitForPinnedNotebookTreeView();
+		});
+
+		it('Unpin Notebook', async function () {
+			const app = this.app as Application;
+			await app.workbench.sqlNotebook.view.focus();
+			await app.workbench.sqlNotebook.view.unpinNotebook();
+		});
 
 		it('No search results if search query is empty', async function () {
 			const app = this.app as Application;

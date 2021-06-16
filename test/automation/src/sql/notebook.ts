@@ -245,7 +245,9 @@ export class NotebookToolbar {
 
 export class NotebookView {
 	private static readonly inputBox = '.notebookExplorer-viewlet .search-widget .input-box';
-	private static actualResult = '.search-view .result-messages';
+	private static searchResult = '.search-view .result-messages';
+	private static firstNotebookTreeItem = '.split-view-view .tree-explorer-viewlet-tree-view .monaco-list-row';
+	private static pinnedNotebooksSelector = '.split-view-view .tree-explorer-viewlet-tree-view .monaco-list[aria-label="Pinned notebooks"] .monaco-list-row';
 
 	constructor(private code: Code, private quickAccess: QuickAccess) { }
 
@@ -256,15 +258,31 @@ export class NotebookView {
 	async searchInNotebook(expr: string): Promise<IElement> {
 		await this.waitForSetSearchValue(expr);
 		await this.code.dispatchKeybinding('enter');
-		let selector = `${NotebookView.actualResult} `;
+		let selector = NotebookView.searchResult;
 		if (expr) {
-			selector += '.message';
+			selector += ' .message';
 		}
-		return await this.code.waitForElement(selector, undefined);
+		return this.code.waitForElement(selector, undefined);
 	}
 
 	async waitForSetSearchValue(text: string): Promise<void> {
 		const textArea = `${NotebookView.inputBox} textarea`;
 		await this.code.waitForTypeInEditor(textArea, text);
+	}
+
+	async pinNotebook(): Promise<void> {
+		await this.code.dispatchKeybinding('escape');
+		await this.code.waitAndClick(NotebookView.firstNotebookTreeItem);
+		await this.code.waitAndClick(`${NotebookView.firstNotebookTreeItem} .codicon-pinned`);
+	}
+
+	async unpinNotebook(): Promise<void> {
+		await this.code.dispatchKeybinding('escape');
+		await this.code.waitAndClick(NotebookView.pinnedNotebooksSelector);
+		await this.code.waitAndClick(`${NotebookView.pinnedNotebooksSelector} .actions a[title="Unpin Notebook"]`);
+	}
+
+	async waitForPinnedNotebookTreeView(): Promise<void> {
+		await this.code.waitForElement(NotebookView.pinnedNotebooksSelector);
 	}
 }
