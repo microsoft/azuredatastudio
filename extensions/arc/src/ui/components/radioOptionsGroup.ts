@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
-import { getErrorMessage } from '../../common/utils';
+import * as loc from '../../localizedConstants';
 
 export interface RadioOptionsInfo {
 	values?: string[],
@@ -67,7 +67,7 @@ export class RadioOptionsGroup {
 			this.component().loadingCompletedText = this._loadingCompleteMessage;
 		}
 		catch (e) {
-			const errorLabel = this._modelBuilder.text().withProperties({ value: `Error loading cluster contexts: ${getErrorMessage(e)}`, CSSStyles: { 'color': 'Red' } }).component();
+			const errorLabel = this._modelBuilder.text().withProperties({ value: loc.loadingClusterContextsError(e), CSSStyles: { 'color': 'Red' } }).component();
 			this._divContainer.addItem(errorLabel);
 			this.component().loadingCompletedText = this._loadingCompleteErrorMessage(e);
 		}
