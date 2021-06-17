@@ -68,6 +68,9 @@ export class MigrationStatusDialog {
 				}
 			);
 			const form = formBuilder.withLayout({ width: '100%' }).component();
+			this._view.onClosed(e => {
+				clearInterval(this._autoRefreshHandle);
+			});
 			return view.initializeModel(form);
 		});
 		this._dialogObject.content = [tab];

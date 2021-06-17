@@ -95,7 +95,9 @@ export class DashboardWidget {
 				}
 			});
 			await view.initializeModel(container);
-
+			this._view.onClosed((e) => {
+				clearInterval(this._autoRefreshHandle);
+			});
 			this.refreshMigrations();
 		});
 	}

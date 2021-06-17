@@ -287,6 +287,9 @@ export class MigrationCutoverDialog {
 				}
 			);
 			const form = formBuilder.withLayout({ width: '100%' }).component();
+			this._view.onClosed(e => {
+				clearInterval(this._autoRefreshHandle);
+			});
 			return view.initializeModel(form).then((value) => {
 				this.refreshStatus();
 			});
