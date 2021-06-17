@@ -129,7 +129,7 @@ export class DeployClusterWizardModel extends ResourceTypeModel {
 		this.setStorageSettingValue(VariableNames.SQLServerLogsStorageSize_VariableName, VariableNames.ControllerLogsStorageSize_VariableName);
 	}
 
-	public setEnvironmentVariables(): void {
+	public override setEnvironmentVariables(): void {
 		this.setStorageSettingValues();
 	}
 
@@ -215,7 +215,7 @@ export class DeployClusterWizardModel extends ResourceTypeModel {
 		return targetDeploymentProfile;
 	}
 
-	public getCodeCellContentForNotebook(tools: ITool[]): string[] {
+	public override getCodeCellContentForNotebook(tools: ITool[]): string[] {
 		const profile = this.createTargetProfile();
 		const statements: string[] = [];
 		if (this.deploymentType === BdcDeploymentType.NewAKS) {

@@ -50,7 +50,7 @@ export class VmSettingsPage extends BasePage {
 		);
 	}
 
-	public async initialize() {
+	public override async initialize() {
 		this.pageObject.registerContent(async (view: azdata.ModelView) => {
 
 			await Promise.all([
@@ -110,7 +110,7 @@ export class VmSettingsPage extends BasePage {
 		});
 	}
 
-	public async onEnter(): Promise<void> {
+	public override async onEnter(): Promise<void> {
 		this.populateVmImageDropdown();
 		this.populateVmSizeDropdown();
 
@@ -132,7 +132,7 @@ export class VmSettingsPage extends BasePage {
 		});
 	}
 
-	public async onLeave(): Promise<void> {
+	public override async onLeave(): Promise<void> {
 		this.wizard.wizardObject.registerNavigationValidator((pcInfo) => {
 			return true;
 		});
@@ -388,7 +388,7 @@ export class VmSettingsPage extends BasePage {
 		this._vmSizeDropdown.loading = false;
 	}
 
-	protected async validatePage(): Promise<string> {
+	protected override async validatePage(): Promise<string> {
 
 		const errorMessages = [];
 		/**

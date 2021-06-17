@@ -344,7 +344,7 @@ export class ServiceSettingsPage extends ResourceTypePage {
 		};
 	}
 
-	public async onEnter(): Promise<void> {
+	public override async onEnter(): Promise<void> {
 		this.setInputBoxValue(VariableNames.ComputePoolScale_VariableName);
 		this.setInputBoxValue(VariableNames.DataPoolScale_VariableName);
 		this.setInputBoxValue(VariableNames.HDFSPoolScale_VariableName);
@@ -421,7 +421,7 @@ export class ServiceSettingsPage extends ResourceTypePage {
 		});
 	}
 
-	public async onLeave(): Promise<void> {
+	public override async onLeave(): Promise<void> {
 		await setModelValues(this.inputComponents, this.wizard.model);
 		this.wizard.wizardObject.registerNavigationValidator((pcInfo) => {
 			return true;

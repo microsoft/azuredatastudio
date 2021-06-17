@@ -22,7 +22,7 @@ export class ExtHostConnectionManagement extends ExtHostConnectionManagementShap
 		this._proxy = mainContext.getProxy(SqlMainContext.MainThreadConnectionManagement);
 	}
 
-	public $onConnectionEvent(handle: number, type: azdata.connection.ConnectionEventType, ownerUri: string, profile: azdata.IConnectionProfile): void {
+	public override $onConnectionEvent(handle: number, type: azdata.connection.ConnectionEventType, ownerUri: string, profile: azdata.IConnectionProfile): void {
 		let listener = this._connectionListeners[handle];
 		if (listener) {
 			listener.onConnectionEvent(type, ownerUri, profile);

@@ -725,19 +725,19 @@ class RootItem extends Item {
 		super(id, registry, context, lock, element);
 	}
 
-	public isVisible(): boolean {
+	public override isVisible(): boolean {
 		return false;
 	}
 
-	public setVisible(value: boolean): void {
+	public override setVisible(value: boolean): void {
 		// no-op
 	}
 
-	public isExpanded(): boolean {
+	public override isExpanded(): boolean {
 		return true;
 	}
 
-	/* protected */ public _setExpanded(value: boolean): void {
+	/* protected */ public override _setExpanded(value: boolean): void {
 		// no-op
 	}
 
@@ -745,11 +745,11 @@ class RootItem extends Item {
 		// no-op
 	}
 
-	/* protected */ public _getHeight(): number {
+	/* protected */ public override _getHeight(): number {
 		return 0;
 	}
 
-	/* protected */ public _isVisible(): boolean {
+	/* protected */ public override _isVisible(): boolean {
 		return false;
 	}
 }

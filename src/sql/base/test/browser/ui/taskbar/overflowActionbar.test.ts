@@ -5,8 +5,9 @@
 
 import * as assert from 'assert';
 import { OverflowActionBar } from 'sql/base/browser/ui/taskbar/overflowActionbar';
-import { Action, IActionViewItem } from 'vs/base/common/actions';
+import { Action } from 'vs/base/common/actions';
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
+import { IActionViewItem } from 'vs/base/browser/ui/actionbar/actionbar';
 
 
 suite('Overflow Actionbar tests', () => {
@@ -92,10 +93,10 @@ suite('Overflow Actionbar tests', () => {
 
 		// move a3 to overflow
 		overflowActionbar.collapseItem();
-		assert.strictEqual(overflowActionbar.actionsList.children.length, 4);
-		assert.strictEqual(overflowActionbar.items.length, 4);
+		assert(overflowActionbar.actionsList.children.length === 4);
+		assert(overflowActionbar.items.length === 4);
 		assert.strictEqual(getMoreItemPlaceholderIndex(overflowActionbar.items), 2);
-		assert.strictEqual(overflowActionbar.overflow.childElementCount, 1);
+		assert(overflowActionbar.overflow.childElementCount === 1);
 		verifyOverflowFocusedIndex(overflowActionbar, 3);
 
 		// move separator to overflow

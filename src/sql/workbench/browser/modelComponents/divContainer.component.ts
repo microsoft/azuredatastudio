@@ -59,7 +59,7 @@ export default class DivContainer extends ContainerBase<azdata.DivItemLayout, az
 		this.baseInit();
 	}
 
-	ngOnDestroy(): void {
+	override ngOnDestroy(): void {
 		this.baseDestroy();
 	}
 
@@ -72,7 +72,7 @@ export default class DivContainer extends ContainerBase<azdata.DivItemLayout, az
 		this.layout();
 	}
 
-	public setProperties(properties: { [key: string]: any; }): void {
+	public override setProperties(properties: { [key: string]: any; }): void {
 		super.setProperties(properties);
 		if (this.overflowY !== this._overflowY) {
 			this.updateOverflowY();
@@ -115,11 +115,11 @@ export default class DivContainer extends ContainerBase<azdata.DivItemLayout, az
 	}
 
 	// CSS-bound properties
-	public get height(): string {
+	public override get height(): string {
 		return this._height;
 	}
 
-	public get width(): string {
+	public override get width(): string {
 		return this._width;
 	}
 

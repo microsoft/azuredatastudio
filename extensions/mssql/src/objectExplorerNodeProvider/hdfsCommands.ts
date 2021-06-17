@@ -62,7 +62,7 @@ export class UploadFilesCommand extends ProgressCommand {
 		super('mssqlCluster.uploadFiles', prompter, appContext);
 	}
 
-	protected async preExecute(context: ICommandViewContext | ICommandObjectExplorerContext, args: object = {}): Promise<any> {
+	protected override async preExecute(context: ICommandViewContext | ICommandObjectExplorerContext, args: object = {}): Promise<any> {
 		return this.execute(context, args);
 	}
 
@@ -138,7 +138,7 @@ export class MkDirCommand extends ProgressCommand {
 		super('mssqlCluster.mkdir', prompter, appContext);
 	}
 
-	protected async preExecute(context: ICommandViewContext | ICommandObjectExplorerContext, args: object = {}): Promise<any> {
+	protected override async preExecute(context: ICommandViewContext | ICommandObjectExplorerContext, args: object = {}): Promise<any> {
 		return this.execute(context, args);
 	}
 
@@ -185,7 +185,7 @@ export class DeleteFilesCommand extends Command {
 		super('mssqlCluster.deleteFiles', appContext);
 	}
 
-	protected async preExecute(context: ICommandViewContext | ICommandObjectExplorerContext, args: object = {}): Promise<any> {
+	protected override async preExecute(context: ICommandViewContext | ICommandObjectExplorerContext, args: object = {}): Promise<any> {
 		return this.execute(context, args);
 	}
 
@@ -257,7 +257,7 @@ export class SaveFileCommand extends ProgressCommand {
 		super('mssqlCluster.saveFile', prompter, appContext);
 	}
 
-	protected async preExecute(context: ICommandViewContext | ICommandObjectExplorerContext, args: object = {}): Promise<any> {
+	protected override async preExecute(context: ICommandViewContext | ICommandObjectExplorerContext, args: object = {}): Promise<any> {
 		return this.execute(context, args);
 	}
 
@@ -297,7 +297,7 @@ export class PreviewFileCommand extends ProgressCommand {
 		super('mssqlCluster.previewFile', prompter, appContext);
 	}
 
-	protected async preExecute(context: ICommandViewContext | ICommandObjectExplorerContext, args: object = {}): Promise<any> {
+	protected override async preExecute(context: ICommandViewContext | ICommandObjectExplorerContext, args: object = {}): Promise<any> {
 		return this.execute(context, args);
 	}
 
@@ -376,7 +376,7 @@ export class CopyPathCommand extends Command {
 		super('mssqlCluster.copyPath', appContext);
 	}
 
-	protected async preExecute(context: ICommandViewContext | ICommandObjectExplorerContext, args: object = {}): Promise<any> {
+	protected override async preExecute(context: ICommandViewContext | ICommandObjectExplorerContext, args: object = {}): Promise<any> {
 		return this.execute(context, args);
 	}
 

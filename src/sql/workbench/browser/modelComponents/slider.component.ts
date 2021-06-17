@@ -67,7 +67,7 @@ export default class SliderComponent extends ComponentBase<azdata.SliderComponen
 		return this._slider;
 	}
 
-	ngOnDestroy(): void {
+	override ngOnDestroy(): void {
 		this.baseDestroy();
 	}
 
@@ -77,7 +77,7 @@ export default class SliderComponent extends ComponentBase<azdata.SliderComponen
 		this.layout();
 	}
 
-	public setProperties(properties: { [key: string]: any; }): void {
+	public override setProperties(properties: { [key: string]: any; }): void {
 		super.setProperties(properties);
 		this.setSliderProperties(this.sliderElement);
 		this.validate().catch(onUnexpectedError);
@@ -136,7 +136,7 @@ export default class SliderComponent extends ComponentBase<azdata.SliderComponen
 		this.setPropertyFromUI<boolean | undefined>((props, value) => props.showTicks = value, newValue);
 	}
 
-	public focus(): void {
+	public override focus(): void {
 		this.sliderElement.focus();
 	}
 

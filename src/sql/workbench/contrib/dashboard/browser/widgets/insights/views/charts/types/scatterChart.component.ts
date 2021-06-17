@@ -15,8 +15,8 @@ import { ChartType } from 'sql/workbench/contrib/charts/common/interfaces';
 const defaultScatterConfig = mixin(deepClone(defaultChartConfig), { dataType: 'point', dataDirection: 'horizontal' }) as ILineConfig;
 
 export default class ScatterChart extends LineChart {
-	protected readonly chartType: ChartType = ChartType.Scatter;
-	protected _defaultConfig = defaultScatterConfig;
+	protected override readonly chartType: ChartType = ChartType.Scatter;
+	protected override _defaultConfig = defaultScatterConfig;
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) _changeRef: ChangeDetectorRef,

@@ -25,10 +25,10 @@ export class ExtHostResourceProvider extends ExtHostResourceProviderShape {
 
 	// PUBLIC METHODS //////////////////////////////////////////////////////
 	// - MAIN THREAD AVAILABLE METHODS /////////////////////////////////////
-	public $createFirewallRule(handle: number, account: azdata.Account, firewallRuleInfo: azdata.FirewallRuleInfo): Thenable<azdata.CreateFirewallRuleResponse> {
+	public override $createFirewallRule(handle: number, account: azdata.Account, firewallRuleInfo: azdata.FirewallRuleInfo): Thenable<azdata.CreateFirewallRuleResponse> {
 		return this._withProvider(handle, (provider: azdata.ResourceProvider) => provider.createFirewallRule(account, firewallRuleInfo));
 	}
-	public $handleFirewallRule(handle: number, errorCode: number, errorMessage: string, connectionTypeId: string): Thenable<azdata.HandleFirewallRuleResponse> {
+	public override $handleFirewallRule(handle: number, errorCode: number, errorMessage: string, connectionTypeId: string): Thenable<azdata.HandleFirewallRuleResponse> {
 		return this._withProvider(handle, (provider: azdata.ResourceProvider) => provider.handleFirewallRule(errorCode, errorMessage, connectionTypeId));
 	}
 
