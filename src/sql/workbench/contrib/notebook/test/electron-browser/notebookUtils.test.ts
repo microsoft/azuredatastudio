@@ -300,5 +300,12 @@ suite('notebookUtils', function (): void {
 		stack.push('b');
 		assert.strictEqual(stack.count, maxStackSize);
 		assert.strictEqual(stack.peek(), 'b');
+
+		// update max stack size and add new element
+		maxStackSize = 20;
+		stack.maxStackSize = maxStackSize;
+		stack.push('c');
+		assert.strictEqual(stack.count, maxStackSize);
+		assert.strictEqual(stack.peek(), 'c');
 	});
 });
