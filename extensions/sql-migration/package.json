@@ -15,6 +15,7 @@
   "activationEvents": [
     "onDashboardOpen",
     "onCommand:sqlmigration.start",
+    "onCommand:sqlmigration.sendfeedback",
     "onCommand:sqlmigration.openNotebooks"
   ],
   "main": "./out/main",
@@ -32,6 +33,12 @@
         "title": "%start-migration-command%",
         "category": "%migration-command-category%",
         "icon": "./images/migration.svg"
+      },
+      {
+        "command": "sqlmigration.sendfeedback",
+        "title": "%send-feedback-command%",
+        "category": "%migration-command-category%",
+        "icon": "./images/sendFeedback.svg"
       },
       {
         "command": "sqlmigration.openNotebooks",
@@ -58,7 +65,8 @@
               "col": 0,
               "widget": {
                 "tasks-widget": [
-                  "sqlmigration.start"
+                  "sqlmigration.start",
+                  "sqlmigration.sendfeedback"
                 ]
               }
             },

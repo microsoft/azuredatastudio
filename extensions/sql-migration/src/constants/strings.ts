@@ -290,6 +290,7 @@ export function MIGRATION_INPROGRESS_WARNING(count: number) {
 			return localize('sql.migration.inprogress.warning.multiple', "{0} databases have warnings", count);
 	}
 }
+export const FEEDBACK_ISSUE_TITLE = localize('sql.migration.feedback.issue.title', "Feedback on the migration experience");
 
 // Azure APIs
 export const EASTUS2EUAP = localize('sql.migration.eastus2euap', 'East US 2 EUAP');
