@@ -209,6 +209,8 @@ export const MANAGED_INSTANCE = localize('sql.migration.managed.instance', "Azur
 export const NO_MANAGED_INSTANCE_FOUND = localize('sql.migration.no.managedInstance.found', "No managed instance found");
 export const NO_VIRTUAL_MACHINE_FOUND = localize('sql.migration.no.virtualMachine.found', "No virtual machine found");
 export const TARGET_SELECTION_PAGE_TITLE = localize('sql.migration.target.page.title', "Choose the target Azure SQL");
+export const RESOURCE_GROUP_DESCRIPTION = localize('sql.migration.resource.group.description', "A resource group is a container that holds related resources for an Azure solution");
+export const OK = localize('sql.migration.ok', "OK");
 
 // common strings
 export const LEARN_MORE = localize('sql.migration.learn.more', "Learn more");
@@ -230,6 +232,7 @@ export const USER_ACCOUNT = localize('sql.migration.path.user.account', "User Ac
 export const VIEW_ALL = localize('sql.migration.view.all', "View All");
 export const TARGET = localize('sql.migration.target', "Target");
 export const AZURE_SQL = localize('sql.migration.azure.sql', "Azure SQL");
+
 
 //Summary Page
 export const SUMMARY_PAGE_TITLE = localize('sql.migration.summary.page.title', "Summary");

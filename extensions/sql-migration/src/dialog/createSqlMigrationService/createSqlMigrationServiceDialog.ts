@@ -13,6 +13,7 @@ import { azureResource } from 'azureResource';
 import { IntergrationRuntimePage } from '../../wizard/integrationRuntimePage';
 import { IconPathHelper } from '../../constants/iconPathHelper';
 import { selectDropDownIndex } from '../../api/utils';
+import { CreateResourceGroupDialog } from '../createResourceGroup/createResourceGroupDialog';
 
 export class CreateSqlMigrationServiceDialog {
 
@@ -21,6 +22,7 @@ export class CreateSqlMigrationServiceDialog {
 	private migrationServiceLocation!: azdata.InputBoxComponent;
 	private migrationServiceNameText!: azdata.InputBoxComponent;
 	private _formSubmitButton!: azdata.ButtonComponent;
+	private _createResourceGroupLink!: azdata.HyperlinkComponent;
 
 	private _statusLoadingComponent!: azdata.LoadingComponent;
 	private migrationServiceAuthKeyTable!: azdata.DeclarativeTableComponent;
@@ -188,6 +190,24 @@ export class CreateSqlMigrationServiceDialog {
 			}
 		}).component();
 
+		this._createResourceGroupLink = this._view.modelBuilder.hyperlink().withProps({
+			label: constants.CREATE_NEW,
+			url: ''
+		}).component();
+
+		this._createResourceGroupLink.onDidClick(async e => {
+			const createResourceGroupDialog = new CreateResourceGroupDialog(this.migrationStateModel._azureAccount, this.migrationStateModel._targetSubscription, this.migrationStateModel._targetServerInstance.location);
+			const createdResourceGroup = await createResourceGroupDialog.initialize();
+			if (createdResourceGroup) {
+				await this.populateResourceGroups();
+				console.log(this.migrationServiceResourceGroupDropdown.values);
+				this.migrationServiceResourceGroupDropdown.value = {
+					name: createdResourceGroup.name,
+					displayName: createdResourceGroup.name
+				};
+			}
+		});
+
 		this.migrationServiceNameText = this._view.modelBuilder.inputBox().component();
 
 		const locationDropdownLabel = this._view.modelBuilder.text().withProps({
@@ -225,6 +245,7 @@ export class CreateSqlMigrationServiceDialog {
 			this.migrationServiceLocation,
 			resourceGroupDropdownLabel,
 			this.migrationServiceResourceGroupDropdown,
+			this._createResourceGroupLink,
 			migrationServiceNameLabel,
 			this.migrationServiceNameText,
 			targetlabel,

@@ -52,6 +52,12 @@ export async function getResourceGroups(account: azdata.Account, subscription: S
 	return result.resourceGroups;
 }
 
+export async function createResourceGroup(account: azdata.Account, subscription: Subscription, resourceGroupName: string, location: string): Promise<azureResource.AzureResourceResourceGroup> {
+	const api = await getAzureCoreAPI();
+	const result = await api.createResourceGroup(account, subscription, resourceGroupName, location, false);
+	return result.resourceGroup;
+}
+
 export type SqlManagedInstance = azureResource.AzureSqlManagedInstance;
 export async function getAvailableManagedInstanceProducts(account: azdata.Account, subscription: Subscription): Promise<SqlManagedInstance[]> {
 	const api = await getAzureCoreAPI();
