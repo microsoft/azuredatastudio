@@ -147,7 +147,7 @@ export class InputBox extends vsInputBox {
 		this.inputBorder = enabled ? this.enabledInputBorder : this.disabledInputBorder;
 	}
 
-	public validate(force?: boolean): MessageType | undefined {
+	public override validate(force?: boolean): MessageType | undefined {
 		// We override the validate call here because in some situations we could end up with an "invalid" alert
 		// being announced incorrectly. For example the InputBox component has its own async validation - and so
 		// if a change was made to the text then the base VS InputBox would call validate immediately - before
