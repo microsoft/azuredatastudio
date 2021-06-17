@@ -165,7 +165,7 @@ export class ChartView extends Disposable implements IPanelView {
 		return option.map(o => altNameHash[o] || o);
 	}
 
-	public dispose() {
+	public override dispose() {
 		dispose(this.optionDisposables);
 		super.dispose();
 	}

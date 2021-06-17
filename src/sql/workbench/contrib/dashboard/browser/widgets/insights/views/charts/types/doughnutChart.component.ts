@@ -10,7 +10,7 @@ import { ChartType } from 'sql/workbench/contrib/charts/common/interfaces';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 
 export default class DoughnutChart extends PieChart {
-	protected readonly chartType: ChartType = ChartType.Doughnut;
+	protected override readonly chartType: ChartType = ChartType.Doughnut;
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) _changeRef: ChangeDetectorRef,

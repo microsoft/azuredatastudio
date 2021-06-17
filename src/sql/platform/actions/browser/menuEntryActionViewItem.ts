@@ -25,15 +25,15 @@ export class LabeledMenuItemActionItem extends MenuEntryActionViewItem {
 	private _labeledItemClassDispose?: IDisposable;
 
 	constructor(
-		public _action: MenuItemAction,
+		_action: MenuItemAction,
 		@IKeybindingService labeledkeybindingService: IKeybindingService,
-		@INotificationService protected _notificationService: INotificationService,
+		@INotificationService _notificationService: INotificationService,
 		private readonly _defaultCSSClassToAdd: string = ''
 	) {
 		super(_action, labeledkeybindingService, _notificationService);
 	}
 
-	updateLabel(): void {
+	override updateLabel(): void {
 		if (this.label) {
 			this.label.innerText = this._commandAction.label;
 		}
@@ -41,7 +41,7 @@ export class LabeledMenuItemActionItem extends MenuEntryActionViewItem {
 
 	// Overwrite item class to ensure that we can pass in a CSS class that other items use
 	// Leverages the _defaultCSSClassToAdd property that's passed into the constructor
-	protected _updateItemClass(item: ICommandAction): void {
+	protected override _updateItemClass(item: ICommandAction): void {
 		dispose(this._labeledItemClassDispose);
 		this._labeledItemClassDispose = undefined;
 
@@ -79,7 +79,7 @@ export class LabeledMenuItemActionItem extends MenuEntryActionViewItem {
 		}
 	}
 
-	dispose(): void {
+	override dispose(): void {
 		if (this._labeledItemClassDispose) {
 			dispose(this._labeledItemClassDispose);
 			this._labeledItemClassDispose = undefined;
@@ -98,15 +98,15 @@ export class MaskedLabeledMenuItemActionItem extends MenuEntryActionViewItem {
 	private _labeledItemClassDispose?: IDisposable;
 
 	constructor(
-		public _action: MenuItemAction,
+		_action: MenuItemAction,
 		@IKeybindingService labeledkeybindingService: IKeybindingService,
-		@INotificationService protected _notificationService: INotificationService,
+		@INotificationService _notificationService: INotificationService,
 		private readonly _defaultCSSClassToAdd: string = ''
 	) {
 		super(_action, labeledkeybindingService, _notificationService);
 	}
 
-	updateLabel(): void {
+	override updateLabel(): void {
 		if (this.label) {
 			this.label.innerText = this._commandAction.label;
 		}
@@ -114,7 +114,7 @@ export class MaskedLabeledMenuItemActionItem extends MenuEntryActionViewItem {
 
 	// Overwrite item class to ensure that we can pass in a CSS class that other items use
 	// Leverages the _defaultCSSClassToAdd property that's passed into the constructor
-	protected _updateItemClass(item: ICommandAction): void {
+	protected override _updateItemClass(item: ICommandAction): void {
 		dispose(this._labeledItemClassDispose);
 		this._labeledItemClassDispose = undefined;
 
@@ -153,7 +153,7 @@ export class MaskedLabeledMenuItemActionItem extends MenuEntryActionViewItem {
 		}
 	}
 
-	dispose(): void {
+	override dispose(): void {
 		if (this._labeledItemClassDispose) {
 			dispose(this._labeledItemClassDispose);
 			this._labeledItemClassDispose = undefined;

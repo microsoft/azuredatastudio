@@ -53,7 +53,7 @@ export class InputBox extends vsInputBox {
 		}
 	}
 
-	public style(styles: IInputBoxStyles): void {
+	public override style(styles: IInputBoxStyles): void {
 		super.style(styles);
 		this.enabledInputBackground = this.inputBackground;
 		this.enabledInputForeground = this.inputForeground;
@@ -64,7 +64,7 @@ export class InputBox extends vsInputBox {
 		this.applyStyles();
 	}
 
-	public enable(): void {
+	public override enable(): void {
 		super.enable();
 		this.updateInputEnabledDisabledColors();
 		this.applyStyles();
@@ -78,13 +78,13 @@ export class InputBox extends vsInputBox {
 		this.inputElement.setAttribute('cols', value.toString());
 	}
 
-	public layout(): void {
+	public override layout(): void {
 		if (!this._isTextAreaInput) {
 			super.layout();
 		}
 	}
 
-	public disable(): void {
+	public override disable(): void {
 		super.disable();
 		this.updateInputEnabledDisabledColors();
 		this.applyStyles();
@@ -125,7 +125,7 @@ export class InputBox extends vsInputBox {
 		}
 	}
 
-	public showMessage(message: IMessage, force?: boolean): void {
+	public override showMessage(message: IMessage, force?: boolean): void {
 		if (!this.hideErrors) {
 			super.showMessage(message, force);
 		}

@@ -217,6 +217,14 @@ export class ExtHostCommands implements ExtHostCommandsShape {
 		try {
 			return await callback.apply(thisArg, args);
 		} catch (err) {
+			// The indirection-command from the converter can fail when invoking the actual
+			// command and in that case it is better to blame the correct command
+			if (id === this.converter.delegatingCommandId) {
+				const actual = this.converter.getActualCommand(...args);
+				if (actual) {
+					id = actual.command;
+				}
+			}
 			this._logService.error(err, id);
 			throw new Error(`Running the contributed command: '${id}' failed.`);
 		}
@@ -261,7 +269,7 @@ export const IExtHostCommands = createDecorator<IExtHostCommands>('IExtHostComma
 
 export class CommandsConverter {
 
-	private readonly _delegatingCommandId: string;
+	readonly delegatingCommandId: string = `_vscode_delegate_cmd_${Date.now().toString(36)}`;
 	private readonly _cache = new Map<number, vscode.Command>();
 	private _cachIdPool = 0;
 
@@ -271,8 +279,7 @@ export class CommandsConverter {
 		private readonly _lookupApiCommand: (id: string) => ApiCommand | undefined,
 		private readonly _logService: ILogService
 	) {
-		this._delegatingCommandId = `_vscode_delegate_cmd_${Date.now().toString(36)}`;
-		this._commands.registerCommand(true, this._delegatingCommandId, this._executeConvertedCommand, this);
+		this._commands.registerCommand(true, this.delegatingCommandId, this._executeConvertedCommand, this);
 	}
 
 	toInternal(command: vscode.Command, disposables: DisposableStore): ICommandDto;
@@ -315,7 +322,7 @@ export class CommandsConverter {
 			}));
 			result.$ident = id;
 
-			result.id = this._delegatingCommandId;
+			result.id = this.delegatingCommandId;
 			result.arguments = [id];
 
 			this._logService.trace('CommandsConverter#CREATE', command.command, id);
@@ -339,8 +346,13 @@ export class CommandsConverter {
 		}
 	}
 
+
+	getActualCommand(...args: any[]): vscode.Command | undefined {
+		return this._cache.get(args[0]);
+	}
+
 	private _executeConvertedCommand<R>(...args: any[]): Promise<R> {
-		const actualCmd = this._cache.get(args[0]);
+		const actualCmd = this.getActualCommand(...args);
 		this._logService.trace('CommandsConverter#EXECUTE', args[0], actualCmd ? actualCmd.command : 'MISSING');
 
 		if (!actualCmd) {

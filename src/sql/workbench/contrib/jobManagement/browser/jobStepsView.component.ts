@@ -58,7 +58,7 @@ export class JobStepsViewComponent extends JobManagementView implements OnInit, 
 		super(commonService, dashboardService, contextMenuService, keybindingService, instantiationService, undefined);
 	}
 
-	ngAfterContentChecked() {
+	override ngAfterContentChecked() {
 		jQuery('.steps-tree .step-column-heading').closest('.monaco-tree-row').addClass('step-column-row');
 		this.layout();
 		this._tree.onDidScroll(() => {

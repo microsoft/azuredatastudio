@@ -15,8 +15,8 @@ import { ILogService } from 'vs/platform/log/common/log';
 export abstract class TitledComponent<T extends azdata.TitledComponentProperties> extends ComponentBase<T> implements ITitledComponent {
 
 	constructor(
-		protected _changeRef: ChangeDetectorRef,
-		protected _el: ElementRef,
+		_changeRef: ChangeDetectorRef,
+		_el: ElementRef,
 		logService: ILogService) {
 		super(_changeRef, _el, logService);
 	}

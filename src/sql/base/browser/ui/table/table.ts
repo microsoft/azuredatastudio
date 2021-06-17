@@ -139,7 +139,7 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 		});
 	}
 
-	public dispose() {
+	public override dispose() {
 		this._container.remove();
 		super.dispose();
 	}

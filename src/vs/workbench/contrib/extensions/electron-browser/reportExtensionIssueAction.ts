@@ -40,7 +40,7 @@ export class ReportExtensionIssueAction extends Action {
 		this.enabled = extension.description.isBuiltin || (!!extension.description.repository && !!extension.description.repository.url);
 	}
 
-	async run(): Promise<void> {
+	override async run(): Promise<void> {
 		if (!this._url) {
 			this._url = await this._generateNewIssueUrl(this.extension);
 		}
@@ -76,7 +76,7 @@ export class ReportExtensionIssueAction extends Action {
 - Extension Name: \`${extension.description.name}\`
 - Extension Version: \`${extension.description.version}\`
 - OS Version: \`${osVersion}\`
-- VSCode version: \`${this.productService.version}\`\n\n${message}`
+- VS Code version: \`${this.productService.version}\`\n\n${message}`
 		);
 
 		return `${baseUrl}${queryStringPrefix}body=${body}&title=${encodeURIComponent(title)}`;

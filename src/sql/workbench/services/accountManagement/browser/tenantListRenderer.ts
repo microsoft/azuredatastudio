@@ -65,18 +65,18 @@ export class TenantListRenderer extends TenantPickerListRenderer {
 		super();
 	}
 
-	public get templateId(): string {
+	public override get templateId(): string {
 		return TenantPickerListRenderer.TEMPLATE_ID;
 	}
 
-	public renderTemplate(container: HTMLElement): PickerListTemplate {
+	public override renderTemplate(container: HTMLElement): PickerListTemplate {
 		const tableTemplate = super.renderTemplate(container) as PickerListTemplate;
 		tableTemplate.content = DOM.append(tableTemplate.label, DOM.$('div.content'));
 
 		return tableTemplate;
 	}
 
-	public renderElement(tenant: Tenant, index: number, templateData: PickerListTemplate): void {
+	public override renderElement(tenant: Tenant, index: number, templateData: PickerListTemplate): void {
 		super.renderElement(tenant, index, templateData);
 	}
 }
