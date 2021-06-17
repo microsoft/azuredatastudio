@@ -124,20 +124,20 @@ export class RegexValidation extends Validation {
 }
 
 export abstract class Comparison extends Validation {
-	protected _target: string; // comparison object requires a target so override the base optional setting.
+	protected override _target: string; // comparison object requires a target so override the base optional setting.
 	protected _ensureOnTargetValidityChangeListenerAdded = false;
 
-	get target(): string {
+	override get target(): string {
 		return this._target;
 	}
 
 	protected onTargetValidityChanged(onTargetValidityChangedAction: (e: boolean) => Promise<void>): void {
-		const onValidityChanged = this._onTargetValidityChangedGetter(this.target);
-		this._onNewDisposableCreated(onValidityChanged(isValid => onTargetValidityChangedAction(isValid)));
+		const onValidityChanged = this._onTargetValidityChangedGetter!(this.target);
+		this._onNewDisposableCreated!(onValidityChanged(isValid => onTargetValidityChangedAction(isValid)));
 	}
 
-	constructor(validation: ComparisonValidationInfo, onValidation: OnValidation, valueGetter: ValueGetter, targetValueGetter: TargetValueGetter, protected _onTargetValidityChangedGetter: OnTargetValidityChangedGetter, protected _onNewDisposableCreated: (disposable: vscode.Disposable) => void) {
-		super(validation, onValidation, valueGetter, targetValueGetter);
+	constructor(validation: ComparisonValidationInfo, onValidation: OnValidation, valueGetter: ValueGetter, targetValueGetter: TargetValueGetter, onTargetValidityChangedGetter: OnTargetValidityChangedGetter, onNewDisposableCreated: (disposable: vscode.Disposable) => void) {
+		super(validation, onValidation, valueGetter, targetValueGetter, onTargetValidityChangedGetter, onNewDisposableCreated);
 		throwUnless(validation.target !== undefined);
 		this._target = validation.target;
 	}

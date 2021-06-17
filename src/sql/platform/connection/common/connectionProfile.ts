@@ -175,7 +175,7 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 		return (this._groupName === ConnectionProfile.RootGroupName);
 	}
 
-	public clone(): ConnectionProfile {
+	public override clone(): ConnectionProfile {
 		let instance = new ConnectionProfile(this.capabilitiesService, this);
 		return instance;
 	}
@@ -205,7 +205,7 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 	 * This key uniquely identifies a connection in a group
 	 * Example: "providerName:MSSQL|authenticationType:|databaseName:database|serverName:server3|userName:user|group:testid"
 	 */
-	public getOptionsKey(): string {
+	public override getOptionsKey(): string {
 		let id = super.getOptionsKey();
 		let databaseDisplayName: string = this.options['databaseDisplayName'];
 		if (databaseDisplayName) {

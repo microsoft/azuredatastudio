@@ -5,22 +5,23 @@
 
 import type * as vscode from 'vscode';
 import { Event, Emitter } from 'vs/base/common/event';
-import { ExtHostTerminalServiceShape, MainContext, MainThreadTerminalServiceShape, IShellLaunchConfigDto, IShellDefinitionDto, IShellAndArgsDto, ITerminalDimensionsDto, ITerminalLinkDto, TerminalIdentifier } from 'vs/workbench/api/common/extHost.protocol';
+import { ExtHostTerminalServiceShape, MainContext, MainThreadTerminalServiceShape, IShellAndArgsDto, ITerminalDimensionsDto, ITerminalLinkDto, TerminalIdentifier } from 'vs/workbench/api/common/extHost.protocol';
 import { ExtHostConfigProvider } from 'vs/workbench/api/common/extHostConfiguration';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
-import { URI, UriComponents } from 'vs/base/common/uri';
-import { ITerminalChildProcess, ITerminalLaunchError, ITerminalDimensionsOverride } from 'vs/workbench/contrib/terminal/common/terminal';
+import { URI } from 'vs/base/common/uri';
 import { IExtHostRpcService } from 'vs/workbench/api/common/extHostRpcService';
-import { TerminalDataBufferer } from 'vs/workbench/contrib/terminal/common/terminalDataBuffering';
 import { IDisposable, DisposableStore, Disposable } from 'vs/base/common/lifecycle';
 import { Disposable as VSCodeDisposable, EnvironmentVariableMutatorType } from './extHostTypes';
 import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
-import { ISerializableEnvironmentVariableCollection } from 'vs/workbench/contrib/terminal/common/environmentVariable';
 import { localize } from 'vs/nls';
 import { NotSupportedError } from 'vs/base/common/errors';
 import { serializeEnvironmentVariableCollection } from 'vs/workbench/contrib/terminal/common/environmentVariableShared';
 import { CancellationTokenSource } from 'vs/base/common/cancellation';
 import { generateUuid } from 'vs/base/common/uuid';
+import { ISerializableEnvironmentVariableCollection } from 'vs/workbench/contrib/terminal/common/environmentVariable';
+import { IShellLaunchConfigDto, ITerminalChildProcess, ITerminalDimensionsOverride, ITerminalEnvironment, ITerminalLaunchError, TerminalShellType } from 'vs/platform/terminal/common/terminal';
+import { TerminalDataBufferer } from 'vs/platform/terminal/common/terminalDataBuffering';
+import { ITerminalProfile } from 'vs/workbench/contrib/terminal/common/terminal';
 
 export interface IExtHostTerminalService extends ExtHostTerminalServiceShape, IDisposable {
 
@@ -116,23 +117,26 @@ export class ExtHostTerminal {
 		shellPath?: string,
 		shellArgs?: string[] | string,
 		cwd?: string | URI,
-		env?: { [key: string]: string | null },
+		env?: ITerminalEnvironment,
+		icon?: string,
+		initialText?: string,
 		waitOnExit?: boolean,
 		strictEnv?: boolean,
 		hideFromUser?: boolean,
-		isFeatureTerminal?: boolean
+		isFeatureTerminal?: boolean,
+		isExtensionOwnedTerminal?: boolean
 	): Promise<void> {
 		if (typeof this._id !== 'string') {
 			throw new Error('Terminal has already been created');
 		}
-		await this._proxy.$createTerminal(this._id, { name: this._name, shellPath, shellArgs, cwd, env, waitOnExit, strictEnv, hideFromUser, isFeatureTerminal });
+		await this._proxy.$createTerminal(this._id, { name: this._name, shellPath, shellArgs, cwd, env, icon, initialText, waitOnExit, strictEnv, hideFromUser, isFeatureTerminal, isExtensionOwnedTerminal });
 	}
 
 	public async createExtensionTerminal(): Promise<number> {
 		if (typeof this._id !== 'string') {
 			throw new Error('Terminal has already been created');
 		}
-		await this._proxy.$createTerminal(this._id, { name: this._name, isExtensionTerminal: true });
+		await this._proxy.$createTerminal(this._id, { name: this._name, isExtensionCustomPtyTerminal: true });
 		// At this point, the id has been set via `$acceptTerminalOpened`
 		if (typeof this._id === 'string') {
 			throw new Error('Terminal creation failed');
@@ -184,6 +188,9 @@ export class ExtHostTerminal {
 }
 
 export class ExtHostPseudoterminal implements ITerminalChildProcess {
+	readonly id = 0;
+	readonly shouldPersist = false;
+
 	private readonly _onProcessData = new Emitter<string>();
 	public readonly onProcessData: Event<string> = this._onProcessData.event;
 	private readonly _onProcessExit = new Emitter<number | undefined>();
@@ -194,6 +201,9 @@ export class ExtHostPseudoterminal implements ITerminalChildProcess {
 	public readonly onProcessTitleChanged: Event<string> = this._onProcessTitleChanged.event;
 	private readonly _onProcessOverrideDimensions = new Emitter<ITerminalDimensionsOverride | undefined>();
 	public get onProcessOverrideDimensions(): Event<ITerminalDimensionsOverride | undefined> { return this._onProcessOverrideDimensions.event; }
+	private readonly _onProcessShellTypeChanged = new Emitter<TerminalShellType>();
+	public readonly onProcessShellTypeChanged = this._onProcessShellTypeChanged.event;
+
 
 	constructor(private readonly _pty: vscode.Pseudoterminal) { }
 
@@ -215,6 +225,10 @@ export class ExtHostPseudoterminal implements ITerminalChildProcess {
 		if (this._pty.setDimensions) {
 			this._pty.setDimensions({ columns: cols, rows });
 		}
+	}
+
+	async processBinary(data: string): Promise<void> {
+		// No-op, processBinary is not supported in extextion owned terminals.
 	}
 
 	acknowledgeDataEvent(charCount: number): void {
@@ -320,10 +334,8 @@ export abstract class BaseExtHostTerminalService extends Disposable implements I
 	public abstract createTerminalFromOptions(options: vscode.TerminalOptions): vscode.Terminal;
 	public abstract getDefaultShell(useAutomationShell: boolean, configProvider: ExtHostConfigProvider): string;
 	public abstract getDefaultShellArgs(useAutomationShell: boolean, configProvider: ExtHostConfigProvider): string[] | string;
-	public abstract $spawnExtHostProcess(id: number, shellLaunchConfigDto: IShellLaunchConfigDto, activeWorkspaceRootUriComponents: UriComponents, cols: number, rows: number, isWorkspaceShellAllowed: boolean): Promise<ITerminalLaunchError | undefined>;
-	public abstract $getAvailableShells(): Promise<IShellDefinitionDto[]>;
+	public abstract $getAvailableProfiles(configuredProfilesOnly: boolean): Promise<ITerminalProfile[]>;
 	public abstract $getDefaultShellAndArgs(useAutomationShell: boolean): Promise<IShellAndArgsDto>;
-	public abstract $acceptWorkspacePermissionsChanged(isAllowed: boolean): void;
 
 	public createExtensionTerminal(options: vscode.ExtensionTerminalOptions): vscode.Terminal {
 		const terminal = new ExtHostTerminal(this._proxy, generateUuid(), options, options.name);
@@ -764,27 +776,18 @@ export class WorkerExtHostTerminalService extends BaseExtHostTerminalService {
 	}
 
 	public getDefaultShell(useAutomationShell: boolean, configProvider: ExtHostConfigProvider): string {
-		// Return the empty string to avoid throwing
-		return '';
+		throw new NotSupportedError();
 	}
 
 	public getDefaultShellArgs(useAutomationShell: boolean, configProvider: ExtHostConfigProvider): string[] | string {
 		throw new NotSupportedError();
 	}
 
-	public $spawnExtHostProcess(id: number, shellLaunchConfigDto: IShellLaunchConfigDto, activeWorkspaceRootUriComponents: UriComponents, cols: number, rows: number, isWorkspaceShellAllowed: boolean): Promise<ITerminalLaunchError | undefined> {
-		throw new NotSupportedError();
-	}
-
-	public $getAvailableShells(): Promise<IShellDefinitionDto[]> {
+	public $getAvailableProfiles(configuredProfilesOnly: boolean): Promise<ITerminalProfile[]> {
 		throw new NotSupportedError();
 	}
 
 	public async $getDefaultShellAndArgs(useAutomationShell: boolean): Promise<IShellAndArgsDto> {
 		throw new NotSupportedError();
-	}
-
-	public $acceptWorkspacePermissionsChanged(isAllowed: boolean): void {
-		// No-op for web worker ext host as workspace permissions aren't used
 	}
 }

@@ -213,7 +213,7 @@ export class ConnectToControllerDialog extends ControllerDialogBase {
 		return this.namespaceInputBox;
 	}
 
-	protected getComponents() {
+	protected override getComponents() {
 		return [
 			...super.getComponents(),
 			{
@@ -222,7 +222,7 @@ export class ConnectToControllerDialog extends ControllerDialogBase {
 			}];
 	}
 
-	protected initializeFields(controllerInfo: ControllerInfo | undefined, password: string | undefined) {
+	protected override initializeFields(controllerInfo: ControllerInfo | undefined, password: string | undefined) {
 		super.initializeFields(controllerInfo, password);
 		this.rememberPwCheckBox = this.modelBuilder.checkBox()
 			.withProperties<azdata.CheckBoxProperties>({
@@ -283,7 +283,7 @@ export class PasswordToControllerDialog extends ControllerDialogBase {
 		return this.passwordInputBox;
 	}
 
-	protected readonlyFields(): azdata.Component[] {
+	protected override readonlyFields(): azdata.Component[] {
 		return [
 			this.urlInputBox,
 			...this.kubeConfigInputBox.items,
@@ -332,7 +332,7 @@ export class PasswordToControllerDialog extends ControllerDialogBase {
 		return true;
 	}
 
-	public showDialog(controllerInfo?: ControllerInfo): azdata.window.Dialog {
+	public override showDialog(controllerInfo?: ControllerInfo): azdata.window.Dialog {
 		const dialog = super.showDialog(controllerInfo);
 		dialog.okButton.label = loc.ok;
 		return dialog;

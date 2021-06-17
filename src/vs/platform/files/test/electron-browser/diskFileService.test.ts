@@ -8,13 +8,12 @@ import { tmpdir } from 'os';
 import { FileService } from 'vs/platform/files/common/fileService';
 import { Schemas } from 'vs/base/common/network';
 import { DiskFileSystemProvider } from 'vs/platform/files/node/diskFileSystemProvider';
-import { getRandomTestPath } from 'vs/base/test/node/testUtils';
+import { getRandomTestPath, getPathFromAmdModule } from 'vs/base/test/node/testUtils';
 import { join, basename, dirname, posix } from 'vs/base/common/path';
-import { getPathFromAmdModule } from 'vs/base/common/amd';
 import { copy, rimraf, rimrafSync } from 'vs/base/node/pfs';
 import { URI } from 'vs/base/common/uri';
 import { existsSync, statSync, readdirSync, readFileSync, writeFileSync, renameSync, unlinkSync, mkdirSync, createReadStream, promises } from 'fs';
-import { FileOperation, FileOperationEvent, IFileStat, FileOperationResult, FileSystemProviderCapabilities, FileChangeType, IFileChange, FileChangesEvent, FileOperationError, etag, IStat, IFileStatWithMetadata } from 'vs/platform/files/common/files';
+import { FileOperation, FileOperationEvent, IFileStat, FileOperationResult, FileSystemProviderCapabilities, FileChangeType, IFileChange, FileChangesEvent, FileOperationError, etag, IStat, IFileStatWithMetadata, IReadFileOptions } from 'vs/platform/files/common/files';
 import { NullLogService } from 'vs/platform/log/common/log';
 import { isLinux, isWindows } from 'vs/base/common/platform';
 import { DisposableStore } from 'vs/base/common/lifecycle';
@@ -59,13 +58,14 @@ export class TestDiskFileSystemProvider extends DiskFileSystemProvider {
 	private smallStatSize: boolean = false;
 
 	private _testCapabilities!: FileSystemProviderCapabilities;
-	get capabilities(): FileSystemProviderCapabilities {
+	override get capabilities(): FileSystemProviderCapabilities {
 		if (!this._testCapabilities) {
 			this._testCapabilities =
 				FileSystemProviderCapabilities.FileReadWrite |
 				FileSystemProviderCapabilities.FileOpenReadWriteClose |
 				FileSystemProviderCapabilities.FileReadStream |
 				FileSystemProviderCapabilities.Trash |
+				FileSystemProviderCapabilities.FileWriteUnlock |
 				FileSystemProviderCapabilities.FileFolderCopy;
 
 			if (isLinux) {
@@ -76,7 +76,7 @@ export class TestDiskFileSystemProvider extends DiskFileSystemProvider {
 		return this._testCapabilities;
 	}
 
-	set capabilities(capabilities: FileSystemProviderCapabilities) {
+	override set capabilities(capabilities: FileSystemProviderCapabilities) {
 		this._testCapabilities = capabilities;
 	}
 
@@ -88,7 +88,7 @@ export class TestDiskFileSystemProvider extends DiskFileSystemProvider {
 		this.smallStatSize = enabled;
 	}
 
-	async stat(resource: URI): Promise<IStat> {
+	override async stat(resource: URI): Promise<IStat> {
 		const res = await super.stat(resource);
 
 		if (this.invalidStatSize) {
@@ -100,7 +100,7 @@ export class TestDiskFileSystemProvider extends DiskFileSystemProvider {
 		return res;
 	}
 
-	async read(fd: number, pos: number, data: Uint8Array, offset: number, length: number): Promise<number> {
+	override async read(fd: number, pos: number, data: Uint8Array, offset: number, length: number): Promise<number> {
 		const bytesRead = await super.read(fd, pos, data, offset, length);
 
 		this.totalBytesRead += bytesRead;
@@ -108,7 +108,7 @@ export class TestDiskFileSystemProvider extends DiskFileSystemProvider {
 		return bytesRead;
 	}
 
-	async readFile(resource: URI): Promise<Uint8Array> {
+	override async readFile(resource: URI): Promise<Uint8Array> {
 		const res = await super.readFile(resource);
 
 		this.totalBytesRead += res.byteLength;
@@ -1181,8 +1181,14 @@ suite.skip('Disk File Service', function () { // {{SQL CARBON EDIT}} Disable occ
 		return testReadFile(URI.file(join(testDir, 'lorem.txt')));
 	});
 
-	async function testReadFile(resource: URI): Promise<void> {
-		const content = await service.readFile(resource);
+	test('readFile - atomic', async () => {
+		setCapabilities(fileProvider, FileSystemProviderCapabilities.FileReadStream);
+
+		return testReadFile(URI.file(join(testDir, 'lorem.txt')), { atomic: true });
+	});
+
+	async function testReadFile(resource: URI, options?: IReadFileOptions): Promise<void> {
+		const content = await service.readFile(resource, options);
 
 		assert.strictEqual(content.value.toString(), readFileSync(resource.fsPath).toString());
 	}
@@ -1584,6 +1590,20 @@ suite.skip('Disk File Service', function () { // {{SQL CARBON EDIT}} Disable occ
 		assert.strictEqual(error!.fileOperationResult, FileOperationResult.FILE_TOO_LARGE);
 	}
 
+	(isWindows ? test.skip /* windows: cannot create file symbolic link without elevated context */ : test)('readFile - dangling symbolic link - https://github.com/microsoft/vscode/issues/116049', async () => {
+		const link = URI.file(join(testDir, 'small.js-link'));
+		await promises.symlink(join(testDir, 'small.js'), link.fsPath);
+
+		let error: FileOperationError | undefined = undefined;
+		try {
+			await service.readFile(link);
+		} catch (err) {
+			error = err;
+		}
+
+		assert.ok(error);
+	});
+
 	test('createFile', async () => {
 		return assertCreateFile(contents => VSBuffer.fromString(contents));
 	});
@@ -1740,19 +1760,23 @@ suite.skip('Disk File Service', function () { // {{SQL CARBON EDIT}} Disable occ
 		assert.ok(error!);
 	}
 
-	test('writeFile (large file) - multiple parallel writes queue up', async () => {
+	test('writeFile (large file) - multiple parallel writes queue up and atomic read support', async () => {
 		const resource = URI.file(join(testDir, 'lorem.txt'));
 
 		const content = readFileSync(resource.fsPath);
 		const newContent = content.toString() + content.toString();
 
-		await Promise.all(['0', '00', '000', '0000', '00000'].map(async offset => {
+		const writePromises = Promise.all(['0', '00', '000', '0000', '00000'].map(async offset => {
 			const fileStat = await service.writeFile(resource, VSBuffer.fromString(offset + newContent));
 			assert.strictEqual(fileStat.name, 'lorem.txt');
 		}));
 
-		const fileContent = readFileSync(resource.fsPath).toString();
-		assert.ok(['0', '00', '000', '0000', '00000'].some(offset => fileContent === offset + newContent));
+		const readPromises = Promise.all(['0', '00', '000', '0000', '00000'].map(async () => {
+			const fileContent = await service.readFile(resource, { atomic: true });
+			assert.ok(fileContent.value.byteLength > 0); // `atomic: true` ensures we never read a truncated file
+		}));
+
+		await Promise.all([writePromises, readPromises]);
 	});
 
 	test('writeFile (readable) - default', async () => {
@@ -1874,6 +1898,63 @@ suite.skip('Disk File Service', function () { // {{SQL CARBON EDIT}} Disable occ
 
 		assert.strictEqual(readFileSync(resource.fsPath).toString(), content);
 	});
+
+	test('writeFile - locked files and unlocking', async () => {
+		setCapabilities(fileProvider, FileSystemProviderCapabilities.FileReadWrite | FileSystemProviderCapabilities.FileWriteUnlock);
+
+		return testLockedFiles(false);
+	});
+
+	test('writeFile (stream) - locked files and unlocking', async () => {
+		setCapabilities(fileProvider, FileSystemProviderCapabilities.FileOpenReadWriteClose | FileSystemProviderCapabilities.FileWriteUnlock);
+
+		return testLockedFiles(false);
+	});
+
+	test('writeFile - locked files and unlocking throws error when missing capability', async () => {
+		setCapabilities(fileProvider, FileSystemProviderCapabilities.FileReadWrite);
+
+		return testLockedFiles(true);
+	});
+
+	test('writeFile (stream) - locked files and unlocking throws error when missing capability', async () => {
+		setCapabilities(fileProvider, FileSystemProviderCapabilities.FileOpenReadWriteClose);
+
+		return testLockedFiles(true);
+	});
+
+	async function testLockedFiles(expectError: boolean) {
+		const lockedFile = URI.file(join(testDir, 'my-locked-file'));
+
+		await service.writeFile(lockedFile, VSBuffer.fromString('Locked File'));
+
+		const stats = await promises.stat(lockedFile.fsPath);
+		await promises.chmod(lockedFile.fsPath, stats.mode & ~0o200);
+
+		let error;
+		const newContent = 'Updates to locked file';
+		try {
+			await service.writeFile(lockedFile, VSBuffer.fromString(newContent));
+		} catch (e) {
+			error = e;
+		}
+
+		assert.ok(error);
+		error = undefined;
+
+		if (expectError) {
+			try {
+				await service.writeFile(lockedFile, VSBuffer.fromString(newContent), { unlock: true });
+			} catch (e) {
+				error = e;
+			}
+
+			assert.ok(error);
+		} else {
+			await service.writeFile(lockedFile, VSBuffer.fromString(newContent), { unlock: true });
+			assert.strictEqual(readFileSync(lockedFile.fsPath).toString(), newContent);
+		}
+	}
 
 	test('writeFile (error when folder is encountered)', async () => {
 		const resource = URI.file(testDir);
@@ -2272,7 +2353,7 @@ suite.skip('Disk File Service', function () { // {{SQL CARBON EDIT}} Disable occ
 		const resource = URI.file(join(testDir, 'lorem.txt'));
 
 		const buffer = VSBuffer.alloc(1024);
-		const fdWrite = await fileProvider.open(resource, { create: true });
+		const fdWrite = await fileProvider.open(resource, { create: true, unlock: false });
 		const fdRead = await fileProvider.open(resource, { create: false });
 
 		let posInFileWrite = 0;

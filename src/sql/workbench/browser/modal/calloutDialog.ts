@@ -47,8 +47,6 @@ export abstract class CalloutDialog<T> extends Modal {
 			});
 	}
 
-	protected abstract renderBody(container: HTMLElement): void;
-
 	public abstract open(): Promise<T>;
 
 	public cancel(): void {

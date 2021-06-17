@@ -153,6 +153,7 @@ export class TestExtensionContext implements vscode.ExtensionContext {
 	globalStoragePath: string;
 	logPath: string;
 	secrets: vscode.SecretStorage;
+	extension: vscode.Extension<any>;
 }
 
 export class TestImportDataModel implements ImportDataModel {

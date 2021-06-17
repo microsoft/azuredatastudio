@@ -9,7 +9,7 @@ import { IAngularEventingService } from 'sql/platform/angularEventing/browser/an
 import { ExecuteCommandAction } from 'vs/platform/actions/common/actions';
 
 export class ExplorerManageAction extends ManageAction {
-	public static readonly ID = 'explorerwidget.manage';
+	public static override readonly ID = 'explorerwidget.manage';
 	constructor(
 		id: string, label: string,
 		@IConnectionManagementService connectionManagementService: IConnectionManagementService,
@@ -18,13 +18,13 @@ export class ExplorerManageAction extends ManageAction {
 		super(id, label, connectionManagementService, angularEventingService);
 	}
 
-	public async run(actionContext: ManageActionContext): Promise<void> {
+	public override async run(actionContext: ManageActionContext): Promise<void> {
 		await super.run(actionContext);
 	}
 }
 
 export class CustomExecuteCommandAction extends ExecuteCommandAction {
-	run(context: ManageActionContext): Promise<any> {
+	override run(context: ManageActionContext): Promise<any> {
 		return super.run(context.profile);
 	}
 }

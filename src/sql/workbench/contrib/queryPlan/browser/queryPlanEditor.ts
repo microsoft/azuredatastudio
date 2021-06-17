@@ -48,7 +48,7 @@ export class QueryPlanEditor extends EditorPane {
 	/**
 	 * Sets focus on this editor. Specifically, it sets the focus on the hosted text editor.
 	 */
-	public focus(): void {
+	public override focus(): void {
 		this.view.focus();
 	}
 
@@ -60,7 +60,7 @@ export class QueryPlanEditor extends EditorPane {
 		this.view.layout(dimension);
 	}
 
-	public async setInput(input: QueryPlanInput, options: EditorOptions, context: IEditorOpenContext): Promise<void> {
+	public override async setInput(input: QueryPlanInput, options: EditorOptions, context: IEditorOpenContext): Promise<void> {
 		if (this.input instanceof QueryPlanInput && this.input.matches(input)) {
 			return Promise.resolve(undefined);
 		}
@@ -71,7 +71,7 @@ export class QueryPlanEditor extends EditorPane {
 		this.view.showPlan(input.planXml!);
 	}
 
-	public dispose(): void {
+	public override dispose(): void {
 		super.dispose();
 	}
 }

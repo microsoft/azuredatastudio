@@ -39,6 +39,7 @@ else
 				# compile-extension:css-language-features-server \
 				# compile-extension:html-language-features-server \
 				# compile-extension:json-language-features-server \
+				# compile-extension-media
 
 
 	# Configuration for more verbose output

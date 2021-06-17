@@ -66,7 +66,7 @@ export default class DeclarativeTableComponent extends ContainerBase<any, azdata
 		this.baseInit();
 	}
 
-	ngOnDestroy(): void {
+	override ngOnDestroy(): void {
 		this.baseDestroy();
 	}
 
@@ -257,7 +257,7 @@ export default class DeclarativeTableComponent extends ContainerBase<any, azdata
 	}
 
 	private static ACCEPTABLE_VALUES = new Set<string>(['number', 'string', 'boolean']);
-	public setProperties(properties: azdata.DeclarativeTableProperties): void {
+	public override setProperties(properties: azdata.DeclarativeTableProperties): void {
 		const basicData: any[][] = properties.data ?? [];
 		const complexData: azdata.DeclarativeTableCellValue[][] = properties.dataValues ?? [];
 		let finalData: azdata.DeclarativeTableCellValue[][];
@@ -311,7 +311,7 @@ export default class DeclarativeTableComponent extends ContainerBase<any, azdata
 		super.setProperties(properties);
 	}
 
-	public clearContainer(): void {
+	public override clearContainer(): void {
 		super.clearContainer();
 		this.selectedRow = -1;
 	}
@@ -357,7 +357,7 @@ export default class DeclarativeTableComponent extends ContainerBase<any, azdata
 		}
 	}
 
-	public doAction(action: string, ...args: any[]): void {
+	public override doAction(action: string, ...args: any[]): void {
 		if (action === ModelViewAction.Filter) {
 			this._filteredRowIndexes = args[0];
 		}
@@ -375,7 +375,7 @@ export default class DeclarativeTableComponent extends ContainerBase<any, azdata
 		return this._filteredRowIndexes.includes(rowIndex) ? false : true;
 	}
 
-	public get CSSStyles(): azdata.CssStyles {
+	public override get CSSStyles(): azdata.CssStyles {
 		return this.mergeCss(super.CSSStyles, {
 			'width': this.getWidth(),
 			'height': this.getHeight()

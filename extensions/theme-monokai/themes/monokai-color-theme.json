@@ -9,7 +9,7 @@
 	"colors": {
 		"dropdown.background": "#414339",
 		"list.activeSelectionBackground": "#75715E",
-		"list.focusBackground": "#414339",
+		"quickInputList.focusBackground": "#414339",
 		"dropdown.listBackground": "#1e1f1c",
 		"settings.textInputBackground": "#32342d",
 		"settings.numberInputBackground": "#32342d",
@@ -52,6 +52,7 @@
 		"statusBar.noFolderBackground": "#414339",
 		"statusBar.debuggingBackground": "#75715E",
 		"statusBarItem.remoteBackground": "#AC6218",
+		"ports.iconRunningProcessforeground": "#ccccc7",
 		"activityBar.background": "#272822",
 		"activityBar.foreground": "#f8f8f2",
 		"sideBar.background": "#1e1f1c",

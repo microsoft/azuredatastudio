@@ -156,7 +156,7 @@ export default class InputBoxComponent extends ComponentBase<azdata.InputBoxProp
 		return this.multiline ? '' : 'none';
 	}
 
-	public async validate(): Promise<boolean> {
+	public override async validate(): Promise<boolean> {
 		await super.validate();
 		// Let the input validate handle showing/hiding the error message
 		const valid = this.inputElement.validate() === undefined;
@@ -174,13 +174,13 @@ export default class InputBoxComponent extends ComponentBase<azdata.InputBoxProp
 		return valid;
 	}
 
-	ngOnDestroy(): void {
+	override ngOnDestroy(): void {
 		this.baseDestroy();
 	}
 
 	/// IComponent implementation
 
-	public layout(): void {
+	public override layout(): void {
 		super.layout();
 		this.layoutInputBox();
 	}
@@ -199,7 +199,7 @@ export default class InputBoxComponent extends ComponentBase<azdata.InputBoxProp
 		this.layout();
 	}
 
-	public setProperties(properties: { [key: string]: any; }): void {
+	public override setProperties(properties: { [key: string]: any; }): void {
 		super.setProperties(properties);
 		this.setInputProperties(this.inputElement);
 		this.validate().catch(onUnexpectedError);
@@ -352,7 +352,7 @@ export default class InputBoxComponent extends ComponentBase<azdata.InputBoxProp
 		return this.getPropertyOrDefault<number | undefined>((props) => props.maxLength, undefined);
 	}
 
-	public focus(): void {
+	public override focus(): void {
 		this.inputElement.focus();
 	}
 
