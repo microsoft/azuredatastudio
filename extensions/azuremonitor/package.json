@@ -208,11 +208,7 @@
     "vscode-languageclient": "5.2.1",
     "vscode-nls": "^4.0.0"
   },
-  "devDependencies": {
-    "@types/kerberos": "^1.1.0",
-    "@types/request": "^2.48.2",
-    "@types/through2": "^2.0.34"
-  },
+  "devDependencies": {},
   "__metadata": {
     "id": "",
     "publisherDisplayName": "Microsoft",
