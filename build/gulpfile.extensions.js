@@ -112,7 +112,7 @@ const tasks = compilations.map(function (tsconfigFile) {
 					sourceRoot: '../src'
 				}))
 				.pipe(tsFilter.restore)
-				//.pipe(build ? nlsDev.bundleMetaDataFiles(headerId, headerOut) : es.through()) // {SQL CARBON EDIT} Metadata files are not used when vscode-nls is set to file mode..
+				//.pipe(build ? nlsDev.bundleMetaDataFiles(headerId, headerOut) : es.through()) // {SQL CARBON EDIT} Metadata files are not used when vscode-nls is set to file mode.
 				// Filter out *.nls.json file. We needed them only to bundle meta data file.
 				//.pipe(filter(['**', '!**/*.nls.json'])) // {SQL CARBON EDIT} out nls.json files are required for default strings when vscode-nls is set to file mode.
 				.pipe(reporter.end(emitError));
