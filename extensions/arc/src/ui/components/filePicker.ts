@@ -6,7 +6,7 @@ import * as azdata from 'azdata';
 import * as path from 'path';
 import * as vscode from 'vscode';
 import * as loc from '../../localizedConstants';
-
+import { promises as fs } from 'fs';
 export interface RadioOptionsInfo {
 	values?: string[],
 	defaultValue: string
@@ -20,14 +20,24 @@ export class FilePicker {
 		modelBuilder: azdata.ModelBuilder,
 		initialPath: string,
 		onNewDisposableCreated: (disposable: vscode.Disposable) => void,
-		ariaLabel: string
+		ariaLabel: string,
+		validationErrorMessage: string
 	) {
 		const buttonWidth = 80;
 		this.filePathInputBox = modelBuilder.inputBox()
 			.withProperties<azdata.InputBoxProperties>({
 				value: initialPath,
 				ariaLabel: ariaLabel,
+				validationErrorMessage: validationErrorMessage,
 				width: 350
+			}).withValidation(async () => {
+				try {
+					await fs.stat(this.filePathInputBox.value || '');
+				} catch (err) {
+					console.log('Error checking config path ', err);
+					return false;
+				}
+				return true;
 			}).component();
 
 		this.filePickerButton = modelBuilder.button()
