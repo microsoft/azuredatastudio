@@ -293,6 +293,7 @@ suite('notebookUtils', function (): void {
 		assert.strictEqual(stack.peek(), undefined);
 
 		// Check max stack size
+		stack.clear();
 		for (let i = 0; i < maxStackSize; i++) {
 			stack.push('a');
 		}

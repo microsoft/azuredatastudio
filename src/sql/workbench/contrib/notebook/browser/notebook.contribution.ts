@@ -325,6 +325,12 @@ configurationRegistry.registerConfiguration({
 			'default': false,
 			'description': localize('notebook.showRenderedNotebookinDiffEditor', "(Preview) Show rendered notebook in diff editor.")
 		},
+		'notebook.maxRichTextUndoHistory': {
+			'type': 'number',
+			'default': 200,
+			'minimum': 1,
+			'description': localize('notebook.maxRichTextUndoHistory', "The maximum number of changes stored in the undo history for the notebook Rich Text editor.")
+		}
 	}
 });
 

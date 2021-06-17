@@ -118,7 +118,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		this.markdownRenderer = this._instantiationService.createInstance(NotebookMarkdownRenderer);
 		this.doubleClickEditEnabled = this._configurationService.getValue('notebook.enableDoubleClickEdit');
 		this.markdownPreviewLineHeight = this._configurationService.getValue('notebook.markdownPreviewLineHeight');
-		let maxStackSize: number = this._configurationService.getValue('notebook.maxUndoStackSize');
+		let maxStackSize: number = this._configurationService.getValue('notebook.maxRichTextUndoHistory');
 		this._undoStack = new RichTextEditStack(maxStackSize);
 		this._redoStack = new RichTextEditStack(maxStackSize);
 
@@ -134,8 +134,8 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 				this.markdownPreviewLineHeight = this._configurationService.getValue('notebook.markdownPreviewLineHeight');
 				this.updatePreview();
 			}
-			if (e.affectsConfiguration('notebook.maxUndoStackSize')) {
-				let newStackSize: number = this._configurationService.getValue('notebook.maxUndoStackSize');
+			if (e.affectsConfiguration('notebook.maxRichTextUndoHistory')) {
+				let newStackSize: number = this._configurationService.getValue('notebook.maxRichTextUndoHistory');
 				this._undoStack.maxStackSize = newStackSize;
 				this._redoStack.maxStackSize = newStackSize;
 			}
