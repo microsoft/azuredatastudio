@@ -72,15 +72,13 @@ export class SqlDatabaseTree {
 	private _assessmentTitle!: azdata.TextComponent;
 	private _databaseTableValues!: azdata.DeclarativeTableCellValue[][];
 
-
 	private _activeIssues!: SqlMigrationAssessmentResultItem[];
-	private _selectedIssue!: SqlMigrationAssessmentResultItem;
-	private _selectedObject!: SqlMigrationImpactedObjectInfo;
+	// private _selectedIssue!: SqlMigrationAssessmentResultItem;
+	// private _selectedObject!: SqlMigrationImpactedObjectInfo;
 
 	private _serverName!: string;
 	private _dbNames!: string[];
 	private _databaseCount!: azdata.TextComponent;
-
 
 	constructor(
 		private _model: MigrationStateModel,
@@ -176,16 +174,15 @@ export class SqlDatabaseTree {
 				'value': constants.DATABASES(this.selectedDbs().length, this._model._serverDatabases.length)
 			});
 		});
-		this._databaseTable.onRowSelected(({ row }) => {
-
-			this._databaseTable.focus();
+		this._databaseTable.onRowSelected((e) => {
+			console.log('this._databaseTable.onRowSelected(' + e.row + ')');
+			//this._databaseTable.focus();
 			if (this._targetType === MigrationTargetType.SQLMI) {
-				this._activeIssues = this._model._assessmentResults?.databaseAssessments[row].issues;
-				this._selectedIssue = this._model._assessmentResults?.databaseAssessments[row].issues[0];
+				this._activeIssues = this._model._assessmentResults?.databaseAssessments[e.row].issues;
 			} else {
 				this._activeIssues = [];
 			}
-			this._dbName.value = this._dbNames[row];
+			this._dbName.value = this._dbNames[e.row];
 			this._recommendationTitle.value = constants.ISSUES_COUNT(this._activeIssues.length);
 			this._recommendation.value = constants.ISSUES_DETAILS;
 			this._resultComponent.updateCssStyles({
@@ -252,10 +249,10 @@ export class SqlDatabaseTree {
 		}).component();
 
 		this._instanceTable.onRowSelected((e) => {
-
-			this._instanceTable.focus();
+			console.log('this._instanceTable.onRowSelected(' + e.row + ')');
+			//this._instanceTable.focus();
 			this._activeIssues = this._model._assessmentResults?.issues;
-			this._selectedIssue = this._model._assessmentResults?.issues[0];
+			//this._selectedIssue = this._model._assessmentResults?.issues[0];
 			this._dbName.value = this._serverName;
 			this._resultComponent.updateCssStyles({
 				'display': 'block'
@@ -407,7 +404,6 @@ export class SqlDatabaseTree {
 
 		const bottomContainer = this.createDescriptionContainer();
 
-
 		const container = this._view.modelBuilder.flexContainer().withItems([title, bottomContainer]).withLayout({
 			flexFlow: 'column'
 		}).withProps({
@@ -422,7 +418,6 @@ export class SqlDatabaseTree {
 	private createDescriptionContainer(): azdata.FlexContainer {
 		const description = this.createDescription();
 		const impactedObjects = this.createImpactedObjectsDescription();
-
 
 		const container = this._view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'row'
@@ -491,9 +486,10 @@ export class SqlDatabaseTree {
 			}
 		).component();
 
-		this._impactedObjectsTable.onRowSelected(({ row }) => {
-			this._selectedObject = this._impactedObjects[row];
-			this.refreshImpactedObject();
+		this._impactedObjectsTable.onRowSelected((e) => {
+			console.log('this._impactedObjectsTable.onRowSelected(' + e.row + ')');
+			const impactedObject = e.row > -1 ? this._impactedObjects[e.row] : undefined;
+			this.refreshImpactedObject(impactedObject);
 		});
 
 		const objectDetailsTitle = this._view.modelBuilder.text().withProps({
@@ -590,14 +586,12 @@ export class SqlDatabaseTree {
 			showLinkIcon: true
 		}).component();
 
-
 		const container = this._view.modelBuilder.flexContainer().withItems([descriptionTitle, this._descriptionText, recommendationTitle, this._recommendationText, moreInfo, this._moreInfo]).withLayout({
 			flexFlow: 'column'
 		}).component();
 
 		return container;
 	}
-
 
 	private createAssessmentTitle(): azdata.TextComponent {
 		this._assessmentTitle = this._view.modelBuilder.text().withProps({
@@ -682,7 +676,6 @@ export class SqlDatabaseTree {
 		return this._recommendation;
 	}
 
-
 	private createImpactedObjectsTable(): azdata.FlexContainer {
 
 		const headerStyle: azdata.CssStyles = {
@@ -719,9 +712,10 @@ export class SqlDatabaseTree {
 			}
 		).component();
 
-		this._assessmentResultsTable.onRowSelected(({ row }) => {
-			this._selectedIssue = this._activeIssues[row];
-			this.refreshAssessmentDetails();
+		this._assessmentResultsTable.onRowSelected((e) => {
+			console.log('this._assessmentResultsTable.onRowSelected(' + e.row + ')');
+			const selectedIssue = e.row > -1 ? this._activeIssues[e.row] : undefined;
+			this.refreshAssessmentDetails(selectedIssue);
 		});
 
 		const container = this._view.modelBuilder.flexContainer().withItems([this._assessmentResultsTable]).withLayout({
@@ -747,7 +741,6 @@ export class SqlDatabaseTree {
 	}
 
 	public refreshResults(): void {
-		const assessmentResults: azdata.DeclarativeTableCellValue[][] = [];
 		if (this._model._targetType === MigrationTargetType.SQLMI) {
 			if (this._activeIssues.length === 0) {
 				/// show no issues here
@@ -787,60 +780,36 @@ export class SqlDatabaseTree {
 			this._recommendationTitle.value = constants.ASSESSMENT_RESULTS;
 			this._recommendation.value = '';
 		}
-		this._activeIssues.forEach((v) => {
-			assessmentResults.push(
-				[
-					{
-						value: v.checkId
-					}
-				]
-			);
-		});
+
+		const assessmentResults: azdata.DeclarativeTableCellValue[][] = this._activeIssues
+			.map((v) => [{ value: v.checkId }]) || [];
+
 		this._assessmentResultsTable.dataValues = assessmentResults;
+		console.log('refreshResults::this._assessmentResultsTable.selectedRow = ' + (assessmentResults.length > 0 ? '0' : '-1'));
+		this._assessmentResultsTable.selectedRow = assessmentResults.length > 0 ? 0 : -1;
 	}
 
-	public refreshAssessmentDetails(): void {
-		if (this._selectedIssue) {
-			this._assessmentTitle.value = this._selectedIssue.checkId;
-			this._descriptionText.value = this._selectedIssue.description;
-			this._moreInfo.url = this._selectedIssue.helpLink;
-			this._moreInfo.label = this._selectedIssue.message;
-			this._impactedObjects = this._selectedIssue.impactedObjects;
-			this._recommendationText.value = this._selectedIssue.message; //TODO: Expose correct property for recommendation.
-			this._impactedObjectsTable.dataValues = this._selectedIssue.impactedObjects.map((object) => {
-				return [
-					{
-						value: object.objectType
-					},
-					{
-						value: object.name
-					}
-				];
-			});
-			this._selectedObject = this._selectedIssue.impactedObjects[0];
-		}
-		else {
-			this._assessmentTitle.value = '';
-			this._descriptionText.value = '';
-			this._moreInfo.url = '';
-			this._moreInfo.label = '';
-			this._recommendationText.value = '';
-			this._impactedObjectsTable.dataValues = [];
-		}
-		this.refreshImpactedObject();
+	public refreshAssessmentDetails(selectedIssue?: SqlMigrationAssessmentResultItem): void {
+		// console.log('refreshAssessmentDetails');
+		this._assessmentTitle.value = selectedIssue?.checkId || '';
+		this._descriptionText.value = selectedIssue?.description || '';
+		this._moreInfo.url = selectedIssue?.helpLink || '';
+		this._moreInfo.label = selectedIssue?.message || '';
+		this._impactedObjects = selectedIssue?.impactedObjects || [];
+		this._recommendationText.value = selectedIssue?.message || ''; //TODO: Expose correct property for recommendation.
+
+		this._impactedObjectsTable.dataValues = this._impactedObjects.map(
+			(object) => [{ value: object.objectType }, { value: object.name }]);
+
+		console.log('refreshAssessmentDetails::this._impactedObjectsTable.selectedRow = ' + (this._impactedObjects.length > 0 ? '0' : '-1'));
+		this._impactedObjectsTable.selectedRow = this._impactedObjects.length > 0 ? 0 : -1;
 	}
 
-	public refreshImpactedObject(): void {
-		if (this._selectedObject) {
-			this._objectDetailsType.value = constants.IMPACT_OBJECT_TYPE(this._selectedObject.objectType!);
-			this._objectDetailsName.value = constants.IMPACT_OBJECT_NAME(this._selectedObject.name);
-			this._objectDetailsSample.value = this._selectedObject.impactDetail;
-		} else {
-			this._objectDetailsType.value = ``;
-			this._objectDetailsName.value = ``;
-			this._objectDetailsSample.value = '';
-		}
-
+	public refreshImpactedObject(impactedObject?: SqlMigrationImpactedObjectInfo): void {
+		// console.log('refreshImpactedObject(impactedObject: ' + (impactedObject ? 'impactedObject' : 'undefined' + ')'));
+		this._objectDetailsType.value = constants.IMPACT_OBJECT_TYPE(impactedObject?.objectType);
+		this._objectDetailsName.value = constants.IMPACT_OBJECT_NAME(impactedObject?.name);
+		this._objectDetailsSample.value = impactedObject?.impactDetail || '';
 	}
 
 	public async initialize(): Promise<void> {
