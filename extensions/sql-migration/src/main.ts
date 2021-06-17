@@ -60,7 +60,7 @@ class SQLMigration {
 			azdata.tasks.registerTask('sqlmigration.sendfeedback', async () => {
 				const actionId = 'workbench.action.openIssueReporter';
 				const args = {
-					extensionId: 'sql-migration',
+					extensionId: 'microsoft.sql-migration',
 					issueTitle: loc.FEEDBACK_ISSUE_TITLE,
 				};
 				return await vscode.commands.executeCommand(actionId, args);
