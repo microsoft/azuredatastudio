@@ -20,7 +20,7 @@ export class OpenGettingStartedInBrowserAction extends Action {
 		super('update.openGettingStartedGuide', nls.localize('gettingStarted', "Get Started"), undefined, true);
 	}
 
-	run(): Promise<any> {
+	override run(): Promise<any> {
 		const uri = URI.parse(product.gettingStartedUrl);
 		return this.openerService.open(uri);
 	}

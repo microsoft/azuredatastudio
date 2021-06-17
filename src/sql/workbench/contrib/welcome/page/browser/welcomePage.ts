@@ -21,7 +21,6 @@ import { localize } from 'vs/nls';
 import { Action, WorkbenchActionExecutedEvent, WorkbenchActionExecutedClassification } from 'vs/base/common/actions';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { Schemas } from 'vs/base/common/network';
-import { IBackupFileService } from 'vs/workbench/services/backup/common/backup';
 import { getInstalledExtensions, IExtensionStatus, onExtensionChanged, isKeymapExtension } from 'vs/workbench/contrib/extensions/common/extensionsUtils';
 import { IExtensionManagementService, IExtensionGalleryService, ILocalExtension } from 'vs/platform/extensionManagement/common/extensionManagement';
 import { IWorkbenchExtensionEnablementService, EnablementState } from 'vs/workbench/services/extensionManagement/common/extensionManagement';
@@ -32,7 +31,7 @@ import { IThemeService, registerThemingParticipant } from 'vs/platform/theme/com
 import { tileBorder, gradientOne, gradientTwo, gradientBackground, extensionPackHeaderShadow, extensionPackGradientColorOneColor, extensionPackGradientColorTwoColor, tileBoxShadow, hoverShadow } from 'sql/platform/theme/common/colorRegistry';
 import { registerColor, foreground, textLinkActiveForeground, descriptionForeground, activeContrastBorder, buttonForeground, menuBorder, menuForeground, editorWidgetBorder, selectBackground, buttonHoverBackground, selectBorder, iconForeground, textLinkForeground, inputBackground, focusBorder, listFocusBackground, listFocusForeground, buttonSecondaryBackground, buttonSecondaryBorder, buttonDisabledForeground, buttonDisabledBackground, buttonSecondaryForeground, buttonSecondaryHoverBackground } from 'vs/platform/theme/common/colorRegistry';
 import { IExtensionsWorkbenchService } from 'vs/workbench/contrib/extensions/common/extensions';
-import { IEditorInputFactory, EditorInput } from 'vs/workbench/common/editor';
+import { EditorInput, IEditorInputSerializer } from 'vs/workbench/common/editor';
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
 import { TimeoutTimer } from 'vs/base/common/async';
 import { areSameExtensions } from 'vs/platform/extensionManagement/common/extensionManagementUtil';
@@ -55,6 +54,7 @@ import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IExtensionRecommendationsService } from 'vs/workbench/services/extensionRecommendations/common/extensionRecommendations';
 import { attachButtonStyler } from 'vs/platform/theme/common/styler';
 import { AddServerAction } from 'sql/workbench/services/objectExplorer/browser/connectionTreeAction';
+import { IWorkingCopyBackupService } from 'vs/workbench/services/workingCopy/common/workingCopyBackup';
 const configurationKey = 'workbench.startupEditor';
 const oldConfigurationKey = 'workbench.welcome.enabled';
 const telemetryFrom = 'welcomePage';
@@ -66,7 +66,7 @@ export class WelcomePageContribution implements IWorkbenchContribution {
 		@IInstantiationService private readonly instantiationService: IInstantiationService,
 		@IConfigurationService private readonly configurationService: IConfigurationService,
 		@IEditorService private readonly editorService: IEditorService,
-		@IBackupFileService private readonly backupFileService: IBackupFileService,
+		@IWorkingCopyBackupService private readonly workingCopyBackupService: IWorkingCopyBackupService,
 		@IFileService private readonly fileService: IFileService,
 		@IWorkspaceContextService private readonly contextService: IWorkspaceContextService,
 		@ILifecycleService private readonly lifecycleService: ILifecycleService,
@@ -78,7 +78,7 @@ export class WelcomePageContribution implements IWorkbenchContribution {
 		const enabled = isWelcomePageEnabled(this.configurationService, this.contextService);
 		const guidedTourEnabled = isGuidedTourEnabled(this.configurationService);
 		if (enabled && this.lifecycleService.startupKind !== StartupKind.ReloadedWindow || guidedTourEnabled) {
-			const hasBackups: boolean = await this.backupFileService.hasBackups();
+			const hasBackups: boolean = await this.workingCopyBackupService.hasBackups();
 			const activeEditor = this.editorService.activeEditor;
 			if (!activeEditor && !hasBackups) {
 				const openWithReadme = this.configurationService.getValue(configurationKey) === 'readme';
@@ -151,7 +151,7 @@ export class WelcomePageAction extends Action {
 		super(id, label);
 	}
 
-	public run(): Promise<void> {
+	public override run(): Promise<void> {
 		return this.instantiationService.createInstance(WelcomePage)
 			.openEditor()
 			.then(() => undefined);
@@ -253,7 +253,7 @@ class WelcomePage extends Disposable {
 		@IContextKeyService private readonly contextKeyService: IContextKeyService,
 		@IThemeService private themeService: IThemeService) {
 		super();
-		this._register(lifecycleService.onShutdown(() => this.dispose()));
+		this._register(lifecycleService.onWillShutdown(() => this.dispose()));
 		const recentlyOpened = this.workspacesService.getRecentlyOpened();
 		const installedExtensions = this.instantiationService.invokeFunction(getInstalledExtensions);
 		const resource = URI.parse(require.toUrl('./az_data_welcome_page'))
@@ -821,7 +821,7 @@ class WelcomePage extends Disposable {
 	}
 }
 
-export class WelcomeInputFactory implements IEditorInputFactory {
+export class WelcomeInputSerializer implements IEditorInputSerializer {
 
 	static readonly ID = welcomeInputTypeId;
 

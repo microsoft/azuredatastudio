@@ -93,7 +93,7 @@ export class ListBox extends SelectBox {
 		this.onfocus(this.selectElement, () => this.onFocus());
 	}
 
-	public style(styles: IListBoxStyles): void {
+	public override style(styles: IListBoxStyles): void {
 		let superStyle: ISelectBoxStyles = {
 			selectBackground: styles.selectBackground,
 			selectForeground: styles.selectForeground,
@@ -164,7 +164,7 @@ export class ListBox extends SelectBox {
 		super.setOptions(this.options);
 	}
 
-	public setOptions(options: ISelectOptionItem[], selected?: number): void {
+	public override setOptions(options: ISelectOptionItem[], selected?: number): void {
 		this.options = options;
 		super.setOptions(options, selected);
 	}
@@ -197,7 +197,7 @@ export class ListBox extends SelectBox {
 		}
 	}
 
-	public focus(): void {
+	public override focus(): void {
 		this.selectElement.focus();
 	}
 

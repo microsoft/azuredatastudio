@@ -32,7 +32,7 @@ export class MiaaComputeAndStoragePage extends DashboardPage {
 
 	private readonly _azdataApi: azdataExt.IExtension;
 
-	constructor(protected modelView: azdata.ModelView, dashboard: azdata.window.ModelViewDashboard, private _miaaModel: MiaaModel) {
+	constructor(modelView: azdata.ModelView, dashboard: azdata.window.ModelViewDashboard, private _miaaModel: MiaaModel) {
 		super(modelView, dashboard);
 		this._azdataApi = vscode.extensions.getExtension(azdataExt.extension.name)?.exports;
 

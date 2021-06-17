@@ -74,7 +74,7 @@ class SaveResultAction extends Action {
 		super(id, label);
 	}
 
-	public async run(gridInfo: IGridInfo): Promise<void> {
+	public override async run(gridInfo: IGridInfo): Promise<void> {
 		this.dataService.sendSaveRequest({
 			batchIndex: gridInfo.batchIndex,
 			resultSetNumber: gridInfo.resultSetNumber,
@@ -100,7 +100,7 @@ class CopyResultAction extends Action {
 		super(id, label);
 	}
 
-	public async run(gridInfo: IGridInfo): Promise<void> {
+	public override async run(gridInfo: IGridInfo): Promise<void> {
 		this.dataService.copyResults(gridInfo.selection, gridInfo.batchIndex, gridInfo.resultSetNumber, this.copyHeader);
 	}
 }
@@ -117,7 +117,7 @@ class SelectAllGridAction extends Action {
 		super(id, label);
 	}
 
-	public async run(gridInfo: IGridInfo): Promise<void> {
+	public override async run(gridInfo: IGridInfo): Promise<void> {
 		this.selectAllCallback(gridInfo.gridIndex);
 	}
 }

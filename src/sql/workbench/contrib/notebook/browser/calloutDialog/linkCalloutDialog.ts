@@ -90,7 +90,7 @@ export class LinkCalloutDialog extends Modal {
 		return this._selectionComplete.promise;
 	}
 
-	public render(): void {
+	public override render(): void {
 		super.render();
 		attachCalloutDialogStyler(this, this._themeService);
 
@@ -144,13 +144,13 @@ export class LinkCalloutDialog extends Modal {
 		this._register(styler.attachInputBoxStyler(this._linkUrlInputBox, this._themeService));
 	}
 
-	protected onAccept(e?: StandardKeyboardEvent) {
+	protected override onAccept(e?: StandardKeyboardEvent) {
 		// EventHelper.stop() will call preventDefault. Without it, text cell will insert an extra newline when pressing enter on dialog
 		DOM.EventHelper.stop(e, true);
 		this.insert();
 	}
 
-	protected onClose(e?: StandardKeyboardEvent) {
+	protected override onClose(e?: StandardKeyboardEvent) {
 		DOM.EventHelper.stop(e, true);
 		this.cancel();
 	}

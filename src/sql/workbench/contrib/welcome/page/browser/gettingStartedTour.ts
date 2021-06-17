@@ -72,7 +72,7 @@ export class GuidedTourAction extends Action {
 		super(id, label);
 	}
 
-	public run(): Promise<void> {
+	public override run(): Promise<void> {
 		if (!guidedTour) {
 			guidedTour = this.instantiationService.createInstance(GuidedTour);
 		}
@@ -92,7 +92,7 @@ export class HideGuidedTourAction extends Action {
 		super(id, label);
 	}
 
-	public run(): Promise<void> {
+	public override run(): Promise<void> {
 		if (guidedTour) {
 			guidedTour.hide();
 		}

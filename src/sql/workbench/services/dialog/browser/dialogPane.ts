@@ -174,7 +174,7 @@ export class DialogPane extends Disposable implements IThemable {
 		return valid;
 	}
 
-	public dispose() {
+	public override dispose() {
 		super.dispose();
 		this._body.remove();
 		this._moduleRefs.forEach(moduleRef => moduleRef.destroy());

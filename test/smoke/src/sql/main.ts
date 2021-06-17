@@ -33,7 +33,7 @@ const PLATFORM = '${PLATFORM}';
 const RUNTIME = '${RUNTIME}';
 const VERSION = '${VERSION}';
 
-const sqliteUrl = `https://github.com/Microsoft/azuredatastudio-sqlite/releases/download/1.2.1/azuredatastudio-sqlite-${PLATFORM}-${RUNTIME}-${VERSION}.zip`;
+const sqliteUrl = `https://github.com/Microsoft/azuredatastudio-sqlite/releases/download/1.3.0/azuredatastudio-sqlite-${PLATFORM}-${RUNTIME}-${VERSION}.zip`;
 
 export async function setup(app: ApplicationOptions): Promise<void> {
 	console.log('*** Downloading test extensions');
@@ -64,13 +64,8 @@ export async function setup(app: ApplicationOptions): Promise<void> {
 						return;
 					}
 
-					mkdirp(path.dirname(destination), err => {
-						if (err) {
-							reject(err);
-							return;
-						}
-						readStream.pipe(fs.createWriteStream(destination));
-					});
+					mkdirp.sync(path.dirname(destination));
+					readStream.pipe(fs.createWriteStream(destination));
 				});
 			}).once('end', () => resolve());
 		});

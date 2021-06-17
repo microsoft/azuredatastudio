@@ -17,14 +17,15 @@ const extensionList = [
 	'azurecore',
 	'cms',
 	'dacpac',
+	'data-workspace',
 	'import',
-	'schema-compare',
 	//'mssql',
 	'notebook',
-	'resource-deployment',
 	'machine-learning',
+	'resource-deployment',
+	'schema-compare',
 	'sql-database-projects',
-	'data-workspace'
+
 ];
 
 let argv = require('yargs')
