@@ -22,6 +22,7 @@ const plumber = require('gulp-plumber');
 const fancyLog = require('fancy-log');
 const ansiColors = require('ansi-colors');
 const ext = require('./lib/extensions');
+
 const extensionsPath = path.join(path.dirname(__dirname), 'extensions');
 // {{SQL CARBON EDIT}}
 const sqlLocalizedExtensions = [
