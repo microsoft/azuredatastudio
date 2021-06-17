@@ -26,3 +26,14 @@
 	width: 100%;
 	text-align: center;
 }
+
+.declarative-table .toggle-more {
+	background-size: 16px !important;
+	background-position: 5px 50% !important;
+	background-repeat: no-repeat;
+	border-width: 0px;
+	height: 16px;
+	width: 26px;
+	vertical-align: middle;
+	cursor: pointer;
+}
