@@ -246,7 +246,11 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 					if (isFile && !path.isAbsolute(linkUrl)) {
 						const notebookDirName = path.dirname(this.cellModel?.notebookModel?.notebookUri.fsPath);
 						const relativePath = (linkUrl).replace(/\\/g, path.posix.sep);
-						linkUrl = path.resolve(notebookDirName, relativePath);
+						if (this.cellModel?.notebookModel?.notebookUri.scheme !== 'untitled') {
+							linkUrl = path.resolve(notebookDirName, relativePath);
+						} else {
+							linkUrl = relativePath;
+						}
 					}
 				}
 				// Otherwise, re-focus on the output element, and insert the link directly.
