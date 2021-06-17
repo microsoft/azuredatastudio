@@ -166,7 +166,7 @@ export class CreateSqlMigrationServiceDialog {
 			try {
 				await this.refreshStatus();
 			} catch (e) {
-				console.log(e);
+				vscode.window.showErrorMessage(e);
 			}
 			this._connectionStatus.updateCssStyles({
 				'display': 'inline'
