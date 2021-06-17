@@ -199,11 +199,16 @@ export class CreateSqlMigrationServiceDialog {
 			const createResourceGroupDialog = new CreateResourceGroupDialog(this.migrationStateModel._azureAccount, this.migrationStateModel._targetSubscription, this.migrationStateModel._targetServerInstance.location);
 			const createdResourceGroup = await createResourceGroupDialog.initialize();
 			if (createdResourceGroup) {
-				await this.populateResourceGroups();
-				console.log(this.migrationServiceResourceGroupDropdown.values);
+				for (let i = 0; i < 5; i++) {
+					await this.populateResourceGroups();
+					if ((<azdata.CategoryValue[]>this.migrationServiceResourceGroupDropdown.values)?.find(v => v.displayName === createdResourceGroup.name)) {
+						break;
+					}
+					await new Promise(resolve => setTimeout(resolve, 3000));
+				}
 				this.migrationServiceResourceGroupDropdown.value = {
-					name: createdResourceGroup.name,
-					displayName: createdResourceGroup.name
+					displayName: createdResourceGroup.name,
+					name: createdResourceGroup.name
 				};
 			}
 		});

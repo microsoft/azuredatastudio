@@ -7,7 +7,7 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { azureResource } from 'azureResource';
 import { EventEmitter } from 'events';
-import { createResourceGroup, getResourceGroups } from '../../api/azure';
+import { createResourceGroup } from '../../api/azure';
 import * as constants from '../../constants/strings';
 
 export class CreateResourceGroupDialog {
@@ -74,14 +74,6 @@ export class CreateResourceGroupDialog {
 				loading.loading = true;
 				try {
 					const resourceGroup = await createResourceGroup(this._azureAccount, this._subscription, resoruceGroupName.value!, this._location);
-					let isResourceGroupCreated = false;
-					let i = 0;
-					while (!isResourceGroupCreated && i < 5) {
-						const resourceGroups = await getResourceGroups(this._azureAccount, this._subscription);
-						isResourceGroupCreated = (resourceGroups.findIndex(r => r.name === resoruceGroupName.value!) !== -1);
-						await new Promise(resolve => setTimeout(resolve, 1000));
-						i++;
-					}
 					this._creationEvent.emit('done', resourceGroup);
 				} catch (e) {
 					vscode.window.showErrorMessage(e.toString());
