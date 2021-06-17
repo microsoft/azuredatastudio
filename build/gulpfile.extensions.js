@@ -76,7 +76,7 @@ const tasks = compilations.map(function (tsconfigFile) {
 	}
 
 	function createPipeline(build, emitError) {
-		const { defaultLanguages, extraLanguages } = require('./lib/i18n'); // {{SQL CARBON EDIT}}
+		const { defaultLanguages, extraLanguages } = require('./lib/i18n'); // {{SQL CARBON EDIT}} Get languages to create nls files.
 		const nlsDev = require('vscode-nls-dev');
 		const tsb = require('gulp-tsb');
 		const sourcemaps = require('gulp-sourcemaps');
@@ -103,7 +103,7 @@ const tasks = compilations.map(function (tsconfigFile) {
 				.pipe(util.loadSourcemaps())
 				.pipe(compilation())
 				.pipe(build ? nlsDev.rewriteLocalizeCalls() : es.through())
-				.pipe(build ? nlsDev.createAdditionalLanguageFiles([...defaultLanguages, ...extraLanguages], path.join(root, 'i18n'), 'out') : es.through()) // {{SQL CARBON EDIT}}
+				.pipe(build ? nlsDev.createAdditionalLanguageFiles([...defaultLanguages, ...extraLanguages], path.join(root, 'i18n'), 'out') : es.through()) // {{SQL CARBON EDIT}} Create nls files for separate extensions (vscode-nls is set to file mode and requires nls files to be created).
 				.pipe(build ? util.stripSourceMappingURL() : es.through())
 				.pipe(sourcemaps.write('.', {
 					sourceMappingURL: !build ? null : f => `${baseUrl}/${f.relative}.map`,
@@ -114,7 +114,7 @@ const tasks = compilations.map(function (tsconfigFile) {
 				.pipe(tsFilter.restore)
 				.pipe(build ? nlsDev.bundleMetaDataFiles(headerId, headerOut) : es.through())
 				// Filter out *.nls.json file. We needed them only to bundle meta data file.
-				.pipe(filter(['**', '!**/*.nls.json']))
+				.pipe(filter(build  ? ['**', '!**/*.nls.json'] : es.through())) // {SQL CARBON EDIT} nls.json files are required for default strings when vscode-nls is set to file mode. Metadata files are not used when in this mode.
 				.pipe(reporter.end(emitError));
 
 			return es.duplex(input, output);
