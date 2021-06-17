@@ -12,19 +12,11 @@ import { output } from './ui-references';
 import { ClientErrorHandler } from './client-error-handler';
 import { SerializationFeature } from './features/serializationFeature';
 
-let isActivated = false;
-
 export function activate(context: vscode.ExtensionContext): void {
-	if (isActivated) {
-		return;
-	}
-
 	output.appendLine(
 		localize("extension.activating", "Activating {0}.", Strings.extensionName));
 
-	launchServiceClient(path.join(__dirname, '../sqltoolsservice/windows/3.0.0-release.1/MicrosoftKustoServiceLayer.exe'), context);
-
-	isActivated = true;
+	launchServiceClient(path.join(context.extensionPath, 'sqltoolsservice/windows/3.0.0-release.1/MicrosoftKustoServiceLayer.exe'), context);
 }
 
 /**

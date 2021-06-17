@@ -7,7 +7,6 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as path from 'path';
-import * as os from 'os';
 import * as findRemoveSync from 'find-remove';
 import { promises as fs } from 'fs';
 
@@ -99,14 +98,6 @@ export function getPackageInfo(packageJson: IPackageInfo): IPackageInfo | undefi
 		};
 	}
 	return undefined;
-}
-
-export function verifyPlatform(): Thenable<boolean> {
-	if (os.platform() === 'darwin' && parseFloat(os.release()) < 16) {
-		return Promise.resolve(false);
-	} else {
-		return Promise.resolve(true);
-	}
 }
 
 export function getErrorMessage(error: Error | any, removeHeader: boolean = false): string {
