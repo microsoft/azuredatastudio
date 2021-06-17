@@ -607,8 +607,8 @@
                           "required": true
                         },
                         {
-                          "label": "%arc.postgres.server.group.label%",
-                          "description": "%arc.postgres.server.group.description%",
+                          "label": "%arc.postgres.server.group.workers.label%",
+                          "description": "%arc.postgres.server.group.workers.description%",
                           "variableName": "AZDATA_NB_VAR_POSTGRES_SERVER_GROUP_WORKERS",
                           "type": "number",
                           "validations": [
