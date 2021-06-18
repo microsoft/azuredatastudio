@@ -11,7 +11,7 @@ import { IAgentDialogData, AgentDialogMode } from '../interfaces';
 import { JobData } from './jobData';
 import { JobStepDialog } from '../dialogs/jobStepDialog';
 
-const localize = nls.loadMessageBundle();
+const localize = nls.config({ messageFormat: nls.MessageFormat.file })();
 
 export class JobStepData implements IAgentDialogData {
 

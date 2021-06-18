@@ -8,7 +8,7 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { CreateSessionData } from '../data/createSessionData';
 
-const localize = nls.loadMessageBundle();
+const localize = nls.config({ messageFormat: nls.MessageFormat.file })();
 
 export class CreateSessionDialog {
 	// Top level

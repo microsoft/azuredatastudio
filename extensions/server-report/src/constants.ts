@@ -5,7 +5,7 @@
 'use strict';
 
 import * as nls from 'vscode-nls';
-const localize = nls.loadMessageBundle();
+const localize = nls.config({ messageFormat: nls.MessageFormat.file })();
 
 // TempDB Messages
 export const XEventsFailed = localize('XEventsFailed', 'XEvents operation failed.');

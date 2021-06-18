@@ -11,7 +11,7 @@ import { AgentDialog } from './agentDialog';
 import { AgentUtils } from '../agentUtils';
 import { NotebookData } from '../data/notebookData';
 
-const localize = nls.loadMessageBundle();
+const localize = nls.config({ messageFormat: nls.MessageFormat.file })();
 // TODO: localize
 // Top level
 const CreateDialogTitle: string = localize('notebookDialog.newJob', "New Notebook Job");

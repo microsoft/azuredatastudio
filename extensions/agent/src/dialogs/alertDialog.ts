@@ -12,7 +12,7 @@ import { OperatorDialog } from './operatorDialog';
 import { JobDialog } from './jobDialog';
 import { JobData } from '../data/jobData';
 
-const localize = nls.loadMessageBundle();
+const localize = nls.config({ messageFormat: nls.MessageFormat.file })();
 
 export class AlertDialog extends AgentDialog<AlertData> {
 

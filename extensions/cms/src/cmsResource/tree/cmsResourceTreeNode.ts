@@ -15,7 +15,7 @@ import { RegisteredServerTreeNode } from './registeredServerTreeNode';
 import { ServerGroupTreeNode } from './serverGroupTreeNode';
 import { CmsResourceMessageTreeNode } from '../messageTreeNode';
 
-const localize = nls.loadMessageBundle();
+const localize = nls.config({ messageFormat: nls.MessageFormat.file })();
 
 export class CmsResourceTreeNode extends CmsResourceTreeNodeBase {
 

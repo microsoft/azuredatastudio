@@ -6,7 +6,7 @@
 import * as vscode from 'vscode';
 import { AppContext } from '../../appContext';
 import * as nls from 'vscode-nls';
-const localize = nls.loadMessageBundle();
+const localize = nls.config({ messageFormat: nls.MessageFormat.file })();
 
 import { TreeNode } from '../treeNode';
 import { CmsResourceEmptyTreeNode } from './cmsResourceEmptyTreeNode';

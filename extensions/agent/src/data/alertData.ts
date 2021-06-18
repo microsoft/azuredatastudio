@@ -10,7 +10,7 @@ import { AgentUtils } from '../agentUtils';
 import { IAgentDialogData, AgentDialogMode } from '../interfaces';
 import { JobData } from './jobData';
 
-const localize = nls.loadMessageBundle();
+const localize = nls.config({ messageFormat: nls.MessageFormat.file })();
 
 export class AlertData implements IAgentDialogData {
 	public static readonly AlertTypeSqlServerEventString: string = localize('alertData.DefaultAlertTypString', "SQL Server event alert");

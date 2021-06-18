@@ -11,7 +11,7 @@ import * as cp from 'promisify-child-process';
 import * as nls from 'vscode-nls';
 import { isNullOrUndefined } from 'util';
 import * as utils from '../common/utils';
-const localize = nls.loadMessageBundle();
+const localize = nls.config({ messageFormat: nls.MessageFormat.file })();
 
 export const DBProjectConfigurationKey: string = 'sqlDatabaseProjects';
 export const NetCoreInstallLocationKey: string = 'netCoreSDKLocation';

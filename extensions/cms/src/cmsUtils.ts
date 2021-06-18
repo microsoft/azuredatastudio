@@ -10,7 +10,7 @@ import * as mssql from '../../mssql';
 import * as Utils from './cmsResource/utils';
 import { ICmsResourceNodeInfo } from './cmsResource/tree/baseTreeNodes';
 
-const localize = nls.loadMessageBundle();
+const localize = nls.config({ messageFormat: nls.MessageFormat.file })();
 const cmsProvider: string = 'MSSQL-CMS';
 const mssqlProvider: string = 'MSSQL';
 const CredentialNamespace = 'cmsCredentials';

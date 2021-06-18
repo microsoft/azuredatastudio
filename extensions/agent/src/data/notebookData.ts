@@ -11,7 +11,7 @@ import { AgentUtils, exists } from '../agentUtils';
 import { IAgentDialogData, AgentDialogMode } from '../interfaces';
 import { NotebookDialogOptions } from '../dialogs/notebookDialog';
 
-const localize = nls.loadMessageBundle();
+const localize = nls.config({ messageFormat: nls.MessageFormat.file })();
 const NotebookCompletionActionCondition_Always: string = localize('notebookData.whenJobCompletes', "When the notebook completes");
 const NotebookCompletionActionCondition_OnFailure: string = localize('notebookData.whenJobFails', "When the notebook fails");
 const NotebookCompletionActionCondition_OnSuccess: string = localize('notebookData.whenJobSucceeds', "When the notebook succeeds");

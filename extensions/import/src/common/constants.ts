@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import * as nls from 'vscode-nls';
-const localize = nls.loadMessageBundle();
+const localize = nls.config({ messageFormat: nls.MessageFormat.file })();
 
 export const extensionConfigSectionName = 'flatFileImport';
 export const serviceName = 'Flat File Import Service';

@@ -20,7 +20,7 @@ import { AgentUtils, exists } from './agentUtils';
 import { NotebookDialog, NotebookDialogOptions } from './dialogs/notebookDialog';
 
 
-const localize = nls.loadMessageBundle();
+const localize = nls.config({ messageFormat: nls.MessageFormat.file })();
 
 /**
  * The main controller class that initializes the extension

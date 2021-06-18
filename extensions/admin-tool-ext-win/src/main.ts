@@ -12,7 +12,7 @@ import { getTelemetryErrorType, buildSsmsMinCommandArgs, buildUrn, LaunchSsmsDia
 import { ChildProcess, exec } from 'child_process';
 import { promises as fs } from 'fs';
 
-const localize = nls.loadMessageBundle();
+const localize = nls.config({ messageFormat: nls.MessageFormat.file })();
 
 let exePath: string;
 const runningProcesses: Map<number, ChildProcess> = new Map<number, ChildProcess>();

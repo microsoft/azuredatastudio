@@ -8,7 +8,7 @@ import { OperatorData } from '../data/operatorData';
 import * as nls from 'vscode-nls';
 import { AgentDialog } from './agentDialog';
 
-const localize = nls.loadMessageBundle();
+const localize = nls.config({ messageFormat: nls.MessageFormat.file })();
 
 export class OperatorDialog extends AgentDialog<OperatorData> {
 

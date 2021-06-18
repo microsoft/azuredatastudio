@@ -9,7 +9,7 @@ import * as nls from 'vscode-nls';
 
 import { AssessmentType } from './engine';
 import { LocalizedStrings } from './localized';
-const localize = nls.loadMessageBundle();
+const localize = nls.config({ messageFormat: nls.MessageFormat.file })();
 
 export class AssessmentResultGrid implements vscode.Disposable {
 

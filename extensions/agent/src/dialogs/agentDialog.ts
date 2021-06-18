@@ -8,7 +8,7 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { IAgentDialogData, AgentDialogMode } from '../interfaces';
 
-const localize = nls.loadMessageBundle();
+const localize = nls.config({ messageFormat: nls.MessageFormat.file })();
 
 export abstract class AgentDialog<T extends IAgentDialogData> {
 

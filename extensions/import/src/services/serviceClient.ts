@@ -8,7 +8,7 @@ import { ServerProvider, Events } from 'service-downloader';
 import { ServerOptions, TransportKind } from 'vscode-languageclient';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
-const localize = nls.loadMessageBundle();
+const localize = nls.config({ messageFormat: nls.MessageFormat.file })();
 import * as path from 'path';
 import { EventAndListener } from 'eventemitter2';
 

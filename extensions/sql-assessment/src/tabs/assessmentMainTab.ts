@@ -16,7 +16,7 @@ import { LocalizedStrings } from '../localized';
 import { TelemetryReporter, SqlAssessmentTelemetryView, SqlTelemetryActions } from '../telemetry';
 import { EOL } from 'os';
 
-const localize = nls.loadMessageBundle();
+const localize = nls.config({ messageFormat: nls.MessageFormat.file })();
 
 export class SqlAssessmentMainTab extends SqlAssessmentTab {
 	private apiVersionPropItem: azdata.PropertiesContainerItem;

@@ -8,7 +8,7 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { AgentUtils } from '../agentUtils';
 import { IAgentDialogData, AgentDialogMode } from '../interfaces';
-const localize = nls.loadMessageBundle();
+const localize = nls.config({ messageFormat: nls.MessageFormat.file })();
 
 export class ProxyData implements IAgentDialogData {
 	public dialogMode: AgentDialogMode = AgentDialogMode.CREATE;

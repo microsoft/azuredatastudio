@@ -12,7 +12,7 @@ import { AssessmentResultGrid } from '../assessmentResultGrid';
 import { LocalizedStrings } from '../localized';
 import { TelemetryReporter, SqlAssessmentTelemetryView, SqlTelemetryActions } from '../telemetry';
 
-const localize = nls.loadMessageBundle();
+const localize = nls.config({ messageFormat: nls.MessageFormat.file })();
 
 export class SqlAssessmentHistoryTab extends SqlAssessmentTab {
 	private engine: AssessmentEngine;

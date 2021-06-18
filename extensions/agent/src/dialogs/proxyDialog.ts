@@ -8,7 +8,7 @@ import * as azdata from 'azdata';
 import { AgentDialog } from './agentDialog';
 import { ProxyData } from '../data/proxyData';
 
-const localize = nls.loadMessageBundle();
+const localize = nls.config({ messageFormat: nls.MessageFormat.file })();
 
 export class ProxyDialog extends AgentDialog<ProxyData>  {
 

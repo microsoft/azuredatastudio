@@ -6,7 +6,7 @@
 import { TreeItem, TreeItemCollapsibleState } from 'vscode';
 import { NodeInfo } from 'azdata';
 import * as nls from 'vscode-nls';
-const localize = nls.loadMessageBundle();
+const localize = nls.config({ messageFormat: nls.MessageFormat.file })();
 
 import { TreeNode } from '../treeNode';
 import { CmsResourceItemType } from '../constants';

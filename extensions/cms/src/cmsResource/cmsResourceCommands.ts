@@ -14,7 +14,7 @@ import { RegisteredServerTreeNode } from './tree/registeredServerTreeNode';
 import { ServerGroupTreeNode } from './tree/serverGroupTreeNode';
 import { CmsResourceTreeNode } from './tree/cmsResourceTreeNode';
 
-const localize = nls.loadMessageBundle();
+const localize = nls.config({ messageFormat: nls.MessageFormat.file })();
 
 export function registerCmsServerCommand(appContext: AppContext, tree: CmsResourceTreeProvider): void {
 	// Create a CMS Server
