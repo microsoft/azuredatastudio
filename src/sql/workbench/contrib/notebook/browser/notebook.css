@@ -59,6 +59,10 @@
 	width: 28px;
 }
 
+.notebookEditor .markdown-toolbar .actions-container .action-item {
+	width: 23px;
+}
+
 .notebookEditor .in-preview .actions-container .action-item .codicon,
 .notebookEditor .in-preview .actions-container .action-item .codicon:before {
 	display: flex;
