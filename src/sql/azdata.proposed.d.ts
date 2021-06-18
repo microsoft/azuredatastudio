@@ -397,7 +397,7 @@ declare module 'azdata' {
 		/**
 		 * context that will be passed to the commands.
 		 */
-		context: any
+		context: { [key: string]: string | boolean | number } | string | boolean | number | undefined
 	}
 
 	export interface DeclarativeTableCellValue {
