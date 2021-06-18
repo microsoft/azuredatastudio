@@ -5,6 +5,7 @@
 
 import { AzureAccount } from 'azurecore';
 import * as nls from 'vscode-nls';
+import { SupportedAutoRefreshIntervals } from '../api/utils';
 import { MigrationSourceAuthenticationType } from '../models/stateMachine';
 const localize = nls.loadMessageBundle();
 
@@ -182,7 +183,7 @@ export const SERVICE_CONTAINER_DESCRIPTION2 = localize('sql.migration.service.co
 export const SERVICE_STEP1 = localize('sql.migration.ir.setup.step1', "Step 1: {0}");
 export const SERVICE_STEP1_LINK = localize('sql.migration.option', "Download and install integration runtime");
 export const SERVICE_STEP2 = localize('sql.migration.ir.setup.step2', "Step 2: Use this key to register your integration runtime");
-export const SERVICE_STEP3 = localize('sql.migration.ir.setup.step3', "Step 3: Check connection between Azure Database Migration Service and Integration Runtime");
+export const SERVICE_STEP3 = localize('sql.migration.ir.setup.step3', "Step 3: Click on 'Test connection' button to check the connection between Azure Database Migration Service and Integration Runtime");
 export const SERVICE_CONNECTION_STATUS = localize('sql.migration.connection.status', "Connection Status");
 export const SERVICE_KEY1_LABEL = localize('sql.migration.key1.label', "Key 1");
 export const SERVICE_KEY2_LABEL = localize('sql.migration.key2.label', "Key 2");
@@ -209,7 +210,9 @@ export const MANAGED_INSTANCE = localize('sql.migration.managed.instance', "Azur
 export const NO_MANAGED_INSTANCE_FOUND = localize('sql.migration.no.managedInstance.found', "No managed instance found");
 export const NO_VIRTUAL_MACHINE_FOUND = localize('sql.migration.no.virtualMachine.found', "No virtual machine found");
 export const TARGET_SELECTION_PAGE_TITLE = localize('sql.migration.target.page.title', "Choose the target Azure SQL");
-
+export const TEST_CONNECTION = localize('sql.migration.test.connection', "Test connection");
+export const DATA_MIGRATION_SERVICE_CREATED_SUCCESSFULLY = localize('sql.migration.database.migration.service.created.successfully', "Database migration service has been created successfully");
+export const DMS_PROVISIONING_FAILED = localize('sql.migration.dms.provision.failed', "Database migration service has failed to provision. Please try again after some time.");
 // common strings
 export const LEARN_MORE = localize('sql.migration.learn.more', "Learn more");
 export const SUBSCRIPTION = localize('sql.migration.subscription', "Subscription");
@@ -230,6 +233,9 @@ export const USER_ACCOUNT = localize('sql.migration.path.user.account', "User Ac
 export const VIEW_ALL = localize('sql.migration.view.all', "View All");
 export const TARGET = localize('sql.migration.target', "Target");
 export const AZURE_SQL = localize('sql.migration.azure.sql', "Azure SQL");
+export const CLOSE = localize('sql.migration.close', "Close");
+export const DATA_UPLOADED = localize('sql.migraiton.data.uploaded.size', "Data Uploaded/Size");
+export const COPY_THROUGHPUT = localize('sql.migration.copy.throughput', "Copy Throughput (MBPS)");
 
 //Summary Page
 export const SUMMARY_PAGE_TITLE = localize('sql.migration.summary.page.title', "Summary");
@@ -331,15 +337,16 @@ export const YES = localize('sql.migration.yes', "Yes");
 export const NO = localize('sql.migration.no', "No");
 
 //Migration confirm cutover dialog
+export const COMPLETING_CUTOVER_WARNING = localize('sql.migration.completing.cutover.warning', "Completing cutover without restoring all the backup(s) may result in loss of data.");
 export const BUSINESS_CRITICAL_INFO = localize('sql.migration.bc.info', "Managed Instance migration cutover for Business Critical service tier can take significantly longer than General Purpose as three secondary replicas have to be seeded for Always On High Availability group. This operation duration depends on the size of data. Seeding speed in 90% of cases is 220 GB/hour or higher.");
 export const CUTOVER_HELP_MAIN = localize('sql.migration.cutover.help.main', "When you are ready to do the migration cutover, perform the following steps to complete the database migration. Please note that the database is ready for cutover only after a full backup has been restored on the target Azure SQL Database Managed Instance.");
 export const CUTOVER_HELP_STEP1 = localize('sql.migration.cutover.step.1', "1. Stop all the incoming transactions coming to the source database.");
-export const CUTOVER_HELP_STEP2 = localize('sql.migration.cutover.step.2', "2. Take the final transaction log backup and provide backup file in the SMB network share.");
-export const CUTOVER_HELP_STEP3 = localize('sql.migration.cutover.step.3', "3. Make sure all the pending log backups are restored on the target. At that point, “Pending log backups” counter shows zero and then perform the cutover. Performing cutover operation without applying all the transaction log backup files may result in loss of data.");
+export const CUTOVER_HELP_STEP2 = localize('sql.migration.cutover.step.2', "2. Take final transaction log backup and provide it in the network share location.");
+export const CUTOVER_HELP_STEP3 = localize('sql.migration.cutover.step.3', "3. Make sure all the log backups are restored on target database. The \"Log backups(s) pending restore\" should be zero.");
 export function PENDING_BACKUPS(count: number): string {
 	return localize('sql.migartion.cutover.pending.backup', "Pending log backups: {0}", count);
 }
-export const CONFIRM_CUTOVER_CHECKBOX = localize('sql.migration.confirm.checkbox.message', "Confirm all pending log backups are restored");
+export const CONFIRM_CUTOVER_CHECKBOX = localize('sql.migration.confirm.checkbox.message', "I confirm there are no additional log backup(s) to provide and want to complete cutover.");
 export function CUTOVER_IN_PROGRESS(dbName: string): string {
 	return localize('sql.migration.cutover.in.progress', "Cutover in progress for database '{0}'", dbName);
 }
@@ -444,3 +451,28 @@ export function WARNINGS_COUNT(totalCount: number): string {
 export const AUTHENTICATION_TYPE = localize('sql.migration.authentication.type', "Authentication Type");
 export const SQL_LOGIN = localize('sql.migration.sql.login', "SQL Login");
 export const WINDOWS_AUTHENTICATION = localize('sql.migration.windows.auth', "Windows Authentication");
+
+//AutoRefresh
+export function AUTO_REFRESH_BUTTON_TEXT(interval: SupportedAutoRefreshIntervals): string {
+	switch (interval) {
+		case -1:
+			return localize('sql.migration.auto.refresh.off', 'Auto Refresh: Off');
+		case 15000:
+			return localize('sql.migration.auto.refresh.15.seconds', 'Auto refresh: 15 seconds');
+		case 30000:
+			return localize('sql.migration.auto.refresh.30.seconds', 'Auto refresh: 30 seconds');
+		case 60000:
+			return localize('sql.migration.auto.refresh.1.min', 'Auto refresh: 1 minute');
+		case 180000:
+			return localize('sql.migration.auto.refresh.3.min', 'Auto refresh: 3 minutes');
+		case 300000:
+			return localize('sql.migration.auto.refresh.5.min', 'Auto refresh: 5 minutes');
+	}
+}
+
+export const SELECT_THE_REFRESH_INTERVAL = localize('sql.migration.select.the.refresh.interval', "Select the refresh interval");
+export const OFF = localize('sql.migration.off', "Off");
+export const EVERY_30_SECOND = localize('sql.migration.every.30.second', "Every 30 seconds");
+export const EVERY_1_MINUTE = localize('sql.migration.every.1.minute', "Every 1 minute");
+export const EVERY_3_MINUTES = localize('sql.migration.every.3.minutes', "Every 3 minutes");
+export const EVERY_5_MINUTES = localize('sql.migration.every.5.minutes', "Every 5 minutes");
