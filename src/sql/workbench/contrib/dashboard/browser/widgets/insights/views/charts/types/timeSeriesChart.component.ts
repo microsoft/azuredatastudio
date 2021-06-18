@@ -18,7 +18,7 @@ import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 const defaultTimeSeriesConfig = mixin(deepClone(defaultChartConfig), { dataType: 'point', dataDirection: 'horizontal' }) as ILineConfig;
 
 export default class TimeSeriesChart extends LineChart {
-	protected _defaultConfig = defaultTimeSeriesConfig;
+	protected override _defaultConfig = defaultTimeSeriesConfig;
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) _changeRef: ChangeDetectorRef,
@@ -28,7 +28,7 @@ export default class TimeSeriesChart extends LineChart {
 		super(_changeRef, themeService, telemetryService);
 	}
 
-	protected addAxisLabels(): void {
+	protected override addAxisLabels(): void {
 		const xLabel = this._config.xAxisLabel || this.getLabels()[1] || 'x';
 		const yLabel = this._config.yAxisLabel || this.getLabels()[2] || 'y';
 
@@ -61,7 +61,7 @@ export default class TimeSeriesChart extends LineChart {
 		this.options = assign({}, mixin(this.options, options));
 	}
 
-	protected getDataAsPoint(): Array<IPointDataSet> {
+	protected override getDataAsPoint(): Array<IPointDataSet> {
 		const dataSetMap: { [label: string]: IPointDataSet } = {};
 		this._data.rows.map(row => {
 			if (row && row.length >= 3) {

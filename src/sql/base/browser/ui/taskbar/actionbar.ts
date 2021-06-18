@@ -3,12 +3,13 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IAction, IActionRunner, ActionRunner, IActionViewItem } from 'vs/base/common/actions';
+import { IAction, IActionRunner, ActionRunner } from 'vs/base/common/actions';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode, KeyMod } from 'vs/base/common/keyCodes';
 import {
 	IActionBarOptions, ActionsOrientation,
-	IActionOptions
+	IActionOptions,
+	IActionViewItem
 } from 'vs/base/browser/ui/actionbar/actionbar';
 import * as lifecycle from 'vs/base/common/lifecycle';
 import * as DOM from 'vs/base/browser/dom';
@@ -365,11 +366,11 @@ export class ActionBar extends ActionRunner implements IActionRunner {
 		//this.emit('cancel');
 	}
 
-	public run(action: IAction, context?: any): Promise<any> {
+	public override run(action: IAction, context?: any): Promise<any> {
 		return this._actionRunner.run(action, context);
 	}
 
-	public dispose(): void {
+	public override dispose(): void {
 		lifecycle.dispose(this._items);
 		this._items = [];
 

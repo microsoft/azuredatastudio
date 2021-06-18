@@ -22,58 +22,77 @@
 	}
 }(this, function () {
 	const bootstrapLib = bootstrap();
-	const preloadGlobals = globals();
-	const sandbox = preloadGlobals.context.sandbox;
-	const webFrame = preloadGlobals.webFrame;
+	const preloadGlobals = sandboxGlobals();
 	const safeProcess = preloadGlobals.process;
-	const configuration = parseWindowConfiguration();
-	const useCustomProtocol = sandbox || typeof safeProcess.env['ENABLE_VSCODE_BROWSER_CODE_LOADING'] === 'string';
-
-	// Start to resolve process.env before anything gets load
-	// so that we can run loading and resolving in parallel
-	const whenEnvResolved = safeProcess.resolveEnv(configuration.userEnv);
+	const useCustomProtocol = safeProcess.sandboxed || typeof safeProcess.env['VSCODE_BROWSER_CODE_LOADING'] === 'string';
 
 	/**
+	 * @typedef {import('./vs/base/parts/sandbox/common/sandboxTypes').ISandboxConfiguration} ISandboxConfiguration
+	 *
 	 * @param {string[]} modulePaths
-	 * @param {(result: unknown, configuration: object) => Promise<unknown> | undefined} resultCallback
-	 * @param {{ forceEnableDeveloperKeybindings?: boolean, disallowReloadKeybinding?: boolean, removeDeveloperKeybindingsAfterLoad?: boolean, canModifyDOM?: (config: object) => void, beforeLoaderConfig?: (config: object, loaderConfig: object) => void, beforeRequire?: () => void }=} options
+	 * @param {(result: unknown, configuration: ISandboxConfiguration) => Promise<unknown> | undefined} resultCallback
+	 * @param {{
+	 *  configureDeveloperSettings?: (config: ISandboxConfiguration) => {
+	 * 		forceDisableShowDevtoolsOnError?: boolean,
+	 * 		forceEnableDeveloperKeybindings?: boolean,
+	 * 		disallowReloadKeybinding?: boolean,
+	 * 		removeDeveloperKeybindingsAfterLoad?: boolean
+	 * 	},
+	 * 	canModifyDOM?: (config: ISandboxConfiguration) => void,
+	 * 	beforeLoaderConfig?: (loaderConfig: object) => void,
+	 *  beforeRequire?: () => void
+	 * }} [options]
 	 */
-	function load(modulePaths, resultCallback, options) {
+	async function load(modulePaths, resultCallback, options) {
 
-		// Apply zoom level early to avoid glitches
-		const zoomLevel = configuration.zoomLevel;
-		if (typeof zoomLevel === 'number' && zoomLevel !== 0) {
-			webFrame.setZoomLevel(zoomLevel);
-		}
-
-		// Error handler
-		safeProcess.on('uncaughtException', function (error) {
-			onUnexpectedError(error, enableDeveloperTools);
+		// Error handler (TODO@sandbox non-sandboxed only)
+		let showDevtoolsOnError = !!safeProcess.env['VSCODE_DEV'];
+		safeProcess.on('uncaughtException', function (/** @type {string | Error} */ error) {
+			onUnexpectedError(error, showDevtoolsOnError);
 		});
 
-		// Developer tools
-		const enableDeveloperTools = (safeProcess.env['VSCODE_DEV'] || !!configuration.extensionDevelopmentPath) && !configuration.extensionTestsPath;
-		let developerToolsUnbind;
-		if (enableDeveloperTools || (options && options.forceEnableDeveloperKeybindings)) {
-			developerToolsUnbind = registerDeveloperKeybindings(options && options.disallowReloadKeybinding);
+		// Await window configuration from preload
+		performance.mark('code/willWaitForWindowConfig');
+		/** @type {ISandboxConfiguration} */
+		const configuration = await preloadGlobals.context.resolveConfiguration();
+		performance.mark('code/didWaitForWindowConfig');
+
+		// Developer settings
+		const {
+			forceDisableShowDevtoolsOnError,
+			forceEnableDeveloperKeybindings,
+			disallowReloadKeybinding,
+			removeDeveloperKeybindingsAfterLoad
+		} = typeof options?.configureDeveloperSettings === 'function' ? options.configureDeveloperSettings(configuration) : {
+			forceDisableShowDevtoolsOnError: false,
+			forceEnableDeveloperKeybindings: false,
+			disallowReloadKeybinding: false,
+			removeDeveloperKeybindingsAfterLoad: false
+		};
+		showDevtoolsOnError = safeProcess.env['VSCODE_DEV'] && !forceDisableShowDevtoolsOnError;
+		const enableDeveloperKeybindings = safeProcess.env['VSCODE_DEV'] || forceEnableDeveloperKeybindings;
+		let developerDeveloperKeybindingsDisposable;
+		if (enableDeveloperKeybindings) {
+			developerDeveloperKeybindingsDisposable = registerDeveloperKeybindings(disallowReloadKeybinding);
 		}
 
 		// Correctly inherit the parent's environment (TODO@sandbox non-sandboxed only)
-		if (!sandbox) {
+		if (!safeProcess.sandboxed) {
 			Object.assign(safeProcess.env, configuration.userEnv);
 		}
 
 		// Enable ASAR support (TODO@sandbox non-sandboxed only)
-		if (!sandbox) {
+		if (!safeProcess.sandboxed) {
 			globalThis.MonacoBootstrap.enableASARSupport(configuration.appRoot);
 		}
 
-		if (options && typeof options.canModifyDOM === 'function') {
+		// Signal DOM modifications are now OK
+		if (typeof options?.canModifyDOM === 'function') {
 			options.canModifyDOM(configuration);
 		}
 
 		// Get the nls configuration into the process.env as early as possible  (TODO@sandbox non-sandboxed only)
-		const nlsConfig = sandbox ? { availableLanguages: {} } : globalThis.MonacoBootstrap.setupNLS();
+		const nlsConfig = safeProcess.sandboxed ? { availableLanguages: {} } : globalThis.MonacoBootstrap.setupNLS();
 
 		let locale = nlsConfig.availableLanguages['*'] || 'en';
 		if (locale === 'zh-tw') {
@@ -84,24 +103,22 @@
 
 		window.document.documentElement.setAttribute('lang', locale);
 
-		// do not advertise AMD to avoid confusing UMD modules loaded with nodejs
+		// Do not advertise AMD to avoid confusing UMD modules loaded with nodejs
 		if (!useCustomProtocol) {
 			window['define'] = undefined;
 		}
 
-		// replace the patched electron fs with the original node fs for all AMD code (TODO@sandbox non-sandboxed only)
-		if (!sandbox) {
+		// Replace the patched electron fs with the original node fs for all AMD code (TODO@sandbox non-sandboxed only)
+		if (!safeProcess.sandboxed) {
 			require.define('fs', [], function () { return require.__$__nodeRequire('original-fs'); });
 		}
 
 		window['MonacoEnvironment'] = {};
 
-		const baseUrl = useCustomProtocol ?
-			`${bootstrapLib.fileUriFromPath(configuration.appRoot, { isWindows: safeProcess.platform === 'win32', scheme: 'vscode-file', fallbackAuthority: 'vscode-app' })}/out` :
-			`${bootstrapLib.fileUriFromPath(configuration.appRoot, { isWindows: safeProcess.platform === 'win32' })}/out`;
-
 		const loaderConfig = {
-			baseUrl: baseUrl,
+			baseUrl: useCustomProtocol ?
+				`${bootstrapLib.fileUriFromPath(configuration.appRoot, { isWindows: safeProcess.platform === 'win32', scheme: 'vscode-file', fallbackAuthority: 'vscode-app' })}/out` :
+				`${bootstrapLib.fileUriFromPath(configuration.appRoot, { isWindows: safeProcess.platform === 'win32' })}/out`,
 			'vs/nls': nlsConfig,
 			amdModulesPattern: /^(vs|sql)\//, // {{SQL CARBON EDIT}} include sql in regex
 			preferScriptTags: useCustomProtocol
@@ -123,7 +140,7 @@
 		// - sandbox: we list paths of webpacked modules to help the loader
 		// - non-sandbox: we signal that any module that does not begin with
 		//                `vs/` should be loaded using node.js require()
-		if (sandbox) {
+		if (safeProcess.sandboxed) {
 			loaderConfig.paths = {
 				'vscode-textmate': `../node_modules/vscode-textmate/release/main`,
 				'vscode-oniguruma': `../node_modules/vscode-oniguruma/release/main`,
@@ -138,7 +155,7 @@
 			loaderConfig.amdModulesPattern = /^(vs|sql)\//;
 		}
 
-		// cached data config
+		// Cached data config
 		if (configuration.nodeCachedDataDir) {
 			loaderConfig.nodeCachedData = {
 				path: configuration.nodeCachedDataDir,
@@ -146,28 +163,35 @@
 			};
 		}
 
-		if (options && typeof options.beforeLoaderConfig === 'function') {
-			options.beforeLoaderConfig(configuration, loaderConfig);
+		// Signal before require.config()
+		if (typeof options?.beforeLoaderConfig === 'function') {
+			options.beforeLoaderConfig(loaderConfig);
 		}
 
+		// Configure loader
 		require.config(loaderConfig);
 
+		// Handle pseudo NLS
 		if (nlsConfig.pseudo) {
 			require(['vs/nls'], function (nlsPlugin) {
 				nlsPlugin.setPseudoTranslation(nlsConfig.pseudo);
 			});
 		}
 
-		if (options && typeof options.beforeRequire === 'function') {
+		// Signal before require()
+		if (typeof options?.beforeRequire === 'function') {
 			options.beforeRequire();
 		}
 
+		// Actually require the main module as specified
 		require(modulePaths, async result => {
 			try {
 
 				// Wait for process environment being fully resolved
 				performance.mark('code/willWaitForShellEnv');
-				await whenEnvResolved;
+				if (!safeProcess.env['VSCODE_SKIP_PROCESS_ENV_PATCHING'] /* TODO@bpasero for https://github.com/microsoft/vscode/issues/108804 */) {
+					await safeProcess.shellEnv();
+				}
 				performance.mark('code/didWaitForShellEnv');
 
 				// Callback only after process environment is resolved
@@ -175,37 +199,14 @@
 				if (callbackResult instanceof Promise) {
 					await callbackResult;
 
-					if (developerToolsUnbind && options && options.removeDeveloperKeybindingsAfterLoad) {
-						developerToolsUnbind();
+					if (developerDeveloperKeybindingsDisposable && removeDeveloperKeybindingsAfterLoad) {
+						developerDeveloperKeybindingsDisposable();
 					}
 				}
 			} catch (error) {
-				onUnexpectedError(error, enableDeveloperTools);
+				onUnexpectedError(error, enableDeveloperKeybindings);
 			}
 		}, onUnexpectedError);
-	}
-
-	/**
-	 * Parses the contents of the window condiguration that
-	 * is passed into the URL from the `electron-main` side.
-	 *
-	 * @returns {{
-	 * zoomLevel?: number,
-	 * extensionDevelopmentPath?: string[],
-	 * extensionTestsPath?: string,
-	 * userEnv?: { [key: string]: string | undefined },
-	 * appRoot: string,
-	 * nodeCachedDataDir?: string
-	 * }}
-	 */
-	function parseWindowConfiguration() {
-		const rawConfiguration = (window.location.search || '').split(/[?&]/)
-			.filter(function (param) { return !!param; })
-			.map(function (param) { return param.split('='); })
-			.filter(function (param) { return param.length === 2; })
-			.reduce(function (r, param) { r[param[0]] = decodeURIComponent(param[1]); return r; }, {});
-
-		return JSON.parse(rawConfiguration['config'] || '{}') || {};
 	}
 
 	/**
@@ -256,10 +257,10 @@
 
 	/**
 	 * @param {string | Error} error
-	 * @param {boolean} [enableDeveloperTools]
+	 * @param {boolean} [showDevtoolsOnError]
 	 */
-	function onUnexpectedError(error, enableDeveloperTools) {
-		if (enableDeveloperTools) {
+	function onUnexpectedError(error, showDevtoolsOnError) {
+		if (showDevtoolsOnError) {
 			const ipcRenderer = preloadGlobals.ipcRenderer;
 			ipcRenderer.send('vscode:openDevTools');
 		}
@@ -282,13 +283,12 @@
 	/**
 	 * @return {typeof import('./vs/base/parts/sandbox/electron-sandbox/globals')}
 	 */
-	function globals() {
+	function sandboxGlobals() {
 		// @ts-ignore (defined in globals.js)
 		return window.vscode;
 	}
 
 	return {
-		load,
-		globals
+		load
 	};
 }));

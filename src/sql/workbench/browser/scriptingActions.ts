@@ -26,7 +26,7 @@ export class ScriptSelectAction extends Action {
 		super(id, label);
 	}
 
-	public async run(actionContext: BaseActionContext): Promise<void> {
+	public override async run(actionContext: BaseActionContext): Promise<void> {
 		await scriptSelect(
 			actionContext.profile!,
 			actionContext.object!,
@@ -51,7 +51,7 @@ export class ScriptExecuteAction extends Action {
 		super(id, label);
 	}
 
-	public async run(actionContext: BaseActionContext): Promise<void> {
+	public override async run(actionContext: BaseActionContext): Promise<void> {
 		await script(
 			actionContext.profile!,
 			actionContext.object!,
@@ -78,7 +78,7 @@ export class ScriptAlterAction extends Action {
 		super(id, label);
 	}
 
-	public async run(actionContext: BaseActionContext): Promise<void> {
+	public override async run(actionContext: BaseActionContext): Promise<void> {
 		await script(
 			actionContext.profile!,
 			actionContext.object!,
@@ -104,7 +104,7 @@ export class EditDataAction extends Action {
 		super(id, label);
 	}
 
-	public async run(actionContext: BaseActionContext): Promise<void> {
+	public override async run(actionContext: BaseActionContext): Promise<void> {
 		await scriptEditSelect(
 			actionContext.profile!,
 			actionContext.object!,
@@ -129,7 +129,7 @@ export class ScriptCreateAction extends Action {
 		super(id, label);
 	}
 
-	public async run(actionContext: BaseActionContext): Promise<void> {
+	public override async run(actionContext: BaseActionContext): Promise<void> {
 		await script(
 			actionContext.profile!,
 			actionContext.object!,
@@ -156,7 +156,7 @@ export class ScriptDeleteAction extends Action {
 		super(id, label);
 	}
 
-	public async run(actionContext: BaseActionContext): Promise<void> {
+	public override async run(actionContext: BaseActionContext): Promise<void> {
 		await script(
 			actionContext.profile!,
 			actionContext.object!,

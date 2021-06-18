@@ -159,7 +159,7 @@ export class AzureSettingsPage extends ResourceTypePage {
 		});
 	}
 
-	public async onEnter(): Promise<void> {
+	public override async onEnter(): Promise<void> {
 		this.wizard.wizardObject.registerNavigationValidator((pcInfo) => {
 			this.wizard.wizardObject.message = { text: '' };
 			if (pcInfo.newPage > pcInfo.lastPage) {
@@ -177,7 +177,7 @@ export class AzureSettingsPage extends ResourceTypePage {
 		});
 	}
 
-	public async onLeave(): Promise<void> {
+	public override async onLeave(): Promise<void> {
 		this.wizard.wizardObject.registerNavigationValidator((pcInfo) => {
 			return true;
 		});

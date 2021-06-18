@@ -401,7 +401,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		return this.cellModel && this.cellModel.id === this.activeCellId;
 	}
 
-	public deltaDecorations(newDecorationsRange: NotebookRange | NotebookRange[], oldDecorationsRange: NotebookRange | NotebookRange[]): void {
+	public override deltaDecorations(newDecorationsRange: NotebookRange | NotebookRange[], oldDecorationsRange: NotebookRange | NotebookRange[]): void {
 		if (newDecorationsRange) {
 			this._isFindActive = true;
 			if (Array.isArray(newDecorationsRange)) {

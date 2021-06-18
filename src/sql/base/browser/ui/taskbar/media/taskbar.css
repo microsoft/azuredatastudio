@@ -48,6 +48,10 @@
 	margin-right: 5px;
 }
 
+.carbon-taskbar .monaco-action-bar .action-item .codicon.action-label {
+	width: 100%;
+}
+
 .carbon-taskbar .action-item.more {
 	padding-right: 15px;
 }

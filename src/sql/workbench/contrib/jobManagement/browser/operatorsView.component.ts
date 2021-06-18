@@ -64,7 +64,7 @@ export class OperatorsViewComponent extends JobManagementView implements OnInit,
 	@ViewChild('operatorsgrid') _gridEl: ElementRef;
 
 	public operators: azdata.AgentOperatorInfo[];
-	public contextAction = NewOperatorAction;
+	public override contextAction = NewOperatorAction;
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _cd: ChangeDetectorRef,
@@ -96,7 +96,7 @@ export class OperatorsViewComponent extends JobManagementView implements OnInit,
 		this._parentComponent = this._agentViewComponent;
 	}
 
-	ngOnDestroy() {
+	override ngOnDestroy() {
 		this._didTabChange = true;
 	}
 
@@ -195,14 +195,14 @@ export class OperatorsViewComponent extends JobManagementView implements OnInit,
 		this._table.resizeCanvas();
 	}
 
-	protected getTableActions(): IAction[] {
+	protected override getTableActions(): IAction[] {
 		return [
 			this._instantiationService.createInstance(EditOperatorAction),
 			this._instantiationService.createInstance(DeleteOperatorAction)
 		];
 	}
 
-	protected getCurrentTableObject(rowIndex: number): any {
+	protected override getCurrentTableObject(rowIndex: number): any {
 		return (this.operators && this.operators.length >= rowIndex)
 			? this.operators[rowIndex]
 			: undefined;

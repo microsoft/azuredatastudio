@@ -59,7 +59,7 @@ export class TaskHistoryView extends ViewPane {
 	/**
 	 * Render the view body
 	 */
-	public renderBody(container: HTMLElement): void {
+	public override renderBody(container: HTMLElement): void {
 		super.renderBody(container);
 
 		let taskNode = this.taskService.getAllTasks();
@@ -171,7 +171,7 @@ export class TaskHistoryView extends ViewPane {
 	/**
 	 * set the layout of the view
 	 */
-	public layoutBody(height: number, width: number): void {
+	public override layoutBody(height: number, width: number): void {
 		super.layoutBody(height, width);
 		if (this._tree) {
 			this._tree.layout(height);

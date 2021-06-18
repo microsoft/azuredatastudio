@@ -71,7 +71,7 @@ export abstract class Command extends vscode.Disposable {
 		this.disposable = vscode.Disposable.from(...subscriptions);
 	}
 
-	dispose(): void {
+	override dispose(): void {
 		if (this.disposable) {
 			this.disposable.dispose();
 		}

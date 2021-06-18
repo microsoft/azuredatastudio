@@ -94,7 +94,7 @@ suite('Dashboard Properties Widget Tests', () => {
 		dashboardService.setup(x => x.connectionManagementService).returns(() => singleConnectionService.object);
 
 		const testLogService = new class extends NullLogService {
-			error() {
+			override error() {
 				assert.fail('Called console Error unexpectedly');
 			}
 		};

@@ -238,9 +238,9 @@ export class QueryResultsView extends Disposable {
 				this._panelView.showTab(this.messagesTab.identifier);
 			}
 			// Currently we only need to support visualization options for the first result set.
-			if (runner.batchSets[0]?.resultSetSummaries[0]?.visualization) {
-				const batchSet = runner.batchSets[0];
-				const resultSet = batchSet.resultSetSummaries[0];
+			const batchSet = runner.batchSets[0];
+			const resultSet = batchSet?.resultSetSummaries?.[0];
+			if (resultSet?.visualization) {
 				this.chartData({
 					resultId: batchSet.id,
 					batchId: resultSet.batchId
@@ -420,7 +420,7 @@ export class QueryResultsView extends Disposable {
 		this.dynamicModelViewTabs = [];
 	}
 
-	public dispose() {
+	public override dispose() {
 		this.runnerDisposables.dispose();
 		this.runnerDisposables = new DisposableStore();
 		super.dispose();

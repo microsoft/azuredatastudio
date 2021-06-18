@@ -62,7 +62,7 @@ export default class TabbedPanelComponent extends ContainerBase<TabConfig> imple
 		this.baseInit();
 	}
 
-	ngOnDestroy(): void {
+	override ngOnDestroy(): void {
 		this.baseDestroy();
 	}
 
@@ -109,7 +109,7 @@ export default class TabbedPanelComponent extends ContainerBase<TabConfig> imple
 		return this._tabs;
 	}
 
-	onItemsUpdated(): void {
+	override onItemsUpdated(): void {
 		if (this.items.length === 0) {
 			this._itemIndexToProcess = 0;
 			this._tabs = [];
@@ -121,11 +121,11 @@ export default class TabbedPanelComponent extends ContainerBase<TabConfig> imple
 		}
 	}
 
-	onItemLayoutUpdated(item: ItemDescriptor<TabConfig>): void {
+	override onItemLayoutUpdated(item: ItemDescriptor<TabConfig>): void {
 		this._panel.updateTab(item.config.id, { title: item.config.title, iconClass: item.config.icon ? createIconCssClass(item.config.icon) : undefined });
 	}
 
-	public doAction(action: string, ...args: any[]): void {
+	public override doAction(action: string, ...args: any[]): void {
 		switch (action) {
 			case ModelViewAction.SelectTab:
 				if (typeof args?.[0] !== 'string') {
