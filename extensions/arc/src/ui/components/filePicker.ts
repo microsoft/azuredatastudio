@@ -21,7 +21,8 @@ export class FilePicker {
 		initialPath: string,
 		onNewDisposableCreated: (disposable: vscode.Disposable) => void,
 		ariaLabel: string,
-		validationErrorMessage: string
+		validationErrorMessage: string,
+		required: boolean
 	) {
 		const buttonWidth = 80;
 		this.filePathInputBox = modelBuilder.inputBox()
@@ -29,6 +30,7 @@ export class FilePicker {
 				value: initialPath,
 				ariaLabel: ariaLabel,
 				validationErrorMessage: validationErrorMessage,
+				required: required,
 				width: 350
 			}).withValidation(async () => {
 				try {
