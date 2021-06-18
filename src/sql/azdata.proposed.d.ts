@@ -274,6 +274,12 @@ declare module 'azdata' {
 		 * will clear the filter
 		 */
 		setFilter(rowIndexes: number[] | undefined): void;
+
+		/**
+		 * Sets the data values.
+		 * @param v The new data values
+		 */
+		setDataValues(v: DeclarativeTableCellValue[][]): Promise<void>;
 	}
 
 	/*
@@ -372,7 +378,8 @@ declare module 'azdata' {
 
 	export interface DeclarativeTableProperties {
 		/**
-		 * dataValues will only be used if data is an empty array
+		 * dataValues will only be used if data is an empty array.
+		 * To set the dataValues, it is recommended to use the setDataValues method that returns a promise.
 		 */
 		dataValues?: DeclarativeTableCellValue[][];
 

@@ -298,17 +298,18 @@ export default class DeclarativeTableComponent extends ContainerBase<any, azdata
 			this._data = finalData;
 		}
 
-		const newSelectedRow = properties.selectedRow ?? -1;
-		if (newSelectedRow !== this.selectedRow && properties.enableRowSelection) {
+		const previousSelectedRow = this.selectedRow;
+
+		super.setProperties(properties);
+
+		if (this.selectedRow !== previousSelectedRow && this.enableRowSelection) {
 			this.fireEvent({
 				eventType: ComponentEventType.onSelectedRowChanged,
 				args: {
-					row: properties.selectedRow
+					row: this.selectedRow
 				}
 			});
 		}
-
-		super.setProperties(properties);
 	}
 
 	public override clearContainer(): void {
