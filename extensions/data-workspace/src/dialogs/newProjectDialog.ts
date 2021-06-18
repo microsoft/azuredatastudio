@@ -62,7 +62,7 @@ export class NewProjectDialog extends DialogBase {
 		}
 	}
 
-	async onComplete(): Promise<void> {
+	override async onComplete(): Promise<void> {
 		try {
 			const validateWorkspace = await this.workspaceService.validateWorkspace();
 

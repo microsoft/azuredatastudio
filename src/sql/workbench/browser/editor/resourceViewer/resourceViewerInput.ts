@@ -49,11 +49,11 @@ export class ResourceViewerInput extends EditorInput {
 		this.refresh().catch(err => onUnexpectedError(err));
 	}
 
-	public getTypeId(): string {
+	override get typeId(): string {
 		return ResourceViewerInput.ID;
 	}
 
-	public getName(): string {
+	public override getName(): string {
 		return this._dataGridProvider.title || nls.localize('resourceViewerInput.resourceViewer', "Resource Viewer");
 	}
 
@@ -70,7 +70,7 @@ export class ResourceViewerInput extends EditorInput {
 		return this._columns;
 	}
 
-	isDirty(): boolean {
+	override isDirty(): boolean {
 		return false;
 	}
 

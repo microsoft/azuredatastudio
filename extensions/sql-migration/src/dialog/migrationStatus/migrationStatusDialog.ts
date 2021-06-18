@@ -11,6 +11,8 @@ import { MigrationCutoverDialog } from '../migrationCutover/migrationCutoverDial
 import { AdsMigrationStatus, MigrationStatusDialogModel } from './migrationStatusDialogModel';
 import * as loc from '../../constants/strings';
 import { convertTimeDifferenceToDuration, filterMigrations } from '../../api/utils';
+import { SqlMigrationServiceDetailsDialog } from '../sqlMigrationService/sqlMigrationServiceDetailsDialog';
+
 export class MigrationStatusDialog {
 	private _model: MigrationStatusDialogModel;
 	private _dialogObject!: azdata.window.Dialog;
@@ -171,7 +173,7 @@ export class MigrationStatusDialog {
 					url: ''
 				}).component();
 				dms.onDidClick((e) => {
-					vscode.window.showInformationMessage(loc.COMING_SOON);
+					(new SqlMigrationServiceDetailsDialog(migration)).initialize();
 				});
 
 				migrationRow.push({

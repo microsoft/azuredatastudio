@@ -380,6 +380,11 @@ declare module 'azdata' {
 		 * Gets a boolean value determines whether the row selection is enabled. Default value is false.
 		 */
 		enableRowSelection?: boolean;
+
+		/**
+		 * Gets or sets the selected row number of the table. -1 means to no selected row.
+		 */
+		selectedRow?: number;
 	}
 
 	export interface DeclarativeTableCellValue {

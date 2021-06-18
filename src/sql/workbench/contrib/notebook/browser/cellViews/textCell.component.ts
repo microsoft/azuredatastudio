@@ -74,9 +74,9 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 			if ((e.ctrlKey || e.metaKey) && e.key === 'a') {
 				preventDefaultAndExecCommand(e, 'selectAll');
 			} else if ((e.metaKey && e.shiftKey && e.key === 'z') || (e.ctrlKey && e.key === 'y') && !this.markdownMode) {
-				preventDefaultAndExecCommand(e, 'redo');
+				this.redoRichTextChange();
 			} else if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
-				preventDefaultAndExecCommand(e, 'undo');
+				this.undoRichTextChange();
 			} else if (e.shiftKey && e.key === 'Tab') {
 				preventDefaultAndExecCommand(e, 'outdent');
 			} else if (e.key === 'Tab') {
@@ -102,13 +102,17 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	public previewFeaturesEnabled: boolean = false;
 	public doubleClickEditEnabled: boolean;
 	private _highlightRange: NotebookRange;
+	private _isFindActive: boolean = false;
+
+	private readonly _undoStack = new RichTextEditStack();
+	private readonly _redoStack = new RichTextEditStack();
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
 		@Inject(IInstantiationService) private _instantiationService: IInstantiationService,
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
 		@Inject(IConfigurationService) private _configurationService: IConfigurationService,
-		@Inject(INotebookService) private _notebookService: INotebookService,
+		@Inject(INotebookService) private _notebookService: INotebookService
 	) {
 		super();
 		this.markdownRenderer = this._instantiationService.createInstance(NotebookMarkdownRenderer);
@@ -244,10 +248,14 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 			if (this._previewMode) {
 				let outputElement = <HTMLElement>this.output.nativeElement;
 				outputElement.innerHTML = this.markdownResult.element.innerHTML;
+				this.addUndoElement(outputElement.innerHTML);
+
 				outputElement.style.lineHeight = this.markdownPreviewLineHeight.toString();
 				this.cellModel.renderedOutputTextContent = this.getRenderedTextOutput();
 				outputElement.focus();
-				this.addDecoration();
+				if (this._isFindActive) {
+					this.addDecoration();
+				}
 			}
 		}
 	}
@@ -257,6 +265,43 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		let newCellSource: string = this._htmlMarkdownConverter.convert(textOutputElement.innerHTML);
 		this.cellModel.source = newCellSource;
 		this._changeRef.detectChanges();
+	}
+
+	private addUndoElement(newText: string) {
+		if (newText !== this._undoStack.peek()) {
+			this._redoStack.clear();
+			this._undoStack.push(newText);
+		}
+	}
+
+	private undoRichTextChange(): void {
+		// The first element in the undo stack is the initial cell text,
+		// which is the hard stop for undoing text changes. So we can only
+		// undo text changes after that one.
+		if (this._undoStack.count > 1) {
+			// The most recent change is at the top of the undo stack, so we want to
+			// update the text so that it's the change just before that.
+			let redoText = this._undoStack.pop();
+			this._redoStack.push(redoText);
+			let undoText = this._undoStack.peek();
+
+			let textOutputElement = <HTMLElement>this.output.nativeElement;
+			textOutputElement.innerHTML = undoText;
+
+			this.updateCellSource();
+		}
+	}
+
+	private redoRichTextChange(): void {
+		if (this._redoStack.count > 0) {
+			let text = this._redoStack.pop();
+			this._undoStack.push(text);
+
+			let textOutputElement = <HTMLElement>this.output.nativeElement;
+			textOutputElement.innerHTML = text;
+
+			this.updateCellSource();
+		}
 	}
 
 	//Sanitizes the content based on trusted mode of Cell Model
@@ -283,6 +328,9 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	}
 
 	public handleHtmlChanged(): void {
+		let textOutputElement = <HTMLElement>this.output.nativeElement;
+		this.addUndoElement(textOutputElement.innerHTML);
+
 		this.updateCellSource();
 	}
 
@@ -353,58 +401,81 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		return this.cellModel && this.cellModel.id === this.activeCellId;
 	}
 
-	public deltaDecorations(newDecorationRange: NotebookRange, oldDecorationRange: NotebookRange): void {
-		if (oldDecorationRange) {
-			this._highlightRange = oldDecorationRange === this._highlightRange ? undefined : this._highlightRange;
-			this.removeDecoration(oldDecorationRange);
+	public override deltaDecorations(newDecorationsRange: NotebookRange | NotebookRange[], oldDecorationsRange: NotebookRange | NotebookRange[]): void {
+		if (newDecorationsRange) {
+			this._isFindActive = true;
+			if (Array.isArray(newDecorationsRange)) {
+				this.highlightAllMatches();
+			} else {
+				this._highlightRange = newDecorationsRange;
+				this.addDecoration(newDecorationsRange);
+			}
 		}
-
-		if (newDecorationRange) {
-			this._highlightRange = newDecorationRange;
-			this.addDecoration(newDecorationRange);
+		if (oldDecorationsRange) {
+			if (Array.isArray(oldDecorationsRange)) {
+				this.removeDecoration();
+				this._isFindActive = false;
+			} else {
+				this._highlightRange = oldDecorationsRange === this._highlightRange ? undefined : this._highlightRange;
+				this.removeDecoration(oldDecorationsRange);
+			}
 		}
 	}
 
 	private addDecoration(range?: NotebookRange): void {
 		range = range ?? this._highlightRange;
-		if (range && this.output && this.output.nativeElement) {
-			let markAllOccurances = new Mark(this.output.nativeElement); // to highlight all occurances in the element.
-			let elements = this.getHtmlElements();
-			if (elements?.length >= range.startLineNumber) {
-				let elementContainingText = elements[range.startLineNumber - 1];
-				let markCurrent = new Mark(elementContainingText); // to highlight the current item of them all.
-				let editor = this._notebookService.findNotebookEditor(this.model.notebookUri);
-				if (editor) {
-					let findModel = (editor.notebookParams.input as NotebookInput).notebookFindModel;
-					if (findModel?.findMatches?.length > 0) {
-						let searchString = findModel.findExpression;
-						markAllOccurances.mark(searchString, {
-							className: findHighlightClass
-						});
-					}
+		if (this.output && this.output.nativeElement) {
+			this.highlightAllMatches();
+			if (range) {
+				let elements = this.getHtmlElements();
+				if (elements?.length >= range.startLineNumber) {
+					let elementContainingText = elements[range.startLineNumber - 1];
+					let markCurrent = new Mark(elementContainingText); // to highlight the current item of them all.
+
+					markCurrent.markRanges([{
+						start: range.startColumn - 1, //subtracting 1 since markdown html is 0 indexed.
+						length: range.endColumn - range.startColumn
+					}], {
+						className: findRangeSpecificClass,
+						each: function (node, range) {
+							// node is the marked DOM element
+							node.scrollIntoView({ behavior: 'smooth', block: 'center' });
+						}
+					});
 				}
-				markCurrent.markRanges([{
-					start: range.startColumn - 1, //subtracting 1 since markdown html is 0 indexed.
-					length: range.endColumn - range.startColumn
-				}], {
-					className: findRangeSpecificClass,
-					each: function (node, range) {
-						// node is the marked DOM element
-						node.scrollIntoView({ behavior: 'smooth', block: 'center' });
-					}
-				});
 			}
 		}
 	}
 
-	private removeDecoration(range: NotebookRange): void {
-		if (range && this.output && this.output.nativeElement) {
-			let markAllOccurances = new Mark(this.output.nativeElement);
-			let elements = this.getHtmlElements();
-			let elementContainingText = elements[range.startLineNumber - 1];
-			let markCurrent = new Mark(elementContainingText);
-			markAllOccurances.unmark({ acrossElements: true, className: findHighlightClass });
-			markCurrent.unmark({ acrossElements: true, className: findRangeSpecificClass });
+	private highlightAllMatches(): void {
+		if (this.output && this.output.nativeElement) {
+			let markAllOccurances = new Mark(this.output.nativeElement); // to highlight all occurances in the element.
+			let editor = this._notebookService.findNotebookEditor(this.model.notebookUri);
+			if (editor) {
+				let findModel = (editor.notebookParams.input as NotebookInput).notebookFindModel;
+				if (findModel?.findMatches?.length > 0) {
+					let searchString = findModel.findExpression;
+					markAllOccurances.mark(searchString, {
+						className: findHighlightClass
+					});
+				}
+			}
+		}
+	}
+
+	private removeDecoration(range?: NotebookRange): void {
+		if (this.output && this.output.nativeElement) {
+			if (range) {
+				let elements = this.getHtmlElements();
+				let elementContainingText = elements[range.startLineNumber - 1];
+				let markCurrent = new Mark(elementContainingText);
+				markCurrent.unmark({ acrossElements: true, className: findRangeSpecificClass });
+			} else {
+				let markAllOccurances = new Mark(this.output.nativeElement);
+				markAllOccurances.unmark({ acrossElements: true, className: findHighlightClass });
+				markAllOccurances.unmark({ acrossElements: true, className: findRangeSpecificClass });
+				this._highlightRange = undefined;
+			}
 		}
 	}
 
@@ -472,4 +543,51 @@ function preventDefaultAndExecCommand(e: KeyboardEvent, commandId: string) {
 	// use preventDefault() to avoid invoking the editor's select all
 	e.preventDefault();
 	document.execCommand(commandId);
+}
+
+/**
+ * A string stack used to track changes to Undo and Redo for the Rich Text editor in text cells.
+ */
+export class RichTextEditStack {
+	private _list: string[] = [];
+
+	/**
+	 * Adds an element to the top of the stack.
+	 * @param element The string element to add to the stack.
+	 */
+	public push(element: string): void {
+		this._list.push(element);
+	}
+
+	/**
+	 * Removes the topmost element of the stack and returns it.
+	 */
+	public pop(): string | undefined {
+		return this._list.pop();
+	}
+
+	/**
+	 * Returns the topmost element of the stack without removing it.
+	 */
+	public peek(): string | undefined {
+		if (this._list.length > 0) {
+			return this._list[this._list.length - 1];
+		} else {
+			return undefined;
+		}
+	}
+
+	/**
+	 * Removes all elements from the stack.
+	 */
+	public clear(): void {
+		this._list = [];
+	}
+
+	/**
+	 * Returns the number of elements in the stack.
+	 */
+	public get count(): number {
+		return this._list.length;
+	}
 }

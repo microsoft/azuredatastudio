@@ -46,7 +46,7 @@ export class MarkerHover implements IHoverPart {
 }
 
 const markerCodeActionTrigger: CodeActionTrigger = {
-	type: CodeActionTriggerType.Manual,
+	type: CodeActionTriggerType.Invoke,
 	filter: { include: CodeActionKind.QuickFix }
 };
 
@@ -120,7 +120,7 @@ export class MarkerHoverParticipant implements IEditorHoverParticipant<MarkerHov
 				codeLink.setAttribute('href', code.target.toString());
 
 				disposables.add(dom.addDisposableListener(codeLink, 'click', (e) => {
-					this._openerService.open(code.target);
+					this._openerService.open(code.target, { allowCommands: true });
 					e.preventDefault();
 					e.stopPropagation();
 				}));
@@ -170,7 +170,7 @@ export class MarkerHoverParticipant implements IEditorHoverParticipant<MarkerHov
 		const actionsElement = dom.append(hoverElement, $('div.actions'));
 		if (markerHover.marker.severity === MarkerSeverity.Error || markerHover.marker.severity === MarkerSeverity.Warning || markerHover.marker.severity === MarkerSeverity.Info) {
 			disposables.add(this.renderAction(actionsElement, {
-				label: nls.localize('peek problem', "Peek Problem"),
+				label: nls.localize('view problem', "View Problem"),
 				commandId: NextMarkerAction.ID,
 				run: () => {
 					this._hover.hide();

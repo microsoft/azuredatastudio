@@ -47,6 +47,7 @@ import { LocalizedStrings } from 'sql/workbench/contrib/assessment/common/string
 import { ConnectionManagementInfo } from 'sql/platform/connection/common/connectionManagementInfo';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { attachTableFilterStyler } from 'sql/platform/theme/common/styler';
+import { DASHBOARD_BORDER } from 'sql/workbench/common/theme';
 
 export const ASMTRESULTSVIEW_SELECTOR: string = 'asmt-results-view-component';
 export const ROW_HEIGHT: number = 25;
@@ -168,7 +169,7 @@ export class AsmtResultsViewComponent extends TabChild implements IAssessmentCom
 		this._telemetryService.sendViewEvent(TelemetryView.SqlAssessment);
 	}
 
-	ngOnDestroy(): void {
+	override ngOnDestroy(): void {
 		this.isVisible = false;
 		this.rowDetail?.destroy();
 		this.filterPlugin.destroy();
@@ -588,7 +589,7 @@ export class AsmtResultsViewComponent extends TabChild implements IAssessmentCom
 	}
 
 	private _updateStyles(theme: IColorTheme): void {
-		this.actionBarContainer.nativeElement.style.borderTopColor = theme.getColor(themeColors.DASHBOARD_BORDER, true).toString();
+		this.actionBarContainer.nativeElement.style.borderTopColor = theme.getColor(DASHBOARD_BORDER, true).toString();
 		let tableStyle: ITableStyles = {
 			tableHeaderBackground: theme.getColor(themeColors.PANEL_BACKGROUND)
 		};

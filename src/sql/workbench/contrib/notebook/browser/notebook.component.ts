@@ -15,7 +15,7 @@ import { IContextMenuService, IContextViewService } from 'vs/platform/contextvie
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { attachSelectBoxStyler } from 'vs/platform/theme/common/styler';
 import { MenuId, IMenuService, MenuItemAction } from 'vs/platform/actions/common/actions';
-import { IAction, Action, IActionViewItem } from 'vs/base/common/actions';
+import { IAction, Action, SubmenuAction } from 'vs/base/common/actions';
 import { IContextKeyService, RawContextKey } from 'vs/platform/contextkey/common/contextkey';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import * as DOM from 'vs/base/browser/dom';
@@ -37,7 +37,6 @@ import { CellModel } from 'sql/workbench/services/notebook/browser/models/cell';
 import { FileOperationError, FileOperationResult } from 'vs/platform/files/common/files';
 import { isValidBasename } from 'vs/base/common/extpath';
 import { basename } from 'vs/base/common/resources';
-import { createErrorWithActions } from 'vs/base/common/errorsWithActions';
 import { toErrorMessage } from 'vs/base/common/errorMessage';
 import { ILogService } from 'vs/platform/log/common/log';
 import { ITextFileService } from 'vs/workbench/services/textfile/common/textfiles';
@@ -45,7 +44,7 @@ import { fillInActions } from 'vs/platform/actions/browser/menuEntryActionViewIt
 import { Button } from 'sql/base/browser/ui/button/button';
 import { isUndefinedOrNull } from 'vs/base/common/types';
 import { IBootstrapParams } from 'sql/workbench/services/bootstrap/common/bootstrapParams';
-import { getErrorMessage, onUnexpectedError } from 'vs/base/common/errors';
+import { getErrorMessage, onUnexpectedError, createErrorWithActions } from 'vs/base/common/errors';
 import { CodeCellComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/codeCell.component';
 import { TextCellComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/textCell.component';
 import { NotebookInput } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
@@ -53,6 +52,7 @@ import { IColorTheme } from 'vs/platform/theme/common/themeService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { CellToolbarComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/cellToolbar.component';
 import { MaskedLabeledMenuItemActionItem } from 'sql/platform/actions/browser/menuEntryActionViewItem';
+import { IActionViewItem } from 'vs/base/browser/ui/actionbar/actionbar';
 
 export const NOTEBOOK_SELECTOR: string = 'notebook-component';
 
@@ -124,7 +124,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		this.initNavSection();
 	}
 
-	ngOnDestroy() {
+	override ngOnDestroy() {
 		this.dispose();
 		if (this.notebookService) {
 			this.notebookService.removeNotebookEditor(this);
@@ -154,14 +154,40 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		return editors;
 	}
 
-	public deltaDecorations(newDecorationRange: NotebookRange, oldDecorationRange: NotebookRange): void {
-		if (newDecorationRange && newDecorationRange.cell && newDecorationRange.cell.cellType === 'markdown') {
-			let cell = this.cellEditors.filter(c => c.cellGuid() === newDecorationRange.cell.cellGuid);
-			cell[cell.length - 1].deltaDecorations(newDecorationRange, undefined);
+	public deltaDecorations(newDecorationsRange: NotebookRange | NotebookRange[], oldDecorationsRange: NotebookRange | NotebookRange[]): void {
+		if (oldDecorationsRange) {
+			if (Array.isArray(oldDecorationsRange)) {
+				let decoratedCells: string[] = [];
+				oldDecorationsRange.forEach(oldDecorationRange => {
+					if (oldDecorationRange.cell.cellType === 'markdown' && decoratedCells.indexOf(oldDecorationRange.cell.cellGuid) === -1) {
+						let cell = this.cellEditors.filter(c => c.cellGuid() === oldDecorationRange.cell.cellGuid);
+						cell[cell.length - 1].deltaDecorations(undefined, [oldDecorationRange]);
+						decoratedCells.push(...oldDecorationRange.cell.cellGuid);
+					}
+				});
+			} else {
+				if (oldDecorationsRange.cell.cellType === 'markdown') {
+					let cell = this.cellEditors.filter(c => c.cellGuid() === oldDecorationsRange.cell.cellGuid);
+					cell[cell.length - 1].deltaDecorations(undefined, oldDecorationsRange);
+				}
+			}
 		}
-		if (oldDecorationRange && oldDecorationRange.cell && oldDecorationRange.cell.cellType === 'markdown') {
-			let cell = this.cellEditors.filter(c => c.cellGuid() === oldDecorationRange.cell.cellGuid);
-			cell[cell.length - 1].deltaDecorations(undefined, oldDecorationRange);
+		if (newDecorationsRange) {
+			if (Array.isArray(newDecorationsRange)) {
+				let decoratedCells: string[] = [];
+				newDecorationsRange.forEach(newDecorationRange => {
+					if (newDecorationRange.cell.cellType === 'markdown' && decoratedCells.indexOf(newDecorationRange.cell.cellGuid) === -1) {
+						let cell = this.cellEditors.filter(c => c.cellGuid() === newDecorationRange.cell.cellGuid);
+						cell[cell.length - 1].deltaDecorations([newDecorationRange], undefined);
+						decoratedCells.push(...newDecorationRange.cell.cellGuid);
+					}
+				});
+			} else {
+				if (newDecorationsRange.cell.cellType === 'markdown') {
+					let cell = this.cellEditors.filter(c => c.cellGuid() === newDecorationsRange.cell.cellGuid);
+					cell[cell.length - 1].deltaDecorations(newDecorationsRange, undefined);
+				}
+			}
 		}
 	}
 
@@ -534,7 +560,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		let secondary: IAction[] = [];
 		let notebookBarMenu = this.menuService.createMenu(MenuId.NotebookToolbar, this.contextKeyService);
 		let groups = notebookBarMenu.getActions({ arg: null, shouldForwardArgs: true });
-		fillInActions(groups, { primary, secondary }, false, (group: string) => group === undefined || group === '');
+		fillInActions(groups, { primary, secondary }, false, '', Number.MAX_SAFE_INTEGER, (action: SubmenuAction, group: string, groupSize: number) => group === undefined || group === '');
 		this.addPrimaryContributedActions(primary);
 	}
 

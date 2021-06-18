@@ -34,7 +34,7 @@ import { IInsightOptions } from 'sql/workbench/common/editor/query/chartState';
 
 let modelId = 0;
 const ads_execute_command = 'ads_execute_command';
-const validBase64OctetStreamRegex = /^data:application\/octet-stream;base64,(?:[A-Za-z0-9+\/]{4})*(?:[A-Za-z0-9+\/]{2}==|[A-Za-z0-9+\/]{3}=|[A-Za-z0-9+\/]{4})/;
+const validBase64OctetStreamRegex = /data:(?:(application\/octet-stream|image\/png));base64,(?:[A-Za-z0-9+\/]{4})*(?:[A-Za-z0-9+\/]{2}==|[A-Za-z0-9+\/]{3}=|[A-Za-z0-9+\/]{4})/;
 export interface QueryResultId {
 	batchId: number;
 	id: number;
@@ -145,11 +145,11 @@ export class CellModel extends Disposable implements ICellModel {
 		return this._metadata;
 	}
 
-	public get attachments() {
+	public get attachments(): nb.ICellAttachments | undefined {
 		return this._attachments;
 	}
 
-	addAttachment(mimeType: string, base64Encoding: string, name: string): void {
+	addAttachment(mimeType: string, base64Encoding: string, name: string): string {
 		// base64Encoded value looks like: data:application/octet-stream;base64,<base64Value>
 		// get the <base64Value> from the string
 		let index = base64Encoding.indexOf('base64,');
@@ -160,10 +160,16 @@ export class CellModel extends Disposable implements ICellModel {
 			if (!this._attachments) {
 				this._attachments = {};
 			}
-			// TO DO: Check if name already exists and message the user?
-			this._attachments[name] = attachment;
-			this.sendChangeToNotebook(NotebookChangeType.CellMetadataUpdated);
+			// Check if name already exists and get a unique name
+			if (this._attachments[name] && this._attachments[name][mimeType] !== attachment[mimeType]) {
+				name = this.getUniqueAttachmentName(name.substring(0, name.lastIndexOf('.')), name.substring(name.lastIndexOf('.') + 1));
+			}
+			if (!this._attachments[name]) {
+				this._attachments[name] = attachment;
+				this.sendChangeToNotebook(NotebookChangeType.CellMetadataUpdated);
+			}
 		}
+		return name;
 	}
 
 	private isValidBase64OctetStream(base64Image: string): boolean {
@@ -295,6 +301,7 @@ export class CellModel extends Disposable implements ICellModel {
 	}
 
 	public set source(newSource: string | string[]) {
+		newSource = this.attachImageFromSource(newSource);
 		newSource = this.getMultilineSource(newSource);
 		if (this._source !== newSource) {
 			this._source = newSource;
@@ -303,6 +310,35 @@ export class CellModel extends Disposable implements ICellModel {
 		}
 		this._modelContentChangedEvent = undefined;
 		this._preventNextChartCache = true;
+	}
+
+	private attachImageFromSource(newSource: string | string[]): string | string[] {
+		if (!Array.isArray(newSource) && this.isValidBase64OctetStream(newSource)) {
+			let results;
+			while ((results = validBase64OctetStreamRegex.exec(newSource)) !== null) {
+				let imageName = this.addAttachment(results[1], results[0], 'image.png');
+				newSource = newSource.replace(validBase64OctetStreamRegex, `attachment:${imageName}`);
+			}
+			return newSource;
+		}
+		return newSource;
+	}
+	/**
+	 * Gets unique attachment name to add to cell metadata
+	 * @param imgName a string defining name of the image.
+	 * @param imgExtension extension of the image
+	 * Returns the unique name
+	 */
+	private getUniqueAttachmentName(imgName?: string, imgExtension?: string): string {
+		let nextVal = 0;
+		// Note: this will go forever if it's coded wrong, or you have infinite images in a notebook!
+		while (true) {
+			let imageName = imgName ? `${imgName}${nextVal}.${imgExtension ?? 'png'}` : `image${nextVal}.png`;
+			if (!this._attachments || !this._attachments[imageName]) {
+				return imageName;
+			}
+			nextVal++;
+		}
 	}
 
 	public get modelContentChangedEvent(): IModelContentChangedEvent {

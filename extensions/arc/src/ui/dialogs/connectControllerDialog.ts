@@ -96,13 +96,15 @@ abstract class ControllerDialogBase extends InitializingComponent {
 		this.kubeConfigInputBox = new FilePicker(
 			this.modelBuilder,
 			controllerInfo?.kubeConfigFilePath || getDefaultKubeConfigPath(),
-			(disposable) => this._toDispose.push(disposable)
+			(disposable) => this._toDispose.push(disposable),
+			loc.controllerKubeConfig,
+			loc.invalidConfigPath
 		);
 		this.modelBuilder.inputBox()
 			.withProps({
 				value: controllerInfo?.kubeConfigFilePath || getDefaultKubeConfigPath()
 			}).component();
-		this.clusterContextRadioGroup = new RadioOptionsGroup(this.modelBuilder, (disposable) => this._toDispose.push(disposable));
+		this.clusterContextRadioGroup = new RadioOptionsGroup(this.modelBuilder, (disposable) => this._toDispose.push(disposable), undefined, loc.loadingClusterContextCompleted, loc.loadingClusterContextsError);
 		this.loadRadioGroup(controllerInfo?.kubeClusterContext);
 		this._toDispose.push(this.clusterContextRadioGroup.onRadioOptionChanged(newContext => this.updateNamespace(newContext)));
 		this._toDispose.push(this.kubeConfigInputBox.onTextChanged(() => this.loadRadioGroup(controllerInfo?.kubeClusterContext)));
@@ -211,7 +213,7 @@ export class ConnectToControllerDialog extends ControllerDialogBase {
 		return this.namespaceInputBox;
 	}
 
-	protected getComponents() {
+	protected override getComponents() {
 		return [
 			...super.getComponents(),
 			{
@@ -220,7 +222,7 @@ export class ConnectToControllerDialog extends ControllerDialogBase {
 			}];
 	}
 
-	protected initializeFields(controllerInfo: ControllerInfo | undefined, password: string | undefined) {
+	protected override initializeFields(controllerInfo: ControllerInfo | undefined, password: string | undefined) {
 		super.initializeFields(controllerInfo, password);
 		this.rememberPwCheckBox = this.modelBuilder.checkBox()
 			.withProperties<azdata.CheckBoxProperties>({
@@ -281,7 +283,7 @@ export class PasswordToControllerDialog extends ControllerDialogBase {
 		return this.passwordInputBox;
 	}
 
-	protected readonlyFields(): azdata.Component[] {
+	protected override readonlyFields(): azdata.Component[] {
 		return [
 			this.urlInputBox,
 			...this.kubeConfigInputBox.items,
@@ -330,7 +332,7 @@ export class PasswordToControllerDialog extends ControllerDialogBase {
 		return true;
 	}
 
-	public showDialog(controllerInfo?: ControllerInfo): azdata.window.Dialog {
+	public override showDialog(controllerInfo?: ControllerInfo): azdata.window.Dialog {
 		const dialog = super.showDialog(controllerInfo);
 		dialog.okButton.label = loc.ok;
 		return dialog;

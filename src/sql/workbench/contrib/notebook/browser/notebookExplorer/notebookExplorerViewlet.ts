@@ -21,7 +21,6 @@ import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/la
 import { Registry } from 'vs/platform/registry/common/platform';
 import { IMenuService, MenuId } from 'vs/platform/actions/common/actions';
 import { IContextKeyService, IContextKey } from 'vs/platform/contextkey/common/contextkey';
-import { Viewlet } from 'vs/workbench/browser/viewlet';
 import { ViewPane } from 'vs/workbench/browser/parts/views/viewPane';
 import { ViewPaneContainer } from 'vs/workbench/browser/parts/views/viewPaneContainer';
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
@@ -70,22 +69,6 @@ export class NotebookExplorerViewletViewsContribution implements IWorkbenchContr
 	}
 }
 
-export class NotebookExplorerViewlet extends Viewlet {
-	constructor(
-		@ITelemetryService telemetryService: ITelemetryService,
-		@IStorageService protected storageService: IStorageService,
-		@IInstantiationService protected instantiationService: IInstantiationService,
-		@IThemeService themeService: IThemeService,
-		@IContextMenuService protected contextMenuService: IContextMenuService,
-		@IExtensionService protected extensionService: IExtensionService,
-		@IWorkspaceContextService protected contextService: IWorkspaceContextService,
-		@IWorkbenchLayoutService protected layoutService: IWorkbenchLayoutService,
-		@IConfigurationService protected configurationService: IConfigurationService
-	) {
-		super(VIEWLET_ID, instantiationService.createInstance(NotebookExplorerViewPaneContainer), telemetryService, storageService, instantiationService, themeService, contextMenuService, extensionService, contextService, layoutService, configurationService);
-	}
-}
-
 export class NotebookExplorerViewPaneContainer extends ViewPaneContainer {
 	private root: HTMLElement;
 	private static readonly MAX_TEXT_RESULTS = 10000;
@@ -119,7 +102,7 @@ export class NotebookExplorerViewPaneContainer extends ViewPaneContainer {
 		this.queryBuilder = this.instantiationService.createInstance(QueryBuilder);
 	}
 
-	create(parent: HTMLElement): void {
+	override create(parent: HTMLElement): void {
 		this.root = parent;
 		super.create(parent);
 		parent.classList.add('notebookExplorer-viewlet');
@@ -392,22 +375,17 @@ export class NotebookExplorerViewPaneContainer extends ViewPaneContainer {
 		}));
 	}
 
-
-	public updateStyles(): void {
-		super.updateStyles();
-	}
-
-	focus(): void {
+	override focus(): void {
 		super.focus();
 		this.searchWidget.focus(undefined, this.searchConfig.seedOnFocus);
 	}
 
-	layout(dimension: Dimension): void {
+	override layout(dimension: Dimension): void {
 		toggleClass(this.root, 'narrow', dimension.width <= 300);
 		super.layout(new Dimension(dimension.width, dimension.height - getTotalHeight(this.searchWidgetsContainerElement)));
 	}
 
-	getOptimalWidth(): number {
+	override getOptimalWidth(): number {
 		return 400;
 	}
 
@@ -423,7 +401,7 @@ export class NotebookExplorerViewPaneContainer extends ViewPaneContainer {
 		return actions;
 	}
 
-	protected createView(viewDescriptor: IViewDescriptor, options: IViewletViewOptions): ViewPane {
+	protected override createView(viewDescriptor: IViewDescriptor, options: IViewletViewOptions): ViewPane {
 		let viewletPanel = this.instantiationService.createInstance(viewDescriptor.ctorDescriptor.ctor, options) as ViewPane;
 		this._register(viewletPanel);
 		return viewletPanel;

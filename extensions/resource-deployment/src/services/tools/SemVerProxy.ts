@@ -35,7 +35,6 @@ function fourPart2SemVer(version: string): string {
 			<version core> ::= <major> "." <minor> "." <patch>
  */
 export class SemVerProxy extends SemVer {
-	public readonly version: string;
 
 	constructor(version: string | SemVerProxy, loose?: boolean) {
 		let ver: string;

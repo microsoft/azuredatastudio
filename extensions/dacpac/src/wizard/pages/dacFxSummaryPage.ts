@@ -48,7 +48,7 @@ export class DacFxSummaryPage extends BasePage {
 		return true;
 	}
 
-	async onPageLeave(): Promise<boolean> {
+	override async onPageLeave(): Promise<boolean> {
 		this.instance.wizard.generateScriptButton.hidden = true;
 		return true;
 	}

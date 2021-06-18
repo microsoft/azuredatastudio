@@ -11,10 +11,10 @@ import {
 import * as azdata from 'azdata';
 
 import { ComponentBase } from 'sql/workbench/browser/modelComponents/componentBase';
-import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
+import { IInputOptions, InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import { attachInputBoxStyler } from 'sql/platform/theme/common/styler';
 
-import { IInputOptions, MessageType } from 'vs/base/browser/ui/inputbox/inputBox';
+import { MessageType } from 'vs/base/browser/ui/inputbox/inputBox';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import * as nls from 'vs/nls';
@@ -73,6 +73,7 @@ export default class InputBoxComponent extends ComponentBase<azdata.InputBoxProp
 			useDefaultValidation: true
 		};
 		if (this._inputContainer) {
+			inputOptions.requireForceValidations = true; // Non-text area input boxes handle our own validations when the text changes so don't run the base ones
 			this._input = new InputBox(this._inputContainer.nativeElement, this.contextViewService, inputOptions);
 			this.onkeydown(this._input.inputElement, (e: StandardKeyboardEvent) => {
 				if (e.keyCode === KeyCode.Enter) {
@@ -156,10 +157,10 @@ export default class InputBoxComponent extends ComponentBase<azdata.InputBoxProp
 		return this.multiline ? '' : 'none';
 	}
 
-	public async validate(): Promise<boolean> {
+	public override async validate(): Promise<boolean> {
 		await super.validate();
 		// Let the input validate handle showing/hiding the error message
-		const valid = this.inputElement.validate();
+		const valid = this.inputElement.validate(true) === undefined;
 
 		// set aria label based on validity of input
 		if (valid) {
@@ -174,13 +175,13 @@ export default class InputBoxComponent extends ComponentBase<azdata.InputBoxProp
 		return valid;
 	}
 
-	ngOnDestroy(): void {
+	override ngOnDestroy(): void {
 		this.baseDestroy();
 	}
 
 	/// IComponent implementation
 
-	public layout(): void {
+	public override layout(): void {
 		super.layout();
 		this.layoutInputBox();
 	}
@@ -199,7 +200,7 @@ export default class InputBoxComponent extends ComponentBase<azdata.InputBoxProp
 		this.layout();
 	}
 
-	public setProperties(properties: { [key: string]: any; }): void {
+	public override setProperties(properties: { [key: string]: any; }): void {
 		super.setProperties(properties);
 		this.setInputProperties(this.inputElement);
 		this.validate().catch(onUnexpectedError);
@@ -352,7 +353,7 @@ export default class InputBoxComponent extends ComponentBase<azdata.InputBoxProp
 		return this.getPropertyOrDefault<number | undefined>((props) => props.maxLength, undefined);
 	}
 
-	public focus(): void {
+	public override focus(): void {
 		this.inputElement.focus();
 	}
 

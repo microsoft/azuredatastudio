@@ -142,7 +142,7 @@ export class AzureDeviceCode extends AzureAuth {
 	}
 
 
-	public async autoOAuthCancelled(): Promise<void> {
+	public override async autoOAuthCancelled(): Promise<void> {
 		return azdata.accounts.endAutoOAuthDeviceCode();
 	}
 }

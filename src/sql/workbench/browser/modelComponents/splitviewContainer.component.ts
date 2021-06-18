@@ -64,7 +64,7 @@ export default class SplitViewContainerImpl extends ContainerBase<FlexItemLayout
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
-		@Inject(ILogService) readonly logService: ILogService
+		@Inject(ILogService) logService: ILogService
 	) {
 		super(changeRef, el, logService);
 		this._flexFlow = '';	// default
@@ -72,7 +72,7 @@ export default class SplitViewContainerImpl extends ContainerBase<FlexItemLayout
 		this._orientation = Orientation.VERTICAL; // default
 	}
 
-	ngOnDestroy(): void {
+	override ngOnDestroy(): void {
 		this.baseDestroy();
 	}
 
@@ -136,11 +136,11 @@ export default class SplitViewContainerImpl extends ContainerBase<FlexItemLayout
 		return this._alignItems;
 	}
 
-	public get height(): string {
+	public override get height(): string {
 		return this._height;
 	}
 
-	public get width(): string {
+	public override get width(): string {
 		return this._width;
 	}
 
@@ -152,7 +152,7 @@ export default class SplitViewContainerImpl extends ContainerBase<FlexItemLayout
 		return this._textAlign;
 	}
 
-	public get position(): string {
+	public override get position(): string {
 		return this._position;
 	}
 
@@ -172,7 +172,7 @@ export default class SplitViewContainerImpl extends ContainerBase<FlexItemLayout
 		return item.config && item.config.CSSStyles ? item.config.CSSStyles : {};
 	}
 
-	public get CSSStyles(): CssStyles {
+	public override get CSSStyles(): CssStyles {
 		return this.mergeCss(super.CSSStyles, {
 			'width': this.getWidth(),
 			'height': this.getHeight(),
