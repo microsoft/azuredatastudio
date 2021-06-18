@@ -190,7 +190,7 @@ gulp.task(task.define('extensions-ci', task.series(compileExtensionsBuildTask)))
 
 exports.compileExtensionsBuildTask = compileExtensionsBuildTask;
 
-// {{SQL CARBON EDIT}} Builds any extension that need to have XLFs built, including external/excluded extensions (only for creating XLF files, not for compiling extensions for shipping)
+// {{SQL CARBON EDIT}} Builds any non-vscode ADS extension that need to have XLFs built, including external/excluded extensions (only for creating XLF files, not for compiling extensions for shipping)
 const compileLocalizationExtensionsBuildTask = task.define('compile-localization-extensions-build', task.series(
 	cleanExtensionsBuildTask,
 	task.define('bundle-marketplace-extensions-build', () => ext.packageMarketplaceExtensionsStream(false).pipe(gulp.dest('.build'))),

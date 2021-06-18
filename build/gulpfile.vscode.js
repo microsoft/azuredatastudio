@@ -454,7 +454,7 @@ gulp.task(task.define(
 	)
 ));
 
-// {{SQL CARBON EDIT}} Localization gulp task, similar to vscode-translations-export but only for ADS only extensions.
+// {{SQL CARBON EDIT}} Localization gulp task, similar to vscode-translations-export but for ADS exclusive extensions that have localization enabled.
 gulp.task(task.define(
 	'export-xlfs',
 	task.series(

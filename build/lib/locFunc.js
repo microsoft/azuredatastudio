@@ -27,7 +27,7 @@ function packageLangpacksStream() {
     return es.merge(builtLangpacks);
 }
 exports.packageLangpacksStream = packageLangpacksStream;
-// Modified packageLocalExtensionsStream but for all ADS extensions that currently listed including excluded/external ones.
+// Modified packageLocalExtensionsStream but for all non-vscode ADS extensions including excluded/external ones.
 function packageADSExtensionsStream() {
     const currentADSJson = JSON.parse(fs.readFileSync(path.join(__dirname, '../../i18n/ADSExtensions.json'), 'utf8'));
     const ADSExtensions = currentADSJson.ADSExtensions;
