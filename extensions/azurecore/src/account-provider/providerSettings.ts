@@ -223,7 +223,7 @@ const germanyAzureSettings: ProviderSettings = {
 			redirectUri: 'https://vscode-redirect.azurewebsites.net/',
 			scopes: [
 				'openid', 'email', 'profile', 'offline_access',
-				'https://management.microsoftazure.cn/user_impersonation'
+				'https://management.microsoftazure.de/user_impersonation'
 			],
 			portalEndpoint: 'https://portal.microsoftazure.de/'
 		}
