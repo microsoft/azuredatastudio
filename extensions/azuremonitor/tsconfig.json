@@ -3,8 +3,8 @@
 	"compilerOptions": {
 		"outDir": "./out",
 		"strict": true,
-		"noUnusedParameters": true,
-		"noImplicitAny": true
+		"noUnusedParameters": false,
+		"noImplicitAny": false
 	},
 	"include": [
 		"src/**/*"
