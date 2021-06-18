@@ -31,6 +31,10 @@ cell-toolbar-component ul.actions-container li.action-item {
 	width: 29px;
 }
 
+cell-toolbar-component ul.actions-container li.action-item a.codicon.masked-icon {
+	height: 24px;
+}
+
 cell-toolbar-component ul.actions-container li:last-child {
 	margin-right: 0;
 }
