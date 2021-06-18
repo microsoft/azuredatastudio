@@ -27,6 +27,8 @@ cell-toolbar-component ul.actions-container li.action-item {
 	display: inline-flex;
 	margin-right: 0;
 	text-align: center;
+	height: 24px;
+	width: 29px;
 }
 
 cell-toolbar-component ul.actions-container li:last-child {
