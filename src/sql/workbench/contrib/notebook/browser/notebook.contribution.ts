@@ -328,7 +328,7 @@ configurationRegistry.registerConfiguration({
 		'notebook.maxRichTextUndoHistory': {
 			'type': 'number',
 			'default': 200,
-			'minimum': 1,
+			'minimum': 10,
 			'description': localize('notebook.maxRichTextUndoHistory', "The maximum number of changes stored in the undo history for the notebook Rich Text editor.")
 		}
 	}
