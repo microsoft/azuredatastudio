@@ -21,6 +21,7 @@ export class PostgresExtensionsPage extends DashboardPage {
 
 	private extensions: { name: string; }[] = [];
 	private extensionsTable!: azdata.DeclarativeTableComponent;
+	private extensionsLoading!: azdata.LoadingComponent;
 
 	private readonly _azdataApi: azdataExt.IExtension;
 
@@ -41,7 +42,7 @@ export class PostgresExtensionsPage extends DashboardPage {
 	}
 
 	protected get icon(): { dark: string; light: string; } {
-		return IconPathHelper.postgres;
+		return IconPathHelper.extensions;
 	}
 
 	protected get container(): azdata.Component {
@@ -72,13 +73,13 @@ export class PostgresExtensionsPage extends DashboardPage {
 		const infoAndLink = this.modelView.modelBuilder.flexContainer().withLayout({ flexWrap: 'wrap' }).component();
 		infoAndLink.addItem(info, { CSSStyles: { 'margin-right': '5px' } });
 		infoAndLink.addItem(link);
-		content.addItem(infoAndLink, { CSSStyles: { 'margin-bottom': '25px' } });
+		content.addItem(infoAndLink, { CSSStyles: { 'margin-bottom': '15px', 'margin-top': '25px' } });
 
 		this.extensionsTable = this.modelView.modelBuilder.declarativeTable().withProperties<azdata.DeclarativeTableProperties>({
 			width: '100%',
 			columns: [
 				{
-					displayName: loc.extension,
+					displayName: loc.extensionName,
 					valueType: azdata.DeclarativeDataType.string,
 					isReadOnly: true,
 					width: '100%',
@@ -88,7 +89,14 @@ export class PostgresExtensionsPage extends DashboardPage {
 			],
 			data: []
 		}).component();
-		content.addItem(this.extensionsTable);
+
+		this.extensionsLoading = this.modelView.modelBuilder.loadingComponent()
+			.withItem(this.extensionsTable)
+			.withProperties<azdata.LoadingComponentProperties>({
+				loading: !this._postgresModel.configLastUpdated
+			}).component();
+
+		content.addItem(this.extensionsLoading, { CSSStyles: cssStyles.text });
 
 		this.initialized = true;
 		return root;
@@ -151,6 +159,7 @@ export class PostgresExtensionsPage extends DashboardPage {
 	}
 
 	private handleConfigUpdated() {
+		this.extensionsLoading.loading = false;
 		this.refreshExtensions();
 	}
 }
