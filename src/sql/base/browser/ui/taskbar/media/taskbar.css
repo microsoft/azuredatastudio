@@ -50,16 +50,13 @@
 
 .carbon-taskbar .monaco-action-bar .action-item .codicon.action-label {
 	width: 100%;
+	background-repeat: no-repeat;
+	background-position: 0% 50%;
+	padding-left: 15px;
 }
 
 .carbon-taskbar .action-item.more {
 	padding-right: 15px;
-}
-
-.carbon-taskbar .action-label {
-	background-repeat: no-repeat;
-	background-position: 0% 50%;
-	padding-left: 15px;
 }
 
 .carbon-taskbar .action-item-label {
