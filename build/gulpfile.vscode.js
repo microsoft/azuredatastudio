@@ -108,6 +108,18 @@ const optimizeVSCodeTask = task.define('optimize-vscode', task.series(
 ));
 gulp.task(optimizeVSCodeTask);
 
+// {{SQL CARBON EDIT}} Gulp task that exports any extensions found in the build folder as an XLF to an external folder.
+const exportXLFFolderTask = task.define('export-xlf-folder',
+	function () {
+		const pathToExtensions = '.build/extensions/*';
+		return es.merge(
+			gulp.src(pathToExtensions).pipe(i18n.createXlfFilesForExtensions())
+		).pipe(vfs.dest('../export-xlfs'));
+	}
+);
+gulp.task(exportXLFFolderTask);
+
+
 const sourceMappingURLBase = `https://sqlopsbuilds.blob.core.windows.net/sourcemaps/${commit}`;
 const minifyVSCodeTask = task.define('minify-vscode', task.series(
 	optimizeVSCodeTask,
@@ -456,17 +468,10 @@ gulp.task(task.define(
 
 // {{SQL CARBON EDIT}} Localization gulp task, similar to vscode-translations-export but for ADS exclusive extensions that have localization enabled.
 gulp.task(task.define(
-	'export-xlfs',
+	'export-ads-xlfs',
 	task.series(
-		compileBuildTask,
 		compileLocalizationExtensionsBuildTask,
-		optimizeVSCodeTask,
-		function () {
-			const pathToExtensions = '.build/extensions/*';
-			return es.merge(
-				gulp.src(pathToExtensions).pipe(i18n.createXlfFilesForExtensions())
-			).pipe(vfs.dest('../export-xlfs'));
-		}
+		exportXLFFolderTask
 	)
 ));
 

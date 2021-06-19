@@ -29,22 +29,28 @@ export function packageLangpacksStream(): NodeJS.ReadWriteStream {
 	return es.merge(builtLangpacks);
 }
 
-// Modified packageLocalExtensionsStream but for all non-vscode ADS extensions including excluded/external ones.
+// Runs packageSingleADSExtensionStream on extensions that are exclusive to ADS.
 export function packageADSExtensionsStream(): NodeJS.ReadWriteStream {
 	const currentADSJson = JSON.parse(fs.readFileSync(path.join(__dirname, '../../i18n/ADSExtensions.json'), 'utf8'));
-	const ADSExtensions = currentADSJson.ADSExtensions;
-	const extenalExtensionDescriptions = (<string[]>glob.sync('extensions/*/package.json'))
+	const ADSExtensions = Object.keys(currentADSJson.ADSExtensions);
+
+	const builtExtensions = ADSExtensions.map(extensionName => packageSingleADSExtensionStream(extensionName))
+	return es.merge(builtExtensions);
+}
+
+// Modified packageLocalExtensionsStream but for any ADS extensions including excluded/external ones.
+export function packageSingleADSExtensionStream(name : string): NodeJS.ReadWriteStream {
+	const extenalExtensionDescriptions = (<string[]>glob.sync(`extensions/${name}/package.json`))
 		.map(manifestPath => {
 			const extensionPath = path.dirname(path.join(root, manifestPath));
 			const extensionName = path.basename(extensionPath);
 			return { name: extensionName, path: extensionPath };
 		})
-		.filter(({ name }) => ADSExtensions[name] !== undefined);
 
-	const builtExtensions = extenalExtensionDescriptions.map(extension => {
+	const builtExtension = extenalExtensionDescriptions.map(extension => {
 		return ext.fromLocal(extension.path, false)
 			.pipe(rename(p => p.dirname = `extensions/${extension.name}/${p.dirname}`));
 	});
 
-	return es.merge(builtExtensions);
+	return es.merge(builtExtension);
 }

@@ -4,7 +4,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.packageADSExtensionsStream = exports.packageLangpacksStream = void 0;
+exports.packageSingleADSExtensionStream = exports.packageADSExtensionsStream = exports.packageLangpacksStream = void 0;
 const es = require("event-stream");
 const fs = require("fs");
 const path = require("path");
@@ -27,21 +27,26 @@ function packageLangpacksStream() {
     return es.merge(builtLangpacks);
 }
 exports.packageLangpacksStream = packageLangpacksStream;
-// Modified packageLocalExtensionsStream but for all non-vscode ADS extensions including excluded/external ones.
+// Runs packageSingleADSExtensionStream on extensions that are exclusive to ADS.
 function packageADSExtensionsStream() {
     const currentADSJson = JSON.parse(fs.readFileSync(path.join(__dirname, '../../i18n/ADSExtensions.json'), 'utf8'));
-    const ADSExtensions = currentADSJson.ADSExtensions;
-    const extenalExtensionDescriptions = glob.sync('extensions/*/package.json')
+    const ADSExtensions = Object.keys(currentADSJson.ADSExtensions);
+    const builtExtensions = ADSExtensions.map(extensionName => packageSingleADSExtensionStream(extensionName));
+    return es.merge(builtExtensions);
+}
+exports.packageADSExtensionsStream = packageADSExtensionsStream;
+// Modified packageLocalExtensionsStream but for any ADS extensions including excluded/external ones.
+function packageSingleADSExtensionStream(name) {
+    const extenalExtensionDescriptions = glob.sync(`extensions/${name}/package.json`)
         .map(manifestPath => {
         const extensionPath = path.dirname(path.join(root, manifestPath));
         const extensionName = path.basename(extensionPath);
         return { name: extensionName, path: extensionPath };
-    })
-        .filter(({ name }) => ADSExtensions[name] !== undefined);
-    const builtExtensions = extenalExtensionDescriptions.map(extension => {
+    });
+    const builtExtension = extenalExtensionDescriptions.map(extension => {
         return ext.fromLocal(extension.path, false)
             .pipe(rename(p => p.dirname = `extensions/${extension.name}/${p.dirname}`));
     });
-    return es.merge(builtExtensions);
+    return es.merge(builtExtension);
 }
-exports.packageADSExtensionsStream = packageADSExtensionsStream;
+exports.packageSingleADSExtensionStream = packageSingleADSExtensionStream;
