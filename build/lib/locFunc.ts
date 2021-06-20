@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as es from 'event-stream';
-import * as fs from 'fs';
 import * as path from 'path';
 import * as glob from 'glob';
 import rename = require('gulp-rename');
@@ -27,15 +26,6 @@ export function packageLangpacksStream(): NodeJS.ReadWriteStream {
 	});
 
 	return es.merge(builtLangpacks);
-}
-
-// Runs packageSingleADSExtensionStream on extensions that are exclusive to ADS.
-export function packageADSExtensionsStream(): NodeJS.ReadWriteStream {
-	const currentADSJson = JSON.parse(fs.readFileSync(path.join(__dirname, '../../i18n/ADSExtensions.json'), 'utf8'));
-	const ADSExtensions = Object.keys(currentADSJson.ADSExtensions);
-
-	const builtExtensions = ADSExtensions.map(extensionName => packageSingleADSExtensionStream(extensionName))
-	return es.merge(builtExtensions);
 }
 
 // Modified packageLocalExtensionsStream but for any ADS extensions including excluded/external ones.

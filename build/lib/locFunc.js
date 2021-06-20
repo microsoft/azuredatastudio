@@ -4,9 +4,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.packageSingleADSExtensionStream = exports.packageADSExtensionsStream = exports.packageLangpacksStream = void 0;
+exports.packageSingleADSExtensionStream = exports.packageLangpacksStream = void 0;
 const es = require("event-stream");
-const fs = require("fs");
 const path = require("path");
 const glob = require("glob");
 const rename = require("gulp-rename");
@@ -27,14 +26,6 @@ function packageLangpacksStream() {
     return es.merge(builtLangpacks);
 }
 exports.packageLangpacksStream = packageLangpacksStream;
-// Runs packageSingleADSExtensionStream on extensions that are exclusive to ADS.
-function packageADSExtensionsStream() {
-    const currentADSJson = JSON.parse(fs.readFileSync(path.join(__dirname, '../../i18n/ADSExtensions.json'), 'utf8'));
-    const ADSExtensions = Object.keys(currentADSJson.ADSExtensions);
-    const builtExtensions = ADSExtensions.map(extensionName => packageSingleADSExtensionStream(extensionName));
-    return es.merge(builtExtensions);
-}
-exports.packageADSExtensionsStream = packageADSExtensionsStream;
 // Modified packageLocalExtensionsStream but for any ADS extensions including excluded/external ones.
 function packageSingleADSExtensionStream(name) {
     const extenalExtensionDescriptions = glob.sync(`extensions/${name}/package.json`)

@@ -39,6 +39,11 @@ const sqlLocalizedExtensions = [
 	'sql-assessment',
 	'sql-database-projects'
 ];
+
+const exportCompilations = glob.sync('**/package.json', {
+	cwd: extensionsPath,
+	ignore: ['**/out/**', '**/node_modules/**', 'package.json']
+});
 // {{SQL CARBON EDIT}}
 
 const compilations = glob.sync('**/tsconfig.json', {
@@ -165,6 +170,26 @@ const tasks = compilations.map(function (tsconfigFile) {
 	return { compileTask, watchTask, compileBuildTask };
 });
 
+// {{SQL CARBON EDIT}}
+const exportTasks = exportCompilations.map(function (packageFile) {
+	const relativeDirname = path.dirname(packageFile);
+
+	const extensionName = relativeDirname.replace(/\//g, '-');
+	const packageTask = task.define(`localization-package-extension:${extensionName}`, task.series(() => {
+		return locFunc.packageSingleADSExtensionStream(extensionName)
+			.pipe(gulp.dest('.build'));
+	}));
+
+	// Tasks
+	gulp.task(packageTask);
+
+	return { packageTask };
+});
+
+const packageLocalizationExtensionsTask = task.define('package-localization-extensions-task', task.series(...exportTasks.map(t => t.packageTask)));
+gulp.task(packageLocalizationExtensionsTask);
+// {{SQL CARBON EDIT}}
+
 const compileExtensionsTask = task.define('compile-extensions', task.parallel(...tasks.map(t => t.compileTask)));
 gulp.task(compileExtensionsTask);
 exports.compileExtensionsTask = compileExtensionsTask;
@@ -193,8 +218,9 @@ exports.compileExtensionsBuildTask = compileExtensionsBuildTask;
 // {{SQL CARBON EDIT}} Builds any non-vscode ADS extension that need to have XLFs built, including external/excluded extensions (only for creating XLF files, not for compiling extensions for shipping)
 const compileLocalizationExtensionsBuildTask = task.define('compile-localization-extensions-build', task.series(
 	cleanExtensionsBuildTask,
+	compileExtensionsTask,
 	task.define('bundle-marketplace-extensions-build', () => ext.packageMarketplaceExtensionsStream(false).pipe(gulp.dest('.build'))),
-	task.define('external-extensions-build', () => locFunc.packageADSExtensionsStream().pipe(gulp.dest('.build'))),
+	packageLocalizationExtensionsTask,
 ));
 
 gulp.task(compileLocalizationExtensionsBuildTask);
