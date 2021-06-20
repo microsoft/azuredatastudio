@@ -170,7 +170,7 @@ const tasks = compilations.map(function (tsconfigFile) {
 	return { compileTask, watchTask, compileBuildTask };
 });
 
-// {{SQL CARBON EDIT}}
+// {{SQL CARBON EDIT}} Runs the localization packaging task on all extensions in ADS.
 const exportTasks = exportCompilations.map(function (packageFile) {
 	const relativeDirname = path.dirname(packageFile);
 
@@ -188,7 +188,7 @@ const exportTasks = exportCompilations.map(function (packageFile) {
 
 const packageLocalizationExtensionsTask = task.define('package-localization-extensions-task', task.series(...exportTasks.map(t => t.packageTask)));
 gulp.task(packageLocalizationExtensionsTask);
-// {{SQL CARBON EDIT}}
+// {{SQL CARBON EDIT}} end
 
 const compileExtensionsTask = task.define('compile-extensions', task.parallel(...tasks.map(t => t.compileTask)));
 gulp.task(compileExtensionsTask);
@@ -215,7 +215,7 @@ gulp.task(task.define('extensions-ci', task.series(compileExtensionsBuildTask)))
 
 exports.compileExtensionsBuildTask = compileExtensionsBuildTask;
 
-// {{SQL CARBON EDIT}} Builds any non-vscode ADS extension that need to have XLFs built, including external/excluded extensions (only for creating XLF files, not for compiling extensions for shipping)
+// {{SQL CARBON EDIT}} Builds all ADS extensions including external/excluded extensions (only for creating XLF files, not for compiling extensions for shipping)
 const compileLocalizationExtensionsBuildTask = task.define('compile-localization-extensions-build', task.series(
 	cleanExtensionsBuildTask,
 	compileExtensionsTask,
@@ -225,7 +225,7 @@ const compileLocalizationExtensionsBuildTask = task.define('compile-localization
 
 gulp.task(compileLocalizationExtensionsBuildTask);
 exports.compileLocalizationExtensionsBuildTask = compileLocalizationExtensionsBuildTask;
-
+// {{SQL CARBON EDIT}} end
 
 const compileWebExtensionsTask = task.define('compile-web', () => buildWebExtensions(false));
 gulp.task(compileWebExtensionsTask);

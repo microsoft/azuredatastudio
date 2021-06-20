@@ -118,7 +118,7 @@ const exportXLFFolderTask = task.define('export-xlf-folder',
 	}
 );
 gulp.task(exportXLFFolderTask);
-
+// {{SQL CARBON EDIT}} end
 
 const sourceMappingURLBase = `https://sqlopsbuilds.blob.core.windows.net/sourcemaps/${commit}`;
 const minifyVSCodeTask = task.define('minify-vscode', task.series(
@@ -474,6 +474,7 @@ gulp.task(task.define(
 		exportXLFFolderTask
 	)
 ));
+// {{SQL CARBON EDIT}} end
 
 gulp.task('vscode-translations-pull', function () {
 	return es.merge([...i18n.defaultLanguages, ...i18n.extraLanguages].map(language => {
