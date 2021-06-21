@@ -23,7 +23,6 @@ const plumber = require('gulp-plumber');
 const fancyLog = require('fancy-log');
 const ansiColors = require('ansi-colors');
 const ext = require('./lib/extensions');
-const locFunc = require('./lib/locFunc'); // {{SQL CARBON EDIT}}
 
 const extensionsPath = path.join(path.dirname(__dirname), 'extensions');
 
@@ -41,12 +40,6 @@ const sqlLocalizedExtensions = [
 	'sql-assessment',
 	'sql-database-projects'
 ];
-
-// {{SQL CARBON EDIT}} Get every extension in 'extensions' to create XLF files.
-const exportCompilations = glob.sync('**/package.json', {
-	cwd: extensionsPath,
-	ignore: ['**/out/**', '**/node_modules/**', 'package.json']
-});
 
 // {{SQL CARBON EDIT}} Not doing this for us right now
 // To save 250ms for each gulp startup, we are caching the result here
@@ -211,26 +204,6 @@ const tasks = compilations.map(function (tsconfigFile) {
 	return { compileTask, watchTask, compileBuildTask };
 });
 
-// {{SQL CARBON EDIT}} Runs the localization packaging task on all extensions in ADS.
-const exportTasks = exportCompilations.map(function (packageFile) {
-	const relativeDirname = path.dirname(packageFile);
-
-	const extensionName = relativeDirname.replace(/\//g, '-');
-	const packageTask = task.define(`localization-package-extension:${extensionName}`, task.series(() => {
-		return locFunc.packageSingleADSExtensionStream(extensionName)
-			.pipe(gulp.dest('.build'));
-	}));
-
-	// Tasks
-	gulp.task(packageTask);
-
-	return { packageTask };
-});
-
-const packageLocalizationExtensionsTask = task.define('package-localization-extensions-task', task.series(...exportTasks.map(t => t.packageTask)));
-gulp.task(packageLocalizationExtensionsTask);
-// {{SQL CARBON EDIT}} end
-
 const compileExtensionsTask = task.define('compile-extensions', task.parallel(...tasks.map(t => t.compileTask)));
 gulp.task(compileExtensionsTask);
 exports.compileExtensionsTask = compileExtensionsTask;
@@ -301,9 +274,36 @@ exports.compileExtensionsBuildTask = compileExtensionsBuildTask;
 
 //#endregion
 
-// {{SQL CARBON EDIT}} Builds all ADS extensions including external/excluded extensions (only for creating XLF files, not for compiling extensions for shipping)
+// {{SQL CARBON EDIT}}
 //#region XLF Creation
 
+//Get every extension in 'extensions' to create XLF files.
+const exportCompilations = glob.sync('**/package.json', {
+	cwd: extensionsPath,
+	ignore: ['**/out/**', '**/node_modules/**', 'package.json']
+});
+
+//Run the localization packaging task on all extensions in ADS.
+const exportTasks = exportCompilations.map(function (packageFile) {
+	const locFunc = require('./lib/locFunc');
+	const relativeDirname = path.dirname(packageFile);
+
+	const extensionName = relativeDirname.replace(/\//g, '-');
+	const packageTask = task.define(`localization-package-extension:${extensionName}`, task.series(() => {
+		return locFunc.packageSingleADSExtensionStream(extensionName)
+			.pipe(gulp.dest('.build'));
+	}));
+
+	// Tasks
+	gulp.task(packageTask);
+
+	return { packageTask };
+});
+
+const packageLocalizationExtensionsTask = task.define('package-localization-extensions-task', task.series(...exportTasks.map(t => t.packageTask)));
+gulp.task(packageLocalizationExtensionsTask);
+
+//Builds all ADS extensions including external/excluded extensions (only for creating XLF files, not for compiling extensions for shipping)
 const compileLocalizationExtensionsBuildTask = task.define('compile-localization-extensions-build', task.series(
 	cleanExtensionsBuildTask,
 	compileExtensionsTask,
