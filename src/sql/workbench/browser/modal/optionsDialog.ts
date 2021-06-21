@@ -66,7 +66,7 @@ export class OptionsDialog extends Modal {
 		super(title, name, telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService, options);
 	}
 
-	public render() {
+	public override render() {
 		super.render();
 		attachModalDialogStyler(this, this._themeService);
 		if (this.backButton) {
@@ -163,12 +163,12 @@ export class OptionsDialog extends Modal {
 	}
 
 	/* Overwrite escape key behavior */
-	protected onClose() {
+	protected override onClose() {
 		this.close();
 	}
 
 	/* Overwrite enter key behavior */
-	protected onAccept() {
+	protected override onAccept() {
 		this.ok();
 	}
 
@@ -219,7 +219,7 @@ export class OptionsDialog extends Modal {
 	protected layout(height?: number): void {
 	}
 
-	public dispose(): void {
+	public override dispose(): void {
 		super.dispose();
 		this._optionElements = {};
 	}

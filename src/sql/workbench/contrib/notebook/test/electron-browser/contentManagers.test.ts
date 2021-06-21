@@ -55,12 +55,12 @@ suite('Local Content Manager', function (): void {
 	setup(() => {
 		const instantiationService = new TestInstantiationService();
 		const fileService = new class extends TestFileService {
-			async readFile(resource: URI, options?: IReadFileOptions | undefined): Promise<IFileContent> {
+			override async readFile(resource: URI, options?: IReadFileOptions | undefined): Promise<IFileContent> {
 				const content = await promisify(fs.readFile)(resource.fsPath);
 
 				return { name: ',', size: 0, etag: '', mtime: 0, value: VSBuffer.fromString(content.toString()), resource, ctime: 0 };
 			}
-			async writeFile(resource: URI, bufferOrReadable: VSBuffer | VSBufferReadable, options?: IWriteFileOptions): Promise<IFileStatWithMetadata> {
+			override async writeFile(resource: URI, bufferOrReadable: VSBuffer | VSBufferReadable, options?: IWriteFileOptions): Promise<IFileStatWithMetadata> {
 				await pfs.writeFile(resource.fsPath, bufferOrReadable.toString());
 				return { resource: resource, mtime: 0, etag: '', size: 0, name: '', isDirectory: false, ctime: 0, isFile: true, isSymbolicLink: false };
 			}

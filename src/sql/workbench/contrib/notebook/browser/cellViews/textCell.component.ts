@@ -104,8 +104,8 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	private _highlightRange: NotebookRange;
 	private _isFindActive: boolean = false;
 
-	private readonly _undoStack = new RichTextEditStack();
-	private readonly _redoStack = new RichTextEditStack();
+	private readonly _undoStack: RichTextEditStack;
+	private readonly _redoStack: RichTextEditStack;
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
@@ -118,6 +118,10 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		this.markdownRenderer = this._instantiationService.createInstance(NotebookMarkdownRenderer);
 		this.doubleClickEditEnabled = this._configurationService.getValue('notebook.enableDoubleClickEdit');
 		this.markdownPreviewLineHeight = this._configurationService.getValue('notebook.markdownPreviewLineHeight');
+		let maxStackSize: number = this._configurationService.getValue('notebook.maxRichTextUndoHistory');
+		this._undoStack = new RichTextEditStack(maxStackSize);
+		this._redoStack = new RichTextEditStack(maxStackSize);
+
 		this._register(toDisposable(() => {
 			if (this.markdownResult) {
 				this.markdownResult.dispose();
@@ -129,6 +133,11 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 			if (e.affectsConfiguration('notebook.markdownPreviewLineHeight')) {
 				this.markdownPreviewLineHeight = this._configurationService.getValue('notebook.markdownPreviewLineHeight');
 				this.updatePreview();
+			}
+			if (e.affectsConfiguration('notebook.maxRichTextUndoHistory')) {
+				let newStackSize: number = this._configurationService.getValue('notebook.maxRichTextUndoHistory');
+				this._undoStack.maxStackSize = newStackSize;
+				this._redoStack.maxStackSize = newStackSize;
 			}
 		}));
 	}
@@ -401,7 +410,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		return this.cellModel && this.cellModel.id === this.activeCellId;
 	}
 
-	public deltaDecorations(newDecorationsRange: NotebookRange | NotebookRange[], oldDecorationsRange: NotebookRange | NotebookRange[]): void {
+	public override deltaDecorations(newDecorationsRange: NotebookRange | NotebookRange[], oldDecorationsRange: NotebookRange | NotebookRange[]): void {
 		if (newDecorationsRange) {
 			this._isFindActive = true;
 			if (Array.isArray(newDecorationsRange)) {
@@ -551,12 +560,24 @@ function preventDefaultAndExecCommand(e: KeyboardEvent, commandId: string) {
 export class RichTextEditStack {
 	private _list: string[] = [];
 
+	constructor(private _maxStackSize: number) {
+	}
+
+	public set maxStackSize(stackSize: number) {
+		this._maxStackSize = stackSize;
+	}
+
 	/**
-	 * Adds an element to the top of the stack.
+	 * Adds an element to the top of the stack. If the number of elements
+	 * exceeds the max stack size, then the oldest elements are removed until
+	 * the max size is reached.
 	 * @param element The string element to add to the stack.
 	 */
 	public push(element: string): void {
 		this._list.push(element);
+		if (this._list.length > this._maxStackSize) {
+			this._list = this._list.slice(this._list.length - this._maxStackSize);
+		}
 	}
 
 	/**

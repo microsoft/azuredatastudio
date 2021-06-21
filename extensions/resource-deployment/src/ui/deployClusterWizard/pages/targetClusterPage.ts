@@ -51,7 +51,7 @@ export class TargetClusterContextPage extends ResourceTypePage {
 		});
 	}
 
-	public async onEnter(): Promise<void> {
+	public override async onEnter(): Promise<void> {
 		if (this.loadDefaultKubeConfigFile) {
 			let defaultKubeConfigPath = this._model.kubeService.getDefaultConfigPath();
 			this.loadClusterContexts(defaultKubeConfigPath);
@@ -74,7 +74,7 @@ export class TargetClusterContextPage extends ResourceTypePage {
 		});
 	}
 
-	public async onLeave(): Promise<void> {
+	public override async onLeave(): Promise<void> {
 		this.wizard.wizardObject.registerNavigationValidator((e) => {
 			return true;
 		});

@@ -14,8 +14,8 @@ import { ComponentBase } from 'sql/workbench/browser/modelComponents/componentBa
 import { IComponent, IComponentDescriptor, IModelStore } from 'sql/platform/dashboard/browser/interfaces';
 import { PropertiesContainer, PropertyItem } from 'sql/base/browser/ui/propertiesContainer/propertiesContainer.component';
 import { registerThemingParticipant, IColorTheme, ICssStyleCollector } from 'vs/platform/theme/common/themeService';
-import { PROPERTIES_CONTAINER_PROPERTY_NAME, PROPERTIES_CONTAINER_PROPERTY_VALUE } from 'vs/workbench/common/theme';
 import { ILogService } from 'vs/platform/log/common/log';
+import { PROPERTIES_CONTAINER_PROPERTY_NAME, PROPERTIES_CONTAINER_PROPERTY_VALUE } from 'sql/workbench/common/theme';
 
 @Component({
 	selector: `modelview-properties-container`,
@@ -44,7 +44,7 @@ export default class PropertiesContainerComponent extends ComponentBase<azdata.P
 		this.layout();
 	}
 
-	public setProperties(properties: { [key: string]: any; }): void {
+	public override setProperties(properties: { [key: string]: any; }): void {
 		super.setProperties(properties);
 		this._propertiesContainer.propertyItems = this.propertyItems;
 	}

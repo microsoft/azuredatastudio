@@ -156,7 +156,7 @@ export class RestoreDialog extends Modal {
 		this.viewModel.onUpdateRestoreDatabaseFiles((files) => this.updateRestoreDatabaseFiles(files));
 	}
 
-	public render() {
+	public override render() {
 		super.render();
 		attachModalDialogStyler(this, this._themeService);
 		let cancelLabel = localize('restoreDialog.cancel', "Cancel");
@@ -677,12 +677,12 @@ export class RestoreDialog extends Modal {
 	}
 
 	/* Overwrite esapce key behavior */
-	protected onClose() {
+	protected override onClose() {
 		this.cancel();
 	}
 
 	/* Overwrite enter key behavior */
-	protected onAccept() {
+	protected override onAccept() {
 		this.restore(false);
 	}
 
@@ -720,7 +720,7 @@ export class RestoreDialog extends Modal {
 		// Nothing currently laid out statically in this class
 	}
 
-	public dispose(): void {
+	public override dispose(): void {
 		super.dispose();
 		for (let key in this._optionsMap) {
 			let widget: Widget = this._optionsMap[key];

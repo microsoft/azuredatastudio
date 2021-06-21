@@ -285,13 +285,13 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 		this.baseInit();
 	}
 
-	ngOnDestroy(): void {
+	override ngOnDestroy(): void {
 		this.baseDestroy();
 	}
 
 	/// IComponent implementation
 
-	public layout(): void {
+	public override layout(): void {
 		this.layoutTable();
 		super.layout();
 	}
@@ -340,7 +340,7 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 		this.layout();
 	}
 
-	public setProperties(properties: { [key: string]: any; }): void {
+	public override setProperties(properties: { [key: string]: any; }): void {
 		super.setProperties(properties);
 		this._tableData.clear();
 		this._tableData.push(this.transformData(this.data, this.columns));
@@ -529,7 +529,7 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 		this._table.registerPlugin(filterPlugin);
 	}
 
-	public focus(): void {
+	public override focus(): void {
 		if (this._table.grid.getDataLength() > 0) {
 			if (!this._table.grid.getActiveCell()) {
 				this._table.grid.setActiveCell(0, 0);
@@ -604,7 +604,7 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 		return this.getPropertyOrDefault<boolean>((props) => props.headerFilter, false);
 	}
 
-	public doAction(action: string, ...args: any[]): void {
+	public override doAction(action: string, ...args: any[]): void {
 		switch (action) {
 			case ModelViewAction.AppendData:
 				this.appendData(args[0]);
@@ -628,7 +628,7 @@ export default class TableComponent extends ComponentBase<azdata.TableComponentP
 		}
 	}
 
-	public get CSSStyles(): azdata.CssStyles {
+	public override get CSSStyles(): azdata.CssStyles {
 		return this.mergeCss(super.CSSStyles, {
 			'width': this.getWidth(),
 			'height': '100%',

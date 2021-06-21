@@ -247,7 +247,7 @@ export class DashboardGridContainer extends DashboardTab implements OnDestroy {
 		return new Array(max).fill(0).map((x, i) => i);
 	}
 
-	ngOnDestroy() {
+	override ngOnDestroy() {
 		this.dispose();
 	}
 
@@ -283,6 +283,6 @@ export class DashboardGridContainer extends DashboardTab implements OnDestroy {
 		}
 	}
 
-	public enableEdit(): void {
+	public override enableEdit(): void {
 	}
 }

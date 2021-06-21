@@ -53,7 +53,7 @@ export abstract class CellActionBase extends Action {
 		return true;
 	}
 
-	public async run(context: CellContext): Promise<void> {
+	public override async run(context: CellContext): Promise<void> {
 		if (hasModelAndCell(context, this.notificationService)) {
 			return this.doRun(context);
 		}
@@ -171,7 +171,7 @@ export class RunCellAction extends MultiStateAction<CellExecutionState> {
 		this.ensureContextIsUpdated(context);
 	}
 
-	public async run(context?: CellContext): Promise<void> {
+	public override async run(context?: CellContext): Promise<void> {
 		return this.doRun(context);
 	}
 

@@ -30,23 +30,23 @@ export class ExtHostAccountManagement extends ExtHostAccountManagementShape {
 
 	// PUBLIC METHODS //////////////////////////////////////////////////////
 	// - MAIN THREAD AVAILABLE METHODS /////////////////////////////////////
-	public $clear(handle: number, accountKey: azdata.AccountKey): Thenable<void> {
+	public override $clear(handle: number, accountKey: azdata.AccountKey): Thenable<void> {
 		return this._withProvider(handle, (provider: azdata.AccountProvider) => provider.clear(accountKey));
 	}
 
-	public $initialize(handle: number, restoredAccounts: azdata.Account[]): Thenable<azdata.Account[]> {
+	public override $initialize(handle: number, restoredAccounts: azdata.Account[]): Thenable<azdata.Account[]> {
 		return this._withProvider(handle, (provider: azdata.AccountProvider) => provider.initialize(restoredAccounts));
 	}
 
-	public $prompt(handle: number): Thenable<azdata.Account | azdata.PromptFailedResult> {
+	public override $prompt(handle: number): Thenable<azdata.Account | azdata.PromptFailedResult> {
 		return this._withProvider(handle, (provider: azdata.AccountProvider) => provider.prompt());
 	}
 
-	public $refresh(handle: number, account: azdata.Account): Thenable<azdata.Account | azdata.PromptFailedResult> {
+	public override $refresh(handle: number, account: azdata.Account): Thenable<azdata.Account | azdata.PromptFailedResult> {
 		return this._withProvider(handle, (provider: azdata.AccountProvider) => provider.refresh(account));
 	}
 
-	public $autoOAuthCancelled(handle: number): Thenable<void> {
+	public override $autoOAuthCancelled(handle: number): Thenable<void> {
 		return this._withProvider(handle, (provider: azdata.AccountProvider) => provider.autoOAuthCancelled());
 	}
 
@@ -94,7 +94,7 @@ export class ExtHostAccountManagement extends ExtHostAccountManagementShape {
 		return resultProviderAndAccounts;
 	}
 
-	public $getSecurityToken(account: azdata.Account, resource: azdata.AzureResource = AzureResource.ResourceManagement): Thenable<{}> {
+	public override $getSecurityToken(account: azdata.Account, resource: azdata.AzureResource = AzureResource.ResourceManagement): Thenable<{}> {
 		return this.getAllProvidersAndAccounts().then(providerAndAccounts => {
 			const providerAndAccount = providerAndAccounts.find(providerAndAccount => providerAndAccount.account.key.accountId === account.key.accountId);
 			if (providerAndAccount) {
@@ -104,7 +104,7 @@ export class ExtHostAccountManagement extends ExtHostAccountManagementShape {
 		});
 	}
 
-	public $getAccountSecurityToken(account: azdata.Account, tenant: string, resource: azdata.AzureResource = AzureResource.ResourceManagement): Thenable<{ token: string }> {
+	public override $getAccountSecurityToken(account: azdata.Account, tenant: string, resource: azdata.AzureResource = AzureResource.ResourceManagement): Thenable<{ token: string }> {
 		return this.getAllProvidersAndAccounts().then(providerAndAccounts => {
 			const providerAndAccount = providerAndAccounts.find(providerAndAccount => providerAndAccount.account.key.accountId === account.key.accountId);
 			if (providerAndAccount) {
@@ -119,7 +119,7 @@ export class ExtHostAccountManagement extends ExtHostAccountManagementShape {
 		return this._onDidChangeAccounts.event;
 	}
 
-	public $accountsChanged(handle: number, accounts: azdata.Account[]): Thenable<void> {
+	public override $accountsChanged(handle: number, accounts: azdata.Account[]): Thenable<void> {
 		return Promise.resolve(this._onDidChangeAccounts.fire({ accounts: accounts }));
 	}
 

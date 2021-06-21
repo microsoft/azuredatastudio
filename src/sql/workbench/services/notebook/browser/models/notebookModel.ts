@@ -1117,7 +1117,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 	}
 
-	public dispose(): void {
+	public override dispose(): void {
 		super.dispose();
 		this.disconnectAttachToConnections().catch(e => this.logService.error(e));
 		this.handleClosed().catch(e => this.logService.error(e));

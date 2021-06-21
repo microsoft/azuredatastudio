@@ -77,15 +77,15 @@ export class ModelViewInput extends EditorInput {
 		return this._model.modelViewId;
 	}
 
-	public getTypeId(): string {
+	override get typeId(): string {
 		return 'ModelViewEditorInput';
 	}
 
-	public resolve(refresh?: boolean): Promise<IEditorModel> {
+	public override resolve(refresh?: boolean): Promise<IEditorModel> {
 		return undefined;
 	}
 
-	public getName(): string {
+	public override getName(): string {
 		return this._title;
 	}
 
@@ -132,18 +132,18 @@ export class ModelViewInput extends EditorInput {
 	/**
 	 * An editor that is dirty will be asked to be saved once it closes.
 	 */
-	isDirty(): boolean {
+	override isDirty(): boolean {
 		return this._model.isDirty;
 	}
 
 	/**
 	 * Saves the editor if it is dirty. Subclasses return a promise with a boolean indicating the success of the operation.
 	 */
-	save(): Promise<IEditorInput | undefined> {
+	override save(): Promise<IEditorInput | undefined> {
 		return this._model.save().then(saved => saved ? this : undefined);
 	}
 
-	public dispose(): void {
+	public override dispose(): void {
 		if (this._dialogPane) {
 			this._dialogPane.dispose();
 		}
