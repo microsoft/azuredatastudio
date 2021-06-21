@@ -70,7 +70,7 @@ export class Application {
 
 	async start(expectWalkthroughPart = true): Promise<any> {
 		await this._start();
-		await this.code.waitForElement('.explorer-folders-view');
+		await this.code.waitForElement('.object-explorer-view'); // {{SQL CARBON EDIT}} We have a different startup view
 
 		// https://github.com/microsoft/vscode/issues/118748
 		// if (expectWalkthroughPart) {
