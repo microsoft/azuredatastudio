@@ -290,7 +290,7 @@ const exportTasks = exportCompilations.map(function (packageFile) {
 
 	const extensionName = relativeDirname.replace(/\//g, '-');
 	const packageTask = task.define(`localization-package-extension:${extensionName}`, task.series(() => {
-		return locFunc.packageSingleADSExtensionStream(extensionName)
+		return locFunc.packageSingleExtensionStream(extensionName)
 			.pipe(gulp.dest('.build'));
 	}));
 
