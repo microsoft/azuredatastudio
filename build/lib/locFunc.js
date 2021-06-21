@@ -4,7 +4,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.packageSingleADSExtensionStream = exports.packageLangpacksStream = void 0;
+exports.packageSingleExtensionStream = exports.packageLangpacksStream = void 0;
 const es = require("event-stream");
 const path = require("path");
 const glob = require("glob");
@@ -27,7 +27,7 @@ function packageLangpacksStream() {
 }
 exports.packageLangpacksStream = packageLangpacksStream;
 // Modified packageLocalExtensionsStream but for any ADS extensions including excluded/external ones.
-function packageSingleADSExtensionStream(name) {
+function packageSingleExtensionStream(name) {
     const extenalExtensionDescriptions = glob.sync(`extensions/${name}/package.json`)
         .map(manifestPath => {
         const extensionPath = path.dirname(path.join(root, manifestPath));
@@ -40,4 +40,4 @@ function packageSingleADSExtensionStream(name) {
     });
     return es.merge(builtExtension);
 }
-exports.packageSingleADSExtensionStream = packageSingleADSExtensionStream;
+exports.packageSingleExtensionStream = packageSingleExtensionStream;

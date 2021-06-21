@@ -29,7 +29,7 @@ export function packageLangpacksStream(): NodeJS.ReadWriteStream {
 }
 
 // Modified packageLocalExtensionsStream but for any ADS extensions including excluded/external ones.
-export function packageSingleADSExtensionStream(name : string): NodeJS.ReadWriteStream {
+export function packageSingleExtensionStream(name : string): NodeJS.ReadWriteStream {
 	const extenalExtensionDescriptions = (<string[]>glob.sync(`extensions/${name}/package.json`))
 		.map(manifestPath => {
 			const extensionPath = path.dirname(path.join(root, manifestPath));
