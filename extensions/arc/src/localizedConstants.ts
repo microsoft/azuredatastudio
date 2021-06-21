@@ -164,13 +164,21 @@ export const nodes = localize('arc.nodes', "nodes");
 export const workerNodes = localize('arc.workerNodes', "Worker Nodes");
 export const coordinatorNode = localize('arc.coordinatorNode', "Coordinator Node");
 export const storagePerNode = localize('arc.storagePerNode', "storage per node");
-export const workerNodeCount = localize('arc.workerNodeCount', "Worker node count:");
+export const workerNodeCount = localize('arc.workerNodeCount', "Worker node count");
 export const configurationPerNode = localize('arc.configurationPerNode', "Configuration (per node)");
 export const configuration = localize('arc.configurationCoordinatorNode', "Configuration");
-export const coresLimit = localize('arc.coresLimit', "CPU limit:");
-export const coresRequest = localize('arc.coresRequest', "CPU request:");
-export const memoryLimit = localize('arc.memoryLimit', "Memory limit (in GB):");
-export const memoryRequest = localize('arc.memoryRequest', "Memory request (in GB):");
+export const coresLimit = localize('arc.coresLimit', "CPU limit");
+export const workerCoresLimit = localize('arc.workerCoresLimit', "Worker Nodes CPU limit");
+export const coordinatorCoresLimit = localize('arc.coordinatorCoresLimit', "Coordinator Node CPU limit");
+export const coresRequest = localize('arc.coresRequest', "CPU request");
+export const workerCoresRequest = localize('arc.workerCoresRequest', "Worker Nodes CPU request");
+export const coordinatorCoresRequest = localize('arc.coordinatorCoresRequest', "Coordinator Node CPU request");
+export const memoryLimit = localize('arc.memoryLimit', "Memory limit (in GB)");
+export const workerMemoryLimit = localize('arc.workerMemoryLimit', "Worker Nodes Memory limit (in GB)");
+export const coordinatorMemoryLimit = localize('arc.coordinatorMemoryLimit', "Coordinator Node Memory limit (in GB)");
+export const memoryRequest = localize('arc.memoryRequest', "Memory request (in GB)");
+export const workerMemoryRequest = localize('arc.workerMemoryRequest', "Worker Nodes Memory request (in GB)");
+export const coordinatorMemoryRequest = localize('arc.coordinatorMemoryRequest', "Coordinator Node Memory request (in GB)");
 export const arcResources = localize('arc.arcResources', "Azure Arc Resources");
 export const enterANonEmptyPassword = localize('arc.enterANonEmptyPassword', "Enter a non empty password or press escape to exit.");
 export const thePasswordsDoNotMatch = localize('arc.thePasswordsDoNotMatch', "The passwords do not match. Confirm the password or press escape to exit.");
@@ -217,6 +225,8 @@ export function numVCores(vCores: string | undefined): string {
 	}
 }
 export function updated(when: string): string { return localize('arc.updated', "Updated {0}", when); }
+export function copyConnectionStringToClipboard(type: string): string { return localize({ key: 'arc.copyConnectionStringToClipboard', comment: ['{0} is the name of the type of connection string (e.g. Java)'] }, "Copy {0} Connection String to clipboard", type); }
+export function copyValueToClipboard(valueName: string): string { return localize({ key: 'arc.copyValueToClipboard', comment: ['{0} is the name of the type of value being copied (e.g. Coordinator endpoint)'] }, "Copy {0} to clipboard", valueName); }
 
 // Errors
 export const pgConnectionRequired = localize('arc.pgConnectionRequired', "A connection is required to show and set database engine settings.");

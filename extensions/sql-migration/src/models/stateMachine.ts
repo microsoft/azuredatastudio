@@ -122,6 +122,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	public _targetDatabaseNames!: string[];
 	public _serverDatabases!: string[];
 
+	public _sqlMigrationServiceResourceGroup!: string;
 	public _sqlMigrationService!: SqlMigrationService;
 	public _sqlMigrationServices!: SqlMigrationService[];
 	public _nodeNames!: string[];
