@@ -29,7 +29,7 @@ export function setup() {
 			await app.workbench.createBookDialog.setName(bookName);
 			await app.workbench.createBookDialog.setLocation(tmpDir);
 			await app.workbench.createBookDialog.create();
-			const bookExists = await fs.stat(path.join(tmpDir, 'my-book'));
+			const bookExists = await fs.stat(path.join(tmpDir, bookName));
 			assert(!!bookExists, 'Book was not created');
 			await new Promise(r => setTimeout(r, 2500));
 		});
