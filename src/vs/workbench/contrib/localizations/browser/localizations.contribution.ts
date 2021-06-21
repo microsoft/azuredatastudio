@@ -26,6 +26,9 @@ import { minimumTranslatedStrings } from 'vs/workbench/contrib/localizations/bro
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { CancellationToken } from 'vs/base/common/cancellation';
 
+// {SQL CARBON EDIT}
+import { getCustomString } from 'sql/workbench/contrib/carbonEditLocalization/browser/carbonEditStrings';
+
 // Register action to configure locale and related settings
 const registry = Registry.as<IWorkbenchActionRegistry>(Extensions.WorkbenchActions);
 registry.registerWorkbenchAction(SyncActionDescriptor.from(ConfigureLocaleAction), 'Configure Display Language');
@@ -58,8 +61,8 @@ export class LocalizationWorkbenchContribution extends Disposable implements IWo
 				this.notificationService.prompt(
 					Severity.Info,
 					// {{SQL CARBON EDIT}} - Update 'VS Code' to 'Azure Data Studio'
-					updateAndRestart ? localize('updateLocale', "Would you like to change Azure Data Studio's UI language to {0} and restart?", e.local.manifest.contributes.localizations[0].languageName || e.local.manifest.contributes.localizations[0].languageId)
-						: localize('activateLanguagePack', "In order to use Azure Data Studio in {0}, Azure Data Studio needs to restart.", e.local.manifest.contributes.localizations[0].languageName || e.local.manifest.contributes.localizations[0].languageId),
+					updateAndRestart ? getCustomString('localizations.contribution.updateLocale', e.local.manifest.contributes.localizations[0].languageName || e.local.manifest.contributes.localizations[0].languageId)
+						: getCustomString('localizations.contribution.updateLocale', e.local.manifest.contributes.localizations[0].languageName || e.local.manifest.contributes.localizations[0].languageId),
 					[{
 						label: updateAndRestart ? localize('changeAndRestart', "Change Language and Restart") : localize('restart', "Restart"),
 						run: () => {

@@ -33,6 +33,9 @@ import { UndoCommand, RedoCommand } from 'vs/editor/browser/editorExtensions';
 import { IUndoRedoService } from 'vs/platform/undoRedo/common/undoRedo';
 import { FileEditorInputSerializer, IExplorerService } from 'vs/workbench/contrib/files/browser/files';
 
+// {SQL CARBON EDIT}
+import { getCustomString } from 'sql/workbench/contrib/carbonEditLocalization/browser/carbonEditStrings';
+
 class FileUriLabelContribution implements IWorkbenchContribution {
 
 	constructor(@ILabelService labelService: ILabelService) {
@@ -249,7 +252,7 @@ configurationRegistry.registerConfiguration({
 		'files.maxMemoryForLargeFilesMB': {
 			'type': 'number',
 			'default': 4096,
-			'markdownDescription': nls.localize('maxMemoryForLargeFilesMB', "Controls the memory available to Azure Data Studio after restart when trying to open large files. Same effect as specifying `--max-memory=NEWSIZE` on the command line."), // {{SQL CARBON EDIT}} Change product name to ADS
+			'markdownDescription': getCustomString('files.contribution.maxMemoryForLargeFilesMB'), // {{SQL CARBON EDIT}} Change product name to ADS
 			included: platform.isNative
 		},
 		'files.restoreUndoStack': {
