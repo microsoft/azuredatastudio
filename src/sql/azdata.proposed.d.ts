@@ -260,7 +260,8 @@ declare module 'azdata' {
 
 
 	export enum DeclarativeDataType {
-		component = 'component'
+		component = 'component',
+		menu = 'menu'
 	}
 
 	export type DeclarativeTableRowSelectedEvent = {
@@ -394,11 +395,23 @@ declare module 'azdata' {
 		selectedRow?: number;
 	}
 
+
+	export interface DeclarativeTableMenuCellValue {
+		/**
+		 * commands for the menu. Use an array for a group and menu separators will be added.
+		 */
+		commands: (string | string[])[];
+		/**
+		 * context that will be passed to the commands.
+		 */
+		context: { [key: string]: string | boolean | number } | string | boolean | number | undefined
+	}
+
 	export interface DeclarativeTableCellValue {
 		/**
 		 * The cell value
 		 */
-		value: string | number | boolean | Component;
+		value: string | number | boolean | Component | DeclarativeTableMenuCellValue;
 		/**
 		 * The aria-label of the cell
 		 */
