@@ -12,7 +12,9 @@ const fixedStrings = {
 	'fileACtions.contribution.miNewNotebook': nls.localize({ key: 'miNewNotebook', comment: ['&& denotes a mnemonic'] }, "&&New Notebook"),
 	'watermark.newSqlFile': nls.localize('watermark.newSqlFile', "New SQL File"),
 	'watermark.newNotebook': nls.localize('watermark.newNotebook', "New Notebook"),
-	'files.contribution.maxMemoryForLargeFilesMB': nls.localize('maxMemoryForLargeFilesMB', "Controls the memory available to Azure Data Studio after restart when trying to open large files. Same effect as specifying `--max-memory=NEWSIZE` on the command line.")
+	'files.contribution.maxMemoryForLargeFilesMB': nls.localize('maxMemoryForLargeFilesMB', "Controls the memory available to Azure Data Studio after restart when trying to open large files. Same effect as specifying `--max-memory=NEWSIZE` on the command line."),
+	'extensionsViews.scenarioTypeUndefined': nls.localize('scenarioTypeUndefined', 'The scenario type for extension recommendations must be provided.'),
+	'extensionsViewlet.recommendedExtensions': nls.localize('recommendedExtensions', "Marketplace")
 };
 
 export function getCustomString(stringName: string, ...stringParams: string[]): string {
@@ -23,11 +25,14 @@ export function getCustomString(stringName: string, ...stringParams: string[]): 
 	else if (stringName === 'localizations.contribution.activateLanguagePack') {
 		return nls.localize('activateLanguagePack', "In order to use Azure Data Studio in {0}, Azure Data Studio needs to restart.", ...stringParams);
 	}
+	else if (stringName === 'extensionsWorkbenchService.incompatible') {
+		return nls.localize('incompatible', "Unable to install extension '{0}' as it is not compatible with Azure Data Studio '{1}'.", ...stringParams);
+	}
+
 	else if (fixedStrings[stringName]) {
 		return fixedStrings[stringName];
 	}
 	else {
 		return nls.localize('stringNotFound', "String was not found.");
 	}
-
 }

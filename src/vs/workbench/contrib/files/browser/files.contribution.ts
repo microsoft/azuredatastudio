@@ -32,9 +32,7 @@ import { DirtyFilesIndicator } from 'vs/workbench/contrib/files/common/dirtyFile
 import { UndoCommand, RedoCommand } from 'vs/editor/browser/editorExtensions';
 import { IUndoRedoService } from 'vs/platform/undoRedo/common/undoRedo';
 import { FileEditorInputSerializer, IExplorerService } from 'vs/workbench/contrib/files/browser/files';
-
-// {SQL CARBON EDIT}
-import { getCustomString } from 'sql/workbench/contrib/carbonEditLocalization/browser/carbonEditStrings';
+import { getCustomString } from 'sql/workbench/contrib/carbonEditLocalization/browser/carbonEditStrings'; // {SQL CARBON EDIT}
 
 class FileUriLabelContribution implements IWorkbenchContribution {
 
