@@ -77,6 +77,7 @@ export const NotebookModule = (params, selector: string, instantiationService: I
 		entryComponents: [
 			NotebookEditorComponent,
 			TextCellComponent,
+			NotebookViewsCardComponent,
 			...outputComponents
 		],
 		imports: [

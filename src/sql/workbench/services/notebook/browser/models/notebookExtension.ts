@@ -5,6 +5,7 @@
 
 import { INotebookModel, ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { NotebookChangeType } from 'sql/workbench/services/notebook/common/contracts';
+import { deepClone } from 'vs/base/common/objects';
 
 export class NotebookExtension<TNotebookMeta, TCellMeta> {
 	readonly version = 1;
@@ -28,10 +29,14 @@ export class NotebookExtension<TNotebookMeta, TCellMeta> {
 		return namespaceMeta[this.extensionName] as TCellMeta;
 	}
 
-	public setCellMetadata(cell: ICellModel, metadata: TCellMeta) {
+	public setCellMetadata(cell: ICellModel, metadata: TCellMeta, silent: boolean = false) {
 		const meta = {};
 		meta[this.extensionName] = metadata;
 		cell.metadata[this.extensionNamespace] = meta;
-		cell.sendChangeToNotebook(NotebookChangeType.CellsModified);
+		cell.metadata = deepClone(cell.metadata);
+
+		if (!silent) {
+			cell.sendChangeToNotebook(NotebookChangeType.CellsModified);
+		}
 	}
 }

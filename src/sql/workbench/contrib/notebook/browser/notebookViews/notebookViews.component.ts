@@ -329,6 +329,12 @@ export class NotebookViewComponent extends AngularDisposable implements INoteboo
 				}
 				break;
 			}
+			/*
+			case NotebookChangeType.CellsModified:
+				//const cell: ICellModel = change?.cells[0];
+				//this.detectChanges();
+				break;
+			*/
 		}
 	}
 

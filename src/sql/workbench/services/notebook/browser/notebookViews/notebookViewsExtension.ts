@@ -109,14 +109,14 @@ export class NotebookViewsExtension extends NotebookExtension<INotebookViewMetad
 		return i <= this.maxNameIterationAttempts ? name : generateUuid();
 	}
 
-	public updateCell(cell: ICellModel, currentView: INotebookView, cellData: INotebookViewCell, override: boolean = false) {
+	public updateCell(cell: ICellModel, currentView: INotebookView, cellData: INotebookViewCell, override: boolean = false, silent: boolean = false) {
 		const cellMetadata = this.getCellMetadata(cell);
 		if (cellMetadata) {
 			const viewToUpdate = cellMetadata.views.findIndex(view => view.guid === currentView.guid);
 
 			if (viewToUpdate >= 0) {
 				cellMetadata.views[viewToUpdate] = override ? cellData : { ...cellMetadata.views[viewToUpdate], ...cellData };
-				this.setCellMetadata(cell, cellMetadata);
+				this.setCellMetadata(cell, cellMetadata, silent);
 			}
 		}
 	}

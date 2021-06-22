@@ -63,18 +63,18 @@ class CellDisplayGroup extends DisplayGroup<ICellModel> {
 			return visInfo;
 		}
 
+		//For headers
+		if (this.isHeader(cell)) {
+			visInfo.height = 1;
+		}
 		//For graphs
 		if (this.hasGraph(cell)) {
 			visInfo.width = 6;
-			visInfo.height = Math.min(meta?.height, 4);
+			visInfo.height = 4;
 		}
 		//For tables
 		else if (this.hasTable(cell)) {
 			visInfo.height = Math.min(meta?.height, 3);
-		}
-		//For headers
-		else if (this.isHeader(cell)) {
-			visInfo.height = 1;
 		} else {
 			visInfo.height = Math.min(meta?.height, 3);
 		}

@@ -185,6 +185,7 @@ export abstract class ToggleableAction extends Action {
 export class NotebookViewsOptions implements IActionProvider {
 	private _options: Action[];
 	private views: NotebookViewsExtension;
+	private viewMode: ViewMode;
 	private readonly _optionsUpdated = new Emitter<boolean>();
 
 	constructor(
@@ -196,14 +197,17 @@ export class NotebookViewsOptions implements IActionProvider {
 
 		if (modelReady) {
 			modelReady
-				.then((model) => { this.views = views; this.updateView(); })
+				.then((model) => {
+					this.views = views;
+					this.viewMode = model.viewMode;
+					this.updateView();
+				})
 				.catch((err) => {
 					// No-op for now
 				});
 		}
-
-		//this.onDidSelect(e => this.optionSelected(e.selected));
 	}
+
 	getActions(): IAction[] {
 		return this._options;
 	}
@@ -214,17 +218,33 @@ export class NotebookViewsOptions implements IActionProvider {
 
 	// Update SelectBox values
 	public updateView() {
-		this._options = [...new Set(this.views.getViews().map(view =>
-			new DashboardViewAction(view.guid, view.name, 'button', this._notebookService)
-		))];
-
 		const backToNotebookButton = this.instantiationService.createInstance(NotebookViewAction, 'notebookView.backToNotebook', localize('notebookViewLabel', 'Editor'), 'notebook-button');
 		const newViewButton = this.instantiationService.createInstance(CreateNotebookViewAction, 'notebookView.newView', localize('newViewLabel', 'Create New View'), 'notebook-button notebook-button-newview');
-		const separator = this.instantiationService.createInstance(Separator);
 
-		this._options.unshift(separator);
-		this._options.unshift(newViewButton);
-		this._options.unshift(backToNotebookButton);
+		const views = this.views.getViews();
+		this._options = [];
+
+		this._options.push(backToNotebookButton);
+		this._options.push(newViewButton);
+
+		if (views.length) {
+			this._options.push(this.instantiationService.createInstance(Separator));
+		}
+
+		views.forEach((view) => {
+			const option = new DashboardViewAction(view.guid, view.name, 'button', this._notebookService);
+			this._options.push(option);
+
+			if (this.viewMode === ViewMode.Views && this.views.getActiveView() === view) {
+				option.checked = true;
+				option.enabled = false;
+			}
+		});
+
+		if (this.viewMode === ViewMode.Notebook) {
+			backToNotebookButton.checked = true;
+			backToNotebookButton.enabled = false;
+		}
 
 		this._optionsUpdated.fire(true);
 	}
@@ -254,7 +274,6 @@ export class DashboardViewAction extends Action {
 				let views = editor.views;
 				const view = views.getViews().find(view => view.guid === this.id);
 
-				editor.model.viewMode = ViewMode.Notebook;
 				views.setActiveView(view);
 				editor.model.viewMode = ViewMode.Views;
 

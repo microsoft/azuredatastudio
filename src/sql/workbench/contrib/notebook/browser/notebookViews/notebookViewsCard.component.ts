@@ -7,8 +7,7 @@ import { Component, OnInit, Input, ViewChild, TemplateRef, ElementRef, Inject, O
 import { CellExecutionState, ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
 import { DEFAULT_VIEW_CARD_HEIGHT, DEFAULT_VIEW_CARD_WIDTH } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViewModel';
-import { NotebookViewsExtension } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViewsExtension';
-import { CellChangeEventType, INotebookView, INotebookViewCellMetadata } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViews';
+import { CellChangeEventType, INotebookView, INotebookViewCell } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViews';
 import { ITaskbarContent, Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { CellContext } from 'sql/workbench/contrib/notebook/browser/cellViews/codeActions';
 import { RunCellAction, HideCellAction, ViewCellToggleMoreActions } from 'sql/workbench/contrib/notebook/browser/notebookViews/notebookViewsActions';
@@ -24,15 +23,15 @@ import { cellBorder, notebookToolbarSelectBackground } from 'sql/platform/theme/
 })
 export class NotebookViewsCardComponent extends AngularDisposable implements OnInit {
 	private _actionbar: Taskbar;
-	private _metadata: INotebookViewCellMetadata;
-	private _activeView: INotebookView;
+	private _metadata: INotebookViewCell;
 	private _executionState: CellExecutionState;
 
 	public _cellToggleMoreActions: ViewCellToggleMoreActions;
 
 	@Input() cell: ICellModel;
 	@Input() model: NotebookModel;
-	@Input() views: NotebookViewsExtension;
+	@Input() activeView: INotebookView;
+	@Input() meta: boolean;
 	@Input() ready: boolean;
 	@Output() onChange: EventEmitter<any> = new EventEmitter();
 
@@ -52,17 +51,15 @@ export class NotebookViewsCardComponent extends AngularDisposable implements OnI
 	}
 
 	ngOnChanges() {
-		if (this.views) {
-			this._activeView = this.views.getActiveView();
-			this._metadata = this.views.getCellMetadata(this.cell);
+		if (this.activeView) {
+			this._metadata = this.activeView.getCellMetadata(this.cell);
 		}
 		this.detectChanges();
 	}
 
 	ngAfterContentInit() {
-		if (this.views) {
-			this._activeView = this.views.getActiveView();
-			this._metadata = this.views.getCellMetadata(this.cell);
+		if (this.activeView) {
+			this._metadata = this.activeView.getCellMetadata(this.cell);
 		}
 		this.detectChanges();
 	}
@@ -143,7 +140,7 @@ export class NotebookViewsCardComponent extends AngularDisposable implements OnI
 	}
 
 	public get data(): any {
-		return this._metadata?.views?.find(v => v.guid === this._activeView.guid);
+		return this._metadata;
 	}
 
 	public get width(): number {
@@ -163,7 +160,7 @@ export class NotebookViewsCardComponent extends AngularDisposable implements OnI
 	}
 
 	public get display(): boolean {
-		if (!this._activeView) {
+		if (!this.activeView) {
 			return true;
 		}
 
@@ -171,11 +168,11 @@ export class NotebookViewsCardComponent extends AngularDisposable implements OnI
 			return false;
 		}
 
-		return this.data?.hidden === false;
+		return !!this.activeView.displayedCells.find(c => c.cellGuid === this.cell.cellGuid);
 	}
 
 	public get awaitingInput(): boolean {
-		return this.cell.future && this.cell.future.inProgress;// && this.cell.stdInVisible;//&& (this.cell.outputs.length > 0 || this.cell.stdInVisible);
+		return this.cell.future && this.cell.future.inProgress;
 	}
 
 	public get showActionBar(): boolean {
