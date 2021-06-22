@@ -134,7 +134,6 @@ export class SparkConfigurationTab {
 			});
 
 			this._filePickerButton = builder.button().withProps({
-				required: (this._path) ? false : true,
 				enabled: (this._path) ? false : true,
 				label: '•••',
 				width: constants.mssqlClusterSparkJobFileSelectorButtonWidth,

@@ -217,7 +217,8 @@ export class DashboardWidget {
 			justifyContent: 'flex-start'
 		}).component();
 		const showMoreComponent = view.modelBuilder.hyperlink().withProps({
-			label: constants.showMoreTitle
+			label: constants.showMoreTitle,
+			url: ''
 		}).component();
 		const image = view.modelBuilder.image().withProps({
 			width: '10px',

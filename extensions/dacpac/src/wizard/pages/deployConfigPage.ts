@@ -150,9 +150,7 @@ export class DeployConfigPage extends DacFxConfigPage {
 			this.model.database = databaseDropdownValue;
 		});
 
-		this.databaseLoader = this.view.modelBuilder.loadingComponent().withItem(this.databaseDropdown).withProps({
-			required: true
-		}).component();
+		this.databaseLoader = this.view.modelBuilder.loadingComponent().withItem(this.databaseDropdown).component();
 
 		return {
 			component: this.databaseLoader,

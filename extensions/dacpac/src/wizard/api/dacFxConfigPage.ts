@@ -114,9 +114,7 @@ export abstract class DacFxConfigPage extends BasePage {
 			this.model.filePath = this.fileTextBox.value;
 		});
 
-		this.databaseLoader = this.view.modelBuilder.loadingComponent().withItem(this.databaseDropdown).withProps({
-			required: true
-		}).component();
+		this.databaseLoader = this.view.modelBuilder.loadingComponent().withItem(this.databaseDropdown).component();
 
 		return {
 			component: this.databaseLoader,

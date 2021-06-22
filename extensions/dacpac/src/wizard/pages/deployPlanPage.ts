@@ -49,7 +49,9 @@ export class DeployPlanPage extends DacFxConfigPage {
 
 	async start(): Promise<boolean> {
 		this.table = this.view.modelBuilder.table().withProps({
-			ariaLabel: loc.deployPlanTableTitle
+			ariaLabel: loc.deployPlanTableTitle,
+			data: [],
+			columns: []
 		}).component();
 		this.loader = this.view.modelBuilder.loadingComponent().withItem(this.table).component();
 		this.dataLossComponentGroup = await this.createDataLossComponents();

@@ -134,29 +134,22 @@ export class SchemaCompareMainWindow {
 
 				this.differencesTable = this.view.modelBuilder.table().withProps({
 					data: [],
-					title: loc.differencesTableTitle
+					title: loc.differencesTableTitle,
+					columns: []
 				}).component();
 
-				this.diffEditor = this.view.modelBuilder.diffeditor().withProps({
+				this.diffEditor = this.view.modelBuilder.diffeditor().withProperties({
 					contentLeft: os.EOL,
 					contentRight: os.EOL,
 					height: 500,
-					title: loc.diffEditorTitle
+					title: loc.diffEditorTitle,
 				}).component();
 
 				this.splitView = this.view.modelBuilder.splitViewContainer().component();
 
-				let sourceTargetLabels = this.view.modelBuilder.flexContainer()
-					.withProps({
-						alignItems: 'stretch',
-						horizontal: true
-					}).component();
+				let sourceTargetLabels = this.view.modelBuilder.flexContainer().component();
 
-				this.sourceTargetFlexLayout = this.view.modelBuilder.flexContainer()
-					.withProps({
-						alignItems: 'stretch',
-						horizontal: true
-					}).component();
+				this.sourceTargetFlexLayout = this.view.modelBuilder.flexContainer().component();
 
 				this.createSwitchButton();
 				this.createCompareButton();

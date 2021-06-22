@@ -99,6 +99,7 @@ export class SchemaCompareOptionsDialog {
 		this.generalOptionsTab.registerContent(async view => {
 
 			this.descriptionHeading = view.modelBuilder.table().withProps({
+				data: [],
 				columns: [
 					{
 						value: 'Option Description',

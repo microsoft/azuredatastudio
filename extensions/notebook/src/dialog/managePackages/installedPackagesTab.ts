@@ -54,7 +54,7 @@ export class InstalledPackagesTab {
 			let defaultPackageType = this.dialog.model.getDefaultPackageType();
 			this.packageTypeDropdown = view.modelBuilder.dropDown().withProps({
 				values: dropdownValues,
-				value: defaultPackageType
+				value: defaultPackageType.providerId
 			}).component();
 			this.dialog.changeProvider(defaultPackageType.providerId);
 			this.packageTypeDropdown.onValueChanged(async () => {

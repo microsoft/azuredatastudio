@@ -67,8 +67,7 @@ export class CurrentModelsComponent extends ModelViewBase implements IPageView {
 
 		this._tableDataCountContainer = modelBuilder.flexContainer().component();
 		this._tableDataCountComponent = modelBuilder.text().withProps({
-			value: dataCountString,
-			margin: '0'
+			value: dataCountString
 		}).component();
 		this._tableDataCountContainer.addItem(this._tableDataCountComponent,
 			{

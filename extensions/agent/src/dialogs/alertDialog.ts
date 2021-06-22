@@ -480,14 +480,14 @@ export class AlertDialog extends AgentDialog<AlertData> {
 			this.delayMinutesTextBox = view.modelBuilder.inputBox()
 				.withProps({
 					inputType: 'number',
-					placeHolder: 0
+					placeHolder: '0'
 				})
 				.component();
 
 			this.delaySecondsTextBox = view.modelBuilder.inputBox()
 				.withProps({
 					inputType: 'number',
-					placeHolder: 0
+					placeHolder: '0'
 				})
 				.component();
 

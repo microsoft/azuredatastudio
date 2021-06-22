@@ -162,8 +162,6 @@ export class AzureModelsTable extends ModelViewBase implements IDataComponent<Wo
 			};
 			if (this._multiSelect) {
 				const checkbox = this._modelBuilder.checkBox().withProps({
-					name: 'amlModel',
-					value: model.id,
 					width: 15,
 					height: 15,
 					checked: false

@@ -834,6 +834,8 @@ declare module 'azdata' {
 		 * Specifies whether this is a secondary button. Default value is false.
 		 */
 		secondary?: boolean;
+
+		fileType?: string
 	}
 
 	export enum ButtonType {

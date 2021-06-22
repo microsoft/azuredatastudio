@@ -266,11 +266,9 @@ export class CurrentModelsTable extends ModelViewBase implements IDataComponent<
 			};
 			if (this._settings.multiSelect) {
 				const checkbox = this._modelBuilder.checkBox().withProps({
-					name: 'amlModel',
-					value: model.id,
 					width: 15,
 					height: 15,
-					checked: this._selectedModels && this._selectedModels.find(x => x.id === model.id)
+					checked: !!this._selectedModels.find(x => x.id === model.id)
 				}).component();
 				checkbox.onChanged(() => {
 					onSelectItem(checkbox.checked || false);
@@ -279,10 +277,10 @@ export class CurrentModelsTable extends ModelViewBase implements IDataComponent<
 			} else {
 				const radioButton = this._modelBuilder.radioButton().withProps({
 					name: 'amlModel',
-					value: model.id,
+					value: String(model.id),
 					width: 15,
 					height: 15,
-					checked: this._selectedModels && this._selectedModels.find(x => x.id === model.id)
+					checked: !!this._selectedModels.find(x => x.id === model.id)
 				}).component();
 				radioButton.onDidClick(() => {
 					onSelectItem(radioButton.checked || false);
