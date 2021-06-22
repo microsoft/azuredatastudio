@@ -1,19 +1,7 @@
 {
   "name": "azuremonitor",
   "version": "0.1.0",
-  "displayName": "Extension for Azure Monitor",
-  "description": "Azure Data Studio extension for Azure Monitor",
   "publisher": "Microsoft",
-  "license": "MIT",
-  "main": "./out/extension",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/Microsoft/azuredatastudio.git"
-  },
-  "typings": "./src/azuremonitor",
-  "categories": [
-    "Other"
-  ],
   "activationEvents": [
     "*"
   ],
@@ -21,6 +9,12 @@
     "vscode": "*",
     "azdata": ">=1.28.0"
   },
+  "main": "./out/extension",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Microsoft/azuredatastudio.git"
+  },
+  "typings": "./src/azuremonitor",
   "contributes": {
     "connectionProvider": {
       "providerId": "LOGANALYTICS",
