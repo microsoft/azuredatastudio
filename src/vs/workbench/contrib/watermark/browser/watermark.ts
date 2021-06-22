@@ -30,7 +30,7 @@ import { attachKeybindingLabelStyler } from 'vs/platform/theme/common/styler';
 
 // {{SQL CARBON EDIT}}
 import { NewNotebookAction } from 'sql/workbench/contrib/notebook/browser/notebookActions';
-import { getCustomString } from 'sql/workbench/contrib/carbonEditLocalization/browser/carbonEditStrings';
+import { getCustomString } from 'sql/platform/carbonEditLocalization/common/carbonEditStrings';
 
 const $ = dom.$;
 

@@ -61,6 +61,7 @@ import { infoIcon, manageExtensionIcon, syncEnabledIcon, syncIgnoredIcon, trustI
 import { isWeb } from 'vs/base/common/platform';
 import { isWorkspaceTrustEnabled } from 'vs/workbench/services/workspaces/common/workspaceTrust';
 import { IExtensionManifestPropertiesService } from 'vs/workbench/services/extensions/common/extensionManifestPropertiesService';
+import { getCustomString } from 'sql/platform/carbonEditLocalization/common/carbonEditStrings'; // {{SQL CARBON EDIT}}
 
 function getRelativeDateLabel(date: Date): string {
 	const delta = new Date().getTime() - date.getTime();
@@ -688,7 +689,7 @@ export class UninstallAction extends ExtensionAction {
 		alert(localize('uninstallExtensionStart', "Uninstalling extension {0} started.", this.extension.displayName));
 
 		return this.extensionsWorkbenchService.uninstall(this.extension).then(() => {
-			alert(localize('uninstallExtensionComplete', "Please reload Azure Data Studio to complete the uninstallation of the extension {0}.", this.extension!.displayName)); // {{SQL CARBON EDIT}} - replace Visual Studio Code with Azure Data Studio
+			alert(getCustomString('extensionsActions.uninstallExtensionComplete', this.extension!.displayName)); // {{SQL CARBON EDIT}} - replace Visual Studio Code with Azure Data Studio
 		});
 	}
 }
@@ -1293,8 +1294,8 @@ export class ReloadAction extends ExtensionAction {
 				this.enabled = true;
 				this.label = localize('reloadRequired', "Reload Required");
 				// {{SQL CARBON EDIT}} - replace Visual Studio Code with Azure Data Studio
-				this.tooltip = localize('postUninstallTooltip', "Please reload Azure Data Studio to complete the uninstallation of this extension.");
-				alert(localize('uninstallExtensionComplete', "Please reload Azure Data Studio to complete the uninstallation of the extension {0}.", this.extension.displayName));
+				this.tooltip = getCustomString('extensionsActions.postUninstallTooltip');
+				alert(getCustomString('extensionsActions.uninstallExtensionComplete', this.extension.displayName));
 			}
 			return;
 		}
@@ -1316,7 +1317,7 @@ export class ReloadAction extends ExtensionAction {
 						if (this.extension.version !== runningExtension.version) {
 							this.enabled = true;
 							this.label = localize('reloadRequired', "Reload Required");
-							this.tooltip = localize('postUpdateTooltip', "Please reload Azure Data Studio to enable the updated extension."); // {{SQL CARBON EDIT}} - replace Visual Studio Code with Azure Data Studio
+							this.tooltip = getCustomString('extensionsActions.postUpdateTooltip'); // {{SQL CARBON EDIT}} - replace Visual Studio Code with Azure Data Studio
 							return;
 						}
 
@@ -1326,7 +1327,7 @@ export class ReloadAction extends ExtensionAction {
 							if (runningExtensionServer === this.extensionManagementServerService.remoteExtensionManagementServer && this.extensionManifestPropertiesService.prefersExecuteOnUI(this.extension.local!.manifest)) {
 								this.enabled = true;
 								this.label = localize('reloadRequired', "Reload Required");
-								this.tooltip = localize('enable locally', "Please reload Visual Studio Code to enable this extension locally.");
+								this.tooltip = getCustomString('extensionsActions.enableLocally');  // {{SQL CARBON EDIT}} - replace Visual Studio Code with Azure Data Studio
 								return;
 							}
 
@@ -1334,7 +1335,7 @@ export class ReloadAction extends ExtensionAction {
 							if (runningExtensionServer === this.extensionManagementServerService.localExtensionManagementServer && this.extensionManifestPropertiesService.prefersExecuteOnWorkspace(this.extension.local!.manifest)) {
 								this.enabled = true;
 								this.label = localize('reloadRequired', "Reload Required");
-								this.tooltip = localize('enable remote', "Please reload Visual Studio Code to enable this extension in {0}.", this.extensionManagementServerService.remoteExtensionManagementServer?.label);
+								this.tooltip = getCustomString('extensionsActions.enableRemote', this.extensionManagementServerService.remoteExtensionManagementServer?.label);  // {{SQL CARBON EDIT}} - replace Visual Studio Code with Azure Data Studio
 								return;
 							}
 						}
@@ -1346,7 +1347,7 @@ export class ReloadAction extends ExtensionAction {
 							if (this.extensionManifestPropertiesService.prefersExecuteOnUI(this.extension.local!.manifest)) {
 								this.enabled = true;
 								this.label = localize('reloadRequired', "Reload Required");
-								this.tooltip = localize('postEnableTooltip', "Please reload Azure Data Studio to enable this extension."); // {{SQL CARBON EDIT}} - replace Visual Studio Code with Azure Data Studio
+								this.tooltip = getCustomString('extensionsActions.postEnableTooltip'); // {{SQL CARBON EDIT}} - replace Visual Studio Code with Azure Data Studio
 							}
 						}
 						if (this.extension.server === this.extensionManagementServerService.remoteExtensionManagementServer && runningExtensionServer === this.extensionManagementServerService.localExtensionManagementServer) {
@@ -1354,7 +1355,7 @@ export class ReloadAction extends ExtensionAction {
 							if (this.extensionManifestPropertiesService.prefersExecuteOnWorkspace(this.extension.local!.manifest)) {
 								this.enabled = true;
 								this.label = localize('reloadRequired', "Reload Required");
-								this.tooltip = localize('postEnableTooltip', "Please reload Azure Data Studio to enable this extension."); // {{SQL CARBON EDIT}} - replace Visual Studio Code with Azure Data Studio
+								this.tooltip = getCustomString('extensionsActions.postEnableTooltip'); // {{SQL CARBON EDIT}} - replace Visual Studio Code with Azure Data Studio
 							}
 						}
 					}
@@ -1364,7 +1365,7 @@ export class ReloadAction extends ExtensionAction {
 						this.enabled = true;
 						this.label = localize('reloadRequired', "Reload Required");
 						// {{SQL CARBON EDIT}} - replace Visual Studio Code with Azure Data Studio
-						this.tooltip = localize('postDisableTooltip', "Please reload Azure Data Studio to disable this extension.");
+						this.tooltip = getCustomString('extensionsActions.postDisableTooltip');
 					}
 				}
 				return;
@@ -1375,7 +1376,7 @@ export class ReloadAction extends ExtensionAction {
 				if (isEnabled && !this.extensionService.canAddExtension(toExtensionDescription(this.extension.local))) {
 					this.enabled = true;
 					this.label = localize('reloadRequired', "Reload Required");
-					this.tooltip = localize('postEnableTooltip', "Please reload Azure Data Studio to enable this extension."); // {{SQL CARBON EDIT}} - replace Visual Studio Code with Azure Data Studio
+					this.tooltip = getCustomString('extensionsActions.postEnableTooltip');// {{SQL CARBON EDIT}} - replace Visual Studio Code with Azure Data Studio
 					return;
 				}
 
@@ -1386,8 +1387,8 @@ export class ReloadAction extends ExtensionAction {
 					if (extensionInOtherServer && extensionInOtherServer.local && this.extensionEnablementService.isEnabled(extensionInOtherServer.local)) {
 						this.enabled = true;
 						this.label = localize('reloadRequired', "Reload Required");
-						this.tooltip = localize('postEnableTooltip', "Please reload Azure Data Studio to enable this extension."); // {{SQL CARBON EDIT}} - replace Visual Studio Code with Azure Data Studio
-						alert(localize('installExtensionCompletedAndReloadRequired', "Installing extension {0} is completed. Please reload Azure Data Studio to enable it.", this.extension.displayName)); // {{SQL CARBON EDIT}} - replace Visual Studio Code with Azure Data Studio
+						this.tooltip = getCustomString('extensionsActions.postEnableTooltip'); // {{SQL CARBON EDIT}} - replace Visual Studio Code with Azure Data Studio
+						alert(getCustomString('extensionsActions.installExtensionCompletedAndReloadRequired', this.extension.displayName)); // {{SQL CARBON EDIT}} - replace Visual Studio Code with Azure Data Studio
 						return;
 					}
 				}
@@ -2396,7 +2397,7 @@ export class ReinstallAction extends Action {
 					.then(extension => {
 						const requireReload = !(extension.local && this.extensionService.canAddExtension(toExtensionDescription(extension.local)));
 						// {{SQL CARBON EDIT}} - replace Visual Studio Code with Azure Data Studio
-						const message = requireReload ? localize('ReinstallAction.successReload', "Please reload Azure Data Studio to complete reinstalling the extension {0}.", extension.identifier.id)
+						const message = requireReload ? getCustomString('extensionsActions.ReinstallAction.successReload', extension.identifier.id)
 							: localize('ReinstallAction.success', "Reinstalling the extension {0} is completed.", extension.identifier.id);
 						const actions = requireReload ? [{
 							label: localize('InstallVSIXAction.reloadNow', "Reload Now"),

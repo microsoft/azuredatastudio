@@ -16,6 +16,7 @@ import { DisposableStore } from 'vs/base/common/lifecycle';
 import { ThemeIcon } from 'vs/platform/theme/common/themeService';
 import { Iterable } from 'vs/base/common/iterator';
 import { index } from 'vs/base/common/arrays';
+import { getCustomString } from 'sql/platform/carbonEditLocalization/common/carbonEditStrings'; // {{SQL CARBON EDIT}}
 
 interface IAPIMenu {
 	readonly key: string;
@@ -230,47 +231,47 @@ const apiMenus: IAPIMenu[] = [
 	{
 		key: 'dashboard/toolbar',
 		id: MenuId.DashboardToolbar,
-		description: localize('dashboard.toolbar', "The dashboard toolbar action menu")
+		description: getCustomString('menusExtensionPoint.dashboard.toolbar')
 	},
 	{
 		key: 'notebook/cell/title',
 		id: MenuId.NotebookCellTitle,
-		description: localize('notebook.cellTitle', "The notebook cell title menu")
+		description: getCustomString('menusExtensionPoint.cellTitle')
 	},
 	{
 		key: 'notebooks/title',
 		id: MenuId.NotebookTitle,
-		description: localize('notebook.title', "The notebook title menu")
+		description: getCustomString('menusExtensionPoint.notebook.title')
 	},
 	{
 		key: 'notebook/toolbar',
 		id: MenuId.NotebookToolbar,
-		description: localize('notebook.toolbar', "The notebook toolbar menu")
+		description: getCustomString('menusExtensionPoint.notebook.toolbar')
 	},
 	{
 		key: 'dataExplorer/action',
 		id: MenuId.DataExplorerAction,
-		description: localize('dataExplorer.action', "The dataexplorer view container title action menu")
+		description: getCustomString('menusExtensionPoint.dataExplorer.action')
 	},
 	{
 		key: 'dataExplorer/context',
 		id: MenuId.DataExplorerContext,
-		description: localize('dataExplorer.context', "The dataexplorer item context menu")
+		description: getCustomString('menusExtensionPoint.dataExplorer.context')
 	},
 	{
 		key: 'objectExplorer/item/context',
 		id: MenuId.ObjectExplorerItemContext,
-		description: localize('objectExplorer.context', "The object explorer item context menu")
+		description: getCustomString('menusExtensionPoint.objectExplorer.context')
 	},
 	{
 		key: 'connectionDialog/browseTree',
 		id: MenuId.ConnectionDialogBrowseTreeContext,
-		description: localize('connectionDialogBrowseTree.context', "The connection dialog's browse tree context menu")
+		description: getCustomString('menusExtensionPoint.connectionDialogBrowseTree.context')
 	},
 	{
 		key: 'dataGrid/item/context',
 		id: MenuId.DataGridItemContext,
-		description: localize('dataGrid.context', "The data grid item context menu")
+		description: getCustomString('menusExtensionPoint.dataGrid.context')
 	}
 	// {{SQL CARBON EDIT}} end menu entries
 ];

@@ -49,7 +49,7 @@ import { IPreferencesService } from 'vs/workbench/services/preferences/common/pr
 import { IListAccessibilityProvider } from 'vs/base/browser/ui/list/listWidget';
 import { IStorageService, StorageScope, StorageTarget } from 'vs/platform/storage/common/storage';
 import { IExtensionManifestPropertiesService } from 'vs/workbench/services/extensions/common/extensionManifestPropertiesService';
-import { getCustomString } from 'sql/workbench/contrib/carbonEditLocalization/browser/carbonEditStrings'; // {SQL CARBON EDIT}
+import { getCustomString } from 'sql/platform/carbonEditLocalization/common/carbonEditStrings'; // {{SQL CARBON EDIT}}
 
 // Extensions that are automatically classified as Programming Language extensions, but should be Feature extensions
 const FORCE_FEATURE_EXTENSIONS = ['vscode.git', 'vscode.search-result'];

@@ -73,6 +73,7 @@ import { Promises } from 'vs/base/common/async';
 import { EditorExtensions } from 'vs/workbench/common/editor';
 import { WORKSPACE_TRUST_EXTENSION_SUPPORT } from 'vs/workbench/services/workspaces/common/workspaceTrust';
 import { IStorageService, StorageScope, StorageTarget } from 'vs/platform/storage/common/storage'; // {{SQL CARBON EDIT}}
+import { getCustomString } from 'sql/platform/carbonEditLocalization/common/carbonEditStrings'; // {{SQL CARBON EDIT}}
 
 // Singletons
 registerSingleton(IExtensionsWorkbenchService, ExtensionsWorkbenchService);
@@ -169,7 +170,7 @@ Registry.as<IConfigurationRegistry>(ConfigurationExtensions.Configuration)
 			},
 			'extensions.extensionsPolicy': { // {{SQL CARBON EDIT}}
 				type: 'string',
-				description: localize('extensionsPolicy', "Sets the security policy for downloading extensions."),
+				description: getCustomString('extensions.contribution.extensionsPolicy'),
 				scope: ConfigurationScope.APPLICATION,
 				default: ExtensionsPolicy.allowAll
 			},
@@ -695,7 +696,7 @@ class ExtensionsContributions extends Disposable implements IWorkbenchContributi
 		const isExtensionInstallationAllowed = (configurationService: IConfigurationService, notificationService: INotificationService): boolean => {
 			const allowAll = configurationService.getValue<string>(ExtensionsPolicyKey) === ExtensionsPolicy.allowAll;
 			if (!allowAll) {
-				notificationService.error(localize('InstallVSIXAction.allowNone', 'Your extension policy does not allow installing extensions. Please change your extension policy and try again.'));
+				notificationService.error(getCustomString('extensions.contribution.InstallVSIXAction.allowNone'));
 			}
 			return allowAll;
 		};
@@ -800,7 +801,7 @@ class ExtensionsContributions extends Disposable implements IWorkbenchContributi
 								continue;
 							}
 							const requireReload = !(extension.local && extensionService.canAddExtension(toExtensionDescription(extension.local)));
-							const message = requireReload ? localize('InstallVSIXAction.successReload', "Completed installing {0} extension from VSIX. Please reload Azure Data Studio to enable it.", extension.displayName || extension.name) // {{SQL CARBON EDIT}} - replace Visual Studio Code with Azure Data Studio
+							const message = requireReload ? getCustomString('extensions.contribution.InstallVSIXAction.successReload', extension.displayName || extension.name) // {{SQL CARBON EDIT}} - replace Visual Studio Code with Azure Data Studio
 								: localize('InstallVSIXAction.success', "Completed installing {0} extension from VSIX.", extension.displayName || extension.name);
 							const actions = requireReload ? [{
 								label: localize('InstallVSIXAction.reloadNow', "Reload Now"),

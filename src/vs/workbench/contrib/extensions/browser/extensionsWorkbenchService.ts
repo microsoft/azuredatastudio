@@ -46,7 +46,7 @@ import { IOpenerService } from 'vs/platform/opener/common/opener'; // {{SQL CARB
 import { IContextKey, IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { isBoolean } from 'vs/base/common/types';
 import { IExtensionManifestPropertiesService } from 'vs/workbench/services/extensions/common/extensionManifestPropertiesService';
-import { getCustomString } from 'sql/workbench/contrib/carbonEditLocalization/browser/carbonEditStrings'; // {SQL CARBON EDIT}
+import { getCustomString } from 'sql/platform/carbonEditLocalization/common/carbonEditStrings'; // {{SQL CARBON EDIT}}
 
 interface IExtensionStateProvider<T> {
 	(extension: Extension): T;

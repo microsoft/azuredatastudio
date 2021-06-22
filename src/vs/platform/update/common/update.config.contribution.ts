@@ -7,6 +7,7 @@ import { Registry } from 'vs/platform/registry/common/platform';
 import { IConfigurationRegistry, Extensions as ConfigurationExtensions, ConfigurationScope } from 'vs/platform/configuration/common/configurationRegistry';
 import { localize } from 'vs/nls';
 import { isWindows, isWeb } from 'vs/base/common/platform';
+import { getCustomString } from 'sql/platform/carbonEditLocalization/common/carbonEditStrings'; // {{SQL CARBON EDIT}}
 
 const configurationRegistry = Registry.as<IConfigurationRegistry>(ConfigurationExtensions.Configuration);
 configurationRegistry.registerConfiguration({
@@ -26,7 +27,7 @@ configurationRegistry.registerConfiguration({
 				localize('none', "Disable updates."),
 				localize('manual', "Disable automatic background update checks. Updates will be available if you manually check for updates."),
 				localize('start', "Check for updates only on startup. Disable automatic background update checks."),
-				localize('default', "Enable automatic update checks. Azure Data Studio will check for updates automatically and periodically.") // {{SQL CARBON EDIT}} Change product name to ADS
+				getCustomString('update.config.contribution.default') // {{SQL CARBON EDIT}} Change product name to ADS
 			]
 		},
 		'update.channel': {
@@ -41,14 +42,14 @@ configurationRegistry.registerConfiguration({
 			default: true,
 			scope: ConfigurationScope.APPLICATION,
 			title: localize('enableWindowsBackgroundUpdatesTitle', "Enable Background Updates on Windows"),
-			description: localize('enableWindowsBackgroundUpdates', "Enable to download and install new Azure Data Studio Versions in the background on Windows"), // {{SQL CARBON EDIT}} Change product name to ADS
+			description: getCustomString('update.config.contribution.enableWindowsBackgroundUpdates'), // {{SQL CARBON EDIT}} Change product name to ADS
 			included: isWindows && !isWeb
 		},
 		'update.showReleaseNotes': {
 			type: 'boolean',
 			default: true,
 			scope: ConfigurationScope.APPLICATION,
-			description: localize('showReleaseNotes', "Show Release Notes after an update. The Release Notes are opened in a new web browser window."), // {{SQL CARBON EDIT}} Update text to be correct for ADS
+			description: getCustomString('update.config.contribution.showReleaseNotes'), // {{SQL CARBON EDIT}} Update text to be correct for ADS
 			tags: ['usesOnlineServices']
 		}
 	}

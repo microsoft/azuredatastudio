@@ -31,7 +31,7 @@ import { SidebarFocusContext } from 'vs/workbench/common/viewlet';
 import { ThemeIcon } from 'vs/platform/theme/common/themeService';
 import { IExplorerService } from 'vs/workbench/contrib/files/browser/files';
 import { Codicon } from 'vs/base/common/codicons';
-import { getCustomString } from 'sql/workbench/contrib/carbonEditLocalization/browser/carbonEditStrings'; // {SQL CARBON EDIT}
+import { getCustomString } from 'sql/platform/carbonEditLocalization/common/carbonEditStrings'; // {{SQL CARBON EDIT}}
 
 // Contribute Global Actions
 const category = { value: nls.localize('filesCategory', "File"), original: 'File' };

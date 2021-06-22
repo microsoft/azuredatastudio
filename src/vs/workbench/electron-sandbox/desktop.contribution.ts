@@ -25,6 +25,7 @@ import { IJSONSchema } from 'vs/base/common/jsonSchema';
 
 // eslint-disable-next-line code-import-patterns
 import { SELECT_INSTALL_VSIX_EXTENSION_COMMAND_ID } from 'vs/workbench/contrib/extensions/common/extensions';
+import { getCustomString } from 'sql/platform/carbonEditLocalization/common/carbonEditStrings'; // {{SQL CARBON EDIT}}
 
 // Actions
 (function registerActions(): void {
@@ -113,7 +114,7 @@ import { SELECT_INSTALL_VSIX_EXTENSION_COMMAND_ID } from 'vs/workbench/contrib/e
 		group: '5.1_installExtension',
 		command: {
 			id: SELECT_INSTALL_VSIX_EXTENSION_COMMAND_ID,
-			title: localize({ key: 'miinstallVsix', comment: ['&& denotes a mnemonic'] }, "Install Extension from VSIX Package")
+			title: getCustomString('desktop.contribution.miinstallVsix')
 		}
 	});
 
