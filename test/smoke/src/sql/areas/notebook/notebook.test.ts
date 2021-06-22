@@ -73,11 +73,28 @@ export function setup() {
 			await app.workbench.sqlNotebook.doubleClickTextCell();
 			await app.workbench.sqlNotebook.waitForDoubleClickToEditGone();
 
-			await app.workbench.sqlNotebook.changeTextCellView('Split View');
+			await app.workbench.sqlNotebook.textCellToolbar.changeTextCellView('Split View');
 			const sampleText: string = 'Test text cells';
 			await app.workbench.sqlNotebook.waitForTypeInEditor(sampleText);
 			await app.code.dispatchKeybinding('escape');
 			await app.workbench.sqlNotebook.waitForTextCellPreviewContent(sampleText, 'p');
+
+			await app.workbench.quickaccess.runCommand('workbench.action.revertAndCloseActiveEditor');
+		});
+
+		it('can perform basic Rich Text cell editing', async function () {
+			const app = this.app as Application;
+			await app.workbench.sqlNotebook.newUntitledNotebook();
+			await app.workbench.sqlNotebook.addCellFromPlaceholder('Markdown');
+			await app.workbench.sqlNotebook.waitForPlaceholderGone();
+
+			await app.workbench.sqlNotebook.textCellToolbar.changeTextCellView('Rich Text View');
+			const sampleText: string = 'Test Rich Text cells';
+			await app.workbench.sqlNotebook.waitForTypeInRichTextEditor(sampleText);
+			await app.workbench.sqlNotebook.selectAllTextInRichTextEditor();
+			await app.workbench.sqlNotebook.textCellToolbar.boldSelectedText();
+			await app.code.dispatchKeybinding('escape');
+			await app.workbench.sqlNotebook.waitForTextCellPreviewContent(sampleText, 'p', 'strong');
 
 			await app.workbench.quickaccess.runCommand('workbench.action.revertAndCloseActiveEditor');
 		});
