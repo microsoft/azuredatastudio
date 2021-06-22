@@ -76,8 +76,10 @@ export function setup() {
 			await app.workbench.sqlNotebook.textCellToolbar.changeTextCellView('Split View');
 			const sampleText: string = 'Test text cells';
 			await app.workbench.sqlNotebook.waitForTypeInEditor(sampleText);
+			await app.workbench.sqlNotebook.selectAllTextInEditor();
+			await app.workbench.sqlNotebook.textCellToolbar.boldSelectedText();
 			await app.code.dispatchKeybinding('escape');
-			await app.workbench.sqlNotebook.waitForTextCellPreviewContent(sampleText, 'p');
+			await app.workbench.sqlNotebook.waitForTextCellPreviewContent(sampleText, 'p', 'strong');
 
 			await app.workbench.quickaccess.runCommand('workbench.action.revertAndCloseActiveEditor');
 		});

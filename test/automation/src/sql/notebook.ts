@@ -101,6 +101,12 @@ export class Notebook {
 		return this.code.waitForTextContent(selector, undefined, c => accept(c.replace(/\u00a0/g, ' ')));
 	}
 
+	public async selectAllTextInEditor(): Promise<void> {
+		const editor = '.notebook-cell.active .monaco-editor';
+		await this.code.waitAndClick(editor);
+		await this.code.dispatchKeybinding('ctrl+a');
+	}
+
 	private static readonly richTextEditorSelector = '.notebook-cell.active div.notebook-preview[contenteditable="true"]';
 	public async waitForTypeInRichTextEditor(text: string) {
 		await this.code.waitAndClick(Notebook.richTextEditorSelector);
