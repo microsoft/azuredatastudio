@@ -81,6 +81,18 @@ export function setup() {
 
 			await app.workbench.quickaccess.runCommand('workbench.action.revertAndCloseActiveEditor');
 		});
+
+		it('can perform basic code cell functionality', async function () {
+			const app = this.app as Application;
+			await app.workbench.sqlNotebook.newUntitledNotebook();
+			await app.workbench.sqlNotebook.addCellFromPlaceholder('Code');
+			await app.workbench.sqlNotebook.waitForPlaceholderGone();
+
+			const sampleText: string = 'SELECT * FROM sys.tables';
+			await app.workbench.sqlNotebook.waitForTypeInEditor(sampleText);
+
+			await app.workbench.quickaccess.runCommand('workbench.action.revertAndCloseActiveEditor');
+		});
 	});
 }
 
