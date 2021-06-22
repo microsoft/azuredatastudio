@@ -107,19 +107,6 @@ export class Notebook {
 		await this.code.dispatchKeybinding('ctrl+a');
 	}
 
-	private static readonly richTextEditorSelector = '.notebook-cell.active div.notebook-preview[contenteditable="true"]';
-	public async waitForTypeInRichTextEditor(text: string) {
-		await this.code.waitAndClick(Notebook.richTextEditorSelector);
-		await this.code.waitForActiveElement(Notebook.richTextEditorSelector);
-		await this.code.waitForTypeInEditor(Notebook.richTextEditorSelector, text);
-		await this._waitForActiveCellEditorContents(c => c.indexOf(text) > -1);
-	}
-
-	public async selectAllTextInRichTextEditor(): Promise<void> {
-		await this.code.waitAndClick(Notebook.richTextEditorSelector);
-		await this.code.dispatchKeybinding('ctrl+a');
-	}
-
 	private static readonly placeholderSelector = 'div.placeholder-cell-component';
 	async addCellFromPlaceholder(cellType: 'Markdown' | 'Code'): Promise<void> {
 		await this.code.waitAndClick(`${Notebook.placeholderSelector} p a[id="add${cellType}"]`);
