@@ -92,6 +92,7 @@ steps:
     yarn gulp compile-extensions-build
     yarn gulp minify-vscode
     yarn gulp vscode-reh-linux-x64-min
+    yarn gulp vscode-reh-web-linux-x64-yarnrc-extensions
     yarn gulp vscode-reh-web-linux-x64-min
   displayName: Compile
 
