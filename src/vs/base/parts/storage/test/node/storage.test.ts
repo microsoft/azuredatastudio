@@ -104,13 +104,14 @@ flakySuite('Storage Library', function () {
 		strictEqual(deletePromiseResolved, true);
 
 		await storage.close();
+		await storage.close(); // it is ok to call this multiple times
 	});
 
 	test('external changes', async () => {
 
 		class TestSQLiteStorageDatabase extends SQLiteStorageDatabase {
 			private readonly _onDidChangeItemsExternal = new Emitter<IStorageItemsChangeEvent>();
-			get onDidChangeItemsExternal(): Event<IStorageItemsChangeEvent> { return this._onDidChangeItemsExternal.event; }
+			override get onDidChangeItemsExternal(): Event<IStorageItemsChangeEvent> { return this._onDidChangeItemsExternal.event; }
 
 			fireDidChangeItemsExternal(event: IStorageItemsChangeEvent): void {
 				this._onDidChangeItemsExternal.fire(event);

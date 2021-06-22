@@ -83,7 +83,7 @@ export class CellModel extends Disposable implements ICellModel {
 	private _isInjectedParameter: boolean;
 	private _previousChartState: IInsightOptions[] = [];
 	private _outputCounter = 0; // When re-executing the same cell, ensure that we apply chart options in the same order
-	private _attachments: nb.ICellAttachments;
+	private _attachments: nb.ICellAttachments | undefined;
 	private _preventNextChartCache: boolean = false;
 
 	constructor(cellData: nb.ICellContents,
@@ -147,6 +147,10 @@ export class CellModel extends Disposable implements ICellModel {
 
 	public get attachments(): nb.ICellAttachments | undefined {
 		return this._attachments;
+	}
+
+	public set attachments(attachments: nb.ICellAttachments | undefined) {
+		this._attachments = attachments ?? {};
 	}
 
 	addAttachment(mimeType: string, base64Encoding: string, name: string): string {

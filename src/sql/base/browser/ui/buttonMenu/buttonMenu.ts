@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import 'vs/css!./buttonMenu';
-import { IAction, IActionRunner, IActionViewItemProvider } from 'vs/base/common/actions';
+import { IAction, IActionRunner } from 'vs/base/common/actions';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { AnchorAlignment } from 'vs/base/browser/ui/contextview/contextview';
 import { ResolvedKeybinding } from 'vs/base/common/keyCodes';
@@ -12,6 +12,7 @@ import { append, $, addClasses } from 'vs/base/browser/dom';
 import { IDropdownMenuOptions, DropdownMenu, IActionProvider, ILabelRenderer } from 'vs/base/browser/ui/dropdown/dropdown';
 import { IContextMenuProvider } from 'vs/base/browser/contextmenu';
 import { BaseActionViewItem } from 'vs/base/browser/ui/actionbar/actionViewItems';
+import { IActionViewItemProvider } from 'vs/base/browser/ui/actionbar/actionbar';
 
 export class DropdownMenuActionViewItem extends BaseActionViewItem {
 	private menuActionsOrProvider: ReadonlyArray<IAction> | IActionProvider;
@@ -46,7 +47,7 @@ export class DropdownMenuActionViewItem extends BaseActionViewItem {
 		this.anchorAlignmentProvider = anchorAlignmentProvider;
 	}
 
-	render(container: HTMLElement): void {
+	override render(container: HTMLElement): void {
 		const labelRenderer: ILabelRenderer = (el: HTMLElement): IDisposable | null => {
 			this.element = append(el, $('a.action-label.button-menu'));
 			if (this.cssClass) {
@@ -92,7 +93,7 @@ export class DropdownMenuActionViewItem extends BaseActionViewItem {
 		}
 	}
 
-	setActionContext(newContext: unknown): void {
+	override setActionContext(newContext: unknown): void {
 		super.setActionContext(newContext);
 
 		if (this.dropdownMenu) {

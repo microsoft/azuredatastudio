@@ -260,7 +260,8 @@ declare module 'azdata' {
 
 
 	export enum DeclarativeDataType {
-		component = 'component'
+		component = 'component',
+		menu = 'menu'
 	}
 
 	export type DeclarativeTableRowSelectedEvent = {
@@ -274,6 +275,12 @@ declare module 'azdata' {
 		 * will clear the filter
 		 */
 		setFilter(rowIndexes: number[] | undefined): void;
+
+		/**
+		 * Sets the data values.
+		 * @param v The new data values
+		 */
+		setDataValues(v: DeclarativeTableCellValue[][]): Promise<void>;
 	}
 
 	/*
@@ -372,7 +379,8 @@ declare module 'azdata' {
 
 	export interface DeclarativeTableProperties {
 		/**
-		 * dataValues will only be used if data is an empty array
+		 * dataValues will only be used if data is an empty array.
+		 * To set the dataValues, it is recommended to use the setDataValues method that returns a promise.
 		 */
 		dataValues?: DeclarativeTableCellValue[][];
 
@@ -387,11 +395,23 @@ declare module 'azdata' {
 		selectedRow?: number;
 	}
 
+
+	export interface DeclarativeTableMenuCellValue {
+		/**
+		 * commands for the menu. Use an array for a group and menu separators will be added.
+		 */
+		commands: (string | string[])[];
+		/**
+		 * context that will be passed to the commands.
+		 */
+		context: { [key: string]: string | boolean | number } | string | boolean | number | undefined
+	}
+
 	export interface DeclarativeTableCellValue {
 		/**
 		 * The cell value
 		 */
-		value: string | number | boolean | Component;
+		value: string | number | boolean | Component | DeclarativeTableMenuCellValue;
 		/**
 		 * The aria-label of the cell
 		 */

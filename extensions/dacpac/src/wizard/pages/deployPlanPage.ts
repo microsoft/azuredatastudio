@@ -286,7 +286,7 @@ export class DeployPlanPage extends DacFxConfigPage {
 		};
 	}
 
-	public setupNavigationValidator() {
+	public override setupNavigationValidator() {
 		this.instance.registerNavigationValidator(() => {
 			return true;
 		});

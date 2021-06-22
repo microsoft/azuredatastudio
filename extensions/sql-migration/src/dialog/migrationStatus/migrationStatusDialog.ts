@@ -10,8 +10,10 @@ import { MigrationContext, MigrationLocalStorage } from '../../models/migrationL
 import { MigrationCutoverDialog } from '../migrationCutover/migrationCutoverDialog';
 import { AdsMigrationStatus, MigrationStatusDialogModel } from './migrationStatusDialogModel';
 import * as loc from '../../constants/strings';
-import { convertTimeDifferenceToDuration, filterMigrations } from '../../api/utils';
+import { convertTimeDifferenceToDuration, filterMigrations, SupportedAutoRefreshIntervals } from '../../api/utils';
 import { SqlMigrationServiceDetailsDialog } from '../sqlMigrationService/sqlMigrationServiceDetailsDialog';
+
+const refreshFrequency: SupportedAutoRefreshIntervals = 180000;
 
 export class MigrationStatusDialog {
 	private _model: MigrationStatusDialogModel;
@@ -22,6 +24,7 @@ export class MigrationStatusDialog {
 	private _statusDropdown!: azdata.DropDownComponent;
 	private _statusTable!: azdata.DeclarativeTableComponent;
 	private _refreshLoader!: azdata.LoadingComponent;
+	private _autoRefreshHandle!: NodeJS.Timeout;
 
 	constructor(migrations: MigrationContext[], private _filter: AdsMigrationStatus) {
 		this._model = new MigrationStatusDialogModel(migrations);
@@ -65,9 +68,17 @@ export class MigrationStatusDialog {
 				}
 			);
 			const form = formBuilder.withLayout({ width: '100%' }).component();
+			this._view.onClosed(e => {
+				clearInterval(this._autoRefreshHandle);
+			});
 			return view.initializeModel(form);
 		});
 		this._dialogObject.content = [tab];
+		this._dialogObject.cancelButton.hidden = true;
+		this._dialogObject.okButton.label = loc.CLOSE;
+		this._dialogObject.okButton.onClick(e => {
+			clearInterval(this._autoRefreshHandle);
+		});
 		azdata.window.openDialog(this._dialogObject);
 	}
 
@@ -97,9 +108,10 @@ export class MigrationStatusDialog {
 		});
 
 		const flexContainer = this._view.modelBuilder.flexContainer().withProps({
+			width: 900,
 			CSSStyles: {
 				'justify-content': 'left'
-			}
+			},
 		}).component();
 
 		flexContainer.addItem(this._searchBox, {
@@ -124,8 +136,25 @@ export class MigrationStatusDialog {
 				'margin-left': '20px'
 			}
 		});
+		this.setAutoRefresh(refreshFrequency);
+		const container = this._view.modelBuilder.flexContainer().withProps({
+			width: 1000
+		}).component();
+		container.addItem(flexContainer, {
+			flex: '0 0 auto',
+			CSSStyles: {
+				'width': '980px'
+			}
+		});
+		return container;
+	}
 
-		return flexContainer;
+	private setAutoRefresh(interval: SupportedAutoRefreshIntervals): void {
+		let classVariable = this;
+		clearInterval(this._autoRefreshHandle);
+		if (interval !== -1) {
+			this._autoRefreshHandle = setInterval(function () { classVariable.refreshTable(); }, interval);
+		}
 	}
 
 	private populateMigrationTable(): void {
@@ -277,7 +306,7 @@ export class MigrationStatusDialog {
 				{
 					displayName: loc.TARGET_AZURE_SQL_INSTANCE_NAME,
 					valueType: azdata.DeclarativeDataType.component,
-					width: '160px',
+					width: '130px',
 					isReadOnly: true,
 					rowCssStyles: rowCssStyle,
 					headerCssStyles: headerCssStyles

@@ -45,7 +45,7 @@ export class CreateInsightAction extends Action {
 		super(CreateInsightAction.ID, CreateInsightAction.LABEL, CreateInsightAction.ICON);
 	}
 
-	public async run(context: IChartActionContext): Promise<void> {
+	public override async run(context: IChartActionContext): Promise<void> {
 		let uriString = this.getActiveUriString();
 		if (!uriString) {
 			this.showError(localize('createInsightNoEditor', "Cannot create insight as the active editor is not a SQL Editor"));
@@ -115,7 +115,7 @@ export class ConfigureChartAction extends Action {
 		super(ConfigureChartAction.ID, ConfigureChartAction.LABEL, ConfigureChartAction.ICON);
 	}
 
-	public async run(context: IChartActionContext): Promise<void> {
+	public override async run(context: IChartActionContext): Promise<void> {
 		if (!this.dialog) {
 			this.dialog = this.instantiationService.createInstance(ConfigureChartDialog, ConfigureChartAction.LABEL, ConfigureChartAction.ID, this._chart);
 			this.dialog.render();
@@ -136,7 +136,7 @@ export class CopyAction extends Action {
 		super(CopyAction.ID, CopyAction.LABEL, CopyAction.ICON);
 	}
 
-	public async run(context: IChartActionContext): Promise<void> {
+	public override async run(context: IChartActionContext): Promise<void> {
 		if (context.insight instanceof Graph) {
 			let data = context.insight.getCanvasData();
 			if (!data) {
@@ -170,7 +170,7 @@ export class SaveImageAction extends Action {
 		super(SaveImageAction.ID, SaveImageAction.LABEL, SaveImageAction.ICON);
 	}
 
-	public async run(context: IChartActionContext): Promise<void> {
+	public override async run(context: IChartActionContext): Promise<void> {
 		if (context.insight instanceof Graph) {
 			let fileFilters = new Array<FileFilter>({ extensions: ['png'], name: localize('resultsSerializer.saveAsFileExtensionPNGTitle', "PNG") });
 

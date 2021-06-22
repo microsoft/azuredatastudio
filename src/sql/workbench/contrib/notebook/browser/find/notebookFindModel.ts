@@ -647,7 +647,7 @@ export class NotebookFindModel extends Disposable implements INotebookFindModel 
 		}
 	}
 
-	public dispose(): void {
+	public override dispose(): void {
 		super.dispose();
 		this._findArray = [];
 		this._isDisposed = true;

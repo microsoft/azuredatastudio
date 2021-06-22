@@ -416,7 +416,7 @@ export default class QueryRunner extends Disposable {
 		this.dispose();
 	}
 
-	public dispose() {
+	public override dispose() {
 		this._batchSets = undefined!;
 		super.dispose();
 	}

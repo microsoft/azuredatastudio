@@ -36,7 +36,7 @@ export default class ImageComponent extends ComponentWithIconBase<azdata.ImageCo
 		this.baseInit();
 	}
 
-	ngOnDestroy(): void {
+	override ngOnDestroy(): void {
 		this.baseDestroy();
 	}
 
@@ -46,13 +46,13 @@ export default class ImageComponent extends ComponentWithIconBase<azdata.ImageCo
 		this.layout();
 	}
 
-	public setProperties(properties: { [key: string]: any; }): void {
+	public override setProperties(properties: { [key: string]: any; }): void {
 		super.setProperties(properties);
 		this.updateIcon();
 		this._changeRef.detectChanges();
 	}
 
-	protected updateIcon() {
+	protected override updateIcon() {
 		if (this.iconPath) {
 			if (!this._iconClass) {
 				super.updateIcon();
@@ -70,7 +70,7 @@ export default class ImageComponent extends ComponentWithIconBase<azdata.ImageCo
 		return `${this.getIconWidth()} ${this.getIconHeight()}`;
 	}
 
-	public get CSSStyles(): azdata.CssStyles {
+	public override get CSSStyles(): azdata.CssStyles {
 		return this.mergeCss(super.CSSStyles, {
 			'background-size': this.getImageSize(),
 			'width': this.getWidth(),

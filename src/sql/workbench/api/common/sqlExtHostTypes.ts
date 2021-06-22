@@ -387,7 +387,8 @@ export enum DeclarativeDataType {
 	category = 'category',
 	boolean = 'boolean',
 	editableCategory = 'editableCategory',
-	component = 'component'
+	component = 'component',
+	menu = 'menu'
 }
 
 export enum CardType {

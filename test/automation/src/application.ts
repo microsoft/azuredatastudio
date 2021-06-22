@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as fs from 'fs';
@@ -70,18 +70,12 @@ export class Application {
 
 	async start(expectWalkthroughPart = true): Promise<any> {
 		await this._start();
-		// {{SQL CARBON EDIT}}
-		await this.code.waitForElement('.object-explorer-view');
+		await this.code.waitForElement('.object-explorer-view'); // {{SQL CARBON EDIT}} We have a different startup view
 
-		//Original
-		/*
-		await this.code.waitForElement('.explorer-folders-view');
-
-		if (expectWalkthroughPart) {
-			await this.code.waitForActiveElement(`.editor-instance[data-editor-id="workbench.editor.walkThroughPart"] > div > div[tabIndex="0"]`);
-		}
-		*/
-		// {{SQL CARBON EDIT}}
+		// https://github.com/microsoft/vscode/issues/118748
+		// if (expectWalkthroughPart) {
+		// 	await this.code.waitForElement(`.editor-instance > div > div.welcomePageFocusElement[tabIndex="0"]`);
+		// }
 	}
 
 	async restart(options: { workspaceOrFolder?: string, extraArgs?: string[] }): Promise<any> {
