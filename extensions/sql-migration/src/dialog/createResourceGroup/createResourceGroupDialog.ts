@@ -61,6 +61,12 @@ export class CreateResourceGroupDialog {
 				return valid;
 			}).component();
 
+			resoruceGroupName.onTextChanged(e => {
+				errorBox.updateCssStyles({
+					'display': 'none'
+				});
+			});
+
 			const okButton = view.modelBuilder.button().withProps({
 				label: constants.OK,
 				width: '80px',
