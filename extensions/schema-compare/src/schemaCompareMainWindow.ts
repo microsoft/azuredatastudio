@@ -132,12 +132,12 @@ export class SchemaCompareMainWindow {
 					this.view = view;
 				}
 
-				this.differencesTable = this.view.modelBuilder.table().withProperties({
+				this.differencesTable = this.view.modelBuilder.table().withProps({
 					data: [],
 					title: loc.differencesTableTitle
 				}).component();
 
-				this.diffEditor = this.view.modelBuilder.diffeditor().withProperties({
+				this.diffEditor = this.view.modelBuilder.diffeditor().withProps({
 					contentLeft: os.EOL,
 					contentRight: os.EOL,
 					height: 500,
@@ -147,13 +147,13 @@ export class SchemaCompareMainWindow {
 				this.splitView = this.view.modelBuilder.splitViewContainer().component();
 
 				let sourceTargetLabels = this.view.modelBuilder.flexContainer()
-					.withProperties({
+					.withProps({
 						alignItems: 'stretch',
 						horizontal: true
 					}).component();
 
 				this.sourceTargetFlexLayout = this.view.modelBuilder.flexContainer()
-					.withProperties({
+					.withProps({
 						alignItems: 'stretch',
 						horizontal: true
 					}).component();
@@ -205,17 +205,17 @@ export class SchemaCompareMainWindow {
 					component: this.saveScmpButton
 				}]);
 
-				let sourceLabel = this.view.modelBuilder.text().withProperties({
+				let sourceLabel = this.view.modelBuilder.text().withProps({
 					value: loc.sourceTitle,
 					CSSStyles: { 'margin-bottom': '0px' }
 				}).component();
 
-				let targetLabel = this.view.modelBuilder.text().withProperties({
+				let targetLabel = this.view.modelBuilder.text().withProps({
 					value: loc.targetTitle,
 					CSSStyles: { 'margin-bottom': '0px' }
 				}).component();
 
-				let arrowLabel = this.view.modelBuilder.text().withProperties({
+				let arrowLabel = this.view.modelBuilder.text().withProps({
 					value: '➔'
 				}).component();
 
@@ -228,15 +228,15 @@ export class SchemaCompareMainWindow {
 				this.sourceTargetFlexLayout.addItem(this.selectTargetButton, { CSSStyles: { 'margin-top': '10px' } });
 
 				this.loader = this.view.modelBuilder.loadingComponent().component();
-				this.waitText = this.view.modelBuilder.text().withProperties({
+				this.waitText = this.view.modelBuilder.text().withProps({
 					value: loc.waitText
 				}).component();
 
-				this.startText = this.view.modelBuilder.text().withProperties({
+				this.startText = this.view.modelBuilder.text().withProps({
 					value: loc.startText
 				}).component();
 
-				this.noDifferencesLabel = this.view.modelBuilder.text().withProperties({
+				this.noDifferencesLabel = this.view.modelBuilder.text().withProps({
 					value: loc.noDifferencesText
 				}).component();
 
@@ -625,7 +625,7 @@ export class SchemaCompareMainWindow {
 	}
 
 	private createCompareButton(): void {
-		this.compareButton = this.view.modelBuilder.button().withProperties({
+		this.compareButton = this.view.modelBuilder.button().withProps({
 			label: loc.compare,
 			iconPath: {
 				light: path.join(this.extensionContext.extensionPath, 'media', 'compare.svg'),
@@ -640,7 +640,7 @@ export class SchemaCompareMainWindow {
 	}
 
 	private createCancelButton(): void {
-		this.cancelCompareButton = this.view.modelBuilder.button().withProperties({
+		this.cancelCompareButton = this.view.modelBuilder.button().withProps({
 			label: loc.stop,
 			iconPath: {
 				light: path.join(this.extensionContext.extensionPath, 'media', 'stop.svg'),
@@ -689,7 +689,7 @@ export class SchemaCompareMainWindow {
 	}
 
 	private createGenerateScriptButton(): void {
-		this.generateScriptButton = this.view.modelBuilder.button().withProperties({
+		this.generateScriptButton = this.view.modelBuilder.button().withProps({
 			label: loc.generateScript,
 			iconPath: {
 				light: path.join(this.extensionContext.extensionPath, 'media', 'generate-script.svg'),
@@ -725,7 +725,7 @@ export class SchemaCompareMainWindow {
 	}
 
 	private createOptionsButton() {
-		this.optionsButton = this.view.modelBuilder.button().withProperties({
+		this.optionsButton = this.view.modelBuilder.button().withProps({
 			label: loc.options,
 			iconPath: {
 				light: path.join(this.extensionContext.extensionPath, 'media', 'options.svg'),
@@ -744,7 +744,7 @@ export class SchemaCompareMainWindow {
 
 	private createApplyButton() {
 
-		this.applyButton = this.view.modelBuilder.button().withProperties({
+		this.applyButton = this.view.modelBuilder.button().withProps({
 			label: loc.apply,
 			iconPath: {
 				light: path.join(this.extensionContext.extensionPath, 'media', 'start.svg'),
@@ -855,7 +855,7 @@ export class SchemaCompareMainWindow {
 	}
 
 	private createSwitchButton(): void {
-		this.switchButton = this.view.modelBuilder.button().withProperties({
+		this.switchButton = this.view.modelBuilder.button().withProps({
 			label: loc.switchDirection,
 			iconPath: {
 				light: path.join(this.extensionContext.extensionPath, 'media', 'switch-directions.svg'),
@@ -891,7 +891,7 @@ export class SchemaCompareMainWindow {
 	}
 
 	private createSourceAndTargetButtons(): void {
-		this.selectSourceButton = this.view.modelBuilder.button().withProperties({
+		this.selectSourceButton = this.view.modelBuilder.button().withProps({
 			label: '•••',
 			title: loc.selectSource,
 			ariaLabel: loc.selectSource,
@@ -905,7 +905,7 @@ export class SchemaCompareMainWindow {
 			await this.promise;
 		});
 
-		this.selectTargetButton = this.view.modelBuilder.button().withProperties({
+		this.selectTargetButton = this.view.modelBuilder.button().withProps({
 			label: '•••',
 			title: loc.selectTarget,
 			ariaLabel: loc.selectTarget,
@@ -921,7 +921,7 @@ export class SchemaCompareMainWindow {
 	}
 
 	private createOpenScmpButton() {
-		this.openScmpButton = this.view.modelBuilder.button().withProperties({
+		this.openScmpButton = this.view.modelBuilder.button().withProps({
 			label: loc.openScmp,
 			iconPath: {
 				light: path.join(this.extensionContext.extensionPath, 'media', 'open-scmp.svg'),
@@ -1009,7 +1009,7 @@ export class SchemaCompareMainWindow {
 	}
 
 	private createSaveScmpButton(): void {
-		this.saveScmpButton = this.view.modelBuilder.button().withProperties({
+		this.saveScmpButton = this.view.modelBuilder.button().withProps({
 			label: loc.saveScmp,
 			iconPath: {
 				light: path.join(this.extensionContext.extensionPath, 'media', 'save-scmp.svg'),

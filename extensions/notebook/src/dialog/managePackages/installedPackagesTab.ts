@@ -52,7 +52,7 @@ export class InstalledPackagesTab {
 				};
 			});
 			let defaultPackageType = this.dialog.model.getDefaultPackageType();
-			this.packageTypeDropdown = view.modelBuilder.dropDown().withProperties({
+			this.packageTypeDropdown = view.modelBuilder.dropDown().withProps({
 				values: dropdownValues,
 				value: defaultPackageType
 			}).component();
@@ -69,12 +69,12 @@ export class InstalledPackagesTab {
 
 			});
 
-			this.installedPackageCount = view.modelBuilder.text().withProperties({
+			this.installedPackageCount = view.modelBuilder.text().withProps({
 				value: ''
 			}).component();
 
 			this.installedPackagesTable = view.modelBuilder.table()
-				.withProperties({
+				.withProps({
 					columns: [
 						{
 							value: localize('managePackages.pkgNameColumn', "Name"),
@@ -128,7 +128,7 @@ export class InstalledPackagesTab {
 
 			this.installedPackagesLoader = view.modelBuilder.loadingComponent()
 				.withItem(this.formBuilder.component())
-				.withProperties({
+				.withProps({
 					loading: true
 				}).component();
 
@@ -167,7 +167,7 @@ export class InstalledPackagesTab {
 		let location: string;
 		let component: azdata.Component;
 		if (locations && locations.length === 1) {
-			component = view.modelBuilder.text().withProperties({
+			component = view.modelBuilder.text().withProps({
 				value: locations[0].displayName
 			}).component();
 			location = locations[0].name;
@@ -181,7 +181,7 @@ export class InstalledPackagesTab {
 			const currentLocation = await dialog.model.getCurrentLocation();
 			const selectedLocation = dropdownValues.find(x => x.name === currentLocation);
 			location = currentLocation || locations[0].name;
-			let locationDropDown = view.modelBuilder.dropDown().withProperties({
+			let locationDropDown = view.modelBuilder.dropDown().withProps({
 				values: dropdownValues,
 				value: selectedLocation || dropdownValues[0]
 			}).component();
@@ -197,7 +197,7 @@ export class InstalledPackagesTab {
 			});
 			component = locationDropDown;
 		} else {
-			component = view.modelBuilder.text().withProperties({
+			component = view.modelBuilder.text().withProps({
 			}).component();
 		}
 		if (location) {

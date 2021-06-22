@@ -188,7 +188,7 @@ export class ManageAccessDialog {
 			.component();
 		contentContainer.addItem(addUserOrGroupTitle, { CSSStyles: { 'margin-top': '15px', ...cssStyles.titleCss } });
 
-		const typeContainer = this.modelBuilder.flexContainer().withProperties({ flexFlow: 'row' }).component();
+		const typeContainer = this.modelBuilder.flexContainer().withProps({ flexFlow: 'row' }).component();
 		const aclEntryTypeGroup = 'aclEntryType';
 		const userTypeButton = this.createRadioButton(this.modelBuilder, loc.userLabel, aclEntryTypeGroup, AclType.user);
 		const groupTypeButton = this.createRadioButton(this.modelBuilder, loc.groupLabel, aclEntryTypeGroup, AclType.group);
@@ -566,7 +566,7 @@ export class ManageAccessDialog {
 		// Only show default section for directories
 		if (this.hdfsModel.fileStatus.type === HdfsFileType.Directory) {
 			// Middle spacer
-			const middleSpacer = this.modelBuilder.text().withProperties({ CSSStyles: { 'width': `${middleSpacerWidth}px`, 'min-width': `${middleSpacerWidth}px` } }).component();
+			const middleSpacer = this.modelBuilder.text().withProps({ CSSStyles: { 'width': `${middleSpacerWidth}px`, 'min-width': `${middleSpacerWidth}px` } }).component();
 			sectionHeaderContainer.addItem(middleSpacer, { flex: '0 0 auto' });
 
 			// Default
@@ -586,7 +586,7 @@ export class ManageAccessDialog {
 		}
 
 		// Right spacer
-		const rightSpacer = this.modelBuilder.text().withProperties({ CSSStyles: { 'width': `${rightSpacerWidth}px`, 'min-width': `${rightSpacerWidth}px` } }).component();
+		const rightSpacer = this.modelBuilder.text().withProps({ CSSStyles: { 'width': `${rightSpacerWidth}px`, 'min-width': `${rightSpacerWidth}px` } }).component();
 		sectionHeaderContainer.addItem(rightSpacer, { flex: '0 0 auto' });
 
 		return sectionHeaderContainer;

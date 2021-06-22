@@ -20,7 +20,7 @@ export class DacFxSummaryPage extends BasePage {
 	}
 
 	async start(): Promise<boolean> {
-		this.table = this.view.modelBuilder.table().withProperties({
+		this.table = this.view.modelBuilder.table().withProps({
 			title: loc.summaryTableTitle
 		}).component();
 		this.loader = this.view.modelBuilder.loadingComponent().withItem(this.table).component();

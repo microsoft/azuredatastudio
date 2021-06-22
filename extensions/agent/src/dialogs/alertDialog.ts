@@ -200,28 +200,28 @@ export class AlertDialog extends AgentDialog<AlertData> {
 				}
 			});
 			this.enabledCheckBox = view.modelBuilder.checkBox()
-				.withProperties({
+				.withProps({
 					label: AlertDialog.EnabledCheckboxLabel
 				}).component();
 
 			this.enabledCheckBox.checked = true;
 
 			this.databaseDropDown = view.modelBuilder.dropDown()
-				.withProperties({
+				.withProps({
 					value: databases[0],
 					values: databases,
 					width: '100%'
 				}).component();
 
 			this.typeDropDown = view.modelBuilder.dropDown()
-				.withProperties({
+				.withProps({
 					value: '',
 					values: AlertDialog.AlertTypes,
 					width: '100%'
 				}).component();
 
 			this.severityRadioButton = view.modelBuilder.radioButton()
-				.withProperties({
+				.withProps({
 					value: 'serverity',
 					name: 'alertTypeOptions',
 					label: AlertDialog.SeverityLabel,
@@ -230,21 +230,21 @@ export class AlertDialog extends AgentDialog<AlertData> {
 			this.severityRadioButton.checked = true;
 
 			this.severityDropDown = view.modelBuilder.dropDown()
-				.withProperties({
+				.withProps({
 					value: AlertDialog.AlertSeverities[0],
 					values: AlertDialog.AlertSeverities,
 					width: '100%'
 				}).component();
 
 			this.errorNumberRadioButton = view.modelBuilder.radioButton()
-				.withProperties({
+				.withProps({
 					value: 'errorNumber',
 					name: 'alertTypeOptions',
 					label: AlertDialog.ErrorNumberLabel
 				}).component();
 
 			this.errorNumberTextBox = view.modelBuilder.inputBox()
-				.withProperties({
+				.withProps({
 					width: '100%'
 				})
 				.component();
@@ -261,7 +261,7 @@ export class AlertDialog extends AgentDialog<AlertData> {
 			});
 
 			this.raiseAlertMessageCheckBox = view.modelBuilder.checkBox()
-				.withProperties({
+				.withProps({
 					label: AlertDialog.RaiseIfMessageContainsLabel
 				}).component();
 
@@ -344,12 +344,12 @@ export class AlertDialog extends AgentDialog<AlertData> {
 	private initializeResponseTab() {
 		this.responseTab.registerContent(async view => {
 			this.executeJobCheckBox = view.modelBuilder.checkBox()
-				.withProperties({
+				.withProps({
 					label: AlertDialog.ExecuteJobCheckBoxLabel
 				}).component();
 
 			this.executeJobTextBox = view.modelBuilder.inputBox()
-				.withProperties({ width: 375 })
+				.withProps({ width: 375 })
 				.component();
 			this.executeJobTextBox.enabled = false;
 			this.newJobButton = view.modelBuilder.button().withProps({
@@ -383,19 +383,19 @@ export class AlertDialog extends AgentDialog<AlertData> {
 				}], { componentWidth: '100%' }).component();
 
 			let previewTag = view.modelBuilder.text()
-				.withProperties({
+				.withProps({
 					value: 'Feature Preview'
 				}).component();
 
 			this.notifyOperatorsCheckBox = view.modelBuilder.checkBox()
-				.withProperties({
+				.withProps({
 					label: AlertDialog.NotifyOperatorsTextBoxLabel
 				}).component();
 
 			this.notifyOperatorsCheckBox.enabled = false;
 
 			this.operatorsTable = view.modelBuilder.table()
-				.withProperties({
+				.withProps({
 					columns: [
 						AlertDialog.OperatorNameColumnLabel,
 						AlertDialog.OperatorEmailColumnLabel,
@@ -466,26 +466,26 @@ export class AlertDialog extends AgentDialog<AlertData> {
 		this.optionsTab.registerContent(async view => {
 
 			this.includeErrorInEmailTextBox = view.modelBuilder.checkBox()
-				.withProperties({
+				.withProps({
 					label: AlertDialog.IncludeErrorInEmailCheckBoxLabel
 				}).component();
 
 			this.includeErrorInPagerTextBox = view.modelBuilder.checkBox()
-				.withProperties({
+				.withProps({
 					label: AlertDialog.IncludeErrorInPagerCheckBoxLabel
 				}).component();
 
 			this.additionalMessageTextBox = view.modelBuilder.inputBox().component();
 
 			this.delayMinutesTextBox = view.modelBuilder.inputBox()
-				.withProperties({
+				.withProps({
 					inputType: 'number',
 					placeHolder: 0
 				})
 				.component();
 
 			this.delaySecondsTextBox = view.modelBuilder.inputBox()
-				.withProperties({
+				.withProps({
 					inputType: 'number',
 					placeHolder: 0
 				})

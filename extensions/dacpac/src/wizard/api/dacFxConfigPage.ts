@@ -33,7 +33,7 @@ export abstract class DacFxConfigPage extends BasePage {
 
 	protected async createServerDropdown(isTargetServer: boolean): Promise<azdata.FormComponent> {
 		const serverDropDownTitle = isTargetServer ? loc.targetServer : loc.sourceServer;
-		this.serverDropdown = this.view.modelBuilder.dropDown().withProperties({
+		this.serverDropdown = this.view.modelBuilder.dropDown().withProps({
 			required: true,
 			ariaLabel: serverDropDownTitle
 		}).component();
@@ -79,7 +79,7 @@ export abstract class DacFxConfigPage extends BasePage {
 	protected async createDatabaseTextBox(title: string): Promise<azdata.FormComponent> {
 		this.databaseTextBox = this.view.modelBuilder.inputBox()
 			.withValidation(component => !this.databaseNameExists(component.value))
-			.withProperties({
+			.withProps({
 				required: true,
 				validationErrorMessage: loc.databaseNameExistsErrorMessage
 			}).component();
@@ -97,7 +97,7 @@ export abstract class DacFxConfigPage extends BasePage {
 
 	protected async createDatabaseDropdown(): Promise<azdata.FormComponent> {
 		const databaseDropdownTitle = loc.sourceDatabase;
-		this.databaseDropdown = this.view.modelBuilder.dropDown().withProperties({
+		this.databaseDropdown = this.view.modelBuilder.dropDown().withProps({
 			required: true,
 			ariaLabel: databaseDropdownTitle
 		}).component();
@@ -114,7 +114,7 @@ export abstract class DacFxConfigPage extends BasePage {
 			this.model.filePath = this.fileTextBox.value;
 		});
 
-		this.databaseLoader = this.view.modelBuilder.loadingComponent().withItem(this.databaseDropdown).withProperties({
+		this.databaseLoader = this.view.modelBuilder.loadingComponent().withItem(this.databaseDropdown).withProps({
 			required: true
 		}).component();
 
@@ -167,7 +167,7 @@ export abstract class DacFxConfigPage extends BasePage {
 		this.fileTextBox = this.view.modelBuilder.inputBox().withValidation(
 			component => isValidBasename(component.value)
 		)
-			.withProperties({
+			.withProps({
 				required: true,
 				ariaLive: 'polite'
 			}).component();

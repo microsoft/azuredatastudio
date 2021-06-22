@@ -75,7 +75,7 @@ export class CreateBookDialog {
 				}).component();
 
 			const bookLabel = this.view.modelBuilder.text()
-				.withProperties({
+				.withProps({
 					value: loc.bookDescription,
 					CSSStyles: { 'margin-bottom': '0px', 'margin-top': '0px', 'font-size': 'small' }
 				}).component();

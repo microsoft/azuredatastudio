@@ -161,7 +161,7 @@ export class CurrentModelsTable extends ModelViewBase implements IDataComponent<
 			.component();
 		this._loader = modelBuilder.loadingComponent()
 			.withItem(this._table)
-			.withProperties({
+			.withProps({
 				loading: true
 			}).component();
 		return this._loader;
@@ -265,7 +265,7 @@ export class CurrentModelsTable extends ModelViewBase implements IDataComponent<
 				this.onModelSelected();
 			};
 			if (this._settings.multiSelect) {
-				const checkbox = this._modelBuilder.checkBox().withProperties({
+				const checkbox = this._modelBuilder.checkBox().withProps({
 					name: 'amlModel',
 					value: model.id,
 					width: 15,
@@ -277,7 +277,7 @@ export class CurrentModelsTable extends ModelViewBase implements IDataComponent<
 				});
 				selectModelButton = checkbox;
 			} else {
-				const radioButton = this._modelBuilder.radioButton().withProperties({
+				const radioButton = this._modelBuilder.radioButton().withProps({
 					name: 'amlModel',
 					value: model.id,
 					width: 15,
@@ -298,7 +298,7 @@ export class CurrentModelsTable extends ModelViewBase implements IDataComponent<
 		let predictButton: azdata.ButtonComponent | undefined = undefined;
 		let editButton: azdata.ButtonComponent | undefined = undefined;
 		if (this._modelBuilder && this._settings.editable) {
-			dropButton = this._modelBuilder.button().withProperties({
+			dropButton = this._modelBuilder.button().withProps({
 				label: '',
 				title: constants.deleteTitle,
 				iconPath: {
@@ -321,7 +321,7 @@ export class CurrentModelsTable extends ModelViewBase implements IDataComponent<
 					this.showErrorMessage(`${constants.updateModelFailedError} ${constants.getErrorMessage(error)}`);
 				}
 			});
-			predictButton = this._modelBuilder.button().withProperties({
+			predictButton = this._modelBuilder.button().withProps({
 				label: '',
 				title: constants.predictModel,
 				iconPath: {
@@ -335,7 +335,7 @@ export class CurrentModelsTable extends ModelViewBase implements IDataComponent<
 				await this.sendDataRequest(PredictWizardEventName, [model]);
 			});
 
-			editButton = this._modelBuilder.button().withProperties({
+			editButton = this._modelBuilder.button().withProps({
 				label: '',
 				title: constants.editTitle,
 				iconPath: {

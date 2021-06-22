@@ -200,7 +200,7 @@ export class OpenExistingDialog extends DialogBase {
 			required: true,
 			component: view.modelBuilder.flexContainer()
 				.withItems([this.localRadioButton, this.remoteGitRepoRadioButton], { flex: '0 0 auto', CSSStyles: { 'margin-right': '15px' } })
-				.withProperties({ ariaRole: 'radiogroup' })
+				.withProps({ ariaRole: 'radiogroup' })
 				.component()
 		};
 

@@ -175,12 +175,12 @@ export class JobDialog extends AgentDialog<JobData>  {
 			});
 			this.ownerTextBox = view.modelBuilder.inputBox().component();
 			this.categoryDropdown = view.modelBuilder.dropDown().component();
-			this.descriptionTextBox = view.modelBuilder.inputBox().withProperties({
+			this.descriptionTextBox = view.modelBuilder.inputBox().withProps({
 				multiline: true,
 				height: 200
 			}).component();
 			this.enabledCheckBox = view.modelBuilder.checkBox()
-				.withProperties({
+				.withProps({
 					label: this.EnabledCheckboxLabel
 				}).component();
 			let formModel = view.modelBuilder.formContainer()
@@ -222,7 +222,7 @@ export class JobDialog extends AgentDialog<JobData>  {
 		this.stepsTab.registerContent(async view => {
 			let data = this.steps ? this.convertStepsToData(this.steps) : [];
 			this.stepsTable = view.modelBuilder.table()
-				.withProperties({
+				.withProps({
 					columns: [
 						this.StepsTable_StepColumnString,
 						this.StepsTable_NameColumnString,
@@ -234,7 +234,7 @@ export class JobDialog extends AgentDialog<JobData>  {
 					height: 500
 				}).component();
 
-			this.startStepDropdown = view.modelBuilder.dropDown().withProperties({ width: 180 }).component();
+			this.startStepDropdown = view.modelBuilder.dropDown().withProps({ width: 180 }).component();
 			this.startStepDropdown.enabled = this.steps.length >= 1;
 			this.steps.forEach((step) => {
 				this.startStepDropdownValues.push({ displayName: step.id + ': ' + step.stepName, name: step.id.toString() });
@@ -438,7 +438,7 @@ export class JobDialog extends AgentDialog<JobData>  {
 			let alerts = this.model.alerts ? this.model.alerts : [];
 			let data = this.convertAlertsToData(alerts);
 			this.alertsTable = view.modelBuilder.table()
-				.withProperties({
+				.withProps({
 					columns: [
 						this.AlertNameLabelString,
 						this.AlertEnabledLabelString,
@@ -485,7 +485,7 @@ export class JobDialog extends AgentDialog<JobData>  {
 	private initializeSchedulesTab() {
 		this.schedulesTab.registerContent(async view => {
 			this.schedulesTable = view.modelBuilder.table()
-				.withProperties({
+				.withProps({
 					columns: [
 						PickScheduleDialog.SchedulesIDText,
 						PickScheduleDialog.ScheduleNameLabelText,
@@ -554,20 +554,20 @@ export class JobDialog extends AgentDialog<JobData>  {
 	private initializeNotificationsTab() {
 		this.notificationsTab.registerContent(async view => {
 
-			this.emailCheckBox = view.modelBuilder.checkBox().withProperties({
+			this.emailCheckBox = view.modelBuilder.checkBox().withProps({
 				label: this.EmailCheckBoxString,
 				width: '20%'
 			}).component();
 
-			this.pagerCheckBox = view.modelBuilder.checkBox().withProperties({
+			this.pagerCheckBox = view.modelBuilder.checkBox().withProps({
 				label: this.PagerCheckBoxString,
 				width: '20%'
 			}).component();
-			this.eventLogCheckBox = view.modelBuilder.checkBox().withProperties({
+			this.eventLogCheckBox = view.modelBuilder.checkBox().withProps({
 				label: this.EventLogCheckBoxString,
 				width: '5%'
 			}).component();
-			this.deleteJobCheckBox = view.modelBuilder.checkBox().withProperties({
+			this.deleteJobCheckBox = view.modelBuilder.checkBox().withProps({
 				label: this.DeleteJobCheckBoxString,
 				width: '7%'
 			}).component();
@@ -589,12 +589,12 @@ export class JobDialog extends AgentDialog<JobData>  {
 				this.deleteJobConditionDropdown.enabled = this.deleteJobCheckBox.checked;
 			});
 
-			this.emailOperatorDropdown = view.modelBuilder.dropDown().withProperties({ width: '90%' }).component();
-			this.pagerOperatorDropdown = view.modelBuilder.dropDown().withProperties({ width: '90%' }).component();
-			this.emailConditionDropdown = view.modelBuilder.dropDown().withProperties({ width: '80%' }).component();
-			this.pagerConditionDropdown = view.modelBuilder.dropDown().withProperties({ width: '80%' }).component();
-			this.eventLogConditionDropdown = view.modelBuilder.dropDown().withProperties({ width: '80%' }).component();
-			this.deleteJobConditionDropdown = view.modelBuilder.dropDown().withProperties({ width: '85%' }).component();
+			this.emailOperatorDropdown = view.modelBuilder.dropDown().withProps({ width: '90%' }).component();
+			this.pagerOperatorDropdown = view.modelBuilder.dropDown().withProps({ width: '90%' }).component();
+			this.emailConditionDropdown = view.modelBuilder.dropDown().withProps({ width: '80%' }).component();
+			this.pagerConditionDropdown = view.modelBuilder.dropDown().withProps({ width: '80%' }).component();
+			this.eventLogConditionDropdown = view.modelBuilder.dropDown().withProps({ width: '80%' }).component();
+			this.deleteJobConditionDropdown = view.modelBuilder.dropDown().withProps({ width: '85%' }).component();
 
 			let emailContainer = this.createRowContainer(view).withItems([this.emailCheckBox, this.emailOperatorDropdown, this.emailConditionDropdown]).component();
 

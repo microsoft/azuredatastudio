@@ -66,7 +66,7 @@ export class CurrentModelsComponent extends ModelViewBase implements IPageView {
 		let dataCountString: string = constants.getDataCount(0);
 
 		this._tableDataCountContainer = modelBuilder.flexContainer().component();
-		this._tableDataCountComponent = modelBuilder.text().withProperties({
+		this._tableDataCountComponent = modelBuilder.text().withProps({
 			value: dataCountString,
 			margin: '0'
 		}).component();
@@ -82,7 +82,7 @@ export class CurrentModelsComponent extends ModelViewBase implements IPageView {
 		let formModelBuilder = modelBuilder.formContainer();
 		this._loader = modelBuilder.loadingComponent()
 			.withItem(formModelBuilder.component())
-			.withProperties({
+			.withProps({
 				loading: true
 			}).component();
 		this._emptyModelsComponent = new DataInfoComponent(this._apiWrapper, this);
@@ -108,13 +108,13 @@ export class CurrentModelsComponent extends ModelViewBase implements IPageView {
 			flexFlow: 'column',
 			width: '452px'
 		}).component();
-		this._subheadingTextComponent = modelBuilder.text().withProperties(<azdata.CheckBoxProperties>{
+		this._subheadingTextComponent = modelBuilder.text().withProps(<azdata.CheckBoxProperties>{
 			value: this.modelActionType === ModelActionType.Import ? constants.viewImportModelsDesc : constants.viewImportModeledForPredictDesc,
 			CSSStyles: {
 				'font-size': '13px'
 			}
 		}).component();
-		this._subheadingLinkComponent = modelBuilder.hyperlink().withProperties({
+		this._subheadingLinkComponent = modelBuilder.hyperlink().withProps({
 			label: constants.learnMoreLink,
 			url: constants.importModelsDoc,
 			CSSStyles: {

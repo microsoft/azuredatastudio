@@ -101,13 +101,13 @@ export class DeployConfigPage extends DacFxConfigPage {
 
 	private createRadiobuttons(): azdata.FormComponent {
 		let upgradeRadioButton = this.view.modelBuilder.radioButton()
-			.withProperties({
+			.withProps({
 				name: 'updateExistingOrCreateNew',
 				label: loc.upgradeExistingDatabase,
 			}).component();
 
 		let newRadioButton = this.view.modelBuilder.radioButton()
-			.withProperties({
+			.withProps({
 				name: 'updateExistingOrCreateNew',
 				label: loc.newDatabase,
 			}).component();
@@ -136,7 +136,7 @@ export class DeployConfigPage extends DacFxConfigPage {
 
 	protected async createDeployDatabaseDropdown(): Promise<azdata.FormComponent> {
 		const targetDatabaseTitle = loc.databaseName;
-		this.databaseDropdown = this.view.modelBuilder.dropDown().withProperties({
+		this.databaseDropdown = this.view.modelBuilder.dropDown().withProps({
 			ariaLabel: targetDatabaseTitle
 		}).component();
 
@@ -150,7 +150,7 @@ export class DeployConfigPage extends DacFxConfigPage {
 			this.model.database = databaseDropdownValue;
 		});
 
-		this.databaseLoader = this.view.modelBuilder.loadingComponent().withItem(this.databaseDropdown).withProperties({
+		this.databaseLoader = this.view.modelBuilder.loadingComponent().withItem(this.databaseDropdown).withProps({
 			required: true
 		}).component();
 

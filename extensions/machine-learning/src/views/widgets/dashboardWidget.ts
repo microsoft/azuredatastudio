@@ -81,7 +81,7 @@ export class DashboardWidget {
 			width: maxWidth,
 			height: headerMaxHeight
 		}).component();
-		const titleComponent = view.modelBuilder.text().withProperties({
+		const titleComponent = view.modelBuilder.text().withProps({
 			value: constants.dashboardTitle,
 			CSSStyles: {
 				'font-size': '36px',
@@ -90,7 +90,7 @@ export class DashboardWidget {
 				'margin': '0px'
 			}
 		}).component();
-		const descComponent = view.modelBuilder.text().withProperties({
+		const descComponent = view.modelBuilder.text().withProps({
 			value: constants.dashboardDesc,
 			CSSStyles: {
 				'font-size': '14px',
@@ -159,7 +159,7 @@ export class DashboardWidget {
 			height: '500px',
 			justifyContent: 'flex-start'
 		}).component();
-		const titleComponent = view.modelBuilder.text().withProperties({
+		const titleComponent = view.modelBuilder.text().withProps({
 			value: constants.dashboardVideoLinksTitle,
 			CSSStyles: {
 				'font-size': '18px',
@@ -216,10 +216,10 @@ export class DashboardWidget {
 			width: 'auto',
 			justifyContent: 'flex-start'
 		}).component();
-		const showMoreComponent = view.modelBuilder.hyperlink().withProperties({
+		const showMoreComponent = view.modelBuilder.hyperlink().withProps({
 			label: constants.showMoreTitle
 		}).component();
-		const image = view.modelBuilder.image().withProperties({
+		const image = view.modelBuilder.image().withProps({
 			width: '10px',
 			height: '10px',
 			iconPath: {
@@ -280,12 +280,12 @@ export class DashboardWidget {
 			width: maxWidth,
 			justifyContent: 'flex-start'
 		}).component();
-		const video1Container = view.modelBuilder.divContainer().withProperties({
+		const video1Container = view.modelBuilder.divContainer().withProps({
 			clickable: true,
 			width: maxWidth,
 			height: '100px'
 		}).component();
-		const descriptionComponent = view.modelBuilder.text().withProperties({
+		const descriptionComponent = view.modelBuilder.text().withProps({
 			value: linkMetaData.description,
 			width: maxWidth,
 			height: '50px',
@@ -325,7 +325,7 @@ export class DashboardWidget {
 			width: maxWidth,
 			height: '300px',
 		}).component();
-		const titleComponent = view.modelBuilder.text().withProperties({
+		const titleComponent = view.modelBuilder.text().withProps({
 			value: constants.dashboardLinksTitle,
 			CSSStyles: {
 				'font-size': '18px',
@@ -391,7 +391,7 @@ export class DashboardWidget {
 			width: maxWidth,
 			justifyContent: 'flex-start'
 		}).component();
-		const descriptionComponent = view.modelBuilder.text().withProperties({
+		const descriptionComponent = view.modelBuilder.text().withProps({
 			value: linkMetaData.description,
 			width: maxWidth,
 			CSSStyles: {

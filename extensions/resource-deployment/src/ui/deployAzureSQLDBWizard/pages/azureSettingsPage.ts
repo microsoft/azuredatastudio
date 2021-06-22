@@ -159,7 +159,7 @@ export class AzureSettingsPage extends BasePage {
 
 	private async createAzureAccountsDropdown(view: azdata.ModelView) {
 
-		this._azureAccountsDropdown = view.modelBuilder.dropDown().withProperties({}).component();
+		this._azureAccountsDropdown = view.modelBuilder.dropDown().withProps({}).component();
 
 		this._azureAccountsDropdown.onValueChanged(async (value) => {
 			this._model.azureAccount = this._accountsMap.get(value.selected)!;
@@ -296,7 +296,7 @@ export class AzureSettingsPage extends BasePage {
 	}
 
 	private async createServerDropdown(view: azdata.ModelView) {
-		this._serverGroupDropdown = view.modelBuilder.dropDown().withProperties({
+		this._serverGroupDropdown = view.modelBuilder.dropDown().withProps({
 			required: true,
 		}).component();
 		this._serverGroupDropdown.onValueChanged(async (value) => {
@@ -360,7 +360,7 @@ export class AzureSettingsPage extends BasePage {
 	//@todo alma1 9/8/2020 functions below are used for upcoming server creation feature.
 
 	// private async createResourceDropdown(view: azdata.ModelView) {
-	// 	this._resourceGroupDropdown = view.modelBuilder.dropDown().withProperties({
+	// 	this._resourceGroupDropdown = view.modelBuilder.dropDown().withProps({
 	// 		required: true
 	// 	}).component();
 	// 	this._resourceGroupDropdown.onValueChanged(async (value) => {
@@ -408,7 +408,7 @@ export class AzureSettingsPage extends BasePage {
 	// }
 
 	// private async createAzureRegionsDropdown(view: azdata.ModelView) {
-	// 	this._azureRegionsDropdown = view.modelBuilder.dropDown().withProperties({
+	// 	this._azureRegionsDropdown = view.modelBuilder.dropDown().withProps({
 	// 		required: true
 	// 	}).component();
 
@@ -446,13 +446,13 @@ export class AzureSettingsPage extends BasePage {
 
 	// private createDatabaseHardwareSettingsText(view: azdata.ModelView) {
 	// 	this._dbHardwareInfoText = view.modelBuilder.text()
-	// 		.withProperties({
+	// 		.withProps({
 	// 			value: constants.DatabaseHardwareInfoLabel
 	// 		}).component();
 	// }
 
 	// private async createManagedInstanceDropdown(view: azdata.ModelView) {
-	// 	this._dbManagedInstanceDropdown = view.modelBuilder.dropDown().withProperties({
+	// 	this._dbManagedInstanceDropdown = view.modelBuilder.dropDown().withProps({
 	// 		required: true,
 	// 	}).component();
 	// 	this._dbManagedInstanceDropdown.onValueChanged(async (value) => {
@@ -528,7 +528,7 @@ export class AzureSettingsPage extends BasePage {
 	// }
 
 	// private async createSupportedEditionsDropdown(view: azdata.ModelView) {
-	// 	this._dbSupportedEditionsDropdown = view.modelBuilder.dropDown().withProperties({
+	// 	this._dbSupportedEditionsDropdown = view.modelBuilder.dropDown().withProps({
 	// 		required: true,
 	// 	}).component();
 	// 	this._dbSupportedEditionsDropdown.onValueChanged(async (value) => {
@@ -595,7 +595,7 @@ export class AzureSettingsPage extends BasePage {
 	// }
 
 	// private async createSupportedFamilyDropdown(view: azdata.ModelView) {
-	// 	this._dbSupportedFamilyDropdown = view.modelBuilder.dropDown().withProperties({
+	// 	this._dbSupportedFamilyDropdown = view.modelBuilder.dropDown().withProps({
 	// 		required: true,
 	// 	}).component();
 	// 	this._dbSupportedFamilyDropdown.onValueChanged(async (value) => {
@@ -662,7 +662,7 @@ export class AzureSettingsPage extends BasePage {
 	// }
 
 	// private async createVCoreDropdown(view: azdata.ModelView) {
-	// 	this._dbVCoreDropdown = view.modelBuilder.dropDown().withProperties({
+	// 	this._dbVCoreDropdown = view.modelBuilder.dropDown().withProps({
 	// 		required: true,
 	// 	}).component();
 	// 	this._dbVCoreDropdown.onValueChanged(async (value) => {
@@ -733,7 +733,7 @@ export class AzureSettingsPage extends BasePage {
 	// }
 
 	// private createMaxMemoryText(view: azdata.ModelView) {
-	// 	this._dbMemoryTextBox = view.modelBuilder.inputBox().withProperties(<azdata.InputBoxProperties>{
+	// 	this._dbMemoryTextBox = view.modelBuilder.inputBox().withProps(<azdata.InputBoxProperties>{
 	// 		inputType: 'number',
 	// 		max: 1024,
 	// 		min: 1,

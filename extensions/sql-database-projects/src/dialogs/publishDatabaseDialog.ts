@@ -258,7 +258,7 @@ export class PublishDatabaseDialog {
 
 	private createRadioButtons(view: azdata.ModelView): azdata.Component {
 		this.connectionsRadioButton = view.modelBuilder.radioButton()
-			.withProperties({
+			.withProps({
 				name: 'connection',
 				label: constants.connectionRadioButtonLabel
 			}).component();
@@ -273,7 +273,7 @@ export class PublishDatabaseDialog {
 		});
 
 		this.dataSourcesRadioButton = view.modelBuilder.radioButton()
-			.withProperties({
+			.withProps({
 				name: 'connection',
 				label: constants.dataSourceRadioButtonLabel
 			}).component();
@@ -290,14 +290,14 @@ export class PublishDatabaseDialog {
 		let flexRadioButtonsModel: azdata.FlexContainer = view.modelBuilder.flexContainer()
 			.withLayout({ flexFlow: 'column' })
 			.withItems([this.connectionsRadioButton, this.dataSourcesRadioButton])
-			.withProperties({ ariaRole: 'radiogroup' })
+			.withProps({ ariaRole: 'radiogroup' })
 			.component();
 
 		return flexRadioButtonsModel;
 	}
 
 	private createTargetConnectionComponent(view: azdata.ModelView): azdata.InputBoxComponent {
-		this.targetConnectionTextBox = view.modelBuilder.inputBox().withProperties({
+		this.targetConnectionTextBox = view.modelBuilder.inputBox().withProps({
 			value: '',
 			ariaLabel: constants.targetConnectionLabel,
 			placeHolder: constants.selectConnection,
@@ -316,7 +316,7 @@ export class PublishDatabaseDialog {
 		if (this.project.dataSources.length > 0) {
 			return this.createDataSourcesDropdown(view);
 		} else {
-			const noDataSourcesText = view.modelBuilder.text().withProperties({ value: constants.noDataSourcesText }).component();
+			const noDataSourcesText = view.modelBuilder.text().withProps({ value: constants.noDataSourcesText }).component();
 			return {
 				title: constants.dataSourceDropdownTitle,
 				component: noDataSourcesText
@@ -338,7 +338,7 @@ export class PublishDatabaseDialog {
 			});
 		});
 
-		this.dataSourcesDropDown = view.modelBuilder.dropDown().withProperties({
+		this.dataSourcesDropDown = view.modelBuilder.dropDown().withProps({
 			values: dataSourcesValues,
 		}).component();
 
@@ -362,7 +362,7 @@ export class PublishDatabaseDialog {
 
 	private createProfileRow(view: azdata.ModelView): azdata.FlexContainer {
 		const loadProfileButton = this.createLoadProfileButton(view);
-		this.loadProfileTextBox = view.modelBuilder.inputBox().withProperties({
+		this.loadProfileTextBox = view.modelBuilder.inputBox().withProps({
 			placeHolder: constants.loadProfilePlaceholderText,
 			ariaLabel: constants.profile,
 			width: cssStyles.publishDialogTextboxWidth
@@ -396,7 +396,7 @@ export class PublishDatabaseDialog {
 	}
 
 	private createDatabaseRow(view: azdata.ModelView): azdata.FlexContainer {
-		this.targetDatabaseDropDown = view.modelBuilder.dropDown().withProperties({
+		this.targetDatabaseDropDown = view.modelBuilder.dropDown().withProps({
 			values: [this.getDefaultDatabaseName()],
 			value: this.getDefaultDatabaseName(),
 			ariaLabel: constants.databaseNameLabel,
@@ -460,7 +460,7 @@ export class PublishDatabaseDialog {
 	}
 
 	private createLoadSqlCmdVarsButton(view: azdata.ModelView): azdata.ButtonComponent {
-		let loadSqlCmdVarsButton: azdata.ButtonComponent = view.modelBuilder.button().withProperties({
+		let loadSqlCmdVarsButton: azdata.ButtonComponent = view.modelBuilder.button().withProps({
 			label: constants.loadSqlCmdVarsButtonTitle,
 			title: constants.loadSqlCmdVarsButtonTitle,
 			ariaLabel: constants.loadSqlCmdVarsButtonTitle,
@@ -485,7 +485,7 @@ export class PublishDatabaseDialog {
 	}
 
 	private createSelectConnectionButton(view: azdata.ModelView): azdata.Component {
-		let selectConnectionButton: azdata.ButtonComponent = view.modelBuilder.button().withProperties({
+		let selectConnectionButton: azdata.ButtonComponent = view.modelBuilder.button().withProps({
 			ariaLabel: constants.selectConnection,
 			iconPath: IconPathHelper.selectConnection,
 			height: '16px',
@@ -528,7 +528,7 @@ export class PublishDatabaseDialog {
 	}
 
 	private createLoadProfileButton(view: azdata.ModelView): azdata.ButtonComponent {
-		let loadProfileButton: azdata.ButtonComponent = view.modelBuilder.button().withProperties({
+		let loadProfileButton: azdata.ButtonComponent = view.modelBuilder.button().withProps({
 			ariaLabel: constants.loadProfilePlaceholderText,
 			iconPath: IconPathHelper.folder_blue,
 			height: '18px',
