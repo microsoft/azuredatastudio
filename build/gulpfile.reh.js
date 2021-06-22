@@ -115,6 +115,10 @@ const serverEntryPoints = [
 	{
 		name: 'vs/platform/files/node/watcher/nsfw/watcherApp',
 		exclude: ['vs/css', 'vs/nls']
+	},
+	{
+		name: 'vs/platform/terminal/node/ptyHostMain',
+		exclude: ['vs/css', 'vs/nls']
 	}
 ];
 
