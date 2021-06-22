@@ -11,7 +11,6 @@ import * as constants from '../../constants/strings';
 import * as os from 'os';
 import { azureResource } from 'azureResource';
 import { IconPathHelper } from '../../constants/iconPathHelper';
-import { selectDropDownIndex } from '../../api/utils';
 import { CreateResourceGroupDialog } from '../createResourceGroup/createResourceGroupDialog';
 import * as EventEmitter from 'events';
 
