@@ -33,7 +33,7 @@ export class CreateResourceGroupDialog {
 	}
 
 	async initialize(): Promise<azureResource.AzureResourceResourceGroup> {
-		let tab = azdata.window.createTab('');
+		let tab = azdata.window.createTab('sql.migration.CreateResourceGroupDialog');
 		await tab.registerContent(async (view: azdata.ModelView) => {
 			this._view = view;
 
@@ -52,7 +52,9 @@ export class CreateResourceGroupDialog {
 				}
 			}).component();
 
-			const resoruceGroupName = view.modelBuilder.inputBox().withValidation(c => {
+			const resourceGroupName = view.modelBuilder.inputBox().withProps({
+				ariaLabel: constants.NAME_OF_NEW_RESOURCE_GROUP
+			}).withValidation(c => {
 				let valid = false;
 				if (c.value!.length > 0 && c.value!.length <= 90 && /^[-\w\._\(\)]+$/.test(c.value!)) {
 					valid = true;
@@ -61,7 +63,7 @@ export class CreateResourceGroupDialog {
 				return valid;
 			}).component();
 
-			resoruceGroupName.onTextChanged(e => {
+			resourceGroupName.onTextChanged(e => {
 				errorBox.updateCssStyles({
 					'display': 'none'
 				});
@@ -81,7 +83,7 @@ export class CreateResourceGroupDialog {
 				cancelButton.enabled = false;
 				loading.loading = true;
 				try {
-					const resourceGroup = await createResourceGroup(this._azureAccount, this._subscription, resoruceGroupName.value!, this._location);
+					const resourceGroup = await createResourceGroup(this._azureAccount, this._subscription, resourceGroupName.value!, this._location);
 					this._creationEvent.emit('done', resourceGroup);
 				} catch (e) {
 					errorBox.updateCssStyles({
@@ -89,7 +91,7 @@ export class CreateResourceGroupDialog {
 					});
 					errorBox.text = e.toString();
 					cancelButton.enabled = true;
-					resoruceGroupName.validate();
+					resourceGroupName.validate();
 				} finally {
 					loading.loading = false;
 				}
@@ -105,7 +107,9 @@ export class CreateResourceGroupDialog {
 			});
 
 			const loading = view.modelBuilder.loadingComponent().withProps({
-				loading: false
+				loading: false,
+				loadingText: constants.CREATING_RESOURCE_GROUP,
+				loadingCompletedText: constants.RESOURCE_GROUP_CREATED
 			}).component();
 
 
@@ -150,7 +154,7 @@ export class CreateResourceGroupDialog {
 			}).withItems([
 				resourceGroupDescription,
 				nameLabel,
-				resoruceGroupName,
+				resourceGroupName,
 				errorBox,
 				buttonContainer
 			]).component();
@@ -172,7 +176,7 @@ export class CreateResourceGroupDialog {
 			}).component();
 			return view.initializeModel(form);
 		});
-		this._dialogObject.okButton.label = 'Apply';
+		this._dialogObject.okButton.label = constants.APPLY;
 		this._dialogObject.content = [tab];
 		azdata.window.openDialog(this._dialogObject);
 		return new Promise((resolve) => {

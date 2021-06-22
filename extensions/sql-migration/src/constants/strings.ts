@@ -218,7 +218,10 @@ export function NEW_RESOURCE_GROUP(resourceGroupName: string): string {
 export const TEST_CONNECTION = localize('sql.migration.test.connection', "Test connection");
 export const DATA_MIGRATION_SERVICE_CREATED_SUCCESSFULLY = localize('sql.migration.database.migration.service.created.successfully', "Database migration service has been created successfully");
 export const DMS_PROVISIONING_FAILED = localize('sql.migration.dms.provision.failed', "Database migration service has failed to provision. Please try again after some time.");
-
+export const APPLY = localize('sql.migration.apply', "Apply");
+export const CREATING_RESOURCE_GROUP = localize('sql.migration.creating.rg.loading', "Creating resource group");
+export const RESOURCE_GROUP_CREATED = localize('sql.migration.rg.created', "Resource group created");
+export const NAME_OF_NEW_RESOURCE_GROUP = localize('sql.migration.name.of.new.rg', "Name of new Resource group");
 // common strings
 export const LEARN_MORE = localize('sql.migration.learn.more', "Learn more");
 export const SUBSCRIPTION = localize('sql.migration.subscription', "Subscription");
