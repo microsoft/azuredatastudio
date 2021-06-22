@@ -478,7 +478,7 @@ export abstract class ViewPane extends Pane implements IView {
 
 	private setActions(): void {
 		if (this.toolbar) {
-			this.toolbar.setActions(prepareActions(this.menuActions.getPrimaryActions()), prepareActions(this.menuActions.getSecondaryActions()));
+			this.toolbar.setActions(prepareActions(this.getActions()), prepareActions(this.menuActions.getSecondaryActions()));
 			this.toolbar.context = this.getActionsContext();
 		}
 	}
@@ -494,6 +494,10 @@ export abstract class ViewPane extends Pane implements IView {
 	protected updateActions(): void {
 		this.setActions();
 		this._onDidChangeTitleArea.fire();
+	}
+
+	getActions(): IAction[] {
+		return this.menuActions.getPrimaryActions();
 	}
 
 	getActionViewItem(action: IAction): IActionViewItem | undefined {

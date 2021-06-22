@@ -116,7 +116,7 @@ class AccountPanel extends ViewPane {
 		this.tenantList!.splice(0, this.tenantList!.length, account.properties?.tenants ?? []);
 	}
 
-	public getActions(): IAction[] {
+	public override getActions(): IAction[] {
 		return [this.instantiationService.createInstance(
 			AddAccountAction,
 			this.options.id
