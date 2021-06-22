@@ -458,14 +458,16 @@ function packagePkgTask(platform, arch, pkgTarget) {
 					() => exec('yarn', root)
 				);
 			});
-			const yarnrcExtensions = task.define(`vscode-web-${type}${dashed(platform)}${dashed(arch)}-yarnrc-extensions`, task.series(...tasks));
+			const yarnrcExtensions = task.define(`vscode-${type}${dashed(platform)}${dashed(arch)}-yarnrc-extensions`, task.series(...tasks));
+			gulp.task(yarnrcExtensions);
 
-			const cleanupExtensions = task.define(`vscode-web-${type}${dashed(platform)}${dashed(arch)}-cleanup-extensions`, () => {
+			const cleanupExtensions = task.define(`vscode-${type}${dashed(platform)}${dashed(arch)}-cleanup-extensions`, () => {
 				return Promise.all(rebuildExtensions.map(scope => {
 					const root = path.join(EXTENSIONS, scope);
 					return util.rimraf(path.join(root, '.yarnrc'))();
 				}));
 			});
+			gulp.task(cleanupExtensions);
 
 			const serverTaskCI = task.define(`vscode-${type}${dashed(platform)}${dashed(arch)}${dashed(minified)}-ci`, task.series(
 				gulp.task(`node-${platform}-${platform === 'darwin' ? 'x64' : arch}`),
