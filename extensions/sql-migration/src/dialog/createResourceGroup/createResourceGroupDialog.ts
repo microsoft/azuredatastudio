@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import * as vscode from 'vscode';
 import { azureResource } from 'azureResource';
 import { EventEmitter } from 'events';
 import { createResourceGroup } from '../../api/azure';
@@ -19,7 +18,7 @@ export class CreateResourceGroupDialog {
 		this._dialogObject = azdata.window.createModelViewDialog(
 			'',
 			'CreateResourceGroupDialog',
-			360,
+			550,
 			'callout',
 			'below',
 			false,
@@ -69,6 +68,9 @@ export class CreateResourceGroupDialog {
 			}).component();
 
 			okButton.onDidClick(async e => {
+				errorBox.updateCssStyles({
+					'display': 'none'
+				});
 				okButton.enabled = false;
 				cancelButton.enabled = false;
 				loading.loading = true;
@@ -76,7 +78,10 @@ export class CreateResourceGroupDialog {
 					const resourceGroup = await createResourceGroup(this._azureAccount, this._subscription, resoruceGroupName.value!, this._location);
 					this._creationEvent.emit('done', resourceGroup);
 				} catch (e) {
-					vscode.window.showErrorMessage(e.toString());
+					errorBox.updateCssStyles({
+						'display': 'inline'
+					});
+					errorBox.text = e.toString();
 					cancelButton.enabled = true;
 					resoruceGroupName.validate();
 				} finally {
@@ -126,12 +131,21 @@ export class CreateResourceGroupDialog {
 				}
 			});
 
+			const errorBox = this._view.modelBuilder.infoBox().withProps({
+				style: 'error',
+				text: '',
+				CSSStyles: {
+					'display': 'none'
+				}
+			}).component();
+
 			const container = this._view.modelBuilder.flexContainer().withLayout({
 				flexFlow: 'column'
 			}).withItems([
 				resourceGroupDescription,
 				nameLabel,
 				resoruceGroupName,
+				errorBox,
 				buttonContainer
 			]).component();
 

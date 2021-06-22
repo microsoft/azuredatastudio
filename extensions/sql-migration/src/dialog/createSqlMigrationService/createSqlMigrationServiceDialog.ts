@@ -199,17 +199,16 @@ export class CreateSqlMigrationServiceDialog {
 			const createResourceGroupDialog = new CreateResourceGroupDialog(this.migrationStateModel._azureAccount, this.migrationStateModel._targetSubscription, this.migrationStateModel._targetServerInstance.location);
 			const createdResourceGroup = await createResourceGroupDialog.initialize();
 			if (createdResourceGroup) {
-				for (let i = 0; i < 5; i++) {
-					await this.populateResourceGroups();
-					if ((<azdata.CategoryValue[]>this.migrationServiceResourceGroupDropdown.values)?.find(v => v.displayName === createdResourceGroup.name)) {
-						break;
-					}
-					await new Promise(resolve => setTimeout(resolve, 3000));
-				}
+				this.migrationServiceResourceGroupDropdown.loading = true;
+				(<azdata.CategoryValue[]>this.migrationServiceResourceGroupDropdown.values).unshift({
+					displayName: constants.NEW_RESOURCE_GROUP(createdResourceGroup.name),
+					name: createdResourceGroup.name
+				});
 				this.migrationServiceResourceGroupDropdown.value = {
 					displayName: createdResourceGroup.name,
 					name: createdResourceGroup.name
 				};
+				this.migrationServiceResourceGroupDropdown.loading = false;
 			}
 		});
 
@@ -581,5 +580,6 @@ export class CreateSqlMigrationServiceDialog {
 		this._formSubmitButton.enabled = enable;
 		this.migrationServiceResourceGroupDropdown.enabled = enable;
 		this.migrationServiceNameText.enabled = enable;
+		this._createResourceGroupLink.enabled = enable;
 	}
 }

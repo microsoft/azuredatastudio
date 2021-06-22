@@ -211,6 +211,9 @@ export const NO_VIRTUAL_MACHINE_FOUND = localize('sql.migration.no.virtualMachin
 export const TARGET_SELECTION_PAGE_TITLE = localize('sql.migration.target.page.title', "Choose the target Azure SQL");
 export const RESOURCE_GROUP_DESCRIPTION = localize('sql.migration.resource.group.description', "A resource group is a container that holds related resources for an Azure solution");
 export const OK = localize('sql.migration.ok', "OK");
+export function NEW_RESOURCE_GROUP(resourceGroupName: string): string {
+	return localize('sql.migration.new.resource.group', "(new) {0}", resourceGroupName);
+}
 
 // common strings
 export const LEARN_MORE = localize('sql.migration.learn.more', "Learn more");
