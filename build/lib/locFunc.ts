@@ -5,12 +5,9 @@
 
 import * as es from 'event-stream';
 import * as path from 'path';
-import * as fs from 'fs';
-import { createStatsStream } from './stats';
-import * as File from 'vinyl';
-import { Stream } from 'stream';
 import * as glob from 'glob';
 import rename = require('gulp-rename');
+import ext = require('./extensions');
 
 const root = path.dirname(path.dirname(__dirname));
 
@@ -24,33 +21,26 @@ export function packageLangpacksStream(): NodeJS.ReadWriteStream {
 		})
 
 	const builtLangpacks = langpackDescriptions.map(langpack => {
-		return fromLocalNormal(langpack.path)
+		return ext.fromLocalNormal(langpack.path)
 			.pipe(rename(p => p.dirname = `langpacks/${langpack.name}/${p.dirname}`));
 	});
 
 	return es.merge(builtLangpacks);
 }
 
-//copied from extensions.
-function fromLocalNormal(extensionPath: string): Stream {
-	const result = es.through();
-
-	const vsce = require('vsce') as typeof import('vsce');
-
-	vsce.listFiles({ cwd: extensionPath, packageManager: vsce.PackageManager.Yarn })
-		.then(fileNames => {
-			const files = fileNames
-				.map(fileName => path.join(extensionPath, fileName))
-				.map(filePath => new File({
-					path: filePath,
-					stat: fs.statSync(filePath),
-					base: extensionPath,
-					contents: fs.createReadStream(filePath) as any
-				}));
-
-			es.readArray(files).pipe(result);
+// Modified packageLocalExtensionsStream but for any ADS extensions including excluded/external ones.
+export function packageSingleExtensionStream(name : string): NodeJS.ReadWriteStream {
+	const extenalExtensionDescriptions = (<string[]>glob.sync(`extensions/${name}/package.json`))
+		.map(manifestPath => {
+			const extensionPath = path.dirname(path.join(root, manifestPath));
+			const extensionName = path.basename(extensionPath);
+			return { name: extensionName, path: extensionPath };
 		})
-		.catch(err => result.emit('error', err));
 
-	return result.pipe(createStatsStream(path.basename(extensionPath)));
+	const builtExtension = extenalExtensionDescriptions.map(extension => {
+		return ext.fromLocal(extension.path, false)
+			.pipe(rename(p => p.dirname = `extensions/${extension.name}/${p.dirname}`));
+	});
+
+	return es.merge(builtExtension);
 }

@@ -236,14 +236,13 @@ export class TabsTitleControl extends TitleControl {
 				}
 
 				EventHelper.stop(e);
-
-				this.group.openEditor(
+				// {{SQL CARBON EDIT}} - use editor service to open editor, which will go through the override step and resolve to UntitledQueryEditorInput.
+				this.editorService.openEditor(
 					this.editorService.createEditorInput({ forceUntitled: true }),
 					{
 						pinned: true,			// untitled is always pinned
 						index: this.group.count // always at the end
-					}
-				);
+					}, this.group);
 			}));
 		});
 

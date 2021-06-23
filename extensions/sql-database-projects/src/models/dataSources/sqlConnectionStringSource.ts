@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as azdata from 'azdata';
+import type * as azdataType from 'azdata';
 import { DataSource } from './dataSources';
 import * as constants from '../../common/constants';
 
@@ -87,8 +87,8 @@ export class SqlConnectionDataSource extends DataSource {
 		return new SqlConnectionDataSource(json.name, (json.data as unknown as SqlConnectionDataSourceJson).connectionString);
 	}
 
-	public getConnectionProfile(): azdata.IConnectionProfile {
-		const connProfile: azdata.IConnectionProfile = {
+	public getConnectionProfile(): azdataType.IConnectionProfile {
+		const connProfile: azdataType.IConnectionProfile = {
 			serverName: this.server,
 			databaseName: this.database,
 			connectionName: this.name,
