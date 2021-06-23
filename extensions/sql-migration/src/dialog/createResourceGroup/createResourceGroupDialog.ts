@@ -174,11 +174,14 @@ export class CreateResourceGroupDialog {
 					'padding': '0px !important'
 				}
 			}).component();
-			return view.initializeModel(form);
+			return view.initializeModel(form).then(v => {
+				resourceGroupName.focus();
+			});
 		});
 		this._dialogObject.okButton.label = constants.APPLY;
 		this._dialogObject.content = [tab];
 		azdata.window.openDialog(this._dialogObject);
+
 		return new Promise((resolve) => {
 			this._creationEvent.once('done', async (resourceGroup: azureResource.AzureResourceResourceGroup) => {
 				azdata.window.closeDialog(this._dialogObject);
