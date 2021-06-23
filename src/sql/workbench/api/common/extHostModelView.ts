@@ -1544,7 +1544,7 @@ class DeclarativeTableWrapper extends ComponentWrapper implements azdata.Declara
 		super(proxy, handle, ModelComponentTypes.DeclarativeTable, id, logService);
 		this.properties = {};
 		this._emitterMap.set(ComponentEventType.onDidChange, new Emitter<any>());
-		this._emitterMap.set(ComponentEventType.onDidClick, new Emitter<any>());
+		this._emitterMap.set(ComponentEventType.onSelectedRowChanged, new Emitter<azdata.DeclarativeTableRowSelectedEvent>());
 
 	}
 
@@ -1568,6 +1568,11 @@ class DeclarativeTableWrapper extends ComponentWrapper implements azdata.Declara
 		});
 	}
 
+	async setDataValues(v: azdata.DeclarativeTableCellValue[][]): Promise<void> {
+		await this.clearItems();
+		await this.setProperty('dataValues', v);
+	}
+
 	public get columns(): azdata.DeclarativeTableColumn[] {
 		return this.properties['columns'];
 	}
@@ -1581,12 +1586,12 @@ class DeclarativeTableWrapper extends ComponentWrapper implements azdata.Declara
 		return emitter && emitter.event;
 	}
 
-	public get onRowSelected(): vscode.Event<any> {
-		let emitter = this._emitterMap.get(ComponentEventType.onDidClick);
+	public get onRowSelected(): vscode.Event<azdata.DeclarativeTableRowSelectedEvent> {
+		let emitter = this._emitterMap.get(ComponentEventType.onSelectedRowChanged);
 		return emitter && emitter.event;
 	}
 
-	protected notifyPropertyChanged(): Thenable<void> {
+	protected override notifyPropertyChanged(): Thenable<void> {
 		return this._proxy.$setProperties(this._handle, this._id, this.getPropertiesForMainThread());
 	}
 
@@ -1602,7 +1607,15 @@ class DeclarativeTableWrapper extends ComponentWrapper implements azdata.Declara
 		this._proxy.$doAction(this._handle, this._id, ModelViewAction.Filter, rowIndexes);
 	}
 
-	public toComponentShape(): IComponentShape {
+	public get selectedRow(): number {
+		return this.properties['selectedRow'] ?? -1;
+	}
+
+	public set selectedRow(v: number) {
+		this.setProperty('selectedRow', v);
+	}
+
+	public override toComponentShape(): IComponentShape {
 		// Overridden to ensure we send the correct properties mapping.
 		return <IComponentShape>{
 			id: this.id,

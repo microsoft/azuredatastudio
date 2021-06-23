@@ -32,6 +32,7 @@ if "%INTEGRATION_TEST_ELECTRON_PATH%"=="" (
 					:: compile-extension:css-language-features-server^
 					:: compile-extension:html-language-features-server^
 					:: compile-extension:json-language-features-server^
+					:: compile-extension-media
 
 	:: Configuration for more verbose output
 	set VSCODE_CLI=1

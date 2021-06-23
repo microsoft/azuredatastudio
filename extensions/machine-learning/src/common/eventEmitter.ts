@@ -44,7 +44,7 @@ export class EventEmitterCollection extends vscode.Disposable {
 		emitter.dispose();
 	}
 
-	public dispose(): any {
+	public override dispose(): any {
 		this._events.forEach(events => {
 			events.forEach(event => {
 				event.dispose();

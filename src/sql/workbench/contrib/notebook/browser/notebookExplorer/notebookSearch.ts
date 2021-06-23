@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { SearchView } from 'vs/workbench/contrib/search/browser/searchView';
+import { SearchLinkButton, SearchView } from 'vs/workbench/contrib/search/browser/searchView';
 import { ViewPane, IViewPaneOptions } from 'vs/workbench/browser/parts/views/viewPane';
 import { IFileService } from 'vs/platform/files/common/files';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
@@ -46,6 +46,7 @@ import { Memento } from 'vs/workbench/common/memento';
 import { SearchUIState } from 'vs/workbench/contrib/search/common/search';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
+import { ICodeEditorService } from 'vs/editor/browser/services/codeEditorService';
 
 const $ = dom.$;
 
@@ -60,26 +61,27 @@ export class NotebookSearchView extends SearchView {
 
 	constructor(
 		options: IViewPaneOptions,
-		@IFileService readonly fileService: IFileService,
-		@IEditorService readonly editorService: IEditorService,
-		@IProgressService readonly progressService: IProgressService,
-		@INotificationService readonly notificationService: INotificationService,
-		@IDialogService readonly dialogService: IDialogService,
-		@IContextViewService readonly contextViewService: IContextViewService,
+		@IFileService fileService: IFileService,
+		@IEditorService editorService: IEditorService,
+		@ICodeEditorService codeEditorService: ICodeEditorService,
+		@IProgressService progressService: IProgressService,
+		@INotificationService notificationService: INotificationService,
+		@IDialogService dialogService: IDialogService,
+		@IContextViewService contextViewService: IContextViewService,
 		@IInstantiationService instantiationService: IInstantiationService,
 		@IViewDescriptorService viewDescriptorService: IViewDescriptorService,
 		@IConfigurationService configurationService: IConfigurationService,
-		@IWorkspaceContextService readonly contextService: IWorkspaceContextService,
-		@ISearchWorkbenchService readonly searchWorkbenchService: ISearchWorkbenchService,
-		@IContextKeyService readonly contextKeyService: IContextKeyService,
-		@IReplaceService readonly replaceService: IReplaceService,
-		@ITextFileService readonly textFileService: ITextFileService,
-		@IPreferencesService readonly preferencesService: IPreferencesService,
+		@IWorkspaceContextService contextService: IWorkspaceContextService,
+		@ISearchWorkbenchService searchWorkbenchService: ISearchWorkbenchService,
+		@IContextKeyService contextKeyService: IContextKeyService,
+		@IReplaceService replaceService: IReplaceService,
+		@ITextFileService textFileService: ITextFileService,
+		@IPreferencesService preferencesService: IPreferencesService,
 		@IThemeService themeService: IThemeService,
-		@ISearchHistoryService readonly searchHistoryService: ISearchHistoryService,
+		@ISearchHistoryService searchHistoryService: ISearchHistoryService,
 		@IContextMenuService contextMenuService: IContextMenuService,
-		@IMenuService readonly menuService: IMenuService,
-		@IAccessibilityService readonly accessibilityService: IAccessibilityService,
+		@IMenuService menuService: IMenuService,
+		@IAccessibilityService accessibilityService: IAccessibilityService,
 		@IKeybindingService keybindingService: IKeybindingService,
 		@IStorageService storageService: IStorageService,
 		@IOpenerService openerService: IOpenerService,
@@ -88,7 +90,7 @@ export class NotebookSearchView extends SearchView {
 		@IAdsTelemetryService private _telemetryService: IAdsTelemetryService,
 	) {
 
-		super(options, fileService, editorService, progressService, notificationService, dialogService, contextViewService, instantiationService, viewDescriptorService, configurationService, contextService, searchWorkbenchService, contextKeyService, replaceService, textFileService, preferencesService, themeService, searchHistoryService, contextMenuService, menuService, accessibilityService, keybindingService, storageService, openerService, telemetryService);
+		super(options, fileService, editorService, codeEditorService, progressService, notificationService, dialogService, contextViewService, instantiationService, viewDescriptorService, configurationService, contextService, searchWorkbenchService, contextKeyService, replaceService, textFileService, preferencesService, themeService, searchHistoryService, contextMenuService, menuService, accessibilityService, keybindingService, storageService, openerService, telemetryService);
 
 		this.memento = new Memento(this.id, storageService);
 		this.viewletState = this.memento.getMemento(StorageScope.WORKSPACE, StorageTarget.MACHINE);
@@ -103,7 +105,7 @@ export class NotebookSearchView extends SearchView {
 		this.toggleExpandAction = this._register(this.instantiationService.createInstance(ToggleCollapseAndExpandAction, ToggleCollapseAndExpandAction.ID, ToggleCollapseAndExpandAction.LABEL, collapseDeepestExpandedLevelAction, expandAllAction));
 	}
 
-	protected get searchConfig(): ISearchConfigurationProperties {
+	protected override get searchConfig(): ISearchConfigurationProperties {
 		return this.configurationService.getValue<ISearchConfigurationProperties>('notebookExplorerSearch');
 	}
 
@@ -119,7 +121,7 @@ export class NotebookSearchView extends SearchView {
 		return this.state !== SearchUIState.Idle;
 	}
 
-	public updateActions(): void {
+	public override updateActions(): void {
 		for (const action of this.viewActions) {
 			action.update();
 		}
@@ -137,7 +139,7 @@ export class NotebookSearchView extends SearchView {
 		this.toggleExpandAction];
 	}
 
-	protected onContextMenu(e: ITreeContextMenuEvent<RenderableMatch | null>): void {
+	protected override onContextMenu(e: ITreeContextMenuEvent<RenderableMatch | null>): void {
 		if (!this.contextMenu) {
 			this.contextMenu = this._register(this.menuService.createMenu(MenuId.SearchContext, this.contextKeyService));
 		}
@@ -156,7 +158,7 @@ export class NotebookSearchView extends SearchView {
 		});
 	}
 
-	public reLayout(): void {
+	public override reLayout(): void {
 		if (this.isDisposed) {
 			return;
 		}
@@ -182,7 +184,7 @@ export class NotebookSearchView extends SearchView {
 		}
 	}
 
-	renderBody(parent: HTMLElement): void {
+	override renderBody(parent: HTMLElement): void {
 		super.callRenderBody(parent);
 
 		this.container = dom.append(parent, dom.$('.search-view'));
@@ -201,7 +203,7 @@ export class NotebookSearchView extends SearchView {
 		this.setExpanded(false);
 	}
 
-	protected showSearchWithoutFolderMessage(): void {
+	protected override showSearchWithoutFolderMessage(): void {
 		this.searchWithoutFolderMessageElement = this.clearMessage();
 
 		const textEl = dom.append(this.searchWithoutFolderMessageElement,
@@ -210,14 +212,14 @@ export class NotebookSearchView extends SearchView {
 		const openFolderLink = dom.append(textEl,
 			$('a.pointer.prominent', { tabindex: 0 }, nls.localize('openNotebookFolder', "Open Notebooks")));
 
-		this.messageDisposables.push(dom.addDisposableListener(openFolderLink, dom.EventType.CLICK, async (e: MouseEvent) => {
+		this.messageDisposables.add(dom.addDisposableListener(openFolderLink, dom.EventType.CLICK, async (e: MouseEvent) => {
 			dom.EventHelper.stop(e, false);
 			this.commandService.executeCommand('notebook.command.openNotebookFolder');
 			this.setExpanded(false);
 		}));
 	}
 
-	protected createSearchResultsView(container: HTMLElement): void {
+	protected override createSearchResultsView(container: HTMLElement): void {
 		super.createSearchResultsView(container);
 
 		this._register(this.tree.onContextMenu(e => this.onContextMenu(e)));
@@ -315,26 +317,16 @@ export class NotebookSearchView extends SearchView {
 				const p = dom.append(messageEl, $('p', undefined, message));
 
 				if (!completed) {
-					const searchAgainLink = dom.append(p, $('a.pointer.prominent', undefined, nls.localize('rerunSearch.message', "Search again")));
-					this.messageDisposables.push(dom.addDisposableListener(searchAgainLink, dom.EventType.CLICK, (e: MouseEvent) => {
-						dom.EventHelper.stop(e, false);
-						this.triggerSearchQueryChange(query, excludePatternText, includePatternText, triggeredOnType, searchWidget);
-					}));
-					// cancel search
-					dom.append(p, $('span', undefined, ' / '));
-					const cancelSearchLink = dom.append(p, $('a.pointer.prominent', undefined, nls.localize('cancelSearch.message', "Cancel Search")));
-					this.messageDisposables.push(dom.addDisposableListener(cancelSearchLink, dom.EventType.CLICK, (e: MouseEvent) => {
-						dom.EventHelper.stop(e, false);
-						this.cancelSearch();
-					}));
+					const searchAgainButton = this.messageDisposables.add(new SearchLinkButton(
+						nls.localize('rerunSearch.message', "Search again"),
+						() => this.triggerQueryChange({ preserveFocus: false })));
+					dom.append(p, searchAgainButton.element);
 				} else if (hasIncludes || hasExcludes) {
-					const searchAgainLink = dom.append(p, $('a.pointer.prominent', { tabindex: 0 }, nls.localize('rerunSearchInAll.message', "Search again in all files")));
-					this.messageDisposables.push(dom.addDisposableListener(searchAgainLink, dom.EventType.CLICK, (e: MouseEvent) => {
-						dom.EventHelper.stop(e, false);
-					}));
+					const searchAgainButton = this.messageDisposables.add(new SearchLinkButton(nls.localize('rerunSearchInAll.message', "Search again in all files"), this.onSearchAgain.bind(this)));
+					dom.append(p, searchAgainButton.element);
 				} else {
-					const openSettingsLink = dom.append(p, $('a.pointer.prominent', { tabindex: 0 }, nls.localize('openSettings.message', "Open Settings")));
-					this.addClickEvents(openSettingsLink, this.onOpenSettings);
+					const openSettingsButton = this.messageDisposables.add(new SearchLinkButton(nls.localize('openSettings.message', "Open Settings"), this.onOpenSettings.bind(this)));
+					dom.append(p, openSettingsButton.element);
 				}
 
 				if (this.contextService.getWorkbenchState() === WorkbenchState.EMPTY && !this.contextKeyService.getContextKeyValue('bookOpened')) {
@@ -391,12 +383,12 @@ export class NotebookSearchView extends SearchView {
 			.then(onComplete, onError);
 	}
 
-	protected async refreshAndUpdateCount(event?: IChangeEvent): Promise<void> {
+	protected override async refreshAndUpdateCount(event?: IChangeEvent): Promise<void> {
 		this.updateSearchResultCount(this.viewModel.searchResult.query!.userDisabledExcludesAndIgnoreFiles, false);
 		return this.refreshTree(event);
 	}
 
-	async refreshTree(event?: IChangeEvent): Promise<void> {
+	override async refreshTree(event?: IChangeEvent): Promise<void> {
 		const collapseResults = this.searchConfig.collapseResults;
 		if (!event || event.added || event.removed) {
 			// Refresh whole tree
@@ -422,7 +414,7 @@ export class NotebookSearchView extends SearchView {
 		}
 	}
 
-	cancelSearch(focus: boolean = true): boolean {
+	override cancelSearch(focus: boolean = true): boolean {
 		if (this.viewModel.cancelSearch(false)) {
 			return true;
 		}
@@ -479,7 +471,7 @@ export class NotebookSearchView extends SearchView {
 			.then(() => undefined, () => undefined);
 	}
 
-	public saveState(): void {
+	public override saveState(): void {
 		const preserveCase = this.viewModel.preserveCase;
 		this.viewletState['query.preserveCase'] = preserveCase;
 
@@ -488,7 +480,7 @@ export class NotebookSearchView extends SearchView {
 		ViewPane.prototype.saveState.call(this);
 	}
 
-	dispose(): void {
+	override dispose(): void {
 		this.isDisposed = true;
 		this.saveState();
 		this.treeSelectionChangeListener.dispose();
@@ -546,7 +538,7 @@ class ToggleCollapseAndExpandAction extends Action {
 	}
 
 
-	async run(): Promise<void> {
+	override async run(): Promise<void> {
 		await this.determineAction().run();
 	}
 }
@@ -568,7 +560,7 @@ class CancelSearchAction extends Action {
 		this.enabled = !!searchView && searchView.isSlowSearch();
 	}
 
-	run(): Promise<void> {
+	override run(): Promise<void> {
 		const searchView = getSearchView(this.viewsService);
 		if (searchView) {
 			searchView.cancelSearch();
@@ -595,7 +587,7 @@ class ExpandAllAction extends Action {
 		this.enabled = !!searchView && searchView.hasSearchResults();
 	}
 
-	run(): Promise<void> {
+	override run(): Promise<void> {
 		const searchView = getSearchView(this.viewsService);
 		if (searchView) {
 			const viewer = searchView.getControl();
@@ -624,7 +616,7 @@ class CollapseDeepestExpandedLevelAction extends Action {
 		this.enabled = !!searchView && searchView.hasSearchResults();
 	}
 
-	run(): Promise<void> {
+	override run(): Promise<void> {
 		const searchView = getSearchView(this.viewsService);
 		if (searchView) {
 			const viewer = searchView.getControl();
@@ -680,7 +672,7 @@ class ClearSearchResultsAction extends Action {
 		this.enabled = !!searchView && searchView.hasSearchResults();
 	}
 
-	run(): Promise<void> {
+	override run(): Promise<void> {
 		const searchView = getSearchView(this.viewsService);
 		if (searchView) {
 			searchView.clearSearchResults();

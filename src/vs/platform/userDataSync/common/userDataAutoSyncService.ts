@@ -18,6 +18,8 @@ import { localize } from 'vs/nls';
 import { toLocalISOString } from 'vs/base/common/date';
 import { URI } from 'vs/base/common/uri';
 import { isEqual } from 'vs/base/common/resources';
+import { isWeb } from 'vs/base/common/platform';
+import { IProductService } from 'vs/platform/product/common/productService';
 
 type AutoSyncClassification = {
 	sources: { classification: 'SystemMetaData', purpose: 'FeatureInsight', isMeasurement: true };
@@ -36,6 +38,7 @@ const enablementKey = 'sync.enable';
 const disableMachineEventuallyKey = 'sync.disableMachineEventually';
 const sessionIdKey = 'sync.sessionId';
 const storeUrlKey = 'sync.storeUrl';
+const productQualityKey = 'sync.productQuality';
 
 interface _IUserDataAutoSyncEnablementService extends IUserDataAutoSyncEnablementService {
 	canToggleEnablement(): boolean;
@@ -76,6 +79,9 @@ export class UserDataAutoSyncEnablementService extends Disposable implements _IU
 	}
 
 	setEnablement(enabled: boolean): void {
+		if (enabled && !this.canToggleEnablement()) {
+			return;
+		}
 		this.storageService.store(enablementKey, enabled, StorageScope.GLOBAL, StorageTarget.MACHINE);
 	}
 
@@ -119,7 +125,20 @@ export class UserDataAutoSyncService extends Disposable implements IUserDataAuto
 		}
 	}
 
+	private previousProductQuality: string | undefined;
+	private get productQuality(): string | undefined {
+		return this.storageService.get(productQualityKey, StorageScope.GLOBAL);
+	}
+	private set productQuality(productQuality: string | undefined) {
+		if (productQuality) {
+			this.storageService.store(productQualityKey, productQuality, StorageScope.GLOBAL, StorageTarget.MACHINE);
+		} else {
+			this.storageService.remove(productQualityKey, StorageScope.GLOBAL);
+		}
+	}
+
 	constructor(
+		@IProductService productService: IProductService,
 		@IUserDataSyncStoreManagementService private readonly userDataSyncStoreManagementService: IUserDataSyncStoreManagementService,
 		@IUserDataSyncStoreService private readonly userDataSyncStoreService: IUserDataSyncStoreService,
 		@IUserDataSyncResourceEnablementService private readonly userDataSyncResourceEnablementService: IUserDataSyncResourceEnablementService,
@@ -137,6 +156,9 @@ export class UserDataAutoSyncService extends Disposable implements IUserDataAuto
 
 		this.lastSyncUrl = this.syncUrl;
 		this.syncUrl = userDataSyncStoreManagementService.userDataSyncStore?.url;
+
+		this.previousProductQuality = this.productQuality;
+		this.productQuality = productService.quality;
 
 		if (this.syncUrl) {
 
@@ -166,6 +188,7 @@ export class UserDataAutoSyncService extends Disposable implements IUserDataAuto
 			this._register(userDataSyncStoreService.onDidChangeDonotMakeRequestsUntil(() => this.updateAutoSync()));
 			this._register(Event.debounce<string, string[]>(userDataSyncService.onDidChangeLocal, (last, source) => last ? [...last, source] : [source], 1000)(sources => this.triggerSync(sources, false, false)));
 			this._register(Event.filter(this.userDataSyncResourceEnablementService.onDidChangeResourceEnablement, ([, enabled]) => enabled)(() => this.triggerSync(['resourceEnablement'], false, false)));
+			this._register(this.userDataSyncStoreManagementService.onDidChangeUserDataSyncStore(() => this.triggerSync(['userDataSyncStoreChanged'], false, false)));
 		}
 	}
 
@@ -257,6 +280,10 @@ export class UserDataAutoSyncService extends Disposable implements IUserDataAuto
 		}
 	}
 
+	private hasProductQualityChanged(): boolean {
+		return !!this.previousProductQuality && !!this.productQuality && this.previousProductQuality !== this.productQuality;
+	}
+
 	private async onDidFinishSync(error: Error | undefined): Promise<void> {
 		if (!error) {
 			// Sync finished without errors
@@ -314,9 +341,22 @@ export class UserDataAutoSyncService extends Disposable implements IUserDataAuto
 
 		// Service changed
 		else if (userDataSyncError.code === UserDataSyncErrorCode.ServiceChanged || userDataSyncError.code === UserDataSyncErrorCode.DefaultServiceChanged) {
-			await this.turnOff(false, true /* force soft turnoff on error */, true /* do not disable machine */);
-			await this.turnOn();
-			this.logService.info('Auto Sync: Sync Service changed. Turned off auto sync, reset local state and turned on auto sync.');
+
+			// Check if default settings sync service has changed in web without changing the product quality
+			// Then turn off settings sync and ask user to turn on again
+			if (isWeb && userDataSyncError.code === UserDataSyncErrorCode.DefaultServiceChanged && !this.hasProductQualityChanged()) {
+				await this.turnOff(false, true /* force soft turnoff on error */);
+				this.logService.info('Auto Sync: Turned off sync because default sync service is changed.');
+			}
+
+			// Service has changed by the user. So turn off and turn on sync.
+			// Show a prompt to the user about service change.
+			else {
+				await this.turnOff(false, true /* force soft turnoff on error */, true /* do not disable machine */);
+				await this.turnOn();
+				this.logService.info('Auto Sync: Sync Service changed. Turned off auto sync, reset local state and turned on auto sync.');
+			}
+
 		}
 
 		else {

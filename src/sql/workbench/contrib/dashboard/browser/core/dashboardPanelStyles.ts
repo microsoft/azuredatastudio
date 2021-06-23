@@ -3,9 +3,9 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { DASHBOARD_WIDGET_TITLE, DASHBOARD_WIDGET_SUBTEXT } from 'sql/workbench/common/theme';
 import 'vs/css!./dashboardPanel';
 import { registerThemingParticipant, IColorTheme, ICssStyleCollector } from 'vs/platform/theme/common/themeService';
-import { DASHBOARD_WIDGET_SUBTEXT, DASHBOARD_WIDGET_TITLE } from 'vs/workbench/common/theme';
 
 registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) => {
 	// widget title

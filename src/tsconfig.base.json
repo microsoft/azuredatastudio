@@ -5,6 +5,7 @@
 		"noImplicitAny": false,
 		"experimentalDecorators": true,
 		"noImplicitReturns": true,
+		"noImplicitOverride": true,
 		"noUnusedLocals": true,
 		"noImplicitThis": true,
 		"alwaysStrict": true,
