@@ -181,6 +181,10 @@
 						"path": "./translations/extensions/mssql.i18n.json"
 					},
 					{
+						"id": "Microsoft.schema-compare",
+						"path": "./translations/extensions/schema-compare.i18n.json"
+					},
+					{
 						"id": "Microsoft.notebook",
 						"path": "./translations/extensions/notebook.i18n.json"
 					},
