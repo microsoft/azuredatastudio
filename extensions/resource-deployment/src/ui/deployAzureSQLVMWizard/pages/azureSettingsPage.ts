@@ -100,7 +100,7 @@ export class AzureSettingsPage extends BasePage {
 
 	private async createAzureAccountsDropdown(view: azdata.ModelView) {
 
-		this._azureAccountsDropdown = view.modelBuilder.dropDown().withProperties({}).component();
+		this._azureAccountsDropdown = view.modelBuilder.dropDown().withProps({}).component();
 
 		this._azureAccountsDropdown.onValueChanged(async (value) => {
 			if (!this._azureAccountsDropdown.value) {
@@ -164,7 +164,7 @@ export class AzureSettingsPage extends BasePage {
 	}
 
 	private async createAzureSubscriptionsDropdown(view: azdata.ModelView) {
-		this._azureSubscriptionsDropdown = view.modelBuilder.dropDown().withProperties({}).component();
+		this._azureSubscriptionsDropdown = view.modelBuilder.dropDown().withProps({}).component();
 
 		this._azureSubscriptionsDropdown.onValueChanged(async value => {
 			if (!this._azureSubscriptionsDropdown.value) {
@@ -234,7 +234,7 @@ export class AzureSettingsPage extends BasePage {
 	}
 
 	private async createResourceDropdown(view: azdata.ModelView) {
-		this._resourceGroupDropdown = view.modelBuilder.dropDown().withProperties({
+		this._resourceGroupDropdown = view.modelBuilder.dropDown().withProps({
 			required: true
 		}).component();
 		this._resourceGroupDropdown.onValueChanged(async (value) => {
@@ -278,7 +278,7 @@ export class AzureSettingsPage extends BasePage {
 	}
 
 	private async createAzureRegionsDropdown(view: azdata.ModelView) {
-		this._azureRegionsDropdown = view.modelBuilder.dropDown().withProperties({
+		this._azureRegionsDropdown = view.modelBuilder.dropDown().withProps({
 			required: true
 		}).component();
 

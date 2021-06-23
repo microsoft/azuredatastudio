@@ -81,14 +81,14 @@ export class ProxyDialog extends AgentDialog<ProxyData>  {
 		this.generalTab.registerContent(async view => {
 
 			this.proxyNameTextBox = view.modelBuilder.inputBox()
-				.withProperties({
+				.withProps({
 					width: 420,
 					ariaLabel: ProxyDialog.ProxyNameTextBoxLabel,
 					placeHolder: ProxyDialog.ProxyNameTextBoxLabel
 				}).component();
 
 			this.credentialNameDropDown = view.modelBuilder.dropDown()
-				.withProperties({
+				.withProps({
 					width: 432,
 					value: '',
 					editable: true,
@@ -97,7 +97,7 @@ export class ProxyDialog extends AgentDialog<ProxyData>  {
 				.component();
 
 			this.descriptionTextBox = view.modelBuilder.inputBox()
-				.withProperties({
+				.withProps({
 					width: 420,
 					multiline: true,
 					height: 300,
@@ -106,7 +106,7 @@ export class ProxyDialog extends AgentDialog<ProxyData>  {
 				}).component();
 
 			this.subsystemCheckBox = view.modelBuilder.checkBox()
-				.withProperties({
+				.withProps({
 					label: ProxyDialog.SubsystemLabel
 				}).component();
 
@@ -137,52 +137,52 @@ export class ProxyDialog extends AgentDialog<ProxyData>  {
 			});
 
 			this.operatingSystemCheckBox = view.modelBuilder.checkBox()
-				.withProperties({
+				.withProps({
 					label: ProxyDialog.OperatingSystemLabel
 				}).component();
 
 			this.replicationSnapshotCheckBox = view.modelBuilder.checkBox()
-				.withProperties({
+				.withProps({
 					label: ProxyDialog.ReplicationSnapshotLabel
 				}).component();
 
 			this.replicationTransactionLogCheckBox = view.modelBuilder.checkBox()
-				.withProperties({
+				.withProps({
 					label: ProxyDialog.ReplicationTransactionLogLabel
 				}).component();
 
 			this.replicationDistributorCheckBox = view.modelBuilder.checkBox()
-				.withProperties({
+				.withProps({
 					label: ProxyDialog.ReplicationDistributorLabel
 				}).component();
 
 			this.replicationMergeCheckbox = view.modelBuilder.checkBox()
-				.withProperties({
+				.withProps({
 					label: ProxyDialog.ReplicationMergeLabel
 				}).component();
 
 			this.replicationQueueReaderCheckbox = view.modelBuilder.checkBox()
-				.withProperties({
+				.withProps({
 					label: ProxyDialog.ReplicationQueueReaderLabel
 				}).component();
 
 			this.sqlQueryCheckBox = view.modelBuilder.checkBox()
-				.withProperties({
+				.withProps({
 					label: ProxyDialog.SSASQueryLabel
 				}).component();
 
 			this.sqlCommandCheckBox = view.modelBuilder.checkBox()
-				.withProperties({
+				.withProps({
 					label: ProxyDialog.SSASCommandLabel
 				}).component();
 
 			this.sqlIntegrationServicesPackageCheckbox = view.modelBuilder.checkBox()
-				.withProperties({
+				.withProps({
 					label: ProxyDialog.SSISPackageLabel
 				}).component();
 
 			this.powershellCheckBox = view.modelBuilder.checkBox()
-				.withProperties({
+				.withProps({
 					label: ProxyDialog.PowerShellLabel
 				}).component();
 

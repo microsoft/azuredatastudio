@@ -158,7 +158,7 @@ export class CreateProjectFromDatabaseDialog {
 	}
 
 	private createDatabaseRow(view: azdataType.ModelView): azdataType.FlexContainer {
-		this.sourceDatabaseDropDown = view.modelBuilder.dropDown().withProperties({
+		this.sourceDatabaseDropDown = view.modelBuilder.dropDown().withProps({
 			ariaLabel: constants.databaseNameLabel,
 			required: true,
 			width: cssStyles.createProjectFromDatabaseTextboxWidth
@@ -186,7 +186,7 @@ export class CreateProjectFromDatabaseDialog {
 	}
 
 	private createSourceConnectionComponent(view: azdataType.ModelView): azdataType.InputBoxComponent {
-		this.sourceConnectionTextBox = view.modelBuilder.inputBox().withProperties({
+		this.sourceConnectionTextBox = view.modelBuilder.inputBox().withProps({
 			value: '',
 			placeHolder: constants.selectConnection,
 			width: cssStyles.createProjectFromDatabaseTextboxWidth,
@@ -201,7 +201,7 @@ export class CreateProjectFromDatabaseDialog {
 	}
 
 	private createSelectConnectionButton(view: azdataType.ModelView): azdataType.Component {
-		this.selectConnectionButton = view.modelBuilder.button().withProperties({
+		this.selectConnectionButton = view.modelBuilder.button().withProps({
 			ariaLabel: constants.selectConnection,
 			iconPath: IconPathHelper.selectConnection,
 			height: '16px',
@@ -282,7 +282,7 @@ export class CreateProjectFromDatabaseDialog {
 	private createProjectLocationRow(view: azdataType.ModelView): azdataType.FlexContainer {
 		const browseFolderButton: azdataType.Component = this.createBrowseFolderButton(view);
 
-		this.projectLocationTextBox = view.modelBuilder.inputBox().withProperties({
+		this.projectLocationTextBox = view.modelBuilder.inputBox().withProps({
 			value: '',
 			ariaLabel: constants.projectLocationLabel,
 			placeHolder: constants.projectLocationPlaceholderText,
@@ -336,7 +336,7 @@ export class CreateProjectFromDatabaseDialog {
 	}
 
 	private createFolderStructureRow(view: azdataType.ModelView): azdataType.FlexContainer {
-		this.folderStructureDropDown = view.modelBuilder.dropDown().withProperties({
+		this.folderStructureDropDown = view.modelBuilder.dropDown().withProps({
 			values: [constants.file, constants.flat, constants.objectType, constants.schema, constants.schemaObjectType],
 			value: constants.schemaObjectType,
 			ariaLabel: constants.folderStructureLabel,
@@ -367,7 +367,7 @@ export class CreateProjectFromDatabaseDialog {
 	private createWorkspaceContainerRow(view: azdataType.ModelView): azdataType.FlexContainer {
 		const initialWorkspaceInputBoxValue = !!vscode.workspace.workspaceFile && !isCurrentWorkspaceUntitled() ? vscode.workspace.workspaceFile.fsPath : '';
 
-		this.workspaceInputBox = view.modelBuilder.inputBox().withProperties({
+		this.workspaceInputBox = view.modelBuilder.inputBox().withProps({
 			ariaLabel: constants.workspaceLocationTitle,
 			enabled: !vscode.workspace.workspaceFile || isCurrentWorkspaceUntitled(), // want it editable if no saved workspace is open
 			value: initialWorkspaceInputBoxValue,
