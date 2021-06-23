@@ -23,6 +23,7 @@ export class JupyterNotebookProvider implements nb.NotebookProvider {
 
 	constructor(private createServerManager: ServerManagerFactory) {
 	}
+	allProviderKernels: nb.IProviderKernels[];
 
 	public getNotebookManager(notebookUri: vscode.Uri): Thenable<nb.NotebookManager> {
 		if (!notebookUri) {
@@ -76,6 +77,10 @@ export class JupyterNotebookProvider implements nb.NotebookProvider {
 	}
 
 	public get standardKernels(): nb.IStandardKernel[] {
+		return [];
+	}
+
+	public get allKernels(): nb.IAllKernels[] {
 		return [];
 	}
 

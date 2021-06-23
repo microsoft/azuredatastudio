@@ -61,6 +61,16 @@ declare module 'azdata' {
 			 */
 			dispose(): void;
 		}
+
+		export interface IProviderKernels {
+			readonly name: string;
+			readonly displayName: string;
+			readonly connectionProviderIds: string[];
+		}
+
+		export interface NotebookProvider {
+			allProviderKernels: IProviderKernels[];
+		}
 	}
 
 	export type SqlDbType = 'BigInt' | 'Binary' | 'Bit' | 'Char' | 'DateTime' | 'Decimal'

@@ -286,7 +286,7 @@ configurationRegistry.registerConfiguration({
 		'notebook.showAllKernels': {
 			'type': 'boolean',
 			'default': false,
-			'description': localize('notebook.showAllKernels', "(Preview) show all kernels for the current notebook provider.")
+			'description': localize('notebook.showAllKernels', "(Preview) show all kernels for the all notebook providers.")
 		},
 		'notebook.allowAzureDataStudioCommands': {
 			'type': 'boolean',
