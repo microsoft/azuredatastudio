@@ -76,6 +76,7 @@ export class PostgresExtensionsPage extends DashboardPage {
 		content.addItem(infoAndLink, { CSSStyles: { 'margin-bottom': '15px', 'margin-top': '25px' } });
 
 		this.extensionsTable = this.modelView.modelBuilder.declarativeTable().withProperties<azdata.DeclarativeTableProperties>({
+			ariaLabel: loc.extensionsTableLabel,
 			width: '100%',
 			columns: [
 				{
@@ -122,19 +123,13 @@ export class PostgresExtensionsPage extends DashboardPage {
 							cancellable: false
 						},
 						async (_progress, _token): Promise<void> => {
-							try {
-								await this._azdataApi.azdata.arc.postgres.server.edit(
-									this._postgresModel.info.name,
-									{
-										extensions: ''
-									},
-									this._postgresModel.controllerModel.azdataAdditionalEnvVars);
-							} catch (err) {
-								// If an error occurs while editing the instance then re-enable the save button since
-								// the edit wasn't successfully applied
-								addExtensionsButton.enabled = true;
-								throw err;
-							}
+							await this._azdataApi.azdata.arc.postgres.server.edit(
+								this._postgresModel.info.name,
+								{
+									extensions: ''
+								},
+								this._postgresModel.controllerModel.azdataAdditionalEnvVars);
+
 							try {
 								await this._postgresModel.refresh();
 							} catch (error) {
@@ -147,21 +142,23 @@ export class PostgresExtensionsPage extends DashboardPage {
 
 				} catch (error) {
 					vscode.window.showErrorMessage(loc.instanceUpdateFailed(this._postgresModel.info.name, error));
+				} finally {
+					addExtensionsButton.enabled = true;
 				}
 			}));
 
 		return this.modelView.modelBuilder.toolbarContainer().component();
 	}
 
-	private refreshExtensions(): void {
+	private refreshExtensionsTable(): void {
 		if (this._postgresModel.config) {
 			this.extensions = this._postgresModel.config?.spec.engine.extensions;
 			this.extensionsTable.data = this.extensions.map(e => [e.name]);
 		}
 	}
 
-	private handleConfigUpdated() {
+	private handleConfigUpdated(): void {
 		this.extensionsLoading.loading = false;
-		this.refreshExtensions();
+		this.refreshExtensionsTable();
 	}
 }
