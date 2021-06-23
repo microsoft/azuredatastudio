@@ -122,6 +122,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	public _targetDatabaseNames!: string[];
 	public _serverDatabases!: string[];
 
+	public _sqlMigrationServiceResourceGroup!: string;
 	public _sqlMigrationService!: SqlMigrationService;
 	public _sqlMigrationServices!: SqlMigrationService[];
 	public _nodeNames!: string[];
@@ -724,8 +725,9 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 					vscode.window.showInformationMessage(localize("sql.migration.starting.migration.message", 'Starting migration for database {0} to {1} - {2}', this._migrationDbs[i], this._targetServerInstance.name, this._targetDatabaseNames[i]));
 				}
 			} catch (e) {
+				vscode.window.showErrorMessage(
+					localize('sql.migration.starting.migration.error', "An error occurred while starting the migration: '{0}'", e.message));
 				console.log(e);
-				vscode.window.showInformationMessage(e);
 			}
 
 			vscode.commands.executeCommand('sqlmigration.refreshMigrationTiles');

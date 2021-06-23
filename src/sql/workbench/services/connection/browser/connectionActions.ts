@@ -48,7 +48,7 @@ export class ClearRecentConnectionsAction extends Action {
 		this._useConfirmationMessage = value;
 	}
 
-	public run(): Promise<void> {
+	public override run(): Promise<void> {
 		if (this._useConfirmationMessage) {
 			return this.promptConfirmationMessage().then(result => {
 				if (result.confirmed) {
@@ -124,7 +124,7 @@ export class ClearSingleRecentConnectionAction extends Action {
 		this.enabled = true;
 	}
 
-	public run(): Promise<void> {
+	public override run(): Promise<void> {
 		return new Promise<void>((resolve, reject) => {
 			resolve(this._connectionManagementService.clearRecentConnection(this._connectionProfile));
 			this._onRecentConnectionRemoved.fire();
@@ -152,7 +152,7 @@ export class GetCurrentConnectionStringAction extends Action {
 		this.enabled = true;
 	}
 
-	public run(): Promise<void> {
+	public override run(): Promise<void> {
 		return new Promise<void>((resolve, reject) => {
 			let activeInput = this._editorService.activeEditor;
 			if (activeInput && (activeInput instanceof QueryEditorInput || activeInput instanceof EditDataInput || activeInput instanceof DashboardInput)

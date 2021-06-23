@@ -66,7 +66,7 @@ export class DashboardWidgetContainer extends DashboardTab implements AfterConte
 		this._widgetContent.refresh();
 	}
 
-	public enableEdit(): void {
+	public override enableEdit(): void {
 		this._widgetContent.enableEdit();
 	}
 }

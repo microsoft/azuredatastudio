@@ -212,7 +212,7 @@ export class InsertCellsModal extends Modal {
 		}));
 	}
 
-	public render() {
+	public override render() {
 		super.render();
 
 		this._submitButton = this.addFooterButton(localize('insertCellsModal.Insert', "Insert"), () => this.onSubmitHandler());
@@ -250,7 +250,7 @@ export class InsertCellsModal extends Modal {
 		this.show();
 	}
 
-	public dispose(): void {
+	public override dispose(): void {
 		super.dispose();
 		for (let key in this._optionsMap) {
 			let widget = this._optionsMap[key];

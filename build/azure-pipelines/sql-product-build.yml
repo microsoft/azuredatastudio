@@ -7,7 +7,7 @@ resources:
 jobs:
 - job: Compile
   pool:
-    vmImage: 'Ubuntu-16.04'
+    vmImage: 'Ubuntu-18.04'
   container: linux-x64
   steps:
   - script: |
@@ -40,7 +40,7 @@ jobs:
 - job: Linux
   condition: and(succeeded(), eq(variables['VSCODE_BUILD_LINUX'], 'true'))
   pool:
-    vmImage: 'Ubuntu-16.04'
+    vmImage: 'Ubuntu-18.04'
   container: linux-x64
   dependsOn:
   - Compile
@@ -53,7 +53,7 @@ jobs:
 - job: LinuxWeb
   condition: and(succeeded(), eq(variables['VSCODE_BUILD_WEB'], 'true'), ne(variables['VSCODE_QUALITY'], 'saw'))
   pool:
-    vmImage: 'Ubuntu-16.04'
+    vmImage: 'Ubuntu-18.04'
   container: linux-x64
   variables:
     VSCODE_ARCH: x64
@@ -66,7 +66,7 @@ jobs:
 - job: Docker
   condition: and(succeeded(), eq(variables['VSCODE_BUILD_DOCKER'], 'true'))
   pool:
-    vmImage: 'Ubuntu-16.04'
+    vmImage: 'Ubuntu-18.04'
   container: linux-x64
   dependsOn:
   - Linux
@@ -98,7 +98,7 @@ jobs:
 - job: Release
   condition: and(succeeded(), or(eq(variables['VSCODE_RELEASE'], 'true'), and(eq(variables['VSCODE_QUALITY'], 'insider'), eq(variables['Build.Reason'], 'Schedule'))))
   pool:
-    vmImage: 'Ubuntu-16.04'
+    vmImage: 'Ubuntu-18.04'
   dependsOn:
   - macOS
   - Linux

@@ -981,7 +981,7 @@ suite('Notebook Editor Model', function (): void {
 	async function createTextEditorModel(self: Mocha.Context): Promise<NotebookEditorModel> {
 		let textFileEditorModel = instantiationService.createInstance(TextFileEditorModel, toResource.call(self, defaultUri.toString()), 'utf8', undefined);
 		(<TestTextFileEditorModelManager>accessor.textFileService.files).add(textFileEditorModel.resource, textFileEditorModel);
-		await textFileEditorModel.load();
+		await textFileEditorModel.resolve();
 		return new NotebookEditorModel(defaultUri, textFileEditorModel, mockNotebookService.object, testResourcePropertiesService);
 	}
 

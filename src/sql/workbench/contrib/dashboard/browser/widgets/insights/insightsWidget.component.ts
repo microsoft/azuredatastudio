@@ -71,7 +71,7 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 	constructor(
 		@Inject(forwardRef(() => ComponentFactoryResolver)) private _componentFactoryResolver: ComponentFactoryResolver,
 		@Inject(forwardRef(() => CommonServiceInterface)) private dashboardService: CommonServiceInterface,
-		@Inject(WIDGET_CONFIG) protected _config: WidgetConfig,
+		@Inject(WIDGET_CONFIG) _config: WidgetConfig,
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
 		@Inject(forwardRef(() => Injector)) private _injector: Injector,
 		@Inject(IInstantiationService) private instantiationService: IInstantiationService,
@@ -80,6 +80,7 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 		@Inject(IFileService) private readonly fileService: IFileService
 	) {
 		super(changeRef);
+		this._config = _config;
 		this.insightConfig = <IInsightsConfig>this._config.widget['insights-widget'];
 		this._loadingMessage = nls.localize('insightsWidgetLoadingMessage', "Loading {0}", this._config.name);
 		this._loadingCompletedMessage = nls.localize('insightsWidgetLoadingCompletedMessage', "Loading {0} completed", this._config.name);
@@ -164,7 +165,7 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 		this._changeRef.detectChanges();
 	}
 
-	get actions(): Array<Action> {
+	override get actions(): Array<Action> {
 		const actions: Array<Action> = [];
 		if (this.insightConfig.details && (this.insightConfig.details.query || this.insightConfig.details.queryFile)) {
 			actions.push(this.instantiationService.createInstance(InsightAction, InsightAction.ID, InsightAction.LABEL));

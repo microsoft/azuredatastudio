@@ -11,7 +11,7 @@ import { ICellEditorProvider, INotebookParams, INotebookService, INotebookEditor
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
 import * as notebookUtils from 'sql/workbench/services/notebook/browser/models/notebookUtils';
 import { IBootstrapParams } from 'sql/workbench/services/bootstrap/common/bootstrapParams';
-import { Action, IActionViewItem } from 'vs/base/common/actions';
+import { Action } from 'vs/base/common/actions';
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { MenuItemAction } from 'vs/platform/actions/common/actions';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
@@ -36,6 +36,7 @@ import { NotebookViewsOptions as NotebookViewsDropdownSelectionProvider, AddCell
 import * as DOM from 'vs/base/browser/dom';
 import { AnchorAlignment } from 'vs/base/browser/ui/contextview/contextview';
 import { LabeledMenuItemActionItem } from 'sql/platform/actions/browser/menuEntryActionViewItem';
+import { IActionViewItem } from 'vs/base/browser/ui/actionbar/actionbar';
 
 export const NOTEBOOKVIEWS_SELECTOR: string = 'notebook-view-component';
 
@@ -175,7 +176,7 @@ export class NotebookViewComponent extends AngularDisposable implements INoteboo
 		}).catch(e => onUnexpectedError(e));
 	}
 
-	ngOnDestroy() {
+	override ngOnDestroy() {
 		this.dispose();
 	}
 

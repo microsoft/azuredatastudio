@@ -93,7 +93,7 @@ export class ViewOptionsModal extends Modal {
 		return input;
 	}
 
-	public render() {
+	public override render() {
 		super.render();
 
 		this._submitButton = this.addFooterButton(localize('save', "Save"), () => this.onSubmitHandler());
@@ -138,7 +138,7 @@ export class ViewOptionsModal extends Modal {
 		this.show();
 	}
 
-	public dispose(): void {
+	public override dispose(): void {
 		super.dispose();
 		for (let key in this._optionsMap) {
 			let widget = this._optionsMap[key];

@@ -110,8 +110,4 @@ export class WizardView extends MainViewBase {
 	public get wizard(): azdata.window.Wizard | undefined {
 		return this._wizard;
 	}
-
-	public async refresh(): Promise<void> {
-		await super.refresh();
-	}
 }

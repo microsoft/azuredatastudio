@@ -73,7 +73,7 @@ export class FocusOnCurrentQueryKeyboardAction extends Action {
 		this.enabled = true;
 	}
 
-	public run(): Promise<void> {
+	public override run(): Promise<void> {
 		const editor = this._editorService.activeEditorPane;
 		if (editor instanceof QueryEditor) {
 			editor.focus();
@@ -99,7 +99,7 @@ export class RunQueryKeyboardAction extends Action {
 		this.enabled = true;
 	}
 
-	public run(): Promise<void> {
+	public override run(): Promise<void> {
 		const editor = this._editorService.activeEditorPane;
 		if (editor instanceof QueryEditor || editor instanceof EditDataEditor) {
 			editor.runQuery();
@@ -124,7 +124,7 @@ export class RunCurrentQueryKeyboardAction extends Action {
 		this.enabled = true;
 	}
 
-	public run(): Promise<void> {
+	public override run(): Promise<void> {
 		const editor = this._editorService.activeEditorPane;
 		if (editor instanceof QueryEditor) {
 			editor.runCurrentQuery();
@@ -185,7 +185,7 @@ export class CopyQueryWithResultsKeyboardAction extends Action {
 		return { text: allResults, html: allHtmlResults };
 	}
 
-	public async run(): Promise<void> {
+	public override async run(): Promise<void> {
 		const editor = this._editorService.activeEditorPane;
 		if (editor instanceof QueryEditor) {
 			let allResults = await this.getFormattedResults(editor);
@@ -219,7 +219,7 @@ export class RunCurrentQueryWithActualPlanKeyboardAction extends Action {
 		this.enabled = true;
 	}
 
-	public run(): Promise<void> {
+	public override run(): Promise<void> {
 		const editor = this._editorService.activeEditorPane;
 		if (editor instanceof QueryEditor) {
 			editor.runCurrentQueryWithActualPlan();
@@ -245,7 +245,7 @@ export class CancelQueryKeyboardAction extends Action {
 		this.enabled = true;
 	}
 
-	public run(): Promise<void> {
+	public override run(): Promise<void> {
 		const editor = this._editorService.activeEditorPane;
 		if (editor instanceof QueryEditor || editor instanceof EditDataEditor) {
 			editor.cancelQuery();
@@ -271,7 +271,7 @@ export class RefreshIntellisenseKeyboardAction extends Action {
 		this.enabled = true;
 	}
 
-	public run(): Promise<void> {
+	public override run(): Promise<void> {
 		const editor = this.editorService.activeEditor;
 		if (editor instanceof QueryEditorInput) {
 			this.connectionManagementService.rebuildIntelliSenseCache(editor.uri);
@@ -297,7 +297,7 @@ export class ToggleQueryResultsKeyboardAction extends Action {
 		this.enabled = true;
 	}
 
-	public run(): Promise<void> {
+	public override run(): Promise<void> {
 		const editor = this._editorService.activeEditorPane;
 		if (editor instanceof QueryEditor) {
 			editor.toggleResultsEditorVisibility();
@@ -324,7 +324,7 @@ export class ToggleFocusBetweenQueryEditorAndResultsAction extends Action {
 		this.enabled = true;
 	}
 
-	public async run(): Promise<void> {
+	public override async run(): Promise<void> {
 		const editor = this._editorService.activeEditorPane;
 		if (editor instanceof QueryEditor) {
 			editor.toggleFocusBetweenQueryEditorAndResults();
@@ -348,7 +348,7 @@ export class RunQueryShortcutAction extends Action {
 		super(RunQueryShortcutAction.ID);
 	}
 
-	public run(index: number): Promise<void> {
+	public override run(index: number): Promise<void> {
 		let promise: Thenable<void> = Promise.resolve(null);
 		runActionOnActiveQueryEditor(this.editorService, (editor) => {
 			promise = this.runQueryShortcut(editor, index);
@@ -508,7 +508,7 @@ export class ParseSyntaxAction extends Action {
 		this.enabled = true;
 	}
 
-	public run(): Promise<void> {
+	public override run(): Promise<void> {
 		const editor = this.editorService.activeEditorPane;
 		if (editor instanceof QueryEditor) {
 			if (!editor.isSelectionEmpty()) {

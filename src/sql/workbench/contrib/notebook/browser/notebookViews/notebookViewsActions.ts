@@ -38,16 +38,12 @@ export class ViewSettingsAction extends Action {
 		super(ViewSettingsAction.ID, ViewSettingsAction.LABEL, ViewSettingsAction.ICON);
 	}
 
-	run(): Promise<boolean> {
-		try {
+	override run(): Promise<void> {
+		return new Promise<void>((resolve) => {
 			const optionsModal = this._instantiationService.createInstance(ViewOptionsModal, this._context.getActiveView());
 			optionsModal.render();
 			optionsModal.open();
-
-			return Promise.resolve(true);
-		} catch (e) {
-			return Promise.resolve(false);
-		}
+		});
 	}
 }
 
@@ -64,21 +60,16 @@ export class DeleteViewAction extends Action {
 		super(DeleteViewAction.ID, DeleteViewAction.LABEL, DeleteViewAction.ICON);
 	}
 
-	async run(): Promise<boolean> {
-		try {
-			const activeView = this._notebookViews.getActiveView();
-			if (activeView) {
-				const confirmDelete = await this.confirmDelete(activeView);
-				if (confirmDelete) {
-					this._notebookViews.removeView(activeView.guid);
-					this._notebookViews.notebook.viewMode = ViewMode.Notebook;
-				}
-			} else {
-				this.notificationService.error(localize('viewsUnableToRemove', "Unable to remove view"));
+	override async run(): Promise<void> {
+		const activeView = this._notebookViews.getActiveView();
+		if (activeView) {
+			const confirmDelete = await this.confirmDelete(activeView);
+			if (confirmDelete) {
+				this._notebookViews.removeView(activeView.guid);
+				this._notebookViews.notebook.viewMode = ViewMode.Notebook;
 			}
-			return Promise.resolve(true);
-		} catch (e) {
-			return Promise.resolve(false);
+		} else {
+			this.notificationService.error(localize('viewsUnableToRemove', "Unable to remove view"));
 		}
 	}
 
@@ -111,7 +102,7 @@ export class InsertCellAction extends Action {
 		super(InsertCellAction.ID, InsertCellAction.LABEL, InsertCellAction.ICON);
 	}
 
-	async run(): Promise<void> {
+	override async run(): Promise<void> {
 		try {
 			const optionsModal = this._instantiationService.createInstance(InsertCellsModal, this.onInsert, this._context, this._containerRef, this._componentFactoryResolver);
 			optionsModal.render();
@@ -141,8 +132,8 @@ export class RunCellAction extends MultiStateAction<CellExecutionState> {
 		this.ensureContextIsUpdated(context);
 	}
 
-	public run(): Promise<boolean> {
-		return this.doRun().then(() => true);
+	public override run(): Promise<void> {
+		return this.doRun();
 	}
 
 	public async doRun(): Promise<void> {
@@ -204,13 +195,11 @@ export class HideCellAction extends Action {
 		super(HideCellAction.ID, HideCellAction.LABEL, HideCellAction.ICON);
 	}
 
-	run(): Promise<boolean> {
-		try {
+	override run(): Promise<void> {
+		return new Promise<void>((resolve) => {
 			this.hideFn.apply(this.context);
-			return Promise.resolve(true);
-		} catch (e) {
-			return Promise.resolve(false);
-		}
+			resolve();
+		});
 	}
 }
 

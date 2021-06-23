@@ -7,6 +7,7 @@ import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import * as azurecore from 'azurecore';
 import { azureResource } from 'azureResource';
+import * as constants from '../constants/strings';
 
 async function getAzureCoreAPI(): Promise<azurecore.IExtension> {
 	const api = (await vscode.extensions.getExtension(azurecore.extension.name)?.activate()) as azurecore.IExtension;
@@ -28,18 +29,17 @@ export async function getSubscriptions(account: azdata.Account): Promise<Subscri
 export async function getLocations(account: azdata.Account, subscription: Subscription): Promise<azureResource.AzureLocation[]> {
 	const api = await getAzureCoreAPI();
 	const response = await api.getLocations(account, subscription, true);
+	const dataMigrationResourceProvider = (await api.makeAzureRestRequest(account, subscription, `/subscriptions/${subscription.id}/providers/Microsoft.DataMigration?api-version=2021-04-01`, azurecore.HttpRequestMethod.GET)).response.data;
+	const sqlMigratonResource = dataMigrationResourceProvider.resourceTypes.find((r: any) => r.resourceType === 'SqlMigrationServices');
+	const sqlMigrationResourceLocations = sqlMigratonResource.locations;
+
 	if (response.errors.length > 0) {
 		throw new Error(response.errors.toString());
 	}
 	sortResourceArrayByName(response.locations);
-	const supportedLocations = [
-		'eastus2',
-		'eastus2euap',
-		'eastus',
-		'canadacentral'
-	];
+
 	const filteredLocations = response.locations.filter(loc => {
-		return supportedLocations.includes(loc.name);
+		return sqlMigrationResourceLocations.includes(loc.displayName);
 	});
 	return filteredLocations;
 }
@@ -160,6 +160,22 @@ export async function createSqlMigrationService(account: azdata.Account, subscri
 	if (response.errors.length > 0) {
 		throw new Error(response.errors.toString());
 	}
+	const asyncUrl = response.response.headers['azure-asyncoperation'];
+	const maxRetry = 5;
+	let i = 0;
+	for (i = 0; i < maxRetry; i++) {
+		const asyncResponse = await api.makeAzureRestRequest(account, subscription, asyncUrl.replace('https://management.azure.com/', ''), azurecore.HttpRequestMethod.GET, undefined, true);
+		const creationStatus = asyncResponse.response.data.status;
+		if (creationStatus === 'Succeeded') {
+			break;
+		} else if (creationStatus === 'Failed') {
+			throw new Error(asyncResponse.errors.toString());
+		}
+		await new Promise(resolve => setTimeout(resolve, 3000)); //adding  3 sec delay before getting creation status
+	}
+	if (i === maxRetry) {
+		throw new Error(constants.DMS_PROVISIONING_FAILED);
+	}
 	return response.response.data;
 }
 
@@ -167,6 +183,24 @@ export async function getSqlMigrationServiceAuthKeys(account: azdata.Account, su
 	const api = await getAzureCoreAPI();
 	const path = `/subscriptions/${subscription.id}/resourceGroups/${resourceGroupName}/providers/Microsoft.DataMigration/sqlMigrationServices/${sqlMigrationServiceName}/ListAuthKeys?api-version=2020-09-01-preview`;
 	const response = await api.makeAzureRestRequest(account, subscription, path, azurecore.HttpRequestMethod.POST, undefined, true);
+	if (response.errors.length > 0) {
+		throw new Error(response.errors.toString());
+	}
+	return {
+		authKey1: response?.response?.data?.authKey1 ?? '',
+		authKey2: response?.response?.data?.authKey2 ?? ''
+	};
+}
+
+export async function regenerateSqlMigrationServiceAuthKey(account: azdata.Account, subscription: Subscription, resourceGroupName: string, regionName: string, sqlMigrationServiceName: string, keyName: string): Promise<SqlMigrationServiceAuthenticationKeys> {
+	const api = await getAzureCoreAPI();
+	const path = `/subscriptions/${subscription.id}/resourceGroups/${resourceGroupName}/providers/Microsoft.DataMigration/sqlMigrationServices/${sqlMigrationServiceName}/regenerateAuthKeys?api-version=2020-09-01-preview`;
+	const requestBody = {
+		'location': regionName,
+		'keyName': keyName,
+	};
+
+	const response = await api.makeAzureRestRequest(account, subscription, path, azurecore.HttpRequestMethod.POST, requestBody, true);
 	if (response.errors.length > 0) {
 		throw new Error(response.errors.toString());
 	}
@@ -409,6 +443,8 @@ export interface MigrationStatusDetails {
 	fileUploadBlockingErrors: string[];
 	currentRestoringFileName: string;
 	lastRestoredFilename: string;
+	pendingLogBackupsCount: number;
+	invalidFiles: string[];
 }
 
 export interface SqlConnectionInfo {
@@ -445,6 +481,8 @@ export interface BackupSetInfo {
 	isBackupRestored: boolean;
 	backupSize: number;
 	compressedBackupSize: number;
+	hasBackupChecksums: boolean;
+	familyCount: number;
 }
 
 export interface SourceLocation {
@@ -460,6 +498,12 @@ export interface TargetLocation {
 export interface BackupFileInfo {
 	fileName: string;
 	status: 'Arrived' | 'Uploading' | 'Uploaded' | 'Restoring' | 'Restored' | 'Cancelled' | 'Ignored';
+	totalSize: number;
+	dataRead: number;
+	dataWritten: number;
+	copyThroughput: number;
+	copyDuration: number;
+	familySequenceNumber: number;
 }
 
 export interface DatabaseMigrationFileShare {

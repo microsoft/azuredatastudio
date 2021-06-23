@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { CategoryValue, DropDownComponent } from 'azdata';
 import { DAYS, HRS, MINUTE, SEC } from '../constants/strings';
 import { AdsMigrationStatus } from '../dialog/migrationStatus/migrationStatusDialogModel';
 import { MigrationContext } from '../models/migrationLocalStorage';
@@ -119,4 +120,39 @@ export function filterMigrations(databaseMigrations: MigrationContext[], statusF
 		});
 	}
 	return filteredMigration;
+}
+
+export function convertByteSizeToReadableUnit(size: number): string {
+	const units = ['B', 'KB', 'MB', 'GB', 'TB'];
+	for (let i = 1; i < units.length; i++) {
+		const higherUnit = size / 1024;
+		if (higherUnit < 0.1) {
+			return `${size.toFixed(2)} ${units[i - 1]}`;
+		}
+		size = higherUnit;
+	}
+	return size.toString();
+}
+
+export function convertIsoTimeToLocalTime(isoTime: string): Date {
+	let isoDate = new Date(isoTime);
+	return new Date(isoDate.getTime() + (isoDate.getTimezoneOffset() * 60000));
+}
+
+export type SupportedAutoRefreshIntervals = -1 | 15000 | 30000 | 60000 | 180000 | 300000;
+
+export function selectDropDownIndex(dropDown: DropDownComponent, index: number): void {
+	if (index >= 0 && dropDown.values && index <= dropDown.values.length - 1) {
+		const value = dropDown.values[index];
+		dropDown.value = value as CategoryValue;
+	}
+}
+
+export function findDropDownItemIndex(dropDown: DropDownComponent, value: string): number {
+	if (dropDown.values) {
+		return dropDown.values.findIndex((v: any) =>
+			(v as CategoryValue)?.displayName?.toLowerCase() === value?.toLowerCase());
+	}
+
+	return -1;
 }

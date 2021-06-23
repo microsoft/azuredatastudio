@@ -187,7 +187,7 @@ export interface ICellEditorProvider {
 	hasEditor(): boolean;
 	cellGuid(): string;
 	getEditor(): BaseTextEditor;
-	deltaDecorations(newDecorationRange: NotebookRange, oldDecorationRange: NotebookRange): void;
+	deltaDecorations(newDecorationsRange: NotebookRange | NotebookRange[], oldDecorationsRange: NotebookRange | NotebookRange[]): void;
 }
 
 export class NotebookRange extends Range {
@@ -222,7 +222,7 @@ export interface INotebookEditor {
 	clearAllOutputs(): Promise<boolean>;
 	getSections(): INotebookSection[];
 	navigateToSection(sectionId: string): void;
-	deltaDecorations(newDecorationRange: NotebookRange, oldDecorationRange: NotebookRange): void;
+	deltaDecorations(newDecorationsRange: NotebookRange | NotebookRange[], oldDecorationsRange: NotebookRange | NotebookRange[]): void;
 	addCell(cellType: CellType, index?: number, event?: UIEvent);
 }
 

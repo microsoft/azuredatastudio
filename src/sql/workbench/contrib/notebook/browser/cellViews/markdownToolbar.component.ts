@@ -272,7 +272,11 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 				if (imageCalloutResult.embedImage) {
 					let base64String = await this.getFileContentBase64(URI.file(imageCalloutResult.imagePath));
 					let mimeType = await this.getFileMimeType(URI.file(imageCalloutResult.imagePath));
-					this.cellModel.addAttachment(mimeType, base64String, path.basename(imageCalloutResult.imagePath).replace(' ', ''));
+					const originalImageName: string = path.basename(imageCalloutResult.imagePath).replace(/\s/g, '');
+					let attachmentName = this.cellModel.addAttachment(mimeType, base64String, originalImageName);
+					if (originalImageName !== attachmentName) {
+						imageCalloutResult.insertEscapedMarkdown = `![${attachmentName}](attachment:${attachmentName.replace(/\s/g, '')})`;
+					}
 					await insertFormattedMarkdown(imageCalloutResult.insertEscapedMarkdown, this.getCellEditorControl());
 				}
 				await insertFormattedMarkdown(imageCalloutResult.insertEscapedMarkdown, this.getCellEditorControl());
@@ -347,10 +351,12 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 
 	private getCurrentLinkUrl(): string {
 		if (this.cellModel.currentMode === CellEditModes.WYSIWYG) {
-			if (document.getSelection().anchorNode.parentNode['protocol'] === 'file:') {
-				return document.getSelection().anchorNode.parentNode['pathname'] || '';
+			const parentNode = document.getSelection().anchorNode.parentNode as HTMLAnchorElement;
+			if (parentNode.protocol === 'file:') {
+				// Pathname starts with / per https://developer.mozilla.org/en-US/docs/Web/API/HTMLAnchorElement/pathname so trim it off
+				return parentNode.pathname?.slice(1) || '';
 			} else {
-				return document.getSelection().anchorNode.parentNode['href'] || '';
+				return parentNode.href || '';
 			}
 		} else {
 			const editorControl = this.getCellEditorControl();

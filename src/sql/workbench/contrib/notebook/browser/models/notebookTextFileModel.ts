@@ -8,7 +8,7 @@ import { FindMatch } from 'vs/editor/common/model';
 import { NotebookContentChange, INotebookModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { NotebookChangeType } from 'sql/workbench/services/notebook/common/contracts';
 import { repeat } from 'vs/base/common/strings';
-import { ITextEditorModel } from 'vs/workbench/common/editor';
+import { ITextEditorModel } from 'vs/editor/common/services/resolverService';
 
 export class NotebookTextFileModel {
 	// save active cell's line/column in editor model for the beginning of the source property

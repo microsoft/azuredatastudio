@@ -22,13 +22,13 @@ export class NotebookViewsCodeCellComponent extends CodeCellComponent implements
 	@Input() display: boolean;
 	@Input() modal: boolean;
 
-	public stdIn: nb.IStdinMessage;
+	public override stdIn: nb.IStdinMessage;
 
 	constructor(@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef) {
 		super(changeRef);
 	}
 
-	ngOnInit() {
+	override ngOnInit() {
 		if (this.cellModel) {
 			this._register(this.cellModel.onCollapseStateChanged((state) => {
 				this._changeRef.detectChanges();
@@ -51,7 +51,7 @@ export class NotebookViewsCodeCellComponent extends CodeCellComponent implements
 		}
 	}
 
-	ngOnChanges(changes: { [propKey: string]: SimpleChange }) {
+	override ngOnChanges(changes: { [propKey: string]: SimpleChange }) {
 		for (let propName in changes) {
 			if (propName === 'activeCellId') {
 				let changedProp = changes[propName];
@@ -75,7 +75,7 @@ export class NotebookViewsCodeCellComponent extends CodeCellComponent implements
 }
 
 export class NotebookViewsCellModel extends CellModel {
-	public get outputs(): Array<nb.ICellOutput> {
+	public override get outputs(): Array<nb.ICellOutput> {
 		return super.outputs
 			.filter((output: nb.IDisplayResult) => output.data === undefined || output?.data['text/plain'] !== '<IPython.core.display.HTML object>')
 			.map((output: nb.ICellOutput) => ({ ...output }))

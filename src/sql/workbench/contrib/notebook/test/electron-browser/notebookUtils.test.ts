@@ -11,6 +11,7 @@ import { getHostAndPortFromEndpoint, isStream, getProvidersForFileName, asyncFor
 import { INotebookService, DEFAULT_NOTEBOOK_FILETYPE, DEFAULT_NOTEBOOK_PROVIDER } from 'sql/workbench/services/notebook/browser/notebookService';
 import { NotebookServiceStub } from 'sql/workbench/contrib/notebook/test/stubs';
 import { tryMatchCellMagic, extractCellMagicCommandPlusArgs } from 'sql/workbench/services/notebook/browser/utils';
+import { RichTextEditStack } from 'sql/workbench/contrib/notebook/browser/cellViews/textCell.component';
 
 suite('notebookUtils', function (): void {
 	const mockNotebookService = TypeMoq.Mock.ofType<INotebookService>(NotebookServiceStub);
@@ -260,5 +261,51 @@ suite('notebookUtils', function (): void {
 		html = '<a target="_blank" href="https://storage-0-0.storage-0-svc.mssql-cluster.svc.cluster.local:8044/node/containerlogs/container_7/root“>Link</a>';
 		result = rewriteUrlUsingRegex(/(https?:\/\/sparkhead.*\/proxy)(.*)/g, html, '1.1.1.1', ':999', '/gateway/default/yarn/proxy');
 		assert.strictEqual(result, '<a target="_blank" href="https://storage-0-0.storage-0-svc.mssql-cluster.svc.cluster.local:8044/node/containerlogs/container_7/root“>Link</a>', 'Target URL should not have been edited');
+	});
+
+	test('EditStack test', async function (): Promise<void> {
+		let maxStackSize = 200;
+		let stack = new RichTextEditStack(maxStackSize);
+		assert.strictEqual(stack.count, 0);
+
+		stack.push('1');
+		stack.push('2');
+		stack.push('3');
+		assert.strictEqual(stack.count, 3);
+
+		assert.strictEqual(stack.peek(), '3');
+
+		let topElement = stack.pop();
+		assert.strictEqual(topElement, '3');
+
+		topElement = stack.pop();
+		assert.strictEqual(topElement, '2');
+
+		stack.push('4');
+		assert.strictEqual(stack.count, 2);
+		topElement = stack.pop();
+		assert.strictEqual(topElement, '4');
+
+		stack.clear();
+		assert.strictEqual(stack.count, 0);
+		topElement = stack.pop();
+		assert.strictEqual(topElement, undefined);
+		assert.strictEqual(stack.peek(), undefined);
+
+		// Check max stack size
+		stack.clear();
+		for (let i = 0; i < maxStackSize; i++) {
+			stack.push('a');
+		}
+		stack.push('b');
+		assert.strictEqual(stack.count, maxStackSize);
+		assert.strictEqual(stack.peek(), 'b');
+
+		// update max stack size and add new element
+		maxStackSize = 20;
+		stack.maxStackSize = maxStackSize;
+		stack.push('c');
+		assert.strictEqual(stack.count, maxStackSize);
+		assert.strictEqual(stack.peek(), 'c');
 	});
 });

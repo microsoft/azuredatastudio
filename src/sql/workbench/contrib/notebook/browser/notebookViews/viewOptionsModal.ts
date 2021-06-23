@@ -78,7 +78,7 @@ export class ViewOptionsModal extends Modal {
 					if (this._view.name !== value && !this._view.nameAvailable(value)) {
 						return ({ type: MessageType.ERROR, content: localize('viewOptionsModal.nameTaken', "This view name has already been taken.") });
 					}
-					return undefined;
+					return null;
 				}
 			},
 			ariaLabel: localize('viewOptionsModal.name', "View Name")
@@ -93,7 +93,7 @@ export class ViewOptionsModal extends Modal {
 		return input;
 	}
 
-	public render() {
+	override render() {
 		super.render();
 
 		this._submitButton = this.addFooterButton(localize('save', "Save"), () => this.onSubmitHandler());
@@ -112,7 +112,7 @@ export class ViewOptionsModal extends Modal {
 	private validate() {
 		let valid = true;
 
-		if (!this._viewNameInput.validate()) {
+		if (this._viewNameInput.validate()) {
 			valid = false;
 		}
 
@@ -138,7 +138,7 @@ export class ViewOptionsModal extends Modal {
 		this.show();
 	}
 
-	public dispose(): void {
+	public override dispose(): void {
 		super.dispose();
 		for (let key in this._optionsMap) {
 			let widget = this._optionsMap[key];

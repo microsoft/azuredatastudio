@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as nls from 'vs/nls';
+import { localize } from 'vs/nls';
 import { isObject, isString, isUndefined, isNumber, withNullAsUndefined } from 'vs/base/common/types';
 import { ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
 import { KeybindingsRegistry, KeybindingWeight } from 'vs/platform/keybinding/common/keybindingsRegistry';
@@ -25,7 +25,6 @@ import { MenuRegistry, MenuId } from 'vs/platform/actions/common/actions';
 import { ActiveGroupEditorsByMostRecentlyUsedQuickAccess } from 'vs/workbench/browser/parts/editor/editorQuickAccess';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
 import { ITextEditorOptions } from 'vs/platform/editor/common/editor';
-import { openEditorWith } from 'vs/workbench/services/editor/common/editorOpenWith';
 
 export const CLOSE_SAVED_EDITORS_COMMAND_ID = 'workbench.action.closeUnmodifiedEditors';
 export const CLOSE_EDITORS_IN_GROUP_COMMAND_ID = 'workbench.action.closeEditorsInGroup';
@@ -103,11 +102,11 @@ function registerActiveEditorMoveCommand(): void {
 		primary: 0,
 		handler: (accessor, args) => moveActiveEditor(args, accessor),
 		description: {
-			description: nls.localize('editorCommand.activeEditorMove.description', "Move the active editor by tabs or groups"),
+			description: localize('editorCommand.activeEditorMove.description', "Move the active editor by tabs or groups"),
 			args: [
 				{
-					name: nls.localize('editorCommand.activeEditorMove.arg.name', "Active editor move argument"),
-					description: nls.localize('editorCommand.activeEditorMove.arg.description', "Argument Properties:\n\t* 'to': String value providing where to move.\n\t* 'by': String value providing the unit for move (by tab or by group).\n\t* 'value': Number value providing how many positions or an absolute position to move."),
+					name: localize('editorCommand.activeEditorMove.arg.name', "Active editor move argument"),
+					description: localize('editorCommand.activeEditorMove.arg.description', "Argument Properties:\n\t* 'to': String value providing where to move.\n\t* 'by': String value providing the unit for move (by tab or by group).\n\t* 'value': Number value providing how many positions or an absolute position to move."),
 					constraint: isActiveEditorMoveArg,
 					schema: {
 						'type': 'object',
@@ -280,17 +279,6 @@ function registerEditorGroupsLayoutCommand(): void {
 	});
 }
 
-export function mergeAllGroups(editorGroupService: IEditorGroupsService): void {
-	const target = editorGroupService.activeGroup;
-	editorGroupService.getGroups(GroupsOrder.MOST_RECENTLY_ACTIVE).forEach(group => {
-		if (group === target) {
-			return; // keep target
-		}
-
-		editorGroupService.mergeGroup(group, target);
-	});
-}
-
 function registerDiffEditorCommands(): void {
 	KeybindingsRegistry.registerCommandAndKeybindingRule({
 		id: GOTO_NEXT_CHANGE,
@@ -408,10 +396,10 @@ function registerDiffEditorCommands(): void {
 		command: {
 			id: TOGGLE_DIFF_SIDE_BY_SIDE,
 			title: {
-				value: nls.localize('toggleInlineView', "Toggle Inline View"),
+				value: localize('toggleInlineView', "Toggle Inline View"),
 				original: 'Compare: Toggle Inline View'
 			},
-			category: nls.localize('compare', "Compare")
+			category: localize('compare', "Compare")
 		},
 		when: ContextKeyExpr.has('textCompareEditorActive')
 	});
@@ -499,10 +487,7 @@ function registerOpenEditorAPICommands(): void {
 			group = editorGroupsService.getGroup(viewColumnToEditorGroup(editorGroupsService, columnArg)) ?? editorGroupsService.activeGroup;
 		}
 
-		const textOptions: ITextEditorOptions = optionsArg ? { ...optionsArg, override: false } : { override: false };
-
-		const input = editorService.createEditorInput({ resource: URI.revive(resource) });
-		return openEditorWith(accessor, input, id, textOptions, group);
+		return editorService.openEditor({ resource: URI.revive(resource), options: { ...optionsArg, override: id } }, group);
 	});
 }
 
@@ -646,12 +631,13 @@ export function splitEditor(editorGroupService: IEditorGroupsService, direction:
 		editorToCopy = withNullAsUndefined(sourceGroup.activeEditor);
 	}
 
-	if (editorToCopy && (editorToCopy as EditorInput).supportsSplitEditor()) {
+	// Copy the editor to the new group, else move the editor to the new group
+	if (editorToCopy && (editorToCopy as EditorInput).canSplit()) {
 		sourceGroup.copyEditor(editorToCopy, newGroup);
+		// Focus
+		newGroup.focus();
 	}
 
-	// Focus
-	newGroup.focus();
 }
 
 function registerSplitEditorCommands() {

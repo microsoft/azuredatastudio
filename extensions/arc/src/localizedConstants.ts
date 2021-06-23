@@ -69,7 +69,7 @@ export const addingWorkerNodes = localize('arc.addingWorkerNodes', "adding worke
 export const workerNodesDescription = localize('arc.workerNodesDescription', "Expand your server group and scale your database by adding worker nodes.");
 export const workerNodesConfigurationInformation = localize('arc.workerNodesConfigurationInformation', "You can configure the number of CPU cores and storage size that will apply to all worker nodes. Adjust the number of CPU cores and memory settings for your server group. To reset the requests and/or limits, pass in empty value.");
 export const coordinatorNodeConfigurationInformation = localize('arc.coordinatorNodeConfigurationInformation', "You can configure the number of CPU cores and storage size that will apply to the coordinator node. Adjust the number of CPU cores and memory settings for your server group. To reset the requests and/or limits, pass in empty value.");
-export const workerNodesInformation = localize('arc.workerNodeInformation', "In preview it is not possible to reduce the number of worker nodes. Please refer to documentation linked above for more information.");
+export const workerNodesInformation = localize('arc.workerNodeInformation', "It is possible to scale in and out your server group by reducing or increasing the number of worker nodes.");
 export const vCores = localize('arc.vCores', "vCores");
 export const ram = localize('arc.ram', "RAM");
 export const refresh = localize('arc.refresh', "Refresh");
@@ -147,11 +147,11 @@ export const confirmNewPassword = localize('arc.confirmNewPassword', "Confirm th
 export const learnAboutPostgresClients = localize('arc.learnAboutPostgresClients', "Learn more about Azure PostgreSQL Hyperscale client interfaces");
 export const coordinatorNodeParametersDescription = localize('arc.coordinatorNodeParametersDescription', " These server parameters of the Coordinator node can be set to custom (non-default) values. Search to find parameters.");
 export const workerNodesParametersDescription = localize('arc.workerNodesParametersDescription', " These server parameters of the Worker nodes can be set to custom (non-default) values. Search to find parameters.");
-export const learnAboutNodeParameters = localize('arc.learnAboutNodeParameters', "Learn more about database engine settings for Azure Arc enabled PostgreSQL Hyperscale");
+export const learnAboutNodeParameters = localize('arc.learnAboutNodeParameters', "Learn more about database engine settings for Azure Arc-enabled PostgreSQL Hyperscale");
 export const noNodeParametersFound = localize('arc.noNodeParametersFound', "No worker server parameters found...");
 export const searchToFilter = localize('arc.searchToFilter', "Search to filter items...");
 export const scalingCompute = localize('arc.scalingCompute', "scaling compute vCores and memory.");
-export const postgresComputeAndStorageDescriptionPartOne = localize('arc.postgresComputeAndStorageDescriptionPartOne', "You can scale your Azure Arc enabled");
+export const postgresComputeAndStorageDescriptionPartOne = localize('arc.postgresComputeAndStorageDescriptionPartOne', "You can scale your Azure Arc-enabled");
 export const miaaComputeAndStorageDescriptionPartOne = localize('arc.miaaComputeAndStorageDescriptionPartOne', "You can scale your Azure SQL managed instance - Azure Arc by");
 export const postgresComputeAndStorageDescriptionPartTwo = localize('arc.postgres.computeAndStorageDescriptionPartTwo', "PostgreSQL Hyperscale server group by");
 export const computeAndStorageDescriptionPartThree = localize('arc.computeAndStorageDescriptionPartThree', "without downtime and by");
@@ -164,13 +164,21 @@ export const nodes = localize('arc.nodes', "nodes");
 export const workerNodes = localize('arc.workerNodes', "Worker Nodes");
 export const coordinatorNode = localize('arc.coordinatorNode', "Coordinator Node");
 export const storagePerNode = localize('arc.storagePerNode', "storage per node");
-export const workerNodeCount = localize('arc.workerNodeCount', "Worker node count:");
+export const workerNodeCount = localize('arc.workerNodeCount', "Worker node count");
 export const configurationPerNode = localize('arc.configurationPerNode', "Configuration (per node)");
 export const configuration = localize('arc.configurationCoordinatorNode', "Configuration");
-export const coresLimit = localize('arc.coresLimit', "CPU limit:");
-export const coresRequest = localize('arc.coresRequest', "CPU request:");
-export const memoryLimit = localize('arc.memoryLimit', "Memory limit (in GB):");
-export const memoryRequest = localize('arc.memoryRequest', "Memory request (in GB):");
+export const coresLimit = localize('arc.coresLimit', "CPU limit");
+export const workerCoresLimit = localize('arc.workerCoresLimit', "Worker Nodes CPU limit");
+export const coordinatorCoresLimit = localize('arc.coordinatorCoresLimit', "Coordinator Node CPU limit");
+export const coresRequest = localize('arc.coresRequest', "CPU request");
+export const workerCoresRequest = localize('arc.workerCoresRequest', "Worker Nodes CPU request");
+export const coordinatorCoresRequest = localize('arc.coordinatorCoresRequest', "Coordinator Node CPU request");
+export const memoryLimit = localize('arc.memoryLimit', "Memory limit (in GB)");
+export const workerMemoryLimit = localize('arc.workerMemoryLimit', "Worker Nodes Memory limit (in GB)");
+export const coordinatorMemoryLimit = localize('arc.coordinatorMemoryLimit', "Coordinator Node Memory limit (in GB)");
+export const memoryRequest = localize('arc.memoryRequest', "Memory request (in GB)");
+export const workerMemoryRequest = localize('arc.workerMemoryRequest', "Worker Nodes Memory request (in GB)");
+export const coordinatorMemoryRequest = localize('arc.coordinatorMemoryRequest', "Coordinator Node Memory request (in GB)");
 export const arcResources = localize('arc.arcResources', "Azure Arc Resources");
 export const enterANonEmptyPassword = localize('arc.enterANonEmptyPassword', "Enter a non empty password or press escape to exit.");
 export const thePasswordsDoNotMatch = localize('arc.thePasswordsDoNotMatch', "The passwords do not match. Confirm the password or press escape to exit.");
@@ -191,7 +199,7 @@ export const noPodIssuesDetected = localize('arc.noPodIssuesDetected', "There ar
 export const podIssuesDetected = localize('arc.podIssuesDetected', "The pods listed below are experiencing issues that may affect performance or availability.");
 export const containerReady = localize('arc.containerReady', "Pod containers are ready.");
 export const podScheduled = localize('arc.podScheduled', "Pod is schedulable.");
-
+export const loadingClusterContextCompleted = localize('arc.loadingClusterContextCompleted', "Loading cluster contexts completed");
 export function rangeSetting(min: string, max: string): string { return localize('arc.rangeSetting', "Value is expected to be in the range {0} - {1}", min, max); }
 export function databaseCreated(name: string): string { return localize('arc.databaseCreated', "Database {0} created", name); }
 export function deletingInstance(name: string): string { return localize('arc.deletingInstance', "Deleting instance '{0}'...", name); }
@@ -217,6 +225,8 @@ export function numVCores(vCores: string | undefined): string {
 	}
 }
 export function updated(when: string): string { return localize('arc.updated', "Updated {0}", when); }
+export function copyConnectionStringToClipboard(type: string): string { return localize({ key: 'arc.copyConnectionStringToClipboard', comment: ['{0} is the name of the type of connection string (e.g. Java)'] }, "Copy {0} Connection String to clipboard", type); }
+export function copyValueToClipboard(valueName: string): string { return localize({ key: 'arc.copyValueToClipboard', comment: ['{0} is the name of the type of value being copied (e.g. Coordinator endpoint)'] }, "Copy {0} to clipboard", valueName); }
 
 // Errors
 export const pgConnectionRequired = localize('arc.pgConnectionRequired', "A connection is required to show and set database engine settings.");
@@ -262,3 +272,5 @@ export const noCurrentContextFound = (configFile: string) => localize('noCurrent
 export const noNameInContext = (configFile: string) => localize('noNameInContext', "No name field was found in a cluster context in the config file: {0}", configFile);
 export const userCancelledError = localize('arc.userCancelledError', "User cancelled the dialog");
 export const clusterContextConfigNoLongerValid = (configFile: string, clusterContext: string, error: any) => localize('clusterContextConfigNoLongerValid', "The cluster context information specified by config file: {0} and cluster context: {1} is no longer valid. Error is:\n\t{2}\n Do you want to update this information?", configFile, clusterContext, getErrorMessage(error));
+export const invalidConfigPath = localize('arc.invalidConfigPath', "Invalid config path");
+export const loadingClusterContextsError = (error: any): string => localize('arc.loadingClusterContextsError', "Error loading cluster contexts. {0}", getErrorMessage(error));

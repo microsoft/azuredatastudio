@@ -91,7 +91,7 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 	private jobSteps: { [jobId: string]: azdata.AgentJobStepInfo[]; } = Object.create(null);
 	private jobAlerts: { [jobId: string]: azdata.AgentAlertInfo[]; } = Object.create(null);
 	private jobSchedules: { [jobId: string]: azdata.AgentJobScheduleInfo[]; } = Object.create(null);
-	public contextAction = NewNotebookJobAction;
+	public override contextAction = NewNotebookJobAction;
 
 	@ViewChild('notebooksgrid') _gridEl: ElementRef;
 
@@ -131,7 +131,7 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 		this._telemetryService.sendViewEvent(TelemetryView.AgentNotebooks);
 	}
 
-	ngOnDestroy() {
+	override ngOnDestroy() {
 	}
 
 	public layout() {
@@ -222,7 +222,7 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 		}
 	}
 
-	protected initActionBar() {
+	protected override initActionBar() {
 		let refreshAction = this._instantiationService.createInstance(JobsRefreshAction);
 		let newAction = this._instantiationService.createInstance(NewNotebookJobAction);
 		let taskbar = <HTMLElement>this.actionBarContainer.nativeElement;
@@ -895,7 +895,7 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 		});
 	}
 
-	protected getTableActions(targetObject: JobActionContext): IAction[] {
+	protected override getTableActions(targetObject: JobActionContext): IAction[] {
 		const editNotebookAction = this._instantiationService.createInstance(EditNotebookJobAction);
 		const runJobAction = this._instantiationService.createInstance(RunJobAction);
 		const openLatestRunAction = this._instantiationService.createInstance(OpenLatestRunMaterializedNotebook);
@@ -941,7 +941,7 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 		return result;
 	}
 
-	protected getCurrentTableObject(rowIndex: number): JobActionContext {
+	protected override getCurrentTableObject(rowIndex: number): JobActionContext {
 		let data = this._table.grid.getData() as Slick.DataProvider<IItem>;
 		if (!data || rowIndex >= data.getLength()) {
 			return undefined;
@@ -997,7 +997,7 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 		await this._commandService.executeCommand('agent.openNotebookDialog', ownerUri);
 	}
 
-	public async openLastNRun(notebook: azdata.AgentNotebookInfo, n: number, maxVisibleElements: number) {
+	public override async openLastNRun(notebook: azdata.AgentNotebookInfo, n: number, maxVisibleElements: number) {
 		let notebookHistories = this._notebookCacheObject.getNotebookHistory(notebook.jobId);
 		if (notebookHistories && n < notebookHistories.length) {
 			notebookHistories = notebookHistories.sort((h1, h2) => {

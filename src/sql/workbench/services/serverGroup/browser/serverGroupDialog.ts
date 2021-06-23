@@ -75,7 +75,7 @@ export class ServerGroupDialog extends Modal {
 		super(localize('ServerGroupsDialogTitle', "Server Groups"), TelemetryKeys.ModalDialogName.ServerGroups, telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService);
 	}
 
-	public render() {
+	public override render() {
 		super.render();
 		attachModalDialogStyler(this, this._themeService);
 		const okLabel = localize('serverGroup.ok', "OK");
@@ -307,11 +307,11 @@ export class ServerGroupDialog extends Modal {
 
 	private validateInputs(): boolean {
 		const renderedDialog = this.withRenderedDialog;
-		let validate = renderedDialog.groupNameInputBox.validate();
-		if (!validate) {
+		const isNameValid = renderedDialog.groupNameInputBox.validate() === undefined;
+		if (!isNameValid) {
 			renderedDialog.groupNameInputBox.focus();
 		}
-		return validate;
+		return isNameValid;
 	}
 
 	// initialize the view based on the current state of the view model
@@ -349,12 +349,12 @@ export class ServerGroupDialog extends Modal {
 	}
 
 	/* Overwrite escape key behavior */
-	protected onClose() {
+	protected override onClose() {
 		this.cancel();
 	}
 
 	/* Overwrite enter key behavior */
-	protected onAccept() {
+	protected override onAccept() {
 		this.addGroup();
 	}
 

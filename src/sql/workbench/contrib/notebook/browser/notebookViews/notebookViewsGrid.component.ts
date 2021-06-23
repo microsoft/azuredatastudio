@@ -91,7 +91,7 @@ export class NotebookViewsGridComponent extends AngularDisposable implements OnI
 		}
 	}
 
-	ngOnDestroy() {
+	override ngOnDestroy() {
 		this.destroyGrid();
 	}
 

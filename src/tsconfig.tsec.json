@@ -2,6 +2,7 @@
 	"extends": "./tsconfig.json",
 	"compilerOptions": {
 		"noEmit": true,
+		"skipLibCheck": true, // {{SQL CARBON EDIT}} Skip checking libs since they're not needed and a couple of ours cause compile errors
 		"plugins": [
 			{
 				"name": "tsec",
