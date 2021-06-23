@@ -51,8 +51,8 @@ export class PublishDatabaseDialog {
 	public readPublishProfile: ((profileUri: vscode.Uri) => any) | undefined;
 
 	constructor(private project: Project) {
-		this.dialog = azdataType.window.createModelViewDialog(constants.publishDialogName, 'sqlProjectPublishDialog');
-		this.publishTab = azdataType.window.createTab(constants.publishDialogName);
+		this.dialog = utils.getAzdataApi()!.window.createModelViewDialog(constants.publishDialogName, 'sqlProjectPublishDialog');
+		this.publishTab = utils.getAzdataApi()!.window.createTab(constants.publishDialogName);
 	}
 
 	public openDialog(): void {
@@ -63,14 +63,14 @@ export class PublishDatabaseDialog {
 
 		this.dialog.cancelButton.label = constants.cancelButtonText;
 
-		let generateScriptButton: azdataType.window.Button = azdataType.window.createButton(constants.generateScriptButtonText);
+		let generateScriptButton: azdataType.window.Button = utils.getAzdataApi()!.window.createButton(constants.generateScriptButtonText);
 		this.toDispose.push(generateScriptButton.onClick(async () => await this.generateScriptClick()));
 		generateScriptButton.enabled = false;
 
 		this.dialog.customButtons = [];
 		this.dialog.customButtons.push(generateScriptButton);
 
-		azdataType.window.openDialog(this.dialog);
+		utils.getAzdataApi()!.window.openDialog(this.dialog);
 	}
 
 	private dispose(): void {
@@ -160,10 +160,10 @@ export class PublishDatabaseDialog {
 				const connProfile: azdataType.IConnectionProfile = dataSource.getConnectionProfile();
 
 				if (dataSource.integratedSecurity) {
-					connId = (await azdataType.connection.connect(connProfile, false, false)).connectionId;
+					connId = (await utils.getAzdataApi()!.connection.connect(connProfile, false, false)).connectionId;
 				}
 				else {
-					connId = (await azdataType.connection.openConnectionDialog(undefined, connProfile)).connectionId;
+					connId = (await utils.getAzdataApi()!.connection.openConnectionDialog(undefined, connProfile)).connectionId;
 				}
 			}
 			else {
@@ -174,7 +174,7 @@ export class PublishDatabaseDialog {
 				connId = this.connectionId;
 			}
 
-			return await azdataType.connection.getUriForConnection(connId);
+			return await utils.getAzdataApi()!.connection.getUriForConnection(connId);
 		}
 		catch (err) {
 			throw new Error(constants.unableToCreatePublishConnection + ': ' + utils.getErrorMessage(err));
@@ -192,7 +192,7 @@ export class PublishDatabaseDialog {
 			profileUsed: this.profileUsed
 		};
 
-		azdataType.window.closeDialog(this.dialog);
+		utils.getAzdataApi()!.window.closeDialog(this.dialog);
 		await this.publish!(this.project, settings);
 
 		this.dispose();
@@ -211,7 +211,7 @@ export class PublishDatabaseDialog {
 			profileUsed: this.profileUsed
 		};
 
-		azdataType.window.closeDialog(this.dialog);
+		utils.getAzdataApi()!.window.closeDialog(this.dialog);
 
 		if (this.generateScript) {
 			await this.generateScript!(this.project, settings);
@@ -430,7 +430,7 @@ export class PublishDatabaseDialog {
 			columns: [
 				{
 					displayName: constants.sqlCmdVariableColumn,
-					valueType: azdataType.DeclarativeDataType.string,
+					valueType: utils.getAzdataApi()!.DeclarativeDataType.string,
 					width: '50%',
 					isReadOnly: true,
 					headerCssStyles: cssStyles.tableHeader,
@@ -438,7 +438,7 @@ export class PublishDatabaseDialog {
 				},
 				{
 					displayName: constants.sqlCmdValueColumn,
-					valueType: azdataType.DeclarativeDataType.string,
+					valueType: utils.getAzdataApi()!.DeclarativeDataType.string,
 					width: '50%',
 					isReadOnly: false,
 					headerCssStyles: cssStyles.tableHeader,
@@ -493,7 +493,7 @@ export class PublishDatabaseDialog {
 		}).component();
 
 		selectConnectionButton.onDidClick(async () => {
-			let connection = await azdataType.connection.openConnectionDialog();
+			let connection = await utils.getAzdataApi()!.connection.openConnectionDialog();
 			this.connectionId = connection.connectionId;
 			this.serverName = connection.options['server'];
 
@@ -519,7 +519,7 @@ export class PublishDatabaseDialog {
 
 		// populate database dropdown with the databases for this connection
 		if (connectionId) {
-			const databaseValues = (await azdataType.connection.listDatabases(connectionId))
+			const databaseValues = (await utils.getAzdataApi()!.connection.listDatabases(connectionId))
 				// filter out system dbs
 				.filter(db => !constants.systemDbs.includes(db));
 
