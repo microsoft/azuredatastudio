@@ -142,7 +142,7 @@ export class SchemaCompareMainWindow {
 					contentLeft: os.EOL,
 					contentRight: os.EOL,
 					height: 500,
-					title: loc.diffEditorTitle,
+					title: loc.diffEditorTitle
 				}).component();
 
 				this.splitView = this.view.modelBuilder.splitViewContainer().component();
