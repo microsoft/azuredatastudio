@@ -112,7 +112,6 @@ export function setup() {
 			});
 
 			it('Collapse and Expand Cell', async function () {
-				// Add Cells - collapse cells
 				const app = this.app as Application;
 				await app.workbench.sqlNotebook.openFile('collapsed.ipynb');
 				await app.workbench.sqlNotebook.waitForCollapseCellsIcon();
