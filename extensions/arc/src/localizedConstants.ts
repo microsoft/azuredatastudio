@@ -18,7 +18,7 @@ export const miaaType = localize('arc.miaaType', "SQL managed instance - Azure A
 
 export const overview = localize('arc.overview', "Overview");
 export const connectionStrings = localize('arc.connectionStrings', "Connection Strings");
-export const extensions = localize('arc.extensions', "Extensions");
+export const preLoadedExtensions = localize('arc.preloaded Extensions', "Preloaded Extensions");
 export const networking = localize('arc.networking', "Networking");
 export const properties = localize('arc.properties', "Properties");
 export const settings = localize('arc.settings', "Settings");
@@ -56,7 +56,7 @@ export const miaaAdmin = localize('arc.miaaAdmin', "Managed instance admin");
 export const controllerEndpoint = localize('arc.controllerEndpoint', "Controller endpoint");
 export const extensionName = localize('arc.extensionName', "Extension name");
 export const extensionsDescription = localize('arc.extensionsDescription', "PostgreSQL provides the ability to extend the functionality of your database by using extensions. Extensions allow for bundling multiple related SQL objects together in a single package that can be loaded or removed from your database with a single command. After being loaded in the database, extensions can function like built-in features.");
-export const extensionsFunction = localize('arc.extensionsFunction', "You can view extensions installed on your instance below.");
+export const extensionsFunction = localize('arc.extensionsFunction', "You can view preloaded extensions added to your instance below.");
 export const extensionsLearnMore = localize('arc.extensionsLearnMore', "Learn more about PostgreSQL extensions.");
 export const dataController = localize('arc.dataController', "Data controller");
 export const kibanaDashboard = localize('arc.kibanaDashboard', "Kibana Dashboard");

@@ -34,7 +34,7 @@ export class PostgresExtensionsPage extends DashboardPage {
 	}
 
 	protected get title(): string {
-		return loc.extensions;
+		return loc.preLoadedExtensions;
 	}
 
 	protected get id(): string {
