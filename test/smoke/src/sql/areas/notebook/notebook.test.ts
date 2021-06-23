@@ -94,6 +94,34 @@ export function setup() {
 			const app = this.app as Application;
 			await app.workbench.quickaccess.runCommand('workbench.action.revertAndCloseActiveEditor');
 		});
+
+		describe('Notebook Toolbar Actions', async () => {
+
+			it('Add Code Cell', async function () {
+				const app = this.app as Application;
+				await app.workbench.sqlNotebook.newUntitledNotebook();
+				await app.workbench.sqlNotebook.addCell('code');
+				await app.workbench.sqlNotebook.waitForTypeInEditor('Select * FROM Customers;');
+			});
+
+			it('Add Markdown Cell', async function () {
+				const app = this.app as Application;
+				await app.workbench.sqlNotebook.newUntitledNotebook();
+				await app.workbench.sqlNotebook.addCellFromPlaceholder('Markdown');
+				await app.workbench.sqlNotebook.waitForPlaceholderGone();
+			});
+
+			it('Collapse and Expand Cell', async function () {
+				// Add Cells - collapse cells
+				const app = this.app as Application;
+				await app.workbench.sqlNotebook.openFile('collapsed.ipynb');
+				await app.workbench.sqlNotebook.waitForCollapseCellsIcon();
+				await app.workbench.sqlNotebook.collapseCells();
+				await app.workbench.sqlNotebook.waitForExpandCellsIcon();
+				await app.workbench.sqlNotebook.expandCells();
+				await app.workbench.sqlNotebook.waitForCollapseCellsIcon();
+			});
+		});
 	});
 }
 
