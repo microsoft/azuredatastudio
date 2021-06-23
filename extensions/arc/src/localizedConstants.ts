@@ -59,6 +59,7 @@ export const extensionsDescription = localize('arc.extensionsDescription', "Post
 export const extensionsFunction = localize('arc.extensionsFunction', "Some extensions must be loaded into PostgreSQL at startup time before they can be used. These preloaded extensions can be viewed below.");
 export const extensionsLearnMore = localize('arc.extensionsLearnMore', "Learn more about PostgreSQL extensions.");
 export const extensionsTableLoading = localize('arc.extensionsTableLoading', "Table of preloaded extensions are loading.");
+export const extensionsTableLabel = localize('arc.extensionsTableLabel', "Table of preloaded extensions.");
 export const extensionsTableLoadingComplete = localize('arc.extensionsTableLoadingComplete', "Preloaded extensions can now be viewed.");
 export const dataController = localize('arc.dataController', "Data controller");
 export const kibanaDashboard = localize('arc.kibanaDashboard', "Kibana Dashboard");
