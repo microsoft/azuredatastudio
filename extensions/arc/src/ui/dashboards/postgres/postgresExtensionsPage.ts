@@ -93,7 +93,9 @@ export class PostgresExtensionsPage extends DashboardPage {
 		this.extensionsLoading = this.modelView.modelBuilder.loadingComponent()
 			.withItem(this.extensionsTable)
 			.withProperties<azdata.LoadingComponentProperties>({
-				loading: !this._postgresModel.configLastUpdated
+				loading: !this._postgresModel.configLastUpdated,
+				loadingText: loc.extensionsTableLoading,
+				loadingCompletedText: loc.extensionsTableLoadingComplete
 			}).component();
 
 		content.addItem(this.extensionsLoading, { CSSStyles: cssStyles.text });
