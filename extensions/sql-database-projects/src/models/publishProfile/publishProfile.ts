@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as azdata from 'azdata';
 import * as xmldom from 'xmldom';
 import * as constants from '../../common/constants';
 import * as utils from '../../common/utils';
@@ -67,13 +66,13 @@ async function readConnectionString(xmlDoc: any): Promise<{ connectionId: string
 
 		try {
 			if (dataSource.integratedSecurity) {
-				const connection = await azdata.connection.connect(connectionProfile, false, false);
+				const connection = await utils.getAzdataApi()!.connection.connect(connectionProfile, false, false);
 				connId = connection.connectionId;
 				server = dataSource.server;
 				username = constants.defaultUser;
 			}
 			else {
-				const connection = await azdata.connection.openConnectionDialog(undefined, connectionProfile);
+				const connection = await utils.getAzdataApi()!.connection.openConnectionDialog(undefined, connectionProfile);
 				connId = connection.connectionId;
 				server = connection.options['server'];
 				username = connection.options['user'];

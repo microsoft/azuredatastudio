@@ -1568,6 +1568,11 @@ class DeclarativeTableWrapper extends ComponentWrapper implements azdata.Declara
 		});
 	}
 
+	async setDataValues(v: azdata.DeclarativeTableCellValue[][]): Promise<void> {
+		await this.clearItems();
+		await this.setProperty('dataValues', v);
+	}
+
 	public get columns(): azdata.DeclarativeTableColumn[] {
 		return this.properties['columns'];
 	}
