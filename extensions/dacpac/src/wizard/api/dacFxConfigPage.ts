@@ -118,7 +118,8 @@ export abstract class DacFxConfigPage extends BasePage {
 
 		return {
 			component: this.databaseLoader,
-			title: databaseDropdownTitle
+			title: databaseDropdownTitle,
+			required: true
 		};
 	}
 

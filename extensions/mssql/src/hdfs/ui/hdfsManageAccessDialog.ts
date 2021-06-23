@@ -197,7 +197,7 @@ export class ManageAccessDialog {
 
 		typeContainer.addItems([userTypeButton, groupTypeButton], { flex: '0 0 auto' });
 		contentContainer.addItem(typeContainer, { flex: '0 0 auto', CSSStyles: { 'margin-bottom': '5px' } });
-		const addUserOrGroupInputRow = this.modelBuilder.flexContainer().withLayout({ flexFlow: 'row' }).component();
+		const addUserOrGroupInputRow = this.modelBuilder.flexContainer().component();
 
 		this.addUserOrGroupInput = this.modelBuilder.inputBox()
 			.withProperties<azdata.InputBoxProperties>({

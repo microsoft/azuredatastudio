@@ -154,7 +154,8 @@ export class DeployConfigPage extends DacFxConfigPage {
 
 		return {
 			component: this.databaseLoader,
-			title: targetDatabaseTitle
+			title: targetDatabaseTitle,
+			required: true
 		};
 	}
 
