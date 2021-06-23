@@ -35,7 +35,6 @@ const sqlLocalizedExtensions = [
 	'import',
 	'machine-learning',
 	'profiler',
-	'schema-compare',
 	'server-report',
 	'sql-assessment',
 	'sql-database-projects'
