@@ -188,7 +188,7 @@ export class ManageAccessDialog {
 			.component();
 		contentContainer.addItem(addUserOrGroupTitle, { CSSStyles: { 'margin-top': '15px', ...cssStyles.titleCss } });
 
-		const typeContainer = this.modelBuilder.flexContainer().withLayout({ flexFlow: 'row' }).component();
+		const typeContainer = this.modelBuilder.flexContainer().component();
 		const aclEntryTypeGroup = 'aclEntryType';
 		const userTypeButton = this.createRadioButton(this.modelBuilder, loc.userLabel, aclEntryTypeGroup, AclType.user);
 		const groupTypeButton = this.createRadioButton(this.modelBuilder, loc.groupLabel, aclEntryTypeGroup, AclType.group);

@@ -835,6 +835,9 @@ declare module 'azdata' {
 		 */
 		secondary?: boolean;
 
+		/**
+		 * The file type filter used for the file input dialog box - only used when the button type is File
+		 */
 		fileType?: string
 	}
 
