@@ -130,7 +130,7 @@ export class NotebookSearchView extends SearchView {
 		this.toggleExpandAction.update();
 	}
 
-	public override getActions(): IAction[] {
+	getActions(): IAction[] {
 		return this.state !== SearchUIState.Idle ? [
 			this.cancelSearchAction,
 			...this.viewActions,

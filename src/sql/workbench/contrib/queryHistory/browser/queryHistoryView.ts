@@ -153,7 +153,7 @@ export class QueryHistoryView extends ViewPane {
 	}
 
 
-	public override getActions(): IAction[] {
+	public getActions(): IAction[] {
 		return this._actionProvider.getActions(undefined);
 	}
 }

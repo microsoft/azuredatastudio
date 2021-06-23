@@ -11,12 +11,11 @@ import { Event, Emitter } from 'vs/base/common/event';
 import { localize } from 'vs/nls';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { attachButtonStyler, attachListStyler } from 'vs/platform/theme/common/styler';
-import { IAction } from 'vs/base/common/actions';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { SplitView, Sizing } from 'vs/base/browser/ui/splitview/splitview';
-import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
+import { IContextKeyService, ContextKeyEqualsExpr } from 'vs/platform/contextkey/common/contextkey';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
 import * as azdata from 'azdata';
@@ -45,6 +44,8 @@ import { Registry } from 'vs/platform/registry/common/platform';
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
 import { Iterable } from 'vs/base/common/iterator';
 import { Tenant, TenantListDelegate, TenantListRenderer } from 'sql/workbench/services/accountManagement/browser/tenantListRenderer';
+import { MenuId, Action2, registerAction2 } from 'vs/platform/actions/common/actions';
+import { Codicon } from 'vs/base/common/codicons';
 
 export const VIEWLET_ID = 'workbench.view.accountpanel';
 
@@ -66,7 +67,7 @@ class AccountPanel extends ViewPane {
 
 
 	constructor(
-		private options: IViewPaneOptions,
+		options: IViewPaneOptions,
 		@IKeybindingService keybindingService: IKeybindingService,
 		@IContextMenuService contextMenuService: IContextMenuService,
 		@IConfigurationService configurationService: IConfigurationService,
@@ -115,13 +116,6 @@ class AccountPanel extends ViewPane {
 	private updateTenants(account: azdata.Account) {
 		this.tenantList!.splice(0, this.tenantList!.length, account.properties?.tenants ?? []);
 	}
-
-	public override getActions(): IAction[] {
-		return [this.instantiationService.createInstance(
-			AddAccountAction,
-			this.options.id
-		)];
-	}
 }
 
 export interface IProviderViewUiComponent {
@@ -138,7 +132,6 @@ export class AccountDialog extends Modal {
 	private _providerViewsMap = new Map<string, IProviderViewUiComponent>();
 
 	private _closeButton?: Button;
-	private _addAccountButton?: Button;
 	private _splitView?: SplitView;
 	private _container?: HTMLElement;
 	private _splitViewContainer?: HTMLElement;
@@ -223,50 +216,12 @@ export class AccountDialog extends Modal {
 		const noAccountTitle = DOM.append(this._noaccountViewContainer, DOM.$('.no-account-view-label'));
 		const noAccountLabel = localize('accountDialog.noAccountLabel', "There is no linked account. Please add an account.");
 		noAccountTitle.innerText = noAccountLabel;
-
-		// Show the add account button for the first provider
-		// Todo: If we have more than 1 provider, need to show all add account buttons for all providers
-		const buttonSection = DOM.append(this._noaccountViewContainer, DOM.$('div.button-section'));
-		this._addAccountButton = new Button(buttonSection);
-		this._addAccountButton.label = localize('accountDialog.addConnection', "Add an account");
-
-		this._register(this._addAccountButton.onDidClick(async () => {
-			const vals = Iterable.consume(this._providerViewsMap.values())[0];
-
-			let pickedValue: string | undefined;
-			if (vals.length === 0) {
-				this._notificationService.error(localize('accountDialog.noCloudsRegistered', "You have no clouds enabled. Go to Settings -> Search Azure Account Configuration -> Enable at least one cloud"));
-				return;
-			}
-			if (vals.length > 1) {
-				const buttons: IQuickPickItem[] = vals.map(v => {
-					return { label: v.view.title } as IQuickPickItem;
-				});
-
-				const picked = await this._quickInputService.pick(buttons, { canPickMany: false });
-
-				pickedValue = picked?.label;
-			} else {
-				pickedValue = vals[0].view.title;
-			}
-
-			const v = vals.filter(v => v.view.title === pickedValue)?.[0];
-
-			if (!v) {
-				this._notificationService.error(localize('accountDialog.didNotPickAuthProvider', "You didn't select any authentication provider. Please try again."));
-				return;
-			}
-
-			v.addAccountAction.run();
-		}));
-
 		DOM.append(container, this._noaccountViewContainer);
 	}
 
 	private registerListeners(): void {
 		// Theme styler
 		this._register(attachButtonStyler(this._closeButton!, this._themeService));
-		this._register(attachButtonStyler(this._addAccountButton!, this._themeService));
 	}
 
 	/* Overwrite escape key behavior */
@@ -297,7 +252,6 @@ export class AccountDialog extends Modal {
 	private showNoAccountContainer() {
 		this._splitViewContainer!.hidden = true;
 		this._noaccountViewContainer!.hidden = false;
-		this._addAccountButton!.focus();
 	}
 
 	private showSplitView() {
@@ -374,6 +328,8 @@ export class AccountDialog extends Modal {
 			ctorDescriptor: new SyncDescriptor(AccountPanel),
 		}], ACCOUNT_VIEW_CONTAINER);
 
+		this.registerActions(newProvider.addedProvider.id);
+
 		attachPanelStyler(providerView, this._themeService);
 
 		const insertIndex = this._splitView!.length;
@@ -430,5 +386,56 @@ export class AccountDialog extends Modal {
 		}
 
 		this.layout();
+	}
+
+	private registerActions(viewId: string) {
+		const that = this;
+		registerAction2(class extends Action2 {
+			constructor() {
+				super({
+					id: `workbench.actions.accountDialog.${viewId}.addAccount`,
+					title: { value: localize('accountDialog.addConnection', "Add an account"), original: 'Add an account' },
+					f1: true,
+					icon: Codicon.add,
+					menu: {
+						id: MenuId.ViewTitle,
+						group: 'navigation',
+						when: ContextKeyEqualsExpr.create('view', viewId),
+						order: 1
+					}
+				});
+			}
+
+			async run() {
+				const vals = Iterable.consume(that._providerViewsMap.values())[0];
+
+				let pickedValue: string | undefined;
+				if (vals.length === 0) {
+					that._notificationService.error(localize('accountDialog.noCloudsRegistered', "You have no clouds enabled. Go to Settings -> Search Azure Account Configuration -> Enable at least one cloud"));
+					return;
+				}
+				if (vals.length > 1) {
+					const buttons: IQuickPickItem[] = vals.map(v => {
+						return { label: v.view.title } as IQuickPickItem;
+					});
+
+					const picked = await that._quickInputService.pick(buttons, { canPickMany: false });
+
+					pickedValue = picked?.label;
+				} else {
+					pickedValue = vals[0].view.title;
+				}
+
+				const v = vals.filter(v => v.view.title === pickedValue)?.[0];
+
+				if (!v) {
+					that._notificationService.error(localize('accountDialog.didNotPickAuthProvider', "You didn't select any authentication provider. Please try again."));
+					return;
+				}
+
+				v.addAccountAction.run();
+			}
+		});
+
 	}
 }
