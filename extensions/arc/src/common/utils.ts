@@ -185,6 +185,22 @@ export async function promptAndConfirmPassword(validate: (input: string) => stri
 	return undefined;
 }
 
+/**
+ * Opens an input box
+ * @param validate A function that accepts value and returns an error message if it's invalid
+ * @returns Promise resolving to the value if it passed validation,
+ * or undefined if the input box was closed for any other reason
+ */
+export async function promptValue(header: string, prompt: string, validate: (input: string) => string): Promise<string | undefined> {
+	const title = header;
+	const options: vscode.InputBoxOptions = {
+		prompt: prompt,
+		validateInput: input => validate(input)
+	};
+
+	return await promptInputBox(title, options);
+}
+
 export function generateGuid(): string {
 	let hexValues: string[] = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'];
 	// c.f. rfc4122 (UUID version 4 = xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx)

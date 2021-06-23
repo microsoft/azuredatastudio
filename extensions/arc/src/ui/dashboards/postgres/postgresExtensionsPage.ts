@@ -10,6 +10,7 @@ import * as loc from '../../../localizedConstants';
 import { IconPathHelper, cssStyles } from '../../../constants';
 import { DashboardPage } from '../../components/dashboardPage';
 import { PostgresModel } from '../../../models/postgresModel';
+import { promptValue } from '../../../common/utils';
 
 export type PodStatusModel = {
 	podName: azdata.Component,
@@ -113,42 +114,49 @@ export class PostgresExtensionsPage extends DashboardPage {
 			addExtensionsButton.onDidClick(async () => {
 				addExtensionsButton.enabled = false;
 				try {
-					await vscode.window.withProgress(
-						{
-							location: vscode.ProgressLocation.Notification,
-							title: loc.updatingInstance(this._postgresModel.info.name),
-							cancellable: false
-						},
-						async (_progress, _token): Promise<void> => {
-							try {
-								await this._azdataApi.azdata.arc.postgres.server.edit(
-									this._postgresModel.info.name,
-									{
-										extensions: ''
-									},
-									this._postgresModel.controllerModel.azdataAdditionalEnvVars);
-							} catch (err) {
-								// If an error occurs while editing the instance then re-enable the save button since
-								// the edit wasn't successfully applied
-								addExtensionsButton.enabled = true;
-								throw err;
+					const extensions = await promptValue(loc.addExtensions, loc.enterExtensionsList, input => !input ? loc.enterANonEmptyExtensionList : '');
+					if (extensions) {
+						await vscode.window.withProgress(
+							{
+								location: vscode.ProgressLocation.Notification,
+								title: loc.updatingInstance(this._postgresModel.info.name),
+								cancellable: false
+							},
+							async (_progress, _token): Promise<void> => {
+								try {
+									await this._azdataApi.azdata.arc.postgres.server.edit(
+										this._postgresModel.info.name,
+										{
+											extensions: extensions
+										},
+										this._postgresModel.controllerModel.azdataAdditionalEnvVars);
+								} catch (err) {
+									// If an error occurs while editing the instance then re-enable the save button since
+									// the edit wasn't successfully applied
+									addExtensionsButton.enabled = true;
+									throw err;
+								}
+								try {
+									await this._postgresModel.refresh();
+								} catch (error) {
+									vscode.window.showErrorMessage(loc.refreshFailed(error));
+								}
 							}
-							try {
-								await this._postgresModel.refresh();
-							} catch (error) {
-								vscode.window.showErrorMessage(loc.refreshFailed(error));
-							}
-						}
-					);
+						);
 
-					vscode.window.showInformationMessage(loc.instanceUpdated(this._postgresModel.info.name));
-
+						vscode.window.showInformationMessage(loc.instanceUpdated(this._postgresModel.info.name));
+					}
 				} catch (error) {
 					vscode.window.showErrorMessage(loc.instanceUpdateFailed(this._postgresModel.info.name, error));
+				} finally {
+					addExtensionsButton.enabled = true;
 				}
-			}));
+			})
+		);
 
-		return this.modelView.modelBuilder.toolbarContainer().component();
+		return this.modelView.modelBuilder.toolbarContainer().withToolbarItems([
+			{ component: addExtensionsButton }
+		]).component();
 	}
 
 	private refreshExtensions(): void {

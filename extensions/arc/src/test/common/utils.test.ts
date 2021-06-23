@@ -7,7 +7,7 @@ import { ResourceType } from 'arc';
 import 'mocha';
 import * as should from 'should';
 import * as vscode from 'vscode';
-import { getAzurecoreApi, getConnectionModeDisplayText, getDatabaseStateDisplayText, getErrorMessage, getResourceTypeIcon, parseEndpoint, parseIpAndPort, promptAndConfirmPassword, promptForInstanceDeletion, resourceTypeToDisplayName, convertToGibibyteString } from '../../common/utils';
+import { getAzurecoreApi, getConnectionModeDisplayText, getDatabaseStateDisplayText, getErrorMessage, getResourceTypeIcon, parseEndpoint, parseIpAndPort, promptAndConfirmPassword, promptForInstanceDeletion, promptValue, resourceTypeToDisplayName, convertToGibibyteString } from '../../common/utils';
 import { ConnectionMode as ConnectionMode, IconPathHelper } from '../../constants';
 import * as loc from '../../localizedConstants';
 import { MockInputBox } from '../stubs';
@@ -225,6 +225,60 @@ describe('promptAndConfirmPassword Method Tests', function (): void {
 					done(new Error(`Validation message '${mockInputBox.validationMessage} was not the expected message`));
 				}
 			});
+		});
+	});
+});
+
+describe('promptForValue Method Tests', function (): void {
+	let mockInputBox: MockInputBox;
+	before(function (): void {
+		vscode.window.createInputBox = () => {
+			return mockInputBox;
+		};
+	});
+
+	beforeEach(function (): void {
+		mockInputBox = new MockInputBox();
+	});
+
+	it('Resolves as true when value entered is correct', function (done): void {
+		const value = 'test1,test2';
+		promptValue('test header', 'test prompt', (_: string) => { return ''; }).then(value => {
+			if (value === value) {
+				done();
+			} else {
+				done(new Error(`Return value was expected to be '${value}'`));
+			}
+		});
+
+		mockInputBox.triggerAccept().then(() => {
+			mockInputBox.value = value;
+			mockInputBox.triggerAccept();
+		});
+		mockInputBox.triggerAccept();
+	});
+
+	it('Resolves with undefined when input box closed early', function (done): void {
+		promptValue('test header', 'test prompt', (_: string) => { return ''; }).then(value => {
+			if (value === undefined) {
+				done();
+			} else {
+				done(new Error('Return value was expected to be undefined'));
+			}
+		});
+		mockInputBox.hide();
+	});
+
+	it('Error message displayed when validation callback returns error message', function (done): void {
+		const testError = 'Test Error';
+		promptValue('test header', 'test prompt', (_: string) => { return testError; }).catch(err => done(err));
+		mockInputBox.value = '';
+		mockInputBox.triggerAccept().then(() => {
+			if (mockInputBox.validationMessage === testError) {
+				done();
+			} else {
+				done(new Error(`Validation message '${mockInputBox.validationMessage}' was expected to be '${testError}'`));
+			}
 		});
 	});
 });
