@@ -19,11 +19,13 @@ export function setup() {
 			await app.workbench.sqlNotebook.doubleClickTextCell();
 			await app.workbench.sqlNotebook.waitForDoubleClickToEditGone();
 
-			await app.workbench.sqlNotebook.changeTextCellView('Split View');
+			await app.workbench.sqlNotebook.textCellToolbar.changeTextCellView('Split View');
 			const sampleText: string = 'Test text cells';
 			await app.workbench.sqlNotebook.waitForTypeInEditor(sampleText);
+			await app.workbench.sqlNotebook.selectAllTextInEditor();
+			await app.workbench.sqlNotebook.textCellToolbar.boldSelectedText();
 			await app.code.dispatchKeybinding('escape');
-			await app.workbench.sqlNotebook.waitForTextCellPreviewContent(sampleText, 'p');
+			await app.workbench.sqlNotebook.waitForTextCellPreviewContent(sampleText, 'p', 'strong');
 		});
 
 		it('can perform basic code cell functionality', async function () {
