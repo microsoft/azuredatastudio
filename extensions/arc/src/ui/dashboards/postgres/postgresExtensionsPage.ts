@@ -11,12 +11,6 @@ import { IconPathHelper, cssStyles } from '../../../constants';
 import { DashboardPage } from '../../components/dashboardPage';
 import { PostgresModel } from '../../../models/postgresModel';
 
-export type PodStatusModel = {
-	podName: azdata.Component,
-	type: string,
-	status: string
-};
-
 export class PostgresExtensionsPage extends DashboardPage {
 
 	private extensions: { name: string; }[] = [];
@@ -67,7 +61,7 @@ export class PostgresExtensionsPage extends DashboardPage {
 
 		const link = this.modelView.modelBuilder.hyperlink().withProperties<azdata.HyperlinkComponentProperties>({
 			label: loc.extensionsLearnMore,
-			url: 'https://docs.microsoft.com/azure/azure-arc/data/get-connection-endpoints-and-connection-strings-postgres-hyperscale',
+			url: 'https://docs.microsoft.com/azure/azure-arc/data/using-extensions-in-postgresql-hyperscale-server-group',
 		}).component();
 
 		const infoAndLink = this.modelView.modelBuilder.flexContainer().withLayout({ flexWrap: 'wrap' }).component();
