@@ -225,7 +225,7 @@ export class AccountDialog extends Modal {
 		this._addAccountButton.label = localize('accountDialog.addConnection', "Add an account");
 
 		this._register(this._addAccountButton.onDidClick(async () => {
-			this.runAddAccountAction();
+			await this.runAddAccountAction();
 		}));
 
 		DOM.append(container, this._noaccountViewContainer);
@@ -421,7 +421,7 @@ export class AccountDialog extends Modal {
 			}
 
 			async run() {
-				that.runAddAccountAction();
+				await that.runAddAccountAction();
 			}
 		});
 	}
