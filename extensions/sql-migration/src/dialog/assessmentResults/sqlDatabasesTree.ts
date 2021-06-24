@@ -73,8 +73,6 @@ export class SqlDatabaseTree {
 	private _databaseTableValues!: azdata.DeclarativeTableCellValue[][];
 
 	private _activeIssues!: SqlMigrationAssessmentResultItem[];
-	// private _selectedIssue!: SqlMigrationAssessmentResultItem;
-	// private _selectedObject!: SqlMigrationImpactedObjectInfo;
 
 	private _serverName!: string;
 	private _dbNames!: string[];
@@ -174,9 +172,7 @@ export class SqlDatabaseTree {
 				'value': constants.DATABASES(this.selectedDbs().length, this._model._serverDatabases.length)
 			});
 		});
-		this._databaseTable.onRowSelected((e) => {
-			console.log('this._databaseTable.onRowSelected(' + e.row + ')');
-			//this._databaseTable.focus();
+		this._databaseTable.onRowSelected(async (e) => {
 			if (this._targetType === MigrationTargetType.SQLMI) {
 				this._activeIssues = this._model._assessmentResults?.databaseAssessments[e.row].issues;
 			} else {
@@ -191,7 +187,7 @@ export class SqlDatabaseTree {
 			this._dbMessageContainer.updateCssStyles({
 				'display': 'none'
 			});
-			this.refreshResults();
+			await this.refreshResults();
 		});
 
 		const tableContainer = this._view.modelBuilder.divContainer().withItems([this._databaseTable]).withProps({
@@ -248,11 +244,8 @@ export class SqlDatabaseTree {
 			}
 		}).component();
 
-		this._instanceTable.onRowSelected((e) => {
-			console.log('this._instanceTable.onRowSelected(' + e.row + ')');
-			//this._instanceTable.focus();
+		this._instanceTable.onRowSelected(async (e) => {
 			this._activeIssues = this._model._assessmentResults?.issues;
-			//this._selectedIssue = this._model._assessmentResults?.issues[0];
 			this._dbName.value = this._serverName;
 			this._resultComponent.updateCssStyles({
 				'display': 'block'
@@ -263,7 +256,7 @@ export class SqlDatabaseTree {
 			this._recommendation.value = constants.WARNINGS_DETAILS;
 			this._recommendationTitle.value = constants.WARNINGS_COUNT(this._activeIssues.length);
 			if (this._model._targetType === MigrationTargetType.SQLMI) {
-				this.refreshResults();
+				await this.refreshResults();
 			}
 		});
 
@@ -487,7 +480,6 @@ export class SqlDatabaseTree {
 		).component();
 
 		this._impactedObjectsTable.onRowSelected((e) => {
-			console.log('this._impactedObjectsTable.onRowSelected(' + e.row + ')');
 			const impactedObject = e.row > -1 ? this._impactedObjects[e.row] : undefined;
 			this.refreshImpactedObject(impactedObject);
 		});
@@ -712,10 +704,9 @@ export class SqlDatabaseTree {
 			}
 		).component();
 
-		this._assessmentResultsTable.onRowSelected((e) => {
-			console.log('this._assessmentResultsTable.onRowSelected(' + e.row + ')');
+		this._assessmentResultsTable.onRowSelected(async (e) => {
 			const selectedIssue = e.row > -1 ? this._activeIssues[e.row] : undefined;
-			this.refreshAssessmentDetails(selectedIssue);
+			await this.refreshAssessmentDetails(selectedIssue);
 		});
 
 		const container = this._view.modelBuilder.flexContainer().withItems([this._assessmentResultsTable]).withLayout({
@@ -740,7 +731,7 @@ export class SqlDatabaseTree {
 		return result;
 	}
 
-	public refreshResults(): void {
+	public async refreshResults(): Promise<void> {
 		if (this._model._targetType === MigrationTargetType.SQLMI) {
 			if (this._activeIssues.length === 0) {
 				/// show no issues here
@@ -784,13 +775,11 @@ export class SqlDatabaseTree {
 		const assessmentResults: azdata.DeclarativeTableCellValue[][] = this._activeIssues
 			.map((v) => [{ value: v.checkId }]) || [];
 
-		this._assessmentResultsTable.dataValues = assessmentResults;
-		console.log('refreshResults::this._assessmentResultsTable.selectedRow = ' + (assessmentResults.length > 0 ? '0' : '-1'));
+		await this._assessmentResultsTable.setDataValues(assessmentResults);
 		this._assessmentResultsTable.selectedRow = assessmentResults.length > 0 ? 0 : -1;
 	}
 
-	public refreshAssessmentDetails(selectedIssue?: SqlMigrationAssessmentResultItem): void {
-		// console.log('refreshAssessmentDetails');
+	public async refreshAssessmentDetails(selectedIssue?: SqlMigrationAssessmentResultItem): Promise<void> {
 		this._assessmentTitle.value = selectedIssue?.checkId || '';
 		this._descriptionText.value = selectedIssue?.description || '';
 		this._moreInfo.url = selectedIssue?.helpLink || '';
@@ -798,15 +787,13 @@ export class SqlDatabaseTree {
 		this._impactedObjects = selectedIssue?.impactedObjects || [];
 		this._recommendationText.value = selectedIssue?.message || ''; //TODO: Expose correct property for recommendation.
 
-		this._impactedObjectsTable.dataValues = this._impactedObjects.map(
-			(object) => [{ value: object.objectType }, { value: object.name }]);
+		await this._impactedObjectsTable.setDataValues(this._impactedObjects.map(
+			(object) => [{ value: object.objectType }, { value: object.name }]));
 
-		console.log('refreshAssessmentDetails::this._impactedObjectsTable.selectedRow = ' + (this._impactedObjects.length > 0 ? '0' : '-1'));
 		this._impactedObjectsTable.selectedRow = this._impactedObjects.length > 0 ? 0 : -1;
 	}
 
 	public refreshImpactedObject(impactedObject?: SqlMigrationImpactedObjectInfo): void {
-		// console.log('refreshImpactedObject(impactedObject: ' + (impactedObject ? 'impactedObject' : 'undefined' + ')'));
 		this._objectDetailsType.value = constants.IMPACT_OBJECT_TYPE(impactedObject?.objectType);
 		this._objectDetailsName.value = constants.IMPACT_OBJECT_NAME(impactedObject?.name);
 		this._objectDetailsSample.value = impactedObject?.impactDetail || '';
@@ -893,8 +880,8 @@ export class SqlDatabaseTree {
 				);
 			});
 		}
-		this._instanceTable.dataValues = instanceTableValues;
-		this._databaseTable.dataValues = this._databaseTableValues;
+		await this._instanceTable.setDataValues(instanceTableValues);
+		await this._databaseTable.setDataValues(this._databaseTableValues);
 	}
 
 	private createIconTextCell(icon: IconPath, text: string): azdata.FlexContainer {
