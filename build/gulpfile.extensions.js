@@ -28,7 +28,6 @@ const extensionsPath = path.join(path.dirname(__dirname), 'extensions');
 
 // {{SQL CARBON EDIT}}
 const sqlLocalizedExtensions = [
-	'machine-learning',
 	'profiler',
 	'server-report',
 	'sql-assessment',
