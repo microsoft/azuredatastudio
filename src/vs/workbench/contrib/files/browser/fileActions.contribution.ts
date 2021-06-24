@@ -31,7 +31,7 @@ import { SidebarFocusContext } from 'vs/workbench/common/viewlet';
 import { ThemeIcon } from 'vs/platform/theme/common/themeService';
 import { IExplorerService } from 'vs/workbench/contrib/files/browser/files';
 import { Codicon } from 'vs/base/common/codicons';
-import { getCustomString } from 'sql/platform/carbonEditLocalization/common/carbonEditStrings'; // {{SQL CARBON EDIT}}
+import * as editStrings from 'sql/platform/editStrings/common/editStrings'; // {{SQL CARBON EDIT}}
 
 // Contribute Global Actions
 const category = { value: nls.localize('filesCategory', "File"), original: 'File' };
@@ -577,7 +577,7 @@ MenuRegistry.appendMenuItem(MenuId.ExplorerContext, {
 
 // Empty Editor Group Context Menu
 // {{SQL CARBON EDIT}} - Use "New Query" instead of "New File"
-MenuRegistry.appendMenuItem(MenuId.EmptyEditorGroupContext, { command: { id: NEW_UNTITLED_FILE_COMMAND_ID, title: getCustomString('fileActions.contribution.newQuery') }, group: '1_file', order: 10 });
+MenuRegistry.appendMenuItem(MenuId.EmptyEditorGroupContext, { command: { id: NEW_UNTITLED_FILE_COMMAND_ID, title: editStrings.fileActionsContributionNewQuery }, group: '1_file', order: 10 });
 MenuRegistry.appendMenuItem(MenuId.EmptyEditorGroupContext, { command: { id: NEW_UNTITLED_PLAIN_FILE_COMMAND_ID, title: nls.localize('newFile', "New File") }, group: '1_file', order: 15 });
 MenuRegistry.appendMenuItem(MenuId.EmptyEditorGroupContext, { command: { id: 'workbench.action.quickOpen', title: nls.localize('openFile', "Open File...") }, group: '1_file', order: 20 });
 
@@ -588,7 +588,7 @@ MenuRegistry.appendMenuItem(MenuId.MenubarFileMenu, {
 	group: '1_new',
 	command: {
 		id: NEW_UNTITLED_FILE_COMMAND_ID,
-		title: getCustomString('fileActions.contribution.miNewQuery')
+		title: editStrings.fileActionsContributionMiNewQuery
 	},
 	order: 1
 });
@@ -608,7 +608,7 @@ MenuRegistry.appendMenuItem(MenuId.MenubarFileMenu, {
 	group: '1_new',
 	command: {
 		id: 'notebook.command.new',
-		title: getCustomString('fileActions.contribution.miNewNotebook')
+		title: editStrings.fileActionsContributionMiNewNotebook
 	},
 	order: 1.2
 });

@@ -32,7 +32,7 @@ import { DirtyFilesIndicator } from 'vs/workbench/contrib/files/common/dirtyFile
 import { UndoCommand, RedoCommand } from 'vs/editor/browser/editorExtensions';
 import { IUndoRedoService } from 'vs/platform/undoRedo/common/undoRedo';
 import { FileEditorInputSerializer, IExplorerService } from 'vs/workbench/contrib/files/browser/files';
-import { getCustomString } from 'sql/platform/carbonEditLocalization/common/carbonEditStrings'; // {{SQL CARBON EDIT}}
+import * as editStrings from 'sql/platform/editStrings/common/editStrings'; // {{SQL CARBON EDIT}}
 
 class FileUriLabelContribution implements IWorkbenchContribution {
 
@@ -250,7 +250,7 @@ configurationRegistry.registerConfiguration({
 		'files.maxMemoryForLargeFilesMB': {
 			'type': 'number',
 			'default': 4096,
-			'markdownDescription': getCustomString('files.contribution.maxMemoryForLargeFilesMB'), // {{SQL CARBON EDIT}} Change product name to ADS
+			'markdownDescription': editStrings.filesContributionMaxMemoryForLargeFilesMB, // {{SQL CARBON EDIT}} Change product name to ADS
 			included: platform.isNative
 		},
 		'files.restoreUndoStack': {
