@@ -16,17 +16,17 @@ export class SerializationFeature extends SqlOpsFeature<undefined> {
 		super(client, SerializationFeature.messageTypes);
 	}
 
-	public fillClientCapabilities(capabilities: ClientCapabilities): void {
+	public fillClientCapabilities(_capabilities: ClientCapabilities): void {
 	}
 
-	public initialize(capabilities: ServerCapabilities): void {
+	public initialize(_capabilities: ServerCapabilities): void {
 		this.register(this.messages, {
 			id: UUID.generateUuid(),
 			registerOptions: undefined
 		});
 	}
 
-	protected registerProvider(options: undefined): Disposable {
+	protected registerProvider(_options: undefined): Disposable {
 		const client = this._client;
 
 		let startSerialization = (requestParams: azdata.SerializeDataStartRequestParams): Thenable<azdata.SerializeDataResult> => {

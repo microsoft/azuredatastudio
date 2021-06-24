@@ -15,11 +15,11 @@ const configLogRetentionMinutes = 'logRetentionMinutes';
 const configLogFilesRemovalLimit = 'logFilesRemovalLimit';
 const extensionConfigSectionName = 'azuremonitor';
 
-export function removeOldLogFiles(logPath: string, prefix: string): JSON {
+export function removeOldLogFiles(logPath: string, _prefix: string): JSON {
 	return findRemoveSync(logPath, { age: { seconds: getConfigLogRetentionSeconds() }, limit: getConfigLogFilesRemovalLimit() });
 }
 
-export function getConfiguration(config: string = extensionConfigSectionName): vscode.WorkspaceConfiguration {
+export function getConfiguration(_config: string = extensionConfigSectionName): vscode.WorkspaceConfiguration {
 	return vscode.workspace.getConfiguration(extensionConfigSectionName);
 }
 
@@ -76,7 +76,7 @@ export function getCommonLaunchArgsAndCleanupOldLogFiles(logPath: string, fileNa
 	return launchArgs;
 }
 
-export function ensure(target: object, key: string): any {
+export function ensure(target: any, key: string): any {
 	if (target[key] === void 0) {
 		target[key] = {} as any;
 	}

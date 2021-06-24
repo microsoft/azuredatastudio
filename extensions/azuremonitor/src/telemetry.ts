@@ -71,7 +71,7 @@ export class Telemetry {
 	 * Send a telemetry event for an exception
 	 */
 	public static sendTelemetryEventForException(
-		err: any, methodName: string, extensionConfigName: string): void {
+		err: any, methodName: string, _extensionConfigName: string): void {
 		let stackArray: string[];
 		let firstLine: string = '';
 		if (err !== undefined && err.stack !== undefined) {
@@ -142,7 +142,7 @@ export class LanguageClientErrorHandler implements ErrorHandler {
 	 *
 	 * @memberOf LanguageClientErrorHandler
 	 */
-	error(error: Error, message: Message, count: number): ErrorAction {
+	error(_error: Error, _message: Message, _count: number): ErrorAction {
 		this.showOnErrorPrompt();
 
 		// we don't retry running the service since crashes leave the extension
