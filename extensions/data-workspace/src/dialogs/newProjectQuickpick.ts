@@ -32,7 +32,7 @@ export async function createNewProjectWithQuickpick(workspaceService: WorkspaceS
 	// 2. Prompt for project name
 	const projectName = await vscode.window.showInputBox(
 		{
-			placeHolder: constants.ProjectName,
+			title: constants.ProjectNamePlaceholder,
 			validateInput: (value) => {
 				return value ? undefined : constants.NameCannotBeEmpty;
 			}

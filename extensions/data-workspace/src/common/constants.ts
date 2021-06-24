@@ -48,7 +48,6 @@ export const NewProjectDialogTitle = localize('dataworkspace.NewProjectDialogTit
 export const TypeTitle = localize('dataworkspace.Type', "Type");
 export const ProjectNameTitle = localize('dataworkspace.projectNameTitle', "Name");
 export const ProjectNamePlaceholder = localize('dataworkspace.projectNamePlaceholder', "Enter project name");
-export const ProjectName = localize('dataworkspace.projectName', "Project Name");
 export const ProjectLocationTitle = localize('dataworkspace.projectLocationTitle', "Location");
 export const ProjectLocationPlaceholder = localize('dataworkspace.projectLocationPlaceholder', "Select location to create project");
 export const AddProjectToCurrentWorkspace = localize('dataworkspace.AddProjectToCurrentWorkspace', "This project will be added to the current workspace.");
