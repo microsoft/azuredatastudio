@@ -28,7 +28,6 @@ const extensionsPath = path.join(path.dirname(__dirname), 'extensions');
 
 // {{SQL CARBON EDIT}}
 const sqlLocalizedExtensions = [
-	'admin-tool-ext-win',
 	'agent',
 	'cms',
 	'dacpac',
