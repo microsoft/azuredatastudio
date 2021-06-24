@@ -235,7 +235,7 @@ export class WorkspaceService implements IWorkspaceService {
 		const projFilter = supportedProjectExtensions.length > 1 ? path.posix.join(escapedPath, '**', `*.{${supportedProjectExtensions.toString()}}`) : path.posix.join(escapedPath, '**', `*.${supportedProjectExtensions[0]}`);
 
 		// glob will return an array of file paths with forward slashes, so they need to be converted back if on windows
-		return (await glob(projFilter)).map(p => folder.fsPath.includes('\\') ? p.split('/').join('\\') : p);
+		return (await glob(projFilter)).map(p => path.resolve(p));
 	}
 
 	async getProjectProvider(projectFile: vscode.Uri): Promise<dataworkspace.IProjectProvider | undefined> {
