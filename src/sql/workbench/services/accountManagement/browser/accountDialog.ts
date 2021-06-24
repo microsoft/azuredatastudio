@@ -15,12 +15,14 @@ import { IContextMenuService } from 'vs/platform/contextview/browser/contextView
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { SplitView, Sizing } from 'vs/base/browser/ui/splitview/splitview';
+import { MenuId, Action2, registerAction2 } from 'vs/platform/actions/common/actions';
 import { IContextKeyService, ContextKeyEqualsExpr } from 'vs/platform/contextkey/common/contextkey';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
 import * as azdata from 'azdata';
 
 import { Button } from 'sql/base/browser/ui/button/button';
+import { SqlIconId } from 'sql/base/common/codicons';
 import { HideReason, Modal } from 'sql/workbench/browser/modal/modal';
 import { AccountViewModel } from 'sql/platform/accounts/common/accountViewModel';
 import { AddAccountAction } from 'sql/platform/accounts/common/accountActions';
@@ -44,8 +46,6 @@ import { Registry } from 'vs/platform/registry/common/platform';
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
 import { Iterable } from 'vs/base/common/iterator';
 import { Tenant, TenantListDelegate, TenantListRenderer } from 'sql/workbench/services/accountManagement/browser/tenantListRenderer';
-import { MenuId, Action2, registerAction2 } from 'vs/platform/actions/common/actions';
-import { Codicon } from 'vs/base/common/codicons';
 
 export const VIEWLET_ID = 'workbench.view.accountpanel';
 
@@ -396,7 +396,7 @@ export class AccountDialog extends Modal {
 					id: `workbench.actions.accountDialog.${viewId}.addAccount`,
 					title: { value: localize('accountDialog.addConnection', "Add an account"), original: 'Add an account' },
 					f1: true,
-					icon: Codicon.add,
+					icon: { id: SqlIconId.addAccountAction },
 					menu: {
 						id: MenuId.ViewTitle,
 						group: 'navigation',
