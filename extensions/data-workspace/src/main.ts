@@ -17,9 +17,9 @@ import { ProjectDashboard } from './dialogs/projectDashboard';
 export async function activate(context: vscode.ExtensionContext): Promise<IExtension> {
 	const workspaceService = new WorkspaceService(context);
 	await workspaceService.loadTempProjects();
-	await workspaceService.checkForProjectsNotAddedToWorkspace();
-	context.subscriptions.push(vscode.workspace.onDidChangeWorkspaceFolders(async () => {
-		await workspaceService.checkForProjectsNotAddedToWorkspace();
+	workspaceService.checkForProjectsNotAddedToWorkspace();
+	context.subscriptions.push(vscode.workspace.onDidChangeWorkspaceFolders(() => {
+		workspaceService.checkForProjectsNotAddedToWorkspace();
 	}));
 
 	const workspaceTreeDataProvider = new WorkspaceTreeDataProvider(workspaceService);
