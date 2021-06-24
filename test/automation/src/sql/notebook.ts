@@ -83,22 +83,6 @@ export class Notebook {
 		await this.notebookToolbar.waitForNotTrustedIcon();
 	}
 
-	async collapseCells(): Promise<void> {
-		await this.notebookToolbar.collapseCells();
-	}
-
-	async expandCells(): Promise<void> {
-		await this.notebookToolbar.expandCells();
-	}
-
-	async waitForCollapseCellsIcon(): Promise<void> {
-		await this.notebookToolbar.waitForCollapseCellsIcon();
-	}
-
-	async waitForExpandCellsIcon(): Promise<void> {
-		await this.notebookToolbar.waitForExpandCellsIcon();
-	}
-
 	// Cell Actions
 
 	async waitForTypeInEditor(text: string) {
@@ -131,6 +115,32 @@ export class Notebook {
 
 	async waitForPlaceholderGone(): Promise<void> {
 		await this.code.waitForElementGone(Notebook.placeholderSelector);
+	}
+
+	async waitForCollapseIconInCells(): Promise<void> {
+		let cellIds = await this.getCellIds();
+		for (let i of cellIds) {
+			const editor = `.notebook-cell[id="${i}"] code-cell-component code-component collapse-component`;
+			await this.code.waitForElement(`${editor} [title="Collapse code cell contents"]`);
+		}
+	}
+
+	async waitForExpandIconInCells(): Promise<void> {
+		let cellIds = await this.getCellIds();
+		for (let i of cellIds) {
+			const editor = `.notebook-cell[id="${i}"] code-cell-component code-component collapse-component`;
+			await this.code.waitForElement(`${editor} [title="Expand code cell contents"]`);
+		}
+	}
+
+	// Helper function to get cell ids for notebook
+	async getCellIds(): Promise<string[]> {
+		let cellIds: string[] = [];
+		await this.code.waitForElements('div.notebook-cell', false, result => {
+			cellIds = result.map(cell => cell.attributes['id']);
+			return true;
+		});
+		return cellIds;
 	}
 
 	// Text Cell Actions
@@ -321,7 +331,6 @@ export class NotebookToolbar {
 		buttons.forEach(async button => {
 			if (button.className.includes('icon-collapse-cells')) {
 				await this.code.waitAndClick(NotebookToolbar.collapseCellsButtonSelector);
-				return;
 			}
 		});
 	}
@@ -331,16 +340,15 @@ export class NotebookToolbar {
 		buttons.forEach(async button => {
 			if (button.className.includes('icon-expand-cells')) {
 				await this.code.waitAndClick(NotebookToolbar.expandCellsButtonSelector);
-				return;
 			}
 		});
 	}
 
-	async waitForCollapseCellsIcon(): Promise<void> {
+	async waitForCollapseCellsNotebookIcon(): Promise<void> {
 		await this.code.waitForElement(NotebookToolbar.collapseCellsButtonSelector);
 	}
 
-	async waitForExpandCellsIcon(): Promise<void> {
+	async waitForExpandCellsNotebookIcon(): Promise<void> {
 		await this.code.waitForElement(NotebookToolbar.expandCellsButtonSelector);
 	}
 }

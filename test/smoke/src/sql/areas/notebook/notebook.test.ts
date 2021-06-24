@@ -107,18 +107,21 @@ export function setup() {
 			it('Add Markdown Cell', async function () {
 				const app = this.app as Application;
 				await app.workbench.sqlNotebook.newUntitledNotebook();
-				await app.workbench.sqlNotebook.addCellFromPlaceholder('Markdown');
+				await app.workbench.sqlNotebook.addCell('markdown');
 				await app.workbench.sqlNotebook.waitForPlaceholderGone();
 			});
 
 			it('Collapse and Expand Cell', async function () {
 				const app = this.app as Application;
 				await app.workbench.sqlNotebook.openFile('collapsed.ipynb');
-				await app.workbench.sqlNotebook.waitForCollapseCellsIcon();
-				await app.workbench.sqlNotebook.collapseCells();
-				await app.workbench.sqlNotebook.waitForExpandCellsIcon();
-				await app.workbench.sqlNotebook.expandCells();
-				await app.workbench.sqlNotebook.waitForCollapseCellsIcon();
+				await app.workbench.sqlNotebook.waitForCollapseIconInCells();
+				await app.workbench.sqlNotebook.notebookToolbar.waitForCollapseCellsNotebookIcon();
+				await app.workbench.sqlNotebook.notebookToolbar.collapseCells();
+				await app.workbench.sqlNotebook.waitForExpandIconInCells();
+				await app.workbench.sqlNotebook.notebookToolbar.waitForExpandCellsNotebookIcon();
+				await app.workbench.sqlNotebook.notebookToolbar.expandCells();
+				await app.workbench.sqlNotebook.waitForCollapseIconInCells();
+				await app.workbench.sqlNotebook.notebookToolbar.waitForCollapseCellsNotebookIcon();
 			});
 		});
 	});
