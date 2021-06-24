@@ -406,6 +406,10 @@ export const SOURCE_CREDENTIALS = localize('sql.migration.source.credentials', "
 export const ENTER_YOUR_SQL_CREDS = localize('sql.migration.enter.your.sql.cred', "Enter the credential for source SQL Server instance. This credential will be used while migrating database(s) to Azure SQL.");
 export const SERVER = localize('sql.migration.server', "Server");
 export const USERNAME = localize('sql.migration.username', "Username");
+export const SIZE = localize('sql.migration.size', "Size (MB)");
+export const LAST_BACKUP = localize('sql.migration.last.backup', "Last backup");
+export const DATABASE_FOR_MIGRATION = localize('sql.migration.database.migration', "Database(s) for Migration");
+export const DATABASE_MIGRATE_TEXT = localize('sql.migrate.text', "Select database(s) that you want to migrate to Azure SQL");
 
 //Assessment Dialog
 export const ISSUES = localize('sql.migration.issues', "Issues");

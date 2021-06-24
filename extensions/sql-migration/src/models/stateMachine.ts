@@ -161,14 +161,18 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		this._currentState = newState;
 		this._stateChangeEventEmitter.fire({ oldState, newState: this.currentState });
 	}
-
-	public async getServerAssessments(): Promise<ServerAssessement> {
+	public async getDatabases(): Promise<string[]> {
 		const excludeDbs: string[] = [
 			'master',
 			'tempdb',
 			'msdb',
 			'model'
 		];
+		return await (await azdata.connection.listDatabases(this.sourceConnectionId)).filter((name) => !excludeDbs.includes(name));
+	}
+
+	public async getServerAssessments(): Promise<ServerAssessement> {
+
 
 		const ownerUri = await azdata.connection.getUriForConnection(this.sourceConnectionId);
 
@@ -176,7 +180,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			ownerUri
 		);
 
-		this._serverDatabases = await (await azdata.connection.listDatabases(this.sourceConnectionId)).filter((name) => !excludeDbs.includes(name));
+		this._serverDatabases = await this.getDatabases();
 		const serverLevelAssessments: mssql.SqlMigrationAssessmentResultItem[] = [];
 		const databaseLevelAssessments = this._serverDatabases.map(db => {
 			return {
