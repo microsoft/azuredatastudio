@@ -1,0 +1,45 @@
+resources:
+  containers:
+  - container: linux-x64
+    image: sqltoolscontainers.azurecr.io/web-build-agent:1
+    endpoint: ContainerRegistry
+
+jobs:
+- job: Compile
+  pool:
+    vmImage: 'Ubuntu-21.04'
+  container: linux-x64
+  steps:
+  - script: |
+      set -e
+      echo "##vso[build.addbuildtag]$(VSCODE_QUALITY)"
+    displayName: Add Quality Build Tag
+  - template: sql-product-compile.yml
+  timeoutInMinutes: 90
+
+- job: LinuxWeb
+  condition: and(succeeded(), eq(variables['VSCODE_BUILD_WEB'], 'true'), ne(variables['VSCODE_QUALITY'], 'saw'))
+  pool:
+    vmImage: 'Ubuntu-21.04'
+  container: linux-x64
+  variables:
+    VSCODE_ARCH: x64
+  dependsOn:
+  - Compile
+  steps:
+  - template: web/sql-product-build-web.yml
+  timeoutInMinutes: 90
+
+- job: Docker
+  condition: and(succeeded(), eq(variables['VSCODE_BUILD_DOCKER'], 'true'))
+  pool:
+    vmImage: 'Ubuntu-21.04'
+  container: linux-x64
+  dependsOn:
+  - Linux
+  steps:
+  - template: docker/sql-product-build-docker.yml
+  timeoutInMinutes: 90
+
+trigger: none
+pr: none
