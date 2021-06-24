@@ -73,7 +73,7 @@ import { Promises } from 'vs/base/common/async';
 import { EditorExtensions } from 'vs/workbench/common/editor';
 import { WORKSPACE_TRUST_EXTENSION_SUPPORT } from 'vs/workbench/services/workspaces/common/workspaceTrust';
 import { IStorageService, StorageScope, StorageTarget } from 'vs/platform/storage/common/storage'; // {{SQL CARBON EDIT}}
-import * as editStrings from 'sql/platform/editStrings/common/editStrings'; // {{SQL CARBON EDIT}}
+import * as locConstants from 'sql/platform/locConstants/common/locConstants'; // {{SQL CARBON EDIT}}
 
 // Singletons
 registerSingleton(IExtensionsWorkbenchService, ExtensionsWorkbenchService);
@@ -170,7 +170,7 @@ Registry.as<IConfigurationRegistry>(ConfigurationExtensions.Configuration)
 			},
 			'extensions.extensionsPolicy': { // {{SQL CARBON EDIT}}
 				type: 'string',
-				description: editStrings.extensionsContributionExtensionsPolicy,
+				description: locConstants.extensionsContributionExtensionsPolicy,
 				scope: ConfigurationScope.APPLICATION,
 				default: ExtensionsPolicy.allowAll
 			},
@@ -696,7 +696,7 @@ class ExtensionsContributions extends Disposable implements IWorkbenchContributi
 		const isExtensionInstallationAllowed = (configurationService: IConfigurationService, notificationService: INotificationService): boolean => {
 			const allowAll = configurationService.getValue<string>(ExtensionsPolicyKey) === ExtensionsPolicy.allowAll;
 			if (!allowAll) {
-				notificationService.error(editStrings.extensionsContributionInstallVSIXActionAllowNone);
+				notificationService.error(locConstants.extensionsContributionInstallVSIXActionAllowNone);
 			}
 			return allowAll;
 		};
@@ -801,7 +801,7 @@ class ExtensionsContributions extends Disposable implements IWorkbenchContributi
 								continue;
 							}
 							const requireReload = !(extension.local && extensionService.canAddExtension(toExtensionDescription(extension.local)));
-							const message = requireReload ? editStrings.extensionsContributionInstallVSIXActionSuccessReload(extension.displayName || extension.name) // {{SQL CARBON EDIT}} - replace Visual Studio Code with Azure Data Studio
+							const message = requireReload ? locConstants.extensionsContributionInstallVSIXActionSuccessReload(extension.displayName || extension.name) // {{SQL CARBON EDIT}} - replace Visual Studio Code with Azure Data Studio
 								: localize('InstallVSIXAction.success', "Completed installing {0} extension from VSIX.", extension.displayName || extension.name);
 							const actions = requireReload ? [{
 								label: localize('InstallVSIXAction.reloadNow', "Reload Now"),

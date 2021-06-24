@@ -25,7 +25,7 @@ import { IJSONSchema } from 'vs/base/common/jsonSchema';
 
 // eslint-disable-next-line code-import-patterns
 import { SELECT_INSTALL_VSIX_EXTENSION_COMMAND_ID } from 'vs/workbench/contrib/extensions/common/extensions';
-import * as editStrings from 'sql/platform/editStrings/common/editStrings'; // {{SQL CARBON EDIT}}
+import * as locConstants from 'sql/platform/locConstants/common/locConstants'; // {{SQL CARBON EDIT}}
 
 // Actions
 (function registerActions(): void {
@@ -114,7 +114,7 @@ import * as editStrings from 'sql/platform/editStrings/common/editStrings'; // {
 		group: '5.1_installExtension',
 		command: {
 			id: SELECT_INSTALL_VSIX_EXTENSION_COMMAND_ID,
-			title: editStrings.desktopContributionMiinstallVsix
+			title: locConstants.desktopContributionMiinstallVsix
 		}
 	});
 

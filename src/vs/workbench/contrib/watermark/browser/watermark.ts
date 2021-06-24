@@ -30,7 +30,7 @@ import { attachKeybindingLabelStyler } from 'vs/platform/theme/common/styler';
 
 // {{SQL CARBON EDIT}}
 import { NewNotebookAction } from 'sql/workbench/contrib/notebook/browser/notebookActions';
-import * as editStrings from 'sql/platform/editStrings/common/editStrings';
+import * as locConstants from 'sql/platform/locConstants/common/locConstants';
 
 const $ = dom.$;
 
@@ -41,8 +41,8 @@ interface WatermarkEntry {
 }
 
 // {{SQL CARBON EDIT}}
-const newSqlFile: WatermarkEntry = { text: editStrings.watermarkNewSqlFile, id: NEW_UNTITLED_FILE_COMMAND_ID };
-const newNotebook: WatermarkEntry = { text: editStrings.watermarkNewNotebook, id: NewNotebookAction.ID };
+const newSqlFile: WatermarkEntry = { text: locConstants.watermarkNewSqlFile, id: NEW_UNTITLED_FILE_COMMAND_ID };
+const newNotebook: WatermarkEntry = { text: locConstants.watermarkNewNotebook, id: NewNotebookAction.ID };
 
 /*const showCommands: WatermarkEntry = { text: nls.localize('watermark.showCommands', "Show All Commands"), id: ShowAllCommandsAction.ID };
 const quickAccess: WatermarkEntry = { text: nls.localize('watermark.quickAccess', "Go to File"), id: 'workbench.action.quickOpen' };

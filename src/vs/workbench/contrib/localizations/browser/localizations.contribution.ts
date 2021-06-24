@@ -25,7 +25,7 @@ import { VIEWLET_ID as EXTENSIONS_VIEWLET_ID, IExtensionsViewPaneContainer } fro
 import { minimumTranslatedStrings } from 'vs/workbench/contrib/localizations/browser/minimalTranslations';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { CancellationToken } from 'vs/base/common/cancellation';
-import * as editStrings from 'sql/platform/editStrings/common/editStrings'; // {{SQL CARBON EDIT}}
+import * as locConstants from 'sql/platform/locConstants/common/locConstants'; // {{SQL CARBON EDIT}}
 
 // Register action to configure locale and related settings
 const registry = Registry.as<IWorkbenchActionRegistry>(Extensions.WorkbenchActions);
@@ -59,8 +59,8 @@ export class LocalizationWorkbenchContribution extends Disposable implements IWo
 				this.notificationService.prompt(
 					Severity.Info,
 					// {{SQL CARBON EDIT}} - Update 'VS Code' to 'Azure Data Studio'
-					updateAndRestart ? editStrings.localizationsContributionUpdateLocale(e.local.manifest.contributes.localizations[0].languageName || e.local.manifest.contributes.localizations[0].languageId)
-						: editStrings.localizationsContributionActivateLanguagePack(e.local.manifest.contributes.localizations[0].languageName || e.local.manifest.contributes.localizations[0].languageId),
+					updateAndRestart ? locConstants.localizationsContributionUpdateLocale(e.local.manifest.contributes.localizations[0].languageName || e.local.manifest.contributes.localizations[0].languageId)
+						: locConstants.localizationsContributionActivateLanguagePack(e.local.manifest.contributes.localizations[0].languageName || e.local.manifest.contributes.localizations[0].languageId),
 					[{
 						label: updateAndRestart ? localize('changeAndRestart', "Change Language and Restart") : localize('restart', "Restart"),
 						run: () => {

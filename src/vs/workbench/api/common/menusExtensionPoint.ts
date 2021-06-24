@@ -16,7 +16,7 @@ import { DisposableStore } from 'vs/base/common/lifecycle';
 import { ThemeIcon } from 'vs/platform/theme/common/themeService';
 import { Iterable } from 'vs/base/common/iterator';
 import { index } from 'vs/base/common/arrays';
-import * as editStrings from 'sql/platform/editStrings/common/editStrings'; // {{SQL CARBON EDIT}}
+import * as locConstants from 'sql/platform/locConstants/common/locConstants'; // {{SQL CARBON EDIT}}
 
 interface IAPIMenu {
 	readonly key: string;
@@ -231,47 +231,47 @@ const apiMenus: IAPIMenu[] = [
 	{
 		key: 'dashboard/toolbar',
 		id: MenuId.DashboardToolbar,
-		description: editStrings.menusExtensionPointDashboardToolbar
+		description: locConstants.menusExtensionPointDashboardToolbar
 	},
 	{
 		key: 'notebook/cell/title',
 		id: MenuId.NotebookCellTitle,
-		description: editStrings.menusExtensionPointNotebookCellTitle
+		description: locConstants.menusExtensionPointNotebookCellTitle
 	},
 	{
 		key: 'notebooks/title',
 		id: MenuId.NotebookTitle,
-		description: editStrings.menusExtensionPointNotebookTitle
+		description: locConstants.menusExtensionPointNotebookTitle
 	},
 	{
 		key: 'notebook/toolbar',
 		id: MenuId.NotebookToolbar,
-		description: editStrings.menusExtensionPointNotebookToolbar
+		description: locConstants.menusExtensionPointNotebookToolbar
 	},
 	{
 		key: 'dataExplorer/action',
 		id: MenuId.DataExplorerAction,
-		description: editStrings.menusExtensionPointDataExplorerAction
+		description: locConstants.menusExtensionPointDataExplorerAction
 	},
 	{
 		key: 'dataExplorer/context',
 		id: MenuId.DataExplorerContext,
-		description: editStrings.menusExtensionPointDataExplorerContext
+		description: locConstants.menusExtensionPointDataExplorerContext
 	},
 	{
 		key: 'objectExplorer/item/context',
 		id: MenuId.ObjectExplorerItemContext,
-		description: editStrings.menusExtensionPointObjectExplorerContext
+		description: locConstants.menusExtensionPointObjectExplorerContext
 	},
 	{
 		key: 'connectionDialog/browseTree',
 		id: MenuId.ConnectionDialogBrowseTreeContext,
-		description: editStrings.menusExtensionPointConnectionDialogBrowseTreeContext
+		description: locConstants.menusExtensionPointConnectionDialogBrowseTreeContext
 	},
 	{
 		key: 'dataGrid/item/context',
 		id: MenuId.DataGridItemContext,
-		description: editStrings.menusExtensionPointDataGridContext
+		description: locConstants.menusExtensionPointDataGridContext
 	}
 	// {{SQL CARBON EDIT}} end menu entries
 ];
