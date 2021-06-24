@@ -23,6 +23,7 @@
 .markdown-toolbar .carbon-taskbar .monaco-action-bar .action-item .codicon.action-label {
 	padding-left: 0px;
 	width: 20px;
+	height: 20px;
 }
 
 .markdown-toolbar .carbon-taskbar ul.actions-container li {
