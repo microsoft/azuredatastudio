@@ -132,6 +132,7 @@ export class AccountDialog extends Modal {
 	private _providerViewsMap = new Map<string, IProviderViewUiComponent>();
 
 	private _closeButton?: Button;
+	private _addAccountButton?: Button;
 	private _splitView?: SplitView;
 	private _container?: HTMLElement;
 	private _splitViewContainer?: HTMLElement;
@@ -216,12 +217,24 @@ export class AccountDialog extends Modal {
 		const noAccountTitle = DOM.append(this._noaccountViewContainer, DOM.$('.no-account-view-label'));
 		const noAccountLabel = localize('accountDialog.noAccountLabel', "There is no linked account. Please add an account.");
 		noAccountTitle.innerText = noAccountLabel;
+
+		// Show the add account button for the first provider
+		// Todo: If we have more than 1 provider, need to show all add account buttons for all providers
+		const buttonSection = DOM.append(this._noaccountViewContainer, DOM.$('div.button-section'));
+		this._addAccountButton = new Button(buttonSection);
+		this._addAccountButton.label = localize('accountDialog.addConnection', "Add an account");
+
+		this._register(this._addAccountButton.onDidClick(async () => {
+			this.runAddAccountAction();
+		}));
+
 		DOM.append(container, this._noaccountViewContainer);
 	}
 
 	private registerListeners(): void {
 		// Theme styler
 		this._register(attachButtonStyler(this._closeButton!, this._themeService));
+		this._register(attachButtonStyler(this._addAccountButton!, this._themeService));
 	}
 
 	/* Overwrite escape key behavior */
@@ -252,6 +265,7 @@ export class AccountDialog extends Modal {
 	private showNoAccountContainer() {
 		this._splitViewContainer!.hidden = true;
 		this._noaccountViewContainer!.hidden = false;
+		this._addAccountButton!.focus();
 	}
 
 	private showSplitView() {
@@ -407,35 +421,38 @@ export class AccountDialog extends Modal {
 			}
 
 			async run() {
-				const vals = Iterable.consume(that._providerViewsMap.values())[0];
-
-				let pickedValue: string | undefined;
-				if (vals.length === 0) {
-					that._notificationService.error(localize('accountDialog.noCloudsRegistered', "You have no clouds enabled. Go to Settings -> Search Azure Account Configuration -> Enable at least one cloud"));
-					return;
-				}
-				if (vals.length > 1) {
-					const buttons: IQuickPickItem[] = vals.map(v => {
-						return { label: v.view.title } as IQuickPickItem;
-					});
-
-					const picked = await that._quickInputService.pick(buttons, { canPickMany: false });
-
-					pickedValue = picked?.label;
-				} else {
-					pickedValue = vals[0].view.title;
-				}
-
-				const v = vals.filter(v => v.view.title === pickedValue)?.[0];
-
-				if (!v) {
-					that._notificationService.error(localize('accountDialog.didNotPickAuthProvider', "You didn't select any authentication provider. Please try again."));
-					return;
-				}
-
-				v.addAccountAction.run();
+				that.runAddAccountAction();
 			}
 		});
+	}
 
+	private async runAddAccountAction() {
+		const vals = Iterable.consume(this._providerViewsMap.values())[0];
+
+		let pickedValue: string | undefined;
+		if (vals.length === 0) {
+			this._notificationService.error(localize('accountDialog.noCloudsRegistered', "You have no clouds enabled. Go to Settings -> Search Azure Account Configuration -> Enable at least one cloud"));
+			return;
+		}
+		if (vals.length > 1) {
+			const buttons: IQuickPickItem[] = vals.map(v => {
+				return { label: v.view.title } as IQuickPickItem;
+			});
+
+			const picked = await this._quickInputService.pick(buttons, { canPickMany: false });
+
+			pickedValue = picked?.label;
+		} else {
+			pickedValue = vals[0].view.title;
+		}
+
+		const v = vals.filter(v => v.view.title === pickedValue)?.[0];
+
+		if (!v) {
+			this._notificationService.error(localize('accountDialog.didNotPickAuthProvider', "You didn't select any authentication provider. Please try again."));
+			return;
+		}
+
+		v.addAccountAction.run();
 	}
 }
