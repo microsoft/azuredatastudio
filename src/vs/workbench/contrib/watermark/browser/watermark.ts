@@ -30,7 +30,7 @@ import { attachKeybindingLabelStyler } from 'vs/platform/theme/common/styler';
 
 // {{SQL CARBON EDIT}}
 import { NewNotebookAction } from 'sql/workbench/contrib/notebook/browser/notebookActions';
-import * as locConstants from 'sql/platform/locConstants/common/locConstants';
+import * as locConstants from 'sql/base/common/locConstants';
 
 const $ = dom.$;
 

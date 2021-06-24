@@ -27,7 +27,7 @@ import { IssueReporterWindowConfiguration, IssueReporterData, IssueReporterExten
 import { Codicon } from 'vs/base/common/codicons';
 import { renderIcon } from 'vs/base/browser/ui/iconLabel/iconLabels';
 import { ElectronIPCMainProcessService } from 'vs/platform/ipc/electron-sandbox/mainProcessService';
-import * as locConstants from 'sql/platform/locConstants/common/locConstants'; // {{SQL CARBON EDIT}}
+import * as locConstants from 'sql/base/common/locConstants'; // {{SQL CARBON EDIT}}
 
 const MAX_URL_LENGTH = 2045;
 
