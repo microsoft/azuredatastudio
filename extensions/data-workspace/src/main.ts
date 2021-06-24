@@ -13,11 +13,13 @@ import { OpenExistingDialog } from './dialogs/openExistingDialog';
 import { IWorkspaceService } from './common/interfaces';
 import { IconPathHelper } from './common/iconHelper';
 import { ProjectDashboard } from './dialogs/projectDashboard';
+import { getAzdataApi } from './common/utils';
+import { createNewProjectWithQuickpick } from './dialogs/newProjectQuickpick';
 
 export async function activate(context: vscode.ExtensionContext): Promise<IExtension> {
 	const workspaceService = new WorkspaceService(context);
 	await workspaceService.loadTempProjects();
-	await workspaceService.checkForProjectsNotAddedToWorkspace();
+	workspaceService.checkForProjectsNotAddedToWorkspace();
 	context.subscriptions.push(vscode.workspace.onDidChangeWorkspaceFolders(async () => {
 		await workspaceService.checkForProjectsNotAddedToWorkspace();
 	}));
@@ -31,8 +33,13 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 	setProjectProviderContextValue(workspaceService);
 
 	context.subscriptions.push(vscode.commands.registerCommand('projects.new', async () => {
-		const dialog = new NewProjectDialog(workspaceService);
-		await dialog.open();
+		if (getAzdataApi()) {
+			const dialog = new NewProjectDialog(workspaceService);
+			await dialog.open();
+		} else {
+			await createNewProjectWithQuickpick(workspaceService);
+		}
+
 	}));
 
 	context.subscriptions.push(vscode.commands.registerCommand('projects.openExisting', async () => {
