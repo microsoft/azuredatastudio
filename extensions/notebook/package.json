@@ -419,12 +419,6 @@
           "when": "false"
         }
       ],
-      "notebooks/title": [
-        {
-          "command": "notebook.command.createBook",
-          "group": "secondary"
-        }
-      ],
       "touchBar": [
         {
           "command": "notebook.command.runactivecell",
@@ -524,6 +518,10 @@
         },
         {
           "command": "notebook.command.openRemoteBook",
+          "when": "view == bookTreeView"
+        },
+        {
+          "command": "notebook.command.createBook",
           "when": "view == bookTreeView"
         }
       ],
