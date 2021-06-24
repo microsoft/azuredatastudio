@@ -328,20 +328,18 @@ export class NotebookToolbar {
 
 	async collapseCells(): Promise<void> {
 		let buttons: IElement[] = await this.code.waitForElements(NotebookToolbar.toolbarButtonSelector, false);
-		buttons.forEach(async button => {
-			if (button.className.includes('icon-collapse-cells')) {
-				await this.code.waitAndClick(NotebookToolbar.collapseCellsButtonSelector);
-			}
-		});
+		let collapseButton = buttons.find(button => button.className.includes('icon-collapse-cells'));
+		if (collapseButton) {
+			await this.code.waitAndClick(NotebookToolbar.collapseCellsButtonSelector);
+		}
 	}
 
 	async expandCells(): Promise<void> {
 		let buttons: IElement[] = await this.code.waitForElements(NotebookToolbar.toolbarButtonSelector, false);
-		buttons.forEach(async button => {
-			if (button.className.includes('icon-expand-cells')) {
-				await this.code.waitAndClick(NotebookToolbar.expandCellsButtonSelector);
-			}
-		});
+		let expandButton = buttons.find(button => button.className.includes('icon-expand-cells'));
+		if (expandButton) {
+			await this.code.waitAndClick(NotebookToolbar.expandCellsButtonSelector);
+		}
 	}
 
 	async waitForCollapseCellsNotebookIcon(): Promise<void> {
