@@ -16,11 +16,12 @@ import { ProjectDashboard } from './dialogs/projectDashboard';
 
 export async function activate(context: vscode.ExtensionContext): Promise<IExtension> {
 	const workspaceService = new WorkspaceService(context);
-	await workspaceService.loadTempProjects();
 
-	// this isn't awaited because if the notification shows, the rest of this activate function will be blocked from running and
-	// the contributed commands won't be registered until the notifation gets dismissed
-	workspaceService.checkForProjectsNotAddedToWorkspace();
+	// this is not being awaited to not block the rest of activate function from running while loading any temp projects and
+	// checking for projects not added to the workspace yet
+	workspaceService.loadTempProjects().then(async () => await workspaceService.checkForProjectsNotAddedToWorkspace())
+		.catch(e => console.log(e));
+
 	context.subscriptions.push(vscode.workspace.onDidChangeWorkspaceFolders(() => {
 		workspaceService.checkForProjectsNotAddedToWorkspace();
 	}));
