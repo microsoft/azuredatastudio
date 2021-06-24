@@ -9,9 +9,14 @@
 
 const withDefaults = require('../shared.webpack.config');
 
+const externals = {
+	'htmlparser2' : 'commonjs htmlparser2'
+};
+
 module.exports = withDefaults({
 	context: __dirname,
 	entry: {
 		extension: './src/extension.ts'
-	}
+	},
+	externals: externals
 });
