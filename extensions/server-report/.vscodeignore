@@ -1,6 +1,7 @@
 *.vsix
 src/**
 .gitignore
-**/*.ts
-**/*.map
-.gitignore
+out/**
+tsconfig.json
+extension.webpack.config.js
+yarn.lock
