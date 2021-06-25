@@ -98,12 +98,12 @@ steps:
     yarn gulp vscode-reh-web-linux-x64-min
   displayName: Compile
 
-- script: |
-    set -e
-    AZURE_STORAGE_ACCOUNT="$(sourcemap-storage-account)" \
-    AZURE_STORAGE_ACCESS_KEY="$(sourcemap-storage-key)" \
-      node build/azure-pipelines/upload-sourcemaps
-  displayName: Upload sourcemaps
+# - script: |
+#     set -e
+#     AZURE_STORAGE_ACCOUNT="$(sourcemap-storage-account)" \
+#     AZURE_STORAGE_ACCESS_KEY="$(sourcemap-storage-key)" \
+#       node build/azure-pipelines/upload-sourcemaps
+#   displayName: Upload sourcemaps
 
 - script: |
     set -e
