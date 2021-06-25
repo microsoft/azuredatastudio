@@ -161,6 +161,11 @@ gridstack@^3.1.3:
   version "2.5.0"
   resolved "git://github.com/kburtram/html-query-plan.git#c524feb824e4960897ad875a37af068376a2b4a3"
 
+html-to-image@^1.6.2:
+  version "1.6.2"
+  resolved "https://registry.yarnpkg.com/html-to-image/-/html-to-image-1.6.2.tgz#9d444424cc638df13db5c7be810ac0d2962f5edd"
+  integrity sha512-X6X7wJW2KQ+AGqMeBITdntCcQnxBgZY62MdGOi042Y70+0SMe8/iJCzUv8RNaUoXqUjWw5FPyoTDmdGoapTQIQ==
+
 htmlparser2@^6.0.0:
   version "6.1.0"
   resolved "https://registry.yarnpkg.com/htmlparser2/-/htmlparser2-6.1.0.tgz#c4d762b6c3371a05dbe65e94ae43a9f845fb8fb7"
