@@ -31,6 +31,7 @@ import { SidebarFocusContext } from 'vs/workbench/common/viewlet';
 import { ThemeIcon } from 'vs/platform/theme/common/themeService';
 import { IExplorerService } from 'vs/workbench/contrib/files/browser/files';
 import { Codicon } from 'vs/base/common/codicons';
+import * as locConstants from 'sql/base/common/locConstants'; // {{SQL CARBON EDIT}}
 
 // Contribute Global Actions
 const category = { value: nls.localize('filesCategory', "File"), original: 'File' };
@@ -576,8 +577,8 @@ MenuRegistry.appendMenuItem(MenuId.ExplorerContext, {
 
 // Empty Editor Group Context Menu
 // {{SQL CARBON EDIT}} - Use "New Query" instead of "New File"
-MenuRegistry.appendMenuItem(MenuId.EmptyEditorGroupContext, { command: { id: NEW_UNTITLED_FILE_COMMAND_ID, title: nls.localize('newFile', "New Query") }, group: '1_file', order: 10 });
-MenuRegistry.appendMenuItem(MenuId.EmptyEditorGroupContext, { command: { id: NEW_UNTITLED_PLAIN_FILE_COMMAND_ID, title: nls.localize('newPlainFile', "New File") }, group: '1_file', order: 15 });
+MenuRegistry.appendMenuItem(MenuId.EmptyEditorGroupContext, { command: { id: NEW_UNTITLED_FILE_COMMAND_ID, title: locConstants.fileActionsContributionNewQuery }, group: '1_file', order: 10 });
+MenuRegistry.appendMenuItem(MenuId.EmptyEditorGroupContext, { command: { id: NEW_UNTITLED_PLAIN_FILE_COMMAND_ID, title: nls.localize('newFile', "New File") }, group: '1_file', order: 15 });
 MenuRegistry.appendMenuItem(MenuId.EmptyEditorGroupContext, { command: { id: 'workbench.action.quickOpen', title: nls.localize('openFile', "Open File...") }, group: '1_file', order: 20 });
 
 // File menu
@@ -587,7 +588,7 @@ MenuRegistry.appendMenuItem(MenuId.MenubarFileMenu, {
 	group: '1_new',
 	command: {
 		id: NEW_UNTITLED_FILE_COMMAND_ID,
-		title: nls.localize({ key: 'miNewFile', comment: ['&& denotes a mnemonic'] }, "New &&Query")
+		title: locConstants.fileActionsContributionMiNewQuery
 	},
 	order: 1
 });
@@ -597,7 +598,7 @@ MenuRegistry.appendMenuItem(MenuId.MenubarFileMenu, {
 	group: '1_new',
 	command: {
 		id: NEW_UNTITLED_PLAIN_FILE_COMMAND_ID,
-		title: nls.localize({ key: 'miNewPlainFile', comment: ['&& denotes a mnemonic'] }, "New &&File")
+		title: nls.localize({ key: 'miNewFile', comment: ['&& denotes a mnemonic'] }, "New &&File")
 	},
 	order: 1.1
 });
@@ -607,7 +608,7 @@ MenuRegistry.appendMenuItem(MenuId.MenubarFileMenu, {
 	group: '1_new',
 	command: {
 		id: 'notebook.command.new',
-		title: nls.localize({ key: 'miNewNotebook', comment: ['&& denotes a mnemonic'] }, "&&New Notebook")
+		title: locConstants.fileActionsContributionMiNewNotebook
 	},
 	order: 1.2
 });
