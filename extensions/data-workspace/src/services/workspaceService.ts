@@ -49,17 +49,23 @@ export class WorkspaceService implements IWorkspaceService {
 	 * @param projectFileFsPath project to add to the workspace
 	 */
 	async CreateNewWorkspaceForProject(projectFileFsPath: string, workspaceFile: vscode.Uri | undefined): Promise<void> {
-		// save temp project
-		await this._context.globalState.update(TempProject, [projectFileFsPath]);
-
 		// create workspace
 		const projectFolder = vscode.Uri.file(path.dirname(projectFileFsPath));
-
-		if (isCurrentWorkspaceUntitled()) {
-			vscode.workspace.updateWorkspaceFolders(vscode.workspace.workspaceFolders!.length, null, { uri: projectFolder });
-			await getAzdataApi()?.workspace.saveAndEnterWorkspace(workspaceFile!);
+		const azdataApi = getAzdataApi();
+		if (azdataApi) {
+			// save temp project
+			await this._context.globalState.update(TempProject, [projectFileFsPath]);
+			if (isCurrentWorkspaceUntitled()) {
+				vscode.workspace.updateWorkspaceFolders(vscode.workspace.workspaceFolders!.length, null, { uri: projectFolder });
+				await azdataApi.workspace.saveAndEnterWorkspace(workspaceFile!);
+			} else {
+				await azdataApi.workspace.createAndEnterWorkspace(projectFolder, workspaceFile);
+			}
 		} else {
-			await getAzdataApi()?.workspace.createAndEnterWorkspace(projectFolder, workspaceFile);
+			// In VS Code we don't have access to the workspace APIs exposed by ADS and so can't actually create a new saved workspace.
+			// Instead we'll just always call this, which will either add it to the existing untitled workspace or create a new
+			// untitled workspace which the user can then save later on as they wish.
+			vscode.workspace.updateWorkspaceFolders(vscode.workspace.workspaceFolders?.length || 0, null, { uri: projectFolder });
 		}
 	}
 
