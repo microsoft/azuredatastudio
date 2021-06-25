@@ -43,6 +43,12 @@
           "default": false,
           "description": "%notebook.dontPromptPythonUpdate.description%"
         },
+        "notebook.jupyterServerShutdownTimeout": {
+          "type": "number",
+          "default": 5,
+          "minimum": 0,
+          "description": "%notebook.jupyterServerShutdownTimeout.description%"
+        },
         "notebook.overrideEditorTheming": {
           "type": "boolean",
           "default": true,

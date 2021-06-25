@@ -14,30 +14,11 @@ import { ProjectProviderRegistry } from '../common/projectProviderRegistry';
 import Logger from '../common/logger';
 import { TelemetryReporter, TelemetryViews, calculateRelativity, TelemetryActions } from '../common/telemetry';
 
-const TempProject = 'tempProject';
-
 export class WorkspaceService implements IWorkspaceService {
 	private _onDidWorkspaceProjectsChange: vscode.EventEmitter<void> = new vscode.EventEmitter<void>();
 	readonly onDidWorkspaceProjectsChange: vscode.Event<void> = this._onDidWorkspaceProjectsChange?.event;
 
-	constructor(private _context: vscode.ExtensionContext) {
-	}
-
-	/**
-	 * Load any temp project that needed to be loaded before ADS was restarted
-	 * which would happen if a workspace was created in order open or create a project
-	 */
-	async loadTempProjects(): Promise<void> {
-		const tempProjects: string[] | undefined = this._context.globalState.get(TempProject) ?? undefined;
-
-		if (tempProjects && vscode.workspace.workspaceFile) {
-			// add project to workspace now that the workspace has been created and saved
-			for (let project of tempProjects) {
-				await this.addProjectsToWorkspace([vscode.Uri.file(<string>project)]);
-			}
-			await this._context.globalState.update(TempProject, undefined);
-		}
-	}
+	constructor() { }
 
 	get isProjectProviderAvailable(): boolean {
 		for (const extension of vscode.extensions.all) {

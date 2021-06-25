@@ -49,6 +49,7 @@ import { IPreferencesService } from 'vs/workbench/services/preferences/common/pr
 import { IListAccessibilityProvider } from 'vs/base/browser/ui/list/listWidget';
 import { IStorageService, StorageScope, StorageTarget } from 'vs/platform/storage/common/storage';
 import { IExtensionManifestPropertiesService } from 'vs/workbench/services/extensions/common/extensionManifestPropertiesService';
+import * as locConstants from 'sql/base/common/locConstants'; // {{SQL CARBON EDIT}}
 
 // Extensions that are automatically classified as Programming Language extensions, but should be Feature extensions
 const FORCE_FEATURE_EXTENSIONS = ['vscode.git', 'vscode.search-result'];
@@ -772,7 +773,7 @@ export class ExtensionsListView extends ViewPane {
 	// {{SQL CARBON EDIT}}
 	private getRecommendedExtensionsByScenario(token: CancellationToken, scenarioType: string): Promise<IPagedModel<IExtension>> {
 		if (!scenarioType) {
-			return Promise.reject(new Error(localize('scenarioTypeUndefined', 'The scenario type for extension recommendations must be provided.')));
+			return Promise.reject(new Error(locConstants.extensionsViewsScenarioTypeUndefined));
 		}
 		return this.extensionsWorkbenchService.queryLocal()
 			.then(result => result.filter(e => e.type === ExtensionType.User))

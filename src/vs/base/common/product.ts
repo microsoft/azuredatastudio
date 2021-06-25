@@ -79,7 +79,7 @@ export interface IProductConfiguration {
 	readonly recommendedExtensions: string[]; // {{SQL CARBON EDIT}}
 	readonly recommendedExtensionsByScenario: { [area: string]: Array<string> }; // {{SQL CARBON EDIT}}
 	readonly vscodeVersion: string; // {{SQL CARBON EDIT}} add vscode version
-	readonly gettingStartedUrl: string; // {SQL CARBON EDIT}
+	readonly gettingStartedUrl: string; // {{SQL CARBON EDIT}}
 	readonly disabledFeatures?: string[]; // {{SQL CARBON EDIT}}
 
 	readonly crashReporter?: {

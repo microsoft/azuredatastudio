@@ -69,12 +69,10 @@ interface ExtensionGlobalMemento extends vscode.Memento {
 }
 
 suite('WorkspaceService Tests', function (): void {
-	const mockExtensionContext = TypeMoq.Mock.ofType<vscode.ExtensionContext>();
 	const mockGlobalState = TypeMoq.Mock.ofType<ExtensionGlobalMemento>();
 	mockGlobalState.setup(x => x.update(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve());
-	mockExtensionContext.setup(x => x.globalState).returns(() => mockGlobalState.object);
 
-	const service = new WorkspaceService(mockExtensionContext.object);
+	const service = new WorkspaceService();
 
 	this.afterEach(() => {
 		sinon.restore();
@@ -387,8 +385,6 @@ suite('WorkspaceService Tests', function (): void {
 		sinon.stub(azdata.workspace, 'createAndEnterWorkspace').resolves(undefined);
 		sinon.stub(vscode.workspace, 'workspaceFolders').value(['folder1']);
 		mockGlobalState.setup(x => x.get(TypeMoq.It.isAny())).returns(() => [processPath('folder1/proj2.sqlproj')]);
-
-		await service.loadTempProjects();
 
 		should.strictEqual(onWorkspaceProjectsChangedStub.calledOnce, true, 'the onDidWorkspaceProjectsChange event should have been fired');
 		onWorkspaceProjectsChangedDisposable.dispose();

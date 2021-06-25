@@ -17,9 +17,7 @@ import { getAzdataApi } from './common/utils';
 import { createNewProjectWithQuickpick } from './dialogs/newProjectQuickpick';
 
 export async function activate(context: vscode.ExtensionContext): Promise<IExtension> {
-	const workspaceService = new WorkspaceService(context);
-	await workspaceService.loadTempProjects();
-
+	const workspaceService = new WorkspaceService();
 
 	const workspaceTreeDataProvider = new WorkspaceTreeDataProvider(workspaceService);
 	context.subscriptions.push(vscode.workspace.onDidChangeWorkspaceFolders(() => {
