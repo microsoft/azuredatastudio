@@ -11,8 +11,6 @@ jobs:
   container: linux-x64
   variables:
     VSCODE_ARCH: x64
-  dependsOn:
-  - Compile
   steps:
   - template: web/sql-product-build-web.yml
   timeoutInMinutes: 90
