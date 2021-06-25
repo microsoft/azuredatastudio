@@ -26,32 +26,32 @@
 				"command": "tempdb.startEvent",
 				"title": "Start",
 				"icon": {
-					"light": "./out/media/launch.svg",
-					"dark": "./out/media/launch_inverse.svg"
+					"light": "./dist/media/launch.svg",
+					"dark": "./dist/media/launch_inverse.svg"
 				}
 			},
 			{
 				"command": "tempdb.stopEvent",
 				"title": "Stop",
 				"icon": {
-					"light": "./out/media/blocker.svg",
-					"dark": "./out/media/blocker_inverse.svg"
+					"light": "./dist/media/blocker.svg",
+					"dark": "./dist/media/blocker_inverse.svg"
 				}
 			},
 			{
 				"command": "tempdb.contention",
 				"title": "Contention Help for Tempdb",
 				"icon": {
-					"light": "./out/media/documentation.svg",
-					"dark": "./out/media/documentation_inverse.svg"
+					"light": "./dist/media/documentation.svg",
+					"dark": "./dist/media/documentation_inverse.svg"
 				}
 			},
 			{
 				"command": "tempdb.pauseEvent",
 				"title": "Toggle Auto Refresh",
 				"icon": {
-					"light": "./out/media/insights.svg",
-					"dark": "./out/media/insights_inverse.svg"
+					"light": "./dist/media/insights.svg",
+					"dark": "./dist/media/insights_inverse.svg"
 				}
 			}
 		],
@@ -71,8 +71,8 @@
 							"id": "server-reports-monitoring",
 							"title": "Monitor",
 							"icon": {
-								"light": "./out/media/monitor.svg",
-								"dark": "./out/media/monitor_inverse.svg"
+								"light": "./dist/media/monitor.svg",
+								"dark": "./dist/media/monitor_inverse.svg"
 							},
 							"container": {
 								"server-reports-monitoring-container": {}
@@ -82,8 +82,8 @@
 							"id": "server-reports-performance",
 							"title": "Performance",
 							"icon": {
-								"light": "./out/media/performance.svg",
-								"dark": "./out/media/performance_inverse.svg"
+								"light": "./dist/media/performance.svg",
+								"dark": "./dist/media/performance_inverse.svg"
 							},
 							"container": {
 								"server-reports-performance-container": {}
@@ -98,8 +98,8 @@
 				"group": "monitoring",
 				"description": "TempDB reports",
 				"icon": {
-					"light": "./out/media/tempdb.svg",
-					"dark": "./out/media/tempdb_inverse.svg"
+					"light": "./dist/media/tempdb.svg",
+					"dark": "./dist/media/tempdb_inverse.svg"
 				},
 				"container": {
 					"server-reports-tempdb-container": {}
@@ -119,7 +119,7 @@
 							"columnsAsLabels": true
 						}
 					},
-					"queryFile": "./out/sql/all_db_space_used.sql"
+					"queryFile": "./dist/sql/all_db_space_used.sql"
 				}
 			},
 			{
@@ -134,7 +134,7 @@
 							"columnsAsLabels": false
 						}
 					},
-					"queryFile": "./out/sql/cpumetric.sql"
+					"queryFile": "./dist/sql/cpumetric.sql"
 				}
 			},
 			{
@@ -150,7 +150,7 @@
 							"columnsAsLabels": false
 						}
 					},
-					"queryFile": "./out/sql/backup_size_trend.sql"
+					"queryFile": "./dist/sql/backup_size_trend.sql"
 				}
 			},
 			{
@@ -165,9 +165,9 @@
 							"columnsAsLabels": true
 						}
 					},
-					"queryFile": "./out/sql/waits_paul_randal.sql",
+					"queryFile": "./dist/sql/waits_paul_randal.sql",
 					"details": {
-						"queryFile": "./out/sql/waits_detail_paul_randal.sql",
+						"queryFile": "./dist/sql/waits_detail_paul_randal.sql",
 						"label": {
 							"column": "WaitType",
 							"state": []
@@ -188,9 +188,9 @@
 							"columnsAsLabels": true
 						}
 					},
-					"queryFile": "./out/sql/wait_resources.sql",
+					"queryFile": "./dist/sql/wait_resources.sql",
 					"details": {
-						"queryFile": "./out/sql/wait_resources.sql",
+						"queryFile": "./dist/sql/wait_resources.sql",
 						"label": {
 							"column": "WaitType",
 							"state": []
@@ -211,7 +211,7 @@
 							"columnsAsLabels": true
 						}
 					},
-					"queryFile": "./out/sql/memorybydb.sql"
+					"queryFile": "./dist/sql/memorybydb.sql"
 				}
 			},
 			{
@@ -225,7 +225,7 @@
 							"legendPosition": "none"
 						}
 					},
-					"queryFile": "./out/sql/typeofContentions.sql",
+					"queryFile": "./dist/sql/typeofContentions.sql",
 					"autoRefreshInterval": 0.05
 				}
 			},
@@ -241,7 +241,7 @@
 							"xAxisLabel": "Object Ids for System Tables"
 						}
 					},
-					"queryFile": "./out/sql/metadataContention.sql",
+					"queryFile": "./dist/sql/metadataContention.sql",
 					"autoRefreshInterval": 0.05
 				}
 			},
@@ -257,7 +257,7 @@
 							"xAxisLabel": "Page Types"
 						}
 					},
-					"queryFile": "./out/sql/allocationContention.sql",
+					"queryFile": "./dist/sql/allocationContention.sql",
 					"autoRefreshInterval": 0.05
 				}
 			}
@@ -380,7 +380,6 @@
 	},
 	"dependencies": {
 		"fs-extra": "^8.1.0",
-		"handlebars": "^4.7.7",
 		"openurl": "^1.1.1",
 		"vscode-nls": "^5.0.0"
 	},
