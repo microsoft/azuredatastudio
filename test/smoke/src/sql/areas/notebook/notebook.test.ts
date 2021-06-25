@@ -97,20 +97,6 @@ export function setup() {
 
 		describe('Notebook Toolbar Actions', async () => {
 
-			it('Add Code Cell', async function () {
-				const app = this.app as Application;
-				await app.workbench.sqlNotebook.newUntitledNotebook();
-				await app.workbench.sqlNotebook.addCell('code');
-				await app.workbench.sqlNotebook.waitForTypeInEditor('Select * FROM Customers;');
-			});
-
-			it('Add Markdown Cell', async function () {
-				const app = this.app as Application;
-				await app.workbench.sqlNotebook.newUntitledNotebook();
-				await app.workbench.sqlNotebook.addCell('markdown');
-				await app.workbench.sqlNotebook.waitForPlaceholderGone();
-			});
-
 			it('Collapse and Expand Cell', async function () {
 				const app = this.app as Application;
 				await app.workbench.sqlNotebook.openFile('collapsed.ipynb');

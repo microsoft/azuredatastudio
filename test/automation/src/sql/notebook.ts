@@ -135,12 +135,7 @@ export class Notebook {
 
 	// Helper function to get cell ids for notebook
 	async getCellIds(): Promise<string[]> {
-		let cellIds: string[] = [];
-		await this.code.waitForElements('div.notebook-cell', false, result => {
-			cellIds = result.map(cell => cell.attributes['id']);
-			return true;
-		});
-		return cellIds;
+		return (await this.code.waitForElements('div.notebook-cell', false)).map(cell => cell.attributes['id']);
 	}
 
 	// Text Cell Actions
