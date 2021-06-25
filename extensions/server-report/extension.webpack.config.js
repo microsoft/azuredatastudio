@@ -13,7 +13,6 @@ const path = require('path');
 
 const externals = {
 	'handlebars': 'commonjs handlebars',
-	'openurl': 'commonjs openurl'
 }
 
 // conditionally add ws if we are going to be running in a node environment
