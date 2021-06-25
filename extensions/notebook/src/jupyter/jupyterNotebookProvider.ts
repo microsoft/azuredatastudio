@@ -64,13 +64,15 @@ export class JupyterNotebookProvider implements nb.NotebookProvider {
 				manager.sessionManager.shutdown(session.id);
 			}
 			if (sessionManager.listRunning().length === 0) {
-				const TenMinutesInMs = 10 * 60 * 1000;
+				let notebookConfig: vscode.WorkspaceConfiguration = vscode.workspace.getConfiguration(constants.notebookConfigKey);
+				let timeoutInMinutes: number = notebookConfig.get(constants.jupyterServerShutdownTimeoutConfigKey);
+				const timeoutInMs = timeoutInMinutes * 60 * 1000;
 				setTimeout(() => {
 					if (sessionManager.listRunning().length === 0) {
 						this.managerTracker.delete(baseFolder);
 						manager.dispose();
 					}
-				}, TenMinutesInMs);
+				}, timeoutInMs);
 			}
 		}
 	}
