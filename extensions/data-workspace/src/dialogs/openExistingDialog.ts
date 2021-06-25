@@ -374,7 +374,7 @@ export class OpenExistingDialog extends DialogBase {
 	public async projectBrowse(): Promise<void> {
 		const filters: { [name: string]: string[] } = {};
 		const projectTypes = await this.workspaceService.getAllProjectTypes();
-		filters[constants.AllProjectTypes] = projectTypes.map(type => type.projectFileExtension);
+		filters[constants.AllProjectTypes] = [...new Set(projectTypes.map(type => type.projectFileExtension))];
 		projectTypes.forEach(type => {
 			filters[type.displayName] = [type.projectFileExtension];
 		});
