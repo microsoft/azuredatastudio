@@ -49,13 +49,12 @@ export class WorkspaceService implements IWorkspaceService {
 	 * @param projectFileFsPath project to add to the workspace
 	 */
 	async CreateNewWorkspaceForProject(projectFileFsPath: string, workspaceFile: vscode.Uri | undefined): Promise<void> {
-		// save temp project
-		await this._context.globalState.update(TempProject, [projectFileFsPath]);
-
 		// create workspace
 		const projectFolder = vscode.Uri.file(path.dirname(projectFileFsPath));
 		const azdataApi = getAzdataApi();
 		if (azdataApi) {
+			// save temp project
+			await this._context.globalState.update(TempProject, [projectFileFsPath]);
 			if (isCurrentWorkspaceUntitled()) {
 				vscode.workspace.updateWorkspaceFolders(vscode.workspace.workspaceFolders!.length, null, { uri: projectFolder });
 				await azdataApi.workspace.saveAndEnterWorkspace(workspaceFile!);
