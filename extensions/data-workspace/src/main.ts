@@ -19,12 +19,12 @@ import { createNewProjectWithQuickpick } from './dialogs/newProjectQuickpick';
 export async function activate(context: vscode.ExtensionContext): Promise<IExtension> {
 	const workspaceService = new WorkspaceService(context);
 	await workspaceService.loadTempProjects();
-	workspaceService.checkForProjectsNotAddedToWorkspace();
-	context.subscriptions.push(vscode.workspace.onDidChangeWorkspaceFolders(async () => {
-		await workspaceService.checkForProjectsNotAddedToWorkspace();
-	}));
+
 
 	const workspaceTreeDataProvider = new WorkspaceTreeDataProvider(workspaceService);
+	context.subscriptions.push(vscode.workspace.onDidChangeWorkspaceFolders(() => {
+		workspaceTreeDataProvider.refresh();
+	}));
 	const dataWorkspaceExtension = new DataWorkspaceExtension(workspaceService);
 	context.subscriptions.push(vscode.window.registerTreeDataProvider('dataworkspace.views.main', workspaceTreeDataProvider));
 	context.subscriptions.push(vscode.extensions.onDidChange(() => {
@@ -43,7 +43,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 	}));
 
 	context.subscriptions.push(vscode.commands.registerCommand('projects.openExisting', async () => {
-		const dialog = new OpenExistingDialog(workspaceService, context);
+		const dialog = new OpenExistingDialog(workspaceService);
 		await dialog.open();
 
 	}));
@@ -56,9 +56,6 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 		vscode.commands.executeCommand('workbench.action.closeFolder');
 	}));
 
-	context.subscriptions.push(vscode.commands.registerCommand('projects.removeProject', async (treeItem: WorkspaceTreeItem) => {
-		await workspaceService.removeProject(vscode.Uri.file(treeItem.element.project.projectFilePath));
-	}));
 	context.subscriptions.push(vscode.commands.registerCommand('projects.manageProject', async (treeItem: WorkspaceTreeItem) => {
 		const dashboard = new ProjectDashboard(workspaceService, treeItem);
 		await dashboard.showDashboard();
