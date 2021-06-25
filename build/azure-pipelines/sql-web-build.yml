@@ -4,19 +4,6 @@ resources:
     image: sqltoolscontainers.azurecr.io/web-build-image:1
     endpoint: ContainerRegistry
 
-jobs:
-- job: Compile
-  pool:
-    vmImage: 'Ubuntu-18.04'
-  container: linux-x64
-  steps:
-  - script: |
-      set -e
-      echo "##vso[build.addbuildtag]$(VSCODE_QUALITY)"
-    displayName: Add Quality Build Tag
-  - template: sql-product-compile.yml
-  timeoutInMinutes: 90
-
 - job: LinuxWeb
   pool:
     vmImage: 'Ubuntu-18.04'
