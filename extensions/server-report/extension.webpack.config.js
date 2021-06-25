@@ -29,7 +29,7 @@ if (fs.existsSync(yarnrcPath)) {
 module.exports = withDefaults({
 	context: __dirname,
 	entry: {
-		main: './src/extension.ts'
+		extension: './src/extension.ts'
 	},
 	externals: externals
 });
