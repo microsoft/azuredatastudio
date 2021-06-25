@@ -21,6 +21,9 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 	// checking for projects not added to the workspace yet
 	workspaceService.loadTempProjects().then(() => {
 		return workspaceService.checkForProjectsNotAddedToWorkspace();
+	}).catch(error => {
+		console.error(error);
+		vscode.window.showErrorMessage(error instanceof Error ? error.message : error);
 	});
 
 	context.subscriptions.push(vscode.workspace.onDidChangeWorkspaceFolders(() => {
