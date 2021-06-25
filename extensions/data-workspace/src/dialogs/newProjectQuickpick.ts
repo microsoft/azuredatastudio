@@ -24,7 +24,7 @@ export async function createNewProjectWithQuickpick(workspaceService: WorkspaceS
 	});
 
 	// 1. Prompt for project type
-	const projectType = await vscode.window.showQuickPick(projectTypes, { title: constants.SelectProjectType });
+	const projectType = await vscode.window.showQuickPick(projectTypes, { title: constants.SelectProjectType, ignoreFocusOut: true });
 	if (!projectType) {
 		return;
 	}
@@ -35,7 +35,8 @@ export async function createNewProjectWithQuickpick(workspaceService: WorkspaceS
 			title: constants.ProjectNamePlaceholder,
 			validateInput: (value) => {
 				return value ? undefined : constants.NameCannotBeEmpty;
-			}
+			},
+			ignoreFocusOut: true
 		});
 	if (!projectName) {
 		return;
@@ -45,7 +46,7 @@ export async function createNewProjectWithQuickpick(workspaceService: WorkspaceS
 	// Show quick pick with just browse option to give user context about what the file dialog is for (since that doesn't always have a title)
 	const browseProjectLocation = await vscode.window.showQuickPick(
 		[constants.BrowseEllipses],
-		{ title: constants.SelectProjectLocation });
+		{ title: constants.SelectProjectLocation, ignoreFocusOut: true });
 	if (!browseProjectLocation) {
 		return;
 	}
@@ -70,7 +71,7 @@ export async function createNewProjectWithQuickpick(workspaceService: WorkspaceS
 			// Show the browse quick pick again with the title updated with the error
 			const browseProjectLocation = await vscode.window.showQuickPick(
 				[constants.BrowseEllipses],
-				{ title: constants.ProjectDirectoryAlreadyExistErrorShort(projectName) });
+				{ title: constants.ProjectDirectoryAlreadyExistErrorShort(projectName), ignoreFocusOut: true });
 			if (!browseProjectLocation) {
 				return;
 			}
