@@ -1,4 +1,4 @@
-resources:
+VSCODE_MIXIN_REPOresources:
   containers:
   - container: linux-x64
     image: sqltoolscontainers.azurecr.io/web-build-image:1
