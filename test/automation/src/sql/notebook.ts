@@ -133,7 +133,10 @@ export class Notebook {
 		}
 	}
 
-	// Helper function to get cell ids for notebook
+	/**
+	 * Helper function
+	 * @returns cell ids for the notebook
+	 */
 	async getCellIds(): Promise<string[]> {
 		return (await this.code.waitForElements('div.notebook-cell', false)).map(cell => cell.attributes['id']);
 	}
