@@ -43,7 +43,7 @@ export class RefreshAction extends Action {
 	) {
 		super(id, label);
 	}
-	public async run(): Promise<void> {
+	public override async run(): Promise<void> {
 		let treeNode: TreeNode | undefined = undefined;
 		if (this.element instanceof ConnectionProfile) {
 			let connection: ConnectionProfile = this.element;
@@ -103,7 +103,7 @@ export class EditConnectionAction extends Action {
 		this.class = 'edit-server-action';
 	}
 
-	public async run(): Promise<void> {
+	public override async run(): Promise<void> {
 		if (this._connectionProfile) {
 			await this._connectionManagementService.showEditConnectionDialog(this._connectionProfile);
 		}
@@ -123,7 +123,7 @@ export class DisconnectConnectionAction extends Action {
 		super(id, label);
 	}
 
-	async run(actionContext: ObjectExplorerActionsContext): Promise<any> {
+	override async run(actionContext: ObjectExplorerActionsContext): Promise<any> {
 		if (!this._connectionProfile) {
 			return true;
 		}
@@ -158,7 +158,7 @@ export class AddServerAction extends Action {
 		super(id, label, SqlIconId.addServerAction);
 	}
 
-	public async run(element: ConnectionProfileGroup): Promise<void> {
+	public override async run(element: ConnectionProfileGroup): Promise<void> {
 		// Not sure how to fix this....
 		let connection: Partial<IConnectionProfile> | undefined = element === undefined ? undefined : {
 			connectionName: undefined,
@@ -196,7 +196,7 @@ export class AddServerGroupAction extends Action {
 		super(id, label, SqlIconId.addServerGroupAction);
 	}
 
-	public async run(): Promise<void> {
+	public override async run(): Promise<void> {
 		return this.serverGroupController.showCreateGroupDialog();
 	}
 }
@@ -218,7 +218,7 @@ export class EditServerGroupAction extends Action {
 		this.class = 'edit-server-group-action';
 	}
 
-	public run(): Promise<void> {
+	public override run(): Promise<void> {
 		return this.serverGroupController.showEditGroupDialog(this._group);
 	}
 }
@@ -241,7 +241,7 @@ export class ActiveConnectionsFilterAction extends Action {
 		super(id, label, SqlIconId.activeConnectionsAction);
 	}
 
-	public async run(): Promise<void> {
+	public override async run(): Promise<void> {
 		const serverTreeView = this._objectExplorerService.getServerTreeView();
 		if (serverTreeView.view !== ServerTreeViewView.active) {
 			// show active connections in the tree
@@ -281,7 +281,7 @@ export class DeleteConnectionAction extends Action {
 		}
 	}
 
-	public async run(): Promise<void> {
+	public override async run(): Promise<void> {
 		if (this.element instanceof ConnectionProfile) {
 			await this._connectionManagementService.deleteConnection(this.element);
 		} else if (this.element instanceof ConnectionProfileGroup) {

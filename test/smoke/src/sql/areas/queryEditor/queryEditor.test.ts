@@ -21,6 +21,8 @@ export function setup() {
 			await app.workbench.connectionDialog.connect();
 			await app.workbench.queryEditor.commandBar.run();
 			await app.workbench.queryEditor.waitForResults();
+
+			await app.workbench.quickaccess.runCommand('workbench.action.revertAndCloseActiveEditor');
 		});
 	});
 }

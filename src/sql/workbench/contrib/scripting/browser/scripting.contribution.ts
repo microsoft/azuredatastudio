@@ -81,7 +81,12 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 		id: commands.EDIT_DATA_COMMAND_ID,
 		title: localize('editData', "Edit Data")
 	},
-	when: ContextKeyExpr.and(MssqlNodeContext.CanEditData, MssqlNodeContext.EngineEdition.notEqualsTo(DatabaseEngineEdition.SqlOnDemand.toString()))
+	when:
+		ContextKeyExpr.and(
+			MssqlNodeContext.CanEditData,
+			MssqlNodeContext.EngineEdition.notEqualsTo(DatabaseEngineEdition.SqlOnDemand.toString()),
+			MssqlNodeContext.EngineEdition.notEqualsTo(DatabaseEngineEdition.SqlDataWarehouse.toString())
+		)
 });
 //#endregion
 
@@ -123,7 +128,14 @@ MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
 		id: commands.OE_EDIT_DATA_COMMAND_ID,
 		title: localize('editData', "Edit Data")
 	},
-	when: ContextKeyExpr.and(TreeNodeContextKey.NodeType.isEqualTo('Table'), ConnectionContextKey.Provider.notEqualsTo('KUSTO'), ConnectionContextKey.Provider.notEqualsTo('LOGANALYTICS'), MssqlNodeContext.EngineEdition.notEqualsTo(DatabaseEngineEdition.SqlOnDemand.toString()))
+	when:
+		ContextKeyExpr.and(
+			TreeNodeContextKey.NodeType.isEqualTo('Table'),
+			ConnectionContextKey.Provider.notEqualsTo('KUSTO'),
+			ConnectionContextKey.Provider.notEqualsTo('LOGANALYTICS'),
+			MssqlNodeContext.EngineEdition.notEqualsTo(DatabaseEngineEdition.SqlOnDemand.toString()),
+			MssqlNodeContext.EngineEdition.notEqualsTo(DatabaseEngineEdition.SqlDataWarehouse.toString())
+		)
 });
 
 MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
@@ -293,7 +305,13 @@ MenuRegistry.appendMenuItem(MenuId.ExplorerWidgetContext, {
 		id: ExplorerEditDataActionID,
 		title: EditDataAction.LABEL
 	},
-	when: ContextKeyExpr.and(ItemContextKey.ItemType.isEqualTo('table'), MssqlNodeContext.EngineEdition.notEqualsTo(DatabaseEngineEdition.SqlOnDemand.toString()), ItemContextKey.ConnectionProvider.notEqualsTo('kusto')),
+	when:
+		ContextKeyExpr.and(
+			ItemContextKey.ItemType.isEqualTo('table'),
+			MssqlNodeContext.EngineEdition.notEqualsTo(DatabaseEngineEdition.SqlOnDemand.toString()),
+			ItemContextKey.ConnectionProvider.notEqualsTo('kusto'),
+			MssqlNodeContext.EngineEdition.notEqualsTo(DatabaseEngineEdition.SqlDataWarehouse.toString())
+		),
 	order: 2
 });
 

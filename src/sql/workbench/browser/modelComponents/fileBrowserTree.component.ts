@@ -91,7 +91,7 @@ export default class FileBrowserTreeComponent extends ComponentBase<azdata.FileB
 		}
 	}
 
-	ngOnDestroy(): void {
+	override ngOnDestroy(): void {
 		this.baseDestroy();
 	}
 
@@ -106,7 +106,7 @@ export default class FileBrowserTreeComponent extends ComponentBase<azdata.FileB
 		this._treeView.layout(700);
 	}
 
-	public setProperties(properties: { [key: string]: any; }): void {
+	public override setProperties(properties: { [key: string]: any; }): void {
 		super.setProperties(properties);
 		if (this.ownerUri) {
 			this.initialize();
@@ -122,7 +122,7 @@ export default class FileBrowserTreeComponent extends ComponentBase<azdata.FileB
 		this.setPropertyFromUI<string>((props, value) => props.ownerUri = value, newValue);
 	}
 
-	public get CSSStyles(): azdata.CssStyles {
+	public override get CSSStyles(): azdata.CssStyles {
 		return this.mergeCss(super.CSSStyles, {
 			'width': this.getWidth(),
 			'height': this.getHeight()

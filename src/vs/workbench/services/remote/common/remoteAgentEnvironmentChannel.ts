@@ -42,7 +42,7 @@ export interface IRemoteAgentEnvironmentDTO {
 	workspaceStorageHome: UriComponents;
 	userHome: UriComponents;
 	os: platform.OperatingSystem;
-	marks: performance.PerformanceMark[]
+	marks: performance.PerformanceMark[];
 	useHostProxy: boolean;
 }
 

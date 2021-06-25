@@ -35,9 +35,11 @@ code-component .toolbar .carbon-taskbar {
 	margin-top: 5px;
 }
 
-code-component .toolbar .codicon {
+code-component .toolbar .carbon-taskbar.monaco-toolbar .monaco-action-bar .codicon.action-label {
 	height: 20px;
 	padding-bottom: 10px;
+	background-size: 20px;
+	width: 40px;
 }
 
 .notebook-cell:not(.active):hover code-component .toolbarIconRun {
@@ -76,11 +78,6 @@ code-component .monaco-editor .decorationsOverviewRuler {
 
 .vs-dark code-component .monaco-editor .rangeHighlight {
 	background-color: rgba(255, 255, 0, 0.2)
-}
-
-code-component .carbon-taskbar .codicon {
-	background-size: 20px;
-	width: 40px;
 }
 
 code-component .carbon-taskbar .codicon.hideIcon {

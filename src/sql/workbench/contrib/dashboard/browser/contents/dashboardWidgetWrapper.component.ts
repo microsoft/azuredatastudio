@@ -36,6 +36,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { ILogService } from 'vs/platform/log/common/log';
 import { values } from 'vs/base/common/collections';
 import { IColorTheme } from 'vs/platform/theme/common/themeService';
+import { DASHBOARD_BORDER } from 'sql/workbench/common/theme';
 
 const componentMap: { [x: string]: Type<IDashboardWidget> } = {
 	'properties-widget': PropertiesWidgetComponent,
@@ -257,7 +258,7 @@ export class DashboardWidgetWrapper extends AngularDisposable implements OnInit 
 		if (!this._config.hideHeader) {
 			const el = <HTMLElement>this._ref.nativeElement;
 			const headerEl: HTMLElement = this.header.nativeElement;
-			let borderColor = theme.getColor(themeColors.DASHBOARD_BORDER);
+			let borderColor = theme.getColor(DASHBOARD_BORDER);
 			let backgroundColor = theme.getColor(colors.editorBackground, true);
 			const foregroundColor = theme.getColor(themeColors.SIDE_BAR_FOREGROUND, true);
 			const border = theme.getColor(colors.contrastBorder, true);

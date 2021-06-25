@@ -75,7 +75,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 				this._resourceTagsListView = this.createTagsListView();
 				resourceComponents.push(this._resourceTagsListView);
 			}
-			this._resourceSearchBox = view.modelBuilder.inputBox().withProperties({
+			this._resourceSearchBox = view.modelBuilder.inputBox().withProps({
 				placeHolder: loc.resourceTypeSearchBoxDescription,
 				ariaLabel: loc.resourceTypeSearchBoxDescription
 			}).component();
@@ -189,7 +189,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 		this._selectedResourceType = resourceType;
 	}
 
-	protected async onComplete(): Promise<void> {
+	protected override async onComplete(): Promise<void> {
 		this.resourceTypeService.startDeployment(this._selectedResourceType, this._optionValuesFilter, this._initialVariableValues);
 	}
 

@@ -54,7 +54,7 @@ export default class GroupContainer extends ContainerBase<GroupLayout, GroupCont
 		this.baseInit();
 	}
 
-	ngOnDestroy(): void {
+	override ngOnDestroy(): void {
 		this.baseDestroy();
 	}
 
@@ -133,7 +133,7 @@ export default class GroupContainer extends ContainerBase<GroupLayout, GroupCont
 		}
 	}
 
-	public get CSSStyles(): CssStyles {
+	public override get CSSStyles(): CssStyles {
 		return this.mergeCss(super.CSSStyles, {
 			'display': this.getContainerDisplayStyle(),
 			'width': this.getContainerWidth(),

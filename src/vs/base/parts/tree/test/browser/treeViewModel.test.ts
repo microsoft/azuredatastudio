@@ -39,7 +39,7 @@ function makeNavigator(...args: any[]): any {
 
 class TestHeightMap extends HeightMap {
 
-	protected createViewItem(item: any): IViewItem {
+	protected override createViewItem(item: any): IViewItem {
 		return {
 			model: item,
 			top: 0,

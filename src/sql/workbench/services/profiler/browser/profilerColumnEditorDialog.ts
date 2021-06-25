@@ -310,7 +310,7 @@ export class ProfilerColumnEditorDialog extends Modal {
 		super(nls.localize('profilerColumnDialog.profiler', "Profiler"), TelemetryKeys.ModalDialogName.Profiler, telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService);
 	}
 
-	public render(): void {
+	public override render(): void {
 		super.render();
 		this._register(attachModalDialogStyler(this, this._themeService));
 		this.addFooterButton(nls.localize('profilerColumnDialog.ok', "OK"), () => this.onAccept(undefined));
@@ -337,7 +337,7 @@ export class ProfilerColumnEditorDialog extends Modal {
 		this._updateList();
 	}
 
-	protected onAccept(e?: StandardKeyboardEvent): void {
+	protected override onAccept(e?: StandardKeyboardEvent): void {
 		this._updateInput();
 		super.onAccept(e);
 	}

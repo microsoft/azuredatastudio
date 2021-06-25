@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as azdata from 'azdata';
+import type * as azdataType from 'azdata';
 import * as vscode from 'vscode';
 import * as constants from '../common/constants';
 import * as newProjectTool from '../tools/newProjectTool';
@@ -15,19 +15,19 @@ import { cssStyles } from '../common/uiConstants';
 import { ImportDataModel } from '../models/api/import';
 import { Deferred } from '../common/promise';
 import { getConnectionName } from './utils';
-import { exists, isCurrentWorkspaceUntitled } from '../common/utils';
+import { exists, getAzdataApi, isCurrentWorkspaceUntitled } from '../common/utils';
 
 export class CreateProjectFromDatabaseDialog {
-	public dialog: azdata.window.Dialog;
-	public createProjectFromDatabaseTab: azdata.window.DialogTab;
-	public sourceConnectionTextBox: azdata.InputBoxComponent | undefined;
-	private selectConnectionButton: azdata.ButtonComponent | undefined;
-	public sourceDatabaseDropDown: azdata.DropDownComponent | undefined;
-	public projectNameTextBox: azdata.InputBoxComponent | undefined;
-	public projectLocationTextBox: azdata.InputBoxComponent | undefined;
-	public folderStructureDropDown: azdata.DropDownComponent | undefined;
-	public workspaceInputBox: azdata.InputBoxComponent | undefined;
-	private formBuilder: azdata.FormBuilder | undefined;
+	public dialog: azdataType.window.Dialog;
+	public createProjectFromDatabaseTab: azdataType.window.DialogTab;
+	public sourceConnectionTextBox: azdataType.InputBoxComponent | undefined;
+	private selectConnectionButton: azdataType.ButtonComponent | undefined;
+	public sourceDatabaseDropDown: azdataType.DropDownComponent | undefined;
+	public projectNameTextBox: azdataType.InputBoxComponent | undefined;
+	public projectLocationTextBox: azdataType.InputBoxComponent | undefined;
+	public folderStructureDropDown: azdataType.DropDownComponent | undefined;
+	public workspaceInputBox: azdataType.InputBoxComponent | undefined;
+	private formBuilder: azdataType.FormBuilder | undefined;
 	private connectionId: string | undefined;
 	private toDispose: vscode.Disposable[] = [];
 	private initDialogComplete!: Deferred<void>;
@@ -35,9 +35,9 @@ export class CreateProjectFromDatabaseDialog {
 
 	public createProjectFromDatabaseCallback: ((model: ImportDataModel) => any) | undefined;
 
-	constructor(private profile: azdata.IConnectionProfile | undefined) {
-		this.dialog = azdata.window.createModelViewDialog(constants.createProjectFromDatabaseDialogName, 'createProjectFromDatabaseDialog');
-		this.createProjectFromDatabaseTab = azdata.window.createTab(constants.createProjectFromDatabaseDialogName);
+	constructor(private profile: azdataType.IConnectionProfile | undefined) {
+		this.dialog = getAzdataApi()!.window.createModelViewDialog(constants.createProjectFromDatabaseDialogName, 'createProjectFromDatabaseDialog');
+		this.createProjectFromDatabaseTab = getAzdataApi()!.window.createTab(constants.createProjectFromDatabaseDialogName);
 		this.dialog.registerCloseValidator(async () => {
 			return this.validate();
 		});
@@ -51,7 +51,7 @@ export class CreateProjectFromDatabaseDialog {
 
 		this.dialog.cancelButton.label = constants.cancelButtonText;
 
-		azdata.window.openDialog(this.dialog);
+		getAzdataApi()!.window.openDialog(this.dialog);
 		await this.initDialogPromise;
 
 		if (this.profile) {
@@ -91,7 +91,7 @@ export class CreateProjectFromDatabaseDialog {
 			const createworkspaceContainerFormSection = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column' }).component();
 			createworkspaceContainerFormSection.addItems([workspaceContainerRow]);
 
-			this.formBuilder = <azdata.FormBuilder>view.modelBuilder.formContainer()
+			this.formBuilder = <azdataType.FormBuilder>view.modelBuilder.formContainer()
 				.withFormItems([
 					{
 						title: constants.sourceDatabase,
@@ -141,11 +141,11 @@ export class CreateProjectFromDatabaseDialog {
 		});
 	}
 
-	private createConnectionRow(view: azdata.ModelView): azdata.FlexContainer {
+	private createConnectionRow(view: azdataType.ModelView): azdataType.FlexContainer {
 		const sourceConnectionTextBox = this.createSourceConnectionComponent(view);
-		const selectConnectionButton: azdata.Component = this.createSelectConnectionButton(view);
+		const selectConnectionButton: azdataType.Component = this.createSelectConnectionButton(view);
 
-		const serverLabel = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+		const serverLabel = view.modelBuilder.text().withProperties<azdataType.TextComponentProperties>({
 			value: constants.server,
 			requiredIndicator: true,
 			width: cssStyles.createProjectFromDatabaseLabelWidth
@@ -157,8 +157,8 @@ export class CreateProjectFromDatabaseDialog {
 		return connectionRow;
 	}
 
-	private createDatabaseRow(view: azdata.ModelView): azdata.FlexContainer {
-		this.sourceDatabaseDropDown = view.modelBuilder.dropDown().withProperties({
+	private createDatabaseRow(view: azdataType.ModelView): azdataType.FlexContainer {
+		this.sourceDatabaseDropDown = view.modelBuilder.dropDown().withProps({
 			ariaLabel: constants.databaseNameLabel,
 			required: true,
 			width: cssStyles.createProjectFromDatabaseTextboxWidth
@@ -170,13 +170,13 @@ export class CreateProjectFromDatabaseDialog {
 			this.tryEnableCreateButton();
 		});
 
-		const databaseLabel = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+		const databaseLabel = view.modelBuilder.text().withProperties<azdataType.TextComponentProperties>({
 			value: constants.databaseNameLabel,
 			requiredIndicator: true,
 			width: cssStyles.createProjectFromDatabaseLabelWidth
 		}).component();
 
-		const databaseRow = view.modelBuilder.flexContainer().withItems([databaseLabel, <azdata.DropDownComponent>this.sourceDatabaseDropDown], { flex: '0 0 auto', CSSStyles: { 'margin-right': '10px', 'margin-bottom': '-10px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
+		const databaseRow = view.modelBuilder.flexContainer().withItems([databaseLabel, <azdataType.DropDownComponent>this.sourceDatabaseDropDown], { flex: '0 0 auto', CSSStyles: { 'margin-right': '10px', 'margin-bottom': '-10px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
 
 		return databaseRow;
 	}
@@ -185,8 +185,8 @@ export class CreateProjectFromDatabaseDialog {
 		this.projectNameTextBox!.value = newProjectTool.defaultProjectNameFromDb(<string>this.sourceDatabaseDropDown!.value);
 	}
 
-	private createSourceConnectionComponent(view: azdata.ModelView): azdata.InputBoxComponent {
-		this.sourceConnectionTextBox = view.modelBuilder.inputBox().withProperties({
+	private createSourceConnectionComponent(view: azdataType.ModelView): azdataType.InputBoxComponent {
+		this.sourceConnectionTextBox = view.modelBuilder.inputBox().withProps({
 			value: '',
 			placeHolder: constants.selectConnection,
 			width: cssStyles.createProjectFromDatabaseTextboxWidth,
@@ -200,8 +200,8 @@ export class CreateProjectFromDatabaseDialog {
 		return this.sourceConnectionTextBox;
 	}
 
-	private createSelectConnectionButton(view: azdata.ModelView): azdata.Component {
-		this.selectConnectionButton = view.modelBuilder.button().withProperties({
+	private createSelectConnectionButton(view: azdataType.ModelView): azdataType.Component {
+		this.selectConnectionButton = view.modelBuilder.button().withProps({
 			ariaLabel: constants.selectConnection,
 			iconPath: IconPathHelper.selectConnection,
 			height: '16px',
@@ -209,7 +209,7 @@ export class CreateProjectFromDatabaseDialog {
 		}).component();
 
 		this.selectConnectionButton.onDidClick(async () => {
-			let connection = await azdata.connection.openConnectionDialog();
+			let connection = await getAzdataApi()!.connection.openConnectionDialog();
 			this.connectionId = connection.connectionId;
 
 			let connectionTextboxValue: string;
@@ -230,7 +230,7 @@ export class CreateProjectFromDatabaseDialog {
 			this.sourceDatabaseDropDown!.loading = true;
 			let databaseValues;
 			try {
-				databaseValues = (await azdata.connection.listDatabases(connectionId))
+				databaseValues = (await getAzdataApi()!.connection.listDatabases(connectionId))
 					// filter out system dbs
 					.filter(db => !constants.systemDbs.includes(db));
 			} catch (e) {
@@ -253,8 +253,8 @@ export class CreateProjectFromDatabaseDialog {
 		this.selectConnectionButton!.iconPath = IconPathHelper.connect;
 	}
 
-	private createProjectNameRow(view: azdata.ModelView): azdata.FlexContainer {
-		this.projectNameTextBox = view.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
+	private createProjectNameRow(view: azdataType.ModelView): azdataType.FlexContainer {
+		this.projectNameTextBox = view.modelBuilder.inputBox().withProperties<azdataType.InputBoxProperties>({
 			ariaLabel: constants.projectNamePlaceholderText,
 			placeHolder: constants.projectNamePlaceholderText,
 			required: true,
@@ -268,7 +268,7 @@ export class CreateProjectFromDatabaseDialog {
 			this.tryEnableCreateButton();
 		});
 
-		const projectNameLabel = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+		const projectNameLabel = view.modelBuilder.text().withProperties<azdataType.TextComponentProperties>({
 			value: constants.projectNameLabel,
 			requiredIndicator: true,
 			width: cssStyles.createProjectFromDatabaseLabelWidth
@@ -279,10 +279,10 @@ export class CreateProjectFromDatabaseDialog {
 		return projectNameRow;
 	}
 
-	private createProjectLocationRow(view: azdata.ModelView): azdata.FlexContainer {
-		const browseFolderButton: azdata.Component = this.createBrowseFolderButton(view);
+	private createProjectLocationRow(view: azdataType.ModelView): azdataType.FlexContainer {
+		const browseFolderButton: azdataType.Component = this.createBrowseFolderButton(view);
 
-		this.projectLocationTextBox = view.modelBuilder.inputBox().withProperties({
+		this.projectLocationTextBox = view.modelBuilder.inputBox().withProps({
 			value: '',
 			ariaLabel: constants.projectLocationLabel,
 			placeHolder: constants.projectLocationPlaceholderText,
@@ -295,7 +295,7 @@ export class CreateProjectFromDatabaseDialog {
 			this.tryEnableCreateButton();
 		});
 
-		const projectLocationLabel = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+		const projectLocationLabel = view.modelBuilder.text().withProperties<azdataType.TextComponentProperties>({
 			value: constants.projectLocationLabel,
 			requiredIndicator: true,
 			width: cssStyles.createProjectFromDatabaseLabelWidth
@@ -307,8 +307,8 @@ export class CreateProjectFromDatabaseDialog {
 		return projectLocationRow;
 	}
 
-	private createBrowseFolderButton(view: azdata.ModelView): azdata.ButtonComponent {
-		const browseFolderButton = view.modelBuilder.button().withProperties<azdata.ButtonProperties>({
+	private createBrowseFolderButton(view: azdataType.ModelView): azdataType.ButtonComponent {
+		const browseFolderButton = view.modelBuilder.button().withProperties<azdataType.ButtonProperties>({
 			ariaLabel: constants.browseButtonText,
 			iconPath: IconPathHelper.folder_blue,
 			height: '18px',
@@ -335,8 +335,8 @@ export class CreateProjectFromDatabaseDialog {
 		return browseFolderButton;
 	}
 
-	private createFolderStructureRow(view: azdata.ModelView): azdata.FlexContainer {
-		this.folderStructureDropDown = view.modelBuilder.dropDown().withProperties({
+	private createFolderStructureRow(view: azdataType.ModelView): azdataType.FlexContainer {
+		this.folderStructureDropDown = view.modelBuilder.dropDown().withProps({
 			values: [constants.file, constants.flat, constants.objectType, constants.schema, constants.schemaObjectType],
 			value: constants.schemaObjectType,
 			ariaLabel: constants.folderStructureLabel,
@@ -348,13 +348,13 @@ export class CreateProjectFromDatabaseDialog {
 			this.tryEnableCreateButton();
 		});
 
-		const folderStructureLabel = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+		const folderStructureLabel = view.modelBuilder.text().withProperties<azdataType.TextComponentProperties>({
 			value: constants.folderStructureLabel,
 			requiredIndicator: true,
 			width: cssStyles.createProjectFromDatabaseLabelWidth
 		}).component();
 
-		const folderStructureRow = view.modelBuilder.flexContainer().withItems([folderStructureLabel, <azdata.DropDownComponent>this.folderStructureDropDown], { flex: '0 0 auto', CSSStyles: { 'margin-right': '10px', 'margin-top': '-10px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
+		const folderStructureRow = view.modelBuilder.flexContainer().withItems([folderStructureLabel, <azdataType.DropDownComponent>this.folderStructureDropDown], { flex: '0 0 auto', CSSStyles: { 'margin-right': '10px', 'margin-top': '-10px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
 
 		return folderStructureRow;
 	}
@@ -364,10 +364,10 @@ export class CreateProjectFromDatabaseDialog {
 	 * created if no workspace is currently open
 	 * @param view
 	 */
-	private createWorkspaceContainerRow(view: azdata.ModelView): azdata.FlexContainer {
+	private createWorkspaceContainerRow(view: azdataType.ModelView): azdataType.FlexContainer {
 		const initialWorkspaceInputBoxValue = !!vscode.workspace.workspaceFile && !isCurrentWorkspaceUntitled() ? vscode.workspace.workspaceFile.fsPath : '';
 
-		this.workspaceInputBox = view.modelBuilder.inputBox().withProperties({
+		this.workspaceInputBox = view.modelBuilder.inputBox().withProps({
 			ariaLabel: constants.workspaceLocationTitle,
 			enabled: !vscode.workspace.workspaceFile || isCurrentWorkspaceUntitled(), // want it editable if no saved workspace is open
 			value: initialWorkspaceInputBoxValue,
@@ -375,7 +375,7 @@ export class CreateProjectFromDatabaseDialog {
 			width: '100%'
 		}).component();
 
-		const browseFolderButton = view.modelBuilder.button().withProperties<azdata.ButtonProperties>({
+		const browseFolderButton = view.modelBuilder.button().withProperties<azdataType.ButtonProperties>({
 			ariaLabel: constants.browseButtonText,
 			iconPath: IconPathHelper.folder_blue,
 			height: '16px',
@@ -402,7 +402,7 @@ export class CreateProjectFromDatabaseDialog {
 			this.workspaceInputBox!.title = selectedFile;
 		}));
 
-		const workspaceLabel = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+		const workspaceLabel = view.modelBuilder.text().withProperties<azdataType.TextComponentProperties>({
 			value: vscode.workspace.workspaceFile ? constants.addProjectToCurrentWorkspace : constants.newWorkspaceWillBeCreated,
 			CSSStyles: { 'margin-top': '-10px', 'margin-bottom': '5px' }
 		}).component();
@@ -454,7 +454,7 @@ export class CreateProjectFromDatabaseDialog {
 			newWorkspaceFilePath: this.workspaceInputBox!.enabled ? vscode.Uri.file(this.workspaceInputBox!.value!) : undefined
 		};
 
-		azdata.window.closeDialog(this.dialog);
+		getAzdataApi()!.window.closeDialog(this.dialog);
 		await this.createProjectFromDatabaseCallback!(model);
 
 		this.dispose();
@@ -529,7 +529,7 @@ export class CreateProjectFromDatabaseDialog {
 	protected showErrorMessage(message: string): void {
 		this.dialog.message = {
 			text: message,
-			level: azdata.window.MessageLevel.Error
+			level: getAzdataApi()!.window.MessageLevel.Error
 		};
 	}
 }

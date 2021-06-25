@@ -45,18 +45,18 @@ export class ProfilerResourceEditor extends BaseTextEditor {
 		@IStorageService storageService: IStorageService,
 		@ITextResourceConfigurationService configurationService: ITextResourceConfigurationService,
 		@IThemeService themeService: IThemeService,
-		@IEditorService protected editorService: IEditorService,
+		@IEditorService editorService: IEditorService,
 		@IEditorGroupsService editorGroupService: IEditorGroupsService
 
 	) {
 		super(ProfilerResourceEditor.ID, telemetryService, instantiationService, storageService, configurationService, themeService, editorService, editorGroupService);
 	}
 
-	public createEditorControl(parent: HTMLElement, configuration: IEditorOptions): editorCommon.IEditor {
+	public override createEditorControl(parent: HTMLElement, configuration: IEditorOptions): editorCommon.IEditor {
 		return this.instantiationService.createInstance(ProfilerResourceCodeEditor, parent, configuration, {});
 	}
 
-	protected getConfigurationOverrides(): IEditorOptions {
+	protected override getConfigurationOverrides(): IEditorOptions {
 		const options = super.getConfigurationOverrides();
 		options.readOnly = true;
 		if (this.input) {
@@ -75,18 +75,18 @@ export class ProfilerResourceEditor extends BaseTextEditor {
 		return options;
 	}
 
-	setInput(input: UntitledTextEditorInput, options: EditorOptions, context: IEditorOpenContext): Promise<void> {
-		return super.setInput(input, options, context, CancellationToken.None)
-			.then(() => this.input.resolve()
-				.then(editorModel => editorModel.load())
-				.then(editorModel => this.getControl().setModel((<ResourceEditorModel>editorModel).textEditorModel)));
+	override async setInput(input: UntitledTextEditorInput, options: EditorOptions, context: IEditorOpenContext): Promise<void> {
+		await super.setInput(input, options, context, CancellationToken.None);
+		const editorModel = await this.input.resolve() as ResourceEditorModel;
+		await editorModel.resolve();
+		this.getControl().setModel(editorModel.textEditorModel);
 	}
 
 	protected getAriaLabel(): string {
 		return nls.localize('profilerTextEditorAriaLabel', "Profiler editor for event text. Readonly");
 	}
 
-	public layout(dimension: DOM.Dimension) {
+	public override layout(dimension: DOM.Dimension) {
 		this.getControl().layout(dimension);
 	}
 }

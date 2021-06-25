@@ -65,7 +65,7 @@ This project has adopted the [Microsoft Open Source Code of Conduct](https://ope
 Azure Data Studio is localized into 10 languages: French, Italian, German, Spanish, Simplified Chinese, Traditional Chinese, Japanese, Korean, Russian, and Portuguese (Brazil). The language packs are available in the Extension Manager marketplace. Simply, search for the specific language using the extension marketplace and install. Once you install the selected language, Azure Data Studio will prompt you to restart with the new language.
 
 ## Privacy Statement
-The [Microsoft Enterprise and Developer Privacy Statement](https://privacy.microsoft.com/en-us/privacystatement) describes the privacy statement of this software.
+The [Microsoft Enterprise and Developer Privacy Statement](https://privacy.microsoft.com/privacystatement) describes the privacy statement of this software.
 
 ## Contributions and "Thank You"
 We would like to thank all our users who raised issues, and in particular the following users who helped contribute fixes:
@@ -131,10 +131,10 @@ Copyright (c) Microsoft Corporation. All rights reserved.
 
 Licensed under the [Source EULA](LICENSE.txt).
 
-[win-user]: https://go.microsoft.com/fwlink/?linkid=2163435
-[win-system]: https://go.microsoft.com/fwlink/?linkid=2163531
-[win-zip]: https://go.microsoft.com/fwlink/?linkid=2163529
-[osx-zip]: https://go.microsoft.com/fwlink/?linkid=2163528
-[linux-zip]: https://go.microsoft.com/fwlink/?linkid=2163530
-[linux-rpm]: https://go.microsoft.com/fwlink/?linkid=2163437
-[linux-deb]: https://go.microsoft.com/fwlink/?linkid=2163436
+[win-user]: https://go.microsoft.com/fwlink/?linkid=2165736
+[win-system]: https://go.microsoft.com/fwlink/?linkid=2165737
+[win-zip]: https://go.microsoft.com/fwlink/?linkid=2165838
+[osx-zip]: https://go.microsoft.com/fwlink/?linkid=2165942
+[linux-zip]: https://go.microsoft.com/fwlink/?linkid=2165841
+[linux-rpm]: https://go.microsoft.com/fwlink/?linkid=2165842
+[linux-deb]: https://go.microsoft.com/fwlink/?linkid=2165738

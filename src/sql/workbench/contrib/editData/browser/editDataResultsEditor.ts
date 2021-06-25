@@ -24,7 +24,7 @@ import { IStorageService } from 'vs/platform/storage/common/storage';
 export class EditDataResultsEditor extends EditorPane {
 
 	public static ID: string = 'workbench.editor.editDataResultsEditor';
-	protected _input: EditDataResultsInput;
+	protected override _input: EditDataResultsInput;
 	protected _rawOptions: BareResultsGridInfo;
 
 	private styleSheet = DOM.createStyleSheet();
@@ -47,7 +47,7 @@ export class EditDataResultsEditor extends EditorPane {
 		});
 	}
 
-	public get input(): EditDataResultsInput {
+	public override get input(): EditDataResultsInput {
 		return this._input;
 	}
 
@@ -55,7 +55,7 @@ export class EditDataResultsEditor extends EditorPane {
 		parent.appendChild(this.styleSheet);
 	}
 
-	public dispose(): void {
+	public override dispose(): void {
 		this.styleSheet = undefined;
 		super.dispose();
 	}
@@ -63,7 +63,7 @@ export class EditDataResultsEditor extends EditorPane {
 	public layout(dimension: DOM.Dimension): void {
 	}
 
-	public setInput(input: EditDataResultsInput, options: EditorOptions, context: IEditorOpenContext): Promise<void> {
+	public override setInput(input: EditDataResultsInput, options: EditorOptions, context: IEditorOpenContext): Promise<void> {
 		super.setInput(input, options, context, CancellationToken.None);
 		this._applySettings();
 		if (!input.hasBootstrapped) {

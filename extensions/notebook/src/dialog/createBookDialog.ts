@@ -75,40 +75,37 @@ export class CreateBookDialog {
 				}).component();
 
 			const bookLabel = this.view.modelBuilder.text()
-				.withProperties({
+				.withProps({
 					value: loc.bookDescription,
 					CSSStyles: { 'margin-bottom': '0px', 'margin-top': '0px', 'font-size': 'small' }
 				}).component();
 
 			this.bookNameInputBox = this.view.modelBuilder.inputBox()
-				.withProperties({
-					values: [],
+				.withProps({
 					value: '',
 					enabled: true
 				}).component();
 
-			this.saveLocationInputBox = this.view.modelBuilder.inputBox().withProperties({
-				values: [],
+			this.saveLocationInputBox = this.view.modelBuilder.inputBox().withProps({
 				value: '',
-				placeHolder: loc.locationBrowser,
+				ariaLabel: loc.saveLocation,
 				width: '400px'
 			}).component();
 
-			this.contentFolderInputBox = this.view.modelBuilder.inputBox().withProperties({
-				values: [],
+			this.contentFolderInputBox = this.view.modelBuilder.inputBox().withProps({
 				value: '',
-				placeHolder: loc.selectContentFolder,
+				ariaLabel: loc.contentFolder,
 				width: '400px'
 			}).component();
 
-			const browseFolderButton = view.modelBuilder.button().withProperties<azdata.ButtonProperties>({
+			const browseFolderButton = view.modelBuilder.button().withProps({
 				ariaLabel: loc.browse,
 				iconPath: IconPathHelper.folder,
 				width: '18px',
 				height: '20px',
 			}).component();
 
-			const browseContentFolderButton = view.modelBuilder.button().withProperties<azdata.ButtonProperties>({
+			const browseContentFolderButton = view.modelBuilder.button().withProps({
 				ariaLabel: loc.browse,
 				iconPath: IconPathHelper.folder,
 				width: '18px',
@@ -116,11 +113,17 @@ export class CreateBookDialog {
 			}).component();
 
 			browseFolderButton.onDidClick(async () => {
-				this.saveLocationInputBox.value = await this.selectFolder();
+				const selectedFolder = await this.selectFolder();
+				if (selectedFolder) {
+					this.saveLocationInputBox.value = selectedFolder;
+				}
 			});
 
 			browseContentFolderButton.onDidClick(async () => {
-				this.contentFolderInputBox.value = await this.selectFolder();
+				const selectedFolder = await this.selectFolder();
+				if (selectedFolder) {
+					this.contentFolderInputBox.value = selectedFolder;
+				}
 			});
 
 			this.formModel = this.view.modelBuilder.formContainer()
@@ -141,7 +144,7 @@ export class CreateBookDialog {
 							component: this.createHorizontalContainer(view, [this.saveLocationInputBox, browseFolderButton])
 						},
 						{
-							title: loc.contentFolder,
+							title: loc.contentFolderOptional,
 							required: false,
 							component: this.createHorizontalContainer(view, [this.contentFolderInputBox, browseContentFolderButton])
 						},

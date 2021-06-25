@@ -10,7 +10,7 @@ import { ICellEditorProvider, INotebookParams, INotebookService, INotebookEditor
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
 import * as notebookUtils from 'sql/workbench/services/notebook/browser/models/notebookUtils';
 import { IBootstrapParams } from 'sql/workbench/services/bootstrap/common/bootstrapParams';
-import { Action, IActionViewItem } from 'vs/base/common/actions';
+import { Action } from 'vs/base/common/actions';
 import { LabeledMenuItemActionItem } from 'sql/platform/actions/browser/menuEntryActionViewItem';
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { MenuItemAction } from 'vs/platform/actions/common/actions';
@@ -28,6 +28,7 @@ import { IConnectionManagementService } from 'sql/platform/connection/common/con
 import { NotebookViewsExtension } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViewsExtension';
 import { INotebookView } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViews';
 import { NotebookViewsGridComponent } from 'sql/workbench/contrib/notebook/browser/notebookViews/notebookViewsGrid.component';
+import { IActionViewItem } from 'vs/base/browser/ui/actionbar/actionbar';
 
 export const NOTEBOOKVIEWS_SELECTOR: string = 'notebook-view-component';
 
@@ -154,7 +155,7 @@ export class NotebookViewComponent extends AngularDisposable implements INoteboo
 		this.doLoad().catch(e => onUnexpectedError(e));
 	}
 
-	ngOnDestroy() {
+	override ngOnDestroy() {
 		this.dispose();
 	}
 
