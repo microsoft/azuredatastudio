@@ -129,92 +129,91 @@ steps:
     artifactName: Compilation
   displayName: Publish compilation artifact
 
+- script: |
+    set -e
+    yarn gulp package-rebuild-extensions
+    yarn gulp compile-extensions
+    yarn gulp package-external-extensions
+  displayName: Package External extensions
 
-  - script: |
-      set -e
-      yarn gulp package-rebuild-extensions
-      yarn gulp compile-extensions
-      yarn gulp package-external-extensions
-    displayName: Package External extensions
+- script: |
+    set -e
+    yarn gulp package-langpacks
+  displayName: Package Langpacks
 
-  - script: |
-      set -e
-      yarn gulp package-langpacks
-    displayName: Package Langpacks
+- bash: |
+    set -e
+    mkdir -p $(Build.ArtifactStagingDirectory)/logs/linux-x64
+    cd /tmp
+    for folder in adsuser*/
+    do
+    folder=${folder%/}
+    # Only archive directories we want for debugging purposes
+    tar -czvf $(Build.ArtifactStagingDirectory)/logs/linux-x64/$folder.tar.gz $folder/User $folder/logs
+    done
+  displayName: Archive Logs
+  continueOnError: true
+  condition: succeededOrFailed()
 
-  - bash: |
-      set -e
-      mkdir -p $(Build.ArtifactStagingDirectory)/logs/linux-x64
-      cd /tmp
-      for folder in adsuser*/
-      do
-      folder=${folder%/}
-      # Only archive directories we want for debugging purposes
-      tar -czvf $(Build.ArtifactStagingDirectory)/logs/linux-x64/$folder.tar.gz $folder/User $folder/logs
-      done
-    displayName: Archive Logs
-    continueOnError: true
-    condition: succeededOrFailed()
+- script: |
+    set -e
+    yarn gulp vscode-linux-x64-build-deb
+  displayName: Build Deb
 
-  - script: |
-      set -e
-      yarn gulp vscode-linux-x64-build-deb
-    displayName: Build Deb
+- script: |
+    set -e
+    yarn gulp vscode-linux-x64-build-rpm
+  displayName: Build Rpm
 
-  - script: |
-      set -e
-      yarn gulp vscode-linux-x64-build-rpm
-    displayName: Build Rpm
+- task: UseDotNet@2
+  displayName: 'Install .NET Core sdk for signing'
+  inputs:
+    packageType: sdk
+    version: 2.1.x
+    installationPath: $(Agent.ToolsDirectory)/dotnet
 
-  - task: UseDotNet@2
-    displayName: 'Install .NET Core sdk for signing'
-    inputs:
-      packageType: sdk
-      version: 2.1.x
-      installationPath: $(Agent.ToolsDirectory)/dotnet
+- task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
+  inputs:
+    ConnectedServiceName: 'Code Signing'
+    FolderPath: '$(Build.SourcesDirectory)/.build'
+    Pattern: 'extensions/*.vsix,langpacks/*.vsix'
+    signConfigType: inlineSignParams
+    inlineOperation: |
+      [
+        {
+          "keyCode": "CP-233016",
+          "operationSetCode": "OpcSign",
+          "parameters": [
+            {
+              "parameterName": "FileDigest",
+              "parameterValue": "/fd \"SHA256\""
+            }
+          ],
+          "toolName": "sign",
+          "toolVersion": "1.0"
+        },
+        {
+          "keyCode": "CP-233016",
+          "operationSetCode": "OpcVerify",
+          "parameters": [],
+          "toolName": "sign",
+          "toolVersion": "1.0"
+        }
+      ]
+    SessionTimeout: 120
+  displayName: 'Signing Extensions and Langpacks'
+  condition: and(succeeded(), eq(variables['signed'], true))
 
-  - task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
-    inputs:
-      ConnectedServiceName: 'Code Signing'
-      FolderPath: '$(Build.SourcesDirectory)/.build'
-      Pattern: 'extensions/*.vsix,langpacks/*.vsix'
-      signConfigType: inlineSignParams
-      inlineOperation: |
-        [
-          {
-            "keyCode": "CP-233016",
-            "operationSetCode": "OpcSign",
-            "parameters": [
-              {
-                "parameterName": "FileDigest",
-                "parameterValue": "/fd \"SHA256\""
-              }
-            ],
-            "toolName": "sign",
-            "toolVersion": "1.0"
-          },
-          {
-            "keyCode": "CP-233016",
-            "operationSetCode": "OpcVerify",
-            "parameters": [],
-            "toolName": "sign",
-            "toolVersion": "1.0"
-          }
-        ]
-      SessionTimeout: 120
-    displayName: 'Signing Extensions and Langpacks'
-    condition: and(succeeded(), eq(variables['signed'], true))
+- script: |
+    set -e
+    ./build/azure-pipelines/linux/createDrop.sh
+  displayName: Create Drop
 
-  - script: |
-      set -e
-      ./build/azure-pipelines/linux/createDrop.sh
-    displayName: Create Drop
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Artifact: drop'
+  condition: succeededOrFailed()
 
-  - task: PublishBuildArtifacts@1
-    displayName: 'Publish Artifact: drop'
-    condition: succeededOrFailed()
-
-  - task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
-    displayName: 'Component Detection'
-    inputs:
-      failOnAlert: true
+- task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
+  displayName: 'Component Detection'
+  inputs:
+    failOnAlert: true
