@@ -145,7 +145,9 @@ export class InsertCellsModal extends Modal {
 
 		DOM.append(container, grid);
 
-		this.createOptions(grid);
+		this.createOptions(grid)
+			.then(() => { })
+			.catch((e) => { this.setError(localize("insertCellsModal.thumbnailError", "Error: Unable to generate thumbnails.")); });
 	}
 
 	protected layout(height: number): void {
