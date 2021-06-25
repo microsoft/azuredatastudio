@@ -63,7 +63,7 @@ export class PickScheduleDialog {
 	private initializeContent() {
 		this.dialog.registerContent(async view => {
 			this.schedulesTable = view.modelBuilder.table()
-				.withProperties({
+				.withProps({
 					columns: [
 						PickScheduleDialog.SchedulesIDText,
 						PickScheduleDialog.ScheduleNameLabelText,

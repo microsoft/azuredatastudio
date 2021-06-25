@@ -30,10 +30,10 @@ export class FileBrowserDialog {
 		this._fileBrowserDialog.content = [fileBrowserTab];
 		fileBrowserTab.registerContent(async (view) => {
 			this._fileBrowserTree = view.modelBuilder.fileBrowserTree()
-				.withProperties({ ownerUri: this.ownerUri, width: 420, height: 700 })
+				.withProps({ ownerUri: this.ownerUri, width: 420, height: 700 })
 				.component();
 			this._selectedPathTextBox = view.modelBuilder.inputBox()
-				.withProperties({ inputType: 'text' })
+				.withProps({ inputType: 'text' })
 				.component();
 			this._fileBrowserTree.onDidChange((args) => {
 				if (this._selectedPathTextBox) {

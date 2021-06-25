@@ -14,12 +14,12 @@ import { IWorkspaceService } from './common/interfaces';
 import { IconPathHelper } from './common/iconHelper';
 import { ProjectDashboard } from './dialogs/projectDashboard';
 
-export function activate(context: vscode.ExtensionContext): Promise<IExtension> {
+export async function activate(context: vscode.ExtensionContext): Promise<IExtension> {
 	const workspaceService = new WorkspaceService(context);
-	workspaceService.loadTempProjects();
-	workspaceService.checkForProjectsNotAddedToWorkspace();
-	context.subscriptions.push(vscode.workspace.onDidChangeWorkspaceFolders(() => {
-		workspaceService.checkForProjectsNotAddedToWorkspace();
+	await workspaceService.loadTempProjects();
+	await workspaceService.checkForProjectsNotAddedToWorkspace();
+	context.subscriptions.push(vscode.workspace.onDidChangeWorkspaceFolders(async () => {
+		await workspaceService.checkForProjectsNotAddedToWorkspace();
 	}));
 
 	const workspaceTreeDataProvider = new WorkspaceTreeDataProvider(workspaceService);

@@ -85,7 +85,7 @@ export class BdcDashboardOverviewPage extends BdcDashboardPage {
 		overviewHeaderContainer.addItem(overviewLabel, { CSSStyles: { ...cssStyles.title } });
 
 		this.lastUpdatedLabel = this.modelView.modelBuilder.text()
-			.withProperties({
+			.withProps({
 				value: loc.lastUpdated(),
 				CSSStyles: { ...cssStyles.lastUpdatedText }
 			}).component();
@@ -192,7 +192,7 @@ export class BdcDashboardOverviewPage extends BdcDashboardPage {
 		// messes up the layout for the table that we display after loading is finished. Instead we'll just remove the loading
 		// component once it's finished loading the content
 		this.serviceStatusLoadingComponent = this.modelView.modelBuilder.loadingComponent()
-			.withProperties({ CSSStyles: { 'padding-top': '0px', 'padding-bottom': '0px' } })
+			.withProps({ CSSStyles: { 'padding-top': '0px', 'padding-bottom': '0px' } })
 			.component();
 
 		this.serviceStatusDisplayContainer.addItem(this.serviceStatusLoadingComponent, { flex: '0 0 auto', CSSStyles: { 'padding-left': '150px', width: '30px' } });
@@ -283,7 +283,7 @@ export class BdcDashboardOverviewPage extends BdcDashboardPage {
 		// messes up the layout for the table that we display after loading is finished. Instead we'll just remove the loading
 		// component once it's finished loading the content
 		this.endpointsLoadingComponent = this.modelView.modelBuilder.loadingComponent()
-			.withProperties({ CSSStyles: { 'padding-top': '0px', 'padding-bottom': '0px' } })
+			.withProps({ CSSStyles: { 'padding-top': '0px', 'padding-bottom': '0px' } })
 			.component();
 		this.endpointsDisplayContainer.addItem(this.endpointsLoadingComponent, { flex: '0 0 auto', CSSStyles: { 'padding-left': '150px', width: '30px' } });
 

@@ -4,7 +4,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.translatePackageJSON = exports.packageRebuildExtensionsStream = exports.cleanRebuildExtensions = exports.packageExternalExtensionsStream = exports.scanBuiltinExtensions = exports.packageMarketplaceExtensionsStream = exports.packageLocalExtensionsStream = exports.fromMarketplace = void 0;
+exports.translatePackageJSON = exports.packageRebuildExtensionsStream = exports.cleanRebuildExtensions = exports.packageExternalExtensionsStream = exports.scanBuiltinExtensions = exports.packageMarketplaceExtensionsStream = exports.packageLocalExtensionsStream = exports.fromMarketplace = exports.fromLocalNormal = exports.fromLocal = void 0;
 const es = require("event-stream");
 const fs = require("fs");
 const glob = require("glob");
@@ -71,6 +71,7 @@ function fromLocal(extensionPath, forWeb) {
     }
     return input;
 }
+exports.fromLocal = fromLocal;
 function fromLocalWebpack(extensionPath, webpackConfigFileName) {
     const result = es.through();
     const packagedDependencies = [];
@@ -163,6 +164,7 @@ function fromLocalNormal(extensionPath) {
         .catch(err => result.emit('error', err));
     return result.pipe((0, stats_1.createStatsStream)(path.basename(extensionPath)));
 }
+exports.fromLocalNormal = fromLocalNormal;
 const baseHeaders = {
     'X-Market-Client-Id': 'VSCode Build',
     'User-Agent': 'VSCode Build',
