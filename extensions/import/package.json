@@ -71,10 +71,11 @@
 		}
 	},
 	"dependencies": {
-		"dataprotocol-client": "github:Microsoft/sqlops-dataprotocolclient#1.2.2",
+		"dataprotocol-client": "github:Microsoft/sqlops-dataprotocolclient#0.3.0",
+		"htmlparser2": "^3.10.1",
 		"service-downloader": "0.2.1",
-		"vscode-extension-telemetry": "0.1.7",
-		"vscode-nls": "^4.1.2"
+		"vscode-extension-telemetry": "0.0.18",
+		"vscode-nls": "^3.2.1"
 	},
 	"devDependencies": {
 		"@types/mocha": "^5.2.5",
