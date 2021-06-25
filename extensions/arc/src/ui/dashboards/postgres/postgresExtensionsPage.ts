@@ -10,10 +10,11 @@ import * as loc from '../../../localizedConstants';
 import { IconPathHelper, cssStyles } from '../../../constants';
 import { DashboardPage } from '../../components/dashboardPage';
 import { PostgresModel } from '../../../models/postgresModel';
+import { AddPGExtensionsDialog } from '../../dialogs/addPGExtensionsDialog';
 
 export class PostgresExtensionsPage extends DashboardPage {
 
-	private extensions: { name: string; }[] = [];
+	private extensionNames: string[] = [];
 	private extensionsTable!: azdata.DeclarativeTableComponent;
 	private extensionsLoading!: azdata.LoadingComponent;
 
@@ -60,8 +61,8 @@ export class PostgresExtensionsPage extends DashboardPage {
 		}).component();
 
 		const link = this.modelView.modelBuilder.hyperlink().withProperties<azdata.HyperlinkComponentProperties>({
-			label: loc.extensionsLearnMore,
-			url: 'https://docs.microsoft.com/azure/azure-arc/data/using-extensions-in-postgresql-hyperscale-server-group',
+			label: loc.learnMore,
+			url: 'https://www.postgresql.org/docs/12/external-extensions.html',
 		}).component();
 
 		const infoAndLink = this.modelView.modelBuilder.flexContainer().withLayout({ flexWrap: 'wrap' }).component();
@@ -77,7 +78,15 @@ export class PostgresExtensionsPage extends DashboardPage {
 					displayName: loc.extensionName,
 					valueType: azdata.DeclarativeDataType.string,
 					isReadOnly: true,
-					width: '100%',
+					width: '95%',
+					headerCssStyles: cssStyles.tableHeader,
+					rowCssStyles: cssStyles.tableRow
+				},
+				{
+					displayName: loc.dropText,
+					valueType: azdata.DeclarativeDataType.component,
+					isReadOnly: false,
+					width: '10%',
 					headerCssStyles: cssStyles.tableHeader,
 					rowCssStyles: cssStyles.tableRow
 				}
@@ -108,46 +117,104 @@ export class PostgresExtensionsPage extends DashboardPage {
 
 		this.disposables.push(
 			addExtensionsButton.onDidClick(async () => {
-				addExtensionsButton.enabled = false;
-				try {
-					await vscode.window.withProgress(
-						{
-							location: vscode.ProgressLocation.Notification,
-							title: loc.updatingInstance(this._postgresModel.info.name),
-							cancellable: false
-						},
-						async (_progress, _token): Promise<void> => {
-							await this._azdataApi.azdata.arc.postgres.server.edit(
-								this._postgresModel.info.name,
-								{
-									extensions: ''
-								},
-								this._postgresModel.controllerModel.azdataAdditionalEnvVars);
+				const addExtDialog = new AddPGExtensionsDialog(this._postgresModel);
+				addExtDialog.showDialog(loc.addExtensions);
 
-							try {
-								await this._postgresModel.refresh();
-							} catch (error) {
-								vscode.window.showErrorMessage(loc.refreshFailed(error));
+				let extArg = await addExtDialog.waitForClose();
+				if (extArg) {
+					try {
+
+						await vscode.window.withProgress(
+							{
+								location: vscode.ProgressLocation.Notification,
+								title: loc.updatingInstance(this._postgresModel.info.name),
+								cancellable: false
+							},
+							async (_progress, _token): Promise<void> => {
+
+
+								await this._azdataApi.azdata.arc.postgres.server.edit(
+									this._postgresModel.info.name,
+									{
+										extensions: this.extensionNames.join() + extArg
+									},
+									this._postgresModel.controllerModel.azdataAdditionalEnvVars);
+
+								try {
+									await this._postgresModel.refresh();
+								} catch (error) {
+									vscode.window.showErrorMessage(loc.refreshFailed(error));
+								}
 							}
-						}
-					);
+						);
 
-					vscode.window.showInformationMessage(loc.instanceUpdated(this._postgresModel.info.name));
+						vscode.window.showInformationMessage(loc.instanceUpdated(this._postgresModel.info.name));
 
-				} catch (error) {
-					vscode.window.showErrorMessage(loc.instanceUpdateFailed(this._postgresModel.info.name, error));
-				} finally {
-					addExtensionsButton.enabled = true;
+					} catch (error) {
+						vscode.window.showErrorMessage(loc.instanceUpdateFailed(this._postgresModel.info.name, error));
+					}
 				}
 			}));
 
-		return this.modelView.modelBuilder.toolbarContainer().component();
+		return this.modelView.modelBuilder.toolbarContainer().withToolbarItems([
+			{ component: addExtensionsButton }
+		]).component();
 	}
 
 	private refreshExtensionsTable(): void {
+
 		if (this._postgresModel.config) {
-			this.extensions = this._postgresModel.config?.spec.engine.extensions;
-			this.extensionsTable.data = this.extensions.map(e => [e.name]);
+			let extensions = this._postgresModel.config?.spec.engine.extensions;
+			this.extensionsTable.data = extensions.map(e => {
+				this.extensionNames.push(e.name);
+
+				// Can drop individual extensions
+				let dropExtensionsButton = this.modelView.modelBuilder.button().withProps({
+					iconPath: IconPathHelper.delete,
+					title: loc.dropExtension,
+					width: '20px',
+					height: '20px',
+					enabled: true
+				}).component();
+
+				this.disposables.push(
+					dropExtensionsButton.onDidClick(async () => {
+						try {
+							await vscode.window.withProgress(
+								{
+									location: vscode.ProgressLocation.Notification,
+									title: loc.updatingInstance(this._postgresModel.info.name),
+									cancellable: false
+								},
+								async (_progress, _token): Promise<void> => {
+									let index = this.extensionNames.indexOf(e.name, 0);
+									let extArg = this.extensionNames.splice(index, 1);
+
+									await this._azdataApi.azdata.arc.postgres.server.edit(
+										this._postgresModel.info.name,
+										{
+											extensions: extArg.join()
+										},
+										this._postgresModel.controllerModel.azdataAdditionalEnvVars);
+
+									try {
+										await this._postgresModel.refresh();
+									} catch (error) {
+										vscode.window.showErrorMessage(loc.refreshFailed(error));
+									}
+								}
+							);
+
+							vscode.window.showInformationMessage(loc.instanceUpdated(this._postgresModel.info.name));
+
+						} catch (error) {
+							vscode.window.showErrorMessage(loc.instanceUpdateFailed(this._postgresModel.info.name, error));
+						}
+					})
+				);
+
+				return [e.name, dropExtensionsButton];
+			});
 		}
 	}
 
