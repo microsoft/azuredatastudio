@@ -192,7 +192,7 @@ steps:
 
 - script: |
     set -e
-    ./build/azure-pipelines/linux/createDrop.sh
+    ./build/azure-pipelines/web/createDrop.sh
   displayName: Create Drop
 
 - task: PublishBuildArtifacts@1
