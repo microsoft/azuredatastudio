@@ -26,7 +26,7 @@ const ext = require('./lib/extensions');
 
 const extensionsPath = path.join(path.dirname(__dirname), 'extensions');
 
-// {{SQL CARBON EDIT}} - Import needs to be updated to work with langpacks.
+// {{SQL CARBON EDIT}} - TODO: Import needs to be updated to work with langpacks.
 const sqlLocalizedExtensions = [
 	'import',
 ];
