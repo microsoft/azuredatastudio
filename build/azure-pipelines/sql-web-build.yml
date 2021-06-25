@@ -4,6 +4,7 @@ resources:
     image: sqltoolscontainers.azurecr.io/web-build-image:1
     endpoint: ContainerRegistry
 
+jobs:
 - job: LinuxWeb
   pool:
     vmImage: 'Ubuntu-18.04'
