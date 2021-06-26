@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 import * as vscode from 'vscode';
+import * as azdata from 'azdata';
 import * as path from 'path';
 import { SqlOpsDataClient, ClientOptions } from 'dataprotocol-client';
 import { ServerOptions, TransportKind } from 'vscode-languageclient';
@@ -11,10 +12,16 @@ import * as Strings from './strings';
 import { output } from './ui-references';
 import { ClientErrorHandler } from './client-error-handler';
 import { SerializationFeature } from './features/serializationFeature';
+import { AppContext } from './appContext';
+import { AzureMonitorObjectExplorerNodeProvider } from './objectExplorerNodeProvider/objectExplorerNodeProvider';
 
 export function activate(context: vscode.ExtensionContext): void {
 	output.appendLine(
 		localize("extension.activating", "Activating {0}.", Strings.extensionName));
+
+	let appContext = new AppContext(context);
+	let nodeProvider = new AzureMonitorObjectExplorerNodeProvider(appContext);
+	azdata.dataprotocol.registerObjectExplorerNodeProvider(nodeProvider);
 
 	launchServiceClient(path.join(context.extensionPath, 'sqltoolsservice/windows/3.0.0-release.1/MicrosoftKustoServiceLayer.exe'), context);
 }
