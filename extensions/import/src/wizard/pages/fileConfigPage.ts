@@ -139,7 +139,7 @@ export class FileConfigPage extends ImportPage {
 	}
 
 	private async createServerDropdown(): Promise<azdata.FormComponent> {
-		this.serverDropdown = this.view.modelBuilder.dropDown().withProperties({
+		this.serverDropdown = this.view.modelBuilder.dropDown().withProps({
 			required: true
 		}).component();
 
@@ -174,7 +174,7 @@ export class FileConfigPage extends ImportPage {
 	}
 
 	private async createDatabaseDropdown(): Promise<azdata.FormComponent> {
-		this.databaseDropdown = this.view.modelBuilder.dropDown().withProperties({
+		this.databaseDropdown = this.view.modelBuilder.dropDown().withProps({
 			required: true
 		}).component();
 
@@ -243,7 +243,7 @@ export class FileConfigPage extends ImportPage {
 			return fs.existsSync(component.value);
 		}).component();
 
-		this.fileButton = this.view.modelBuilder.button().withProperties({
+		this.fileButton = this.view.modelBuilder.button().withProps({
 			label: constants.browseFilesText,
 			secondary: true
 		}).component();
@@ -326,7 +326,7 @@ export class FileConfigPage extends ImportPage {
 			}
 
 			return true;
-		}).withProperties({
+		}).withProps({
 			required: true,
 		}).component();
 
@@ -342,7 +342,7 @@ export class FileConfigPage extends ImportPage {
 
 
 	private async createSchemaDropdown(): Promise<azdata.FormComponent> {
-		this.schemaDropdown = this.view.modelBuilder.dropDown().withProperties({
+		this.schemaDropdown = this.view.modelBuilder.dropDown().withProps({
 			required: true
 		}).component();
 		this.schemaLoader = this.view.modelBuilder.loadingComponent().withItem(this.schemaDropdown).component();

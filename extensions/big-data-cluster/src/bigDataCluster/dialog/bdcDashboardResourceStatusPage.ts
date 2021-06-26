@@ -64,7 +64,7 @@ export class BdcDashboardResourceStatusPage extends BdcDashboardPage {
 
 		// Last updated label
 		this.lastUpdatedLabel = this.modelView.modelBuilder.text()
-			.withProperties({
+			.withProps({
 				value: loc.lastUpdated(this.model.bdcStatusLastUpdated),
 				CSSStyles: { ...cssStyles.lastUpdatedText }
 			}).component();
@@ -297,7 +297,7 @@ export class BdcDashboardResourceStatusPage extends BdcDashboardPage {
 
 		// Not all instances have all logs available - in that case just display N/A instead of a link
 		if (isNullOrUndefined(instanceStatus.dashboards) || isNullOrUndefined(instanceStatus.dashboards.nodeMetricsUrl)) {
-			row.push(this.modelView.modelBuilder.text().withProperties({ value: loc.notAvailable, CSSStyles: { ...cssStyles.text } }).component());
+			row.push(this.modelView.modelBuilder.text().withProps({ value: loc.notAvailable, CSSStyles: { ...cssStyles.text } }).component());
 		} else {
 			row.push(this.modelView.modelBuilder.hyperlink().withProperties<azdata.HyperlinkComponentProperties>({
 				label: loc.view,
@@ -312,7 +312,7 @@ export class BdcDashboardResourceStatusPage extends BdcDashboardPage {
 		if (this.serviceName === Service.sql) {
 			// Not all instances have all logs available - in that case just display N/A instead of a link
 			if (isNullOrUndefined(instanceStatus.dashboards) || isNullOrUndefined(instanceStatus.dashboards.sqlMetricsUrl)) {
-				row.push(this.modelView.modelBuilder.text().withProperties({ value: loc.notAvailable, CSSStyles: { ...cssStyles.text } }).component());
+				row.push(this.modelView.modelBuilder.text().withProps({ value: loc.notAvailable, CSSStyles: { ...cssStyles.text } }).component());
 			} else {
 				row.push(this.modelView.modelBuilder.hyperlink().withProperties<azdata.HyperlinkComponentProperties>({
 					label: loc.view,
@@ -325,7 +325,7 @@ export class BdcDashboardResourceStatusPage extends BdcDashboardPage {
 		}
 
 		if (isNullOrUndefined(instanceStatus.dashboards) || isNullOrUndefined(instanceStatus.dashboards.logsUrl)) {
-			row.push(this.modelView.modelBuilder.text().withProperties({ value: loc.notAvailable, CSSStyles: { ...cssStyles.text } }).component());
+			row.push(this.modelView.modelBuilder.text().withProps({ value: loc.notAvailable, CSSStyles: { ...cssStyles.text } }).component());
 		} else {
 			row.push(this.modelView.modelBuilder.hyperlink().withProperties<azdata.HyperlinkComponentProperties>({
 				label: loc.view,

@@ -46,6 +46,7 @@ import { IOpenerService } from 'vs/platform/opener/common/opener'; // {{SQL CARB
 import { IContextKey, IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { isBoolean } from 'vs/base/common/types';
 import { IExtensionManifestPropertiesService } from 'vs/workbench/services/extensions/common/extensionManifestPropertiesService';
+import * as locConstants from 'sql/base/common/locConstants'; // {{SQL CARBON EDIT}}
 
 interface IExtensionStateProvider<T> {
 	(extension: Extension): T;
@@ -1045,7 +1046,7 @@ export class ExtensionsWorkbenchService extends Disposable implements IExtension
 		return this.galleryService.getCompatibleExtension(extension.gallery.identifier, version)
 			.then(gallery => {
 				if (!gallery) {
-					return Promise.reject(new Error(nls.localize('incompatible', "Unable to install extension '{0}' as it is not compatible with Azure Data Studio '{1}'.", extension.gallery!.identifier.id, version))); // {{SQL CARBON EDIT}} Change vscode to ads
+					return Promise.reject(new Error(locConstants.extensionsWorkbenchServiceIncompatible(extension.gallery!.identifier.id, version))); // {{SQL CARBON EDIT}} Change vscode to ads
 				}
 				return this.installWithProgress(async () => {
 					const installed = await this.installFromGallery(extension, gallery);

@@ -98,7 +98,7 @@ export class ExtractConfigPage extends DacFxConfigPage {
 	}
 
 	private async createVersionTextBox(): Promise<azdata.FormComponent> {
-		this.versionTextBox = this.view.modelBuilder.inputBox().withProperties({
+		this.versionTextBox = this.view.modelBuilder.inputBox().withProps({
 			required: true,
 			ariaLabel: loc.version
 		}).component();

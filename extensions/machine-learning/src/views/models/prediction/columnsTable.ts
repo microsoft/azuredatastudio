@@ -134,7 +134,7 @@ export class ColumnsTable extends ModelViewBase implements IDataComponent<Predic
 			.component();
 		this._loader = modelBuilder.loadingComponent()
 			.withItem(this._table)
-			.withProperties({
+			.withProps({
 				loading: true
 			}).component();
 		return this._loader;
@@ -233,7 +233,7 @@ export class ColumnsTable extends ModelViewBase implements IDataComponent<Predic
 					CSSStyles: css
 				});
 			}
-			let nameInput = this._modelBuilder.dropDown().withProperties({
+			let nameInput = this._modelBuilder.dropDown().withProps({
 				values: dataTypes,
 				width: this.componentMaxLength,
 				value: dataType
@@ -264,7 +264,7 @@ export class ColumnsTable extends ModelViewBase implements IDataComponent<Predic
 				}
 			});
 
-			let displayNameInput = this._modelBuilder.inputBox().withProperties({
+			let displayNameInput = this._modelBuilder.inputBox().withProps({
 				value: name,
 				width: 200
 			}).component();
@@ -294,7 +294,7 @@ export class ColumnsTable extends ModelViewBase implements IDataComponent<Predic
 				column = values.length > 0 ? values[0] : undefined;
 			}
 			const currentColumn = columns.find(x => x.columnName === column?.name);
-			let nameInput = this._modelBuilder.dropDown().withProperties({
+			let nameInput = this._modelBuilder.dropDown().withProps({
 				values: values,
 				value: column,
 				width: this.componentMaxLength
@@ -348,7 +348,7 @@ export class ColumnsTable extends ModelViewBase implements IDataComponent<Predic
 				}
 			});
 
-			const label = this._modelBuilder.inputBox().withProperties({
+			const label = this._modelBuilder.inputBox().withProps({
 				value: `${name}(${modelParameter.originalType ? modelParameter.originalType : constants.unsupportedModelParameterType})`,
 				enabled: false,
 				width: this.componentMaxLength
@@ -367,7 +367,7 @@ export class ColumnsTable extends ModelViewBase implements IDataComponent<Predic
 					CSSStyles: css
 				});
 			}
-			const image = this._modelBuilder.image().withProperties({
+			const image = this._modelBuilder.image().withProps({
 				width: 50,
 				height: 50,
 				iconPath: {
@@ -385,7 +385,7 @@ export class ColumnsTable extends ModelViewBase implements IDataComponent<Predic
 	}
 
 	private createWarningButton(): azdata.ButtonComponent {
-		const warningButton = this._modelBuilder.button().withProperties({
+		const warningButton = this._modelBuilder.button().withProps({
 			width: `${WarningButtonDimensions.width}px`,
 			height: `${WarningButtonDimensions.height}px`,
 			title: constants.columnDataTypeMismatchWarningHelper,
@@ -407,8 +407,8 @@ export class ColumnsTable extends ModelViewBase implements IDataComponent<Predic
 		const dialog = azdata.window.createModelViewDialog(dialogHeading, dialogName, 288, 'callout', 'left', true, false, dialogProperties);
 		const warningTab: azdata.window.DialogTab = azdata.window.createTab('warning');
 		warningTab.registerContent(async view => {
-			const warningContentContainer = view.modelBuilder.divContainer().withProperties({}).component();
-			const messageTextComponent = view.modelBuilder.text().withProperties({
+			const warningContentContainer = view.modelBuilder.divContainer().withProps({}).component();
+			const messageTextComponent = view.modelBuilder.text().withProps({
 				value: calloutMessageText,
 				CSSStyles: {
 					'font-size': '12px',
@@ -419,7 +419,7 @@ export class ColumnsTable extends ModelViewBase implements IDataComponent<Predic
 			warningContentContainer.addItem(messageTextComponent);
 
 			if (calloutMessageLinkText && calloutMessageLinkUrl) {
-				const messageLinkComponent = view.modelBuilder.hyperlink().withProperties({
+				const messageLinkComponent = view.modelBuilder.hyperlink().withProps({
 					label: calloutMessageLinkText,
 					url: calloutMessageLinkUrl,
 					CSSStyles: {
