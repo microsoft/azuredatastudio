@@ -1167,7 +1167,7 @@ export function prepareI18nFiles(): ThroughStream {
 	});
 }
 
-function createI18nFile(originalFilePath: string, messages: any): File {
+export function createI18nFile(originalFilePath: string, messages: any): File { // {{SQL CARBON EDIT}} Needed for locfunc.
 	let result = Object.create(null);
 	result[''] = [
 		'--------------------------------------------------------------------------------------------',
