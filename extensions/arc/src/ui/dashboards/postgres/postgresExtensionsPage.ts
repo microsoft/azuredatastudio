@@ -136,7 +136,7 @@ export class PostgresExtensionsPage extends DashboardPage {
 								await this._azdataApi.azdata.arc.postgres.server.edit(
 									this._postgresModel.info.name,
 									{
-										extensions: this.extensionNames.join() + extArg
+										extensions: this.extensionNames.join() + ',' + extArg
 									},
 									this._postgresModel.controllerModel.azdataAdditionalEnvVars);
 
@@ -188,12 +188,12 @@ export class PostgresExtensionsPage extends DashboardPage {
 								},
 								async (_progress, _token): Promise<void> => {
 									let index = this.extensionNames.indexOf(e.name, 0);
-									let extArg = this.extensionNames.splice(index, 1);
+									this.extensionNames.splice(index, 1);
 
 									await this._azdataApi.azdata.arc.postgres.server.edit(
 										this._postgresModel.info.name,
 										{
-											extensions: extArg.join()
+											extensions: this.extensionNames.join()
 										},
 										this._postgresModel.controllerModel.azdataAdditionalEnvVars);
 
@@ -220,6 +220,7 @@ export class PostgresExtensionsPage extends DashboardPage {
 
 	private handleConfigUpdated(): void {
 		this.extensionsLoading.loading = false;
+		this.extensionNames = [];
 		this.refreshExtensionsTable();
 	}
 }
