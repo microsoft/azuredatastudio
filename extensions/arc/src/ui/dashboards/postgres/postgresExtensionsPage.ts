@@ -112,6 +112,7 @@ export class PostgresExtensionsPage extends DashboardPage {
 		// Add extensions
 		const addExtensionsButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
 			label: loc.addExtensions,
+			ariaLabel: loc.addExtensions,
 			iconPath: IconPathHelper.add
 		}).component();
 
@@ -171,6 +172,7 @@ export class PostgresExtensionsPage extends DashboardPage {
 				// Can drop individual extensions
 				let dropExtensionsButton = this.modelView.modelBuilder.button().withProps({
 					iconPath: IconPathHelper.delete,
+					ariaLabel: loc.dropExtension,
 					title: loc.dropExtension,
 					width: '20px',
 					height: '20px',

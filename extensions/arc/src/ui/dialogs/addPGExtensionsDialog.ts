@@ -44,6 +44,7 @@ export class AddPGExtensionsDialog extends InitializingComponent {
 			this.extensionsListInputBox = this.modelBuilder.inputBox()
 				.withProperties<azdata.InputBoxProperties>({
 					value: '',
+					ariaLabel: loc.extensionsAddList,
 					enabled: true
 				}).component();
 
