@@ -192,9 +192,12 @@ const VSCODEExtensions = [
  * It removes the resources of vscode that we do not support, and adds in new i18n json files created from the xlf files in the folder.
  * It also merges in the sql core XLF strings with the langpack's existing core strings into a combined main i18n json file.
  *
- * IMPORTANT: after running on 1 or more vscode langpacks, remember to change the version of the langpacks to continue from the previous ADS langpack.
- * Additionally, change the dependencies of vscode to "*" and add an azdata dependency that is higher than the current version. (E.G."^1.0.0")
- * Replace the changelog and readme with the ones from previous langpacks, and update the changelog if needed.
+ * Remember to change the version of the langpacks to continue from the previous version of the ADS langpack.
+ *
+ * IMPORTANT: after running on 1 or more vscode langpacks:
+ * 1. change the dependencies of vscode to "*"
+ * 2. add an azdata dependency that matches the current version. (E.G."^1.0.0")
+ * 3. replace the changelog and readme with the ones from previous langpacks, and update the changelog if needed.
 */
 function refreshLangpacks() {
     let supportedLocations = [...i18n.defaultLanguages, ...i18n.extraLanguages];
