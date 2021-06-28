@@ -22,7 +22,7 @@
 	"licenseFileName": "LICENSE.txt",
 	"reportIssueUrl": "https://github.com/Microsoft/azuredatastudio/issues/new",
 	"requestFeatureUrl": "https://go.microsoft.com/fwlink/?linkid=2118021",
-	"privacyStatementUrl": "https://privacy.microsoft.com/en-us/privacystatement",
+	"privacyStatementUrl": "https://privacy.microsoft.com/privacystatement",
 	"telemetryOptOutUrl": "https://github.com/Microsoft/azuredatastudio/wiki/How-to-Disable-Telemetry-Reporting",
 	"urlProtocol": "azuredatastudio",
 	"enableTelemetry": true,
