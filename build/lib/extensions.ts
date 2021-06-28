@@ -239,7 +239,7 @@ const excludedExtensions = [
 ];
 
 // {{SQL CARBON EDIT}}
-export const externalExtensions = [
+const externalExtensions = [
 	// This is the list of SQL extensions which the source code is included in this repository, but
 	// they get packaged separately. Adding extension name here, will make the build to create
 	// a separate vsix package for the extension and the extension will be excluded from the main package.
