@@ -4,7 +4,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.translatePackageJSON = exports.packageRebuildExtensionsStream = exports.cleanRebuildExtensions = exports.packageExternalExtensionsStream = exports.scanBuiltinExtensions = exports.packageMarketplaceExtensionsStream = exports.packageLocalExtensionsStream = exports.fromMarketplace = exports.fromLocalNormal = exports.fromLocal = void 0;
+exports.translatePackageJSON = exports.packageRebuildExtensionsStream = exports.cleanRebuildExtensions = exports.packageExternalExtensionsStream = exports.scanBuiltinExtensions = exports.packageMarketplaceExtensionsStream = exports.packageLocalExtensionsStream = exports.externalExtensions = exports.fromMarketplace = exports.fromLocalNormal = exports.fromLocal = void 0;
 const es = require("event-stream");
 const fs = require("fs");
 const glob = require("glob");
@@ -144,7 +144,7 @@ function fromLocalWebpack(extensionPath, webpackConfigFileName) {
         console.error(packagedDependencies);
         result.emit('error', err);
     });
-    return result.pipe(stats_1.createStatsStream(path.basename(extensionPath)));
+    return result.pipe((0, stats_1.createStatsStream)(path.basename(extensionPath)));
 }
 function fromLocalNormal(extensionPath) {
     const result = es.through();
@@ -162,7 +162,7 @@ function fromLocalNormal(extensionPath) {
         es.readArray(files).pipe(result);
     })
         .catch(err => result.emit('error', err));
-    return result.pipe(stats_1.createStatsStream(path.basename(extensionPath)));
+    return result.pipe((0, stats_1.createStatsStream)(path.basename(extensionPath)));
 }
 exports.fromLocalNormal = fromLocalNormal;
 const baseHeaders = {
@@ -204,7 +204,7 @@ const excludedExtensions = [
     'integration-tests', // {{SQL CARBON EDIT}}
 ];
 // {{SQL CARBON EDIT}}
-const externalExtensions = [
+exports.externalExtensions = [
     // This is the list of SQL extensions which the source code is included in this repository, but
     // they get packaged separately. Adding extension name here, will make the build to create
     // a separate vsix package for the extension and the extension will be excluded from the main package.
@@ -265,7 +265,7 @@ function packageLocalExtensionsStream(forWeb) {
     })
         .filter(({ name }) => excludedExtensions.indexOf(name) === -1)
         .filter(({ name }) => builtInExtensions.every(b => b.name !== name))
-        .filter(({ name }) => externalExtensions.indexOf(name) === -1) // {{SQL CARBON EDIT}} Remove external Extensions with separate package
+        .filter(({ name }) => exports.externalExtensions.indexOf(name) === -1) // {{SQL CARBON EDIT}} Remove external Extensions with separate package
     );
     const localExtensionsStream = minifyExtensionResources(es.merge(...localExtensionsDescriptions.map(extension => {
         return fromLocal(extension.path, forWeb)
@@ -346,7 +346,7 @@ function packageExternalExtensionsStream() {
         const extensionName = path.basename(extensionPath);
         return { name: extensionName, path: extensionPath };
     })
-        .filter(({ name }) => externalExtensions.indexOf(name) >= 0);
+        .filter(({ name }) => exports.externalExtensions.indexOf(name) >= 0);
     const builtExtensions = extenalExtensionDescriptions.map(extension => {
         return fromLocal(extension.path, false)
             .pipe(rename(p => p.dirname = `extensions/${extension.name}/${p.dirname}`));

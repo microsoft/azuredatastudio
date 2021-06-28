@@ -15,7 +15,6 @@ const task = require('./lib/task');
 const glob = require('glob');
 const vsce = require('vsce');
 const mkdirp = require('mkdirp');
-const convert = require('./npm/convert-langpack-extension');
 
 gulp.task('fmt', () => formatStagedFiles());
 const formatFiles = (some) => {
@@ -147,4 +146,4 @@ gulp.task('package-rebuild-extensions', task.series(
 	task.define('rebuild-extensions-build', () => ext.packageRebuildExtensionsStream().pipe(gulp.dest('.build'))),
 ));
 
-gulp.task('convert-vscode-langpacks', convert.updateLangpackResources());
+gulp.task('refresh-langpacks', () => loc.refreshLangpacks());
