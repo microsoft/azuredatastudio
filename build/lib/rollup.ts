@@ -7,7 +7,7 @@ import * as fs from 'fs';
 import * as rollup from 'rollup';
 import * as path from 'path';
 
-// getting around stupid import rules
+// getting around import rules
 const nodeResolve = require('rollup-plugin-node-resolve');
 const commonjs = require('rollup-plugin-commonjs');
 
