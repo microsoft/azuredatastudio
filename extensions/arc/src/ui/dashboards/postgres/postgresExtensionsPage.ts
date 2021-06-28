@@ -18,6 +18,7 @@ export class PostgresExtensionsPage extends DashboardPage {
 	private extensionNames: string[] = [];
 	private extensionsTable!: azdata.DeclarativeTableComponent;
 	private extensionsLoading!: azdata.LoadingComponent;
+	private addExtensionsButton!: azdata.ButtonComponent;
 	private _dropExtPromise?: Deferred<void>;
 
 	private readonly _azdataApi: azdataExt.IExtension;
@@ -112,21 +113,21 @@ export class PostgresExtensionsPage extends DashboardPage {
 
 	protected get toolbarContainer(): azdata.ToolbarContainer {
 		// Add extensions
-		const addExtensionsButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
+		this.addExtensionsButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
 			label: loc.addExtensions,
 			ariaLabel: loc.addExtensions,
 			iconPath: IconPathHelper.add
 		}).component();
 
 		this.disposables.push(
-			addExtensionsButton.onDidClick(async () => {
+			this.addExtensionsButton.onDidClick(async () => {
 				const addExtDialog = new AddPGExtensionsDialog(this._postgresModel);
 				addExtDialog.showDialog(loc.addExtensions);
 
 				let extArg = await addExtDialog.waitForClose();
 				if (extArg) {
 					try {
-						addExtensionsButton.enabled = false;
+						this.addExtensionsButton.enabled = false;
 						let extensionList = this.extensionNames.join() + ',' + extArg;
 						await vscode.window.withProgress(
 							{
@@ -157,13 +158,13 @@ export class PostgresExtensionsPage extends DashboardPage {
 					} catch (error) {
 						vscode.window.showErrorMessage(loc.updateExtensionsFailed(error));
 					} finally {
-						addExtensionsButton.enabled = true;
+						this.addExtensionsButton.enabled = true;
 					}
 				}
 			}));
 
 		return this.modelView.modelBuilder.toolbarContainer().withToolbarItems([
-			{ component: addExtensionsButton }
+			{ component: this.addExtensionsButton }
 		]).component();
 	}
 
@@ -188,11 +189,19 @@ export class PostgresExtensionsPage extends DashboardPage {
 				this.disposables.push(
 					dropExtensionsButton.onDidClick(async () => {
 						try {
+							this.addExtensionsButton.enabled = false;
 							dropExtensionsButton.enabled = false;
 							await this.dropExtension(e.name);
+
+							try {
+								await this._postgresModel.refresh();
+							} catch (error) {
+								vscode.window.showErrorMessage(loc.refreshFailed(error));
+							}
 						} catch (error) {
 							vscode.window.showErrorMessage(loc.updateExtensionsFailed(error));
 						} finally {
+							this.addExtensionsButton.enabled = false;
 							dropExtensionsButton.enabled = true;
 						}
 					})
@@ -232,13 +241,8 @@ export class PostgresExtensionsPage extends DashboardPage {
 						{
 							extensions: this.extensionNames.join()
 						},
-						this._postgresModel.controllerModel.azdataAdditionalEnvVars);
-
-					try {
-						await this._postgresModel.refresh();
-					} catch (error) {
-						vscode.window.showErrorMessage(loc.refreshFailed(error));
-					}
+						this._postgresModel.controllerModel.azdataAdditionalEnvVars
+					);
 				}
 			);
 			vscode.window.showInformationMessage(loc.extensionDropped(name));
