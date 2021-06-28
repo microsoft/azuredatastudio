@@ -54,7 +54,6 @@ export class OutputComponent extends CellView implements OnInit, AfterViewInit {
 	ngOnInit() {
 		this._register(this._themeService.onDidColorThemeChange(event => this.updateTheme(event)));
 		this.loadComponent();
-		this.layout();
 		this._initialized = true;
 		this._register(Event.debounce(this.cellModel.notebookModel.layoutChanged, (l, e) => e, 50, /*leading=*/false)
 			(() => this.layout()));
