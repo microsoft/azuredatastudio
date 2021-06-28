@@ -37,7 +37,7 @@ export class Notebook {
 		await this.code.waitForElement('.notebookEditor');
 	}
 
-	// Notebook Toolbar Actions
+	// Notebook Toolbar Actions (keyboard shortcuts)
 
 	async addCell(cellType: 'markdown' | 'code'): Promise<void> {
 		if (cellType === 'markdown') {
@@ -49,38 +49,12 @@ export class Notebook {
 		await this.code.waitForElement('.notebook-cell.active');
 	}
 
-	async changeKernel(kernel: string): Promise<void> {
-		await this.notebookToolbar.changeKernel(kernel);
-	}
-
-	async waitForKernel(kernel: string): Promise<void> {
-		await this.notebookToolbar.waitForKernel(kernel);
-	}
-
 	async runActiveCell(): Promise<void> {
 		await this.code.dispatchKeybinding('F5');
 	}
 
 	async runAllCells(): Promise<void> {
 		await this.code.dispatchKeybinding('ctrl+shift+F5');
-	}
-
-	async clearResults(): Promise<void> {
-		await this.code.waitAndClick('.notebookEditor');
-		const clearResultsButton = '.editor-toolbar a[class="action-label codicon icon-clear-results masked-icon"]';
-		await this.code.waitAndClick(clearResultsButton);
-	}
-
-	async trustNotebook(): Promise<void> {
-		await this.notebookToolbar.trustNotebook();
-	}
-
-	async waitForTrustedIcon(): Promise<void> {
-		await this.notebookToolbar.waitForTrustedIcon();
-	}
-
-	async waitForNotTrustedIcon(): Promise<void> {
-		await this.notebookToolbar.waitForNotTrustedIcon();
 	}
 
 	// Cell Actions
@@ -280,14 +254,11 @@ export class NotebookToolbar {
 
 	private static readonly toolbarSelector = '.notebookEditor .editor-toolbar .actions-container';
 	private static readonly toolbarButtonSelector = `${NotebookToolbar.toolbarSelector} a.action-label.codicon.masked-icon`;
-	private static readonly trustedButtonClass = 'action-label codicon masked-icon icon-shield';
-	private static readonly trustedButtonSelector = `${NotebookToolbar.toolbarSelector} a[class="${NotebookToolbar.trustedButtonClass}"]`;
-	private static readonly notTrustedButtonClass = 'action-label codicon masked-icon icon-shield-x';
-	private static readonly notTrustedButtonSelector = `${NotebookToolbar.toolbarSelector} a[class="${NotebookToolbar.notTrustedButtonClass}"]`;
-	private static readonly collapseCellsClass = 'action-label codicon masked-icon icon-collapse-cells';
-	private static readonly collapseCellsButtonSelector = `${NotebookToolbar.toolbarSelector} a[class="${NotebookToolbar.collapseCellsClass}"]`;
-	private static readonly expandCellsClass = 'action-label codicon masked-icon icon-expand-cells';
-	private static readonly expandCellsButtonSelector = `${NotebookToolbar.toolbarSelector} a[class="${NotebookToolbar.expandCellsClass}"]`;
+	private static readonly trustedButtonSelector = `${NotebookToolbar.toolbarButtonSelector}.icon-shield`;
+	private static readonly notTrustedButtonSelector = `${NotebookToolbar.toolbarButtonSelector}.icon-shield-x`;
+	private static readonly collapseCellsButtonSelector = `${NotebookToolbar.toolbarButtonSelector}.icon-collapse-cells`;
+	private static readonly expandCellsButtonSelector = `${NotebookToolbar.toolbarButtonSelector}.icon-expand-cells`;
+	private static readonly clearResultsButtonSelector = `${NotebookToolbar.toolbarButtonSelector}.icon-clear-results`;
 
 	constructor(private code: Code) { }
 
@@ -346,6 +317,10 @@ export class NotebookToolbar {
 
 	async waitForExpandCellsNotebookIcon(): Promise<void> {
 		await this.code.waitForElement(NotebookToolbar.expandCellsButtonSelector);
+	}
+
+	async clearResults(): Promise<void> {
+		await this.code.waitAndClick(NotebookToolbar.clearResultsButtonSelector);
 	}
 }
 
