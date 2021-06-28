@@ -18,6 +18,7 @@ import { localize } from 'vs/nls';
 import { ILogService } from 'vs/platform/log/common/log';
 import * as colorRegistry from 'vs/platform/theme/common/colorRegistry';
 import { IColorTheme, IThemeService } from 'vs/platform/theme/common/themeService';
+import { equals } from 'vs/base/common/objects';
 
 export enum DeclarativeDataType {
 	string = 'string',
@@ -38,7 +39,6 @@ export default class DeclarativeTableComponent extends ContainerBase<any, azdata
 	private _data: azdata.DeclarativeTableCellValue[][] = [];
 	private _filteredRowIndexes: number[] | undefined = undefined;
 	private columns: azdata.DeclarativeTableColumn[] = [];
-	private _selectedRow: number;
 	private _colorTheme: IColorTheme;
 	private _hasFocus: boolean;
 
@@ -284,7 +284,9 @@ export default class DeclarativeTableComponent extends ContainerBase<any, azdata
 
 		// check whether the data property is changed before actually setting the properties.
 		const isDataPropertyChanged = !arrayEquals(this.data, finalData ?? [], (a, b) => {
-			return arrayEquals(a, b);
+			return arrayEquals(a, b, (cell1, cell2) => {
+				return equals(cell1, cell2);
+			});
 		});
 
 		// the angular is using reference compare to determine whether the data is changed or not
@@ -295,12 +297,23 @@ export default class DeclarativeTableComponent extends ContainerBase<any, azdata
 			this.clearContainer();
 			this._data = finalData;
 		}
+
+		const newSelectedRow = properties.selectedRow ?? -1;
+		if (newSelectedRow !== this.selectedRow && properties.enableRowSelection) {
+			this.fireEvent({
+				eventType: ComponentEventType.onSelectedRowChanged,
+				args: {
+					row: properties.selectedRow
+				}
+			});
+		}
+
 		super.setProperties(properties);
 	}
 
 	public override clearContainer(): void {
 		super.clearContainer();
-		this._selectedRow = -1;
+		this.selectedRow = -1;
 	}
 
 	public get data(): azdata.DeclarativeTableCellValue[][] {
@@ -311,7 +324,7 @@ export default class DeclarativeTableComponent extends ContainerBase<any, azdata
 		if (!this.enableRowSelection) {
 			return false;
 		}
-		return this._selectedRow === row;
+		return this.selectedRow === row;
 	}
 
 	public onRowSelected(row: number) {
@@ -319,12 +332,12 @@ export default class DeclarativeTableComponent extends ContainerBase<any, azdata
 			return;
 		}
 		if (this._rowSelectionFocusFlag || !this.isRowSelected(row)) {
-			this._selectedRow = row;
+			this.selectedRow = row;
 			this._rowSelectionFocusFlag = false;
 			this._changeRef.detectChanges();
 
 			this.fireEvent({
-				eventType: ComponentEventType.onDidClick,
+				eventType: ComponentEventType.onSelectedRowChanged,
 				args: {
 					row
 				}
@@ -395,5 +408,15 @@ export default class DeclarativeTableComponent extends ContainerBase<any, azdata
 
 	public get enableRowSelection(): boolean {
 		return this.getPropertyOrDefault<boolean>((props) => props.enableRowSelection, false);
+	}
+
+	public get selectedRow(): number {
+		return this.getPropertyOrDefault<number>((props) => props.selectedRow, -1);
+	}
+
+	public set selectedRow(row: number) {
+		if (row !== this.selectedRow) {
+			this.setPropertyFromUI<number>((properties, value) => { properties.selectedRow = value; }, row);
+		}
 	}
 }
