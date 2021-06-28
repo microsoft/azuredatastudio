@@ -199,13 +199,15 @@ const VSCODEExtensions = [
 
 /**
  * A heavily modified version of update-localization-extension that runs using local xlf resources, no arguments required to pass in.
- * It converts a renamed vscode langpack to an ADS one or updates the existing one to use XLF resources.
+ * It converts a renamed vscode langpack to an ADS one or updates the existing one to use current XLF resources.
+ * It runs this process on all langpacks currently in the ADS i18n folder.
+ * (Replace the ADS langpack with a corresponding vscode langpack renamed to "ads" instead of "vscode" in order to update vscode core strings and extensions)
  *
  * It removes the resources of vscode that we do not support, and adds in new i18n json files created from the xlf files in the folder.
- * It also merges in the sql core strings with the vscode core strings into a combined main i18n json file.
+ * It also merges in the sql core XLF strings with the langpack's existing core strings into a combined main i18n json file.
  *
- * Note: Can be used on both the current langpack as well as renamed vscode langpacks (required to update vs core and vscode extensions).
- * Remember to change the version of the langpack and rename the folder to ads instead of vscode for the function to work.
+ * IMPORTANT: Remember to change the version of the langpacks to continue from the previous ADS langpack.
+ * Additionally, change the dependencies of vscode to "*" and add an azdata dependency that is higher than the current version. (E.G."^1.0.0")
 */
 export function refreshLangpacks(): Promise<undefined> {
 	let supportedLocations = [...i18n.defaultLanguages, ...i18n.extraLanguages];
