@@ -198,7 +198,7 @@ const VSCODEExtensions = [
 ];
 
 /**
- * A heavily modified version of update-localization-extension that runs using local xlf resources, no commands required to pass in.
+ * A heavily modified version of update-localization-extension that runs using local xlf resources, no arguments required to pass in.
  * It converts a renamed vscode langpack to an ADS one or updates the existing one to use XLF resources.
  *
  * It removes the resources of vscode that we do not support, and adds in new i18n json files created from the xlf files in the folder.
