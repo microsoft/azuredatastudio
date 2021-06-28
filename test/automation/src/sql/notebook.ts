@@ -117,6 +117,30 @@ export class Notebook {
 		await this.code.waitForElementGone(Notebook.placeholderSelector);
 	}
 
+	async waitForCollapseIconInCells(): Promise<void> {
+		let cellIds = await this.getCellIds();
+		for (let i of cellIds) {
+			const editor = `.notebook-cell[id="${i}"] code-cell-component code-component collapse-component`;
+			await this.code.waitForElement(`${editor} [title="Collapse code cell contents"]`);
+		}
+	}
+
+	async waitForExpandIconInCells(): Promise<void> {
+		let cellIds = await this.getCellIds();
+		for (let i of cellIds) {
+			const editor = `.notebook-cell[id="${i}"] code-cell-component code-component collapse-component`;
+			await this.code.waitForElement(`${editor} [title="Expand code cell contents"]`);
+		}
+	}
+
+	/**
+	 * Helper function
+	 * @returns cell ids for the notebook
+	 */
+	async getCellIds(): Promise<string[]> {
+		return (await this.code.waitForElements('div.notebook-cell', false)).map(cell => cell.attributes['id']);
+	}
+
 	// Text Cell Actions
 
 	private static readonly textCellPreviewSelector = 'div.notebook-preview';
@@ -260,6 +284,10 @@ export class NotebookToolbar {
 	private static readonly trustedButtonSelector = `${NotebookToolbar.toolbarSelector} a[class="${NotebookToolbar.trustedButtonClass}"]`;
 	private static readonly notTrustedButtonClass = 'action-label codicon masked-icon icon-shield-x';
 	private static readonly notTrustedButtonSelector = `${NotebookToolbar.toolbarSelector} a[class="${NotebookToolbar.notTrustedButtonClass}"]`;
+	private static readonly collapseCellsClass = 'action-label codicon masked-icon icon-collapse-cells';
+	private static readonly collapseCellsButtonSelector = `${NotebookToolbar.toolbarSelector} a[class="${NotebookToolbar.collapseCellsClass}"]`;
+	private static readonly expandCellsClass = 'action-label codicon masked-icon icon-expand-cells';
+	private static readonly expandCellsButtonSelector = `${NotebookToolbar.toolbarSelector} a[class="${NotebookToolbar.expandCellsClass}"]`;
 
 	constructor(private code: Code) { }
 
@@ -294,6 +322,30 @@ export class NotebookToolbar {
 
 	async waitForNotTrustedIcon(): Promise<void> {
 		await this.code.waitForElement(NotebookToolbar.notTrustedButtonSelector);
+	}
+
+	async collapseCells(): Promise<void> {
+		let buttons: IElement[] = await this.code.waitForElements(NotebookToolbar.toolbarButtonSelector, false);
+		let collapseButton = buttons.find(button => button.className.includes('icon-collapse-cells'));
+		if (collapseButton) {
+			await this.code.waitAndClick(NotebookToolbar.collapseCellsButtonSelector);
+		}
+	}
+
+	async expandCells(): Promise<void> {
+		let buttons: IElement[] = await this.code.waitForElements(NotebookToolbar.toolbarButtonSelector, false);
+		let expandButton = buttons.find(button => button.className.includes('icon-expand-cells'));
+		if (expandButton) {
+			await this.code.waitAndClick(NotebookToolbar.expandCellsButtonSelector);
+		}
+	}
+
+	async waitForCollapseCellsNotebookIcon(): Promise<void> {
+		await this.code.waitForElement(NotebookToolbar.collapseCellsButtonSelector);
+	}
+
+	async waitForExpandCellsNotebookIcon(): Promise<void> {
+		await this.code.waitForElement(NotebookToolbar.expandCellsButtonSelector);
 	}
 }
 

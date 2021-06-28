@@ -94,6 +94,22 @@ export function setup() {
 			const app = this.app as Application;
 			await app.workbench.quickaccess.runCommand('workbench.action.revertAndCloseActiveEditor');
 		});
+
+		describe('Notebook Toolbar Actions', async () => {
+
+			it('Collapse and Expand Cell', async function () {
+				const app = this.app as Application;
+				await app.workbench.sqlNotebook.openFile('collapsed.ipynb');
+				await app.workbench.sqlNotebook.waitForCollapseIconInCells();
+				await app.workbench.sqlNotebook.notebookToolbar.waitForCollapseCellsNotebookIcon();
+				await app.workbench.sqlNotebook.notebookToolbar.collapseCells();
+				await app.workbench.sqlNotebook.waitForExpandIconInCells();
+				await app.workbench.sqlNotebook.notebookToolbar.waitForExpandCellsNotebookIcon();
+				await app.workbench.sqlNotebook.notebookToolbar.expandCells();
+				await app.workbench.sqlNotebook.waitForCollapseIconInCells();
+				await app.workbench.sqlNotebook.notebookToolbar.waitForCollapseCellsNotebookIcon();
+			});
+		});
 	});
 }
 
