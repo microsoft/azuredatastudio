@@ -96,7 +96,8 @@ abstract class ControllerDialogBase extends InitializingComponent {
 		this.kubeConfigInputBox = new FilePicker(
 			this.modelBuilder,
 			controllerInfo?.kubeConfigFilePath || getDefaultKubeConfigPath(),
-			(disposable) => this._toDispose.push(disposable)
+			(disposable) => this._toDispose.push(disposable),
+			loc.controllerKubeConfig
 		);
 		this.modelBuilder.inputBox()
 			.withProps({
