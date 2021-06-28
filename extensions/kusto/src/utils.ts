@@ -60,6 +60,8 @@ export function getLogFileName(prefix: string, pid: number): string {
 
 export function getCommonLaunchArgsAndCleanupOldLogFiles(logPath: string, fileName: string, executablePath: string): string[] {
 	let launchArgs: string[] = [];
+	launchArgs.push(`--locale`, vscode.env.language);
+
 	launchArgs.push('--log-file');
 	let logFile = path.join(logPath, fileName);
 	launchArgs.push(logFile);
