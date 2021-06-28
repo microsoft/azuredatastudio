@@ -11,12 +11,14 @@ import { IconPathHelper, cssStyles } from '../../../constants';
 import { DashboardPage } from '../../components/dashboardPage';
 import { PostgresModel } from '../../../models/postgresModel';
 import { AddPGExtensionsDialog } from '../../dialogs/addPGExtensionsDialog';
+import { Deferred } from '../../../common/promise';
 
 export class PostgresExtensionsPage extends DashboardPage {
 
 	private extensionNames: string[] = [];
 	private extensionsTable!: azdata.DeclarativeTableComponent;
 	private extensionsLoading!: azdata.LoadingComponent;
+	private _dropExtPromise?: Deferred<void>;
 
 	private readonly _azdataApi: azdataExt.IExtension;
 
@@ -124,7 +126,8 @@ export class PostgresExtensionsPage extends DashboardPage {
 				let extArg = await addExtDialog.waitForClose();
 				if (extArg) {
 					try {
-
+						addExtensionsButton.enabled = false;
+						let extensionList = this.extensionNames.join() + ',' + extArg;
 						await vscode.window.withProgress(
 							{
 								location: vscode.ProgressLocation.Notification,
@@ -137,7 +140,7 @@ export class PostgresExtensionsPage extends DashboardPage {
 								await this._azdataApi.azdata.arc.postgres.server.edit(
 									this._postgresModel.info.name,
 									{
-										extensions: this.extensionNames.join() + ',' + extArg
+										extensions: extensionList
 									},
 									this._postgresModel.controllerModel.azdataAdditionalEnvVars);
 
@@ -149,10 +152,12 @@ export class PostgresExtensionsPage extends DashboardPage {
 							}
 						);
 
-						vscode.window.showInformationMessage(loc.instanceUpdated(this._postgresModel.info.name));
+						vscode.window.showInformationMessage(loc.extensionsAdded(extensionList));
 
 					} catch (error) {
-						vscode.window.showErrorMessage(loc.instanceUpdateFailed(this._postgresModel.info.name, error));
+						vscode.window.showErrorMessage(loc.updateExtensionsFailed(error));
+					} finally {
+						addExtensionsButton.enabled = true;
 					}
 				}
 			}));
@@ -167,6 +172,7 @@ export class PostgresExtensionsPage extends DashboardPage {
 		if (this._postgresModel.config) {
 			let extensions = this._postgresModel.config?.spec.engine.extensions;
 			this.extensionsTable.data = extensions.map(e => {
+
 				this.extensionNames.push(e.name);
 
 				// Can drop individual extensions
@@ -182,41 +188,66 @@ export class PostgresExtensionsPage extends DashboardPage {
 				this.disposables.push(
 					dropExtensionsButton.onDidClick(async () => {
 						try {
-							await vscode.window.withProgress(
-								{
-									location: vscode.ProgressLocation.Notification,
-									title: loc.updatingInstance(this._postgresModel.info.name),
-									cancellable: false
-								},
-								async (_progress, _token): Promise<void> => {
-									let index = this.extensionNames.indexOf(e.name, 0);
-									this.extensionNames.splice(index, 1);
-
-									await this._azdataApi.azdata.arc.postgres.server.edit(
-										this._postgresModel.info.name,
-										{
-											extensions: this.extensionNames.join()
-										},
-										this._postgresModel.controllerModel.azdataAdditionalEnvVars);
-
-									try {
-										await this._postgresModel.refresh();
-									} catch (error) {
-										vscode.window.showErrorMessage(loc.refreshFailed(error));
-									}
-								}
-							);
-
-							vscode.window.showInformationMessage(loc.instanceUpdated(this._postgresModel.info.name));
-
+							dropExtensionsButton.enabled = false;
+							await this.dropExtension(e.name);
 						} catch (error) {
-							vscode.window.showErrorMessage(loc.instanceUpdateFailed(this._postgresModel.info.name, error));
+							vscode.window.showErrorMessage(loc.updateExtensionsFailed(error));
+						} finally {
+							dropExtensionsButton.enabled = true;
 						}
 					})
 				);
 
+				if (e.name === 'citus') {
+					dropExtensionsButton.enabled = false;
+				}
+
 				return [e.name, dropExtensionsButton];
 			});
+		}
+	}
+
+	/** Drop extension */
+	public async dropExtension(name: string) {
+		// Only allow one drop to be happening at a time
+		if (this._dropExtPromise) {
+			vscode.window.showErrorMessage(loc.dropMultipleExtensions);
+			return this._dropExtPromise.promise;
+		}
+
+		this._dropExtPromise = new Deferred();
+		try {
+			await vscode.window.withProgress(
+				{
+					location: vscode.ProgressLocation.Notification,
+					title: loc.updatingInstance(this._postgresModel.info.name),
+					cancellable: false
+				},
+				async (_progress, _token): Promise<void> => {
+					let index = this.extensionNames.indexOf(name, 0);
+					this.extensionNames.splice(index, 1);
+
+					await this._azdataApi.azdata.arc.postgres.server.edit(
+						this._postgresModel.info.name,
+						{
+							extensions: this.extensionNames.join()
+						},
+						this._postgresModel.controllerModel.azdataAdditionalEnvVars);
+
+					try {
+						await this._postgresModel.refresh();
+					} catch (error) {
+						vscode.window.showErrorMessage(loc.refreshFailed(error));
+					}
+				}
+			);
+			vscode.window.showInformationMessage(loc.extensionDropped(name));
+			this._dropExtPromise.resolve();
+		} catch (err) {
+			this._dropExtPromise.reject(err);
+			throw err;
+		} finally {
+			this._dropExtPromise = undefined;
 		}
 	}
 
