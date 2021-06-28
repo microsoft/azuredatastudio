@@ -58,8 +58,15 @@ function updateMainI18nFile(existingTranslationFilePath, originalFilePath, messa
     let currFilePath = path.join(existingTranslationFilePath + '.i18n.json');
     let currentContent = fs.readFileSync(currFilePath);
     let currentContentObject = JSON.parse(currentContent.toString());
+    let objectContents = currentContentObject.contents;
     let result = Object.create(null);
-    messages.contents = Object.assign(Object.assign({}, currentContentObject.contents), messages.contents);
+    // Delete any SQL strings that are no longer part of ADS in current langpack.
+    for (let contentKey of Object.keys(objectContents)) {
+        if (contentKey.startsWith('sql') && messages.contents[contentKey] === undefined) {
+            delete objectContents[`${contentKey}`];
+        }
+    }
+    messages.contents = Object.assign(Object.assign({}, objectContents), messages.contents);
     result[''] = [
         '--------------------------------------------------------------------------------------------',
         'Copyright (c) Microsoft Corporation. All rights reserved.',
