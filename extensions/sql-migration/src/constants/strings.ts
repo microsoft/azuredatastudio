@@ -434,11 +434,11 @@ export const ISSUES_DETAILS = localize('sql.migration.issues.details', "Issue De
 export const SELECT_DB_PROMPT = localize('sql.migration.select.prompt', "Click on SQL Server Instance or any of the databases on the left to view its details.");
 export const NO_ISSUES_FOUND_VM = localize('sql.migration.no.issues.vm', "No issues found for migrating to SQL Server on Azure Virtual Machine");
 export const NO_ISSUES_FOUND_MI = localize('sql.migration.no.issues.mi', "No issues found for migrating to SQL Server on Azure SQL Managed Instance");
-export function IMPACT_OBJECT_TYPE(objectType: string): string {
-	return localize('sql.migration.impact.object.type', "Type: {0}", objectType);
+export function IMPACT_OBJECT_TYPE(objectType?: string): string {
+	return objectType ? localize('sql.migration.impact.object.type', "Type: {0}", objectType) : '';
 }
-export function IMPACT_OBJECT_NAME(objectName: string): string {
-	return localize('sql.migration.impact.object.name', "Name: {0}", objectName);
+export function IMPACT_OBJECT_NAME(objectName?: string): string {
+	return objectName ? localize('sql.migration.impact.object.name', "Name: {0}", objectName) : '';
 }
 export function DATABASES(selectedCount: number, totalCount: number): string {
 	return localize('sql.migration.databases', "Databases ({0}/{1})", selectedCount, totalCount);
