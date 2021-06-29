@@ -228,9 +228,6 @@ export default class DropDownComponent extends ComponentBase<azdata.DropDownProp
 		return this.getPropertyOrDefault<boolean>((props) => props.fireOnTextChange, false);
 	}
 
-	public get displayEditable(): boolean {
-		return (this.editable && !this._isInAccessibilityMode) && !this.loading;
-	}
 	public getEditableDisplay(): string {
 		return (this.editable && !this._isInAccessibilityMode) && !this.loading ? '' : 'none';
 	}
