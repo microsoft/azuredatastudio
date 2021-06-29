@@ -352,7 +352,8 @@ export class NotebookToolbar {
 export class NotebookView {
 	private static readonly inputBox = '.notebookExplorer-viewlet .search-widget .input-box';
 	private static searchResult = '.search-view .result-messages';
-	private static firstNotebookTreeItem = '.split-view-view .tree-explorer-viewlet-tree-view .monaco-list-row[data-index="0"]';
+	private static notebookTreeItem = '.split-view-view .tree-explorer-viewlet-tree-view .monaco-list-row';
+	private static selectedItem = '.focused.selected';
 	private static pinnedNotebooksSelector = '.split-view-view .tree-explorer-viewlet-tree-view .monaco-list[aria-label="Pinned notebooks"] .monaco-list-row';
 
 	constructor(private code: Code, private quickAccess: QuickAccess) { }
@@ -376,9 +377,18 @@ export class NotebookView {
 		await this.code.waitForTypeInEditor(textArea, text);
 	}
 
+	/**
+	 * Helper function
+	 * @returns tree item ids from Notebooks View
+	 */
+	async getNotebookTreeItemIds(): Promise<string[]> {
+		return (await this.code.waitForElements(NotebookView.notebookTreeItem, false)).map(item => item.attributes['id']);
+	}
+
 	async pinNotebook(): Promise<void> {
-		await this.code.waitAndClick(NotebookView.firstNotebookTreeItem);
-		await this.code.waitAndClick(`${NotebookView.firstNotebookTreeItem} .codicon-pinned`);
+		const notebookIds = await this.getNotebookTreeItemIds();
+		await this.code.waitAndClick(`${NotebookView.notebookTreeItem}[id="${notebookIds[0]}"]`);
+		await this.code.waitAndClick(`${NotebookView.notebookTreeItem}${NotebookView.selectedItem} .codicon-pinned`);
 	}
 
 	async unpinNotebook(): Promise<void> {
