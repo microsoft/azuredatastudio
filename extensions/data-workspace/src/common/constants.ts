@@ -64,7 +64,7 @@ export const CloneParentDirectoryNotExistError = (location: string): string => {
 export const Project = localize('dataworkspace.project', "Project");
 export const Workspace = localize('dataworkspace.workspace', "Workspace");
 export const LocationSelectorTitle = localize('dataworkspace.locationSelectorTitle', "Location");
-export const ProjectFilePlaceholder = localize('dataworkspace.projectFilePlaceholder', "Select project (.sqlproj) file");
+export const ProjectFilePlaceholder = localize('dataworkspace.projectFilePlaceholder', "Select project file");
 export const WorkspacePlaceholder = localize('dataworkspace.workspacePlaceholder', "Select workspace ({0}) file", WorkspaceFileExtension);
 export const ProjectAlreadyOpened = (path: string): string => { return localize('dataworkspace.projectAlreadyOpened', "Project '{0}' is already opened.", path); };
 export const Local = localize('dataworksapce.local', 'Local');
