@@ -64,13 +64,13 @@ export class JupyterNotebookProvider implements nb.NotebookProvider {
 				manager.sessionManager.shutdown(session.id);
 			}
 			if (sessionManager.listRunning().length === 0) {
-				const FiveMinutesInMs = 5 * 60 * 1000;
+				const TenMinutesInMs = 10 * 60 * 1000;
 				setTimeout(() => {
 					if (sessionManager.listRunning().length === 0) {
 						this.managerTracker.delete(baseFolder);
 						manager.dispose();
 					}
-				}, FiveMinutesInMs);
+				}, TenMinutesInMs);
 			}
 		}
 	}
