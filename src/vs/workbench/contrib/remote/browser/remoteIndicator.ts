@@ -28,7 +28,6 @@ import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace
 import { getVirtualWorkspaceLocation } from 'vs/platform/remote/common/remoteHosts';
 import { getCodiconAriaLabel } from 'vs/base/common/codicons';
 import { ILogService } from 'vs/platform/log/common/log';
-import { ReloadWindowAction } from 'vs/workbench/browser/actions/windowActions';
 
 
 type ActionGroup = [string, Array<MenuItemAction | SubmenuItemAction>];

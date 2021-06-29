@@ -4109,7 +4109,7 @@ declare namespace monaco.editor {
 		wrappingIndent = 119,
 		wrappingStrategy = 120,
 		showDeprecated = 121,
-		inlayHints = 122,
+		inlineHints = 122,
 		editorClassName = 123,
 		pixelRatio = 124,
 		tabFocusMode = 125,
@@ -6454,16 +6454,17 @@ declare namespace monaco.languages {
 		resolveCodeLens?(model: editor.ITextModel, codeLens: CodeLens, token: CancellationToken): ProviderResult<CodeLens>;
 	}
 
-	export enum InlayHintKind {
+	export enum InlineHintKind {
 		Other = 0,
 		Type = 1,
 		Parameter = 2
 	}
 
-	export interface InlayHint {
+	export interface InlineHint {
 		text: string;
-		position: IPosition;
-		kind: InlayHintKind;
+		range: IRange;
+		kind: InlineHintKind;
+		description?: string | IMarkdownString;
 		whitespaceBefore?: boolean;
 		whitespaceAfter?: boolean;
 	}

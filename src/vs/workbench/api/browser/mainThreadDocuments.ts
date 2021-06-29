@@ -158,8 +158,10 @@ export class MainThreadDocuments extends Disposable implements MainThreadDocumen
 	}
 
 	public override dispose(): void {
-		dispose(this._modelTrackers.values());
-		this._modelTrackers.clear();
+		Object.keys(this._modelTrackers).forEach((modelUrl) => {
+			this._modelTrackers[modelUrl].dispose();
+		});
+		this._modelTrackers = Object.create(null);
 		super.dispose();
 	}
 
@@ -188,7 +190,8 @@ export class MainThreadDocuments extends Disposable implements MainThreadDocumen
 
 	private _onModelModeChanged(event: { model: ITextModel; oldModeId: string; }): void {
 		let { model } = event;
-		if (!this._modelIsSynced.has(model.uri)) {
+		const modelUrl = model.uri;
+		if (!this._modelIsSynced.has(modelUrl.toString())) {
 			return;
 		}
 		this._proxy.$acceptModelModeChanged(model.uri, model.getLanguageIdentifier().language);

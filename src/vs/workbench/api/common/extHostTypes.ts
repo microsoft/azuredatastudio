@@ -1420,7 +1420,7 @@ export enum SignatureHelpTriggerKind {
 }
 
 
-export enum InlayHintKind {
+export enum InlineHintKind {
 	Other = 0,
 	Type = 1,
 	Parameter = 2,
@@ -1429,14 +1429,15 @@ export enum InlayHintKind {
 @es5ClassCompat
 export class InlayHint {
 	text: string;
-	position: Position;
-	kind?: vscode.InlayHintKind;
+	range: Range;
+	kind?: vscode.InlineHintKind;
+	description?: string | vscode.MarkdownString;
 	whitespaceBefore?: boolean;
 	whitespaceAfter?: boolean;
 
-	constructor(text: string, position: Position, kind?: vscode.InlayHintKind) {
+	constructor(text: string, range: Range, kind?: vscode.InlineHintKind) {
 		this.text = text;
-		this.position = position;
+		this.range = range;
 		this.kind = kind;
 	}
 }

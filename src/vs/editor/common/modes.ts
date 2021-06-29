@@ -1701,16 +1701,17 @@ export interface CodeLensProvider {
 }
 
 
-export enum InlayHintKind {
+export enum InlineHintKind {
 	Other = 0,
 	Type = 1,
 	Parameter = 2,
 }
 
-export interface InlayHint {
+export interface InlineHint {
 	text: string;
-	position: IPosition;
-	kind: InlayHintKind;
+	range: IRange;
+	kind: InlineHintKind;
+	description?: string | IMarkdownString;
 	whitespaceBefore?: boolean;
 	whitespaceAfter?: boolean;
 }

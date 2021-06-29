@@ -3274,12 +3274,7 @@ export abstract class AbstractTaskService extends Disposable implements ITaskSer
 			return;
 		}
 
-		if (!this.workspaceTrustManagementService.isWorkpaceTrusted()) {
-			this._register(Event.once(this.workspaceTrustManagementService.onDidChangeTrust)(isTrusted => {
-				if (isTrusted) {
-					this.upgrade();
-				}
-			}));
+		if (!(await this.trust())) {
 			return;
 		}
 

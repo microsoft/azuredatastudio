@@ -70,7 +70,7 @@ export class NotebookCellTextModel extends Disposable implements ICell {
 		this._language = newLanguage;
 		this._hash = null;
 		this._onDidChangeLanguage.fire(newLanguage);
-		this._onDidChangeContent.fire('language');
+		this._onDidChangeContent.fire();
 	}
 
 	private _textBuffer!: model.IReadonlyTextBuffer;
@@ -90,7 +90,7 @@ export class NotebookCellTextModel extends Disposable implements ICell {
 		this._register(this._textBuffer.onDidChangeContent(() => {
 			this._hash = null;
 			if (!this._textModel) {
-				this._onDidChangeContent.fire('content');
+				this._onDidChangeContent.fire();
 			}
 		}));
 
@@ -132,7 +132,7 @@ export class NotebookCellTextModel extends Disposable implements ICell {
 					this._versionId = this._textModel.getVersionId();
 					this._alternativeId = this._textModel.getAlternativeVersionId();
 				}
-				this._onDidChangeContent.fire('content');
+				this._onDidChangeContent.fire();
 			}));
 
 			this._textModel._overwriteVersionId(this._versionId);

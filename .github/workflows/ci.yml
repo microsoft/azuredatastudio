@@ -247,6 +247,11 @@ jobs:
           path: ${{ steps.yarnCacheDirPath.outputs.dir }}
           key: ${{ runner.os }}-yarnCacheDir-${{ steps.nodeModulesCacheKey.outputs.value }}
           restore-keys: ${{ runner.os }}-yarnCacheDir-
+      - name: Setup Build Environment # {{SQL CARBON EDIT}} Add step to install required packages if we need to run yarn
+        if: ${{ steps.cacheNodeModules.outputs.cache-hit != 'true' }}
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libkrb5-dev
       - name: Execute yarn
         if: ${{ steps.cacheNodeModules.outputs.cache-hit != 'true' }}
         env:
@@ -260,8 +265,8 @@ jobs:
       - name: Run Valid Layers Checks
         run: yarn valid-layers-check
 
-      - run: yarn strict-vscode # {{SQL CARBON EDIT}} add step
-        name: Run Strict Compile Options
+      - name: Run Strict Compile Options # {{SQL CARBON EDIT}} add step
+        run: yarn strict-vscode
 
       # - name: Run Monaco Editor Checks {{SQL CARBON EDIT}} Remove Monaco checks
       #   run: yarn monaco-compile-check

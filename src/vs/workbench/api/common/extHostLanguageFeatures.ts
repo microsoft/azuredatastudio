@@ -1355,7 +1355,7 @@ type Adapter = DocumentSymbolAdapter | CodeLensAdapter | DefinitionAdapter | Hov
 	| TypeDefinitionAdapter | ColorProviderAdapter | FoldingProviderAdapter | DeclarationAdapter
 	| SelectionRangeAdapter | CallHierarchyAdapter | DocumentSemanticTokensAdapter | DocumentRangeSemanticTokensAdapter
 	| EvaluatableExpressionAdapter | InlineValuesAdapter
-	| LinkedEditingRangeAdapter | InlayHintsAdapter;
+	| LinkedEditingRangeAdapter | InlineHintsAdapter;
 
 class AdapterData {
 	constructor(

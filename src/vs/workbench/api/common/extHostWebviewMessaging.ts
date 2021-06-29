@@ -21,9 +21,9 @@ class ArrayBufferSet {
 
 export function serializeWebviewMessage(
 	message: any,
-	options: { serializeBuffersForPostMessage?: boolean }
+	transfer?: readonly ArrayBuffer[]
 ): { message: string, buffers: VSBuffer[] } {
-	if (options.serializeBuffersForPostMessage) {
+	if (transfer) {
 		// Extract all ArrayBuffers from the message and replace them with references.
 		const arrayBuffers = new ArrayBufferSet();
 

@@ -295,6 +295,7 @@
 					"vs/nls",
 					"**/{vs,sql}/base/{common,browser}/**",
 					"**/{vs,sql}/base/test/{common,browser}/**",
+					"**/{vs,sql}/base/parts/*/common/**", // {{SQL CARBON EDIT}}
 					"**/{vs,sql}/platform/*/{common,browser}/**",
 					"**/{vs,sql}/platform/*/test/{common,browser}/**"
 				]
@@ -636,6 +637,7 @@
 					"**/{vs,sql}/base/**",
 					"**/{vs,sql}/platform/**",
 					"**/{vs,sql}/editor/**",
+					"**/{vs,sql}/workbench/api/common/**", // {{SQL CARBON EDIT}}
 					"**/{vs,sql}/workbench/{common,browser,node,electron-sandbox,electron-browser}/**",
 					"**/{vs,sql}/workbench/services/**",
 					"**/{vs,sql}/workbench/contrib/**",
@@ -964,7 +966,8 @@
 				"target": "**/{node,electron-browser,electron-main}/**/*.test.ts",
 				"restrictions": [
 					"**/{vs,sql}/**",
-					"*" // node modules
+					"*", // node modules
+					"@angular/*" // {{SQL CARBON EDIT}}
 				]
 			},
 			{

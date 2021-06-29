@@ -64,7 +64,6 @@ export const NOTEBOOK_CELL_INPUT_COLLAPSED = new RawContextKey<boolean>('noteboo
 export const NOTEBOOK_CELL_OUTPUT_COLLAPSED = new RawContextKey<boolean>('notebookCellOutputIsCollapsed', false); // bool
 // Kernels
 export const NOTEBOOK_KERNEL_COUNT = new RawContextKey<number>('notebookKernelCount', 0);
-export const NOTEBOOK_KERNEL_SELECTED = new RawContextKey<boolean>('notebookKernelSelected', false);
 export const NOTEBOOK_INTERRUPTIBLE_KERNEL = new RawContextKey<boolean>('notebookInterruptibleKernel', false);
 
 //#endregion
@@ -249,7 +248,6 @@ export interface ICellViewModel extends IGenericCellViewModel {
 	readonly onDidChangeLayout: Event<{ totalHeight?: boolean | number; outerWidth?: number; }>;
 	readonly onDidChangeCellStatusBarItems: Event<void>;
 	readonly editStateSource: string;
-	readonly editorAttached: boolean;
 	dragging: boolean;
 	handle: number;
 	uri: URI;
@@ -270,8 +268,6 @@ export interface ICellViewModel extends IGenericCellViewModel {
 	getCellStatusBarItems(): INotebookCellStatusBarItem[];
 	getEditState(): CellEditState;
 	updateEditState(state: CellEditState, source: string): void;
-	deltaModelDecorations(oldDecorations: string[], newDecorations: IModelDeltaDecoration[]): string[];
-	getCellDecorationRange(id: string): Range | null;
 }
 
 export interface IEditableCellViewModel extends ICellViewModel {
@@ -348,7 +344,6 @@ export interface INotebookEditorCreationOptions {
 
 export interface IActiveNotebookEditor extends INotebookEditor {
 	viewModel: NotebookViewModel;
-	textModel: NotebookTextModel;
 	getFocus(): ICellRange;
 }
 

@@ -181,7 +181,7 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 			let secondary: IAction[] = [];
 			const menu = this.menuService.createMenu(MenuId.DashboardToolbar, this.contextKeyService);
 			let groups = menu.getActions({ arg: this.connectionManagementService.connectionInfo.connectionProfile.toIConnectionProfile(), shouldForwardArgs: true });
-			fillInActions(groups, { primary, secondary }, false, 'navigation', Number.MAX_SAFE_INTEGER, (action: SubmenuAction, group: string, groupSize: number) => group === undefined || group === '');
+			fillInActions(groups, { primary, secondary }, false, '', Number.MAX_SAFE_INTEGER, (action: SubmenuAction, group: string, groupSize: number) => group === undefined || group === '');
 
 			primary.forEach(a => {
 				if (a instanceof MenuItemAction) {

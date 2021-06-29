@@ -1254,8 +1254,8 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 			ViewColumn: extHostTypes.ViewColumn,
 			WorkspaceEdit: extHostTypes.WorkspaceEdit,
 			// proposed api types
-			InlayHint: extHostTypes.InlayHint,
-			InlayHintKind: extHostTypes.InlayHintKind,
+			InlineHint: extHostTypes.InlineHint,
+			InlineHintKind: extHostTypes.InlineHintKind,
 			RemoteAuthorityResolverError: extHostTypes.RemoteAuthorityResolverError,
 			RemoteTrustOption: RemoteTrustOption,
 			ResolvedAuthority: extHostTypes.ResolvedAuthority,

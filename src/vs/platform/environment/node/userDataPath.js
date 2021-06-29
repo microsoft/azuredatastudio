@@ -88,7 +88,7 @@
 				}
 			}
 
-			return path.join(appDataPath, productName);
+			return path.join(appDataPath, 'azuredatastudio'); // {{SQL CARBON EDIT}} hard-code Azure Data Studio
 		}
 
 		return {

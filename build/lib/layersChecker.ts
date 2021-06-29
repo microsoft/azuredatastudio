@@ -110,6 +110,17 @@ const RULES = [
 		]
 	},
 
+	// Common: vs/platform/native/common/native.ts
+	{
+		target: '**/vs/platform/native/common/native.ts',
+		disallowedTypes: [/* Ignore native types that are defined from here */],
+		allowedTypes: CORE_TYPES,
+		disallowedDefinitions: [
+			'lib.dom.d.ts', // no DOM
+			'@types/node'	// no node.js
+		]
+	},
+
 	// Common: vs/workbench/api/common/extHostExtensionService.ts
 	{
 		target: '**/{vs,sql}/workbench/api/common/extHostExtensionService.ts',

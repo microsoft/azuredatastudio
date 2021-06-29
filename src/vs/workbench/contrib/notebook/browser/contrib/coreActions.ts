@@ -1343,8 +1343,7 @@ registerAction2(class extends NotebookAction {
 						runStartTime: undefined,
 						runStartTimeAdjustment: undefined,
 						runEndTime: undefined,
-						executionOrder: undefined,
-						lastRunSuccess: undefined
+						executionOrder: undefined
 					}
 				};
 			} else {

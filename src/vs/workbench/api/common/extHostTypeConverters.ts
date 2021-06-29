@@ -1135,30 +1135,32 @@ export namespace InlayHint {
 	export function from(hint: vscode.InlayHint): modes.InlayHint {
 		return {
 			text: hint.text,
-			position: Position.from(hint.position),
-			kind: InlayHintKind.from(hint.kind ?? types.InlayHintKind.Other),
+			range: Range.from(hint.range),
+			kind: InlineHintKind.from(hint.kind ?? types.InlineHintKind.Other),
+			description: hint.description && MarkdownString.fromStrict(hint.description),
 			whitespaceBefore: hint.whitespaceBefore,
 			whitespaceAfter: hint.whitespaceAfter
 		};
 	}
 
-	export function to(hint: modes.InlayHint): vscode.InlayHint {
-		const res = new types.InlayHint(
+	export function to(hint: modes.InlineHint): vscode.InlineHint {
+		const res = new types.InlineHint(
 			hint.text,
-			Position.to(hint.position),
-			InlayHintKind.to(hint.kind)
+			Range.to(hint.range),
+			InlineHintKind.to(hint.kind)
 		);
 		res.whitespaceAfter = hint.whitespaceAfter;
 		res.whitespaceBefore = hint.whitespaceBefore;
+		res.description = htmlContent.isMarkdownString(hint.description) ? MarkdownString.to(hint.description) : hint.description;
 		return res;
 	}
 }
 
-export namespace InlayHintKind {
-	export function from(kind: vscode.InlayHintKind): modes.InlayHintKind {
+export namespace InlineHintKind {
+	export function from(kind: vscode.InlineHintKind): modes.InlineHintKind {
 		return kind;
 	}
-	export function to(kind: modes.InlayHintKind): vscode.InlayHintKind {
+	export function to(kind: modes.InlineHintKind): vscode.InlineHintKind {
 		return kind;
 	}
 }

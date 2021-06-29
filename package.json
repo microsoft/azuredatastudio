@@ -1,7 +1,7 @@
 {
   "name": "azuredatastudio",
   "version": "1.30.0",
-  "distro": "da9346f4dbf9e6069dd59f3d5b2ee4dcc1a19b2a",
+  "distro": "a4c62d0c040835943c171ddf77885936e4d1fbb5",
   "author": {
     "name": "Microsoft Corporation"
   },
@@ -43,8 +43,8 @@
     "strict-vscode": "node --max_old_space_size=4095 node_modules/typescript/bin/tsc -p src/tsconfig.vscode.json",
     "strict-vscode-watch": "node --max_old_space_size=4095 node_modules/typescript/bin/tsc -p src/tsconfig.vscode.json --watch",
     "strict-initialization-watch": "tsc --watch -p src/tsconfig.json --noEmit --strictPropertyInitialization",
-    "tsec-compile-check": "node node_modules/tsec/bin/tsec -p src/tsconfig.tsec.json",
-    "valid-layers-check": "node build/lib/layersChecker.js",
+    "tsec-compile-check": "node --max_old_space_size=4095 node_modules/tsec/bin/tsec -p src/tsconfig.tsec.json",
+    "valid-layers-check": "node --max_old_space_size=4095 build/lib/layersChecker.js",
     "update-distro": "node build/npm/update-distro.js",
     "web": "node resources/web/code-web.js",
     "compile-web": "node --max_old_space_size=4095 ./node_modules/gulp/bin/gulp.js compile-web",

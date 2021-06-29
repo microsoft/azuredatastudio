@@ -142,7 +142,7 @@ export class InlayHintsController implements IEditorContribution {
 		const newDecorationsTypeIds: string[] = [];
 		const newDecorationsData: IModelDeltaDecoration[] = [];
 
-		const fontFamilyVar = '--inlayHintsFontFamily';
+		const fontFamilyVar = '--inlineHintsFontFamily';
 		this._editor.getContainerDomNode().style.setProperty(fontFamilyVar, fontFamily);
 
 		for (const { list: hints } of hintsData) {

@@ -531,8 +531,8 @@ function markNodes(ts: typeof import('typescript'), languageService: ts.Language
 			}
 
 			if (symbol && !nodeIsInItsOwnDeclaration(nodeSourceFile, node, symbol)) {
-				for (let i = 0, len = symbol.declarations.length; i < len; i++) {
-					const declaration = symbol.declarations[i];
+				for (let i = 0, len = symbol.declarations!.length; i < len; i++) { // {{SQL CARBON EDIT}} Compile fixes
+					const declaration = symbol.declarations![i]; // {{SQL CARBON EDIT}} Compile fixes
 					if (ts.isSourceFile(declaration)) {
 						// Do not enqueue full source files
 						// (they can be the declaration of a module import)
@@ -596,8 +596,8 @@ function markNodes(ts: typeof import('typescript'), languageService: ts.Language
 }
 
 function nodeIsInItsOwnDeclaration(nodeSourceFile: ts.SourceFile, node: ts.Node, symbol: ts.Symbol): boolean {
-	for (let i = 0, len = symbol.declarations.length; i < len; i++) {
-		const declaration = symbol.declarations[i];
+	for (let i = 0, len = symbol.declarations!.length; i < len; i++) { // {{SQL CARBON EDIT}} Compile fixes
+		const declaration = symbol.declarations![i]; // {{SQL CARBON EDIT}} Compile fixes
 		const declarationSourceFile = declaration.getSourceFile();
 
 		if (nodeSourceFile === declarationSourceFile) {
@@ -838,11 +838,11 @@ function getRealNodeSymbol(ts: typeof import('typescript'), checker: ts.TypeChec
 	// get the aliased symbol instead. This allows for goto def on an import e.g.
 	//   import {A, B} from "mod";
 	// to jump to the implementation directly.
-	if (symbol && symbol.flags & ts.SymbolFlags.Alias && shouldSkipAlias(node, symbol.declarations[0])) {
+	if (symbol && symbol.flags & ts.SymbolFlags.Alias && shouldSkipAlias(node, symbol.declarations![0])) { // {{SQL CARBON EDIT}} Compile fixes
 		const aliased = checker.getAliasedSymbol(symbol);
 		if (aliased.declarations) {
 			// We should mark the import as visited
-			importNode = symbol.declarations[0];
+			importNode = symbol.declarations![0]; // {{SQL CARBON EDIT}} Compile fixes
 			symbol = aliased;
 		}
 	}

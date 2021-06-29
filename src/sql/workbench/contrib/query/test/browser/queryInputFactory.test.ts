@@ -148,7 +148,7 @@ suite('Query Input Factory', () => {
 		const untitledService = instantiationService.invokeFunction(accessor => accessor.get(IUntitledTextEditorService));
 		const queryeditorservice = instantiationService.invokeFunction(accessor => accessor.get(IQueryEditorService));
 		const input = instantiationService.createInstance(UntitledTextEditorInput, untitledService.create());
-		sinon.stub(editorService, 'isOpen', (editor: IEditorInput) => extUri.isEqual(editor.resource, input.resource));
+		sinon.stub(editorService, 'isOpened', (editor: IEditorInput) => extUri.isEqual(editor.resource, input.resource));
 		const newsqlEditorStub = sinon.stub(queryeditorservice, 'newSqlEditor', () => {
 			const untitledInput = instantiationService.createInstance(UntitledTextEditorInput, untitledService.create());
 			const queryResultsInput: QueryResultsInput = instantiationService.createInstance(QueryResultsInput, untitledInput.resource.toString());

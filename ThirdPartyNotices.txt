@@ -12,7 +12,7 @@ expressly granted herein, whether by implication, estoppel or otherwise.
     angular2-grid: https://github.com/BTMorton/angular2-grid
     angular2-slickgrid: https://github.com/Microsoft/angular2-slickgrid
     applicationinsights: https://github.com/Microsoft/ApplicationInsights-node.js
-	axios: https://github.com/axios/axios
+    axios: https://github.com/axios/axios
     bootstrap: https://github.com/twbs/bootstrap
     chart.js: https://github.com/Timer/chartjs
     chokidar: https://github.com/paulmillr/chokidar
