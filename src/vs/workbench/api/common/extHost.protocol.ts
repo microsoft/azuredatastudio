@@ -467,6 +467,7 @@ export interface TerminalLaunchConfig {
 	isExtensionCustomPtyTerminal?: boolean;
 	isFeatureTerminal?: boolean;
 	isExtensionOwnedTerminal?: boolean;
+	useShellEnvironment?: boolean;
 }
 
 export interface MainThreadTerminalServiceShape extends IDisposable {
