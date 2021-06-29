@@ -104,7 +104,7 @@ export class Notebook {
 	public async selectAllTextInEditor(): Promise<void> {
 		const editor = '.notebook-cell.active .monaco-editor';
 		await this.code.waitAndClick(editor);
-		await this.code.dispatchKeybinding('ctrl+a');
+		await this.code.dispatchKeybinding('cmd+a');
 	}
 
 	private static readonly placeholderSelector = 'div.placeholder-cell-component';
