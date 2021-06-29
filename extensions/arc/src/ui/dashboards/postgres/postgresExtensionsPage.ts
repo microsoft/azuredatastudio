@@ -58,12 +58,12 @@ export class PostgresExtensionsPage extends DashboardPage {
 			CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
 		}).component());
 
-		const info = this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+		const info = this.modelView.modelBuilder.text().withProps({
 			value: loc.extensionsFunction,
 			CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
 		}).component();
 
-		const link = this.modelView.modelBuilder.hyperlink().withProperties<azdata.HyperlinkComponentProperties>({
+		const link = this.modelView.modelBuilder.hyperlink().withProps({
 			label: loc.learnMore,
 			url: 'https://www.postgresql.org/docs/12/external-extensions.html',
 		}).component();
@@ -73,7 +73,7 @@ export class PostgresExtensionsPage extends DashboardPage {
 		infoAndLink.addItem(link);
 		content.addItem(infoAndLink, { CSSStyles: { 'margin-bottom': '15px', 'margin-top': '25px' } });
 
-		this.extensionsTable = this.modelView.modelBuilder.declarativeTable().withProperties<azdata.DeclarativeTableProperties>({
+		this.extensionsTable = this.modelView.modelBuilder.declarativeTable().withProps({
 			ariaLabel: loc.extensionsTableLabel,
 			width: '100%',
 			columns: [
@@ -98,8 +98,7 @@ export class PostgresExtensionsPage extends DashboardPage {
 		}).component();
 
 		this.extensionsLoading = this.modelView.modelBuilder.loadingComponent()
-			.withItem(this.extensionsTable)
-			.withProperties<azdata.LoadingComponentProperties>({
+			.withItem(this.extensionsTable).withProps({
 				loading: !this._postgresModel.configLastUpdated,
 				loadingText: loc.extensionsTableLoading,
 				loadingCompletedText: loc.extensionsTableLoadingComplete
@@ -113,7 +112,7 @@ export class PostgresExtensionsPage extends DashboardPage {
 
 	protected get toolbarContainer(): azdata.ToolbarContainer {
 		// Add extensions
-		this.addExtensionsButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
+		this.addExtensionsButton = this.modelView.modelBuilder.button().withProps({
 			label: loc.addExtensions,
 			ariaLabel: loc.addExtensions,
 			iconPath: IconPathHelper.add
@@ -219,6 +218,7 @@ export class PostgresExtensionsPage extends DashboardPage {
 			})
 		);
 
+		// Dropping the citus extension is not supported.
 		if (name === 'citus') {
 			button.enabled = false;
 		}
