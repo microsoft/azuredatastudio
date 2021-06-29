@@ -62,7 +62,7 @@ async function sync(commit, quality) {
             await new Promise((c, e) => readStream.pipe(writeStream).on('finish', c).on('error', e));
             log(`  Updating build in DB...`);
             const mooncakeUrl = `${process.env['MOONCAKE_CDN_URL']}${blobPath}`;
-            await retry_1.retry(() => container.scripts.storedProcedure('setAssetMooncakeUrl')
+            await (0, retry_1.retry)(() => container.scripts.storedProcedure('setAssetMooncakeUrl')
                 .execute('', [commit, asset.platform, asset.type, mooncakeUrl]));
             log(`  Done ✔️`);
         }
