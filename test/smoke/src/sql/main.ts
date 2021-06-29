@@ -8,6 +8,7 @@ import { setup as setupNotebookTests } from './areas/notebook/notebook.test';
 import { setup as setupNotebookViewTests } from './areas/notebook/notebookView.test';
 import { setup as setupImportTests } from './areas/import/import.test';
 import { setup as setupCreateBookDialogTests } from './areas/notebook/createBook.test';
+import { setup as setupAddRemoteBookDialogTests } from './areas/notebook/addRemoteBook.test';
 import { ApplicationOptions } from '../../../automation';
 import * as yazl from 'yauzl';
 import * as fs from 'fs';
@@ -24,6 +25,7 @@ export function main(isWeb: boolean = false): void {
 	setupNotebookTests();
 	setupNotebookViewTests();
 	setupCreateBookDialogTests();
+	setupAddRemoteBookDialogTests();
 	setupImportTests();
 }
 
@@ -64,13 +66,8 @@ export async function setup(app: ApplicationOptions): Promise<void> {
 						return;
 					}
 
-					mkdirp(path.dirname(destination), err => {
-						if (err) {
-							reject(err);
-							return;
-						}
-						readStream.pipe(fs.createWriteStream(destination));
-					});
+					mkdirp.sync(path.dirname(destination));
+					readStream.pipe(fs.createWriteStream(destination));
 				});
 			}).once('end', () => resolve());
 		});
