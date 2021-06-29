@@ -4,7 +4,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.prepareIslFiles = exports.prepareI18nPackFiles = exports.pullI18nPackFiles = exports.prepareI18nFiles = exports.pullSetupXlfFiles = exports.pullCoreAndExtensionsXlfFiles = exports.findObsoleteResources = exports.pushXlfFiles = exports.createXlfFilesForIsl = exports.createXlfFilesForExtensions = exports.createXlfFilesForCoreBundle = exports.getResource = exports.processNlsFiles = exports.Limiter = exports.XLF = exports.Line = exports.externalExtensionsWithTranslations = exports.extraLanguages = exports.defaultLanguages = void 0;
+exports.prepareIslFiles = exports.prepareI18nPackFiles = exports.pullI18nPackFiles = exports.i18nPackVersion = exports.createI18nFile = exports.prepareI18nFiles = exports.pullSetupXlfFiles = exports.pullCoreAndExtensionsXlfFiles = exports.findObsoleteResources = exports.pushXlfFiles = exports.createXlfFilesForIsl = exports.createXlfFilesForExtensions = exports.createXlfFilesForCoreBundle = exports.getResource = exports.processNlsFiles = exports.Limiter = exports.XLF = exports.Line = exports.externalExtensionsWithTranslations = exports.extraLanguages = exports.defaultLanguages = void 0;
 const path = require("path");
 const fs = require("fs");
 const event_stream_1 = require("event-stream");
@@ -463,7 +463,7 @@ function processCoreBundleFormat(fileHeader, languages, json, emitter) {
     });
 }
 function processNlsFiles(opts) {
-    return event_stream_1.through(function (file) {
+    return (0, event_stream_1.through)(function (file) {
         let fileName = path.basename(file.path);
         if (fileName === 'nls.metadata.json') {
             let json = null;
@@ -521,7 +521,7 @@ function getResource(sourceFile) {
 }
 exports.getResource = getResource;
 function createXlfFilesForCoreBundle() {
-    return event_stream_1.through(function (file) {
+    return (0, event_stream_1.through)(function (file) {
         const basename = path.basename(file.path);
         if (basename === 'nls.metadata.json') {
             if (file.isBuffer()) {
@@ -572,7 +572,7 @@ function createXlfFilesForExtensions() {
     let counter = 0;
     let folderStreamEnded = false;
     let folderStreamEndEmitted = false;
-    return event_stream_1.through(function (extensionFolder) {
+    return (0, event_stream_1.through)(function (extensionFolder) {
         const folderStream = this;
         const stat = fs.statSync(extensionFolder.path);
         if (!stat.isDirectory()) {
@@ -590,7 +590,7 @@ function createXlfFilesForExtensions() {
             }
             return _xlf;
         }
-        gulp.src([`.build/extensions/${extensionName}/package.nls.json`, `.build/extensions/${extensionName}/**/nls.metadata.json`], { allowEmpty: true }).pipe(event_stream_1.through(function (file) {
+        gulp.src([`.build/extensions/${extensionName}/package.nls.json`, `.build/extensions/${extensionName}/**/nls.metadata.json`], { allowEmpty: true }).pipe((0, event_stream_1.through)(function (file) {
             if (file.isBuffer()) {
                 const buffer = file.contents;
                 const basename = path.basename(file.path);
@@ -649,7 +649,7 @@ function createXlfFilesForExtensions() {
 }
 exports.createXlfFilesForExtensions = createXlfFilesForExtensions;
 function createXlfFilesForIsl() {
-    return event_stream_1.through(function (file) {
+    return (0, event_stream_1.through)(function (file) {
         let projectName, resourceFile;
         if (path.basename(file.path) === 'Default.isl') {
             projectName = setupProject;
@@ -703,7 +703,7 @@ exports.createXlfFilesForIsl = createXlfFilesForIsl;
 function pushXlfFiles(apiHostname, username, password) {
     let tryGetPromises = [];
     let updateCreatePromises = [];
-    return event_stream_1.through(function (file) {
+    return (0, event_stream_1.through)(function (file) {
         const project = path.dirname(file.relative);
         const fileName = path.basename(file.path);
         const slug = fileName.substr(0, fileName.length - '.xlf'.length);
@@ -765,7 +765,7 @@ function getAllResources(project, apiHostname, username, password) {
 function findObsoleteResources(apiHostname, username, password) {
     let resourcesByProject = Object.create(null);
     resourcesByProject[extensionsProject] = [].concat(exports.externalExtensionsWithTranslations); // clone
-    return event_stream_1.through(function (file) {
+    return (0, event_stream_1.through)(function (file) {
         const project = path.dirname(file.relative);
         const fileName = path.basename(file.path);
         const slug = fileName.substr(0, fileName.length - '.xlf'.length);
@@ -942,7 +942,7 @@ function pullXlfFiles(apiHostname, username, password, language, resources) {
     const credentials = `${username}:${password}`;
     let expectedTranslationsCount = resources.length;
     let translationsRetrieved = 0, called = false;
-    return event_stream_1.readable(function (_count, callback) {
+    return (0, event_stream_1.readable)(function (_count, callback) {
         // Mark end of stream when all resources were retrieved
         if (translationsRetrieved === expectedTranslationsCount) {
             return this.emit('end');
@@ -1000,7 +1000,7 @@ function retrieveResource(language, resource, apiHostname, credentials) {
 }
 function prepareI18nFiles() {
     let parsePromises = [];
-    return event_stream_1.through(function (xlf) {
+    return (0, event_stream_1.through)(function (xlf) {
         let stream = this;
         let parsePromise = XLF.parse(xlf.contents.toString());
         parsePromises.push(parsePromise);
@@ -1038,7 +1038,8 @@ function createI18nFile(originalFilePath, messages) {
         contents: Buffer.from(content, 'utf8')
     });
 }
-const i18nPackVersion = '1.0.0';
+exports.createI18nFile = createI18nFile;
+exports.i18nPackVersion = '1.0.0'; // {{SQL CARBON EDIT}} Needed in locfunc.
 function pullI18nPackFiles(apiHostname, username, password, language, resultingTranslationPaths) {
     return pullCoreAndExtensionsXlfFiles(apiHostname, username, password, language, exports.externalExtensionsWithTranslations)
         .pipe(prepareI18nPackFiles(exports.externalExtensionsWithTranslations, resultingTranslationPaths, language.id === 'ps'));
@@ -1046,10 +1047,10 @@ function pullI18nPackFiles(apiHostname, username, password, language, resultingT
 exports.pullI18nPackFiles = pullI18nPackFiles;
 function prepareI18nPackFiles(externalExtensions, resultingTranslationPaths, pseudo = false) {
     let parsePromises = [];
-    let mainPack = { version: i18nPackVersion, contents: {} };
+    let mainPack = { version: exports.i18nPackVersion, contents: {} };
     let extensionsPacks = {};
     let errors = [];
-    return event_stream_1.through(function (xlf) {
+    return (0, event_stream_1.through)(function (xlf) {
         let project = path.basename(path.dirname(xlf.relative));
         let resource = path.basename(xlf.relative, '.xlf');
         let contents = xlf.contents.toString();
@@ -1062,7 +1063,7 @@ function prepareI18nPackFiles(externalExtensions, resultingTranslationPaths, pse
                 if (project === extensionsProject) {
                     let extPack = extensionsPacks[resource];
                     if (!extPack) {
-                        extPack = extensionsPacks[resource] = { version: i18nPackVersion, contents: {} };
+                        extPack = extensionsPacks[resource] = { version: exports.i18nPackVersion, contents: {} };
                     }
                     const externalId = externalExtensions[resource];
                     if (!externalId) { // internal extension: remove 'extensions/extensionId/' segnent
@@ -1110,7 +1111,7 @@ function prepareI18nPackFiles(externalExtensions, resultingTranslationPaths, pse
 exports.prepareI18nPackFiles = prepareI18nPackFiles;
 function prepareIslFiles(language, innoSetupConfig) {
     let parsePromises = [];
-    return event_stream_1.through(function (xlf) {
+    return (0, event_stream_1.through)(function (xlf) {
         let stream = this;
         let parsePromise = XLF.parse(xlf.contents.toString());
         parsePromises.push(parsePromise);
