@@ -225,7 +225,6 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				{
 					'sessionId': this._sessionId,
 					'tenantId': this._azureAccount.properties.tenants[0].id,
-					'accountId': this._azureAccount.key.accountId,
 					'hashedServerName': hashString((connectionProfile.serverName))
 				},
 				{
