@@ -35,16 +35,16 @@ export class AzureResourceFilterComponent extends ModelViewBase implements IData
 	 */
 	constructor(apiWrapper: ApiWrapper, private _modelBuilder: azdata.ModelBuilder, parent: ModelViewBase) {
 		super(apiWrapper, parent.root, parent);
-		this._accounts = this._modelBuilder.dropDown().withProperties({
+		this._accounts = this._modelBuilder.dropDown().withProps({
 			width: componentWidth
 		}).component();
-		this._subscriptions = this._modelBuilder.dropDown().withProperties({
+		this._subscriptions = this._modelBuilder.dropDown().withProps({
 			width: componentWidth
 		}).component();
-		this._groups = this._modelBuilder.dropDown().withProperties({
+		this._groups = this._modelBuilder.dropDown().withProps({
 			width: componentWidth
 		}).component();
-		this._workspaces = this._modelBuilder.dropDown().withProperties({
+		this._workspaces = this._modelBuilder.dropDown().withProps({
 			width: componentWidth
 		}).component();
 

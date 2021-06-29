@@ -107,7 +107,7 @@ export class AddDatabaseReferenceDialog {
 			this.dacpacFormComponent = this.createDacpacTextbox();
 			const locationDropdown = this.createLocationDropdown();
 			const variableSection = this.createVariableSection();
-			this.suppressMissingDependenciesErrorsCheckbox = view.modelBuilder.checkBox().withProperties({
+			this.suppressMissingDependenciesErrorsCheckbox = view.modelBuilder.checkBox().withProps({
 				label: constants.suppressMissingDependenciesErrors
 			}).component();
 			const exampleUsage = this.createExampleUsage();
@@ -190,7 +190,7 @@ export class AddDatabaseReferenceDialog {
 
 	private createRadioButtons(): azdataType.FormComponent {
 		this.projectRadioButton = this.view!.modelBuilder.radioButton()
-			.withProperties({
+			.withProps({
 				name: 'referenceType',
 				label: constants.projectRadioButtonTitle
 			}).component();
@@ -200,7 +200,7 @@ export class AddDatabaseReferenceDialog {
 		});
 
 		this.systemDatabaseRadioButton = this.view!.modelBuilder.radioButton()
-			.withProperties({
+			.withProps({
 				name: 'referenceType',
 				label: constants.systemDatabaseRadioButtonTitle
 			}).component();
@@ -210,7 +210,7 @@ export class AddDatabaseReferenceDialog {
 		});
 
 		const dacpacRadioButton = this.view!.modelBuilder.radioButton()
-			.withProperties({
+			.withProps({
 				name: 'referenceType',
 				label: constants.dacpacText
 			}).component();
@@ -233,7 +233,7 @@ export class AddDatabaseReferenceDialog {
 		let flexRadioButtonsModel: azdataType.FlexContainer = this.view!.modelBuilder.flexContainer()
 			.withLayout({ flexFlow: 'column' })
 			.withItems([this.projectRadioButton, this.systemDatabaseRadioButton, dacpacRadioButton])
-			.withProperties({ ariaRole: 'radiogroup' })
+			.withProps({ ariaRole: 'radiogroup' })
 			.component();
 
 		return {
@@ -284,7 +284,7 @@ export class AddDatabaseReferenceDialog {
 	}
 
 	private async createProjectDropdown(): Promise<azdataType.FormComponent> {
-		this.projectDropdown = this.view!.modelBuilder.dropDown().withProperties({
+		this.projectDropdown = this.view!.modelBuilder.dropDown().withProps({
 			ariaLabel: constants.databaseProject
 		}).component();
 
@@ -306,7 +306,7 @@ export class AddDatabaseReferenceDialog {
 	}
 
 	private createSystemDatabaseDropdown(): azdataType.FormComponent {
-		this.systemDatabaseDropdown = this.view!.modelBuilder.dropDown().withProperties({
+		this.systemDatabaseDropdown = this.view!.modelBuilder.dropDown().withProps({
 			values: [constants.master, constants.msdb],
 			ariaLabel: constants.databaseNameLabel
 		}).component();
@@ -327,7 +327,7 @@ export class AddDatabaseReferenceDialog {
 	}
 
 	private createDacpacTextbox(): azdataType.FormComponent {
-		this.dacpacTextbox = this.view!.modelBuilder.inputBox().withProperties({
+		this.dacpacTextbox = this.view!.modelBuilder.inputBox().withProps({
 			ariaLabel: constants.dacpacText,
 			placeHolder: constants.dacpacPlaceholder,
 			width: '400px'
@@ -350,7 +350,7 @@ export class AddDatabaseReferenceDialog {
 	}
 
 	private createLoadDacpacButton(): azdataType.ButtonComponent {
-		const loadDacpacButton = this.view!.modelBuilder.button().withProperties({
+		const loadDacpacButton = this.view!.modelBuilder.button().withProps({
 			ariaLabel: constants.loadDacpacButton,
 			iconPath: IconPathHelper.folder_blue,
 			height: '18px',
@@ -382,7 +382,7 @@ export class AddDatabaseReferenceDialog {
 	}
 
 	private createLocationDropdown(): azdataType.FormComponent {
-		this.locationDropdown = this.view!.modelBuilder.dropDown().withProperties({
+		this.locationDropdown = this.view!.modelBuilder.dropDown().withProps({
 			ariaLabel: constants.locationDropdown,
 			values: this.currentReferenceType === ReferenceType.systemDb ? constants.systemDbLocationDropdownValues : constants.locationDropdownValues
 		}).component();
@@ -486,7 +486,7 @@ export class AddDatabaseReferenceDialog {
 		this.serverVariableTextbox = this.createInputBox(constants.serverVariable, false, true);
 		const serverVariableRow = this.view!.modelBuilder.flexContainer().withItems([this.createLabel(constants.serverVariable, true), this.serverVariableTextbox], { flex: '0 0 auto' }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
 
-		const variableSection = this.view!.modelBuilder.flexContainer().withItems([databaseNameRow, databaseVariableRow, serverNameRow, serverVariableRow]).withLayout({ flexFlow: 'column' }).withProperties({ CSSStyles: { 'margin-bottom': '25px' } }).component();
+		const variableSection = this.view!.modelBuilder.flexContainer().withItems([databaseNameRow, databaseVariableRow, serverNameRow, serverVariableRow]).withLayout({ flexFlow: 'column' }).withProps({ CSSStyles: { 'margin-bottom': '25px' } }).component();
 		this.setDefaultDatabaseValues();
 
 		return {
@@ -506,7 +506,7 @@ export class AddDatabaseReferenceDialog {
 	}
 
 	private createInputBox(ariaLabel: string, enabled: boolean, required: boolean): azdataType.InputBoxComponent {
-		const inputBox = this.view!.modelBuilder.inputBox().withProperties({
+		const inputBox = this.view!.modelBuilder.inputBox().withProps({
 			ariaLabel: ariaLabel,
 			enabled: enabled,
 			width: cssStyles.addDatabaseReferenceInputboxWidth,
@@ -522,7 +522,7 @@ export class AddDatabaseReferenceDialog {
 	}
 
 	private createExampleUsage(): azdataType.FormComponent {
-		this.exampleUsage = this.view!.modelBuilder.text().withProperties({
+		this.exampleUsage = this.view!.modelBuilder.text().withProps({
 			value: this.currentReferenceType === ReferenceType.project ? constants.databaseNameRequiredVariableOptional : constants.systemDatabaseReferenceRequired,
 			CSSStyles: { 'user-select': 'text' }
 		}).component();

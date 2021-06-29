@@ -154,7 +154,7 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 		// Assemble the container
 		const rootContainer = this.modelView.modelBuilder.flexContainer()
 			.withLayout({ flexFlow: 'column' })
-			.withProperties({ CSSStyles: { 'margin': '18px' } })
+			.withProps({ CSSStyles: { 'margin': '18px' } })
 			.component();
 
 		// Properties

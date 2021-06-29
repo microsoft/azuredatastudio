@@ -161,9 +161,7 @@ export class AzureModelsTable extends ModelViewBase implements IDataComponent<Wo
 				this._onModelSelectionChanged.fire();
 			};
 			if (this._multiSelect) {
-				const checkbox = this._modelBuilder.checkBox().withProperties({
-					name: 'amlModel',
-					value: model.id,
+				const checkbox = this._modelBuilder.checkBox().withProps({
 					width: 15,
 					height: 15,
 					checked: false
@@ -173,7 +171,7 @@ export class AzureModelsTable extends ModelViewBase implements IDataComponent<Wo
 				});
 				selectModelButton = checkbox;
 			} else {
-				const radioButton = this._modelBuilder.radioButton().withProperties({
+				const radioButton = this._modelBuilder.radioButton().withProps({
 					name: 'amlModel',
 					value: model.id,
 					width: 15,

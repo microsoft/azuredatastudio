@@ -451,7 +451,7 @@ suite('ExtHostModelView Validation Tests', () => {
  */
 function createDeclarativeTable(modelView: azdata.ModelView, dataType: DeclarativeDataType, data?: any[]): azdata.DeclarativeTableComponent {
 	return modelView.modelBuilder.declarativeTable()
-		.withProperties(
+		.withProps(
 			{
 				columns: [
 					{
