@@ -259,6 +259,11 @@ number-is-nan@^1.0.0:
   resolved "https://registry.yarnpkg.com/number-is-nan/-/number-is-nan-1.0.1.tgz#097b602b53422a522c1afb8790318336941a011d"
   integrity sha1-CXtgK1NCKlIsGvuHkDGDNpQaAR0=
 
+plotly.js-dist-min@^1.53.0:
+  version "1.58.4"
+  resolved "https://registry.yarnpkg.com/plotly.js-dist-min/-/plotly.js-dist-min-1.58.4.tgz#6a5b9baf1988b6aca6b20804503e4d70f3085186"
+  integrity sha512-9O3q1Wl5vL1diYwPE1AJQHtSBVqEGwUXCP+i6Xf6jA1iMFYUL4Rld5WCEcZXPtk/8owq6eqjQ78KEdxqRWHnfw==
+
 postcss@^6.0.14:
   version "6.0.23"
   resolved "https://registry.yarnpkg.com/postcss/-/postcss-6.0.23.tgz#61c82cc328ac60e677645f979054eb98bc0e3324"
