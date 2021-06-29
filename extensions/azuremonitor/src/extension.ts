@@ -1,74 +1,148 @@
-// Copyright (c) Microsoft Corporation.
-// Licensed under the MIT License.
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
+import * as nls from 'vscode-nls';
 import * as azdata from 'azdata';
 import * as path from 'path';
-import { SqlOpsDataClient, ClientOptions } from 'dataprotocol-client';
-import { ServerOptions, TransportKind } from 'vscode-languageclient';
-import { localize } from './localization';
-import * as Constants from './constants';
-import * as Strings from './strings';
-import { output } from './ui-references';
-import { ClientErrorHandler } from './client-error-handler';
-import { SerializationFeature } from './features/serializationFeature';
-import { AppContext } from './appContext';
-import { AzureMonitorObjectExplorerNodeProvider } from './objectExplorerNodeProvider/objectExplorerNodeProvider';
 
-export function activate(context: vscode.ExtensionContext): void {
-	output.appendLine(
-		localize("extension.activating", "Activating {0}.", Strings.extensionName));
+import * as Constants from './constants';
+import ContextProvider from './contextProvider';
+import * as Utils from './utils';
+import { AppContext } from './appContext';
+import { IExtension } from './azuremonitor';
+import { AzureMonitorObjectExplorerNodeProvider } from './objectExplorerNodeProvider/objectExplorerNodeProvider';
+import { registerSearchServerCommand } from './objectExplorerNodeProvider/command';
+import { AzureMonitorIconProvider } from './iconProvider';
+import { createAzureMonitorApi } from './azuremonitorApiFactory';
+import { AzureMonitorServer } from './azuremonitorServer';
+import { promises as fs } from 'fs';
+
+// export function activate2(context: vscode.ExtensionContext): void {
+// 	output.appendLine(
+// 		localize("extension.activating", "Activating {0}.", Strings.extensionName));
+
+// 	let appContext = new AppContext(context);
+// 	let nodeProvider = new AzureMonitorObjectExplorerNodeProvider(appContext);
+// 	azdata.dataprotocol.registerObjectExplorerNodeProvider(nodeProvider);
+
+// 	launchServiceClient(path.join(context.extensionPath, 'sqltoolsservice/windows/3.0.0-release.1/MicrosoftKustoServiceLayer.exe'), context);
+// }
+
+const localize = nls.loadMessageBundle();
+
+export async function activate(context: vscode.ExtensionContext): Promise<IExtension | undefined> {
+	// lets make sure we support this platform first
+	let supported = await Utils.verifyPlatform();
+
+	if (!supported) {
+		vscode.window.showErrorMessage(localize('azuremonitor.unsupportedPlatform', 'Unsupported platform'));
+		return undefined;
+	}
+
+	// ensure our log path exists
+	if (!(await Utils.exists(context.logPath))) {
+		await fs.mkdir(context.logPath);
+	}
 
 	let appContext = new AppContext(context);
+
 	let nodeProvider = new AzureMonitorObjectExplorerNodeProvider(appContext);
 	azdata.dataprotocol.registerObjectExplorerNodeProvider(nodeProvider);
+	let iconProvider = new AzureMonitorIconProvider();
+	azdata.dataprotocol.registerIconProvider(iconProvider);
 
-	launchServiceClient(path.join(context.extensionPath, 'sqltoolsservice/windows/3.0.0-release.1/MicrosoftKustoServiceLayer.exe'), context);
+	activateNotebookTask();
+
+	registerSearchServerCommand();
+	context.subscriptions.push(new ContextProvider());
+
+	registerLogCommand(context);
+
+	// initialize client last so we don't have features stuck behind it
+	const server = new AzureMonitorServer();
+	context.subscriptions.push(server);
+	await server.start(appContext);
+
+	return createAzureMonitorApi(appContext);
 }
 
-/**
- * ADS calls this function to deactivate our extension.
- * Usually this is because ADS is exiting.
- *
- * @param _context The VSCode extension context
- */
+const logFiles = ['resourceprovider.log', 'azuremonitorservice.log', 'credentialstore.log'];
+function registerLogCommand(context: vscode.ExtensionContext) {
+	context.subscriptions.push(vscode.commands.registerCommand('azuremonitor.showLogFile', async () => {
+		const choice = await vscode.window.showQuickPick(logFiles);
+		if (choice) {
+			const document = await vscode.workspace.openTextDocument(vscode.Uri.file(path.join(context.logPath, choice)));
+			if (document) {
+				vscode.window.showTextDocument(document);
+			}
+		}
+	}));
+}
+
+function activateNotebookTask(): void {
+	azdata.tasks.registerTask(Constants.azuremonitorClusterNewNotebookTask, (profile: azdata.IConnectionProfile) => {
+		return saveProfileAndCreateNotebook(profile);
+	});
+	azdata.tasks.registerTask(Constants.azuremonitorClusterOpenNotebookTask, (profile: azdata.IConnectionProfile) => {
+		return handleOpenNotebookTask(profile);
+	});
+}
+
+function saveProfileAndCreateNotebook(profile: azdata.IConnectionProfile): Promise<void> {
+	return handleNewNotebookTask(undefined, profile);
+}
+
+function findNextUntitledEditorName(): string {
+	let nextVal = 0;
+	// Note: this will go forever if it's coded wrong, or you have inifinite Untitled notebooks!
+	while (true) {
+		let title = `Notebook-${nextVal}`;
+		let hasNotebookDoc = azdata.nb.notebookDocuments.findIndex(doc => doc.isUntitled && doc.fileName === title) > -1;
+		if (!hasNotebookDoc) {
+			return title;
+		}
+		nextVal++;
+	}
+}
+
+async function handleNewNotebookTask(_oeContext?: azdata.ObjectExplorerContext, profile?: azdata.IConnectionProfile): Promise<void> {
+	// Ensure we get a unique ID for the notebook. For now we're using a different prefix to the built-in untitled files
+	// to handle this. We should look into improving this in the future
+	let title = findNextUntitledEditorName();
+	let untitledUri = vscode.Uri.parse(`untitled:${title}`);
+	await azdata.nb.showNotebookDocument(untitledUri, {
+		connectionProfile: profile,
+		preview: false
+	});
+}
+
+async function handleOpenNotebookTask(profile: azdata.IConnectionProfile): Promise<void> {
+	let notebookFileTypeName = localize('notebookFileType', "Notebooks");
+	let filter: any = {};
+	filter[notebookFileTypeName] = 'ipynb';
+	let uris = await vscode.window.showOpenDialog({
+		filters: filter,
+		canSelectFiles: true,
+		canSelectMany: false
+	});
+	if (uris && uris.length > 0) {
+		let fileUri = uris[0];
+		// Verify this is a .ipynb file since this isn't actually filtered on Mac/Linux
+		if (path.extname(fileUri.fsPath) !== '.ipynb') {
+			// in the future might want additional supported types
+			vscode.window.showErrorMessage(localize('unsupportedFileType', "Only .ipynb Notebooks are supported"));
+		} else {
+			await azdata.nb.showNotebookDocument(fileUri, {
+				connectionProfile: profile,
+				preview: false
+			});
+		}
+	}
+}
+
+// this method is called when your extension is deactivated
 export function deactivate(): void {
-	output.appendLine(
-		localize("extension.deactivated", "{0} has been deactivated.", Strings.extensionName));
-}
-
-function launchServiceClient(executablePath: string, context: vscode.ExtensionContext): SqlOpsDataClient {
-	const backendService = new SqlOpsDataClient(Strings.serviceName, getServerOptions(executablePath), getClientOptions());
-
-	backendService
-		.onReady()
-		.then(() => output.appendLine(localize("extension.activated", "{0} is now active!", Strings.extensionName)));
-
-	// Register backend service for disposal when extension is deactivated
-	context.subscriptions.push(backendService.start());
-
-	return backendService;
-}
-
-function getServerOptions(executablePath: string): ServerOptions {
-	return {
-		command: executablePath,
-		args: ['--service-name', 'AzureMonitor'],
-		transport: TransportKind.stdio
-	};
-}
-
-function getClientOptions(): ClientOptions {
-	return {
-		documentSelector: ['loganalytics'],
-		providerId: Constants.providerId,
-		errorHandler: new ClientErrorHandler(),
-		synchronize: {
-			configurationSection: 'azuremonitor'
-		},
-		features: [
-			...SqlOpsDataClient.defaultFeatures,
-			SerializationFeature
-		]
-	};
 }

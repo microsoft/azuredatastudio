@@ -1,4 +1,5 @@
 {
+	"azuremonitor.description": "Azure Monitor access for Azure Data Studio",
 	"azuremonitor.cloud.workspaceProperties.name": "Workspace Name",
 	"azuremonitor.cloud.workspaceProperties.id": "Workspace ID",
 	"azuremonitor.databasesListProperties.name": "Name",

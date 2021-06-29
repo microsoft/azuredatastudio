@@ -7,6 +7,7 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as path from 'path';
+import * as os from 'os';
 import * as findRemoveSync from 'find-remove';
 import { promises as fs } from 'fs';
 
@@ -59,6 +60,8 @@ export function getLogFileName(prefix: string, pid: number): string {
 
 export function getCommonLaunchArgsAndCleanupOldLogFiles(logPath: string, fileName: string, executablePath: string): string[] {
 	let launchArgs: string[] = [];
+	launchArgs.push(`--locale`, vscode.env.language);
+
 	launchArgs.push('--log-file');
 	let logFile = path.join(logPath, fileName);
 	launchArgs.push(logFile);
@@ -73,6 +76,9 @@ export function getCommonLaunchArgsAndCleanupOldLogFiles(logPath: string, fileNa
 		launchArgs.push('--tracing-level');
 		launchArgs.push(config);
 	}
+
+	launchArgs.push('--service-name AzureMonitor');
+
 	return launchArgs;
 }
 
@@ -98,6 +104,14 @@ export function getPackageInfo(packageJson: IPackageInfo): IPackageInfo | undefi
 		};
 	}
 	return undefined;
+}
+
+export function verifyPlatform(): Thenable<boolean> {
+	if (os.platform() === 'darwin' && parseFloat(os.release()) < 16) {
+		return Promise.resolve(false);
+	} else {
+		return Promise.resolve(true);
+	}
 }
 
 export function getErrorMessage(error: Error | any, removeHeader: boolean = false): string {

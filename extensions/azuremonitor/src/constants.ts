@@ -14,8 +14,12 @@ export const integratedAuth = 'integrated';
 export const serverPropName = 'server';
 export const userPropName = 'user';
 export const passwordPropName = 'password';
+export const azuremonitorProviderName = 'LOGANALYTICS';
 
 // SERVICE NAMES //////////////////////////////////////////////////////////
 export const ObjectExplorerService = 'objectexplorer';
 export const objectExplorerPrefix: string = 'objectexplorer://';
 export const ViewType = 'view';
+
+export const azuremonitorClusterNewNotebookTask = 'azuremonitorCluster.task.newNotebook';
+export const azuremonitorClusterOpenNotebookTask = 'azuremonitorCluster.task.openNotebook';

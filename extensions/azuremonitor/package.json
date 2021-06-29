@@ -1,13 +1,15 @@
 {
   "name": "azuremonitor",
+  "description": "%azuremonitor.description%",
   "version": "0.1.0",
   "publisher": "Microsoft",
+  "aiKey": "AIF-444c3af9-8e69-4462-ab49-4191e6ad1916",
   "activationEvents": [
     "*"
   ],
   "engines": {
     "vscode": "*",
-    "azdata": ">=1.28.0"
+    "azdata": ">=1.31.0"
   },
   "main": "./out/extension",
   "repository": {
