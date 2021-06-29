@@ -413,14 +413,8 @@ export class TabsTitleControl extends TitleControl {
 	}
 
 	closeEditors(editors: IEditorInput[]): void {
-
 		// Cleanup closed editors
 		this.handleClosedEditors();
-
-		// Update Breadcrumbs when last editor closed
-		if (this.group.count === 0) {
-			this.breadcrumbsControl?.update();
-		}
 	}
 
 	private handleClosedEditors(): void {
@@ -458,6 +452,8 @@ export class TabsTitleControl extends TitleControl {
 			this.tabActionBars = [];
 
 			this.clearEditorActionsToolbar();
+
+			this.breadcrumbsControl?.update();
 		}
 	}
 

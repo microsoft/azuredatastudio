@@ -22,6 +22,7 @@ import { ExtHostTaskBase, TaskHandleDTO, TaskDTO, CustomExecutionDTO, HandlerDat
 import { Schemas } from 'vs/base/common/network';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IExtHostApiDeprecationService } from 'vs/workbench/api/common/extHostApiDeprecationService';
+import { IExtHostEditorTabs } from 'vs/workbench/api/common/extHostEditorTabs';
 
 export class ExtHostTask extends ExtHostTaskBase {
 	// private _variableResolver: ExtHostVariableResolverService | undefined; {{SQL CARBON EDIT}}
@@ -34,7 +35,8 @@ export class ExtHostTask extends ExtHostTaskBase {
 		@IExtHostConfiguration configurationService: IExtHostConfiguration,
 		@IExtHostTerminalService extHostTerminalService: IExtHostTerminalService,
 		@ILogService logService: ILogService,
-		@IExtHostApiDeprecationService deprecationService: IExtHostApiDeprecationService
+		@IExtHostApiDeprecationService deprecationService: IExtHostApiDeprecationService,
+		@IExtHostEditorTabs private readonly editorTabs: IExtHostEditorTabs
 	) {
 		super(extHostRpc, initData, workspaceService, editorService, configurationService, extHostTerminalService, logService, deprecationService);
 		if (initData.remote.isRemote && initData.remote.authority) {
@@ -171,10 +173,6 @@ export class ExtHostTask extends ExtHostTaskBase {
 		}
 		return result;*/ // {{SQL CARBON EDIT}}
 		return undefined;
-	}
-
-	public $getDefaultShellAndArgs(): Promise<{ shell: string, args: string[] | string | undefined }> {
-		return this._terminalService.$getDefaultShellAndArgs(true);
 	}
 
 	public async $jsonTasksSupported(): Promise<boolean> {

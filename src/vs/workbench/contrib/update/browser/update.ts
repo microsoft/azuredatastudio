@@ -335,8 +335,7 @@ export class UpdateContribution extends Disposable implements IWorkbenchContribu
 					action.run();
 					action.dispose();
 				}
-			}],
-			{ sticky: true }
+			}]
 		);
 	}
 
@@ -362,8 +361,7 @@ export class UpdateContribution extends Disposable implements IWorkbenchContribu
 					action.run();
 					action.dispose();
 				}
-			}],
-			{ sticky: true }
+			}]
 		);
 	}
 

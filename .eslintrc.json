@@ -523,7 +523,7 @@
 					"**/{vs,sql}/platform/**",
 					"**/{vs,sql}/editor/**",
 					"**/{vs,sql}/workbench/{common,browser,node,electron-sandbox,electron-browser}/**",
-					"vs/workbench/contrib/files/common/editors/fileEditorInput",
+					"vs/workbench/contrib/files/browser/editors/fileEditorInput",
 					"**/{vs,sql}/workbench/services/**",
 					"**/{vs,sql}/workbench/test/**",
 					"*" // node modules

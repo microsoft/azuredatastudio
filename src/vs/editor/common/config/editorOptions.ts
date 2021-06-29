@@ -383,7 +383,7 @@ export interface IEditorOptions {
 	 */
 	suggest?: ISuggestOptions;
 	/**
-	 * Smart select opptions;
+	 * Smart select options.
 	 */
 	smartSelect?: ISmartSelectOptions;
 	/**
@@ -638,6 +638,10 @@ export interface IEditorOptions {
 	 * Control the behavior and rendering of the inline hints.
 	 */
 	inlayHints?: IEditorInlayHintsOptions;
+	/**
+	 * Control if the editor should use shadow DOM.
+	 */
+	useShadowDOM?: boolean;
 }
 
 /**
@@ -3852,6 +3856,7 @@ export const enum EditorOption {
 	tabCompletion,
 	tabIndex,
 	unusualLineTerminators,
+	useShadowDOM,
 	useTabStops,
 	wordSeparators,
 	wordWrap,
@@ -4466,6 +4471,9 @@ export const EditorOptions = {
 			],
 			description: nls.localize('unusualLineTerminators', "Remove unusual line terminators that might cause problems.")
 		}
+	)),
+	useShadowDOM: register(new EditorBooleanOption(
+		EditorOption.useShadowDOM, 'useShadowDOM', true
 	)),
 	useTabStops: register(new EditorBooleanOption(
 		EditorOption.useTabStops, 'useTabStops', true,
