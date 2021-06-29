@@ -141,7 +141,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	public _targetType!: MigrationTargetType;
 	public refreshDatabaseBackupPage!: boolean;
 
-	public _sessionId: string;
+	public _sessionId: string = uuidv4();
 
 	constructor(
 		private readonly _extensionContext: vscode.ExtensionContext,
@@ -152,7 +152,6 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		this._databaseBackup = {} as DatabaseBackupModel;
 		this._databaseBackup.networkShare = {} as NetworkShare;
 		this._databaseBackup.blobs = [];
-		this._sessionId = uuidv4();
 	}
 
 	public get sourceConnectionId(): string {
@@ -206,7 +205,11 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			issues: serverLevelAssessments,
 			databaseAssessments: databaseLevelAssessments
 		};
+		this.generateAssessmentTelemetry(startTime, endTime, connectionProfile);
+		return this._assessmentResults;
+	}
 
+	private async generateAssessmentTelemetry(startTime: number, endTime: number, connectionProfile: azdata.connection.ConnectionProfile): Promise<void> {
 		try {
 			const queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>(connectionProfile.providerId, azdata.DataProviderType.QueryProvider);
 			const query = 'SELECT name, compatibility_level FROM sys.databases; ';
@@ -276,8 +279,6 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		} catch (e) {
 			console.log(e);
 		}
-
-		return this._assessmentResults;
 	}
 
 	public getDatabaseAssessments(databaseName: string): mssql.SqlMigrationAssessmentResultItem[] | undefined {
