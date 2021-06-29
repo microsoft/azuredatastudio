@@ -46,6 +46,7 @@ export class WorkspaceService implements IWorkspaceService {
 			return true;
 		}
 	}
+
 	async addProjectsToWorkspace(projectFiles: vscode.Uri[]): Promise<void> {
 		if (!projectFiles || projectFiles.length === 0) {
 			return;
@@ -113,7 +114,7 @@ export class WorkspaceService implements IWorkspaceService {
 	/**
 	 * Returns an array of all the supported projects in the folder
 	 * @param folder folder to look look for projects
-	 * @returns array of file paths of supported projects
+	 * @returns array of file URIs for supported projects
 	 */
 	async getAllProjectsInFolder(folder: vscode.Uri): Promise<vscode.Uri[]> {
 		// get the unique supported project extensions

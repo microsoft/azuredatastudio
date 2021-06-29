@@ -861,7 +861,7 @@ export class ProjectsController {
 		try {
 			const workspaceApi = utils.getDataWorkspaceExtensionApi();
 
-			const validateWorkspace = true; // await workspaceApi.validateWorkspace();
+			const validateWorkspace = await workspaceApi.validateWorkspace();
 			if (validateWorkspace) {
 				const newProjFolderUri = model.filePath;
 
