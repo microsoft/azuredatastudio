@@ -62,7 +62,6 @@ export class WorkspaceService implements IWorkspaceService {
 
 				TelemetryReporter.createActionEvent(TelemetryViews.WorkspaceTreePane, TelemetryActions.ProjectAddedToWorkspace)
 					.withAdditionalProperties({
-						workspaceProjectRelativity: calculateRelativity(projectFile.fsPath),
 						projectType: path.extname(projectFile.fsPath)
 					}).send();
 
