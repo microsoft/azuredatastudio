@@ -1549,10 +1549,10 @@ export class CompletionList {
 }
 
 @es5ClassCompat
-export class InlineSuggestion implements vscode.InlineSuggestion {
+export class InlineSuggestion implements vscode.InlineCompletionItem {
 
 	text: string;
-	replaceRange?: Range;
+	range?: Range;
 
 	constructor(text: string) {
 		this.text = text;
@@ -1560,10 +1560,10 @@ export class InlineSuggestion implements vscode.InlineSuggestion {
 }
 
 @es5ClassCompat
-export class InlineSuggestions implements vscode.InlineSuggestions {
-	items: vscode.InlineSuggestion[];
+export class InlineSuggestions implements vscode.InlineCompletionList {
+	items: vscode.InlineCompletionItem[];
 
-	constructor(items: vscode.InlineSuggestion[]) {
+	constructor(items: vscode.InlineCompletionItem[]) {
 		this.items = items;
 	}
 }
@@ -2457,6 +2457,11 @@ export class EvaluatableExpression implements vscode.EvaluatableExpression {
 		this.range = range;
 		this.expression = expression;
 	}
+}
+
+export enum InlineCompletionTriggerKind {
+	Automatic = 0,
+	Explicit = 1,
 }
 
 @es5ClassCompat
