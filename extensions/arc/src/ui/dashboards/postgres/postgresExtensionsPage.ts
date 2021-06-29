@@ -20,6 +20,7 @@ export class PostgresExtensionsPage extends DashboardPage {
 	private extensionsLoading!: azdata.LoadingComponent;
 	private addExtensionsButton!: azdata.ButtonComponent;
 	private _dropExtPromise?: Deferred<void>;
+	private extensionsLink!: azdata.HyperlinkComponent;
 
 	private readonly _azdataApi: azdataExt.IExtension;
 
@@ -63,14 +64,14 @@ export class PostgresExtensionsPage extends DashboardPage {
 			CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
 		}).component();
 
-		const link = this.modelView.modelBuilder.hyperlink().withProps({
+		this.extensionsLink = this.modelView.modelBuilder.hyperlink().withProps({
 			label: loc.learnMore,
 			url: 'https://www.postgresql.org/docs/12/external-extensions.html',
 		}).component();
 
 		const infoAndLink = this.modelView.modelBuilder.flexContainer().withLayout({ flexWrap: 'wrap' }).component();
 		infoAndLink.addItem(info, { CSSStyles: { 'margin-right': '5px' } });
-		infoAndLink.addItem(link);
+		infoAndLink.addItem(this.extensionsLink);
 		content.addItem(infoAndLink, { CSSStyles: { 'margin-bottom': '15px', 'margin-top': '25px' } });
 
 		this.extensionsTable = this.modelView.modelBuilder.declarativeTable().withProps({
@@ -167,16 +168,13 @@ export class PostgresExtensionsPage extends DashboardPage {
 	}
 
 	private refreshExtensionsTable(): void {
+		let extensions = this._postgresModel.config!.spec.engine.extensions;
+		this.extensionsTable.data = extensions.map(e => {
 
-		if (this._postgresModel.config) {
-			let extensions = this._postgresModel.config?.spec.engine.extensions;
-			this.extensionsTable.data = extensions.map(e => {
+			this.extensionNames.push(e.name);
 
-				this.extensionNames.push(e.name);
-
-				return [e.name, this.createDropButton(e.name)];
-			});
-		}
+			return [e.name, this.createDropButton(e.name)];
+		});
 	}
 
 	/**
@@ -268,8 +266,11 @@ export class PostgresExtensionsPage extends DashboardPage {
 	}
 
 	private handleConfigUpdated(): void {
-		this.extensionsLoading.loading = false;
-		this.extensionNames = [];
-		this.refreshExtensionsTable();
+		if (this._postgresModel.config) {
+			this.extensionsLoading.loading = false;
+			this.extensionsLink.url = `https://www.postgresql.org/docs/${this._postgresModel.engineVersion}/external-extensions.html`;
+			this.extensionNames = [];
+			this.refreshExtensionsTable();
+		}
 	}
 }
