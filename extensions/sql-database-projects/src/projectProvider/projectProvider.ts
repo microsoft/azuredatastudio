@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ThemedIconPath } from 'azdata';
+import type { ThemedIconPath } from 'azdata';
 import * as dataworkspace from 'dataworkspace';
 import * as sqldbproj from 'sqldbproj';
 import * as vscode from 'vscode';
