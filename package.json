@@ -1,7 +1,7 @@
 {
   "name": "azuredatastudio",
   "version": "1.31.0",
-  "distro": "d69a2de3200adff1ccbccd53a6dae7074f883bb5",
+  "distro": "9eab1e6d6180c1a560a4a50eb9e6e99641549329 ",
   "author": {
     "name": "Microsoft Corporation"
   },
@@ -95,7 +95,7 @@
     "plotly.js-dist-min": "^1.53.0",
     "reflect-metadata": "^0.1.8",
     "rxjs": "5.4.0",
-    "sanitize-html": "^2.3.2",
+    "sanitize-html": "1.19.1",
     "semver-umd": "^5.5.7",
     "slickgrid": "github:kburtram/SlickGrid#2.3.33",
     "spdlog": "^0.11.1",
