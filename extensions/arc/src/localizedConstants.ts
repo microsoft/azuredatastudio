@@ -191,7 +191,7 @@ export const noPodIssuesDetected = localize('arc.noPodIssuesDetected', "There ar
 export const podIssuesDetected = localize('arc.podIssuesDetected', "The pods listed below are experiencing issues that may affect performance or availability.");
 export const containerReady = localize('arc.containerReady', "Pod containers are ready.");
 export const podScheduled = localize('arc.podScheduled', "Pod is schedulable.");
-
+export const loadingClusterContextCompleted = localize('arc.loadingClusterContextCompleted', "Loading cluster contexts completed");
 export function rangeSetting(min: string, max: string): string { return localize('arc.rangeSetting', "Value is expected to be in the range {0} - {1}", min, max); }
 export function databaseCreated(name: string): string { return localize('arc.databaseCreated', "Database {0} created", name); }
 export function deletingInstance(name: string): string { return localize('arc.deletingInstance', "Deleting instance '{0}'...", name); }
@@ -262,3 +262,5 @@ export const noCurrentContextFound = (configFile: string) => localize('noCurrent
 export const noNameInContext = (configFile: string) => localize('noNameInContext', "No name field was found in a cluster context in the config file: {0}", configFile);
 export const userCancelledError = localize('arc.userCancelledError', "User cancelled the dialog");
 export const clusterContextConfigNoLongerValid = (configFile: string, clusterContext: string, error: any) => localize('clusterContextConfigNoLongerValid', "The cluster context information specified by config file: {0} and cluster context: {1} is no longer valid. Error is:\n\t{2}\n Do you want to update this information?", configFile, clusterContext, getErrorMessage(error));
+export const invalidConfigPath = localize('arc.invalidConfigPath', "Invalid config path");
+export const loadingClusterContextsError = (error: any): string => localize('arc.loadingClusterContextsError', "Error loading cluster contexts. {0}", getErrorMessage(error));
