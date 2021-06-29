@@ -109,7 +109,7 @@ export class OpenExistingDialog extends DialogBase {
 			if (checked) {
 				this.formBuilder?.removeFormItem(<azdataType.FormComponent>this.gitRepoTextBoxComponent);
 				this.formBuilder?.removeFormItem(<azdataType.FormComponent>this.localClonePathComponent);
-				this.formBuilder?.insertFormItem(<azdataType.FormComponent>this.filePathAndButtonComponent, 2);
+				this.formBuilder?.insertFormItem(<azdataType.FormComponent>this.filePathAndButtonComponent, 1);
 			}
 		}));
 
@@ -130,8 +130,8 @@ export class OpenExistingDialog extends DialogBase {
 		this.register(this.remoteGitRepoRadioButton.onDidChangeCheckedState(checked => {
 			if (checked) {
 				this.formBuilder?.removeFormItem(<azdataType.FormComponent>this.filePathAndButtonComponent);
-				this.formBuilder?.insertFormItem(<azdataType.FormComponent>this.gitRepoTextBoxComponent, 2);
-				this.formBuilder?.insertFormItem(<azdataType.FormComponent>this.localClonePathComponent, 3);
+				this.formBuilder?.insertFormItem(<azdataType.FormComponent>this.gitRepoTextBoxComponent, 1);
+				this.formBuilder?.insertFormItem(<azdataType.FormComponent>this.localClonePathComponent, 2);
 			}
 		}));
 
