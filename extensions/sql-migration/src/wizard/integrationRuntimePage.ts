@@ -24,6 +24,7 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 	private _resourceGroupDropdown!: azdata.DropDownComponent;
 	private _dmsDropdown!: azdata.DropDownComponent;
 
+	private _dmsDetailsContainer!: azdata.FlexContainer;
 	private _dmsStatusInfoBox!: azdata.InfoBoxComponent;
 	private _authKeyTable!: azdata.DeclarativeTableComponent;
 	private _refreshButton!: azdata.ButtonComponent;
@@ -56,7 +57,8 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 			dialog.initialize();
 		});
 
-		this._statusLoadingComponent = view.modelBuilder.loadingComponent().withItem(this.createDMSDetailsContainer()).component();
+		this._dmsDetailsContainer = this.createDMSDetailsContainer();
+		this._statusLoadingComponent = view.modelBuilder.loadingComponent().withItem(this._dmsDetailsContainer).component();
 
 		const dmsPortalInfo = this._view.modelBuilder.infoBox().withProps({
 			text: constants.DMS_PORTAL_INFO,
@@ -201,7 +203,7 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 		}).component();
 
 		this._dmsDropdown.onValueChanged(async (value) => {
-			if (value && value !== constants.SQL_MIGRATION_SERVICE_NOT_FOUND_ERROR) {
+			if (value) {
 				this.wizard.message = {
 					text: ''
 				};
@@ -441,7 +443,17 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 	}
 
 	private async loadMigrationServiceStatus(): Promise<void> {
+		if (!this.migrationStateModel._sqlMigrationService) {
+			this._statusLoadingComponent.loading = false;
+			this._dmsDetailsContainer.updateProperties({
+				'display': 'none'
+			});
+			return;
+		}
 		this._statusLoadingComponent.loading = true;
+		this._dmsDetailsContainer.updateProperties({
+			'display': 'inline'
+		});
 		try {
 			await this.loadStatus();
 		} catch (error) {

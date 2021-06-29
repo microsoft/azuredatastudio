@@ -13,6 +13,9 @@ import { SKURecommendations } from './externalContract';
 import * as constants from '../constants/strings';
 import { MigrationLocalStorage } from './migrationLocalStorage';
 import * as nls from 'vscode-nls';
+import { v4 as uuidv4 } from 'uuid';
+import { sendSqlMigrationActionEvent, TelemetryAction, TelemetryViews } from '../telemtery';
+import { getTime, hashString } from '../api/utils';
 const localize = nls.loadMessageBundle();
 
 export enum State {
@@ -137,6 +140,8 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	public _targetType!: MigrationTargetType;
 	public refreshDatabaseBackupPage!: boolean;
 
+	public _sessionId: string;
+
 	constructor(
 		private readonly _extensionContext: vscode.ExtensionContext,
 		private readonly _sourceConnectionId: string,
@@ -146,6 +151,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		this._databaseBackup = {} as DatabaseBackupModel;
 		this._databaseBackup.networkShare = {} as NetworkShare;
 		this._databaseBackup.blobs = [];
+		this._sessionId = uuidv4();
 	}
 
 	public get sourceConnectionId(): string {
@@ -171,11 +177,12 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		];
 
 		const ownerUri = await azdata.connection.getUriForConnection(this.sourceConnectionId);
-
+		const startTime = getTime();
 		const assessmentResults = await this.migrationService.getAssessments(
 			ownerUri
 		);
-
+		const endTime = getTime();
+		const connectionProfile = await this.getSourceConnectionProfile();
 		this._serverDatabases = await (await azdata.connection.listDatabases(this.sourceConnectionId)).filter((name) => !excludeDbs.includes(name));
 		const serverLevelAssessments: mssql.SqlMigrationAssessmentResultItem[] = [];
 		const databaseLevelAssessments = this._serverDatabases.map(db => {
@@ -184,7 +191,6 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				issues: <mssql.SqlMigrationAssessmentResultItem[]>[]
 			};
 		});
-
 		assessmentResults?.items.forEach((item) => {
 			if (item.appliesToMigrationTargetPlatform === MigrationTargetType.SQLMI) {
 				const dbIndex = this._serverDatabases.indexOf(item.databaseName);
@@ -195,11 +201,80 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				}
 			}
 		});
-
 		this._assessmentResults = {
 			issues: serverLevelAssessments,
 			databaseAssessments: databaseLevelAssessments
 		};
+
+		try {
+			const queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>(connectionProfile.providerId, azdata.DataProviderType.QueryProvider);
+			const query = 'SELECT name, compatibility_level FROM sys.databases; ';
+			const results = await queryProvider.runQueryAndReturn(await (azdata.connection.getUriForConnection(this.sourceConnectionId)), query);
+			const compatLevelHashMap: Map<string, string> = new Map();
+			results.rows.forEach(r => {
+				compatLevelHashMap.set(r[0].displayValue, r[1].displayValue);
+			});
+
+			sendSqlMigrationActionEvent(
+				TelemetryViews.MigrationWizardTargetSelectionPage,
+				TelemetryAction.ServerAssessment,
+				{
+					'sessionId': this._sessionId,
+					'tenantId': this._azureAccount.properties.tenants[0].id,
+					'accountId': this._azureAccount.key.accountId,
+					'hashedServerName': hashString((connectionProfile.serverName))
+				},
+				{
+					'issuesCount': this._assessmentResults.issues.length,
+					'duration': endTime - startTime,
+					'databaseCount': this._assessmentResults.databaseAssessments.length,
+					'startTime': startTime,
+					'endTime': endTime,
+				}
+			);
+
+			this._assessmentResults.issues.forEach(i => {
+				sendSqlMigrationActionEvent(
+					TelemetryViews.MigrationWizardTargetSelectionPage,
+					TelemetryAction.ServerAssessmentIssues,
+					{
+						'sessionId': this._sessionId,
+						'rule': i.checkId
+					},
+					{}
+				);
+			});
+
+			this._assessmentResults.databaseAssessments.forEach(d => {
+				sendSqlMigrationActionEvent(
+					TelemetryViews.MigrationWizardTargetSelectionPage,
+					TelemetryAction.DatabaseAssessment,
+					{
+						'sessionId': this._sessionId,
+						'hashedDatabaseName': hashString(d.name),
+						'compatibilityLevel': compatLevelHashMap.get(d.name)!,
+					},
+					{
+						'warningCount': d.issues.length,
+					}
+				);
+
+				d.issues.forEach(w => {
+					sendSqlMigrationActionEvent(
+						TelemetryViews.MigrationWizardTargetSelectionPage,
+						TelemetryAction.DatabaseAssessmentWarning,
+						{
+							'sessionId': this._sessionId,
+							'hashedDatabaseName': hashString(d.name),
+							'warning': w.checkId
+						},
+						{}
+					);
+				});
+			});
+		} catch (e) {
+			console.log(e);
+		}
 
 		return this._assessmentResults;
 	}
@@ -574,6 +649,15 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 	public async getBlobContainerValues(subscription: azureResource.AzureResourceSubscription, storageAccount: StorageAccount): Promise<azdata.CategoryValue[]> {
 		let blobContainerValues: azdata.CategoryValue[] = [];
+		if (!this._azureAccount || !subscription || !storageAccount) {
+			blobContainerValues = [
+				{
+					displayName: constants.NO_BLOBCONTAINERS_FOUND,
+					name: ''
+				}
+			];
+			return blobContainerValues;
+		}
 		try {
 			this._blobContainers = await getBlobContainers(this._azureAccount, subscription, storageAccount);
 			this._blobContainers.forEach((blobContainer) => {
