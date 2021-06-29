@@ -32,7 +32,7 @@ export function setup() {
 			const app = this.app as Application;
 			await app.workbench.sqlNotebook.view.focus();
 			// Adding a regex expression to not depend on specific results of files
-			const regexExpr = /[0-9]+( results in )[0-9]+( files)/;
+			const regexExpr = /[0-9]+( results in | result in )[0-9]+( files| file)/;
 			const results = await app.workbench.sqlNotebook.view.searchInNotebook('hello');
 			assert(results.textContent !== '' && results.textContent.match(regexExpr));
 		});
