@@ -137,7 +137,6 @@ export class PostgresExtensionsPage extends DashboardPage {
 							},
 							async (_progress, _token): Promise<void> => {
 
-
 								await this._azdataApi.azdata.arc.postgres.server.edit(
 									this._postgresModel.info.name,
 									{
@@ -176,48 +175,62 @@ export class PostgresExtensionsPage extends DashboardPage {
 
 				this.extensionNames.push(e.name);
 
-				// Can drop individual extensions
-				let dropExtensionsButton = this.modelView.modelBuilder.button().withProps({
-					iconPath: IconPathHelper.delete,
-					ariaLabel: loc.dropExtension,
-					title: loc.dropExtension,
-					width: '20px',
-					height: '20px',
-					enabled: true
-				}).component();
-
-				this.disposables.push(
-					dropExtensionsButton.onDidClick(async () => {
-						try {
-							this.addExtensionsButton.enabled = false;
-							dropExtensionsButton.enabled = false;
-							await this.dropExtension(e.name);
-
-							try {
-								await this._postgresModel.refresh();
-							} catch (error) {
-								vscode.window.showErrorMessage(loc.refreshFailed(error));
-							}
-						} catch (error) {
-							vscode.window.showErrorMessage(loc.updateExtensionsFailed(error));
-						} finally {
-							this.addExtensionsButton.enabled = false;
-							dropExtensionsButton.enabled = true;
-						}
-					})
-				);
-
-				if (e.name === 'citus') {
-					dropExtensionsButton.enabled = false;
-				}
-
-				return [e.name, dropExtensionsButton];
+				return [e.name, this.createDropButton(e.name)];
 			});
 		}
 	}
 
-	/** Drop extension */
-	public async dropExtension(name: string) {
+	/**
+	 * Creates drop button to add to each row of extensions table.
+	 * Allows user to drop individual extension.
+	 * @param name name of postgres extension the drop button will be tied to.
+	 */
+	public createDropButton(name: string): azdata.ButtonComponent {
+		// Can drop individual extensions
+		let button = this.modelView.modelBuilder.button().withProps({
+			iconPath: IconPathHelper.delete,
+			ariaLabel: loc.dropExtension,
+			title: loc.dropExtension,
+			width: '20px',
+			height: '20px',
+			enabled: true
+		}).component();
+
+		this.disposables.push(
+			button.onDidClick(async () => {
+				try {
+					this.addExtensionsButton.enabled = false;
+					button.enabled = false;
+					await this.dropExtension(name);
+
+					try {
+						await this._postgresModel.refresh();
+					} catch (error) {
+						vscode.window.showErrorMessage(loc.refreshFailed(error));
+					}
+
+					vscode.window.showInformationMessage(loc.extensionDropped(name));
+
+				} catch (error) {
+					vscode.window.showErrorMessage(loc.updateExtensionsFailed(error));
+				} finally {
+					this.addExtensionsButton.enabled = true;
+				}
+			})
+		);
+
+		if (name === 'citus') {
+			button.enabled = false;
+		}
+
+		return button;
+	}
+
+	/**
+	 * Calls edit on postgres extensions with an updated extensions list.
+	 * @param name name of postgres extension to not inlcude when editing list of extensions
+	 */
+	public async dropExtension(name: string): Promise<void> {
 		// Only allow one drop to be happening at a time
 		if (this._dropExtPromise) {
 			vscode.window.showErrorMessage(loc.dropMultipleExtensions);
@@ -245,7 +258,6 @@ export class PostgresExtensionsPage extends DashboardPage {
 					);
 				}
 			);
-			vscode.window.showInformationMessage(loc.extensionDropped(name));
 			this._dropExtPromise.resolve();
 		} catch (err) {
 			this._dropExtPromise.reject(err);

@@ -59,7 +59,7 @@ export const miaaAdmin = localize('arc.miaaAdmin', "Managed instance admin");
 export const controllerEndpoint = localize('arc.controllerEndpoint', "Controller endpoint");
 export const extensionName = localize('arc.extensionName', "Extension name");
 export const extensionsDescription = localize('arc.extensionsDescription', "PostgreSQL provides the ability to extend the functionality of your database by using extensions. Extensions allow for bundling multiple related SQL objects together in a single package that can be loaded or removed from your database with a single command. After being loaded in the database, extensions can function like built-in features.");
-export const extensionsFunction = localize('arc.extensionsFunction', "Some extensions must be loaded into PostgreSQL at startup time before they can be used. These preloaded extensions can be viewed below.");
+export const extensionsFunction = localize('arc.extensionsFunction', "Some extensions must be loaded into PostgreSQL at startup time before they can be used. These preloaded extensions can be viewed and edited  below.");
 export const extensionsLearnMore = localize('arc.extensionsLearnMore', "Learn more about PostgreSQL extensions.");
 export const extensionsTableLoading = localize('arc.extensionsTableLoading', "Table of preloaded extensions are loading.");
 export const extensionsTableLabel = localize('arc.extensionsTableLabel', "Table of preloaded extensions.");
@@ -248,7 +248,7 @@ export function copyValueToClipboard(valueName: string): string { return localiz
 export const pgConnectionRequired = localize('arc.pgConnectionRequired', "A connection is required to show and set database engine settings.");
 export const miaaConnectionRequired = localize('arc.miaaConnectionRequired', "A connection is required to list the databases on this instance.");
 export const couldNotFindControllerRegistration = localize('arc.couldNotFindControllerRegistration', "Could not find controller registration.");
-export const dropMultipleExtensions = localize('arc.dropMultipleExtensions', "Only drop one extension at a time.");
+export const dropMultipleExtensions = localize('arc.dropMultipleExtensions', "Currently dropping another extension, try again once that is completed.");
 export function updateExtensionsFailed(error: any): string { return localize('arc.updateExtensionsFailed', "Editing extensions failed. {0}", getErrorMessage(error)); }
 export function refreshFailed(error: any): string { return localize('arc.refreshFailed', "Refresh failed. {0}", getErrorMessage(error)); }
 export function resetFailed(error: any): string { return localize('arc.resetFailed', "Reset failed. {0}", getErrorMessage(error)); }
