@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as dataworkspace from 'dataworkspace';
 import * as path from 'path';
@@ -14,7 +13,7 @@ import { IWorkspaceService } from '../common/interfaces';
 import { ProjectProviderRegistry } from '../common/projectProviderRegistry';
 import Logger from '../common/logger';
 import { TelemetryReporter, TelemetryViews, calculateRelativity, TelemetryActions } from '../common/telemetry';
-import { isCurrentWorkspaceUntitled } from '../common/utils';
+import { getAzdataApi, isCurrentWorkspaceUntitled } from '../common/utils';
 
 const WorkspaceConfigurationName = 'dataworkspace';
 const ProjectsConfigurationName = 'projects';
@@ -58,9 +57,9 @@ export class WorkspaceService implements IWorkspaceService {
 
 		if (isCurrentWorkspaceUntitled()) {
 			vscode.workspace.updateWorkspaceFolders(vscode.workspace.workspaceFolders!.length, null, { uri: projectFolder });
-			await azdata.workspace.saveAndEnterWorkspace(workspaceFile!);
+			await getAzdataApi()?.workspace.saveAndEnterWorkspace(workspaceFile!);
 		} else {
-			await azdata.workspace.createAndEnterWorkspace(projectFolder, workspaceFile);
+			await getAzdataApi()?.workspace.createAndEnterWorkspace(projectFolder, workspaceFile);
 		}
 	}
 
@@ -98,7 +97,7 @@ export class WorkspaceService implements IWorkspaceService {
 	async enterWorkspace(workspaceFile: vscode.Uri): Promise<void> {
 		const result = await vscode.window.showWarningMessage(constants.EnterWorkspaceConfirmation, { modal: true }, constants.OkButtonText);
 		if (result === constants.OkButtonText) {
-			await azdata.workspace.enterWorkspace(workspaceFile);
+			await getAzdataApi()?.workspace.enterWorkspace(workspaceFile);
 		} else {
 			return;
 		}
