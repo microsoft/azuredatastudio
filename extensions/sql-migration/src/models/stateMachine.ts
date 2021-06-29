@@ -229,6 +229,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				},
 				{
 					'issuesCount': this._assessmentResults.issues.length,
+					'warningsCount': this._assessmentResults.databaseAssessments.reduce((count, d) => count + d.issues.length, 0),
 					'duration': endTime - startTime,
 					'databaseCount': this._assessmentResults.databaseAssessments.length,
 					'startTime': startTime,
@@ -257,9 +258,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 						'hashedDatabaseName': hashString(d.name),
 						'compatibilityLevel': compatLevelHashMap.get(d.name)!,
 					},
-					{
-						'warningCount': d.issues.length,
-					}
+					{}
 				);
 
 				d.issues.forEach(w => {
