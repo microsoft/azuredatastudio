@@ -43,7 +43,7 @@ export class SqlAssessmentMainTab extends SqlAssessmentTab {
 		this.engine = engine;
 	}
 
-	public dispose() {
+	public override dispose() {
 		this.toDispose.forEach(disposable => disposable.dispose());
 	}
 

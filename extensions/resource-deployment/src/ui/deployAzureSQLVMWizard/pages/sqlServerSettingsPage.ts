@@ -38,7 +38,7 @@ export class SqlServerSettingsPage extends BasePage {
 
 	}
 
-	public async initialize() {
+	public override async initialize() {
 		this.pageObject.registerContent(async (view: azdata.ModelView) => {
 
 			await Promise.all([
@@ -80,7 +80,7 @@ export class SqlServerSettingsPage extends BasePage {
 		});
 	}
 
-	public async onEnter(): Promise<void> {
+	public override async onEnter(): Promise<void> {
 
 		this.liveValidation = false;
 
@@ -100,7 +100,7 @@ export class SqlServerSettingsPage extends BasePage {
 		});
 	}
 
-	public async onLeave(): Promise<void> {
+	public override async onLeave(): Promise<void> {
 		this._model.wizard.wizardObject.registerNavigationValidator((pcInfo) => {
 			return true;
 		});
@@ -109,7 +109,7 @@ export class SqlServerSettingsPage extends BasePage {
 	private createSqlConnectivityDropdown(view: azdata.ModelView) {
 
 		const privateOptionDisplayName = localize('deployAzureSQLVM.PrivateConnectivityDropdownOptionDefault', "Private (within Virtual Network)");
-		this._sqlConnectivityDropdown = view.modelBuilder.dropDown().withProperties(<azdata.DropDownProperties>
+		this._sqlConnectivityDropdown = view.modelBuilder.dropDown().withProps(<azdata.DropDownProperties>
 			{
 				values: [
 					{
@@ -148,7 +148,7 @@ export class SqlServerSettingsPage extends BasePage {
 	}
 
 	private createPortText(view: azdata.ModelView) {
-		this._portTextBox = view.modelBuilder.inputBox().withProperties(<azdata.InputBoxProperties>{
+		this._portTextBox = view.modelBuilder.inputBox().withProps(<azdata.InputBoxProperties>{
 			inputType: 'number',
 			max: 65535,
 			min: 1024,
@@ -165,7 +165,7 @@ export class SqlServerSettingsPage extends BasePage {
 
 	private createSqlAuthentication(view: azdata.ModelView) {
 
-		this._sqlAuthenticationDropdown = view.modelBuilder.dropDown().withProperties(<azdata.DropDownComponent>{
+		this._sqlAuthenticationDropdown = view.modelBuilder.dropDown().withProps(<azdata.DropDownComponent>{
 			values: [
 				{
 					displayName: localizedConstants.yes,
@@ -194,13 +194,13 @@ export class SqlServerSettingsPage extends BasePage {
 
 		this._sqlAuthenticationTextRow = this._model.createFormRowComponent(view, constants.SqlAuthenticationUsernameLabel, '', this._sqlAuthenticationTextbox, true);
 
-		this._sqlAuthenticationPasswordTextbox = view.modelBuilder.inputBox().withProperties(<azdata.InputBoxProperties>{
+		this._sqlAuthenticationPasswordTextbox = view.modelBuilder.inputBox().withProps(<azdata.InputBoxProperties>{
 			inputType: 'password'
 		}).component();
 
 		this._sqlAuthenticationPasswordTextRow = this._model.createFormRowComponent(view, constants.SqlAuthenticationPasswordLabel, '', this._sqlAuthenticationPasswordTextbox, true);
 
-		this._sqlAuthenticationPasswordConfirmationTextbox = view.modelBuilder.inputBox().withProperties(<azdata.InputBoxProperties>{
+		this._sqlAuthenticationPasswordConfirmationTextbox = view.modelBuilder.inputBox().withProps(<azdata.InputBoxProperties>{
 			inputType: 'password'
 		}).component();
 
@@ -220,7 +220,7 @@ export class SqlServerSettingsPage extends BasePage {
 	}
 
 
-	protected async validatePage(): Promise<string> {
+	protected override async validatePage(): Promise<string> {
 
 		const errorMessages = [];
 

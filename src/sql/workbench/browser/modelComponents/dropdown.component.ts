@@ -122,7 +122,7 @@ export default class DropDownComponent extends ComponentBase<azdata.DropDownProp
 		this.baseInit();
 	}
 
-	ngOnDestroy(): void {
+	override ngOnDestroy(): void {
 		this.baseDestroy();
 	}
 
@@ -133,7 +133,7 @@ export default class DropDownComponent extends ComponentBase<azdata.DropDownProp
 		this.layout();
 	}
 
-	public setProperties(properties: { [key: string]: any; }): void {
+	public override setProperties(properties: { [key: string]: any; }): void {
 		super.setProperties(properties);
 
 		if (this.ariaLabel !== '') {
@@ -263,7 +263,7 @@ export default class DropDownComponent extends ComponentBase<azdata.DropDownProp
 		this.setPropertyFromUI<boolean>((props, value) => props.required = value, newValue);
 	}
 
-	public focus(): void {
+	public override focus(): void {
 		if (this.editable && !this._isInAccessibilityMode) {
 			this._editableDropdown.focus();
 		} else {
@@ -291,7 +291,7 @@ export default class DropDownComponent extends ComponentBase<azdata.DropDownProp
 		return this.loading ? this.loadingText : this.loadingCompletedText;
 	}
 
-	public get CSSStyles(): azdata.CssStyles {
+	public override get CSSStyles(): azdata.CssStyles {
 		return this.mergeCss(super.CSSStyles, {
 			'width': this.getWidth()
 		});

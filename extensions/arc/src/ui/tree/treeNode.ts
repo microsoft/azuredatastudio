@@ -20,6 +20,6 @@ export abstract class TreeNode extends vscode.TreeItem {
 
 	public async openDashboard(): Promise<void> { }
 
-	iconPath = getResourceTypeIcon(this.resourceType);
-	contextValue = this.resourceType;
+	override iconPath = getResourceTypeIcon(this.resourceType);
+	override contextValue = this.resourceType;
 }

@@ -19,7 +19,7 @@ export abstract class ToggleViewAction extends Action {
 		super(id, label, cssClass);
 	}
 
-	async run(): Promise<void> {
+	override async run(): Promise<void> {
 		const focusedViewId = FocusedViewContext.getValue(this.contextKeyService);
 
 		if (focusedViewId === this.viewId) {

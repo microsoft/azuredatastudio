@@ -39,10 +39,10 @@ export class DataInfoComponent extends ViewBase {
 	}
 
 	public registerComponent(modelBuilder: azdata.ModelBuilder): azdata.Component {
-		this._descriptionComponent = modelBuilder.text().withProperties({
+		this._descriptionComponent = modelBuilder.text().withProps({
 			value: this._description,
 		}).component();
-		this._labelComponent = modelBuilder.text().withProperties({
+		this._labelComponent = modelBuilder.text().withProps({
 			value: this._title,
 		}).component();
 		this._labelContainer = modelBuilder.flexContainer().withLayout({
@@ -64,7 +64,7 @@ export class DataInfoComponent extends ViewBase {
 			};
 		}
 
-		this._iconComponent = modelBuilder.image().withProperties({
+		this._iconComponent = modelBuilder.image().withProps({
 			width: this._iconSettings?.containerWidth ?? this._defaultIconSize,
 			height: this._iconSettings?.containerHeight ?? this._defaultIconSize,
 			iconWidth: this._iconSettings?.width ?? this._defaultIconSize,
@@ -97,7 +97,7 @@ export class DataInfoComponent extends ViewBase {
 
 		this._loadingComponent = modelBuilder.loadingComponent().withItem(
 			this._labelContainer
-		).withProperties({
+		).withProps({
 			loading: false
 		}).component();
 

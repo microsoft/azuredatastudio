@@ -56,10 +56,10 @@ export class TableSelectionComponent extends ModelViewBase implements IDataCompo
 	 * @param modelBuilder model builder
 	 */
 	public registerComponent(modelBuilder: azdata.ModelBuilder): azdata.Component {
-		this._databases = modelBuilder.dropDown().withProperties({
+		this._databases = modelBuilder.dropDown().withProps({
 			width: '275px'
 		}).component();
-		this._tables = modelBuilder.dropDown().withProperties({
+		this._tables = modelBuilder.dropDown().withProps({
 			width: '275px'
 		}).component();
 
@@ -70,19 +70,19 @@ export class TableSelectionComponent extends ModelViewBase implements IDataCompo
 			}
 		});
 
-		this._existingTableButton = modelBuilder.radioButton().withProperties({
+		this._existingTableButton = modelBuilder.radioButton().withProps({
 			name: 'tableName',
 			value: 'existing',
 			label: 'Existing table',
 			checked: true
 		}).component();
-		this._newTableButton = modelBuilder.radioButton().withProperties({
+		this._newTableButton = modelBuilder.radioButton().withProps({
 			name: 'tableName',
 			value: 'new',
 			label: 'New table',
 			checked: false
 		}).component();
-		this._newTableName = modelBuilder.inputBox().withProperties({
+		this._newTableName = modelBuilder.inputBox().withProps({
 			width: this.componentMaxLength - 10,
 			enabled: false
 		}).component();

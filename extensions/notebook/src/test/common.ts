@@ -350,6 +350,7 @@ class TestDeclarativeTableComponent extends TestComponentBase implements azdata.
 	setFilter: undefined;
 	data: any[][];
 	columns: azdata.DeclarativeTableColumn[];
+	setDataValues: undefined;
 }
 
 class TestButtonComponent extends TestComponentBase implements azdata.ButtonComponent {

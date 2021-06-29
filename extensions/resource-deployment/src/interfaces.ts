@@ -477,7 +477,7 @@ export interface ITool {
 	finishInitialization(): Promise<void>;
 	install(): Promise<void>;
 	isSameOrNewerThan(version: string): boolean;
-	isEulaAccepted(): boolean;
+	isEulaAccepted(): Promise<boolean>;
 	promptForEula(): Promise<boolean>;
 }
 

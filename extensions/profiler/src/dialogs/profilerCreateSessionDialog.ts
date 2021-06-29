@@ -56,12 +56,12 @@ export class CreateSessionDialog {
 	private initializeContent(): void {
 		this.dialog.registerContent(async view => {
 			this.templatesBox = view.modelBuilder.dropDown()
-				.withProperties({
+				.withProps({
 					values: []
 				}).component();
 
 			this.sessionNameBox = view.modelBuilder.inputBox()
-				.withProperties({
+				.withProps({
 					required: true,
 					multiline: false,
 					value: ''

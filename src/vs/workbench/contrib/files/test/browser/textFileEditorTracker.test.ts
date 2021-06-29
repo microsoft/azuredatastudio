@@ -8,14 +8,13 @@ import { Event } from 'vs/base/common/event';
 import { TextFileEditorTracker } from 'vs/workbench/contrib/files/browser/editors/textFileEditorTracker';
 import { toResource } from 'vs/base/test/common/utils';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
-import { workbenchInstantiationService, TestServiceAccessor, TestFilesConfigurationService, registerTestFileEditor, registerTestResourceEditor } from 'vs/workbench/test/browser/workbenchTestServices';
+import { workbenchInstantiationService, TestServiceAccessor, TestFilesConfigurationService, registerTestFileEditor, registerTestResourceEditor, createEditorPart } from 'vs/workbench/test/browser/workbenchTestServices';
 import { IResolvedTextFileEditorModel, snapshotToString, ITextFileService } from 'vs/workbench/services/textfile/common/textfiles';
-import { FileChangesEvent, FileChangeType } from 'vs/platform/files/common/files';
+import { FileChangesEvent, FileChangeType, FileOperationError, FileOperationResult } from 'vs/platform/files/common/files';
 import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
 import { timeout } from 'vs/base/common/async';
 import { DisposableStore } from 'vs/base/common/lifecycle';
 import { TextFileEditorModelManager } from 'vs/workbench/services/textfile/common/textFileEditorModelManager';
-import { EditorPart } from 'vs/workbench/browser/parts/editor/editorPart';
 import { EditorService } from 'vs/workbench/services/editor/browser/editorService';
 import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
 import { isEqual } from 'vs/base/common/resources';
@@ -25,6 +24,8 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { IFilesConfigurationService } from 'vs/workbench/services/filesConfiguration/common/filesConfigurationService';
 import { MockContextKeyService } from 'vs/platform/keybinding/test/common/mockKeybindingService';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
+import { whenTextEditorClosed } from 'vs/workbench/browser/editor';
+import { FILE_EDITOR_INPUT_ID } from 'vs/workbench/contrib/files/common/files';
 
 suite('Files - TextFileEditorTracker', () => {
 
@@ -54,9 +55,7 @@ suite('Files - TextFileEditorTracker', () => {
 			));
 		}
 
-		const part = disposables.add(instantiationService.createInstance(EditorPart));
-		part.create(document.createElement('div'));
-		part.layout(400, 300);
+		const part = await createEditorPart(instantiationService, disposables);
 
 		instantiationService.stub(IEditorGroupsService, part);
 
@@ -65,8 +64,6 @@ suite('Files - TextFileEditorTracker', () => {
 
 		const accessor = instantiationService.createInstance(TestServiceAccessor);
 		disposables.add((<TextFileEditorModelManager>accessor.textFileService.files));
-
-		await part.whenRestored;
 
 		disposables.add(instantiationService.createInstance(TextFileEditorTracker));
 
@@ -96,30 +93,51 @@ suite('Files - TextFileEditorTracker', () => {
 	test.skip('dirty text file model opens as editor', async function () { // {{SQL CARBON EDIT}} tabcolormode failure
 		const resource = toResource.call(this, '/path/index.txt');
 
-		await testDirtyTextFileModelOpensEditorDependingOnAutoSaveSetting(resource, false);
+		await testDirtyTextFileModelOpensEditorDependingOnAutoSaveSetting(resource, false, false);
 	});
 
 	test('dirty text file model does not open as editor if autosave is ON', async function () {
 		const resource = toResource.call(this, '/path/index.txt');
 
-		await testDirtyTextFileModelOpensEditorDependingOnAutoSaveSetting(resource, true);
+		await testDirtyTextFileModelOpensEditorDependingOnAutoSaveSetting(resource, true, false);
 	});
 
-	async function testDirtyTextFileModelOpensEditorDependingOnAutoSaveSetting(resource: URI, autoSave: boolean): Promise<void> {
+	test('dirty text file model opens as editor when save fails', async function () {
+		const resource = toResource.call(this, '/path/index.txt');
+
+		await testDirtyTextFileModelOpensEditorDependingOnAutoSaveSetting(resource, false, true);
+	});
+
+	test('dirty text file model opens as editor when save fails if autosave is ON', async function () {
+		const resource = toResource.call(this, '/path/index.txt');
+
+		await testDirtyTextFileModelOpensEditorDependingOnAutoSaveSetting(resource, true, true);
+	});
+
+	async function testDirtyTextFileModelOpensEditorDependingOnAutoSaveSetting(resource: URI, autoSave: boolean, error: boolean): Promise<void> {
 		const accessor = await createTracker(autoSave);
 
-		assert.ok(!accessor.editorService.isOpen(accessor.editorService.createEditorInput({ resource, forceFile: true })));
+		assert.ok(!accessor.editorService.isOpened({ resource, typeId: FILE_EDITOR_INPUT_ID }));
+
+		if (error) {
+			accessor.textFileService.setWriteErrorOnce(new FileOperationError('fail to write', FileOperationResult.FILE_OTHER_ERROR));
+		}
 
 		const model = await accessor.textFileService.files.resolve(resource) as IResolvedTextFileEditorModel;
 
 		model.textEditorModel.setValue('Super Good');
 
 		if (autoSave) {
+			await model.save();
 			await timeout(100);
-			assert.ok(!accessor.editorService.isOpen(accessor.editorService.createEditorInput({ resource, forceFile: true })));
+			if (error) {
+				assert.ok(accessor.editorService.isOpened({ resource, typeId: FILE_EDITOR_INPUT_ID }));
+			} else {
+				assert.ok(!accessor.editorService.isOpened({ resource, typeId: FILE_EDITOR_INPUT_ID }));
+			}
 		} else {
 			await awaitEditorOpening(accessor.editorService);
-			assert.ok(accessor.editorService.isOpen(accessor.editorService.createEditorInput({ resource, forceFile: true })));
+			assert.ok(accessor.editorService.isOpened({ resource, typeId: FILE_EDITOR_INPUT_ID }));
 		}
 	}
 
@@ -129,12 +147,12 @@ suite('Files - TextFileEditorTracker', () => {
 		const untitledEditor = accessor.editorService.createEditorInput({ forceUntitled: true }) as UntitledTextEditorInput;
 		const model = disposables.add(await untitledEditor.resolve());
 
-		assert.ok(!accessor.editorService.isOpen(untitledEditor));
+		assert.ok(!accessor.editorService.isOpened(untitledEditor));
 
-		model.textEditorModel.setValue('Super Good');
+		model.textEditorModel?.setValue('Super Good');
 
 		await awaitEditorOpening(accessor.editorService);
-		assert.ok(accessor.editorService.isOpen(untitledEditor));
+		assert.ok(accessor.editorService.isOpened(untitledEditor));
 	});
 
 	function awaitEditorOpening(editorService: IEditorService): Promise<void> {
@@ -151,17 +169,39 @@ suite('Files - TextFileEditorTracker', () => {
 		accessor.hostService.setFocus(false);
 		accessor.hostService.setFocus(true);
 
-		await awaitModelLoadEvent(accessor.textFileService, resource);
+		await awaitModelResolveEvent(accessor.textFileService, resource);
 	});
 
-	function awaitModelLoadEvent(textFileService: ITextFileService, resource: URI): Promise<void> {
+	function awaitModelResolveEvent(textFileService: ITextFileService, resource: URI): Promise<void> {
 		return new Promise(resolve => {
-			const listener = textFileService.files.onDidLoad(e => {
+			const listener = textFileService.files.onDidResolve(e => {
 				if (isEqual(e.model.resource, resource)) {
 					listener.dispose();
 					resolve();
 				}
 			});
 		});
+	}
+
+	test('whenTextEditorClosed (single editor)', async function () {
+		return testWhenTextEditorClosed(toResource.call(this, '/path/index.txt'));
+	});
+
+	test('whenTextEditorClosed (multiple editor)', async function () {
+		return testWhenTextEditorClosed(toResource.call(this, '/path/index.txt'), toResource.call(this, '/test.html'));
+	});
+
+	async function testWhenTextEditorClosed(...resources: URI[]): Promise<void> {
+		const accessor = await createTracker(false);
+
+		for (const resource of resources) {
+			await accessor.editorService.openEditor({ resource, options: { pinned: true } });
+		}
+
+		const closedPromise = accessor.instantitionService.invokeFunction(accessor => whenTextEditorClosed(accessor, resources));
+
+		accessor.editorGroupService.activeGroup.closeAllEditors();
+
+		await closedPromise;
 	}
 });

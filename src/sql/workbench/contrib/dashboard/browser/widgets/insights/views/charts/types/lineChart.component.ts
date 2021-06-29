@@ -21,9 +21,9 @@ export interface ILineConfig extends IBarChartConfig {
 const defaultLineConfig = mixin(deepClone(defaultChartConfig), { dataType: 'number' }) as ILineConfig;
 
 export default class LineChart extends BarChart {
-	protected readonly chartType: ChartType = ChartType.Line;
-	protected _config: ILineConfig;
-	protected _defaultConfig = defaultLineConfig;
+	protected override readonly chartType: ChartType = ChartType.Line;
+	protected override _config: ILineConfig;
+	protected override _defaultConfig = defaultLineConfig;
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) _changeRef: ChangeDetectorRef,
@@ -33,14 +33,14 @@ export default class LineChart extends BarChart {
 		super(_changeRef, themeService, telemetryService);
 	}
 
-	public init() {
+	public override init() {
 		if (this._config.dataType === DataType.Point) {
 			this.addAxisLabels();
 		}
 		super.init();
 	}
 
-	public get chartData(): Array<IDataSet | IPointDataSet> {
+	public override get chartData(): Array<IDataSet | IPointDataSet> {
 		if (this._config.dataType === DataType.Number) {
 			return super.getChartData();
 		} else {
@@ -48,7 +48,7 @@ export default class LineChart extends BarChart {
 		}
 	}
 
-	protected clearMemoize() {
+	protected override clearMemoize() {
 		super.clearMemoize();
 		LineChart.MEMOIZER.clear();
 	}
@@ -68,7 +68,7 @@ export default class LineChart extends BarChart {
 		return values(dataSetMap);
 	}
 
-	public get labels(): Array<string> {
+	public override get labels(): Array<string> {
 		if (this._config.dataType === DataType.Number) {
 			return super.getLabels();
 		} else {

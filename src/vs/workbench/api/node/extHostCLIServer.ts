@@ -33,7 +33,6 @@ export interface StatusPipeArgs {
 	type: 'status';
 }
 
-
 export interface ExtensionManagementPipeArgs {
 	type: 'extensionManagement';
 	list?: { showVersions?: boolean, category?: string; };
@@ -42,7 +41,7 @@ export interface ExtensionManagementPipeArgs {
 	force?: boolean;
 }
 
-export type PipeCommand = OpenCommandPipeArgs | StatusPipeArgs | OpenExternalCommandPipeArgs;
+export type PipeCommand = OpenCommandPipeArgs | StatusPipeArgs | OpenExternalCommandPipeArgs | ExtensionManagementPipeArgs;
 
 export interface ICommandsExecuter {
 	executeCommand<T>(id: string, ...args: any[]): Promise<T>;
@@ -147,15 +146,16 @@ export class CLIServerBase {
 	}
 
 	private async openExternal(data: OpenExternalCommandPipeArgs, res: http.ServerResponse) {
-		for (const uri of data.uris) {
-			await this._commands.executeCommand('_remoteCLI.openExternal', URI.parse(uri), { allowTunneling: true });
+		for (const uriString of data.uris) {
+			const uri = URI.parse(uriString);
+			const urioOpen = uri.scheme === 'file' ? uri : uriString; // workaround for #112577
+			await this._commands.executeCommand('_remoteCLI.openExternal', urioOpen);
 		}
 		res.writeHead(200);
 		res.end();
 	}
 
 	private async manageExtensions(data: ExtensionManagementPipeArgs, res: http.ServerResponse) {
-		console.log('server: manageExtensions');
 		try {
 			const toExtOrVSIX = (inputs: string[] | undefined) => inputs?.map(input => /\.vsix$/i.test(input) ? URI.parse(input) : input);
 			const commandArgs = {
@@ -164,12 +164,16 @@ export class CLIServerBase {
 				uninstall: toExtOrVSIX(data.uninstall),
 				force: data.force
 			};
-			const output = await this._commands.executeCommand('_remoteCLI.manageExtensions', commandArgs, { allowTunneling: true });
+			const output = await this._commands.executeCommand('_remoteCLI.manageExtensions', commandArgs);
 			res.writeHead(200);
 			res.write(output);
-		} catch (e) {
+		} catch (err) {
 			res.writeHead(500);
-			res.write(String(e));
+			res.write(String(err), err => {
+				if (err) {
+					this.logService.error(err);
+				}
+			});
 		}
 		res.end();
 	}

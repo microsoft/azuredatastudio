@@ -38,13 +38,14 @@ export class WebviewWidget extends DashboardWidget implements IDashboardWidget, 
 
 	constructor(
 		@Inject(forwardRef(() => CommonServiceInterface)) private readonly _dashboardService: DashboardServiceInterface,
-		@Inject(WIDGET_CONFIG) protected readonly _config: WidgetConfig,
+		@Inject(WIDGET_CONFIG) _config: WidgetConfig,
 		@Inject(forwardRef(() => ElementRef)) private readonly _el: ElementRef,
 		@Inject(IDashboardViewService) private readonly dashboardViewService: IDashboardViewService,
 		@Inject(IWebviewService) private readonly webviewService: IWebviewService,
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef
 	) {
 		super(changeRef);
+		this._config = _config;
 		this._id = (_config.widget[selector] as IWebviewWidgetConfig).id;
 	}
 
@@ -106,7 +107,7 @@ export class WebviewWidget extends DashboardWidget implements IDashboardWidget, 
 
 		this._webview.mountTo(this._el.nativeElement);
 		this._onMessageDisposable = this._webview.onMessage(e => {
-			this._onMessage.fire(e);
+			this._onMessage.fire(e.message);
 		});
 		if (this._html) {
 			this._webview.html = this._html;

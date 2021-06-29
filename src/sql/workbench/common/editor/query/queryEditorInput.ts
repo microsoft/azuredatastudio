@@ -177,17 +177,17 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 	public get text(): AbstractTextResourceEditorInput { return this._text; }
 	public get results(): QueryResultsInput { return this._results; }
 	// Description is shown beside the tab name in the combobox of open editors
-	public getDescription(): string | undefined { return this._description; }
+	public override getDescription(): string | undefined { return this._description; }
 	public supportsSplitEditor(): boolean { return false; }
-	public revert(group: GroupIdentifier, options?: IRevertOptions): Promise<void> {
+	public override revert(group: GroupIdentifier, options?: IRevertOptions): Promise<void> {
 		return this._text.revert(group, options);
 	}
 
-	public isReadonly(): boolean {
+	public override isReadonly(): boolean {
 		return false;
 	}
 
-	public matches(otherInput: any): boolean {
+	public override matches(otherInput: any): boolean {
 		// we want to be able to match against our underlying input as well, bascially we are our underlying input
 		if (otherInput instanceof QueryEditorInput) {
 			return this._text.matches(otherInput._text);
@@ -197,10 +197,10 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 	}
 
 	// Forwarding resource functions to the inline sql file editor
-	public isDirty(): boolean { return this._text.isDirty(); }
+	public override isDirty(): boolean { return this._text.isDirty(); }
 	public get resource(): URI { return this._text.resource; }
 
-	public getName(longForm?: boolean): string {
+	public override getName(longForm?: boolean): string {
 		if (this.configurationService.getValue<IQueryEditorConfiguration>('queryEditor').showConnectionInfoInTitle) {
 			let profile = this.connectionManagementService.getConnectionProfile(this.uri);
 			let title = '';
@@ -222,16 +222,16 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 		}
 	}
 
-	save(group: GroupIdentifier, options?: ISaveOptions): Promise<IEditorInput | undefined> {
+	override save(group: GroupIdentifier, options?: ISaveOptions): Promise<IEditorInput | undefined> {
 		return this.text.save(group, options);
 	}
 
-	saveAs(group: GroupIdentifier, options?: ISaveOptions): Promise<IEditorInput | undefined> {
+	override saveAs(group: GroupIdentifier, options?: ISaveOptions): Promise<IEditorInput | undefined> {
 		return this.text.saveAs(group, options);
 	}
 
 	// Called to get the tooltip of the tab
-	public getTitle(): string {
+	public override getTitle(): string {
 		return this.getName(true);
 	}
 
@@ -313,7 +313,7 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 		return this.connectionManagementService.getTabColorForUri(this.uri);
 	}
 
-	public dispose() {
+	public override dispose() {
 		super.dispose(); // we want to dispose first so that for future logic we know we are disposed
 		this.queryModelService.disposeQuery(this.uri);
 		this.connectionManagementService.disconnectEditor(this, true);

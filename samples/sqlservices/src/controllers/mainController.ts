@@ -123,7 +123,7 @@ export default class MainController implements vscode.Disposable {
 
 		let treeDataProvider = new TreeDataProvider(root);
 
-		let tree: azdata.TreeComponent<TreeNode> = view.modelBuilder.tree<TreeNode>().withProperties({
+		let tree: azdata.TreeComponent<TreeNode> = view.modelBuilder.tree<TreeNode>().withProps({
 			'withCheckbox': true
 		}).component();
 		let treeView = tree.registerDataProvider(treeDataProvider);
@@ -156,7 +156,7 @@ export default class MainController implements vscode.Disposable {
 	private async getTabContent(view: azdata.ModelView, customButton1: azdata.window.Button, customButton2: azdata.window.Button, componentWidth: number | string
 	): Promise<void> {
 		let inputBox = view.modelBuilder.inputBox()
-			.withProperties({
+			.withProps({
 				multiline: true,
 				height: 100
 			}).component();
@@ -170,7 +170,7 @@ export default class MainController implements vscode.Disposable {
 		let backupFilesInputBox = view.modelBuilder.inputBox().component();
 
 		let checkbox = view.modelBuilder.checkBox()
-			.withProperties({
+			.withProps({
 				label: 'Copy-only backup'
 			})
 			.component();
@@ -179,11 +179,11 @@ export default class MainController implements vscode.Disposable {
 			inputBox.enabled = !inputBox.enabled;
 		});
 		let button = view.modelBuilder.button()
-			.withProperties({
+			.withProps({
 				label: '+'
 			}).component();
 		let button3 = view.modelBuilder.button()
-			.withProperties({
+			.withProps({
 				label: '-'
 
 			}).component();
@@ -191,7 +191,7 @@ export default class MainController implements vscode.Disposable {
 			backupFilesInputBox.value = 'Button clicked';
 		});
 		let dropdown = view.modelBuilder.dropDown()
-			.withProperties({
+			.withProps({
 				value: 'Full',
 				values: ['Full', 'Differential', 'Transaction Log']
 			})
@@ -208,7 +208,7 @@ export default class MainController implements vscode.Disposable {
 			console.info('dropdown change ' + dropdown.value.toString());
 		});
 		let radioButton = view.modelBuilder.radioButton()
-			.withProperties({
+			.withProps({
 				value: 'option1',
 				name: 'radioButtonOptions',
 				label: 'Option 1',
@@ -216,7 +216,7 @@ export default class MainController implements vscode.Disposable {
 				// width: 300
 			}).component();
 		let radioButton2 = view.modelBuilder.radioButton()
-			.withProperties({
+			.withProps({
 				value: 'option2',
 				name: 'radioButtonOptions',
 				label: 'Option 2'
@@ -315,13 +315,13 @@ export default class MainController implements vscode.Disposable {
 			}
 		});
 
-		let listBox = view.modelBuilder.listBox().withProperties({
+		let listBox = view.modelBuilder.listBox().withProps({
 			values: ['1', '2', '3'],
 			selectedRow: 2
 		}).component();
 
 		let declarativeTable = view.modelBuilder.declarativeTable()
-			.withProperties({
+			.withProps({
 				columns: [{
 					displayName: 'Column 1',
 					valueType: azdata.DeclarativeDataType.string,
@@ -570,12 +570,12 @@ export default class MainController implements vscode.Disposable {
 		editor.registerContent(async view => {
 			let count = 0;
 			let webview1 = view.modelBuilder.webView()
-				.withProperties({
+				.withProps({
 					html: html1
 				})
 				.component();
 			let webview2 = view.modelBuilder.webView()
-				.withProperties({
+				.withProps({
 					html: html2
 				})
 				.component();
@@ -585,13 +585,13 @@ export default class MainController implements vscode.Disposable {
 			});
 
 			let editor1 = view.modelBuilder.editor()
-				.withProperties({
+				.withProps({
 					content: 'select * from sys.tables'
 				})
 				.component();
 
 			let editor2 = view.modelBuilder.editor()
-				.withProperties({
+				.withProps({
 					content: 'print("Hello World !")',
 					languageMode: 'python'
 				})
@@ -621,14 +621,14 @@ export default class MainController implements vscode.Disposable {
 
 			let inputBox = view.modelBuilder.inputBox().component();
 			let dropdown = view.modelBuilder.dropDown()
-				.withProperties({
+				.withProps({
 					value: 'aa',
 					values: ['aa', 'bb', 'cc']
 				})
 				.component();
 			let runIcon = path.join(__dirname, '..', 'media', 'start.svg');
 			let runButton = view.modelBuilder.button()
-				.withProperties({
+				.withProps({
 					label: 'Run',
 					iconPath: runIcon,
 					title: 'Run title'
@@ -641,7 +641,7 @@ export default class MainController implements vscode.Disposable {
 			};
 
 			let monitorButton = view.modelBuilder.button()
-				.withProperties({
+				.withProps({
 					label: 'Monitor',
 					iconPath: monitorIcon,
 					title: 'Monitor title'

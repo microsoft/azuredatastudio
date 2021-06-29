@@ -85,11 +85,11 @@ export default class CardComponent extends ComponentWithIconBase<azdata.CardProp
 		this.baseInit();
 	}
 
-	ngOnDestroy(): void {
+	override ngOnDestroy(): void {
 		this.baseDestroy();
 	}
 
-	focus(): void {
+	override focus(): void {
 		if (this.cardDiv) {
 			this.cardDiv.nativeElement.focus();
 		}
@@ -136,12 +136,12 @@ export default class CardComponent extends ComponentWithIconBase<azdata.CardProp
 		this.layout();
 	}
 
-	public setProperties(properties: { [key: string]: any; }): void {
+	public override setProperties(properties: { [key: string]: any; }): void {
 		super.setProperties(properties);
 		this.updateIcon();
 	}
 
-	public get iconClass(): string {
+	public override get iconClass(): string {
 		if (this.isListItemCard) {
 			return this._iconClass + ' icon' + ' list-item-icon';
 		}

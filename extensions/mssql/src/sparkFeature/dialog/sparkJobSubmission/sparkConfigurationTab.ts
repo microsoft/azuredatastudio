@@ -56,7 +56,7 @@ export class SparkConfigurationTab {
 
 			let formContainer = builder.formContainer();
 
-			this._jobNameInputBox = builder.inputBox().withProperties({
+			this._jobNameInputBox = builder.inputBox().withProps({
 				placeHolder: localize('sparkJobSubmission.JobNamePlaceHolder', "Enter a name ..."),
 				value: (this._path) ? fspath.basename(this._path) : ''
 			}).component();
@@ -67,7 +67,7 @@ export class SparkConfigurationTab {
 				required: true
 			}, baseFormItemLayout);
 
-			this._sparkContextLabel = builder.text().withProperties({
+			this._sparkContextLabel = builder.text().withProps({
 				value: this._dataModel.getSparkClusterUrl()
 			}).component();
 			formContainer.addFormItem({
@@ -104,7 +104,7 @@ export class SparkConfigurationTab {
 				}
 			});
 
-			this._sparkSourceFileInputBox = builder.inputBox().withProperties({
+			this._sparkSourceFileInputBox = builder.inputBox().withProps({
 				required: true,
 				placeHolder: localize('sparkJobSubmission.FilePathPlaceHolder', "Path to a .jar or .py file"),
 				value: (this._path) ? this._path : ''
@@ -133,8 +133,7 @@ export class SparkConfigurationTab {
 				}
 			});
 
-			this._filePickerButton = builder.button().withProperties({
-				required: (this._path) ? false : true,
+			this._filePickerButton = builder.button().withProps({
 				enabled: (this._path) ? false : true,
 				label: '•••',
 				width: constants.mssqlClusterSparkJobFileSelectorButtonWidth,
@@ -156,7 +155,7 @@ export class SparkConfigurationTab {
 				alignContent: 'stretch'
 			});
 
-			this._localUploadDestinationLabel = builder.text().withProperties({
+			this._localUploadDestinationLabel = builder.text().withProps({
 				value: (this._path) ? '' : LocalizedConstants.sparkLocalFileDestinationHint
 			}).component();
 			this._sourceFlexContainerWithHint = builder.flexContainer().component();

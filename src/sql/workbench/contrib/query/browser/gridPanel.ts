@@ -311,7 +311,7 @@ export class GridPanel extends Disposable {
 		return this._state;
 	}
 
-	public dispose() {
+	public override dispose() {
 		dispose(this.tables);
 		this.tables = undefined;
 		super.dispose();
@@ -692,7 +692,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 				let content = value.displayValue;
 
 				const input = this.untitledEditorService.create({ mode: column.isXml ? 'xml' : 'json', initialValue: content });
-				await input.load();
+				await input.resolve();
 				await this.instantiationService.invokeFunction(formatDocumentWithSelectedProvider, input.textEditorModel, FormattingMode.Explicit, Progress.None, CancellationToken.None);
 				return this.editorService.openEditor(input);
 			});
@@ -852,7 +852,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		}
 	}
 
-	public dispose() {
+	public override dispose() {
 		this.container.remove();
 		if (this.table) {
 			this.table.dispose();

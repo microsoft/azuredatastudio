@@ -58,7 +58,7 @@ export class NotebookWizardModel extends ResourceTypeModel {
 	/**
 	 * Generates the notebook and returns true if generation was done and so the wizard should be closed.
 	 **/
-	public async onGenerateScript(): Promise<boolean> {
+	public override async onGenerateScript(): Promise<boolean> {
 		const lastPage = this.wizard.lastPage! as NotebookWizardPage;
 		if (lastPage.validatePage()) {
 			let notebook: Notebook | undefined;

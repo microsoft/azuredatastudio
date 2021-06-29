@@ -32,7 +32,7 @@ dashboard-page .default-tab-icon {
 	background-image: url("media/default.svg");
 }
 
-dashboard-page .actions-container .action-item .action-label{
+dashboard-page .carbon-taskbar .monaco-action-bar .actions-container .action-item .action-label{
 	padding-left: 20px;
 	padding-right: 5px;
 	background-size: 16px;

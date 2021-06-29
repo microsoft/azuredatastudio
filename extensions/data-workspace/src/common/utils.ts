@@ -5,6 +5,7 @@
 
 import * as fs from 'fs';
 import * as vscode from 'vscode';
+import type * as azdataType from 'azdata';
 
 export async function directoryExist(directoryPath: string): Promise<boolean> {
 	const stats = await getFileStatus(directoryPath);
@@ -54,4 +55,21 @@ export function getPackageInfo(packageJson: any): IPackageInfo | undefined {
 	}
 
 	return undefined;
+}
+
+// Try to load the azdata API - but gracefully handle the failure in case we're running
+// in a context where the API doesn't exist (such as VS Code)
+let azdataApi: typeof azdataType | undefined = undefined;
+try {
+	azdataApi = require('azdata');
+} catch {
+	// no-op
+}
+
+/**
+ * Gets the azdata API if it's available in the context this extension is running in.
+ * @returns The azdata API if it's available
+ */
+export function getAzdataApi(): typeof azdataType | undefined {
+	return azdataApi;
 }

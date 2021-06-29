@@ -3,12 +3,12 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as azdata from 'azdata';
+import type * as azdataType from 'azdata';
 import * as vscode from 'vscode';
 import * as path from 'path';
 import * as constants from '../common/constants';
 import { IconPathHelper } from '../common/iconHelper';
-import { directoryExist, fileExist, isCurrentWorkspaceUntitled } from '../common/utils';
+import { directoryExist, fileExist, getAzdataApi, isCurrentWorkspaceUntitled } from '../common/utils';
 
 interface Deferred<T> {
 	resolve: (result: T | Promise<T>) => void;
@@ -17,15 +17,15 @@ interface Deferred<T> {
 
 export abstract class DialogBase {
 	protected _toDispose: vscode.Disposable[] = [];
-	public dialogObject: azdata.window.Dialog;
+	public dialogObject: azdataType.window.Dialog;
 	protected initDialogComplete: Deferred<void> | undefined;
 	protected initDialogPromise: Promise<void> = new Promise<void>((resolve, reject) => this.initDialogComplete = { resolve, reject });
-	protected workspaceDescriptionFormComponent: azdata.FormComponent | undefined;
-	public workspaceInputBox: azdata.InputBoxComponent | undefined;
-	protected workspaceInputFormComponent: azdata.FormComponent | undefined;
+	protected workspaceDescriptionFormComponent: azdataType.FormComponent | undefined;
+	public workspaceInputBox: azdataType.InputBoxComponent | undefined;
+	protected workspaceInputFormComponent: azdataType.FormComponent | undefined;
 
-	constructor(dialogTitle: string, dialogName: string, okButtonText: string, dialogWidth: azdata.window.DialogWidth = 600) {
-		this.dialogObject = azdata.window.createModelViewDialog(dialogTitle, dialogName, dialogWidth);
+	constructor(dialogTitle: string, dialogName: string, okButtonText: string, dialogWidth: azdataType.window.DialogWidth = 600) {
+		this.dialogObject = getAzdataApi()!.window.createModelViewDialog(dialogTitle, dialogName, dialogWidth);
 		this.dialogObject.okButton.label = okButtonText;
 		this.register(this.dialogObject.cancelButton.onClick(() => this.onCancelButtonClicked()));
 		this.register(this.dialogObject.okButton.onClick(() => this.onOkButtonClicked()));
@@ -34,17 +34,17 @@ export abstract class DialogBase {
 		});
 	}
 
-	protected abstract initialize(view: azdata.ModelView): Promise<void>;
+	protected abstract initialize(view: azdataType.ModelView): Promise<void>;
 
 	abstract validate(): Promise<boolean>;
 
 	public async open(): Promise<void> {
-		const tab = azdata.window.createTab('');
-		tab.registerContent(async (view: azdata.ModelView) => {
+		const tab = getAzdataApi()!.window.createTab('');
+		tab.registerContent(async (view: azdataType.ModelView) => {
 			return this.initialize(view);
 		});
 		this.dialogObject.content = [tab];
-		azdata.window.openDialog(this.dialogObject);
+		getAzdataApi()!.window.openDialog(this.dialogObject);
 		await this.initDialogPromise;
 	}
 
@@ -71,15 +71,15 @@ export abstract class DialogBase {
 	protected showErrorMessage(message: string): void {
 		this.dialogObject.message = {
 			text: message,
-			level: azdata.window.MessageLevel.Error
+			level: getAzdataApi()!.window.MessageLevel.Error
 		};
 	}
 
-	public getErrorMessage(): azdata.window.DialogMessage {
+	public getErrorMessage(): azdataType.window.DialogMessage {
 		return this.dialogObject.message;
 	}
 
-	protected createHorizontalContainer(view: azdata.ModelView, items: azdata.Component[]): azdata.FlexContainer {
+	protected createHorizontalContainer(view: azdataType.ModelView, items: azdataType.Component[]): azdataType.FlexContainer {
 		return view.modelBuilder.flexContainer().withItems(items, { CSSStyles: { 'margin-right': '5px', 'margin-bottom': '10px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
 	}
 
@@ -88,15 +88,15 @@ export abstract class DialogBase {
 	 * created if no workspace is currently open
 	 * @param view
 	 */
-	protected createWorkspaceContainer(view: azdata.ModelView): void {
-		const workspaceDescription = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+	protected createWorkspaceContainer(view: azdataType.ModelView): void {
+		const workspaceDescription = view.modelBuilder.text().withProperties<azdataType.TextComponentProperties>({
 			value: vscode.workspace.workspaceFile ? constants.AddProjectToCurrentWorkspace : constants.NewWorkspaceWillBeCreated,
 			CSSStyles: { 'margin-top': '3px', 'margin-bottom': '0px' }
 		}).component();
 
 		const initialWorkspaceInputBoxValue = !!vscode.workspace.workspaceFile && !isCurrentWorkspaceUntitled() ? vscode.workspace.workspaceFile.fsPath : '';
 
-		this.workspaceInputBox = view.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
+		this.workspaceInputBox = view.modelBuilder.inputBox().withProperties<azdataType.InputBoxProperties>({
 			ariaLabel: constants.WorkspaceLocationTitle,
 			width: constants.DefaultInputWidth,
 			enabled: !vscode.workspace.workspaceFile || isCurrentWorkspaceUntitled(), // want it editable if no saved workspace is open
@@ -104,7 +104,7 @@ export abstract class DialogBase {
 			title: initialWorkspaceInputBoxValue // hovertext for if file path is too long to be seen in textbox
 		}).component();
 
-		const browseFolderButton = view.modelBuilder.button().withProperties<azdata.ButtonProperties>({
+		const browseFolderButton = view.modelBuilder.button().withProperties<azdataType.ButtonProperties>({
 			ariaLabel: constants.BrowseButtonText,
 			iconPath: IconPathHelper.folder,
 			height: '16px',
