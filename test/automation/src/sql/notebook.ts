@@ -387,7 +387,7 @@ export class NotebookView {
 
 	async pinNotebook(): Promise<void> {
 		const notebookIds = await this.getNotebookTreeItemIds();
-		await this.code.waitAndClick(`${NotebookView.notebookTreeItem}[id="${notebookIds[0]}"]`);
+		await this.code.waitAndDoubleClick(`${NotebookView.notebookTreeItem}[id="${notebookIds[0]}"]`);
 		await this.code.waitAndClick(`${NotebookView.notebookTreeItem}${NotebookView.selectedItem} .codicon-pinned`);
 	}
 
