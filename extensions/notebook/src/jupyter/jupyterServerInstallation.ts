@@ -474,9 +474,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 								await this.createInstallPipPackagesHelpNotebook(this._oldUserInstalledPipPackages);
 							}
 
-							await fs.remove(this._oldPythonInstallationPath).catch(err => {
-								throw (err);
-							});
+							await fs.remove(this._oldPythonInstallationPath);
 							this._upgradeInProcess = false;
 						} else {
 							await vscode.commands.executeCommand('notebook.action.restartJupyterNotebookSessions');
