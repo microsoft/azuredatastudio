@@ -34,8 +34,25 @@ export function setup() {
 			await app.workbench.sqlNotebook.addCellFromPlaceholder('Code');
 			await app.workbench.sqlNotebook.waitForPlaceholderGone();
 
-			const sampleText: string = 'SELECT * FROM sys.tables';
-			await app.workbench.sqlNotebook.waitForTypeInEditor(sampleText);
+			await new Promise(r => setTimeout(r, 10000));
+
+			const text1: string = 'SEL';
+			await app.workbench.sqlNotebook.waitForTypeInEditor(text1);
+			await app.code.dispatchKeybinding('ctrl+space bar');
+			await new Promise(r => setTimeout(r, 5000));
+			// check for completion suggestions
+			await app.code.dispatchKeybinding('tab');
+
+			const text2: string = ' * FROM';
+			await app.workbench.sqlNotebook.waitForTypeInEditor(text2);
+
+			const text3: string = ' employees';
+			await app.workbench.sqlNotebook.waitForTypeInEditor(text3);
+
+			await app.workbench.sqlNotebook.waitForColorization('1', 'mtk5'); // SELECT
+			await app.workbench.sqlNotebook.waitForColorization('3', 'mtk13'); // *
+			await app.workbench.sqlNotebook.waitForColorization('5', 'mtk5'); // FROM
+			await app.workbench.sqlNotebook.waitForColorization('6', 'mtk1'); // employees
 		});
 
 		// Python Notebooks

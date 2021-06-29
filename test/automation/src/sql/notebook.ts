@@ -75,6 +75,11 @@ export class Notebook {
 		return this.code.waitForTextContent(selector, undefined, c => accept(c.replace(/\u00a0/g, ' ')));
 	}
 
+	async waitForColorization(spanNumber: string, color: string): Promise<void> {
+		const span = `span:nth-child(${spanNumber})[class="${color}"]`;
+		await this.code.waitForElement(span);
+	}
+
 	public async selectAllTextInEditor(): Promise<void> {
 		const editor = '.notebook-cell.active .monaco-editor';
 		await this.code.waitAndClick(editor);
