@@ -228,7 +228,7 @@ const VSCODEExtensions = [
  *
  * 3. Update the changelog with the new version of the language pack.
  *
- * IMPORTANT: If you run this gulp task on langpacks that originated from vscode, for each affected vscode langpack, you must
+ * IMPORTANT: If you have run this gulp task on langpacks that originated from vscode, for each affected vscode langpack, you must
  * replace the changelog and readme files with the ones from the previous ADS version of the langpack before doing the above steps.
  *
  * This is mainly for consistency with previous langpacks and to provide proper information to the user.
