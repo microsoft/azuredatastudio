@@ -82,7 +82,6 @@ export class OpenExistingDialog extends DialogBase {
 
 				addProjectsPromise = this.workspaceService.gitCloneProject((<azdataType.InputBoxComponent>this.gitRepoTextBoxComponent?.component).value!, this.localClonePathTextBox!.value!);
 			} else {
-				telemetryProps.workspaceProjectRelativity = '';// TODO figure this out calculateRelativity(this.filePathTextBox!.value!, this.workspaceInputBox!.value!);
 				telemetryProps.cancelled = 'false';
 				addProjectsPromise = this.workspaceService.addProjectsToWorkspace([vscode.Uri.file(this.filePathTextBox!.value!)]);
 			}
