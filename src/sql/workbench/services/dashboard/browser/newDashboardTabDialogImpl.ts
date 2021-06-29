@@ -141,7 +141,7 @@ export class NewDashboardTabDialog extends Modal {
 		this._extensionList!.layout(height);
 	}
 
-	public render() {
+	public override render() {
 		super.render();
 		attachModalDialogStyler(this, this._themeService);
 
@@ -192,12 +192,12 @@ export class NewDashboardTabDialog extends Modal {
 	}
 
 	/* Overwrite escape key behavior */
-	protected onClose() {
+	protected override onClose() {
 		this.cancel();
 	}
 
 	/* Overwrite enter key behavior */
-	protected onAccept() {
+	protected override onAccept() {
 		this.addNewTabs();
 	}
 
@@ -238,7 +238,7 @@ export class NewDashboardTabDialog extends Modal {
 		}
 	}
 
-	public dispose(): void {
+	public override dispose(): void {
 		super.dispose();
 	}
 }

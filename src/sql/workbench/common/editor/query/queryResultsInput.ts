@@ -50,15 +50,15 @@ export class QueryResultsInput extends EditorInput {
 		super();
 	}
 
-	getTypeId(): string {
+	override get typeId(): string {
 		return QueryResultsInput.ID;
 	}
 
-	getName(): string {
+	override getName(): string {
 		return localize('extensionsInputName', "Extension");
 	}
 
-	matches(other: any): boolean {
+	override matches(other: any): boolean {
 		if (other instanceof QueryResultsInput) {
 			return (other._uri === this._uri);
 		}
@@ -66,7 +66,7 @@ export class QueryResultsInput extends EditorInput {
 		return false;
 	}
 
-	resolve(refresh?: boolean): Promise<any> {
+	override resolve(refresh?: boolean): Promise<any> {
 		return Promise.resolve(null);
 	}
 
@@ -74,7 +74,7 @@ export class QueryResultsInput extends EditorInput {
 		return false;
 	}
 
-	public dispose(): void {
+	public override dispose(): void {
 		super.dispose();
 	}
 

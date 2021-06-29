@@ -350,7 +350,7 @@ class RootViewItem extends ViewItem {
 		};
 	}
 
-	public render(): void {
+	public override render(): void {
 		if (!this.model || !this.element) {
 			return;
 		}
@@ -365,11 +365,11 @@ class RootViewItem extends ViewItem {
 		this.element.className = classes.join(' ');
 	}
 
-	public insertInDOM(container: HTMLElement, afterElement: HTMLElement): void {
+	public override insertInDOM(container: HTMLElement, afterElement: HTMLElement): void {
 		// noop
 	}
 
-	public removeFromDOM(): void {
+	public override removeFromDOM(): void {
 		// noop
 	}
 }
@@ -573,7 +573,7 @@ export class TreeView extends HeightMap {
 		this.treeStyler.style(styles);
 	}
 
-	protected createViewItem(item: Model.Item): IViewItem {
+	protected override createViewItem(item: Model.Item): IViewItem {
 		return new ViewItem(this.context, item);
 	}
 
@@ -1068,19 +1068,19 @@ export class TreeView extends HeightMap {
 
 	// HeightMap "events"
 
-	public onInsertItem(item: ViewItem): void {
+	public override onInsertItem(item: ViewItem): void {
 		item.onDragStart = (e) => { this.onDragStart(item, e); };
 		item.needsRender = true;
 		this.refreshViewItem(item);
 		this.items[item.id] = item;
 	}
 
-	public onRefreshItem(item: ViewItem, needsRender = false): void {
+	public override onRefreshItem(item: ViewItem, needsRender = false): void {
 		item.needsRender = item.needsRender || needsRender;
 		this.refreshViewItem(item);
 	}
 
-	public onRemoveItem(item: ViewItem): void {
+	public override onRemoveItem(item: ViewItem): void {
 		this.removeItemFromDOM(item);
 		item.dispose();
 		delete this.items[item.id];
@@ -1585,7 +1585,7 @@ export class TreeView extends HeightMap {
 		}
 	}
 
-	public dispose(): void {
+	public override dispose(): void {
 		// TODO@joao: improve
 		this.scrollableElement.dispose();
 

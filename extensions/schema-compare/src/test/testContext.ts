@@ -41,7 +41,8 @@ export function createContext(): TestContext {
 			globalStorageUri: undefined,
 			logUri: undefined,
 			storageUri: undefined,
-			secrets: undefined
+			secrets: undefined,
+			extension: undefined
 		},
 		viewContext: viewContext
 	};

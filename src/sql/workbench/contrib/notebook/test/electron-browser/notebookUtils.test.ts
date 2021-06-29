@@ -264,7 +264,8 @@ suite('notebookUtils', function (): void {
 	});
 
 	test('EditStack test', async function (): Promise<void> {
-		let stack = new RichTextEditStack();
+		let maxStackSize = 200;
+		let stack = new RichTextEditStack(maxStackSize);
 		assert.strictEqual(stack.count, 0);
 
 		stack.push('1');
@@ -290,5 +291,21 @@ suite('notebookUtils', function (): void {
 		topElement = stack.pop();
 		assert.strictEqual(topElement, undefined);
 		assert.strictEqual(stack.peek(), undefined);
+
+		// Check max stack size
+		stack.clear();
+		for (let i = 0; i < maxStackSize; i++) {
+			stack.push('a');
+		}
+		stack.push('b');
+		assert.strictEqual(stack.count, maxStackSize);
+		assert.strictEqual(stack.peek(), 'b');
+
+		// update max stack size and add new element
+		maxStackSize = 20;
+		stack.maxStackSize = maxStackSize;
+		stack.push('c');
+		assert.strictEqual(stack.count, maxStackSize);
+		assert.strictEqual(stack.peek(), 'c');
 	});
 });

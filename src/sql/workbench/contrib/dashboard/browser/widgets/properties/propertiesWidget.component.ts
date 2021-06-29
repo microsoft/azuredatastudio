@@ -16,7 +16,7 @@ import { ILogService } from 'vs/platform/log/common/log';
 import { subscriptionToDisposable } from 'sql/base/browser/lifecycle';
 import { PropertiesContainer, PropertyItem } from 'sql/base/browser/ui/propertiesContainer/propertiesContainer.component';
 import { registerThemingParticipant, IColorTheme, ICssStyleCollector } from 'vs/platform/theme/common/themeService';
-import { PROPERTIES_CONTAINER_PROPERTY_NAME, PROPERTIES_CONTAINER_PROPERTY_VALUE } from 'vs/workbench/common/theme';
+import { PROPERTIES_CONTAINER_PROPERTY_NAME, PROPERTIES_CONTAINER_PROPERTY_VALUE } from 'sql/workbench/common/theme';
 
 @Component({
 	selector: 'properties-widget',
@@ -34,10 +34,11 @@ export class PropertiesWidgetComponent extends DashboardWidget implements IDashb
 		@Inject(forwardRef(() => CommonServiceInterface)) private _bootstrap: CommonServiceInterface,
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
 		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef,
-		@Inject(WIDGET_CONFIG) protected _config: WidgetConfig,
+		@Inject(WIDGET_CONFIG) _config: WidgetConfig,
 		@Inject(ILogService) private logService: ILogService
 	) {
 		super(changeRef);
+		this._config = _config;
 		this.init();
 	}
 

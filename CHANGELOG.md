@@ -1,5 +1,21 @@
 # Change Log
 
+## Version 1.30.0
+* Release date: June 17, 2021
+* Release status: General Availability
+* New Notebook Features:
+    * Show book's notebook TOC title in pinned notebooks view
+    * Add new book icon 
+    * Update Python to 3.8.10
+* Query Editor Features:
+    * Added filtering/sorting feature for query result grid in query editor and notebook, the feature can be invoked from the column headers. Note that this feature is only           available when you enable the preview features
+    * Added a status bar item to show summary of the selected cells if there are multiple numeric values
+* Extension Updates:
+    * SQL Database Projects
+    * Machine Learning
+* Bug Fixes
+  * Fix WYSIWYG Table cell adding new line in table cell 
+
 ## Version 1.29.0
 * Release date: May 19, 2021
 * Release status: General Availability

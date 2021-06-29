@@ -69,12 +69,12 @@ export class RecentConnectionTreeController extends DefaultController {
 		super();
 	}
 
-	protected onLeftClick(tree: ITree, element: any, eventish: ICancelableEvent, origin: string = 'mouse'): boolean {
+	protected override onLeftClick(tree: ITree, element: any, eventish: ICancelableEvent, origin: string = 'mouse'): boolean {
 		this.clickcb(element, eventish, origin);
 		return super.onLeftClick(tree, element, eventish, origin);
 	}
 
-	protected onEnter(tree: ITree, event: IKeyboardEvent): boolean {
+	protected override onEnter(tree: ITree, event: IKeyboardEvent): boolean {
 		super.onEnter(tree, event);
 		this.clickcb(tree.getSelection()[0], event, 'keyboard');
 		return true;
@@ -86,7 +86,7 @@ export class RecentConnectionTreeController extends DefaultController {
 		return true;
 	}
 
-	public onMouseDown(tree: ITree, element: any, event: mouse.IMouseEvent, origin: string = 'mouse'): boolean {
+	public override onMouseDown(tree: ITree, element: any, event: mouse.IMouseEvent, origin: string = 'mouse'): boolean {
 		if (event.leftButton || event.middleButton) {
 			return this.onLeftClick(tree, element, event, origin);
 		} else {
@@ -94,7 +94,7 @@ export class RecentConnectionTreeController extends DefaultController {
 		}
 	}
 
-	public onKeyDown(tree: ITree, event: IKeyboardEvent): boolean {
+	public override onKeyDown(tree: ITree, event: IKeyboardEvent): boolean {
 		if (event.keyCode === 20) {
 			let element = tree.getFocus();
 			if (element instanceof ConnectionProfile) {

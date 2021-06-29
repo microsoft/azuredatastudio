@@ -8,6 +8,7 @@
 	padding: 0;
 }
 .button-menu.masked-pseudo-after.dropdown-arrow:after {
+	height: 100%;
 	right: 0;
 	width: 20px;
 }

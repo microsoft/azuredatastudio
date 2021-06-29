@@ -106,13 +106,13 @@ export default class EditorComponent extends ComponentBase<azdata.EditorProperti
 		return uri;
 	}
 
-	ngOnDestroy(): void {
+	override ngOnDestroy(): void {
 		this.baseDestroy();
 	}
 
 	/// IComponent implementation
 
-	public layout(): void {
+	public override layout(): void {
 		let width: number = convertSizeToNumber(this.width);
 
 		let height: number = convertSizeToNumber(this.height);
@@ -149,7 +149,7 @@ export default class EditorComponent extends ComponentBase<azdata.EditorProperti
 		this.layout();
 	}
 
-	public setProperties(properties: { [key: string]: any; }): void {
+	public override setProperties(properties: { [key: string]: any; }): void {
 		super.setProperties(properties);
 		if (this.content !== this._renderedContent) {
 			this.updateModel();

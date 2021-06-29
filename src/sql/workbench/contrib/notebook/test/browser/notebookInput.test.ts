@@ -62,13 +62,13 @@ suite('Notebook Input', function (): void {
 			testTitle, fileUri, undefined,
 			undefined, instantiationService, mockNotebookService.object, mockExtensionService.object);
 
-		let inputId = fileNotebookInput.getTypeId();
+		let inputId = fileNotebookInput.typeId;
 		assert.strictEqual(inputId, FileNotebookInput.ID);
 		assert.strictEqual(fileNotebookInput.isUntitled(), false, 'File Input should not be untitled');
 	});
 
 	test('Untitled Notebook Input', async function (): Promise<void> {
-		let inputId = untitledNotebookInput.getTypeId();
+		let inputId = untitledNotebookInput.typeId;
 		assert.strictEqual(inputId, UntitledNotebookInput.ID);
 		assert.ok(untitledNotebookInput.isUntitled(), 'Untitled Input should be untitled');
 	});

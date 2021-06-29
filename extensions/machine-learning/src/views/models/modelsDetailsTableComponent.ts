@@ -129,12 +129,12 @@ export class ModelsDetailsTableComponent extends ModelViewBase implements IDataC
 
 	private createTableRow(model: ModelViewData | undefined): any[] {
 		if (this._modelBuilder && model && model.modelDetails) {
-			const nameComponent = this._modelBuilder.inputBox().withProperties({
+			const nameComponent = this._modelBuilder.inputBox().withProps({
 				value: model.modelDetails.modelName,
 				width: this.componentMaxLength - 100,
 				required: true
 			}).component();
-			const descriptionComponent = this._modelBuilder.inputBox().withProperties({
+			const descriptionComponent = this._modelBuilder.inputBox().withProps({
 				value: model.modelDetails.description,
 				width: this.componentMaxLength
 			}).component();
@@ -148,7 +148,7 @@ export class ModelsDetailsTableComponent extends ModelViewBase implements IDataC
 					model.modelDetails.modelName = nameComponent.value || '';
 				}
 			});
-			let deleteButton = this._modelBuilder.button().withProperties({
+			let deleteButton = this._modelBuilder.button().withProps({
 				label: '',
 				title: constants.deleteTitle,
 				width: 15,

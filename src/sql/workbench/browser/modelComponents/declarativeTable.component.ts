@@ -19,13 +19,18 @@ import { ILogService } from 'vs/platform/log/common/log';
 import * as colorRegistry from 'vs/platform/theme/common/colorRegistry';
 import { IColorTheme, IThemeService } from 'vs/platform/theme/common/themeService';
 import { equals } from 'vs/base/common/objects';
+import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { MenuItemAction, MenuRegistry } from 'vs/platform/actions/common/actions';
+import { IAction, Separator } from 'vs/base/common/actions';
 
 export enum DeclarativeDataType {
 	string = 'string',
 	category = 'category',
 	boolean = 'boolean',
 	editableCategory = 'editableCategory',
-	component = 'component'
+	component = 'component',
+	menu = 'menu'
 }
 
 @Component({
@@ -53,7 +58,9 @@ export default class DeclarativeTableComponent extends ContainerBase<any, azdata
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
 		@Inject(ILogService) logService: ILogService,
-		@Inject(IThemeService) themeService: IThemeService
+		@Inject(IThemeService) themeService: IThemeService,
+		@Inject(IContextMenuService) private contextMenuService: IContextMenuService,
+		@Inject(IInstantiationService) private instantiationService: IInstantiationService
 	) {
 		super(changeRef, el, logService);
 		this._colorTheme = themeService.getColorTheme();
@@ -66,7 +73,7 @@ export default class DeclarativeTableComponent extends ContainerBase<any, azdata
 		this.baseInit();
 	}
 
-	ngOnDestroy(): void {
+	override ngOnDestroy(): void {
 		this.baseDestroy();
 	}
 
@@ -87,6 +94,10 @@ export default class DeclarativeTableComponent extends ContainerBase<any, azdata
 	public isCheckBox(colIdx: number): boolean {
 		let column: azdata.DeclarativeTableColumn = this.columns[colIdx];
 		return column.valueType === DeclarativeDataType.boolean;
+	}
+
+	public isContextMenuColumn(colIdx: number): boolean {
+		return this.columns[colIdx].valueType === DeclarativeDataType.menu;
 	}
 
 	public isControlEnabled(rowIdx: number, colIdx: number): boolean {
@@ -257,7 +268,7 @@ export default class DeclarativeTableComponent extends ContainerBase<any, azdata
 	}
 
 	private static ACCEPTABLE_VALUES = new Set<string>(['number', 'string', 'boolean']);
-	public setProperties(properties: azdata.DeclarativeTableProperties): void {
+	public override setProperties(properties: azdata.DeclarativeTableProperties): void {
 		const basicData: any[][] = properties.data ?? [];
 		const complexData: azdata.DeclarativeTableCellValue[][] = properties.dataValues ?? [];
 		let finalData: azdata.DeclarativeTableCellValue[][];
@@ -298,20 +309,21 @@ export default class DeclarativeTableComponent extends ContainerBase<any, azdata
 			this._data = finalData;
 		}
 
-		const newSelectedRow = properties.selectedRow ?? -1;
-		if (newSelectedRow !== this.selectedRow && properties.enableRowSelection) {
+		const previousSelectedRow = this.selectedRow;
+
+		super.setProperties(properties);
+
+		if (this.selectedRow !== previousSelectedRow && this.enableRowSelection) {
 			this.fireEvent({
 				eventType: ComponentEventType.onSelectedRowChanged,
 				args: {
-					row: properties.selectedRow
+					row: this.selectedRow
 				}
 			});
 		}
-
-		super.setProperties(properties);
 	}
 
-	public clearContainer(): void {
+	public override clearContainer(): void {
 		super.clearContainer();
 		this.selectedRow = -1;
 	}
@@ -345,6 +357,41 @@ export default class DeclarativeTableComponent extends ContainerBase<any, azdata
 		}
 	}
 
+	public get contextMenuButtonTitle(): string {
+		return localize('declarativeTable.showActions', "Show Actions");
+	}
+
+	public onContextMenuRequested(event: MouseEvent, row: number, column: number) {
+		const cellValue = this.data[row][column].value as azdata.DeclarativeTableMenuCellValue;
+		const actions: IAction[] = [];
+		let addSeparator = false;
+		for (const [index, command] of cellValue.commands.entries()) {
+			const isCommand = typeof command === 'string';
+			if (addSeparator || (!isCommand && index !== 0)) {
+				actions.push(new Separator());
+			}
+			if (typeof command === 'string') {
+				addSeparator = false;
+				actions.push(this.createMenuItem(command));
+			} else {
+				addSeparator = true;
+				actions.push(...command.map(cmd => {
+					return this.createMenuItem(cmd);
+				}));
+			}
+		}
+		this.contextMenuService.showContextMenu({
+			getAnchor: () => event.currentTarget as HTMLElement,
+			getActions: () => actions,
+			getActionsContext: () => cellValue.context
+		});
+	}
+
+	private createMenuItem(commandId: string): MenuItemAction {
+		const command = MenuRegistry.getCommand(commandId);
+		return this.instantiationService.createInstance(MenuItemAction, command, undefined, { shouldForwardArgs: true });
+	}
+
 	public onKey(e: KeyboardEvent, row: number) {
 		// Ignore the bubble up events
 		if (e.target !== e.currentTarget) {
@@ -357,7 +404,7 @@ export default class DeclarativeTableComponent extends ContainerBase<any, azdata
 		}
 	}
 
-	public doAction(action: string, ...args: any[]): void {
+	public override doAction(action: string, ...args: any[]): void {
 		if (action === ModelViewAction.Filter) {
 			this._filteredRowIndexes = args[0];
 		}
@@ -375,7 +422,7 @@ export default class DeclarativeTableComponent extends ContainerBase<any, azdata
 		return this._filteredRowIndexes.includes(rowIndex) ? false : true;
 	}
 
-	public get CSSStyles(): azdata.CssStyles {
+	public override get CSSStyles(): azdata.CssStyles {
 		return this.mergeCss(super.CSSStyles, {
 			'width': this.getWidth(),
 			'height': this.getHeight()

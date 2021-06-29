@@ -32,7 +32,7 @@ export class KerberosAuth extends SslAuth implements Authentication {
 		super();
 	}
 
-	applyToRequest(requestOptions: request.Options): void {
+	override applyToRequest(requestOptions: request.Options): void {
 		super.applyToRequest(requestOptions);
 		if (requestOptions && requestOptions.headers) {
 			requestOptions.headers['Authorization'] = `Negotiate ${this.kerberosToken}`;
@@ -45,7 +45,7 @@ export class BasicAuth extends SslAuth implements Authentication {
 		super();
 	}
 
-	applyToRequest(requestOptions: request.Options): void {
+	override applyToRequest(requestOptions: request.Options): void {
 		super.applyToRequest(requestOptions);
 		requestOptions.auth = {
 			username: this.username, password: this.password
@@ -56,7 +56,7 @@ export class BasicAuth extends SslAuth implements Authentication {
 export class OAuthWithSsl extends SslAuth implements Authentication {
 	public accessToken: string = '';
 
-	applyToRequest(requestOptions: request.Options): void {
+	override applyToRequest(requestOptions: request.Options): void {
 		super.applyToRequest(requestOptions);
 		if (requestOptions && requestOptions.headers) {
 			requestOptions.headers['Authorization'] = `Bearer ${this.accessToken}`;

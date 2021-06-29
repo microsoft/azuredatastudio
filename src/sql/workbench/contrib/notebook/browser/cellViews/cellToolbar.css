@@ -32,7 +32,7 @@ cell-toolbar-component ul.actions-container li.action-item {
 cell-toolbar-component ul.actions-container li:last-child {
 	margin-right: 0;
 }
-cell-toolbar-component .carbon-taskbar .action-label {
+cell-toolbar-component .carbon-taskbar.monaco-toolbar .monaco-action-bar .codicon.action-label {
 	padding: 0;
 }
 cell-toolbar-component .monaco-action-bar .action-label {
@@ -41,8 +41,8 @@ cell-toolbar-component .monaco-action-bar .action-label {
 cell-toolbar-component ul.actions-container li a.masked-icon {
 	display: flex;
 }
-cell-toolbar-component ul.actions-container li a.masked-icon,
-cell-toolbar-component ul.actions-container li a.masked-icon:before {
+cell-toolbar-component .carbon-taskbar.monaco-toolbar .monaco-action-bar ul.actions-container li a.masked-icon,
+cell-toolbar-component .carbon-taskbar.monaco-toolbar .monaco-action-bar ul.actions-container li a.masked-icon:before {
 	height: 24px;
 	width: 29px;
 }

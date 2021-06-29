@@ -58,7 +58,7 @@ export default class FlexContainer extends ContainerBase<azdata.FlexItemLayout> 
 		this.baseInit();
 	}
 
-	ngOnDestroy(): void {
+	override ngOnDestroy(): void {
 		this.baseDestroy();
 	}
 
@@ -92,11 +92,11 @@ export default class FlexContainer extends ContainerBase<azdata.FlexItemLayout> 
 		return this._alignItems;
 	}
 
-	public get height(): string {
+	public override get height(): string {
 		return this._height;
 	}
 
-	public get width(): string {
+	public override get width(): string {
 		return this._width;
 	}
 
@@ -108,7 +108,7 @@ export default class FlexContainer extends ContainerBase<azdata.FlexItemLayout> 
 		return this._textAlign;
 	}
 
-	public get position(): string {
+	public override get position(): string {
 		return this._position;
 	}
 
