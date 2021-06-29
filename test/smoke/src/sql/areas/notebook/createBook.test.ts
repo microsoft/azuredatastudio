@@ -20,9 +20,6 @@ export function setup() {
 		let tmpDir = '';
 		it('can create new book with default content folder', async function () {
 			const app = this.app as Application;
-			// Add timeout for giving time for the SQL Tools Service to start (it'll error if it's not started yet)
-			// TODO @chgagnon - Figure out better way to have tests wait for STS
-			await new Promise(r => setTimeout(r, 10000));
 			// eslint-disable-next-line no-sync
 			tmpDir = tmp.dirSync().name;
 			await app.workbench.quickaccess.runCommand(CreateBookCommand);
@@ -31,14 +28,13 @@ export function setup() {
 			await app.workbench.createBookDialog.create();
 			const bookExists = await fs.stat(path.join(tmpDir, bookName));
 			assert(!!bookExists, 'Book was not created');
+			// Wait a bit for the book to load in the viewlet before ending the test, otherwise we can get an error when it tries to read the deleted files
+			// TODO Instead it would be better to either not add the book to the viewlet to begin with or close it after the test is done
 			await new Promise(r => setTimeout(r, 2500));
 		});
 
 		it('can create new book with specified content folder', async function () {
 			const app = this.app as Application;
-			// Add timeout for giving time for the SQL Tools Service to start (it'll error if it's not started yet)
-			// TODO @chgagnon - Figure out better way to have tests wait for STS
-			await new Promise(r => setTimeout(r, 10000));
 			// eslint-disable-next-line no-sync
 			tmpDir = tmp.dirSync().name;
 			// Our content folder is just the workspace folder containing the test notebooks
@@ -52,6 +48,8 @@ export function setup() {
 			assert(!!bookExists, 'Book was not created');
 			const contentNotebookExists = await fs.stat(path.join(tmpDir, bookName, 'hello.ipynb'));
 			assert(!!contentNotebookExists, 'Notebook from content folder wasn\'t copied over');
+			// Wait a bit for the book to load in the viewlet before ending the test, otherwise we can get an error when it tries to read the deleted files
+			// TODO Instead it would be better to either not add the book to the viewlet to begin with or close it after the test is done
 			await new Promise(r => setTimeout(r, 2500));
 		});
 
