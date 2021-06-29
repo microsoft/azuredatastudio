@@ -134,7 +134,7 @@ function modifyI18nPackFiles(existingTranslationFolder, resultingTranslationPath
             for (let extension in extensionsPacks) {
                 const translatedExtFile = i18n.createI18nFile(`extensions/${extension}`, extensionsPacks[extension]);
                 this.queue(translatedExtFile);
-                //handle edge case for 'Microsoft.sqlservernotebook'
+                //handle edge case for 'Microsoft.sqlservernotebook' where extension name is the same as ID.
                 const adsExtensionId = (extension === 'Microsoft.sqlservernotebook') ? extension : 'Microsoft.' + extension;
                 resultingTranslationPaths.push({ id: adsExtensionId, resourceName: `extensions/${extension}.i18n.json` });
             }
@@ -151,7 +151,10 @@ const textFields = {
     "displayNameText": 'Azure Data Studio',
     "publisherText": 'Microsoft',
     "licenseText": 'SEE SOURCE EULA LICENSE IN LICENSE.txt',
-    "updateText": 'cd ../vscode && npm run update-localization-extension '
+    "updateText": 'cd ../vscode && npm run update-localization-extension ',
+    "vscodeVersion": '*',
+    "azdataPlaceholder": '^0.0.0',
+    "gitUrl": 'https://github.com/Microsoft/azuredatastudio'
 };
 //list of extensions from vscode that are to be included with ADS.
 const VSCODEExtensions = [
@@ -192,19 +195,26 @@ const VSCODEExtensions = [
 ];
 /**
  * A heavily modified version of update-localization-extension that runs using local xlf resources, no arguments required to pass in.
- * It converts a renamed vscode langpack to an ADS one or updates the existing one to use current XLF resources.
+ * It converts a renamed vscode langpack to an ADS one or updates the existing langpack to use current XLF resources.
  * It runs this process on all langpacks currently in the ADS i18n folder.
- * (Replace the ADS langpack with a corresponding vscode langpack renamed to "ads" instead of "vscode" in order to update vscode core strings and extensions)
+ * (Replace an individual ADS langpack folder with a corresponding vscode langpack folder renamed to "ads" instead of "vscode"
+ * in order to update vscode core strings and extensions for that langpack)
  *
  * It removes the resources of vscode that we do not support, and adds in new i18n json files created from the xlf files in the folder.
  * It also merges in the sql core XLF strings with the langpack's existing core strings into a combined main i18n json file.
  *
- * Remember to change the version of the langpacks to continue from the previous version of the ADS langpack.
+ * After running this gulp task, for each language pack:
  *
- * IMPORTANT: after running on 1 or more vscode langpacks:
- * 1. change the dependencies of vscode to "*"
- * 2. add an azdata dependency that matches the current version. (E.G."^1.0.0")
- * 3. replace the changelog and readme with the ones from previous langpacks, and update the changelog if needed.
+ * 1. Remember to change the version of the langpacks to continue from the previous version of the ADS langpack.
+ *
+ * 2. Also change the azdata version to match the current ADS version number.
+ *
+ * 3. Update the changelog with the new version of the language pack.
+ *
+ * IMPORTANT: If you run this gulp task on langpacks that originated from vscode, for each affected vscode langpack, you must
+ * replace the changelog and readme files with the ones from the previous ADS version of the langpack before doing the above steps.
+ *
+ * This is mainly for consistency with previous langpacks and to provide proper information to the user.
 */
 function refreshLangpacks() {
     let supportedLocations = [...i18n.defaultLanguages, ...i18n.extraLanguages];
@@ -232,6 +242,9 @@ function refreshLangpacks() {
         packageJSON['publisher'] = textFields.publisherText;
         packageJSON['license'] = textFields.licenseText;
         packageJSON['scripts']['update'] = textFields.updateText + langId;
+        packageJSON['engines']['vscode'] = textFields.vscodeVersion;
+        packageJSON['repository']['url'] = textFields.gitUrl;
+        packageJSON['engines']['azdata'] = textFields.azdataPlaceholder; // Remember to change this to the appropriate version at the end.
         let contributes = packageJSON['contributes'];
         if (!contributes) {
             throw new Error('The extension must define a "localizations" contribution in the "package.json"');
@@ -322,9 +335,7 @@ function refreshLangpacks() {
             });
         });
     }
-    return new Promise(function (resolve) {
-        console.log("Langpack Refresh Completed.");
-        resolve(undefined);
-    });
+    console.log("Langpack Refresh Completed.");
+    return Promise.resolve();
 }
 exports.refreshLangpacks = refreshLangpacks;
