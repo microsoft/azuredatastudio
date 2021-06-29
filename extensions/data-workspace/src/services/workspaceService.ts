@@ -12,7 +12,7 @@ import * as glob from 'fast-glob';
 import { IWorkspaceService } from '../common/interfaces';
 import { ProjectProviderRegistry } from '../common/projectProviderRegistry';
 import Logger from '../common/logger';
-import { TelemetryReporter, TelemetryViews, calculateRelativity, TelemetryActions } from '../common/telemetry';
+import { TelemetryReporter, TelemetryViews, TelemetryActions } from '../common/telemetry';
 
 export class WorkspaceService implements IWorkspaceService {
 	private _onDidWorkspaceProjectsChange: vscode.EventEmitter<void> = new vscode.EventEmitter<void>();
