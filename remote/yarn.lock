@@ -696,9 +696,9 @@ source-map-js@^0.6.2:
   integrity sha512-/3GptzWzu0+0MBQFrDKzw/DvvMTUORvgY6k6jd/VS6iCR4RDTKWH6v6WPwQoUO8667uQEf9Oe38DxAYWY5F/Ug==
 
 spdlog@^0.13.0:
-  version "0.13.4"
-  resolved "https://registry.yarnpkg.com/spdlog/-/spdlog-0.13.4.tgz#7393d436f077fca1d07500741e50cbf8928a838a"
-  integrity sha512-tdzk9ysc640emskx+pE/A2JdJ5IAr440ZIsNjRlD9aPK6U6IQ94VUGpl7u0NHamAB8O1H7RxLgtHyXT32V+RaA==
+  version "0.13.5"
+  resolved "https://registry.yarnpkg.com/spdlog/-/spdlog-0.13.5.tgz#a31027dcccbe032e9a53579f42cb45428af08bad"
+  integrity sha512-D1xA5tRXw7eZOoFBCAnOxCxLN3JpHVDjpPJG/xjJ0nFZvtfOUTAzK66MVxJCDht/ZFwjLcBAltvzjfz4JTuSEw==
   dependencies:
     bindings "^1.5.0"
     mkdirp "^0.5.5"

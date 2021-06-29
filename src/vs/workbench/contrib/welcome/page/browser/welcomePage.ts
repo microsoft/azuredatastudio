@@ -752,10 +752,10 @@ export class WelcomeInputSerializer implements IEditorInputSerializer {
 	}
 
 	public serialize(editorInput: EditorInput): string {
-		return '{}';
+		return '';
 	}
 
-	public deserialize(instantiationService: IInstantiationService, serializedEditorInput: string): WalkThroughInput {
+	public deserialize(instantiationService: IInstantiationService): WalkThroughInput {
 		return instantiationService.createInstance(WelcomePage)
 			.editorInput;
 	}

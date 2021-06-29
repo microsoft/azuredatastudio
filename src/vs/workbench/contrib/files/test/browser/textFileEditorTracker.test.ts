@@ -26,6 +26,8 @@ import { MockContextKeyService } from 'vs/platform/keybinding/test/common/mockKe
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { whenTextEditorClosed } from 'vs/workbench/browser/editor';
 import { FILE_EDITOR_INPUT_ID } from 'vs/workbench/contrib/files/common/files';
+import { IWorkspaceTrustRequestService } from 'vs/platform/workspace/common/workspaceTrust';
+import { TestWorkspaceTrustRequestService } from 'vs/workbench/services/workspaces/test/common/testWorkspaceTrustService';
 
 suite('Files - TextFileEditorTracker', () => {
 
@@ -58,6 +60,7 @@ suite('Files - TextFileEditorTracker', () => {
 		const part = await createEditorPart(instantiationService, disposables);
 
 		instantiationService.stub(IEditorGroupsService, part);
+		instantiationService.stub(IWorkspaceTrustRequestService, new TestWorkspaceTrustRequestService(false));
 
 		const editorService: EditorService = instantiationService.createInstance(EditorService);
 		instantiationService.stub(IEditorService, editorService);

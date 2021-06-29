@@ -3869,6 +3869,10 @@ declare namespace monaco.editor {
 		 */
 		showConstructors?: boolean;
 		/**
+		 * Show deprecated-suggestions.
+		 */
+		showDeprecated?: boolean;
+		/**
 		 * Show field-suggestions.
 		 */
 		showFields?: boolean;
