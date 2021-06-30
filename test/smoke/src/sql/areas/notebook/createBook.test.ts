@@ -61,6 +61,9 @@ export function setup() {
 					// Try our best to clean up but don't fail the test if we can't
 				}
 			}
+			const app = this.app as Application;
+			// Workaround for error notification trying to read deleted books
+			await app.workbench.notificationToast.closeNotificationToasts();
 		});
 	});
 }
