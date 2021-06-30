@@ -98,12 +98,6 @@ class CellDisplayGroup extends DisplayGroup<ICellModel> {
 
 export class AutoDash extends Disposable {
 	private readonly _displayGroup: CellDisplayGroup;
-	/*
-	private readonly _maxHeight: number = 10;
-	private readonly _minWidth: number = 1;
-	private readonly _maxWidth: number = 12;
-	private readonly _minHeight: number = 1;
-	*/
 
 	constructor() {
 		super();

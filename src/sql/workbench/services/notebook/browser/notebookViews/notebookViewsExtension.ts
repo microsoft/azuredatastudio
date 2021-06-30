@@ -109,14 +109,14 @@ export class NotebookViewsExtension extends NotebookExtension<INotebookViewMetad
 		return i <= this.maxNameIterationAttempts ? name : generateUuid();
 	}
 
-	public updateCell(cell: ICellModel, currentView: INotebookView, cellData: INotebookViewCell, override: boolean = false, silent: boolean = false) {
+	public updateCell(cell: ICellModel, currentView: INotebookView, cellData: INotebookViewCell, override: boolean = false) {
 		const cellMetadata = this.getCellMetadata(cell);
 		if (cellMetadata) {
 			const viewToUpdate = cellMetadata.views.findIndex(view => view.guid === currentView.guid);
 
 			if (viewToUpdate >= 0) {
 				cellMetadata.views[viewToUpdate] = override ? cellData : { ...cellMetadata.views[viewToUpdate], ...cellData };
-				this.setCellMetadata(cell, cellMetadata, silent);
+				this.setCellMetadata(cell, cellMetadata);
 			}
 		}
 	}
@@ -137,7 +137,7 @@ export class NotebookViewsExtension extends NotebookExtension<INotebookViewMetad
 		return this.getViews().find(view => view.guid === this._metadata.activeView);
 	}
 
-	public setActiveView(view: INotebookView): void {
+	public setActiveView(view: INotebookView) {
 		this._metadata.activeView = view.guid;
 		this._onActiveViewChanged.fire();
 	}

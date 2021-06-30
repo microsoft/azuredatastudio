@@ -29,14 +29,11 @@ export class NotebookExtension<TNotebookMeta, TCellMeta> {
 		return namespaceMeta[this.extensionName] as TCellMeta;
 	}
 
-	public setCellMetadata(cell: ICellModel, metadata: TCellMeta, silent: boolean = false) {
+	public setCellMetadata(cell: ICellModel, metadata: TCellMeta) {
 		const meta = {};
 		meta[this.extensionName] = metadata;
 		cell.metadata[this.extensionNamespace] = meta;
-		cell.metadata = deepClone(cell.metadata);
-
-		if (!silent) {
-			cell.sendChangeToNotebook(NotebookChangeType.CellsModified);
-		}
+		cell.metadata = deepClone(cell.metadata); // creating a new reference for change detection
+		cell.sendChangeToNotebook(NotebookChangeType.CellsModified);
 	}
 }

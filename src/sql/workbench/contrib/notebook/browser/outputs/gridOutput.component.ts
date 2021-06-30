@@ -214,7 +214,6 @@ class DataResourceTable extends GridTableBase<any> {
 	) {
 		super(state, createResultSet(source), {
 			actionOrientation: ActionsOrientation.HORIZONTAL,
-			//displayActions: cellOutput?.metadata?.displayActionBar,
 			inMemoryDataProcessing: true
 		}, contextMenuService, instantiationService, editorService, untitledEditorService, configurationService, queryModelService, themeService, contextViewService, notificationService);
 		this._gridDataProvider = this.instantiationService.createInstance(DataResourceDataProvider, source, this.resultSet, this.cellModel);

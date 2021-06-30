@@ -667,26 +667,6 @@ suite('Notebook Actions', function (): void {
 		});
 
 	});
-
-	test('Create new view action', async () => {
-		/*
-		let sandbox: sinon.SinonSandbox;
-
-		sandbox = sinon.sandbox.create();
-
-		let views = mockNotebookEditor.object.views;
-		let mockNotebookViews = TypeMoq.Mock.ofType<INotebookViews>(NotebookViewsStub);
-		mockNotebookEditor.setup(x => x.views).returns(() => mockNotebookViews);
-		const createNewViewStub = sandbox.stub(views, 'createNewView').returns(new NotebookViewStub());
-
-		let newViewAction = new CreateNotebookViewAction('notebookView.newView', 'Create New View', 'notebook-button', mockNotebookService.object);
-		let result = await newViewAction.run(testUri);
-
-
-		assert.ok(result, "New view action should succeed");
-		assert.ok(createNewViewStub.calledOnce, "createNewView should be called");
-		*/
-	});
 });
 
 
