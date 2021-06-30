@@ -187,11 +187,6 @@ export class ProductContribution implements IWorkbenchContribution {
 				/*});*/
 			}
 
-			// should we show the new license?
-			if (productService.licenseUrl && lastVersion && lastVersion.major < 1 && currentVersion && currentVersion.major >= 1) {
-				notificationService.info(nls.localize('licenseChanged', "Our license terms have changed, please click [here]({0}) to go through them.", productService.licenseUrl));
-			}
-
 			storageService.store(ProductContribution.KEY, productService.version, StorageScope.GLOBAL, StorageTarget.MACHINE);
 		});
 	}
@@ -259,10 +254,6 @@ export class UpdateContribution extends Disposable implements IWorkbenchContribu
 
 			case StateType.Downloaded:
 				this.onUpdateDownloaded(state.update);
-				break;
-
-			case StateType.Updating:
-				this.onUpdateUpdating(state.update);
 				break;
 
 			case StateType.Ready:
@@ -370,23 +361,6 @@ export class UpdateContribution extends Disposable implements IWorkbenchContribu
 					action.dispose();
 				}
 			}]
-		);
-	}
-
-	// windows fast updates
-	private onUpdateUpdating(update: IUpdate): void {
-		if (isWindows && this.productService.target === 'user') {
-			return;
-		}
-
-		// windows fast updates (target === system)
-		this.notificationService.prompt(
-			severity.Info,
-			nls.localize('updateInstalling', "{0} {1} is being installed in the background; we'll let you know when it's done.", this.productService.nameLong, update.productVersion),
-			[],
-			{
-				neverShowAgain: { id: 'neverShowAgain:update/win32-fast-updates', isSecondary: true }
-			}
 		);
 	}
 

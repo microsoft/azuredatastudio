@@ -278,8 +278,14 @@ const apiMenus: IAPIMenu[] = [
 		key: 'dataGrid/item/context',
 		id: MenuId.DataGridItemContext,
 		description: locConstants.menusExtensionPointDataGridContext
-	}
+	},
 	// {{SQL CARBON EDIT}} end menu entries
+	{
+		key: 'editor/inlineCompletions/actions',
+		id: MenuId.InlineCompletionsActions,
+		description: localize('inlineCompletions.actions', "The actions shown when hovering on an inline completion"),
+		supportsSubmenus: false
+	},
 ];
 
 namespace schema {

@@ -13,7 +13,7 @@ import { join, basename, dirname, posix } from 'vs/base/common/path';
 import { copy, Promises, rimraf, rimrafSync } from 'vs/base/node/pfs';
 import { URI } from 'vs/base/common/uri';
 import { existsSync, statSync, readdirSync, readFileSync, writeFileSync, renameSync, unlinkSync, mkdirSync, createReadStream } from 'fs';
-import { FileOperation, FileOperationEvent, IFileStat, FileOperationResult, FileSystemProviderCapabilities, FileChangeType, IFileChange, FileChangesEvent, FileOperationError, etag, IStat, IFileStatWithMetadata, IReadFileOptions, FilePermission } from 'vs/platform/files/common/files';
+import { FileOperation, FileOperationEvent, IFileStat, FileOperationResult, FileSystemProviderCapabilities, FileChangeType, IFileChange, FileChangesEvent, FileOperationError, etag, IStat, IFileStatWithMetadata, IReadFileOptions, FilePermission, NotModifiedSinceFileOperationError } from 'vs/platform/files/common/files';
 import { NullLogService } from 'vs/platform/log/common/log';
 import { isLinux, isWindows } from 'vs/base/common/platform';
 import { DisposableStore } from 'vs/base/common/lifecycle';
@@ -1491,6 +1491,7 @@ suite.skip('Disk File Service', function () { // {{SQL CARBON EDIT}} Disable occ
 
 		assert.ok(error);
 		assert.strictEqual(error!.fileOperationResult, FileOperationResult.FILE_NOT_MODIFIED_SINCE);
+		assert.ok(error instanceof NotModifiedSinceFileOperationError && error.stat);
 		assert.strictEqual(fileProvider.totalBytesRead, 0);
 	}
 
