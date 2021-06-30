@@ -20,6 +20,7 @@ import { Editors } from './editors';
 import { Code } from './code';
 import { Terminal } from './terminal';
 import { Notebook } from './notebook';
+import { Localization } from './localization';
 
 // {{SQL CARBON EDIT}}
 import { ConnectionDialog } from './sql/connectionDialog';
@@ -54,6 +55,7 @@ export class Workbench {
 	readonly keybindingsEditor: KeybindingsEditor;
 	readonly terminal: Terminal;
 	readonly notebook: Notebook;
+	readonly localization: Localization;
 
 	// {{SQL CARBON EDIT}}
 	readonly connectionDialog: ConnectionDialog;
@@ -93,5 +95,6 @@ export class Workbench {
 		this.configurePythonDialog = new ConfigurePythonDialog(code);
 		// {{END}}
 		this.notebook = new Notebook(this.quickaccess, code);
+		this.localization = new Localization(code);
 	}
 }
