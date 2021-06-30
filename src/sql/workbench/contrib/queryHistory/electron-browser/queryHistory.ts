@@ -94,7 +94,7 @@ export class QueryHistoryWorkbenchContribution implements IWorkbenchContribution
 									id: MenuId.ViewTitle,
 									group: 'navigation',
 									when: ContextKeyEqualsExpr.create('view', QUERY_HISTORY_VIEW_ID),
-									order: 1
+									order: 2
 								},
 								toggled: {
 									condition: ContextKeyEqualsExpr.create('config.queryHistory.captureEnabled', true),
