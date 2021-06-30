@@ -347,7 +347,6 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 			if (parentNode.protocol === 'file:') {
 				return parentNode.attributes['href'].nodeValue || '';
 			} else {
-				//const isAbsolute : boolean = parentNode.attributes['is-absolute'].nodeValue;
 				return parentNode.href || '';
 			}
 		} else {
