@@ -27,18 +27,16 @@ class DivItem {
 
 @Component({
 	template: `
-		<style>
-			.divContainer:focus {
-				outline-offset: 2px;
-			}
-		</style>
 		<div #divContainer *ngIf="items" class="divContainer" [ngStyle]="CSSStyles" [style.height]="height" [style.width]="width" [style.display]="display" (keyup)="onKey($event)" [attr.role]="ariaRole" [attr.aria-selected]="ariaSelected" (mouseover)="onMouseOver()" (mouseout)="onMouseOut()">
 			<div *ngFor="let item of items" [style.order]="getItemOrder(item)" [ngStyle]="getItemStyles(item)">
 				<model-component-wrapper [descriptor]="item.descriptor" [modelStore]="modelStore">
 				</model-component-wrapper>
 			</div>
 		</div>
-	`
+	`,
+	styles: [
+		`.divContainer: focus { outline-offset: 2px }`
+	]
 })
 export default class DivContainer extends ContainerBase<azdata.DivItemLayout, azdata.DivContainerProperties> implements IComponent, OnDestroy, AfterViewInit {
 	@Input() descriptor: IComponentDescriptor;
