@@ -60,7 +60,6 @@ import { isIOS, isWeb } from 'vs/base/common/platform';
 import { installLocalInRemoteIcon } from 'vs/workbench/contrib/extensions/browser/extensionsIcons';
 import { registerAction2, Action2, MenuId } from 'vs/platform/actions/common/actions';
 import * as locConstants from 'sql/base/common/locConstants'; // {{SQL CARBON EDIT}}
-import { IWorkspaceTrustManagementService } from 'vs/platform/workspace/common/workspaceTrust';
 import { WorkspaceTrustContext } from 'vs/workbench/services/workspaces/common/workspaceTrust';
 
 const SearchMarketplaceExtensionsContext = new RawContextKey<boolean>('searchMarketplaceExtensions', false);
@@ -488,7 +487,6 @@ export class ExtensionsViewPaneContainer extends ViewPaneContainer implements IE
 		@IExtensionManagementServerService private readonly extensionManagementServerService: IExtensionManagementServerService,
 		@INotificationService private readonly notificationService: INotificationService,
 		@IViewletService private readonly viewletService: IViewletService,
-		@IWorkspaceTrustManagementService private readonly workspaceTrustService: IWorkspaceTrustManagementService,
 		@IThemeService themeService: IThemeService,
 		@IConfigurationService configurationService: IConfigurationService,
 		@IStorageService storageService: IStorageService,
@@ -546,14 +544,7 @@ export class ExtensionsViewPaneContainer extends ViewPaneContainer implements IE
 		const header = append(this.root, $('.header'));
 		const placeholder = localize('searchExtensions', "Search Extensions in Marketplace");
 
-		let searchValue = this.searchViewletState['query.value'];
-		if (ExtensionsListView.isSearchWorkspaceUnsupportedExtensionsQuery(searchValue)) {
-			searchValue = undefined;
-		}
-
-		if (searchValue === undefined || searchValue === '') {
-			searchValue = this.workspaceTrustService.isWorkpaceTrusted() ? '' : '@workspaceUnsupported';
-		}
+		const searchValue = this.searchViewletState['query.value'] ? this.searchViewletState['query.value'] : '';
 
 		this.searchBox = this._register(this.instantiationService.createInstance(SuggestEnabledInput, `${VIEWLET_ID}.searchbox`, header, {
 			triggerCharacters: ['@'],
