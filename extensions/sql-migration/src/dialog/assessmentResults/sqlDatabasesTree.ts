@@ -47,6 +47,8 @@ const blockingIssues: Array<string> = [
 ];
 
 export class SqlDatabaseTree {
+	public focusComponent!: azdata.Component;
+
 	private _view!: azdata.ModelView;
 	private _instanceTable!: azdata.DeclarativeTableComponent;
 	private _databaseTable!: azdata.DeclarativeTableComponent;
@@ -201,9 +203,30 @@ export class SqlDatabaseTree {
 
 	private createSearchComponent(): azdata.DivContainer {
 		let resourceSearchBox = this._view.modelBuilder.inputBox().withProps({
+			stopEnterPropagation: true,
 			placeHolder: constants.SEARCH,
 			width: 200
 		}).component();
+		this.focusComponent = resourceSearchBox;
+
+		resourceSearchBox.onTextChanged(value => {
+			const filter: number[] = [];
+			if (this._databaseTableValues && value && value.length > 0) {
+				this._databaseTableValues.forEach((row, index) => {
+					const cell: any = row[1]?.value;
+					const cellText: string = cell?.items[1]?.value?.toLowerCase();
+					const searchText: string = value.toLowerCase();
+					if (cellText?.includes(searchText)) {
+						filter.push(index);
+					}
+				});
+			}
+
+			this._databaseTable.setFilter(
+				filter.length > 0
+					? filter
+					: undefined);
+		});
 
 		const searchContainer = this._view.modelBuilder.divContainer().withItems([resourceSearchBox]).withProps({
 			CSSStyles: {
