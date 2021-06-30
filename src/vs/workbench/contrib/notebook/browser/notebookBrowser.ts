@@ -37,6 +37,7 @@ export const NOTEBOOK_EDITOR_ID = 'workbench.editor.notebook';
 export const NOTEBOOK_DIFF_EDITOR_ID = 'workbench.editor.notebookTextDiffEditor';
 
 //#region Context Keys
+export const HAS_OPENED_NOTEBOOK = new RawContextKey<boolean>('userHasOpenedNotebook', false);
 export const KEYBINDING_CONTEXT_NOTEBOOK_FIND_WIDGET_FOCUSED = new RawContextKey<boolean>('notebookFindWidgetFocused', false);
 
 // Is Notebook
@@ -117,7 +118,7 @@ export interface ICellOutputViewModel {
 	 */
 	model: ICellOutput;
 	resolveMimeTypes(textModel: NotebookTextModel, kernelProvides: readonly string[] | undefined): [readonly IOrderedMimeType[], number];
-	pickedMimeType: number;
+	pickedMimeType: IOrderedMimeType | undefined;
 	supportAppend(): boolean;
 	hasMultiMimeType(): boolean;
 	toRawJSON(): any;
@@ -125,7 +126,6 @@ export interface ICellOutputViewModel {
 
 export interface IDisplayOutputViewModel extends ICellOutputViewModel {
 	resolveMimeTypes(textModel: NotebookTextModel, kernelProvides: readonly string[] | undefined): [readonly IOrderedMimeType[], number];
-	pickedMimeType: number;
 }
 
 
