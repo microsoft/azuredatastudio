@@ -27,6 +27,7 @@ import { IssueReporterWindowConfiguration, IssueReporterData, IssueReporterExten
 import { Codicon } from 'vs/base/common/codicons';
 import { renderIcon } from 'vs/base/browser/ui/iconLabel/iconLabels';
 import { ElectronIPCMainProcessService } from 'vs/platform/ipc/electron-sandbox/mainProcessService';
+import * as locConstants from 'sql/base/common/locConstants'; // {{SQL CARBON EDIT}}
 
 const MAX_URL_LENGTH = 2045;
 
@@ -672,7 +673,7 @@ export class IssueReporter extends Disposable {
 
 		sourceSelect.innerText = '';
 		sourceSelect.append(this.makeOption('', localize('selectSource', "Select source"), true));
-		sourceSelect.append(this.makeOption('azuredatastudio', localize('azuredatastudio', "Azure Data Studio"), false)); // {{SQL CARBON EDIT}} Update name
+		sourceSelect.append(this.makeOption('azuredatastudio', locConstants.issueReporterMainAzuredatastudio, false)); // {{SQL CARBON EDIT}} Update name
 		sourceSelect.append(this.makeOption('extension', localize('extension', "An extension"), false));
 		if (this.configuration.product.reportMarketplaceIssueUrl) {
 			sourceSelect.append(this.makeOption('marketplace', localize('marketplace', "Extensions marketplace"), false));

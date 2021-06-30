@@ -53,6 +53,7 @@ export class SubscriptionSelectionPage extends MigrationWizardPage {
 
 	private createAccountDropDown(view: azdata.ModelView): azdata.FormComponent<azdata.DropDownComponent> {
 		const dropDown = view.modelBuilder.dropDown().withProperties<azdata.DropDownProperties>({
+			ariaLabel: SUBSCRIPTION_SELECTION_AZURE_ACCOUNT_TITLE,
 			values: [],
 			editable: true,
 			fireOnTextChange: true,
@@ -70,6 +71,7 @@ export class SubscriptionSelectionPage extends MigrationWizardPage {
 
 	private createSubscriptionDropDown(view: azdata.ModelView): azdata.FormComponent<azdata.DropDownComponent> {
 		const dropDown = view.modelBuilder.dropDown().withProperties<azdata.DropDownProperties>({
+			ariaLabel: SUBSCRIPTION_SELECTION_AZURE_SUBSCRIPTION_TITLE,
 			values: [],
 			editable: true,
 			fireOnTextChange: true,
@@ -87,6 +89,7 @@ export class SubscriptionSelectionPage extends MigrationWizardPage {
 
 	private createProductDropDown(view: azdata.ModelView): azdata.FormComponent<azdata.DropDownComponent> {
 		const dropDown = view.modelBuilder.dropDown().withProperties<azdata.DropDownProperties>({
+			ariaLabel: SUBSCRIPTION_SELECTION_AZURE_PRODUCT_TITLE,
 			values: [],
 			editable: true,
 			fireOnTextChange: true,

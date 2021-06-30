@@ -15,7 +15,7 @@ jobs:
       echo "##vso[build.addbuildtag]$(VSCODE_QUALITY)"
     displayName: Add Quality Build Tag
   - template: sql-product-compile.yml
-  timeoutInMinutes: 90
+  timeoutInMinutes: 120
 
 - job: macOS
   condition: and(succeeded(), eq(variables['VSCODE_BUILD_MACOS'], 'true'), ne(variables['VSCODE_QUALITY'], 'saw'))
@@ -50,30 +50,6 @@ jobs:
       extensionsToUnitTest: ["admin-tool-ext-win", "agent", "azdata", "azurecore", "cms", "dacpac", "import", "schema-compare", "notebook", "resource-deployment", "machine-learning", "sql-database-projects", "data-workspace"]
   timeoutInMinutes: 90
 
-- job: LinuxWeb
-  condition: and(succeeded(), eq(variables['VSCODE_BUILD_WEB'], 'true'), ne(variables['VSCODE_QUALITY'], 'saw'))
-  pool:
-    vmImage: 'Ubuntu-18.04'
-  container: linux-x64
-  variables:
-    VSCODE_ARCH: x64
-  dependsOn:
-  - Compile
-  steps:
-  - template: web/sql-product-build-web.yml
-  timeoutInMinutes: 90
-
-- job: Docker
-  condition: and(succeeded(), eq(variables['VSCODE_BUILD_DOCKER'], 'true'))
-  pool:
-    vmImage: 'Ubuntu-18.04'
-  container: linux-x64
-  dependsOn:
-  - Linux
-  steps:
-  - template: docker/sql-product-build-docker.yml
-  timeoutInMinutes: 90
-
 - job: Windows
   condition: and(succeeded(), eq(variables['VSCODE_BUILD_WIN32'], 'true'))
   pool:
@@ -102,10 +78,8 @@ jobs:
   dependsOn:
   - macOS
   - Linux
-  # - Docker
   - Windows
   - Windows_Test
-  - LinuxWeb
   - macOS_Signing
   steps:
   - template: sql-release.yml

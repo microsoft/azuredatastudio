@@ -10,7 +10,7 @@ import * as loc from '../constants/strings';
 import { IconPath, IconPathHelper } from '../constants/iconPathHelper';
 import { MigrationStatusDialog } from '../dialog/migrationStatus/migrationStatusDialog';
 import { AdsMigrationStatus } from '../dialog/migrationStatus/migrationStatusDialogModel';
-import { filterMigrations } from '../api/utils';
+import { filterMigrations, SupportedAutoRefreshIntervals } from '../api/utils';
 
 interface IActionMetadata {
 	title?: string,
@@ -21,6 +21,7 @@ interface IActionMetadata {
 }
 
 const maxWidth = 800;
+const refreshFrequency: SupportedAutoRefreshIntervals = 180000;
 
 interface StatusCard {
 	container: azdata.DivContainer;
@@ -46,10 +47,9 @@ export class DashboardWidget {
 	private _migrationStatusMap: Map<string, MigrationContext[]> = new Map();
 	private _viewAllMigrationsButton!: azdata.ButtonComponent;
 
+	private _autoRefreshHandle!: NodeJS.Timeout;
+
 	constructor() {
-		vscode.commands.registerCommand('sqlmigration.refreshMigrationTiles', () => {
-			this.refreshMigrations();
-		});
 	}
 
 	private async getCurrentMigrations(): Promise<MigrationContext[]> {
@@ -95,7 +95,9 @@ export class DashboardWidget {
 				}
 			});
 			await view.initializeModel(container);
-
+			this._view.onClosed((e) => {
+				clearInterval(this._autoRefreshHandle);
+			});
 			this.refreshMigrations();
 		});
 	}
@@ -107,11 +109,19 @@ export class DashboardWidget {
 		}).component();
 		const titleComponent = view.modelBuilder.text().withProps({
 			value: loc.DASHBOARD_TITLE,
+			width: '750px',
 			CSSStyles: {
 				'font-size': '36px',
 				'margin-bottom': '5px',
 			}
 		}).component();
+
+		this.setAutoRefresh(refreshFrequency);
+
+		const container = view.modelBuilder.flexContainer().withItems([
+			titleComponent,
+		]).component();
+
 		const descComponent = view.modelBuilder.text().withProps({
 			value: loc.DASHBOARD_DESCRIPTION,
 			CSSStyles: {
@@ -119,7 +129,7 @@ export class DashboardWidget {
 				'margin-top': '10px',
 			}
 		}).component();
-		header.addItems([titleComponent, descComponent], {
+		header.addItems([container, descComponent], {
 			CSSStyles: {
 				'width': `${maxWidth}px`,
 				'padding-left': '20px'
@@ -229,6 +239,14 @@ export class DashboardWidget {
 			}
 		});
 		return view.modelBuilder.divContainer().withItems([buttonContainer]).component();
+	}
+
+	private setAutoRefresh(interval: SupportedAutoRefreshIntervals): void {
+		let classVariable = this;
+		clearInterval(this._autoRefreshHandle);
+		if (interval !== -1) {
+			this._autoRefreshHandle = setInterval(function () { classVariable.refreshMigrations(); }, interval);
+		}
 	}
 
 	private async refreshMigrations(): Promise<void> {

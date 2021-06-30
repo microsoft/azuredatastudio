@@ -98,7 +98,8 @@ abstract class ControllerDialogBase extends InitializingComponent {
 			controllerInfo?.kubeConfigFilePath || getDefaultKubeConfigPath(),
 			(disposable) => this._toDispose.push(disposable),
 			loc.controllerKubeConfig,
-			loc.invalidConfigPath
+			loc.invalidConfigPath,
+			true
 		);
 		this.modelBuilder.inputBox()
 			.withProps({

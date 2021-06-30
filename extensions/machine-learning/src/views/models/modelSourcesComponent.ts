@@ -92,7 +92,7 @@ export class ModelSourcesComponent extends ModelViewBase implements IDataCompone
 			}
 		});
 		let radioCardGroup = modelBuilder.radioCardGroup()
-			.withProperties({
+			.withProps({
 				cards: components,
 				iconHeight: '100px',
 				iconWidth: '100px',
@@ -104,7 +104,7 @@ export class ModelSourcesComponent extends ModelViewBase implements IDataCompone
 		this._flexContainer = modelBuilder.flexContainer().withLayout({
 			flexFlow: 'column'
 		}).withItems([radioCardGroup]).component();
-		this._selectedSourceLabel = modelBuilder.text().withProperties({
+		this._selectedSourceLabel = modelBuilder.text().withProps({
 			value: this.getSourceTypeDescription(this._sourceType),
 			CSSStyles: {
 				'font-size': '13px',

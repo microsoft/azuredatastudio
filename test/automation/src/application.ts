@@ -70,7 +70,7 @@ export class Application {
 
 	async start(expectWalkthroughPart = true): Promise<any> {
 		await this._start();
-		await this.code.waitForElement('.explorer-folders-view');
+		await this.code.waitForElement('.object-explorer-view'); // {{SQL CARBON EDIT}} We have a different startup view
 
 		// https://github.com/microsoft/vscode/issues/118748
 		// if (expectWalkthroughPart) {
@@ -146,9 +146,17 @@ export class Application {
 		await this.code.waitForWindowIds(ids => ids.length > 0);
 		await this.code.waitForElement('.monaco-workbench');
 
+		// {{SQL CARBON EDIT}} Wait for specified status bar items before considering the app ready - we wait for them together to avoid timing
+		// issues with the status bar items disappearing
+		const statusbarPromises: Promise<string>[] = [];
+
 		if (this.remote) {
-			await this.code.waitForTextContent('.monaco-workbench .statusbar-item[id="status.host"]', ' TestResolver', undefined, 2000);
+			statusbarPromises.push(this.code.waitForTextContent('.monaco-workbench .statusbar-item[id="status.host"]', ' TestResolver', undefined, 2000));
 		}
+
+		// Wait for SQL Tools Service to start before considering the app ready
+		statusbarPromises.push(this.code.waitForTextContent('.monaco-workbench .statusbar-item[id="Microsoft.mssql"]', 'SQL Tools Service Started', undefined, 30000));
+		await Promise.all(statusbarPromises);
 
 		// wait a bit, since focus might be stolen off widgets
 		// as soon as they open (e.g. quick access)
