@@ -20,17 +20,6 @@ import { createAzureMonitorApi } from './azuremonitorApiFactory';
 import { AzureMonitorServer } from './azuremonitorServer';
 import { promises as fs } from 'fs';
 
-// export function activate2(context: vscode.ExtensionContext): void {
-// 	output.appendLine(
-// 		localize("extension.activating", "Activating {0}.", Strings.extensionName));
-
-// 	let appContext = new AppContext(context);
-// 	let nodeProvider = new AzureMonitorObjectExplorerNodeProvider(appContext);
-// 	azdata.dataprotocol.registerObjectExplorerNodeProvider(nodeProvider);
-
-// 	launchServiceClient(path.join(context.extensionPath, 'sqltoolsservice/windows/3.0.0-release.1/MicrosoftKustoServiceLayer.exe'), context);
-// }
-
 const localize = nls.loadMessageBundle();
 
 export async function activate(context: vscode.ExtensionContext): Promise<IExtension | undefined> {

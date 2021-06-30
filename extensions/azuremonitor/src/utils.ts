@@ -77,7 +77,8 @@ export function getCommonLaunchArgsAndCleanupOldLogFiles(logPath: string, fileNa
 		launchArgs.push(config);
 	}
 
-	launchArgs.push('--service-name AzureMonitor');
+	launchArgs.push('--service-name');
+	launchArgs.push('AzureMonitor');
 
 	return launchArgs;
 }
