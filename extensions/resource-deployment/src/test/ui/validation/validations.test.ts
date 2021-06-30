@@ -12,10 +12,9 @@ import { InputValueType } from '../../../ui/modelViewUtils';
 import { createValidation, GreaterThanOrEqualsValidation, IntegerValidation, LessThanOrEqualsValidation, RegexValidation, validateInputBoxComponent, Validation, ValidationType } from '../../../ui/validation/validations';
 
 const inputBox = <azdata.InputBoxComponent>{
-	updateProperty(key: string, value: any) { }
+	validationErrorMessage: ''
 };
-let inputBoxStub: sinon.SinonStub;
-// const validationMessage = 'The field value is not valid';
+
 const testValidations = [
 	{
 		type: ValidationType.IsInteger,
@@ -42,7 +41,6 @@ let onValidityChangedEmitter: vscode.EventEmitter<boolean>;
 describe('Validation', () => {
 	beforeEach('validation setup', () => {
 		sinon.restore(); //cleanup all previously defined sinon mocks
-		inputBoxStub = sinon.stub(inputBox, 'updateProperty').resolves();
 		onValidityChangedEmitter = new vscode.EventEmitter<boolean>(); // recreate for every test so that any previous subscriptions on the event are cleared out.
 	});
 	describe('createValidation and validate input Box', () => {
@@ -62,8 +60,6 @@ describe('Validation', () => {
 					case ValidationType.GreaterThanOrEqualsTo: should(validation).be.instanceOf(GreaterThanOrEqualsValidation); break;
 				}
 				should(await validateInputBoxComponent(inputBox, [validation])).be.true(`Call to validate should be true`); // undefined and '' values are valid so validation should return true. This allows for fields that are not required
-				should(inputBoxStub.calledOnce).be.true();
-				should(inputBoxStub.getCall(0).args[1]).be.undefined();
 			});
 		});
 	});
