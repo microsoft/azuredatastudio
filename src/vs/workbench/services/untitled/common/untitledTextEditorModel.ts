@@ -346,6 +346,8 @@ export class UntitledTextEditorModel extends BaseTextEditorModel implements IUnt
 				this._onDidChangeContent.fire();
 			}
 		}
+
+		return super.resolve();
 	}
 
 	private onModelContentChanged(textEditorModel: ITextModel, e: IModelContentChangedEvent): void {

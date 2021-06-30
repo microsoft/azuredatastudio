@@ -464,6 +464,8 @@ class TerminalTabsRenderer implements IListRenderer<ITerminalInstance, ITerminal
 				}
 			}
 		}
+		this._terminalGroupService.focusTabs();
+		this._listService.lastFocusedList?.focusNext();
 	}
 }
 
@@ -546,21 +548,14 @@ class TerminalTabsDragAndDrop implements IListDragAndDrop<ITerminalInstance> {
 		// Attach terminals type to event
 		const terminals: ITerminalInstance[] = dndData.filter(e => 'instanceId' in (e as any));
 		if (terminals.length > 0) {
+			originalEvent.dataTransfer.setData(DataTransfers.RESOURCES, JSON.stringify(terminals.map(e => e.resource.toString())));
 			originalEvent.dataTransfer.setData(DataTransfers.TERMINALS, JSON.stringify(terminals.map(e => e.instanceId)));
 		}
 	}
 
 	onDragOver(data: IDragAndDropData, targetInstance: ITerminalInstance | undefined, targetIndex: number | undefined, originalEvent: DragEvent): boolean | IListDragOverReaction {
-		if (containsDragType(originalEvent, DataTransfers.TERMINALS)) {
-			return {
-				feedback: targetIndex ? [targetIndex] : undefined,
-				accept: true,
-				effect: ListDragOverEffect.Move
-			};
-		}
-
 		if (data instanceof NativeDragAndDropData) {
-			if (!containsDragType(originalEvent, DataTransfers.FILES, DataTransfers.RESOURCES)) {
+			if (!containsDragType(originalEvent, DataTransfers.FILES, DataTransfers.RESOURCES, DataTransfers.TERMINALS)) {
 				return false;
 			}
 		}
@@ -571,11 +566,11 @@ class TerminalTabsDragAndDrop implements IListDragAndDrop<ITerminalInstance> {
 			this._autoFocusInstance = targetInstance;
 		}
 
-		if (!targetInstance) {
+		if (!targetInstance && !containsDragType(originalEvent, DataTransfers.TERMINALS)) {
 			return data instanceof ElementsDragAndDropData;
 		}
 
-		if (didChangeAutoFocusInstance) {
+		if (didChangeAutoFocusInstance && targetInstance) {
 			this._autoFocusDisposable = disposableTimeout(() => {
 				this._terminalService.setActiveInstance(targetInstance);
 				this._autoFocusInstance = undefined;
@@ -626,9 +621,7 @@ class TerminalTabsDragAndDrop implements IListDragAndDrop<ITerminalInstance> {
 		}
 
 		if (!targetInstance) {
-			for (const instance of sourceInstances) {
-				this._terminalGroupService.unsplitInstance(instance);
-			}
+			this._terminalGroupService.moveGroupToEnd(sourceInstances[0]);
 			return;
 		}
 

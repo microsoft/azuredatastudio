@@ -3298,11 +3298,11 @@ export enum TestMessageSeverity {
 	Hint = 3
 }
 
-const testItemPropAccessor = <K extends keyof vscode.TestItem<never>>(
+const testItemPropAccessor = <K extends keyof vscode.TestItem>(
 	api: IExtHostTestItemApi,
 	key: K,
-	defaultValue: vscode.TestItem<never>[K],
-	equals: (a: vscode.TestItem<never>[K], b: vscode.TestItem<never>[K]) => boolean
+	defaultValue: vscode.TestItem[K],
+	equals: (a: vscode.TestItem[K], b: vscode.TestItem[K]) => boolean
 ) => {
 	let value = defaultValue;
 	return {
@@ -3311,7 +3311,7 @@ const testItemPropAccessor = <K extends keyof vscode.TestItem<never>>(
 		get() {
 			return value;
 		},
-		set(newValue: vscode.TestItem<never>[K]) {
+		set(newValue: vscode.TestItem[K]) {
 			if (!equals(value, newValue)) {
 				value = newValue;
 				api.bus.fire([ExtHostTestItemEventType.SetProp, key, newValue]);
@@ -3327,19 +3327,19 @@ const rangeComparator = (a: vscode.Range | undefined, b: vscode.Range | undefine
 	return a.isEqual(b);
 };
 
-export class TestRunRequest<T> implements vscode.TestRunRequest<T> {
+export class TestRunRequest implements vscode.TestRunRequest {
 	constructor(
-		public readonly tests: vscode.TestItem<T>[],
-		public readonly exclude?: vscode.TestItem<T>[] | undefined,
+		public readonly tests: vscode.TestItem[],
+		public readonly exclude?: vscode.TestItem[] | undefined,
 		public readonly debug = false,
 	) { }
 }
 
-export class TestItemImpl<T = any> implements vscode.TestItem<T> {
+export class TestItemImpl implements vscode.TestItem {
 	public readonly id!: string;
 	public readonly uri!: vscode.Uri | undefined;
-	public readonly children!: ReadonlyMap<string, TestItemImpl<T>>;
-	public readonly parent!: TestItemImpl<T> | undefined;
+	public readonly children!: ReadonlyMap<string, TestItemImpl>;
+	public readonly parent!: TestItemImpl | undefined;
 
 	public range!: vscode.Range | undefined;
 	public description!: string | undefined;
@@ -3350,7 +3350,10 @@ export class TestItemImpl<T = any> implements vscode.TestItem<T> {
 	public busy!: boolean;
 	public canResolveChildren!: boolean;
 
-	constructor(id: string, label: string, uri: vscode.Uri | undefined, public data: T, parent: vscode.TestItem | undefined) {
+	/**
+	 * Note that data is deprecated and here for back-compat only
+	 */
+	constructor(id: string, label: string, uri: vscode.Uri | undefined, public data: any, parent: vscode.TestItem | undefined) {
 		const api = getPrivateApiFor(this);
 
 		Object.defineProperties(this, {
@@ -3399,7 +3402,12 @@ export class TestItemImpl<T = any> implements vscode.TestItem<T> {
 		}
 	}
 
+	/** @deprecated back compat */
 	public invalidate() {
+		return this.invalidateResults();
+	}
+
+	public invalidateResults() {
 		getPrivateApiFor(this).bus.fire([ExtHostTestItemEventType.Invalidated]);
 	}
 
