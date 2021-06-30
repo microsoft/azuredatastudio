@@ -1169,7 +1169,7 @@ export class TerminalTaskSystem extends Disposable implements ITaskSystem {
 		let options = await this.resolveOptions(resolver, task.command.options);
 		const presentationOptions = task.command.presentation;
 
-		let waitOnExit: boolean | string = presentationOptions?.close ? !presentationOptions.close : false;
+		let waitOnExit: boolean | string = (presentationOptions?.close !== undefined) ? !presentationOptions.close : true;
 		if (!presentationOptions) {
 			throw new Error('Task presentation options should not be undefined here.');
 		}
@@ -1275,7 +1275,7 @@ export class TerminalTaskSystem extends Disposable implements ITaskSystem {
 		}
 		if (!result) {
 			// Either no group is used, no terminal with the group exists or splitting an existing terminal failed.
-			result = this.terminalService.createTerminal(launchConfigs);
+			result = this.terminalService.createTerminal({ config: launchConfigs });
 		}
 
 		const terminalKey = result.instanceId.toString();

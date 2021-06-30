@@ -874,20 +874,26 @@ declare module 'vscode' {
 
 	//#endregion
 
-	//#region Terminal icon https://github.com/microsoft/vscode/issues/120538
+	//#region Terminal name change event https://github.com/microsoft/vscode/issues/114898
 
-	export interface TerminalOptions {
+	export interface Pseudoterminal {
 		/**
-		 * The icon path or {@link ThemeIcon} for the terminal.
+		 * An event that when fired allows changing the name of the terminal.
+		 *
+		 * **Example:** Change the terminal name to "My new terminal".
+		 * ```typescript
+		 * const writeEmitter = new vscode.EventEmitter<string>();
+		 * const changeNameEmitter = new vscode.EventEmitter<string>();
+		 * const pty: vscode.Pseudoterminal = {
+		 *   onDidWrite: writeEmitter.event,
+		 *   onDidChangeName: changeNameEmitter.event,
+		 *   open: () => changeNameEmitter.fire('My new terminal'),
+		 *   close: () => {}
+		 * };
+		 * vscode.window.createTerminal({ name: 'My terminal', pty });
+		 * ```
 		 */
-		readonly iconPath?: Uri | { light: Uri; dark: Uri } | ThemeIcon;
-	}
-
-	export interface ExtensionTerminalOptions {
-		/**
-		 * A themeIcon, Uri, or light and dark Uris to use as the terminal tab icon
-		 */
-		readonly iconPath?: Uri | { light: Uri; dark: Uri } | ThemeIcon;
+		onDidChangeName?: Event<string>;
 	}
 
 	//#endregion
@@ -1382,15 +1388,17 @@ declare module 'vscode' {
 
 	export interface CompletionItemLabel {
 		/**
-		 * The function or variable. Rendered leftmost.
+		 * The name of this completion item. By default
+		 * this is also the text that is inserted when selecting
+		 * this completion.
 		 */
 		name: string;
 
 		/**
-		 * The parameters without the return type. Render after `name`.
+		 * The signature of this completion item. Will be rendered right after the
+		 * {@link CompletionItemLabel.name name}.
 		 */
-		//todo@API rename to signature
-		parameters?: string;
+		signature?: string;
 
 		/**
 		 * The fully qualified name, like package name or file path. Rendered after `signature`.
@@ -1973,10 +1981,13 @@ declare module 'vscode' {
 		 * run should be created before the function returns or the reutrned
 		 * promise is resolved.
 		 *
-		 * @param options Options for this test run
-		 * @param cancellationToken Token that signals the used asked to abort the test run.
+		 * @param request Request information for the test run
+		 * @param cancellationToken Token that signals the used asked to abort the
+		 * test run. If cancellation is requested on this token, all {@link TestRun}
+		 * instances associated with the request will be
+		 * automatically cancelled as well.
 		 */
-		runTests(options: TestRunRequest<T>, token: CancellationToken): Thenable<void> | void;
+		runTests(request: TestRunRequest<T>, token: CancellationToken): Thenable<void> | void;
 	}
 
 	/**
@@ -2013,6 +2024,12 @@ declare module 'vscode' {
 		 * tests are run across multiple platforms, for example.
 		 */
 		readonly name?: string;
+
+		/**
+		 * A cancellation token which will be triggered when the test run is
+		 * canceled from the UI.
+		 */
+		readonly token: CancellationToken;
 
 		/**
 		 * Updates the state of the test in the run. Calling with method with nodes
@@ -2879,6 +2896,47 @@ declare module 'vscode' {
 		 * The stored keys.
 		 */
 		readonly keys: readonly string[];
+	}
+
+	//#endregion
+
+	//#region https://github.com/microsoft/vscode/issues/126258 @aeschli
+
+	export interface StatusBarItem {
+
+		/**
+		 * Will be merged into StatusBarItem#tooltip
+		 */
+		tooltip2: string | MarkdownString | undefined;
+
+	}
+
+	//#endregion
+
+	//#region https://github.com/microsoft/vscode/issues/126280 @mjbvz
+
+	export interface NotebookCellData {
+		/**
+		 * Mime type determines how the cell's `value` is interpreted.
+		 *
+		 * The mime selects which notebook renders is used to render the cell.
+		 *
+		 * If not set, internally the cell is treated as having a mime type of `text/plain`.
+		 * Cells that set `language` to `markdown` instead are treated as `text/markdown`.
+		 */
+		mime?: string;
+	}
+
+	export interface NotebookCell {
+		/**
+		 * Mime type determines how the markup cell's `value` is interpreted.
+		 *
+		 * The mime selects which notebook renders is used to render the cell.
+		 *
+		 * If not set, internally the cell is treated as having a mime type of `text/plain`.
+		 * Cells that set `language` to `markdown` instead are treated as `text/markdown`.
+		 */
+		mime: string | undefined;
 	}
 
 	//#endregion

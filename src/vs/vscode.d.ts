@@ -1860,6 +1860,12 @@ declare module 'vscode' {
 		 * Indicates that this message should be modal.
 		 */
 		modal?: boolean;
+
+		/**
+		 * Human-readable detail message that is rendered less prominent. _Note_ that detail
+		 * is only shown for {@link MessageOptions.modal modal} messages.
+		 */
+		detail?: string;
 	}
 
 	/**
@@ -5795,7 +5801,7 @@ declare module 'vscode' {
 	/**
 	 * A link on a terminal line.
 	 */
-	export interface TerminalLink {
+	export class TerminalLink {
 		/**
 		 * The start index of the link on {@link TerminalLinkContext.line}.
 		 */
@@ -5814,6 +5820,18 @@ declare module 'vscode' {
 		 * depending on OS, user settings, and localization.
 		 */
 		tooltip?: string;
+
+		/**
+		 * Creates a new terminal link.
+		 * @param startIndex The start index of the link on {@link TerminalLinkContext.line}.
+		 * @param length The length of the link on {@link TerminalLinkContext.line}.
+		 * @param tooltip The tooltip text when you hover over this link.
+		 *
+		 * If a tooltip is provided, is will be displayed in a string that includes instructions on
+		 * how to trigger the link, such as `{0} (ctrl + click)`. The specific instructions vary
+		 * depending on OS, user settings, and localization.
+		 */
+		constructor(startIndex: number, length: number, tooltip?: string);
 	}
 
 	/**
@@ -5838,6 +5856,10 @@ declare module 'vscode' {
 		 */
 		options: TerminalOptions | ExtensionTerminalOptions;
 
+		/**
+		 * Creates a new terminal profile.
+		 * @param options The options that the terminal will launch with.
+		 */
 		constructor(options: TerminalOptions | ExtensionTerminalOptions);
 	}
 
@@ -9419,6 +9441,11 @@ declare module 'vscode' {
 		 * a setting text style.
 		 */
 		message?: string;
+
+		/**
+		 * The icon path or {@link ThemeIcon} for the terminal.
+		 */
+		iconPath?: Uri | { light: Uri; dark: Uri } | ThemeIcon;
 	}
 
 	/**
@@ -9435,6 +9462,11 @@ declare module 'vscode' {
 		 * control a terminal.
 		 */
 		pty: Pseudoterminal;
+
+		/**
+		 * The icon path or {@link ThemeIcon} for the terminal.
+		 */
+		iconPath?: Uri | { light: Uri; dark: Uri } | ThemeIcon;
 	}
 
 	/**
@@ -11771,9 +11803,9 @@ declare module 'vscode' {
 	}
 
 	/**
-	 * NotebookData is the raw representation of notebooks.
+	 * Raw representation of a notebook.
 	 *
-	 * Extensions are responsible to create {@link NotebookData `NotebookData`} so that the editor
+	 * Extensions are responsible for creating {@link NotebookData `NotebookData`} so that the editor
 	 * can create a {@link NotebookDocument `NotebookDocument`}.
 	 *
 	 * @see {@link NotebookSerializer}
