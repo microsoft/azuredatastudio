@@ -237,18 +237,6 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				}
 			);
 
-			this._assessmentResults.issues.forEach(i => {
-				sendSqlMigrationActionEvent(
-					TelemetryViews.MigrationWizardTargetSelectionPage,
-					TelemetryAction.ServerAssessmentIssues,
-					{
-						'sessionId': this._sessionId,
-						'rule': i.checkId
-					},
-					{}
-				);
-			});
-
 			this._assessmentResults.databaseAssessments.forEach(d => {
 				sendSqlMigrationActionEvent(
 					TelemetryViews.MigrationWizardTargetSelectionPage,
@@ -258,21 +246,10 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 						'hashedDatabaseName': hashString(d.name),
 						'compatibilityLevel': compatLevelHashMap.get(d.name)!,
 					},
-					{}
+					{
+						'warningsCount': d.issues.length
+					}
 				);
-
-				d.issues.forEach(w => {
-					sendSqlMigrationActionEvent(
-						TelemetryViews.MigrationWizardTargetSelectionPage,
-						TelemetryAction.DatabaseAssessmentWarning,
-						{
-							'sessionId': this._sessionId,
-							'hashedDatabaseName': hashString(d.name),
-							'warning': w.checkId
-						},
-						{}
-					);
-				});
 			});
 		} catch (e) {
 			console.log(e);
