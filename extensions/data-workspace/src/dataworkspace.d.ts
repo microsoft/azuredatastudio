@@ -18,14 +18,13 @@ declare module 'dataworkspace' {
 		 * Returns all the projects in the workspace
 		 * @param ext project extension to filter on. If this is passed in, this will only return projects with this file extension
 		 */
-		getProjectsInWorkspace(ext?: string): vscode.Uri[];
+		getProjectsInWorkspace(ext?: string): Promise<vscode.Uri[]>;
 
 		/**
 		 * Add projects to the workspace
-		 * @param projectFiles Uris of project files to add,
-		 * @param workspaceFilePath workspace file to create if no workspace is open
+		 * @param projectFiles Uris of project files to add
 		 */
-		addProjectsToWorkspace(projectFiles: vscode.Uri[], workspaceFilePath?: vscode.Uri): Promise<void>;
+		addProjectsToWorkspace(projectFiles: vscode.Uri[]): Promise<void>;
 
 		/**
 		 * Change focus to Projects view
@@ -52,12 +51,6 @@ declare module 'dataworkspace' {
 		 * @param projectFile The Uri of the project file
 		 */
 		getProjectTreeDataProvider(projectFile: vscode.Uri): Promise<vscode.TreeDataProvider<any>>;
-
-		/**
-		 * Notify the project provider extension that the specified project file has been removed from the data workspace
-		 * @param projectFile The Uri of the project file
-		 */
-		RemoveProject(projectFile: vscode.Uri): Promise<void>;
 
 		/**
 		 *
