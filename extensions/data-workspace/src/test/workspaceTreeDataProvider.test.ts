@@ -7,23 +7,13 @@ import { IDashboardTable, IProjectProvider, WorkspaceTreeItem } from 'dataworksp
 import 'mocha';
 import * as should from 'should';
 import * as sinon from 'sinon';
-import * as TypeMoq from 'typemoq';
 import * as vscode from 'vscode';
 import { WorkspaceTreeDataProvider } from '../common/workspaceTreeDataProvider';
 import { WorkspaceService } from '../services/workspaceService';
 import { MockTreeDataProvider } from './projectProviderRegistry.test';
 
-interface ExtensionGlobalMemento extends vscode.Memento {
-	setKeysForSync(keys: string[]): void;
-}
-
 suite('workspaceTreeDataProvider Tests', function (): void {
-	const mockExtensionContext = TypeMoq.Mock.ofType<vscode.ExtensionContext>();
-	const mockGlobalState = TypeMoq.Mock.ofType<ExtensionGlobalMemento>();
-	mockGlobalState.setup(x => x.update(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve());
-	mockExtensionContext.setup(x => x.globalState).returns(() => mockGlobalState.object);
-
-	const workspaceService = new WorkspaceService(mockExtensionContext.object);
+	const workspaceService = new WorkspaceService();
 	const treeProvider = new WorkspaceTreeDataProvider(workspaceService);
 
 	this.afterEach(() => {
@@ -63,7 +53,7 @@ suite('workspaceTreeDataProvider Tests', function (): void {
 		};
 		const children = await treeProvider.getChildren(element);
 		should.strictEqual(children.length, 0, 'children count should be 0');
-		should.strictEqual(getChildrenStub.calledWithExactly('obj1'), true, 'getChildren parameter should be obj1')
+		should.strictEqual(getChildrenStub.calledWithExactly('obj1'), true, 'getChildren parameter should be obj1');
 	});
 
 	test('test getChildren() for root element', async () => {
@@ -82,9 +72,6 @@ suite('workspaceTreeDataProvider Tests', function (): void {
 				displayName: 'sql project',
 				description: ''
 			}],
-			RemoveProject: (projectFile: vscode.Uri): Promise<void> => {
-				return Promise.resolve();
-			},
 			getProjectTreeDataProvider: (projectFile: vscode.Uri): Promise<vscode.TreeDataProvider<any>> => {
 				return Promise.resolve(treeDataProvider);
 			},

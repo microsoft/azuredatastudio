@@ -28,6 +28,7 @@ const { compileBuildTask } = require('./gulpfile.compile');
 const { compileExtensionsBuildTask } = require('./gulpfile.extensions');
 const { vscodeWebEntryPoints, vscodeWebResourceIncludes, createVSCodeWebFileContentMapper } = require('./gulpfile.vscode.web');
 const cp = require('child_process');
+const { rollupAngular } = require('./lib/rollup');
 
 const REPO_ROOT = path.dirname(__dirname);
 const commit = util.getVersion(REPO_ROOT);
@@ -113,6 +114,10 @@ const serverEntryPoints = [
 	},
 	{
 		name: 'vs/platform/files/node/watcher/nsfw/watcherApp',
+		exclude: ['vs/css', 'vs/nls']
+	},
+	{
+		name: 'vs/platform/terminal/node/ptyHostMain',
 		exclude: ['vs/css', 'vs/nls']
 	}
 ];
@@ -437,8 +442,46 @@ function packagePkgTask(platform, arch, pkgTarget) {
 			const sourceFolderName = `out-vscode-${type}${dashed(minified)}`;
 			const destinationFolderName = `vscode-${type}${dashed(platform)}${dashed(arch)}`;
 
+			const rollupAngularTask = task.define(`vscode-web-${type}${dashed(platform)}${dashed(arch)}-angular-rollup`, () => {
+				return rollupAngular(REMOTE_FOLDER);
+			});
+			gulp.task(rollupAngularTask);
+
+			// rebuild extensions that contain native npm modules or have conditional webpack rules
+			// when building with the web .yarnrc settings (e.g. runtime=node, etc.)
+			// this is needed to have correct module set published with desired ABI
+			const rebuildExtensions = ['big-data-cluster', 'mssql', 'notebook'];
+			const EXTENSIONS = path.join(REPO_ROOT, 'extensions');
+			function exec(cmdLine, cwd) {
+				console.log(cmdLine);
+				cp.execSync(cmdLine, { stdio: 'inherit', cwd: cwd });
+			}
+			const tasks = [];
+			rebuildExtensions.forEach(scope => {
+				const root = path.join(EXTENSIONS, scope);
+				tasks.push(
+					() => gulp.src(path.join(REMOTE_FOLDER, '.yarnrc')).pipe(gulp.dest(root)),
+					util.rimraf(path.join(root, 'node_modules')),
+					() => exec('yarn', root)
+				);
+			});
+			const yarnrcExtensions = task.define(`vscode-${type}${dashed(platform)}${dashed(arch)}-yarnrc-extensions`, task.series(...tasks));
+			gulp.task(yarnrcExtensions);
+
+			const cleanupExtensions = task.define(`vscode-${type}${dashed(platform)}${dashed(arch)}-cleanup-extensions`, () => {
+				return Promise.all(rebuildExtensions.map(scope => {
+					const root = path.join(EXTENSIONS, scope);
+					return util.rimraf(path.join(root, '.yarnrc'))();
+				}));
+			});
+			gulp.task(cleanupExtensions);
+
 			const serverTaskCI = task.define(`vscode-${type}${dashed(platform)}${dashed(arch)}${dashed(minified)}-ci`, task.series(
 				gulp.task(`node-${platform}-${platform === 'darwin' ? 'x64' : arch}`),
+				yarnrcExtensions,
+				compileExtensionsBuildTask,
+				cleanupExtensions,
+				rollupAngularTask,
 				util.rimraf(path.join(BUILD_ROOT, destinationFolderName)),
 				packageTask(type, platform, arch, sourceFolderName, destinationFolderName)
 			));
