@@ -1290,6 +1290,11 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 			TestMessage: extHostTypes.TestMessage,
 			TextSearchCompleteMessageType: TextSearchCompleteMessageType,
 			TestMessageSeverity: extHostTypes.TestMessageSeverity,
+			CoveredCount: extHostTypes.CoveredCount,
+			FileCoverage: extHostTypes.FileCoverage,
+			StatementCoverage: extHostTypes.StatementCoverage,
+			BranchCoverage: extHostTypes.BranchCoverage,
+			FunctionCoverage: extHostTypes.FunctionCoverage,
 			WorkspaceTrustState: extHostTypes.WorkspaceTrustState
 		};
 	};
