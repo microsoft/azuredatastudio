@@ -5,7 +5,7 @@
 
 import { Event } from 'vs/base/common/event';
 import { createDecorator, refineServiceDecorator } from 'vs/platform/instantiation/common/instantiation';
-import { IExtension, IScannedExtension, ExtensionType, ITranslatedScannedExtension, IExtensionManifest } from 'vs/platform/extensions/common/extensions';
+import { IExtension, ExtensionType, IExtensionManifest } from 'vs/platform/extensions/common/extensions';
 import { IExtensionManagementService, IGalleryExtension, IExtensionIdentifier, ILocalExtension, InstallOptions } from 'vs/platform/extensionManagement/common/extensionManagement';
 import { URI } from 'vs/base/common/uri';
 import { IWorkspace, IWorkspaceFolder } from 'vs/platform/workspace/common/workspace'; // {{SQL CARBON EDIT}}
@@ -29,6 +29,7 @@ export interface IExtensionManagementServerService {
 export const IWorkbenchExtensionManagementService = refineServiceDecorator<IExtensionManagementService, IWorkbenchExtensionManagementService>(IExtensionManagementService);
 export interface IWorkbenchExtensionManagementService extends IExtensionManagementService {
 	readonly _serviceBrand: undefined;
+	installWebExtension(location: URI): Promise<ILocalExtension>;
 	installExtensions(extensions: IGalleryExtension[], installOptions?: InstallOptions): Promise<ILocalExtension[]>;
 	updateFromGallery(gallery: IGalleryExtension, extension: ILocalExtension): Promise<ILocalExtension>;
 	getExtensionManagementServerToInstall(manifest: IExtensionManifest): IExtensionManagementServer | null
@@ -138,10 +139,16 @@ export interface IExtensionRecommendationReason {
 export const IWebExtensionsScannerService = createDecorator<IWebExtensionsScannerService>('IWebExtensionsScannerService');
 export interface IWebExtensionsScannerService {
 	readonly _serviceBrand: undefined;
-	scanExtensions(type?: ExtensionType): Promise<IScannedExtension[]>;
-	scanAndTranslateExtensions(type?: ExtensionType): Promise<ITranslatedScannedExtension[]>;
-	scanAndTranslateSingleExtension(extensionLocation: URI, extensionType: ExtensionType): Promise<ITranslatedScannedExtension | null>;
+
+	scanSystemExtensions(): Promise<IExtension[]>;
+	scanUserExtensions(): Promise<IExtension[]>;
+	scanExtensionsUnderDevelopment(): Promise<IExtension[]>;
+	scanExistingExtension(extensionLocation: URI, extensionType: ExtensionType): Promise<IExtension | null>;
+
 	canAddExtension(galleryExtension: IGalleryExtension): boolean;
-	addExtension(galleryExtension: IGalleryExtension): Promise<IScannedExtension>;
+	addExtension(location: URI): Promise<IExtension>;
+	addExtensionFromGallery(galleryExtension: IGalleryExtension): Promise<IExtension>;
 	removeExtension(identifier: IExtensionIdentifier, version?: string): Promise<void>;
+
+	scanExtensionManifest(extensionLocation: URI): Promise<IExtensionManifest | null>;
 }

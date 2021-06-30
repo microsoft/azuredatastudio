@@ -13,6 +13,7 @@ import { dispose, Disposable, DisposableStore } from 'vs/base/common/lifecycle';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { coalesce } from 'vs/base/common/arrays';
 import { doHandleUpgrade } from 'sql/workbench/services/languageAssociation/common/doHandleUpgrade';
+import { IResourceEditorInputType } from 'vs/workbench/services/editor/common/editorService';
 
 const EditorOpenPositioning = {
 	LEFT: 'left',
@@ -721,7 +722,7 @@ export class EditorGroupModel extends Disposable {
 		return false;
 	}
 
-	private matches(editor: IEditorInput | null, candidate: IEditorInput | null, strictEquals?: boolean): boolean {
+	private matches(editor: IEditorInput | null, candidate: IEditorInput | IResourceEditorInputType | null, strictEquals?: boolean): boolean {
 		if (!editor || !candidate) {
 			return false;
 		}

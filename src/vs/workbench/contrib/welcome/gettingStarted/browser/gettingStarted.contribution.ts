@@ -12,7 +12,7 @@ import { IInstantiationService, ServicesAccessor } from 'vs/platform/instantiati
 import { ContextKeyEqualsExpr } from 'vs/platform/contextkey/common/contextkey';
 import { IEditorService, SIDE_GROUP } from 'vs/workbench/services/editor/common/editorService';
 import { KeybindingWeight } from 'vs/platform/keybinding/common/keybindingsRegistry';
-import { KeyCode } from 'vs/base/common/keyCodes';
+import { KeyCode, KeyMod } from 'vs/base/common/keyCodes';
 import { EditorDescriptor, IEditorRegistry } from 'vs/workbench/browser/editor';
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
 import { IGettingStartedService } from 'vs/workbench/contrib/welcome/gettingStarted/browser/gettingStartedService';
@@ -21,7 +21,6 @@ import { Extensions as WorkbenchExtensions, IWorkbenchContributionsRegistry } fr
 import { LifecyclePhase } from 'vs/workbench/services/lifecycle/common/lifecycle';
 import { ConfigurationScope, Extensions as ConfigurationExtensions, IConfigurationRegistry } from 'vs/platform/configuration/common/configurationRegistry';
 import { workbenchConfigurationNodeBase } from 'vs/workbench/common/configuration';
-import product from 'vs/platform/product/common/product';
 import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
 import { EditorOverride } from 'vs/platform/editor/common/editor';
 import { CommandsRegistry } from 'vs/platform/commands/common/commands';
@@ -190,6 +189,31 @@ registerAction2(class extends Action2 {
 registerAction2(class extends Action2 {
 	constructor() {
 		super({
+			id: 'welcome.showNewEntries',
+			title: localize('welcome.new', "Create New..."),
+			category,
+			f1: true,
+			keybinding: {
+				primary: KeyMod.Alt + KeyMod.CtrlCmd + KeyCode.KEY_N,
+				weight: KeybindingWeight.WorkbenchContrib,
+			},
+			menu: {
+				id: MenuId.MenubarFileMenu,
+				group: '1_new',
+				order: 3
+			}
+		});
+	}
+
+	run(accessor: ServicesAccessor) {
+		const gettingStartedService = accessor.get(IGettingStartedService);
+		gettingStartedService.selectNewEntry();
+	}
+});
+
+registerAction2(class extends Action2 {
+	constructor() {
+		super({
 			id: 'welcome.markStepComplete',
 			title: localize('welcome.markStepComplete', "Mark Step Complete"),
 			category,
@@ -244,16 +268,3 @@ configurationRegistry.registerConfiguration({
 		}
 	}
 });
-if (product.quality !== 'stable') {
-	configurationRegistry.registerConfiguration({
-		...workbenchConfigurationNodeBase,
-		properties: {
-			'workbench.welcomePage.experimental.startEntryContributions': {
-				scope: ConfigurationScope.APPLICATION,
-				type: 'boolean',
-				default: false,
-				description: localize('workbench.welcomePage.experimental.startEntryContributions', "When enabled, allow extensions to contribute items to the \"Start\" section of the welcome page. Experimental, subject to breakage as api changes.")
-			}
-		}
-	});
-}

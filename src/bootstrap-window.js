@@ -81,15 +81,8 @@
 			developerDeveloperKeybindingsDisposable = registerDeveloperKeybindings(disallowReloadKeybinding);
 		}
 
-		// Correctly inherit the parent's environment (TODO@sandbox non-sandboxed only)
-		if (!safeProcess.sandboxed) {
-			Object.assign(safeProcess.env, configuration.userEnv);
-		}
-
-		// Enable ASAR support (TODO@sandbox non-sandboxed only)
-		if (!safeProcess.sandboxed) {
-			globalThis.MonacoBootstrap.enableASARSupport(configuration.appRoot);
-		}
+		// Enable ASAR support
+		globalThis.MonacoBootstrap.enableASARSupport(configuration.appRoot, true);
 
 		// Get the nls configuration into the process.env as early as possible
 		const nlsConfig = globalThis.MonacoBootstrap.setupNLS();

@@ -9,7 +9,7 @@ import { Registry } from 'vs/platform/registry/common/platform';
 import { MenuRegistry, MenuId, registerAction2, Action2, ISubmenuItem, IMenuItem, IAction2Options } from 'vs/platform/actions/common/actions';
 import { registerSingleton } from 'vs/platform/instantiation/common/extensions';
 import { ExtensionsLabel, ExtensionsLocalizedLabel, ExtensionsChannelId, IExtensionManagementService, IExtensionGalleryService, PreferencesLocalizedLabel, InstallOperation } from 'vs/platform/extensionManagement/common/extensionManagement';
-import { EnablementState, IExtensionManagementServerService, IWorkbenchExtensionEnablementService } from 'vs/workbench/services/extensionManagement/common/extensionManagement';
+import { EnablementState, IExtensionManagementServerService, IWorkbenchExtensionEnablementService, IWorkbenchExtensionManagementService } from 'vs/workbench/services/extensionManagement/common/extensionManagement';
 import { IExtensionIgnoredRecommendationsService, IExtensionRecommendationsService } from 'vs/workbench/services/extensionRecommendations/common/extensionRecommendations';
 import { IWorkbenchContributionsRegistry, Extensions as WorkbenchExtensions, IWorkbenchContribution } from 'vs/workbench/common/contributions';
 import { IOutputChannelRegistry, Extensions as OutputExtensions } from 'vs/workbench/services/output/common/output';
@@ -76,6 +76,7 @@ import { IStorageService, StorageScope, StorageTarget } from 'vs/platform/storag
 import * as locConstants from 'sql/base/common/locConstants'; // {{SQL CARBON EDIT}}
 import { ExtensionsCompletionItemsProvider } from 'vs/workbench/contrib/extensions/browser/extensionsCompletionItemsProvider';
 import { ITASExperimentService } from 'vs/workbench/services/experiment/common/experimentService';
+import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
 
 // Singletons
 registerSingleton(IExtensionsWorkbenchService, ExtensionsWorkbenchService);
@@ -838,6 +839,36 @@ class ExtensionsContributions extends Disposable implements IWorkbenchContributi
 							);
 						}
 					});
+			}
+		});
+
+		this.registerExtensionAction({
+			id: 'workbench.extensions.action.installWebExtensionFromLocation',
+			title: { value: localize('installWebExtensionFromLocation', "Install Web Extension..."), original: 'Install Web Extension...' },
+			category: CATEGORIES.Developer,
+			menu: [{
+				id: MenuId.CommandPalette,
+				when: ContextKeyOrExpr.create([CONTEXT_HAS_WEB_SERVER])
+			}],
+			run: async (accessor: ServicesAccessor) => {
+				const quickInputService = accessor.get(IQuickInputService);
+				const extensionManagementService = accessor.get(IWorkbenchExtensionManagementService);
+
+				const disposables = new DisposableStore();
+				const quickPick = disposables.add(quickInputService.createQuickPick());
+				quickPick.title = localize('installFromLocation', "Install Web Extension from Location");
+				quickPick.customButton = true;
+				quickPick.customLabel = localize('install button', "Install");
+				quickPick.placeholder = localize('installFromLocationPlaceHolder', "Location of the web extension");
+				quickPick.ignoreFocusOut = true;
+				disposables.add(quickPick.onDidAccept(() => {
+					quickPick.hide();
+					if (quickPick.value) {
+						extensionManagementService.installWebExtension(URI.parse(quickPick.value));
+					}
+				}));
+				disposables.add(quickPick.onDidHide(() => disposables.dispose()));
+				quickPick.show();
 			}
 		});
 

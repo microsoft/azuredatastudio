@@ -3160,6 +3160,14 @@ export interface IInlineSuggestOptions {
 	 * Enable or disable the rendering of automatic inline completions.
 	*/
 	enabled?: boolean;
+
+	/**
+	 * Configures the mode.
+	 * Use `prefix` to only show ghost text if the text to replace is a prefix of the suggestion text.
+	 * Use `subwordDiff` to only show ghost text if the replace text is a subword of the suggestion text and diffing should be used to compute the ghost text.
+	 * Defaults to `prefix`.
+	*/
+	mode?: 'prefix' | 'subwordDiff';
 }
 
 export type InternalInlineSuggestOptions = Readonly<Required<IInlineSuggestOptions>>;
@@ -3170,7 +3178,8 @@ export type InternalInlineSuggestOptions = Readonly<Required<IInlineSuggestOptio
 class InlineEditorSuggest extends BaseEditorOption<EditorOption.inlineSuggest, InternalInlineSuggestOptions> {
 	constructor() {
 		const defaults: InternalInlineSuggestOptions = {
-			enabled: false
+			enabled: false,
+			mode: 'prefix'
 		};
 
 		super(
@@ -3180,6 +3189,16 @@ class InlineEditorSuggest extends BaseEditorOption<EditorOption.inlineSuggest, I
 					type: 'boolean',
 					default: defaults.enabled,
 					description: nls.localize('inlineSuggest.enabled', "Controls whether to automatically show inline suggestions in the editor.")
+				},
+				'editor.inlineSuggest.mode': {
+					type: 'string',
+					enum: ['prefix', 'subwordDiff'],
+					enumDescriptions: [
+						nls.localize('inlineSuggest.mode.prefix', "Only render an inline suggestion if the replace text is a prefix of the insert text."),
+						nls.localize('inlineSuggest.mode.subwordDiff', "Only render an inline suggestion if the replace text is a subword of the insert text."),
+					],
+					default: defaults.mode,
+					description: nls.localize('inlineSuggest.mode', "Controls which mode to use for rendering inline suggestions.")
 				},
 			}
 		);
@@ -3192,6 +3211,7 @@ class InlineEditorSuggest extends BaseEditorOption<EditorOption.inlineSuggest, I
 		const input = _input as IInlineSuggestOptions;
 		return {
 			enabled: boolean(input.enabled, this.defaultValue.enabled),
+			mode: stringSet(input.mode, this.defaultValue.mode, ['prefix', 'subwordDiff']),
 		};
 	}
 }
@@ -3236,6 +3256,10 @@ export interface ISuggestOptions {
 	 * Enable or disable the rendering of the suggestion preview.
 	 */
 	preview?: boolean;
+	/**
+	 * Configures the mode of the preview. Defaults to `subwordDiff`.
+	*/
+	previewMode?: 'prefix' | 'subwordDiff';
 	/**
 	 * Show details inline with the label. Defaults to true.
 	 */
@@ -3368,6 +3392,7 @@ class EditorSuggest extends BaseEditorOption<EditorOption.suggest, InternalSugge
 			showIcons: true,
 			showStatusBar: false,
 			preview: false,
+			previewMode: 'subwordDiff',
 			showInlineDetails: true,
 			showMethods: true,
 			showFunctions: true,
@@ -3445,6 +3470,16 @@ class EditorSuggest extends BaseEditorOption<EditorOption.suggest, InternalSugge
 					type: 'boolean',
 					default: defaults.preview,
 					description: nls.localize('suggest.preview', "Controls whether to preview the suggestion outcome in the editor.")
+				},
+				'editor.suggest.previewMode': {
+					type: 'string',
+					enum: ['prefix', 'subwordDiff'],
+					enumDescriptions: [
+						nls.localize('suggest.previewMode.prefix', "Only render a preview if the replace text is a prefix of the insert text."),
+						nls.localize('suggest.previewMode.subwordDiff', "Only render a preview if the replace text is a subword of the insert text."),
+					],
+					default: defaults.previewMode,
+					description: nls.localize('suggest.previewMode', "Controls which mode to use for rendering the suggest preview.")
 				},
 				'editor.suggest.showInlineDetails': {
 					type: 'boolean',
@@ -3622,6 +3657,7 @@ class EditorSuggest extends BaseEditorOption<EditorOption.suggest, InternalSugge
 			showIcons: boolean(input.showIcons, this.defaultValue.showIcons),
 			showStatusBar: boolean(input.showStatusBar, this.defaultValue.showStatusBar),
 			preview: boolean(input.preview, this.defaultValue.preview),
+			previewMode: stringSet(input.previewMode, this.defaultValue.previewMode, ['prefix', 'subwordDiff']),
 			showInlineDetails: boolean(input.showInlineDetails, this.defaultValue.showInlineDetails),
 			showMethods: boolean(input.showMethods, this.defaultValue.showMethods),
 			showFunctions: boolean(input.showFunctions, this.defaultValue.showFunctions),

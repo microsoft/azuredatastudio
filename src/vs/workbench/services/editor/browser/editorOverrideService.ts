@@ -22,6 +22,7 @@ import { registerSingleton } from 'vs/platform/instantiation/common/extensions';
 import { IStorageService, StorageScope, StorageTarget } from 'vs/platform/storage/common/storage';
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
 import { IResourceEditorInputType } from 'vs/workbench/services/editor/common/editorService';
+import { ILogService } from 'vs/platform/log/common/log';
 
 interface IRegisteredEditorInput extends IEditorInput {
 	viewType?: string;
@@ -56,7 +57,8 @@ export class EditorOverrideService extends Disposable implements IEditorOverride
 		@INotificationService private readonly notificationService: INotificationService,
 		@ITelemetryService private readonly telemetryService: ITelemetryService,
 		@IStorageService private readonly storageService: IStorageService,
-		@IExtensionService private readonly extensionService: IExtensionService
+		@IExtensionService private readonly extensionService: IExtensionService,
+		@ILogService private readonly logService: ILogService
 	) {
 		super();
 		// Read in the cache on statup
@@ -75,8 +77,10 @@ export class EditorOverrideService extends Disposable implements IEditorOverride
 		});
 
 		// When the setting changes we want to ensure that it is properly converted
-		this._register(this.configurationService.onDidChangeConfiguration(() => {
-			this.convertOldAssociationFormat();
+		this._register(this.configurationService.onDidChangeConfiguration((e) => {
+			if (e.affectsConfiguration(editorsAssociationsSettingId)) {
+				this.convertOldAssociationFormat();
+			}
 		}));
 	}
 
@@ -112,8 +116,7 @@ export class EditorOverrideService extends Disposable implements IEditorOverride
 		}
 
 		// Resolved the override as much as possible, now find a given editor
-		const { editor: matchededEditor, conflictingDefault } = this.getEditor(resource, override);
-		const selectedEditor = matchededEditor;
+		const { editor: selectedEditor, conflictingDefault } = this.getEditor(resource, override);
 		if (!selectedEditor) {
 			return OverrideStatus.NONE;
 		}
@@ -124,8 +127,8 @@ export class EditorOverrideService extends Disposable implements IEditorOverride
 		}
 
 		// If it's the currently active editor we shouldn't do anything
-		const currentEditors = group.findEditors(resource);
-		const isActive = currentEditors.find(editor => (editor as IRegisteredEditorInput).viewType === selectedEditor.editorInfo.id);
+		const activeEditor = group.activeEditor;
+		const isActive = activeEditor ? (activeEditor as IRegisteredEditorInput).viewType === selectedEditor.editorInfo.id && isEqual(activeEditor.resource, resource) : false;
 		if (isActive) {
 			return OverrideStatus.ABORT;
 		}
@@ -186,11 +189,12 @@ export class EditorOverrideService extends Disposable implements IEditorOverride
 				newSettingObject[association.filenamePattern] = association.viewType;
 			}
 		}
+		this.logService.info(`Migrating ${editorsAssociationsSettingId}`);
 		this.configurationService.updateValue(editorsAssociationsSettingId, newSettingObject);
 	}
 
 	private getAllUserAssociations(): EditorAssociations {
-		const rawAssociations = this.configurationService.getValue<{ [fileNamePattern: string]: string }>(editorsAssociationsSettingId) || [];
+		const rawAssociations = this.configurationService.getValue<{ [fileNamePattern: string]: string }>(editorsAssociationsSettingId) || {};
 		let associations = [];
 		for (const [key, value] of Object.entries(rawAssociations)) {
 			const association: EditorAssociation = {
@@ -248,7 +252,7 @@ export class EditorOverrideService extends Disposable implements IEditorOverride
 	 * Given a resource and an override selects the best possible editor
 	 * @returns The editor and whether there was another default which conflicted with it
 	 */
-	private getEditor(resource: URI, override: string | undefined): { editor: RegisteredEditor | undefined, conflictingDefault: boolean } {
+	private getEditor(resource: URI, override: string | EditorOverride.EXCLUSIVE_ONLY | undefined): { editor: RegisteredEditor | undefined, conflictingDefault: boolean } {
 		const findMatchingEditor = (editors: RegisteredEditors, viewType: string) => {
 			return editors.find((editor) => {
 				if (editor.options && editor.options.canSupportResource !== undefined) {
@@ -257,7 +261,7 @@ export class EditorOverrideService extends Disposable implements IEditorOverride
 				return editor.editorInfo.id === viewType;
 			});
 		};
-		if (override) {
+		if (override && override !== EditorOverride.EXCLUSIVE_ONLY) {
 			// Specific overried passed in doesn't have to match the resource, it can be anything
 			const registeredEditors = this._registeredEditors;
 			return {
@@ -269,12 +273,19 @@ export class EditorOverrideService extends Disposable implements IEditorOverride
 		let editors = this.findMatchingEditors(resource);
 
 		const associationsFromSetting = this.getAssociationsForResource(resource);
-		// We only want built-in+ if no user defined setting is found, else we won't override
-		const possibleEditors = editors.filter(editor => priorityToRank(editor.editorInfo.priority) >= priorityToRank(RegisteredEditorPriority.builtin) && editor.editorInfo.id !== DEFAULT_EDITOR_ASSOCIATION.id);
+		// We only want minPriority+ if no user defined setting is found, else we won't override
+		const minPriority = override === EditorOverride.EXCLUSIVE_ONLY ? RegisteredEditorPriority.exclusive : RegisteredEditorPriority.builtin;
+		const possibleEditors = editors.filter(editor => priorityToRank(editor.editorInfo.priority) >= priorityToRank(minPriority) && editor.editorInfo.id !== DEFAULT_EDITOR_ASSOCIATION.id);
+		if (possibleEditors.length === 0) {
+			return {
+				editor: undefined,
+				conflictingDefault: false
+			};
+		}
 		// If the editor is exclusive we use that, else use the user setting, else use the built-in+ editor
-		const selectedViewType = possibleEditors[0]?.editorInfo.priority === RegisteredEditorPriority.exclusive ?
-			possibleEditors[0]?.editorInfo.id :
-			associationsFromSetting[0]?.viewType || possibleEditors[0]?.editorInfo.id;
+		const selectedViewType = possibleEditors[0].editorInfo.priority === RegisteredEditorPriority.exclusive ?
+			possibleEditors[0].editorInfo.id :
+			associationsFromSetting[0]?.viewType || possibleEditors[0].editorInfo.id;
 
 		let conflictingDefault = false;
 		if (associationsFromSetting.length === 0 && possibleEditors.length > 1) {

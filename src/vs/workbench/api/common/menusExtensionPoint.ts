@@ -188,15 +188,21 @@ const apiMenus: IAPIMenu[] = [
 	},
 	*/
 	{
-		key: 'notebook/toolbar/right',
-		id: MenuId.NotebookRightToolbar,
-		description: localize('notebook.toolbar.right', "The contributed notebook right toolbar menu"),
-		proposed: true
-	},
-	{
 		key: 'notebook/cell/title',
 		id: MenuId.NotebookCellTitle,
 		description: localize('notebook.cell.title', "The contributed notebook cell title menu"),
+		proposed: true
+	},
+	{
+		key: 'interactive/toolbar',
+		id: MenuId.InteractiveToolbar,
+		description: localize('interactive.toolbar', "The contributed interactive toolbar menu"),
+		proposed: true
+	},
+	{
+		key: 'interactive/cell/title',
+		id: MenuId.InteractiveCellTitle,
+		description: localize('interactive.cell.title', "The contributed interactive cell title menu"),
 		proposed: true
 	},
 	{

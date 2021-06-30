@@ -817,6 +817,7 @@ export class NativeHostMainService extends Disposable implements INativeHostMain
 					const result: ChunkedPassword = JSON.parse(nextChunk!);
 					content += result.content;
 					hasNextChunk = result.hasNextChunk;
+					index++;
 				}
 
 				return content;
