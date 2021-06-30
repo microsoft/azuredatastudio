@@ -358,8 +358,16 @@ export class NotebookView {
 
 	constructor(private code: Code, private quickAccess: QuickAccess) { }
 
-	async focus(): Promise<void> {
+	async focusSearchResultsView(): Promise<void> {
 		return this.quickAccess.runCommand('Notebooks: Focus on Search Results View');
+	}
+
+	async focusNotebooksView(): Promise<void> {
+		return this.quickAccess.runCommand('Notebooks: Focus on Notebooks View');
+	}
+
+	async focusPinnedNotebooksView(): Promise<void> {
+		return this.quickAccess.runCommand('Notebooks: Focus on Pinned notebooks View');
 	}
 
 	async searchInNotebook(expr: string): Promise<IElement> {
@@ -385,19 +393,28 @@ export class NotebookView {
 		return (await this.code.waitForElements(NotebookView.notebookTreeItem, false)).map(item => item.attributes['id']);
 	}
 
+	/**
+	 * Pin the first notebook in the Notebooks View
+	 */
 	async pinNotebook(): Promise<void> {
-		await this.code.dispatchKeybinding('escape');
 		const notebookIds = await this.getNotebookTreeItemIds();
 		await this.code.waitAndDoubleClick(`${NotebookView.notebookTreeItem}[id="${notebookIds[0]}"]`);
 		await this.code.waitAndClick(`${NotebookView.notebookTreeItem}${NotebookView.selectedItem} .codicon-pinned`);
 	}
 
+	/**
+	 * Unpin the only pinned notebook.
+	 * Previously pinned by the pinNotebook method.
+	 */
 	async unpinNotebook(): Promise<void> {
 		await this.code.waitAndClick(NotebookView.pinnedNotebooksSelector);
 		await this.code.waitAndClick(`${NotebookView.pinnedNotebooksSelector} .actions a[title="Unpin Notebook"]`);
 	}
 
-	async waitForPinnedNotebookTreeView(): Promise<void> {
+	/**
+	 * When pinning a notebook, the pinned notebook view will show.
+	 */
+	async waitForPinnedNotebookView(): Promise<void> {
 		await this.code.waitForElement(NotebookView.pinnedNotebooksSelector);
 	}
 }
