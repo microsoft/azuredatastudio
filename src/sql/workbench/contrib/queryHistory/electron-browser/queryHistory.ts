@@ -20,6 +20,7 @@ import { QUERY_HISTORY_CONTAINER_ID, QUERY_HISTORY_VIEW_ID } from 'sql/workbench
 import { QueryHistoryView } from 'sql/workbench/contrib/queryHistory/browser/queryHistoryView';
 import { ContextKeyEqualsExpr } from 'vs/platform/contextkey/common/contextkey';
 import { ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
+import { Codicon } from 'vs/base/common/codicons';
 
 export class QueryHistoryWorkbenchContribution implements IWorkbenchContribution {
 
@@ -64,7 +65,7 @@ export class QueryHistoryWorkbenchContribution implements IWorkbenchContribution
 							super({
 								id: `queryHistory.clear`,
 								title: { value: localize('queryHistory.clearLabel', "Clear All History"), original: 'Clear All History' },
-								icon: { id: 'clear-all' },
+								icon: Codicon.clearAll,
 								menu: {
 									id: MenuId.ViewTitle,
 									group: 'navigation',
@@ -89,7 +90,7 @@ export class QueryHistoryWorkbenchContribution implements IWorkbenchContribution
 								id: `queryHistory.toggleCapture`,
 								title: { value: START_QUERY_HISTORY_CAPTURE, original: 'Start Query History Capture' },
 								tooltip: START_QUERY_HISTORY_CAPTURE,
-								icon: { id: 'play' },
+								icon: Codicon.play,
 								menu: {
 									id: MenuId.ViewTitle,
 									group: 'navigation',
