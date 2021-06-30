@@ -21,6 +21,7 @@
 		"jschardet": "2.3.0",
 		"mark.js": "^8.11.1",
 		"ng2-charts": "^1.6.0",
+    "plotly.js-dist-min": "^1.53.0",
 		"reflect-metadata": "^0.1.8",
 		"rxjs": "5.4.0",
 		"sanitize-html": "1.19.1",
