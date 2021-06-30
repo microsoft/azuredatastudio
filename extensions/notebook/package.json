@@ -91,11 +91,7 @@
       },
       {
         "command": "notebook.command.open",
-        "title": "%notebook.command.open%",
-        "icon": {
-          "dark": "resources/dark/open_notebook_inverse.svg",
-          "light": "resources/light/open_notebook.svg"
-        }
+        "title": "%notebook.command.open%"
       },
       {
         "command": "notebook.command.runactivecell",
@@ -137,11 +133,7 @@
       },
       {
         "command": "jupyter.task.openNotebook",
-        "title": "%title.openJupyterNotebook%",
-        "icon": {
-          "dark": "resources/dark/open_notebook_inverse.svg",
-          "light": "resources/light/open_notebook.svg"
-        }
+        "title": "%title.openJupyterNotebook%"
       },
       {
         "command": "jupyter.cmd.newNotebook",
@@ -223,8 +215,8 @@
         "title": "%title.openJupyterBook%",
         "category": "%books-preview-category%",
         "icon": {
-          "dark": "resources/dark/open_notebook_inverse.svg",
-          "light": "resources/light/open_notebook.svg"
+          "dark": "resources/dark/open_book_inverse.svg",
+          "light": "resources/light/open_book.svg"
         }
       },
       {
@@ -263,20 +255,12 @@
       {
         "command": "notebook.command.createBook",
         "title": "%title.createJupyterBook%",
-        "category": "%books-preview-category%",
-        "icon": {
-          "dark": "resources/dark/open_notebook_inverse.svg",
-          "light": "resources/light/open_notebook.svg"
-        }
+        "category": "%books-preview-category%"
       },
       {
         "command": "notebook.command.openRemoteBook",
         "title": "%title.openRemoteJupyterBook%",
-        "category": "%books-preview-category%",
-        "icon": {
-          "dark": "resources/dark/open_notebook_inverse.svg",
-          "light": "resources/light/open_notebook.svg"
-        }
+        "category": "%books-preview-category%"
       },
       {
         "command": "notebook.command.pinNotebook",

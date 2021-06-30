@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as dataworkspace from 'dataworkspace';
 import * as path from 'path';
@@ -14,7 +13,7 @@ import { IWorkspaceService } from '../common/interfaces';
 import { ProjectProviderRegistry } from '../common/projectProviderRegistry';
 import Logger from '../common/logger';
 import { TelemetryReporter, TelemetryViews, calculateRelativity, TelemetryActions } from '../common/telemetry';
-import { isCurrentWorkspaceUntitled } from '../common/utils';
+import { getAzdataApi, isCurrentWorkspaceUntitled } from '../common/utils';
 
 const WorkspaceConfigurationName = 'dataworkspace';
 const ProjectsConfigurationName = 'projects';
@@ -50,17 +49,23 @@ export class WorkspaceService implements IWorkspaceService {
 	 * @param projectFileFsPath project to add to the workspace
 	 */
 	async CreateNewWorkspaceForProject(projectFileFsPath: string, workspaceFile: vscode.Uri | undefined): Promise<void> {
-		// save temp project
-		await this._context.globalState.update(TempProject, [projectFileFsPath]);
-
 		// create workspace
 		const projectFolder = vscode.Uri.file(path.dirname(projectFileFsPath));
-
-		if (isCurrentWorkspaceUntitled()) {
-			vscode.workspace.updateWorkspaceFolders(vscode.workspace.workspaceFolders!.length, null, { uri: projectFolder });
-			await azdata.workspace.saveAndEnterWorkspace(workspaceFile!);
+		const azdataApi = getAzdataApi();
+		if (azdataApi) {
+			// save temp project
+			await this._context.globalState.update(TempProject, [projectFileFsPath]);
+			if (isCurrentWorkspaceUntitled()) {
+				vscode.workspace.updateWorkspaceFolders(vscode.workspace.workspaceFolders!.length, null, { uri: projectFolder });
+				await azdataApi.workspace.saveAndEnterWorkspace(workspaceFile!);
+			} else {
+				await azdataApi.workspace.createAndEnterWorkspace(projectFolder, workspaceFile);
+			}
 		} else {
-			await azdata.workspace.createAndEnterWorkspace(projectFolder, workspaceFile);
+			// In VS Code we don't have access to the workspace APIs exposed by ADS and so can't actually create a new saved workspace.
+			// Instead we'll just always call this, which will either add it to the existing untitled workspace or create a new
+			// untitled workspace which the user can then save later on as they wish.
+			vscode.workspace.updateWorkspaceFolders(vscode.workspace.workspaceFolders?.length || 0, null, { uri: projectFolder });
 		}
 	}
 
@@ -98,7 +103,7 @@ export class WorkspaceService implements IWorkspaceService {
 	async enterWorkspace(workspaceFile: vscode.Uri): Promise<void> {
 		const result = await vscode.window.showWarningMessage(constants.EnterWorkspaceConfirmation, { modal: true }, constants.OkButtonText);
 		if (result === constants.OkButtonText) {
-			await azdata.workspace.enterWorkspace(workspaceFile);
+			await getAzdataApi()?.workspace.enterWorkspace(workspaceFile);
 		} else {
 			return;
 		}
@@ -219,6 +224,11 @@ export class WorkspaceService implements IWorkspaceService {
 		}
 	}
 
+	/**
+	 * Returns an array of all the supported projects in the folder
+	 * @param folder folder to look look for projects
+	 * @returns array of file paths of supported projects
+	 */
 	async getAllProjectsInFolder(folder: vscode.Uri): Promise<string[]> {
 		// get the unique supported project extensions
 		const supportedProjectExtensions = [...new Set((await this.getAllProjectTypes()).map(p => { return p.projectFileExtension; }))];
@@ -230,7 +240,8 @@ export class WorkspaceService implements IWorkspaceService {
 		// so the filter needs to be in the format folder/**/*.sqlproj if there's only one supported projectextension
 		const projFilter = supportedProjectExtensions.length > 1 ? path.posix.join(escapedPath, '**', `*.{${supportedProjectExtensions.toString()}}`) : path.posix.join(escapedPath, '**', `*.${supportedProjectExtensions[0]}`);
 
-		return await glob(projFilter);
+		// glob will return an array of file paths with forward slashes, so they need to be converted back if on windows
+		return (await glob(projFilter)).map(p => path.resolve(p));
 	}
 
 	async getProjectProvider(projectFile: vscode.Uri): Promise<dataworkspace.IProjectProvider | undefined> {
