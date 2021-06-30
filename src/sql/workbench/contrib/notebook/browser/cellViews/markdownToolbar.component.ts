@@ -240,22 +240,10 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 				needsTransform = false;
 			} else {
 				let linkUrl = linkCalloutResult.insertUnescapedLinkUrl;
-				const isAnchorLink = linkUrl.startsWith('#');
-				if (!isAnchorLink) {
-					const isFile = URI.parse(linkUrl).scheme === 'file';
-					if (isFile && !path.isAbsolute(linkUrl)) {
-						const notebookDirName = path.dirname(this.cellModel?.notebookModel?.notebookUri.fsPath);
-						const relativePath = (linkUrl).replace(/\\/g, path.posix.sep);
-						if (this.cellModel?.notebookModel?.notebookUri.scheme !== 'untitled') {
-							linkUrl = path.resolve(notebookDirName, relativePath);
-						} else {
-							linkUrl = relativePath;
-						}
-					}
-				}
+				let hrefAbsolute: boolean = path.isAbsolute(linkUrl);
 				// Otherwise, re-focus on the output element, and insert the link directly.
 				this.output?.nativeElement?.focus();
-				document.execCommand('insertHTML', false, `<a href="${escape(linkUrl)}">${escape(linkCalloutResult?.insertUnescapedLinkLabel)}</a>`);
+				document.execCommand('insertHTML', false, `<a href="${escape(linkUrl)}" is-absolute="${hrefAbsolute}">${escape(linkCalloutResult?.insertUnescapedLinkLabel)}</a>`);
 				return;
 			}
 		} else if (type === MarkdownButtonType.IMAGE_PREVIEW) {
@@ -357,9 +345,9 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 		if (this.cellModel.currentMode === CellEditModes.WYSIWYG) {
 			const parentNode = document.getSelection().anchorNode.parentNode as HTMLAnchorElement;
 			if (parentNode.protocol === 'file:') {
-				// Pathname starts with / per https://developer.mozilla.org/en-US/docs/Web/API/HTMLAnchorElement/pathname so trim it off
-				return parentNode.pathname?.slice(1) || '';
+				return parentNode.attributes['href'].nodeValue || '';
 			} else {
+				//const isAbsolute : boolean = parentNode.attributes['is-absolute'].nodeValue;
 				return parentNode.href || '';
 			}
 		} else {

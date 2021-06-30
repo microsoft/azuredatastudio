@@ -133,6 +133,7 @@ export class HTMLMarkdownConverter {
 			filter: 'a',
 			replacement: (content, node) => {
 				let href = node.attributes.href?.nodeValue;
+				let isAbsolute = node.attributes['is-absolute'].nodeValue;
 				let notebookLink: URI | undefined;
 				const isAnchorLinkInFile = (node.attributes.href?.nodeValue.startsWith('#') || href.includes('#')) && href.startsWith('file://');
 				if (isAnchorLinkInFile) {
@@ -142,17 +143,18 @@ export class HTMLMarkdownConverter {
 					// href contains either a hyperlink or a URI-encoded absolute path. (See resolveUrls method in notebookMarkdown.ts)
 					notebookLink = href ? URI.parse(href) : URI.file(node.title);
 				}
-				const notebookFolder = this.notebookUri ? path.join(path.dirname(this.notebookUri.fsPath), path.sep) : '';
-				if (notebookLink.fsPath !== this.notebookUri.fsPath) {
-					let relativePath = findPathRelativeToContent(notebookFolder, notebookLink);
-					if (relativePath) {
-						return `[${node.innerText}](${relativePath})`;
+				if (!isAbsolute) {
+					const notebookFolder = this.notebookUri ? path.join(path.dirname(this.notebookUri.fsPath), path.sep) : '';
+					if (notebookLink.fsPath !== this.notebookUri.fsPath) {
+						let relativePath = findPathRelativeToContent(notebookFolder, notebookLink);
+						if (relativePath) {
+							return `[${node.innerText}](${relativePath})`;
+						}
+					} else if (notebookLink?.fragment) {
+						// if the anchor link is to a section in the same notebook then just add the fragment
+						return `[${content}](${notebookLink.fragment})`;
 					}
-				} else if (notebookLink?.fragment) {
-					// if the anchor link is to a section in the same notebook then just add the fragment
-					return `[${content}](${notebookLink.fragment})`;
 				}
-
 				return `[${content}](${href})`;
 			}
 		});
