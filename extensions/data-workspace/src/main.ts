@@ -9,7 +9,7 @@ import { WorkspaceService } from './services/workspaceService';
 import { WorkspaceTreeItem, IExtension } from 'dataworkspace';
 import { DataWorkspaceExtension } from './common/dataWorkspaceExtension';
 import { NewProjectDialog } from './dialogs/newProjectDialog';
-import { OpenExistingDialog } from './dialogs/openExistingDialog';
+import { browseForProject, OpenExistingDialog } from './dialogs/openExistingDialog';
 import { IWorkspaceService } from './common/interfaces';
 import { IconPathHelper } from './common/iconHelper';
 import { ProjectDashboard } from './dialogs/projectDashboard';
@@ -37,13 +37,19 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 		} else {
 			await createNewProjectWithQuickpick(workspaceService);
 		}
-
 	}));
 
 	context.subscriptions.push(vscode.commands.registerCommand('projects.openExisting', async () => {
-		const dialog = new OpenExistingDialog(workspaceService);
-		await dialog.open();
-
+		if (getAzdataApi()) {
+			const dialog = new OpenExistingDialog(workspaceService);
+			await dialog.open();
+		} else {
+			const projectFileUri = await browseForProject(workspaceService);
+			if (!projectFileUri) {
+				return;
+			}
+			await workspaceService.addProjectsToWorkspace([projectFileUri]);
+		}
 	}));
 
 	context.subscriptions.push(vscode.commands.registerCommand('dataworkspace.refresh', () => {
