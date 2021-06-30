@@ -189,7 +189,6 @@ export default class DivContainer extends ContainerBase<azdata.DivItemLayout, az
 		// not forcing the mouse in styling on non-clickable divs
 		if (this.clickable) {
 			this.divContainer.nativeElement.style.backgroundColor = this._colorTheme.getColor(colorRegistry.editorHoverBackground).toString();
-			this._changeRef.detectChanges();
 		}
 	}
 
@@ -197,7 +196,6 @@ export default class DivContainer extends ContainerBase<azdata.DivItemLayout, az
 		// not forcing the mouse out styling on non-clickable divs
 		if (this.clickable) {
 			this.divContainer.nativeElement.style.backgroundColor = this._colorTheme.getColor(colorRegistry.editorBackground).toString();
-			this._changeRef.detectChanges();
 		}
 	}
 }
