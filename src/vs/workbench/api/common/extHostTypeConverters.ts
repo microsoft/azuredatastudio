@@ -1420,8 +1420,7 @@ export namespace NotebookRange {
 export namespace NotebookCellExecutionSummary {
 	export function to(data: notebooks.NotebookCellInternalMetadata): vscode.NotebookCellExecutionSummary {
 		return {
-			startTime: data.runStartTime,
-			endTime: data.runEndTime,
+			timing: typeof data.runStartTime === 'number' && typeof data.runEndTime === 'number' ? { startTime: data.runStartTime, endTime: data.runEndTime } : undefined,
 			executionOrder: data.executionOrder,
 			success: data.lastRunSuccess
 		};
@@ -1430,8 +1429,8 @@ export namespace NotebookCellExecutionSummary {
 	export function from(data: vscode.NotebookCellExecutionSummary): Partial<notebooks.NotebookCellInternalMetadata> {
 		return {
 			lastRunSuccess: data.success,
-			runStartTime: data.startTime,
-			runEndTime: data.endTime,
+			runStartTime: data.timing?.startTime,
+			runEndTime: data.timing?.endTime,
 			executionOrder: data.executionOrder
 		};
 	}
