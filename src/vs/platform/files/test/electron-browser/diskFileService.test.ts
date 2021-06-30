@@ -10,7 +10,7 @@ import { Schemas } from 'vs/base/common/network';
 import { DiskFileSystemProvider } from 'vs/platform/files/node/diskFileSystemProvider';
 import { getRandomTestPath, getPathFromAmdModule } from 'vs/base/test/node/testUtils';
 import { join, basename, dirname, posix } from 'vs/base/common/path';
-import { copy, Promises, rimraf, rimrafSync } from 'vs/base/node/pfs';
+import { Promises, rimrafSync } from 'vs/base/node/pfs';
 import { URI } from 'vs/base/common/uri';
 import { existsSync, statSync, readdirSync, readFileSync, writeFileSync, renameSync, unlinkSync, mkdirSync, createReadStream } from 'fs';
 import { FileOperation, FileOperationEvent, IFileStat, FileOperationResult, FileSystemProviderCapabilities, FileChangeType, IFileChange, FileChangesEvent, FileOperationError, etag, IStat, IFileStatWithMetadata, IReadFileOptions, FilePermission, NotModifiedSinceFileOperationError } from 'vs/platform/files/common/files';
@@ -154,13 +154,13 @@ suite.skip('Disk File Service', function () { // {{SQL CARBON EDIT}} Disable occ
 
 		const sourceDir = getPathFromAmdModule(require, './fixtures/service');
 
-		await copy(sourceDir, testDir, { preserveSymlinks: false });
+		await Promises.copy(sourceDir, testDir, { preserveSymlinks: false });
 	});
 
 	teardown(() => {
 		disposables.clear();
 
-		return rimraf(testDir);
+		return Promises.rm(testDir);
 	});
 
 	test('createFolder', async () => {
