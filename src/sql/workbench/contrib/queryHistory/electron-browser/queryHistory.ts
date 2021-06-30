@@ -7,7 +7,7 @@ import { IWorkbenchContribution } from 'vs/workbench/common/contributions';
 import { IQueryHistoryService } from 'sql/workbench/services/queryHistory/common/queryHistoryService';
 import { KeyMod, KeyCode } from 'vs/base/common/keyCodes';
 import { localize } from 'vs/nls';
-import { SyncActionDescriptor, MenuRegistry, MenuId } from 'vs/platform/actions/common/actions';
+import { SyncActionDescriptor, MenuRegistry, MenuId, registerAction2, Action2 } from 'vs/platform/actions/common/actions';
 import { IWorkbenchActionRegistry, Extensions as ActionExtensions } from 'vs/workbench/common/actions';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { ToggleQueryHistoryAction } from 'sql/workbench/contrib/queryHistory/browser/queryHistoryActions';
@@ -18,6 +18,9 @@ import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
 import { ViewPaneContainer } from 'vs/workbench/browser/parts/views/viewPaneContainer';
 import { QUERY_HISTORY_CONTAINER_ID, QUERY_HISTORY_VIEW_ID } from 'sql/workbench/contrib/queryHistory/common/constants';
 import { QueryHistoryView } from 'sql/workbench/contrib/queryHistory/browser/queryHistoryView';
+import { ContextKeyEqualsExpr } from 'vs/platform/contextkey/common/contextkey';
+import { ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
+import { Codicon } from 'vs/base/common/codicons';
 
 export class QueryHistoryWorkbenchContribution implements IWorkbenchContribution {
 
@@ -57,17 +60,53 @@ export class QueryHistoryWorkbenchContribution implements IWorkbenchContribution
 					// on some events
 					_queryHistoryService.start();
 
-					CommandsRegistry.registerCommand({
-						id: 'queryHistory.clear',
-						handler: (accessor) => {
+					registerAction2(class extends Action2 {
+						constructor() {
+							super({
+								id: `queryHistory.clear`,
+								title: { value: localize('queryHistory.clearLabel', "Clear All History"), original: 'Clear All History' },
+								icon: Codicon.clearAll,
+								menu: {
+									id: MenuId.ViewTitle,
+									group: 'navigation',
+									when: ContextKeyEqualsExpr.create('view', QUERY_HISTORY_VIEW_ID),
+									order: 10
+								}
+							});
+						}
+
+						run(accessor: ServicesAccessor) {
 							const queryHistoryService = accessor.get(IQueryHistoryService);
 							queryHistoryService.clearQueryHistory();
 						}
 					});
 
-					CommandsRegistry.registerCommand({
-						id: 'queryHistory.toggleCapture',
-						handler: (accessor) => {
+					const PAUSE_QUERY_HISTORY_CAPTURE = localize('queryHistory.disableCapture', "Pause Query History Capture");
+					const START_QUERY_HISTORY_CAPTURE = localize('queryHistory.enableCapture', "Start Query History Capture");
+
+					registerAction2(class extends Action2 {
+						constructor() {
+							super({
+								id: `queryHistory.toggleCapture`,
+								title: { value: START_QUERY_HISTORY_CAPTURE, original: 'Start Query History Capture' },
+								tooltip: START_QUERY_HISTORY_CAPTURE,
+								icon: Codicon.play,
+								menu: {
+									id: MenuId.ViewTitle,
+									group: 'navigation',
+									when: ContextKeyEqualsExpr.create('view', QUERY_HISTORY_VIEW_ID),
+									order: 20
+								},
+								toggled: {
+									condition: ContextKeyEqualsExpr.create('config.queryHistory.captureEnabled', true),
+									title: { value: PAUSE_QUERY_HISTORY_CAPTURE, original: 'Pause Query History Capture' },
+									tooltip: PAUSE_QUERY_HISTORY_CAPTURE,
+									icon: { id: 'debug-pause' }
+								}
+							});
+						}
+
+						run(accessor: ServicesAccessor) {
 							const queryHistoryService = accessor.get(IQueryHistoryService);
 							queryHistoryService.toggleCaptureEnabled();
 						}
@@ -93,7 +132,6 @@ export class QueryHistoryWorkbenchContribution implements IWorkbenchContribution
 						order: 2
 					});
 
-					// markers view container
 					const VIEW_CONTAINER: ViewContainer = Registry.as<IViewContainersRegistry>(ViewContainerExtensions.ViewContainersRegistry).registerViewContainer({
 						id: QUERY_HISTORY_CONTAINER_ID,
 						title: localize('queryHistory', "Query History"),

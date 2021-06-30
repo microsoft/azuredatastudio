@@ -38,25 +38,6 @@ export function setup() {
 			await app.workbench.sqlNotebook.waitForTypeInEditor(sampleText);
 		});
 
-		it('can open untrusted notebook, trust, save, and reopen trusted notebook', async function () {
-			const app = this.app as Application;
-			await app.workbench.sqlNotebook.openFile('untrusted.ipynb');
-			await app.workbench.sqlNotebook.waitForKernel('SQL');
-			await app.workbench.sqlNotebook.waitForNotTrustedIcon();
-			await app.workbench.sqlNotebook.waitForTrustedElementsGone();
-
-			await app.workbench.sqlNotebook.trustNotebook();
-			await app.workbench.sqlNotebook.waitForTrustedIcon();
-			await app.workbench.sqlNotebook.waitForTrustedElements();
-
-			await app.workbench.quickaccess.runCommand('workbench.action.files.save');
-			await app.workbench.quickaccess.runCommand('workbench.action.closeActiveEditor');
-
-			await app.workbench.sqlNotebook.openFile('untrusted.ipynb');
-			await app.workbench.sqlNotebook.waitForTrustedIcon();
-			await app.workbench.sqlNotebook.waitForTrustedElements();
-		});
-
 		// Python Notebooks
 
 		it('can open new notebook, configure Python, and execute one cell', async function () {
@@ -64,12 +45,12 @@ export function setup() {
 			await app.workbench.sqlNotebook.newUntitledNotebook();
 			await app.workbench.sqlNotebook.addCell('code');
 			await app.workbench.sqlNotebook.waitForTypeInEditor('print("Hello world!")');
-			await app.workbench.sqlNotebook.waitForKernel('SQL');
+			await app.workbench.sqlNotebook.notebookToolbar.waitForKernel('SQL');
 
-			await app.workbench.sqlNotebook.changeKernel('Python 3');
+			await app.workbench.sqlNotebook.notebookToolbar.changeKernel('Python 3');
 			await app.workbench.configurePythonDialog.waitForConfigurePythonDialog();
 			await app.workbench.configurePythonDialog.installPython();
-			await app.workbench.sqlNotebook.waitForKernel('Python 3');
+			await app.workbench.sqlNotebook.notebookToolbar.waitForKernel('Python 3');
 
 			await app.workbench.sqlNotebook.runActiveCell();
 			await app.workbench.sqlNotebook.waitForActiveCellResults();
@@ -94,14 +75,49 @@ export function setup() {
 			const app = this.app as Application;
 			await app.workbench.quickaccess.runCommand('workbench.action.revertAndCloseActiveEditor');
 		});
+
+		describe('Notebook Toolbar Actions', async () => {
+
+			it('Collapse and Expand Cell', async function () {
+				const app = this.app as Application;
+				await app.workbench.sqlNotebook.openFile('collapsed.ipynb');
+				await app.workbench.sqlNotebook.waitForCollapseIconInCells();
+				await app.workbench.sqlNotebook.notebookToolbar.waitForCollapseCellsNotebookIcon();
+				await app.workbench.sqlNotebook.notebookToolbar.collapseCells();
+				await app.workbench.sqlNotebook.waitForExpandIconInCells();
+				await app.workbench.sqlNotebook.notebookToolbar.waitForExpandCellsNotebookIcon();
+				await app.workbench.sqlNotebook.notebookToolbar.expandCells();
+				await app.workbench.sqlNotebook.waitForCollapseIconInCells();
+				await app.workbench.sqlNotebook.notebookToolbar.waitForCollapseCellsNotebookIcon();
+			});
+
+			it('can open untrusted notebook, trust, save, and reopen trusted notebook', async function () {
+				const app = this.app as Application;
+				await app.workbench.sqlNotebook.openFile('untrusted.ipynb');
+				await app.workbench.sqlNotebook.notebookToolbar.waitForKernel('SQL');
+				await app.workbench.sqlNotebook.notebookToolbar.waitForNotTrustedIcon();
+				await app.workbench.sqlNotebook.waitForTrustedElementsGone();
+
+				await app.workbench.sqlNotebook.notebookToolbar.trustNotebook();
+				await app.workbench.sqlNotebook.notebookToolbar.waitForTrustedIcon();
+				await app.workbench.sqlNotebook.waitForTrustedElements();
+
+				await app.workbench.quickaccess.runCommand('workbench.action.files.save');
+				await app.workbench.quickaccess.runCommand('workbench.action.closeActiveEditor');
+
+				await app.workbench.sqlNotebook.openFile('untrusted.ipynb');
+				await app.workbench.sqlNotebook.notebookToolbar.waitForTrustedIcon();
+				await app.workbench.sqlNotebook.waitForTrustedElements();
+			});
+		});
 	});
 }
 
 async function openAndRunNotebook(app: Application, filename: string): Promise<void> {
 	await app.workbench.sqlNotebook.openFile(filename);
-	await app.workbench.sqlNotebook.waitForKernel('Python 3');
+	await app.workbench.sqlNotebook.notebookToolbar.waitForKernel('Python 3');
 
-	await app.workbench.sqlNotebook.clearResults();
+	await app.workbench.sqlNotebook.notebookToolbar.clearResults();
 	await app.workbench.sqlNotebook.waitForAllResultsGone();
 	await app.workbench.sqlNotebook.runAllCells();
 	await app.workbench.sqlNotebook.waitForAllResults();
@@ -110,6 +126,6 @@ async function openAndRunNotebook(app: Application, filename: string): Promise<v
 	await app.workbench.quickaccess.runCommand('workbench.action.closeActiveEditor');
 
 	await app.workbench.sqlNotebook.openFile(filename);
-	await app.workbench.sqlNotebook.waitForKernel('Python 3');
+	await app.workbench.sqlNotebook.notebookToolbar.waitForKernel('Python 3');
 	await app.workbench.sqlNotebook.waitForAllResults();
 }
