@@ -15,7 +15,7 @@ const inputBox = <azdata.InputBoxComponent>{
 	updateProperty(key: string, value: any) { }
 };
 let inputBoxStub: sinon.SinonStub;
-const validationMessage = 'The field value is not valid';
+// const validationMessage = 'The field value is not valid';
 const testValidations = [
 	{
 		type: ValidationType.IsInteger,
