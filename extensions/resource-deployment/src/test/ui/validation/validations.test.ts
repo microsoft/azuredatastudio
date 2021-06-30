@@ -50,7 +50,6 @@ describe('Validation', () => {
 			it(`validationType: ${testObj.type}`, async () => {
 				const validation = createValidation(
 					testObj,
-					async (isValid) => (isValid) ? inputBox.updateProperty('validationErrorMessage', undefined) : inputBox.updateProperty('validationErrorMessage', validationMessage),
 					async () => undefined,
 					async (_varName: string) => undefined,
 					(_variableName) => onValidityChangedEmitter.event,
@@ -62,7 +61,7 @@ describe('Validation', () => {
 					case ValidationType.LessThanOrEqualsTo: should(validation).be.instanceOf(LessThanOrEqualsValidation); break;
 					case ValidationType.GreaterThanOrEqualsTo: should(validation).be.instanceOf(GreaterThanOrEqualsValidation); break;
 				}
-				should(await validateInputBoxComponent(inputBox, [validation])).be.true(); // undefined and '' values are valid so validation should return true. This allows for fields that are not required
+				should(await validateInputBoxComponent(inputBox, [validation])).be.true(`Call to validate should be true`); // undefined and '' values are valid so validation should return true. This allows for fields that are not required
 				should(inputBoxStub.calledOnce).be.true();
 				should(inputBoxStub.getCall(0).args[1]).be.undefined();
 			});
@@ -87,7 +86,6 @@ describe('Validation', () => {
 				const validationDescription = `value: ${displayTestValue} was not an integer`;
 				const validation = new IntegerValidation(
 					{ type: ValidationType.IsInteger, description: validationDescription },
-					async (isValid) => (isValid) ? inputBox.updateProperty('validationErrorMessage', undefined) : inputBox.updateProperty('validationErrorMessage', validationMessage),
 					async () => testObj.value
 				);
 				await testValidation(validation, testObj, validationDescription);
@@ -114,7 +112,6 @@ describe('Validation', () => {
 				const validationDescription = `value:${displayTestValue} did not match the regex:/${testRegex}/`;
 				const validation = new RegexValidation(
 					{ type: ValidationType.IsInteger, description: validationDescription, regex: testRegex },
-					async (isValid) => (isValid) ? inputBox.updateProperty('validationErrorMessage', undefined) : inputBox.updateProperty('validationErrorMessage', validationMessage),
 					async () => testOb.value
 				);
 				await testValidation(validation, testOb, validationDescription);
@@ -173,7 +170,6 @@ describe('Validation', () => {
 				const validationDescription = `${displayTestValue} did not test as <= ${displayTargetValue}`;
 				const validation = new LessThanOrEqualsValidation(
 					{ type: ValidationType.IsInteger, description: validationDescription, target: targetVariableName },
-					async (isValid) => (isValid) ? inputBox.updateProperty('validationErrorMessage', undefined) : inputBox.updateProperty('validationErrorMessage', validationMessage),
 					async () => testObj.value,
 					async (_variableName: string) => testObj.targetValue,
 					(_variableName) => onValidityChangedEmitter.event,
@@ -228,7 +224,6 @@ describe('Validation', () => {
 				const validationDescription = `${displayTestValue} did not test as >= ${displayTargetValue}`;
 				const validation = new GreaterThanOrEqualsValidation(
 					{ type: ValidationType.IsInteger, description: validationDescription, target: targetVariableName },
-					async (isValid) => (isValid) ? inputBox.updateProperty('validationErrorMessage', undefined) : inputBox.updateProperty('validationErrorMessage', validationMessage),
 					async () => testObj.value,
 					async (_variableName: string) => testObj.targetValue,
 					(_variableName) => onValidityChangedEmitter.event,

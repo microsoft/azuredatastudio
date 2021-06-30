@@ -539,13 +539,6 @@ async function processField(context: FieldContext): Promise<void> {
 	//populate the fieldValidations objects for each field based on the information from the fieldInfo
 	context.fieldValidations = context.fieldInfo.validations?.map((validation => createValidation(
 		validation,
-		async (isValid: boolean) => {
-			const inputBox = (<azdata.InputBoxComponent>context.inputComponents[context.fieldInfo.variableName || context.fieldInfo.label].component);
-			const validationMessage = (isValid) ? '' : validation.description;
-			if (inputBox.validationErrorMessage !== validationMessage) { // unset validationErrorMessage if it is set
-				await inputBox.updateProperty('validationErrorMessage', validationMessage);
-			}
-		},
 		() => context.inputComponents[context.fieldInfo.variableName || context.fieldInfo.label].getValue(),  // callback to fetch the value of this field, and return the default value if the field value is undefined
 		(variable: string) => context.inputComponents[variable].getValue(),  // callback to fetch the value of a variable corresponding to any field already defined.
 		(targetVariable: string) => (<azdata.InputBoxComponent>context.inputComponents[targetVariable].component).onValidityChanged,
