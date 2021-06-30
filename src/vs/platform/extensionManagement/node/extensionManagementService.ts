@@ -137,7 +137,7 @@ export class ExtensionManagementService extends Disposable implements IExtension
 	private async collectFiles(extension: ILocalExtension): Promise<IFile[]> {
 
 		const collectFilesFromDirectory = async (dir: string): Promise<string[]> => {
-			let entries = await pfs.readdir(dir);
+			let entries = await pfs.Promises.readdir(dir);
 			entries = entries.map(e => path.join(dir, e));
 			const stats = await Promise.all(entries.map(e => pfs.Promises.stat(e)));
 			let promise: Promise<string[]> = Promise.resolve([]);
@@ -660,7 +660,7 @@ export class ExtensionManagementService extends Disposable implements IExtension
 	}
 
 	private async preUninstallExtension(extension: ILocalExtension): Promise<void> {
-		const exists = await pfs.exists(extension.location.fsPath);
+		const exists = await pfs.Promises.exists(extension.location.fsPath);
 		if (!exists) {
 			throw new Error(nls.localize('notExists', "Could not find extension"));
 		}
