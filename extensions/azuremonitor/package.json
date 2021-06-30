@@ -21,7 +21,7 @@
     "connectionProvider": {
       "providerId": "LOGANALYTICS",
       "languageMode": "loganalytics",
-      "displayName": "Azure Monitor Logs",
+      "displayName": "%azuremonitor.displayName%",
       "notebookKernelAlias": "LogAnalytics",
       "azureResource": "AzureLogAnalytics",
       "iconPath": [
@@ -122,8 +122,7 @@
           "objectType": null,
           "categoryValues": null,
           "isRequired": false,
-          "isArray": false,
-          "hide": true
+          "isArray": false
         }
       ]
     },

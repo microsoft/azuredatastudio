@@ -282,7 +282,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 	private addDatabaseOption(): void {
 		// Database
 		let databaseOption = this._optionsMaps[ConnectionOptionSpecialType.databaseName];
-		if (databaseOption && !databaseOption.hide) {
+		if (databaseOption) {
 			let databaseName = DialogHelper.appendRow(this._tableContainer, databaseOption.displayName, 'connection-label', 'connection-input');
 			this._databaseNameInputBox = new Dropdown(databaseName, this._contextViewService, {
 				values: [this._defaultDatabaseName, this._loadingDatabaseName],
