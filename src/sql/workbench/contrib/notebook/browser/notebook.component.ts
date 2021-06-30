@@ -128,6 +128,9 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 
 	override ngOnDestroy() {
 		this.dispose();
+		if (this.notebookService) {
+			this.notebookService.removeNotebookEditor(this);
+		}
 	}
 	public get model(): NotebookModel | null {
 		return this._model;
