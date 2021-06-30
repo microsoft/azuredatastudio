@@ -290,6 +290,7 @@ export const SUCCESSFULLY_MIGRATED_TO_AZURE_SQL = localize('sql.migration.succes
 export const MIGRATION_NOT_STARTED = localize('sql.migration.migration.not.started', "Migration not started");
 export const CHOOSE_TO_MIGRATE_TO_AZURE_SQL = localize('sql.migration.choose.to.migrate.to.azure.sql', "Choose to migrate to Azure SQL");
 export const COMING_SOON = localize('sql.migration.coming.soon', "Coming soon");
+export const SHOW_STATUS = localize('sql.migration.show.status', "show status");
 export function MIGRATION_INPROGRESS_WARNING(count: number) {
 	switch (count) {
 		case 1:

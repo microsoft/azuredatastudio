@@ -373,7 +373,7 @@ export class DashboardWidget {
 
 		const compositeButton = this._view.modelBuilder.divContainer().withItems([flex]).withProps({
 			ariaRole: 'button',
-			ariaLabel: 'show status',
+			ariaLabel: loc.SHOW_STATUS,
 			clickable: true,
 			CSSStyles: {
 				'width': '400px',
