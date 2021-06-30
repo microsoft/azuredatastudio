@@ -18,6 +18,8 @@ import { KeyCode } from 'vs/base/common/keyCodes';
 import { IComponentDescriptor, IComponent, IModelStore, ComponentEventType } from 'sql/platform/dashboard/browser/interfaces';
 import { convertSize } from 'sql/base/browser/dom';
 import { ILogService } from 'vs/platform/log/common/log';
+import { IColorTheme, IThemeService } from 'vs/platform/theme/common/themeService';
+import * as colorRegistry from 'vs/platform/theme/common/colorRegistry';
 
 class DivItem {
 	constructor(public descriptor: IComponentDescriptor, public config: azdata.DivItemLayout) { }
@@ -25,7 +27,12 @@ class DivItem {
 
 @Component({
 	template: `
-		<div #divContainer *ngIf="items" class="divContainer" [ngStyle]="CSSStyles" [style.height]="height" [style.width]="width" [style.display]="display" (keyup)="onKey($event)" [attr.role]="ariaRole" [attr.aria-selected]="ariaSelected">
+		<style>
+			.divContainer:focus {
+				outline-offset: 2px;
+			}
+		</style>
+		<div #divContainer *ngIf="items" class="divContainer" [ngStyle]="CSSStyles" [style.height]="height" [style.width]="width" [style.display]="display" (keyup)="onKey($event)" [attr.role]="ariaRole" [attr.aria-selected]="ariaSelected" (mouseover)="onMouseOver()" (mouseout)="onMouseOut()">
 			<div *ngFor="let item of items" [style.order]="getItemOrder(item)" [ngStyle]="getItemStyles(item)">
 				<model-component-wrapper [descriptor]="item.descriptor" [modelStore]="modelStore">
 				</model-component-wrapper>
@@ -42,15 +49,23 @@ export default class DivContainer extends ContainerBase<azdata.DivItemLayout, az
 	private _overflowY: string;
 	private viewInitialized: boolean;
 	private cancelClick: Function;
+	private _colorTheme: IColorTheme;
+
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
 		@Inject(forwardRef(() => Renderer2)) private renderer: Renderer2,
-		@Inject(ILogService) logService: ILogService
+		@Inject(ILogService) logService: ILogService,
+		@Inject(IThemeService) themeService: IThemeService,
 	) {
 		super(changeRef, el, logService);
 		this._overflowY = '';	// default
+		this._colorTheme = themeService.getColorTheme();
+		this._register(themeService.onDidColorThemeChange((colorTheme) => {
+			this._colorTheme = colorTheme;
+			this.onMouseOut();
+		}));
 	}
 
 	ngAfterViewInit(): void {
@@ -167,6 +182,22 @@ export default class DivContainer extends ContainerBase<azdata.DivItemLayout, az
 		} else if (!this.clickable && this.cancelClick) {
 			this.cancelClick();
 			this.cancelClick = undefined;
+		}
+	}
+
+	public onMouseOver(): void {
+		// not forcing the mouse in styling on non-clickable divs
+		if (this.clickable) {
+			this.divContainer.nativeElement.style.backgroundColor = this._colorTheme.getColor(colorRegistry.editorHoverBackground).toString();
+			this._changeRef.detectChanges();
+		}
+	}
+
+	public onMouseOut(): void {
+		// not forcing the mouse out styling on non-clickable divs
+		if (this.clickable) {
+			this.divContainer.nativeElement.style.backgroundColor = this._colorTheme.getColor(colorRegistry.editorBackground).toString();
+			this._changeRef.detectChanges();
 		}
 	}
 }

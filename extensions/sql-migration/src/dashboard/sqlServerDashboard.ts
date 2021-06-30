@@ -270,9 +270,9 @@ export class DashboardWidget {
 			if (warningCount > 0) {
 				this._inProgressWarningMigrationButton.warningText!.value = loc.MIGRATION_INPROGRESS_WARNING(warningCount);
 				this._inProgressMigrationButton.container.display = 'none';
-				this._inProgressWarningMigrationButton.container.display = 'inline';
+				this._inProgressWarningMigrationButton.container.display = '';
 			} else {
-				this._inProgressMigrationButton.container.display = 'inline';
+				this._inProgressMigrationButton.container.display = '';
 				this._inProgressWarningMigrationButton.container.display = 'none';
 			}
 
@@ -286,7 +286,7 @@ export class DashboardWidget {
 			const failedMigrations = filterMigrations(migrations, AdsMigrationStatus.FAILED);
 			const failedCount = failedMigrations.length;
 			if (failedCount > 0) {
-				this._failedMigrationButton.container.display = 'inline';
+				this._failedMigrationButton.container.display = '';
 				this._failedMigrationButton.count.value = failedMigrations.length.toString();
 			} else {
 				this._failedMigrationButton.container.display = 'none';
@@ -295,7 +295,7 @@ export class DashboardWidget {
 			const completingCutoverMigrations = filterMigrations(migrations, AdsMigrationStatus.COMPLETING);
 			const cutoverCount = completingCutoverMigrations.length;
 			if (cutoverCount > 0) {
-				this._completingMigrationButton.container.display = 'inline';
+				this._completingMigrationButton.container.display = '';
 				this._completingMigrationButton.count.value = cutoverCount.toString();
 			} else {
 				this._completingMigrationButton.container.display = 'none';
@@ -327,6 +327,7 @@ export class DashboardWidget {
 				'margin-bottom': '0px',
 				'width': '300px',
 				'font-size': '14px',
+				'font-weight': 'bold'
 			}
 		}).component();
 
@@ -342,9 +343,7 @@ export class DashboardWidget {
 		const flex = this._view.modelBuilder.flexContainer().withProps({
 			CSSStyles: {
 				'width': '400px',
-				'height': '50px',
-				'margin-top': '10px',
-				'border': '1px solid',
+				'height': '50px'
 			}
 		}).component();
 
@@ -375,7 +374,13 @@ export class DashboardWidget {
 		const compositeButton = this._view.modelBuilder.divContainer().withItems([flex]).withProps({
 			ariaRole: 'button',
 			ariaLabel: 'show status',
-			clickable: true
+			clickable: true,
+			CSSStyles: {
+				'width': '400px',
+				'border': '1px solid',
+				'margin-top': '10px',
+				'height': '50px'
+			}
 		}).component();
 		return {
 			container: compositeButton,
@@ -456,8 +461,6 @@ export class DashboardWidget {
 			CSSStyles: {
 				'width': '400px',
 				'height': '70px',
-				'margin-top': '10px',
-				'border': '1px solid'
 			}
 		}).component();
 
@@ -488,7 +491,13 @@ export class DashboardWidget {
 		const compositeButton = this._view.modelBuilder.divContainer().withItems([flex]).withProps({
 			ariaRole: 'button',
 			ariaLabel: 'show status',
-			clickable: true
+			clickable: true,
+			CSSStyles: {
+				'width': '400px',
+				'height': '70px',
+				'margin-top': '10px',
+				'border': '1px solid'
+			}
 		}).component();
 		return {
 			container: compositeButton,
