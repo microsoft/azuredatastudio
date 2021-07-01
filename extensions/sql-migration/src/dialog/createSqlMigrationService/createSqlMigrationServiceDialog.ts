@@ -262,6 +262,7 @@ export class CreateSqlMigrationServiceDialog {
 					name: createdResourceGroup.name
 				};
 				this.migrationServiceResourceGroupDropdown.loading = false;
+				this.migrationServiceResourceGroupDropdown.focus();
 			}
 		});
 
