@@ -33,10 +33,7 @@ class DivItem {
 				</model-component-wrapper>
 			</div>
 		</div>
-	`,
-	styles: [
-		`.divContainer:focus { outline-offset: 2px }`
-	]
+	`
 })
 export default class DivContainer extends ContainerBase<azdata.DivItemLayout, azdata.DivContainerProperties> implements IComponent, OnDestroy, AfterViewInit {
 	@Input() descriptor: IComponentDescriptor;
@@ -47,8 +44,6 @@ export default class DivContainer extends ContainerBase<azdata.DivItemLayout, az
 	private _overflowY: string;
 	private viewInitialized: boolean;
 	private cancelClick: Function;
-	private _colorTheme: IColorTheme;
-
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
