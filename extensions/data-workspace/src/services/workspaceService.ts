@@ -143,7 +143,7 @@ export class WorkspaceService implements IWorkspaceService {
 		const provider = ProjectProviderRegistry.getProviderByProjectType(projectTypeId);
 		if (provider) {
 			const projectFile = await provider.createProject(name, location, projectTypeId);
-			this.addProjectsToWorkspace([projectFile]);
+			await this.addProjectsToWorkspace([projectFile]);
 			this._onDidWorkspaceProjectsChange.fire();
 			return projectFile;
 		} else {
