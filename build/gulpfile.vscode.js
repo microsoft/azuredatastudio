@@ -143,9 +143,9 @@ const extensionsFilter = filter([
 // Copy ADS extension XLFs into English resource folder.
 const importExtensionsTask = task.define('import-extensions-xlfs', function () {
 	return es.merge(
-		gulp.src(`../vscode-translations-export/vscode-extensions/*.xlf`)
+		gulp.src(`./vscode-translations-export/vscode-extensions/*.xlf`)
 			.pipe(extensionsFilter),
-		gulp.src(`../vscode-translations-export/sqlops-core/*.xlf`)
+		gulp.src(`./vscode-translations-export/ads-core/*.xlf`)
 	)
 	.pipe(vfs.dest(`./resources/xlf/en`));
 });
@@ -497,7 +497,7 @@ const vscodeTranslationsExport = task.define(
 				gulp.src(pathToMetadata).pipe(i18n.createXlfFilesForCoreBundle()),
 				gulp.src(pathToSetup).pipe(i18n.createXlfFilesForIsl()),
 				gulp.src(pathToExtensions).pipe(i18n.createXlfFilesForExtensions())
-			).pipe(vfs.dest('../vscode-translations-export'));
+			).pipe(vfs.dest('./vscode-translations-export')); // {{SQL CARBON EDIT}} move vscode-translations-export into ADS (for safely deleting after use).
 		}
 	)
 );
@@ -508,7 +508,8 @@ gulp.task(task.define(
 	'update-english-xlfs',
 	task.series(
 		vscodeTranslationsExport,
-		importExtensionsTask
+		importExtensionsTask,
+		task.define('delete-vscode-translations-export', util.rimraf('./vscode-translations-export'))
 	)
 ));
 // {{SQL CARBON EDIT}} end
