@@ -7,6 +7,7 @@ import * as azdata from 'azdata';
 import { ColumnMetadata, ColumnMetadataArray } from '../api/models';
 import { ImportPage } from '../api/importPage';
 import * as constants from '../../common/constants';
+import { DerivedColumnDialog } from '../../dialogs/derivedColumnDialog';
 
 export class ModifyColumnsPage extends ImportPage {
 	private readonly categoryValues = [
@@ -50,6 +51,7 @@ export class ModifyColumnsPage extends ImportPage {
 	private _loading: azdata.LoadingComponent;
 	private _text: azdata.TextComponent;
 	private _form: azdata.FormContainer;
+	private _createDerivedColumnButton: azdata.ButtonComponent;
 
 	public get table(): azdata.DeclarativeTableComponent {
 		return this._table;
@@ -104,6 +106,14 @@ export class ModifyColumnsPage extends ImportPage {
 			});
 		});
 
+		this._createDerivedColumnButton = this.view.modelBuilder.button().withProps({
+			label: constants.createDerivedColumn
+		}).component();
+
+		this._createDerivedColumnButton.onDidClick(e => {
+			const derivedColumnDialog = new DerivedColumnDialog(this.model);
+			derivedColumnDialog.openDialog();
+		});
 
 		this.form = this.view.modelBuilder.formContainer()
 			.withFormItems(
@@ -114,6 +124,10 @@ export class ModifyColumnsPage extends ImportPage {
 					},
 					{
 						component: this.table,
+						title: ''
+					},
+					{
+						component: this._createDerivedColumnButton,
 						title: ''
 					}
 				], {

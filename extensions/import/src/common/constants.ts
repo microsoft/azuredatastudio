@@ -58,6 +58,6 @@ export const page2NameText = localize('flatFileImport.page2Name', "Preview Data"
 export const page3NameText = localize('flatFileImport.page3Name', "Modify Columns");
 export const page4NameText = localize('flatFileImport.page4Name', "Summary");
 export const importNewFileText = localize('flatFileImport.importNewFile', "Import new file");
-
+export const createDerivedColumn = localize('flatFileImport.createDerivedColumns', "Create derived column");
 // SQL Queries
 export const selectSchemaQuery = `SELECT name FROM sys.schemas`;

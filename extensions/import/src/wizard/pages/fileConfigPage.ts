@@ -111,10 +111,7 @@ export class FileConfigPage extends ImportPage {
 
 	async onPageEnter(): Promise<boolean> {
 		this.serverDropdown.focus();
-		let r1 = await this.populateServerDropdown();
-		let r2 = await this.populateDatabaseDropdown();
-		let r3 = await this.populateSchemaDropdown();
-		return r1 && r2 && r3;
+		return await this.populateServerDropdown();
 	}
 
 	override async onPageLeave(): Promise<boolean> {
@@ -130,12 +127,6 @@ export class FileConfigPage extends ImportPage {
 	}
 
 	public setupNavigationValidator() {
-		this.instance.registerNavigationValidator((info) => {
-			if (this.schemaLoader.loading || this.databaseDropdown.loading) {
-				return false;
-			}
-			return true;
-		});
 	}
 
 	private async createServerDropdown(): Promise<azdata.FormComponent> {
@@ -152,7 +143,6 @@ export class FileConfigPage extends ImportPage {
 			this.model.server = connectionValue.connection;
 
 			await this.populateDatabaseDropdown();
-			await this.populateSchemaDropdown();
 		});
 
 		return {
@@ -205,33 +195,35 @@ export class FileConfigPage extends ImportPage {
 		this.databaseDropdown.values = [];
 		this.schemaDropdown.values = [];
 
-		if (!this.model.server) {
-			//TODO handle error case
-			this.databaseDropdown.loading = false;
-			return false;
-		}
-
-		let defaultServerDatabase = this.model.server.options.database;
-
-		let values: any[];
 		try {
-			values = await this.getDatabaseValues();
-		} catch (error) {
-			// This code is used in case of contained databases when the query will return an error.
-			console.log(error);
-			values = [{ displayName: defaultServerDatabase, name: defaultServerDatabase }];
-			this.databaseDropdown.editable = false;
+			if (!this.model.server) {
+				//TODO handle error case
+				this.databaseDropdown.loading = false;
+				return false;
+			}
+
+			let defaultServerDatabase = this.model.server.options.database;
+
+			let values: any[];
+			try {
+				values = await this.getDatabaseValues();
+			} catch (error) {
+				// This code is used in case of contained databases when the query will return an error.
+				console.log(error);
+				values = [{ displayName: defaultServerDatabase, name: defaultServerDatabase }];
+				this.databaseDropdown.editable = false;
+			}
+
+			this.model.database = defaultServerDatabase;
+
+			this.databaseDropdown.updateProperties({
+				values: values
+			});
+
+			this.databaseDropdown.value = { displayName: this.model.database, name: this.model.database };
+		} finally {
+			this.databaseDropdown.loading = false;
 		}
-
-		this.model.database = defaultServerDatabase;
-
-		this.databaseDropdown.updateProperties({
-			values: values
-		});
-
-		this.databaseDropdown.value = { displayName: this.model.database, name: this.model.database };
-		this.databaseDropdown.loading = false;
-
 		return true;
 	}
 
@@ -240,7 +232,10 @@ export class FileConfigPage extends ImportPage {
 			required: true,
 			validationErrorMessage: constants.invalidFileLocationError
 		}).withValidation((component) => {
-			return fs.existsSync(component.value);
+			if (component.value) {
+				return fs.existsSync(component.value);
+			}
+			return false;
 		}).component();
 
 		this.fileButton = this.view.modelBuilder.button().withProps({
