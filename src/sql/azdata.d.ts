@@ -3518,7 +3518,7 @@ declare module 'azdata' {
 		/**
 		 * Whether to show the loading spinner instead of the contained component. True by default
 		 */
-		loading?: boolean;
+		pploading?: boolean;
 		/**
 		 * Whether to show the loading text next to the spinner
 		 */

@@ -74,7 +74,7 @@ export class CreateSqlMigrationServiceDialog {
 
 
 				const subscription = this._model._targetSubscription;
-				const resourceGroup = (this.migrationServiceResourceGroupDropdown.value as azdata.CategoryValue).displayName;
+				const resourceGroup = (this.migrationServiceResourceGroupDropdown.value as azdata.CategoryValue).name;
 				const location = this._model._targetServerInstance.location;
 				const serviceName = this.migrationServiceNameText.value;
 
@@ -340,7 +340,7 @@ export class CreateSqlMigrationServiceDialog {
 		this.migrationServiceResourceGroupDropdown.loading = true;
 		try {
 			this.migrationServiceResourceGroupDropdown.values = await this._model.getAzureResourceGroupDropdownValues(this._model._targetSubscription);
-			const selectedResourceGroupValue = this.migrationServiceResourceGroupDropdown.values.find(v => v.displayName.toLowerCase() === this._resourceGroupPreset.toLowerCase());
+			const selectedResourceGroupValue = this.migrationServiceResourceGroupDropdown.values.find(v => v.name.toLowerCase() === this._resourceGroupPreset.toLowerCase());
 			this.migrationServiceResourceGroupDropdown.value = (selectedResourceGroupValue) ? selectedResourceGroupValue : this.migrationServiceResourceGroupDropdown.values[0];
 		} finally {
 			this.migrationServiceResourceGroupDropdown.loading = false;
@@ -491,7 +491,7 @@ export class CreateSqlMigrationServiceDialog {
 
 	private async refreshStatus(): Promise<void> {
 		const subscription = this._model._targetSubscription;
-		const resourceGroup = (this.migrationServiceResourceGroupDropdown.value as azdata.CategoryValue).displayName;
+		const resourceGroup = (this.migrationServiceResourceGroupDropdown.value as azdata.CategoryValue).name;
 		const location = this._model._targetServerInstance.location;
 
 		const maxRetries = 5;
@@ -537,7 +537,7 @@ export class CreateSqlMigrationServiceDialog {
 	}
 	private async refreshAuthTable(): Promise<void> {
 		const subscription = this._model._targetSubscription;
-		const resourceGroup = (this.migrationServiceResourceGroupDropdown.value as azdata.CategoryValue).displayName;
+		const resourceGroup = (this.migrationServiceResourceGroupDropdown.value as azdata.CategoryValue).name;
 		const location = this._model._targetServerInstance.location;
 		const keys = await getSqlMigrationServiceAuthKeys(this._model._azureAccount, subscription, resourceGroup, location, this._createdMigrationService!.name);
 
