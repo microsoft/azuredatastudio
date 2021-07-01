@@ -108,16 +108,7 @@ const optimizeVSCodeTask = task.define('optimize-vscode', task.series(
 ));
 gulp.task(optimizeVSCodeTask);
 
-// {{SQL CARBON EDIT}} Gulp task that exports any extensions found in the build folder as an XLF to an external folder.
-const exportXLFFolderTask = task.define('export-xlf-folder',
-	function () {
-		const pathToExtensions = '.build/extensions/*';
-		return es.merge(
-			gulp.src(pathToExtensions).pipe(i18n.createXlfFilesForExtensions())
-		).pipe(vfs.dest('../export-xlfs'));
-	}
-);
-gulp.task(exportXLFFolderTask);
+// {{SQL CARBON EDIT}} Gulp task that imports any relevant ADS XLF found in vscode-translations-export to resources/xlf/en folder.
 
 // List of ADS extension XLF files that we want to put into the English resource folder.
 const extensionsFilter = filter([
@@ -151,12 +142,14 @@ const extensionsFilter = filter([
 
 // Copy ADS extension XLFs into English resource folder.
 const importExtensionsTask = task.define('import-extensions-xlfs', function () {
-	gulp.src(`../export-xlfs/vscode-extensions/*.xlf`)
-		.pipe(extensionsFilter)
-		.pipe(vfs.dest(`./resources/xlf/en`));
+	return es.merge(
+		gulp.src(`../vscode-translations-export/vscode-extensions/*.xlf`)
+			.pipe(extensionsFilter),
+		gulp.src(`../vscode-translations-export/sqlops-core/*.xlf`)
+	)
+	.pipe(vfs.dest(`./resources/xlf/en`));
 });
 gulp.task(importExtensionsTask)
-
 // {{SQL CARBON EDIT}} end
 
 const sourceMappingURLBase = `https://sqlopsbuilds.blob.core.windows.net/sourcemaps/${commit}`;
@@ -488,11 +481,12 @@ gulp.task(task.define(
 	)
 ));
 
-gulp.task(task.define(
+// {{SQL CARBON EDIT}} Allow for gulp task to be added to update-english-xlfs.
+const vscodeTranslationsExport = task.define(
 	'vscode-translations-export',
 	task.series(
 		compileBuildTask,
-		compileExtensionsBuildTask,
+		compileLocalizationExtensionsBuildTask, // {{SQL CARBON EDIT}} now include all extensions in ADS, not just a subset. (replaces "compileExtensionsBuildTask" here).
 		optimizeVSCodeTask,
 		function () {
 			const pathToMetadata = './out-vscode/nls.metadata.json';
@@ -506,15 +500,14 @@ gulp.task(task.define(
 			).pipe(vfs.dest('../vscode-translations-export'));
 		}
 	)
-));
+);
+gulp.task(vscodeTranslationsExport)
 
-// {{SQL CARBON EDIT}} Localization gulp task, similar to vscode-translations-export but for all extensions.
-// It also imports a subset of the generated XLFs into the folder (extensions created for ADS with localization)
+// {{SQL CARBON EDIT}} Localization gulp task, runs vscodeTranslationsExport and imports a subset of the generated XLFs into the folder.
 gulp.task(task.define(
 	'update-english-xlfs',
 	task.series(
-		compileLocalizationExtensionsBuildTask,
-		exportXLFFolderTask,
+		vscodeTranslationsExport,
 		importExtensionsTask
 	)
 ));
