@@ -193,7 +193,8 @@ export class TerminalViewPane extends ViewPane {
 					run: () => {
 						const instance = this._terminalGroupService.activeInstance;
 						if (instance) {
-							return this._terminalService.splitInstance(instance);
+							const newInstance = this._terminalService.splitInstance(instance);
+							return newInstance?.focusWhenReady();
 						}
 						return;
 					}
@@ -214,7 +215,7 @@ export class TerminalViewPane extends ViewPane {
 				}
 				const actions = this._getTabActionBarArgs(this._terminalService.availableProfiles);
 
-				this._tabButtons = new DropdownWithPrimaryActionViewItem(actions.primaryAction, actions.dropdownAction, actions.dropdownMenuActions, actions.className, this._contextMenuService, this._keybindingService, this._notificationService);
+				this._tabButtons = new DropdownWithPrimaryActionViewItem(actions.primaryAction, actions.dropdownAction, actions.dropdownMenuActions, actions.className, this._contextMenuService, this._keybindingService, this._notificationService, this._contextKeyService);
 				this._updateTabActionBar(this._terminalService.availableProfiles);
 				return this._tabButtons;
 			}
@@ -429,11 +430,11 @@ class SingleTerminalTabActionViewItem extends MenuEntryActionViewItem {
 			_commandService
 		), {
 			draggable: true
-		}, keybindingService, notificationService);
+		}, keybindingService, notificationService, contextKeyService);
 
 		// Register listeners to update the tab
 		this._register(this._terminalService.onInstancePrimaryStatusChanged(e => this.updateLabel(e)));
-		this._register(_terminalGroupService.onDidChangeActiveInstance(() => this.updateLabel()));
+		this._register(this._terminalGroupService.onDidChangeActiveInstance(() => this.updateLabel()));
 		this._register(this._terminalService.onInstanceIconChanged(e => this.updateLabel(e)));
 		this._register(this._terminalService.onInstanceColorChanged(e => this.updateLabel(e)));
 		this._register(this._terminalService.onInstanceTitleChanged(e => {

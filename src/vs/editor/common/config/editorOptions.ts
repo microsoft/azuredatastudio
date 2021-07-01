@@ -3012,6 +3012,7 @@ export interface IEditorScrollbarOptions {
 	/**
 	 * The size of arrows (if displayed).
 	 * Defaults to 11.
+	 * **NOTE**: This option cannot be updated using `updateOptions()`
 	 */
 	arrowSize?: number;
 	/**
@@ -3027,16 +3028,19 @@ export interface IEditorScrollbarOptions {
 	/**
 	 * Cast horizontal and vertical shadows when the content is scrolled.
 	 * Defaults to true.
+	 * **NOTE**: This option cannot be updated using `updateOptions()`
 	 */
 	useShadows?: boolean;
 	/**
 	 * Render arrows at the top and bottom of the vertical scrollbar.
 	 * Defaults to false.
+	 * **NOTE**: This option cannot be updated using `updateOptions()`
 	 */
 	verticalHasArrows?: boolean;
 	/**
 	 * Render arrows at the left and right of the horizontal scrollbar.
 	 * Defaults to false.
+	 * **NOTE**: This option cannot be updated using `updateOptions()`
 	 */
 	horizontalHasArrows?: boolean;
 	/**
@@ -3047,6 +3051,7 @@ export interface IEditorScrollbarOptions {
 	/**
 	 * Always consume mouse wheel events (always call preventDefault() and stopPropagation() on the browser events).
 	 * Defaults to true.
+	 * **NOTE**: This option cannot be updated using `updateOptions()`
 	 */
 	alwaysConsumeMouseWheel?: boolean;
 	/**
@@ -3062,11 +3067,13 @@ export interface IEditorScrollbarOptions {
 	/**
 	 * Width in pixels for the vertical slider.
 	 * Defaults to `verticalScrollbarSize`.
+	 * **NOTE**: This option cannot be updated using `updateOptions()`
 	 */
 	verticalSliderSize?: number;
 	/**
 	 * Height in pixels for the horizontal slider.
 	 * Defaults to `horizontalScrollbarSize`.
+	 * **NOTE**: This option cannot be updated using `updateOptions()`
 	 */
 	horizontalSliderSize?: number;
 	/**
@@ -3106,22 +3113,61 @@ function _scrollbarVisibilityFromString(visibility: string | undefined, defaultV
 class EditorScrollbar extends BaseEditorOption<EditorOption.scrollbar, InternalEditorScrollbarOptions> {
 
 	constructor() {
+		const defaults: InternalEditorScrollbarOptions = {
+			vertical: ScrollbarVisibility.Auto,
+			horizontal: ScrollbarVisibility.Auto,
+			arrowSize: 11,
+			useShadows: true,
+			verticalHasArrows: false,
+			horizontalHasArrows: false,
+			horizontalScrollbarSize: 12,
+			horizontalSliderSize: 12,
+			verticalScrollbarSize: 14,
+			verticalSliderSize: 14,
+			handleMouseWheel: true,
+			alwaysConsumeMouseWheel: true,
+			scrollByPage: false
+		};
 		super(
-			EditorOption.scrollbar, 'scrollbar',
+			EditorOption.scrollbar, 'scrollbar', defaults,
 			{
-				vertical: ScrollbarVisibility.Auto,
-				horizontal: ScrollbarVisibility.Auto,
-				arrowSize: 11,
-				useShadows: true,
-				verticalHasArrows: false,
-				horizontalHasArrows: false,
-				horizontalScrollbarSize: 12,
-				horizontalSliderSize: 12,
-				verticalScrollbarSize: 14,
-				verticalSliderSize: 14,
-				handleMouseWheel: true,
-				alwaysConsumeMouseWheel: true,
-				scrollByPage: false
+				'editor.scrollbar.vertical': {
+					type: 'string',
+					enum: ['auto', 'visible', 'hidden'],
+					enumDescriptions: [
+						nls.localize('scrollbar.vertical.auto', "The vertical scrollbar will be visible only when necessary."),
+						nls.localize('scrollbar.vertical.visible', "The vertical scrollbar will always be visible."),
+						nls.localize('scrollbar.vertical.fit', "The vertical scrollbar will always be hidden."),
+					],
+					default: 'auto',
+					description: nls.localize('scrollbar.vertical', "Controls the visibility of the vertical scrollbar.")
+				},
+				'editor.scrollbar.horizontal': {
+					type: 'string',
+					enum: ['auto', 'visible', 'hidden'],
+					enumDescriptions: [
+						nls.localize('scrollbar.horizontal.auto', "The horizontal scrollbar will be visible only when necessary."),
+						nls.localize('scrollbar.horizontal.visible', "The horizontal scrollbar will always be visible."),
+						nls.localize('scrollbar.horizontal.fit', "The horizontal scrollbar will always be hidden."),
+					],
+					default: 'auto',
+					description: nls.localize('scrollbar.horizontal', "Controls the visibility of the horizontal scrollbar.")
+				},
+				'editor.scrollbar.verticalScrollbarSize': {
+					type: 'number',
+					default: defaults.verticalScrollbarSize,
+					description: nls.localize('scrollbar.verticalScrollbarSize', "The width of the vertical scrollbar.")
+				},
+				'editor.scrollbar.horizontalScrollbarSize': {
+					type: 'number',
+					default: defaults.horizontalScrollbarSize,
+					description: nls.localize('scrollbar.horizontalScrollbarSize', "The height of the horizontal scrollbar.")
+				},
+				'editor.scrollbar.scrollByPage': {
+					type: 'boolean',
+					default: defaults.scrollByPage,
+					description: nls.localize('scrollbar.scrollByPage', "Controls whether clicks scroll by page or jump to click position.")
+				}
 			}
 		);
 	}
@@ -3179,7 +3225,7 @@ class InlineEditorSuggest extends BaseEditorOption<EditorOption.inlineSuggest, I
 	constructor() {
 		const defaults: InternalInlineSuggestOptions = {
 			enabled: false,
-			mode: 'prefix'
+			mode: 'subwordDiff'
 		};
 
 		super(
@@ -3392,7 +3438,7 @@ class EditorSuggest extends BaseEditorOption<EditorOption.suggest, InternalSugge
 			showIcons: true,
 			showStatusBar: false,
 			preview: false,
-			previewMode: 'subwordDiff',
+			previewMode: 'prefix',
 			showInlineDetails: true,
 			showMethods: true,
 			showFunctions: true,

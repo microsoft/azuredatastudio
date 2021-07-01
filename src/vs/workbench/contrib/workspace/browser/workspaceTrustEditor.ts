@@ -90,6 +90,7 @@ class WorkspaceTrustedUrisTable extends Disposable {
 		@IWorkspaceContextService private readonly workspaceService: IWorkspaceContextService,
 		@IWorkspaceTrustManagementService private readonly workspaceTrustManagementService: IWorkspaceTrustManagementService,
 		@IUriIdentityService private readonly uriService: IUriIdentityService,
+		@ILabelService private readonly labelService: ILabelService,
 		@IFileDialogService private readonly fileDialogService: IFileDialogService
 	) {
 		super();
@@ -133,6 +134,24 @@ class WorkspaceTrustedUrisTable extends Disposable {
 				horizontalScrolling: false,
 				alwaysConsumeMouseWheel: false,
 				openOnSingleClick: false,
+				multipleSelectionSupport: false,
+				accessibilityProvider: {
+					getAriaLabel: (item: ITrustedUriItem) => {
+						if (item.entryType === TrustedUriItemType.Add) {
+							return localize('addFolderAriaLabel', "Add a Trusted Folder");
+						} else {
+							const hostLabel = getHostLabel(this.labelService, item);
+							if (hostLabel === undefined || hostLabel.length === 0) {
+								return localize('trustedFolderAriaLabel', "You trust {0}", this.labelService.getUriLabel(item.uri));
+							}
+
+							return localize('trustedFolderWithHostAriaLabel', "You trust {0} on {1}", this.labelService.getUriLabel(item.uri), hostLabel);
+
+
+						}
+					},
+					getWidgetAriaLabel: () => localize('trustedFoldersAndWorkspaces', "Trusted Folders & Workspaces")
+				}
 			}
 		) as WorkbenchTable<ITrustedUriItem>;
 
@@ -482,6 +501,10 @@ interface ITrustedUriHostColumnTemplateData {
 	renderDisposables: DisposableStore;
 }
 
+function getHostLabel(labelService: ILabelService, item: ITrustedUriItem): string {
+	return item.uri.authority ? labelService.getHostLabel(item.uri.scheme, item.uri.authority) : localize('localAuthority', "Local");
+}
+
 class TrustedUriHostColumnRenderer implements ITableRenderer<ITrustedUriItem, ITrustedUriHostColumnTemplateData> {
 	static readonly TEMPLATE_ID = 'host';
 
@@ -514,7 +537,7 @@ class TrustedUriHostColumnRenderer implements ITableRenderer<ITrustedUriItem, IT
 		templateData.renderDisposables.clear();
 		templateData.renderDisposables.add({ dispose: () => { clearNode(templateData.buttonBarContainer); } });
 
-		templateData.hostContainer.innerText = item.uri.authority ? this.labelService.getHostLabel(item.uri.scheme, item.uri.authority) : localize('localAuthority', "Local");
+		templateData.hostContainer.innerText = getHostLabel(this.labelService, item);
 		templateData.element.classList.toggle('current-workspace-parent', item.parentOfWorkspaceItem);
 
 		if (item.entryType === TrustedUriItemType.Add) {
@@ -815,7 +838,7 @@ export class WorkspaceTrustEditor extends EditorPane {
 		configurationTitle.innerText = localize('trustedFoldersAndWorkspaces', "Trusted Folders & Workspaces");
 
 		const configurationDescription = append(this.configurationContainer, $('.workspace-trusted-folders-description'));
-		configurationDescription.innerText = localize('trustedFoldersDescription', "You trust the following folders, their children, and workspace files.");
+		configurationDescription.innerText = localize('trustedFoldersDescription', "You trust the following folders, their subfolders, and workspace files.");
 
 		this.workpaceTrustedUrisTable = this._register(this.instantiationService.createInstance(WorkspaceTrustedUrisTable, this.configurationContainer));
 	}

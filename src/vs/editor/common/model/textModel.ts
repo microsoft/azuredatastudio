@@ -1443,6 +1443,8 @@ export class TextModel extends Disposable implements model.ITextModel {
 
 			let rawContentChanges: ModelRawChange[] = [];
 
+			this._increaseVersionId();
+
 			let lineCount = oldLineCount;
 			for (let i = 0, len = contentChanges.length; i < len; i++) {
 				const change = contentChanges[i];
@@ -1462,13 +1464,11 @@ export class TextModel extends Disposable implements model.ITextModel {
 				const firstEditLineNumber = currentEditStartLineNumber;
 				const lastInsertedLineNumber = currentEditStartLineNumber + insertingLinesCnt;
 
-				// We use `cacheVersionId` 0 because we only increment the model version id once at the end of handling all the changes
-				// and we wouldn't want the interval tree to cache ranges incorrectly
 				const decorationsWithInjectedTextInEditedRange = this._ensureNodesHaveRanges(this._decorationsTree.getInjectedTextInInterval(
 					this.getOffsetAt(new Position(firstEditLineNumber, 1)),
 					this.getOffsetAt(new Position(lastInsertedLineNumber, this.getLineMaxColumn(lastInsertedLineNumber))),
 					0,
-					0
+					this._versionId
 				));
 
 
@@ -1524,8 +1524,6 @@ export class TextModel extends Disposable implements model.ITextModel {
 
 				lineCount += changeLineCountDelta;
 			}
-
-			this._increaseVersionId();
 
 			this._emitContentChangedEvent(
 				new ModelRawContentChangedEvent(

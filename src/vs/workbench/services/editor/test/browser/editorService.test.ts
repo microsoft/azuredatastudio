@@ -203,8 +203,8 @@ suite.skip('EditorService', () => { // {{SQL CARBON EDIT}} Skip suite
 
 		disposables.add(accessor.editorOverrideService.registerEditor(
 			'*.editor-service-override-tests',
-			{ id: 'editorServiceOverrideTests', label: 'Label', priority: RegisteredEditorPriority.exclusive },
-			{},
+			{ id: TEST_EDITOR_INPUT_ID, label: 'Label', priority: RegisteredEditorPriority.exclusive },
+			{ canHandleDiff: true },
 			editor => {
 				editorFactoryCalled++;
 				lastEditorFactoryEditor = editor;
@@ -281,8 +281,8 @@ suite.skip('EditorService', () => { // {{SQL CARBON EDIT}} Skip suite
 
 				// opening the same editor should not create
 				// a new editor input
-				pane = await openEditor(untypedEditor);
-				assert.strictEqual(pane?.input, typedEditor);
+				await openEditor(untypedEditor);
+				assert.strictEqual(pane?.group.activeEditor, typedEditor);
 
 				// replaceEditors should work too
 				let untypedEditorReplacement: IResourceEditorInput = { resource: URI.file('file-replaced.editor-service-override-tests') };
@@ -294,9 +294,9 @@ suite.skip('EditorService', () => { // {{SQL CARBON EDIT}} Skip suite
 				typedEditor = rootGroup.activeEditor!;
 
 				assert.ok(typedEditor instanceof TestFileEditorInput);
-				assert.strictEqual(typedEditor.resource.toString(), untypedEditorReplacement.resource.toString());
+				assert.strictEqual(typedEditor?.resource?.toString(), untypedEditorReplacement.resource.toString());
 
-				assert.strictEqual(editorFactoryCalled, 3);
+				assert.strictEqual(editorFactoryCalled, 2);
 				assert.strictEqual(untitledEditorFactoryCalled, 0);
 				assert.strictEqual(diffEditorFactoryCalled, 0);
 
@@ -327,8 +327,8 @@ suite.skip('EditorService', () => { // {{SQL CARBON EDIT}} Skip suite
 
 				// opening the same editor should not create
 				// a new editor input
-				pane = await openEditor(untypedEditor);
-				assert.strictEqual(pane?.input, typedEditor);
+				await openEditor(untypedEditor);
+				assert.strictEqual(pane?.group.activeEditor, typedEditor);
 
 				await resetTestState();
 			}
@@ -375,9 +375,9 @@ suite.skip('EditorService', () => { // {{SQL CARBON EDIT}} Skip suite
 				await resetTestState();
 			}
 
-			// untyped resource editor, options (override: 'editorServiceOverrideTests'), no group
+			// untyped resource editor, options (override: TEST_EDITOR_INPUT_ID), no group
 			{
-				let untypedEditor: IResourceEditorInput = { resource: URI.file('file.editor-service-override-tests'), options: { override: 'editorServiceOverrideTests' } };
+				let untypedEditor: IResourceEditorInput = { resource: URI.file('file.editor-service-override-tests'), options: { override: TEST_EDITOR_INPUT_ID } };
 				let pane = await openEditor(untypedEditor);
 
 				assert.strictEqual(pane?.group, rootGroup);
@@ -418,9 +418,9 @@ suite.skip('EditorService', () => { // {{SQL CARBON EDIT}} Skip suite
 				await part.activeGroup.closeEditor(pane.input);
 			}
 
-			// untyped resource editor, options (override: 'editorServiceOverrideTests', sticky: true, preserveFocus: true), no group
+			// untyped resource editor, options (override: TEST_EDITOR_INPUT_ID, sticky: true, preserveFocus: true), no group
 			{
-				let untypedEditor: IResourceEditorInput = { resource: URI.file('file.editor-service-override-tests'), options: { sticky: true, preserveFocus: true, override: 'editorServiceOverrideTests' } };
+				let untypedEditor: IResourceEditorInput = { resource: URI.file('file.editor-service-override-tests'), options: { sticky: true, preserveFocus: true, override: TEST_EDITOR_INPUT_ID } };
 				let pane = await openEditor(untypedEditor);
 
 				assert.strictEqual(pane?.group, rootGroup);
@@ -506,8 +506,8 @@ suite.skip('EditorService', () => { // {{SQL CARBON EDIT}} Skip suite
 
 				// opening the same editor should not create
 				// a new editor input
-				pane = await openEditor(typedEditor);
-				assert.strictEqual(pane?.input, typedInput);
+				await openEditor(typedEditor);
+				assert.strictEqual(pane?.group.activeEditor, typedInput);
 
 				// replaceEditors should work too
 				let typedEditorReplacement = new TestFileEditorInput(URI.file('file-replaced.editor-service-override-tests'), TEST_EDITOR_INPUT_ID);
@@ -521,7 +521,7 @@ suite.skip('EditorService', () => { // {{SQL CARBON EDIT}} Skip suite
 				assert.ok(typedInput instanceof TestFileEditorInput);
 				assert.strictEqual(typedInput.resource.toString(), typedEditorReplacement.resource.toString());
 
-				assert.strictEqual(editorFactoryCalled, 3);
+				assert.strictEqual(editorFactoryCalled, 2);
 				assert.strictEqual(untitledEditorFactoryCalled, 0);
 				assert.strictEqual(diffEditorFactoryCalled, 0);
 
@@ -552,8 +552,8 @@ suite.skip('EditorService', () => { // {{SQL CARBON EDIT}} Skip suite
 
 				// opening the same editor should not create
 				// a new editor input
-				pane = await openEditor(typedEditor);
-				assert.strictEqual(pane?.input, typedInput);
+				await openEditor(typedEditor);
+				assert.strictEqual(pane?.group.activeEditor, typedEditor);
 
 				await resetTestState();
 			}
@@ -600,10 +600,10 @@ suite.skip('EditorService', () => { // {{SQL CARBON EDIT}} Skip suite
 				await resetTestState();
 			}
 
-			// typed editor, options (override: 'editorServiceOverrideTests'), no group
+			// typed editor, options (override: TEST_EDITOR_INPUT_ID), no group
 			{
 				let typedEditor = new TestFileEditorInput(URI.file('file.editor-service-override-tests'), TEST_EDITOR_INPUT_ID);
-				let pane = await openEditor({ editor: typedEditor, options: { override: 'editorServiceOverrideTests' } });
+				let pane = await openEditor({ editor: typedEditor, options: { override: TEST_EDITOR_INPUT_ID } });
 
 				assert.strictEqual(pane?.group, rootGroup);
 				assert.ok(pane.input instanceof TestFileEditorInput);
@@ -643,10 +643,10 @@ suite.skip('EditorService', () => { // {{SQL CARBON EDIT}} Skip suite
 				await part.activeGroup.closeEditor(pane.input);
 			}
 
-			// typed editor, options (override: 'editorServiceOverrideTests', sticky: true, preserveFocus: true), no group
+			// typed editor, options (override: TEST_EDITOR_INPUT_ID, sticky: true, preserveFocus: true), no group
 			{
 				let typedEditor = new TestFileEditorInput(URI.file('file.editor-service-override-tests'), TEST_EDITOR_INPUT_ID);
-				let pane = await openEditor({ editor: typedEditor, options: { sticky: true, preserveFocus: true, override: 'editorServiceOverrideTests' } });
+				let pane = await openEditor({ editor: typedEditor, options: { sticky: true, preserveFocus: true, override: TEST_EDITOR_INPUT_ID } });
 
 				assert.strictEqual(pane?.group, rootGroup);
 				assert.ok(pane.input instanceof TestFileEditorInput);
@@ -713,7 +713,7 @@ suite.skip('EditorService', () => { // {{SQL CARBON EDIT}} Skip suite
 		{
 			// untyped untitled editor, no options, no group
 			{
-				let untypedEditor: IUntitledTextResourceEditorInput = { options: { override: 'editorServiceOverrideTests' } };
+				let untypedEditor: IUntitledTextResourceEditorInput = { options: { override: TEST_EDITOR_INPUT_ID } };
 				let pane = await openEditor(untypedEditor);
 
 				assert.strictEqual(pane?.group, rootGroup);
@@ -733,7 +733,7 @@ suite.skip('EditorService', () => { // {{SQL CARBON EDIT}} Skip suite
 
 			// untyped untitled editor, no options, SIDE_GROUP
 			{
-				let untypedEditor: IUntitledTextResourceEditorInput = { options: { override: 'editorServiceOverrideTests' } };
+				let untypedEditor: IUntitledTextResourceEditorInput = { options: { override: TEST_EDITOR_INPUT_ID } };
 				let pane = await openEditor(untypedEditor, SIDE_GROUP);
 
 				assert.strictEqual(accessor.editorGroupService.groups.length, 2);
@@ -772,21 +772,21 @@ suite.skip('EditorService', () => { // {{SQL CARBON EDIT}} Skip suite
 
 				// opening the same editor should not create
 				// a new editor input
-				pane = await openEditor(untypedEditor);
-				assert.strictEqual(pane?.input, typedEditor);
+				await openEditor(untypedEditor);
+				assert.strictEqual(pane?.group.activeEditor, typedEditor);
 
 				await resetTestState();
 			}
 
 			// untyped untitled editor, options (sticky: true, preserveFocus: true), no group
 			{
-				let untypedEditor: IUntitledTextResourceEditorInput = { options: { sticky: true, preserveFocus: true, override: 'editorServiceOverrideTests' } };
+				let untypedEditor: IUntitledTextResourceEditorInput = { options: { sticky: true, preserveFocus: true, override: TEST_EDITOR_INPUT_ID } };
 				let pane = await openEditor(untypedEditor);
 
 				assert.strictEqual(pane?.group, rootGroup);
 				assert.ok(pane.input instanceof TestFileEditorInput);
 				assert.strictEqual(pane.input.resource.scheme, 'untitled');
-				// assert.strictEqual(pane.group.isSticky(pane.input), true); https://github.com/microsoft/vscode/issues/127314
+				assert.strictEqual(pane.group.isSticky(pane.input), true);
 
 				assert.strictEqual(editorFactoryCalled, 0);
 				assert.strictEqual(untitledEditorFactoryCalled, 1);
@@ -809,7 +809,7 @@ suite.skip('EditorService', () => { // {{SQL CARBON EDIT}} Skip suite
 				let untypedEditor: IResourceDiffEditorInput = {
 					originalInput: { resource: URI.file('file-original.editor-service-override-tests') },
 					modifiedInput: { resource: URI.file('file-modified.editor-service-override-tests') },
-					options: { override: 'editorServiceOverrideTests' }
+					options: { override: TEST_EDITOR_INPUT_ID }
 				};
 				let pane = await openEditor(untypedEditor);
 				let typedEditor = pane?.input;
@@ -833,7 +833,7 @@ suite.skip('EditorService', () => { // {{SQL CARBON EDIT}} Skip suite
 				let untypedEditor: IResourceDiffEditorInput = {
 					originalInput: { resource: URI.file('file-original.editor-service-override-tests') },
 					modifiedInput: { resource: URI.file('file-modified.editor-service-override-tests') },
-					options: { override: 'editorServiceOverrideTests' }
+					options: { override: TEST_EDITOR_INPUT_ID }
 				};
 				let pane = await openEditor(untypedEditor, SIDE_GROUP);
 
@@ -858,15 +858,14 @@ suite.skip('EditorService', () => { // {{SQL CARBON EDIT}} Skip suite
 					originalInput: { resource: URI.file('file-original.editor-service-override-tests') },
 					modifiedInput: { resource: URI.file('file-modified.editor-service-override-tests') },
 					options: {
-						override: 'editorServiceOverrideTests', sticky: true, preserveFocus: true
+						override: TEST_EDITOR_INPUT_ID, sticky: true, preserveFocus: true
 					}
 				};
 				let pane = await openEditor(untypedEditor);
 
 				assert.strictEqual(pane?.group, rootGroup);
 				assert.ok(pane.input instanceof TestFileEditorInput);
-				// assert.strictEqual(pane.group.isSticky(pane.input), true); https://github.com/microsoft/vscode/issues/127314
-
+				assert.strictEqual(pane.group.isSticky(pane.input), true);
 				assert.strictEqual(editorFactoryCalled, 0);
 				assert.strictEqual(untitledEditorFactoryCalled, 0);
 				assert.strictEqual(diffEditorFactoryCalled, 1);
@@ -1008,14 +1007,14 @@ suite.skip('EditorService', () => { // {{SQL CARBON EDIT}} Skip suite
 
 		disposables.add(accessor.editorOverrideService.registerEditor(
 			'*.editor-service-override-tests',
-			{ id: 'editorServiceOverrideTests', label: 'Label', priority: RegisteredEditorPriority.exclusive },
+			{ id: TEST_EDITOR_INPUT_ID, label: 'Label', priority: RegisteredEditorPriority.exclusive },
 			{},
-			editor => ({ editor: new TestFileEditorInput(editor.resource, 'editorServiceOverrideTests') })
+			editor => ({ editor: new TestFileEditorInput(editor.resource, TEST_EDITOR_INPUT_ID) })
 		));
 
 		// Typed editor
-		let pane = await service.openEditor(new TestFileEditorInput(URI.parse('my://resource-openEditors'), 'editorServiceOverrideTests'));
-		pane = await service.openEditor(new TestFileEditorInput(URI.parse('my://resource-openEditors'), 'editorServiceOverrideTests'), { sticky: true, preserveFocus: true });
+		let pane = await service.openEditor(new TestFileEditorInput(URI.parse('my://resource-openEditors'), TEST_EDITOR_INPUT_ID));
+		pane = await service.openEditor(new TestFileEditorInput(URI.parse('my://resource-openEditors'), TEST_EDITOR_INPUT_ID), { sticky: true, preserveFocus: true });
 
 		assert.ok(pane instanceof TestEditorWithOptions);
 		assert.strictEqual(pane.lastSetOptions?.sticky, true);
@@ -1028,6 +1027,14 @@ suite.skip('EditorService', () => { // {{SQL CARBON EDIT}} Skip suite
 		pane = await service.openEditor({ resource: URI.file('resource-openEditors'), options: { sticky: true, preserveFocus: true } });
 
 		assert.ok(pane instanceof TestTextFileEditor);
+		assert.strictEqual(pane.lastSetOptions?.sticky, true);
+		assert.strictEqual(pane.lastSetOptions?.preserveFocus, true);
+
+		// Untyped editor (with registered editor)
+		pane = await service.openEditor({ resource: URI.file('file.editor-service-override-tests') });
+		pane = await service.openEditor({ resource: URI.file('file.editor-service-override-tests'), options: { sticky: true, preserveFocus: true } });
+
+		assert.ok(pane instanceof TestEditorWithOptions);
 		assert.strictEqual(pane.lastSetOptions?.sticky, true);
 		assert.strictEqual(pane.lastSetOptions?.preserveFocus, true);
 	});
@@ -1322,6 +1329,12 @@ suite.skip('EditorService', () => { // {{SQL CARBON EDIT}} Skip suite
 		input = service.createEditorInput(untypedInput);
 		assert(input instanceof UntitledTextEditorInput);
 		assert.ok(!(input as UntitledTextEditorInput).model.hasAssociatedFilePath);
+
+		// Untyped input (untitled with custom resource, but forceUntitled)
+		untypedInput = { resource: URI.file('/fake'), forceUntitled: true };
+		assert.ok(isUntitledResourceEditorInput(untypedInput));
+		input = service.createEditorInput(untypedInput);
+		assert(input instanceof UntitledTextEditorInput);
 
 		// Untyped Input (untitled with custom resource)
 		const provider = instantiationService.createInstance(FileServiceProvider, 'untitled-custom');

@@ -8,8 +8,7 @@ import { createDecorator, refineServiceDecorator } from 'vs/platform/instantiati
 import { IExtension, ExtensionType, IExtensionManifest } from 'vs/platform/extensions/common/extensions';
 import { IExtensionManagementService, IGalleryExtension, IExtensionIdentifier, ILocalExtension, InstallOptions, InstallExtensionEvent, DidInstallExtensionEvent, DidUninstallExtensionEvent } from 'vs/platform/extensionManagement/common/extensionManagement';
 import { URI } from 'vs/base/common/uri';
-import { IWorkspace, IWorkspaceFolder } from 'vs/platform/workspace/common/workspace'; // {{SQL CARBON EDIT}}
-import { ExtensionRecommendationReason } from 'vs/workbench/services/extensionRecommendations/common/extensionRecommendations';
+import { IStringDictionary } from 'vs/base/common/collections';
 
 export interface IExtensionManagementServer {
 	id: string;
@@ -120,32 +119,8 @@ export interface IWorkbenchExtensionEnablementService {
 	updateEnablementByWorkspaceTrustRequirement(): Promise<void>;
 }
 
-export interface IExtensionsConfigContent {
-	recommendations: string[];
-	unwantedRecommendations: string[];
-}
-
-export type RecommendationChangeNotification = {
-	extensionId: string,
-	isRecommended: boolean
-};
-
-export type DynamicRecommendation = 'dynamic';
-export type ConfigRecommendation = 'config';
-export type ExecutableRecommendation = 'executable';
-export type CachedRecommendation = 'cached';
-export type ApplicationRecommendation = 'application';
-export type ExperimentalRecommendation = 'experimental';
-export type ExtensionRecommendationSource = IWorkspace | IWorkspaceFolder | URI | DynamicRecommendation | ExecutableRecommendation | CachedRecommendation | ApplicationRecommendation | ExperimentalRecommendation | ConfigRecommendation;
-
-export interface IExtensionRecommendation {
-	extensionId: string;
-	sources: ExtensionRecommendationSource[];
-}
-
-export interface IExtensionRecommendationReason {
-	reasonId: ExtensionRecommendationReason;
-	reasonText: string;
+export interface IScannedExtension extends IExtension {
+	readonly metadata?: IStringDictionary<any>;
 }
 
 export const IWebExtensionsScannerService = createDecorator<IWebExtensionsScannerService>('IWebExtensionsScannerService');
@@ -153,13 +128,12 @@ export interface IWebExtensionsScannerService {
 	readonly _serviceBrand: undefined;
 
 	scanSystemExtensions(): Promise<IExtension[]>;
-	scanUserExtensions(): Promise<IExtension[]>;
+	scanUserExtensions(): Promise<IScannedExtension[]>;
 	scanExtensionsUnderDevelopment(): Promise<IExtension[]>;
 	scanExistingExtension(extensionLocation: URI, extensionType: ExtensionType): Promise<IExtension | null>;
 
-	canAddExtension(galleryExtension: IGalleryExtension): boolean;
-	addExtension(location: URI): Promise<IExtension>;
-	addExtensionFromGallery(galleryExtension: IGalleryExtension): Promise<IExtension>;
+	addExtension(location: URI, metadata?: IStringDictionary<any>): Promise<IExtension>;
+	addExtensionFromGallery(galleryExtension: IGalleryExtension, metadata?: IStringDictionary<any>): Promise<IExtension>;
 	removeExtension(identifier: IExtensionIdentifier, version?: string): Promise<void>;
 
 	scanExtensionManifest(extensionLocation: URI): Promise<IExtensionManifest | null>;
