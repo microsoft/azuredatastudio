@@ -287,7 +287,7 @@ export class DashboardWidget {
 			const failedCount = failedMigrations.length;
 			if (failedCount > 0) {
 				this._failedMigrationButton.container.display = '';
-				this._failedMigrationButton.count.value = failedMigrations.length.toString();
+				this._failedMigrationButton.count.value = failedCount.toString();
 			} else {
 				this._failedMigrationButton.container.display = 'none';
 			}
