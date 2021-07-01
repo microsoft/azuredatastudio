@@ -118,6 +118,45 @@ const exportXLFFolderTask = task.define('export-xlf-folder',
 	}
 );
 gulp.task(exportXLFFolderTask);
+
+// List of ADS extension XLF files that we want to put into the English resource folder.
+const extensionsFilter = filter([
+	"**/admin-tool-ext-win.xlf",
+	"**/agent.xlf",
+	"**/arc.xlf",
+	"**/asde-deployment.xlf",
+	"**/azdata.xlf",
+	"**/azurecore.xlf",
+	"**/azurehybridtoolkit.xlf",
+	"**/big-data-cluster.xlf",
+	"**/cms.xlf",
+	"**/dacpac.xlf",
+	"**/data-workspace.xlf",
+	"**/import.xlf",
+	"**/kusto.xlf",
+	"**/machine-learning.xlf",
+	"**/Microsoft.sqlservernotebook.xlf",
+	"**/mssql.xlf",
+	"**/notebook.xlf",
+	"**/profiler.xlf",
+	"**/query-history.xlf",
+	"**/resource-deployment.xlf",
+	"**/schema-compare.xlf",
+	"**/server-report.xlf",
+	"**/sql-assessment.xlf",
+	"**/sql-database-projects.xlf",
+	"**/sql-migration.xlf",
+	"**/xml-language-features.xlf"
+])
+
+// Copy ADS extension XLFs into English resource folder.
+const importExtensionsTask = task.define('import-extensions-xlfs', function () {
+	gulp.src(`../export-xlfs/vscode-extensions/*.xlf`)
+		.pipe(extensionsFilter)
+		.pipe(vfs.dest(`./resources/xlf/en`));
+});
+gulp.task(importExtensionsTask)
+
 // {{SQL CARBON EDIT}} end
 
 const sourceMappingURLBase = `https://sqlopsbuilds.blob.core.windows.net/sourcemaps/${commit}`;
@@ -470,54 +509,15 @@ gulp.task(task.define(
 ));
 
 // {{SQL CARBON EDIT}} Localization gulp task, similar to vscode-translations-export but for all extensions.
+// It also imports a subset of the generated XLFs into the folder (extensions created for ADS with localization)
 gulp.task(task.define(
-	'export-xlfs',
+	'update-english-xlfs',
 	task.series(
 		compileLocalizationExtensionsBuildTask,
-		exportXLFFolderTask
+		exportXLFFolderTask,
+		importExtensionsTask
 	)
 ));
-
-// List of ADS extension XLF files that we want to put into the English resource folder.
-const extensionsFilter = filter([
-	"**/admin-tool-ext-win.xlf",
-	"**/agent.xlf",
-	"**/arc.xlf",
-	"**/asde-deployment.xlf",
-	"**/azdata.xlf",
-	"**/azurecore.xlf",
-	"**/azurehybridtoolkit.xlf",
-	"**/big-data-cluster.xlf",
-	"**/cms.xlf",
-	"**/dacpac.xlf",
-	"**/data-workspace.xlf",
-	"**/import.xlf",
-	"**/kusto.xlf",
-	"**/machine-learning.xlf",
-	"**/Microsoft.sqlservernotebook.xlf",
-	"**/mssql.xlf",
-	"**/notebook.xlf",
-	"**/profiler.xlf",
-	"**/query-history.xlf",
-	"**/resource-deployment.xlf",
-	"**/schema-compare.xlf",
-	"**/server-report.xlf",
-	"**/sql-assessment.xlf",
-	"**/sql-database-projects.xlf",
-	"**/sql-migration.xlf",
-	"**/xml-language-features.xlf"
-])
-
-// Copy ADS extension XLFs into English resource folder.
-gulp.task('import-extensions-xlfs', function () {
-	return new Promise(function(resolve) {
-		gulp.src(`../export-xlfs/vscode-extensions/*.xlf`)
-			.pipe(extensionsFilter)
-			.pipe(vfs.dest(`./resources/xlf/en`));
-		resolve();
-	});
-});
-
 // {{SQL CARBON EDIT}} end
 
 gulp.task('vscode-translations-pull', function () {
