@@ -83,7 +83,7 @@ export class ProsePreviewPage extends ImportPage {
 		this.loading = this.view.modelBuilder.loadingComponent().component();
 
 		this.resultTextComponent = this.view.modelBuilder.text()
-			.withProperties({
+			.withProps({
 				value: this.isSuccess ? constants.successTitleText : constants.failureTitleText
 			}).component();
 

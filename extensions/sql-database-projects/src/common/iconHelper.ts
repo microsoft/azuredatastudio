@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
-import * as azdata from 'azdata';
+import type * as azdataType from 'azdata';
 
 export interface IconPath {
 	dark: string;
@@ -40,7 +40,7 @@ export class IconPathHelper {
 	public static error: IconPath;
 	public static inProgress: IconPath;
 
-	public static dashboardSqlProj: azdata.ThemedIconPath;
+	public static dashboardSqlProj: azdataType.ThemedIconPath;
 
 	public static setExtensionContext(extensionContext: vscode.ExtensionContext) {
 		IconPathHelper.extensionContext = extensionContext;

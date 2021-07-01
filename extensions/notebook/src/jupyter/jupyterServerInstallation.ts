@@ -202,9 +202,6 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 						// Remove '0.0.1' from python executable path since the bundle version is removed from the path for ADS-Python 3.8.10+.
 						this._pythonExecutable = path.join(this._pythonInstallationPath, process.platform === constants.winPlatform ? 'python.exe' : 'bin/python3');
 					}
-					await fs.remove(this._oldPythonInstallationPath).catch(err => {
-						throw (err);
-					});
 				}
 			}
 
@@ -476,6 +473,8 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 							if (this._oldUserInstalledPipPackages.length !== 0) {
 								await this.createInstallPipPackagesHelpNotebook(this._oldUserInstalledPipPackages);
 							}
+
+							await fs.remove(this._oldPythonInstallationPath);
 							this._upgradeInProcess = false;
 						} else {
 							await vscode.commands.executeCommand('notebook.action.restartJupyterNotebookSessions');
@@ -529,7 +528,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 
 		let response = await vscode.window.showInformationMessage(msgPythonVersionUpdatePrompt(constants.pythonVersion), yes, no, dontAskAgain);
 		if (response === yes) {
-			this._oldPythonInstallationPath = path.join(this._pythonInstallationPath);
+			this._oldPythonInstallationPath = path.join(this._pythonInstallationPath, '0.0.1');
 			this._oldPythonExecutable = this._pythonExecutable;
 			vscode.commands.executeCommand(constants.jupyterConfigurePython);
 		} else if (response === dontAskAgain) {

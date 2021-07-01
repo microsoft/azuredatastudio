@@ -108,13 +108,13 @@ export class DatabaseSettingsPage extends BasePage {
 	private createIpAddressText(view: azdata.ModelView) {
 
 		this._IpInfoText = view.modelBuilder.text()
-			.withProperties({
+			.withProps({
 				value: constants.IpAddressInfoLabel
 			}).component();
 
 		//Start IP Address Section:
 
-		this._startIpAddressTextbox = view.modelBuilder.inputBox().withProperties(<azdata.InputBoxProperties>{
+		this._startIpAddressTextbox = view.modelBuilder.inputBox().withProps(<azdata.InputBoxProperties>{
 			inputType: 'text'
 		}).component();
 
@@ -126,7 +126,7 @@ export class DatabaseSettingsPage extends BasePage {
 
 		//End IP Address Section:
 
-		this._endIpAddressTextbox = view.modelBuilder.inputBox().withProperties(<azdata.InputBoxProperties>{
+		this._endIpAddressTextbox = view.modelBuilder.inputBox().withProps(<azdata.InputBoxProperties>{
 			inputType: 'text'
 		}).component();
 
@@ -191,7 +191,7 @@ export class DatabaseSettingsPage extends BasePage {
 	}
 
 	private createCollationText(view: azdata.ModelView) {
-		this._collationTextbox = view.modelBuilder.inputBox().withProperties(<azdata.InputBoxProperties>{
+		this._collationTextbox = view.modelBuilder.inputBox().withProps(<azdata.InputBoxProperties>{
 			inputType: 'text',
 			value: 'SQL_Latin1_General_CP1_CI_AS'
 		}).component();

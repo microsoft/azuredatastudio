@@ -1717,6 +1717,13 @@ class ButtonWrapper extends ComponentWithIconWrapper implements azdata.ButtonCom
 		this.setProperty('label', v);
 	}
 
+	public get fileType(): string {
+		return this.properties['fileType'];
+	}
+	public set fileType(v: string) {
+		this.setProperty('fileType', v);
+	}
+
 	public get onDidClick(): vscode.Event<any> {
 		let emitter = this._emitterMap.get(ComponentEventType.onDidClick);
 		return emitter && emitter.event;

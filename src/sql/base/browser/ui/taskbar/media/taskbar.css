@@ -79,6 +79,7 @@
 	min-width: 1px;
 	background-color:#A5A5A5;
 	margin: 6px 8px;
+	align-self: stretch;
 }
 
 .taskbarTextSeparator {

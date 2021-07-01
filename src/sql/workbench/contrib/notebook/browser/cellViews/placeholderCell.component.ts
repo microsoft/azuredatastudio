@@ -68,6 +68,14 @@ export class PlaceholderCellComponent extends CellView implements OnInit, OnChan
 		return localize('toAddCell', "to add a code or text cell");
 	}
 
+	get plusCodeAriaLabel(): string {
+		return localize('plusCodeAriaLabel', "Add a code cell");
+	}
+
+	get plusTextAriaLabel(): string {
+		return localize('plusTextAriaLabel', "Add a text cell");
+	}
+
 	public addCell(cellType: string, event?: Event): void {
 		if (event) {
 			event.preventDefault();

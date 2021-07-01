@@ -99,12 +99,12 @@ export class NotebookDialog extends AgentDialog<NotebookData>  {
 	private initializeGeneralTab() {
 		this.generalTab.registerContent(async view => {
 			this.templateFilePathBox = view.modelBuilder.inputBox()
-				.withProperties({
+				.withProps({
 					width: 400,
 					inputType: 'text'
 				}).component();
 			this.openTemplateFileButton = view.modelBuilder.button()
-				.withProperties({
+				.withProps({
 					label: '...',
 					title: '...',
 					width: '20px',
@@ -139,22 +139,22 @@ export class NotebookDialog extends AgentDialog<NotebookData>  {
 			let databases = await AgentUtils.getDatabases(this.ownerUri);
 			databases.unshift(DefaultDropdownString);
 			this.targetDatabaseDropDown = view.modelBuilder.dropDown()
-				.withProperties({
+				.withProps({
 					value: databases[0],
 					values: databases
 				}).component();
-			this.descriptionTextBox = view.modelBuilder.inputBox().withProperties({
+			this.descriptionTextBox = view.modelBuilder.inputBox().withProps({
 				multiline: true,
 				height: 50
 			}).component();
 			this.executeDatabaseDropDown = view.modelBuilder.dropDown()
-				.withProperties({
+				.withProps({
 					value: databases[0],
 					values: databases
 				}).component();
 			this.targetDatabaseDropDown.required = true;
 			this.executeDatabaseDropDown.required = true;
-			this.descriptionTextBox = view.modelBuilder.inputBox().withProperties({
+			this.descriptionTextBox = view.modelBuilder.inputBox().withProps({
 				multiline: true,
 				height: 50
 			}).component();
@@ -171,7 +171,7 @@ export class NotebookDialog extends AgentDialog<NotebookData>  {
 
 			this.ownerTextBox = view.modelBuilder.inputBox().component();
 			this.schedulesTable = view.modelBuilder.table()
-				.withProperties({
+				.withProps({
 					columns: [
 						PickScheduleDialog.SchedulesIDText,
 						PickScheduleDialog.ScheduleNameLabelText,

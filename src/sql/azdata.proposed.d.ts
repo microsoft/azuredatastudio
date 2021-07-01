@@ -834,6 +834,11 @@ declare module 'azdata' {
 		 * Specifies whether this is a secondary button. Default value is false.
 		 */
 		secondary?: boolean;
+
+		/**
+		 * The file type filter used for the file input dialog box - only used when the button type is File
+		 */
+		fileType?: string
 	}
 
 	export enum ButtonType {

@@ -64,7 +64,7 @@ export const externalExtensionsWithTranslations = {
 };
 
 
-interface Map<V> {
+export interface Map<V> {	// {{SQL CARBON EDIT}} Needed in locfunc.
 	[key: string]: V;
 }
 
@@ -79,7 +79,7 @@ export interface Resource {
 	project: string;
 }
 
-interface ParsedXLF {
+export interface ParsedXLF {	// {{SQL CARBON EDIT}} Needed in locfunc.
 	messages: Map<string>;
 	originalFilePath: string;
 	language: string;
@@ -1167,7 +1167,7 @@ export function prepareI18nFiles(): ThroughStream {
 	});
 }
 
-function createI18nFile(originalFilePath: string, messages: any): File {
+export function createI18nFile(originalFilePath: string, messages: any): File { // {{SQL CARBON EDIT}} Needed for locfunc.
 	let result = Object.create(null);
 	result[''] = [
 		'--------------------------------------------------------------------------------------------',
@@ -1190,14 +1190,14 @@ function createI18nFile(originalFilePath: string, messages: any): File {
 	});
 }
 
-interface I18nPack {
+export interface I18nPack {	// {{SQL CARBON EDIT}} Needed in locfunc.
 	version: string;
 	contents: {
 		[path: string]: Map<string>;
 	};
 }
 
-const i18nPackVersion = '1.0.0';
+export const i18nPackVersion = '1.0.0'; // {{SQL CARBON EDIT}} Needed in locfunc.
 
 export interface TranslationPath {
 	id: string;

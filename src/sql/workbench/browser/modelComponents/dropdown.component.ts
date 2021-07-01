@@ -29,9 +29,9 @@ import { ILogService } from 'vs/platform/log/common/log';
 	template: `
 
 	<div [ngStyle]="CSSStyles">
-		<div [style.display]="getLoadingDisplay()" style="width: 100%; position: relative">
+		<div *ngIf="loading" style="width: 100%; position: relative">
 			<div class="modelview-loadingComponent-spinner" style="position:absolute; right: 0px; margin-right: 5px; height:15px; z-index:1" #spinnerElement></div>
-			<div [style.display]="getLoadingDisplay()" #loadingBox style="width: 100%;"></div>
+			<div #loadingBox style="width: 100%;"></div>
 		</div>
 		<div [style.display]="getEditableDisplay()" #editableDropDown style="width: 100%;"></div>
 		<div [style.display]="getNotEditableDisplay()" #dropDown style="width: 100%;"></div>
@@ -114,11 +114,6 @@ export default class DropDownComponent extends ComponentBase<azdata.DropDownProp
 			this._validations.push(() => !this.required || this.editable || !!this._selectBox.value);
 		}
 
-		this._loadingBox = new SelectBox([this.getStatusText()], this.getStatusText(), this.contextViewService, this._loadingBoxContainer.nativeElement);
-		this._loadingBox.render(this._loadingBoxContainer.nativeElement);
-		this._register(this._loadingBox);
-		this._register(attachSelectBoxStyler(this._loadingBox, this.themeService));
-		this._loadingBoxContainer.nativeElement.className = ''; // Removing the dropdown arrow icon from the right
 		this.baseInit();
 	}
 
@@ -137,9 +132,10 @@ export default class DropDownComponent extends ComponentBase<azdata.DropDownProp
 		super.setProperties(properties);
 
 		if (this.ariaLabel !== '') {
-			this._selectBox.setAriaLabel(this.ariaLabel);
-			this._editableDropdown.ariaLabel = this.ariaLabel;
-			this._loadingBox.setAriaLabel(this.ariaLabel);
+			this._selectBox?.setAriaLabel(this.ariaLabel);
+			if (this._editableDropdown) {
+				this._editableDropdown.ariaLabel = this.ariaLabel;
+			}
 		}
 
 		if (this.editable && !this._isInAccessibilityMode) {
@@ -160,11 +156,20 @@ export default class DropDownComponent extends ComponentBase<azdata.DropDownProp
 		}
 
 		if (this.loading) {
+			// Lazily create the select box for the loading portion since many dropdowns won't use it
+			if (!this._loadingBox) {
+				this._loadingBox = new SelectBox([this.getStatusText()], this.getStatusText(), this.contextViewService, this._loadingBoxContainer.nativeElement);
+				this._loadingBox.render(this._loadingBoxContainer.nativeElement);
+				this._register(this._loadingBox);
+				this._register(attachSelectBoxStyler(this._loadingBox, this.themeService));
+				this._loadingBoxContainer.nativeElement.className = ''; // Removing the dropdown arrow icon from the right
+			}
+			if (this.ariaLabel !== '') {
+				this._loadingBox.setAriaLabel(this.ariaLabel);
+			}
 			this._loadingBox.setOptions([this.getStatusText()]);
 			this._loadingBox.selectWithOptionName(this.getStatusText());
 			this._loadingBox.enable();
-		} else {
-			this._loadingBox.disable();
 		}
 
 		this._selectBox.selectElem.required = this.required;
@@ -229,10 +234,6 @@ export default class DropDownComponent extends ComponentBase<azdata.DropDownProp
 
 	public getNotEditableDisplay(): string {
 		return (!this.editable || this._isInAccessibilityMode) && !this.loading ? '' : 'none';
-	}
-
-	public getLoadingDisplay(): string {
-		return this.loading ? '' : 'none';
 	}
 
 	private set value(newValue: string | azdata.CategoryValue) {

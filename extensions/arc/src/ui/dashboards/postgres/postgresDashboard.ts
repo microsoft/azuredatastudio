@@ -18,6 +18,7 @@ import { PostgresWorkerNodeParametersPage } from './postgresWorkerNodeParameters
 import { PostgresPropertiesPage } from './postgresPropertiesPage';
 import { PostgresResourceHealthPage } from './postgresResourceHealthPage';
 import { PostgresCoordinatorNodeParametersPage } from './postgresCoordinatorNodeParametersPage';
+import { PostgresExtensionsPage } from './postgresExtensionsPage';
 
 export class PostgresDashboard extends Dashboard {
 	constructor(private _context: vscode.ExtensionContext, private _controllerModel: ControllerModel, private _postgresModel: PostgresModel) {
@@ -34,6 +35,7 @@ export class PostgresDashboard extends Dashboard {
 
 	protected async registerTabs(modelView: azdata.ModelView): Promise<(azdata.DashboardTab | azdata.DashboardTabGroup)[]> {
 		const overviewPage = new PostgresOverviewPage(modelView, this.dashboard, this._controllerModel, this._postgresModel);
+		const extensionsPage = new PostgresExtensionsPage(modelView, this.dashboard, this._postgresModel);
 		const connectionStringsPage = new PostgresConnectionStringsPage(modelView, this.dashboard, this._postgresModel);
 		const computeAndStoragePage = new PostgresComputeAndStoragePage(modelView, this.dashboard, this._postgresModel);
 		const propertiesPage = new PostgresPropertiesPage(modelView, this.dashboard, this._controllerModel, this._postgresModel);
@@ -49,6 +51,7 @@ export class PostgresDashboard extends Dashboard {
 				title: loc.settings,
 				tabs: [
 					propertiesPage.tab,
+					extensionsPage.tab,
 					connectionStringsPage.tab,
 					computeAndStoragePage.tab,
 					coordinatorNodeParametersPage.tab,

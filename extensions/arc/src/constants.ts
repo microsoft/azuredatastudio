@@ -28,6 +28,7 @@ export class IconPathHelper {
 	public static collapseUp: IconPath;
 	public static collapseDown: IconPath;
 	public static postgres: IconPath;
+	public static extensions: IconPath;
 	public static computeStorage: IconPath;
 	public static connection: IconPath;
 	public static backup: IconPath;
@@ -73,6 +74,10 @@ export class IconPathHelper {
 		IconPathHelper.postgres = {
 			light: IconPathHelper.context.asAbsolutePath('images/postgres.svg'),
 			dark: IconPathHelper.context.asAbsolutePath('images/postgres.svg')
+		};
+		IconPathHelper.extensions = {
+			light: IconPathHelper.context.asAbsolutePath('images/extensions.svg'),
+			dark: IconPathHelper.context.asAbsolutePath('images/extensions.svg')
 		};
 		IconPathHelper.computeStorage = {
 			light: context.asAbsolutePath('images/billing.svg'),

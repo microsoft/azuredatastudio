@@ -259,6 +259,8 @@ export const SUMMARY_AZURE_STORAGE = localize('sql.migration.summary.azure.stora
 export const SUMMARY_IR_NODE = localize('sql.migration.ir.node', "Integration Runtime node");
 export const NETWORK_SHARE = localize('sql.migration.network.share', "Network Share");
 export const BLOB_CONTAINER = localize('sql.migration.blob.container.title', "Blob Container");
+export const BLOB_CONTAINER_RESOURCE_GROUP = localize('sql.migration.blob.container.label', "Blob container resource group");
+export const BLOB_CONTAINER_STORAGE_ACCOUNT = localize('sql.migration.blob.container.storage.account.label', "Blob container storage account");
 export const FILE_SHARE = localize('sql.migration.file.share.title', "File Share");
 export const MIGRATION_STARTED = localize('sql.migration.started.notification', "Migration in progress");
 export const SOURCE_DATABASES = localize('sql.migration.source.databases', "Source Database(s)");
@@ -298,6 +300,7 @@ export const SUCCESSFULLY_MIGRATED_TO_AZURE_SQL = localize('sql.migration.succes
 export const MIGRATION_NOT_STARTED = localize('sql.migration.migration.not.started', "Migration not started");
 export const CHOOSE_TO_MIGRATE_TO_AZURE_SQL = localize('sql.migration.choose.to.migrate.to.azure.sql', "Choose to migrate to Azure SQL");
 export const COMING_SOON = localize('sql.migration.coming.soon', "Coming soon");
+export const SHOW_STATUS = localize('sql.migration.show.status', "Show status");
 export function MIGRATION_INPROGRESS_WARNING(count: number) {
 	switch (count) {
 		case 1:
@@ -321,6 +324,7 @@ export const TARGET_DATABASE_NAME = localize('sql.migration.target.database.name
 export const TARGET_SERVER = localize('sql.migration.target.server', "Target server");
 export const TARGET_VERSION = localize('sql.migration.target.version', "Target version");
 export const MIGRATION_STATUS = localize('sql.migration.migration.status', "Migration status");
+export const MIGRATION_STATUS_FILTER = localize('sql.migration.migration.status.filter', "Migration status filter");
 export const FULL_BACKUP_FILES = localize('sql.migration.full.backup.files', "Full backup files");
 export const LAST_APPLIED_LSN = localize('sql.migration.last.applied.lsn', "Last applied LSN");
 export const LAST_APPLIED_BACKUP_FILES = localize('sql.migration.last.applied.backup.files', "Last applied backup files");
@@ -444,11 +448,11 @@ export const ISSUES_DETAILS = localize('sql.migration.issues.details', "Issue De
 export const SELECT_DB_PROMPT = localize('sql.migration.select.prompt', "Click on SQL Server Instance or any of the databases on the left to view its details.");
 export const NO_ISSUES_FOUND_VM = localize('sql.migration.no.issues.vm', "No issues found for migrating to SQL Server on Azure Virtual Machine");
 export const NO_ISSUES_FOUND_MI = localize('sql.migration.no.issues.mi', "No issues found for migrating to SQL Server on Azure SQL Managed Instance");
-export function IMPACT_OBJECT_TYPE(objectType: string): string {
-	return localize('sql.migration.impact.object.type', "Type: {0}", objectType);
+export function IMPACT_OBJECT_TYPE(objectType?: string): string {
+	return objectType ? localize('sql.migration.impact.object.type', "Type: {0}", objectType) : '';
 }
-export function IMPACT_OBJECT_NAME(objectName: string): string {
-	return localize('sql.migration.impact.object.name', "Name: {0}", objectName);
+export function IMPACT_OBJECT_NAME(objectName?: string): string {
+	return objectName ? localize('sql.migration.impact.object.name', "Name: {0}", objectName) : '';
 }
 export function DATABASES(selectedCount: number, totalCount: number): string {
 	return localize('sql.migration.databases', "Databases ({0}/{1})", selectedCount, totalCount);

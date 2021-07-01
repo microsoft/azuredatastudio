@@ -30,7 +30,7 @@ const { getProductionDependencies } = require('./lib/dependencies');
 const { config } = require('./lib/electron');
 const createAsar = require('./lib/asar').createAsar;
 const { compileBuildTask } = require('./gulpfile.compile');
-const { compileExtensionsBuildTask } = require('./gulpfile.extensions');
+const { compileExtensionsBuildTask, compileLocalizationExtensionsBuildTask } = require('./gulpfile.extensions');  // {{SQL CARBON EDIT}} Must handle localization code.
 
 // Build
 const vscodeEntryPoints = _.flatten([
@@ -107,6 +107,18 @@ const optimizeVSCodeTask = task.define('optimize-vscode', task.series(
 	})
 ));
 gulp.task(optimizeVSCodeTask);
+
+// {{SQL CARBON EDIT}} Gulp task that exports any extensions found in the build folder as an XLF to an external folder.
+const exportXLFFolderTask = task.define('export-xlf-folder',
+	function () {
+		const pathToExtensions = '.build/extensions/*';
+		return es.merge(
+			gulp.src(pathToExtensions).pipe(i18n.createXlfFilesForExtensions())
+		).pipe(vfs.dest('../export-xlfs'));
+	}
+);
+gulp.task(exportXLFFolderTask);
+// {{SQL CARBON EDIT}} end
 
 const sourceMappingURLBase = `https://sqlopsbuilds.blob.core.windows.net/sourcemaps/${commit}`;
 const minifyVSCodeTask = task.define('minify-vscode', task.series(
@@ -456,6 +468,16 @@ gulp.task(task.define(
 		}
 	)
 ));
+
+// {{SQL CARBON EDIT}} Localization gulp task, similar to vscode-translations-export but for all extensions.
+gulp.task(task.define(
+	'export-xlfs',
+	task.series(
+		compileLocalizationExtensionsBuildTask,
+		exportXLFFolderTask
+	)
+));
+// {{SQL CARBON EDIT}} end
 
 gulp.task('vscode-translations-pull', function () {
 	return es.merge([...i18n.defaultLanguages, ...i18n.extraLanguages].map(language => {
