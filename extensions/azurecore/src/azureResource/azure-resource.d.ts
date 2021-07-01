@@ -69,6 +69,12 @@ declare module 'azureResource' {
 		}
 
 		export interface AzureResourceResourceGroup extends AzureResource {
+			location?: string;
+			managedBy?: string;
+			properties?: {
+				provisioningState?: string
+			};
+			type?: string;
 		}
 
 		export interface AzureLocation {
