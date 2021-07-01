@@ -47,7 +47,6 @@ export class AssessmentResultsDialog {
 					flex.addItem(await this._tree.createRootContainer(view), { flex: '1 1 auto' });
 
 					await view.initializeModel(flex);
-					await this._tree.focusComponent.focus();
 					resolve();
 				} catch (ex) {
 					reject(ex);

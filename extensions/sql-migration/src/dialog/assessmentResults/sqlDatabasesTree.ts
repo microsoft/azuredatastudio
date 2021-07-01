@@ -7,6 +7,7 @@ import { SqlMigrationAssessmentResultItem, SqlMigrationImpactedObjectInfo } from
 import { IconPath, IconPathHelper } from '../../constants/iconPathHelper';
 import { MigrationStateModel, MigrationTargetType } from '../../models/stateMachine';
 import * as constants from '../../constants/strings';
+import { debounce } from '../../api/utils';
 
 const styleLeft: azdata.CssStyles = {
 	'border': 'none',
@@ -47,8 +48,6 @@ const blockingIssues: Array<string> = [
 ];
 
 export class SqlDatabaseTree {
-	public focusComponent!: azdata.Component;
-
 	private _view!: azdata.ModelView;
 	private _instanceTable!: azdata.DeclarativeTableComponent;
 	private _databaseTable!: azdata.DeclarativeTableComponent;
@@ -207,26 +206,8 @@ export class SqlDatabaseTree {
 			placeHolder: constants.SEARCH,
 			width: 200
 		}).component();
-		this.focusComponent = resourceSearchBox;
 
-		resourceSearchBox.onTextChanged(value => {
-			const filter: number[] = [];
-			if (this._databaseTableValues && value && value.length > 0) {
-				this._databaseTableValues.forEach((row, index) => {
-					const cell: any = row[1]?.value;
-					const cellText: string = cell?.items[1]?.value?.toLowerCase();
-					const searchText: string = value.toLowerCase();
-					if (cellText?.includes(searchText)) {
-						filter.push(index);
-					}
-				});
-			}
-
-			this._databaseTable.setFilter(
-				filter.length > 0
-					? filter
-					: undefined);
-		});
+		resourceSearchBox.onTextChanged(value => this._filterTableList(value));
 
 		const searchContainer = this._view.modelBuilder.divContainer().withItems([resourceSearchBox]).withProps({
 			CSSStyles: {
@@ -236,6 +217,25 @@ export class SqlDatabaseTree {
 		}).component();
 
 		return searchContainer;
+	}
+
+	@debounce(500)
+	private _filterTableList(value: string): void {
+		if (this._databaseTableValues && value && value.length > 0) {
+			const filter: number[] = [];
+			this._databaseTableValues.forEach((row, index) => {
+				const cell: any = row[1]?.value;
+				const cellText: string = cell?.items[1]?.value?.toLowerCase();
+				const searchText: string = value.toLowerCase();
+				if (cellText?.includes(searchText)) {
+					filter.push(index);
+				}
+			});
+
+			this._databaseTable.setFilter(filter);
+		} else {
+			this._databaseTable.setFilter(undefined);
+		}
 	}
 
 	private createInstanceComponent(): azdata.DivContainer {

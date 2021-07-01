@@ -72,8 +72,7 @@ export class MigrationStatusDialog {
 			this._view.onClosed(e => {
 				clearInterval(this._autoRefreshHandle);
 			});
-			await view.initializeModel(form);
-			return await this._searchBox.focus();
+			return await view.initializeModel(form);
 		});
 		this._dialogObject.content = [tab];
 		this._dialogObject.cancelButton.hidden = true;
