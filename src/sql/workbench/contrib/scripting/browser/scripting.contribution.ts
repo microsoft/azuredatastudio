@@ -101,7 +101,7 @@ MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
 	},
 	when: ContextKeyExpr.and(
 		ConnectionContextKey.Provider.notEqualsTo('KUSTO'),
-		ConnectionContextKey.Provider.notEqualsTo('LOGANALYTICS'),
+		ConnectionContextKey.Provider.notEqualsTo('LogAnalytics'),
 		ContextKeyExpr.or(
 			TreeNodeContextKey.NodeType.isEqualTo('Table'),
 			TreeNodeContextKey.NodeType.isEqualTo('View')
@@ -118,7 +118,7 @@ MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
 	},
 	when: ContextKeyExpr.or(
 		ContextKeyExpr.and(ConnectionContextKey.Provider.isEqualTo('KUSTO'), TreeNodeContextKey.NodeType.isEqualTo('Table')),
-		ContextKeyExpr.and(ConnectionContextKey.Provider.isEqualTo('LOGANALYTICS'), TreeNodeContextKey.NodeType.isEqualTo('Table')))
+		ContextKeyExpr.and(ConnectionContextKey.Provider.isEqualTo('LogAnalytics'), TreeNodeContextKey.NodeType.isEqualTo('Table')))
 });
 
 MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
@@ -132,7 +132,7 @@ MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
 		ContextKeyExpr.and(
 			TreeNodeContextKey.NodeType.isEqualTo('Table'),
 			ConnectionContextKey.Provider.notEqualsTo('KUSTO'),
-			ConnectionContextKey.Provider.notEqualsTo('LOGANALYTICS'),
+			ConnectionContextKey.Provider.notEqualsTo('LogAnalytics'),
 			MssqlNodeContext.EngineEdition.notEqualsTo(DatabaseEngineEdition.SqlOnDemand.toString()),
 			MssqlNodeContext.EngineEdition.notEqualsTo(DatabaseEngineEdition.SqlDataWarehouse.toString())
 		)
@@ -148,7 +148,7 @@ MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
 	when:
 		ContextKeyExpr.and(
 			ConnectionContextKey.Provider.notEqualsTo('KUSTO'),
-			ConnectionContextKey.Provider.notEqualsTo('LOGANALYTICS'),
+			ConnectionContextKey.Provider.notEqualsTo('LogAnalytics'),
 			ContextKeyExpr.or(
 				TreeNodeContextKey.NodeType.isEqualTo('Table'),
 				TreeNodeContextKey.NodeType.isEqualTo('View'),
@@ -220,7 +220,7 @@ MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
 	when:
 		ContextKeyExpr.and(
 			ConnectionContextKey.Provider.notEqualsTo('KUSTO'),
-			ConnectionContextKey.Provider.notEqualsTo('LOGANALYTICS'),
+			ConnectionContextKey.Provider.notEqualsTo('LogAnalytics'),
 			ContextKeyExpr.or(
 				TreeNodeContextKey.NodeType.isEqualTo(NodeType.Table),
 				TreeNodeContextKey.NodeType.isEqualTo(NodeType.View),

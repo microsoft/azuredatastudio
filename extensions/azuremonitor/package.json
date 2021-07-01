@@ -19,7 +19,7 @@
   "typings": "./src/azuremonitor",
   "contributes": {
     "connectionProvider": {
-      "providerId": "LOGANALYTICS",
+      "providerId": "LogAnalytics",
       "languageMode": "loganalytics",
       "displayName": "%azuremonitor.displayName%",
       "notebookKernelAlias": "LogAnalytics",

@@ -287,7 +287,7 @@ export class QueryEditor extends EditorPane {
 				{ action: this._listDatabasesAction }
 			];
 		}
-		else if (providerId === 'LOGANALYTICS' || this.modeService.getExtensions('LogAnalytics').indexOf(fileExtension) > -1) {
+		else if (providerId === 'LogAnalytics' || this.modeService.getExtensions('LogAnalytics').indexOf(fileExtension) > -1) {
 			if (this.input instanceof UntitledQueryEditorInput) {
 				this.input.setMode('loganalytics');
 			}

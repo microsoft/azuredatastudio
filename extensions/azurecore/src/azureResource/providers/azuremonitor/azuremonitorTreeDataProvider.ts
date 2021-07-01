@@ -47,12 +47,12 @@ export class AzureMonitorTreeDataProvider extends ResourceTreeDataProviderBase<a
 				savePassword: true,
 				groupFullName: '',
 				groupId: '',
-				providerName: 'LOGANALYTICS',
+				providerName: 'LogAnalytics',
 				saveProfile: false,
 				options: {},
 				azureAccount: account.key.accountId
 			},
-			childProvider: 'LOGANALYTICS',
+			childProvider: 'LogAnalytics',
 			type: ExtensionNodeType.Server
 		};
 	}
