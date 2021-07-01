@@ -207,9 +207,7 @@ export class OpenExistingDialog extends DialogBase {
 			width: '18px',
 			height: '16px'
 		}).component();
-		this.register(localProjectBrowseFolderButton.onDidClick(async () => {
-			await this.projectBrowse();
-		}));
+		this.register(localProjectBrowseFolderButton.onDidClick(() => this.onBrowseButtonClick()));
 
 		const flexContainer = this.createHorizontalContainer(view, [this.filePathTextBox, localProjectBrowseFolderButton]);
 		flexContainer.updateCssStyles({ 'margin-top': '-10px' });
@@ -225,27 +223,29 @@ export class OpenExistingDialog extends DialogBase {
 		this.initDialogComplete?.resolve();
 	}
 
-	public async projectBrowse(): Promise<void> {
-		const filters: { [name: string]: string[] } = {};
-		const projectTypes = await this.workspaceService.getAllProjectTypes();
-		filters[constants.AllProjectTypes] = [...new Set(projectTypes.map(type => type.projectFileExtension))];
-		projectTypes.forEach(type => {
-			filters[type.displayName] = [type.projectFileExtension];
-		});
-
-		const fileUris = await vscode.window.showOpenDialog({
-			canSelectFiles: true,
-			canSelectFolders: false,
-			canSelectMany: false,
-			openLabel: constants.SelectProjectFileActionName,
-			filters: filters
-		});
-
-		if (!fileUris || fileUris.length === 0) {
-			return;
+	public async onBrowseButtonClick(): Promise<void> {
+		const projectFilePath = await browseForProject(this.workspaceService);
+		if (projectFilePath) {
+			this.filePathTextBox!.value = projectFilePath.fsPath;
 		}
-
-		const projectFilePath = fileUris[0].fsPath;
-		this.filePathTextBox!.value = projectFilePath;
 	}
+}
+
+export async function browseForProject(workspaceService: IWorkspaceService): Promise<vscode.Uri | undefined> {
+	const filters: { [name: string]: string[] } = {};
+	const projectTypes = await workspaceService.getAllProjectTypes();
+	filters[constants.AllProjectTypes] = [...new Set(projectTypes.map(type => type.projectFileExtension))];
+	projectTypes.forEach(type => {
+		filters[type.displayName] = [type.projectFileExtension];
+	});
+
+	const fileUris = await vscode.window.showOpenDialog({
+		canSelectFiles: true,
+		canSelectFolders: false,
+		canSelectMany: false,
+		openLabel: constants.SelectProjectFileActionName,
+		filters: filters
+	});
+
+	return fileUris?.[0];
 }
