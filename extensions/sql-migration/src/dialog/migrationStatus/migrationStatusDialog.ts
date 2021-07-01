@@ -37,6 +37,7 @@ export class MigrationStatusDialog {
 			this._view = view;
 
 			this._statusDropdown = this._view.modelBuilder.dropDown().withProps({
+				ariaLabel: loc.MIGRATION_STATUS_FILTER,
 				values: this._model.statusDropdownValues,
 				width: '220px'
 			}).component();

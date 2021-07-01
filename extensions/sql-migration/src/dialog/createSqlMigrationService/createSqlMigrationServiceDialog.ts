@@ -228,6 +228,7 @@ export class CreateSqlMigrationServiceDialog {
 		}).component();
 
 		this.migrationServiceResourceGroupDropdown = this._view.modelBuilder.dropDown().withProps({
+			ariaLabel: constants.RESOURCE_GROUP,
 			required: true,
 			editable: true,
 			fireOnTextChange: true,

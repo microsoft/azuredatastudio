@@ -181,6 +181,7 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 			}
 		}).component();
 		this._resourceGroupDropdown = this._view.modelBuilder.dropDown().withProps({
+			ariaLabel: constants.RESOURCE_GROUP,
 			width: WIZARD_INPUT_COMPONENT_WIDTH,
 			editable: true,
 			fireOnTextChange: true,
@@ -202,6 +203,7 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 		}).component();
 
 		this._dmsDropdown = this._view.modelBuilder.dropDown().withProps({
+			ariaLabel: constants.IR_PAGE_TITLE,
 			width: WIZARD_INPUT_COMPONENT_WIDTH,
 			editable: true,
 			fireOnTextChange: true,
