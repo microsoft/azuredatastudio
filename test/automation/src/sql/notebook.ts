@@ -154,12 +154,7 @@ export class Notebook {
 	}
 
 	async waitForAllResults(): Promise<void> {
-		let cellIds: string[] = [];
-		await this.code.waitForElements('div.notebook-cell', false, result => {
-			cellIds = result.map(cell => cell.attributes['id']);
-			return true;
-		});
-		await this.waitForResults(cellIds);
+		await this.waitForResults(await this.getCellIds());
 	}
 
 	async waitForActiveCellResultsGone(): Promise<void> {
@@ -174,12 +169,7 @@ export class Notebook {
 	}
 
 	async waitForAllResultsGone(): Promise<void> {
-		let cellIds: string[] = [];
-		await this.code.waitForElements('div.notebook-cell', false, result => {
-			cellIds = result.map(cell => cell.attributes['id']);
-			return true;
-		});
-		await this.waitForResultsGone(cellIds);
+		await this.waitForResultsGone(await this.getCellIds());
 	}
 
 	async waitForTrustedElements(): Promise<void> {
