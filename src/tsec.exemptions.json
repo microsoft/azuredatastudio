@@ -34,6 +34,7 @@
 	],
 	"ban-element-innerhtml-assignments": [
 		"sql/workbench/browser/modal/modal.ts",
+		"sql/base/browser/ui/checkbox/checkbox.ts",
 		"sql/base/browser/ui/panel/panel.ts",
 		"sql/base/browser/ui/selectBox/selectBox.ts",
 		"sql/base/browser/ui/panel/panel.component.ts",
