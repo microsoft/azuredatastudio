@@ -31,16 +31,6 @@ export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvide
 	}
 
 	/**
-	 * Callback method when a project has been removed from the workspace view
-	 * @param projectFile The Uri of the project file
-	 */
-	RemoveProject(projectFile: vscode.Uri): Promise<void> {
-		// No resource release needed
-		console.log(`project file unloaded: ${projectFile.fsPath}`);
-		return Promise.resolve();
-	}
-
-	/**
 	 * Gets the supported project types
 	 */
 	get supportedProjectTypes(): dataworkspace.IProjectType[] {

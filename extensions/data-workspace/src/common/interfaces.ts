@@ -51,7 +51,7 @@ export interface IWorkspaceService {
 	/**
 	 * Gets the project files in current workspace
 	 */
-	getProjectsInWorkspace(): vscode.Uri[];
+	getProjectsInWorkspace(): Promise<vscode.Uri[]>;
 
 	/**
 	 * Gets the project provider by project file
@@ -67,27 +67,19 @@ export interface IWorkspaceService {
 	addProjectsToWorkspace(projectFiles: vscode.Uri[], workspaceFilePath?: vscode.Uri): Promise<void>;
 
 	/**
-	 * Remove the project from workspace
-	 * @param projectFile The project file to be removed
-	 */
-	removeProject(projectFile: vscode.Uri): Promise<void>;
-
-	/**
 	 * Creates a new project from workspace
 	 * @param name The name of the project
 	 * @param location The location of the project
 	 * @param projectTypeId The project type id
-	 * @param workspaceFile The workspace file to create if a workspace isn't currently open
 	 */
-	createProject(name: string, location: vscode.Uri, projectTypeId: string, workspaceFile?: vscode.Uri): Promise<vscode.Uri>;
+	createProject(name: string, location: vscode.Uri, projectTypeId: string): Promise<vscode.Uri>;
 
 	/**
 	 * Clones git repository and adds projects to workspace
 	 * @param url The url to clone from
 	 * @param localClonePath local path to clone repository to
-	 * @param workspaceFile workspace file to add the projects to
 	 */
-	gitCloneProject(url: string, localClonePath: string, workspaceFile: vscode.Uri): Promise<void>;
+	gitCloneProject(url: string, localClonePath: string): Promise<void>;
 
 	readonly isProjectProviderAvailable: boolean;
 
@@ -100,9 +92,4 @@ export interface IWorkspaceService {
 	 * Verify that a workspace is open or if one isn't, ask user to pick whether a workspace should be automatically created
 	 */
 	validateWorkspace(): Promise<boolean>;
-
-	/**
-	 * Shows confirmation message that the extension host will be restarted and current workspace/file will be closed. If confirmed, the specified workspace will be entered.
-	 */
-	enterWorkspace(workspaceFile: vscode.Uri): Promise<void>;
 }

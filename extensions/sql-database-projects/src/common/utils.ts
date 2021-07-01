@@ -241,7 +241,7 @@ export async function getSqlProjectFilesInFolder(folderPath: string): Promise<st
 /**
  * Get all the projects in the workspace that are sqlproj
  */
-export function getSqlProjectsInWorkspace(): vscode.Uri[] {
+export function getSqlProjectsInWorkspace(): Promise<vscode.Uri[]> {
 	const api = getDataWorkspaceExtensionApi();
 	return api.getProjectsInWorkspace(constants.sqlprojExtension);
 }
@@ -249,13 +249,6 @@ export function getSqlProjectsInWorkspace(): vscode.Uri[] {
 export function getDataWorkspaceExtensionApi(): dataworkspace.IExtension {
 	const extension = vscode.extensions.getExtension(dataworkspace.extension.name)!;
 	return extension.exports;
-}
-
-/**
- * if the current workspace is untitled, the returned URI of vscode.workspace.workspaceFile will use the `untitled` scheme
- */
-export function isCurrentWorkspaceUntitled(): boolean {
-	return !!vscode.workspace.workspaceFile && vscode.workspace.workspaceFile.scheme.toLowerCase() === 'untitled';
 }
 
 /*
