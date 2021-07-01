@@ -953,7 +953,10 @@ registerThemingParticipant((theme, collector) => {
 	}
 	const foregroundColor = theme.getColor(foreground);
 	if (foregroundColor) {
-		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage h1, h2, h3, h4, h5, h6, h7, p { color: ${foregroundColor}; }`);
+		collector.addRule(`
+		.monaco-workbench .part.editor > .content .welcomePage a p,
+		.monaco-workbench .part.editor > .content .welcomePage a h3,
+		.monaco-workbench .part.editor > .content .welcomePage a h4 { color: ${foregroundColor}; }`);
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage .ads-homepage .resources .label { color: ${foregroundColor}; }`);
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePageContainer .ads-homepage .ads-homepage-section .history .list li a { color: ${foregroundColor};}`);
 		collector.addRule(`.monaco-workbench .part.editor > .content .welcomePage .ads-homepage .resources .label { color: ${foregroundColor}; }`);
