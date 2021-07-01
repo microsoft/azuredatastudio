@@ -31,6 +31,7 @@ import { Notebook as SqlNotebook } from './sql/notebook';
 import { ConfigurePythonDialog } from './sql/configurePythonDialog';
 import { CreateBookDialog } from './sql/createBookDialog';
 import { NotificationToast } from './sql/notificationToast';
+import { AddRemoteBookDialog } from './sql/addRemoteBookDialog';
 // {{END}}
 
 export interface Commands {
@@ -66,6 +67,7 @@ export class Workbench {
 	readonly createBookDialog: CreateBookDialog;
 	readonly configurePythonDialog: ConfigurePythonDialog;
 	readonly notificationToast: NotificationToast;
+	readonly addRemoteBookDialog: AddRemoteBookDialog;
 	// {{END}}
 
 	constructor(code: Code, userDataPath: string) {
@@ -93,6 +95,7 @@ export class Workbench {
 		this.sqlNotebook = new SqlNotebook(code, this.quickaccess, this.quickinput, this.editors);
 		this.createBookDialog = new CreateBookDialog(code);
 		this.configurePythonDialog = new ConfigurePythonDialog(code);
+		this.addRemoteBookDialog = new AddRemoteBookDialog(code);
 		// {{END}}
 		this.notebook = new Notebook(this.quickaccess, code);
 		this.localization = new Localization(code);
