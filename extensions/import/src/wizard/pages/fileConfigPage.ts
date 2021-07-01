@@ -111,10 +111,7 @@ export class FileConfigPage extends ImportPage {
 
 	async onPageEnter(): Promise<boolean> {
 		this.serverDropdown.focus();
-		let r1 = await this.populateServerDropdown();
-		let r2 = await this.populateDatabaseDropdown();
-		let r3 = await this.populateSchemaDropdown();
-		return r1 && r2 && r3;
+		return await this.populateServerDropdown();
 	}
 
 	override async onPageLeave(): Promise<boolean> {
@@ -144,15 +141,15 @@ export class FileConfigPage extends ImportPage {
 		}).component();
 
 		// Handle server changes
-		this.serverDropdown.onValueChanged(async () => {
-			const connectionValue = this.serverDropdown.value as ConnectionDropdownValue;
-			if (!connectionValue) {
-				return;
+		this.serverDropdown.onValueChanged(async (value) => {
+			if (value.selected) {
+				const connectionValue = this.serverDropdown.value as ConnectionDropdownValue;
+				if (!connectionValue) {
+					return;
+				}
+				this.model.server = connectionValue.connection;
+				await this.populateDatabaseDropdown();
 			}
-			this.model.server = connectionValue.connection;
-
-			await this.populateDatabaseDropdown();
-			await this.populateSchemaDropdown();
 		});
 
 		return {
@@ -179,19 +176,21 @@ export class FileConfigPage extends ImportPage {
 		}).component();
 
 		// Handle database changes
-		this.databaseDropdown.onValueChanged(async () => {
-			const nameValue = this.databaseDropdown.value as azdata.CategoryValue;
-			if (!nameValue) {
-				return;
+		this.databaseDropdown.onValueChanged(async (value) => {
+			if (value.selected) {
+				const nameValue = this.databaseDropdown.value as azdata.CategoryValue;
+				if (!nameValue) {
+					return;
+				}
+				this.model.database = nameValue.name;
+				if (!this.model.server) {
+					return;
+				}
+				let connectionProvider = azdata.dataprotocol.getProvider<azdata.ConnectionProvider>(this.model.server.providerName, azdata.DataProviderType.ConnectionProvider);
+				let connectionUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
+				connectionProvider.changeDatabase(connectionUri, this.model.database);
+				this.populateSchemaDropdown();
 			}
-			this.model.database = nameValue.name;
-			if (!this.model.server) {
-				return;
-			}
-			let connectionProvider = azdata.dataprotocol.getProvider<azdata.ConnectionProvider>(this.model.server.providerName, azdata.DataProviderType.ConnectionProvider);
-			let connectionUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
-			connectionProvider.changeDatabase(connectionUri, this.model.database);
-			this.populateSchemaDropdown();
 		});
 
 		return {
@@ -347,12 +346,14 @@ export class FileConfigPage extends ImportPage {
 		}).component();
 		this.schemaLoader = this.view.modelBuilder.loadingComponent().withItem(this.schemaDropdown).component();
 
-		this.schemaDropdown.onValueChanged(() => {
-			const schemaValue = this.schemaDropdown.value as azdata.CategoryValue;
-			if (!schemaValue) {
-				return;
+		this.schemaDropdown.onValueChanged((value) => {
+			if (value.selected) {
+				const schemaValue = this.schemaDropdown.value as azdata.CategoryValue;
+				if (!schemaValue) {
+					return;
+				}
+				this.model.schema = schemaValue.name;
 			}
-			this.model.schema = schemaValue.name;
 		});
 
 
