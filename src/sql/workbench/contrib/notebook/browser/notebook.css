@@ -38,7 +38,7 @@
 }
 
 .notebookEditor .in-preview .actions-container .action-item {
-	height: 100%;
+	height: 21px;
 }
 
 .notebookEditor .editor-toolbar .actions-container .action-item .codicon.masked-pseudo {
