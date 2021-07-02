@@ -102,6 +102,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	public _authenticationType!: MigrationSourceAuthenticationType;
 	public _sqlServerUsername!: string;
 	public _sqlServerPassword!: string;
+	public _databaseAssessment!: string[];
 
 	public _subscriptions!: azureResource.AzureResourceSubscription[];
 
@@ -168,7 +169,9 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			'msdb',
 			'model'
 		];
-		return await (await azdata.connection.listDatabases(this.sourceConnectionId)).filter((name) => !excludeDbs.includes(name));
+		let temp = await azdata.connection.listDatabases(this.sourceConnectionId);
+		let finalResult = temp.filter((name) => !excludeDbs.includes(name));
+		return finalResult;
 	}
 
 	public async getServerAssessments(): Promise<ServerAssessement> {

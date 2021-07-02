@@ -439,6 +439,9 @@ export function IMPACT_OBJECT_NAME(objectName: string): string {
 export function DATABASES(selectedCount: number, totalCount: number): string {
 	return localize('sql.migration.databases', "Databases ({0}/{1})", selectedCount, totalCount);
 }
+export function DATABASES_SELECTED(selectedCount: number, totalCount: number): string {
+	return localize('sql.migration.databases.selected', "{0}/{1} Databases Selected", selectedCount, totalCount);
+}
 export function ISSUES_COUNT(totalCount: number): string {
 	return localize('sql.migration.issues.count', "Issues ({0})", totalCount);
 }
