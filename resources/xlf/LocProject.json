@@ -156,8 +156,8 @@
     {
           "SourceFile": "resources\\xlf\\en\\xml-language-features.xlf",
           "LclFile": "resources\\localization\\LCL\\{Lang}\\xml-language-features.xlf.lcl",
-          "CopyOption": "LangIDOnName",
-          "OutputPath": "resources\\xlf\\Localized"
+          "CopyOption": "LangIDOnPath",
+          "OutputPath": "resources\\xlf"
         }
       ]
     }
