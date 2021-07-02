@@ -111,7 +111,10 @@ export class FileConfigPage extends ImportPage {
 
 	async onPageEnter(): Promise<boolean> {
 		this.serverDropdown.focus();
-		return await this.populateServerDropdown();
+		let r1 = await this.populateServerDropdown();
+		let r2 = await this.populateDatabaseDropdown();
+		let r3 = await this.populateSchemaDropdown();
+		return r1 && r2 && r3;
 	}
 
 	override async onPageLeave(): Promise<boolean> {
@@ -124,10 +127,6 @@ export class FileConfigPage extends ImportPage {
 		delete this.model.table;
 
 		return true;
-	}
-
-	public setupNavigationValidator(): void {
-		return;
 	}
 
 	private async createServerDropdown(): Promise<azdata.FormComponent> {
