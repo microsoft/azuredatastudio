@@ -8,7 +8,7 @@ exports.rollupAngular = void 0;
 const fs = require("fs");
 const rollup = require("rollup");
 const path = require("path");
-// getting around stupid import rules
+// getting around import rules
 const nodeResolve = require('rollup-plugin-node-resolve');
 const commonjs = require('rollup-plugin-commonjs');
 async function rollupModule(options) {
