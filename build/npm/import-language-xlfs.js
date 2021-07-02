@@ -9,11 +9,13 @@ let path = require("path");
 let gulp = require('gulp');
 let minimist = require('minimist');
 
+// function takes in a folder path as an argument, and moves the XLF files from a drop folder and puts it into the resources/xlf folder.
 function update(options) {
 	let location = options._;
 
 	gulp.src(`${location}/drop/loc/**/*.xlf`)
 		.pipe(gulp.dest(function (file) {
+			// need to account for different folder structure of drop files.
 			let firstSlashIndex =  file.relative.indexOf('\\');
 			let language = '\\' + file.relative.substr(0,firstSlashIndex) + '\\';
 			file.path = file.base + language + path.basename(file.relative);
