@@ -1,5 +1,7 @@
 src/**
+out/**
 .gitignore
 tsconfig.json
-cgmanifest.json
-.vscode
+extension.webpack.config.js
+*.vsix
+yarn.lock

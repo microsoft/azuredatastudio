@@ -362,3 +362,40 @@ export function refreshLangpacks(): Promise<void> {
 	return Promise.resolve();
 }
 
+/**
+ * Function for adding replacing ads language packs with vscode ones.
+ * For new languages, remember to add to i18n.extraLanguages so that it will be recognized by ADS.
+*/
+export function renameVscodeLangpacks(): Promise<void> {
+	let supportedLocations = [...i18n.defaultLanguages, ...i18n.extraLanguages];
+
+
+	for (let i = 0; i < supportedLocations.length; i++) {
+		let langId = supportedLocations[i].id;
+		if (langId === "zh-cn") {
+			langId = "zh-hans";
+		}
+		if (langId === "zh-tw") {
+			langId = "zh-hant";
+		}
+		let locADSFolder = path.join('.', 'i18n', `ads-language-pack-${langId}`);
+		let locVSCODEFolder = path.join('.', 'i18n', `vscode-language-pack-${langId}`);
+		try {
+			fs.statSync(locVSCODEFolder);
+		}
+		catch {
+			console.log('vscode pack is not in ADS yet: ' + langId);
+			continue;
+		}
+		gulp.src(`i18n/ads-language-pack-${langId}/*.md`)
+			.pipe(vfs.dest(locVSCODEFolder, {overwrite: true}))
+			.end(function () {
+				rimraf.sync(locADSFolder);
+				fs.renameSync(locVSCODEFolder, locADSFolder);
+			});
+	}
+
+	console.log("Langpack Rename Completed.");
+	return Promise.resolve();
+}
+

@@ -7,7 +7,7 @@ import { ResourceGraphClient } from '@azure/arm-resourcegraph';
 import { TokenCredentials } from '@azure/ms-rest-js';
 import axios, { AxiosRequestConfig } from 'axios';
 import * as azdata from 'azdata';
-import { AzureRestResponse, GetResourceGroupsResult, GetSubscriptionsResult, ResourceQueryResult, GetBlobContainersResult, GetFileSharesResult, HttpRequestMethod, GetLocationsResult, GetManagedDatabasesResult } from 'azurecore';
+import { AzureRestResponse, GetResourceGroupsResult, GetSubscriptionsResult, ResourceQueryResult, GetBlobContainersResult, GetFileSharesResult, HttpRequestMethod, GetLocationsResult, GetManagedDatabasesResult, CreateResourceGroupResult } from 'azurecore';
 import { azureResource } from 'azureResource';
 import { EOL } from 'os';
 import * as nls from 'vscode-nls';
@@ -452,6 +452,18 @@ export async function getFileShares(account: azdata.Account, subscription: azure
 	const response = await makeHttpRequest(account, subscription, path, HttpRequestMethod.GET, undefined, ignoreErrors);
 	return {
 		fileShares: response?.response?.data?.value ?? [],
+		errors: response.errors ? response.errors : []
+	};
+}
+
+export async function createResourceGroup(account: azdata.Account, subscription: azureResource.AzureResourceSubscription, resourceGroupName: string, location: string, ignoreErrors: boolean): Promise<CreateResourceGroupResult> {
+	const path = `/subscriptions/${subscription.id}/resourcegroups/${resourceGroupName}?api-version=2021-04-01`;
+	const requestBody = {
+		location: location
+	};
+	const response = await makeHttpRequest(account, subscription, path, HttpRequestMethod.PUT, requestBody, ignoreErrors);
+	return {
+		resourceGroup: response?.response?.data,
 		errors: response.errors ? response.errors : []
 	};
 }

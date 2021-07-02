@@ -18,6 +18,8 @@ import { KeyCode } from 'vs/base/common/keyCodes';
 import { IComponentDescriptor, IComponent, IModelStore, ComponentEventType } from 'sql/platform/dashboard/browser/interfaces';
 import { convertSize } from 'sql/base/browser/dom';
 import { ILogService } from 'vs/platform/log/common/log';
+import { registerThemingParticipant, IColorTheme, IThemeService, ICssStyleCollector } from 'vs/platform/theme/common/themeService';
+import * as colorRegistry from 'vs/platform/theme/common/colorRegistry';
 
 class DivItem {
 	constructor(public descriptor: IComponentDescriptor, public config: azdata.DivItemLayout) { }
@@ -25,7 +27,7 @@ class DivItem {
 
 @Component({
 	template: `
-		<div #divContainer *ngIf="items" class="divContainer" [ngStyle]="CSSStyles" [style.height]="height" [style.width]="width" [style.display]="display" (keyup)="onKey($event)" [attr.role]="ariaRole" [attr.aria-selected]="ariaSelected">
+		<div #divContainer *ngIf="items" [ngClass] = "{'divContainer': true, 'clickable-divContainer': clickable}" [ngStyle]="CSSStyles" [style.height]="height" [style.width]="width" [style.display]="display" (keyup)="onKey($event)" [attr.role]="ariaRole" [attr.aria-selected]="ariaSelected">
 			<div *ngFor="let item of items" [style.order]="getItemOrder(item)" [ngStyle]="getItemStyles(item)">
 				<model-component-wrapper [descriptor]="item.descriptor" [modelStore]="modelStore">
 				</model-component-wrapper>
@@ -47,10 +49,22 @@ export default class DivContainer extends ContainerBase<azdata.DivItemLayout, az
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
 		@Inject(forwardRef(() => Renderer2)) private renderer: Renderer2,
-		@Inject(ILogService) logService: ILogService
+		@Inject(ILogService) logService: ILogService,
+		@Inject(IThemeService) themeService: IThemeService,
 	) {
 		super(changeRef, el, logService);
 		this._overflowY = '';	// default
+
+		registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) => {
+			const editorHoverBackground = theme.getColor(colorRegistry.editorHoverBackground).toString();
+			if (editorHoverBackground) {
+				collector.addRule(`
+					.clickable-divContainer:hover {
+						background-color: ${editorHoverBackground};
+					}
+					`);
+			}
+		});
 	}
 
 	ngAfterViewInit(): void {
@@ -170,3 +184,5 @@ export default class DivContainer extends ContainerBase<azdata.DivItemLayout, az
 		}
 	}
 }
+
+

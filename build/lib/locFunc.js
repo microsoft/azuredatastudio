@@ -4,7 +4,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.refreshLangpacks = exports.modifyI18nPackFiles = exports.packageSingleExtensionStream = exports.packageLangpacksStream = void 0;
+exports.renameVscodeLangpacks = exports.refreshLangpacks = exports.modifyI18nPackFiles = exports.packageSingleExtensionStream = exports.packageLangpacksStream = void 0;
 const es = require("event-stream");
 const path = require("path");
 const glob = require("glob");
@@ -340,3 +340,37 @@ function refreshLangpacks() {
     return Promise.resolve();
 }
 exports.refreshLangpacks = refreshLangpacks;
+/**
+ * Function for adding replacing ads language packs with vscode ones.
+ * For new languages, remember to add to i18n.extraLanguages so that it will be recognized by ADS.
+*/
+function renameVscodeLangpacks() {
+    let supportedLocations = [...i18n.defaultLanguages, ...i18n.extraLanguages];
+    for (let i = 0; i < supportedLocations.length; i++) {
+        let langId = supportedLocations[i].id;
+        if (langId === "zh-cn") {
+            langId = "zh-hans";
+        }
+        if (langId === "zh-tw") {
+            langId = "zh-hant";
+        }
+        let locADSFolder = path.join('.', 'i18n', `ads-language-pack-${langId}`);
+        let locVSCODEFolder = path.join('.', 'i18n', `vscode-language-pack-${langId}`);
+        try {
+            fs.statSync(locVSCODEFolder);
+        }
+        catch (_a) {
+            console.log('vscode pack is not in ADS yet: ' + langId);
+            continue;
+        }
+        gulp.src(`i18n/ads-language-pack-${langId}/*.md`)
+            .pipe(vfs.dest(locVSCODEFolder, { overwrite: true }))
+            .end(function () {
+            rimraf.sync(locADSFolder);
+            fs.renameSync(locVSCODEFolder, locADSFolder);
+        });
+    }
+    console.log("Langpack Rename Completed.");
+    return Promise.resolve();
+}
+exports.renameVscodeLangpacks = renameVscodeLangpacks;
