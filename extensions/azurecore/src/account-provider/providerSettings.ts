@@ -255,7 +255,7 @@ const chinaAzureSettings: ProviderSettings = {
 			},
 			armResource: {
 				id: SettingIds.arm,
-				endpoint: 'https://managemement.chinacloudapi.net',
+				endpoint: 'https://management.chinacloudapi.cn',
 				azureResourceId: AzureResource.ResourceManagement
 			},
 			sqlResource: {
