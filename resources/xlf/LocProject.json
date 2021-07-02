@@ -152,6 +152,12 @@
           "LclFile": "resources\\localization\\LCL\\{Lang}\\sql.xlf.lcl",
           "CopyOption": "LangIDOnPath",
           "OutputPath": "resources\\xlf"
+        },
+    {
+          "SourceFile": "resources\\xlf\\en\\xml-language-features.xlf",
+          "LclFile": "resources\\localization\\LCL\\{Lang}\\xml-language-features.xlf.lcl",
+          "CopyOption": "LangIDOnPath",
+          "OutputPath": "resources\\xlf"
         }
       ]
     }

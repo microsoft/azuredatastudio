@@ -8,7 +8,99 @@
       <source xml:lang="en">[Optional] Log debug output to the console (View -&gt; Output) and then select appropriate output channel from the dropdown</source>
     </trans-unit>
   </body></file>
-  <file original="extensions/import/out/wizard/pages/summaryPage" source-language="en" datatype="plaintext"><body>
+  <file original="extensions/import/out/services/serviceClient" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="serviceStarted">
+      <source xml:lang="en">{0} Started</source>
+    </trans-unit>
+    <trans-unit id="serviceStarting">
+      <source xml:lang="en">Starting {0}</source>
+    </trans-unit>
+    <trans-unit id="flatFileImport.serviceStartFailed">
+      <source xml:lang="en">Failed to start {0}: {1}</source>
+    </trans-unit>
+    <trans-unit id="installingServiceDetailed">
+      <source xml:lang="en">Installing {0} to {1}</source>
+    </trans-unit>
+    <trans-unit id="installingService">
+      <source xml:lang="en">Installing {0} Service</source>
+    </trans-unit>
+    <trans-unit id="serviceInstalled">
+      <source xml:lang="en">Installed {0}</source>
+    </trans-unit>
+    <trans-unit id="downloadingService">
+      <source xml:lang="en">Downloading {0}</source>
+    </trans-unit>
+    <trans-unit id="downloadingServiceSize">
+      <source xml:lang="en">({0} KB)</source>
+    </trans-unit>
+    <trans-unit id="downloadingServiceStatus">
+      <source xml:lang="en">Downloading {0}</source>
+    </trans-unit>
+    <trans-unit id="downloadingServiceComplete">
+      <source xml:lang="en">Done downloading {0}</source>
+    </trans-unit>
+    <trans-unit id="entryExtractedChannelMsg">
+      <source xml:lang="en">Extracted {0} ({1}/{2})</source>
+    </trans-unit>
+  </body></file>
+  <file original="extensions/import/out/common/constants" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="import.serviceCrashButton">
+      <source xml:lang="en">Give Feedback</source>
+    </trans-unit>
+    <trans-unit id="serviceCrashMessage">
+      <source xml:lang="en">service component could not start</source>
+    </trans-unit>
+    <trans-unit id="flatFileImport.serverDropdownTitle">
+      <source xml:lang="en">Server the database is in</source>
+    </trans-unit>
+    <trans-unit id="flatFileImport.databaseDropdownTitle">
+      <source xml:lang="en">Database the table is created in</source>
+    </trans-unit>
+    <trans-unit id="flatFile.InvalidFileLocation">
+      <source xml:lang="en">Invalid file location. Please try a different input file</source>
+    </trans-unit>
+    <trans-unit id="flatFileImport.browseFiles">
+      <source xml:lang="en">Browse</source>
+    </trans-unit>
+    <trans-unit id="flatFileImport.openFile">
+      <source xml:lang="en">Open</source>
+    </trans-unit>
+    <trans-unit id="flatFileImport.fileTextboxTitle">
+      <source xml:lang="en">Location of the file to be imported</source>
+    </trans-unit>
+    <trans-unit id="flatFileImport.tableTextboxTitle">
+      <source xml:lang="en">New table name</source>
+    </trans-unit>
+    <trans-unit id="flatFileImport.schemaTextboxTitle">
+      <source xml:lang="en">Table schema</source>
+    </trans-unit>
+    <trans-unit id="flatFileImport.importData">
+      <source xml:lang="en">Import Data</source>
+    </trans-unit>
+    <trans-unit id="flatFileImport.next">
+      <source xml:lang="en">Next</source>
+    </trans-unit>
+    <trans-unit id="flatFileImport.columnName">
+      <source xml:lang="en">Column Name</source>
+    </trans-unit>
+    <trans-unit id="flatFileImport.dataType">
+      <source xml:lang="en">Data Type</source>
+    </trans-unit>
+    <trans-unit id="flatFileImport.primaryKey">
+      <source xml:lang="en">Primary Key</source>
+    </trans-unit>
+    <trans-unit id="flatFileImport.allowNulls">
+      <source xml:lang="en">Allow Nulls</source>
+    </trans-unit>
+    <trans-unit id="flatFileImport.prosePreviewMessage">
+      <source xml:lang="en">This operation analyzed the input file structure to generate the preview below for up to the first 50 rows.</source>
+    </trans-unit>
+    <trans-unit id="flatFileImport.prosePreviewMessageFail">
+      <source xml:lang="en">This operation was unsuccessful. Please try a different input file.</source>
+    </trans-unit>
+    <trans-unit id="flatFileImport.refresh">
+      <source xml:lang="en">Refresh</source>
+    </trans-unit>
     <trans-unit id="flatFileImport.importInformation">
       <source xml:lang="en">Import information</source>
     </trans-unit>
@@ -33,64 +125,11 @@
     <trans-unit id="flatFileImport.success.norows">
       <source xml:lang="en">✔ You have successfully inserted the data into a table.</source>
     </trans-unit>
-  </body></file>
-  <file original="extensions/import/out/wizard/pages/prosePreviewPage" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="flatFileImport.prosePreviewMessage">
-      <source xml:lang="en">This operation analyzed the input file structure to generate the preview below for up to the first 50 rows.</source>
-    </trans-unit>
-    <trans-unit id="flatFileImport.prosePreviewMessageFail">
-      <source xml:lang="en">This operation was unsuccessful. Please try a different input file.</source>
-    </trans-unit>
-    <trans-unit id="flatFileImport.refresh">
-      <source xml:lang="en">Refresh</source>
-    </trans-unit>
-  </body></file>
-  <file original="extensions/import/out/wizard/pages/modifyColumnsPage" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="flatFileImport.importData">
-      <source xml:lang="en">Import Data</source>
-    </trans-unit>
-    <trans-unit id="flatFileImport.next">
-      <source xml:lang="en">Next</source>
-    </trans-unit>
-    <trans-unit id="flatFileImport.columnName">
-      <source xml:lang="en">Column Name</source>
-    </trans-unit>
-    <trans-unit id="flatFileImport.dataType">
-      <source xml:lang="en">Data Type</source>
-    </trans-unit>
-    <trans-unit id="flatFileImport.primaryKey">
-      <source xml:lang="en">Primary Key</source>
-    </trans-unit>
-    <trans-unit id="flatFileImport.allowNulls">
-      <source xml:lang="en">Allow Nulls</source>
-    </trans-unit>
-  </body></file>
-  <file original="extensions/import/out/wizard/pages/fileConfigPage" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="flatFileImport.serverDropdownTitle">
-      <source xml:lang="en">Server the database is in</source>
-    </trans-unit>
-    <trans-unit id="flatFileImport.databaseDropdownTitle">
-      <source xml:lang="en">Database the table is created in</source>
-    </trans-unit>
-    <trans-unit id="flatFileImport.browseFiles">
-      <source xml:lang="en">Browse</source>
-    </trans-unit>
-    <trans-unit id="flatFileImport.openFile">
-      <source xml:lang="en">Open</source>
-    </trans-unit>
-    <trans-unit id="flatFileImport.fileTextboxTitle">
-      <source xml:lang="en">Location of the file to be imported</source>
-    </trans-unit>
-    <trans-unit id="flatFileImport.tableTextboxTitle">
-      <source xml:lang="en">New table name</source>
-    </trans-unit>
-    <trans-unit id="flatFileImport.schemaTextboxTitle">
-      <source xml:lang="en">Table schema</source>
-    </trans-unit>
-  </body></file>
-  <file original="extensions/import/out/wizard/flatFileWizard" source-language="en" datatype="plaintext"><body>
     <trans-unit id="import.needConnection">
       <source xml:lang="en">Please connect to a server before using this wizard.</source>
+    </trans-unit>
+    <trans-unit id="import.needSQLConnection">
+      <source xml:lang="en">SQL Server Import extension does not support this type of connection</source>
     </trans-unit>
     <trans-unit id="flatFileImport.wizardName">
       <source xml:lang="en">Import flat file wizard</source>
@@ -109,46 +148,6 @@
     </trans-unit>
     <trans-unit id="flatFileImport.importNewFile">
       <source xml:lang="en">Import new file</source>
-    </trans-unit>
-  </body></file>
-  <file original="extensions/import/out/services/telemetry" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="import.serviceCrashButton">
-      <source xml:lang="en">Give Feedback</source>
-    </trans-unit>
-    <trans-unit id="serviceCrashMessage">
-      <source xml:lang="en">service component could not start</source>
-    </trans-unit>
-  </body></file>
-  <file original="extensions/import/out/services/serviceClient" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="serviceStarted">
-      <source xml:lang="en">Service Started</source>
-    </trans-unit>
-    <trans-unit id="serviceStarting">
-      <source xml:lang="en">Starting service</source>
-    </trans-unit>
-    <trans-unit id="flatFileImport.serviceStartFailed">
-      <source xml:lang="en">Failed to start Import service{0}</source>
-    </trans-unit>
-    <trans-unit id="installingServiceDetailed">
-      <source xml:lang="en">Installing {0} service to {1}</source>
-    </trans-unit>
-    <trans-unit id="installingService">
-      <source xml:lang="en">Installing Service</source>
-    </trans-unit>
-    <trans-unit id="serviceInstalled">
-      <source xml:lang="en">Installed</source>
-    </trans-unit>
-    <trans-unit id="downloadingService">
-      <source xml:lang="en">Downloading {0}</source>
-    </trans-unit>
-    <trans-unit id="downloadingServiceSize">
-      <source xml:lang="en">({0} KB)</source>
-    </trans-unit>
-    <trans-unit id="downloadingServiceStatus">
-      <source xml:lang="en">Downloading Service</source>
-    </trans-unit>
-    <trans-unit id="downloadingServiceComplete">
-      <source xml:lang="en">Done!</source>
     </trans-unit>
   </body></file>
 </xliff>
