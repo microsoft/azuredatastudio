@@ -67,29 +67,11 @@ To learn more about projects [read our docs](https://aka.ms/azuredatastudio-proj
     <trans-unit id="UnknownProjectTypeError">
       <source xml:lang="en">No provider was found for project type with id: '{0}'</source>
     </trans-unit>
-    <trans-unit id="dataworkspace.workspaceRequiredMessage">
-      <source xml:lang="en">A workspace is required in order to use the project feature.</source>
-    </trans-unit>
-    <trans-unit id="dataworkspace.openWorkspace">
-      <source xml:lang="en">Open Workspace…</source>
-    </trans-unit>
-    <trans-unit id="dataworkspace.createWorkspaceConfirmation">
-      <source xml:lang="en">A workspace will be created and opened in order to open project. Azure Data Studio will restart and if there is a folder currently open, it will be closed.</source>
-    </trans-unit>
-    <trans-unit id="dataworkspace.enterWorkspaceConfirmation">
-      <source xml:lang="en">To open this workspace, Azure Data Studio will restart. If there is a workspace or folder currently open, it will be closed.</source>
-    </trans-unit>
-    <trans-unit id="dataworkspace.workspaceContainsNotAddedProjects">
-      <source xml:lang="en">The current workspace contains one or more projects that have not been added to the workspace. Use the 'Open existing' dialog to add projects to the projects pane.</source>
-    </trans-unit>
-    <trans-unit id="dataworkspace.launchOpenExistingDialog">
-      <source xml:lang="en">Launch Open existing dialog</source>
-    </trans-unit>
-    <trans-unit id="dataworkspace.doNotShowAgain">
-      <source xml:lang="en">Do not show again</source>
+    <trans-unit id="dataworkspace.restartConfirmation">
+      <source xml:lang="en">Azure Data Studio needs to be restarted for the project to be created and added to the workspace, do this now?</source>
     </trans-unit>
     <trans-unit id="dataworkspace.projectsFailedToLoad">
-      <source xml:lang="en">Some projects failed to load. Please open console for more information</source>
+      <source xml:lang="en">Some projects failed to load. To view more details, [open the developer console](command:workbench.action.toggleDevTools)</source>
     </trans-unit>
     <trans-unit id="fileDoesNotExist">
       <source xml:lang="en">File '{0}' doesn't exist</source>
@@ -100,20 +82,29 @@ To learn more about projects [read our docs](https://aka.ms/azuredatastudio-proj
     <trans-unit id="noPreviousData">
       <source xml:lang="en">Prior {0} for the current project will appear here, please run to see the results.</source>
     </trans-unit>
+    <trans-unit id="gitCloneMessage">
+      <source xml:lang="en">Cloning git repository '{0}'...</source>
+    </trans-unit>
+    <trans-unit id="gitCloneError">
+      <source xml:lang="en">Error during git clone. View git output for more details</source>
+    </trans-unit>
     <trans-unit id="dataworkspace.ok">
       <source xml:lang="en">OK</source>
     </trans-unit>
-    <trans-unit id="dataworkspace.cancel">
-      <source xml:lang="en">Cancel</source>
-    </trans-unit>
     <trans-unit id="dataworkspace.browse">
       <source xml:lang="en">Browse</source>
+    </trans-unit>
+    <trans-unit id="dataworkspace.browseEllipsis">
+      <source xml:lang="en">Browse...</source>
     </trans-unit>
     <trans-unit id="dataworkspace.open">
       <source xml:lang="en">Open</source>
     </trans-unit>
     <trans-unit id="dataworkspace.create">
       <source xml:lang="en">Create</source>
+    </trans-unit>
+    <trans-unit id="dataworkspace.select">
+      <source xml:lang="en">Select</source>
     </trans-unit>
     <trans-unit id="dataworkspace.NewProjectDialogTitle">
       <source xml:lang="en">Create new project</source>
@@ -127,20 +118,14 @@ To learn more about projects [read our docs](https://aka.ms/azuredatastudio-proj
     <trans-unit id="dataworkspace.projectNamePlaceholder">
       <source xml:lang="en">Enter project name</source>
     </trans-unit>
+    <trans-unit id="dataworkspace.enterProjectName">
+      <source xml:lang="en">Enter Project Name</source>
+    </trans-unit>
     <trans-unit id="dataworkspace.projectLocationTitle">
       <source xml:lang="en">Location</source>
     </trans-unit>
     <trans-unit id="dataworkspace.projectLocationPlaceholder">
       <source xml:lang="en">Select location to create project</source>
-    </trans-unit>
-    <trans-unit id="dataworkspace.AddProjectToCurrentWorkspace">
-      <source xml:lang="en">This project will be added to the current workspace.</source>
-    </trans-unit>
-    <trans-unit id="dataworkspace.NewWorkspaceWillBeCreated">
-      <source xml:lang="en">A workspace will be created for this project.</source>
-    </trans-unit>
-    <trans-unit id="dataworkspace.workspaceLocationTitle">
-      <source xml:lang="en">Workspace location</source>
     </trans-unit>
     <trans-unit id="dataworkspace.projectParentDirectoryNotExistError">
       <source xml:lang="en">The selected project location '{0}' does not exist or is not a directory.</source>
@@ -148,17 +133,20 @@ To learn more about projects [read our docs](https://aka.ms/azuredatastudio-proj
     <trans-unit id="dataworkspace.projectDirectoryAlreadyExistError">
       <source xml:lang="en">There is already a directory named '{0}' in the selected location: '{1}'.</source>
     </trans-unit>
-    <trans-unit id="dataworkspace.workspaceFileInvalidError">
-      <source xml:lang="en">The selected workspace file path '{0}' does not have the required file extension {1}.</source>
+    <trans-unit id="dataworkspace.projectDirectoryAlreadyExistErrorShort">
+      <source xml:lang="en">Directory '{0}' already exists in the selected location, please choose another</source>
     </trans-unit>
-    <trans-unit id="dataworkspace.workspaceParentDirectoryNotExistError">
-      <source xml:lang="en">The selected workspace location '{0}' does not exist or is not a directory.</source>
+    <trans-unit id="dataworkspace.selectProjectType">
+      <source xml:lang="en">Select Project Type</source>
     </trans-unit>
-    <trans-unit id="dataworkspace.workspaceFileAlreadyExistsError">
-      <source xml:lang="en">The selected workspace file '{0}' already exists. To add the project to an existing workspace, use the Open Existing dialog to first open the workspace.</source>
+    <trans-unit id="dataworkspace.selectProjectLocation">
+      <source xml:lang="en">Select Project Location</source>
+    </trans-unit>
+    <trans-unit id="dataworkspace.nameCannotBeEmpty">
+      <source xml:lang="en">Name cannot be empty</source>
     </trans-unit>
     <trans-unit id="dataworkspace.openExistingDialogTitle">
-      <source xml:lang="en">Open existing</source>
+      <source xml:lang="en">Open Existing Project</source>
     </trans-unit>
     <trans-unit id="dataworkspace.fileNotExistError">
       <source xml:lang="en">The selected {0} file '{1}' does not exist or is not a file.</source>
@@ -169,14 +157,11 @@ To learn more about projects [read our docs](https://aka.ms/azuredatastudio-proj
     <trans-unit id="dataworkspace.project">
       <source xml:lang="en">Project</source>
     </trans-unit>
-    <trans-unit id="dataworkspace.workspace">
-      <source xml:lang="en">Workspace</source>
-    </trans-unit>
     <trans-unit id="dataworkspace.locationSelectorTitle">
       <source xml:lang="en">Location</source>
     </trans-unit>
     <trans-unit id="dataworkspace.projectFilePlaceholder">
-      <source xml:lang="en">Select project (.sqlproj) file</source>
+      <source xml:lang="en">Select project file</source>
     </trans-unit>
     <trans-unit id="dataworkspace.workspacePlaceholder">
       <source xml:lang="en">Select workspace ({0}) file</source>
