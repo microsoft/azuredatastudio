@@ -126,15 +126,6 @@ export class FileConfigPage extends ImportPage {
 		return true;
 	}
 
-	public setupNavigationValidator() {
-		this.instance.registerNavigationValidator((info) => {
-			if (this.schemaLoader.loading || this.databaseDropdown.loading) {
-				return false;
-			}
-			return true;
-		});
-	}
-
 	private async createServerDropdown(): Promise<azdata.FormComponent> {
 		this.serverDropdown = this.view.modelBuilder.dropDown().withProps({
 			required: true
