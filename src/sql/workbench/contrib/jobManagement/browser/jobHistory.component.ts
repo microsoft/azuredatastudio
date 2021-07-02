@@ -350,7 +350,7 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 		}
 	}
 
-	protected initActionBar() {
+	protected override initActionBar() {
 		this._runJobAction = this.instantiationService.createInstance(RunJobAction);
 		this._stopJobAction = this.instantiationService.createInstance(StopJobAction);
 		this._editJobAction = this.instantiationService.createInstance(EditJobAction);

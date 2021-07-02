@@ -25,7 +25,7 @@ export const TextCompareEditorVisible = new RawContextKey<boolean>('textCompareE
 
 export class BareResultsGridInfo extends BareFontInfo {
 
-	public static createFromRawSettings(opts: {
+	public static override createFromRawSettings(opts: {
 		fontFamily?: string;
 		fontWeight?: string;
 		fontSize?: number;
@@ -96,7 +96,7 @@ export class QueryResultsEditor extends EditorPane {
 		this.applySettings();
 	}
 
-	public get input(): QueryResultsInput {
+	public override get input(): QueryResultsInput {
 		return this._input as QueryResultsInput;
 	}
 
@@ -120,7 +120,7 @@ export class QueryResultsEditor extends EditorPane {
 		}
 	}
 
-	dispose() {
+	override dispose() {
 		this.styleSheet.remove();
 		this.styleSheet = undefined;
 		super.dispose();
@@ -130,13 +130,13 @@ export class QueryResultsEditor extends EditorPane {
 		this.resultsView.layout(dimension);
 	}
 
-	setInput(input: QueryResultsInput, options: EditorOptions, context: IEditorOpenContext): Promise<void> {
+	override setInput(input: QueryResultsInput, options: EditorOptions, context: IEditorOpenContext): Promise<void> {
 		super.setInput(input, options, context, CancellationToken.None);
 		this.resultsView.input = input;
 		return Promise.resolve<void>(null);
 	}
 
-	clearInput() {
+	override clearInput() {
 		this.resultsView.clearInput();
 		super.clearInput();
 	}
@@ -153,7 +153,7 @@ export class QueryResultsEditor extends EditorPane {
 		this.resultsView.registerQueryModelViewTab(title, componentId);
 	}
 
-	public focus(): void {
+	public override focus(): void {
 		this.resultsView.focus();
 	}
 }

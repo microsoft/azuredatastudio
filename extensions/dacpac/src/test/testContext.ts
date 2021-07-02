@@ -39,7 +39,8 @@ export function createContext(): TestContext {
 			globalStorageUri: undefined,
 			logUri: undefined,
 			storageUri: undefined,
-			secrets: undefined
+			secrets: undefined,
+			extension: undefined
 		},
 		viewContext: viewContext
 	};
@@ -137,8 +138,8 @@ export function createViewContext(): ViewTestContext {
 		let button = radioButton();
 		let builder: azdata.ComponentBuilder<azdata.RadioButtonComponent, azdata.RadioButtonProperties> = {
 			component: () => button,
-			withProps: () => undefined,
-			withProperties: (properties) => {
+			withProperties: () => undefined,
+			withProps: (properties) => {
 				switch ((properties as any).label) {
 					case loc.newDatabase:
 						button.label = loc.newDatabase;

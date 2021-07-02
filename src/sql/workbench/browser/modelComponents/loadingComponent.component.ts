@@ -54,7 +54,7 @@ export default class LoadingComponent extends ComponentBase<azdata.LoadingCompon
 		this.baseInit();
 	}
 
-	ngOnDestroy(): void {
+	override ngOnDestroy(): void {
 		this.baseDestroy();
 	}
 
@@ -64,7 +64,7 @@ export default class LoadingComponent extends ComponentBase<azdata.LoadingCompon
 		this.layout();
 	}
 
-	public setProperties(properties: { [key: string]: any; }): void {
+	public override setProperties(properties: { [key: string]: any; }): void {
 		const wasLoading = this.loading;
 		super.setProperties(properties);
 		if (wasLoading && !this.loading) {

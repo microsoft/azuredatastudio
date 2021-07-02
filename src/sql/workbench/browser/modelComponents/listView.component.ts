@@ -76,7 +76,7 @@ export default class ListViewComponent extends ComponentBase<azdata.ListViewComp
 		this.layout();
 	}
 
-	ngOnDestroy(): void {
+	override ngOnDestroy(): void {
 		this.baseDestroy();
 	}
 
@@ -84,11 +84,11 @@ export default class ListViewComponent extends ComponentBase<azdata.ListViewComp
 		return this.getProperties().options ?? [];
 	}
 
-	public get width(): string | number | undefined {
+	public override get width(): string | number | undefined {
 		return this.getProperties().width ?? undefined;
 	}
 
-	public get height(): string | number | undefined {
+	public override get height(): string | number | undefined {
 		return this.getProperties().height ?? undefined;
 	}
 
@@ -100,7 +100,7 @@ export default class ListViewComponent extends ComponentBase<azdata.ListViewComp
 		return this.getProperties().selectedOptionId ?? undefined;
 	}
 
-	public setProperties(properties: { [key: string]: any }) {
+	public override setProperties(properties: { [key: string]: any }) {
 		super.setProperties(properties);
 		if (this.options) {
 			this._optionsList!.splice(0, this._optionsList!.length, this.options);
@@ -131,7 +131,7 @@ export default class ListViewComponent extends ComponentBase<azdata.ListViewComp
 		});
 	}
 
-	public focus(): void {
+	public override focus(): void {
 		super.focus();
 		if (this._selectedElementIdx !== undefined) {
 			this._optionsList.domFocus();
@@ -140,7 +140,7 @@ export default class ListViewComponent extends ComponentBase<azdata.ListViewComp
 		}
 	}
 
-	public get CSSStyles(): azdata.CssStyles {
+	public override get CSSStyles(): azdata.CssStyles {
 		return this.mergeCss(super.CSSStyles, {
 			'width': this.getWidth(),
 			'height': this.getHeight()

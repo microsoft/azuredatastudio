@@ -25,7 +25,7 @@ export class ShowRecommendedExtensionsByScenarioAction extends Action {
 		super(getScenarioID(scenarioType), localize('showRecommendations', "Show Recommendations"), undefined, true);
 	}
 
-	run(): Promise<void> {
+	override run(): Promise<void> {
 		return this.viewletService.openViewlet(VIEWLET_ID, true)
 			.then(viewlet => viewlet?.getViewPaneContainer() as IExtensionsViewPaneContainer)
 			.then(viewlet => {
@@ -50,7 +50,7 @@ export class InstallRecommendedExtensionsByScenarioAction extends Action {
 		this.recommendations = recommendations;
 	}
 
-	async run(): Promise<void> {
+	override async run(): Promise<void> {
 		if (!this.recommendations.length) { return; }
 		const viewlet = await this.viewletService.openViewlet(VIEWLET_ID, true);
 		const viewPaneContainer = viewlet?.getViewPaneContainer() as IExtensionsViewPaneContainer;
@@ -81,7 +81,7 @@ export class OpenExtensionAuthoringDocsAction extends Action {
 		super(id, label);
 	}
 
-	async run(): Promise<void> {
+	override async run(): Promise<void> {
 		await this.openerService.open(URI.parse(OpenExtensionAuthoringDocsAction.extensionAuthoringDocsURI));
 	}
 }

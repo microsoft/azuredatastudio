@@ -17,7 +17,7 @@ export class FileBrowserController extends treedefaults.DefaultController {
 		super({ clickBehavior: treedefaults.ClickBehavior.ON_MOUSE_DOWN, openMode: treedefaults.OpenMode.SINGLE_CLICK });
 	}
 
-	protected onLeftClick(tree: ITree, element: any, event: IMouseEvent, origin: string = 'mouse'): boolean {
+	protected override onLeftClick(tree: ITree, element: any, event: IMouseEvent, origin: string = 'mouse'): boolean {
 		// In file browser, double clicking an element calls tree.dispose(). There should not be any tree events after selection.
 		if (event.detail === 2) {
 			let payload = { origin: origin, originalEvent: event };
@@ -39,7 +39,7 @@ export class FileBrowserController extends treedefaults.DefaultController {
 		}
 	}
 
-	protected onEnter(tree: ITree, event: IKeyboardEvent): boolean {
+	protected override onEnter(tree: ITree, event: IKeyboardEvent): boolean {
 		let payload = { origin: 'keyboard', originalEvent: event };
 
 		if (tree.getHighlight()) {

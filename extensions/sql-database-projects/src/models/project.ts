@@ -1131,7 +1131,7 @@ export class FileProjectEntry extends ProjectEntry implements IFileProjectEntry 
 		this.sqlObjectType = sqlObjectType;
 	}
 
-	public toString(): string {
+	public override toString(): string {
 		return this.fsUri.path;
 	}
 
@@ -1173,7 +1173,7 @@ export class DacpacReferenceProjectEntry extends FileProjectEntry implements IDa
 		return path.parse(utils.getPlatformSafeFileEntryPath(this.fsUri.fsPath)).name;
 	}
 
-	public pathForSqlProj(): string {
+	public override pathForSqlProj(): string {
 		// need to remove the leading slash from path for build to work
 		return utils.convertSlashesForSqlProj(this.fsUri.path.substring(1));
 	}
@@ -1191,7 +1191,7 @@ export class SystemDatabaseReferenceProjectEntry extends FileProjectEntry implem
 		return path.parse(utils.getPlatformSafeFileEntryPath(this.fsUri.fsPath)).name;
 	}
 
-	public pathForSqlProj(): string {
+	public override pathForSqlProj(): string {
 		// need to remove the leading slash for system database path for build to work on Windows
 		return utils.convertSlashesForSqlProj(this.fsUri.path.substring(1));
 	}
@@ -1226,7 +1226,7 @@ export class SqlProjectReferenceProjectEntry extends FileProjectEntry implements
 		return this.projectName;
 	}
 
-	public pathForSqlProj(): string {
+	public override pathForSqlProj(): string {
 		// need to remove the leading slash from path for build to work on Windows
 		return utils.convertSlashesForSqlProj(this.fsUri.path.substring(1));
 	}

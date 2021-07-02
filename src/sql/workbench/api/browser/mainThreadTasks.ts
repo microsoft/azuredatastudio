@@ -32,7 +32,7 @@ export class MainThreadTasks extends Disposable implements MainThreadTasksShape 
 		this._proxy = extHostContext.getProxy(SqlExtHostContext.ExtHostTasks);
 	}
 
-	dispose() {
+	override dispose() {
 		this._disposables.forEach(value => value.dispose());
 		this._disposables.clear();
 	}

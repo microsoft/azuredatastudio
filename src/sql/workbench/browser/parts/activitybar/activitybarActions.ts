@@ -10,22 +10,29 @@ import { KeyCode } from 'vs/base/common/keyCodes';
 import { IMenuService } from 'vs/platform/actions/common/actions';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { IColorTheme, IThemeService } from 'vs/platform/theme/common/themeService';
-import { ActivityAction, ActivityActionViewItem, ICompositeBarColors } from 'vs/workbench/browser/parts/compositeBarActions';
+import { ActivityAction, ActivityActionViewItem, IActivityHoverOptions, ICompositeBarColors } from 'vs/workbench/browser/parts/compositeBarActions';
 import { IAccountManagementService } from 'sql/platform/accounts/common/interfaces';
+import { IHoverService } from 'vs/workbench/services/hover/browser/hover';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 
 export class AccountsActionViewItem extends ActivityActionViewItem {
 	constructor(
 		action: ActivityAction,
 		colors: (theme: IColorTheme) => ICompositeBarColors,
+		hoverOptions: IActivityHoverOptions,
 		@IThemeService themeService: IThemeService,
 		@IContextMenuService protected contextMenuService: IContextMenuService,
 		@IMenuService protected menuService: IMenuService,
-		@IAccountManagementService private readonly accountManagementService: IAccountManagementService
+		@IAccountManagementService private readonly accountManagementService: IAccountManagementService,
+		@IHoverService hoverService: IHoverService,
+		@IConfigurationService configurationService: IConfigurationService,
+		@IKeybindingService keybindingService: IKeybindingService,
 	) {
-		super(action, { draggable: false, colors, icon: true }, themeService);
+		super(action, { draggable: false, colors, icon: true, hoverOptions: hoverOptions }, themeService, hoverService, configurationService, keybindingService);
 	}
 
-	render(container: HTMLElement): void {
+	override render(container: HTMLElement): void {
 		super.render(container);
 
 		// Context menus are triggered on mouse down so that an item can be picked

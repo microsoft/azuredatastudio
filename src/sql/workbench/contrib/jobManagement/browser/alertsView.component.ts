@@ -65,7 +65,7 @@ export class AlertsViewComponent extends JobManagementView implements OnInit, On
 	@ViewChild('jobalertsgrid') _gridEl: ElementRef;
 
 	public alerts: azdata.AgentAlertInfo[];
-	public contextAction = NewAlertAction;
+	public override contextAction = NewAlertAction;
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _cd: ChangeDetectorRef,
@@ -97,7 +97,7 @@ export class AlertsViewComponent extends JobManagementView implements OnInit, On
 		this._parentComponent = this._agentViewComponent;
 	}
 
-	ngOnDestroy() {
+	override ngOnDestroy() {
 		this._didTabChange = true;
 	}
 
@@ -196,14 +196,14 @@ export class AlertsViewComponent extends JobManagementView implements OnInit, On
 		this._table.resizeCanvas();
 	}
 
-	protected getTableActions(): IAction[] {
+	protected override getTableActions(): IAction[] {
 		return [
 			this._instantiationService.createInstance(EditAlertAction),
 			this._instantiationService.createInstance(DeleteAlertAction)
 		];
 	}
 
-	protected getCurrentTableObject(rowIndex: number): any {
+	protected override getCurrentTableObject(rowIndex: number): any {
 		let targetObject = {
 			alertInfo: this.alerts && this.alerts.length >= rowIndex ? this.alerts[rowIndex] : undefined
 		};

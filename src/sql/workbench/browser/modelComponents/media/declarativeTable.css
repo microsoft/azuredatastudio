@@ -26,3 +26,11 @@
 	width: 100%;
 	text-align: center;
 }
+
+.declarative-table .declarative-table-cell .codicon.toggle-more {
+	border-width: 0px;
+	height: 16px;
+	width: 26px;
+	vertical-align: middle;
+	cursor: pointer;
+}

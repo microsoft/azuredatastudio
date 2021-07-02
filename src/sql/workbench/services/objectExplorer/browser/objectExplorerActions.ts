@@ -42,7 +42,7 @@ export class OEAction extends ExecuteCommandAction {
 		super(id, label, commandService);
 	}
 
-	public async run(actionContext: any): Promise<boolean> {
+	public override async run(actionContext: any): Promise<boolean> {
 		const treeSelectionHandler = this._instantiationService.createInstance(TreeSelectionHandler);
 
 		let profile: IConnectionProfile | undefined = undefined;

@@ -361,7 +361,7 @@ export class ExplorerScriptSelectAction extends ScriptSelectAction {
 		super(id, label, queryEditorService, connectionManagementService, scriptingService);
 	}
 
-	public async run(actionContext: BaseActionContext): Promise<void> {
+	public override async run(actionContext: BaseActionContext): Promise<void> {
 		await this.progressService.withProgress({ location: ProgressLocation.Window }, async () => await super.run(actionContext));
 	}
 }
@@ -378,7 +378,7 @@ export class ExplorerScriptCreateAction extends ScriptCreateAction {
 		super(id, label, queryEditorService, connectionManagementService, scriptingService, errorMessageService);
 	}
 
-	public async run(actionContext: BaseActionContext): Promise<void> {
+	public override async run(actionContext: BaseActionContext): Promise<void> {
 		await this.progressService.withProgress({ location: ProgressLocation.Window }, async () => await super.run(actionContext));
 	}
 }
@@ -395,7 +395,7 @@ export class ExplorerScriptAlterAction extends ScriptAlterAction {
 		super(id, label, queryEditorService, connectionManagementService, scriptingService, errorMessageService);
 	}
 
-	public async run(actionContext: BaseActionContext): Promise<void> {
+	public override async run(actionContext: BaseActionContext): Promise<void> {
 		await this.progressService.withProgress({ location: ProgressLocation.Window }, async () => await super.run(actionContext));
 	}
 }
@@ -412,7 +412,7 @@ export class ExplorerScriptExecuteAction extends ScriptExecuteAction {
 		super(id, label, queryEditorService, connectionManagementService, scriptingService, errorMessageService);
 	}
 
-	public async run(actionContext: BaseActionContext): Promise<void> {
+	public override async run(actionContext: BaseActionContext): Promise<void> {
 		await this.progressService.withProgress({ location: ProgressLocation.Window }, async () => await super.run(actionContext));
 	}
 }

@@ -145,3 +145,5 @@ gulp.task('package-rebuild-extensions', task.series(
 	task.define('clean-rebuild-extensions', () => ext.cleanRebuildExtensions('.build/extensions')),
 	task.define('rebuild-extensions-build', () => ext.packageRebuildExtensionsStream().pipe(gulp.dest('.build'))),
 ));
+
+gulp.task('refresh-langpacks', () => loc.refreshLangpacks());

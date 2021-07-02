@@ -45,7 +45,7 @@ export default class RadioCardGroup extends ComponentBase<azdata.RadioCardGroupC
 		this.layout();
 	}
 
-	ngOnDestroy(): void {
+	override ngOnDestroy(): void {
 		Object.keys(this.iconClasses).forEach((key) => {
 			DOM.removeCSSRulesContainingSelector(this.iconClasses[key]);
 		});
@@ -162,7 +162,7 @@ export default class RadioCardGroup extends ComponentBase<azdata.RadioCardGroupC
 		return this.iconClasses[cardId];
 	}
 
-	public setProperties(properties: { [key: string]: any }) {
+	public override setProperties(properties: { [key: string]: any }) {
 		super.setProperties(properties);
 		// This is the entry point for the extension to set the selectedCardId
 		if (this.selectedCardId) {
@@ -227,7 +227,7 @@ export default class RadioCardGroup extends ComponentBase<azdata.RadioCardGroupC
 		this.focusedCardId = undefined;
 	}
 
-	public get CSSStyles(): azdata.CssStyles {
+	public override get CSSStyles(): azdata.CssStyles {
 		return this.mergeCss(super.CSSStyles, {
 			'width': this.getWidth(),
 			'height': this.getHeight()

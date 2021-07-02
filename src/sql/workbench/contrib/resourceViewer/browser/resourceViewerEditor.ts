@@ -84,11 +84,11 @@ export class ResourceViewerEditor extends EditorPane {
 		return resourceViewerTableContainer;
 	}
 
-	public get input(): ResourceViewerInput | undefined {
+	public override get input(): ResourceViewerInput | undefined {
 		return this._input as ResourceViewerInput;
 	}
 
-	async setInput(input: ResourceViewerInput, options: EditorOptions | undefined, context: IEditorOpenContext, token: CancellationToken): Promise<void> {
+	override async setInput(input: ResourceViewerInput, options: EditorOptions | undefined, context: IEditorOpenContext, token: CancellationToken): Promise<void> {
 		await super.setInput(input, options, context, token);
 
 		this._resourceViewerTable.title = input.title;
@@ -144,10 +144,8 @@ export class ResourceViewerEditor extends EditorPane {
 
 	private getMenuActions(context: azdata.DataGridItem): IAction[] {
 		// Get the contributed menu action items. Note that this currently doesn't
-		// have any item-level support for action filtering, that can be added to the scoped context as
-		// needed in the future
-		const scopedContext = this._contextKeyService.createScoped();
-		const menu = this._menuService.createMenu(MenuId.DataGridItemContext, scopedContext);
+		// have any item-level support for action filtering, that can be added as needed in the future
+		const menu = this._menuService.createMenu(MenuId.DataGridItemContext, this._contextKeyService);
 		const options = { arg: context };
 		const groups = menu.getActions(options);
 		const actions: IAction[] = [];

@@ -130,7 +130,7 @@ export class ModelManagementController extends ControllerBase {
 	 * Register events in the main view
 	 * @param view main view
 	 */
-	public registerEvents(view: ModelViewBase): void {
+	public override registerEvents(view: ModelViewBase): void {
 
 		// Register events
 		//

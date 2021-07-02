@@ -61,7 +61,7 @@ export class ErrorMessageDialog extends Modal {
 		this._body = DOM.append(container, DOM.$('div.error-dialog'));
 	}
 
-	public render() {
+	public override render() {
 		super.render();
 		this._register(attachModalDialogStyler(this, this._themeService));
 		this.createCopyButton();
@@ -126,12 +126,12 @@ export class ErrorMessageDialog extends Modal {
 	}
 
 	/* espace key */
-	protected onClose() {
+	protected override onClose() {
 		this.ok();
 	}
 
 	/* enter key */
-	protected onAccept() {
+	protected override onAccept() {
 		this.ok();
 	}
 
@@ -179,6 +179,6 @@ export class ErrorMessageDialog extends Modal {
 		}
 	}
 
-	public dispose(): void {
+	public override dispose(): void {
 	}
 }

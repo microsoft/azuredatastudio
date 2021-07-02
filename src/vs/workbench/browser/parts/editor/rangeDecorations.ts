@@ -110,7 +110,7 @@ export class RangeHighlightDecorations extends Disposable {
 		return (isWholeLine ? RangeHighlightDecorations._WHOLE_LINE_RANGE_HIGHLIGHT : RangeHighlightDecorations._RANGE_HIGHLIGHT);
 	}
 
-	dispose() {
+	override dispose() {
 		super.dispose();
 
 		if (this.editor && this.editor.getModel()) {

@@ -24,7 +24,7 @@ export class TestInstantiationService extends VsTestInstantiationService {
 		this._createInstanceStubsMap.set(ctorOrDescriptor, obj);
 	}
 
-	createInstance(ctorOrDescriptor: any | SyncDescriptor<any>, ...rest: any[]): any {
+	override createInstance(ctorOrDescriptor: any | SyncDescriptor<any>, ...rest: any[]): any {
 		if (this._createInstanceStubsMap.has(ctorOrDescriptor)) {
 			return this._createInstanceStubsMap.get(ctorOrDescriptor);
 		}

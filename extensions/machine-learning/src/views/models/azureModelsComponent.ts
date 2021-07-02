@@ -42,7 +42,7 @@ export class AzureModelsComponent extends ModelViewBase implements IDataComponen
 		this.azureSignInComponent = new AzureSignInComponent(this._apiWrapper, modelBuilder, this);
 		this._loader = modelBuilder.loadingComponent()
 			.withItem(this.azureModelsTable.component)
-			.withProperties({
+			.withProps({
 				loading: true
 			}).component();
 		this.azureModelsTable.onModelSelectionChanged(async () => {

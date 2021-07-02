@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as azdata from 'azdata';
+import type * as azdataType from 'azdata';
 import * as vscode from 'vscode';
 import * as path from 'path';
 import { DialogBase } from './dialogBase';
@@ -34,6 +34,9 @@ export class NewProjectDialog extends DialogBase {
 	}
 
 	async validate(): Promise<boolean> {
+		if (await this.workspaceService.validateWorkspace() === false) {
+			return false;
+		}
 		try {
 			// the selected location should be an existing directory
 			const parentDirectoryExists = await directoryExist(this.model.location);
@@ -49,11 +52,6 @@ export class NewProjectDialog extends DialogBase {
 				return false;
 			}
 
-			if (this.workspaceInputBox!.enabled) {
-				const sameFolderAsNewProject = path.join(this.model.location, this.model.name) === path.dirname(this.workspaceInputBox!.value!);
-				await this.validateNewWorkspace(sameFolderAsNewProject);
-			}
-
 			return true;
 		}
 		catch (err) {
@@ -62,17 +60,14 @@ export class NewProjectDialog extends DialogBase {
 		}
 	}
 
-	async onComplete(): Promise<void> {
+	override async onComplete(): Promise<void> {
 		try {
-			const validateWorkspace = await this.workspaceService.validateWorkspace();
 
 			TelemetryReporter.createActionEvent(TelemetryViews.NewProjectDialog, TelemetryActions.NewProjectDialogCompleted)
-				.withAdditionalProperties({ projectFileExtension: this.model.projectFileExtension, projectTemplateId: this.model.projectTypeId, workspaceValidationPassed: validateWorkspace.toString() })
+				.withAdditionalProperties({ projectFileExtension: this.model.projectFileExtension, projectTemplateId: this.model.projectTypeId })
 				.send();
 
-			if (validateWorkspace) {
-				await this.workspaceService.createProject(this.model.name, vscode.Uri.file(this.model.location), this.model.projectTypeId, vscode.Uri.file(this.workspaceInputBox!.value!));
-			}
+			await this.workspaceService.createProject(this.model.name, vscode.Uri.file(this.model.location), this.model.projectTypeId);
 		}
 		catch (err) {
 
@@ -84,11 +79,11 @@ export class NewProjectDialog extends DialogBase {
 		}
 	}
 
-	protected async initialize(view: azdata.ModelView): Promise<void> {
+	protected async initialize(view: azdataType.ModelView): Promise<void> {
 		const allProjectTypes = await this.workspaceService.getAllProjectTypes();
-		const projectTypeRadioCardGroup = view.modelBuilder.radioCardGroup().withProperties<azdata.RadioCardGroupComponentProperties>({
+		const projectTypeRadioCardGroup = view.modelBuilder.radioCardGroup().withProperties<azdataType.RadioCardGroupComponentProperties>({
 			cards: allProjectTypes.map((projectType: IProjectType) => {
-				return <azdata.RadioCard>{
+				return <azdataType.RadioCard>{
 					id: projectType.id,
 					label: projectType.displayName,
 					icon: projectType.icon,
@@ -119,7 +114,7 @@ export class NewProjectDialog extends DialogBase {
 			this.model.projectTypeId = e.cardId;
 		}));
 
-		const projectNameTextBox = view.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
+		const projectNameTextBox = view.modelBuilder.inputBox().withProperties<azdataType.InputBoxProperties>({
 			ariaLabel: constants.ProjectNameTitle,
 			placeHolder: constants.ProjectNamePlaceholder,
 			required: true,
@@ -129,11 +124,9 @@ export class NewProjectDialog extends DialogBase {
 		this.register(projectNameTextBox.onTextChanged(() => {
 			this.model.name = projectNameTextBox.value!;
 			projectNameTextBox.updateProperty('title', projectNameTextBox.value);
-
-			this.updateWorkspaceInputbox(path.join(this.model.location, this.model.name), this.model.name);
 		}));
 
-		const locationTextBox = view.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
+		const locationTextBox = view.modelBuilder.inputBox().withProperties<azdataType.InputBoxProperties>({
 			ariaLabel: constants.ProjectLocationTitle,
 			placeHolder: constants.ProjectLocationPlaceholder,
 			required: true,
@@ -143,10 +136,9 @@ export class NewProjectDialog extends DialogBase {
 		this.register(locationTextBox.onTextChanged(() => {
 			this.model.location = locationTextBox.value!;
 			locationTextBox.updateProperty('title', locationTextBox.value);
-			this.updateWorkspaceInputbox(path.join(this.model.location, this.model.name), this.model.name);
 		}));
 
-		const browseFolderButton = view.modelBuilder.button().withProperties<azdata.ButtonProperties>({
+		const browseFolderButton = view.modelBuilder.button().withProperties<azdataType.ButtonProperties>({
 			ariaLabel: constants.BrowseButtonText,
 			iconPath: IconPathHelper.folder,
 			height: '16px',
@@ -165,11 +157,7 @@ export class NewProjectDialog extends DialogBase {
 			const selectedFolder = folderUris[0].fsPath;
 			locationTextBox.value = selectedFolder;
 			this.model.location = selectedFolder;
-
-			this.updateWorkspaceInputbox(path.join(this.model.location, this.model.name), this.model.name);
 		}));
-
-		this.createWorkspaceContainer(view);
 
 		const form = view.modelBuilder.formContainer().withFormItems([
 			{
@@ -185,9 +173,7 @@ export class NewProjectDialog extends DialogBase {
 				title: constants.ProjectLocationTitle,
 				required: true,
 				component: this.createHorizontalContainer(view, [locationTextBox, browseFolderButton])
-			},
-			this.workspaceDescriptionFormComponent!,
-			this.workspaceInputFormComponent!
+			}
 		]).component();
 		await view.initializeModel(form);
 		this.initDialogComplete?.resolve();

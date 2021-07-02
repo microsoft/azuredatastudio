@@ -153,7 +153,7 @@ export class GridTable<T> extends Disposable implements IView {
 		return Math.max(this.maxSize, BOTTOM_PADDING);
 	}
 
-	public dispose() {
+	public override dispose() {
 		this.element.remove();
 		super.dispose();
 	}

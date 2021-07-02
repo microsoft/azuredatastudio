@@ -10,7 +10,7 @@ import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { ChartType } from 'sql/workbench/contrib/charts/common/interfaces';
 
 export default class HorizontalBarChart extends BarChart {
-	protected readonly chartType: ChartType = ChartType.HorizontalBar;
+	protected override readonly chartType: ChartType = ChartType.HorizontalBar;
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) _changeRef: ChangeDetectorRef,

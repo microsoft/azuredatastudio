@@ -109,7 +109,7 @@ export class TabbedPanel extends Disposable {
 		return this.parent;
 	}
 
-	public dispose() {
+	public override dispose() {
 		this.header.remove();
 		this.tabList.remove();
 		this.body.remove();

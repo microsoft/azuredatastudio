@@ -31,7 +31,7 @@ suite('Editable dropdown tests', () => {
 
 	test('changing value through code fires onValueChange event', () => {
 		const dropdown = new Dropdown(container, undefined, options);
-		let count = 0;
+		let count: number = 0;
 		dropdown.onValueChange((e) => {
 			count++;
 		});

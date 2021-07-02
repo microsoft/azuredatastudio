@@ -68,7 +68,7 @@ suite('ConnectionDialogWidget tests', () => {
 		connectionDialogWidget = new TestConnectionDialogWidget(providerDisplayNames, providerNameToDisplayMap['MSSQL'], providerNameToDisplayMap, cmInstantiationService, mockConnectionManagementService.object, undefined, undefined, viewDescriptorService, new TestThemeService(), new TestLayoutService(), new NullAdsTelemetryService(), new MockContextKeyService(), undefined, new NullLogService(), new TestTextResourcePropertiesService(new TestConfigurationService()), new TestConfigurationService());
 		element = DOM.createStyleSheet();
 		connectionDialogWidget.render();
-		connectionDialogWidget.renderBody(element);
+		connectionDialogWidget['renderBody'](element);
 	});
 
 	teardown(() => {

@@ -6,7 +6,7 @@
 import { Event, Emitter } from 'vs/base/common/event';
 import { IDisposable, Disposable } from 'vs/base/common/lifecycle';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { IAction, ActionRunner, IActionViewItemProvider } from 'vs/base/common/actions';
+import { IAction, ActionRunner } from 'vs/base/common/actions';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { IMenuService, MenuId, MenuItemAction, registerAction2, Action2, SubmenuItemAction } from 'vs/platform/actions/common/actions';
@@ -20,7 +20,7 @@ import { IExtensionService } from 'vs/workbench/services/extensions/common/exten
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import * as DOM from 'vs/base/browser/dom';
 import { ResourceLabels, IResourceLabel } from 'vs/workbench/browser/labels';
-import { ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
+import { ActionBar, IActionViewItemProvider } from 'vs/base/browser/ui/actionbar/actionbar';
 import { URI } from 'vs/base/common/uri';
 import { dirname, basename } from 'vs/base/common/resources';
 import { FileThemeIcon, FolderThemeIcon, registerThemingParticipant, ThemeIcon, IThemeService } from 'vs/platform/theme/common/themeService';
@@ -941,7 +941,7 @@ class MultipleSelectionActionRunner extends ActionRunner {
 		}));
 	}
 
-	async runAction(action: IAction, context: TreeViewItemHandleArg): Promise<void> {
+	override async runAction(action: IAction, context: TreeViewItemHandleArg): Promise<void> {
 		const selection = this.getSelectedResources();
 		let selectionHandleArgs: TreeViewItemHandleArg[] | undefined = undefined;
 		let actionInSelected: boolean = false;
@@ -991,15 +991,16 @@ class TreeMenus extends Disposable implements IDisposable {
 	}
 
 	private getActions(menuId: MenuId, context: { key: string, value?: string }): { primary: IAction[]; secondary: IAction[]; } {
-		const contextKeyService = this.contextKeyService.createScoped();
-		contextKeyService.createKey('view', this.id);
-		contextKeyService.createKey(context.key, context.value);
+		const contextKeyService = this.contextKeyService.createOverlay([
+			['view', this.id],
+			[context.key, context.value]
+		]);
 
 		const menu = this.menuService.createMenu(menuId, contextKeyService);
 		const primary: IAction[] = [];
 		const secondary: IAction[] = [];
 		const result = { primary, secondary };
-		createAndFillInContextMenuActions(menu, { shouldForwardArgs: true }, result, g => /^inline/.test(g));
+		createAndFillInContextMenuActions(menu, { shouldForwardArgs: true }, result, 'inline');
 
 		menu.dispose();
 		contextKeyService.dispose();
@@ -1030,7 +1031,7 @@ export class CustomTreeView extends TreeView {
 		super(id, title, themeService, instantiationService, commandService, configurationService, progressService, contextMenuService, keybindingService, notificationService, viewDescriptorService, contextKeyService);
 	}
 
-	setVisibility(isVisible: boolean): void {
+	override setVisibility(isVisible: boolean): void {
 		super.setVisibility(isVisible);
 		if (this.visible) {
 			this.activate();

@@ -19,10 +19,10 @@ import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { getErrorMessage } from 'vs/base/common/errors';
 import { SaveFormat } from 'sql/workbench/services/query/common/resultSerializer';
 import { IExtensionRecommendationsService } from 'vs/workbench/services/extensionRecommendations/common/extensionRecommendations';
-import { IEncodingSupport } from 'vs/workbench/common/editor';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import { getChartMaxRowCount, notifyMaxRowCountExceeded } from 'sql/workbench/contrib/charts/browser/utils';
+import { IEncodingSupport } from 'vs/workbench/services/textfile/common/textfiles';
 
 export interface IGridActionContext {
 	gridDataProvider: IGridDataProvider;
@@ -71,7 +71,7 @@ export class SaveResultAction extends Action {
 		super(id, label, icon);
 	}
 
-	public async run(context: IGridActionContext): Promise<void> {
+	public override async run(context: IGridActionContext): Promise<void> {
 
 		const activeEditor = this.editorService.activeEditorPane as unknown as IEncodingSupport;
 		if (typeof activeEditor.getEncoding === 'function' && activeEditor.getEncoding() !== 'utf8') {
@@ -111,7 +111,7 @@ export class CopyResultAction extends Action {
 		super(id, label);
 	}
 
-	public async run(context: IGridActionContext): Promise<void> {
+	public override async run(context: IGridActionContext): Promise<void> {
 		const selection = this.accountForNumberColumn ? mapForNumberColumn(context.selection) : context.selection;
 		await context.gridDataProvider.copyResults(selection, this.copyHeader, context.table.getData());
 	}
@@ -125,7 +125,7 @@ export class SelectAllGridAction extends Action {
 		super(SelectAllGridAction.ID, SelectAllGridAction.LABEL);
 	}
 
-	public async run(context: IGridActionContext): Promise<void> {
+	public override async run(context: IGridActionContext): Promise<void> {
 		context.selectionModel.setSelectedRanges([new Slick.Range(0, 0, context.table.getData().getLength() - 1, context.table.columns.length - 1)]);
 	}
 }
@@ -139,7 +139,7 @@ export class MaximizeTableAction extends Action {
 		super(MaximizeTableAction.ID, MaximizeTableAction.LABEL, MaximizeTableAction.ICON);
 	}
 
-	public async run(context: IGridActionContext): Promise<void> {
+	public override async run(context: IGridActionContext): Promise<void> {
 		context.tableState.maximized = true;
 	}
 }
@@ -153,7 +153,7 @@ export class RestoreTableAction extends Action {
 		super(RestoreTableAction.ID, RestoreTableAction.LABEL, RestoreTableAction.ICON);
 	}
 
-	public async run(context: IGridActionContext): Promise<void> {
+	public override async run(context: IGridActionContext): Promise<void> {
 		context.tableState.maximized = false;
 	}
 }
@@ -174,7 +174,7 @@ export class ChartDataAction extends Action {
 		super(ChartDataAction.ID, ChartDataAction.LABEL, ChartDataAction.ICON);
 	}
 
-	public async run(context: IGridActionContext): Promise<void> {
+	public override async run(context: IGridActionContext): Promise<void> {
 		// show the visualizer extension recommendation notification
 		this.extensionTipsService.promptRecommendedExtensionsByScenario(Constants.visualizerExtensions);
 		const maxRowCount = getChartMaxRowCount(this.configurationService);
@@ -206,7 +206,7 @@ export class VisualizerDataAction extends Action {
 		super(VisualizerDataAction.ID, VisualizerDataAction.LABEL, VisualizerDataAction.ICON);
 	}
 
-	public async run(context: IGridActionContext): Promise<void> {
+	public override async run(context: IGridActionContext): Promise<void> {
 		this.adsTelemetryService.sendActionEvent(
 			TelemetryKeys.TelemetryView.ResultsPanel,
 			TelemetryKeys.TelemetryAction.Click,

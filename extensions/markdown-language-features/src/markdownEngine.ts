@@ -17,6 +17,7 @@ const UNICODE_NEWLINE_REGEX = /\u2028|\u2029/g;
 interface MarkdownItConfig {
 	readonly breaks: boolean;
 	readonly linkify: boolean;
+	readonly typographer: boolean;
 }
 
 class TokenCache {
@@ -194,7 +195,8 @@ export class MarkdownEngine {
 		const config = vscode.workspace.getConfiguration('markdown', resource);
 		return {
 			breaks: config.get<boolean>('preview.breaks', false),
-			linkify: config.get<boolean>('preview.linkify', true)
+			linkify: config.get<boolean>('preview.linkify', true),
+			typographer: config.get<boolean>('preview.typographer', false)
 		};
 	}
 
@@ -223,7 +225,7 @@ export class MarkdownEngine {
 
 			const src = token.attrGet('src');
 			if (src) {
-				env.containingImages.push({ src });
+				env.containingImages?.push({ src });
 				const imgHash = hash(src);
 				token.attrSet('id', `image-hash-${imgHash}`);
 			}

@@ -19,7 +19,7 @@ export class PostgresTreeNode extends ResourceTreeNode<PostgresModel> {
 		super(model.info.name, vscode.TreeItemCollapsibleState.None, ResourceType.postgresInstances, model);
 	}
 
-	public async openDashboard(): Promise<void> {
+	public override async openDashboard(): Promise<void> {
 		const postgresDashboard = new PostgresDashboard(this._context, this._controllerModel, this.model);
 		await postgresDashboard.showDashboard();
 	}

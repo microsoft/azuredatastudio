@@ -4,11 +4,11 @@
  *--------------------------------------------------------------------------------------------*/
 
 /* Icons for various account actions */
-.vs .action-item .codicon.add-linked-account-action {
-	background-image: url('new_account.svg');
+.monaco-workbench .account-view .actions-container .action-label.codicon-add-linked-account-action {
+	background-image: url('new_account.svg') !important;
 }
 
-.vs-dark .action-item .codicon.add-linked-account-action,
-.hc-black .action-item .codicon.add-linked-account-action {
-	background-image: url('new_account_inverse.svg');
+.monaco-workbench.vs-dark .account-view .actions-container .action-label.codicon-add-linked-account-action,
+.monaco-workbench.hc-black .account-view .actions-container .action-label.codicon-add-linked-account-action {
+	background-image: url('new_account_inverse.svg') !important;
 }

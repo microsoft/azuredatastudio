@@ -69,7 +69,7 @@ class BadgeRenderer {
 		return `position: absolute;
 			height: 0.25rem;
 			width: 0.25rem;
-			top: 14px;
+			top: 12px;
 			left: 19px;
 			border: 2.4px solid ${circleColor};
 			border-radius: 100%;

@@ -123,7 +123,7 @@ export class ExtHostTreeView<T> extends vsTreeExt.ExtHostTreeView<T> {
 		}
 	}
 
-	reveal(element: T, options?: { select?: boolean }): Promise<void> {
+	override reveal(element: T, options?: { select?: boolean }): Promise<void> {
 		if (typeof this.componentDataProvider.getParent !== 'function') {
 			return Promise.reject(new Error(`Required registered TreeDataProvider to implement 'getParent' method to access 'reveal' method`));
 		}
@@ -146,7 +146,7 @@ export class ExtHostTreeView<T> extends vsTreeExt.ExtHostTreeView<T> {
 		}
 	}
 
-	protected refreshHandles(itemHandles: vsTreeExt.TreeItemHandle[]): Promise<void> {
+	protected override refreshHandles(itemHandles: vsTreeExt.TreeItemHandle[]): Promise<void> {
 		const itemsToRefresh: { [treeItemHandle: string]: ITreeComponentItem } = {};
 		return Promise.all(itemHandles.map(treeItemHandle =>
 			this.refreshNode(treeItemHandle)
@@ -158,7 +158,7 @@ export class ExtHostTreeView<T> extends vsTreeExt.ExtHostTreeView<T> {
 			.then(() => Object.keys(itemsToRefresh).length ? this.modelViewProxy.$refreshDataProvider(this.handle, this.componentId, itemsToRefresh) : null);
 	}
 
-	protected createTreeNode(element: T, extensionTreeItem: azdata.TreeComponentItem, parent?: vsTreeExt.TreeNode | vsTreeExt.Root): vsTreeExt.TreeNode {
+	protected override createTreeNode(element: T, extensionTreeItem: azdata.TreeComponentItem, parent?: vsTreeExt.TreeNode | vsTreeExt.Root): vsTreeExt.TreeNode {
 		let node = super.createTreeNode(element, extensionTreeItem, parent);
 		if (node.item) {
 			node.item = assign(node.item, { checked: extensionTreeItem.checked, enabled: extensionTreeItem.enabled });

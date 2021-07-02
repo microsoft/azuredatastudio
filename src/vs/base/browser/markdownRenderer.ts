@@ -168,27 +168,24 @@ export function renderMarkdown(markdown: IMarkdownString, options: MarkdownRende
 			// when code-block rendering is async we return sync
 			// but update the node with the real result later.
 			const id = defaultGenerator.nextId();
-
 			// {{SQL CARBON EDIT}} - Promise.all not returning the strValue properly in original code? @todo anthonydresser 4/12/19 investigate a better way to do this.
 			const promise = value.then(strValue => {
 				withInnerHTML.then(e => {
 					const span = <HTMLDivElement>element.querySelector(`div[data-code="${id}"]`);
 					if (span) {
-						span.innerHTML = strValue.innerHTML;
+						DOM.reset(span, strValue);
 					}
 				}).catch(err => {
 					// ignore
 				});
 			});
 
-			// original VS Code source
 			// const promise = Promise.all([value, withInnerHTML]).then(values => {
-			// 	const strValue = values[0];
-			// 	const span = element.querySelector(`div[data-code="${id}"]`);
+			// 	const span = <HTMLDivElement>element.querySelector(`div[data-code="${id}"]`);
 			// 	if (span) {
-			// 		span.innerHTML = strValue;
+			// 		DOM.reset(span, values[0]);
 			// 	}
-			// }).catch(err => {
+			// }).catch(_err => {
 			// 	// ignore
 			// });
 
@@ -398,5 +395,16 @@ export function renderMarkdownAsPlaintext(markdown: IMarkdownString) {
 	if (value.length > 100_000) {
 		value = `${value.substr(0, 100_000)}…`;
 	}
-	return sanitizeRenderedMarkdown({ isTrusted: false }, marked.parse(value, { renderer })).toString();
+
+	const unescapeInfo = new Map<string, string>([
+		['&quot;', '"'],
+		['&amp;', '&'],
+		['&#39;', '\''],
+		['&lt;', '<'],
+		['&gt;', '>'],
+	]);
+
+	const html = marked.parse(value, { renderer }).replace(/&(#\d+|[a-zA-Z]+);/g, m => unescapeInfo.get(m) ?? m);
+
+	return sanitizeRenderedMarkdown({ isTrusted: false }, html).toString();
 }

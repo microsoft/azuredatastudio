@@ -117,11 +117,11 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 		return this._sessionName;
 	}
 
-	public getTypeId(): string {
+	override get typeId(): string {
 		return ProfilerInput.ID;
 	}
 
-	public getName(): string {
+	public override getName(): string {
 		let name: string = nls.localize('profilerInput.profiler', "Profiler");
 		if (!this.connection) {
 			return name;
@@ -277,7 +277,7 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 		this.data.clearFilter();
 	}
 
-	dispose() {
+	override dispose() {
 		super.dispose();
 		this._profilerService.disconnectSession(this.id);
 	}

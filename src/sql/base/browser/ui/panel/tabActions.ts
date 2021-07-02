@@ -18,7 +18,7 @@ export class CloseTabAction extends Action {
 		super(CloseTabAction.ID, CloseTabAction.LABEL, CloseTabAction.ICON);
 	}
 
-	async run(): Promise<void> {
+	override async run(): Promise<void> {
 		this.closeFn.apply(this.context);
 	}
 }

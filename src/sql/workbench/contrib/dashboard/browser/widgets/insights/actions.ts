@@ -24,7 +24,7 @@ export class RunInsightQueryAction extends Action {
 		super(id, label);
 	}
 
-	public async run(context: InsightActionContext): Promise<void> {
+	public override async run(context: InsightActionContext): Promise<void> {
 		let queryString: string = undefined;
 		let eol: string = this._textResourcePropertiesService.getEOL(undefined);
 		if (context.insight && context.insight.query) {

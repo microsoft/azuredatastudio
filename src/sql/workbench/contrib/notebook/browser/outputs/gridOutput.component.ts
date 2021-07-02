@@ -202,7 +202,7 @@ class DataResourceTable extends GridTableBase<any> {
 		private cellOutput: azdata.nb.ICellOutput,
 		state: GridTableState,
 		@IContextMenuService contextMenuService: IContextMenuService,
-		@IInstantiationService protected instantiationService: IInstantiationService,
+		@IInstantiationService instantiationService: IInstantiationService,
 		@IEditorService editorService: IEditorService,
 		@IUntitledTextEditorService untitledEditorService: IUntitledTextEditorService,
 		@IConfigurationService configurationService: IConfigurationService,
@@ -251,13 +251,13 @@ class DataResourceTable extends GridTableBase<any> {
 		];
 	}
 
-	public get maximumSize(): number {
+	public override get maximumSize(): number {
 		// Overriding action bar size calculation for now.
 		// When we add this back in, we should update this calculation
 		return Math.max(this.maxSize, /* ACTIONBAR_HEIGHT + BOTTOM_PADDING */ 0);
 	}
 
-	public layout(size?: number): void {
+	public override layout(size?: number): void {
 		super.layout(size);
 
 		if (!this._chartContainer) {
@@ -557,7 +557,7 @@ export class NotebookChartAction extends ToggleableAction {
 		});
 	}
 
-	public async run(context: IGridActionContext): Promise<void> {
+	public override async run(context: IGridActionContext): Promise<void> {
 		this.resourceTable.toggleChartVisibility();
 		this.toggle(!this.state.isOn);
 		if (this.state.isOn) {

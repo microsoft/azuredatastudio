@@ -16,7 +16,7 @@ export class NotebookViewsExtension extends NotebookExtension<INotebookViewMetad
 
 	readonly maxNameIterationAttempts = 100;
 	readonly extension = 'azuredatastudio';
-	readonly version = 1;
+	override readonly version = 1;
 
 	protected _metadata: INotebookViewMetadata;
 	private _onViewDeleted = new Emitter<void>();

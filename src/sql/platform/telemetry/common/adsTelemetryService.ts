@@ -8,6 +8,7 @@ import { IAdsTelemetryService, ITelemetryInfo, ITelemetryEvent, ITelemetryEventM
 import { ILogService } from 'vs/platform/log/common/log';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { assign } from 'vs/base/common/objects';
+import { EventName } from 'sql/platform/telemetry/common/telemetryKeys';
 
 
 class TelemetryEventImpl implements ITelemetryEvent {
@@ -106,7 +107,7 @@ export class AdsTelemetryService implements IAdsTelemetryService {
 	 * @param view The name of the page or item that was viewed
 	 */
 	public createViewEvent(view: string): ITelemetryEvent {
-		return new TelemetryEventImpl(this.telemetryService, this.logService, 'view', {
+		return new TelemetryEventImpl(this.telemetryService, this.logService, EventName.View, {
 			view: view
 		});
 	}
@@ -128,7 +129,7 @@ export class AdsTelemetryService implements IAdsTelemetryService {
 	 */
 	public createActionEvent(view: string, action: string, target: string = '', source: string = '', durationInMs?: number): ITelemetryEvent {
 		const measures: ITelemetryEventMeasures = durationInMs ? { durationInMs: durationInMs } : {};
-		return new TelemetryEventImpl(this.telemetryService, this.logService, 'action', {
+		return new TelemetryEventImpl(this.telemetryService, this.logService, EventName.Action, {
 			view: view,
 			action: action,
 			target: target,
@@ -152,7 +153,7 @@ export class AdsTelemetryService implements IAdsTelemetryService {
 	 * @param metrics The metrics to send
 	 */
 	public createMetricsEvent(metrics: ITelemetryEventMeasures, groupName: string = ''): ITelemetryEvent {
-		return new TelemetryEventImpl(this.telemetryService, this.logService, 'metrics', { groupName: groupName }, metrics);
+		return new TelemetryEventImpl(this.telemetryService, this.logService, EventName.Metrics, { groupName: groupName }, metrics);
 	}
 
 	/**
@@ -172,7 +173,7 @@ export class AdsTelemetryService implements IAdsTelemetryService {
 	 * @param properties Optional additional properties
 	 */
 	public createErrorEvent(view: string, name: string, errorCode: string = '', errorType: string = ''): ITelemetryEvent {
-		return new TelemetryEventImpl(this.telemetryService, this.logService, 'error', {
+		return new TelemetryEventImpl(this.telemetryService, this.logService, EventName.Error, {
 			view: view,
 			name: name,
 			errorCode: errorCode,

@@ -27,7 +27,7 @@ export class JobHistoryModel {
 export class JobHistoryController extends TreeDefaults.DefaultController {
 	private _jobHistories: AgentJobHistoryInfo[];
 
-	protected onLeftClick(tree: tree.ITree, element: JobHistoryRow, event: IMouseEvent, origin: string = 'mouse'): boolean {
+	protected override onLeftClick(tree: tree.ITree, element: JobHistoryRow, event: IMouseEvent, origin: string = 'mouse'): boolean {
 		return true;
 	}
 

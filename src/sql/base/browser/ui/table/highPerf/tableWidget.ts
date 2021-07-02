@@ -207,7 +207,7 @@ class FocusTrait<T> extends Trait<T> {
 		super('focused');
 	}
 
-	renderIndex(index: GridPosition, container: HTMLElement): void {
+	override renderIndex(index: GridPosition, container: HTMLElement): void {
 		super.renderIndex(index, container);
 
 		if (this.contains(index)) {

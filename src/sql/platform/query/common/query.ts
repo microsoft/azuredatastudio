@@ -20,7 +20,8 @@ export interface IQueryEditorConfiguration {
 		readonly copyIncludeHeaders: boolean,
 		readonly copyRemoveNewLine: boolean,
 		readonly optimizedTable: boolean,
-		readonly inMemoryDataProcessingThreshold: number
+		readonly inMemoryDataProcessingThreshold: number,
+		readonly openAfterSave: boolean
 	},
 	readonly messages: {
 		readonly showBatchTime: boolean,

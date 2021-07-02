@@ -26,7 +26,7 @@ export default class CodeAdapter implements IPrompter {
 
 	public async promptSingle<T>(question: IQuestion, ignoreFocusOut?: boolean): Promise<T | undefined> {
 		let questions: IQuestion[] = [question];
-		const answers = this.prompt(questions, ignoreFocusOut);
+		const answers = await this.prompt<T>(questions, ignoreFocusOut);
 		if (answers) {
 			let response: T = answers[question.name];
 			return response || undefined;

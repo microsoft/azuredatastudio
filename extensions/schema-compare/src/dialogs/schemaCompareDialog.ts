@@ -190,7 +190,7 @@ export class SchemaCompareDialog {
 				this.view = view;
 			}
 
-			this.sourceTextBox = this.view.modelBuilder.inputBox().withProperties({
+			this.sourceTextBox = this.view.modelBuilder.inputBox().withProps({
 				value: this.schemaCompareMainWindow.sourceEndpointInfo ? this.schemaCompareMainWindow.sourceEndpointInfo.packageFilePath : '',
 				width: this.textBoxWidth,
 				ariaLabel: loc.sourceFile
@@ -200,7 +200,7 @@ export class SchemaCompareDialog {
 				this.dialog.okButton.enabled = await this.shouldEnableOkayButton();
 			});
 
-			this.targetTextBox = this.view.modelBuilder.inputBox().withProperties({
+			this.targetTextBox = this.view.modelBuilder.inputBox().withProps({
 				value: this.schemaCompareMainWindow.targetEndpointInfo ? this.schemaCompareMainWindow.targetEndpointInfo.packageFilePath : '',
 				width: this.textBoxWidth,
 				ariaLabel: loc.targetFile
@@ -286,14 +286,14 @@ export class SchemaCompareDialog {
 	private createFileBrowser(isTarget: boolean, endpoint: mssql.SchemaCompareEndpointInfo): azdata.FormComponent {
 		let currentTextbox = isTarget ? this.targetTextBox : this.sourceTextBox;
 		if (isTarget) {
-			this.targetFileButton = this.view.modelBuilder.button().withProperties({
+			this.targetFileButton = this.view.modelBuilder.button().withProps({
 				label: '•••',
 				title: loc.selectTargetFile,
 				ariaLabel: loc.selectTargetFile,
 				secondary: true
 			}).component();
 		} else {
-			this.sourceFileButton = this.view.modelBuilder.button().withProperties({
+			this.sourceFileButton = this.view.modelBuilder.button().withProps({
 				label: '•••',
 				title: loc.selectSourceFile,
 				ariaLabel: loc.selectSourceFile,
@@ -338,13 +338,13 @@ export class SchemaCompareDialog {
 
 	private createSourceRadioButtons(): azdata.FormComponent {
 		this.sourceDacpacRadioButton = this.view.modelBuilder.radioButton()
-			.withProperties({
+			.withProps({
 				name: 'source',
 				label: loc.DacpacRadioButtonLabel
 			}).component();
 
 		this.sourceDatabaseRadioButton = this.view.modelBuilder.radioButton()
-			.withProperties({
+			.withProps({
 				name: 'source',
 				label: loc.DatabaseRadioButtonLabel
 			}).component();
@@ -379,7 +379,7 @@ export class SchemaCompareDialog {
 		let flexRadioButtonsModel = this.view.modelBuilder.flexContainer()
 			.withLayout({ flexFlow: 'column' })
 			.withItems([this.sourceDacpacRadioButton, this.sourceDatabaseRadioButton])
-			.withProperties({ ariaRole: 'radiogroup' })
+			.withProps({ ariaRole: 'radiogroup' })
 			.component();
 
 		return {
@@ -390,13 +390,13 @@ export class SchemaCompareDialog {
 
 	private createTargetRadioButtons(): azdata.FormComponent {
 		let dacpacRadioButton = this.view.modelBuilder.radioButton()
-			.withProperties({
+			.withProps({
 				name: 'target',
 				label: loc.DacpacRadioButtonLabel
 			}).component();
 
 		let databaseRadioButton = this.view.modelBuilder.radioButton()
-			.withProperties({
+			.withProps({
 				name: 'target',
 				label: loc.DatabaseRadioButtonLabel
 			}).component();
@@ -433,7 +433,7 @@ export class SchemaCompareDialog {
 			.withLayout({ flexFlow: 'column' })
 			.withItems([dacpacRadioButton, databaseRadioButton]
 			)
-			.withProperties({ ariaRole: 'radiogroup' })
+			.withProps({ ariaRole: 'radiogroup' })
 			.component();
 
 		return {
@@ -456,7 +456,7 @@ export class SchemaCompareDialog {
 	}
 
 	protected createSourceServerDropdown(): azdata.FormComponent {
-		this.sourceServerDropdown = this.view.modelBuilder.dropDown().withProperties(
+		this.sourceServerDropdown = this.view.modelBuilder.dropDown().withProps(
 			{
 				editable: true,
 				fireOnTextChange: true,
@@ -491,7 +491,7 @@ export class SchemaCompareDialog {
 	}
 
 	private createConnectionButton(isTarget: boolean): azdata.ButtonComponent {
-		const selectConnectionButton = this.view.modelBuilder.button().withProperties({
+		const selectConnectionButton = this.view.modelBuilder.button().withProps({
 			ariaLabel: loc.selectConnection,
 			iconPath: path.join(this.extensionContext.extensionPath, 'media', 'selectConnection.svg'),
 			height: '20px',
@@ -516,7 +516,7 @@ export class SchemaCompareDialog {
 	}
 
 	protected createTargetServerDropdown(): azdata.FormComponent {
-		this.targetServerDropdown = this.view.modelBuilder.dropDown().withProperties(
+		this.targetServerDropdown = this.view.modelBuilder.dropDown().withProps(
 			{
 				editable: true,
 				fireOnTextChange: true,
@@ -651,7 +651,7 @@ export class SchemaCompareDialog {
 	}
 
 	protected createSourceDatabaseDropdown(): azdata.FormComponent {
-		this.sourceDatabaseDropdown = this.view.modelBuilder.dropDown().withProperties(
+		this.sourceDatabaseDropdown = this.view.modelBuilder.dropDown().withProps(
 			{
 				editable: true,
 				fireOnTextChange: true,
@@ -671,7 +671,7 @@ export class SchemaCompareDialog {
 	}
 
 	protected createTargetDatabaseDropdown(): azdata.FormComponent {
-		this.targetDatabaseDropdown = this.view.modelBuilder.dropDown().withProperties(
+		this.targetDatabaseDropdown = this.view.modelBuilder.dropDown().withProps(
 			{
 				editable: true,
 				fireOnTextChange: true,

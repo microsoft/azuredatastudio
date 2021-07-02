@@ -41,7 +41,7 @@ export default class HyperlinkComponent extends TitledComponent<azdata.Hyperlink
 		this.baseInit();
 	}
 
-	ngOnDestroy(): void {
+	override ngOnDestroy(): void {
 		this.baseDestroy();
 	}
 

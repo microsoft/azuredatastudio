@@ -63,7 +63,7 @@ export default class CheckBoxComponent extends ComponentBase<azdata.CheckBoxProp
 		this.baseInit();
 	}
 
-	ngOnDestroy(): void {
+	override ngOnDestroy(): void {
 		this.baseDestroy();
 	}
 
@@ -74,7 +74,7 @@ export default class CheckBoxComponent extends ComponentBase<azdata.CheckBoxProp
 		this.layout();
 	}
 
-	public setProperties(properties: { [key: string]: any; }): void {
+	public override setProperties(properties: { [key: string]: any; }): void {
 		super.setProperties(properties);
 		this._input.checked = this.checked;
 		this._input.label = this.label;
@@ -124,11 +124,11 @@ export default class CheckBoxComponent extends ComponentBase<azdata.CheckBoxProp
 		this.setPropertyFromUI<boolean>((props, value) => props.required = value, newValue);
 	}
 
-	public focus(): void {
+	public override focus(): void {
 		this._input.focus();
 	}
 
-	public get CSSStyles(): azdata.CssStyles {
+	public override get CSSStyles(): azdata.CssStyles {
 		return this.mergeCss(super.CSSStyles, {
 			'display': this.display
 		});

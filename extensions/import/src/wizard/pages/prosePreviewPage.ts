@@ -83,7 +83,7 @@ export class ProsePreviewPage extends ImportPage {
 		this.loading = this.view.modelBuilder.loadingComponent().component();
 
 		this.resultTextComponent = this.view.modelBuilder.text()
-			.withProperties({
+			.withProps({
 				value: this.isSuccess ? constants.successTitleText : constants.failureTitleText
 			}).component();
 
@@ -134,12 +134,12 @@ export class ProsePreviewPage extends ImportPage {
 		}
 	}
 
-	async onPageLeave(): Promise<boolean> {
+	override async onPageLeave(): Promise<boolean> {
 		await this.emptyTable();
 		return true;
 	}
 
-	async cleanup(): Promise<boolean> {
+	override async cleanup(): Promise<boolean> {
 		delete this.model.proseDataPreview;
 		return true;
 	}

@@ -50,7 +50,7 @@ export class VmSettingsPage extends BasePage {
 		);
 	}
 
-	public async initialize() {
+	public override async initialize() {
 		this.pageObject.registerContent(async (view: azdata.ModelView) => {
 
 			await Promise.all([
@@ -110,7 +110,7 @@ export class VmSettingsPage extends BasePage {
 		});
 	}
 
-	public async onEnter(): Promise<void> {
+	public override async onEnter(): Promise<void> {
 		this.populateVmImageDropdown();
 		this.populateVmSizeDropdown();
 
@@ -132,7 +132,7 @@ export class VmSettingsPage extends BasePage {
 		});
 	}
 
-	public async onLeave(): Promise<void> {
+	public override async onLeave(): Promise<void> {
 		this.wizard.wizardObject.registerNavigationValidator((pcInfo) => {
 			return true;
 		});
@@ -140,7 +140,7 @@ export class VmSettingsPage extends BasePage {
 
 
 	private async createVmNameTextBox(view: azdata.ModelView) {
-		this._vmNameTextBox = view.modelBuilder.inputBox().withProperties({
+		this._vmNameTextBox = view.modelBuilder.inputBox().withProps({
 		}).component();
 
 		this._vmNameTextBox.onTextChanged((value) => {
@@ -150,7 +150,7 @@ export class VmSettingsPage extends BasePage {
 	}
 
 	private async createAdminUsernameTextBox(view: azdata.ModelView) {
-		this._adminUsernameTextBox = view.modelBuilder.inputBox().withProperties({
+		this._adminUsernameTextBox = view.modelBuilder.inputBox().withProps({
 		}).component();
 
 		this._adminUsernameTextBox.onTextChanged((value) => {
@@ -160,7 +160,7 @@ export class VmSettingsPage extends BasePage {
 	}
 
 	private async createAdminPasswordTextBox(view: azdata.ModelView) {
-		this._adminPasswordTextBox = view.modelBuilder.inputBox().withProperties({
+		this._adminPasswordTextBox = view.modelBuilder.inputBox().withProps({
 			inputType: 'password',
 		}).component();
 
@@ -171,7 +171,7 @@ export class VmSettingsPage extends BasePage {
 	}
 
 	private async createAdminPasswordConfirmTextBox(view: azdata.ModelView) {
-		this._adminComfirmPasswordTextBox = view.modelBuilder.inputBox().withProperties({
+		this._adminComfirmPasswordTextBox = view.modelBuilder.inputBox().withProps({
 			inputType: 'password',
 		}).component();
 
@@ -181,7 +181,7 @@ export class VmSettingsPage extends BasePage {
 	}
 
 	private async createVmImageDropdown(view: azdata.ModelView) {
-		this._vmImageDropdown = view.modelBuilder.dropDown().withProperties({
+		this._vmImageDropdown = view.modelBuilder.dropDown().withProps({
 		}).component();
 
 		this._vmImageDropdown.onValueChanged(value => {
@@ -236,7 +236,7 @@ export class VmSettingsPage extends BasePage {
 	}
 
 	private async createVMImageSkuDropdown(view: azdata.ModelView) {
-		this._vmImageSkuDropdown = view.modelBuilder.dropDown().withProperties({
+		this._vmImageSkuDropdown = view.modelBuilder.dropDown().withProps({
 		}).component();
 
 		this._vmImageSkuDropdown.onValueChanged(value => {
@@ -277,7 +277,7 @@ export class VmSettingsPage extends BasePage {
 	}
 
 	private async createVMImageVersionDropdown(view: azdata.ModelView) {
-		this._vmImageVersionDropdown = view.modelBuilder.dropDown().withProperties({
+		this._vmImageVersionDropdown = view.modelBuilder.dropDown().withProps({
 		}).component();
 
 		this._vmImageVersionDropdown.onValueChanged(value => {
@@ -317,7 +317,7 @@ export class VmSettingsPage extends BasePage {
 
 
 	private async createVmSizeDropdown(view: azdata.ModelView) {
-		this._vmSizeDropdown = view.modelBuilder.dropDown().withProperties({
+		this._vmSizeDropdown = view.modelBuilder.dropDown().withProps({
 			editable: true
 		}).component();
 
@@ -325,7 +325,7 @@ export class VmSettingsPage extends BasePage {
 			this._model.vmSize = (this._vmSizeDropdown.value as azdata.CategoryValue).name;
 		});
 
-		this._vmSizeLearnMoreLink = view.modelBuilder.hyperlink().withProperties(<azdata.HyperlinkComponent>{
+		this._vmSizeLearnMoreLink = view.modelBuilder.hyperlink().withProps(<azdata.HyperlinkComponent>{
 			label: constants.VmSizeLearnMoreLabel,
 			url: 'https://go.microsoft.com/fwlink/?linkid=2143101'
 
@@ -388,7 +388,7 @@ export class VmSettingsPage extends BasePage {
 		this._vmSizeDropdown.loading = false;
 	}
 
-	protected async validatePage(): Promise<string> {
+	protected override async validatePage(): Promise<string> {
 
 		const errorMessages = [];
 		/**

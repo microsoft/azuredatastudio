@@ -8,7 +8,7 @@ import { ICommandHandlerDescription } from 'vs/platform/commands/common/commands
 import * as extHostTypes from 'vs/workbench/api/common/extHostTypes';
 import * as extHostTypeConverter from 'vs/workbench/api/common/extHostTypeConverters';
 import { cloneAndChange } from 'vs/base/common/objects';
-import { MainContext, MainThreadCommandsShape, ExtHostCommandsShape, ObjectIdentifier, ICommandDto } from './extHost.protocol';
+import { MainContext, MainThreadCommandsShape, ExtHostCommandsShape, ObjectIdentifier, ICommandDto, MainThreadTelemetryShape } from './extHost.protocol'; // {{SQL CARBON EDIT}} Log extension contributed actions
 import { isNonEmptyArray } from 'vs/base/common/arrays';
 import * as modes from 'vs/editor/common/modes';
 import type * as vscode from 'vscode';
@@ -21,6 +21,7 @@ import { DisposableStore, toDisposable } from 'vs/base/common/lifecycle';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { IExtHostRpcService } from 'vs/workbench/api/common/extHostRpcService';
 import { ISelection } from 'vs/editor/common/core/selection';
+import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys'; // {{SQL CARBON EDIT}} Log extension contributed actions
 
 interface CommandHandler {
 	callback: Function;
@@ -40,6 +41,7 @@ export class ExtHostCommands implements ExtHostCommandsShape {
 	private readonly _apiCommands = new Map<string, ApiCommand>();
 
 	private readonly _proxy: MainThreadCommandsShape;
+	protected readonly _mainThreadTelemetryProxy: MainThreadTelemetryShape; // {{SQL CARBON EDIT}} Log extension contributed actions
 	private readonly _logService: ILogService;
 	private readonly _argumentProcessors: ArgumentProcessor[];
 
@@ -50,6 +52,7 @@ export class ExtHostCommands implements ExtHostCommandsShape {
 		@ILogService logService: ILogService
 	) {
 		this._proxy = extHostRpc.getProxy(MainContext.MainThreadCommands);
+		this._mainThreadTelemetryProxy = extHostRpc.getProxy(MainContext.MainThreadTelemetry); // {{SQL CARBON EDIT}} Log extension contributed actions
 		this._logService = logService;
 		this.converter = new CommandsConverter(
 			this,
@@ -157,6 +160,7 @@ export class ExtHostCommands implements ExtHostCommandsShape {
 	private async _doExecuteCommand<T>(id: string, args: any[], retry: boolean): Promise<T> {
 
 		if (this._commands.has(id)) {
+			this._mainThreadTelemetryProxy.$publicLog(TelemetryKeys.EventName.Action, { properties: { action: TelemetryKeys.TelemetryAction.adsCommandExecuted, view: TelemetryKeys.TelemetryView.ExtensionHost, target: id } }); // {{SQL CARBON EDIT}} Log ext-contributed commands. Only logging here to avoid double-logging for command executions coming from core (which are already logged)
 			// we stay inside the extension host and support
 			// to pass any kind of parameters around
 			return this._executeContributedCommand<T>(id, args);
@@ -213,6 +217,14 @@ export class ExtHostCommands implements ExtHostCommandsShape {
 		try {
 			return await callback.apply(thisArg, args);
 		} catch (err) {
+			// The indirection-command from the converter can fail when invoking the actual
+			// command and in that case it is better to blame the correct command
+			if (id === this.converter.delegatingCommandId) {
+				const actual = this.converter.getActualCommand(...args);
+				if (actual) {
+					id = actual.command;
+				}
+			}
 			this._logService.error(err, id);
 			throw new Error(`Running the contributed command: '${id}' failed.`);
 		}
@@ -257,7 +269,7 @@ export const IExtHostCommands = createDecorator<IExtHostCommands>('IExtHostComma
 
 export class CommandsConverter {
 
-	private readonly _delegatingCommandId: string;
+	readonly delegatingCommandId: string = `_vscode_delegate_cmd_${Date.now().toString(36)}`;
 	private readonly _cache = new Map<number, vscode.Command>();
 	private _cachIdPool = 0;
 
@@ -267,8 +279,7 @@ export class CommandsConverter {
 		private readonly _lookupApiCommand: (id: string) => ApiCommand | undefined,
 		private readonly _logService: ILogService
 	) {
-		this._delegatingCommandId = `_vscode_delegate_cmd_${Date.now().toString(36)}`;
-		this._commands.registerCommand(true, this._delegatingCommandId, this._executeConvertedCommand, this);
+		this._commands.registerCommand(true, this.delegatingCommandId, this._executeConvertedCommand, this);
 	}
 
 	toInternal(command: vscode.Command, disposables: DisposableStore): ICommandDto;
@@ -311,7 +322,7 @@ export class CommandsConverter {
 			}));
 			result.$ident = id;
 
-			result.id = this._delegatingCommandId;
+			result.id = this.delegatingCommandId;
 			result.arguments = [id];
 
 			this._logService.trace('CommandsConverter#CREATE', command.command, id);
@@ -335,8 +346,13 @@ export class CommandsConverter {
 		}
 	}
 
+
+	getActualCommand(...args: any[]): vscode.Command | undefined {
+		return this._cache.get(args[0]);
+	}
+
 	private _executeConvertedCommand<R>(...args: any[]): Promise<R> {
-		const actualCmd = this._cache.get(args[0]);
+		const actualCmd = this.getActualCommand(...args);
 		this._logService.trace('CommandsConverter#EXECUTE', args[0], actualCmd ? actualCmd.command : 'MISSING');
 
 		if (!actualCmd) {

@@ -80,7 +80,7 @@ export default class ListBoxComponent extends ComponentBase<azdata.ListBoxProper
 		this.baseInit();
 	}
 
-	ngOnDestroy(): void {
+	override ngOnDestroy(): void {
 		this.baseDestroy();
 	}
 
@@ -90,7 +90,7 @@ export default class ListBoxComponent extends ComponentBase<azdata.ListBoxProper
 		this.layout();
 	}
 
-	public setProperties(properties: { [key: string]: any; }): void {
+	public override setProperties(properties: { [key: string]: any; }): void {
 		super.setProperties(properties);
 		this._input.setOptions(this.values.map(value => { return { text: value }; }), this.selectedRow);
 	}
@@ -114,7 +114,7 @@ export default class ListBoxComponent extends ComponentBase<azdata.ListBoxProper
 	}
 
 
-	public get CSSStyles(): azdata.CssStyles {
+	public override get CSSStyles(): azdata.CssStyles {
 		return this.mergeCss(super.CSSStyles, {
 			'width': '100%'
 		});

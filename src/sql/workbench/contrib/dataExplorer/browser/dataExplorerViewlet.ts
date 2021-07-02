@@ -25,7 +25,6 @@ import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { ViewPane } from 'vs/workbench/browser/parts/views/viewPane';
 import { ViewPaneContainer } from 'vs/workbench/browser/parts/views/viewPaneContainer';
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
-import { Viewlet } from 'vs/workbench/browser/viewlet';
 import { KeyCode, KeyMod } from 'vs/base/common/keyCodes';
 import { SqlIconId } from 'sql/base/common/codicons';
 
@@ -55,22 +54,6 @@ export class DataExplorerViewletViewsContribution implements IWorkbenchContribut
 	}
 }
 
-export class DataExplorerViewlet extends Viewlet {
-	constructor(
-		@ITelemetryService telemetryService: ITelemetryService,
-		@IStorageService protected storageService: IStorageService,
-		@IInstantiationService protected instantiationService: IInstantiationService,
-		@IThemeService themeService: IThemeService,
-		@IContextMenuService protected contextMenuService: IContextMenuService,
-		@IExtensionService protected extensionService: IExtensionService,
-		@IWorkspaceContextService protected contextService: IWorkspaceContextService,
-		@IWorkbenchLayoutService protected layoutService: IWorkbenchLayoutService,
-		@IConfigurationService protected configurationService: IConfigurationService
-	) {
-		super(VIEWLET_ID, instantiationService.createInstance(DataExplorerViewPaneContainer), telemetryService, storageService, instantiationService, themeService, contextMenuService, extensionService, contextService, layoutService, configurationService);
-	}
-}
-
 export class DataExplorerViewPaneContainer extends ViewPaneContainer {
 	private root?: HTMLElement;
 
@@ -91,26 +74,22 @@ export class DataExplorerViewPaneContainer extends ViewPaneContainer {
 		super(VIEWLET_ID, { mergeViewWithContainerWhenSingleView: true }, instantiationService, configurationService, layoutService, contextMenuService, telemetryService, extensionService, themeService, storageService, contextService, viewDescriptorService);
 	}
 
-	create(parent: HTMLElement): void {
+	override create(parent: HTMLElement): void {
 		this.root = parent;
 
 		super.create(parent);
 		parent.classList.add('dataExplorer-viewlet');
 	}
 
-	public updateStyles(): void {
-		super.updateStyles();
+	override focus(): void {
 	}
 
-	focus(): void {
-	}
-
-	layout(dimension: Dimension): void {
+	override layout(dimension: Dimension): void {
 		toggleClass(this.root!, 'narrow', dimension.width <= 300);
 		super.layout(new Dimension(dimension.width, dimension.height));
 	}
 
-	getOptimalWidth(): number {
+	override getOptimalWidth(): number {
 		return 400;
 	}
 
@@ -126,7 +105,7 @@ export class DataExplorerViewPaneContainer extends ViewPaneContainer {
 		return actions;
 	}
 
-	protected createView(viewDescriptor: IViewDescriptor, options: IViewletViewOptions): ViewPane {
+	protected override createView(viewDescriptor: IViewDescriptor, options: IViewletViewOptions): ViewPane {
 		let viewletPanel = this.instantiationService.createInstance(viewDescriptor.ctorDescriptor.ctor, options) as ViewPane;
 		this._register(viewletPanel);
 		return viewletPanel;

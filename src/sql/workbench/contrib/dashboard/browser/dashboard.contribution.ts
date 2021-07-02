@@ -7,7 +7,8 @@ import { DashboardEditor } from 'sql/workbench/contrib/dashboard/browser/dashboa
 import { DashboardInput } from 'sql/workbench/browser/editor/profiler/dashboardInput';
 
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
-import { EditorDescriptor, IEditorRegistry, Extensions as EditorExtensions } from 'vs/workbench/browser/editor';
+import { EditorDescriptor, IEditorRegistry } from 'vs/workbench/browser/editor';
+import { EditorExtensions } from 'vs/workbench/common/editor';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { localize } from 'vs/nls';
 import { IConfigurationNode, IConfigurationRegistry, Extensions } from 'vs/platform/configuration/common/configurationRegistry';

@@ -11,7 +11,7 @@ export class TestChildProcessPromise<T> implements cp.ChildProcessPromise {
 	private _promise: Promise<T>;
 	private _event: events.EventEmitter = new events.EventEmitter();
 	readonly exitCode: number | null = null;
-	readonly signalCode: number | null = null;
+	readonly signalCode: NodeJS.Signals | null = null;
 	readonly spawnargs: string[] = [];
 	readonly spawnfile: string = '';
 

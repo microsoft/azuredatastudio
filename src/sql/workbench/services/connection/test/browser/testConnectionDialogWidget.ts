@@ -38,7 +38,4 @@ export class TestConnectionDialogWidget extends ConnectionDialogWidget {
 	) {
 		super(providerDisplayNameOptions, selectedProviderType, providerNameToDisplayNameMap, _instantiationService, _connectionManagementService, _contextMenuService, _contextViewService, themeService, layoutService, telemetryService, contextKeyService, clipboardService, logService, textResourcePropertiesService, configurationService);
 	}
-	public renderBody(container: HTMLElement) {
-		super.renderBody(container);
-	}
 }

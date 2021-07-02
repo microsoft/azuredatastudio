@@ -35,7 +35,7 @@ export default class BarChart extends ChartInsight {
 		super(_changeRef, themeService, telemetryService);
 	}
 
-	public setConfig(config: IBarChartConfig): void {
+	public override setConfig(config: IBarChartConfig): void {
 		let options = {};
 		if (config.xAxisMax) {
 			const opts = {
@@ -127,7 +127,7 @@ export default class BarChart extends ChartInsight {
 		super.setConfig(config);
 	}
 
-	protected updateTheme(e: IColorTheme): void {
+	protected override updateTheme(e: IColorTheme): void {
 		super.updateTheme(e);
 		const foregroundColor = e.getColor(colors.editorForeground);
 		const foreground = foregroundColor ? foregroundColor.toString() : null;

@@ -46,7 +46,7 @@ export class ExplorerWidget extends DashboardWidget implements IDashboardWidget,
 	constructor(
 		@Inject(forwardRef(() => CommonServiceInterface)) private readonly _bootstrap: CommonServiceInterface,
 		@Inject(forwardRef(() => Router)) private readonly _router: Router,
-		@Inject(WIDGET_CONFIG) protected _config: WidgetConfig,
+		@Inject(WIDGET_CONFIG) _config: WidgetConfig,
 		@Inject(forwardRef(() => ElementRef)) private readonly _el: ElementRef,
 		@Inject(IWorkbenchThemeService) private readonly themeService: IWorkbenchThemeService,
 		@Inject(IContextViewService) private readonly contextViewService: IContextViewService,
@@ -60,6 +60,7 @@ export class ExplorerWidget extends DashboardWidget implements IDashboardWidget,
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef
 	) {
 		super(changeRef);
+		this._config = _config;
 		this._loadingMessage = this._config.context === 'database' ? nls.localize('loadingObjects', "loading objects") : nls.localize('loadingDatabases', "loading databases");
 		this._loadingCompletedMessage = this._config.context === 'database' ? nls.localize('loadingObjectsCompleted', "loading objects completed.") : nls.localize('loadingDatabasesCompleted', "loading databases completed.");
 		this.init();

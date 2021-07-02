@@ -18,7 +18,7 @@ const newFileUri = vscode.Uri.file(path.join('path', 'to', 'new', '.kube', 'conf
 describe('filePicker', function (): void {
 	beforeEach(async () => {
 		const { modelBuilderMock } = createModelViewMock();
-		filePicker = new FilePicker(modelBuilderMock.object, initialPath, (_disposable) => { });
+		filePicker = new FilePicker(modelBuilderMock.object, initialPath, (_disposable) => { }, '', '', true);
 	});
 
 	afterEach(() => {

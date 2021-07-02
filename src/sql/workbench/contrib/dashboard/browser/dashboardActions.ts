@@ -72,7 +72,7 @@ export class OEManageConnectionAction extends Action {
 		super(id, label);
 	}
 
-	async run(actionContext: ObjectExplorerActionsContext): Promise<void> {
+	override async run(actionContext: ObjectExplorerActionsContext): Promise<void> {
 		this._treeSelectionHandler = this._instantiationService.createInstance(TreeSelectionHandler);
 		this._treeSelectionHandler.onTreeActionStateChange(true);
 		try {
@@ -124,7 +124,7 @@ export class OEManageConnectionAction extends Action {
 		this._treeSelectionHandler.onTreeActionStateChange(false);
 	}
 
-	dispose(): void {
+	override dispose(): void {
 		super.dispose();
 	}
 }

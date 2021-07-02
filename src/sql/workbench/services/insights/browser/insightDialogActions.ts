@@ -20,7 +20,7 @@ export class CopyInsightDialogSelectionAction extends Action {
 		super(id, label);
 	}
 
-	public async run(event?: IInsightDialogActionContext): Promise<void> {
+	public override async run(event?: IInsightDialogActionContext): Promise<void> {
 		await this._clipboardService.writeText(event.cellData);
 	}
 }

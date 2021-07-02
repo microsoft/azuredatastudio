@@ -121,13 +121,13 @@ export default class DiffEditorComponent extends ComponentBase<azdata.DiffEditor
 		return uri;
 	}
 
-	ngOnDestroy(): void {
+	override ngOnDestroy(): void {
 		this.baseDestroy();
 	}
 
 	/// IComponent implementation
 
-	public layout(): void {
+	public override layout(): void {
 		let width: number = convertSizeToNumber(this.width);
 		let height: number = convertSizeToNumber(this.height);
 		if (this._isAutoResizable) {
@@ -167,7 +167,7 @@ export default class DiffEditorComponent extends ComponentBase<azdata.DiffEditor
 		// TODO allow configuring the look and feel
 	}
 
-	public setProperties(properties: { [key: string]: any; }): void {
+	public override setProperties(properties: { [key: string]: any; }): void {
 		super.setProperties(properties);
 		if (this.contentLeft !== this._renderedContentLeft || this.contentRight !== this._renderedContentRight) {
 			this.updateModel();

@@ -45,7 +45,7 @@ export default class InfoBoxComponent extends ComponentBase<azdata.InfoBoxCompon
 		}
 	}
 
-	ngOnDestroy(): void {
+	override ngOnDestroy(): void {
 		this.baseDestroy();
 	}
 
@@ -53,7 +53,7 @@ export default class InfoBoxComponent extends ComponentBase<azdata.InfoBoxCompon
 		this.layout();
 	}
 
-	public setProperties(properties: { [key: string]: any; }): void {
+	public override setProperties(properties: { [key: string]: any; }): void {
 		super.setProperties(properties);
 		this.updateInfoBox();
 	}

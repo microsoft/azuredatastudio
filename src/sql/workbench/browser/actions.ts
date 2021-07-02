@@ -45,7 +45,7 @@ export class ManageAction extends Action {
 		super(id, label);
 	}
 
-	async run(actionContext: ManageActionContext): Promise<void> {
+	override async run(actionContext: ManageActionContext): Promise<void> {
 		if (actionContext.profile) {
 			await this._connectionManagementService.connect(actionContext.profile, actionContext.uri, { showDashboard: true, saveTheConnection: false, params: undefined, showConnectionDialogOnError: false, showFirewallRuleOnError: true });
 			this._angularEventingService.sendAngularEvent(actionContext.uri, AngularEventType.NAV_DATABASE);
@@ -64,7 +64,7 @@ export class InsightAction extends Action {
 		super(id, label);
 	}
 
-	async run(actionContext: InsightActionContext): Promise<void> {
+	override async run(actionContext: InsightActionContext): Promise<void> {
 		if (actionContext.profile) {
 			await this._insightsDialogService.show(actionContext.insight, actionContext.profile);
 		}

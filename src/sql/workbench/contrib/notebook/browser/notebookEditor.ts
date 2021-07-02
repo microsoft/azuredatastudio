@@ -71,7 +71,7 @@ export class NotebookEditor extends EditorPane implements IFindNotebookControlle
 		this._actionMap[ACTION_IDS.FIND_PREVIOUS] = this._instantiationService.createInstance(NotebookFindPreviousAction, this);
 	}
 
-	public dispose(): void {
+	public override dispose(): void {
 		this._toDispose.dispose();
 	}
 
@@ -172,7 +172,7 @@ export class NotebookEditor extends EditorPane implements IFindNotebookControlle
 	 * Sets focus on this editor. Specifically, it sets the focus on the hosted text editor.
 	 * An implementation provided here for IFindNotebookController interface.
 	 */
-	public focus(): void {
+	public override focus(): void {
 		//no-op
 	}
 
@@ -187,7 +187,7 @@ export class NotebookEditor extends EditorPane implements IFindNotebookControlle
 		}
 	}
 
-	public async setInput(input: NotebookInput, options: EditorOptions, context: IEditorOpenContext): Promise<void> {
+	public override async setInput(input: NotebookInput, options: EditorOptions, context: IEditorOpenContext): Promise<void> {
 		if (this.input && this.input.matches(input)) {
 			return Promise.resolve(undefined);
 		}

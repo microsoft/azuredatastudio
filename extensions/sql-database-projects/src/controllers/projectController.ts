@@ -11,7 +11,7 @@ import * as utils from '../common/utils';
 import * as UUID from 'vscode-languageclient/lib/utils/uuid';
 import * as templates from '../templates/templates';
 import * as vscode from 'vscode';
-import * as azdata from 'azdata';
+import type * as azdataType from 'azdata';
 import * as dataworkspace from 'dataworkspace';
 
 import { promises as fs } from 'fs';
@@ -57,7 +57,7 @@ export class ProjectsController {
 
 		for (let i = this.publishInfo.length - 1; i >= 0; i--) {
 			if (this.publishInfo[i].projectFile === projectFile) {
-				let icon: azdata.IconPath;
+				let icon: azdataType.IconPath;
 				let text: string;
 				if (this.publishInfo[i].status === Status.success) {
 					icon = IconPathHelper.success;
@@ -88,7 +88,7 @@ export class ProjectsController {
 
 		for (let i = this.buildInfo.length - 1; i >= 0; i--) {
 			if (this.buildInfo[i].projectFile === projectFile) {
-				let icon: azdata.IconPath;
+				let icon: azdataType.IconPath;
 				let text: string;
 				if (this.buildInfo[i].status === Status.success) {
 					icon = IconPathHelper.success;
@@ -286,11 +286,11 @@ export class ProjectsController {
 		try {
 			if ((<IPublishSettings>settings).upgradeExisting) {
 				telemetryProps.publishAction = 'deploy';
-				result = await dacFxService.deployDacpac(tempPath, settings.databaseName, (<IPublishSettings>settings).upgradeExisting, settings.connectionUri, azdata.TaskExecutionMode.execute, settings.sqlCmdVariables, settings.deploymentOptions);
+				result = await dacFxService.deployDacpac(tempPath, settings.databaseName, (<IPublishSettings>settings).upgradeExisting, settings.connectionUri, utils.getAzdataApi()!.TaskExecutionMode.execute, settings.sqlCmdVariables, settings.deploymentOptions);
 			}
 			else {
 				telemetryProps.publishAction = 'generateScript';
-				result = await dacFxService.generateDeployScript(tempPath, settings.databaseName, settings.connectionUri, azdata.TaskExecutionMode.script, settings.sqlCmdVariables, settings.deploymentOptions);
+				result = await dacFxService.generateDeployScript(tempPath, settings.databaseName, settings.connectionUri, utils.getAzdataApi()!.TaskExecutionMode.script, settings.sqlCmdVariables, settings.deploymentOptions);
 			}
 		} catch (err) {
 			const actionEndTime = new Date().getTime();
@@ -664,7 +664,7 @@ export class ProjectsController {
 			if ((<IProjectReferenceSettings>settings).projectName !== undefined) {
 				// get project path and guid
 				const projectReferenceSettings = settings as IProjectReferenceSettings;
-				const workspaceProjects = utils.getSqlProjectsInWorkspace();
+				const workspaceProjects = await utils.getSqlProjectsInWorkspace();
 				const referencedProject = await Project.openProject(workspaceProjects.filter(p => path.parse(p.fsPath).name === projectReferenceSettings.projectName)[0].fsPath);
 				const relativePath = path.relative(project.projectFolderPath, referencedProject?.projectFilePath!);
 				projectReferenceSettings.projectRelativePath = vscode.Uri.file(relativePath);
@@ -842,7 +842,7 @@ export class ProjectsController {
 	 * Creates a new SQL database project from the existing database,
 	 * prompting the user for a name, file path location and extract target
 	 */
-	public async createProjectFromDatabase(context: azdata.IConnectionProfile | any): Promise<CreateProjectFromDatabaseDialog> {
+	public async createProjectFromDatabase(context: azdataType.IConnectionProfile | any): Promise<CreateProjectFromDatabaseDialog> {
 		const profile = this.getConnectionProfileFromContext(context);
 		let createProjectFromDatabaseDialog = this.getCreateProjectFromDatabaseDialog(profile);
 
@@ -853,7 +853,7 @@ export class ProjectsController {
 		return createProjectFromDatabaseDialog;
 	}
 
-	public getCreateProjectFromDatabaseDialog(profile: azdata.IConnectionProfile | undefined): CreateProjectFromDatabaseDialog {
+	public getCreateProjectFromDatabaseDialog(profile: azdataType.IConnectionProfile | undefined): CreateProjectFromDatabaseDialog {
 		return new CreateProjectFromDatabaseDialog(profile);
 	}
 
@@ -882,7 +882,7 @@ export class ProjectsController {
 
 				// add project to workspace
 				workspaceApi.showProjectsView();
-				await workspaceApi.addProjectsToWorkspace([vscode.Uri.file(newProjFilePath)], model.newWorkspaceFilePath);
+				await workspaceApi.addProjectsToWorkspace([vscode.Uri.file(newProjFilePath)]);
 			}
 		} catch (err) {
 			vscode.window.showErrorMessage(utils.getErrorMessage(err));
@@ -895,7 +895,7 @@ export class ProjectsController {
 		}
 	}
 
-	private getConnectionProfileFromContext(context: azdata.IConnectionProfile | any): azdata.IConnectionProfile | undefined {
+	private getConnectionProfileFromContext(context: azdataType.IConnectionProfile | any): azdataType.IConnectionProfile | undefined {
 		if (!context) {
 			return undefined;
 		}
@@ -909,9 +909,9 @@ export class ProjectsController {
 		let ext = vscode.extensions.getExtension(mssql.extension.name)!;
 
 		const service = (await ext.activate() as mssql.IExtension).dacFx;
-		const ownerUri = await azdata.connection.getUriForConnection(model.serverId);
+		const ownerUri = await utils.getAzdataApi()!.connection.getUriForConnection(model.serverId);
 
-		await service.createProjectFromDatabase(model.database, model.filePath, model.projName, model.version, ownerUri, model.extractTarget, azdata.TaskExecutionMode.execute);
+		await service.createProjectFromDatabase(model.database, model.filePath, model.projName, model.version, ownerUri, model.extractTarget, utils.getAzdataApi()!.TaskExecutionMode.execute);
 
 		// TODO: Check for success; throw error
 	}

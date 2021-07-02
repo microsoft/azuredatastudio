@@ -20,7 +20,6 @@ import { IExpandableTree } from 'sql/workbench/services/objectExplorer/browser/t
 import { IQueryHistoryService } from 'sql/workbench/services/queryHistory/common/queryHistoryService';
 import { QueryHistoryNode } from 'sql/workbench/contrib/queryHistory/browser/queryHistoryNode';
 import { QueryHistoryInfo } from 'sql/workbench/services/queryHistory/common/queryHistoryInfo';
-import { IAction } from 'vs/base/common/actions';
 import { ViewPane, IViewPaneOptions } from 'vs/workbench/browser/parts/views/viewPane';
 import { IViewDescriptorService } from 'vs/workbench/common/views';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
@@ -58,7 +57,7 @@ export class QueryHistoryView extends ViewPane {
 	/**
 	 * Render the view body
 	 */
-	public renderBody(container: HTMLElement): void {
+	public override renderBody(container: HTMLElement): void {
 		// Add div to display no task executed message
 		this._messages = append(container, $('div.no-queries-message'));
 
@@ -137,23 +136,18 @@ export class QueryHistoryView extends ViewPane {
 	/**
 	 * set the layout of the view
 	 */
-	public layout(height: number): void {
+	public override layout(height: number): void {
 		this._tree.layout(height);
 	}
 
 	/**
 	 * set the visibility of the view
 	 */
-	public setVisible(visible: boolean): void {
+	public override setVisible(visible: boolean): void {
 		if (visible) {
 			this._tree.onVisible();
 		} else {
 			this._tree.onHidden();
 		}
-	}
-
-
-	public getActions(): IAction[] {
-		return this._actionProvider.getActions(undefined);
 	}
 }

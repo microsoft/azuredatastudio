@@ -204,7 +204,7 @@ export class AssessmentResultGrid implements vscode.Disposable {
 			.withLayout({
 				flexFlow: 'column',
 				height: '200px',
-			}).withProperties({
+			}).withProps({
 				CSSStyles: {
 					'padding': '0px 10px'
 				}

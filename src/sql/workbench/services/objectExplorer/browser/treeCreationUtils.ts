@@ -99,7 +99,6 @@ export class TreeCreationUtils {
 				accessibilityProvider: new ServerTreeAccessibilityProvider(nls.localize('serversAriaLabel', "Servers")),
 				keyboardNavigationLabelProvider: instantiationService.createInstance(ServerTreeKeyboardNavigationLabelProvider),
 				openOnSingleClick: true,
-				openOnFocus: true,
 				dnd: dnd,
 				identityProvider: identityProvider
 			};

@@ -28,7 +28,7 @@ export default class EditQueryRunner extends QueryRunner {
 	public readonly onEditSessionReady = this._onEditSessionReady.event;
 
 	constructor(
-		public uri: string,
+		uri: string,
 		@INotificationService private readonly notificationService: INotificationService,
 		@IQueryManagementService queryManagementService: IQueryManagementService,
 		@IConfigurationService configurationService: IConfigurationService,

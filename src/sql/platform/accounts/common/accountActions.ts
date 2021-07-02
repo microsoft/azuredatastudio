@@ -45,7 +45,7 @@ export class AddAccountAction extends Action {
 		this._addAccountStartEmitter = new Emitter<void>();
 	}
 
-	public async run(): Promise<void> {
+	public override async run(): Promise<void> {
 
 		// Fire the event that we've started adding accounts
 		this._addAccountStartEmitter.fire();
@@ -76,7 +76,7 @@ export class RemoveAccountAction extends Action {
 		super(RemoveAccountAction.ID, RemoveAccountAction.LABEL, 'remove-account-action codicon remove');
 	}
 
-	public async run(): Promise<void> {
+	public override async run(): Promise<void> {
 		// Ask for Confirm
 		const confirm: IConfirmation = {
 			message: localize('confirmRemoveUserAccountMessage', "Are you sure you want to remove '{0}'?", this._account.displayInfo.displayName),
@@ -113,7 +113,7 @@ export class ApplyFilterAction extends Action {
 		super(id, label, 'apply-filters-action codicon filter');
 	}
 
-	public async run(): Promise<void> {
+	public override async run(): Promise<void> {
 		// Todo: apply filter to the account
 	}
 }
@@ -132,7 +132,7 @@ export class RefreshAccountAction extends Action {
 	) {
 		super(RefreshAccountAction.ID, RefreshAccountAction.LABEL, 'refresh-account-action codicon refresh');
 	}
-	public async run(): Promise<void> {
+	public override async run(): Promise<void> {
 		if (this.account) {
 			try {
 				await this._accountManagementService.refreshAccount(this.account);

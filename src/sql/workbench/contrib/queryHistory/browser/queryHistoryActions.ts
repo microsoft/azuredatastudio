@@ -46,7 +46,7 @@ export class DeleteAction extends Action {
 		super(id, label);
 	}
 
-	public async run(element: QueryHistoryNode): Promise<void> {
+	public override async run(element: QueryHistoryNode): Promise<void> {
 		if (element instanceof QueryHistoryNode && element.info) {
 			this._queryHistoryService.deleteQueryHistoryInfo(element.info);
 		}
@@ -65,7 +65,7 @@ export class ClearHistoryAction extends Action {
 		super(id, label, 'clear-query-history-action codicon-clear-all');
 	}
 
-	public async run(): Promise<void> {
+	public override async run(): Promise<void> {
 		return this._commandService.executeCommand('queryHistory.clear');
 	}
 }
@@ -83,7 +83,7 @@ export class OpenQueryAction extends Action {
 		super(id, label);
 	}
 
-	public async run(element: QueryHistoryNode): Promise<void> {
+	public override async run(element: QueryHistoryNode): Promise<void> {
 		if (element instanceof QueryHistoryNode && element.info) {
 			return this._instantiationService.invokeFunction(openNewQuery, element.info.connectionProfile, element.info.queryText, RunQueryOnConnectionMode.none).then();
 		}
@@ -102,7 +102,7 @@ export class RunQueryAction extends Action {
 		super(id, label);
 	}
 
-	public async run(element: QueryHistoryNode): Promise<void> {
+	public override async run(element: QueryHistoryNode): Promise<void> {
 		if (element instanceof QueryHistoryNode && element.info) {
 			return this._instantiationService.invokeFunction(openNewQuery, element.info.connectionProfile, element.info.queryText, RunQueryOnConnectionMode.executeQuery).then();
 		}
@@ -124,7 +124,7 @@ export class ToggleQueryHistoryCaptureAction extends Action {
 		this._register(queryHistoryService.onQueryHistoryCaptureChanged((captureEnabled: boolean) => { this.setClassAndLabel(captureEnabled); }));
 	}
 
-	public async run(): Promise<void> {
+	public override async run(): Promise<void> {
 		return this._commandService.executeCommand('queryHistory.toggleCapture');
 	}
 

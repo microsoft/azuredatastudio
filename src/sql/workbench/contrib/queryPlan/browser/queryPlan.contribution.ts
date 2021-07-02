@@ -4,7 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { QueryPlanInput, QueryPlanConverter } from 'sql/workbench/contrib/queryPlan/common/queryPlanInput';
-import { EditorDescriptor, IEditorRegistry, Extensions } from 'vs/workbench/browser/editor';
+import { EditorDescriptor, IEditorRegistry } from 'vs/workbench/browser/editor';
+import { EditorExtensions } from 'vs/workbench/common/editor';
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { QueryPlanEditor } from 'sql/workbench/contrib/queryPlan/browser/queryPlanEditor';
@@ -18,7 +19,7 @@ const queryPlanEditorDescriptor = EditorDescriptor.create(
 	'QueryPlan'
 );
 
-Registry.as<IEditorRegistry>(Extensions.Editors)
+Registry.as<IEditorRegistry>(EditorExtensions.Editors)
 	.registerEditor(queryPlanEditorDescriptor, [new SyncDescriptor(QueryPlanInput)]);
 
 Registry.as<ILanguageAssociationRegistry>(LanguageAssociationExtensions.LanguageAssociations)

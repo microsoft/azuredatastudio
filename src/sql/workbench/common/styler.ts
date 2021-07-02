@@ -11,9 +11,9 @@ import { IThemable } from 'vs/base/common/styler';
 import { attachStyler, IStyleOverrides } from 'vs/platform/theme/common/styler';
 import {
 	SIDE_BAR_SECTION_HEADER_FOREGROUND, SIDE_BAR_BACKGROUND, SIDE_BAR_SECTION_HEADER_BACKGROUND, SIDE_BAR_DRAG_AND_DROP_BACKGROUND,
-	PANEL_ACTIVE_TITLE_BORDER, PANEL_ACTIVE_TITLE_FOREGROUND, PANEL_INACTIVE_TITLE_FOREGROUND, VERTICAL_TAB_ACTIVE_BACKGROUND, DASHBOARD_BORDER,
-
+	PANEL_ACTIVE_TITLE_BORDER, PANEL_ACTIVE_TITLE_FOREGROUND, PANEL_INACTIVE_TITLE_FOREGROUND
 } from 'vs/workbench/common/theme';
+import { VERTICAL_TAB_ACTIVE_BACKGROUND, DASHBOARD_BORDER } from 'sql/workbench/common/theme';
 
 export interface IModalDialogStyleOverrides extends IStyleOverrides {
 	dialogForeground?: cr.ColorIdentifier,

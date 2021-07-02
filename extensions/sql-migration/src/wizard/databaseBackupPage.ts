@@ -555,6 +555,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				}
 			}).component();
 		this._networkShareStorageAccountResourceGroupDropdown = this._view.modelBuilder.dropDown().withProps({
+			ariaLabel: constants.RESOURCE_GROUP,
 			width: WIZARD_INPUT_COMPONENT_WIDTH,
 			editable: true,
 			fireOnTextChange: true,
@@ -578,6 +579,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			}).component();
 		this._networkShareContainerStorageAccountDropdown = this._view.modelBuilder.dropDown()
 			.withProps({
+				ariaLabel: constants.STORAGE_ACCOUNT,
 				required: true,
 				width: WIZARD_INPUT_COMPONENT_WIDTH,
 				editable: true,
@@ -684,6 +686,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				}).component();
 				targetDatabaseInput.onTextChanged((value) => {
 					this.migrationStateModel._targetDatabaseNames[index] = value.trim();
+					this.validateFields();
 				});
 				this._networkShareTargetDatabaseNames.push(targetDatabaseInput);
 
@@ -712,6 +715,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				this._blobContainerTargetDatabaseNames.push(blobtargetDatabaseInput);
 
 				const blobContainerResourceDropdown = this._view.modelBuilder.dropDown().withProps({
+					ariaLabel: constants.BLOB_CONTAINER_RESOURCE_GROUP,
 					width: WIZARD_TABLE_COLUMN_WIDTH,
 					editable: true,
 					fireOnTextChange: true,
@@ -728,6 +732,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 
 				const blobContainerStorageAccountDropdown = this._view.modelBuilder.dropDown()
 					.withProps({
+						ariaLabel: constants.BLOB_CONTAINER_STORAGE_ACCOUNT,
 						width: WIZARD_TABLE_COLUMN_WIDTH,
 						editable: true,
 						fireOnTextChange: true,
@@ -744,12 +749,13 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 
 				const blobContainerDropdown = this._view.modelBuilder.dropDown()
 					.withProps({
+						ariaLabel: constants.BLOB_CONTAINER,
 						width: WIZARD_TABLE_COLUMN_WIDTH,
 						editable: true,
 						fireOnTextChange: true,
 					}).component();
 				blobContainerDropdown.onValueChanged(value => {
-					const selectedIndex = findDropDownItemIndex(blobContainerStorageAccountDropdown, value);
+					const selectedIndex = findDropDownItemIndex(blobContainerDropdown, value);
 					if (selectedIndex > -1 && value !== constants.NO_BLOBCONTAINERS_FOUND) {
 						this.migrationStateModel._databaseBackup.blobs[index].blobContainer = this.migrationStateModel.getBlobContainer(selectedIndex);
 					}
@@ -830,22 +836,23 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 						}
 					});
 
-					const duplicates: Map<string, number[]> = new Map();
-					for (let i = 0; i < this.migrationStateModel._targetDatabaseNames.length; i++) {
-						const blobContainerId = this.migrationStateModel._databaseBackup.blobs[i].blobContainer.id;
-						if (duplicates.has(blobContainerId)) {
-							duplicates.get(blobContainerId)?.push(i);
-						} else {
-							duplicates.set(blobContainerId, [i]);
+					if (errors.length > 0) {
+						const duplicates: Map<string, number[]> = new Map();
+						for (let i = 0; i < this.migrationStateModel._targetDatabaseNames.length; i++) {
+							const blobContainerId = this.migrationStateModel._databaseBackup.blobs[i].blobContainer?.id;
+							if (duplicates.has(blobContainerId)) {
+								duplicates.get(blobContainerId)?.push(i);
+							} else {
+								duplicates.set(blobContainerId, [i]);
+							}
 						}
+						duplicates.forEach((d) => {
+							if (d.length > 1) {
+								const dupString = `${d.map(index => this.migrationStateModel._migrationDbs[index]).join(', ')}`;
+								errors.push(constants.PROVIDE_UNIQUE_CONTAINERS + dupString);
+							}
+						});
 					}
-
-					duplicates.forEach((d) => {
-						if (d.length > 1) {
-							const dupString = `${d.map(index => this.migrationStateModel._migrationDbs[index]).join(', ')}`;
-							errors.push(constants.PROVIDE_UNIQUE_CONTAINERS + dupString);
-						}
-					});
 
 					break;
 			}

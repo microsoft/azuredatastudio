@@ -83,6 +83,7 @@ export const OPTIONS: OptionDescriptions<Required<NativeParsedArgs>> = {
 
 	'locate-extension': { type: 'string[]' },
 	'extensionDevelopmentPath': { type: 'string[]' },
+	'extensionDevelopmentKind': { type: 'string[]' },
 	'extensionTestsPath': { type: 'string' },
 	'debugId': { type: 'string' },
 	'debugRenderer': { type: 'boolean' },
@@ -95,6 +96,7 @@ export const OPTIONS: OptionDescriptions<Required<NativeParsedArgs>> = {
 	'skip-release-notes': { type: 'boolean' },
 	'disable-telemetry': { type: 'boolean' },
 	'disable-updates': { type: 'boolean' },
+	'disable-keytar': { type: 'boolean' },
 	'disable-crash-reporter': { type: 'boolean' },
 	'crash-reporter-directory': { type: 'string' },
 	'crash-reporter-id': { type: 'string' },
@@ -139,6 +141,7 @@ export const OPTIONS: OptionDescriptions<Required<NativeParsedArgs>> = {
 	'ignore-certificate-errors': { type: 'boolean' },
 	'allow-insecure-localhost': { type: 'boolean' },
 	'log-net-log': { type: 'string' },
+	'vmodule': { type: 'string' },
 	'_urls': { type: 'string[]' },
 
 	_: { type: 'string[]' } // main arguments
@@ -269,7 +272,7 @@ export function formatOptions(options: OptionDescriptions<any>, columns: number)
 }
 
 function indent(count: number): string {
-	return (<any>' ').repeat(count);
+	return ' '.repeat(count);
 }
 
 function wrapText(text: string, columns: number): string[] {
