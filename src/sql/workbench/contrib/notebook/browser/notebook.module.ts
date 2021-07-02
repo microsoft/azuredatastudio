@@ -7,6 +7,7 @@ import { forwardRef, NgModule, ComponentFactoryResolver, Inject, ApplicationRef 
 import { FormsModule } from '@angular/forms';
 import { CommonModule, APP_BASE_HREF } from '@angular/common';
 import { BrowserModule } from '@angular/platform-browser';
+import { VirtualScrollerModule } from 'ngx-virtual-scroller';
 
 import { ComponentHostDirective } from 'sql/base/browser/componentHost.directive';
 import { providerIterator } from 'sql/workbench/services/bootstrap/browser/bootstrapService';
@@ -78,7 +79,8 @@ export const NotebookModule = (params, selector: string, instantiationService: I
 		imports: [
 			FormsModule,
 			CommonModule,
-			BrowserModule
+			BrowserModule,
+			VirtualScrollerModule
 		],
 		providers: [
 			{ provide: APP_BASE_HREF, useValue: '/' },
