@@ -7,6 +7,7 @@ import * as azdata from 'azdata';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
 import { MigrationStateModel, StateChangeEvent } from '../models/stateMachine';
 import * as constants from '../constants/strings';
+import { IconPath, IconPathHelper } from '../constants/iconPathHelper';
 
 const headerLeft: azdata.CssStyles = {
 	'border': 'none',
@@ -53,8 +54,8 @@ export class SourceConfigurationPage extends MigrationWizardPage {
 		});
 	}
 	public async onPageLeave(): Promise<void> {
+		this.migrationStateModel._databaseAssessment = this.selectedDbs();
 		this.wizard.registerNavigationValidator((pageChangeInfo) => {
-			this.migrationStateModel._databaseAssessment = this.selectedDbs();
 			return true;
 		});
 	}
@@ -156,7 +157,7 @@ export class SourceConfigurationPage extends MigrationWizardPage {
 					style: styleLeft
 				},
 				{
-					value: `${finalResult[index][1].displayValue}`,
+					value: this.createIconTextCell(IconPathHelper.sqlDatabaseLogo, finalResult[index][1].displayValue),
 					style: styleLeft
 				},
 				{
@@ -220,7 +221,7 @@ export class SourceConfigurationPage extends MigrationWizardPage {
 					},
 					{
 						displayName: constants.DATABASE,
-						valueType: azdata.DeclarativeDataType.string,
+						valueType: azdata.DeclarativeDataType.component,
 						width: 100,
 						isReadOnly: true,
 						headerCssStyles: headerLeft
@@ -277,6 +278,44 @@ export class SourceConfigurationPage extends MigrationWizardPage {
 			}
 		});
 		return result;
+	}
+
+	private createIconTextCell(icon: IconPath, text: string): azdata.FlexContainer {
+
+		const iconComponent = this._view.modelBuilder.image().withProps({
+			iconPath: icon,
+			iconWidth: '16px',
+			iconHeight: '16px',
+			width: '20px',
+			height: '20px'
+		}).component();
+		const textComponent = this._view.modelBuilder.text().withProps({
+			value: text,
+			title: text,
+			CSSStyles: {
+				'margin': '0px',
+				'width': '110px'
+			}
+		}).component();
+
+		const cellContainer = this._view.modelBuilder.flexContainer().withProps({
+			CSSStyles: {
+				'justify-content': 'left'
+			}
+		}).component();
+		cellContainer.addItem(iconComponent, {
+			flex: '0',
+			CSSStyles: {
+				'width': '32px'
+			}
+		});
+		cellContainer.addItem(textComponent, {
+			CSSStyles: {
+				'width': 'auto'
+			}
+		});
+
+		return cellContainer;
 	}
 
 }
