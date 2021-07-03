@@ -133,9 +133,9 @@ export class HTMLMarkdownConverter {
 			filter: 'a',
 			replacement: (content, node) => {
 				let href = node.attributes.href?.nodeValue;
-				let isAbsolute = node.attributes['is-absolute']?.nodeValue;
+				let isAbsolute = node.attributes['is-absolute']?.nodeValue === 'true' ? true : false;
 				let notebookLink: URI | undefined;
-				const isAnchorLinkInFile = (node.attributes.href?.nodeValue.startsWith('#') || href.includes('#')) && href.startsWith('file://');
+				const isAnchorLinkInFile = (node.attributes.href?.nodeValue.startsWith('#') || href.includes('#')) && node.protocol === 'file:';
 				if (isAnchorLinkInFile) {
 					notebookLink = getUriAnchorLink(node, this.notebookUri);
 				} else {

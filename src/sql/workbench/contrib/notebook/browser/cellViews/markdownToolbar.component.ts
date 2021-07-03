@@ -24,6 +24,7 @@ import { URI } from 'vs/base/common/uri';
 import { escape } from 'vs/base/common/strings';
 import { IImageCalloutDialogOptions, ImageCalloutDialog } from 'sql/workbench/contrib/notebook/browser/calloutDialog/imageCalloutDialog';
 import { TextCellEditModes } from 'sql/workbench/services/notebook/common/contracts';
+import { findPathRelativeToContent } from 'sql/workbench/contrib/notebook/browser/htmlMarkdownConverter';
 
 export const MARKDOWN_TOOLBAR_SELECTOR: string = 'markdown-toolbar-component';
 const linksRegex = /\[(?<text>.+)\]\((?<url>[^ ]+)(?: "(?<title>.+)")?\)/;
@@ -241,6 +242,15 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 			} else {
 				let linkUrl = linkCalloutResult.insertUnescapedLinkUrl;
 				let hrefAbsolute: boolean = path.isAbsolute(linkUrl);
+				const isAnchorLink = linkUrl.startsWith('#');
+				if (!isAnchorLink) {
+					const isFile = URI.parse(linkUrl).scheme === 'file';
+					if (isFile && !path.isAbsolute(linkUrl)) {
+						const notebookDirName = path.dirname(this.cellModel?.notebookModel?.notebookUri.fsPath);
+						const relativePath = (linkUrl).replace(/\\/g, path.posix.sep);
+						linkUrl = path.resolve(notebookDirName, relativePath);
+					}
+				}
 				// Otherwise, re-focus on the output element, and insert the link directly.
 				this.output?.nativeElement?.focus();
 				document.execCommand('insertHTML', false, `<a href="${escape(linkUrl)}" is-absolute="${hrefAbsolute}">${escape(linkCalloutResult?.insertUnescapedLinkLabel)}</a>`);
@@ -345,6 +355,14 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 		if (this.cellModel.currentMode === CellEditModes.WYSIWYG) {
 			const parentNode = document.getSelection().anchorNode.parentNode as HTMLAnchorElement;
 			if (parentNode.protocol === 'file:') {
+				const isAnchorLink = parentNode.attributes['href'].nodeValue.startsWith('#');
+				if (isAnchorLink) {
+					return parentNode.attributes['href'].nodeValue;
+				}
+				else if (parentNode.attributes['is-absolute'].nodeValue === 'false') {
+					let absoluteURI = URI.file(parentNode.attributes['href'].nodeValue);
+					return findPathRelativeToContent(path.dirname(this.cellModel?.notebookModel?.notebookUri.fsPath), absoluteURI);
+				}
 				return parentNode.attributes['href'].nodeValue || '';
 			} else {
 				return parentNode.href || '';
