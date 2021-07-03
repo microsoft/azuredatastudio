@@ -221,7 +221,7 @@ export class SqlDatabaseTree {
 
 	@debounce(500)
 	private _filterTableList(value: string): void {
-		if (this._databaseTableValues && value && value.length > 0) {
+		if (this._databaseTableValues && value?.length > 0) {
 			const filter: number[] = [];
 			this._databaseTableValues.forEach((row, index) => {
 				const cell: any = row[1]?.value;

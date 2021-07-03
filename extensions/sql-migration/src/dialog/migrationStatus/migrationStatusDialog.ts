@@ -72,7 +72,7 @@ export class MigrationStatusDialog {
 			this._view.onClosed(e => {
 				clearInterval(this._autoRefreshHandle);
 			});
-			return await view.initializeModel(form);
+			return view.initializeModel(form);
 		});
 		this._dialogObject.content = [tab];
 		this._dialogObject.cancelButton.hidden = true;
