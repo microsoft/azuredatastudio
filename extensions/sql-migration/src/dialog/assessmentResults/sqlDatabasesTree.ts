@@ -224,8 +224,9 @@ export class SqlDatabaseTree {
 		if (this._databaseTableValues && value?.length > 0) {
 			const filter: number[] = [];
 			this._databaseTableValues.forEach((row, index) => {
-				const cell: any = row[1]?.value;
-				const cellText: string = cell?.items[1]?.value?.toLowerCase();
+				const flexContainer: azdata.FlexContainer = row[1]?.value as azdata.FlexContainer;
+				const textComponent: azdata.TextComponent = flexContainer.items[1] as azdata.TextComponent;
+				const cellText = textComponent.value?.toLowerCase();
 				const searchText: string = value.toLowerCase();
 				if (cellText?.includes(searchText)) {
 					filter.push(index);
