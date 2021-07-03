@@ -33,7 +33,7 @@ export interface IAzdataTool extends azdataExt.IAzdataApi {
 	 * @param args The args to pass to azdata
 	 * @param parseResult A function used to parse out the raw result into the desired shape
 	 */
-	executeCommand<R>(args: string[], additionalEnvVars?: azdataExt.AdditionalEnvVars, azdataContext?: string): Promise<azdataExt.AzdataOutput<R>>
+	executeCommand<R>(args: string[], additionalEnvVars?: azdataExt.AdditionalEnvVars): Promise<azdataExt.AzdataOutput<R>>
 }
 
 /**
@@ -74,8 +74,7 @@ export class AzdataTool implements azdataExt.IAzdataApi {
 				subscription: string,
 				profileName?: string,
 				storageClass?: string,
-				additionalEnvVars?: azdataExt.AdditionalEnvVars,
-				azdataContext?: string): Promise<azdataExt.AzdataOutput<void>> => {
+				additionalEnvVars?: azdataExt.AdditionalEnvVars): Promise<azdataExt.AzdataOutput<void>> => {
 				const args = ['arc', 'dc', 'create',
 					'--namespace', namespace,
 					'--name', name,
@@ -89,32 +88,32 @@ export class AzdataTool implements azdataExt.IAzdataApi {
 				if (storageClass) {
 					args.push('--storage-class', storageClass);
 				}
-				return this.executeCommand<void>(args, additionalEnvVars, azdataContext);
+				return this.executeCommand<void>(args, additionalEnvVars);
 			},
 			endpoint: {
-				list: (additionalEnvVars?: azdataExt.AdditionalEnvVars, azdataContext?: string): Promise<azdataExt.AzdataOutput<azdataExt.DcEndpointListResult[]>> => {
-					return this.executeCommand<azdataExt.DcEndpointListResult[]>(['arc', 'dc', 'endpoint', 'list'], additionalEnvVars, azdataContext);
+				list: (additionalEnvVars?: azdataExt.AdditionalEnvVars): Promise<azdataExt.AzdataOutput<azdataExt.DcEndpointListResult[]>> => {
+					return this.executeCommand<azdataExt.DcEndpointListResult[]>(['arc', 'dc', 'endpoint', 'list'], additionalEnvVars);
 				}
 			},
 			config: {
-				list: (additionalEnvVars?: azdataExt.AdditionalEnvVars, azdataContext?: string): Promise<azdataExt.AzdataOutput<azdataExt.DcConfigListResult[]>> => {
-					return this.executeCommand<azdataExt.DcConfigListResult[]>(['arc', 'dc', 'config', 'list'], additionalEnvVars, azdataContext);
+				list: (additionalEnvVars?: azdataExt.AdditionalEnvVars): Promise<azdataExt.AzdataOutput<azdataExt.DcConfigListResult[]>> => {
+					return this.executeCommand<azdataExt.DcConfigListResult[]>(['arc', 'dc', 'config', 'list'], additionalEnvVars);
 				},
-				show: (additionalEnvVars?: azdataExt.AdditionalEnvVars, azdataContext?: string): Promise<azdataExt.AzdataOutput<azdataExt.DcConfigShowResult>> => {
-					return this.executeCommand<azdataExt.DcConfigShowResult>(['arc', 'dc', 'config', 'show'], additionalEnvVars, azdataContext);
+				show: (additionalEnvVars?: azdataExt.AdditionalEnvVars): Promise<azdataExt.AzdataOutput<azdataExt.DcConfigShowResult>> => {
+					return this.executeCommand<azdataExt.DcConfigShowResult>(['arc', 'dc', 'config', 'show'], additionalEnvVars);
 				}
 			}
 		},
 		postgres: {
 			server: {
-				delete: (name: string, additionalEnvVars?: azdataExt.AdditionalEnvVars, azdataContext?: string): Promise<azdataExt.AzdataOutput<void>> => {
-					return this.executeCommand<void>(['arc', 'postgres', 'server', 'delete', '-n', name, '--force'], additionalEnvVars, azdataContext);
+				delete: (name: string, additionalEnvVars?: azdataExt.AdditionalEnvVars): Promise<azdataExt.AzdataOutput<void>> => {
+					return this.executeCommand<void>(['arc', 'postgres', 'server', 'delete', '-n', name, '--force'], additionalEnvVars);
 				},
-				list: (additionalEnvVars?: azdataExt.AdditionalEnvVars, azdataContext?: string): Promise<azdataExt.AzdataOutput<azdataExt.PostgresServerListResult[]>> => {
-					return this.executeCommand<azdataExt.PostgresServerListResult[]>(['arc', 'postgres', 'server', 'list'], additionalEnvVars, azdataContext);
+				list: (additionalEnvVars?: azdataExt.AdditionalEnvVars): Promise<azdataExt.AzdataOutput<azdataExt.PostgresServerListResult[]>> => {
+					return this.executeCommand<azdataExt.PostgresServerListResult[]>(['arc', 'postgres', 'server', 'list'], additionalEnvVars);
 				},
-				show: (name: string, additionalEnvVars?: azdataExt.AdditionalEnvVars, azdataContext?: string): Promise<azdataExt.AzdataOutput<azdataExt.PostgresServerShowResult>> => {
-					return this.executeCommand<azdataExt.PostgresServerShowResult>(['arc', 'postgres', 'server', 'show', '-n', name], additionalEnvVars, azdataContext);
+				show: (name: string, additionalEnvVars?: azdataExt.AdditionalEnvVars): Promise<azdataExt.AzdataOutput<azdataExt.PostgresServerShowResult>> => {
+					return this.executeCommand<azdataExt.PostgresServerShowResult>(['arc', 'postgres', 'server', 'show', '-n', name], additionalEnvVars);
 				},
 				edit: (
 					name: string,
@@ -133,8 +132,7 @@ export class AzdataTool implements azdataExt.IAzdataApi {
 						workerEngineSettings?: string,
 						workers?: number
 					},
-					additionalEnvVars?: azdataExt.AdditionalEnvVars,
-					azdataContext?: string): Promise<azdataExt.AzdataOutput<void>> => {
+					additionalEnvVars?: azdataExt.AdditionalEnvVars): Promise<azdataExt.AzdataOutput<void>> => {
 					const argsArray = ['arc', 'postgres', 'server', 'edit', '-n', name];
 					if (args.adminPassword) { argsArray.push('--admin-password'); }
 					if (args.coresLimit) { argsArray.push('--cores-limit', args.coresLimit); }
@@ -149,20 +147,20 @@ export class AzdataTool implements azdataExt.IAzdataApi {
 					if (args.replaceEngineSettings) { argsArray.push('--replace-engine-settings'); }
 					if (args.workerEngineSettings) { argsArray.push('--worker-engine-settings', args.workerEngineSettings); }
 					if (args.workers !== undefined) { argsArray.push('--workers', args.workers.toString()); }
-					return this.executeCommand<void>(argsArray, additionalEnvVars, azdataContext);
+					return this.executeCommand<void>(argsArray, additionalEnvVars);
 				}
 			}
 		},
 		sql: {
 			mi: {
-				delete: (name: string, additionalEnvVars?: azdataExt.AdditionalEnvVars, azdataContext?: string): Promise<azdataExt.AzdataOutput<void>> => {
-					return this.executeCommand<void>(['arc', 'sql', 'mi', 'delete', '-n', name], additionalEnvVars, azdataContext);
+				delete: (name: string, additionalEnvVars?: azdataExt.AdditionalEnvVars): Promise<azdataExt.AzdataOutput<void>> => {
+					return this.executeCommand<void>(['arc', 'sql', 'mi', 'delete', '-n', name], additionalEnvVars);
 				},
-				list: (additionalEnvVars?: azdataExt.AdditionalEnvVars, azdataContext?: string): Promise<azdataExt.AzdataOutput<azdataExt.SqlMiListResult[]>> => {
-					return this.executeCommand<azdataExt.SqlMiListResult[]>(['arc', 'sql', 'mi', 'list'], additionalEnvVars, azdataContext);
+				list: (additionalEnvVars?: azdataExt.AdditionalEnvVars): Promise<azdataExt.AzdataOutput<azdataExt.SqlMiListResult[]>> => {
+					return this.executeCommand<azdataExt.SqlMiListResult[]>(['arc', 'sql', 'mi', 'list'], additionalEnvVars);
 				},
-				show: (name: string, additionalEnvVars?: azdataExt.AdditionalEnvVars, azdataContext?: string): Promise<azdataExt.AzdataOutput<azdataExt.SqlMiShowResult>> => {
-					return this.executeCommand<azdataExt.SqlMiShowResult>(['arc', 'sql', 'mi', 'show', '-n', name], additionalEnvVars, azdataContext);
+				show: (name: string, additionalEnvVars?: azdataExt.AdditionalEnvVars): Promise<azdataExt.AzdataOutput<azdataExt.SqlMiShowResult>> => {
+					return this.executeCommand<azdataExt.SqlMiShowResult>(['arc', 'sql', 'mi', 'show', '-n', name], additionalEnvVars);
 				},
 				edit: (
 					name: string,
@@ -187,18 +185,6 @@ export class AzdataTool implements azdataExt.IAzdataApi {
 		}
 	};
 
-	public async login(endpointOrNamespace: azdataExt.EndpointOrNamespace, username: string, password: string, additionalEnvVars: azdataExt.AdditionalEnvVars = {}, azdataContext?: string): Promise<azdataExt.AzdataOutput<void>> {
-		const args = ['login', '-u', username];
-		if (endpointOrNamespace.endpoint) {
-			args.push('-e', endpointOrNamespace.endpoint);
-		} else if (endpointOrNamespace.namespace) {
-			args.push('--namespace', endpointOrNamespace.namespace);
-		} else {
-			throw new Error(loc.endpointOrNamespaceRequired);
-		}
-		return this.executeCommand<void>(args, Object.assign({}, additionalEnvVars, { 'AZDATA_PASSWORD': password }), azdataContext);
-	}
-
 	/**
 	 * Gets the output of running '--version' command on the azdata tool.
 	 * It also updates the cachedVersion property based on the return value from the tool.
@@ -219,11 +205,8 @@ export class AzdataTool implements azdataExt.IAzdataApi {
 	 * @param args The args to pass to azdata
 	 * @param additionalEnvVars Additional environment variables to set for this execution
 	 */
-	public async executeCommand<R>(args: string[], additionalEnvVars?: azdataExt.AdditionalEnvVars, azdataContext?: string): Promise<azdataExt.AzdataOutput<R>> {
+	public async executeCommand<R>(args: string[], additionalEnvVars?: azdataExt.AdditionalEnvVars): Promise<azdataExt.AzdataOutput<R>> {
 		try {
-			if (azdataContext) {
-				args = args.concat('--controller-context', azdataContext);
-			}
 			const output = JSON.parse((await executeAzdataCommand(`"${this._path}"`, args.concat(['--output', 'json']), additionalEnvVars)).stdout);
 			return {
 				logs: <string[]>output.log,

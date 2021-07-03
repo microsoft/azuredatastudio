@@ -72,41 +72,40 @@ export function getAzdataApi(azdataToolService: AzdataToolService, memento: vsco
 					subscription: string,
 					profileName?: string,
 					storageClass?: string,
-					additionalEnvVars?: azdataExt.AdditionalEnvVars,
-					azdataContext?: string) => {
+					additionalEnvVars?: azdataExt.AdditionalEnvVars) => {
 					await validateAzdata(azdataToolService.localAzdata, isEulaAccepted(memento));
-					return azdataToolService.localAzdata!.arc.dc.create(namespace, name, connectivityMode, resourceGroup, location, subscription, profileName, storageClass, additionalEnvVars, azdataContext);
+					return azdataToolService.localAzdata!.arc.dc.create(namespace, name, connectivityMode, resourceGroup, location, subscription, profileName, storageClass, additionalEnvVars);
 				},
 				endpoint: {
-					list: async (additionalEnvVars?: azdataExt.AdditionalEnvVars, azdataContext?: string) => {
+					list: async (additionalEnvVars?: azdataExt.AdditionalEnvVars) => {
 						await validateAzdata(azdataToolService.localAzdata, isEulaAccepted(memento));
-						return azdataToolService.localAzdata!.arc.dc.endpoint.list(additionalEnvVars, azdataContext);
+						return azdataToolService.localAzdata!.arc.dc.endpoint.list(additionalEnvVars);
 					}
 				},
 				config: {
-					list: async (additionalEnvVars?: azdataExt.AdditionalEnvVars, azdataContext?: string) => {
+					list: async (additionalEnvVars?: azdataExt.AdditionalEnvVars) => {
 						await validateAzdata(azdataToolService.localAzdata, isEulaAccepted(memento));
-						return azdataToolService.localAzdata!.arc.dc.config.list(additionalEnvVars, azdataContext);
+						return azdataToolService.localAzdata!.arc.dc.config.list(additionalEnvVars);
 					},
-					show: async (additionalEnvVars?: azdataExt.AdditionalEnvVars, azdataContext?: string) => {
+					show: async (additionalEnvVars?: azdataExt.AdditionalEnvVars) => {
 						await validateAzdata(azdataToolService.localAzdata, isEulaAccepted(memento));
-						return azdataToolService.localAzdata!.arc.dc.config.show(additionalEnvVars, azdataContext);
+						return azdataToolService.localAzdata!.arc.dc.config.show(additionalEnvVars);
 					}
 				}
 			},
 			postgres: {
 				server: {
-					delete: async (name: string, additionalEnvVars?: azdataExt.AdditionalEnvVars, azdataContext?: string) => {
+					delete: async (name: string, additionalEnvVars?: azdataExt.AdditionalEnvVars) => {
 						await validateAzdata(azdataToolService.localAzdata, isEulaAccepted(memento));
-						return azdataToolService.localAzdata!.arc.postgres.server.delete(name, additionalEnvVars, azdataContext);
+						return azdataToolService.localAzdata!.arc.postgres.server.delete(name, additionalEnvVars);
 					},
-					list: async (additionalEnvVars?: azdataExt.AdditionalEnvVars, azdataContext?: string) => {
+					list: async (additionalEnvVars?: azdataExt.AdditionalEnvVars) => {
 						await validateAzdata(azdataToolService.localAzdata, isEulaAccepted(memento));
-						return azdataToolService.localAzdata!.arc.postgres.server.list(additionalEnvVars, azdataContext);
+						return azdataToolService.localAzdata!.arc.postgres.server.list(additionalEnvVars);
 					},
-					show: async (name: string, additionalEnvVars?: azdataExt.AdditionalEnvVars, azdataContext?: string) => {
+					show: async (name: string, additionalEnvVars?: azdataExt.AdditionalEnvVars) => {
 						await validateAzdata(azdataToolService.localAzdata, isEulaAccepted(memento));
-						return azdataToolService.localAzdata!.arc.postgres.server.show(name, additionalEnvVars, azdataContext);
+						return azdataToolService.localAzdata!.arc.postgres.server.show(name, additionalEnvVars);
 					},
 					edit: async (
 						name: string,
@@ -125,26 +124,25 @@ export function getAzdataApi(azdataToolService: AzdataToolService, memento: vsco
 							workerEngineSettings?: string;
 							workers?: number;
 						},
-						additionalEnvVars?: azdataExt.AdditionalEnvVars,
-						azdataContext?: string) => {
+						additionalEnvVars?: azdataExt.AdditionalEnvVars) => {
 						await validateAzdata(azdataToolService.localAzdata, isEulaAccepted(memento));
-						return azdataToolService.localAzdata!.arc.postgres.server.edit(name, args, additionalEnvVars, azdataContext);
+						return azdataToolService.localAzdata!.arc.postgres.server.edit(name, args, additionalEnvVars);
 					}
 				}
 			},
 			sql: {
 				mi: {
-					delete: async (name: string, additionalEnvVars?: azdataExt.AdditionalEnvVars, azdataContext?: string) => {
+					delete: async (name: string, additionalEnvVars?: azdataExt.AdditionalEnvVars) => {
 						await validateAzdata(azdataToolService.localAzdata, isEulaAccepted(memento));
-						return azdataToolService.localAzdata!.arc.sql.mi.delete(name, additionalEnvVars, azdataContext);
+						return azdataToolService.localAzdata!.arc.sql.mi.delete(name, additionalEnvVars);
 					},
-					list: async (additionalEnvVars?: azdataExt.AdditionalEnvVars, azdataContext?: string) => {
+					list: async (additionalEnvVars?: azdataExt.AdditionalEnvVars) => {
 						await validateAzdata(azdataToolService.localAzdata, isEulaAccepted(memento));
-						return azdataToolService.localAzdata!.arc.sql.mi.list(additionalEnvVars, azdataContext);
+						return azdataToolService.localAzdata!.arc.sql.mi.list(additionalEnvVars);
 					},
-					show: async (name: string, additionalEnvVars?: azdataExt.AdditionalEnvVars, azdataContext?: string) => {
+					show: async (name: string, additionalEnvVars?: azdataExt.AdditionalEnvVars) => {
 						await validateAzdata(azdataToolService.localAzdata, isEulaAccepted(memento));
-						return azdataToolService.localAzdata!.arc.sql.mi.show(name, additionalEnvVars, azdataContext);
+						return azdataToolService.localAzdata!.arc.sql.mi.show(name, additionalEnvVars);
 					},
 					edit: async (
 						name: string,
@@ -155,11 +153,10 @@ export function getAzdataApi(azdataToolService: AzdataToolService, memento: vsco
 							memoryRequest?: string;
 							noWait?: boolean;
 						},
-						additionalEnvVars?: azdataExt.AdditionalEnvVars,
-						azdataContext?: string
+						additionalEnvVars?: azdataExt.AdditionalEnvVars
 					) => {
 						await validateAzdata(azdataToolService.localAzdata, isEulaAccepted(memento));
-						return azdataToolService.localAzdata!.arc.sql.mi.edit(name, args, additionalEnvVars, azdataContext);
+						return azdataToolService.localAzdata!.arc.sql.mi.edit(name, args, additionalEnvVars);
 					}
 				}
 			}
@@ -167,10 +164,6 @@ export function getAzdataApi(azdataToolService: AzdataToolService, memento: vsco
 		getPath: async () => {
 			throwIfNoAzdata(azdataToolService.localAzdata);
 			return azdataToolService.localAzdata.getPath();
-		},
-		login: async (endpointOrNamespace: azdataExt.EndpointOrNamespace, username: string, password: string, additionalEnvVars?: azdataExt.AdditionalEnvVars, azdataContext?: string) => {
-			await validateAzdata(azdataToolService.localAzdata, isEulaAccepted(memento));
-			return azdataToolService.localAzdata!.login(endpointOrNamespace, username, password, additionalEnvVars, azdataContext);
 		},
 		getSemVersion: async () => {
 			throwIfNoAzdata(azdataToolService.localAzdata);
