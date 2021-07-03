@@ -425,17 +425,12 @@
 	padding: 0px 0px 0px;
 }
 
-.modal{
+notebook-view-component .modal{
 	position: absolute;
 	background: rgba(244, 244, 244, .3);
 }
 
-.modal{
-	position: absolute;
-	background: rgba(244, 244, 244, .3);
-}
-
-.modal .content {
+notebook-view-component .modal .content {
 	height: calc(100% - 60px);
 	width: calc(100% - 60px);
 	position: absolute;
@@ -445,7 +440,7 @@
 	border: 1px solid;
 }
 
-.modal .content .title {
+notebook-view-component .modal .content .title {
 	padding: 10px;
 	border-bottom: 1px solid;
 }

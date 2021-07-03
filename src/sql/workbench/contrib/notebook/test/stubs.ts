@@ -20,7 +20,7 @@ import { IContextViewProvider, IDelegate } from 'vs/base/browser/ui/contextview/
 import { NotebookViewsExtension } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViewsExtension';
 import { IEditorPane } from 'vs/workbench/common/editor';
 import { INotebookShowOptions } from 'sql/workbench/api/common/sqlExtHost.protocol';
-import { INotebookView, INotebookViewCell, INotebookViews } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViews';
+import { INotebookView, INotebookViewCell, INotebookViewMetadata, INotebookViews } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViews';
 
 export class NotebookModelStub implements INotebookModel {
 	constructor(private _languageInfo?: nb.ILanguageInfo, private _cells?: ICellModel[], private _testContents?: nb.INotebookContents) {
@@ -762,6 +762,8 @@ export class ContextViewProviderStub implements IContextViewProvider {
 }
 
 export class NotebookViewsStub implements INotebookViews {
+	metadata: INotebookViewMetadata;
+
 	get onActiveViewChanged(): vsEvent.Event<void> {
 		throw new Error('Method not implemented.');
 	}

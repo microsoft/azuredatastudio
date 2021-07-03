@@ -27,7 +27,7 @@ import { CellType, CellTypes, NotebookChangeType } from 'sql/workbench/services/
 import { isUndefinedOrNull } from 'vs/base/common/types';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { NotebookViewsExtension } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViewsExtension';
-import { INotebookView } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViews';
+import { INotebookView, INotebookViewMetadata } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViews';
 import { NotebookViewsGridComponent } from 'sql/workbench/contrib/notebook/browser/notebookViews/notebookViewsGrid.component';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { DeleteViewAction, InsertCellAction, ViewSettingsAction } from 'sql/workbench/contrib/notebook/browser/notebookViews/notebookViewsActions';
@@ -49,6 +49,7 @@ export class NotebookViewComponent extends AngularDisposable implements INoteboo
 	@Input() model: NotebookModel;
 	@Input() activeView: INotebookView;
 	@Input() views: NotebookViewsExtension;
+	@Input() notebookMeta: INotebookViewMetadata;
 
 	@ViewChild('container', { read: ElementRef }) private _container: ElementRef;
 	@ViewChild('viewsToolbar', { read: ElementRef }) private _viewsToolbar: ElementRef;
@@ -328,12 +329,6 @@ export class NotebookViewComponent extends AngularDisposable implements INoteboo
 				}
 				break;
 			}
-			/*
-			case NotebookChangeType.CellsModified:
-				//const cell: ICellModel = change?.cells[0];
-				//this.detectChanges();
-				break;
-			*/
 		}
 	}
 

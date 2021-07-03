@@ -187,12 +187,10 @@ export class NotebookViewsGridComponent extends AngularDisposable implements OnI
 			if (e.cell && e.event === 'insert') {
 				const component = this._items.find(x => x.cell.cellGuid === e.cell.cellGuid);
 
-				//this.activeView.moveCell(e.cell, 0, 0);
 				this.activeView.insertCell(e.cell);
 
 				this.detectChanges();
 
-				//const el = component.elementRef.nativeElement;
 				const el = this._grid.getGridItems().find(x => x.getAttribute('data-cell-id') === e.cell.cellGuid);
 				this._grid.makeWidget(el);
 				this._grid.update(el, { x: 0, y: 0 });
@@ -200,8 +198,6 @@ export class NotebookViewsGridComponent extends AngularDisposable implements OnI
 				this._grid.movable(el, true);
 
 				component.initialize();
-
-				//this.detectChanges();
 			}
 
 			if (e.cell && e.event === 'update') {

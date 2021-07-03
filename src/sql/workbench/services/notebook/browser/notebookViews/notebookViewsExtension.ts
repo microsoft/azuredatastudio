@@ -68,7 +68,8 @@ export class NotebookViewsExtension extends NotebookExtension<INotebookViewMetad
 		const view = new NotebookViewModel(viewName, this);
 		view.initialize();
 
-		this._metadata.views.push(view);
+		//Add view to the views metadata
+		this._metadata = Object.assign({}, this._metadata, { views: [...this._metadata.views, view] });
 
 		return view;
 	}
@@ -86,13 +87,13 @@ export class NotebookViewsExtension extends NotebookExtension<INotebookViewMetad
 					this.setCellMetadata(cell, meta);
 				});
 			}
-
-			this.setNotebookMetadata(this.notebook, this._metadata);
 		}
 
 		if (guid === this._metadata.activeView) {
 			this._metadata.activeView = undefined;
 		}
+
+		this._metadata = Object.assign({}, this._metadata);
 
 		this._onViewDeleted.fire();
 		this.commit();
@@ -129,6 +130,10 @@ export class NotebookViewsExtension extends NotebookExtension<INotebookViewMetad
 		return this._metadata.views;
 	}
 
+	public get metadata(): INotebookViewMetadata {
+		return this._metadata;
+	}
+
 	public getCells(): INotebookViewCellMetadata[] {
 		return this._notebook.cells.map(cell => this.getCellMetadata(cell));
 	}
@@ -143,6 +148,7 @@ export class NotebookViewsExtension extends NotebookExtension<INotebookViewMetad
 	}
 
 	public commit() {
+		this._metadata = Object.assign({}, this._metadata);
 		this.setNotebookMetadata(this._notebook, this._metadata);
 	}
 

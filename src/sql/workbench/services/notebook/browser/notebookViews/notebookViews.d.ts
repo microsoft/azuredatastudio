@@ -20,6 +20,7 @@ export interface INotebookViews {
 	getActiveView(): INotebookView;
 	setActiveView(view: INotebookView);
 	viewNameIsTaken(name: string): boolean;
+	metadata: INotebookViewMetadata;
 }
 
 export interface INotebookView {
