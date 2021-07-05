@@ -33,19 +33,6 @@
             "default": false,
             "description": "%azdata.config.debug%"
           },
-          "azdata.acceptEula": {
-            "type": "string",
-            "default": "prompt",
-            "enum": [
-              "dontPrompt",
-              "prompt"
-            ],
-            "enumDescriptions": [
-              "%azdata.acceptEula.dontPrompt.description%",
-              "%azdata.acceptEula.prompt.description%"
-            ],
-            "description": "%azdata.acceptEula.description%"
-          },
           "azdata.install": {
             "type": "string",
             "default": "prompt",
@@ -90,11 +77,6 @@
     ],
     "commands": [
       {
-        "command": "azdata.acceptEula",
-        "title": "%azdata.acceptEula.command.name%",
-        "category": "%command.category%"
-      },
-      {
         "command": "azdata.install",
         "title": "%azdata.install.command.name%",
         "category": "%command.category%"
@@ -107,10 +89,6 @@
     ],
     "menus": {
       "commandPalette": [
-        {
-          "command": "azdata.acceptEula",
-          "when": "!azdata.eulaAccepted"
-        },
         {
           "command": "azdata.install",
           "when": "!azdata.found"

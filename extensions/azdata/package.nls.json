@@ -5,14 +5,9 @@
 	"azdata.config.debug": "Log debug info to the output channel for all executed azdata commands",
 
 	"command.category": "Azure Data CLI",
-	"azdata.acceptEula.command.name": "Accept Eula",
 	"azdata.install.command.name": "Install",
 	"azdata.update.command.name": "Check for Update",
 	"azdata.category": "Azure Data CLI",
-
-	"azdata.acceptEula.description": "Choose how acceptance of EULA for the Azure Data CLI is done",
-	"azdata.acceptEula.prompt.description": "The user will be prompted for acceptance of EULA for the Azure Data CLI",
-	"azdata.acceptEula.dontPrompt.description": "The user will not be prompted for acceptance of EULA for the Azure Data CLI",
 
 	"azdata.install.description": "Choose how install of Azure Data CLI is done",
 	"azdata.install.prompt.description": "The user will be prompted for installation of the Azure Data CLI",

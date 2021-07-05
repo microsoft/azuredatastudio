@@ -63,11 +63,5 @@ export const userResponseToInstallPrompt = (response: string | undefined): strin
 export const userResponseToUpdatePrompt = (response: string | undefined): string => localize('azdata.userResponseUpdate', "User Response on prompt to update Azure Data CLI: {0}", response);
 export const userRequestedInstall = localize('azdata.userRequestedInstall', "User requested to install Azure Data CLI using 'Azure Data CLI: Install' command");
 export const userRequestedUpdate = localize('azdata.userRequestedUpdate', "User requested to update Azure Data CLI using 'Azure Data CLI: Check for Update' command");
-export const userRequestedAcceptEula = localize('azdata.acceptEula', "User requested to be prompted for accepting EULA by invoking 'Azure Data CLI: Accept EULA' command");
 export const updateCheckSkipped = localize('azdata.updateCheckSkipped', "No check for new Azure Data CLI version availability performed as Azure Data CLI was not found to be installed");
-export const eulaNotAccepted = localize('azdata.eulaNotAccepted', "Microsoft Privacy statement and Azure Data CLI license terms have not been accepted. Execute the command: [Azure Data CLI: Accept EULA](command:azdata.acceptEula) to accept EULA to enable the features that requires Azure Data CLI.");
-export const promptForEula = (privacyStatementUrl: string, eulaUrl: string) => localize('azdata.promptForEula', "It is required to accept the [Microsoft Privacy Statement]({0}) and the [Azure Data CLI license terms]({1}) to use this extension. Declining this will result in some features not working.", privacyStatementUrl, eulaUrl);
-export const promptForEulaLog = (privacyStatementUrl: string, eulaUrl: string) => promptLog(promptForEula(privacyStatementUrl, eulaUrl));
-export const userResponseToEulaPrompt = (response: string | undefined) => localize('azdata.promptForEulaResponse', "User response to EULA prompt: {0}", response);
-export const eulaAcceptedStateOnStartup = (eulaAccepted: boolean) => localize('azdata.eulaAcceptedStateOnStartup', "'EULA Accepted' state on startup: {0}", eulaAccepted);
 export const endpointOrNamespaceRequired = localize('azdata.endpointOrNamespaceRequired', "Either an endpoint or a namespace must be specified");

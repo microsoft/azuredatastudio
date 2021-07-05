@@ -9,10 +9,8 @@ import * as os from 'os';
 import { SemVer } from 'semver';
 import * as vscode from 'vscode';
 import { executeCommand, ExitCodeError, ProcessOutput } from './common/childProcess';
-import Logger from './common/logger';
 import { NoAzdataError } from './common/utils';
-import { azdataAcceptEulaKey, azdataConfigSection, azdataFound, debugConfigKey, eulaAccepted, eulaUrl, microsoftPrivacyStatementUrl } from './constants';
-import * as loc from './localizedConstants';
+import { azdataConfigSection, azdataFound, debugConfigKey } from './constants';
 
 /**
  * The minimum required azdata CLI version for this extension to function properly
@@ -250,64 +248,6 @@ export type AzdataDarwinPackageVersionInfo = {
 		bottle: boolean
 	}
 };
-
-/**
- *	Returns true if Eula has been accepted.
- *
- * @param memento The memento that stores the eulaAccepted state
- */
-export function isEulaAccepted(memento: vscode.Memento): boolean {
-	return !!memento.get<boolean>(eulaAccepted);
-}
-
-/**
- * Prompts user to accept EULA. Stores and returns the user response to EULA prompt.
- * @param memento - memento where the user response is stored.
- * @param userRequested - if true this operation was requested in response to a user issued command, if false it was issued at startup by system
- * @param requireUserAction - if the prompt is required to be acted upon by the user. This is typically 'true' when this method is called to address an Error when the EULA needs to be accepted to proceed.
- * pre-requisite, the calling code has to ensure that the eula has not yet been previously accepted by the user.
- * returns true if the user accepted the EULA.
- */
-export async function promptForEula(memento: vscode.Memento, userRequested: boolean = false, requireUserAction: boolean = false): Promise<boolean> {
-	let response: string | undefined = loc.no;
-	const config = <AzdataDeployOption>getConfig(azdataAcceptEulaKey);
-	if (userRequested) {
-		Logger.show();
-		Logger.log(loc.userRequestedAcceptEula);
-	}
-	const responses = userRequested
-		? [loc.accept, loc.decline]
-		: [loc.accept, loc.askLater, loc.doNotAskAgain];
-	if (config === AzdataDeployOption.prompt || userRequested) {
-		Logger.show();
-		Logger.log(loc.promptForEulaLog(microsoftPrivacyStatementUrl, eulaUrl));
-		response = requireUserAction
-			? await vscode.window.showErrorMessage(loc.promptForEula(microsoftPrivacyStatementUrl, eulaUrl), ...responses)
-			: await vscode.window.showInformationMessage(loc.promptForEula(microsoftPrivacyStatementUrl, eulaUrl), ...responses);
-		Logger.log(loc.userResponseToEulaPrompt(response));
-	}
-	if (response === loc.doNotAskAgain) {
-		await setConfig(azdataAcceptEulaKey, AzdataDeployOption.dontPrompt);
-	} else if (response === loc.accept) {
-		await memento.update(eulaAccepted, true); // save a memento that eula was accepted
-		await vscode.commands.executeCommand('setContext', eulaAccepted, true); // save a context key that eula was accepted so that command for accepting eula is no longer available in commandPalette
-		return true;
-	}
-	return false;
-}
-
-function getConfig(key: string): AzdataDeployOption | undefined {
-	const config = vscode.workspace.getConfiguration(azdataConfigSection);
-	const value = <AzdataDeployOption>config.get<AzdataDeployOption>(key);
-	Logger.log(loc.azdataUserSettingRead(key, value));
-	return value;
-}
-
-async function setConfig(key: string, value: string): Promise<void> {
-	const config = vscode.workspace.getConfiguration(azdataConfigSection);
-	await config.update(key, value, vscode.ConfigurationTarget.Global);
-	Logger.log(loc.azdataUserSettingUpdated(key, value));
-}
 
 /**
  * Parses out the azdata version from the raw azdata version output
