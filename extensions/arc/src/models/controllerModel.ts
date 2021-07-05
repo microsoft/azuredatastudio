@@ -6,10 +6,7 @@
 import { ControllerInfo, ResourceType } from 'arc';
 import * as azdataExt from 'azdata-ext';
 import * as vscode from 'vscode';
-import { UserCancelledError } from '../common/api';
-import { getCurrentClusterContext, getKubeConfigClusterContexts } from '../common/kubeUtils';
 import * as loc from '../localizedConstants';
-import { ConnectToControllerDialog } from '../ui/dialogs/connectControllerDialog';
 import { AzureArcTreeDataProvider } from '../ui/tree/azureArcTreeDataProvider';
 
 export type Registration = {
@@ -38,7 +35,7 @@ export class ControllerModel {
 	public endpointsLastUpdated?: Date;
 	public registrationsLastUpdated?: Date;
 
-	constructor(public treeDataProvider: AzureArcTreeDataProvider, private _info: ControllerInfo, private _password?: string) {
+	constructor(public treeDataProvider: AzureArcTreeDataProvider, private _info: ControllerInfo) {
 		this._azdataApi = <azdataExt.IExtension>vscode.extensions.getExtension(azdataExt.extension.name)?.exports;
 	}
 
@@ -73,51 +70,6 @@ export class ControllerModel {
 	}
 
 	/**
-	 * Calls azdata login to set the context to this controller and acquires a login session to prevent other
-	 * calls from changing the context while commands for this session are being executed.
-	 * @param promptReconnect
-	 */
-	public async login(promptReconnect: boolean = false): Promise<void> {
-		let promptForValidClusterContext: boolean = false;
-		try {
-			const contexts = getKubeConfigClusterContexts(this.info.kubeConfigFilePath);
-			getCurrentClusterContext(contexts, this.info.kubeClusterContext, true); // this throws if this.info.kubeClusterContext is not found in 'contexts'
-		} catch (error) {
-			const response = await vscode.window.showErrorMessage(loc.clusterContextConfigNoLongerValid(this.info.kubeConfigFilePath, this.info.kubeClusterContext, error), loc.yes, loc.no);
-			if (response === loc.yes) {
-				promptForValidClusterContext = true;
-			} else {
-				if (!promptReconnect) { //throw unless we are required to prompt for reconnect anyways
-					throw error;
-				}
-			}
-		}
-
-		// We haven't gotten our password yet or we want to prompt for a reconnect or we want to prompt to reacquire valid cluster context or any and all of these.
-		if (!this._password || promptReconnect || promptForValidClusterContext) {
-			this._password = '';
-			if (this.info.rememberPassword) {
-				// It should be in the credentials store, get it from there
-				this._password = await this.treeDataProvider.getPassword(this.info);
-			}
-			if (promptReconnect || !this._password || promptForValidClusterContext) {
-				// No password yet or we want to re-prompt for credentials so prompt for it from the user
-				const dialog = new ConnectToControllerDialog(this.treeDataProvider);
-				dialog.showDialog(this.info, this._password);
-				const model = await dialog.waitForClose();
-				if (model) {
-					await this.treeDataProvider.addOrUpdateController(model.controllerModel, model.password, false);
-					this._password = model.password;
-					this._info = model.controllerModel.info;
-				} else {
-					throw new UserCancelledError(loc.userCancelledError);
-				}
-			}
-		}
-		await this._azdataApi.azdata.login({ endpoint: this.info.endpoint, namespace: this.info.namespace }, this.info.username, this._password, this.azdataAdditionalEnvVars);
-	}
-
-	/**
 	 * Refreshes the Tree Node for this model. This will also result in the model being refreshed.
 	 */
 	public async refreshTreeNode(): Promise<void> {
@@ -130,10 +82,9 @@ export class ControllerModel {
 	}
 	public async refresh(showErrors: boolean = true): Promise<void> {
 		// First need to log in to ensure that we're able to authenticate with the controller
-		await this.login(false);
 		const newRegistrations: Registration[] = [];
 		await Promise.all([
-			this._azdataApi.azdata.arc.dc.config.show(this.azdataAdditionalEnvVars, this.controllerContext).then(result => {
+			this._azdataApi.azdata.arc.dc.config.show(this.azdataAdditionalEnvVars).then(result => {
 				this._controllerConfig = result.result;
 				this.configLastUpdated = new Date();
 				this._onConfigUpdated.fire(this._controllerConfig);
@@ -147,7 +98,7 @@ export class ControllerModel {
 				this._onConfigUpdated.fire(this._controllerConfig);
 				throw err;
 			}),
-			this._azdataApi.azdata.arc.dc.endpoint.list(this.azdataAdditionalEnvVars, this.controllerContext).then(result => {
+			this._azdataApi.azdata.arc.dc.endpoint.list(this.azdataAdditionalEnvVars).then(result => {
 				this._endpoints = result.result;
 				this.endpointsLastUpdated = new Date();
 				this._onEndpointsUpdated.fire(this._endpoints);
@@ -162,7 +113,7 @@ export class ControllerModel {
 				throw err;
 			}),
 			Promise.all([
-				this._azdataApi.azdata.arc.postgres.server.list(this.azdataAdditionalEnvVars, this.controllerContext).then(result => {
+				this._azdataApi.azdata.arc.postgres.server.list(this.azdataAdditionalEnvVars).then(result => {
 					newRegistrations.push(...result.result.map(r => {
 						return {
 							instanceName: r.name,
@@ -171,7 +122,7 @@ export class ControllerModel {
 						};
 					}));
 				}),
-				this._azdataApi.azdata.arc.sql.mi.list(this.azdataAdditionalEnvVars, this.controllerContext).then(result => {
+				this._azdataApi.azdata.arc.sql.mi.list(this.azdataAdditionalEnvVars).then(result => {
 					newRegistrations.push(...result.result.map(r => {
 						return {
 							instanceName: r.name,

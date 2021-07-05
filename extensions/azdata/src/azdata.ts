@@ -9,8 +9,10 @@ import * as os from 'os';
 import { SemVer } from 'semver';
 import * as vscode from 'vscode';
 import { executeCommand, ExitCodeError, ProcessOutput } from './common/childProcess';
-import { NoAzdataError } from './common/utils';
+import Logger from './common/logger';
+import { NoAzdataError, searchForCmd } from './common/utils';
 import { azdataConfigSection, azdataFound, debugConfigKey } from './constants';
+import * as loc from './localizedConstants';
 
 /**
  * The minimum required azdata CLI version for this extension to function properly
@@ -250,6 +252,24 @@ export type AzdataDarwinPackageVersionInfo = {
 };
 
 /**
+ * Finds the existing installation of azdata, or throws an error if it couldn't find it
+ * or encountered an unexpected error.
+ * The promise is rejected when Azdata is not found.
+ */
+export async function findAzdata(): Promise<IAzdataTool> {
+	Logger.log(loc.searchingForAzdata);
+	try {
+		const azdata = await findSpecificAzdata();
+		Logger.log(loc.foundExistingAzdata(await azdata.getPath(), (await azdata.getSemVersion()).raw));
+		return azdata;
+	} catch (err) {
+		Logger.log(loc.couldNotFindAzdata(err));
+		Logger.log(loc.noAzdata);
+		throw err;
+	}
+}
+
+/**
  * Parses out the azdata version from the raw azdata version output
  * @param raw The raw version output from azdata --version
  */
@@ -268,6 +288,15 @@ async function executeAzdataCommand(command: string, args: string[], additionalE
 	}
 	return executeCommand(command, args, additionalEnvVars);
 }
+
+/**
+ */
+async function findSpecificAzdata(): Promise<IAzdataTool> {
+	const path = await ((process.platform === 'win32') ? searchForCmd('az.cmd') : searchForCmd('az'));
+	const versionOutput = await executeAzdataCommand(`"${path}"`, ['--version']);
+	return new AzdataTool(path, parseVersion(versionOutput.stdout));
+}
+
 
 /**
  * Gets the latest azdata version for linux clients

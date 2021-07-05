@@ -7,11 +7,15 @@ import * as azdataExt from 'azdata-ext';
 import * as rd from 'resource-deployment';
 import * as vscode from 'vscode';
 import { getExtensionApi } from './api';
+import { findAzdata } from './azdata';
 import { ArcControllerConfigProfilesOptionsSource } from './providers/arcControllerConfigProfilesOptionsSource';
 import { AzdataToolService } from './services/azdataToolService';
 
 export async function activate(context: vscode.ExtensionContext): Promise<azdataExt.IExtension> {
 	const azdataToolService = new AzdataToolService();
+
+	azdataToolService.localAzdata = await findAzdata();
+
 	const azdataApi = getExtensionApi(azdataToolService);
 
 	// register option source(s)

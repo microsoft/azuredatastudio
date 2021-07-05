@@ -5,7 +5,6 @@
 
 declare module 'azdata-ext' {
 	import { SemVer } from 'semver';
-	import * as vscode from 'vscode';
 
 	/**
 	 * Covers defining what the azdata extension exports to other extensions
