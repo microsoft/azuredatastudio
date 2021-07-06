@@ -14,8 +14,7 @@ import { TreeNode } from './treeNodes';
 import { AppContext } from '../appContext';
 import * as constants from '../constants';
 import { ICommandObjectExplorerContext } from './command';
-
-export const azureMonitorOutputChannel = vscode.window.createOutputChannel(constants.providerId);
+import { outputChannel } from '../azuremonitorServer';
 
 export interface ITreeChangeHandler {
 	notifyNodeChanged(node: TreeNode): void;
@@ -108,7 +107,7 @@ export class AzureMonitorObjectExplorerNodeProvider extends ProviderBase impleme
 				await this.refreshNode(expandInfo);
 			}
 		} catch (err) {
-			azureMonitorOutputChannel.appendLine(localize('notifyError', "Error notifying of node change: {0}", err));
+			outputChannel.appendLine(localize('notifyError', "Error notifying of node change: {0}", err));
 		}
 	}
 

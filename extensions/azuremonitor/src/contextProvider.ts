@@ -39,7 +39,7 @@ export default class ContextProvider {
 	public onDashboardOpen(e: azdata.DashboardDocument): void {
 		let iscloud: boolean = false;
 		let edition: number | undefined;
-		let isCluster: boolean = false; // TODO: Do we even need this for AzureMonitor
+		let isCluster: boolean = false;
 		let serverMajorVersion: number | undefined;
 		if (e.profile.providerName.toLowerCase() === 'loganalytics' && !types.isUndefinedOrNull(e.serverInfo) && !types.isUndefinedOrNull(e.serverInfo.engineEditionId)) {
 			if (isCloudEditions.some(i => i === e.serverInfo.engineEditionId)) {

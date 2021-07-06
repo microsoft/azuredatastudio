@@ -21,7 +21,7 @@ import { promises as fs } from 'fs';
 
 const localize = nls.loadMessageBundle();
 
-const outputChannel = vscode.window.createOutputChannel(Constants.serviceName);
+export const outputChannel = vscode.window.createOutputChannel(Constants.serviceName);
 const statusView = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left);
 
 export class AzureMonitorServer {

@@ -43,7 +43,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 	let iconProvider = new AzureMonitorIconProvider();
 	azdata.dataprotocol.registerIconProvider(iconProvider);
 
-	activateNotebookTask();
+	registerTasks();
 
 	registerSearchServerCommand();
 	context.subscriptions.push(new ContextProvider());
@@ -71,7 +71,7 @@ function registerLogCommand(context: vscode.ExtensionContext) {
 	}));
 }
 
-function activateNotebookTask(): void {
+function registerTasks(): void {
 	azdata.tasks.registerTask(Constants.azuremonitorClusterNewNotebookTask, (profile: azdata.IConnectionProfile) => {
 		return saveProfileAndCreateNotebook(profile);
 	});
