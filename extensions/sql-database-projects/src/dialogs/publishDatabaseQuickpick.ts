@@ -73,7 +73,8 @@ export async function launchPublishDatabaseQuickpick(project: Project): Promise<
 			databaseName = await vscode.window.showInputBox(
 				{
 					title: constants.enterNewDatabaseName,
-					ignoreFocusOut: true
+					ignoreFocusOut: true,
+					validateInput: input => input ? undefined : constants.nameMustNotBeEmpty
 				}
 			) ?? '';
 			// If user cancels out of this just return them to the db select quickpick in case they changed their mind

@@ -297,10 +297,10 @@ export class ProjectsController {
 			if ((<IPublishSettings>settings).upgradeExisting) {
 				telemetryProps.publishAction = 'deploy';
 				if (azdataApi) {
-					result = await (dacFxService as mssql.IDacFxService).deployDacpac(tempPath, settings.databaseName, (<IPublishSettings>settings).upgradeExisting, settings.connectionUri, utils.getAzdataApi()!.TaskExecutionMode.execute, settings.sqlCmdVariables, settings.deploymentOptions);
+					result = await (dacFxService as mssql.IDacFxService).deployDacpac(tempPath, settings.databaseName, (<IPublishSettings>settings).upgradeExisting, settings.connectionUri, azdataApi.TaskExecutionMode.execute, settings.sqlCmdVariables, settings.deploymentOptions);
 				} else {
 					// TODO Fix typing
-					result = await (dacFxService as mssqlVscode.IDacFxService).deployDacpac(tempPath, settings.databaseName, (<IPublishSettings>settings).upgradeExisting, settings.connectionUri, utils.getAzdataApi()!.TaskExecutionMode.execute, settings.sqlCmdVariables, <mssqlVscode.DeploymentOptions><any>settings.deploymentOptions);
+					result = await (dacFxService as mssqlVscode.IDacFxService).deployDacpac(tempPath, settings.databaseName, (<IPublishSettings>settings).upgradeExisting, settings.connectionUri, <mssqlVscode.TaskExecutionMode><any>azdataApi!.TaskExecutionMode.execute, settings.sqlCmdVariables, <mssqlVscode.DeploymentOptions><any>settings.deploymentOptions);
 				}
 
 			}

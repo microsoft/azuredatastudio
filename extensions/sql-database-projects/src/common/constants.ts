@@ -120,6 +120,7 @@ export const enterNewDatabaseName = localize('enterNewDatabaseName', "Enter new 
 export const newDatabaseTitle = (name: string) => localize({ key: 'newDatabaseTitle', comment: ['Name is the name of a new database being created'] }, "{0} (new)", name);
 export const selectDatabase = localize('selectDatabase', "Select database");
 export const done = localize('done', "Done");
+export const nameMustNotBeEmpty = localize('nameMustNotBeEmpty', "Name must not be empty");
 
 // Add Database Reference dialog strings
 
