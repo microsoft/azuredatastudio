@@ -37,10 +37,6 @@
 	min-height: 21px;
 }
 
-.notebookEditor .in-preview .actions-container .action-item {
-	height: 100%;
-}
-
 .notebookEditor .editor-toolbar .actions-container .action-item .codicon.masked-pseudo {
 	padding-right: 18px;
 }
@@ -62,7 +58,6 @@
 .notebookEditor .in-preview .actions-container .action-item .codicon,
 .notebookEditor .in-preview .actions-container .action-item .codicon:before {
 	display: flex;
-	height: 100%;
 	padding-right: 0;
 	background-size: contain;
 }
