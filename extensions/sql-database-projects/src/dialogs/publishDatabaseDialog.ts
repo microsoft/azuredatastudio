@@ -566,6 +566,9 @@ export class PublishDatabaseDialog {
 					this.targetDatabaseDropDown!.value = result.databaseName;
 				}
 
+				// save count for later to see if we need to add the SQLCMD Variables table
+				const sqlCmdVarBeforeCount = Object.keys(<Record<string, string>>this.sqlCmdVars).length;
+
 				for (let key in result.sqlCmdVariables) {
 					(<Record<string, string>>this.sqlCmdVars)[key] = result.sqlCmdVariables[key];
 				}
@@ -579,7 +582,7 @@ export class PublishDatabaseDialog {
 
 				if (Object.keys(result.sqlCmdVariables).length) {
 					// add SQLCMD Variables table if it wasn't there before
-					if (Object.keys(this.project.sqlCmdVariables).length === 0) {
+					if (Object.keys(this.project.sqlCmdVariables).length === 0 && sqlCmdVarBeforeCount === 0) {
 						this.formBuilder?.addFormItem(<azdataType.FormComponentGroup>this.sqlCmdVariablesFormComponentGroup);
 					}
 				} else if (Object.keys(this.project.sqlCmdVariables).length === 0) {
