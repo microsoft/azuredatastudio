@@ -1,0 +1,212 @@
+{
+  "name": "azuremonitor",
+  "description": "%azuremonitor.description%",
+  "version": "0.1.0",
+  "publisher": "Microsoft",
+  "aiKey": "AIF-444c3af9-8e69-4462-ab49-4191e6ad1916",
+  "activationEvents": [
+    "*"
+  ],
+  "engines": {
+    "vscode": "*",
+    "azdata": ">=1.31.0"
+  },
+  "main": "./out/extension",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Microsoft/azuredatastudio.git"
+  },
+  "typings": "./src/azuremonitor",
+  "contributes": {
+    "connectionProvider": {
+      "providerId": "LOGANALYTICS",
+      "languageMode": "loganalytics",
+      "displayName": "%azuremonitor.displayName%",
+      "notebookKernelAlias": "LogAnalytics",
+      "azureResource": "AzureLogAnalytics",
+      "iconPath": [
+        {
+          "id": "azuremonitor:cloud",
+          "path": {
+            "light": "resources/light/azure_monitor_light.svg",
+            "dark": "resources/dark/azure_monitor_dark.svg"
+          },
+          "default": true
+        }
+      ],
+      "connectionOptions": [
+        {
+          "specialValueType": "serverName",
+          "isIdentity": true,
+          "name": "server",
+          "displayName": "%azuremonitor.connectionProperties.serverName.displayName%",
+          "description": "%azuremonitor.connectionProperties.serverName.description%",
+          "groupName": "Source",
+          "valueType": "string",
+          "defaultValue": null,
+          "objectType": null,
+          "categoryValues": [],
+          "isRequired": true,
+          "isArray": false
+        },
+        {
+          "specialValueType": "authType",
+          "isIdentity": true,
+          "name": "authenticationType",
+          "displayName": "%azuremonitor.connectionProperties.authType.displayName%",
+          "description": "%azuremonitor.connectionProperties.authType.description%",
+          "groupName": "Security",
+          "valueType": "category",
+          "defaultValue": "AzureMFA",
+          "objectType": null,
+          "categoryValues": [
+            {
+              "displayName": "%azuremonitor.connectionProperties.authType.categoryValues.azureMFA%",
+              "name": "AzureMFA"
+            }
+          ],
+          "isRequired": true,
+          "isArray": false
+        },
+        {
+          "specialValueType": "connectionName",
+          "isIdentity": true,
+          "name": "connectionName",
+          "displayName": "%azuremonitor.connectionProperties.connectionName.displayName%",
+          "description": "%azuremonitor.connectionProperties.connectionName.description%",
+          "groupName": "Source",
+          "valueType": "string",
+          "defaultValue": null,
+          "objectType": null,
+          "categoryValues": null,
+          "isRequired": false,
+          "isArray": false
+        },
+        {
+          "specialValueType": "userName",
+          "isIdentity": true,
+          "name": "user",
+          "displayName": "%azuremonitor.connectionProperties.userName.displayName%",
+          "description": "%azuremonitor.connectionProperties.userName.description%",
+          "groupName": "Security",
+          "valueType": "string",
+          "defaultValue": null,
+          "objectType": null,
+          "categoryValues": null,
+          "isRequired": true,
+          "isArray": false
+        },
+        {
+          "specialValueType": "password",
+          "isIdentity": true,
+          "name": "password",
+          "displayName": "%azuremonitor.connectionProperties.password.displayName%",
+          "description": "%azuremonitor.connectionProperties.password.description%",
+          "groupName": "Security",
+          "valueType": "password",
+          "defaultValue": null,
+          "objectType": null,
+          "categoryValues": null,
+          "isRequired": true,
+          "isArray": false
+        },
+        {
+          "specialValueType": "databaseName",
+          "isIdentity": true,
+          "name": "database",
+          "displayName": "%azuremonitor.connectionOptions.databaseName.displayName%",
+          "description": "%azuremonitor.connectionOptions.databaseName.description%",
+          "groupName": "Source",
+          "valueType": "string",
+          "defaultValue": null,
+          "objectType": null,
+          "categoryValues": null,
+          "isRequired": false,
+          "isArray": false
+        }
+      ]
+    },
+    "dashboard": {
+      "provider": "LOGANALYTICS",
+      "flavors": [
+        {
+          "flavor": "cloud",
+          "conditions": [
+            {
+              "field": "isCloud",
+              "operator": "==",
+              "value": true
+            }
+          ],
+          "databaseProperties": [
+            {
+              "displayName": "%azuremonitor.cloud.workspaceProperties.name%",
+              "value": "name"
+            },
+            {
+              "displayName": "%azuremonitor.cloud.workspaceProperties.id%",
+              "value": "id"
+            }
+          ],
+          "serverProperties": [],
+          "databasesListProperties": [
+            {
+              "displayName": "%azuremonitor.databasesListProperties.name%",
+              "value": "name",
+              "widthWeight": 60
+            },
+            {
+              "displayName": "%azuremonitor.databasesListProperties.size%",
+              "value": "sizeInMB",
+              "widthWeight": 20
+            }
+          ],
+          "objectsListProperties": [
+            {
+              "displayName": "%azuremonitor.objectsListProperties.name%",
+              "value": "name",
+              "widthWeight": 60
+            },
+            {
+              "displayName": "%azuremonitor.objectsListProperties.metadataTypeName%",
+              "value": "metadataTypeName",
+              "widthWeight": 20
+            }
+          ]
+        }
+      ]
+    },
+    "languages": [
+      {
+        "id": "loganalytics",
+        "aliases": [
+          "LogAnalytics",
+          "loganalytics"
+        ],
+        "extensions": [
+          ".loganalytics"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ]
+  },
+  "scripts": {
+    "compile": "gulp compile-extension:azuremonitor-client",
+    "update-grammar": "node ../../build/npm/update-grammar.js Microsoft/vscode-azuremonitor ./syntaxes/azuremonitor.tmLanguage"
+  },
+  "dependencies": {
+    "dataprotocol-client": "github:Microsoft/sqlops-dataprotocolclient#1.2.2",
+    "figures": "^2.0.0",
+    "find-remove": "1.2.1",
+    "service-downloader": "0.2.1",
+    "vscode-extension-telemetry": "0.1.0",
+    "vscode-languageclient": "5.2.1",
+    "vscode-nls": "^4.0.0"
+  },
+  "devDependencies": {},
+  "__metadata": {
+    "id": "",
+    "publisherDisplayName": "Microsoft",
+    "publisherId": "Microsoft"
+  }
+}

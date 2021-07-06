@@ -287,6 +287,20 @@ export class QueryEditor extends EditorPane {
 				{ action: this._listDatabasesAction }
 			];
 		}
+		else if (providerId === 'LOGANALYTICS' || this.modeService.getExtensions('LogAnalytics').indexOf(fileExtension) > -1) {
+			if (this.input instanceof UntitledQueryEditorInput) {
+				this.input.setMode('loganalytics');
+			}
+
+			content = [
+				{ action: this._runQueryAction },
+				{ action: this._cancelQueryAction },
+				{ element: separator },
+				{ action: this._toggleConnectDatabaseAction },
+				{ action: this._changeConnectionAction },
+				{ action: this._listDatabasesAction }
+			];
+		}
 		else {
 			if (previewFeaturesEnabled) {
 				content = [

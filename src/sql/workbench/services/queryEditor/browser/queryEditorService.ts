@@ -101,8 +101,8 @@ export class QueryEditorService implements IQueryEditorService {
 
 	////// Private functions
 	private createUntitledSqlFilePath(providerName?: string): Promise<string> {
-		if (providerName === 'KUSTO') {
-			return this.createPrefixedSqlFilePath(providerName + 'Query');
+		if (providerName === 'LOGANALYTICS' || providerName === 'KUSTO') {
+			return this.createPrefixedSqlFilePath('KQLQuery');
 		}
 
 		return this.createPrefixedSqlFilePath('SQLQuery');
