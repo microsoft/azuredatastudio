@@ -109,6 +109,17 @@ export const profile = localize('profile', "Profile");
 export const selectConnection = localize('selectConnection', "Select connection");
 export const server = localize('server', "Server");
 export const defaultUser = localize('default', "default");
+export const selectProfile = localize('selectProfile', "Select publish profile to use");
+export const dontUseProfile = localize('dontUseProfile', "Don't use profile");
+export const browseForProfile = localize('browseForProfile', "Browse for profile");
+export const chooseAction = localize('chooseAction', "Choose action");
+export const chooseSqlcmdVarsToModify = localize('chooseSqlcmdVarsToModify', "Choose SQLCMD variables to modify");
+export const resetAllVars = localize('resetAllVars', "Reset all variables");
+export const createNew = localize('createNew', "<Create New>");
+export const enterNewDatabaseName = localize('enterNewDatabaseName', "Enter new database name");
+export const newDatabaseTitle = (name: string) => localize({ key: 'newDatabaseTitle', comment: ['Name is the name of a new database being created'] }, "{0} (new)", name);
+export const selectDatabase = localize('selectDatabase', "Select database");
+export const done = localize('done', "Done");
 
 // Add Database Reference dialog strings
 
