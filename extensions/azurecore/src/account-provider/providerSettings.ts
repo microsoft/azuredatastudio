@@ -236,7 +236,7 @@ const chinaAzureSettings: ProviderSettings = {
 		displayName: localize('chinaCloudDisplayName', "Azure (China)"),
 		id: 'azure_chinaCloud',
 		settings: {
-			host: 'https://login.chinacloudapi.cn/',
+			host: 'https://login.partner.microsoftonline.cn/',
 			clientId: 'a69788c6-1d43-44ed-9ca3-b83e194da255',
 			microsoftResource: {
 				id: SettingIds.marm,
