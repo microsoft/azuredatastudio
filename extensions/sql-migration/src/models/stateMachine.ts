@@ -211,7 +211,41 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		return this._assessmentResults;
 	}
 
-	public getDatabaseAssessments(databaseName: string): mssql.SqlMigrationAssessmentResultItem[] | undefined {
+	public async getDatabaseAssessments(): Promise<ServerAssessement> {
+		const ownerUri = await azdata.connection.getUriForConnection(this.sourceConnectionId);
+
+		const assessmentResults = await this.migrationService.getAssessments(
+			ownerUri,
+			this._databaseAssessment
+		);
+		const serverLevelAssessments: mssql.SqlMigrationAssessmentResultItem[] = [];
+		const databaseLevelAssessments = this._databaseAssessment.map(db => {
+			return {
+				name: db,
+				issues: <mssql.SqlMigrationAssessmentResultItem[]>[]
+			};
+		});
+
+		assessmentResults?.items.forEach((item) => {
+			if (item.appliesToMigrationTargetPlatform === MigrationTargetType.SQLMI) {
+				const dbIndex = this._databaseAssessment.indexOf(item.databaseName);
+				if (dbIndex === -1) {
+					serverLevelAssessments.push(item);
+				} else {
+					databaseLevelAssessments[dbIndex].issues.push(item);
+				}
+			}
+		});
+
+		this._assessmentResults = {
+			issues: serverLevelAssessments,
+			databaseAssessments: databaseLevelAssessments
+		};
+
+		return this._assessmentResults;
+	}
+
+	public findDatabaseAssessments(databaseName: string): mssql.SqlMigrationAssessmentResultItem[] | undefined {
 		return this._assessmentResults.databaseAssessments.find(databaseAsssessment => databaseAsssessment.name === databaseName)?.issues;
 	}
 

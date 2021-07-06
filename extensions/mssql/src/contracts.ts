@@ -702,7 +702,8 @@ export namespace SchemaCompareCancellationRequest {
 
 export interface SqlAssessmentParams {
 	ownerUri: string;
-	targetType: azdata.sqlAssessment.SqlAssessmentTargetType
+	targetType: azdata.sqlAssessment.SqlAssessmentTargetType;
+	databases?: string[];
 }
 
 export interface GenerateSqlAssessmentScriptParams {
@@ -1021,6 +1022,7 @@ export interface SqlAssessmentResult extends azdata.ResultStatus {
 
 export interface SqlMigrationAssessmentParams {
 	ownerUri: string;
+	databases?: string[];
 }
 
 export namespace GetSqlMigrationAssessmentItemsRequest {

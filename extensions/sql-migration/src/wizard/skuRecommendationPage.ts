@@ -420,7 +420,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		const serverName = (await this.migrationStateModel.getSourceConnectionProfile()).serverName;
 		this._igComponent.value = constants.ASSESSMENT_COMPLETED(serverName);
 		try {
-			await this.migrationStateModel.getServerAssessments();
+			await this.migrationStateModel.getDatabaseAssessments();
 			this._detailsComponent.value = constants.SKU_RECOMMENDATION_ALL_SUCCESSFUL(this.migrationStateModel._assessmentResults.databaseAssessments.length);
 		} catch (e) {
 			console.log(e);
