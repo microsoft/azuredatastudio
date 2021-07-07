@@ -211,6 +211,21 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 	private async generateAssessmentTelemetry(startTime: number, endTime: number, connectionProfile: azdata.connection.ConnectionProfile): Promise<void> {
 		try {
+			this._assessmentResults.issues.forEach(i => {
+				sendSqlMigrationActionEvent(
+					TelemetryViews.MigrationWizardTargetSelectionPage,
+					TelemetryAction.ServerAssessmentIssues,
+					{
+						'sessionId': this._sessionId,
+						'ruleId': i.ruleId
+
+					},
+					{
+						'count': i.impactedObjects.length
+					}
+				);
+			});
+
 			const queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>(connectionProfile.providerId, azdata.DataProviderType.QueryProvider);
 			const query = 'SELECT name, compatibility_level FROM sys.databases; ';
 			const results = await queryProvider.runQueryAndReturn(await (azdata.connection.getUriForConnection(this.sourceConnectionId)), query);
@@ -237,7 +252,10 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				}
 			);
 
+			const databaseMap: Map<string, number> = new Map();
+
 			this._assessmentResults.databaseAssessments.forEach(d => {
+
 				sendSqlMigrationActionEvent(
 					TelemetryViews.MigrationWizardTargetSelectionPage,
 					TelemetryAction.DatabaseAssessment,
@@ -250,7 +268,32 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 						'warningsCount': d.issues.length
 					}
 				);
+
+				d.issues.forEach(i => {
+					if (databaseMap.has(i.ruleId)) {
+						databaseMap.set(i.ruleId, databaseMap.get(i.ruleId)! + i.impactedObjects.length);
+					} else {
+						databaseMap.set(i.ruleId, i.impactedObjects.length);
+					}
+				});
+
 			});
+
+			databaseMap.forEach((v, k) => {
+				sendSqlMigrationActionEvent(
+					TelemetryViews.MigrationWizardTargetSelectionPage,
+					TelemetryAction.DatabaseAssessmentWarning,
+					{
+						'sessionId': this._sessionId,
+						'ruleId': k
+
+					},
+					{
+						'count': v
+					}
+				);
+			});
+
 		} catch (e) {
 			console.log(e);
 		}
