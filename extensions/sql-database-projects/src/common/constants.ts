@@ -90,7 +90,7 @@ export function currentTargetPlatform(projectName: string, currentTargetPlatform
 // Publish dialog strings
 
 export const publishDialogName = localize('publishDialogName', "Publish project");
-export const publishDialogOkButtonText = localize('publishDialogOkButtonText', "Publish");
+export const publish = localize('publish', "Publish");
 export const cancelButtonText = localize('cancelButtonText', "Cancel");
 export const generateScriptButtonText = localize('generateScriptButtonText', "Generate Script");
 export const databaseNameLabel = localize('databaseNameLabel', "Database");
@@ -109,11 +109,12 @@ export const profile = localize('profile', "Profile");
 export const selectConnection = localize('selectConnection', "Select connection");
 export const server = localize('server', "Server");
 export const defaultUser = localize('default', "default");
-export const selectProfile = localize('selectProfile', "Select publish profile to use");
+export const selectProfile = localize('selectProfile', "Select publish profile to load");
 export const dontUseProfile = localize('dontUseProfile', "Don't use profile");
 export const browseForProfile = localize('browseForProfile', "Browse for profile");
 export const chooseAction = localize('chooseAction', "Choose action");
 export const chooseSqlcmdVarsToModify = localize('chooseSqlcmdVarsToModify', "Choose SQLCMD variables to modify");
+export const enterNewValueForVar = (varName: string) => localize('enterNewValueForVar', "Enter new value for variable '{0}'", varName);
 export const resetAllVars = localize('resetAllVars', "Reset all variables");
 export const createNew = localize('createNew', "<Create New>");
 export const enterNewDatabaseName = localize('enterNewDatabaseName', "Enter new database name");

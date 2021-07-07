@@ -15,7 +15,7 @@ import { promptForPublishProfile } from './publishDatabaseDialog';
 export async function launchPublishDatabaseQuickpick(project: Project): Promise<void> {
 
 	// 1. Select publish settings file (optional)
-	// TODO: Hook up to dacfx service
+	// TODO@chgagnon: Hook up to dacfx service
 	const browseProfileOption = await vscode.window.showQuickPick(
 		[constants.dontUseProfile, constants.browseForProfile],
 		{ title: constants.selectProfile, ignoreFocusOut: true });
@@ -33,7 +33,7 @@ export async function launchPublishDatabaseQuickpick(project: Project): Promise<
 	}
 
 	// 2. Select connection
-	// TODO: Hook up to MSSQL
+	// TODO@chgagnon: Hook up to MSSQL
 	const connectionProfile = await vscode.window.showQuickPick(
 		['Connection 1', 'Connection 2', 'Create New Connection'],
 		{ title: constants.selectConnection, ignoreFocusOut: true });
@@ -58,7 +58,7 @@ export async function launchPublishDatabaseQuickpick(project: Project): Promise<
 
 	dbQuickpicks.push({ label: constants.createNew, dbName: '', isCreateNew: true });
 	// 3. Select database
-	// TODO: Hook up to MSSQL
+	// TODO@chgagnon: Hook up to MSSQL
 	let databaseName = '';
 	while (databaseName === '') {
 		const selectedDatabase = await vscode.window.showQuickPick(
@@ -83,11 +83,15 @@ export async function launchPublishDatabaseQuickpick(project: Project): Promise<
 
 
 	// 4. Modify sqlcmd vars
-	// TODO: Concat ones from publish profile
+	// TODO@chgagnon: Concat ones from publish profile
 	let sqlCmdVariables = Object.assign({}, project.sqlCmdVariables);
 
 	if (Object.keys(sqlCmdVariables).length > 0) {
-		// Loop over the vars to modify until the user is done
+		// Continually loop here, allowing the user to modify SQLCMD variables one
+		// at a time until they're done (either by selecting the "Done" option or
+		// escaping out of the quick pick dialog). Users can modify each variable
+		// as many times as they wish - with an option to reset all the variables
+		// to their starting values being provided as well.
 		while (true) {
 			const quickPickItems = Object.keys(sqlCmdVariables).map(key => {
 				return {
@@ -110,7 +114,7 @@ export async function launchPublishDatabaseQuickpick(project: Project): Promise<
 			if (sqlCmd.key) {
 				const newValue = await vscode.window.showInputBox(
 					{
-						title: sqlCmd.key,
+						title: constants.enterNewValueForVar(sqlCmd.key),
 						value: sqlCmdVariables[sqlCmd.key],
 						ignoreFocusOut: true
 					}
@@ -129,25 +133,25 @@ export async function launchPublishDatabaseQuickpick(project: Project): Promise<
 
 	// 5. Select action to take
 	const action = await vscode.window.showQuickPick(
-		[constants.generateScriptButtonText, constants.publishDialogOkButtonText],
+		[constants.generateScriptButtonText, constants.publish],
 		{ title: constants.chooseAction, ignoreFocusOut: true });
 	if (!action) {
 		return;
 	}
 
-	// TODO: Get deployment options
+	// TODO@chgagnon: Get deployment options
 	// 6. Generate script/publish
 	let settings: IPublishSettings | IGenerateScriptSettings = {
 		databaseName: databaseName,
-		serverName: '', // TODO: Get from connection profile
-		connectionUri: '', // TODO: Get from connection profile
+		serverName: '', // TODO@chgagnon: Get from connection profile
+		connectionUri: '', // TODO@chgagnon: Get from connection profile
 		sqlCmdVariables: undefined, // this.getSqlCmdVariablesForPublish(),
 		deploymentOptions: undefined, // await this.getDeploymentOptions(),
 		profileUsed: true, // this.profileUsed,
 	};
 
-	// TODO Consolidate creation of the settings into one place
-	if (action === constants.publishDialogOkButtonText) {
+	// TODO@chgagnon Consolidate creation of the settings into one place
+	if (action === constants.publish) {
 		(settings as IPublishSettings).upgradeExisting = true;
 	}
 }

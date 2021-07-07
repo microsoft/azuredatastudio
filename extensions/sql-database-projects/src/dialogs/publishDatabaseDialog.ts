@@ -57,7 +57,7 @@ export class PublishDatabaseDialog {
 
 	public openDialog(): void {
 		this.initializeDialog();
-		this.dialog.okButton.label = constants.publishDialogOkButtonText;
+		this.dialog.okButton.label = constants.publish;
 		this.dialog.okButton.enabled = false;
 		this.toDispose.push(this.dialog.okButton.onClick(async () => await this.publishClick()));
 
