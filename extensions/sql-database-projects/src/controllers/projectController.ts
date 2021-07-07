@@ -136,8 +136,6 @@ export class ProjectsController {
 			throw new Error(`Specified GUID is invalid: '${creationParams.projectGuid}'`);
 		}
 
-		const defaultDSP = constants.targetPlatformToVersion.get(SqlTargetPlatform.sqlServer2019)!;
-
 		const macroDict: Record<string, string> = {
 			'PROJECT_NAME': creationParams.newProjName,
 			'PROJECT_GUID': creationParams.projectGuid ?? UUID.generateUuid().toUpperCase(),
