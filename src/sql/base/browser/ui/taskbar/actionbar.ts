@@ -238,6 +238,10 @@ export class ActionBar extends ActionRunner implements IActionRunner {
 			//this.addEmitter(item);
 			item.render(actionItemElement);
 
+			if (item instanceof BaseActionViewItem) {
+				item.setFocusable(true);
+			}
+
 			if (index === null || index < 0 || index >= this._actionsList.children.length) {
 				this._actionsList.appendChild(actionItemElement);
 			} else {
