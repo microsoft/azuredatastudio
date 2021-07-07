@@ -62,11 +62,14 @@ export class BookTocManager implements IBookTocManager {
 		// If it doesnt find a file named as 'index.md' then use the first file we find.
 		if (initFileIndex !== -1) {
 			initFile = path.parse(files[initFileIndex]);
+			files.splice(initFileIndex, 1);
 		} else {
 			files.some((f) => {
 				const parsedPath = path.parse(f);
 				if (allowedFileExtensions.includes(parsedPath.ext)) {
 					initFile = parsedPath;
+					const index = files.findIndex(f => f === parsedPath.base);
+					files.splice(index, 1);
 					return true;
 				}
 				return false;
@@ -260,7 +263,6 @@ export class BookTocManager implements IBookTocManager {
 		let contents = await fs.promises.readdir(bookContentPath);
 		const initFile = this.getInitFile(contents);
 		if (initFile) {
-			contents.splice(contents.indexOf(initFile.base), 1);
 			contents.unshift(initFile.base);
 		}
 		this.tableofContents = await this.createTocFromDir(contents, bookContentPath, bookContentPath);

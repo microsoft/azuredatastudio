@@ -116,15 +116,15 @@ describe('BookTocManagerTests', function () {
 			should(listFiles.length).be.equal(6);
 		});
 
-		it.skip('should create a table of contents with sections if folder contains submodules', async () => { // TODO: chgagnon Fix from vscode merge
+		it('should create a table of contents with sections if folder contains submodules', async () => {
 			let bookTocManager: BookTocManager = new BookTocManager();
 			let expectedSection: IJupyterBookSectionV2[] = [{
 				title: 'notebook2',
-				file: path.posix.join(subfolder, 'notebook2')
+				file: path.posix.join(path.posix.sep, subfolder, 'notebook2')
 			},
 			{
 				title: 'notebook3',
-				file: path.posix.join(subfolder, 'notebook3')
+				file: path.posix.join(path.posix.sep, subfolder, 'notebook3')
 			}];
 			await bookTocManager.createBook(bookFolderPath, root2FolderPath);
 			const index = bookTocManager.tableofContents.findIndex(entry => entry.file === path.posix.join(path.posix.sep, subfolder, 'index'));
@@ -459,7 +459,7 @@ describe('BookTocManagerTests', function () {
 				});
 
 
-				it.skip('Add section to book', async () => { // TODO: chgagnon Fix from vscode merge
+				it('Add section to book', async () => {
 					bookTocManager = new BookTocManager(sourceBookModel, targetBookModel);
 					await bookTocManager.updateBook(sectionA, targetBook, undefined);
 					const listFiles = await fs.promises.readdir(path.join(run.targetBook.bookContentFolderPath, 'sectionA'));
@@ -468,7 +468,7 @@ describe('BookTocManagerTests', function () {
 					should(JSON.stringify(listFiles)).be.equal(JSON.stringify(['notebook1.ipynb', 'notebook2.ipynb', 'readme.md']), 'The files of the section should be moved to the target book folder');
 				});
 
-				it.skip('Add section to section', async () => { // TODO: chgagnon Fix from vscode merge
+				it('Add section to section', async () => {
 					bookTocManager = new BookTocManager(sourceBookModel, targetBookModel);
 					await bookTocManager.updateBook(sectionB, sectionC, {
 						'title': 'Notebook 6',
