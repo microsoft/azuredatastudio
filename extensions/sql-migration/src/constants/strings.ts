@@ -210,9 +210,18 @@ export const MANAGED_INSTANCE = localize('sql.migration.managed.instance', "Azur
 export const NO_MANAGED_INSTANCE_FOUND = localize('sql.migration.no.managedInstance.found', "No managed instance found");
 export const NO_VIRTUAL_MACHINE_FOUND = localize('sql.migration.no.virtualMachine.found', "No virtual machine found");
 export const TARGET_SELECTION_PAGE_TITLE = localize('sql.migration.target.page.title', "Choose the target Azure SQL");
+export const RESOURCE_GROUP_DESCRIPTION = localize('sql.migration.resource.group.description', "A resource group is a container that holds related resources for an Azure solution");
+export const OK = localize('sql.migration.ok', "OK");
+export function NEW_RESOURCE_GROUP(resourceGroupName: string): string {
+	return localize('sql.migration.new.resource.group', "(new) {0}", resourceGroupName);
+}
 export const TEST_CONNECTION = localize('sql.migration.test.connection', "Test connection");
 export const DATA_MIGRATION_SERVICE_CREATED_SUCCESSFULLY = localize('sql.migration.database.migration.service.created.successfully', "Database migration service has been created successfully");
 export const DMS_PROVISIONING_FAILED = localize('sql.migration.dms.provision.failed', "Database migration service has failed to provision. Please try again after some time.");
+export const APPLY = localize('sql.migration.apply', "Apply");
+export const CREATING_RESOURCE_GROUP = localize('sql.migration.creating.rg.loading', "Creating resource group");
+export const RESOURCE_GROUP_CREATED = localize('sql.migration.rg.created', "Resource group created");
+export const NAME_OF_NEW_RESOURCE_GROUP = localize('sql.migration.name.of.new.rg', "Name of new Resource group");
 // common strings
 export const LEARN_MORE = localize('sql.migration.learn.more', "Learn more");
 export const SUBSCRIPTION = localize('sql.migration.subscription', "Subscription");
@@ -237,6 +246,7 @@ export const CLOSE = localize('sql.migration.close', "Close");
 export const DATA_UPLOADED = localize('sql.migraiton.data.uploaded.size', "Data Uploaded/Size");
 export const COPY_THROUGHPUT = localize('sql.migration.copy.throughput', "Copy Throughput (MBPS)");
 
+
 //Summary Page
 export const SUMMARY_PAGE_TITLE = localize('sql.migration.summary.page.title', "Summary");
 export const AZURE_ACCOUNT_LINKED = localize('sql.migration.summary.azure.account.linked', "Azure account linked");
@@ -249,6 +259,8 @@ export const SUMMARY_AZURE_STORAGE = localize('sql.migration.summary.azure.stora
 export const SUMMARY_IR_NODE = localize('sql.migration.ir.node', "Integration Runtime node");
 export const NETWORK_SHARE = localize('sql.migration.network.share', "Network Share");
 export const BLOB_CONTAINER = localize('sql.migration.blob.container.title', "Blob Container");
+export const BLOB_CONTAINER_RESOURCE_GROUP = localize('sql.migration.blob.container.label', "Blob container resource group");
+export const BLOB_CONTAINER_STORAGE_ACCOUNT = localize('sql.migration.blob.container.storage.account.label', "Blob container storage account");
 export const FILE_SHARE = localize('sql.migration.file.share.title', "File Share");
 export const MIGRATION_STARTED = localize('sql.migration.started.notification', "Migration in progress");
 export const SOURCE_DATABASES = localize('sql.migration.source.databases', "Source Database(s)");
@@ -288,6 +300,7 @@ export const SUCCESSFULLY_MIGRATED_TO_AZURE_SQL = localize('sql.migration.succes
 export const MIGRATION_NOT_STARTED = localize('sql.migration.migration.not.started', "Migration not started");
 export const CHOOSE_TO_MIGRATE_TO_AZURE_SQL = localize('sql.migration.choose.to.migrate.to.azure.sql', "Choose to migrate to Azure SQL");
 export const COMING_SOON = localize('sql.migration.coming.soon', "Coming soon");
+export const SHOW_STATUS = localize('sql.migration.show.status', "Show status");
 export function MIGRATION_INPROGRESS_WARNING(count: number) {
 	switch (count) {
 		case 1:
@@ -311,6 +324,7 @@ export const TARGET_DATABASE_NAME = localize('sql.migration.target.database.name
 export const TARGET_SERVER = localize('sql.migration.target.server', "Target server");
 export const TARGET_VERSION = localize('sql.migration.target.version', "Target version");
 export const MIGRATION_STATUS = localize('sql.migration.migration.status', "Migration status");
+export const MIGRATION_STATUS_FILTER = localize('sql.migration.migration.status.filter', "Migration status filter");
 export const FULL_BACKUP_FILES = localize('sql.migration.full.backup.files', "Full backup files");
 export const LAST_APPLIED_LSN = localize('sql.migration.last.applied.lsn', "Last applied LSN");
 export const LAST_APPLIED_BACKUP_FILES = localize('sql.migration.last.applied.backup.files', "Last applied backup files");

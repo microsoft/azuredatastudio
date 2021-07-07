@@ -15,7 +15,7 @@ import { cssStyles } from '../common/uiConstants';
 import { ImportDataModel } from '../models/api/import';
 import { Deferred } from '../common/promise';
 import { getConnectionName } from './utils';
-import { exists, getAzdataApi, isCurrentWorkspaceUntitled } from '../common/utils';
+import { exists, getAzdataApi, getDataWorkspaceExtensionApi } from '../common/utils';
 
 export class CreateProjectFromDatabaseDialog {
 	public dialog: azdataType.window.Dialog;
@@ -26,7 +26,6 @@ export class CreateProjectFromDatabaseDialog {
 	public projectNameTextBox: azdataType.InputBoxComponent | undefined;
 	public projectLocationTextBox: azdataType.InputBoxComponent | undefined;
 	public folderStructureDropDown: azdataType.DropDownComponent | undefined;
-	public workspaceInputBox: azdataType.InputBoxComponent | undefined;
 	private formBuilder: azdataType.FormBuilder | undefined;
 	private connectionId: string | undefined;
 	private toDispose: vscode.Disposable[] = [];
@@ -87,10 +86,6 @@ export class CreateProjectFromDatabaseDialog {
 			const createProjectSettingsFormSection = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column' }).component();
 			createProjectSettingsFormSection.addItems([folderStructureRow]);
 
-			const workspaceContainerRow = this.createWorkspaceContainerRow(view);
-			const createworkspaceContainerFormSection = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column' }).component();
-			createworkspaceContainerFormSection.addItems([workspaceContainerRow]);
-
 			this.formBuilder = <azdataType.FormBuilder>view.modelBuilder.formContainer()
 				.withFormItems([
 					{
@@ -114,14 +109,6 @@ export class CreateProjectFromDatabaseDialog {
 						components: [
 							{
 								component: createProjectSettingsFormSection,
-							}
-						]
-					},
-					{
-						title: constants.workspace,
-						components: [
-							{
-								component: createworkspaceContainerFormSection,
 							}
 						]
 					}
@@ -166,7 +153,6 @@ export class CreateProjectFromDatabaseDialog {
 
 		this.sourceDatabaseDropDown.onValueChanged(() => {
 			this.setProjectName();
-			this.updateWorkspaceInputbox(path.join(this.projectLocationTextBox!.value!, this.projectNameTextBox!.value!), this.projectNameTextBox!.value!);
 			this.tryEnableCreateButton();
 		});
 
@@ -264,7 +250,6 @@ export class CreateProjectFromDatabaseDialog {
 		this.projectNameTextBox.onTextChanged(() => {
 			this.projectNameTextBox!.value = this.projectNameTextBox!.value?.trim();
 			this.projectNameTextBox!.updateProperty('title', this.projectNameTextBox!.value);
-			this.updateWorkspaceInputbox(path.join(this.projectLocationTextBox!.value!, this.projectNameTextBox!.value!), this.projectNameTextBox!.value!);
 			this.tryEnableCreateButton();
 		});
 
@@ -291,7 +276,6 @@ export class CreateProjectFromDatabaseDialog {
 
 		this.projectLocationTextBox.onTextChanged(() => {
 			this.projectLocationTextBox!.updateProperty('title', this.projectLocationTextBox!.value);
-			this.updateWorkspaceInputbox(path.join(this.projectLocationTextBox!.value!, this.projectNameTextBox!.value!), this.projectNameTextBox!.value!);
 			this.tryEnableCreateButton();
 		});
 
@@ -329,7 +313,6 @@ export class CreateProjectFromDatabaseDialog {
 
 			this.projectLocationTextBox!.value = folderUris[0].fsPath;
 			this.projectLocationTextBox!.updateProperty('title', folderUris[0].fsPath);
-			this.updateWorkspaceInputbox(path.join(this.projectLocationTextBox!.value!, this.projectNameTextBox!.value!), this.projectNameTextBox!.value!);
 		});
 
 		return browseFolderButton;
@@ -359,80 +342,6 @@ export class CreateProjectFromDatabaseDialog {
 		return folderStructureRow;
 	}
 
-	/**
-	 * Creates container with information on which workspace the project will be added to and where the workspace will be
-	 * created if no workspace is currently open
-	 * @param view
-	 */
-	private createWorkspaceContainerRow(view: azdataType.ModelView): azdataType.FlexContainer {
-		const initialWorkspaceInputBoxValue = !!vscode.workspace.workspaceFile && !isCurrentWorkspaceUntitled() ? vscode.workspace.workspaceFile.fsPath : '';
-
-		this.workspaceInputBox = view.modelBuilder.inputBox().withProps({
-			ariaLabel: constants.workspaceLocationTitle,
-			enabled: !vscode.workspace.workspaceFile || isCurrentWorkspaceUntitled(), // want it editable if no saved workspace is open
-			value: initialWorkspaceInputBoxValue,
-			title: initialWorkspaceInputBoxValue, // hovertext for if file path is too long to be seen in textbox
-			width: '100%'
-		}).component();
-
-		const browseFolderButton = view.modelBuilder.button().withProperties<azdataType.ButtonProperties>({
-			ariaLabel: constants.browseButtonText,
-			iconPath: IconPathHelper.folder_blue,
-			height: '16px',
-			width: '18px'
-		}).component();
-
-		this.toDispose.push(browseFolderButton.onDidClick(async () => {
-			const currentFileName = path.parse(this.workspaceInputBox!.value!).base;
-
-			// let user select folder for workspace file to be created in
-			const folderUris = await vscode.window.showOpenDialog({
-				canSelectFiles: false,
-				canSelectFolders: true,
-				canSelectMany: false,
-				defaultUri: vscode.Uri.file(path.parse(this.workspaceInputBox!.value!).dir)
-			});
-			if (!folderUris || folderUris.length === 0) {
-				return;
-			}
-			const selectedFolder = folderUris[0].fsPath;
-
-			const selectedFile = path.join(selectedFolder, currentFileName);
-			this.workspaceInputBox!.value = selectedFile;
-			this.workspaceInputBox!.title = selectedFile;
-		}));
-
-		const workspaceLabel = view.modelBuilder.text().withProperties<azdataType.TextComponentProperties>({
-			value: vscode.workspace.workspaceFile ? constants.addProjectToCurrentWorkspace : constants.newWorkspaceWillBeCreated,
-			CSSStyles: { 'margin-top': '-10px', 'margin-bottom': '5px' }
-		}).component();
-
-		let workspaceContainerRow;
-		if (vscode.workspace.workspaceFile && !isCurrentWorkspaceUntitled()) {
-			workspaceContainerRow = view.modelBuilder.flexContainer().withItems([workspaceLabel, this.workspaceInputBox], { flex: '0 0 auto', CSSStyles: { 'margin-right': '10px', 'margin-top': '0px' } }).withLayout({ flexFlow: 'column' }).component();
-		} else {
-			// have browse button to help select where the workspace file should be created
-			const workspaceInput = view.modelBuilder.flexContainer().withItems([this.workspaceInputBox], { CSSStyles: { 'margin-right': '10px', 'margin-bottom': '10px', 'width': '100%' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
-			workspaceInput.addItem(browseFolderButton, { CSSStyles: { 'margin-top': '-10px' } });
-			workspaceContainerRow = view.modelBuilder.flexContainer().withItems([workspaceLabel, workspaceInput], { flex: '0 0 auto', CSSStyles: { 'margin-top': '0px' } }).withLayout({ flexFlow: 'column' }).component();
-		}
-
-		return workspaceContainerRow;
-	}
-
-	/**
-	 * Update the workspace inputbox based on the passed in location and name if there isn't a workspace currently open
-	 * @param location
-	 * @param name
-	 */
-	public updateWorkspaceInputbox(location: string, name: string): void {
-		if (!vscode.workspace.workspaceFile || isCurrentWorkspaceUntitled()) {
-			const fileLocation = location && name ? path.join(location, `${name}.code-workspace`) : '';
-			this.workspaceInputBox!.value = fileLocation;
-			this.workspaceInputBox!.title = fileLocation;
-		}
-	}
-
 	// only enable Create button if all fields are filled
 	public tryEnableCreateButton(): void {
 		if (this.sourceConnectionTextBox!.value && this.sourceDatabaseDropDown!.value
@@ -450,8 +359,7 @@ export class CreateProjectFromDatabaseDialog {
 			projName: this.projectNameTextBox!.value!,
 			filePath: this.projectLocationTextBox!.value!,
 			version: '1.0.0.0',
-			extractTarget: this.mapExtractTargetEnum(<string>this.folderStructureDropDown!.value),
-			newWorkspaceFilePath: this.workspaceInputBox!.enabled ? vscode.Uri.file(this.workspaceInputBox!.value!) : undefined
+			extractTarget: this.mapExtractTargetEnum(<string>this.folderStructureDropDown!.value)
 		};
 
 		getAzdataApi()!.window.closeDialog(this.dialog);
@@ -477,6 +385,9 @@ export class CreateProjectFromDatabaseDialog {
 
 	async validate(): Promise<boolean> {
 		try {
+			if (await getDataWorkspaceExtensionApi().validateWorkspace() === false) {
+				return false;
+			}
 			// the selected location should be an existing directory
 			const parentDirectoryExists = await exists(this.projectLocationTextBox!.value!);
 			if (!parentDirectoryExists) {
@@ -490,39 +401,10 @@ export class CreateProjectFromDatabaseDialog {
 				this.showErrorMessage(constants.ProjectDirectoryAlreadyExistError(this.projectNameTextBox!.value!, this.projectLocationTextBox!.value!));
 				return false;
 			}
-
-			if (this.workspaceInputBox!.enabled) {
-				await this.validateNewWorkspace();
-			}
-
 			return true;
 		} catch (err) {
 			this.showErrorMessage(err?.message ? err.message : err);
 			return false;
-		}
-	}
-
-	protected async validateNewWorkspace(): Promise<void> {
-		const sameFolderAsNewProject = path.join(this.projectLocationTextBox!.value!, this.projectNameTextBox!.value!) === path.dirname(this.workspaceInputBox!.value!);
-
-		// workspace file should end in .code-workspace
-		const workspaceValid = this.workspaceInputBox!.value!.endsWith(constants.WorkspaceFileExtension);
-		if (!workspaceValid) {
-			throw new Error(constants.WorkspaceFileInvalidError(this.workspaceInputBox!.value!));
-		}
-
-		// if the workspace file is not going to be in the same folder as the newly created project, then check that it's a valid folder
-		if (!sameFolderAsNewProject) {
-			const workspaceParentDirectoryExists = await exists(path.dirname(this.workspaceInputBox!.value!));
-			if (!workspaceParentDirectoryExists) {
-				throw new Error(constants.WorkspaceParentDirectoryNotExistError(path.dirname(this.workspaceInputBox!.value!)));
-			}
-		}
-
-		// workspace file should not be an existing workspace file
-		const workspaceFileExists = await exists(this.workspaceInputBox!.value!);
-		if (workspaceFileExists) {
-			throw new Error(constants.WorkspaceFileAlreadyExistsError(this.workspaceInputBox!.value!));
 		}
 	}
 

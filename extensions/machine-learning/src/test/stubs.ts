@@ -8,6 +8,9 @@ import * as azurecore from 'azurecore';
 import { azureResource } from 'azureResource';
 
 export class AzurecoreApiStub implements azurecore.IExtension {
+	createResourceGroup(_account: azdata.Account, _subscription: azureResource.AzureResourceSubscription, _resourceGroupName: string, _location: string, _ignoreErrors?: boolean): Promise<azurecore.CreateResourceGroupResult> {
+		throw new Error('Method not implemented.');
+	}
 	getManagedDatabases(_account: azdata.Account, _subscription: azureResource.AzureResourceSubscription, _managedInstance: azureResource.AzureGraphResource, _ignoreErrors?: boolean): Promise<azurecore.GetManagedDatabasesResult> {
 		throw new Error('Method not implemented.');
 	}

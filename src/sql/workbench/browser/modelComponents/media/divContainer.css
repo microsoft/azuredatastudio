@@ -7,3 +7,7 @@
 	display: block;
 	height: 100%;
 }
+
+.divContainer:focus {
+	outline-offset: 2px
+}

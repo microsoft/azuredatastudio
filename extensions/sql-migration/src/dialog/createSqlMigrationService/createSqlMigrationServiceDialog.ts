@@ -11,6 +11,7 @@ import * as constants from '../../constants/strings';
 import * as os from 'os';
 import { azureResource } from 'azureResource';
 import { IconPathHelper } from '../../constants/iconPathHelper';
+import { CreateResourceGroupDialog } from '../createResourceGroup/createResourceGroupDialog';
 import * as EventEmitter from 'events';
 
 export class CreateSqlMigrationServiceDialog {
@@ -22,6 +23,7 @@ export class CreateSqlMigrationServiceDialog {
 	private migrationServiceLocation!: azdata.InputBoxComponent;
 	private migrationServiceNameText!: azdata.InputBoxComponent;
 	private _formSubmitButton!: azdata.ButtonComponent;
+	private _createResourceGroupLink!: azdata.HyperlinkComponent;
 
 	private _statusLoadingComponent!: azdata.LoadingComponent;
 	private _refreshLoadingComponent!: azdata.LoadingComponent;
@@ -72,7 +74,7 @@ export class CreateSqlMigrationServiceDialog {
 
 
 				const subscription = this._model._targetSubscription;
-				const resourceGroup = (this.migrationServiceResourceGroupDropdown.value as azdata.CategoryValue).displayName;
+				const resourceGroup = (this.migrationServiceResourceGroupDropdown.value as azdata.CategoryValue).name;
 				const location = this._model._targetServerInstance.location;
 				const serviceName = this.migrationServiceNameText.value;
 
@@ -228,6 +230,7 @@ export class CreateSqlMigrationServiceDialog {
 		}).component();
 
 		this.migrationServiceResourceGroupDropdown = this._view.modelBuilder.dropDown().withProps({
+			ariaLabel: constants.RESOURCE_GROUP,
 			required: true,
 			editable: true,
 			fireOnTextChange: true,
@@ -240,6 +243,29 @@ export class CreateSqlMigrationServiceDialog {
 				'font-weight': 'bold'
 			}
 		}).component();
+
+		this._createResourceGroupLink = this._view.modelBuilder.hyperlink().withProps({
+			label: constants.CREATE_NEW,
+			url: ''
+		}).component();
+
+		this._createResourceGroupLink.onDidClick(async e => {
+			const createResourceGroupDialog = new CreateResourceGroupDialog(this._model._azureAccount, this._model._targetSubscription, this._model._targetServerInstance.location);
+			const createdResourceGroup = await createResourceGroupDialog.initialize();
+			if (createdResourceGroup) {
+				this.migrationServiceResourceGroupDropdown.loading = true;
+				(<azdata.CategoryValue[]>this.migrationServiceResourceGroupDropdown.values).unshift({
+					displayName: constants.NEW_RESOURCE_GROUP(createdResourceGroup.name),
+					name: createdResourceGroup.name
+				});
+				this.migrationServiceResourceGroupDropdown.value = {
+					displayName: createdResourceGroup.name,
+					name: createdResourceGroup.name
+				};
+				this.migrationServiceResourceGroupDropdown.loading = false;
+				this.migrationServiceResourceGroupDropdown.focus();
+			}
+		});
 
 		this.migrationServiceNameText = this._view.modelBuilder.inputBox().component();
 
@@ -278,6 +304,7 @@ export class CreateSqlMigrationServiceDialog {
 			this.migrationServiceLocation,
 			resourceGroupDropdownLabel,
 			this.migrationServiceResourceGroupDropdown,
+			this._createResourceGroupLink,
 			migrationServiceNameLabel,
 			this.migrationServiceNameText,
 			targetlabel,
@@ -315,7 +342,7 @@ export class CreateSqlMigrationServiceDialog {
 		this.migrationServiceResourceGroupDropdown.loading = true;
 		try {
 			this.migrationServiceResourceGroupDropdown.values = await this._model.getAzureResourceGroupDropdownValues(this._model._targetSubscription);
-			const selectedResourceGroupValue = this.migrationServiceResourceGroupDropdown.values.find(v => v.displayName.toLowerCase() === this._resourceGroupPreset.toLowerCase());
+			const selectedResourceGroupValue = this.migrationServiceResourceGroupDropdown.values.find(v => v.name.toLowerCase() === this._resourceGroupPreset.toLowerCase());
 			this.migrationServiceResourceGroupDropdown.value = (selectedResourceGroupValue) ? selectedResourceGroupValue : this.migrationServiceResourceGroupDropdown.values[0];
 		} finally {
 			this.migrationServiceResourceGroupDropdown.loading = false;
@@ -466,7 +493,7 @@ export class CreateSqlMigrationServiceDialog {
 
 	private async refreshStatus(): Promise<void> {
 		const subscription = this._model._targetSubscription;
-		const resourceGroup = (this.migrationServiceResourceGroupDropdown.value as azdata.CategoryValue).displayName;
+		const resourceGroup = (this.migrationServiceResourceGroupDropdown.value as azdata.CategoryValue).name;
 		const location = this._model._targetServerInstance.location;
 
 		const maxRetries = 5;
@@ -512,7 +539,7 @@ export class CreateSqlMigrationServiceDialog {
 	}
 	private async refreshAuthTable(): Promise<void> {
 		const subscription = this._model._targetSubscription;
-		const resourceGroup = (this.migrationServiceResourceGroupDropdown.value as azdata.CategoryValue).displayName;
+		const resourceGroup = (this.migrationServiceResourceGroupDropdown.value as azdata.CategoryValue).name;
 		const location = this._model._targetServerInstance.location;
 		const keys = await getSqlMigrationServiceAuthKeys(this._model._azureAccount, subscription, resourceGroup, location, this._createdMigrationService!.name);
 
@@ -588,6 +615,7 @@ export class CreateSqlMigrationServiceDialog {
 		this._formSubmitButton.enabled = enable;
 		this.migrationServiceResourceGroupDropdown.enabled = enable;
 		this.migrationServiceNameText.enabled = enable;
+		this._createResourceGroupLink.enabled = enable;
 	}
 }
 

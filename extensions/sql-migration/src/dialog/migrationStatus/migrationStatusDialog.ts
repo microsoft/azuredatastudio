@@ -33,10 +33,11 @@ export class MigrationStatusDialog {
 
 	initialize() {
 		let tab = azdata.window.createTab('');
-		tab.registerContent((view: azdata.ModelView) => {
+		tab.registerContent(async (view: azdata.ModelView) => {
 			this._view = view;
 
 			this._statusDropdown = this._view.modelBuilder.dropDown().withProps({
+				ariaLabel: loc.MIGRATION_STATUS_FILTER,
 				values: this._model.statusDropdownValues,
 				width: '220px'
 			}).component();
@@ -84,6 +85,7 @@ export class MigrationStatusDialog {
 
 	private createSearchAndRefreshContainer(): azdata.FlexContainer {
 		this._searchBox = this._view.modelBuilder.inputBox().withProps({
+			stopEnterPropagation: true,
 			placeHolder: loc.SEARCH_FOR_MIGRATIONS,
 			width: '360px'
 		}).component();

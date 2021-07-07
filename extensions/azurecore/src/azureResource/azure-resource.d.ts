@@ -24,6 +24,7 @@ declare module 'azureResource' {
 			postgresServer = 'microsoft.dbforpostgresql/servers',
 			azureArcService = 'microsoft.azuredata/datacontrollers',
 			storageAccount = 'microsoft.storage/storageaccounts',
+			logAnalytics = 'microsoft.operationalinsights/workspaces'
 		}
 
 		export interface IAzureResourceProvider extends DataProvider {
@@ -69,6 +70,12 @@ declare module 'azureResource' {
 		}
 
 		export interface AzureResourceResourceGroup extends AzureResource {
+			location?: string;
+			managedBy?: string;
+			properties?: {
+				provisioningState?: string
+			};
+			type?: string;
 		}
 
 		export interface AzureLocation {
@@ -115,7 +122,7 @@ declare module 'azureResource' {
 				proxyOverride: string,
 				vCores: number,
 				dnsZone: string,
-			  }
+			}
 
 		}
 

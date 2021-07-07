@@ -555,6 +555,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				}
 			}).component();
 		this._networkShareStorageAccountResourceGroupDropdown = this._view.modelBuilder.dropDown().withProps({
+			ariaLabel: constants.RESOURCE_GROUP,
 			width: WIZARD_INPUT_COMPONENT_WIDTH,
 			editable: true,
 			fireOnTextChange: true,
@@ -578,6 +579,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			}).component();
 		this._networkShareContainerStorageAccountDropdown = this._view.modelBuilder.dropDown()
 			.withProps({
+				ariaLabel: constants.STORAGE_ACCOUNT,
 				required: true,
 				width: WIZARD_INPUT_COMPONENT_WIDTH,
 				editable: true,
@@ -713,6 +715,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				this._blobContainerTargetDatabaseNames.push(blobtargetDatabaseInput);
 
 				const blobContainerResourceDropdown = this._view.modelBuilder.dropDown().withProps({
+					ariaLabel: constants.BLOB_CONTAINER_RESOURCE_GROUP,
 					width: WIZARD_TABLE_COLUMN_WIDTH,
 					editable: true,
 					fireOnTextChange: true,
@@ -729,6 +732,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 
 				const blobContainerStorageAccountDropdown = this._view.modelBuilder.dropDown()
 					.withProps({
+						ariaLabel: constants.BLOB_CONTAINER_STORAGE_ACCOUNT,
 						width: WIZARD_TABLE_COLUMN_WIDTH,
 						editable: true,
 						fireOnTextChange: true,
@@ -745,6 +749,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 
 				const blobContainerDropdown = this._view.modelBuilder.dropDown()
 					.withProps({
+						ariaLabel: constants.BLOB_CONTAINER,
 						width: WIZARD_TABLE_COLUMN_WIDTH,
 						editable: true,
 						fireOnTextChange: true,

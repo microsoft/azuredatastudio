@@ -20,7 +20,6 @@ import { IExpandableTree } from 'sql/workbench/services/objectExplorer/browser/t
 import { IQueryHistoryService } from 'sql/workbench/services/queryHistory/common/queryHistoryService';
 import { QueryHistoryNode } from 'sql/workbench/contrib/queryHistory/browser/queryHistoryNode';
 import { QueryHistoryInfo } from 'sql/workbench/services/queryHistory/common/queryHistoryInfo';
-import { IAction } from 'vs/base/common/actions';
 import { ViewPane, IViewPaneOptions } from 'vs/workbench/browser/parts/views/viewPane';
 import { IViewDescriptorService } from 'vs/workbench/common/views';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
@@ -150,10 +149,5 @@ export class QueryHistoryView extends ViewPane {
 		} else {
 			this._tree.onHidden();
 		}
-	}
-
-
-	public getActions(): IAction[] {
-		return this._actionProvider.getActions(undefined);
 	}
 }
