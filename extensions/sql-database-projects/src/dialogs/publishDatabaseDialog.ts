@@ -566,8 +566,15 @@ export class PublishDatabaseDialog {
 					this.targetDatabaseDropDown!.value = result.databaseName;
 				}
 
-				// save count for later to see if we need to add the SQLCMD Variables table
-				const sqlCmdVarBeforeCount = Object.keys(<Record<string, string>>this.sqlCmdVars).length;
+				if (Object.keys(result.sqlCmdVariables).length) {
+					// add SQLCMD Variables table if it wasn't there before and the profile had sqlcmd variables
+					if (Object.keys(this.project.sqlCmdVariables).length === 0 && Object.keys(<Record<string, string>>this.sqlCmdVars).length === 0) {
+						this.formBuilder?.addFormItem(<azdataType.FormComponentGroup>this.sqlCmdVariablesFormComponentGroup);
+					}
+				} else if (Object.keys(this.project.sqlCmdVariables).length === 0) {
+					// remove the table if there are no SQLCMD variables in the project and loaded profile
+					this.formBuilder?.removeFormItem(<azdataType.FormComponentGroup>this.sqlCmdVariablesFormComponentGroup);
+				}
 
 				for (let key in result.sqlCmdVariables) {
 					(<Record<string, string>>this.sqlCmdVars)[key] = result.sqlCmdVariables[key];
@@ -579,16 +586,6 @@ export class PublishDatabaseDialog {
 				await (<azdataType.DeclarativeTableComponent>this.sqlCmdVariablesTable).updateProperties({
 					dataValues: data
 				});
-
-				if (Object.keys(result.sqlCmdVariables).length) {
-					// add SQLCMD Variables table if it wasn't there before
-					if (Object.keys(this.project.sqlCmdVariables).length === 0 && sqlCmdVarBeforeCount === 0) {
-						this.formBuilder?.addFormItem(<azdataType.FormComponentGroup>this.sqlCmdVariablesFormComponentGroup);
-					}
-				} else if (Object.keys(this.project.sqlCmdVariables).length === 0) {
-					// remove the table if there are no SQLCMD variables in the project and loaded profile
-					this.formBuilder?.removeFormItem(<azdataType.FormComponentGroup>this.sqlCmdVariablesFormComponentGroup);
-				}
 
 				// show file path in text box and hover text
 				this.loadProfileTextBox!.value = fileUris[0].fsPath;
