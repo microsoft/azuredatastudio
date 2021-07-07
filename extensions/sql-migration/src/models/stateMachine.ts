@@ -218,7 +218,6 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 					{
 						'sessionId': this._sessionId,
 						'ruleId': i.ruleId
-
 					},
 					{
 						'count': i.impactedObjects.length
