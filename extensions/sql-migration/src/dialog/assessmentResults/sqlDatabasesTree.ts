@@ -131,7 +131,7 @@ export class SqlDatabaseTree {
 				'font-weight': 'bold',
 				'margin': '0px 8px 0px 36px'
 			},
-			value: constants.DATABASES(this.selectedDbs.length, this._model._serverDatabases.length)
+			value: constants.DATABASES(0, this._model._databaseAssessment.length)
 		}).component();
 		return this._databaseCount;
 	}
@@ -173,7 +173,7 @@ export class SqlDatabaseTree {
 		).component();
 		this._databaseTable.onDataChanged(() => {
 			this._databaseCount.updateProperties({
-				'value': constants.DATABASES(this.selectedDbs().length, this._model._serverDatabases.length)
+				'value': constants.DATABASES(this.selectedDbs().length, this._model._databaseAssessment.length)
 			});
 		});
 		this._databaseTable.onRowSelected(({ row }) => {
@@ -265,7 +265,7 @@ export class SqlDatabaseTree {
 			});
 			this._recommendation.value = constants.WARNINGS_DETAILS;
 			this._recommendationTitle.value = constants.WARNINGS_COUNT(this._activeIssues.length);
-			if (this._model._targetType === MigrationTargetType.SQLMI) {
+			if (this._targetType === MigrationTargetType.SQLMI) {
 				this.refreshResults();
 			}
 		});
@@ -348,7 +348,7 @@ export class SqlDatabaseTree {
 
 	private createNoIssuesText(): azdata.FlexContainer {
 		let message: azdata.TextComponent;
-		if (this._model._targetType === MigrationTargetType.SQLVM) {
+		if (this._targetType === MigrationTargetType.SQLVM) {
 			message = this._view.modelBuilder.text().withProps({
 				value: constants.NO_ISSUES_FOUND_VM,
 				CSSStyles: {
@@ -748,7 +748,7 @@ export class SqlDatabaseTree {
 
 	public refreshResults(): void {
 		const assessmentResults: azdata.DeclarativeTableCellValue[][] = [];
-		if (this._model._targetType === MigrationTargetType.SQLMI) {
+		if (this._targetType === MigrationTargetType.SQLMI) {
 			if (this._activeIssues.length === 0) {
 				/// show no issues here
 				this._assessmentsTable.updateCssStyles({
@@ -846,8 +846,7 @@ export class SqlDatabaseTree {
 	public async initialize(): Promise<void> {
 		let instanceTableValues: azdata.DeclarativeTableCellValue[][] = [];
 		this._databaseTableValues = [];
-		const excludedDatabases = ['master', 'msdb', 'tempdb', 'model'];
-		this._dbNames = (await azdata.connection.listDatabases(this._model.sourceConnectionId)).filter(db => !excludedDatabases.includes(db));
+		this._dbNames = this._model._databaseAssessment;
 		const selectedDbs = (this._targetType === MigrationTargetType.SQLVM) ? this._model._vmDbs : this._model._miDbs;
 		this._serverName = (await this._model.getSourceConnectionProfile()).serverName;
 

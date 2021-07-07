@@ -146,6 +146,7 @@ export class SourceConfigurationPage extends MigrationWizardPage {
 			'msdb',
 			'model'
 		];
+		this._dbNames = [];
 		let finalResult = results.rows.filter((name) => !excludeDbs.includes(name[1].displayValue));
 		// need to sort list of dbs alphabetically
 		finalResult.sort((a, b) => a[1].displayValue.localeCompare(b[1].displayValue));
@@ -173,6 +174,7 @@ export class SourceConfigurationPage extends MigrationWizardPage {
 					style: styleLeft
 				}
 			]);
+			this._dbNames.push(finalResult[index][1].displayValue);
 		}
 
 		const title = this._view.modelBuilder.text().withProps({
@@ -274,7 +276,7 @@ export class SourceConfigurationPage extends MigrationWizardPage {
 		let result: string[] = [];
 		this._databaseSelectorTable.dataValues?.forEach((arr, index) => {
 			if (arr[0].value === true) {
-				result.push(arr[1].value.toString());
+				result.push(this._dbNames[index]);
 			}
 		});
 		return result;
