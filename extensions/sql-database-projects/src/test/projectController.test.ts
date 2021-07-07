@@ -31,6 +31,7 @@ import { AddDatabaseReferenceDialog } from '../dialogs/addDatabaseReferenceDialo
 import { IDacpacReferenceSettings } from '../models/IDatabaseReferenceSettings';
 import { CreateProjectFromDatabaseDialog } from '../dialogs/createProjectFromDatabaseDialog';
 import { ImportDataModel } from '../models/api/import';
+import { SqlTargetPlatform } from 'sqldbproj';
 
 let testContext: TestContext;
 
@@ -316,21 +317,21 @@ describe('ProjectsController', function (): void {
 			});
 
 			it('Should change target platform', async function (): Promise<void> {
-				sinon.stub(vscode.window, 'showQuickPick').resolves({ label: constants.sqlAzure });
+				sinon.stub(vscode.window, 'showQuickPick').resolves({ label: SqlTargetPlatform.sqlAzure });
 
 				const projController = new ProjectsController();
 				const sqlProjPath = await testUtils.createTestSqlProjFile(baselines.openProjectFileBaseline);
 				const project = await Project.openProject(sqlProjPath);
-				should(project.getProjectTargetVersion()).equal(constants.targetPlatformToVersion.get(constants.sqlServer2019));
+				should(project.getProjectTargetVersion()).equal(constants.targetPlatformToVersion.get(SqlTargetPlatform.sqlServer2019));
 				should(project.databaseReferences.length).equal(1, 'Project should have one database reference to master');
-				should(project.databaseReferences[0].fsUri.fsPath).containEql(constants.targetPlatformToVersion.get(constants.sqlServer2019));
-				should((<SystemDatabaseReferenceProjectEntry>project.databaseReferences[0]).ssdtUri.fsPath).containEql(constants.targetPlatformToVersion.get(constants.sqlServer2019));
+				should(project.databaseReferences[0].fsUri.fsPath).containEql(constants.targetPlatformToVersion.get(SqlTargetPlatform.sqlServer2019));
+				should((<SystemDatabaseReferenceProjectEntry>project.databaseReferences[0]).ssdtUri.fsPath).containEql(constants.targetPlatformToVersion.get(SqlTargetPlatform.sqlServer2019));
 
 				await projController.changeTargetPlatform(project);
-				should(project.getProjectTargetVersion()).equal(constants.targetPlatformToVersion.get(constants.sqlAzure));
+				should(project.getProjectTargetVersion()).equal(constants.targetPlatformToVersion.get(SqlTargetPlatform.sqlAzure));
 				// verify system db reference got updated too
-				should(project.databaseReferences[0].fsUri.fsPath).containEql(constants.targetPlatformToVersion.get(constants.sqlAzure));
-				should((<SystemDatabaseReferenceProjectEntry>project.databaseReferences[0]).ssdtUri.fsPath).containEql(constants.targetPlatformToVersion.get(constants.sqlAzure));
+				should(project.databaseReferences[0].fsUri.fsPath).containEql(constants.targetPlatformToVersion.get(SqlTargetPlatform.sqlAzure));
+				should((<SystemDatabaseReferenceProjectEntry>project.databaseReferences[0]).ssdtUri.fsPath).containEql(constants.targetPlatformToVersion.get(SqlTargetPlatform.sqlAzure));
 			});
 		});
 
