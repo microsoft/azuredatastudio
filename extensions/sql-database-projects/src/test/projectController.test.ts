@@ -67,6 +67,25 @@ describe('ProjectsController', function (): void {
 				should(projFileText).equal(baselines.newProjectFileBaseline);
 			});
 
+			it('Should create new sqlproj file with correct specified target platform', async function (): Promise<void> {
+				const projController = new ProjectsController();
+				const projFileDir = path.join(os.tmpdir(), `TestProject_${new Date().getTime()}`);
+				const projTargetPlatform = SqlTargetPlatform.sqlAzure; // default is SQL Server 2019
+
+				const projFilePath = await projController.createNewProject({
+					newProjName: 'TestProjectName',
+					folderUri: vscode.Uri.file(projFileDir),
+					projectTypeId: constants.emptySqlDatabaseProjectTypeId,
+					projectGuid: 'BA5EBA11-C0DE-5EA7-ACED-BABB1E70A575',
+					targetPlatform: projTargetPlatform
+				});
+
+				const project = await Project.openProject(projFilePath);
+				const projTargetVersion = project.getProjectTargetVersion();
+				should(constants.getTargetPlatformFromVersion(projTargetVersion)).equal(projTargetPlatform);
+			});
+
+
 			it('Should return silently when no SQL object name provided in prompts', async function (): Promise<void> {
 				for (const name of ['', '    ', undefined]) {
 					const showInputBoxStub = sinon.stub(vscode.window, 'showInputBox').resolves(name);

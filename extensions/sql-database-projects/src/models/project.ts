@@ -515,6 +515,9 @@ export class Project implements ISqlProject {
 		return version === constants.targetPlatformToVersion.get(SqlTargetPlatform.sqlDW) ? constants.AzureDwFolder : version;
 	}
 
+	/**
+	 * Gets the project target version specified in the DSP property in the sqlproj
+	 */
 	public getProjectTargetVersion(): string {
 		let dsp: string | undefined;
 
