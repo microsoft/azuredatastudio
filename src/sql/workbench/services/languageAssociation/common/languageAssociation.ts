@@ -54,6 +54,7 @@ const languageAssociationRegistry = new class implements ILanguageAssociationReg
 	}
 
 	registerLanguageAssociation(languages: string[], contribution: ILanguageAssociationSignature<BrandedService[]>, isDefault?: boolean): IDisposable {
+		languages = languages.map(lang => lang.toLowerCase());
 		for (const language of languages) {
 			this.associationContructors.set(language, contribution);
 		}
@@ -71,7 +72,7 @@ const languageAssociationRegistry = new class implements ILanguageAssociationReg
 	}
 
 	getAssociationForLanguage(language: string): ILanguageAssociation | undefined {
-		return this.associationsInstances.get(language);
+		return this.associationsInstances.get(language.toLowerCase());
 	}
 
 	get defaultAssociation(): [string, ILanguageAssociation] | undefined {

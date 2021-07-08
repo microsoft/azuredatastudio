@@ -9,10 +9,10 @@ import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
 import { IInstantiationService, ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
 import { localize } from 'vs/nls';
 import { IEditorInputFactoryRegistry, ActiveEditorContext, IEditorInput, EditorExtensions } from 'vs/workbench/common/editor';
-
+import { ILanguageAssociationRegistry, Extensions as LanguageAssociationExtensions } from 'sql/workbench/services/languageAssociation/common/languageAssociation';
 import { UntitledNotebookInput } from 'sql/workbench/contrib/notebook/browser/models/untitledNotebookInput';
 import { FileNotebookInput } from 'sql/workbench/contrib/notebook/browser/models/fileNotebookInput';
-import { FileNoteBookEditorInputSerializer, UntitledNoteBookEditorInputSerializer } from 'sql/workbench/contrib/notebook/browser/models/notebookInputFactory';
+import { FileNoteBookEditorInputSerializer, NotebookEditorInputAssociation, UntitledNoteBookEditorInputSerializer } from 'sql/workbench/contrib/notebook/browser/models/notebookInputFactory';
 import { IWorkbenchActionRegistry, Extensions as WorkbenchActionsExtensions } from 'vs/workbench/common/actions';
 import { SyncActionDescriptor, registerAction2, MenuRegistry, MenuId, Action2 } from 'vs/platform/actions/common/actions';
 
@@ -55,17 +55,20 @@ import { NotebookInput } from 'sql/workbench/contrib/notebook/browser/models/not
 import { INotebookModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { INotebookManager } from 'sql/workbench/services/notebook/browser/notebookService';
 import { NotebookExplorerViewletViewsContribution } from 'sql/workbench/contrib/notebook/browser/notebookExplorer/notebookExplorerViewlet';
-import { Disposable } from 'vs/base/common/lifecycle';
+import { Disposable, DisposableStore } from 'vs/base/common/lifecycle';
 import { ContributedEditorPriority, IEditorOverrideService } from 'vs/workbench/services/editor/common/editorOverrideService';
 import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
-import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { DiffNotebookInput } from 'sql/workbench/contrib/notebook/browser/models/diffNotebookInput';
+import { IModeService } from 'vs/editor/common/services/modeService';
+import { ILogService } from 'vs/platform/log/common/log';
 
 Registry.as<IEditorInputFactoryRegistry>(EditorExtensions.EditorInputFactories)
 	.registerEditorInputSerializer(FileNotebookInput.ID, FileNoteBookEditorInputSerializer);
 
 Registry.as<IEditorInputFactoryRegistry>(EditorExtensions.EditorInputFactories)
 	.registerEditorInputSerializer(UntitledNotebookInput.ID, UntitledNoteBookEditorInputSerializer);
+
+Registry.as<ILanguageAssociationRegistry>(LanguageAssociationExtensions.LanguageAssociations)
+	.registerLanguageAssociation(NotebookEditorInputAssociation.languages, NotebookEditorInputAssociation);
 
 Registry.as<IEditorRegistry>(EditorExtensions.Editors)
 	.registerEditor(EditorDescriptor.create(NotebookEditor, NotebookEditor.ID, NotebookEditor.LABEL), [new SyncDescriptor(UntitledNotebookInput), new SyncDescriptor(FileNotebookInput)]);
@@ -660,42 +663,71 @@ configurationRegistry.registerConfiguration({
 	}
 });
 
+const languageAssociationRegistry = Registry.as<ILanguageAssociationRegistry>(LanguageAssociationExtensions.LanguageAssociations);
+
 export class NotebookEditorOverrideContribution extends Disposable implements IWorkbenchContribution {
+
+	private _registeredOverrides = new DisposableStore();
+
 	constructor(
-		@IInstantiationService private _instantiationService: IInstantiationService,
-		@IConfigurationService private _configurationService: IConfigurationService,
+		@ILogService private _logService: ILogService,
 		@IEditorService private _editorService: IEditorService,
-		@IEditorOverrideService private _editorOverrideService: IEditorOverrideService
+		@IEditorOverrideService private _editorOverrideService: IEditorOverrideService,
+		@IModeService private _modeService: IModeService
 	) {
 		super();
 		this.registerEditorOverride();
 	}
 
 	private registerEditorOverride(): void {
-		this._register(this._editorOverrideService.registerContributionPoint(
-			'*.ipynb',
-			{
-				id: NotebookEditor.ID,
-				label: NotebookEditor.LABEL,
-				describes: (currentEditor) => currentEditor instanceof FileNotebookInput,
-				priority: ContributedEditorPriority.builtin
-			},
-			{},
-			(resource, options, group) => {
-				const fileInput = this._editorService.createEditorInput({
-					resource: resource
-				}) as FileEditorInput;
-				const notebookInput = this._instantiationService.createInstance(FileNotebookInput, fileInput.getName(), fileInput.resource, fileInput);
-				return { editor: notebookInput };
-			},
-			(diffEditorInput, options, group) => {
-				// Only use rendered Notebook diff editor if the setting is enabled, otherwise just use the normal text diff editor
-				if (this._configurationService.getValue('notebook.showRenderedNotebookInDiffEditor') === true) {
-					return { editor: this._instantiationService.createInstance(DiffNotebookInput, diffEditorInput.getName(), diffEditorInput) };
+		// Refresh the editor overrides whenever the languages change so we ensure we always have
+		// the latest up to date list of extensions for each language
+		this._modeService.onLanguagesMaybeChanged(() => {
+			this._registeredOverrides.clear();
+			// List of language IDs to associate the query editor for. These are case sensitive.
+			NotebookEditorInputAssociation.languages.map(lang => {
+				const langExtensions = this._modeService.getExtensions(lang);
+				if (langExtensions.length === 0) {
+					return;
 				}
-				return { editor: diffEditorInput };
-			}
-		));
+				// Create the selector from the list of all the language extensions we want to associate with the
+				// query editor (filtering out any languages which didn't have any extensions registered yet)
+				const selector = `*{${langExtensions.join(',')}}`;
+				this._registeredOverrides.add(this._editorOverrideService.registerContributionPoint(
+					selector,
+					{
+						id: NotebookEditor.ID,
+						label: NotebookEditor.LABEL,
+						describes: (currentEditor) => currentEditor instanceof FileNotebookInput,
+						priority: ContributedEditorPriority.builtin
+					},
+					{},
+					(resource, options, group) => {
+						const fileInput = this._editorService.createEditorInput({
+							resource: resource
+						}) as FileEditorInput;
+						// Try to convert the input, falling back to just a plain file input if we're unable to
+						const newInput = this.tryConvertInput(fileInput, lang) ?? fileInput;
+						return { editor: newInput, options: options, group: group };
+					},
+					(diffEditorInput, options, group) => {
+						// Try to convert the input, falling back to just a plain file input if we're unable to
+						const newInput = this.tryConvertInput(diffEditorInput, lang) ?? diffEditorInput;
+						return { editor: newInput, options: options, group: group };
+					}
+				));
+			});
+		});
+	}
+
+	private tryConvertInput(input: IEditorInput, lang: string): IEditorInput | undefined {
+		const langAssociation = languageAssociationRegistry.getAssociationForLanguage(lang);
+		const notebookEditorInput = langAssociation?.syncConvertinput?.(input);
+		if (!notebookEditorInput) {
+			this._logService.warn('Unable to create input for overriding editor ', input.resource.toString());
+			return undefined;
+		}
+		return notebookEditorInput;
 	}
 }
 
