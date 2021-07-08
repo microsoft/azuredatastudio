@@ -7,8 +7,9 @@ import * as azdata from 'azdata';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
 import { MigrationMode, MigrationStateModel, MigrationTargetType, NetworkContainerType, StateChangeEvent } from '../models/stateMachine';
 import * as constants from '../constants/strings';
-import { createHeadingTextComponent, createInformationRow } from './wizardController';
+import { createHeadingTextComponent, createInformationRow, createLabelTextComponent } from './wizardController';
 import { getResourceGroupFromId } from '../api/azure';
+import { TargetDatabaseSummaryDialog } from '../dialog/targetDatabaseSummary/targetDatabaseSummaryDialog';
 
 export class SummaryPage extends MigrationWizardPage {
 	private _view!: azdata.ModelView;
@@ -35,13 +36,54 @@ export class SummaryPage extends MigrationWizardPage {
 	}
 
 	public async onPageEnter(): Promise<void> {
+		const targetDatabaseSummary = new TargetDatabaseSummaryDialog(this.migrationStateModel);
+		const targetDatabaseHyperlink = this._view.modelBuilder.hyperlink().withProps({
+			url: '',
+			label: this.migrationStateModel._migrationDbs.length.toString(),
+			CSSStyles: {
+				'margin': '0px',
+				'width': '300px',
+				'font-size': '13px',
+				'line-height': '24px'
+			}
+		}).component();
+
+		targetDatabaseHyperlink.onDidClick(e => {
+			targetDatabaseSummary.initialize();
+		});
+
+		const targetDatabaseRow = this._view.modelBuilder.flexContainer()
+			.withLayout(
+				{
+					flexFlow: 'row',
+					alignItems: 'center',
+				})
+			.withItems(
+				[
+					createLabelTextComponent(this._view, constants.SUMMARY_DATABASE_COUNT_LABEL,
+						{
+							'margin': '0px',
+							'width': '300px',
+							'font-size': '13px',
+							'line-height': '24px'
+						}
+					),
+					targetDatabaseHyperlink
+				],
+				{
+					CSSStyles: {
+						'margin-right': '5px'
+					}
+				})
+			.component();
+
 		this._flexContainer.addItems(
 			[
 				createHeadingTextComponent(this._view, constants.ACCOUNTS_SELECTION_PAGE_TITLE),
 				createInformationRow(this._view, constants.ACCOUNTS_SELECTION_PAGE_TITLE, this.migrationStateModel._azureAccount.displayInfo.displayName),
 
 				createHeadingTextComponent(this._view, constants.SOURCE_DATABASES),
-				createInformationRow(this._view, constants.SUMMARY_DATABASE_COUNT_LABEL, this.migrationStateModel._migrationDbs.length.toString()),
+				targetDatabaseRow,
 
 				createHeadingTextComponent(this._view, constants.SKU_RECOMMENDATION_PAGE_TITLE),
 				createInformationRow(this._view, constants.SKU_RECOMMENDATION_PAGE_TITLE, (this.migrationStateModel._targetType === MigrationTargetType.SQLVM) ? constants.SUMMARY_VM_TYPE : constants.SUMMARY_MI_TYPE),
@@ -107,18 +149,6 @@ export class SummaryPage extends MigrationWizardPage {
 					]
 				);
 		}
-		flexContainer.addItem(createHeadingTextComponent(this._view, constants.TARGET_NAME));
-		this.migrationStateModel._migrationDbs.forEach((db, index) => {
-			flexContainer.addItem(createInformationRow(this._view, db, this.migrationStateModel._targetDatabaseNames[index]));
-			if (this.migrationStateModel._databaseBackup.networkContainerType === NetworkContainerType.BLOB_CONTAINER) {
-				flexContainer.addItems([
-					createInformationRow(this._view, constants.LOCATION, this.migrationStateModel._databaseBackup.blobs[index].storageAccount.location),
-					createInformationRow(this._view, constants.RESOURCE_GROUP, this.migrationStateModel._databaseBackup.blobs[index].storageAccount.resourceGroup!),
-					createInformationRow(this._view, constants.SUMMARY_AZURE_STORAGE, this.migrationStateModel._databaseBackup.blobs[index].storageAccount.name),
-					createInformationRow(this._view, constants.BLOB_CONTAINER, this.migrationStateModel._databaseBackup.blobs[index].blobContainer.name)
-				]);
-			}
-		});
 		return flexContainer;
 	}
 }
