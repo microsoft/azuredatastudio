@@ -124,7 +124,7 @@ describe('AzureArcTreeDataProvider tests', function (): void {
 
 			sinon.stub(vscode.extensions, 'getExtension').returns(mockArcExtension.object);
 			sinon.stub(kubeUtils, 'getKubeConfigClusterContexts').returns([{ name: 'currentCluster', isCurrentContext: true }]);
-			const controllerModel = new ControllerModel(treeDataProvider, getDefaultControllerInfo(), 'mypassword');
+			const controllerModel = new ControllerModel(treeDataProvider, getDefaultControllerInfo());
 			await treeDataProvider.addOrUpdateController(controllerModel, '');
 			const controllerNode = treeDataProvider.getControllerNode(controllerModel);
 			const children = await treeDataProvider.getChildren(controllerNode);

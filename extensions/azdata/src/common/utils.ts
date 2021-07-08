@@ -7,9 +7,9 @@ import * as azdataExt from 'azdata-ext';
 import * as which from 'which';
 import * as loc from '../localizedConstants';
 
-export class NoAzdataError extends Error implements azdataExt.ErrorWithLink {
+export class NoAzureCLIError extends Error implements azdataExt.ErrorWithLink {
 	constructor() {
-		super(loc.noAzdata);
+		super(loc.noAzureCLI);
 	}
 
 	public get messageWithLink(): string {

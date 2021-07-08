@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import * as should from 'should';
-import { NoAzdataError, searchForCmd as searchForExe } from '../../common/utils';
+import { NoAzureCLIError, searchForCmd as searchForExe } from '../../common/utils';
 
 describe('utils', function () {
 	describe('searchForExe', function (): void {
@@ -17,7 +17,7 @@ describe('utils', function () {
 
 	describe('NoAzdataError', function (): void {
 		it('error contains message with and without links', function (): void {
-			const error = new NoAzdataError();
+			const error = new NoAzureCLIError();
 			should(error.message).not.be.empty();
 			should(error.messageWithLink).not.be.empty();
 			should(error.message).not.equal(error.messageWithLink, 'Messages should not be equal');

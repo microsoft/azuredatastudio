@@ -19,3 +19,4 @@ export const azdataHostname = 'https://aka.ms';
 export const azdataUri = 'azdata-msi';
 export const azdataReleaseJson = 'azdata/release.json';
 export const microsoftPrivacyStatementUrl = 'https://privacy.microsoft.com/privacystatement';
+export const latestAzArcExtensionVersion = '0.0.1';

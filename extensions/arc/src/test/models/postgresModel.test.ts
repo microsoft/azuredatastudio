@@ -163,9 +163,6 @@ describe('PostgresModel', function (): void {
 		// Setup Controller Model
 		controllerModel = new FakeControllerModel();
 
-		//Stub calling azdata login and acquiring session
-		sinon.stub(controllerModel, 'login').returns(Promise.resolve());
-
 		// Stub the azdata CLI API
 		azdataApi = new FakeAzdataApi();
 		const azdataExt = TypeMoq.Mock.ofType<azdataExt.IExtension>();
@@ -186,7 +183,7 @@ describe('PostgresModel', function (): void {
 			const postgresShowStub = sinon.stub(azdataApi.arc.postgres.server, 'show').resolves(FakePostgresServerShowOutput);
 
 			await postgresModel.refresh();
-			sinon.assert.calledOnceWithExactly(postgresShowStub, postgresModel.info.name, sinon.match.any, sinon.match.any);
+			sinon.assert.calledOnceWithExactly(postgresShowStub, postgresModel.info.name, sinon.match.any);
 			sinon.assert.match(postgresModel.config, FakePostgresServerShowOutput.result);
 		});
 
@@ -194,7 +191,7 @@ describe('PostgresModel', function (): void {
 			const postgresShowStub = sinon.stub(azdataApi.arc.postgres.server, 'show').resolves(FakePostgresServerShowOutput);
 
 			await postgresModel.refresh();
-			sinon.assert.calledOnceWithExactly(postgresShowStub, postgresModel.info.name, sinon.match.any, sinon.match.any);
+			sinon.assert.calledOnceWithExactly(postgresShowStub, postgresModel.info.name, sinon.match.any);
 			should(postgresModel.configLastUpdated).be.Date();
 		});
 
@@ -203,7 +200,7 @@ describe('PostgresModel', function (): void {
 			const configUpdatedEvent = sinon.spy(vscode.EventEmitter.prototype, 'fire');
 
 			await postgresModel.refresh();
-			sinon.assert.calledOnceWithExactly(postgresShowStub, postgresModel.info.name, sinon.match.any, sinon.match.any);
+			sinon.assert.calledOnceWithExactly(postgresShowStub, postgresModel.info.name, sinon.match.any);
 			sinon.assert.calledOnceWithExactly(configUpdatedEvent, postgresModel.config);
 		});
 

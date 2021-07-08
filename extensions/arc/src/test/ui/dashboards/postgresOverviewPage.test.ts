@@ -78,7 +78,6 @@ describe('postgresOverviewPage', () => {
 
 		beforeEach(() => {
 			sinon.stub(utils, 'promptForInstanceDeletion').returns(Promise.resolve(true));
-			sinon.stub(controllerModel, 'login').returns(Promise.resolve());
 			refreshTreeNode = sinon.stub(controllerModel, 'refreshTreeNode');
 		});
 
@@ -88,7 +87,7 @@ describe('postgresOverviewPage', () => {
 
 			(postgresOverview['deleteButton'] as StubButton).click();
 			await informationMessageShown;
-			sinon.assert.calledOnceWithExactly(postgresDeleteStub, postgresModel.info.name, sinon.match.any, sinon.match.any);
+			sinon.assert.calledOnceWithExactly(postgresDeleteStub, postgresModel.info.name, sinon.match.any);
 			sinon.assert.calledOnceWithExactly(showInformationMessage, loc.instanceDeleted(postgresModel.info.name));
 			sinon.assert.notCalled(showErrorMessage);
 			sinon.assert.calledOnce(refreshTreeNode);
@@ -101,7 +100,7 @@ describe('postgresOverviewPage', () => {
 
 			(postgresOverview['deleteButton'] as StubButton).click();
 			await errorMessageShown;
-			sinon.assert.calledOnceWithExactly(postgresDeleteStub, postgresModel.info.name, sinon.match.any, sinon.match.any);
+			sinon.assert.calledOnceWithExactly(postgresDeleteStub, postgresModel.info.name, sinon.match.any);
 			sinon.assert.notCalled(showInformationMessage);
 			sinon.assert.calledOnceWithExactly(showErrorMessage, loc.instanceDeletionFailed(postgresModel.info.name, error.message));
 			sinon.assert.notCalled(refreshTreeNode);

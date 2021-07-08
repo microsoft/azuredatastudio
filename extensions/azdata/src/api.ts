@@ -6,7 +6,7 @@
 import * as azdataExt from 'azdata-ext';
 import { IAzdataTool, MIN_AZDATA_VERSION } from './azdata';
 import Logger from './common/logger';
-import { NoAzdataError } from './common/utils';
+import { NoAzureCLIError } from './common/utils';
 import * as loc from './localizedConstants';
 import { AzdataToolService } from './services/azdataToolService';
 
@@ -31,8 +31,8 @@ export async function throwIfRequiredVersionMissing(azdata: IAzdataTool): Promis
 
 export function throwIfNoAzdata(localAzdata: IAzdataTool | undefined): asserts localAzdata {
 	if (!localAzdata) {
-		Logger.log(loc.noAzdata);
-		throw new NoAzdataError();
+		Logger.log(loc.noAzureCLI);
+		throw new NoAzureCLIError();
 	}
 }
 

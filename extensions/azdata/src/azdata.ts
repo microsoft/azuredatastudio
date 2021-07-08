@@ -10,14 +10,20 @@ import { SemVer } from 'semver';
 import * as vscode from 'vscode';
 import { executeCommand, ExitCodeError, ProcessOutput } from './common/childProcess';
 import Logger from './common/logger';
-import { NoAzdataError, searchForCmd } from './common/utils';
-import { azdataConfigSection, azdataFound, debugConfigKey } from './constants';
+import { NoAzureCLIError, searchForCmd } from './common/utils';
+import { azdataConfigSection, azdataFound, debugConfigKey, latestAzArcExtensionVersion } from './constants';
 import * as loc from './localizedConstants';
 
 /**
  * The minimum required azdata CLI version for this extension to function properly
  */
-export const MIN_AZDATA_VERSION = new SemVer('20.3.4');
+export const MIN_AZDATA_VERSION = new SemVer('20.3.4');  // for now 0.0.1 for arcdata ext
+
+/**
+ * The minimum required azdata CLI version for this extension to function properly TODOCANYE change
+ */
+export const LATEST_AZ_ARC_EXTENSION_VERSION = new SemVer('0.0.1');  // for now 0.0.1 for arcdata ext
+
 
 export const enum AzdataDeployOption {
 	dontPrompt = 'dontPrompt',
@@ -207,6 +213,7 @@ export class AzdataTool implements azdataExt.IAzdataApi {
 	 */
 	public async executeCommand<R>(args: string[], additionalEnvVars?: azdataExt.AdditionalEnvVars): Promise<azdataExt.AzdataOutput<R>> {
 		try {
+			// JSON OUTPUT
 			const output = JSON.parse((await executeAzdataCommand(`"${this._path}"`, args.concat(['--output', 'json']), additionalEnvVars)).stdout);
 			return {
 				logs: <string[]>output.log,
@@ -231,7 +238,7 @@ export class AzdataTool implements azdataExt.IAzdataApi {
 					} catch (e) {
 						// this.path does not exist
 						await vscode.commands.executeCommand('setContext', azdataFound, false);
-						throw new NoAzdataError();
+						throw new NoAzureCLIError();
 					}
 					throw err; // rethrow the original error
 				}
@@ -263,8 +270,8 @@ export async function findAzdata(): Promise<IAzdataTool> {
 		Logger.log(loc.foundExistingAzdata(await azdata.getPath(), (await azdata.getSemVersion()).raw));
 		return azdata;
 	} catch (err) {
-		Logger.log(loc.couldNotFindAzdata(err));
-		Logger.log(loc.noAzdata);
+		Logger.log(loc.noAzureCLI);
+		// Logger.log(loc.couldNotFindAzdata(err));
 		throw err;
 	}
 }
@@ -278,6 +285,23 @@ function parseVersion(raw: string): string {
 	// as the Python installation, with the first line being the version of azdata itself.
 	const lines = raw.split(os.EOL);
 	return lines[0].trim();
+}
+
+/**
+ * Parses out the arcdata extension version from the raw azdata version output
+ * @param raw The raw version output from azdata --version
+ */
+function parseArcExtensionVersion(raw: string): string {
+	// Currently the version is a multi-line string that contains other version information such
+	// as the Python installation and any extensions.
+	const start = raw.search('arcdata');
+	const end = raw.search('Python location');
+	if (start === -1 || end === -1) {
+		vscode.window.showErrorMessage(loc.arcdataExtensionNotInstalled);
+	} else {
+		raw = raw.slice(start, end).replace('arcdata', '').replace(' ', '');
+	}
+	return raw.trim();
 }
 
 async function executeAzdataCommand(command: string, args: string[], additionalEnvVars: azdataExt.AdditionalEnvVars = {}): Promise<ProcessOutput> {
@@ -294,7 +318,11 @@ async function executeAzdataCommand(command: string, args: string[], additionalE
 async function findSpecificAzdata(): Promise<IAzdataTool> {
 	const path = await ((process.platform === 'win32') ? searchForCmd('az.cmd') : searchForCmd('az'));
 	const versionOutput = await executeAzdataCommand(`"${path}"`, ['--version']);
-	return new AzdataTool(path, parseVersion(versionOutput.stdout));
+	const version = parseArcExtensionVersion(versionOutput.stdout);
+	if (version !== latestAzArcExtensionVersion) {
+		vscode.window.showErrorMessage(loc.requiredArcDataVersionNotAvailable(latestAzArcExtensionVersion, version));
+	}
+	return new AzdataTool(path, version);
 }
 
 

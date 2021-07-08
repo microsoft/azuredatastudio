@@ -39,8 +39,7 @@ export class PostgresCoordinatorNodeParametersPage extends PostgresParametersPag
 		await this._azdataApi.azdata.arc.postgres.server.edit(
 			this._postgresModel.info.name,
 			{ coordinatorEngineSettings: engineSettings },
-			this._postgresModel.controllerModel.azdataAdditionalEnvVars,
-			this._postgresModel.controllerModel.controllerContext);
+			this._postgresModel.controllerModel.azdataAdditionalEnvVars);
 
 	}
 
@@ -48,15 +47,13 @@ export class PostgresCoordinatorNodeParametersPage extends PostgresParametersPag
 		await this._azdataApi.azdata.arc.postgres.server.edit(
 			this._postgresModel.info.name,
 			{ coordinatorEngineSettings: `''`, replaceEngineSettings: true },
-			this._postgresModel.controllerModel.azdataAdditionalEnvVars,
-			this._postgresModel.controllerModel.controllerContext);
+			this._postgresModel.controllerModel.azdataAdditionalEnvVars);
 	}
 
 	protected async resetParameter(parameterName: string): Promise<void> {
 		await this._azdataApi.azdata.arc.postgres.server.edit(
 			this._postgresModel.info.name,
 			{ coordinatorEngineSettings: parameterName + '=' },
-			this._postgresModel.controllerModel.azdataAdditionalEnvVars,
-			this._postgresModel.controllerModel.controllerContext);
+			this._postgresModel.controllerModel.azdataAdditionalEnvVars);
 	}
 }

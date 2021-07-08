@@ -38,9 +38,6 @@ describe('postgresConnectionStringsPage', function (): void {
 		// Setup Controller Model
 		controllerModel = new FakeControllerModel();
 
-		//Stub calling azdata login and acquiring session
-		sinon.stub(controllerModel, 'login').returns(Promise.resolve());
-
 		// Setup PostgresModel
 		const postgresResource: PGResourceInfo = { name: 'pgt', resourceType: '' };
 		const registration: Registration = { instanceName: '', state: '', instanceType: ResourceType.postgresInstances };

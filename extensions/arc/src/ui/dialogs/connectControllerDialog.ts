@@ -5,7 +5,6 @@
 
 import { ControllerInfo, ResourceInfo } from 'arc';
 import * as azdata from 'azdata';
-import * as azdataExt from 'azdata-ext';
 import { v4 as uuid } from 'uuid';
 import * as vscode from 'vscode';
 import { Deferred } from '../../common/promise';
@@ -13,7 +12,6 @@ import * as loc from '../../localizedConstants';
 import { ControllerModel } from '../../models/controllerModel';
 import { InitializingComponent } from '../components/initializingComponent';
 import { AzureArcTreeDataProvider } from '../tree/azureArcTreeDataProvider';
-import { getErrorMessage } from '../../common/utils';
 import { RadioOptionsGroup } from '../components/radioOptionsGroup';
 import { getCurrentClusterContext, getDefaultKubeConfigPath, getKubeConfigClusterContexts, KubeClusterContext } from '../../common/kubeUtils';
 import { FilePicker } from '../components/filePicker';
@@ -257,7 +255,7 @@ export class ConnectToControllerDialog extends ControllerDialogBase {
 		}
 
 		const controllerInfo: ControllerInfo = this.getControllerInfo(url, !!this.rememberPwCheckBox.checked);
-		const controllerModel = new ControllerModel(this.treeDataProvider, controllerInfo, this.passwordInputBox.value);
+		const controllerModel = new ControllerModel(this.treeDataProvider, controllerInfo);
 		try {
 			// Validate that we can connect to the controller, this also populates the controllerRegistration from the connection response.
 			await controllerModel.refresh(false);
@@ -299,36 +297,7 @@ export class PasswordToControllerDialog extends ControllerDialogBase {
 			return false;
 		}
 		const controllerInfo: ControllerInfo = this.getControllerInfo(this.urlInputBox.value!, false);
-		const controllerModel = new ControllerModel(this.treeDataProvider, controllerInfo, this.passwordInputBox.value);
-		const azdataApi = <azdataExt.IExtension>vscode.extensions.getExtension(azdataExt.extension.name)?.exports;
-		try {
-			await azdataApi.azdata.login(
-				{
-					endpoint: controllerInfo.endpoint,
-					namespace: controllerInfo.namespace
-				},
-				controllerInfo.username,
-				this.passwordInputBox.value,
-				{
-					'KUBECONFIG': this.kubeConfigInputBox.value!,
-					'KUBECTL_CONTEXT': this.clusterContextRadioGroup.value!
-				}
-			);
-		} catch (e) {
-			if (getErrorMessage(e).match(/Wrong username or password/i)) {
-				this.dialog.message = {
-					text: loc.loginFailed,
-					level: azdata.window.MessageLevel.Error
-				};
-				return false;
-			} else {
-				this.dialog.message = {
-					text: loc.errorVerifyingPassword(e),
-					level: azdata.window.MessageLevel.Error
-				};
-				return false;
-			}
-		}
+		const controllerModel = new ControllerModel(this.treeDataProvider, controllerInfo);
 		this.completionPromise.resolve({ controllerModel: controllerModel, password: this.passwordInputBox.value });
 		return true;
 	}

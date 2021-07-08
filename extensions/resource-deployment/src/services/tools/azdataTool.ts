@@ -9,7 +9,6 @@ import { SemVer } from 'semver';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import { Command, OsDistribution, ToolStatus, ToolType } from '../../interfaces';
-import * as loc from '../../localizedConstants';
 import { IPlatformService } from '../platformService';
 import { ToolBase } from './toolBase';
 
@@ -43,26 +42,6 @@ export class AzdataTool extends ToolBase {
 
 	get homePage(): string {
 		return 'https://docs.microsoft.com/sql/big-data-cluster/deploy-install-azdata';
-	}
-
-	public override async isEulaAccepted(): Promise<boolean> {
-		if (!this.azdataApi) {
-			return false;
-		}
-		if (await this.azdataApi.isEulaAccepted()) {
-			return true;
-		} else {
-			this.setStatusDescription(loc.azdataEulaNotAccepted);
-			return false;
-		}
-	}
-
-	public override async promptForEula(): Promise<boolean> {
-		const eulaAccepted = await this.azdataApi.promptForEula();
-		if (!eulaAccepted) {
-			this.setStatusDescription(loc.azdataEulaDeclined);
-		}
-		return eulaAccepted;
 	}
 
 	/* unused */
