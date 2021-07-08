@@ -25,6 +25,10 @@ type ILanguageAssociationSignature<Services extends BrandedService[]> = new (...
 
 export interface ILanguageAssociationRegistry {
 	registerLanguageAssociation<Services extends BrandedService[]>(languages: string[], contribution: ILanguageAssociationSignature<Services>, isDefault?: boolean): IDisposable;
+	/**
+	 * Gets the registered association for a language if one is registered
+	 * @param language The case-insensitive language ID to get the association for
+	 */
 	getAssociationForLanguage(language: string): ILanguageAssociation | undefined;
 	readonly defaultAssociation: [string, ILanguageAssociation] | undefined;
 
