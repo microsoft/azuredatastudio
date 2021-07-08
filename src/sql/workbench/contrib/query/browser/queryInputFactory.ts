@@ -49,9 +49,19 @@ export class QueryEditorLanguageAssociation implements ILanguageAssociation {
 			const content = (await activeEditor.resolve()).textEditorModel.getValue();
 			queryEditorInput = await this.queryEditorService.newSqlEditor({
 				resource: this.editorService.isOpened(activeEditor) ? activeEditor.resource : undefined,
-				open: false, initalContent: content,
-				connectWithGlobal: true
+				open: false, initalContent: content
 			}) as UntitledQueryEditorInput;
+		}
+		const profile = getCurrentGlobalConnection(this.objectExplorerService, this.connectionManagementService, this.editorService);
+		if (profile) {
+			const options: IConnectionCompletionOptions = {
+				params: { connectionType: ConnectionType.editor, runQueryOnCompletion: undefined, input: queryEditorInput },
+				saveTheConnection: false,
+				showDashboard: false,
+				showConnectionDialogOnError: true,
+				showFirewallRuleOnError: true
+			};
+			this.connectionManagementService.connect(profile, queryEditorInput.uri, options).catch(err => onUnexpectedError(err));
 		}
 
 		return queryEditorInput;
