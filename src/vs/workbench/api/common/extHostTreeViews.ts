@@ -86,7 +86,8 @@ export class ExtHostTreeViews implements ExtHostTreeViewsShape {
 		if (!options || !options.treeDataProvider) {
 			throw new Error('Options with treeDataProvider is mandatory');
 		}
-		const registerPromise = this._proxy.$registerTreeViewDataProvider(viewId, { showCollapseAll: !!options.showCollapseAll, canSelectMany: !!options.canSelectMany });
+		const canDragAndDrop = options.dragAndDropController !== undefined;
+		const registerPromise = this._proxy.$registerTreeViewDataProvider(viewId, { showCollapseAll: !!options.showCollapseAll, canSelectMany: !!options.canSelectMany, canDragAndDrop: canDragAndDrop });
 		const treeView = this.createExtHostTreeView(viewId, options, extension);
 		return {
 			get onDidCollapseElement() { return treeView.onDidCollapseElement; },
@@ -127,6 +128,14 @@ export class ExtHostTreeViews implements ExtHostTreeViewsShape {
 			return Promise.reject(new Error(localize('treeView.notRegistered', 'No tree view with id \'{0}\' registered.', treeViewId)));
 		}
 		return treeView.getChildren(treeItemHandle);
+	}
+
+	$onDrop(treeViewId: string, treeItemHandles: string[], newParentItemHandle: string): Promise<void> {
+		const treeView = this.treeViews.get(treeViewId);
+		if (!treeView) {
+			return Promise.reject(new Error(localize('treeView.notRegistered', 'No tree view with id \'{0}\' registered.', treeViewId)));
+		}
+		return treeView.onDrop(treeItemHandles, newParentItemHandle);
 	}
 
 	async $hasResolve(treeViewId: string): Promise<boolean> {
@@ -199,6 +208,7 @@ export class ExtHostTreeView<T> extends Disposable {
 	private static readonly ID_HANDLE_PREFIX = '1';
 
 	private readonly dataProvider: vscode.TreeDataProvider<T>;
+	private readonly dndController: vscode.DragAndDropController<T> | undefined;
 
 	private roots: TreeNode[] | null = null;
 	private elements: Map<TreeItemHandle, T> = new Map<TreeItemHandle, T>();
@@ -250,6 +260,7 @@ export class ExtHostTreeView<T> extends Disposable {
 		if (this.proxy) {
 			this.proxy.$registerTreeViewDataProvider(viewId, { showCollapseAll: !!options.showCollapseAll, canSelectMany: !!options.canSelectMany });
 		}
+		this.dndController = options.dragAndDropController;
 		if (this.dataProvider.onDidChangeTreeData) {
 			this._register(this.dataProvider.onDidChangeTreeData(element => this._onDidChangeData.fire({ message: false, element })));
 		}
@@ -375,6 +386,15 @@ export class ExtHostTreeView<T> extends Disposable {
 			this._visible = visible;
 			this._onDidChangeVisibility.fire(Object.freeze({ visible: this._visible }));
 		}
+	}
+
+	onDrop(treeItemHandleOrNodes: TreeItemHandle[], targetHandleOrNode: TreeItemHandle): Promise<void> {
+		const elements = <T[]>treeItemHandleOrNodes.map(item => this.getExtensionElement(item)).filter(element => !isUndefinedOrNull(element));
+		const target = this.getExtensionElement(targetHandleOrNode);
+		if (elements && target) {
+			return asPromise(() => this.dndController?.onDrop(elements, target));
+		}
+		return Promise.resolve(undefined);
 	}
 
 	get hasResolve(): boolean {

@@ -271,6 +271,9 @@ jobs:
       # - name: Run Monaco Editor Checks {{SQL CARBON EDIT}} Remove Monaco checks
       #   run: yarn monaco-compile-check
 
+      - name: Compile /build/
+        run: yarn --cwd build compile
+
       - name: Run Trusted Types Checks
         run: yarn tsec-compile-check
 

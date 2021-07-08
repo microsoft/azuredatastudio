@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as fs from 'fs';
 import * as nls from 'vs/nls';
 import * as path from 'vs/base/common/path';
 import * as pfs from 'vs/base/node/pfs';
@@ -21,7 +20,8 @@ import {
 	INSTALL_ERROR_INCOMPATIBLE,
 	ExtensionManagementError,
 	InstallOptions,
-	UninstallOptions
+	UninstallOptions,
+	InstallVSIXOptions
 } from 'vs/platform/extensionManagement/common/extensionManagement';
 import { areSameExtensions, getGalleryExtensionId, getMaliciousExtensionsSet, getGalleryExtensionTelemetryData, getLocalExtensionTelemetryData, ExtensionIdentifierWithVersion } from 'vs/platform/extensionManagement/common/extensionManagementUtil';
 import { INativeEnvironmentService } from 'vs/platform/environment/common/environment';
@@ -137,9 +137,9 @@ export class ExtensionManagementService extends Disposable implements IExtension
 	private async collectFiles(extension: ILocalExtension): Promise<IFile[]> {
 
 		const collectFilesFromDirectory = async (dir: string): Promise<string[]> => {
-			let entries = await pfs.readdir(dir);
+			let entries = await pfs.Promises.readdir(dir);
 			entries = entries.map(e => path.join(dir, e));
-			const stats = await Promise.all(entries.map(e => fs.promises.stat(e)));
+			const stats = await Promise.all(entries.map(e => pfs.Promises.stat(e)));
 			let promise: Promise<string[]> = Promise.resolve([]);
 			stats.forEach((stat, index) => {
 				const entry = entries[index];
@@ -159,7 +159,7 @@ export class ExtensionManagementService extends Disposable implements IExtension
 		return files.map(f => (<IFile>{ path: `extension/${path.relative(extension.location.fsPath, f)}`, localPath: f }));
 	}
 
-	async install(vsix: URI, options: InstallOptions = {}): Promise<ILocalExtension> {
+	async install(vsix: URI, options: InstallVSIXOptions = {}): Promise<ILocalExtension> {
 		// {{SQL CARBON EDIT}}
 		let startTime = new Date().getTime();
 		this.logService.trace('ExtensionManagementService#install', vsix.toString());
@@ -228,8 +228,9 @@ export class ExtensionManagementService extends Disposable implements IExtension
 			// try {
 			// 	metadata = await this.getGalleryMetadata(getGalleryExtensionId(manifest.publisher, manifest.name));
 			// } catch (e) { /* Ignore */ }
+
 			// try {
-			// 	const local = await this.installFromZipPath(identifierWithVersion, zipPath, isMachineScoped ? { ...(metadata || {}), isMachineScoped } : metadata, operation, token);
+			// 	const local = await this.installFromZipPath(identifierWithVersion, zipPath, options.installOnlyNewlyAddedFromExtensionPack ? existing : undefined, { ...(metadata || {}), ...options }, options, operation, token);
 			// 	this.logService.info('Successfully installed the extension:', identifier.id);
 			// 	return local;
 			// } catch (e) {
@@ -253,11 +254,13 @@ export class ExtensionManagementService extends Disposable implements IExtension
 	}
 
 	// {{SQL CARBON EDIT}}
-	/*private async installFromZipPath(identifierWithVersion: ExtensionIdentifierWithVersion, zipPath: string, metadata: IMetadata | undefined, operation: InstallOperation, token: CancellationToken): Promise<ILocalExtension> {
+	/*private async installFromZipPath(identifierWithVersion: ExtensionIdentifierWithVersion, zipPath: string, existing: ILocalExtension | undefined, metadata: IMetadata | undefined, options: InstallOptions, operation: InstallOperation, token: CancellationToken): Promise<ILocalExtension> {
 		try {
 			const local = await this.installExtension({ zipPath, identifierWithVersion, metadata }, token);
 			try {
-				await this.installDependenciesAndPackExtensions(local, undefined, options);
+				if (!options.donotIncludePackAndDependencies) {
+					await this.installDependenciesAndPackExtensions(local, existing, options);
+				}
 			} catch (error) {
 				if (isNonEmptyArray(local.manifest.extensionDependencies)) {
 					this.logService.warn(`Cannot install dependencies of extension:`, local.identifier.id, error.message);
@@ -657,7 +660,7 @@ export class ExtensionManagementService extends Disposable implements IExtension
 	}
 
 	private async preUninstallExtension(extension: ILocalExtension): Promise<void> {
-		const exists = await pfs.exists(extension.location.fsPath);
+		const exists = await pfs.Promises.exists(extension.location.fsPath);
 		if (!exists) {
 			throw new Error(nls.localize('notExists', "Could not find extension"));
 		}

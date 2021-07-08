@@ -220,6 +220,7 @@ async function setupRepository(): Promise<void> {
 			cp.spawnSync('git', ['clean', '-xdf'], { cwd: workspacePath });
 		}
 
+		// None of the test run the project
 		// console.log('*** Running yarn...');
 		// cp.execSync('yarn', { cwd: workspacePath, stdio: 'inherit' });
 	}
