@@ -57,7 +57,7 @@ export class PublishDatabaseDialog {
 
 	public openDialog(): void {
 		this.initializeDialog();
-		this.dialog.okButton.label = constants.publishDialogOkButtonText;
+		this.dialog.okButton.label = constants.publish;
 		this.dialog.okButton.enabled = false;
 		this.toDispose.push(this.dialog.okButton.onClick(async () => await this.publishClick()));
 
@@ -536,17 +536,7 @@ export class PublishDatabaseDialog {
 		}).component();
 
 		loadProfileButton.onDidClick(async () => {
-			const fileUris = await vscode.window.showOpenDialog(
-				{
-					canSelectFiles: true,
-					canSelectFolders: false,
-					canSelectMany: false,
-					defaultUri: vscode.Uri.file(this.project.projectFolderPath),
-					filters: {
-						[constants.publishSettingsFiles]: ['publish.xml']
-					}
-				}
-			);
+			const fileUris = await promptForPublishProfile(this.project.projectFolderPath);
 
 			if (!fileUris || fileUris.length === 0) {
 				return;
@@ -627,4 +617,18 @@ export class PublishDatabaseDialog {
 
 		return true;
 	}
+}
+
+export function promptForPublishProfile(defaultPath: string): Thenable<vscode.Uri[] | undefined> {
+	return vscode.window.showOpenDialog(
+		{
+			canSelectFiles: true,
+			canSelectFolders: false,
+			canSelectMany: false,
+			defaultUri: vscode.Uri.file(defaultPath),
+			filters: {
+				[constants.publishSettingsFiles]: ['publish.xml']
+			}
+		}
+	);
 }
