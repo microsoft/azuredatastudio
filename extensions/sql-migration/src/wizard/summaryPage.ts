@@ -35,6 +35,7 @@ export class SummaryPage extends MigrationWizardPage {
 	}
 
 	public async onPageEnter(): Promise<void> {
+
 		this._flexContainer.addItems(
 			[
 				createHeadingTextComponent(this._view, constants.ACCOUNTS_SELECTION_PAGE_TITLE),
