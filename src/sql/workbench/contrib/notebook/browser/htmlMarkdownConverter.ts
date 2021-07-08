@@ -133,8 +133,8 @@ export class HTMLMarkdownConverter {
 		this.turndownService.addRule('a', {
 			filter: 'a',
 			replacement: (content, node) => {
-				let hrefNodeParsed = new MarkdownWYSIWYGLinkHandler(this.notebookUri, node);
-				let href = hrefNodeParsed.getLinkUrl();
+				const linkHandler = new MarkdownWYSIWYGLinkHandler(this.notebookUri, node);
+				const href = linkHandler.getLinkUrl();
 				return `[${content}](${href})`;
 			}
 		});

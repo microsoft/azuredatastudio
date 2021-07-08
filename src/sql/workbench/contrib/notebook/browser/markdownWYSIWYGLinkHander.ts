@@ -8,30 +8,30 @@ export class MarkdownWYSIWYGLinkHandler {
 	private _notebookDirectory: string;
 	private _href: URI | undefined;
 
-	constructor(private _notebookURI: URI, private _path: string | HTMLAnchorElement) {
-		if (typeof this._path === 'string') {
-			this._href = URI.parse(this._path);
+	constructor(private _notebookURI: URI, private _pathOrElement: string | HTMLAnchorElement) {
+		if (typeof this._pathOrElement === 'string') {
+			this._href = URI.parse(this._pathOrElement);
 			this._isFile = this._href.scheme === 'file';
-			this._isAbsolutePath = path.isAbsolute(this._path);
-			this._isAnchorLink = this._path.includes('#') && this._isFile;
+			this._isAbsolutePath = path.isAbsolute(this._pathOrElement);
+			this._isAnchorLink = this._pathOrElement.includes('#') && this._isFile;
 		} else {
-			this._href = this._path.attributes['href']?.nodeValue ? URI.parse(this._path.attributes['href']?.nodeValue) : undefined;
-			this._isFile = this._path.protocol === 'file:';
+			this._href = this._pathOrElement.attributes['href']?.nodeValue ? URI.parse(this._pathOrElement.attributes['href']?.nodeValue) : undefined;
+			this._isFile = this._pathOrElement.protocol === 'file:';
 			this._isAnchorLink = this._href?.fragment ? true : false;
-			this._isAbsolutePath = this._path.attributes['is-absolute']?.nodeValue === 'true' ? true : false;
+			this._isAbsolutePath = this._pathOrElement.attributes['is-absolute']?.nodeValue === 'true' ? true : false;
 		}
 		this._notebookDirectory = this._notebookURI ? path.dirname(this._notebookURI.fsPath) : '';
 	}
 
 	public getLinkUrl(): string {
-		switch (typeof this._path) {
+		switch (typeof this._pathOrElement) {
 			case 'string': {
 				if (this._isFile && !this._isAbsolutePath && !this._isAnchorLink) {
-					const relativePath = (this._path).replace(/\\/g, path.posix.sep);
+					const relativePath = (this._pathOrElement).replace(/\\/g, path.posix.sep);
 					const linkUrl = path.resolve(this._notebookDirectory, relativePath);
 					return linkUrl;
 				}
-				return this._path;
+				return this._pathOrElement;
 			}
 			case 'object': {
 				if (this._href) {
@@ -39,7 +39,7 @@ export class MarkdownWYSIWYGLinkHandler {
 						if (!this._isAbsolutePath) {
 							let absoluteURI: URI;
 							if (this._isAnchorLink) {
-								absoluteURI = this.getUriAnchorLink(this._path, this._notebookURI);
+								absoluteURI = this.getUriAnchorLink(this._pathOrElement, this._notebookURI);
 							} else {
 								absoluteURI = this._href;
 							}
