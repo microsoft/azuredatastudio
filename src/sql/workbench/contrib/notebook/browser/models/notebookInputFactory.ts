@@ -21,6 +21,10 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 const editorInputFactoryRegistry = Registry.as<IEditorInputFactoryRegistry>(EditorExtensions.EditorInputFactories);
 
 export class NotebookEditorInputAssociation implements ILanguageAssociation {
+	/**
+	 * The language IDs that are associated with Notebooks. These are case sensitive for comparing with what's
+	 * registered in the ModeService registry. 
+	 */
 	static readonly languages = [NotebookLanguage.Notebook, NotebookLanguage.Ipynb];
 
 	constructor(@IInstantiationService private readonly instantiationService: IInstantiationService, @IConfigurationService private readonly configurationService: IConfigurationService) { }

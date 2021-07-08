@@ -28,6 +28,10 @@ const editorInputFactoryRegistry = Registry.as<IEditorInputFactoryRegistry>(Edit
 
 export class QueryEditorLanguageAssociation implements ILanguageAssociation {
 	static readonly isDefault = true;
+	/**
+	 * The language IDs that are associated with the query editor. These are case sensitive for comparing with what's
+	 * registered in the ModeService registry.
+	 */
 	static readonly languages = ['Kusto', 'LogAnalytics', 'SQL'];	//TODO Add language id here for new languages supported in query editor. Make it easier to contribute new extension's languageID
 
 

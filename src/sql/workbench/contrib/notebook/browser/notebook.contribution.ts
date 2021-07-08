@@ -711,7 +711,7 @@ export class NotebookEditorOverrideContribution extends Disposable implements IW
 						return { editor: newInput, options: options, group: group };
 					},
 					(diffEditorInput, options, group) => {
-						// Try to convert the input, falling back to just a plain file input if we're unable to
+						// Try to convert the input, falling back to the original input if we're unable to
 						const newInput = this.tryConvertInput(diffEditorInput, lang) ?? diffEditorInput;
 						return { editor: newInput, options: options, group: group };
 					}
