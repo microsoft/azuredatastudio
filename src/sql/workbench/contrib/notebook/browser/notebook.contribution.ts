@@ -10,10 +10,9 @@ import { IInstantiationService, ServicesAccessor } from 'vs/platform/instantiati
 import { localize } from 'vs/nls';
 import { IEditorInputFactoryRegistry, ActiveEditorContext, IEditorInput, EditorExtensions } from 'vs/workbench/common/editor';
 
-import { ILanguageAssociationRegistry, Extensions as LanguageAssociationExtensions } from 'sql/workbench/services/languageAssociation/common/languageAssociation';
 import { UntitledNotebookInput } from 'sql/workbench/contrib/notebook/browser/models/untitledNotebookInput';
 import { FileNotebookInput } from 'sql/workbench/contrib/notebook/browser/models/fileNotebookInput';
-import { FileNoteBookEditorInputSerializer, UntitledNoteBookEditorInputFactory, NotebookEditorInputAssociation } from 'sql/workbench/contrib/notebook/browser/models/notebookInputFactory';
+import { FileNoteBookEditorInputSerializer, UntitledNoteBookEditorInputSerializer } from 'sql/workbench/contrib/notebook/browser/models/notebookInputFactory';
 import { IWorkbenchActionRegistry, Extensions as WorkbenchActionsExtensions } from 'vs/workbench/common/actions';
 import { SyncActionDescriptor, registerAction2, MenuRegistry, MenuId, Action2 } from 'vs/platform/actions/common/actions';
 
@@ -43,7 +42,7 @@ import { IHostService } from 'vs/workbench/services/host/browser/host';
 import { MarkdownOutputComponent } from 'sql/workbench/contrib/notebook/browser/outputs/markdownOutput.component';
 import { registerCellComponent } from 'sql/platform/notebooks/common/outputRegistry';
 import { TextCellComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/textCell.component';
-import { IWorkbenchContributionsRegistry, Extensions as WorkbenchExtensions } from 'vs/workbench/common/contributions';
+import { IWorkbenchContributionsRegistry, Extensions as WorkbenchExtensions, IWorkbenchContribution } from 'vs/workbench/common/contributions';
 import { NotebookThemingContribution } from 'sql/workbench/contrib/notebook/browser/notebookThemingContribution';
 import { LifecyclePhase } from 'vs/workbench/services/lifecycle/common/lifecycle';
 import { ToggleTabFocusModeAction } from 'vs/editor/contrib/toggleTabFocusMode/toggleTabFocusMode';
@@ -56,18 +55,20 @@ import { NotebookInput } from 'sql/workbench/contrib/notebook/browser/models/not
 import { INotebookModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { INotebookManager } from 'sql/workbench/services/notebook/browser/notebookService';
 import { NotebookExplorerViewletViewsContribution } from 'sql/workbench/contrib/notebook/browser/notebookExplorer/notebookExplorerViewlet';
+import { Disposable } from 'vs/base/common/lifecycle';
+import { ContributedEditorPriority, IEditorOverrideService } from 'vs/workbench/services/editor/common/editorOverrideService';
+import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { DiffNotebookInput } from 'sql/workbench/contrib/notebook/browser/models/diffNotebookInput';
 
 Registry.as<IEditorInputFactoryRegistry>(EditorExtensions.EditorInputFactories)
 	.registerEditorInputSerializer(FileNotebookInput.ID, FileNoteBookEditorInputSerializer);
 
 Registry.as<IEditorInputFactoryRegistry>(EditorExtensions.EditorInputFactories)
-	.registerEditorInputSerializer(UntitledNotebookInput.ID, UntitledNoteBookEditorInputFactory);
-
-Registry.as<ILanguageAssociationRegistry>(LanguageAssociationExtensions.LanguageAssociations)
-	.registerLanguageAssociation(NotebookEditorInputAssociation.languages, NotebookEditorInputAssociation);
+	.registerEditorInputSerializer(UntitledNotebookInput.ID, UntitledNoteBookEditorInputSerializer);
 
 Registry.as<IEditorRegistry>(EditorExtensions.Editors)
-	.registerEditor(EditorDescriptor.create(NotebookEditor, NotebookEditor.ID, localize('notebookEditor.name', "Notebook Editor")), [new SyncDescriptor(UntitledNotebookInput), new SyncDescriptor(FileNotebookInput)]);
+	.registerEditor(EditorDescriptor.create(NotebookEditor, NotebookEditor.ID, NotebookEditor.LABEL), [new SyncDescriptor(UntitledNotebookInput), new SyncDescriptor(FileNotebookInput)]);
 
 Registry.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench)
 	.registerWorkbenchContribution(NotebookThemingContribution, LifecyclePhase.Restored);
@@ -658,3 +659,45 @@ configurationRegistry.registerConfiguration({
 		},
 	}
 });
+
+export class NotebookEditorOverrideContribution extends Disposable implements IWorkbenchContribution {
+	constructor(
+		@IInstantiationService private _instantiationService: IInstantiationService,
+		@IConfigurationService private _configurationService: IConfigurationService,
+		@IEditorService private _editorService: IEditorService,
+		@IEditorOverrideService private _editorOverrideService: IEditorOverrideService
+	) {
+		super();
+		this.registerEditorOverride();
+	}
+
+	private registerEditorOverride(): void {
+		this._register(this._editorOverrideService.registerContributionPoint(
+			'*.ipynb',
+			{
+				id: NotebookEditor.ID,
+				label: NotebookEditor.LABEL,
+				describes: (currentEditor) => currentEditor instanceof FileNotebookInput,
+				priority: ContributedEditorPriority.builtin
+			},
+			{},
+			(resource, options, group) => {
+				const fileInput = this._editorService.createEditorInput({
+					resource: resource
+				}) as FileEditorInput;
+				const notebookInput = this._instantiationService.createInstance(FileNotebookInput, fileInput.getName(), fileInput.resource, fileInput);
+				return { editor: notebookInput };
+			},
+			(diffEditorInput, options, group) => {
+				// Only use rendered Notebook diff editor if the setting is enabled, otherwise just use the normal text diff editor
+				if (this._configurationService.getValue('notebook.showRenderedNotebookInDiffEditor') === true) {
+					return { editor: this._instantiationService.createInstance(DiffNotebookInput, diffEditorInput.getName(), diffEditorInput) };
+				}
+				return { editor: diffEditorInput };
+			}
+		));
+	}
+}
+
+Registry.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench)
+	.registerWorkbenchContribution(NotebookEditorOverrideContribution, LifecyclePhase.Starting);

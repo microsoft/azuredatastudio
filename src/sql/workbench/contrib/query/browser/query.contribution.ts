@@ -24,16 +24,15 @@ import {
 import * as gridActions from 'sql/workbench/contrib/editData/browser/gridActions';
 import * as gridCommands from 'sql/workbench/contrib/editData/browser/gridCommands';
 import { localize } from 'vs/nls';
-import { IWorkbenchContributionsRegistry, Extensions as WorkbenchExtensions } from 'vs/workbench/common/contributions';
+import { IWorkbenchContributionsRegistry, Extensions as WorkbenchExtensions, IWorkbenchContribution } from 'vs/workbench/common/contributions';
 
 import { LifecyclePhase } from 'vs/workbench/services/lifecycle/common/lifecycle';
 import { TimeElapsedStatusBarContributions, RowCountStatusBarContributions, QueryStatusStatusBarContributions, QueryResultSelectionSummaryStatusBarContribution } from 'sql/workbench/contrib/query/browser/statusBarItems';
 import { SqlFlavorStatusbarItem, ChangeFlavorAction } from 'sql/workbench/contrib/query/browser/flavorStatus';
 import { EditorExtensions, IEditorInputFactoryRegistry } from 'vs/workbench/common/editor';
 import { FileQueryEditorInput } from 'sql/workbench/contrib/query/common/fileQueryEditorInput';
-import { FileQueryEditorInputSerializer, UntitledQueryEditorInputSerializer, QueryEditorLanguageAssociation } from 'sql/workbench/contrib/query/browser/queryInputFactory';
+import { FileQueryEditorInputSerializer, UntitledQueryEditorInputSerializer } from 'sql/workbench/contrib/query/browser/queryInputFactory';
 import { UntitledQueryEditorInput } from 'sql/workbench/common/editor/query/untitledQueryEditorInput';
-import { ILanguageAssociationRegistry, Extensions as LanguageAssociationExtensions } from 'sql/workbench/services/languageAssociation/common/languageAssociation';
 import { NewQueryTask, OE_NEW_QUERY_ACTION_ID, DE_NEW_QUERY_COMMAND_ID } from 'sql/workbench/contrib/query/browser/queryActions';
 import { TreeNodeContextKey } from 'sql/workbench/services/objectExplorer/common/treeNodeContextKey';
 import { MssqlNodeContext } from 'sql/workbench/services/objectExplorer/browser/mssqlNodeContext';
@@ -41,6 +40,11 @@ import { CommandsRegistry, ICommandService } from 'vs/platform/commands/common/c
 import { ManageActionContext } from 'sql/workbench/browser/actions';
 import { ItemContextKey } from 'sql/workbench/contrib/dashboard/browser/widgets/explorer/explorerContext';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { Disposable, IDisposable } from 'vs/base/common/lifecycle';
+import { IModeService } from 'vs/editor/common/services/modeService';
+import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
+import { IEditorOverrideService, ContributedEditorPriority } from 'vs/workbench/services/editor/common/editorOverrideService';
+import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 
 export const QueryEditorVisibleCondition = ContextKeyExpr.has(queryContext.queryEditorVisibleId);
 export const ResultsGridFocusCondition = ContextKeyExpr.and(ContextKeyExpr.has(queryContext.resultsVisibleId), ContextKeyExpr.has(queryContext.resultsGridFocussedId));
@@ -52,14 +56,11 @@ Registry.as<IEditorInputFactoryRegistry>(EditorExtensions.EditorInputFactories)
 Registry.as<IEditorInputFactoryRegistry>(EditorExtensions.EditorInputFactories)
 	.registerEditorInputSerializer(UntitledQueryEditorInput.ID, UntitledQueryEditorInputSerializer);
 
-Registry.as<ILanguageAssociationRegistry>(LanguageAssociationExtensions.LanguageAssociations)
-	.registerLanguageAssociation(QueryEditorLanguageAssociation.languages, QueryEditorLanguageAssociation, QueryEditorLanguageAssociation.isDefault);
-
 Registry.as<IEditorRegistry>(EditorExtensions.Editors)
 	.registerEditor(EditorDescriptor.create(QueryResultsEditor, QueryResultsEditor.ID, localize('queryResultsEditor.name', "Query Results")), [new SyncDescriptor(QueryResultsInput)]);
 
 Registry.as<IEditorRegistry>(EditorExtensions.Editors)
-	.registerEditor(EditorDescriptor.create(QueryEditor, QueryEditor.ID, localize('queryEditor.name', "Query Editor")), [new SyncDescriptor(FileQueryEditorInput), new SyncDescriptor(UntitledQueryEditorInput)]);
+	.registerEditor(EditorDescriptor.create(QueryEditor, QueryEditor.ID, QueryEditor.LABEL), [new SyncDescriptor(FileQueryEditorInput), new SyncDescriptor(UntitledQueryEditorInput)]);
 
 const actionRegistry = <IWorkbenchActionRegistry>Registry.as(ActionExtensions.WorkbenchActions);
 
@@ -490,3 +491,54 @@ workbenchRegistry.registerWorkbenchContribution(RowCountStatusBarContributions, 
 workbenchRegistry.registerWorkbenchContribution(QueryStatusStatusBarContributions, LifecyclePhase.Restored);
 workbenchRegistry.registerWorkbenchContribution(SqlFlavorStatusbarItem, LifecyclePhase.Restored);
 workbenchRegistry.registerWorkbenchContribution(QueryResultSelectionSummaryStatusBarContribution, LifecyclePhase.Restored);
+
+export class QueryEditorOverrideContribution extends Disposable implements IWorkbenchContribution {
+	private _registeredOverride: IDisposable | undefined = undefined;
+
+	constructor(
+		@IInstantiationService private _instantiationService: IInstantiationService,
+		@IEditorService private _editorService: IEditorService,
+		@IEditorOverrideService private _editorOverrideService: IEditorOverrideService,
+		@IModeService private _modeService: IModeService
+	) {
+		super();
+		this.registerEditorOverride();
+	}
+
+	private registerEditorOverride(): void {
+		// Refresh the editor overrides whenever the languages change so we ensure we always have
+		// the latest up to date list of extensions for each language
+		this._modeService.onLanguagesMaybeChanged(() => {
+			// List of language IDs to associate the query editor for. These are case sensitive.
+			// TODO: This should probably be defined in the language contribution instead of here
+			const extensions = ['Kusto', 'LogAnalytics', 'SQL'].map(lang => {
+				const langExtensions = this._modeService.getExtensions(lang);
+				return langExtensions.join(',');
+			});
+			// Create the selector from the list of all the language extensions we want to associate with the
+			// query editor (filtering out any languages which didn't have any extensions registered yet)
+			const selector = `*{${extensions.filter(val => val).join(',')}}`;
+			this._registeredOverride?.dispose();
+			this._registeredOverride = this._editorOverrideService.registerContributionPoint(
+				selector,
+				{
+					id: QueryEditor.ID,
+					label: QueryEditor.LABEL,
+					describes: (currentEditor) => currentEditor instanceof FileQueryEditorInput,
+					priority: ContributedEditorPriority.builtin
+				},
+				{},
+				(resource, options, group) => {
+					const fileInput = this._editorService.createEditorInput({
+						resource: resource
+					}) as FileEditorInput;
+					const queryResultsInput = this._instantiationService.createInstance(QueryResultsInput, fileInput.resource.toString(true));
+					const queryEditorInput = this._instantiationService.createInstance(FileQueryEditorInput, '', fileInput, queryResultsInput);
+					return { editor: queryEditorInput };
+				}
+			);
+		});
+	}
+}
+
+workbenchRegistry.registerWorkbenchContribution(QueryEditorOverrideContribution, LifecyclePhase.Restored);
