@@ -23,8 +23,10 @@ export interface ICheckboxStyles {
 }
 
 export class Checkbox extends Widget {
+	public readonly id: string;
+
 	private _el: HTMLInputElement;
-	private _label: HTMLSpanElement;
+	private _label: HTMLLabelElement;
 	private disabledCheckboxForeground?: Color;
 
 	private _onChange = new Emitter<boolean>();
@@ -32,11 +34,12 @@ export class Checkbox extends Widget {
 
 	constructor(container: HTMLElement, opts: ICheckboxOptions) {
 		super();
-		const id = generateUuid();
+
+		this.id = generateUuid();
 		this._el = document.createElement('input');
 		this._el.type = 'checkbox';
 		this._el.style.verticalAlign = 'middle';
-		this._el.id = id;
+		this._el.id = this.id;
 
 		if (opts.ariaLabel) {
 			this.ariaLabel = opts.ariaLabel;
@@ -49,7 +52,7 @@ export class Checkbox extends Widget {
 
 		this._label = document.createElement('label');
 		this._label.style.verticalAlign = 'middle';
-		this._label.setAttribute('for', id);
+		this._label.htmlFor = this.id;
 
 		this.label = opts.label;
 		this.enabled = opts.enabled ?? true;
@@ -64,7 +67,7 @@ export class Checkbox extends Widget {
 	}
 
 	public set label(val: string) {
-		this._label.innerText = val;
+		this._label.innerHTML = val;
 		// Default the aria label to the label if one wasn't specifically set by the user
 		if (!this.ariaLabel) {
 			this.ariaLabel = val;
