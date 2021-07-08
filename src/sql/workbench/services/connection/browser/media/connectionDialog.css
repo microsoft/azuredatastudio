@@ -92,6 +92,7 @@
 	background-position: 2px center;
 	background-repeat: no-repeat;
 	padding-left: 25px;
+	width: auto;
 }
 
 .search-action.clear-search-results {
