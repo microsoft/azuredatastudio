@@ -12,7 +12,7 @@ import { IEditorInputFactoryRegistry, ActiveEditorContext, IEditorInput, EditorE
 import { ILanguageAssociationRegistry, Extensions as LanguageAssociationExtensions } from 'sql/workbench/services/languageAssociation/common/languageAssociation';
 import { UntitledNotebookInput } from 'sql/workbench/contrib/notebook/browser/models/untitledNotebookInput';
 import { FileNotebookInput } from 'sql/workbench/contrib/notebook/browser/models/fileNotebookInput';
-import { FileNoteBookEditorInputSerializer, NotebookEditorInputAssociation, UntitledNoteBookEditorInputSerializer } from 'sql/workbench/contrib/notebook/browser/models/notebookInputFactory';
+import { FileNoteBookEditorInputSerializer, NotebookEditorInputAssociation, UntitledNotebookEditorInputSerializer } from 'sql/workbench/contrib/notebook/browser/models/notebookInputFactory';
 import { IWorkbenchActionRegistry, Extensions as WorkbenchActionsExtensions } from 'vs/workbench/common/actions';
 import { SyncActionDescriptor, registerAction2, MenuRegistry, MenuId, Action2 } from 'vs/platform/actions/common/actions';
 
@@ -66,7 +66,7 @@ Registry.as<IEditorInputFactoryRegistry>(EditorExtensions.EditorInputFactories)
 	.registerEditorInputSerializer(FileNotebookInput.ID, FileNoteBookEditorInputSerializer);
 
 Registry.as<IEditorInputFactoryRegistry>(EditorExtensions.EditorInputFactories)
-	.registerEditorInputSerializer(UntitledNotebookInput.ID, UntitledNoteBookEditorInputSerializer);
+	.registerEditorInputSerializer(UntitledNotebookInput.ID, UntitledNotebookEditorInputSerializer);
 
 Registry.as<ILanguageAssociationRegistry>(LanguageAssociationExtensions.LanguageAssociations)
 	.registerLanguageAssociation(NotebookEditorInputAssociation.languages, NotebookEditorInputAssociation);
@@ -692,7 +692,7 @@ export class NotebookEditorOverrideContribution extends Disposable implements IW
 					return;
 				}
 				// Create the selector from the list of all the language extensions we want to associate with the
-				// query editor (filtering out any languages which didn't have any extensions registered yet)
+				// notebook editor (filtering out any languages which didn't have any extensions registered yet)
 				const selector = `*{${langExtensions.join(',')}}`;
 				this._registeredOverrides.add(this._editorOverrideService.registerContributionPoint(
 					selector,

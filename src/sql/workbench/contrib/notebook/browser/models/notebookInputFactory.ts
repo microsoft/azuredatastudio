@@ -23,7 +23,7 @@ const editorInputFactoryRegistry = Registry.as<IEditorInputFactoryRegistry>(Edit
 export class NotebookEditorInputAssociation implements ILanguageAssociation {
 	/**
 	 * The language IDs that are associated with Notebooks. These are case sensitive for comparing with what's
-	 * registered in the ModeService registry. 
+	 * registered in the ModeService registry.
 	 */
 	static readonly languages = [NotebookLanguage.Notebook, NotebookLanguage.Ipynb];
 
@@ -73,7 +73,7 @@ export class FileNoteBookEditorInputSerializer implements IEditorInputSerializer
 	}
 }
 
-export class UntitledNoteBookEditorInputSerializer implements IEditorInputSerializer {
+export class UntitledNotebookEditorInputSerializer implements IEditorInputSerializer {
 	serialize(editorInput: UntitledNotebookInput): string {
 		const factory = editorInputFactoryRegistry.getEditorInputSerializer(UntitledTextEditorInput.ID);
 		if (factory) {

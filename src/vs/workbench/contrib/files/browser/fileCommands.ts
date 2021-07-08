@@ -678,6 +678,7 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 	},
 	handler: async (accessor, args?: { viewType: string }) => {
 		// {{SQL CARBON EDIT}} Modify to open untitled query editor
+		// We don't use the viewType arg since we always want to open a query editor
 		const queryEditorService = accessor.get(IQueryEditorService);
 		await queryEditorService.newSqlEditor({ connectWithGlobal: true });
 	}
