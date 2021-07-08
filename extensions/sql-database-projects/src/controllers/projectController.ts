@@ -13,6 +13,7 @@ import * as templates from '../templates/templates';
 import * as vscode from 'vscode';
 import type * as azdataType from 'azdata';
 import * as dataworkspace from 'dataworkspace';
+import type * as mssqlVscode from 'vscode-mssql';
 
 import { promises as fs } from 'fs';
 import { PublishDatabaseDialog } from '../dialogs/publishDatabaseDialog';
@@ -34,8 +35,11 @@ import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/t
 import { IconPathHelper } from '../common/iconHelper';
 import { DashboardData, PublishData, Status } from '../models/dashboardData/dashboardData';
 import { SqlTargetPlatform } from 'sqldbproj';
+import { launchPublishDatabaseQuickpick } from '../dialogs/publishDatabaseQuickpick';
 
 const maxTableLength = 10;
+
+export type IDacFxService = mssql.IDacFxService | mssqlVscode.IDacFxService;
 
 /**
  * Controller for managing lifecycle of projects
@@ -233,17 +237,22 @@ export class ProjectsController {
 	 * @param project Project to be built and published
 	 */
 	public publishProject(project: Project): PublishDatabaseDialog;
-	public publishProject(context: Project | dataworkspace.WorkspaceTreeItem): PublishDatabaseDialog {
+	public publishProject(context: Project | dataworkspace.WorkspaceTreeItem): PublishDatabaseDialog | undefined {
 		const project: Project = this.getProjectFromContext(context);
-		let publishDatabaseDialog = this.getPublishDialog(project);
+		if (utils.getAzdataApi()) {
+			let publishDatabaseDialog = this.getPublishDialog(project);
 
-		publishDatabaseDialog.publish = async (proj, prof) => await this.publishProjectCallback(proj, prof);
-		publishDatabaseDialog.generateScript = async (proj, prof) => await this.publishProjectCallback(proj, prof);
-		publishDatabaseDialog.readPublishProfile = async (profileUri) => await this.readPublishProfileCallback(profileUri);
+			publishDatabaseDialog.publish = async (proj, prof) => await this.publishProjectCallback(proj, prof);
+			publishDatabaseDialog.generateScript = async (proj, prof) => await this.publishProjectCallback(proj, prof);
+			publishDatabaseDialog.readPublishProfile = async (profileUri) => await this.readPublishProfileCallback(profileUri);
 
-		publishDatabaseDialog.openDialog();
+			publishDatabaseDialog.openDialog();
 
-		return publishDatabaseDialog;
+			return publishDatabaseDialog;
+		} else {
+			launchPublishDatabaseQuickpick(project);
+			return undefined;
+		}
 	}
 
 	public async publishProjectCallback(project: Project, settings: IPublishSettings | IGenerateScriptSettings): Promise<mssql.DacFxResult | undefined> {
@@ -286,13 +295,26 @@ export class ProjectsController {
 		}
 
 		try {
+			const azdataApi = utils.getAzdataApi();
 			if ((<IPublishSettings>settings).upgradeExisting) {
 				telemetryProps.publishAction = 'deploy';
-				result = await dacFxService.deployDacpac(tempPath, settings.databaseName, (<IPublishSettings>settings).upgradeExisting, settings.connectionUri, utils.getAzdataApi()!.TaskExecutionMode.execute, settings.sqlCmdVariables, settings.deploymentOptions);
+				if (azdataApi) {
+					result = await (dacFxService as mssql.IDacFxService).deployDacpac(tempPath, settings.databaseName, (<IPublishSettings>settings).upgradeExisting, settings.connectionUri, azdataApi.TaskExecutionMode.execute, settings.sqlCmdVariables, settings.deploymentOptions);
+				} else {
+					// TODO@chgagnon Fix typing
+					result = await (dacFxService as mssqlVscode.IDacFxService).deployDacpac(tempPath, settings.databaseName, (<IPublishSettings>settings).upgradeExisting, settings.connectionUri, <mssqlVscode.TaskExecutionMode><any>azdataApi!.TaskExecutionMode.execute, settings.sqlCmdVariables, <mssqlVscode.DeploymentOptions><any>settings.deploymentOptions);
+				}
+
 			}
 			else {
 				telemetryProps.publishAction = 'generateScript';
-				result = await dacFxService.generateDeployScript(tempPath, settings.databaseName, settings.connectionUri, utils.getAzdataApi()!.TaskExecutionMode.script, settings.sqlCmdVariables, settings.deploymentOptions);
+				if (azdataApi) {
+					result = await (dacFxService as mssql.IDacFxService).generateDeployScript(tempPath, settings.databaseName, settings.connectionUri, azdataApi.TaskExecutionMode.script, settings.sqlCmdVariables, settings.deploymentOptions);
+				} else {
+					// TODO@chgagnon Fix typing
+					result = await (dacFxService as mssqlVscode.IDacFxService).generateDeployScript(tempPath, settings.databaseName, settings.connectionUri, <any>undefined/*mssqlVscode.TaskExecutionMode.script*/, settings.sqlCmdVariables, <mssqlVscode.DeploymentOptions><any>settings.deploymentOptions);
+				}
+
 			}
 		} catch (err) {
 			const actionEndTime = new Date().getTime();
@@ -809,11 +831,17 @@ export class ProjectsController {
 		}
 	}
 
-	public async getDaxFxService(): Promise<mssql.IDacFxService> {
-		const ext: vscode.Extension<any> = vscode.extensions.getExtension(mssql.extension.name)!;
+	public async getDaxFxService(): Promise<IDacFxService> {
+		if (utils.getAzdataApi()) {
+			const ext: vscode.Extension<mssql.IExtension> = vscode.extensions.getExtension(mssql.extension.name)!;
+			const extensionApi = await ext.activate();
+			return extensionApi.dacFx;
+		} else {
+			const ext: vscode.Extension<mssqlVscode.IExtension> = vscode.extensions.getExtension(mssql.extension.name)!;
+			const extensionApi = await ext.activate();
+			return extensionApi.dacFx;
+		}
 
-		await ext.activate();
-		return (ext.exports as mssql.IExtension).dacFx;
 	}
 
 
