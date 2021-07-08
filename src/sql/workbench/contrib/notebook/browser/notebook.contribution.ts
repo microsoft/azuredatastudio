@@ -60,6 +60,7 @@ import { ContributedEditorPriority, IEditorOverrideService } from 'vs/workbench/
 import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
 import { IModeService } from 'vs/editor/common/services/modeService';
 import { ILogService } from 'vs/platform/log/common/log';
+import { DiffEditorInput } from 'vs/workbench/common/editor/diffEditorInput';
 
 Registry.as<IEditorInputFactoryRegistry>(EditorExtensions.EditorInputFactories)
 	.registerEditorInputSerializer(FileNotebookInput.ID, FileNoteBookEditorInputSerializer);
@@ -724,7 +725,7 @@ export class NotebookEditorOverrideContribution extends Disposable implements IW
 		const langAssociation = languageAssociationRegistry.getAssociationForLanguage(lang);
 		const notebookEditorInput = langAssociation?.syncConvertinput?.(input);
 		if (!notebookEditorInput) {
-			this._logService.warn('Unable to create input for overriding editor ', input.resource.toString());
+			this._logService.warn('Unable to create input for overriding editor ', input instanceof DiffEditorInput ? `${input.primary.resource.toString()} <-> ${input.secondary.resource.toString()}` : input.resource.toString());
 			return undefined;
 		}
 		return notebookEditorInput;
