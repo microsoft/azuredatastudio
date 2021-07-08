@@ -373,7 +373,6 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 			}
 			return '';
 		}
-
 	}
 
 	private getCellEditorControl(): IEditor | undefined {
