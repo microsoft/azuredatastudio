@@ -700,4 +700,4 @@ export class NotebookEditorOverrideContribution extends Disposable implements IW
 }
 
 Registry.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench)
-	.registerWorkbenchContribution(NotebookEditorOverrideContribution, LifecyclePhase.Starting);
+	.registerWorkbenchContribution(NotebookEditorOverrideContribution, LifecyclePhase.Restored);

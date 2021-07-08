@@ -54,4 +54,4 @@ export class QueryPlanEditorOverrideContribution extends Disposable implements I
 }
 
 Registry.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench)
-	.registerWorkbenchContribution(QueryPlanEditorOverrideContribution, LifecyclePhase.Starting);
+	.registerWorkbenchContribution(QueryPlanEditorOverrideContribution, LifecyclePhase.Restored);
