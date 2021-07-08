@@ -351,10 +351,12 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 
 	private getCurrentLinkUrl(): string {
 		if (this.cellModel.currentMode === CellEditModes.WYSIWYG) {
-			const parentNode = document.getSelection().anchorNode.parentNode as HTMLAnchorElement || '';
-			if (parentNode === '') {
+			const anchorNode = document.getSelection().anchorNode;
+			if (!anchorNode) {
 				return '';
-			} else if (parentNode?.protocol === 'file:') {
+			}
+			const parentNode = anchorNode.parentNode as HTMLAnchorElement;
+			if (parentNode?.protocol === 'file:') {
 				// Pathname starts with / per https://developer.mozilla.org/en-US/docs/Web/API/HTMLAnchorElement/pathname so trim it off
 				return parentNode.pathname?.slice(1) || '';
 			} else {
