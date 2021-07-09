@@ -344,7 +344,11 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 
 	private getCurrentLinkUrl(): string {
 		if (this.cellModel.currentMode === CellEditModes.WYSIWYG) {
-			const parentNode = document.getSelection().anchorNode.parentNode as HTMLAnchorElement;
+			const anchorNode = document.getSelection().anchorNode;
+			if (!anchorNode) {
+				return '';
+			}
+			const parentNode = anchorNode.parentNode as HTMLAnchorElement;
 			const linkHandler = new MarkdownWYSIWYGLinkHandler(this.cellModel?.notebookModel?.notebookUri, parentNode);
 			return linkHandler.getLinkUrl();
 		} else {

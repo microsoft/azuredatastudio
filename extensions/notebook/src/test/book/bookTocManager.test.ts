@@ -459,7 +459,7 @@ describe('BookTocManagerTests', function () {
 				});
 
 
-				it.skip('Add section to book', async () => { // TODO: chgagnon Fix from vscode merge
+				it('Add section to book', async () => {
 					bookTocManager = new BookTocManager(sourceBookModel, targetBookModel);
 					await bookTocManager.updateBook(sectionA, targetBook, undefined);
 					const listFiles = await fs.promises.readdir(path.join(run.targetBook.bookContentFolderPath, 'sectionA'));
@@ -468,7 +468,7 @@ describe('BookTocManagerTests', function () {
 					should(JSON.stringify(listFiles)).be.equal(JSON.stringify(['notebook1.ipynb', 'notebook2.ipynb', 'readme.md']), 'The files of the section should be moved to the target book folder');
 				});
 
-				it.skip('Add section to section', async () => { // TODO: chgagnon Fix from vscode merge
+				it('Add section to section', async () => {
 					bookTocManager = new BookTocManager(sourceBookModel, targetBookModel);
 					await bookTocManager.updateBook(sectionB, sectionC, {
 						'title': 'Notebook 6',

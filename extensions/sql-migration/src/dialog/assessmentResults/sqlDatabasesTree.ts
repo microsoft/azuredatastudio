@@ -7,6 +7,7 @@ import { SqlMigrationAssessmentResultItem, SqlMigrationImpactedObjectInfo } from
 import { IconPath, IconPathHelper } from '../../constants/iconPathHelper';
 import { MigrationStateModel, MigrationTargetType } from '../../models/stateMachine';
 import * as constants from '../../constants/strings';
+import { debounce } from '../../api/utils';
 
 const styleLeft: azdata.CssStyles = {
 	'border': 'none',
@@ -201,9 +202,12 @@ export class SqlDatabaseTree {
 
 	private createSearchComponent(): azdata.DivContainer {
 		let resourceSearchBox = this._view.modelBuilder.inputBox().withProps({
+			stopEnterPropagation: true,
 			placeHolder: constants.SEARCH,
 			width: 200
 		}).component();
+
+		resourceSearchBox.onTextChanged(value => this._filterTableList(value));
 
 		const searchContainer = this._view.modelBuilder.divContainer().withItems([resourceSearchBox]).withProps({
 			CSSStyles: {
@@ -213,6 +217,26 @@ export class SqlDatabaseTree {
 		}).component();
 
 		return searchContainer;
+	}
+
+	@debounce(500)
+	private _filterTableList(value: string): void {
+		if (this._databaseTableValues && value?.length > 0) {
+			const filter: number[] = [];
+			this._databaseTableValues.forEach((row, index) => {
+				const flexContainer: azdata.FlexContainer = row[1]?.value as azdata.FlexContainer;
+				const textComponent: azdata.TextComponent = flexContainer.items[1] as azdata.TextComponent;
+				const cellText = textComponent.value?.toLowerCase();
+				const searchText: string = value.toLowerCase();
+				if (cellText?.includes(searchText)) {
+					filter.push(index);
+				}
+			});
+
+			this._databaseTable.setFilter(filter);
+		} else {
+			this._databaseTable.setFilter(undefined);
+		}
 	}
 
 	private createInstanceComponent(): azdata.DivContainer {
