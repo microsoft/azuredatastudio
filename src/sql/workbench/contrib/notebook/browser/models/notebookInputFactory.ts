@@ -21,6 +21,10 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 const editorInputFactoryRegistry = Registry.as<IEditorInputFactoryRegistry>(EditorExtensions.EditorInputFactories);
 
 export class NotebookEditorInputAssociation implements ILanguageAssociation {
+	/**
+	 * The language IDs that are associated with Notebooks. These are case sensitive for comparing with what's
+	 * registered in the ModeService registry.
+	 */
 	static readonly languages = [NotebookLanguage.Notebook, NotebookLanguage.Ipynb];
 
 	constructor(@IInstantiationService private readonly instantiationService: IInstantiationService, @IConfigurationService private readonly configurationService: IConfigurationService) { }
@@ -38,6 +42,10 @@ export class NotebookEditorInputAssociation implements ILanguageAssociation {
 			}
 		}
 		return undefined;
+	}
+
+	syncConvertinput(activeEditor: IEditorInput): NotebookInput | DiffNotebookInput | undefined {
+		return this.convertInput(activeEditor);
 	}
 
 	createBase(activeEditor: NotebookInput): IEditorInput {
@@ -65,7 +73,7 @@ export class FileNoteBookEditorInputSerializer implements IEditorInputSerializer
 	}
 }
 
-export class UntitledNoteBookEditorInputFactory implements IEditorInputSerializer {
+export class UntitledNotebookEditorInputSerializer implements IEditorInputSerializer {
 	serialize(editorInput: UntitledNotebookInput): string {
 		const factory = editorInputFactoryRegistry.getEditorInputSerializer(UntitledTextEditorInput.ID);
 		if (factory) {
