@@ -53,6 +53,18 @@
         "category": "%migration-command-category%"
       }
     ],
+    "menus": {
+      "commandPalette": [
+        {
+          "command": "sqlmigration.newsupportrequest",
+          "when": "false"
+        },
+        {
+          "command": "sqlmigration.sendfeedback",
+          "when": "false"
+        }
+      ]
+    },
     "dashboard.tabs": [
       {
         "id": "migration-dashboard",
