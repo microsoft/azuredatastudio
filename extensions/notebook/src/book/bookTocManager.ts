@@ -367,6 +367,7 @@ export class BookTocManager implements IBookTocManager {
 		let fileName = undefined;
 		try {
 			await fs.move(file.book.contentPath, path.join(rootPath, filePath.base), { overwrite: false });
+			this.movedFiles.set(file.book.contentPath, path.join(rootPath, filePath.base));
 		} catch (error) {
 			if (error.code === 'EEXIST') {
 				fileName = await this.renameFile(file.book.contentPath, path.join(rootPath, filePath.base));
