@@ -20,7 +20,9 @@ class NewProjectDialogModel {
 	projectFileExtension: string = '';
 	name: string = '';
 	location: string = '';
+	version?: string;
 }
+
 export class NewProjectDialog extends DialogBase {
 	public model: NewProjectDialogModel = new NewProjectDialogModel();
 
@@ -159,6 +161,13 @@ export class NewProjectDialog extends DialogBase {
 			this.model.location = selectedFolder;
 		}));
 
+		const versionDropdown = view.modelBuilder.dropDown().withProperties<azdataType.DropDownProperties>({
+			values: allProjectTypes[0].targetPlatforms,
+			ariaLabel: 'Target Platform',
+			required: true,
+			width: constants.DefaultInputWidth
+		}).component();
+
 		const form = view.modelBuilder.formContainer().withFormItems([
 			{
 				title: constants.TypeTitle,
@@ -169,10 +178,16 @@ export class NewProjectDialog extends DialogBase {
 				title: constants.ProjectNameTitle,
 				required: true,
 				component: this.createHorizontalContainer(view, [projectNameTextBox])
-			}, {
+			},
+			{
 				title: constants.ProjectLocationTitle,
 				required: true,
 				component: this.createHorizontalContainer(view, [locationTextBox, browseFolderButton])
+			},
+			{
+				title: 'Target Platform',
+				required: true,
+				component: versionDropdown
 			}
 		]).component();
 		await view.initializeModel(form);

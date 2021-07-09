@@ -79,6 +79,11 @@ declare module 'dataworkspace' {
 		 * Gets the project image to be used as background in dashboard container
 		 */
 		 readonly image?: azdata.ThemedIconPath;
+
+		 /**
+		  * Gets the target platforms to show in the dropdown
+		  */
+		 readonly targetPlatforms?: string[];
 	}
 
 	/**
@@ -108,7 +113,12 @@ declare module 'dataworkspace' {
 		/**
 		 * Gets the icon path of the project type
 		 */
-		readonly icon: azdata.IconPath
+		readonly icon: azdata.IconPath;
+
+		/**
+		  * Gets the target platforms to show in the dropdown
+		 */
+		readonly targetPlatforms?: string[];
 	}
 
 	/**

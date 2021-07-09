@@ -34,19 +34,23 @@ export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvide
 	 * Gets the supported project types
 	 */
 	get supportedProjectTypes(): dataworkspace.IProjectType[] {
+		let keys = Object.keys(constants.targetPlatformToVersion);
+
 		return [{
 			id: constants.emptySqlDatabaseProjectTypeId,
 			projectFileExtension: constants.sqlprojExtension.replace(/\./g, ''),
 			displayName: constants.emptyProjectTypeDisplayName,
 			description: constants.emptyProjectTypeDescription,
-			icon: IconPathHelper.colorfulSqlProject
+			icon: IconPathHelper.colorfulSqlProject,
+			targetPlatforms: Object.keys(constants.targetPlatformToVersion)
 		},
 		{
 			id: constants.edgeSqlDatabaseProjectTypeId,
 			projectFileExtension: constants.sqlprojExtension.replace(/\./g, ''),
 			displayName: constants.edgeProjectTypeDisplayName,
 			description: constants.edgeProjectTypeDescription,
-			icon: IconPathHelper.sqlEdgeProject
+			icon: IconPathHelper.sqlEdgeProject,
+			targetPlatforms: [sqldbproj.SqlTargetPlatform.sqlServer2019]
 		}];
 	}
 
@@ -144,5 +148,9 @@ export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvide
 
 	get image(): ThemedIconPath {
 		return IconPathHelper.dashboardSqlProj;
+	}
+
+	get targetPlatforms(): string[] {
+		return Object.keys(constants.targetPlatformToVersion);
 	}
 }
