@@ -224,8 +224,8 @@ appendToCommandPalette(SAVE_FILE_AS_COMMAND_ID, { value: SAVE_FILE_AS_LABEL, ori
 appendToCommandPalette(NEW_FILE_COMMAND_ID, { value: NEW_FILE_LABEL, original: 'New File' }, category, WorkspaceFolderCountContext.notEqualsTo('0'));
 appendToCommandPalette(NEW_FOLDER_COMMAND_ID, { value: NEW_FOLDER_LABEL, original: 'New Folder' }, category, WorkspaceFolderCountContext.notEqualsTo('0'));
 appendToCommandPalette(DOWNLOAD_COMMAND_ID, { value: DOWNLOAD_LABEL, original: 'Download' }, category, ContextKeyExpr.and(ResourceContextKey.Scheme.notEqualsTo(Schemas.file)));
-appendToCommandPalette(NEW_UNTITLED_FILE_COMMAND_ID, { value: NEW_UNTITLED_FILE_LABEL, original: 'New Query' }, category);
-appendToCommandPalette(NEW_UNTITLED_PLAIN_FILE_COMMAND_ID, { value: NEW_UNTITLED_PLAIN_FILE_COMMAND_ID, original: 'New File' }, category); // {{SQL CARBON EDIT}}
+appendToCommandPalette(NEW_UNTITLED_FILE_COMMAND_ID, { value: locConstants.fileActionsContributionNewQuery, original: 'New Query' }, category); // {{SQL CARBON EDIT}} New Query label for normal untitled file
+appendToCommandPalette(NEW_UNTITLED_PLAIN_FILE_COMMAND_ID, { value: NEW_UNTITLED_FILE_LABEL, original: 'New File' }, category); // {{SQL CARBON EDIT}} New File label for untitled plain file
 
 // Menu registration - open editors
 
