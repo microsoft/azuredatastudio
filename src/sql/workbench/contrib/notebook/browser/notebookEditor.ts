@@ -2,6 +2,8 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
+
+import { localize } from 'vs/nls';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { EditorPane } from 'vs/workbench/browser/parts/editor/editorPane';
@@ -9,7 +11,6 @@ import { EditorOptions, IEditorOpenContext } from 'vs/workbench/common/editor';
 import * as DOM from 'vs/base/browser/dom';
 import { bootstrapAngular } from 'sql/workbench/services/bootstrap/browser/bootstrapService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { NotebookInput } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
 import { NotebookModule } from 'sql/workbench/contrib/notebook/browser/notebook.module';
@@ -38,6 +39,8 @@ import { onUnexpectedError } from 'vs/base/common/errors';
 export class NotebookEditor extends EditorPane implements IFindNotebookController {
 
 	public static ID: string = 'workbench.editor.notebookEditor';
+	public static LABEL: string = localize('notebookEditor.name', "Notebook Editor");
+
 	private _notebookContainer: HTMLElement;
 	private _currentDimensions: DOM.Dimension;
 	private _overlay: HTMLElement;
