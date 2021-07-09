@@ -25,6 +25,8 @@ class NewProjectDialogModel {
 
 export class NewProjectDialog extends DialogBase {
 	public model: NewProjectDialogModel = new NewProjectDialogModel();
+	public formBuilder: azdataType.FormBuilder | undefined;
+	public versionDropdownFormComponent: azdataType.FormComponent | undefined;
 
 	constructor(private workspaceService: IWorkspaceService) {
 		super(constants.NewProjectDialogTitle, 'NewProject', constants.CreateButtonText);
@@ -69,7 +71,7 @@ export class NewProjectDialog extends DialogBase {
 				.withAdditionalProperties({ projectFileExtension: this.model.projectFileExtension, projectTemplateId: this.model.projectTypeId })
 				.send();
 
-			await this.workspaceService.createProject(this.model.name, vscode.Uri.file(this.model.location), this.model.projectTypeId);
+			await this.workspaceService.createProject(this.model.name, vscode.Uri.file(this.model.location), this.model.projectTypeId, this.model.version);
 		}
 		catch (err) {
 
@@ -114,6 +116,19 @@ export class NewProjectDialog extends DialogBase {
 
 		this.register(projectTypeRadioCardGroup.onSelectionChanged((e) => {
 			this.model.projectTypeId = e.cardId;
+			const selectedProject = allProjectTypes.find(p => p.id === e.cardId);
+
+			if (selectedProject?.targetPlatforms) {
+				// update the target platforms dropdown for the selected project type
+				versionDropdown.values = selectedProject?.targetPlatforms;
+				versionDropdown.value = selectedProject?.defaultTargetPlatform;
+
+				this.formBuilder?.addFormItem(this.versionDropdownFormComponent!);
+			} else {
+				// remove the target version dropdown if the selected project type didn't provide values for this
+				this.formBuilder?.removeFormItem(this.versionDropdownFormComponent!);
+				this.model.version = undefined;
+			}
 		}));
 
 		const projectNameTextBox = view.modelBuilder.inputBox().withProperties<azdataType.InputBoxProperties>({
@@ -163,12 +178,24 @@ export class NewProjectDialog extends DialogBase {
 
 		const versionDropdown = view.modelBuilder.dropDown().withProperties<azdataType.DropDownProperties>({
 			values: allProjectTypes[0].targetPlatforms,
+			value: allProjectTypes[0].defaultTargetPlatform,
 			ariaLabel: 'Target Platform',
 			required: true,
 			width: constants.DefaultInputWidth
 		}).component();
 
-		const form = view.modelBuilder.formContainer().withFormItems([
+		this.register(versionDropdown.onValueChanged(() => {
+			this.model.version = versionDropdown.value! as string;
+		}));
+
+
+		this.versionDropdownFormComponent = {
+			title: 'Target Platform',
+			required: true,
+			component: versionDropdown
+		};
+
+		this.formBuilder = view.modelBuilder.formContainer().withFormItems([
 			{
 				title: constants.TypeTitle,
 				required: true,
@@ -183,14 +210,15 @@ export class NewProjectDialog extends DialogBase {
 				title: constants.ProjectLocationTitle,
 				required: true,
 				component: this.createHorizontalContainer(view, [locationTextBox, browseFolderButton])
-			},
-			{
-				title: 'Target Platform',
-				required: true,
-				component: versionDropdown
 			}
-		]).component();
-		await view.initializeModel(form);
+		]);
+
+		// add version dropdown if the first project type has one
+		if (allProjectTypes[0].targetPlatforms) {
+			this.formBuilder.addFormItem(this.versionDropdownFormComponent);
+		}
+
+		await view.initializeModel(this.formBuilder.component());
 		this.initDialogComplete?.resolve();
 	}
 }

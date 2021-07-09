@@ -57,8 +57,9 @@ declare module 'dataworkspace' {
 		 * @param name Create a project
 		 * @param location the parent directory of the project
 		 * @param projectTypeId the identifier of the selected project type
+		 * @param projectTargetVersion the target version of the project
 		 */
-		createProject(name: string, location: vscode.Uri, projectTypeId: string): Promise<vscode.Uri>;
+		createProject(name: string, location: vscode.Uri, projectTypeId: string, projectTargetVersion?: string): Promise<vscode.Uri>;
 
 		/**
 		 * Gets the project data corresponding to the project file, to be placed in the dashboard container
@@ -119,6 +120,11 @@ declare module 'dataworkspace' {
 		  * Gets the target platforms to show in the dropdown
 		 */
 		readonly targetPlatforms?: string[];
+
+		/**
+		 * Gets the default target platform
+		 */
+		readonly defaultTargetPlatform?: string;
 	}
 
 	/**
