@@ -609,7 +609,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 
 		this._assessmentLoader = this._view.modelBuilder.loadingComponent().withProps({
 			CSSStyles: {
-				'height': '60px'
+				'height': '100%'
 			}
 		}).component();
 
