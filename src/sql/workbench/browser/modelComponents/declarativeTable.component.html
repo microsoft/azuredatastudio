@@ -6,6 +6,7 @@
 				<th class="declarative-table-header" aria-sort="none" [style.width]="getColumnWidth(column)"
 					[ngStyle]="column.headerCssStyles" [attr.aria-label]="getHeaderAriaLabel(c)">
 					{{column.displayName}}
+					<span *ngIf="isRequired(c)" style="color:red;">*</span>
 					<checkbox *ngIf="headerCheckboxVisible(c)" [checked]="isHeaderChecked(c)"
 						[aria-label]="getCheckAllColumnAriaLabel(c)" (onChange)="onHeaderCheckBoxChanged($event,c)"
 						label=""></checkbox>

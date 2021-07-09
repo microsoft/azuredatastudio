@@ -179,6 +179,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 		const usernameLable = this._view.modelBuilder.text().withProps({
 			value: constants.USERNAME,
 			width: WIZARD_INPUT_COMPONENT_WIDTH,
+			requiredIndicator: true,
 			CSSStyles: {
 				'font-size': '13px',
 				'font-weight': 'bold',
@@ -196,6 +197,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 		const sqlPasswordLabel = this._view.modelBuilder.text().withProps({
 			value: constants.DATABASE_BACKUP_NETWORK_SHARE_PASSWORD_LABEL,
 			width: WIZARD_INPUT_COMPONENT_WIDTH,
+			requiredIndicator: true,
 			CSSStyles: {
 				'font-size': '13px',
 				'font-weight': 'bold',
@@ -231,6 +233,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 		const networkLocationInputBoxLabel = this._view.modelBuilder.text().withProps({
 			value: constants.DATABASE_BACKUP_NETWORK_SHARE_LOCATION_LABEL,
 			width: WIZARD_INPUT_COMPONENT_WIDTH,
+			requiredIndicator: true,
 			CSSStyles: {
 				'font-size': '13px',
 				'font-weight': 'bold'
@@ -273,6 +276,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			.withProps({
 				value: constants.DATABASE_BACKUP_NETWORK_SHARE_WINDOWS_USER_LABEL,
 				width: WIZARD_INPUT_COMPONENT_WIDTH,
+				requiredIndicator: true,
 				CSSStyles: {
 					'font-size': '13px',
 					'font-weight': 'bold'
@@ -303,6 +307,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			.withProps({
 				value: constants.DATABASE_BACKUP_NETWORK_SHARE_PASSWORD_LABEL,
 				width: WIZARD_INPUT_COMPONENT_WIDTH,
+				requiredIndicator: true,
 				CSSStyles: {
 					'font-size': '13px',
 					'font-weight': 'bold'
@@ -425,6 +430,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 					rowCssStyles: rowCssStyle,
 					headerCssStyles: headerCssStyles,
 					isReadOnly: true,
+					requiredIndicator: true,
 					width: '300px'
 				}
 			]
@@ -517,6 +523,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			.withProps({
 				value: constants.SUBSCRIPTION,
 				width: WIZARD_INPUT_COMPONENT_WIDTH,
+				requiredIndicator: true,
 				CSSStyles: {
 					'font-size': '13px',
 					'font-weight': 'bold'
@@ -533,6 +540,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			.withProps({
 				value: constants.LOCATION,
 				width: WIZARD_INPUT_COMPONENT_WIDTH,
+				requiredIndicator: true,
 				CSSStyles: {
 					'font-size': '13px',
 					'font-weight': 'bold'
@@ -549,6 +557,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			.withProps({
 				value: constants.RESOURCE_GROUP,
 				width: WIZARD_INPUT_COMPONENT_WIDTH,
+				requiredIndicator: true,
 				CSSStyles: {
 					'font-size': '13px',
 					'font-weight': 'bold'
@@ -572,6 +581,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			.withProps({
 				value: constants.STORAGE_ACCOUNT,
 				width: WIZARD_INPUT_COMPONENT_WIDTH,
+				requiredIndicator: true,
 				CSSStyles: {
 					'font-size': '13px',
 					'font-weight': 'bold'

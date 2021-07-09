@@ -466,4 +466,9 @@ export default class DeclarativeTableComponent extends ContainerBase<any, azdata
 			this.setPropertyFromUI<number>((properties, value) => { properties.selectedRow = value; }, row);
 		}
 	}
+
+	public isRequired(colIdx: number): boolean {
+		const column: azdata.DeclarativeTableColumn = this.columns[colIdx];
+		return column.requiredIndicator;
+	}
 }

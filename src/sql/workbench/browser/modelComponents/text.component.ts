@@ -26,7 +26,7 @@ import { IThemeService } from 'vs/platform/theme/common/themeService';
 	<div *ngIf="showDiv;else noDiv" style="display:flex;flex-flow:row;align-items:center;" [style.width]="getWidth()" [style.height]="getHeight()">
 	<p [title]="title" [ngStyle]="this.CSSStyles" [attr.role]="ariaRole" [attr.aria-hidden]="ariaHidden"></p>
 		<span #textContainer></span>
-		<p *ngIf="requiredIndicator" style="color:red;margin-left:5px;">*</p>
+		<span *ngIf="requiredIndicator" style="color:red;">*</span>
 		<div *ngIf="description" tabindex="0" class="modelview-text-tooltip" [attr.aria-label]="description" role="img">
 			<div class="modelview-text-tooltip-content" [innerHTML]="description"></div>
 		</div>
@@ -34,6 +34,7 @@ import { IThemeService } from 'vs/platform/theme/common/themeService';
 	<ng-template #noDiv>
 	<p [style.display]="display" [style.width]="getWidth()" [style.height]="getHeight()" [title]="title" [attr.role]="ariaRole" [attr.aria-hidden]="ariaHidden" [ngStyle]="this.CSSStyles">
 		<span #textContainer></span>
+		<span *ngIf="requiredIndicator" style="color:red;">*</span>
 	</p>
 	</ng-template>`
 })
@@ -140,6 +141,6 @@ export default class TextComponent extends TitledComponent<azdata.TextComponentP
 	}
 
 	public get showDiv(): boolean {
-		return this.requiredIndicator || !!this.description;
+		return !!this.description;
 	}
 }

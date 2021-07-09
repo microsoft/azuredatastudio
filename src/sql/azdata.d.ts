@@ -3433,6 +3433,7 @@ declare module 'azdata' {
 		isReadOnly: boolean;
 		width: number | string;
 		categoryValues?: CategoryValue[];
+		requiredIndicator?: boolean;
 	}
 
 	export interface DeclarativeTableProperties extends ComponentProperties {
