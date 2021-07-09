@@ -20,9 +20,7 @@ class SslAuth implements Authentication {
 	constructor() { }
 
 	applyToRequest(requestOptions: request.Options): void {
-		requestOptions['agentOptions'] = {
-			rejectUnauthorized: !getIgnoreSslVerificationConfigSetting()
-		};
+		requestOptions.rejectUnauthorized = !getIgnoreSslVerificationConfigSetting();
 	}
 }
 
