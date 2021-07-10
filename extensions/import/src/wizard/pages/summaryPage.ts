@@ -85,11 +85,6 @@ export class SummaryPage extends ImportPage {
 
 		return true;
 	}
-	public setupNavigationValidator() {
-		this.instance.registerNavigationValidator((info) => {
-			return !this.loading.loading;
-		});
-	}
 
 	private populateTable() {
 		this.table.updateProperties({

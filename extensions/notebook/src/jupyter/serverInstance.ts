@@ -204,12 +204,16 @@ export class PerFolderServerInstance implements IServerInstance {
 	 * started when the log message with URL to connect to is emitted.
 	 */
 	protected async startInternal(): Promise<void> {
+		let startCommand: string;
+		let notebookConfig: vscode.WorkspaceConfiguration = vscode.workspace.getConfiguration(constants.notebookConfigKey);
+		let allowRoot: boolean = notebookConfig.get(constants.allowRoot);
 		if (this.isStarted) {
 			return;
 		}
 		let notebookDirectory = this.getNotebookDirectory();
 		this._token = await utils.getRandomToken();
-		let startCommand = `"${this.options.install.pythonExecutable}" "${this.notebookScriptPath}" --no-browser --ip=127.0.0.1 --allow-root --no-mathjax --notebook-dir "${notebookDirectory}" --NotebookApp.token=${this._token}`;
+		const allowRootParam = allowRoot ? '--allow-root' : '';
+		startCommand = `"${this.options.install.pythonExecutable}" "${this.notebookScriptPath}" --no-browser --ip=127.0.0.1 ${allowRootParam} --no-mathjax --notebook-dir "${notebookDirectory}" --NotebookApp.token=${this._token}`;
 		this.notifyStarting(this.options.install, startCommand);
 
 		// Execute the command

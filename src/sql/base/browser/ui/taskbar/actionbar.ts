@@ -238,6 +238,13 @@ export class ActionBar extends ActionRunner implements IActionRunner {
 			//this.addEmitter(item);
 			item.render(actionItemElement);
 
+			// VSCode toolbar now will only receive one tab stop, by default all items are not focusable.
+			// Adding the following change to make sure the ADS toolbars are keyboard focusable to match the previous behavior as a temporary solution.
+			// TODO: https://github.com/microsoft/azuredatastudio/issues/16016
+			if (item instanceof BaseActionViewItem) {
+				item.setFocusable(true);
+			}
+
 			if (index === null || index < 0 || index >= this._actionsList.children.length) {
 				this._actionsList.appendChild(actionItemElement);
 			} else {
