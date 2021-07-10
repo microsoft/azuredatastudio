@@ -1473,6 +1473,9 @@
       <Item ItemId=";extensions/notebook/dist/jupyter/jupyterServerInstallation.dontAskAgain" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Don't Ask Again]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[다시 묻지 않음]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1605,18 +1608,27 @@
       <Item ItemId=";extensions/notebook/dist/jupyter/jupyterServerInstallation.msgPythonVersionUpdatePrompt" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Python {0} is now available in Azure Data Studio. The current Python version (3.6.6) will be out of support in December 2021. Would you like to update to Python {0} now?]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[이제 python {0}에서 Azure Data Studio를 사용할 수 있습니다. 현재 Python 버전(3.6.6)은 2021년 12월에 지원되지 않습니다. 지금 Python {0}을(를) 업데이트하시겠습니까?]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/notebook/dist/jupyter/jupyterServerInstallation.msgPythonVersionUpdateWarning" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Python {0} will be installed and will replace Python 3.6.6. Some packages may no longer be compatible with the new version or may need to be reinstalled. A notebook will be created to help you reinstall all pip packages. Would you like to continue with the update now?]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Python {0}이(가) 설치되고 Python 3.6.6을 대체합니다. 일부 패키지는 더 이상 새 버전과 호환되지 않거나 다시 설치해야 할 수 있습니다. 모든 pip 패키지를 다시 설치하는 데 도움이 되는 전자 필기장이 만들어집니다. 지금 업데이트를 계속하시겠습니까?]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/notebook/dist/jupyter/jupyterServerInstallation.msgShutdownNotebookSessions" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Active Python notebook sessions will be shutdown in order to update. Would you like to proceed now?]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[업데이트를 하기 위해 활성 Python Notebook 세션이 종료됩니다. 지금 계속하시겠습니까?]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1980,12 +1992,18 @@
       <Item ItemId=";extensions/notebook/package.notebook.dontPromptPythonUpdate.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Do not show prompt to update Python.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Python을 업데이트하라는 메시지가 표시되지 않습니다.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/notebook/package.notebook.jupyterServerShutdownTimeout.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The amount of time (in minutes) to wait before shutting down a server after all notebooks are closed. (Enter 0 to not shutdown)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[모든 전자 필기장이 닫힌 후 서버를 종료하기 전에 대기해야 할 시간(분)입니다(종료하지 않으려면 0을 입력하세요).]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>

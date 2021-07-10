@@ -974,6 +974,9 @@
         <Item ItemId=";(...) ext" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Please run this cell to view outputs.]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Führen Sie diese Zelle aus, um Ausgaben anzuzeigen.]]></Val>
+            </Tgt>
           </Str>
           <Disp Icon="Str" />
         </Item>
@@ -1260,24 +1263,36 @@
       <Item ItemId=";src/sql/base/common/locConstants.InstallVSIXAction.allowNone" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Your extension policy does not allow installing extensions. Please change your extension policy and try again.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Die Erweiterungsrichtlinie lässt die Installation von Erweiterungen nicht zu. Ändern Sie Ihre Erweiterungsrichtlinie und versuchen Sie es noch mal.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/base/common/locConstants.InstallVSIXAction.successReload" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Completed installing {0} extension from VSIX. Please reload Azure Data Studio to enable it.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Die Installation der Erweiterung "{0}" aus VSIX wurde abgeschlossen. Laden Sie Azure Data Studio neu, um sie zu aktivieren.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/base/common/locConstants.ReinstallAction.successReload" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Please reload Azure Data Studio to complete reinstalling the extension {0}.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Laden Sie Azure Data Studio neu, um die Neuinstallation der Erweiterung {0} abzuschließen.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/base/common/locConstants.activateLanguagePack" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[In order to use Azure Data Studio in {0}, Azure Data Studio needs to restart.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Um Azure Data Studio in {0} zu verwenden, muss Azure Data Studio neu gestartet werden.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1293,96 +1308,144 @@
       <Item ItemId=";src/sql/base/common/locConstants.connectionDialogBrowseTree.context" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The connection dialog's browse tree context menu]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Kontextmenü zum Durchsuchen der Struktur des Verbindungsdialogfelds]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/base/common/locConstants.dashboard.toolbar" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The dashboard toolbar action menu]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Das Aktionsmenü für die Dashboard-Symbolleiste]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/base/common/locConstants.dataExplorer.action" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The dataexplorer view container title action menu]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Das Aktionsmenü für den Container-Titel der Dataexplorer-Ansicht]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/base/common/locConstants.dataExplorer.context" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The dataexplorer item context menu]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Kontextmenü des Dataexplorer-Elements]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/base/common/locConstants.dataGrid.context" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The data grid item context menu]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Kontextmenü des Datenrasterelements]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/base/common/locConstants.default" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Enable automatic update checks. Azure Data Studio will check for updates automatically and periodically.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Automatische Prüfung auf Aktualisierungen aktivieren. Azure Data Studio prüft automatisch und regelmäßig auf Aktualisierungen.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/base/common/locConstants.enable locally" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Please reload Azure Data Studio to enable this extension locally.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Laden Sie Azure Data Studio erneut, um diese Erweiterung lokal zu aktivieren.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/base/common/locConstants.enable remote" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Please reload Azure Data Studio to enable this extension in {0}.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Laden Sie Azure Data Studio erneut, um diese Erweiterung in {0} zu aktivieren.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/base/common/locConstants.enableWindowsBackgroundUpdates" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Enable to download and install new Azure Data Studio Versions in the background on Windows]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Aktivieren Sie diese Option, um neue Azure Data Studio-Versionen im Hintergrund unter Windows herunterzuladen und zu installieren.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/base/common/locConstants.extensionsPolicy" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Sets the security policy for downloading extensions.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Legt die Sicherheitsrichtlinie für das Herunterladen von Erweiterungen fest.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/base/common/locConstants.incompatible" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Unable to install extension '{0}' as it is not compatible with Azure Data Studio '{1}'.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Die Erweiterung '{0}' mit Version '{1}' konnte nicht installiert werden, da sie nicht mit Azure Data Studio kompatibel ist.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/base/common/locConstants.installExtensionCompletedAndReloadRequired" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Installing extension {0} is completed. Please reload Azure Data Studio to enable it.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Die Installation der Erweiterung "{0}" wurde abgeschlossen. Laden Sie Azure Data Studio neu, um sie zu aktivieren.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/base/common/locConstants.maxMemoryForLargeFilesMB" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Controls the memory available to Azure Data Studio after restart when trying to open large files. Same effect as specifying `--max-memory=NEWSIZE` on the command line.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Steuert den für Azure Data Studio verfügbaren Arbeitsspeicher nach einem Neustart bei dem Versuch, große Dateien zu öffnen. Dies hat die gleiche Auswirkung wie das Festlegen von `--max-memory=NEWSIZE` über die Befehlszeile.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/base/common/locConstants.miNewNotebook" ItemType="0" PsrId="308" InstFlg="true" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[&&New Notebook]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[&&Neues Notizbuch]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/base/common/locConstants.miNewQuery" ItemType="0" PsrId="308" InstFlg="true" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[New &&Query]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Neue &&Abfrage]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/base/common/locConstants.miinstallVsix" ItemType="0" PsrId="308" InstFlg="true" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Install Extension from VSIX Package]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Erweiterung aus VSIX-Paket installieren]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1398,48 +1461,72 @@
       <Item ItemId=";src/sql/base/common/locConstants.notebook.cellTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The notebook cell title menu]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Titelmenü der Notizbuchzelle]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/base/common/locConstants.notebook.title" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The notebook title menu]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Titelmenü des Notizbuchs]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/base/common/locConstants.notebook.toolbar" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The notebook toolbar menu]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Symbolleistenmenü des Notizbuchs]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/base/common/locConstants.objectExplorer.context" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The object explorer item context menu]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Kontextmenü des Objekt-Explorer-Elements]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/base/common/locConstants.postDisableTooltip" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Please reload Azure Data Studio to disable this extension.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Laden Sie Azure Data Studio erneut, um diese Erweiterung zu deaktivieren.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/base/common/locConstants.postEnableTooltip" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Please reload Azure Data Studio to enable this extension.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Laden Sie Azure Data Studio erneut, um diese Erweiterung zu aktivieren.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/base/common/locConstants.postUninstallTooltip" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Please reload Azure Data Studio to complete the uninstallation of this extension.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Laden Sie Azure Data Studio erneut, um die Deinstallation dieser Erweiterung abzuschließen.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/base/common/locConstants.postUpdateTooltip" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Please reload Azure Data Studio to enable the updated extension.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Laden Sie Azure Data Studio erneut, um die Aktualisierung dieser Erweiterung abzuschließen.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1464,18 +1551,27 @@
       <Item ItemId=";src/sql/base/common/locConstants.showReleaseNotes" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Show Release Notes after an update. The Release Notes are opened in a new web browser window.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Versionshinweise nach einem Update anzeigen. Die Versionshinweise werden in einem neuen Webbrowserfenster geöffnet.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/base/common/locConstants.uninstallExtensionComplete" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Please reload Azure Data Studio to complete the uninstallation of the extension {0}.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Laden Sie Azure Data Studio erneut, um die Deinstallation der Erweiterung {0} abzuschließen.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/base/common/locConstants.updateLocale" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Would you like to change Azure Data Studio's UI language to {0} and restart?]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Möchten Sie die Sprache der Benutzeroberfläche von Azure Data Studio in {0} ändern und einen Neustart durchführen?]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1483,7 +1579,7 @@
         <Str Cat="Text">
           <Val><![CDATA[New Notebook]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Neues Notebook]]></Val>
+            <Val><![CDATA[Neues Notizbuch]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1491,6 +1587,9 @@
       <Item ItemId=";src/sql/base/common/locConstants.watermark.newSqlFile" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[New SQL File]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Neue SQL-Datei]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2939,6 +3038,69 @@
           <Val><![CDATA[Extension]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Erweiterung]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/common/theme.dashboardBorder" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Color for borders in dashboard]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Farbe für Rahmen im Dashboard]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/common/theme.dashboardWidget" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Color of dashboard widget title]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Farbe des Titels des Dashboardgadgets]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/common/theme.dashboardWidgetSubtext" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Color for dashboard widget subtext]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Farbe für Dashboard-Widget-Subtext]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/common/theme.propertiesContainerPropertyName" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Color for property names displayed in the properties container component]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Farbe für Eigenschaftennamen, die in der Eigenschaftencontainerkomponente angezeigt werden]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/common/theme.propertiesContainerPropertyValue" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Color for property values displayed in the properties container component]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Farbe für Eigenschaftswerte, die in der Eigenschaftencontainerkomponente angezeigt werden]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/common/theme.toolbarOverflowShadow" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Toolbar overflow shadow color]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Schattenfarbe für Symbolleistenüberlauf]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";src/sql/workbench/common/theme.verticalTabActiveBackground" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Active tab background color for vertical tabs]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Hintergrundfarbe für aktive Registerkarten für vertikale Tabstopps]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -5433,12 +5595,18 @@
       <Item ItemId=";src/sql/workbench/contrib/dataExplorer/browser/dataExplorer.contribution.connectionsSortOrder.dateAdded" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Saved connections are sorted by the dates they were added.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Gespeicherte Verbindungen werden nach dem Datum sortiert, an dem sie hinzugefügt wurden.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/workbench/contrib/dataExplorer/browser/dataExplorer.contribution.connectionsSortOrder.displayName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Saved connections are sorted by their display names alphabetically.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Gespeicherte Verbindungen werden alphabetisch nach ihren Anzeigenamen sortiert.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -5472,6 +5640,9 @@
       <Item ItemId=";src/sql/workbench/contrib/dataExplorer/browser/dataExplorer.contribution.datasource.connectionsSortOrder" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Controls sorting order of saved connections and connection groups.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Steuert die Sortierreihenfolge gespeicherter Verbindungen und Verbindungsgruppen.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -7512,6 +7683,9 @@
       <Item ItemId=";src/sql/workbench/contrib/notebook/browser/cellViews/placeholderCell.component.plusCodeAriaLabel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Add a code cell]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Eine Codezelle hinzufügen]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -7527,6 +7701,9 @@
       <Item ItemId=";src/sql/workbench/contrib/notebook/browser/cellViews/placeholderCell.component.plusTextAriaLabel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Add a text cell]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Eine Textzelle hinzufügen]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -7869,6 +8046,9 @@
       <Item ItemId=";src/sql/workbench/contrib/notebook/browser/notebook.contribution.notebook.defaultTextEditMode" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The default editing mode used for text cells]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Der Standardbearbeitungsmodus, der für Textzellen verwendet wird]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -7884,6 +8064,9 @@
       <Item ItemId=";src/sql/workbench/contrib/notebook/browser/notebook.contribution.notebook.markdownModeDescription" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Text is displayed as Markdown.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Der Text wird als Markdown angezeigt.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -7899,12 +8082,18 @@
       <Item ItemId=";src/sql/workbench/contrib/notebook/browser/notebook.contribution.notebook.maxRichTextUndoHistory" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The maximum number of changes stored in the undo history for the notebook Rich Text editor.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Die maximale Anzahl von Änderungen, die im Verlauf des Rücksetzens für den Notizbuch-Rich-Text-Editor gespeichert sind.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";src/sql/workbench/contrib/notebook/browser/notebook.contribution.notebook.richTextModeDescription" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Text is displayed as Rich Text (also known as WYSIWYG).]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Text wird als Rich-Text (auch bekannt als WSSIWYG) angezeigt.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -7938,6 +8127,9 @@
       <Item ItemId=";src/sql/workbench/contrib/notebook/browser/notebook.contribution.notebook.splitViewModeDescription" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Markdown is displayed on the left, with a preview of the rendered text on the right.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Auf der linken Seite wird ein Markdown mit einer Vorschau des gerenderten Texts auf der rechten Seite angezeigt.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -8346,6 +8538,9 @@
       <Item ItemId=";src/sql/workbench/contrib/notebook/browser/notebookActions.kernelNotSupported" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[This notebook cannot run with parameters as the kernel is not supported. Please use the supported kernels and format. [Learn more]5D;(https://docs.microsoft.com/sql/azure-data-studio/notebooks/notebooks-parameterization).]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Dieses Notizbuch kann nicht mit Parametern ausgeführt werden, da der Kernel nicht unterstützt wird. Verwenden Sie die unterstützten Kernel und das unterstützte Format. [Weitere Informationen]5D; (https://docs.microsoft.com/sql/azure-data-studio/notebooks/notebooks-parameterization).]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -8415,6 +8610,9 @@
       <Item ItemId=";src/sql/workbench/contrib/notebook/browser/notebookActions.noParametersInCell" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[This notebook cannot run with parameters until there are parameters added to the parameter cell. [Learn more]5D;(https://docs.microsoft.com/sql/azure-data-studio/notebooks/notebooks-parameterization).]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Dieses Notizbuch kann erst mit Parametern ausgeführt werden, wenn der Parameterzelle Parameter hinzugefügt wurden. [Weitere Informationen]5D;(https://docs.microsoft.com/sql/azure-data-studio/notebooks/notebooks-parameterization).]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -8682,6 +8880,9 @@
       <Item ItemId=";src/sql/workbench/contrib/notebook/browser/notebookViews/notebookViewsGrid.component.emptyText" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[This view is empty. Add a cell to this view by clicking the Insert Cells button.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Diese Ansicht ist leer. Fügen Sie dieser Ansicht eine Zelle hinzu, indem Sie auf die Schaltfläche „Zellen einfügen“ klicken.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -9438,6 +9639,9 @@
       <Item ItemId=";src/sql/workbench/contrib/query/browser/gridPanel.resultsGrid.maxRowCountExceeded" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Max row count for filtering/sorting has been exceeded. To update it, you can go to User Settings and change the setting: 'queryEditor.results.inMemoryDataProcessingThreshold']]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Die maximale Zeilenanzahl für das Filtern/ Sortieren wurde überschritten. Um sie zu aktualisieren, können Sie zu "Benutzereinstellungen" wechseln und die Einstellung "queryEditor.results.inMemoryDataProcessingThreshold" ändern.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -9633,8 +9837,8 @@
       <Item ItemId=";src/sql/workbench/contrib/query/browser/query.contribution.queryEditor.inMemoryDataProcessingThreshold" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Controls the max number of rows allowed to do filtering and sorting in memory. If the number is exceeded, sorting and filtering will be disabled. Warning: Increasing this may impact performance.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Steuert die maximale Anzahl von Zeilen, die im Arbeitsspeicher gefiltert und sortiert werden dürfen. Wenn die Zahl überschritten wird, werden die Sortier- und Filterfunktionen deaktiviert.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Steuert die maximale Anzahl von Zeilen, die im Arbeitsspeicher gefiltert und sortiert werden dürfen. Wenn die Zahl überschritten wird, werden die Sortier- und Filterfunktionen deaktiviert. Warnung: die Erhöhung dieser Anzahl kann sich auf die Leistung auswirken.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Controls the max number of rows allowed to do filtering and sorting in memory. If the number is exceeded, sorting and filtering will be disabled.]]></Val>
@@ -9699,6 +9903,9 @@
       <Item ItemId=";src/sql/workbench/contrib/query/browser/query.contribution.queryEditor.results.openAfterSave" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Whether to open the file in Azure Data Studio after the result is saved.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Gibt an, ob die Datei in Azure Data Studio geöffnet werden soll, nachdem das Ergebnis gespeichert wurde.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -9897,7 +10104,7 @@
       <Item ItemId=";src/sql/workbench/contrib/query/browser/queryActions.changeDatabase.failedWithError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Failed to change database: {0}]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Fehler beim Ändern der Datenbank: {0}]]></Val>
           </Tgt>
           <Prev Cat="Text">
@@ -10863,8 +11070,8 @@
       <Item ItemId=";src/sql/workbench/contrib/tasks/common/tasksAction.errorMsgFromCancelTask" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The task failed to cancel.]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Die Aufgabe konnte nicht abgebrochen werden.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Der Task konnte nicht abgebrochen werden.]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[The task is failed to cancel.]]></Val>
@@ -13551,6 +13758,9 @@
       <Item ItemId=";src/sql/workbench/services/notebook/browser/notebookViews/notebookViewModel.notebookView.nameTaken" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[A view with the name {0} already exists in this notebook.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Eine Ansicht mit dem Namen {0} ist in diesem Notizbuch bereits vorhanden.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
