@@ -1473,6 +1473,9 @@
       <Item ItemId=";extensions/notebook/dist/jupyter/jupyterServerInstallation.dontAskAgain" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Don't Ask Again]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Ne plus me poser la question]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1605,18 +1608,27 @@
       <Item ItemId=";extensions/notebook/dist/jupyter/jupyterServerInstallation.msgPythonVersionUpdatePrompt" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Python {0} is now available in Azure Data Studio. The current Python version (3.6.6) will be out of support in December 2021. Would you like to update to Python {0} now?]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Python {0} est désormais disponible dans Azure Data Studio. La version actuelle de Python (3.6.6) n’est plus prise en charge en décembre 2021. Voulez-vous effectuer une mise à jour vers python {0} maintenant ?]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/notebook/dist/jupyter/jupyterServerInstallation.msgPythonVersionUpdateWarning" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Python {0} will be installed and will replace Python 3.6.6. Some packages may no longer be compatible with the new version or may need to be reinstalled. A notebook will be created to help you reinstall all pip packages. Would you like to continue with the update now?]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Python {0} sera installé et va remplacer python 3.6.6. Certains packages ne sont peut-être plus compatibles avec la nouvelle version ou doivent peut-être être réinstallés. Un bloc-notes va être créé pour vous aider à réinstaller tous les packages PIP. Voulez-vous continuer la mise à jour maintenant ?]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/notebook/dist/jupyter/jupyterServerInstallation.msgShutdownNotebookSessions" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Active Python notebook sessions will be shutdown in order to update. Would you like to proceed now?]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Les sessions de bloc-notes python actives seront arrêtées pour permettre la mise à jour. Voulez-vous continuer maintenant ?]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1980,12 +1992,18 @@
       <Item ItemId=";extensions/notebook/package.notebook.dontPromptPythonUpdate.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Do not show prompt to update Python.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Ne pas afficher d’invite pour mettre à jour Python.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/notebook/package.notebook.jupyterServerShutdownTimeout.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The amount of time (in minutes) to wait before shutting down a server after all notebooks are closed. (Enter 0 to not shutdown)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Durée d’attente (en minutes) avant l’arrêt d’un serveur une fois tous les blocs-notes fermés. (Entrez 0 pour ne pas arrêter)]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
