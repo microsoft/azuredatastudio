@@ -243,7 +243,7 @@
     <trans-unit id="publishDialogName">
       <source xml:lang="en">Publish project</source>
     </trans-unit>
-    <trans-unit id="publishDialogOkButtonText">
+    <trans-unit id="publish">
       <source xml:lang="en">Publish</source>
     </trans-unit>
     <trans-unit id="cancelButtonText">
@@ -299,6 +299,46 @@
     </trans-unit>
     <trans-unit id="default">
       <source xml:lang="en">default</source>
+    </trans-unit>
+    <trans-unit id="selectProfile">
+      <source xml:lang="en">Select publish profile to load</source>
+    </trans-unit>
+    <trans-unit id="dontUseProfile">
+      <source xml:lang="en">Don't use profile</source>
+    </trans-unit>
+    <trans-unit id="browseForProfile">
+      <source xml:lang="en">Browse for profile</source>
+    </trans-unit>
+    <trans-unit id="chooseAction">
+      <source xml:lang="en">Choose action</source>
+    </trans-unit>
+    <trans-unit id="chooseSqlcmdVarsToModify">
+      <source xml:lang="en">Choose SQLCMD variables to modify</source>
+    </trans-unit>
+    <trans-unit id="enterNewValueForVar">
+      <source xml:lang="en">Enter new value for variable '{0}'</source>
+    </trans-unit>
+    <trans-unit id="resetAllVars">
+      <source xml:lang="en">Reset all variables</source>
+    </trans-unit>
+    <trans-unit id="createNew">
+      <source xml:lang="en">&lt;Create New&gt;</source>
+    </trans-unit>
+    <trans-unit id="enterNewDatabaseName">
+      <source xml:lang="en">Enter new database name</source>
+    </trans-unit>
+    <trans-unit id="newDatabaseTitle">
+      <source xml:lang="en">{0} (new)</source>
+      <note>Name is the name of a new database being created</note>
+    </trans-unit>
+    <trans-unit id="selectDatabase">
+      <source xml:lang="en">Select database</source>
+    </trans-unit>
+    <trans-unit id="done">
+      <source xml:lang="en">Done</source>
+    </trans-unit>
+    <trans-unit id="nameMustNotBeEmpty">
+      <source xml:lang="en">Name must not be empty</source>
     </trans-unit>
     <trans-unit id="addDatabaseReferencedialogName">
       <source xml:lang="en">Add database reference</source>
