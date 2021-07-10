@@ -147,9 +147,9 @@ export class ModifyColumnsPage extends ImportPage {
 		return true;
 	}
 
-	public setupNavigationValidator() {
+	public override setupNavigationValidator() {
 		this.instance.registerNavigationValidator((info) => {
-			return !this.loading.loading && this.table.data && this.table.data.length > 0;
+			return this.table.data && this.table.data.length > 0;
 		});
 	}
 

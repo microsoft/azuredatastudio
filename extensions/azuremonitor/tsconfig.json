@@ -1,0 +1,12 @@
+{
+	"extends": "../tsconfig.base.json",
+	"compilerOptions": {
+		"outDir": "./out",
+		"strict": true,
+		"noUnusedParameters": true,
+		"noImplicitAny": true
+	},
+	"include": [
+		"src/**/*"
+	]
+}

@@ -113,7 +113,7 @@ export default class DropDownComponent extends ComponentBase<azdata.DropDownProp
 			}));
 			this._validations.push(() => !this.required || this.editable || !!this._selectBox.value);
 		}
-
+		this._validations.push(() => !this.loading);
 		this.baseInit();
 	}
 

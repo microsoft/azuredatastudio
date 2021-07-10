@@ -115,6 +115,7 @@ describe('Jupyter Session Manager', function (): void {
 			}
 		};
 		mockJupyterManager.setup(m => m.startNew(TypeMoq.It.isAny())).returns(() => Promise.resolve(expectedSessionInfo));
+		mockJupyterManager.setup(m => m.specs).returns(() => undefined);
 
 		// When I call startSession
 		let session = await sessionManager.startNew(sessionOptions, true);

@@ -248,7 +248,13 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 			inputType: 'number',
 			placeHolder: loc.loading,
 			required: true,
-			ariaLabel: loc.workerNodeCount
+			ariaLabel: loc.workerNodeCount,
+			validationErrorMessage: loc.workerOneNodeValidationMessage
+		}).withValidation((component) => {
+			if (component.value === '1') {
+				return false;
+			}
+			return true;
 		}).component();
 
 		this.disposables.push(
