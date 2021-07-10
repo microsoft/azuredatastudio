@@ -336,8 +336,8 @@
       <Item ItemId=";extensions/import/out/services/serviceClient.downloadingServiceComplete" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Done downloading {0}]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Готово!]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Скачивание {0} завершено]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Done!]]></Val>
@@ -358,7 +358,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Downloading {0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Идет загрузка {0}]]></Val>
+            <Val><![CDATA[Скачивание {0}]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Downloading Service]]></Val>
@@ -378,8 +378,8 @@
       <Item ItemId=";extensions/import/out/services/serviceClient.flatFileImport.serviceStartFailed" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Failed to start {0}: {1}]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Не удалось запустить службу импорта {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Не удалось запустить {0}: {1}]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Failed to start Import service{0}]]></Val>
@@ -390,8 +390,8 @@
       <Item ItemId=";extensions/import/out/services/serviceClient.installingService" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Installing {0} Service]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Установка службы]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Установка службы {0}]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Installing Service]]></Val>
@@ -427,7 +427,7 @@
         <Str Cat="Text">
           <Val><![CDATA[{0} Started]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[{0} запущен]]></Val>
+            <Val><![CDATA[Запущено: {0}]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Service Started]]></Val>
@@ -439,7 +439,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Starting {0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Запуск (0)]]></Val>
+            <Val><![CDATA[Запуск {0}]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Starting service]]></Val>
