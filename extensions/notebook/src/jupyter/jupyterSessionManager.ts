@@ -129,6 +129,12 @@ export class JupyterSessionManager implements nb.SessionManager {
 			// no-op
 			return Promise.reject(new Error(localize('errorStartBeforeReady', "Cannot start a session, the manager is not yet initialized")));
 		}
+
+		// Prompt for Python Install to check that all dependencies are installed.
+		// This prevents the kernel from getting stuck if a user deletes a dependency after the server has been started.
+		let kernelDisplayName: string = this.specs?.kernels.find(k => k.name === options.kernelName)?.display_name;
+		await this._installation?.promptForPythonInstall(kernelDisplayName);
+
 		let sessionImpl = await this._sessionManager.startNew(options);
 		let jupyterSession = new JupyterSession(sessionImpl, this._installation, skipSettingEnvironmentVars, this._installation?.pythonEnvVarPath);
 		await jupyterSession.messagesComplete;

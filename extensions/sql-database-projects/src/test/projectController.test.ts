@@ -345,7 +345,7 @@ describe('ProjectsController', function (): void {
 				projController.callBase = true;
 				projController.setup(x => x.getPublishDialog(TypeMoq.It.isAny())).returns(() => publishDialog.object);
 
-				await projController.object.publishProject(new Project('FakePath'));
+				projController.object.publishProject(new Project('FakePath'));
 				should(opened).equal(true);
 			});
 
@@ -376,12 +376,12 @@ describe('ProjectsController', function (): void {
 					return Promise.resolve(undefined);
 				});
 
-				let dialog = await projController.object.publishProject(proj);
+				let dialog = projController.object.publishProject(proj);
 				await dialog.publishClick();
 
 				should(holler).equal(publishHoller, 'executionCallback() is supposed to have been setup and called for Publish scenario');
 
-				dialog = await projController.object.publishProject(proj);
+				dialog = projController.object.publishProject(proj);
 				await dialog.generateScriptClick();
 
 				should(holler).equal(generateHoller, 'executionCallback() is supposed to have been setup and called for GenerateScript scenario');
