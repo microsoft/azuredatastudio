@@ -148,6 +148,7 @@
 	"arc.agreement.sql.terms.conditions": "Azure SQL managed instance - Azure Arc terms and conditions",
 	"arc.agreement.postgres.terms.conditions": "Azure Arc-enabled PostgreSQL Hyperscale terms and conditions",
 	"should.be.integer": "Value must be an integer",
+	"worker.node.count.should.not.be.one": "Value of 1 is not supported.",
 	"requested.cores.less.than.or.equal.to.cores.limit": "Requested cores must be less than or equal to cores limit",
 	"cores.limit.greater.than.or.equal.to.requested.cores": "Cores limit must be greater than or equal to requested cores",
 	"requested.memory.less.than.or.equal.to.memory.limit": "Requested memory must be less than or equal to memory limit",
