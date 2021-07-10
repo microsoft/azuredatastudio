@@ -18,6 +18,9 @@
       <Item ItemId=";extensions/import/out/common/constants.flatFile.InvalidFileLocation" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Invalid file location. Please try a different input file]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[잘못된 파일 위치입니다. 다른 입력 파일을 사용해 보세요.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -303,6 +306,9 @@
       <Item ItemId=";extensions/import/out/common/constants.import.needSQLConnection" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[SQL Server Import extension does not support this type of connection]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[SQL Server 가져오기 확장은 이 유형의 연결을 지원하지 않습니다.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
