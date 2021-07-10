@@ -12,6 +12,8 @@ import { AdsMigrationStatus, MigrationStatusDialogModel } from './migrationStatu
 import * as loc from '../../constants/strings';
 import { convertTimeDifferenceToDuration, filterMigrations, SupportedAutoRefreshIntervals } from '../../api/utils';
 import { SqlMigrationServiceDetailsDialog } from '../sqlMigrationService/sqlMigrationServiceDetailsDialog';
+import { ConfirmCutoverDialog } from '../migrationCutover/confirmCutoverDialog';
+import { MigrationCutoverDialogModel } from '../migrationCutover/migrationCutoverDialogModel';
 
 const refreshFrequency: SupportedAutoRefreshIntervals = 180000;
 
@@ -83,6 +85,9 @@ export class MigrationStatusDialog {
 		azdata.window.openDialog(this._dialogObject);
 	}
 
+	private canCancelMigration = (status: string | undefined) => status && status in ['InProgress', 'Creating', 'Completing', 'Creating'];
+	private canCutoverMigration = (status: string | undefined) => status === 'InProgress';
+
 	private createSearchAndRefreshContainer(): azdata.FlexContainer {
 		this._searchBox = this._view.modelBuilder.inputBox().withProps({
 			stopEnterPropagation: true,
@@ -102,7 +107,7 @@ export class MigrationStatusDialog {
 			iconHeight: '16px',
 			iconWidth: '20px',
 			height: '30px',
-			label: 'Refresh',
+			label: loc.REFRESH_BUTTON_LABEL,
 		}).component();
 
 		this._refresh.onDidClick((e) => {
@@ -152,122 +157,225 @@ export class MigrationStatusDialog {
 	}
 
 	private setAutoRefresh(interval: SupportedAutoRefreshIntervals): void {
-		let classVariable = this;
+		const classVariable = this;
 		clearInterval(this._autoRefreshHandle);
 		if (interval !== -1) {
 			this._autoRefreshHandle = setInterval(function () { classVariable.refreshTable(); }, interval);
 		}
 	}
 
-	private populateMigrationTable(): void {
+	private async populateMigrationTable(): Promise<void> {
 		try {
-			const migrations = filterMigrations(this._model._migrations, (<azdata.CategoryValue>this._statusDropdown.value).name, this._searchBox.value!);
-
-			const data: azdata.DeclarativeTableCellValue[][] = [];
+			const migrations = filterMigrations(
+				this._model._migrations,
+				(<azdata.CategoryValue>this._statusDropdown.value).name,
+				this._searchBox.value!);
 
 			migrations.sort((m1, m2) => {
 				return new Date(m1.migrationContext.properties.startedOn) > new Date(m2.migrationContext.properties.startedOn) ? -1 : 1;
 			});
 
-			migrations.forEach((migration, index) => {
-				const migrationRow: azdata.DeclarativeTableCellValue[] = [];
-
-				const databaseHyperLink = this._view.modelBuilder.hyperlink().withProps({
-					label: migration.migrationContext.properties.sourceDatabaseName,
-					url: ''
-				}).component();
-				databaseHyperLink.onDidClick(async (e) => {
-					await (new MigrationCutoverDialog(migration)).initialize();
-				});
-				migrationRow.push({
-					value: databaseHyperLink,
-				});
-
-				migrationRow.push({
-					value: (migration.targetManagedInstance.type === 'microsoft.sql/managedinstances') ? loc.SQL_MANAGED_INSTANCE : loc.SQL_VIRTUAL_MACHINE
-				});
-
-				const sqlMigrationName = this._view.modelBuilder.hyperlink().withProps({
-					label: migration.targetManagedInstance.name,
-					url: ''
-				}).component();
-				sqlMigrationName.onDidClick((e) => {
-					vscode.window.showInformationMessage(loc.COMING_SOON);
+			vscode.commands.registerCommand(
+				'sqlmigration.cutover',
+				async (migrationId: string) => {
+					try {
+						const migration = migrations.find(migration => migration.migrationContext.id === migrationId);
+						if (this.canCutoverMigration(migration?.migrationContext.properties.migrationStatus)) {
+							const cutoverDialogModel = new MigrationCutoverDialogModel(migration!);
+							await cutoverDialogModel.fetchStatus();
+							const dialog = new ConfirmCutoverDialog(cutoverDialogModel);
+							await dialog.initialize();
+						} else {
+							await vscode.window.showInformationMessage(loc.MIGRATION_CANNOT_CUTOVER);
+						}
+					} catch (e) {
+						console.log(e);
+					}
 				});
 
-				migrationRow.push({
-					value: sqlMigrationName
+			vscode.commands.registerCommand(
+				'sqlmigration.view.database',
+				async (migrationId: string) => {
+					try {
+						const migration = migrations.find(migration => migration.migrationContext.id === migrationId);
+						const dialog = new MigrationCutoverDialog(migration!);
+						await dialog.initialize();
+					} catch (e) {
+						console.log(e);
+					}
 				});
 
-				const dms = this._view.modelBuilder.hyperlink().withProps({
-					label: migration.controller.name,
-					url: ''
-				}).component();
-				dms.onDidClick((e) => {
-					(new SqlMigrationServiceDetailsDialog(migration)).initialize();
+			vscode.commands.registerCommand(
+				'sqlmigration.view.target',
+				async (migrationId: string) => {
+					try {
+						const migration = migrations.find(migration => migration.migrationContext.id === migrationId);
+						const url = 'https://portal.azure.com/#resource/' + migration!.targetManagedInstance.id;
+						await vscode.env.openExternal(vscode.Uri.parse(url));
+					} catch (e) {
+						console.log(e);
+					}
 				});
 
-				migrationRow.push({
-					value: dms
+			vscode.commands.registerCommand(
+				'sqlmigration.view.service',
+				async (migrationId: string) => {
+					try {
+						const migration = migrations.find(migration => migration.migrationContext.id === migrationId);
+						const dialog = new SqlMigrationServiceDetailsDialog(migration!);
+						await dialog.initialize();
+					} catch (e) {
+						console.log(e);
+					}
 				});
 
-				migrationRow.push({
-					value: loc.ONLINE
+			vscode.commands.registerCommand(
+				'sqlmigration.copy.migration',
+				async (migrationId: string) => {
+					try {
+						const migration = migrations.find(migration => migration.migrationContext.id === migrationId);
+						const cutoverDialogModel = new MigrationCutoverDialogModel(migration!);
+						await cutoverDialogModel.fetchStatus();
+						if (cutoverDialogModel.migrationOpStatus) {
+							await vscode.env.clipboard.writeText(JSON.stringify({
+								'async-operation-details': cutoverDialogModel.migrationOpStatus,
+								'details': cutoverDialogModel.migrationStatus
+							}, undefined, 2));
+						} else {
+							await vscode.env.clipboard.writeText(JSON.stringify(cutoverDialogModel.migrationStatus, undefined, 2));
+						}
+
+						await vscode.window.showInformationMessage(loc.DETAILS_COPIED);
+					} catch (e) {
+						console.log(e);
+					}
 				});
 
-				let migrationStatus = migration.migrationContext.properties.migrationStatus ? migration.migrationContext.properties.migrationStatus : migration.migrationContext.properties.provisioningState;
-
-				let warningCount = 0;
-
-				if (migration.asyncOperationResult?.error?.message) {
-					warningCount++;
-				}
-				if (migration.migrationContext.properties.migrationFailureError?.message) {
-					warningCount++;
-				}
-				if (migration.migrationContext.properties.migrationStatusDetails?.fileUploadBlockingErrors) {
-					warningCount += migration.migrationContext.properties.migrationStatusDetails?.fileUploadBlockingErrors.length;
-				}
-				if (migration.migrationContext.properties.migrationStatusDetails?.restoreBlockingReason) {
-					warningCount++;
-				}
-
-				migrationRow.push({
-					value: loc.STATUS_WARNING_COUNT(migrationStatus, warningCount)
+			vscode.commands.registerCommand(
+				'sqlmigration.cancel.migration',
+				async (migrationId: string) => {
+					try {
+						const migration = migrations.find(migration => migration.migrationContext.id === migrationId);
+						if (this.canCancelMigration(migration?.migrationContext.properties.migrationStatus)) {
+							vscode.window.showInformationMessage(loc.CANCEL_MIGRATION_CONFIRMATION, loc.YES, loc.NO).then(async (v) => {
+								if (v === loc.YES) {
+									const cutoverDialogModel = new MigrationCutoverDialogModel(migration!);
+									await cutoverDialogModel.fetchStatus();
+									await cutoverDialogModel.cancelMigration();
+								}
+							});
+						} else {
+							await vscode.window.showInformationMessage(loc.MIGRATION_CANNOT_CANCEL);
+						}
+					} catch (e) {
+						console.log(e);
+					}
 				});
 
-				let duration;
-				if (migration.migrationContext.properties.endedOn) {
-					duration = convertTimeDifferenceToDuration(new Date(migration.migrationContext.properties.startedOn), new Date(migration.migrationContext.properties.endedOn));
-				} else {
-					duration = convertTimeDifferenceToDuration(new Date(migration.migrationContext.properties.startedOn), new Date());
-				}
-
-				migrationRow.push({
-					value: (migration.migrationContext.properties.startedOn) ? duration : '---'
-				});
-
-				migrationRow.push({
-					value: (migration.migrationContext.properties.startedOn) ? new Date(migration.migrationContext.properties.startedOn).toLocaleString() : '---'
-				});
-				migrationRow.push({
-					value: (migration.migrationContext.properties.endedOn) ? new Date(migration.migrationContext.properties.endedOn).toLocaleString() : '---'
-				});
-
-				data.push(migrationRow);
+			const data: azdata.DeclarativeTableCellValue[][] = migrations.map((migration, index) => {
+				return [
+					{ value: this._getDatabaserHyperLink(migration) },
+					{ value: this._getMigrationStatus(migration) },
+					{ value: loc.ONLINE },
+					{ value: this._getMigrationTargetType(migration) },
+					{ value: migration.targetManagedInstance.name },
+					{ value: migration.controller.name },
+					{
+						value: this._getMigrationDuration(
+							migration.migrationContext.properties.startedOn,
+							migration.migrationContext.properties.endedOn)
+					},
+					{ value: this._getMigrationTime(migration.migrationContext.properties.startedOn) },
+					{ value: this._getMigrationTime(migration.migrationContext.properties.endedOn) },
+					{
+						value: {
+							commands: [
+								'sqlmigration.cutover',
+								'sqlmigration.view.database',
+								'sqlmigration.view.target',
+								'sqlmigration.view.service',
+								'sqlmigration.copy.migration',
+								'sqlmigration.cancel.migration',
+							],
+							context: migration.migrationContext.id
+						},
+					}
+				];
 			});
 
-			this._statusTable.dataValues = data;
+			await this._statusTable.setDataValues(data);
 		} catch (e) {
 			console.log(e);
 		}
+	}
+
+	private _getDatabaserHyperLink(migration: MigrationContext): azdata.HyperlinkComponent {
+		const databaseHyperLink = this._view.modelBuilder
+			.hyperlink()
+			.withProps({
+				label: migration.migrationContext.properties.sourceDatabaseName,
+				url: '',
+			}).component();
+
+		databaseHyperLink.onDidClick(
+			async (e) => await (new MigrationCutoverDialog(migration)).initialize());
+
+		return databaseHyperLink;
+	}
+
+	private _getMigrationTime(migrationTime: string): string {
+		return migrationTime
+			? new Date(migrationTime).toLocaleString()
+			: '---';
+	}
+
+	private _getMigrationDuration(startDate: string, endDate: string): string {
+		if (startDate) {
+			if (endDate) {
+				return convertTimeDifferenceToDuration(
+					new Date(startDate),
+					new Date(endDate));
+			} else {
+				return convertTimeDifferenceToDuration(
+					new Date(startDate),
+					new Date());
+			}
+		}
+
+		return '---';
+	}
+
+	private _getMigrationTargetType(migration: MigrationContext): string {
+		return migration.targetManagedInstance.type === 'microsoft.sql/managedinstances'
+			? loc.SQL_MANAGED_INSTANCE
+			: loc.SQL_VIRTUAL_MACHINE;
+	}
+
+	private _getMigrationStatus(migration: MigrationContext): string {
+		const properties = migration.migrationContext.properties;
+		const migrationStatus = properties.migrationStatus ?? properties.provisioningState;
+		let warningCount = 0;
+		if (migration.asyncOperationResult?.error?.message) {
+			warningCount++;
+		}
+		if (properties.migrationFailureError?.message) {
+			warningCount++;
+		}
+		if (properties.migrationStatusDetails?.fileUploadBlockingErrors) {
+			warningCount += properties.migrationStatusDetails?.fileUploadBlockingErrors.length;
+		}
+		if (properties.migrationStatusDetails?.restoreBlockingReason) {
+			warningCount++;
+		}
+
+		return loc.STATUS_WARNING_COUNT(migrationStatus, warningCount);
 	}
 
 	private async refreshTable(): Promise<void> {
 		this._refreshLoader.loading = true;
 		const currentConnection = await azdata.connection.getCurrentConnection();
 		this._model._migrations = await MigrationLocalStorage.getMigrationsBySourceConnections(currentConnection, true);
-		this.populateMigrationTable();
+		await this.populateMigrationTable();
 		this._refreshLoader.loading = false;
 	}
 
@@ -298,24 +406,8 @@ export class MigrationStatusDialog {
 					headerCssStyles: headerCssStyles
 				},
 				{
-					displayName: loc.AZURE_SQL_TARGET,
+					displayName: loc.MIGRATION_STATUS,
 					valueType: azdata.DeclarativeDataType.string,
-					width: '140px',
-					isReadOnly: true,
-					rowCssStyles: rowCssStyle,
-					headerCssStyles: headerCssStyles
-				},
-				{
-					displayName: loc.TARGET_AZURE_SQL_INSTANCE_NAME,
-					valueType: azdata.DeclarativeDataType.component,
-					width: '130px',
-					isReadOnly: true,
-					rowCssStyles: rowCssStyle,
-					headerCssStyles: headerCssStyles
-				},
-				{
-					displayName: loc.DATABASE_MIGRATION_SERVICE,
-					valueType: azdata.DeclarativeDataType.component,
 					width: '150px',
 					isReadOnly: true,
 					rowCssStyles: rowCssStyle,
@@ -330,7 +422,23 @@ export class MigrationStatusDialog {
 					headerCssStyles: headerCssStyles
 				},
 				{
-					displayName: loc.MIGRATION_STATUS,
+					displayName: loc.AZURE_SQL_TARGET,
+					valueType: azdata.DeclarativeDataType.string,
+					width: '140px',
+					isReadOnly: true,
+					rowCssStyles: rowCssStyle,
+					headerCssStyles: headerCssStyles
+				},
+				{
+					displayName: loc.TARGET_AZURE_SQL_INSTANCE_NAME,
+					valueType: azdata.DeclarativeDataType.string,
+					width: '130px',
+					isReadOnly: true,
+					rowCssStyles: rowCssStyle,
+					headerCssStyles: headerCssStyles
+				},
+				{
+					displayName: loc.DATABASE_MIGRATION_SERVICE,
 					valueType: azdata.DeclarativeDataType.string,
 					width: '150px',
 					isReadOnly: true,
@@ -360,6 +468,14 @@ export class MigrationStatusDialog {
 					isReadOnly: true,
 					rowCssStyles: rowCssStyle,
 					headerCssStyles: headerCssStyles
+				},
+				{
+					displayName: '',
+					valueType: azdata.DeclarativeDataType.menu,
+					width: '60px',
+					isReadOnly: true,
+					rowCssStyles: rowCssStyle,
+					headerCssStyles: headerCssStyles,
 				}
 			]
 		}).component();

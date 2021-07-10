@@ -369,6 +369,9 @@ export const CONFIRM_CUTOVER_CHECKBOX = localize('sql.migration.confirm.checkbox
 export function CUTOVER_IN_PROGRESS(dbName: string): string {
 	return localize('sql.migration.cutover.in.progress', "Cutover in progress for database '{0}'", dbName);
 }
+export const MIGRATION_CANNOT_CANCEL = localize('sql.migration.cannot.cancel', 'Migration is not in progress and cannot be cancelled.');
+export const MIGRATION_CANNOT_CUTOVER = localize('sql.migration.cannot.cutover', 'Migration is not in progress and cannot be cutover.');
+
 //Migration status dialog
 export const SEARCH_FOR_MIGRATIONS = localize('sql.migration.search.for.migration', "Search for migrations");
 export const ONLINE = localize('sql.migration.online', "Online");
@@ -470,6 +473,8 @@ export function WARNINGS_COUNT(totalCount: number): string {
 export const AUTHENTICATION_TYPE = localize('sql.migration.authentication.type', "Authentication Type");
 export const SQL_LOGIN = localize('sql.migration.sql.login', "SQL Login");
 export const WINDOWS_AUTHENTICATION = localize('sql.migration.windows.auth', "Windows Authentication");
+
+export const REFRESH_BUTTON_LABEL = localize('sql.migration.status.refresh.label', 'Refresh');
 
 //AutoRefresh
 export function AUTO_REFRESH_BUTTON_TEXT(interval: SupportedAutoRefreshIntervals): string {
