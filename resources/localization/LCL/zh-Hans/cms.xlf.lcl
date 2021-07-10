@@ -15,7 +15,7 @@
     <Disp Icon="Expand" Expand="true" Disp="true" LocTbl="false" />
     <Item ItemId=";Xliff Resources" ItemType="0" PsrId="308" Leaf="false">
       <Disp Icon="Str" Disp="true" LocTbl="false" />
-      <Item ItemId=";extensions/cms/out/cmsResource/cmsResourceCommands.cms.AddServerGroup" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/cms/dist/cmsResource/cmsResourceCommands.cms.AddServerGroup" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Add Server Group]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -24,7 +24,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/out/cmsResource/cmsResourceCommands.cms.Cancel" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/cms/dist/cmsResource/cmsResourceCommands.cms.Cancel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Cancel]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -33,7 +33,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/out/cmsResource/cmsResourceCommands.cms.OK" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/cms/dist/cmsResource/cmsResourceCommands.cms.OK" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[OK]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -42,7 +42,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/out/cmsResource/cmsResourceCommands.cms.ServerGroupDescription" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/cms/dist/cmsResource/cmsResourceCommands.cms.ServerGroupDescription" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Server Group Description]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -51,7 +51,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/out/cmsResource/cmsResourceCommands.cms.ServerGroupName" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/cms/dist/cmsResource/cmsResourceCommands.cms.ServerGroupName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Server Group Name]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -60,7 +60,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/out/cmsResource/cmsResourceCommands.cms.confirmDeleteGroup" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/cms/dist/cmsResource/cmsResourceCommands.cms.confirmDeleteGroup" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Are you sure you want to delete]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -69,7 +69,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/out/cmsResource/cmsResourceCommands.cms.confirmDeleteServer" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/cms/dist/cmsResource/cmsResourceCommands.cms.confirmDeleteServer" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Are you sure you want to delete]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -78,19 +78,16 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/out/cmsResource/cmsResourceCommands.cms.errors.azureNotAllowed" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/cms/dist/cmsResource/cmsResourceCommands.cms.errors.azureNotAllowed" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Azure SQL Servers cannot be used as Central Management Servers]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[无法将 Azure SQL Server 用作中央管理服务器]]></Val>
           </Tgt>
-          <Prev Cat="Text">
-            <Val><![CDATA[Azure SQL Database Servers cannot be used as Central Management Servers]]></Val>
-          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/out/cmsResource/cmsResourceCommands.cms.errors.sameCmsServerName" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/cms/dist/cmsResource/cmsResourceCommands.cms.errors.sameCmsServerName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Central Management Server Group already has a Registered Server with the name {0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -99,7 +96,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/out/cmsResource/cmsResourceCommands.cms.errors.sameServerGroupName" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/cms/dist/cmsResource/cmsResourceCommands.cms.errors.sameServerGroupName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[{0} already has a Server Group with the name {1}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -108,7 +105,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/out/cmsResource/cmsResourceCommands.cms.no" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/cms/dist/cmsResource/cmsResourceCommands.cms.no" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[No]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -117,7 +114,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/out/cmsResource/cmsResourceCommands.cms.yes" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/cms/dist/cmsResource/cmsResourceCommands.cms.yes" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Yes]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -126,7 +123,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/out/cmsResource/tree/cmsResourceEmptyTreeNode.cms.resource.tree.CmsTreeNode.addCmsServerLabel" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/cms/dist/cmsResource/tree/cmsResourceEmptyTreeNode.cms.resource.tree.CmsTreeNode.addCmsServerLabel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Add Central Management Server...]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -135,7 +132,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/out/cmsResource/tree/cmsResourceTreeNode.cms.resource.cmsResourceTreeNode.noResourcesLabel" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/cms/dist/cmsResource/tree/cmsResourceTreeNode.cms.resource.cmsResourceTreeNode.noResourcesLabel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[No resources found]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -144,7 +141,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/out/cmsResource/tree/treeProvider.cms.resource.tree.treeProvider.loadError" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/cms/dist/cmsResource/tree/treeProvider.cms.resource.tree.treeProvider.loadError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Unexpected error occurred while loading saved servers {0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -153,7 +150,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/out/cmsResource/tree/treeProvider.cms.resource.tree.treeProvider.loadingLabel" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/cms/dist/cmsResource/tree/treeProvider.cms.resource.tree.treeProvider.loadingLabel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Loading ...]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -162,7 +159,7 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/cms/out/cmsUtils.cms.errors.sameServerUnderCms" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/cms/dist/cmsUtils.cms.errors.sameServerUnderCms" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[You cannot add a shared registered server with the same name as the Configuration Server]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
