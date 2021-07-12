@@ -893,7 +893,7 @@ declare module 'azdata' {
 		* Generally, a link has no need to set the `role` of the accessibilityInformation;
 		* but it is exposed for situations that may require it.
 		*/
-		accessibilityInformation: vscode.AccessibilityInformation
+		accessibilityInformation?: vscode.AccessibilityInformation
 	}
 
 	export interface IconColumnCellValue {
