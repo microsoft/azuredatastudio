@@ -664,6 +664,7 @@ export function createXlfFilesForCoreBundle(): ThroughStream {
 					const projectResource = getResource(coreModule);
 					const resource = projectResource.name;
 					const project = projectResource.project;
+
 					const keys = json.keys[coreModule];
 					const messages = json.messages[coreModule];
 					if (keys.length !== messages.length) {
