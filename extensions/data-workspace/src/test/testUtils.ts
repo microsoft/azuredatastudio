@@ -13,9 +13,7 @@ export const testProjectType: IProjectType = {
 	description: '',
 	projectFileExtension: 'testproj',
 	icon: '',
-	displayName: 'test project',
-	targetPlatforms: ['version1', 'version2', 'version3'],
-	defaultTargetPlatform: 'version2'
+	displayName: 'test project'
 };
 
 /**

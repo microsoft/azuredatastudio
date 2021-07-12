@@ -20,7 +20,7 @@ class NewProjectDialogModel {
 	projectFileExtension: string = '';
 	name: string = '';
 	location: string = '';
-	version?: string;
+	targetPlatform?: string;
 }
 
 export class NewProjectDialog extends DialogBase {
@@ -71,7 +71,7 @@ export class NewProjectDialog extends DialogBase {
 				.withAdditionalProperties({ projectFileExtension: this.model.projectFileExtension, projectTemplateId: this.model.projectTypeId })
 				.send();
 
-			await this.workspaceService.createProject(this.model.name, vscode.Uri.file(this.model.location), this.model.projectTypeId, this.model.version);
+			await this.workspaceService.createProject(this.model.name, vscode.Uri.file(this.model.location), this.model.projectTypeId, this.model.targetPlatform);
 		}
 		catch (err) {
 
@@ -121,13 +121,13 @@ export class NewProjectDialog extends DialogBase {
 			if (selectedProject?.targetPlatforms) {
 				// update the target platforms dropdown for the selected project type
 				versionDropdown.values = selectedProject?.targetPlatforms;
-				versionDropdown.value = selectedProject?.defaultTargetPlatform;
+				versionDropdown.value = this.getDefaultTargetPlatform(selectedProject);
 
 				this.formBuilder?.addFormItem(this.versionDropdownFormComponent!);
 			} else {
 				// remove the target version dropdown if the selected project type didn't provide values for this
 				this.formBuilder?.removeFormItem(this.versionDropdownFormComponent!);
-				this.model.version = undefined;
+				this.model.targetPlatform = undefined;
 			}
 		}));
 
@@ -178,14 +178,14 @@ export class NewProjectDialog extends DialogBase {
 
 		const versionDropdown = view.modelBuilder.dropDown().withProperties<azdataType.DropDownProperties>({
 			values: allProjectTypes[0].targetPlatforms,
-			value: allProjectTypes[0].defaultTargetPlatform,
+			value: this.getDefaultTargetPlatform(allProjectTypes[0]),
 			ariaLabel: 'Target Platform',
 			required: true,
 			width: constants.DefaultInputWidth
 		}).component();
 
 		this.register(versionDropdown.onValueChanged(() => {
-			this.model.version = versionDropdown.value! as string;
+			this.model.targetPlatform = versionDropdown.value! as string;
 		}));
 
 
@@ -220,5 +220,19 @@ export class NewProjectDialog extends DialogBase {
 
 		await view.initializeModel(this.formBuilder.component());
 		this.initDialogComplete?.resolve();
+	}
+
+	/**
+	 * Gets the default target platform of the project type if there is one
+	 * @param projectType
+	 * @returns
+	 */
+	getDefaultTargetPlatform(projectType: IProjectType): string | undefined {
+		// only return the specified default target platform if it's also included in the project type's array of target platforms
+		if (projectType.defaultTargetPlatform && projectType.targetPlatforms?.includes(projectType.defaultTargetPlatform)) {
+			return projectType.defaultTargetPlatform;
+		} else {
+			return undefined;
+		}
 	}
 }
