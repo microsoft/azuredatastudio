@@ -1092,6 +1092,9 @@
           "links": [
             {
               "text": "%arc.agreement.sql.help.text.learn.more%",
+              "accessibilityInformation": {
+                "label": "%arc.agreement.sql.help.text.learn.more.ariaLabel%"
+              },
               "url": "https://go.microsoft.com/fwlink/?linkid=2141849"
             }
           ],
