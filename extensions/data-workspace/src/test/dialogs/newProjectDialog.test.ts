@@ -39,5 +39,15 @@ suite('New Project Dialog', function (): void {
 		dialog.model.name = `TestProject_${new Date().getTime()}`;
 		should.equal(await dialog.validate(), true, 'Validation should pass because name is unique and parent directory exists');
 	});
+
+	test('Should show version dropdown if there is a version', async function (): Promise<void> {
+		const workspaceServiceMock = TypeMoq.Mock.ofType<WorkspaceService>();
+		workspaceServiceMock.setup(x => x.getAllProjectTypes()).returns(() => Promise.resolve([testProjectType]));
+
+		const dialog = new NewProjectDialog(workspaceServiceMock.object);
+		await dialog.open();
+
+		should.equal(dialog.model.version, 'version2');
+	});
 });
 
