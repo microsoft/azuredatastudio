@@ -3,17 +3,17 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-declare module 'azdata-ext' {
+declare module 'az-ext' {
 	import { SemVer } from 'semver';
 
 	/**
-	 * Covers defining what the azdata extension exports to other extensions
+	 * Covers defining what the az extension exports to other extensions
 	 *
 	 * IMPORTANT: THIS IS NOT A HARD DEFINITION unlike vscode; therefore no enums or classes should be defined here
 	 * (const enums get evaluated when typescript -> javascript so those are fine)
 	 */
 	export const enum extension {
-		name = 'Microsoft.azdata'
+		name = 'Microsoft.az'
 	}
 
 	export type AdditionalEnvVars = { [key: string]: string };
@@ -257,7 +257,7 @@ declare module 'azdata-ext' {
 		}
 	}
 
-	export interface AzdataOutput<R> {
+	export interface AzOutput<R> {
 		logs: string[],
 		result: R,
 		stderr: string[],
@@ -269,23 +269,23 @@ declare module 'azdata-ext' {
 		endpoint?: string,
 		namespace?: string
 	}
-	export interface IAzdataApi {
+	export interface IAzApi {
 		arc: {
 			dc: {
-				create(namespace: string, name: string, connectivityMode: string, resourceGroup: string, location: string, subscription: string, profileName?: string, storageClass?: string, additionalEnvVars?: AdditionalEnvVars): Promise<AzdataOutput<void>>,
+				create(namespace: string, name: string, connectivityMode: string, resourceGroup: string, location: string, subscription: string, profileName?: string, storageClass?: string, additionalEnvVars?: AdditionalEnvVars): Promise<AzOutput<void>>,
 				endpoint: {
-					list(additionalEnvVars?: AdditionalEnvVars): Promise<AzdataOutput<DcEndpointListResult[]>>
+					list(additionalEnvVars?: AdditionalEnvVars): Promise<AzOutput<DcEndpointListResult[]>>
 				},
 				config: {
-					list(additionalEnvVars?: AdditionalEnvVars): Promise<AzdataOutput<DcConfigListResult[]>>,
-					show(additionalEnvVars?: AdditionalEnvVars): Promise<AzdataOutput<DcConfigShowResult>>
+					list(additionalEnvVars?: AdditionalEnvVars): Promise<AzOutput<DcConfigListResult[]>>,
+					show(additionalEnvVars?: AdditionalEnvVars): Promise<AzOutput<DcConfigShowResult>>
 				}
 			},
 			postgres: {
 				server: {
-					delete(name: string, additionalEnvVars?: AdditionalEnvVars): Promise<AzdataOutput<void>>,
-					list(additionalEnvVars?: AdditionalEnvVars): Promise<AzdataOutput<PostgresServerListResult[]>>,
-					show(name: string, additionalEnvVars?: AdditionalEnvVars): Promise<AzdataOutput<PostgresServerShowResult>>,
+					delete(name: string, additionalEnvVars?: AdditionalEnvVars): Promise<AzOutput<void>>,
+					list(additionalEnvVars?: AdditionalEnvVars): Promise<AzOutput<PostgresServerListResult[]>>,
+					show(name: string, additionalEnvVars?: AdditionalEnvVars): Promise<AzOutput<PostgresServerShowResult>>,
 					edit(
 						name: string,
 						args: {
@@ -304,14 +304,14 @@ declare module 'azdata-ext' {
 							workers?: number
 						},
 						additionalEnvVars?: AdditionalEnvVars
-					): Promise<AzdataOutput<void>>
+					): Promise<AzOutput<void>>
 				}
 			},
 			sql: {
 				mi: {
-					delete(name: string, additionalEnvVars?: AdditionalEnvVars): Promise<AzdataOutput<void>>,
-					list(additionalEnvVars?: AdditionalEnvVars): Promise<AzdataOutput<SqlMiListResult[]>>,
-					show(name: string, additionalEnvVars?: AdditionalEnvVars): Promise<AzdataOutput<SqlMiShowResult>>,
+					delete(name: string, additionalEnvVars?: AdditionalEnvVars): Promise<AzOutput<void>>,
+					list(additionalEnvVars?: AdditionalEnvVars): Promise<AzOutput<SqlMiListResult[]>>,
+					show(name: string, additionalEnvVars?: AdditionalEnvVars): Promise<AzOutput<SqlMiShowResult>>,
 					edit(
 						name: string,
 						args: {
@@ -322,21 +322,21 @@ declare module 'azdata-ext' {
 							noWait?: boolean,
 						},
 						additionalEnvVars?: AdditionalEnvVars
-					): Promise<AzdataOutput<void>>
+					): Promise<AzOutput<void>>
 				}
 			}
 		},
 		getPath(): Promise<string>,
 		/**
-		 * The semVersion corresponding to this installation of azdata. version() method should have been run
+		 * The semVersion corresponding to this installation of az. version() method should have been run
 		 * before fetching this value to ensure that correct value is returned. This is almost always correct unless
-		 * Azdata has gotten reinstalled in the background after this IAzdataApi object was constructed.
+		 * Az has gotten reinstalled in the background after this IAzApi object was constructed.
 		 */
 		getSemVersion(): Promise<SemVer>,
-		version(): Promise<AzdataOutput<string>>
+		version(): Promise<AzOutput<string>>
 	}
 
 	export interface IExtension {
-		azdata: IAzdataApi;
+		az: IAzApi;
 	}
 }

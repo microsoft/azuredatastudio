@@ -10,7 +10,7 @@ export class Log {
 	private _output: vscode.OutputChannel;
 
 	constructor() {
-		this._output = vscode.window.createOutputChannel(loc.azdata);
+		this._output = vscode.window.createOutputChannel(loc.az);
 	}
 
 	log(msg: string): void {

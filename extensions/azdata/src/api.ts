@@ -3,46 +3,37 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as azdataExt from 'azdata-ext';
-import { IAzdataTool, MIN_AZDATA_VERSION } from './azdata';
+import * as azExt from 'az-ext';
+import { IAzTool } from './azdata';
 import Logger from './common/logger';
 import { NoAzureCLIError } from './common/utils';
 import * as loc from './localizedConstants';
-import { AzdataToolService } from './services/azdataToolService';
+import { AzToolService } from './services/azToolService';
 
 /**
  * Validates that :
- *	- Azdata is installed
- *	- The Azdata version is >= the minimum required version
- *	- The Azdata CLI has been accepted
- * @param azdata The azdata tool to check
+ *	- Az is installed
+ *	- The Az CLI has been accepted
+ * @param az The az tool to check
  */
-async function validateAzdata(azdata: IAzdataTool | undefined): Promise<void> {
-	throwIfNoAzdata(azdata);
-	await throwIfRequiredVersionMissing(azdata);
+export function validateAz(az: IAzTool | undefined) {
+	throwIfNoAz(az);
 }
 
-export async function throwIfRequiredVersionMissing(azdata: IAzdataTool): Promise<void> {
-	const currentVersion = await azdata.getSemVersion();
-	if (currentVersion.compare(MIN_AZDATA_VERSION) < 0) {
-		throw new Error(loc.missingRequiredVersion(MIN_AZDATA_VERSION.raw));
-	}
-}
-
-export function throwIfNoAzdata(localAzdata: IAzdataTool | undefined): asserts localAzdata {
-	if (!localAzdata) {
+export function throwIfNoAz(localAz: IAzTool | undefined): asserts localAz {
+	if (!localAz) {
 		Logger.log(loc.noAzureCLI);
 		throw new NoAzureCLIError();
 	}
 }
 
-export function getExtensionApi(azdataToolService: AzdataToolService): azdataExt.IExtension {
+export function getExtensionApi(azToolService: AzToolService): azExt.IExtension {
 	return {
-		azdata: getAzdataApi(azdataToolService)
+		az: getAzApi(azToolService)
 	};
 }
 
-export function getAzdataApi(azdataToolService: AzdataToolService): azdataExt.IAzdataApi {
+export function getAzApi(azToolService: AzToolService): azExt.IAzApi {
 	return {
 		arc: {
 			dc: {
@@ -55,40 +46,40 @@ export function getAzdataApi(azdataToolService: AzdataToolService): azdataExt.IA
 					subscription: string,
 					profileName?: string,
 					storageClass?: string,
-					additionalEnvVars?: azdataExt.AdditionalEnvVars) => {
-					await validateAzdata(azdataToolService.localAzdata);
-					return azdataToolService.localAzdata!.arc.dc.create(namespace, name, connectivityMode, resourceGroup, location, subscription, profileName, storageClass, additionalEnvVars);
+					additionalEnvVars?: azExt.AdditionalEnvVars) => {
+					validateAz(azToolService.localAz);
+					return azToolService.localAz!.arc.dc.create(namespace, name, connectivityMode, resourceGroup, location, subscription, profileName, storageClass, additionalEnvVars);
 				},
 				endpoint: {
-					list: async (additionalEnvVars?: azdataExt.AdditionalEnvVars) => {
-						await validateAzdata(azdataToolService.localAzdata);
-						return azdataToolService.localAzdata!.arc.dc.endpoint.list(additionalEnvVars);
+					list: async (additionalEnvVars?: azExt.AdditionalEnvVars) => {
+						validateAz(azToolService.localAz);
+						return azToolService.localAz!.arc.dc.endpoint.list(additionalEnvVars);
 					}
 				},
 				config: {
-					list: async (additionalEnvVars?: azdataExt.AdditionalEnvVars) => {
-						await validateAzdata(azdataToolService.localAzdata);
-						return azdataToolService.localAzdata!.arc.dc.config.list(additionalEnvVars);
+					list: async (additionalEnvVars?: azExt.AdditionalEnvVars) => {
+						validateAz(azToolService.localAz);
+						return azToolService.localAz!.arc.dc.config.list(additionalEnvVars);
 					},
-					show: async (additionalEnvVars?: azdataExt.AdditionalEnvVars) => {
-						await validateAzdata(azdataToolService.localAzdata);
-						return azdataToolService.localAzdata!.arc.dc.config.show(additionalEnvVars);
+					show: async (additionalEnvVars?: azExt.AdditionalEnvVars) => {
+						validateAz(azToolService.localAz);
+						return azToolService.localAz!.arc.dc.config.show(additionalEnvVars);
 					}
 				}
 			},
 			postgres: {
 				server: {
-					delete: async (name: string, additionalEnvVars?: azdataExt.AdditionalEnvVars) => {
-						await validateAzdata(azdataToolService.localAzdata);
-						return azdataToolService.localAzdata!.arc.postgres.server.delete(name, additionalEnvVars);
+					delete: async (name: string, additionalEnvVars?: azExt.AdditionalEnvVars) => {
+						validateAz(azToolService.localAz);
+						return azToolService.localAz!.arc.postgres.server.delete(name, additionalEnvVars);
 					},
-					list: async (additionalEnvVars?: azdataExt.AdditionalEnvVars) => {
-						await validateAzdata(azdataToolService.localAzdata);
-						return azdataToolService.localAzdata!.arc.postgres.server.list(additionalEnvVars);
+					list: async (additionalEnvVars?: azExt.AdditionalEnvVars) => {
+						validateAz(azToolService.localAz);
+						return azToolService.localAz!.arc.postgres.server.list(additionalEnvVars);
 					},
-					show: async (name: string, additionalEnvVars?: azdataExt.AdditionalEnvVars) => {
-						await validateAzdata(azdataToolService.localAzdata);
-						return azdataToolService.localAzdata!.arc.postgres.server.show(name, additionalEnvVars);
+					show: async (name: string, additionalEnvVars?: azExt.AdditionalEnvVars) => {
+						validateAz(azToolService.localAz);
+						return azToolService.localAz!.arc.postgres.server.show(name, additionalEnvVars);
 					},
 					edit: async (
 						name: string,
@@ -107,25 +98,25 @@ export function getAzdataApi(azdataToolService: AzdataToolService): azdataExt.IA
 							workerEngineSettings?: string;
 							workers?: number;
 						},
-						additionalEnvVars?: azdataExt.AdditionalEnvVars) => {
-						await validateAzdata(azdataToolService.localAzdata);
-						return azdataToolService.localAzdata!.arc.postgres.server.edit(name, args, additionalEnvVars);
+						additionalEnvVars?: azExt.AdditionalEnvVars) => {
+						validateAz(azToolService.localAz);
+						return azToolService.localAz!.arc.postgres.server.edit(name, args, additionalEnvVars);
 					}
 				}
 			},
 			sql: {
 				mi: {
-					delete: async (name: string, additionalEnvVars?: azdataExt.AdditionalEnvVars) => {
-						await validateAzdata(azdataToolService.localAzdata);
-						return azdataToolService.localAzdata!.arc.sql.mi.delete(name, additionalEnvVars);
+					delete: async (name: string, additionalEnvVars?: azExt.AdditionalEnvVars) => {
+						validateAz(azToolService.localAz);
+						return azToolService.localAz!.arc.sql.mi.delete(name, additionalEnvVars);
 					},
-					list: async (additionalEnvVars?: azdataExt.AdditionalEnvVars) => {
-						await validateAzdata(azdataToolService.localAzdata);
-						return azdataToolService.localAzdata!.arc.sql.mi.list(additionalEnvVars);
+					list: async (additionalEnvVars?: azExt.AdditionalEnvVars) => {
+						validateAz(azToolService.localAz);
+						return azToolService.localAz!.arc.sql.mi.list(additionalEnvVars);
 					},
-					show: async (name: string, additionalEnvVars?: azdataExt.AdditionalEnvVars) => {
-						await validateAzdata(azdataToolService.localAzdata);
-						return azdataToolService.localAzdata!.arc.sql.mi.show(name, additionalEnvVars);
+					show: async (name: string, additionalEnvVars?: azExt.AdditionalEnvVars) => {
+						validateAz(azToolService.localAz);
+						return azToolService.localAz!.arc.sql.mi.show(name, additionalEnvVars);
 					},
 					edit: async (
 						name: string,
@@ -136,25 +127,25 @@ export function getAzdataApi(azdataToolService: AzdataToolService): azdataExt.IA
 							memoryRequest?: string;
 							noWait?: boolean;
 						},
-						additionalEnvVars?: azdataExt.AdditionalEnvVars
+						additionalEnvVars?: azExt.AdditionalEnvVars
 					) => {
-						await validateAzdata(azdataToolService.localAzdata);
-						return azdataToolService.localAzdata!.arc.sql.mi.edit(name, args, additionalEnvVars);
+						validateAz(azToolService.localAz);
+						return azToolService.localAz!.arc.sql.mi.edit(name, args, additionalEnvVars);
 					}
 				}
 			}
 		},
 		getPath: async () => {
-			throwIfNoAzdata(azdataToolService.localAzdata);
-			return azdataToolService.localAzdata.getPath();
+			throwIfNoAz(azToolService.localAz);
+			return azToolService.localAz.getPath();
 		},
 		getSemVersion: async () => {
-			throwIfNoAzdata(azdataToolService.localAzdata);
-			return azdataToolService.localAzdata.getSemVersion();
+			throwIfNoAz(azToolService.localAz);
+			return azToolService.localAz.getSemVersion();
 		},
 		version: async () => {
-			throwIfNoAzdata(azdataToolService.localAzdata);
-			return azdataToolService.localAzdata.version();
+			throwIfNoAz(azToolService.localAz);
+			return azToolService.localAz.version();
 		}
 	};
 }

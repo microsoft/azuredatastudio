@@ -3,26 +3,26 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as azdataExt from 'azdata-ext';
+import * as azExt from 'az-ext';
 import * as rd from 'resource-deployment';
 import * as vscode from 'vscode';
 import { getExtensionApi } from './api';
-import { findAzdata } from './azdata';
+import { findAz } from './azdata';
 import { ArcControllerConfigProfilesOptionsSource } from './providers/arcControllerConfigProfilesOptionsSource';
-import { AzdataToolService } from './services/azdataToolService';
+import { AzToolService } from './services/azToolService';
 
-export async function activate(context: vscode.ExtensionContext): Promise<azdataExt.IExtension> {
-	const azdataToolService = new AzdataToolService();
+export async function activate(context: vscode.ExtensionContext): Promise<azExt.IExtension> {
+	const azToolService = new AzToolService();
 
-	azdataToolService.localAzdata = await findAzdata();
+	azToolService.localAz = await findAz();
 
-	const azdataApi = getExtensionApi(azdataToolService);
+	const azApi = getExtensionApi(azToolService);
 
 	// register option source(s)
 	const rdApi = <rd.IExtension>vscode.extensions.getExtension(rd.extension.name)?.exports;
-	context.subscriptions.push(rdApi.registerOptionsSourceProvider(new ArcControllerConfigProfilesOptionsSource(azdataApi)));
+	context.subscriptions.push(rdApi.registerOptionsSourceProvider(new ArcControllerConfigProfilesOptionsSource(azApi)));
 
-	return azdataApi;
+	return azApi;
 }
 
 export function deactivate(): void { }

@@ -4,15 +4,15 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as rd from 'resource-deployment';
-import * as azdataExt from 'azdata-ext';
+import * as azExt from 'az-ext';
 
 /**
  * Class that provides options sources for an Arc Data Controller
  */
 export class ArcControllerConfigProfilesOptionsSource implements rd.IOptionsSourceProvider {
 	readonly id = 'arc.controller.config.profiles';
-	constructor(private _azdataExtApi: azdataExt.IExtension) { }
+	constructor(private _azExtApi: azExt.IExtension) { }
 	async getOptions(): Promise<string[]> {
-		return (await this._azdataExtApi.azdata.arc.dc.config.list()).result;
+		return (await this._azExtApi.az.arc.dc.config.list()).result;
 	}
 }

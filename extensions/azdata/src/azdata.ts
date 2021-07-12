@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as azdataExt from 'azdata-ext';
+import * as azExt from 'az-ext';
 import * as fs from 'fs';
 import * as os from 'os';
 import { SemVer } from 'semver';
@@ -11,41 +11,30 @@ import * as vscode from 'vscode';
 import { executeCommand, ExitCodeError, ProcessOutput } from './common/childProcess';
 import Logger from './common/logger';
 import { NoAzureCLIError, searchForCmd } from './common/utils';
-import { azdataConfigSection, azdataFound, debugConfigKey, latestAzArcExtensionVersion } from './constants';
+import { azConfigSection, azFound, debugConfigKey, latestAzArcExtensionVersion } from './constants';
 import * as loc from './localizedConstants';
 
 /**
- * The minimum required azdata CLI version for this extension to function properly
+ * The latest Az CLI arcdata extension version for this extension to function properly
  */
-export const MIN_AZDATA_VERSION = new SemVer('20.3.4');  // for now 0.0.1 for arcdata ext
+export const LATEST_AZ_ARC_EXTENSION_VERSION = new SemVer(latestAzArcExtensionVersion); // TODOCANYE change to 0.0.2 when release happens
 
 /**
- * The minimum required azdata CLI version for this extension to function properly TODOCANYE change
+ * Interface for an object to interact with the az tool installed on the box.
  */
-export const LATEST_AZ_ARC_EXTENSION_VERSION = new SemVer('0.0.1');  // for now 0.0.1 for arcdata ext
-
-
-export const enum AzdataDeployOption {
-	dontPrompt = 'dontPrompt',
-	prompt = 'prompt'
-}
-
-/**
- * Interface for an object to interact with the azdata tool installed on the box.
- */
-export interface IAzdataTool extends azdataExt.IAzdataApi {
+export interface IAzTool extends azExt.IAzApi {
 	/**
-	 * Executes azdata with the specified arguments (e.g. --version) and returns the result
-	 * @param args The args to pass to azdata
+	 * Executes az with the specified arguments (e.g. --version) and returns the result
+	 * @param args The args to pass to az
 	 * @param parseResult A function used to parse out the raw result into the desired shape
 	 */
-	executeCommand<R>(args: string[], additionalEnvVars?: azdataExt.AdditionalEnvVars): Promise<azdataExt.AzdataOutput<R>>
+	executeCommand<R>(args: string[], additionalEnvVars?: azExt.AdditionalEnvVars): Promise<azExt.AzOutput<R>>
 }
 
 /**
- * An object to interact with the azdata tool installed on the box.
+ * An object to interact with the az tool installed on the box.
  */
-export class AzdataTool implements azdataExt.IAzdataApi {
+export class AzTool implements azExt.IAzApi {
 
 	private _semVersion: SemVer;
 
@@ -54,16 +43,16 @@ export class AzdataTool implements azdataExt.IAzdataApi {
 	}
 
 	/**
-	 * The semVersion corresponding to this installation of azdata. version() method should have been run
+	 * The semVersion corresponding to this installation of az. version() method should have been run
 	 * before fetching this value to ensure that correct value is returned. This is almost always correct unless
-	 * Azdata has gotten reinstalled in the background after this IAzdataApi object was constructed.
+	 * Az has gotten reinstalled in the background after this IAzApi object was constructed.
 	 */
 	public async getSemVersion(): Promise<SemVer> {
 		return this._semVersion;
 	}
 
 	/**
-	 * gets the path where azdata tool is installed
+	 * gets the path where az tool is installed
 	 */
 	public async getPath(): Promise<string> {
 		return this._path;
@@ -80,7 +69,7 @@ export class AzdataTool implements azdataExt.IAzdataApi {
 				subscription: string,
 				profileName?: string,
 				storageClass?: string,
-				additionalEnvVars?: azdataExt.AdditionalEnvVars): Promise<azdataExt.AzdataOutput<void>> => {
+				additionalEnvVars?: azExt.AdditionalEnvVars): Promise<azExt.AzOutput<void>> => {
 				const args = ['arc', 'dc', 'create',
 					'--namespace', namespace,
 					'--name', name,
@@ -97,29 +86,29 @@ export class AzdataTool implements azdataExt.IAzdataApi {
 				return this.executeCommand<void>(args, additionalEnvVars);
 			},
 			endpoint: {
-				list: (additionalEnvVars?: azdataExt.AdditionalEnvVars): Promise<azdataExt.AzdataOutput<azdataExt.DcEndpointListResult[]>> => {
-					return this.executeCommand<azdataExt.DcEndpointListResult[]>(['arc', 'dc', 'endpoint', 'list'], additionalEnvVars);
+				list: (additionalEnvVars?: azExt.AdditionalEnvVars): Promise<azExt.AzOutput<azExt.DcEndpointListResult[]>> => {
+					return this.executeCommand<azExt.DcEndpointListResult[]>(['arc', 'dc', 'endpoint', 'list'], additionalEnvVars);
 				}
 			},
 			config: {
-				list: (additionalEnvVars?: azdataExt.AdditionalEnvVars): Promise<azdataExt.AzdataOutput<azdataExt.DcConfigListResult[]>> => {
-					return this.executeCommand<azdataExt.DcConfigListResult[]>(['arc', 'dc', 'config', 'list'], additionalEnvVars);
+				list: (additionalEnvVars?: azExt.AdditionalEnvVars): Promise<azExt.AzOutput<azExt.DcConfigListResult[]>> => {
+					return this.executeCommand<azExt.DcConfigListResult[]>(['arc', 'dc', 'config', 'list'], additionalEnvVars);
 				},
-				show: (additionalEnvVars?: azdataExt.AdditionalEnvVars): Promise<azdataExt.AzdataOutput<azdataExt.DcConfigShowResult>> => {
-					return this.executeCommand<azdataExt.DcConfigShowResult>(['arc', 'dc', 'config', 'show'], additionalEnvVars);
+				show: (additionalEnvVars?: azExt.AdditionalEnvVars): Promise<azExt.AzOutput<azExt.DcConfigShowResult>> => {
+					return this.executeCommand<azExt.DcConfigShowResult>(['arc', 'dc', 'config', 'show'], additionalEnvVars);
 				}
 			}
 		},
 		postgres: {
 			server: {
-				delete: (name: string, additionalEnvVars?: azdataExt.AdditionalEnvVars): Promise<azdataExt.AzdataOutput<void>> => {
+				delete: (name: string, additionalEnvVars?: azExt.AdditionalEnvVars): Promise<azExt.AzOutput<void>> => {
 					return this.executeCommand<void>(['arc', 'postgres', 'server', 'delete', '-n', name, '--force'], additionalEnvVars);
 				},
-				list: (additionalEnvVars?: azdataExt.AdditionalEnvVars): Promise<azdataExt.AzdataOutput<azdataExt.PostgresServerListResult[]>> => {
-					return this.executeCommand<azdataExt.PostgresServerListResult[]>(['arc', 'postgres', 'server', 'list'], additionalEnvVars);
+				list: (additionalEnvVars?: azExt.AdditionalEnvVars): Promise<azExt.AzOutput<azExt.PostgresServerListResult[]>> => {
+					return this.executeCommand<azExt.PostgresServerListResult[]>(['arc', 'postgres', 'server', 'list'], additionalEnvVars);
 				},
-				show: (name: string, additionalEnvVars?: azdataExt.AdditionalEnvVars): Promise<azdataExt.AzdataOutput<azdataExt.PostgresServerShowResult>> => {
-					return this.executeCommand<azdataExt.PostgresServerShowResult>(['arc', 'postgres', 'server', 'show', '-n', name], additionalEnvVars);
+				show: (name: string, additionalEnvVars?: azExt.AdditionalEnvVars): Promise<azExt.AzOutput<azExt.PostgresServerShowResult>> => {
+					return this.executeCommand<azExt.PostgresServerShowResult>(['arc', 'postgres', 'server', 'show', '-n', name], additionalEnvVars);
 				},
 				edit: (
 					name: string,
@@ -138,7 +127,7 @@ export class AzdataTool implements azdataExt.IAzdataApi {
 						workerEngineSettings?: string,
 						workers?: number
 					},
-					additionalEnvVars?: azdataExt.AdditionalEnvVars): Promise<azdataExt.AzdataOutput<void>> => {
+					additionalEnvVars?: azExt.AdditionalEnvVars): Promise<azExt.AzOutput<void>> => {
 					const argsArray = ['arc', 'postgres', 'server', 'edit', '-n', name];
 					if (args.adminPassword) { argsArray.push('--admin-password'); }
 					if (args.coresLimit) { argsArray.push('--cores-limit', args.coresLimit); }
@@ -159,14 +148,14 @@ export class AzdataTool implements azdataExt.IAzdataApi {
 		},
 		sql: {
 			mi: {
-				delete: (name: string, additionalEnvVars?: azdataExt.AdditionalEnvVars): Promise<azdataExt.AzdataOutput<void>> => {
-					return this.executeCommand<void>(['arc', 'sql', 'mi', 'delete', '-n', name], additionalEnvVars);
+				delete: (name: string, additionalEnvVars?: azExt.AdditionalEnvVars): Promise<azExt.AzOutput<void>> => {
+					return this.executeCommand<void>(['arcdata', 'sql', 'mi-arc', 'delete', '-n', name], additionalEnvVars);
 				},
-				list: (additionalEnvVars?: azdataExt.AdditionalEnvVars): Promise<azdataExt.AzdataOutput<azdataExt.SqlMiListResult[]>> => {
-					return this.executeCommand<azdataExt.SqlMiListResult[]>(['arc', 'sql', 'mi', 'list'], additionalEnvVars);
+				list: (additionalEnvVars?: azExt.AdditionalEnvVars): Promise<azExt.AzOutput<azExt.SqlMiListResult[]>> => {
+					return this.executeCommand<azExt.SqlMiListResult[]>(['arc', 'sql', 'mi', 'list'], additionalEnvVars);
 				},
-				show: (name: string, additionalEnvVars?: azdataExt.AdditionalEnvVars): Promise<azdataExt.AzdataOutput<azdataExt.SqlMiShowResult>> => {
-					return this.executeCommand<azdataExt.SqlMiShowResult>(['arc', 'sql', 'mi', 'show', '-n', name], additionalEnvVars);
+				show: (name: string, additionalEnvVars?: azExt.AdditionalEnvVars): Promise<azExt.AzOutput<azExt.SqlMiShowResult>> => {
+					return this.executeCommand<azExt.SqlMiShowResult>(['arc', 'sql', 'mi', 'show', '-n', name], additionalEnvVars);
 				},
 				edit: (
 					name: string,
@@ -177,8 +166,8 @@ export class AzdataTool implements azdataExt.IAzdataApi {
 						memoryRequest?: string,
 						noWait?: boolean,
 					},
-					additionalEnvVars?: azdataExt.AdditionalEnvVars
-				): Promise<azdataExt.AzdataOutput<void>> => {
+					additionalEnvVars?: azExt.AdditionalEnvVars
+				): Promise<azExt.AzOutput<void>> => {
 					const argsArray = ['arc', 'sql', 'mi', 'edit', '-n', name];
 					if (args.coresLimit) { argsArray.push('--cores-limit', args.coresLimit); }
 					if (args.coresRequest) { argsArray.push('--cores-request', args.coresRequest); }
@@ -192,11 +181,11 @@ export class AzdataTool implements azdataExt.IAzdataApi {
 	};
 
 	/**
-	 * Gets the output of running '--version' command on the azdata tool.
+	 * Gets the output of running '--version' command on the az tool.
 	 * It also updates the cachedVersion property based on the return value from the tool.
 	 */
-	public async version(): Promise<azdataExt.AzdataOutput<string>> {
-		const output = await executeAzdataCommand(`"${this._path}"`, ['--version']);
+	public async version(): Promise<azExt.AzOutput<string>> {
+		const output = await executeAzCommand(`"${this._path}"`, ['--version']);
 		this._semVersion = new SemVer(parseVersion(output.stdout));
 		return {
 			logs: [],
@@ -207,14 +196,14 @@ export class AzdataTool implements azdataExt.IAzdataApi {
 	}
 
 	/**
-	 * Executes the specified azdata command.
-	 * @param args The args to pass to azdata
+	 * Executes the specified az command.
+	 * @param args The args to pass to az
 	 * @param additionalEnvVars Additional environment variables to set for this execution
 	 */
-	public async executeCommand<R>(args: string[], additionalEnvVars?: azdataExt.AdditionalEnvVars): Promise<azdataExt.AzdataOutput<R>> {
+	public async executeCommand<R>(args: string[], additionalEnvVars?: azExt.AdditionalEnvVars): Promise<azExt.AzOutput<R>> {
 		try {
 			// JSON OUTPUT
-			const output = JSON.parse((await executeAzdataCommand(`"${this._path}"`, args.concat(['--output', 'json']), additionalEnvVars)).stdout);
+			const output = JSON.parse((await executeAzCommand(`"${this._path}"`, args.concat(['--output', 'json']), additionalEnvVars)).stdout);
 			return {
 				logs: <string[]>output.log,
 				stdout: <string[]>output.stdout,
@@ -224,20 +213,20 @@ export class AzdataTool implements azdataExt.IAzdataApi {
 		} catch (err) {
 			if (err instanceof ExitCodeError) {
 				try {
-					// For azdata internal errors the output is JSON and so we need to do some extra parsing here
+					// For az internal errors the output is JSON and so we need to do some extra parsing here
 					// to get the correct stderr out. The actual value we get is something like
 					// ERROR: { stderr: '...' }
 					// so we also need to trim off the start that isn't a valid JSON blob
 					err.stderr = JSON.parse(err.stderr.substring(err.stderr.indexOf('{'), err.stderr.indexOf('}') + 1)).stderr;
 				} catch {
 					// it means this was probably some other generic error (such as command not being found)
-					// check if azdata still exists if it does then rethrow the original error if not then emit a new specific error.
+					// check if az still exists if it does then rethrow the original error if not then emit a new specific error.
 					try {
 						await fs.promises.access(this._path);
 						//this.path exists
 					} catch (e) {
 						// this.path does not exist
-						await vscode.commands.executeCommand('setContext', azdataFound, false);
+						await vscode.commands.executeCommand('setContext', azFound, false);
 						throw new NoAzureCLIError();
 					}
 					throw err; // rethrow the original error
@@ -249,64 +238,57 @@ export class AzdataTool implements azdataExt.IAzdataApi {
 	}
 }
 
-export type AzdataDarwinPackageVersionInfo = {
-	versions: {
-		stable: string,
-		devel: string,
-		head: string,
-		bottle: boolean
-	}
-};
-
 /**
- * Finds the existing installation of azdata, or throws an error if it couldn't find it
+ * Finds the existing installation of az, or throws an error if it couldn't find it
  * or encountered an unexpected error.
- * The promise is rejected when Azdata is not found.
+ * The promise is rejected when Az is not found.
  */
-export async function findAzdata(): Promise<IAzdataTool> {
-	Logger.log(loc.searchingForAzdata);
+export async function findAz(): Promise<IAzTool> {
+	Logger.log(loc.searchingForAz);
 	try {
-		const azdata = await findSpecificAzdata();
-		Logger.log(loc.foundExistingAzdata(await azdata.getPath(), (await azdata.getSemVersion()).raw));
-		return azdata;
+		const az = await findSpecificAz();
+		Logger.log(loc.foundExistingAz(await az.getPath(), (await az.getSemVersion()).raw));
+		return az;
 	} catch (err) {
 		Logger.log(loc.noAzureCLI);
-		// Logger.log(loc.couldNotFindAzdata(err));
+		// Logger.log(loc.couldNotFindAz(err));
 		throw err;
 	}
 }
 
 /**
- * Parses out the azdata version from the raw azdata version output
- * @param raw The raw version output from azdata --version
+ * Parses out the Azure CLI version from the raw az version output
+ * @param raw The raw version output from az --version
  */
 function parseVersion(raw: string): string {
 	// Currently the version is a multi-line string that contains other version information such
-	// as the Python installation, with the first line being the version of azdata itself.
-	const lines = raw.split(os.EOL);
-	return lines[0].trim();
+	// as the Python installation, with the first line holding the version of az itself.
+	const start = raw.search('azure-cli');
+	const end = raw.search('core');
+	raw = raw.slice(start, end).replace('azure-cli', '');
+	return raw.trim();
 }
 
 /**
- * Parses out the arcdata extension version from the raw azdata version output
- * @param raw The raw version output from azdata --version
+ * Parses out the arcdata extension version from the raw az version output
+ * @param raw The raw version output from az --version
  */
 function parseArcExtensionVersion(raw: string): string {
 	// Currently the version is a multi-line string that contains other version information such
 	// as the Python installation and any extensions.
 	const start = raw.search('arcdata');
-	const end = raw.search('Python location');
-	if (start === -1 || end === -1) {
+	if (start === -1) {
 		vscode.window.showErrorMessage(loc.arcdataExtensionNotInstalled);
 	} else {
-		raw = raw.slice(start, end).replace('arcdata', '').replace(' ', '');
+		raw = raw.slice(start + 7);
+		raw = raw.split(os.EOL)[0].trim();
 	}
 	return raw.trim();
 }
 
-async function executeAzdataCommand(command: string, args: string[], additionalEnvVars: azdataExt.AdditionalEnvVars = {}): Promise<ProcessOutput> {
+async function executeAzCommand(command: string, args: string[], additionalEnvVars: azExt.AdditionalEnvVars = {}): Promise<ProcessOutput> {
 	additionalEnvVars = Object.assign(additionalEnvVars, { 'ACCEPT_EULA': 'yes' });
-	const debug = vscode.workspace.getConfiguration(azdataConfigSection).get(debugConfigKey);
+	const debug = vscode.workspace.getConfiguration(azConfigSection).get(debugConfigKey);
 	if (debug) {
 		args.push('--debug');
 	}
@@ -315,29 +297,17 @@ async function executeAzdataCommand(command: string, args: string[], additionalE
 
 /**
  */
-async function findSpecificAzdata(): Promise<IAzdataTool> {
+async function findSpecificAz(): Promise<IAzTool> {
 	const path = await ((process.platform === 'win32') ? searchForCmd('az.cmd') : searchForCmd('az'));
-	const versionOutput = await executeAzdataCommand(`"${path}"`, ['--version']);
+	const versionOutput = await executeAzCommand(`"${path}"`, ['--version']);
 	const version = parseArcExtensionVersion(versionOutput.stdout);
-	if (version !== latestAzArcExtensionVersion) {
+	const semVersion = new SemVer(version);
+	if (LATEST_AZ_ARC_EXTENSION_VERSION.compare(semVersion) === 1) {
+		// If there is a greater version of az arc extension available, prompt to update
 		vscode.window.showErrorMessage(loc.requiredArcDataVersionNotAvailable(latestAzArcExtensionVersion, version));
+	} else if (LATEST_AZ_ARC_EXTENSION_VERSION.compare(semVersion) === -1) {
+		// Current version should not be greater than latest version
+		vscode.window.showErrorMessage(loc.unsupportedArcDataVersion(latestAzArcExtensionVersion, version));
 	}
-	return new AzdataTool(path, version);
+	return new AzTool(path, version);
 }
-
-
-/**
- * Gets the latest azdata version for linux clients
- * This method requires sudo permission so not suitable to be run during startup.
- */
-// async function discoverLatestStableAzdataVersionLinux(): Promise<SemVer> {
-// 	// Update repository information and install azdata
-// 	await executeSudoCommand('apt-get update');
-// 	const output = (await executeCommand('apt', ['list', 'azdata-cli', '--upgradeable'])).stdout;
-// 	// the packageName (with version) string is the second space delimited token on the 2nd line
-// 	const packageName = output.split('\n')[1].split(' ')[1];
-// 	// the version string is the first part of the package sting before '~'
-// 	const version = packageName.split('~')[0];
-// 	Logger.log(loc.latestAzdataVersionAvailable(version));
-// 	return new SemVer(version);
-// }

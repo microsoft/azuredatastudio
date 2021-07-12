@@ -3,17 +3,17 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as azdataExt from 'azdata-ext';
+import * as azExt from 'az-ext';
 import * as which from 'which';
 import * as loc from '../localizedConstants';
 
-export class NoAzureCLIError extends Error implements azdataExt.ErrorWithLink {
+export class NoAzureCLIError extends Error implements azExt.ErrorWithLink {
 	constructor() {
 		super(loc.noAzureCLI);
 	}
 
 	public get messageWithLink(): string {
-		return loc.noAzdataWithLink;
+		return loc.noAzureCLI;
 	}
 }
 /**

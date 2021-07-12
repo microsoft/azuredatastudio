@@ -249,7 +249,7 @@ const externalExtensions = [
 	'agent',
 	'arc',
 	'asde-deployment',
-	'azdata',
+	'az',
 	'azurehybridtoolkit',
 	'cms',
 	'dacpac',
