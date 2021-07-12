@@ -7,7 +7,7 @@ import { localize } from 'vs/nls';
 import { GettingStartedInputSerializer, GettingStartedPage, inGettingStartedContext } from 'vs/workbench/contrib/welcome/gettingStarted/browser/gettingStarted';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { EditorExtensions, IEditorInputFactoryRegistry } from 'vs/workbench/common/editor';
-import { MenuId, registerAction2, Action2 } from 'vs/platform/actions/common/actions';
+import { registerAction2, Action2 } from 'vs/platform/actions/common/actions';
 import { IInstantiationService, ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
 import { ContextKeyEqualsExpr } from 'vs/platform/contextkey/common/contextkey';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
@@ -25,26 +25,6 @@ import product from 'vs/platform/product/common/product';
 
 
 export * as icons from 'vs/workbench/contrib/welcome/gettingStarted/browser/gettingStartedIcons';
-
-registerAction2(class extends Action2 {
-	constructor() {
-		super({
-			id: 'workbench.action.showGettingStarted',
-			title: localize('Getting Started', "Getting Started"),
-			category: localize('help', "Help"),
-			f1: true,
-			menu: {
-				id: MenuId.MenubarHelpMenu,
-				group: '1_welcome',
-				order: 2,
-			}
-		});
-	}
-
-	public run(accessor: ServicesAccessor) {
-		accessor.get(IEditorService).openEditor(new GettingStartedInput({}), {});
-	}
-});
 
 Registry.as<IEditorInputFactoryRegistry>(EditorExtensions.EditorInputFactories).registerEditorInputSerializer(GettingStartedInput.ID, GettingStartedInputSerializer);
 Registry.as<IEditorRegistry>(EditorExtensions.Editors).registerEditor(
