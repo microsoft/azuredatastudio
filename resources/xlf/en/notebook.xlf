@@ -43,6 +43,9 @@
     <trans-unit id="notebook.pinnedNotebooks.description">
       <source xml:lang="en">Notebooks that are pinned by the user for the current workspace</source>
     </trans-unit>
+    <trans-unit id="notebook.allowRoot.description">
+      <source xml:lang="en">Allow Jupyter server to run as root user</source>
+    </trans-unit>
     <trans-unit id="notebook.command.new">
       <source xml:lang="en">New Notebook</source>
     </trans-unit>
