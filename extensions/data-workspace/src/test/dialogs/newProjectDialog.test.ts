@@ -41,7 +41,7 @@ suite('New Project Dialog', function (): void {
 		should.equal(await dialog.validate(), true, 'Validation should pass because name is unique and parent directory exists');
 	});
 
-	test('Should select correct target platform if provided type', async function (): Promise<void> {
+	test('Should select correct target platform if provided default', async function (): Promise<void> {
 		const projectTypeWithTargetPlatforms: IProjectType = {
 			id: 'tp2',
 			description: '',
@@ -61,7 +61,7 @@ suite('New Project Dialog', function (): void {
 
 	});
 
-	test('Should handle invalid default Target Platform', async function (): Promise<void> {
+	test('Should handle invalid default target platform', async function (): Promise<void> {
 		const projectTypeWithTargetPlatforms: IProjectType = {
 			id: 'tp2',
 			description: '',
