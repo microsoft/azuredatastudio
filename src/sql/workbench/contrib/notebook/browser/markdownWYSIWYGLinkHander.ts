@@ -6,18 +6,20 @@ export class MarkdownWYSIWYGLinkHandler {
 	private _isFile: boolean | undefined;
 	private _isAbsolutePath: boolean | undefined;
 	private _notebookDirectory: string;
-	private _href: URI | undefined;
+	private _notebookLink: URI | undefined;
+	private _href: string | undefined;
 
 	constructor(private _notebookURI: URI, private _pathOrElement: string | HTMLAnchorElement) {
 		if (typeof this._pathOrElement === 'string') {
-			this._href = URI.parse(this._pathOrElement);
-			this._isFile = this._href.scheme === 'file';
+			this._notebookLink = URI.parse(this._pathOrElement);
+			this._isFile = this._notebookLink.scheme === 'file';
 			this._isAbsolutePath = path.isAbsolute(this._pathOrElement);
 			this._isAnchorLink = this._pathOrElement.includes('#') && this._isFile;
 		} else {
-			this._href = this._pathOrElement.attributes['href']?.nodeValue ? URI.parse(this._pathOrElement.attributes['href']?.nodeValue) : undefined;
+			this._notebookLink = this._pathOrElement.attributes['href']?.nodeValue ? URI.parse(this._pathOrElement.attributes['href']?.nodeValue) : undefined;
+			this._href = this._pathOrElement.attributes['href']?.nodeValue;
 			this._isFile = this._pathOrElement.protocol === 'file:';
-			this._isAnchorLink = this._href?.fragment ? true : false;
+			this._isAnchorLink = this._notebookLink?.fragment ? true : false;
 			this._isAbsolutePath = this._pathOrElement.attributes['is-absolute']?.nodeValue === 'true' ? true : false;
 		}
 		this._notebookDirectory = this._notebookURI ? path.dirname(this._notebookURI.fsPath) : '';
@@ -34,24 +36,21 @@ export class MarkdownWYSIWYGLinkHandler {
 				return this._pathOrElement;
 			}
 			case 'object': {
-				if (this._href) {
-					if (this._isFile) {
-						if (!this._isAbsolutePath) {
-							let absoluteURI: URI;
-							if (this._isAnchorLink) {
-								absoluteURI = this.getUriAnchorLink(this._pathOrElement, this._notebookURI);
-							} else {
-								absoluteURI = this._href;
-							}
-							if (this._href.fsPath !== path.posix.sep) {
-								return findPathRelativeToContent(this._notebookDirectory, absoluteURI);
-							}
-							return absoluteURI.fragment;
+				if (this._notebookLink && this._isFile) {
+					if (!this._isAbsolutePath) {
+						let absoluteURI: URI;
+						if (this._isAnchorLink) {
+							absoluteURI = this.getUriAnchorLink(this._pathOrElement, this._notebookURI);
+						} else {
+							absoluteURI = this._notebookLink;
 						}
+						if (this._notebookLink.fsPath !== path.posix.sep) {
+							return findPathRelativeToContent(this._notebookDirectory, absoluteURI);
+						}
+						return absoluteURI.fragment;
 					}
-					return this._href.fsPath;
 				}
-				return '';
+				return this._href || '';
 			}
 		}
 	}

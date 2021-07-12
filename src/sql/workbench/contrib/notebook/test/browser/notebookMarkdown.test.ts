@@ -49,16 +49,16 @@ suite('NotebookMarkdownRenderer', () => {
 
 	test('link from local file path', () => {
 		let result: HTMLElement = notebookMarkdownRenderer.renderMarkdown({ value: `[Link to File Path](someFileurl)`, isTrusted: true });
-		assert.strictEqual(result.innerHTML, `<p><a href="someFileurl" data-href="someFileurl" title="someFileurl">Link to File Path</a></p>`);
+		assert.strictEqual(result.innerHTML, `<p><a href="someFileurl" data-href="someFileurl" title="someFileurl" is-absolute="false">Link to File Path</a></p>`);
 	});
 
 	test('link from relative file path', () => {
 		notebookMarkdownRenderer.setNotebookURI(URI.parse('maddy/temp/file1.txt'));
 		let result: HTMLElement = notebookMarkdownRenderer.renderMarkdown({ value: `[Link to relative path](../test/.build/someimageurl)`, isTrusted: true });
 		if (process.platform === 'win32') {
-			assert.strictEqual(result.innerHTML, `<p><a href="\\maddy\\test\\.build\\someimageurl" data-href="\\maddy\\test\\.build\\someimageurl" title="\\maddy\\test\\.build\\someimageurl">Link to relative path</a></p>`);
+			assert.strictEqual(result.innerHTML, `<p><a href="\\maddy\\test\\.build\\someimageurl" data-href="\\maddy\\test\\.build\\someimageurl" title="\\maddy\\test\\.build\\someimageurl" is-absolute="false">Link to relative path</a></p>`);
 		} else {
-			assert.strictEqual(result.innerHTML, `<p><a href="/maddy/test/.build/someimageurl" data-href="/maddy/test/.build/someimageurl" title="/maddy/test/.build/someimageurl">Link to relative path</a></p>`);
+			assert.strictEqual(result.innerHTML, `<p><a href="/maddy/test/.build/someimageurl" data-href="/maddy/test/.build/someimageurl" title="/maddy/test/.build/someimageurl" is-absolute="false">Link to relative path</a></p>`);
 		}
 	});
 
