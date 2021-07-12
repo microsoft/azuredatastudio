@@ -41,16 +41,14 @@ export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvide
 			description: constants.emptyProjectTypeDescription,
 			icon: IconPathHelper.colorfulSqlProject,
 			targetPlatforms: this.targetPlatforms,
-			defaultTargetPlatform: sqldbproj.SqlTargetPlatform.sqlServer2019
+			defaultTargetPlatform: constants.defaultTargetPlatform
 		},
 		{
 			id: constants.edgeSqlDatabaseProjectTypeId,
 			projectFileExtension: constants.sqlprojExtension.replace(/\./g, ''),
 			displayName: constants.edgeProjectTypeDisplayName,
 			description: constants.edgeProjectTypeDescription,
-			icon: IconPathHelper.sqlEdgeProject,
-			// targetPlatforms: [sqldbproj.SqlTargetPlatform.sqlServer2019],
-			// defaultTargetPlatform: sqldbproj.SqlTargetPlatform.sqlServer2019
+			icon: IconPathHelper.sqlEdgeProject
 		}];
 	}
 

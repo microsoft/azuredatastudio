@@ -133,12 +133,11 @@ export class ProjectsController {
 			.send();
 
 		if (creationParams.projectGuid && !UUID.isUUID(creationParams.projectGuid)) {
-			throw new Error(`Specified GUID is invalid: '${creationParams.projectGuid}'`);
+			throw new Error(constants.invalidGuid(creationParams.projectGuid));
 		}
 
-		// check for invalid project target platform
 		if (creationParams.targetPlatform && !constants.targetPlatformToVersion.get(creationParams.targetPlatform)) {
-			throw new Error(`Invalid target platform: ${creationParams.targetPlatform}`);
+			throw new Error(constants.invalidTargetPlatform(creationParams.targetPlatform, Array.from(constants.targetPlatformToVersion.keys())));
 		}
 
 		const macroDict: Record<string, string> = {
