@@ -527,12 +527,8 @@ function createXlfFilesForCoreBundle() {
             if (file.isBuffer()) {
                 const xlfs = Object.create(null);
                 const json = JSON.parse(file.contents.toString('utf8'));
-                // {{SQL CARBON EDIT}} - Must sort the keys for easier translation, (Map class used here is custom, cannot sort keys directly).
-                let sortedKeys = [];
-                for (let moduleString in json.keys) {
-                    sortedKeys.push(moduleString);
-                }
-                sortedKeys.sort();
+                // {{SQL CARBON EDIT}} - Must sort the keys for easier translation.
+                let sortedKeys = Object.keys(json.keys).sort();
                 for (let i = 0; i < sortedKeys.length; i++) {
                     let coreModule = sortedKeys[i];
                     // {{SQL CARBON EDIT}} - End
