@@ -34,6 +34,7 @@ import { CreateProjectFromDatabaseDialog } from '../dialogs/createProjectFromDat
 import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
 import { IconPathHelper } from '../common/iconHelper';
 import { DashboardData, PublishData, Status } from '../models/dashboardData/dashboardData';
+import { SqlTargetPlatform } from 'sqldbproj';
 import { launchPublishDatabaseQuickpick } from '../dialogs/publishDatabaseQuickpick';
 
 const maxTableLength = 10;
@@ -137,7 +138,8 @@ export class ProjectsController {
 
 		const macroDict: Record<string, string> = {
 			'PROJECT_NAME': creationParams.newProjName,
-			'PROJECT_GUID': creationParams.projectGuid ?? UUID.generateUuid().toUpperCase()
+			'PROJECT_GUID': creationParams.projectGuid ?? UUID.generateUuid().toUpperCase(),
+			'PROJECT_DSP': creationParams.targetPlatform ? constants.targetPlatformToVersion.get(creationParams.targetPlatform)! : constants.defaultDSP
 		};
 
 		let newProjFileContents = templates.macroExpansion(templates.newSqlProjectTemplate, macroDict);
@@ -990,4 +992,5 @@ export interface NewProjectParams {
 	folderUri: vscode.Uri;
 	projectTypeId: string;
 	projectGuid?: string;
+	targetPlatform?: SqlTargetPlatform;
 }
