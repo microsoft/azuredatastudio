@@ -458,6 +458,9 @@
     <trans-unit id="arc.agreement.sql.help.text.learn.more">
       <source xml:lang="en">Learn more</source>
     </trans-unit>
+    <trans-unit id="arc.agreement.sql.help.text.learn.more.ariaLabel">
+      <source xml:lang="en">Learn more about Azure Arc enabled Managed Instance</source>
+    </trans-unit>
   </body></file>
   <file original="extensions/arc/dist/localizedConstants" source-language="en" datatype="plaintext"><body>
     <trans-unit id="arc.arcDeploymentDeprecation">

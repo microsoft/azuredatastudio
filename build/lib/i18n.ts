@@ -652,11 +652,18 @@ export function createXlfFilesForCoreBundle(): ThroughStream {
 			if (file.isBuffer()) {
 				const xlfs: Map<XLF> = Object.create(null);
 				const json: BundledFormat = JSON.parse((file.contents as Buffer).toString('utf8'));
-				for (let coreModule in json.keys) {
+				// {{SQL CARBON EDIT}} - Must sort the keys for easier translation, (Map class used here is custom, cannot sort keys directly).
+				let sortedKeys = [];
+				for(let moduleString in json.keys){
+					sortedKeys.push(moduleString);
+				}
+				sortedKeys.sort();
+				for (let i = 0; i < sortedKeys.length; i++) {
+					let coreModule = sortedKeys[i];
+					// {{SQL CARBON EDIT}} - End
 					const projectResource = getResource(coreModule);
 					const resource = projectResource.name;
 					const project = projectResource.project;
-
 					const keys = json.keys[coreModule];
 					const messages = json.messages[coreModule];
 					if (keys.length !== messages.length) {
