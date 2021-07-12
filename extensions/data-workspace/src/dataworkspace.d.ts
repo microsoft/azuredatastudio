@@ -80,11 +80,6 @@ declare module 'dataworkspace' {
 		 * Gets the project image to be used as background in dashboard container
 		 */
 		 readonly image?: azdata.ThemedIconPath;
-
-		 /**
-		  * Gets the target platforms to show in the dropdown
-		  */
-		 readonly targetPlatforms?: string[];
 	}
 
 	/**

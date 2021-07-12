@@ -26,7 +26,7 @@ class NewProjectDialogModel {
 export class NewProjectDialog extends DialogBase {
 	public model: NewProjectDialogModel = new NewProjectDialogModel();
 	public formBuilder: azdataType.FormBuilder | undefined;
-	public versionDropdownFormComponent: azdataType.FormComponent | undefined;
+	public targetPlatformDropdownFormComponent: azdataType.FormComponent | undefined;
 
 	constructor(private workspaceService: IWorkspaceService) {
 		super(constants.NewProjectDialogTitle, 'NewProject', constants.CreateButtonText);
@@ -120,13 +120,13 @@ export class NewProjectDialog extends DialogBase {
 
 			if (selectedProject?.targetPlatforms) {
 				// update the target platforms dropdown for the selected project type
-				versionDropdown.values = selectedProject?.targetPlatforms;
-				versionDropdown.value = this.getDefaultTargetPlatform(selectedProject);
+				targetPlatformDropdown.values = selectedProject?.targetPlatforms;
+				targetPlatformDropdown.value = this.getDefaultTargetPlatform(selectedProject);
 
-				this.formBuilder?.addFormItem(this.versionDropdownFormComponent!);
+				this.formBuilder?.addFormItem(this.targetPlatformDropdownFormComponent!);
 			} else {
 				// remove the target version dropdown if the selected project type didn't provide values for this
-				this.formBuilder?.removeFormItem(this.versionDropdownFormComponent!);
+				this.formBuilder?.removeFormItem(this.targetPlatformDropdownFormComponent!);
 				this.model.targetPlatform = undefined;
 			}
 		}));
@@ -176,23 +176,23 @@ export class NewProjectDialog extends DialogBase {
 			this.model.location = selectedFolder;
 		}));
 
-		const versionDropdown = view.modelBuilder.dropDown().withProperties<azdataType.DropDownProperties>({
+		const targetPlatformDropdown = view.modelBuilder.dropDown().withProperties<azdataType.DropDownProperties>({
 			values: allProjectTypes[0].targetPlatforms,
 			value: this.getDefaultTargetPlatform(allProjectTypes[0]),
-			ariaLabel: 'Target Platform',
+			ariaLabel: constants.TargetPlatform,
 			required: true,
 			width: constants.DefaultInputWidth
 		}).component();
 
-		this.register(versionDropdown.onValueChanged(() => {
-			this.model.targetPlatform = versionDropdown.value! as string;
+		this.register(targetPlatformDropdown.onValueChanged(() => {
+			this.model.targetPlatform = targetPlatformDropdown.value! as string;
 		}));
 
 
-		this.versionDropdownFormComponent = {
-			title: 'Target Platform',
+		this.targetPlatformDropdownFormComponent = {
+			title: constants.TargetPlatform,
 			required: true,
-			component: versionDropdown
+			component: targetPlatformDropdown
 		};
 
 		this.formBuilder = view.modelBuilder.formContainer().withFormItems([
@@ -215,7 +215,7 @@ export class NewProjectDialog extends DialogBase {
 
 		// add version dropdown if the first project type has one
 		if (allProjectTypes[0].targetPlatforms) {
-			this.formBuilder.addFormItem(this.versionDropdownFormComponent);
+			this.formBuilder.addFormItem(this.targetPlatformDropdownFormComponent);
 		}
 
 		await view.initializeModel(this.formBuilder.component());

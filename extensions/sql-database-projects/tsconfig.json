@@ -10,6 +10,5 @@
 	},
 	"exclude": [
 		"node_modules"
-	],
-	"preserveConstEnums": true
+	]
 }

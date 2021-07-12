@@ -40,7 +40,7 @@ export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvide
 			displayName: constants.emptyProjectTypeDisplayName,
 			description: constants.emptyProjectTypeDescription,
 			icon: IconPathHelper.colorfulSqlProject,
-			targetPlatforms: this.targetPlatforms,
+			targetPlatforms: Array.from(constants.targetPlatformToVersion.keys()),
 			defaultTargetPlatform: constants.defaultTargetPlatform
 		},
 		{
@@ -146,9 +146,5 @@ export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvide
 
 	get image(): ThemedIconPath {
 		return IconPathHelper.dashboardSqlProj;
-	}
-
-	get targetPlatforms(): string[] {
-		return Array.from(constants.targetPlatformToVersion.keys());
 	}
 }
