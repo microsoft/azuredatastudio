@@ -4255,10 +4255,6 @@
 									"value": "*"
 								},
 								{
-									"key": "Microsoft.AzDataEngine",
-									"value": "*"
-								},
-								{
 									"key": "Microsoft.VisualStudio.Services.Links.Source",
 									"value": "https://github.com/Microsoft/azuredatastudio"
 								},
