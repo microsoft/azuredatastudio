@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as DOM from 'vs/base/browser/dom';
+import { localize } from 'vs/nls';
 import { EditorOptions, IEditorOpenContext } from 'vs/workbench/common/editor';
 import { EditorPane } from 'vs/workbench/browser/parts/editor/editorPane';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
@@ -16,6 +17,7 @@ import { QueryPlanView } from 'sql/workbench/contrib/queryPlan/browser/queryPlan
 export class QueryPlanEditor extends EditorPane {
 
 	public static ID: string = 'workbench.editor.queryplan';
+	public static LABEL: string = localize('queryPlanEditor', "Query Plan Editor");
 
 	private view = this._register(new QueryPlanView());
 
