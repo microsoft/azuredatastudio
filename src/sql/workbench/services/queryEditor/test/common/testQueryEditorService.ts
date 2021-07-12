@@ -19,7 +19,7 @@ export class TestQueryEditorService implements IQueryEditorService {
 		@IEditorService private readonly editorService: IEditorService) {
 	}
 
-	newSqlEditor(options?: INewSqlEditorOptions): Promise<IConnectableInput> {
+	newSqlEditor(options?: INewSqlEditorOptions): Promise<UntitledQueryEditorInput> {
 		const base = this.editorService.createEditorInput({ forceUntitled: true }) as UntitledTextEditorInput;
 		return Promise.resolve(this.instantiationService.createInstance(UntitledQueryEditorInput, '', base, new QueryResultsInput(base.resource.toString(true))));
 	}

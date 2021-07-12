@@ -24,6 +24,7 @@ import { getCurrentGlobalConnection } from 'sql/workbench/browser/taskUtilities'
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
+
 const defaults: INewSqlEditorOptions = {
 	open: true
 };
@@ -50,7 +51,7 @@ export class QueryEditorService implements IQueryEditorService {
 	/**
 	 * Creates new untitled document for SQL/Kusto query and opens in new editor tab
 	 */
-	public async newSqlEditor(options: INewSqlEditorOptions = {}, connectionProviderName?: string): Promise<IConnectableInput> {
+	public async newSqlEditor(options: INewSqlEditorOptions = {}, connectionProviderName?: string): Promise<UntitledQueryEditorInput> {
 		options = mixin(options, defaults, false);
 		// Create file path and file URI
 		let docUri: URI = options.resource ?? URI.from({ scheme: Schemas.untitled, path: await this.createUntitledSqlFilePath(connectionProviderName) });

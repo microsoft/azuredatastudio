@@ -32,7 +32,7 @@ import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { Promises, RunOnceWorker } from 'vs/base/common/async';
 import { EventType as TouchEventType, GestureEvent } from 'vs/base/browser/touch';
 import { TitleControl } from 'vs/workbench/browser/parts/editor/titleControl';
-import { IEditorGroupsAccessor, IEditorGroupView, getActiveTextEditorOptions, EditorServiceImpl, IEditorGroupTitleHeight } from 'vs/workbench/browser/parts/editor/editor';
+import { IEditorGroupsAccessor, IEditorGroupView, getActiveTextEditorOptions, IEditorGroupTitleHeight } from 'vs/workbench/browser/parts/editor/editor'; // {{SQL CARBON EDIT}} Remove unused
 import { ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { ActionRunner, IAction, Action } from 'vs/base/common/actions';
@@ -42,7 +42,7 @@ import { IMenuService, MenuId, IMenu } from 'vs/platform/actions/common/actions'
 import { StandardMouseEvent } from 'vs/base/browser/mouseEvent';
 import { createAndFillInContextMenuActions } from 'vs/platform/actions/browser/menuEntryActionViewItem';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
-import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
+// import { IEditorService } from 'vs/workbench/services/editor/common/editorService'; {{SQL CARBON EDIT}} Remove unused
 import { hash } from 'vs/base/common/hash';
 import { guessMimeTypes } from 'vs/base/common/mime';
 import { extname, isEqual } from 'vs/base/common/resources';
@@ -55,6 +55,7 @@ import { IFilesConfigurationService, AutoSaveMode } from 'vs/workbench/services/
 import { withNullAsUndefined } from 'vs/base/common/types';
 import { URI } from 'vs/base/common/uri';
 import { IUriIdentityService } from 'vs/workbench/services/uriIdentity/common/uriIdentity';
+import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService'; // {{SQL CARBON EDIT}}
 
 export class EditorGroupView extends Themable implements IEditorGroupView {
 
@@ -145,7 +146,7 @@ export class EditorGroupView extends Themable implements IEditorGroupView {
 		@IContextMenuService private readonly contextMenuService: IContextMenuService,
 		@IFileDialogService private readonly fileDialogService: IFileDialogService,
 		@ILogService private readonly logService: ILogService,
-		@IEditorService private readonly editorService: EditorServiceImpl,
+		@IQueryEditorService private readonly queryEditorService: IQueryEditorService, // {{SQL CARBON EDIT}} Use our own service
 		@IFilesConfigurationService private readonly filesConfigurationService: IFilesConfigurationService,
 		@IUriIdentityService private readonly uriIdentityService: IUriIdentityService
 	) {
@@ -287,18 +288,12 @@ export class EditorGroupView extends Themable implements IEditorGroupView {
 	private registerContainerListeners(): void {
 
 		// Open new file via doubleclick on empty container
-		this._register(addDisposableListener(this.element, EventType.DBLCLICK, e => {
+		this._register(addDisposableListener(this.element, EventType.DBLCLICK, async (e) => {
 			if (this.isEmpty) {
 				EventHelper.stop(e);
-
-				// {{SQL CARBON EDIT}} - use editor service to open editor, which will go through the override step and resolve to UntitledQueryEditorInput.
-				this.editorService.openEditor({
-					forceUntitled: true,
-					options: {
-						pinned: true,
-						override: DEFAULT_EDITOR_ASSOCIATION.id
-					}
-				}, this.id);
+				// {{SQL CARBON EDIT}} - Create our own editor input so we open an untitled query editor
+				const queryEditorInput = await this.queryEditorService.newSqlEditor({ connectWithGlobal: true, open: false });
+				this.openEditor(queryEditorInput, EditorOptions.create({ pinned: true }));
 			}
 		}));
 
