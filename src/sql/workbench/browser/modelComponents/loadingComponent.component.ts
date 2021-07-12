@@ -19,7 +19,7 @@ import { ILogService } from 'vs/platform/log/common/log';
 @Component({
 	selector: 'modelview-loadingComponent',
 	template: `
-		<div class="modelview-loadingComponent-container" aria-busy="true" *ngIf="loading">
+		<div class="modelview-loadingComponent-container" aria-busy="true" *ngIf="loading" [ngStyle]="CSSStyles">
 			<div class="modelview-loadingComponent-spinner" [title]="getStatusText()" #spinnerElement></div>
 			<div *ngIf="showText" class="modelview-loadingComponent-status-text">{{getStatusText()}}</div>
 		</div>
