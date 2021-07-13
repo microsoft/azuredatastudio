@@ -53,6 +53,7 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { CellToolbarComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/cellToolbar.component';
 import { MaskedLabeledMenuItemActionItem } from 'sql/platform/actions/browser/menuEntryActionViewItem';
 import { IActionViewItem } from 'vs/base/browser/ui/actionbar/actionbar';
+import { IPageInfo } from 'ngx-virtual-scroller';
 
 export const NOTEBOOK_SELECTOR: string = 'notebook-component';
 
@@ -73,6 +74,8 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 
 	protected _actionBar: Taskbar;
 	protected isLoading: boolean;
+	protected cellsBuffer: ICellModel[] = [];
+	protected isLoadingMoreCells: boolean = false;
 	private _modelReadyDeferred = new Deferred<NotebookModel>();
 	private _trustedAction: TrustedAction;
 	private _runAllCellsAction: RunAllCellsAction;
@@ -273,9 +276,25 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		}
 	}
 
+	protected fetchMore(event: IPageInfo): void {
+		if (event.endIndex !== this.cellsBuffer.length - 1) {
+			return;
+		}
+		this.isLoadingMoreCells = true;
+		let chunk: ICellModel[] = this.fetchNextChunk(this.cellsBuffer.length, 20);
+		this.cellsBuffer = this.cellsBuffer.concat(chunk);
+		this.isLoadingMoreCells = false;
+	}
+
+	protected fetchNextChunk(startIndex: number, limit: number): ICellModel[] {
+		let endIndex: number | undefined = startIndex + limit > this.cells.length ? undefined : startIndex + limit;
+		return this.cells.slice(startIndex, endIndex);
+	}
+
 	private async doLoad(): Promise<void> {
 		try {
 			await this.registerModel();
+			this.cellsBuffer = this.cells.slice(0, 20);
 			this._modelReadyDeferred.resolve(this._model);
 			this.notebookService.addNotebookEditor(this);
 			await this._model.onClientSessionReady;
