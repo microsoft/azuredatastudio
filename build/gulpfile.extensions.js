@@ -26,19 +26,9 @@ const ext = require('./lib/extensions');
 
 const extensionsPath = path.join(path.dirname(__dirname), 'extensions');
 
-// {{SQL CARBON EDIT}}
+// {{SQL CARBON EDIT}} - TODO: Import needs to be updated to work with langpacks.
 const sqlLocalizedExtensions = [
-	'admin-tool-ext-win',
-	'agent',
-	'cms',
-	'dacpac',
 	'import',
-	'machine-learning',
-	'profiler',
-	'schema-compare',
-	'server-report',
-	'sql-assessment',
-	'sql-database-projects'
 ];
 
 // {{SQL CARBON EDIT}} Not doing this for us right now
@@ -273,6 +263,49 @@ gulp.task(task.define('extensions-ci', task.series(compileExtensionsBuildTask, c
 exports.compileExtensionsBuildTask = compileExtensionsBuildTask;
 
 //#endregion
+
+// {{SQL CARBON EDIT}}
+//#region XLF Creation
+
+//Get every extension in 'extensions' to create XLF files.
+const exportCompilations = glob.sync('**/package.json', {
+	cwd: extensionsPath,
+	ignore: ['**/out/**', '**/node_modules/**', 'package.json']
+});
+
+//Run the localization packaging task on all extensions in ADS.
+const exportTasks = exportCompilations.map(function (packageFile) {
+	const locFunc = require('./lib/locFunc');
+	const relativeDirname = path.dirname(packageFile);
+
+	const extensionName = relativeDirname.replace(/\//g, '-');
+	const packageTask = task.define(`localization-package-extension:${extensionName}`, task.series(() => {
+		return locFunc.packageSingleExtensionStream(extensionName)
+			.pipe(gulp.dest('.build'));
+	}));
+
+	// Tasks
+	gulp.task(packageTask);
+
+	return { packageTask };
+});
+
+const packageLocalizationExtensionsTask = task.define('package-localization-extensions-task', task.series(...exportTasks.map(t => t.packageTask)));
+gulp.task(packageLocalizationExtensionsTask);
+
+//Builds all ADS extensions including external/excluded extensions (only for creating XLF files, not for compiling extensions for shipping)
+const compileLocalizationExtensionsBuildTask = task.define('compile-localization-extensions-build', task.series(
+	cleanExtensionsBuildTask,
+	compileExtensionsTask,
+	task.define('bundle-marketplace-extensions-build', () => ext.packageMarketplaceExtensionsStream(false).pipe(gulp.dest('.build'))),
+	packageLocalizationExtensionsTask,
+));
+
+gulp.task(compileLocalizationExtensionsBuildTask);
+exports.compileLocalizationExtensionsBuildTask = compileLocalizationExtensionsBuildTask;
+
+//#endregion
+// {{SQL CARBON EDIT}} end
 
 const compileWebExtensionsTask = task.define('compile-web', () => buildWebExtensions(false));
 gulp.task(compileWebExtensionsTask);

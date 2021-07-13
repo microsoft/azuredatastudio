@@ -80,6 +80,7 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 		@Inject(IFileService) private readonly fileService: IFileService
 	) {
 		super(changeRef);
+		this._config = _config;
 		this.insightConfig = <IInsightsConfig>this._config.widget['insights-widget'];
 		this._loadingMessage = nls.localize('insightsWidgetLoadingMessage', "Loading {0}", this._config.name);
 		this._loadingCompletedMessage = nls.localize('insightsWidgetLoadingCompletedMessage', "Loading {0} completed", this._config.name);

@@ -1,4 +1,3 @@
-
 steps:
 - task: NodeTool@0
   inputs:
@@ -13,17 +12,6 @@ steps:
   inputs:
     azureSubscription: 'ClientToolsInfra_670062 (88d5392f-a34f-4769-b405-f597fc533613)'
     KeyVaultName: ado-secrets
-    SecretsFilter: 'github-distro-mixin-password'
-
-- task: DownloadPipelineArtifact@2
-  inputs:
-    artifact: Compilation
-  displayName: Download compilation output
-
-- script: |
-    set -e
-    tar -xzf $(Pipeline.Workspace)/compilation.tar.gz
-  displayName: Extract compilation output
 
 - script: |
     set -e
@@ -44,33 +32,46 @@ steps:
     git merge $(node -p "require('./package.json').distro")
   displayName: Merge distro
 
-# - task: 1ESLighthouseEng.PipelineArtifactCaching.RestoreCacheV1.RestoreCache@1
-#   displayName: Restore Cache - Node Modules
-#   inputs:
-#     keyfile: 'build/.cachesalt, .yarnrc, remote/.yarnrc, **/yarn.lock, !**/node_modules/**/yarn.lock, !**/.*/**/yarn.lock'
-#     targetfolder: '**/node_modules, !**/node_modules/**/node_modules'
-#     vstsFeed: 'npm-vscode'
+- script: |
+    mkdir -p .build
+    node build/azure-pipelines/common/sql-computeNodeModulesCacheKey.js > .build/yarnlockhash
+  displayName: Prepare yarn cache key
+
+- task: Cache@2
+  inputs:
+    key: 'nodeModules | $(Agent.OS) | .build/yarnlockhash'
+    path: .build/node_modules_cache
+    cacheHitVar: NODE_MODULES_RESTORED
+  displayName: Restore Cache - Node Modules
+
+- script: |
+    set -e
+    tar -xzf .build/node_modules_cache/cache.tgz
+  condition: and(succeeded(), eq(variables.NODE_MODULES_RESTORED, 'true'))
+  displayName: Extract node_modules archive
 
 - script: |
     set -e
     CHILD_CONCURRENCY=1 yarn --frozen-lockfile
   displayName: Install dependencies
-  # condition: and(succeeded(), ne(variables['CacheRestored'], 'true'))
+  condition: and(succeeded(), ne(variables['NODE_MODULES_RESTORED'], 'true'))
 
-# - task: 1ESLighthouseEng.PipelineArtifactCaching.SaveCacheV1.SaveCache@1
-#   displayName: Save Cache - Node Modules
-#   inputs:
-#     keyfile: 'build/.cachesalt, .yarnrc, remote/.yarnrc, **/yarn.lock, !**/node_modules/**/yarn.lock, !**/.*/**/yarn.lock'
-#     targetfolder: '**/node_modules, !**/node_modules/**/node_modules'
-#     vstsFeed: 'npm-vscode'
-#   condition: and(succeeded(), ne(variables['CacheRestored'], 'true'))
+- script: |
+    set -e
+    node build/azure-pipelines/common/listNodeModules.js .build/node_modules_list.txt
+    mkdir -p .build/node_modules_cache
+    tar -czf .build/node_modules_cache/cache.tgz --files-from .build/node_modules_list.txt
+  condition: and(succeeded(), ne(variables.NODE_MODULES_RESTORED, 'true'))
+  displayName: Create node_modules archive
 
-# - script: |
-#     set -e
-#     yarn postinstall
-#   displayName: Run postinstall scripts
-#   condition: and(succeeded(), eq(variables['CacheRestored'], 'true'))
+- script: |
+    set -e
+    yarn postinstall
+  displayName: Run postinstall scripts
+  condition: and(succeeded(), eq(variables['NODE_MODULES_RESTORED'], 'true'))
 
+# Mixin must run before optimize, because the CSS loader will
+# inline small SVGs
 - script: |
     set -e
     node build/azure-pipelines/mixin
@@ -78,25 +79,128 @@ steps:
 
 - script: |
     set -e
-    VSCODE_MIXIN_PASSWORD="$(github-distro-mixin-password)" \
-      yarn gulp vscode-web-min-ci
-  displayName: Build
+    yarn sqllint
+    yarn gulp hygiene
+    yarn strict-vscode
+    yarn valid-layers-check
+  displayName: Run hygiene, eslint
+  condition: and(succeeded(), eq(variables['VSCODE_STEP_ON_IT'], 'false'))
 
-  # upload only the workbench.web.api.js source maps because
-  # we just compiled these bits in the previous step and the
-  # general task to upload source maps has already been run
 - script: |
     set -e
-    AZURE_STORAGE_ACCOUNT="$(sourcemap-storage-account)" \
-    AZURE_STORAGE_ACCESS_KEY="$(sourcemap-storage-key)" \
-      node build/azure-pipelines/upload-sourcemaps out-vscode-web-min out-vscode-web-min/vs/workbench/workbench.web.api.js.map
-  displayName: Upload sourcemaps (Web)
+    yarn gulp compile-build
+    yarn gulp compile-extensions-build
+    yarn gulp minify-vscode
+    yarn gulp vscode-linux-x64-min-ci
+    yarn gulp vscode-web-min-ci
+    yarn gulp vscode-reh-linux-x64-min
+    yarn gulp vscode-reh-web-linux-x64-yarnrc-extensions
+    yarn gulp vscode-reh-web-linux-x64-min
+  displayName: Compile
 
 # - script: |
 #     set -e
-#     AZURE_DOCUMENTDB_MASTERKEY="$(builds-docdb-key-readwrite)" \
-#     AZURE_STORAGE_ACCESS_KEY_2="$(vscode-storage-key)" \
-#     VSCODE_MIXIN_PASSWORD="$(github-distro-mixin-password)" \
-#     ./build/azure-pipelines/web/publish.sh
-#   displayName: Publish
+#     AZURE_STORAGE_ACCOUNT="$(sourcemap-storage-account)" \
+#     AZURE_STORAGE_ACCESS_KEY="$(sourcemap-storage-key)" \
+#       node build/azure-pipelines/upload-sourcemaps
+#   displayName: Upload sourcemaps
 
+- script: |
+    set -e
+
+    VERSION=$(node -p "require(\"./package.json\").version")
+
+    echo -e "{  \"version\": \"$VERSION\", \"quality\": \"$VSCODE_QUALITY\", \"commit\": \"$BUILD_SOURCEVERSION\" }" > ".build/version.json"
+
+    node build/azure-pipelines/common/copyArtifacts.js
+  displayName: Write Version Information
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Artifact: drop'
+
+- script: |
+    set -e
+    tar -czf $(Build.ArtifactStagingDirectory)/compilation.tar.gz .build out-*
+  displayName: Compress compilation artifact
+
+- task: PublishPipelineArtifact@1
+  inputs:
+    targetPath: $(Build.ArtifactStagingDirectory)/compilation.tar.gz
+    artifactName: Compilation
+  displayName: Publish compilation artifact
+
+- script: |
+    set -e
+    yarn gulp package-rebuild-extensions
+    yarn gulp compile-extensions
+    yarn gulp package-external-extensions
+  displayName: Package External extensions
+
+- script: |
+    set -e
+    yarn gulp package-langpacks
+  displayName: Package Langpacks
+
+- script: |
+    set -e
+    yarn gulp vscode-linux-x64-build-deb
+  displayName: Build Deb
+
+- script: |
+    set -e
+    yarn gulp vscode-linux-x64-build-rpm
+  displayName: Build Rpm
+
+- task: UseDotNet@2
+  displayName: 'Install .NET Core sdk for signing'
+  inputs:
+    packageType: sdk
+    version: 2.1.x
+    installationPath: $(Agent.ToolsDirectory)/dotnet
+
+- task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
+  inputs:
+    ConnectedServiceName: 'Code Signing'
+    FolderPath: '$(Build.SourcesDirectory)/.build'
+    Pattern: 'extensions/*.vsix,langpacks/*.vsix'
+    signConfigType: inlineSignParams
+    inlineOperation: |
+      [
+        {
+          "keyCode": "CP-233016",
+          "operationSetCode": "OpcSign",
+          "parameters": [
+            {
+              "parameterName": "FileDigest",
+              "parameterValue": "/fd \"SHA256\""
+            }
+          ],
+          "toolName": "sign",
+          "toolVersion": "1.0"
+        },
+        {
+          "keyCode": "CP-233016",
+          "operationSetCode": "OpcVerify",
+          "parameters": [],
+          "toolName": "sign",
+          "toolVersion": "1.0"
+        }
+      ]
+    SessionTimeout: 120
+  displayName: 'Signing Extensions and Langpacks'
+  condition: and(succeeded(), eq(variables['signed'], true))
+
+- script: |
+    set -e
+    ./build/azure-pipelines/web/createDrop.sh
+  displayName: Create Drop
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Artifact: drop'
+  continueOnError: true
+  condition: succeededOrFailed()
+
+- task: ms.vss-governance-buildtask.governance-build-task-component-detection.ComponentGovernanceComponentDetection@0
+  displayName: 'Component Detection'
+  inputs:
+    failOnAlert: true

@@ -11,7 +11,7 @@
       <source xml:lang="en">Schema Compare</source>
     </trans-unit>
   </body></file>
-  <file original="extensions/schema-compare/out/localizedConstants" source-language="en" datatype="plaintext"><body>
+  <file original="extensions/schema-compare/dist/localizedConstants" source-language="en" datatype="plaintext"><body>
     <trans-unit id="schemaCompareDialog.ok">
       <source xml:lang="en">OK</source>
     </trans-unit>

@@ -228,7 +228,7 @@ jobs:
 
       - name: Compute node modules cache key
         id: nodeModulesCacheKey
-        run: echo "::set-output name=value::$(node build/azure-pipelines/common/computeNodeModulesCacheKey.js)"
+        run: echo "::set-output name=value::$(node build/azure-pipelines/common/sql-computeNodeModulesCacheKey.js)"
       - name: Cache node modules
         id: cacheNodeModules
         uses: actions/cache@v2

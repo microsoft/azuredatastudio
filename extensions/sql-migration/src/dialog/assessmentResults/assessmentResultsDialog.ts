@@ -46,7 +46,7 @@ export class AssessmentResultsDialog {
 					}).component();
 					flex.addItem(await this._tree.createRootContainer(view), { flex: '1 1 auto' });
 
-					view.initializeModel(flex);
+					await view.initializeModel(flex);
 					resolve();
 				} catch (ex) {
 					reject(ex);
@@ -58,7 +58,7 @@ export class AssessmentResultsDialog {
 	public async openDialog(dialogName?: string) {
 		if (!this._isOpen) {
 			this._isOpen = true;
-			this.dialog = azdata.window.createModelViewDialog(this.title, this.title, '90%');
+			this.dialog = azdata.window.createModelViewDialog(this.title, this.title, 'wide');
 
 			this.dialog.okButton.label = AssessmentResultsDialog.OkButtonText;
 			this.dialog.okButton.onClick(async () => await this.execute());

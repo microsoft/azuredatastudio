@@ -113,7 +113,8 @@ export abstract class BaseInputKeyValue extends KeyValue {
 		const copy = modelBuilder.button().withProperties<azdata.ButtonProperties>({
 			iconPath: IconPathHelper.copy,
 			width: '17px',
-			height: '17px'
+			height: '17px',
+			ariaLabel: loc.copyConnectionStringToClipboard(key)
 		}).component();
 
 		this.disposables.push(copy.onDidClick(async () => {

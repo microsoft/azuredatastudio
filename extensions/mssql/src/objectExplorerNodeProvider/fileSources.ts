@@ -18,7 +18,6 @@ import { WebHDFS, HdfsError } from '../hdfs/webhdfs';
 import { PermissionStatus } from '../hdfs/aclEntry';
 import { Mount, MountStatus } from '../hdfs/mount';
 import { FileStatus, hdfsFileTypeToFileType } from '../hdfs/fileStatus';
-import { getIgnoreSslVerificationConfigSetting } from '../util/auth';
 
 const localize = nls.loadMessageBundle();
 
@@ -129,6 +128,7 @@ export interface IRequestParams {
 	timeout?: number;
 	agent?: https.Agent;
 	headers?: {};
+	rejectUnauthorized?: boolean;
 }
 
 export class FileSourceFactory {
@@ -143,19 +143,7 @@ export class FileSourceFactory {
 
 	public async createHdfsFileSource(options: IHdfsOptions): Promise<IFileSource> {
 		options = options && options.host ? FileSourceFactory.removePortFromHost(options) : options;
-		let requestParams: IRequestParams = options.requestParams ? options.requestParams : {};
-		if (requestParams.auth || requestParams.isKerberos) {
-			let agentOptions = {
-				host: options.host,
-				port: options.port,
-				path: constants.hdfsRootPath,
-				rejectUnauthorized: !getIgnoreSslVerificationConfigSetting()
-			};
-			let agent = new https.Agent(agentOptions);
-			requestParams['agent'] = agent;
-
-		}
-		return new HdfsFileSource(WebHDFS.createClient(options, requestParams));
+		return new HdfsFileSource(WebHDFS.createClient(options));
 	}
 
 	// remove port from host when port is specified after a comma or colon

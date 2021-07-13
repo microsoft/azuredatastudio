@@ -8,7 +8,7 @@
       <source xml:lang="en">Full path to folder where .DACPAC and .BACPAC files are saved by default</source>
     </trans-unit>
   </body></file>
-  <file original="extensions/dacpac/out/localizedConstants" source-language="en" datatype="plaintext"><body>
+  <file original="extensions/dacpac/dist/localizedConstants" source-language="en" datatype="plaintext"><body>
     <trans-unit id="dacFx.targetServer">
       <source xml:lang="en">Target Server</source>
     </trans-unit>

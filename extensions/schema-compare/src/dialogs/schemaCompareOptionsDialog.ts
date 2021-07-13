@@ -98,7 +98,8 @@ export class SchemaCompareOptionsDialog {
 	private initializeSchemaCompareOptionsDialogTab(): void {
 		this.generalOptionsTab.registerContent(async view => {
 
-			this.descriptionHeading = view.modelBuilder.table().withProperties({
+			this.descriptionHeading = view.modelBuilder.table().withProps({
+				data: [],
 				columns: [
 					{
 						value: 'Option Description',
@@ -108,7 +109,7 @@ export class SchemaCompareOptionsDialog {
 				]
 			}).component();
 
-			this.descriptionText = view.modelBuilder.text().withProperties({
+			this.descriptionText = view.modelBuilder.text().withProps({
 				value: ' '
 			}).component();
 

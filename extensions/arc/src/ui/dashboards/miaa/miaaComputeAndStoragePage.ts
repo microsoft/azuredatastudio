@@ -183,7 +183,8 @@ export class MiaaComputeAndStoragePage extends DashboardPage {
 			readOnly: false,
 			min: 1,
 			inputType: 'number',
-			placeHolder: loc.loading
+			placeHolder: loc.loading,
+			ariaLabel: loc.coresLimit
 		}).component();
 
 		this.disposables.push(
@@ -200,7 +201,8 @@ export class MiaaComputeAndStoragePage extends DashboardPage {
 			readOnly: false,
 			min: 1,
 			inputType: 'number',
-			placeHolder: loc.loading
+			placeHolder: loc.loading,
+			ariaLabel: loc.coresRequest
 		}).component();
 
 		this.disposables.push(
@@ -217,7 +219,8 @@ export class MiaaComputeAndStoragePage extends DashboardPage {
 			readOnly: false,
 			min: 2,
 			inputType: 'number',
-			placeHolder: loc.loading
+			placeHolder: loc.loading,
+			ariaLabel: loc.memoryLimit
 		}).component();
 
 		this.disposables.push(
@@ -234,7 +237,8 @@ export class MiaaComputeAndStoragePage extends DashboardPage {
 			readOnly: false,
 			min: 2,
 			inputType: 'number',
-			placeHolder: loc.loading
+			placeHolder: loc.loading,
+			ariaLabel: loc.memoryRequest
 		}).component();
 
 		this.disposables.push(
@@ -274,7 +278,7 @@ export class MiaaComputeAndStoragePage extends DashboardPage {
 		}).component();
 
 		const keyComponent = this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
-			value: key,
+			value: `${key} :`,
 			CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
 		}).component();
 

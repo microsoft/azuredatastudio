@@ -139,7 +139,7 @@ export abstract class HdfsDialogBase<T extends HdfsDialogProperties, R> {
 					enabled: false
 				}).component();
 
-			this.authDropdown = this.uiModelBuilder.dropDown().withProperties({
+			this.authDropdown = this.uiModelBuilder.dropDown().withProps({
 				values: this.model.authCategories,
 				value: this.model.authCategory,
 				editable: false,

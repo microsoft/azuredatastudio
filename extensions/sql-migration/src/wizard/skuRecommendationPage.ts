@@ -291,6 +291,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			}
 		}).component();
 		this._managedInstanceSubscriptionDropdown = this._view.modelBuilder.dropDown().withProps({
+			ariaLabel: constants.SUBSCRIPTION,
 			width: WIZARD_INPUT_COMPONENT_WIDTH,
 			editable: true,
 			fireOnTextChange: true,
@@ -314,6 +315,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			}
 		}).component();
 		this._azureLocationDropdown = this._view.modelBuilder.dropDown().withProps({
+			ariaLabel: constants.LOCATION,
 			width: WIZARD_INPUT_COMPONENT_WIDTH,
 			editable: true,
 			fireOnTextChange: true,
@@ -335,6 +337,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			}
 		}).component();
 		this._azureResourceGroupDropdown = this._view.modelBuilder.dropDown().withProps({
+			ariaLabel: constants.RESOURCE_GROUP,
 			width: WIZARD_INPUT_COMPONENT_WIDTH,
 			editable: true,
 			fireOnTextChange: true,
@@ -356,6 +359,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		}).component();
 
 		this._resourceDropdown = this._view.modelBuilder.dropDown().withProps({
+			ariaLabel: constants.MANAGED_INSTANCE,
 			width: WIZARD_INPUT_COMPONENT_WIDTH,
 			editable: true,
 			fireOnTextChange: true,
@@ -603,7 +607,12 @@ export class SKURecommendationPage extends MigrationWizardPage {
 
 	private createAssessmentProgress(): azdata.FlexContainer {
 
-		this._assessmentLoader = this._view.modelBuilder.loadingComponent().component();
+		this._assessmentLoader = this._view.modelBuilder.loadingComponent().withProps({
+			CSSStyles: {
+				'margin-top': '15px'
+			}
+		}).component();
+
 		this._assessmentProgress = this._view.modelBuilder.text().withProps({
 			value: constants.ASSESSMENT_IN_PROGRESS,
 			CSSStyles: {

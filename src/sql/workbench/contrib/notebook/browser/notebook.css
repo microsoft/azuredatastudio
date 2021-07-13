@@ -8,9 +8,8 @@
 }
 
 .notebookEditor .taskbarSeparator {
-	margin: 0 16px 0 -8px;
+	margin: 0px 8px;
 }
-
 .notebookEditor .editor-toolbar {
 	border-bottom-style: solid;
 	border-width: 0px 0px 1px 0px;
@@ -58,7 +57,6 @@
 .notebookEditor .in-preview .actions-container .action-item .codicon,
 .notebookEditor .in-preview .actions-container .action-item .codicon:before {
 	display: flex;
-	height: 100%;
 	padding-right: 0;
 	background-size: contain;
 }
@@ -75,18 +73,7 @@
 	.actions-container
 	.action-item
 	.codicon.masked-icon:before {
-	margin-right: 0;
-	padding-left: 18px;
-	width: 16px;
-}
-
-.notebookEditor
-	.in-preview
-	.actions-container
-	.action-item
-	.codicon.icon-run-with-parameters:before {
-	padding-left: 20px;
-	width: 18px;
+	width: 100%;
 }
 
 .notebookEditor .in-preview .actions-container .action-item:last-child {

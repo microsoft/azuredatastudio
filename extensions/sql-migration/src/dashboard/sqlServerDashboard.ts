@@ -10,7 +10,7 @@ import * as loc from '../constants/strings';
 import { IconPath, IconPathHelper } from '../constants/iconPathHelper';
 import { MigrationStatusDialog } from '../dialog/migrationStatus/migrationStatusDialog';
 import { AdsMigrationStatus } from '../dialog/migrationStatus/migrationStatusDialogModel';
-import { filterMigrations } from '../api/utils';
+import { filterMigrations, SupportedAutoRefreshIntervals } from '../api/utils';
 
 interface IActionMetadata {
 	title?: string,
@@ -21,6 +21,7 @@ interface IActionMetadata {
 }
 
 const maxWidth = 800;
+const refreshFrequency: SupportedAutoRefreshIntervals = 180000;
 
 interface StatusCard {
 	container: azdata.DivContainer;
@@ -46,10 +47,9 @@ export class DashboardWidget {
 	private _migrationStatusMap: Map<string, MigrationContext[]> = new Map();
 	private _viewAllMigrationsButton!: azdata.ButtonComponent;
 
+	private _autoRefreshHandle!: NodeJS.Timeout;
+
 	constructor() {
-		vscode.commands.registerCommand('sqlmigration.refreshMigrationTiles', () => {
-			this.refreshMigrations();
-		});
 	}
 
 	private async getCurrentMigrations(): Promise<MigrationContext[]> {
@@ -95,7 +95,9 @@ export class DashboardWidget {
 				}
 			});
 			await view.initializeModel(container);
-
+			this._view.onClosed((e) => {
+				clearInterval(this._autoRefreshHandle);
+			});
 			this.refreshMigrations();
 		});
 	}
@@ -107,11 +109,19 @@ export class DashboardWidget {
 		}).component();
 		const titleComponent = view.modelBuilder.text().withProps({
 			value: loc.DASHBOARD_TITLE,
+			width: '750px',
 			CSSStyles: {
 				'font-size': '36px',
 				'margin-bottom': '5px',
 			}
 		}).component();
+
+		this.setAutoRefresh(refreshFrequency);
+
+		const container = view.modelBuilder.flexContainer().withItems([
+			titleComponent,
+		]).component();
+
 		const descComponent = view.modelBuilder.text().withProps({
 			value: loc.DASHBOARD_DESCRIPTION,
 			CSSStyles: {
@@ -119,7 +129,7 @@ export class DashboardWidget {
 				'margin-top': '10px',
 			}
 		}).component();
-		header.addItems([titleComponent, descComponent], {
+		header.addItems([container, descComponent], {
 			CSSStyles: {
 				'width': `${maxWidth}px`,
 				'padding-left': '20px'
@@ -231,6 +241,14 @@ export class DashboardWidget {
 		return view.modelBuilder.divContainer().withItems([buttonContainer]).component();
 	}
 
+	private setAutoRefresh(interval: SupportedAutoRefreshIntervals): void {
+		let classVariable = this;
+		clearInterval(this._autoRefreshHandle);
+		if (interval !== -1) {
+			this._autoRefreshHandle = setInterval(function () { classVariable.refreshMigrations(); }, interval);
+		}
+	}
+
 	private async refreshMigrations(): Promise<void> {
 		this._viewAllMigrationsButton.enabled = false;
 		this._migrationStatusCardLoadingContainer.loading = true;
@@ -252,9 +270,9 @@ export class DashboardWidget {
 			if (warningCount > 0) {
 				this._inProgressWarningMigrationButton.warningText!.value = loc.MIGRATION_INPROGRESS_WARNING(warningCount);
 				this._inProgressMigrationButton.container.display = 'none';
-				this._inProgressWarningMigrationButton.container.display = 'inline';
+				this._inProgressWarningMigrationButton.container.display = '';
 			} else {
-				this._inProgressMigrationButton.container.display = 'inline';
+				this._inProgressMigrationButton.container.display = '';
 				this._inProgressWarningMigrationButton.container.display = 'none';
 			}
 
@@ -268,8 +286,8 @@ export class DashboardWidget {
 			const failedMigrations = filterMigrations(migrations, AdsMigrationStatus.FAILED);
 			const failedCount = failedMigrations.length;
 			if (failedCount > 0) {
-				this._failedMigrationButton.container.display = 'inline';
-				this._failedMigrationButton.count.value = failedMigrations.length.toString();
+				this._failedMigrationButton.container.display = '';
+				this._failedMigrationButton.count.value = failedCount.toString();
 			} else {
 				this._failedMigrationButton.container.display = 'none';
 			}
@@ -277,7 +295,7 @@ export class DashboardWidget {
 			const completingCutoverMigrations = filterMigrations(migrations, AdsMigrationStatus.COMPLETING);
 			const cutoverCount = completingCutoverMigrations.length;
 			if (cutoverCount > 0) {
-				this._completingMigrationButton.container.display = 'inline';
+				this._completingMigrationButton.container.display = '';
 				this._completingMigrationButton.count.value = cutoverCount.toString();
 			} else {
 				this._completingMigrationButton.container.display = 'none';
@@ -309,6 +327,7 @@ export class DashboardWidget {
 				'margin-bottom': '0px',
 				'width': '300px',
 				'font-size': '14px',
+				'font-weight': 'bold'
 			}
 		}).component();
 
@@ -324,9 +343,7 @@ export class DashboardWidget {
 		const flex = this._view.modelBuilder.flexContainer().withProps({
 			CSSStyles: {
 				'width': '400px',
-				'height': '50px',
-				'margin-top': '10px',
-				'border': '1px solid',
+				'height': '50px'
 			}
 		}).component();
 
@@ -356,8 +373,14 @@ export class DashboardWidget {
 
 		const compositeButton = this._view.modelBuilder.divContainer().withItems([flex]).withProps({
 			ariaRole: 'button',
-			ariaLabel: 'show status',
-			clickable: true
+			ariaLabel: loc.SHOW_STATUS,
+			clickable: true,
+			CSSStyles: {
+				'width': '400px',
+				'border': '1px solid',
+				'margin-top': '10px',
+				'height': '50px'
+			}
 		}).component();
 		return {
 			container: compositeButton,
@@ -438,8 +461,6 @@ export class DashboardWidget {
 			CSSStyles: {
 				'width': '400px',
 				'height': '70px',
-				'margin-top': '10px',
-				'border': '1px solid'
 			}
 		}).component();
 
@@ -470,7 +491,13 @@ export class DashboardWidget {
 		const compositeButton = this._view.modelBuilder.divContainer().withItems([flex]).withProps({
 			ariaRole: 'button',
 			ariaLabel: 'show status',
-			clickable: true
+			clickable: true,
+			CSSStyles: {
+				'width': '400px',
+				'height': '70px',
+				'margin-top': '10px',
+				'border': '1px solid'
+			}
 		}).component();
 		return {
 			container: compositeButton,

@@ -87,13 +87,12 @@ export function msgDownloadLocation(downloadLocation: string): string { return l
 export const newBook = localize('newBook', "New Jupyter Book (Preview)");
 export const bookDescription = localize('bookDescription', "Jupyter Books are used to organize Notebooks.");
 export const learnMore = localize('learnMore', "Learn more.");
-export const locationBrowser = localize('locationBrowser', "Browse locations...");
-export const selectContentFolder = localize('selectContentFolder', "Select content folder");
+export const contentFolder = localize('contentFolder', "Content folder");
 export const browse = localize('browse', "Browse");
 export const create = localize('create', "Create");
 export const name = localize('name', "Name");
 export const saveLocation = localize('saveLocation', "Save location");
-export const contentFolder = localize('contentFolder', "Content folder (Optional)");
+export const contentFolderOptional = localize('contentFolderOptional', "Content folder (Optional)");
 export const msgContentFolderError = localize('msgContentFolderError', "Content folder path does not exist");
 export const msgSaveFolderError = localize('msgSaveFolderError', "Save location path does not exist.");
 export function msgCreateBookWarningMsg(file: string): string { return localize('msgCreateBookWarningMsg', "Error while trying to access: {0}", file); }

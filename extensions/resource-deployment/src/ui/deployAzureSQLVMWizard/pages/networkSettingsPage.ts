@@ -110,7 +110,7 @@ export class NetworkSettingsPage extends BasePage {
 
 	private async createVirtualNetworkDropdown(view: azdata.ModelView) {
 
-		this._newVirtualNetworkCheckbox = view.modelBuilder.checkBox().withProperties(<azdata.CheckBoxProperties>{
+		this._newVirtualNetworkCheckbox = view.modelBuilder.checkBox().withProps(<azdata.CheckBoxProperties>{
 			label: constants.NetworkSettingsNewVirtualNetwork,
 			checked: false
 		}).component();
@@ -119,7 +119,7 @@ export class NetworkSettingsPage extends BasePage {
 			this.toggleNewVirtualNetwork();
 		});
 
-		this._virtualNetworkDropdown = view.modelBuilder.dropDown().withProperties({
+		this._virtualNetworkDropdown = view.modelBuilder.dropDown().withProps({
 			width: constants.standardWidth,
 			required: true
 		}).component();
@@ -132,7 +132,7 @@ export class NetworkSettingsPage extends BasePage {
 			this.populateSubnetDropdown();
 		});
 
-		this._newVirtualNetworkText = view.modelBuilder.inputBox().withProperties(<azdata.InputBoxProperties>{
+		this._newVirtualNetworkText = view.modelBuilder.inputBox().withProps(<azdata.InputBoxProperties>{
 			width: constants.standardWidth,
 			required: true,
 			placeHolder: localize('deployAzureSQLVM.NewVnetPlaceholder', "Enter name for new virtual network")
@@ -222,7 +222,7 @@ export class NetworkSettingsPage extends BasePage {
 		});
 
 
-		this._subnetDropdown = view.modelBuilder.dropDown().withProperties(<azdata.DropDownProperties>{
+		this._subnetDropdown = view.modelBuilder.dropDown().withProps(<azdata.DropDownProperties>{
 			width: constants.standardWidth,
 			required: true
 		}).component();
@@ -234,7 +234,7 @@ export class NetworkSettingsPage extends BasePage {
 			this._model.subnetName = (this._subnetDropdown.value as azdata.CategoryValue).name;
 		});
 
-		this._newsubnetText = view.modelBuilder.inputBox().withProperties(<azdata.InputBoxProperties>{
+		this._newsubnetText = view.modelBuilder.inputBox().withProps(<azdata.InputBoxProperties>{
 			width: constants.standardWidth,
 			required: true,
 			placeHolder: localize('deployAzureSQLVM.NewSubnetPlaceholder', "Enter name for new subnet")
@@ -299,7 +299,7 @@ export class NetworkSettingsPage extends BasePage {
 
 	private async createPublicIPDropdown(view: azdata.ModelView) {
 
-		this._newPublicIpCheckbox = view.modelBuilder.checkBox().withProperties(<azdata.CheckBoxProperties>{
+		this._newPublicIpCheckbox = view.modelBuilder.checkBox().withProps(<azdata.CheckBoxProperties>{
 			label: constants.NetworkSettingsNewPublicIp,
 			checked: false
 		}).component();
@@ -308,7 +308,7 @@ export class NetworkSettingsPage extends BasePage {
 			this.toggleNewPublicIp();
 		});
 
-		this._publicIpDropdown = view.modelBuilder.dropDown().withProperties({
+		this._publicIpDropdown = view.modelBuilder.dropDown().withProps({
 			required: true,
 			width: constants.standardWidth,
 		}).component();
@@ -320,7 +320,7 @@ export class NetworkSettingsPage extends BasePage {
 			this._model.publicIpName = (this._publicIpDropdown.value as azdata.CategoryValue).name;
 		});
 
-		this._publicIpNetworkText = view.modelBuilder.inputBox().withProperties(<azdata.InputBoxProperties>{
+		this._publicIpNetworkText = view.modelBuilder.inputBox().withProps(<azdata.InputBoxProperties>{
 			placeHolder: localize('deployAzureSQLVM.NewPipPlaceholder', "Enter name for new public IP"),
 			width: constants.standardWidth
 		}).component();
@@ -385,7 +385,7 @@ export class NetworkSettingsPage extends BasePage {
 	}
 
 	private async createVmRDPAllowCheckbox(view: azdata.ModelView) {
-		this._vmRDPAllowCheckbox = view.modelBuilder.checkBox().withProperties({
+		this._vmRDPAllowCheckbox = view.modelBuilder.checkBox().withProps({
 			label: constants.RDPAllowCheckboxLabel,
 		}).component();
 		this._vmRDPAllowCheckbox.onChanged((value) => {

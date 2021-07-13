@@ -93,31 +93,31 @@ export class OperatorDialog extends AgentDialog<OperatorData> {
 	private initializeGeneralTab() {
 		this.generalTab.registerContent(async view => {
 
-			this.nameTextBox = view.modelBuilder.inputBox().withProperties({
+			this.nameTextBox = view.modelBuilder.inputBox().withProps({
 				ariaLabel: OperatorDialog.NameLabel,
 				placeHolder: OperatorDialog.NameLabel
 			}).component();
 			this.nameTextBox.value = this.model.name;
-			this.emailNameTextBox = view.modelBuilder.inputBox().withProperties({
+			this.emailNameTextBox = view.modelBuilder.inputBox().withProps({
 				ariaLabel: OperatorDialog.EmailNameTextLabel,
 				placeHolder: OperatorDialog.EmailNameTextLabel
 			}).component();
 			this.emailNameTextBox.value = this.model.emailAddress;
 
-			this.pagerEmailNameTextBox = view.modelBuilder.inputBox().withProperties({
+			this.pagerEmailNameTextBox = view.modelBuilder.inputBox().withProps({
 				ariaLabel: OperatorDialog.PagerEmailNameTextLabel,
 				placeHolder: OperatorDialog.PagerEmailNameTextLabel
 			}).component();
 			this.pagerEmailNameTextBox.value = this.model.pagerAddress;
 
 			this.enabledCheckBox = view.modelBuilder.checkBox()
-				.withProperties({
+				.withProps({
 					label: OperatorDialog.EnabledCheckboxLabel
 				}).component();
 			this.enabledCheckBox.checked = this.model.enabled;
 
 			this.pagerMondayCheckBox = view.modelBuilder.checkBox()
-				.withProperties({
+				.withProps({
 					label: OperatorDialog.PagerMondayCheckBoxLabel
 				}).component();
 
@@ -135,7 +135,7 @@ export class OperatorDialog extends AgentDialog<OperatorData> {
 			});
 
 			this.pagerTuesdayCheckBox = view.modelBuilder.checkBox()
-				.withProperties({
+				.withProps({
 					label: OperatorDialog.PagerTuesdayCheckBoxLabel
 				}).component();
 
@@ -154,7 +154,7 @@ export class OperatorDialog extends AgentDialog<OperatorData> {
 			});
 
 			this.pagerWednesdayCheckBox = view.modelBuilder.checkBox()
-				.withProperties({
+				.withProps({
 					label: OperatorDialog.PagerWednesdayCheckBoxLabel
 				}).component();
 
@@ -172,7 +172,7 @@ export class OperatorDialog extends AgentDialog<OperatorData> {
 			});
 
 			this.pagerThursdayCheckBox = view.modelBuilder.checkBox()
-				.withProperties({
+				.withProps({
 					label: OperatorDialog.PagerThursdayCheckBoxLabel
 				}).component();
 
@@ -190,7 +190,7 @@ export class OperatorDialog extends AgentDialog<OperatorData> {
 			});
 
 			this.weekdayPagerStartTimeInput = view.modelBuilder.inputBox()
-				.withProperties({
+				.withProps({
 					inputType: 'time',
 					placeHolder: '08:00:00',
 				}).component();
@@ -202,7 +202,7 @@ export class OperatorDialog extends AgentDialog<OperatorData> {
 				}]).component();
 
 			this.weekdayPagerEndTimeInput = view.modelBuilder.inputBox()
-				.withProperties({
+				.withProps({
 					inputType: 'time',
 					placeHolder: '06:00:00'
 				}).component();
@@ -214,7 +214,7 @@ export class OperatorDialog extends AgentDialog<OperatorData> {
 				}]).component();
 
 			this.pagerFridayCheckBox = view.modelBuilder.checkBox()
-				.withProperties({
+				.withProps({
 					label: OperatorDialog.PagerFridayCheckBoxLabel
 				}).component();
 			this.pagerFridayCheckBox.onChanged(() => {
@@ -239,7 +239,7 @@ export class OperatorDialog extends AgentDialog<OperatorData> {
 				.component();
 
 			this.pagerSaturdayCheckBox = view.modelBuilder.checkBox()
-				.withProperties({
+				.withProps({
 					label: OperatorDialog.PagerSaturdayCheckBoxLabel
 				}).component();
 
@@ -254,7 +254,7 @@ export class OperatorDialog extends AgentDialog<OperatorData> {
 			});
 
 			this.saturdayPagerStartTimeInput = view.modelBuilder.inputBox()
-				.withProperties({
+				.withProps({
 					inputType: 'time',
 					placeHolder: '08:00:00'
 				}).component();
@@ -266,7 +266,7 @@ export class OperatorDialog extends AgentDialog<OperatorData> {
 				}]).component();
 
 			this.saturdayPagerEndTimeInput = view.modelBuilder.inputBox()
-				.withProperties({
+				.withProps({
 					inputType: 'time',
 					placeHolder: '06:00:00'
 				}).component();
@@ -285,7 +285,7 @@ export class OperatorDialog extends AgentDialog<OperatorData> {
 				.component();
 
 			this.pagerSundayCheckBox = view.modelBuilder.checkBox()
-				.withProperties({
+				.withProps({
 					label: OperatorDialog.PagerSundayCheckBoxLabel
 				}).component();
 
@@ -300,7 +300,7 @@ export class OperatorDialog extends AgentDialog<OperatorData> {
 			});
 
 			this.sundayPagerStartTimeInput = view.modelBuilder.inputBox()
-				.withProperties({
+				.withProps({
 					inputType: 'time',
 					placeHolder: '08:00:00'
 				}).component();
@@ -312,7 +312,7 @@ export class OperatorDialog extends AgentDialog<OperatorData> {
 				}]).component();
 
 			this.sundayPagerEndTimeInput = view.modelBuilder.inputBox()
-				.withProperties({
+				.withProps({
 					inputType: 'time',
 					placeHolder: '06:00:00'
 				}).component();
@@ -383,11 +383,11 @@ export class OperatorDialog extends AgentDialog<OperatorData> {
 		this.notificationsTab.registerContent(async view => {
 
 			let previewTag = view.modelBuilder.text()
-				.withProperties({
+				.withProps({
 					value: 'Feature Preview'
 				}).component();
 			this.alertsTable = view.modelBuilder.table()
-				.withProperties({
+				.withProps({
 					columns: [
 						OperatorDialog.AlertNameColumnLabel,
 						OperatorDialog.AlertEmailColumnLabel,

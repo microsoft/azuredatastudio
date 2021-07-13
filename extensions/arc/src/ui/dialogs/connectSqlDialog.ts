@@ -78,7 +78,7 @@ export abstract class ConnectToSqlDialog extends InitializingComponent {
 					title: ''
 				}]).withLayout({ width: '100%' }).component();
 			await view.initializeModel(formModel);
-			this.serverNameInputBox.focus();
+			this.usernameInputBox.focus();
 			this.initialized = true;
 		});
 

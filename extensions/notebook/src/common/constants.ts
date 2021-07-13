@@ -17,12 +17,14 @@ export const pythonVersion = '3.8.10';
 export const pythonPathConfigKey = 'pythonPath';
 export const existingPythonConfigKey = 'useExistingPython';
 export const dontPromptPythonUpdate = 'dontPromptPythonUpdate';
+export const jupyterServerShutdownTimeoutConfigKey = 'jupyterServerShutdownTimeout';
 export const notebookConfigKey = 'notebook';
 export const trustedBooksConfigKey = 'trustedBooks';
 export const pinnedBooksConfigKey = 'pinnedNotebooks';
 export const maxBookSearchDepth = 'maxBookSearchDepth';
 export const remoteBookDownloadTimeout = 'remoteBookDownloadTimeout';
 export const collapseBookItems = 'collapseBookItems';
+export const allowRoot = 'allowRoot';
 
 export const winPlatform = 'win32';
 export const macPlatform = 'darwin';

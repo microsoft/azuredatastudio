@@ -41,21 +41,6 @@ export class ConfirmCutoverDialog {
 
 			const separator = this._view.modelBuilder.separator().withProps({ width: '800px' }).component();
 
-			let infoDisplay = 'none';
-			if (this.migrationCutoverModel._migration.targetManagedInstance.id.toLocaleLowerCase().includes('managedinstances')
-				&& (<SqlManagedInstance>this.migrationCutoverModel._migration.targetManagedInstance)?.sku?.tier === 'BusinessCritical') {
-				infoDisplay = 'inline';
-			}
-
-			const businessCriticalinfoBox = this._view.modelBuilder.infoBox().withProps({
-				text: constants.BUSINESS_CRITICAL_INFO,
-				style: 'information',
-				CSSStyles: {
-					'font-size': '13px',
-					'display': infoDisplay
-				}
-			}).component();
-
 			const helpMainText = this._view.modelBuilder.text().withProps({
 				value: constants.CUTOVER_HELP_MAIN,
 				CSSStyles: {
@@ -73,7 +58,7 @@ export class ConfirmCutoverDialog {
 			}).component();
 
 
-			const pendingBackupCount = this.migrationCutoverModel.migrationStatus.properties.migrationStatusDetails?.activeBackupSets?.filter(f => f.listOfBackupFiles[0].status !== 'Restored' && f.listOfBackupFiles[0].status !== 'Ignored').length ?? 0;
+			const pendingBackupCount = this.migrationCutoverModel.migrationStatus.properties.migrationStatusDetails?.pendingLogBackupsCount ?? 0;
 			const pendingText = this._view.modelBuilder.text().withProps({
 				CSSStyles: {
 					'font-size': '13px',
@@ -93,6 +78,29 @@ export class ConfirmCutoverDialog {
 				this._dialogObject.okButton.enabled = e;
 			});
 
+			const cutoverWarning = this._view.modelBuilder.infoBox().withProps({
+				text: constants.COMPLETING_CUTOVER_WARNING,
+				style: 'warning',
+				CSSStyles: {
+					'font-size': '13px',
+				}
+			}).component();
+
+
+			let infoDisplay = 'none';
+			if (this.migrationCutoverModel._migration.targetManagedInstance.id.toLocaleLowerCase().includes('managedinstances')
+				&& (<SqlManagedInstance>this.migrationCutoverModel._migration.targetManagedInstance)?.sku?.tier === 'BusinessCritical') {
+				infoDisplay = 'inline';
+			}
+
+			const businessCriticalinfoBox = this._view.modelBuilder.infoBox().withProps({
+				text: constants.BUSINESS_CRITICAL_INFO,
+				style: 'information',
+				CSSStyles: {
+					'font-size': '13px',
+					'display': infoDisplay
+				}
+			}).component();
 
 			const container = this._view.modelBuilder.flexContainer().withLayout({
 				flexFlow: 'column'
@@ -100,11 +108,12 @@ export class ConfirmCutoverDialog {
 				completeCutoverText,
 				sourceDatabaseText,
 				separator,
-				businessCriticalinfoBox,
 				helpMainText,
 				helpStepsText,
 				pendingText,
-				confirmCheckbox
+				confirmCheckbox,
+				cutoverWarning,
+				businessCriticalinfoBox
 			]).component();
 
 

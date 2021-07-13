@@ -30,7 +30,7 @@ const { getProductionDependencies } = require('./lib/dependencies');
 const { config } = require('./lib/electron');
 const createAsar = require('./lib/asar').createAsar;
 const { compileBuildTask } = require('./gulpfile.compile');
-const { compileExtensionsBuildTask } = require('./gulpfile.extensions');
+const { compileExtensionsBuildTask, compileLocalizationExtensionsBuildTask } = require('./gulpfile.extensions');  // {{SQL CARBON EDIT}} Must handle localization code.
 
 // Build
 const vscodeEntryPoints = _.flatten([
@@ -107,6 +107,50 @@ const optimizeVSCodeTask = task.define('optimize-vscode', task.series(
 	})
 ));
 gulp.task(optimizeVSCodeTask);
+
+// {{SQL CARBON EDIT}} Gulp task that imports any relevant ADS XLF found in vscode-translations-export to resources/xlf/en folder.
+
+// List of ADS extension XLF files that we want to put into the English resource folder.
+const extensionsFilter = filter([
+	"**/admin-tool-ext-win.xlf",
+	"**/agent.xlf",
+	"**/arc.xlf",
+	"**/asde-deployment.xlf",
+	"**/azdata.xlf",
+	"**/azurecore.xlf",
+	"**/azurehybridtoolkit.xlf",
+	"**/big-data-cluster.xlf",
+	"**/cms.xlf",
+	"**/dacpac.xlf",
+	"**/data-workspace.xlf",
+	"**/import.xlf",
+	"**/kusto.xlf",
+	"**/machine-learning.xlf",
+	"**/Microsoft.sqlservernotebook.xlf",
+	"**/mssql.xlf",
+	"**/notebook.xlf",
+	"**/profiler.xlf",
+	"**/query-history.xlf",
+	"**/resource-deployment.xlf",
+	"**/schema-compare.xlf",
+	"**/server-report.xlf",
+	"**/sql-assessment.xlf",
+	"**/sql-database-projects.xlf",
+	"**/sql-migration.xlf",
+	"**/xml-language-features.xlf"
+])
+
+// Copy ADS extension XLFs into English resource folder.
+const importExtensionsTask = task.define('import-extensions-xlfs', function () {
+	return es.merge(
+		gulp.src(`./vscode-translations-export/vscode-extensions/*.xlf`)
+			.pipe(extensionsFilter),
+		gulp.src(`./vscode-translations-export/ads-core/*.xlf`)
+	)
+	.pipe(vfs.dest(`./resources/xlf/en`));
+});
+gulp.task(importExtensionsTask)
+// {{SQL CARBON EDIT}} end
 
 const sourceMappingURLBase = `https://sqlopsbuilds.blob.core.windows.net/sourcemaps/${commit}`;
 const minifyVSCodeTask = task.define('minify-vscode', task.series(
@@ -437,11 +481,12 @@ gulp.task(task.define(
 	)
 ));
 
-gulp.task(task.define(
+// {{SQL CARBON EDIT}} Allow for gulp task to be added to update-english-xlfs.
+const vscodeTranslationsExport = task.define(
 	'vscode-translations-export',
 	task.series(
 		compileBuildTask,
-		compileExtensionsBuildTask,
+		compileLocalizationExtensionsBuildTask, // {{SQL CARBON EDIT}} now include all extensions in ADS, not just a subset. (replaces "compileExtensionsBuildTask" here).
 		optimizeVSCodeTask,
 		function () {
 			const pathToMetadata = './out-vscode/nls.metadata.json';
@@ -452,10 +497,22 @@ gulp.task(task.define(
 				gulp.src(pathToMetadata).pipe(i18n.createXlfFilesForCoreBundle()),
 				gulp.src(pathToSetup).pipe(i18n.createXlfFilesForIsl()),
 				gulp.src(pathToExtensions).pipe(i18n.createXlfFilesForExtensions())
-			).pipe(vfs.dest('../vscode-translations-export'));
+			).pipe(vfs.dest('./vscode-translations-export')); // {{SQL CARBON EDIT}} move vscode-translations-export into ADS (for safely deleting after use).
 		}
 	)
+);
+gulp.task(vscodeTranslationsExport)
+
+// {{SQL CARBON EDIT}} Localization gulp task, runs vscodeTranslationsExport and imports a subset of the generated XLFs into the folder.
+gulp.task(task.define(
+	'update-english-xlfs',
+	task.series(
+		vscodeTranslationsExport,
+		importExtensionsTask,
+		task.define('delete-vscode-translations-export', util.rimraf('./vscode-translations-export'))
+	)
 ));
+// {{SQL CARBON EDIT}} end
 
 gulp.task('vscode-translations-pull', function () {
 	return es.merge([...i18n.defaultLanguages, ...i18n.extraLanguages].map(language => {

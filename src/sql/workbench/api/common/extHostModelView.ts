@@ -1568,6 +1568,11 @@ class DeclarativeTableWrapper extends ComponentWrapper implements azdata.Declara
 		});
 	}
 
+	async setDataValues(v: azdata.DeclarativeTableCellValue[][]): Promise<void> {
+		await this.clearItems();
+		await this.setProperty('dataValues', v);
+	}
+
 	public get columns(): azdata.DeclarativeTableColumn[] {
 		return this.properties['columns'];
 	}
@@ -1710,6 +1715,13 @@ class ButtonWrapper extends ComponentWithIconWrapper implements azdata.ButtonCom
 	}
 	public set label(v: string) {
 		this.setProperty('label', v);
+	}
+
+	public get fileType(): string {
+		return this.properties['fileType'];
+	}
+	public set fileType(v: string) {
+		this.setProperty('fileType', v);
 	}
 
 	public get onDidClick(): vscode.Event<any> {

@@ -52,6 +52,14 @@
 	margin-left: auto;
 }
 
+/* {{SQL CARBON EDIT}} Bring back styles for action labels - ours aren't sized correctly without these */
+.monaco-pane-view .pane > .pane-header > .actions .action-label.icon,
+.monaco-pane-view .pane > .pane-header > .actions .action-label.codicon {
+	background-size: 16px;
+	background-position: center center;
+	background-repeat: no-repeat;
+}
+
 .monaco-pane-view .pane > .pane-header > .actions .action-item {
 	margin-right: 4px;
 }

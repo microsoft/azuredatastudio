@@ -28,7 +28,7 @@ export class CurrentLanguagesTab extends LanguageViewBase {
 			// TODO: only supporting single location for now. We should add a drop down for multi locations mode
 			//
 			let locationTitle = await this.getServerTitle();
-			this._locationComponent = view.modelBuilder.text().withProperties({
+			this._locationComponent = view.modelBuilder.text().withProps({
 				value: locationTitle
 			}).component();
 
@@ -46,7 +46,7 @@ export class CurrentLanguagesTab extends LanguageViewBase {
 
 			this._loader = view.modelBuilder.loadingComponent()
 				.withItem(formModel)
-				.withProperties({
+				.withProps({
 					loading: true
 				}).component();
 

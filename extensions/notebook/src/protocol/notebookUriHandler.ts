@@ -87,19 +87,18 @@ export class NotebookUriHandler implements vscode.UriHandler {
 					vscode.window.showErrorMessage(localize('unsupportedScheme', "Cannot open link {0} as only HTTP, HTTPS, and File links are supported", url));
 					return;
 			}
-
-			let doOpen = await this.prompter.promptSingle<boolean>(<IQuestion>{
-				type: QuestionTypes.confirm,
-				message: localize('notebook.confirmOpen', "Download and open '{0}'?", url),
-				default: true
-			});
-			if (!doOpen) {
-				return;
-			}
 			let contents: string;
 			if (uri.scheme === 'file') {
 				contents = await readJson(uri.fsPath);
 			} else {
+				let doOpen = await this.prompter.promptSingle<boolean>(<IQuestion>{
+					type: QuestionTypes.confirm,
+					message: localize('notebook.confirmOpen', "Download and open '{0}'?", url),
+					default: true
+				});
+				if (!doOpen) {
+					return;
+				}
 				contents = await this.download(url);
 			}
 			let untitledUriPath = this.getUntitledUriPath(path.basename(uri.fsPath));
