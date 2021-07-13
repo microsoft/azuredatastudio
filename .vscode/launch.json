@@ -16,7 +16,7 @@
 			"request": "attach",
 			"restart": true,
 			"name": "Attach to Extension Host",
-			"timeout": 30000,
+			"timeout": 50000,
 			"port": 5870,
 			"outFiles": [
 				"${workspaceFolder}/out/**/*.js",
@@ -27,7 +27,7 @@
 			"type": "pwa-chrome",
 			"request": "attach",
 			"name": "Attach to Shared Process",
-			"timeout": 30000,
+			"timeout": 50000,
 			"port": 9222,
 			"urlFilter": "*sharedProcess.html*",
 			"presentation": {
@@ -56,7 +56,7 @@
 			"type": "node",
 			"request": "attach",
 			"name": "Attach to Main Process",
-			"timeout": 30000,
+			"timeout": 50000,
 			"port": 5875,
 			"outFiles": [
 				"${workspaceFolder}/out/**/*.js"
@@ -222,7 +222,7 @@
 				"runtimeExecutable": "${workspaceFolder}/scripts/sql.sh"
 			},
 			"port": 9222,
-			"timeout": 20000,
+			"timeout": 40000,
 			"env": {
 				"VSCODE_EXTHOST_WILL_SEND_SOCKET": null,
 				"VSCODE_SKIP_PRELAUNCH": "1"
@@ -402,7 +402,7 @@
 				"runtimeExecutable": "${workspaceFolder}/scripts/test-extensions-unit.sh"
 			},
 			"webRoot": "${workspaceFolder}",
-			"timeout": 45000
+			"timeout": 65000
 		},
 		{
 			"type": "chrome",
@@ -418,7 +418,7 @@
 				"runtimeExecutable": "${workspaceFolder}/scripts/sql-test-integration.sh"
 			},
 			"webRoot": "${workspaceFolder}",
-			"timeout": 45000
+			"timeout": 65000
 		},
 	],
 	"compounds": [

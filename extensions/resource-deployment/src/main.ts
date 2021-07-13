@@ -46,10 +46,10 @@ export async function activate(context: vscode.ExtensionContext): Promise<rd.IEx
 		}
 	};
 
-	vscode.commands.registerCommand('azdata.resource.sql-image.deploy', () => {
+	vscode.commands.registerCommand('az.resource.sql-image.deploy', () => {
 		openDialog('sql-image');
 	});
-	vscode.commands.registerCommand('azdata.resource.sql-bdc.deploy', () => {
+	vscode.commands.registerCommand('az.resource.sql-bdc.deploy', () => {
 		openDialog('sql-bdc');
 	});
 	/**
@@ -61,7 +61,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<rd.IEx
 	 * @param initialVariableValues - Optional list of initial values to assign to variables. This is an object of key/value pairs in the format
 	 * { "VARIABLE_NAME": "value", "OTHER_VARIABLE_NAME": "value" }
 	 */
-	vscode.commands.registerCommand('azdata.resource.deploy', (defaultResourceTypeName?: string, resourceTypeNameFilters?: string[], optionValuesFilter?: OptionValuesFilter, initialVariableValues?: InitialVariableValues) => {
+	vscode.commands.registerCommand('az.resource.deploy', (defaultResourceTypeName?: string, resourceTypeNameFilters?: string[], optionValuesFilter?: OptionValuesFilter, initialVariableValues?: InitialVariableValues) => {
 		if ((resourceTypeNameFilters && !Array.isArray(resourceTypeNameFilters) ||
 			(resourceTypeNameFilters && resourceTypeNameFilters.length > 0 && typeof resourceTypeNameFilters[0] !== 'string'))) {
 			throw new Error('resourceTypeNameFilters must either be undefined or an array of strings');
@@ -79,7 +79,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<rd.IEx
 			openDialog(defaultDeploymentType, resourceTypeNameFilters, optionValuesFilter, initialVariableValues);
 		}
 	});
-	vscode.commands.registerCommand('azdata.openNotebookInputDialog', (dialogInfo: NotebookBasedDialogInfo) => {
+	vscode.commands.registerCommand('az.openNotebookInputDialog', (dialogInfo: NotebookBasedDialogInfo) => {
 		const dialog = new DeploymentInputDialog(notebookService, platformService, toolsService, dialogInfo);
 		dialog.open();
 	});

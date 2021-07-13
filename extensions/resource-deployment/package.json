@@ -13,8 +13,8 @@
     "azdata": ">=1.6.0"
   },
   "activationEvents": [
-    "onCommand:azdata.resource.deploy",
-    "onCommand:azdata.openNotebookInputDialog"
+    "onCommand:az.resource.deploy",
+    "onCommand:az.openNotebookInputDialog"
   ],
   "main": "./out/main",
   "repository": {
@@ -39,12 +39,12 @@
     ],
     "commands": [
       {
-        "command": "azdata.resource.deploy",
+        "command": "az.resource.deploy",
         "title": "%deploy-resource-command-name%",
         "category": "%deploy-resource-command-category%"
       },
       {
-        "command": "azdata.openNotebookInputDialog",
+        "command": "az.openNotebookInputDialog",
         "title": "Open notebook input dialog",
         "category": "Notebook"
       }
@@ -52,13 +52,13 @@
     "menus": {
       "commandPalette": [
         {
-          "command": "azdata.openNotebookInputDialog",
+          "command": "az.openNotebookInputDialog",
           "when": "false"
         }
       ],
       "dataExplorer/action": [
         {
-          "command": "azdata.resource.deploy",
+          "command": "az.resource.deploy",
           "group": "secondary"
         }
       ]

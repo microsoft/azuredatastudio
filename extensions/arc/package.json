@@ -14,11 +14,11 @@
   "activationEvents": [
     "onCommand:arc.connectToController",
     "onCommand:arc.createController",
-    "onCommand:azdata.resource.deploy",
+    "onCommand:az.resource.deploy",
     "onView:azureArc"
   ],
   "extensionDependencies": [
-    "Microsoft.azdata",
+    "Microsoft.azcli",
     "Microsoft.resource-deployment"
   ],
   "repository": {
@@ -519,7 +519,7 @@
                 "name": "kubectl"
               },
               {
-                "name": "azdata",
+                "name": "az",
                 "version": "20.3.4"
               }
             ],
@@ -838,7 +838,7 @@
                 "name": "kubectl"
               },
               {
-                "name": "azdata",
+                "name": "az",
                 "version": "20.3.4"
               }
             ],
@@ -1067,7 +1067,7 @@
               "name": "kubectl"
             },
             {
-              "name": "azdata",
+              "name": "az",
               "version": "20.3.4"
             }
           ],

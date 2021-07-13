@@ -83,7 +83,7 @@ export class UriHandlerService implements vscode.UriHandler {
 			if (resourceType) {
 				this._resourceTypeService.startDeployment(resourceType, undefined, wizardParams);
 			} else {
-				return vscode.commands.executeCommand('azdata.resource.deploy');
+				return vscode.commands.executeCommand('az.resource.deploy');
 			}
 
 		}
