@@ -739,8 +739,7 @@ export class SqlDatabaseTree {
 		return result;
 	}
 
-	public refreshResults(): void {
-		const assessmentResults: azdata.DeclarativeTableCellValue[][] = [];
+	public async refreshResults(): Promise<void> {
 		if (this._targetType === MigrationTargetType.SQLMI) {
 			if (this._activeIssues.length === 0) {
 				/// show no issues here
