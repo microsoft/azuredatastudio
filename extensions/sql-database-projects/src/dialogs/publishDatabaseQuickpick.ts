@@ -7,6 +7,7 @@ import * as vscode from 'vscode';
 import * as constants from '../common/constants';
 import { IGenerateScriptSettings, IPublishSettings } from '../models/IPublishSettings';
 import { Project } from '../models/project';
+import { PublishProfile, readPublishProfile } from '../models/publishProfile/publishProfile';
 import { promptForPublishProfile } from './publishDatabaseDialog';
 
 /**
@@ -15,22 +16,41 @@ import { promptForPublishProfile } from './publishDatabaseDialog';
 export async function launchPublishDatabaseQuickpick(project: Project): Promise<void> {
 
 	// 1. Select publish settings file (optional)
-	// TODO@chgagnon: Hook up to dacfx service
-	const browseProfileOption = await vscode.window.showQuickPick(
-		[constants.dontUseProfile, constants.browseForProfile],
-		{ title: constants.selectProfile, ignoreFocusOut: true });
-	if (!browseProfileOption) {
-		return;
-	}
-
-	// let publishSettingsFile: vscode.Uri | undefined;
-	if (browseProfileOption === constants.browseForProfile) {
-		const locations = await promptForPublishProfile(project.projectFolderPath);
-		if (!locations) {
-			return;
-		}
-		// publishSettingsFile = locations[0];
-	}
+	// Create custom quickpick so we can control stuff like displaying the loading indicator
+	const quickPick = vscode.window.createQuickPick();
+	quickPick.items = [{ label: constants.dontUseProfile }, { label: constants.browseForProfile }];
+	quickPick.ignoreFocusOut = true;
+	quickPick.title = constants.selectProfileToUse;
+	const profilePicked = new Promise<PublishProfile | undefined>(resolve => {
+		quickPick.onDidChangeSelection(async items => {
+			if (items[0].label === constants.browseForProfile) {
+				const locations = await promptForPublishProfile(project.projectFolderPath);
+				if (!locations) {
+					// If the user cancels out of the file picker then just return and let them choose another option
+					return;
+				}
+				let publishProfileUri = locations[0];
+				try {
+					// Show loading state while reading profile
+					quickPick.busy = true;
+					quickPick.enabled = false;
+					const profile = await readPublishProfile(publishProfileUri);
+					resolve(profile);
+				} catch (err) {
+					// readPublishProfile will handle displaying an error if one occurs
+					// Clear selected items so this event will trigger again if they select the same item
+					quickPick.selectedItems = [];
+					quickPick.busy = false;
+					quickPick.enabled = true;
+				}
+			} else {
+				// Selected no profile so just continue on
+				resolve(undefined);
+			}
+		});
+	});
+	quickPick.show();
+	const publishProfile = await profilePicked;
 
 	// 2. Select connection
 	// TODO@chgagnon: Hook up to MSSQL
@@ -83,8 +103,7 @@ export async function launchPublishDatabaseQuickpick(project: Project): Promise<
 
 
 	// 4. Modify sqlcmd vars
-	// TODO@chgagnon: Concat ones from publish profile
-	let sqlCmdVariables = Object.assign({}, project.sqlCmdVariables);
+	let sqlCmdVariables = Object.assign({}, project.sqlCmdVariables, publishProfile?.sqlCmdVariables);
 
 	if (Object.keys(sqlCmdVariables).length > 0) {
 		// Continually loop here, allowing the user to modify SQLCMD variables one
@@ -123,7 +142,7 @@ export async function launchPublishDatabaseQuickpick(project: Project): Promise<
 					sqlCmdVariables[sqlCmd.key] = newValue;
 				}
 			} else if (sqlCmd.isResetAllVars) {
-				sqlCmdVariables = Object.assign({}, project.sqlCmdVariables);
+				sqlCmdVariables = Object.assign({}, project.sqlCmdVariables, publishProfile?.sqlCmdVariables);
 			} else if (sqlCmd.isDone) {
 				break;
 			}
