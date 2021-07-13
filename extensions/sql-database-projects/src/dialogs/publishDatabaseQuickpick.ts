@@ -26,6 +26,9 @@ export async function launchPublishDatabaseQuickpick(project: Project): Promise<
 			if (items[0].label === constants.browseForProfile) {
 				const locations = await promptForPublishProfile(project.projectFolderPath);
 				if (!locations) {
+					// Clear items so that this event will trigger again if they select the same item
+					quickPick.selectedItems = [];
+					quickPick.activeItems = [];
 					// If the user cancels out of the file picker then just return and let them choose another option
 					return;
 				}
@@ -38,10 +41,12 @@ export async function launchPublishDatabaseQuickpick(project: Project): Promise<
 					resolve(profile);
 				} catch (err) {
 					// readPublishProfile will handle displaying an error if one occurs
-					// Clear selected items so this event will trigger again if they select the same item
+					// Clear items so that this event will trigger again if they select the same item
 					quickPick.selectedItems = [];
+					quickPick.activeItems = [];
 					quickPick.busy = false;
 					quickPick.enabled = true;
+
 				}
 			} else {
 				// Selected no profile so just continue on

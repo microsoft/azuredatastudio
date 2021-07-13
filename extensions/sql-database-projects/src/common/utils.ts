@@ -260,7 +260,6 @@ export async function getDacFxService(): Promise<IDacFxService> {
 		const api = await ext.activate();
 		return api.dacFx;
 	} else {
-		console.log(vscodeMssql.extension.name);
 		let ext = vscode.extensions.getExtension(vscodeMssql.extension.name) as vscode.Extension<vscodeMssql.IExtension>;
 		const api = await ext.activate();
 		return api.dacFx;
