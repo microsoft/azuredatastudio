@@ -4226,7 +4226,7 @@
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/extensions/azuremonitor/images/ADX.png"
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/extensions/azuremonitor/resources/ADX.png"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
