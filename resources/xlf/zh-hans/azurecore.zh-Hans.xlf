@@ -126,6 +126,10 @@
         <source xml:lang="en">Error fetching resource groups for account {0} ({1}) subscription {2} ({3}) tenant {4} : {5}</source>
         <target state="translated">为帐户 {0} ({1})订阅 {2} ({3})租户 {4} 提取资源组时出错: {5}</target>
       </trans-unit>
+      <trans-unit id="azure.accounts.getLocations.queryError">
+        <source xml:lang="en">Error fetching locations for account {0} ({1}) subscription {2} ({3}) tenant {4} : {5}</source>
+        <target state="translated">提取帐户 {0} ({1})订阅 {2} ({3})租户 {4} 的位置时出错: {5}</target>
+      </trans-unit>
       <trans-unit id="azure.accounts.runResourceQuery.errors.invalidQuery">
         <source xml:lang="en">Invalid query</source>
         <target state="translated">查询无效</target>
@@ -379,8 +383,8 @@
         <target state="translated">SQL Server - Azure Arc</target>
       </trans-unit>
       <trans-unit id="azurecore.azureArcPostgres">
-        <source xml:lang="en">Azure Arc enabled PostgreSQL Hyperscale</source>
-        <target state="translated">已启用 Azure Arc 的 PostgreSQL 超大规模</target>
+        <source xml:lang="en">Azure Arc-enabled PostgreSQL Hyperscale</source>
+        <target state="translated">启用 Azure Arc 的 PostgreSQL 超大规模</target>
       </trans-unit>
       <trans-unit id="azure.unableToOpenAzureLink">
         <source xml:lang="en">Unable to open link, missing required values</source>
@@ -411,15 +415,15 @@
         <target state="translated">使用 Azure 身份验证时出现不明错误</target>
       </trans-unit>
       <trans-unit id="azure.tenantNotFound">
-        <source xml:lang="en">Specifed tenant with ID '{0}' not found.</source>
-        <target state="translated">找不到 ID 为“{0}”的指定租户。</target>
+        <source xml:lang="en">Specified tenant with ID '{0}' not found.</source>
+        <target state="translated">找不到带有 ID '{0}' 的指定租户。</target>
       </trans-unit>
       <trans-unit id="azure.noBaseToken">
         <source xml:lang="en">Something failed with the authentication, or your tokens have been deleted from the system. Please try adding your account to Azure Data Studio again.</source>
         <target state="translated">身份验证失败，或者你的令牌已从系统中删除。请尝试再次将帐户添加到 Azure Data Studio。</target>
       </trans-unit>
       <trans-unit id="azure.responseError">
-        <source xml:lang="en">Token retrival failed with an error. Open developer tools to view the error</source>
+        <source xml:lang="en">Token retrieval failed with an error. Open developer tools to view the error</source>
         <target state="translated">令牌检索失败，出现错误。请打开开发人员工具以查看错误</target>
       </trans-unit>
       <trans-unit id="azure.accessTokenEmpty">
@@ -512,6 +516,14 @@
       <trans-unit id="azure.resource.tree.accountTreeNode.credentialError">
         <source xml:lang="en">Failed to get credential for account {0}. Please go to the accounts dialog and refresh the account.</source>
         <target state="translated">未能获取帐户 {0} 的凭据。请转到“帐户”对话框并刷新帐户。</target>
+      </trans-unit>
+      <trans-unit id="azure.resource.throttleerror">
+        <source xml:lang="en">Requests from this account have been throttled. To retry, please select a smaller number of subscriptions.</source>
+        <target state="translated">已限制来自此帐户的请求。要重试，请选择少量订阅。</target>
+      </trans-unit>
+      <trans-unit id="azure.resource.tree.loadresourceerror">
+        <source xml:lang="en">An error occured while loading Azure resources: {0}</source>
+        <target state="translated">加载 Azure 资源时出错: {0}</target>
       </trans-unit>
     </body>
   </file>
@@ -700,6 +712,14 @@
       <trans-unit id="azure.resource.providers.KustoContainerLabel">
         <source xml:lang="en">Azure Data Explorer Cluster</source>
         <target state="translated">Azure 数据资源管理器群集</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/azurecore/dist/azureResource/providers/azuremonitor/azuremonitorTreeDataProvider" source-language="en" datatype="plaintext" target-language="zh-Hans">
+    <body>
+      <trans-unit id="azure.resource.providers.AzureMonitorContainerLabel">
+        <source xml:lang="en">Azure Monitor Workspace</source>
+        <target state="new">Azure Monitor Workspace</target>
       </trans-unit>
     </body>
   </file>
