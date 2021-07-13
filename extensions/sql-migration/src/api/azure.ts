@@ -218,14 +218,13 @@ export async function regenerateSqlMigrationServiceAuthKey(account: azdata.Accou
 
 export async function getStorageAccountAccessKeys(account: azdata.Account, subscription: Subscription, storageAccount: StorageAccount): Promise<GetStorageAccountAccessKeysResult> {
 	const api = await getAzureCoreAPI();
-	const path = `/subscriptions/${subscription.id}/resourceGroups/${storageAccount.resourceGroup}/providers/Microsoft.Storage/storageAccounts/${storageAccount.name}/listKeys?api-version=2019-06-01`;
-	const response = await api.makeAzureRestRequest(account, subscription, path, azurecore.HttpRequestMethod.POST, undefined, true);
+	const response = await api.getStorageAccountAccessKey(account, subscription, storageAccount, true);
 	if (response.errors.length > 0) {
 		throw new Error(response.errors.toString());
 	}
 	return {
-		keyName1: response?.response?.data?.keys[0].value ?? '',
-		keyName2: response?.response?.data?.keys[0].value ?? '',
+		keyName1: response?.keyName1,
+		keyName2: response?.keyName2
 	};
 }
 
