@@ -58,6 +58,7 @@ export class MigrationStatusDialog {
 				});
 			}
 
+			this.registerCommands();
 			const formBuilder = view.modelBuilder.formContainer().withFormItems(
 				[
 					{
@@ -168,6 +169,105 @@ export class MigrationStatusDialog {
 		}
 	}
 
+	private registerCommands(): void {
+		vscode.commands.registerCommand(
+			'sqlmigration.cutover',
+			async (migrationId: string) => {
+				try {
+					const migration = this._model._migrations.find(migration => migration.migrationContext.id === migrationId);
+					if (this.canCutoverMigration(migration?.migrationContext.properties.migrationStatus)) {
+						const cutoverDialogModel = new MigrationCutoverDialogModel(migration!);
+						await cutoverDialogModel.fetchStatus();
+						const dialog = new ConfirmCutoverDialog(cutoverDialogModel);
+						await dialog.initialize();
+					} else {
+						await vscode.window.showInformationMessage(loc.MIGRATION_CANNOT_CUTOVER);
+					}
+				} catch (e) {
+					console.log(e);
+				}
+			});
+
+		vscode.commands.registerCommand(
+			'sqlmigration.view.database',
+			async (migrationId: string) => {
+				try {
+					const migration = this._model._migrations.find(migration => migration.migrationContext.id === migrationId);
+					const dialog = new MigrationCutoverDialog(migration!);
+					await dialog.initialize();
+				} catch (e) {
+					console.log(e);
+				}
+			});
+
+		vscode.commands.registerCommand(
+			'sqlmigration.view.target',
+			async (migrationId: string) => {
+				try {
+					const migration = this._model._migrations.find(migration => migration.migrationContext.id === migrationId);
+					const url = 'https://portal.azure.com/#resource/' + migration!.targetManagedInstance.id;
+					await vscode.env.openExternal(vscode.Uri.parse(url));
+				} catch (e) {
+					console.log(e);
+				}
+			});
+
+		vscode.commands.registerCommand(
+			'sqlmigration.view.service',
+			async (migrationId: string) => {
+				try {
+					const migration = this._model._migrations.find(migration => migration.migrationContext.id === migrationId);
+					const dialog = new SqlMigrationServiceDetailsDialog(migration!);
+					await dialog.initialize();
+				} catch (e) {
+					console.log(e);
+				}
+			});
+
+		vscode.commands.registerCommand(
+			'sqlmigration.copy.migration',
+			async (migrationId: string) => {
+				try {
+					const migration = this._model._migrations.find(migration => migration.migrationContext.id === migrationId);
+					const cutoverDialogModel = new MigrationCutoverDialogModel(migration!);
+					await cutoverDialogModel.fetchStatus();
+					if (cutoverDialogModel.migrationOpStatus) {
+						await vscode.env.clipboard.writeText(JSON.stringify({
+							'async-operation-details': cutoverDialogModel.migrationOpStatus,
+							'details': cutoverDialogModel.migrationStatus
+						}, undefined, 2));
+					} else {
+						await vscode.env.clipboard.writeText(JSON.stringify(cutoverDialogModel.migrationStatus, undefined, 2));
+					}
+
+					await vscode.window.showInformationMessage(loc.DETAILS_COPIED);
+				} catch (e) {
+					console.log(e);
+				}
+			});
+
+		vscode.commands.registerCommand(
+			'sqlmigration.cancel.migration',
+			async (migrationId: string) => {
+				try {
+					const migration = this._model._migrations.find(migration => migration.migrationContext.id === migrationId);
+					if (this.canCancelMigration(migration?.migrationContext.properties.migrationStatus)) {
+						vscode.window.showInformationMessage(loc.CANCEL_MIGRATION_CONFIRMATION, loc.YES, loc.NO).then(async (v) => {
+							if (v === loc.YES) {
+								const cutoverDialogModel = new MigrationCutoverDialogModel(migration!);
+								await cutoverDialogModel.fetchStatus();
+								await cutoverDialogModel.cancelMigration();
+							}
+						});
+					} else {
+						await vscode.window.showInformationMessage(loc.MIGRATION_CANNOT_CANCEL);
+					}
+				} catch (e) {
+					console.log(e);
+				}
+			});
+	}
+
 	private async populateMigrationTable(): Promise<void> {
 		try {
 			const migrations = filterMigrations(
@@ -178,103 +278,6 @@ export class MigrationStatusDialog {
 			migrations.sort((m1, m2) => {
 				return new Date(m1.migrationContext.properties.startedOn) > new Date(m2.migrationContext.properties.startedOn) ? -1 : 1;
 			});
-
-			vscode.commands.registerCommand(
-				'sqlmigration.cutover',
-				async (migrationId: string) => {
-					try {
-						const migration = migrations.find(migration => migration.migrationContext.id === migrationId);
-						if (this.canCutoverMigration(migration?.migrationContext.properties.migrationStatus)) {
-							const cutoverDialogModel = new MigrationCutoverDialogModel(migration!);
-							await cutoverDialogModel.fetchStatus();
-							const dialog = new ConfirmCutoverDialog(cutoverDialogModel);
-							await dialog.initialize();
-						} else {
-							await vscode.window.showInformationMessage(loc.MIGRATION_CANNOT_CUTOVER);
-						}
-					} catch (e) {
-						console.log(e);
-					}
-				});
-
-			vscode.commands.registerCommand(
-				'sqlmigration.view.database',
-				async (migrationId: string) => {
-					try {
-						const migration = migrations.find(migration => migration.migrationContext.id === migrationId);
-						const dialog = new MigrationCutoverDialog(migration!);
-						await dialog.initialize();
-					} catch (e) {
-						console.log(e);
-					}
-				});
-
-			vscode.commands.registerCommand(
-				'sqlmigration.view.target',
-				async (migrationId: string) => {
-					try {
-						const migration = migrations.find(migration => migration.migrationContext.id === migrationId);
-						const url = 'https://portal.azure.com/#resource/' + migration!.targetManagedInstance.id;
-						await vscode.env.openExternal(vscode.Uri.parse(url));
-					} catch (e) {
-						console.log(e);
-					}
-				});
-
-			vscode.commands.registerCommand(
-				'sqlmigration.view.service',
-				async (migrationId: string) => {
-					try {
-						const migration = migrations.find(migration => migration.migrationContext.id === migrationId);
-						const dialog = new SqlMigrationServiceDetailsDialog(migration!);
-						await dialog.initialize();
-					} catch (e) {
-						console.log(e);
-					}
-				});
-
-			vscode.commands.registerCommand(
-				'sqlmigration.copy.migration',
-				async (migrationId: string) => {
-					try {
-						const migration = migrations.find(migration => migration.migrationContext.id === migrationId);
-						const cutoverDialogModel = new MigrationCutoverDialogModel(migration!);
-						await cutoverDialogModel.fetchStatus();
-						if (cutoverDialogModel.migrationOpStatus) {
-							await vscode.env.clipboard.writeText(JSON.stringify({
-								'async-operation-details': cutoverDialogModel.migrationOpStatus,
-								'details': cutoverDialogModel.migrationStatus
-							}, undefined, 2));
-						} else {
-							await vscode.env.clipboard.writeText(JSON.stringify(cutoverDialogModel.migrationStatus, undefined, 2));
-						}
-
-						await vscode.window.showInformationMessage(loc.DETAILS_COPIED);
-					} catch (e) {
-						console.log(e);
-					}
-				});
-
-			vscode.commands.registerCommand(
-				'sqlmigration.cancel.migration',
-				async (migrationId: string) => {
-					try {
-						const migration = migrations.find(migration => migration.migrationContext.id === migrationId);
-						if (this.canCancelMigration(migration?.migrationContext.properties.migrationStatus)) {
-							vscode.window.showInformationMessage(loc.CANCEL_MIGRATION_CONFIRMATION, loc.YES, loc.NO).then(async (v) => {
-								if (v === loc.YES) {
-									const cutoverDialogModel = new MigrationCutoverDialogModel(migration!);
-									await cutoverDialogModel.fetchStatus();
-									await cutoverDialogModel.cancelMigration();
-								}
-							});
-						} else {
-							await vscode.window.showInformationMessage(loc.MIGRATION_CANNOT_CANCEL);
-						}
-					} catch (e) {
-						console.log(e);
-					}
-				});
 
 			const data: azdata.DeclarativeTableCellValue[][] = migrations.map((migration, index) => {
 				return [
@@ -550,7 +553,7 @@ export class MigrationStatusDialog {
 		return this._statusTable;
 	}
 
-	private _statusImageMap(status: string): azdata.IconPath | undefined {
+	private _statusImageMap(status: string): azdata.IconPath {
 		switch (status) {
 			case 'InProgress':
 				return IconPathHelper.inProgressMigration;
