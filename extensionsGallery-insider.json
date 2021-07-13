@@ -4214,7 +4214,7 @@
 				{
 					"extensionId": "83",
 					"extensionName": "azuremonitor",
-					"displayName": "Azure Monitor",
+					"displayName": "Azure Monitor Logs",
 					"shortDescription": "Azure Monitor extension for Azure Data Studio",
 					"publisher": {
 						"displayName": "Microsoft",
@@ -4234,11 +4234,11 @@
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/extensions/azuremonitor/resources/images/ADX.png"
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/extensions/azuremonitor/resources/images/azuremonitor.png"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/extensions/azuremonitor/readme.md"
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/extensions/azuremonitor/README.md"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Code.Manifest",
