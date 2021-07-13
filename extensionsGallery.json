@@ -4123,7 +4123,6 @@
 									"source": "https://github.com/sahalMoidu/ADS-add-columns/raw/master/LICENSE"
 								}
 							],
-							
 							"properties": [
 								{
 									"key": "Microsoft.VisualStudio.Code.ExtensionDependencies",
@@ -4146,6 +4145,63 @@
 					],
 					"statistics": [],
 					"flags": ""
+				},
+				{
+					"extensionId": "83",
+					"extensionName": "azuremonitor",
+					"displayName": "Azure Monitor Logs",
+					"shortDescription": "Azure Monitor extension for Azure Data Studio",
+					"publisher": {
+						"displayName": "Microsoft",
+						"publisherId": "Microsoft",
+						"publisherName": "Microsoft"
+					},
+					"versions": [
+						{
+							"version": "0.1.0",
+							"lastUpdated": "07/09/2021",
+							"assetUri": "",
+							"fallbackAssetUri": "fallbackAssetUri",
+							"files": [
+								{
+									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/azuremonitor/azuremonitor-0.1.0.vsix"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/extensions/azuremonitor/resources/images/azuremonitor.png"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/extensions/azuremonitor/README.md"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Code.Manifest",
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/extensions/azuremonitor/package.json"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.License",
+									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt"
+								}
+							],
+							"properties": [
+								{
+									"key": "Microsoft.VisualStudio.Code.Engine",
+									"value": "*"
+								},
+								{
+									"key": "Microsoft.VisualStudio.Services.Links.Source",
+									"value": "https://github.com/Microsoft/azuredatastudio"
+								},
+								{
+									"key": "Microsoft.AzDataEngine",
+									"value": ">=1.31.0"
+								}
+							]
+						}
+					],
+					"statistics": [],
+					"flags": "preview"
 				}
 			],
 			"resultMetadata": [
@@ -4154,7 +4210,7 @@
 					"metadataItems": [
 						{
 							"name": "TotalCount",
-							"count": 68
+							"count": 69
 						}
 					]
 				}
