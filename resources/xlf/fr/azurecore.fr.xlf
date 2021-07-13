@@ -126,6 +126,10 @@
         <source xml:lang="en">Error fetching resource groups for account {0} ({1}) subscription {2} ({3}) tenant {4} : {5}</source>
         <target state="translated">Erreur de récupération des groupes de ressources pour le compte {0} ({1}), abonnement {2} ({3}), locataire {4} : {5}</target>
       </trans-unit>
+      <trans-unit id="azure.accounts.getLocations.queryError">
+        <source xml:lang="en">Error fetching locations for account {0} ({1}) subscription {2} ({3}) tenant {4} : {5}</source>
+        <target state="translated">Erreur de récupération des emplacements pour le compte {0} ({1}), abonnement {2} ({3}), locataire {4} : {5}</target>
+      </trans-unit>
       <trans-unit id="azure.accounts.runResourceQuery.errors.invalidQuery">
         <source xml:lang="en">Invalid query</source>
         <target state="translated">Requête non valide</target>
@@ -379,7 +383,7 @@
         <target state="translated">SQL Server - Azure Arc</target>
       </trans-unit>
       <trans-unit id="azurecore.azureArcPostgres">
-        <source xml:lang="en">Azure Arc enabled PostgreSQL Hyperscale</source>
+        <source xml:lang="en">Azure Arc-enabled PostgreSQL Hyperscale</source>
         <target state="translated">PostgreSQL Hyperscale avec Azure Arc</target>
       </trans-unit>
       <trans-unit id="azure.unableToOpenAzureLink">
@@ -411,7 +415,7 @@
         <target state="translated">Erreur non identifiée avec l'authentification Azure</target>
       </trans-unit>
       <trans-unit id="azure.tenantNotFound">
-        <source xml:lang="en">Specifed tenant with ID '{0}' not found.</source>
+        <source xml:lang="en">Specified tenant with ID '{0}' not found.</source>
         <target state="translated">Le locataire spécifié avec l'ID « {0} » est introuvable.</target>
       </trans-unit>
       <trans-unit id="azure.noBaseToken">
@@ -419,7 +423,7 @@
         <target state="translated">Une erreur s'est produite pendant l'authentification ou vos jetons ont été supprimés du système. Essayez de rajouter votre compte à Azure Data Studio.</target>
       </trans-unit>
       <trans-unit id="azure.responseError">
-        <source xml:lang="en">Token retrival failed with an error. Open developer tools to view the error</source>
+        <source xml:lang="en">Token retrieval failed with an error. Open developer tools to view the error</source>
         <target state="translated">La récupération du jeton a échoué avec une erreur. Ouvrir les outils de développement pour voir l'erreur</target>
       </trans-unit>
       <trans-unit id="azure.accessTokenEmpty">
@@ -512,6 +516,14 @@
       <trans-unit id="azure.resource.tree.accountTreeNode.credentialError">
         <source xml:lang="en">Failed to get credential for account {0}. Please go to the accounts dialog and refresh the account.</source>
         <target state="translated">L'obtention des informations d'identification a échoué pour le compte {0}. Accédez à la boîte de dialogue des comptes et actualisez le compte.</target>
+      </trans-unit>
+      <trans-unit id="azure.resource.throttleerror">
+        <source xml:lang="en">Requests from this account have been throttled. To retry, please select a smaller number of subscriptions.</source>
+        <target state="translated">Les demandes de ce compte ont été limitées. Pour réessayer, sélectionnez un nombre plus petit d’abonnements.</target>
+      </trans-unit>
+      <trans-unit id="azure.resource.tree.loadresourceerror">
+        <source xml:lang="en">An error occured while loading Azure resources: {0}</source>
+        <target state="translated">Une erreur s’est produite lors du chargement des ressources Azure : {0}</target>
       </trans-unit>
     </body>
   </file>
@@ -700,6 +712,14 @@
       <trans-unit id="azure.resource.providers.KustoContainerLabel">
         <source xml:lang="en">Azure Data Explorer Cluster</source>
         <target state="translated">Cluster Azure Data Explorer</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/azurecore/dist/azureResource/providers/azuremonitor/azuremonitorTreeDataProvider" source-language="en" datatype="plaintext" target-language="fr">
+    <body>
+      <trans-unit id="azure.resource.providers.AzureMonitorContainerLabel">
+        <source xml:lang="en">Azure Monitor Workspace</source>
+        <target state="new">Azure Monitor Workspace</target>
       </trans-unit>
     </body>
   </file>
