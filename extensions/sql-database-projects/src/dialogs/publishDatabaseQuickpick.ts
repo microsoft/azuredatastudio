@@ -21,7 +21,12 @@ export async function launchPublishDatabaseQuickpick(project: Project): Promise<
 	quickPick.items = [{ label: constants.dontUseProfile }, { label: constants.browseForProfile }];
 	quickPick.ignoreFocusOut = true;
 	quickPick.title = constants.selectProfileToUse;
-	const profilePicked = new Promise<PublishProfile | undefined>(resolve => {
+	const profilePicked = new Promise<PublishProfile | undefined>((resolve, reject) => {
+		quickPick.onDidHide(() => {
+			// If the quickpick is hidden that means the user cancelled or another quickpick came up - so we reject
+			// here to be able to complete the promise being waited on below
+			reject();
+		});
 		quickPick.onDidChangeSelection(async items => {
 			if (items[0].label === constants.browseForProfile) {
 				const locations = await promptForPublishProfile(project.projectFolderPath);
@@ -55,7 +60,14 @@ export async function launchPublishDatabaseQuickpick(project: Project): Promise<
 		});
 	});
 	quickPick.show();
-	const publishProfile = await profilePicked;
+	let publishProfile: PublishProfile | undefined = undefined;
+	try {
+		publishProfile = await profilePicked;
+	} catch (err) {
+		// User cancelled or another quickpick came up and hid the current one
+		// so exit the flow.
+		return;
+	}
 
 	// 2. Select connection
 	// TODO@chgagnon: Hook up to MSSQL
