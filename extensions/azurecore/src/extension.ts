@@ -210,6 +210,19 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 			ignoreErrors: boolean): Promise<azurecore.GetFileSharesResult> {
 			return azureResourceUtils.getFileShares(account, subscription, storageAccount, ignoreErrors);
 		},
+		getStorageAccountAccessKey(account: azdata.Account,
+			subscription: azureResource.AzureResourceSubscription,
+			storageAccount: azureResource.AzureGraphResource,
+			ignoreErrors: boolean): Promise<azurecore.GetStorageAccountAccessKeyResult> {
+			return azureResourceUtils.getStorageAccountAccessKey(account, subscription, storageAccount, ignoreErrors);
+		},
+		getBlobs(account: azdata.Account,
+			subscription: azureResource.AzureResourceSubscription,
+			storageAccount: azureResource.AzureGraphResource,
+			containerName: string,
+			ignoreErrors: boolean): Promise<azurecore.GetBlobsResult> {
+			return azureResourceUtils.getBlobs(account, subscription, storageAccount, containerName, ignoreErrors);
+		},
 		createResourceGroup(account: azdata.Account,
 			subscription: azureResource.AzureResourceSubscription,
 			resourceGroupName: string,
