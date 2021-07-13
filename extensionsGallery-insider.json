@@ -2689,10 +2689,6 @@
 								{
 									"assetType": "Microsoft.VisualStudio.Code.Manifest",
 									"source": "https://raw.githubusercontent.com/ecirpnaes/SimpleDataScripter/master/package.json"
-								},
-								{
-									"assetType": "Microsoft.VisualStudio.Services.Content.License",
-									"source": "https://raw.githubusercontent.com/ecirpnaes/SimpleDataScripter/master/LICENSE"
 								}
 							],
 							"properties": [
@@ -2933,10 +2929,6 @@
 								{
 									"assetType": "Microsoft.VisualStudio.Code.Manifest",
 									"source": "https://raw.githubusercontent.com/ecirpnaes/DbSnapshotCreator/master/package.json"
-								},
-								{
-									"assetType": "Microsoft.VisualStudio.Services.Content.License",
-									"source": "https://raw.githubusercontent.com/ecirpnaes/DbSnapshotCreator/master/LICENSE"
 								}
 							],
 							"properties": [
@@ -3506,7 +3498,7 @@
 							"files": [
 								{
 									"assetType": "Microsoft.SQLOps.DownloadPage",
-									"source": "https://github.com/wakatime/vscode-wakatime/releases/tag/4.0.0"
+									"source": "https://marketplace.visualstudio.com/items?itemName=WakaTime.vscode-wakatime"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -4234,11 +4226,11 @@
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/extensions/azuremonitor/resources/images/ADX.png"
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/extensions/azuremonitor/resources/light/azure_monitor_light.svg"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/extensions/azuremonitor/readme.md"
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/extensions/azuremonitor/README.md"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Code.Manifest",
