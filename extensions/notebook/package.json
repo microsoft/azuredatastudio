@@ -43,10 +43,21 @@
           "default": false,
           "description": "%notebook.dontPromptPythonUpdate.description%"
         },
+        "notebook.jupyterServerShutdownTimeout": {
+          "type": "number",
+          "default": 5,
+          "minimum": 0,
+          "description": "%notebook.jupyterServerShutdownTimeout.description%"
+        },
         "notebook.overrideEditorTheming": {
           "type": "boolean",
           "default": true,
           "description": "%notebook.overrideEditorTheming.description%"
+        },
+        "notebook.allowRoot": {
+          "type": "boolean",
+          "default": false,
+          "description": "%notebook.allowRoot.description%"
         },
         "notebook.maxTableRows": {
           "type": "number",
@@ -91,11 +102,7 @@
       },
       {
         "command": "notebook.command.open",
-        "title": "%notebook.command.open%",
-        "icon": {
-          "dark": "resources/dark/open_notebook_inverse.svg",
-          "light": "resources/light/open_notebook.svg"
-        }
+        "title": "%notebook.command.open%"
       },
       {
         "command": "notebook.command.runactivecell",
@@ -137,11 +144,7 @@
       },
       {
         "command": "jupyter.task.openNotebook",
-        "title": "%title.openJupyterNotebook%",
-        "icon": {
-          "dark": "resources/dark/open_notebook_inverse.svg",
-          "light": "resources/light/open_notebook.svg"
-        }
+        "title": "%title.openJupyterNotebook%"
       },
       {
         "command": "jupyter.cmd.newNotebook",
@@ -223,8 +226,8 @@
         "title": "%title.openJupyterBook%",
         "category": "%books-preview-category%",
         "icon": {
-          "dark": "resources/dark/open_notebook_inverse.svg",
-          "light": "resources/light/open_notebook.svg"
+          "dark": "resources/dark/open_book_inverse.svg",
+          "light": "resources/light/open_book.svg"
         }
       },
       {
@@ -263,20 +266,12 @@
       {
         "command": "notebook.command.createBook",
         "title": "%title.createJupyterBook%",
-        "category": "%books-preview-category%",
-        "icon": {
-          "dark": "resources/dark/open_notebook_inverse.svg",
-          "light": "resources/light/open_notebook.svg"
-        }
+        "category": "%books-preview-category%"
       },
       {
         "command": "notebook.command.openRemoteBook",
         "title": "%title.openRemoteJupyterBook%",
-        "category": "%books-preview-category%",
-        "icon": {
-          "dark": "resources/dark/open_notebook_inverse.svg",
-          "light": "resources/light/open_notebook.svg"
-        }
+        "category": "%books-preview-category%"
       },
       {
         "command": "notebook.command.pinNotebook",
@@ -435,12 +430,6 @@
           "when": "false"
         }
       ],
-      "notebooks/title": [
-        {
-          "command": "notebook.command.createBook",
-          "group": "secondary"
-        }
-      ],
       "touchBar": [
         {
           "command": "notebook.command.runactivecell",
@@ -540,6 +529,10 @@
         },
         {
           "command": "notebook.command.openRemoteBook",
+          "when": "view == bookTreeView"
+        },
+        {
+          "command": "notebook.command.createBook",
           "when": "view == bookTreeView"
         }
       ],
@@ -671,6 +664,7 @@
     "fast-glob": "^3.1.0",
     "fs-extra": "^5.0.0",
     "glob": "^7.1.1",
+    "js-yaml": "^3.12.1",
     "node-fetch": "^2.6.1",
     "request": "^2.88.0",
     "tar": "^6.0.1",

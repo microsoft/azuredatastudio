@@ -77,7 +77,7 @@ export abstract class ComponentWithIconBase<T extends azdata.ComponentWithIconPr
 		this.setPropertyFromUI<string>((properties, title) => { properties.title = title; }, newTitle);
 	}
 
-	ngOnDestroy(): void {
+	override ngOnDestroy(): void {
 		if (this._iconClass) {
 			removeCSSRulesContainingSelector(this._iconClass);
 		}

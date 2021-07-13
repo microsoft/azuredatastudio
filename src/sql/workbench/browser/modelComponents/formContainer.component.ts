@@ -101,7 +101,7 @@ export default class FormContainer extends ContainerBase<FormItemLayout> impleme
 		super(changeRef, el, logService);
 	}
 
-	ngOnDestroy(): void {
+	override ngOnDestroy(): void {
 		this.baseDestroy();
 	}
 
@@ -109,7 +109,7 @@ export default class FormContainer extends ContainerBase<FormItemLayout> impleme
 		this.baseInit();
 	}
 
-	public layout(): void {
+	public override layout(): void {
 		super.layout();
 	}
 
@@ -224,7 +224,7 @@ export default class FormContainer extends ContainerBase<FormItemLayout> impleme
 		return item && item.config && !item.config.horizontal;
 	}
 
-	public get CSSStyles(): CssStyles {
+	public override get CSSStyles(): CssStyles {
 		return this.mergeCss(super.CSSStyles, {
 			'padding': this.getFormPadding(),
 			'width': this.getFormWidth(),

@@ -44,7 +44,7 @@ export class BackupDialog extends Modal {
 		this._body = append(container, $('.backup-dialog'));
 	}
 
-	public render() {
+	public override render() {
 		super.render();
 		attachModalDialogStyler(this, this._themeService);
 
@@ -74,7 +74,7 @@ export class BackupDialog extends Modal {
 	}
 
 	/* Overwrite escape key behavior */
-	protected onClose() {
+	protected override onClose() {
 		this.close();
 	}
 
@@ -85,7 +85,7 @@ export class BackupDialog extends Modal {
 		this.hide('close');
 	}
 
-	public dispose(): void {
+	public override dispose(): void {
 		super.dispose();
 		if (this._moduleRef) {
 			this._moduleRef.destroy();

@@ -133,11 +133,11 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 		}
 	}
 
-	public getEditor(): QueryTextEditor {
+	public override getEditor(): QueryTextEditor {
 		return this._editor;
 	}
 
-	public hasEditor(): boolean {
+	public override hasEditor(): boolean {
 		return true;
 	}
 

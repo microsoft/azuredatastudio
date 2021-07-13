@@ -49,7 +49,7 @@ export class SelectOperationPage extends BasePage {
 
 	private async createDeployRadioButton(): Promise<azdata.FormComponent> {
 		this.deployRadioButton = this.view.modelBuilder.radioButton()
-			.withProperties({
+			.withProps({
 				name: 'selectedOperation',
 				label: loc.deployDescription,
 				checked: true // Default to first radio button being selected
@@ -77,7 +77,7 @@ export class SelectOperationPage extends BasePage {
 
 	private async createExtractRadioButton(): Promise<azdata.FormComponent> {
 		this.extractRadioButton = this.view.modelBuilder.radioButton()
-			.withProperties({
+			.withProps({
 				name: 'selectedOperation',
 				label: loc.extractDescription,
 			}).component();
@@ -102,7 +102,7 @@ export class SelectOperationPage extends BasePage {
 
 	private async createImportRadioButton(): Promise<azdata.FormComponent> {
 		this.importRadioButton = this.view.modelBuilder.radioButton()
-			.withProperties({
+			.withProps({
 				name: 'selectedOperation',
 				label: loc.importDescription,
 			}).component();
@@ -127,7 +127,7 @@ export class SelectOperationPage extends BasePage {
 
 	private async createExportRadioButton(): Promise<azdata.FormComponent> {
 		this.exportRadioButton = this.view.modelBuilder.radioButton()
-			.withProperties({
+			.withProps({
 				name: 'selectedOperation',
 				label: loc.exportDescription,
 			}).component();

@@ -198,7 +198,7 @@ class DialogImpl extends ModelViewPanelImpl implements azdata.window.Dialog {
 		this._operationHandler.registerOperation(operationInfo);
 	}
 
-	public setModelViewId(value: string) {
+	public override setModelViewId(value: string) {
 		super.setModelViewId(value);
 		this.content = value;
 	}
@@ -252,7 +252,7 @@ class TabImpl extends ModelViewPanelImpl implements azdata.window.DialogTab {
 	public title: string;
 	public content: string;
 
-	public setModelViewId(value: string) {
+	public override setModelViewId(value: string) {
 		super.setModelViewId(value);
 		this.content = value;
 	}

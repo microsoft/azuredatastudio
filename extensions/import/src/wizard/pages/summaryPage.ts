@@ -80,15 +80,10 @@ export class SummaryPage extends ImportPage {
 		return true;
 	}
 
-	async onPageLeave(): Promise<boolean> {
+	override async onPageLeave(): Promise<boolean> {
 		this.instance.setImportAnotherFileVisibility(false);
 
 		return true;
-	}
-	public setupNavigationValidator() {
-		this.instance.registerNavigationValidator((info) => {
-			return !this.loading.loading;
-		});
 	}
 
 	private populateTable() {

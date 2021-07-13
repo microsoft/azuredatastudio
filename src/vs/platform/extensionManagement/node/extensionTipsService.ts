@@ -25,8 +25,6 @@ type IExeBasedExtensionTips = {
 
 export class ExtensionTipsService extends BaseExtensionTipsService {
 
-	_serviceBrand: any;
-
 	private readonly allImportantExecutableTips: Map<string, IExeBasedExtensionTips> = new Map<string, IExeBasedExtensionTips>();
 	private readonly allOtherExecutableTips: Map<string, IExeBasedExtensionTips> = new Map<string, IExeBasedExtensionTips>();
 
@@ -59,11 +57,11 @@ export class ExtensionTipsService extends BaseExtensionTipsService {
 		}
 	}
 
-	getImportantExecutableBasedTips(): Promise<IExecutableBasedExtensionTip[]> {
+	override getImportantExecutableBasedTips(): Promise<IExecutableBasedExtensionTip[]> {
 		return this.getValidExecutableBasedExtensionTips(this.allImportantExecutableTips);
 	}
 
-	getOtherExecutableBasedTips(): Promise<IExecutableBasedExtensionTip[]> {
+	override getOtherExecutableBasedTips(): Promise<IExecutableBasedExtensionTip[]> {
 		return this.getValidExecutableBasedExtensionTips(this.allOtherExecutableTips);
 	}
 

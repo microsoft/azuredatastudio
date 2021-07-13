@@ -118,7 +118,7 @@ export class LanguagesTable extends LanguageViewBase {
 
 	private createTableRow(language: mssql.ExternalLanguage, content: mssql.ExternalLanguageContent): azdata.DeclarativeTableCellValue[] {
 		if (this._modelBuilder) {
-			let dropLanguageButton = this._modelBuilder.button().withProperties({
+			let dropLanguageButton = this._modelBuilder.button().withProps({
 				label: '',
 				title: constants.deleteTitle,
 				iconPath: {
@@ -136,7 +136,7 @@ export class LanguagesTable extends LanguageViewBase {
 				});
 			});
 
-			let editLanguageButton = this._modelBuilder.button().withProperties({
+			let editLanguageButton = this._modelBuilder.button().withProps({
 				label: '',
 				title: constants.editTitle,
 				iconPath: {

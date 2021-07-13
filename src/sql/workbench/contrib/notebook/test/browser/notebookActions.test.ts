@@ -30,10 +30,10 @@ import { MockQuickInputService } from 'sql/workbench/contrib/notebook/test/commo
 class TestClientSession extends ClientSessionStub {
 	private _errorState: boolean = false;
 	setErrorState = (value: boolean) => this._errorState = value;
-	get isInErrorState(): boolean {
+	override get isInErrorState(): boolean {
 		return this._errorState;
 	}
-	get kernel(): azdata.nb.IKernel {
+	override get kernel(): azdata.nb.IKernel {
 		return <azdata.nb.IKernel>{
 			name: 'StandardKernel1'
 		};
@@ -43,11 +43,11 @@ class TestNotebookModel extends NotebookModelStub {
 	private _clientSession: TestClientSession = new TestClientSession();
 	public kernelChangedEmitter: Emitter<azdata.nb.IKernelChangedArgs> = new Emitter<azdata.nb.IKernelChangedArgs>();
 
-	public get kernelChanged() {
+	public override get kernelChanged() {
 		return this.kernelChangedEmitter.event;
 	}
 
-	public get clientSession(): TestClientSession {
+	public override get clientSession(): TestClientSession {
 		return this._clientSession;
 	}
 
@@ -80,7 +80,7 @@ class TestNotebookModel extends NotebookModelStub {
 		return [...this._standardKernelsMap.values()].map(x => x.displayName);
 	}
 
-	public get specs(): azdata.nb.IAllKernels | undefined {
+	public override get specs(): azdata.nb.IAllKernels | undefined {
 		return {
 			defaultKernel: 'SpecKernel1',
 			// The name and displayName are set to same value
@@ -100,7 +100,7 @@ class TestNotebookModel extends NotebookModelStub {
 		};
 	}
 
-	public getStandardKernelFromName(name: string): IStandardKernelWithProvider {
+	public override getStandardKernelFromName(name: string): IStandardKernelWithProvider {
 		return this._standardKernelsMap.get(name);
 	}
 }

@@ -388,11 +388,11 @@ export class MouseContextMenuEvent extends ContextMenuEvent {
 		this.originalEvent = originalEvent;
 	}
 
-	public preventDefault(): void {
+	public override preventDefault(): void {
 		this.originalEvent.preventDefault();
 	}
 
-	public stopPropagation(): void {
+	public override stopPropagation(): void {
 		this.originalEvent.stopPropagation();
 	}
 }
@@ -406,11 +406,11 @@ export class KeyboardContextMenuEvent extends ContextMenuEvent {
 		this.originalEvent = originalEvent;
 	}
 
-	public preventDefault(): void {
+	public override preventDefault(): void {
 		this.originalEvent.preventDefault();
 	}
 
-	public stopPropagation(): void {
+	public override stopPropagation(): void {
 		this.originalEvent.stopPropagation();
 	}
 }

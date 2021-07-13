@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as nls from 'vscode-nls';
+import { SqlTargetPlatform } from 'sqldbproj';
 
 const localize = nls.loadMessageBundle();
 
@@ -90,7 +91,7 @@ export function currentTargetPlatform(projectName: string, currentTargetPlatform
 // Publish dialog strings
 
 export const publishDialogName = localize('publishDialogName', "Publish project");
-export const publishDialogOkButtonText = localize('publishDialogOkButtonText', "Publish");
+export const publish = localize('publish', "Publish");
 export const cancelButtonText = localize('cancelButtonText', "Cancel");
 export const generateScriptButtonText = localize('generateScriptButtonText', "Generate Script");
 export const databaseNameLabel = localize('databaseNameLabel', "Database");
@@ -109,6 +110,19 @@ export const profile = localize('profile', "Profile");
 export const selectConnection = localize('selectConnection', "Select connection");
 export const server = localize('server', "Server");
 export const defaultUser = localize('default', "default");
+export const selectProfile = localize('selectProfile', "Select publish profile to load");
+export const dontUseProfile = localize('dontUseProfile', "Don't use profile");
+export const browseForProfile = localize('browseForProfile', "Browse for profile");
+export const chooseAction = localize('chooseAction', "Choose action");
+export const chooseSqlcmdVarsToModify = localize('chooseSqlcmdVarsToModify', "Choose SQLCMD variables to modify");
+export const enterNewValueForVar = (varName: string) => localize('enterNewValueForVar', "Enter new value for variable '{0}'", varName);
+export const resetAllVars = localize('resetAllVars', "Reset all variables");
+export const createNew = localize('createNew', "<Create New>");
+export const enterNewDatabaseName = localize('enterNewDatabaseName', "Enter new database name");
+export const newDatabaseTitle = (name: string) => localize({ key: 'newDatabaseTitle', comment: ['Name is the name of a new database being created'] }, "{0} (new)", name);
+export const selectDatabase = localize('selectDatabase', "Select database");
+export const done = localize('done', "Done");
+export const nameMustNotBeEmpty = localize('nameMustNotBeEmpty', "Name must not be empty");
 
 // Add Database Reference dialog strings
 
@@ -153,16 +167,9 @@ export const projectLocationLabel = localize('projectLocationLabel', "Location")
 export const projectLocationPlaceholderText = localize('projectLocationPlaceholderText', "Select location to create project");
 export const browseButtonText = localize('browseButtonText', "Browse folder");
 export const folderStructureLabel = localize('folderStructureLabel', "Folder structure");
-export const addProjectToCurrentWorkspace = localize('addProjectToCurrentWorkspace', "This project will be added to the current workspace.");
-export const newWorkspaceWillBeCreated = localize('newWorkspaceWillBeCreated', "A new workspace will be created for this project.");
-export const workspaceLocationTitle = localize('workspaceLocationTitle', "Workspace location");
-export const workspace = localize('workspace', "Workspace");
 export const WorkspaceFileExtension = '.code-workspace';
 export const ProjectParentDirectoryNotExistError = (location: string): string => { return localize('dataworkspace.projectParentDirectoryNotExistError', "The selected project location '{0}' does not exist or is not a directory.", location); };
 export const ProjectDirectoryAlreadyExistError = (projectName: string, location: string): string => { return localize('dataworkspace.projectDirectoryAlreadyExistError', "There is already a directory named '{0}' in the selected location: '{1}'.", projectName, location); };
-export const WorkspaceFileInvalidError = (workspace: string): string => { return localize('dataworkspace.workspaceFileInvalidError', "The selected workspace file path '{0}' does not have the required file extension {1}.", workspace, WorkspaceFileExtension); };
-export const WorkspaceParentDirectoryNotExistError = (location: string): string => { return localize('dataworkspace.workspaceParentDirectoryNotExistError', "The selected workspace location '{0}' does not exist or is not a directory.", location); };
-export const WorkspaceFileAlreadyExistsError = (file: string): string => { return localize('dataworkspace.workspaceFileAlreadyExistsError', "The selected workspace file '{0}' already exists. To add the project to an existing workspace, use the Open Existing dialog to first open the workspace.", file); };
 
 
 // Error messages
@@ -339,31 +346,28 @@ export const sameDatabaseExampleUsage = 'SELECT * FROM [Schema1].[Table1]';
 export function differentDbSameServerExampleUsage(db: string) { return `SELECT * FROM [${db}].[Schema1].[Table1]`; }
 export function differentDbDifferentServerExampleUsage(server: string, db: string) { return `SELECT * FROM [${server}].[${db}].[Schema1].[Table1]`; }
 
-export const sqlServer2005 = 'SQL Server 2005';
-export const sqlServer2008 = 'SQL Server 2008';
-export const sqlServer2012 = 'SQL Server 2012';
-export const sqlServer2014 = 'SQL Server 2014';
-export const sqlServer2016 = 'SQL Server 2016';
-export const sqlServer2017 = 'SQL Server 2017';
-export const sqlServer2019 = 'SQL Server 2019';
-export const sqlAzure = 'Microsoft Azure SQL Database';
-export const sqlDW = 'Microsoft Azure SQL Data Warehouse';
-
 export const targetPlatformToVersion: Map<string, string> = new Map<string, string>([
-	[sqlServer2005, '90'],
-	[sqlServer2008, '100'],
-	[sqlServer2012, '110'],
-	[sqlServer2014, '120'],
-	[sqlServer2016, '130'],
-	[sqlServer2017, '140'],
-	[sqlServer2019, '150'],
-	[sqlAzure, 'AzureV12'],
-	[sqlDW, 'Dw']
+	[SqlTargetPlatform.sqlServer2005, '90'],
+	[SqlTargetPlatform.sqlServer2008, '100'],
+	[SqlTargetPlatform.sqlServer2012, '110'],
+	[SqlTargetPlatform.sqlServer2014, '120'],
+	[SqlTargetPlatform.sqlServer2016, '130'],
+	[SqlTargetPlatform.sqlServer2017, '140'],
+	[SqlTargetPlatform.sqlServer2019, '150'],
+	[SqlTargetPlatform.sqlAzure, 'AzureV12'],
+	[SqlTargetPlatform.sqlDW, 'Dw']
 ]);
 
 // DW is special since the system dacpac folder has a different name from the target platform
 export const AzureDwFolder = 'AzureDw';
 
+export const defaultDSP = targetPlatformToVersion.get(SqlTargetPlatform.sqlServer2019)!;
+
+/**
+ * Returns the name of the target platform of the version of sql
+ * @param version version of sql
+ * @returns target platform name
+ */
 export function getTargetPlatformFromVersion(version: string): string {
 	return Array.from(targetPlatformToVersion.keys()).filter(k => targetPlatformToVersion.get(k) === version)[0];
 }

@@ -92,7 +92,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 	private jobSteps: { [jobId: string]: azdata.AgentJobStepInfo[]; } = Object.create(null);
 	private jobAlerts: { [jobId: string]: azdata.AgentAlertInfo[]; } = Object.create(null);
 	private jobSchedules: { [jobId: string]: azdata.AgentJobScheduleInfo[]; } = Object.create(null);
-	public contextAction = NewJobAction;
+	public override contextAction = NewJobAction;
 
 	@ViewChild('jobsgrid') _gridEl: ElementRef;
 
@@ -131,7 +131,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 		this._telemetryService.sendViewEvent(TelemetryView.AgentJobs);
 	}
 
-	ngOnDestroy() {
+	override ngOnDestroy() {
 	}
 
 	public layout() {
@@ -859,7 +859,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 		});
 	}
 
-	protected getTableActions(targetObject: JobActionContext): IAction[] {
+	protected override getTableActions(targetObject: JobActionContext): IAction[] {
 		const editAction = this._instantiationService.createInstance(EditJobAction);
 		const runJobAction = this._instantiationService.createInstance(RunJobAction);
 		if (!targetObject.canEdit) {
@@ -906,7 +906,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 		return result;
 	}
 
-	protected getCurrentTableObject(rowIndex: number): JobActionContext {
+	protected override getCurrentTableObject(rowIndex: number): JobActionContext {
 		let data = this._table.grid.getData() as Slick.DataProvider<IItem>;
 		if (!data || rowIndex >= data.getLength()) {
 			return undefined;

@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ThemedIconPath } from 'azdata';
+import type { ThemedIconPath } from 'azdata';
 import * as dataworkspace from 'dataworkspace';
 import * as sqldbproj from 'sqldbproj';
 import * as vscode from 'vscode';
@@ -28,16 +28,6 @@ export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvide
 		const project = await Project.openProject(projectFilePath.fsPath);
 		provider.load([project]);
 		return provider;
-	}
-
-	/**
-	 * Callback method when a project has been removed from the workspace view
-	 * @param projectFile The Uri of the project file
-	 */
-	RemoveProject(projectFile: vscode.Uri): Promise<void> {
-		// No resource release needed
-		console.log(`project file unloaded: ${projectFile.fsPath}`);
-		return Promise.resolve();
 	}
 
 	/**
@@ -67,11 +57,12 @@ export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvide
 	 * @param projectTypeId the ID of the project/template
 	 * @returns Uri of the newly created project file
 	 */
-	async createProject(name: string, location: vscode.Uri, projectTypeId: string): Promise<vscode.Uri> {
+	async createProject(name: string, location: vscode.Uri, projectTypeId: string, targetPlatform?: sqldbproj.SqlTargetPlatform): Promise<vscode.Uri> {
 		const projectFile = await this.projectController.createNewProject({
 			newProjName: name,
 			folderUri: location,
-			projectTypeId: projectTypeId
+			projectTypeId: projectTypeId,
+			targetPlatform: targetPlatform
 		});
 
 		return vscode.Uri.file(projectFile);

@@ -54,7 +54,7 @@ export class DialogModal extends Modal {
 		this._dialogPane.layout();
 	}
 
-	public render() {
+	public override render() {
 		super.render();
 		attachCustomDialogStyler(this, this._themeService, this._modalOptions.dialogStyle);
 
@@ -159,18 +159,18 @@ export class DialogModal extends Modal {
 	/**
 	 * Overridable to change behavior of escape key
 	 */
-	protected onClose(e: StandardKeyboardEvent): void {
+	protected override onClose(e: StandardKeyboardEvent): void {
 		this.cancel();
 	}
 
 	/**
 	 * Overridable to change behavior of enter key
 	 */
-	protected onAccept(e: StandardKeyboardEvent): void {
+	protected override onAccept(e: StandardKeyboardEvent): void {
 		this.done().catch(err => onUnexpectedError(err));
 	}
 
-	public dispose(): void {
+	public override dispose(): void {
 		super.dispose();
 		this._dialogPane.dispose();
 	}

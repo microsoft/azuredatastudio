@@ -20,7 +20,7 @@ import { EditDataInput } from 'sql/workbench/browser/editData/editDataInput';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import * as queryContext from 'sql/workbench/contrib/query/common/queryContext';
 import { Taskbar, ITaskbarContent } from 'sql/base/browser/ui/taskbar/taskbar';
-import { IAction, IActionViewItem } from 'vs/base/common/actions';
+import { IAction } from 'vs/base/common/actions';
 import { IQueryModelService } from 'sql/workbench/services/query/common/queryModel';
 import { IEditorDescriptorService } from 'sql/workbench/services/queryEditor/browser/editorDescriptorService';
 import {
@@ -37,6 +37,7 @@ import { CancellationToken } from 'vs/base/common/cancellation';
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import { IEditorGroup } from 'vs/workbench/services/editor/common/editorGroupsService';
 import { onUnexpectedError } from 'vs/base/common/errors';
+import { IActionViewItem } from 'vs/base/browser/ui/actionbar/actionbar';
 
 /**
  * Editor that hosts an action bar and a resultSetInput for an edit data session
@@ -113,7 +114,7 @@ export class EditDataEditor extends EditorPane {
 	 * Called to indicate to the editor that the input should be cleared and resources associated with the
 	 * input should be freed.
 	 */
-	public clearInput(): void {
+	public override clearInput(): void {
 		if (this._resultsEditor) {
 			this._resultsEditor.clearInput();
 		}
@@ -134,7 +135,7 @@ export class EditDataEditor extends EditorPane {
 		this._createTaskbar(parent);
 	}
 
-	public dispose(): void {
+	public override dispose(): void {
 		this._disposeEditors();
 		super.dispose();
 	}
@@ -142,13 +143,13 @@ export class EditDataEditor extends EditorPane {
 	/**
 	 * Sets focus on this editor. Specifically, it sets the focus on the hosted text editor.
 	 */
-	public focus(): void {
+	public override focus(): void {
 		if (this._sqlEditor) {
 			this._sqlEditor.focus();
 		}
 	}
 
-	public getControl(): IEditorControl {
+	public override getControl(): IEditorControl {
 		if (this._sqlEditor) {
 			return this._sqlEditor.getControl();
 		}
@@ -196,7 +197,7 @@ export class EditDataEditor extends EditorPane {
 	/**
 	 * Sets this editor and the sub-editors to visible.
 	 */
-	public setEditorVisible(visible: boolean, group: IEditorGroup): void {
+	public override setEditorVisible(visible: boolean, group: IEditorGroup): void {
 		if (this._resultsEditor) {
 			this._resultsEditor.setVisible(visible, group);
 		}
@@ -213,7 +214,7 @@ export class EditDataEditor extends EditorPane {
 	/**
 	 * Sets the input data for this editor.
 	 */
-	public setInput(newInput: EditDataInput, options?: EditorOptions, context?: IEditorOpenContext): Promise<void> {
+	public override setInput(newInput: EditDataInput, options?: EditorOptions, context?: IEditorOpenContext): Promise<void> {
 		let oldInput = <EditDataInput>this.input;
 		if (!newInput.setup) {
 			this._initialized = false;
@@ -301,7 +302,7 @@ export class EditDataEditor extends EditorPane {
 	}
 
 
-	updateStyles() {
+	override updateStyles() {
 		if (this._resultsEditorContainer) {
 			this._resultsEditorContainer.style.borderTopColor = this.getColor(PANEL_BORDER);
 		}

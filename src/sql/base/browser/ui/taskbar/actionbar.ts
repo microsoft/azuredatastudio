@@ -3,12 +3,13 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IAction, IActionRunner, ActionRunner, IActionViewItem } from 'vs/base/common/actions';
+import { IAction, IActionRunner, ActionRunner } from 'vs/base/common/actions';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode, KeyMod } from 'vs/base/common/keyCodes';
 import {
 	IActionBarOptions, ActionsOrientation,
-	IActionOptions
+	IActionOptions,
+	IActionViewItem
 } from 'vs/base/browser/ui/actionbar/actionbar';
 import * as lifecycle from 'vs/base/common/lifecycle';
 import * as DOM from 'vs/base/browser/dom';
@@ -237,6 +238,13 @@ export class ActionBar extends ActionRunner implements IActionRunner {
 			//this.addEmitter(item);
 			item.render(actionItemElement);
 
+			// VSCode toolbar now will only receive one tab stop, by default all items are not focusable.
+			// Adding the following change to make sure the ADS toolbars are keyboard focusable to match the previous behavior as a temporary solution.
+			// TODO: https://github.com/microsoft/azuredatastudio/issues/16016
+			if (item instanceof BaseActionViewItem) {
+				item.setFocusable(true);
+			}
+
 			if (index === null || index < 0 || index >= this._actionsList.children.length) {
 				this._actionsList.appendChild(actionItemElement);
 			} else {
@@ -365,11 +373,11 @@ export class ActionBar extends ActionRunner implements IActionRunner {
 		//this.emit('cancel');
 	}
 
-	public run(action: IAction, context?: any): Promise<any> {
+	public override run(action: IAction, context?: any): Promise<any> {
 		return this._actionRunner.run(action, context);
 	}
 
-	public dispose(): void {
+	public override dispose(): void {
 		lifecycle.dispose(this._items);
 		this._items = [];
 

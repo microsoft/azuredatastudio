@@ -62,7 +62,7 @@ export class ProxiesViewComponent extends JobManagementView implements OnInit, O
 	private _proxiesCacheObject: ProxiesCacheObject;
 
 	public proxies: azdata.AgentProxyInfo[];
-	public readonly contextAction = NewProxyAction;
+	public override readonly contextAction = NewProxyAction;
 
 	private _didTabChange: boolean;
 	@ViewChild('proxiesgrid') _gridEl: ElementRef;
@@ -97,7 +97,7 @@ export class ProxiesViewComponent extends JobManagementView implements OnInit, O
 		this._parentComponent = this._agentViewComponent;
 	}
 
-	ngOnDestroy() {
+	override ngOnDestroy() {
 		this._didTabChange = true;
 	}
 
@@ -196,14 +196,14 @@ export class ProxiesViewComponent extends JobManagementView implements OnInit, O
 		this._table.resizeCanvas();
 	}
 
-	protected getTableActions(): IAction[] {
+	protected override getTableActions(): IAction[] {
 		return [
 			this._instantiationService.createInstance(EditProxyAction),
 			this._instantiationService.createInstance(DeleteProxyAction)
 		];
 	}
 
-	protected getCurrentTableObject(rowIndex: number): any {
+	protected override getCurrentTableObject(rowIndex: number): any {
 		return (this.proxies && this.proxies.length >= rowIndex)
 			? this.proxies[rowIndex]
 			: undefined;

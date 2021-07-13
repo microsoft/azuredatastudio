@@ -61,7 +61,7 @@ export class AddCellAction extends Action {
 	) {
 		super(id, label, cssClass);
 	}
-	public async run(context: URI | CellContext): Promise<void> {
+	public override async run(context: URI | CellContext): Promise<void> {
 		let index = 0;
 		if (context instanceof CellContext) {
 			if (context?.model?.cells) {
@@ -128,7 +128,7 @@ export class ClearAllOutputsAction extends TooltipFromLabelAction {
 		});
 	}
 
-	public async run(context: URI): Promise<void> {
+	public override async run(context: URI): Promise<void> {
 		const editor = this._notebookService.findNotebookEditor(context);
 		await editor.clearAllOutputs();
 	}
@@ -210,7 +210,7 @@ export class TrustedAction extends ToggleableAction {
 		this.toggle(value);
 	}
 
-	public async run(context: URI): Promise<void> {
+	public override async run(context: URI): Promise<void> {
 		const editor = this._notebookService.findNotebookEditor(context);
 		this.trusted = !this.trusted;
 		editor.model.trustedMode = this.trusted;
@@ -227,7 +227,7 @@ export class RunAllCellsAction extends Action {
 	) {
 		super(id, label, cssClass);
 	}
-	public async run(context: URI): Promise<void> {
+	public override async run(context: URI): Promise<void> {
 		try {
 			this._telemetryService.sendActionEvent(TelemetryKeys.TelemetryView.Notebook, TelemetryKeys.NbTelemetryAction.RunAll);
 			const editor = this._notebookService.findNotebookEditor(context);
@@ -269,7 +269,7 @@ export class CollapseCellsAction extends ToggleableAction {
 		this.expanded = !value;
 	}
 
-	public async run(context: URI): Promise<void> {
+	public override async run(context: URI): Promise<void> {
 		const editor = this._notebookService.findNotebookEditor(context);
 		this.setCollapsed(!this.isCollapsed);
 		editor.cells.forEach(cell => {
@@ -304,7 +304,7 @@ export class RunParametersAction extends TooltipFromLabelAction {
 	 * Once user enters all values it will open the new parameterized notebook
 	 * with injected parameters value from the QuickInput
 	*/
-	public async run(context: URI): Promise<void> {
+	public override async run(context: URI): Promise<void> {
 		const editor = this._notebookService.findNotebookEditor(context);
 		// Only run action for kernels that are supported (Python, PySpark, PowerShell)
 		let supportedKernels: string[] = [KernelsLanguage.Python, KernelsLanguage.PowerShell];
@@ -686,7 +686,7 @@ export class NewNotebookAction extends Action {
 		this.class = 'notebook-action new-notebook';
 	}
 
-	async run(context?: azdata.ObjectExplorerContext): Promise<void> {
+	override async run(context?: azdata.ObjectExplorerContext): Promise<void> {
 		this._telemetryService.createActionEvent(TelemetryKeys.TelemetryView.Notebook, TelemetryKeys.NbTelemetryAction.NewNotebookFromConnections)
 			.withConnectionInfo(context?.connectionProfile)
 			.send();

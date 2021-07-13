@@ -86,7 +86,7 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 		}
 	}
 
-	public dispose(): void {
+	public override dispose(): void {
 		if (this._onCapabilitiesRegisteredDisposable) {
 			dispose(this._onCapabilitiesRegisteredDisposable);
 		}

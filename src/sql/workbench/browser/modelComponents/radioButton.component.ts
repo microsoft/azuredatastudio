@@ -63,7 +63,7 @@ export default class RadioButtonComponent extends ComponentBase<azdata.RadioButt
 		this.baseInit();
 	}
 
-	ngOnDestroy(): void {
+	override ngOnDestroy(): void {
 		this.baseDestroy();
 	}
 
@@ -74,7 +74,7 @@ export default class RadioButtonComponent extends ComponentBase<azdata.RadioButt
 		this.layout();
 	}
 
-	public setProperties(properties: { [key: string]: any; }): void {
+	public override setProperties(properties: { [key: string]: any; }): void {
 		super.setProperties(properties);
 		this._input.name = this.name;
 		this._input.value = this.value;
@@ -121,7 +121,7 @@ export default class RadioButtonComponent extends ComponentBase<azdata.RadioButt
 		this.setPropertyFromUI<string>((properties, label) => { properties.name = label; }, newValue);
 	}
 
-	public focus(): void {
+	public override focus(): void {
 		this._input.focus();
 	}
 

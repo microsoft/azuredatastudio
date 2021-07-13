@@ -79,5 +79,7 @@
 	"[typescript]": {
 		"editor.defaultFormatter": "vscode.typescript-language-features"
 	},
-	"typescript.tsc.autoDetect": "off"
+	"typescript.tsc.autoDetect": "off",
+	"notebook.experimental.useMarkdownRenderer": true,
+	"testing.autoRun.mode": "rerun",
 }

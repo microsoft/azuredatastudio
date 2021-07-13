@@ -10,7 +10,6 @@ import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
 import { SingleConnectionManagementService } from 'sql/workbench/services/bootstrap/browser/commonServiceInterface.service';
 
 export abstract class DashboardTab extends TabChild {
-	public abstract layout(): void;
 	public abstract readonly id: string;
 	public abstract readonly editable: boolean;
 	public abstract refresh(): void;

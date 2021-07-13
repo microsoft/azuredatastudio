@@ -72,7 +72,7 @@ export class FileNode extends BaseProjectTreeItem {
 }
 
 export class ExternalStreamingJobFileNode extends FileNode {
-	public get treeItem(): vscode.TreeItem {
+	public override get treeItem(): vscode.TreeItem {
 		const treeItem = super.treeItem;
 		treeItem.contextValue = DatabaseProjectItemType.externalStreamingJob;
 

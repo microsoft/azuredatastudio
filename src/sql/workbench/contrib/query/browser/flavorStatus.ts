@@ -185,7 +185,7 @@ export class ChangeFlavorAction extends Action {
 		super(actionId, actionLabel);
 	}
 
-	public run(): Promise<any> {
+	public override run(): Promise<any> {
 		let activeEditor = this._editorService.activeEditorPane;
 		let currentUri = activeEditor?.input.resource?.toString(true);
 		if (this._connectionManagementService.isConnected(currentUri)) {

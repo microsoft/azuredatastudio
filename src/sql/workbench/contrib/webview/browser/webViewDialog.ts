@@ -106,7 +106,7 @@ export class WebViewDialog extends Modal {
 		return this._onMessage.event;
 	}
 
-	public render() {
+	public override render() {
 		super.render();
 		this._register(attachModalDialogStyler(this, this._themeService));
 
@@ -125,12 +125,12 @@ export class WebViewDialog extends Modal {
 	}
 
 	/* espace key */
-	protected onClose() {
+	protected override onClose() {
 		this.ok();
 	}
 
 	/* enter key */
-	protected onAccept() {
+	protected override onAccept() {
 		this.ok();
 	}
 

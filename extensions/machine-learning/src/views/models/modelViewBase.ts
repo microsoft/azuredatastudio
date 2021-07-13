@@ -86,7 +86,7 @@ export abstract class ModelViewBase extends ViewBase {
 		super(apiWrapper, root, parent);
 	}
 
-	protected getEventNames(): string[] {
+	protected override getEventNames(): string[] {
 		return super.getEventNames().concat([ListModelsEventName,
 			ListAzureModelsEventName,
 			ListAccountsEventName,

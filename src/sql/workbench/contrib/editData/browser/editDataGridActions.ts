@@ -22,7 +22,7 @@ export class EditDataGridActionProvider extends GridActionProvider {
 	/**
 	 * Return actions given a click on an edit data grid
 	 */
-	public getGridActions(): IAction[] {
+	public override getGridActions(): IAction[] {
 		let actions: IAction[] = [];
 		actions.push(new DeleteRowAction(DeleteRowAction.ID, DeleteRowAction.LABEL, this._deleteRowCallback));
 		actions.push(new RevertRowAction(RevertRowAction.ID, RevertRowAction.LABEL, this._revertRowCallback));
@@ -43,7 +43,7 @@ export class DeleteRowAction extends Action {
 		super(id, label);
 	}
 
-	public async run(gridInfo: IGridInfo): Promise<void> {
+	public override async run(gridInfo: IGridInfo): Promise<void> {
 		this.callback(gridInfo.rowIndex);
 	}
 }
@@ -60,7 +60,7 @@ export class RevertRowAction extends Action {
 		super(id, label);
 	}
 
-	public async run(gridInfo: IGridInfo): Promise<void> {
+	public override async run(gridInfo: IGridInfo): Promise<void> {
 		this.callback();
 	}
 }

@@ -373,10 +373,8 @@ export class NotebookFindDecorations implements IDisposable {
 }
 
 export class NotebookFindMatch extends FindMatch {
-	_findMatchBrand: void;
 
-	public readonly range: NotebookRange;
-	public readonly matches: string[] | null;
+	public override readonly range: NotebookRange;
 
 	/**
 	 * @internal
@@ -384,6 +382,5 @@ export class NotebookFindMatch extends FindMatch {
 	constructor(range: NotebookRange, matches: string[] | null) {
 		super(new Range(range.startLineNumber, range.startColumn, range.endLineNumber, range.endColumn), matches);
 		this.range = range;
-		this.matches = matches;
 	}
 }

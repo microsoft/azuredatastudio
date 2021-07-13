@@ -52,7 +52,7 @@ export class EditCellAction extends ToggleableAction {
 		this.toggle(value);
 	}
 
-	public async run(context: CellContext): Promise<void> {
+	public override async run(context: CellContext): Promise<void> {
 		this.editMode = !this.editMode;
 		context.cell.isEditMode = this.editMode;
 	}
@@ -236,7 +236,7 @@ export class ClearCellOutputAction extends CellActionBase {
 		super(id, label, undefined, notificationService);
 	}
 
-	public canRun(context: CellContext): boolean {
+	public override canRun(context: CellContext): boolean {
 		return context.cell && context.cell.cellType === CellTypes.Code;
 	}
 
@@ -270,7 +270,7 @@ export class RunCellsAction extends CellActionBase {
 		super(id, label, undefined, notificationService);
 	}
 
-	public canRun(context: CellContext): boolean {
+	public override canRun(context: CellContext): boolean {
 		return context.cell && context.cell.cellType === CellTypes.Code;
 	}
 
@@ -307,7 +307,7 @@ export class CollapseCellAction extends CellActionBase {
 		super(id, label, undefined, notificationService);
 	}
 
-	public canRun(context: CellContext): boolean {
+	public override canRun(context: CellContext): boolean {
 		return context.cell && context.cell.cellType === CellTypes.Code;
 	}
 
@@ -350,7 +350,7 @@ export class ToggleMoreActions extends Action {
 		super(ToggleMoreActions.ID, ToggleMoreActions.LABEL, ToggleMoreActions.ICON);
 	}
 
-	async run(context: StandardKeyboardEvent): Promise<void> {
+	override async run(context: StandardKeyboardEvent): Promise<void> {
 		this._contextMenuService.showContextMenu({
 			getAnchor: () => context.target,
 			getActions: () => this._actions,
@@ -368,7 +368,7 @@ export class ParametersCellAction extends CellActionBase {
 		super(id, label, undefined, notificationService);
 	}
 
-	public canRun(context: CellContext): boolean {
+	public override canRun(context: CellContext): boolean {
 		return context.cell?.cellType === CellTypes.Code;
 	}
 

@@ -7,7 +7,6 @@ import { azureResource } from 'azureResource';
 import { DatabaseMigration, SqlMigrationService, SqlManagedInstance, getMigrationStatus, AzureAsyncOperationResource, getMigrationAsyncOperationDetails, SqlVMServer } from '../api/azure';
 import * as azdata from 'azdata';
 
-
 export class MigrationLocalStorage {
 	private static context: vscode.ExtensionContext;
 	private static mementoToken: string = 'sqlmigration.databaseMigrations';

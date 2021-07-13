@@ -13,7 +13,7 @@ import { ResourceType } from 'arc';
 import { PostgresModel } from '../../../models/postgresModel';
 
 export class PostgresSupportRequestPage extends DashboardPage {
-	constructor(protected modelView: azdata.ModelView, dashboard: azdata.window.ModelViewDashboard, private _controllerModel: ControllerModel, private _postgresModel: PostgresModel) {
+	constructor(modelView: azdata.ModelView, dashboard: azdata.window.ModelViewDashboard, private _controllerModel: ControllerModel, private _postgresModel: PostgresModel) {
 		super(modelView, dashboard);
 	}
 

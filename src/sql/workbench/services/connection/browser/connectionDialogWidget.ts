@@ -226,7 +226,7 @@ export class ConnectionDialogWidget extends Modal {
 	/**
 	 * Render the connection flyout
 	 */
-	public render() {
+	public override render() {
 		super.render();
 		attachModalDialogStyler(this, this._themeService);
 		const connectLabel = localize('connectionDialog.connect', "Connect");
@@ -285,12 +285,12 @@ export class ConnectionDialogWidget extends Modal {
 	}
 
 	/* Overwrite espace key behavior */
-	protected onClose(e: StandardKeyboardEvent) {
+	protected override onClose(e: StandardKeyboardEvent) {
 		this.cancel();
 	}
 
 	/* Overwrite enter key behavior */
-	protected onAccept(e: StandardKeyboardEvent) {
+	protected override onAccept(e: StandardKeyboardEvent) {
 		if (!e.target.classList.contains('monaco-tree')) {
 			this.connect();
 		}

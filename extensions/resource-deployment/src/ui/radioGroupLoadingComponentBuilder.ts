@@ -22,11 +22,11 @@ export class RadioGroupLoadingComponentBuilder implements azdata.ComponentBuilde
 	}
 
 	withProperties<U>(properties: U): azdata.ComponentBuilder<azdata.LoadingComponent, azdata.LoadingComponentProperties> {
-		return this._optionsLoadingBuilder.withProperties(properties);
+		return this._optionsLoadingBuilder.withProps(properties);
 	}
 
 	withProps(properties: azdata.LoadingComponentProperties): azdata.ComponentBuilder<azdata.LoadingComponent, azdata.LoadingComponentProperties> {
-		return this._optionsLoadingBuilder.withProperties(properties);
+		return this._optionsLoadingBuilder.withProps(properties);
 	}
 
 	withValidation(validation: (component: azdata.LoadingComponent) => boolean): azdata.ComponentBuilder<azdata.LoadingComponent, azdata.LoadingComponentProperties> {
@@ -68,7 +68,7 @@ export class RadioGroupLoadingComponentBuilder implements azdata.ComponentBuilde
 			});
 		}
 		catch (e) {
-			const errorLoadingRadioOptionsLabel = this._view!.modelBuilder.text().withProperties({ value: getErrorMessage(e), CSSStyles: { 'color': 'Red' } }).component();
+			const errorLoadingRadioOptionsLabel = this._view!.modelBuilder.text().withProps({ value: getErrorMessage(e), CSSStyles: { 'color': 'Red' } }).component();
 			this._optionsDivContainer.addItem(errorLoadingRadioOptionsLabel);
 		}
 		this.component().loading = false;

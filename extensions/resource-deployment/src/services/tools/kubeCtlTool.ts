@@ -98,7 +98,7 @@ export class KubeCtlTool extends ToolBase {
 			command: this.discoveryCommandString('kubectl')
 		};
 	}
-	protected async getSearchPaths(): Promise<string[]> {
+	protected override async getSearchPaths(): Promise<string[]> {
 		switch (this.osDistribution) {
 			case OsDistribution.win32:
 				return [this.storagePath];
@@ -113,7 +113,7 @@ export class KubeCtlTool extends ToolBase {
 		[OsDistribution.others, defaultInstallationCommands]
 	]);
 
-	protected dependenciesByOsType: Map<OsDistribution, dependencyType[]> = new Map<OsDistribution, dependencyType[]>([
+	protected override dependenciesByOsType: Map<OsDistribution, dependencyType[]> = new Map<OsDistribution, dependencyType[]>([
 		[OsDistribution.debian, []],
 		[OsDistribution.win32, []],
 		[OsDistribution.darwin, [dependencyType.Brew]],

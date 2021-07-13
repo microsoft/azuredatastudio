@@ -1,7 +1,11 @@
-src
+src/**
 tsconfig.json
 python
 r_packages
-out/test
+out/**
 coverage
 coverConfig.json
+extension.webpack.config.js
+.gitignore
+*.vsix
+yarn.lock

@@ -3,15 +3,16 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as azdata from 'azdata';
 import * as xmldom from 'xmldom';
 import * as constants from '../../common/constants';
 import * as utils from '../../common/utils';
 import * as mssql from '../../../../mssql';
+import * as vscodeMssql from 'vscode-mssql';
 
 import { promises as fs } from 'fs';
 import { Uri } from 'vscode';
 import { SqlConnectionDataSource } from '../dataSources/sqlConnectionStringSource';
+import { IDacFxService } from '../../controllers/projectController';
 
 // only reading db name, connection string, and SQLCMD vars from profile for now
 export interface PublishProfile {
@@ -20,13 +21,13 @@ export interface PublishProfile {
 	connectionId: string;
 	connection: string;
 	sqlCmdVariables: Record<string, string>;
-	options?: mssql.DeploymentOptions;
+	options?: mssql.DeploymentOptions | vscodeMssql.DeploymentOptions;
 }
 
 /**
  * parses the specified file to load publish settings
  */
-export async function load(profileUri: Uri, dacfxService: mssql.IDacFxService): Promise<PublishProfile> {
+export async function load(profileUri: Uri, dacfxService: IDacFxService): Promise<PublishProfile> {
 	const profileText = await fs.readFile(profileUri.fsPath);
 	const profileXmlDoc = new xmldom.DOMParser().parseFromString(profileText.toString());
 
@@ -67,13 +68,13 @@ async function readConnectionString(xmlDoc: any): Promise<{ connectionId: string
 
 		try {
 			if (dataSource.integratedSecurity) {
-				const connection = await azdata.connection.connect(connectionProfile, false, false);
+				const connection = await utils.getAzdataApi()!.connection.connect(connectionProfile, false, false);
 				connId = connection.connectionId;
 				server = dataSource.server;
 				username = constants.defaultUser;
 			}
 			else {
-				const connection = await azdata.connection.openConnectionDialog(undefined, connectionProfile);
+				const connection = await utils.getAzdataApi()!.connection.openConnectionDialog(undefined, connectionProfile);
 				connId = connection.connectionId;
 				server = connection.options['server'];
 				username = connection.options['user'];

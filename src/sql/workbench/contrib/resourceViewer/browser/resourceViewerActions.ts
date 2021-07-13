@@ -15,7 +15,7 @@ export class ResourceViewerRefresh extends Action {
 		super(ResourceViewerRefresh.ID, ResourceViewerRefresh.LABEL, 'codicon refresh');
 	}
 
-	public async run(input: ResourceViewerInput): Promise<void> {
+	public override async run(input: ResourceViewerInput): Promise<void> {
 		this.enabled = false;
 		try {
 			await input.refresh();

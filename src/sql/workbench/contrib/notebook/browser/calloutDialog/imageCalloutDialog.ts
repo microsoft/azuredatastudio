@@ -94,7 +94,7 @@ export class ImageCalloutDialog extends Modal {
 		return this._selectionComplete.promise;
 	}
 
-	public render(): void {
+	public override render(): void {
 		super.render();
 		attachCalloutDialogStyler(this, this._themeService);
 

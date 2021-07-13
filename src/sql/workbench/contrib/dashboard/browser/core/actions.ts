@@ -30,7 +30,7 @@ export class EditDashboardAction extends Action {
 		super(EditDashboardAction.ID, EditDashboardAction.EDITLABEL, EditDashboardAction.ICON);
 	}
 
-	async run(): Promise<void> {
+	override async run(): Promise<void> {
 		this.editFn.apply(this.context);
 		this.toggleLabel();
 	}
@@ -59,7 +59,7 @@ export class RefreshWidgetAction extends Action {
 		super(RefreshWidgetAction.ID, RefreshWidgetAction.LABEL, RefreshWidgetAction.ICON);
 	}
 
-	async run(): Promise<void> {
+	override async run(): Promise<void> {
 		this.refreshFn.apply(this.context);
 	}
 }
@@ -76,7 +76,7 @@ export class ToolbarAction extends Action {
 		super(id, label, cssClass);
 	}
 
-	async run(): Promise<void> {
+	override async run(): Promise<void> {
 		try {
 			this.runFn.apply(this.context, [this.id]);
 		} catch (e) {
@@ -99,7 +99,7 @@ export class ToggleMoreWidgetAction extends Action {
 		super(ToggleMoreWidgetAction.ID, ToggleMoreWidgetAction.LABEL, ToggleMoreWidgetAction.ICON);
 	}
 
-	async run(context: StandardKeyboardEvent): Promise<void> {
+	override async run(context: StandardKeyboardEvent): Promise<void> {
 		this._contextMenuService.showContextMenu({
 			getAnchor: () => context.target,
 			getActions: () => this._actions,
@@ -121,7 +121,7 @@ export class DeleteWidgetAction extends Action {
 		super(DeleteWidgetAction.ID, DeleteWidgetAction.LABEL, DeleteWidgetAction.ICON);
 	}
 
-	async run(): Promise<void> {
+	override async run(): Promise<void> {
 		this.angularEventService.sendAngularEvent(this._uri, AngularEventType.DELETE_WIDGET, { id: this._widgetId });
 	}
 }
@@ -153,7 +153,7 @@ export class PinUnpinTabAction extends Action {
 		}
 	}
 
-	public async run(): Promise<void> {
+	public override async run(): Promise<void> {
 		this._isPinned = !this._isPinned;
 		this.updatePinStatus();
 		this.angularEventService.sendAngularEvent(this._uri, AngularEventType.PINUNPIN_TAB, { tabId: this._tabId, isPinned: this._isPinned });
@@ -176,7 +176,7 @@ export class AddFeatureTabAction extends Action {
 		this._register(this._angularEventService.onAngularEvent(this._uri)(event => this.handleDashboardEvent(event)));
 	}
 
-	async run(): Promise<void> {
+	override async run(): Promise<void> {
 		this._newDashboardTabService.showDialog(this._dashboardTabs, this._openedTabs, this._uri);
 	}
 
@@ -220,7 +220,7 @@ export class CollapseWidgetAction extends Action {
 		this.expanded = !this.collpasedState;
 	}
 
-	async run(): Promise<void> {
+	override async run(): Promise<void> {
 		this._toggleState();
 		this._angularEventService.sendAngularEvent(this._uri, AngularEventType.COLLAPSE_WIDGET, this._widgetUuid);
 	}

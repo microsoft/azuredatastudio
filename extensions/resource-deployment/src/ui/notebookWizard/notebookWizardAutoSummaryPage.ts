@@ -25,7 +25,7 @@ export class NotebookWizardAutoSummaryPage extends NotebookWizardPage {
 		);
 	}
 
-	public initialize(): void {
+	public override initialize(): void {
 		this.pageObject.registerContent((view: azdata.ModelView) => {
 			this.view = view;
 			this.form = view.modelBuilder.formContainer();
@@ -33,11 +33,11 @@ export class NotebookWizardAutoSummaryPage extends NotebookWizardPage {
 		});
 	}
 
-	public async onLeave(): Promise<void> {
+	public override async onLeave(): Promise<void> {
 		this.wizard.wizardObject.message = { text: '' };
 	}
 
-	public async onEnter(): Promise<void> {
+	public override async onEnter(): Promise<void> {
 		this.formItems.forEach(item => {
 			this.form!.removeFormItem(item);
 		});

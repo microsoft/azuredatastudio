@@ -16,6 +16,7 @@ import { NullLogService } from 'vs/platform/log/common/log';
 import { NativeEnvironmentService } from 'vs/platform/environment/node/environmentService';
 import { parseArgs, OPTIONS } from 'vs/platform/environment/node/argv';
 import { assign } from 'vs/base/common/objects';
+import product from 'vs/platform/product/common/product';
 
 let connections: ConnectionStatusManager;
 let capabilitiesService: TestCapabilitiesService;
@@ -81,7 +82,7 @@ suite('SQL ConnectionStatusManager tests', () => {
 		capabilitiesService = new TestCapabilitiesService();
 		connectionProfileObject = new ConnectionProfile(capabilitiesService, connectionProfile);
 
-		const environmentService = new NativeEnvironmentService(parseArgs(process.argv, OPTIONS));
+		const environmentService = new NativeEnvironmentService(parseArgs(process.argv, OPTIONS), { _serviceBrand: undefined, ...product });
 		connections = new ConnectionStatusManager(capabilitiesService, new NullLogService(), environmentService, new TestNotificationService());
 		connection1Id = Utils.generateUri(connectionProfile);
 		connection2Id = 'connection2Id';

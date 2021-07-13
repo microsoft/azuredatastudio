@@ -908,7 +908,7 @@ export const EventType = {
 	MOUSE_OUT: 'mouseout',
 	MOUSE_ENTER: 'mouseenter',
 	MOUSE_LEAVE: 'mouseleave',
-	MOUSE_WHEEL: browser.isEdgeLegacy ? 'mousewheel' : 'wheel',
+	MOUSE_WHEEL: 'wheel',
 	POINTER_UP: 'pointerup',
 	POINTER_DOWN: 'pointerdown',
 	POINTER_MOVE: 'pointermove',
@@ -1260,18 +1260,21 @@ export function computeScreenAwareSize(cssPx: number): number {
  * to change the location of the current page.
  * See https://mathiasbynens.github.io/rel-noopener/
  */
-export function windowOpenNoOpener(url: string): void {
+export function windowOpenNoOpener(url: string): boolean {
 	if (browser.isElectron || browser.isEdgeLegacyWebView) {
 		// In VSCode, window.open() always returns null...
 		// The same is true for a WebView (see https://github.com/microsoft/monaco-editor/issues/628)
 		// Also call directly window.open in sandboxed Electron (see https://github.com/microsoft/monaco-editor/issues/2220)
 		window.open(url);
+		return true;
 	} else {
 		let newTab = window.open();
 		if (newTab) {
 			(newTab as any).opener = null;
 			newTab.location.href = url;
+			return true;
 		}
+		return false;
 	}
 }
 
@@ -1477,37 +1480,8 @@ export function multibyteAwareBtoa(str: string): string {
  */
 export namespace WebFileSystemAccess {
 
-	// https://wicg.github.io/file-system-access/#dom-window-showdirectorypicker
-	export interface FileSystemAccess {
-		showDirectoryPicker: () => Promise<FileSystemDirectoryHandle>;
-	}
-
-	// https://wicg.github.io/file-system-access/#api-filesystemdirectoryhandle
-	export interface FileSystemDirectoryHandle {
-		readonly kind: 'directory',
-		readonly name: string,
-
-		getFileHandle: (name: string, options?: { create?: boolean }) => Promise<FileSystemFileHandle>;
-		getDirectoryHandle: (name: string, options?: { create?: boolean }) => Promise<FileSystemDirectoryHandle>;
-	}
-
-	// https://wicg.github.io/file-system-access/#api-filesystemfilehandle
-	export interface FileSystemFileHandle {
-		readonly kind: 'file',
-		readonly name: string,
-
-		createWritable: (options?: { keepExistingData?: boolean }) => Promise<FileSystemWritableFileStream>;
-	}
-
-	// https://wicg.github.io/file-system-access/#api-filesystemwritablefilestream
-	export interface FileSystemWritableFileStream {
-		write: (buffer: Uint8Array) => Promise<void>;
-		close: () => Promise<void>;
-	}
-
-	export function supported(obj: any & Window): obj is FileSystemAccess {
-		const candidate = obj as FileSystemAccess | undefined;
-		if (typeof candidate?.showDirectoryPicker === 'function') {
+	export function supported(obj: any & Window): boolean {
+		if (typeof obj?.showDirectoryPicker === 'function') {
 			return true;
 		}
 
@@ -1543,13 +1517,14 @@ export class ModifierKeyEmitter extends Emitter<IModifierKeyStatus> {
 			metaKey: false
 		};
 
-		this._subscriptions.add(domEvent(document.body, 'keydown', true)(e => {
-			// if keydown event is repeated, ignore it #112347
-			if (e.repeat) {
-				return;
-			}
+		this._subscriptions.add(domEvent(window, 'keydown', true)(e => {
 
 			const event = new StandardKeyboardEvent(e);
+			// If Alt-key keydown event is repeated, ignore it #112347
+			// Only known to be necessary for Alt-Key at the moment #115810
+			if (event.keyCode === KeyCode.Alt && e.repeat) {
+				return;
+			}
 
 			if (e.altKey && !this._keyStatus.altKey) {
 				this._keyStatus.lastKeyPressed = 'alt';
@@ -1576,7 +1551,7 @@ export class ModifierKeyEmitter extends Emitter<IModifierKeyStatus> {
 			}
 		}));
 
-		this._subscriptions.add(domEvent(document.body, 'keyup', true)(e => {
+		this._subscriptions.add(domEvent(window, 'keyup', true)(e => {
 			if (!e.altKey && this._keyStatus.altKey) {
 				this._keyStatus.lastKeyReleased = 'alt';
 			} else if (!e.ctrlKey && this._keyStatus.ctrlKey) {
@@ -1656,7 +1631,7 @@ export class ModifierKeyEmitter extends Emitter<IModifierKeyStatus> {
 		return ModifierKeyEmitter.instance;
 	}
 
-	dispose() {
+	override dispose() {
 		super.dispose();
 		this._subscriptions.dispose();
 	}

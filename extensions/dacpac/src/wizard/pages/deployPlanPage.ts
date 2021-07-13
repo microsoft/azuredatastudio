@@ -48,8 +48,10 @@ export class DeployPlanPage extends DacFxConfigPage {
 	}
 
 	async start(): Promise<boolean> {
-		this.table = this.view.modelBuilder.table().withProperties({
-			ariaLabel: loc.deployPlanTableTitle
+		this.table = this.view.modelBuilder.table().withProps({
+			ariaLabel: loc.deployPlanTableTitle,
+			data: [],
+			columns: []
 		}).component();
 		this.loader = this.view.modelBuilder.loadingComponent().withItem(this.table).component();
 		this.dataLossComponentGroup = await this.createDataLossComponents();
@@ -117,7 +119,7 @@ export class DeployPlanPage extends DacFxConfigPage {
 	private async createDataLossCheckbox(): Promise<azdata.FormComponent> {
 		this.dataLossCheckbox = this.view.modelBuilder.checkBox()
 			.withValidation(component => component.checked === true)
-			.withProperties({
+			.withProps({
 				label: loc.proceedDataLossMessage,
 			}).component();
 
@@ -130,7 +132,7 @@ export class DeployPlanPage extends DacFxConfigPage {
 
 	private async createNoDataLossText(): Promise<azdata.FormComponent> {
 		let noDataLossText = this.view.modelBuilder.text()
-			.withProperties({
+			.withProps({
 				value: loc.noDataLossMessage
 			}).component();
 
@@ -143,7 +145,7 @@ export class DeployPlanPage extends DacFxConfigPage {
 	private async createDataLossComponents(): Promise<azdata.FormComponentGroup> {
 		let dataLossComponent = await this.createDataLossCheckbox();
 		this.dataLossText = this.view.modelBuilder.text()
-			.withProperties({
+			.withProps({
 				value: loc.dataLossMessage
 			}).component();
 
@@ -286,7 +288,7 @@ export class DeployPlanPage extends DacFxConfigPage {
 		};
 	}
 
-	public setupNavigationValidator() {
+	public override setupNavigationValidator() {
 		this.instance.registerNavigationValidator(() => {
 			return true;
 		});

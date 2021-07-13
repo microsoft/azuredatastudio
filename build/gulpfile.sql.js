@@ -145,3 +145,9 @@ gulp.task('package-rebuild-extensions', task.series(
 	task.define('clean-rebuild-extensions', () => ext.cleanRebuildExtensions('.build/extensions')),
 	task.define('rebuild-extensions-build', () => ext.packageRebuildExtensionsStream().pipe(gulp.dest('.build'))),
 ));
+
+gulp.task('update-langpacks', task.series(
+	task.define('rename-vscode-packs', () => loc.renameVscodeLangpacks()),
+	task.define('refresh-langpack-resources', () => loc.refreshLangpacks())
+));
+

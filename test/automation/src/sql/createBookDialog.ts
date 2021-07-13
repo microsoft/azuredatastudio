@@ -9,8 +9,8 @@ import { Dialog } from './dialog';
 const CREATE_BOOK_DIALOG_TITLE = 'New Jupyter Book (Preview)';
 
 const NAME_INPUT_SELECTOR = '.modal .modal-body input[aria-label="Name. Please fill out this field."]';
-const LOCATION_INPUT_SELECTOR = '.modal .modal-body input[title="Browse locations..."]';
-const CONTENT_FOLDER_INPUT_SELECTOR = '.modal .modal-body input[title="Select content folder"]';
+const LOCATION_INPUT_SELECTOR = '.modal .modal-body input[aria-label="Save location"]';
+const CONTENT_FOLDER_INPUT_SELECTOR = '.modal .modal-body input[aria-label="Content folder"]';
 const CREATE_BUTTON_SELECTOR = '.modal .modal-footer a[aria-label="Create"]:not(.disabled)';
 
 export class CreateBookDialog extends Dialog {

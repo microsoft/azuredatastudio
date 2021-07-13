@@ -60,7 +60,7 @@ abstract class AsmtServerAction extends Action {
 		super(id, label, TARGET_ICON_CLASS[AssessmentTargetType.Server]);
 	}
 
-	public async run(context: IAsmtActionInfo): Promise<void> {
+	public override async run(context: IAsmtActionInfo): Promise<void> {
 		this._telemetryService.sendActionEvent(TelemetryView.SqlAssessment, this.id);
 		if (context && context.component && !context.component.isBusy) {
 			context.component.showProgress(this.asmtType);
@@ -133,7 +133,7 @@ export class AsmtDatabaseSelectItemsAction extends Action {
 			TARGET_ICON_CLASS[AssessmentTargetType.Database]);
 	}
 
-	public async run(context: IAsmtActionInfo): Promise<void> {
+	public override async run(context: IAsmtActionInfo): Promise<void> {
 		this._telemetryService.sendActionEvent(TelemetryView.SqlAssessment, this.id);
 		if (context && context.component && !context.component.isBusy) {
 			context.component.showProgress(AssessmentType.AvailableRules);
@@ -179,7 +179,7 @@ export class AsmtDatabaseInvokeItemsAction extends Action {
 			TARGET_ICON_CLASS[AssessmentTargetType.Database]);
 	}
 
-	public async run(context: IAsmtActionInfo): Promise<void> {
+	public override async run(context: IAsmtActionInfo): Promise<void> {
 		this._telemetryService.sendActionEvent(TelemetryView.SqlAssessment, this.id);
 		if (context && context.component && !context.component.isBusy) {
 			context.component.showProgress(AssessmentType.InvokeAssessment);
@@ -201,7 +201,7 @@ export class AsmtExportAsScriptAction extends Action {
 		super(AsmtExportAsScriptAction.ID, AsmtExportAsScriptAction.LABEL, 'exportAsScriptIcon');
 	}
 
-	public async run(context: IAsmtActionInfo): Promise<void> {
+	public override async run(context: IAsmtActionInfo): Promise<void> {
 		this._telemetryService.sendActionEvent(TelemetryView.SqlAssessment, AsmtExportAsScriptAction.ID);
 		const items = context?.component?.recentResult?.result.items;
 		if (items) {
@@ -224,7 +224,7 @@ export class AsmtSamplesLinkAction extends Action {
 		super(AsmtSamplesLinkAction.ID, AsmtSamplesLinkAction.LABEL, AsmtSamplesLinkAction.ICON);
 	}
 
-	public async run(): Promise<void> {
+	public override async run(): Promise<void> {
 		this._telemetryService.sendActionEvent(TelemetryView.SqlAssessment, AsmtSamplesLinkAction.ID);
 		await this._openerService.open(URI.parse(AsmtSamplesLinkAction.configHelpUri));
 	}
@@ -252,7 +252,7 @@ export class AsmtGenerateHTMLReportAction extends Action {
 		return URI.file(filePath);
 	}
 
-	public async run(context: IAsmtActionInfo): Promise<void> {
+	public override async run(context: IAsmtActionInfo): Promise<void> {
 		context.component.showProgress(AssessmentType.ReportGeneration);
 		const choosenPath = await this._fileDialogService.pickFileToSave(this.suggestReportFile(context.component.recentResult.dateUpdated));
 		context.component.stopProgress(AssessmentType.ReportGeneration);

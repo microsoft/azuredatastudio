@@ -59,7 +59,7 @@ export function bootstrapAngular<T>(accessor: ServicesAccessor, moduleType: IMod
 
 	platform.bootstrapModule(moduleType(params, uniqueSelectorString, instantiationService)).then(moduleRef => {
 		if (input) {
-			input.onDispose(() => {
+			input.onWillDispose(() => {
 				moduleRef.destroy();
 			});
 		}

@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Action, IActionViewItem, IActionRunner } from 'vs/base/common/actions';
+import { Action, IActionRunner } from 'vs/base/common/actions';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { IQueryModelService } from 'sql/workbench/services/query/common/queryModel';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
@@ -16,6 +16,7 @@ import { INotificationService } from 'vs/platform/notification/common/notificati
 import Severity from 'vs/base/common/severity';
 import { attachSelectBoxStyler } from 'vs/platform/theme/common/styler';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
+import { IActionViewItem } from 'vs/base/browser/ui/actionbar/actionbar';
 const $ = dom.$;
 
 /**
@@ -31,11 +32,6 @@ export abstract class EditDataAction extends Action {
 		this.enabled = true;
 		this.setClass(enabledClass);
 	}
-
-	/**
-	 * This method is executed when the button is clicked.
-	 */
-	public abstract run(): Promise<void>;
 
 	protected setClass(enabledClass: string): void {
 		this._classes = [];
@@ -73,7 +69,7 @@ export class RefreshTableAction extends EditDataAction {
 		this.label = nls.localize('editData.run', "Run");
 	}
 
-	public run(): Promise<void> {
+	public override run(): Promise<void> {
 		if (this.isConnected(this.editor)) {
 			let input = this.editor.editDataInput;
 
@@ -116,7 +112,7 @@ export class StopRefreshTableAction extends EditDataAction {
 		this.label = nls.localize('editData.stop', "Stop");
 	}
 
-	public run(): Promise<void> {
+	public override run(): Promise<void> {
 		let input = this.editor.editDataInput;
 		this._queryModelService.disposeEdit(input.uri);
 		return Promise.resolve(null);
@@ -139,7 +135,7 @@ export class ChangeMaxRowsAction extends EditDataAction {
 		this.class = ChangeMaxRowsAction.EnabledClass;
 	}
 
-	public run(): Promise<void> {
+	public override run(): Promise<void> {
 
 		return Promise.resolve(null);
 	}
@@ -249,7 +245,7 @@ export class ShowQueryPaneAction extends EditDataAction {
 		}
 	}
 
-	public run(): Promise<void> {
+	public override run(): Promise<void> {
 		this.editor.toggleQueryPane();
 		this.updateLabel(this.editor.queryPaneEnabled());
 		return Promise.resolve(null);

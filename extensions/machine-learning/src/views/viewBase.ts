@@ -199,7 +199,7 @@ export abstract class ViewBase extends EventEmitterCollection {
 
 	public abstract refresh(): Promise<void>;
 
-	public dispose(): void {
+	public override dispose(): void {
 		super.dispose();
 		this._toDispose.forEach(disposable => disposable.dispose());
 	}

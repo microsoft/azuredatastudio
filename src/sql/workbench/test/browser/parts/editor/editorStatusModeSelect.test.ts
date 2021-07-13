@@ -136,11 +136,11 @@ class MockEditorService extends TestEditorService {
 		super();
 	}
 
-	activeEditorPane: IVisibleEditorPane = <any>{
+	override activeEditorPane: IVisibleEditorPane = <any>{
 		group: {}
 	};
 
-	get activeTextEditorControl(): ICodeEditor {
+	override get activeTextEditorControl(): ICodeEditor {
 		return {
 			getModel: () => {
 				return <any>{
@@ -153,11 +153,11 @@ class MockEditorService extends TestEditorService {
 		} as any;
 	}
 
-	openEditor(_editor: any, _options?: any, _group?: any): Promise<any> {
+	override openEditor(_editor: any, _options?: any, _group?: any): Promise<any> {
 		return Promise.resolve(_editor);
 	}
 
-	createEditorInput(_input: IUntitledTextResourceEditorInput): EditorInput {
+	override createEditorInput(_input: IUntitledTextResourceEditorInput): EditorInput {
 		const accessor = this.instantiationService.createInstance(ServiceAccessor);
 		const service = accessor.untitledTextEditorService;
 		return this.instantiationService.createInstance(UntitledTextEditorInput, service.create());

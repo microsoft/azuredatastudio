@@ -17,10 +17,10 @@ import { DashboardWidgetWrapper } from 'sql/workbench/contrib/dashboard/browser/
 import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
 
 import { ConfigurationTarget, IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { DASHBOARD_BORDER } from 'vs/workbench/common/theme';
 import { IColorTheme } from 'vs/platform/theme/common/themeService';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { contrastBorder } from 'vs/platform/theme/common/colorRegistry';
+import { DASHBOARD_BORDER } from 'sql/workbench/common/theme';
 
 @Component({
 	selector: 'dashboard-home-container',
@@ -53,7 +53,7 @@ export class DashboardHomeContainer extends DashboardWidgetContainer {
 		super(_cd);
 	}
 
-	ngAfterContentInit() {
+	override ngAfterContentInit() {
 		this.updateTheme(this.themeService.getColorTheme());
 		this._register(this.themeService.onDidColorThemeChange((event: IColorTheme) => {
 			this.updateTheme(event);
@@ -90,7 +90,7 @@ export class DashboardHomeContainer extends DashboardWidgetContainer {
 		}
 	}
 
-	public refresh(): void {
+	public override refresh(): void {
 		super.refresh();
 		this._propertiesClass.refresh();
 	}

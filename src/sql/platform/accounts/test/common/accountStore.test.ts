@@ -7,9 +7,9 @@ import * as assert from 'assert';
 import * as azdata from 'azdata';
 import AccountStore from 'sql/platform/accounts/common/accountStore';
 import { EventVerifierSingle } from 'sql/base/test/common/event';
-import { ConsoleLogService } from 'vs/platform/log/common/log';
+import { ConsoleLogger, LogService } from 'vs/platform/log/common/log';
 
-const consoleLogService = new ConsoleLogService;
+const consoleLogService = new LogService(new ConsoleLogger());
 suite('Account Store Tests', () => {
 	test('AddOrUpdate - Uninitialized memento', () => {
 		// Setup: Create account store w/o initialized memento

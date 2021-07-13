@@ -93,13 +93,13 @@ export class EditDataGridPanel extends GridParentComponent {
 		onRestoreViewState: Event<void>,
 		@IInstantiationService protected instantiationService: IInstantiationService,
 		@INotificationService protected notificationService: INotificationService,
-		@IContextMenuService protected contextMenuService: IContextMenuService,
-		@IKeybindingService protected keybindingService: IKeybindingService,
-		@IContextKeyService protected contextKeyService: IContextKeyService,
-		@IConfigurationService protected configurationService: IConfigurationService,
-		@IClipboardService protected clipboardService: IClipboardService,
-		@IQueryEditorService protected queryEditorService: IQueryEditorService,
-		@ILogService protected logService: ILogService
+		@IContextMenuService contextMenuService: IContextMenuService,
+		@IKeybindingService keybindingService: IKeybindingService,
+		@IContextKeyService contextKeyService: IContextKeyService,
+		@IConfigurationService configurationService: IConfigurationService,
+		@IClipboardService clipboardService: IClipboardService,
+		@IQueryEditorService queryEditorService: IQueryEditorService,
+		@ILogService logService: ILogService
 	) {
 		super(contextMenuService, keybindingService, contextKeyService, configurationService, clipboardService, queryEditorService, logService);
 		this.nativeElement = document.createElement('div');
@@ -147,7 +147,7 @@ export class EditDataGridPanel extends GridParentComponent {
 		this.dataService.onLoaded();
 	}
 
-	public render(container: HTMLElement): void {
+	public override render(container: HTMLElement): void {
 		container.appendChild(this.nativeElement);
 	}
 
@@ -516,7 +516,7 @@ export class EditDataGridPanel extends GridParentComponent {
 	 * Force re-rendering of the results grids. Calling this upon unhide (upon focus) fixes UI
 	 * glitches that occur when a QueryResultsEditor is hidden then unhidden while it is running a query.
 	 */
-	refreshDatasets(): void {
+	override refreshDatasets(): void {
 		let tempRenderedDataSets = this.renderedDataSets;
 		this.renderedDataSets = [];
 		this.handleChanges({

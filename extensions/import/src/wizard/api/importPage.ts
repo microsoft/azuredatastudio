@@ -11,10 +11,10 @@ import { BasePage } from './basePage';
 
 export abstract class ImportPage extends BasePage {
 
-	protected readonly wizardPage: azdata.window.WizardPage;
+	protected override readonly wizardPage: azdata.window.WizardPage;
 	protected readonly instance: FlatFileWizard;
-	protected readonly model: ImportDataModel;
-	protected readonly view: azdata.ModelView;
+	protected override readonly model: ImportDataModel;
+	protected override readonly view: azdata.ModelView;
 	protected readonly provider: FlatFileProvider;
 
 

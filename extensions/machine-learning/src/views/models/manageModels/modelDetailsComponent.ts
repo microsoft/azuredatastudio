@@ -34,23 +34,23 @@ export class ModelDetailsComponent extends ModelViewBase implements IDataCompone
 	 * @param modelBuilder model builder
 	 */
 	public registerComponent(modelBuilder: azdata.ModelBuilder): azdata.Component {
-		this._createdComponent = modelBuilder.text().withProperties({
+		this._createdComponent = modelBuilder.text().withProps({
 			value: this._model.created
 		}).component();
-		this._deployedComponent = modelBuilder.text().withProperties({
+		this._deployedComponent = modelBuilder.text().withProps({
 			value: this._model.deploymentTime
 		}).component();
-		this._frameworkComponent = modelBuilder.text().withProperties({
+		this._frameworkComponent = modelBuilder.text().withProps({
 			value: this._model.framework
 		}).component();
-		this._frameworkVersionComponent = modelBuilder.text().withProperties({
+		this._frameworkVersionComponent = modelBuilder.text().withProps({
 			value: this._model.frameworkVersion
 		}).component();
-		this._nameComponent = modelBuilder.inputBox().withProperties({
+		this._nameComponent = modelBuilder.inputBox().withProps({
 			width: this.componentMaxLength,
 			value: this._model.modelName
 		}).component();
-		this._descriptionComponent = modelBuilder.inputBox().withProperties({
+		this._descriptionComponent = modelBuilder.inputBox().withProps({
 			width: this.componentMaxLength,
 			value: this._model.description,
 			multiline: true,

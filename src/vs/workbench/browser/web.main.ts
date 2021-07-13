@@ -6,8 +6,8 @@
 import { mark } from 'vs/base/common/performance';
 import { domContentLoaded, detectFullscreen, getCookieValue } from 'vs/base/browser/dom';
 import { ServiceCollection } from 'vs/platform/instantiation/common/serviceCollection';
-import { ILogService, ConsoleLogService, MultiplexLogService, getLogLevel } from 'vs/platform/log/common/log';
-import { ConsoleLogInAutomationService } from 'vs/platform/log/browser/log';
+import { ILogService, ConsoleLogger, MultiplexLogService, getLogLevel } from 'vs/platform/log/common/log';
+import { ConsoleLogInAutomationLogger } from 'vs/platform/log/browser/log';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { BrowserWorkbenchEnvironmentService } from 'vs/workbench/services/environment/browser/environmentService';
 import { Workbench } from 'vs/workbench/browser/workbench';
@@ -36,7 +36,7 @@ import type { IWorkbenchConstructionOptions, IWorkspace, IWorkbench } from 'vs/w
 import { BrowserStorageService } from 'vs/platform/storage/browser/storageService';
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import { BufferLogService } from 'vs/platform/log/common/bufferLog';
-import { FileLogService } from 'vs/platform/log/common/fileLogService';
+import { FileLogger } from 'vs/platform/log/common/fileLog';
 import { toLocalISOString } from 'vs/base/common/date';
 import { isWorkspaceToOpen, isFolderToOpen } from 'vs/platform/windows/common/windows';
 import { getSingleFolderWorkspaceIdentifier, getWorkspaceIdentifier } from 'vs/workbench/services/workspaces/browser/workspaces';
@@ -60,6 +60,9 @@ import { IUriIdentityService } from 'vs/workbench/services/uriIdentity/common/ur
 import { UriIdentityService } from 'vs/workbench/services/uriIdentity/common/uriIdentityService';
 import { BrowserWindow } from 'vs/workbench/browser/window';
 import { ITimerService } from 'vs/workbench/services/timer/browser/timerService';
+import { WorkspaceTrustManagementService } from 'vs/workbench/services/workspaces/common/workspaceTrust';
+import { IWorkspaceTrustManagementService } from 'vs/platform/workspace/common/workspaceTrust';
+import { HTMLFileSystemProvider } from 'vs/platform/files/browser/htmlFileSystemProvider';
 
 class BrowserMain extends Disposable {
 
@@ -79,10 +82,9 @@ class BrowserMain extends Disposable {
 	}
 
 	async open(): Promise<IWorkbench> {
-		const services = await this.initServices();
 
-		await domContentLoaded();
-		mark('code/willStartWorkbench');
+		// Init services and wait for DOM to be ready in parallel
+		const [services] = await Promise.all([this.initServices(), domContentLoaded()]);
 
 		// Create Workbench
 		const workbench = new Workbench(this.domElement, services.serviceCollection, services.logService);
@@ -130,7 +132,7 @@ class BrowserMain extends Disposable {
 			}
 		}));
 		this._register(workbench.onWillShutdown(() => storageService.close()));
-		this._register(workbench.onShutdown(() => this.dispose()));
+		this._register(workbench.onDidShutdown(() => this.dispose()));
 	}
 
 	private async initServices(): Promise<{ serviceCollection: ServiceCollection, configurationService: IWorkbenchConfigurationService, logService: ILogService, storageService: BrowserStorageService }> {
@@ -200,6 +202,14 @@ class BrowserMain extends Disposable {
 			})
 		]);
 
+		// Workspace Trust Service
+		const workspaceTrustManagementService = new WorkspaceTrustManagementService(configurationService, environmentService, storageService, uriIdentityService, configurationService);
+		serviceCollection.set(IWorkspaceTrustManagementService, workspaceTrustManagementService);
+
+		// Update workspace trust so that configuration is updated accordingly
+		configurationService.updateWorkspaceTrust(workspaceTrustManagementService.isWorkpaceTrusted());
+		this._register(workspaceTrustManagementService.onDidChangeTrust(() => configurationService.updateWorkspaceTrust(workspaceTrustManagementService.isWorkpaceTrusted())));
+
 		// Request Service
 		const requestService = new BrowserRequestService(remoteAgentService, configurationService, logService);
 		serviceCollection.set(IRequestService, requestService);
@@ -247,10 +257,10 @@ class BrowserMain extends Disposable {
 			}
 
 			logService.logger = new MultiplexLogService(coalesce([
-				new ConsoleLogService(logService.getLevel()),
-				new FileLogService('window', environmentService.logFile, logService.getLevel(), fileService),
+				new ConsoleLogger(logService.getLevel()),
+				new FileLogger('window', environmentService.logFile, logService.getLevel(), fileService),
 				// Extension development test CLI: forward everything to test runner
-				environmentService.isExtensionDevelopment && !!environmentService.extensionTestsLocationURI ? new ConsoleLogInAutomationService(logService.getLevel()) : undefined
+				environmentService.isExtensionDevelopment && !!environmentService.extensionTestsLocationURI ? new ConsoleLogInAutomationLogger(logService.getLevel()) : undefined
 			]));
 		})();
 
@@ -269,7 +279,16 @@ class BrowserMain extends Disposable {
 		} catch (error) {
 			onUnexpectedError(error);
 		}
-		fileService.registerProvider(Schemas.userData, indexedDBUserDataProvider || new InMemoryFileSystemProvider());
+
+		let userDataProvider: IFileSystemProvider | undefined;
+		if (indexedDBUserDataProvider) {
+			userDataProvider = indexedDBUserDataProvider;
+		} else {
+			logService.info('using in-memory user data provider');
+			userDataProvider = new InMemoryFileSystemProvider();
+		}
+
+		fileService.registerProvider(Schemas.userData, userDataProvider);
 
 		if (indexedDBUserDataProvider) {
 			registerAction2(class ResetUserDataAction extends Action2 {
@@ -299,13 +318,16 @@ class BrowserMain extends Disposable {
 				}
 			});
 		}
+
+		fileService.registerProvider(Schemas.file, new HTMLFileSystemProvider());
+		fileService.registerProvider(Schemas.tmp, new InMemoryFileSystemProvider());
 	}
 
 	private async createStorageService(payload: IWorkspaceInitializationPayload, environmentService: IWorkbenchEnvironmentService, fileService: IFileService, logService: ILogService): Promise<BrowserStorageService> {
-		const storageService = new BrowserStorageService(environmentService, fileService);
+		const storageService = new BrowserStorageService(payload, environmentService, fileService);
 
 		try {
-			await storageService.initialize(payload);
+			await storageService.initialize();
 
 			return storageService;
 		} catch (error) {

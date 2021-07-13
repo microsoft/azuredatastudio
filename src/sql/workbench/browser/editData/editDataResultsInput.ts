@@ -45,11 +45,11 @@ export class EditDataResultsInput extends EditorInput {
 		this._editDataGridPanel = gridPanel;
 	}
 
-	getTypeId(): string {
+	override get typeId(): string {
 		return EditDataResultsInput.ID;
 	}
 
-	matches(other: any): boolean {
+	override matches(other: any): boolean {
 		if (other instanceof EditDataResultsInput) {
 			return (other._uri === this._uri);
 		}
@@ -57,7 +57,7 @@ export class EditDataResultsInput extends EditorInput {
 		return false;
 	}
 
-	resolve(refresh?: boolean): Promise<any> {
+	override resolve(refresh?: boolean): Promise<any> {
 		return Promise.resolve(null);
 	}
 
@@ -69,7 +69,7 @@ export class EditDataResultsInput extends EditorInput {
 		this._hasBootstrapped = true;
 	}
 
-	public dispose(): void {
+	public override dispose(): void {
 		this._disposeContainer();
 		super.dispose();
 	}

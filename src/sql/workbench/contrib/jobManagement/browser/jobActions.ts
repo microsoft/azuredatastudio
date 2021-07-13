@@ -47,7 +47,7 @@ export class JobsRefreshAction extends Action {
 		super(JobsRefreshAction.ID, JobsRefreshAction.LABEL, 'refreshIcon');
 	}
 
-	public async run(context?: IJobActionInfo): Promise<void> {
+	public override async run(context?: IJobActionInfo): Promise<void> {
 		context?.component?.refreshJobs();
 	}
 }
@@ -61,7 +61,7 @@ export class NewJobAction extends Action {
 		super(NewJobAction.ID, NewJobAction.LABEL, 'newStepIcon');
 	}
 
-	public async run(context: IJobActionInfo): Promise<void> {
+	public override async run(context: IJobActionInfo): Promise<void> {
 		const component = context.component as JobsViewComponent;
 		await component.openCreateJobDialog();
 	}
@@ -81,7 +81,7 @@ export class RunJobAction extends Action {
 		super(RunJobAction.ID, RunJobAction.LABEL, 'start');
 	}
 
-	public async run(context: IJobActionInfo): Promise<void> {
+	public override async run(context: IJobActionInfo): Promise<void> {
 		let jobName = context.targetObject.job.name;
 		let ownerUri = context.ownerUri;
 		let refreshAction = this.instantationService.createInstance(JobsRefreshAction);
@@ -111,7 +111,7 @@ export class StopJobAction extends Action {
 		super(StopJobAction.ID, StopJobAction.LABEL, 'stop');
 	}
 
-	public async run(context: IJobActionInfo): Promise<void> {
+	public override async run(context: IJobActionInfo): Promise<void> {
 		let jobName = context.targetObject.name;
 		let ownerUri = context.ownerUri;
 		let refreshAction = this.instantationService.createInstance(JobsRefreshAction);
@@ -137,7 +137,7 @@ export class EditJobAction extends Action {
 		super(EditJobAction.ID, EditJobAction.LABEL, 'edit');
 	}
 
-	public async run(actionInfo: IJobActionInfo): Promise<void> {
+	public override async run(actionInfo: IJobActionInfo): Promise<void> {
 		await this._commandService.executeCommand(
 			'agent.openJobDialog',
 			actionInfo.ownerUri,
@@ -153,7 +153,7 @@ export class OpenMaterializedNotebookAction extends Action {
 		super(OpenMaterializedNotebookAction.ID, OpenMaterializedNotebookAction.LABEL, 'openNotebook');
 	}
 
-	public async run(context: any): Promise<void> {
+	public override async run(context: any): Promise<void> {
 		context.component.openNotebook(context.history);
 	}
 }
@@ -171,7 +171,7 @@ export class DeleteJobAction extends Action {
 		super(DeleteJobAction.ID, DeleteJobAction.LABEL);
 	}
 
-	public async run(actionInfo: IJobActionInfo): Promise<void> {
+	public override async run(actionInfo: IJobActionInfo): Promise<void> {
 		let job = actionInfo.targetObject.job as azdata.AgentJobInfo;
 		this._notificationService.prompt(
 			Severity.Info,
@@ -211,7 +211,7 @@ export class NewStepAction extends Action {
 		super(NewStepAction.ID, NewStepAction.LABEL, 'newStepIcon');
 	}
 
-	public async run(context: JobHistoryComponent): Promise<void> {
+	public override async run(context: JobHistoryComponent): Promise<void> {
 		let ownerUri = context.ownerUri;
 		let server = context.serverName;
 		let jobInfo = context.agentJobInfo;
@@ -233,7 +233,7 @@ export class DeleteStepAction extends Action {
 		super(DeleteStepAction.ID, DeleteStepAction.LABEL);
 	}
 
-	public async run(actionInfo: IJobActionInfo): Promise<void> {
+	public override async run(actionInfo: IJobActionInfo): Promise<void> {
 		let step = actionInfo.targetObject as azdata.AgentJobStepInfo;
 		let refreshAction = this.instantationService.createInstance(JobsRefreshAction);
 		this._notificationService.prompt(
@@ -274,7 +274,7 @@ export class NewAlertAction extends Action {
 		super(NewAlertAction.ID, NewAlertAction.LABEL, 'newStepIcon');
 	}
 
-	public async run(context: IJobActionInfo): Promise<void> {
+	public override async run(context: IJobActionInfo): Promise<void> {
 		let component = context.component as AlertsViewComponent;
 		await component.openCreateAlertDialog();
 	}
@@ -290,7 +290,7 @@ export class EditAlertAction extends Action {
 		super(EditAlertAction.ID, EditAlertAction.LABEL);
 	}
 
-	public async run(actionInfo: IJobActionInfo): Promise<void> {
+	public override async run(actionInfo: IJobActionInfo): Promise<void> {
 		await this._commandService.executeCommand(
 			'agent.openAlertDialog',
 			actionInfo.ownerUri,
@@ -313,7 +313,7 @@ export class DeleteAlertAction extends Action {
 		super(DeleteAlertAction.ID, DeleteAlertAction.LABEL);
 	}
 
-	public async run(actionInfo: IJobActionInfo): Promise<void> {
+	public override async run(actionInfo: IJobActionInfo): Promise<void> {
 		let alert = actionInfo.targetObject.alertInfo as azdata.AgentAlertInfo;
 		this._notificationService.prompt(
 			Severity.Info,
@@ -351,7 +351,7 @@ export class NewOperatorAction extends Action {
 		super(NewOperatorAction.ID, NewOperatorAction.LABEL, 'newStepIcon');
 	}
 
-	public async run(context: IJobActionInfo): Promise<void> {
+	public override async run(context: IJobActionInfo): Promise<void> {
 		let component = context.component as OperatorsViewComponent;
 		await component.openCreateOperatorDialog();
 	}
@@ -367,7 +367,7 @@ export class EditOperatorAction extends Action {
 		super(EditOperatorAction.ID, EditOperatorAction.LABEL);
 	}
 
-	public async run(actionInfo: IJobActionInfo): Promise<void> {
+	public override async run(actionInfo: IJobActionInfo): Promise<void> {
 		await this._commandService.executeCommand(
 			'agent.openOperatorDialog',
 			actionInfo.ownerUri,
@@ -388,7 +388,7 @@ export class DeleteOperatorAction extends Action {
 		super(DeleteOperatorAction.ID, DeleteOperatorAction.LABEL);
 	}
 
-	public async run(actionInfo: IJobActionInfo): Promise<void> {
+	public override async run(actionInfo: IJobActionInfo): Promise<void> {
 		let operator = actionInfo.targetObject as azdata.AgentOperatorInfo;
 		this._notificationService.prompt(
 			Severity.Info,
@@ -427,7 +427,7 @@ export class NewProxyAction extends Action {
 		super(NewProxyAction.ID, NewProxyAction.LABEL, 'newStepIcon');
 	}
 
-	public async run(context: IJobActionInfo): Promise<void> {
+	public override async run(context: IJobActionInfo): Promise<void> {
 		const component = context.component as ProxiesViewComponent;
 		component.openCreateProxyDialog();
 	}
@@ -444,7 +444,7 @@ export class EditProxyAction extends Action {
 		super(EditProxyAction.ID, EditProxyAction.LABEL);
 	}
 
-	public async run(actionInfo: IJobActionInfo): Promise<void> {
+	public override async run(actionInfo: IJobActionInfo): Promise<void> {
 		const result = await this._jobManagementService.getCredentials(actionInfo.ownerUri);
 		if (result && result.credentials) {
 			await this._commandService.executeCommand(
@@ -469,7 +469,7 @@ export class DeleteProxyAction extends Action {
 		super(DeleteProxyAction.ID, DeleteProxyAction.LABEL);
 	}
 
-	public async run(actionInfo: IJobActionInfo): Promise<void> {
+	public override async run(actionInfo: IJobActionInfo): Promise<void> {
 		let proxy = actionInfo.targetObject as azdata.AgentProxyInfo;
 		this._notificationService.prompt(
 			Severity.Info,
@@ -507,7 +507,7 @@ export class NewNotebookJobAction extends Action {
 		super(NewNotebookJobAction.ID, NewNotebookJobAction.LABEL, 'newStepIcon');
 	}
 
-	public async run(context: IJobActionInfo): Promise<void> {
+	public override async run(context: IJobActionInfo): Promise<void> {
 		let component = context.component as NotebooksViewComponent;
 		await component.openCreateNotebookDialog();
 	}
@@ -523,7 +523,7 @@ export class EditNotebookJobAction extends Action {
 		super(EditNotebookJobAction.ID, EditNotebookJobAction.LABEL, 'edit');
 	}
 
-	public async run(actionInfo: IJobActionInfo): Promise<void> {
+	public override async run(actionInfo: IJobActionInfo): Promise<void> {
 		await this._commandService.executeCommand(
 			'agent.openNotebookDialog',
 			actionInfo.ownerUri,
@@ -539,7 +539,7 @@ export class OpenTemplateNotebookAction extends Action {
 		super(OpenTemplateNotebookAction.ID, OpenTemplateNotebookAction.LABEL, 'opennotebook');
 	}
 
-	public async run(actionInfo: any): Promise<void> {
+	public override async run(actionInfo: any): Promise<void> {
 		actionInfo.component.openTemplateNotebook();
 	}
 }
@@ -558,7 +558,7 @@ export class DeleteNotebookAction extends Action {
 		super(DeleteNotebookAction.ID, DeleteNotebookAction.LABEL);
 	}
 
-	public async run(actionInfo: IJobActionInfo): Promise<void> {
+	public override async run(actionInfo: IJobActionInfo): Promise<void> {
 		let notebook = actionInfo.targetObject.job as azdata.AgentNotebookInfo;
 		let refreshAction = this.instantationService.createInstance(JobsRefreshAction);
 		this._notificationService.prompt(
@@ -596,7 +596,7 @@ export class PinNotebookMaterializedAction extends Action {
 		super(PinNotebookMaterializedAction.ID, PinNotebookMaterializedAction.LABEL);
 	}
 
-	public async run(actionInfo: any): Promise<void> {
+	public override async run(actionInfo: any): Promise<void> {
 		actionInfo.component.toggleNotebookPin(actionInfo.history, true);
 	}
 }
@@ -609,7 +609,7 @@ export class DeleteMaterializedNotebookAction extends Action {
 		super(DeleteMaterializedNotebookAction.ID, DeleteMaterializedNotebookAction.LABEL);
 	}
 
-	public async run(actionInfo: any): Promise<void> {
+	public override async run(actionInfo: any): Promise<void> {
 		actionInfo.component.deleteMaterializedNotebook(actionInfo.history);
 	}
 }
@@ -622,7 +622,7 @@ export class UnpinNotebookMaterializedAction extends Action {
 		super(UnpinNotebookMaterializedAction.ID, UnpinNotebookMaterializedAction.LABEL);
 	}
 
-	public async run(actionInfo: any): Promise<void> {
+	public override async run(actionInfo: any): Promise<void> {
 		actionInfo.component.toggleNotebookPin(actionInfo.history, false);
 	}
 }
@@ -635,7 +635,7 @@ export class RenameNotebookMaterializedAction extends Action {
 		super(RenameNotebookMaterializedAction.ID, RenameNotebookMaterializedAction.LABEL);
 	}
 
-	public async run(actionInfo: any): Promise<void> {
+	public override async run(actionInfo: any): Promise<void> {
 		actionInfo.component.renameNotebook(actionInfo.history);
 	}
 }
@@ -648,7 +648,7 @@ export class OpenLatestRunMaterializedNotebook extends Action {
 		super(OpenLatestRunMaterializedNotebook.ID, OpenLatestRunMaterializedNotebook.LABEL);
 	}
 
-	public async run(actionInfo: IJobActionInfo): Promise<void> {
+	public override async run(actionInfo: IJobActionInfo): Promise<void> {
 		actionInfo.component.openLastNRun(actionInfo.targetObject.job, 0, 1);
 	}
 }

@@ -88,7 +88,7 @@ export class DropdownList extends Dropdown {
 	/**
 	 * Render the dropdown contents
 	 */
-	protected renderContents(container: HTMLElement): IDisposable {
+	protected override renderContents(container: HTMLElement): IDisposable {
 		let div = DOM.append(container, this._contentContainer);
 		div.style.width = DOM.getTotalWidth(this.element) + 'px';
 		return { dispose: () => { } };
@@ -103,7 +103,7 @@ export class DropdownList extends Dropdown {
 		}
 	}
 
-	protected onEvent(e: Event, activeElement: HTMLElement): void {
+	protected override onEvent(e: Event, activeElement: HTMLElement): void {
 		// If there is an event outside dropdown label and dropdown list, hide the dropdown list
 		if (!DOM.isAncestor(<HTMLElement>e.target, this.element) && !DOM.isAncestor(<HTMLElement>e.target, this._contentContainer)) {
 			// focus on the dropdown label then hide the dropdown list

@@ -32,7 +32,7 @@ export class AddNewPackageTab {
 		this.addNewPkgTab = azdata.window.createTab(localize('managePackages.addNewTabTitle', "Add new"));
 
 		this.addNewPkgTab.registerContent(async view => {
-			this.newPackagesSearchBar = view.modelBuilder.inputBox().withProperties({ width: '400px' }).component();
+			this.newPackagesSearchBar = view.modelBuilder.inputBox().withProps({ width: '400px' }).component();
 			// Search package by name when pressing enter
 			this.newPackagesSearchBar.onEnterKeyPressed(async () => {
 				await this.loadNewPackageInfo();
@@ -48,22 +48,22 @@ export class AddNewPackageTab {
 				await this.loadNewPackageInfo();
 			});
 
-			this.newPackagesName = view.modelBuilder.text().withProperties({ width: '400px' }).component();
+			this.newPackagesName = view.modelBuilder.text().withProps({ width: '400px' }).component();
 			this.newPackagesNameLoader = view.modelBuilder.loadingComponent()
 				.withItem(this.newPackagesName)
 				.component();
 
-			this.newPackagesVersions = view.modelBuilder.dropDown().withProperties({ width: '400px' }).component();
+			this.newPackagesVersions = view.modelBuilder.dropDown().withProps({ width: '400px' }).component();
 			this.newPackagesVersionsLoader = view.modelBuilder.loadingComponent()
 				.withItem(this.newPackagesVersions)
 				.component();
 
-			this.newPackagesSummary = view.modelBuilder.text().withProperties({ width: '400px' }).component();
+			this.newPackagesSummary = view.modelBuilder.text().withProps({ width: '400px' }).component();
 			this.newPackagesSummaryLoader = view.modelBuilder.loadingComponent()
 				.withItem(this.newPackagesSummary)
 				.component();
 
-			this.packageInstallButton = view.modelBuilder.button().withProperties({
+			this.packageInstallButton = view.modelBuilder.button().withProps({
 				label: localize('managePackages.installButtonText', "Install"),
 				width: '200px',
 				secondary: true

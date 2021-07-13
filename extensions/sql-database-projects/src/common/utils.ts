@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import type * as azdataType from 'azdata';
 import * as vscode from 'vscode';
 import * as os from 'os';
 import * as constants from './constants';
@@ -240,7 +241,7 @@ export async function getSqlProjectFilesInFolder(folderPath: string): Promise<st
 /**
  * Get all the projects in the workspace that are sqlproj
  */
-export function getSqlProjectsInWorkspace(): vscode.Uri[] {
+export function getSqlProjectsInWorkspace(): Promise<vscode.Uri[]> {
 	const api = getDataWorkspaceExtensionApi();
 	return api.getProjectsInWorkspace(constants.sqlprojExtension);
 }
@@ -248,13 +249,6 @@ export function getSqlProjectsInWorkspace(): vscode.Uri[] {
 export function getDataWorkspaceExtensionApi(): dataworkspace.IExtension {
 	const extension = vscode.extensions.getExtension(dataworkspace.extension.name)!;
 	return extension.exports;
-}
-
-/**
- * if the current workspace is untitled, the returned URI of vscode.workspace.workspaceFile will use the `untitled` scheme
- */
-export function isCurrentWorkspaceUntitled(): boolean {
-	return !!vscode.workspace.workspaceFile && vscode.workspace.workspaceFile.scheme.toLowerCase() === 'untitled';
 }
 
 /*
@@ -323,4 +317,21 @@ export function timeConversion(duration: number): string {
 	}
 
 	return portions.join(', ');
+}
+
+// Try to load the azdata API - but gracefully handle the failure in case we're running
+// in a context where the API doesn't exist (such as VS Code)
+let azdataApi: typeof azdataType | undefined = undefined;
+try {
+	azdataApi = require('azdata');
+} catch {
+	// no-op
+}
+
+/**
+ * Gets the azdata API if it's available in the context this extension is running in.
+ * @returns The azdata API if it's available
+ */
+export function getAzdataApi(): typeof azdataType | undefined {
+	return azdataApi;
 }

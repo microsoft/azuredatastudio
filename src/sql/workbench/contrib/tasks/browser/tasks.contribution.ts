@@ -55,7 +55,7 @@ export class StatusUpdater extends lifecycle.Disposable implements ext.IWorkbenc
 		return StatusUpdater.ID;
 	}
 
-	public dispose(): void {
+	public override dispose(): void {
 		lifecycle.dispose(this.badgeHandle);
 		super.dispose();
 	}

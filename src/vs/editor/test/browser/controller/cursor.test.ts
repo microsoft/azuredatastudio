@@ -1047,6 +1047,21 @@ suite('Editor Controller - Cursor', () => {
 		});
 	});
 
+	test('issue #118062: Column selection cannot select first position of a line', () => {
+		withTestCodeEditor([
+			'hello world',
+		].join('\n'), {}, (editor, viewModel) => {
+
+			moveTo(editor, viewModel, 1, 2, false);
+			assertCursor(viewModel, new Position(1, 2));
+
+			CoreNavigationCommands.CursorColumnSelectLeft.runCoreEditorCommand(viewModel, {});
+			assertCursor(viewModel, [
+				new Selection(1, 2, 1, 1)
+			]);
+		});
+	});
+
 	test('column select with keyboard', () => {
 		withTestCodeEditor([
 			'var gulp = require("gulp");',
@@ -2079,16 +2094,16 @@ suite('Editor Controller - Regression tests', () => {
 
 			// Typing sennsei in Japanese - Hiragana
 			viewModel.type('ｓ', 'keyboard');
-			viewModel.replacePreviousChar('せ', 1);
-			viewModel.replacePreviousChar('せｎ', 1);
-			viewModel.replacePreviousChar('せん', 2);
-			viewModel.replacePreviousChar('せんｓ', 2);
-			viewModel.replacePreviousChar('せんせ', 3);
-			viewModel.replacePreviousChar('せんせ', 3);
-			viewModel.replacePreviousChar('せんせい', 3);
-			viewModel.replacePreviousChar('せんせい', 4);
-			viewModel.replacePreviousChar('せんせい', 4);
-			viewModel.replacePreviousChar('せんせい', 4);
+			viewModel.compositionType('せ', 1, 0, 0);
+			viewModel.compositionType('せｎ', 1, 0, 0);
+			viewModel.compositionType('せん', 2, 0, 0);
+			viewModel.compositionType('せんｓ', 2, 0, 0);
+			viewModel.compositionType('せんせ', 3, 0, 0);
+			viewModel.compositionType('せんせ', 3, 0, 0);
+			viewModel.compositionType('せんせい', 3, 0, 0);
+			viewModel.compositionType('せんせい', 4, 0, 0);
+			viewModel.compositionType('せんせい', 4, 0, 0);
+			viewModel.compositionType('せんせい', 4, 0, 0);
 
 			assert.strictEqual(model.getLineContent(1), 'せんせい');
 			assertCursor(viewModel, new Position(1, 5));
@@ -5311,6 +5326,41 @@ suite('autoClosingPairs', () => {
 		mode.dispose();
 	});
 
+	test('issue #118270 - auto closing deletes only those characters that it inserted', () => {
+		let mode = new AutoClosingMode();
+		usingCursor({
+			text: [
+				'',
+				'y=();'
+			],
+			languageIdentifier: mode.getLanguageIdentifier()
+		}, (editor, model, viewModel) => {
+			assertCursor(viewModel, new Position(1, 1));
+
+			viewModel.type('x=(', 'keyboard');
+			assert.strictEqual(model.getLineContent(1), 'x=()');
+
+			viewModel.type('asd', 'keyboard');
+			assert.strictEqual(model.getLineContent(1), 'x=(asd)');
+
+			CoreEditingCommands.DeleteLeft.runEditorCommand(null, editor, null);
+			CoreEditingCommands.DeleteLeft.runEditorCommand(null, editor, null);
+			CoreEditingCommands.DeleteLeft.runEditorCommand(null, editor, null);
+			assert.strictEqual(model.getLineContent(1), 'x=()');
+
+			// delete closing char!
+			CoreEditingCommands.DeleteLeft.runEditorCommand(null, editor, null);
+			assert.strictEqual(model.getLineContent(1), 'x=');
+
+			// do not delete closing char!
+			viewModel.setSelections('test', [new Selection(2, 4, 2, 4)]);
+			CoreEditingCommands.DeleteLeft.runEditorCommand(null, editor, null);
+			assert.strictEqual(model.getLineContent(2), 'y=);');
+
+		});
+		mode.dispose();
+	});
+
 	test('issue #78527 - does not close quote on odd count', () => {
 		let mode = new AutoClosingMode();
 		usingCursor({
@@ -5449,7 +5499,7 @@ suite('autoClosingPairs', () => {
 			// Typing ` + e on the mac US intl kb layout
 			viewModel.startComposition();
 			viewModel.type('`', 'keyboard');
-			viewModel.replacePreviousChar('è', 1, 'keyboard');
+			viewModel.compositionType('è', 1, 0, 0, 'keyboard');
 			viewModel.endComposition('keyboard');
 
 			assert.strictEqual(model.getValue(), 'è');
@@ -5470,8 +5520,8 @@ suite('autoClosingPairs', () => {
 			// Typing ` + e on the mac US intl kb layout
 			viewModel.startComposition();
 			viewModel.type('\'', 'keyboard');
-			viewModel.replacePreviousChar('\'', 1, 'keyboard');
-			viewModel.replacePreviousChar('\'', 1, 'keyboard');
+			viewModel.compositionType('\'', 1, 0, 0, 'keyboard');
+			viewModel.compositionType('\'', 1, 0, 0, 'keyboard');
 			viewModel.endComposition('keyboard');
 
 			assert.strictEqual(model.getValue(), '\'test\'');
@@ -5550,8 +5600,8 @@ suite('autoClosingPairs', () => {
 			viewModel.startComposition();
 			viewModel.type('`', 'keyboard');
 			moveDown(editor, viewModel, true);
-			viewModel.replacePreviousChar('`', 1, 'keyboard');
-			viewModel.replacePreviousChar('`', 1, 'keyboard');
+			viewModel.compositionType('`', 1, 0, 0, 'keyboard');
+			viewModel.compositionType('`', 1, 0, 0, 'keyboard');
 			viewModel.endComposition('keyboard');
 
 			assert.strictEqual(model.getValue(), '`hello\nworld');
@@ -5575,14 +5625,14 @@ suite('autoClosingPairs', () => {
 			// Typing ' + space
 			viewModel.startComposition();
 			viewModel.type('\'', 'keyboard');
-			viewModel.replacePreviousChar('\'', 1, 'keyboard');
+			viewModel.compositionType('\'', 1, 0, 0, 'keyboard');
 			viewModel.endComposition('keyboard');
 			assert.strictEqual(model.getValue(), '\'\'');
 
 			// Typing one more ' + space
 			viewModel.startComposition();
 			viewModel.type('\'', 'keyboard');
-			viewModel.replacePreviousChar('\'', 1, 'keyboard');
+			viewModel.compositionType('\'', 1, 0, 0, 'keyboard');
 			viewModel.endComposition('keyboard');
 			assert.strictEqual(model.getValue(), '\'\'');
 
@@ -5591,7 +5641,7 @@ suite('autoClosingPairs', () => {
 			viewModel.setSelections('test', [new Selection(1, 5, 1, 5)]);
 			viewModel.startComposition();
 			viewModel.type('\'', 'keyboard');
-			viewModel.replacePreviousChar('\'', 1, 'keyboard');
+			viewModel.compositionType('\'', 1, 0, 0, 'keyboard');
 			viewModel.endComposition('keyboard');
 
 			assert.strictEqual(model.getValue(), '\'abc\'');
@@ -5601,7 +5651,7 @@ suite('autoClosingPairs', () => {
 			viewModel.setSelections('test', [new Selection(1, 10, 1, 10)]);
 			viewModel.startComposition();
 			viewModel.type('\'', 'keyboard');
-			viewModel.replacePreviousChar('\'', 1, 'keyboard');
+			viewModel.compositionType('\'', 1, 0, 0, 'keyboard');
 			viewModel.endComposition('keyboard');
 
 			assert.strictEqual(model.getValue(), '\'abc\'def \'\'');
@@ -5611,7 +5661,7 @@ suite('autoClosingPairs', () => {
 			viewModel.setSelections('test', [new Selection(1, 1, 1, 1)]);
 			viewModel.startComposition();
 			viewModel.type('\'', 'keyboard');
-			viewModel.replacePreviousChar('\'', 1, 'keyboard');
+			viewModel.compositionType('\'', 1, 0, 0, 'keyboard');
 			viewModel.endComposition('keyboard');
 
 			// No auto closing if it's after a word.
@@ -5619,7 +5669,7 @@ suite('autoClosingPairs', () => {
 			viewModel.setSelections('test', [new Selection(1, 4, 1, 4)]);
 			viewModel.startComposition();
 			viewModel.type('\'', 'keyboard');
-			viewModel.replacePreviousChar('\'', 1, 'keyboard');
+			viewModel.compositionType('\'', 1, 0, 0, 'keyboard');
 			viewModel.endComposition('keyboard');
 
 			assert.strictEqual(model.getValue(), 'abc\'');
@@ -5640,7 +5690,7 @@ suite('autoClosingPairs', () => {
 			// Typing a + backspace
 			viewModel.startComposition();
 			viewModel.type('a', 'keyboard');
-			viewModel.replacePreviousChar('', 1, 'keyboard');
+			viewModel.compositionType('', 1, 0, 0, 'keyboard');
 			viewModel.endComposition('keyboard');
 			assert.strictEqual(model.getValue(), '{}');
 		});

@@ -91,14 +91,14 @@ class InsightTableView extends ViewPane {
 		super(options, keybindingService, contextMenuService, configurationService, contextKeyService, viewDescriptorService, instantiationService, openerService, themeService, telemetryService);
 	}
 
-	protected renderBody(container: HTMLElement): void {
+	protected override renderBody(container: HTMLElement): void {
 		this._table = new Table(container, {
 			columns: this.columns,
 			dataProvider: this.data
 		}, this.tableOptions);
 	}
 
-	protected layoutBody(size: number): void {
+	protected override layoutBody(size: number): void {
 		this._table.layout(size, Orientation.VERTICAL);
 	}
 
@@ -336,7 +336,7 @@ export class InsightsDialogView extends Modal {
 		});
 	}
 
-	public render() {
+	public override render() {
 		super.render();
 		this._closeButton = this.addFooterButton('Close', () => this.close());
 		this._register(attachButtonStyler(this._closeButton, this._themeService));
@@ -420,7 +420,7 @@ export class InsightsDialogView extends Modal {
 		this._taskButtonDisposables = [];
 	}
 
-	protected onClose(e: StandardKeyboardEvent) {
+	protected override onClose(e: StandardKeyboardEvent) {
 		this.close();
 	}
 

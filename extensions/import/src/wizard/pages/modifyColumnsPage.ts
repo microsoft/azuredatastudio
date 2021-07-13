@@ -135,21 +135,21 @@ export class ModifyColumnsPage extends ImportPage {
 		return true;
 	}
 
-	async onPageLeave(): Promise<boolean> {
+	override async onPageLeave(): Promise<boolean> {
 		this.instance.changeNextButtonLabel(constants.nextText);
 		return undefined;
 	}
 
-	async cleanup(): Promise<boolean> {
+	override async cleanup(): Promise<boolean> {
 		delete this.model.proseColumns;
 		this.instance.changeNextButtonLabel(constants.nextText);
 
 		return true;
 	}
 
-	public setupNavigationValidator() {
+	public override setupNavigationValidator() {
 		this.instance.registerNavigationValidator((info) => {
-			return !this.loading.loading && this.table.data && this.table.data.length > 0;
+			return this.table.data && this.table.data.length > 0;
 		});
 	}
 

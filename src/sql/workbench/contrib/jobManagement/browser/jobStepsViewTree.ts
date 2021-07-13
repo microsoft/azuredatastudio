@@ -27,11 +27,11 @@ export class JobStepsViewModel {
 
 export class JobStepsViewController extends TreeDefaults.DefaultController {
 
-	protected onLeftClick(tree: tree.ITree, element: JobStepsViewRow, event: IMouseEvent, origin: string = 'mouse'): boolean {
+	protected override onLeftClick(tree: tree.ITree, element: JobStepsViewRow, event: IMouseEvent, origin: string = 'mouse'): boolean {
 		return true;
 	}
 
-	public onContextMenu(tree: tree.ITree, element: JobStepsViewRow, event: tree.ContextMenuEvent): boolean {
+	public override onContextMenu(tree: tree.ITree, element: JobStepsViewRow, event: tree.ContextMenuEvent): boolean {
 		return true;
 	}
 

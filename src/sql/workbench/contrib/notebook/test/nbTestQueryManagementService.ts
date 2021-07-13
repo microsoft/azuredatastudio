@@ -8,9 +8,9 @@ import { Event, Emitter } from 'vs/base/common/event';
 
 export class NBTestQueryManagementService extends TestQueryManagementService {
 	onHandlerAddedEmitter = new Emitter<string>();
-	onHandlerAdded: Event<string> = this.onHandlerAddedEmitter.event;
+	override onHandlerAdded: Event<string> = this.onHandlerAddedEmitter.event;
 
-	getRegisteredProviders(): string[] {
+	override getRegisteredProviders(): string[] {
 		return ['sql'];
 	}
 }

@@ -56,7 +56,7 @@ export default class TextComponent extends TitledComponent<azdata.TextComponentP
 		this.baseInit();
 	}
 
-	ngOnDestroy(): void {
+	override ngOnDestroy(): void {
 		this.baseDestroy();
 	}
 
@@ -91,7 +91,7 @@ export default class TextComponent extends TitledComponent<azdata.TextComponentP
 		return this.getPropertyOrDefault<boolean>((props) => props.requiredIndicator, false);
 	}
 
-	public setProperties(properties: { [key: string]: any; }): void {
+	public override setProperties(properties: { [key: string]: any; }): void {
 		super.setProperties(properties);
 		this.updateText();
 		this._changeRef.detectChanges();
@@ -124,6 +124,13 @@ export default class TextComponent extends TitledComponent<azdata.TextComponentP
 				label: link.text,
 				href: link.url
 			}));
+			if (link.accessibilityInformation) {
+				linkElement.el.setAttribute('aria-label', link.accessibilityInformation.label);
+				if (link.accessibilityInformation.role) {
+					linkElement.el.setAttribute('role', link.accessibilityInformation.role);
+				}
+			}
+
 			this._register(attachLinkStyler(linkElement, this.themeService));
 			(<HTMLElement>this.textContainer.nativeElement).appendChild(linkElement.el);
 

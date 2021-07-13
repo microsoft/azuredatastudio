@@ -6,5 +6,5 @@
 import { ResourceTypePage } from '../../resourceTypePage';
 
 export abstract class BasePage extends ResourceTypePage {
-	public abstract initialize(): void;
+	public abstract override initialize(): void;
 }

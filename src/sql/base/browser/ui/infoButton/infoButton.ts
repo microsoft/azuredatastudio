@@ -79,10 +79,10 @@ export class InfoButton extends sqlButton {
 		this.infoButtonOptions = options;
 	}
 
-	public get title(): string {
+	public override get title(): string {
 		return this._title!;
 	}
-	public set title(value: string) {
+	public override set title(value: string) {
 		this._title! = value;
 		this._pTitle.innerText = this.title;
 	}
@@ -152,18 +152,18 @@ export class InfoButton extends sqlButton {
 		this.title = options.title;
 	}
 
-	style(styles: IButtonStyles): void {
+	override style(styles: IButtonStyles): void {
 		this._styles = styles;
 		this.applyStyles();
 	}
 
-	applyStyles(): void {
+	override applyStyles(): void {
 		this.element.style.backgroundColor = this._styles?.buttonBackground?.toString();
 		this.element.style.color = this._styles?.buttonForeground?.toString();
 		this.element.style.borderColor = this._styles?.buttonBorder?.toString();
 	}
 
-	setHoverBackground(): void {
+	override setHoverBackground(): void {
 		this.element.style.backgroundColor = this._styles?.buttonHoverBackground?.toString();
 	}
 }

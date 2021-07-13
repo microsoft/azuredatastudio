@@ -83,7 +83,7 @@ export class ProsePreviewPage extends ImportPage {
 		this.loading = this.view.modelBuilder.loadingComponent().component();
 
 		this.resultTextComponent = this.view.modelBuilder.text()
-			.withProperties({
+			.withProps({
 				value: this.isSuccess ? constants.successTitleText : constants.failureTitleText
 			}).component();
 
@@ -134,22 +134,22 @@ export class ProsePreviewPage extends ImportPage {
 		}
 	}
 
-	async onPageLeave(): Promise<boolean> {
+	override async onPageLeave(): Promise<boolean> {
 		await this.emptyTable();
 		return true;
 	}
 
-	async cleanup(): Promise<boolean> {
+	override async cleanup(): Promise<boolean> {
 		delete this.model.proseDataPreview;
 		return true;
 	}
 
-	public setupNavigationValidator() {
+	public override setupNavigationValidator() {
 		this.instance.registerNavigationValidator((info) => {
 			if (info) {
 				// Prose Preview to Modify Columns
 				if (info.lastPage === 1 && info.newPage === 2) {
-					return !this.loading.loading && this.table.data && this.table.data.length > 0;
+					return this.table.data && this.table.data.length > 0;
 				}
 			}
 			return !this.loading.loading;

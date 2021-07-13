@@ -12,7 +12,7 @@ import * as os from 'os';
 import * as templates from '../templates/templates';
 
 import { Uri, window } from 'vscode';
-import { IFileProjectEntry, ISqlProject } from 'sqldbproj';
+import { IFileProjectEntry, ISqlProject, SqlTargetPlatform } from 'sqldbproj';
 import { promises as fs } from 'fs';
 import { DataSource } from './dataSources/dataSources';
 import { ISystemDatabaseReferenceSettings, IDacpacReferenceSettings, IProjectReferenceSettings } from './IDatabaseReferenceSettings';
@@ -512,9 +512,12 @@ export class Project implements ISqlProject {
 
 		// DW is special because the target version is DW, but the folder name for system dacpacs is AzureDW in SSDT
 		// the other target versions have the same version name and folder name
-		return version === constants.targetPlatformToVersion.get(constants.sqlDW) ? constants.AzureDwFolder : version;
+		return version === constants.targetPlatformToVersion.get(SqlTargetPlatform.sqlDW) ? constants.AzureDwFolder : version;
 	}
 
+	/**
+	 * Gets the project target version specified in the DSP property in the sqlproj
+	 */
 	public getProjectTargetVersion(): string {
 		let dsp: string | undefined;
 
@@ -1131,7 +1134,7 @@ export class FileProjectEntry extends ProjectEntry implements IFileProjectEntry 
 		this.sqlObjectType = sqlObjectType;
 	}
 
-	public toString(): string {
+	public override toString(): string {
 		return this.fsUri.path;
 	}
 
@@ -1173,7 +1176,7 @@ export class DacpacReferenceProjectEntry extends FileProjectEntry implements IDa
 		return path.parse(utils.getPlatformSafeFileEntryPath(this.fsUri.fsPath)).name;
 	}
 
-	public pathForSqlProj(): string {
+	public override pathForSqlProj(): string {
 		// need to remove the leading slash from path for build to work
 		return utils.convertSlashesForSqlProj(this.fsUri.path.substring(1));
 	}
@@ -1191,7 +1194,7 @@ export class SystemDatabaseReferenceProjectEntry extends FileProjectEntry implem
 		return path.parse(utils.getPlatformSafeFileEntryPath(this.fsUri.fsPath)).name;
 	}
 
-	public pathForSqlProj(): string {
+	public override pathForSqlProj(): string {
 		// need to remove the leading slash for system database path for build to work on Windows
 		return utils.convertSlashesForSqlProj(this.fsUri.path.substring(1));
 	}
@@ -1226,7 +1229,7 @@ export class SqlProjectReferenceProjectEntry extends FileProjectEntry implements
 		return this.projectName;
 	}
 
-	public pathForSqlProj(): string {
+	public override pathForSqlProj(): string {
 		// need to remove the leading slash from path for build to work on Windows
 		return utils.convertSlashesForSqlProj(this.fsUri.path.substring(1));
 	}

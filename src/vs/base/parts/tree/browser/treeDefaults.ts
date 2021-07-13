@@ -561,7 +561,7 @@ export class CollapseAllAction extends Action {
 		super('vs.tree.collapse', nls.localize('collapse all', "Collapse All"), 'monaco-tree-action collapse-all', enabled);
 	}
 
-	public run(context?: any): Promise<any> {
+	public override run(context?: any): Promise<any> {
 		if (this.viewer.getHighlight()) {
 			return Promise.resolve(); // Global action disabled if user is in edit mode from another action
 		}

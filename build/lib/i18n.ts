@@ -64,7 +64,7 @@ export const externalExtensionsWithTranslations = {
 };
 
 
-interface Map<V> {
+export interface Map<V> {	// {{SQL CARBON EDIT}} Needed in locfunc.
 	[key: string]: V;
 }
 
@@ -79,7 +79,7 @@ export interface Resource {
 	project: string;
 }
 
-interface ParsedXLF {
+export interface ParsedXLF {	// {{SQL CARBON EDIT}} Needed in locfunc.
 	messages: Map<string>;
 	originalFilePath: string;
 	language: string;
@@ -339,13 +339,14 @@ export class XLF {
 
 							let val = unit.target[0];
 							if (typeof val !== 'string') {
-								val = val._;
+								// We allow empty source values so support them for translations as well.
+								val = val._ ? val._ : '';
 							}
-							if (key && val) {
-								messages[key] = decodeEntities(val);
-							} else {
-								reject(new Error(`XLF parsing error: XLIFF file ${originalFilePath} does not contain full localization data. ID or target translation for one of the trans-unit nodes is not present.`));
+							if (!key) {
+								reject(new Error(`XLF parsing error: trans-unit ${JSON.stringify(unit, undefined, 0)} defined in file ${originalFilePath} is missing the ID attribute.`));
+								return;
 							}
+							messages[key] = decodeEntities(val);
 						});
 						files.push({ messages: messages, originalFilePath: originalFilePath, language: language.toLowerCase() });
 					}
@@ -610,7 +611,7 @@ const editorProject: string = 'vscode-editor',
 	setupProject: string = 'vscode-setup';
 
 // {{SQL CARBON EDIT}}
-const sqlopsProject: string = 'sqlops-core';
+const adsProject: string = 'ads-core';
 
 export function getResource(sourceFile: string): Resource {
 	let resource: string;
@@ -637,7 +638,7 @@ export function getResource(sourceFile: string): Resource {
 
 	// {{SQL CARBON EDIT}}
 	else if (/^sql/.test(sourceFile)) {
-		return { name: 'sql', project: sqlopsProject };
+		return { name: 'sql', project: adsProject };
 	}
 
 	throw new Error(`Could not identify the XLF bundle for ${sourceFile}`);
@@ -651,7 +652,11 @@ export function createXlfFilesForCoreBundle(): ThroughStream {
 			if (file.isBuffer()) {
 				const xlfs: Map<XLF> = Object.create(null);
 				const json: BundledFormat = JSON.parse((file.contents as Buffer).toString('utf8'));
-				for (let coreModule in json.keys) {
+				// {{SQL CARBON EDIT}} - Must sort the keys for easier translation.
+				let sortedKeys = Object.keys(json.keys).sort();
+				for (let i = 0; i < sortedKeys.length; i++) {
+					let coreModule = sortedKeys[i];
+					// {{SQL CARBON EDIT}} - End
 					const projectResource = getResource(coreModule);
 					const resource = projectResource.name;
 					const project = projectResource.project;
@@ -1166,7 +1171,7 @@ export function prepareI18nFiles(): ThroughStream {
 	});
 }
 
-function createI18nFile(originalFilePath: string, messages: any): File {
+export function createI18nFile(originalFilePath: string, messages: any): File { // {{SQL CARBON EDIT}} Needed for locfunc.
 	let result = Object.create(null);
 	result[''] = [
 		'--------------------------------------------------------------------------------------------',
@@ -1189,14 +1194,14 @@ function createI18nFile(originalFilePath: string, messages: any): File {
 	});
 }
 
-interface I18nPack {
+export interface I18nPack {	// {{SQL CARBON EDIT}} Needed in locfunc.
 	version: string;
 	contents: {
 		[path: string]: Map<string>;
 	};
 }
 
-const i18nPackVersion = '1.0.0';
+export const i18nPackVersion = '1.0.0'; // {{SQL CARBON EDIT}} Needed in locfunc.
 
 export interface TranslationPath {
 	id: string;

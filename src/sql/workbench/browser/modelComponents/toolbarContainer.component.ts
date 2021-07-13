@@ -69,7 +69,7 @@ export default class ToolbarContainer extends ContainerBase<ToolbarItemConfig> i
 		this.baseInit();
 	}
 
-	ngOnDestroy(): void {
+	override ngOnDestroy(): void {
 		this.baseDestroy();
 	}
 

@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { release } from 'os';
+import { release, hostname } from 'os';
 import * as fs from 'fs';
 import { gracefulify } from 'graceful-fs';
 import { isAbsolute, join } from 'vs/base/common/path';
@@ -13,7 +13,7 @@ import { ServiceCollection } from 'vs/platform/instantiation/common/serviceColle
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { InstantiationService } from 'vs/platform/instantiation/common/instantiationService';
-import { IEnvironmentService, INativeEnvironmentService } from 'vs/platform/environment/common/environment';
+import { INativeEnvironmentService } from 'vs/platform/environment/common/environment';
 import { NativeParsedArgs } from 'vs/platform/environment/common/argv';
 import { NativeEnvironmentService } from 'vs/platform/environment/node/environmentService';
 import { IExtensionManagementService, IExtensionGalleryService, IExtensionManagementCLIService } from 'vs/platform/extensionManagement/common/extensionManagement';
@@ -30,9 +30,9 @@ import { ConfigurationService } from 'vs/platform/configuration/common/configura
 import { AppInsightsAppender } from 'vs/platform/telemetry/node/appInsightsAppender';
 import { IStateService } from 'vs/platform/state/node/state';
 import { StateService } from 'vs/platform/state/node/stateService';
-import { ILogService, getLogLevel, LogLevel, ConsoleLogService, MultiplexLogService } from 'vs/platform/log/common/log';
+import { ILogService, getLogLevel, LogLevel, ConsoleLogger, MultiplexLogService, ILogger } from 'vs/platform/log/common/log';
 import { Schemas } from 'vs/base/common/network';
-import { SpdLogService } from 'vs/platform/log/node/spdlogService';
+import { SpdLogLogger } from 'vs/platform/log/node/spdlogLog';
 import { buildTelemetryMessage } from 'vs/platform/telemetry/node/telemetry';
 import { FileService } from 'vs/platform/files/common/fileService';
 import { IFileService } from 'vs/platform/files/common/files';
@@ -46,6 +46,7 @@ import { ILocalizationsService } from 'vs/platform/localizations/common/localiza
 import { setUnexpectedErrorHandler } from 'vs/base/common/errors';
 import { toErrorMessage } from 'vs/base/common/errorMessage';
 import { VSBuffer } from 'vs/base/common/buffer';
+import { cwd } from 'vs/base/common/process';
 
 class CliMain extends Disposable {
 
@@ -94,9 +95,12 @@ class CliMain extends Disposable {
 	private async initServices(): Promise<[IInstantiationService, AppInsightsAppender[]]> {
 		const services = new ServiceCollection();
 
+		// Product
+		const productService = { _serviceBrand: undefined, ...product };
+		services.set(IProductService, productService);
+
 		// Environment
-		const environmentService = new NativeEnvironmentService(this.argv);
-		services.set(IEnvironmentService, environmentService);
+		const environmentService = new NativeEnvironmentService(this.argv, productService);
 		services.set(INativeEnvironmentService, environmentService);
 
 		// Init folders
@@ -104,10 +108,10 @@ class CliMain extends Disposable {
 
 		// Log
 		const logLevel = getLogLevel(environmentService);
-		const loggers: ILogService[] = [];
-		loggers.push(new SpdLogService('cli', environmentService.logsPath, logLevel));
+		const loggers: ILogger[] = [];
+		loggers.push(new SpdLogLogger('cli', join(environmentService.logsPath, 'cli.log'), true, logLevel));
 		if (logLevel === LogLevel.Trace) {
-			loggers.push(new ConsoleLogService(logLevel));
+			loggers.push(new ConsoleLogger(logLevel));
 		}
 
 		const logService = this._register(new MultiplexLogService(loggers));
@@ -131,11 +135,6 @@ class CliMain extends Disposable {
 		const stateService = new StateService(environmentService, logService);
 		services.set(IStateService, stateService);
 
-		// Product
-		services.set(IProductService, { _serviceBrand: undefined, ...product });
-
-		const { appRoot, extensionsPath, extensionDevelopmentLocationURI, isBuilt, installSourcePath } = environmentService;
-
 		// Request
 		services.set(IRequestService, new SyncDescriptor(RequestService));
 
@@ -149,15 +148,17 @@ class CliMain extends Disposable {
 
 		// Telemetry
 		const appenders: AppInsightsAppender[] = [];
-		if (isBuilt && !extensionDevelopmentLocationURI && !environmentService.disableTelemetry && product.enableTelemetry) {
-			if (product.aiConfig && product.aiConfig.asimovKey) {
-				appenders.push(new AppInsightsAppender('adsworkbench', null, product.aiConfig.asimovKey)); // {{SQL CARBON EDIT}} Use our own event prefix
+		if (environmentService.isBuilt && !environmentService.isExtensionDevelopment && !environmentService.disableTelemetry && productService.enableTelemetry) {
+			if (productService.aiConfig && productService.aiConfig.asimovKey) {
+				appenders.push(new AppInsightsAppender('adsworkbench', null, productService.aiConfig.asimovKey)); // {{SQL CARBON EDIT}} Use our own event prefix
 			}
+
+			const { appRoot, extensionsPath, installSourcePath } = environmentService;
 
 			const config: ITelemetryServiceConfig = {
 				appender: combinedAppender(...appenders),
 				sendErrorTelemetry: false,
-				commonProperties: resolveCommonProperties(fileService, release(), process.arch, product.commit, product.version, stateService.getItem('telemetry.machineId'), product.msftInternalDomains, installSourcePath),
+				commonProperties: resolveCommonProperties(fileService, release(), hostname(), process.arch, productService.commit, productService.version, stateService.getItem('telemetry.machineId'), productService.msftInternalDomains, installSourcePath),
 				piiPaths: [appRoot, extensionsPath]
 			};
 
@@ -217,7 +218,7 @@ class CliMain extends Disposable {
 	}
 
 	private asExtensionIdOrVSIX(inputs: string[]): (string | URI)[] {
-		return inputs.map(input => /\.vsix$/i.test(input) ? URI.file(isAbsolute(input) ? input : join(process.cwd(), input)) : input);
+		return inputs.map(input => /\.vsix$/i.test(input) ? URI.file(isAbsolute(input) ? input : join(cwd(), input)) : input);
 	}
 
 	private async setInstallSource(environmentService: INativeEnvironmentService, fileService: IFileService, installSource: string): Promise<void> {

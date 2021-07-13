@@ -123,7 +123,7 @@ export class AddControllerDialog {
 					placeHolder: loc.url.toLocaleLowerCase(),
 					value: this.model.prefilledUrl
 				}).component();
-			this.authDropdown = this.uiModelBuilder.dropDown().withProperties({
+			this.authDropdown = this.uiModelBuilder.dropDown().withProps({
 				values: this.model.authCategories,
 				value: this.model.prefilledAuth,
 				editable: false,

@@ -236,7 +236,7 @@ export class MessagePanel extends Disposable {
 		this.reset();
 	}
 
-	public dispose() {
+	public override dispose() {
 		if (this.container) {
 			this.container.remove();
 			this.container = undefined;

@@ -52,7 +52,9 @@ export class Link extends Disposable {
 
 		this._register(onOpen(e => {
 			EventHelper.stop(e, true);
-			openerService.open(link.href, { allowCommands: true });
+			if (!this.disabled) {
+				openerService.open(link.href, { allowCommands: true });
+			}
 		}));
 
 		this.disabled = false;

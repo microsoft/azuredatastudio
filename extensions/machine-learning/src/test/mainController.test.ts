@@ -97,7 +97,8 @@ function createContext(): TestContext {
 			globalStorageUri: vscode.Uri.parse('test://'),
 			logUri: vscode.Uri.parse('test://'),
 			storageUri: undefined,
-			secrets: undefined as any
+			secrets: undefined as any,
+			extension: undefined as any
 		},
 		outputChannel: {
 			name: '',

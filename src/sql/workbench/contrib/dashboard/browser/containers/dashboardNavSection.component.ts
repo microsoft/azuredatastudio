@@ -87,7 +87,7 @@ export class DashboardNavSection extends DashboardTab implements OnDestroy, OnCh
 		}
 	}
 
-	ngOnDestroy() {
+	override ngOnDestroy() {
 		this.dispose();
 	}
 
@@ -164,7 +164,7 @@ export class DashboardNavSection extends DashboardTab implements OnDestroy, OnCh
 		}
 	}
 
-	public enableEdit(): void {
+	public override enableEdit(): void {
 		if (this._tabs) {
 			this._tabs.forEach(tabContent => {
 				tabContent.enableEdit();

@@ -117,42 +117,33 @@ export class FileConfigPage extends ImportPage {
 		return r1 && r2 && r3;
 	}
 
-	async onPageLeave(): Promise<boolean> {
+	override async onPageLeave(): Promise<boolean> {
 		delete this.model.serverId;
 		return true;
 	}
 
-	public async cleanup(): Promise<boolean> {
+	public override async cleanup(): Promise<boolean> {
 		delete this.model.filePath;
 		delete this.model.table;
 
 		return true;
 	}
 
-	public setupNavigationValidator() {
-		this.instance.registerNavigationValidator((info) => {
-			if (this.schemaLoader.loading || this.databaseDropdown.loading) {
-				return false;
-			}
-			return true;
-		});
-	}
-
 	private async createServerDropdown(): Promise<azdata.FormComponent> {
-		this.serverDropdown = this.view.modelBuilder.dropDown().withProperties({
+		this.serverDropdown = this.view.modelBuilder.dropDown().withProps({
 			required: true
 		}).component();
 
 		// Handle server changes
-		this.serverDropdown.onValueChanged(async () => {
-			const connectionValue = this.serverDropdown.value as ConnectionDropdownValue;
-			if (!connectionValue) {
-				return;
+		this.serverDropdown.onValueChanged(async (value) => {
+			if (value.selected) {
+				const connectionValue = this.serverDropdown.value as ConnectionDropdownValue;
+				if (!connectionValue) {
+					return;
+				}
+				this.model.server = connectionValue.connection;
+				await this.populateDatabaseDropdown();
 			}
-			this.model.server = connectionValue.connection;
-
-			await this.populateDatabaseDropdown();
-			await this.populateSchemaDropdown();
 		});
 
 		return {
@@ -174,24 +165,26 @@ export class FileConfigPage extends ImportPage {
 	}
 
 	private async createDatabaseDropdown(): Promise<azdata.FormComponent> {
-		this.databaseDropdown = this.view.modelBuilder.dropDown().withProperties({
+		this.databaseDropdown = this.view.modelBuilder.dropDown().withProps({
 			required: true
 		}).component();
 
 		// Handle database changes
-		this.databaseDropdown.onValueChanged(async () => {
-			const nameValue = this.databaseDropdown.value as azdata.CategoryValue;
-			if (!nameValue) {
-				return;
+		this.databaseDropdown.onValueChanged(async (value) => {
+			if (value.selected) {
+				const nameValue = this.databaseDropdown.value as azdata.CategoryValue;
+				if (!nameValue) {
+					return;
+				}
+				this.model.database = nameValue.name;
+				if (!this.model.server) {
+					return;
+				}
+				let connectionProvider = azdata.dataprotocol.getProvider<azdata.ConnectionProvider>(this.model.server.providerName, azdata.DataProviderType.ConnectionProvider);
+				let connectionUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
+				connectionProvider.changeDatabase(connectionUri, this.model.database);
+				this.populateSchemaDropdown();
 			}
-			this.model.database = nameValue.name;
-			if (!this.model.server) {
-				return;
-			}
-			let connectionProvider = azdata.dataprotocol.getProvider<azdata.ConnectionProvider>(this.model.server.providerName, azdata.DataProviderType.ConnectionProvider);
-			let connectionUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
-			connectionProvider.changeDatabase(connectionUri, this.model.database);
-			this.populateSchemaDropdown();
 		});
 
 		return {
@@ -243,7 +236,7 @@ export class FileConfigPage extends ImportPage {
 			return fs.existsSync(component.value);
 		}).component();
 
-		this.fileButton = this.view.modelBuilder.button().withProperties({
+		this.fileButton = this.view.modelBuilder.button().withProps({
 			label: constants.browseFilesText,
 			secondary: true
 		}).component();
@@ -326,7 +319,7 @@ export class FileConfigPage extends ImportPage {
 			}
 
 			return true;
-		}).withProperties({
+		}).withProps({
 			required: true,
 		}).component();
 
@@ -342,17 +335,19 @@ export class FileConfigPage extends ImportPage {
 
 
 	private async createSchemaDropdown(): Promise<azdata.FormComponent> {
-		this.schemaDropdown = this.view.modelBuilder.dropDown().withProperties({
+		this.schemaDropdown = this.view.modelBuilder.dropDown().withProps({
 			required: true
 		}).component();
 		this.schemaLoader = this.view.modelBuilder.loadingComponent().withItem(this.schemaDropdown).component();
 
-		this.schemaDropdown.onValueChanged(() => {
-			const schemaValue = this.schemaDropdown.value as azdata.CategoryValue;
-			if (!schemaValue) {
-				return;
+		this.schemaDropdown.onValueChanged((value) => {
+			if (value.selected) {
+				const schemaValue = this.schemaDropdown.value as azdata.CategoryValue;
+				if (!schemaValue) {
+					return;
+				}
+				this.model.schema = schemaValue.name;
 			}
-			this.model.schema = schemaValue.name;
 		});
 
 
@@ -409,7 +404,7 @@ export class FileConfigPage extends ImportPage {
 		return values;
 	}
 
-	protected deleteServerValues() {
+	protected override deleteServerValues() {
 		delete this.model.server;
 		delete this.model.serverId;
 		delete this.model.database;

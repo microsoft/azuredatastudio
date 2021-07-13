@@ -114,7 +114,7 @@ export class ExtensionRecommendationsService extends Disposable implements IExte
 	}
 
 	private isEnabled(): boolean {
-		return this.galleryService.isEnabled() && !this.environmentService.extensionDevelopmentLocationURI;
+		return this.galleryService.isEnabled() && !this.environmentService.isExtensionDevelopment;
 	}
 
 	private async activateProactiveRecommendations(): Promise<void> {

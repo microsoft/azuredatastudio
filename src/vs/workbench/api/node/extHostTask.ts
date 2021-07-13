@@ -43,6 +43,12 @@ export class ExtHostTask extends ExtHostTaskBase {
 				authority: initData.remote.authority,
 				platform: process.platform
 			});
+		} else {
+			this.registerTaskSystem(Schemas.file, {
+				scheme: Schemas.file,
+				authority: '',
+				platform: process.platform
+			});
 		}
 		this._proxy.$registerSupportedExecutions(true, true, true);
 	}
@@ -117,13 +123,14 @@ export class ExtHostTask extends ExtHostTaskBase {
 		return resolvedTaskDTO;
 	}
 
+	// {{SQL CARBON EDIT}}
 	// private async getVariableResolver(workspaceFolders: vscode.WorkspaceFolder[]): Promise<ExtHostVariableResolverService> {
 	// 	if (this._variableResolver === undefined) {
 	// 		const configProvider = await this._configurationService.getConfigProvider();
-	// 		this._variableResolver = new ExtHostVariableResolverService(workspaceFolders, this._editorService, configProvider, process.env as IProcessEnvironment);
+	// 		this._variableResolver = new ExtHostVariableResolverService(workspaceFolders, this._editorService, configProvider, this.workspaceService);
 	// 	}
 	// 	return this._variableResolver;
-	// } {{SQL CARBON EDIT}}
+	// }
 
 	public async $resolveVariables(uriComponents: UriComponents, toResolve: { process?: { name: string; cwd?: string; path?: string }, variables: string[] }): Promise<{ process?: string, variables: { [key: string]: string; } }> {
 		/*const uri: URI = URI.revive(uriComponents);
@@ -146,19 +153,19 @@ export class ExtHostTask extends ExtHostTaskBase {
 			}
 		};
 		for (let variable of toResolve.variables) {
-			result.variables[variable] = resolver.resolve(ws, variable);
+			result.variables[variable] = await resolver.resolveAsync(ws, variable);
 		}
 		if (toResolve.process !== undefined) {
 			let paths: string[] | undefined = undefined;
 			if (toResolve.process.path !== undefined) {
 				paths = toResolve.process.path.split(path.delimiter);
 				for (let i = 0; i < paths.length; i++) {
-					paths[i] = resolver.resolve(ws, paths[i]);
+					paths[i] = await resolver.resolveAsync(ws, paths[i]);
 				}
 			}
 			result.process = await win32.findExecutable(
-				resolver.resolve(ws, toResolve.process.name),
-				toResolve.process.cwd !== undefined ? resolver.resolve(ws, toResolve.process.cwd) : undefined,
+				await resolver.resolveAsync(ws, toResolve.process.name),
+				toResolve.process.cwd !== undefined ? await resolver.resolveAsync(ws, toResolve.process.cwd) : undefined,
 				paths
 			);
 		}

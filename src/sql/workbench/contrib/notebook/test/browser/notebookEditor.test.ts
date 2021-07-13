@@ -64,25 +64,25 @@ class NotebookModelStub extends stubs.NotebookModelStub {
 	private _kernelChangedEmitter = new Emitter<nb.IKernelChangedArgs>();
 	private _onActiveCellChanged = new Emitter<ICellModel>();
 
-	public get contentChanged(): Event<NotebookContentChange> {
+	public override get contentChanged(): Event<NotebookContentChange> {
 		return this.contentChangedEmitter.event;
 	}
 
-	get kernelChanged(): Event<nb.IKernelChangedArgs> {
+	override get kernelChanged(): Event<nb.IKernelChangedArgs> {
 		return this._kernelChangedEmitter.event;
 	}
 
-	get onActiveCellChanged(): Event<ICellModel> {
+	override get onActiveCellChanged(): Event<ICellModel> {
 		return this._onActiveCellChanged.event;
 	}
 
-	updateActiveCell(cell: ICellModel) {
+	override updateActiveCell(cell: ICellModel) {
 		// do nothing.
 		// When relevant a mock is used to intercept this call to do any verifications or run
 		// any code relevant for testing in the context of the test.
 	}
 
-	get activeCell(): ICellModel {
+	override get activeCell(): ICellModel {
 		return <ICellModel>{};
 	}
 }

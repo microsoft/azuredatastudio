@@ -93,11 +93,11 @@ export class ProfilerFilterDialog extends Modal {
 		this._okButton!.focus();
 	}
 
-	public dispose(): void {
+	public override dispose(): void {
 
 	}
 
-	public render() {
+	public override render() {
 		super.render();
 		this.title = DialogTitle;
 		this.titleIconClassName = TitleIconClass;
@@ -137,12 +137,12 @@ export class ProfilerFilterDialog extends Modal {
 	}
 
 	/* espace key */
-	protected onClose() {
+	protected override onClose() {
 		this.hide('close');
 	}
 
 	/* enter key */
-	protected onAccept() {
+	protected override onAccept() {
 		this.handleOkButtonClick();
 	}
 

@@ -191,7 +191,7 @@ export class AccountPicker extends Disposable {
 			});
 	}
 
-	public dispose() {
+	public override dispose() {
 		super.dispose();
 		if (this._accountList) {
 			this._accountList.dispose();

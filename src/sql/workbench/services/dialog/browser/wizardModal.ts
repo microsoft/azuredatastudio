@@ -65,7 +65,7 @@ export class WizardModal extends Modal {
 
 	}
 
-	public render() {
+	public override render() {
 		super.render();
 		attachModalDialogStyler(this, this._themeService);
 
@@ -151,7 +151,7 @@ export class WizardModal extends Modal {
 		this.updatePageNumbers();
 	}
 
-	protected set messagesElementVisible(visible: boolean) {
+	protected override set messagesElementVisible(visible: boolean) {
 		if (visible) {
 			this._mpContainer.prepend(this._messageElement);
 		} else {
@@ -309,14 +309,14 @@ export class WizardModal extends Modal {
 	/**
 	 * Overridable to change behavior of escape key
 	 */
-	protected onClose(e: StandardKeyboardEvent): void {
+	protected override onClose(e: StandardKeyboardEvent): void {
 		this.cancel();
 	}
 
 	/**
 	 * Overridable to change behavior of enter key
 	 */
-	protected onAccept(e: StandardKeyboardEvent): void {
+	protected override onAccept(e: StandardKeyboardEvent): void {
 		if (this._wizard.currentPage === this._wizard.pages.length - 1) {
 			this.done().catch(err => onUnexpectedError(err));
 		} else {
@@ -326,7 +326,7 @@ export class WizardModal extends Modal {
 		}
 	}
 
-	public dispose(): void {
+	public override dispose(): void {
 		super.dispose();
 		this._dialogPanes.forEach(dialogPane => dialogPane.dispose());
 	}

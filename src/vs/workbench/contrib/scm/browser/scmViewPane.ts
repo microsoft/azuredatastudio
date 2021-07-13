@@ -20,10 +20,10 @@ import { IContextKeyService, IContextKey, ContextKeyExpr, RawContextKey } from '
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { MenuItemAction, IMenuService, registerAction2, MenuId, IAction2Options, MenuRegistry, Action2 } from 'vs/platform/actions/common/actions';
-import { IAction, ActionRunner, IActionViewItemProvider } from 'vs/base/common/actions';
-import { ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
+import { IAction, ActionRunner } from 'vs/base/common/actions';
+import { ActionBar, IActionViewItemProvider } from 'vs/base/browser/ui/actionbar/actionbar';
 import { IThemeService, registerThemingParticipant, IFileIconTheme } from 'vs/platform/theme/common/themeService';
-import { isSCMResource, isSCMResourceGroup, connectPrimaryMenuToInlineActionBar, isSCMRepository, isSCMInput, collectContextMenuActions, getStatusBarActionViewItem } from './util';
+import { isSCMResource, isSCMResourceGroup, connectPrimaryMenuToInlineActionBar, isSCMRepository, isSCMInput, collectContextMenuActions, getActionViewItemProvider } from './util';
 import { attachBadgeStyler } from 'vs/platform/theme/common/styler';
 import { WorkbenchCompressibleObjectTree, IOpenEvent } from 'vs/platform/list/browser/listService';
 import { IConfigurationService, ConfigurationTarget, IConfigurationChangeEvent } from 'vs/platform/configuration/common/configuration';
@@ -80,6 +80,7 @@ import { LabelFuzzyScore } from 'vs/base/browser/ui/tree/abstractTree';
 import { Selection } from 'vs/editor/common/core/selection';
 import { API_OPEN_DIFF_EDITOR_COMMAND_ID, API_OPEN_EDITOR_COMMAND_ID } from 'vs/workbench/browser/parts/editor/editorCommands';
 import { createAndFillInContextMenuActions } from 'vs/platform/actions/browser/menuEntryActionViewItem';
+import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
 
 type TreeElement = ISCMRepository | ISCMInput | ISCMResourceGroup | IResourceNode<ISCMResource, ISCMResourceGroup> | ISCMResource;
 
@@ -300,7 +301,7 @@ class RepositoryPaneActionRunner extends ActionRunner {
 		super();
 	}
 
-	async runAction(action: IAction, context: ISCMResource | IResourceNode<ISCMResource, ISCMResourceGroup>): Promise<any> {
+	override async runAction(action: IAction, context: ISCMResource | IResourceNode<ISCMResource, ISCMResourceGroup>): Promise<any> {
 		if (!(action instanceof MenuItemAction)) {
 			return super.runAction(action, context);
 		}
@@ -686,7 +687,10 @@ class SCMResourceIdentityProvider implements IIdentityProvider<TreeElement> {
 
 export class SCMAccessibilityProvider implements IListAccessibilityProvider<TreeElement> {
 
-	constructor(@ILabelService private readonly labelService: ILabelService) { }
+	constructor(
+		@ILabelService private readonly labelService: ILabelService,
+		@IWorkspaceContextService private readonly workspaceContextService: IWorkspaceContextService
+	) { }
 
 	getWidgetAriaLabel(): string {
 		return localize('scm', "Source Control Management");
@@ -696,7 +700,17 @@ export class SCMAccessibilityProvider implements IListAccessibilityProvider<Tree
 		if (ResourceTree.isResourceNode(element)) {
 			return this.labelService.getUriLabel(element.uri, { relative: true, noPrefix: true }) || element.name;
 		} else if (isSCMRepository(element)) {
-			return element.provider.label;
+			let folderName = '';
+			if (element.provider.rootUri) {
+				const folder = this.workspaceContextService.getWorkspaceFolder(element.provider.rootUri);
+
+				if (folder?.uri.toString() === element.provider.rootUri.toString()) {
+					folderName = folder.name;
+				} else {
+					folderName = basename(element.provider.rootUri);
+				}
+			}
+			return `${folderName} ${element.provider.label}`;
 		} else if (isSCMInput(element)) {
 			return localize('input', "Source Control Input");
 		} else if (isSCMResourceGroup(element)) {
@@ -1388,7 +1402,7 @@ class CollapseAllRepositoriesAction extends ViewAction<SCMViewPane>  {
 			menu: {
 				id: MenuId.SCMTitle,
 				group: 'navigation',
-				when: ContextKeyExpr.and(ContextKeys.ViewModelIsAnyRepositoryCollapsible.isEqualTo(true), ContextKeys.ViewModelAreAllRepositoriesCollapsed.isEqualTo(false))
+				when: ContextKeyExpr.and(ContextKeyExpr.equals('view', VIEW_PANE_ID), ContextKeys.ViewModelIsAnyRepositoryCollapsible.isEqualTo(true), ContextKeys.ViewModelAreAllRepositoriesCollapsed.isEqualTo(false))
 			}
 		});
 	}
@@ -1410,7 +1424,7 @@ class ExpandAllRepositoriesAction extends ViewAction<SCMViewPane>  {
 			menu: {
 				id: MenuId.SCMTitle,
 				group: 'navigation',
-				when: ContextKeyExpr.and(ContextKeys.ViewModelIsAnyRepositoryCollapsible.isEqualTo(true), ContextKeys.ViewModelAreAllRepositoriesCollapsed.isEqualTo(true))
+				when: ContextKeyExpr.and(ContextKeyExpr.equals('view', VIEW_PANE_ID), ContextKeys.ViewModelIsAnyRepositoryCollapsible.isEqualTo(true), ContextKeys.ViewModelAreAllRepositoriesCollapsed.isEqualTo(true))
 			}
 		});
 	}
@@ -1424,6 +1438,11 @@ registerAction2(CollapseAllRepositoriesAction);
 registerAction2(ExpandAllRepositoriesAction);
 
 class SCMInputWidget extends Disposable {
+	private static readonly ValidationTimeouts: { [severity: number]: number } = {
+		[InputValidationType.Information]: 5000,
+		[InputValidationType.Warning]: 8000,
+		[InputValidationType.Error]: 10000
+	};
 
 	private readonly defaultInputFontFamily = DEFAULT_FONT_FAMILY;
 
@@ -1438,6 +1457,7 @@ class SCMInputWidget extends Disposable {
 
 	private validation: IInputValidation | undefined;
 	private validationDisposable: IDisposable = Disposable.None;
+	private _validationTimer: any;
 
 	// This is due to "Setup height change listener on next tick" above
 	// https://github.com/microsoft/vscode/issues/108067
@@ -1481,10 +1501,11 @@ class SCMInputWidget extends Disposable {
 			query
 		});
 
-		this.configurationService.updateValue('editor.wordBasedSuggestions', false, { resource: uri }, ConfigurationTarget.MEMORY);
+		if (this.configurationService.getValue('editor.wordBasedSuggestions', { resource: uri }) !== false) {
+			this.configurationService.updateValue('editor.wordBasedSuggestions', false, { resource: uri }, ConfigurationTarget.MEMORY);
+		}
 
-		const mode = this.modeService.create('scminput');
-		const textModel = this.modelService.getModel(uri) || this.modelService.createModel('', mode, uri);
+		const textModel = this.modelService.getModel(uri) ?? this.modelService.createModel('', this.modeService.create('scminput'), uri);
 		this.inputEditor.setModel(textModel);
 
 		// Validation
@@ -1494,8 +1515,7 @@ class SCMInputWidget extends Disposable {
 			const offset = position && textModel.getOffsetAt(position);
 			const value = textModel.getValue();
 
-			this.validation = await input.validateInput(value, offset || 0);
-			this.renderValidation();
+			this.setValidation(await input.validateInput(value, offset || 0));
 		};
 
 		const triggerValidation = () => validationDelayer.trigger(validate);
@@ -1521,6 +1541,8 @@ class SCMInputWidget extends Disposable {
 			this.inputEditor.setPosition(position);
 			this.inputEditor.revealPositionInCenterIfOutsideViewport(position);
 		}));
+		this.repositoryDisposables.add(input.onDidChangeFocus(() => this.focus()));
+		this.repositoryDisposables.add(input.onDidChangeValidationMessage((e) => this.setValidation(e, { focus: true, timeout: true })));
 
 		// Keep API in sync with model, update placeholder visibility and validate
 		const updatePlaceholderVisibility = () => this.placeholderTextContainer.classList.toggle('hidden', textModel.getValueLength() > 0);
@@ -1579,6 +1601,24 @@ class SCMInputWidget extends Disposable {
 		}
 	}
 
+	private setValidation(validation: IInputValidation | undefined, options?: { focus?: boolean; timeout?: boolean }) {
+		if (this._validationTimer) {
+			clearTimeout(this._validationTimer);
+			this._validationTimer = 0;
+		}
+
+		this.validation = validation;
+		this.renderValidation();
+
+		if (options?.focus && !this.hasFocus()) {
+			this.focus();
+		}
+
+		if (validation && options?.timeout) {
+			this._validationTimer = setTimeout(() => this.setValidation(undefined), SCMInputWidget.ValidationTimeouts[validation.type]);
+		}
+	}
+
 	constructor(
 		container: HTMLElement,
 		overflowWidgetsDomNode: HTMLElement,
@@ -1597,6 +1637,12 @@ class SCMInputWidget extends Disposable {
 		this.editorContainer = append(this.element, $('.scm-editor-container'));
 		this.placeholderTextContainer = append(this.editorContainer, $('.scm-editor-placeholder'));
 
+		const fontFamily = this.getInputEditorFontFamily();
+		const fontSize = this.getInputEditorFontSize();
+		const lineHeight = this.computeLineHeight(fontSize);
+
+		this.setPlaceholderFontStyles(fontFamily, fontSize, lineHeight);
+
 		const contextKeyService2 = contextKeyService.createScoped(this.element);
 		this.repositoryContextKey = contextKeyService2.createKey('scmRepository', undefined);
 
@@ -1605,9 +1651,9 @@ class SCMInputWidget extends Disposable {
 			lineDecorationsWidth: 4,
 			dragAndDrop: false,
 			cursorWidth: 1,
-			fontSize: 13,
-			lineHeight: 20,
-			fontFamily: this.getInputEditorFontFamily(),
+			fontSize: fontSize,
+			lineHeight: lineHeight,
+			fontFamily: fontFamily,
 			wrappingStrategy: 'advanced',
 			wrappingIndent: 'none',
 			padding: { top: 3, bottom: 3 },
@@ -1661,8 +1707,20 @@ class SCMInputWidget extends Disposable {
 			lastLineKey.set(viewPosition.lineNumber === lastLineNumber && viewPosition.column === lastLineCol);
 		}));
 
-		const onInputFontFamilyChanged = Event.filter(this.configurationService.onDidChangeConfiguration, e => e.affectsConfiguration('scm.inputFontFamily'));
-		this._register(onInputFontFamilyChanged(() => this.inputEditor.updateOptions({ fontFamily: this.getInputEditorFontFamily() })));
+		const onInputFontFamilyChanged = Event.filter(this.configurationService.onDidChangeConfiguration, e => e.affectsConfiguration('scm.inputFontFamily') || e.affectsConfiguration('scm.inputFontSize'));
+		this._register(onInputFontFamilyChanged(() => {
+			const fontFamily = this.getInputEditorFontFamily();
+			const fontSize = this.getInputEditorFontSize();
+			const lineHeight = this.computeLineHeight(fontSize);
+
+			this.inputEditor.updateOptions({
+				fontFamily: fontFamily,
+				fontSize: fontSize,
+				lineHeight: lineHeight,
+			});
+
+			this.setPlaceholderFontStyles(fontFamily, fontSize, lineHeight);
+		}));
 
 		this.onDidChangeContentHeight = Event.signal(Event.filter(this.inputEditor.onDidContentSizeChange, e => e.contentHeightChanged));
 	}
@@ -1746,11 +1804,25 @@ class SCMInputWidget extends Disposable {
 		return this.defaultInputFontFamily;
 	}
 
+	private getInputEditorFontSize(): number {
+		return this.configurationService.getValue<number>('scm.inputFontSize');
+	}
+
+	private computeLineHeight(fontSize: number): number {
+		return Math.round(fontSize * 1.5);
+	}
+
+	private setPlaceholderFontStyles(fontFamily: string, fontSize: number, lineHeight: number): void {
+		this.placeholderTextContainer.style.fontFamily = fontFamily;
+		this.placeholderTextContainer.style.fontSize = `${fontSize}px`;
+		this.placeholderTextContainer.style.lineHeight = `${lineHeight}px`;
+	}
+
 	clearValidation(): void {
 		this.validationDisposable.dispose();
 	}
 
-	dispose(): void {
+	override dispose(): void {
 		this.input = undefined;
 		this.repositoryDisposables.dispose();
 		this.validationDisposable.dispose();
@@ -1770,43 +1842,25 @@ export class SCMViewPane extends ViewPane {
 	private listLabels!: ResourceLabels;
 	private inputRenderer!: InputRenderer;
 
-	private scmService: ISCMService;
-	private scmViewService: ISCMViewService;
-	private storageService: IStorageService;
-	private commandService: ICommandService;
-	private editorService: IEditorService;
-	private menuService: IMenuService;
-
 	constructor(
 		options: IViewPaneOptions,
-		@ISCMService scmService: ISCMService,
-		@ISCMViewService scmViewService: ISCMViewService,
+		@ISCMService private scmService: ISCMService,
+		@ISCMViewService private scmViewService: ISCMViewService,
 		@IKeybindingService keybindingService: IKeybindingService,
 		@IThemeService themeService: IThemeService,
 		@IContextMenuService contextMenuService: IContextMenuService,
-		@ICommandService commandService: ICommandService,
-		@IEditorService editorService: IEditorService,
-		@IInstantiationService _instantiationService: IInstantiationService,
+		@ICommandService private commandService: ICommandService,
+		@IEditorService private editorService: IEditorService,
+		@IInstantiationService instantiationService: IInstantiationService,
 		@IViewDescriptorService viewDescriptorService: IViewDescriptorService,
 		@IConfigurationService configurationService: IConfigurationService,
-		@IContextKeyService _contextKeyService: IContextKeyService,
-		@IMenuService menuService: IMenuService,
-		@IStorageService storageService: IStorageService,
+		@IContextKeyService contextKeyService: IContextKeyService,
+		@IMenuService private menuService: IMenuService,
+		@IStorageService private storageService: IStorageService,
 		@IOpenerService openerService: IOpenerService,
 		@ITelemetryService telemetryService: ITelemetryService,
 	) {
-		const contextKeyService = _contextKeyService.createScoped();
-		const services = new ServiceCollection([IContextKeyService, contextKeyService]);
-		const instantiationService = _instantiationService.createChild(services);
-
 		super({ ...options, titleMenuId: MenuId.SCMTitle }, keybindingService, contextMenuService, configurationService, contextKeyService, viewDescriptorService, instantiationService, openerService, themeService, telemetryService);
-
-		this.scmService = scmService;
-		this.scmViewService = scmViewService;
-		this.storageService = storageService;
-		this.commandService = commandService;
-		this.editorService = editorService;
-		this.menuService = menuService;
 
 		this._onDidLayout = new Emitter<void>();
 		this.layoutCache = {
@@ -1816,10 +1870,9 @@ export class SCMViewPane extends ViewPane {
 		};
 
 		this._register(Event.any(this.scmService.onDidAddRepository, this.scmService.onDidRemoveRepository)(() => this._onDidChangeViewWelcomeState.fire()));
-		// this._register(this.scmViewService.menus.titleMenu.onDidChangeTitle(this.updateActions, this));
 	}
 
-	protected renderBody(container: HTMLElement): void {
+	protected override renderBody(container: HTMLElement): void {
 		super.renderBody(container);
 
 		// List
@@ -1850,10 +1903,10 @@ export class SCMViewPane extends ViewPane {
 		this._register(actionRunner.onBeforeRun(() => this.tree.domFocus()));
 
 		const renderers: ICompressibleTreeRenderer<any, any, any>[] = [
-			this.instantiationService.createInstance(RepositoryRenderer, getStatusBarActionViewItem),
+			this.instantiationService.createInstance(RepositoryRenderer, getActionViewItemProvider(this.instantiationService)),
 			this.inputRenderer,
-			this.instantiationService.createInstance(ResourceGroupRenderer, getStatusBarActionViewItem),
-			this.instantiationService.createInstance(ResourceRenderer, () => this._viewModel, this.listLabels, getStatusBarActionViewItem, actionRunner)
+			this.instantiationService.createInstance(ResourceGroupRenderer, getActionViewItemProvider(this.instantiationService)),
+			this.instantiationService.createInstance(ResourceRenderer, () => this._viewModel, this.listLabels, getActionViewItemProvider(this.instantiationService), actionRunner)
 		];
 
 		const filter = new SCMTreeFilter();
@@ -1941,7 +1994,7 @@ export class SCMViewPane extends ViewPane {
 		this.storageService.store(`scm.viewMode`, this._viewModel.mode, StorageScope.WORKSPACE, StorageTarget.USER);
 	}
 
-	layoutBody(height: number | undefined = this.layoutCache.height, width: number | undefined = this.layoutCache.width): void {
+	override layoutBody(height: number | undefined = this.layoutCache.height, width: number | undefined = this.layoutCache.width): void {
 		if (height === undefined) {
 			return;
 		}
@@ -1958,7 +2011,7 @@ export class SCMViewPane extends ViewPane {
 		this.tree.layout(height, width);
 	}
 
-	focus(): void {
+	override focus(): void {
 		super.focus();
 
 		if (this.isExpanded()) {
@@ -2094,7 +2147,7 @@ export class SCMViewPane extends ViewPane {
 			.filter(r => !!r && !isSCMResourceGroup(r))! as any;
 	}
 
-	shouldShowWelcome(): boolean {
+	override shouldShowWelcome(): boolean {
 		return this.scmService.repositories.length === 0;
 	}
 }

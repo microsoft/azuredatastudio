@@ -46,19 +46,19 @@ export class AddFileDialog {
 		this._dialog.registerContent(async view => {
 			this.view = view;
 			this._fileNameInputBox = this.view.modelBuilder.inputBox()
-				.withProperties({
+				.withProps({
 					enabled: true,
 					width: '400px'
 				}).component();
 
 			this._titleInputBox = this.view.modelBuilder.inputBox()
-				.withProperties({
+				.withProps({
 					enabled: true,
 					width: '400px'
 				}).component();
 
 			this._saveLocationInputBox = this.view.modelBuilder.inputBox()
-				.withProperties({
+				.withProps({
 					value: this._bookItem.contextValue === BookTreeItemType.savedBook ? this._bookItem.rootContentPath : path.dirname(this._bookItem.resourceUri.fsPath),
 					enabled: false,
 					width: '400px'
