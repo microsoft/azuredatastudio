@@ -9,6 +9,19 @@ import * as vscode from 'vscode';
 
 declare module 'azdata' {
 
+	export namespace queryeditor {
+		/**
+		 * Opens an untitled text document. The editor will prompt the user for a file
+		 * path when the document is to be saved. The `options` parameter allows to
+		 * specify the *content* of the document.
+		 *
+		 * @param options Options to control how the document will be created.
+		 * @param providerId Optional provider ID this editor will be associated with. Defaults to MSSQL.
+		 * @return A promise that resolves to a [document](#QueryDocument).
+		 */
+		export function openQueryDocument(options?: { content?: string; }, providerId?: string): Thenable<QueryDocument>;
+	}
+
 	export namespace nb {
 		export interface NotebookDocument {
 			/**
