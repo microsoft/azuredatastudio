@@ -149,7 +149,7 @@ export class MainThreadQueryEditor extends Disposable implements MainThreadQuery
 		return this._queryManagementService.setQueryExecutionOptions(fileUri, options);
 	}
 
-	public async $tryCreateQueryDocument(options?: { content?: string }, providerId?: string): Promise<URI> {
+	public async $createQueryDocument(options?: { content?: string }, providerId?: string): Promise<URI> {
 		const queryInput = await this._queryEditorService.newSqlEditor({ initalContent: options.content }, providerId);
 		return queryInput.resource;
 	}

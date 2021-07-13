@@ -847,7 +847,7 @@ export interface MainThreadQueryEditorShape extends IDisposable {
 	$setQueryExecutionOptions(fileUri: string, options: azdata.QueryExecutionOptions): Thenable<void>;
 	$registerQueryInfoListener(handle: number): void;
 	$unregisterQueryInfoListener(handle: number): void;
-	$tryCreateQueryDocument(options?: { content?: string }, providerId?: string): Promise<URI>;
+	$createQueryDocument(options?: { content?: string }, providerId?: string): Promise<URI>;
 }
 
 export interface ExtHostNotebookShape {

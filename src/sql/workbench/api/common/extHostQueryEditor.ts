@@ -79,6 +79,6 @@ export class ExtHostQueryEditor implements ExtHostQueryEditorShape {
 	}
 
 	public createQueryDocument(options?: { content?: string }, providerId?: string): Promise<URI> {
-		return this._proxy.$tryCreateQueryDocument(options, providerId).then(data => URI.revive(data));
+		return this._proxy.$createQueryDocument(options, providerId).then(data => URI.revive(data));
 	}
 }
