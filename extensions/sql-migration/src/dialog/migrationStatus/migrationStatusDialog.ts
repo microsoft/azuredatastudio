@@ -17,6 +17,10 @@ import { MigrationCutoverDialogModel } from '../migrationCutover/migrationCutove
 
 const refreshFrequency: SupportedAutoRefreshIntervals = 180000;
 
+const statusImageSize: number = 14;
+const imageCellStyles: azdata.CssStyles = { 'margin': '3px 3px 0 0', 'padding': '0' };
+const statusCellStyles: azdata.CssStyles = { 'margin': '0', 'padding': '0' };
+
 export class MigrationStatusDialog {
 	private _model: MigrationStatusDialogModel;
 	private _dialogObject!: azdata.window.Dialog;
@@ -309,18 +313,34 @@ export class MigrationStatusDialog {
 		}
 	}
 
-	private _getDatabaserHyperLink(migration: MigrationContext): azdata.HyperlinkComponent {
+	private _getDatabaserHyperLink(migration: MigrationContext): azdata.FlexContainer {
+		const imageControl = this._view.modelBuilder.image()
+			.withProps({
+				iconPath: IconPathHelper.sqlDatabaseLogo,
+				iconHeight: statusImageSize,
+				iconWidth: statusImageSize,
+				height: statusImageSize,
+				width: statusImageSize,
+				CSSStyles: imageCellStyles
+			})
+			.component();
+
 		const databaseHyperLink = this._view.modelBuilder
 			.hyperlink()
 			.withProps({
 				label: migration.migrationContext.properties.sourceDatabaseName,
 				url: '',
+				CSSStyles: statusCellStyles
 			}).component();
 
 		databaseHyperLink.onDidClick(
 			async (e) => await (new MigrationCutoverDialog(migration)).initialize());
 
-		return databaseHyperLink;
+		return this._view.modelBuilder
+			.flexContainer()
+			.withItems([imageControl, databaseHyperLink])
+			.withProps({ CSSStyles: statusCellStyles, display: 'inline-flex' })
+			.component();
 	}
 
 	private _getMigrationTime(migrationTime: string): string {
@@ -351,7 +371,7 @@ export class MigrationStatusDialog {
 			: loc.SQL_VIRTUAL_MACHINE;
 	}
 
-	private _getMigrationStatus(migration: MigrationContext): string {
+	private _getMigrationStatus(migration: MigrationContext): azdata.FlexContainer {
 		const properties = migration.migrationContext.properties;
 		const migrationStatus = properties.migrationStatus ?? properties.provisioningState;
 		let warningCount = 0;
@@ -368,7 +388,56 @@ export class MigrationStatusDialog {
 			warningCount++;
 		}
 
-		return loc.STATUS_WARNING_COUNT(migrationStatus, warningCount);
+		return this._getStatusControl(migrationStatus, warningCount);
+	}
+
+	private _getStatusControl(status: string, count: number): azdata.FlexContainer {
+		status = 'InProgress';
+		const control = this._view.modelBuilder
+			.flexContainer()
+			.withItems([
+				// migration status icon
+				this._view.modelBuilder.image()
+					.withProps({
+						iconPath: this._statusImageMap(status),
+						iconHeight: statusImageSize,
+						iconWidth: statusImageSize,
+						height: statusImageSize,
+						width: statusImageSize,
+						CSSStyles: imageCellStyles
+					})
+					.component(),
+				// migration status text
+				this._view.modelBuilder.text().withProps({
+					value: loc.STATUS_VALUE(status, count),
+					height: statusImageSize,
+					CSSStyles: statusCellStyles,
+				}).component()
+			])
+			.withProps({ CSSStyles: statusCellStyles, display: 'inline-flex' })
+			.component();
+
+		if (count > 0) {
+			control.addItems([
+				// migration warning / error image
+				this._view.modelBuilder.image().withProps({
+					iconPath: this._statusInfoMap(status),
+					iconHeight: statusImageSize,
+					iconWidth: statusImageSize,
+					height: statusImageSize,
+					width: statusImageSize,
+					CSSStyles: imageCellStyles
+				}).component(),
+				// migration warning / error counts
+				this._view.modelBuilder.text().withProps({
+					value: loc.STATUS_WARNING_COUNT(status, count),
+					height: statusImageSize,
+					CSSStyles: statusCellStyles,
+				}).component()
+			]);
+		}
+
+		return control;
 	}
 
 	private async refreshTable(): Promise<void> {
@@ -407,8 +476,8 @@ export class MigrationStatusDialog {
 				},
 				{
 					displayName: loc.MIGRATION_STATUS,
-					valueType: azdata.DeclarativeDataType.string,
-					width: '150px',
+					valueType: azdata.DeclarativeDataType.component,
+					width: '170px',
 					isReadOnly: true,
 					rowCssStyles: rowCssStyle,
 					headerCssStyles: headerCssStyles
@@ -416,7 +485,7 @@ export class MigrationStatusDialog {
 				{
 					displayName: loc.MIGRATION_MODE,
 					valueType: azdata.DeclarativeDataType.string,
-					width: '100px',
+					width: '90px',
 					isReadOnly: true,
 					rowCssStyles: rowCssStyle,
 					headerCssStyles: headerCssStyles
@@ -424,7 +493,7 @@ export class MigrationStatusDialog {
 				{
 					displayName: loc.AZURE_SQL_TARGET,
 					valueType: azdata.DeclarativeDataType.string,
-					width: '140px',
+					width: '130px',
 					isReadOnly: true,
 					rowCssStyles: rowCssStyle,
 					headerCssStyles: headerCssStyles
@@ -456,7 +525,7 @@ export class MigrationStatusDialog {
 				{
 					displayName: loc.START_TIME,
 					valueType: azdata.DeclarativeDataType.string,
-					width: '120px',
+					width: '140px',
 					isReadOnly: true,
 					rowCssStyles: rowCssStyle,
 					headerCssStyles: headerCssStyles
@@ -464,7 +533,7 @@ export class MigrationStatusDialog {
 				{
 					displayName: loc.FINISH_TIME,
 					valueType: azdata.DeclarativeDataType.string,
-					width: '120px',
+					width: '140px',
 					isReadOnly: true,
 					rowCssStyles: rowCssStyle,
 					headerCssStyles: headerCssStyles
@@ -472,7 +541,7 @@ export class MigrationStatusDialog {
 				{
 					displayName: '',
 					valueType: azdata.DeclarativeDataType.menu,
-					width: '60px',
+					width: '20px',
 					isReadOnly: true,
 					rowCssStyles: rowCssStyle,
 					headerCssStyles: headerCssStyles,
@@ -480,5 +549,34 @@ export class MigrationStatusDialog {
 			]
 		}).component();
 		return this._statusTable;
+	}
+
+	private _statusImageMap(status: string): azdata.IconPath | undefined {
+		switch (status) {
+			case 'InProgress':
+				return IconPathHelper.inProgressMigration;
+			case 'Succeeded':
+				return IconPathHelper.completedMigration;
+			case 'Creating':
+				return IconPathHelper.notStartedMigration;
+			case 'Completing':
+				return IconPathHelper.completingCutover;
+			case 'Cancelling':
+				return IconPathHelper.cancel;
+			case 'Failed':
+			default:
+				return IconPathHelper.error;
+		}
+	}
+
+	private _statusInfoMap(status: string): azdata.IconPath {
+		switch (status) {
+			case 'InProgress':
+			case 'Creating':
+			case 'Completing':
+				return IconPathHelper.warning;
+			default:
+				return IconPathHelper.error;
+		}
 	}
 }

@@ -327,7 +327,7 @@ export const SOURCE_VERSION = localize('sql.migration.source.version', "Source v
 export const TARGET_DATABASE_NAME = localize('sql.migration.target.database.name', "Target database name");
 export const TARGET_SERVER = localize('sql.migration.target.server', "Target server");
 export const TARGET_VERSION = localize('sql.migration.target.version', "Target version");
-export const MIGRATION_STATUS = localize('sql.migration.migration.status', "Migration status");
+export const MIGRATION_STATUS = localize('sql.migration.migration.status', "Migration Status");
 export const MIGRATION_STATUS_FILTER = localize('sql.migration.migration.status.filter', "Migration status filter");
 export const FULL_BACKUP_FILES = localize('sql.migration.full.backup.files', "Full backup files");
 export const LAST_APPLIED_LSN = localize('sql.migration.last.applied.lsn', "Last applied LSN");
@@ -386,24 +386,47 @@ export const TARGET_AZURE_SQL_INSTANCE_NAME = localize('sql.migration.target.azu
 export const MIGRATION_MODE = localize('sql.migration.cutover.type', "Migration Mode");
 export const START_TIME = localize('sql.migration.start.time', "Start Time");
 export const FINISH_TIME = localize('sql.migration.finish.time', "Finish Time");
-export function STATUS_WARNING_COUNT(status: string, count: number): string {
-	if (status === 'InProgress' || status === 'Creating' || status === 'Completing' || status === 'Creating') {
+
+export function STATUS_VALUE(status: string, count: number): string {
+	if (count > 0) {
+		return localize('sql.migration.status.error.count.some', "{0} (", StatusLookup[status]);
+	}
+
+	return localize('sql.migration.status.error.count.none', "{0}", StatusLookup[status]);
+}
+
+export interface LookupTable<T> {
+	[key: string]: T;
+}
+
+export const StatusLookup: LookupTable<string | undefined> = {
+	['InProgress']: localize('sql.migration.status.inprogress', 'In progress'),
+	['Succeeded']: localize('sql.migration.status.succeeded', 'Succeeded'),
+	['Creating']: localize('sql.migration.status.creating', 'Creating'),
+	['Completing']: localize('sql.migration.status.completing', 'Completing'),
+	['Cancelling']: localize('sql.migration.status.cancelling', 'Cancelling'),
+	['Failed']: localize('sql.migration.status.failed', 'Failed'),
+	default: undefined,
+};
+
+export function STATUS_WARNING_COUNT(status: string, count: number): string | undefined {
+	if (status === 'InProgress' || status === 'Creating' || status === 'Completing') {
 		switch (count) {
 			case 0:
-				return localize('sql.migration.status.warning.count.none', "{0}", status);
+				return undefined;
 			case 1:
-				return localize('sql.migration.status.warning.count.single', "{0} ({1} Warning)", status, count);
+				return localize('sql.migration.status.warning.count.single', "{0} Warning)", count);
 			default:
-				return localize('sql.migration.status.warning.count.multiple', "{0} ({1} Warnings)", status, count);
+				return localize('sql.migration.status.warning.count.multiple', "{0} Warnings)", count);
 		}
 	} else {
 		switch (count) {
 			case 0:
-				return localize('sql.migration.status.error.count.none', "{0}", status);
+				return undefined;
 			case 1:
-				return localize('sql.migration.status.error.count.single', "{0} ({1} Error)", status, count);
+				return localize('sql.migration.status.error.count.single', "{0} Error)", count);
 			default:
-				return localize('sql.migration.status.error.count.multiple', "{0} ({1} Errors)", status, count);
+				return localize('sql.migration.status.error.count.multiple', "{0} Errors)", count);
 		}
 	}
 }
