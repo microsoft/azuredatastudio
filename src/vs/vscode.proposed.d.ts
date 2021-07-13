@@ -874,30 +874,6 @@ declare module 'vscode' {
 
 	//#endregion
 
-	//#region Terminal name change event https://github.com/microsoft/vscode/issues/114898
-
-	export interface Pseudoterminal {
-		/**
-		 * An event that when fired allows changing the name of the terminal.
-		 *
-		 * **Example:** Change the terminal name to "My new terminal".
-		 * ```typescript
-		 * const writeEmitter = new vscode.EventEmitter<string>();
-		 * const changeNameEmitter = new vscode.EventEmitter<string>();
-		 * const pty: vscode.Pseudoterminal = {
-		 *   onDidWrite: writeEmitter.event,
-		 *   onDidChangeName: changeNameEmitter.event,
-		 *   open: () => changeNameEmitter.fire('My new terminal'),
-		 *   close: () => {}
-		 * };
-		 * vscode.window.createTerminal({ name: 'My terminal', pty });
-		 * ```
-		 */
-		onDidChangeName?: Event<string>;
-	}
-
-	//#endregion
-
 	//#region Terminal icon https://github.com/microsoft/vscode/issues/120538
 
 	export interface TerminalOptions {
@@ -912,27 +888,6 @@ declare module 'vscode' {
 		 * A themeIcon, Uri, or light and dark Uris to use as the terminal tab icon
 		 */
 		readonly iconPath?: Uri | { light: Uri; dark: Uri } | ThemeIcon;
-	}
-
-	//#endregion
-
-	//#region Terminal profile provider https://github.com/microsoft/vscode/issues/120369
-
-	export namespace window {
-		/**
-		 * Registers a provider for a contributed terminal profile.
-		 * @param id The ID of the contributed terminal profile.
-		 * @param provider The terminal profile provider.
-		 */
-		export function registerTerminalProfileProvider(id: string, provider: TerminalProfileProvider): Disposable;
-	}
-
-	export interface TerminalProfileProvider {
-		/**
-		 * Provide terminal profile options for the requested terminal.
-		 * @param token A cancellation token that indicates the result is no longer needed.
-		 */
-		provideProfileOptions(token: CancellationToken): ProviderResult<TerminalOptions | ExtensionTerminalOptions>;
 	}
 
 	//#endregion
@@ -1734,10 +1689,11 @@ declare module 'vscode' {
 
 	//#region https://github.com/microsoft/vscode/issues/16221
 
-	// todo@API rename to InlayHint
+	// todo@API Split between Inlay- and OverlayHints (InlayHint are for a position, OverlayHints for a non-empty range)
 	// todo@API add "mini-markdown" for links and styles
-	// todo@API remove description
-	// (done:)  add InlayHintKind with type, argument, etc
+	// (done) remove description
+	// (done) rename to InlayHint
+	// (done)  add InlayHintKind with type, argument, etc
 
 	export namespace languages {
 		/**
@@ -1760,12 +1716,6 @@ declare module 'vscode' {
 		Parameter = 2,
 	}
 
-	export enum InlineHintKind {
-		Other = 0,
-		Type = 1,
-		Parameter = 2,
-	}
-
 	/**
 	 * Inlay hint information.
 	 */
@@ -1777,12 +1727,11 @@ declare module 'vscode' {
 		/**
 		 * The position of this hint.
 		 */
-		range: Range;
-
-		kind?: InlineHintKind;
-
-		// todo@API remove this
-		description?: string | MarkdownString;
+		position: Position;
+		/**
+		 * The kind of this hint.
+		 */
+		kind?: InlayHintKind;
 		/**
 		 * Whitespace before the hint.
 		 */
@@ -1793,7 +1742,7 @@ declare module 'vscode' {
 		whitespaceAfter?: boolean;
 
 		// todo@API make range first argument
-		constructor(text: string, range: Range, kind?: InlineHintKind);
+		constructor(text: string, position: Position, kind?: InlayHintKind);
 	}
 
 	/**
@@ -2640,7 +2589,7 @@ declare module 'vscode' {
 		 * ```
 		 *
 		 * *Note* that extensions should not cache the result of `asExternalUri` as the resolved uri may become invalid due to
-		 * a system or user action — for example, in remote cases, a user may close a port forwarding tunnel that was opened by
+		 * a system or user action — for example, in remote cases, a user may close a port forwarding tunnel that was opened by
 		 * `asExternalUri`.
 		 *
 		 * #### Any other scheme
@@ -2693,27 +2642,6 @@ declare module 'vscode' {
 		 * workspace trust request.
 		 */
 		export function requestWorkspaceTrust(options?: WorkspaceTrustRequestOptions): Thenable<boolean | undefined>;
-	}
-
-	//#endregion
-
-	//#region https://github.com/microsoft/vscode/issues/115807
-
-	export interface Webview {
-		/**
-		 * @param message A json serializable message to send to the webview.
-		 *
-		 *   For older versions of vscode, if an `ArrayBuffer` is included in `message`,
-		 *   it will not be serialized properly and will not be received by the webview.
-		 *   Similarly any TypedArrays, such as a `Uint8Array`, will be very inefficiently
-		 *   serialized and will also not be recreated as a typed array inside the webview.
-		 *
-		 *   However if your extension targets vscode 1.56+ in the `engines` field of its
-		 *   `package.json` any `ArrayBuffer` values that appear in `message` will be more
-		 *   efficiently transferred to the webview and will also be recreated inside of
-		 *   the webview.
-		 */
-		postMessage(message: any): Thenable<boolean>;
 	}
 
 	//#endregion

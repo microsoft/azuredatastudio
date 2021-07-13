@@ -721,7 +721,7 @@ export interface WebviewMessageArrayBufferReference {
 export interface MainThreadWebviewsShape extends IDisposable {
 	$setHtml(handle: WebviewHandle, value: string): void;
 	$setOptions(handle: WebviewHandle, options: IWebviewOptions): void;
-	$postMessage(handle: WebviewHandle, value: any, ...buffers: VSBuffer[]): Promise<boolean>
+	$postMessage(handle: WebviewHandle, value: string, ...buffers: VSBuffer[]): Promise<boolean>
 }
 
 export interface MainThreadWebviewPanelsShape extends IDisposable {
@@ -1457,11 +1457,10 @@ export interface ISignatureHelpContextDto {
 
 export interface IInlayHintDto {
 	text: string;
-	range: IRange;
-	kind: modes.InlineHintKind;
+	position: IPosition;
+	kind: modes.InlayHintKind;
 	whitespaceBefore?: boolean;
 	whitespaceAfter?: boolean;
-	hoverMessage?: string;
 }
 
 export interface IInlayHintsDto {

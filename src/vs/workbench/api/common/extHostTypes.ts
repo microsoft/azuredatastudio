@@ -8,7 +8,7 @@ import { illegalArgument } from 'vs/base/common/errors';
 import { IRelativePattern } from 'vs/base/common/glob';
 import { isMarkdownString, MarkdownString as BaseMarkdownString } from 'vs/base/common/htmlContent';
 import { ReadonlyMapView, ResourceMap } from 'vs/base/common/map';
-import { normalizeMimeType } from 'vs/base/common/mime';
+import { Mimes, normalizeMimeType } from 'vs/base/common/mime';
 import { isArray, isStringArray } from 'vs/base/common/types';
 import { URI } from 'vs/base/common/uri';
 import { generateUuid } from 'vs/base/common/uuid';
@@ -1420,7 +1420,7 @@ export enum SignatureHelpTriggerKind {
 }
 
 
-export enum InlineHintKind {
+export enum InlayHintKind {
 	Other = 0,
 	Type = 1,
 	Parameter = 2,
@@ -1429,15 +1429,14 @@ export enum InlineHintKind {
 @es5ClassCompat
 export class InlayHint {
 	text: string;
-	range: Range;
-	kind?: vscode.InlineHintKind;
-	description?: string | vscode.MarkdownString;
+	position: Position;
+	kind?: vscode.InlayHintKind;
 	whitespaceBefore?: boolean;
 	whitespaceAfter?: boolean;
 
-	constructor(text: string, range: Range, kind?: vscode.InlineHintKind) {
+	constructor(text: string, position: Position, kind?: vscode.InlayHintKind) {
 		this.text = text;
-		this.range = range;
+		this.position = position;
 		this.kind = kind;
 	}
 }
@@ -3073,7 +3072,7 @@ export class NotebookCellOutputItem {
 
 	static #encoder = new TextEncoder();
 
-	static text(value: string, mime: string = 'text/plain'): NotebookCellOutputItem {
+	static text(value: string, mime: string = Mimes.text): NotebookCellOutputItem {
 		const bytes = NotebookCellOutputItem.#encoder.encode(String(value));
 		return new NotebookCellOutputItem(bytes, mime);
 	}

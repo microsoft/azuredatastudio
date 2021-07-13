@@ -5814,6 +5814,28 @@ declare module 'vscode' {
 	}
 
 	/**
+	 * Provides a terminal profile for the contributed terminal profile when launched via the UI or
+	 * command.
+	 */
+	export interface TerminalProfileProvider {
+		/**
+		 * Provide the terminal profile.
+		 * @param token A cancellation token that indicates the result is no longer needed.
+		 */
+		provideTerminalProfile(token: CancellationToken): ProviderResult<TerminalProfile>;
+	}
+
+	/**
+	 * A terminal profile defines how a termianl will be launched.
+	 */
+	export interface TerminalProfile {
+		/**
+		 * The options that the terminal will launch with.
+		 */
+		options: TerminalOptions | ExtensionTerminalOptions;
+	}
+
+	/**
 	 * A file decoration represents metadata that can be rendered with a file.
 	 */
 	export class FileDecoration {
@@ -8224,7 +8246,7 @@ declare module 'vscode' {
 		 * ```
 		 *
 		 * *Note* that extensions should not cache the result of `asExternalUri` as the resolved uri may become invalid due to
-		 * a system or user action — for example, in remote cases, a user may close a port forwarding tunnel that was opened by
+		 * a system or user action — for example, in remote cases, a user may close a port forwarding tunnel that was opened by
 		 * `asExternalUri`.
 		 *
 		 * @return A uri that can be used on the client machine.
@@ -8995,6 +9017,12 @@ declare module 'vscode' {
 		export function registerTerminalLinkProvider(provider: TerminalLinkProvider): Disposable;
 
 		/**
+		 * Registers a provider for a contributed terminal profile.
+		 * @param id The ID of the contributed terminal profile.
+		 * @param provider The terminal profile provider.
+		 */
+		export function registerTerminalProfileProvider(id: string, provider: TerminalProfileProvider): Disposable;
+		/**
 		 * Register a file decoration provider.
 		 *
 		 * @param provider A {@link FileDecorationProvider}.
@@ -9488,6 +9516,24 @@ declare module 'vscode' {
 		 * ```
 		 */
 		onDidClose?: Event<void | number>;
+
+		/**
+		 * An event that when fired allows changing the name of the terminal.
+		 *
+		 * **Example:** Change the terminal name to "My new terminal".
+		 * ```typescript
+		 * const writeEmitter = new vscode.EventEmitter<string>();
+		 * const changeNameEmitter = new vscode.EventEmitter<string>();
+		 * const pty: vscode.Pseudoterminal = {
+		 *   onDidWrite: writeEmitter.event,
+		 *   onDidChangeName: changeNameEmitter.event,
+		 *   open: () => changeNameEmitter.fire('My new terminal'),
+		 *   close: () => {}
+		 * };
+		 * vscode.window.createTerminal({ name: 'My terminal', pty });
+		 * ```
+		 */
+		onDidChangeName?: Event<string>;
 
 		/**
 		 * Implement to handle when the pty is open and ready to start firing events.
