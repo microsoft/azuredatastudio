@@ -10,6 +10,7 @@ import { MigrationStateModel, StateChangeEvent } from '../models/stateMachine';
 import * as constants from '../constants/strings';
 import { WIZARD_INPUT_COMPONENT_WIDTH } from './wizardController';
 import { deepClone, findDropDownItemIndex, selectDropDownIndex } from '../api/utils';
+import { getSubscriptions } from '../api/azure';
 
 export class AccountsSelectionPage extends MigrationWizardPage {
 	private _azureAccountsDropdown!: azdata.DropDownComponent;
@@ -198,14 +199,21 @@ export class AccountsSelectionPage extends MigrationWizardPage {
 	}
 
 	public async onPageEnter(): Promise<void> {
-		this.wizard.registerNavigationValidator(pageChangeInfo => {
-			if (this.migrationStateModel._azureAccount?.isStale === true) {
-				this.wizard.message = {
-					text: constants.ACCOUNT_STALE_ERROR(this.migrationStateModel._azureAccount)
-				};
-				return false;
+		this.wizard.registerNavigationValidator(async pageChangeInfo => {
+			try {
+				if (!this.migrationStateModel._azureAccount?.isStale) {
+					const subscriptions = await getSubscriptions(this.migrationStateModel._azureAccount);
+					if (subscriptions?.length > 0) {
+						return true;
+					}
+				}
+
+				this.wizard.message = { text: constants.ACCOUNT_STALE_ERROR(this.migrationStateModel._azureAccount) };
+			} catch (error) {
+				this.wizard.message = { text: constants.ACCOUNT_ACCESS_ERROR(this.migrationStateModel._azureAccount, error) };
 			}
-			return true;
+
+			return false;
 		});
 	}
 

@@ -392,7 +392,6 @@ export class MigrationStatusDialog {
 	}
 
 	private _getStatusControl(status: string, count: number): azdata.FlexContainer {
-		status = 'InProgress';
 		const control = this._view.modelBuilder
 			.flexContainer()
 			.withItems([
