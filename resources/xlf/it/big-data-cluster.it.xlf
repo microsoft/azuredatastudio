@@ -60,6 +60,126 @@
         <source xml:lang="en">Ignore SSL verification errors against SQL Server Big Data Cluster endpoints such as HDFS, Spark, and Controller if true</source>
         <target state="translated">Se è true, ignora gli errori di verifica SSL in endpoint del cluster Big Data di SQL Server come HDFS, Spark e Controller</target>
       </trans-unit>
+      <trans-unit id="resource-type-sql-bdc-display-name">
+        <source xml:lang="en">SQL Server Big Data Cluster</source>
+        <target state="translated">Cluster Big Data di SQL Server</target>
+      </trans-unit>
+      <trans-unit id="resource-type-sql-bdc-description">
+        <source xml:lang="en">SQL Server Big Data Cluster allows you to deploy scalable clusters of SQL Server, Spark, and HDFS containers running on Kubernetes</source>
+        <target state="translated">Il cluster Big Data di SQL Server consente di distribuire cluster scalabili di contenitori SQL Server, Spark e HDFS in esecuzione in Kubernetes</target>
+      </trans-unit>
+      <trans-unit id="version-display-name">
+        <source xml:lang="en">Version</source>
+        <target state="translated">Versione</target>
+      </trans-unit>
+      <trans-unit id="bdc-2019-display-name">
+        <source xml:lang="en">SQL Server 2019</source>
+        <target state="translated">SQL Server 2019</target>
+      </trans-unit>
+      <trans-unit id="bdc-deployment-target">
+        <source xml:lang="en">Deployment target</source>
+        <target state="translated">Destinazione di distribuzione</target>
+      </trans-unit>
+      <trans-unit id="bdc-deployment-target-new-aks">
+        <source xml:lang="en">New Azure Kubernetes Service Cluster</source>
+        <target state="translated">Nuovo cluster del servizio Azure Kubernetes</target>
+      </trans-unit>
+      <trans-unit id="bdc-deployment-target-existing-aks">
+        <source xml:lang="en">Existing Azure Kubernetes Service Cluster</source>
+        <target state="translated">Cluster esistente del servizio Azure Kubernetes</target>
+      </trans-unit>
+      <trans-unit id="bdc-deployment-target-existing-kubeadm">
+        <source xml:lang="en">Existing Kubernetes Cluster (kubeadm)</source>
+        <target state="translated">Cluster Kubernetes esistente (kubeadm)</target>
+      </trans-unit>
+      <trans-unit id="bdc-deployment-target-existing-aro">
+        <source xml:lang="en">Existing Azure Red Hat OpenShift cluster</source>
+        <target state="translated">Cluster Azure Red Hat OpenShift esistente</target>
+      </trans-unit>
+      <trans-unit id="bdc-deployment-target-existing-openshift">
+        <source xml:lang="en">Existing OpenShift cluster</source>
+        <target state="translated">Cluster OpenShift esistente</target>
+      </trans-unit>
+      <trans-unit id="bdc-cluster-settings-section-title">
+        <source xml:lang="en">SQL Server Big Data Cluster settings</source>
+        <target state="translated">Impostazioni del cluster Big Data di SQL Server</target>
+      </trans-unit>
+      <trans-unit id="bdc-cluster-name-field">
+        <source xml:lang="en">Cluster name</source>
+        <target state="translated">Nome del cluster</target>
+      </trans-unit>
+      <trans-unit id="bdc-controller-username-field">
+        <source xml:lang="en">Controller username</source>
+        <target state="translated">Nome utente del controller</target>
+      </trans-unit>
+      <trans-unit id="bdc-password-field">
+        <source xml:lang="en">Password</source>
+        <target state="translated">Password</target>
+      </trans-unit>
+      <trans-unit id="bdc-confirm-password-field">
+        <source xml:lang="en">Confirm password</source>
+        <target state="translated">Conferma password</target>
+      </trans-unit>
+      <trans-unit id="bdc-azure-settings-section-title">
+        <source xml:lang="en">Azure settings</source>
+        <target state="translated">Impostazioni di Azure</target>
+      </trans-unit>
+      <trans-unit id="bdc-azure-subscription-id-field">
+        <source xml:lang="en">Subscription id</source>
+        <target state="translated">ID sottoscrizione</target>
+      </trans-unit>
+      <trans-unit id="bdc-azure-subscription-id-placeholder">
+        <source xml:lang="en">Use my default Azure subscription</source>
+        <target state="translated">Usa la sottoscrizione di Azure predefinita personale</target>
+      </trans-unit>
+      <trans-unit id="bdc-azure-resource-group-field">
+        <source xml:lang="en">Resource group name</source>
+        <target state="translated">Nome del gruppo di risorse</target>
+      </trans-unit>
+      <trans-unit id="bdc-azure-region-field">
+        <source xml:lang="en">Region</source>
+        <target state="translated">Area</target>
+      </trans-unit>
+      <trans-unit id="bdc-azure-aks-name-field">
+        <source xml:lang="en">AKS cluster name</source>
+        <target state="translated">Nome del cluster del servizio Azure Kubernetes</target>
+      </trans-unit>
+      <trans-unit id="bdc-azure-vm-size-field">
+        <source xml:lang="en">VM size</source>
+        <target state="translated">Dimensioni della macchina virtuale</target>
+      </trans-unit>
+      <trans-unit id="bdc-azure-vm-count-field">
+        <source xml:lang="en">VM count</source>
+        <target state="translated">Numero di macchine virtuali</target>
+      </trans-unit>
+      <trans-unit id="bdc-storage-class-field">
+        <source xml:lang="en">Storage class name</source>
+        <target state="translated">Nome della classe di archiviazione</target>
+      </trans-unit>
+      <trans-unit id="bdc-data-size-field">
+        <source xml:lang="en">Capacity for data (GB)</source>
+        <target state="translated">Capacità per i dati (GB)</target>
+      </trans-unit>
+      <trans-unit id="bdc-log-size-field">
+        <source xml:lang="en">Capacity for logs (GB)</source>
+        <target state="translated">Capacità per i log (GB)</target>
+      </trans-unit>
+      <trans-unit id="bdc-agreement">
+        <source xml:lang="en">I accept {0}, {1} and {2}.</source>
+        <target state="translated">Accetto {0}, {1} e {2}.</target>
+      </trans-unit>
+      <trans-unit id="microsoft-privacy-statement">
+        <source xml:lang="en">Microsoft Privacy Statement</source>
+        <target state="translated">Informativa sulla privacy di Microsoft</target>
+      </trans-unit>
+      <trans-unit id="bdc-agreement-azdata-eula">
+        <source xml:lang="en">azdata License Terms</source>
+        <target state="translated">Condizioni di licenza di azdata</target>
+      </trans-unit>
+      <trans-unit id="bdc-agreement-bdc-eula">
+        <source xml:lang="en">SQL Server License Terms</source>
+        <target state="translated">Condizioni di licenza di SQL Server</target>
+      </trans-unit>
     </body>
   </file>
   <file original="extensions/big-data-cluster/dist/bigDataCluster/utils" source-language="en" datatype="plaintext" target-language="it">
