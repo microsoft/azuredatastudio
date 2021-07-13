@@ -327,7 +327,7 @@ export class BackLayerWebView<T extends ICommonCellInfo> extends Disposable {
 	private resolveOutputId(id: string): { cellInfo: T, output: ICellOutputViewModel } | undefined {
 		const output = this.reversedInsetMapping.get(id);
 		if (!output) {
-			return undefined; // {{SQL CARBON EDIT}} strict-null-checks
+			return;
 		}
 
 		const cellInfo = this.insetMapping.get(output)!.cellInfo;
@@ -433,7 +433,7 @@ var requirejs = (function() {
 		}));
 
 		this._register(this.webview.onMessage((message) => {
-			const data: FromWebviewMessage /*| { readonly __vscode_notebook_message: undefined }*/ = message.message; // {{SQL CARBON EDIT}} Fix compile error
+			const data: FromWebviewMessage | { readonly __vscode_notebook_message: undefined } = message.message;
 			if (this._disposed) {
 				return;
 			}
@@ -799,11 +799,11 @@ var requirejs = (function() {
 		const widgets = coalesce(outputRequests.map((request): IContentWidgetTopRequest | undefined => {
 			const outputCache = this.insetMapping.get(request.output);
 			if (!outputCache) {
-				return undefined; // {{SQL CARBON EDIT}} Strict null
+				return;
 			}
 
 			if (!request.forceDisplay && !this.shouldUpdateInset(request.cell, request.output, request.cellTop, request.outputOffset)) {
-				return undefined; // {{SQL CARBON EDIT}} Strict null
+				return;
 			}
 
 			const id = outputCache.outputId;
@@ -826,7 +826,7 @@ var requirejs = (function() {
 		this._sendMessageToWebview({
 			type: 'view-scroll',
 			widgets: widgets,
-			markdownPreviews,
+			markupCells: markdownPreviews,
 		});
 	}
 
