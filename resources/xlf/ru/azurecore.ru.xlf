@@ -126,6 +126,10 @@
         <source xml:lang="en">Error fetching resource groups for account {0} ({1}) subscription {2} ({3}) tenant {4} : {5}</source>
         <target state="translated">Ошибка при получении групп ресурсов для учетной записи {0} ({1}) в подписке {2} ({3}) и клиенте {4}: {5}</target>
       </trans-unit>
+      <trans-unit id="azure.accounts.getLocations.queryError">
+        <source xml:lang="en">Error fetching locations for account {0} ({1}) subscription {2} ({3}) tenant {4} : {5}</source>
+        <target state="translated">Ошибка при получении местоположений для учетной записи {0} ({1}) в подписке {2} ({3}) и клиенте {4}: {5}</target>
+      </trans-unit>
       <trans-unit id="azure.accounts.runResourceQuery.errors.invalidQuery">
         <source xml:lang="en">Invalid query</source>
         <target state="translated">Недопустимый запрос</target>
@@ -379,8 +383,8 @@
         <target state="translated">SQL Server — Azure Arc</target>
       </trans-unit>
       <trans-unit id="azurecore.azureArcPostgres">
-        <source xml:lang="en">Azure Arc enabled PostgreSQL Hyperscale</source>
-        <target state="translated">Гипермасштабирование для PostgreSQL с поддержкой Azure Arc</target>
+        <source xml:lang="en">Azure Arc-enabled PostgreSQL Hyperscale</source>
+        <target state="translated">Гипермасштабирование для PostgreSQL с поддержкой Azure Arc</target>
       </trans-unit>
       <trans-unit id="azure.unableToOpenAzureLink">
         <source xml:lang="en">Unable to open link, missing required values</source>
@@ -411,7 +415,7 @@
         <target state="translated">Неизвестная ошибка при проверке подлинности Azure</target>
       </trans-unit>
       <trans-unit id="azure.tenantNotFound">
-        <source xml:lang="en">Specifed tenant with ID '{0}' not found.</source>
+        <source xml:lang="en">Specified tenant with ID '{0}' not found.</source>
         <target state="translated">Указанный клиент с идентификатором "{0}" не найден.</target>
       </trans-unit>
       <trans-unit id="azure.noBaseToken">
@@ -419,7 +423,7 @@
         <target state="translated">Произошла ошибка при проверке подлинности, или ваши токены были удалены из системы. Попробуйте добавить учетную запись в Azure Data Studio еще раз.</target>
       </trans-unit>
       <trans-unit id="azure.responseError">
-        <source xml:lang="en">Token retrival failed with an error. Open developer tools to view the error</source>
+        <source xml:lang="en">Token retrieval failed with an error. Open developer tools to view the error</source>
         <target state="translated">Не удалось получить токен из-за ошибки. Откройте Инструменты разработчика, чтобы просмотреть ошибку</target>
       </trans-unit>
       <trans-unit id="azure.accessTokenEmpty">
@@ -512,6 +516,14 @@
       <trans-unit id="azure.resource.tree.accountTreeNode.credentialError">
         <source xml:lang="en">Failed to get credential for account {0}. Please go to the accounts dialog and refresh the account.</source>
         <target state="translated">Не удалось получить учетные данные для учетной записи {0}. Перейдите в диалоговое окно учетных записей и обновите учетную запись.</target>
+      </trans-unit>
+      <trans-unit id="azure.resource.throttleerror">
+        <source xml:lang="en">Requests from this account have been throttled. To retry, please select a smaller number of subscriptions.</source>
+        <target state="translated">Запросы от этой учетной записи были ограничены. Чтобы повторить попытку, выберите меньшее количество подписок.</target>
+      </trans-unit>
+      <trans-unit id="azure.resource.tree.loadresourceerror">
+        <source xml:lang="en">An error occured while loading Azure resources: {0}</source>
+        <target state="translated">При загрузке ресурсов Azure произошла ошибка: {0}</target>
       </trans-unit>
     </body>
   </file>
@@ -700,6 +712,14 @@
       <trans-unit id="azure.resource.providers.KustoContainerLabel">
         <source xml:lang="en">Azure Data Explorer Cluster</source>
         <target state="translated">Кластер Azure Data Explorer</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/azurecore/dist/azureResource/providers/azuremonitor/azuremonitorTreeDataProvider" source-language="en" datatype="plaintext" target-language="ru">
+    <body>
+      <trans-unit id="azure.resource.providers.AzureMonitorContainerLabel">
+        <source xml:lang="en">Azure Monitor Workspace</source>
+        <target state="new">Azure Monitor Workspace</target>
       </trans-unit>
     </body>
   </file>
