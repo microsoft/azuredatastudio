@@ -235,13 +235,19 @@ export class NotebookMarkdownRenderer {
 		}
 		base = this._baseUrls[' ' + base];
 
-		href = href.replace(/^(?!.*\.\\])\.\W/, '..\\');
 		if (href.slice(0, 2) === '//') {
 			return base.replace(/:[\s\S]*/, ':') + href;
 		} else if (href.charAt(0) === '/') {
 			return base.replace(/(:\/*[^/]*)[\s\S]*/, '$1') + href;
 		} else if (href.slice(0, 2) === '..') {
-			return path.resolve(base, href);
+			if (process.platform === 'win32') {
+				// we need to format invalid href formats (ex. ....\file to ..\..\file)
+				// in order to resolve to absolute link
+				href = href.replace(/^(?!.*\.\\])\.\W/, '..\\');
+				return path.resolve(base, href);
+			} else {
+				return path.join(base + href);
+			}
 		} else {
 			return base + href;
 		}
