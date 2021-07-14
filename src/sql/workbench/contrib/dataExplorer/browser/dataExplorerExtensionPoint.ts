@@ -10,8 +10,8 @@ import { Registry } from 'vs/platform/registry/common/platform';
 import { IViewContainersRegistry, ViewContainer, Extensions as ViewContainerExtensions, IViewsRegistry } from 'vs/workbench/common/views';
 import { IExtensionPoint, ExtensionsRegistry, ExtensionMessageCollector } from 'vs/workbench/services/extensions/common/extensionsRegistry';
 import { IWorkbenchContribution } from 'vs/workbench/common/contributions';
-import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
+import { IInstantiationService, ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
+import { ContextKeyEqualsExpr, ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
 import { coalesce } from 'vs/base/common/arrays';
 
 import { VIEWLET_ID } from 'sql/workbench/contrib/dataExplorer/browser/dataExplorerViewlet';
@@ -19,6 +19,11 @@ import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
 import { ICustomViewDescriptor } from 'vs/workbench/api/browser/viewsExtensionPoint';
 import { CustomTreeView as VSCustomTreeView, TreeViewPane } from 'vs/workbench/browser/parts/views/treeView';
 import { CustomTreeView } from 'sql/workbench/contrib/views/browser/treeView';
+import { Action2, IAction2Options, IMenuItem, MenuId, MenuRegistry, registerAction2 } from 'vs/platform/actions/common/actions';
+import { ConnectionViewletPanel } from 'sql/workbench/contrib/dataExplorer/browser/connectionViewletPanel';
+import { ICommandService } from 'vs/platform/commands/common/commands';
+import { DisposableStore, IDisposable } from 'vs/base/common/lifecycle';
+import { isArray } from 'vs/base/common/types';
 
 interface IUserFriendlyViewDescriptor {
 	id: string;
@@ -65,6 +70,11 @@ const dataExplorerContribution: IJSONSchema = {
 
 const dataExplorerExtensionPoint: IExtensionPoint<{ [loc: string]: IUserFriendlyViewDescriptor[] }> = ExtensionsRegistry.registerExtensionPoint<{ [loc: string]: IUserFriendlyViewDescriptor[] }>({ extensionPoint: 'dataExplorer', jsonSchema: dataExplorerContribution });
 
+interface IDataExplorerActionOptions extends IAction2Options {
+	menuTitles?: { [id: number]: string };
+	run(accessor: ServicesAccessor, ...args: any[]): Promise<any>;
+}
+
 export class DataExplorerContainerExtensionHandler implements IWorkbenchContribution {
 
 	private viewContainersRegistry: IViewContainersRegistry;
@@ -74,6 +84,24 @@ export class DataExplorerContainerExtensionHandler implements IWorkbenchContribu
 	) {
 		this.viewContainersRegistry = Registry.as<IViewContainersRegistry>(ViewContainerExtensions.ViewContainersRegistry);
 		this.handleAndRegisterCustomViews();
+		this.registerExtensionAction({
+			id: 'azdata.resource.deploy',
+			title: { value: localize('resourceDeployment', 'New Deployment...'), original: 'New Deployment...' },
+			category: 'Deployment',
+			menu: [{
+				id: MenuId.ViewContainerTitle,
+				when: ContextKeyEqualsExpr.create('view', ConnectionViewletPanel.ID)
+			}, {
+				id: MenuId.ViewContainerTitle,
+				when: ContextKeyEqualsExpr.create('viewContainer', VIEWLET_ID),
+				group: '2_deployment',
+				order: 1
+			}],
+			run: async (accessor: ServicesAccessor) => {
+				let commandService = accessor.get(ICommandService);
+				await commandService.executeCommand('azdata.resource.deploy');
+			}
+		});
 	}
 
 	private handleAndRegisterCustomViews() {
@@ -123,6 +151,41 @@ export class DataExplorerContainerExtensionHandler implements IWorkbenchContribu
 				});
 			}
 		});
+	}
+
+	private registerExtensionAction(actionOptions: IDataExplorerActionOptions): IDisposable {
+		const menus = actionOptions.menu ? isArray(actionOptions.menu) ? actionOptions.menu : [actionOptions.menu] : [];
+		let menusWithOutTitles: ({ id: MenuId } & Omit<IMenuItem, 'command'>)[] = [];
+		const menusWithTitles: { id: MenuId, item: IMenuItem }[] = [];
+		if (actionOptions.menuTitles) {
+			for (let index = 0; index < menus.length; index++) {
+				const menu = menus[index];
+				const menuTitle = actionOptions.menuTitles[menu.id.id];
+				if (menuTitle) {
+					menusWithTitles.push({ id: menu.id, item: { ...menu, command: { id: actionOptions.id, title: menuTitle } } });
+				} else {
+					menusWithOutTitles.push(menu);
+				}
+			}
+		} else {
+			menusWithOutTitles = menus;
+		}
+		const disposables = new DisposableStore();
+		disposables.add(registerAction2(class extends Action2 {
+			constructor() {
+				super({
+					...actionOptions,
+					menu: menusWithOutTitles
+				});
+			}
+			run(accessor: ServicesAccessor, ...args: any[]): Promise<any> {
+				return actionOptions.run(accessor, ...args);
+			}
+		}));
+		if (menusWithTitles.length) {
+			disposables.add(MenuRegistry.appendMenuItems(menusWithTitles));
+		}
+		return disposables;
 	}
 
 	private isValidViewDescriptors(viewDescriptors: IUserFriendlyViewDescriptor[], collector: ExtensionMessageCollector): boolean {

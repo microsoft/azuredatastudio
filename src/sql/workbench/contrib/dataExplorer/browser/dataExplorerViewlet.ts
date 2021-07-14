@@ -24,8 +24,6 @@ import { ViewPaneContainer } from 'vs/workbench/browser/parts/views/viewPaneCont
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
 import { KeyCode, KeyMod } from 'vs/base/common/keyCodes';
 import { SqlIconId } from 'sql/base/common/codicons';
-import { MenuId } from 'vs/platform/actions/common/actions';
-import { DataExplorerMenuActions } from 'sql/workbench/contrib/dataExplorer/dataExplorerMenuActions';
 
 export const VIEWLET_ID = 'workbench.view.connections';
 
@@ -76,7 +74,6 @@ export class DataExplorerViewPaneContainer extends ViewPaneContainer {
 
 		super.create(parent);
 		parent.classList.add('dataExplorer-viewlet');
-		this.menuActions = this._register(this.instantiationService.createInstance(DataExplorerMenuActions, MenuId.DataExplorerAction, MenuId.DataExplorerContext, { shouldForwardArgs: true }));
 	}
 
 	override focus(): void {
