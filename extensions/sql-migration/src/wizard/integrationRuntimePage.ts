@@ -263,7 +263,8 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 			iconHeight: '18px',
 			iconPath: IconPathHelper.refresh,
 			height: '18px',
-			width: '18px'
+			width: '18px',
+			ariaLabel: constants.REFRESH,
 		}).component();
 
 		this._refreshButton.onDidClick(async (e) => {
@@ -313,6 +314,7 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 
 		this._copy1 = this._view.modelBuilder.button().withProps({
 			iconPath: IconPathHelper.copy,
+			ariaLabel: constants.REFRESH,
 		}).component();
 
 		this._copy1.onDidClick(async (e) => {
@@ -321,7 +323,8 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 		});
 
 		this._copy2 = this._view.modelBuilder.button().withProps({
-			iconPath: IconPathHelper.copy
+			iconPath: IconPathHelper.copy,
+			ariaLabel: constants.REFRESH,
 		}).component();
 
 		this._copy2.onDidClick(async (e) => {
@@ -330,11 +333,13 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 		});
 
 		this._refresh1 = this._view.modelBuilder.button().withProps({
-			iconPath: IconPathHelper.refresh
+			iconPath: IconPathHelper.refresh,
+			ariaLabel: constants.REFRESH,
 		}).component();
 
 		this._refresh2 = this._view.modelBuilder.button().withProps({
 			iconPath: IconPathHelper.refresh,
+			ariaLabel: constants.REFRESH,
 		}).component();
 		this._authKeyTable = this._view.modelBuilder.declarativeTable().withProps({
 			columns: [

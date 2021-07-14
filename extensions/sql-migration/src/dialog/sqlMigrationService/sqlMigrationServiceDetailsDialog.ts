@@ -233,6 +233,7 @@ export class SqlMigrationServiceDetailsDialog {
 				iconPath: IconPathHelper.copy,
 				height: IMAGE_SIZE,
 				width: IMAGE_SIZE,
+				ariaLabel: constants.COPY_KEY,
 			})
 			.component();
 
@@ -247,6 +248,7 @@ export class SqlMigrationServiceDetailsDialog {
 				iconPath: IconPathHelper.copy,
 				height: IMAGE_SIZE,
 				width: IMAGE_SIZE,
+				ariaLabel: constants.COPY_KEY,
 			})
 			.component();
 
@@ -261,6 +263,7 @@ export class SqlMigrationServiceDetailsDialog {
 				iconPath: IconPathHelper.refresh,
 				height: IMAGE_SIZE,
 				width: IMAGE_SIZE,
+				ariaLabel: constants.REFRESH,
 			})
 			.component();
 		refreshKey1Button.onDidClick(
@@ -272,6 +275,7 @@ export class SqlMigrationServiceDetailsDialog {
 				iconPath: IconPathHelper.refresh,
 				height: IMAGE_SIZE,
 				width: IMAGE_SIZE,
+				ariaLabel: constants.REFRESH,
 			})
 			.component();
 		refreshKey2Button.onDidClick(
