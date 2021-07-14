@@ -13,6 +13,7 @@ import { defaultGenerator } from 'vs/base/common/idGenerator';
 import { revive } from 'vs/base/common/marshalling';
 import { ImageMimeTypes } from 'sql/workbench/services/notebook/common/contracts';
 import { IMarkdownStringWithCellAttachments, MarkdownRenderOptionsWithCellAttachments } from 'sql/workbench/contrib/notebook/browser/cellViews/interfaces';
+import { isWindows } from 'vs/base/common/platform';
 
 // Based off of HtmlContentRenderer
 export class NotebookMarkdownRenderer {
@@ -240,7 +241,7 @@ export class NotebookMarkdownRenderer {
 		} else if (href.charAt(0) === '/') {
 			return base.replace(/(:\/*[^/]*)[\s\S]*/, '$1') + href;
 		} else if (href.slice(0, 2) === '..') {
-			if (process.platform === 'win32') {
+			if (isWindows) {
 				// we need to format invalid href formats (ex. ....\file to ..\..\file)
 				// in order to resolve to an absolute link
 				href = href.replace(/^(?!.*\.\\])\.\W/, '..\\');

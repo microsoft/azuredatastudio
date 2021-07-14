@@ -7,6 +7,7 @@ import * as assert from 'assert';
 import * as marked from 'vs/base/common/marked/marked';
 import { NotebookMarkdownRenderer } from '../../browser/outputs/notebookMarkdown';
 import { URI } from 'vs/base/common/uri';
+import path = require('path');
 
 suite('NotebookMarkdownRenderer', () => {
 	let notebookMarkdownRenderer = new NotebookMarkdownRenderer();
@@ -56,7 +57,9 @@ suite('NotebookMarkdownRenderer', () => {
 		notebookMarkdownRenderer.setNotebookURI(URI.parse('maddy/temp/file1.txt'));
 		let result: HTMLElement = notebookMarkdownRenderer.renderMarkdown({ value: `[Link to relative path](../test/.build/someimageurl)`, isTrusted: true });
 		if (process.platform === 'win32') {
-			assert.strictEqual(result.innerHTML, `<p><a href="C:\\maddy\\test\\.build\\someimageurl" data-href="C:\\maddy\\test\\.build\\someimageurl" title="C:\\maddy\\test\\.build\\someimageurl">Link to relative path</a></p>`);
+			let fullPath = path.resolve('.');
+			let diskDrive = fullPath.substring(0, fullPath.indexOf(':') + 1);
+			assert.strictEqual(result.innerHTML, `<p><a href="${diskDrive}\\maddy\\test\\.build\\someimageurl" data-href="${diskDrive}\\maddy\\test\\.build\\someimageurl" title="${diskDrive}\\maddy\\test\\.build\\someimageurl">Link to relative path</a></p>`);
 		} else {
 			assert.strictEqual(result.innerHTML, `<p><a href="/maddy/test/.build/someimageurl" data-href="/maddy/test/.build/someimageurl" title="/maddy/test/.build/someimageurl">Link to relative path</a></p>`);
 		}
