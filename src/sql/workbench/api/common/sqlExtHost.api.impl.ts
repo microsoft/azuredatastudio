@@ -35,6 +35,7 @@ import { IExtensionApiFactory as vsIApiFactory, createApiFactoryAndRegisterActor
 import { IExtHostCommands } from 'vs/workbench/api/common/extHostCommands';
 import { ExtHostWorkspace } from 'sql/workbench/api/common/extHostWorkspace';
 import { IExtHostInitDataService } from 'vs/workbench/api/common/extHostInitDataService';
+import { URI } from 'vs/base/common/uri';
 
 export interface IAzdataExtensionApiFactory {
 	(extension: IExtensionDescription): typeof azdata;
@@ -96,7 +97,6 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 	const extHostNotebookDocumentsAndEditors = rpcProtocol.set(SqlExtHostContext.ExtHostNotebookDocumentsAndEditors, new ExtHostNotebookDocumentsAndEditors(rpcProtocol));
 	const extHostExtensionManagement = rpcProtocol.set(SqlExtHostContext.ExtHostExtensionManagement, new ExtHostExtensionManagement(rpcProtocol));
 	const extHostWorkspace = rpcProtocol.set(SqlExtHostContext.ExtHostWorkspace, new ExtHostWorkspace(rpcProtocol));
-
 	return {
 		azdata: function (extension: IExtensionDescription): typeof azdata {
 			// namespace: connection
@@ -506,6 +506,15 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 
 				getQueryDocument(fileUri: string): Thenable<azdata.queryeditor.QueryDocument> {
 					return extHostQueryEditor.$getQueryDocument(fileUri);
+				},
+
+				openQueryDocument(options?: { content?: string; }, providerId?: string): Thenable<azdata.queryeditor.QueryDocument> {
+					let uriPromise: Thenable<URI>;
+
+					uriPromise = extHostQueryEditor.createQueryDocument(options, providerId);
+					return uriPromise.then(uri => {
+						return extHostQueryEditor.$getQueryDocument(uri.toString());
+					});
 				}
 			};
 
