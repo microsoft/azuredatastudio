@@ -434,7 +434,7 @@ export const SERVER = localize('sql.migration.server', "Server");
 export const USERNAME = localize('sql.migration.username', "Username");
 export const SIZE = localize('sql.migration.size', "Size (MB)");
 export const LAST_BACKUP = localize('sql.migration.last.backup', "Last backup");
-export const DATABASE_FOR_MIGRATION = localize('sql.migration.database.migration', "Databases for Migration");
+export const DATABASE_FOR_MIGRATION = localize('sql.migration.database.migration', "Databases for migration");
 export const DATABASE_MIGRATE_TEXT = localize('sql.migrate.text', "Select database(s) that you want to migrate to Azure SQL");
 
 //Assessment Dialog

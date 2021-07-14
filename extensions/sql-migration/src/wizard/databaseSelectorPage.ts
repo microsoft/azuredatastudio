@@ -69,7 +69,6 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 		const metaDataService = azdata.dataprotocol.getProvider<azdata.MetadataProvider>(providerId, azdata.DataProviderType.MetadataProvider);
 		const ownerUri = await azdata.connection.getUriForConnection(this.migrationStateModel.sourceConnectionId);
 		const results = <azdata.DatabaseInfo[]>await metaDataService.getDatabases(ownerUri);
-		// const results = await queryProvider.runQueryAndReturn(await (azdata.connection.getUriForConnection(this.migrationStateModel.sourceConnectionId)), query);
 		const excludeDbs: string[] = [
 			'master',
 			'tempdb',
@@ -77,7 +76,6 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 			'model'
 		];
 		this._dbNames = [];
-		// need to sort list of dbs alphabetically
 		let finalResult = results.filter((db) => !excludeDbs.includes(db.options.name));
 		finalResult.sort((a, b) => a.options.name.localeCompare(b.options.name));
 		const databasesArray: azdata.DeclarativeTableCellValue[][] = [];
