@@ -3316,14 +3316,14 @@
 					},
 					"versions": [
 						{
-							"version": "0.9.4",
-							"lastUpdated": "6/3/2021",
+							"version": "0.9.5",
+							"lastUpdated": "7/14/2021",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/arc/arc-0.9.4.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/arc/arc-0.9.5.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
