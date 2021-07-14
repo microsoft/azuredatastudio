@@ -26,6 +26,15 @@ const styleLeft: azdata.CssStyles = {
 	'text-overflow': 'ellipsis',
 	'overflow': 'hidden',
 };
+
+const styleCenter: azdata.CssStyles = {
+	'border': 'none',
+	'text-align': 'center',
+	'white-space': 'nowrap',
+	'text-overflow': 'ellipsis',
+	'overflow': 'hidden',
+};
+
 export class DatabaseSelectorPage extends MigrationWizardPage {
 	private _view!: azdata.ModelView;
 	private _databaseSelectorTable!: azdata.DeclarativeTableComponent;
@@ -129,7 +138,7 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 			this._databaseTableValues.push([
 				{
 					value: false,
-					style: styleLeft,
+					style: styleCenter,
 					enabled: selectable
 				},
 				{
@@ -191,7 +200,7 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 					{
 						displayName: '',
 						valueType: azdata.DeclarativeDataType.boolean,
-						width: 10,
+						width: 1,
 						isReadOnly: false,
 						showCheckAll: true,
 						headerCssStyles: headerLeft,
