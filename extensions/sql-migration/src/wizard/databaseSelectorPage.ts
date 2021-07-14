@@ -112,7 +112,7 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 			CSSStyles: {
 				'font-size': '28px',
 				'line-size': '19px',
-				'margin': '16px 0px'
+				'margin': '16px 0px 20px 28px'
 			}
 		}).component();
 
@@ -121,7 +121,7 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 			CSSStyles: {
 				'font-size': '13px',
 				'line-size': '19px',
-				'margin': '0px 0px 0px 0px'
+				'margin': '10px 0px 0px 28px'
 			}
 		}).component();
 
@@ -130,7 +130,7 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 			CSSStyles: {
 				'font-size': '13px',
 				'line-size': '19px',
-				'margin': '0px 0px 0px 0px'
+				'margin': '10px 0px 0px 28px'
 			}
 		}).component();
 

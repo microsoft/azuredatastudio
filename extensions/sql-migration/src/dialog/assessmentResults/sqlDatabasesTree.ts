@@ -280,7 +280,7 @@ export class SqlDatabaseTree {
 			this._recommendation.value = constants.WARNINGS_DETAILS;
 			this._recommendationTitle.value = constants.WARNINGS_COUNT(this._activeIssues.length);
 			if (this._targetType === MigrationTargetType.SQLMI) {
-				this.refreshResults();
+				await this.refreshResults();
 			}
 		});
 
