@@ -120,6 +120,8 @@ export async function launchPublishDatabaseQuickpick(project: Project): Promise<
 
 
 	// 4. Modify sqlcmd vars
+	// If a publish profile is provided then the values from there will overwrite the ones in the
+	// project file (if they exist)
 	let sqlCmdVariables = Object.assign({}, project.sqlCmdVariables, publishProfile?.sqlCmdVariables);
 
 	if (Object.keys(sqlCmdVariables).length > 0) {
