@@ -8,6 +8,7 @@ import { MigrationWizardPage } from '../models/migrationWizardPage';
 import { MigrationStateModel, StateChangeEvent } from '../models/stateMachine';
 import * as constants from '../constants/strings';
 import { IconPath, IconPathHelper } from '../constants/iconPathHelper';
+import { debounce } from '../api/utils';
 
 const headerLeft: azdata.CssStyles = {
 	'border': 'none',
@@ -30,6 +31,7 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 	private _databaseSelectorTable!: azdata.DeclarativeTableComponent;
 	private _dbNames!: string[];
 	private _dbCount!: azdata.TextComponent;
+	private _databaseTableValues!: azdata.DeclarativeTableCellValue[][];
 
 	constructor(wizard: azdata.window.Wizard, migrationStateModel: MigrationStateModel) {
 		super(wizard, azdata.window.createWizardPage(constants.SOURCE_CONFIGURATION, 'MigrationModePage'), migrationStateModel);
@@ -64,6 +66,46 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 	}
 
 
+	private createSearchComponent(): azdata.DivContainer {
+		let resourceSearchBox = this._view.modelBuilder.inputBox().withProps({
+			stopEnterPropagation: true,
+			placeHolder: constants.SEARCH,
+			width: 200
+		}).component();
+
+		resourceSearchBox.onTextChanged(value => this._filterTableList(value));
+
+		const searchContainer = this._view.modelBuilder.divContainer().withItems([resourceSearchBox]).withProps({
+			CSSStyles: {
+				'width': '200px',
+				'margin': '10px 8px 0px 0px'
+			}
+		}).component();
+
+		return searchContainer;
+	}
+
+	@debounce(500)
+	private _filterTableList(value: string): void {
+		if (this._databaseTableValues && value?.length > 0) {
+			const filter: number[] = [];
+			this._databaseTableValues.forEach((row, index) => {
+				const flexContainer: azdata.FlexContainer = row[1]?.value as azdata.FlexContainer;
+				const textComponent: azdata.TextComponent = flexContainer.items[1] as azdata.TextComponent;
+				const cellText = textComponent.value?.toLowerCase();
+				const searchText: string = value.toLowerCase();
+				if (cellText?.includes(searchText)) {
+					filter.push(index);
+				}
+			});
+
+			this._databaseSelectorTable.setFilter(filter);
+		} else {
+			this._databaseSelectorTable.setFilter(undefined);
+		}
+	}
+
+
 	public async createRootContainer(view: azdata.ModelView): Promise<azdata.FlexContainer> {
 		const providerId = (await this.migrationStateModel.getSourceConnectionProfile()).providerId;
 		const metaDataService = azdata.dataprotocol.getProvider<azdata.MetadataProvider>(providerId, azdata.DataProviderType.MetadataProvider);
@@ -78,12 +120,17 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 		this._dbNames = [];
 		let finalResult = results.filter((db) => !excludeDbs.includes(db.options.name));
 		finalResult.sort((a, b) => a.options.name.localeCompare(b.options.name));
-		const databasesArray: azdata.DeclarativeTableCellValue[][] = [];
+		this._databaseTableValues = [];
 		for (let index in finalResult) {
-			databasesArray.push([
+			let selectable = true;
+			if (constants.OFFLINE_CAPS.includes(finalResult[index].options.state)) {
+				selectable = false;
+			}
+			this._databaseTableValues.push([
 				{
 					value: false,
-					style: styleLeft
+					style: styleLeft,
+					enabled: selectable
 				},
 				{
 					value: this.createIconTextCell(IconPathHelper.sqlDatabaseLogo, finalResult[index].options.name),
@@ -110,7 +157,7 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 			CSSStyles: {
 				'font-size': '28px',
 				'line-size': '19px',
-				'margin': '16px 0px 20px 28px'
+				'margin': '16px 0px 20px 0px'
 			}
 		}).component();
 
@@ -119,16 +166,16 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 			CSSStyles: {
 				'font-size': '13px',
 				'line-size': '19px',
-				'margin': '10px 0px 0px 28px'
+				'margin': '10px 0px 0px 0px'
 			}
 		}).component();
 
 		this._dbCount = this._view.modelBuilder.text().withProps({
-			value: constants.DATABASES_SELECTED(this.selectedDbs.length, databasesArray.length),
+			value: constants.DATABASES_SELECTED(this.selectedDbs.length, this._databaseTableValues.length),
 			CSSStyles: {
 				'font-size': '13px',
 				'line-size': '19px',
-				'margin': '10px 0px 0px 28px'
+				'margin': '10px 0px 0px 0px'
 			}
 		}).component();
 
@@ -181,19 +228,24 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 			}
 		).component();
 
-		this._databaseSelectorTable.dataValues = databasesArray;
+		this._databaseSelectorTable.dataValues = this._databaseTableValues;
 		this._databaseSelectorTable.onDataChanged(() => {
 			this._dbCount.updateProperties({
-				'value': constants.DATABASES_SELECTED(this.selectedDbs().length, databasesArray.length)
+				'value': constants.DATABASES_SELECTED(this.selectedDbs().length, this._databaseTableValues.length)
 			});
 		});
 		const flex = view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'column',
 			height: '100%',
 			width: '100%'
+		}).withProps({
+			CSSStyles: {
+				'margin': '0px 0px 0px 28px'
+			}
 		}).component();
 		flex.addItem(title, { flex: '0 0 auto' });
 		flex.addItem(text, { flex: '0 0 auto' });
+		flex.addItem(this.createSearchComponent(), { flex: '0 0 auto' });
 		flex.addItem(this._dbCount, { flex: '0 0 auto' });
 		flex.addItem(this._databaseSelectorTable);
 		return flex;
