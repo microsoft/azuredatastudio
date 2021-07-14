@@ -3834,6 +3834,11 @@ Error: {1}</source>
       <source xml:lang="en">Top Operations</source>
     </trans-unit>
   </body></file>
+  <file original="src/sql/workbench/contrib/resourceDeployment/browser/resourceDeployment.contribution" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="deployment.title">
+      <source xml:lang="en">New Deployment...</source>
+    </trans-unit>
+  </body></file>
   <file original="src/sql/workbench/contrib/resourceViewer/browser/resourceViewer.contribution" source-language="en" datatype="plaintext"><body>
     <trans-unit id="resourceViewer">
       <source xml:lang="en">Resource Viewer</source>
