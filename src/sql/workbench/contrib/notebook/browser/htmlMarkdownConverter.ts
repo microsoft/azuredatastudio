@@ -312,6 +312,7 @@ export function findPathRelativeToContent(notebookFolder: string, contentPath: U
 			relativePath = relativePath.replace(/\s/g, '%20');
 			if (relativePath.startsWith(path.join('..', path.sep) || path.join('.', path.sep))) {
 				return relativePath;
+				// if relativePath contains improper directory format (ex. ....\) then we need to replace it to ensure the directories are formatted properly (ex. ..\..\)
 			} else if (relativePath.match(/^(?!.*\.\\])\.\W/)) {
 				return relativePath.replace(/^(?!.*\.\\])\.\W/, '..\\');
 			} else {
