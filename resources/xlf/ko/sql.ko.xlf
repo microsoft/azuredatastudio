@@ -4307,7 +4307,7 @@ Error: {1}</source>
     <body>
       <trans-unit id="notebookEditor.name">
         <source xml:lang="en">Notebook Editor</source>
-        <target state="new">Notebook Editor</target>
+        <target state="translated">Notebook 편집기</target>
       </trans-unit>
     </body>
   </file>
@@ -5091,7 +5091,7 @@ Error: {1}</source>
     <body>
       <trans-unit id="queryEditor.name">
         <source xml:lang="en">Query Editor</source>
-        <target state="new">Query Editor</target>
+        <target state="translated">쿼리 편집기</target>
       </trans-unit>
     </body>
   </file>
@@ -5289,7 +5289,7 @@ Error: {1}</source>
     <body>
       <trans-unit id="queryPlanEditor">
         <source xml:lang="en">Query Plan Editor</source>
-        <target state="new">Query Plan Editor</target>
+        <target state="translated">쿼리 플랜 편집기</target>
       </trans-unit>
     </body>
   </file>
