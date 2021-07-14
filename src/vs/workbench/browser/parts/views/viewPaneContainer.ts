@@ -38,6 +38,7 @@ import { ViewPane } from 'vs/workbench/browser/parts/views/viewPane';
 import { CompositeMenuActions } from 'vs/workbench/browser/menuActions';
 import { createActionViewItem } from 'vs/platform/actions/browser/menuEntryActionViewItem';
 import { IActionViewItem } from 'vs/base/browser/ui/actionbar/actionbar';
+import { DataExplorerMenuActions } from 'sql/workbench/contrib/dataExplorer/dataExplorerMenuActions';
 
 export const ViewsSubMenu = new MenuId('Views');
 MenuRegistry.appendMenuItem(MenuId.ViewContainerTitle, <ISubmenuItem>{
@@ -367,9 +368,14 @@ export class ViewPaneContainer extends Component implements IViewPaneContainer {
 		return this.paneItems.length;
 	}
 
-	private _menuActions?: ViewContainerMenuActions;
-	get menuActions(): CompositeMenuActions | undefined {
+	private _menuActions?: ViewContainerMenuActions | DataExplorerMenuActions;
+	get menuActions(): CompositeMenuActions | DataExplorerMenuActions | undefined {
 		return this._menuActions;
+	}
+
+	// SQL CARBON EDIT
+	set menuActions(menuActions: CompositeMenuActions | DataExplorerMenuActions | undefined) {
+		this._menuActions = menuActions;
 	}
 
 	constructor(

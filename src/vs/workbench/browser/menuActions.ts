@@ -10,7 +10,7 @@ import { MenuId, IMenuService, IMenu, SubmenuItemAction, IMenuActionOptions } fr
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { createAndFillInActionBarActions } from 'vs/platform/actions/browser/menuEntryActionViewItem';
 
-class MenuActions extends Disposable {
+export class MenuActions extends Disposable {
 
 	private readonly menu: IMenu;
 
