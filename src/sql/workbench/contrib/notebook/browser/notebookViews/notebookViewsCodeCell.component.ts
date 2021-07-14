@@ -79,6 +79,6 @@ export class NotebookViewsCellModel extends CellModel {
 		return super.outputs
 			.filter((output: nb.IDisplayResult) => output.data === undefined || output?.data['text/plain'] !== '<IPython.core.display.HTML object>')
 			.map((output: nb.ICellOutput) => ({ ...output }))
-			.map((output: nb.ICellOutput) => { output.metadata = { ...output.metadata, displayActionBar: false }; return output; });
+			.map((output: nb.ICellOutput) => { output.metadata = { ...output.metadata }; return output; });
 	}
 }

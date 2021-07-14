@@ -16,7 +16,6 @@ export interface ICheckboxOptions {
 	checked?: boolean;
 	onChange?: (val: boolean) => void;
 	ariaLabel?: string;
-	displayCheckmark?: boolean;
 }
 
 export interface ICheckboxStyles {
@@ -24,11 +23,8 @@ export interface ICheckboxStyles {
 }
 
 export class Checkbox extends Widget {
-	public readonly id: string;
-
 	private _el: HTMLInputElement;
-	private _label: HTMLLabelElement;
-	private _displayCheckmark: boolean;
+	private _label: HTMLSpanElement;
 	private disabledCheckboxForeground?: Color;
 
 	private _onChange = new Emitter<boolean>();
@@ -36,13 +32,11 @@ export class Checkbox extends Widget {
 
 	constructor(container: HTMLElement, opts: ICheckboxOptions) {
 		super();
-
-		this.id = generateUuid();
+		const id = generateUuid();
 		this._el = document.createElement('input');
-		this._el.id = this.id;
 		this._el.type = 'checkbox';
 		this._el.style.verticalAlign = 'middle';
-		this._el.id = this.id;
+		this._el.id = id;
 
 		if (opts.ariaLabel) {
 			this.ariaLabel = opts.ariaLabel;
@@ -55,9 +49,7 @@ export class Checkbox extends Widget {
 
 		this._label = document.createElement('label');
 		this._label.style.verticalAlign = 'middle';
-		this._label.htmlFor = this.id;
-
-		this._displayCheckmark = opts.displayCheckmark || true;
+		this._label.setAttribute('for', id);
 
 		this.label = opts.label;
 		this.enabled = opts.enabled ?? true;
@@ -72,7 +64,7 @@ export class Checkbox extends Widget {
 	}
 
 	public set label(val: string) {
-		this._label.innerHTML = val;
+		this._label.innerText = val;
 		// Default the aria label to the label if one wasn't specifically set by the user
 		if (!this.ariaLabel) {
 			this.ariaLabel = val;
@@ -135,11 +127,6 @@ export class Checkbox extends Widget {
 	public style(styles: ICheckboxStyles): void {
 		this.disabledCheckboxForeground = styles.disabledCheckboxForeground;
 		this.updateStyle();
-
-		if (this._displayCheckmark) {
-			this._el.style.display = 'flex';
-			this._el.style.webkitAppearance = 'none';
-		}
 	}
 
 	private updateStyle(): void {
