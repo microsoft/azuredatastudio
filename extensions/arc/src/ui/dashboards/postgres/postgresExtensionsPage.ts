@@ -128,7 +128,7 @@ export class PostgresExtensionsPage extends DashboardPage {
 				if (extArg) {
 					try {
 						this.addExtensionsButton.enabled = false;
-						let extensionList = this.extensionNames.join() + ',' + extArg;
+						let extensionList = this.extensionNames.length ? this.extensionNames.join() + ',' + extArg : extArg;
 						await vscode.window.withProgress(
 							{
 								location: vscode.ProgressLocation.Notification,
