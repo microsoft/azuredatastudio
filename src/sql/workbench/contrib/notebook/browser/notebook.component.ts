@@ -277,7 +277,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	}
 
 	protected fetchMore(event: IPageInfo): void {
-		if (event.endIndex !== this.cellsBuffer.length - 1) {
+		if (event.endIndex < this.cellsBuffer.length - 1 || event.endIndex === this.cells.length - 1) {
 			return;
 		}
 		this.isLoadingMoreCells = true;
@@ -378,6 +378,10 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			this._trustedAction.trusted = this._model.trustedMode;
 		}
 
+		if (change.changeType === NotebookChangeType.CellsModified) {
+			let endIndex = this.cellsBuffer.length;
+			this.cellsBuffer = this.cells.slice(0, endIndex + 1);
+		}
 		// Note: for now we just need to set dirty state and refresh the UI.
 		this.detectChanges();
 	}
