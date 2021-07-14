@@ -242,7 +242,7 @@ export class NotebookMarkdownRenderer {
 		} else if (href.slice(0, 2) === '..') {
 			if (process.platform === 'win32') {
 				// we need to format invalid href formats (ex. ....\file to ..\..\file)
-				// in order to resolve to absolute link
+				// in order to resolve to an absolute link
 				href = href.replace(/^(?!.*\.\\])\.\W/, '..\\');
 				return path.resolve(base, href);
 			} else {
