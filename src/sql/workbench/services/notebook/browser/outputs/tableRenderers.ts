@@ -14,7 +14,7 @@ import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { MouseWheelSupport } from 'sql/base/browser/ui/table/plugins/mousewheelTableScroll.plugin';
 import { AutoColumnSize } from 'sql/base/browser/ui/table/plugins/autoSizeColumns.plugin';
 import { AdditionalKeyBindings } from 'sql/base/browser/ui/table/plugins/additionalKeyBindings.plugin';
-import { RESULTS_GRID_DEFAULTS } from 'sql/workbench/contrib/query/common/resultsGrid.contribution';
+import { RESULTS_GRID_DEFAULTS } from 'sql/workbench/common/constants';
 import { values } from 'vs/base/common/collections';
 
 /**
@@ -58,10 +58,10 @@ export function renderDataResource(
 	let detailTable = new Table(tableContainer, {
 		dataProvider: tableResultsData, columns: columnsTransformed
 	}, {
-			rowHeight: RESULTS_GRID_DEFAULTS.rowHeight,
-			forceFitColumns: false,
-			defaultColumnWidth: 120
-		});
+		rowHeight: RESULTS_GRID_DEFAULTS.rowHeight,
+		forceFitColumns: false,
+		defaultColumnWidth: 120
+	});
 	detailTable.registerPlugin(rowNumberColumn);
 	detailTable.registerPlugin(new MouseWheelSupport());
 	detailTable.registerPlugin(new AutoColumnSize({ autoSizeOnRender: true }));
