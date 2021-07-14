@@ -50,7 +50,10 @@ export class AzureMonitorTreeDataProvider extends ResourceTreeDataProviderBase<a
 				providerName: 'LOGANALYTICS',
 				saveProfile: false,
 				options: {},
-				azureAccount: account.key.accountId
+				azureAccount: account.key.accountId,
+				azureTenantId: databaseServer.tenant,
+				azureResourceId: databaseServer.id,
+				azurePortalEndpoint: account.properties.providerSettings.settings.portalEndpoint
 			},
 			childProvider: 'LOGANALYTICS',
 			type: ExtensionNodeType.Server
