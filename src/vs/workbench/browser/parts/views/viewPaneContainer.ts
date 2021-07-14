@@ -367,8 +367,8 @@ export class ViewPaneContainer extends Component implements IViewPaneContainer {
 		return this.paneItems.length;
 	}
 
-	private _menuActions?: ViewContainerMenuActions | DataExplorerMenuActions;
-	get menuActions(): CompositeMenuActions | DataExplorerMenuActions | undefined {
+	private _menuActions?: ViewContainerMenuActions;
+	get menuActions(): CompositeMenuActions | undefined {
 		return this._menuActions;
 	}
 
