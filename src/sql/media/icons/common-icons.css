@@ -33,12 +33,6 @@
 	background: url("database_inverse.svg") center center no-repeat;
 }
 
-.vs-dark .codicon.icon-dashboard-view,
-.hc-black .codicon.icon-dashboard-view,
-.vs .codicon.icon-dashboard-view {
-	background: url("dashboard_view.svg") center center no-repeat;
-}
-
 .vs-dark .codicon.icon-dashboard-view::before,
 .hc-black .codicon.icon-dashboard-view::before,
 .vs .codicon.icon-dashboard-view::before {
