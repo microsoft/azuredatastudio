@@ -4307,7 +4307,7 @@ Error: {1}</source>
     <body>
       <trans-unit id="notebookEditor.name">
         <source xml:lang="en">Notebook Editor</source>
-        <target state="new">Notebook Editor</target>
+        <target state="translated">笔记本编辑器</target>
       </trans-unit>
     </body>
   </file>
@@ -5091,7 +5091,7 @@ Error: {1}</source>
     <body>
       <trans-unit id="queryEditor.name">
         <source xml:lang="en">Query Editor</source>
-        <target state="new">Query Editor</target>
+        <target state="translated">查询编辑器</target>
       </trans-unit>
     </body>
   </file>
