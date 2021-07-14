@@ -48,17 +48,16 @@ export class NewProjectDialog extends DialogBase {
 				this.showErrorMessage(constants.ProjectDirectoryAlreadyExistError(this.model.name, this.model.location));
 				return false;
 			}
+
+			if (await this.workspaceService.validateWorkspace() === false) {
+				return false;
+			}
+			return true;
 		}
 		catch (err) {
 			this.showErrorMessage(err?.message ? err.message : err);
 			return false;
 		}
-
-		if (await this.workspaceService.validateWorkspace() === false) {
-			return false;
-		}
-
-		return true;
 	}
 
 	override async onComplete(): Promise<void> {
