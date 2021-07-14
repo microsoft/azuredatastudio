@@ -18,6 +18,7 @@
 				</text-cell-component>
 			</div>
 		</div>
+		<loading-spinner [loading]="isLoadingMoreCells"></loading-spinner>
 		<div class="notebook-cell" *ngIf="(!cells || !cells.length) && !isLoading">
 			<placeholder-cell-component [cellModel]="cell" [model]="model">
 			</placeholder-cell-component>

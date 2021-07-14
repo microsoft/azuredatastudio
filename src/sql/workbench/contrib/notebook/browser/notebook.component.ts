@@ -281,9 +281,11 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			return;
 		}
 		this.isLoadingMoreCells = true;
-		let chunk: ICellModel[] = this.fetchNextChunk(this.cellsBuffer.length, 20);
-		this.cellsBuffer = this.cellsBuffer.concat(chunk);
-		this.isLoadingMoreCells = false;
+		setTimeout(() => {
+			let chunk: ICellModel[] = this.fetchNextChunk(this.cellsBuffer.length, 10);
+			this.cellsBuffer = this.cellsBuffer.concat(chunk);
+			this.isLoadingMoreCells = false;
+		}, 1000);
 	}
 
 	protected fetchNextChunk(startIndex: number, limit: number): ICellModel[] {
