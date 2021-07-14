@@ -185,7 +185,7 @@ export class ExtHostNotebookController implements ExtHostNotebookShape {
 
 	private static _convertNotebookRegistrationData(extension: IExtensionDescription, registration: vscode.NotebookRegistrationData | undefined): INotebookContributionData | undefined {
 		if (!registration) {
-			return;
+			return undefined; // {{SQL CARBON EDIT}} Strict nulls
 		}
 		const viewOptionsFilenamePattern = registration.filenamePattern
 			.map(pattern => typeConverters.NotebookExclusiveDocumentPattern.from(pattern))

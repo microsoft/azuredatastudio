@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { localize } from 'vs/nls';
@@ -229,7 +229,8 @@ export class FileWorkingCopyManager<S extends IStoredFileWorkingCopyModel, U ext
 		}
 
 		if (!target) {
-			return; // user canceled
+			// {{SQL CARBON EDIT}} Strict nulls
+			return undefined; // user canceled
 		}
 
 		// Just save if target is same as working copies own resource
