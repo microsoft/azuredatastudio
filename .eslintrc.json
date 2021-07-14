@@ -583,7 +583,7 @@
 					"@angular/*",
 					"rxjs/**",
 					"sanitize-html",
-					"**/sql/workbench/contrib/notebook/browser/outputs/widgets"
+					"ansi_up"
 				]
 			},
 			{
@@ -749,8 +749,7 @@
 					"vscode-textmate",
 					"vscode-oniguruma",
 					"iconv-lite-umd",
-					"jschardet",
-					"ansi_up"
+					"jschardet"
 				]
 			},
 			{
