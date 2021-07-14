@@ -235,12 +235,13 @@ export class NotebookMarkdownRenderer {
 		}
 		base = this._baseUrls[' ' + base];
 
+		href = href.replace(/^(?!.*\.\\])\.\W/, '..\\');
 		if (href.slice(0, 2) === '//') {
 			return base.replace(/:[\s\S]*/, ':') + href;
 		} else if (href.charAt(0) === '/') {
 			return base.replace(/(:\/*[^/]*)[\s\S]*/, '$1') + href;
 		} else if (href.slice(0, 2) === '..') {
-			return path.join(base, href);
+			return path.resolve(base, href);
 		} else {
 			return base + href;
 		}

@@ -56,7 +56,7 @@ suite('NotebookMarkdownRenderer', () => {
 		notebookMarkdownRenderer.setNotebookURI(URI.parse('maddy/temp/file1.txt'));
 		let result: HTMLElement = notebookMarkdownRenderer.renderMarkdown({ value: `[Link to relative path](../test/.build/someimageurl)`, isTrusted: true });
 		if (process.platform === 'win32') {
-			assert.strictEqual(result.innerHTML, `<p><a href="\\maddy\\test\\.build\\someimageurl" data-href="\\maddy\\test\\.build\\someimageurl" title="\\maddy\\test\\.build\\someimageurl">Link to relative path</a></p>`);
+			assert.strictEqual(result.innerHTML, `<p><a href="C:\\maddy\\test\\.build\\someimageurl" data-href="C:\\maddy\\test\\.build\\someimageurl" title="C:\\maddy\\test\\.build\\someimageurl">Link to relative path</a></p>`);
 		} else {
 			assert.strictEqual(result.innerHTML, `<p><a href="/maddy/test/.build/someimageurl" data-href="/maddy/test/.build/someimageurl" title="/maddy/test/.build/someimageurl">Link to relative path</a></p>`);
 		}
