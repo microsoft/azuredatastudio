@@ -545,7 +545,7 @@ export class CreateSqlMigrationServiceDialog {
 
 		this._copyKey1Button = this._view.modelBuilder.button().withProps({
 			iconPath: IconPathHelper.copy,
-			ariaLabel: constants.COPY_KEY
+			ariaLabel: constants.COPY_KEY,
 		}).component();
 
 		this._copyKey1Button.onDidClick((e) => {

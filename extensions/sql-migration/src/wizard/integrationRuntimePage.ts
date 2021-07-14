@@ -314,7 +314,7 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 
 		this._copy1 = this._view.modelBuilder.button().withProps({
 			iconPath: IconPathHelper.copy,
-			ariaLabel: constants.REFRESH,
+			ariaLabel: constants.COPY_KEY,
 		}).component();
 
 		this._copy1.onDidClick(async (e) => {
@@ -324,7 +324,7 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 
 		this._copy2 = this._view.modelBuilder.button().withProps({
 			iconPath: IconPathHelper.copy,
-			ariaLabel: constants.REFRESH,
+			ariaLabel: constants.COPY_KEY,
 		}).component();
 
 		this._copy2.onDidClick(async (e) => {
