@@ -68,8 +68,6 @@ const dataExplorerExtensionPoint: IExtensionPoint<{ [loc: string]: IUserFriendly
 export class DataExplorerContainerExtensionHandler implements IWorkbenchContribution {
 
 	private viewContainersRegistry: IViewContainersRegistry;
-	public static RESOURCE_DEPLOYMENT_CATEGORY = 'Deployment';
-	public static RESOURCE_DEPLOYMENT_COMMAND: string = 'azdata.resource.deploy';
 
 	constructor(
 		@IInstantiationService private instantiationService: IInstantiationService
