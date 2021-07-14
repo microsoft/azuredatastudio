@@ -4927,7 +4927,6 @@ declare module 'azdata' {
 
 		export interface ICellOutputMetadata {
 			azdata_chartOptions?: any;
-			displayActionBar?: boolean;
 		}
 
 		/**
