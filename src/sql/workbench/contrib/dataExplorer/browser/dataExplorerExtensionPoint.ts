@@ -78,6 +78,8 @@ interface IDataExplorerActionOptions extends IAction2Options {
 export class DataExplorerContainerExtensionHandler implements IWorkbenchContribution {
 
 	private viewContainersRegistry: IViewContainersRegistry;
+	public static RESOURCE_DEPLOYMENT_CATEGORY = 'Deployment';
+	public static RESOURCE_DEPLOYMENT_COMMAND: string = 'azdata.resource.deploy';
 
 	constructor(
 		@IInstantiationService private instantiationService: IInstantiationService
@@ -87,19 +89,19 @@ export class DataExplorerContainerExtensionHandler implements IWorkbenchContribu
 		this.registerExtensionAction({
 			id: 'azdata.resource.deploy',
 			title: { value: localize('resourceDeployment', 'New Deployment...'), original: 'New Deployment...' },
-			category: 'Deployment',
+			category: DataExplorerContainerExtensionHandler.RESOURCE_DEPLOYMENT_CATEGORY,
 			menu: [{
 				id: MenuId.ViewContainerTitle,
 				when: ContextKeyEqualsExpr.create('view', ConnectionViewletPanel.ID)
 			}, {
 				id: MenuId.ViewContainerTitle,
 				when: ContextKeyEqualsExpr.create('viewContainer', VIEWLET_ID),
-				group: '2_deployment',
+				group: 'deployment',
 				order: 1
 			}],
 			run: async (accessor: ServicesAccessor) => {
 				let commandService = accessor.get(ICommandService);
-				await commandService.executeCommand('azdata.resource.deploy');
+				await commandService.executeCommand(DataExplorerContainerExtensionHandler.RESOURCE_DEPLOYMENT_COMMAND);
 			}
 		});
 	}
