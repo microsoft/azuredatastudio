@@ -132,23 +132,13 @@ export abstract class ViewBase extends AngularDisposable implements IModelView {
 
 	removeFromContainer(containerId: string, itemConfig: IItemConfig): void {
 		this.logService.debug(`Queueing action to remove component ${itemConfig.componentShape.id} from container ${containerId}`);
-		const childDescriptor = this.modelStore.getComponentDescriptor(itemConfig.componentShape.id);
-		if (!childDescriptor) {
-			// This should ideally never happen but it's possible for a race condition to happen when adding/removing components quickly where
-			// the child component is unregistered after it is defined because a component is only unregistered when it's destroyed by Angular
-			// which can take a while and we don't wait on that to happen currently.
-			// While this happening isn't desirable there isn't much we can do here currently until that's fixed so for now just continue on since
-			// it doesn't typically seem to have any huge impacts when this does happen (which is generally rare)
-			this.logService.warn(`Could not find descriptor for child component ${itemConfig.componentShape.id} when removing from container ${containerId}`);
-			return;
-		}
 		this.queueAction(containerId, (component) => {
 			if (!component.removeFromContainer) {
 				this.logService.warn(`Container ${containerId} is trying to remove component ${itemConfig.componentShape.id} but does not implement removeFromContainer!`);
 				return;
 			}
 			this.logService.debug(`Removing component ${itemConfig.componentShape.id} from container ${containerId}`);
-			component.removeFromContainer(childDescriptor);
+			component.removeFromContainer({ id: itemConfig.componentShape.id, type: componentRegistry.getIdForTypeMapping(itemConfig.componentShape.type) });
 			this.removeComponent(itemConfig.componentShape);
 		});
 	}
