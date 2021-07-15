@@ -458,11 +458,11 @@ export class MainThreadDataProtocol extends Disposable implements MainThreadData
 		const self = this;
 		this._assessmentService.registerProvider(providerId, <azdata.SqlAssessmentServicesProvider>{
 			providerId: providerId,
-			assessmentInvoke(connectionUri: string, targetType: number): Thenable<azdata.SqlAssessmentResult> {
-				return self._proxy.$assessmentInvoke(handle, connectionUri, targetType);
+			assessmentInvoke(connectionUri: string, targetType: number, databases: string[]): Thenable<azdata.SqlAssessmentResult> {
+				return self._proxy.$assessmentInvoke(handle, connectionUri, targetType, databases);
 			},
-			getAssessmentItems(connectionUri: string, targetType: number): Thenable<azdata.SqlAssessmentResult> {
-				return self._proxy.$getAssessmentItems(handle, connectionUri, targetType);
+			getAssessmentItems(connectionUri: string, targetType: number, databases: string[]): Thenable<azdata.SqlAssessmentResult> {
+				return self._proxy.$getAssessmentItems(handle, connectionUri, targetType, databases);
 			},
 			generateAssessmentScript(items: azdata.SqlAssessmentResultItem[]): Thenable<azdata.ResultStatus> {
 				return self._proxy.$generateAssessmentScript(handle, items);

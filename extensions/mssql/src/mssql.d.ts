@@ -503,8 +503,8 @@ export interface ListRegisteredServersResult {
 
 
 export interface ISqlAssessmentService {
-	assessmentInvoke(ownerUri: string, targetType: azdata.sqlAssessment.SqlAssessmentTargetType): Promise<azdata.SqlAssessmentResult>;
-	getAssessmentItems(ownerUri: string, targetType: azdata.sqlAssessment.SqlAssessmentTargetType): Promise<azdata.SqlAssessmentResult>;
+	assessmentInvoke(ownerUri: string, targetType: azdata.sqlAssessment.SqlAssessmentTargetType, databases: string[]): Promise<azdata.SqlAssessmentResult>;
+	getAssessmentItems(ownerUri: string, targetType: azdata.sqlAssessment.SqlAssessmentTargetType, databases: string[]): Promise<azdata.SqlAssessmentResult>;
 	generateAssessmentScript(items: azdata.SqlAssessmentResultItem[], targetServerName: string, targetDatabaseName: string, taskExecutionMode: azdata.TaskExecutionMode): Promise<azdata.ResultStatus>;
 }
 
@@ -547,5 +547,5 @@ export interface SqlMigrationAssessmentResult extends azdata.ResultStatus {
 }
 
 export interface ISqlMigrationService {
-	getAssessments(ownerUri: string, databases?: string[]): Promise<SqlMigrationAssessmentResult | undefined>;
+	getAssessments(ownerUri: string, databases: string[]): Promise<SqlMigrationAssessmentResult | undefined>;
 }
