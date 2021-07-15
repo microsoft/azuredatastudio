@@ -294,7 +294,7 @@ export class Button extends Disposable implements IButton {
 		} else {
 			this._element.classList.add('disabled');
 			this._element.setAttribute('aria-disabled', String(true));
-			removeTabIndexAndUpdateFocus(this._element); // {{SQL CARBON EDIT}} - remove tabindex when the disabled otherwise disabled control is still keyboard focusable
+			removeTabIndexAndUpdateFocus(this._element); // {{SQL CARBON EDIT}} - remove tabindex when disabled otherwise disabled control is still keyboard focusable.
 		}
 		this.applyStyles(); // {{SQL CARBON EDIT}}
 	}
