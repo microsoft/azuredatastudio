@@ -562,8 +562,8 @@
     <trans-unit id="arc.addExtensions">
       <source xml:lang="en">Add extensions</source>
     </trans-unit>
-    <trans-unit id="arc.dropExtension">
-      <source xml:lang="en">Drop extension</source>
+    <trans-unit id="arc.dropExtensions">
+      <source xml:lang="en">Drop extensions</source>
     </trans-unit>
     <trans-unit id="arc.openInAzurePortal">
       <source xml:lang="en">Open in Azure Portal</source>
@@ -1090,8 +1090,8 @@
     <trans-unit id="arc.instanceUpdated">
       <source xml:lang="en">Instance '{0}' updated</source>
     </trans-unit>
-    <trans-unit id="arc.extensionDropped">
-      <source xml:lang="en">Extension '{0}' deleted</source>
+    <trans-unit id="arc.extensionsDropped">
+      <source xml:lang="en">Extensions '{0}' dropped</source>
     </trans-unit>
     <trans-unit id="arc.extensionsAdded">
       <source xml:lang="en">Extensions '{0}' added</source>
