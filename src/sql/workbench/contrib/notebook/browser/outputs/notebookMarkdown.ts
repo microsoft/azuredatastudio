@@ -244,7 +244,9 @@ export class NotebookMarkdownRenderer {
 			if (isWindows) {
 				// we need to format invalid href formats (ex. ....\file to ..\..\file)
 				// in order to resolve to an absolute link
-				href = href.replace(/^(?!.*\.\\])\.\W/, '..\\');
+				// Test that documents issue [Follow up]:
+				// 'marked js compiles relative link incorrectly'
+				href = href.replace(/\.\.(?=\.\.)/g, '..\\');
 				return path.resolve(base, href);
 			} else {
 				return path.join(base + href);

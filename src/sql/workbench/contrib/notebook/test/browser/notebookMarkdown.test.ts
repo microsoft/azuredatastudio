@@ -59,15 +59,16 @@ suite('NotebookMarkdownRenderer', () => {
 		if (process.platform === 'win32') {
 			let fullPath = path.resolve('.');
 			let diskDrive = fullPath.substring(0, fullPath.indexOf(':') + 1);
-			if (diskDrive) {
-				assert.strictEqual(result.innerHTML, `<p><a href="${diskDrive}\\foo\\test\\.build\\someimageurl" data-href="${diskDrive}\\foo\\test\\.build\\someimageurl" title="${diskDrive}\\foo\\test\\.build\\someimageurl">Link to relative path</a></p>`);
-			} else {
-				// network paths
-				assert.strictEqual(result.innerHTML, `<p><a href="${fullPath}\\foo\\test\\.build\\someimageurl" data-href="${fullPath}\\foo\\test\\.build\\someimageurl" title="${fullPath}\\foo\\test\\.build\\someimageurl">Link to relative path</a></p>`);
-			}
+			assert.strictEqual(result.innerHTML, `<p><a href="${diskDrive}\\foo\\test\\.build\\someimageurl" data-href="${diskDrive}\\foo\\test\\.build\\someimageurl" title="${diskDrive}\\foo\\test\\.build\\someimageurl">Link to relative path</a></p>`);
 		} else {
 			assert.strictEqual(result.innerHTML, `<p><a href="/foo/test/.build/someimageurl" data-href="/foo/test/.build/someimageurl" title="/foo/test/.build/someimageurl">Link to relative path</a></p>`);
 		}
+	});
+
+	// marked js test that alters the relative path requiring regex replace to resolve path properly
+	test('marked js compiles relative link incorrectly', () => {
+		const markedPath = marked.parse('..\\..\\test.ipynb');
+		assert.strict(markedPath, '<p>....\test.ipynb</p>');
 	});
 
 	test('cell attachment image', () => {
