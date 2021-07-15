@@ -774,8 +774,8 @@ declare module 'azdata' {
 	}
 
 	export interface SqlAssessmentServicesProvider extends DataProvider {
-		assessmentInvoke(ownerUri: string, targetType: sqlAssessment.SqlAssessmentTargetType, databases: string[]): Promise<SqlAssessmentResult>;
-		getAssessmentItems(ownerUri: string, targetType: sqlAssessment.SqlAssessmentTargetType, databases: string[]): Promise<SqlAssessmentResult>;
+		assessmentInvoke(ownerUri: string, targetType: sqlAssessment.SqlAssessmentTargetType): Promise<SqlAssessmentResult>;
+		getAssessmentItems(ownerUri: string, targetType: sqlAssessment.SqlAssessmentTargetType): Promise<SqlAssessmentResult>;
 		generateAssessmentScript(items: SqlAssessmentResultItem[]): Promise<ResultStatus>;
 	}
 

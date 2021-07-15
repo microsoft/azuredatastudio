@@ -498,12 +498,12 @@ export abstract class ExtHostDataProtocolShape {
 	/**
 	* Perform an assessment
 	*/
-	$assessmentInvoke(handle: number, connectionUri: string, targetType: number, databases: string[]): Thenable<azdata.SqlAssessmentResult> { throw ni(); }
+	$assessmentInvoke(handle: number, connectionUri: string, targetType: number): Thenable<azdata.SqlAssessmentResult> { throw ni(); }
 
 	/**
 	 * Get applicable assessment rules
 	 */
-	$getAssessmentItems(handle: number, connectionUri: string, targetType: number, databases: string[]): Thenable<azdata.SqlAssessmentResult> { throw ni(); }
+	$getAssessmentItems(handle: number, connectionUri: string, targetType: number): Thenable<azdata.SqlAssessmentResult> { throw ni(); }
 
 	/**
 	 * Generate an assessment script based on recent results

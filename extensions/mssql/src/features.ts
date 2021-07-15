@@ -876,8 +876,8 @@ export class SqlAssessmentServicesFeature extends SqlOpsFeature<undefined> {
 	protected registerProvider(options: undefined): Disposable {
 		const client = this._client;
 
-		let assessmentInvoke = async (ownerUri: string, targetType: azdata.sqlAssessment.SqlAssessmentTargetType, databases: string[]): Promise<azdata.SqlAssessmentResult> => {
-			let params: contracts.SqlAssessmentParams = { ownerUri: ownerUri, targetType: targetType, databases: databases };
+		let assessmentInvoke = async (ownerUri: string, targetType: azdata.sqlAssessment.SqlAssessmentTargetType): Promise<azdata.SqlAssessmentResult> => {
+			let params: contracts.SqlAssessmentParams = { ownerUri: ownerUri, targetType: targetType };
 			try {
 				return client.sendRequest(contracts.SqlAssessmentInvokeRequest.type, params);
 			}
@@ -888,8 +888,8 @@ export class SqlAssessmentServicesFeature extends SqlOpsFeature<undefined> {
 			return undefined;
 		};
 
-		let getAssessmentItems = async (ownerUri: string, targetType: azdata.sqlAssessment.SqlAssessmentTargetType, databases: string[]): Promise<azdata.SqlAssessmentResult> => {
-			let params: contracts.SqlAssessmentParams = { ownerUri: ownerUri, targetType: targetType, databases: databases };
+		let getAssessmentItems = async (ownerUri: string, targetType: azdata.sqlAssessment.SqlAssessmentTargetType): Promise<azdata.SqlAssessmentResult> => {
+			let params: contracts.SqlAssessmentParams = { ownerUri: ownerUri, targetType: targetType };
 			try {
 				return client.sendRequest(contracts.GetSqlAssessmentItemsRequest.type, params);
 			}
