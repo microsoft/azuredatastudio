@@ -12,7 +12,7 @@ import { Event as BaseEvent, Emitter } from 'vs/base/common/event';
 import { Disposable, IDisposable } from 'vs/base/common/lifecycle';
 import { Gesture, EventType as TouchEventType } from 'vs/base/browser/touch';
 import { renderLabelWithIcons } from 'vs/base/browser/ui/iconLabel/iconLabels';
-import { addDisposableListener, IFocusTracker, EventType, EventHelper, trackFocus, reset, removeTabIndexAndUpdateFocus } from 'vs/base/browser/dom';
+import { addDisposableListener, IFocusTracker, EventType, EventHelper, trackFocus, reset, removeTabIndexAndUpdateFocus } from 'vs/base/browser/dom'; // {{SQL CARBON EDIT}}
 import { IContextMenuProvider } from 'vs/base/browser/contextmenu';
 import { Action, IAction, IActionRunner } from 'vs/base/common/actions';
 import { CSSIcon, Codicon } from 'vs/base/common/codicons';
