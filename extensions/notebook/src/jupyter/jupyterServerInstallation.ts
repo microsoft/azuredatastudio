@@ -121,6 +121,7 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 	private _oldPythonExecutable: string | undefined;
 	private _oldPythonInstallationPath: string | undefined;
 	private _oldUserInstalledPipPackages: PythonPkgDetails[] = [];
+	private _upgradePrompted: boolean = false;
 
 	private _installInProgress: boolean;
 	private _installCompletion: Deferred<void>;
@@ -506,7 +507,8 @@ export class JupyterServerInstallation implements IJupyterServerInstallation {
 		let isPythonInstalled = JupyterServerInstallation.isPythonInstalled();
 
 		// If the latest version of ADS-Python is not installed, then prompt the user to upgrade
-		if (isPythonInstalled && !this._usingExistingPython && utils.compareVersions(await this.getInstalledPythonVersion(this._pythonExecutable), constants.pythonVersion) < 0) {
+		if (!this._upgradePrompted && isPythonInstalled && !this._usingExistingPython && utils.compareVersions(await this.getInstalledPythonVersion(this._pythonExecutable), constants.pythonVersion) < 0) {
+			this._upgradePrompted = true;
 			this.promptUserForPythonUpgrade();
 		}
 
