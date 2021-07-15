@@ -34,9 +34,6 @@ export class NewProjectDialog extends DialogBase {
 	}
 
 	async validate(): Promise<boolean> {
-		if (await this.workspaceService.validateWorkspace() === false) {
-			return false;
-		}
 		try {
 			// the selected location should be an existing directory
 			const parentDirectoryExists = await directoryExist(this.model.location);
@@ -52,6 +49,9 @@ export class NewProjectDialog extends DialogBase {
 				return false;
 			}
 
+			if (await this.workspaceService.validateWorkspace() === false) {
+				return false;
+			}
 			return true;
 		}
 		catch (err) {
