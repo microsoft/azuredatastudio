@@ -85,7 +85,7 @@ export class NewProjectDialog extends DialogBase {
 
 	protected async initialize(view: azdataType.ModelView): Promise<void> {
 		const allProjectTypes = await this.workspaceService.getAllProjectTypes();
-		const projectTypeRadioCardGroup = view.modelBuilder.radioCardGroup().withProperties<azdataType.RadioCardGroupComponentProperties>({
+		const projectTypeRadioCardGroup = view.modelBuilder.radioCardGroup().withProps({
 			cards: allProjectTypes.map((projectType: IProjectType) => {
 				return <azdataType.RadioCard>{
 					id: projectType.id,
@@ -131,7 +131,7 @@ export class NewProjectDialog extends DialogBase {
 			}
 		}));
 
-		const projectNameTextBox = view.modelBuilder.inputBox().withProperties<azdataType.InputBoxProperties>({
+		const projectNameTextBox = view.modelBuilder.inputBox().withProps({
 			ariaLabel: constants.ProjectNameTitle,
 			placeHolder: constants.ProjectNamePlaceholder,
 			required: true,
@@ -143,7 +143,7 @@ export class NewProjectDialog extends DialogBase {
 			projectNameTextBox.updateProperty('title', projectNameTextBox.value);
 		}));
 
-		const locationTextBox = view.modelBuilder.inputBox().withProperties<azdataType.InputBoxProperties>({
+		const locationTextBox = view.modelBuilder.inputBox().withProps({
 			ariaLabel: constants.ProjectLocationTitle,
 			placeHolder: constants.ProjectLocationPlaceholder,
 			required: true,
@@ -155,7 +155,7 @@ export class NewProjectDialog extends DialogBase {
 			locationTextBox.updateProperty('title', locationTextBox.value);
 		}));
 
-		const browseFolderButton = view.modelBuilder.button().withProperties<azdataType.ButtonProperties>({
+		const browseFolderButton = view.modelBuilder.button().withProps({
 			ariaLabel: constants.BrowseButtonText,
 			iconPath: IconPathHelper.folder,
 			height: '16px',
@@ -176,7 +176,7 @@ export class NewProjectDialog extends DialogBase {
 			this.model.location = selectedFolder;
 		}));
 
-		const targetPlatformDropdown = view.modelBuilder.dropDown().withProperties<azdataType.DropDownProperties>({
+		const targetPlatformDropdown = view.modelBuilder.dropDown().withProps({
 			values: allProjectTypes[0].targetPlatforms,
 			value: this.getDefaultTargetPlatform(allProjectTypes[0]),
 			ariaLabel: constants.TargetPlatform,
