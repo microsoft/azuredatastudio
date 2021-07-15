@@ -13,6 +13,9 @@
       <Item ItemId=";extensions/kusto/dist/features.kusto.accountDoesNotExist" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Account does not exist.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Conta não existe.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -83,7 +86,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Installed {0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[{0} instalado]]></Val>
+            <Val><![CDATA[Instalado {0}]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -110,7 +113,7 @@
         <Str Cat="Text">
           <Val><![CDATA[{0} Started]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[{0} iniciado]]></Val>
+            <Val><![CDATA[{0} Iniciado]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -119,7 +122,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Starting {0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Iniciando {0}]]></Val>
+            <Val><![CDATA[A partir de {0}]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -127,6 +130,9 @@
       <Item ItemId=";extensions/kusto/dist/main.kusto.unsupportedPlatform" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Unsupported platform]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Plataforma não suportada]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -224,7 +230,7 @@
         <Str Cat="Text">
           <Val><![CDATA[View Known Issues]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Exibir os Problemas Conhecidos]]></Val>
+            <Val><![CDATA[Exibir Problemas Conhecidos]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -233,7 +239,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Database Name]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Nome do Banco de Dados]]></Val>
+            <Val><![CDATA[Nome do Banco de dados]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -250,12 +256,18 @@
       <Item ItemId=";extensions/kusto/package.cloud.serverProperties.diskCacheCapacity" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[% of Cluster data capacity used]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[% da capacidade de dados do cluster usada]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/kusto/package.cloud.serverProperties.machinesTotal" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Total Machines in the cluster]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Total de Máquinas no cluster]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -289,6 +301,9 @@
       <Item ItemId=";extensions/kusto/package.kusto.configuration.title" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[KUSTO configuration]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Configuração KUSTO]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -305,7 +320,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Application name]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Nome do aplicativo]]></Val>
+            <Val><![CDATA[Nome da Aplicação]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -332,7 +347,7 @@
         <Str Cat="Text">
           <Val><![CDATA[User Authentication]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Autenticação de Usuário]]></Val>
+            <Val><![CDATA[Autenticação de usuário]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -340,6 +355,9 @@
       <Item ItemId=";extensions/kusto/package.kusto.connectionOptions.authType.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Specifies the method of authenticating with Kusto Server]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Especifica o método de autenticação com o servidor Kusto]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -347,7 +365,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Authentication type]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Tipo de autenticação]]></Val>
+            <Val><![CDATA[Tipo de Autenticação]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -365,7 +383,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Connect retry count]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Contagem de nova tentativa de conexão]]></Val>
+            <Val><![CDATA[Contagem de tentativas de conexão]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -383,7 +401,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Connect retry interval]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Intervalo de nova tentativa de conexão]]></Val>
+            <Val><![CDATA[Intervalo de tentativa de conexão]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -427,6 +445,9 @@
       <Item ItemId=";extensions/kusto/package.kusto.connectionOptions.databaseName.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The name of the initial catalog or database in the data source]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[O nome do catálogo ou banco de dados inicial na fonte de dados]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -434,7 +455,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Database]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Banco de dados]]></Val>
+            <Val><![CDATA[Base de dados]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -442,6 +463,9 @@
       <Item ItemId=";extensions/kusto/package.kusto.connectionOptions.failoverPartner.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The name or network address of the instance of Kusto Server that acts as a failover partner]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[O nome ou endereço de rede da instância do Servidor Kusto que atua como um parceiro de failover]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -475,6 +499,9 @@
       <Item ItemId=";extensions/kusto/package.kusto.connectionOptions.serverName.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Kusto cluster name]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Nome do cluster Kusto]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -508,6 +535,9 @@
       <Item ItemId=";extensions/kusto/package.kusto.connectionOptions.workstationId.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The name of the workstation connecting to Kusto Server]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[O nome da estação de trabalho conectada ao Servidor Kusto]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -515,7 +545,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Workstation Id]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[ID da estação de trabalho]]></Val>
+            <Val><![CDATA[Id da Estação de trabalho]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -587,7 +617,7 @@
         <Str Cat="Text">
           <Val><![CDATA[New Notebook]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Novo bloco de anotações]]></Val>
+            <Val><![CDATA[Novo Notebook]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

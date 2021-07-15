@@ -29,7 +29,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Failed]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Com falha]]></Val>
+            <Val><![CDATA[Ocorreu um erro]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -253,6 +253,9 @@
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.currentTargetPlatform" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Target platform of the project {0} is now {1}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[A plataforma de destino do projeto {0} agora é {1}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -317,7 +320,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Data Sources]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Fontes de Dados]]></Val>
+            <Val><![CDATA[Fontes dos dados]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -325,6 +328,9 @@
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.databaseLocation" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Database location is required for adding a reference to a database]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[A localização do banco de dados é necessária para adicionar uma referência a um banco de dados]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -367,6 +373,9 @@
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.databaseProject" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Database project]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Projeto do banco de dados]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -524,7 +533,7 @@
         <Str Cat="Text">
           <Val><![CDATA[SQL Database]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Banco de Dados SQL]]></Val>
+            <Val><![CDATA[Banco de dados SQL]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -538,6 +547,9 @@
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.enterNewValueForVar" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Enter new value for variable '{0}']]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Inserir novo valor para a variável '{0}']]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -620,7 +632,7 @@
         <Str Cat="Text">
           <Val><![CDATA[File Format]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Formato de Arquivo]]></Val>
+            <Val><![CDATA[Formato do arquivo]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -637,6 +649,9 @@
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.fileOrFolderDoesNotExist" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[File or directory '{0}' doesn't exist]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[O arquivo ou diretório '{0}' não existe]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
