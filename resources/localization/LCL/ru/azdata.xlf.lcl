@@ -22,12 +22,18 @@
       <Item ItemId=";extensions/azdata/dist/localizedConstants.azdata.acceptEula" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[User requested to be prompted for accepting EULA by invoking 'Azure Data CLI: Accept EULA' command]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Пользователю требуется запросить принятие лицензионного соглашения, вызвав команду "Azure Data CLI: принять условия лицензионного соглашения"]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azdata/dist/localizedConstants.azdata.askLater" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Ask Later]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Спросить позже]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -35,7 +41,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Azure Data CLI]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Azure Data CLI]]></Val>
+            <Val><![CDATA[Azure Data CLI]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -43,48 +49,72 @@
       <Item ItemId=";extensions/azdata/dist/localizedConstants.azdata.azdataInstalled" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Azure Data CLI was successfully installed. Restarting Azure Data Studio is required to complete configuration - features will not be activated until this is done.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Служба Azure Data CLI успешно установлена. Перезапуск Azure Data Studio необходим для завершения настройки — функции не будут активированы, пока это не будет сделано.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azdata/dist/localizedConstants.azdata.azdataUpdated" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Azure Data CLI was successfully updated to version: {0}.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Служба Azure Data CLI успешно обновлена до версии: {0}.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azdata/dist/localizedConstants.azdata.azdataUserSettingReadLog" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Azure Data CLI user setting: {0}.{1} read, value: {2}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Пользовательский параметр Azure Data CLI: {0}.{1} чтение, значение: {2}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azdata/dist/localizedConstants.azdata.azdataUserSettingUpdatedLog" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Azure Data CLI user setting: {0}.{1} updated, newValue: {2}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Пользовательский параметр Azure Data CLI: {0}. {1} обновлено, newValue: {2}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azdata/dist/localizedConstants.azdata.checkingLatestAzdataVersion" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Checking for latest available version of Azure Data CLI]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Проверка последней доступной версии Azure Data CLI]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azdata/dist/localizedConstants.azdata.couldNotFindAzdata" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Could not find Azure Data CLI. Error: {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Не удалось найти Azure Data CLI. Ошибка: {0}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azdata/dist/localizedConstants.azdata.couldNotFindAzdataWithPrompt" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Could not find Azure Data CLI, install it now? If not then some features will not be able to function.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Не удалось найти Azure Data CLI, установить сейчас? Если нет, то некоторые функции не смогут работать.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azdata/dist/localizedConstants.azdata.currentlyInstalledVersionIsLatest" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Currently installed version of Azure Data CLI: {0} is same or newer than any other version available]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Установленная в настоящее время версия Azure Data CLI: {0} или более новая, чем любая другая доступная версия]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -109,6 +139,9 @@
       <Item ItemId=";extensions/azdata/dist/localizedConstants.azdata.downloadError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Error while downloading]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Ошибка при скачивании]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -124,78 +157,117 @@
       <Item ItemId=";extensions/azdata/dist/localizedConstants.azdata.downloadingProgressMb" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Downloading ({0} / {1} MB)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Выполняется скачивание ({0} / {1} МБ)]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azdata/dist/localizedConstants.azdata.downloadingTo" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Downloading {0} from {1} to {2}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Идет скачивание {0} из {1} в {2}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azdata/dist/localizedConstants.azdata.endpointOrNamespaceRequired" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Either an endpoint or a namespace must be specified]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Необходимо указать конечную точку или пространство имен]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azdata/dist/localizedConstants.azdata.eulaAcceptedStateOnStartup" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA['EULA Accepted' state on startup: {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Состояние "Лицензионное соглашение принято" при запуске: {0}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azdata/dist/localizedConstants.azdata.eulaNotAccepted" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Microsoft Privacy statement and Azure Data CLI license terms have not been accepted. Execute the command: [Azure Data CLI: Accept EULA]5D;(command:azdata.acceptEula) to accept EULA to enable the features that requires Azure Data CLI.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Заявление о конфиденциальности Майкрософт и условия лицензии Azure Data CLI не приняты. Выполните команду: [Azure Data CLI: принять условия лицензионного соглашения]5D;(command:azdata.acceptEula), чтобы принять условия лицензионного соглашения для включения функций, требующих Azure Data CLI.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azdata/dist/localizedConstants.azdata.executingCommand" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Executing command: '{0} {1}']]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Выполнение команды: "{0} {1}"]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azdata/dist/localizedConstants.azdata.failedToParseReleaseInfo" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Failed to parse the JSON of contents at: {0}.]D;]A;File contents:]D;]A;{1}]D;]A;Error: {2}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Не удалось проанализировать JSON содержимого: в {0}.]D;]A;Содержимое файла:]D;]A;{1}]D;]A;Ошибка: {2}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azdata/dist/localizedConstants.azdata.foundExistingAzdata" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Found existing Azure Data CLI installation of version (v{0}) at path:{1}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Найдена существующая установка Azure Data CLI версии (v{0}) в пути:{1}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azdata/dist/localizedConstants.azdata.gettingTextContentsOfUrl" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Getting text contents of resource at URL {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Получение текстового содержимого ресурса по URL-адресу {0}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azdata/dist/localizedConstants.azdata.installError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Error installing Azure Data CLI: {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Ошибка при установке Azure Data CLI: {0}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azdata/dist/localizedConstants.azdata.installingAzdata" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Installing Azure Data CLI...]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Идет установка Azure Data CLI...]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azdata/dist/localizedConstants.azdata.latestAzdataVersionAvailable" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Latest available Azure Data CLI version: {0}.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Последняя доступная версия Azure Data CLI: {0}.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azdata/dist/localizedConstants.azdata.missingRequiredVersion" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Azure Data CLI >= {0} is required for this feature. Run the 'Azure Data CLI: Check for Update' command to install this and then try again.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Для этой функции требуется Azure Data CLI >= {0}. Запустите команду "Azure Data CLI: проверка на наличие обновления", чтобы установить ее, а затем повторите попытку.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -211,162 +283,243 @@
       <Item ItemId=";extensions/azdata/dist/localizedConstants.azdata.noAzdata" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[No Azure Data CLI is available, run the command 'Azure Data CLI: Install' to enable the features that require it.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Служба Azure Data CLI недоступна, запустите команду "Azure Data CLI: установить", чтобы включить необходимые функции.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azdata/dist/localizedConstants.azdata.noAzdataWithLink" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[No Azure Data CLI is available, [install the Azure Data CLI]5D;(command:azdata.install) to enable the features that require it.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Служба Azure Data CLI недоступна, [установите Azure Data CLI]5D;(command:azdata.install), чтобы включить необходимые функции.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azdata/dist/localizedConstants.azdata.noDownloadLink" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[No download link available for platform '{0}']D;]A;Release info: ${1}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Нет доступной ссылки для скачивания для платформы "{0}"]D;]A;Версия выпуска: ${1}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azdata/dist/localizedConstants.azdata.noReleaseVersion" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[No release version available for platform '{0}']D;]A;Release info: ${1}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Нет доступной версии выпуска для платформы "{0}"]D;]A;Версия выпуска: ${1}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azdata/dist/localizedConstants.azdata.platformUnsupported" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Platform '{0}' is currently unsupported]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Платформа "{0}" сейчас не поддерживается]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azdata/dist/localizedConstants.azdata.promptForAzdataUpdate" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[A new version of Azure Data CLI ( {0} ) is available, do you wish to update to it now?]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Доступна новая версия Azure Data CLI ({0}). Обновить ее сейчас?]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azdata/dist/localizedConstants.azdata.promptForEula" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[It is required to accept the [Microsoft Privacy Statement]5D;({0}) and the [Azure Data CLI license terms]5D;({1}) to use this extension. Declining this will result in some features not working.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Для использования этого расширения необходимо принять [Заявление о конфиденциальности Майкрософт]5D;({0}) и [условия лицензии Azure Data CLI]5D; ({1}). Отказ от этого приведет к тому, что некоторые функции не будут работать.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azdata/dist/localizedConstants.azdata.promptForEulaResponse" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[User response to EULA prompt: {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Ответ пользователя на запрос лицензионного соглашения: {0}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azdata/dist/localizedConstants.azdata.promptForRequiredAzdataUpdate" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[This extension requires Azure Data CLI >= {0} to be installed, do you wish to update to the latest version ({1}) now? If you do not then some functionality may not work.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Для этого расширения требуется установить Azure Data CLI >= {0}, чтобы выполнить обновление до последней версии ({1}) сейчас? В противном случае некоторые функции могут не работать.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azdata/dist/localizedConstants.azdata.promptLog" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Prompting the user to accept the following: {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Пользователю будет предложено принять следующее: {0}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azdata/dist/localizedConstants.azdata.requiredVersionNotAvailable" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[This extension requires Azure Data CLI >= {0} to be installed, but the current version available is only {1}. Install the correct version manually from [here]5D;(https://docs.microsoft.com/sql/azdata/install/deploy-install-azdata) and then restart Azure Data Studio.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Для этого расширения требуется установка Azure Data CLI >= {0}, однако доступна только текущая версия {1}. Установите правильную версию вручную [отсюда]5D;(https://docs.microsoft.com/sql/azdata/install/deploy-install-azdata), а затем перезапустите Azure Data Studio.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azdata/dist/localizedConstants.azdata.searchingForAzdata" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Searching for existing Azure Data CLI installation...]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Поиск существующей установки Azure Data CLI...]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azdata/dist/localizedConstants.azdata.skipInstall" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Skipping installation of Azure Data CLI, since the operation was not user requested and config option: {0}.{1} is {2}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Пропущена установка Azure Data CLI, так как операция не была запрошена пользователем, а параметр конфигурации: {0}. {1} — {2}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azdata/dist/localizedConstants.azdata.skipRequiredUpdate" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Skipping required update of Azure Data CLI, since the operation was not user requested and config option: {0}.{1} is {2}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Пропущено необходимое обновление Azure Data CLI, так как операция не была запрошена пользователем, а параметр конфигурации: {0}. {1} — {2}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azdata/dist/localizedConstants.azdata.skipUpdate" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Skipping update of Azure Data CLI, since the operation was not user requested and config option: {0}.{1} is {2}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Пропущено обновление Azure Data CLI, так как операция не была запрошена пользователем, а параметр конфигурации: {0}. {1} — {2}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azdata/dist/localizedConstants.azdata.stderrOutput" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[stderr: {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[stderr: {0}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azdata/dist/localizedConstants.azdata.stdoutOutput" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[stdout: {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[stdout: {0}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azdata/dist/localizedConstants.azdata.unexpectedCommandError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Unexpected error executing command: {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Непредвиденная ошибка при выполнении команды: {0}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azdata/dist/localizedConstants.azdata.unexpectedExitCode" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Unexpected exit code from command: {1} ({0})]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Непредвиденный код выхода из команды: {1} ({0})]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azdata/dist/localizedConstants.azdata.updateCheckSkipped" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[No check for new Azure Data CLI version availability performed as Azure Data CLI was not found to be installed]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Проверка доступности новой версии Azure Data CLI не выполнена, так как не удалось установить Azure Data CLI]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azdata/dist/localizedConstants.azdata.updateError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Error updating Azure Data CLI: {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Ошибка при обновлении Azure Data CLI: {0}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azdata/dist/localizedConstants.azdata.updatingAzdata" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Updating Azure Data CLI...]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Обновление Azure Data CLI...]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azdata/dist/localizedConstants.azdata.userRequestedInstall" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[User requested to install Azure Data CLI using 'Azure Data CLI: Install' command]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Пользователь запросил установку Azure Data CLI с помощью команды "Azure Data CLI: установка"]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azdata/dist/localizedConstants.azdata.userRequestedUpdate" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[User requested to update Azure Data CLI using 'Azure Data CLI: Check for Update' command]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Пользователь запросил обновление Azure CLI с помощью команды "Azure Data CLI: проверка на наличие обновления"]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azdata/dist/localizedConstants.azdata.userResponseInstall" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[User Response on prompt to install Azure Data CLI: {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Ответ пользователя при запросе на установку Azure Data CLI: {0}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azdata/dist/localizedConstants.azdata.userResponseUpdate" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[User Response on prompt to update Azure Data CLI: {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Ответ пользователя при запросе на обновление Azure Data CLI: {0}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azdata/dist/localizedConstants.azdata.versionForUpdate" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Found version: {0} that Azure Data CLI can be updated to from current version: {1}.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Найденная версия: {0}, до которой можно обновить Azure Data CLI с текущей версии: {1}.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -382,24 +535,36 @@
       <Item ItemId=";extensions/azdata/package.azdata.acceptEula.command.name" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Accept Eula]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Принять лицензионное соглашение]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azdata/package.azdata.acceptEula.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Choose how acceptance of EULA for the Azure Data CLI is done]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Выберите способ принятия условий лицензионного соглашения для Azure Data CLI]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azdata/package.azdata.acceptEula.dontPrompt.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The user will not be prompted for acceptance of EULA for the Azure Data CLI]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Пользователю не будет предложено принять условия лицензионного соглашения для Azure Data CLI]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azdata/package.azdata.acceptEula.prompt.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The user will be prompted for acceptance of EULA for the Azure Data CLI]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Пользователю будет предложено принять условия лицензионного соглашения для Azure Data CLI]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -407,7 +572,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Azure Data CLI]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Azure Data CLI]]></Val>
+            <Val><![CDATA[Azure Data CLI]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -415,18 +580,27 @@
       <Item ItemId=";extensions/azdata/package.azdata.config.debug" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Log debug info to the output channel for all executed azdata commands]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Записывать отладочную информацию в канал вывода для всех выполненных команд azdata]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azdata/package.azdata.config.title" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Azure Data CLI Configuration]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Конфигурация Azure Data CLI]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azdata/package.azdata.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Support for Azure Data CLI.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Поддержка Azure Data CLI.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -434,7 +608,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Azure Data CLI]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Azure Data CLI]]></Val>
+            <Val><![CDATA[Azure Data CLI]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -451,48 +625,72 @@
       <Item ItemId=";extensions/azdata/package.azdata.install.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Choose how install of Azure Data CLI is done]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Выберите способ установки Azure Data CLI]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azdata/package.azdata.install.dontPrompt.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The user will not be prompted for installation of the Azure Data CLI]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Пользователю не будет выдаваться запрос на установку Azure Data CLI]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azdata/package.azdata.install.prompt.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The user will be prompted for installation of the Azure Data CLI]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Пользователю будет выдаваться запрос на установку Azure Data CLI]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azdata/package.azdata.requiredUpdate.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Choose whether you will be prompted when a required update of the Azure Data CLI is available.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Выберите, будет ли отображаться запрос, когда станет доступно обязательное обновление Azure Data CLI.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azdata/package.azdata.update.command.name" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Check for Update]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Проверка на наличие обновления]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azdata/package.azdata.update.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Choose whether you will be prompted when an update of the Azure Data CLI is available.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Выберите, будет ли отображаться запрос, когда станет доступно обновление Azure Data CLI.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azdata/package.azdata.update.dontPrompt.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The user will not be prompted for update of the Azure Data CLI]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Пользователю не будет выдаваться запрос на обновление Azure Data CLI]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/azdata/package.azdata.update.prompt.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The user will be prompted for update of the Azure Data CLI]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Пользователю будет выдаваться запрос на обновление Azure Data CLI]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -500,7 +698,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Azure Data CLI]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Azure Data CLI]]></Val>
+            <Val><![CDATA[Azure Data CLI]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
