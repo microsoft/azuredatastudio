@@ -622,6 +622,7 @@ export class PublishDatabaseDialog {
 export function promptForPublishProfile(defaultPath: string): Thenable<vscode.Uri[] | undefined> {
 	return vscode.window.showOpenDialog(
 		{
+			title: constants.selectProfile,
 			canSelectFiles: true,
 			canSelectFolders: false,
 			canSelectMany: false,
