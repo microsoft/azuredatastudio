@@ -263,7 +263,8 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 			iconHeight: '18px',
 			iconPath: IconPathHelper.refresh,
 			height: '18px',
-			width: '18px'
+			width: '18px',
+			ariaLabel: constants.REFRESH,
 		}).component();
 
 		this._refreshButton.onDidClick(async (e) => {
@@ -311,30 +312,38 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 			}
 		}).component();
 
-		this._copy1 = this._view.modelBuilder.button().withProps({
+		this._copy1 = this._view.modelBuilder.button().withProperties<azdata.ComponentWithIconProperties>({
+			title: constants.COPY_KEY1,
 			iconPath: IconPathHelper.copy,
+			ariaLabel: constants.COPY_KEY1,
 		}).component();
 
 		this._copy1.onDidClick(async (e) => {
 			await vscode.env.clipboard.writeText(<string>this._authKeyTable.dataValues![0][1].value);
-			vscode.window.showInformationMessage(constants.SERVICE_KEY_COPIED_HELP);
+			vscode.window.showInformationMessage(constants.SERVICE_KEY1_COPIED_HELP);
 		});
 
-		this._copy2 = this._view.modelBuilder.button().withProps({
-			iconPath: IconPathHelper.copy
+		this._copy2 = this._view.modelBuilder.button().withProperties<azdata.ComponentWithIconProperties>({
+			title: constants.COPY_KEY2,
+			iconPath: IconPathHelper.copy,
+			ariaLabel: constants.COPY_KEY2,
 		}).component();
 
 		this._copy2.onDidClick(async (e) => {
 			await vscode.env.clipboard.writeText(<string>this._authKeyTable.dataValues![1][1].value);
-			vscode.window.showInformationMessage(constants.SERVICE_KEY_COPIED_HELP);
+			vscode.window.showInformationMessage(constants.SERVICE_KEY2_COPIED_HELP);
 		});
 
-		this._refresh1 = this._view.modelBuilder.button().withProps({
-			iconPath: IconPathHelper.refresh
+		this._refresh1 = this._view.modelBuilder.button().withProperties<azdata.ComponentWithIconProperties>({
+			title: constants.REFRESH_KEY1,
+			iconPath: IconPathHelper.refresh,
+			ariaLabel: constants.REFRESH_KEY1,
 		}).component();
 
-		this._refresh2 = this._view.modelBuilder.button().withProps({
+		this._refresh2 = this._view.modelBuilder.button().withProperties<azdata.ComponentWithIconProperties>({
+			title: constants.REFRESH_KEY2,
 			iconPath: IconPathHelper.refresh,
+			ariaLabel: constants.REFRESH_KEY2,
 		}).component();
 		this._authKeyTable = this._view.modelBuilder.declarativeTable().withProps({
 			columns: [

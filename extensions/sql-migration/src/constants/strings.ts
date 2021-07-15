@@ -187,9 +187,12 @@ export const SERVICE_STEP3 = localize('sql.migration.ir.setup.step3', "Step 3: C
 export const SERVICE_CONNECTION_STATUS = localize('sql.migration.connection.status', "Connection Status");
 export const SERVICE_KEY1_LABEL = localize('sql.migration.key1.label', "Key 1");
 export const SERVICE_KEY2_LABEL = localize('sql.migration.key2.label', "Key 2");
-export const SERVICE_KEY_COPIED_HELP = localize('sql.migration.key.copied', "Key copied");
-export const REFRESH_KEYS = localize('sql.migration.refresh.keys', "Refresh keys");
-export const COPY_KEY = localize('sql.migration.copy.key', "Copy key");
+export const SERVICE_KEY1_COPIED_HELP = localize('sql.migration.key1.copied', "Key 1 copied");
+export const SERVICE_KEY2_COPIED_HELP = localize('sql.migration.key2.copied', "Key 2 copied");
+export const REFRESH_KEY1 = localize('sql.migration.refresh.key1', "Refresh key 1");
+export const REFRESH_KEY2 = localize('sql.migration.refresh.key2', "Refresh key 2");
+export const COPY_KEY1 = localize('sql.migration.copy.key1', "Copy key 1");
+export const COPY_KEY2 = localize('sql.migration.copy.key2', "Copy key 2");
 export const AUTH_KEY_COLUMN_HEADER = localize('sql.migration.authkeys.header', "Authentication key");
 export function AUTH_KEY_REFRESHED(keyName: string): string {
 	return localize('sql.migration.authkeys.refresh.message', "Authentication key '{0}' has been refreshed.", keyName);
@@ -225,7 +228,7 @@ export const NAME_OF_NEW_RESOURCE_GROUP = localize('sql.migration.name.of.new.rg
 // common strings
 export const LEARN_MORE = localize('sql.migration.learn.more', "Learn more");
 export const SUBSCRIPTION = localize('sql.migration.subscription', "Subscription");
-export const STORAGE_ACCOUNT = localize('sql.migration.storage.account', "Storage Account");
+export const STORAGE_ACCOUNT = localize('sql.migration.storage.account', "Storage account");
 export const RESOURCE_GROUP = localize('sql.migration.resourceGroups', "Resource group");
 export const REGION = localize('sql.migration.region', "Region");
 export const NAME = localize('sql.migration.name', "Name");
