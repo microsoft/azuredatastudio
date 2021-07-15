@@ -22,7 +22,7 @@
       "providerId": "LOGANALYTICS",
       "languageMode": "loganalytics",
       "displayName": "%azuremonitor.displayName%",
-      "notebookKernelAlias": "AzureMonitorLogs",
+      "notebookKernelAlias": "Azure Monitor Logs",
       "azureResource": "AzureLogAnalytics",
       "iconPath": [
         {
