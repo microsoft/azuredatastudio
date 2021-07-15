@@ -122,7 +122,10 @@ export class PostgresResourceHealthPage extends DashboardPage {
 			data: [this.coordinatorData.map(p => [p.condition, p.details, p.lastUpdate])]
 		}).component();
 
-		this.podDropDown = this.modelView.modelBuilder.dropDown().withProps({ width: '150px' }).component();
+		this.podDropDown = this.modelView.modelBuilder.dropDown().withProps({
+			width: '150px',
+			ariaLabel: loc.podsUsedDescription
+		}).component();
 		this.disposables.push(
 			this.podDropDown.onValueChanged(() => {
 				this.podConditionsTable.setFilter(this.podConditionsTableIndexes.get(String(this.podDropDown.value)));
