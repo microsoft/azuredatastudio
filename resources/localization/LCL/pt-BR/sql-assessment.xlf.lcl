@@ -86,7 +86,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Check ID]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Verificar ID]]></Val>
+            <Val><![CDATA[Verificar a ID]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -95,7 +95,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Help Link]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Link da Ajuda]]></Val>
+            <Val><![CDATA[Link de Ajuda]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -122,7 +122,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Tags]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Marcas]]></Val>
+            <Val><![CDATA[Rótulos]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -166,6 +166,9 @@
       <Item ItemId=";extensions/sql-assessment/dist/localized.asmt.rulesetversion" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Default Ruleset]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Conjunto de Regras Padrão]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -406,6 +409,9 @@
       <Item ItemId=";extensions/sql-assessment/dist/tabs/historyTab.asmt.history.back" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[<< Back]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[<< Voltar]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -466,6 +472,9 @@
       <Item ItemId=";extensions/sql-assessment/package.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[SQL Assessment for Azure Data Studio (Preview) provides a mechanism to evaluate the configuration of SQL Server for best practices.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[A Avaliação do SQL para o Azure Data Studio (Visualização) fornece um mecanismo para avaliar a configuração do SQL Server para práticas recomendadas.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
