@@ -310,7 +310,7 @@ export function findPathRelativeToContent(notebookFolder: string, contentPath: U
 			let relativePath = contentPath.fragment ? path.relative(notebookFolder, contentPath.fsPath).concat('#', contentPath.fragment) : path.relative(notebookFolder, contentPath.fsPath);
 			//if path contains whitespaces then it's not identified as a link
 			relativePath = relativePath.replace(/\s/g, '%20');
-			if (relativePath.startsWith(path.join('..', path.sep) || path.join('.', path.sep))) {
+			if (relativePath.startsWith(path.join('..', path.sep)) || relativePath.startsWith(path.join('.', path.sep))) {
 				return relativePath;
 			} else {
 				// if the relative path does not contain ./ at the beginning, we need to add it so it's recognized as a link
