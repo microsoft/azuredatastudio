@@ -22,6 +22,9 @@
       <Item ItemId=";queryHistory.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[View and run previously executed queries]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Просмотр и запуск ранее выполненных запросов]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -37,6 +40,9 @@
       <Item ItemId=";queryHistory.toggleCapture" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Toggle Query History Capture]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Включить или отключить ведение Журнала запросов]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
