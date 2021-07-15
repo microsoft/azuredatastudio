@@ -16,27 +16,115 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/schema-compare/out/dialogs/schemaCompareOptionsDialog" source-language="en" datatype="plaintext" target-language="zh-Hans">
+  <file original="extensions/schema-compare/dist/localizedConstants" source-language="en" datatype="plaintext" target-language="zh-Hans">
     <body>
-      <trans-unit id="SchemaCompareOptionsDialog.Ok">
-        <source xml:lang="en">Ok</source>
+      <trans-unit id="schemaCompareDialog.ok">
+        <source xml:lang="en">OK</source>
         <target state="translated">确定</target>
       </trans-unit>
-      <trans-unit id="SchemaCompareOptionsDialog.Cancel">
+      <trans-unit id="schemaCompareDialog.cancel">
         <source xml:lang="en">Cancel</source>
         <target state="translated">取消</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.SourceTitle">
+        <source xml:lang="en">Source</source>
+        <target state="translated">源</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.TargetTitle">
+        <source xml:lang="en">Target</source>
+        <target state="translated">目标</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.fileTextBoxLabel">
+        <source xml:lang="en">File</source>
+        <target state="translated">文件</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.dacpacRadioButtonLabel">
+        <source xml:lang="en">Data-tier Application File (.dacpac)</source>
+        <target state="translated">数据层应用程序文件(.dacpac)</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.databaseButtonLabel">
+        <source xml:lang="en">Database</source>
+        <target state="translated">数据库</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.radioButtonsLabel">
+        <source xml:lang="en">Type</source>
+        <target state="translated">类型</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.serverDropdownTitle">
+        <source xml:lang="en">Server</source>
+        <target state="translated">服务器</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.databaseDropdownTitle">
+        <source xml:lang="en">Database</source>
+        <target state="translated">数据库</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.dialogTitle">
+        <source xml:lang="en">Schema Compare</source>
+        <target state="translated">架构比较</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.differentSourceMessage">
+        <source xml:lang="en">A different source schema has been selected. Compare to see the comparison?</source>
+        <target state="translated">已选择其他源架构。是否进行比较以查看比较结果?</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.differentTargetMessage">
+        <source xml:lang="en">A different target schema has been selected. Compare to see the comparison?</source>
+        <target state="translated">已选择其他目标架构。是否进行比较以查看比较结果?</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.differentSourceTargetMessage">
+        <source xml:lang="en">Different source and target schemas have been selected. Compare to see the comparison?</source>
+        <target state="translated">已选择其他源和目标架构。是否进行比较以查看比较结果?</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.Yes">
+        <source xml:lang="en">Yes</source>
+        <target state="translated">是</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.No">
+        <source xml:lang="en">No</source>
+        <target state="translated">否</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.sourceTextBox">
+        <source xml:lang="en">Source file</source>
+        <target state="translated">源文件</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.targetTextBox">
+        <source xml:lang="en">Target file</source>
+        <target state="translated">目标文件</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.sourceDatabaseDropdown">
+        <source xml:lang="en">Source Database</source>
+        <target state="translated">源数据库</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.targetDatabaseDropdown">
+        <source xml:lang="en">Target Database</source>
+        <target state="translated">目标数据库</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.sourceServerDropdown">
+        <source xml:lang="en">Source Server</source>
+        <target state="translated">源服务器</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.targetServerDropdown">
+        <source xml:lang="en">Target Server</source>
+        <target state="translated">目标服务器</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.defaultUser">
+        <source xml:lang="en">default</source>
+        <target state="translated">默认</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.openFile">
+        <source xml:lang="en">Open</source>
+        <target state="translated">打开</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.selectSourceFile">
+        <source xml:lang="en">Select source file</source>
+        <target state="translated">选择源文件</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.selectTargetFile">
+        <source xml:lang="en">Select target file</source>
+        <target state="translated">选择目标文件</target>
       </trans-unit>
       <trans-unit id="SchemaCompareOptionsDialog.Reset">
         <source xml:lang="en">Reset</source>
         <target state="translated">重置</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompareOptionsDialog.Yes">
-        <source xml:lang="en">Yes</source>
-        <target state="translated">是</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompareOptionsDialog.No">
-        <source xml:lang="en">No</source>
-        <target state="translated">否</target>
       </trans-unit>
       <trans-unit id="schemaCompareOptions.RecompareMessage">
         <source xml:lang="en">Options have changed. Recompare to see the comparison?</source>
@@ -53,6 +141,174 @@
       <trans-unit id="SchemaCompare.ObjectTypesOptionsLabel">
         <source xml:lang="en">Include Object Types</source>
         <target state="translated">包括对象类型</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.CompareDetailsTitle">
+        <source xml:lang="en">Compare Details</source>
+        <target state="translated">比较详细信息</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.ApplyConfirmation">
+        <source xml:lang="en">Are you sure you want to update the target?</source>
+        <target state="translated">确定要更新目标吗?</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.RecompareToRefresh">
+        <source xml:lang="en">Press Compare to refresh the comparison.</source>
+        <target state="translated">按“比较”以刷新比较结果。</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.generateScriptEnabledButton">
+        <source xml:lang="en">Generate script to deploy changes to target</source>
+        <target state="translated">生成脚本以将更改部署到目标</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.generateScriptNoChanges">
+        <source xml:lang="en">No changes to script</source>
+        <target state="translated">未更改脚本</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.applyButtonEnabledTitle">
+        <source xml:lang="en">Apply changes to target</source>
+        <target state="translated">将更改应用到目标</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.applyNoChanges">
+        <source xml:lang="en">No changes to apply</source>
+        <target state="translated">没有可应用的更改</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.includeExcludeInfoMessage">
+        <source xml:lang="en">Please note that include/exclude operations can take a moment to calculate affected dependencies</source>
+        <target state="translated">请注意，包括/排除操作可能需要一点时间来计算受影响的依赖项</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.deleteAction">
+        <source xml:lang="en">Delete</source>
+        <target state="translated">删除</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.changeAction">
+        <source xml:lang="en">Change</source>
+        <target state="translated">更改</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.addAction">
+        <source xml:lang="en">Add</source>
+        <target state="translated">添加</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.differencesTableTitle">
+        <source xml:lang="en">Comparison between Source and Target</source>
+        <target state="translated">源和目标之间的比较</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.waitText">
+        <source xml:lang="en">Initializing Comparison. This might take a moment.</source>
+        <target state="translated">初始化比较。这可能需要一段时间。</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.startText">
+        <source xml:lang="en">To compare two schemas, first select a source schema and target schema, then press Compare.</source>
+        <target state="translated">要比较两个架构，请先选择源架构和目标架构，然后按“比较”。</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.noDifferences">
+        <source xml:lang="en">No schema differences were found.</source>
+        <target state="translated">未找到架构差异。</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.typeColumn">
+        <source xml:lang="en">Type</source>
+        <target state="translated">类型</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.sourceNameColumn">
+        <source xml:lang="en">Source Name</source>
+        <target state="translated">源名称</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.includeColumnName">
+        <source xml:lang="en">Include</source>
+        <target state="translated">包括</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.actionColumn">
+        <source xml:lang="en">Action</source>
+        <target state="translated">操作</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.targetNameColumn">
+        <source xml:lang="en">Target Name</source>
+        <target state="translated">目标名称</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.generateScriptButtonDisabledTitle">
+        <source xml:lang="en">Generate script is enabled when the target is a database</source>
+        <target state="translated">当目标为数据库时启用生成脚本</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.applyButtonDisabledTitle">
+        <source xml:lang="en">Apply is enabled when the target is a database</source>
+        <target state="translated">当目标为数据库时启用应用</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.cannotExcludeMessageWithDependent">
+        <source xml:lang="en">Cannot exclude {0}. Included dependents exist, such as {1}</source>
+        <target state="translated">无法排除 {0}。存在包括的依赖项，例如 {1}</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.cannotIncludeMessageWithDependent">
+        <source xml:lang="en">Cannot include {0}. Excluded dependents exist, such as {1}</source>
+        <target state="translated">无法包括 {0}。存在被排除的依赖项，如 {1}</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.cannotExcludeMessage">
+        <source xml:lang="en">Cannot exclude {0}. Included dependents exist</source>
+        <target state="translated">无法排除 {0}。存在包括的依赖项</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.cannotIncludeMessage">
+        <source xml:lang="en">Cannot include {0}. Excluded dependents exist</source>
+        <target state="translated">无法包括 {0}。存在排除的依赖项</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.compareButton">
+        <source xml:lang="en">Compare</source>
+        <target state="translated">比较</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.cancelCompareButton">
+        <source xml:lang="en">Stop</source>
+        <target state="translated">停止</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.generateScriptButton">
+        <source xml:lang="en">Generate script</source>
+        <target state="translated">生成脚本</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.optionsButton">
+        <source xml:lang="en">Options</source>
+        <target state="translated">选项</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.updateButton">
+        <source xml:lang="en">Apply</source>
+        <target state="translated">应用</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.switchDirectionButton">
+        <source xml:lang="en">Switch direction</source>
+        <target state="translated">切换方向</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.switchButtonTitle">
+        <source xml:lang="en">Switch source and target</source>
+        <target state="translated">切换源和目标</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.sourceButtonTitle">
+        <source xml:lang="en">Select Source</source>
+        <target state="translated">选择源</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.targetButtonTitle">
+        <source xml:lang="en">Select Target</source>
+        <target state="translated">选择目标</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.openScmpButton">
+        <source xml:lang="en">Open .scmp file</source>
+        <target state="translated">打开 .scmp 文件</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.openScmpButtonTitle">
+        <source xml:lang="en">Load source, target, and options saved in an .scmp file</source>
+        <target state="translated">加载保存在 .smp 文件中的源、目标和选项</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.saveScmpButton">
+        <source xml:lang="en">Save .scmp file</source>
+        <target state="translated">保存 .smp 文件</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.saveScmpButtonTitle">
+        <source xml:lang="en">Save source and target, options, and excluded elements</source>
+        <target state="translated">保存源、目标、选项和已排除的元素</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.saveFile">
+        <source xml:lang="en">Save</source>
+        <target state="translated">保存</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.GetConnectionString">
+        <source xml:lang="en">Do you want to connect to {0}?</source>
+        <target state="translated">是否要连接到 {0}?</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.selectConnection">
+        <source xml:lang="en">Select connection</source>
+        <target state="translated">选择连接</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.IgnoreTableOptions">
         <source xml:lang="en">Ignore Table Options</source>
@@ -407,7 +663,7 @@
         <target state="translated">数据库角色</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.DatabaseTriggers">
-        <source xml:lang="en">DatabaseTriggers</source>
+        <source xml:lang="en">Database Triggers</source>
         <target state="translated">数据库触发器</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.Defaults">
@@ -426,6 +682,14 @@
         <source xml:lang="en">External File Formats</source>
         <target state="translated">外部文件格式</target>
       </trans-unit>
+      <trans-unit id="SchemaCompare.ExternalStreams">
+        <source xml:lang="en">External Streams</source>
+        <target state="translated">外部流</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.ExternalStreamingJobs">
+        <source xml:lang="en">External Streaming Jobs</source>
+        <target state="translated">外部流式处理作业</target>
+      </trans-unit>
       <trans-unit id="SchemaCompare.ExternalTables">
         <source xml:lang="en">External Tables</source>
         <target state="translated">外部表</target>
@@ -433,6 +697,10 @@
       <trans-unit id="SchemaCompare.Filegroups">
         <source xml:lang="en">Filegroups</source>
         <target state="translated">文件组</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Files">
+        <source xml:lang="en">Files</source>
+        <target state="translated">文件</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.FileTables">
         <source xml:lang="en">File Tables</source>
@@ -503,11 +771,11 @@
         <target state="translated">签名</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.StoredProcedures">
-        <source xml:lang="en">StoredProcedures</source>
+        <source xml:lang="en">Stored Procedures</source>
         <target state="translated">存储过程</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.SymmetricKeys">
-        <source xml:lang="en">SymmetricKeys</source>
+        <source xml:lang="en">Symmetric Keys</source>
         <target state="translated">对称密钥</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.Synonyms">
@@ -926,285 +1194,29 @@
         <source xml:lang="en">Specifies whether differences in table column order should be ignored or updated when you publish to a database.</source>
         <target state="translated">指定在发布到数据库时忽略还是更新表列顺序的差异。</target>
       </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/schema-compare/out/dialogs/schemaCompareDialog" source-language="en" datatype="plaintext" target-language="zh-Hans">
-    <body>
-      <trans-unit id="schemaCompareDialog.ok">
-        <source xml:lang="en">Ok</source>
-        <target state="translated">确定</target>
-      </trans-unit>
-      <trans-unit id="schemaCompareDialog.cancel">
-        <source xml:lang="en">Cancel</source>
-        <target state="translated">取消</target>
-      </trans-unit>
-      <trans-unit id="schemaCompareDialog.SourceTitle">
-        <source xml:lang="en">Source</source>
-        <target state="translated">源</target>
-      </trans-unit>
-      <trans-unit id="schemaCompareDialog.TargetTitle">
-        <source xml:lang="en">Target</source>
-        <target state="translated">目标</target>
-      </trans-unit>
-      <trans-unit id="schemaCompareDialog.fileTextBoxLabel">
-        <source xml:lang="en">File</source>
-        <target state="translated">文件</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.dacpacRadioButtonLabel">
-        <source xml:lang="en">Data-tier Application File (.dacpac)</source>
-        <target state="translated">数据层应用程序文件(.dacpac)</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.databaseButtonLabel">
-        <source xml:lang="en">Database</source>
-        <target state="translated">数据库</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.radioButtonsLabel">
-        <source xml:lang="en">Type</source>
-        <target state="translated">类型</target>
-      </trans-unit>
-      <trans-unit id="schemaCompareDialog.serverDropdownTitle">
-        <source xml:lang="en">Server</source>
-        <target state="translated">服务器</target>
-      </trans-unit>
-      <trans-unit id="schemaCompareDialog.databaseDropdownTitle">
-        <source xml:lang="en">Database</source>
-        <target state="translated">数据库</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.noActiveConnectionsText">
-        <source xml:lang="en">No active connections</source>
-        <target state="translated">无活动连接</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.dialogTitle">
-        <source xml:lang="en">Schema Compare</source>
-        <target state="translated">架构比较</target>
-      </trans-unit>
-      <trans-unit id="schemaCompareDialog.differentSourceMessage">
-        <source xml:lang="en">A different source schema has been selected. Compare to see the comparison?</source>
-        <target state="translated">已选择其他源架构。是否进行比较以查看比较结果?</target>
-      </trans-unit>
-      <trans-unit id="schemaCompareDialog.differentTargetMessage">
-        <source xml:lang="en">A different target schema has been selected. Compare to see the comparison?</source>
-        <target state="translated">已选择其他目标架构。是否进行比较以查看比较结果?</target>
-      </trans-unit>
-      <trans-unit id="schemaCompareDialog.differentSourceTargetMessage">
-        <source xml:lang="en">Different source and target schemas have been selected. Compare to see the comparison?</source>
-        <target state="translated">已选择其他源和目标架构。是否进行比较以查看比较结果?</target>
-      </trans-unit>
-      <trans-unit id="schemaCompareDialog.Yes">
-        <source xml:lang="en">Yes</source>
-        <target state="translated">是</target>
-      </trans-unit>
-      <trans-unit id="schemaCompareDialog.No">
-        <source xml:lang="en">No</source>
-        <target state="translated">否</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.openFile">
-        <source xml:lang="en">Open</source>
-        <target state="translated">打开</target>
-      </trans-unit>
-      <trans-unit id="schemaCompareDialog.defaultUser">
-        <source xml:lang="en">default</source>
-        <target state="translated">默认</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/schema-compare/out/schemaCompareMainWindow" source-language="en" datatype="plaintext" target-language="zh-Hans">
-    <body>
-      <trans-unit id="schemaCompare.CompareDetailsTitle">
-        <source xml:lang="en">Compare Details</source>
-        <target state="translated">比较详细信息</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.ApplyConfirmation">
-        <source xml:lang="en">Are you sure you want to update the target?</source>
-        <target state="translated">确定要更新目标吗?</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.RecompareToRefresh">
-        <source xml:lang="en">Press Compare to refresh the comparison.</source>
-        <target state="translated">按“比较”以刷新比较结果。</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.generateScriptEnabledButton">
-        <source xml:lang="en">Generate script to deploy changes to target</source>
-        <target state="translated">生成脚本以将更改部署到目标</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.generateScriptNoChanges">
-        <source xml:lang="en">No changes to script</source>
-        <target state="translated">未更改脚本</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.applyButtonEnabledTitle">
-        <source xml:lang="en">Apply changes to target</source>
-        <target state="translated">将更改应用到目标</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.applyNoChanges">
-        <source xml:lang="en">No changes to apply</source>
-        <target state="translated">没有可应用的更改</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.deleteAction">
-        <source xml:lang="en">Delete</source>
-        <target state="translated">删除</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.changeAction">
-        <source xml:lang="en">Change</source>
-        <target state="translated">更改</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.addAction">
-        <source xml:lang="en">Add</source>
-        <target state="translated">添加</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.Title">
-        <source xml:lang="en">Schema Compare</source>
-        <target state="translated">架构比较</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.sourceLabel">
-        <source xml:lang="en">Source</source>
-        <target state="translated">源</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.targetLabel">
-        <source xml:lang="en">Target</source>
-        <target state="translated">目标</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.switchLabel">
-        <source xml:lang="en">➔</source>
-        <target state="translated">➔</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.waitText">
-        <source xml:lang="en">Initializing Comparison. This might take a moment.</source>
-        <target state="translated">初始化比较。这可能需要一段时间。</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.startText">
-        <source xml:lang="en">To compare two schemas, first select a source schema and target schema, then press Compare.</source>
-        <target state="translated">要比较两个架构，请先选择源架构和目标架构，然后按“比较”。</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.noDifferences">
-        <source xml:lang="en">No schema differences were found.</source>
-        <target state="translated">未找到架构差异。</target>
-      </trans-unit>
       <trans-unit id="schemaCompare.compareErrorMessage">
         <source xml:lang="en">Schema Compare failed: {0}</source>
         <target state="translated">架构比较失败: {0}</target>
       </trans-unit>
-      <trans-unit id="schemaCompare.typeColumn">
-        <source xml:lang="en">Type</source>
-        <target state="translated">类型</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.sourceNameColumn">
-        <source xml:lang="en">Source Name</source>
-        <target state="translated">源名称</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.includeColumnName">
-        <source xml:lang="en">Include</source>
-        <target state="translated">包括</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.actionColumn">
-        <source xml:lang="en">Action</source>
-        <target state="translated">操作</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.targetNameColumn">
-        <source xml:lang="en">Target Name</source>
-        <target state="translated">目标名称</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.generateScriptButtonDisabledTitle">
-        <source xml:lang="en">Generate script is enabled when the target is a database</source>
-        <target state="translated">当目标为数据库时启用生成脚本</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.applyButtonDisabledTitle">
-        <source xml:lang="en">Apply is enabled when the target is a database</source>
-        <target state="translated">当目标为数据库时启用应用</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.compareButton">
-        <source xml:lang="en">Compare</source>
-        <target state="translated">比较</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.compareButtonTitle">
-        <source xml:lang="en">Compare</source>
-        <target state="translated">比较</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.cancelCompareButton">
-        <source xml:lang="en">Stop</source>
-        <target state="translated">停止</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.cancelCompareButtonTitle">
-        <source xml:lang="en">Stop</source>
-        <target state="translated">停止</target>
+      <trans-unit id="schemaCompare.saveScmpErrorMessage">
+        <source xml:lang="en">Save scmp failed: '{0}'</source>
+        <target state="translated">保存 scmp 失败:“{0}”</target>
       </trans-unit>
       <trans-unit id="schemaCompare.cancelErrorMessage">
         <source xml:lang="en">Cancel schema compare failed: '{0}'</source>
         <target state="translated">取消架构比较失败:“{0}”</target>
       </trans-unit>
-      <trans-unit id="schemaCompare.generateScriptButton">
-        <source xml:lang="en">Generate script</source>
-        <target state="translated">生成脚本</target>
-      </trans-unit>
       <trans-unit id="schemaCompare.generateScriptErrorMessage">
         <source xml:lang="en">Generate script failed: '{0}'</source>
         <target state="translated">生成脚本失败:“{0}”</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.optionsButton">
-        <source xml:lang="en">Options</source>
-        <target state="translated">选项</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.optionsButtonTitle">
-        <source xml:lang="en">Options</source>
-        <target state="translated">选项</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.updateButton">
-        <source xml:lang="en">Apply</source>
-        <target state="translated">应用</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.ApplyYes">
-        <source xml:lang="en">Yes</source>
-        <target state="translated">是</target>
       </trans-unit>
       <trans-unit id="schemaCompare.updateErrorMessage">
         <source xml:lang="en">Schema Compare Apply failed '{0}'</source>
         <target state="translated">架构比较应用失败“{0}”</target>
       </trans-unit>
-      <trans-unit id="schemaCompare.switchDirectionButton">
-        <source xml:lang="en">Switch direction</source>
-        <target state="translated">切换方向</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.switchButtonTitle">
-        <source xml:lang="en">Switch source and target</source>
-        <target state="translated">切换源和目标</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.sourceButtonTitle">
-        <source xml:lang="en">Select Source</source>
-        <target state="translated">选择源</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.targetButtonTitle">
-        <source xml:lang="en">Select Target</source>
-        <target state="translated">选择目标</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.openScmpButton">
-        <source xml:lang="en">Open .scmp file</source>
-        <target state="translated">打开 .scmp 文件</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.openScmpButtonTitle">
-        <source xml:lang="en">Load source, target, and options saved in an .scmp file</source>
-        <target state="translated">加载保存在 .smp 文件中的源、目标和选项</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.openFile">
-        <source xml:lang="en">Open</source>
-        <target state="translated">打开</target>
-      </trans-unit>
       <trans-unit id="schemaCompare.openScmpErrorMessage">
         <source xml:lang="en">Open scmp failed: '{0}'</source>
         <target state="translated">打开 scmp 失败:“{0}”</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.saveScmpButton">
-        <source xml:lang="en">Save .scmp file</source>
-        <target state="translated">保存 .smp 文件</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.saveScmpButtonTitle">
-        <source xml:lang="en">Save source and target, options, and excluded elements</source>
-        <target state="translated">保存源、目标、选项和已排除的元素</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.saveFile">
-        <source xml:lang="en">Save</source>
-        <target state="translated">保存</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.saveScmpErrorMessage">
-        <source xml:lang="en">Save scmp failed: '{0}'</source>
-        <target state="translated">保存 scmp 失败:“{0}”</target>
       </trans-unit>
     </body>
   </file>
