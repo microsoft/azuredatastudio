@@ -66,6 +66,7 @@ suite('NotebookMarkdownRenderer', () => {
 	});
 
 	// marked js test that alters the relative path requiring regex replace to resolve path properly
+	// Issue tracked here: https://github.com/markedjs/marked/issues/2135
 	test('marked js compiles relative link incorrectly', () => {
 		const markedPath = marked.parse('..\\..\\test.ipynb');
 		assert.strict(markedPath, '<p>....\test.ipynb</p>');

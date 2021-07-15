@@ -14,6 +14,7 @@ import { revive } from 'vs/base/common/marshalling';
 import { ImageMimeTypes } from 'sql/workbench/services/notebook/common/contracts';
 import { IMarkdownStringWithCellAttachments, MarkdownRenderOptionsWithCellAttachments } from 'sql/workbench/contrib/notebook/browser/cellViews/interfaces';
 import { isWindows } from 'vs/base/common/platform';
+import { replaceInvalidLinkPath } from 'sql/workbench/contrib/notebook/test/common/utils';
 
 // Based off of HtmlContentRenderer
 export class NotebookMarkdownRenderer {
@@ -244,9 +245,8 @@ export class NotebookMarkdownRenderer {
 			if (isWindows) {
 				// we need to format invalid href formats (ex. ....\file to ..\..\file)
 				// in order to resolve to an absolute link
-				// Test that documents issue [Follow up]:
-				// 'marked js compiles relative link incorrectly'
-				href = href.replace(/\.\.(?=\.\.)/g, '..\\');
+				// Issue tracked here: https://github.com/markedjs/marked/issues/2135
+				href = replaceInvalidLinkPath(href);
 				return path.resolve(base, href);
 			} else {
 				return path.join(base + href);
