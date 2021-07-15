@@ -185,7 +185,7 @@ declare module 'azdata-ext' {
 		},
 		spec: {
 			engine: {
-				extensions: {
+				extensions?: {
 					name: string // "citus"
 				}[],
 				settings: {
