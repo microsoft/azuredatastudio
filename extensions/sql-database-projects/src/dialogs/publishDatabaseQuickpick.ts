@@ -9,6 +9,7 @@ import { IGenerateScriptSettings, IPublishSettings } from '../models/IPublishSet
 import { Project } from '../models/project';
 import { PublishProfile, readPublishProfile } from '../models/publishProfile/publishProfile';
 import { promptForPublishProfile } from './publishDatabaseDialog';
+import { getVscodeMssqlApi } from '../common/utils';
 
 /**
  * Create flow for Publishing a database using only VS Code-native APIs such as QuickPick
@@ -70,10 +71,8 @@ export async function launchPublishDatabaseQuickpick(project: Project): Promise<
 	}
 
 	// 2. Select connection
-	// TODO@chgagnon: Hook up to MSSQL
-	const connectionProfile = await vscode.window.showQuickPick(
-		['Connection 1', 'Connection 2', 'Create New Connection'],
-		{ title: constants.selectConnection, ignoreFocusOut: true });
+	const api = await getVscodeMssqlApi();
+	const connectionProfile = await api.promptForConnection();
 	if (!connectionProfile) {
 		return;
 	}
