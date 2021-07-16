@@ -382,7 +382,6 @@ export function renameVscodeLangpacks(): Promise<void> {
 			fs.unlinkSync(element);
 		});
 
-
 		// Delete extension files in vscode language pack that are not in ADS.
 		if (fs.existsSync(translationDataFolder)) {
 			let totalExtensions = fs.readdirSync(path.join(translationDataFolder, 'extensions'));
