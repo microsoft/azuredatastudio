@@ -8,7 +8,6 @@ import { URI } from 'vs/base/common/uri';
 import * as path from 'vs/base/common/path';
 import * as turndownPluginGfm from 'sql/workbench/contrib/notebook/browser/turndownPluginGfm';
 import { replaceInvalidLinkPath } from 'sql/workbench/contrib/notebook/common/utils';
-import { isWindows } from 'vs/base/common/platform';
 
 // These replacements apply only to text. Here's how it's handled from Turndown:
 // if (node.nodeType === 3) {

@@ -13,7 +13,6 @@ import { defaultGenerator } from 'vs/base/common/idGenerator';
 import { revive } from 'vs/base/common/marshalling';
 import { ImageMimeTypes } from 'sql/workbench/services/notebook/common/contracts';
 import { IMarkdownStringWithCellAttachments, MarkdownRenderOptionsWithCellAttachments } from 'sql/workbench/contrib/notebook/browser/cellViews/interfaces';
-import { isWindows } from 'vs/base/common/platform';
 import { replaceInvalidLinkPath } from 'sql/workbench/contrib/notebook/common/utils';
 
 // Based off of HtmlContentRenderer
