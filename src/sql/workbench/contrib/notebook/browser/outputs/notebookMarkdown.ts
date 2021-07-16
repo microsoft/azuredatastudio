@@ -242,15 +242,11 @@ export class NotebookMarkdownRenderer {
 		} else if (href.charAt(0) === '/') {
 			return base.replace(/(:\/*[^/]*)[\s\S]*/, '$1') + href;
 		} else if (href.slice(0, 2) === '..') {
-			if (isWindows && href.startsWith('...')) {
-				// we need to format invalid href formats (ex. ....\file to ..\..\file)
-				// in order to resolve to an absolute link
-				// Issue tracked here: https://github.com/markedjs/marked/issues/2135
-				href = replaceInvalidLinkPath(href);
-				return path.join(base, href);
-			} else {
-				return path.join(base + href);
-			}
+			// we need to format invalid href formats (ex. ....\file to ..\..\file)
+			// in order to resolve to an absolute link
+			// Issue tracked here: https://github.com/markedjs/marked/issues/2135
+			href = replaceInvalidLinkPath(href);
+			return path.join(base, href);
 		} else {
 			return base + href;
 		}

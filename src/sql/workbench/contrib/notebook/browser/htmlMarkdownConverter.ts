@@ -311,11 +311,10 @@ export function findPathRelativeToContent(notebookFolder: string, contentPath: U
 			let relativePath = contentPath.fragment ? path.relative(notebookFolder, contentPath.fsPath).concat('#', contentPath.fragment) : path.relative(notebookFolder, contentPath.fsPath);
 			//if path contains whitespaces then it's not identified as a link
 			relativePath = relativePath.replace(/\s/g, '%20');
+			// if relativePath contains improper directory format due to marked js parsing returning an invalid path (ex. ....\) then we need to replace it to ensure the directories are formatted properly (ex. ..\..\)
+			relativePath = replaceInvalidLinkPath(relativePath);
 			if (relativePath.startsWith(path.join('..', path.sep) || path.join('.', path.sep))) {
 				return relativePath;
-				// if relativePath contains improper directory format due to marked js parsing returning an invalid path (ex. ....\) then we need to replace it to ensure the directories are formatted properly (ex. ..\..\)
-			} else if (isWindows && relativePath.startsWith('...')) {
-				return replaceInvalidLinkPath(relativePath);
 			} else {
 				// if the relative path does not contain ./ at the beginning, we need to add it so it's recognized as a link
 				return `.${path.join(path.sep, relativePath)}`;
