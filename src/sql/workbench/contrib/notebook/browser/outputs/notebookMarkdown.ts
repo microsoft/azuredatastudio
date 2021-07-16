@@ -13,6 +13,7 @@ import { defaultGenerator } from 'vs/base/common/idGenerator';
 import { revive } from 'vs/base/common/marshalling';
 import { ImageMimeTypes } from 'sql/workbench/services/notebook/common/contracts';
 import { IMarkdownStringWithCellAttachments, MarkdownRenderOptionsWithCellAttachments } from 'sql/workbench/contrib/notebook/browser/cellViews/interfaces';
+import { replaceInvalidLinkPath } from 'sql/workbench/contrib/notebook/common/utils';
 
 // Based off of HtmlContentRenderer
 export class NotebookMarkdownRenderer {
@@ -240,6 +241,10 @@ export class NotebookMarkdownRenderer {
 		} else if (href.charAt(0) === '/') {
 			return base.replace(/(:\/*[^/]*)[\s\S]*/, '$1') + href;
 		} else if (href.slice(0, 2) === '..') {
+			// we need to format invalid href formats (ex. ....\file to ..\..\file)
+			// in order to resolve to an absolute link
+			// Issue tracked here: https://github.com/markedjs/marked/issues/2135
+			href = replaceInvalidLinkPath(href);
 			return path.join(base, href);
 		} else {
 			return base + href;
