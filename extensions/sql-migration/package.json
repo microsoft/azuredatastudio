@@ -44,8 +44,70 @@
         "command": "sqlmigration.openNotebooks",
         "title": "%migration-notebook-command-title%",
         "category": "%migration-command-category%"
+      },
+      {
+        "command": "sqlmigration.cutover",
+        "title": "%complete-cutover-menu%",
+        "category": "%migration-context-menu-category%"
+      },
+      {
+        "command": "sqlmigration.view.database",
+        "title": "%database-details-menu%",
+        "category": "%migration-context-menu-category%"
+      },
+      {
+        "command": "sqlmigration.view.target",
+        "title": "%view-target-menu%",
+        "category": "%migration-context-menu-category%"
+      },
+      {
+        "command": "sqlmigration.view.service",
+        "title": "%view-service-menu%",
+        "category": "%migration-context-menu-category%"
+      },
+      {
+        "command": "sqlmigration.copy.migration",
+        "title": "%copy-migration-menu%",
+        "category": "%migration-context-menu-category%"
+      },
+      {
+        "command": "sqlmigration.cancel.migration",
+        "title": "%cancel-migration-menu%",
+        "category": "%migration-context-menu-category%"
       }
     ],
+    "menu": {
+      "commandPalette": [
+        {
+          "command": "sqlmigration.sendfeedback",
+          "when": "false"
+        },
+        {
+          "command": "sqlmigration.cutover",
+          "when": "false"
+        },
+        {
+          "command": "sqlmigration.view.database",
+          "when": "false"
+        },
+        {
+          "command": "sqlmigration.view.target",
+          "when": "false"
+        },
+        {
+          "command": "sqlmigration.view.service",
+          "when": "false"
+        },
+        {
+          "command": "sqlmigration.copy.migration",
+          "when": "false"
+        },
+        {
+          "command": "sqlmigration.cancel.migration",
+          "when": "false"
+        }
+      ]
+    },
     "dashboard.tabs": [
       {
         "id": "migration-dashboard",
