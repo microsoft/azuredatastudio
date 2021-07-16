@@ -188,7 +188,7 @@ declare module 'azdata-ext' {
 				extensions?: {
 					name: string // "citus"
 				}[],
-				settings: {
+				settings?: {
 					default: { [key: string]: string }, // { "max_connections": "101", "work_mem": "4MB" }
 					roles: {
 						coordinator: { [key: string]: string },
@@ -208,7 +208,7 @@ declare module 'azdata-ext' {
 						limits: SchedulingOptions
 					}
 				},
-				roles: {
+				roles?: {
 					coordinator: {
 						resources: {
 							requests: SchedulingOptions,
