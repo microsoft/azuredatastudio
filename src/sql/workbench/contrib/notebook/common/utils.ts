@@ -9,6 +9,6 @@ export function replaceInvalidLinkPath(href: string): string {
 	// Get first slash of link and use that create relative path format (..\) string
 	// and then concatenate relative path format string to rest of href path after slash
 	let slashIndex = href.indexOf('\\');
-	href = '..\\'.repeat((slashIndex / 2)) + href.substring(slashIndex + 1);
+	href = '..\\'.repeat(slashIndex / 2) + href.substring(slashIndex + 1);
 	return href;
 }
