@@ -7,7 +7,6 @@ import * as assert from 'assert';
 import * as marked from 'vs/base/common/marked/marked';
 import { NotebookMarkdownRenderer } from '../../browser/outputs/notebookMarkdown';
 import { URI } from 'vs/base/common/uri';
-import * as path from 'path';
 
 suite('NotebookMarkdownRenderer', () => {
 	let notebookMarkdownRenderer = new NotebookMarkdownRenderer();
