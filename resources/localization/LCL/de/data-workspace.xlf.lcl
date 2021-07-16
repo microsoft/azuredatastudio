@@ -31,18 +31,27 @@
       <Item ItemId=";extensions/data-workspace/dist/common/constants.UnknownProjectTypeError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[No provider was found for project type with id: '{0}']]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Für den Projekttyp mit der ID "{0}" wurde kein Anbieter gefunden]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/data-workspace/dist/common/constants.UnknownProjectsError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[No provider was found for the following projects: {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Für die folgenden Projekte wurde kein Anbieter gefunden: {0}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/data-workspace/dist/common/constants.activateExtensionFailed" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Failed to load the project provider extension '{0}'. Error message: {1}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Fehler beim Laden der Projektanbietererweiterung "{0}". Fehlermeldung: {1}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -103,6 +112,9 @@
       <Item ItemId=";extensions/data-workspace/dist/common/constants.dataworkspace.cloneParentDirectoryNotExistError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The selected clone path '{0}' does not exist or is not a directory.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Der ausgewählte Klonpfad "{0}" ist nicht vorhanden oder kein Verzeichnis.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -118,18 +130,27 @@
       <Item ItemId=";extensions/data-workspace/dist/common/constants.dataworkspace.enterProjectName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Enter Project Name]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Geben Sie den Projektnamen ein]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/data-workspace/dist/common/constants.dataworkspace.fileNotExistError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The selected {0} file '{1}' does not exist or is not a file.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Die ausgewählte {0}-Datei "{1}" ist nicht vorhanden oder keine Datei.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/data-workspace/dist/common/constants.dataworkspace.gitRepoUrlPlaceholder" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Enter remote git repository URL]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[URL des Git-Remoterepositorys eingeben]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -145,12 +166,18 @@
       <Item ItemId=";extensions/data-workspace/dist/common/constants.dataworkspace.localClonePathPlaceholder" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Select location to clone repository locally]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Speicherort zum lokalen Klonen des Repositorys auswählen]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/data-workspace/dist/common/constants.dataworkspace.localClonePathTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Local clone path]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Lokaler Klonpfad]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -158,7 +185,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Location]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Standort]]></Val>
+            <Val><![CDATA[Speicherort]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -193,6 +220,9 @@
       <Item ItemId=";extensions/data-workspace/dist/common/constants.dataworkspace.openExistingDialogTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Open Existing Project]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Vorhandenes Projekt öffnen]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -200,7 +230,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Project]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Project]]></Val>
+            <Val><![CDATA[Projekt]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -208,30 +238,45 @@
       <Item ItemId=";extensions/data-workspace/dist/common/constants.dataworkspace.projectAlreadyOpened" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Project '{0}' is already opened.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Das Projekt "{0}" ist bereits geöffnet.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/data-workspace/dist/common/constants.dataworkspace.projectDirectoryAlreadyExistError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[There is already a directory named '{0}' in the selected location: '{1}'.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Es ist bereits ein Verzeichnis mit dem Namen "{0}" am ausgewählten Speicherort vorhanden: "{1}".]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/data-workspace/dist/common/constants.dataworkspace.projectDirectoryAlreadyExistErrorShort" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Directory '{0}' already exists in the selected location, please choose another]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Das Verzeichnis "{0}" ist bereits am ausgewählten Speicherort vorhanden, wählen Sie ein anderes aus]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/data-workspace/dist/common/constants.dataworkspace.projectFilePlaceholder" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Select project file]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Projektdatei auswählen]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/data-workspace/dist/common/constants.dataworkspace.projectLocationPlaceholder" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Select location to create project]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Speicherort zum Erstellen des Projekts auswählen]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -239,7 +284,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Location]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Standort]]></Val>
+            <Val><![CDATA[Speicherort]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -248,7 +293,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Enter project name]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Geben Sie den Projektnamen ein.]]></Val>
+            <Val><![CDATA[Geben Sie den Projektnamen ein]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -265,24 +310,36 @@
       <Item ItemId=";extensions/data-workspace/dist/common/constants.dataworkspace.projectParentDirectoryNotExistError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The selected project location '{0}' does not exist or is not a directory.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Der ausgewählte Projektspeicherort "{0}" ist nicht vorhanden oder kein Verzeichnis.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/data-workspace/dist/common/constants.dataworkspace.projectsFailedToLoad" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Some projects failed to load. To view more details, [open the developer console]5D;(command:workbench.action.toggleDevTools)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Einige Projekte konnten nicht geladen werden. Um weitere Details anzuzeigen, [Entwicklerkonsole öffnen]5D;(command:workbench.action.toggleDevTools)]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/data-workspace/dist/common/constants.dataworkspace.remoteGitRepo" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Remote git repository]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Git-Remoterepository]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/data-workspace/dist/common/constants.dataworkspace.restartConfirmation" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Azure Data Studio needs to be restarted for the project to be created and added to the workspace, do this now?]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Azure Data Studio muss neu gestartet werden, damit das Projekt erstellt und dem Arbeitsbereich hinzugefügt wird, jetzt ausführen?]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -298,30 +355,45 @@
       <Item ItemId=";extensions/data-workspace/dist/common/constants.dataworkspace.selectProjectLocation" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Select Project Location]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Projektspeicherort auswählen]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/data-workspace/dist/common/constants.dataworkspace.selectProjectType" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Select Project Type]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Projekttyp auswählen]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/data-workspace/dist/common/constants.dataworkspace.workspacePlaceholder" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Select workspace ({0}) file]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Arbeitsbereichsdatei auswählen ({0})]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/data-workspace/dist/common/constants.fileDoesNotExist" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[File '{0}' doesn't exist]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Die Datei "{0}" ist nicht vorhanden]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/data-workspace/dist/common/constants.gitCloneError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Error during git clone. View git output for more details]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Fehler beim Git-Klonen. Weitere Details finden Sie in der Git-Ausgabe]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -337,12 +409,18 @@
       <Item ItemId=";extensions/data-workspace/dist/common/constants.noPreviousData" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Prior {0} for the current project will appear here, please run to see the results.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Vorherige "{0}" für das aktuelle Projekt werden hier angezeigt. Führen Sie die Ausführung aus, um die Ergebnisse anzuzeigen.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/data-workspace/dist/common/constants.projectNameNull" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Project name is null]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Projektname ist Null]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -367,12 +445,18 @@
       <Item ItemId=";extensions/data-workspace/package.extension-description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Data workspace]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Datenarbeitsbereich]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/data-workspace/package.extension-displayName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Data workspace]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Datenarbeitsbereich]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -406,30 +490,45 @@
       <Item ItemId=";extensions/data-workspace/package.open-existing-command" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Open existing]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Vorhandene öffnen]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/data-workspace/package.projects-view-no-project-content" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[No projects open in current workspace.]D;]A;[Create new]5D;(command:projects.new)]D;]A;[Open existing]5D;(command:projects.openExisting)]D;]A;To learn more about projects [read our docs]5D;(https://aka.ms/azuredatastudio-projects).]D;]A;]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Im aktuellen Arbeitsbereich sind keine Projekte geöffnet.]D;]A;[Neues erstellen]5D;(command:projects.new)]D;]A;[Bestehendes öffnen]5D;(command:projects.openExisting)]D;]A;Weitere Informationen zu Projekten [unsere Dokumentation lesen]5D;(https://aka.ms/azuredatastudio-projects).]D;]A;]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/data-workspace/package.projects-view-no-workspace-content" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Create new or open existing to get started.]D;]A;[Create new]5D;(command:projects.new)]D;]A;[Open existing]5D;(command:projects.openExisting)]D;]A;To learn more about projects [read our docs]5D;(https://aka.ms/azuredatastudio-projects).]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Erstellen Sie ein neues oder öffnen Sie ein bestehendes, um loszulegen.]D;]A;[Neues erstellen]5D;(command:projects.new)]D;]A;[Bestehendes öffnen]5D;(command:projects.openExisting)]D;]A;Weitere Informationen zu Projekten [unsere Dokumentation lesen]5D;(https://aka.ms/azuredatastudio-projects).]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/data-workspace/package.projects.defaultProjectSaveLocation" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Full path to folder where new projects are saved by default.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Vollständiger Pfad zu dem Ordner, in dem neue Projekte standardmäßig gespeichert werden.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/data-workspace/package.projects.showNotAddedProjectsInWorkspacePrompt" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Always show information message when the current workspace folders contain projects that have not been added to the workspace's projects.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Informationsmeldung immer anzeigen, wenn die aktuellen Arbeitsbereichsordner Projekte enthalten, die nicht zu den Projekten des Arbeitsbereichs hinzugefügt wurden.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -445,6 +544,9 @@
       <Item ItemId=";extensions/data-workspace/package.remove-project-command" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Remove Project]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Projekt entfernen]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
