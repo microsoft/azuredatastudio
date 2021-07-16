@@ -138,7 +138,7 @@ export class SqlDatabaseTree {
 		this._databaseTable = this._view.modelBuilder.declarativeTable().withProps(
 			{
 				enableRowSelection: true,
-				width: 200,
+				width: 250,
 				CSSStyles: {
 					'table-layout': 'fixed'
 				},
@@ -193,8 +193,8 @@ export class SqlDatabaseTree {
 
 		const tableContainer = this._view.modelBuilder.divContainer().withItems([this._databaseTable]).withProps({
 			CSSStyles: {
-				'width': '200px',
-				'margin': '0px 8px 0px 34px'
+				'width': '280px',
+				'margin': '0px 8px 0px 30px'
 			}
 		}).component();
 		return tableContainer;
