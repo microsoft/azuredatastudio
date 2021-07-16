@@ -19,6 +19,7 @@ import { QueryTextEditor } from 'sql/workbench/browser/modelComponents/queryText
 import { IContextViewProvider, IDelegate } from 'vs/base/browser/ui/contextview/contextview';
 import { IEditorPane } from 'vs/workbench/common/editor';
 import { INotebookShowOptions } from 'sql/workbench/api/common/sqlExtHost.protocol';
+import { NotebookViewsExtension } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViewsExtension';
 
 export class NotebookModelStub implements INotebookModel {
 	constructor(private _languageInfo?: nb.ILanguageInfo, private _cells?: ICellModel[], private _testContents?: nb.INotebookContents) {
@@ -490,6 +491,9 @@ export class NotebookComponentStub implements INotebookEditor {
 	get model(): INotebookModel {
 		throw new Error('Method not implemented.');
 	}
+	get views(): NotebookViewsExtension {
+		throw new Error('Method not implemented.');
+	}
 	isDirty(): boolean {
 		throw new Error('Method not implemented.');
 	}
@@ -684,6 +688,7 @@ export class NotebookEditorStub implements INotebookEditor {
 	cellEditors: CellEditorProviderStub[];
 	modelReady: Promise<INotebookModel>;
 	model: INotebookModel;
+	views: NotebookViewsExtension;
 	viewMode: string;
 	isDirty(): boolean {
 		throw new Error('Method not implemented.');

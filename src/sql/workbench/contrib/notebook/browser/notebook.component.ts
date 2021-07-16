@@ -28,7 +28,7 @@ import { INotebookService, INotebookParams, INotebookEditor, INotebookSection, I
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
 import { Deferred } from 'sql/base/common/promise';
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
-import { AddCellAction, KernelsDropdown, AttachToDropdown, TrustedAction, RunAllCellsAction, ClearAllOutputsAction, CollapseCellsAction, RunParametersAction } from 'sql/workbench/contrib/notebook/browser/notebookActions';
+import { AddCellAction, KernelsDropdown, AttachToDropdown, TrustedAction, RunAllCellsAction, ClearAllOutputsAction, CollapseCellsAction, RunParametersAction, NotebookViewsOptions } from 'sql/workbench/contrib/notebook/browser/notebookActions';
 import { DropdownMenuActionViewItem } from 'sql/base/browser/ui/buttonMenu/buttonMenu';
 import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { IConnectionDialogService } from 'sql/workbench/services/connection/common/connectionDialogService';
@@ -51,6 +51,7 @@ import { NotebookInput } from 'sql/workbench/contrib/notebook/browser/models/not
 import { IColorTheme } from 'vs/platform/theme/common/themeService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { CellToolbarComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/cellToolbar.component';
+import { NotebookViewsExtension } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViewsExtension';
 import { MaskedLabeledMenuItemActionItem } from 'sql/platform/actions/browser/menuEntryActionViewItem';
 import { IActionViewItem } from 'vs/base/browser/ui/actionbar/actionbar';
 
@@ -70,6 +71,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	@ViewChildren(CellToolbarComponent) private cellToolbar: QueryList<CellToolbarComponent>;
 
 	@Input() _model: NotebookModel;
+	@Input() _views: NotebookViewsExtension;
 
 	protected _actionBar: Taskbar;
 	protected isLoading: boolean;
@@ -132,6 +134,10 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	}
 	public get model(): NotebookModel | null {
 		return this._model;
+	}
+
+	public get views(): NotebookViewsExtension | null {
+		return this._views;
 	}
 
 	public get activeCellId(): string {
@@ -442,6 +448,28 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			dropdownMenuActionViewItem.render(buttonDropdownContainer);
 			dropdownMenuActionViewItem.setActionContext(this._notebookParams.notebookUri);
 
+			let viewsDropdownContainer;
+			if (this._configurationService.getValue<boolean>('notebookViews.enabled')) {
+				let viewsContainer = document.createElement('li');
+				let viewsActionsProvider = new NotebookViewsOptions(viewsContainer, this.views, this.modelReady, this.notebookService, this.instantiationService);
+				let viewsButton = this.instantiationService.createInstance(AddCellAction, 'notebook.OpenViews', localize('views', "Views"), 'notebook-button masked-pseudo code');
+				viewsDropdownContainer = DOM.$('li.action-item');
+				viewsDropdownContainer.setAttribute('role', 'presentation');
+				let viewsDropdownMenuActionViewItem = new DropdownMenuActionViewItem(
+					viewsButton,
+					viewsActionsProvider,
+					this.contextMenuService,
+					undefined,
+					this._actionBar.actionRunner,
+					undefined,
+					'codicon notebook-button masked-pseudo masked-pseudo-after icon-dashboard-view dropdown-arrow',
+					localize('editor', "Editor"),
+					undefined
+				);
+				viewsDropdownMenuActionViewItem.render(viewsDropdownContainer);
+				viewsDropdownMenuActionViewItem.setActionContext(this._notebookParams.notebookUri);
+			}
+
 			this._actionBar.setContent([
 				{ element: buttonDropdownContainer },
 				{ action: this._runAllCellsAction },
@@ -449,6 +477,8 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 				{ element: kernelContainer },
 				{ element: attachToContainer },
 				{ element: spacerElement },
+				{ element: Taskbar.createTaskbarSeparator() },
+				{ element: viewsDropdownContainer },
 				{ action: collapseCellsAction },
 				{ action: clearResultsButton },
 				{ action: this._trustedAction },
