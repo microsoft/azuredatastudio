@@ -90,6 +90,8 @@ export class PostgresResourceHealthPage extends DashboardPage {
 		this.podConditionsContainer = this.modelView.modelBuilder.divContainer().component();
 		this.podConditionsTable = this.modelView.modelBuilder.declarativeTable().withProps({
 			width: '100%',
+			ariaLabel: loc.podConditionsTable,
+			ariaRole: loc.podConditionsTable,
 			columns: [
 				{
 					displayName: loc.condition,

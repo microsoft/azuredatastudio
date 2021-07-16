@@ -108,6 +108,7 @@ export class PostgresOverviewPage extends DashboardPage {
 		const endpointsTable = this.modelView.modelBuilder.declarativeTable().withProperties<azdata.DeclarativeTableProperties>({
 			width: '100%',
 			ariaLabel: loc.serviceEndpoints,
+			ariaRole: loc.serviceEndpointsTable,
 			columns: [
 				{
 					displayName: loc.name,
@@ -155,6 +156,7 @@ export class PostgresOverviewPage extends DashboardPage {
 		this.podStatusTable = this.modelView.modelBuilder.declarativeTable().withProps({
 			width: '100%',
 			ariaLabel: loc.serverGroupNodes,
+			ariaRole: loc.serverGroupNodesTable,
 			columns: [
 				{
 					displayName: loc.name,
