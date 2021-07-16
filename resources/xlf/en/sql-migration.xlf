@@ -396,14 +396,23 @@ This may take some time.</source>
     <trans-unit id="sql.migration.key2.label">
       <source xml:lang="en">Key 2</source>
     </trans-unit>
-    <trans-unit id="sql.migration.key.copied">
-      <source xml:lang="en">Key copied</source>
+    <trans-unit id="sql.migration.key1.copied">
+      <source xml:lang="en">Key 1 copied</source>
     </trans-unit>
-    <trans-unit id="sql.migration.refresh.keys">
-      <source xml:lang="en">Refresh keys</source>
+    <trans-unit id="sql.migration.key2.copied">
+      <source xml:lang="en">Key 2 copied</source>
     </trans-unit>
-    <trans-unit id="sql.migration.copy.key">
-      <source xml:lang="en">Copy key</source>
+    <trans-unit id="sql.migration.refresh.key1">
+      <source xml:lang="en">Refresh key 1</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.refresh.key2">
+      <source xml:lang="en">Refresh key 2</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.copy.key1">
+      <source xml:lang="en">Copy key 1</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.copy.key2">
+      <source xml:lang="en">Copy key 2</source>
     </trans-unit>
     <trans-unit id="sql.migration.authkeys.header">
       <source xml:lang="en">Authentication key</source>
@@ -484,7 +493,7 @@ This may take some time.</source>
       <source xml:lang="en">Subscription</source>
     </trans-unit>
     <trans-unit id="sql.migration.storage.account">
-      <source xml:lang="en">Storage Account</source>
+      <source xml:lang="en">Storage account</source>
     </trans-unit>
     <trans-unit id="sql.migration.resourceGroups">
       <source xml:lang="en">Resource group</source>
