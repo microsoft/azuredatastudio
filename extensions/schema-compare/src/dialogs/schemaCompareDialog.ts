@@ -289,16 +289,16 @@ export class SchemaCompareDialog {
 			this.targetFileButton = this.view.modelBuilder.button().withProps({
 				title: loc.selectTargetFile,
 				ariaLabel: loc.selectTargetFile,
-				secondary: true
+				secondary: true,
+				iconPath: path.join(this.extensionContext.extensionPath, 'media', 'folder.svg')
 			}).component();
-			this.targetFileButton.iconPath = path.join(this.extensionContext.extensionPath, 'media', 'folder.svg');
 		} else {
 			this.sourceFileButton = this.view.modelBuilder.button().withProps({
 				title: loc.selectSourceFile,
 				ariaLabel: loc.selectSourceFile,
-				secondary: true
+				secondary: true,
+				iconPath: path.join(this.extensionContext.extensionPath, 'media', 'folder.svg')
 			}).component();
-			this.sourceFileButton.iconPath = path.join(this.extensionContext.extensionPath, 'media', 'folder.svg');
 		}
 
 		let currentButton = isTarget ? this.targetFileButton : this.sourceFileButton;
