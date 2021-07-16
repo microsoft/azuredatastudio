@@ -266,18 +266,6 @@ function refreshLangpacks() {
             if (languageId === "zh-tw") {
                 languageId = "zh-hant";
             }
-            //remove extensions not part of ADS.
-            if (fs.existsSync(translationDataFolder)) {
-                let totalExtensions = fs.readdirSync(path.join(translationDataFolder, 'extensions'));
-                for (let extensionTag in totalExtensions) {
-                    let extensionFileName = totalExtensions[extensionTag];
-                    let xlfPath = path.join(location, `${languageId}`, extensionFileName.replace('.i18n.json', '.xlf'));
-                    if (!(fs.existsSync(xlfPath) || VSCODEExtensions.indexOf(extensionFileName.replace('.i18n.json', '')) !== -1)) {
-                        let filePath = path.join(translationDataFolder, 'extensions', extensionFileName);
-                        rimraf.sync(filePath);
-                    }
-                }
-            }
             console.log(`Importing translations for ${languageId} from '${location}' to '${translationDataFolder}' ...`);
             let translationPaths = [];
             gulp.src(path.join(location, languageId, '**', '*.xlf'))
@@ -356,6 +344,8 @@ function renameVscodeLangpacks() {
         }
         let locADSFolder = path.join('.', 'i18n', `ads-language-pack-${langId}`);
         let locVSCODEFolder = path.join('.', 'i18n', `vscode-language-pack-${langId}`);
+        let translationDataFolder = path.join(locVSCODEFolder, 'translations');
+        let xlfFolder = path.join('.', 'resources', 'xlf');
         try {
             fs.statSync(locVSCODEFolder);
         }
@@ -363,13 +353,26 @@ function renameVscodeLangpacks() {
             console.log('vscode pack is not in ADS yet: ' + langId);
             continue;
         }
-        gulp.src(path.join(locADSFolder, '*.md'))
-            .pipe(rename(filepath => filepath.dirname = ''))
-            .pipe(gulp.dest(locVSCODEFolder))
-            .on('end', () => {
-            rimraf.sync(locADSFolder);
-            fs.renameSync(locVSCODEFolder, locADSFolder);
+        // Delete extension files in vscode language pack that are not in ADS.
+        if (fs.existsSync(translationDataFolder)) {
+            let totalExtensions = fs.readdirSync(path.join(translationDataFolder, 'extensions'));
+            for (let extensionTag in totalExtensions) {
+                let extensionFileName = totalExtensions[extensionTag];
+                let xlfPath = path.join(xlfFolder, `${langId}`, extensionFileName.replace('.i18n.json', '.xlf'));
+                if (!(fs.existsSync(xlfPath) || VSCODEExtensions.indexOf(extensionFileName.replace('.i18n.json', '')) !== -1)) {
+                    let filePath = path.join(translationDataFolder, 'extensions', extensionFileName);
+                    rimraf.sync(filePath);
+                }
+            }
+        }
+        //Get list of md files in ADS langpack, to copy to vscode langpack prior to renaming.
+        let globArray = glob.sync(path.join(locADSFolder, '*.md'));
+        //Copy files to vscode langpack, then remove the ADS langpack, and finally rename the vscode langpack to match the ADS one.
+        globArray.forEach(element => {
+            fs.copyFileSync(element, path.join(locVSCODEFolder, path.parse(element).base));
         });
+        rimraf.sync(locADSFolder);
+        fs.renameSync(locVSCODEFolder, locADSFolder);
     }
     console.log("Langpack Rename Completed.");
     return Promise.resolve();
