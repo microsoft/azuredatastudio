@@ -6,6 +6,9 @@
 export const invalidRelativePathRegex = /^\.\.+(?=\.\.)/g;
 
 export function replaceInvalidLinkPath(href: string): string {
-	href = href.replace(invalidRelativePathRegex, '..\\');
+	// Get first slash of link and use that create relative path format (..\) string
+	// and then concatenate relative path format string to rest of href path after slash
+	let slashIndex = href.indexOf('\\');
+	href = '..\\'.repeat((slashIndex / 2)) + href.substring(slashIndex + 1);
 	return href;
 }
