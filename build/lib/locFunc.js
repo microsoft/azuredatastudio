@@ -332,7 +332,7 @@ exports.refreshLangpacks = refreshLangpacks;
  * Function for adding replacing ads language packs with vscode ones.
  * For new languages, remember to add to i18n.extraLanguages so that it will be recognized by ADS.
 */
-async function renameVscodeLangpacks() {
+function renameVscodeLangpacks() {
     let supportedLocations = [...i18n.defaultLanguages, ...i18n.extraLanguages];
     for (let i = 0; i < supportedLocations.length; i++) {
         let langId = supportedLocations[i].id;
@@ -345,7 +345,7 @@ async function renameVscodeLangpacks() {
         let locADSFolder = path.join('.', 'i18n', `ads-language-pack-${langId}`);
         let locVSCODEFolder = path.join('.', 'i18n', `vscode-language-pack-${langId}`);
         let translationDataFolder = path.join(locVSCODEFolder, 'translations');
-        let location = path.join('.', 'resources', 'xlf');
+        let xlfFolder = path.join('.', 'resources', 'xlf');
         try {
             fs.statSync(locVSCODEFolder);
         }
@@ -358,14 +358,16 @@ async function renameVscodeLangpacks() {
             let totalExtensions = fs.readdirSync(path.join(translationDataFolder, 'extensions'));
             for (let extensionTag in totalExtensions) {
                 let extensionFileName = totalExtensions[extensionTag];
-                let xlfPath = path.join(location, `${langId}`, extensionFileName.replace('.i18n.json', '.xlf'));
+                let xlfPath = path.join(xlfFolder, `${langId}`, extensionFileName.replace('.i18n.json', '.xlf'));
                 if (!(fs.existsSync(xlfPath) || VSCODEExtensions.indexOf(extensionFileName.replace('.i18n.json', '')) !== -1)) {
                     let filePath = path.join(translationDataFolder, 'extensions', extensionFileName);
                     rimraf.sync(filePath);
                 }
             }
         }
+        //Get list of md files in ADS langpack, to copy to vscode langpack prior to renaming.
         let globArray = glob.sync(path.join(locADSFolder, '*.md'));
+        //Copy files to vscode langpack, then remove the ADS langpack, and finally rename the vscode langpack to match the ADS one.
         globArray.forEach(element => {
             fs.copyFileSync(element, path.join(locVSCODEFolder, path.parse(element).base));
         });
