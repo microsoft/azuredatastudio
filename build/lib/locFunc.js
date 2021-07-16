@@ -353,6 +353,11 @@ function renameVscodeLangpacks() {
             console.log('vscode pack is not in ADS yet: ' + langId);
             continue;
         }
+        //Delete any erroneous zip files found in vscode folder.
+        let globZipArray = glob.sync(path.join(locVSCODEFolder, '*.zip'));
+        globZipArray.forEach(element => {
+            fs.unlinkSync(element);
+        });
         // Delete extension files in vscode language pack that are not in ADS.
         if (fs.existsSync(translationDataFolder)) {
             let totalExtensions = fs.readdirSync(path.join(translationDataFolder, 'extensions'));
@@ -366,9 +371,9 @@ function renameVscodeLangpacks() {
             }
         }
         //Get list of md files in ADS langpack, to copy to vscode langpack prior to renaming.
-        let globArray = glob.sync(path.join(locADSFolder, '*.md'));
+        let globMDArray = glob.sync(path.join(locADSFolder, '*.md'));
         //Copy files to vscode langpack, then remove the ADS langpack, and finally rename the vscode langpack to match the ADS one.
-        globArray.forEach(element => {
+        globMDArray.forEach(element => {
             fs.copyFileSync(element, path.join(locVSCODEFolder, path.parse(element).base));
         });
         rimraf.sync(locADSFolder);
