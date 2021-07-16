@@ -7,7 +7,7 @@ import TurndownService = require('turndown');
 import { URI } from 'vs/base/common/uri';
 import * as path from 'vs/base/common/path';
 import * as turndownPluginGfm from 'sql/workbench/contrib/notebook/browser/turndownPluginGfm';
-import { invalidRelativePathRegex, replaceInvalidLinkPath } from 'sql/workbench/contrib/notebook/common/utils';
+import { replaceInvalidLinkPath } from 'sql/workbench/contrib/notebook/common/utils';
 import { isWindows } from 'vs/base/common/platform';
 
 // These replacements apply only to text. Here's how it's handled from Turndown:
@@ -314,7 +314,7 @@ export function findPathRelativeToContent(notebookFolder: string, contentPath: U
 			if (relativePath.startsWith(path.join('..', path.sep) || path.join('.', path.sep))) {
 				return relativePath;
 				// if relativePath contains improper directory format due to marked js parsing returning an invalid path (ex. ....\) then we need to replace it to ensure the directories are formatted properly (ex. ..\..\)
-			} else if (isWindows && relativePath.match(invalidRelativePathRegex)) {
+			} else if (isWindows && relativePath.startsWith('...')) {
 				return replaceInvalidLinkPath(relativePath);
 			} else {
 				// if the relative path does not contain ./ at the beginning, we need to add it so it's recognized as a link
