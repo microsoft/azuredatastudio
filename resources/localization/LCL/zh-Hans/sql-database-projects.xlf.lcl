@@ -1128,10 +1128,13 @@
       </Item>
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.profileReadError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Could not load the profile file.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
+          <Val><![CDATA[Error loading the publish profile. {0}]]></Val>
+          <Tgt Cat="Text" Stat="Update" Orig="New">
             <Val><![CDATA[无法加载配置文件。]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Could not load the profile file.]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1361,6 +1364,18 @@
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.selectProfile" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Select Profile]]></Val>
+          <Tgt Cat="Text" Stat="Update" Orig="New">
+            <Val><![CDATA[选择要加载的发布配置文件]]></Val>
+          </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Select publish profile to load]]></Val>
+          </Prev>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/sql-database-projects/dist/common/constants.selectProfileToUse" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Select publish profile to load]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
