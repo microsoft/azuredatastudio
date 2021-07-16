@@ -5361,6 +5361,14 @@ Erreur : {1}</target>
       </trans-unit>
     </body>
   </file>
+  <file original="src/sql/workbench/contrib/resourceDeployment/browser/resourceDeployment.contribution" source-language="en" datatype="plaintext" target-language="fr">
+    <body>
+      <trans-unit id="deployment.title">
+        <source xml:lang="en">New Deployment...</source>
+        <target state="new">New Deployment...</target>
+      </trans-unit>
+    </body>
+  </file>
   <file original="src/sql/workbench/contrib/resourceViewer/browser/resourceViewer.contribution" source-language="en" datatype="plaintext" target-language="fr">
     <body>
       <trans-unit id="resourceViewer">
