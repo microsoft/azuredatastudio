@@ -37,6 +37,7 @@ import * as statusbar from 'vs/workbench/services/statusbar/common/statusbar';
 import { ClassifiedEvent, GDPRClassification, StrictPropertyCheck } from 'vs/platform/telemetry/common/gdprTypings';
 import { ITelemetryInfo } from 'vs/platform/telemetry/common/telemetry';
 import { ThemeColor } from 'vs/platform/theme/common/themeService';
+import { TreeDataTransferDTO } from 'vs/workbench/api/common/shared/treeDataTransfer';
 import * as tasks from 'vs/workbench/api/common/shared/tasks';
 import { IRevealOptions, ITreeItem } from 'vs/workbench/common/views';
 import { IAdapterDescriptor, IConfig, IDebugSessionReplMode } from 'vs/workbench/contrib/debug/common/debug';
@@ -1235,7 +1236,7 @@ export interface ExtHostTreeViewsShape {
 	// {{SQL CARBON EDIT}}
 	$getChildren(treeViewId: string, treeItemHandle?: string): Promise<sqlITreeItem[]>;
 	// {{SQL CARBON EDIT}}
-	$onDrop?(treeViewId: string, treeItemHandle: string[], newParentTreeItemHandle: string): Promise<void>;
+	$onDrop?(treeViewId: string, treeDataTransfer: TreeDataTransferDTO, newParentTreeItemHandle: string): Promise<void>;
 	$setExpanded(treeViewId: string, treeItemHandle: string, expanded: boolean): void;
 	$setSelection(treeViewId: string, treeItemHandles: string[]): void;
 	$setVisible(treeViewId: string, visible: boolean): void;
