@@ -122,7 +122,8 @@
           "objectType": null,
           "categoryValues": null,
           "isRequired": false,
-          "isArray": false
+          "isArray": false,
+          "hide": true
         }
       ]
     },
