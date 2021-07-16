@@ -22,6 +22,9 @@
       <Item ItemId=";extensions/machine-learning/dist/common/constants.dashboardDesc" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Machine Learning for SQL databases]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[针对 SQL 数据库的机器学习]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -424,6 +427,9 @@
       <Item ItemId=";extensions/machine-learning/dist/common/constants.mls.enableExternalScriptsError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Failed to enable External script.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[未能启用外部脚本。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
