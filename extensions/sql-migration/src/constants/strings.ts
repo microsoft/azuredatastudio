@@ -78,7 +78,7 @@ export function ACCOUNT_STALE_ERROR(account: AzureAccount) {
 	return localize('azure.accounts.accountStaleError', "The access token for selected account '{0}' is no longer valid. Please click the 'Link Account' button and refresh the account or select a different account.", `${account.displayInfo.displayName} (${account.displayInfo.userId})`);
 }
 export function ACCOUNT_ACCESS_ERROR(account: AzureAccount, error: Error) {
-	return localize('azure.accounts.accountAccessError', "Am error occurred while accessing the selected account '{0}'. Please click the 'Link Account' button and refresh the account or select a different account. Error '{1}'", `${account.displayInfo.displayName} (${account.displayInfo.userId})`, error.message);
+	return localize('azure.accounts.accountAccessError', "An error occurred while accessing the selected account '{0}'. Please click the 'Link Account' button and refresh the account or select a different account. Error '{1}'", `${account.displayInfo.displayName} (${account.displayInfo.userId})`, error.message);
 }
 
 // database backup page
