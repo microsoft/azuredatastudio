@@ -11,7 +11,7 @@ import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import * as azdata from 'azdata';
 import * as nls from 'vs/nls';
 
-import { EditorInput } from 'vs/workbench/common/editor';
+import { EditorInput } from 'vs/workbench/common/editor/editorInput';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { Event, Emitter } from 'vs/base/common/event';
 import { generateUuid } from 'vs/base/common/uuid';

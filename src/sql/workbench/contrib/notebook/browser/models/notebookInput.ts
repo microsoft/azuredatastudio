@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { EditorInput, EditorModel, IRevertOptions, GroupIdentifier, IEditorInput } from 'vs/workbench/common/editor';
+import { IRevertOptions, GroupIdentifier, IEditorInput } from 'vs/workbench/common/editor';
 import { Emitter, Event } from 'vs/base/common/event';
 import { URI } from 'vs/base/common/uri';
 import * as resources from 'vs/base/common/resources';
@@ -35,6 +35,8 @@ import { NotebookFindModel } from 'sql/workbench/contrib/notebook/browser/find/n
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
 import { INotebookInput } from 'sql/workbench/services/notebook/browser/interface';
+import { EditorModel } from 'vs/workbench/common/editor/editorModel';
+import { EditorInput } from 'vs/workbench/common/editor/editorInput';
 
 export type ModeViewSaveHandler = (handle: number) => Thenable<boolean>;
 

@@ -7,7 +7,7 @@ import * as strings from 'vs/base/common/strings';
 import * as DOM from 'vs/base/browser/dom';
 import * as nls from 'vs/nls';
 
-import { EditorOptions, EditorInput, IEditorControl, IEditorPane, IEditorOpenContext } from 'vs/workbench/common/editor';
+import { IEditorControl, IEditorPane, IEditorOpenContext } from 'vs/workbench/common/editor';
 import { EditorPane } from 'vs/workbench/browser/parts/editor/editorPane';
 
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
@@ -38,6 +38,7 @@ import { IStorageService } from 'vs/platform/storage/common/storage';
 import { IEditorGroup } from 'vs/workbench/services/editor/common/editorGroupsService';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { IActionViewItem } from 'vs/base/browser/ui/actionbar/actionbar';
+import { EditorInput } from 'vs/workbench/common/editor/editorInput';
 
 /**
  * Editor that hosts an action bar and a resultSetInput for an edit data session
