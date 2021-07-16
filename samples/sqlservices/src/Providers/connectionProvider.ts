@@ -5,7 +5,7 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 
-export const ProviderId: string = 'testProvider';
+export const ProviderId: string = 'TESTPROVIDER';
 
 export class ConnectionProvider implements azdata.ConnectionProvider {
 	private onConnectionCompleteEmitter: vscode.EventEmitter<azdata.ConnectionInfoSummary> = new vscode.EventEmitter();

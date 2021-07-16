@@ -57,12 +57,12 @@ export class ObjectExplorerProvider implements azdata.ObjectExplorerProvider {
 				nodes: [
 					{
 						nodePath: 'root/1',
-						nodeType: 'database',
+						nodeType: 'Database',
 						label: 'abc1',
 						isLeaf: false
 					}, {
 						nodePath: 'root/2',
-						nodeType: 'database',
+						nodeType: 'Database',
 						label: 'abc2',
 						isLeaf: false
 					}

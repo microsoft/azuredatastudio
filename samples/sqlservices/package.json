@@ -84,7 +84,7 @@
       }
     ],
     "connectionProvider": {
-      "providerId": "testProvider",
+      "providerId": "TESTPROVIDER",
       "languageMode": "sql",
       "notebookKernelAlias": "Test Provider",
       "displayName": "Test Provider",
@@ -187,6 +187,14 @@
           "categoryValues": null,
           "isRequired": false,
           "isArray": false
+        }
+      ]
+    },
+    "menus": {
+      "objectExplorer/item/context": [
+        {
+          "command": "sqlservices.openDialog",
+          "when": "nodeType =~ /^(Database|Server)$/ && connectionProvider == TESTPROVIDER"
         }
       ]
     }
