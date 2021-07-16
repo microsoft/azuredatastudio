@@ -91,7 +91,6 @@ export class PostgresResourceHealthPage extends DashboardPage {
 		this.podConditionsTable = this.modelView.modelBuilder.declarativeTable().withProps({
 			width: '100%',
 			ariaLabel: loc.podConditionsTable,
-			ariaRole: loc.podConditionsTable,
 			columns: [
 				{
 					displayName: loc.condition,
@@ -126,7 +125,7 @@ export class PostgresResourceHealthPage extends DashboardPage {
 
 		this.podDropDown = this.modelView.modelBuilder.dropDown().withProps({
 			width: '150px',
-			ariaLabel: loc.podsUsedDescription
+			ariaLabel: loc.podsUsedDescriptionAria
 		}).component();
 		this.disposables.push(
 			this.podDropDown.onValueChanged(() => {

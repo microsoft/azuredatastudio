@@ -81,7 +81,8 @@ export class PostgresOverviewPage extends DashboardPage {
 		const titleCSS = { ...cssStyles.title, 'margin-block-start': '2em', 'margin-block-end': '0' };
 		content.addItem(this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
 			value: loc.serviceEndpoints,
-			CSSStyles: titleCSS
+			CSSStyles: titleCSS,
+			ariaRole: 'heading'
 		}).component());
 
 		this.kibanaLink = this.modelView.modelBuilder.hyperlink().component();
@@ -108,7 +109,6 @@ export class PostgresOverviewPage extends DashboardPage {
 		const endpointsTable = this.modelView.modelBuilder.declarativeTable().withProperties<azdata.DeclarativeTableProperties>({
 			width: '100%',
 			ariaLabel: loc.serviceEndpoints,
-			ariaRole: loc.serviceEndpointsTable,
 			columns: [
 				{
 					displayName: loc.name,
@@ -150,13 +150,13 @@ export class PostgresOverviewPage extends DashboardPage {
 		// Server Group Nodes
 		content.addItem(this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
 			value: loc.serverGroupNodes,
-			CSSStyles: titleCSS
+			CSSStyles: titleCSS,
+			ariaRole: 'heading'
 		}).component());
 
 		this.podStatusTable = this.modelView.modelBuilder.declarativeTable().withProps({
 			width: '100%',
 			ariaLabel: loc.serverGroupNodes,
-			ariaRole: loc.serverGroupNodesTable,
 			columns: [
 				{
 					displayName: loc.name,
