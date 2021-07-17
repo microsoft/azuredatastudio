@@ -730,7 +730,7 @@ export class ListDatabasesActionItem extends Disposable implements IActionViewIt
 		if (uri) {
 			let profile = this.connectionManagementService.getConnectionProfile(uri);
 			if (profile) {
-				return profile.databaseName;
+				return profile.databaseName ? profile.databaseName : profile.serverName;
 			}
 		}
 		return undefined;
@@ -759,7 +759,7 @@ export class ListDatabasesActionItem extends Disposable implements IActionViewIt
 			return;
 		}
 
-		this.updateConnection(connParams.connectionProfile.databaseName);
+		this.updateConnection(connParams.connectionProfile.databaseName ? connParams.connectionProfile.databaseName : connParams.connectionProfile.serverName);
 	}
 
 	private onDropdownFocus(): void {
