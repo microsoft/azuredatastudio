@@ -514,11 +514,20 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.copy.key" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.copy.key1" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Copy key]]></Val>
+          <Val><![CDATA[Copy key 1]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[複製金鑰]]></Val>
+            <Val><![CDATA[複製金鑰 1]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.copy.key2" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Copy key 2]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[複製金鑰 2]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1459,11 +1468,11 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.key.copied" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.key1.copied" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Key copied]]></Val>
+          <Val><![CDATA[Key 1 copied]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[已複製金鑰]]></Val>
+            <Val><![CDATA[已複製金鑰 1]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -1473,6 +1482,15 @@
           <Val><![CDATA[Key 1]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[金鑰 1]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.key2.copied" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Key 2 copied]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[已複製金鑰 2]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2080,11 +2098,20 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.refresh.keys" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.refresh.key1" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Refresh keys]]></Val>
+          <Val><![CDATA[Refresh key 1]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[重新整理金鑰]]></Val>
+            <Val><![CDATA[重新整理金鑰 1]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.refresh.key2" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Refresh key 2]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[重新整理金鑰 2]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2649,10 +2676,13 @@
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.storage.account" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Storage Account]]></Val>
+          <Val><![CDATA[Storage account]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[儲存體帳戶]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Storage Account]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
