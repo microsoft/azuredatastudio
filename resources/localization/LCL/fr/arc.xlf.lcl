@@ -383,7 +383,7 @@
         <Str Cat="Text">
           <Val><![CDATA[https://<IP or hostname>:<port>]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[https://<IP ou nom d’hôte> : <port>]]></Val>
+            <Val><![CDATA[https://<IP ou nom d’hôte>:<port>]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
