@@ -8,7 +8,7 @@
       </trans-unit>
       <trans-unit id="description">
         <source xml:lang="en">SQL Assessment for Azure Data Studio (Preview) provides a mechanism to evaluate the configuration of SQL Server for best practices.</source>
-        <target state="new">SQL Assessment for Azure Data Studio (Preview) provides a mechanism to evaluate the configuration of SQL Server for best practices.</target>
+        <target state="translated">SQL Assessment pour Azure Data Studio (préversion) offre un mécanisme d’évaluation de la configuration des SQL Server pour les meilleures pratiques.</target>
       </trans-unit>
       <trans-unit id="dashboard.tabName">
         <source xml:lang="en">SQL Assessment</source>
@@ -28,7 +28,7 @@
       </trans-unit>
       <trans-unit id="asmt.rulesetversion">
         <source xml:lang="en">Default Ruleset</source>
-        <target state="new">Default Ruleset</target>
+        <target state="translated">Ensemble de règles par défaut</target>
       </trans-unit>
       <trans-unit id="asmt.section.instance.title">
         <source xml:lang="en">SQL Server Instance Details</source>
@@ -104,7 +104,7 @@
       </trans-unit>
       <trans-unit id="asmt.sqlReport.severityMsg">
         <source xml:lang="en">{0}: {1} item(s)</source>
-        <target state="translated">{0} : {1} élément(s)</target>
+        <target state="translated">{0} : {1} élément(s)</target>
       </trans-unit>
     </body>
   </file>
@@ -128,7 +128,7 @@
       </trans-unit>
       <trans-unit id="asmt.details.toLearnMore">
         <source xml:lang="en"> to learn more.</source>
-        <target state="new"> to learn more.</target>
+        <target state="translated"> pour en savoir plus.</target>
       </trans-unit>
       <trans-unit id="asmt.details.ruleDescription">
         <source xml:lang="en">Rule Description</source>
@@ -144,7 +144,7 @@
     <body>
       <trans-unit id="invokeAssessmentLabelServer">
         <source xml:lang="en">Invoke assessment</source>
-        <target state="new">Invoke assessment</target>
+        <target state="translated">Appeler l'évaluation</target>
       </trans-unit>
       <trans-unit id="getAssessmentItemsServer">
         <source xml:lang="en">View applicable rules</source>
@@ -152,7 +152,7 @@
       </trans-unit>
       <trans-unit id="invokeAssessmentLabelDatabase">
         <source xml:lang="en">Invoke assessment for {0}</source>
-        <target state="new">Invoke assessment for {0}</target>
+        <target state="translated">Appeler l'évaluation pour {0}</target>
       </trans-unit>
       <trans-unit id="getAssessmentItemsDatabase">
         <source xml:lang="en">View applicable rules for {0}</source>
@@ -160,7 +160,7 @@
       </trans-unit>
       <trans-unit id="btnExportAsScript">
         <source xml:lang="en">Export as script</source>
-        <target state="new">Export as script</target>
+        <target state="translated">Exporter sous forme de script</target>
       </trans-unit>
       <trans-unit id="btnGeneratehtmlreport">
         <source xml:lang="en">Create HTML Report</source>
@@ -180,7 +180,7 @@
       </trans-unit>
       <trans-unit id="btnViewSamplesShort">
         <source xml:lang="en">View all on GitHub</source>
-        <target state="new">View all on GitHub</target>
+        <target state="translated">Afficher tout sur GitHub</target>
       </trans-unit>
       <trans-unit id="btnViewSamples">
         <source xml:lang="en">View all rules and learn more on GitHub</source>
@@ -188,7 +188,7 @@
       </trans-unit>
       <trans-unit id="msgBoxAsmtInfo">
         <source xml:lang="en">SQL Assessment Information</source>
-        <target state="new">SQL Assessment Information</target>
+        <target state="translated">Informations de SQL Assessment</target>
       </trans-unit>
       <trans-unit id="msgBoxCopyBtn">
         <source xml:lang="en">Copy</source>
@@ -200,7 +200,7 @@
       </trans-unit>
       <trans-unit id="msgBoxCopied">
         <source xml:lang="en">SQL Assessment Information copied</source>
-        <target state="new">SQL Assessment Information copied</target>
+        <target state="translated">Informations de SQL Assessment copiées</target>
       </trans-unit>
     </body>
   </file>
@@ -208,15 +208,15 @@
     <body>
       <trans-unit id="asmt.history.back">
         <source xml:lang="en">&lt;&lt; Back</source>
-        <target state="new">&lt;&lt; Back</target>
+        <target state="translated">&lt;&lt; Retour</target>
       </trans-unit>
       <trans-unit id="asmt.history.resultsTitle">
         <source xml:lang="en">Assessment Results from {0}</source>
-        <target state="new">Assessment Results from {0}</target>
+        <target state="translated">Résultats de l’évaluation à partir de {0}</target>
       </trans-unit>
       <trans-unit id="asmt.history.summaryAsmtDate">
         <source xml:lang="en">Assessment Date</source>
-        <target state="new">Assessment Date</target>
+        <target state="translated">Date d’évaluation</target>
       </trans-unit>
       <trans-unit id="asmt.history.summaryError">
         <source xml:lang="en">Error</source>

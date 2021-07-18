@@ -28,15 +28,15 @@
       </trans-unit>
       <trans-unit id="ml.command.managePackages">
         <source xml:lang="en">Manage packages in database</source>
-        <target state="new">Manage packages in database</target>
+        <target state="translated">Administrar paquetes en una base de datos</target>
       </trans-unit>
       <trans-unit id="ml.command.manageLanguages">
         <source xml:lang="en">Manage external languages</source>
-        <target state="new">Manage external languages</target>
+        <target state="translated">Administrar lenguajes externos</target>
       </trans-unit>
       <trans-unit id="ml.command.predictModel">
         <source xml:lang="en">Make prediction</source>
-        <target state="new">Make prediction</target>
+        <target state="translated">Realizar una predicción</target>
       </trans-unit>
       <trans-unit id="ml.command.manageModels">
         <source xml:lang="en">Manage models</source>
@@ -48,31 +48,31 @@
       </trans-unit>
       <trans-unit id="ml.configuration.title">
         <source xml:lang="en">Machine Learning Configurations</source>
-        <target state="new">Machine Learning Configurations</target>
+        <target state="translated">Configuraciones de Machine Learning</target>
       </trans-unit>
       <trans-unit id="ml.pythonPath.description">
         <source xml:lang="en">Local path to a preexisting Python installation used by Machine Learning.</source>
-        <target state="new">Local path to a preexisting Python installation used by Machine Learning.</target>
+        <target state="translated">Ruta de acceso local a una instalación de Python preexistente utilizada por Machine Learning.</target>
       </trans-unit>
       <trans-unit id="ml.enablePython.description">
         <source xml:lang="en">Enable Python package management in database.</source>
-        <target state="new">Enable Python package management in database.</target>
+        <target state="translated">Habilite la administración de paquetes de Python en la base de datos.</target>
       </trans-unit>
       <trans-unit id="ml.enableR.description">
         <source xml:lang="en">Enable R package management in database.</source>
-        <target state="new">Enable R package management in database.</target>
+        <target state="translated">Habilite la administración de paquetes de R en la base de datos.</target>
       </trans-unit>
       <trans-unit id="ml.rPath.description">
         <source xml:lang="en">Local path to a preexisting R installation used by Machine Learning.</source>
-        <target state="new">Local path to a preexisting R installation used by Machine Learning.</target>
+        <target state="translated">Ruta de acceso local a una instalación de R preexistente utilizada por Machine Learning.</target>
       </trans-unit>
       <trans-unit id="ml.command.dependencies">
         <source xml:lang="en">Install Machine Learning Dependencies</source>
-        <target state="new">Install Machine Learning Dependencies</target>
+        <target state="translated">Instalar dependencias de Machine Learning</target>
       </trans-unit>
       <trans-unit id="ml.command.enableExternalScript">
         <source xml:lang="en">Enable External script</source>
-        <target state="new">Enable External script</target>
+        <target state="translated">Habilitar script externo</target>
       </trans-unit>
     </body>
   </file>
@@ -92,7 +92,7 @@
       </trans-unit>
       <trans-unit id="notebookExtensionFailedError">
         <source xml:lang="en">The extension failed to load because of it's dependency to Notebook extension. Please check the output log for Notebook extension to get more details</source>
-        <target state="new">The extension failed to load because of it's dependency to Notebook extension. Please check the output log for Notebook extension to get more details</target>
+        <target state="translated">No se pudo cargar la extensión debido a que es una dependencia de la extensión de Cuaderno. Compruebe el registro de salida para obtener más información sobre la extensión de Cuaderno.</target>
       </trans-unit>
       <trans-unit id="mls.verifyOdbcDriverError.error">
         <source xml:lang="en">'{0}' is required  for package management. Please make sure it is installed and set up correctly.</source>
@@ -132,7 +132,7 @@
       </trans-unit>
       <trans-unit id="mls.enableExternalScriptsError">
         <source xml:lang="en">Failed to enable External script.</source>
-        <target state="new">Failed to enable External script.</target>
+        <target state="translated">No se pudo habilitar el script externo.</target>
       </trans-unit>
       <trans-unit id="mls.externalScriptsIsRequiredError">
         <source xml:lang="en">External script configuration is required for this action.</source>
@@ -152,7 +152,7 @@
       </trans-unit>
       <trans-unit id="models.confirmDeleteModel">
         <source xml:lang="en">Are you sure you want to delete model '{0}?</source>
-        <target state="new">Are you sure you want to delete model '{0}?</target>
+        <target state="translated">¿Seguro que desea eliminar el modelo '{0}?</target>
       </trans-unit>
       <trans-unit id="mls.installDependencies.packages">
         <source xml:lang="en">Installing required packages ...</source>
@@ -264,7 +264,7 @@
       </trans-unit>
       <trans-unit id="notSupportedEventArg">
         <source xml:lang="en">Not supported event args</source>
-        <target state="new">Not supported event args</target>
+        <target state="translated">Argumentos de evento no admitidos</target>
       </trans-unit>
       <trans-unit id="extLang.installTabTitle">
         <source xml:lang="en">Installed</source>
@@ -364,11 +364,11 @@
       </trans-unit>
       <trans-unit id="models.modelUpdateFailedError">
         <source xml:lang="en">Failed to update the model</source>
-        <target state="new">Failed to update the model</target>
+        <target state="translated">No se pudo actualizar el modelo</target>
       </trans-unit>
       <trans-unit id="models.modelsListEmptyMessage">
         <source xml:lang="en">No models found</source>
-        <target state="new">No models found</target>
+        <target state="translated">No se encontró ningún modelo</target>
       </trans-unit>
       <trans-unit id="models.selectModelTableMessage">
         <source xml:lang="en">Select table</source>
@@ -376,7 +376,7 @@
       </trans-unit>
       <trans-unit id="models.selectModelDatabaseMessage">
         <source xml:lang="en">Select Database</source>
-        <target state="translated">Seleccionar la base de datos</target>
+        <target state="translated">Seleccionar base de datos</target>
       </trans-unit>
       <trans-unit id="models.azureModelsListEmptyTitle">
         <source xml:lang="en">No models found</source>
@@ -388,7 +388,7 @@
       </trans-unit>
       <trans-unit id="models.modelsListEmptyDescription">
         <source xml:lang="en">Select another database or table</source>
-        <target state="new">Select another database or table</target>
+        <target state="translated">Seleccionar otra base de datos o tabla</target>
       </trans-unit>
       <trans-unit id="databaseName">
         <source xml:lang="en">Database</source>
@@ -400,7 +400,7 @@
       </trans-unit>
       <trans-unit id="tableToStoreInfo">
         <source xml:lang="en">Select an existing table that conforms the model schema or create a new one to store the imported model.</source>
-        <target state="new">Select an existing table that conforms the model schema or create a new one to store the imported model.</target>
+        <target state="translated">Seleccione una tabla existente que se ajuste al esquema de modelo o cree una nueva para almacenar el modelo importado.</target>
       </trans-unit>
       <trans-unit id="tableName">
         <source xml:lang="en">Table</source>
@@ -440,11 +440,11 @@
       </trans-unit>
       <trans-unit id="models.imported">
         <source xml:lang="en">Date imported</source>
-        <target state="translated">Fecha importada</target>
+        <target state="translated">Fecha de la importación</target>
       </trans-unit>
       <trans-unit id="models.framework">
         <source xml:lang="en">Framework</source>
-        <target state="translated">Plataforma</target>
+        <target state="translated">Marco</target>
       </trans-unit>
       <trans-unit id="models.frameworkVersion">
         <source xml:lang="en">Framework version</source>
@@ -472,7 +472,7 @@
       </trans-unit>
       <trans-unit id="predict.columnDatabaseInfo">
         <source xml:lang="en">Select the database containing the dataset to apply the prediction.</source>
-        <target state="new">Select the database containing the dataset to apply the prediction.</target>
+        <target state="translated">Seleccione la base de datos que contiene el conjunto de datos al que se aplicará la predicción.</target>
       </trans-unit>
       <trans-unit id="predict.columnTable">
         <source xml:lang="en">Source table</source>
@@ -480,11 +480,11 @@
       </trans-unit>
       <trans-unit id="predict.columnTableInfo">
         <source xml:lang="en">Select the table containing the dataset to apply the prediction.</source>
-        <target state="new">Select the table containing the dataset to apply the prediction.</target>
+        <target state="translated">Seleccione la tabla que contiene el conjunto de datos al que desea aplicar la predicción.</target>
       </trans-unit>
       <trans-unit id="predict.inputColumns">
         <source xml:lang="en">Model Input mapping</source>
-        <target state="new">Model Input mapping</target>
+        <target state="translated">Asignación de entrada del modelo</target>
       </trans-unit>
       <trans-unit id="predict.outputColumns">
         <source xml:lang="en">Model output</source>
@@ -500,7 +500,7 @@
       </trans-unit>
       <trans-unit id="predict.displayName">
         <source xml:lang="en">Display  name</source>
-        <target state="new">Display  name</target>
+        <target state="translated">Nombre para mostrar</target>
       </trans-unit>
       <trans-unit id="predict.inputName">
         <source xml:lang="en">Model input</source>
@@ -508,15 +508,15 @@
       </trans-unit>
       <trans-unit id="predict.selectColumnTitle">
         <source xml:lang="en">Select column...</source>
-        <target state="translated">Seleccione una columna...</target>
+        <target state="translated">Seleccionar columna...</target>
       </trans-unit>
       <trans-unit id="models.selectModelDatabaseTitle">
         <source xml:lang="en">Select database with models</source>
-        <target state="new">Select database with models</target>
+        <target state="translated">Seleccionar base de datos con modelos</target>
       </trans-unit>
       <trans-unit id="models.selectModelTableTitle">
         <source xml:lang="en">Select tables with models</source>
-        <target state="new">Select tables with models</target>
+        <target state="translated">Seleccionar tablas con modelos</target>
       </trans-unit>
       <trans-unit id="predict.selectDatabaseTitle">
         <source xml:lang="en">Select database</source>
@@ -556,7 +556,7 @@
       </trans-unit>
       <trans-unit id="models.localModelsTitle">
         <source xml:lang="en">Local models</source>
-        <target state="new">Local models</target>
+        <target state="translated">Modelos locales</target>
       </trans-unit>
       <trans-unit id="models.modelSourcesTitle">
         <source xml:lang="en">Source location</source>
@@ -564,11 +564,11 @@
       </trans-unit>
       <trans-unit id="models.modelSourcePageTitle">
         <source xml:lang="en">Select model source type</source>
-        <target state="new">Select model source type</target>
+        <target state="translated">Seleccionar tipo de origen del modelo</target>
       </trans-unit>
       <trans-unit id="models.localModelSourceDescriptionForImport">
         <source xml:lang="en">‘File Upload’ is selected. This allows you to import a model file from your local machine into a model database in this SQL instance. Click ‘Next’ to continue.​</source>
-        <target state="new">‘File Upload’ is selected. This allows you to import a model file from your local machine into a model database in this SQL instance. Click ‘Next’ to continue.​</target>
+        <target state="translated">"Carga de archivos" seleccionada. Esto permite importar un archivo modelo de la máquina local a una base de datos modelo en esta instancia de SQL. Haga clic en "siguiente" para continuar.​</target>
       </trans-unit>
       <trans-unit id="models.azureModelSourceDescriptionForImport">
         <source xml:lang="en">‘Azure Machine Learning’ is selected. This allows you to import models stored in Azure Machine Learning workspaces in a model database in this SQL instance. Click ‘Next’ to continue.​​</source>
@@ -576,11 +576,11 @@
       </trans-unit>
       <trans-unit id="models.localModelSourceDescriptionForPredict">
         <source xml:lang="en">‘File Upload’ is selected. This allows you to upload a model file from your local machine.  Click ‘Next’ to continue.​​</source>
-        <target state="new">‘File Upload’ is selected. This allows you to upload a model file from your local machine.  Click ‘Next’ to continue.​​</target>
+        <target state="translated">"Carga de archivos" está seleccionada. Esto permite cargar un archivo de modelo desde el equipo local.  Haga clic en "siguiente" para continuar.​​</target>
       </trans-unit>
       <trans-unit id="models.importedModelSourceDescriptionForPredict">
         <source xml:lang="en">‘Imported Models’ is selected. This allows you to choose from models stored in a model table in your database.  Click ‘Next’ to continue.​</source>
-        <target state="new">‘Imported Models’ is selected. This allows you to choose from models stored in a model table in your database.  Click ‘Next’ to continue.​</target>
+        <target state="translated">"Modelos importados" está seleccionado. Esto le permite elegir modelos almacenados en una tabla modelo de la base de datos.  Haga clic en "siguiente" para continuar.​</target>
       </trans-unit>
       <trans-unit id="models.azureModelSourceDescriptionForPredict">
         <source xml:lang="en">‘Azure Machine Learning’ is selected. This allows you to choose from models stored in Azure Machine Learning workspaces. Click ‘Next’ to continue.​</source>
@@ -588,27 +588,27 @@
       </trans-unit>
       <trans-unit id="models.modelImportTargetPageTitle">
         <source xml:lang="en">Select or enter the location to import the models to</source>
-        <target state="new">Select or enter the location to import the models to</target>
+        <target state="translated">Seleccione o especifique la ubicación a la que se importarán los modelos.</target>
       </trans-unit>
       <trans-unit id="models.columnSelectionPageTitle">
         <source xml:lang="en">Map source data to model</source>
-        <target state="new">Map source data to model</target>
+        <target state="translated">Asignar datos de origen al modelo</target>
       </trans-unit>
       <trans-unit id="models.modelDetailsPageTitle">
         <source xml:lang="en">Enter model details</source>
-        <target state="new">Enter model details</target>
+        <target state="translated">Especificar detalles de modelo</target>
       </trans-unit>
       <trans-unit id="models.modelLocalSourceTitle">
         <source xml:lang="en">Source files</source>
-        <target state="translated">Archivos de código fuente</target>
+        <target state="translated">Archivos de origen</target>
       </trans-unit>
       <trans-unit id="models.modelLocalSourceTooltip">
         <source xml:lang="en">File paths of the models to import</source>
-        <target state="new">File paths of the models to import</target>
+        <target state="translated">Rutas de acceso de archivos de los modelos que se van a importar</target>
       </trans-unit>
       <trans-unit id="models.onnxNotSupportedError">
         <source xml:lang="en">ONNX runtime is not supported in current server</source>
-        <target state="new">ONNX runtime is not supported in current server</target>
+        <target state="translated">La ejecución de ONNX no se admite en el servidor actual</target>
       </trans-unit>
       <trans-unit id="models.currentModelsTitle">
         <source xml:lang="en">Models</source>
@@ -628,15 +628,15 @@
       </trans-unit>
       <trans-unit id="models.viewImportModelsTitle">
         <source xml:lang="en">View and import models</source>
-        <target state="new">View and import models</target>
+        <target state="translated">Ver e importar modelos</target>
       </trans-unit>
       <trans-unit id="models.viewImportModelsDesc">
         <source xml:lang="en">Machine Learning models can be stored in one or more databases and tables. Select the model database and table to view the models within them.</source>
-        <target state="new">Machine Learning models can be stored in one or more databases and tables. Select the model database and table to view the models within them.</target>
+        <target state="translated">Los modelos de Machine Learning se pueden almacenar en una o varias bases de datos y tablas. Seleccione la base de datos modelo y la tabla para ver los modelos que contienen.</target>
       </trans-unit>
       <trans-unit id="models.viewImportModeledForPredictDesc">
         <source xml:lang="en">The models are stored in one or more databases and tables. Select the model database and table to view models in them.</source>
-        <target state="new">The models are stored in one or more databases and tables. Select the model database and table to view models in them.</target>
+        <target state="translated">Los modelos se almacenan en una o varias bases de datos y tablas. Seleccione la base de datos modelo y la tabla para ver los modelos que contienen.</target>
       </trans-unit>
       <trans-unit id="models.learnMoreLink">
         <source xml:lang="en">Learn more.</source>
@@ -652,15 +652,15 @@
       </trans-unit>
       <trans-unit id="models.importModelDesc">
         <source xml:lang="en">Import or view machine learning models stored in database</source>
-        <target state="new">Import or view machine learning models stored in database</target>
+        <target state="translated">Importar o ver los modelos de Machine Learning almacenados en la base de datos</target>
       </trans-unit>
       <trans-unit id="models.makePredictionTitle">
         <source xml:lang="en">Make predictions</source>
-        <target state="new">Make predictions</target>
+        <target state="translated">Realizar predicciones</target>
       </trans-unit>
       <trans-unit id="models.makePredictionDesc">
         <source xml:lang="en">Generate a predicted value or scores using a managed model</source>
-        <target state="new">Generate a predicted value or scores using a managed model</target>
+        <target state="translated">Generar un valor o puntuaciones previstos mediante un modelo administrado</target>
       </trans-unit>
       <trans-unit id="models.createNotebookTitle">
         <source xml:lang="en">Create notebook</source>
@@ -668,19 +668,19 @@
       </trans-unit>
       <trans-unit id="models.createNotebookDesc">
         <source xml:lang="en">Run experiments and create models in a notebook</source>
-        <target state="new">Run experiments and create models in a notebook</target>
+        <target state="translated">Ejecutar experimentos y crear modelos en un cuaderno</target>
       </trans-unit>
       <trans-unit id="models.modelRegisteredSuccessfully">
         <source xml:lang="en">Model registered successfully</source>
-        <target state="new">Model registered successfully</target>
+        <target state="translated">Se registró correctamente el modelo</target>
       </trans-unit>
       <trans-unit id="models.modelUpdatedSuccessfully">
         <source xml:lang="en">Model updated successfully</source>
-        <target state="new">Model updated successfully</target>
+        <target state="translated">Modelo actualizado correctamente</target>
       </trans-unit>
       <trans-unit id="models.modelFailedToRegistered">
         <source xml:lang="en">Model failed to register</source>
-        <target state="new">Model failed to register</target>
+        <target state="translated">No se pudo registrar el modelo</target>
       </trans-unit>
       <trans-unit id="models.localModelSource">
         <source xml:lang="en">File upload</source>
@@ -688,7 +688,7 @@
       </trans-unit>
       <trans-unit id="models.localModelPageTitle">
         <source xml:lang="en">Upload model file</source>
-        <target state="new">Upload model file</target>
+        <target state="translated">Cargar archivo de modelo</target>
       </trans-unit>
       <trans-unit id="models.azureModelSource">
         <source xml:lang="en">Azure Machine Learning</source>
@@ -700,43 +700,43 @@
       </trans-unit>
       <trans-unit id="models.importedModelsPageTitle">
         <source xml:lang="en">Select imported model</source>
-        <target state="new">Select imported model</target>
+        <target state="translated">Seleccionar modelo importado</target>
       </trans-unit>
       <trans-unit id="models.registeredModelsSource">
         <source xml:lang="en">Imported models</source>
-        <target state="new">Imported models</target>
+        <target state="translated">Modelos importados</target>
       </trans-unit>
       <trans-unit id="models.downloadModelMsgTaskName">
         <source xml:lang="en">Downloading Model from Azure</source>
-        <target state="new">Downloading Model from Azure</target>
+        <target state="translated">Descargando modelo de Azure</target>
       </trans-unit>
       <trans-unit id="models.invalidAzureResourceError">
         <source xml:lang="en">Invalid Azure resource</source>
-        <target state="new">Invalid Azure resource</target>
+        <target state="translated">Recurso de Azure no válido</target>
       </trans-unit>
       <trans-unit id="models.invalidModelToRegisterError">
         <source xml:lang="en">Invalid model to register</source>
-        <target state="new">Invalid model to register</target>
+        <target state="translated">Modelo no válido para registrar</target>
       </trans-unit>
       <trans-unit id="models.invalidModelToPredictError">
         <source xml:lang="en">Invalid model to predict</source>
-        <target state="new">Invalid model to predict</target>
+        <target state="translated">Modelo no válido para predecir</target>
       </trans-unit>
       <trans-unit id="models.invalidModelParametersError">
         <source xml:lang="en">Please select valid source table and model parameters</source>
-        <target state="new">Please select valid source table and model parameters</target>
+        <target state="translated">Seleccione una tabla de origen y parámetros de modelo válidos.</target>
       </trans-unit>
       <trans-unit id="models.invalidModelToSelectError">
         <source xml:lang="en">Please select a valid model</source>
-        <target state="new">Please select a valid model</target>
+        <target state="translated">Seleccione un modelo válido</target>
       </trans-unit>
       <trans-unit id="models.invalidModelImportTargetError">
         <source xml:lang="en">Please select a valid table</source>
-        <target state="new">Please select a valid table</target>
+        <target state="translated">Seleccione una tabla válida</target>
       </trans-unit>
       <trans-unit id="models.columnDataTypeMismatchWarningHelper">
         <source xml:lang="en">Click to review warning details</source>
-        <target state="new">Click to review warning details</target>
+        <target state="translated">Hacer clic para revisar los detalles de la advertencia</target>
       </trans-unit>
       <trans-unit id="models.columnDataTypeMismatchWarningHeading">
         <source xml:lang="en">Differences in data type</source>
@@ -748,47 +748,47 @@
       </trans-unit>
       <trans-unit id="models.outputColumnDataTypeNotSupportedWarning">
         <source xml:lang="en">The data type of output column does not match the output field’s type.</source>
-        <target state="new">The data type of output column does not match the output field’s type.</target>
+        <target state="translated">El tipo de datos de la columna de salida no coincide con el tipo del campo de salida.</target>
       </trans-unit>
       <trans-unit id="models.modelNameRequiredError">
         <source xml:lang="en">Model name is required.</source>
-        <target state="new">Model name is required.</target>
+        <target state="translated">Es necesario especificar el nombre del modelo.</target>
       </trans-unit>
       <trans-unit id="models.modelsRequiredError">
         <source xml:lang="en">Please select at least one model to import.</source>
-        <target state="new">Please select at least one model to import.</target>
+        <target state="translated">Seleccione al menos un módulo para importar.</target>
       </trans-unit>
       <trans-unit id="models.updateModelFailedError">
         <source xml:lang="en">Failed to update the model</source>
-        <target state="new">Failed to update the model</target>
+        <target state="translated">No se pudo actualizar el modelo</target>
       </trans-unit>
       <trans-unit id="models.modelSchemaIsAcceptedMessage">
         <source xml:lang="en">Table meets requirements!</source>
-        <target state="new">Table meets requirements!</target>
+        <target state="translated">La tabla cumple los requisitos</target>
       </trans-unit>
       <trans-unit id="models.selectModelsTableMessage">
         <source xml:lang="en">Select models table</source>
-        <target state="new">Select models table</target>
+        <target state="translated">Seleccionar tabla de modelos</target>
       </trans-unit>
       <trans-unit id="models.modelSchemaIsNotAcceptedMessage">
         <source xml:lang="en">Invalid table structure!</source>
-        <target state="new">Invalid table structure!</target>
+        <target state="translated">Estructura de tabla no válida.</target>
       </trans-unit>
       <trans-unit id="models.importModelFailedError">
         <source xml:lang="en">Failed to register the model: {0} ,file: {1}</source>
-        <target state="new">Failed to register the model: {0} ,file: {1}</target>
+        <target state="translated">No se pudo registrar el modelo: {0}, archivo: {1}</target>
       </trans-unit>
       <trans-unit id="models.invalidImportTableError">
         <source xml:lang="en">Invalid table for importing models. database name: {0} ,table name: {1}</source>
-        <target state="new">Invalid table for importing models. database name: {0} ,table name: {1}</target>
+        <target state="translated">Tabla no válida para la importación de modelos. nombre de la base de datos: {0}, nombre de la tabla: {1}</target>
       </trans-unit>
       <trans-unit id="models.invalidImportTableSchemaError">
         <source xml:lang="en">Table schema is not supported for model import. Database name: {0}, table name: {1}.</source>
-        <target state="new">Table schema is not supported for model import. Database name: {0}, table name: {1}.</target>
+        <target state="translated">No se admite el esquema de tabla para la importación de modelos. Nombre de la base de datos: {0}, nombre de la tabla: {1}.</target>
       </trans-unit>
       <trans-unit id="models.loadModelParameterFailedError">
         <source xml:lang="en">Failed to load model parameters'</source>
-        <target state="new">Failed to load model parameters'</target>
+        <target state="translated">Error de carga de los parámetros del modelo</target>
       </trans-unit>
       <trans-unit id="models.unsupportedModelParameterType">
         <source xml:lang="en">unsupported</source>
@@ -800,7 +800,7 @@
       </trans-unit>
       <trans-unit id="dashboardDesc">
         <source xml:lang="en">Machine Learning for SQL databases</source>
-        <target state="new">Machine Learning for SQL databases</target>
+        <target state="translated">Machine Learning para bases de datos SQL</target>
       </trans-unit>
       <trans-unit id="dashboardLinksTitle">
         <source xml:lang="en">Useful links</source>
@@ -824,35 +824,35 @@
       </trans-unit>
       <trans-unit id="sqlMlDocTitle">
         <source xml:lang="en">SQL machine learning documentation</source>
-        <target state="new">SQL machine learning documentation</target>
+        <target state="translated">Documentación de Machine Learning de SQL</target>
       </trans-unit>
       <trans-unit id="sqlMlExtDocTitle">
         <source xml:lang="en">Machine Learning extension in Azure Data Studio</source>
-        <target state="new">Machine Learning extension in Azure Data Studio</target>
+        <target state="translated">Extensión de Machine Learning en Azure Data Studio</target>
       </trans-unit>
       <trans-unit id="sqlMlExtDocDesc">
         <source xml:lang="en">Learn how to use Machine Learning extension in Azure Data Studio, to manage packages, make predictions, and import models.</source>
-        <target state="new">Learn how to use Machine Learning extension in Azure Data Studio, to manage packages, make predictions, and import models.</target>
+        <target state="translated">Aprenda a usar la extensión de Machine Learning en Azure Data Studio para administrar paquetes, realizar predicciones e importar modelos.</target>
       </trans-unit>
       <trans-unit id="sqlMlDocDesc">
         <source xml:lang="en">Learn how to use machine learning in SQL Server and SQL on Azure, to run Python and R scripts on relational data.</source>
-        <target state="new">Learn how to use machine learning in SQL Server and SQL on Azure, to run Python and R scripts on relational data.</target>
+        <target state="translated">Obtenga información sobre cómo el aprendizaje automático en SQL Server y SQL en Azure para ejecutar scripts de Python y R en datos relacionales.</target>
       </trans-unit>
       <trans-unit id="sqlMlsDocTitle">
         <source xml:lang="en">SQL Server Machine Learning Services (Python and R)</source>
-        <target state="new">SQL Server Machine Learning Services (Python and R)</target>
+        <target state="translated">SQL Server Machine Learning Services (Python y R)</target>
       </trans-unit>
       <trans-unit id="sqlMlsDocDesc">
         <source xml:lang="en">Get started with Machine Learning Services on SQL Server and how to install it on Windows and Linux.</source>
-        <target state="new">Get started with Machine Learning Services on SQL Server and how to install it on Windows and Linux.</target>
+        <target state="translated">Empiece a trabajar con Machine Learning Services en SQL Server y aprenda a instalarlo en Windows y Linux.</target>
       </trans-unit>
       <trans-unit id="sqlMlsMIDocTitle">
         <source xml:lang="en">Machine Learning Services in Azure SQL Managed Instance</source>
-        <target state="new">Machine Learning Services in Azure SQL Managed Instance</target>
+        <target state="translated">Machine Learning Services en Azure SQL Managed Instance</target>
       </trans-unit>
       <trans-unit id="sqlMlsMIDocDesc">
         <source xml:lang="en">Get started with Machine Learning Services in Azure SQL Managed Instances.</source>
-        <target state="new">Get started with Machine Learning Services in Azure SQL Managed Instances.</target>
+        <target state="translated">Introducción a Machine Learning Services en Azure SQL Managed Instance.</target>
       </trans-unit>
       <trans-unit id="mlsInstallObdcDocTitle">
         <source xml:lang="en">Install the Microsoft ODBC driver for SQL Server</source>
@@ -864,11 +864,11 @@
       </trans-unit>
       <trans-unit id="onnxOnEdgeOdbcDocTitle">
         <source xml:lang="en">Machine learning and AI with ONNX in SQL Database Edge Preview</source>
-        <target state="new">Machine learning and AI with ONNX in SQL Database Edge Preview</target>
+        <target state="translated">Aprendizaje automático e IA con ONNX en la versión preliminar de SQL Database Edge</target>
       </trans-unit>
       <trans-unit id="onnxOnEdgeOdbcDocDesc">
         <source xml:lang="en">Get started with machine learning in Azure SQL Database Edge</source>
-        <target state="new">Get started with machine learning in Azure SQL Database Edge</target>
+        <target state="translated">Introducción al aprendizaje automático en Azure SQL Database Edge</target>
       </trans-unit>
       <trans-unit id="ml.dataCount">
         <source xml:lang="en">Showing {0} model(s)</source>

@@ -8,7 +8,7 @@
       </trans-unit>
       <trans-unit id="arc.description">
         <source xml:lang="en">Support for Azure Arc</source>
-        <target state="new">Support for Azure Arc</target>
+        <target state="translated">Compatibilidad con Azure Arc</target>
       </trans-unit>
       <trans-unit id="arc.configuration.title">
         <source xml:lang="en">Azure Arc</source>
@@ -16,13 +16,13 @@
       </trans-unit>
       <trans-unit id="arc.view.title">
         <source xml:lang="en">Azure Arc Controllers</source>
-        <target state="new">Azure Arc Controllers</target>
+        <target state="translated">Controladores de Azure Arc</target>
       </trans-unit>
       <trans-unit id="arc.view.welcome.connect">
         <source xml:lang="en">No Azure Arc controllers registered. [Learn More](https://azure.microsoft.com/services/azure-arc/)
 [Connect Controller](command:arc.connectToController)</source>
-        <target state="new">No Azure Arc controllers registered. [Learn More](https://azure.microsoft.com/services/azure-arc/)
-[Connect Controller](command:arc.connectToController)</target>
+        <target state="translated">No hay ningún controlador de Azure Arc registrado. [Más información](https://azure.microsoft.com/services/azure-arc/)
+[Conectar controlador](command:arc.connectToController)</target>
       </trans-unit>
       <trans-unit id="arc.view.welcome.loading">
         <source xml:lang="en">Loading controllers...</source>
@@ -30,23 +30,23 @@
       </trans-unit>
       <trans-unit id="command.createController.title">
         <source xml:lang="en">Create New Azure Arc Controller</source>
-        <target state="new">Create New Azure Arc Controller</target>
+        <target state="translated">Creación de un controlador de Azure Arc</target>
       </trans-unit>
       <trans-unit id="command.connectToController.title">
         <source xml:lang="en">Connect to Existing Azure Arc Controller</source>
-        <target state="new">Connect to Existing Azure Arc Controller</target>
+        <target state="translated">Conexión a un controlador existente de Azure Arc</target>
       </trans-unit>
       <trans-unit id="command.removeController.title">
         <source xml:lang="en">Remove Controller</source>
-        <target state="translated">Eliminación de un controlador</target>
+        <target state="translated">Eliminación del controlador</target>
       </trans-unit>
       <trans-unit id="command.refresh.title">
         <source xml:lang="en">Refresh</source>
-        <target state="translated">Actualizar</target>
+        <target state="translated">Actualización</target>
       </trans-unit>
       <trans-unit id="command.editConnection.title">
         <source xml:lang="en">Edit Connection</source>
-        <target state="translated">Editar conexión</target>
+        <target state="translated">Edición de la conexión</target>
       </trans-unit>
       <trans-unit id="arc.openDashboard">
         <source xml:lang="en">Manage</source>
@@ -54,15 +54,15 @@
       </trans-unit>
       <trans-unit id="resource.type.azure.arc.display.name">
         <source xml:lang="en">Azure Arc data controller (preview)</source>
-        <target state="new">Azure Arc data controller (preview)</target>
+        <target state="translated">Controlador de datos de Azure Arc (versión preliminar)</target>
       </trans-unit>
       <trans-unit id="resource.type.azure.arc.description">
         <source xml:lang="en">Creates an Azure Arc data controller</source>
-        <target state="new">Creates an Azure Arc data controller</target>
+        <target state="translated">Permite crear un controlador de datos de Azure Arc.</target>
       </trans-unit>
       <trans-unit id="arc.data.controller.new.wizard.title">
         <source xml:lang="en">Create Azure Arc data controller</source>
-        <target state="new">Create Azure Arc data controller</target>
+        <target state="translated">Crear el controlador de datos de Azure Arc</target>
       </trans-unit>
       <trans-unit id="arc.data.controller.cluster.environment.title">
         <source xml:lang="en">What is your target existing Kubernetes cluster environment?</source>
@@ -70,7 +70,7 @@
       </trans-unit>
       <trans-unit id="arc.data.controller.select.cluster.title">
         <source xml:lang="en">Select from existing Kubernetes clusters</source>
-        <target state="new">Select from existing Kubernetes clusters</target>
+        <target state="translated">Seleccionar de los clústeres de Kubernetes existentes</target>
       </trans-unit>
       <trans-unit id="arc.data.controller.kube.cluster.context">
         <source xml:lang="en">Cluster context</source>
@@ -114,15 +114,15 @@
       </trans-unit>
       <trans-unit id="arc.data.controller.details.description">
         <source xml:lang="en">Provide a namespace, name and storage class for your Azure Arc data controller. This name will be used to identify your Arc instance for remote management and monitoring.</source>
-        <target state="new">Provide a namespace, name and storage class for your Azure Arc data controller. This name will be used to identify your Arc instance for remote management and monitoring.</target>
+        <target state="translated">Proporcione un espacio de nombres, un nombre y una clase de almacenamiento para el controlador de datos de Azure Arc. Este nombre se usará para identificar la instancia de Arc para la administración y supervisión remotas.</target>
       </trans-unit>
       <trans-unit id="arc.data.controller.namespace">
         <source xml:lang="en">Data controller namespace</source>
-        <target state="new">Data controller namespace</target>
+        <target state="translated">Espacio de nombres del controlador de datos</target>
       </trans-unit>
       <trans-unit id="arc.data.controller.namespace.validation.description">
         <source xml:lang="en">Namespace must consist of lower case alphanumeric characters or '-', start/end with an alphanumeric character, and be 63 characters or fewer in length.</source>
-        <target state="new">Namespace must consist of lower case alphanumeric characters or '-', start/end with an alphanumeric character, and be 63 characters or fewer in length.</target>
+        <target state="translated">El espacio de nombres debe incluir caracteres alfanuméricos en minúsculas o "-", empezar y terminar con una letra, y tener 63 caracteres de longitud o menos.</target>
       </trans-unit>
       <trans-unit id="arc.data.controller.name">
         <source xml:lang="en">Data controller name</source>
@@ -130,7 +130,7 @@
       </trans-unit>
       <trans-unit id="arc.data.controller.name.validation.description">
         <source xml:lang="en">Name must consist of lower case alphanumeric characters, '-' or '.', start/end with an alphanumeric character and be 253 characters or less in length.</source>
-        <target state="new">Name must consist of lower case alphanumeric characters, '-' or '.', start/end with an alphanumeric character and be 253 characters or less in length.</target>
+        <target state="translated">El nombre debe constar de caracteres alfanuméricos en minúsculas, "-" o ".", empezar y terminar con un carácter alfanumérico y tener 253 caracteres de longitud o menos.</target>
       </trans-unit>
       <trans-unit id="arc.data.controller.location">
         <source xml:lang="en">Location</source>
@@ -190,7 +190,7 @@
       </trans-unit>
       <trans-unit id="arc.data.controller.summary.terms.description">
         <source xml:lang="en">By clicking 'Script to notebook', I (a) agree to the legal terms and privacy statement(s) associated with the Marketplace offering(s) listed above; (b) authorize Microsoft to bill my current payment method for the fees associated with the offering(s), with the same billing frequency as my Azure subscription; and (c) agree that Microsoft may share my contact, usage and transactional information with the provider(s) of the offering(s) for support, billing and other transactional activities. Microsoft does not provide rights for third-party offerings. For additional details see {0}.</source>
-        <target state="new">By clicking 'Script to notebook', I (a) agree to the legal terms and privacy statement(s) associated with the Marketplace offering(s) listed above; (b) authorize Microsoft to bill my current payment method for the fees associated with the offering(s), with the same billing frequency as my Azure subscription; and (c) agree that Microsoft may share my contact, usage and transactional information with the provider(s) of the offering(s) for support, billing and other transactional activities. Microsoft does not provide rights for third-party offerings. For additional details see {0}.</target>
+        <target state="translated">Al hacer clic en "De script a cuaderno", (a) acepto los términos legales y las declaraciones de privacidad asociados a cada oferta de Marketplace enumerada previamente; (b) autorizo a Microsoft a facturar, de acuerdo con mi método de pago actual, las cuotas relativas a las ofertas con la misma frecuencia de facturación que mi suscripción de Azure; y (c) autorizo a Microsoft a compartir mi información de contacto y los datos de transacción y uso con los proveedores de dichas ofertas para fines de soporte técnico, facturación y otras actividades transaccionales. Microsoft no proporciona derechos sobre ofertas de terceros. Para más información, consulte {0}.</target>
       </trans-unit>
       <trans-unit id="arc.data.controller.summary.terms.link.text">
         <source xml:lang="en">Azure Marketplace Terms</source>
@@ -210,7 +210,7 @@
       </trans-unit>
       <trans-unit id="arc.data.controller.summary.profile">
         <source xml:lang="en">Config profile</source>
-        <target state="new">Config profile</target>
+        <target state="translated">Perfil de configuración</target>
       </trans-unit>
       <trans-unit id="arc.data.controller.summary.username">
         <source xml:lang="en">Username</source>
@@ -234,7 +234,7 @@
       </trans-unit>
       <trans-unit id="arc.data.controller.summary.data.controller.namespace">
         <source xml:lang="en">Data controller namespace</source>
-        <target state="new">Data controller namespace</target>
+        <target state="translated">Espacio de nombres del controlador de datos</target>
       </trans-unit>
       <trans-unit id="arc.data.controller.summary.controller">
         <source xml:lang="en">Controller</source>
@@ -266,11 +266,11 @@
       </trans-unit>
       <trans-unit id="resource.type.arc.sql.display.name">
         <source xml:lang="en">Azure SQL managed instance - Azure Arc (preview)</source>
-        <target state="new">Azure SQL managed instance - Azure Arc (preview)</target>
+        <target state="translated">Azure SQL Managed Instance: Azure Arc (versión preliminar)</target>
       </trans-unit>
       <trans-unit id="resource.type.arc.postgres.display.name">
         <source xml:lang="en">PostgreSQL Hyperscale server groups - Azure Arc (preview)</source>
-        <target state="new">PostgreSQL Hyperscale server groups - Azure Arc (preview)</target>
+        <target state="translated">Grupos de servidores de hiperescala de PostgreSQL: Azure Arc (versión preliminar)</target>
       </trans-unit>
       <trans-unit id="resource.type.arc.sql.description">
         <source xml:lang="en">Managed SQL Instance service for app developers in a customer-managed environment</source>
@@ -278,27 +278,27 @@
       </trans-unit>
       <trans-unit id="resource.type.arc.postgres.description">
         <source xml:lang="en">Deploy PostgreSQL Hyperscale server groups into an Azure Arc environment</source>
-        <target state="new">Deploy PostgreSQL Hyperscale server groups into an Azure Arc environment</target>
+        <target state="translated">Permite implementar grupos de servidores de hiperescala de PostgreSQL en un entorno de Azure Arc.</target>
       </trans-unit>
       <trans-unit id="arc.controller">
         <source xml:lang="en">Target Azure Arc Controller</source>
-        <target state="new">Target Azure Arc Controller</target>
+        <target state="translated">Controlador de destino de Azure Arc</target>
       </trans-unit>
       <trans-unit id="arc.sql.wizard.title">
         <source xml:lang="en">Deploy Azure SQL managed instance - Azure Arc (preview)</source>
-        <target state="new">Deploy Azure SQL managed instance - Azure Arc (preview)</target>
+        <target state="translated">Implementación de Azure SQL Managed Instance: Azure Arc (versión preliminar)</target>
       </trans-unit>
       <trans-unit id="arc.sql.wizard.page1.title">
         <source xml:lang="en">Provide Azure SQL managed instance parameters</source>
-        <target state="new">Provide Azure SQL managed instance parameters</target>
+        <target state="translated">Proporción de parámetros de Azure SQL Managed Instance</target>
       </trans-unit>
       <trans-unit id="arc.sql.connection.settings.section.title">
         <source xml:lang="en">SQL Connection information</source>
-        <target state="new">SQL Connection information</target>
+        <target state="translated">Información de conexión de SQL</target>
       </trans-unit>
       <trans-unit id="arc.sql.instance.settings.section.title">
         <source xml:lang="en">SQL Instance settings</source>
-        <target state="new">SQL Instance settings</target>
+        <target state="translated">Configuración de la instancia de SQL</target>
       </trans-unit>
       <trans-unit id="arc.azure.section.title">
         <source xml:lang="en">Azure information</source>
@@ -314,11 +314,11 @@
       </trans-unit>
       <trans-unit id="arc.sql.invalid.username">
         <source xml:lang="en">sa username is disabled, please choose another username</source>
-        <target state="new">sa username is disabled, please choose another username</target>
+        <target state="translated">El nombre de usuario de sa está deshabilitado; elija otro nombre de usuario.</target>
       </trans-unit>
       <trans-unit id="arc.sql.invalid.instance.name">
         <source xml:lang="en">Instance name must consist of lower case alphanumeric characters or '-', start with a letter, end with an alphanumeric character, and be 13 characters or fewer in length.</source>
-        <target state="new">Instance name must consist of lower case alphanumeric characters or '-', start with a letter, end with an alphanumeric character, and be 13 characters or fewer in length.</target>
+        <target state="translated">El nombre de instancia debe constar de caracteres alfanuméricos en minúsculas o "-", empezar con una letra, terminar con un carácter alfanumérico y tener 13 caracteres o menos de longitud.</target>
       </trans-unit>
       <trans-unit id="arc.storage-class.dc.label">
         <source xml:lang="en">Storage Class</source>
@@ -326,7 +326,7 @@
       </trans-unit>
       <trans-unit id="arc.sql.storage-class.dc.description">
         <source xml:lang="en">The storage class to be used for all data and logs persistent volumes for all data controller pods that require them.</source>
-        <target state="new">The storage class to be used for all data and logs persistent volumes for all data controller pods that require them.</target>
+        <target state="translated">La clase de almacenamiento que se va a usar para todos los volúmenes persistentes de datos y registros para todos los pods de controlador de datos que los requieran.</target>
       </trans-unit>
       <trans-unit id="arc.sql.replicas.label">
         <source xml:lang="en">Replicas</source>
@@ -334,35 +334,35 @@
       </trans-unit>
       <trans-unit id="arc.sql.replicas.description">
         <source xml:lang="en">The number of SQL Managed Instance replicas that will be deployed in your Kubernetes cluster for high availability purposes</source>
-        <target state="new">The number of SQL Managed Instance replicas that will be deployed in your Kubernetes cluster for high availability purposes</target>
+        <target state="translated">Número de réplicas de SQL Managed Instance que se implementarán en el clúster de Kubernetes para propósitos de alta disponibilidad.</target>
       </trans-unit>
       <trans-unit id="arc.storage-class.data.label">
         <source xml:lang="en">Storage Class (Data)</source>
-        <target state="translated">Clase de almacenamiento (Datos)</target>
+        <target state="translated">Clase de almacenamiento (datos)</target>
       </trans-unit>
       <trans-unit id="arc.sql.storage-class.data.description">
         <source xml:lang="en">The storage class to be used for data (.mdf)</source>
-        <target state="new">The storage class to be used for data (.mdf)</target>
+        <target state="translated">Clase de almacenamiento que se usa para los datos (.mdf).</target>
       </trans-unit>
       <trans-unit id="arc.postgres.storage-class.data.description">
         <source xml:lang="en">The storage class to be used for data persistent volumes</source>
-        <target state="new">The storage class to be used for data persistent volumes</target>
+        <target state="translated">Clase de almacenamiento que se usará para volúmenes persistentes de datos.</target>
       </trans-unit>
       <trans-unit id="arc.storage-class.logs.label">
         <source xml:lang="en">Storage Class (Logs)</source>
-        <target state="translated">Clase de almacenamiento (Registros)</target>
+        <target state="translated">Clase de almacenamiento (registros)</target>
       </trans-unit>
       <trans-unit id="arc.sql.storage-class.logs.description">
         <source xml:lang="en">The storage class to be used for logs (/var/log)</source>
-        <target state="new">The storage class to be used for logs (/var/log)</target>
+        <target state="translated">Clase de almacenamiento que se usará para los registros (/var/log).</target>
       </trans-unit>
       <trans-unit id="arc.postgres.storage-class.logs.description">
         <source xml:lang="en">The storage class to be used for logs persistent volumes</source>
-        <target state="new">The storage class to be used for logs persistent volumes</target>
+        <target state="translated">La clase de almacenamiento que se va a usar para los volúmenes persistentes de registros</target>
       </trans-unit>
       <trans-unit id="arc.storage-class.backups.label">
         <source xml:lang="en">Storage Class (Backups)</source>
-        <target state="translated">Clase de almacenamiento (Copias de seguridad)</target>
+        <target state="translated">Clase de almacenamiento (copias de seguridad)</target>
       </trans-unit>
       <trans-unit id="arc.cores-limit.label">
         <source xml:lang="en">Cores Limit</source>
@@ -370,15 +370,15 @@
       </trans-unit>
       <trans-unit id="arc.sql.cores-limit.description">
         <source xml:lang="en">The cores limit of the managed instance as an integer.</source>
-        <target state="new">The cores limit of the managed instance as an integer.</target>
+        <target state="translated">El límite de núcleos de la instancia administrada como un entero.</target>
       </trans-unit>
       <trans-unit id="arc.cores-request.label">
         <source xml:lang="en">Cores Request</source>
-        <target state="new">Cores Request</target>
+        <target state="translated">Solicitud de núcleos</target>
       </trans-unit>
       <trans-unit id="arc.sql.cores-request.description">
         <source xml:lang="en">The request for cores of the managed instance as an integer.</source>
-        <target state="new">The request for cores of the managed instance as an integer.</target>
+        <target state="translated">Solicitud de núcleos de la instancia administrada como un entero.</target>
       </trans-unit>
       <trans-unit id="arc.memory-limit.label">
         <source xml:lang="en">Memory Limit</source>
@@ -386,7 +386,7 @@
       </trans-unit>
       <trans-unit id="arc.sql.memory-limit.description">
         <source xml:lang="en">The limit of the capacity of the managed instance as an integer.</source>
-        <target state="new">The limit of the capacity of the managed instance as an integer.</target>
+        <target state="translated">El límite de la capacidad de la instancia administrada como un entero.</target>
       </trans-unit>
       <trans-unit id="arc.memory-request.label">
         <source xml:lang="en">Memory Request</source>
@@ -394,11 +394,11 @@
       </trans-unit>
       <trans-unit id="arc.sql.memory-request.description">
         <source xml:lang="en">The request for the capacity of the managed instance as an integer amount of memory in GBs.</source>
-        <target state="new">The request for the capacity of the managed instance as an integer amount of memory in GBs.</target>
+        <target state="translated">La solicitud para la capacidad de la instancia administrada como un entero de cantidad de memoria, en GB.</target>
       </trans-unit>
       <trans-unit id="arc.postgres.storage-class.backups.description">
         <source xml:lang="en">The storage class to be used for backup persistent volumes</source>
-        <target state="new">The storage class to be used for backup persistent volumes</target>
+        <target state="translated">La clase de almacenamiento que se va a usar para los volúmenes persistentes de las copias de seguridad</target>
       </trans-unit>
       <trans-unit id="arc.password">
         <source xml:lang="en">Password</source>
@@ -426,11 +426,11 @@
       </trans-unit>
       <trans-unit id="arc.postgres.wizard.title">
         <source xml:lang="en">Deploy an Azure Arc-enabled PostgreSQL Hyperscale server group (Preview)</source>
-        <target state="new">Deploy an Azure Arc-enabled PostgreSQL Hyperscale server group (Preview)</target>
+        <target state="translated">Implementar un grupo de servidores de hiperescala de PostgreSQL habilitado para Azure Arc (versión preliminar)</target>
       </trans-unit>
       <trans-unit id="arc.postgres.wizard.page1.title">
         <source xml:lang="en">Provide Azure enabled PostgreSQL Hyperscale server group parameters</source>
-        <target state="new">Provide Azure enabled PostgreSQL Hyperscale server group parameters</target>
+        <target state="translated">Proporcionar los parámetros del grupo de servidores de hiperescala de PostgreSQL habilitado para Azure</target>
       </trans-unit>
       <trans-unit id="arc.postgres.settings.section.title">
         <source xml:lang="en">General settings</source>
@@ -454,7 +454,7 @@
       </trans-unit>
       <trans-unit id="arc.postgres.server.group.name.validation.description">
         <source xml:lang="en">Server group name must consist of lower case alphanumeric characters or '-', start with a letter, end with an alphanumeric character, and be 11 characters or fewer in length.</source>
-        <target state="new">Server group name must consist of lower case alphanumeric characters or '-', start with a letter, end with an alphanumeric character, and be 11 characters or fewer in length.</target>
+        <target state="translated">El nombre del grupo de servidores debe incluir caracteres alfanuméricos en minúsculas o "-", empezar con una letra, terminar con un carácter alfanumérico y tener 11 caracteres de longitud o menos.</target>
       </trans-unit>
       <trans-unit id="arc.postgres.server.group.workers.label">
         <source xml:lang="en">Number of workers</source>
@@ -482,27 +482,27 @@
       </trans-unit>
       <trans-unit id="arc.postgres.server.group.volume.size.data.label">
         <source xml:lang="en">Volume Size GB (Data)</source>
-        <target state="new">Volume Size GB (Data)</target>
+        <target state="translated">Tamaño del volumen en GB (datos)</target>
       </trans-unit>
       <trans-unit id="arc.postgres.server.group.volume.size.data.description">
         <source xml:lang="en">The size of the storage volume to be used for data in GB.</source>
-        <target state="new">The size of the storage volume to be used for data in GB.</target>
+        <target state="translated">Tamaño del volumen de almacenamiento que usará para los datos en GB.</target>
       </trans-unit>
       <trans-unit id="arc.postgres.server.group.volume.size.logs.label">
         <source xml:lang="en">Volume Size GB (Logs)</source>
-        <target state="new">Volume Size GB (Logs)</target>
+        <target state="translated">Tamaño de volumen en GB (registros)</target>
       </trans-unit>
       <trans-unit id="arc.postgres.server.group.volume.size.logs.description">
         <source xml:lang="en">The size of the storage volume to be used for logs in GB.</source>
-        <target state="new">The size of the storage volume to be used for logs in GB.</target>
+        <target state="translated">El tamaño del volumen de almacenamiento que se usará para los registros, en GB.</target>
       </trans-unit>
       <trans-unit id="arc.postgres.server.group.volume.size.backups.label">
         <source xml:lang="en">Volume Size GB (Backups)</source>
-        <target state="new">Volume Size GB (Backups)</target>
+        <target state="translated">Tamaño de volumen en GB (copias de seguridad)</target>
       </trans-unit>
       <trans-unit id="arc.postgres.server.group.volume.size.backups.description">
         <source xml:lang="en">The size of the storage volume to be used for backups in GB.</source>
-        <target state="new">The size of the storage volume to be used for backups in GB.</target>
+        <target state="translated">El tamaño del volumen de almacenamiento que se usará en las copias de seguridad, en GB.</target>
       </trans-unit>
       <trans-unit id="arc.postgres.server.group.workers.cores.request.label">
         <source xml:lang="en">CPU request (cores per node)</source>
@@ -510,7 +510,7 @@
       </trans-unit>
       <trans-unit id="arc.postgres.server.group.workers.cores.request.description">
         <source xml:lang="en">The minimum number of CPU cores that must be available per node to schedule the service. Fractional cores are supported.</source>
-        <target state="new">The minimum number of CPU cores that must be available per node to schedule the service. Fractional cores are supported.</target>
+        <target state="translated">La cantidad mínima de núcleos de CPU que deben estar disponibles por nodo para programar el servicio. Se admiten núcleos fraccionales.</target>
       </trans-unit>
       <trans-unit id="arc.postgres.server.group.workers.cores.limit.label">
         <source xml:lang="en">CPU limit (cores per node)</source>
@@ -518,23 +518,23 @@
       </trans-unit>
       <trans-unit id="arc.postgres.server.group.workers.cores.limit.description">
         <source xml:lang="en">The maximum number of CPU cores for the Postgres instance that can be used per node. Fractional cores are supported.</source>
-        <target state="new">The maximum number of CPU cores for the Postgres instance that can be used per node. Fractional cores are supported.</target>
+        <target state="translated">Número máximo de núcleos de CPU para la instancia de Postgres que se puede usar por nodo. Se admiten núcleos fraccionarios.</target>
       </trans-unit>
       <trans-unit id="arc.postgres.server.group.workers.memory.request.label">
         <source xml:lang="en">Memory request (GB per node)</source>
-        <target state="new">Memory request (GB per node)</target>
+        <target state="translated">Solicitud de memoria (GB por nodo)</target>
       </trans-unit>
       <trans-unit id="arc.postgres.server.group.workers.memory.request.description">
         <source xml:lang="en">The memory request of the Postgres instance per node in GB.</source>
-        <target state="new">The memory request of the Postgres instance per node in GB.</target>
+        <target state="translated">Solicitud de memoria de la instancia de Postgres por nodo en GB.</target>
       </trans-unit>
       <trans-unit id="arc.postgres.server.group.workers.memory.limit.label">
         <source xml:lang="en">Memory limit (GB per node)</source>
-        <target state="new">Memory limit (GB per node)</target>
+        <target state="translated">Límite de memoria (GB por nodo)</target>
       </trans-unit>
       <trans-unit id="arc.postgres.server.group.workers.memory.limit.description">
         <source xml:lang="en">The memory limit of the Postgres instance per node in GB.</source>
-        <target state="new">The memory limit of the Postgres instance per node in GB.</target>
+        <target state="translated">El límite de memoria de la instancia de Postgres por nodo en GB.</target>
       </trans-unit>
       <trans-unit id="arc.postgres.server.group.coordinator.cores.request.label">
         <source xml:lang="en">CPU request</source>
@@ -542,7 +542,7 @@
       </trans-unit>
       <trans-unit id="arc.postgres.server.group.coordinator.cores.request.description">
         <source xml:lang="en">The minimum number of CPU cores that must be available on the coordinator node to schedule the service. Fractional cores are supported.</source>
-        <target state="new">The minimum number of CPU cores that must be available on the coordinator node to schedule the service. Fractional cores are supported.</target>
+        <target state="translated">Número mínimo de núcleos de CPU que deben estar disponibles en el nodo de coordinación para programar el servicio. Se admiten núcleos fraccionarios.</target>
       </trans-unit>
       <trans-unit id="arc.postgres.server.group.coordinator.cores.limit.label">
         <source xml:lang="en">CPU limit</source>
@@ -550,23 +550,23 @@
       </trans-unit>
       <trans-unit id="arc.postgres.server.group.coordinator.cores.limit.description">
         <source xml:lang="en">The maximum number of CPU cores for the Postgres instance that can be used on the coordinator node. Fractional cores are supported.</source>
-        <target state="new">The maximum number of CPU cores for the Postgres instance that can be used on the coordinator node. Fractional cores are supported.</target>
+        <target state="translated">Número máximo de núcleos de CPU para la instancia de Postgres que se puede usar por nodo de coordinación. Se admiten núcleos fraccionarios.</target>
       </trans-unit>
       <trans-unit id="arc.postgres.server.group.coordinator.memory.request.label">
         <source xml:lang="en">Memory request (GB)</source>
-        <target state="new">Memory request (GB)</target>
+        <target state="translated">Solicitud de memoria (GB)</target>
       </trans-unit>
       <trans-unit id="arc.postgres.server.group.coordinator.memory.request.description">
         <source xml:lang="en">The memory request of the Postgres instance on the coordinator node in GB.</source>
-        <target state="new">The memory request of the Postgres instance on the coordinator node in GB.</target>
+        <target state="translated">Solicitud de memoria de la instancia de Postgres en el nodo de coordinación en GB.</target>
       </trans-unit>
       <trans-unit id="arc.postgres.server.group.coordinator.memory.limit.label">
         <source xml:lang="en">Memory limit (GB)</source>
-        <target state="new">Memory limit (GB)</target>
+        <target state="translated">Límite de memoria (GB)</target>
       </trans-unit>
       <trans-unit id="arc.postgres.server.group.coordinator.memory.limit.description">
         <source xml:lang="en">The memory limit of the Postgres instance on the coordinator node in GB.</source>
-        <target state="new">The memory limit of the Postgres instance on the coordinator node in GB.</target>
+        <target state="translated">Límite de memoria de la instancia de Postgres en el nodo de coordinación en GB.</target>
       </trans-unit>
       <trans-unit id="arc.agreement">
         <source xml:lang="en">I accept {0} and {1}.</source>
@@ -574,7 +574,7 @@
       </trans-unit>
       <trans-unit id="arc.agreement.sql.terms.conditions">
         <source xml:lang="en">Azure SQL managed instance - Azure Arc terms and conditions</source>
-        <target state="new">Azure SQL managed instance - Azure Arc terms and conditions</target>
+        <target state="translated">Azure SQL Managed Instance: términos y condiciones de Azure Arc</target>
       </trans-unit>
       <trans-unit id="arc.agreement.postgres.terms.conditions">
         <source xml:lang="en">Azure Arc-enabled PostgreSQL Hyperscale terms and conditions</source>
@@ -586,23 +586,23 @@
       </trans-unit>
       <trans-unit id="worker.node.count.should.not.be.one">
         <source xml:lang="en">Value of 1 is not supported.</source>
-        <target state="new">Value of 1 is not supported.</target>
+        <target state="translated">No se admite el valor 1.</target>
       </trans-unit>
       <trans-unit id="requested.cores.less.than.or.equal.to.cores.limit">
         <source xml:lang="en">Requested cores must be less than or equal to cores limit</source>
-        <target state="new">Requested cores must be less than or equal to cores limit</target>
+        <target state="translated">La cantidad de núcleos solicitados debe ser menor o igual que el límite de núcleos.</target>
       </trans-unit>
       <trans-unit id="cores.limit.greater.than.or.equal.to.requested.cores">
         <source xml:lang="en">Cores limit must be greater than or equal to requested cores</source>
-        <target state="new">Cores limit must be greater than or equal to requested cores</target>
+        <target state="translated">El límite de núcleos debe ser mayor o igual que la cantidad de núcleos solicitados.</target>
       </trans-unit>
       <trans-unit id="requested.memory.less.than.or.equal.to.memory.limit">
         <source xml:lang="en">Requested memory must be less than or equal to memory limit</source>
-        <target state="new">Requested memory must be less than or equal to memory limit</target>
+        <target state="translated">La cantidad de memoria solicitada debe ser menor o igual que el límite de memoria.</target>
       </trans-unit>
       <trans-unit id="memory.limit.greater.than.or.equal.to.requested.memory">
         <source xml:lang="en">Memory limit must be greater than or equal to requested memory</source>
-        <target state="new">Memory limit must be greater than or equal to requested memory</target>
+        <target state="translated">El límite de memoria debe ser mayor o igual que la cantidad de memoria solicitada.</target>
       </trans-unit>
       <trans-unit id="arc.agreement.sql.help.text">
         <source xml:lang="en">Azure Arc enabled Managed Instance provides SQL Server access and feature compatibility that can be deployed on the infrastructure of your choice. While this service is in preview, it has some feature limitations compared to SQL Managed Instance on Azure. {0}</source>
@@ -614,7 +614,7 @@
       </trans-unit>
       <trans-unit id="arc.agreement.sql.help.text.learn.more.ariaLabel">
         <source xml:lang="en">Learn more about Azure Arc enabled Managed Instance</source>
-        <target state="new">Learn more about Azure Arc enabled Managed Instance</target>
+        <target state="translated">Más información sobre la instancia administrada habilitada para Azure Arc</target>
       </trans-unit>
     </body>
   </file>
@@ -902,7 +902,7 @@
       </trans-unit>
       <trans-unit id="arc.workerNodesDescription">
         <source xml:lang="en">Expand your server group and scale your database by adding worker nodes.</source>
-        <target state="new">Expand your server group and scale your database by adding worker nodes.</target>
+        <target state="translated">Agregue nodos de trabajo para expandir el grupo de servidores y escalar la base de datos.</target>
       </trans-unit>
       <trans-unit id="arc.workerNodesConfigurationInformation">
         <source xml:lang="en">You can configure the number of CPU cores and storage size that will apply to all worker nodes. Adjust the number of CPU cores and memory settings for your server group. To reset the requests and/or limits, pass in empty value.</source>
@@ -918,7 +918,7 @@
       </trans-unit>
       <trans-unit id="arc.workerOneNodeValidationMessage">
         <source xml:lang="en">Value of 1 is not supported.</source>
-        <target state="new">Value of 1 is not supported.</target>
+        <target state="translated">No se admite el valor de 1.</target>
       </trans-unit>
       <trans-unit id="arc.vCores">
         <source xml:lang="en">vCores</source>
@@ -974,7 +974,7 @@
       </trans-unit>
       <trans-unit id="arc.unknown">
         <source xml:lang="en">Unknown</source>
-        <target state="translated">Desconocida</target>
+        <target state="translated">Desconocidas</target>
       </trans-unit>
       <trans-unit id="arc.direct">
         <source xml:lang="en">Direct</source>
@@ -1154,7 +1154,7 @@
       </trans-unit>
       <trans-unit id="arc.serverGroupNodes">
         <source xml:lang="en">Server group nodes</source>
-        <target state="translated">Nodos de grupo de servidor</target>
+        <target state="translated">Nodos de grupo de servidores</target>
       </trans-unit>
       <trans-unit id="arc.fullyQualifiedDomain">
         <source xml:lang="en">Fully qualified domain</source>
@@ -1270,7 +1270,7 @@
       </trans-unit>
       <trans-unit id="arc.workerNodes">
         <source xml:lang="en">Worker Nodes</source>
-        <target state="new">Worker Nodes</target>
+        <target state="translated">Nodos de trabajo</target>
       </trans-unit>
       <trans-unit id="arc.coordinatorNode">
         <source xml:lang="en">Coordinator Node</source>
@@ -1310,7 +1310,7 @@
       </trans-unit>
       <trans-unit id="arc.workerCoresRequest">
         <source xml:lang="en">Worker Nodes CPU request</source>
-        <target state="new">Worker Nodes CPU request</target>
+        <target state="translated">Solicitud de CPU de nodos de trabajo</target>
       </trans-unit>
       <trans-unit id="arc.coordinatorCoresRequest">
         <source xml:lang="en">Coordinator Node CPU request</source>
@@ -1334,7 +1334,7 @@
       </trans-unit>
       <trans-unit id="arc.workerMemoryRequest">
         <source xml:lang="en">Worker Nodes Memory request (in GB)</source>
-        <target state="new">Worker Nodes Memory request (in GB)</target>
+        <target state="translated">Solicitud de memoria de nodos de trabajo (en GB)</target>
       </trans-unit>
       <trans-unit id="arc.coordinatorMemoryRequest">
         <source xml:lang="en">Coordinator Node Memory request (in GB)</source>
@@ -1524,15 +1524,15 @@
       </trans-unit>
       <trans-unit id="arc.updateExtensionsFailed">
         <source xml:lang="en">Editing extensions failed. {0}</source>
-        <target state="new">Editing extensions failed. {0}</target>
+        <target state="translated">Error al editar las extensiones. {0}</target>
       </trans-unit>
       <trans-unit id="arc.refreshFailed">
         <source xml:lang="en">Refresh failed. {0}</source>
-        <target state="new">Refresh failed. {0}</target>
+        <target state="translated">Error al actualizar. {0}</target>
       </trans-unit>
       <trans-unit id="arc.resetFailed">
         <source xml:lang="en">Reset failed. {0}</source>
-        <target state="new">Reset failed. {0}</target>
+        <target state="translated">No se pudo restablecer. {0}</target>
       </trans-unit>
       <trans-unit id="arc.openDashboardFailed">
         <source xml:lang="en">Error opening dashboard. {0}</source>
@@ -1644,15 +1644,15 @@
       </trans-unit>
       <trans-unit id="noControllerInfoFound">
         <source xml:lang="en">Controller Info could not be found with name: {0}</source>
-        <target state="new">Controller Info could not be found with name: {0}</target>
+        <target state="translated">No se encontró la información del controlador con el nombre {0}</target>
       </trans-unit>
       <trans-unit id="noPasswordFound">
         <source xml:lang="en">Password could not be retrieved for controller: {0} and user did not provide a password. Please retry later.</source>
-        <target state="new">Password could not be retrieved for controller: {0} and user did not provide a password. Please retry later.</target>
+        <target state="translated">No se pudo recuperar la contraseña para el controlador {0} y el usuario no proporcionó una contraseña. Vuelva a intentarlo más tarde.</target>
       </trans-unit>
       <trans-unit id="clusterContextNotFound">
         <source xml:lang="en">Cluster Context with name: {0} not found in the Kube config file</source>
-        <target state="new">Cluster Context with name: {0} not found in the Kube config file</target>
+        <target state="translated">No se encuentra el contexto del clúster con el nombre {0} en el archivo de configuración de Kube</target>
       </trans-unit>
       <trans-unit id="noCurrentClusterContext">
         <source xml:lang="en">No current cluster context was found in the kube config file</source>
@@ -1668,7 +1668,7 @@
       </trans-unit>
       <trans-unit id="noContextFound">
         <source xml:lang="en">No 'contexts' found in the config file: {0}</source>
-        <target state="new">No 'contexts' found in the config file: {0}</target>
+        <target state="translated">No se encontraron "contextos" en el archivo de configuración {0}</target>
       </trans-unit>
       <trans-unit id="noCurrentContextFound">
         <source xml:lang="en">No context is marked as 'current-context' in the config file: {0}</source>
@@ -1676,7 +1676,7 @@
       </trans-unit>
       <trans-unit id="noNameInContext">
         <source xml:lang="en">No name field was found in a cluster context in the config file: {0}</source>
-        <target state="new">No name field was found in a cluster context in the config file: {0}</target>
+        <target state="translated">No se encontró ningún campo de nombre en un contexto de clúster en el archivo de configuración {0}</target>
       </trans-unit>
       <trans-unit id="arc.userCancelledError">
         <source xml:lang="en">User cancelled the dialog</source>

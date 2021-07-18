@@ -24,11 +24,11 @@
       </trans-unit>
       <trans-unit id="cloud.serverProperties.machinesTotal">
         <source xml:lang="en">Total Machines in the cluster</source>
-        <target state="new">Total Machines in the cluster</target>
+        <target state="translated">Nombre total de machines dans le cluster</target>
       </trans-unit>
       <trans-unit id="cloud.serverProperties.diskCacheCapacity">
         <source xml:lang="en">% of Cluster data capacity used</source>
-        <target state="new">% of Cluster data capacity used</target>
+        <target state="translated">% de la capacité de données du cluster utilisée</target>
       </trans-unit>
       <trans-unit id="databasesListProperties.name">
         <source xml:lang="en">Name</source>
@@ -48,7 +48,7 @@
       </trans-unit>
       <trans-unit id="kusto.configuration.title">
         <source xml:lang="en">KUSTO configuration</source>
-        <target state="new">KUSTO configuration</target>
+        <target state="translated">Configuration de KUSTO</target>
       </trans-unit>
       <trans-unit id="kusto.query.displayBitAsNumber">
         <source xml:lang="en">Should BIT columns be displayed as numbers (1 or 0)? If false, BIT columns will be displayed as 'true' or 'false'</source>
@@ -92,7 +92,7 @@
       </trans-unit>
       <trans-unit id="kusto.connectionOptions.serverName.description">
         <source xml:lang="en">Kusto cluster name</source>
-        <target state="new">Kusto cluster name</target>
+        <target state="translated">Nom du cluster Kusto</target>
       </trans-unit>
       <trans-unit id="kusto.connectionOptions.databaseName.displayName">
         <source xml:lang="en">Database</source>
@@ -100,7 +100,7 @@
       </trans-unit>
       <trans-unit id="kusto.connectionOptions.databaseName.description">
         <source xml:lang="en">The name of the initial catalog or database in the data source</source>
-        <target state="new">The name of the initial catalog or database in the data source</target>
+        <target state="translated">Nom du catalogue initial ou de la base de données initiale dans la source de données</target>
       </trans-unit>
       <trans-unit id="kusto.connectionOptions.authType.displayName">
         <source xml:lang="en">Authentication type</source>
@@ -108,7 +108,7 @@
       </trans-unit>
       <trans-unit id="kusto.connectionOptions.authType.description">
         <source xml:lang="en">Specifies the method of authenticating with Kusto Server</source>
-        <target state="new">Specifies the method of authenticating with Kusto Server</target>
+        <target state="translated">Spécifie la méthode d'authentification avec Kusto Server</target>
       </trans-unit>
       <trans-unit id="kusto.connectionOptions.authType.categoryValues.azureMFA">
         <source xml:lang="en">Azure Active Directory - Universal with MFA support</source>
@@ -176,7 +176,7 @@
       </trans-unit>
       <trans-unit id="kusto.connectionOptions.workstationId.description">
         <source xml:lang="en">The name of the workstation connecting to Kusto Server</source>
-        <target state="new">The name of the workstation connecting to Kusto Server</target>
+        <target state="translated">Nom de la station de travail se connectant à Kusto Server</target>
       </trans-unit>
       <trans-unit id="kusto.connectionOptions.failoverPartner.displayName">
         <source xml:lang="en">Failover partner</source>
@@ -184,7 +184,7 @@
       </trans-unit>
       <trans-unit id="kusto.connectionOptions.failoverPartner.description">
         <source xml:lang="en">The name or network address of the instance of Kusto Server that acts as a failover partner</source>
-        <target state="new">The name or network address of the instance of Kusto Server that acts as a failover partner</target>
+        <target state="translated">Nom ou adresse réseau de l'instance de Kusto Server servant de partenaire de basculement</target>
       </trans-unit>
     </body>
   </file>
@@ -204,7 +204,7 @@
     <body>
       <trans-unit id="kusto.unsupportedPlatform">
         <source xml:lang="en">Unsupported platform</source>
-        <target state="new">Unsupported platform</target>
+        <target state="translated">Plateforme non prise en charge</target>
       </trans-unit>
       <trans-unit id="notebookFileType">
         <source xml:lang="en">Notebooks</source>
@@ -304,7 +304,7 @@
       </trans-unit>
       <trans-unit id="kusto.accountDoesNotExist">
         <source xml:lang="en">Account does not exist.</source>
-        <target state="new">Account does not exist.</target>
+        <target state="translated">Le compte n’existe pas.</target>
       </trans-unit>
       <trans-unit id="kusto.insufficientlyPrivelagedAzureAccount">
         <source xml:lang="en">The configured Azure account for {0} does not have sufficient permissions for Azure Key Vault to access a column master key for Always Encrypted.</source>

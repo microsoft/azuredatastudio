@@ -4,11 +4,11 @@
     <body>
       <trans-unit id="extension-displayName">
         <source xml:lang="en">Azure SQL Edge Deployment Extension</source>
-        <target state="new">Azure SQL Edge Deployment Extension</target>
+        <target state="translated">Extension de déploiement Azure SQL Edge</target>
       </trans-unit>
       <trans-unit id="extension-description">
         <source xml:lang="en">Provides a notebook-based experience to deploy Azure SQL Edge</source>
-        <target state="new">Provides a notebook-based experience to deploy Azure SQL Edge</target>
+        <target state="translated">Fournit une expérience de notebook pour déployer Azure SQL Edge</target>
       </trans-unit>
       <trans-unit id="docker-container-name-field">
         <source xml:lang="en">Container name</source>
@@ -16,7 +16,7 @@
       </trans-unit>
       <trans-unit id="docker-sql-password-field">
         <source xml:lang="en">Azure SQL Edge instance (sa) password</source>
-        <target state="new">Azure SQL Edge instance (sa) password</target>
+        <target state="translated">Mot de passe de l’instance Azure SQL Edge (sa)</target>
       </trans-unit>
       <trans-unit id="docker-confirm-sql-password-field">
         <source xml:lang="en">Confirm password</source>
@@ -24,7 +24,7 @@
       </trans-unit>
       <trans-unit id="docker-sql-port-field">
         <source xml:lang="en">Azure SQL Edge Port</source>
-        <target state="new">Azure SQL Edge Port</target>
+        <target state="translated">Port Azure SQL Edge</target>
       </trans-unit>
       <trans-unit id="microsoft-privacy-statement">
         <source xml:lang="en">Microsoft Privacy Statement</source>
@@ -32,11 +32,11 @@
       </trans-unit>
       <trans-unit id="resource-type-sql-edge-display-name">
         <source xml:lang="en">Azure SQL Edge</source>
-        <target state="new">Azure SQL Edge</target>
+        <target state="translated">Azure SQL Edge</target>
       </trans-unit>
       <trans-unit id="resource-type-sql-edge-description">
         <source xml:lang="en">Azure SQL Edge (Preview) is an optimized relational database engine geared for IoT and IoT Edge deployments.</source>
-        <target state="new">Azure SQL Edge (Preview) is an optimized relational database engine geared for IoT and IoT Edge deployments.</target>
+        <target state="translated">Azure SQL Edge (préversion) est un moteur de base de données relationnelle optimisé conçu pour les déploiements IoT et IoT Edge.</target>
       </trans-unit>
       <trans-unit id="sql-edge-type-display-name">
         <source xml:lang="en">Deployment target</source>
@@ -44,15 +44,15 @@
       </trans-unit>
       <trans-unit id="sql-edge-local-display-name">
         <source xml:lang="en">Local container instance</source>
-        <target state="new">Local container instance</target>
+        <target state="translated">Instance de conteneur locale</target>
       </trans-unit>
       <trans-unit id="sql-edge-remote-display-name">
         <source xml:lang="en">Remote container instance</source>
-        <target state="new">Remote container instance</target>
+        <target state="translated">Instance de conteneur distante</target>
       </trans-unit>
       <trans-unit id="sql-edge-local-title">
         <source xml:lang="en">Deploy Azure SQL Edge container instance on local machine</source>
-        <target state="new">Deploy Azure SQL Edge container instance on local machine</target>
+        <target state="translated">Déployer l’instance de conteneur Azure SQL Edge sur l’ordinateur local</target>
       </trans-unit>
       <trans-unit id="docker-settings-section-title">
         <source xml:lang="en">Docker settings</source>
@@ -84,15 +84,15 @@
       </trans-unit>
       <trans-unit id="edge-eula">
         <source xml:lang="en">Microsoft Azure SQL Edge License Agreement</source>
-        <target state="new">Microsoft Azure SQL Edge License Agreement</target>
+        <target state="translated">Contrat de licence Microsoft Azure SQL Edge</target>
       </trans-unit>
       <trans-unit id="sql-edge-remote-title">
         <source xml:lang="en">Deploy Azure SQL Edge container instance on remote machine</source>
-        <target state="new">Deploy Azure SQL Edge container instance on remote machine</target>
+        <target state="translated">Déployer l’instance de conteneur Azure SQL Edge sur l’ordinateur distant</target>
       </trans-unit>
       <trans-unit id="remote-info-section-title">
         <source xml:lang="en">Target machine information</source>
-        <target state="new">Target machine information</target>
+        <target state="translated">Informations sur l'ordinateur cible</target>
       </trans-unit>
       <trans-unit id="edge-remote-target-field">
         <source xml:lang="en">Name or IP address</source>
@@ -108,15 +108,15 @@
       </trans-unit>
       <trans-unit id="sql-edge-azure-display-name">
         <source xml:lang="en">New Azure IoT Hub and VM (password authentication)</source>
-        <target state="new">New Azure IoT Hub and VM (password authentication)</target>
+        <target state="translated">Nouveau Azure IoT Hub et machine virtuelle (authentification par mot de passe)</target>
       </trans-unit>
       <trans-unit id="sql-edge-azure-sshkey-display-name">
         <source xml:lang="en">New Azure IoT Hub and VM (ssh public key authentication)</source>
-        <target state="new">New Azure IoT Hub and VM (ssh public key authentication)</target>
+        <target state="translated">Nouvelle Azure IoT Hub et machine virtuelle (authentification par clé publique SSH)</target>
       </trans-unit>
       <trans-unit id="sql-edge-azure-title">
         <source xml:lang="en">Deploy Azure SQL Edge to a new Azure VM via IoT hub</source>
-        <target state="new">Deploy Azure SQL Edge to a new Azure VM via IoT hub</target>
+        <target state="translated">Déployer Azure SQL Edge sur une nouvelle machine virtuelle Azure via IoT Hub</target>
       </trans-unit>
       <trans-unit id="azure_subscription_id">
         <source xml:lang="en">Subscription id</source>
@@ -132,19 +132,19 @@
       </trans-unit>
       <trans-unit id="vm_admin">
         <source xml:lang="en">VM admin username</source>
-        <target state="new">VM admin username</target>
+        <target state="translated">Nom d'utilisateur de l'administrateur de machine virtuelle</target>
       </trans-unit>
       <trans-unit id="vm_password">
         <source xml:lang="en">VM admin password</source>
-        <target state="new">VM admin password</target>
+        <target state="translated">Mot de passe administrateur de machine virtuelle</target>
       </trans-unit>
       <trans-unit id="vm_password_confirm">
         <source xml:lang="en">Confirm VM admin password</source>
-        <target state="new">Confirm VM admin password</target>
+        <target state="translated">Confirmer le mot de passe administrateur de machine virtuelle</target>
       </trans-unit>
       <trans-unit id="vm_password_validation_error_message">
         <source xml:lang="en">VM password must be 12 to 123 characters in length and consists of upper case characters, lower case characters, numbers and special characters.</source>
-        <target state="new">VM password must be 12 to 123 characters in length and consists of upper case characters, lower case characters, numbers and special characters.</target>
+        <target state="translated">Le mot de passe de la machine virtuelle doit comprendre entre 12 et 123 caractères, et contenir des caractères majuscules, des caractères minuscules, des chiffres et des caractères spéciaux.</target>
       </trans-unit>
       <trans-unit id="package_path">
         <source xml:lang="en">Package file</source>
@@ -152,7 +152,7 @@
       </trans-unit>
       <trans-unit id="package_path_description">
         <source xml:lang="en">Path of the SQL Server package file(dacpac, bacpac) or compressed package file.</source>
-        <target state="new">Path of the SQL Server package file(dacpac, bacpac) or compressed package file.</target>
+        <target state="translated">Chemin d’accès du fichier de package SQL Server (dacpac, BacPac) ou du fichier de package compressé.</target>
       </trans-unit>
       <trans-unit id="azure-info-section-title">
         <source xml:lang="en">Azure information</source>
@@ -160,19 +160,19 @@
       </trans-unit>
       <trans-unit id="sqlserver-info-section-title">
         <source xml:lang="en">Azure SQL Edge information</source>
-        <target state="new">Azure SQL Edge information</target>
+        <target state="translated">Informations Azure SQL Edge</target>
       </trans-unit>
       <trans-unit id="package-files">
         <source xml:lang="en">SQL Server Package files</source>
-        <target state="new">SQL Server Package files</target>
+        <target state="translated">Fichiers de package SQL Server</target>
       </trans-unit>
       <trans-unit id="sql-edge-azure-single-device-display-name">
         <source xml:lang="en">Existing device of an Azure IoT Hub</source>
-        <target state="new">Existing device of an Azure IoT Hub</target>
+        <target state="translated">Appareil existant d’un Azure IoT Hub</target>
       </trans-unit>
       <trans-unit id="sql-edge-azure-single-device-title">
         <source xml:lang="en">Deploy Azure SQL Edge to an existing device</source>
-        <target state="new">Deploy Azure SQL Edge to an existing device</target>
+        <target state="translated">Déployer Azure SQL Edge sur un appareil existant</target>
       </trans-unit>
       <trans-unit id="iot-hub-name">
         <source xml:lang="en">IoT Hub name</source>
@@ -184,27 +184,27 @@
       </trans-unit>
       <trans-unit id="device-ip-address">
         <source xml:lang="en">Device IP Address</source>
-        <target state="new">Device IP Address</target>
+        <target state="translated">Adresse IP du périphérique</target>
       </trans-unit>
       <trans-unit id="device-ip-address-description">
         <source xml:lang="en">Will be used to connect to the Azure SQL Edge instance after deployment</source>
-        <target state="new">Will be used to connect to the Azure SQL Edge instance after deployment</target>
+        <target state="translated">Sera utilisé pour se connecter à l’instance Azure SQL Edge après le déploiement</target>
       </trans-unit>
       <trans-unit id="sql-edge-azure-multi-device-display-name">
         <source xml:lang="en">Multiple devices of an Azure IoT Hub</source>
-        <target state="new">Multiple devices of an Azure IoT Hub</target>
+        <target state="translated">Plusieurs appareils d’un Azure IoT Hub</target>
       </trans-unit>
       <trans-unit id="sql-edge-azure-multi-device-title">
         <source xml:lang="en">Deploy Azure SQL Edge to multiple Azure IoT devices</source>
-        <target state="new">Deploy Azure SQL Edge to multiple Azure IoT devices</target>
+        <target state="translated">Déployer Azure SQL Edge sur plusieurs appareils Azure IoT</target>
       </trans-unit>
       <trans-unit id="device-target-condition">
         <source xml:lang="en">Target condition</source>
-        <target state="new">Target condition</target>
+        <target state="translated">Condition cible</target>
       </trans-unit>
       <trans-unit id="device-target-condition-learn-more">
         <source xml:lang="en">Learn more about target condition</source>
-        <target state="new">Learn more about target condition</target>
+        <target state="translated">En savoir plus sur l'état des cibles</target>
       </trans-unit>
       <trans-unit id="vm_ssh_public_key">
         <source xml:lang="en">SSH public key</source>

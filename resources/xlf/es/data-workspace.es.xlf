@@ -200,6 +200,10 @@ Para obtener más información sobre los proyectos, [le la documentación](https
         <source xml:lang="en">Name cannot be empty</source>
         <target state="translated">El nombre no puede estar vacío</target>
       </trans-unit>
+      <trans-unit id="dataworkspace.targetPlatform">
+        <source xml:lang="en">Target Platform</source>
+        <target state="translated">Plataforma de destino</target>
+      </trans-unit>
       <trans-unit id="dataworkspace.openExistingDialogTitle">
         <source xml:lang="en">Open Existing Project</source>
         <target state="translated">Abrir proyecto existente</target>

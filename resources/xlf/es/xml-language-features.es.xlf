@@ -4,11 +4,11 @@
     <body>
       <trans-unit id="displayName">
         <source xml:lang="en">XML Language Features</source>
-        <target state="new">XML Language Features</target>
+        <target state="translated">Características del lenguaje XML</target>
       </trans-unit>
       <trans-unit id="description">
         <source xml:lang="en">Provides rich language support for XML.</source>
-        <target state="new">Provides rich language support for XML.</target>
+        <target state="translated">Proporciona un potente soporte de lenguaje para archivos XML.</target>
       </trans-unit>
     </body>
   </file>

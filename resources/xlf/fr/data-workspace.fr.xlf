@@ -4,11 +4,11 @@
     <body>
       <trans-unit id="extension-displayName">
         <source xml:lang="en">Data workspace</source>
-        <target state="new">Data workspace</target>
+        <target state="translated">Espace de travail de données</target>
       </trans-unit>
       <trans-unit id="extension-description">
         <source xml:lang="en">Data workspace</source>
-        <target state="new">Data workspace</target>
+        <target state="translated">Espace de travail de données</target>
       </trans-unit>
       <trans-unit id="data-workspace-view-container-name">
         <source xml:lang="en">Projects</source>
@@ -32,17 +32,17 @@
       </trans-unit>
       <trans-unit id="remove-project-command">
         <source xml:lang="en">Remove Project</source>
-        <target state="new">Remove Project</target>
+        <target state="translated">Supprimer le projet</target>
       </trans-unit>
       <trans-unit id="projects-view-no-workspace-content">
         <source xml:lang="en">Create new or open existing to get started.
 [Create new](command:projects.new)
 [Open existing](command:projects.openExisting)
 To learn more about projects [read our docs](https://aka.ms/azuredatastudio-projects).</source>
-        <target state="new">Create new or open existing to get started.
-[Create new](command:projects.new)
-[Open existing](command:projects.openExisting)
-To learn more about projects [read our docs](https://aka.ms/azuredatastudio-projects).</target>
+        <target state="translated">Créez ou ouvrez existant pour commencer.
+[Créer](command:projects.new)
+[Ouvrir un existant](command:projects.openExisting)
+Pour en savoir plus sur les projets [lire nos documents](https://aka.ms/azuredatastudio-projects).</target>
       </trans-unit>
       <trans-unit id="projects-view-no-project-content">
         <source xml:lang="en">No projects open in current workspace.
@@ -50,23 +50,23 @@ To learn more about projects [read our docs](https://aka.ms/azuredatastudio-proj
 [Open existing](command:projects.openExisting)
 To learn more about projects [read our docs](https://aka.ms/azuredatastudio-projects).
 </source>
-        <target state="new">No projects open in current workspace.
-[Create new](command:projects.new)
-[Open existing](command:projects.openExisting)
-To learn more about projects [read our docs](https://aka.ms/azuredatastudio-projects).
+        <target state="translated">Aucun projet n’est ouvert dans l’espace de travail actuel.
+[Créer](command:projects.new)
+[Ouvrir un existant](command:projects.openExisting)
+Pour en savoir plus sur les projets [lire nos documents](https://aka.ms/azuredatastudio-projects).
 </target>
       </trans-unit>
       <trans-unit id="open-existing-command">
         <source xml:lang="en">Open existing</source>
-        <target state="new">Open existing</target>
+        <target state="translated">Ouvrir des instances existantes</target>
       </trans-unit>
       <trans-unit id="projects.defaultProjectSaveLocation">
         <source xml:lang="en">Full path to folder where new projects are saved by default.</source>
-        <target state="new">Full path to folder where new projects are saved by default.</target>
+        <target state="translated">Chemin d’accès complet au dossier dans lequel les nouveaux projets sont enregistrés par défaut.</target>
       </trans-unit>
       <trans-unit id="projects.showNotAddedProjectsInWorkspacePrompt">
         <source xml:lang="en">Always show information message when the current workspace folders contain projects that have not been added to the workspace's projects.</source>
-        <target state="new">Always show information message when the current workspace folders contain projects that have not been added to the workspace's projects.</target>
+        <target state="translated">Toujours afficher un message d'information lorsque les dossiers de l'espace de travail actuel contiennent des projets qui n'ont pas été ajoutés aux projets de l'espace de travail.</target>
       </trans-unit>
       <trans-unit id="manage-project-command">
         <source xml:lang="en">Manage</source>
@@ -78,11 +78,11 @@ To learn more about projects [read our docs](https://aka.ms/azuredatastudio-proj
     <body>
       <trans-unit id="activateExtensionFailed">
         <source xml:lang="en">Failed to load the project provider extension '{0}'. Error message: {1}</source>
-        <target state="new">Failed to load the project provider extension '{0}'. Error message: {1}</target>
+        <target state="translated">Échec du chargement de l’extension de fournisseur de projet « {0} ». Message d’erreur : {1}</target>
       </trans-unit>
       <trans-unit id="UnknownProjectsError">
         <source xml:lang="en">No provider was found for the following projects: {0}</source>
-        <target state="new">No provider was found for the following projects: {0}</target>
+        <target state="translated">Aucun fournisseur n’a été trouvé pour les projets suivants : {0}</target>
       </trans-unit>
       <trans-unit id="SelectProjectFileActionName">
         <source xml:lang="en">Select</source>
@@ -94,27 +94,27 @@ To learn more about projects [read our docs](https://aka.ms/azuredatastudio-proj
       </trans-unit>
       <trans-unit id="UnknownProjectTypeError">
         <source xml:lang="en">No provider was found for project type with id: '{0}'</source>
-        <target state="new">No provider was found for project type with id: '{0}'</target>
+        <target state="translated">Aucun fournisseur n’a été trouvé pour le type de projet ayant l’ID : « {0} »</target>
       </trans-unit>
       <trans-unit id="dataworkspace.restartConfirmation">
         <source xml:lang="en">Azure Data Studio needs to be restarted for the project to be created and added to the workspace, do this now?</source>
-        <target state="new">Azure Data Studio needs to be restarted for the project to be created and added to the workspace, do this now?</target>
+        <target state="translated">Azure Data Studio doit être redémarré pour que le projet soit créé et ajouté à l’espace de travail, faites-le maintenant ?</target>
       </trans-unit>
       <trans-unit id="dataworkspace.projectsFailedToLoad">
         <source xml:lang="en">Some projects failed to load. To view more details, [open the developer console](command:workbench.action.toggleDevTools)</source>
-        <target state="new">Some projects failed to load. To view more details, [open the developer console](command:workbench.action.toggleDevTools)</target>
+        <target state="translated">Échec du chargement de certains projets. Pour afficher plus de détails, [ouvrez la console du développeur](command:workbench.action.toggleDevTools)</target>
       </trans-unit>
       <trans-unit id="fileDoesNotExist">
         <source xml:lang="en">File '{0}' doesn't exist</source>
-        <target state="new">File '{0}' doesn't exist</target>
+        <target state="translated">Le fichier « {0} » n'existe pas</target>
       </trans-unit>
       <trans-unit id="projectNameNull">
         <source xml:lang="en">Project name is null</source>
-        <target state="new">Project name is null</target>
+        <target state="translated">Le nom de la feuille est Null</target>
       </trans-unit>
       <trans-unit id="noPreviousData">
         <source xml:lang="en">Prior {0} for the current project will appear here, please run to see the results.</source>
-        <target state="new">Prior {0} for the current project will appear here, please run to see the results.</target>
+        <target state="translated">Les {0} antérieures pour le projet actif s’afficheront ici, exécutez pour voir les résultats.</target>
       </trans-unit>
       <trans-unit id="gitCloneMessage">
         <source xml:lang="en">Cloning git repository '{0}'...</source>
@@ -122,7 +122,7 @@ To learn more about projects [read our docs](https://aka.ms/azuredatastudio-proj
       </trans-unit>
       <trans-unit id="gitCloneError">
         <source xml:lang="en">Error during git clone. View git output for more details</source>
-        <target state="new">Error during git clone. View git output for more details</target>
+        <target state="translated">Erreur lors du Git Clone. Afficher la sortie git pour plus de détails</target>
       </trans-unit>
       <trans-unit id="dataworkspace.ok">
         <source xml:lang="en">OK</source>
@@ -166,7 +166,7 @@ To learn more about projects [read our docs](https://aka.ms/azuredatastudio-proj
       </trans-unit>
       <trans-unit id="dataworkspace.enterProjectName">
         <source xml:lang="en">Enter Project Name</source>
-        <target state="new">Enter Project Name</target>
+        <target state="translated">Entrer le nom du projet</target>
       </trans-unit>
       <trans-unit id="dataworkspace.projectLocationTitle">
         <source xml:lang="en">Location</source>
@@ -174,43 +174,47 @@ To learn more about projects [read our docs](https://aka.ms/azuredatastudio-proj
       </trans-unit>
       <trans-unit id="dataworkspace.projectLocationPlaceholder">
         <source xml:lang="en">Select location to create project</source>
-        <target state="new">Select location to create project</target>
+        <target state="translated">Sélectionner l’emplacement de création du projet</target>
       </trans-unit>
       <trans-unit id="dataworkspace.projectParentDirectoryNotExistError">
         <source xml:lang="en">The selected project location '{0}' does not exist or is not a directory.</source>
-        <target state="new">The selected project location '{0}' does not exist or is not a directory.</target>
+        <target state="translated">L’emplacement de projet sélectionné « {0} » n’existe pas ou n’est pas un répertoire.</target>
       </trans-unit>
       <trans-unit id="dataworkspace.projectDirectoryAlreadyExistError">
         <source xml:lang="en">There is already a directory named '{0}' in the selected location: '{1}'.</source>
-        <target state="new">There is already a directory named '{0}' in the selected location: '{1}'.</target>
+        <target state="translated">Il existe déjà un répertoire nommé « {0} » à l’emplacement sélectionné : « {1} ».</target>
       </trans-unit>
       <trans-unit id="dataworkspace.projectDirectoryAlreadyExistErrorShort">
         <source xml:lang="en">Directory '{0}' already exists in the selected location, please choose another</source>
-        <target state="new">Directory '{0}' already exists in the selected location, please choose another</target>
+        <target state="translated">Le répertoire « {0} » existe déjà à l’emplacement sélectionné, choisissez-en un autre</target>
       </trans-unit>
       <trans-unit id="dataworkspace.selectProjectType">
         <source xml:lang="en">Select Project Type</source>
-        <target state="new">Select Project Type</target>
+        <target state="translated">Sélectionner le type de projet</target>
       </trans-unit>
       <trans-unit id="dataworkspace.selectProjectLocation">
         <source xml:lang="en">Select Project Location</source>
-        <target state="new">Select Project Location</target>
+        <target state="translated">Sélectionner l’emplacement du projet</target>
       </trans-unit>
       <trans-unit id="dataworkspace.nameCannotBeEmpty">
         <source xml:lang="en">Name cannot be empty</source>
         <target state="translated">Le nom ne peut pas être vide</target>
       </trans-unit>
+      <trans-unit id="dataworkspace.targetPlatform">
+        <source xml:lang="en">Target Platform</source>
+        <target state="translated">Plateforme cible</target>
+      </trans-unit>
       <trans-unit id="dataworkspace.openExistingDialogTitle">
         <source xml:lang="en">Open Existing Project</source>
-        <target state="new">Open Existing Project</target>
+        <target state="translated">Ouvrir un projet existant</target>
       </trans-unit>
       <trans-unit id="dataworkspace.fileNotExistError">
         <source xml:lang="en">The selected {0} file '{1}' does not exist or is not a file.</source>
-        <target state="new">The selected {0} file '{1}' does not exist or is not a file.</target>
+        <target state="translated">Le fichier {0} sélectionné « {1} » n’existe pas ou n’est pas un fichier.</target>
       </trans-unit>
       <trans-unit id="dataworkspace.cloneParentDirectoryNotExistError">
         <source xml:lang="en">The selected clone path '{0}' does not exist or is not a directory.</source>
-        <target state="new">The selected clone path '{0}' does not exist or is not a directory.</target>
+        <target state="translated">Le chemin de clone sélectionné « {0} » n’existe pas ou n’est pas un répertoire.</target>
       </trans-unit>
       <trans-unit id="dataworkspace.project">
         <source xml:lang="en">Project</source>
@@ -222,15 +226,15 @@ To learn more about projects [read our docs](https://aka.ms/azuredatastudio-proj
       </trans-unit>
       <trans-unit id="dataworkspace.projectFilePlaceholder">
         <source xml:lang="en">Select project file</source>
-        <target state="new">Select project file</target>
+        <target state="translated">Sélectionner un fichier de projet</target>
       </trans-unit>
       <trans-unit id="dataworkspace.workspacePlaceholder">
         <source xml:lang="en">Select workspace ({0}) file</source>
-        <target state="new">Select workspace ({0}) file</target>
+        <target state="translated">Sélectionner le fichier d’espace de travail ({0})</target>
       </trans-unit>
       <trans-unit id="dataworkspace.projectAlreadyOpened">
         <source xml:lang="en">Project '{0}' is already opened.</source>
-        <target state="new">Project '{0}' is already opened.</target>
+        <target state="translated">Le projet « {0} » est déjà ouvert.</target>
       </trans-unit>
       <trans-unit id="dataworksapce.local">
         <source xml:lang="en">Local</source>
@@ -238,23 +242,23 @@ To learn more about projects [read our docs](https://aka.ms/azuredatastudio-proj
       </trans-unit>
       <trans-unit id="dataworkspace.remoteGitRepo">
         <source xml:lang="en">Remote git repository</source>
-        <target state="new">Remote git repository</target>
+        <target state="translated">Référentiel Git distant</target>
       </trans-unit>
       <trans-unit id="dataworkspace.gitRepoUrlTitle">
         <source xml:lang="en">Git repository URL</source>
-        <target state="translated">URL de dépôt Git</target>
+        <target state="translated">URL du référentiel Git</target>
       </trans-unit>
       <trans-unit id="dataworkspace.gitRepoUrlPlaceholder">
         <source xml:lang="en">Enter remote git repository URL</source>
-        <target state="new">Enter remote git repository URL</target>
+        <target state="translated">Entrer une URL de référentiel git distant</target>
       </trans-unit>
       <trans-unit id="dataworkspace.localClonePathTitle">
         <source xml:lang="en">Local clone path</source>
-        <target state="new">Local clone path</target>
+        <target state="translated">Chemin d'accès de clone local</target>
       </trans-unit>
       <trans-unit id="dataworkspace.localClonePathPlaceholder">
         <source xml:lang="en">Select location to clone repository locally</source>
-        <target state="new">Select location to clone repository locally</target>
+        <target state="translated">Sélectionner l’emplacement vers lequel cloner le référentiel localement</target>
       </trans-unit>
       <trans-unit id="dataworksapce.refresh">
         <source xml:lang="en">Refresh</source>

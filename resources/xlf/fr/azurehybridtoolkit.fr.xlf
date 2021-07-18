@@ -4,19 +4,19 @@
     <body>
       <trans-unit id="displayName">
         <source xml:lang="en">Azure SQL Hybrid Cloud Toolkit</source>
-        <target state="new">Azure SQL Hybrid Cloud Toolkit</target>
+        <target state="translated">kit de ressources cloud hybride Azure SQL</target>
       </trans-unit>
       <trans-unit id="description">
         <source xml:lang="en">Opens up Azure SQL Hybrid Cloud Toolkit Jupyter Book</source>
-        <target state="new">Opens up Azure SQL Hybrid Cloud Toolkit Jupyter Book</target>
+        <target state="translated">Ouvrir l’ouvrage kit de ressources cloud hybride Azure SQL</target>
       </trans-unit>
       <trans-unit id="title.openJupyterBook">
         <source xml:lang="en">Open Azure SQL Hybrid Cloud Toolkit Jupyter Book</source>
-        <target state="new">Open Azure SQL Hybrid Cloud Toolkit Jupyter Book</target>
+        <target state="translated">Ouvrir l’ouvrage kit de ressources cloud hybride Azure SQL</target>
       </trans-unit>
       <trans-unit id="title.cloudHybridBooks">
         <source xml:lang="en">Azure SQL Hybrid Cloud Toolkit</source>
-        <target state="new">Azure SQL Hybrid Cloud Toolkit</target>
+        <target state="translated">kit de ressources cloud hybride Azure SQL</target>
       </trans-unit>
       <trans-unit id="books-preview-category">
         <source xml:lang="en">Jupyter Books</source>

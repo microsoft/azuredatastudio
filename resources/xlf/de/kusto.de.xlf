@@ -4,7 +4,7 @@
     <body>
       <trans-unit id="notebook.command.new">
         <source xml:lang="en">New Notebook</source>
-        <target state="translated">Neues Notizbuch</target>
+        <target state="translated">Neues Notebook</target>
       </trans-unit>
       <trans-unit id="notebook.command.open">
         <source xml:lang="en">Open Notebook</source>
@@ -24,11 +24,11 @@
       </trans-unit>
       <trans-unit id="cloud.serverProperties.machinesTotal">
         <source xml:lang="en">Total Machines in the cluster</source>
-        <target state="new">Total Machines in the cluster</target>
+        <target state="translated">Gesamtanzahl der Computer im Cluster</target>
       </trans-unit>
       <trans-unit id="cloud.serverProperties.diskCacheCapacity">
         <source xml:lang="en">% of Cluster data capacity used</source>
-        <target state="new">% of Cluster data capacity used</target>
+        <target state="translated">% der verwendeten Cluster Datenkapazität</target>
       </trans-unit>
       <trans-unit id="databasesListProperties.name">
         <source xml:lang="en">Name</source>
@@ -48,7 +48,7 @@
       </trans-unit>
       <trans-unit id="kusto.configuration.title">
         <source xml:lang="en">KUSTO configuration</source>
-        <target state="new">KUSTO configuration</target>
+        <target state="translated">KUSTO-Konfiguration</target>
       </trans-unit>
       <trans-unit id="kusto.query.displayBitAsNumber">
         <source xml:lang="en">Should BIT columns be displayed as numbers (1 or 0)? If false, BIT columns will be displayed as 'true' or 'false'</source>
@@ -92,7 +92,7 @@
       </trans-unit>
       <trans-unit id="kusto.connectionOptions.serverName.description">
         <source xml:lang="en">Kusto cluster name</source>
-        <target state="new">Kusto cluster name</target>
+        <target state="translated">KUSTO-Clustername</target>
       </trans-unit>
       <trans-unit id="kusto.connectionOptions.databaseName.displayName">
         <source xml:lang="en">Database</source>
@@ -100,7 +100,7 @@
       </trans-unit>
       <trans-unit id="kusto.connectionOptions.databaseName.description">
         <source xml:lang="en">The name of the initial catalog or database in the data source</source>
-        <target state="new">The name of the initial catalog or database in the data source</target>
+        <target state="translated">Der Name des Anfangskatalogs oder der Anfangsdatenbank in der Datenquelle</target>
       </trans-unit>
       <trans-unit id="kusto.connectionOptions.authType.displayName">
         <source xml:lang="en">Authentication type</source>
@@ -108,7 +108,7 @@
       </trans-unit>
       <trans-unit id="kusto.connectionOptions.authType.description">
         <source xml:lang="en">Specifies the method of authenticating with Kusto Server</source>
-        <target state="new">Specifies the method of authenticating with Kusto Server</target>
+        <target state="translated">Gibt die Methode für die Authentifizierung bei KUSTO Server an</target>
       </trans-unit>
       <trans-unit id="kusto.connectionOptions.authType.categoryValues.azureMFA">
         <source xml:lang="en">Azure Active Directory - Universal with MFA support</source>
@@ -176,7 +176,7 @@
       </trans-unit>
       <trans-unit id="kusto.connectionOptions.workstationId.description">
         <source xml:lang="en">The name of the workstation connecting to Kusto Server</source>
-        <target state="new">The name of the workstation connecting to Kusto Server</target>
+        <target state="translated">Der Name der Arbeitsstation, die eine Verbindung mit KUSTO Server herstellt</target>
       </trans-unit>
       <trans-unit id="kusto.connectionOptions.failoverPartner.displayName">
         <source xml:lang="en">Failover partner</source>
@@ -184,7 +184,7 @@
       </trans-unit>
       <trans-unit id="kusto.connectionOptions.failoverPartner.description">
         <source xml:lang="en">The name or network address of the instance of Kusto Server that acts as a failover partner</source>
-        <target state="new">The name or network address of the instance of Kusto Server that acts as a failover partner</target>
+        <target state="translated">Der Name oder die Netzwerkadresse der KUSTO Server-Instanz, die als Failoverpartner fungiert</target>
       </trans-unit>
     </body>
   </file>
@@ -204,7 +204,7 @@
     <body>
       <trans-unit id="kusto.unsupportedPlatform">
         <source xml:lang="en">Unsupported platform</source>
-        <target state="new">Unsupported platform</target>
+        <target state="translated">Nicht unterstützte Plattform</target>
       </trans-unit>
       <trans-unit id="notebookFileType">
         <source xml:lang="en">Notebooks</source>
@@ -256,7 +256,7 @@
     <body>
       <trans-unit id="serviceStartedStatusMsg">
         <source xml:lang="en">{0} Started</source>
-        <target state="translated">"{0}" wurde gestartet.</target>
+        <target state="translated">"{0}" wurde gestartet</target>
       </trans-unit>
       <trans-unit id="startingServiceStatusMsg">
         <source xml:lang="en">Starting {0}</source>
@@ -272,15 +272,15 @@
       </trans-unit>
       <trans-unit id="installingServiceStatusMsg">
         <source xml:lang="en">Installing {0}</source>
-        <target state="translated">"{0}" wird installiert.</target>
+        <target state="translated">"{0}" wird installiert</target>
       </trans-unit>
       <trans-unit id="installedServiceChannelMsg">
         <source xml:lang="en">Installed {0}</source>
-        <target state="translated">"{0}" wurde installiert.</target>
+        <target state="translated">"{0}" wurde installiert</target>
       </trans-unit>
       <trans-unit id="downloadingServiceChannelMsg">
         <source xml:lang="en">Downloading {0}</source>
-        <target state="translated">"{0}" wird heruntergeladen.</target>
+        <target state="translated">"{0}" wird heruntergeladen</target>
       </trans-unit>
       <trans-unit id="downloadingServiceSizeChannelMsg">
         <source xml:lang="en">({0} KB)</source>
@@ -288,11 +288,11 @@
       </trans-unit>
       <trans-unit id="downloadingServiceStatusMsg">
         <source xml:lang="en">Downloading {0}</source>
-        <target state="translated">"{0}" wird heruntergeladen.</target>
+        <target state="translated">"{0}" wird heruntergeladen</target>
       </trans-unit>
       <trans-unit id="downloadServiceDoneChannelMsg">
         <source xml:lang="en">Done installing {0}</source>
-        <target state="translated">Die Installation von {0} wurde abgeschlossen.</target>
+        <target state="translated">Die Installation von {0} wurde abgeschlossen</target>
       </trans-unit>
     </body>
   </file>
@@ -304,7 +304,7 @@
       </trans-unit>
       <trans-unit id="kusto.accountDoesNotExist">
         <source xml:lang="en">Account does not exist.</source>
-        <target state="new">Account does not exist.</target>
+        <target state="translated">Konto nicht vorhanden.</target>
       </trans-unit>
       <trans-unit id="kusto.insufficientlyPrivelagedAzureAccount">
         <source xml:lang="en">The configured Azure account for {0} does not have sufficient permissions for Azure Key Vault to access a column master key for Always Encrypted.</source>

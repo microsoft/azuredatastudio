@@ -8,7 +8,7 @@
       </trans-unit>
       <trans-unit id="sqlDatabaseProjects.displayName">
         <source xml:lang="en">Database Projects</source>
-        <target state="new">Database Projects</target>
+        <target state="translated">Proyectos de base de datos</target>
       </trans-unit>
       <trans-unit id="sqlDatabaseProjects.description">
         <source xml:lang="en">Design and publish SQL database schemas</source>
@@ -20,7 +20,7 @@
       </trans-unit>
       <trans-unit id="sqlDatabaseProjects.open">
         <source xml:lang="en">Open Database Project</source>
-        <target state="new">Open Database Project</target>
+        <target state="translated">Abrir proyecto de base de datos</target>
       </trans-unit>
       <trans-unit id="sqlDatabaseProjects.close">
         <source xml:lang="en">Close Database Project</source>
@@ -68,7 +68,7 @@
       </trans-unit>
       <trans-unit id="sqlDatabaseProjects.newPostDeploymentScript">
         <source xml:lang="en">Add Post-Deployment Script</source>
-        <target state="new">Add Post-Deployment Script</target>
+        <target state="translated">Agregar script posterior a la implementación</target>
       </trans-unit>
       <trans-unit id="sqlDatabaseProjects.newTable">
         <source xml:lang="en">Add Table</source>
@@ -84,11 +84,11 @@
       </trans-unit>
       <trans-unit id="sqlDatabaseProjects.newExternalStreamingJob">
         <source xml:lang="en">Add External Streaming Job</source>
-        <target state="new">Add External Streaming Job</target>
+        <target state="translated">Agregar trabajo de streaming externo</target>
       </trans-unit>
       <trans-unit id="sqlDatabaseProjects.newItem">
         <source xml:lang="en">Add Item...</source>
-        <target state="new">Add Item...</target>
+        <target state="translated">Agregar elemento...</target>
       </trans-unit>
       <trans-unit id="sqlDatabaseProjects.newFolder">
         <source xml:lang="en">Add Folder</source>
@@ -104,7 +104,7 @@
       </trans-unit>
       <trans-unit id="sqlDatabaseProjects.editProjectFile">
         <source xml:lang="en">Edit .sqlproj File</source>
-        <target state="new">Edit .sqlproj File</target>
+        <target state="translated">Editar archivo. sqlproj</target>
       </trans-unit>
       <trans-unit id="sqlDatabaseProjects.changeTargetPlatform">
         <source xml:lang="en">Change Target Platform</source>
@@ -116,7 +116,7 @@
       </trans-unit>
       <trans-unit id="sqlDatabaseProjects.netCoreInstallLocation">
         <source xml:lang="en">Full path to .NET Core SDK on the machine.</source>
-        <target state="new">Full path to .NET Core SDK on the machine.</target>
+        <target state="translated">Ruta de acceso completa a SDK de .NET Core en la máquina.</target>
       </trans-unit>
       <trans-unit id="sqlDatabaseProjects.netCoreDoNotAsk">
         <source xml:lang="en">Whether to prompt the user to install .NET Core when not detected.</source>
@@ -370,7 +370,7 @@
       </trans-unit>
       <trans-unit id="profileReadError">
         <source xml:lang="en">Error loading the publish profile. {0}</source>
-        <target state="new">Error loading the publish profile. {0}</target>
+        <target state="translated">Error al cargar el perfil de publicación. {0}</target>
       </trans-unit>
       <trans-unit id="sqlCmdTableLabel">
         <source xml:lang="en">SQLCMD Variables</source>
@@ -406,11 +406,11 @@
       </trans-unit>
       <trans-unit id="selectProfileToUse">
         <source xml:lang="en">Select publish profile to load</source>
-        <target state="new">Select publish profile to load</target>
+        <target state="translated">Seleccionar el perfil de publicación que se va a cargar.</target>
       </trans-unit>
       <trans-unit id="selectProfile">
         <source xml:lang="en">Select Profile</source>
-        <target state="new">Select Profile</target>
+        <target state="translated">Seleccionar perfil</target>
       </trans-unit>
       <trans-unit id="dontUseProfile">
         <source xml:lang="en">Don't use profile</source>
@@ -800,6 +800,14 @@
       <trans-unit id="unableToFindReference">
         <source xml:lang="en">Unable to find database reference {0}</source>
         <target state="translated">No se encuentra la referencia de base de datos {0}.</target>
+      </trans-unit>
+      <trans-unit id="invalidGuid">
+        <source xml:lang="en">Specified GUID is invalid: {0}</source>
+        <target state="translated">El GUID especificado no es válido: {0}</target>
+      </trans-unit>
+      <trans-unit id="invalidTargetPlatform">
+        <source xml:lang="en">Invalid target platform: {0}. Supported target platforms: {1}</source>
+        <target state="translated">Plataforma de destino no válida: {0}. Plataformas de destino admitidas: {1}</target>
       </trans-unit>
       <trans-unit id="deleteAction">
         <source xml:lang="en">Delete</source>
