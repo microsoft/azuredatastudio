@@ -66,11 +66,11 @@ export class ControllerModel {
 			await this.refresh(false);
 		}
 	}
-	public async refresh(showErrors: boolean = true): Promise<void> {
+	public async refresh(showErrors: boolean = true, namespace?: string): Promise<void> {
 		// First need to log in to ensure that we're able to authenticate with the controller
 		const newRegistrations: Registration[] = [];
 		await Promise.all([
-			this._azApi.az.arcdata.dc.config.show(this.azAdditionalEnvVars).then(result => {
+			this._azApi.az.arcdata.dc.config.show(namespace, this.azAdditionalEnvVars).then(result => {
 				this._controllerConfig = result.result;
 				this.configLastUpdated = new Date();
 				this._onConfigUpdated.fire(this._controllerConfig);
@@ -84,7 +84,7 @@ export class ControllerModel {
 				this._onConfigUpdated.fire(this._controllerConfig);
 				throw err;
 			}),
-			this._azApi.az.arcdata.dc.endpoint.list(this.azAdditionalEnvVars).then(result => {
+			this._azApi.az.arcdata.dc.endpoint.list(namespace, this.azAdditionalEnvVars).then(result => {
 				this._endpoints = result.result;
 				this.endpointsLastUpdated = new Date();
 				this._onEndpointsUpdated.fire(this._endpoints);
@@ -99,16 +99,16 @@ export class ControllerModel {
 				throw err;
 			}),
 			Promise.all([
-				this._azApi.az.arcdata.postgres.server.list(this.azAdditionalEnvVars).then(result => {
-					newRegistrations.push(...result.result.map(r => {
-						return {
-							instanceName: r.name,
-							state: r.state,
-							instanceType: ResourceType.postgresInstances
-						};
-					}));
-				}),
-				this._azApi.az.arcdata.sql.mi.list(this.azAdditionalEnvVars).then(result => {
+				// this._azApi.az.postgres.arcserver.list(namespace, this.azAdditionalEnvVars).then(result => {
+				// 	newRegistrations.push(...result.result.map(r => {
+				// 		return {
+				// 			instanceName: r.name,
+				// 			state: r.state,
+				// 			instanceType: ResourceType.postgresInstances
+				// 		};
+				// 	}));
+				// }),
+				this._azApi.az.sql.miarc.list(namespace, this.azAdditionalEnvVars).then(result => {
 					newRegistrations.push(...result.result.map(r => {
 						return {
 							instanceName: r.name,
@@ -116,6 +116,7 @@ export class ControllerModel {
 							instanceType: ResourceType.sqlManagedInstances
 						};
 					}));
+
 				})
 			]).then(() => {
 				this._registrations = newRegistrations;

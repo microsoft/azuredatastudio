@@ -274,56 +274,58 @@ declare module 'az-ext' {
 			dc: {
 				create(namespace: string, name: string, connectivityMode: string, resourceGroup: string, location: string, subscription: string, profileName?: string, storageClass?: string, additionalEnvVars?: AdditionalEnvVars): Promise<AzOutput<void>>,
 				endpoint: {
-					list(additionalEnvVars?: AdditionalEnvVars): Promise<AzOutput<DcEndpointListResult[]>>
+					list(namespace?: string, additionalEnvVars?: AdditionalEnvVars): Promise<AzOutput<DcEndpointListResult[]>>
 				},
 				config: {
 					list(additionalEnvVars?: AdditionalEnvVars): Promise<AzOutput<DcConfigListResult[]>>,
-					show(additionalEnvVars?: AdditionalEnvVars): Promise<AzOutput<DcConfigShowResult>>
+					show(namespace?: string, additionalEnvVars?: AdditionalEnvVars): Promise<AzOutput<DcConfigShowResult>>
 				}
-			},
-			postgres: {
-				server: {
-					delete(name: string, additionalEnvVars?: AdditionalEnvVars): Promise<AzOutput<void>>,
-					list(additionalEnvVars?: AdditionalEnvVars): Promise<AzOutput<PostgresServerListResult[]>>,
-					show(name: string, additionalEnvVars?: AdditionalEnvVars): Promise<AzOutput<PostgresServerShowResult>>,
-					edit(
-						name: string,
-						args: {
-							adminPassword?: boolean,
-							coresLimit?: string,
-							coresRequest?: string,
-							coordinatorEngineSettings?: string,
-							engineSettings?: string,
-							extensions?: string,
-							memoryLimit?: string,
-							memoryRequest?: string,
-							noWait?: boolean,
-							port?: number,
-							replaceEngineSettings?: boolean,
-							workerEngineSettings?: string,
-							workers?: number
-						},
-						additionalEnvVars?: AdditionalEnvVars
-					): Promise<AzOutput<void>>
-				}
-			},
-			sql: {
-				mi: {
-					delete(name: string, additionalEnvVars?: AdditionalEnvVars): Promise<AzOutput<void>>,
-					list(additionalEnvVars?: AdditionalEnvVars): Promise<AzOutput<SqlMiListResult[]>>,
-					show(name: string, additionalEnvVars?: AdditionalEnvVars): Promise<AzOutput<SqlMiShowResult>>,
-					edit(
-						name: string,
-						args: {
-							coresLimit?: string,
-							coresRequest?: string,
-							memoryLimit?: string,
-							memoryRequest?: string,
-							noWait?: boolean,
-						},
-						additionalEnvVars?: AdditionalEnvVars
-					): Promise<AzOutput<void>>
-				}
+			}
+		},
+		postgres: {
+			arcserver: {
+				delete(name: string, namespace?: string, additionalEnvVars?: AdditionalEnvVars): Promise<AzOutput<void>>,
+				list(namespace?: string, additionalEnvVars?: AdditionalEnvVars): Promise<AzOutput<PostgresServerListResult[]>>,
+				show(name: string, namespace?: string, additionalEnvVars?: AdditionalEnvVars): Promise<AzOutput<PostgresServerShowResult>>,
+				edit(
+					name: string,
+					args: {
+						adminPassword?: boolean,
+						coresLimit?: string,
+						coresRequest?: string,
+						coordinatorEngineSettings?: string,
+						engineSettings?: string,
+						extensions?: string,
+						memoryLimit?: string,
+						memoryRequest?: string,
+						noWait?: boolean,
+						port?: number,
+						replaceEngineSettings?: boolean,
+						workerEngineSettings?: string,
+						workers?: number
+					},
+					namespace?: string,
+					additionalEnvVars?: AdditionalEnvVars
+				): Promise<AzOutput<void>>
+			}
+		},
+		sql: {
+			miarc: {
+				delete(name: string, namespace?: string, additionalEnvVars?: AdditionalEnvVars): Promise<AzOutput<void>>,
+				list(namespace?: string, additionalEnvVars?: AdditionalEnvVars): Promise<AzOutput<SqlMiListResult[]>>,
+				show(name: string, namespace?: string, additionalEnvVars?: AdditionalEnvVars): Promise<AzOutput<SqlMiShowResult>>,
+				edit(
+					name: string,
+					args: {
+						coresLimit?: string,
+						coresRequest?: string,
+						memoryLimit?: string,
+						memoryRequest?: string,
+						noWait?: boolean,
+					},
+					namespace?: string,
+					additionalEnvVars?: AdditionalEnvVars
+				): Promise<AzOutput<void>>
 			}
 		},
 		getPath(): Promise<string>,

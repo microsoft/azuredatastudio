@@ -51,9 +51,9 @@ export function getAzApi(azToolService: AzToolService): azExt.IAzApi {
 					return azToolService.localAz!.arcdata.dc.create(namespace, name, connectivityMode, resourceGroup, location, subscription, profileName, storageClass, additionalEnvVars);
 				},
 				endpoint: {
-					list: async (additionalEnvVars?: azExt.AdditionalEnvVars) => {
+					list: async (namespace: string, additionalEnvVars?: azExt.AdditionalEnvVars) => {
 						validateAz(azToolService.localAz);
-						return azToolService.localAz!.arcdata.dc.endpoint.list(additionalEnvVars);
+						return azToolService.localAz!.arcdata.dc.endpoint.list(namespace, additionalEnvVars);
 					}
 				},
 				config: {
@@ -61,77 +61,79 @@ export function getAzApi(azToolService: AzToolService): azExt.IAzApi {
 						validateAz(azToolService.localAz);
 						return azToolService.localAz!.arcdata.dc.config.list(additionalEnvVars);
 					},
-					show: async (additionalEnvVars?: azExt.AdditionalEnvVars) => {
+					show: async (namespace: string, additionalEnvVars?: azExt.AdditionalEnvVars) => {
 						validateAz(azToolService.localAz);
-						return azToolService.localAz!.arcdata.dc.config.show(additionalEnvVars);
+						return azToolService.localAz!.arcdata.dc.config.show(namespace, additionalEnvVars);
 					}
 				}
-			},
-			postgres: {
-				server: {
-					delete: async (name: string, additionalEnvVars?: azExt.AdditionalEnvVars) => {
-						validateAz(azToolService.localAz);
-						return azToolService.localAz!.arcdata.postgres.server.delete(name, additionalEnvVars);
+			}
+		},
+		postgres: {
+			arcserver: {
+				delete: async (name: string, namespace: string, additionalEnvVars?: azExt.AdditionalEnvVars) => {
+					validateAz(azToolService.localAz);
+					return azToolService.localAz!.postgres.arcserver.delete(name, namespace, additionalEnvVars);
+				},
+				list: async (namespace: string, additionalEnvVars?: azExt.AdditionalEnvVars) => {
+					validateAz(azToolService.localAz);
+					return azToolService.localAz!.postgres.arcserver.list(namespace, additionalEnvVars);
+				},
+				show: async (name: string, namespace: string, additionalEnvVars?: azExt.AdditionalEnvVars) => {
+					validateAz(azToolService.localAz);
+					return azToolService.localAz!.postgres.arcserver.show(name, namespace, additionalEnvVars);
+				},
+				edit: async (
+					name: string,
+					args: {
+						adminPassword?: boolean;
+						coresLimit?: string;
+						coresRequest?: string;
+						coordinatorEngineSettings?: string;
+						engineSettings?: string;
+						extensions?: string;
+						memoryLimit?: string;
+						memoryRequest?: string;
+						noWait?: boolean;
+						port?: number;
+						replaceEngineSettings?: boolean;
+						workerEngineSettings?: string;
+						workers?: number;
 					},
-					list: async (additionalEnvVars?: azExt.AdditionalEnvVars) => {
-						validateAz(azToolService.localAz);
-						return azToolService.localAz!.arcdata.postgres.server.list(additionalEnvVars);
-					},
-					show: async (name: string, additionalEnvVars?: azExt.AdditionalEnvVars) => {
-						validateAz(azToolService.localAz);
-						return azToolService.localAz!.arcdata.postgres.server.show(name, additionalEnvVars);
-					},
-					edit: async (
-						name: string,
-						args: {
-							adminPassword?: boolean;
-							coresLimit?: string;
-							coresRequest?: string;
-							coordinatorEngineSettings?: string;
-							engineSettings?: string;
-							extensions?: string;
-							memoryLimit?: string;
-							memoryRequest?: string;
-							noWait?: boolean;
-							port?: number;
-							replaceEngineSettings?: boolean;
-							workerEngineSettings?: string;
-							workers?: number;
-						},
-						additionalEnvVars?: azExt.AdditionalEnvVars) => {
-						validateAz(azToolService.localAz);
-						return azToolService.localAz!.arcdata.postgres.server.edit(name, args, additionalEnvVars);
-					}
+					namespace: string,
+					additionalEnvVars?: azExt.AdditionalEnvVars) => {
+					validateAz(azToolService.localAz);
+					return azToolService.localAz!.postgres.arcserver.edit(name, args, namespace, additionalEnvVars);
 				}
-			},
-			sql: {
-				mi: {
-					delete: async (name: string, additionalEnvVars?: azExt.AdditionalEnvVars) => {
-						validateAz(azToolService.localAz);
-						return azToolService.localAz!.arcdata.sql.mi.delete(name, additionalEnvVars);
+			}
+		},
+		sql: {
+			miarc: {
+				delete: async (name: string, namespace: string, additionalEnvVars?: azExt.AdditionalEnvVars) => {
+					validateAz(azToolService.localAz);
+					return azToolService.localAz!.sql.miarc.delete(name, namespace, additionalEnvVars);
+				},
+				list: async (namespace: string, additionalEnvVars?: azExt.AdditionalEnvVars) => {
+					validateAz(azToolService.localAz);
+					return azToolService.localAz!.sql.miarc.list(namespace, additionalEnvVars);
+				},
+				show: async (name: string, namespace: string, additionalEnvVars?: azExt.AdditionalEnvVars) => {
+					validateAz(azToolService.localAz);
+					return azToolService.localAz!.sql.miarc.show(name, namespace, additionalEnvVars);
+				},
+				edit: async (
+					name: string,
+					args: {
+						coresLimit?: string;
+						coresRequest?: string;
+						memoryLimit?: string;
+						memoryRequest?: string;
+						noWait?: boolean;
 					},
-					list: async (additionalEnvVars?: azExt.AdditionalEnvVars) => {
-						validateAz(azToolService.localAz);
-						return azToolService.localAz!.arcdata.sql.mi.list(additionalEnvVars);
-					},
-					show: async (name: string, additionalEnvVars?: azExt.AdditionalEnvVars) => {
-						validateAz(azToolService.localAz);
-						return azToolService.localAz!.arcdata.sql.mi.show(name, additionalEnvVars);
-					},
-					edit: async (
-						name: string,
-						args: {
-							coresLimit?: string;
-							coresRequest?: string;
-							memoryLimit?: string;
-							memoryRequest?: string;
-							noWait?: boolean;
-						},
-						additionalEnvVars?: azExt.AdditionalEnvVars
-					) => {
-						validateAz(azToolService.localAz);
-						return azToolService.localAz!.arcdata.sql.mi.edit(name, args, additionalEnvVars);
-					}
+					namespace: string,
+					additionalEnvVars?: azExt.AdditionalEnvVars
+				) => {
+					validateAz(azToolService.localAz);
+					return azToolService.localAz!.sql.miarc.edit(name, args, namespace, additionalEnvVars);
 				}
 			}
 		},

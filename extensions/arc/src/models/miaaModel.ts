@@ -73,7 +73,7 @@ export class MiaaModel extends ResourceModel {
 		this._refreshPromise = new Deferred();
 		try {
 			try {
-				const result = await this._azApi.az.arcdata.sql.mi.show(this.info.name, this.controllerModel.azAdditionalEnvVars);
+				const result = await this._azApi.az.sql.miarc.show(this.info.name, this.controllerModel.info.namespace, this.controllerModel.azAdditionalEnvVars);
 				this._config = result.result;
 				this.configLastUpdated = new Date();
 				this._onConfigUpdated.fire(this._config);

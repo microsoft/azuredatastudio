@@ -130,8 +130,8 @@ export class MiaaComputeAndStoragePage extends DashboardPage {
 						},
 						async (_progress, _token): Promise<void> => {
 							try {
-								await this._azApi.az.arcdata.sql.mi.edit(
-									this._miaaModel.info.name, this.saveArgs, this._miaaModel.controllerModel.azAdditionalEnvVars);
+								await this._azApi.az.sql.miarc.edit(
+									this._miaaModel.info.name, this.saveArgs, this._miaaModel.controllerModel.info.namespace, this._miaaModel.controllerModel.azAdditionalEnvVars);
 							} catch (err) {
 								this.saveButton!.enabled = true;
 								throw err;

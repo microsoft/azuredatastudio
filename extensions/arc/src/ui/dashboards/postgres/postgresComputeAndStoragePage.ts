@@ -165,7 +165,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 						},
 						async (_progress, _token): Promise<void> => {
 							try {
-								await this._azApi.az.arcdata.postgres.server.edit(
+								await this._azApi.az.postgres.arcserver.edit(
 									this._postgresModel.info.name,
 									{
 										workers: this.saveArgs.workers,
@@ -174,6 +174,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 										memoryRequest: this.schedulingParamsToEdit(this.saveArgs.memoryRequest!),
 										memoryLimit: this.schedulingParamsToEdit(this.saveArgs.memoryLimit!)
 									},
+									this._postgresModel.controllerModel.info.namespace,
 									this._postgresModel.controllerModel.azAdditionalEnvVars);
 							} catch (err) {
 								// If an error occurs while editing the instance then re-enable the save button since

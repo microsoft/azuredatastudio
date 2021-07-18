@@ -137,11 +137,12 @@ export class PostgresExtensionsPage extends DashboardPage {
 							},
 							async (_progress, _token): Promise<void> => {
 
-								await this._azApi.az.arcdata.postgres.server.edit(
+								await this._azApi.az.postgres.arcserver.edit(
 									this._postgresModel.info.name,
 									{
 										extensions: extensionList
 									},
+									this._postgresModel.controllerModel.info.namespace,
 									this._postgresModel.controllerModel.azAdditionalEnvVars);
 
 								try {
@@ -247,11 +248,12 @@ export class PostgresExtensionsPage extends DashboardPage {
 					let index = this.extensionNames.indexOf(name, 0);
 					this.extensionNames.splice(index, 1);
 
-					await this._azApi.az.arcdata.postgres.server.edit(
+					await this._azApi.az.postgres.arcserver.edit(
 						this._postgresModel.info.name,
 						{
 							extensions: this.extensionNames.join()
 						},
+						this._postgresModel.controllerModel.info.namespace,
 						this._postgresModel.controllerModel.azAdditionalEnvVars
 					);
 				}

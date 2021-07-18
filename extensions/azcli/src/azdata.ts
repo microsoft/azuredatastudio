@@ -71,12 +71,12 @@ export class AzTool implements azExt.IAzApi {
 				storageClass?: string,
 				additionalEnvVars?: azExt.AdditionalEnvVars): Promise<azExt.AzOutput<void>> => {
 				const args = ['arcdata', 'dc', 'create',
-					'--namespace', namespace,
+					'--k8s-namespace', namespace,
 					'--name', name,
 					'--connectivity-mode', connectivityMode,
 					'--resource-group', resourceGroup,
 					'--location', location,
-					'--subscription', subscription];
+					'--azure-subscription', subscription];
 				if (profileName) {
 					args.push('--profile-name', profileName);
 				}
@@ -86,96 +86,100 @@ export class AzTool implements azExt.IAzApi {
 				return this.executeCommand<void>(args, additionalEnvVars);
 			},
 			endpoint: {
-				list: (additionalEnvVars?: azExt.AdditionalEnvVars): Promise<azExt.AzOutput<azExt.DcEndpointListResult[]>> => {
-					return this.executeCommand<azExt.DcEndpointListResult[]>(['arcdata', 'dc', 'endpoint', 'list'], additionalEnvVars);
+				list: (namespace: string, additionalEnvVars?: azExt.AdditionalEnvVars): Promise<azExt.AzOutput<azExt.DcEndpointListResult[]>> => {
+					return this.executeCommand<azExt.DcEndpointListResult[]>(['arcdata', 'dc', 'endpoint', 'list', '--k8s-namespace', namespace, '--use-k8s'], additionalEnvVars);
 				}
 			},
 			config: {
 				list: (additionalEnvVars?: azExt.AdditionalEnvVars): Promise<azExt.AzOutput<azExt.DcConfigListResult[]>> => {
 					return this.executeCommand<azExt.DcConfigListResult[]>(['arcdata', 'dc', 'config', 'list'], additionalEnvVars);
 				},
-				show: (additionalEnvVars?: azExt.AdditionalEnvVars): Promise<azExt.AzOutput<azExt.DcConfigShowResult>> => {
-					return this.executeCommand<azExt.DcConfigShowResult>(['arcdata', 'dc', 'config', 'show'], additionalEnvVars);
+				show: (namespace: string, additionalEnvVars?: azExt.AdditionalEnvVars): Promise<azExt.AzOutput<azExt.DcConfigShowResult>> => {
+					return this.executeCommand<azExt.DcConfigShowResult>(['arcdata', 'dc', 'config', 'show', '--k8s-namespace', namespace, '--use-k8s'], additionalEnvVars);
 				}
 			}
-		},
-		postgres: {
-			server: {
-				delete: (name: string, additionalEnvVars?: azExt.AdditionalEnvVars): Promise<azExt.AzOutput<void>> => {
-					return this.executeCommand<void>(['arcdata', 'postgres', 'server', 'delete', '-n', name, '--force'], additionalEnvVars);
+		}
+	};
+
+	public postgres = {
+		arcserver: {
+			delete: (name: string, namespace: string, additionalEnvVars?: azExt.AdditionalEnvVars): Promise<azExt.AzOutput<void>> => {
+				return this.executeCommand<void>(['postgres', 'arc-server', 'delete', '-n', name, '--k8s-namespace', namespace, '--force', '--use-k8s'], additionalEnvVars);
+			},
+			list: (namespace: string, additionalEnvVars?: azExt.AdditionalEnvVars): Promise<azExt.AzOutput<azExt.PostgresServerListResult[]>> => {
+				return this.executeCommand<azExt.PostgresServerListResult[]>(['postgres', 'arc-server', 'list', '--k8s-namespace', namespace, '--use-k8s'], additionalEnvVars);
+			},
+			show: (name: string, namespace: string, additionalEnvVars?: azExt.AdditionalEnvVars): Promise<azExt.AzOutput<azExt.PostgresServerShowResult>> => {
+				return this.executeCommand<azExt.PostgresServerShowResult>(['postgres', 'arc-server', 'show', '-n', name, '--k8s-namespace', namespace, '--use-k8s'], additionalEnvVars);
+			},
+			edit: (
+				name: string,
+				args: {
+					adminPassword?: boolean,
+					coresLimit?: string,
+					coresRequest?: string,
+					coordinatorEngineSettings?: string,
+					engineSettings?: string,
+					extensions?: string,
+					memoryLimit?: string,
+					memoryRequest?: string,
+					noWait?: boolean,
+					port?: number,
+					replaceEngineSettings?: boolean,
+					workerEngineSettings?: string,
+					workers?: number
 				},
-				list: (additionalEnvVars?: azExt.AdditionalEnvVars): Promise<azExt.AzOutput<azExt.PostgresServerListResult[]>> => {
-					return this.executeCommand<azExt.PostgresServerListResult[]>(['arcdata', 'postgres', 'server', 'list'], additionalEnvVars);
-				},
-				show: (name: string, additionalEnvVars?: azExt.AdditionalEnvVars): Promise<azExt.AzOutput<azExt.PostgresServerShowResult>> => {
-					return this.executeCommand<azExt.PostgresServerShowResult>(['arcdata', 'postgres', 'server', 'show', '-n', name], additionalEnvVars);
-				},
-				edit: (
-					name: string,
-					args: {
-						adminPassword?: boolean,
-						coresLimit?: string,
-						coresRequest?: string,
-						coordinatorEngineSettings?: string,
-						engineSettings?: string,
-						extensions?: string,
-						memoryLimit?: string,
-						memoryRequest?: string,
-						noWait?: boolean,
-						port?: number,
-						replaceEngineSettings?: boolean,
-						workerEngineSettings?: string,
-						workers?: number
-					},
-					additionalEnvVars?: azExt.AdditionalEnvVars): Promise<azExt.AzOutput<void>> => {
-					const argsArray = ['arcdata', 'postgres', 'server', 'edit', '-n', name];
-					if (args.adminPassword) { argsArray.push('--admin-password'); }
-					if (args.coresLimit) { argsArray.push('--cores-limit', args.coresLimit); }
-					if (args.coresRequest) { argsArray.push('--cores-request', args.coresRequest); }
-					if (args.coordinatorEngineSettings) { argsArray.push('--coordinator-engine-settings', args.coordinatorEngineSettings); }
-					if (args.engineSettings) { argsArray.push('--engine-settings', args.engineSettings); }
-					if (args.extensions) { argsArray.push('--extensions', args.extensions); }
-					if (args.memoryLimit) { argsArray.push('--memory-limit', args.memoryLimit); }
-					if (args.memoryRequest) { argsArray.push('--memory-request', args.memoryRequest); }
-					if (args.noWait) { argsArray.push('--no-wait'); }
-					if (args.port) { argsArray.push('--port', args.port.toString()); }
-					if (args.replaceEngineSettings) { argsArray.push('--replace-engine-settings'); }
-					if (args.workerEngineSettings) { argsArray.push('--worker-engine-settings', args.workerEngineSettings); }
-					if (args.workers !== undefined) { argsArray.push('--workers', args.workers.toString()); }
-					return this.executeCommand<void>(argsArray, additionalEnvVars);
-				}
+				namespace: string,
+				additionalEnvVars?: azExt.AdditionalEnvVars): Promise<azExt.AzOutput<void>> => {
+				const argsArray = ['postgres', 'arc-server', 'edit', '-n', name, '--k8s-namespace', namespace, '--use-k8s'];
+				if (args.adminPassword) { argsArray.push('--admin-password'); }
+				if (args.coresLimit) { argsArray.push('--cores-limit', args.coresLimit); }
+				if (args.coresRequest) { argsArray.push('--cores-request', args.coresRequest); }
+				if (args.coordinatorEngineSettings) { argsArray.push('--coordinator-engine-settings', args.coordinatorEngineSettings); }
+				if (args.engineSettings) { argsArray.push('--engine-settings', args.engineSettings); }
+				if (args.extensions) { argsArray.push('--extensions', args.extensions); }
+				if (args.memoryLimit) { argsArray.push('--memory-limit', args.memoryLimit); }
+				if (args.memoryRequest) { argsArray.push('--memory-request', args.memoryRequest); }
+				if (args.noWait) { argsArray.push('--no-wait'); }
+				if (args.port) { argsArray.push('--port', args.port.toString()); }
+				if (args.replaceEngineSettings) { argsArray.push('--replace-engine-settings'); }
+				if (args.workerEngineSettings) { argsArray.push('--worker-engine-settings', args.workerEngineSettings); }
+				if (args.workers !== undefined) { argsArray.push('--workers', args.workers.toString()); }
+				return this.executeCommand<void>(argsArray, additionalEnvVars);
 			}
-		},
-		sql: {
-			mi: {
-				delete: (name: string, additionalEnvVars?: azExt.AdditionalEnvVars): Promise<azExt.AzOutput<void>> => {
-					return this.executeCommand<void>(['arcdata', 'sql', 'mi-arc', 'delete', '-n', name], additionalEnvVars);
+		}
+	};
+
+	public sql = {
+		miarc: {
+			delete: (name: string, namespace: string, additionalEnvVars?: azExt.AdditionalEnvVars): Promise<azExt.AzOutput<void>> => {
+				return this.executeCommand<void>(['sql', 'mi-arc', 'delete', '-n', name, '--k8s-namespace', namespace, '--use-k8s'], additionalEnvVars);
+			},
+			list: (namespace: string, additionalEnvVars?: azExt.AdditionalEnvVars): Promise<azExt.AzOutput<azExt.SqlMiListResult[]>> => {
+				return this.executeCommand<azExt.SqlMiListResult[]>(['sql', 'mi-arc', 'list', '--k8s-namespace', namespace, '--use-k8s'], additionalEnvVars);
+			},
+			show: (name: string, namespace: string, additionalEnvVars?: azExt.AdditionalEnvVars): Promise<azExt.AzOutput<azExt.SqlMiShowResult>> => {
+				return this.executeCommand<azExt.SqlMiShowResult>(['sql', 'mi-arc', 'show', '-n', name, '--k8s-namespace', namespace, '--use-k8s'], additionalEnvVars);
+			},
+			edit: (
+				name: string,
+				args: {
+					coresLimit?: string,
+					coresRequest?: string,
+					memoryLimit?: string,
+					memoryRequest?: string,
+					noWait?: boolean,
 				},
-				list: (additionalEnvVars?: azExt.AdditionalEnvVars): Promise<azExt.AzOutput<azExt.SqlMiListResult[]>> => {
-					return this.executeCommand<azExt.SqlMiListResult[]>(['arcdata', 'sql', 'mi', 'list'], additionalEnvVars);
-				},
-				show: (name: string, additionalEnvVars?: azExt.AdditionalEnvVars): Promise<azExt.AzOutput<azExt.SqlMiShowResult>> => {
-					return this.executeCommand<azExt.SqlMiShowResult>(['arcdata', 'sql', 'mi', 'show', '-n', name], additionalEnvVars);
-				},
-				edit: (
-					name: string,
-					args: {
-						coresLimit?: string,
-						coresRequest?: string,
-						memoryLimit?: string,
-						memoryRequest?: string,
-						noWait?: boolean,
-					},
-					additionalEnvVars?: azExt.AdditionalEnvVars
-				): Promise<azExt.AzOutput<void>> => {
-					const argsArray = ['arcdata', 'sql', 'mi', 'edit', '-n', name];
-					if (args.coresLimit) { argsArray.push('--cores-limit', args.coresLimit); }
-					if (args.coresRequest) { argsArray.push('--cores-request', args.coresRequest); }
-					if (args.memoryLimit) { argsArray.push('--memory-limit', args.memoryLimit); }
-					if (args.memoryRequest) { argsArray.push('--memory-request', args.memoryRequest); }
-					if (args.noWait) { argsArray.push('--no-wait'); }
-					return this.executeCommand<void>(argsArray, additionalEnvVars);
-				}
+				namespace: string,
+				additionalEnvVars?: azExt.AdditionalEnvVars
+			): Promise<azExt.AzOutput<void>> => {
+				const argsArray = ['sql', 'mi-arc', 'edit', '-n', name, '--k8s-namespace', namespace, '--use-k8s'];
+				if (args.coresLimit) { argsArray.push('--cores-limit', args.coresLimit); }
+				if (args.coresRequest) { argsArray.push('--cores-request', args.coresRequest); }
+				if (args.memoryLimit) { argsArray.push('--memory-limit', args.memoryLimit); }
+				if (args.memoryRequest) { argsArray.push('--memory-request', args.memoryRequest); }
+				if (args.noWait) { argsArray.push('--no-wait'); }
+				return this.executeCommand<void>(argsArray, additionalEnvVars);
 			}
 		}
 	};
@@ -203,7 +207,9 @@ export class AzTool implements azExt.IAzApi {
 	public async executeCommand<R>(args: string[], additionalEnvVars?: azExt.AdditionalEnvVars): Promise<azExt.AzOutput<R>> {
 		try {
 			// JSON OUTPUT
-			const output = JSON.parse((await executeAzCommand(`"${this._path}"`, args.concat(['--output', 'json']), additionalEnvVars)).stdout);
+			const result = await executeAzCommand(`"${this._path}"`, args.concat(['--output', 'json']), additionalEnvVars);
+
+			const output = JSON.parse(result.stdout);
 			return {
 				logs: <string[]>output.log,
 				stdout: <string[]>output.stdout,

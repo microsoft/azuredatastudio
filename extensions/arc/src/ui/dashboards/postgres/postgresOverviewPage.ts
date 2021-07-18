@@ -217,12 +217,13 @@ export class PostgresOverviewPage extends DashboardPage {
 				try {
 					const password = await promptAndConfirmPassword(input => !input ? loc.enterANonEmptyPassword : '');
 					if (password) {
-						await this._azApi.az.arcdata.postgres.server.edit(
+						await this._azApi.az.postgres.arcserver.edit(
 							this._postgresModel.info.name,
 							{
 								adminPassword: true,
 								noWait: true
 							},
+							this._postgresModel.controllerModel.info.namespace,
 							Object.assign({ 'AZDATA_PASSWORD': password }, this._controllerModel.azAdditionalEnvVars));
 						vscode.window.showInformationMessage(loc.passwordReset);
 					}
@@ -251,7 +252,7 @@ export class PostgresOverviewPage extends DashboardPage {
 								cancellable: false
 							},
 							async (_progress, _token) => {
-								return await this._azApi.az.arcdata.postgres.server.delete(this._postgresModel.info.name, this._controllerModel.azAdditionalEnvVars);
+								return await this._azApi.az.postgres.arcserver.delete(this._postgresModel.info.name, this._postgresModel.controllerModel.info.namespace, this._controllerModel.azAdditionalEnvVars);
 							}
 						);
 						await this._controllerModel.refreshTreeNode();
