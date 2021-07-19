@@ -18,8 +18,9 @@ import { NotebookCellOutputTextModel } from 'vs/workbench/contrib/notebook/commo
 import { CellInternalMetadataChangedEvent, CellKind, ICell, ICellOutput, IOutputDto, NotebookCellInternalMetadata, NotebookCellMetadata, NotebookCellOutputsSplice, TransientOptions } from 'vs/workbench/contrib/notebook/common/notebookCommon';
 
 export class NotebookCellTextModel extends Disposable implements ICell {
-	private _onDidChangeOutputs = new Emitter<NotebookCellOutputsSplice>();
-	onDidChangeOutputs: Event<NotebookCellOutputsSplice> = this._onDidChangeOutputs.event;
+	// {{SQL CARBON EDIT}}
+	private _onDidChangeOutputs = new Emitter<NotebookCellOutputsSplice[]>();
+	onDidChangeOutputs: Event<NotebookCellOutputsSplice[]> = this._onDidChangeOutputs.event;
 
 	private _onDidChangeContent = new Emitter<'content' | 'language'>();
 	onDidChangeContent: Event<'content' | 'language'> = this._onDidChangeContent.event;
@@ -221,8 +222,9 @@ export class NotebookCellTextModel extends Disposable implements ICell {
 	}
 
 	spliceNotebookCellOutputs(splice: NotebookCellOutputsSplice): void {
-		this.outputs.splice(splice.start, splice.deleteCount, ...splice.newOutputs);
-		this._onDidChangeOutputs.fire(splice);
+		// {{SQL CARBON EDIT}}
+		this.outputs.splice(splice[0], splice[1], ...splice[2]);
+		this._onDidChangeOutputs.fire([splice]);
 	}
 	override dispose() {
 		dispose(this._outputs);

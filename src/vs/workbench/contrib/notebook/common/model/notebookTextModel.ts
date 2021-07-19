@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the MIT Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { flatten } from 'vs/base/common/arrays';
@@ -451,7 +451,8 @@ export class NotebookTextModel extends Disposable implements INotebookTextModel 
 					this._assertIndex(cellIndex);
 					const cell = this._cells[cellIndex];
 					if (edit.append) {
-						this._spliceNotebookCellOutputs(cell, { start: cell.outputs.length, deleteCount: 0, newOutputs: edit.outputs.map(op => new NotebookCellOutputTextModel(op)) }, true, computeUndoRedo);
+						// {{SQL CARBON EDIT}}
+						this._spliceNotebookCellOutputs(cell, [cell.outputs.length, 0, edit.outputs.map(op => new NotebookCellOutputTextModel(op))], true, computeUndoRedo);
 					} else {
 						this._spliceNotebookCellOutputs2(cell, edit.outputs.map(op => new NotebookCellOutputTextModel(op)), computeUndoRedo);
 					}
@@ -843,7 +844,8 @@ export class NotebookTextModel extends Disposable implements INotebookTextModel 
 	private _spliceNotebookCellOutputs2(cell: NotebookCellTextModel, outputs: ICellOutput[], computeUndoRedo: boolean): void {
 		const diff = new LcsDiff(new OutputSequence(cell.outputs), new OutputSequence(outputs));
 		const diffResult = diff.ComputeDiff(false);
-		const splices: NotebookCellOutputsSplice[] = diffResult.changes.map(change => ({ start: change.originalStart, deleteCount: change.originalLength, newOutputs: outputs.slice(change.modifiedStart, change.modifiedStart + change.modifiedLength) }));
+		// {{SQL CARBON EDIT}}
+		const splices: NotebookCellOutputsSplice[] = diffResult.changes.map(change => ([change.originalStart, change.originalLength, outputs.slice(change.modifiedStart, change.modifiedStart + change.modifiedLength)]));
 		splices.reverse().forEach(splice => {
 			this._spliceNotebookCellOutputs(cell, splice, false, computeUndoRedo);
 		});
@@ -856,7 +858,7 @@ export class NotebookTextModel extends Disposable implements INotebookTextModel 
 			kind: NotebookCellsChangeType.Output,
 			index: this._cells.indexOf(cell),
 			outputs: cell.outputs ?? [],
-			append,
+			// append, {{SQL CARBON EDIT}} Remove unused append
 			transient: this.transientOptions.transientOutputs,
 		}, true);
 	}

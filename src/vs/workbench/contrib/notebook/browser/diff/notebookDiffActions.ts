@@ -168,7 +168,8 @@ registerAction2(class extends Action2 {
 			return;
 		}
 
-		modified.textModel.spliceNotebookCellOutputs([[0, modified.outputs.length, original.outputs]]);
+		// {{SQL CARBON EDIT}}
+		modified.textModel.spliceNotebookCellOutputs([0, modified.outputs.length, original.outputs]);
 	}
 });
 
