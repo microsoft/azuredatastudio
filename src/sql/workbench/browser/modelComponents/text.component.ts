@@ -89,18 +89,16 @@ export default class TextComponent extends TitledComponent<azdata.TextComponentP
 		return this.getPropertyOrDefault<boolean>((props) => props.requiredIndicator, false);
 	}
 
-	public get headingLevel(): number | undefined {
-		return this.getPropertyOrDefault<number | undefined>(props => props.headingLevel, undefined);
+	public get headingLevel(): azdata.HeadingLevel | undefined {
+		return this.getPropertyOrDefault<azdata.HeadingLevel | undefined>(props => props.headingLevel, undefined);
 	}
 
-	public set headingLevel(newValue: number | undefined) {
-		this.setPropertyFromUI<number | undefined>((properties, value) => { properties.headingLevel = value; }, newValue);
-		this.validateHeadingLevel();
+	public set headingLevel(newValue: azdata.HeadingLevel | undefined) {
+		this.setPropertyFromUI<azdata.HeadingLevel | undefined>((properties, value) => { properties.headingLevel = value; }, newValue);
 	}
 
 	public override setProperties(properties: { [key: string]: any; }): void {
 		super.setProperties(properties);
-		this.validateHeadingLevel();
 		this.updateText();
 		this._changeRef.detectChanges();
 	}
@@ -158,16 +156,6 @@ export default class TextComponent extends TitledComponent<azdata.TextComponentP
 		return this.requiredIndicator || !!this.description;
 	}
 
-	private validateHeadingLevel(): void {
-		const headingLevel = this.headingLevel;
-		if (headingLevel < 1) {
-			this.logService.error(`Text component heading level must be a value between 1 and 6 (Actual ${headingLevel})`);
-			this.headingLevel = 1;
-		} else if (headingLevel > 6) {
-			this.logService.error(`Text component heading level must be a value between 1 and 6 (Actual : ${headingLevel})`);
-			this.headingLevel = 6;
-		}
-	}
 	/**
 	 * Creates the appropriate text element based on the type of text component (regular or header) this is
 	 * @returns The text element
