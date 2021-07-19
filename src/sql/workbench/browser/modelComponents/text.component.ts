@@ -95,10 +95,12 @@ export default class TextComponent extends TitledComponent<azdata.TextComponentP
 
 	public set headingLevel(newValue: number | undefined) {
 		this.setPropertyFromUI<number | undefined>((properties, value) => { properties.headingLevel = value; }, newValue);
+		this.validateHeadingLevel();
 	}
 
 	public override setProperties(properties: { [key: string]: any; }): void {
 		super.setProperties(properties);
+		this.validateHeadingLevel();
 		this.updateText();
 		this._changeRef.detectChanges();
 	}
@@ -156,19 +158,26 @@ export default class TextComponent extends TitledComponent<azdata.TextComponentP
 		return this.requiredIndicator || !!this.description;
 	}
 
+	private validateHeadingLevel(): void {
+		const headingLevel = this.headingLevel;
+		if (headingLevel < 1) {
+			this.logService.error(`Text component heading level must be a value between 1 and 6 (Actual ${headingLevel})`);
+			this.headingLevel = 1;
+		} else if (headingLevel > 6) {
+			this.logService.error(`Text component heading level must be a value between 1 and 6 (Actual : ${headingLevel})`);
+			this.headingLevel = 6;
+		}
+	}
 	/**
 	 * Creates the appropriate text element based on the type of text component (regular or header) this is
 	 * @returns The text element
 	 */
 	private createTextElement(): HTMLElement {
-		const headingLevel = this.headingLevel;
+		let headingLevel = this.headingLevel;
 		let element: HTMLElement;
-		if (headingLevel === undefined) {
+		if (!headingLevel) { // Undefined or 0
 			element = DOM.$('span');
 		} else {
-			if (headingLevel > 6) {
-				throw new Error('Heading level must be a value between 1 and 6');
-			}
 			element = DOM.$(`h${headingLevel}`);
 		}
 		// Manually set the font-size and font-weight since that is set by the base style sheets which may not be what the user wants
