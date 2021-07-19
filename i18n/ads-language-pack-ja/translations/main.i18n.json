@@ -9260,924 +9260,92 @@
 		"vs/workbench/services/workspaces/browser/workspaceTrustEditorInput": {
 			"workspaceTrustEditorInputName": "ワークスペースの信頼"
 		},
-		"sql/platform/clipboard/browser/clipboardService": {
-			"imageCopyingNotSupported": "イメージのコピーはサポートされていません"
-		},
-		"sql/workbench/update/electron-browser/releaseNotes": {
-			"gettingStarted": "はじめに",
-			"showReleaseNotes": "「はじめに」を表示する",
-			"miGettingStarted": "はじめに(&&S)"
-		},
-		"sql/workbench/contrib/queryHistory/electron-browser/queryHistory": {
-			"queryHistoryConfigurationTitle": "クエリ履歴",
-			"queryHistoryCaptureEnabled": "Query History キャプチャが有効かどうか。false の場合、実行されたクエリはキャプチャされません。",
-			"viewCategory": "表示",
-			"miViewQueryHistory": "Query History (&&Q)",
-			"queryHistory": "Query History"
-		},
-		"sql/workbench/contrib/commandLine/electron-browser/commandLine": {
-			"connectingLabel": "接続中: {0}",
-			"runningCommandLabel": "実行中のコマンド: {0}",
-			"openingNewQueryLabel": "新しいクエリを開いています: {0}",
-			"warnServerRequired": "サーバー情報が提供されていないため接続できません",
-			"errConnectUrl": "エラー {0} により URL を開くことができませんでした",
-			"connectServerDetail": "これにより、サーバー {0} に接続されます",
-			"confirmConnect": "接続しますか?",
-			"open": "開く(&&O)",
-			"connectingQueryLabel": "クエリ ファイルへの接続中"
-		},
-		"sql/workbench/services/tasks/common/tasksService": {
-			"InProgressWarning": "1 つ以上のタスクを実行中です。終了してもよろしいですか?",
-			"taskService.yes": "はい",
-			"taskService.no": "いいえ"
-		},
-		"sql/workbench/contrib/welcome/gettingStarted/browser/abstractEnablePreviewFeatures": {
-			"enablePreviewFeatures.notice": "プレビュー機能により、新機能と機能改善にフル アクセスできることで、Azure Data Studio のエクスペリエンスが拡張されます。プレビュー機能の詳細については、[ここ] ({0}) を参照してください。プレビュー機能を有効にしますか?",
-			"enablePreviewFeatures.yes": "はい (推奨)",
-			"enablePreviewFeatures.no": "いいえ",
-			"enablePreviewFeatures.never": "いいえ、今後は表示しない"
-		},
-		"sql/workbench/contrib/queryHistory/browser/queryHistoryActions": {
-			"toggleQueryHistory": "Query History の切り替え",
-			"queryHistory.delete": "削除",
-			"queryHistory.clearLabel": "すべての履歴をクリア",
-			"queryHistory.openQuery": "クエリを開く",
-			"queryHistory.runQuery": "クエリの実行",
-			"queryHistory.toggleCaptureLabel": "Query History キャプチャの切り替え",
-			"queryHistory.disableCapture": "Query History キャプチャの一時停止",
-			"queryHistory.enableCapture": "Query History キャプチャの開始"
-		},
-		"sql/workbench/contrib/queryHistory/browser/queryHistoryView": {
-			"noQueriesMessage": "表示するクエリがありません。",
-			"queryHistory.regTreeAriaLabel": "Query History"
-		},
-		"sql/workbench/services/errorMessage/browser/errorMessageService": {
-			"error": "エラー",
-			"warning": "警告",
-			"info": "情報",
-			"ignore": "無視する"
-		},
-		"sql/platform/serialization/common/serializationService": {
-			"saveAsNotSupported": "このデータ プロバイダーに対して無効になっている別の形式で結果を保存しています。",
-			"noSerializationProvider": "プロバイダーが登録されていないため、データをシリアル化できません",
-			"unknownSerializationError": "不明なエラーにより、シリアル化に失敗しました"
-		},
-		"sql/workbench/services/admin/common/adminService": {
-			"adminService.providerIdNotValidError": "管理サービスとの対話には接続が必須です",
-			"adminService.noHandlerRegistered": "登録されているハンドラーがありません"
-		},
-		"sql/workbench/services/fileBrowser/browser/fileBrowserDialogController": {
-			"filebrowser.selectFile": "ファイルの選択"
-		},
-		"sql/workbench/services/assessment/common/assessmentService": {
-			"asmt.providerIdNotValidError": "評価サービスとの対話には接続が必要です",
-			"asmt.noHandlerRegistered": "登録されているハンドラーがありません"
-		},
-		"sql/workbench/contrib/query/common/resultsGrid.contribution": {
-			"resultsGridConfigurationTitle": "結果グリッドとメッセージ",
-			"fontFamily": "フォント ファミリを制御します。",
-			"fontWeight": "フォントの太さを制御します。",
-			"fontSize": "フォント サイズ (ピクセル単位) を制御します。",
-			"letterSpacing": "文字間隔 (ピクセル単位) を制御します。",
-			"rowHeight": "ピクセル単位で行の高さを制御する",
-			"cellPadding": "セルの埋め込みをピクセル単位で制御します",
-			"autoSizeColumns": "最初の結果について、列の幅を自動サイズ設定します。多数の列がある場合や、大きいセルがある場合、パフォーマンスの問題が発生する可能性があります",
-			"maxColumnWidth": "自動サイズ設定される列の最大幅 (ピクセル単位)"
-		},
-		"sql/workbench/contrib/dataExplorer/browser/dataExplorer.contribution": {
-			"dataExplorer.view": "表示",
-			"databaseConnections": "データベース接続",
-			"datasource.connections": "データ ソース接続",
-			"datasource.connectionGroups": "データソース グループ",
-			"startupConfig": "起動の構成",
-			"startup.alwaysShowServersView": "Azure Data Studio の起動時にサーバー ビューを表示する場合には true (既定)。最後に開いたビューを表示する場合には false"
-		},
-		"sql/workbench/contrib/dataExplorer/browser/nodeActions.common.contribution": {
-			"disconnect": "切断",
-			"refresh": "最新の情報に更新"
-		},
-		"sql/workbench/browser/actions.contribution": {
-			"previewFeatures.configTitle": "プレビュー機能",
-			"previewFeatures.configEnable": "未リリースのプレビュー機能を有効にする",
-			"showConnectDialogOnStartup": "起動時に接続ダイアログを表示",
-			"enableObsoleteApiUsageNotificationTitle": "古い API 通知",
-			"enableObsoleteApiUsageNotification": "古い API 使用状況通知を有効または無効にする"
-		},
-		"sql/workbench/contrib/accounts/browser/accounts.contribution": {
-			"status.problems": "問題"
-		},
-		"sql/workbench/contrib/tasks/browser/tasks.contribution": {
-			"inProgressTasksChangesBadge": "{0} 個のタスクが進行中です",
-			"viewCategory": "表示",
-			"tasks": "タスク",
-			"miViewTasks": "タスク(&&T)"
-		},
-		"sql/workbench/contrib/connection/browser/connection.contribution": {
-			"sql.maxRecentConnectionsDescription": "接続リストに格納する最近使用された接続の最大数。",
-			"sql.defaultEngineDescription": "使用する既定の SQL エンジン。.sql ファイル内の既定の言語プロバイダーが駆動され、新しい接続が作成されるときに既定で使用されます。",
-			"connection.parseClipboardForConnectionStringDescription": "接続ダイアログが開いたり、解析が実行されたりするときにクリップボードの内容の解析を試行します。"
-		},
-		"sql/workbench/contrib/objectExplorer/common/serverGroup.contribution": {
-			"serverGroup.colors": "オブジェクト エクスプローラー ビューレットで使用するサーバー グループ カラー パレット。",
-			"serverGroup.autoExpand": "オブジェクト エクスプローラー ビューレットの自動展開サーバー グループ。",
-			"serverTree.useAsyncServerTree": "(プレビュー) 動的ノード フィルターなどの新機能をサポートする、新しい非同期サーバー ツリーをサーバー ビューおよび接続ダイアログに使用します。"
-		},
-		"sql/workbench/contrib/accounts/browser/accountManagement.contribution": {
-			"carbon.extension.contributes.account.id": "アカウントの種類の識別子",
-			"carbon.extension.contributes.account.icon": "(省略可能) UI の accpunt を表すために使用するアイコン。ファイル パスまたはテーマを設定可能な構成のいずれかです",
-			"carbon.extension.contributes.account.icon.light": "明るいテーマを使用した場合のアイコンのパス",
-			"carbon.extension.contributes.account.icon.dark": "暗いテーマを使用した場合のアイコンのパス",
-			"carbon.extension.contributes.account": "アカウント プロバイダーにアイコンを提供します。"
-		},
-		"sql/workbench/contrib/editData/browser/editData.contribution": {
-			"showEditDataSqlPaneOnStartup": "起動時にデータ SQL の編集ペインを表示する"
-		},
-		"sql/workbench/contrib/dashboard/browser/widgets/insights/views/charts/types/barChart.contribution": {
-			"yAxisMin": "Y 軸の最小値",
-			"yAxisMax": "Y 軸の最大値",
-			"barchart.yAxisLabel": "Y 軸のラベル",
-			"xAxisMin": "X 軸の最小値",
-			"xAxisMax": "X 軸の最大値",
-			"barchart.xAxisLabel": "X 軸のラベル"
-		},
-		"sql/workbench/contrib/resourceViewer/browser/resourceViewer.contribution": {
-			"resourceViewer": "リソース ビューアー"
-		},
-		"sql/workbench/contrib/dashboard/browser/widgets/insights/views/charts/types/lineChart.contribution": {
-			"dataTypeDescription": "グラフのデータ セットのデータ プロパティを示します。"
-		},
-		"sql/workbench/contrib/dashboard/browser/widgets/insights/views/countInsight.contribution": {
-			"countInsightDescription": "結果セットの各列について、行 0 の値をカウントとして表示し、その後に列名が続きます。たとえば、'1 正常'、'3 異常' をサポートします。ここで、'正常' は列名、1 は行 1 セル 1 の値です。"
-		},
-		"sql/workbench/contrib/dashboard/browser/widgets/insights/views/tableInsight.contribution": {
-			"tableInsightDescription": "単純なテーブルに結果を表示する"
-		},
-		"sql/workbench/contrib/dashboard/browser/widgets/insights/views/imageInsight.contribution": {
-			"imageInsightDescription": "イメージを表示します。例: ggplot2 を使用して R クエリによって返されたイメージ",
-			"imageFormatDescription": "必要な形式は何ですか。JPEG、PNG、またはその他の形式ですか?",
-			"encodingDescription": "これは 16 進数、base64 または、他の形式でエンコードされていますか？"
-		},
-		"sql/workbench/contrib/dashboard/browser/dashboard.contribution": {
-			"manage": "管理",
-			"dashboard.editor.label": "ダッシュボード"
-		},
-		"sql/workbench/contrib/dashboard/browser/containers/dashboardWebviewContainer.contribution": {
-			"dashboard.container.webview": "このタブに表示される Web ビュー。"
-		},
-		"sql/workbench/contrib/dashboard/browser/containers/dashboardControlHostContainer.contribution": {
-			"dashboard.container.controlhost": "このタブに表示される controlhost。"
-		},
-		"sql/workbench/contrib/dashboard/browser/containers/dashboardWidgetContainer.contribution": {
-			"dashboard.container.widgets": "このタブに表示されるウィジェットのリスト。",
-			"widgetContainer.invalidInputs": "拡張には、ウィジェット コンテナー内にウィジェットのリストが必要です。"
-		},
-		"sql/workbench/contrib/dashboard/browser/containers/dashboardGridContainer.contribution": {
-			"dashboard.container.gridtab.items": "このタブに表示されるウィジェットまたは Web ビューのリスト。",
-			"gridContainer.invalidInputs": "ウィジェットや Web ビューが拡張機能用のウィジェット コンテナー内に必要です。"
-		},
-		"sql/workbench/contrib/dashboard/browser/containers/dashboardContainer.contribution": {
-			"azdata.extension.contributes.dashboard.container.id": "このコンテナーの一意の識別子。",
-			"azdata.extension.contributes.dashboard.container.container": "タブに表示されるコンテナー。",
-			"azdata.extension.contributes.containers": "単一または複数のダッシュ ボード コンテナーを提供し、ユーザーが自分のダッシュボードに追加できるようにします。",
-			"dashboardContainer.contribution.noIdError": "ダッシュボード コンテナーに、拡張用に指定された ID はありません。",
-			"dashboardContainer.contribution.noContainerError": "ダッシュボード コンテナーに、拡張用に指定されたコンテナーはありません。",
-			"dashboardContainer.contribution.moreThanOneDashboardContainersError": "空間ごとにダッシュボード コンテナーを 1 つだけ定義する必要があります。",
-			"dashboardTab.contribution.unKnownContainerType": "拡張用にダッシュボード コンテナーで定義されているコンテナーの種類が不明です。"
-		},
-		"sql/workbench/contrib/dashboard/browser/containers/dashboardNavSection.contribution": {
-			"dashboard.container.left-nav-bar.id": "このナビゲーション セクションの一意の識別子。すべての要求で拡張機能に渡されます。",
-			"dashboard.container.left-nav-bar.icon": "(省略可能) UI でこのナビゲーション セクションを表すために使用されるアイコン。ファイル パスまたはテーマを設定可能な構成のいずれかです",
-			"dashboard.container.left-nav-bar.icon.light": "明るいテーマを使用した場合のアイコンのパス",
-			"dashboard.container.left-nav-bar.icon.dark": "暗いテーマを使用した場合のアイコンのパス",
-			"dashboard.container.left-nav-bar.title": "ユーザーに表示するナビゲーション セクションのタイトル。",
-			"dashboard.container.left-nav-bar.container": "このナビゲーション セクションに表示されるコンテナー。",
-			"dashboard.container.left-nav-bar": "このナビゲーション セクションに表示されるダッシュボード コンテナーのリスト。",
-			"navSection.missingTitle.error": "ナビゲーション セクションに、拡張用に指定されたタイトルはありません。",
-			"navSection.missingContainer.error": "ナビゲーション セクションに、拡張用に指定されたコンテナーはありません。",
-			"navSection.moreThanOneDashboardContainersError": "空間ごとにダッシュボード コンテナーを 1 つだけ定義する必要があります。",
-			"navSection.invalidContainer.error": "NAV_SECTION 内の NAV_SECTION は拡張用に無効なコンテナーです。"
-		},
-		"sql/workbench/contrib/dashboard/browser/containers/dashboardModelViewContainer.contribution": {
-			"dashboard.container.modelview": "このタブに表示されるモデルに基づくビュー。"
-		},
-		"sql/workbench/contrib/backup/browser/backup.contribution": {
-			"backup": "バックアップ"
-		},
-		"sql/workbench/contrib/restore/browser/restore.contribution": {
-			"restore": "復元",
-			"backup": "復元"
-		},
-		"sql/workbench/contrib/azure/browser/azure.contribution": {
-			"azure.openInAzurePortal.title": "Azure Portal で開きます"
-		},
-		"sql/workbench/common/editor/query/queryEditorInput": {
-			"disconnected": "切断されました"
-		},
-		"sql/workbench/services/objectExplorer/browser/objectExplorerViewTreeShim": {
-			"noProviderFound": "必要な接続プロバイダー '{0}' が見つからないため、展開できません",
-			"loginCanceled": "ユーザーによる取り消し",
-			"firewallCanceled": "ファイアウォール ダイアログが取り消されました"
-		},
-		"sql/workbench/services/jobManagement/common/jobManagementService": {
-			"providerIdNotValidError": "JobManagementService と対話するには接続が必須です",
-			"noHandlerRegistered": "登録されているハンドラーがありません"
-		},
-		"sql/workbench/services/fileBrowser/common/fileBrowserService": {
-			"fileBrowserErrorMessage": "ファイル ブラウザーの読み込み中にエラーが発生しました。",
-			"fileBrowserErrorDialogTitle": "ファイル ブラウザーのエラー"
-		},
-		"sql/workbench/contrib/connection/common/connectionProviderExtension": {
-			"schema.providerId": "プロバイダーの共通 ID",
-			"schema.displayName": "プロバイダーの表示名",
-			"schema.notebookKernelAlias": "プロバイダーの Notebook カーネル別名",
-			"schema.iconPath": "サーバーの種類のアイコン パス",
-			"schema.connectionOptions": "接続のオプション"
-		},
-		"sql/workbench/contrib/dashboard/browser/core/dashboardTab.contribution": {
-			"azdata.extension.contributes.dashboard.tab.id": "このタブの一意の識別子。すべての要求で拡張機能に渡されます。",
-			"azdata.extension.contributes.dashboard.tab.title": "ユーザーを表示するタブのタイトル。",
-			"azdata.extension.contributes.dashboard.tab.description": "ユーザーに表示されるこのタブの説明。",
-			"azdata.extension.contributes.tab.when": "この項目を表示するために true にする必要がある条件",
-			"azdata.extension.contributes.tab.provider": "このタブと互換性のある接続の種類を定義します。設定されていない場合、既定値は 'MSSQL' に設定されます",
-			"azdata.extension.contributes.dashboard.tab.container": "このタブに表示されるコンテナー。",
-			"azdata.extension.contributes.dashboard.tab.alwaysShow": "このタブを常に表示するか、またはユーザーが追加したときにのみ表示するかどうか。",
-			"azdata.extension.contributes.dashboard.tab.isHomeTab": "このタブを接続の種類の [ホーム] タブとして使用するかどうか。",
-			"azdata.extension.contributes.dashboard.tab.group": "このタブが属しているグループの一意識別子。ホーム グループの値: home。",
-			"dazdata.extension.contributes.dashboard.tab.icon": "(省略可能) UI でこのタブを表すために使用されるアイコン。ファイル パスまたはテーマを設定可能な構成のいずれかです",
-			"azdata.extension.contributes.dashboard.tab.icon.light": "明るいテーマを使用した場合のアイコンのパス",
-			"azdata.extension.contributes.dashboard.tab.icon.dark": "暗いテーマを使用した場合のアイコンのパス",
-			"azdata.extension.contributes.tabs": "ユーザーがダッシュボードに追加する 1 つまたは、複数のタブを提供します。",
-			"dashboardTab.contribution.noTitleError": "拡張機能にタイトルが指定されていません。",
-			"dashboardTab.contribution.noDescriptionWarning": "表示するよう指定された説明はありません。",
-			"dashboardTab.contribution.noContainerError": "拡張機能にコンテナーが指定されていません。",
-			"dashboardTab.contribution.moreThanOneDashboardContainersError": "空間ごとにダッシュボード コンテナーを 1 つだけ定義する必要があります",
-			"azdata.extension.contributes.dashboard.tabGroup.id": "このタブ グループの一意識別子。",
-			"azdata.extension.contributes.dashboard.tabGroup.title": "タブ グループのタイトル。",
-			"azdata.extension.contributes.tabGroups": "ユーザーがダッシュボードに追加するための 1 つまたは複数のタブ グループを提供します。",
-			"dashboardTabGroup.contribution.noIdError": "タブ グループの ID が指定されていません。",
-			"dashboardTabGroup.contribution.noTitleError": "タブ グループのタイトルが指定されていません。",
-			"administrationTabGroup": "管理",
-			"monitoringTabGroup": "監視中",
-			"performanceTabGroup": "パフォーマンス",
-			"securityTabGroup": "セキュリティ",
-			"troubleshootingTabGroup": "トラブルシューティング",
-			"settingsTabGroup": "設定",
-			"databasesTabDescription": "データベース タブ",
-			"databasesTabTitle": "データベース"
-		},
-		"sql/workbench/contrib/queryHistory/browser/queryHistoryRenderer": {
-			"succeeded": "成功",
-			"failed": "失敗"
-		},
-		"sql/workbench/services/connection/browser/connectionDialogService": {
-			"connectionError": "接続エラー",
-			"kerberosErrorStart": "接続は、Kerberos エラーのため失敗しました。",
-			"kerberosHelpLink": "Kerberos を構成するためのヘルプを {0} で確認できます",
-			"kerberosKinit": "以前に接続した場合は、kinit を再実行しなければならない場合があります。"
-		},
-		"sql/workbench/services/accountManagement/browser/accountManagementService": {
-			"accountManagementService.close": "閉じる",
-			"loggingIn": "アカウントを追加しています...",
-			"refreshFailed": "ユーザーがアカウントの更新をキャンセルしました"
-		},
-		"sql/workbench/contrib/query/browser/query.contribution": {
-			"queryResultsEditor.name": "クエリ結果",
-			"queryEditor.name": "クエリ エディター",
-			"newQuery": "新しいクエリ",
-			"queryEditorConfigurationTitle": "クエリ エディター",
-			"queryEditor.results.saveAsCsv.includeHeaders": "true の場合、CSV として結果を保存する際に列ヘッダーが組み込まれます",
-			"queryEditor.results.saveAsCsv.delimiter": "CSV として保存するときに値の間に使用するカスタム区切り記号",
-			"queryEditor.results.saveAsCsv.lineSeperator": "結果を CSV として保存するときに行を区切るために使用する文字",
-			"queryEditor.results.saveAsCsv.textIdentifier": "結果を CSV として保存するときにテキスト フィールドを囲むために使用する文字",
-			"queryEditor.results.saveAsCsv.encoding": "結果を CSV として保存するときに使用するファイル エンコード",
-			"queryEditor.results.saveAsXml.formatted": "true の場合、XML として結果を保存すると XML 出力がフォーマットされます",
-			"queryEditor.results.saveAsXml.encoding": "結果を XML として保存するときに使用されるファイル エンコード",
-			"queryEditor.results.streaming": "結果のストリーミングを有効にします。視覚上の小さな問題がいくつかあります",
-			"queryEditor.results.copyIncludeHeaders": "結果を結果ビューからコピーするための構成オプション",
-			"queryEditor.results.copyRemoveNewLine": "複数行の結果を結果ビューからコピーするための構成オプション",
-			"queryEditor.results.optimizedTable": "(試験的) 結果の最適化されたテーブルを使用します。一部の機能がなく、準備中の場合があります。",
-			"queryEditor.messages.showBatchTime": "各バッチの実行時間を表示するかどうか",
-			"queryEditor.messages.wordwrap": "メッセージを右端で折り返す",
-			"queryEditor.chart.defaultChartType": "クエリ結果からグラフ ビューアーを開くときに使用する既定のグラフの種類",
-			"queryEditor.tabColorMode.off": "タブの色指定は無効になります",
-			"queryEditor.tabColorMode.border": "各エディター タブの上部境界線は、関連するサーバー グループと同じ色になります",
-			"queryEditor.tabColorMode.fill": "各エディター タブの背景色は、関連するサーバー グループと同じになります",
-			"queryEditor.tabColorMode": "アクティブな接続のサーバー グループに基づいてタブに色を付ける方法を制御します",
-			"queryEditor.showConnectionInfoInTitle": "タイトルにタブの接続情報を表示するかを制御します。",
-			"queryEditor.promptToSaveGeneratedFiles": "生成された SQL ファイルを保存するかをプロンプトで確認する",
-			"queryShortcutDescription": "ショートカット テキストをプロシージャ呼び出しとして実行するにはキーバインド workbench.action.query.shortcut{0} を設定します。クエリ エディターで選択したテキストはパラメーターとして渡されます"
-		},
-		"sql/workbench/contrib/profiler/browser/profiler.contribution": {
-			"profiler.settings.viewTemplates": "ビュー テンプレートを指定する",
-			"profiler.settings.sessionTemplates": "セッション テンプレートを指定する",
-			"profiler.settings.Filters": "Profiler フィルター"
-		},
-		"sql/workbench/contrib/scripting/browser/scripting.contribution": {
-			"scriptAsCreate": "作成としてのスクリプト",
-			"scriptAsDelete": "ドロップとしてのスクリプト",
-			"scriptAsSelect": "上位 1000 を選択する",
-			"scriptAsExecute": "実行としてのスクリプト",
-			"scriptAsAlter": "変更としてのスクリプト",
-			"editData": "データの編集",
-			"scriptSelect": "上位 1000 を選択する",
-			"scriptKustoSelect": "10 個",
-			"scriptCreate": "作成としてのスクリプト",
-			"scriptExecute": "実行としてのスクリプト",
-			"scriptAlter": "変更としてのスクリプト",
-			"scriptDelete": "ドロップとしてのスクリプト",
-			"refreshNode": "最新の情報に更新"
-		},
-		"sql/workbench/services/query/common/queryModelService": {
-			"commitEditFailed": "行のコミットに失敗しました: ",
-			"runQueryBatchStartMessage": "次の場所でクエリの実行を開始しました: ",
-			"runQueryStringBatchStartMessage": "クエリ「{0}」の実行を開始しました",
-			"runQueryBatchStartLine": "行 {0}",
-			"msgCancelQueryFailed": "失敗したクエリのキャンセル中: {0}",
-			"updateCellFailed": "セルの更新が失敗しました: "
-		},
-		"sql/workbench/services/notebook/browser/notebookServiceImpl": {
-			"notebookUriNotDefined": "ノートブック マネージャーを作成するときに URI が渡されませんでした",
-			"notebookServiceNoProvider": "ノートブック プロバイダーが存在しません"
-		},
-		"sql/workbench/contrib/notebook/browser/notebook.contribution": {
-			"notebookEditor.name": "ノートブック エディター",
-			"newNotebook": "新しいノートブック",
-			"newQuery": "新しいノートブック",
-			"workbench.action.setWorkspaceAndOpen": "ワークスペースを設定して開く",
-			"notebook.sqlStopOnError": "SQL カーネル: セルでエラーが発生したときに Notebook の実行を停止します。",
-			"notebook.showAllKernels": "(プレビュー) 現在のノートブック プロバイダーのすべてのカーネルを表示します。",
-			"notebook.allowADSCommands": "ノートブックでの Azure Data Studio コマンドの実行を許可します。",
-			"notebook.enableDoubleClickEdit": "ノートブックのテキスト セルのダブルクリックして編集を有効する",
-			"notebook.setRichTextViewByDefault": "既定でテキスト セルにリッチ テキスト表示モードを設定する",
-			"notebook.saveConnectionName": "(プレビュー) ノートブック メタデータに接続名を保存します。",
-			"notebook.markdownPreviewLineHeight": "ノートブック マークダウン プレビューで使用される行の高さを制御します。この数値はフォント サイズを基準とします。",
-			"notebookExplorer.view": "表示",
-			"searchConfigurationTitle": "ノートブックの検索",
-			"exclude": "フルテキスト検索および Quick Open でファイルやフォルダーを除外するための glob パターンを構成します。'#files.exclude#' 設定からすべての glob パターンを継承します。glob パターンの詳細については、[こちら](https://code.visualstudio.com/docs/editor/codebasics#_advanced-search-options) を参照してください。",
-			"exclude.boolean": "ファイル パスの照合基準となる glob パターン。これを true または false に設定すると、パターンがそれぞれ有効/無効になります。",
-			"exclude.when": "一致するファイルの兄弟をさらにチェックします。一致するファイル名の変数として $(basename) を使用します。",
-			"useRipgrep": "この設定は推奨されず、現在 \"search.usePCRE2\" にフォール バックします。",
-			"useRipgrepDeprecated": "推奨されません。高度な正規表現機能サポートのために \"search.usePCRE2\" の利用を検討してください。",
-			"search.maintainFileSearchCache": "有効にすると、searchService プロセスは 1 時間操作がない場合でもシャットダウンされず、アクティブな状態に保たれます。これにより、ファイル検索キャッシュがメモリに保持されます。",
-			"useIgnoreFiles": "ファイルを検索するときに、`.gitignore` ファイルと `.ignore` ファイルを使用するかどうかを制御します。",
-			"useGlobalIgnoreFiles": "ファイルを検索するときに、グローバルの `.gitignore` と `.ignore` ファイルを使用するかどうかを制御します。",
-			"search.quickOpen.includeSymbols": "グローバル シンボル検索の結果を、Quick Open の結果ファイルに含めるかどうか。",
-			"search.quickOpen.includeHistory": "最近開いたファイルの結果を、Quick Open の結果ファイルに含めるかどうか。",
-			"filterSortOrder.default": "履歴エントリは、使用されるフィルター値に基づいて関連性によって並び替えられます。関連性の高いエントリが最初に表示されます。",
-			"filterSortOrder.recency": "履歴エントリは、新しい順に並べ替えられます。最近開いたエントリが最初に表示されます。",
-			"filterSortOrder": "フィルター処理時に、 Quick Open におけるエディター履歴の並べ替え順序を制御します。",
-			"search.followSymlinks": "検索中にシンボリック リンクをたどるかどうかを制御します。",
-			"search.smartCase": "すべて小文字のパターンの場合、大文字と小文字を区別しないで検索し、そうでない場合は大文字と小文字を区別して検索します。",
-			"search.globalFindClipboard": "macOS で検索ビューが共有の検索クリップボードを読み取りまたは変更するかどうかを制御します。",
-			"search.location": "検索をサイドバーのビューとして表示するか、より水平方向の空間をとるためにパネル領域のパネルとして表示するかを制御します。",
-			"search.location.deprecationMessage": "この設定は非推奨です。代わりに検索ビューのコンテキスト メニューをお使いください。",
-			"search.collapseResults.auto": "結果が 10 件未満のファイルが展開されます。他のファイルは折りたたまれます。",
-			"search.collapseAllResults": "検索結果を折りたたむか展開するかどうかを制御します。",
-			"search.useReplacePreview": "一致項目を選択するか置換するときに、置換のプレビューを開くかどうかを制御します。",
-			"search.showLineNumbers": "検索結果に行番号を表示するかどうかを制御します。",
-			"search.usePCRE2": "テキスト検索に PCRE2 正規表現エンジンを使用するかどうか。これにより、先読みや後方参照といった高度な正規表現機能を使用できるようになります。ただし、すべての PCRE2 機能がサポートされているわけではありません。JavaScript によってサポートされる機能のみが使用できます。",
-			"usePCRE2Deprecated": "廃止されました。PCRE2 でのみサポートされている正規表現機能を使用すると、PCRE2 が自動的に使用されます。",
-			"search.actionsPositionAuto": "検索ビューが狭い場合はアクションバーを右に、検索ビューが広い場合はコンテンツの直後にアクションバーを配置します。",
-			"search.actionsPositionRight": "アクションバーを常に右側に表示します。",
-			"search.actionsPosition": "検索ビューの行内のアクションバーの位置を制御します。",
-			"search.searchOnType": "入力中の文字列を全てのファイルから検索する。",
-			"search.seedWithNearestWord": "アクティブなエディターで何も選択されていないときに、カーソルに最も近い語からのシード検索を有効にします。",
-			"search.seedOnFocus": "検索ビューにフォーカスを置いたときに、ワークスペースの検索クエリが、エディターで選択されているテキストに更新されます。これは、クリックされたときか、'workbench.views.search.focus' コマンドがトリガーされたときに発生します。",
-			"search.searchOnTypeDebouncePeriod": "'#search.searchOnType#' を有効にすると、文字が入力されてから検索が開始されるまでのタイムアウト (ミリ秒) が制御されます。'search.searchOnType' が無効になっている場合には影響しません。",
-			"search.searchEditor.doubleClickBehaviour.selectWord": "ダブルクリックすると、カーソルの下にある単語が選択されます。",
-			"search.searchEditor.doubleClickBehaviour.goToLocation": "ダブルクリックすると、アクティブなエディター グループに結果が開きます。",
-			"search.searchEditor.doubleClickBehaviour.openLocationToSide": "ダブルクリックすると、結果はエディター グループの横に開かれ、まだ存在しない場合は作成されます。",
-			"search.searchEditor.doubleClickBehaviour": "検索エディターで結果をダブル クリックした場合の効果を構成します。",
-			"searchSortOrder.default": "結果はフォルダー名とファイル名でアルファベット順に並べ替えられます。",
-			"searchSortOrder.filesOnly": "結果はフォルダーの順序を無視したファイル名でアルファベット順に並べ替えられます。",
-			"searchSortOrder.type": "結果は、ファイル拡張子でアルファベット順に並べ替えられます。",
-			"searchSortOrder.modified": "結果は、ファイルの最終更新日で降順に並べ替えられます。",
-			"searchSortOrder.countDescending": "結果は、ファイルあたりの数で降順に並べ替えられます。",
-			"searchSortOrder.countAscending": "結果は、ファイルごとのカウントで昇順に並べ替えられます。",
-			"search.sortOrder": "検索結果の並べ替え順序を制御します。"
-		},
-		"sql/workbench/contrib/query/browser/queryActions": {
-			"newQueryTask.newQuery": "新しいクエリ",
-			"runQueryLabel": "実行",
-			"cancelQueryLabel": "キャンセル",
-			"estimatedQueryPlan": "説明",
-			"actualQueryPlan": "実際",
-			"disconnectDatabaseLabel": "切断",
-			"changeConnectionDatabaseLabel": "接続の変更",
-			"connectDatabaseLabel": "接続",
-			"enablesqlcmdLabel": "SQLCMD を有効にする",
-			"disablesqlcmdLabel": "SQLCMD を無効にする",
-			"selectDatabase": "データベースの選択",
-			"changeDatabase.failed": "データベースを変更できませんでした",
-			"changeDatabase.failedWithError": "データベース {0} を変更できませんでした",
-			"queryEditor.exportSqlAsNotebook": "ノートブックとしてエクスポート"
-		},
-		"sql/workbench/services/errorMessage/browser/errorMessageDialog": {
-			"errorMessageDialog.ok": "OK",
-			"errorMessageDialog.close": "閉じる",
-			"errorMessageDialog.action": "アクション",
-			"copyDetails": "コピーの詳細"
-		},
-		"sql/workbench/services/serverGroup/common/serverGroupViewModel": {
-			"serverGroup.addServerGroup": "サーバー グループを追加する",
-			"serverGroup.editServerGroup": "サーバー グループの編集"
-		},
-		"sql/workbench/common/editor/query/queryResultsInput": {
-			"extensionsInputName": "拡張"
-		},
-		"sql/workbench/services/objectExplorer/browser/objectExplorerService": {
-			"OeSessionFailedError": "オブジェクト エクスプローラー セッションを作成できませんでした",
-			"nodeExpansionError": "複数のエラー:"
-		},
-		"sql/workbench/services/resourceProvider/browser/firewallRuleDialogController": {
-			"firewallDialog.addAccountErrorTitle": "アカウントの追加でのエラー",
-			"firewallRuleError": "ファイアウォール規則のエラー"
-		},
-		"sql/workbench/api/browser/mainThreadExtensionManagement": {
-			"workbench.generalObsoleteApiNotification": "読み込まれた拡張機能の一部は古い API を使用しています。[開発者ツール] ウィンドウの [コンソール] タブで詳細情報を確認してください。",
-			"dontShowAgain": "今後表示しない"
-		},
-		"sql/workbench/contrib/dataExplorer/browser/dataExplorerExtensionPoint": {
-			"vscode.extension.contributes.view.id": "ビューの識別子。`vscode.window.registerTreeDataProviderForView` API を介してデータ プロバイダーを登録するには、これを使用します。また、`onView:${id}` イベントを `activationEvents` に登録することによって、拡張機能のアクティブ化をトリガーするためにも使用できます。",
-			"vscode.extension.contributes.view.name": "ビューの判読できる名前。これが表示されます",
-			"vscode.extension.contributes.view.when": "このビューを表示するために満たす必要がある条件",
-			"extension.contributes.dataExplorer": "ビューをエディターに提供します",
-			"extension.dataExplorer": "アクティビティ バーのデータ エクスプローラー コンテナーにビューを提供します",
-			"dataExplorer.contributed": "コントリビューション ビュー コンテナーにビューを提供します",
-			"duplicateView1": "ビュー コンテナー '{1}'に同じ ID '{0}' のビューを複数登録できません",
-			"duplicateView2": "ビュー ID `{0}` はビュー コンテナー `{1}` に既に登録されています",
-			"requirearray": "ビューは配列にする必要があります",
-			"requirestring": "プロパティ `{0}` は必須で、`string` 型でなければなりません",
-			"optstring": "プロパティ `{0}` は省略するか、`string` 型にする必要があります"
-		},
-		"sql/workbench/contrib/configuration/common/configurationUpgrader": {
-			"workbench.configuration.upgradeUser": "ユーザー設定の {0} は {1} に置き換えられました。",
-			"workbench.configuration.upgradeWorkspace": "ワークスペース設定の {0} は {1} に置き換えられました。"
-		},
-		"sql/workbench/browser/actions": {
-			"manage": "管理",
-			"showDetails": "詳細の表示",
-			"configureDashboardLearnMore": "詳細情報",
-			"clearSavedAccounts": "保存されているすべてのアカウントのクリア"
-		},
-		"sql/workbench/contrib/tasks/browser/tasksActions": {
-			"toggleTasks": "タスクの切り替え"
-		},
-		"sql/workbench/contrib/connection/browser/connectionStatus": {
-			"status.connection.status": "接続状態"
-		},
-		"sql/workbench/contrib/connection/common/connectionTreeProviderExentionPoint": {
-			"connectionTreeProvider.schema.name": "ツリー プロバイダーのユーザー表示名",
-			"connectionTreeProvider.schema.id": "プロバイダーの ID は、ツリー データ プロバイダーを登録するときと同じである必要があり、'connectionDialog/' で始まる必要があります"
-		},
-		"sql/workbench/contrib/dashboard/browser/widgets/insights/views/charts/chartInsight.contribution": {
-			"chartInsightDescription": "ダッシュボード上のグラフとしてクエリの結果を表示します",
-			"colorMapDescription": "'列名' -> 色をマップします。たとえば、「'column1': red」を追加して、この列で赤色が使用されるようにします ",
-			"legendDescription": "グラフの凡例の優先される位置と表示範囲を示します。これはクエリに基づく列名で、各グラフ項目のラベルにマップされます",
-			"labelFirstColumnDescription": "dataDirection が横の場合、true に設定すると凡例に最初の列値が使用されます。",
-			"columnsAsLabels": "dataDirection が縦の場合、true に設定すると凡例に列名が使用されます。",
-			"dataDirectionDescription": "データを列 (縦) 方向から、または行 (横) 方向から読み取るかを定義します。時系列の場合、方向は縦にする必要があるため、これは無視されます。",
-			"showTopNData": "showTopNData を設定すると、上位 N 個のデータのみがグラフに表示されます。"
-		},
-		"sql/platform/dashboard/browser/insightRegistry": {
-			"schema.dashboardWidgets.InsightsRegistry": "ダッシュ ボードで使用されているウィジェット"
-		},
-		"sql/workbench/browser/editor/resourceViewer/resourceViewerInput": {
-			"resourceViewer.showActions": "アクションの表示",
-			"resourceViewerInput.resourceViewer": "リソース ビューアー"
-		},
-		"sql/workbench/contrib/resourceViewer/common/resourceViewerViewExtensionPoint": {
-			"extension.contributes.resourceView.resource.id": "リソースの識別子。",
-			"extension.contributes.resourceView.resource.name": "ビューの判読できる名前。これが表示されます",
-			"extension.contributes.resourceView.resource.icon": "リソース アイコンへのパス。",
-			"extension.contributes.resourceViewResources": "リソースをリソース ビューに提供します",
-			"requirestring": "プロパティ `{0}` は必須で、`string` 型でなければなりません",
-			"optstring": "プロパティ `{0}` は省略するか、`string` 型にする必要があります"
-		},
-		"sql/workbench/contrib/resourceViewer/browser/resourceViewerView": {
-			"resourceViewer.ariaLabel": "リソース ビューアー ツリー"
-		},
-		"sql/platform/dashboard/browser/widgetRegistry": {
-			"schema.dashboardWidgets.all": "ダッシュ ボードで使用されているウィジェット",
-			"schema.dashboardWidgets.database": "ダッシュ ボードで使用されているウィジェット",
-			"schema.dashboardWidgets.server": "ダッシュ ボードで使用されているウィジェット"
-		},
-		"sql/workbench/contrib/dashboard/browser/pages/dashboardPageContribution": {
-			"azdata.extension.contributes.widget.when": "この項目を表示するために true にする必要がある条件",
-			"azdata.extension.contributes.widget.hideHeader": "ウィジェットのヘッダーを非表示にするかどうか。既定値は false です。",
-			"dashboardpage.tabName": "コンテナーのタイトル",
-			"dashboardpage.rowNumber": "グリッド内のコンポーネントの行",
-			"dashboardpage.rowSpan": "グリッド内のコンポーネントの rowspan。既定値は 1 です。グリッド内の行数に設定するには '*' を使用します。",
-			"dashboardpage.colNumber": "グリッド内のコンポーネントの列",
-			"dashboardpage.colspan": "グリッドのコンポーネントの colspan。既定値は 1 です。グリッドの列数に設定するには '*' を使用します。",
-			"azdata.extension.contributes.dashboardPage.tab.id": "このタブの一意の識別子。すべての要求で拡張機能に渡されます。",
-			"dashboardTabError": "拡張機能タブが不明またはインストールされていません。"
-		},
-		"sql/workbench/contrib/dashboard/browser/pages/databaseDashboardPage.contribution": {
-			"dashboardDatabaseProperties": "プロパティ ウィジェットを有効または無効にする",
-			"dashboard.databaseproperties": "表示するプロパティ値",
-			"dashboard.databaseproperties.displayName": "プロパティの表示名",
-			"dashboard.databaseproperties.value": "データベース情報オブジェクトの値",
-			"dashboard.databaseproperties.ignore": "無視する特定の値を指定します",
-			"recoveryModel": "復旧モデル",
-			"lastDatabaseBackup": "前回のデータベース バックアップ",
-			"lastLogBackup": "最終ログ バックアップ",
-			"compatibilityLevel": "互換性レベル",
-			"owner": "所有者",
-			"dashboardDatabase": "データベース ダッシュボード ページをカスタマイズする",
-			"objectsWidgetTitle": "検索",
-			"dashboardDatabaseTabs": "データベース ダッシュボード タブをカスタマイズする"
-		},
-		"sql/workbench/contrib/dashboard/browser/pages/serverDashboardPage.contribution": {
-			"dashboardServerProperties": "プロパティ ウィジェットを有効または無効にする",
-			"dashboard.serverproperties": "表示するプロパティ値",
-			"dashboard.serverproperties.displayName": "プロパティの表示名",
-			"dashboard.serverproperties.value": "サーバー情報オブジェクトの値",
-			"version": "バージョン",
-			"edition": "エディション",
-			"computerName": "コンピューター名",
-			"osVersion": "OS バージョン",
-			"explorerWidgetsTitle": "検索",
-			"dashboardServer": "サーバー ダッシュ ボード ページをカスタマイズします",
-			"dashboardServerTabs": "サーバー ダッシュボードのタブをカスタマイズします"
-		},
-		"sql/workbench/contrib/dashboard/browser/dashboardActions": {
-			"ManageAction": "管理"
-		},
-		"sql/workbench/contrib/dashboard/browser/dashboardIconUtil": {
-			"opticon": "プロパティ `icon` は省略するか、文字列または `{dark, light}` などのリテラルにする必要があります"
-		},
-		"sql/workbench/contrib/dashboard/browser/widgets/insights/insightsWidgetSchemas": {
-			"insightWidgetDescription": "ウィジェットを追加します。そこでは、サーバーまたはデータベースのクエリを実行して、その結果をグラフや集計されたカウントなどの複数の方法で表示できます",
-			"insightIdDescription": "分析情報の結果をキャッシュするために使用される一意識別子。",
-			"insightQueryDescription": "実行する SQL クエリ。返す結果セットは 1 つのみでなければなりません。",
-			"insightQueryFileDescription": "[省略可能] クエリを含むファイルへのパス。'クエリ' が設定されていない場合に使用します",
-			"insightAutoRefreshIntervalDescription": "[省略可能] 分単位の自動更新間隔。設定しないと、自動更新されません",
-			"actionTypes": "使用するアクション",
-			"actionDatabaseDescription": "アクションのターゲット データベース。形式 '${ columnName }' を使用して、データ ドリブン列名を使用できます。",
-			"actionServerDescription": "アクションのターゲット サーバー。形式 '${ columnName }' を使用して、データ ドリブン列名を使用できます。",
-			"actionUserDescription": "アクションのターゲット ユーザー。形式 '${ columnName }' を使用して、データ ドリブン列名を使用できます。",
-			"carbon.extension.contributes.insightType.id": "分析情報の識別子",
-			"carbon.extension.contributes.insights": "ダッシュボード パレットに分析情報を提供します。"
-		},
-		"sql/workbench/contrib/backup/browser/backupActions": {
-			"backupAction.backup": "バックアップ",
-			"backup.isPreviewFeature": "バックアップを使用するにはプレビュー機能を有効にする必要があります",
-			"backup.commandNotSupported": "Azure SQL データベースでは、バックアップ コマンドはサポートされていません。",
-			"backup.commandNotSupportedForServer": "バックアップ コマンドは、サーバー コンテキストではサポートされていません。データベースを選択して、もう一度お試しください。"
-		},
-		"sql/workbench/contrib/restore/browser/restoreActions": {
-			"restoreAction.restore": "復元",
-			"restore.isPreviewFeature": "復元を使用するには、プレビュー機能を有効にする必要があります",
-			"restore.commandNotSupported": "Azure SQL データベースでは、復元コマンドはサポートされていません。"
-		},
-		"sql/workbench/contrib/extensions/browser/extensionsActions": {
-			"showRecommendations": "推奨事項を表示",
-			"Install Extensions": "拡張機能のインストール",
-			"openExtensionAuthoringDocs": "拡張機能の作成..."
-		},
-		"sql/workbench/browser/editData/editDataInput": {
-			"connectionFailure": "編集データ セッションの接続に失敗しました"
-		},
-		"sql/workbench/browser/modal/optionsDialog": {
-			"optionsDialog.ok": "OK",
-			"optionsDialog.cancel": "キャンセル"
-		},
-		"sql/workbench/services/dashboard/browser/newDashboardTabDialogImpl": {
-			"newDashboardTab.openDashboardExtensions": "ダッシュボードの拡張機能を開く",
-			"newDashboardTab.ok": "OK",
-			"newDashboardTab.cancel": "キャンセル",
-			"newdashboardTabDialog.noExtensionLabel": "まだダッシュボードの拡張機能がインストールされていません。拡張機能マネージャーに移動し、推奨される拡張機能をご確認ください。"
-		},
-		"sql/workbench/services/fileBrowser/browser/fileBrowserDialog": {
-			"filebrowser.filepath": "選択されたパス",
-			"fileFilter": "ファイルの種類",
-			"fileBrowser.ok": "OK",
-			"fileBrowser.discard": "破棄"
-		},
-		"sql/workbench/services/insights/browser/insightsDialogController": {
-			"insightsInputError": "分析情報ポップアップに渡された接続プロファイルはありませんでした",
-			"insightsError": "分析情報エラー",
-			"insightsFileError": "クエリ ファイルの読み取り中にエラーが発生しました: ",
-			"insightsConfigError": "分析情報の構成の解析中にエラーが発生しました。クエリ配列/文字列、またはクエリ ファイルが見つかりませんでした"
-		},
-		"sql/workbench/services/accountManagement/browser/accountPickerImpl": {
-			"azureAccount": "Azure アカウント",
-			"azureTenant": "Azure テナント"
-		},
-		"sql/workbench/contrib/dataExplorer/browser/dataExplorerViewlet": {
-			"showDataExplorer": "接続の表示",
-			"dataExplorer.servers": "サーバー",
-			"dataexplorer.name": "接続"
-		},
-		"sql/workbench/contrib/tasks/browser/tasksView": {
-			"noTaskMessage": "表示するタスク履歴がありません。",
-			"taskHistory.regTreeAriaLabel": "タスク履歴",
-			"taskError": "タスク エラー"
-		},
-		"sql/workbench/services/connection/browser/connectionActions": {
-			"ClearRecentlyUsedLabel": "リストのクリア",
-			"ClearedRecentConnections": "最近の接続履歴をクリアしました",
-			"connectionAction.yes": "はい",
-			"connectionAction.no": "いいえ",
-			"clearRecentConnectionMessage": "一覧からすべての接続を削除してよろしいですか?",
-			"connectionDialog.yes": "はい",
-			"connectionDialog.no": "いいえ",
-			"delete": "削除",
-			"connectionAction.GetCurrentConnectionString": "現在の接続文字列を取得する",
-			"connectionAction.connectionString": "接続文字列は使用できません",
-			"connectionAction.noConnection": "使用できるアクティブな接続がありません"
-		},
-		"sql/workbench/services/objectExplorer/browser/connectionTreeAction": {
-			"connectionTree.refresh": "最新の情報に更新",
-			"connectionTree.editConnection": "接続の編集",
-			"DisconnectAction": "切断",
-			"connectionTree.addConnection": "新しい接続",
-			"connectionTree.addServerGroup": "新しいサーバー グループ",
-			"connectionTree.editServerGroup": "サーバー グループの編集",
-			"activeConnections": "アクティブな接続を表示",
-			"showAllConnections": "すべての接続を表示",
-			"recentConnections": "最近の接続",
-			"deleteConnection": "接続の削除",
-			"deleteConnectionGroup": "グループの削除"
-		},
-		"sql/workbench/contrib/editData/browser/editDataActions": {
-			"editData.run": "実行",
-			"disposeEditFailure": "編集内容の破棄がエラーで失敗しました: ",
-			"editData.stop": "停止",
-			"editData.showSql": "SQL ペインの表示",
-			"editData.closeSql": "SQL ペインを閉じる"
-		},
-		"sql/workbench/browser/editor/profiler/profilerInput": {
-			"profilerInput.profiler": "プロファイラー",
-			"profilerInput.notConnected": "未接続",
-			"profiler.sessionStopped": "サーバー {0} で XEvent Profiler セッションが予期せず停止しました。",
-			"profiler.sessionCreationError": "新しいセッションを開始中にエラーが発生しました",
-			"profiler.eventsLost": "{0} の XEvent Profiler セッションのイベントが失われました。"
-		},
-		"sql/workbench/browser/modelComponents/loadingComponent.component": {
+		"sql/base/browser/ui/loadingSpinner/loadingSpinner.component": {
 			"loadingMessage": "読み込み中",
 			"loadingCompletedMessage": "読み込み完了"
 		},
-		"sql/workbench/services/serverGroup/browser/serverGroupDialog": {
-			"ServerGroupsDialogTitle": "サーバー グループ",
-			"serverGroup.ok": "OK",
-			"serverGroup.cancel": "キャンセル",
-			"connectionGroupName": "サーバー グループ名",
-			"MissingGroupNameError": "グループ名が必須です。",
-			"groupDescription": "グループの説明",
-			"groupColor": "グループの色"
+		"sql/base/browser/ui/panel/panel.component": {
+			"hideTextLabel": "テキスト ラベルの非表示",
+			"showTextLabel": "テキスト ラベルの表示"
 		},
-		"sql/workbench/services/accountManagement/browser/accountDialogController": {
-			"accountDialog.addAccountErrorTitle": "アカウントの追加でのエラー"
-		},
-		"sql/workbench/services/insights/browser/insightsDialogView": {
-			"insights.item": "アイテム",
-			"insights.value": "値",
-			"insightsDetailView.name": "分析情報の詳細",
-			"property": "プロパティ",
-			"value": "値",
-			"InsightsDialogTitle": "分析情報",
-			"insights.dialog.items": "アイテム",
-			"insights.dialog.itemDetails": "アイテムの詳細"
-		},
-		"sql/workbench/services/accountManagement/browser/autoOAuthDialogController": {
-			"oauthFlyoutIsAlreadyOpen": "自動 OAuth を開始できません。自動 OAuth は既に進行中です。"
-		},
-		"sql/workbench/services/profiler/browser/profilerColumnEditorDialog": {
-			"eventSort": "イベントで並べ替え",
-			"nameColumn": "列で並べ替え",
-			"profilerColumnDialog.profiler": "プロファイラー",
-			"profilerColumnDialog.ok": "OK",
-			"profilerColumnDialog.cancel": "キャンセル"
-		},
-		"sql/workbench/services/profiler/browser/profilerFilterDialog": {
-			"profilerFilterDialog.clear": "すべてクリア",
-			"profilerFilterDialog.apply": "適用",
-			"profilerFilterDialog.ok": "OK",
-			"profilerFilterDialog.cancel": "キャンセル",
-			"profilerFilterDialog.title": "フィルター",
-			"profilerFilterDialog.remove": "この句を削除する",
-			"profilerFilterDialog.saveFilter": "フィルターを保存する",
-			"profilerFilterDialog.loadFilter": "フィルターを読み込む",
-			"profilerFilterDialog.addClauseText": "句を追加する",
-			"profilerFilterDialog.fieldColumn": "フィールド",
-			"profilerFilterDialog.operatorColumn": "演算子",
-			"profilerFilterDialog.valueColumn": "値",
-			"profilerFilterDialog.isNullOperator": "Null である",
-			"profilerFilterDialog.isNotNullOperator": "Null でない",
-			"profilerFilterDialog.containsOperator": "含む",
-			"profilerFilterDialog.notContainsOperator": "含まない",
-			"profilerFilterDialog.startsWithOperator": "次で始まる",
-			"profilerFilterDialog.notStartsWithOperator": "次で始まらない"
-		},
-		"sql/workbench/contrib/editData/browser/gridActions": {
-			"saveAsCsv": "CSV として保存",
-			"saveAsJson": "JSON として保存",
-			"saveAsExcel": "Excel として保存",
-			"saveAsXml": "XML として保存",
-			"copySelection": "コピー",
-			"copyWithHeaders": "ヘッダー付きでコピー",
-			"selectAll": "すべて選択"
-		},
-		"sql/workbench/contrib/dashboard/browser/dashboardRegistry": {
-			"dashboard.properties.property": "ダッシュ ボードに表示するプロパティを定義します",
-			"dashboard.properties.property.displayName": "プロパティのラベルとして使用する値",
-			"dashboard.properties.property.value": "値にアクセスするためのオブジェクト内の値",
-			"dashboard.properties.property.ignore": "無視される値を指定します",
-			"dashboard.properties.property.default": "無視されるか値がない場合に表示される既定値です",
-			"dashboard.properties.flavor": "ダッシュボードのプロパティを定義するためのフレーバー",
-			"dashboard.properties.flavor.id": "フレーバーの ID",
-			"dashboard.properties.flavor.condition": "このフレーバーを使用する条件",
-			"dashboard.properties.flavor.condition.field": "比較するフィールド",
-			"dashboard.properties.flavor.condition.operator": "比較に使用する演算子",
-			"dashboard.properties.flavor.condition.value": "フィールドを比較する値",
-			"dashboard.properties.databaseProperties": "データベース ページに表示するプロパティ",
-			"dashboard.properties.serverProperties": "サーバー ページに表示するプロパティ",
-			"carbon.extension.dashboard": "このプロバイダーがダッシュボードをサポートすることを定義します",
-			"dashboard.id": "プロバイダー ID (例: MSSQL)",
-			"dashboard.properties": "ダッシュボードに表示するプロパティ値"
-		},
-		"sql/workbench/browser/modelComponents/inputbox.component": {
-			"invalidValueError": "無効な値",
-			"period": "{0}。{1}"
-		},
-		"sql/workbench/browser/modelComponents/dropdown.component": {
-			"loadingMessage": "読み込み中",
-			"loadingCompletedMessage": "読み込み完了"
-		},
-		"sql/workbench/browser/modelComponents/declarativeTable.component": {
-			"blankValue": "空白",
-			"checkAllColumnLabel": "列 {0} のすべてのチェック ボックスをオンにする"
-		},
-		"sql/workbench/api/common/extHostModelViewTree": {
-			"treeView.notRegistered": "ID '{0}' のツリー ビューは登録されていません。"
-		},
-		"sql/workbench/services/editData/common/editQueryRunner": {
-			"query.initEditExecutionFailed": "編集データ セッションを初期化できませんでした: "
-		},
-		"sql/workbench/services/notebook/common/notebookRegistry": {
-			"carbon.extension.contributes.notebook.provider": "ノートブック プロバイダーの識別子。",
-			"carbon.extension.contributes.notebook.fileExtensions": "このノートブック プロバイダーにどのファイル拡張子を登録する必要があるか",
-			"carbon.extension.contributes.notebook.standardKernels": "このノートブック プロバイダーへの標準装備が必要なカーネル",
-			"vscode.extension.contributes.notebook.providers": "ノートブック プロバイダーを提供します。",
-			"carbon.extension.contributes.notebook.magic": "'%%sql' などのセル マジックの名前。",
-			"carbon.extension.contributes.notebook.language": "このセル マジックがセルに含まれる場合に使用されるセルの言語",
-			"carbon.extension.contributes.notebook.executionTarget": "Spark / SQL など、このマジックが示すオプションの実行対象",
-			"carbon.extension.contributes.notebook.kernels": "これが有効なカーネルのオプションのセット (python3、pyspark、sql など)",
-			"vscode.extension.contributes.notebook.languagemagics": "ノートブックの言語を提供します。"
-		},
-		"sql/workbench/api/browser/mainThreadNotebookDocumentsAndEditors": {
-			"runActiveCell": "F5 ショートカット キーでは、コード セルを選択する必要があります。実行するコード セルを選択してください。",
-			"clearResultActiveCell": "結果をクリアするには、コード セルを選択する必要があります。実行するコード セルを選択してください。"
-		},
-		"sql/workbench/services/notebook/browser/interfaces": {
-			"sqlKernel": "SQL"
-		},
-		"sql/workbench/contrib/editData/browser/editDataEditor": {
-			"maxRowTaskbar": "最大行数:"
-		},
-		"sql/workbench/contrib/profiler/browser/profilerEditor": {
-			"profiler.viewSelectAccessibleName": "ビューの選択",
-			"profiler.sessionSelectAccessibleName": "セッションの選択",
-			"profiler.sessionSelectLabel": "セッションを選択:",
-			"profiler.viewSelectLabel": "ビューを選択:",
-			"text": "テキスト",
-			"label": "ラベル",
-			"profilerEditor.value": "値",
-			"details": "詳細"
-		},
-		"sql/workbench/contrib/query/browser/statusBarItems": {
-			"status.query.timeElapsed": "経過時間",
-			"status.query.rowCount": "行数",
-			"rowCount": "{0} 行",
-			"query.status.executing": "クエリを実行しています...",
-			"status.query.status": "実行状態",
-			"status.query.selection-summary": "選択の要約",
-			"status.query.summaryText": "平均: {0}  数: {1}  合計: {2}"
-		},
-		"sql/workbench/contrib/query/browser/flavorStatus": {
-			"chooseSqlLang": "SQL 言語の選択",
-			"changeProvider": "SQL 言語プロバイダーの変更",
-			"status.query.flavor": "SQL 言語のフレーバー",
-			"changeSqlProvider": "SQL エンジン プロバイダーの変更",
-			"alreadyConnected": "エンジン {0} を使用している接続が存在します。変更するには、切断するか、接続を変更してください",
-			"noEditor": "現時点でアクティブなテキスト エディターはありません",
-			"pickSqlProvider": "言語プロバイダーの選択"
-		},
-		"sql/workbench/contrib/notebook/browser/outputs/plotlyOutput.component": {
-			"plotlyError": "Plotly グラフの表示エラー: {0}"
-		},
-		"sql/workbench/contrib/notebook/browser/outputs/mimeRenderer.component": {
-			"noRendererFound": "出力用の {0} レンダラーが見つかりませんでした。次の MIME の種類があります: {1}。",
-			"safe": "(安全) "
-		},
-		"sql/workbench/browser/scriptingActions": {
-			"scriptSelect": "上位 1000 を選択する",
-			"scriptKustoSelect": "10 個",
-			"scriptExecute": "実行としてのスクリプト",
-			"scriptAlter": "変更としてのスクリプト",
-			"editData": "データの編集",
-			"scriptCreate": "作成としてのスクリプト",
-			"scriptDelete": "ドロップとしてのスクリプト"
-		},
-		"sql/workbench/api/common/extHostNotebookDocumentsAndEditors": {
-			"providerRequired": "有効な providerId を持つ NotebookProvider をこのメソッドに渡す必要があります"
-		},
-		"sql/workbench/api/common/extHostNotebook": {
-			"providerRequired": "有効な providerId を持つ NotebookProvider をこのメソッドに渡す必要があります",
-			"errNoProvider": "ノートブック プロバイダーが見つかりません",
-			"errNoManager": "マネージャーが見つかりません",
-			"noServerManager": "ノートブック {0} の Notebook Manager にサーバー マネージャーがありません。それに対して操作を実行できません",
-			"noContentManager": "ノートブック {0} の Notebook Manager にコンテンツ マネージャーがありません。それに対して操作を実行できません",
-			"noSessionManager": "ノートブック {0} の Notebook Manager にセッション マネージャーがありません。それに対して操作を実行できません"
-		},
-		"sql/workbench/services/connection/browser/connectionManagementService": {
-			"connection.noAzureAccount": "接続用の Azure アカウント トークンの取得に失敗しました",
-			"connectionNotAcceptedError": "接続が承認されていません",
-			"connectionService.yes": "はい",
-			"connectionService.no": "いいえ",
-			"cancelConnectionConfirmation": "この接続をキャンセルしてもよろしいですか?"
-		},
-		"sql/workbench/contrib/webview/browser/webViewDialog": {
-			"webViewDialog.ok": "OK",
-			"webViewDialog.close": "閉じる"
-		},
-		"sql/workbench/contrib/notebook/browser/notebookActions": {
-			"loading": "カーネルを読み込んでいます...",
-			"changing": "カーネルを変更しています...",
-			"AttachTo": "接続先: ",
-			"Kernel": "カーネル ",
-			"loadingContexts": "コンテキストを読み込んでいます...",
-			"changeConnection": "接続の変更",
-			"selectConnection": "接続を選択",
-			"localhost": "localhost",
-			"noKernel": "カーネルなし",
-			"clearResults": "結果のクリア",
-			"trustLabel": "信頼されています",
-			"untrustLabel": "信頼されていません",
-			"collapseAllCells": "セルを折りたたむ",
-			"expandAllCells": "セルを展開する",
-			"noContextAvailable": "なし",
-			"newNotebookAction": "新しいノートブック",
-			"notebook.findNext": "次の文字列を検索",
-			"notebook.findPrevious": "前の文字列を検索"
-		},
-		"sql/workbench/contrib/queryPlan/browser/queryPlan": {
-			"queryPlanTitle": "クエリ プラン"
-		},
-		"sql/workbench/contrib/resourceViewer/browser/resourceViewerActions": {
-			"resourceViewer.refresh": "最新の情報に更新"
-		},
-		"sql/workbench/services/dialog/browser/dialogPane": {
-			"wizardPageNumberDisplayText": "ステップ {0}"
-		},
-		"sql/base/parts/editableDropdown/browser/dropdown": {
-			"editableDropdown.errorValidate": "一覧からオプションを選択する必要があります",
-			"selectBox": "ボックスを選択"
+		"sql/base/browser/ui/panel/tabActions": {
+			"closeTab": "閉じる"
 		},
 		"sql/base/browser/ui/selectBox/selectBox": {
 			"alertErrorMessage": "エラー: {0}",
 			"alertWarningMessage": "警告: {0}",
 			"alertInfoMessage": "情報: {0}"
 		},
-		"sql/workbench/services/connection/browser/connectionDialogWidget": {
-			"connection": "接続",
-			"connecting": "接続しています",
-			"connectType": "接続の種類",
-			"recentConnectionTitle": "最近の接続",
-			"savedConnectionTitle": "保存された接続",
-			"connectionDetailsTitle": "接続の詳細",
-			"connectionDialog.connect": "接続",
-			"connectionDialog.cancel": "キャンセル",
-			"connectionDialog.recentConnections": "最近の接続",
-			"noRecentConnections": "最近の接続はありません",
-			"connectionDialog.savedConnections": "保存された接続",
-			"noSavedConnections": "保存された接続はありません"
+		"sql/base/browser/ui/table/formatters": {
+			"tableCell.NoDataAvailable": "利用できるデータはありません"
 		},
-		"sql/workbench/services/fileBrowser/browser/fileBrowserTreeView": {
-			"fileBrowser.regTreeAriaLabel": "ファイル ブラウザー ツリー"
+		"sql/base/browser/ui/table/plugins/checkboxSelectColumn.plugin": {
+			"selectDeselectAll": "すべて選択/選択解除"
 		},
-		"sql/workbench/services/resourceProvider/browser/firewallRuleDialog": {
-			"from": "開始",
-			"to": "終了",
-			"createNewFirewallRule": "新しいファイアウォール規則の作成",
-			"firewall.ok": "OK",
-			"firewall.cancel": "キャンセル",
-			"firewallRuleDialogDescription": "このクライアント IP アドレスではサーバーにアクセスできません。アクセスできるようにするには、Azure アカウントにサインインし、新しいファイアウォール規則を作成します。",
-			"firewallRuleHelpDescription": "ファイアウォール設定の詳細情報",
-			"filewallRule": "ファイアウォール規則",
-			"addIPAddressLabel": "自分のクライアント IP アドレスを追加 ",
-			"addIpRangeLabel": "自分のサブネット IP 範囲を追加"
+		"sql/base/browser/ui/table/plugins/headerFilter.plugin": {
+			"headerFilter.showFilter": "フィルターの表示",
+			"table.selectAll": "すべて選択",
+			"table.searchPlaceHolder": "検索",
+			"tableFilter.visibleCount": "{0} 件の結果",
+			"tableFilter.selectedCount": "{0} 件選択済み",
+			"table.sortAscending": "昇順で並べ替え",
+			"table.sortDescending": "降順で並べ替え",
+			"headerFilter.ok": "OK",
+			"headerFilter.clear": "クリア",
+			"headerFilter.cancel": "キャンセル",
+			"table.filterOptions": "フィルター オプション"
 		},
-		"sql/workbench/services/fileBrowser/common/fileBrowserViewModel": {
-			"allFiles": "すべてのファイル"
+		"sql/base/browser/ui/table/plugins/loadingSpinner.plugin": {
+			"loadingSpinner.loading": "読み込み中"
 		},
-		"sql/workbench/services/insights/common/insightsUtils": {
-			"insightsDidNotFindResolvedFile": "クエリ ファイルが、次のどのパスにも見つかりませんでした:\r\n {0}"
+		"sql/base/browser/ui/table/plugins/rowDetailView": {
+			"rowDetailView.loadError": "読み込みエラー..."
 		},
-		"sql/workbench/services/accountManagement/browser/accountListRenderer": {
-			"refreshCredentials": "このアカウントの資格情報を更新する必要があります。"
+		"sql/base/browser/ui/taskbar/overflowActionbar": {
+			"toggleMore": "詳細の切り替え"
+		},
+		"sql/base/common/locConstants": {
+			"azuredatastudio": "Azure Data Studio",
+			"default": "自動更新チェックを有効にします。Azure Data Studio は、更新プログラムを自動的かつ定期的に確認します。",
+			"enableWindowsBackgroundUpdates": "Windows で新しい Azure Data Studio バージョンをバックグラウンドでダウンロードしてインストールできるようにする",
+			"showReleaseNotes": "更新後にリリース ノートを表示します。リリース ノートが新しい Web ブラウザー ウィンドウで開きます。",
+			"dashboard.toolbar": "ダッシュボード ツールバーのアクション メニュー",
+			"notebook.cellTitle": "ノートブックのセル タイトル メニュー",
+			"notebook.title": "ノートブックのタイトル メニュー",
+			"notebook.toolbar": "ノートブックのツール バー メニュー",
+			"dataExplorer.action": "dataexplorer ビュー コンテナーのタイトル アクション メニュー",
+			"dataExplorer.context": "データエクスプローラー項目のコンテキスト メニュー",
+			"objectExplorer.context": "オブジェクト エクスプローラー項目のコンテキスト メニュー",
+			"connectionDialogBrowseTree.context": "接続ダイアログの閲覧ツリーのコンテキスト メニュー",
+			"dataGrid.context": "データ グリッド項目のコンテキスト メニュー",
+			"extensionsPolicy": "拡張機能をダウンロードするためのセキュリティ ポリシーを設定します。",
+			"InstallVSIXAction.allowNone": "拡張機能のポリシーでは、拡張機能のインストールは許可されていません。拡張機能ポリシーを変更して、もう一度お試しください。",
+			"InstallVSIXAction.successReload": "VSIX からの {0} 拡張機能のインストールが完了しました。有効にするには、Azure Data Studio を再度読み込んでください。",
+			"postUninstallTooltip": "この拡張機能のアンインストールを完了するには、Azure Data Studio を再度読み込んでください。",
+			"postUpdateTooltip": "更新された拡張機能を有効にするには、Azure Data Studio を再度読み込んでください。",
+			"enable locally": "この拡張機能をローカルで有効にするには、Azure Data Studio を再度読み込んでください。",
+			"postEnableTooltip": "この拡張機能を有効にするには、Azure Data Studio を再度読み込んでください。",
+			"postDisableTooltip": "更新された拡張機能を無効にするには、Azure Data Studio を再度読み込んでください。",
+			"uninstallExtensionComplete": "拡張機能 {0}のアンインストールを完了するには、Azure Data Studio を再度読み込んでください。",
+			"enable remote": "この拡張機能を {0} で有効にするには、Azure Data Studio を再度読み込んでください。",
+			"installExtensionCompletedAndReloadRequired": "拡張機能 {0} のインストールが完了しました。これを有効にするには、Azure Data Studio を再度読み込んでください。",
+			"ReinstallAction.successReload": "拡張機能 {0}の再インストールを完了するには、Azure Data Studio を再度読み込んでください。",
+			"recommendedExtensions": "マーケット プレース",
+			"scenarioTypeUndefined": "拡張機能の推奨事項のシナリオの種類を指定する必要があります。",
+			"incompatible": "Azure Data Studio '{1}' と互換性がないため、拡張機能 '{0}' をインストールできません。",
+			"newQuery": "新しいクエリ",
+			"miNewQuery": "新しいクエリ(&Q)",
+			"miNewNotebook": "新しいノートブック(&N)",
+			"maxMemoryForLargeFilesMB": "大きなファイルを開こうとすると再起動後に Azure Data Studio に対して使用できるメモリを制御します。コマンド ラインで '--max-memory=NEWSIZE' を指定する場合と同じ効果があります。",
+			"updateLocale": "Azure Data Studio の UI 言語を {0} に変更して再起動しますか?",
+			"activateLanguagePack": "{0}で Azure Data Studio を使用するには、Azure Data Studio を再起動する必要があります。",
+			"watermark.newSqlFile": "新しい SQL ファイル",
+			"watermark.newNotebook": "新しいノートブック",
+			"miinstallVsix": "VSIX パッケージから拡張機能をインストールする"
+		},
+		"sql/base/parts/editableDropdown/browser/dropdown": {
+			"editableDropdown.errorValidate": "一覧からオプションを選択する必要があります",
+			"selectBox": "ボックスを選択"
 		},
 		"sql/platform/accounts/common/accountActions": {
 			"addAccount": "アカウントを追加します",
@@ -10190,354 +9358,24 @@
 			"refreshAccount": "資格情報を再入力してください",
 			"NoAccountToRefresh": "更新するアカウントはありません"
 		},
-		"sql/workbench/contrib/notebook/browser/notebookExplorer/notebookExplorerViewlet": {
-			"showNotebookExplorer": "ノートブックの表示",
-			"notebookExplorer.searchResults": "検索結果",
-			"searchPathNotFoundError": "検索パスが見つかりません: {0}",
-			"notebookExplorer.name": "ノートブック"
+		"sql/platform/clipboard/browser/clipboardService": {
+			"imageCopyingNotSupported": "イメージのコピーはサポートされていません"
 		},
-		"sql/workbench/contrib/query/browser/keyboardQueryActions": {
-			"focusOnCurrentQueryKeyboardAction": "現在のクエリにフォーカスを移動する",
-			"runQueryKeyboardAction": "クエリの実行",
-			"runCurrentQueryKeyboardAction": "現在のクエリを実行",
-			"copyQueryWithResultsKeyboardAction": "結果を含むクエリのコピー",
-			"queryActions.queryResultsCopySuccess": "クエリと結果が正常にコピーされました。",
-			"runCurrentQueryWithActualPlanKeyboardAction": "実際のプランで現在のクエリを実行",
-			"cancelQueryKeyboardAction": "クエリのキャンセル",
-			"refreshIntellisenseKeyboardAction": "IntelliSense キャッシュの更新",
-			"toggleQueryResultsKeyboardAction": "クエリ結果の切り替え",
-			"ToggleFocusBetweenQueryEditorAndResultsAction": "クエリと結果の間のフォーカスの切り替え",
-			"queryShortcutNoEditor": "ショートカットを実行するにはエディター パラメーターが必須です",
-			"parseSyntaxLabel": "クエリの解析",
-			"queryActions.parseSyntaxSuccess": "コマンドが正常に完了しました",
-			"queryActions.parseSyntaxFailure": "コマンドが失敗しました: ",
-			"queryActions.notConnected": "サーバーに接続してください"
+		"sql/platform/connection/common/connectionConfig": {
+			"invalidServerName": "同じ名前のサーバー グループが既に存在します。"
 		},
-		"sql/workbench/contrib/tasks/browser/tasksRenderer": {
-			"succeeded": "成功",
-			"failed": "失敗",
-			"inProgress": "進行中",
-			"notStarted": "未開始",
-			"canceled": "キャンセル済み",
-			"canceling": "キャンセル中"
+		"sql/platform/dashboard/browser/insightRegistry": {
+			"schema.dashboardWidgets.InsightsRegistry": "ダッシュ ボードで使用されているウィジェット"
 		},
-		"sql/workbench/contrib/dashboard/browser/widgets/insights/views/charts/chartInsight.component": {
-			"chartErrorMessage": "指定されたデータでグラフを表示できません"
+		"sql/platform/dashboard/browser/widgetRegistry": {
+			"schema.dashboardWidgets.all": "ダッシュ ボードで使用されているウィジェット",
+			"schema.dashboardWidgets.database": "ダッシュ ボードで使用されているウィジェット",
+			"schema.dashboardWidgets.server": "ダッシュ ボードで使用されているウィジェット"
 		},
-		"sql/workbench/contrib/resourceViewer/browser/resourceViewerTable": {
-			"resourceViewerTable.openError": "リンクを開いているときにエラーが発生しました: {0}",
-			"resourceViewerTable.commandError": "コマンド '{0}' の実行でエラーが発生しました: {1}"
-		},
-		"sql/workbench/contrib/notebook/browser/outputs/gridOutput.component": {
-			"copyFailed": "エラー {0} でコピーに失敗しました",
-			"notebook.showChart": "グラフの表示",
-			"notebook.showTable": "テーブルの表示"
-		},
-		"sql/workbench/contrib/notebook/browser/cellViews/textCell.component": {
-			"doubleClickEdit": "<i>ダブルクリックして編集</i>",
-			"addContent": "<i>ここにコンテンツを追加...</i>"
-		},
-		"sql/workbench/contrib/scripting/browser/scriptingActions": {
-			"refreshError": "ノード '{0}' の更新でエラーが発生しました: {1}"
-		},
-		"sql/workbench/api/common/extHostModelViewDialog": {
-			"dialogDoneLabel": "完了",
-			"dialogCancelLabel": "キャンセル",
-			"generateScriptLabel": "スクリプトの生成",
-			"dialogNextLabel": "次へ",
-			"dialogPreviousLabel": "前へ",
-			"dashboardNotInitialized": "タブが初期化されていません"
-		},
-		"sql/workbench/browser/modal/optionsDialogHelper": {
-			"optionsDialog.missingRequireField": " が必須です。",
-			"optionsDialog.invalidInput": "無効な入力です。数値が必要です。"
-		},
-		"sql/workbench/services/restore/browser/restoreDialog": {
-			"backupFilePath": "バックアップ ファイルのパス",
-			"targetDatabase": "ターゲット データベース",
-			"restoreDialog.restore": "復元",
-			"restoreDialog.restoreTitle": "データベースの復元",
-			"restoreDialog.database": "データベース",
-			"restoreDialog.backupFile": "バックアップ ファイル",
-			"RestoreDialogTitle": "データベースの復元",
-			"restoreDialog.cancel": "キャンセル",
-			"restoreDialog.script": "スクリプト",
-			"source": "ソース",
-			"restoreFrom": "復元元",
-			"missingBackupFilePathError": "バックアップ ファイルのパスが必須です。",
-			"multipleBackupFilePath": "１つまたは複数のファイル パスをコンマで区切って入力してください。",
-			"database": "データベース",
-			"destination": "ターゲット",
-			"restoreTo": "復元先",
-			"restorePlan": "復元計画",
-			"backupSetsToRestore": "復元するバックアップ セット",
-			"restoreDatabaseFileAs": "データベース ファイルを名前を付けて復元",
-			"restoreDatabaseFileDetails": "データベース ファイルの詳細を復元する",
-			"logicalFileName": "論理ファイル名",
-			"fileType": "ファイルの種類",
-			"originalFileName": "元のファイル名",
-			"restoreAs": "復元ファイル名",
-			"restoreOptions": "復元オプション",
-			"taillogBackup": "ログ末尾のバックアップ",
-			"serverConnection": "サーバーの接続",
-			"generalTitle": "全般",
-			"filesTitle": "ファイル",
-			"optionsTitle": "オプション​​"
-		},
-		"sql/workbench/services/insights/browser/insightDialogActions": {
-			"workbench.action.insights.copySelection": "セルをコピー"
-		},
-		"sql/workbench/services/dialog/common/dialogTypes": {
-			"dialogModalDoneButtonLabel": "完了",
-			"dialogModalCancelButtonLabel": "キャンセル"
-		},
-		"sql/workbench/services/accountManagement/browser/autoOAuthDialog": {
-			"copyAndOpen": "コピーして開く",
-			"oauthDialog.cancel": "キャンセル",
-			"userCode": "ユーザー コード",
-			"website": "Web サイト"
-		},
-		"sql/workbench/browser/modelComponents/componentBase": {
-			"invalidIndex": "インデックス {0} が無効です。"
-		},
-		"sql/workbench/services/connection/browser/cmsConnectionWidget": {
-			"serverDescription": "サーバーの説明 (省略可能)"
-		},
-		"sql/workbench/services/connection/browser/advancedPropertiesController": {
-			"connectionAdvancedProperties": "詳細プロパティ",
-			"advancedProperties.discard": "破棄"
-		},
-		"sql/workbench/services/notebook/common/localContentManager": {
-			"nbformatNotRecognized": "認識されない nbformat v{0}.{1}",
-			"nbNotSupported": "このファイルは有効なノートブック形式ではありません",
-			"unknownCellType": "セルの種類 {0} が不明",
-			"unrecognizedOutput": "出力の種類 {0} を認識できません",
-			"invalidMimeData": "{0} のデータは、文字列または文字列の配列である必要があります",
-			"unrecognizedOutputType": "出力の種類 {0} を認識できません"
-		},
-		"sql/workbench/contrib/welcome/page/browser/welcomePage": {
-			"welcomePage": "ようこそ",
-			"welcomePage.adminPack": "SQL 管理パック",
-			"welcomePage.showAdminPack": "SQL 管理パック",
-			"welcomePage.adminPackDescription": "SQL Server の管理パックは、一般的なデータベース管理拡張機能のコレクションであり、SQL Server の管理に役立ちます",
-			"welcomePage.powershell": "PowerShell",
-			"welcomePage.powershellDescription": "Azure Data Studio のリッチ クエリ エディターを使用して PowerShell スクリプトを作成して実行します",
-			"welcomePage.dataVirtualization": "データ仮想化",
-			"welcomePage.dataVirtualizationDescription": "SQL Server 2019 を使用してデータを仮想化し、インタラクティブなウィザードを使用して外部テーブルを作成します",
-			"welcomePage.PostgreSQL": "PostgreSQL",
-			"welcomePage.PostgreSQLDescription": "Azure Data Studio で Postgres データベースを接続、クエリ、および管理します",
-			"welcomePage.extensionPackAlreadyInstalled": "{0} のサポートは既にインストールされています。",
-			"welcomePage.willReloadAfterInstallingExtensionPack": "{0} に追加のサポートをインストールしたあと、ウィンドウが再度読み込まれます。",
-			"welcomePage.installingExtensionPack": "{0} に追加のサポートをインストールしています...",
-			"welcomePage.extensionPackNotFound": "ID {1} のサポート {0} は見つかりませんでした。",
-			"welcomePage.newConnection": "新しい接続",
-			"welcomePage.newQuery": "新しいクエリ",
-			"welcomePage.newNotebook": "新しいノートブック",
-			"welcomePage.deployServer": "サーバーのデプロイ",
-			"welcome.title": "ようこそ",
-			"welcomePage.new": "新規",
-			"welcomePage.open": "開く…",
-			"welcomePage.openFile": "ファイルを開く…",
-			"welcomePage.openFolder": "フォルダーを開く",
-			"welcomePage.startTour": "ツアーの開始",
-			"closeTourBar": "クイック ツアー バーを閉じる",
-			"WelcomePage.TakeATour": "Azure Data Studio のクイック ツアーを開始しますか?",
-			"WelcomePage.welcome": "ようこそ",
-			"welcomePage.openFolderWithPath": "パス {1} のフォルダー {0} を開く",
-			"welcomePage.install": "インストール",
-			"welcomePage.installKeymap": "{0} キーマップのインストール",
-			"welcomePage.installExtensionPack": "{0} に追加のサポートをインストールする",
-			"welcomePage.installed": "インストール済み",
-			"welcomePage.installedKeymap": "{0} キーマップは既にインストールされています",
-			"welcomePage.installedExtensionPack": "{0} のサポートは既にインストールされています",
-			"ok": "OK",
-			"details": "詳細",
-			"welcomePage.background": "ウェルカム ページの背景色。"
-		},
-		"sql/workbench/contrib/profiler/browser/profilerResourceEditor": {
-			"profilerTextEditorAriaLabel": "イベント テキストの Profiler エディター。読み取り専用"
-		},
-		"sql/workbench/services/query/common/resultSerializer": {
-			"msgSaveFailed": "結果を保存できませんでした。 ",
-			"resultsSerializer.saveAsFileTitle": "結果ファイルの選択",
-			"resultsSerializer.saveAsFileExtensionCSVTitle": "CSV (コンマ区切り)",
-			"resultsSerializer.saveAsFileExtensionJSONTitle": "JSON",
-			"resultsSerializer.saveAsFileExtensionExcelTitle": "Excel ブック",
-			"resultsSerializer.saveAsFileExtensionXMLTitle": "XML",
-			"resultsSerializer.saveAsFileExtensionTXTTitle": "プレーン テキスト",
-			"savingFile": "ファイルを保存しています...",
-			"msgSaveSucceeded": "結果が {0} に正常に保存されました ",
-			"openFile": "ファイルを開く"
-		},
-		"sql/base/browser/ui/panel/panel.component": {
-			"hideTextLabel": "テキスト ラベルの非表示",
-			"showTextLabel": "テキスト ラベルの表示"
-		},
-		"sql/workbench/browser/modelComponents/queryTextEditor": {
-			"queryTextEditorAriaLabel": "ビュー モデル用のモードビュー コード エディター。"
-		},
-		"sql/workbench/browser/modal/modal": {
-			"infoAltText": "情報",
-			"warningAltText": "警告",
-			"errorAltText": "エラー",
-			"showMessageDetails": "詳細の表示",
-			"copyMessage": "コピー",
-			"closeMessage": "閉じる",
-			"modal.back": "戻る",
-			"hideMessageDetails": "詳細を表示しない"
-		},
-		"sql/workbench/services/accountManagement/browser/accountDialog": {
-			"accountExplorer.name": "アカウント",
-			"linkedAccounts": "リンクされたアカウント",
-			"accountDialog.close": "閉じる",
-			"accountDialog.noAccountLabel": "リンクされているアカウントはありません。アカウントを追加してください。",
-			"accountDialog.addConnection": "アカウントを追加する",
-			"accountDialog.noCloudsRegistered": "有効にされているクラウドがありません。[設定] -> [Azure アカウント構成の検索] に移動し、 少なくとも 1 つのクラウドを有効にしてください",
-			"accountDialog.didNotPickAuthProvider": "認証プロバイダーを選択していません。もう一度お試しください。"
-		},
-		"sql/workbench/services/query/common/queryRunner": {
-			"query.ExecutionFailedError": "予期しないエラーにより、実行が失敗しました: {0} {1}",
-			"query.message.executionTime": "総実行時間: {0}",
-			"query.message.startQueryWithRange": "行 {0} でのクエリの実行が開始されました",
-			"query.message.startQuery": "バッチ {0} の実行を開始しました",
-			"elapsedBatchTime": "バッチ実行時間: {0}",
-			"copyFailed": "エラー {0} でコピーに失敗しました"
-		},
-		"sql/workbench/contrib/welcome2/page/browser/az_data_welcome_page": {
-			"welcomePage.azdata": "Azure Data Studio",
-			"welcomePage.start": "開始",
-			"welcomePage.newConnection": "新しい接続",
-			"welcomePage.newQuery": "新しいクエリ",
-			"welcomePage.newNotebook": "新しいノートブック",
-			"welcomePage.openFileMac": "ファイルを開く",
-			"welcomePage.openFileLinuxPC": "ファイルを開く",
-			"welcomePage.deploy": "デプロイ",
-			"welcomePage.newDeployment": "新しいデプロイ…",
-			"welcomePage.recent": "最近",
-			"welcomePage.moreRecent": "その他...",
-			"welcomePage.noRecentFolders": "最近使用したフォルダーなし",
-			"welcomePage.help": "ヘルプ",
-			"welcomePage.gettingStarted": "はじめに",
-			"welcomePage.productDocumentation": "ドキュメント",
-			"welcomePage.reportIssue": "問題または機能要求を報告する",
-			"welcomePage.gitHubRepository": "GitHub リポジトリ",
-			"welcomePage.releaseNotes": "リリース ノート",
-			"welcomePage.showOnStartup": "起動時にウェルカム ページを表示する",
-			"welcomePage.customize": "カスタマイズ",
-			"welcomePage.extensions": "拡張",
-			"welcomePage.extensionDescription": "SQL Server 管理パックなど、必要な拡張機能をダウンロードする",
-			"welcomePage.keyboardShortcut": "キーボード ショートカット",
-			"welcomePage.keyboardShortcutDescription": "お気に入りのコマンドを見つけてカスタマイズする",
-			"welcomePage.colorTheme": "配色テーマ",
-			"welcomePage.colorThemeDescription": "エディターとコードの外観を自由に設定します",
-			"welcomePage.learn": "詳細",
-			"welcomePage.showCommands": "すべてのコマンドの検索と実行",
-			"welcomePage.showCommandsDescription": "コマンド パレット ({0}) にすばやくアクセスしてコマンドを検索します",
-			"welcomePage.azdataBlog": "最新リリースの新機能を見る",
-			"welcomePage.azdataBlogDescription": "毎月新機能を紹介する新しいブログ記事",
-			"welcomePage.followTwitter": "Twitter でフォローする",
-			"welcomePage.followTwitterDescription": "コミュニティがどのように Azure Data Studio を使用しているかについて、最新情報を把握し、エンジニアと直接話し合います。"
-		},
-		"sql/workbench/contrib/profiler/browser/profilerActions": {
-			"profilerAction.connect": "接続",
-			"profilerAction.disconnect": "切断",
-			"start": "開始",
-			"create": "新しいセッション",
-			"profilerAction.pauseCapture": "一時停止",
-			"profilerAction.resumeCapture": "再開",
-			"profilerStop.stop": "停止",
-			"profiler.clear": "データのクリア",
-			"profiler.clearDataPrompt": "データをクリアしますか?",
-			"profiler.yes": "はい",
-			"profiler.no": "いいえ",
-			"profilerAction.autoscrollOn": "自動スクロール: オン",
-			"profilerAction.autoscrollOff": "自動スクロール: オフ",
-			"profiler.toggleCollapsePanel": "折りたたんだパネルを切り替える",
-			"profiler.editColumns": "列の編集",
-			"profiler.findNext": "次の文字列を検索",
-			"profiler.findPrevious": "前の文字列を検索",
-			"profilerAction.newProfiler": "Profiler を起動",
-			"profiler.filter": "フィルター...",
-			"profiler.clearFilter": "フィルターのクリア",
-			"profiler.clearFilterPrompt": "フィルターをクリアしますか?"
-		},
-		"sql/workbench/contrib/profiler/browser/profilerTableEditor": {
-			"ProfilerTableEditor.eventCountFiltered": "イベント (フィルター処理済み): {0}/{1}",
-			"ProfilerTableEditor.eventCount": "イベント: {0}",
-			"status.eventCount": "イベント数"
-		},
-		"sql/base/browser/ui/table/formatters": {
-			"tableCell.NoDataAvailable": "利用できるデータはありません"
-		},
-		"sql/workbench/contrib/query/browser/queryResultsView": {
-			"resultsTabTitle": "結果",
-			"messagesTabTitle": "メッセージ"
-		},
-		"sql/workbench/browser/scriptingUtils": {
-			"scriptSelectNotFound": "オブジェクトに対するスクリプトの選択を呼び出したときに返されたスクリプトはありません ",
-			"selectOperationName": "選択",
-			"createOperationName": "作成",
-			"insertOperationName": "挿入",
-			"updateOperationName": "更新",
-			"deleteOperationName": "削除",
-			"scriptNotFoundForObject": "オブジェクト {1} に対する {0} としてスクリプトを作成したときに返されたスクリプトはありません",
-			"scriptingFailed": "スクリプト作成に失敗しました",
-			"scriptNotFound": "{0} としてスクリプトを作成したときに返されたスクリプトはありません"
-		},
-		"sql/platform/theme/common/colors": {
-			"tableHeaderBackground": "テーブル ヘッダーの背景色",
-			"tableHeaderForeground": "テーブル ヘッダーの前景色",
-			"listFocusAndSelectionBackground": "リスト/テーブルがアクティブなときに選択した項目とフォーカスのある項目のリスト/テーブル背景色",
-			"tableCellOutline": "セルの枠線の色。",
-			"disabledInputBoxBackground": "入力ボックスの背景が無効にされました。",
-			"disabledInputBoxForeground": "入力ボックスの前景が無効にされました。",
-			"buttonFocusOutline": "フォーカスしたときのボタンの外枠の色。",
-			"disabledCheckboxforeground": "チェック ボックスの前景が無効にされました。",
-			"agentTableBackground": "SQL Agent のテーブル背景色。",
-			"agentCellBackground": "SQL エージェントのテーブル セル背景色。",
-			"agentTableHoverBackground": "SQL Agent のテーブル ホバー背景色。",
-			"agentJobsHeadingColor": "SQL Agent の見出し背景色。",
-			"agentCellBorderColor": "SQL Agent のテーブル セル枠線色。",
-			"resultsErrorColor": "結果メッセージのエラー色。"
-		},
-		"sql/workbench/contrib/backup/browser/backup.component": {
-			"backup.backupName": "バックアップ名",
-			"backup.recoveryModel": "復旧モデル",
-			"backup.backupType": "バックアップの種類",
-			"backup.backupDevice": "バックアップ ファイル",
-			"backup.algorithm": "アルゴリズム",
-			"backup.certificateOrAsymmetricKey": "証明書または非対称キー",
-			"backup.media": "メディア",
-			"backup.mediaOption": "既存のメディア セットにバックアップ",
-			"backup.mediaOptionFormat": "新しいメディア セットにバックアップ",
-			"backup.existingMediaAppend": "既存のバックアップ セットに追加",
-			"backup.existingMediaOverwrite": "既存のすべてのバックアップ セットを上書きする",
-			"backup.newMediaSetName": "新しいメディア セット名",
-			"backup.newMediaSetDescription": "新しいメディア セットの説明",
-			"backup.checksumContainer": "メディアに書き込む前にチェックサムを行う",
-			"backup.verifyContainer": "完了時にバックアップを検証する",
-			"backup.continueOnErrorContainer": "エラー時に続行",
-			"backup.expiration": "有効期限",
-			"backup.setBackupRetainDays": "バックアップ保持日数の設定",
-			"backup.copyOnly": "コピーのみのバックアップ",
-			"backup.advancedConfiguration": "高度な構成",
-			"backup.compression": "圧縮",
-			"backup.setBackupCompression": "バックアップの圧縮の設定",
-			"backup.encryption": "暗号化",
-			"backup.transactionLog": "トランザクション ログ",
-			"backup.truncateTransactionLog": "トランザクション ログの切り捨て",
-			"backup.backupTail": "ログ末尾のバックアップ",
-			"backup.reliability": "信頼性",
-			"backup.mediaNameRequired": "メディア名が必須です",
-			"backup.noEncryptorWarning": "使用可能な証明書または非対称キーがありません",
-			"addFile": "ファイルを追加",
-			"removeFile": "ファイルを削除",
-			"backupComponent.invalidInput": "入力が無効です。値は 0 以上でなければなりません。",
-			"backupComponent.script": "スクリプト",
-			"backupComponent.backup": "バックアップ",
-			"backupComponent.cancel": "キャンセル",
-			"backup.containsBackupToUrlError": "ファイルへのバックアップのみがサポートされています",
-			"backup.backupFileRequired": "バックアップ ファイルのパスが必須です"
+		"sql/platform/serialization/common/serializationService": {
+			"saveAsNotSupported": "このデータ プロバイダーに対して無効になっている別の形式で結果を保存しています。",
+			"noSerializationProvider": "プロバイダーが登録されていないため、データをシリアル化できません",
+			"unknownSerializationError": "不明なエラーにより、シリアル化に失敗しました"
 		},
 		"sql/platform/theme/common/colorRegistry": {
 			"tileBorder": "タイルの境界線の色",
@@ -10587,231 +9425,184 @@
 			"calloutDialogBodyBackground": "吹き出しダイアログの本文の背景。",
 			"calloutDialogShadowColor": "吹き出しダイアログ ボックスの影の色。"
 		},
-		"sql/workbench/contrib/views/browser/treeView": {
-			"no-dataprovider": "ビュー データを提供できるデータ プロバイダーが登録されていません。",
-			"refresh": "最新の情報に更新",
-			"collapseAll": "すべて折りたたむ",
-			"command-error": "コマンド {1} の実行中にエラー {0} が発生しました。{1} を提供する拡張機能が原因である可能性があります。"
+		"sql/platform/theme/common/colors": {
+			"tableHeaderBackground": "テーブル ヘッダーの背景色",
+			"tableHeaderForeground": "テーブル ヘッダーの前景色",
+			"listFocusAndSelectionBackground": "リスト/テーブルがアクティブなときに選択した項目とフォーカスのある項目のリスト/テーブル背景色",
+			"tableCellOutline": "セルの枠線の色。",
+			"disabledInputBoxBackground": "入力ボックスの背景が無効にされました。",
+			"disabledInputBoxForeground": "入力ボックスの前景が無効にされました。",
+			"buttonFocusOutline": "フォーカスしたときのボタンの外枠の色。",
+			"disabledCheckboxforeground": "チェック ボックスの前景が無効にされました。",
+			"agentTableBackground": "SQL Agent のテーブル背景色。",
+			"agentCellBackground": "SQL エージェントのテーブル セル背景色。",
+			"agentTableHoverBackground": "SQL Agent のテーブル ホバー背景色。",
+			"agentJobsHeadingColor": "SQL Agent の見出し背景色。",
+			"agentCellBorderColor": "SQL Agent のテーブル セル枠線色。",
+			"resultsErrorColor": "結果メッセージのエラー色。"
 		},
-		"sql/workbench/contrib/notebook/browser/cellViews/codeActions": {
-			"notebook.failed": "アクティブなセルを選択して、もう一度お試しください",
-			"runCell": "セルの実行",
-			"stopCell": "実行のキャンセル",
-			"errorRunCell": "最後の実行でエラーが発生しました。もう一度実行するにはクリックしてください"
+		"sql/workbench/api/browser/mainThreadExtensionManagement": {
+			"workbench.generalObsoleteApiNotification": "読み込まれた拡張機能の一部は古い API を使用しています。[開発者ツール] ウィンドウの [コンソール] タブで詳細情報を確認してください。",
+			"dontShowAgain": "今後表示しない"
 		},
-		"sql/workbench/contrib/tasks/common/tasksAction": {
-			"cancelTask.cancel": "キャンセル",
-			"errorMsgFromCancelTask": "タスクをキャンセルできませんでした。",
-			"taskAction.script": "スクリプト"
-		},
-		"sql/base/browser/ui/taskbar/overflowActionbar": {
-			"toggleMore": "詳細の切り替え"
-		},
-		"sql/base/browser/ui/table/plugins/loadingSpinner.plugin": {
-			"loadingSpinner.loading": "読み込み中"
-		},
-		"sql/workbench/contrib/dashboard/browser/services/breadcrumb.service": {
-			"homeCrumb": "ホーム"
-		},
-		"sql/workbench/contrib/dashboard/browser/containers/dashboardErrorContainer.component": {
-			"dashboardNavSection.loadTabError": "\"{0}\" セクションに無効なコンテンツがあります。機能拡張の所有者にお問い合わせください。"
-		},
-		"sql/workbench/contrib/jobManagement/browser/agentView.component": {
-			"jobview.Jobs": "ジョブ",
-			"jobview.Notebooks": "ノートブック",
-			"jobview.Alerts": "アラート",
-			"jobview.Proxies": "プロキシ",
-			"jobview.Operators": "演算子"
-		},
-		"sql/workbench/contrib/dashboard/browser/pages/serverDashboardPage.component": {
-			"serverPageName": "サーバーのプロパティ"
-		},
-		"sql/workbench/contrib/dashboard/browser/pages/databaseDashboardPage.component": {
-			"databasePageName": "データベースのプロパティ"
-		},
-		"sql/base/browser/ui/table/plugins/checkboxSelectColumn.plugin": {
-			"selectDeselectAll": "すべて選択/選択解除"
-		},
-		"sql/base/browser/ui/table/plugins/headerFilter.plugin": {
-			"headerFilter.showFilter": "フィルターの表示",
-			"headerFilter.ok": "OK",
-			"headerFilter.clear": "クリア",
-			"headerFilter.cancel": "キャンセル"
-		},
-		"sql/workbench/services/objectExplorer/browser/treeCreationUtils": {
-			"treeAriaLabel": "最近の接続",
-			"serversAriaLabel": "サーバー",
-			"treeCreation.regTreeAriaLabel": "サーバー"
-		},
-		"sql/workbench/services/restore/common/constants": {
-			"backup.filterBackupFiles": "バックアップ ファイル",
-			"backup.allFiles": "すべてのファイル"
-		},
-		"sql/workbench/contrib/notebook/browser/notebookExplorer/notebookSearchWidget": {
-			"label.Search": "検索: 検索語句を入力し Enter を押して検索するか、Esc を押して取り消します",
-			"search.placeHolder": "検索"
-		},
-		"sql/workbench/contrib/dashboard/browser/services/dashboardServiceInterface.service": {
-			"dashboard.changeDatabaseFailure": "データベースを変更できませんでした"
-		},
-		"sql/workbench/contrib/jobManagement/browser/alertsView.component": {
-			"jobAlertColumns.name": "名前",
-			"jobAlertColumns.lastOccurrenceDate": "最後の発生",
-			"jobAlertColumns.enabled": "有効",
-			"jobAlertColumns.delayBetweenResponses": "応答間の遅延 (秒)",
-			"jobAlertColumns.categoryName": "カテゴリ名"
-		},
-		"sql/workbench/contrib/jobManagement/browser/operatorsView.component": {
-			"jobOperatorsView.name": "名前",
-			"jobOperatorsView.emailAddress": "電子メール アドレス",
-			"jobOperatorsView.enabled": "有効"
-		},
-		"sql/workbench/contrib/jobManagement/browser/proxiesView.component": {
-			"jobProxiesView.accountName": "アカウント名",
-			"jobProxiesView.credentialName": "資格情報名",
-			"jobProxiesView.description": "説明",
-			"jobProxiesView.isEnabled": "有効"
-		},
-		"sql/workbench/contrib/dashboard/browser/widgets/explorer/explorerWidget.component": {
-			"loadingObjects": "オブジェクトを読み込んでいます",
-			"loadingDatabases": "データベースを読み込んでいます",
-			"loadingObjectsCompleted": "オブジェクトの読み込みが完了しました。",
-			"loadingDatabasesCompleted": "データベースの読み込みが完了しました。",
-			"seachObjects": "型の名前で検索する (t:、v:、f:、sp:)",
-			"searchDatabases": "検索データベース",
-			"dashboard.explorer.objectError": "オブジェクトを読み込めません",
-			"dashboard.explorer.databaseError": "データベースを読み込めません"
-		},
-		"sql/workbench/contrib/dashboard/browser/widgets/properties/propertiesWidget.component": {
-			"loadingProperties": "プロパティを読み込んでいます...",
-			"loadingPropertiesCompleted": "プロパティの読み込みが完了しました",
-			"dashboard.properties.error": "ダッシュボードのプロパティを読み込めません"
-		},
-		"sql/workbench/contrib/dashboard/browser/widgets/insights/insightsWidget.component": {
-			"insightsWidgetLoadingMessage": "{0} を読み込んでいます",
-			"insightsWidgetLoadingCompletedMessage": "{0} の読み込みが完了しました",
-			"insights.autoRefreshOffState": "自動更新: オフ",
-			"insights.lastUpdated": "最終更新日: {0} {1}",
-			"noResults": "表示する結果がありません。"
-		},
-		"sql/workbench/contrib/jobManagement/browser/jobStepsView.component": {
-			"agent.steps": "ステップ"
-		},
-		"sql/workbench/contrib/query/browser/actions": {
-			"saveAsCsv": "CSV として保存",
-			"saveAsJson": "JSON として保存",
-			"saveAsExcel": "Excel として保存",
-			"saveAsXml": "XML として保存",
-			"jsonEncoding": "JSON にエクスポートするときに結果のエンコードは保存されません。ファイルが作成されたら、目的のエンコードで保存することを忘れないでください。",
-			"saveToFileNotSupported": "バッキング データ ソースでファイルへの保存はサポートされていません",
-			"copySelection": "コピー",
-			"copyWithHeaders": "ヘッダー付きでコピー",
-			"selectAll": "すべて選択",
-			"maximize": "最大化",
-			"restore": "復元",
-			"chart": "グラフ",
-			"visualizer": "ビジュアライザー"
+		"sql/workbench/api/browser/mainThreadNotebookDocumentsAndEditors": {
+			"runActiveCell": "F5 ショートカット キーでは、コード セルを選択する必要があります。実行するコード セルを選択してください。",
+			"clearResultActiveCell": "結果をクリアするには、コード セルを選択する必要があります。実行するコード セルを選択してください。"
 		},
 		"sql/workbench/api/common/extHostModelView": {
 			"unknownComponentType": "不明なコンポーネントの種類です。ModelBuilder を使用してオブジェクトを作成する必要があります",
 			"invalidIndex": "インデックス {0} が無効です。",
 			"unknownConfig": "不明なコンポーネント構成です。ModelBuilder を使用して構成オブジェクトを作成する必要があります"
 		},
-		"sql/workbench/contrib/jobManagement/browser/jobHistory.component": {
-			"stepRow.stepID": "ステップ ID",
-			"stepRow.stepName": "ステップ名",
-			"stepRow.message": "メッセージ"
+		"sql/workbench/api/common/extHostModelViewDialog": {
+			"dialogDoneLabel": "完了",
+			"dialogCancelLabel": "キャンセル",
+			"generateScriptLabel": "スクリプトの生成",
+			"dialogNextLabel": "次へ",
+			"dialogPreviousLabel": "前へ",
+			"dashboardNotInitialized": "タブが初期化されていません"
 		},
-		"sql/workbench/contrib/notebook/browser/find/notebookFindWidget": {
-			"label.find": "検索",
-			"placeholder.find": "検索",
-			"label.previousMatchButton": "前の一致項目",
-			"label.nextMatchButton": "次の一致項目",
-			"label.closeButton": "閉じる",
-			"title.matchesCountLimit": "検索で多数の結果が返されました。最初の 999 件の一致のみ強調表示されます。",
-			"label.matchesLocation": "{0}/{1} 件",
-			"label.noResults": "結果なし"
+		"sql/workbench/api/common/extHostModelViewTree": {
+			"treeView.notRegistered": "ID '{0}' のツリー ビューは登録されていません。"
 		},
-		"sql/workbench/contrib/charts/browser/chartView": {
-			"horizontalBarAltName": "水平バー",
-			"barAltName": "バー",
-			"lineAltName": "直線",
-			"pieAltName": "円",
-			"scatterAltName": "散布",
-			"timeSeriesAltName": "時系列",
-			"imageAltName": "イメージ",
-			"countAltName": "カウント",
-			"tableAltName": "テーブル",
-			"doughnutAltName": "ドーナツ",
-			"charting.failedToGetRows": "グラフを作成するデータセットの行を取得できませんでした。",
-			"charting.unsupportedType": "グラフの種類 '{0}' はサポートされていません。"
+		"sql/workbench/api/common/extHostNotebook": {
+			"providerRequired": "有効な providerId を持つ NotebookProvider をこのメソッドに渡す必要があります",
+			"errNoProvider": "ノートブック プロバイダーが見つかりません",
+			"errNoManager": "マネージャーが見つかりません",
+			"noServerManager": "ノートブック {0} の Notebook Manager にサーバー マネージャーがありません。それに対して操作を実行できません",
+			"noContentManager": "ノートブック {0} の Notebook Manager にコンテンツ マネージャーがありません。それに対して操作を実行できません",
+			"noSessionManager": "ノートブック {0} の Notebook Manager にセッション マネージャーがありません。それに対して操作を実行できません"
 		},
-		"sql/workbench/contrib/notebook/browser/cellViews/code.component": {
-			"parametersText": "パラメーター"
+		"sql/workbench/api/common/extHostNotebookDocumentsAndEditors": {
+			"providerRequired": "有効な providerId を持つ NotebookProvider をこのメソッドに渡す必要があります"
 		},
-		"sql/workbench/services/connection/browser/localizedConstants": {
-			"onDidConnectMessage": "接続先",
-			"onDidDisconnectMessage": "切断",
-			"unsavedGroupLabel": "保存されていない接続"
+		"sql/workbench/browser/actions": {
+			"manage": "管理",
+			"showDetails": "詳細の表示",
+			"configureDashboardLearnMore": "詳細情報",
+			"clearSavedAccounts": "保存されているすべてのアカウントのクリア"
 		},
-		"sql/workbench/services/connection/browser/connectionBrowseTab": {
-			"connectionDialog.browser": "参照 (プレビュー)",
-			"connectionDialog.FilterPlaceHolder": "一覧にフィルターをかけるには、ここに入力します",
-			"connectionDialog.FilterInputTitle": "接続のフィルター",
-			"connectionDialog.ApplyingFilter": "フィルターを適用しています",
-			"connectionDialog.RemovingFilter": "フィルターを削除しています",
-			"connectionDialog.FilterApplied": "フィルター適用済み",
-			"connectionDialog.FilterRemoved": "フィルターが削除されました",
-			"savedConnections": "保存された接続",
-			"savedConnection": "保存された接続",
-			"connectionBrowserTree": "接続ブラウザー ツリー"
+		"sql/workbench/browser/actions.contribution": {
+			"previewFeatures.configTitle": "プレビュー機能",
+			"previewFeatures.configEnable": "未リリースのプレビュー機能を有効にする",
+			"showConnectDialogOnStartup": "起動時に接続ダイアログを表示",
+			"enableObsoleteApiUsageNotificationTitle": "古い API 通知",
+			"enableObsoleteApiUsageNotification": "古い API 使用状況通知を有効または無効にする"
 		},
-		"sql/workbench/contrib/extensions/browser/staticRecommendations": {
-			"defaultRecommendations": "この拡張機能は Azure Data Studio で推奨されます。"
+		"sql/workbench/browser/editData/editDataInput": {
+			"connectionFailure": "編集データ セッションの接続に失敗しました"
 		},
-		"sql/workbench/contrib/extensions/browser/scenarioRecommendations": {
-			"neverShowAgain": "今後表示しない",
-			"ExtensionsRecommended": "Azure Data Studio には拡張機能の推奨事項があります。",
-			"VisualizerExtensionsRecommended": "Azure Data Studio には、データ可視化の拡張機能の推奨事項があります。\r\nインストールすると、ビジュアライザー アイコンを選択して、クエリ結果を視覚化できます。",
-			"installAll": "すべてをインストール",
-			"showRecommendations": "推奨事項を表示",
-			"scenarioTypeUndefined": "拡張機能の推奨事項のシナリオの種類を指定する必要があります。"
+		"sql/workbench/browser/editor/profiler/profilerInput": {
+			"profilerInput.profiler": "プロファイラー",
+			"profilerInput.notConnected": "未接続",
+			"profiler.sessionStopped": "サーバー {0} で XEvent Profiler セッションが予期せず停止しました。",
+			"profiler.sessionCreationError": "新しいセッションを開始中にエラーが発生しました",
+			"profiler.eventsLost": "{0} の XEvent Profiler セッションのイベントが失われました。"
 		},
-		"sql/workbench/contrib/welcome/page/browser/az_data_welcome_page": {
-			"welcomePage.previewBody": "この機能ページはプレビュー段階です。プレビュー機能では、製品の永続的な部分になる予定の新しい機能が導入されています。これらは安定していますが、追加のアクセシビリティの改善が必要です。開発中の早期のフィードバックを歓迎しています。",
-			"welcomePage.preview": "プレビュー",
-			"welcomePage.createConnection": "接続の作成",
-			"welcomePage.createConnectionBody": "接続ダイアログを使用してデータベース インスタンスに接続します。",
-			"welcomePage.runQuery": "クエリの実行",
-			"welcomePage.runQueryBody": "クエリ エディターを使用してデータを操作します。",
-			"welcomePage.createNotebook": "ノートブックの作成",
-			"welcomePage.createNotebookBody": "ネイティブのノートブック エディターを使用して、新しいノートブックを作成します。",
-			"welcomePage.deployServer": "サーバーのデプロイ",
-			"welcomePage.deployServerBody": "選択したプラットフォームでリレーショナル データ サービスの新しいインスタンスを作成します。",
-			"welcomePage.resources": "リソース",
-			"welcomePage.history": "履歴",
-			"welcomePage.name": "名前",
-			"welcomePage.location": "場所",
-			"welcomePage.moreRecent": "さらに表示",
-			"welcomePage.showOnStartup": "起動時にウェルカム ページを表示する",
-			"welcomePage.usefuLinks": "役に立つリンク",
-			"welcomePage.gettingStarted": "はじめに",
-			"welcomePage.gettingStartedBody": "Azure Data Studio によって提供される機能を検出し、それらを最大限に活用する方法について説明します。",
-			"welcomePage.documentation": "ドキュメント",
-			"welcomePage.documentationBody": "PowerShell、API などのクイックスタート、攻略ガイド、リファレンスについては、ドキュメント センターを参照してください。",
-			"welcomePage.videoDescriptionOverview": "Azure Data Studio の概要",
-			"welcomePage.videoDescriptionIntroduction": "Azure Data Studio ノートブックの概要 | 公開されたデータ",
-			"welcomePage.extensions": "拡張",
-			"welcomePage.showAll": "すべて表示",
-			"welcomePage.learnMore": "詳細情報"
+		"sql/workbench/browser/editor/resourceViewer/resourceViewerInput": {
+			"resourceViewer.showActions": "アクションの表示",
+			"resourceViewerInput.resourceViewer": "リソース ビューアー"
 		},
-		"sql/workbench/contrib/jobManagement/browser/notebookHistory.component": {
-			"notebookHistory.dateCreatedTooltip": "作成日: ",
-			"notebookHistory.notebookErrorTooltip": "ノートブック エラー: ",
-			"notebookHistory.ErrorTooltip": "ジョブ エラー: ",
-			"notebookHistory.pinnedTitle": "ピン留めされました",
-			"notebookHistory.recentRunsTitle": "最近の実行",
-			"notebookHistory.pastRunsTitle": "過去の実行"
+		"sql/workbench/browser/modal/modal": {
+			"infoAltText": "情報",
+			"warningAltText": "警告",
+			"errorAltText": "エラー",
+			"showMessageDetails": "詳細の表示",
+			"copyMessage": "コピー",
+			"closeMessage": "閉じる",
+			"modal.back": "戻る",
+			"hideMessageDetails": "詳細を表示しない"
+		},
+		"sql/workbench/browser/modal/optionsDialog": {
+			"optionsDialog.ok": "OK",
+			"optionsDialog.cancel": "キャンセル"
+		},
+		"sql/workbench/browser/modal/optionsDialogHelper": {
+			"optionsDialog.missingRequireField": " が必須です。",
+			"optionsDialog.invalidInput": "無効な入力です。数値が必要です。"
+		},
+		"sql/workbench/browser/modelComponents/componentBase": {
+			"invalidIndex": "インデックス {0} が無効です。"
+		},
+		"sql/workbench/browser/modelComponents/declarativeTable.component": {
+			"blankValue": "空白",
+			"checkAllColumnLabel": "列 {0} のすべてのチェック ボックスをオンにする",
+			"declarativeTable.showActions": "アクションの表示"
+		},
+		"sql/workbench/browser/modelComponents/dropdown.component": {
+			"loadingMessage": "読み込み中",
+			"loadingCompletedMessage": "読み込み完了"
+		},
+		"sql/workbench/browser/modelComponents/inputbox.component": {
+			"invalidValueError": "無効な値",
+			"period": "{0}。{1}"
+		},
+		"sql/workbench/browser/modelComponents/loadingComponent.component": {
+			"loadingMessage": "読み込み中",
+			"loadingCompletedMessage": "読み込み完了"
+		},
+		"sql/workbench/browser/modelComponents/queryTextEditor": {
+			"queryTextEditorAriaLabel": "ビュー モデル用のモードビュー コード エディター。"
+		},
+		"sql/workbench/browser/modelComponents/viewBase": {
+			"componentTypeNotRegistered": "型 {0} のコンポーネントが見つかりませんでした"
+		},
+		"sql/workbench/browser/parts/editor/editorStatusModeSelect": {
+			"languageChangeUnsupported": "保存されていないファイルでの編集者の種類の変更はサポートされていません"
+		},
+		"sql/workbench/browser/scriptingActions": {
+			"scriptSelect": "上位 1000 を選択する",
+			"scriptKustoSelect": "10 個",
+			"scriptExecute": "実行としてのスクリプト",
+			"scriptAlter": "変更としてのスクリプト",
+			"editData": "データの編集",
+			"scriptCreate": "作成としてのスクリプト",
+			"scriptDelete": "ドロップとしてのスクリプト"
+		},
+		"sql/workbench/browser/scriptingUtils": {
+			"scriptSelectNotFound": "オブジェクトに対するスクリプトの選択を呼び出したときに返されたスクリプトはありません ",
+			"selectOperationName": "選択",
+			"createOperationName": "作成",
+			"insertOperationName": "挿入",
+			"updateOperationName": "更新",
+			"deleteOperationName": "削除",
+			"scriptNotFoundForObject": "オブジェクト {1} に対する {0} としてスクリプトを作成したときに返されたスクリプトはありません",
+			"scriptingFailed": "スクリプト作成に失敗しました",
+			"scriptNotFound": "{0} としてスクリプトを作成したときに返されたスクリプトはありません"
+		},
+		"sql/workbench/common/editor/query/queryEditorInput": {
+			"disconnected": "切断されました"
+		},
+		"sql/workbench/common/editor/query/queryResultsInput": {
+			"extensionsInputName": "拡張"
+		},
+		"sql/workbench/common/theme": {
+			"verticalTabActiveBackground": "垂直タブのアクティブなタブの背景色",
+			"dashboardBorder": "ダッシュボードの境界線の色",
+			"dashboardWidget": "ダッシュボード ウィジェットのタイトルの色",
+			"dashboardWidgetSubtext": "ダッシュボード ウィジェット サブテキストの色",
+			"propertiesContainerPropertyValue": "プロパティ コンテナー コンポーネントに表示されるプロパティ色の値",
+			"propertiesContainerPropertyName": "プロパティ コンテナー コンポーネントに表示されるプロパティ名の色",
+			"toolbarOverflowShadow": "ツールバーのオーバーフローの影の色"
+		},
+		"sql/workbench/contrib/accounts/browser/accountManagement.contribution": {
+			"carbon.extension.contributes.account.id": "アカウントの種類の識別子",
+			"carbon.extension.contributes.account.icon": "(省略可能) UI の accpunt を表すために使用するアイコン。ファイル パスまたはテーマを設定可能な構成のいずれかです",
+			"carbon.extension.contributes.account.icon.light": "明るいテーマを使用した場合のアイコンのパス",
+			"carbon.extension.contributes.account.icon.dark": "暗いテーマを使用した場合のアイコンのパス",
+			"carbon.extension.contributes.account": "アカウント プロバイダーにアイコンを提供します。"
+		},
+		"sql/workbench/contrib/assessment/browser/asmtActions": {
+			"asmtaction.server.getitems": "適用可能な規則を表示する",
+			"asmtaction.database.getitems": "{0} に適用可能な規則を表示する",
+			"asmtaction.server.invokeitems": "評価の呼び出し",
+			"asmtaction.database.invokeitems": "{0} の評価の呼び出し",
+			"asmtaction.exportasscript": "スクリプトとしてエクスポート",
+			"asmtaction.showsamples": "すべての規則を表示し、GitHub の詳細を確認する",
+			"asmtaction.generatehtmlreport": "HTML レポートの作成",
+			"asmtaction.openReport": "レポートが保存されました。開きますか?",
+			"asmtaction.label.open": "開く",
+			"asmtaction.label.cancel": "キャンセル"
 		},
 		"sql/workbench/contrib/assessment/browser/asmtResultsView.component": {
 			"asmt.NoResultsInitial": "表示するものがありません。評価を呼び出して結果を取得します",
@@ -10820,110 +9611,6 @@
 			"asmt.column.severity": "重大度",
 			"asmt.TargetInstanceComplient": "インスタンス {0} は、ベスト プラクティスに完全に準拠しています。お疲れさまでした。",
 			"asmt.TargetDatabaseComplient": "データベース {0} は、ベスト プラクティスに完全に準拠しています。お疲れさまでした。"
-		},
-		"sql/workbench/contrib/charts/browser/chartTab": {
-			"chartTabTitle": "グラフ"
-		},
-		"sql/workbench/contrib/queryPlan/browser/topOperations": {
-			"topOperations.operation": "操作",
-			"topOperations.object": "オブジェクト",
-			"topOperations.estCost": "推定コスト",
-			"topOperations.estSubtreeCost": "サブ ツリーの推定コスト",
-			"topOperations.actualRows": "実際の行数",
-			"topOperations.estRows": "推定行数",
-			"topOperations.actualExecutions": "実際の実行",
-			"topOperations.estCPUCost": "推定 CPU コスト",
-			"topOperations.estIOCost": "推定 IO コスト",
-			"topOperations.parallel": "並列",
-			"topOperations.actualRebinds": "実際の再バインド数",
-			"topOperations.estRebinds": "再バインドの推定数",
-			"topOperations.actualRewinds": "実際の巻き戻し数",
-			"topOperations.estRewinds": "巻き戻しの推定数",
-			"topOperations.partitioned": "パーティション分割",
-			"topOperationsTitle": "上位操作"
-		},
-		"sql/workbench/contrib/objectExplorer/browser/serverTreeView": {
-			"servers.noConnections": "接続が見つかりません。",
-			"serverTree.addConnection": "接続の追加"
-		},
-		"sql/workbench/services/connection/browser/connectionWidget": {
-			"connectionWidget.AddAzureAccount": "アカウントを追加する...",
-			"defaultDatabaseOption": "<既定>",
-			"loadingDatabaseOption": "読み込んでいます...",
-			"serverGroup": "サーバー グループ",
-			"defaultServerGroup": "<既定>",
-			"addNewServerGroup": "新しいグループを追加する...",
-			"noneServerGroup": "<保存しない>",
-			"connectionWidget.missingRequireField": "{0} が必須です。",
-			"connectionWidget.fieldWillBeTrimmed": "{0} がトリミングされます。",
-			"rememberPassword": "パスワードを記憶する",
-			"connection.azureAccountDropdownLabel": "アカウント",
-			"connectionWidget.refreshAzureCredentials": "アカウントの資格情報を更新",
-			"connection.azureTenantDropdownLabel": "Azure AD テナント",
-			"connectionName": "名前 (省略可能)",
-			"advanced": "詳細設定...",
-			"connectionWidget.invalidAzureAccount": "アカウントを選択する必要があります"
-		},
-		"sql/workbench/contrib/backup/common/constants": {
-			"backup.labelDatabase": "データベース",
-			"backup.labelFilegroup": "ファイルとファイル グループ",
-			"backup.labelFull": "完全",
-			"backup.labelDifferential": "差分",
-			"backup.labelLog": "トランザクション ログ",
-			"backup.labelDisk": "ディスク",
-			"backup.labelUrl": "URL",
-			"backup.defaultCompression": "既定のサーバー設定を使用する",
-			"backup.compressBackup": "バックアップの圧縮",
-			"backup.doNotCompress": "バックアップを圧縮しない",
-			"backup.serverCertificate": "サーバー証明書",
-			"backup.asymmetricKey": "非対称キー"
-		},
-		"sql/workbench/contrib/notebook/browser/notebookExplorer/notebookSearch": {
-			"searchWithoutFolder": "ノートブックまたはブックを格納するフォルダーを開いていません。",
-			"openNotebookFolder": "ノートブックを開く",
-			"searchMaxResultsWarning": "結果セットにはすべての一致項目のサブセットのみが含まれています。より限定的な検索条件を入力して、検索結果を絞り込んでください。",
-			"searchInProgress": "検索中です...",
-			"noResultsIncludesExcludes": "'{0}' に '{1}' を除外した結果はありません - ",
-			"noResultsIncludes": "'{0}' に結果はありません - ",
-			"noResultsExcludes": "'{0}' を除外した結果はありませんでした - ",
-			"noResultsFound": "結果がありません。除外構成の設定を確認し、gitignore ファイルを調べてください - ",
-			"rerunSearch.message": "もう一度検索",
-			"cancelSearch.message": "検索のキャンセル",
-			"rerunSearchInAll.message": "すべてのファイルでもう一度検索してください",
-			"openSettings.message": "設定を開く",
-			"ariaSearchResultsStatus": "検索により {1} 個のファイル内の {0} 件の結果が返されました",
-			"ToggleCollapseAndExpandAction.label": "折りたたみと展開の切り替え",
-			"CancelSearchAction.label": "検索のキャンセル",
-			"ExpandAllAction.label": "すべて展開",
-			"CollapseDeepestExpandedLevelAction.label": "すべて折りたたむ",
-			"ClearSearchResultsAction.label": "検索結果のクリア"
-		},
-		"sql/workbench/contrib/welcome/page/browser/gettingStartedTour": {
-			"GuidedTour.connections": "接続",
-			"GuidedTour.makeConnections": "SQL Server、Azure などからの接続を接続、クエリ、および管理します。",
-			"GuidedTour.one": "1",
-			"GuidedTour.next": "次へ",
-			"GuidedTour.notebooks": "ノートブック",
-			"GuidedTour.gettingStartedNotebooks": "1 か所で独自のノートブックまたはノートブックのコレクションの作成を開始します。",
-			"GuidedTour.two": "2",
-			"GuidedTour.extensions": "拡張",
-			"GuidedTour.addExtensions": "Microsoft (私たち) だけでなくサードパーティ コミュニティ (あなた) が開発した拡張機能をインストールすることにより、Azure Data Studio の機能を拡張します。",
-			"GuidedTour.three": "3",
-			"GuidedTour.settings": "設定",
-			"GuidedTour.makeConnesetSettings": "好みに応じて Azure Data Studio をカスタマイズします。自動保存やタブ サイズなどの設定の構成、キーボード ショートカットのカスタマイズ、好きな配色テーマへの切り替えを行うことができます。",
-			"GuidedTour.four": "4",
-			"GuidedTour.welcomePage": "ウェルカム ページ",
-			"GuidedTour.discoverWelcomePage": "ウェルカム ページで、トップの機能、最近開いたファイル、推奨される拡張機能がわかります。Azure Data Studio で作業を開始する方法の詳細については、ビデオとドキュメントをご覧ください。",
-			"GuidedTour.five": "5",
-			"GuidedTour.finish": "完了",
-			"guidedTour": "ユーザー紹介ツアー",
-			"hideGuidedTour": "紹介ツアーの非表示",
-			"GuidedTour.readMore": "詳細情報",
-			"help": "ヘルプ"
-		},
-		"sql/workbench/contrib/editData/browser/editDataGridActions": {
-			"deleteRow": "行の削除",
-			"revertRow": "現在の行を元に戻す"
 		},
 		"sql/workbench/contrib/assessment/common/strings": {
 			"asmt.section.api.title": "API 情報",
@@ -10947,171 +9634,81 @@
 			"asmt.column.helpLink": "ヘルプ リンク",
 			"asmt.sqlReport.severityMsg": "{0}: {1} 項目"
 		},
-		"sql/workbench/contrib/query/browser/messagePanel": {
-			"messagePanel": "メッセージ パネル",
-			"copy": "コピー",
-			"copyAll": "すべてコピー"
+		"sql/workbench/contrib/azure/browser/azure.contribution": {
+			"azure.openInAzurePortal.title": "Azure Portal で開きます"
 		},
-		"sql/base/browser/ui/loadingSpinner/loadingSpinner.component": {
-			"loadingMessage": "読み込み中",
-			"loadingCompletedMessage": "読み込み完了"
+		"sql/workbench/contrib/backup/browser/backup.component": {
+			"backup.backupName": "バックアップ名",
+			"backup.recoveryModel": "復旧モデル",
+			"backup.backupType": "バックアップの種類",
+			"backup.backupDevice": "バックアップ ファイル",
+			"backup.algorithm": "アルゴリズム",
+			"backup.certificateOrAsymmetricKey": "証明書または非対称キー",
+			"backup.media": "メディア",
+			"backup.mediaOption": "既存のメディア セットにバックアップ",
+			"backup.mediaOptionFormat": "新しいメディア セットにバックアップ",
+			"backup.existingMediaAppend": "既存のバックアップ セットに追加",
+			"backup.existingMediaOverwrite": "既存のすべてのバックアップ セットを上書きする",
+			"backup.newMediaSetName": "新しいメディア セット名",
+			"backup.newMediaSetDescription": "新しいメディア セットの説明",
+			"backup.checksumContainer": "メディアに書き込む前にチェックサムを行う",
+			"backup.verifyContainer": "完了時にバックアップを検証する",
+			"backup.continueOnErrorContainer": "エラー時に続行",
+			"backup.expiration": "有効期限",
+			"backup.setBackupRetainDays": "バックアップ保持日数の設定",
+			"backup.copyOnly": "コピーのみのバックアップ",
+			"backup.advancedConfiguration": "高度な構成",
+			"backup.compression": "圧縮",
+			"backup.setBackupCompression": "バックアップの圧縮の設定",
+			"backup.encryption": "暗号化",
+			"backup.transactionLog": "トランザクション ログ",
+			"backup.truncateTransactionLog": "トランザクション ログの切り捨て",
+			"backup.backupTail": "ログ末尾のバックアップ",
+			"backup.reliability": "信頼性",
+			"backup.mediaNameRequired": "メディア名が必須です",
+			"backup.noEncryptorWarning": "使用可能な証明書または非対称キーがありません",
+			"addFile": "ファイルを追加",
+			"removeFile": "ファイルを削除",
+			"backupComponent.invalidInput": "入力が無効です。値は 0 以上でなければなりません。",
+			"backupComponent.script": "スクリプト",
+			"backupComponent.backup": "バックアップ",
+			"backupComponent.cancel": "キャンセル",
+			"backup.containsBackupToUrlError": "ファイルへのバックアップのみがサポートされています",
+			"backup.backupFileRequired": "バックアップ ファイルのパスが必須です"
 		},
-		"sql/workbench/contrib/notebook/browser/cellViews/placeholderCell.component": {
-			"clickOn": "次をクリック",
-			"plusCode": "+ コード",
-			"or": "または",
-			"plusText": "+ テキスト",
-			"toAddCell": "コードまたはテキストのセルを追加するため"
+		"sql/workbench/contrib/backup/browser/backup.contribution": {
+			"backup": "バックアップ"
 		},
-		"sql/workbench/contrib/notebook/browser/cellViews/stdin.component": {
-			"stdInLabel": "StdIn:"
+		"sql/workbench/contrib/backup/browser/backupActions": {
+			"backup.isPreviewFeature": "バックアップを使用するにはプレビュー機能を有効にする必要があります",
+			"backup.commandNotSupportedForServer": "バックアップ コマンドは、データベース コンテキストの外ではサポートされていません。データベースを選択して、もう一度お試しください。",
+			"backup.commandNotSupported": "Azure SQL データベースでは、バックアップ コマンドはサポートされていません。",
+			"backupAction.backup": "バックアップ"
 		},
-		"sql/workbench/contrib/notebook/browser/cellViews/collapse.component": {
-			"expandCellContents": "コード セルの内容の展開",
-			"collapseCellContents": "コード セル コンテンツを折りたたむ"
+		"sql/workbench/contrib/backup/common/constants": {
+			"backup.labelDatabase": "データベース",
+			"backup.labelFilegroup": "ファイルとファイル グループ",
+			"backup.labelFull": "完全",
+			"backup.labelDifferential": "差分",
+			"backup.labelLog": "トランザクション ログ",
+			"backup.labelDisk": "ディスク",
+			"backup.labelUrl": "URL",
+			"backup.defaultCompression": "既定のサーバー設定を使用する",
+			"backup.compressBackup": "バックアップの圧縮",
+			"backup.doNotCompress": "バックアップを圧縮しない",
+			"backup.serverCertificate": "サーバー証明書",
+			"backup.asymmetricKey": "非対称キー"
 		},
-		"sql/workbench/contrib/query/browser/gridPanel": {
-			"xmlShowplan": "XML プラン表示",
-			"resultsGrid": "結果グリッド"
-		},
-		"sql/workbench/contrib/notebook/browser/cellViews/cellToolbar.component": {
-			"buttonAdd": "セルの追加",
-			"optionCodeCell": "コード セル",
-			"optionTextCell": "テキスト セル",
-			"buttonMoveDown": "セルを下に移動します",
-			"buttonMoveUp": "セルを上に移動します",
-			"buttonDelete": "削除",
-			"codeCellsPreview": "セルの追加",
-			"codePreview": "コード セル",
-			"textPreview": "テキスト セル"
-		},
-		"sql/workbench/services/notebook/browser/sql/sqlSessionManager": {
-			"sqlKernelError": "SQL カーネル エラー",
-			"connectionRequired": "ノートブックのセルを実行するには、接続を選択する必要があります",
-			"sqlMaxRowsDisplayed": "上位 {0} 行を表示しています。"
-		},
-		"sql/workbench/contrib/jobManagement/browser/jobsView.component": {
-			"jobColumns.name": "名前",
-			"jobColumns.lastRun": "前回の実行",
-			"jobColumns.nextRun": "次回の実行",
-			"jobColumns.enabled": "有効",
-			"jobColumns.status": "状態",
-			"jobColumns.category": "カテゴリ",
-			"jobColumns.runnable": "実行可能",
-			"jobColumns.schedule": "スケジュール",
-			"jobColumns.lastRunOutcome": "前回の実行の結果",
-			"jobColumns.previousRuns": "以前の実行",
-			"jobsView.noSteps": "このジョブに利用できるステップはありません。",
-			"jobsView.error": "エラー: "
-		},
-		"sql/workbench/browser/modelComponents/viewBase": {
-			"componentTypeNotRegistered": "型 {0} のコンポーネントが見つかりませんでした"
-		},
-		"sql/workbench/contrib/profiler/browser/profilerFindWidget": {
-			"label.find": "検索",
-			"placeholder.find": "検索",
-			"label.previousMatchButton": "前の一致項目",
-			"label.nextMatchButton": "次の一致項目",
-			"label.closeButton": "閉じる",
-			"title.matchesCountLimit": "検索で多数の結果が返されました。最初の 999 件の一致のみ強調表示されます。",
-			"label.matchesLocation": "{0} / {1} 件",
-			"label.noResults": "結果なし"
-		},
-		"sql/workbench/contrib/dashboard/browser/widgets/explorer/explorerView": {
-			"dashboard.explorer.namePropertyDisplayValue": "名前",
-			"dashboard.explorer.schemaDisplayValue": "スキーマ",
-			"dashboard.explorer.objectTypeDisplayValue": "種類"
-		},
-		"sql/workbench/contrib/dashboard/browser/widgets/insights/actions": {
-			"insights.runQuery": "クエリの実行"
-		},
-		"sql/workbench/contrib/notebook/browser/cellViews/output.component": {
-			"noMimeTypeFound": "出力用の {0} レンダラーが見つかりませんでした。次の MIME の種類があります: {1}",
-			"safe": "安全 ",
-			"noSelectorFound": "セレクター {0} のコンポーネントが見つかりませんでした",
-			"componentRenderError": "コンポーネントのレンダリング エラー: {0}"
-		},
-		"sql/workbench/services/objectExplorer/browser/serverTreeRenderer": {
-			"loading": "読み込んでいます..."
-		},
-		"sql/workbench/services/objectExplorer/browser/asyncServerTreeRenderer": {
-			"loading": "読み込んでいます..."
-		},
-		"sql/workbench/contrib/dashboard/browser/core/actions": {
-			"editDashboard": "編集",
-			"editDashboardExit": "終了",
-			"refreshWidget": "最新の情報に更新",
-			"toggleMore": "アクションの表示",
-			"deleteWidget": "ウィジェットの削除",
-			"clickToUnpin": "クリックしてピン留めを外します",
-			"clickToPin": "クリックしてピン留めします",
-			"addFeatureAction.openInstalledFeatures": "インストールされている機能を開く",
-			"collapseWidget": "ウィジェットの折りたたみ",
-			"expandWidget": "ウィジェットの展開"
-		},
-		"sql/workbench/contrib/dashboard/browser/core/dashboardHelper": {
-			"unknownDashboardContainerError": "{0} は不明なコンテナーです。"
-		},
-		"sql/workbench/contrib/jobManagement/browser/notebooksView.component": {
-			"notebookColumns.name": "名前",
-			"notebookColumns.targetDatbase": "ターゲット データベース",
-			"notebookColumns.lastRun": "前回の実行",
-			"notebookColumns.nextRun": "次回の実行",
-			"notebookColumns.status": "状態",
-			"notebookColumns.lastRunOutcome": "前回の実行の結果",
-			"notebookColumns.previousRuns": "以前の実行",
-			"notebooksView.noSteps": "このジョブに利用できるステップはありません。",
-			"notebooksView.error": "エラー: ",
-			"notebooksView.notebookError": "ノートブック エラー: "
-		},
-		"sql/base/browser/ui/table/plugins/rowDetailView": {
-			"rowDetailView.loadError": "読み込みエラー..."
-		},
-		"sql/workbench/contrib/dashboard/browser/widgets/explorer/explorerTable": {
-			"dashboard.explorer.actions": "アクションの表示",
-			"explorerSearchNoMatchResultMessage": "一致する項目が見つかりませんでした",
-			"explorerSearchSingleMatchResultMessage": "検索一覧が 1 項目にフィルター処理されました",
-			"explorerSearchMatchResultMessage": "検索一覧が {0} 項目にフィルター処理されました"
-		},
-		"sql/workbench/services/jobManagement/browser/jobManagementUtilities": {
-			"agentUtilities.failed": "失敗",
-			"agentUtilities.succeeded": "成功",
-			"agentUtilities.retry": "再試行",
-			"agentUtilities.canceled": "取り消されました",
-			"agentUtilities.inProgress": "進行中",
-			"agentUtilities.statusUnknown": "不明な状態",
-			"agentUtilities.executing": "実行中",
-			"agentUtilities.waitingForThread": "スレッドを待機しています",
-			"agentUtilities.betweenRetries": "再試行の間",
-			"agentUtilities.idle": "アイドル状態",
-			"agentUtilities.suspended": "中断中",
-			"agentUtilities.obsolete": "[古い]",
-			"agentUtilities.yes": "はい",
-			"agentUtilities.no": "いいえ",
-			"agentUtilities.notScheduled": "スケジュールが設定されていません",
-			"agentUtilities.neverRun": "実行しない"
-		},
-		"sql/workbench/contrib/notebook/browser/cellViews/markdownToolbar.component": {
-			"buttonBold": "太字",
-			"buttonItalic": "斜体",
-			"buttonUnderline": "下線を付ける",
-			"buttonHighlight": "強調表示",
-			"buttonCode": "コード",
-			"buttonLink": "リンク",
-			"buttonList": "リスト",
-			"buttonOrderedList": "順序指定済みリスト",
-			"buttonImage": "イメージ",
-			"buttonPreview": "マークダウン プレビューの切り替え - オフ",
-			"dropdownHeading": "見出し",
-			"optionHeading1": "見出し 1",
-			"optionHeading2": "見出し 2",
-			"optionHeading3": "見出し 3",
-			"optionParagraph": "段落",
-			"callout.insertLinkHeading": "リンクの挿入",
-			"callout.insertImageHeading": "画像の挿入",
-			"richTextViewButton": "リッチ テキスト ビュー",
-			"splitViewButton": "分割ビュー",
-			"markdownViewButton": "マークダウン ビュー"
+		"sql/workbench/contrib/charts/browser/actions": {
+			"createInsightLabel": "分析情報の作成",
+			"createInsightNoEditor": "アクティブなエディターが SQL エディターではないため、分析情報を作成できません",
+			"myWidgetName": "マイ ウィジェット",
+			"configureChartLabel": "グラフの構成",
+			"copyChartLabel": "イメージとしてコピー",
+			"chartNotFound": "保存するグラフが見つかりませんでした",
+			"saveImageLabel": "イメージとして保存",
+			"resultsSerializer.saveAsFileExtensionPNGTitle": "PNG",
+			"chartSaved": "グラフが保存されたパス: {0}"
 		},
 		"sql/workbench/contrib/charts/browser/chartOptions": {
 			"dataDirectionLabel": "データの方向",
@@ -11135,45 +9732,432 @@
 			"encodingOption": "エンコード",
 			"imageFormatOption": "イメージ形式"
 		},
-		"sql/base/browser/ui/panel/tabActions": {
-			"closeTab": "閉じる"
+		"sql/workbench/contrib/charts/browser/chartTab": {
+			"chartTabTitle": "グラフ"
 		},
-		"sql/platform/connection/common/connectionConfig": {
-			"invalidServerName": "同じ名前のサーバー グループが既に存在します。"
+		"sql/workbench/contrib/charts/browser/chartView": {
+			"horizontalBarAltName": "水平バー",
+			"barAltName": "バー",
+			"lineAltName": "直線",
+			"pieAltName": "円",
+			"scatterAltName": "散布",
+			"timeSeriesAltName": "時系列",
+			"imageAltName": "イメージ",
+			"countAltName": "カウント",
+			"tableAltName": "テーブル",
+			"doughnutAltName": "ドーナツ",
+			"charting.failedToGetRows": "グラフを作成するデータセットの行を取得できませんでした。",
+			"charting.unsupportedType": "グラフの種類 '{0}' はサポートされていません。"
+		},
+		"sql/workbench/contrib/charts/browser/charts.contribution": {
+			"builtinChartsConfigurationTitle": "組み込みグラフ",
+			"builtinCharts.maxRowCountDescription": "グラフに表示する最大の行数です。警告: これを大きくするとパフォーマンスに影響が及ぶ場合があります。"
+		},
+		"sql/workbench/contrib/charts/browser/configureChartDialog": {
+			"configureChartDialog.close": "閉じる"
+		},
+		"sql/workbench/contrib/charts/browser/graphInsight": {
+			"series": "系列 {0}"
+		},
+		"sql/workbench/contrib/charts/browser/imageInsight": {
+			"invalidImage": "テーブルに有効なイメージが含まれていません"
+		},
+		"sql/workbench/contrib/charts/browser/utils": {
+			"charts.maxAllowedRowsExceeded": "組み込みグラフの最大行カウントを超過しました。最初の {0} 行だけが使用されます。値を構成するには、ユーザー設定を開き、'builtinCharts.maxRowCount' を検索してください。",
+			"charts.neverShowAgain": "今後表示しない"
+		},
+		"sql/workbench/contrib/commandLine/electron-browser/commandLine": {
+			"connectingLabel": "接続中: {0}",
+			"runningCommandLabel": "実行中のコマンド: {0}",
+			"openingNewQueryLabel": "新しいクエリを開いています: {0}",
+			"warnServerRequired": "サーバー情報が提供されていないため接続できません",
+			"errConnectUrl": "エラー {0} により URL を開くことができませんでした",
+			"connectServerDetail": "これにより、サーバー {0} に接続されます",
+			"confirmConnect": "接続しますか?",
+			"open": "開く(&&O)",
+			"connectingQueryLabel": "クエリ ファイルへの接続中"
+		},
+		"sql/workbench/contrib/configuration/common/configurationUpgrader": {
+			"workbench.configuration.upgradeUser": "ユーザー設定の {0} は {1} に置き換えられました。",
+			"workbench.configuration.upgradeWorkspace": "ワークスペース設定の {0} は {1} に置き換えられました。"
+		},
+		"sql/workbench/contrib/connection/browser/connection.contribution": {
+			"sql.maxRecentConnectionsDescription": "接続リストに格納する最近使用された接続の最大数。",
+			"sql.defaultEngineDescription": "使用する既定の SQL エンジン。.sql ファイル内の既定の言語プロバイダーが駆動され、新しい接続が作成されるときに既定で使用されます。",
+			"connection.parseClipboardForConnectionStringDescription": "接続ダイアログが開いたり、解析が実行されたりするときにクリップボードの内容の解析を試行します。"
+		},
+		"sql/workbench/contrib/connection/browser/connectionStatus": {
+			"status.connection.status": "接続状態"
+		},
+		"sql/workbench/contrib/connection/common/connectionProviderExtension": {
+			"schema.providerId": "プロバイダーの共通 ID",
+			"schema.displayName": "プロバイダーの表示名",
+			"schema.notebookKernelAlias": "プロバイダーの Notebook カーネル別名",
+			"schema.iconPath": "サーバーの種類のアイコン パス",
+			"schema.connectionOptions": "接続のオプション"
+		},
+		"sql/workbench/contrib/connection/common/connectionTreeProviderExentionPoint": {
+			"connectionTreeProvider.schema.name": "ツリー プロバイダーのユーザー表示名",
+			"connectionTreeProvider.schema.id": "プロバイダーの ID は、ツリー データ プロバイダーを登録するときと同じである必要があり、'connectionDialog/' で始まる必要があります"
+		},
+		"sql/workbench/contrib/dashboard/browser/containers/dashboardContainer.contribution": {
+			"azdata.extension.contributes.dashboard.container.id": "このコンテナーの一意の識別子。",
+			"azdata.extension.contributes.dashboard.container.container": "タブに表示されるコンテナー。",
+			"azdata.extension.contributes.containers": "単一または複数のダッシュ ボード コンテナーを提供し、ユーザーが自分のダッシュボードに追加できるようにします。",
+			"dashboardContainer.contribution.noIdError": "ダッシュボード コンテナーに、拡張用に指定された ID はありません。",
+			"dashboardContainer.contribution.noContainerError": "ダッシュボード コンテナーに、拡張用に指定されたコンテナーはありません。",
+			"dashboardContainer.contribution.moreThanOneDashboardContainersError": "空間ごとにダッシュボード コンテナーを 1 つだけ定義する必要があります。",
+			"dashboardTab.contribution.unKnownContainerType": "拡張用にダッシュボード コンテナーで定義されているコンテナーの種類が不明です。"
+		},
+		"sql/workbench/contrib/dashboard/browser/containers/dashboardControlHostContainer.contribution": {
+			"dashboard.container.controlhost": "このタブに表示される controlhost。"
+		},
+		"sql/workbench/contrib/dashboard/browser/containers/dashboardErrorContainer.component": {
+			"dashboardNavSection.loadTabError": "\"{0}\" セクションに無効なコンテンツがあります。機能拡張の所有者にお問い合わせください。"
+		},
+		"sql/workbench/contrib/dashboard/browser/containers/dashboardGridContainer.contribution": {
+			"dashboard.container.gridtab.items": "このタブに表示されるウィジェットまたは Web ビューのリスト。",
+			"gridContainer.invalidInputs": "ウィジェットや Web ビューが拡張機能用のウィジェット コンテナー内に必要です。"
+		},
+		"sql/workbench/contrib/dashboard/browser/containers/dashboardModelViewContainer.contribution": {
+			"dashboard.container.modelview": "このタブに表示されるモデルに基づくビュー。"
+		},
+		"sql/workbench/contrib/dashboard/browser/containers/dashboardNavSection.contribution": {
+			"dashboard.container.left-nav-bar.id": "このナビゲーション セクションの一意の識別子。すべての要求で拡張機能に渡されます。",
+			"dashboard.container.left-nav-bar.icon": "(省略可能) UI でこのナビゲーション セクションを表すために使用されるアイコン。ファイル パスまたはテーマを設定可能な構成のいずれかです",
+			"dashboard.container.left-nav-bar.icon.light": "明るいテーマを使用した場合のアイコンのパス",
+			"dashboard.container.left-nav-bar.icon.dark": "暗いテーマを使用した場合のアイコンのパス",
+			"dashboard.container.left-nav-bar.title": "ユーザーに表示するナビゲーション セクションのタイトル。",
+			"dashboard.container.left-nav-bar.container": "このナビゲーション セクションに表示されるコンテナー。",
+			"dashboard.container.left-nav-bar": "このナビゲーション セクションに表示されるダッシュボード コンテナーのリスト。",
+			"navSection.missingTitle.error": "ナビゲーション セクションに、拡張用に指定されたタイトルはありません。",
+			"navSection.missingContainer.error": "ナビゲーション セクションに、拡張用に指定されたコンテナーはありません。",
+			"navSection.moreThanOneDashboardContainersError": "空間ごとにダッシュボード コンテナーを 1 つだけ定義する必要があります。",
+			"navSection.invalidContainer.error": "NAV_SECTION 内の NAV_SECTION は拡張用に無効なコンテナーです。"
+		},
+		"sql/workbench/contrib/dashboard/browser/containers/dashboardWebviewContainer.contribution": {
+			"dashboard.container.webview": "このタブに表示される Web ビュー。"
+		},
+		"sql/workbench/contrib/dashboard/browser/containers/dashboardWidgetContainer.contribution": {
+			"dashboard.container.widgets": "このタブに表示されるウィジェットのリスト。",
+			"widgetContainer.invalidInputs": "拡張には、ウィジェット コンテナー内にウィジェットのリストが必要です。"
+		},
+		"sql/workbench/contrib/dashboard/browser/core/actions": {
+			"editDashboard": "編集",
+			"editDashboardExit": "終了",
+			"refreshWidget": "最新の情報に更新",
+			"toggleMore": "アクションの表示",
+			"deleteWidget": "ウィジェットの削除",
+			"clickToUnpin": "クリックしてピン留めを外します",
+			"clickToPin": "クリックしてピン留めします",
+			"addFeatureAction.openInstalledFeatures": "インストールされている機能を開く",
+			"collapseWidget": "ウィジェットの折りたたみ",
+			"expandWidget": "ウィジェットの展開"
+		},
+		"sql/workbench/contrib/dashboard/browser/core/dashboardHelper": {
+			"unknownDashboardContainerError": "{0} は不明なコンテナーです。"
 		},
 		"sql/workbench/contrib/dashboard/browser/core/dashboardPage.component": {
 			"home": "ホーム",
 			"missingConnectionInfo": "このダッシュ ボードには接続情報が見つかりませんでした",
 			"dashboard.generalTabGroupHeader": "全般"
 		},
-		"sql/workbench/contrib/charts/browser/actions": {
-			"createInsightLabel": "分析情報の作成",
-			"createInsightNoEditor": "アクティブなエディターが SQL エディターではないため、分析情報を作成できません",
-			"myWidgetName": "マイ ウィジェット",
-			"configureChartLabel": "グラフの構成",
-			"copyChartLabel": "イメージとしてコピー",
-			"chartNotFound": "保存するグラフが見つかりませんでした",
-			"saveImageLabel": "イメージとして保存",
-			"resultsSerializer.saveAsFileExtensionPNGTitle": "PNG",
-			"chartSaved": "グラフが保存されたパス: {0}"
+		"sql/workbench/contrib/dashboard/browser/core/dashboardTab.contribution": {
+			"azdata.extension.contributes.dashboard.tab.id": "このタブの一意の識別子。すべての要求で拡張機能に渡されます。",
+			"azdata.extension.contributes.dashboard.tab.title": "ユーザーを表示するタブのタイトル。",
+			"azdata.extension.contributes.dashboard.tab.description": "ユーザーに表示されるこのタブの説明。",
+			"azdata.extension.contributes.tab.when": "この項目を表示するために true にする必要がある条件",
+			"azdata.extension.contributes.tab.provider": "このタブと互換性のある接続の種類を定義します。設定されていない場合、既定値は 'MSSQL' に設定されます",
+			"azdata.extension.contributes.dashboard.tab.container": "このタブに表示されるコンテナー。",
+			"azdata.extension.contributes.dashboard.tab.alwaysShow": "このタブを常に表示するか、またはユーザーが追加したときにのみ表示するかどうか。",
+			"azdata.extension.contributes.dashboard.tab.isHomeTab": "このタブを接続の種類の [ホーム] タブとして使用するかどうか。",
+			"azdata.extension.contributes.dashboard.tab.group": "このタブが属しているグループの一意識別子。ホーム グループの値: home。",
+			"dazdata.extension.contributes.dashboard.tab.icon": "(省略可能) UI でこのタブを表すために使用されるアイコン。ファイル パスまたはテーマを設定可能な構成のいずれかです",
+			"azdata.extension.contributes.dashboard.tab.icon.light": "明るいテーマを使用した場合のアイコンのパス",
+			"azdata.extension.contributes.dashboard.tab.icon.dark": "暗いテーマを使用した場合のアイコンのパス",
+			"azdata.extension.contributes.tabs": "ユーザーがダッシュボードに追加する 1 つまたは、複数のタブを提供します。",
+			"dashboardTab.contribution.noTitleError": "拡張機能にタイトルが指定されていません。",
+			"dashboardTab.contribution.noDescriptionWarning": "表示するよう指定された説明はありません。",
+			"dashboardTab.contribution.noContainerError": "拡張機能にコンテナーが指定されていません。",
+			"dashboardTab.contribution.moreThanOneDashboardContainersError": "空間ごとにダッシュボード コンテナーを 1 つだけ定義する必要があります",
+			"azdata.extension.contributes.dashboard.tabGroup.id": "このタブ グループの一意識別子。",
+			"azdata.extension.contributes.dashboard.tabGroup.title": "タブ グループのタイトル。",
+			"azdata.extension.contributes.tabGroups": "ユーザーがダッシュボードに追加するための 1 つまたは複数のタブ グループを提供します。",
+			"dashboardTabGroup.contribution.noIdError": "タブ グループの ID が指定されていません。",
+			"dashboardTabGroup.contribution.noTitleError": "タブ グループのタイトルが指定されていません。",
+			"administrationTabGroup": "管理",
+			"monitoringTabGroup": "監視中",
+			"performanceTabGroup": "パフォーマンス",
+			"securityTabGroup": "セキュリティ",
+			"troubleshootingTabGroup": "トラブルシューティング",
+			"settingsTabGroup": "設定",
+			"databasesTabDescription": "データベース タブ",
+			"databasesTabTitle": "データベース"
 		},
-		"sql/workbench/contrib/notebook/browser/notebook.component": {
-			"addCodeLabel": "コードの追加",
-			"addTextLabel": "テキストの追加",
-			"createFile": "ファイルの作成",
-			"displayFailed": "コンテンツを表示できませんでした: {0}",
-			"codeCellsPreview": "セルの追加",
-			"codePreview": "コード セル",
-			"textPreview": "テキスト セル",
-			"runAllPreview": "すべて実行",
-			"addCell": "セル",
-			"code": "コード",
-			"text": "テキスト",
-			"runAll": "セルの実行",
-			"previousButtonLabel": "< 前へ",
-			"nextButtonLabel": "次へ >",
-			"cellNotFound": "URI {0} を含むセルは、このモデルには見つかりませんでした",
-			"cellRunFailed": "セルの実行に失敗しました。詳細については、現在選択されているセルの出力内のエラーをご覧ください。"
+		"sql/workbench/contrib/dashboard/browser/dashboard.contribution": {
+			"manage": "管理",
+			"dashboard.editor.label": "ダッシュボード"
+		},
+		"sql/workbench/contrib/dashboard/browser/dashboardActions": {
+			"ManageAction": "管理"
+		},
+		"sql/workbench/contrib/dashboard/browser/dashboardIconUtil": {
+			"opticon": "プロパティ `icon` は省略するか、文字列または `{dark, light}` などのリテラルにする必要があります"
+		},
+		"sql/workbench/contrib/dashboard/browser/dashboardRegistry": {
+			"dashboard.properties.property": "ダッシュ ボードに表示するプロパティを定義します",
+			"dashboard.properties.property.displayName": "プロパティのラベルとして使用する値",
+			"dashboard.properties.property.value": "値にアクセスするためのオブジェクト内の値",
+			"dashboard.properties.property.ignore": "無視される値を指定します",
+			"dashboard.properties.property.default": "無視されるか値がない場合に表示される既定値です",
+			"dashboard.properties.flavor": "ダッシュボードのプロパティを定義するためのフレーバー",
+			"dashboard.properties.flavor.id": "フレーバーの ID",
+			"dashboard.properties.flavor.condition": "このフレーバーを使用する条件",
+			"dashboard.properties.flavor.condition.field": "比較するフィールド",
+			"dashboard.properties.flavor.condition.operator": "比較に使用する演算子",
+			"dashboard.properties.flavor.condition.value": "フィールドを比較する値",
+			"dashboard.properties.databaseProperties": "データベース ページに表示するプロパティ",
+			"dashboard.properties.serverProperties": "サーバー ページに表示するプロパティ",
+			"carbon.extension.dashboard": "このプロバイダーがダッシュボードをサポートすることを定義します",
+			"dashboard.id": "プロバイダー ID (例: MSSQL)",
+			"dashboard.properties": "ダッシュボードに表示するプロパティ値"
+		},
+		"sql/workbench/contrib/dashboard/browser/pages/dashboardPageContribution": {
+			"azdata.extension.contributes.widget.when": "この項目を表示するために true にする必要がある条件",
+			"azdata.extension.contributes.widget.hideHeader": "ウィジェットのヘッダーを非表示にするかどうか。既定値は false です。",
+			"dashboardpage.tabName": "コンテナーのタイトル",
+			"dashboardpage.rowNumber": "グリッド内のコンポーネントの行",
+			"dashboardpage.rowSpan": "グリッド内のコンポーネントの rowspan。既定値は 1 です。グリッド内の行数に設定するには '*' を使用します。",
+			"dashboardpage.colNumber": "グリッド内のコンポーネントの列",
+			"dashboardpage.colspan": "グリッドのコンポーネントの colspan。既定値は 1 です。グリッドの列数に設定するには '*' を使用します。",
+			"azdata.extension.contributes.dashboardPage.tab.id": "このタブの一意の識別子。すべての要求で拡張機能に渡されます。",
+			"dashboardTabError": "拡張機能タブが不明またはインストールされていません。"
+		},
+		"sql/workbench/contrib/dashboard/browser/pages/databaseDashboardPage.component": {
+			"databasePageName": "データベースのプロパティ"
+		},
+		"sql/workbench/contrib/dashboard/browser/pages/databaseDashboardPage.contribution": {
+			"dashboardDatabaseProperties": "プロパティ ウィジェットを有効または無効にする",
+			"dashboard.databaseproperties": "表示するプロパティ値",
+			"dashboard.databaseproperties.displayName": "プロパティの表示名",
+			"dashboard.databaseproperties.value": "データベース情報オブジェクトの値",
+			"dashboard.databaseproperties.ignore": "無視する特定の値を指定します",
+			"recoveryModel": "復旧モデル",
+			"lastDatabaseBackup": "前回のデータベース バックアップ",
+			"lastLogBackup": "最終ログ バックアップ",
+			"compatibilityLevel": "互換性レベル",
+			"owner": "所有者",
+			"dashboardDatabase": "データベース ダッシュボード ページをカスタマイズする",
+			"objectsWidgetTitle": "検索",
+			"dashboardDatabaseTabs": "データベース ダッシュボード タブをカスタマイズする"
+		},
+		"sql/workbench/contrib/dashboard/browser/pages/serverDashboardPage.component": {
+			"serverPageName": "サーバーのプロパティ"
+		},
+		"sql/workbench/contrib/dashboard/browser/pages/serverDashboardPage.contribution": {
+			"dashboardServerProperties": "プロパティ ウィジェットを有効または無効にする",
+			"dashboard.serverproperties": "表示するプロパティ値",
+			"dashboard.serverproperties.displayName": "プロパティの表示名",
+			"dashboard.serverproperties.value": "サーバー情報オブジェクトの値",
+			"version": "バージョン",
+			"edition": "エディション",
+			"computerName": "コンピューター名",
+			"osVersion": "OS バージョン",
+			"explorerWidgetsTitle": "検索",
+			"dashboardServer": "サーバー ダッシュ ボード ページをカスタマイズします",
+			"dashboardServerTabs": "サーバー ダッシュボードのタブをカスタマイズします"
+		},
+		"sql/workbench/contrib/dashboard/browser/services/breadcrumb.service": {
+			"homeCrumb": "ホーム"
+		},
+		"sql/workbench/contrib/dashboard/browser/services/dashboardServiceInterface.service": {
+			"dashboard.changeDatabaseFailure": "データベースを変更できませんでした"
+		},
+		"sql/workbench/contrib/dashboard/browser/widgets/explorer/explorerTable": {
+			"dashboard.explorer.actions": "アクションの表示",
+			"explorerSearchNoMatchResultMessage": "一致する項目が見つかりませんでした",
+			"explorerSearchSingleMatchResultMessage": "検索一覧が 1 項目にフィルター処理されました",
+			"explorerSearchMatchResultMessage": "検索一覧が {0} 項目にフィルター処理されました"
+		},
+		"sql/workbench/contrib/dashboard/browser/widgets/explorer/explorerView": {
+			"dashboard.explorer.namePropertyDisplayValue": "名前",
+			"dashboard.explorer.schemaDisplayValue": "スキーマ",
+			"dashboard.explorer.objectTypeDisplayValue": "種類"
+		},
+		"sql/workbench/contrib/dashboard/browser/widgets/explorer/explorerWidget.component": {
+			"loadingObjects": "オブジェクトを読み込んでいます",
+			"loadingDatabases": "データベースを読み込んでいます",
+			"loadingObjectsCompleted": "オブジェクトの読み込みが完了しました。",
+			"loadingDatabasesCompleted": "データベースの読み込みが完了しました。",
+			"seachObjects": "型の名前で検索する (t:、v:、f:、sp:)",
+			"searchDatabases": "検索データベース",
+			"dashboard.explorer.objectError": "オブジェクトを読み込めません",
+			"dashboard.explorer.databaseError": "データベースを読み込めません"
+		},
+		"sql/workbench/contrib/dashboard/browser/widgets/insights/actions": {
+			"insights.runQuery": "クエリの実行"
+		},
+		"sql/workbench/contrib/dashboard/browser/widgets/insights/insightsWidget.component": {
+			"insightsWidgetLoadingMessage": "{0} を読み込んでいます",
+			"insightsWidgetLoadingCompletedMessage": "{0} の読み込みが完了しました",
+			"insights.autoRefreshOffState": "自動更新: オフ",
+			"insights.lastUpdated": "最終更新日: {0} {1}",
+			"noResults": "表示する結果がありません。"
+		},
+		"sql/workbench/contrib/dashboard/browser/widgets/insights/insightsWidgetSchemas": {
+			"insightWidgetDescription": "ウィジェットを追加します。そこでは、サーバーまたはデータベースのクエリを実行して、その結果をグラフや集計されたカウントなどの複数の方法で表示できます",
+			"insightIdDescription": "分析情報の結果をキャッシュするために使用される一意識別子。",
+			"insightQueryDescription": "実行する SQL クエリ。返す結果セットは 1 つのみでなければなりません。",
+			"insightQueryFileDescription": "[省略可能] クエリを含むファイルへのパス。'クエリ' が設定されていない場合に使用します",
+			"insightAutoRefreshIntervalDescription": "[省略可能] 分単位の自動更新間隔。設定しないと、自動更新されません",
+			"actionTypes": "使用するアクション",
+			"actionDatabaseDescription": "アクションのターゲット データベース。形式 '${ columnName }' を使用して、データ ドリブン列名を使用できます。",
+			"actionServerDescription": "アクションのターゲット サーバー。形式 '${ columnName }' を使用して、データ ドリブン列名を使用できます。",
+			"actionUserDescription": "アクションのターゲット ユーザー。形式 '${ columnName }' を使用して、データ ドリブン列名を使用できます。",
+			"carbon.extension.contributes.insightType.id": "分析情報の識別子",
+			"carbon.extension.contributes.insights": "ダッシュボード パレットに分析情報を提供します。"
+		},
+		"sql/workbench/contrib/dashboard/browser/widgets/insights/views/charts/chartInsight.component": {
+			"chartErrorMessage": "指定されたデータでグラフを表示できません"
+		},
+		"sql/workbench/contrib/dashboard/browser/widgets/insights/views/charts/chartInsight.contribution": {
+			"chartInsightDescription": "ダッシュボード上のグラフとしてクエリの結果を表示します",
+			"colorMapDescription": "'列名' -> 色をマップします。たとえば、「'column1': red」を追加して、この列で赤色が使用されるようにします ",
+			"legendDescription": "グラフの凡例の優先される位置と表示範囲を示します。これはクエリに基づく列名で、各グラフ項目のラベルにマップされます",
+			"labelFirstColumnDescription": "dataDirection が横の場合、true に設定すると凡例に最初の列値が使用されます。",
+			"columnsAsLabels": "dataDirection が縦の場合、true に設定すると凡例に列名が使用されます。",
+			"dataDirectionDescription": "データを列 (縦) 方向から、または行 (横) 方向から読み取るかを定義します。時系列の場合、方向は縦にする必要があるため、これは無視されます。",
+			"showTopNData": "showTopNData を設定すると、上位 N 個のデータのみがグラフに表示されます。"
+		},
+		"sql/workbench/contrib/dashboard/browser/widgets/insights/views/charts/types/barChart.contribution": {
+			"yAxisMin": "Y 軸の最小値",
+			"yAxisMax": "Y 軸の最大値",
+			"barchart.yAxisLabel": "Y 軸のラベル",
+			"xAxisMin": "X 軸の最小値",
+			"xAxisMax": "X 軸の最大値",
+			"barchart.xAxisLabel": "X 軸のラベル"
+		},
+		"sql/workbench/contrib/dashboard/browser/widgets/insights/views/charts/types/lineChart.contribution": {
+			"dataTypeDescription": "グラフのデータ セットのデータ プロパティを示します。"
+		},
+		"sql/workbench/contrib/dashboard/browser/widgets/insights/views/countInsight.contribution": {
+			"countInsightDescription": "結果セットの各列について、行 0 の値をカウントとして表示し、その後に列名が続きます。たとえば、'1 正常'、'3 異常' をサポートします。ここで、'正常' は列名、1 は行 1 セル 1 の値です。"
+		},
+		"sql/workbench/contrib/dashboard/browser/widgets/insights/views/imageInsight.contribution": {
+			"imageInsightDescription": "イメージを表示します。例: ggplot2 を使用して R クエリによって返されたイメージ",
+			"imageFormatDescription": "必要な形式は何ですか。JPEG、PNG、またはその他の形式ですか?",
+			"encodingDescription": "これは 16 進数、base64 または、他の形式でエンコードされていますか？"
+		},
+		"sql/workbench/contrib/dashboard/browser/widgets/insights/views/tableInsight.contribution": {
+			"tableInsightDescription": "単純なテーブルに結果を表示する"
+		},
+		"sql/workbench/contrib/dashboard/browser/widgets/properties/propertiesWidget.component": {
+			"loadingProperties": "プロパティを読み込んでいます...",
+			"loadingPropertiesCompleted": "プロパティの読み込みが完了しました",
+			"dashboard.properties.error": "ダッシュボードのプロパティを読み込めません"
+		},
+		"sql/workbench/contrib/dataExplorer/browser/dataExplorer.contribution": {
+			"databaseConnections": "データベース接続",
+			"datasource.connections": "データ ソース接続",
+			"datasource.connectionGroups": "データソース グループ",
+			"connectionsSortOrder.dateAdded": "保存された接続は、追加された日付順に並べ替えられます。",
+			"connectionsSortOrder.displayName": "保存された接続は、表示名のアルファベット順に並べ替えられます。",
+			"datasource.connectionsSortOrder": "保存された接続と接続グループの並べ替え順序を制御します。",
+			"startupConfig": "起動の構成",
+			"startup.alwaysShowServersView": "Azure Data Studio の起動時にサーバー ビューを表示する場合には true (既定)。最後に開いたビューを表示する場合には false"
+		},
+		"sql/workbench/contrib/dataExplorer/browser/dataExplorerExtensionPoint": {
+			"vscode.extension.contributes.view.id": "ビューの識別子。`vscode.window.registerTreeDataProviderForView` API を介してデータ プロバイダーを登録するには、これを使用します。また、`onView:${id}` イベントを `activationEvents` に登録することによって、拡張機能のアクティブ化をトリガーするためにも使用できます。",
+			"vscode.extension.contributes.view.name": "ビューの判読できる名前。これが表示されます",
+			"vscode.extension.contributes.view.when": "このビューを表示するために満たす必要がある条件",
+			"extension.contributes.dataExplorer": "ビューをエディターに提供します",
+			"extension.dataExplorer": "アクティビティ バーのデータ エクスプローラー コンテナーにビューを提供します",
+			"dataExplorer.contributed": "コントリビューション ビュー コンテナーにビューを提供します",
+			"duplicateView1": "ビュー コンテナー '{1}'に同じ ID '{0}' のビューを複数登録できません",
+			"duplicateView2": "ビュー ID `{0}` はビュー コンテナー `{1}` に既に登録されています",
+			"requirearray": "ビューは配列にする必要があります",
+			"requirestring": "プロパティ `{0}` は必須で、`string` 型でなければなりません",
+			"optstring": "プロパティ `{0}` は省略するか、`string` 型にする必要があります"
+		},
+		"sql/workbench/contrib/dataExplorer/browser/dataExplorerViewlet": {
+			"dataExplorer.servers": "サーバー",
+			"dataexplorer.name": "接続",
+			"showDataExplorer": "接続の表示"
+		},
+		"sql/workbench/contrib/dataExplorer/browser/nodeActions.common.contribution": {
+			"disconnect": "切断",
+			"refresh": "最新の情報に更新"
+		},
+		"sql/workbench/contrib/editData/browser/editData.contribution": {
+			"showEditDataSqlPaneOnStartup": "起動時にデータ SQL の編集ペインを表示する"
+		},
+		"sql/workbench/contrib/editData/browser/editDataActions": {
+			"editData.run": "実行",
+			"disposeEditFailure": "編集内容の破棄がエラーで失敗しました: ",
+			"editData.stop": "停止",
+			"editData.showSql": "SQL ペインの表示",
+			"editData.closeSql": "SQL ペインを閉じる"
+		},
+		"sql/workbench/contrib/editData/browser/editDataEditor": {
+			"maxRowTaskbar": "最大行数:"
+		},
+		"sql/workbench/contrib/editData/browser/editDataGridActions": {
+			"deleteRow": "行の削除",
+			"revertRow": "現在の行を元に戻す"
+		},
+		"sql/workbench/contrib/editData/browser/gridActions": {
+			"saveAsCsv": "CSV として保存",
+			"saveAsJson": "JSON として保存",
+			"saveAsExcel": "Excel として保存",
+			"saveAsXml": "XML として保存",
+			"copySelection": "コピー",
+			"copyWithHeaders": "ヘッダー付きでコピー",
+			"selectAll": "すべて選択"
+		},
+		"sql/workbench/contrib/extensions/browser/contributionRenders": {
+			"tabs": "ダッシュボード タブ ({0})",
+			"tabId": "ID",
+			"tabTitle": "タイトル",
+			"tabDescription": "説明",
+			"insights": "ダッシュボード分析情報 ({0})",
+			"insightId": "ID",
+			"name": "名前",
+			"insight condition": "タイミング"
+		},
+		"sql/workbench/contrib/extensions/browser/extensions.contribution": {
+			"workbench.extensions.getExtensionFromGallery.description": "ギャラリーから拡張機能情報を取得します",
+			"workbench.extensions.getExtensionFromGallery.arg.name": "拡張機能 ID",
+			"notFound": "拡張機能 '{0}' が見つかりませんでした。"
+		},
+		"sql/workbench/contrib/extensions/browser/extensionsActions": {
+			"showRecommendations": "推奨事項を表示",
+			"Install Extensions": "拡張機能のインストール",
+			"openExtensionAuthoringDocs": "拡張機能の作成..."
+		},
+		"sql/workbench/contrib/extensions/browser/scenarioRecommendations": {
+			"neverShowAgain": "今後表示しない",
+			"ExtensionsRecommended": "Azure Data Studio には拡張機能の推奨事項があります。",
+			"VisualizerExtensionsRecommended": "Azure Data Studio には、データ可視化の拡張機能の推奨事項があります。\r\nインストールすると、ビジュアライザー アイコンを選択して、クエリ結果を視覚化できます。",
+			"installAll": "すべてをインストール",
+			"showRecommendations": "推奨事項を表示",
+			"scenarioTypeUndefined": "拡張機能の推奨事項のシナリオの種類を指定する必要があります。"
+		},
+		"sql/workbench/contrib/extensions/browser/staticRecommendations": {
+			"defaultRecommendations": "この拡張機能は Azure Data Studio で推奨されます。"
+		},
+		"sql/workbench/contrib/jobManagement/browser/agentView.component": {
+			"jobview.Jobs": "ジョブ",
+			"jobview.Notebooks": "ノートブック",
+			"jobview.Alerts": "アラート",
+			"jobview.Proxies": "プロキシ",
+			"jobview.Operators": "演算子"
+		},
+		"sql/workbench/contrib/jobManagement/browser/alertsView.component": {
+			"jobAlertColumns.name": "名前",
+			"jobAlertColumns.lastOccurrenceDate": "最後の発生",
+			"jobAlertColumns.enabled": "有効",
+			"jobAlertColumns.delayBetweenResponses": "応答間の遅延 (秒)",
+			"jobAlertColumns.categoryName": "カテゴリ名"
 		},
 		"sql/workbench/contrib/jobManagement/browser/jobActions": {
 			"jobaction.successLabel": "成功",
@@ -11227,77 +10211,58 @@
 			"notebookaction.renameNotebook": "名前の変更",
 			"notebookaction.openLatestRun": "最新の実行を開く"
 		},
-		"sql/workbench/contrib/assessment/browser/asmtActions": {
-			"asmtaction.server.getitems": "適用可能な規則を表示する",
-			"asmtaction.database.getitems": "{0} に適用可能な規則を表示する",
-			"asmtaction.server.invokeitems": "評価の呼び出し",
-			"asmtaction.database.invokeitems": "{0} の評価の呼び出し",
-			"asmtaction.exportasscript": "スクリプトとしてエクスポート",
-			"asmtaction.showsamples": "すべての規則を表示し、GitHub の詳細を確認する",
-			"asmtaction.generatehtmlreport": "HTML レポートの作成",
-			"asmtaction.openReport": "レポートが保存されました。開きますか?",
-			"asmtaction.label.open": "開く",
-			"asmtaction.label.cancel": "キャンセル"
+		"sql/workbench/contrib/jobManagement/browser/jobHistory.component": {
+			"stepRow.stepID": "ステップ ID",
+			"stepRow.stepName": "ステップ名",
+			"stepRow.message": "メッセージ"
 		},
-		"sql/workbench/contrib/preferences/browser/sqlSettingsLayout": {
-			"data": "データ",
-			"connection": "接続",
-			"queryEditor": "クエリ エディター",
-			"notebook": "ノートブック",
-			"dashboard": "ダッシュボード",
-			"profiler": "Profiler"
+		"sql/workbench/contrib/jobManagement/browser/jobStepsView.component": {
+			"agent.steps": "ステップ"
 		},
-		"sql/workbench/contrib/extensions/browser/contributionRenders": {
-			"tabs": "ダッシュボード タブ ({0})",
-			"tabId": "ID",
-			"tabTitle": "タイトル",
-			"tabDescription": "説明",
-			"insights": "ダッシュボード分析情報 ({0})",
-			"insightId": "ID",
-			"name": "名前",
-			"insight condition": "タイミング"
+		"sql/workbench/contrib/jobManagement/browser/jobsView.component": {
+			"jobColumns.name": "名前",
+			"jobColumns.lastRun": "前回の実行",
+			"jobColumns.nextRun": "次回の実行",
+			"jobColumns.enabled": "有効",
+			"jobColumns.status": "状態",
+			"jobColumns.category": "カテゴリ",
+			"jobColumns.runnable": "実行可能",
+			"jobColumns.schedule": "スケジュール",
+			"jobColumns.lastRunOutcome": "前回の実行の結果",
+			"jobColumns.previousRuns": "以前の実行",
+			"jobsView.noSteps": "このジョブに利用できるステップはありません。",
+			"jobsView.error": "エラー: "
 		},
-		"sql/workbench/contrib/charts/browser/imageInsight": {
-			"invalidImage": "テーブルに有効なイメージが含まれていません"
+		"sql/workbench/contrib/jobManagement/browser/notebookHistory.component": {
+			"notebookHistory.dateCreatedTooltip": "作成日: ",
+			"notebookHistory.notebookErrorTooltip": "ノートブック エラー: ",
+			"notebookHistory.ErrorTooltip": "ジョブ エラー: ",
+			"notebookHistory.pinnedTitle": "ピン留めされました",
+			"notebookHistory.recentRunsTitle": "最近の実行",
+			"notebookHistory.pastRunsTitle": "過去の実行"
 		},
-		"sql/workbench/contrib/notebook/browser/cellToolbarActions": {
-			"moreActionsLabel": "その他",
-			"editLabel": "編集",
-			"closeLabel": "閉じる",
-			"convertCell": "セルの変換",
-			"runAllAbove": "上のセルの実行",
-			"runAllBelow": "下のセルの実行",
-			"codeAbove": "コードを上に挿入",
-			"codeBelow": "コードを下に挿入",
-			"markdownAbove": "テキストを上に挿入",
-			"markdownBelow": "テキストを下に挿入",
-			"collapseCell": "セルを折りたたむ",
-			"expandCell": "セルの展開",
-			"makeParameterCell": "パラメーター セルの作成",
-			"RemoveParameterCell": "パラメーター セルの削除",
-			"clear": "結果のクリア"
+		"sql/workbench/contrib/jobManagement/browser/notebooksView.component": {
+			"notebookColumns.name": "名前",
+			"notebookColumns.targetDatbase": "ターゲット データベース",
+			"notebookColumns.lastRun": "前回の実行",
+			"notebookColumns.nextRun": "次回の実行",
+			"notebookColumns.status": "状態",
+			"notebookColumns.lastRunOutcome": "前回の実行の結果",
+			"notebookColumns.previousRuns": "以前の実行",
+			"notebooksView.noSteps": "このジョブに利用できるステップはありません。",
+			"notebooksView.error": "エラー: ",
+			"notebooksView.notebookError": "ノートブック エラー: "
 		},
-		"sql/workbench/services/notebook/browser/models/clientSession": {
-			"clientSession.unknownError": "ノートブック セッションの開始中にエラーが発生しました。",
-			"ServerNotStarted": "不明な理由によりサーバーが起動しませんでした",
-			"kernelRequiresConnection": "カーネル {0} が見つかりませんでした。既定のカーネルが代わりに使用されます。"
+		"sql/workbench/contrib/jobManagement/browser/operatorsView.component": {
+			"jobOperatorsView.name": "名前",
+			"jobOperatorsView.emailAddress": "電子メール アドレス",
+			"jobOperatorsView.enabled": "有効"
 		},
-		"sql/workbench/contrib/charts/browser/graphInsight": {
-			"series": "系列 {0}"
-		},
-		"sql/workbench/contrib/charts/browser/configureChartDialog": {
-			"configureChartDialog.close": "閉じる"
-		},
-		"sql/workbench/services/notebook/browser/models/notebookModel": {
-			"injectedParametersMsg": "# Injected-Parameters\r\n",
-			"kernelRequiresConnection": "このカーネルのセルを実行する接続を選択してください",
-			"deleteCellFailed": "セルの削除に失敗しました。",
-			"changeKernelFailedRetry": "カーネルの変更に失敗しました。カーネル {0} が使用されます。エラー: {1}",
-			"changeKernelFailed": "次のエラーにより、カーネルの変更に失敗しました: {0}",
-			"changeContextFailed": "コンテキストの変更に失敗しました: {0}",
-			"startSessionFailed": "セッションを開始できませんでした: {0}",
-			"shutdownClientSessionError": "ノートブックを閉じるときにクライアント セッション エラーが発生しました: {0}",
-			"ProviderNoManager": "プロバイダー {0} のノートブック マネージャーが見つかりません"
+		"sql/workbench/contrib/jobManagement/browser/proxiesView.component": {
+			"jobProxiesView.accountName": "アカウント名",
+			"jobProxiesView.credentialName": "資格情報名",
+			"jobProxiesView.description": "説明",
+			"jobProxiesView.isEnabled": "有効"
 		},
 		"sql/workbench/contrib/notebook/browser/calloutDialog/common/constants": {
 			"callout.insertButton": "挿入",
@@ -11317,6 +10282,940 @@
 			"linkCallout.linkAddressLabel": "アドレス",
 			"linkCallout.linkAddressPlaceholder": "既存のファイルまたは Web ページへのリンク"
 		},
+		"sql/workbench/contrib/notebook/browser/cellToolbarActions": {
+			"moreActionsLabel": "その他",
+			"editLabel": "編集",
+			"closeLabel": "閉じる",
+			"convertCell": "セルの変換",
+			"runAllAbove": "上のセルの実行",
+			"runAllBelow": "下のセルの実行",
+			"codeAbove": "コードを上に挿入",
+			"codeBelow": "コードを下に挿入",
+			"markdownAbove": "テキストを上に挿入",
+			"markdownBelow": "テキストを下に挿入",
+			"collapseCell": "セルを折りたたむ",
+			"expandCell": "セルの展開",
+			"makeParameterCell": "パラメーター セルの作成",
+			"RemoveParameterCell": "パラメーター セルの削除",
+			"clear": "結果のクリア"
+		},
+		"sql/workbench/contrib/notebook/browser/cellViews/cellToolbar.component": {
+			"buttonAdd": "セルの追加",
+			"optionCodeCell": "コード セル",
+			"optionTextCell": "テキスト セル",
+			"buttonMoveDown": "セルを下に移動します",
+			"buttonMoveUp": "セルを上に移動します",
+			"buttonDelete": "削除",
+			"codeCellsPreview": "セルの追加",
+			"codePreview": "コード セル",
+			"textPreview": "テキスト セル"
+		},
+		"sql/workbench/contrib/notebook/browser/cellViews/code.component": {
+			"parametersText": "パラメーター"
+		},
+		"sql/workbench/contrib/notebook/browser/cellViews/codeActions": {
+			"notebook.failed": "アクティブなセルを選択して、もう一度お試しください",
+			"runCell": "セルの実行",
+			"stopCell": "実行のキャンセル",
+			"errorRunCell": "最後の実行でエラーが発生しました。もう一度実行するにはクリックしてください"
+		},
+		"sql/workbench/contrib/notebook/browser/cellViews/collapse.component": {
+			"expandCellContents": "コード セルの内容の展開",
+			"collapseCellContents": "コード セル コンテンツを折りたたむ"
+		},
+		"sql/workbench/contrib/notebook/browser/cellViews/markdownToolbar.component": {
+			"buttonBold": "太字",
+			"buttonItalic": "斜体",
+			"buttonUnderline": "下線を付ける",
+			"buttonHighlight": "強調表示",
+			"buttonCode": "コード",
+			"buttonLink": "リンク",
+			"buttonList": "リスト",
+			"buttonOrderedList": "順序指定済みリスト",
+			"buttonImage": "イメージ",
+			"buttonPreview": "マークダウン プレビューの切り替え - オフ",
+			"dropdownHeading": "見出し",
+			"optionHeading1": "見出し 1",
+			"optionHeading2": "見出し 2",
+			"optionHeading3": "見出し 3",
+			"optionParagraph": "段落",
+			"callout.insertLinkHeading": "リンクの挿入",
+			"callout.insertImageHeading": "画像の挿入",
+			"richTextViewButton": "リッチ テキスト ビュー",
+			"splitViewButton": "分割ビュー",
+			"markdownViewButton": "マークダウン ビュー"
+		},
+		"sql/workbench/contrib/notebook/browser/cellViews/output.component": {
+			"noMimeTypeFound": "出力用の {0} レンダラーが見つかりませんでした。次の MIME の種類があります: {1}",
+			"safe": "安全 ",
+			"noSelectorFound": "セレクター {0} のコンポーネントが見つかりませんでした",
+			"componentRenderError": "コンポーネントのレンダリング エラー: {0}"
+		},
+		"sql/workbench/contrib/notebook/browser/cellViews/placeholderCell.component": {
+			"clickOn": "次をクリック",
+			"plusCode": "+ コード",
+			"or": "または",
+			"plusText": "+ テキスト",
+			"toAddCell": "コードまたはテキストのセルを追加するため",
+			"plusCodeAriaLabel": "コード セルの追加",
+			"plusTextAriaLabel": "テキスト セルの追加"
+		},
+		"sql/workbench/contrib/notebook/browser/cellViews/stdin.component": {
+			"stdInLabel": "StdIn:"
+		},
+		"sql/workbench/contrib/notebook/browser/cellViews/textCell.component": {
+			"doubleClickEdit": "<i>ダブルクリックして編集</i>",
+			"addContent": "<i>ここにコンテンツを追加...</i>"
+		},
+		"sql/workbench/contrib/notebook/browser/find/notebookFindWidget": {
+			"label.find": "検索",
+			"placeholder.find": "検索",
+			"label.previousMatchButton": "前の一致項目",
+			"label.nextMatchButton": "次の一致項目",
+			"label.closeButton": "閉じる",
+			"title.matchesCountLimit": "検索で多数の結果が返されました。最初の 999 件の一致のみ強調表示されます。",
+			"label.matchesLocation": "{0}/{1} 件",
+			"label.noResults": "結果なし"
+		},
+		"sql/workbench/contrib/notebook/browser/notebook.component": {
+			"addCodeLabel": "コードの追加",
+			"addTextLabel": "テキストの追加",
+			"createFile": "ファイルの作成",
+			"displayFailed": "コンテンツを表示できませんでした: {0}",
+			"codeCellsPreview": "セルの追加",
+			"codePreview": "コード セル",
+			"textPreview": "テキスト セル",
+			"runAllPreview": "すべて実行",
+			"addCell": "セル",
+			"code": "コード",
+			"text": "テキスト",
+			"runAll": "セルの実行",
+			"previousButtonLabel": "< 前へ",
+			"nextButtonLabel": "次へ >",
+			"cellNotFound": "URI {0} を含むセルは、このモデルには見つかりませんでした",
+			"cellRunFailed": "セルの実行に失敗しました。詳細については、現在選択されているセルの出力内のエラーをご覧ください。"
+		},
+		"sql/workbench/contrib/notebook/browser/notebook.contribution": {
+			"newNotebook": "新しいノートブック",
+			"newQuery": "新しいノートブック",
+			"workbench.action.setWorkspaceAndOpen": "ワークスペースを設定して開く",
+			"notebook.sqlStopOnError": "SQL カーネル: セルでエラーが発生したときに Notebook の実行を停止します。",
+			"notebook.showAllKernels": "(プレビュー) 現在のノートブック プロバイダーのすべてのカーネルを表示します。",
+			"notebook.allowADSCommands": "ノートブックでの Azure Data Studio コマンドの実行を許可します。",
+			"notebook.enableDoubleClickEdit": "ノートブックのテキスト セルのダブルクリックして編集を有効する",
+			"notebook.richTextModeDescription": "テキストはリッチ テキスト (WYSIWYG とも呼ばれる) として表示されます。",
+			"notebook.splitViewModeDescription": "マークダウンが左側に表示され、レンダリングされたテキストの右側にプレビューが表示されます。",
+			"notebook.markdownModeDescription": "テキストはマークダウンとして表示されます。",
+			"notebook.defaultTextEditMode": "テキスト セルに使用される既定の編集モード",
+			"notebook.saveConnectionName": "(プレビュー) ノートブック メタデータに接続名を保存します。",
+			"notebook.markdownPreviewLineHeight": "ノートブック マークダウン プレビューで使用される行の高さを制御します。この数値はフォント サイズを基準とします。",
+			"notebook.showRenderedNotebookinDiffEditor": "(プレビュー) レンダリングされたノートブックを差分エディターで表示します。",
+			"notebook.maxRichTextUndoHistory": "ノートブックのリッチ テキスト エディターを元に戻す操作の履歴に格納される変更の最大数です。",
+			"searchConfigurationTitle": "ノートブックの検索",
+			"exclude": "フルテキスト検索および Quick Open でファイルやフォルダーを除外するための glob パターンを構成します。'#files.exclude#' 設定からすべての glob パターンを継承します。glob パターンの詳細については、[こちら](https://code.visualstudio.com/docs/editor/codebasics#_advanced-search-options) を参照してください。",
+			"exclude.boolean": "ファイル パスの照合基準となる glob パターン。これを true または false に設定すると、パターンがそれぞれ有効/無効になります。",
+			"exclude.when": "一致するファイルの兄弟をさらにチェックします。一致するファイル名の変数として $(basename) を使用します。",
+			"useRipgrep": "この設定は推奨されず、現在 \"search.usePCRE2\" にフォール バックします。",
+			"useRipgrepDeprecated": "推奨されません。高度な正規表現機能サポートのために \"search.usePCRE2\" の利用を検討してください。",
+			"search.maintainFileSearchCache": "有効にすると、searchService プロセスは 1 時間操作がない場合でもシャットダウンされず、アクティブな状態に保たれます。これにより、ファイル検索キャッシュがメモリに保持されます。",
+			"useIgnoreFiles": "ファイルを検索するときに、`.gitignore` ファイルと `.ignore` ファイルを使用するかどうかを制御します。",
+			"useGlobalIgnoreFiles": "ファイルを検索するときに、グローバルの `.gitignore` と `.ignore` ファイルを使用するかどうかを制御します。",
+			"search.quickOpen.includeSymbols": "グローバル シンボル検索の結果を、Quick Open の結果ファイルに含めるかどうか。",
+			"search.quickOpen.includeHistory": "最近開いたファイルの結果を、Quick Open の結果ファイルに含めるかどうか。",
+			"filterSortOrder.default": "履歴エントリは、使用されるフィルター値に基づいて関連性によって並び替えられます。関連性の高いエントリが最初に表示されます。",
+			"filterSortOrder.recency": "履歴エントリは、新しい順に並べ替えられます。最近開いたエントリが最初に表示されます。",
+			"filterSortOrder": "フィルター処理時に、 Quick Open におけるエディター履歴の並べ替え順序を制御します。",
+			"search.followSymlinks": "検索中にシンボリック リンクをたどるかどうかを制御します。",
+			"search.smartCase": "すべて小文字のパターンの場合、大文字と小文字を区別しないで検索し、そうでない場合は大文字と小文字を区別して検索します。",
+			"search.globalFindClipboard": "macOS で検索ビューが共有の検索クリップボードを読み取りまたは変更するかどうかを制御します。",
+			"search.location": "検索をサイドバーのビューとして表示するか、より水平方向の空間をとるためにパネル領域のパネルとして表示するかを制御します。",
+			"search.location.deprecationMessage": "この設定は非推奨です。代わりに検索ビューのコンテキスト メニューをお使いください。",
+			"search.collapseResults.auto": "結果が 10 件未満のファイルが展開されます。他のファイルは折りたたまれます。",
+			"search.collapseAllResults": "検索結果を折りたたむか展開するかどうかを制御します。",
+			"search.useReplacePreview": "一致項目を選択するか置換するときに、置換のプレビューを開くかどうかを制御します。",
+			"search.showLineNumbers": "検索結果に行番号を表示するかどうかを制御します。",
+			"search.usePCRE2": "テキスト検索に PCRE2 正規表現エンジンを使用するかどうか。これにより、先読みや後方参照といった高度な正規表現機能を使用できるようになります。ただし、すべての PCRE2 機能がサポートされているわけではありません。JavaScript によってサポートされる機能のみが使用できます。",
+			"usePCRE2Deprecated": "廃止されました。PCRE2 でのみサポートされている正規表現機能を使用すると、PCRE2 が自動的に使用されます。",
+			"search.actionsPositionAuto": "検索ビューが狭い場合はアクションバーを右に、検索ビューが広い場合はコンテンツの直後にアクションバーを配置します。",
+			"search.actionsPositionRight": "アクションバーを常に右側に表示します。",
+			"search.actionsPosition": "検索ビューの行内のアクションバーの位置を制御します。",
+			"search.searchOnType": "入力中の文字列を全てのファイルから検索する。",
+			"search.seedWithNearestWord": "アクティブなエディターで何も選択されていないときに、カーソルに最も近い語からのシード検索を有効にします。",
+			"search.seedOnFocus": "検索ビューにフォーカスを置いたときに、ワークスペースの検索クエリが、エディターで選択されているテキストに更新されます。これは、クリックされたときか、'workbench.views.search.focus' コマンドがトリガーされたときに発生します。",
+			"search.searchOnTypeDebouncePeriod": "'#search.searchOnType#' を有効にすると、文字が入力されてから検索が開始されるまでのタイムアウト (ミリ秒) が制御されます。'search.searchOnType' が無効になっている場合には影響しません。",
+			"search.searchEditor.doubleClickBehaviour.selectWord": "ダブルクリックすると、カーソルの下にある単語が選択されます。",
+			"search.searchEditor.doubleClickBehaviour.goToLocation": "ダブルクリックすると、アクティブなエディター グループに結果が開きます。",
+			"search.searchEditor.doubleClickBehaviour.openLocationToSide": "ダブルクリックすると、結果はエディター グループの横に開かれ、まだ存在しない場合は作成されます。",
+			"search.searchEditor.doubleClickBehaviour": "検索エディターで結果をダブル クリックした場合の効果を構成します。",
+			"searchSortOrder.default": "結果はフォルダー名とファイル名でアルファベット順に並べ替えられます。",
+			"searchSortOrder.filesOnly": "結果はフォルダーの順序を無視したファイル名でアルファベット順に並べ替えられます。",
+			"searchSortOrder.type": "結果は、ファイル拡張子でアルファベット順に並べ替えられます。",
+			"searchSortOrder.modified": "結果は、ファイルの最終更新日で降順に並べ替えられます。",
+			"searchSortOrder.countDescending": "結果は、ファイルあたりの数で降順に並べ替えられます。",
+			"searchSortOrder.countAscending": "結果は、ファイルごとのカウントで昇順に並べ替えられます。",
+			"search.sortOrder": "検索結果の並べ替え順序を制御します。"
+		},
+		"sql/workbench/contrib/notebook/browser/notebookActions": {
+			"loading": "カーネルを読み込んでいます...",
+			"changing": "カーネルを変更しています...",
+			"AttachTo": "接続先: ",
+			"Kernel": "カーネル ",
+			"loadingContexts": "コンテキストを読み込んでいます...",
+			"changeConnection": "接続の変更",
+			"selectConnection": "接続を選択",
+			"localhost": "localhost",
+			"noKernel": "カーネルなし",
+			"kernelNotSupported": "カーネルがサポートされていないため、このノートブックはパラメーターを指定して実行できません。サポートされているカーネルと形式を使用してください。[詳細情報](https://docs.microsoft.com/sql/azure-data-studio/notebooks/notebooks-parameterization)。",
+			"noParametersCell": "パラメーター セルが追加されるまで、パラメーターを指定してこのノートブックを実行することはできません。[詳細情報](https://docs.microsoft.com/sql/azure-data-studio/notebooks/notebooks-parameterization)。",
+			"noParametersInCell": "パラメーター セルにパラメーターが追加されるまで、パラメーターを指定してこのノートブックを実行することはできません。[詳細情報] (https://docs.microsoft.com/sql/azure-data-studio/notebooks/notebooks-parameterization)。",
+			"clearResults": "結果のクリア",
+			"trustLabel": "信頼されています",
+			"untrustLabel": "信頼されていません",
+			"collapseAllCells": "セルを折りたたむ",
+			"expandAllCells": "セルを展開する",
+			"runParameters": "パラメーターを指定して実行",
+			"noContextAvailable": "なし",
+			"newNotebookAction": "新しいノートブック",
+			"notebook.findNext": "次の文字列を検索",
+			"notebook.findPrevious": "前の文字列を検索"
+		},
+		"sql/workbench/contrib/notebook/browser/notebookEditor": {
+			"notebookEditor.name": "Notebook Editor"
+		},
+		"sql/workbench/contrib/notebook/browser/notebookExplorer/notebookExplorerViewlet": {
+			"notebookExplorer.searchResults": "検索結果",
+			"searchPathNotFoundError": "検索パスが見つかりません: {0}",
+			"notebookExplorer.name": "ノートブック"
+		},
+		"sql/workbench/contrib/notebook/browser/notebookExplorer/notebookSearch": {
+			"searchWithoutFolder": "ノートブックまたはブックを格納するフォルダーを開いていません。",
+			"openNotebookFolder": "ノートブックを開く",
+			"searchMaxResultsWarning": "結果セットにはすべての一致項目のサブセットのみが含まれています。より限定的な検索条件を入力して、検索結果を絞り込んでください。",
+			"searchInProgress": "検索中です...",
+			"noResultsIncludesExcludes": "'{0}' に '{1}' を除外した結果はありません - ",
+			"noResultsIncludes": "'{0}' に結果はありません - ",
+			"noResultsExcludes": "'{0}' を除外した結果はありませんでした - ",
+			"noResultsFound": "結果がありません。除外構成の設定を確認し、gitignore ファイルを調べてください - ",
+			"rerunSearch.message": "もう一度検索",
+			"rerunSearchInAll.message": "すべてのファイルでもう一度検索してください",
+			"openSettings.message": "設定を開く",
+			"ariaSearchResultsStatus": "検索により {1} 個のファイル内の {0} 件の結果が返されました",
+			"ToggleCollapseAndExpandAction.label": "折りたたみと展開の切り替え",
+			"CancelSearchAction.label": "検索のキャンセル",
+			"ExpandAllAction.label": "すべて展開",
+			"CollapseDeepestExpandedLevelAction.label": "すべて折りたたむ",
+			"ClearSearchResultsAction.label": "検索結果のクリア"
+		},
+		"sql/workbench/contrib/notebook/browser/notebookExplorer/notebookSearchWidget": {
+			"label.Search": "検索: 検索語句を入力し Enter を押して検索するか、Esc を押して取り消します",
+			"search.placeHolder": "検索"
+		},
+		"sql/workbench/contrib/notebook/browser/notebookViews/notebookViews.component": {
+			"cellNotFound": "URI {0} を含むセルは、このモデルには見つかりませんでした",
+			"cellRunFailed": "セルの実行に失敗しました。詳細については、現在選択されているセルの出力内のエラーをご覧ください。"
+		},
+		"sql/workbench/contrib/notebook/browser/notebookViews/notebookViewsCodeCell.component": {
+			"viewsCodeCell.emptyCellText": "出力を表示するには、このセルを実行してください。"
+		},
+		"sql/workbench/contrib/notebook/browser/notebookViews/notebookViewsGrid.component": {
+			"emptyText": "このビューは空です。[セルの挿入] ボタンをクリックして、このビューにセルを追加します。"
+		},
+		"sql/workbench/contrib/notebook/browser/outputs/gridOutput.component": {
+			"copyFailed": "エラー {0} でコピーに失敗しました",
+			"notebook.showChart": "グラフの表示",
+			"notebook.showTable": "テーブルの表示"
+		},
+		"sql/workbench/contrib/notebook/browser/outputs/mimeRenderer.component": {
+			"noRendererFound": "出力用の {0} レンダラーが見つかりませんでした。次の MIME の種類があります: {1}。",
+			"safe": "(安全) "
+		},
+		"sql/workbench/contrib/notebook/browser/outputs/plotlyOutput.component": {
+			"plotlyError": "Plotly グラフの表示エラー: {0}"
+		},
+		"sql/workbench/contrib/objectExplorer/browser/serverTreeView": {
+			"servers.noConnections": "接続が見つかりません。",
+			"serverTree.addConnection": "接続の追加"
+		},
+		"sql/workbench/contrib/objectExplorer/common/serverGroup.contribution": {
+			"serverGroup.colors": "オブジェクト エクスプローラー ビューレットで使用するサーバー グループ カラー パレット。",
+			"serverGroup.autoExpand": "オブジェクト エクスプローラー ビューレットの自動展開サーバー グループ。",
+			"serverTree.useAsyncServerTree": "(プレビュー) 動的ノード フィルターなどの新機能をサポートする、新しい非同期サーバー ツリーをサーバー ビューおよび接続ダイアログに使用します。"
+		},
+		"sql/workbench/contrib/preferences/browser/sqlSettingsLayout": {
+			"data": "データ",
+			"connection": "接続",
+			"queryEditor": "クエリ エディター",
+			"notebook": "ノートブック",
+			"dashboard": "ダッシュボード",
+			"profiler": "Profiler",
+			"builtinCharts": "組み込みグラフ"
+		},
+		"sql/workbench/contrib/profiler/browser/profiler.contribution": {
+			"profiler.settings.viewTemplates": "ビュー テンプレートを指定する",
+			"profiler.settings.sessionTemplates": "セッション テンプレートを指定する",
+			"profiler.settings.Filters": "Profiler フィルター"
+		},
+		"sql/workbench/contrib/profiler/browser/profilerActions": {
+			"profilerAction.connect": "接続",
+			"profilerAction.disconnect": "切断",
+			"start": "開始",
+			"create": "新しいセッション",
+			"profilerAction.pauseCapture": "一時停止",
+			"profilerAction.resumeCapture": "再開",
+			"profilerStop.stop": "停止",
+			"profiler.clear": "データのクリア",
+			"profiler.clearDataPrompt": "データをクリアしますか?",
+			"profiler.yes": "はい",
+			"profiler.no": "いいえ",
+			"profilerAction.autoscrollOn": "自動スクロール: オン",
+			"profilerAction.autoscrollOff": "自動スクロール: オフ",
+			"profiler.toggleCollapsePanel": "折りたたんだパネルを切り替える",
+			"profiler.editColumns": "列の編集",
+			"profiler.findNext": "次の文字列を検索",
+			"profiler.findPrevious": "前の文字列を検索",
+			"profilerAction.newProfiler": "Profiler を起動",
+			"profiler.filter": "フィルター...",
+			"profiler.clearFilter": "フィルターのクリア",
+			"profiler.clearFilterPrompt": "フィルターをクリアしますか?"
+		},
+		"sql/workbench/contrib/profiler/browser/profilerEditor": {
+			"profiler.viewSelectAccessibleName": "ビューの選択",
+			"profiler.sessionSelectAccessibleName": "セッションの選択",
+			"profiler.sessionSelectLabel": "セッションを選択:",
+			"profiler.viewSelectLabel": "ビューを選択:",
+			"text": "テキスト",
+			"label": "ラベル",
+			"profilerEditor.value": "値",
+			"details": "詳細"
+		},
+		"sql/workbench/contrib/profiler/browser/profilerFindWidget": {
+			"label.find": "検索",
+			"placeholder.find": "検索",
+			"label.previousMatchButton": "前の一致項目",
+			"label.nextMatchButton": "次の一致項目",
+			"label.closeButton": "閉じる",
+			"title.matchesCountLimit": "検索で多数の結果が返されました。最初の 999 件の一致のみ強調表示されます。",
+			"label.matchesLocation": "{0} / {1} 件",
+			"label.noResults": "結果なし"
+		},
+		"sql/workbench/contrib/profiler/browser/profilerResourceEditor": {
+			"profilerTextEditorAriaLabel": "イベント テキストの Profiler エディター。読み取り専用"
+		},
+		"sql/workbench/contrib/profiler/browser/profilerTableEditor": {
+			"ProfilerTableEditor.eventCountFiltered": "イベント (フィルター処理済み): {0}/{1}",
+			"ProfilerTableEditor.eventCount": "イベント: {0}",
+			"status.eventCount": "イベント数"
+		},
+		"sql/workbench/contrib/query/browser/actions": {
+			"saveAsCsv": "CSV として保存",
+			"saveAsJson": "JSON として保存",
+			"saveAsExcel": "Excel として保存",
+			"saveAsXml": "XML として保存",
+			"jsonEncoding": "JSON にエクスポートするときに結果のエンコードは保存されません。ファイルが作成されたら、目的のエンコードで保存することを忘れないでください。",
+			"saveToFileNotSupported": "バッキング データ ソースでファイルへの保存はサポートされていません",
+			"copySelection": "コピー",
+			"copyWithHeaders": "ヘッダー付きでコピー",
+			"selectAll": "すべて選択",
+			"maximize": "最大化",
+			"restore": "復元",
+			"chart": "グラフ",
+			"visualizer": "ビジュアライザー"
+		},
+		"sql/workbench/contrib/query/browser/flavorStatus": {
+			"chooseSqlLang": "SQL 言語の選択",
+			"changeProvider": "SQL 言語プロバイダーの変更",
+			"status.query.flavor": "SQL 言語のフレーバー",
+			"changeSqlProvider": "SQL エンジン プロバイダーの変更",
+			"alreadyConnected": "エンジン {0} を使用している接続が存在します。変更するには、切断するか、接続を変更してください",
+			"noEditor": "現時点でアクティブなテキスト エディターはありません",
+			"pickSqlProvider": "言語プロバイダーの選択"
+		},
+		"sql/workbench/contrib/query/browser/gridPanel": {
+			"xmlShowplan": "XML プラン表示",
+			"resultsGrid": "結果グリッド",
+			"resultsGrid.maxRowCountExceeded": "フィルター/並べ替えに使用する行の最大数を超えました。更新するには、[ユーザーの設定] に移動し、設定を変更します: 'queryEditor.results.inMemoryDataProcessingThreshold'"
+		},
+		"sql/workbench/contrib/query/browser/keyboardQueryActions": {
+			"focusOnCurrentQueryKeyboardAction": "現在のクエリにフォーカスを移動する",
+			"runQueryKeyboardAction": "クエリの実行",
+			"runCurrentQueryKeyboardAction": "現在のクエリを実行",
+			"copyQueryWithResultsKeyboardAction": "結果を含むクエリのコピー",
+			"queryActions.queryResultsCopySuccess": "クエリと結果が正常にコピーされました。",
+			"runCurrentQueryWithActualPlanKeyboardAction": "実際のプランで現在のクエリを実行",
+			"cancelQueryKeyboardAction": "クエリのキャンセル",
+			"refreshIntellisenseKeyboardAction": "IntelliSense キャッシュの更新",
+			"toggleQueryResultsKeyboardAction": "クエリ結果の切り替え",
+			"ToggleFocusBetweenQueryEditorAndResultsAction": "クエリと結果の間のフォーカスの切り替え",
+			"queryShortcutNoEditor": "ショートカットを実行するにはエディター パラメーターが必須です",
+			"parseSyntaxLabel": "クエリの解析",
+			"queryActions.parseSyntaxSuccess": "コマンドが正常に完了しました",
+			"queryActions.parseSyntaxFailure": "コマンドが失敗しました: ",
+			"queryActions.notConnected": "サーバーに接続してください"
+		},
+		"sql/workbench/contrib/query/browser/messagePanel": {
+			"messagePanel": "メッセージ パネル",
+			"copy": "コピー",
+			"copyAll": "すべてコピー"
+		},
+		"sql/workbench/contrib/query/browser/query.contribution": {
+			"queryResultsEditor.name": "クエリ結果",
+			"newQuery": "新しいクエリ",
+			"queryEditorConfigurationTitle": "クエリ エディター",
+			"queryEditor.results.saveAsCsv.includeHeaders": "true の場合、CSV として結果を保存する際に列ヘッダーが組み込まれます",
+			"queryEditor.results.saveAsCsv.delimiter": "CSV として保存するときに値の間に使用するカスタム区切り記号",
+			"queryEditor.results.saveAsCsv.lineSeperator": "結果を CSV として保存するときに行を区切るために使用する文字",
+			"queryEditor.results.saveAsCsv.textIdentifier": "結果を CSV として保存するときにテキスト フィールドを囲むために使用する文字",
+			"queryEditor.results.saveAsCsv.encoding": "結果を CSV として保存するときに使用するファイル エンコード",
+			"queryEditor.results.saveAsXml.formatted": "true の場合、XML として結果を保存すると XML 出力がフォーマットされます",
+			"queryEditor.results.saveAsXml.encoding": "結果を XML として保存するときに使用されるファイル エンコード",
+			"queryEditor.results.streaming": "結果のストリーミングを有効にします。視覚上の小さな問題がいくつかあります",
+			"queryEditor.results.copyIncludeHeaders": "結果を結果ビューからコピーするための構成オプション",
+			"queryEditor.results.copyRemoveNewLine": "複数行の結果を結果ビューからコピーするための構成オプション",
+			"queryEditor.results.optimizedTable": "(試験的) 結果の最適化されたテーブルを使用します。一部の機能がなく、準備中の場合があります。",
+			"queryEditor.inMemoryDataProcessingThreshold": "メモリ内でフィルター処理と並べ替えを実行できる行の最大数を制御します。この数を超えた場合、並べ替えとフィルター処理は無効になります。警告: これを増やすと、パフォーマンスに影響を与える可能性があります。",
+			"queryEditor.results.openAfterSave": "結果保存後に Azure Data Studio でファイルを開くかどうかを指定します。",
+			"queryEditor.messages.showBatchTime": "各バッチの実行時間を表示するかどうか",
+			"queryEditor.messages.wordwrap": "メッセージを右端で折り返す",
+			"queryEditor.chart.defaultChartType": "クエリ結果からグラフ ビューアーを開くときに使用する既定のグラフの種類",
+			"queryEditor.tabColorMode.off": "タブの色指定は無効になります",
+			"queryEditor.tabColorMode.border": "各エディター タブの上部境界線は、関連するサーバー グループと同じ色になります",
+			"queryEditor.tabColorMode.fill": "各エディター タブの背景色は、関連するサーバー グループと同じになります",
+			"queryEditor.tabColorMode": "アクティブな接続のサーバー グループに基づいてタブに色を付ける方法を制御します",
+			"queryEditor.showConnectionInfoInTitle": "タイトルにタブの接続情報を表示するかを制御します。",
+			"queryEditor.promptToSaveGeneratedFiles": "生成された SQL ファイルを保存するかをプロンプトで確認する",
+			"queryShortcutDescription": "ショートカット テキストをプロシージャ呼び出しまたはクエリ実行として実行するにはキー バインド workbench.action.query.shortcut{0} を設定します。クエリ エディターで選択したテキストはクエリの末尾でパラメーターとして渡されます。または、これを {arg} で参照することができます。"
+		},
+		"sql/workbench/contrib/query/browser/queryActions": {
+			"newQueryTask.newQuery": "新しいクエリ",
+			"runQueryLabel": "実行",
+			"cancelQueryLabel": "キャンセル",
+			"estimatedQueryPlan": "説明",
+			"actualQueryPlan": "実際",
+			"disconnectDatabaseLabel": "切断",
+			"changeConnectionDatabaseLabel": "接続の変更",
+			"connectDatabaseLabel": "接続",
+			"enablesqlcmdLabel": "SQLCMD を有効にする",
+			"disablesqlcmdLabel": "SQLCMD を無効にする",
+			"selectDatabase": "データベースの選択",
+			"changeDatabase.failed": "データベースを変更できませんでした",
+			"changeDatabase.failedWithError": "データベースを変更できませんでした: {0}",
+			"queryEditor.exportSqlAsNotebook": "ノートブックとしてエクスポート"
+		},
+		"sql/workbench/contrib/query/browser/queryEditor": {
+			"queryEditor.name": "Query Editor"
+		},
+		"sql/workbench/contrib/query/browser/queryResultsView": {
+			"resultsTabTitle": "結果",
+			"messagesTabTitle": "メッセージ"
+		},
+		"sql/workbench/contrib/query/browser/statusBarItems": {
+			"status.query.timeElapsed": "経過時間",
+			"status.query.rowCount": "行数",
+			"rowCount": "{0} 行",
+			"query.status.executing": "クエリを実行しています...",
+			"status.query.status": "実行状態",
+			"status.query.selection-summary": "選択の要約",
+			"status.query.summaryText": "平均: {0}  数: {1}  合計: {2}"
+		},
+		"sql/workbench/contrib/query/common/resultsGrid.contribution": {
+			"resultsGridConfigurationTitle": "結果グリッドとメッセージ",
+			"fontFamily": "フォント ファミリを制御します。",
+			"fontWeight": "フォントの太さを制御します。",
+			"fontSize": "フォント サイズ (ピクセル単位) を制御します。",
+			"letterSpacing": "文字間隔 (ピクセル単位) を制御します。",
+			"rowHeight": "ピクセル単位で行の高さを制御する",
+			"cellPadding": "セルの埋め込みをピクセル単位で制御します",
+			"autoSizeColumns": "最初の結果について、列の幅を自動サイズ設定します。多数の列がある場合や、大きいセルがある場合、パフォーマンスの問題が発生する可能性があります",
+			"maxColumnWidth": "自動サイズ設定される列の最大幅 (ピクセル単位)"
+		},
+		"sql/workbench/contrib/queryHistory/browser/queryHistoryActions": {
+			"toggleQueryHistory": "Query History の切り替え",
+			"queryHistory.delete": "削除",
+			"queryHistory.clearLabel": "すべての履歴をクリア",
+			"queryHistory.openQuery": "クエリを開く",
+			"queryHistory.runQuery": "クエリの実行",
+			"queryHistory.toggleCaptureLabel": "Query History キャプチャの切り替え",
+			"queryHistory.disableCapture": "Query History キャプチャの一時停止",
+			"queryHistory.enableCapture": "Query History キャプチャの開始"
+		},
+		"sql/workbench/contrib/queryHistory/browser/queryHistoryRenderer": {
+			"succeeded": "成功",
+			"failed": "失敗"
+		},
+		"sql/workbench/contrib/queryHistory/browser/queryHistoryView": {
+			"noQueriesMessage": "表示するクエリがありません。",
+			"queryHistory.regTreeAriaLabel": "Query History"
+		},
+		"sql/workbench/contrib/queryHistory/electron-browser/queryHistory": {
+			"queryHistoryConfigurationTitle": "クエリ履歴",
+			"queryHistoryCaptureEnabled": "Query History キャプチャが有効かどうか。false の場合、実行されたクエリはキャプチャされません。",
+			"queryHistory.clearLabel": "すべての履歴をクリア",
+			"queryHistory.disableCapture": "Query History キャプチャの一時停止",
+			"queryHistory.enableCapture": "Query History キャプチャの開始",
+			"viewCategory": "表示",
+			"miViewQueryHistory": "Query History (&&Q)",
+			"queryHistory": "Query History"
+		},
+		"sql/workbench/contrib/queryPlan/browser/queryPlan": {
+			"queryPlanTitle": "クエリ プラン"
+		},
+		"sql/workbench/contrib/queryPlan/browser/queryPlanEditor": {
+			"queryPlanEditor": "Query Plan Editor"
+		},
+		"sql/workbench/contrib/queryPlan/browser/topOperations": {
+			"topOperations.operation": "操作",
+			"topOperations.object": "オブジェクト",
+			"topOperations.estCost": "推定コスト",
+			"topOperations.estSubtreeCost": "サブ ツリーの推定コスト",
+			"topOperations.actualRows": "実際の行数",
+			"topOperations.estRows": "推定行数",
+			"topOperations.actualExecutions": "実際の実行",
+			"topOperations.estCPUCost": "推定 CPU コスト",
+			"topOperations.estIOCost": "推定 IO コスト",
+			"topOperations.parallel": "並列",
+			"topOperations.actualRebinds": "実際の再バインド数",
+			"topOperations.estRebinds": "再バインドの推定数",
+			"topOperations.actualRewinds": "実際の巻き戻し数",
+			"topOperations.estRewinds": "巻き戻しの推定数",
+			"topOperations.partitioned": "パーティション分割",
+			"topOperationsTitle": "上位操作"
+		},
+		"sql/workbench/contrib/resourceViewer/browser/resourceViewer.contribution": {
+			"resourceViewer": "リソース ビューアー"
+		},
+		"sql/workbench/contrib/resourceViewer/browser/resourceViewerActions": {
+			"resourceViewer.refresh": "最新の情報に更新"
+		},
+		"sql/workbench/contrib/resourceViewer/browser/resourceViewerTable": {
+			"resourceViewerTable.openError": "リンクを開いているときにエラーが発生しました: {0}",
+			"resourceViewerTable.commandError": "コマンド '{0}' の実行でエラーが発生しました: {1}"
+		},
+		"sql/workbench/contrib/resourceViewer/browser/resourceViewerView": {
+			"resourceViewer.ariaLabel": "リソース ビューアー ツリー"
+		},
+		"sql/workbench/contrib/resourceViewer/common/resourceViewerViewExtensionPoint": {
+			"extension.contributes.resourceView.resource.id": "リソースの識別子。",
+			"extension.contributes.resourceView.resource.name": "ビューの判読できる名前。これが表示されます",
+			"extension.contributes.resourceView.resource.icon": "リソース アイコンへのパス。",
+			"extension.contributes.resourceViewResources": "リソースをリソース ビューに提供します",
+			"requirestring": "プロパティ `{0}` は必須で、`string` 型でなければなりません",
+			"optstring": "プロパティ `{0}` は省略するか、`string` 型にする必要があります"
+		},
+		"sql/workbench/contrib/restore/browser/restore.contribution": {
+			"restore": "復元",
+			"backup": "復元"
+		},
+		"sql/workbench/contrib/restore/browser/restoreActions": {
+			"restore.isPreviewFeature": "復元を使用するには、プレビュー機能を有効にする必要があります",
+			"restore.commandNotSupportedOutsideContext": "復元コマンドは、サーバー コンテキストの外ではサポートされていません。サーバーまたはデータベースを選択して、もう一度お試しください。",
+			"restore.commandNotSupported": "Azure SQL データベースでは、復元コマンドはサポートされていません。",
+			"restoreAction.restore": "復元"
+		},
+		"sql/workbench/contrib/scripting/browser/scripting.contribution": {
+			"scriptAsCreate": "作成としてのスクリプト",
+			"scriptAsDelete": "ドロップとしてのスクリプト",
+			"scriptAsSelect": "上位 1000 を選択する",
+			"scriptAsExecute": "実行としてのスクリプト",
+			"scriptAsAlter": "変更としてのスクリプト",
+			"editData": "データの編集",
+			"scriptSelect": "上位 1000 を選択する",
+			"scriptKustoSelect": "10 個",
+			"scriptCreate": "作成としてのスクリプト",
+			"scriptExecute": "実行としてのスクリプト",
+			"scriptAlter": "変更としてのスクリプト",
+			"scriptDelete": "ドロップとしてのスクリプト",
+			"refreshNode": "最新の情報に更新"
+		},
+		"sql/workbench/contrib/scripting/browser/scriptingActions": {
+			"refreshError": "ノード '{0}' の更新でエラーが発生しました: {1}"
+		},
+		"sql/workbench/contrib/tasks/browser/tasks.contribution": {
+			"inProgressTasksChangesBadge": "{0} 個のタスクが進行中です",
+			"viewCategory": "表示",
+			"tasks": "タスク",
+			"miViewTasks": "タスク(&&T)"
+		},
+		"sql/workbench/contrib/tasks/browser/tasksActions": {
+			"toggleTasks": "タスクの切り替え"
+		},
+		"sql/workbench/contrib/tasks/browser/tasksRenderer": {
+			"succeeded": "成功",
+			"failed": "失敗",
+			"inProgress": "進行中",
+			"notStarted": "未開始",
+			"canceled": "キャンセル済み",
+			"canceling": "キャンセル中"
+		},
+		"sql/workbench/contrib/tasks/browser/tasksView": {
+			"noTaskMessage": "表示するタスク履歴がありません。",
+			"taskHistory.regTreeAriaLabel": "タスク履歴",
+			"taskError": "タスク エラー"
+		},
+		"sql/workbench/contrib/tasks/common/tasksAction": {
+			"cancelTask.cancel": "キャンセル",
+			"errorMsgFromCancelTask": "タスクを取り消せませんでした。",
+			"taskAction.script": "スクリプト"
+		},
+		"sql/workbench/contrib/views/browser/treeView": {
+			"no-dataprovider": "ビュー データを提供できるデータ プロバイダーが登録されていません。",
+			"refresh": "最新の情報に更新",
+			"collapseAll": "すべて折りたたむ",
+			"command-error": "コマンド {1} の実行中にエラー {0} が発生しました。{1} を提供する拡張機能が原因である可能性があります。"
+		},
+		"sql/workbench/contrib/webview/browser/webViewDialog": {
+			"webViewDialog.ok": "OK",
+			"webViewDialog.close": "閉じる"
+		},
+		"sql/workbench/contrib/welcome/gettingStarted/browser/abstractEnablePreviewFeatures": {
+			"enablePreviewFeatures.notice": "プレビュー機能により、新機能と機能改善にフル アクセスできることで、Azure Data Studio のエクスペリエンスが拡張されます。プレビュー機能の詳細については、[ここ] ({0}) を参照してください。プレビュー機能を有効にしますか?",
+			"enablePreviewFeatures.yes": "はい (推奨)",
+			"enablePreviewFeatures.no": "いいえ",
+			"enablePreviewFeatures.never": "いいえ、今後は表示しない"
+		},
+		"sql/workbench/contrib/welcome/page/browser/az_data_welcome_page": {
+			"welcomePage.previewBody": "この機能ページはプレビュー段階です。プレビュー機能では、製品の永続的な部分になる予定の新しい機能が導入されています。これらは安定していますが、追加のアクセシビリティの改善が必要です。開発中の早期のフィードバックを歓迎しています。",
+			"welcomePage.preview": "プレビュー",
+			"welcomePage.createConnection": "接続の作成",
+			"welcomePage.createConnectionBody": "接続ダイアログを使用してデータベース インスタンスに接続します。",
+			"welcomePage.runQuery": "クエリの実行",
+			"welcomePage.runQueryBody": "クエリ エディターを使用してデータを操作します。",
+			"welcomePage.createNotebook": "ノートブックの作成",
+			"welcomePage.createNotebookBody": "ネイティブのノートブック エディターを使用して、新しいノートブックを作成します。",
+			"welcomePage.deployServer": "サーバーのデプロイ",
+			"welcomePage.deployServerBody": "選択したプラットフォームでリレーショナル データ サービスの新しいインスタンスを作成します。",
+			"welcomePage.resources": "リソース",
+			"welcomePage.history": "履歴",
+			"welcomePage.name": "名前",
+			"welcomePage.location": "場所",
+			"welcomePage.moreRecent": "さらに表示",
+			"welcomePage.showOnStartup": "起動時にウェルカム ページを表示する",
+			"welcomePage.usefuLinks": "役に立つリンク",
+			"welcomePage.gettingStarted": "はじめに",
+			"welcomePage.gettingStartedBody": "Azure Data Studio によって提供される機能を検出し、それらを最大限に活用する方法について説明します。",
+			"welcomePage.documentation": "ドキュメント",
+			"welcomePage.documentationBody": "PowerShell、API などのクイックスタート、攻略ガイド、リファレンスについては、ドキュメント センターを参照してください。",
+			"welcomePage.videos": "ビデオ",
+			"welcomePage.videoDescriptionOverview": "Azure Data Studio の概要",
+			"welcomePage.videoDescriptionIntroduction": "Azure Data Studio ノートブックの概要 | 公開されたデータ",
+			"welcomePage.extensions": "拡張",
+			"welcomePage.showAll": "すべて表示",
+			"welcomePage.learnMore": "詳細情報"
+		},
+		"sql/workbench/contrib/welcome/page/browser/gettingStartedTour": {
+			"GuidedTour.connections": "接続",
+			"GuidedTour.makeConnections": "SQL Server、Azure などからの接続を接続、クエリ、および管理します。",
+			"GuidedTour.one": "1",
+			"GuidedTour.next": "次へ",
+			"GuidedTour.notebooks": "ノートブック",
+			"GuidedTour.gettingStartedNotebooks": "1 か所で独自のノートブックまたはノートブックのコレクションの作成を開始します。",
+			"GuidedTour.two": "2",
+			"GuidedTour.extensions": "拡張",
+			"GuidedTour.addExtensions": "Microsoft (私たち) だけでなくサードパーティ コミュニティ (あなた) が開発した拡張機能をインストールすることにより、Azure Data Studio の機能を拡張します。",
+			"GuidedTour.three": "3",
+			"GuidedTour.settings": "設定",
+			"GuidedTour.makeConnesetSettings": "好みに応じて Azure Data Studio をカスタマイズします。自動保存やタブ サイズなどの設定の構成、キーボード ショートカットのカスタマイズ、好きな配色テーマへの切り替えを行うことができます。",
+			"GuidedTour.four": "4",
+			"GuidedTour.welcomePage": "ウェルカム ページ",
+			"GuidedTour.discoverWelcomePage": "ウェルカム ページで、トップの機能、最近開いたファイル、推奨される拡張機能がわかります。Azure Data Studio で作業を開始する方法の詳細については、ビデオとドキュメントをご覧ください。",
+			"GuidedTour.five": "5",
+			"GuidedTour.finish": "完了",
+			"guidedTour": "ユーザー紹介ツアー",
+			"hideGuidedTour": "紹介ツアーの非表示",
+			"GuidedTour.readMore": "詳細情報",
+			"help": "ヘルプ"
+		},
+		"sql/workbench/contrib/welcome/page/browser/welcomePage": {
+			"welcomePage": "ようこそ",
+			"welcomePage.adminPack": "SQL 管理パック",
+			"welcomePage.showAdminPack": "SQL 管理パック",
+			"welcomePage.adminPackDescription": "SQL Server の管理パックは、一般的なデータベース管理拡張機能のコレクションであり、SQL Server の管理に役立ちます",
+			"welcomePage.sqlServerAgent": "SQL Server エージェント",
+			"welcomePage.sqlServerProfiler": "SQL Server Profiler",
+			"welcomePage.sqlServerImport": "SQL Server のインポート",
+			"welcomePage.sqlServerDacpac": "SQL Server DACPAC",
+			"welcomePage.powershell": "PowerShell",
+			"welcomePage.powershellDescription": "Azure Data Studio のリッチ クエリ エディターを使用して PowerShell スクリプトを作成して実行します",
+			"welcomePage.dataVirtualization": "データ仮想化",
+			"welcomePage.dataVirtualizationDescription": "SQL Server 2019 を使用してデータを仮想化し、インタラクティブなウィザードを使用して外部テーブルを作成します",
+			"welcomePage.PostgreSQL": "PostgreSQL",
+			"welcomePage.PostgreSQLDescription": "Azure Data Studio で Postgres データベースを接続、クエリ、および管理します",
+			"welcomePage.extensionPackAlreadyInstalled": "{0} のサポートは既にインストールされています。",
+			"welcomePage.willReloadAfterInstallingExtensionPack": "{0} に追加のサポートをインストールしたあと、ウィンドウが再度読み込まれます。",
+			"welcomePage.installingExtensionPack": "{0} に追加のサポートをインストールしています...",
+			"welcomePage.extensionPackNotFound": "ID {1} のサポート {0} は見つかりませんでした。",
+			"welcomePage.newConnection": "新しい接続",
+			"welcomePage.newQuery": "新しいクエリ",
+			"welcomePage.newNotebook": "新しいノートブック",
+			"welcomePage.deployServer": "サーバーのデプロイ",
+			"welcome.title": "ようこそ",
+			"welcomePage.new": "新規",
+			"welcomePage.open": "開く…",
+			"welcomePage.openFile": "ファイルを開く…",
+			"welcomePage.openFolder": "フォルダーを開く",
+			"welcomePage.startTour": "ツアーの開始",
+			"closeTourBar": "クイック ツアー バーを閉じる",
+			"WelcomePage.TakeATour": "Azure Data Studio のクイック ツアーを開始しますか?",
+			"WelcomePage.welcome": "ようこそ",
+			"welcomePage.openFolderWithPath": "パス {1} のフォルダー {0} を開く",
+			"welcomePage.install": "インストール",
+			"welcomePage.installKeymap": "{0} キーマップのインストール",
+			"welcomePage.installExtensionPack": "{0} に追加のサポートをインストールする",
+			"welcomePage.installed": "インストール済み",
+			"welcomePage.installedKeymap": "{0} キーマップは既にインストールされています",
+			"welcomePage.installedExtensionPack": "{0} のサポートは既にインストールされています",
+			"ok": "OK",
+			"details": "詳細",
+			"welcomePage.background": "ウェルカム ページの背景色。"
+		},
+		"sql/workbench/contrib/welcome2/page/browser/az_data_welcome_page": {
+			"welcomePage.azdata": "Azure Data Studio",
+			"welcomePage.start": "開始",
+			"welcomePage.newConnection": "新しい接続",
+			"welcomePage.newQuery": "新しいクエリ",
+			"welcomePage.newNotebook": "新しいノートブック",
+			"welcomePage.openFileMac": "ファイルを開く",
+			"welcomePage.openFileLinuxPC": "ファイルを開く",
+			"welcomePage.deploy": "デプロイ",
+			"welcomePage.newDeployment": "新しいデプロイ…",
+			"welcomePage.recent": "最近",
+			"welcomePage.moreRecent": "その他...",
+			"welcomePage.noRecentFolders": "最近使用したフォルダーなし",
+			"welcomePage.help": "ヘルプ",
+			"welcomePage.gettingStarted": "はじめに",
+			"welcomePage.productDocumentation": "ドキュメント",
+			"welcomePage.reportIssue": "問題または機能要求を報告する",
+			"welcomePage.gitHubRepository": "GitHub リポジトリ",
+			"welcomePage.releaseNotes": "リリース ノート",
+			"welcomePage.showOnStartup": "起動時にウェルカム ページを表示する",
+			"welcomePage.customize": "カスタマイズ",
+			"welcomePage.extensions": "拡張",
+			"welcomePage.extensionDescription": "SQL Server 管理パックなど、必要な拡張機能をダウンロードする",
+			"welcomePage.keyboardShortcut": "キーボード ショートカット",
+			"welcomePage.keyboardShortcutDescription": "お気に入りのコマンドを見つけてカスタマイズする",
+			"welcomePage.colorTheme": "配色テーマ",
+			"welcomePage.colorThemeDescription": "エディターとコードの外観を自由に設定します",
+			"welcomePage.learn": "詳細",
+			"welcomePage.showCommands": "すべてのコマンドの検索と実行",
+			"welcomePage.showCommandsDescription": "コマンド パレット ({0}) にすばやくアクセスしてコマンドを検索します",
+			"welcomePage.azdataBlog": "最新リリースの新機能を見る",
+			"welcomePage.azdataBlogDescription": "毎月新機能を紹介する新しいブログ記事",
+			"welcomePage.followTwitter": "Twitter でフォローする",
+			"welcomePage.followTwitterDescription": "コミュニティがどのように Azure Data Studio を使用しているかについて、最新情報を把握し、エンジニアと直接話し合います。"
+		},
+		"sql/workbench/services/accountManagement/browser/accountDialog": {
+			"accountExplorer.name": "アカウント",
+			"linkedAccounts": "リンクされたアカウント",
+			"accountDialog.close": "閉じる",
+			"accountDialog.noAccountLabel": "リンクされているアカウントはありません。アカウントを追加してください。",
+			"accountDialog.addConnection": "アカウントを追加する",
+			"accountDialog.noCloudsRegistered": "有効にされているクラウドがありません。[設定] -> [Azure アカウント構成の検索] に移動し、 少なくとも 1 つのクラウドを有効にしてください",
+			"accountDialog.didNotPickAuthProvider": "認証プロバイダーを選択していません。もう一度お試しください。"
+		},
+		"sql/workbench/services/accountManagement/browser/accountDialogController": {
+			"accountDialog.addAccountErrorTitle": "アカウントの追加でのエラー"
+		},
+		"sql/workbench/services/accountManagement/browser/accountListRenderer": {
+			"refreshCredentials": "このアカウントの資格情報を更新する必要があります。"
+		},
+		"sql/workbench/services/accountManagement/browser/accountManagementService": {
+			"accountManagementService.close": "閉じる",
+			"loggingIn": "アカウントを追加しています...",
+			"refreshFailed": "ユーザーがアカウントの更新をキャンセルしました"
+		},
+		"sql/workbench/services/accountManagement/browser/accountPickerImpl": {
+			"azureAccount": "Azure アカウント",
+			"azureTenant": "Azure テナント"
+		},
+		"sql/workbench/services/accountManagement/browser/autoOAuthDialog": {
+			"copyAndOpen": "コピーして開く",
+			"oauthDialog.cancel": "キャンセル",
+			"userCode": "ユーザー コード",
+			"website": "Web サイト"
+		},
+		"sql/workbench/services/accountManagement/browser/autoOAuthDialogController": {
+			"oauthFlyoutIsAlreadyOpen": "自動 OAuth を開始できません。自動 OAuth は既に進行中です。"
+		},
+		"sql/workbench/services/admin/common/adminService": {
+			"adminService.providerIdNotValidError": "管理サービスとの対話には接続が必須です",
+			"adminService.noHandlerRegistered": "登録されているハンドラーがありません"
+		},
+		"sql/workbench/services/assessment/common/assessmentService": {
+			"asmt.providerIdNotValidError": "評価サービスとの対話には接続が必要です",
+			"asmt.noHandlerRegistered": "登録されているハンドラーがありません"
+		},
+		"sql/workbench/services/connection/browser/advancedPropertiesController": {
+			"connectionAdvancedProperties": "詳細プロパティ",
+			"advancedProperties.discard": "破棄"
+		},
+		"sql/workbench/services/connection/browser/cmsConnectionWidget": {
+			"serverDescription": "サーバーの説明 (省略可能)"
+		},
+		"sql/workbench/services/connection/browser/connectionActions": {
+			"ClearRecentlyUsedLabel": "リストのクリア",
+			"ClearedRecentConnections": "最近の接続履歴をクリアしました",
+			"connectionAction.yes": "はい",
+			"connectionAction.no": "いいえ",
+			"clearRecentConnectionMessage": "一覧からすべての接続を削除してよろしいですか?",
+			"connectionDialog.yes": "はい",
+			"connectionDialog.no": "いいえ",
+			"delete": "削除",
+			"connectionAction.GetCurrentConnectionString": "現在の接続文字列を取得する",
+			"connectionAction.connectionString": "接続文字列は使用できません",
+			"connectionAction.noConnection": "使用できるアクティブな接続がありません"
+		},
+		"sql/workbench/services/connection/browser/connectionBrowseTab": {
+			"connectionDialog.browser": "参照",
+			"connectionDialog.FilterPlaceHolder": "一覧にフィルターをかけるには、ここに入力します",
+			"connectionDialog.FilterInputTitle": "接続のフィルター",
+			"connectionDialog.ApplyingFilter": "フィルターを適用しています",
+			"connectionDialog.RemovingFilter": "フィルターを削除しています",
+			"connectionDialog.FilterApplied": "フィルター適用済み",
+			"connectionDialog.FilterRemoved": "フィルターが削除されました",
+			"savedConnections": "保存された接続",
+			"savedConnection": "保存された接続",
+			"connectionBrowserTree": "接続ブラウザー ツリー"
+		},
+		"sql/workbench/services/connection/browser/connectionDialogService": {
+			"connectionError": "接続エラー",
+			"kerberosErrorStart": "接続は、Kerberos エラーのため失敗しました。",
+			"kerberosHelpLink": "Kerberos を構成するためのヘルプを {0} で確認できます",
+			"kerberosKinit": "以前に接続した場合は、kinit を再実行しなければならない場合があります。"
+		},
+		"sql/workbench/services/connection/browser/connectionDialogWidget": {
+			"connection": "接続",
+			"connecting": "接続しています",
+			"connectType": "接続の種類",
+			"recentConnectionTitle": "最近",
+			"connectionDetailsTitle": "接続の詳細",
+			"connectionDialog.connect": "接続",
+			"connectionDialog.cancel": "キャンセル",
+			"connectionDialog.recentConnections": "最近の接続",
+			"noRecentConnections": "最近の接続はありません"
+		},
+		"sql/workbench/services/connection/browser/connectionManagementService": {
+			"connection.noAzureAccount": "接続用の Azure アカウント トークンの取得に失敗しました",
+			"connectionNotAcceptedError": "接続が承認されていません",
+			"connectionService.yes": "はい",
+			"connectionService.no": "いいえ",
+			"cancelConnectionConfirmation": "この接続をキャンセルしてもよろしいですか?"
+		},
+		"sql/workbench/services/connection/browser/connectionWidget": {
+			"connectionWidget.AddAzureAccount": "アカウントを追加する...",
+			"defaultDatabaseOption": "<既定>",
+			"loadingDatabaseOption": "読み込んでいます...",
+			"serverGroup": "サーバー グループ",
+			"defaultServerGroup": "<既定>",
+			"addNewServerGroup": "新しいグループを追加する...",
+			"noneServerGroup": "<保存しない>",
+			"connectionWidget.missingRequireField": "{0} が必須です。",
+			"connectionWidget.fieldWillBeTrimmed": "{0} がトリミングされます。",
+			"rememberPassword": "パスワードを記憶する",
+			"connection.azureAccountDropdownLabel": "アカウント",
+			"connectionWidget.refreshAzureCredentials": "アカウントの資格情報を更新",
+			"connection.azureTenantDropdownLabel": "Azure AD テナント",
+			"connectionName": "名前 (省略可能)",
+			"advanced": "詳細設定...",
+			"connectionWidget.invalidAzureAccount": "アカウントを選択する必要があります"
+		},
+		"sql/workbench/services/connection/browser/localizedConstants": {
+			"onDidConnectMessage": "接続先",
+			"onDidDisconnectMessage": "切断",
+			"unsavedGroupLabel": "保存されていない接続"
+		},
+		"sql/workbench/services/dashboard/browser/newDashboardTabDialogImpl": {
+			"newDashboardTab.openDashboardExtensions": "ダッシュボードの拡張機能を開く",
+			"newDashboardTab.ok": "OK",
+			"newDashboardTab.cancel": "キャンセル",
+			"newdashboardTabDialog.noExtensionLabel": "まだダッシュボードの拡張機能がインストールされていません。拡張機能マネージャーに移動し、推奨される拡張機能をご確認ください。"
+		},
+		"sql/workbench/services/dialog/browser/dialogPane": {
+			"wizardPageNumberDisplayText": "ステップ {0}"
+		},
+		"sql/workbench/services/dialog/common/dialogTypes": {
+			"dialogModalDoneButtonLabel": "完了",
+			"dialogModalCancelButtonLabel": "キャンセル"
+		},
+		"sql/workbench/services/editData/common/editQueryRunner": {
+			"query.initEditExecutionFailed": "編集データ セッションを初期化できませんでした: "
+		},
+		"sql/workbench/services/errorMessage/browser/errorMessageDialog": {
+			"errorMessageDialog.ok": "OK",
+			"errorMessageDialog.close": "閉じる",
+			"errorMessageDialog.action": "アクション",
+			"copyDetails": "コピーの詳細"
+		},
+		"sql/workbench/services/errorMessage/browser/errorMessageService": {
+			"error": "エラー",
+			"warning": "警告",
+			"info": "情報",
+			"ignore": "無視する"
+		},
+		"sql/workbench/services/fileBrowser/browser/fileBrowserDialog": {
+			"filebrowser.filepath": "選択されたパス",
+			"fileFilter": "ファイルの種類",
+			"fileBrowser.ok": "OK",
+			"fileBrowser.discard": "破棄"
+		},
+		"sql/workbench/services/fileBrowser/browser/fileBrowserDialogController": {
+			"filebrowser.selectFile": "ファイルの選択"
+		},
+		"sql/workbench/services/fileBrowser/browser/fileBrowserTreeView": {
+			"fileBrowser.regTreeAriaLabel": "ファイル ブラウザー ツリー"
+		},
+		"sql/workbench/services/fileBrowser/common/fileBrowserService": {
+			"fileBrowserErrorMessage": "ファイル ブラウザーの読み込み中にエラーが発生しました。",
+			"fileBrowserErrorDialogTitle": "ファイル ブラウザーのエラー"
+		},
+		"sql/workbench/services/fileBrowser/common/fileBrowserViewModel": {
+			"allFiles": "すべてのファイル"
+		},
+		"sql/workbench/services/insights/browser/insightDialogActions": {
+			"workbench.action.insights.copySelection": "セルをコピー"
+		},
+		"sql/workbench/services/insights/browser/insightsDialogController": {
+			"insightsInputError": "分析情報ポップアップに渡された接続プロファイルはありませんでした",
+			"insightsError": "分析情報エラー",
+			"insightsFileError": "クエリ ファイルの読み取り中にエラーが発生しました: ",
+			"insightsConfigError": "分析情報の構成の解析中にエラーが発生しました。クエリ配列/文字列、またはクエリ ファイルが見つかりませんでした"
+		},
+		"sql/workbench/services/insights/browser/insightsDialogView": {
+			"insights.item": "アイテム",
+			"insights.value": "値",
+			"insightsDetailView.name": "分析情報の詳細",
+			"property": "プロパティ",
+			"value": "値",
+			"InsightsDialogTitle": "分析情報",
+			"insights.dialog.items": "アイテム",
+			"insights.dialog.itemDetails": "アイテムの詳細"
+		},
+		"sql/workbench/services/insights/common/insightsUtils": {
+			"insightsDidNotFindResolvedFile": "クエリ ファイルが、次のどのパスにも見つかりませんでした:\r\n {0}"
+		},
+		"sql/workbench/services/jobManagement/browser/jobManagementUtilities": {
+			"agentUtilities.failed": "失敗",
+			"agentUtilities.succeeded": "成功",
+			"agentUtilities.retry": "再試行",
+			"agentUtilities.canceled": "取り消されました",
+			"agentUtilities.inProgress": "進行中",
+			"agentUtilities.statusUnknown": "不明な状態",
+			"agentUtilities.executing": "実行中",
+			"agentUtilities.waitingForThread": "スレッドを待機しています",
+			"agentUtilities.betweenRetries": "再試行の間",
+			"agentUtilities.idle": "アイドル状態",
+			"agentUtilities.suspended": "中断中",
+			"agentUtilities.obsolete": "[古い]",
+			"agentUtilities.yes": "はい",
+			"agentUtilities.no": "いいえ",
+			"agentUtilities.notScheduled": "スケジュールが設定されていません",
+			"agentUtilities.neverRun": "実行しない"
+		},
+		"sql/workbench/services/jobManagement/common/jobManagementService": {
+			"providerIdNotValidError": "JobManagementService と対話するには接続が必須です",
+			"noHandlerRegistered": "登録されているハンドラーがありません"
+		},
+		"sql/workbench/services/notebook/browser/interfaces": {
+			"sqlKernel": "SQL"
+		},
 		"sql/workbench/services/notebook/browser/models/cell": {
 			"runCellCancelled": "セルの実行が取り消されました",
 			"executionCanceled": "クエリの実行が取り消されました",
@@ -11325,12 +11224,223 @@
 			"noDefaultKernel": "このノートブックで使用できるカーネルはありません",
 			"commandSuccessful": "コマンドは正常に実行されました"
 		},
+		"sql/workbench/services/notebook/browser/models/clientSession": {
+			"clientSession.unknownError": "ノートブック セッションの開始中にエラーが発生しました。",
+			"ServerNotStarted": "不明な理由によりサーバーが起動しませんでした",
+			"kernelRequiresConnection": "カーネル {0} が見つかりませんでした。既定のカーネルが代わりに使用されます。"
+		},
 		"sql/workbench/services/notebook/browser/models/notebookContexts": {
 			"selectConnection": "接続を選択",
 			"localhost": "localhost"
 		},
-		"sql/workbench/browser/parts/editor/editorStatusModeSelect": {
-			"languageChangeUnsupported": "保存されていないファイルでの編集者の種類の変更はサポートされていません"
+		"sql/workbench/services/notebook/browser/models/notebookModel": {
+			"injectedParametersMsg": "# Injected-Parameters\r\n",
+			"kernelRequiresConnection": "このカーネルのセルを実行する接続を選択してください",
+			"deleteCellFailed": "セルの削除に失敗しました。",
+			"changeKernelFailedRetry": "カーネルの変更に失敗しました。カーネル {0} が使用されます。エラー: {1}",
+			"changeKernelFailed": "次のエラーにより、カーネルの変更に失敗しました: {0}",
+			"changeContextFailed": "コンテキストの変更に失敗しました: {0}",
+			"startSessionFailed": "セッションを開始できませんでした: {0}",
+			"shutdownClientSessionError": "ノートブックを閉じるときにクライアント セッション エラーが発生しました: {0}",
+			"ProviderNoManager": "プロバイダー {0} のノートブック マネージャーが見つかりません"
+		},
+		"sql/workbench/services/notebook/browser/notebookServiceImpl": {
+			"notebookUriNotDefined": "ノートブック マネージャーを作成するときに URI が渡されませんでした",
+			"notebookServiceNoProvider": "ノートブック プロバイダーが存在しません"
+		},
+		"sql/workbench/services/notebook/browser/notebookViews/notebookViewModel": {
+			"notebookView.nameTaken": "このノートブックには、 {0} という名前のビューが既に存在します。"
+		},
+		"sql/workbench/services/notebook/browser/sql/sqlSessionManager": {
+			"sqlKernelError": "SQL カーネル エラー",
+			"connectionRequired": "ノートブックのセルを実行するには、接続を選択する必要があります",
+			"sqlMaxRowsDisplayed": "上位 {0} 行を表示しています。"
+		},
+		"sql/workbench/services/notebook/common/contracts": {
+			"notebook.richTextEditMode": "リッチ テキスト",
+			"notebook.splitViewEditMode": "分割ビュー",
+			"notebook.markdownEditMode": "Markdown"
+		},
+		"sql/workbench/services/notebook/common/localContentManager": {
+			"nbformatNotRecognized": "認識されない nbformat v{0}.{1}",
+			"nbNotSupported": "このファイルは有効なノートブック形式ではありません",
+			"unknownCellType": "セルの種類 {0} が不明",
+			"unrecognizedOutput": "出力の種類 {0} を認識できません",
+			"invalidMimeData": "{0} のデータは、文字列または文字列の配列である必要があります",
+			"unrecognizedOutputType": "出力の種類 {0} を認識できません"
+		},
+		"sql/workbench/services/notebook/common/notebookRegistry": {
+			"carbon.extension.contributes.notebook.provider": "ノートブック プロバイダーの識別子。",
+			"carbon.extension.contributes.notebook.fileExtensions": "このノートブック プロバイダーにどのファイル拡張子を登録する必要があるか",
+			"carbon.extension.contributes.notebook.standardKernels": "このノートブック プロバイダーへの標準装備が必要なカーネル",
+			"vscode.extension.contributes.notebook.providers": "ノートブック プロバイダーを提供します。",
+			"carbon.extension.contributes.notebook.magic": "'%%sql' などのセル マジックの名前。",
+			"carbon.extension.contributes.notebook.language": "このセル マジックがセルに含まれる場合に使用されるセルの言語",
+			"carbon.extension.contributes.notebook.executionTarget": "Spark / SQL など、このマジックが示すオプションの実行対象",
+			"carbon.extension.contributes.notebook.kernels": "これが有効なカーネルのオプションのセット (python3、pyspark、sql など)",
+			"vscode.extension.contributes.notebook.languagemagics": "ノートブックの言語を提供します。"
+		},
+		"sql/workbench/services/objectExplorer/browser/asyncServerTreeRenderer": {
+			"loading": "読み込んでいます..."
+		},
+		"sql/workbench/services/objectExplorer/browser/connectionTreeAction": {
+			"connectionTree.refresh": "最新の情報に更新",
+			"connectionTree.editConnection": "接続の編集",
+			"DisconnectAction": "切断",
+			"connectionTree.addConnection": "新しい接続",
+			"connectionTree.addServerGroup": "新しいサーバー グループ",
+			"connectionTree.editServerGroup": "サーバー グループの編集",
+			"activeConnections": "アクティブな接続を表示",
+			"showAllConnections": "すべての接続を表示",
+			"deleteConnection": "接続の削除",
+			"deleteConnectionGroup": "グループの削除"
+		},
+		"sql/workbench/services/objectExplorer/browser/objectExplorerService": {
+			"OeSessionFailedError": "オブジェクト エクスプローラー セッションを作成できませんでした",
+			"nodeExpansionError": "複数のエラー:"
+		},
+		"sql/workbench/services/objectExplorer/browser/objectExplorerViewTreeShim": {
+			"noProviderFound": "必要な接続プロバイダー '{0}' が見つからないため、展開できません",
+			"loginCanceled": "ユーザーによる取り消し",
+			"firewallCanceled": "ファイアウォール ダイアログが取り消されました"
+		},
+		"sql/workbench/services/objectExplorer/browser/serverTreeRenderer": {
+			"loading": "読み込んでいます..."
+		},
+		"sql/workbench/services/objectExplorer/browser/treeCreationUtils": {
+			"treeAriaLabel": "最近の接続",
+			"serversAriaLabel": "サーバー",
+			"treeCreation.regTreeAriaLabel": "サーバー"
+		},
+		"sql/workbench/services/profiler/browser/profilerColumnEditorDialog": {
+			"eventSort": "イベントで並べ替え",
+			"nameColumn": "列で並べ替え",
+			"profilerColumnDialog.profiler": "プロファイラー",
+			"profilerColumnDialog.ok": "OK",
+			"profilerColumnDialog.cancel": "キャンセル"
+		},
+		"sql/workbench/services/profiler/browser/profilerFilterDialog": {
+			"profilerFilterDialog.clear": "すべてクリア",
+			"profilerFilterDialog.apply": "適用",
+			"profilerFilterDialog.ok": "OK",
+			"profilerFilterDialog.cancel": "キャンセル",
+			"profilerFilterDialog.title": "フィルター",
+			"profilerFilterDialog.remove": "この句を削除する",
+			"profilerFilterDialog.saveFilter": "フィルターを保存する",
+			"profilerFilterDialog.loadFilter": "フィルターを読み込む",
+			"profilerFilterDialog.addClauseText": "句を追加する",
+			"profilerFilterDialog.fieldColumn": "フィールド",
+			"profilerFilterDialog.operatorColumn": "演算子",
+			"profilerFilterDialog.valueColumn": "値",
+			"profilerFilterDialog.isNullOperator": "Null である",
+			"profilerFilterDialog.isNotNullOperator": "Null でない",
+			"profilerFilterDialog.containsOperator": "含む",
+			"profilerFilterDialog.notContainsOperator": "含まない",
+			"profilerFilterDialog.startsWithOperator": "次で始まる",
+			"profilerFilterDialog.notStartsWithOperator": "次で始まらない"
+		},
+		"sql/workbench/services/query/common/queryModelService": {
+			"commitEditFailed": "行のコミットに失敗しました: ",
+			"runQueryBatchStartMessage": "次の場所でクエリの実行を開始しました: ",
+			"runQueryStringBatchStartMessage": "クエリ「{0}」の実行を開始しました",
+			"runQueryBatchStartLine": "行 {0}",
+			"msgCancelQueryFailed": "失敗したクエリのキャンセル中: {0}",
+			"updateCellFailed": "セルの更新が失敗しました: "
+		},
+		"sql/workbench/services/query/common/queryRunner": {
+			"query.ExecutionFailedError": "予期しないエラーにより、実行が失敗しました: {0} {1}",
+			"query.message.executionTime": "総実行時間: {0}",
+			"query.message.startQueryWithRange": "行 {0} でのクエリの実行が開始されました",
+			"query.message.startQuery": "バッチ {0} の実行を開始しました",
+			"elapsedBatchTime": "バッチ実行時間: {0}",
+			"copyFailed": "エラー {0} でコピーに失敗しました"
+		},
+		"sql/workbench/services/query/common/resultSerializer": {
+			"msgSaveFailed": "結果を保存できませんでした。 ",
+			"resultsSerializer.saveAsFileTitle": "結果ファイルの選択",
+			"resultsSerializer.saveAsFileExtensionCSVTitle": "CSV (コンマ区切り)",
+			"resultsSerializer.saveAsFileExtensionJSONTitle": "JSON",
+			"resultsSerializer.saveAsFileExtensionExcelTitle": "Excel ブック",
+			"resultsSerializer.saveAsFileExtensionXMLTitle": "XML",
+			"resultsSerializer.saveAsFileExtensionTXTTitle": "プレーン テキスト",
+			"savingFile": "ファイルを保存しています...",
+			"msgSaveSucceeded": "結果が {0} に正常に保存されました ",
+			"openFile": "ファイルを開く"
+		},
+		"sql/workbench/services/resourceProvider/browser/firewallRuleDialog": {
+			"from": "開始",
+			"to": "終了",
+			"createNewFirewallRule": "新しいファイアウォール規則の作成",
+			"firewall.ok": "OK",
+			"firewall.cancel": "キャンセル",
+			"firewallRuleDialogDescription": "このクライアント IP アドレスではサーバーにアクセスできません。アクセスできるようにするには、Azure アカウントにサインインし、新しいファイアウォール規則を作成します。",
+			"firewallRuleHelpDescription": "ファイアウォール設定の詳細情報",
+			"filewallRule": "ファイアウォール規則",
+			"addIPAddressLabel": "自分のクライアント IP アドレスを追加 ",
+			"addIpRangeLabel": "自分のサブネット IP 範囲を追加"
+		},
+		"sql/workbench/services/resourceProvider/browser/firewallRuleDialogController": {
+			"firewallDialog.addAccountErrorTitle": "アカウントの追加でのエラー",
+			"firewallRuleError": "ファイアウォール規則のエラー"
+		},
+		"sql/workbench/services/restore/browser/restoreDialog": {
+			"backupFilePath": "バックアップ ファイルのパス",
+			"targetDatabase": "ターゲット データベース",
+			"restoreDialog.restore": "復元",
+			"restoreDialog.restoreTitle": "データベースの復元",
+			"restoreDialog.database": "データベース",
+			"restoreDialog.backupFile": "バックアップ ファイル",
+			"RestoreDialogTitle": "データベースの復元",
+			"restoreDialog.cancel": "キャンセル",
+			"restoreDialog.script": "スクリプト",
+			"source": "ソース",
+			"restoreFrom": "復元元",
+			"missingBackupFilePathError": "バックアップ ファイルのパスが必須です。",
+			"multipleBackupFilePath": "１つまたは複数のファイル パスをコンマで区切って入力してください。",
+			"database": "データベース",
+			"destination": "ターゲット",
+			"restoreTo": "復元先",
+			"restorePlan": "復元計画",
+			"backupSetsToRestore": "復元するバックアップ セット",
+			"restoreDatabaseFileAs": "データベース ファイルを名前を付けて復元",
+			"restoreDatabaseFileDetails": "データベース ファイルの詳細を復元する",
+			"logicalFileName": "論理ファイル名",
+			"fileType": "ファイルの種類",
+			"originalFileName": "元のファイル名",
+			"restoreAs": "復元ファイル名",
+			"restoreOptions": "復元オプション",
+			"taillogBackup": "ログ末尾のバックアップ",
+			"serverConnection": "サーバーの接続",
+			"generalTitle": "全般",
+			"filesTitle": "ファイル",
+			"optionsTitle": "オプション​​"
+		},
+		"sql/workbench/services/restore/common/constants": {
+			"backup.filterBackupFiles": "バックアップ ファイル",
+			"backup.allFiles": "すべてのファイル"
+		},
+		"sql/workbench/services/serverGroup/browser/serverGroupDialog": {
+			"ServerGroupsDialogTitle": "サーバー グループ",
+			"serverGroup.ok": "OK",
+			"serverGroup.cancel": "キャンセル",
+			"connectionGroupName": "サーバー グループ名",
+			"MissingGroupNameError": "グループ名が必須です。",
+			"groupDescription": "グループの説明",
+			"groupColor": "グループの色"
+		},
+		"sql/workbench/services/serverGroup/common/serverGroupViewModel": {
+			"serverGroup.addServerGroup": "サーバー グループを追加する",
+			"serverGroup.editServerGroup": "サーバー グループの編集"
+		},
+		"sql/workbench/services/tasks/common/tasksService": {
+			"InProgressWarning": "1 つ以上のタスクを実行中です。終了してもよろしいですか?",
+			"taskService.yes": "はい",
+			"taskService.no": "いいえ"
+		},
+		"sql/workbench/update/electron-browser/releaseNotes": {
+			"gettingStarted": "はじめに",
+			"showReleaseNotes": "「はじめに」を表示する",
+			"miGettingStarted": "はじめに(&&S)"
 		}
 	}
 }

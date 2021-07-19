@@ -1,16 +1,84 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
-  <file original="extensions/dacpac/out/localizedConstants" source-language="en" datatype="plaintext" target-language="ko">
+  <file original="extensions/dacpac/package" source-language="en" datatype="plaintext" target-language="ko">
     <body>
+      <trans-unit id="dacFx.settings">
+        <source xml:lang="en">Dacpac</source>
+        <target state="translated">Dacpac</target>
+      </trans-unit>
+      <trans-unit id="dacFx.defaultSaveLocation">
+        <source xml:lang="en">Full path to folder where .DACPAC and .BACPAC files are saved by default</source>
+        <target state="translated">.DACPAC 및 .BACPAC 파일이 기본적으로 저장되는 폴더의 전체 경로입니다.</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/dacpac/dist/localizedConstants" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="dacFx.targetServer">
+        <source xml:lang="en">Target Server</source>
+        <target state="translated">대상 서버</target>
+      </trans-unit>
+      <trans-unit id="dacFx.sourceServer">
+        <source xml:lang="en">Source Server</source>
+        <target state="translated">원본 서버</target>
+      </trans-unit>
+      <trans-unit id="dacFx.sourceDatabase">
+        <source xml:lang="en">Source Database</source>
+        <target state="translated">원본 데이터베이스</target>
+      </trans-unit>
+      <trans-unit id="dacFx.targetDatabase">
+        <source xml:lang="en">Target Database</source>
+        <target state="translated">대상 데이터베이스</target>
+      </trans-unit>
+      <trans-unit id="dacfx.fileLocation">
+        <source xml:lang="en">File Location</source>
+        <target state="translated">파일 위치</target>
+      </trans-unit>
+      <trans-unit id="dacfx.selectFile">
+        <source xml:lang="en">Select file</source>
+        <target state="translated">파일 선택</target>
+      </trans-unit>
+      <trans-unit id="dacfx.summaryTableTitle">
+        <source xml:lang="en">Summary of settings</source>
+        <target state="translated">설정 요약</target>
+      </trans-unit>
+      <trans-unit id="dacfx.version">
+        <source xml:lang="en">Version</source>
+        <target state="translated">버전</target>
+      </trans-unit>
+      <trans-unit id="dacfx.setting">
+        <source xml:lang="en">Setting</source>
+        <target state="translated">설정</target>
+      </trans-unit>
+      <trans-unit id="dacfx.value">
+        <source xml:lang="en">Value</source>
+        <target state="translated">값</target>
+      </trans-unit>
+      <trans-unit id="dacFx.databaseName">
+        <source xml:lang="en">Database Name</source>
+        <target state="translated">데이터베이스 이름</target>
+      </trans-unit>
+      <trans-unit id="dacFxDeploy.openFile">
+        <source xml:lang="en">Open</source>
+        <target state="translated">열기</target>
+      </trans-unit>
+      <trans-unit id="dacFx.upgradeExistingDatabase">
+        <source xml:lang="en">Upgrade Existing Database</source>
+        <target state="translated">기존 데이터베이스 업그레이드</target>
+      </trans-unit>
+      <trans-unit id="dacFx.newDatabase">
+        <source xml:lang="en">New Database</source>
+        <target state="translated">새 데이터베이스</target>
+      </trans-unit>
       <trans-unit id="dacfx.dataLossTextWithCount">
         <source xml:lang="en">{0} of the deploy actions listed may result in data loss. Please ensure you have a backup or snapshot available in the event of an issue with the deployment.</source>
         <target state="translated">나열된 배포 작업의 {0}(으)로 인해 데이터가 손실될 수 있습니다. 배포 관련 문제가 발생하는 경우 사용할 수 있는 백업 또는 스냅샷이 있는지 확인하세요.</target>
       </trans-unit>
-      <trans-unit id="dacFx.dataLossCheckbox">
+      <trans-unit id="dacFx.proceedDataLoss">
         <source xml:lang="en">Proceed despite possible data loss</source>
         <target state="translated">데이터가 손실되더라도 계속 진행</target>
       </trans-unit>
-      <trans-unit id="dacfx.noDataLossText">
+      <trans-unit id="dacfx.noDataLoss">
         <source xml:lang="en">No data loss will occur from the listed deploy actions.</source>
         <target state="translated">나열된 배포 작업에서 데이터 손실이 발생하지 않습니다.</target>
       </trans-unit>
@@ -54,19 +122,11 @@
         <source xml:lang="en">Save</source>
         <target state="translated">저장</target>
       </trans-unit>
-      <trans-unit id="dacfx.fileLocation">
-        <source xml:lang="en">File Location</source>
-        <target state="translated">파일 위치</target>
-      </trans-unit>
-      <trans-unit id="dacFxExtract.versionText">
+      <trans-unit id="dacFx.versionText">
         <source xml:lang="en">Version (use x.x.x.x where x is a number)</source>
         <target state="translated">버전(x.x.x.x 사용, x는 숫자임)</target>
       </trans-unit>
-      <trans-unit id="dacFxDeploy.openFile">
-        <source xml:lang="en">Open</source>
-        <target state="translated">열기</target>
-      </trans-unit>
-      <trans-unit id="dacFx.deployDescrption">
+      <trans-unit id="dacFx.deployDescription">
         <source xml:lang="en">Deploy a data-tier application .dacpac file to an instance of SQL Server [Deploy Dacpac]</source>
         <target state="translated">데이터 계층 애플리케이션 .dacpac 파일을 SQL Server의 인스턴스에 배포[Dacpac 배포]</target>
       </trans-unit>
@@ -82,49 +142,9 @@
         <source xml:lang="en">Export the schema and data from a database to the logical .bacpac file format [Export Bacpac]</source>
         <target state="translated">데이터베이스의 스키마 및 데이터를 논리적 .bacpac 파일 형식으로 내보내기[Bacpac 내보내기]</target>
       </trans-unit>
-      <trans-unit id="dacFx.databaseName">
-        <source xml:lang="en">Database Name</source>
-        <target state="translated">데이터베이스 이름</target>
-      </trans-unit>
-      <trans-unit id="dacFx.upgradeExistingDatabase">
-        <source xml:lang="en">Upgrade Existing Database</source>
-        <target state="translated">기존 데이터베이스 업그레이드</target>
-      </trans-unit>
-      <trans-unit id="dacFx.newDatabase">
-        <source xml:lang="en">New Database</source>
-        <target state="translated">새 데이터베이스</target>
-      </trans-unit>
-      <trans-unit id="dacFx.targetDatabase">
-        <source xml:lang="en">Target Database</source>
-        <target state="translated">대상 데이터베이스</target>
-      </trans-unit>
-      <trans-unit id="dacFx.targetServer">
-        <source xml:lang="en">Target Server</source>
-        <target state="translated">대상 서버</target>
-      </trans-unit>
-      <trans-unit id="dacFx.sourceServer">
-        <source xml:lang="en">Source Server</source>
-        <target state="translated">원본 서버</target>
-      </trans-unit>
-      <trans-unit id="dacFx.sourceDatabase">
-        <source xml:lang="en">Source Database</source>
-        <target state="translated">원본 데이터베이스</target>
-      </trans-unit>
-      <trans-unit id="dacfx.version">
-        <source xml:lang="en">Version</source>
-        <target state="translated">버전</target>
-      </trans-unit>
-      <trans-unit id="dacfx.setting">
-        <source xml:lang="en">Setting</source>
-        <target state="translated">설정</target>
-      </trans-unit>
-      <trans-unit id="dacfx.value">
-        <source xml:lang="en">Value</source>
-        <target state="translated">값</target>
-      </trans-unit>
-      <trans-unit id="dacfx.default">
-        <source xml:lang="en">default</source>
-        <target state="translated">기본값</target>
+      <trans-unit id="dacfx.wizardTitle">
+        <source xml:lang="en">Data-tier Application Wizard</source>
+        <target state="translated">데이터 계층 애플리케이션 마법사</target>
       </trans-unit>
       <trans-unit id="dacFx.selectOperationPageName">
         <source xml:lang="en">Select an Operation</source>
@@ -174,17 +194,65 @@
         <source xml:lang="en">Generate Script</source>
         <target state="translated">스크립트 생성</target>
       </trans-unit>
+      <trans-unit id="dacfx.scriptGeneratingMessage">
+        <source xml:lang="en">You can view the status of script generation in the Tasks View once the wizard is closed. The generated script will open when complete.</source>
+        <target state="translated">마법사가 닫히면 작업 보기에서 스크립트 생성 상태를 볼 수 있습니다. 완료되면 생성된 스크립트가 열립니다.</target>
+      </trans-unit>
+      <trans-unit id="dacfx.default">
+        <source xml:lang="en">default</source>
+        <target state="translated">기본값</target>
+      </trans-unit>
+      <trans-unit id="dacfx.deployPlanTableTitle">
+        <source xml:lang="en">Deploy plan operations</source>
+        <target state="translated">계획 작업 배포</target>
+      </trans-unit>
+      <trans-unit id="dacfx.databaseNameExistsErrorMessage">
+        <source xml:lang="en">A database with the same name already exists on the instance of SQL Server</source>
+        <target state="translated">SQL Server 인스턴스에 같은 이름의 데이터베이스가 이미 있습니다.</target>
+      </trans-unit>
+      <trans-unit id="dacfx.undefinedFilenameErrorMessage">
+        <source xml:lang="en">Undefined name</source>
+        <target state="translated">정의되지 않은 네임스페이스:</target>
+      </trans-unit>
+      <trans-unit id="dacfx.filenameEndingInPeriodErrorMessage">
+        <source xml:lang="en">File name cannot end with a period</source>
+        <target state="translated">파일 이름은 마침표(.)로 끝날 수 없습니다.</target>
+      </trans-unit>
+      <trans-unit id="dacfx.whitespaceFilenameErrorMessage">
+        <source xml:lang="en">File name cannot be whitespace</source>
+        <target state="translated">파일 이름은 공백일 수 없습니다.</target>
+      </trans-unit>
+      <trans-unit id="dacfx.invalidFileCharsErrorMessage">
+        <source xml:lang="en">Invalid file characters</source>
+        <target state="translated">잘못된 파일 문자</target>
+      </trans-unit>
+      <trans-unit id="dacfx.reservedWindowsFilenameErrorMessage">
+        <source xml:lang="en">This file name is reserved for use by Windows. Choose another name and try again</source>
+        <target state="translated">이 파일 이름은 Windows에서 예약되어 있습니다. 다른 이름을 선택하고 다시 시도하세요.</target>
+      </trans-unit>
+      <trans-unit id="dacfx.reservedValueErrorMessage">
+        <source xml:lang="en">Reserved file name. Choose another name and try again</source>
+        <target state="translated">예약된 파일 이름입니다. 다른 이름을 선택하고 다시 시도하십시오.</target>
+      </trans-unit>
+      <trans-unit id="dacfx.trailingWhitespaceErrorMessage">
+        <source xml:lang="en">File name cannot end with a whitespace</source>
+        <target state="translated">파일 이름은 공백으로 끝날 수 없습니다.</target>
+      </trans-unit>
+      <trans-unit id="dacfx.tooLongFilenameErrorMessage">
+        <source xml:lang="en">File name is over 255 characters</source>
+        <target state="translated">파일 이름이 255자를 초과합니다.</target>
+      </trans-unit>
       <trans-unit id="dacfx.deployPlanErrorMessage">
         <source xml:lang="en">Generating deploy plan failed '{0}'</source>
         <target state="translated">배포 플랜 '{0}'을(를) 생성하지 못했습니다.</target>
       </trans-unit>
+      <trans-unit id="dacfx.generateDeployErrorMessage">
+        <source xml:lang="en">Generating deploy script failed '{0}'</source>
+        <target state="translated">배포 스크립트 생성 실패 '{0}'</target>
+      </trans-unit>
       <trans-unit id="dacfx.operationErrorMessage">
         <source xml:lang="en">{0} operation failed '{1}'</source>
         <target state="translated">{0} 작업 실패 '{1}'</target>
-      </trans-unit>
-      <trans-unit id="dacfx.scriptGeneratingMessage">
-        <source xml:lang="en">You can view the status of script generation in the Tasks View once the wizard is closed. The generated script will open when complete.</source>
-        <target state="translated">마법사가 닫히면 작업 보기에서 스크립트 생성 상태를 볼 수 있습니다. 완료되면 생성된 스크립트가 열립니다.</target>
       </trans-unit>
     </body>
   </file>

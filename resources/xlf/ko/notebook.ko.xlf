@@ -22,6 +22,14 @@
         <source xml:lang="en">Local path to a preexisting python installation used by Notebooks.</source>
         <target state="translated">Notebook에서 사용하는 기존 python 설치의 로컬 경로입니다.</target>
       </trans-unit>
+      <trans-unit id="notebook.dontPromptPythonUpdate.description">
+        <source xml:lang="en">Do not show prompt to update Python.</source>
+        <target state="translated">Python을 업데이트하라는 메시지가 표시되지 않습니다.</target>
+      </trans-unit>
+      <trans-unit id="notebook.jupyterServerShutdownTimeout.description">
+        <source xml:lang="en">The amount of time (in minutes) to wait before shutting down a server after all notebooks are closed. (Enter 0 to not shutdown)</source>
+        <target state="translated">모든 전자 필기장이 닫힌 후 서버를 종료하기 전에 대기해야 할 시간(분)입니다(종료하지 않으려면 0을 입력하세요).</target>
+      </trans-unit>
       <trans-unit id="notebook.overrideEditorTheming.description">
         <source xml:lang="en">Override editor default settings in the Notebook editor. Settings include background color, current line color and border</source>
         <target state="translated">Notebook 편집기에서 편집기 기본 설정을 재정의합니다. 설정에는 배경색, 현재 선 색 및 테두리가 포함됩니다.</target>
@@ -32,7 +40,7 @@
       </trans-unit>
       <trans-unit id="notebook.trustedBooks.description">
         <source xml:lang="en">Notebooks contained in these books will automatically be trusted.</source>
-        <target state="new">Notebooks contained in these books will automatically be trusted.</target>
+        <target state="translated">이 Book에 포함된 Notebook은 자동으로 신뢰할 수 있습니다.</target>
       </trans-unit>
       <trans-unit id="notebook.maxBookSearchDepth.description">
         <source xml:lang="en">Maximum depth of subdirectories to search for Books (Enter 0 for infinite)</source>
@@ -40,15 +48,19 @@
       </trans-unit>
       <trans-unit id="notebook.collapseBookItems.description">
         <source xml:lang="en">Collapse Book items at root level in the Notebooks Viewlet</source>
-        <target state="new">Collapse Book items at root level in the Notebooks Viewlet</target>
+        <target state="translated">Notebook 뷰렛에서 루트 수준의 Book 항목 축소</target>
       </trans-unit>
       <trans-unit id="notebook.remoteBookDownloadTimeout.description">
         <source xml:lang="en">Download timeout in milliseconds for GitHub books</source>
-        <target state="new">Download timeout in milliseconds for GitHub books</target>
+        <target state="translated">GitHub 문서의 다운로드 시간 제한(밀리초)</target>
       </trans-unit>
       <trans-unit id="notebook.pinnedNotebooks.description">
         <source xml:lang="en">Notebooks that are pinned by the user for the current workspace</source>
-        <target state="new">Notebooks that are pinned by the user for the current workspace</target>
+        <target state="translated">사용자가 현재 작업 영역에 고정한 Notebook</target>
+      </trans-unit>
+      <trans-unit id="notebook.allowRoot.description">
+        <source xml:lang="en">Allow Jupyter server to run as root user</source>
+        <target state="new">Allow Jupyter server to run as root user</target>
       </trans-unit>
       <trans-unit id="notebook.command.new">
         <source xml:lang="en">New Notebook</source>
@@ -139,72 +151,84 @@
         <target state="translated">Jupyter Book</target>
       </trans-unit>
       <trans-unit id="title.saveJupyterBook">
-        <source xml:lang="en">Save Book</source>
-        <target state="translated">책 저장</target>
+        <source xml:lang="en">Save Jupyter Book</source>
+        <target state="translated">Jupyter Book 저장</target>
       </trans-unit>
       <trans-unit id="title.trustBook">
-        <source xml:lang="en">Trust Book</source>
-        <target state="new">Trust Book</target>
+        <source xml:lang="en">Trust Jupyter Book</source>
+        <target state="translated">Jupyter Book 신뢰</target>
       </trans-unit>
       <trans-unit id="title.searchJupyterBook">
-        <source xml:lang="en">Search Book</source>
-        <target state="translated">책 검색</target>
+        <source xml:lang="en">Search Jupyter Book</source>
+        <target state="translated">Jupyter Book 검색</target>
       </trans-unit>
       <trans-unit id="title.SavedBooks">
         <source xml:lang="en">Notebooks</source>
-        <target state="new">Notebooks</target>
+        <target state="translated">Notebook</target>
       </trans-unit>
       <trans-unit id="title.ProvidedBooks">
-        <source xml:lang="en">Provided Books</source>
-        <target state="new">Provided Books</target>
+        <source xml:lang="en">Provided Jupyter Books</source>
+        <target state="translated">Jupyter Book 제공</target>
       </trans-unit>
       <trans-unit id="title.PinnedBooks">
         <source xml:lang="en">Pinned notebooks</source>
-        <target state="new">Pinned notebooks</target>
+        <target state="translated">고정된 Notebook</target>
       </trans-unit>
       <trans-unit id="title.PreviewLocalizedBook">
         <source xml:lang="en">Get localized SQL Server 2019 guide</source>
-        <target state="new">Get localized SQL Server 2019 guide</target>
+        <target state="translated">지역화된 SQL Server 2019 가이드 가져오기</target>
       </trans-unit>
       <trans-unit id="title.openJupyterBook">
         <source xml:lang="en">Open Jupyter Book</source>
-        <target state="new">Open Jupyter Book</target>
+        <target state="translated">Jupyter Book 열기</target>
       </trans-unit>
       <trans-unit id="title.closeJupyterBook">
         <source xml:lang="en">Close Jupyter Book</source>
-        <target state="new">Close Jupyter Book</target>
+        <target state="translated">Jupyter Book 닫기</target>
       </trans-unit>
-      <trans-unit id="title.closeJupyterNotebook">
-        <source xml:lang="en">Close Jupyter Notebook</source>
-        <target state="new">Close Jupyter Notebook</target>
+      <trans-unit id="title.closeNotebook">
+        <source xml:lang="en">Close Notebook</source>
+        <target state="translated">Notebook 닫기</target>
+      </trans-unit>
+      <trans-unit id="title.removeNotebook">
+        <source xml:lang="en">Remove Notebook</source>
+        <target state="translated">Notebook 제거</target>
+      </trans-unit>
+      <trans-unit id="title.addNotebook">
+        <source xml:lang="en">Add Notebook</source>
+        <target state="translated">Notebook 추가</target>
+      </trans-unit>
+      <trans-unit id="title.addMarkdown">
+        <source xml:lang="en">Add Markdown File</source>
+        <target state="translated">Markdown 파일 추가</target>
       </trans-unit>
       <trans-unit id="title.revealInBooksViewlet">
         <source xml:lang="en">Reveal in Books</source>
-        <target state="new">Reveal in Books</target>
+        <target state="translated">Book에 표시</target>
       </trans-unit>
       <trans-unit id="title.createJupyterBook">
-        <source xml:lang="en">Create Book (Preview)</source>
-        <target state="new">Create Book (Preview)</target>
+        <source xml:lang="en">Create Jupyter Book</source>
+        <target state="translated">Jupyter Book 만들기</target>
       </trans-unit>
       <trans-unit id="title.openNotebookFolder">
         <source xml:lang="en">Open Notebooks in Folder</source>
-        <target state="new">Open Notebooks in Folder</target>
+        <target state="translated">폴더에서 Notebook 열기</target>
       </trans-unit>
       <trans-unit id="title.openRemoteJupyterBook">
         <source xml:lang="en">Add Remote Jupyter Book</source>
-        <target state="new">Add Remote Jupyter Book</target>
+        <target state="translated">원격 Jupyter Book 추가</target>
       </trans-unit>
       <trans-unit id="title.pinNotebook">
         <source xml:lang="en">Pin Notebook</source>
-        <target state="new">Pin Notebook</target>
+        <target state="translated">Notebook 고정</target>
       </trans-unit>
       <trans-unit id="title.unpinNotebook">
         <source xml:lang="en">Unpin Notebook</source>
-        <target state="new">Unpin Notebook</target>
+        <target state="translated">Notebook 고정 해제</target>
       </trans-unit>
       <trans-unit id="title.moveTo">
         <source xml:lang="en">Move to ...</source>
-        <target state="new">Move to ...</target>
+        <target state="translated">이동 대상...</target>
       </trans-unit>
     </body>
   </file>
@@ -212,11 +236,11 @@
     <body>
       <trans-unit id="ensureDirOutputMsg">
         <source xml:lang="en">... Ensuring {0} exists</source>
-        <target state="new">... Ensuring {0} exists</target>
+        <target state="translated">... {0}이(가) 있는지 확인</target>
       </trans-unit>
       <trans-unit id="executeCommandProcessExited">
         <source xml:lang="en">Process exited with error code: {0}. StdErr Output: {1}</source>
-        <target state="new">Process exited with error code: {0}. StdErr Output: {1}</target>
+        <target state="translated">프로세스가 종료되었습니다(오류 코드: {0}). StdErr 출력: {1}</target>
       </trans-unit>
     </body>
   </file>
@@ -224,11 +248,11 @@
     <body>
       <trans-unit id="managePackages.localhost">
         <source xml:lang="en">localhost</source>
-        <target state="new">localhost</target>
+        <target state="translated">localhost</target>
       </trans-unit>
       <trans-unit id="managePackages.packageNotFound">
         <source xml:lang="en">Could not find the specified package</source>
-        <target state="new">Could not find the specified package</target>
+        <target state="translated">지정된 패키지를 찾을 수 없습니다.</target>
       </trans-unit>
     </body>
   </file>
@@ -248,293 +272,333 @@
       </trans-unit>
       <trans-unit id="noBDCConnectionError">
         <source xml:lang="en">Spark kernels require a connection to a SQL Server Big Data Cluster master instance.</source>
-        <target state="new">Spark kernels require a connection to a SQL Server Big Data Cluster master instance.</target>
+        <target state="translated">Spark 커널을 SQL Server 빅 데이터 클러스터 마스터 인스턴스에 연결해야 합니다.</target>
       </trans-unit>
       <trans-unit id="providerNotValidError">
         <source xml:lang="en">Non-MSSQL providers are not supported for spark kernels.</source>
-        <target state="new">Non-MSSQL providers are not supported for spark kernels.</target>
+        <target state="translated">비 MSSQL 공급자는 Spark 커널에서 지원되지 않습니다.</target>
       </trans-unit>
       <trans-unit id="allFiles">
         <source xml:lang="en">All Files</source>
-        <target state="new">All Files</target>
+        <target state="translated">모든 파일</target>
       </trans-unit>
       <trans-unit id="labelSelectFolder">
         <source xml:lang="en">Select Folder</source>
-        <target state="new">Select Folder</target>
+        <target state="translated">폴더 선택</target>
       </trans-unit>
       <trans-unit id="labelBookFolder">
-        <source xml:lang="en">Select Book</source>
-        <target state="new">Select Book</target>
+        <source xml:lang="en">Select Jupyter Book</source>
+        <target state="translated">Jupyter Book 선택</target>
       </trans-unit>
       <trans-unit id="confirmReplace">
         <source xml:lang="en">Folder already exists. Are you sure you want to delete and replace this folder?</source>
-        <target state="new">Folder already exists. Are you sure you want to delete and replace this folder?</target>
+        <target state="translated">폴더가 이미 있습니다. 이 폴더를 삭제하고 바꾸시겠습니까?</target>
       </trans-unit>
       <trans-unit id="openNotebookCommand">
         <source xml:lang="en">Open Notebook</source>
-        <target state="new">Open Notebook</target>
+        <target state="translated">Notebook 열기</target>
       </trans-unit>
       <trans-unit id="openMarkdownCommand">
         <source xml:lang="en">Open Markdown</source>
-        <target state="new">Open Markdown</target>
+        <target state="translated">Markdown 열기</target>
       </trans-unit>
       <trans-unit id="openExternalLinkCommand">
         <source xml:lang="en">Open External Link</source>
-        <target state="new">Open External Link</target>
+        <target state="translated">외부 링크 열기</target>
       </trans-unit>
       <trans-unit id="msgBookTrusted">
-        <source xml:lang="en">Book is now trusted in the workspace.</source>
-        <target state="new">Book is now trusted in the workspace.</target>
+        <source xml:lang="en">Jupyter Book is now trusted in the workspace.</source>
+        <target state="translated">이제 Jupyter Book은 작업 영역에서 신뢰할 수 있습니다.</target>
       </trans-unit>
       <trans-unit id="msgBookAlreadyTrusted">
-        <source xml:lang="en">Book is already trusted in this workspace.</source>
-        <target state="new">Book is already trusted in this workspace.</target>
+        <source xml:lang="en">Jupyter Book is already trusted in this workspace.</source>
+        <target state="translated">Jupyter Book은 이미 이 작업 영역에서 신뢰할 수 있습니다.</target>
       </trans-unit>
       <trans-unit id="msgBookUntrusted">
-        <source xml:lang="en">Book is no longer trusted in this workspace</source>
-        <target state="new">Book is no longer trusted in this workspace</target>
+        <source xml:lang="en">Jupyter Book is no longer trusted in this workspace</source>
+        <target state="translated">Jupyter Book은 더 이상 이 작업 영역에서 신뢰할 수 없습니다.</target>
       </trans-unit>
       <trans-unit id="msgBookAlreadyUntrusted">
-        <source xml:lang="en">Book is already untrusted in this workspace.</source>
-        <target state="new">Book is already untrusted in this workspace.</target>
+        <source xml:lang="en">Jupyter Book is already untrusted in this workspace.</source>
+        <target state="translated">Jupyter Book은 이미 이 작업 영역에서 신뢰할 수 없습니다.</target>
       </trans-unit>
       <trans-unit id="msgBookPinned">
-        <source xml:lang="en">Book {0} is now pinned in the workspace.</source>
-        <target state="new">Book {0} is now pinned in the workspace.</target>
+        <source xml:lang="en">Jupyter Book {0} is now pinned in the workspace.</source>
+        <target state="translated">Jupyter Book {0}는 이제 작업 영역에 고정됩니다.</target>
       </trans-unit>
       <trans-unit id="msgBookUnpinned">
-        <source xml:lang="en">Book {0} is no longer pinned in this workspace</source>
-        <target state="new">Book {0} is no longer pinned in this workspace</target>
+        <source xml:lang="en">Jupyter Book {0} is no longer pinned in this workspace</source>
+        <target state="translated">Jupyter Book {0}은(는) 더 이상 이 작업 영역에 고정되지 않습니다.</target>
       </trans-unit>
       <trans-unit id="bookInitializeFailed">
-        <source xml:lang="en">Failed to find a Table of Contents file in the specified book.</source>
-        <target state="new">Failed to find a Table of Contents file in the specified book.</target>
+        <source xml:lang="en">Failed to find a Table of Contents file in the specified Jupyter Book.</source>
+        <target state="translated">지정된 Jupyter Book에서 목차 파일을 찾지 못했습니다.</target>
       </trans-unit>
       <trans-unit id="noBooksSelected">
-        <source xml:lang="en">No books are currently selected in the viewlet.</source>
-        <target state="new">No books are currently selected in the viewlet.</target>
+        <source xml:lang="en">No Jupyter Books are currently selected in the viewlet.</source>
+        <target state="translated">뷰렛에 현재 선택된 Jupyter Book이 없습니다.</target>
       </trans-unit>
       <trans-unit id="labelBookSection">
-        <source xml:lang="en">Select Book Section</source>
-        <target state="new">Select Book Section</target>
+        <source xml:lang="en">Select Jupyter Book Section</source>
+        <target state="translated">Jupyter Book 섹션 선택</target>
       </trans-unit>
       <trans-unit id="labelAddToLevel">
         <source xml:lang="en">Add to this level</source>
-        <target state="new">Add to this level</target>
+        <target state="translated">이 수준에 추가</target>
       </trans-unit>
       <trans-unit id="missingFileError">
         <source xml:lang="en">Missing file : {0} from {1}</source>
-        <target state="new">Missing file : {0} from {1}</target>
+        <target state="translated">누락된 파일: {1}의 {0}</target>
       </trans-unit>
       <trans-unit id="InvalidError.tocFile">
         <source xml:lang="en">Invalid toc file</source>
-        <target state="new">Invalid toc file</target>
+        <target state="translated">잘못된 toc 파일</target>
       </trans-unit>
       <trans-unit id="Invalid toc.yml">
         <source xml:lang="en">Error: {0} has an incorrect toc.yml file</source>
-        <target state="new">Error: {0} has an incorrect toc.yml file</target>
+        <target state="translated">오류: {0}에 잘못된 toc.yml 파일이 있음</target>
       </trans-unit>
       <trans-unit id="configFileError">
         <source xml:lang="en">Configuration file missing</source>
-        <target state="new">Configuration file missing</target>
+        <target state="translated">구성 파일 없음</target>
       </trans-unit>
       <trans-unit id="openBookError">
-        <source xml:lang="en">Open book {0} failed: {1}</source>
-        <target state="new">Open book {0} failed: {1}</target>
+        <source xml:lang="en">Open Jupyter Book {0} failed: {1}</source>
+        <target state="translated">Jupyter Book {0} 열기 실패: {1}</target>
       </trans-unit>
       <trans-unit id="readBookError">
-        <source xml:lang="en">Failed to read book {0}: {1}</source>
-        <target state="new">Failed to read book {0}: {1}</target>
+        <source xml:lang="en">Failed to read Jupyter Book {0}: {1}</source>
+        <target state="translated">Jupyter Book {0}을(를) 읽지 못했습니다. {1}</target>
       </trans-unit>
       <trans-unit id="openNotebookError">
         <source xml:lang="en">Open notebook {0} failed: {1}</source>
-        <target state="new">Open notebook {0} failed: {1}</target>
+        <target state="translated">{0} Notebook을 열지 못함: {1}</target>
       </trans-unit>
       <trans-unit id="openMarkdownError">
         <source xml:lang="en">Open markdown {0} failed: {1}</source>
-        <target state="new">Open markdown {0} failed: {1}</target>
+        <target state="translated">{0} Markdown을 열지 못함: {1}</target>
       </trans-unit>
       <trans-unit id="openUntitledNotebookError">
         <source xml:lang="en">Open untitled notebook {0} as untitled failed: {1}</source>
-        <target state="new">Open untitled notebook {0} as untitled failed: {1}</target>
+        <target state="translated">제목 없는 Notebook {0}을(를) 제목 없음으로 열지 못함: {1}</target>
       </trans-unit>
       <trans-unit id="openExternalLinkError">
         <source xml:lang="en">Open link {0} failed: {1}</source>
-        <target state="new">Open link {0} failed: {1}</target>
+        <target state="translated">링크 {0} 열기 실패: {1}</target>
       </trans-unit>
       <trans-unit id="closeBookError">
-        <source xml:lang="en">Close book {0} failed: {1}</source>
-        <target state="new">Close book {0} failed: {1}</target>
+        <source xml:lang="en">Close Jupyter Book {0} failed: {1}</source>
+        <target state="translated">Jupyter Book {0} 닫기 실패: {1}</target>
       </trans-unit>
       <trans-unit id="duplicateFileError">
         <source xml:lang="en">File {0} already exists in the destination folder {1} 
  The file has been renamed to {2} to prevent data loss.</source>
-        <target state="new">File {0} already exists in the destination folder {1} 
- The file has been renamed to {2} to prevent data loss.</target>
+        <target state="translated">대상 폴더 {1}에 {0} 파일이 이미 있습니다. 
+ 데이터 손실을 방지하기 위해 파일 이름이 {2}(으)로 바뀌었습니다.</target>
       </trans-unit>
       <trans-unit id="editBookError">
-        <source xml:lang="en">Error while editing book {0}: {1}</source>
-        <target state="new">Error while editing book {0}: {1}</target>
+        <source xml:lang="en">Error while editing Jupyter Book {0}: {1}</source>
+        <target state="translated">Jupyter Book {0}을(를) 편집하는 동안 오류 발생: {1}</target>
       </trans-unit>
       <trans-unit id="selectBookError">
-        <source xml:lang="en">Error while selecting a book or a section to edit: {0}</source>
-        <target state="new">Error while selecting a book or a section to edit: {0}</target>
+        <source xml:lang="en">Error while selecting a Jupyter Book or a section to edit: {0}</source>
+        <target state="translated">Jupyter Book 또는 편집할 섹션을 선택하는 동안 오류 발생: {0}</target>
+      </trans-unit>
+      <trans-unit id="sectionNotFound">
+        <source xml:lang="en">Failed to find section {0} in {1}.</source>
+        <target state="translated">{1}에서 {0} 섹션을 찾지 못했습니다.</target>
       </trans-unit>
       <trans-unit id="url">
         <source xml:lang="en">URL</source>
-        <target state="new">URL</target>
+        <target state="translated">URL</target>
       </trans-unit>
       <trans-unit id="repoUrl">
         <source xml:lang="en">Repository URL</source>
-        <target state="new">Repository URL</target>
+        <target state="translated">리포지토리 URL</target>
       </trans-unit>
       <trans-unit id="location">
         <source xml:lang="en">Location</source>
-        <target state="new">Location</target>
+        <target state="translated">위치</target>
       </trans-unit>
       <trans-unit id="addRemoteBook">
-        <source xml:lang="en">Add Remote Book</source>
-        <target state="new">Add Remote Book</target>
+        <source xml:lang="en">Add Remote Jupyter Book</source>
+        <target state="translated">원격 Jupyter Book 추가</target>
       </trans-unit>
       <trans-unit id="onGitHub">
         <source xml:lang="en">GitHub</source>
-        <target state="new">GitHub</target>
+        <target state="translated">GitHub</target>
       </trans-unit>
       <trans-unit id="onsharedFile">
         <source xml:lang="en">Shared File</source>
-        <target state="new">Shared File</target>
+        <target state="translated">공유 파일</target>
       </trans-unit>
       <trans-unit id="releases">
         <source xml:lang="en">Releases</source>
-        <target state="new">Releases</target>
+        <target state="translated">릴리스</target>
       </trans-unit>
       <trans-unit id="book">
-        <source xml:lang="en">Book</source>
-        <target state="new">Book</target>
+        <source xml:lang="en">Jupyter Book</source>
+        <target state="translated">Jupyter Book</target>
       </trans-unit>
       <trans-unit id="version">
         <source xml:lang="en">Version</source>
-        <target state="new">Version</target>
+        <target state="translated">버전</target>
       </trans-unit>
       <trans-unit id="language">
         <source xml:lang="en">Language</source>
-        <target state="new">Language</target>
+        <target state="translated">언어</target>
       </trans-unit>
       <trans-unit id="booksNotFound">
-        <source xml:lang="en">No books are currently available on the provided link</source>
-        <target state="new">No books are currently available on the provided link</target>
+        <source xml:lang="en">No Jupyter Books are currently available on the provided link</source>
+        <target state="translated">제공된 링크에 현재 사용 가능한 Jupyter Book이 없습니다.</target>
       </trans-unit>
       <trans-unit id="urlGithubError">
         <source xml:lang="en">The url provided is not a Github release url</source>
-        <target state="new">The url provided is not a Github release url</target>
+        <target state="translated">제공된 URL은 GitHub 릴리스 URL이 아닙니다.</target>
       </trans-unit>
       <trans-unit id="search">
         <source xml:lang="en">Search</source>
-        <target state="new">Search</target>
+        <target state="translated">검색</target>
       </trans-unit>
       <trans-unit id="add">
         <source xml:lang="en">Add</source>
-        <target state="new">Add</target>
+        <target state="translated">추가</target>
       </trans-unit>
       <trans-unit id="close">
         <source xml:lang="en">Close</source>
-        <target state="new">Close</target>
+        <target state="translated">닫기</target>
       </trans-unit>
       <trans-unit id="invalidTextPlaceholder">
         <source xml:lang="en">-</source>
-        <target state="new">-</target>
+        <target state="translated">-</target>
       </trans-unit>
       <trans-unit id="msgRemoteBookDownloadProgress">
-        <source xml:lang="en">Remote Book download is in progress</source>
-        <target state="new">Remote Book download is in progress</target>
+        <source xml:lang="en">Remote Jupyter Book download is in progress</source>
+        <target state="translated">원격 Jupyter Book 다운로드가 진행 중입니다.</target>
       </trans-unit>
       <trans-unit id="msgRemoteBookDownloadComplete">
-        <source xml:lang="en">Remote Book download is complete</source>
-        <target state="new">Remote Book download is complete</target>
+        <source xml:lang="en">Remote Jupyter Book download is complete</source>
+        <target state="translated">원격 Jupyter Book 다운로드가 완료되었습니다.</target>
       </trans-unit>
       <trans-unit id="msgRemoteBookDownloadError">
-        <source xml:lang="en">Error while downloading remote Book</source>
-        <target state="new">Error while downloading remote Book</target>
+        <source xml:lang="en">Error while downloading remote Jupyter Book</source>
+        <target state="translated">원격 Jupyter Book을 다운로드하는 동안 오류 발생</target>
       </trans-unit>
       <trans-unit id="msgRemoteBookUnpackingError">
-        <source xml:lang="en">Error while decompressing remote Book</source>
-        <target state="new">Error while decompressing remote Book</target>
+        <source xml:lang="en">Error while decompressing remote Jupyter Book</source>
+        <target state="translated">원격 Jupyter Book의 압축을 푸는 동안 오류 발생</target>
       </trans-unit>
       <trans-unit id="msgRemoteBookDirectoryError">
-        <source xml:lang="en">Error while creating remote Book directory</source>
-        <target state="new">Error while creating remote Book directory</target>
+        <source xml:lang="en">Error while creating remote Jupyter Book directory</source>
+        <target state="translated">원격 Jupyter Book 디렉터리를 만드는 동안 오류 발생</target>
       </trans-unit>
       <trans-unit id="msgTaskName">
-        <source xml:lang="en">Downloading Remote Book</source>
-        <target state="new">Downloading Remote Book</target>
+        <source xml:lang="en">Downloading Remote Jupyter Book</source>
+        <target state="translated">원격 Jupyter Book 다운로드</target>
       </trans-unit>
       <trans-unit id="msgResourceNotFound">
         <source xml:lang="en">Resource not Found</source>
-        <target state="new">Resource not Found</target>
+        <target state="translated">리소스를 찾을 수 없음</target>
       </trans-unit>
       <trans-unit id="msgBookNotFound">
-        <source xml:lang="en">Books not Found</source>
-        <target state="new">Books not Found</target>
+        <source xml:lang="en">Jupyter Books not Found</source>
+        <target state="translated">Jupyter Book을 찾을 수 없음</target>
       </trans-unit>
       <trans-unit id="msgReleaseNotFound">
         <source xml:lang="en">Releases not Found</source>
-        <target state="new">Releases not Found</target>
+        <target state="translated">릴리스를 찾을 수 없음</target>
       </trans-unit>
       <trans-unit id="msgUndefinedAssetError">
-        <source xml:lang="en">The selected book is not valid</source>
-        <target state="new">The selected book is not valid</target>
+        <source xml:lang="en">The selected Jupyter Book is not valid</source>
+        <target state="translated">선택한 Jupyter Book이 유효하지 않습니다.</target>
       </trans-unit>
       <trans-unit id="httpRequestError">
         <source xml:lang="en">Http Request failed with error: {0} {1}</source>
-        <target state="new">Http Request failed with error: {0} {1}</target>
+        <target state="translated">오류로 인해 Http 요청 실패: {0} {1}</target>
       </trans-unit>
       <trans-unit id="msgDownloadLocation">
         <source xml:lang="en">Downloading to {0}</source>
-        <target state="new">Downloading to {0}</target>
+        <target state="translated">{0}에 다운로드</target>
       </trans-unit>
-      <trans-unit id="newGroup">
-        <source xml:lang="en">New Group</source>
-        <target state="new">New Group</target>
+      <trans-unit id="newBook">
+        <source xml:lang="en">New Jupyter Book (Preview)</source>
+        <target state="translated">새 Jupyter Book(미리 보기)</target>
       </trans-unit>
-      <trans-unit id="groupDescription">
-        <source xml:lang="en">Groups are used to organize Notebooks.</source>
-        <target state="new">Groups are used to organize Notebooks.</target>
+      <trans-unit id="bookDescription">
+        <source xml:lang="en">Jupyter Books are used to organize Notebooks.</source>
+        <target state="translated">Jupyter Book은 Notebook을 구성하는 데 사용됩니다.</target>
       </trans-unit>
-      <trans-unit id="locationBrowser">
-        <source xml:lang="en">Browse locations...</source>
-        <target state="new">Browse locations...</target>
+      <trans-unit id="learnMore">
+        <source xml:lang="en">Learn more.</source>
+        <target state="translated">자세히 알아보세요.</target>
       </trans-unit>
-      <trans-unit id="selectContentFolder">
-        <source xml:lang="en">Select content folder</source>
-        <target state="new">Select content folder</target>
+      <trans-unit id="contentFolder">
+        <source xml:lang="en">Content folder</source>
+        <target state="translated">콘텐츠 폴더</target>
       </trans-unit>
       <trans-unit id="browse">
         <source xml:lang="en">Browse</source>
-        <target state="new">Browse</target>
+        <target state="translated">찾아보기</target>
       </trans-unit>
       <trans-unit id="create">
         <source xml:lang="en">Create</source>
-        <target state="new">Create</target>
+        <target state="translated">만들기</target>
       </trans-unit>
       <trans-unit id="name">
         <source xml:lang="en">Name</source>
-        <target state="new">Name</target>
+        <target state="translated">이름</target>
       </trans-unit>
       <trans-unit id="saveLocation">
         <source xml:lang="en">Save location</source>
-        <target state="new">Save location</target>
+        <target state="translated">저장 위치</target>
       </trans-unit>
-      <trans-unit id="contentFolder">
+      <trans-unit id="contentFolderOptional">
         <source xml:lang="en">Content folder (Optional)</source>
-        <target state="new">Content folder (Optional)</target>
+        <target state="translated">콘텐츠 폴더(선택 사항)</target>
       </trans-unit>
       <trans-unit id="msgContentFolderError">
         <source xml:lang="en">Content folder path does not exist</source>
-        <target state="new">Content folder path does not exist</target>
+        <target state="translated">콘텐츠 폴더 경로가 없습니다.</target>
       </trans-unit>
       <trans-unit id="msgSaveFolderError">
-        <source xml:lang="en">Save location path does not exist</source>
-        <target state="new">Save location path does not exist</target>
+        <source xml:lang="en">Save location path does not exist.</source>
+        <target state="translated">저장 위치 경로가 없습니다.</target>
+      </trans-unit>
+      <trans-unit id="msgCreateBookWarningMsg">
+        <source xml:lang="en">Error while trying to access: {0}</source>
+        <target state="translated">{0}에 액세스하는 동안 오류가 발생했습니다.</target>
+      </trans-unit>
+      <trans-unit id="newNotebook">
+        <source xml:lang="en">New Notebook (Preview)</source>
+        <target state="translated">새 Notebook(미리 보기)</target>
+      </trans-unit>
+      <trans-unit id="newMarkdown">
+        <source xml:lang="en">New Markdown (Preview)</source>
+        <target state="translated">새 Markdown(미리 보기)</target>
+      </trans-unit>
+      <trans-unit id="fileExtension">
+        <source xml:lang="en">File Extension</source>
+        <target state="translated">파일 확장명</target>
+      </trans-unit>
+      <trans-unit id="confirmOverwrite">
+        <source xml:lang="en">File already exists. Are you sure you want to overwrite this file?</source>
+        <target state="translated">파일이 이미 있습니다. 이 파일을 덮어쓰시겠습니까?</target>
+      </trans-unit>
+      <trans-unit id="title">
+        <source xml:lang="en">Title</source>
+        <target state="translated">제목</target>
+      </trans-unit>
+      <trans-unit id="fileName">
+        <source xml:lang="en">File Name</source>
+        <target state="translated">파일 이름</target>
+      </trans-unit>
+      <trans-unit id="msgInvalidSaveFolder">
+        <source xml:lang="en">Save location path is not valid.</source>
+        <target state="translated">저장 위치 경로가 유효하지 않습니다.</target>
+      </trans-unit>
+      <trans-unit id="msgDuplicadFileName">
+        <source xml:lang="en">File {0} already exists in the destination folder</source>
+        <target state="translated">{0} 파일이 대상 폴더에 이미 있습니다.</target>
       </trans-unit>
     </body>
   </file>
@@ -588,6 +652,18 @@
         <source xml:lang="en">Another Python installation is currently in progress. Waiting for it to complete.</source>
         <target state="translated">현재 다른 Python 설치를 진행 중입니다. 완료될 때까지 기다립니다.</target>
       </trans-unit>
+      <trans-unit id="msgShutdownNotebookSessions">
+        <source xml:lang="en">Active Python notebook sessions will be shutdown in order to update. Would you like to proceed now?</source>
+        <target state="translated">업데이트를 하기 위해 활성 Python Notebook 세션이 종료됩니다. 지금 계속하시겠습니까?</target>
+      </trans-unit>
+      <trans-unit id="msgPythonVersionUpdatePrompt">
+        <source xml:lang="en">Python {0} is now available in Azure Data Studio. The current Python version (3.6.6) will be out of support in December 2021. Would you like to update to Python {0} now?</source>
+        <target state="translated">이제 python {0}에서 Azure Data Studio를 사용할 수 있습니다. 현재 Python 버전(3.6.6)은 2021년 12월에 지원되지 않습니다. 지금 Python {0}을(를) 업데이트하시겠습니까?</target>
+      </trans-unit>
+      <trans-unit id="msgPythonVersionUpdateWarning">
+        <source xml:lang="en">Python {0} will be installed and will replace Python 3.6.6. Some packages may no longer be compatible with the new version or may need to be reinstalled. A notebook will be created to help you reinstall all pip packages. Would you like to continue with the update now?</source>
+        <target state="translated">Python {0}이(가) 설치되고 Python 3.6.6을 대체합니다. 일부 패키지는 더 이상 새 버전과 호환되지 않거나 다시 설치해야 할 수 있습니다. 모든 pip 패키지를 다시 설치하는 데 도움이 되는 전자 필기장이 만들어집니다. 지금 업데이트를 계속하시겠습니까?</target>
+      </trans-unit>
       <trans-unit id="msgDependenciesInstallationFailed">
         <source xml:lang="en">Installing Notebook dependencies failed with error: {0}</source>
         <target state="translated">오류: {0}(을) 나타내며 Notebook 종속성 설치에 실패했습니다.</target>
@@ -598,11 +674,23 @@
       </trans-unit>
       <trans-unit id="msgPackageRetrievalFailed">
         <source xml:lang="en">Encountered an error when trying to retrieve list of installed packages: {0}</source>
-        <target state="new">Encountered an error when trying to retrieve list of installed packages: {0}</target>
+        <target state="translated">설치된 패키지 목록을 검색하는 동안 오류가 발생했습니다. {0}</target>
       </trans-unit>
       <trans-unit id="msgGetPythonUserDirFailed">
         <source xml:lang="en">Encountered an error when getting Python user path: {0}</source>
-        <target state="new">Encountered an error when getting Python user path: {0}</target>
+        <target state="translated">Python 사용자 경로를 가져올 때 오류가 발생했습니다. {0}</target>
+      </trans-unit>
+      <trans-unit id="yes">
+        <source xml:lang="en">Yes</source>
+        <target state="translated">예</target>
+      </trans-unit>
+      <trans-unit id="no">
+        <source xml:lang="en">No</source>
+        <target state="translated">아니요</target>
+      </trans-unit>
+      <trans-unit id="dontAskAgain">
+        <source xml:lang="en">Don't Ask Again</source>
+        <target state="translated">다시 묻지 않음</target>
       </trans-unit>
     </body>
   </file>
@@ -610,35 +698,35 @@
     <body>
       <trans-unit id="configurePython.okButtonText">
         <source xml:lang="en">Install</source>
-        <target state="new">Install</target>
+        <target state="translated">설치</target>
       </trans-unit>
       <trans-unit id="configurePython.invalidLocationMsg">
         <source xml:lang="en">The specified install location is invalid.</source>
-        <target state="new">The specified install location is invalid.</target>
+        <target state="translated">지정된 설치 위치가 잘못되었습니다.</target>
       </trans-unit>
       <trans-unit id="configurePython.pythonNotFoundMsg">
         <source xml:lang="en">No Python installation was found at the specified location.</source>
-        <target state="new">No Python installation was found at the specified location.</target>
+        <target state="translated">지정된 위치에서 Python 설치를 찾을 수 없습니다.</target>
       </trans-unit>
       <trans-unit id="configurePython.wizardNameWithKernel">
         <source xml:lang="en">Configure Python to run {0} kernel</source>
-        <target state="new">Configure Python to run {0} kernel</target>
+        <target state="translated">{0} 커널을 실행하도록 Python 구성</target>
       </trans-unit>
       <trans-unit id="configurePython.wizardNameWithoutKernel">
         <source xml:lang="en">Configure Python to run kernels</source>
-        <target state="new">Configure Python to run kernels</target>
+        <target state="translated">커널을 실행하도록 Python 구성</target>
       </trans-unit>
       <trans-unit id="configurePython.page0Name">
         <source xml:lang="en">Configure Python Runtime</source>
-        <target state="new">Configure Python Runtime</target>
+        <target state="translated">Python 런타임 구성</target>
       </trans-unit>
       <trans-unit id="configurePython.page1Name">
         <source xml:lang="en">Install Dependencies</source>
-        <target state="new">Install Dependencies</target>
+        <target state="translated">종속성 설치</target>
       </trans-unit>
       <trans-unit id="configurePython.pythonInstallDeclined">
         <source xml:lang="en">Python installation was declined.</source>
-        <target state="new">Python installation was declined.</target>
+        <target state="translated">Python 설치가 거부되었습니다.</target>
       </trans-unit>
     </body>
   </file>
@@ -678,55 +766,55 @@
     <body>
       <trans-unit id="configurePython.browseButtonText">
         <source xml:lang="en">Browse</source>
-        <target state="new">Browse</target>
+        <target state="translated">찾아보기</target>
       </trans-unit>
       <trans-unit id="configurePython.selectFileLabel">
         <source xml:lang="en">Select</source>
-        <target state="new">Select</target>
+        <target state="translated">선택</target>
       </trans-unit>
       <trans-unit id="configurePython.descriptionWithKernel">
         <source xml:lang="en">The {0} kernel requires a Python runtime to be configured and dependencies to be installed.</source>
-        <target state="new">The {0} kernel requires a Python runtime to be configured and dependencies to be installed.</target>
+        <target state="translated">{0} 커널을 사용하려면 Python 런타임을 구성하고 종속성을 설치해야 합니다.</target>
       </trans-unit>
       <trans-unit id="configurePython.descriptionWithoutKernel">
         <source xml:lang="en">Notebook kernels require a Python runtime to be configured and dependencies to be installed.</source>
-        <target state="new">Notebook kernels require a Python runtime to be configured and dependencies to be installed.</target>
+        <target state="translated">Notebook 커널에서는 Python 런타임을 구성하고 종속성을 설치해야 합니다.</target>
       </trans-unit>
       <trans-unit id="configurePython.installationType">
         <source xml:lang="en">Installation Type</source>
-        <target state="new">Installation Type</target>
+        <target state="translated">설치 유형</target>
       </trans-unit>
       <trans-unit id="configurePython.locationTextBoxText">
         <source xml:lang="en">Python Install Location</source>
-        <target state="new">Python Install Location</target>
+        <target state="translated">Python 설치 위치</target>
       </trans-unit>
       <trans-unit id="configurePython.pythonConfigured">
         <source xml:lang="en">Python runtime configured!</source>
-        <target state="new">Python runtime configured!</target>
+        <target state="translated">Python 런타임이 구성되었습니다.</target>
       </trans-unit>
       <trans-unit id="configurePythyon.dropdownPathLabel">
         <source xml:lang="en">{0} (Python {1})</source>
-        <target state="new">{0} (Python {1})</target>
+        <target state="translated">{0}(Python {1})</target>
       </trans-unit>
       <trans-unit id="configurePythyon.noVersionsFound">
         <source xml:lang="en">No supported Python versions found.</source>
-        <target state="new">No supported Python versions found.</target>
+        <target state="translated">지원되는 Python 버전을 찾을 수 없습니다.</target>
       </trans-unit>
       <trans-unit id="configurePythyon.defaultPathLabel">
         <source xml:lang="en">{0} (Default)</source>
-        <target state="new">{0} (Default)</target>
+        <target state="translated">{0}(기본값)</target>
       </trans-unit>
       <trans-unit id="configurePython.newInstall">
         <source xml:lang="en">New Python installation</source>
-        <target state="new">New Python installation</target>
+        <target state="translated">새 Python 설치</target>
       </trans-unit>
       <trans-unit id="configurePython.existingInstall">
         <source xml:lang="en">Use existing Python installation</source>
-        <target state="new">Use existing Python installation</target>
+        <target state="translated">기존 Python 설치 사용</target>
       </trans-unit>
       <trans-unit id="configurePythyon.customPathLabel">
         <source xml:lang="en">{0} (Custom)</source>
-        <target state="new">{0} (Custom)</target>
+        <target state="translated">{0}(사용자 지정)</target>
       </trans-unit>
     </body>
   </file>
@@ -734,27 +822,27 @@
     <body>
       <trans-unit id="configurePython.pkgNameColumn">
         <source xml:lang="en">Name</source>
-        <target state="new">Name</target>
+        <target state="translated">이름</target>
       </trans-unit>
       <trans-unit id="configurePython.existingVersionColumn">
         <source xml:lang="en">Existing Version</source>
-        <target state="new">Existing Version</target>
+        <target state="translated">기존 버전</target>
       </trans-unit>
       <trans-unit id="configurePython.requiredVersionColumn">
         <source xml:lang="en">Required Version</source>
-        <target state="new">Required Version</target>
+        <target state="translated">필요한 버전</target>
       </trans-unit>
       <trans-unit id="configurePython.kernelLabel">
         <source xml:lang="en">Kernel</source>
-        <target state="new">Kernel</target>
+        <target state="translated">커널</target>
       </trans-unit>
       <trans-unit id="configurePython.requiredDependencies">
         <source xml:lang="en">Install required kernel dependencies</source>
-        <target state="new">Install required kernel dependencies</target>
+        <target state="translated">필요한 커널 종속성 설치</target>
       </trans-unit>
       <trans-unit id="msgUnsupportedKernel">
         <source xml:lang="en">Could not retrieve packages for kernel {0}</source>
-        <target state="new">Could not retrieve packages for kernel {0}</target>
+        <target state="translated">{0} 커널의 패키지를 검색할 수 없음</target>
       </trans-unit>
     </body>
   </file>
@@ -774,7 +862,7 @@
       </trans-unit>
       <trans-unit id="notebookStartProcessExitPremature">
         <source xml:lang="en">Notebook process exited prematurely with error code: {0}. StdErr Output: {1}</source>
-        <target state="new">Notebook process exited prematurely with error code: {0}. StdErr Output: {1}</target>
+        <target state="translated">Notebook 프로세스가 조기에 종료되었습니다(오류 코드: {0}). StdErr 출력: {1}</target>
       </trans-unit>
       <trans-unit id="jupyterError">
         <source xml:lang="en">Error sent from Jupyter: {0}</source>
@@ -806,23 +894,23 @@
       </trans-unit>
       <trans-unit id="notebook.couldNotFindKnoxGateway">
         <source xml:lang="en">Could not find Knox gateway endpoint</source>
-        <target state="new">Could not find Knox gateway endpoint</target>
+        <target state="translated">Knox 게이트웨이 엔드포인트를 찾을 수 없음</target>
       </trans-unit>
       <trans-unit id="promptBDCUsername">
         <source xml:lang="en">{0}Please provide the username to connect to the BDC Controller:</source>
-        <target state="new">{0}Please provide the username to connect to the BDC Controller:</target>
+        <target state="translated">{0}BDC 컨트롤러에 연결하려면 사용자 이름을 제공하세요.</target>
       </trans-unit>
       <trans-unit id="promptBDCPassword">
         <source xml:lang="en">Please provide the password to connect to the BDC Controller</source>
-        <target state="new">Please provide the password to connect to the BDC Controller</target>
+        <target state="translated">BDC 컨트롤러에 연결하려면 암호를 제공하세요.</target>
       </trans-unit>
       <trans-unit id="bdcConnectError">
         <source xml:lang="en">Error: {0}. </source>
-        <target state="new">Error: {0}. </target>
+        <target state="translated">오류: {0}. </target>
       </trans-unit>
       <trans-unit id="clusterControllerConnectionRequired">
         <source xml:lang="en">A connection to the cluster controller is required to run Spark jobs</source>
-        <target state="new">A connection to the cluster controller is required to run Spark jobs</target>
+        <target state="translated">Spark 작업을 실행하려면 클러스터 컨트롤러에 대한 연결이 필요합니다.</target>
       </trans-unit>
     </body>
   </file>
@@ -854,7 +942,7 @@
       </trans-unit>
       <trans-unit id="managePackages.deleteColumn">
         <source xml:lang="en">Delete</source>
-        <target state="new">Delete</target>
+        <target state="translated">삭제</target>
       </trans-unit>
       <trans-unit id="managePackages.uninstallButtonText">
         <source xml:lang="en">Uninstall selected packages</source>
@@ -866,7 +954,7 @@
       </trans-unit>
       <trans-unit id="managePackages.location">
         <source xml:lang="en">Location</source>
-        <target state="new">Location</target>
+        <target state="translated">위치</target>
       </trans-unit>
       <trans-unit id="managePackages.packageCount">
         <source xml:lang="en">{0} {1} packages found</source>
@@ -946,7 +1034,7 @@
     <body>
       <trans-unit id="managePackages.packageRequestError">
         <source xml:lang="en">Package info request failed with error: {0} {1}</source>
-        <target state="new">Package info request failed with error: {0} {1}</target>
+        <target state="translated">{0} {1} 오류를 나타내며 패키지 정보 요청 실패</target>
       </trans-unit>
     </body>
   </file>
@@ -954,15 +1042,15 @@
     <body>
       <trans-unit id="msgSampleCodeDataFrame">
         <source xml:lang="en">This sample code loads the file into a data frame and shows the first 10 results.</source>
-        <target state="new">This sample code loads the file into a data frame and shows the first 10 results.</target>
+        <target state="translated">이 샘플 코드는 파일을 데이터 프레임에 로드하고 처음 10개의 결과를 표시합니다.</target>
       </trans-unit>
       <trans-unit id="noNotebookVisible">
         <source xml:lang="en">No notebook editor is active</source>
-        <target state="new">No notebook editor is active</target>
+        <target state="translated">Notebook 편집기가 활성 상태가 아님</target>
       </trans-unit>
       <trans-unit id="notebookFiles">
         <source xml:lang="en">Notebooks</source>
-        <target state="new">Notebooks</target>
+        <target state="translated">Notebook</target>
       </trans-unit>
     </body>
   </file>
@@ -973,8 +1061,8 @@
         <target state="translated">이 처리기에는 {0} 작업이 지원되지 않습니다.</target>
       </trans-unit>
       <trans-unit id="unsupportedScheme">
-        <source xml:lang="en">Cannot open link {0} as only HTTP and HTTPS links are supported</source>
-        <target state="translated">HTTP 및 HTTPS 링크만 지원되기 때문에 {0} 링크를 열 수 없습니다.</target>
+        <source xml:lang="en">Cannot open link {0} as only HTTP, HTTPS, and File links are supported</source>
+        <target state="translated">HTTP, HTTPS 및 파일 링크만 지원되므로 링크 {0}을(를) 열 수 없음</target>
       </trans-unit>
       <trans-unit id="notebook.confirmOpen">
         <source xml:lang="en">Download and open '{0}'?</source>
