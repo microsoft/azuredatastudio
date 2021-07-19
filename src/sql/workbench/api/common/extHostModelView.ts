@@ -1371,10 +1371,10 @@ class TextComponentWrapper extends ComponentWrapper implements azdata.TextCompon
 		this.setProperty('requiredIndicator', requiredIndicator);
 	}
 
-	public get headingLevel(): number | undefined {
+	public get headingLevel(): azdata.HeadingLevel | undefined {
 		return this.properties['headingLevel'];
 	}
-	public set headingLevel(headingLevel: number | undefined) {
+	public set headingLevel(headingLevel: azdata.HeadingLevel | undefined) {
 		this.setProperty('headingLevel', headingLevel);
 	}
 }
