@@ -177,7 +177,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			ownerUri
 		);
 		this._serverDatabases = await (await azdata.connection.listDatabases(this.sourceConnectionId)).filter((name) => !excludeDbs.includes(name));
-		const dbAssessments = assessmentResults?.result.databases.filter(d => !excludeDbs.includes(d.name)).map(d => {
+		const dbAssessments = assessmentResults?.assessmentResult.databases.filter(d => !excludeDbs.includes(d.name)).map(d => {
 			return {
 				name: d.name,
 				issues: d.items.filter(i => i.appliesToMigrationTargetPlatform === MigrationTargetType.SQLMI) ?? []
@@ -185,7 +185,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		});
 
 		this._assessmentResults = {
-			issues: assessmentResults?.result.items?.filter(i => i.appliesToMigrationTargetPlatform === MigrationTargetType.SQLMI) ?? [],
+			issues: assessmentResults?.assessmentResult.items?.filter(i => i.appliesToMigrationTargetPlatform === MigrationTargetType.SQLMI) ?? [],
 			databaseAssessments: dbAssessments! ?? []
 		};
 
