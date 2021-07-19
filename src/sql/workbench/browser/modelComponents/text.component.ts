@@ -168,6 +168,7 @@ export default class TextComponent extends TitledComponent<azdata.TextComponentP
 		} else {
 			element = DOM.$(`h${headingLevel}`);
 		}
+		// Manually set the font-size and font-weight since that is set by the base style sheets which may not be what the user wants
 		element.style.fontSize = this.CSSStyles['font-size']?.toString();
 		element.style.fontWeight = this.CSSStyles['font-weight']?.toString();
 		return element;
