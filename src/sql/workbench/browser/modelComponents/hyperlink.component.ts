@@ -21,7 +21,7 @@ import { ILogService } from 'vs/platform/log/common/log';
 
 @Component({
 	selector: 'modelview-hyperlink',
-	template: `<a [href]="url" [title]="title" [attr.aria-label]="ariaLabel" [attr.role]="isButton ? 'button' : null" target="blank" [ngStyle]="CSSStyles" [class]="cssClass">{{label}}</a>`
+	template: `<a [href]="url" [title]="title" [attr.aria-label]="ariaLabel" [attr.role]="ariaRole ? ariaRole : null" target="blank" [ngStyle]="CSSStyles" [class]="cssClass">{{label}}</a>`
 })
 export default class HyperlinkComponent extends TitledComponent<azdata.HyperlinkComponentProperties> implements IComponent, OnDestroy, AfterViewInit {
 	@Input() descriptor: IComponentDescriptor;
@@ -71,10 +71,6 @@ export default class HyperlinkComponent extends TitledComponent<azdata.Hyperlink
 
 	public get showLinkIcon(): boolean {
 		return this.getPropertyOrDefault<boolean>((props) => props.showLinkIcon, false);
-	}
-
-	public get isButton(): boolean {
-		return this.getPropertyOrDefault<boolean>((props) => props.isButton, false);
 	}
 
 	public onClick(e: MouseEvent): void {
