@@ -5,6 +5,8 @@
 
 .notebookEditor .scrollable-content {
 	padding-top: 16px;
+	box-sizing: border-box;
+	transform: none !important;
 }
 
 .notebookEditor .taskbarSeparator {
