@@ -71,6 +71,18 @@ export function trimChars(input: string, chars: string): string {
 }
 
 /**
+ * Ensures that folder path terminates with the slash.
+ * Windows-style slash (`\`) is used by default.
+ *
+ * @param path Folder path to ensure trailing slash for.
+ * @param slashCharacter Slash character to ensure is present at the end of the path.
+ * @returns Path that ends with the given slash character.
+ */
+export function ensureTrailingSlash(path: string, slashCharacter: string = '\\'): string {
+	return path.endsWith(slashCharacter) ? path : path + slashCharacter;
+}
+
+/**
  * Checks if the folder or file exists @param path path of the folder/file
 */
 export async function exists(path: string): Promise<boolean> {

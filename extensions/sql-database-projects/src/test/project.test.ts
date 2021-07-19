@@ -707,26 +707,87 @@ describe('Project: sqlproj content operations', function (): void {
 	it('Project entry relative path should not change after round-trip', async function (): Promise<void> {
 		// Create new sqlproj
 		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
-		const fileList = await testUtils.createListOfFiles(path.dirname(projFilePath));
+		const projectFolder = path.dirname(projFilePath);
+
+		// Create file under nested folders structure
+		const newFile = path.join(projectFolder, 'foo', 'test.sql');
+		await fs.mkdir(path.dirname(newFile), { recursive: true });
+		await fs.writeFile(newFile, '');
 
 		let project: Project = await Project.openProject(projFilePath);
 
 		// Add a file to the project
-		let existingFileUri = fileList[3];
-		let fileStats = await fs.stat(existingFileUri.fsPath);
-		should(fileStats.isFile()).equal(true, 'Fourth entry in fileList should be a file');
-		await project.addToProject([existingFileUri]);
+		await project.addToProject([Uri.file(newFile)]);
 
 		// Store the original `relativePath` of the project entry
-		should(project.files.length).equal(1, 'An entry should be created in the project');
-		const originalRelativePath = project.files[0].relativePath;
+		let fileEntry = project.files.find(f => f.relativePath.endsWith('test.sql'));
+
+		should.exist(fileEntry, 'Entry for the file should be added to project');
+		let originalRelativePath = '';
+		if (fileEntry) {
+			originalRelativePath = fileEntry.relativePath;
+		}
 
 		// Reopen existing project
 		project = await Project.openProject(projFilePath);
 
-		// Try adding the same file to the project again
-		should(project.files.length).equal(1, 'Single entry is expected in the loaded project');
-		should(project.files[0].relativePath).equal(originalRelativePath, 'Relative path should match after a round-trip');
+		// Validate that relative path of the file entry matches the original
+		// There will be additional folder
+		should(project.files.length).equal(2, 'Two entries are expected in the loaded project');
+
+		fileEntry = project.files.find(f => f.relativePath.endsWith('test.sql'));
+		should.exist(fileEntry, 'Entry for the file should be present in the project after round-trip');
+		if (fileEntry) {
+			should(fileEntry.relativePath).equal(originalRelativePath, 'Relative path should match after a round-trip');
+		}
+	});
+
+	it('Intermediate folders for file should be automatically added to project', async function (): Promise<void> {
+		// Create new sqlproj
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
+		const projectFolder = path.dirname(projFilePath);
+
+		// Create file under nested folders structure
+		const newFile = path.join(projectFolder, 'foo', 'bar', 'test.sql');
+		await fs.mkdir(path.dirname(newFile), { recursive: true });
+		await fs.writeFile(newFile, '');
+
+		// Open empty project
+		let project: Project = await Project.openProject(projFilePath);
+
+		// Add a file to the project
+		await project.addToProject([Uri.file(newFile)]);
+
+		// Validate that intermediate folders were added to the project
+		should(project.files.length).equal(3, 'Three entries are expected in the project');
+		should(project.files.map(f => ({ type: f.type, relativePath: f.relativePath })))
+			.containDeep([
+				{ type: EntryType.Folder, relativePath: 'foo\\' },
+				{ type: EntryType.Folder, relativePath: 'foo\\bar\\' },
+				{ type: EntryType.File, relativePath: 'foo\\bar\\test.sql' }]);
+	});
+
+	it('Intermediate folders for folder should be automatically added to project', async function (): Promise<void> {
+		// Create new sqlproj
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
+		const projectFolder = path.dirname(projFilePath);
+
+		// Create nested folders structure
+		const newFolder = path.join(projectFolder, 'foo', 'bar');
+		await fs.mkdir(newFolder, { recursive: true });
+
+		// Open empty project
+		let project: Project = await Project.openProject(projFilePath);
+
+		// Add a file to the project
+		await project.addToProject([Uri.file(newFolder)]);
+
+		// Validate that intermediate folders were added to the project
+		should(project.files.length).equal(2, 'Two entries are expected in the project');
+		should(project.files.map(f => ({ type: f.type, relativePath: f.relativePath })))
+			.containDeep([
+				{ type: EntryType.Folder, relativePath: 'foo\\' },
+				{ type: EntryType.Folder, relativePath: 'foo\\bar' }]);
 	});
 });
 

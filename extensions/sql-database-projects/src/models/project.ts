@@ -316,7 +316,8 @@ export class Project implements ISqlProject {
 		const normalizedRelativeFolderPath = utils.convertSlashesForSqlProj(relativeFolderPath);
 
 		// check if folder already has been added to sqlproj
-		const existingEntry = this.files.find(f => f.relativePath.toUpperCase() === normalizedRelativeFolderPath.toUpperCase());
+		const expectedExistingEntryRelativePath = utils.ensureTrailingSlash(normalizedRelativeFolderPath.toUpperCase());
+		const existingEntry = this.files.find(f => utils.ensureTrailingSlash(f.relativePath.toUpperCase()) === expectedExistingEntryRelativePath);
 		if (existingEntry) {
 			if (!doNotThrowOnDuplicate) {
 				throw new Error(constants.folderAlreadyAddedToProject((relativeFolderPath)));
@@ -330,6 +331,9 @@ export class Project implements ISqlProject {
 		if (!exists) {
 			await fs.mkdir(absoluteFolderPath, { recursive: true });
 		}
+
+		// ensure that parent folder items exist in the project for the corresponding folder path
+		this.ensureFolderItemsForPath(absoluteFolderPath);
 
 		const folderEntry = this.createFileProjectEntry(normalizedRelativeFolderPath, EntryType.Folder);
 		this._files.push(folderEntry);
@@ -378,6 +382,9 @@ export class Project implements ISqlProject {
 		if (!exists) {
 			throw new Error(constants.noFileExist(absoluteFilePath));
 		}
+
+		// ensure that parent folder items exist in the project for the corresponding file path
+		this.ensureFolderItemsForPath(absoluteFilePath);
 
 		// update sqlproj XML
 		const fileEntry = this.createFileProjectEntry(normalizedRelativeFilePath, EntryType.File);
@@ -1105,6 +1112,47 @@ export class Project implements ISqlProject {
 		}
 
 		return firstPropertyElement.childNodes[0].data;
+	}
+
+	/**
+	 * Adds folder items for all intermediate folders in the path.
+	 * For example, when adding a file `a/b/c/d.sql`, we also need to add items for
+	 * the following folders:
+	 *   a/
+	 *   a/b/
+	 *   a/b/c/
+	 *
+	 * @param absolutePath Normalized absolute path to the file or folder.
+	 */
+	private async ensureFolderItemsForPath(absolutePath: string): Promise<void> {
+		const normalizedProjectFolderPath = path.normalize(this.projectFolderPath);
+
+		// Only add folders for files within the project folder. When adding files outside the project
+		// folder, they should be copied to the project root and there will be no additional folders to add.
+		if (!absolutePath.toUpperCase().startsWith(normalizedProjectFolderPath.toUpperCase())) {
+			return;
+		}
+
+		const relativePath = utils.convertSlashesForSqlProj(absolutePath.substring(normalizedProjectFolderPath.length));
+		const pathSegments = utils.trimChars(relativePath, ' \\').split('\\');
+		let intermediateFolderPath = '';
+
+		// Add folder items for all segments, except the last one, which will be explicitly
+		// added by the caller of this helper method
+		for (let segmentIndex = 0; segmentIndex < pathSegments.length - 1; ++segmentIndex) {
+			if (pathSegments[segmentIndex] !== '') {
+				intermediateFolderPath += pathSegments[segmentIndex] + '\\';
+				const existingEntry =
+					this.files.find(f => utils.ensureTrailingSlash(f.relativePath.toUpperCase()) === intermediateFolderPath.toUpperCase());
+
+				if (!existingEntry) {
+					// If there is no <Folder/> item for the intermediate folder - add it
+					const folderEntry = this.createFileProjectEntry(intermediateFolderPath, EntryType.Folder);
+					this.files.push(folderEntry);
+					await this.addToProjFile(folderEntry);
+				}
+			}
+		}
 	}
 }
 
