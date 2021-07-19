@@ -138,9 +138,9 @@ export class SqlDatabaseTree {
 		this._databaseTable = this._view.modelBuilder.declarativeTable().withProps(
 			{
 				enableRowSelection: true,
-				width: 250,
+				width: 200,
 				CSSStyles: {
-					'table-layout': 'fixed'
+					'table-layout': 'auto'
 				},
 				columns: [
 					{
@@ -193,8 +193,8 @@ export class SqlDatabaseTree {
 
 		const tableContainer = this._view.modelBuilder.divContainer().withItems([this._databaseTable]).withProps({
 			CSSStyles: {
-				'width': '280px',
-				'margin': '0px 8px 0px 30px'
+				'width': '200px',
+				'margin': '0px 8px 0px 34px'
 			}
 		}).component();
 		return tableContainer;
@@ -906,7 +906,10 @@ export class SqlDatabaseTree {
 			title: text,
 			CSSStyles: {
 				'margin': '0px',
-				'width': '110px'
+				'width': '110px',
+				'white-space': 'nowrap',
+				'text-overflow': 'ellipsis',
+				'overflow': 'hidden'
 			}
 		}).component();
 
