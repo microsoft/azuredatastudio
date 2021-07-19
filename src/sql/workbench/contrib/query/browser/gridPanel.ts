@@ -325,13 +325,13 @@ export interface IDataSet {
 
 export interface IGridTableOptions {
 	actionOrientation: ActionsOrientation;
-	displayActions?: boolean;
+	showActionBar?: boolean;
 	inMemoryDataProcessing: boolean;
 	inMemoryDataCountThreshold?: number;
 }
 
 const defaultGridTableOptions: IGridTableOptions = {
-	displayActions: true,
+	showActionBar: true,
 	inMemoryDataProcessing: false,
 	actionOrientation: ActionsOrientation.VERTICAL
 };
@@ -742,14 +742,20 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 	private rebuildActionBar() {
 		let actions = this.getCurrentActions();
 		this.actionBar.clear();
-		if (this.options.displayActions) {
+		if (this.options.showActionBar) {
 			this.actionBar.push(actions, { icon: true, label: false });
 		}
 	}
 
-	public showActionBar(display: boolean) {
-		this.options.displayActions = display;
-		this.rebuildActionBar();
+	public get showActionBar(): boolean {
+		return this.options.showActionBar;
+	}
+
+	public set showActionBar(v: boolean) {
+		if (this.options.showActionBar !== v) {
+			this.options.showActionBar = v;
+			this.rebuildActionBar();
+		}
 	}
 
 	protected abstract getCurrentActions(): IAction[];
@@ -897,7 +903,7 @@ class GridTable<T> extends GridTableBase<T> {
 		super(state, resultSet, {
 			actionOrientation: ActionsOrientation.VERTICAL,
 			inMemoryDataProcessing: true,
-			displayActions: true,
+			showActionBar: true,
 			inMemoryDataCountThreshold: configurationService.getValue<IQueryEditorConfiguration>('queryEditor').results.inMemoryDataProcessingThreshold,
 		}, contextMenuService, instantiationService, editorService, untitledEditorService, configurationService, queryModelService, themeService, contextViewService, notificationService);
 		this._gridDataProvider = this.instantiationService.createInstance(QueryGridDataProvider, this._runner, resultSet.batchId, resultSet.id);
