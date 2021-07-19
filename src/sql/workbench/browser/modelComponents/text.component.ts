@@ -119,9 +119,9 @@ export default class TextComponent extends TitledComponent<azdata.TextComponentP
 			// First insert any text from the start of the current string fragment up to the placeholder
 			let curText = text.slice(0, placeholderIndex);
 			if (curText) {
-				const textSpan = this.createTextElement();
-				textSpan.innerText = text.slice(0, placeholderIndex);
-				(<HTMLElement>this.textContainer.nativeElement).appendChild(textSpan);
+				const textElement = this.createTextElement();
+				textElement.innerText = text.slice(0, placeholderIndex);
+				(<HTMLElement>this.textContainer.nativeElement).appendChild(textElement);
 			}
 
 			// Now insert the link element
@@ -146,9 +146,9 @@ export default class TextComponent extends TitledComponent<azdata.TextComponentP
 
 		// If we have any text left over now insert that in directly
 		if (text) {
-			const textSpan = this.createTextElement();
-			textSpan.innerText = text;
-			(<HTMLElement>this.textContainer.nativeElement).appendChild(textSpan);
+			const textElement = this.createTextElement();
+			textElement.innerText = text;
+			(<HTMLElement>this.textContainer.nativeElement).appendChild(textElement);
 		}
 	}
 
@@ -156,12 +156,20 @@ export default class TextComponent extends TitledComponent<azdata.TextComponentP
 		return this.requiredIndicator || !!this.description;
 	}
 
+	/**
+	 * Creates the appropriate text element based on the type of text component (regular or header) this is
+	 * @returns The text element
+	 */
 	private createTextElement(): HTMLElement {
 		const headingLevel = this.headingLevel;
+		let element: HTMLElement;
 		if (headingLevel === undefined) {
-			return DOM.$('span');
+			element = DOM.$('span');
 		} else {
-			return DOM.$(`h${headingLevel}`);
+			element = DOM.$(`h${headingLevel}`);
 		}
+		element.style.fontSize = this.CSSStyles['font-size']?.toString();
+		element.style.fontWeight = this.CSSStyles['font-weight']?.toString();
+		return element;
 	}
 }
