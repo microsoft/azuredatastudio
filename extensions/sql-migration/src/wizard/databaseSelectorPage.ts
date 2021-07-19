@@ -237,7 +237,7 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 			}
 		).component();
 
-		this._databaseSelectorTable.dataValues = this._databaseTableValues;
+		await this._databaseSelectorTable.setDataValues(this._databaseTableValues);
 		this._databaseSelectorTable.onDataChanged(() => {
 			this._dbCount.updateProperties({
 				'value': constants.DATABASES_SELECTED(this.selectedDbs().length, this._databaseTableValues.length)

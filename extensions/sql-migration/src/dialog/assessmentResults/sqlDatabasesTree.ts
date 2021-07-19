@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 import * as azdata from 'azdata';
 import { SqlMigrationAssessmentResultItem, SqlMigrationImpactedObjectInfo } from '../../../../mssql/src/mssql';
-import { IconPath, IconPathHelper } from '../../constants/iconPathHelper';
 import { MigrationStateModel, MigrationTargetType } from '../../models/stateMachine';
 import * as constants from '../../constants/strings';
 import { debounce } from '../../api/utils';
@@ -153,7 +152,7 @@ export class SqlDatabaseTree {
 					},
 					{
 						displayName: constants.DATABASE,
-						valueType: azdata.DeclarativeDataType.component,
+						valueType: azdata.DeclarativeDataType.string,
 						width: 100,
 						isReadOnly: true,
 						headerCssStyles: headerLeft
@@ -818,7 +817,8 @@ export class SqlDatabaseTree {
 			instanceTableValues = [
 				[
 					{
-						value: this.createIconTextCell(IconPathHelper.sqlServerLogo, this._serverName),
+						// value: this.createIconTextCell(IconPathHelper.sqlServerLogo, this._serverName),
+						value: this._serverName,
 						style: styleLeft
 					},
 					{
@@ -835,7 +835,8 @@ export class SqlDatabaseTree {
 							style: styleLeft
 						},
 						{
-							value: this.createIconTextCell(IconPathHelper.sqlDatabaseLogo, db),
+							// value: this.createIconTextCell(IconPathHelper.sqlDatabaseLogo, db),
+							value: db,
 							style: styleLeft
 						},
 						{
@@ -849,7 +850,8 @@ export class SqlDatabaseTree {
 			instanceTableValues = [
 				[
 					{
-						value: this.createIconTextCell(IconPathHelper.sqlServerLogo, this._serverName),
+						// value: this.createIconTextCell(IconPathHelper.sqlServerLogo, this._serverName),
+						value: this._serverName,
 						style: styleLeft
 					},
 					{
@@ -876,7 +878,8 @@ export class SqlDatabaseTree {
 							enabled: selectable
 						},
 						{
-							value: this.createIconTextCell((selectable) ? IconPathHelper.sqlDatabaseLogo : IconPathHelper.sqlDatabaseWarningLogo, db.name),
+							// value: this.createIconTextCell((selectable) ? IconPathHelper.sqlDatabaseLogo : IconPathHelper.sqlDatabaseWarningLogo, db.name),
+							value: db.name,
 							style: styleLeft
 						},
 						{
@@ -891,41 +894,4 @@ export class SqlDatabaseTree {
 		await this._databaseTable.setDataValues(this._databaseTableValues);
 	}
 
-	private createIconTextCell(icon: IconPath, text: string): azdata.FlexContainer {
-
-		const iconComponent = this._view.modelBuilder.image().withProps({
-			iconPath: icon,
-			iconWidth: '16px',
-			iconHeight: '16px',
-			width: '20px',
-			height: '20px'
-		}).component();
-		const textComponent = this._view.modelBuilder.text().withProps({
-			value: text,
-			title: text,
-			CSSStyles: {
-				'margin': '0px',
-				'width': '110px'
-			}
-		}).component();
-
-		const cellContainer = this._view.modelBuilder.flexContainer().withProps({
-			CSSStyles: {
-				'justify-content': 'left'
-			}
-		}).component();
-		cellContainer.addItem(iconComponent, {
-			flex: '0',
-			CSSStyles: {
-				'width': '32px'
-			}
-		});
-		cellContainer.addItem(textComponent, {
-			CSSStyles: {
-				'width': 'auto'
-			}
-		});
-
-		return cellContainer;
-	}
 }

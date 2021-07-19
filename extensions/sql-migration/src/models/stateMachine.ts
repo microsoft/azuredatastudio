@@ -121,7 +121,6 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	public _blobContainers!: azureResource.BlobContainer[];
 	public _refreshNetworkShareLocation!: azureResource.BlobContainer[];
 	public _targetDatabaseNames!: string[];
-	public _serverDatabases!: string[];
 
 	public _sqlMigrationServiceResourceGroup!: string;
 	public _sqlMigrationService!: SqlMigrationService;
@@ -177,7 +176,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 	public async getDatabaseAssessments(): Promise<ServerAssessement> {
 		const ownerUri = await azdata.connection.getUriForConnection(this.sourceConnectionId);
-
+		// stress test backend & dialog component
 		const assessmentResults = await this.migrationService.getAssessments(
 			ownerUri,
 			this._databaseAssessment
