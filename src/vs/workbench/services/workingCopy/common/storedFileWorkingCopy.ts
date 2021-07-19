@@ -597,7 +597,7 @@ export class StoredFileWorkingCopy<M extends IStoredFileWorkingCopyModel> extend
 		});
 
 		// Update existing model if we had been resolved
-		if (this.isResolved()) {
+		if ((this as StoredFileWorkingCopy<M>).isResolved()) { // {{SQL CARBON EDIT}} Fix compile error with predicate casting to interface
 			await this.doUpdateModel(content.value);
 		}
 
@@ -780,7 +780,7 @@ export class StoredFileWorkingCopy<M extends IStoredFileWorkingCopyModel> extend
 		// Scenario: user invoked the save action multiple times quickly for the same contents
 		//           while the save was not yet finished to disk
 		//
-		if (this.saveSequentializer.hasPending(versionId)) {
+		if ((this.saveSequentializer as TaskSequentializer).hasPending(versionId)) { // {{SQL CARBON EDIT}} Fix compile error with predicate casting to interface
 			this.trace(`[stored file working copy] doSave(${versionId}) - exit - found a pending save for versionId ${versionId}`);
 
 			return this.saveSequentializer.pending;
@@ -803,7 +803,7 @@ export class StoredFileWorkingCopy<M extends IStoredFileWorkingCopyModel> extend
 		// Scenario B: save is very slow (e.g. network share) and the user manages to change the working copy and trigger another save
 		//             while the first save has not returned yet.
 		//
-		if (this.saveSequentializer.hasPending()) {
+		if ((this.saveSequentializer as TaskSequentializer).hasPending()) { // {{SQL CARBON EDIT}} Fix compile error with predicate casting to interface
 			this.trace(`[stored file working copy] doSave(${versionId}) - exit - because busy saving`);
 
 			// Indicate to the save sequentializer that we want to
@@ -821,7 +821,7 @@ export class StoredFileWorkingCopy<M extends IStoredFileWorkingCopyModel> extend
 
 		// Push all edit operations to the undo stack so that the user has a chance to
 		// Ctrl+Z back to the saved version.
-		if (this.isResolved()) {
+		if ((this as StoredFileWorkingCopy<M>).isResolved()) { // {{SQL CARBON EDIT}} Fix compile error with predicate casting to interface
 			this.model.pushStackElement();
 		}
 
