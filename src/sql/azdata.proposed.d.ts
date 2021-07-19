@@ -318,6 +318,10 @@ declare module 'azdata' {
 		defaultValueOsOverrides?: DefaultValueOsOverride[];
 	}
 
+	export interface HyperlinkComponentProperties {
+		isButton: boolean;
+	}
+
 	export interface ModelBuilder {
 		radioCardGroup(): ComponentBuilder<RadioCardGroupComponent, RadioCardGroupComponentProperties>;
 		listView(): ComponentBuilder<ListViewComponent, ListViewComponentProperties>;
