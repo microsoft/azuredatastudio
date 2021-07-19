@@ -166,6 +166,9 @@ export default class TextComponent extends TitledComponent<azdata.TextComponentP
 		if (headingLevel === undefined) {
 			element = DOM.$('span');
 		} else {
+			if (headingLevel > 6) {
+				throw new Error('Heading level must be a value between 1 and 6');
+			}
 			element = DOM.$(`h${headingLevel}`);
 		}
 		// Manually set the font-size and font-weight since that is set by the base style sheets which may not be what the user wants
