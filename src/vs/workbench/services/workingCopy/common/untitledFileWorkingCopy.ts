@@ -151,31 +151,31 @@ export class UntitledFileWorkingCopy<M extends IUntitledFileWorkingCopyModel> ex
 		let untitledContents: VSBufferReadableStream;
 
 		// Check for backups or use initial value or empty
-		const backup = await this.workingCopyBackupService.resolve(this);
+		const backup = await (this as UntitledFileWorkingCopy<M>).workingCopyBackupService.resolve(this); // {{SQL CARBON EDIT}} Fix compile error with predicate casting to interface
 		if (backup) {
-			this.trace('[untitled file working copy] resolve() - with backup');
+			(this as UntitledFileWorkingCopy<M>).trace('[untitled file working copy] resolve() - with backup'); // {{SQL CARBON EDIT}} Fix compile error with predicate casting to interface
 
 			untitledContents = backup.value;
-		} else if (this.initialValue) {
-			this.trace('[untitled file working copy] resolve() - with initial contents');
+		} else if ((this as UntitledFileWorkingCopy<M>).initialValue) { // {{SQL CARBON EDIT}} Fix compile error with predicate casting to interface
+			(this as UntitledFileWorkingCopy<M>).trace('[untitled file working copy] resolve() - with initial contents'); // {{SQL CARBON EDIT}} Fix compile error with predicate casting to interface
 
-			untitledContents = this.initialValue;
+			untitledContents = (this as UntitledFileWorkingCopy<M>).initialValue; // {{SQL CARBON EDIT}} Fix compile error with predicate casting to interface
 		} else {
-			this.trace('[untitled file working copy] resolve() - empty');
+			(this as UntitledFileWorkingCopy<M>).trace('[untitled file working copy] resolve() - empty'); // {{SQL CARBON EDIT}} Fix compile error with predicate casting to interface
 
 			untitledContents = emptyStream();
 		}
 
 		// Create model
-		await this.doCreateModel(untitledContents);
+		await (this as UntitledFileWorkingCopy<M>).doCreateModel(untitledContents); // {{SQL CARBON EDIT}} Fix compile error with predicate casting to interface
 
 		// Untitled associated to file path are dirty right away as well as untitled with content
-		this.setDirty(this.hasAssociatedFilePath || !!backup || !!this.initialValue);
+		(this as UntitledFileWorkingCopy<M>).setDirty((this as UntitledFileWorkingCopy<M>).hasAssociatedFilePath || !!backup || !!(this as UntitledFileWorkingCopy<M>).initialValue); // {{SQL CARBON EDIT}} Fix compile error with predicate casting to interface
 
 		// If we have initial contents, make sure to emit this
 		// as the appropiate events to the outside.
-		if (!!backup || this.initialValue) {
-			this._onDidChangeContent.fire();
+		if (!!backup || (this as UntitledFileWorkingCopy<M>).initialValue) { // {{SQL CARBON EDIT}} Fix compile error with predicate casting to interface
+			(this as UntitledFileWorkingCopy<M>)._onDidChangeContent.fire(); // {{SQL CARBON EDIT}} Fix compile error with predicate casting to interface
 		}
 	}
 
