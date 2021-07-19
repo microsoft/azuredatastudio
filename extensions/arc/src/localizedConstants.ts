@@ -44,6 +44,7 @@ export const discardText = localize('arc.discard', "Discard");
 export const resetPassword = localize('arc.resetPassword', "Reset Password");
 export const addExtensions = localize('arc.addExtensions', "Add extensions");
 export const dropExtensions = localize('arc.dropExtensions', "Drop extensions");
+export const noExtensions = localize('arc.noExtensions', "No extensions listed in configuration.");
 export const openInAzurePortal = localize('arc.openInAzurePortal', "Open in Azure Portal");
 export const resourceGroup = localize('arc.resourceGroup', "Resource Group");
 export const region = localize('arc.region', "Region");

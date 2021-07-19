@@ -48,13 +48,6 @@ export class QueryPlanEditor extends EditorPane {
 	}
 
 	/**
-	 * Sets focus on this editor. Specifically, it sets the focus on the hosted text editor.
-	 */
-	public override focus(): void {
-		this.view.focus();
-	}
-
-	/**
 	 * Updates the internal variable keeping track of the editor's size, and re-calculates the sash position.
 	 * To be called when the container of this editor changes size.
 	 */

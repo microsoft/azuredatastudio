@@ -3277,12 +3277,6 @@ Error: {1}</source>
     <trans-unit id="profiler.clearDataPrompt">
       <source xml:lang="en">Are you sure you want to clear the data?</source>
     </trans-unit>
-    <trans-unit id="profiler.yes">
-      <source xml:lang="en">Yes</source>
-    </trans-unit>
-    <trans-unit id="profiler.no">
-      <source xml:lang="en">No</source>
-    </trans-unit>
     <trans-unit id="profilerAction.autoscrollOn">
       <source xml:lang="en">Auto Scroll: On</source>
     </trans-unit>
