@@ -14,7 +14,7 @@ import { localize } from 'vs/nls';
 import * as DOM from 'vs/base/browser/dom';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
-import { IMenu, MenuItemAction } from 'vs/platform/actions/common/actions';
+import { MenuItemAction } from 'vs/platform/actions/common/actions';
 import { MenuEntryActionViewItem } from 'vs/platform/actions/browser/menuEntryActionViewItem';
 import { IS_SPLIT_TERMINAL_CONTEXT_KEY, KEYBINDING_CONTEXT_TERMINAL_TABS_SINGULAR_SELECTION, TerminalCommandId } from 'vs/workbench/contrib/terminal/common/terminal';
 import { TerminalSettingId } from 'vs/platform/terminal/common/terminal';
@@ -30,7 +30,7 @@ import { Disposable, DisposableStore, dispose, IDisposable, toDisposable } from 
 import { IListDragAndDrop, IListDragOverReaction, IListRenderer, ListDragOverEffect } from 'vs/base/browser/ui/list/list';
 import { DataTransfers, IDragAndDropData } from 'vs/base/browser/dnd';
 import { disposableTimeout } from 'vs/base/common/async';
-import { ElementsDragAndDropData } from 'vs/base/browser/ui/list/listView';
+import { ElementsDragAndDropData, NativeDragAndDropData } from 'vs/base/browser/ui/list/listView';
 import { URI } from 'vs/base/common/uri';
 import { getColorClass, getIconId, getUriClasses } from 'vs/workbench/contrib/terminal/browser/terminalIcon';
 import { Schemas } from 'vs/base/common/network';
@@ -41,6 +41,8 @@ import { once } from 'vs/base/common/functional';
 import { attachInputBoxStyler } from 'vs/platform/theme/common/styler';
 import { IKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
+import { containsDragType } from 'vs/workbench/browser/dnd';
+import { terminalStrings } from 'vs/workbench/contrib/terminal/common/terminalStrings';
 
 const $ = DOM.$;
 
@@ -61,7 +63,6 @@ export class TerminalTabList extends WorkbenchList<ITerminalInstance> {
 
 	constructor(
 		container: HTMLElement,
-		inlineMenu: IMenu,
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@IListService listService: IListService,
 		@IThemeService themeService: IThemeService,
@@ -186,9 +187,9 @@ export class TerminalTabList extends WorkbenchList<ITerminalInstance> {
 
 class TerminalTabsRenderer implements IListRenderer<ITerminalInstance, ITerminalTabEntryTemplate> {
 	templateId = 'terminal.tabs';
+
 	constructor(
 		private readonly _container: HTMLElement,
-		private readonly _inlineMenu: IMenu,
 		private readonly _labels: ResourceLabels,
 		private readonly _getSelection: () => ITerminalInstance[],
 		@IInstantiationService private readonly _instantiationService: IInstantiationService,
@@ -437,23 +438,33 @@ class TerminalTabsRenderer implements IListRenderer<ITerminalInstance, ITerminal
 	fillActionBar(instance: ITerminalInstance, template: ITerminalTabEntryTemplate): void {
 		// If the instance is within the selection, split all selected
 		const actions = [
-			new Action(TerminalCommandId.SplitInstance, localize('terminal.split', "Split"), ThemeIcon.asClassName(Codicon.splitHorizontal), true, async () => {
+			new Action(TerminalCommandId.SplitInstance, terminalStrings.split.short, ThemeIcon.asClassName(Codicon.splitHorizontal), true, async () => {
 				this._runForSelectionOrInstance(instance, e => this._terminalService.splitInstance(e));
 			}),
-			new Action(TerminalCommandId.KillInstance, localize('terminal.kill', "Kill"), ThemeIcon.asClassName(Codicon.trashcan), true, async () => {
+			new Action(TerminalCommandId.KillInstance, terminalStrings.kill.short, ThemeIcon.asClassName(Codicon.trashcan), true, async () => {
 				this._runForSelectionOrInstance(instance, e => e.dispose());
 			})
 		];
 		// TODO: Cache these in a way that will use the correct instance
 		template.actionBar.clear();
-		for (const [, action] of actions) {
-			for (const a of action) {
-				a.item.icon = a.id === TERMINAL_COMMAND_ID.KILL_INSTANCE ? Codicon.trashcan : Codicon.splitHorizontal;
-				if ('item' in a) {
-					template.actionBar.push(a, { icon: true, label: false, keybinding: this._keybindingService.lookupKeybinding(a.id)?.getLabel() });
+		for (const action of actions) {
+			template.actionBar.push(action, { icon: true, label: false, keybinding: this._keybindingService.lookupKeybinding(action.id)?.getLabel() });
+		}
+	}
+
+	private _runForSelectionOrInstance(instance: ITerminalInstance, callback: (instance: ITerminalInstance) => void) {
+		const selection = this._getSelection();
+		if (selection.includes(instance)) {
+			for (const s of selection) {
+				if (s) {
+					callback(s);
 				}
 			}
+		} else {
+			callback(instance);
 		}
+		this._terminalService.focusTabs();
+		this._listService.lastFocusedList?.focusNext();
 	}
 }
 
@@ -538,7 +549,11 @@ class TerminalTabsDragAndDrop implements IListDragAndDrop<ITerminalInstance> {
 	}
 
 	onDragOver(data: IDragAndDropData, targetInstance: ITerminalInstance | undefined, targetIndex: number | undefined, originalEvent: DragEvent): boolean | IListDragOverReaction {
-		let result = true;
+		if (data instanceof NativeDragAndDropData) {
+			if (!containsDragType(originalEvent, DataTransfers.FILES, DataTransfers.RESOURCES)) {
+				return false;
+			}
+		}
 
 		const didChangeAutoFocusInstance = this._autoFocusInstance !== targetInstance;
 		if (didChangeAutoFocusInstance) {
@@ -547,7 +562,7 @@ class TerminalTabsDragAndDrop implements IListDragAndDrop<ITerminalInstance> {
 		}
 
 		if (!targetInstance) {
-			return result;
+			return data instanceof ElementsDragAndDropData;
 		}
 
 		if (didChangeAutoFocusInstance) {

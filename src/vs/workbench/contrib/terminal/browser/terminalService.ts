@@ -999,7 +999,7 @@ export class TerminalService implements ITerminalService {
 
 			if ('id' in value.profile) {
 				await this.createContributedTerminalProfile(value.profile.id, !!(keyMods?.alt && activeInstance));
-				return;
+				return undefined; // {{SQL CARBON EDIT}} strict nulls
 			} else {
 				if (keyMods?.alt && activeInstance) {
 					// create split, only valid if there's an active instance
