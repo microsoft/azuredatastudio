@@ -8,7 +8,7 @@ import { nb } from 'azdata';
 import { URI } from 'vs/base/common/uri';
 import { IMarkdownString, removeMarkdownEscapes } from 'vs/base/common/htmlContent';
 import { IMarkdownRenderResult } from 'vs/editor/browser/core/markdownRenderer';
-import * as marked from 'vs/base/common/marked/marked';
+import * as marked from 'sql/base/common/marked/marked';
 import { defaultGenerator } from 'vs/base/common/idGenerator';
 import { revive } from 'vs/base/common/marshalling';
 import { ImageMimeTypes } from 'sql/workbench/services/notebook/common/contracts';
