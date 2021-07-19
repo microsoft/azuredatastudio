@@ -789,6 +789,36 @@ describe('Project: sqlproj content operations', function (): void {
 				{ type: EntryType.Folder, relativePath: 'foo\\' },
 				{ type: EntryType.Folder, relativePath: 'foo\\bar' }]);
 	});
+
+	it('Should not add duplicate intermediate folders to project', async function (): Promise<void> {
+		// Create new sqlproj
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
+		const projectFolder = path.dirname(projFilePath);
+
+		// Create file under nested folders structure
+		const newFile = path.join(projectFolder, 'foo', 'bar', 'test.sql');
+		await fs.mkdir(path.dirname(newFile), { recursive: true });
+		await fs.writeFile(newFile, '');
+
+		const anotherNewFile = path.join(projectFolder, 'foo', 'bar', 'test2.sql');
+		await fs.writeFile(anotherNewFile, '');
+
+		// Open empty project
+		let project: Project = await Project.openProject(projFilePath);
+
+		// Add a file to the project
+		await project.addToProject([Uri.file(newFile)]);
+		await project.addToProject([Uri.file(anotherNewFile)]);
+
+		// Validate that intermediate folders were added to the project
+		should(project.files.length).equal(4, 'Four entries are expected in the project');
+		should(project.files.map(f => ({ type: f.type, relativePath: f.relativePath })))
+			.containDeep([
+				{ type: EntryType.Folder, relativePath: 'foo\\' },
+				{ type: EntryType.Folder, relativePath: 'foo\\bar\\' },
+				{ type: EntryType.File, relativePath: 'foo\\bar\\test.sql' },
+				{ type: EntryType.File, relativePath: 'foo\\bar\\test2.sql' }]);
+	});
 });
 
 describe('Project: add SQLCMD Variables', function (): void {
