@@ -300,7 +300,7 @@ export class QueryResultsView extends Disposable {
 		this._input = input;
 		this.runnerDisposables.clear();
 
-		[this.resultsTab, this.messagesTab, this.qpTab, this.topOperationsTab, this.chartTab].forEach(t => t.clear());
+		[this.qpTab, this.topOperationsTab, this.chartTab].forEach(t => t.clear());
 		this.dynamicModelViewTabs.forEach(t => t.clear());
 
 		if (input) {
@@ -332,8 +332,6 @@ export class QueryResultsView extends Disposable {
 	clearInput() {
 		this._input = undefined;
 		this.runnerDisposables.clear();
-		this.resultsTab.clear();
-		this.messagesTab.clear();
 		this.qpTab.clear();
 		this.topOperationsTab.clear();
 		this.chartTab.clear();

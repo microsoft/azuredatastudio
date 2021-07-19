@@ -374,7 +374,7 @@ export class QueryEditor extends EditorPane {
 
 		this.inputDisposables.clear();
 		this.inputDisposables.add(this.input.state.onChange(c => this.updateState(c)));
-		this.updateState({ connectingChange: true, connectedChange: true, executingChange: true, resultsVisibleChange: true, sqlCmdModeChanged: true });
+		this.updateState({ connectingChange: true, connectedChange: true, executingChange: true, resultsVisibleChange: false, sqlCmdModeChanged: true });
 
 		const editorViewState = this.loadTextEditorViewState(this.input.resource);
 
