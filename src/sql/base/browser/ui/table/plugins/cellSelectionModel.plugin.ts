@@ -207,8 +207,7 @@ export class CellSelectionModel<T> implements Slick.SelectionModel<T, Array<Slic
 		let i = 0;
 		while (true) {
 			if (i++ > 10000) {
-				console.error('InsertIntoSelection infinite loop: Report this error on github');
-				break;
+				throw new Error('InsertIntoSelection infinite loop');
 			}
 			let shouldContinue = false;
 			for (let current of newRanges) {

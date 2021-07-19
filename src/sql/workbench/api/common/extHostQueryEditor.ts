@@ -9,6 +9,7 @@ import * as azdata from 'azdata';
 import { IQueryEvent } from 'sql/workbench/services/query/common/queryModel';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 import { Disposable } from 'vs/workbench/api/common/extHostTypes';
+import { URI } from 'vs/base/common/uri';
 
 class ExtHostQueryDocument implements azdata.queryeditor.QueryDocument {
 	constructor(
@@ -77,4 +78,7 @@ export class ExtHostQueryEditor implements ExtHostQueryEditorShape {
 		});
 	}
 
+	public createQueryDocument(options?: { content?: string }, providerId?: string): Promise<URI> {
+		return this._proxy.$createQueryDocument(options, providerId).then(data => URI.revive(data));
+	}
 }

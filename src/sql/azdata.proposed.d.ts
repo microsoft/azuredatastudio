@@ -9,6 +9,19 @@ import * as vscode from 'vscode';
 
 declare module 'azdata' {
 
+	export namespace queryeditor {
+		/**
+		 * Opens an untitled text document. The editor will prompt the user for a file
+		 * path when the document is to be saved. The `options` parameter allows to
+		 * specify the *content* of the document.
+		 *
+		 * @param options Options to control how the document will be created.
+		 * @param providerId Optional provider ID this editor will be associated with. Defaults to MSSQL.
+		 * @return A promise that resolves to a [document](#QueryDocument).
+		 */
+		export function openQueryDocument(options?: { content?: string; }, providerId?: string): Thenable<QueryDocument>;
+	}
+
 	export namespace nb {
 		export interface NotebookDocument {
 			/**
@@ -885,6 +898,15 @@ declare module 'azdata' {
 		 * Append data to an existing table data.
 		 */
 		appendData(data: any[][]): Thenable<void>;
+	}
+
+	export interface LinkArea {
+		/*
+		* Accessibility information used when screen reader interacts with this link.
+		* Generally, a link has no need to set the `role` of the accessibilityInformation;
+		* but it is exposed for situations that may require it.
+		*/
+		accessibilityInformation?: vscode.AccessibilityInformation
 	}
 
 	export interface IconColumnCellValue {

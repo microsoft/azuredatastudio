@@ -22,6 +22,14 @@
         <source xml:lang="en">Local path to a preexisting python installation used by Notebooks.</source>
         <target state="translated">Notebooks 所使用之現有 python 安裝的本機路徑。</target>
       </trans-unit>
+      <trans-unit id="notebook.dontPromptPythonUpdate.description">
+        <source xml:lang="en">Do not show prompt to update Python.</source>
+        <target state="translated">不要顯示更新 Python 的提示。</target>
+      </trans-unit>
+      <trans-unit id="notebook.jupyterServerShutdownTimeout.description">
+        <source xml:lang="en">The amount of time (in minutes) to wait before shutting down a server after all notebooks are closed. (Enter 0 to not shutdown)</source>
+        <target state="translated">在所有筆記本關閉後關閉伺服器前須等候的時間 (分鐘)。(若不要關閉，請輸入 0) </target>
+      </trans-unit>
       <trans-unit id="notebook.overrideEditorTheming.description">
         <source xml:lang="en">Override editor default settings in the Notebook editor. Settings include background color, current line color and border</source>
         <target state="translated">覆寫 Notebook 編輯器中的預設設定。設定包含背景色彩、目前的線條色彩和框線</target>
@@ -49,6 +57,10 @@
       <trans-unit id="notebook.pinnedNotebooks.description">
         <source xml:lang="en">Notebooks that are pinned by the user for the current workspace</source>
         <target state="translated">目前工作區之使用者所釘選的筆記本</target>
+      </trans-unit>
+      <trans-unit id="notebook.allowRoot.description">
+        <source xml:lang="en">Allow Jupyter server to run as root user</source>
+        <target state="new">Allow Jupyter server to run as root user</target>
       </trans-unit>
       <trans-unit id="notebook.command.new">
         <source xml:lang="en">New Notebook</source>
@@ -139,24 +151,24 @@
         <target state="translated">Jupyter 書籍</target>
       </trans-unit>
       <trans-unit id="title.saveJupyterBook">
-        <source xml:lang="en">Save Book</source>
-        <target state="translated">儲存書籍</target>
+        <source xml:lang="en">Save Jupyter Book</source>
+        <target state="translated">開啟 Jupyter 書籍</target>
       </trans-unit>
       <trans-unit id="title.trustBook">
-        <source xml:lang="en">Trust Book</source>
-        <target state="translated">信任書籍</target>
+        <source xml:lang="en">Trust Jupyter Book</source>
+        <target state="translated">信任 Jupyter 書籍</target>
       </trans-unit>
       <trans-unit id="title.searchJupyterBook">
-        <source xml:lang="en">Search Book</source>
-        <target state="translated">搜尋書籍</target>
+        <source xml:lang="en">Search Jupyter Book</source>
+        <target state="translated">搜尋 Jupyter 書籍</target>
       </trans-unit>
       <trans-unit id="title.SavedBooks">
         <source xml:lang="en">Notebooks</source>
         <target state="translated">Notebooks</target>
       </trans-unit>
       <trans-unit id="title.ProvidedBooks">
-        <source xml:lang="en">Provided Books</source>
-        <target state="translated">提供的書籍</target>
+        <source xml:lang="en">Provided Jupyter Books</source>
+        <target state="translated">提供的 Jupyter 書籍</target>
       </trans-unit>
       <trans-unit id="title.PinnedBooks">
         <source xml:lang="en">Pinned notebooks</source>
@@ -174,17 +186,29 @@
         <source xml:lang="en">Close Jupyter Book</source>
         <target state="translated">關閉 Jupyter 書籍</target>
       </trans-unit>
-      <trans-unit id="title.closeJupyterNotebook">
-        <source xml:lang="en">Close Jupyter Notebook</source>
-        <target state="translated">關閉 Jupyter Notebook</target>
+      <trans-unit id="title.closeNotebook">
+        <source xml:lang="en">Close Notebook</source>
+        <target state="translated">關閉筆記本</target>
+      </trans-unit>
+      <trans-unit id="title.removeNotebook">
+        <source xml:lang="en">Remove Notebook</source>
+        <target state="translated">移除筆記本</target>
+      </trans-unit>
+      <trans-unit id="title.addNotebook">
+        <source xml:lang="en">Add Notebook</source>
+        <target state="translated">新增筆記本</target>
+      </trans-unit>
+      <trans-unit id="title.addMarkdown">
+        <source xml:lang="en">Add Markdown File</source>
+        <target state="translated">新增 Markdown 檔案</target>
       </trans-unit>
       <trans-unit id="title.revealInBooksViewlet">
         <source xml:lang="en">Reveal in Books</source>
         <target state="translated">在書籍中顯示</target>
       </trans-unit>
       <trans-unit id="title.createJupyterBook">
-        <source xml:lang="en">Create Book (Preview)</source>
-        <target state="translated">建立書籍 (預覽)</target>
+        <source xml:lang="en">Create Jupyter Book</source>
+        <target state="translated">建立 Jupyter 書籍</target>
       </trans-unit>
       <trans-unit id="title.openNotebookFolder">
         <source xml:lang="en">Open Notebooks in Folder</source>
@@ -263,8 +287,8 @@
         <target state="translated">選取資料夾</target>
       </trans-unit>
       <trans-unit id="labelBookFolder">
-        <source xml:lang="en">Select Book</source>
-        <target state="translated">選取書籍</target>
+        <source xml:lang="en">Select Jupyter Book</source>
+        <target state="translated">選取 Jupyter 書籍</target>
       </trans-unit>
       <trans-unit id="confirmReplace">
         <source xml:lang="en">Folder already exists. Are you sure you want to delete and replace this folder?</source>
@@ -283,40 +307,40 @@
         <target state="translated">開啟外部連結</target>
       </trans-unit>
       <trans-unit id="msgBookTrusted">
-        <source xml:lang="en">Book is now trusted in the workspace.</source>
-        <target state="translated">書籍在此工作區現已受信任。</target>
+        <source xml:lang="en">Jupyter Book is now trusted in the workspace.</source>
+        <target state="translated">Jupyter 書籍在此工作區現已受信任。</target>
       </trans-unit>
       <trans-unit id="msgBookAlreadyTrusted">
-        <source xml:lang="en">Book is already trusted in this workspace.</source>
-        <target state="translated">書籍在此工作區已受信任。</target>
+        <source xml:lang="en">Jupyter Book is already trusted in this workspace.</source>
+        <target state="translated">Jupyter 書籍在此工作區已受信任。</target>
       </trans-unit>
       <trans-unit id="msgBookUntrusted">
-        <source xml:lang="en">Book is no longer trusted in this workspace</source>
-        <target state="translated">書籍在此工作區已不再受信任</target>
+        <source xml:lang="en">Jupyter Book is no longer trusted in this workspace</source>
+        <target state="translated">Jupyter 書籍在此工作區已不再受信任</target>
       </trans-unit>
       <trans-unit id="msgBookAlreadyUntrusted">
-        <source xml:lang="en">Book is already untrusted in this workspace.</source>
-        <target state="translated">書籍在此工作區未受信任。</target>
+        <source xml:lang="en">Jupyter Book is already untrusted in this workspace.</source>
+        <target state="translated">Jupyter 書籍在此工作區未受信任。</target>
       </trans-unit>
       <trans-unit id="msgBookPinned">
-        <source xml:lang="en">Book {0} is now pinned in the workspace.</source>
-        <target state="translated">書籍 {0} 現已釘選在工作區中。</target>
+        <source xml:lang="en">Jupyter Book {0} is now pinned in the workspace.</source>
+        <target state="translated">Jupyter 書籍 {0} 現已釘選在工作區中。</target>
       </trans-unit>
       <trans-unit id="msgBookUnpinned">
-        <source xml:lang="en">Book {0} is no longer pinned in this workspace</source>
-        <target state="translated">書籍 {0} 已不再釘選於此工作區中</target>
+        <source xml:lang="en">Jupyter Book {0} is no longer pinned in this workspace</source>
+        <target state="translated">Jupyter 書籍 {0} 已不再釘選於此工作區中</target>
       </trans-unit>
       <trans-unit id="bookInitializeFailed">
-        <source xml:lang="en">Failed to find a Table of Contents file in the specified book.</source>
-        <target state="translated">找不到指定書籍中的目錄檔案。</target>
+        <source xml:lang="en">Failed to find a Table of Contents file in the specified Jupyter Book.</source>
+        <target state="translated">指定 Jupyter 書籍中找不到的目錄檔案。</target>
       </trans-unit>
       <trans-unit id="noBooksSelected">
-        <source xml:lang="en">No books are currently selected in the viewlet.</source>
-        <target state="translated">目前未在 Viewlet 中選取任何書籍。</target>
+        <source xml:lang="en">No Jupyter Books are currently selected in the viewlet.</source>
+        <target state="translated">目前未在 Viewlet 中選取任何 Jupyter 書籍。</target>
       </trans-unit>
       <trans-unit id="labelBookSection">
-        <source xml:lang="en">Select Book Section</source>
-        <target state="translated">選取書籍區段</target>
+        <source xml:lang="en">Select Jupyter Book Section</source>
+        <target state="translated">選取 Jupyter 書籍章節</target>
       </trans-unit>
       <trans-unit id="labelAddToLevel">
         <source xml:lang="en">Add to this level</source>
@@ -339,12 +363,12 @@
         <target state="translated">缺少組態檔</target>
       </trans-unit>
       <trans-unit id="openBookError">
-        <source xml:lang="en">Open book {0} failed: {1}</source>
-        <target state="translated">無法開啟書籍 {0}: {1}</target>
+        <source xml:lang="en">Open Jupyter Book {0} failed: {1}</source>
+        <target state="translated">開啟 Jupyter 書籍 {0} 失敗: {1}</target>
       </trans-unit>
       <trans-unit id="readBookError">
-        <source xml:lang="en">Failed to read book {0}: {1}</source>
-        <target state="translated">無法讀取書籍 {0}: {1}</target>
+        <source xml:lang="en">Failed to read Jupyter Book {0}: {1}</source>
+        <target state="translated">無法讀取 Jupyter 書籍 {0}: {1}</target>
       </trans-unit>
       <trans-unit id="openNotebookError">
         <source xml:lang="en">Open notebook {0} failed: {1}</source>
@@ -363,8 +387,8 @@
         <target state="translated">開啟連結 {0} 失敗: {1}</target>
       </trans-unit>
       <trans-unit id="closeBookError">
-        <source xml:lang="en">Close book {0} failed: {1}</source>
-        <target state="translated">無法關閉書籍 {0}: {1}</target>
+        <source xml:lang="en">Close Jupyter Book {0} failed: {1}</source>
+        <target state="translated">關閉 Jupyter 書籍 {0} 失敗: {1}</target>
       </trans-unit>
       <trans-unit id="duplicateFileError">
         <source xml:lang="en">File {0} already exists in the destination folder {1} 
@@ -373,12 +397,16 @@
  檔案已重新命名為 {2}，以避免資料遺失。</target>
       </trans-unit>
       <trans-unit id="editBookError">
-        <source xml:lang="en">Error while editing book {0}: {1}</source>
-        <target state="translated">編輯書籍 {0} 時發生錯誤: {1}</target>
+        <source xml:lang="en">Error while editing Jupyter Book {0}: {1}</source>
+        <target state="translated">編輯 Jupyter 書籍 {0} 時發生錯誤: {1}</target>
       </trans-unit>
       <trans-unit id="selectBookError">
-        <source xml:lang="en">Error while selecting a book or a section to edit: {0}</source>
-        <target state="translated">選取要編輯的書籍或區段時發生錯誤: {0}</target>
+        <source xml:lang="en">Error while selecting a Jupyter Book or a section to edit: {0}</source>
+        <target state="translated">選取要編輯的 Jupyter 書籍或章節時發生錯誤: {0}</target>
+      </trans-unit>
+      <trans-unit id="sectionNotFound">
+        <source xml:lang="en">Failed to find section {0} in {1}.</source>
+        <target state="translated">在 {1} 中找不到區段 {0}。</target>
       </trans-unit>
       <trans-unit id="url">
         <source xml:lang="en">URL</source>
@@ -393,8 +421,8 @@
         <target state="translated">位置</target>
       </trans-unit>
       <trans-unit id="addRemoteBook">
-        <source xml:lang="en">Add Remote Book</source>
-        <target state="translated">新增遠端書籍</target>
+        <source xml:lang="en">Add Remote Jupyter Book</source>
+        <target state="translated">新增遠端 Jupyter 書籍</target>
       </trans-unit>
       <trans-unit id="onGitHub">
         <source xml:lang="en">GitHub</source>
@@ -409,8 +437,8 @@
         <target state="translated">版本</target>
       </trans-unit>
       <trans-unit id="book">
-        <source xml:lang="en">Book</source>
-        <target state="translated">書籍</target>
+        <source xml:lang="en">Jupyter Book</source>
+        <target state="translated">Jupyter 書籍</target>
       </trans-unit>
       <trans-unit id="version">
         <source xml:lang="en">Version</source>
@@ -421,8 +449,8 @@
         <target state="translated">語言</target>
       </trans-unit>
       <trans-unit id="booksNotFound">
-        <source xml:lang="en">No books are currently available on the provided link</source>
-        <target state="translated">提供的連結目前沒有任何書籍可供使用</target>
+        <source xml:lang="en">No Jupyter Books are currently available on the provided link</source>
+        <target state="translated">提供的連結目前沒有任何 Jupyter 書籍可供使用</target>
       </trans-unit>
       <trans-unit id="urlGithubError">
         <source xml:lang="en">The url provided is not a Github release url</source>
@@ -445,44 +473,44 @@
         <target state="translated">-</target>
       </trans-unit>
       <trans-unit id="msgRemoteBookDownloadProgress">
-        <source xml:lang="en">Remote Book download is in progress</source>
-        <target state="translated">正在下載遠端書籍</target>
+        <source xml:lang="en">Remote Jupyter Book download is in progress</source>
+        <target state="translated">遠端 Jupyter 書籍下載進行中</target>
       </trans-unit>
       <trans-unit id="msgRemoteBookDownloadComplete">
-        <source xml:lang="en">Remote Book download is complete</source>
-        <target state="translated">遠端書籍下載已完成</target>
+        <source xml:lang="en">Remote Jupyter Book download is complete</source>
+        <target state="translated">遠端 Jupyter 書籍下載已完成</target>
       </trans-unit>
       <trans-unit id="msgRemoteBookDownloadError">
-        <source xml:lang="en">Error while downloading remote Book</source>
-        <target state="translated">下載遠端書籍時發生錯誤</target>
+        <source xml:lang="en">Error while downloading remote Jupyter Book</source>
+        <target state="translated">下載遠端 Jupyter 書籍時發生錯誤</target>
       </trans-unit>
       <trans-unit id="msgRemoteBookUnpackingError">
-        <source xml:lang="en">Error while decompressing remote Book</source>
-        <target state="translated">解壓縮遠端書籍時發生錯誤</target>
+        <source xml:lang="en">Error while decompressing remote Jupyter Book</source>
+        <target state="translated">解壓縮遠端 Jupyter 書籍時發生錯誤</target>
       </trans-unit>
       <trans-unit id="msgRemoteBookDirectoryError">
-        <source xml:lang="en">Error while creating remote Book directory</source>
-        <target state="translated">建立遠端書籍目錄時發生錯誤</target>
+        <source xml:lang="en">Error while creating remote Jupyter Book directory</source>
+        <target state="translated">建立遠端 Jupyter 書籍目錄時發生錯誤</target>
       </trans-unit>
       <trans-unit id="msgTaskName">
-        <source xml:lang="en">Downloading Remote Book</source>
-        <target state="translated">正在下載遠端書籍</target>
+        <source xml:lang="en">Downloading Remote Jupyter Book</source>
+        <target state="translated">正在下載遠端 Jupyter 書籍</target>
       </trans-unit>
       <trans-unit id="msgResourceNotFound">
         <source xml:lang="en">Resource not Found</source>
         <target state="translated">找不到資源</target>
       </trans-unit>
       <trans-unit id="msgBookNotFound">
-        <source xml:lang="en">Books not Found</source>
-        <target state="translated">找不到書籍</target>
+        <source xml:lang="en">Jupyter Books not Found</source>
+        <target state="translated">找不到 Jupyter 書籍</target>
       </trans-unit>
       <trans-unit id="msgReleaseNotFound">
         <source xml:lang="en">Releases not Found</source>
         <target state="translated">找不到版本</target>
       </trans-unit>
       <trans-unit id="msgUndefinedAssetError">
-        <source xml:lang="en">The selected book is not valid</source>
-        <target state="translated">選取的書籍無效</target>
+        <source xml:lang="en">The selected Jupyter Book is not valid</source>
+        <target state="translated">選取的 Jupyter 書籍無效</target>
       </trans-unit>
       <trans-unit id="httpRequestError">
         <source xml:lang="en">Http Request failed with error: {0} {1}</source>
@@ -492,21 +520,21 @@
         <source xml:lang="en">Downloading to {0}</source>
         <target state="translated">正在下載至 {0}</target>
       </trans-unit>
-      <trans-unit id="newGroup">
-        <source xml:lang="en">New Group</source>
-        <target state="translated">新增群組</target>
+      <trans-unit id="newBook">
+        <source xml:lang="en">New Jupyter Book (Preview)</source>
+        <target state="translated">新 Jupyter Book (預覽)</target>
       </trans-unit>
-      <trans-unit id="groupDescription">
-        <source xml:lang="en">Groups are used to organize Notebooks.</source>
-        <target state="translated">群組可用於整理 Notebooks。</target>
+      <trans-unit id="bookDescription">
+        <source xml:lang="en">Jupyter Books are used to organize Notebooks.</source>
+        <target state="translated">Jupyter Books 可用來整理筆記本。</target>
       </trans-unit>
-      <trans-unit id="locationBrowser">
-        <source xml:lang="en">Browse locations...</source>
-        <target state="translated">瀏覽位置...</target>
+      <trans-unit id="learnMore">
+        <source xml:lang="en">Learn more.</source>
+        <target state="translated">深入了解。</target>
       </trans-unit>
-      <trans-unit id="selectContentFolder">
-        <source xml:lang="en">Select content folder</source>
-        <target state="translated">選取內容資料夾</target>
+      <trans-unit id="contentFolder">
+        <source xml:lang="en">Content folder</source>
+        <target state="translated">內容資料夾</target>
       </trans-unit>
       <trans-unit id="browse">
         <source xml:lang="en">Browse</source>
@@ -524,7 +552,7 @@
         <source xml:lang="en">Save location</source>
         <target state="translated">儲存位置</target>
       </trans-unit>
-      <trans-unit id="contentFolder">
+      <trans-unit id="contentFolderOptional">
         <source xml:lang="en">Content folder (Optional)</source>
         <target state="translated">內容資料夾 (選擇性)</target>
       </trans-unit>
@@ -533,8 +561,44 @@
         <target state="translated">內容資料夾路徑不存在</target>
       </trans-unit>
       <trans-unit id="msgSaveFolderError">
-        <source xml:lang="en">Save location path does not exist</source>
-        <target state="translated">儲存位置路徑不存在</target>
+        <source xml:lang="en">Save location path does not exist.</source>
+        <target state="translated">儲存位置路徑不存在。</target>
+      </trans-unit>
+      <trans-unit id="msgCreateBookWarningMsg">
+        <source xml:lang="en">Error while trying to access: {0}</source>
+        <target state="translated">嘗試存取時發生錯誤: {0}</target>
+      </trans-unit>
+      <trans-unit id="newNotebook">
+        <source xml:lang="en">New Notebook (Preview)</source>
+        <target state="translated">新筆記本 (預覽)</target>
+      </trans-unit>
+      <trans-unit id="newMarkdown">
+        <source xml:lang="en">New Markdown (Preview)</source>
+        <target state="translated">新增 Markdown (預覽)</target>
+      </trans-unit>
+      <trans-unit id="fileExtension">
+        <source xml:lang="en">File Extension</source>
+        <target state="translated">副檔名</target>
+      </trans-unit>
+      <trans-unit id="confirmOverwrite">
+        <source xml:lang="en">File already exists. Are you sure you want to overwrite this file?</source>
+        <target state="translated">檔案已存在。確定要覆寫此檔案嗎 ?</target>
+      </trans-unit>
+      <trans-unit id="title">
+        <source xml:lang="en">Title</source>
+        <target state="translated">標題</target>
+      </trans-unit>
+      <trans-unit id="fileName">
+        <source xml:lang="en">File Name</source>
+        <target state="translated">檔案名稱</target>
+      </trans-unit>
+      <trans-unit id="msgInvalidSaveFolder">
+        <source xml:lang="en">Save location path is not valid.</source>
+        <target state="translated">儲存位置路徑無效。</target>
+      </trans-unit>
+      <trans-unit id="msgDuplicadFileName">
+        <source xml:lang="en">File {0} already exists in the destination folder</source>
+        <target state="translated">檔案 {0} 已存在於目的地資料夾中</target>
       </trans-unit>
     </body>
   </file>
@@ -588,6 +652,18 @@
         <source xml:lang="en">Another Python installation is currently in progress. Waiting for it to complete.</source>
         <target state="translated">目前在進行另一個 Python 安裝。請等它完成。</target>
       </trans-unit>
+      <trans-unit id="msgShutdownNotebookSessions">
+        <source xml:lang="en">Active Python notebook sessions will be shutdown in order to update. Would you like to proceed now?</source>
+        <target state="translated">為了進行更新，將關閉使用中的 Python 筆記本工作階段。您要立即繼續嗎?</target>
+      </trans-unit>
+      <trans-unit id="msgPythonVersionUpdatePrompt">
+        <source xml:lang="en">Python {0} is now available in Azure Data Studio. The current Python version (3.6.6) will be out of support in December 2021. Would you like to update to Python {0} now?</source>
+        <target state="translated">Azure Data Studio 現已提供 Python {0}。目前的 Python 版本 (3.6.6) 將在 2021 年 12 月時取消支援。您要立即更新為 Python {0} 嗎?</target>
+      </trans-unit>
+      <trans-unit id="msgPythonVersionUpdateWarning">
+        <source xml:lang="en">Python {0} will be installed and will replace Python 3.6.6. Some packages may no longer be compatible with the new version or may need to be reinstalled. A notebook will be created to help you reinstall all pip packages. Would you like to continue with the update now?</source>
+        <target state="translated">將安裝 Python {0} 並取代 Python 3.6.6。某些套件可能不再與新版本相容，或可能需要重新安裝。將建立筆記本以協助您重新安裝所有 pip 套件。您要立即繼續更新嗎?</target>
+      </trans-unit>
       <trans-unit id="msgDependenciesInstallationFailed">
         <source xml:lang="en">Installing Notebook dependencies failed with error: {0}</source>
         <target state="translated">安裝 Notebook 相依性失敗。錯誤: {0}</target>
@@ -603,6 +679,18 @@
       <trans-unit id="msgGetPythonUserDirFailed">
         <source xml:lang="en">Encountered an error when getting Python user path: {0}</source>
         <target state="translated">取得 Python 使用者路徑時發生錯誤: {0}</target>
+      </trans-unit>
+      <trans-unit id="yes">
+        <source xml:lang="en">Yes</source>
+        <target state="translated">是</target>
+      </trans-unit>
+      <trans-unit id="no">
+        <source xml:lang="en">No</source>
+        <target state="translated">否</target>
+      </trans-unit>
+      <trans-unit id="dontAskAgain">
+        <source xml:lang="en">Don't Ask Again</source>
+        <target state="translated">不要再詢問</target>
       </trans-unit>
     </body>
   </file>
@@ -973,8 +1061,8 @@
         <target state="translated">這個處理常式不支援動作 {0}</target>
       </trans-unit>
       <trans-unit id="unsupportedScheme">
-        <source xml:lang="en">Cannot open link {0} as only HTTP and HTTPS links are supported</source>
-        <target state="translated">因為只支援 HTTP 和 HTTPS 連結，所以無法開啟連結 {0}</target>
+        <source xml:lang="en">Cannot open link {0} as only HTTP, HTTPS, and File links are supported</source>
+        <target state="translated">由於僅支援 HTTP、HTTPS 和檔案連結，所以無法開啟連結 {0}</target>
       </trans-unit>
       <trans-unit id="notebook.confirmOpen">
         <source xml:lang="en">Download and open '{0}'?</source>

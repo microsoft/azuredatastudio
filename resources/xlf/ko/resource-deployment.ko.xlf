@@ -12,7 +12,7 @@
       </trans-unit>
       <trans-unit id="deploy-resource-command-name">
         <source xml:lang="en">New Deployment…</source>
-        <target state="new">New Deployment…</target>
+        <target state="translated">새 배포...</target>
       </trans-unit>
       <trans-unit id="deploy-resource-command-category">
         <source xml:lang="en">Deployment</source>
@@ -26,14 +26,6 @@
         <source xml:lang="en">Run SQL Server container image with docker</source>
         <target state="translated">Docker를 사용하여 SQL Server 컨테이너 이미지 실행</target>
       </trans-unit>
-      <trans-unit id="resource-type-sql-bdc-display-name">
-        <source xml:lang="en">SQL Server Big Data Cluster</source>
-        <target state="translated">SQL Server 빅 데이터 클러스터</target>
-      </trans-unit>
-      <trans-unit id="resource-type-sql-bdc-description">
-        <source xml:lang="en">SQL Server Big Data Cluster allows you to deploy scalable clusters of SQL Server, Spark, and HDFS containers running on Kubernetes</source>
-        <target state="translated">SQL Server 빅 데이터 클러스터를 사용하면 Kubernetes에서 실행되는 SQL Server, Spark 및 HDFS 컨테이너의 확장 가능한 클러스터를 배포할 수 있습니다.</target>
-      </trans-unit>
       <trans-unit id="version-display-name">
         <source xml:lang="en">Version</source>
         <target state="translated">버전</target>
@@ -44,43 +36,15 @@
       </trans-unit>
       <trans-unit id="sql-2019-display-name">
         <source xml:lang="en">SQL Server 2019</source>
-        <target state="new">SQL Server 2019</target>
-      </trans-unit>
-      <trans-unit id="bdc-2019-display-name">
-        <source xml:lang="en">SQL Server 2019</source>
-        <target state="new">SQL Server 2019</target>
-      </trans-unit>
-      <trans-unit id="bdc-deployment-target">
-        <source xml:lang="en">Deployment target</source>
-        <target state="translated">배포 대상</target>
-      </trans-unit>
-      <trans-unit id="bdc-deployment-target-new-aks">
-        <source xml:lang="en">New Azure Kubernetes Service Cluster</source>
-        <target state="translated">새 Azure Kubernetes Service 클러스터</target>
-      </trans-unit>
-      <trans-unit id="bdc-deployment-target-existing-aks">
-        <source xml:lang="en">Existing Azure Kubernetes Service Cluster</source>
-        <target state="translated">기존 Azure Kubernetes Service 클러스터</target>
-      </trans-unit>
-      <trans-unit id="bdc-deployment-target-existing-kubeadm">
-        <source xml:lang="en">Existing Kubernetes Cluster (kubeadm)</source>
-        <target state="translated">기존 Kubernetes 클러스터(kubeadm)</target>
-      </trans-unit>
-      <trans-unit id="bdc-deployment-target-existing-aro">
-        <source xml:lang="en">Existing Azure Red Hat OpenShift cluster</source>
-        <target state="new">Existing Azure Red Hat OpenShift cluster</target>
-      </trans-unit>
-      <trans-unit id="bdc-deployment-target-existing-openshift">
-        <source xml:lang="en">Existing OpenShift cluster</source>
-        <target state="new">Existing OpenShift cluster</target>
+        <target state="translated">SQL Server 2019</target>
       </trans-unit>
       <trans-unit id="docker-sql-2017-title">
         <source xml:lang="en">Deploy SQL Server 2017 container images</source>
-        <target state="new">Deploy SQL Server 2017 container images</target>
+        <target state="translated">SQL Server 2017 컨테이너 이미지 배포</target>
       </trans-unit>
       <trans-unit id="docker-sql-2019-title">
         <source xml:lang="en">Deploy SQL Server 2019 container images</source>
-        <target state="new">Deploy SQL Server 2019 container images</target>
+        <target state="translated">SQL Server 2019 컨테이너 이미지 배포</target>
       </trans-unit>
       <trans-unit id="docker-container-name-field">
         <source xml:lang="en">Container name</source>
@@ -98,70 +62,6 @@
         <source xml:lang="en">Port</source>
         <target state="translated">포트</target>
       </trans-unit>
-      <trans-unit id="bdc-cluster-settings-section-title">
-        <source xml:lang="en">SQL Server Big Data Cluster settings</source>
-        <target state="translated">SQL Server 빅 데이터 클러스터 설정</target>
-      </trans-unit>
-      <trans-unit id="bdc-cluster-name-field">
-        <source xml:lang="en">Cluster name</source>
-        <target state="translated">클러스터 이름</target>
-      </trans-unit>
-      <trans-unit id="bdc-controller-username-field">
-        <source xml:lang="en">Controller username</source>
-        <target state="translated">컨트롤러 사용자 이름</target>
-      </trans-unit>
-      <trans-unit id="bdc-password-field">
-        <source xml:lang="en">Password</source>
-        <target state="translated">암호</target>
-      </trans-unit>
-      <trans-unit id="bdc-confirm-password-field">
-        <source xml:lang="en">Confirm password</source>
-        <target state="translated">암호 확인</target>
-      </trans-unit>
-      <trans-unit id="bdc-azure-settings-section-title">
-        <source xml:lang="en">Azure settings</source>
-        <target state="translated">Azure 설정</target>
-      </trans-unit>
-      <trans-unit id="bdc-azure-subscription-id-field">
-        <source xml:lang="en">Subscription id</source>
-        <target state="translated">구독 ID</target>
-      </trans-unit>
-      <trans-unit id="bdc-azure-subscription-id-placeholder">
-        <source xml:lang="en">Use my default Azure subscription</source>
-        <target state="translated">내 기본 Azure 구독 사용</target>
-      </trans-unit>
-      <trans-unit id="bdc-azure-resource-group-field">
-        <source xml:lang="en">Resource group name</source>
-        <target state="translated">리소스 그룹 이름</target>
-      </trans-unit>
-      <trans-unit id="bdc-azure-region-field">
-        <source xml:lang="en">Region</source>
-        <target state="translated">지역</target>
-      </trans-unit>
-      <trans-unit id="bdc-azure-aks-name-field">
-        <source xml:lang="en">AKS cluster name</source>
-        <target state="translated">AKS 클러스터 이름</target>
-      </trans-unit>
-      <trans-unit id="bdc-azure-vm-size-field">
-        <source xml:lang="en">VM size</source>
-        <target state="translated">VM 크기</target>
-      </trans-unit>
-      <trans-unit id="bdc-azure-vm-count-field">
-        <source xml:lang="en">VM count</source>
-        <target state="translated">VM 수</target>
-      </trans-unit>
-      <trans-unit id="bdc-storage-class-field">
-        <source xml:lang="en">Storage class name</source>
-        <target state="translated">스토리지 클래스 이름</target>
-      </trans-unit>
-      <trans-unit id="bdc-data-size-field">
-        <source xml:lang="en">Capacity for data (GB)</source>
-        <target state="translated">데이터 용량(GB)</target>
-      </trans-unit>
-      <trans-unit id="bdc-log-size-field">
-        <source xml:lang="en">Capacity for logs (GB)</source>
-        <target state="translated">로그 용량(GB)</target>
-      </trans-unit>
       <trans-unit id="resource-type-sql-windows-setup-display-name">
         <source xml:lang="en">SQL Server on Windows</source>
         <target state="translated">Windows의 SQL Server</target>
@@ -170,197 +70,185 @@
         <source xml:lang="en">Run SQL Server on Windows, select a version to get started.</source>
         <target state="translated">Windows에서 SQL Server를 실행하고 시작할 버전을 선택합니다.</target>
       </trans-unit>
-      <trans-unit id="bdc-agreement">
-        <source xml:lang="en">I accept {0}, {1} and {2}.</source>
-        <target state="translated">{0}, {1} 및 {2}에 동의합니다.</target>
-      </trans-unit>
       <trans-unit id="microsoft-privacy-statement">
         <source xml:lang="en">Microsoft Privacy Statement</source>
-        <target state="new">Microsoft Privacy Statement</target>
-      </trans-unit>
-      <trans-unit id="bdc-agreement-azdata-eula">
-        <source xml:lang="en">azdata License Terms</source>
-        <target state="translated">azdata 사용 조건</target>
-      </trans-unit>
-      <trans-unit id="bdc-agreement-bdc-eula">
-        <source xml:lang="en">SQL Server License Terms</source>
-        <target state="translated">SQL Server 사용 조건</target>
+        <target state="translated">Microsoft 개인정보처리방침</target>
       </trans-unit>
       <trans-unit id="deployment.configuration.title">
         <source xml:lang="en">Deployment configuration</source>
-        <target state="new">Deployment configuration</target>
+        <target state="translated">배포 구성</target>
       </trans-unit>
       <trans-unit id="azdata-install-location-description">
         <source xml:lang="en">Location of the azdata package used for the install command</source>
-        <target state="new">Location of the azdata package used for the install command</target>
+        <target state="translated">설치 명령에 사용되는 azdata 패키지의 위치</target>
       </trans-unit>
       <trans-unit id="azure-sqlvm-display-name">
         <source xml:lang="en">SQL Server on Azure Virtual Machine</source>
-        <target state="new">SQL Server on Azure Virtual Machine</target>
+        <target state="translated">Azure 가상 머신의 SQL Server</target>
       </trans-unit>
       <trans-unit id="azure-sqlvm-description">
         <source xml:lang="en">Create SQL virtual machines on Azure. Best for migrations and applications requiring OS-level access.</source>
-        <target state="new">Create SQL virtual machines on Azure. Best for migrations and applications requiring OS-level access.</target>
+        <target state="translated">Azure에서 SQL 가상 머신을 만듭니다. OS 수준 액세스가 필요한 마이그레이션 및 애플리케이션에 가장 적합합니다.</target>
       </trans-unit>
       <trans-unit id="azure-sqlvm-deploy-dialog-title">
         <source xml:lang="en">Deploy Azure SQL virtual machine</source>
-        <target state="new">Deploy Azure SQL virtual machine</target>
+        <target state="translated">Azure SQL 가상 머신 배포</target>
       </trans-unit>
       <trans-unit id="azure-sqlvm-deploy-dialog-action-text">
         <source xml:lang="en">Script to notebook</source>
-        <target state="new">Script to notebook</target>
+        <target state="translated">Notebook으로 스크립트</target>
       </trans-unit>
       <trans-unit id="azure-sqlvm-agreement">
         <source xml:lang="en">I accept {0}, {1} and {2}.</source>
-        <target state="new">I accept {0}, {1} and {2}.</target>
+        <target state="translated">{0}, {1} 및 {2}에 동의합니다.</target>
       </trans-unit>
       <trans-unit id="azure-sqlvm-agreement-sqlvm-eula">
         <source xml:lang="en">Azure SQL VM License Terms</source>
-        <target state="new">Azure SQL VM License Terms</target>
+        <target state="translated">Azure SQL VM 사용 조건</target>
       </trans-unit>
       <trans-unit id="azure-sqlvm-agreement-azdata-eula">
         <source xml:lang="en">azdata License Terms</source>
-        <target state="new">azdata License Terms</target>
+        <target state="translated">azdata 사용 조건</target>
       </trans-unit>
       <trans-unit id="azure-sqlvm-azure-account-page-label">
         <source xml:lang="en">Azure information</source>
-        <target state="new">Azure information</target>
+        <target state="translated">Azure 정보</target>
       </trans-unit>
       <trans-unit id="azure-sqlvm-azure-location-label">
         <source xml:lang="en">Azure locations</source>
-        <target state="new">Azure locations</target>
+        <target state="translated">Azure 위치</target>
       </trans-unit>
       <trans-unit id="azure-sqlvm-vm-information-page-label">
         <source xml:lang="en">VM information</source>
-        <target state="new">VM information</target>
+        <target state="translated">VM 정보</target>
       </trans-unit>
       <trans-unit id="azure-sqlvm-image-label">
         <source xml:lang="en">Image</source>
-        <target state="new">Image</target>
+        <target state="translated">이미지</target>
       </trans-unit>
       <trans-unit id="azure-sqlvm-image-sku-label">
         <source xml:lang="en">VM image SKU</source>
-        <target state="new">VM image SKU</target>
+        <target state="translated">VM 이미지 SKU</target>
       </trans-unit>
       <trans-unit id="azure-sqlvm-publisher-label">
         <source xml:lang="en">Publisher</source>
-        <target state="new">Publisher</target>
+        <target state="translated">게시자</target>
       </trans-unit>
       <trans-unit id="azure-sqlvm-vmname-label">
         <source xml:lang="en">Virtual machine name</source>
-        <target state="new">Virtual machine name</target>
+        <target state="translated">가상 머신 이름</target>
       </trans-unit>
       <trans-unit id="azure-sqlvm-vmsize-label">
         <source xml:lang="en">Size</source>
-        <target state="new">Size</target>
+        <target state="translated">크기</target>
       </trans-unit>
       <trans-unit id="azure-sqlvm-storage-page-lable">
         <source xml:lang="en">Storage account</source>
-        <target state="new">Storage account</target>
+        <target state="translated">스토리지 계정</target>
       </trans-unit>
       <trans-unit id="azure-sqlvm-storage-accountname-label">
         <source xml:lang="en">Storage account name</source>
-        <target state="new">Storage account name</target>
+        <target state="translated">스토리지 계정 이름</target>
       </trans-unit>
       <trans-unit id="azure-sqlvm-storage-sku-label">
         <source xml:lang="en">Storage account SKU type</source>
-        <target state="new">Storage account SKU type</target>
+        <target state="translated">스토리지 계정 SKU 유형</target>
       </trans-unit>
       <trans-unit id="azure-sqlvm-vm-administrator-account-page-label">
         <source xml:lang="en">Administrator account</source>
-        <target state="new">Administrator account</target>
+        <target state="translated">관리자 계정</target>
       </trans-unit>
       <trans-unit id="azure-sqlvm-username-label">
         <source xml:lang="en">Username</source>
-        <target state="new">Username</target>
+        <target state="translated">사용자 이름</target>
       </trans-unit>
       <trans-unit id="azure-sqlvm-password-label">
         <source xml:lang="en">Password</source>
-        <target state="new">Password</target>
+        <target state="translated">암호</target>
       </trans-unit>
       <trans-unit id="azure-sqlvm-password-confirm-label">
         <source xml:lang="en">Confirm password</source>
-        <target state="new">Confirm password</target>
+        <target state="translated">암호 확인</target>
       </trans-unit>
       <trans-unit id="azure-sqlvm-vm-summary-page-label">
         <source xml:lang="en">Summary</source>
-        <target state="new">Summary</target>
+        <target state="translated">요약</target>
       </trans-unit>
       <trans-unit id="azure-sqldb-display-name">
         <source xml:lang="en">Azure SQL Database</source>
-        <target state="new">Azure SQL Database</target>
+        <target state="translated">Azure SQL Database</target>
       </trans-unit>
       <trans-unit id="azure-sqldb-description">
         <source xml:lang="en">Create a SQL database, database server, or elastic pool in Azure.</source>
-        <target state="new">Create a SQL database, database server, or elastic pool in Azure.</target>
+        <target state="translated">Azure에서 SQL 데이터베이스, 데이터베이스 서버 또는 탄력적 풀을 만듭니다.</target>
       </trans-unit>
       <trans-unit id="azure-sqldb-portal-ok-button-text">
         <source xml:lang="en">Create in Azure portal</source>
-        <target state="new">Create in Azure portal</target>
+        <target state="translated">Azure Portal에서 만들기</target>
       </trans-unit>
       <trans-unit id="azure-sqldb-notebook-ok-button-text">
         <source xml:lang="en">Select</source>
-        <target state="new">Select</target>
+        <target state="translated">선택</target>
       </trans-unit>
       <trans-unit id="resource-type-display-name">
         <source xml:lang="en">Resource Type</source>
-        <target state="new">Resource Type</target>
+        <target state="translated">리소스 종류</target>
       </trans-unit>
       <trans-unit id="sql-azure-single-database-display-name">
         <source xml:lang="en">Single Database</source>
-        <target state="new">Single Database</target>
+        <target state="translated">단일 데이터베이스</target>
       </trans-unit>
       <trans-unit id="sql-azure-elastic-pool-display-name">
         <source xml:lang="en">Elastic Pool</source>
-        <target state="new">Elastic Pool</target>
+        <target state="translated">탄력적 풀</target>
       </trans-unit>
       <trans-unit id="sql-azure-database-server-display-name">
         <source xml:lang="en">Database Server</source>
-        <target state="new">Database Server</target>
+        <target state="translated">데이터베이스 서버</target>
       </trans-unit>
       <trans-unit id="azure-sqldb-agreement">
         <source xml:lang="en">I accept {0}, {1} and {2}.</source>
-        <target state="new">I accept {0}, {1} and {2}.</target>
+        <target state="translated">{0}, {1} 및 {2}에 동의합니다.</target>
       </trans-unit>
       <trans-unit id="azure-sqldb-agreement-sqldb-eula">
         <source xml:lang="en">Azure SQL DB License Terms</source>
-        <target state="new">Azure SQL DB License Terms</target>
+        <target state="translated">Azure SQL DB 사용 조건</target>
       </trans-unit>
       <trans-unit id="azure-sqldb-agreement-azdata-eula">
         <source xml:lang="en">azdata License Terms</source>
-        <target state="new">azdata License Terms</target>
+        <target state="translated">azdata 사용 조건</target>
       </trans-unit>
       <trans-unit id="azure-sql-mi-display-name">
         <source xml:lang="en">Azure SQL managed instance</source>
-        <target state="new">Azure SQL managed instance</target>
+        <target state="translated">Azure SQL Managed Instance</target>
       </trans-unit>
       <trans-unit id="azure-sql-mi-display-description">
         <source xml:lang="en">Create a SQL Managed Instance in either Azure or a customer-managed environment</source>
-        <target state="new">Create a SQL Managed Instance in either Azure or a customer-managed environment</target>
+        <target state="translated">Azure 또는 고객 관리형 환경에서 SQL Managed Instance 만들기</target>
       </trans-unit>
       <trans-unit id="azure-sql-mi-okButton-text">
         <source xml:lang="en">Open in Portal</source>
-        <target state="new">Open in Portal</target>
+        <target state="translated">Portal에서 열기</target>
       </trans-unit>
       <trans-unit id="azure-sql-mi-resource-type-option-label">
         <source xml:lang="en">Resource Type</source>
-        <target state="new">Resource Type</target>
+        <target state="translated">리소스 종류</target>
       </trans-unit>
       <trans-unit id="azure-sql-mi-agreement">
         <source xml:lang="en">I accept {0} and {1}.</source>
-        <target state="new">I accept {0} and {1}.</target>
+        <target state="translated">{0} 및 {1}에 동의합니다.</target>
       </trans-unit>
       <trans-unit id="azure-sql-mi-agreement-eula">
         <source xml:lang="en">Azure SQL MI License Terms</source>
-        <target state="new">Azure SQL MI License Terms</target>
+        <target state="translated">Azure SQL MI 사용 조건</target>
       </trans-unit>
       <trans-unit id="azure-sql-mi-help-text">
         <source xml:lang="en">Azure SQL Managed Instance provides full SQL Server access and feature compatibility for migrating SQL Servers to Azure, or developing new applications. {0}.</source>
-        <target state="new">Azure SQL Managed Instance provides full SQL Server access and feature compatibility for migrating SQL Servers to Azure, or developing new applications. {0}.</target>
+        <target state="translated">Azure SQL Managed Instance는 SQL Server를 Azure로 마이그레이션하거나 새 애플리케이션을 개발하는 데 필요한 전체 SQL Server 액세스 및 기능 호환성을 제공합니다. {0}.</target>
       </trans-unit>
       <trans-unit id="azure-sql-mi-help-text-learn-more">
         <source xml:lang="en">Learn More</source>
-        <target state="new">Learn More</target>
+        <target state="translated">자세한 정보</target>
       </trans-unit>
     </body>
   </file>
@@ -368,227 +256,243 @@
     <body>
       <trans-unit id="azure.account">
         <source xml:lang="en">Azure Account</source>
-        <target state="new">Azure Account</target>
+        <target state="translated">Azure 계정</target>
       </trans-unit>
       <trans-unit id="azure.account.subscription">
         <source xml:lang="en">Subscription (selected subset)</source>
-        <target state="new">Subscription (selected subset)</target>
+        <target state="translated">구독(선택한 하위 집합)</target>
       </trans-unit>
       <trans-unit id="azure.account.subscriptionDescription">
         <source xml:lang="en">Change the currently selected subscriptions through the 'Select Subscriptions' action on an account listed in the 'Azure' tree view of the 'Connections' viewlet</source>
-        <target state="new">Change the currently selected subscriptions through the 'Select Subscriptions' action on an account listed in the 'Azure' tree view of the 'Connections' viewlet</target>
+        <target state="translated">'연결' 뷰렛의 'Azure' 트리 뷰에 나열된 계정의 '구독 선택' 작업을 통해 현재 선택된 구독 변경</target>
       </trans-unit>
       <trans-unit id="azure.account.resourceGroup">
         <source xml:lang="en">Resource Group</source>
-        <target state="new">Resource Group</target>
+        <target state="translated">리소스 그룹</target>
       </trans-unit>
       <trans-unit id="azure.account.location">
         <source xml:lang="en">Azure Location</source>
-        <target state="new">Azure Location</target>
+        <target state="translated">Azure 위치</target>
       </trans-unit>
       <trans-unit id="filePicker.browse">
         <source xml:lang="en">Browse</source>
-        <target state="new">Browse</target>
+        <target state="translated">찾아보기</target>
       </trans-unit>
       <trans-unit id="button.label">
         <source xml:lang="en">Select</source>
-        <target state="new">Select</target>
+        <target state="translated">선택</target>
       </trans-unit>
       <trans-unit id="kubeConfigClusterPicker.kubeConfigFilePath">
         <source xml:lang="en">Kube config file path</source>
-        <target state="new">Kube config file path</target>
+        <target state="translated">Kube 구성 파일 경로</target>
       </trans-unit>
       <trans-unit id="kubeConfigClusterPicker.clusterContextNotFound">
         <source xml:lang="en">No cluster context information found</source>
-        <target state="new">No cluster context information found</target>
+        <target state="translated">클러스터 컨텍스트 정보를 찾을 수 없음</target>
       </trans-unit>
       <trans-unit id="azure.signin">
         <source xml:lang="en">Sign in…</source>
-        <target state="new">Sign in…</target>
+        <target state="translated">로그인…</target>
       </trans-unit>
       <trans-unit id="azure.refresh">
         <source xml:lang="en">Refresh</source>
-        <target state="new">Refresh</target>
+        <target state="translated">새로 고침</target>
       </trans-unit>
       <trans-unit id="azure.yes">
         <source xml:lang="en">Yes</source>
-        <target state="new">Yes</target>
+        <target state="translated">예</target>
       </trans-unit>
       <trans-unit id="azure.no">
         <source xml:lang="en">No</source>
-        <target state="new">No</target>
+        <target state="translated">아니요</target>
       </trans-unit>
       <trans-unit id="azure.resourceGroup.createNewResourceGroup">
         <source xml:lang="en">Create a new resource group</source>
-        <target state="new">Create a new resource group</target>
+        <target state="translated">새 리소스 그룹 만들기</target>
       </trans-unit>
       <trans-unit id="azure.resourceGroup.NewResourceGroupAriaLabel">
         <source xml:lang="en">New resource group name</source>
-        <target state="new">New resource group name</target>
+        <target state="translated">새 리소스 그룹 이름</target>
       </trans-unit>
       <trans-unit id="deployCluster.Realm">
         <source xml:lang="en">Realm</source>
-        <target state="new">Realm</target>
+        <target state="translated">영역</target>
       </trans-unit>
       <trans-unit id="UnknownFieldTypeError">
         <source xml:lang="en">Unknown field type: "{0}"</source>
-        <target state="new">Unknown field type: "{0}"</target>
+        <target state="translated">알 수 없는 필드 형식: "{0}"</target>
       </trans-unit>
       <trans-unit id="optionsSource.alreadyDefined">
         <source xml:lang="en">Options Source with id:{0} is already defined</source>
-        <target state="new">Options Source with id:{0} is already defined</target>
+        <target state="translated">ID가 {0}인 옵션 원본이 이미 정의되어 있습니다.</target>
       </trans-unit>
       <trans-unit id="valueProvider.alreadyDefined">
         <source xml:lang="en">Value Provider with id:{0} is already defined</source>
-        <target state="new">Value Provider with id:{0} is already defined</target>
+        <target state="translated">ID가 {0}인 값 공급자가 이미 정의되어 있습니다.</target>
       </trans-unit>
       <trans-unit id="optionsSource.notDefined">
         <source xml:lang="en">No Options Source defined for id: {0}</source>
-        <target state="new">No Options Source defined for id: {0}</target>
+        <target state="translated">{0} ID에 대해 정의된 옵션 원본 없음</target>
       </trans-unit>
       <trans-unit id="valueProvider.notDefined">
         <source xml:lang="en">No Value Provider defined for id: {0}</source>
-        <target state="new">No Value Provider defined for id: {0}</target>
+        <target state="translated">{0} ID에 대해 정의된 값 공급자 없음</target>
       </trans-unit>
       <trans-unit id="getVariableValue.unknownVariableName">
         <source xml:lang="en">Attempt to get variable value for unknown variable:{0}</source>
-        <target state="new">Attempt to get variable value for unknown variable:{0}</target>
+        <target state="translated">알 수 없는 변수 {0}의 변수 값을 가져오려고 시도합니다.</target>
       </trans-unit>
       <trans-unit id="getIsPassword.unknownVariableName">
         <source xml:lang="en">Attempt to get isPassword for unknown variable:{0}</source>
-        <target state="new">Attempt to get isPassword for unknown variable:{0}</target>
+        <target state="translated">알 수 없는 변수 {0}의 isPassword를 가져오려고 시도합니다.</target>
       </trans-unit>
       <trans-unit id="optionsNotDefined">
         <source xml:lang="en">FieldInfo.options was not defined for field type: {0}</source>
-        <target state="new">FieldInfo.options was not defined for field type: {0}</target>
+        <target state="translated">FieldInfo.options가 필드 형식 {0}에 대해 정의되지 않았습니다.</target>
       </trans-unit>
       <trans-unit id="optionsNotObjectOrArray">
         <source xml:lang="en">FieldInfo.options must be an object if it is not an array</source>
-        <target state="new">FieldInfo.options must be an object if it is not an array</target>
+        <target state="translated">FieldInfo.options는 배열이 아닌 경우 개체여야 합니다.</target>
       </trans-unit>
       <trans-unit id="optionsTypeNotFound">
         <source xml:lang="en">When FieldInfo.options is an object it must have 'optionsType' property</source>
-        <target state="new">When FieldInfo.options is an object it must have 'optionsType' property</target>
+        <target state="translated">FieldInfo.options가 개체인 경우 'optionsType' 속성을 포함해야 합니다.</target>
       </trans-unit>
       <trans-unit id="optionsTypeRadioOrDropdown">
         <source xml:lang="en">When optionsType is not {0} then it must be {1}</source>
-        <target state="new">When optionsType is not {0} then it must be {1}</target>
+        <target state="translated">optionsType이 {0}이(가) 아니면 {1}이어야 합니다.</target>
       </trans-unit>
       <trans-unit id="azdataEulaNotAccepted">
         <source xml:lang="en">Deployment cannot continue. Azure Data CLI license terms have not yet been accepted. Please accept the EULA to enable the features that requires Azure Data CLI.</source>
-        <target state="new">Deployment cannot continue. Azure Data CLI license terms have not yet been accepted. Please accept the EULA to enable the features that requires Azure Data CLI.</target>
+        <target state="translated">배포를 계속할 수 없습니다. Azure Data CLI 사용 조건에 아직 동의하지 않았습니다. Azure Data CLI가 필요한 기능을 사용하려면 EULA에 동의하세요.</target>
       </trans-unit>
       <trans-unit id="azdataEulaDeclined">
         <source xml:lang="en">Deployment cannot continue. Azure Data CLI license terms were declined.You can either Accept EULA to continue or Cancel this operation</source>
-        <target state="new">Deployment cannot continue. Azure Data CLI license terms were declined.You can either Accept EULA to continue or Cancel this operation</target>
+        <target state="translated">배포를 계속할 수 없습니다. Azure Data CLI 사용 조건이 거부되었습니다. EULA에 동의하여 계속하거나 이 작업을 취소할 수 있습니다.</target>
       </trans-unit>
       <trans-unit id="deploymentDialog.RecheckEulaButton">
         <source xml:lang="en">Accept EULA &amp; Select</source>
-        <target state="new">Accept EULA &amp; Select</target>
+        <target state="translated">EULA에 동의 및 선택</target>
+      </trans-unit>
+      <trans-unit id="resourceDeployment.extensionRequiredPrompt">
+        <source xml:lang="en">The '{0}' extension is required to deploy this resource, do you want to install it now?</source>
+        <target state="translated">이 리소스를 배포하려면 '{0}' 확장이 필요합니다. 지금 설치하시겠습니까?</target>
+      </trans-unit>
+      <trans-unit id="resourceDeployment.install">
+        <source xml:lang="en">Install</source>
+        <target state="translated">설치</target>
+      </trans-unit>
+      <trans-unit id="resourceDeployment.installingExtension">
+        <source xml:lang="en">Installing extension '{0}'...</source>
+        <target state="translated">'{0}' 확장을 설치하는 중...</target>
+      </trans-unit>
+      <trans-unit id="resourceDeployment.unknownExtension">
+        <source xml:lang="en">Unknown extension '{0}'</source>
+        <target state="translated">'{0}'은(는) 알 수 없는 확장입니다.</target>
       </trans-unit>
       <trans-unit id="resourceTypePickerDialog.title">
         <source xml:lang="en">Select the deployment options</source>
-        <target state="new">Select the deployment options</target>
+        <target state="translated">배포 옵션 선택</target>
       </trans-unit>
       <trans-unit id="resourceTypePickerDialog.resourceSearchPlaceholder">
         <source xml:lang="en">Filter resources...</source>
-        <target state="new">Filter resources...</target>
+        <target state="translated">리소스 필터링...</target>
       </trans-unit>
       <trans-unit id="resourceTypePickerDialog.tagsListViewTitle">
         <source xml:lang="en">Categories</source>
-        <target state="new">Categories</target>
+        <target state="translated">범주</target>
       </trans-unit>
       <trans-unit id="validation.multipleValidationErrors">
         <source xml:lang="en">There are some errors on this page, click 'Show Details' to view the errors.</source>
-        <target state="new">There are some errors on this page, click 'Show Details' to view the errors.</target>
+        <target state="translated">이 페이지에 오류가 있습니다. 오류를 보려면 '세부 정보 표시'를 클릭합니다.</target>
       </trans-unit>
       <trans-unit id="ui.ScriptToNotebookButton">
         <source xml:lang="en">Script</source>
-        <target state="new">Script</target>
+        <target state="translated">스크립트</target>
       </trans-unit>
       <trans-unit id="ui.DeployButton">
         <source xml:lang="en">Run</source>
-        <target state="new">Run</target>
+        <target state="translated">실행</target>
       </trans-unit>
       <trans-unit id="resourceDeployment.ViewErrorDetail">
         <source xml:lang="en">View error detail</source>
-        <target state="new">View error detail</target>
+        <target state="translated">오류 세부 정보 보기</target>
       </trans-unit>
       <trans-unit id="resourceDeployment.FailedToOpenNotebook">
         <source xml:lang="en">An error occurred opening the output notebook. {1}{2}.</source>
-        <target state="new">An error occurred opening the output notebook. {1}{2}.</target>
+        <target state="translated">출력 Notebook을 여는 동안 오류가 발생했습니다. {1}{2}.</target>
       </trans-unit>
       <trans-unit id="resourceDeployment.BackgroundExecutionFailed">
         <source xml:lang="en">The task "{0}" has failed.</source>
-        <target state="new">The task "{0}" has failed.</target>
+        <target state="translated">"{0}" 작업이 실패했습니다.</target>
       </trans-unit>
       <trans-unit id="resourceDeployment.TaskFailedWithNoOutputNotebook">
         <source xml:lang="en">The task "{0}" failed and no output Notebook was generated.</source>
-        <target state="new">The task "{0}" failed and no output Notebook was generated.</target>
+        <target state="translated">"{0}" 작업이 실패했으며 출력 Notebook이 생성되지 않았습니다.</target>
       </trans-unit>
       <trans-unit id="resourceTypePickerDialog.resourceTypeCategoryAll">
         <source xml:lang="en">All</source>
-        <target state="new">All</target>
+        <target state="translated">모두</target>
       </trans-unit>
       <trans-unit id="resourceTypePickerDialog.resourceTypeCategoryOnPrem">
         <source xml:lang="en">On-premises</source>
-        <target state="new">On-premises</target>
+        <target state="translated">온-프레미스</target>
       </trans-unit>
       <trans-unit id="resourceTypePickerDialog.resourceTypeCategoriesSqlServer">
         <source xml:lang="en">SQL Server</source>
-        <target state="new">SQL Server</target>
+        <target state="translated">SQL Server</target>
       </trans-unit>
       <trans-unit id="resourceTypePickerDialog.resourceTypeCategoryOnHybrid">
         <source xml:lang="en">Hybrid</source>
-        <target state="new">Hybrid</target>
+        <target state="translated">하이브리드</target>
       </trans-unit>
       <trans-unit id="resourceTypePickerDialog.resourceTypeCategoryOnPostgreSql">
         <source xml:lang="en">PostgreSQL</source>
-        <target state="new">PostgreSQL</target>
+        <target state="translated">PostgreSQL</target>
       </trans-unit>
       <trans-unit id="resourceTypePickerDialog.resourceTypeCategoryOnCloud">
         <source xml:lang="en">Cloud</source>
-        <target state="new">Cloud</target>
+        <target state="translated">클라우드</target>
       </trans-unit>
       <trans-unit id="resourceDeployment.Description">
         <source xml:lang="en">Description</source>
-        <target state="new">Description</target>
+        <target state="translated">설명</target>
       </trans-unit>
       <trans-unit id="resourceDeployment.Tool">
         <source xml:lang="en">Tool</source>
-        <target state="new">Tool</target>
+        <target state="translated">도구</target>
       </trans-unit>
       <trans-unit id="resourceDeployment.Status">
         <source xml:lang="en">Status</source>
-        <target state="new">Status</target>
+        <target state="translated">상태</target>
       </trans-unit>
       <trans-unit id="resourceDeployment.Version">
         <source xml:lang="en">Version</source>
-        <target state="new">Version</target>
+        <target state="translated">버전</target>
       </trans-unit>
       <trans-unit id="resourceDeployment.RequiredVersion">
         <source xml:lang="en">Required Version</source>
-        <target state="new">Required Version</target>
+        <target state="translated">필요한 버전</target>
       </trans-unit>
       <trans-unit id="resourceDeployment.discoverPathOrAdditionalInformation">
         <source xml:lang="en">Discovered Path or Additional Information</source>
-        <target state="new">Discovered Path or Additional Information</target>
+        <target state="translated">검색된 경로 또는 추가 정보</target>
       </trans-unit>
       <trans-unit id="resourceDeployment.requiredTools">
         <source xml:lang="en">Required tools</source>
-        <target state="new">Required tools</target>
+        <target state="translated">필요한 도구</target>
       </trans-unit>
       <trans-unit id="resourceDeployment.InstallTools">
         <source xml:lang="en">Install tools</source>
-        <target state="new">Install tools</target>
+        <target state="translated">도구 설치</target>
       </trans-unit>
       <trans-unit id="resourceDeployment.Options">
         <source xml:lang="en">Options</source>
-        <target state="new">Options</target>
+        <target state="translated">옵션</target>
       </trans-unit>
       <trans-unit id="deploymentDialog.InstallingTool">
         <source xml:lang="en">Required tool '{0}' [ {1} ] is being installed now.</source>
-        <target state="new">Required tool '{0}' [ {1} ] is being installed now.</target>
+        <target state="translated">지금 필요한 도구 '{0}'[{1}]을(를) 설치하는 중입니다.</target>
       </trans-unit>
     </body>
   </file>
@@ -596,45 +500,45 @@
     <body>
       <trans-unit id="getClusterContexts.errorFetchingClusters">
         <source xml:lang="en">An error ocurred while loading or parsing the config file:{0}, error is:{1}</source>
-        <target state="new">An error ocurred while loading or parsing the config file:{0}, error is:{1}</target>
+        <target state="translated">{0} 구성 파일을 로드하거나 구문 분석하는 동안 오류가 발생했습니다. 오류: {1}</target>
       </trans-unit>
       <trans-unit id="fileChecker.NotFile">
         <source xml:lang="en">Path: {0} is not a file, please select a valid kube config file.</source>
-        <target state="new">Path: {0} is not a file, please select a valid kube config file.</target>
+        <target state="translated">{0} 경로가 파일이 아닙니다. 유효한 kube 구성 파일을 선택하세요.</target>
       </trans-unit>
       <trans-unit id="fileChecker.FileNotFound">
         <source xml:lang="en">File: {0} not found. Please select a kube config file.</source>
-        <target state="new">File: {0} not found. Please select a kube config file.</target>
+        <target state="translated">{0} 파일을 찾을 수 없습니다. kube 구성 파일을 선택하세요.</target>
       </trans-unit>
       <trans-unit id="azure.accounts.unexpectedAccountsError">
         <source xml:lang="en">Unexpected error fetching accounts: {0}</source>
-        <target state="new">Unexpected error fetching accounts: {0}</target>
+        <target state="translated">계정을 가져오는 동안 예기치 않은 오류 발생: {0}</target>
       </trans-unit>
       <trans-unit id="resourceDeployment.errorFetchingStorageClasses">
         <source xml:lang="en">Unexpected error fetching available kubectl storage classes : {0}</source>
-        <target state="new">Unexpected error fetching available kubectl storage classes : {0}</target>
+        <target state="translated">사용 가능한 kubectl 스토리지 클래스를 가져오는 동안 예기치 않은 오류 발생: {0}</target>
       </trans-unit>
       <trans-unit id="azure.accounts.unexpectedSubscriptionsError">
         <source xml:lang="en">Unexpected error fetching subscriptions for account {0}: {1}</source>
-        <target state="new">Unexpected error fetching subscriptions for account {0}: {1}</target>
+        <target state="translated">{0} 계정의 구독을 가져오는 동안 예기치 않은 오류 발생: {1}</target>
       </trans-unit>
       <trans-unit id="azure.accounts.accountNotFoundError">
         <source xml:lang="en">The selected account '{0}' is no longer available. Click sign in to add it again or select a different account.</source>
-        <target state="new">The selected account '{0}' is no longer available. Click sign in to add it again or select a different account.</target>
+        <target state="translated">선택한 계정 '{0}'은(는) 더 이상 사용할 수 없습니다. [로그인]을 클릭하여 다시 추가하거나 다른 계정을 선택합니다.</target>
       </trans-unit>
       <trans-unit id="azure.accessError">
         <source xml:lang="en">
  Error Details: {0}.</source>
-        <target state="new">
- Error Details: {0}.</target>
+        <target state="translated">
+ 오류 세부 정보: {0}.</target>
       </trans-unit>
       <trans-unit id="azure.accounts.accountStaleError">
         <source xml:lang="en">The access token for selected account '{0}' is no longer valid. Please click the sign in button and refresh the account or select a different account.</source>
-        <target state="new">The access token for selected account '{0}' is no longer valid. Please click the sign in button and refresh the account or select a different account.</target>
+        <target state="translated">선택한 계정 '{0}'의 액세스 토큰이 더 이상 유효하지 않습니다. [로그인] 단추를 클릭하고 계정을 새로 고치거나, 다른 계정을 선택하세요.</target>
       </trans-unit>
       <trans-unit id="azure.accounts.unexpectedResourceGroupsError">
         <source xml:lang="en">Unexpected error fetching resource groups for subscription {0}: {1}</source>
-        <target state="new">Unexpected error fetching resource groups for subscription {0}: {1}</target>
+        <target state="translated">{0} 구독의 리소스 그룹을 가져오는 동안 예기치 않은 오류 발생: {1}</target>
       </trans-unit>
       <trans-unit id="invalidSQLPassword">
         <source xml:lang="en">{0} doesn't meet the password complexity requirement. For more information: https://docs.microsoft.com/sql/relational-databases/security/password-policy</source>
@@ -650,139 +554,139 @@
     <body>
       <trans-unit id="deployAzureSQLVM.NewSQLVMTitle">
         <source xml:lang="en">Deploy Azure SQL VM</source>
-        <target state="new">Deploy Azure SQL VM</target>
+        <target state="translated">Azure SQL VM 배포</target>
       </trans-unit>
       <trans-unit id="deployAzureSQLVM.ScriptToNotebook">
         <source xml:lang="en">Script to Notebook</source>
-        <target state="new">Script to Notebook</target>
+        <target state="translated">Notebook으로 스크립트</target>
       </trans-unit>
       <trans-unit id="deployAzureSQLVM.MissingRequiredInfoError">
         <source xml:lang="en">Please fill out the required fields marked with red asterisks.</source>
-        <target state="new">Please fill out the required fields marked with red asterisks.</target>
+        <target state="translated">빨간색 별표가 표시된 필수 필드를 입력하세요.</target>
       </trans-unit>
       <trans-unit id="deployAzureSQLVM.AzureSettingsPageTitle">
         <source xml:lang="en">Azure settings</source>
-        <target state="new">Azure settings</target>
+        <target state="translated">Azure 설정</target>
       </trans-unit>
       <trans-unit id="deployAzureSQLVM.AzureAccountDropdownLabel">
         <source xml:lang="en">Azure Account</source>
-        <target state="new">Azure Account</target>
+        <target state="translated">Azure 계정</target>
       </trans-unit>
       <trans-unit id="deployAzureSQLVM.AzureSubscriptionDropdownLabel">
         <source xml:lang="en">Subscription</source>
-        <target state="new">Subscription</target>
+        <target state="translated">구독</target>
       </trans-unit>
       <trans-unit id="deployAzureSQLVM.ResourceGroup">
         <source xml:lang="en">Resource Group</source>
-        <target state="new">Resource Group</target>
+        <target state="translated">리소스 그룹</target>
       </trans-unit>
       <trans-unit id="deployAzureSQLVM.AzureRegionDropdownLabel">
         <source xml:lang="en">Region</source>
-        <target state="new">Region</target>
+        <target state="translated">지역</target>
       </trans-unit>
       <trans-unit id="deployeAzureSQLVM.VmSettingsPageTitle">
         <source xml:lang="en">Virtual machine settings</source>
-        <target state="new">Virtual machine settings</target>
+        <target state="translated">가상 머신 설정</target>
       </trans-unit>
       <trans-unit id="deployAzureSQLVM.VmNameTextBoxLabel">
         <source xml:lang="en">Virtual machine name</source>
-        <target state="new">Virtual machine name</target>
+        <target state="translated">가상 머신 이름</target>
       </trans-unit>
       <trans-unit id="deployAzureSQLVM.VmAdminUsernameTextBoxLabel">
         <source xml:lang="en">Administrator account username</source>
-        <target state="new">Administrator account username</target>
+        <target state="translated">관리자 계정 사용자 이름</target>
       </trans-unit>
       <trans-unit id="deployAzureSQLVM.VmAdminPasswordTextBoxLabel">
         <source xml:lang="en">Administrator account password</source>
-        <target state="new">Administrator account password</target>
+        <target state="translated">관리자 계정 암호</target>
       </trans-unit>
       <trans-unit id="deployAzureSQLVM.VmAdminConfirmPasswordTextBoxLabel">
         <source xml:lang="en">Confirm password</source>
-        <target state="new">Confirm password</target>
+        <target state="translated">암호 확인</target>
       </trans-unit>
       <trans-unit id="deployAzureSQLVM.VmImageDropdownLabel">
         <source xml:lang="en">Image</source>
-        <target state="new">Image</target>
+        <target state="translated">이미지</target>
       </trans-unit>
       <trans-unit id="deployAzureSQLVM.VmSkuDropdownLabel">
         <source xml:lang="en">Image SKU</source>
-        <target state="new">Image SKU</target>
+        <target state="translated">이미지 SKU</target>
       </trans-unit>
       <trans-unit id="deployAzureSQLVM.VmImageVersionDropdownLabel">
         <source xml:lang="en">Image Version</source>
-        <target state="new">Image Version</target>
+        <target state="translated">이미지 버전</target>
       </trans-unit>
       <trans-unit id="deployAzureSQLVM.VmSizeDropdownLabel">
         <source xml:lang="en">Size</source>
-        <target state="new">Size</target>
+        <target state="translated">크기</target>
       </trans-unit>
       <trans-unit id="deployeAzureSQLVM.VmSizeLearnMoreLabel">
         <source xml:lang="en">Click here to learn more about pricing and supported VM sizes</source>
-        <target state="new">Click here to learn more about pricing and supported VM sizes</target>
+        <target state="translated">가격 책정 및 지원되는 VM 크기를 자세히 알아보려면 여기를 클릭합니다.</target>
       </trans-unit>
       <trans-unit id="deployAzureSQLVM.NetworkSettingsPageTitle">
         <source xml:lang="en">Networking</source>
-        <target state="new">Networking</target>
+        <target state="translated">네트워킹</target>
       </trans-unit>
       <trans-unit id="deployAzureSQLVM.NetworkSettingsPageDescription">
         <source xml:lang="en">Configure network settings</source>
-        <target state="new">Configure network settings</target>
+        <target state="translated">네트워크 설정 구성</target>
       </trans-unit>
       <trans-unit id="deployAzureSQLVM.NetworkSettingsNewVirtualNetwork">
         <source xml:lang="en">New virtual network</source>
-        <target state="new">New virtual network</target>
+        <target state="translated">새 가상 네트워크</target>
       </trans-unit>
       <trans-unit id="deployAzureSQLVM.VirtualNetworkDropdownLabel">
         <source xml:lang="en">Virtual Network</source>
-        <target state="new">Virtual Network</target>
+        <target state="translated">Virtual Network</target>
       </trans-unit>
       <trans-unit id="deployAzureSQLVM.NetworkSettingsNewSubnet">
         <source xml:lang="en">New subnet</source>
-        <target state="new">New subnet</target>
+        <target state="translated">새 서브넷</target>
       </trans-unit>
       <trans-unit id="deployAzureSQLVM.SubnetDropdownLabel">
         <source xml:lang="en">Subnet</source>
-        <target state="new">Subnet</target>
+        <target state="translated">서브넷</target>
       </trans-unit>
       <trans-unit id="deployAzureSQLVM.PublicIPDropdownLabel">
         <source xml:lang="en">Public IP</source>
-        <target state="new">Public IP</target>
+        <target state="translated">공용 IP</target>
       </trans-unit>
       <trans-unit id="deployAzureSQLVM.NetworkSettingsUseExistingPublicIp">
         <source xml:lang="en">New public ip</source>
-        <target state="new">New public ip</target>
+        <target state="translated">새 공용 IP</target>
       </trans-unit>
       <trans-unit id="deployAzureSQLVM.VmRDPAllowCheckboxLabel">
         <source xml:lang="en">Enable Remote Desktop (RDP) inbound port (3389)</source>
-        <target state="new">Enable Remote Desktop (RDP) inbound port (3389)</target>
+        <target state="translated">RDP(원격 데스크톱) 인바운드 포트(3389) 사용</target>
       </trans-unit>
       <trans-unit id="deployAzureSQLVM.SqlServerSettingsPageTitle">
         <source xml:lang="en">SQL Servers settings</source>
-        <target state="new">SQL Servers settings</target>
+        <target state="translated">SQL Server 설정</target>
       </trans-unit>
       <trans-unit id="deployAzureSQLVM.SqlConnectivityTypeDropdownLabel">
         <source xml:lang="en">SQL connectivity</source>
-        <target state="new">SQL connectivity</target>
+        <target state="translated">SQL 연결</target>
       </trans-unit>
       <trans-unit id="deployAzureSQLVM.SqlPortLabel">
         <source xml:lang="en">Port</source>
-        <target state="new">Port</target>
+        <target state="translated">포트</target>
       </trans-unit>
       <trans-unit id="deployAzureSQLVM.SqlEnableSQLAuthenticationLabel">
         <source xml:lang="en">Enable SQL authentication</source>
-        <target state="new">Enable SQL authentication</target>
+        <target state="translated">SQL 인증 사용</target>
       </trans-unit>
       <trans-unit id="deployAzureSQLVM.SqlAuthenticationUsernameLabel">
         <source xml:lang="en">Username</source>
-        <target state="new">Username</target>
+        <target state="translated">사용자 이름</target>
       </trans-unit>
       <trans-unit id="deployAzureSQLVM.SqlAuthenticationPasswordLabel">
         <source xml:lang="en">Password</source>
-        <target state="new">Password</target>
+        <target state="translated">암호</target>
       </trans-unit>
       <trans-unit id="deployAzureSQLVM.SqlAuthenticationConfirmPasswordLabel">
         <source xml:lang="en">Confirm password</source>
-        <target state="new">Confirm password</target>
+        <target state="translated">암호 확인</target>
       </trans-unit>
     </body>
   </file>
@@ -790,39 +694,39 @@
     <body>
       <trans-unit id="deployCluster.SaveConfigFiles">
         <source xml:lang="en">Save config files</source>
-        <target state="new">Save config files</target>
+        <target state="translated">구성 파일 저장</target>
       </trans-unit>
       <trans-unit id="deployCluster.ScriptToNotebook">
         <source xml:lang="en">Script to Notebook</source>
-        <target state="new">Script to Notebook</target>
+        <target state="translated">Notebook으로 스크립트</target>
       </trans-unit>
       <trans-unit id="deployCluster.SelectConfigFileFolder">
         <source xml:lang="en">Save config files</source>
-        <target state="new">Save config files</target>
+        <target state="translated">구성 파일 저장</target>
       </trans-unit>
       <trans-unit id="deployCluster.SaveConfigFileSucceeded">
         <source xml:lang="en">Config files saved to {0}</source>
-        <target state="new">Config files saved to {0}</target>
+        <target state="translated">구성 파일이 {0}에 저장됨</target>
       </trans-unit>
       <trans-unit id="deployCluster.NewAKSWizardTitle">
         <source xml:lang="en">Deploy SQL Server 2019 Big Data Cluster on a new AKS cluster</source>
-        <target state="new">Deploy SQL Server 2019 Big Data Cluster on a new AKS cluster</target>
+        <target state="translated">새 AKS 클러스터에 SQL Server 2019 빅 데이터 클러스터 배포</target>
       </trans-unit>
       <trans-unit id="deployCluster.ExistingAKSWizardTitle">
         <source xml:lang="en">Deploy SQL Server 2019 Big Data Cluster on an existing AKS cluster</source>
-        <target state="new">Deploy SQL Server 2019 Big Data Cluster on an existing AKS cluster</target>
+        <target state="translated">기존 AKS 클러스터에 SQL Server 2019 빅 데이터 클러스터 배포</target>
       </trans-unit>
       <trans-unit id="deployCluster.ExistingKubeAdm">
         <source xml:lang="en">Deploy SQL Server 2019 Big Data Cluster on an existing kubeadm cluster</source>
-        <target state="new">Deploy SQL Server 2019 Big Data Cluster on an existing kubeadm cluster</target>
+        <target state="translated">기존 kubeadm 클러스터에 SQL Server 2019 빅 데이터 클러스터 배포</target>
       </trans-unit>
       <trans-unit id="deployCluster.ExistingARO">
         <source xml:lang="en">Deploy SQL Server 2019 Big Data Cluster on an existing Azure Red Hat OpenShift cluster</source>
-        <target state="new">Deploy SQL Server 2019 Big Data Cluster on an existing Azure Red Hat OpenShift cluster</target>
+        <target state="translated">기존 Azure Red Hat OpenShift 클러스터에 SQL Server 2019 빅 데이터 클러스터 배포</target>
       </trans-unit>
       <trans-unit id="deployCluster.ExistingOpenShift">
         <source xml:lang="en">Deploy SQL Server 2019 Big Data Cluster on an existing OpenShift cluster</source>
-        <target state="new">Deploy SQL Server 2019 Big Data Cluster on an existing OpenShift cluster</target>
+        <target state="translated">기존 OpenShift 클러스터에 SQL Server 2019 빅 데이터 클러스터 배포</target>
       </trans-unit>
     </body>
   </file>
@@ -830,79 +734,79 @@
     <body>
       <trans-unit id="deploymentDialog.ToolStatus.NotInstalled">
         <source xml:lang="en">Not Installed</source>
-        <target state="new">Not Installed</target>
+        <target state="translated">설치되지 않음</target>
       </trans-unit>
       <trans-unit id="deploymentDialog.ToolStatus.Installed">
         <source xml:lang="en">Installed</source>
-        <target state="new">Installed</target>
+        <target state="translated">설치됨</target>
       </trans-unit>
       <trans-unit id="deploymentDialog.ToolStatus.Installing">
         <source xml:lang="en">Installing…</source>
-        <target state="new">Installing…</target>
+        <target state="translated">설치하는 중...</target>
       </trans-unit>
       <trans-unit id="deploymentDialog.ToolStatus.Error">
         <source xml:lang="en">Error</source>
-        <target state="new">Error</target>
+        <target state="translated">오류</target>
       </trans-unit>
       <trans-unit id="deploymentDialog.ToolStatus.Failed">
         <source xml:lang="en">Failed</source>
-        <target state="new">Failed</target>
+        <target state="translated">실패</target>
       </trans-unit>
       <trans-unit id="deploymentDialog.ToolInformationalMessage.Brew">
         <source xml:lang="en">•	brew is needed for deployment of the tools and needs to be pre-installed before necessary tools can be deployed</source>
-        <target state="new">•	brew is needed for deployment of the tools and needs to be pre-installed before necessary tools can be deployed</target>
+        <target state="translated">•	brew는 도구를 배포하는 데 필요하며 필요한 도구를 배포하기 전에 미리 설치해야 합니다.</target>
       </trans-unit>
       <trans-unit id="deploymentDialog.ToolInformationalMessage.Curl">
         <source xml:lang="en">•	curl is needed for installation and needs to be pre-installed before necessary tools can be deployed</source>
-        <target state="new">•	curl is needed for installation and needs to be pre-installed before necessary tools can be deployed</target>
+        <target state="translated">•	curl은 설치에 필요하며 필요한 도구를 배포하기 전에 미리 설치해야 합니다.</target>
       </trans-unit>
       <trans-unit id="toolBase.getPip3InstallationLocation.LocationNotFound">
         <source xml:lang="en">   Could not find 'Location' in the output:</source>
-        <target state="new">   Could not find 'Location' in the output:</target>
+        <target state="translated">   출력에서 'Location'을 찾을 수 없습니다.</target>
       </trans-unit>
       <trans-unit id="toolBase.getPip3InstallationLocation.Output">
         <source xml:lang="en">   output:</source>
-        <target state="new">   output:</target>
+        <target state="translated">   출력:</target>
       </trans-unit>
       <trans-unit id="toolBase.InstallError">
         <source xml:lang="en">Error installing tool '{0}' [ {1} ].{2}Error: {3}{2}See output channel '{4}' for more details</source>
-        <target state="new">Error installing tool '{0}' [ {1} ].{2}Error: {3}{2}See output channel '{4}' for more details</target>
+        <target state="translated">'{0}'[{1}] 도구를 설치하는 동안 오류가 발생했습니다. {2}오류: {3}{2}자세한 내용은 출력 채널 '{4}'을(를) 참조하세요.</target>
       </trans-unit>
       <trans-unit id="toolBase.InstallErrorInformation">
         <source xml:lang="en">Error installing tool. See output channel '{0}' for more details</source>
-        <target state="new">Error installing tool. See output channel '{0}' for more details</target>
+        <target state="translated">도구를 설치하는 동안 오류가 발생했습니다. 자세한 내용은 출력 채널 '{0}'을(를) 참조하세요.</target>
       </trans-unit>
       <trans-unit id="toolBase.InstallFailed">
         <source xml:lang="en">Installation commands completed but version of tool '{0}' could not be detected so our installation attempt has failed. Detection Error: {1}{2}Cleaning up previous installations would help.</source>
-        <target state="new">Installation commands completed but version of tool '{0}' could not be detected so our installation attempt has failed. Detection Error: {1}{2}Cleaning up previous installations would help.</target>
+        <target state="translated">설치 명령이 완료되었지만 '{0}' 도구의 버전을 검색할 수 없어서 설치하지 못했습니다. 검색 오류: {1}{2}이전 설치를 정리하는 것이 도움이 됩니다.</target>
       </trans-unit>
       <trans-unit id="toolBase.InstallFailInformation">
         <source xml:lang="en">Failed to detect version post installation. See output channel '{0}' for more details</source>
-        <target state="new">Failed to detect version post installation. See output channel '{0}' for more details</target>
+        <target state="translated">설치 후 버전을 검색하지 못했습니다. 자세한 내용은 출력 채널 '{0}'을(를) 참조하세요.</target>
       </trans-unit>
       <trans-unit id="toolBase.ManualUninstallCommand">
         <source xml:lang="en"> A possibly way to uninstall is using this command:{0}   &gt;{1}</source>
-        <target state="new"> A possibly way to uninstall is using this command:{0}   &gt;{1}</target>
+        <target state="translated"> 제거할 수 있는 방법은 {0}   &gt;{1} 명령을 사용하는 것입니다.</target>
       </trans-unit>
       <trans-unit id="toolBase.SeeOutputChannel">
         <source xml:lang="en">{0}See output channel '{1}' for more details</source>
-        <target state="new">{0}See output channel '{1}' for more details</target>
+        <target state="translated">{0}자세한 내용은 출력 채널 '{1}' 참조</target>
       </trans-unit>
       <trans-unit id="toolBase.installCore.CannotInstallTool">
         <source xml:lang="en">Cannot install tool:{0}::{1} as installation commands are unknown for your OS distribution, Please install {0} manually before proceeding</source>
-        <target state="new">Cannot install tool:{0}::{1} as installation commands are unknown for your OS distribution, Please install {0} manually before proceeding</target>
+        <target state="translated">OS 배포를 위한 설치 명령을 알 수 없으므로 {0}::{1} 도구를 설치할 수 없습니다. 계속하기 전에 {0}을(를) 수동으로 설치하세요.</target>
       </trans-unit>
       <trans-unit id="toolBase.addInstallationSearchPathsToSystemPath.SearchPaths">
         <source xml:lang="en">Search Paths for tool '{0}': {1}</source>
-        <target state="new">Search Paths for tool '{0}': {1}</target>
+        <target state="translated">'{0}' 도구의 검색 경로: {1}</target>
       </trans-unit>
       <trans-unit id="deployCluster.GetToolVersionErrorInformation">
         <source xml:lang="en">Error retrieving version information. See output channel '{0}' for more details</source>
-        <target state="new">Error retrieving version information. See output channel '{0}' for more details</target>
+        <target state="translated">버전 정보를 검색하는 동안 오류가 발생했습니다. 자세한 내용은 출력 채널 '{0}'을(를) 참조하세요.</target>
       </trans-unit>
       <trans-unit id="deployCluster.GetToolVersionError">
         <source xml:lang="en">Error retrieving version information.{0}Invalid output received, get version command output: '{1}' </source>
-        <target state="new">Error retrieving version information.{0}Invalid output received, get version command output: '{1}' </target>
+        <target state="translated">버전 정보를 검색하는 동안 오류가 발생했습니다. {0}잘못된 출력이 수신되었습니다. 버전 명령 출력 '{1}'을(를) 가져옵니다. </target>
       </trans-unit>
     </body>
   </file>
@@ -910,87 +814,87 @@
     <body>
       <trans-unit id="deployAzureSQLDB.NewSQLDBTitle">
         <source xml:lang="en">Deploy Azure SQL DB</source>
-        <target state="new">Deploy Azure SQL DB</target>
+        <target state="translated">Azure SQL DB 배포</target>
       </trans-unit>
       <trans-unit id="deployAzureSQLDB.ScriptToNotebook">
         <source xml:lang="en">Script to Notebook</source>
-        <target state="new">Script to Notebook</target>
+        <target state="translated">Notebook으로 스크립트</target>
       </trans-unit>
       <trans-unit id="deployAzureSQLDB.MissingRequiredInfoError">
         <source xml:lang="en">Please fill out the required fields marked with red asterisks.</source>
-        <target state="new">Please fill out the required fields marked with red asterisks.</target>
+        <target state="translated">빨간색 별표가 표시된 필수 필드를 입력하세요.</target>
       </trans-unit>
       <trans-unit id="deployAzureSQLDB.AzureSettingsPageTitle">
         <source xml:lang="en">Azure SQL Database - Azure account settings</source>
-        <target state="new">Azure SQL Database - Azure account settings</target>
+        <target state="translated">Azure SQL Database - Azure 계정 설정</target>
       </trans-unit>
       <trans-unit id="deployAzureSQLDB.AzureSettingsSummaryPageTitle">
         <source xml:lang="en">Azure account settings</source>
-        <target state="new">Azure account settings</target>
+        <target state="translated">Azure 계정 설정</target>
       </trans-unit>
       <trans-unit id="deployAzureSQLDB.AzureAccountDropdownLabel">
         <source xml:lang="en">Azure account</source>
-        <target state="new">Azure account</target>
+        <target state="translated">Azure 계정</target>
       </trans-unit>
       <trans-unit id="deployAzureSQLDB.AzureSubscriptionDropdownLabel">
         <source xml:lang="en">Subscription</source>
-        <target state="new">Subscription</target>
+        <target state="translated">구독</target>
       </trans-unit>
       <trans-unit id="deployAzureSQLDB.AzureDatabaseServersDropdownLabel">
         <source xml:lang="en">Server</source>
-        <target state="new">Server</target>
+        <target state="translated">서버</target>
       </trans-unit>
       <trans-unit id="deployAzureSQLDB.ResourceGroup">
         <source xml:lang="en">Resource group</source>
-        <target state="new">Resource group</target>
+        <target state="translated">리소스 그룹</target>
       </trans-unit>
       <trans-unit id="deployAzureSQLDB.DatabaseSettingsPageTitle">
         <source xml:lang="en">Database settings</source>
-        <target state="new">Database settings</target>
+        <target state="translated">데이터베이스 설정</target>
       </trans-unit>
       <trans-unit id="deployAzureSQLDB.FirewallRuleNameLabel">
         <source xml:lang="en">Firewall rule name</source>
-        <target state="new">Firewall rule name</target>
+        <target state="translated">방화벽 규칙 이름</target>
       </trans-unit>
       <trans-unit id="deployAzureSQLDB.DatabaseNameLabel">
         <source xml:lang="en">SQL database name</source>
-        <target state="new">SQL database name</target>
+        <target state="translated">SQL 데이터베이스 이름</target>
       </trans-unit>
       <trans-unit id="deployAzureSQLDB.CollationNameLabel">
         <source xml:lang="en">Database collation</source>
-        <target state="new">Database collation</target>
+        <target state="translated">데이터베이스 데이터 정렬</target>
       </trans-unit>
       <trans-unit id="deployAzureSQLDB.CollationNameSummaryLabel">
         <source xml:lang="en">Collation for database</source>
-        <target state="new">Collation for database</target>
+        <target state="translated">데이터베이스 데이터 정렬</target>
       </trans-unit>
       <trans-unit id="deployAzureSQLDB.IpAddressInfoLabel">
         <source xml:lang="en">Enter IP addresses in IPv4 format.</source>
-        <target state="new">Enter IP addresses in IPv4 format.</target>
+        <target state="translated">IPv4 형식으로 IP 주소를 입력합니다.</target>
       </trans-unit>
       <trans-unit id="deployAzureSQLDB.StartIpAddressLabel">
         <source xml:lang="en">Min IP address in firewall IP range</source>
-        <target state="new">Min IP address in firewall IP range</target>
+        <target state="translated">방화벽 IP 범위의 최소 IP 주소</target>
       </trans-unit>
       <trans-unit id="deployAzureSQLDB.EndIpAddressLabel">
         <source xml:lang="en">Max IP address in firewall IP range</source>
-        <target state="new">Max IP address in firewall IP range</target>
+        <target state="translated">방화벽 IP 범위의 최대 IP 주소</target>
       </trans-unit>
       <trans-unit id="deployAzureSQLDB.StartIpAddressShortLabel">
         <source xml:lang="en">Min IP address</source>
-        <target state="new">Min IP address</target>
+        <target state="translated">최소 IP 주소</target>
       </trans-unit>
       <trans-unit id="deployAzureSQLDB.EndIpAddressShortLabel">
         <source xml:lang="en">Max IP address</source>
-        <target state="new">Max IP address</target>
+        <target state="translated">최대 IP 주소</target>
       </trans-unit>
       <trans-unit id="deployAzureSQLDB.FirewallRuleDescription">
         <source xml:lang="en">Create a firewall rule for your local client IP in order to connect to your database through Azure Data Studio after creation is completed.</source>
-        <target state="new">Create a firewall rule for your local client IP in order to connect to your database through Azure Data Studio after creation is completed.</target>
+        <target state="translated">만들기가 완료된 후 Azure Data Studio를 통해 데이터베이스에 연결하려면 로컬 클라이언트 IP의 방화벽 규칙을 만듭니다.</target>
       </trans-unit>
       <trans-unit id="deployAzureSQLDB.FirewallToggleLabel">
         <source xml:lang="en">Create a firewall rule</source>
-        <target state="new">Create a firewall rule</target>
+        <target state="translated">방화벽 규칙 만들기</target>
       </trans-unit>
     </body>
   </file>
@@ -998,7 +902,7 @@
     <body>
       <trans-unit id="resourceDeployment.KubeCtlDescription">
         <source xml:lang="en">Runs commands against Kubernetes clusters</source>
-        <target state="new">Runs commands against Kubernetes clusters</target>
+        <target state="translated">Kubernetes 클러스터에 대해 명령 실행</target>
       </trans-unit>
       <trans-unit id="resourceDeployment.KubeCtlDisplayName">
         <source xml:lang="en">kubectl</source>
@@ -1006,67 +910,67 @@
       </trans-unit>
       <trans-unit id="resourceDeployment.invalidKubectlVersionOutput">
         <source xml:lang="en">Unable to parse the kubectl version command output: "{0}"</source>
-        <target state="new">Unable to parse the kubectl version command output: "{0}"</target>
+        <target state="translated">Kubectl 버전 명령 출력을 구문 분석할 수 없음: "{0}"</target>
       </trans-unit>
       <trans-unit id="resourceDeployment.Kubectl.UpdatingBrewRepository">
         <source xml:lang="en">updating your brew repository for kubectl installation …</source>
-        <target state="new">updating your brew repository for kubectl installation …</target>
+        <target state="translated">kubectl 설치를 위해 brew 리포지토리를 업데이트하는 중...</target>
       </trans-unit>
       <trans-unit id="resourceDeployment.Kubectl.InstallingKubeCtl">
         <source xml:lang="en">installing kubectl …</source>
-        <target state="new">installing kubectl …</target>
+        <target state="translated">kubectl을 설치하는 중...</target>
       </trans-unit>
       <trans-unit id="resourceDeployment.Kubectl.AptGetUpdate">
         <source xml:lang="en">updating repository information …</source>
-        <target state="new">updating repository information …</target>
+        <target state="translated">리포지토리 정보를 업데이트하는 중...</target>
       </trans-unit>
       <trans-unit id="resourceDeployment.Kubectl.AptGetPackages">
         <source xml:lang="en">getting packages needed for kubectl installation …</source>
-        <target state="new">getting packages needed for kubectl installation …</target>
+        <target state="translated">kubectl 설치에 필요한 패키지를 가져오는 중...</target>
       </trans-unit>
       <trans-unit id="resourceDeployment.Kubectl.DownloadAndInstallingSigningKey">
         <source xml:lang="en">downloading and installing the signing key for kubectl …</source>
-        <target state="new">downloading and installing the signing key for kubectl …</target>
+        <target state="translated">kubectl의 서명 키를 다운로드하고 설치하는 중...</target>
       </trans-unit>
       <trans-unit id="resourceDeployment.Kubectl.AddingKubectlRepositoryInformation">
         <source xml:lang="en">adding the kubectl repository information …</source>
-        <target state="new">adding the kubectl repository information …</target>
+        <target state="translated">kubectl 리포지토리 정보를 추가하는 중...</target>
       </trans-unit>
       <trans-unit id="resourceDeployment.Kubectl.InstallingKubectl">
         <source xml:lang="en">installing kubectl …</source>
-        <target state="new">installing kubectl …</target>
+        <target state="translated">kubectl을 설치하는 중...</target>
       </trans-unit>
       <trans-unit id="resourceDeployment.Kubectl.DeletePreviousDownloadedKubectl.exe">
         <source xml:lang="en">deleting previously downloaded kubectl.exe if one exists …</source>
-        <target state="new">deleting previously downloaded kubectl.exe if one exists …</target>
+        <target state="translated">이전에 다운로드한 kubectl.exe 삭제 중(있는 경우)...</target>
       </trans-unit>
       <trans-unit id="resourceDeployment.Kubectl.DownloadingAndInstallingKubectl">
         <source xml:lang="en">downloading and installing the latest kubectl.exe …</source>
-        <target state="new">downloading and installing the latest kubectl.exe …</target>
+        <target state="translated">최신 kubectl.exe를 다운로드하고 설치하는 중...</target>
       </trans-unit>
       <trans-unit id="resourceDeployment.Kubectl.DeletePreviousDownloadedKubectl">
         <source xml:lang="en">deleting previously downloaded kubectl if one exists …</source>
-        <target state="new">deleting previously downloaded kubectl if one exists …</target>
+        <target state="translated">이전에 다운로드한 kubectl 삭제 중(있는 경우)...</target>
       </trans-unit>
       <trans-unit id="resourceDeployment.Kubectl.DownloadingKubectl">
         <source xml:lang="en">downloading the latest kubectl release …</source>
-        <target state="new">downloading the latest kubectl release …</target>
+        <target state="translated">최신 kubectl 릴리스를 다운로드하는 중...</target>
       </trans-unit>
       <trans-unit id="resourceDeployment.Kubectl.MakingExecutable">
         <source xml:lang="en">making kubectl executable …</source>
-        <target state="new">making kubectl executable …</target>
+        <target state="translated">kubectl 실행 파일을 만드는 중...</target>
       </trans-unit>
       <trans-unit id="resourceDeployment.Kubectl.CleaningUpOldBackups">
         <source xml:lang="en">cleaning up any previously backed up version in the install location if they exist …</source>
-        <target state="new">cleaning up any previously backed up version in the install location if they exist …</target>
+        <target state="translated">설치 위치에서 이전에 백업된 버전을 정리하는 중(있는 경우)...</target>
       </trans-unit>
       <trans-unit id="resourceDeployment.Kubectl.BackupCurrentBinary">
         <source xml:lang="en">backing up any existing kubectl in the install location …</source>
-        <target state="new">backing up any existing kubectl in the install location …</target>
+        <target state="translated">설치 위치의 기존 kubectl을 백업하는 중...</target>
       </trans-unit>
       <trans-unit id="resourceDeployment.Kubectl.MoveToSystemPath">
         <source xml:lang="en">moving kubectl into the install location in the PATH …</source>
-        <target state="new">moving kubectl into the install location in the PATH …</target>
+        <target state="translated">PATH에서 설치 위치로 kubectl을 이동하는 중...</target>
       </trans-unit>
     </body>
   </file>
@@ -1074,7 +978,7 @@
     <body>
       <trans-unit id="wizardPage.ValidationError">
         <source xml:lang="en">There are some errors on this page, click 'Show Details' to view the errors.</source>
-        <target state="new">There are some errors on this page, click 'Show Details' to view the errors.</target>
+        <target state="translated">이 페이지에 오류가 있습니다. 오류를 보려면 '세부 정보 표시'를 클릭합니다.</target>
       </trans-unit>
     </body>
   </file>
@@ -1082,24 +986,20 @@
     <body>
       <trans-unit id="deploymentDialog.OpenNotebook">
         <source xml:lang="en">Open Notebook</source>
-        <target state="new">Open Notebook</target>
+        <target state="translated">Notebook 열기</target>
       </trans-unit>
       <trans-unit id="deploymentDialog.OkButtonText">
         <source xml:lang="en">OK</source>
-        <target state="new">OK</target>
+        <target state="translated">확인</target>
       </trans-unit>
       <trans-unit id="notebookType">
         <source xml:lang="en">Notebook type</source>
-        <target state="new">Notebook type</target>
+        <target state="translated">Notebook 유형</target>
       </trans-unit>
     </body>
   </file>
   <file original="extensions/resource-deployment/dist/main" source-language="en" datatype="plaintext" target-language="ko">
     <body>
-      <trans-unit id="resourceDeployment.FailedToLoadExtension">
-        <source xml:lang="en">Failed to load extension: {0}, Error detected in the resource type definition in package.json, check debug console for details.</source>
-        <target state="translated">{0} 확장을 로드하지 못했습니다. package.json의 리소스 종류 정의에서 오류가 감지되었습니다. 자세한 내용은 디버그 콘솔을 참조하세요.</target>
-      </trans-unit>
       <trans-unit id="resourceDeployment.UnknownResourceType">
         <source xml:lang="en">The resource type: {0} is not defined</source>
         <target state="translated">리소스 종류 {0}이(가) 정의되지 않았습니다.</target>
@@ -1118,31 +1018,31 @@
     <body>
       <trans-unit id="resourceDeployment.outputChannel">
         <source xml:lang="en">Deployments</source>
-        <target state="new">Deployments</target>
+        <target state="translated">배포</target>
       </trans-unit>
       <trans-unit id="platformService.RunCommand.ErroredOut">
         <source xml:lang="en">	&gt;&gt;&gt; {0}   … errored out: {1}</source>
-        <target state="new">	&gt;&gt;&gt; {0}   … errored out: {1}</target>
+        <target state="translated">	&gt;&gt;&gt; {0}    ... 오류가 발생했습니다. {1}</target>
       </trans-unit>
       <trans-unit id="platformService.RunCommand.IgnoringError">
         <source xml:lang="en">	&gt;&gt;&gt; Ignoring error in execution and continuing tool deployment</source>
-        <target state="new">	&gt;&gt;&gt; Ignoring error in execution and continuing tool deployment</target>
+        <target state="translated">	&gt;&gt;&gt; 실행 시 오류 무시 및 도구 배포 계속</target>
       </trans-unit>
       <trans-unit id="platformService.RunCommand.stdout">
         <source xml:lang="en">    stdout: </source>
-        <target state="new">    stdout: </target>
+        <target state="translated">    stdout: </target>
       </trans-unit>
       <trans-unit id="platformService.RunCommand.stderr">
         <source xml:lang="en">    stderr: </source>
-        <target state="new">    stderr: </target>
+        <target state="translated">    stderr: </target>
       </trans-unit>
       <trans-unit id="platformService.RunStreamedCommand.ExitedWithCode">
         <source xml:lang="en">    &gt;&gt;&gt; {0}    … exited with code: {1}</source>
-        <target state="new">    &gt;&gt;&gt; {0}    … exited with code: {1}</target>
+        <target state="translated">    &gt;&gt;&gt; {0}    … 종료됨(코드: {1})</target>
       </trans-unit>
       <trans-unit id="platformService.RunStreamedCommand.ExitedWithSignal">
         <source xml:lang="en">    &gt;&gt;&gt; {0}   … exited with signal: {1}</source>
-        <target state="new">    &gt;&gt;&gt; {0}   … exited with signal: {1}</target>
+        <target state="translated">    &gt;&gt;&gt; {0}    … 종료됨(신호: {1})</target>
       </trans-unit>
     </body>
   </file>
@@ -1158,31 +1058,31 @@
     <body>
       <trans-unit id="deployCluster.serviceScaleTableTitle">
         <source xml:lang="en">Service scale settings (Instances)</source>
-        <target state="new">Service scale settings (Instances)</target>
+        <target state="translated">서비스 스케일링 설정(인스턴스)</target>
       </trans-unit>
       <trans-unit id="deployCluster.storageTableTitle">
         <source xml:lang="en">Service storage settings (GB per Instance)</source>
-        <target state="new">Service storage settings (GB per Instance)</target>
+        <target state="translated">서비스 스토리지 설정(인스턴스당 GB)</target>
       </trans-unit>
       <trans-unit id="deployCluster.featureTableTitle">
         <source xml:lang="en">Features</source>
-        <target state="new">Features</target>
+        <target state="translated">기능</target>
       </trans-unit>
       <trans-unit id="deployCluster.yesText">
         <source xml:lang="en">Yes</source>
-        <target state="new">Yes</target>
+        <target state="translated">예</target>
       </trans-unit>
       <trans-unit id="deployCluster.noText">
         <source xml:lang="en">No</source>
-        <target state="new">No</target>
+        <target state="translated">아니요</target>
       </trans-unit>
       <trans-unit id="deployCluster.summaryPageTitle">
         <source xml:lang="en">Deployment configuration profile</source>
-        <target state="new">Deployment configuration profile</target>
+        <target state="translated">배포 구성 프로필</target>
       </trans-unit>
       <trans-unit id="deployCluster.summaryPageDescription">
         <source xml:lang="en">Select the target configuration profile</source>
-        <target state="new">Select the target configuration profile</target>
+        <target state="translated">대상 구성 프로필 선택</target>
       </trans-unit>
       <trans-unit id="deployCluster.ProfileHintText">
         <source xml:lang="en">Note: The settings of the deployment profile can be customized in later steps.</source>
@@ -1190,15 +1090,15 @@
       </trans-unit>
       <trans-unit id="deployCluster.loadingProfiles">
         <source xml:lang="en">Loading profiles</source>
-        <target state="new">Loading profiles</target>
+        <target state="translated">프로필 로드</target>
       </trans-unit>
       <trans-unit id="deployCluster.loadingProfilesCompleted">
         <source xml:lang="en">Loading profiles completed</source>
-        <target state="new">Loading profiles completed</target>
+        <target state="translated">프로필 로드 완료</target>
       </trans-unit>
       <trans-unit id="deployCluster.profileRadioGroupLabel">
         <source xml:lang="en">Deployment configuration profile</source>
-        <target state="new">Deployment configuration profile</target>
+        <target state="translated">배포 구성 프로필</target>
       </trans-unit>
       <trans-unit id="deployCluster.loadProfileFailed">
         <source xml:lang="en">Failed to load the deployment profiles: {0}</source>
@@ -1222,19 +1122,19 @@
       </trans-unit>
       <trans-unit id="deployCluster.ServiceName">
         <source xml:lang="en">Service</source>
-        <target state="new">Service</target>
+        <target state="translated">서비스</target>
       </trans-unit>
       <trans-unit id="deployCluster.dataStorageType">
         <source xml:lang="en">Data</source>
-        <target state="new">Data</target>
+        <target state="translated">데이터</target>
       </trans-unit>
       <trans-unit id="deployCluster.logsStorageType">
         <source xml:lang="en">Logs</source>
-        <target state="new">Logs</target>
+        <target state="translated">로그</target>
       </trans-unit>
       <trans-unit id="deployCluster.StorageType">
         <source xml:lang="en">Storage type</source>
-        <target state="new">Storage type</target>
+        <target state="translated">스토리지 유형</target>
       </trans-unit>
       <trans-unit id="deployCluster.basicAuthentication">
         <source xml:lang="en">Basic authentication</source>
@@ -1250,7 +1150,7 @@
       </trans-unit>
       <trans-unit id="deployCluster.featureText">
         <source xml:lang="en">Feature</source>
-        <target state="new">Feature</target>
+        <target state="translated">기능</target>
       </trans-unit>
       <trans-unit id="deployCluster.ProfileNotSelectedError">
         <source xml:lang="en">Please select a deployment profile.</source>
@@ -1262,7 +1162,7 @@
     <body>
       <trans-unit id="deployCluster.MissingRequiredInfoError">
         <source xml:lang="en">Please fill out the required fields marked with red asterisks.</source>
-        <target state="new">Please fill out the required fields marked with red asterisks.</target>
+        <target state="translated">빨간색 별표가 표시된 필수 필드를 입력하세요.</target>
       </trans-unit>
       <trans-unit id="deployCluster.AzureSettingsPageTitle">
         <source xml:lang="en">Azure settings</source>
@@ -1322,7 +1222,7 @@
     <body>
       <trans-unit id="deployCluster.ClusterNameDescription">
         <source xml:lang="en">The cluster name must consist only of alphanumeric lowercase characters or '-' and must start and end with an alphanumeric character.</source>
-        <target state="new">The cluster name must consist only of alphanumeric lowercase characters or '-' and must start and end with an alphanumeric character.</target>
+        <target state="translated">클러스터 이름은 영숫자 소문자 또는 '-'로만 구성되어야 하며 영숫자 문자로 시작하고 끝나야 합니다.</target>
       </trans-unit>
       <trans-unit id="deployCluster.ClusterSettingsPageTitle">
         <source xml:lang="en">Cluster settings</source>
@@ -1434,7 +1334,7 @@
       </trans-unit>
       <trans-unit id="deployCluster.RealmDescription">
         <source xml:lang="en">If not provided, the domain DNS name will be used as the default value.</source>
-        <target state="new">If not provided, the domain DNS name will be used as the default value.</target>
+        <target state="translated">제공하지 않으면 도메인 DNS 이름이 기본값으로 사용됩니다.</target>
       </trans-unit>
       <trans-unit id="deployCluster.ClusterAdmins">
         <source xml:lang="en">Cluster admin group</source>
@@ -1470,7 +1370,7 @@
       </trans-unit>
       <trans-unit id="deployCluster.AppOwners">
         <source xml:lang="en">App owners</source>
-        <target state="new">App owners</target>
+        <target state="translated">앱 소유자</target>
       </trans-unit>
       <trans-unit id="deployCluster.AppOwnersPlaceHolder">
         <source xml:lang="en">Use comma to separate the values.</source>
@@ -1494,19 +1394,19 @@
       </trans-unit>
       <trans-unit id="deployCluster.Subdomain">
         <source xml:lang="en">Subdomain</source>
-        <target state="new">Subdomain</target>
+        <target state="translated">하위 도메인</target>
       </trans-unit>
       <trans-unit id="deployCluster.SubdomainDescription">
         <source xml:lang="en">A unique DNS subdomain to use for this SQL Server Big Data Cluster. If not provided, the cluster name will be used as the default value.</source>
-        <target state="new">A unique DNS subdomain to use for this SQL Server Big Data Cluster. If not provided, the cluster name will be used as the default value.</target>
+        <target state="translated">이 SQL Server 빅 데이터 클러스터에 사용할 고유한 DNS 하위 도메인입니다. 제공되지 않으면 클러스터 이름이 기본값으로 사용됩니다.</target>
       </trans-unit>
       <trans-unit id="deployCluster.AccountPrefix">
         <source xml:lang="en">Account prefix</source>
-        <target state="new">Account prefix</target>
+        <target state="translated">계정 접두사</target>
       </trans-unit>
       <trans-unit id="deployCluster.AccountPrefixDescription">
         <source xml:lang="en">A unique prefix for AD accounts SQL Server Big Data Cluster will generate. If not provided, the subdomain name will be used as the default value. If a subdomain is not provided, the cluster name will be used as the default value.</source>
-        <target state="new">A unique prefix for AD accounts SQL Server Big Data Cluster will generate. If not provided, the subdomain name will be used as the default value. If a subdomain is not provided, the cluster name will be used as the default value.</target>
+        <target state="translated">AD 계정 SQL Server 빅 데이터 클러스터의 고유한 접두사가 생성됩니다. 제공되지 않으면 하위 도메인 이름이 기본값으로 사용됩니다. 하위 도메인이 제공되지 않으면 클러스터 이름이 기본값으로 사용됩니다.</target>
       </trans-unit>
       <trans-unit id="deployCluster.AdminPasswordField">
         <source xml:lang="en">Password</source>
@@ -1646,19 +1546,19 @@
       </trans-unit>
       <trans-unit id="deployCluster.controllerDataStorageClass">
         <source xml:lang="en">Controller's data storage class</source>
-        <target state="new">Controller's data storage class</target>
+        <target state="translated">컨트롤러의 데이터 스토리지 클래스</target>
       </trans-unit>
       <trans-unit id="deployCluster.controllerDataStorageClaimSize">
         <source xml:lang="en">Controller's data storage claim size</source>
-        <target state="new">Controller's data storage claim size</target>
+        <target state="translated">컨트롤러의 데이터 스토리지 클레임 크기</target>
       </trans-unit>
       <trans-unit id="deployCluster.controllerLogsStorageClass">
         <source xml:lang="en">Controller's logs storage class</source>
-        <target state="new">Controller's logs storage class</target>
+        <target state="translated">컨트롤러의 로그 스토리지 클래스</target>
       </trans-unit>
       <trans-unit id="deployCluster.controllerLogsStorageClaimSize">
         <source xml:lang="en">Controller's logs storage claim size</source>
-        <target state="new">Controller's logs storage claim size</target>
+        <target state="translated">컨트롤러의 로그 스토리지 클레임 크기</target>
       </trans-unit>
       <trans-unit id="deployCluster.StoragePool">
         <source xml:lang="en">Storage pool (HDFS)</source>
@@ -1666,19 +1566,19 @@
       </trans-unit>
       <trans-unit id="deployCluster.storagePoolDataStorageClass">
         <source xml:lang="en">Storage pool's data storage class</source>
-        <target state="new">Storage pool's data storage class</target>
+        <target state="translated">스토리지 풀의 데이터 스토리지 클래스</target>
       </trans-unit>
       <trans-unit id="deployCluster.storagePoolDataStorageClaimSize">
         <source xml:lang="en">Storage pool's data storage claim size</source>
-        <target state="new">Storage pool's data storage claim size</target>
+        <target state="translated">스토리지 풀의 데이터 스토리지 클레임 크기</target>
       </trans-unit>
       <trans-unit id="deployCluster.storagePoolLogsStorageClass">
         <source xml:lang="en">Storage pool's logs storage class</source>
-        <target state="new">Storage pool's logs storage class</target>
+        <target state="translated">스토리지 풀의 로그 스토리지 클래스</target>
       </trans-unit>
       <trans-unit id="deployCluster.storagePoolLogsStorageClaimSize">
         <source xml:lang="en">Storage pool's logs storage claim size</source>
-        <target state="new">Storage pool's logs storage claim size</target>
+        <target state="translated">스토리지 풀의 로그 스토리지 클레임 크기</target>
       </trans-unit>
       <trans-unit id="deployCluster.DataPool">
         <source xml:lang="en">Data pool</source>
@@ -1686,39 +1586,39 @@
       </trans-unit>
       <trans-unit id="deployCluster.dataPoolDataStorageClass">
         <source xml:lang="en">Data pool's data storage class</source>
-        <target state="new">Data pool's data storage class</target>
+        <target state="translated">데이터 풀의 데이터 스토리지 클래스</target>
       </trans-unit>
       <trans-unit id="deployCluster.dataPoolDataStorageClaimSize">
         <source xml:lang="en">Data pool's data storage claim size</source>
-        <target state="new">Data pool's data storage claim size</target>
+        <target state="translated">데이터 풀의 데이터 스토리지 클레임 크기</target>
       </trans-unit>
       <trans-unit id="deployCluster.dataPoolLogsStorageClass">
         <source xml:lang="en">Data pool's logs storage class</source>
-        <target state="new">Data pool's logs storage class</target>
+        <target state="translated">데이터 풀의 로그 스토리지 클래스</target>
       </trans-unit>
       <trans-unit id="deployCluster.dataPoolLogsStorageClaimSize">
         <source xml:lang="en">Data pool's logs storage claim size</source>
-        <target state="new">Data pool's logs storage claim size</target>
+        <target state="translated">데이터 풀의 로그 스토리지 클레임 크기</target>
       </trans-unit>
       <trans-unit id="deployCluster.sqlServerMasterDataStorageClass">
         <source xml:lang="en">SQL Server master's data storage class</source>
-        <target state="new">SQL Server master's data storage class</target>
+        <target state="translated">SQL Server 마스터의 데이터 스토리지 클래스</target>
       </trans-unit>
       <trans-unit id="deployCluster.sqlServerMasterDataStorageClaimSize">
         <source xml:lang="en">SQL Server master's data storage claim size</source>
-        <target state="new">SQL Server master's data storage claim size</target>
+        <target state="translated">SQL Server 마스터의 데이터 스토리지 클레임 크기</target>
       </trans-unit>
       <trans-unit id="deployCluster.sqlServerMasterLogsStorageClass">
         <source xml:lang="en">SQL Server master's logs storage class</source>
-        <target state="new">SQL Server master's logs storage class</target>
+        <target state="translated">SQL Server 마스터의 로그 스토리지 클래스</target>
       </trans-unit>
       <trans-unit id="deployCluster.sqlServerMasterLogsStorageClaimSize">
         <source xml:lang="en">SQL Server master's logs storage claim size</source>
-        <target state="new">SQL Server master's logs storage claim size</target>
+        <target state="translated">SQL Server 마스터의 로그 스토리지 클레임 크기</target>
       </trans-unit>
       <trans-unit id="deployCluster.ServiceName">
         <source xml:lang="en">Service name</source>
-        <target state="new">Service name</target>
+        <target state="translated">서비스 이름</target>
       </trans-unit>
       <trans-unit id="deployCluster.DataStorageClassName">
         <source xml:lang="en">Storage class for data</source>
@@ -1738,7 +1638,7 @@
       </trans-unit>
       <trans-unit id="deployCluster.StorageSettings">
         <source xml:lang="en">Storage settings</source>
-        <target state="new">Storage settings</target>
+        <target state="translated">스토리지 설정</target>
       </trans-unit>
       <trans-unit id="deployCluster.StorageSectionTitle">
         <source xml:lang="en">Storage settings</source>
@@ -1822,7 +1722,7 @@
       </trans-unit>
       <trans-unit id="deployCluster.AppOwners">
         <source xml:lang="en">App owners</source>
-        <target state="new">App owners</target>
+        <target state="translated">앱 소유자</target>
       </trans-unit>
       <trans-unit id="deployCluster.AppReaders">
         <source xml:lang="en">App readers</source>
@@ -1830,11 +1730,11 @@
       </trans-unit>
       <trans-unit id="deployCluster.Subdomain">
         <source xml:lang="en">Subdomain</source>
-        <target state="new">Subdomain</target>
+        <target state="translated">하위 도메인</target>
       </trans-unit>
       <trans-unit id="deployCluster.AccountPrefix">
         <source xml:lang="en">Account prefix</source>
-        <target state="new">Account prefix</target>
+        <target state="translated">계정 접두사</target>
       </trans-unit>
       <trans-unit id="deployCluster.DomainServiceAccountUserName">
         <source xml:lang="en">Service account username</source>
@@ -1902,7 +1802,7 @@
       </trans-unit>
       <trans-unit id="deployCluster.ServiceName">
         <source xml:lang="en">Service</source>
-        <target state="new">Service</target>
+        <target state="translated">서비스</target>
       </trans-unit>
       <trans-unit id="deployCluster.DataStorageClassName">
         <source xml:lang="en">Storage class for data</source>
@@ -2010,11 +1910,11 @@
     <body>
       <trans-unit id="sqlVMDeploymentWizard.PasswordLengthError">
         <source xml:lang="en">Password must be between 12 and 123 characters long.</source>
-        <target state="new">Password must be between 12 and 123 characters long.</target>
+        <target state="translated">암호는 12~123자여야 합니다.</target>
       </trans-unit>
       <trans-unit id="sqlVMDeploymentWizard.PasswordSpecialCharRequirementError">
         <source xml:lang="en">Password must have 3 of the following: 1 lower case character, 1 upper case character, 1 number, and 1 special character.</source>
-        <target state="new">Password must have 3 of the following: 1 lower case character, 1 upper case character, 1 number, and 1 special character.</target>
+        <target state="translated">암호는 소문자 1자, 대문자 1자, 숫자 1자 및 특수 문자 1자 중 3가지를 포함해야 합니다.</target>
       </trans-unit>
     </body>
   </file>
@@ -2022,47 +1922,47 @@
     <body>
       <trans-unit id="deployAzureSQLVM.VnameLengthError">
         <source xml:lang="en">Virtual machine name must be between 1 and 15 characters long.</source>
-        <target state="new">Virtual machine name must be between 1 and 15 characters long.</target>
+        <target state="translated">가상 머신 이름은 1~15자여야 합니다.</target>
       </trans-unit>
       <trans-unit id="deployAzureSQLVM.VNameOnlyNumericNameError">
         <source xml:lang="en">Virtual machine name cannot contain only numbers.</source>
-        <target state="new">Virtual machine name cannot contain only numbers.</target>
+        <target state="translated">가상 머신 이름을 숫자로만 설정할 수는 없습니다.</target>
       </trans-unit>
       <trans-unit id="deployAzureSQLVM.VNamePrefixSuffixError">
         <source xml:lang="en">Virtual machine name Can't start with underscore. Can't end with period or hyphen</source>
-        <target state="new">Virtual machine name Can't start with underscore. Can't end with period or hyphen</target>
+        <target state="translated">가상 머신 이름은 밑줄로 시작할 수 없습니다. 마침표 또는 하이픈으로 끝날 수 없습니다.</target>
       </trans-unit>
       <trans-unit id="deployAzureSQLVM.VNameSpecialCharError">
         <source xml:lang="en">Virtual machine name cannot contain special characters \/""[]:|&lt;&gt;+=;,?*@&amp;, .</source>
-        <target state="new">Virtual machine name cannot contain special characters \/""[]:|&lt;&gt;+=;,?*@&amp;, .</target>
+        <target state="translated">가상 머신 이름에는 특수 문자 \/""[]:|&lt;&gt;+=;,?*@&amp;,가 포함될 수 없습니다.</target>
       </trans-unit>
       <trans-unit id="deployAzureSQLVM.VNameExistsError">
         <source xml:lang="en">Virtual machine name must be unique in the current resource group.</source>
-        <target state="new">Virtual machine name must be unique in the current resource group.</target>
+        <target state="translated">가상 머신 이름은 현재 리소스 그룹에서 고유해야 합니다.</target>
       </trans-unit>
       <trans-unit id="deployAzureSQLVM.VMUsernameLengthError">
         <source xml:lang="en">Username must be between 1 and 20 characters long.</source>
-        <target state="new">Username must be between 1 and 20 characters long.</target>
+        <target state="translated">사용자 이름은 1~20자여야 합니다.</target>
       </trans-unit>
       <trans-unit id="deployAzureSQLVM.VMUsernameSuffixError">
         <source xml:lang="en">Username cannot end with period</source>
-        <target state="new">Username cannot end with period</target>
+        <target state="translated">사용자 이름은 마침표로 끝날 수 없습니다.</target>
       </trans-unit>
       <trans-unit id="deployAzureSQLVM.VMUsernameSpecialCharError">
         <source xml:lang="en">Username cannot contain special characters \/""[]:|&lt;&gt;+=;,?*@&amp; .</source>
-        <target state="new">Username cannot contain special characters \/""[]:|&lt;&gt;+=;,?*@&amp; .</target>
+        <target state="translated">사용자 이름에는 특수 문자 \/""[]:|&lt;&gt;+=;,?*@&amp;를 사용할 수 없습니다.</target>
       </trans-unit>
       <trans-unit id="deployAzureSQLVM.VMUsernameReservedWordsError">
         <source xml:lang="en">Username must not include reserved words.</source>
-        <target state="new">Username must not include reserved words.</target>
+        <target state="translated">사용자 이름은 예약어를 포함하지 않아야 합니다.</target>
       </trans-unit>
       <trans-unit id="deployAzureSQLVM.VMConfirmPasswordError">
         <source xml:lang="en">Password and confirm password must match.</source>
-        <target state="new">Password and confirm password must match.</target>
+        <target state="translated">암호와 확인 암호가 일치해야 합니다.</target>
       </trans-unit>
       <trans-unit id="deployAzureSQLVM.vmDropdownSizeError">
         <source xml:lang="en">Select a valid virtual machine size.</source>
-        <target state="new">Select a valid virtual machine size.</target>
+        <target state="translated">유효한 가상 머신 크기를 선택합니다.</target>
       </trans-unit>
     </body>
   </file>
@@ -2070,39 +1970,39 @@
     <body>
       <trans-unit id="deployAzureSQLVM.NewVnetPlaceholder">
         <source xml:lang="en">Enter name for new virtual network</source>
-        <target state="new">Enter name for new virtual network</target>
+        <target state="translated">새 가상 네트워크의 이름 입력</target>
       </trans-unit>
       <trans-unit id="deployAzureSQLVM.NewSubnetPlaceholder">
         <source xml:lang="en">Enter name for new subnet</source>
-        <target state="new">Enter name for new subnet</target>
+        <target state="translated">새 서브넷의 이름 입력</target>
       </trans-unit>
       <trans-unit id="deployAzureSQLVM.NewPipPlaceholder">
         <source xml:lang="en">Enter name for new public IP</source>
-        <target state="new">Enter name for new public IP</target>
+        <target state="translated">새 공용 IP의 이름 입력</target>
       </trans-unit>
       <trans-unit id="deployAzureSQLVM.VnetNameLengthError">
         <source xml:lang="en">Virtual Network name must be between 2 and 64 characters long</source>
-        <target state="new">Virtual Network name must be between 2 and 64 characters long</target>
+        <target state="translated">Virtual Network 이름은 2~64자여야 합니다.</target>
       </trans-unit>
       <trans-unit id="deployAzureSQLVM.NewVnetError">
         <source xml:lang="en">Create a new virtual network</source>
-        <target state="new">Create a new virtual network</target>
+        <target state="translated">새 가상 네트워크 만들기</target>
       </trans-unit>
       <trans-unit id="deployAzureSQLVM.SubnetNameLengthError">
         <source xml:lang="en">Subnet name must be between 1 and 80 characters long</source>
-        <target state="new">Subnet name must be between 1 and 80 characters long</target>
+        <target state="translated">서브넷 이름은 1~80자여야 합니다.</target>
       </trans-unit>
       <trans-unit id="deployAzureSQLVM.NewSubnetError">
         <source xml:lang="en">Create a new sub network</source>
-        <target state="new">Create a new sub network</target>
+        <target state="translated">새 하위 네트워크 만들기</target>
       </trans-unit>
       <trans-unit id="deployAzureSQLVM.PipNameError">
         <source xml:lang="en">Public IP name must be between 1 and 80 characters long</source>
-        <target state="new">Public IP name must be between 1 and 80 characters long</target>
+        <target state="translated">공용 IP 이름은 1~80자여야 합니다.</target>
       </trans-unit>
       <trans-unit id="deployAzureSQLVM.NewPipError">
         <source xml:lang="en">Create a new new public Ip</source>
-        <target state="new">Create a new new public Ip</target>
+        <target state="translated">새 공용 IP 만들기</target>
       </trans-unit>
     </body>
   </file>
@@ -2110,27 +2010,27 @@
     <body>
       <trans-unit id="deployAzureSQLVM.PrivateConnectivityDropdownOptionDefault">
         <source xml:lang="en">Private (within Virtual Network)</source>
-        <target state="new">Private (within Virtual Network)</target>
+        <target state="translated">프라이빗(가상 네트워크 내)</target>
       </trans-unit>
       <trans-unit id="deployAzureSQLVM.LocalConnectivityDropdownOption">
         <source xml:lang="en">Local (inside VM only)</source>
-        <target state="new">Local (inside VM only)</target>
+        <target state="translated">로컬(VM 내부 전용)</target>
       </trans-unit>
       <trans-unit id="deployAzureSQLVM.PublicConnectivityDropdownOption">
         <source xml:lang="en">Public (Internet)</source>
-        <target state="new">Public (Internet)</target>
+        <target state="translated">퍼블릭(인터넷)</target>
       </trans-unit>
       <trans-unit id="deployAzureSQLVM.SqlUsernameLengthError">
         <source xml:lang="en">Username must be between 2 and 128 characters long.</source>
-        <target state="new">Username must be between 2 and 128 characters long.</target>
+        <target state="translated">암호는 2~128자여야 합니다.</target>
       </trans-unit>
       <trans-unit id="deployAzureSQLVM.SqlUsernameSpecialCharError">
         <source xml:lang="en">Username cannot contain special characters \/""[]:|&lt;&gt;+=;,?* .</source>
-        <target state="new">Username cannot contain special characters \/""[]:|&lt;&gt;+=;,?* .</target>
+        <target state="translated">사용자 이름에는 특수 문자(\/""[]:|&lt;&gt;+=;,?*)를 사용할 수 없습니다.</target>
       </trans-unit>
       <trans-unit id="deployAzureSQLVM.SqlConfirmPasswordError">
         <source xml:lang="en">Password and confirm password must match.</source>
-        <target state="new">Password and confirm password must match.</target>
+        <target state="translated">암호와 확인 암호가 일치해야 합니다.</target>
       </trans-unit>
     </body>
   </file>
@@ -2138,7 +2038,7 @@
     <body>
       <trans-unit id="notebookWizard.autoSummaryPageTitle">
         <source xml:lang="en">Review your configuration</source>
-        <target state="new">Review your configuration</target>
+        <target state="translated">구성 검토</target>
       </trans-unit>
     </body>
   </file>
@@ -2146,55 +2046,55 @@
     <body>
       <trans-unit id="deployAzureSQLDB.DBMinIpInvalidError">
         <source xml:lang="en">Min Ip address is invalid</source>
-        <target state="new">Min Ip address is invalid</target>
+        <target state="translated">최소 IP 주소가 잘못되었습니다.</target>
       </trans-unit>
       <trans-unit id="deployAzureSQLDB.DBMaxIpInvalidError">
         <source xml:lang="en">Max Ip address is invalid</source>
-        <target state="new">Max Ip address is invalid</target>
+        <target state="translated">최대 IP 주소가 잘못되었습니다.</target>
       </trans-unit>
       <trans-unit id="deployAzureSQLDB.DBFirewallOnlyNumericNameError">
         <source xml:lang="en">Firewall name cannot contain only numbers.</source>
-        <target state="new">Firewall name cannot contain only numbers.</target>
+        <target state="translated">방화벽 이름에 숫자만 사용할 수는 없습니다.</target>
       </trans-unit>
       <trans-unit id="deployAzureSQLDB.DBFirewallLengthError">
         <source xml:lang="en">Firewall name must be between 1 and 100 characters long.</source>
-        <target state="new">Firewall name must be between 1 and 100 characters long.</target>
+        <target state="translated">방화벽 이름은 1~100자여야 합니다.</target>
       </trans-unit>
       <trans-unit id="deployAzureSQLDB.DBFirewallSpecialCharError">
         <source xml:lang="en">Firewall name cannot contain special characters \/""[]:|&lt;&gt;+=;,?*@&amp;, .</source>
-        <target state="new">Firewall name cannot contain special characters \/""[]:|&lt;&gt;+=;,?*@&amp;, .</target>
+        <target state="translated">방화벽 이름에는 특수 문자 \/""[]:|&lt;&gt;+=;,?*@&amp;,를 사용할 수 없습니다.</target>
       </trans-unit>
       <trans-unit id="deployAzureSQLDB.DBFirewallUpperCaseError">
         <source xml:lang="en">Upper case letters are not allowed for firewall name</source>
-        <target state="new">Upper case letters are not allowed for firewall name</target>
+        <target state="translated">방화벽 이름에는 대문자를 사용할 수 없습니다.</target>
       </trans-unit>
       <trans-unit id="deployAzureSQLDB.DBNameOnlyNumericNameError">
         <source xml:lang="en">Database name cannot contain only numbers.</source>
-        <target state="new">Database name cannot contain only numbers.</target>
+        <target state="translated">데이터베이스 이름은 숫자만 포함할 수 없습니다.</target>
       </trans-unit>
       <trans-unit id="deployAzureSQLDB.DBNameLengthError">
         <source xml:lang="en">Database name must be between 1 and 100 characters long.</source>
-        <target state="new">Database name must be between 1 and 100 characters long.</target>
+        <target state="translated">데이터베이스 이름은 1~100자여야 합니다.</target>
       </trans-unit>
       <trans-unit id="deployAzureSQLDB.DBNameSpecialCharError">
         <source xml:lang="en">Database name cannot contain special characters \/""[]:|&lt;&gt;+=;,?*@&amp;, .</source>
-        <target state="new">Database name cannot contain special characters \/""[]:|&lt;&gt;+=;,?*@&amp;, .</target>
+        <target state="translated">데이터베이스 이름에는 특수 문자 \/""[]:|&lt;&gt;+=;,?*@&amp;,를 사용할 수 없습니다.</target>
       </trans-unit>
       <trans-unit id="deployAzureSQLDB.DBNameExistsError">
         <source xml:lang="en">Database name must be unique in the current server.</source>
-        <target state="new">Database name must be unique in the current server.</target>
+        <target state="translated">데이터베이스 이름은 현재 서버에서 고유해야 합니다.</target>
       </trans-unit>
       <trans-unit id="deployAzureSQLDB.DBCollationOnlyNumericNameError">
         <source xml:lang="en">Collation name cannot contain only numbers.</source>
-        <target state="new">Collation name cannot contain only numbers.</target>
+        <target state="translated">데이터 정렬 이름은 숫자만 포함할 수 없습니다.</target>
       </trans-unit>
       <trans-unit id="deployAzureSQLDB.DBCollationLengthError">
         <source xml:lang="en">Collation name must be between 1 and 100 characters long.</source>
-        <target state="new">Collation name must be between 1 and 100 characters long.</target>
+        <target state="translated">데이터 정렬 이름은 1~100자여야 합니다.</target>
       </trans-unit>
       <trans-unit id="deployAzureSQLDB.DBCollationSpecialCharError">
         <source xml:lang="en">Collation name cannot contain special characters \/""[]:|&lt;&gt;+=;,?*@&amp;, .</source>
-        <target state="new">Collation name cannot contain special characters \/""[]:|&lt;&gt;+=;,?*@&amp;, .</target>
+        <target state="translated">데이터 정렬 이름에는 특수 문자 \/""[]:|&lt;&gt;+=;,?*@&amp;,를 사용할 수 없습니다.</target>
       </trans-unit>
     </body>
   </file>
@@ -2202,17 +2102,17 @@
     <body>
       <trans-unit id="deployAzureSQLDB.azureSignInError">
         <source xml:lang="en">Sign in to an Azure account first</source>
-        <target state="new">Sign in to an Azure account first</target>
+        <target state="translated">먼저 Azure 계정에 로그인</target>
       </trans-unit>
       <trans-unit id="deployAzureSQLDB.NoServerLabel">
         <source xml:lang="en">No servers found</source>
-        <target state="new">No servers found</target>
+        <target state="translated">서버를 찾을 수 없음</target>
       </trans-unit>
       <trans-unit id="deployAzureSQLDB.NoServerError">
         <source xml:lang="en">No servers found in current subscription.
 Select a different subscription containing at least one server</source>
-        <target state="new">No servers found in current subscription.
-Select a different subscription containing at least one server</target>
+        <target state="translated">현재 구독에서 서버를 찾을 수 없습니다.
+하나 이상의 서버를 포함하는 다른 구독을 선택합니다.</target>
       </trans-unit>
     </body>
   </file>
@@ -2220,59 +2120,59 @@ Select a different subscription containing at least one server</target>
     <body>
       <trans-unit id="notebookWizard.toolsAndEulaPageTitle">
         <source xml:lang="en">Deployment pre-requisites</source>
-        <target state="new">Deployment pre-requisites</target>
-      </trans-unit>
-      <trans-unit id="deploymentDialog.FailedEulaValidation">
-        <source xml:lang="en">To proceed, you must accept the terms of the End User License Agreement(EULA)</source>
-        <target state="new">To proceed, you must accept the terms of the End User License Agreement(EULA)</target>
+        <target state="translated">배포 필수 구성 요소</target>
       </trans-unit>
       <trans-unit id="deploymentDialog.FailedToolsInstallation">
         <source xml:lang="en">Some tools were still not discovered. Please make sure that they are installed, running and discoverable</source>
-        <target state="new">Some tools were still not discovered. Please make sure that they are installed, running and discoverable</target>
+        <target state="translated">일부 도구가 아직 검색되지 않았습니다. 해당 도구가 설치되고, 실행 중이며, 검색 가능한지 확인하세요.</target>
+      </trans-unit>
+      <trans-unit id="deploymentDialog.FailedEulaValidation">
+        <source xml:lang="en">To proceed, you must accept the terms of the End User License Agreement(EULA)</source>
+        <target state="translated">계속 진행하려면 EULA(최종 사용자 사용권 계약) 약관에 동의해야 합니다.</target>
       </trans-unit>
       <trans-unit id="deploymentDialog.loadingRequiredToolsCompleted">
         <source xml:lang="en">Loading required tools information completed</source>
-        <target state="new">Loading required tools information completed</target>
+        <target state="translated">필요한 도구 정보 로드 완료</target>
       </trans-unit>
       <trans-unit id="deploymentDialog.loadingRequiredTools">
         <source xml:lang="en">Loading required tools information</source>
-        <target state="new">Loading required tools information</target>
+        <target state="translated">필요한 도구 정보 로드</target>
       </trans-unit>
       <trans-unit id="resourceDeployment.AgreementTitle">
         <source xml:lang="en">Accept terms of use</source>
-        <target state="new">Accept terms of use</target>
+        <target state="translated">사용 약관에 동의</target>
       </trans-unit>
       <trans-unit id="deploymentDialog.ToolDoesNotMeetVersionRequirement">
         <source xml:lang="en">'{0}' [ {1} ] does not meet the minimum version requirement, please uninstall it and restart Azure Data Studio.</source>
-        <target state="new">'{0}' [ {1} ] does not meet the minimum version requirement, please uninstall it and restart Azure Data Studio.</target>
+        <target state="translated">'{0}'[{1}]이(가) 최소 버전 요구 사항을 충족하지 않습니다. 해당 도구를 제거하고 Azure Data Studio를 다시 시작하세요.</target>
       </trans-unit>
       <trans-unit id="deploymentDialog.InstalledTools">
         <source xml:lang="en">All required tools are installed now.</source>
-        <target state="new">All required tools are installed now.</target>
+        <target state="translated">이제 모든 필수 도구가 설치되었습니다.</target>
       </trans-unit>
       <trans-unit id="deploymentDialog.PendingInstallation">
         <source xml:lang="en">Following tools: {0} were still not discovered. Please make sure that they are installed, running and discoverable</source>
-        <target state="new">Following tools: {0} were still not discovered. Please make sure that they are installed, running and discoverable</target>
+        <target state="translated">{0} 도구가 아직 검색되지 않았습니다. 해당 도구가 설치되고, 실행 중이며, 검색 가능한지 확인하세요.</target>
       </trans-unit>
       <trans-unit id="deploymentDialog.ToolInformation">
         <source xml:lang="en">'{0}' was not discovered and automated installation is not currently supported. Install '{0}' manually or ensure it is started and discoverable. Once done please restart Azure Data Studio. See [{1}] .</source>
-        <target state="new">'{0}' was not discovered and automated installation is not currently supported. Install '{0}' manually or ensure it is started and discoverable. Once done please restart Azure Data Studio. See [{1}] .</target>
+        <target state="translated">'{0}'이(가) 검색되지 않았고 현재 자동화된 설치가 지원되지 않습니다. '{0}'을(를) 수동으로 설치하거나 해당 항목이 시작되고 검색 가능한지 확인합니다. 완료되면 Azure Data Studio를 다시 시작하세요. [{1}] 항목을 참조하세요.</target>
       </trans-unit>
       <trans-unit id="deploymentDialog.VersionInformationDebugHint">
         <source xml:lang="en">You will need to restart Azure Data Studio if the tools are installed manually to pick up the change. You may find additional details in 'Deployments' and 'Azure Data CLI' output channels</source>
-        <target state="new">You will need to restart Azure Data Studio if the tools are installed manually to pick up the change. You may find additional details in 'Deployments' and 'Azure Data CLI' output channels</target>
+        <target state="translated">변경 내용을 선택하기 위해 도구를 수동으로 설치한 경우에는 Azure Data Studio를 다시 시작해야 합니다. '배포' 및 'Azure Data CLI' 출력 채널에서 추가적인 세부 정보를 찾을 수 있습니다.</target>
       </trans-unit>
       <trans-unit id="deploymentDialog.InstallToolsHintOne">
         <source xml:lang="en">Tool: {0} is not installed, you can click the "{1}" button to install it.</source>
-        <target state="new">Tool: {0} is not installed, you can click the "{1}" button to install it.</target>
+        <target state="translated">{0} 도구가 설치되지 않았습니다. "{1}" 단추를 클릭하여 설치할 수 있습니다.</target>
       </trans-unit>
       <trans-unit id="deploymentDialog.InstallToolsHintMany">
         <source xml:lang="en">Tools: {0} are not installed, you can click the "{1}" button to install them.</source>
-        <target state="new">Tools: {0} are not installed, you can click the "{1}" button to install them.</target>
+        <target state="translated">{0} 도구가 설치되지 않았습니다. "{1}" 단추를 클릭하여 설치할 수 있습니다.</target>
       </trans-unit>
       <trans-unit id="deploymentDialog.NoRequiredTool">
         <source xml:lang="en">No tools required</source>
-        <target state="new">No tools required</target>
+        <target state="translated">도구가 필요하지 않음</target>
       </trans-unit>
     </body>
   </file>
@@ -2280,23 +2180,23 @@ Select a different subscription containing at least one server</target>
     <body>
       <trans-unit id="resourceDeployment.DownloadAndLaunchTaskName">
         <source xml:lang="en">Download and launch installer, URL: {0}</source>
-        <target state="new">Download and launch installer, URL: {0}</target>
+        <target state="translated">설치 관리자 다운로드 및 시작, URL: {0}</target>
       </trans-unit>
       <trans-unit id="resourceDeployment.DownloadingText">
         <source xml:lang="en">Downloading from: {0}</source>
-        <target state="new">Downloading from: {0}</target>
+        <target state="translated">{0}에서 다운로드</target>
       </trans-unit>
       <trans-unit id="resourceDeployment.DownloadCompleteText">
         <source xml:lang="en">Successfully downloaded: {0}</source>
-        <target state="new">Successfully downloaded: {0}</target>
+        <target state="translated">다운로드함: {0}</target>
       </trans-unit>
       <trans-unit id="resourceDeployment.LaunchingProgramText">
         <source xml:lang="en">Launching: {0}</source>
-        <target state="new">Launching: {0}</target>
+        <target state="translated">{0} 시작 중</target>
       </trans-unit>
       <trans-unit id="resourceDeployment.ProgramLaunchedText">
         <source xml:lang="en">Successfully launched: {0}</source>
-        <target state="new">Successfully launched: {0}</target>
+        <target state="translated">시작함: {0}</target>
       </trans-unit>
     </body>
   </file>
@@ -2304,7 +2204,7 @@ Select a different subscription containing at least one server</target>
     <body>
       <trans-unit id="resourceDeployment.DockerDescription">
         <source xml:lang="en">Packages and runs applications in isolated containers</source>
-        <target state="new">Packages and runs applications in isolated containers</target>
+        <target state="translated">격리된 컨테이너에서 애플리케이션 패키지 및 실행</target>
       </trans-unit>
       <trans-unit id="resourceDeployment.DockerDisplayName">
         <source xml:lang="en">docker</source>
@@ -2316,7 +2216,7 @@ Select a different subscription containing at least one server</target>
     <body>
       <trans-unit id="resourceDeployment.AzCLIDescription">
         <source xml:lang="en">Manages Azure resources</source>
-        <target state="new">Manages Azure resources</target>
+        <target state="translated">Azure 리소스 관리</target>
       </trans-unit>
       <trans-unit id="resourceDeployment.AzCLIDisplayName">
         <source xml:lang="en">Azure CLI</source>
@@ -2324,47 +2224,47 @@ Select a different subscription containing at least one server</target>
       </trans-unit>
       <trans-unit id="resourceDeployment.AziCli.DeletingPreviousAzureCli.msi">
         <source xml:lang="en">deleting previously downloaded azurecli.msi if one exists …</source>
-        <target state="new">deleting previously downloaded azurecli.msi if one exists …</target>
+        <target state="translated">이전에 다운로드한 azurecli.msi 삭제 중(있는 경우)...</target>
       </trans-unit>
       <trans-unit id="resourceDeployment.AziCli.DownloadingAndInstallingAzureCli">
         <source xml:lang="en">downloading azurecli.msi and installing azure-cli …</source>
-        <target state="new">downloading azurecli.msi and installing azure-cli …</target>
+        <target state="translated">azurecli.msi를 다운로드하고 azure-cli를 설치하는 중…</target>
       </trans-unit>
       <trans-unit id="resourceDeployment.AziCli.DisplayingInstallationLog">
         <source xml:lang="en">displaying the installation log …</source>
-        <target state="new">displaying the installation log …</target>
+        <target state="translated">설치 로그를 표시하는 중...</target>
       </trans-unit>
       <trans-unit id="resourceDeployment.AziCli.UpdatingBrewRepository">
         <source xml:lang="en">updating your brew repository for azure-cli installation …</source>
-        <target state="new">updating your brew repository for azure-cli installation …</target>
+        <target state="translated">azure-cli 설치를 위해 brew 리포지토리를 업데이트하는 중...</target>
       </trans-unit>
       <trans-unit id="resourceDeployment.AziCli.InstallingAzureCli">
         <source xml:lang="en">installing azure-cli …</source>
-        <target state="new">installing azure-cli …</target>
+        <target state="translated">azure-cli를 설치하는 중...</target>
       </trans-unit>
       <trans-unit id="resourceDeployment.AziCli.AptGetUpdate">
         <source xml:lang="en">updating repository information before installing azure-cli …</source>
-        <target state="new">updating repository information before installing azure-cli …</target>
+        <target state="translated">azure-cli를 설치하기 전에 리포지토리 정보를 업데이트하는 중...</target>
       </trans-unit>
       <trans-unit id="resourceDeployment.AziCli.AptGetPackages">
         <source xml:lang="en">getting packages needed for azure-cli installation …</source>
-        <target state="new">getting packages needed for azure-cli installation …</target>
+        <target state="translated">azure-cli 설치에 필요한 패키지를 가져오는 중...</target>
       </trans-unit>
       <trans-unit id="resourceDeployment.AziCli.DownloadAndInstallingSigningKey">
         <source xml:lang="en">downloading and installing the signing key for azure-cli …</source>
-        <target state="new">downloading and installing the signing key for azure-cli …</target>
+        <target state="translated">azure-cli의 서명 키를 다운로드하고 설치하는 중...</target>
       </trans-unit>
       <trans-unit id="resourceDeployment.AziCli.AddingAzureCliRepositoryInformation">
         <source xml:lang="en">adding the azure-cli repository information …</source>
-        <target state="new">adding the azure-cli repository information …</target>
+        <target state="translated">azure-cli 리포지토리 정보를 추가하는 중...</target>
       </trans-unit>
       <trans-unit id="resourceDeployment.AziCli.AptGetUpdateAgain">
         <source xml:lang="en">updating repository information again for azure-cli …</source>
-        <target state="new">updating repository information again for azure-cli …</target>
+        <target state="translated">azure-cli의 리포지토리 정보를 다시 업데이트하는 중...</target>
       </trans-unit>
       <trans-unit id="resourceDeployment.AziCli.ScriptedInstall">
         <source xml:lang="en">download and invoking script to install azure-cli …</source>
-        <target state="new">download and invoking script to install azure-cli …</target>
+        <target state="translated">azure-cli를 설치하는 스크립트 다운로드 및 호출 중...</target>
       </trans-unit>
     </body>
   </file>
@@ -2372,59 +2272,23 @@ Select a different subscription containing at least one server</target>
     <body>
       <trans-unit id="resourceDeployment.AzdataDescription">
         <source xml:lang="en">Azure Data command line interface</source>
-        <target state="new">Azure Data command line interface</target>
+        <target state="translated">Azure 데이터 명령줄 인터페이스</target>
       </trans-unit>
       <trans-unit id="resourceDeployment.AzdataDisplayName">
         <source xml:lang="en">Azure Data CLI</source>
-        <target state="new">Azure Data CLI</target>
+        <target state="translated">Azure Data CLI</target>
+      </trans-unit>
+      <trans-unit id="deploy.azdataExtMissing">
+        <source xml:lang="en">The Azure Data CLI extension must be installed to deploy this resource. Please install it through the extension gallery and try again.</source>
+        <target state="translated">이 리소스를 배포하려면 Azure Data CLI 확장을 설치해야 합니다. 확장 갤러리를 통해 설치한 후 다시 시도하세요.</target>
       </trans-unit>
       <trans-unit id="deployCluster.GetToolVersionErrorInformation">
         <source xml:lang="en">Error retrieving version information. See output channel '{0}' for more details</source>
-        <target state="new">Error retrieving version information. See output channel '{0}' for more details</target>
+        <target state="translated">버전 정보를 검색하는 동안 오류가 발생했습니다. 자세한 내용은 출력 채널 '{0}'을(를) 참조하세요.</target>
       </trans-unit>
       <trans-unit id="deployCluster.GetToolVersionError">
         <source xml:lang="en">Error retrieving version information.{0}Invalid output received, get version command output: '{1}' </source>
-        <target state="new">Error retrieving version information.{0}Invalid output received, get version command output: '{1}' </target>
-      </trans-unit>
-      <trans-unit id="resourceDeployment.Azdata.DeletingPreviousAzdata.msi">
-        <source xml:lang="en">deleting previously downloaded Azdata.msi if one exists …</source>
-        <target state="new">deleting previously downloaded Azdata.msi if one exists …</target>
-      </trans-unit>
-      <trans-unit id="resourceDeployment.Azdata.DownloadingAndInstallingAzdata">
-        <source xml:lang="en">downloading Azdata.msi and installing azdata-cli …</source>
-        <target state="new">downloading Azdata.msi and installing azdata-cli …</target>
-      </trans-unit>
-      <trans-unit id="resourceDeployment.Azdata.DisplayingInstallationLog">
-        <source xml:lang="en">displaying the installation log …</source>
-        <target state="new">displaying the installation log …</target>
-      </trans-unit>
-      <trans-unit id="resourceDeployment.Azdata.TappingBrewRepository">
-        <source xml:lang="en">tapping into the brew repository for azdata-cli …</source>
-        <target state="new">tapping into the brew repository for azdata-cli …</target>
-      </trans-unit>
-      <trans-unit id="resourceDeployment.Azdata.UpdatingBrewRepository">
-        <source xml:lang="en">updating the brew repository for azdata-cli installation …</source>
-        <target state="new">updating the brew repository for azdata-cli installation …</target>
-      </trans-unit>
-      <trans-unit id="resourceDeployment.Azdata.InstallingAzdata">
-        <source xml:lang="en">installing azdata …</source>
-        <target state="new">installing azdata …</target>
-      </trans-unit>
-      <trans-unit id="resourceDeployment.Azdata.AptGetUpdate">
-        <source xml:lang="en">updating repository information …</source>
-        <target state="new">updating repository information …</target>
-      </trans-unit>
-      <trans-unit id="resourceDeployment.Azdata.AptGetPackages">
-        <source xml:lang="en">getting packages needed for azdata installation …</source>
-        <target state="new">getting packages needed for azdata installation …</target>
-      </trans-unit>
-      <trans-unit id="resourceDeployment.Azdata.DownloadAndInstallingSigningKey">
-        <source xml:lang="en">downloading and installing the signing key for azdata …</source>
-        <target state="new">downloading and installing the signing key for azdata …</target>
-      </trans-unit>
-      <trans-unit id="resourceDeployment.Azdata.AddingAzdataRepositoryInformation">
-        <source xml:lang="en">adding the azdata repository information …</source>
-        <target state="new">adding the azdata repository information …</target>
+        <target state="translated">버전 정보를 검색하는 동안 오류가 발생했습니다. {0}잘못된 출력이 수신되었습니다. 버전 명령 출력 '{1}'을(를) 가져옵니다. </target>
       </trans-unit>
     </body>
   </file>
@@ -2432,51 +2296,51 @@ Select a different subscription containing at least one server</target>
     <body>
       <trans-unit id="resourceDeployment.AzdataDescription">
         <source xml:lang="en">Azure Data command line interface</source>
-        <target state="new">Azure Data command line interface</target>
+        <target state="translated">Azure 데이터 명령줄 인터페이스</target>
       </trans-unit>
       <trans-unit id="resourceDeployment.AzdataDisplayName">
         <source xml:lang="en">Azure Data CLI</source>
-        <target state="new">Azure Data CLI</target>
+        <target state="translated">Azure Data CLI</target>
       </trans-unit>
       <trans-unit id="resourceDeployment.Azdata.DeletingPreviousAzdata.msi">
         <source xml:lang="en">deleting previously downloaded Azdata.msi if one exists …</source>
-        <target state="new">deleting previously downloaded Azdata.msi if one exists …</target>
+        <target state="translated">이전에 다운로드한 Azdata.msi를 삭제하는 중(있는 경우)...</target>
       </trans-unit>
       <trans-unit id="resourceDeployment.Azdata.DownloadingAndInstallingAzdata">
         <source xml:lang="en">downloading Azdata.msi and installing azdata-cli …</source>
-        <target state="new">downloading Azdata.msi and installing azdata-cli …</target>
+        <target state="translated">Azdata.msi를 다운로드하고 azdata-cli를 설치하는 중...</target>
       </trans-unit>
       <trans-unit id="resourceDeployment.Azdata.DisplayingInstallationLog">
         <source xml:lang="en">displaying the installation log …</source>
-        <target state="new">displaying the installation log …</target>
+        <target state="translated">설치 로그를 표시하는 중...</target>
       </trans-unit>
       <trans-unit id="resourceDeployment.Azdata.TappingBrewRepository">
         <source xml:lang="en">tapping into the brew repository for azdata-cli …</source>
-        <target state="new">tapping into the brew repository for azdata-cli …</target>
+        <target state="translated">azdata-cli의 brew 리포지토리를 활용하는 중...</target>
       </trans-unit>
       <trans-unit id="resourceDeployment.Azdata.UpdatingBrewRepository">
         <source xml:lang="en">updating the brew repository for azdata-cli installation …</source>
-        <target state="new">updating the brew repository for azdata-cli installation …</target>
+        <target state="translated">azdata-cli 설치를 위해 brew 리포지토리를 업데이트하는 중...</target>
       </trans-unit>
       <trans-unit id="resourceDeployment.Azdata.InstallingAzdata">
         <source xml:lang="en">installing azdata …</source>
-        <target state="new">installing azdata …</target>
+        <target state="translated">azdata를 설치하는 중...</target>
       </trans-unit>
       <trans-unit id="resourceDeployment.Azdata.AptGetUpdate">
         <source xml:lang="en">updating repository information …</source>
-        <target state="new">updating repository information …</target>
+        <target state="translated">리포지토리 정보를 업데이트하는 중...</target>
       </trans-unit>
       <trans-unit id="resourceDeployment.Azdata.AptGetPackages">
         <source xml:lang="en">getting packages needed for azdata installation …</source>
-        <target state="new">getting packages needed for azdata installation …</target>
+        <target state="translated">azdata 설치에 필요한 패키지를 가져오는 중...</target>
       </trans-unit>
       <trans-unit id="resourceDeployment.Azdata.DownloadAndInstallingSigningKey">
         <source xml:lang="en">downloading and installing the signing key for azdata …</source>
-        <target state="new">downloading and installing the signing key for azdata …</target>
+        <target state="translated">azdata의 서명 키를 다운로드하고 설치하는 중...</target>
       </trans-unit>
       <trans-unit id="resourceDeployment.Azdata.AddingAzdataRepositoryInformation">
         <source xml:lang="en">adding the azdata repository information …</source>
-        <target state="new">adding the azdata repository information …</target>
+        <target state="translated">azdata 리포지토리 정보를 추가하는 중...</target>
       </trans-unit>
     </body>
   </file>
@@ -2484,7 +2348,7 @@ Select a different subscription containing at least one server</target>
     <body>
       <trans-unit id="deploymentDialog.deploymentOptions">
         <source xml:lang="en">Deployment options</source>
-        <target state="new">Deployment options</target>
+        <target state="translated">배포 옵션</target>
       </trans-unit>
     </body>
   </file>

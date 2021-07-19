@@ -607,7 +607,12 @@ export class SKURecommendationPage extends MigrationWizardPage {
 
 	private createAssessmentProgress(): azdata.FlexContainer {
 
-		this._assessmentLoader = this._view.modelBuilder.loadingComponent().component();
+		this._assessmentLoader = this._view.modelBuilder.loadingComponent().withProps({
+			CSSStyles: {
+				'margin-top': '15px'
+			}
+		}).component();
+
 		this._assessmentProgress = this._view.modelBuilder.text().withProps({
 			value: constants.ASSESSMENT_IN_PROGRESS,
 			CSSStyles: {
