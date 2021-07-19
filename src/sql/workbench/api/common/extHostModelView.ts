@@ -1880,6 +1880,14 @@ class HyperlinkComponentWrapper extends ComponentWrapper implements azdata.Hyper
 		this.setProperty('url', v);
 	}
 
+	public get isButton(): boolean {
+		return this.properties['isButton'];
+	}
+
+	public set isButton(v: boolean) {
+		this.setProperty('isButton', v);
+	}
+
 	public get onDidClick(): vscode.Event<any> {
 		let emitter = this._emitterMap.get(ComponentEventType.onDidClick);
 		return emitter && emitter.event;

@@ -319,7 +319,7 @@ declare module 'azdata' {
 	}
 
 	export interface HyperlinkComponentProperties {
-		isButton: boolean;
+		isButton?: boolean;
 	}
 
 	export interface ModelBuilder {

@@ -73,6 +73,10 @@ export default class HyperlinkComponent extends TitledComponent<azdata.Hyperlink
 		return this.getPropertyOrDefault<boolean>((props) => props.showLinkIcon, false);
 	}
 
+	public get isButton(): boolean {
+		return this.getPropertyOrDefault<boolean>((props) => props.isButton, false);
+	}
+
 	public onClick(e: MouseEvent): void {
 		this.fireEvent({
 			eventType: ComponentEventType.onDidClick,
