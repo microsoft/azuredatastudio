@@ -327,7 +327,7 @@ export class BackLayerWebView<T extends ICommonCellInfo> extends Disposable {
 	private resolveOutputId(id: string): { cellInfo: T, output: ICellOutputViewModel } | undefined {
 		const output = this.reversedInsetMapping.get(id);
 		if (!output) {
-			return;
+			return undefined; // {{SQL CARBON EDIT}} strict nulls
 		}
 
 		const cellInfo = this.insetMapping.get(output)!.cellInfo;
@@ -525,17 +525,12 @@ var requirejs = (function() {
 					}
 				case 'focus-editor':
 					{
-						const resolvedResult = this.resolveOutputId(data.id);
-						if (resolvedResult) {
-							const latestCell = this.notebookEditor.getCellByInfo(resolvedResult.cellInfo);
-							if (!latestCell) {
-								return;
-							}
-
+						const cell = this.notebookEditor.getCellById(data.cellId);
+						if (cell) {
 							if (data.focusNext) {
-								this.notebookEditor.focusNextNotebookCell(latestCell, 'editor');
+								this.notebookEditor.focusNextNotebookCell(cell, 'editor');
 							} else {
-								this.notebookEditor.focusNotebookCell(latestCell, 'editor');
+								this.notebookEditor.focusNotebookCell(cell, 'editor');
 							}
 						}
 						break;
@@ -799,11 +794,11 @@ var requirejs = (function() {
 		const widgets = coalesce(outputRequests.map((request): IContentWidgetTopRequest | undefined => {
 			const outputCache = this.insetMapping.get(request.output);
 			if (!outputCache) {
-				return;
+				return undefined; // {{SQL CARBON EDIT}} strict nulls
 			}
 
 			if (!request.forceDisplay && !this.shouldUpdateInset(request.cell, request.output, request.cellTop, request.outputOffset)) {
-				return;
+				return undefined; // {{SQL CARBON EDIT}} strict nulls
 			}
 
 			const id = outputCache.outputId;
@@ -812,6 +807,7 @@ var requirejs = (function() {
 			this.hiddenInsetMapping.delete(request.output);
 
 			return {
+				cellId: request.cell.id,
 				outputId: id,
 				cellTop: request.cellTop,
 				outputOffset: request.outputOffset,
