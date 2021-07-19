@@ -1022,7 +1022,7 @@
       </trans-unit>
       <trans-unit id="arc.controllerUrlPlaceholder">
         <source xml:lang="en">https://&lt;IP or hostname&gt;:&lt;port&gt;</source>
-        <target state="translated">https://&lt;IP ou nom d’hôte&gt; : &lt;port&gt;</target>
+        <target state="translated">https://&lt;IP ou nom d’hôte&gt;:&lt;port&gt;</target>
       </trans-unit>
       <trans-unit id="arc.controllerUrlDescription">
         <source xml:lang="en">The Controller URL is necessary if there are multiple clusters with the same namespace - this should generally not be necessary.</source>

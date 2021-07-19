@@ -202,7 +202,7 @@ To learn more about projects [read our docs](https://aka.ms/azuredatastudio-proj
       </trans-unit>
       <trans-unit id="dataworkspace.targetPlatform">
         <source xml:lang="en">Target Platform</source>
-        <target state="translated">Целевая платформа</target>
+        <target state="translated">Целевая Платформа</target>
       </trans-unit>
       <trans-unit id="dataworkspace.openExistingDialogTitle">
         <source xml:lang="en">Open Existing Project</source>

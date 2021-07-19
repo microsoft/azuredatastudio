@@ -803,11 +803,11 @@
       </trans-unit>
       <trans-unit id="invalidGuid">
         <source xml:lang="en">Specified GUID is invalid: {0}</source>
-        <target state="new">Specified GUID is invalid: {0}</target>
+        <target state="translated">O GUID especificado é inválido: {0}</target>
       </trans-unit>
       <trans-unit id="invalidTargetPlatform">
         <source xml:lang="en">Invalid target platform: {0}. Supported target platforms: {1}</source>
-        <target state="new">Invalid target platform: {0}. Supported target platforms: {1}</target>
+        <target state="translated">Plataforma de destino inválida: {0}. Plataformas de destino suportadas: {1}</target>
       </trans-unit>
       <trans-unit id="deleteAction">
         <source xml:lang="en">Delete</source>

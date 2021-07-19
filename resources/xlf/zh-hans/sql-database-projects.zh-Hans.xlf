@@ -370,7 +370,7 @@
       </trans-unit>
       <trans-unit id="profileReadError">
         <source xml:lang="en">Error loading the publish profile. {0}</source>
-        <target state="new">Error loading the publish profile. {0}</target>
+        <target state="translated">加载发布配置文件时出错。{0}</target>
       </trans-unit>
       <trans-unit id="sqlCmdTableLabel">
         <source xml:lang="en">SQLCMD Variables</source>
@@ -410,7 +410,7 @@
       </trans-unit>
       <trans-unit id="selectProfile">
         <source xml:lang="en">Select Profile</source>
-        <target state="new">Select Profile</target>
+        <target state="translated">选择配置文件</target>
       </trans-unit>
       <trans-unit id="dontUseProfile">
         <source xml:lang="en">Don't use profile</source>
@@ -803,11 +803,11 @@
       </trans-unit>
       <trans-unit id="invalidGuid">
         <source xml:lang="en">Specified GUID is invalid: {0}</source>
-        <target state="new">Specified GUID is invalid: {0}</target>
+        <target state="translated">指定的 GUID 无效: {0}</target>
       </trans-unit>
       <trans-unit id="invalidTargetPlatform">
         <source xml:lang="en">Invalid target platform: {0}. Supported target platforms: {1}</source>
-        <target state="new">Invalid target platform: {0}. Supported target platforms: {1}</target>
+        <target state="translated">目标平台 {0} 无效。支持的目标平台: {1}</target>
       </trans-unit>
       <trans-unit id="deleteAction">
         <source xml:lang="en">Delete</source>

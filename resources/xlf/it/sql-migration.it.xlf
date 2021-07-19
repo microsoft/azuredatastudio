@@ -34,6 +34,34 @@
         <source xml:lang="en">Feedback</source>
         <target state="translated">Feedback</target>
       </trans-unit>
+      <trans-unit id="migration-context-menu-category">
+        <source xml:lang="en">Migration Context Menu</source>
+        <target state="new">Migration Context Menu</target>
+      </trans-unit>
+      <trans-unit id="complete-cutover-menu">
+        <source xml:lang="en">Complete cutover</source>
+        <target state="new">Complete cutover</target>
+      </trans-unit>
+      <trans-unit id="database-details-menu">
+        <source xml:lang="en">Database details</source>
+        <target state="new">Database details</target>
+      </trans-unit>
+      <trans-unit id="view-target-menu">
+        <source xml:lang="en">Azure SQL Target details</source>
+        <target state="new">Azure SQL Target details</target>
+      </trans-unit>
+      <trans-unit id="view-service-menu">
+        <source xml:lang="en">Dataase Migration Service details</source>
+        <target state="new">Dataase Migration Service details</target>
+      </trans-unit>
+      <trans-unit id="copy-migration-menu">
+        <source xml:lang="en">Copy migration details</source>
+        <target state="new">Copy migration details</target>
+      </trans-unit>
+      <trans-unit id="cancel-migration-menu">
+        <source xml:lang="en">Cancel migration</source>
+        <target state="new">Cancel migration</target>
+      </trans-unit>
     </body>
   </file>
   <file original="extensions/sql-migration/dist/constants/strings" source-language="en" datatype="plaintext" target-language="it">
@@ -195,6 +223,10 @@ L'operazione potrebbe richiedere del tempo.</target>
       <trans-unit id="azure.accounts.accountStaleError">
         <source xml:lang="en">The access token for selected account '{0}' is no longer valid. Please click the 'Link Account' button and refresh the account or select a different account.</source>
         <target state="translated">Il token di accesso per l'account selezionato '{0}' non è più valido. Fare clic sul pulsante ‘Collega account’ per aggiornare l'account o selezionare un account diverso.</target>
+      </trans-unit>
+      <trans-unit id="azure.accounts.accountAccessError">
+        <source xml:lang="en">An error occurred while accessing the selected account '{0}'. Please click the 'Link Account' button and refresh the account or select a different account. Error '{1}'</source>
+        <target state="new">An error occurred while accessing the selected account '{0}'. Please click the 'Link Account' button and refresh the account or select a different account. Error '{1}'</target>
       </trans-unit>
       <trans-unit id="sql.migration.database.page.title">
         <source xml:lang="en">Database Backup</source>
@@ -534,27 +566,27 @@ L'operazione potrebbe richiedere del tempo.</target>
       </trans-unit>
       <trans-unit id="sql.migration.key1.copied">
         <source xml:lang="en">Key 1 copied</source>
-        <target state="new">Key 1 copied</target>
+        <target state="translated">Chiave 1 copiata</target>
       </trans-unit>
       <trans-unit id="sql.migration.key2.copied">
         <source xml:lang="en">Key 2 copied</source>
-        <target state="new">Key 2 copied</target>
+        <target state="translated">Chiave 2 copiata</target>
       </trans-unit>
       <trans-unit id="sql.migration.refresh.key1">
         <source xml:lang="en">Refresh key 1</source>
-        <target state="new">Refresh key 1</target>
+        <target state="translated">Aggiorna chiave 1</target>
       </trans-unit>
       <trans-unit id="sql.migration.refresh.key2">
         <source xml:lang="en">Refresh key 2</source>
-        <target state="new">Refresh key 2</target>
+        <target state="translated">Aggiorna chiave 2</target>
       </trans-unit>
       <trans-unit id="sql.migration.copy.key1">
         <source xml:lang="en">Copy key 1</source>
-        <target state="new">Copy key 1</target>
+        <target state="translated">Copia chiave 1</target>
       </trans-unit>
       <trans-unit id="sql.migration.copy.key2">
         <source xml:lang="en">Copy key 2</source>
-        <target state="new">Copy key 2</target>
+        <target state="translated">Copia chiave 2</target>
       </trans-unit>
       <trans-unit id="sql.migration.authkeys.header">
         <source xml:lang="en">Authentication key</source>
@@ -997,8 +1029,8 @@ L'operazione potrebbe richiedere del tempo.</target>
         <target state="translated">Versione di destinazione</target>
       </trans-unit>
       <trans-unit id="sql.migration.migration.status">
-        <source xml:lang="en">Migration status</source>
-        <target state="translated">Stato di migrazione</target>
+        <source xml:lang="en">Migration Status</source>
+        <target state="new">Migration Status</target>
       </trans-unit>
       <trans-unit id="sql.migration.migration.status.filter">
         <source xml:lang="en">Migration status filter</source>
@@ -1120,6 +1152,14 @@ L'operazione potrebbe richiedere del tempo.</target>
         <source xml:lang="en">Cutover in progress for database '{0}'</source>
         <target state="translated">Cutover in corso per il database '{0}'</target>
       </trans-unit>
+      <trans-unit id="sql.migration.cannot.cancel">
+        <source xml:lang="en">Migration is not in progress and cannot be cancelled.</source>
+        <target state="new">Migration is not in progress and cannot be cancelled.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.cannot.cutover">
+        <source xml:lang="en">Migration is not in progress and cannot be cutover.</source>
+        <target state="new">Migration is not in progress and cannot be cutover.</target>
+      </trans-unit>
       <trans-unit id="sql.migration.search.for.migration">
         <source xml:lang="en">Search for migrations</source>
         <target state="translated">Cercare migrazioni</target>
@@ -1172,29 +1212,53 @@ L'operazione potrebbe richiedere del tempo.</target>
         <source xml:lang="en">Finish Time</source>
         <target state="translated">Ora di fine</target>
       </trans-unit>
-      <trans-unit id="sql.migration.status.warning.count.none">
-        <source xml:lang="en">{0}</source>
-        <target state="translated">{0}</target>
-      </trans-unit>
-      <trans-unit id="sql.migration.status.warning.count.single">
-        <source xml:lang="en">{0} ({1} Warning)</source>
-        <target state="translated">{0} ({1} avviso)</target>
-      </trans-unit>
-      <trans-unit id="sql.migration.status.warning.count.multiple">
-        <source xml:lang="en">{0} ({1} Warnings)</source>
-        <target state="translated">{0} ({1} avvisi)</target>
+      <trans-unit id="sql.migration.status.error.count.some">
+        <source xml:lang="en">{0} (</source>
+        <target state="new">{0} (</target>
       </trans-unit>
       <trans-unit id="sql.migration.status.error.count.none">
         <source xml:lang="en">{0}</source>
         <target state="translated">{0}</target>
       </trans-unit>
+      <trans-unit id="sql.migration.status.inprogress">
+        <source xml:lang="en">In progress</source>
+        <target state="new">In progress</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.status.succeeded">
+        <source xml:lang="en">Succeeded</source>
+        <target state="new">Succeeded</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.status.creating">
+        <source xml:lang="en">Creating</source>
+        <target state="new">Creating</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.status.completing">
+        <source xml:lang="en">Completing</source>
+        <target state="new">Completing</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.status.cancelling">
+        <source xml:lang="en">Cancelling</source>
+        <target state="new">Cancelling</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.status.failed">
+        <source xml:lang="en">Failed</source>
+        <target state="new">Failed</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.status.warning.count.single">
+        <source xml:lang="en">{0} Warning)</source>
+        <target state="new">{0} Warning)</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.status.warning.count.multiple">
+        <source xml:lang="en">{0} Warnings)</source>
+        <target state="new">{0} Warnings)</target>
+      </trans-unit>
       <trans-unit id="sql.migration.status.error.count.single">
-        <source xml:lang="en">{0} ({1} Error)</source>
-        <target state="translated">{0} ({1} errore)</target>
+        <source xml:lang="en">{0} Error)</source>
+        <target state="new">{0} Error)</target>
       </trans-unit>
       <trans-unit id="sql.migration.status.error.count.multiple">
-        <source xml:lang="en">{0} ({1} Errors)</source>
-        <target state="translated">{0} ({1} errori)</target>
+        <source xml:lang="en">{0} Errors)</source>
+        <target state="new">{0} Errors)</target>
       </trans-unit>
       <trans-unit id="sql.migration.hrs">
         <source xml:lang="en">{0} hrs</source>
@@ -1371,6 +1435,10 @@ L'operazione potrebbe richiedere del tempo.</target>
       <trans-unit id="sql.migration.windows.auth">
         <source xml:lang="en">Windows Authentication</source>
         <target state="translated">Autenticazione di Windows</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.status.refresh.label">
+        <source xml:lang="en">Refresh</source>
+        <target state="new">Refresh</target>
       </trans-unit>
       <trans-unit id="sql.migration.auto.refresh.off">
         <source xml:lang="en">Auto Refresh: Off</source>

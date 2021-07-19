@@ -4589,14 +4589,6 @@ Erro: {1}</target>
         <source xml:lang="en">Are you sure you want to clear the data?</source>
         <target state="translated">Tem certeza de que deseja limpar os dados?</target>
       </trans-unit>
-      <trans-unit id="profiler.yes">
-        <source xml:lang="en">Yes</source>
-        <target state="translated">Sim</target>
-      </trans-unit>
-      <trans-unit id="profiler.no">
-        <source xml:lang="en">No</source>
-        <target state="translated">Não</target>
-      </trans-unit>
       <trans-unit id="profilerAction.autoscrollOn">
         <source xml:lang="en">Auto Scroll: On</source>
         <target state="translated">Rolagem Automática: Ativada</target>
