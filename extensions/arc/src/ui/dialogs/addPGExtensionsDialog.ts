@@ -27,12 +27,12 @@ export class AddPGExtensionsDialog extends InitializingComponent {
 		dialog.registerContent(async view => {
 			this.modelBuilder = view.modelBuilder;
 
-			const info = this.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+			const info = this.modelBuilder.text().withProps({
 				value: loc.extensionsFunction,
 				CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
 			}).component();
 
-			const link = this.modelBuilder.hyperlink().withProperties<azdata.HyperlinkComponentProperties>({
+			const link = this.modelBuilder.hyperlink().withProps({
 				label: loc.extensionsLearnMore,
 				url: 'https://docs.microsoft.com/azure/azure-arc/data/using-extensions-in-postgresql-hyperscale-server-group',
 			}).component();
@@ -42,7 +42,7 @@ export class AddPGExtensionsDialog extends InitializingComponent {
 			infoAndLink.addItem(link);
 
 			this.extensionsListInputBox = this.modelBuilder.inputBox()
-				.withProperties<azdata.InputBoxProperties>({
+				.withProps({
 					value: '',
 					ariaLabel: loc.extensionsAddList,
 					enabled: true
