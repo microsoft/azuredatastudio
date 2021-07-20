@@ -256,7 +256,7 @@ export class ProjectDashboard {
 				});
 
 				const table = this.modelView!.modelBuilder.declarativeTable()
-					.withProperties<azdataType.DeclarativeTableProperties>({ columns: columns, dataValues: data, ariaLabel: info.name, CSSStyles: { 'margin-left': '30px' } }).component();
+					.withProps({ columns: columns, dataValues: data, ariaLabel: info.name, CSSStyles: { 'margin-left': '30px' } }).component();
 
 				tableContainer.addItem(table);
 			}

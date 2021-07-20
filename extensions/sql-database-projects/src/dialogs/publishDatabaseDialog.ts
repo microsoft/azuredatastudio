@@ -424,7 +424,7 @@ export class PublishDatabaseDialog {
 	private createSqlCmdTable(view: azdataType.ModelView): azdataType.DeclarativeTableComponent {
 		this.sqlCmdVars = { ...this.project.sqlCmdVariables };
 
-		const table = view.modelBuilder.declarativeTable().withProperties<azdataType.DeclarativeTableProperties>({
+		const table = view.modelBuilder.declarativeTable().withProps({
 			ariaLabel: constants.sqlCmdTableLabel,
 			dataValues: this.convertSqlCmdVarsToTableFormat(this.sqlCmdVars),
 			columns: [
