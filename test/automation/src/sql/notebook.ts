@@ -120,6 +120,18 @@ export class Notebook {
 		return (await this.code.waitForElements('div.notebook-cell', false)).map(cell => cell.attributes['id']);
 	}
 
+	// Code Cell Actions
+
+	async waitForSuggestionWidget(): Promise<void> {
+		const suggestionWidgetSelector = 'div.editor-widget.suggest-widget';
+		await this.code.waitForElement(suggestionWidgetSelector);
+	}
+
+	async waitForSuggestionResult(expectedResult: string): Promise<void> {
+		const expectedResultSelector = `div.monaco-list-row.focused[aria-label="${expectedResult}"]`;
+		await this.code.waitForElement(expectedResultSelector);
+	}
+
 	// Text Cell Actions
 
 	private static readonly textCellPreviewSelector = 'div.notebook-preview';

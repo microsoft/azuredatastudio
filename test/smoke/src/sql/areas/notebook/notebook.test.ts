@@ -31,23 +31,21 @@ export function setup() {
 		it('can perform basic code cell functionality', async function () {
 			const app = this.app as Application;
 			await app.workbench.sqlNotebook.newUntitledNotebook();
+			await app.workbench.sqlNotebook.notebookToolbar.waitForKernel('SQL');
 			await app.workbench.sqlNotebook.addCellFromPlaceholder('Code');
 			await app.workbench.sqlNotebook.waitForPlaceholderGone();
-
-			await new Promise(r => setTimeout(r, 10000));
 
 			const text1: string = 'SEL';
 			await app.workbench.sqlNotebook.waitForTypeInEditor(text1);
 			await app.code.dispatchKeybinding('ctrl+space bar');
-			await new Promise(r => setTimeout(r, 5000));
+
 			// check for completion suggestions
+			await app.workbench.sqlNotebook.waitForSuggestionWidget();
+			await app.workbench.sqlNotebook.waitForSuggestionResult('SELECT');
 			await app.code.dispatchKeybinding('tab');
 
-			const text2: string = ' * FROM';
+			const text2: string = ' * FROM employees';
 			await app.workbench.sqlNotebook.waitForTypeInEditor(text2);
-
-			const text3: string = ' employees';
-			await app.workbench.sqlNotebook.waitForTypeInEditor(text3);
 
 			await app.workbench.sqlNotebook.waitForColorization('1', 'mtk5'); // SELECT
 			await app.workbench.sqlNotebook.waitForColorization('3', 'mtk13'); // *
