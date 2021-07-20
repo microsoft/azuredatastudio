@@ -13,7 +13,7 @@ import { ICellModel } from 'sql/workbench/services/notebook/browser/models/model
 import { MimeModel } from 'sql/workbench/services/notebook/browser/outputs/mimemodel';
 import { getErrorMessage } from 'vs/base/common/errors';
 import { getResizesObserver } from 'vs/workbench/contrib/notebook/browser/view/renderers/cellWidgets';
-
+import * as Plotly from 'plotly.js';
 type ObjectType = object;
 
 interface FigureLayout extends ObjectType {
@@ -27,12 +27,6 @@ interface Figure extends ObjectType {
 	layout: Partial<FigureLayout>;
 }
 
-declare class PlotlyHTMLElement extends HTMLDivElement {
-	data: object;
-	layout: object;
-	newPlot: () => void;
-	redraw: () => void;
-}
 
 @Component({
 	selector: PlotlyOutputComponent.SELECTOR,
@@ -43,7 +37,7 @@ declare class PlotlyHTMLElement extends HTMLDivElement {
 export class PlotlyOutputComponent extends AngularDisposable implements IMimeComponent, OnInit {
 	public static readonly SELECTOR: string = 'plotly-output';
 
-	private static Plotly?: Promise<typeof import('plotly.js-dist-min')>;
+	private static Plotly?: Promise<typeof Plotly>;
 
 	@ViewChild('output', { read: ElementRef }) private output: ElementRef;
 
@@ -51,8 +45,8 @@ export class PlotlyOutputComponent extends AngularDisposable implements IMimeCom
 	private _rendered: boolean = false;
 	private _cellModel: ICellModel;
 	private _bundleOptions: MimeModel.IOptions;
-	private _plotDiv: PlotlyHTMLElement;
-	private _plotly: any;
+	private _plotDiv: Plotly.PlotlyHTMLElement;
+	private _plotly: typeof Plotly;
 	public errorText: string;
 
 	constructor() {
