@@ -47,7 +47,7 @@ export class RadioGroupLoadingComponentBuilder implements azdata.ComponentBuilde
 				const option: azdata.CategoryValue = (typeof op === 'string')
 					? { name: op, displayName: op }
 					: op as azdata.CategoryValue;
-				const radioOption = this._view!.modelBuilder.radioButton().withProperties<azdata.RadioButtonProperties>({
+				const radioOption = this._view!.modelBuilder.radioButton().withProps({
 					label: option.displayName,
 					value: option.name,
 					checked: option.displayName === defaultValue,

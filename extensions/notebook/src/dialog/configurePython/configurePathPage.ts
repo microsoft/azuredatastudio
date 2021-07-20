@@ -202,7 +202,7 @@ export class ConfigurePathPage extends BasePage {
 	private createInstallRadioButtons(modelBuilder: azdata.ModelBuilder, useExistingPython: boolean): void {
 		let buttonGroup = 'installationType';
 		this.newInstallButton = modelBuilder.radioButton()
-			.withProperties<azdata.RadioButtonProperties>({
+			.withProps({
 				name: buttonGroup,
 				label: localize('configurePython.newInstall', "New Python installation"),
 				checked: !useExistingPython
@@ -216,7 +216,7 @@ export class ConfigurePathPage extends BasePage {
 		});
 
 		this.existingInstallButton = modelBuilder.radioButton()
-			.withProperties<azdata.RadioButtonProperties>({
+			.withProps({
 				name: buttonGroup,
 				label: localize('configurePython.existingInstall', "Use existing Python installation"),
 				checked: useExistingPython

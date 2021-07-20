@@ -336,7 +336,7 @@ export class ManageAccessDialog {
 	}
 
 	private createRadioButton(modelBuilder: azdata.ModelBuilder, label: string, name: string, aclEntryType: AclType): azdata.RadioButtonComponent {
-		const button = modelBuilder.radioButton().withProperties<azdata.RadioButtonProperties>({ label: label, name: name }).component();
+		const button = modelBuilder.radioButton().withProps({ label: label, name: name }).component();
 		button.onDidClick(() => {
 			this.addUserOrGroupSelectedType = aclEntryType;
 		});

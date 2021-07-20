@@ -150,7 +150,7 @@ export class TargetClusterContextPage extends ResourceTypePage {
 		if (clusterContexts.length !== 0) {
 			self.wizard.model.setPropertyValue(KubeConfigPath_VariableName, configPath);
 			let options = clusterContexts.map(clusterContext => {
-				let option = this.view!.modelBuilder.radioButton().withProperties<azdata.RadioButtonProperties>({
+				let option = this.view!.modelBuilder.radioButton().withProps({
 					label: clusterContext.name,
 					checked: clusterContext.isCurrentContext,
 					name: ClusterRadioButtonGroupName

@@ -121,7 +121,7 @@ export class DeploymentProfilePage extends ResourceTypePage {
 		const groupName = 'profileGroup';
 		const radioButtons = profiles.map(profile => {
 			const checked = profile.profileName === defaultProfile;
-			const radioButton = view.modelBuilder.radioButton().withProperties<azdata.RadioButtonProperties>({
+			const radioButton = view.modelBuilder.radioButton().withProps({
 				label: profile.profileName,
 				checked: checked,
 				name: groupName
