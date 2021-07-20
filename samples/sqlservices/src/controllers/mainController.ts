@@ -700,7 +700,7 @@ export default class MainController implements vscode.Disposable {
 						})
 						.withItems([
 							view.modelBuilder.card()
-								.withProperties<azdata.CardProperties>({
+								.withProps({
 									label: 'label1',
 									value: 'value1',
 									actions: [{ label: 'action' }]
@@ -712,7 +712,7 @@ export default class MainController implements vscode.Disposable {
 						.withLayout({ flexFlow: 'column' })
 						.withItems([
 							view.modelBuilder.card()
-								.withProperties<azdata.CardProperties>({
+								.withProps({
 									label: 'label2',
 									value: 'value2',
 									actions: [{ label: 'action' }]
