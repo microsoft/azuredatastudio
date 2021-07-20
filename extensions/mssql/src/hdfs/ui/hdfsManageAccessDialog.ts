@@ -368,7 +368,7 @@ export class ManageAccessDialog {
 	private createImageComponent(type: AclType | PermissionType): azdata.ImageComponent {
 		const imageProperties = getImageForType(type);
 		return this.modelBuilder.image()
-			.withProperties<azdata.ImageComponentProperties>({
+			.withProps({
 				iconPath: imageProperties.iconPath,
 				width: permissionsTypeIconColumnWidth,
 				height: permissionsRowHeight,
