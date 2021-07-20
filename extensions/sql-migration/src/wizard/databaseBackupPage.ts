@@ -7,7 +7,7 @@ import * as azdata from 'azdata';
 import { EOL } from 'os';
 import { getStorageAccountAccessKeys } from '../api/azure';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
-import { Blob, MigrationSourceAuthenticationType, MigrationStateModel, MigrationTargetType, NetworkContainerType, StateChangeEvent } from '../models/stateMachine';
+import { Blob, MigrationMode, MigrationSourceAuthenticationType, MigrationStateModel, MigrationTargetType, NetworkContainerType, StateChangeEvent } from '../models/stateMachine';
 import * as constants from '../constants/strings';
 import { IconPathHelper } from '../constants/iconPathHelper';
 import { WIZARD_INPUT_COMPONENT_WIDTH } from './wizardController';
@@ -32,6 +32,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 	private _blobContainerResourceGroupDropdowns!: azdata.DropDownComponent[];
 	private _blobContainerStorageAccountDropdowns!: azdata.DropDownComponent[];
 	private _blobContainerDropdowns!: azdata.DropDownComponent[];
+	private _blobContainerFileNameDropdowns!: azdata.DropDownComponent[];
 
 	private _networkShareStorageAccountDetails!: azdata.FlexContainer;
 	private _networkShareContainerSubscription!: azdata.InputBoxComponent;
@@ -470,6 +471,15 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 					headerCssStyles: headerCssStyles,
 					isReadOnly: true,
 					width: WIZARD_TABLE_COLUMN_WIDTH
+				},
+				{
+					displayName: constants.BLOB_CONTAINER_FILE_NAME,
+					valueType: azdata.DeclarativeDataType.component,
+					rowCssStyles: rowCssStyle,
+					headerCssStyles: headerCssStyles,
+					isReadOnly: true,
+					width: WIZARD_TABLE_COLUMN_WIDTH,
+					// _todo: need to update this dynamically...
 				}
 			]
 		}).component();
@@ -656,6 +666,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			this._blobContainerResourceGroupDropdowns = [];
 			this._blobContainerStorageAccountDropdowns = [];
 			this._blobContainerDropdowns = [];
+			this._blobContainerFileNameDropdowns = [];
 
 			if (this.migrationStateModel._targetType === MigrationTargetType.SQLMI) {
 				this._existingDatabases = await this.migrationStateModel.getManagedDatabases();
@@ -755,13 +766,34 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 						editable: true,
 						fireOnTextChange: true,
 					}).component();
-				blobContainerDropdown.onValueChanged(value => {
+				blobContainerDropdown.onValueChanged(async (value) => {
 					const selectedIndex = findDropDownItemIndex(blobContainerDropdown, value);
 					if (selectedIndex > -1 && value !== constants.NO_BLOBCONTAINERS_FOUND) {
 						this.migrationStateModel._databaseBackup.blobs[index].blobContainer = this.migrationStateModel.getBlobContainer(selectedIndex);
 					}
+
+					if (this.migrationStateModel._databaseBackup.migrationMode === MigrationMode.OFFLINE) {
+						await this.loadLastBackupFileDropdown(index);
+					}
 				});
 				this._blobContainerDropdowns.push(blobContainerDropdown);
+
+				if (this.migrationStateModel._databaseBackup.migrationMode === MigrationMode.OFFLINE) {
+					const blobContainerFileNameDropdown = this._view.modelBuilder.dropDown()
+						.withProps({
+							ariaLabel: constants.BLOB_CONTAINER_FILE_NAME,
+							width: WIZARD_TABLE_COLUMN_WIDTH,
+							editable: true,
+							fireOnTextChange: true,
+						}).component();
+					blobContainerFileNameDropdown.onValueChanged(value => {
+						const selectedIndex = findDropDownItemIndex(blobContainerFileNameDropdown, value);
+						if (selectedIndex > -1 && value !== constants.NO_FILE_NAMES_FOUND) {
+							this.migrationStateModel._databaseBackup.blobs[index].lastBackupFile = this.migrationStateModel.getBlobLastBackupFileName(selectedIndex);
+						}
+					});
+					this._blobContainerFileNameDropdowns.push(blobContainerFileNameDropdown);
+				}
 			});
 
 
@@ -797,6 +829,13 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				targetRow.push({
 					value: this._blobContainerDropdowns[index]
 				});
+
+				// if (this.migrationStateModel._databaseBackup.migrationMode === MigrationMode.OFFLINE)
+				// {
+				targetRow.push({
+					value: this._blobContainerFileNameDropdowns[index]
+				});
+				// }
 				data.push(targetRow);
 			});
 			this._blobContainerTargetDatabaseNamesTable.dataValues = data;
@@ -836,6 +875,14 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 							errors.push(constants.INVALID_BLOBCONTAINER_ERROR);
 						}
 					});
+
+					if (this.migrationStateModel._databaseBackup.migrationMode === MigrationMode.OFFLINE) {
+						this._blobContainerFileNameDropdowns.forEach(v => {
+							if ((<azdata.CategoryValue>v.value).displayName === constants.NO_FILE_NAMES_FOUND) {
+								errors.push(constants.INVALID_FILENAME_ERROR);
+							}
+						});
+					}
 
 					if (errors.length > 0) {
 						const duplicates: Map<string, number[]> = new Map();
@@ -1042,4 +1089,16 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 		}
 	}
 
+	private async loadLastBackupFileDropdown(index: number): Promise<void> {
+		this._blobContainerFileNameDropdowns[index].loading = true;
+		try {
+			const blobLastBackupFileValues = await this.migrationStateModel.getBlobLastBackupFileNameValues(this.migrationStateModel._databaseBackup.subscription, this.migrationStateModel._databaseBackup.blobs[index].storageAccount, this.migrationStateModel._databaseBackup.blobs[index].blobContainer);
+			this._blobContainerFileNameDropdowns[index].values = blobLastBackupFileValues;
+			selectDropDownIndex(this._blobContainerFileNameDropdowns[index], 0);
+		} catch (error) {
+			console.log(error);
+		} finally {
+			this._blobContainerFileNameDropdowns[index].loading = false;
+		}
+	}
 }

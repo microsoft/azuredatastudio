@@ -131,6 +131,14 @@ export async function getBlobContainers(account: azdata.Account, subscription: S
 	return blobContainers!;
 }
 
+export async function getBlobs(account: azdata.Account, subscription: Subscription, storageAccount: StorageAccount, containerName: string): Promise<azureResource.Blob[]> {
+	const api = await getAzureCoreAPI();
+	let result = await api.getBlobs(account, subscription, storageAccount, containerName, true);
+	let blobNames = result.blobs;
+	sortResourceArrayByName(blobNames);
+	return blobNames!;
+}
+
 export async function getSqlMigrationService(account: azdata.Account, subscription: Subscription, resourceGroupName: string, regionName: string, sqlMigrationServiceName: string): Promise<SqlMigrationService> {
 	const api = await getAzureCoreAPI();
 	const path = `/subscriptions/${subscription.id}/resourceGroups/${resourceGroupName}/providers/Microsoft.DataMigration/sqlMigrationServices/${sqlMigrationServiceName}?api-version=2020-09-01-preview`;
@@ -319,7 +327,7 @@ export async function getLocationDisplayName(location: string): Promise<string> 
 	return await api.getRegionDisplayName(location);
 }
 
-type SortableAzureResources = AzureProduct | azureResource.FileShare | azureResource.BlobContainer | azureResource.AzureResourceSubscription | SqlMigrationService;
+type SortableAzureResources = AzureProduct | azureResource.FileShare | azureResource.BlobContainer | azureResource.Blob | azureResource.AzureResourceSubscription | SqlMigrationService;
 function sortResourceArrayByName(resourceArray: SortableAzureResources[]): void {
 	if (!resourceArray) {
 		return;
@@ -390,6 +398,10 @@ export interface StartDatabaseMigrationRequest {
 	properties: {
 		sourceDatabaseName: string,
 		migrationService: string,
+		autoCutoverConfiguration: {
+			autoCutover?: boolean,
+			lastBackupName?: string
+		},
 		backupConfiguration: {
 			targetLocation?: {
 				storageAccountResourceId: string,
@@ -467,6 +479,7 @@ export interface BackupConfiguration {
 }
 
 export interface AutoCutoverConfiguration {
+	autoCutover: boolean;
 	lastBackupName: string;
 }
 

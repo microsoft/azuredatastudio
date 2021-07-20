@@ -90,9 +90,7 @@ export class MigrationModePage extends MigrationWizardPage {
 
 		offlineButton.onDidChangeCheckedState((e) => {
 			if (e) {
-				vscode.window.showInformationMessage('Feature coming soon');
-				onlineButton.checked = true;
-				//this.migrationStateModel._databaseBackup.migrationCutover = MigrationCutover.OFFLINE; TODO: Enable when offline mode is supported.
+				this.migrationStateModel._databaseBackup.migrationMode = MigrationMode.OFFLINE;
 			}
 		});
 

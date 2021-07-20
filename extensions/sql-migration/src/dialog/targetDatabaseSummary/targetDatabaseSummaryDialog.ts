@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import { MigrationStateModel, NetworkContainerType } from '../../models/stateMachine';
+import { MigrationMode, MigrationStateModel, NetworkContainerType } from '../../models/stateMachine';
 import * as constants from '../../constants/strings';
 
 export class TargetDatabaseSummaryDialog {
@@ -109,6 +109,14 @@ export class TargetDatabaseSummaryDialog {
 					width: columnWidth,
 					rowCssStyles: rowCssStyle,
 					headerCssStyles: headerCssStyle
+				}, {
+					valueType: azdata.DeclarativeDataType.string,
+					displayName: constants.LAST_BACKUP_FILE,
+					isReadOnly: true,
+					width: columnWidth,
+					rowCssStyles: rowCssStyle,
+					headerCssStyles: headerCssStyle,
+					hideColumn: this._model._databaseBackup.migrationMode !== MigrationMode.ONLINE
 				});
 			}
 
@@ -131,6 +139,12 @@ export class TargetDatabaseSummaryDialog {
 					}, {
 						value: this._model._databaseBackup.blobs[index].blobContainer.name
 					});
+
+					if (this._model._databaseBackup.migrationMode === MigrationMode.OFFLINE) {
+						tableRow.push({
+							value: this._model._databaseBackup.blobs[index].lastBackupFile!
+						});
+					}
 				}
 				tableRows.push(tableRow);
 			});

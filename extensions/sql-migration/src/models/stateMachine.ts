@@ -8,7 +8,7 @@ import { azureResource } from 'azureResource';
 import * as azurecore from 'azurecore';
 import * as vscode from 'vscode';
 import * as mssql from '../../../mssql';
-import { getAvailableManagedInstanceProducts, getAvailableStorageAccounts, getBlobContainers, getFileShares, getSqlMigrationServices, getSubscriptions, SqlMigrationService, SqlManagedInstance, startDatabaseMigration, StartDatabaseMigrationRequest, StorageAccount, getAvailableSqlVMs, SqlVMServer, getLocations, getResourceGroups, getLocationDisplayName, getSqlManagedInstanceDatabases } from '../api/azure';
+import { getAvailableManagedInstanceProducts, getAvailableStorageAccounts, getBlobContainers, getFileShares, getSqlMigrationServices, getSubscriptions, SqlMigrationService, SqlManagedInstance, startDatabaseMigration, StartDatabaseMigrationRequest, StorageAccount, getAvailableSqlVMs, SqlVMServer, getLocations, getResourceGroups, getLocationDisplayName, getSqlManagedInstanceDatabases, getBlobs } from '../api/azure';
 import { SKURecommendations } from './externalContract';
 import * as constants from '../constants/strings';
 import { MigrationLocalStorage } from './migrationLocalStorage';
@@ -77,6 +77,7 @@ export interface Blob {
 	storageAccount: StorageAccount;
 	blobContainer: azureResource.BlobContainer;
 	storageKey: string;
+	lastBackupFile?: string; // _todo: does it make sense to store the last backup file here?
 }
 
 export interface Model {
@@ -118,6 +119,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	public _storageAccounts!: StorageAccount[];
 	public _fileShares!: azureResource.FileShare[];
 	public _blobContainers!: azureResource.BlobContainer[];
+	public _lastFileNames!: azureResource.Blob[];
 	public _refreshNetworkShareLocation!: azureResource.BlobContainer[];
 	public _targetDatabaseNames!: string[];
 	public _serverDatabases!: string[];
@@ -595,6 +597,40 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		return this._blobContainers[index];
 	}
 
+	public async getBlobLastBackupFileNameValues(subscription: azureResource.AzureResourceSubscription, storageAccount: StorageAccount, blobContainer: azureResource.BlobContainer): Promise<azdata.CategoryValue[]> {
+		let blobLastBackupFileValues: azdata.CategoryValue[] = [];
+		try {
+			this._lastFileNames = await getBlobs(this._azureAccount, subscription, storageAccount, blobContainer.name);
+			this._lastFileNames.forEach((blob) => {
+				blobLastBackupFileValues.push({
+					name: blob.name, // _todo: is it ok for this to be blob.name, there is no blob.id
+					displayName: `${blob.name}`
+				});
+			});
+
+			if (blobLastBackupFileValues.length === 0) {
+				blobLastBackupFileValues = [
+					{
+						displayName: constants.NO_FILE_NAMES_FOUND,
+						name: ''
+					}
+				];
+			}
+		} catch (e) {
+			console.log(e);
+			blobLastBackupFileValues = [
+				{
+					displayName: constants.NO_FILE_NAMES_FOUND,
+					name: ''
+				}
+			];
+		}
+		return blobLastBackupFileValues;
+	}
+
+	public getBlobLastBackupFileName(index: number): string {
+		return this._lastFileNames[index].name;
+	}
 
 	public async getSqlMigrationServiceValues(subscription: azureResource.AzureResourceSubscription, managedInstance: SqlManagedInstance, resourceGroupName: string): Promise<azdata.CategoryValue[]> {
 		let sqlMigrationServiceValues: azdata.CategoryValue[] = [];
@@ -653,7 +689,8 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 					username: this._sqlServerUsername,
 					password: this._sqlServerPassword
 				},
-				scope: this._targetServerInstance.id
+				scope: this._targetServerInstance.id,
+				autoCutoverConfiguration: {}
 			}
 		};
 
@@ -671,6 +708,13 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 								}
 							}
 						};
+
+						if (this._databaseBackup.migrationMode === MigrationMode.OFFLINE) {
+							requestBody.properties.autoCutoverConfiguration = {
+								autoCutover: (this._databaseBackup.migrationMode === MigrationMode.OFFLINE ? true : false),
+								lastBackupName: this._databaseBackup.blobs[i]?.lastBackupFile
+							};
+						}
 						break;
 					case NetworkContainerType.NETWORK_SHARE:
 						requestBody.properties.backupConfiguration = {
