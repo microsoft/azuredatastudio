@@ -53,7 +53,7 @@ export class PickPackagesPage extends BasePage {
 		let nameColumn = localize('configurePython.pkgNameColumn', "Name");
 		let existingVersionColumn = localize('configurePython.existingVersionColumn', "Existing Version");
 		let requiredVersionColumn = localize('configurePython.requiredVersionColumn', "Required Version");
-		this.requiredPackagesTable = this.view.modelBuilder.declarativeTable().withProperties<azdata.DeclarativeTableProperties>({
+		this.requiredPackagesTable = this.view.modelBuilder.declarativeTable().withProps({
 			columns: [{
 				displayName: nameColumn,
 				ariaLabel: nameColumn,

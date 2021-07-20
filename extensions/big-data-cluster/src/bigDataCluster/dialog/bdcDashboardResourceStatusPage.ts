@@ -72,7 +72,7 @@ export class BdcDashboardResourceStatusPage extends BdcDashboardPage {
 		healthStatusHeaderContainer.addItem(this.lastUpdatedLabel, { CSSStyles: { 'margin-left': '45px' } });
 
 		this.instanceHealthStatusTable = this.modelView.modelBuilder.declarativeTable()
-			.withProperties<azdata.DeclarativeTableProperties>(
+			.withProps(
 				{
 					columns: [
 						{ // status icon
@@ -250,7 +250,7 @@ export class BdcDashboardResourceStatusPage extends BdcDashboardPage {
 			});
 
 		this.metricsAndLogsRowsTable = this.modelView.modelBuilder.declarativeTable()
-			.withProperties<azdata.DeclarativeTableProperties>(
+			.withProps(
 				{
 					columns: metricsAndLogsColumns,
 					data: this.createMetricsAndLogsRows(),

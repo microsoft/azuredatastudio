@@ -306,7 +306,7 @@ export class ManageAccessDialog {
 			namedUsersAndGroupsColumns.push(this.createTableColumn('', loc.deleteTitle, permissionsDeleteColumnWidth, azdata.DeclarativeDataType.component));
 
 			const posixPermissionsTable = this.modelBuilder.declarativeTable()
-				.withProperties<azdata.DeclarativeTableProperties>(
+				.withProps(
 					{
 						columns: posixPermissionsColumns,
 						data: posixPermissionData
@@ -321,7 +321,7 @@ export class ManageAccessDialog {
 			});
 
 			const namedUsersAndGroupsTable = this.modelBuilder.declarativeTable()
-				.withProperties<azdata.DeclarativeTableProperties>(
+				.withProps(
 					{
 						columns: namedUsersAndGroupsColumns,
 						data: namedUsersAndGroupsData

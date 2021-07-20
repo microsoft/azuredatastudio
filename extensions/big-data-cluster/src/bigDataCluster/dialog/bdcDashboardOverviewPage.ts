@@ -95,7 +95,7 @@ export class BdcDashboardOverviewPage extends BdcDashboardPage {
 		const overviewContainer = this.modelView.modelBuilder.flexContainer().withLayout({ flexFlow: 'column', width: '100%', height: '100%' }).component();
 
 		this.serviceStatusTable = this.modelView.modelBuilder.declarativeTable()
-			.withProperties<azdata.DeclarativeTableProperties>(
+			.withProps(
 				{
 					columns: [
 						{ // status icon
@@ -218,7 +218,7 @@ export class BdcDashboardOverviewPage extends BdcDashboardPage {
 		const endpointsContainer = this.modelView.modelBuilder.flexContainer().withLayout({ flexFlow: 'column', width: '100%', height: '100%' }).component();
 
 		this.endpointsTable = this.modelView.modelBuilder.declarativeTable()
-			.withProperties<azdata.DeclarativeTableProperties>(
+			.withProps(
 				{
 					columns: [
 						{ // service
