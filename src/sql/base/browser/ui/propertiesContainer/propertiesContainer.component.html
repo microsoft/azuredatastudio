@@ -4,7 +4,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 -->
-<div class="grid-container {{gridDisplayLayout}}">
+<div *ngIf="this._togglePropertiesAction.expanded" class="grid-container {{gridDisplayLayout}}">
 	<ng-template ngFor let-item [ngForOf]="propertyItems">
 		<div class="property {{propertyLayout}}">
 			<div class="propertyName">{{item.displayName}}</div>
@@ -13,3 +13,4 @@
 		</div>
 	</ng-template>
 </div>
+<div [style.display]="this.showToggleButton ? 'flex': 'none'"  class="actionbar-container" #actionbar></div>
