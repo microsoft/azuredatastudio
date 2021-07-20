@@ -512,7 +512,7 @@ export function createFlexContainer(view: azdata.ModelView, items: azdata.Compon
 	if (alignItems) {
 		flexLayout.alignItems = alignItems;
 	}
-	return view.modelBuilder.flexContainer().withItems(items, itemsStyle).withLayout(flexLayout).withProperties<azdata.ComponentProperties>({ CSSStyles: cssStyles || {} }).component();
+	return view.modelBuilder.flexContainer().withItems(items, itemsStyle).withLayout(flexLayout).withProps({ CSSStyles: cssStyles || {} }).component();
 }
 
 export function createGroupContainer(view: azdata.ModelView, items: azdata.Component[], layout: azdata.GroupLayout): azdata.GroupContainer {

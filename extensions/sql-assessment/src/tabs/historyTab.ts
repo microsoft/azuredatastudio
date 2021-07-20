@@ -65,7 +65,7 @@ export class SqlAssessmentHistoryTab extends SqlAssessmentTab {
 		const infoPanel = view.modelBuilder.flexContainer()
 			.withLayout({
 				flexFlow: 'row'
-			}).withProperties<azdata.ComponentProperties>({
+			}).withProps({
 				CSSStyles: {
 					'padding-left': '15px'
 				}
