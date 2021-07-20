@@ -142,7 +142,7 @@ export class AddControllerDialog {
 				})
 				.component();
 			this.rememberPwCheckBox = this.uiModelBuilder.checkBox()
-				.withProperties<azdata.CheckBoxProperties>({
+				.withProps({
 					label: loc.rememberPassword,
 					checked: this.model.prefilledRememberPassword
 				}).component();

@@ -260,7 +260,7 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 
 
 	private createAgreementCheckbox(agreementInfo: AgreementInfo): azdata.FlexContainer {
-		this._agreementCheckBox = this.view.modelBuilder.checkBox().withProperties<azdata.CheckBoxProperties>({
+		this._agreementCheckBox = this.view.modelBuilder.checkBox().withProps({
 			ariaLabel: this.getAgreementDisplayText(agreementInfo),
 			required: true
 		}).component();

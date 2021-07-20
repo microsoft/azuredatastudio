@@ -158,7 +158,7 @@ export class ManageAccessDialog {
 		// = Sticky =
 		// ==========
 		this.stickyCheckbox = this.modelBuilder.checkBox()
-			.withProperties<azdata.CheckBoxProperties>({
+			.withProps({
 				width: checkboxSize,
 				height: checkboxSize,
 				checked: permissionStatus.stickyBit,
@@ -492,7 +492,7 @@ export class ManageAccessDialog {
 
 	private createInheritDefaultsCheckbox(): azdata.CheckBoxComponent {
 		this.inheritDefaultsCheckbox = this.modelBuilder.checkBox()
-			.withProperties<azdata.CheckBoxProperties>({
+			.withProps({
 				width: checkboxSize,
 				height: checkboxSize,
 				checked: false, // Will be set when we get the model update
@@ -623,7 +623,7 @@ export class ManageAccessDialog {
  */
 function createCheckbox(builder: azdata.ModelBuilder, checked: boolean, enabled: boolean, containerWidth: number, containerHeight: number, ariaLabel: string): { container: azdata.FlexContainer, checkbox: azdata.CheckBoxComponent } {
 	const checkbox = builder.checkBox()
-		.withProperties<azdata.CheckBoxProperties>({
+		.withProps({
 			checked: checked,
 			enabled: enabled,
 			height: checkboxSize,

@@ -252,7 +252,7 @@ export function createCheckboxInputInfo(view: azdata.ModelView, info: { initialV
 	};
 }
 export function createCheckbox(view: azdata.ModelView, info: { initialValue: boolean, label: string, required?: boolean }): azdata.CheckBoxComponent {
-	return view.modelBuilder.checkBox().withProperties<azdata.CheckBoxProperties>({
+	return view.modelBuilder.checkBox().withProps({
 		checked: info.initialValue,
 		required: info.required,
 		label: info.label
