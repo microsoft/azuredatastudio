@@ -48,7 +48,7 @@ export class ConfigurePathPage extends BasePage {
 			}).component();
 		this.pythonDropdownLoader = this.view.modelBuilder.loadingComponent()
 			.withItem(this.pythonLocationDropdown)
-			.withProperties<azdata.LoadingComponentProperties>({
+			.withProps({
 				loading: false
 			})
 			.component();

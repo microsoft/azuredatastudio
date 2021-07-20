@@ -121,7 +121,7 @@ export class SqlAssessmentMainTab extends SqlAssessmentTab {
 			}).component();
 		const btnInvokeAssessmentLoading = view.modelBuilder.loadingComponent()
 			.withItem(btnInvokeAssessment)
-			.withProperties<azdata.LoadingComponentProperties>({
+			.withProps({
 				loadingText: limitLongName(this.invokeAssessmentLabel, maxNameLength),
 				showText: true,
 				loading: false
@@ -154,7 +154,7 @@ export class SqlAssessmentMainTab extends SqlAssessmentTab {
 			}).component();
 		const btnGetAssessmentItemsLoading = view.modelBuilder.loadingComponent()
 			.withItem(btnGetAssessmentItems)
-			.withProperties<azdata.LoadingComponentProperties>({
+			.withProps({
 				loadingText: limitLongName(this.getItemsLabel, maxNameLength),
 				showText: true,
 				loading: false

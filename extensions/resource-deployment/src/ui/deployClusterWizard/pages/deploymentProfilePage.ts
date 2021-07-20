@@ -35,7 +35,7 @@ export class DeploymentProfilePage extends ResourceTypePage {
 				value: localize('deployCluster.ProfileHintText', "Note: The settings of the deployment profile can be customized in later steps.")
 			}).component();
 			const container = createFlexContainer(view, [this._container, hintText], false);
-			this._loadingComponent = view.modelBuilder.loadingComponent().withItem(container).withProperties<azdata.LoadingComponentProperties>({
+			this._loadingComponent = view.modelBuilder.loadingComponent().withItem(container).withProps({
 				loading: true,
 				loadingText: localize('deployCluster.loadingProfiles', "Loading profiles"),
 				loadingCompletedText: localize('deployCluster.loadingProfilesCompleted', "Loading profiles completed"),
