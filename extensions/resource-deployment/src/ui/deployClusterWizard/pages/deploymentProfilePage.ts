@@ -147,7 +147,7 @@ export class DeploymentProfilePage extends ResourceTypePage {
 			[localize('deployCluster.hdfsLabel', "HDFS + Spark"), ...profiles.map(profile => profile.hdfsReplicas.toString())]
 		];
 
-		return view.modelBuilder.table().withProperties<azdata.TableComponentProperties>({
+		return view.modelBuilder.table().withProps({
 			columns: [this.createDescriptionColumn(localize('deployCluster.ServiceName', "Service")), ...this.createProfileColumns(profiles)],
 			data: data,
 			title: serviceScaleTableTitle,
@@ -162,7 +162,7 @@ export class DeploymentProfilePage extends ResourceTypePage {
 			[localize('deployCluster.dataStorageType', "Data"), ...profiles.map(profile => profile.controllerDataStorageSize.toString())],
 			[localize('deployCluster.logsStorageType', "Logs"), ...profiles.map(profile => profile.controllerLogsStorageSize.toString())]
 		];
-		return view.modelBuilder.table().withProperties<azdata.TableComponentProperties>({
+		return view.modelBuilder.table().withProps({
 			columns: [this.createDescriptionColumn(localize('deployCluster.StorageType', "Storage type")), ...this.createProfileColumns(profiles)],
 			data: data,
 			title: storageTableTitle,
@@ -184,7 +184,7 @@ export class DeploymentProfilePage extends ResourceTypePage {
 			data.push([localize('deployCluster.hadr', "High Availability"), ...profiles.map(profile => profile.sqlServerReplicas > 1 ? YesText : NoText)]);
 		}
 
-		return view.modelBuilder.table().withProperties<azdata.TableComponentProperties>({
+		return view.modelBuilder.table().withProps({
 			columns: [this.createDescriptionColumn(localize('deployCluster.featureText', "Feature")), ...this.createProfileColumns(profiles)],
 			data: data,
 			title: featureTableTitle,

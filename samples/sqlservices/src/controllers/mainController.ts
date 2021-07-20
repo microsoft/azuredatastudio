@@ -246,7 +246,7 @@ export default class MainController implements vscode.Disposable {
 			light: path.join(__dirname, '..', 'media', 'monitor.svg'),
 			dark: path.join(__dirname, '..', 'media', 'monitor_inverse.svg')
 		};
-		let table = view.modelBuilder.table().withProperties<azdata.TableComponentProperties>({
+		let table = view.modelBuilder.table().withProps({
 			data: [
 				['1', '2', '2', { enabled: false, checked: false },
 					undefined, // for button/hyperlink column, 'undefined' means to use the default information provided by the column definition

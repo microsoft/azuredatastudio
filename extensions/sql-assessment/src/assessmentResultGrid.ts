@@ -58,7 +58,7 @@ export class AssessmentResultGrid implements vscode.Disposable {
 		};
 
 		this.table = view.modelBuilder.table()
-			.withProperties<azdata.TableComponentProperties>({
+			.withProps({
 				data: [],
 				columns: [
 					{

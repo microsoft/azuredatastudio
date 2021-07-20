@@ -122,7 +122,7 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 				value: loc.discoverPathOrAdditionalInformationText,
 				width: 435
 			};
-			this._toolsTable = view.modelBuilder.table().withProperties<azdata.TableComponentProperties>({
+			this._toolsTable = view.modelBuilder.table().withProps({
 				data: [],
 				columns: [toolColumn, descriptionColumn, installStatusColumn, versionColumn, minVersionColumn, installedPathColumn],
 				width: tableWidth,

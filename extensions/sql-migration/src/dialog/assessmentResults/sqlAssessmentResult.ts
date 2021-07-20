@@ -57,7 +57,7 @@ export class SqlAssessmentResult {
 	}
 
 	private createImpactedObjectsComponent(view: azdata.ModelView): azdata.TableComponent {
-		const impactedObjects = view.modelBuilder.table().withProperties<azdata.TableComponentProperties>({
+		const impactedObjects = view.modelBuilder.table().withProps({
 			title: 'Impacted Objects',
 			columns: [
 				'Type', // TODO localize

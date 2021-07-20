@@ -114,7 +114,7 @@ export class SqlAssessmentHistoryTab extends SqlAssessmentTab {
 	private async createHistorySummaryTable(view: azdata.ModelView): Promise<azdata.TableComponent> {
 		const cssHeader = 'no-borders align-with-header';
 		return view.modelBuilder.table()
-			.withProperties<azdata.TableComponentProperties>({
+			.withProps({
 				data: [],
 				columns: [
 					{ value: localize('asmt.history.summaryAsmtDate', "Assessment Date"), headerCssClass: cssHeader, width: 125 },
