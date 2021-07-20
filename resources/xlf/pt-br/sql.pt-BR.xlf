@@ -4589,14 +4589,6 @@ Erro: {1}</target>
         <source xml:lang="en">Are you sure you want to clear the data?</source>
         <target state="translated">Tem certeza de que deseja limpar os dados?</target>
       </trans-unit>
-      <trans-unit id="profiler.yes">
-        <source xml:lang="en">Yes</source>
-        <target state="translated">Sim</target>
-      </trans-unit>
-      <trans-unit id="profiler.no">
-        <source xml:lang="en">No</source>
-        <target state="translated">Não</target>
-      </trans-unit>
       <trans-unit id="profilerAction.autoscrollOn">
         <source xml:lang="en">Auto Scroll: On</source>
         <target state="translated">Rolagem Automática: Ativada</target>
@@ -5358,6 +5350,14 @@ Erro: {1}</target>
       <trans-unit id="topOperationsTitle">
         <source xml:lang="en">Top Operations</source>
         <target state="translated">Operações Principais</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/sql/workbench/contrib/resourceDeployment/browser/resourceDeployment.contribution" source-language="en" datatype="plaintext" target-language="pt-BR">
+    <body>
+      <trans-unit id="deployment.title">
+        <source xml:lang="en">New Deployment...</source>
+        <target state="translated">Nova Implantação...</target>
       </trans-unit>
     </body>
   </file>

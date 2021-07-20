@@ -166,6 +166,9 @@
       <Item ItemId=";extensions/sql-assessment/dist/localized.asmt.rulesetversion" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Default Ruleset]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Ensemble de règles par défaut]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -254,7 +257,7 @@
         <Str Cat="Text">
           <Val><![CDATA[{0}: {1} item(s)]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[{0} : {1} élément(s)]]></Val>
+            <Val><![CDATA[{0} : {1} élément(s)]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -406,6 +409,9 @@
       <Item ItemId=";extensions/sql-assessment/dist/tabs/historyTab.asmt.history.back" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[<< Back]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[<< Retour]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -466,6 +472,9 @@
       <Item ItemId=";extensions/sql-assessment/package.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[SQL Assessment for Azure Data Studio (Preview) provides a mechanism to evaluate the configuration of SQL Server for best practices.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[SQL Assessment pour Azure Data Studio (préversion) offre un mécanisme d’évaluation de la configuration des SQL Server pour les meilleures pratiques.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
