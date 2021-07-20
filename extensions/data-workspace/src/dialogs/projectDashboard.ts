@@ -236,7 +236,7 @@ export class ProjectDashboard {
 						if (typeof val === 'string') {
 							columnValue.push({ value: val });
 						} else {
-							const iconComponent = this.modelView!.modelBuilder.image().withProperties<azdataType.ImageComponentProperties>({
+							const iconComponent = this.modelView!.modelBuilder.image().withProps({
 								iconPath: val.icon,
 								width: '15px',
 								height: '15px',
