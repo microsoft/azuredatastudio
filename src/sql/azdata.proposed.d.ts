@@ -574,6 +574,19 @@ declare module 'azdata' {
 		onInput: vscode.Event<number>;
 	}
 
+	/**
+	 * The heading levels an HTML heading element can be.
+	 */
+	export type HeadingLevel = 1 | 2 | 3 | 4 | 5 | 6;
+
+	export interface TextComponentProperties {
+		/**
+		 * The heading level for this component - if set the text component will be created as an h#
+		 * HTML element with this value being the #.
+		 */
+		headingLevel?: HeadingLevel;
+	}
+
 	export namespace nb {
 		/**
 		 * An event that is emitted when the active Notebook editor is changed.
