@@ -85,6 +85,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	private navigationResult: nb.NavigationResult;
 	public previewFeaturesEnabled: boolean = false;
 	public doubleClickEditEnabled: boolean;
+	public virtualScrollerEnabled: boolean = false;
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
@@ -108,6 +109,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	) {
 		super();
 		this.isLoading = true;
+		this.virtualScrollerEnabled = this._configurationService.getValue('notebook.enableVirtualScroller');
 		this.doubleClickEditEnabled = this._configurationService.getValue('notebook.enableDoubleClickEdit');
 		this._register(this._configurationService.onDidChangeConfiguration(e => {
 			this.previewFeaturesEnabled = this._configurationService.getValue('workbench.enablePreviewFeatures');

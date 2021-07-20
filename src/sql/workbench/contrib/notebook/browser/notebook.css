@@ -9,6 +9,10 @@
 	transform: none !important;
 }
 
+.notebookEditor .scrollable {
+	padding-top: 16px;
+}
+
 .notebookEditor .taskbarSeparator {
 	margin: 0px 8px;
 }
