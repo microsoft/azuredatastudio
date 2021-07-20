@@ -79,7 +79,7 @@ export async function launchPublishDatabaseQuickpick(project: Project): Promise<
 		if (!connectionProfile) {
 			return;
 		}
-		// Get the list of databases now to validate that the connection is valid and re-prompt them if it is
+		// Get the list of databases now to validate that the connection is valid and re-prompt them if it isn't
 		try {
 			dbs = await vscodeMssqlApi.listDatabases(connectionProfile);
 		} catch (err) {
