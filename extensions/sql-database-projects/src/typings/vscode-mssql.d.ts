@@ -25,6 +25,7 @@ declare module 'vscode-mssql' {
          * Service for accessing DacFx functionality
          */
         readonly dacFx: IDacFxService;
+
         /**
          * Prompts the user to select an existing connection or create a new one, and then returns the result
          */
@@ -76,7 +77,7 @@ declare module 'vscode-mssql' {
         authenticationType: string;
 
         /**
-         * Gets or sets the azure account token to use
+         * Gets or sets the azure account token to use.
          */
         azureAccountToken: string;
 
@@ -189,7 +190,7 @@ declare module 'vscode-mssql' {
         typeSystemVersion: string;
 
         /**
-         * Gets or sets the connection string to use for this connection
+         * Gets or sets the connection string to use for this connection.
          */
         connectionString: string;
     }
