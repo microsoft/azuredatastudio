@@ -98,7 +98,7 @@ export class OpenExistingDialog extends DialogBase {
 	}
 
 	protected async initialize(view: azdataType.ModelView): Promise<void> {
-		this.localRadioButton = view.modelBuilder.radioButton().withProperties<azdataType.RadioButtonProperties>({
+		this.localRadioButton = view.modelBuilder.radioButton().withProps({
 			name: 'location',
 			label: constants.Local,
 			checked: true
@@ -112,7 +112,7 @@ export class OpenExistingDialog extends DialogBase {
 			}
 		}));
 
-		this.remoteGitRepoRadioButton = view.modelBuilder.radioButton().withProperties<azdataType.RadioButtonProperties>({
+		this.remoteGitRepoRadioButton = view.modelBuilder.radioButton().withProps({
 			name: 'location',
 			label: constants.RemoteGitRepo
 		}).component();
