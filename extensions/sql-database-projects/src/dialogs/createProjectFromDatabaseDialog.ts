@@ -292,7 +292,7 @@ export class CreateProjectFromDatabaseDialog {
 	}
 
 	private createBrowseFolderButton(view: azdataType.ModelView): azdataType.ButtonComponent {
-		const browseFolderButton = view.modelBuilder.button().withProperties<azdataType.ButtonProperties>({
+		const browseFolderButton = view.modelBuilder.button().withProps({
 			ariaLabel: constants.browseButtonText,
 			iconPath: IconPathHelper.folder_blue,
 			height: '18px',

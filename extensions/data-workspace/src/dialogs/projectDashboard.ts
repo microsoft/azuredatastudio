@@ -84,7 +84,7 @@ export class ProjectDashboard {
 		});
 
 		const refreshButton = this.modelView!.modelBuilder.button()
-			.withProperties<azdataType.ButtonProperties>({
+			.withProps({
 				label: constants.Refresh,
 				iconPath: IconPathHelper.refresh,
 				height: '20px'
@@ -110,7 +110,7 @@ export class ProjectDashboard {
 
 	private createButton(projectAction: IProjectAction): azdataType.ButtonComponent {
 		let button = this.modelView!.modelBuilder.button()
-			.withProperties<azdataType.ButtonProperties>({
+			.withProps({
 				label: projectAction.id,
 				iconPath: projectAction.icon,
 				height: '20px'

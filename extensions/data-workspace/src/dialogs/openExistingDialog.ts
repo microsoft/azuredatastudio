@@ -161,7 +161,7 @@ export class OpenExistingDialog extends DialogBase {
 			this.localClonePathTextBox!.updateProperty('title', this.localClonePathTextBox!.value!);
 		}));
 
-		const localClonePathBrowseFolderButton = view.modelBuilder.button().withProperties<azdataType.ButtonProperties>({
+		const localClonePathBrowseFolderButton = view.modelBuilder.button().withProps({
 			ariaLabel: constants.BrowseButtonText,
 			iconPath: IconPathHelper.folder,
 			width: '18px',
@@ -201,7 +201,7 @@ export class OpenExistingDialog extends DialogBase {
 			this.filePathTextBox!.updateProperty('title', this.filePathTextBox!.value!);
 		}));
 
-		const localProjectBrowseFolderButton = view.modelBuilder.button().withProperties<azdataType.ButtonProperties>({
+		const localProjectBrowseFolderButton = view.modelBuilder.button().withProps({
 			ariaLabel: constants.BrowseButtonText,
 			iconPath: IconPathHelper.folder,
 			width: '18px',
