@@ -50,7 +50,7 @@
 			"bdc-data-size-field": "Kapazität für Daten (GB)",
 			"bdc-log-size-field": "Kapazität für Protokolle (GB)",
 			"bdc-agreement": "Ich akzeptiere {0}, {1} und {2}.",
-			"microsoft-privacy-statement": "Microsoft-Datenschutzerklärung",
+			"microsoft-privacy-statement": "Microsoft-Datenschutzbestimmungen",
 			"bdc-agreement-azdata-eula": "azdata-Lizenzbedingungen",
 			"bdc-agreement-bdc-eula": "SQL Server-Lizenzbedingungen"
 		},
