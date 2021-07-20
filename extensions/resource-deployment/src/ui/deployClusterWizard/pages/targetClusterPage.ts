@@ -96,7 +96,7 @@ export class TargetClusterContextPage extends ResourceTypePage {
 		this.errorLoadingClustersLabel = this.view!.modelBuilder.text().withProps({ value: localize('deployCluster.errorLoadingClustersText', "No cluster information is found in the config file or an error ocurred while loading the config file") }).component();
 		this.clusterContextList = this.view!.modelBuilder.divContainer().component();
 		this.clusterContextLoadingComponent = this.view!.modelBuilder.loadingComponent().withItem(this.clusterContextList).component();
-		this.existingClusterControl = this.view!.modelBuilder.divContainer().withProperties<azdata.DivContainerProperties>({ clickable: false }).component();
+		this.existingClusterControl = this.view!.modelBuilder.divContainer().withProps({ clickable: false }).component();
 		let clusterContextContainer = this.view!.modelBuilder.flexContainer().withLayout({ flexFlow: 'row', alignItems: 'start' }).component();
 		clusterContextContainer.addItem(this.clusterContextsLabel, { flex: '0 0 auto' });
 		clusterContextContainer.addItem(this.clusterContextLoadingComponent, { flex: '0 0 auto', CSSStyles: { 'width': '400px', 'margin-left': '10px', 'margin-top': '10px' } });

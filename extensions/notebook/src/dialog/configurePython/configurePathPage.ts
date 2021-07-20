@@ -78,7 +78,7 @@ export class ConfigurePathPage extends BasePage {
 			}]).component();
 		let selectInstallContainer = this.view.modelBuilder.divContainer()
 			.withItems([selectInstallForm])
-			.withProperties<azdata.DivContainerProperties>({
+			.withProps({
 				clickable: false
 			}).component();
 
@@ -105,7 +105,7 @@ export class ConfigurePathPage extends BasePage {
 
 			let editPathContainer = this.view.modelBuilder.divContainer()
 				.withItems([editPathForm])
-				.withProperties<azdata.DivContainerProperties>({
+				.withProps({
 					clickable: false
 				}).component();
 			allParentItems.push(editPathContainer);
