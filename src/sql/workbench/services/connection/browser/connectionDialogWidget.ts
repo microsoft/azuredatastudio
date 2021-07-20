@@ -191,9 +191,6 @@ export class ConnectionDialogWidget extends Modal {
 				},
 				layout: (dimension: DOM.Dimension) => {
 					this._recentConnectionTree.layout(dimension.height - DOM.getTotalHeight(this._recentConnectionActionBarContainer));
-				},
-				focus: () => {
-					this._actionbar.focus();
 				}
 			}
 		});

@@ -565,6 +565,9 @@
     <trans-unit id="arc.dropExtensions">
       <source xml:lang="en">Drop extensions</source>
     </trans-unit>
+    <trans-unit id="arc.noExtensions">
+      <source xml:lang="en">No extensions listed in configuration.</source>
+    </trans-unit>
     <trans-unit id="arc.openInAzurePortal">
       <source xml:lang="en">Open in Azure Portal</source>
     </trans-unit>

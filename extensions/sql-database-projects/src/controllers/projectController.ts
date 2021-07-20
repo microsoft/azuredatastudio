@@ -34,8 +34,8 @@ import { CreateProjectFromDatabaseDialog } from '../dialogs/createProjectFromDat
 import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
 import { IconPathHelper } from '../common/iconHelper';
 import { DashboardData, PublishData, Status } from '../models/dashboardData/dashboardData';
-import { SqlTargetPlatform } from 'sqldbproj';
 import { launchPublishDatabaseQuickpick } from '../dialogs/publishDatabaseQuickpick';
+import { SqlTargetPlatform } from 'sqldbproj';
 
 const maxTableLength = 10;
 
@@ -131,7 +131,11 @@ export class ProjectsController {
 			.send();
 
 		if (creationParams.projectGuid && !UUID.isUUID(creationParams.projectGuid)) {
-			throw new Error(`Specified GUID is invalid: '${creationParams.projectGuid}'`);
+			throw new Error(constants.invalidGuid(creationParams.projectGuid));
+		}
+
+		if (creationParams.targetPlatform && !constants.targetPlatformToVersion.get(creationParams.targetPlatform)) {
+			throw new Error(constants.invalidTargetPlatform(creationParams.targetPlatform, Array.from(constants.targetPlatformToVersion.keys())));
 		}
 
 		const macroDict: Record<string, string> = {

@@ -598,6 +598,12 @@
     <trans-unit id="unableToFindReference">
       <source xml:lang="en">Unable to find database reference {0}</source>
     </trans-unit>
+    <trans-unit id="invalidGuid">
+      <source xml:lang="en">Specified GUID is invalid: {0}</source>
+    </trans-unit>
+    <trans-unit id="invalidTargetPlatform">
+      <source xml:lang="en">Invalid target platform: {0}. Supported target platforms: {1}</source>
+    </trans-unit>
     <trans-unit id="deleteAction">
       <source xml:lang="en">Delete</source>
     </trans-unit>

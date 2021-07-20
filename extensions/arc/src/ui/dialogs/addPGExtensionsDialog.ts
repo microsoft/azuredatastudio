@@ -67,7 +67,7 @@ export class AddPGExtensionsDialog extends InitializingComponent {
 		});
 
 		dialog.registerCloseValidator(async () => await this.validate());
-		dialog.okButton.label = loc.addExtensions;
+		dialog.okButton.label = loc.loadExtensions;
 		dialog.cancelButton.label = loc.cancel;
 		azdata.window.openDialog(dialog);
 		return dialog;
