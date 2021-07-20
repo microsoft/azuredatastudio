@@ -260,7 +260,7 @@ export function createCheckbox(view: azdata.ModelView, info: { initialValue: boo
 }
 
 export function createDropdownInputInfo(view: azdata.ModelView, info: { defaultValue?: string | azdata.CategoryValue, values?: string[] | azdata.CategoryValue[], width?: string, editable?: boolean, required?: boolean, label: string }): InputComponentInfo<azdata.DropDownComponent> {
-	const dropdown = view.modelBuilder.dropDown().withProperties<azdata.DropDownProperties>({
+	const dropdown = view.modelBuilder.dropDown().withProps({
 		values: info.values,
 		value: info.defaultValue,
 		width: info.width,

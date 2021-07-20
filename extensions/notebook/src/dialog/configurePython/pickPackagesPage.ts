@@ -40,7 +40,7 @@ export class PickPackagesPage extends BasePage {
 			}).component();
 		} else {
 			let dropdownValues = [python3DisplayName, pysparkDisplayName, sparkScalaDisplayName, sparkRDisplayName, powershellDisplayName, allKernelsName];
-			this.kernelDropdown = this.view.modelBuilder.dropDown().withProperties<azdata.DropDownProperties>({
+			this.kernelDropdown = this.view.modelBuilder.dropDown().withProps({
 				value: dropdownValues[0],
 				values: dropdownValues,
 				width: '300px'

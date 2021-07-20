@@ -41,7 +41,7 @@ export class ConfigurePathPage extends BasePage {
 			}).component();
 
 		this.pythonLocationDropdown = this.view.modelBuilder.dropDown()
-			.withProperties<azdata.DropDownProperties>({
+			.withProps({
 				value: undefined,
 				values: [],
 				width: '400px'

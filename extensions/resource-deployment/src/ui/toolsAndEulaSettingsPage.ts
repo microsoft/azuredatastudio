@@ -211,7 +211,7 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 						optionLabel.width = '150px';
 
 						const optionSelectedValue = (this.wizard.toolsEulaPagePresets) ? this.wizard.toolsEulaPagePresets[index] : optionValues[0];
-						const optionSelectBox = this.view.modelBuilder.dropDown().withProperties<azdata.DropDownProperties>({
+						const optionSelectBox = this.view.modelBuilder.dropDown().withProps({
 							values: optionValues,
 							value: optionSelectedValue,
 							width: '300px',
