@@ -444,7 +444,7 @@ export interface ICmsService {
 	/**
 	 * Connects to or creates a Central management Server
 	 */
-	createCmsServer(name: string, description:string, connectiondetails: azdata.ConnectionInfo, ownerUri: string): Thenable<ListRegisteredServersResult>;
+	createCmsServer(name: string, description: string, connectiondetails: azdata.ConnectionInfo, ownerUri: string): Thenable<ListRegisteredServersResult>;
 
 	/**
 	 * gets all Registered Servers inside a CMS on a particular level
@@ -454,22 +454,22 @@ export interface ICmsService {
 	/**
 	 * Adds a Registered Server inside a CMS on a particular level
 	 */
-	addRegisteredServer (ownerUri: string, relativePath: string, registeredServerName: string, registeredServerDescription:string, connectionDetails:azdata.ConnectionInfo): Thenable<boolean>;
+	addRegisteredServer(ownerUri: string, relativePath: string, registeredServerName: string, registeredServerDescription: string, connectionDetails: azdata.ConnectionInfo): Thenable<boolean>;
 
 	/**
 	 * Removes a Registered Server inside a CMS on a particular level
 	 */
-	removeRegisteredServer (ownerUri: string, relativePath: string, registeredServerName: string): Thenable<boolean>;
+	removeRegisteredServer(ownerUri: string, relativePath: string, registeredServerName: string): Thenable<boolean>;
 
 	/**
 	 * Adds a Server Group inside a CMS on a particular level
 	 */
-	addServerGroup (ownerUri: string, relativePath: string, groupName: string, groupDescription:string): Thenable<boolean>;
+	addServerGroup(ownerUri: string, relativePath: string, groupName: string, groupDescription: string): Thenable<boolean>;
 
 	/**
 	 * Removes a Server Group inside a CMS on a particular level
 	 */
-	removeServerGroup (ownerUri: string, relativePath: string, groupName: string): Thenable<boolean>;
+	removeServerGroup(ownerUri: string, relativePath: string, groupName: string): Thenable<boolean>;
 }
 /**
  * CMS Result interfaces as passed back to Extensions
@@ -542,10 +542,62 @@ export interface SqlMigrationAssessmentResultItem {
 	impactedObjects: SqlMigrationImpactedObjectInfo[];
 }
 
-export interface SqlMigrationAssessmentResult extends azdata.ResultStatus {
+export interface ServerTargetReadiness {
+	numberOfDatabasesReadyForMigration: number;
+	numberOfNonOnlineDatabases: number;
+	totalNumberOfDatabases: number;
+}
+
+export interface ErrorModel {
+	errorId: number;
+	message: string;
+	errorSummary: string;
+	possibleCauses: string;
+	guidance: string;
+}
+
+export interface DatabaseTargetReadiness {
+	noSelectionForMigration: boolean;
+	numOfBlockerIssues: number;
+}
+
+export interface DatabaseAssessmentProperties {
+	compatibilityLevel: string;
+	databaseSize: number;
+	isReplicationEnabled: boolean;
+	assessmentTimeInMilliseconds: number;
 	items: SqlMigrationAssessmentResultItem[];
+	errors: ErrorModel[];
+	sqlManagedInstanceTargetReadiness: DatabaseTargetReadiness;
+	name: string;
+}
+
+export interface ServerAssessmentProperties {
+	cpuCoreCount: number;
+	physicalServerMemory: number;
+	serverHostPlatform: string;
+	serverVersion: string;
+	serverEngineEdition: string;
+	serverEdition: string;
+	isClustered: boolean;
+	numberOfUserDatabases: number;
+	sqlAssessmentStatus: number;
+	assessedDatabaseCount: number;
+	sqlManagedInstanceTargetReadiness: ServerTargetReadiness;
+	items: SqlMigrationAssessmentResultItem[];
+	errors: ErrorModel[];
+	databases: DatabaseAssessmentProperties[];
+	name: string;
+}
+
+export interface AssessmentResult {
+	startedOn: string;
+	endedOn: string;
+	assessmentResult: ServerAssessmentProperties;
+	rawAssessmentResult: any;
+	errors: ErrorModel[];
 }
 
 export interface ISqlMigrationService {
-	getAssessments(ownerUri: string): Promise<SqlMigrationAssessmentResult | undefined>;
+	getAssessments(ownerUri: string): Promise<AssessmentResult | undefined>;
 }
