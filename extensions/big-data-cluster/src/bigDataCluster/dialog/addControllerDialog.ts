@@ -119,7 +119,7 @@ export class AddControllerDialog {
 			this.uiModelBuilder = view.modelBuilder;
 
 			this.urlInputBox = this.uiModelBuilder.inputBox()
-				.withProperties<azdata.InputBoxProperties>({
+				.withProps({
 					placeHolder: loc.url.toLocaleLowerCase(),
 					value: this.model.prefilledUrl
 				}).component();
@@ -130,12 +130,12 @@ export class AddControllerDialog {
 			}).component();
 			this.authDropdown.onValueChanged(e => this.onAuthChanged());
 			this.usernameInputBox = this.uiModelBuilder.inputBox()
-				.withProperties<azdata.InputBoxProperties>({
+				.withProps({
 					placeHolder: loc.usernameRequired.toLocaleLowerCase(),
 					value: this.model.prefilledUsername
 				}).component();
 			this.passwordInputBox = this.uiModelBuilder.inputBox()
-				.withProperties<azdata.InputBoxProperties>({
+				.withProps({
 					placeHolder: loc.password,
 					inputType: 'password',
 					value: this.model.prefilledPassword

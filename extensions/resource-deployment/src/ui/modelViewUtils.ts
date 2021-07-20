@@ -192,7 +192,7 @@ function createInputBoxField({ context, inputBoxType = 'text' }: { context: Fiel
 }
 
 export function createInputBoxInputInfo(view: azdata.ModelView, inputInfo: InputBoxInfo): InputComponentInfo<azdata.InputBoxComponent> {
-	const component = view.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
+	const component = view.modelBuilder.inputBox().withProps({
 		value: inputInfo.defaultValue,
 		ariaLabel: inputInfo.ariaLabel,
 		inputType: inputInfo.type || 'text',
@@ -771,7 +771,7 @@ function processPasswordField(context: FieldContext): void {
 	if (context.fieldInfo.confirmationRequired) {
 		const passwordNotMatchMessage = getPasswordMismatchMessage(context.fieldInfo.label);
 		const confirmPasswordLabel = createLabel(context.view, { text: context.fieldInfo.confirmationLabel!, required: true, width: context.fieldInfo.labelWidth, cssStyles: context.fieldInfo.labelCSSStyles });
-		const confirmPasswordInput = context.view.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
+		const confirmPasswordInput = context.view.modelBuilder.inputBox().withProps({
 			ariaLabel: context.fieldInfo.confirmationLabel,
 			inputType: 'password',
 			required: true,

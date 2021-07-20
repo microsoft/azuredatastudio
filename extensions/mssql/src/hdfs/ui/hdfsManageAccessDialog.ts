@@ -200,7 +200,7 @@ export class ManageAccessDialog {
 		const addUserOrGroupInputRow = this.modelBuilder.flexContainer().component();
 
 		this.addUserOrGroupInput = this.modelBuilder.inputBox()
-			.withProperties<azdata.InputBoxProperties>({
+			.withProps({
 				inputType: 'text',
 				placeHolder: loc.enterNamePlaceholder,
 				width: 250,
