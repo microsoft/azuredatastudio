@@ -114,15 +114,15 @@ export class PostgresExtensionsPage extends DashboardPage {
 	protected get toolbarContainer(): azdata.ToolbarContainer {
 		// Add extensions
 		this.addExtensionsButton = this.modelView.modelBuilder.button().withProps({
-			label: loc.addExtensions,
-			ariaLabel: loc.addExtensions,
+			label: loc.loadExtensions,
+			ariaLabel: loc.loadExtensions,
 			iconPath: IconPathHelper.add
 		}).component();
 
 		this.disposables.push(
 			this.addExtensionsButton.onDidClick(async () => {
 				const addExtDialog = new AddPGExtensionsDialog(this._postgresModel);
-				addExtDialog.showDialog(loc.addExtensions);
+				addExtDialog.showDialog(loc.loadExtensions);
 
 				let extArg = await addExtDialog.waitForClose();
 				if (extArg) {
@@ -165,9 +165,9 @@ export class PostgresExtensionsPage extends DashboardPage {
 
 		// Drop extensions
 		this.dropExtensionsButton = this.modelView.modelBuilder.button().withProps({
-			label: loc.dropExtensions,
-			ariaLabel: loc.addExtensions,
-			iconPath: IconPathHelper.add,
+			label: loc.unloadExtensions,
+			ariaLabel: loc.unloadExtensions,
+			iconPath: IconPathHelper.delete,
 			enabled: false
 		}).component();
 
@@ -231,7 +231,7 @@ export class PostgresExtensionsPage extends DashboardPage {
 	public createDropCheckBox(name: string): azdata.CheckBoxComponent {
 		// Can select extensions to drop
 		let checkBox = this.modelView.modelBuilder.checkBox().withProps({
-			ariaLabel: loc.dropExtensions,
+			ariaLabel: loc.unloadExtensions,
 			CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
 		}).component();
 
