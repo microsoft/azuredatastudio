@@ -134,7 +134,7 @@ export class OpenExistingDialog extends DialogBase {
 			}
 		}));
 
-		const gitRepoTextBox = view.modelBuilder.inputBox().withProperties<azdataType.InputBoxProperties>({
+		const gitRepoTextBox = view.modelBuilder.inputBox().withProps({
 			ariaLabel: constants.GitRepoUrlTitle,
 			placeHolder: constants.GitRepoUrlPlaceholder,
 			required: true,
@@ -150,7 +150,7 @@ export class OpenExistingDialog extends DialogBase {
 			component: gitRepoTextBox
 		};
 
-		this.localClonePathTextBox = view.modelBuilder.inputBox().withProperties<azdataType.InputBoxProperties>({
+		this.localClonePathTextBox = view.modelBuilder.inputBox().withProps({
 			ariaLabel: constants.LocalClonePathTitle,
 			placeHolder: constants.LocalClonePathPlaceholder,
 			required: true,
@@ -190,7 +190,7 @@ export class OpenExistingDialog extends DialogBase {
 			required: true
 		};
 
-		this.filePathTextBox = view.modelBuilder.inputBox().withProperties<azdataType.InputBoxProperties>({
+		this.filePathTextBox = view.modelBuilder.inputBox().withProps({
 			ariaLabel: constants.LocationSelectorTitle,
 			placeHolder: constants.ProjectFilePlaceholder,
 			required: true,

@@ -240,7 +240,7 @@ export class CreateProjectFromDatabaseDialog {
 	}
 
 	private createProjectNameRow(view: azdataType.ModelView): azdataType.FlexContainer {
-		this.projectNameTextBox = view.modelBuilder.inputBox().withProperties<azdataType.InputBoxProperties>({
+		this.projectNameTextBox = view.modelBuilder.inputBox().withProps({
 			ariaLabel: constants.projectNamePlaceholderText,
 			placeHolder: constants.projectNamePlaceholderText,
 			required: true,
