@@ -32,7 +32,7 @@ export class ConfigurePathPage extends BasePage {
 			wizardDescription = localize('configurePython.descriptionWithoutKernel', "Notebook kernels require a Python runtime to be configured and dependencies to be installed.");
 		}
 		let wizardDescriptionLabel = this.view.modelBuilder.text()
-			.withProperties<azdata.TextComponentProperties>({
+			.withProps({
 				value: wizardDescription,
 				CSSStyles: {
 					'padding': '0px',
@@ -84,7 +84,7 @@ export class ConfigurePathPage extends BasePage {
 
 		let allParentItems = [selectInstallContainer];
 		if (this.model.pythonLocation) {
-			let installedPathTextBox = this.view.modelBuilder.inputBox().withProperties<azdata.TextComponentProperties>({
+			let installedPathTextBox = this.view.modelBuilder.inputBox().withProps({
 				value: this.model.pythonLocation,
 				enabled: false,
 				width: '400px'

@@ -45,7 +45,7 @@ export class SqlAssessmentHistoryTab extends SqlAssessmentTab {
 				height: '100%'
 			}).component();
 
-		const title = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+		const title = view.modelBuilder.text().withProps({
 			value: '',
 			CSSStyles: { 'font-weight': 'bold', 'margin-block-start': '0px', 'margin-block-end': '0px', 'font-size': '20px', 'padding-left': '20px', 'padding-bottom': '20px' }
 		}).component();

@@ -205,7 +205,7 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 						if (optionValueFilter) {
 							optionValues = optionValues.filter(optionValue => optionValueFilter.includes(optionValue.name));
 						}
-						const optionLabel = this.view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+						const optionLabel = this.view.modelBuilder.text().withProps({
 							value: option.displayName,
 						}).component();
 						optionLabel.width = '150px';
@@ -264,7 +264,7 @@ export class ToolsAndEulaPage extends ResourceTypePage {
 			ariaLabel: this.getAgreementDisplayText(agreementInfo),
 			required: true
 		}).component();
-		const text = this.view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+		const text = this.view.modelBuilder.text().withProps({
 			value: agreementInfo.template,
 			links: agreementInfo.links,
 			requiredIndicator: true

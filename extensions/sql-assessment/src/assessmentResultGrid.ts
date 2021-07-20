@@ -214,10 +214,10 @@ export class AssessmentResultGrid implements vscode.Disposable {
 		const flexSettings = '0 1 auto';
 
 
-		this.checkNamePlaceholder = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+		this.checkNamePlaceholder = view.modelBuilder.text().withProps({
 			CSSStyles: { ...cssNoMarginFloatLeft, 'font-weight': 'bold', 'font-size': '16px', 'padding-bottom': '5px', 'display': 'block' }
 		}).component();
-		this.checkDescriptionPlaceholder = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+		this.checkDescriptionPlaceholder = view.modelBuilder.text().withProps({
 			CSSStyles: { ...cssNoMarginFloatLeft, 'padding-right': '2px' }
 		}).component();
 		this.clickHereLabel = view.modelBuilder.hyperlink().withProperties<azdata.HyperlinkComponentProperties>({
@@ -225,23 +225,23 @@ export class AssessmentResultGrid implements vscode.Disposable {
 			url: '',
 			CSSStyles: cssNoMarginFloatLeft
 		}).component();
-		const toLearnMoreText = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+		const toLearnMoreText = view.modelBuilder.text().withProps({
 			CSSStyles: { ...cssNoMarginFloatLeft, 'padding-left': '2px' },
 			value: localize('asmt.details.toLearnMore', " to learn more.")
 		}).component();
-		const tagsCaption = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+		const tagsCaption = view.modelBuilder.text().withProps({
 			CSSStyles: cssBlockCaption,
 			value: LocalizedStrings.TAGS_COLUMN_NAME
 		}).component();
-		this.tagsPlaceholder = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+		this.tagsPlaceholder = view.modelBuilder.text().withProps({
 			CSSStyles: cssNoMarginFloatLeft
 		}).component();
 
-		this.asmtMessagePlaceholder = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+		this.asmtMessagePlaceholder = view.modelBuilder.text().withProps({
 			CSSStyles: cssNoMarginFloatLeft
 		}).component();
 
-		this.descriptionCaption = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+		this.descriptionCaption = view.modelBuilder.text().withProps({
 			CSSStyles: cssBlockCaption,
 			value: localize('asmt.details.ruleDescription', "Rule Description")
 		}).component();
@@ -251,7 +251,7 @@ export class AssessmentResultGrid implements vscode.Disposable {
 		);
 
 		this.asmtMessageDiv = view.modelBuilder.divContainer().withItems([
-			view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+			view.modelBuilder.text().withProps({
 				CSSStyles: cssBlockCaption,
 				value: localize('asmt.details.recommendation', "Recommendation")
 			}).component(),

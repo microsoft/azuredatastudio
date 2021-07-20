@@ -31,7 +31,7 @@ export class DeploymentProfilePage extends ResourceTypePage {
 	public initialize(): void {
 		this.pageObject.registerContent(async (view: azdata.ModelView): Promise<void> => {
 			this._container = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column' }).component();
-			const hintText = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+			const hintText = view.modelBuilder.text().withProps({
 				value: localize('deployCluster.ProfileHintText', "Note: The settings of the deployment profile can be customized in later steps.")
 			}).component();
 			const container = createFlexContainer(view, [this._container, hintText], false);

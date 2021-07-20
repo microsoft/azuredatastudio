@@ -220,7 +220,7 @@ export function createLabel(view: azdata.ModelView, info: { text: string, descri
 		}
 	}
 
-	const text = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+	const text = view.modelBuilder.text().withProps({
 		value: info.text,
 		description: info.description,
 		requiredIndicator: info.required,

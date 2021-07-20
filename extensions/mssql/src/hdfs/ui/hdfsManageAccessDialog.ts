@@ -111,13 +111,13 @@ export class ManageAccessDialog {
 		const locationContainer = this.modelBuilder.flexContainer().withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
 
 		const locationLabel = this.modelBuilder.text()
-			.withProperties<azdata.TextComponentProperties>({
+			.withProps({
 				value: loc.locationTitle,
 				CSSStyles: { ...cssStyles.titleCss }
 			}).component();
 
 		const pathLabel = this.modelBuilder.text()
-			.withProperties<azdata.TextComponentProperties>({
+			.withProps({
 				value: this.hdfsPath,
 				title: this.hdfsPath,
 				height: locationLabelHeight,
@@ -141,7 +141,7 @@ export class ManageAccessDialog {
 		// = Permissions Title =
 		// =====================
 		const permissionsTitle = this.modelBuilder.text()
-			.withProperties<azdata.TextComponentProperties>({ value: loc.permissionsHeader })
+			.withProps({ value: loc.permissionsHeader })
 			.component();
 		contentContainer.addItem(permissionsTitle, { CSSStyles: { 'margin-top': '15px', ...cssStyles.titleCss } });
 
@@ -184,7 +184,7 @@ export class ManageAccessDialog {
 		// ===========================
 
 		const addUserOrGroupTitle = this.modelBuilder.text()
-			.withProperties<azdata.TextComponentProperties>({ value: loc.addUserOrGroupHeader, CSSStyles: { 'margin-block-start': '0px', 'margin-block-end': '10px' } })
+			.withProps({ value: loc.addUserOrGroupHeader, CSSStyles: { 'margin-block-start': '0px', 'margin-block-end': '10px' } })
 			.component();
 		contentContainer.addItem(addUserOrGroupTitle, { CSSStyles: { 'margin-top': '15px', ...cssStyles.titleCss } });
 
@@ -550,7 +550,7 @@ export class ManageAccessDialog {
 
 		// Access
 		const accessSectionHeader = this.modelBuilder.text()
-			.withProperties<azdata.TextComponentProperties>({
+			.withProps({
 				value: loc.accessHeader,
 				ariaHidden: true,
 				CSSStyles: {
@@ -571,7 +571,7 @@ export class ManageAccessDialog {
 
 			// Default
 			const defaultSectionHeader = this.modelBuilder.text()
-				.withProperties<azdata.TextComponentProperties>({
+				.withProps({
 					value: loc.defaultHeader,
 					ariaHidden: true,
 					CSSStyles: {

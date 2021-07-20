@@ -35,7 +35,7 @@ export class PickPackagesPage extends BasePage {
 	public async initialize(): Promise<boolean> {
 		if (this.model.kernelName) {
 			// Wizard was started for a specific kernel, so don't populate any other options
-			this.kernelLabel = this.view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+			this.kernelLabel = this.view.modelBuilder.text().withProps({
 				value: this.model.kernelName
 			}).component();
 		} else {

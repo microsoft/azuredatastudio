@@ -59,7 +59,7 @@ export class BdcDashboardOverviewPage extends BdcDashboardPage {
 		// ##############
 
 		const propertiesLabel = this.modelView.modelBuilder.text()
-			.withProperties<azdata.TextComponentProperties>({ value: loc.clusterProperties, CSSStyles: { 'margin-block-start': '0px', 'margin-block-end': '10px' } })
+			.withProps({ value: loc.clusterProperties, CSSStyles: { 'margin-block-start': '0px', 'margin-block-end': '10px' } })
 			.component();
 		rootContainer.addItem(propertiesLabel, { CSSStyles: { 'margin-top': '15px', 'padding-left': '10px', ...cssStyles.title } });
 
@@ -76,7 +76,7 @@ export class BdcDashboardOverviewPage extends BdcDashboardPage {
 		rootContainer.addItem(overviewHeaderContainer, { CSSStyles: { 'padding-left': '10px', 'padding-top': '15px' } });
 
 		const overviewLabel = this.modelView.modelBuilder.text()
-			.withProperties<azdata.TextComponentProperties>({
+			.withProps({
 				value: loc.clusterOverview,
 				CSSStyles: { ...cssStyles.text }
 			})
@@ -197,7 +197,7 @@ export class BdcDashboardOverviewPage extends BdcDashboardPage {
 
 		this.serviceStatusDisplayContainer.addItem(this.serviceStatusLoadingComponent, { flex: '0 0 auto', CSSStyles: { 'padding-left': '150px', width: '30px' } });
 
-		this.serviceStatusErrorMessage = this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ display: 'none', CSSStyles: { ...cssStyles.errorText } }).component();
+		this.serviceStatusErrorMessage = this.modelView.modelBuilder.text().withProps({ display: 'none', CSSStyles: { ...cssStyles.errorText } }).component();
 		overviewContainer.addItem(this.serviceStatusErrorMessage);
 
 		overviewContainer.addItem(this.serviceStatusDisplayContainer);
@@ -209,11 +209,11 @@ export class BdcDashboardOverviewPage extends BdcDashboardPage {
 		// #####################
 
 		const endpointsLabel = this.modelView.modelBuilder.text()
-			.withProperties<azdata.TextComponentProperties>({ value: loc.serviceEndpoints, CSSStyles: { 'margin-block-start': '20px', 'margin-block-end': '0px' } })
+			.withProps({ value: loc.serviceEndpoints, CSSStyles: { 'margin-block-start': '20px', 'margin-block-end': '0px' } })
 			.component();
 		rootContainer.addItem(endpointsLabel, { CSSStyles: { 'padding-left': '10px', ...cssStyles.title } });
 
-		this.endpointsErrorMessage = this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ display: 'none', CSSStyles: { ...cssStyles.errorText } }).component();
+		this.endpointsErrorMessage = this.modelView.modelBuilder.text().withProps({ display: 'none', CSSStyles: { ...cssStyles.errorText } }).component();
 
 		const endpointsContainer = this.modelView.modelBuilder.flexContainer().withLayout({ flexFlow: 'column', width: '100%', height: '100%' }).component();
 
@@ -326,7 +326,7 @@ export class BdcDashboardOverviewPage extends BdcDashboardPage {
 		if (bdcStatus.services) {
 			this.serviceStatusTable.data = bdcStatus.services.map(serviceStatus => {
 				const statusIconCell = this.modelView.modelBuilder.text()
-					.withProperties<azdata.TextComponentProperties>({
+					.withProps({
 						value: getHealthStatusIcon(serviceStatus.healthStatus),
 						ariaRole: 'img',
 						title: getHealthStatusDisplayText(serviceStatus.healthStatus),
@@ -458,7 +458,7 @@ function createEndpointComponent(modelBuilder: azdata.ModelBuilder, endpoint: En
 	}
 	else {
 		return modelBuilder.text()
-			.withProperties<azdata.TextComponentProperties>({
+			.withProps({
 				value: endpoint.endpoint,
 				title: endpoint.endpoint,
 				CSSStyles: { ...cssStyles.text }

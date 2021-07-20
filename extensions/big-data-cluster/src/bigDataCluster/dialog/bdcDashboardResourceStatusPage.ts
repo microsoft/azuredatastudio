@@ -54,7 +54,7 @@ export class BdcDashboardResourceStatusPage extends BdcDashboardPage {
 
 		// Header label
 		const healthStatusHeaderLabel = this.modelView.modelBuilder.text()
-			.withProperties<azdata.TextComponentProperties>({
+			.withProps({
 				value: loc.healthStatusDetails,
 				CSSStyles: { 'margin-block-start': '0px', 'margin-block-end': '10px' }
 			})
@@ -168,7 +168,7 @@ export class BdcDashboardResourceStatusPage extends BdcDashboardPage {
 
 		// Title label
 		const endpointsLabel = this.modelView.modelBuilder.text()
-			.withProperties<azdata.TextComponentProperties>({ value: loc.metricsAndLogs, CSSStyles: { 'margin-block-start': '20px', 'margin-block-end': '0px' } })
+			.withProps({ value: loc.metricsAndLogs, CSSStyles: { 'margin-block-start': '20px', 'margin-block-end': '0px' } })
 			.component();
 		this.rootContainer.addItem(endpointsLabel, { CSSStyles: { 'padding-left': '10px', ...cssStyles.title } });
 
@@ -340,7 +340,7 @@ export class BdcDashboardResourceStatusPage extends BdcDashboardPage {
 
 	private createHealthStatusRow(instanceStatus: InstanceStatusModel): any[] {
 		const statusIconCell = this.modelView.modelBuilder.text()
-			.withProperties<azdata.TextComponentProperties>({
+			.withProps({
 				value: getHealthStatusIcon(instanceStatus.healthStatus),
 				ariaRole: 'img',
 				title: getHealthStatusDisplayText(instanceStatus.healthStatus),
