@@ -474,7 +474,7 @@ export class ManageAccessDialog {
 
 		if (includeDelete) {
 			const deleteButton = this.modelBuilder.button()
-				.withProperties<azdata.ButtonProperties>(
+				.withProps(
 					{
 						label: '',
 						title: loc.deleteTitle,

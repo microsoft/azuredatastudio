@@ -370,7 +370,7 @@ export class BdcDashboardOverviewPage extends BdcDashboardPage {
 		endpoints.unshift(...sqlServerMasterEndpoints);
 
 		this.endpointsTable.dataValues = endpoints.map(e => {
-			const copyValueCell = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({ title: loc.copy }).component();
+			const copyValueCell = this.modelView.modelBuilder.button().withProps({ title: loc.copy }).component();
 			copyValueCell.iconPath = IconPathHelper.copy;
 			copyValueCell.onDidClick(() => {
 				vscode.env.clipboard.writeText(e.endpoint);

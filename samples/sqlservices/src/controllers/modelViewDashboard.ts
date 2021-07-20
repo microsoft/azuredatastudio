@@ -10,7 +10,7 @@ export async function openModelViewDashboard(context: vscode.ExtensionContext): 
 	const dashboard = azdata.window.createModelViewDashboard('Test Dashboard');
 	dashboard.registerTabs(async (view: azdata.ModelView) => {
 		// Tab with toolbar
-		const button = view.modelBuilder.button().withProperties<azdata.ButtonProperties>({
+		const button = view.modelBuilder.button().withProps({
 			label: 'Add databases tab',
 			iconPath: {
 				light: context.asAbsolutePath('images/compare.svg'),
@@ -32,8 +32,8 @@ export async function openModelViewDashboard(context: vscode.ExtensionContext): 
 		};
 
 		// Tab with nested tabbed Panel
-		const addTabButton = view.modelBuilder.button().withProperties<azdata.ButtonProperties>({ label: 'Add a tab', width: '150px' }).component();
-		const removeTabButton = view.modelBuilder.button().withProperties<azdata.ButtonProperties>({ label: 'Remove a tab', width: '150px' }).component();
+		const addTabButton = view.modelBuilder.button().withProps({ label: 'Add a tab', width: '150px' }).component();
+		const removeTabButton = view.modelBuilder.button().withProps({ label: 'Remove a tab', width: '150px' }).component();
 		const container = view.modelBuilder.flexContainer().withItems([addTabButton, removeTabButton]).withLayout({ flexFlow: 'column' }).component();
 		const nestedTab1 = {
 			title: 'Tab1',
