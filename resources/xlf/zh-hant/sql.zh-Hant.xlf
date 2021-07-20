@@ -1803,17 +1803,13 @@
         <source xml:lang="en">Connecting query file</source>
         <target state="translated">正在連線到查詢檔案</target>
       </trans-unit>
-    </body>
-  </file>
-  <file original="src/sql/workbench/contrib/configuration/common/configurationUpgrader" source-language="en" datatype="plaintext" target-language="zh-Hant">
-    <body>
-      <trans-unit id="workbench.configuration.upgradeUser">
-        <source xml:lang="en">{0} was replaced with {1} in your user settings.</source>
-        <target state="translated">您使用者設定中的 {1} 已取代 {0}。</target>
+      <trans-unit id="databasesTabDescription">
+        <source xml:lang="en">databases tab</source>
+        <target state="translated">資料庫索引標籤</target>
       </trans-unit>
-      <trans-unit id="workbench.configuration.upgradeWorkspace">
-        <source xml:lang="en">{0} was replaced with {1} in your workspace settings.</source>
-        <target state="translated">您工作區設定中的 {1} 已取代 {0}。</target>
+      <trans-unit id="databasesTabTitle">
+        <source xml:lang="en">Databases</source>
+        <target state="translated">資料庫</target>
       </trans-unit>
     </body>
   </file>
@@ -1833,11 +1829,11 @@
       </trans-unit>
     </body>
   </file>
-  <file original="src/sql/workbench/contrib/connection/browser/connectionStatus" source-language="en" datatype="plaintext" target-language="zh-Hant">
+  <file original="src/sql/workbench/contrib/dashboard/browser/dashboardActions" source-language="en" datatype="plaintext" target-language="zh-Hant">
     <body>
-      <trans-unit id="status.connection.status">
-        <source xml:lang="en">Connection Status</source>
-        <target state="translated">連線狀態</target>
+      <trans-unit id="ManageAction">
+        <source xml:lang="en">Manage</source>
+        <target state="translated">管理</target>
       </trans-unit>
     </body>
   </file>
@@ -4307,7 +4303,7 @@ Error: {1}</source>
     <body>
       <trans-unit id="notebookEditor.name">
         <source xml:lang="en">Notebook Editor</source>
-        <target state="new">Notebook Editor</target>
+        <target state="translated">Notebook 編輯器</target>
       </trans-unit>
     </body>
   </file>
@@ -4588,14 +4584,6 @@ Error: {1}</source>
       <trans-unit id="profiler.clearDataPrompt">
         <source xml:lang="en">Are you sure you want to clear the data?</source>
         <target state="translated">確定要清除資料嗎?</target>
-      </trans-unit>
-      <trans-unit id="profiler.yes">
-        <source xml:lang="en">Yes</source>
-        <target state="translated">是</target>
-      </trans-unit>
-      <trans-unit id="profiler.no">
-        <source xml:lang="en">No</source>
-        <target state="translated">否</target>
       </trans-unit>
       <trans-unit id="profilerAction.autoscrollOn">
         <source xml:lang="en">Auto Scroll: On</source>
@@ -5091,7 +5079,7 @@ Error: {1}</source>
     <body>
       <trans-unit id="queryEditor.name">
         <source xml:lang="en">Query Editor</source>
-        <target state="new">Query Editor</target>
+        <target state="translated">查詢編輯器</target>
       </trans-unit>
     </body>
   </file>
@@ -5289,7 +5277,7 @@ Error: {1}</source>
     <body>
       <trans-unit id="queryPlanEditor">
         <source xml:lang="en">Query Plan Editor</source>
-        <target state="new">Query Plan Editor</target>
+        <target state="translated">查詢計畫編輯器</target>
       </trans-unit>
     </body>
   </file>
@@ -5358,6 +5346,14 @@ Error: {1}</source>
       <trans-unit id="topOperationsTitle">
         <source xml:lang="en">Top Operations</source>
         <target state="translated">最前幾項操作</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/sql/workbench/contrib/resourceDeployment/browser/resourceDeployment.contribution" source-language="en" datatype="plaintext" target-language="zh-Hant">
+    <body>
+      <trans-unit id="deployment.title">
+        <source xml:lang="en">New Deployment...</source>
+        <target state="translated">新部署…</target>
       </trans-unit>
     </body>
   </file>

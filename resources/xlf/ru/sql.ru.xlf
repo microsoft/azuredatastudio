@@ -4307,7 +4307,7 @@ Error: {1}</source>
     <body>
       <trans-unit id="notebookEditor.name">
         <source xml:lang="en">Notebook Editor</source>
-        <target state="new">Notebook Editor</target>
+        <target state="translated">Редактор записной книжки</target>
       </trans-unit>
     </body>
   </file>
@@ -4588,14 +4588,6 @@ Error: {1}</source>
       <trans-unit id="profiler.clearDataPrompt">
         <source xml:lang="en">Are you sure you want to clear the data?</source>
         <target state="translated">Вы действительно хотите очистить данные?</target>
-      </trans-unit>
-      <trans-unit id="profiler.yes">
-        <source xml:lang="en">Yes</source>
-        <target state="translated">Да</target>
-      </trans-unit>
-      <trans-unit id="profiler.no">
-        <source xml:lang="en">No</source>
-        <target state="translated">Нет</target>
       </trans-unit>
       <trans-unit id="profilerAction.autoscrollOn">
         <source xml:lang="en">Auto Scroll: On</source>
@@ -5091,7 +5083,7 @@ Error: {1}</source>
     <body>
       <trans-unit id="queryEditor.name">
         <source xml:lang="en">Query Editor</source>
-        <target state="new">Query Editor</target>
+        <target state="translated">Редактор запросов</target>
       </trans-unit>
     </body>
   </file>
@@ -5289,7 +5281,7 @@ Error: {1}</source>
     <body>
       <trans-unit id="queryPlanEditor">
         <source xml:lang="en">Query Plan Editor</source>
-        <target state="new">Query Plan Editor</target>
+        <target state="translated">Редактор планов запросов</target>
       </trans-unit>
     </body>
   </file>
@@ -5358,6 +5350,14 @@ Error: {1}</source>
       <trans-unit id="topOperationsTitle">
         <source xml:lang="en">Top Operations</source>
         <target state="translated">Основные операции</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/sql/workbench/contrib/resourceDeployment/browser/resourceDeployment.contribution" source-language="en" datatype="plaintext" target-language="ru">
+    <body>
+      <trans-unit id="deployment.title">
+        <source xml:lang="en">New Deployment...</source>
+        <target state="translated">Новое развертывание...</target>
       </trans-unit>
     </body>
   </file>

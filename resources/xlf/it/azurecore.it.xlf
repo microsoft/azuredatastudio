@@ -719,7 +719,7 @@
     <body>
       <trans-unit id="azure.resource.providers.AzureMonitorContainerLabel">
         <source xml:lang="en">Azure Monitor Workspace</source>
-        <target state="new">Azure Monitor Workspace</target>
+        <target state="translated">Area di lavoro Monitoraggio di Azure</target>
       </trans-unit>
     </body>
   </file>

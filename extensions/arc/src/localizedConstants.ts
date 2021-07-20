@@ -42,8 +42,9 @@ export const dropText = localize('arc.drop', "Drop");
 export const saveText = localize('arc.save', "Save");
 export const discardText = localize('arc.discard', "Discard");
 export const resetPassword = localize('arc.resetPassword', "Reset Password");
-export const addExtensions = localize('arc.addExtensions', "Add extensions");
-export const dropExtension = localize('arc.dropExtension', "Drop extension");
+export const loadExtensions = localize('arc.loadExtensions', "Load extensions");
+export const unloadExtensions = localize('arc.unloadExtensions', "Unload extensions");
+export const noExtensions = localize('arc.noExtensions', "No extensions listed in configuration.");
 export const openInAzurePortal = localize('arc.openInAzurePortal', "Open in Azure Portal");
 export const resourceGroup = localize('arc.resourceGroup', "Resource Group");
 export const region = localize('arc.region', "Region");
@@ -223,7 +224,7 @@ export function extensionInstalled(name: string): string { return localize('arc.
 export function updatingInstance(name: string): string { return localize('arc.updatingInstance', "Updating instance '{0}'...", name); }
 export function instanceDeleted(name: string): string { return localize('arc.instanceDeleted', "Instance '{0}' deleted", name); }
 export function instanceUpdated(name: string): string { return localize('arc.instanceUpdated', "Instance '{0}' updated", name); }
-export function extensionDropped(name: string): string { return localize('arc.extensionDropped', "Extension '{0}' deleted", name); }
+export function extensionsDropped(name: string): string { return localize('arc.extensionsDropped', "Extensions '{0}' dropped", name); }
 export function extensionsAdded(name: string): string { return localize('arc.extensionsAdded', "Extensions '{0}' added", name); }
 export function copiedToClipboard(name: string): string { return localize('arc.copiedToClipboard', "{0} copied to clipboard", name); }
 export function clickTheTroubleshootButton(resourceType: string): string { return localize('arc.clickTheTroubleshootButton', "Click the troubleshoot button to open the Azure Arc {0} troubleshooting notebook.", resourceType); }

@@ -60,7 +60,7 @@
       </trans-unit>
       <trans-unit id="notebook.allowRoot.description">
         <source xml:lang="en">Allow Jupyter server to run as root user</source>
-        <target state="new">Allow Jupyter server to run as root user</target>
+        <target state="translated">Jupyter 서버를 루트 사용자로 실행하도록 허용</target>
       </trans-unit>
       <trans-unit id="notebook.command.new">
         <source xml:lang="en">New Notebook</source>
@@ -391,9 +391,9 @@
         <target state="translated">Jupyter Book {0} 닫기 실패: {1}</target>
       </trans-unit>
       <trans-unit id="duplicateFileError">
-        <source xml:lang="en">File {0} already exists in the destination folder {1} 
+        <source xml:lang="en">File {0} already exists in the destination folder {1}
  The file has been renamed to {2} to prevent data loss.</source>
-        <target state="translated">대상 폴더 {1}에 {0} 파일이 이미 있습니다. 
+        <target state="translated">대상 폴더 {1}에 {0} 파일이 이미 있습니다.
  데이터 손실을 방지하기 위해 파일 이름이 {2}(으)로 바뀌었습니다.</target>
       </trans-unit>
       <trans-unit id="editBookError">

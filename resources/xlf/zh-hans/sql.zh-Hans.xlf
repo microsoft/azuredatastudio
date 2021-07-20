@@ -1293,11 +1293,15 @@
       </trans-unit>
     </body>
   </file>
-  <file original="src/sql/workbench/contrib/azure/browser/azure.contribution" source-language="en" datatype="plaintext" target-language="zh-Hans">
+  <file original="src/sql/workbench/browser/modelComponents/dropdown.component" source-language="en" datatype="plaintext" target-language="zh-Hans">
     <body>
-      <trans-unit id="azure.openInAzurePortal.title">
-        <source xml:lang="en">Open in Azure Portal</source>
-        <target state="translated">在 Azure 门户中打开</target>
+      <trans-unit id="loadingMessage">
+        <source xml:lang="en">Loading</source>
+        <target state="translated">正在加载</target>
+      </trans-unit>
+      <trans-unit id="loadingCompletedMessage">
+        <source xml:lang="en">Loading completed</source>
+        <target state="translated">加载已完成</target>
       </trans-unit>
     </body>
   </file>
@@ -2301,43 +2305,15 @@
       </trans-unit>
     </body>
   </file>
-  <file original="src/sql/workbench/contrib/dashboard/browser/pages/dashboardPageContribution" source-language="en" datatype="plaintext" target-language="zh-Hans">
+  <file original="src/sql/workbench/contrib/dashboard/browser/containers/dashboardGridContainer.contribution" source-language="en" datatype="plaintext" target-language="zh-Hans">
     <body>
-      <trans-unit id="azdata.extension.contributes.widget.when">
-        <source xml:lang="en">Condition which must be true to show this item</source>
-        <target state="translated">此条件必须为 true 才能显示此项</target>
+      <trans-unit id="dashboard.container.gridtab.items">
+        <source xml:lang="en">The list of widgets or webviews that will be displayed in this tab.</source>
+        <target state="translated">将在此选项卡中显示的小组件或 Web 视图的列表。</target>
       </trans-unit>
-      <trans-unit id="azdata.extension.contributes.widget.hideHeader">
-        <source xml:lang="en">Whether to hide the header of the widget, default value is false</source>
-        <target state="translated">是否隐藏小组件的标题，默认值为 false</target>
-      </trans-unit>
-      <trans-unit id="dashboardpage.tabName">
-        <source xml:lang="en">The title of the container</source>
-        <target state="translated">容器的标题</target>
-      </trans-unit>
-      <trans-unit id="dashboardpage.rowNumber">
-        <source xml:lang="en">The row of the component in the grid</source>
-        <target state="translated">网格中组件的行</target>
-      </trans-unit>
-      <trans-unit id="dashboardpage.rowSpan">
-        <source xml:lang="en">The rowspan of the component in the grid. Default value is 1. Use '*' to set to number of rows in the grid.</source>
-        <target state="translated">网格中组件的行跨度。默认值为 1。使用 "*" 设置为网格中的行数。</target>
-      </trans-unit>
-      <trans-unit id="dashboardpage.colNumber">
-        <source xml:lang="en">The column of the component in the grid</source>
-        <target state="translated">网格中组件的列</target>
-      </trans-unit>
-      <trans-unit id="dashboardpage.colspan">
-        <source xml:lang="en">The colspan of the component in the grid. Default value is 1. Use '*' to set to number of columns in the grid.</source>
-        <target state="translated">网格中组件的列跨度。默认值为 1。使用 "*" 设置为网格中的列数。</target>
-      </trans-unit>
-      <trans-unit id="azdata.extension.contributes.dashboardPage.tab.id">
-        <source xml:lang="en">Unique identifier for this tab. Will be passed to the extension for any requests.</source>
-        <target state="translated">此选项卡的唯一标识符。将传递到任何请求的扩展。</target>
-      </trans-unit>
-      <trans-unit id="dashboardTabError">
-        <source xml:lang="en">Extension tab is unknown or not installed.</source>
-        <target state="translated">扩展选项卡未知或未安装。</target>
+      <trans-unit id="gridContainer.invalidInputs">
+        <source xml:lang="en">widgets or webviews are expected inside widgets-container for extension.</source>
+        <target state="translated">扩展预期小组件容器中存在小组件或 Web 视图。</target>
       </trans-unit>
     </body>
   </file>
@@ -2351,57 +2327,65 @@
   </file>
   <file original="src/sql/workbench/contrib/dashboard/browser/pages/databaseDashboardPage.contribution" source-language="en" datatype="plaintext" target-language="zh-Hans">
     <body>
-      <trans-unit id="dashboardDatabaseProperties">
-        <source xml:lang="en">Enable or disable the properties widget</source>
-        <target state="translated">启用或禁用属性小组件</target>
+      <trans-unit id="dashboard.container.modelview">
+        <source xml:lang="en">The model-backed view that will be displayed in this tab.</source>
+        <target state="translated">将在此选项卡中显示的由模型支持的视图。</target>
       </trans-unit>
-      <trans-unit id="dashboard.databaseproperties">
-        <source xml:lang="en">Property values to show</source>
-        <target state="translated">要显示的属性值</target>
+    </body>
+  </file>
+  <file original="src/sql/workbench/contrib/dashboard/browser/containers/dashboardNavSection.contribution" source-language="en" datatype="plaintext" target-language="zh-Hans">
+    <body>
+      <trans-unit id="dashboard.container.left-nav-bar.id">
+        <source xml:lang="en">Unique identifier for this nav section. Will be passed to the extension for any requests.</source>
+        <target state="translated">此导航部分的唯一标识符。将传递到任何请求的扩展。</target>
       </trans-unit>
-      <trans-unit id="dashboard.databaseproperties.displayName">
-        <source xml:lang="en">Display name of the property</source>
-        <target state="translated">属性的显示名称</target>
+      <trans-unit id="dashboard.container.left-nav-bar.icon">
+        <source xml:lang="en">(Optional) Icon which is used to represent this nav section in the UI. Either a file path or a themeable configuration</source>
+        <target state="translated">(可选) UI 中用于表示此导航部分的图标。可以是文件路径或可设置主题的配置</target>
       </trans-unit>
-      <trans-unit id="dashboard.databaseproperties.value">
-        <source xml:lang="en">Value in the Database Info Object</source>
-        <target state="translated">数据库信息对象中的值</target>
+      <trans-unit id="dashboard.container.left-nav-bar.icon.light">
+        <source xml:lang="en">Icon path when a light theme is used</source>
+        <target state="translated">使用浅色主题时的图标路径</target>
       </trans-unit>
-      <trans-unit id="dashboard.databaseproperties.ignore">
-        <source xml:lang="en">Specify specific values to ignore</source>
-        <target state="translated">指定要忽略的特定值</target>
+      <trans-unit id="dashboard.container.left-nav-bar.icon.dark">
+        <source xml:lang="en">Icon path when a dark theme is used</source>
+        <target state="translated">使用深色主题时的图标路径</target>
       </trans-unit>
-      <trans-unit id="recoveryModel">
-        <source xml:lang="en">Recovery Model</source>
-        <target state="translated">恢复模式</target>
+      <trans-unit id="dashboard.container.left-nav-bar.title">
+        <source xml:lang="en">Title of the nav section to show the user.</source>
+        <target state="translated">要向用户显示的导航部分的标题。</target>
       </trans-unit>
-      <trans-unit id="lastDatabaseBackup">
-        <source xml:lang="en">Last Database Backup</source>
-        <target state="translated">上次数据库备份</target>
+      <trans-unit id="dashboard.container.left-nav-bar.container">
+        <source xml:lang="en">The container that will be displayed in this nav section.</source>
+        <target state="translated">将在此导航部分显示的容器。</target>
       </trans-unit>
-      <trans-unit id="lastLogBackup">
-        <source xml:lang="en">Last Log Backup</source>
-        <target state="translated">上次日志备份</target>
+      <trans-unit id="dashboard.container.left-nav-bar">
+        <source xml:lang="en">The list of dashboard containers that will be displayed in this navigation section.</source>
+        <target state="translated">将在此导航部分显示的仪表板容器的列表。</target>
       </trans-unit>
-      <trans-unit id="compatibilityLevel">
-        <source xml:lang="en">Compatibility Level</source>
-        <target state="translated">兼容级别</target>
+      <trans-unit id="navSection.missingTitle.error">
+        <source xml:lang="en">No title in nav section specified for extension.</source>
+        <target state="translated">未在导航部分为扩展指定标题。</target>
       </trans-unit>
-      <trans-unit id="owner">
-        <source xml:lang="en">Owner</source>
-        <target state="translated">所有者</target>
+      <trans-unit id="navSection.missingContainer.error">
+        <source xml:lang="en">No container in nav section specified for extension.</source>
+        <target state="translated">未在导航部分为扩展指定容器。</target>
       </trans-unit>
-      <trans-unit id="dashboardDatabase">
-        <source xml:lang="en">Customizes the database dashboard page</source>
-        <target state="translated">自定义数据库仪表板页面</target>
+      <trans-unit id="navSection.moreThanOneDashboardContainersError">
+        <source xml:lang="en">Exactly 1 dashboard container must be defined per space.</source>
+        <target state="translated">必须在每个空间定义恰好 1 个仪表板容器。</target>
       </trans-unit>
-      <trans-unit id="objectsWidgetTitle">
-        <source xml:lang="en">Search</source>
-        <target state="translated">搜索</target>
+      <trans-unit id="navSection.invalidContainer.error">
+        <source xml:lang="en">NAV_SECTION within NAV_SECTION is an invalid container for extension.</source>
+        <target state="translated">NAV_SECTION 内的 NAV_SECTION 是一个无效的扩展容器。</target>
       </trans-unit>
-      <trans-unit id="dashboardDatabaseTabs">
-        <source xml:lang="en">Customizes the database dashboard tabs</source>
-        <target state="translated">自定义数据库仪表板选项卡</target>
+    </body>
+  </file>
+  <file original="src/sql/workbench/contrib/dashboard/browser/containers/dashboardWebviewContainer.contribution" source-language="en" datatype="plaintext" target-language="zh-Hans">
+    <body>
+      <trans-unit id="dashboard.container.webview">
+        <source xml:lang="en">The webview that will be displayed in this tab.</source>
+        <target state="translated">将在此选项卡中显示的 Web 视图。</target>
       </trans-unit>
     </body>
   </file>
@@ -2415,49 +2399,57 @@
   </file>
   <file original="src/sql/workbench/contrib/dashboard/browser/pages/serverDashboardPage.contribution" source-language="en" datatype="plaintext" target-language="zh-Hans">
     <body>
-      <trans-unit id="dashboardServerProperties">
-        <source xml:lang="en">Enable or disable the properties widget</source>
-        <target state="translated">启用或禁用属性小组件</target>
+      <trans-unit id="dashboard.container.widgets">
+        <source xml:lang="en">The list of widgets that will be displayed in this tab.</source>
+        <target state="translated">将在此选项卡中显示的小组件列表。</target>
       </trans-unit>
-      <trans-unit id="dashboard.serverproperties">
-        <source xml:lang="en">Property values to show</source>
-        <target state="translated">要显示的属性值</target>
+      <trans-unit id="widgetContainer.invalidInputs">
+        <source xml:lang="en">The list of widgets is expected inside widgets-container for extension.</source>
+        <target state="translated">扩展预期小组件容器中存在控件列表。</target>
       </trans-unit>
-      <trans-unit id="dashboard.serverproperties.displayName">
-        <source xml:lang="en">Display name of the property</source>
-        <target state="translated">属性的显示名称</target>
+    </body>
+  </file>
+  <file original="src/sql/workbench/contrib/dashboard/browser/core/actions" source-language="en" datatype="plaintext" target-language="zh-Hans">
+    <body>
+      <trans-unit id="editDashboard">
+        <source xml:lang="en">Edit</source>
+        <target state="translated">编辑</target>
       </trans-unit>
-      <trans-unit id="dashboard.serverproperties.value">
-        <source xml:lang="en">Value in the Server Info Object</source>
-        <target state="translated">服务器信息对象中的值</target>
+      <trans-unit id="editDashboardExit">
+        <source xml:lang="en">Exit</source>
+        <target state="translated">退出</target>
       </trans-unit>
-      <trans-unit id="version">
-        <source xml:lang="en">Version</source>
-        <target state="translated">版本</target>
+      <trans-unit id="refreshWidget">
+        <source xml:lang="en">Refresh</source>
+        <target state="translated">刷新</target>
       </trans-unit>
-      <trans-unit id="edition">
-        <source xml:lang="en">Edition</source>
-        <target state="translated">版本</target>
+      <trans-unit id="toggleMore">
+        <source xml:lang="en">Show Actions</source>
+        <target state="translated">显示操作</target>
       </trans-unit>
-      <trans-unit id="computerName">
-        <source xml:lang="en">Computer Name</source>
-        <target state="translated">计算机名</target>
+      <trans-unit id="deleteWidget">
+        <source xml:lang="en">Delete Widget</source>
+        <target state="translated">删除小组件</target>
       </trans-unit>
-      <trans-unit id="osVersion">
-        <source xml:lang="en">OS Version</source>
-        <target state="translated">OS 版本</target>
+      <trans-unit id="clickToUnpin">
+        <source xml:lang="en">Click to unpin</source>
+        <target state="translated">单击以取消固定</target>
       </trans-unit>
-      <trans-unit id="explorerWidgetsTitle">
-        <source xml:lang="en">Search</source>
-        <target state="translated">搜索</target>
+      <trans-unit id="clickToPin">
+        <source xml:lang="en">Click to pin</source>
+        <target state="translated">单击以固定</target>
       </trans-unit>
-      <trans-unit id="dashboardServer">
-        <source xml:lang="en">Customizes the server dashboard page</source>
-        <target state="translated">自定义服务器仪表板页面</target>
+      <trans-unit id="addFeatureAction.openInstalledFeatures">
+        <source xml:lang="en">Open installed features</source>
+        <target state="translated">打开已安装的功能</target>
       </trans-unit>
-      <trans-unit id="dashboardServerTabs">
-        <source xml:lang="en">Customizes the Server dashboard tabs</source>
-        <target state="translated">自定义服务器仪表板选项卡</target>
+      <trans-unit id="collapseWidget">
+        <source xml:lang="en">Collapse Widget</source>
+        <target state="translated">折叠小组件</target>
+      </trans-unit>
+      <trans-unit id="expandWidget">
+        <source xml:lang="en">Expand Widget</source>
+        <target state="translated">展开小组件</target>
       </trans-unit>
     </body>
   </file>
@@ -2917,35 +2909,43 @@
       </trans-unit>
     </body>
   </file>
-  <file original="src/sql/workbench/contrib/editData/browser/gridActions" source-language="en" datatype="plaintext" target-language="zh-Hans">
+  <file original="src/sql/workbench/contrib/dashboard/browser/widgets/insights/views/imageInsight.contribution" source-language="en" datatype="plaintext" target-language="zh-Hans">
     <body>
-      <trans-unit id="saveAsCsv">
-        <source xml:lang="en">Save As CSV</source>
-        <target state="translated">另存为 CSV</target>
+      <trans-unit id="imageInsightDescription">
+        <source xml:lang="en">Displays an image, for example one returned by an R query using ggplot2</source>
+        <target state="translated">显示图像，例如由 R 查询使用 ggplot2 返回的图像</target>
       </trans-unit>
-      <trans-unit id="saveAsJson">
-        <source xml:lang="en">Save As JSON</source>
-        <target state="translated">另存为 JSON</target>
+      <trans-unit id="imageFormatDescription">
+        <source xml:lang="en">What format is expected - is this a JPEG, PNG or other format?</source>
+        <target state="translated">期望的格式 - 是 JPEG、PNG 还是其他格式?</target>
       </trans-unit>
-      <trans-unit id="saveAsExcel">
-        <source xml:lang="en">Save As Excel</source>
-        <target state="translated">另存为 Excel</target>
+      <trans-unit id="encodingDescription">
+        <source xml:lang="en">Is this encoded as hex, base64 or some other format?</source>
+        <target state="translated">这是以十六进制、base64 还是其他格式进行编码的?</target>
       </trans-unit>
-      <trans-unit id="saveAsXml">
-        <source xml:lang="en">Save As XML</source>
-        <target state="translated">另存为 XML</target>
+    </body>
+  </file>
+  <file original="src/sql/workbench/contrib/dashboard/browser/widgets/insights/views/tableInsight.contribution" source-language="en" datatype="plaintext" target-language="zh-Hans">
+    <body>
+      <trans-unit id="tableInsightDescription">
+        <source xml:lang="en">Displays the results in a simple table</source>
+        <target state="translated">在简单表中显示结果</target>
       </trans-unit>
-      <trans-unit id="copySelection">
-        <source xml:lang="en">Copy</source>
-        <target state="translated">复制</target>
+    </body>
+  </file>
+  <file original="src/sql/workbench/contrib/dashboard/browser/widgets/properties/propertiesWidget.component" source-language="en" datatype="plaintext" target-language="zh-Hans">
+    <body>
+      <trans-unit id="loadingProperties">
+        <source xml:lang="en">Loading properties</source>
+        <target state="translated">正在加载属性</target>
       </trans-unit>
-      <trans-unit id="copyWithHeaders">
-        <source xml:lang="en">Copy With Headers</source>
-        <target state="translated">带标头复制</target>
+      <trans-unit id="loadingPropertiesCompleted">
+        <source xml:lang="en">Loading properties completed</source>
+        <target state="translated">属性加载已完成</target>
       </trans-unit>
-      <trans-unit id="selectAll">
-        <source xml:lang="en">Select All</source>
-        <target state="translated">全选</target>
+      <trans-unit id="dashboard.properties.error">
+        <source xml:lang="en">Unable to load dashboard properties</source>
+        <target state="translated">无法加载仪表板属性</target>
       </trans-unit>
     </body>
   </file>
@@ -4307,7 +4307,7 @@ Error: {1}</source>
     <body>
       <trans-unit id="notebookEditor.name">
         <source xml:lang="en">Notebook Editor</source>
-        <target state="new">Notebook Editor</target>
+        <target state="translated">笔记本编辑器</target>
       </trans-unit>
     </body>
   </file>
@@ -4588,14 +4588,6 @@ Error: {1}</source>
       <trans-unit id="profiler.clearDataPrompt">
         <source xml:lang="en">Are you sure you want to clear the data?</source>
         <target state="translated">是否确实要清除数据?</target>
-      </trans-unit>
-      <trans-unit id="profiler.yes">
-        <source xml:lang="en">Yes</source>
-        <target state="translated">是</target>
-      </trans-unit>
-      <trans-unit id="profiler.no">
-        <source xml:lang="en">No</source>
-        <target state="translated">否</target>
       </trans-unit>
       <trans-unit id="profilerAction.autoscrollOn">
         <source xml:lang="en">Auto Scroll: On</source>
@@ -5091,7 +5083,7 @@ Error: {1}</source>
     <body>
       <trans-unit id="queryEditor.name">
         <source xml:lang="en">Query Editor</source>
-        <target state="new">Query Editor</target>
+        <target state="translated">查询编辑器</target>
       </trans-unit>
     </body>
   </file>
@@ -5289,7 +5281,7 @@ Error: {1}</source>
     <body>
       <trans-unit id="queryPlanEditor">
         <source xml:lang="en">Query Plan Editor</source>
-        <target state="new">Query Plan Editor</target>
+        <target state="translated">查询计划编辑器</target>
       </trans-unit>
     </body>
   </file>
@@ -5358,6 +5350,14 @@ Error: {1}</source>
       <trans-unit id="topOperationsTitle">
         <source xml:lang="en">Top Operations</source>
         <target state="translated">热门的操作</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/sql/workbench/contrib/resourceDeployment/browser/resourceDeployment.contribution" source-language="en" datatype="plaintext" target-language="zh-Hans">
+    <body>
+      <trans-unit id="deployment.title">
+        <source xml:lang="en">New Deployment...</source>
+        <target state="translated">新建部署...</target>
       </trans-unit>
     </body>
   </file>

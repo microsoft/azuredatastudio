@@ -1293,11 +1293,11 @@
       </trans-unit>
     </body>
   </file>
-  <file original="src/sql/workbench/contrib/azure/browser/azure.contribution" source-language="en" datatype="plaintext" target-language="it">
+  <file original="src/sql/workbench/browser/modelComponents/componentBase" source-language="en" datatype="plaintext" target-language="it">
     <body>
-      <trans-unit id="azure.openInAzurePortal.title">
-        <source xml:lang="en">Open in Azure Portal</source>
-        <target state="translated">Apri nel portale di Azure</target>
+      <trans-unit id="invalidIndex">
+        <source xml:lang="en">The index {0} is invalid.</source>
+        <target state="translated">L'indice {0} non è valido.</target>
       </trans-unit>
     </body>
   </file>
@@ -2299,45 +2299,41 @@
         <source xml:lang="en">Property values to show on dashboard</source>
         <target state="translated">Valori di proprietà da mostrare nel dashboard</target>
       </trans-unit>
-    </body>
-  </file>
-  <file original="src/sql/workbench/contrib/dashboard/browser/pages/dashboardPageContribution" source-language="en" datatype="plaintext" target-language="it">
-    <body>
-      <trans-unit id="azdata.extension.contributes.widget.when">
-        <source xml:lang="en">Condition which must be true to show this item</source>
-        <target state="translated">Condizione che deve essere vera per mostrare questo elemento</target>
+      <trans-unit id="dashboard.container.left-nav-bar.icon.light">
+        <source xml:lang="en">Icon path when a light theme is used</source>
+        <target state="translated">Percorso dell'icona quando viene usato un tema chiaro</target>
       </trans-unit>
-      <trans-unit id="azdata.extension.contributes.widget.hideHeader">
-        <source xml:lang="en">Whether to hide the header of the widget, default value is false</source>
-        <target state="translated">Indica se nascondere l'intestazione del widget. Il valore predefinito è false</target>
+      <trans-unit id="dashboard.container.left-nav-bar.icon.dark">
+        <source xml:lang="en">Icon path when a dark theme is used</source>
+        <target state="translated">Percorso dell'icona quando viene usato un tema scuro</target>
       </trans-unit>
-      <trans-unit id="dashboardpage.tabName">
-        <source xml:lang="en">The title of the container</source>
-        <target state="translated">Titolo del contenitore</target>
+      <trans-unit id="dashboard.container.left-nav-bar.title">
+        <source xml:lang="en">Title of the nav section to show the user.</source>
+        <target state="translated">Titolo della sezione di spostamento da mostrare all'utente.</target>
       </trans-unit>
-      <trans-unit id="dashboardpage.rowNumber">
-        <source xml:lang="en">The row of the component in the grid</source>
-        <target state="translated">Riga del componente nella griglia</target>
+      <trans-unit id="dashboard.container.left-nav-bar.container">
+        <source xml:lang="en">The container that will be displayed in this nav section.</source>
+        <target state="translated">Contenitore che verrà visualizzato in questa sezione di spostamento.</target>
       </trans-unit>
-      <trans-unit id="dashboardpage.rowSpan">
-        <source xml:lang="en">The rowspan of the component in the grid. Default value is 1. Use '*' to set to number of rows in the grid.</source>
-        <target state="translated">rowspan del componente nella griglia. Il valore predefinito è 1. Usare '*' per impostare sul numero di righe della griglia.</target>
+      <trans-unit id="dashboard.container.left-nav-bar">
+        <source xml:lang="en">The list of dashboard containers that will be displayed in this navigation section.</source>
+        <target state="translated">Elenco di container di dashboard che verrà visualizzato in questa sezione di spostamento.</target>
       </trans-unit>
-      <trans-unit id="dashboardpage.colNumber">
-        <source xml:lang="en">The column of the component in the grid</source>
-        <target state="translated">Colonna del componente nella griglia</target>
+      <trans-unit id="navSection.missingTitle.error">
+        <source xml:lang="en">No title in nav section specified for extension.</source>
+        <target state="translated">Nella sezione di spostamento non è stato specificato alcun titolo per l'estensione.</target>
       </trans-unit>
-      <trans-unit id="dashboardpage.colspan">
-        <source xml:lang="en">The colspan of the component in the grid. Default value is 1. Use '*' to set to number of columns in the grid.</source>
-        <target state="translated">colspan del componente nella griglia. Il valore predefinito è 1. Usare '*' per impostare sul numero di colonne della griglia.</target>
+      <trans-unit id="navSection.missingContainer.error">
+        <source xml:lang="en">No container in nav section specified for extension.</source>
+        <target state="translated">Nella sezione di spostamento non è stato specificato alcun contenitore per l'estensione.</target>
       </trans-unit>
-      <trans-unit id="azdata.extension.contributes.dashboardPage.tab.id">
-        <source xml:lang="en">Unique identifier for this tab. Will be passed to the extension for any requests.</source>
-        <target state="translated">Identificatore univoco per questa scheda. Verrà passato all'estensione per eventuali richieste.</target>
+      <trans-unit id="navSection.moreThanOneDashboardContainersError">
+        <source xml:lang="en">Exactly 1 dashboard container must be defined per space.</source>
+        <target state="translated">Per ogni spazio è necessario definire un solo container di dashboard.</target>
       </trans-unit>
-      <trans-unit id="dashboardTabError">
-        <source xml:lang="en">Extension tab is unknown or not installed.</source>
-        <target state="translated">La scheda dell'estensione è sconosciuta o non è installata.</target>
+      <trans-unit id="navSection.invalidContainer.error">
+        <source xml:lang="en">NAV_SECTION within NAV_SECTION is an invalid container for extension.</source>
+        <target state="translated">Un elemento NAV_SECTION all'interno di un altro elemento NAV_SECTION non è un contenitore valido per l'estensione.</target>
       </trans-unit>
     </body>
   </file>
@@ -2351,57 +2347,21 @@
   </file>
   <file original="src/sql/workbench/contrib/dashboard/browser/pages/databaseDashboardPage.contribution" source-language="en" datatype="plaintext" target-language="it">
     <body>
-      <trans-unit id="dashboardDatabaseProperties">
-        <source xml:lang="en">Enable or disable the properties widget</source>
-        <target state="translated">Abilita o disabilita il widget delle proprietà</target>
+      <trans-unit id="dashboard.container.webview">
+        <source xml:lang="en">The webview that will be displayed in this tab.</source>
+        <target state="translated">Webview che verrà visualizzata in questa scheda.</target>
       </trans-unit>
-      <trans-unit id="dashboard.databaseproperties">
-        <source xml:lang="en">Property values to show</source>
-        <target state="translated">Valori di proprietà da mostrare</target>
+    </body>
+  </file>
+  <file original="src/sql/workbench/contrib/dashboard/browser/containers/dashboardWidgetContainer.contribution" source-language="en" datatype="plaintext" target-language="it">
+    <body>
+      <trans-unit id="dashboard.container.widgets">
+        <source xml:lang="en">The list of widgets that will be displayed in this tab.</source>
+        <target state="translated">Elenco dei widget che verranno visualizzati in questa scheda.</target>
       </trans-unit>
-      <trans-unit id="dashboard.databaseproperties.displayName">
-        <source xml:lang="en">Display name of the property</source>
-        <target state="translated">Nome visualizzato della proprietà</target>
-      </trans-unit>
-      <trans-unit id="dashboard.databaseproperties.value">
-        <source xml:lang="en">Value in the Database Info Object</source>
-        <target state="translated">Valore nell'oggetto informazioni database</target>
-      </trans-unit>
-      <trans-unit id="dashboard.databaseproperties.ignore">
-        <source xml:lang="en">Specify specific values to ignore</source>
-        <target state="translated">Specifica i valori da ignorare</target>
-      </trans-unit>
-      <trans-unit id="recoveryModel">
-        <source xml:lang="en">Recovery Model</source>
-        <target state="translated">Modello di recupero</target>
-      </trans-unit>
-      <trans-unit id="lastDatabaseBackup">
-        <source xml:lang="en">Last Database Backup</source>
-        <target state="translated">Ultimo backup del database</target>
-      </trans-unit>
-      <trans-unit id="lastLogBackup">
-        <source xml:lang="en">Last Log Backup</source>
-        <target state="translated">Ultimo backup del log</target>
-      </trans-unit>
-      <trans-unit id="compatibilityLevel">
-        <source xml:lang="en">Compatibility Level</source>
-        <target state="translated">Livello di compatibilità</target>
-      </trans-unit>
-      <trans-unit id="owner">
-        <source xml:lang="en">Owner</source>
-        <target state="translated">Proprietario</target>
-      </trans-unit>
-      <trans-unit id="dashboardDatabase">
-        <source xml:lang="en">Customizes the database dashboard page</source>
-        <target state="translated">Personalizza la pagina del dashboard del database</target>
-      </trans-unit>
-      <trans-unit id="objectsWidgetTitle">
-        <source xml:lang="en">Search</source>
-        <target state="translated">Cerca</target>
-      </trans-unit>
-      <trans-unit id="dashboardDatabaseTabs">
-        <source xml:lang="en">Customizes the database dashboard tabs</source>
-        <target state="translated">Personalizza le schede del dashboard del database</target>
+      <trans-unit id="widgetContainer.invalidInputs">
+        <source xml:lang="en">The list of widgets is expected inside widgets-container for extension.</source>
+        <target state="translated">L'elenco dei widget deve trovarsi all'interno del contenitore dei widget per l'estensione.</target>
       </trans-unit>
     </body>
   </file>
@@ -2415,45 +2375,41 @@
   </file>
   <file original="src/sql/workbench/contrib/dashboard/browser/pages/serverDashboardPage.contribution" source-language="en" datatype="plaintext" target-language="it">
     <body>
-      <trans-unit id="dashboardServerProperties">
-        <source xml:lang="en">Enable or disable the properties widget</source>
-        <target state="translated">Abilita o disabilita il widget delle proprietà</target>
+      <trans-unit id="editDashboard">
+        <source xml:lang="en">Edit</source>
+        <target state="translated">Modifica</target>
       </trans-unit>
-      <trans-unit id="dashboard.serverproperties">
-        <source xml:lang="en">Property values to show</source>
-        <target state="translated">Valori di proprietà da mostrare</target>
+      <trans-unit id="editDashboardExit">
+        <source xml:lang="en">Exit</source>
+        <target state="translated">Esci</target>
       </trans-unit>
-      <trans-unit id="dashboard.serverproperties.displayName">
-        <source xml:lang="en">Display name of the property</source>
-        <target state="translated">Nome visualizzato della proprietà</target>
+      <trans-unit id="refreshWidget">
+        <source xml:lang="en">Refresh</source>
+        <target state="translated">Aggiorna</target>
       </trans-unit>
-      <trans-unit id="dashboard.serverproperties.value">
-        <source xml:lang="en">Value in the Server Info Object</source>
-        <target state="translated">Valore nell'oggetto informazioni server</target>
+      <trans-unit id="toggleMore">
+        <source xml:lang="en">Show Actions</source>
+        <target state="translated">Mostra azioni</target>
       </trans-unit>
-      <trans-unit id="version">
-        <source xml:lang="en">Version</source>
-        <target state="translated">Versione</target>
+      <trans-unit id="deleteWidget">
+        <source xml:lang="en">Delete Widget</source>
+        <target state="translated">Elimina widget</target>
       </trans-unit>
-      <trans-unit id="edition">
-        <source xml:lang="en">Edition</source>
-        <target state="translated">Edizione</target>
+      <trans-unit id="clickToUnpin">
+        <source xml:lang="en">Click to unpin</source>
+        <target state="translated">Fare clic per rimuovere</target>
       </trans-unit>
-      <trans-unit id="computerName">
-        <source xml:lang="en">Computer Name</source>
-        <target state="translated">Nome del computer</target>
+      <trans-unit id="clickToPin">
+        <source xml:lang="en">Click to pin</source>
+        <target state="translated">Fare clic per aggiungere</target>
       </trans-unit>
-      <trans-unit id="osVersion">
-        <source xml:lang="en">OS Version</source>
-        <target state="translated">Versione del sistema operativo</target>
+      <trans-unit id="addFeatureAction.openInstalledFeatures">
+        <source xml:lang="en">Open installed features</source>
+        <target state="translated">Apri funzionalità installate</target>
       </trans-unit>
-      <trans-unit id="explorerWidgetsTitle">
-        <source xml:lang="en">Search</source>
-        <target state="translated">Cerca</target>
-      </trans-unit>
-      <trans-unit id="dashboardServer">
-        <source xml:lang="en">Customizes the server dashboard page</source>
-        <target state="translated">Personalizza la pagina del dashboard del server</target>
+      <trans-unit id="collapseWidget">
+        <source xml:lang="en">Collapse Widget</source>
+        <target state="translated">Comprimi widget</target>
       </trans-unit>
       <trans-unit id="dashboardServerTabs">
         <source xml:lang="en">Customizes the Server dashboard tabs</source>
@@ -2917,35 +2873,11 @@
       </trans-unit>
     </body>
   </file>
-  <file original="src/sql/workbench/contrib/editData/browser/gridActions" source-language="en" datatype="plaintext" target-language="it">
+  <file original="src/sql/workbench/contrib/dashboard/browser/widgets/insights/views/charts/chartInsight.component" source-language="en" datatype="plaintext" target-language="it">
     <body>
-      <trans-unit id="saveAsCsv">
-        <source xml:lang="en">Save As CSV</source>
-        <target state="translated">Salva in formato CSV</target>
-      </trans-unit>
-      <trans-unit id="saveAsJson">
-        <source xml:lang="en">Save As JSON</source>
-        <target state="translated">Salva in formato JSON</target>
-      </trans-unit>
-      <trans-unit id="saveAsExcel">
-        <source xml:lang="en">Save As Excel</source>
-        <target state="translated">Salva in formato Excel</target>
-      </trans-unit>
-      <trans-unit id="saveAsXml">
-        <source xml:lang="en">Save As XML</source>
-        <target state="translated">Salva in formato XML</target>
-      </trans-unit>
-      <trans-unit id="copySelection">
-        <source xml:lang="en">Copy</source>
-        <target state="translated">Copia</target>
-      </trans-unit>
-      <trans-unit id="copyWithHeaders">
-        <source xml:lang="en">Copy With Headers</source>
-        <target state="translated">Copia con intestazioni</target>
-      </trans-unit>
-      <trans-unit id="selectAll">
-        <source xml:lang="en">Select All</source>
-        <target state="translated">Seleziona tutto</target>
+      <trans-unit id="chartErrorMessage">
+        <source xml:lang="en">Chart cannot be displayed with the given data</source>
+        <target state="translated">Non è possibile visualizzare il grafico con i dati specificati</target>
       </trans-unit>
     </body>
   </file>
@@ -4307,7 +4239,7 @@ Errore: {1}</target>
     <body>
       <trans-unit id="notebookEditor.name">
         <source xml:lang="en">Notebook Editor</source>
-        <target state="new">Notebook Editor</target>
+        <target state="translated">Editor di notebook</target>
       </trans-unit>
     </body>
   </file>
@@ -4588,14 +4520,6 @@ Errore: {1}</target>
       <trans-unit id="profiler.clearDataPrompt">
         <source xml:lang="en">Are you sure you want to clear the data?</source>
         <target state="translated">Cancellare i dati?</target>
-      </trans-unit>
-      <trans-unit id="profiler.yes">
-        <source xml:lang="en">Yes</source>
-        <target state="translated">Sì</target>
-      </trans-unit>
-      <trans-unit id="profiler.no">
-        <source xml:lang="en">No</source>
-        <target state="translated">No</target>
       </trans-unit>
       <trans-unit id="profilerAction.autoscrollOn">
         <source xml:lang="en">Auto Scroll: On</source>
@@ -5091,7 +5015,7 @@ Errore: {1}</target>
     <body>
       <trans-unit id="queryEditor.name">
         <source xml:lang="en">Query Editor</source>
-        <target state="new">Query Editor</target>
+        <target state="translated">Editor di query</target>
       </trans-unit>
     </body>
   </file>
@@ -5289,7 +5213,7 @@ Errore: {1}</target>
     <body>
       <trans-unit id="queryPlanEditor">
         <source xml:lang="en">Query Plan Editor</source>
-        <target state="new">Query Plan Editor</target>
+        <target state="translated">Editor piano di query</target>
       </trans-unit>
     </body>
   </file>
@@ -5358,6 +5282,14 @@ Errore: {1}</target>
       <trans-unit id="topOperationsTitle">
         <source xml:lang="en">Top Operations</source>
         <target state="translated">Operazioni più frequenti</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/sql/workbench/contrib/resourceDeployment/browser/resourceDeployment.contribution" source-language="en" datatype="plaintext" target-language="it">
+    <body>
+      <trans-unit id="deployment.title">
+        <source xml:lang="en">New Deployment...</source>
+        <target state="translated">Nuova distribuzione...</target>
       </trans-unit>
     </body>
   </file>

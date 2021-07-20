@@ -1293,11 +1293,15 @@
       </trans-unit>
     </body>
   </file>
-  <file original="src/sql/workbench/contrib/azure/browser/azure.contribution" source-language="en" datatype="plaintext" target-language="fr">
+  <file original="src/sql/workbench/browser/modelComponents/dropdown.component" source-language="en" datatype="plaintext" target-language="fr">
     <body>
-      <trans-unit id="azure.openInAzurePortal.title">
-        <source xml:lang="en">Open in Azure Portal</source>
-        <target state="translated">Ouvrir dans le portail Azure</target>
+      <trans-unit id="loadingMessage">
+        <source xml:lang="en">Loading</source>
+        <target state="translated">Chargement</target>
+      </trans-unit>
+      <trans-unit id="loadingCompletedMessage">
+        <source xml:lang="en">Loading completed</source>
+        <target state="translated">Chargement effectué</target>
       </trans-unit>
     </body>
   </file>
@@ -2299,45 +2303,45 @@
         <source xml:lang="en">Property values to show on dashboard</source>
         <target state="translated">Valeurs de propriété à afficher sur le tableau de bord</target>
       </trans-unit>
+      <trans-unit id="dashboard.container.left-nav-bar.icon.dark">
+        <source xml:lang="en">Icon path when a dark theme is used</source>
+        <target state="translated">Chemin de l'icône quand un thème foncé est utilisé</target>
+      </trans-unit>
+      <trans-unit id="dashboard.container.left-nav-bar.title">
+        <source xml:lang="en">Title of the nav section to show the user.</source>
+        <target state="translated">Titre de la section de navigation à montrer à l'utilisateur.</target>
+      </trans-unit>
+      <trans-unit id="dashboard.container.left-nav-bar.container">
+        <source xml:lang="en">The container that will be displayed in this nav section.</source>
+        <target state="translated">Conteneur à afficher dans cette section de navigation.</target>
+      </trans-unit>
+      <trans-unit id="dashboard.container.left-nav-bar">
+        <source xml:lang="en">The list of dashboard containers that will be displayed in this navigation section.</source>
+        <target state="translated">Liste des conteneurs de tableau de bord à afficher dans cette section de navigation.</target>
+      </trans-unit>
+      <trans-unit id="navSection.missingTitle.error">
+        <source xml:lang="en">No title in nav section specified for extension.</source>
+        <target state="translated">Aucun titre dans la section de navigation n'a été spécifié pour l'extension.</target>
+      </trans-unit>
+      <trans-unit id="navSection.missingContainer.error">
+        <source xml:lang="en">No container in nav section specified for extension.</source>
+        <target state="translated">Aucun conteneur dans la section de navigation n'a été spécifié pour l'extension.</target>
+      </trans-unit>
+      <trans-unit id="navSection.moreThanOneDashboardContainersError">
+        <source xml:lang="en">Exactly 1 dashboard container must be defined per space.</source>
+        <target state="translated">1 seul conteneur de tableau de bord doit être défini par espace.</target>
+      </trans-unit>
+      <trans-unit id="navSection.invalidContainer.error">
+        <source xml:lang="en">NAV_SECTION within NAV_SECTION is an invalid container for extension.</source>
+        <target state="translated">NAV_SECTION dans NAV_SECTION est un conteneur non valide pour l'extension.</target>
+      </trans-unit>
     </body>
   </file>
-  <file original="src/sql/workbench/contrib/dashboard/browser/pages/dashboardPageContribution" source-language="en" datatype="plaintext" target-language="fr">
+  <file original="src/sql/workbench/contrib/dashboard/browser/containers/dashboardWebviewContainer.contribution" source-language="en" datatype="plaintext" target-language="fr">
     <body>
-      <trans-unit id="azdata.extension.contributes.widget.when">
-        <source xml:lang="en">Condition which must be true to show this item</source>
-        <target state="translated">Condition qui doit être true pour afficher cet élément</target>
-      </trans-unit>
-      <trans-unit id="azdata.extension.contributes.widget.hideHeader">
-        <source xml:lang="en">Whether to hide the header of the widget, default value is false</source>
-        <target state="translated">Indique s'il faut masquer l'en-tête du widget. La valeur par défaut est false</target>
-      </trans-unit>
-      <trans-unit id="dashboardpage.tabName">
-        <source xml:lang="en">The title of the container</source>
-        <target state="translated">Titre du conteneur</target>
-      </trans-unit>
-      <trans-unit id="dashboardpage.rowNumber">
-        <source xml:lang="en">The row of the component in the grid</source>
-        <target state="translated">Ligne du composant dans la grille</target>
-      </trans-unit>
-      <trans-unit id="dashboardpage.rowSpan">
-        <source xml:lang="en">The rowspan of the component in the grid. Default value is 1. Use '*' to set to number of rows in the grid.</source>
-        <target state="translated">Rowspan du composant dans la grille. La valeur par défaut est 1. Utilisez '*' pour le définir sur le nombre de lignes dans la grille.</target>
-      </trans-unit>
-      <trans-unit id="dashboardpage.colNumber">
-        <source xml:lang="en">The column of the component in the grid</source>
-        <target state="translated">Colonne du composant dans la grille</target>
-      </trans-unit>
-      <trans-unit id="dashboardpage.colspan">
-        <source xml:lang="en">The colspan of the component in the grid. Default value is 1. Use '*' to set to number of columns in the grid.</source>
-        <target state="translated">Colspan du composant dans la grille. La valeur par défaut est 1. Utilisez '*' pour le définir sur le nombre de colonnes dans la grille.</target>
-      </trans-unit>
-      <trans-unit id="azdata.extension.contributes.dashboardPage.tab.id">
-        <source xml:lang="en">Unique identifier for this tab. Will be passed to the extension for any requests.</source>
-        <target state="translated">Identificateur unique pour cet onglet. Est transmis à l'extension pour toutes les demandes.</target>
-      </trans-unit>
-      <trans-unit id="dashboardTabError">
-        <source xml:lang="en">Extension tab is unknown or not installed.</source>
-        <target state="translated">L'onglet d'extension est inconnu ou non installé.</target>
+      <trans-unit id="dashboard.container.webview">
+        <source xml:lang="en">The webview that will be displayed in this tab.</source>
+        <target state="translated">Vue web à afficher sous cet onglet.</target>
       </trans-unit>
     </body>
   </file>
@@ -2351,57 +2355,81 @@
   </file>
   <file original="src/sql/workbench/contrib/dashboard/browser/pages/databaseDashboardPage.contribution" source-language="en" datatype="plaintext" target-language="fr">
     <body>
-      <trans-unit id="dashboardDatabaseProperties">
-        <source xml:lang="en">Enable or disable the properties widget</source>
-        <target state="translated">Activer ou désactiver le widget de propriétés</target>
+      <trans-unit id="dashboard.container.widgets">
+        <source xml:lang="en">The list of widgets that will be displayed in this tab.</source>
+        <target state="translated">Liste des widgets à afficher sous cet onglet.</target>
       </trans-unit>
-      <trans-unit id="dashboard.databaseproperties">
-        <source xml:lang="en">Property values to show</source>
-        <target state="translated">Valeurs de propriété à afficher</target>
+      <trans-unit id="widgetContainer.invalidInputs">
+        <source xml:lang="en">The list of widgets is expected inside widgets-container for extension.</source>
+        <target state="translated">La liste des widgets est attendue à l'intérieur du conteneur de widgets pour l'extension.</target>
       </trans-unit>
-      <trans-unit id="dashboard.databaseproperties.displayName">
-        <source xml:lang="en">Display name of the property</source>
-        <target state="translated">Nom d'affichage de la propriété</target>
+    </body>
+  </file>
+  <file original="src/sql/workbench/contrib/dashboard/browser/core/actions" source-language="en" datatype="plaintext" target-language="fr">
+    <body>
+      <trans-unit id="editDashboard">
+        <source xml:lang="en">Edit</source>
+        <target state="translated">Modifier</target>
       </trans-unit>
-      <trans-unit id="dashboard.databaseproperties.value">
-        <source xml:lang="en">Value in the Database Info Object</source>
-        <target state="translated">Valeur de l'objet d'informations de base de données</target>
+      <trans-unit id="editDashboardExit">
+        <source xml:lang="en">Exit</source>
+        <target state="translated">Quitter</target>
       </trans-unit>
-      <trans-unit id="dashboard.databaseproperties.ignore">
-        <source xml:lang="en">Specify specific values to ignore</source>
-        <target state="translated">Spécifiez des valeurs spécifiques à ignorer</target>
+      <trans-unit id="refreshWidget">
+        <source xml:lang="en">Refresh</source>
+        <target state="translated">Actualiser</target>
       </trans-unit>
-      <trans-unit id="recoveryModel">
-        <source xml:lang="en">Recovery Model</source>
-        <target state="translated">Mode de récupération</target>
+      <trans-unit id="toggleMore">
+        <source xml:lang="en">Show Actions</source>
+        <target state="translated">Afficher les actions</target>
       </trans-unit>
-      <trans-unit id="lastDatabaseBackup">
-        <source xml:lang="en">Last Database Backup</source>
-        <target state="translated">Dernière sauvegarde de base de données</target>
+      <trans-unit id="deleteWidget">
+        <source xml:lang="en">Delete Widget</source>
+        <target state="translated">Supprimer le widget</target>
       </trans-unit>
-      <trans-unit id="lastLogBackup">
-        <source xml:lang="en">Last Log Backup</source>
-        <target state="translated">Dernière sauvegarde de journal</target>
+      <trans-unit id="clickToUnpin">
+        <source xml:lang="en">Click to unpin</source>
+        <target state="translated">Cliquer pour désépingler</target>
       </trans-unit>
-      <trans-unit id="compatibilityLevel">
-        <source xml:lang="en">Compatibility Level</source>
-        <target state="translated">Niveau de compatibilité</target>
+      <trans-unit id="clickToPin">
+        <source xml:lang="en">Click to pin</source>
+        <target state="translated">Cliquer pour épingler</target>
       </trans-unit>
-      <trans-unit id="owner">
-        <source xml:lang="en">Owner</source>
-        <target state="translated">Propriétaire</target>
+      <trans-unit id="addFeatureAction.openInstalledFeatures">
+        <source xml:lang="en">Open installed features</source>
+        <target state="translated">Ouvrir les fonctionnalités installées</target>
       </trans-unit>
-      <trans-unit id="dashboardDatabase">
-        <source xml:lang="en">Customizes the database dashboard page</source>
-        <target state="translated">Personnalise la page de tableau de bord de base de données</target>
+      <trans-unit id="collapseWidget">
+        <source xml:lang="en">Collapse Widget</source>
+        <target state="translated">Réduire le widget</target>
       </trans-unit>
-      <trans-unit id="objectsWidgetTitle">
-        <source xml:lang="en">Search</source>
-        <target state="translated">Recherche</target>
+      <trans-unit id="expandWidget">
+        <source xml:lang="en">Expand Widget</source>
+        <target state="translated">Développer le widget</target>
       </trans-unit>
-      <trans-unit id="dashboardDatabaseTabs">
-        <source xml:lang="en">Customizes the database dashboard tabs</source>
-        <target state="translated">Personnalise les onglets de tableau de bord de base de données</target>
+    </body>
+  </file>
+  <file original="src/sql/workbench/contrib/dashboard/browser/core/dashboardHelper" source-language="en" datatype="plaintext" target-language="fr">
+    <body>
+      <trans-unit id="unknownDashboardContainerError">
+        <source xml:lang="en">{0} is an unknown container.</source>
+        <target state="translated">{0} est un conteneur inconnu.</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/sql/workbench/contrib/dashboard/browser/core/dashboardPage.component" source-language="en" datatype="plaintext" target-language="fr">
+    <body>
+      <trans-unit id="home">
+        <source xml:lang="en">Home</source>
+        <target state="translated">Accueil</target>
+      </trans-unit>
+      <trans-unit id="missingConnectionInfo">
+        <source xml:lang="en">No connection information could be found for this dashboard</source>
+        <target state="translated">Aucune information de connexion pour ce tableau de bord</target>
+      </trans-unit>
+      <trans-unit id="dashboard.generalTabGroupHeader">
+        <source xml:lang="en">General</source>
+        <target state="translated">Général</target>
       </trans-unit>
     </body>
   </file>
@@ -2415,49 +2443,49 @@
   </file>
   <file original="src/sql/workbench/contrib/dashboard/browser/pages/serverDashboardPage.contribution" source-language="en" datatype="plaintext" target-language="fr">
     <body>
-      <trans-unit id="dashboardServerProperties">
-        <source xml:lang="en">Enable or disable the properties widget</source>
-        <target state="translated">Activer ou désactiver le widget de propriétés</target>
+      <trans-unit id="azdata.extension.contributes.dashboard.tab.id">
+        <source xml:lang="en">Unique identifier for this tab. Will be passed to the extension for any requests.</source>
+        <target state="translated">Identificateur unique pour cet onglet. Est transmis à l'extension pour toutes les demandes.</target>
       </trans-unit>
-      <trans-unit id="dashboard.serverproperties">
-        <source xml:lang="en">Property values to show</source>
-        <target state="translated">Valeurs de propriété à afficher</target>
+      <trans-unit id="azdata.extension.contributes.dashboard.tab.title">
+        <source xml:lang="en">Title of the tab to show the user.</source>
+        <target state="translated">Titre de l'onglet à montrer à l'utilisateur.</target>
       </trans-unit>
-      <trans-unit id="dashboard.serverproperties.displayName">
-        <source xml:lang="en">Display name of the property</source>
-        <target state="translated">Nom d'affichage de la propriété</target>
+      <trans-unit id="azdata.extension.contributes.dashboard.tab.description">
+        <source xml:lang="en">Description of this tab that will be shown to the user.</source>
+        <target state="translated">Description de cet onglet à montrer à l'utilisateur.</target>
       </trans-unit>
-      <trans-unit id="dashboard.serverproperties.value">
-        <source xml:lang="en">Value in the Server Info Object</source>
-        <target state="translated">Valeur de l'objet d'informations de serveur</target>
+      <trans-unit id="azdata.extension.contributes.tab.when">
+        <source xml:lang="en">Condition which must be true to show this item</source>
+        <target state="translated">Condition qui doit être true pour afficher cet élément</target>
       </trans-unit>
-      <trans-unit id="version">
-        <source xml:lang="en">Version</source>
-        <target state="translated">Version</target>
+      <trans-unit id="azdata.extension.contributes.tab.provider">
+        <source xml:lang="en">Defines the connection types this tab is compatible with. Defaults to 'MSSQL' if not set</source>
+        <target state="translated">Définit les types de connexion avec lesquels cet onglet est compatible. La valeur par défaut est 'MSSQL' si aucune valeur n'est définie</target>
       </trans-unit>
-      <trans-unit id="edition">
-        <source xml:lang="en">Edition</source>
-        <target state="translated">Édition</target>
+      <trans-unit id="azdata.extension.contributes.dashboard.tab.container">
+        <source xml:lang="en">The container that will be displayed in this tab.</source>
+        <target state="translated">Conteneur à afficher sous cet onglet.</target>
       </trans-unit>
-      <trans-unit id="computerName">
-        <source xml:lang="en">Computer Name</source>
-        <target state="translated">Nom de l'ordinateur</target>
+      <trans-unit id="azdata.extension.contributes.dashboard.tab.alwaysShow">
+        <source xml:lang="en">Whether or not this tab should always be shown or only when the user adds it.</source>
+        <target state="translated">Indique si cet onglet doit toujours apparaître ou uniquement quand l'utilisateur l'ajoute.</target>
       </trans-unit>
-      <trans-unit id="osVersion">
-        <source xml:lang="en">OS Version</source>
-        <target state="translated">Version de système d'exploitation</target>
+      <trans-unit id="azdata.extension.contributes.dashboard.tab.isHomeTab">
+        <source xml:lang="en">Whether or not this tab should be used as the Home tab for a connection type.</source>
+        <target state="translated">Indique si cet onglet doit être utilisé comme onglet d'accueil pour un type de connexion.</target>
       </trans-unit>
-      <trans-unit id="explorerWidgetsTitle">
-        <source xml:lang="en">Search</source>
-        <target state="translated">Recherche</target>
+      <trans-unit id="azdata.extension.contributes.dashboard.tab.group">
+        <source xml:lang="en">The unique identifier of the group this tab belongs to, value for home group: home.</source>
+        <target state="translated">Identificateur unique du groupe auquel appartient cet onglet, valeur du groupe d'accueil : accueil.</target>
       </trans-unit>
-      <trans-unit id="dashboardServer">
-        <source xml:lang="en">Customizes the server dashboard page</source>
-        <target state="translated">Personnalise la page de tableau de bord de serveur</target>
+      <trans-unit id="dazdata.extension.contributes.dashboard.tab.icon">
+        <source xml:lang="en">(Optional) Icon which is used to represent this tab in the UI. Either a file path or a themeable configuration</source>
+        <target state="translated">(Facultatif) Icône utilisée pour représenter cet onglet dans l'interface utilisateur (chemin de fichier ou configuration à thèmes)</target>
       </trans-unit>
-      <trans-unit id="dashboardServerTabs">
-        <source xml:lang="en">Customizes the Server dashboard tabs</source>
-        <target state="translated">Personnalise les onglets de tableau de bord de serveur</target>
+      <trans-unit id="azdata.extension.contributes.dashboard.tab.icon.light">
+        <source xml:lang="en">Icon path when a light theme is used</source>
+        <target state="translated">Chemin de l'icône quand un thème clair est utilisé</target>
       </trans-unit>
     </body>
   </file>
@@ -2917,35 +2945,43 @@
       </trans-unit>
     </body>
   </file>
-  <file original="src/sql/workbench/contrib/editData/browser/gridActions" source-language="en" datatype="plaintext" target-language="fr">
+  <file original="src/sql/workbench/contrib/dashboard/browser/widgets/insights/views/imageInsight.contribution" source-language="en" datatype="plaintext" target-language="fr">
     <body>
-      <trans-unit id="saveAsCsv">
-        <source xml:lang="en">Save As CSV</source>
-        <target state="translated">Enregistrer au format CSV</target>
+      <trans-unit id="imageInsightDescription">
+        <source xml:lang="en">Displays an image, for example one returned by an R query using ggplot2</source>
+        <target state="translated">Affiche une image, par exemple, celle retournée par une requête de type R utilisant ggplot2</target>
       </trans-unit>
-      <trans-unit id="saveAsJson">
-        <source xml:lang="en">Save As JSON</source>
-        <target state="translated">Enregistrer au format JSON</target>
+      <trans-unit id="imageFormatDescription">
+        <source xml:lang="en">What format is expected - is this a JPEG, PNG or other format?</source>
+        <target state="translated">Format attendu : JPEG, PNG ou un autre format ?</target>
       </trans-unit>
-      <trans-unit id="saveAsExcel">
-        <source xml:lang="en">Save As Excel</source>
-        <target state="translated">Enregistrer au format Excel</target>
+      <trans-unit id="encodingDescription">
+        <source xml:lang="en">Is this encoded as hex, base64 or some other format?</source>
+        <target state="translated">Cet objet est-il encodé en hexadécimal, base64 ou un autre format ?</target>
       </trans-unit>
-      <trans-unit id="saveAsXml">
-        <source xml:lang="en">Save As XML</source>
-        <target state="translated">Enregistrer au format XML</target>
+    </body>
+  </file>
+  <file original="src/sql/workbench/contrib/dashboard/browser/widgets/insights/views/tableInsight.contribution" source-language="en" datatype="plaintext" target-language="fr">
+    <body>
+      <trans-unit id="tableInsightDescription">
+        <source xml:lang="en">Displays the results in a simple table</source>
+        <target state="translated">Affiche les résultats dans un tableau simple</target>
       </trans-unit>
-      <trans-unit id="copySelection">
-        <source xml:lang="en">Copy</source>
-        <target state="translated">Copier</target>
+    </body>
+  </file>
+  <file original="src/sql/workbench/contrib/dashboard/browser/widgets/properties/propertiesWidget.component" source-language="en" datatype="plaintext" target-language="fr">
+    <body>
+      <trans-unit id="loadingProperties">
+        <source xml:lang="en">Loading properties</source>
+        <target state="translated">Chargement des propriétés</target>
       </trans-unit>
-      <trans-unit id="copyWithHeaders">
-        <source xml:lang="en">Copy With Headers</source>
-        <target state="translated">Copier avec les en-têtes</target>
+      <trans-unit id="loadingPropertiesCompleted">
+        <source xml:lang="en">Loading properties completed</source>
+        <target state="translated">Les propriétés ont été chargées</target>
       </trans-unit>
-      <trans-unit id="selectAll">
-        <source xml:lang="en">Select All</source>
-        <target state="translated">Tout sélectionner</target>
+      <trans-unit id="dashboard.properties.error">
+        <source xml:lang="en">Unable to load dashboard properties</source>
+        <target state="translated">Impossible de charger les propriétés de tableau de bord</target>
       </trans-unit>
     </body>
   </file>
@@ -4307,7 +4343,7 @@ Erreur : {1}</target>
     <body>
       <trans-unit id="notebookEditor.name">
         <source xml:lang="en">Notebook Editor</source>
-        <target state="new">Notebook Editor</target>
+        <target state="translated">Éditeur de notebook</target>
       </trans-unit>
     </body>
   </file>
@@ -4588,14 +4624,6 @@ Erreur : {1}</target>
       <trans-unit id="profiler.clearDataPrompt">
         <source xml:lang="en">Are you sure you want to clear the data?</source>
         <target state="translated">Voulez-vous vraiment effacer les données ?</target>
-      </trans-unit>
-      <trans-unit id="profiler.yes">
-        <source xml:lang="en">Yes</source>
-        <target state="translated">Oui</target>
-      </trans-unit>
-      <trans-unit id="profiler.no">
-        <source xml:lang="en">No</source>
-        <target state="translated">Non</target>
       </trans-unit>
       <trans-unit id="profilerAction.autoscrollOn">
         <source xml:lang="en">Auto Scroll: On</source>
@@ -5091,7 +5119,7 @@ Erreur : {1}</target>
     <body>
       <trans-unit id="queryEditor.name">
         <source xml:lang="en">Query Editor</source>
-        <target state="new">Query Editor</target>
+        <target state="translated">Éditeur de requêtes</target>
       </trans-unit>
     </body>
   </file>
@@ -5289,7 +5317,7 @@ Erreur : {1}</target>
     <body>
       <trans-unit id="queryPlanEditor">
         <source xml:lang="en">Query Plan Editor</source>
-        <target state="new">Query Plan Editor</target>
+        <target state="translated">Éditeur du plan de requête</target>
       </trans-unit>
     </body>
   </file>
@@ -5358,6 +5386,14 @@ Erreur : {1}</target>
       <trans-unit id="topOperationsTitle">
         <source xml:lang="en">Top Operations</source>
         <target state="translated">Principales opérations</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/sql/workbench/contrib/resourceDeployment/browser/resourceDeployment.contribution" source-language="en" datatype="plaintext" target-language="fr">
+    <body>
+      <trans-unit id="deployment.title">
+        <source xml:lang="en">New Deployment...</source>
+        <target state="translated">Nouveau déploiement...</target>
       </trans-unit>
     </body>
   </file>

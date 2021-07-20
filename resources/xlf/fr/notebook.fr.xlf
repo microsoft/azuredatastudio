@@ -60,7 +60,7 @@
       </trans-unit>
       <trans-unit id="notebook.allowRoot.description">
         <source xml:lang="en">Allow Jupyter server to run as root user</source>
-        <target state="new">Allow Jupyter server to run as root user</target>
+        <target state="translated">Autoriser le serveur Jupyter à s’exécuter en tant qu’utilisateur racine</target>
       </trans-unit>
       <trans-unit id="notebook.command.new">
         <source xml:lang="en">New Notebook</source>
@@ -391,9 +391,9 @@
         <target state="translated">Échec de la fermerture de Jupyter Book {0} : {1}</target>
       </trans-unit>
       <trans-unit id="duplicateFileError">
-        <source xml:lang="en">File {0} already exists in the destination folder {1} 
+        <source xml:lang="en">File {0} already exists in the destination folder {1}
  The file has been renamed to {2} to prevent data loss.</source>
-        <target state="translated">Le fichier {0} existe déjà dans le dossier de destination {1} 
+        <target state="translated">Le fichier {0} existe déjà dans le dossier de destination {1}
  Le fichier a été renommé en {2} pour éviter toute perte de données.</target>
       </trans-unit>
       <trans-unit id="editBookError">

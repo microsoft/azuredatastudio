@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file original="extensions/azurehybridtoolkit/package" source-language="en" datatype="plaintext" target-language="de">
+    <body>
+      <trans-unit id="displayName">
+        <source xml:lang="en">Azure SQL Hybrid Cloud Toolkit</source>
+        <target state="translated">Azure SQL Hybrid Cloud Toolkit</target>
+      </trans-unit>
+      <trans-unit id="description">
+        <source xml:lang="en">Opens up Azure SQL Hybrid Cloud Toolkit Jupyter Book</source>
+        <target state="translated">Öffnet das Jupyter Book für Azure SQL Hybrid Cloud Toolkit.</target>
+      </trans-unit>
+      <trans-unit id="title.openJupyterBook">
+        <source xml:lang="en">Open Azure SQL Hybrid Cloud Toolkit Jupyter Book</source>
+        <target state="translated">Jupyter Book für Azure SQL Hybrid Cloud Toolkit öffnen</target>
+      </trans-unit>
+      <trans-unit id="title.cloudHybridBooks">
+        <source xml:lang="en">Azure SQL Hybrid Cloud Toolkit</source>
+        <target state="translated">Azure SQL Hybrid Cloud Toolkit</target>
+      </trans-unit>
+      <trans-unit id="books-preview-category">
+        <source xml:lang="en">Jupyter Books</source>
+        <target state="translated">Jupyter Books</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>
