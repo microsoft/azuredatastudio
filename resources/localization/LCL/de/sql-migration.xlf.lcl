@@ -13,6 +13,9 @@
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.azure.accounts.accountAccessError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[An error occurred while accessing the selected account '{0}'. Please click the 'Link Account' button and refresh the account or select a different account. Error '{1}']]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Während auf das ausgewählte Konto "{0}" zugegriffen wurde, ist ein Fehler aufgetreten. Klicken Sie auf die Schaltfläche "Konto verknüpfen", und aktualisieren Sie das Konto, oder wählen Sie ein anderes Konto aus. Error "{1}"]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -424,12 +427,18 @@
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.cannot.cancel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Migration is not in progress and cannot be cancelled.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Die Migration ist nicht in Bearbeitung und kann nicht abgebrochen werden.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.cannot.cutover" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Migration is not in progress and cannot be cutover.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Die Migration ist nicht in Bearbeitung und kann nicht überlappen.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2645,7 +2654,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Cancelling]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Wird abgebrochen]]></Val>
+            <Val><![CDATA[Abbrechen]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2671,8 +2680,8 @@
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.status.error.count.multiple" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[{0} Errors)]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[{0} ({1} Fehler)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[{0} Fehler)]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[{0} ({1} Errors)]]></Val>
@@ -2692,8 +2701,8 @@
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.status.error.count.single" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[{0} Error)]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[{0} ({1} Fehler)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[{0} Fehler)]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[{0} ({1} Error)]]></Val>
@@ -2749,8 +2758,8 @@
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.status.warning.count.multiple" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[{0} Warnings)]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[{0} ({1} Warnungen)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[{0} Warnungen)]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[{0} ({1} Warnings)]]></Val>
@@ -2761,8 +2770,8 @@
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.status.warning.count.single" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[{0} Warning)]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[{0} ({1} Warnung)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[{0} Warnung)]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[{0} ({1} Warning)]]></Val>
@@ -3244,6 +3253,9 @@
       <Item ItemId=";extensions/sql-migration/package.copy-migration-menu" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Copy migration details]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Migrationsdetails kopieren]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3286,6 +3298,9 @@
       <Item ItemId=";extensions/sql-migration/package.migration-context-menu-category" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Migration Context Menu]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Migrationskontextmenü]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3337,12 +3352,18 @@
       <Item ItemId=";extensions/sql-migration/package.view-service-menu" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Dataase Migration Service details]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Details zum Database Migration Service]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-migration/package.view-target-menu" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Azure SQL Target details]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Azure SQL-Zieldetails]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
