@@ -19,6 +19,8 @@ import { startsWith } from 'vs/base/common/strings';
 import { IRange } from 'vs/editor/common/core/range';
 import { AbstractTextResourceEditorInput } from 'vs/workbench/common/editor/textResourceEditorInput';
 import { IQueryEditorConfiguration } from 'sql/platform/query/common/query';
+import { isEqual } from 'vs/base/common/resources';
+import { ITextFileSaveOptions } from 'vs/workbench/services/textfile/common/textfiles';
 
 const MAX_SIZE = 13;
 
@@ -106,6 +108,10 @@ export class QueryEditorState extends Disposable {
 	public get isSqlCmdMode(): boolean {
 		return this._isSqlCmdMode;
 	}
+}
+
+export interface IQueryEditorInput extends IEditorInput {
+	resultsVisible?: boolean;
 }
 
 /**
@@ -227,8 +233,40 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 	}
 
 	override saveAs(group: GroupIdentifier, options?: ISaveOptions): Promise<IEditorInput | undefined> {
-		return this.text.saveAs(group, options);
+		return this.doSave(options, true);
+		//return this.text.saveAs(group, options);
 	}
+
+	public async doSave(options: ITextFileSaveOptions | undefined, saveAs: boolean): Promise<IEditorInput | undefined> {
+
+		// Save / Save As
+		let target: URI | undefined;
+		if (saveAs) {
+			target = await this.text.textFileService.saveAs(this.resource, undefined, { ...options, suggestedTarget: this.text.preferredResource });
+		} else {
+			target = await this.text.textFileService.save(this.resource, options);
+		}
+
+		if (!target) {
+			return undefined; // save cancelled
+		}
+
+		// If this save operation results in a new editor, either
+		// because it was saved to disk (e.g. from untitled) or
+		// through an explicit "Save As", make sure to replace it.
+		if (
+			target.scheme !== this.resource.scheme ||
+			(saveAs && !isEqual(target, this.text.preferredResource))
+		) {
+			let newInput: IQueryEditorInput = this.text.editorService.createEditorInput({ resource: target });
+			newInput.resultsVisible = this.state.resultsVisible;
+			return newInput;
+		}
+
+		return this;
+	}
+
+
 
 	// Called to get the tooltip of the tab
 	public override getTitle(): string {

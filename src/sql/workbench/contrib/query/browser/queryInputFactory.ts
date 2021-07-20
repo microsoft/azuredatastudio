@@ -13,7 +13,7 @@ import { FileQueryEditorInput } from 'sql/workbench/contrib/query/common/fileQue
 import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
 import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
 import { ILanguageAssociation } from 'sql/workbench/services/languageAssociation/common/languageAssociation';
-import { QueryEditorInput } from 'sql/workbench/common/editor/query/queryEditorInput';
+import { QueryEditorInput, IQueryEditorInput } from 'sql/workbench/common/editor/query/queryEditorInput';
 import { getCurrentGlobalConnection } from 'sql/workbench/browser/taskUtilities';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import { IConnectionManagementService, IConnectionCompletionOptions, ConnectionType } from 'sql/platform/connection/common/connectionManagement';
@@ -80,6 +80,9 @@ export class QueryEditorLanguageAssociation implements ILanguageAssociation {
 			queryEditorInput = this.instantiationService.createInstance(UntitledQueryEditorInput, '', activeEditor, queryResultsInput);
 		} else {
 			return undefined;
+		}
+		if ((activeEditor as IQueryEditorInput).resultsVisible) {
+			queryEditorInput.state.resultsVisible = true;
 		}
 
 		const profile = getCurrentGlobalConnection(this.objectExplorerService, this.connectionManagementService, this.editorService);

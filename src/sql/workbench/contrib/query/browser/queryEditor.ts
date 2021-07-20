@@ -344,13 +344,6 @@ export class QueryEditor extends EditorPane {
 			return Promise.resolve();
 		}
 
-		if (newInput.state.resultsVisible) {
-			//console.log('Results are visible!');
-		}
-		else {
-			//console.log('Results are not visible!');
-		}
-
 		if (oldInput) {
 			// Remember view settings if input changes
 			this.saveQueryEditorViewState(this.input);

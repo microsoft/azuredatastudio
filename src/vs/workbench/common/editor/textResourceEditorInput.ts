@@ -25,9 +25,9 @@ export abstract class AbstractTextResourceEditorInput extends EditorInput implem
 	constructor(
 		public readonly resource: URI,
 		preferredResource: URI | undefined,
-		@IEditorService protected readonly editorService: IEditorService,
+		@IEditorService public readonly editorService: IEditorService, // {{SQL CARBON EDIT}} - Required in Query Editor Input.
 		@IEditorGroupsService protected readonly editorGroupService: IEditorGroupsService,
-		@ITextFileService protected readonly textFileService: ITextFileService,
+		@ITextFileService public readonly textFileService: ITextFileService, // {{SQL CARBON EDIT}} - Required in Query Editor Input.
 		@ILabelService protected readonly labelService: ILabelService,
 		@IFileService protected readonly fileService: IFileService,
 		@IFilesConfigurationService protected readonly filesConfigurationService: IFilesConfigurationService
@@ -206,7 +206,8 @@ export abstract class AbstractTextResourceEditorInput extends EditorInput implem
 		return this.doSave(options, true);
 	}
 
-	private async doSave(options: ITextFileSaveOptions | undefined, saveAs: boolean): Promise<IEditorInput | undefined> {
+	//{{SQL CARBON EDIT}} - Needed in QueryEditor.
+	public async doSave(options: ITextFileSaveOptions | undefined, saveAs: boolean): Promise<IEditorInput | undefined> {
 
 		// Save / Save As
 		let target: URI | undefined;
