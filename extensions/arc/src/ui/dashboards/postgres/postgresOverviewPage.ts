@@ -82,7 +82,7 @@ export class PostgresOverviewPage extends DashboardPage {
 		content.addItem(this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
 			value: loc.serviceEndpoints,
 			CSSStyles: titleCSS,
-			ariaRole: 'heading'
+			headingLevel: 1
 		}).component());
 
 		this.kibanaLink = this.modelView.modelBuilder.hyperlink().component();
@@ -151,7 +151,7 @@ export class PostgresOverviewPage extends DashboardPage {
 		content.addItem(this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
 			value: loc.serverGroupNodes,
 			CSSStyles: titleCSS,
-			ariaRole: 'heading'
+			headingLevel: 1
 		}).component());
 
 		this.podStatusTable = this.modelView.modelBuilder.declarativeTable().withProps({
