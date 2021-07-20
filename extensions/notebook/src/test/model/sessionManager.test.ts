@@ -289,6 +289,8 @@ describe('Jupyter Session', function (): void {
 			isCloud: false,
 			azureVersion: 0,
 			osVersion: '',
+			cpuCount: 0,
+			physicalMemoryInMb: -1,
 			options: {
 				isBigDataCluster: true
 			}
