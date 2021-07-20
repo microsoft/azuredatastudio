@@ -238,7 +238,7 @@ function refreshLangpacks() {
         }
         let packageJSON = JSON.parse(fs.readFileSync(path.join(locExtFolder, 'package.json')).toString());
         //processing extension fields, version and folder name must be changed manually.
-        packageJSON['name'] = packageJSON['name'].replace('vscode', textFields.nameText);
+        packageJSON['name'] = packageJSON['name'].replace('vscode', textFields.nameText).toLowerCase();
         packageJSON['displayName'] = packageJSON['displayName'].replace('Visual Studio Code', textFields.displayNameText);
         packageJSON['publisher'] = textFields.publisherText;
         packageJSON['license'] = textFields.licenseText;
