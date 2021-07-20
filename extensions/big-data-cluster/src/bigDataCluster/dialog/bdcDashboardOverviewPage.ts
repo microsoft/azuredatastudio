@@ -333,7 +333,7 @@ export class BdcDashboardOverviewPage extends BdcDashboardPage {
 						CSSStyles: { 'user-select': 'none', ...cssStyles.text }
 					}).component();
 				const nameCell = this.modelView.modelBuilder.hyperlink()
-					.withProperties<azdata.HyperlinkComponentProperties>({
+					.withProps({
 						label: getServiceNameDisplayText(serviceStatus.serviceName),
 						url: '',
 						CSSStyles: { ...cssStyles.text }
@@ -426,7 +426,7 @@ export class BdcDashboardOverviewPage extends BdcDashboardPage {
 function createEndpointComponent(modelBuilder: azdata.ModelBuilder, endpoint: EndpointModel, bdcModel: BdcDashboardModel, isHyperlink: boolean): azdata.HyperlinkComponent | azdata.TextComponent {
 	if (isHyperlink) {
 		return modelBuilder.hyperlink()
-			.withProperties<azdata.HyperlinkComponentProperties>({
+			.withProps({
 				label: endpoint.endpoint,
 				title: endpoint.endpoint,
 				url: endpoint.endpoint
@@ -435,7 +435,7 @@ function createEndpointComponent(modelBuilder: azdata.ModelBuilder, endpoint: En
 	}
 	else if (endpoint.name === Endpoint.sqlServerMaster) {
 		const endpointCell = modelBuilder.hyperlink()
-			.withProperties<azdata.HyperlinkComponentProperties>({
+			.withProps({
 				title: endpoint.endpoint,
 				label: endpoint.endpoint,
 				url: '',

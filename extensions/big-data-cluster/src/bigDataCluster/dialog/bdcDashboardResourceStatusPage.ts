@@ -299,7 +299,7 @@ export class BdcDashboardResourceStatusPage extends BdcDashboardPage {
 		if (isNullOrUndefined(instanceStatus.dashboards) || isNullOrUndefined(instanceStatus.dashboards.nodeMetricsUrl)) {
 			row.push(this.modelView.modelBuilder.text().withProps({ value: loc.notAvailable, CSSStyles: { ...cssStyles.text } }).component());
 		} else {
-			row.push(this.modelView.modelBuilder.hyperlink().withProperties<azdata.HyperlinkComponentProperties>({
+			row.push(this.modelView.modelBuilder.hyperlink().withProps({
 				label: loc.view,
 				url: instanceStatus.dashboards.nodeMetricsUrl,
 				title: instanceStatus.dashboards.nodeMetricsUrl,
@@ -314,7 +314,7 @@ export class BdcDashboardResourceStatusPage extends BdcDashboardPage {
 			if (isNullOrUndefined(instanceStatus.dashboards) || isNullOrUndefined(instanceStatus.dashboards.sqlMetricsUrl)) {
 				row.push(this.modelView.modelBuilder.text().withProps({ value: loc.notAvailable, CSSStyles: { ...cssStyles.text } }).component());
 			} else {
-				row.push(this.modelView.modelBuilder.hyperlink().withProperties<azdata.HyperlinkComponentProperties>({
+				row.push(this.modelView.modelBuilder.hyperlink().withProps({
 					label: loc.view,
 					url: instanceStatus.dashboards.sqlMetricsUrl,
 					title: instanceStatus.dashboards.sqlMetricsUrl,
@@ -327,7 +327,7 @@ export class BdcDashboardResourceStatusPage extends BdcDashboardPage {
 		if (isNullOrUndefined(instanceStatus.dashboards) || isNullOrUndefined(instanceStatus.dashboards.logsUrl)) {
 			row.push(this.modelView.modelBuilder.text().withProps({ value: loc.notAvailable, CSSStyles: { ...cssStyles.text } }).component());
 		} else {
-			row.push(this.modelView.modelBuilder.hyperlink().withProperties<azdata.HyperlinkComponentProperties>({
+			row.push(this.modelView.modelBuilder.hyperlink().withProps({
 				label: loc.view,
 				url: instanceStatus.dashboards.logsUrl,
 				title: instanceStatus.dashboards.logsUrl,

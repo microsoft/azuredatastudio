@@ -220,7 +220,7 @@ export class AssessmentResultGrid implements vscode.Disposable {
 		this.checkDescriptionPlaceholder = view.modelBuilder.text().withProps({
 			CSSStyles: { ...cssNoMarginFloatLeft, 'padding-right': '2px' }
 		}).component();
-		this.clickHereLabel = view.modelBuilder.hyperlink().withProperties<azdata.HyperlinkComponentProperties>({
+		this.clickHereLabel = view.modelBuilder.hyperlink().withProps({
 			label: localize('asmt.details.clickHere', "Click here"),
 			url: '',
 			CSSStyles: cssNoMarginFloatLeft

@@ -50,7 +50,7 @@ export class SqlAssessmentHistoryTab extends SqlAssessmentTab {
 			CSSStyles: { 'font-weight': 'bold', 'margin-block-start': '0px', 'margin-block-end': '0px', 'font-size': '20px', 'padding-left': '20px', 'padding-bottom': '20px' }
 		}).component();
 
-		const backLink = view.modelBuilder.hyperlink().withProperties<azdata.HyperlinkComponentProperties>({
+		const backLink = view.modelBuilder.hyperlink().withProps({
 			label: localize('asmt.history.back', "<< Back"),
 			url: '',
 			CSSStyles: { 'text-decoration': 'none', 'width': '150px' }
