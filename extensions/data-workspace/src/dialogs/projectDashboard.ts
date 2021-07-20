@@ -159,13 +159,13 @@ export class ProjectDashboard {
 			}).component();
 
 		const titleLabel = this.modelView!.modelBuilder.text()
-			.withProperties<azdataType.TextComponentProperties>({ value: title, CSSStyles: { 'margin-block-start': '20px', 'margin-block-end': '0px' } })
+			.withProps({ value: title, CSSStyles: { 'margin-block-start': '20px', 'margin-block-end': '0px' } })
 			.component();
 		header.addItem(titleLabel, { CSSStyles: { 'padding-left': '34px', 'padding-top': '15px', 'font-size': '36px', 'font-weight': '400' } });
 
 		const projectFolderPath = path.dirname(location);
 		const locationLabel = this.modelView!.modelBuilder.text()
-			.withProperties<azdataType.TextComponentProperties>({ value: projectFolderPath, CSSStyles: { 'margin-block-start': '20px', 'margin-block-end': '0px' } })
+			.withProps({ value: projectFolderPath, CSSStyles: { 'margin-block-start': '20px', 'margin-block-end': '0px' } })
 			.component();
 		header.addItem(locationLabel, { CSSStyles: { 'padding-left': '34px', 'padding-top': '15px', 'padding-bottom': '50px', 'font-size': '16px' } });
 
@@ -200,14 +200,14 @@ export class ProjectDashboard {
 
 		dashboardData.forEach(info => {
 			const tableNameLabel = this.modelView!.modelBuilder.text()
-				.withProperties<azdataType.TextComponentProperties>({ value: info.name, CSSStyles: { 'margin-block-start': '30px', 'margin-block-end': '0px' } })
+				.withProps({ value: info.name, CSSStyles: { 'margin-block-start': '30px', 'margin-block-end': '0px' } })
 				.component();
 			tableContainer.addItem(tableNameLabel, { CSSStyles: { 'padding-left': '25px', 'padding-bottom': '20px', ...constants.cssStyles.title } });
 
 			if (info.data.length === 0) {
 				const noDataText = constants.noPreviousData(info.name.toLocaleLowerCase());
 				const noDataLabel = this.modelView!.modelBuilder.text()
-					.withProperties<azdataType.TextComponentProperties>({ value: noDataText })
+					.withProps({ value: noDataText })
 					.component();
 				tableContainer.addItem(noDataLabel, { CSSStyles: { 'padding-left': '25px', 'padding-bottom': '20px' } });
 			} else {
@@ -243,7 +243,7 @@ export class ProjectDashboard {
 								iconHeight: '15px',
 								iconWidth: '15px'
 							}).component();
-							const stringComponent = this.modelView!.modelBuilder.text().withProperties<azdataType.TextComponentProperties>({
+							const stringComponent = this.modelView!.modelBuilder.text().withProps({
 								value: val.text,
 								CSSStyles: { 'margin-block-start': 'auto', 'block-size': 'auto', 'margin-block-end': '0px' }
 							}).component();
