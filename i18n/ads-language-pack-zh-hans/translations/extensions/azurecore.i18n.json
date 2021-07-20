@@ -41,6 +41,7 @@
 		"dist/azureResource/utils": {
 			"azure.resource.error": "错误: {0}",
 			"azure.accounts.getResourceGroups.queryError": "为帐户 {0} ({1})订阅 {2} ({3})租户 {4} 提取资源组时出错: {5}",
+			"azure.accounts.getLocations.queryError": "提取帐户 {0} ({1})订阅 {2} ({3})租户 {4} 的位置时出错: {5}",
 			"azure.accounts.runResourceQuery.errors.invalidQuery": "查询无效",
 			"azure.accounts.getSubscriptions.queryError": "为帐户 {0} 租户 {1} 提取订阅时出错: {2}",
 			"azure.accounts.getSelectedSubscriptions.queryError": "为帐户 {0} 提取订阅时出错: {1}"
@@ -105,7 +106,7 @@
 			"azurecore.azureArcsqlManagedInstance": "SQL 托管实例 - Azure Arc",
 			"azurecore.azureArcService": "数据服务 - Azure Arc",
 			"azurecore.sqlServerArc": "SQL Server - Azure Arc",
-			"azurecore.azureArcPostgres": "已启用 Azure Arc 的 PostgreSQL 超大规模",
+			"azurecore.azureArcPostgres": "启用 Azure Arc 的 PostgreSQL 超大规模",
 			"azure.unableToOpenAzureLink": "无法打开链接，缺少所需的值",
 			"azure.azureResourcesGridTitle": "Azure 资源(预览)",
 			"azurecore.invalidAzureAccount": "帐户无效",
@@ -114,7 +115,7 @@
 		},
 		"dist/account-provider/auths/azureAuth": {
 			"azureAuth.unidentifiedError": "使用 Azure 身份验证时出现不明错误",
-			"azure.tenantNotFound": "找不到 ID 为“{0}”的指定租户。",
+			"azure.tenantNotFound": "找不到带有 ID '{0}' 的指定租户。",
 			"azure.noBaseToken": "身份验证失败，或者你的令牌已从系统中删除。请尝试再次将帐户添加到 Azure Data Studio。",
 			"azure.responseError": "令牌检索失败，出现错误。请打开开发人员工具以查看错误",
 			"azure.accessTokenEmpty": "未从 Microsoft OAuth 返回访问令牌",
@@ -141,7 +142,9 @@
 		"dist/azureResource/tree/flatAccountTreeNode": {
 			"azure.resource.tree.accountTreeNode.titleLoading": "{0} - 正在加载...",
 			"azure.resource.tree.accountTreeNode.title": "{0} ({1}/{2} 个订阅)",
-			"azure.resource.tree.accountTreeNode.credentialError": "未能获取帐户 {0} 的凭据。请转到“帐户”对话框并刷新帐户。"
+			"azure.resource.tree.accountTreeNode.credentialError": "未能获取帐户 {0} 的凭据。请转到“帐户”对话框并刷新帐户。",
+			"azure.resource.throttleerror": "已限制来自此帐户的请求。要重试，请选择少量订阅。",
+			"azure.resource.tree.loadresourceerror": "加载 Azure 资源时出错: {0}"
 		},
 		"dist/azureResource/tree/accountNotSignedInTreeNode": {
 			"azure.resource.tree.accountNotSignedInTreeNode.signInLabel": "登录到 Azure…"
@@ -202,6 +205,9 @@
 		},
 		"dist/azureResource/providers/kusto/kustoTreeDataProvider": {
 			"azure.resource.providers.KustoContainerLabel": "Azure 数据资源管理器群集"
+		},
+		"dist/azureResource/providers/azuremonitor/azuremonitorTreeDataProvider": {
+			"azure.resource.providers.AzureMonitorContainerLabel": "Azure Monitor Workspace"
 		},
 		"dist/azureResource/providers/postgresServer/postgresServerTreeDataProvider": {
 			"azure.resource.providers.databaseServer.treeDataProvider.postgresServerContainerLabel": "Azure Database for PostgreSQL 服务器"
