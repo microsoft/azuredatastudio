@@ -229,7 +229,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		let element = <HTMLElement>event.srcElement;
 		this._scrollTop = element.scrollTop;
 
-		if (this.virtualScrollerEnabled && (viewPortInfo.scrollEndPosition + 300) >= element.scrollHeight) {
+		if (this.virtualScrollerEnabled && !this.isLoadingMoreCells && (viewPortInfo.scrollEndPosition + 100) >= element.scrollHeight) {
 			this.fetchMore(viewPortInfo);
 		}
 	}
