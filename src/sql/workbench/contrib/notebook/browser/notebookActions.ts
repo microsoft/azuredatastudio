@@ -182,7 +182,7 @@ export abstract class ToggleableAction extends Action {
 	}
 }
 
-export class NotebookViewsOptions implements IActionProvider {
+export class NotebookViewsActionProvider implements IActionProvider {
 	private _options: Action[];
 	private views: NotebookViewsExtension;
 	private viewMode: ViewMode;
@@ -216,7 +216,9 @@ export class NotebookViewsOptions implements IActionProvider {
 		return this._options;
 	}
 
-	// Update SelectBox values
+	/**
+	 * Update SelectBox values
+	 */
 	public updateView() {
 		const backToNotebookButton = this.instantiationService.createInstance(NotebookViewAction, 'notebookView.backToNotebook', localize('notebookViewLabel', 'Editor'), 'notebook-button');
 		const newViewButton = this.instantiationService.createInstance(CreateNotebookViewAction, 'notebookView.newView', localize('newViewLabel', 'Create New View'), 'notebook-button notebook-button-newview');
@@ -259,6 +261,9 @@ export class NotebookViewsOptions implements IActionProvider {
 	}
 }
 
+/**
+ * Action to open a Notebook View
+ */
 export class DashboardViewAction extends Action {
 	constructor(
 		id: string, label: string, cssClass: string,
@@ -267,24 +272,21 @@ export class DashboardViewAction extends Action {
 		super(id, label, cssClass);
 	}
 
-	public override run(context: URI): Promise<void> {
-		return new Promise<void>((resolve, reject) => {
-			try {
-				const editor = this._notebookService.findNotebookEditor(context);
-				let views = editor.views;
-				const view = views.getViews().find(view => view.guid === this.id);
+	public override async run(context: URI): Promise<void> {
+		if (context) {
+			const editor = this._notebookService.findNotebookEditor(context);
+			let views = editor.views;
+			const view = views.getViews().find(view => view.guid === this.id);
 
-				views.setActiveView(view);
-				editor.model.viewMode = ViewMode.Views;
-
-				resolve();
-			} catch (e) {
-				reject(e);
-			}
-		});
+			views.setActiveView(view);
+			editor.model.viewMode = ViewMode.Views;
+		}
 	}
 }
 
+/**
+ * Action to open enter the default notebook editor
+ */
 export class NotebookViewAction extends Action {
 	constructor(
 		id: string, label: string, cssClass: string,
