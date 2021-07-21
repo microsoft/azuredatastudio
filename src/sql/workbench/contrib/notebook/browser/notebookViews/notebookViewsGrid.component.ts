@@ -19,10 +19,6 @@ export interface INotebookViewsGridOptions {
 	cellHeight?: number;
 }
 
-const defaultGridOptions: INotebookViewsGridOptions = {
-	cellHeight: 60
-};
-
 @Component({
 	selector: 'notebook-views-grid-component',
 	templateUrl: decodeURI(require.toUrl('./notebookViewsGrid.component.html')),
@@ -38,16 +34,17 @@ export class NotebookViewsGridComponent extends AngularDisposable implements OnI
 	@ViewChildren(NotebookViewsCardComponent) private _items: QueryList<NotebookViewsCardComponent>;
 
 	protected _grid: GridStack;
-	protected _activeView: INotebookView;
 	protected _gridEnabled: boolean;
 	protected _loaded: boolean;
 
+	protected _options: INotebookViewsGridOptions = {
+		cellHeight: 60
+	};;
+
 	constructor(
-		protected _options: INotebookViewsGridOptions,
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
 	) {
 		super();
-		this._options = { ...defaultGridOptions, ..._options };
 		this._loaded = false;
 	}
 
@@ -67,7 +64,6 @@ export class NotebookViewsGridComponent extends AngularDisposable implements OnI
 
 	ngAfterViewInit() {
 		const self = this;
-		this._activeView = this.activeView;
 
 		this.createGrid();
 
@@ -80,7 +76,7 @@ export class NotebookViewsGridComponent extends AngularDisposable implements OnI
 	}
 
 	ngAfterContentChecked() {
-		if (!this._activeView || this.activeView.guid !== this._activeView.guid) {
+		if (!this.activeView || this.activeView.guid !== this.activeView.guid) {
 			if (this._grid) {
 				this.destroyGrid();
 				this._grid = undefined;
@@ -89,8 +85,7 @@ export class NotebookViewsGridComponent extends AngularDisposable implements OnI
 	}
 
 	ngAfterViewChecked() {
-		if (!this._activeView || this.activeView.guid !== this._activeView.guid) {
-			this._activeView = this.activeView;
+		if (!this.activeView || this.activeView.guid !== this.activeView.guid) {
 
 			if (!this._grid) {
 				this.createGrid();
