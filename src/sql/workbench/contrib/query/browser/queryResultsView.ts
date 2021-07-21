@@ -300,6 +300,7 @@ export class QueryResultsView extends Disposable {
 		this._input = input;
 		this.runnerDisposables.clear();
 
+		//[this.resultsTab, this.messagesTab, this.qpTab, this.topOperationsTab, this.chartTab].forEach(t => t.clear());
 		[this.qpTab, this.topOperationsTab, this.chartTab].forEach(t => t.clear()); // Preserve results and messages for user convenience, do not clear results and messages tab.
 		this.dynamicModelViewTabs.forEach(t => t.clear());
 
