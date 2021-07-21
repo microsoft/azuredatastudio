@@ -10,7 +10,7 @@ import * as utils from '../common/utils';
 
 import { Project } from '../models/project';
 import { SqlConnectionDataSource } from '../models/dataSources/sqlConnectionStringSource';
-import { IPublishSettings, IGenerateScriptSettings } from '../models/IPublishSettings';
+import { IDeploySettings } from '../models/IDeploySettings';
 import { DeploymentOptions, SchemaObjectType } from '../../../mssql/src/mssql';
 import { IconPathHelper } from '../common/iconHelper';
 import { cssStyles } from '../common/uiConstants';
@@ -46,8 +46,8 @@ export class PublishDatabaseDialog {
 
 	private toDispose: vscode.Disposable[] = [];
 
-	public publish: ((proj: Project, profile: IPublishSettings) => any) | undefined;
-	public generateScript: ((proj: Project, profile: IGenerateScriptSettings) => any) | undefined;
+	public publish: ((proj: Project, profile: IDeploySettings) => any) | undefined;
+	public generateScript: ((proj: Project, profile: IDeploySettings) => any) | undefined;
 	public readPublishProfile: ((profileUri: vscode.Uri) => any) | undefined;
 
 	constructor(private project: Project) {
@@ -182,10 +182,9 @@ export class PublishDatabaseDialog {
 	}
 
 	public async publishClick(): Promise<void> {
-		const settings: IPublishSettings = {
+		const settings: IDeploySettings = {
 			databaseName: this.getTargetDatabaseName(),
 			serverName: this.getServerName(),
-			upgradeExisting: true,
 			connectionUri: await this.getConnectionUri(),
 			sqlCmdVariables: this.getSqlCmdVariablesForPublish(),
 			deploymentOptions: await this.getDeploymentOptions(),
@@ -202,7 +201,7 @@ export class PublishDatabaseDialog {
 		TelemetryReporter.sendActionEvent(TelemetryViews.SqlProjectPublishDialog, TelemetryActions.generateScriptClicked);
 
 		const sqlCmdVars = this.getSqlCmdVariablesForPublish();
-		const settings: IGenerateScriptSettings = {
+		const settings: IDeploySettings = {
 			databaseName: this.getTargetDatabaseName(),
 			serverName: this.getServerName(),
 			connectionUri: await this.getConnectionUri(),
@@ -213,9 +212,7 @@ export class PublishDatabaseDialog {
 
 		utils.getAzdataApi()!.window.closeDialog(this.dialog);
 
-		if (this.generateScript) {
-			await this.generateScript!(this.project, settings);
-		}
+		await this.generateScript?.(this.project, settings);
 
 		this.dispose();
 	}
