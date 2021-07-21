@@ -9,7 +9,7 @@ import { getGalleryExtensionId, getGalleryExtensionTelemetryData, adoptToGallery
 import { getOrDefault } from 'vs/base/common/objects';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IPager } from 'vs/base/common/paging';
-import { IRequestService, asJson, asText } from 'vs/platform/request/common/request';
+import { IRequestService, asJson, asText, isSuccess } from 'vs/platform/request/common/request';
 import { IRequestOptions, IRequestContext, IHeaders } from 'vs/base/parts/request/common/request';
 import { isEngineValid } from 'vs/platform/extensions/common/extensionValidator';
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
@@ -534,19 +534,8 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 			throw new Error('No extension gallery service configured.');
 		}
 
-		const type = options.names ? 'ids' : (options.text ? 'text' : 'all');
 		let text = options.text || '';
 		const pageSize = getOrDefault(options, o => o.pageSize, 50);
-
-		type GalleryServiceQueryClassification = {
-			type: { classification: 'SystemMetaData', purpose: 'FeatureInsight' };
-			text: { classification: 'CustomerContent', purpose: 'FeatureInsight' };
-		};
-		type GalleryServiceQueryEvent = {
-			type: string;
-			text: string;
-		};
-		this.telemetryService.publicLog2<GalleryServiceQueryEvent, GalleryServiceQueryClassification>('galleryService:query', { type, text });
 
 		let query = new Query()
 			.withFlags(Flags.IncludeLatestVersionOnly, Flags.IncludeAssetUri, Flags.IncludeStatistics, Flags.IncludeFiles, Flags.IncludeVersionProperties)
@@ -723,6 +712,7 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 		if (!this.isEnabled()) {
 			throw new Error('No extension gallery service configured.');
 		}
+
 		// Always exclude non validated and unpublished extensions
 		query = query
 			.withFlags(query.flags, Flags.ExcludeNonValidated)
@@ -738,34 +728,56 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 			'Content-Length': String(data.length)
 		};
 
-		const context = await this.requestService.request({
-			// {{SQL CARBON EDIT}}
-			type: 'GET',
-			url: this.api('/extensionquery'),
-			data,
-			headers
-		}, token);
+		const startTime = new Date().getTime();
+		let context: IRequestContext | undefined, error: any, total: number = 0;
 
-		// {{SQL CARBON EDIT}}
-		let extensionPolicy: string = this.configurationService.getValue<string>(ExtensionsPolicyKey);
-		if (context.res.statusCode && context.res.statusCode >= 400 && context.res.statusCode < 500 || extensionPolicy === ExtensionsPolicy.allowNone) {
-			return { galleryExtensions: [], total: 0 };
-		}
-
-		const result = await asJson<IRawGalleryQueryResult>(context);
-		if (result) {
-			const r = result.results[0];
-			const galleryExtensions = r.extensions;
-			// const resultCount = r.resultMetadata && r.resultMetadata.filter(m => m.metadataType === 'ResultCount')[0]; {{SQL CARBON EDIT}} comment out for no unused
-			// const total = resultCount && resultCount.metadataItems.filter(i => i.name === 'TotalCount')[0].count || 0; {{SQL CARBON EDIT}} comment out for no unused
+		try {
+			context = await this.requestService.request({
+				// {{SQL CARBON EDIT}}
+				type: 'GET',
+				url: this.api('/extensionquery'),
+				data,
+				headers
+			}, token);
 
 			// {{SQL CARBON EDIT}}
-			let filteredExtensionsResult = this.createQueryResult(query, galleryExtensions);
+			let extensionPolicy: string = this.configurationService.getValue<string>(ExtensionsPolicyKey);
+			if (context.res.statusCode && context.res.statusCode >= 400 && context.res.statusCode < 500 || extensionPolicy === ExtensionsPolicy.allowNone) {
+				return { galleryExtensions: [], total };
+			}
 
-			return { galleryExtensions: filteredExtensionsResult.galleryExtensions, total: filteredExtensionsResult.total };
-			// {{SQL CARBON EDIT}} - End
+			const result = await asJson<IRawGalleryQueryResult>(context);
+			if (result) {
+				const r = result.results[0];
+				const galleryExtensions = r.extensions;
+				// const resultCount = r.resultMetadata && r.resultMetadata.filter(m => m.metadataType === 'ResultCount')[0]; {{SQL CARBON EDIT}} comment out for no unused
+				// total = resultCount && resultCount.metadataItems.filter(i => i.name === 'TotalCount')[0].count || 0; {{SQL CARBON EDIT}} comment out for no unused
+
+				// {{SQL CARBON EDIT}}
+				let filteredExtensionsResult = this.createQueryResult(query, galleryExtensions);
+
+				return { galleryExtensions: filteredExtensionsResult.galleryExtensions, total: filteredExtensionsResult.total };
+				// {{SQL CARBON EDIT}} - End
+			}
+			return { galleryExtensions: [], total };
+
+		} catch (e) {
+			error = e;
+			throw e;
+		} finally {
+			this.telemetryService.publicLog2<GalleryServiceQueryEvent, GalleryServiceQueryClassification>('galleryService:query', {
+				...query.telemetryData,
+				requestBodySize: String(data.length),
+				duration: new Date().getTime() - startTime,
+				success: !!context && isSuccess(context),
+				responseBodySize: context?.res.headers['Content-Length'],
+				statusCode: context ? String(context.res.statusCode) : undefined,
+				errorCode: error
+					? isPromiseCanceledError(error) ? 'canceled' : getErrorMessage(error).startsWith('XHR timeout') ? 'timeout' : 'failed'
+					: undefined,
+				count: String(total)
+			});
 		}
-		return { galleryExtensions: [], total: 0 };
 	}
 
 	async reportStatistic(publisher: string, name: string, version: string, type: StatisticType): Promise<void> {
@@ -935,8 +947,8 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 			if (!vsCodeEngine && !azDataEngine) {
 				return null;
 			}
-			const vsCodeEngineValid = !vsCodeEngine || (vsCodeEngine && isEngineValid(vsCodeEngine, this.productService.vscodeVersion));
-			const azDataEngineValid = !azDataEngine || (azDataEngine && isEngineValid(azDataEngine, this.productService.version));
+			const vsCodeEngineValid = !vsCodeEngine || (vsCodeEngine && isEngineValid(vsCodeEngine, this.productService.vscodeVersion, this.productService.date));
+			const azDataEngineValid = !azDataEngine || (azDataEngine && isEngineValid(azDataEngine, this.productService.version, this.productService.date));
 			if (vsCodeEngineValid && azDataEngineValid) {
 				return version;
 			}
