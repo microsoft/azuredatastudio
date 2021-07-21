@@ -566,6 +566,7 @@ export class DashboardWidget {
 		const refreshButton = view.modelBuilder.hyperlink().withProps({
 			label: loc.REFRESH,
 			url: '',
+			ariaRole: 'button',
 			CSSStyles: {
 				'text-align': 'right',
 				'font-size': '13px'

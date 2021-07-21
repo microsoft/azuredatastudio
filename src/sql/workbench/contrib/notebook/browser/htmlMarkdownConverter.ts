@@ -7,6 +7,7 @@ import TurndownService = require('turndown');
 import { URI } from 'vs/base/common/uri';
 import * as path from 'vs/base/common/path';
 import * as turndownPluginGfm from 'sql/workbench/contrib/notebook/browser/turndownPluginGfm';
+import { replaceInvalidLinkPath } from 'sql/workbench/contrib/notebook/common/utils';
 
 // These replacements apply only to text. Here's how it's handled from Turndown:
 // if (node.nodeType === 3) {
@@ -29,7 +30,6 @@ const markdownReplacements = [
 	[/</g, '\\<'], // Added to ensure sample text like <hello> is escaped
 	[/>/g, '\\>'], // Added to ensure sample text like <hello> is escaped
 ];
-
 export class HTMLMarkdownConverter {
 	private turndownService: TurndownService;
 
@@ -310,6 +310,8 @@ export function findPathRelativeToContent(notebookFolder: string, contentPath: U
 			let relativePath = contentPath.fragment ? path.relative(notebookFolder, contentPath.fsPath).concat('#', contentPath.fragment) : path.relative(notebookFolder, contentPath.fsPath);
 			//if path contains whitespaces then it's not identified as a link
 			relativePath = relativePath.replace(/\s/g, '%20');
+			// if relativePath contains improper directory format due to marked js parsing returning an invalid path (ex. ....\) then we need to replace it to ensure the directories are formatted properly (ex. ..\..\)
+			relativePath = replaceInvalidLinkPath(relativePath);
 			if (relativePath.startsWith(path.join('..', path.sep) || path.join('.', path.sep))) {
 				return relativePath;
 			} else {

@@ -57,7 +57,7 @@ export class PublishDatabaseDialog {
 
 	public openDialog(): void {
 		this.initializeDialog();
-		this.dialog.okButton.label = constants.publishDialogOkButtonText;
+		this.dialog.okButton.label = constants.publish;
 		this.dialog.okButton.enabled = false;
 		this.toDispose.push(this.dialog.okButton.onClick(async () => await this.publishClick()));
 
@@ -536,17 +536,7 @@ export class PublishDatabaseDialog {
 		}).component();
 
 		loadProfileButton.onDidClick(async () => {
-			const fileUris = await vscode.window.showOpenDialog(
-				{
-					canSelectFiles: true,
-					canSelectFolders: false,
-					canSelectMany: false,
-					defaultUri: vscode.Uri.file(this.project.projectFolderPath),
-					filters: {
-						[constants.publishSettingsFiles]: ['publish.xml']
-					}
-				}
-			);
+			const fileUris = await promptForPublishProfile(this.project.projectFolderPath);
 
 			if (!fileUris || fileUris.length === 0) {
 				return;
@@ -566,6 +556,16 @@ export class PublishDatabaseDialog {
 					this.targetDatabaseDropDown!.value = result.databaseName;
 				}
 
+				if (Object.keys(result.sqlCmdVariables).length) {
+					// add SQLCMD Variables table if it wasn't there before and the profile had sqlcmd variables
+					if (Object.keys(this.project.sqlCmdVariables).length === 0 && Object.keys(<Record<string, string>>this.sqlCmdVars).length === 0) {
+						this.formBuilder?.addFormItem(<azdataType.FormComponentGroup>this.sqlCmdVariablesFormComponentGroup);
+					}
+				} else if (Object.keys(this.project.sqlCmdVariables).length === 0) {
+					// remove the table if there are no SQLCMD variables in the project and loaded profile
+					this.formBuilder?.removeFormItem(<azdataType.FormComponentGroup>this.sqlCmdVariablesFormComponentGroup);
+				}
+
 				for (let key in result.sqlCmdVariables) {
 					(<Record<string, string>>this.sqlCmdVars)[key] = result.sqlCmdVariables[key];
 				}
@@ -576,16 +576,6 @@ export class PublishDatabaseDialog {
 				await (<azdataType.DeclarativeTableComponent>this.sqlCmdVariablesTable).updateProperties({
 					dataValues: data
 				});
-
-				if (Object.keys(result.sqlCmdVariables).length) {
-					// add SQLCMD Variables table if it wasn't there before
-					if (Object.keys(this.project.sqlCmdVariables).length === 0) {
-						this.formBuilder?.addFormItem(<azdataType.FormComponentGroup>this.sqlCmdVariablesFormComponentGroup);
-					}
-				} else if (Object.keys(this.project.sqlCmdVariables).length === 0) {
-					// remove the table if there are no SQLCMD variables in the project and loaded profile
-					this.formBuilder?.removeFormItem(<azdataType.FormComponentGroup>this.sqlCmdVariablesFormComponentGroup);
-				}
 
 				// show file path in text box and hover text
 				this.loadProfileTextBox!.value = fileUris[0].fsPath;
@@ -627,4 +617,19 @@ export class PublishDatabaseDialog {
 
 		return true;
 	}
+}
+
+export function promptForPublishProfile(defaultPath: string): Thenable<vscode.Uri[] | undefined> {
+	return vscode.window.showOpenDialog(
+		{
+			title: constants.selectProfile,
+			canSelectFiles: true,
+			canSelectFolders: false,
+			canSelectMany: false,
+			defaultUri: vscode.Uri.file(defaultPath),
+			filters: {
+				[constants.publishSettingsFiles]: ['publish.xml']
+			}
+		}
+	);
 }

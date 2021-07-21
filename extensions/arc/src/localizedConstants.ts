@@ -42,8 +42,9 @@ export const dropText = localize('arc.drop', "Drop");
 export const saveText = localize('arc.save', "Save");
 export const discardText = localize('arc.discard', "Discard");
 export const resetPassword = localize('arc.resetPassword', "Reset Password");
-export const addExtensions = localize('arc.addExtensions', "Add extensions");
-export const dropExtension = localize('arc.dropExtension', "Drop extension");
+export const loadExtensions = localize('arc.loadExtensions', "Load extensions");
+export const unloadExtensions = localize('arc.unloadExtensions', "Unload extensions");
+export const noExtensions = localize('arc.noExtensions', "No extensions listed in configuration.");
 export const openInAzurePortal = localize('arc.openInAzurePortal', "Open in Azure Portal");
 export const resourceGroup = localize('arc.resourceGroup', "Resource Group");
 export const region = localize('arc.region', "Region");
@@ -83,7 +84,8 @@ export const addingWorkerNodes = localize('arc.addingWorkerNodes', "adding worke
 export const workerNodesDescription = localize('arc.workerNodesDescription', "Expand your server group and scale your database by adding worker nodes.");
 export const workerNodesConfigurationInformation = localize('arc.workerNodesConfigurationInformation', "You can configure the number of CPU cores and storage size that will apply to all worker nodes. Adjust the number of CPU cores and memory settings for your server group. To reset the requests and/or limits, pass in empty value.");
 export const coordinatorNodeConfigurationInformation = localize('arc.coordinatorNodeConfigurationInformation', "You can configure the number of CPU cores and storage size that will apply to the coordinator node. Adjust the number of CPU cores and memory settings for your server group. To reset the requests and/or limits, pass in empty value.");
-export const workerNodesInformation = localize('arc.workerNodeInformation', "It is possible to scale in and out your server group by reducing or increasing the number of worker nodes.");
+export const workerNodesInformation = localize('arc.workerNodeInformation', "It is possible to scale in and out your server group by reducing or increasing the number of worker nodes. The value must be 0 or greater than 1.");
+export const workerOneNodeValidationMessage = localize('arc.workerOneNodeValidationMessage', "Value of 1 is not supported.");
 export const vCores = localize('arc.vCores', "vCores");
 export const ram = localize('arc.ram', "RAM");
 export const refresh = localize('arc.refresh', "Refresh");
@@ -222,7 +224,7 @@ export function extensionInstalled(name: string): string { return localize('arc.
 export function updatingInstance(name: string): string { return localize('arc.updatingInstance', "Updating instance '{0}'...", name); }
 export function instanceDeleted(name: string): string { return localize('arc.instanceDeleted', "Instance '{0}' deleted", name); }
 export function instanceUpdated(name: string): string { return localize('arc.instanceUpdated', "Instance '{0}' updated", name); }
-export function extensionDropped(name: string): string { return localize('arc.extensionDropped', "Extension '{0}' deleted", name); }
+export function extensionsDropped(name: string): string { return localize('arc.extensionsDropped', "Extensions '{0}' dropped", name); }
 export function extensionsAdded(name: string): string { return localize('arc.extensionsAdded', "Extensions '{0}' added", name); }
 export function copiedToClipboard(name: string): string { return localize('arc.copiedToClipboard', "{0} copied to clipboard", name); }
 export function clickTheTroubleshootButton(resourceType: string): string { return localize('arc.clickTheTroubleshootButton', "Click the troubleshoot button to open the Azure Arc {0} troubleshooting notebook.", resourceType); }

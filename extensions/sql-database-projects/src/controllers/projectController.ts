@@ -13,6 +13,7 @@ import * as templates from '../templates/templates';
 import * as vscode from 'vscode';
 import type * as azdataType from 'azdata';
 import * as dataworkspace from 'dataworkspace';
+import type * as mssqlVscode from 'vscode-mssql';
 
 import { promises as fs } from 'fs';
 import { PublishDatabaseDialog } from '../dialogs/publishDatabaseDialog';
@@ -25,7 +26,7 @@ import { ProjectRootTreeItem } from '../models/tree/projectTreeItem';
 import { ImportDataModel } from '../models/api/import';
 import { NetCoreTool, DotNetCommandOptions } from '../tools/netcoreTool';
 import { BuildHelper } from '../tools/buildHelper';
-import { PublishProfile, load } from '../models/publishProfile/publishProfile';
+import { readPublishProfile } from '../models/publishProfile/publishProfile';
 import { AddDatabaseReferenceDialog } from '../dialogs/addDatabaseReferenceDialog';
 import { ISystemDatabaseReferenceSettings, IDacpacReferenceSettings, IProjectReferenceSettings } from '../models/IDatabaseReferenceSettings';
 import { DatabaseReferenceTreeItem } from '../models/tree/databaseReferencesTreeItem';
@@ -33,6 +34,8 @@ import { CreateProjectFromDatabaseDialog } from '../dialogs/createProjectFromDat
 import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
 import { IconPathHelper } from '../common/iconHelper';
 import { DashboardData, PublishData, Status } from '../models/dashboardData/dashboardData';
+import { launchPublishDatabaseQuickpick } from '../dialogs/publishDatabaseQuickpick';
+import { SqlTargetPlatform } from 'sqldbproj';
 
 const maxTableLength = 10;
 
@@ -128,12 +131,17 @@ export class ProjectsController {
 			.send();
 
 		if (creationParams.projectGuid && !UUID.isUUID(creationParams.projectGuid)) {
-			throw new Error(`Specified GUID is invalid: '${creationParams.projectGuid}'`);
+			throw new Error(constants.invalidGuid(creationParams.projectGuid));
+		}
+
+		if (creationParams.targetPlatform && !constants.targetPlatformToVersion.get(creationParams.targetPlatform)) {
+			throw new Error(constants.invalidTargetPlatform(creationParams.targetPlatform, Array.from(constants.targetPlatformToVersion.keys())));
 		}
 
 		const macroDict: Record<string, string> = {
 			'PROJECT_NAME': creationParams.newProjName,
-			'PROJECT_GUID': creationParams.projectGuid ?? UUID.generateUuid().toUpperCase()
+			'PROJECT_GUID': creationParams.projectGuid ?? UUID.generateUuid().toUpperCase(),
+			'PROJECT_DSP': creationParams.targetPlatform ? constants.targetPlatformToVersion.get(creationParams.targetPlatform)! : constants.defaultDSP
 		};
 
 		let newProjFileContents = templates.macroExpansion(templates.newSqlProjectTemplate, macroDict);
@@ -231,17 +239,22 @@ export class ProjectsController {
 	 * @param project Project to be built and published
 	 */
 	public publishProject(project: Project): PublishDatabaseDialog;
-	public publishProject(context: Project | dataworkspace.WorkspaceTreeItem): PublishDatabaseDialog {
+	public publishProject(context: Project | dataworkspace.WorkspaceTreeItem): PublishDatabaseDialog | undefined {
 		const project: Project = this.getProjectFromContext(context);
-		let publishDatabaseDialog = this.getPublishDialog(project);
+		if (utils.getAzdataApi()) {
+			let publishDatabaseDialog = this.getPublishDialog(project);
 
-		publishDatabaseDialog.publish = async (proj, prof) => await this.publishProjectCallback(proj, prof);
-		publishDatabaseDialog.generateScript = async (proj, prof) => await this.publishProjectCallback(proj, prof);
-		publishDatabaseDialog.readPublishProfile = async (profileUri) => await this.readPublishProfileCallback(profileUri);
+			publishDatabaseDialog.publish = async (proj, prof) => this.publishProjectCallback(proj, prof);
+			publishDatabaseDialog.generateScript = async (proj, prof) => this.publishProjectCallback(proj, prof);
+			publishDatabaseDialog.readPublishProfile = async (profileUri) => readPublishProfile(profileUri);
 
-		publishDatabaseDialog.openDialog();
+			publishDatabaseDialog.openDialog();
 
-		return publishDatabaseDialog;
+			return publishDatabaseDialog;
+		} else {
+			launchPublishDatabaseQuickpick(project);
+			return undefined;
+		}
 	}
 
 	public async publishProjectCallback(project: Project, settings: IPublishSettings | IGenerateScriptSettings): Promise<mssql.DacFxResult | undefined> {
@@ -268,7 +281,7 @@ export class ProjectsController {
 		const tempPath = path.join(os.tmpdir(), `${path.parse(dacpacPath).name}_${new Date().getTime()}${constants.sqlprojExtension}`);
 		await fs.copyFile(dacpacPath, tempPath);
 
-		const dacFxService = await this.getDaxFxService();
+		const dacFxService = await utils.getDacFxService();
 
 		let result: mssql.DacFxResult;
 		telemetryProps.profileUsed = (settings.profileUsed ?? false).toString();
@@ -284,13 +297,26 @@ export class ProjectsController {
 		}
 
 		try {
+			const azdataApi = utils.getAzdataApi();
 			if ((<IPublishSettings>settings).upgradeExisting) {
 				telemetryProps.publishAction = 'deploy';
-				result = await dacFxService.deployDacpac(tempPath, settings.databaseName, (<IPublishSettings>settings).upgradeExisting, settings.connectionUri, utils.getAzdataApi()!.TaskExecutionMode.execute, settings.sqlCmdVariables, settings.deploymentOptions);
+				if (azdataApi) {
+					result = await (dacFxService as mssql.IDacFxService).deployDacpac(tempPath, settings.databaseName, (<IPublishSettings>settings).upgradeExisting, settings.connectionUri, azdataApi.TaskExecutionMode.execute, settings.sqlCmdVariables, settings.deploymentOptions);
+				} else {
+					// TODO@chgagnon Fix typing
+					result = await (dacFxService as mssqlVscode.IDacFxService).deployDacpac(tempPath, settings.databaseName, (<IPublishSettings>settings).upgradeExisting, settings.connectionUri, <mssqlVscode.TaskExecutionMode><any>azdataApi!.TaskExecutionMode.execute, settings.sqlCmdVariables, <mssqlVscode.DeploymentOptions><any>settings.deploymentOptions);
+				}
+
 			}
 			else {
 				telemetryProps.publishAction = 'generateScript';
-				result = await dacFxService.generateDeployScript(tempPath, settings.databaseName, settings.connectionUri, utils.getAzdataApi()!.TaskExecutionMode.script, settings.sqlCmdVariables, settings.deploymentOptions);
+				if (azdataApi) {
+					result = await (dacFxService as mssql.IDacFxService).generateDeployScript(tempPath, settings.databaseName, settings.connectionUri, azdataApi.TaskExecutionMode.script, settings.sqlCmdVariables, settings.deploymentOptions);
+				} else {
+					// TODO@chgagnon Fix typing
+					result = await (dacFxService as mssqlVscode.IDacFxService).generateDeployScript(tempPath, settings.databaseName, settings.connectionUri, <any>undefined/*mssqlVscode.TaskExecutionMode.script*/, settings.sqlCmdVariables, <mssqlVscode.DeploymentOptions><any>settings.deploymentOptions);
+				}
+
 			}
 		} catch (err) {
 			const actionEndTime = new Date().getTime();
@@ -323,17 +349,6 @@ export class ProjectsController {
 			.send();
 
 		return result;
-	}
-
-	public async readPublishProfileCallback(profileUri: vscode.Uri): Promise<PublishProfile> {
-		try {
-			const dacFxService = await this.getDaxFxService();
-			const profile = await load(profileUri, dacFxService);
-			return profile;
-		} catch (e) {
-			vscode.window.showErrorMessage(constants.profileReadError);
-			throw e;
-		}
 	}
 
 	public async schemaCompare(treeNode: dataworkspace.WorkspaceTreeItem): Promise<void> {
@@ -716,7 +731,7 @@ export class ProjectsController {
 
 		const streamingJobDefinition: string = (await fs.readFile(node.element.fileSystemUri.fsPath)).toString();
 
-		const dacFxService = await this.getDaxFxService();
+		const dacFxService = await utils.getDacFxService();
 		const actionStartTime = new Date().getTime();
 
 		const result: mssql.ValidateStreamingJobResult = await dacFxService.validateStreamingJob(dacpacPath, streamingJobDefinition);
@@ -806,15 +821,6 @@ export class ProjectsController {
 			throw new Error(constants.unexpectedProjectContext(context.projectUri.path));
 		}
 	}
-
-	public async getDaxFxService(): Promise<mssql.IDacFxService> {
-		const ext: vscode.Extension<any> = vscode.extensions.getExtension(mssql.extension.name)!;
-
-		await ext.activate();
-		return (ext.exports as mssql.IExtension).dacFx;
-	}
-
-
 
 	private async promptForNewObjectName(itemType: templates.ProjectScriptType, _project: Project, folderPath: string, fileExtension?: string): Promise<string | undefined> {
 		const suggestedName = itemType.friendlyName.replace(/\s+/g, '');
@@ -962,4 +968,5 @@ export interface NewProjectParams {
 	folderUri: vscode.Uri;
 	projectTypeId: string;
 	projectGuid?: string;
+	targetPlatform?: SqlTargetPlatform;
 }

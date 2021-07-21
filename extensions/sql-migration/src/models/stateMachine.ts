@@ -181,29 +181,16 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		const assessmentResults = await this.migrationService.getAssessments(
 			ownerUri
 		);
-		const endTime = getTime();
-		const connectionProfile = await this.getSourceConnectionProfile();
 		this._serverDatabases = await (await azdata.connection.listDatabases(this.sourceConnectionId)).filter((name) => !excludeDbs.includes(name));
-		const serverLevelAssessments: mssql.SqlMigrationAssessmentResultItem[] = [];
-		const databaseLevelAssessments = this._serverDatabases.map(db => {
+		const dbAssessments = assessmentResults?.assessmentResult.databases.filter(d => !excludeDbs.includes(d.name)).map(d => {
 			return {
-				name: db,
-				issues: <mssql.SqlMigrationAssessmentResultItem[]>[]
+				name: d.name,
+				issues: d.items.filter(i => i.appliesToMigrationTargetPlatform === MigrationTargetType.SQLMI) ?? []
 			};
 		});
-		assessmentResults?.items.forEach((item) => {
-			if (item.appliesToMigrationTargetPlatform === MigrationTargetType.SQLMI) {
-				const dbIndex = this._serverDatabases.indexOf(item.databaseName);
-				if (dbIndex === -1) {
-					serverLevelAssessments.push(item);
-				} else {
-					databaseLevelAssessments[dbIndex].issues.push(item);
-				}
-			}
-		});
 		this._assessmentResults = {
-			issues: serverLevelAssessments,
-			databaseAssessments: databaseLevelAssessments
+			issues: assessmentResults?.assessmentResult.items?.filter(i => i.appliesToMigrationTargetPlatform === MigrationTargetType.SQLMI) ?? [],
+			databaseAssessments: dbAssessments! ?? []
 		};
 		this.generateAssessmentTelemetry(startTime, endTime, connectionProfile);
 		return this._assessmentResults;

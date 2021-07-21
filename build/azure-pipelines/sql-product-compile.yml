@@ -79,19 +79,8 @@ steps:
 
 - script: |
     set -e
-    yarn sqllint
-    yarn gulp hygiene
-    yarn strict-vscode
-    yarn valid-layers-check
-  displayName: Run hygiene, eslint
-  condition: and(succeeded(), eq(variables['VSCODE_STEP_ON_IT'], 'false'))
-
-- script: |
-    set -e
-    yarn gulp compile-build
-    yarn gulp compile-extensions-build
-    yarn gulp minify-vscode
-  displayName: Compile
+    yarn npm-run-all -lp core-ci extensions-ci hygiene eslint valid-layers-check sqllint strict-vscode
+  displayName: Compile & Hygiene
 
 - script: |
     set -e

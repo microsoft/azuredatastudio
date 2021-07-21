@@ -41,6 +41,7 @@
 		"dist/azureResource/utils": {
 			"azure.resource.error": "Fehler: {0}",
 			"azure.accounts.getResourceGroups.queryError": "Fehler beim Abrufen von Ressourcengruppen für das Konto \"{0}\" ({1}), Abonnement \"{2}\" ({3}), Mandant \"{4}\": {5}",
+			"azure.accounts.getLocations.queryError": "Fehler beim Abrufen von Standorten für das Konto \"{0}\" ({1}), Abonnement \"{2}\" ({3}), Mandant \"{4}\": {5}",
 			"azure.accounts.runResourceQuery.errors.invalidQuery": "Ungültige Abfrage",
 			"azure.accounts.getSubscriptions.queryError": "Fehler beim Abrufen von Abonnements für das Konto \"{0}\", Mandant \"{1}\": {2}",
 			"azure.accounts.getSelectedSubscriptions.queryError": "Fehler beim Abrufen von Abonnements für das Konto \"{0}\": {1}"
@@ -105,7 +106,7 @@
 			"azurecore.azureArcsqlManagedInstance": "Verwaltete SQL-Instanz – Azure Arc",
 			"azurecore.azureArcService": "Datendienst – Azure Arc",
 			"azurecore.sqlServerArc": "SQL Server – Azure Arc",
-			"azurecore.azureArcPostgres": "PostgreSQL Hyperscale mit Azure Arc-Aktivierung",
+			"azurecore.azureArcPostgres": "PostgreSQL Hyperscale mit Azure Arc-Unterstützung",
 			"azure.unableToOpenAzureLink": "Der Link kann nicht geöffnet werden, weil erforderliche Werte fehlen.",
 			"azure.azureResourcesGridTitle": "Azure-Ressourcen (Vorschau)",
 			"azurecore.invalidAzureAccount": "Ungültiges Konto.",
@@ -141,7 +142,9 @@
 		"dist/azureResource/tree/flatAccountTreeNode": {
 			"azure.resource.tree.accountTreeNode.titleLoading": "{0}: Wird geladen...",
 			"azure.resource.tree.accountTreeNode.title": "{0} ({1}/{2} Abonnements)",
-			"azure.resource.tree.accountTreeNode.credentialError": "Fehler beim Abrufen der Anmeldeinformationen für das Konto \"{0}\". Wechseln Sie zum Dialogfeld \"Konten\", und aktualisieren Sie das Konto."
+			"azure.resource.tree.accountTreeNode.credentialError": "Fehler beim Abrufen der Anmeldeinformationen für das Konto \"{0}\". Wechseln Sie zum Dialogfeld \"Konten\", und aktualisieren Sie das Konto.",
+			"azure.resource.throttleerror": "Anforderungen von diesem Konto wurden gedrosselt. Wählen Sie eine geringere Anzahl von Abonnements aus, um den Vorgang zu wiederholen.",
+			"azure.resource.tree.loadresourceerror": "Fehler beim Laden von Azure-Ressourcen: {0}"
 		},
 		"dist/azureResource/tree/accountNotSignedInTreeNode": {
 			"azure.resource.tree.accountNotSignedInTreeNode.signInLabel": "Bei Azure anmelden..."
@@ -202,6 +205,9 @@
 		},
 		"dist/azureResource/providers/kusto/kustoTreeDataProvider": {
 			"azure.resource.providers.KustoContainerLabel": "Azure Data Explorer-Cluster"
+		},
+		"dist/azureResource/providers/azuremonitor/azuremonitorTreeDataProvider": {
+			"azure.resource.providers.AzureMonitorContainerLabel": "Azure Monitor Workspace"
 		},
 		"dist/azureResource/providers/postgresServer/postgresServerTreeDataProvider": {
 			"azure.resource.providers.databaseServer.treeDataProvider.postgresServerContainerLabel": "Azure Database for PostgreSQL-Server"

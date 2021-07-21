@@ -103,6 +103,10 @@
 			"azdataEulaNotAccepted": "Die Bereitstellung kann nicht fortgesetzt werden. Die Lizenzbedingungen für die Azure Data CLI wurden noch nicht akzeptiert. Akzeptieren Sie die Lizenzbedingungen, um die Features zu aktivieren, für die die Azure Data CLI erforderlich ist.",
 			"azdataEulaDeclined": "Die Bereitstellung kann nicht fortgesetzt werden. Die Lizenzbedingungen für die Azure Data CLI wurden abgelehnt. Sie können entweder die Lizenzbedingungen akzeptieren, um den Vorgang fortzusetzen, oder den Vorgang abbrechen.",
 			"deploymentDialog.RecheckEulaButton": "Lizenzbedingungen akzeptieren und auswählen",
+			"resourceDeployment.extensionRequiredPrompt": "Die Erweiterung \"{0}\" ist für die Bereitstellung dieser Ressource erforderlich. Möchten Sie sie jetzt installieren?",
+			"resourceDeployment.install": "Installieren",
+			"resourceDeployment.installingExtension": "Die Erweiterung \"{0}\" wird installiert...",
+			"resourceDeployment.unknownExtension": "Unbekannte Erweiterung \"{0}\".",
 			"resourceTypePickerDialog.title": "Bereitstellungsoptionen auswählen",
 			"resourceTypePickerDialog.resourceSearchPlaceholder": "Ressourcen filtern...",
 			"resourceTypePickerDialog.tagsListViewTitle": "Kategorien",
@@ -264,7 +268,6 @@
 			"notebookType": "Notebook-Typ"
 		},
 		"dist/main": {
-			"resourceDeployment.FailedToLoadExtension": "Fehler beim Laden der Erweiterung: {0}. In der Ressourcentypdefinition in \"package.json\" wurde ein Fehler festgestellt. Details finden Sie in der Debugkonsole.",
 			"resourceDeployment.UnknownResourceType": "Der Ressourcentyp \"{0}\" ist nicht definiert."
 		},
 		"dist/services/notebookService": {
@@ -562,8 +565,8 @@
 		},
 		"dist/ui/toolsAndEulaSettingsPage": {
 			"notebookWizard.toolsAndEulaPageTitle": "Voraussetzungen für die Bereitstellung",
-			"deploymentDialog.FailedEulaValidation": "Um fortzufahren, müssen Sie die Lizenzbedingungen akzeptieren.",
 			"deploymentDialog.FailedToolsInstallation": "Einige Tools wurden noch nicht ermittelt. Stellen Sie sicher, dass sie installiert wurden, ausgeführt werden und ermittelbar sind.",
+			"deploymentDialog.FailedEulaValidation": "Um fortzufahren, müssen Sie die Lizenzbedingungen akzeptieren.",
 			"deploymentDialog.loadingRequiredToolsCompleted": "Informationen zu erforderlichen Tools wurden vollständig geladen.",
 			"deploymentDialog.loadingRequiredTools": "Informationen zu erforderlichen Tools werden geladen.",
 			"resourceDeployment.AgreementTitle": "Nutzungsbedingungen akzeptieren",
@@ -605,18 +608,9 @@
 		"dist/services/tools/azdataTool": {
 			"resourceDeployment.AzdataDescription": "Azure Data-Befehlszeilenschnittstelle",
 			"resourceDeployment.AzdataDisplayName": "Azure Data CLI",
+			"deploy.azdataExtMissing": "Die Azure Data CLI-Erweiterung muss installiert sein, damit diese Ressource bereitgestellt werden kann. Installieren Sie sie über den Erweiterungskatalog, und versuchen Sie es noch mal.",
 			"deployCluster.GetToolVersionErrorInformation": "Fehler beim Abrufen der Versionsinformationen. Weitere Informationen finden Sie im Ausgabekanal \"{0}\".",
-			"deployCluster.GetToolVersionError": "Fehler beim Abrufen der Versionsinformationen.{0}Ungültige Ausgabe empfangen, Versionsbefehlsausgabe abrufen: {1} ",
-			"resourceDeployment.Azdata.DeletingPreviousAzdata.msi": "Zuvor heruntergeladene Datei \"Azdata.msi\" wird ggf. gelöscht…",
-			"resourceDeployment.Azdata.DownloadingAndInstallingAzdata": "\"Azdata.msi\" wird heruntergeladen, und die azdata-CLI wird installiert…",
-			"resourceDeployment.Azdata.DisplayingInstallationLog": "Installationsprotokoll wird angezeigt…",
-			"resourceDeployment.Azdata.TappingBrewRepository": "Für die azdata-CLI werden Ressourcen aus dem Brew-Repository abgerufen…",
-			"resourceDeployment.Azdata.UpdatingBrewRepository": "Das Brew-Repository für die azdata-CLI-Installation wird aktualisiert…",
-			"resourceDeployment.Azdata.InstallingAzdata": "azdata wird installiert…",
-			"resourceDeployment.Azdata.AptGetUpdate": "Repositoryinformationen werden aktualisiert…",
-			"resourceDeployment.Azdata.AptGetPackages": "Die für die azdata-Installation erforderlichen Pakete werden abgerufen…",
-			"resourceDeployment.Azdata.DownloadAndInstallingSigningKey": "Der Signaturschlüssel für azdata wird heruntergeladen und installiert…",
-			"resourceDeployment.Azdata.AddingAzdataRepositoryInformation": "Die azdata-Repositoryinformationen werden hinzugefügt…"
+			"deployCluster.GetToolVersionError": "Fehler beim Abrufen der Versionsinformationen.{0}Ungültige Ausgabe empfangen, Versionsbefehlsausgabe abrufen: {1} "
 		},
 		"dist/services/tools/azdataToolOld": {
 			"resourceDeployment.AzdataDescription": "Azure Data-Befehlszeilenschnittstelle",

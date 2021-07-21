@@ -332,6 +332,7 @@
   "dependencies": {
     "@azure/arm-resourcegraph": "^4.0.0",
     "@azure/arm-subscriptions": "^3.0.0",
+    "@azure/storage-blob": "^12.6.0",
     "axios": "^0.21.1",
     "node-fetch": "^2.6.1",
     "qs": "^6.9.1",

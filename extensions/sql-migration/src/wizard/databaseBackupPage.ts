@@ -596,7 +596,8 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			iconPath: IconPathHelper.refresh,
 			iconHeight: 18,
 			iconWidth: 18,
-			height: 25
+			height: 25,
+			ariaLabel: constants.REFRESH,
 		}).component();
 
 		this._networkShareContainerStorageAccountRefreshButton.onDidClick(async (value) => {

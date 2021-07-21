@@ -12,7 +12,7 @@ import * as os from 'os';
 import * as templates from '../templates/templates';
 
 import { Uri, window } from 'vscode';
-import { IFileProjectEntry, ISqlProject } from 'sqldbproj';
+import { IFileProjectEntry, ISqlProject, SqlTargetPlatform } from 'sqldbproj';
 import { promises as fs } from 'fs';
 import { DataSource } from './dataSources/dataSources';
 import { ISystemDatabaseReferenceSettings, IDacpacReferenceSettings, IProjectReferenceSettings } from './IDatabaseReferenceSettings';
@@ -512,9 +512,12 @@ export class Project implements ISqlProject {
 
 		// DW is special because the target version is DW, but the folder name for system dacpacs is AzureDW in SSDT
 		// the other target versions have the same version name and folder name
-		return version === constants.targetPlatformToVersion.get(constants.sqlDW) ? constants.AzureDwFolder : version;
+		return version === constants.targetPlatformToVersion.get(SqlTargetPlatform.sqlDW) ? constants.AzureDwFolder : version;
 	}
 
+	/**
+	 * Gets the project target version specified in the DSP property in the sqlproj
+	 */
 	public getProjectTargetVersion(): string {
 		let dsp: string | undefined;
 

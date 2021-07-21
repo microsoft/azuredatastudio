@@ -1332,7 +1332,9 @@ suite('SQL ConnectionManagementService tests', () => {
 			azureVersion: 0,
 			osVersion: 'test_version',
 			options: { isBigDataCluster: 'test' },
-			isCloud: true
+			isCloud: true,
+			cpuCount: 0,
+			physicalMemoryInMb: 0
 		};
 		let uri: string = 'Editor Uri';
 		let options: IConnectionCompletionOptions = {

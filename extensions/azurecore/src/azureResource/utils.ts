@@ -7,7 +7,7 @@ import { ResourceGraphClient } from '@azure/arm-resourcegraph';
 import { TokenCredentials } from '@azure/ms-rest-js';
 import axios, { AxiosRequestConfig } from 'axios';
 import * as azdata from 'azdata';
-import { AzureRestResponse, GetResourceGroupsResult, GetSubscriptionsResult, ResourceQueryResult, GetBlobContainersResult, GetFileSharesResult, HttpRequestMethod, GetLocationsResult, GetManagedDatabasesResult, CreateResourceGroupResult } from 'azurecore';
+import { AzureRestResponse, GetResourceGroupsResult, GetSubscriptionsResult, ResourceQueryResult, GetBlobContainersResult, GetFileSharesResult, HttpRequestMethod, GetLocationsResult, GetManagedDatabasesResult, CreateResourceGroupResult, GetBlobsResult, GetStorageAccountAccessKeyResult } from 'azurecore';
 import { azureResource } from 'azureResource';
 import { EOL } from 'os';
 import * as nls from 'vscode-nls';
@@ -16,6 +16,7 @@ import { invalidAzureAccount, invalidTenant, unableToFetchTokenError } from '../
 import { AzureResourceServiceNames } from './constants';
 import { IAzureResourceSubscriptionFilterService, IAzureResourceSubscriptionService } from './interfaces';
 import { AzureResourceGroupService } from './providers/resourceGroup/resourceGroupService';
+import { BlobServiceClient, StorageSharedKeyCredential } from '@azure/storage-blob';
 
 const localize = nls.loadMessageBundle();
 
@@ -466,4 +467,42 @@ export async function createResourceGroup(account: azdata.Account, subscription:
 		resourceGroup: response?.response?.data,
 		errors: response.errors ? response.errors : []
 	};
+}
+
+export async function getStorageAccountAccessKey(account: azdata.Account, subscription: azureResource.AzureResourceSubscription, storageAccount: azureResource.AzureGraphResource, ignoreErrors: boolean): Promise<GetStorageAccountAccessKeyResult> {
+	const path = `/subscriptions/${subscription.id}/resourceGroups/${storageAccount.resourceGroup}/providers/Microsoft.Storage/storageAccounts/${storageAccount.name}/listKeys?api-version=2019-06-01`;
+	const response = await makeHttpRequest(account, subscription, path, HttpRequestMethod.POST, undefined, ignoreErrors);
+	return {
+		keyName1: response?.response?.data?.keys[0].value ?? '',
+		keyName2: response?.response?.data?.keys[0].value ?? '',
+		errors: response.errors ? response.errors : []
+	};
+}
+
+export async function getBlobs(account: azdata.Account, subscription: azureResource.AzureResourceSubscription, storageAccount: azureResource.AzureGraphResource, containerName: string, ignoreErrors: boolean): Promise<GetBlobsResult> {
+	const result: GetBlobsResult = { blobs: [], errors: [] };
+	const storageKeys = await getStorageAccountAccessKey(account, subscription, storageAccount, ignoreErrors);
+	if (!ignoreErrors) {
+		throw storageKeys.errors.toString();
+	} else {
+		result.errors.push(...storageKeys.errors);
+	}
+	try {
+		const sharedKeyCredential = new StorageSharedKeyCredential(storageAccount.name, storageKeys.keyName1);
+		const blobServiceClient = new BlobServiceClient(
+			`https://${storageAccount.name}.blob.core.windows.net`,
+			sharedKeyCredential
+		);
+		const containerClient = blobServiceClient.getContainerClient(containerName);
+		for await (const blob of containerClient.listBlobsFlat()) {
+			result.blobs.push(blob);
+		}
+	} catch (e) {
+		if (!ignoreErrors) {
+			throw e;
+		} else {
+			result.errors.push(e);
+		}
+	}
+	return result;
 }
