@@ -132,11 +132,11 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			this.notebookService.removeNotebookEditor(this);
 		}
 	}
-	public get model(): NotebookModel | null {
+	public get model(): NotebookModel | undefined {
 		return this._model;
 	}
 
-	public get views(): NotebookViewsExtension | null {
+	public get views(): NotebookViewsExtension | undefined {
 		return this._views;
 	}
 
