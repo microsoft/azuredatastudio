@@ -7,7 +7,7 @@
 <div style="overflow: hidden; width: 100%; height: 100%; display: flex; flex-flow: column">
 	<div #toolbar class="editor-toolbar actionbar-container" style="flex: 0 0 auto; display: flex; flex-flow: row; width: 100%; align-items: center;">
 	</div>
-	<div *ngIf="!virtualScrollerEnabled" #scroll class="scrollable" style="flex: 1 1 auto; position: relative; outline: none" (click)="unselectActiveCell()" (scroll)="scrollHandler($event)">
+	<div *ngIf="!virtualScrollerEnabled" #container class="scrollable" style="flex: 1 1 auto; position: relative; outline: none" (click)="unselectActiveCell()" (scroll)="scrollHandler($event)">
 		<loading-spinner [loading]="isLoading"></loading-spinner>
 		<div *ngFor="let cell of cells">
 			<div id="{{ cell.id }}" class="notebook-cell" (click)="selectCell(cell, $event)" [class.active]="cell.active">
@@ -25,7 +25,7 @@
 		<div class="book-nav" #bookNav [style.visibility]="navigationVisibility">
 		</div>
 	</div>
-	<virtual-scroller *ngIf="virtualScrollerEnabled" #scroll [items]="cellsBuffer" [enableUnequalChildrenSizes]="true" [bufferAmount]=1000 style="flex: 1 1 auto; position: relative; outline: none" (click)="unselectActiveCell()" (vsEnd)="fetchMore($event)">
+	<virtual-scroller *ngIf="virtualScrollerEnabled" #scroll [items]="cellsBuffer" [enableUnequalChildrenSizes]="true" [bufferAmount]=1000 style="flex: 1 1 auto; position: relative; outline: none" (click)="unselectActiveCell()" (scroll)="scrollHandler($event, scroll.viewPortInfo)">
 		<loading-spinner [loading]="isLoading"></loading-spinner>
 		<div *ngFor="let cell of scroll.viewPortItems">
 			<div id="{{ cell.id }}" class="notebook-cell" (click)="selectCell(cell, $event)" [class.active]="cell.active">

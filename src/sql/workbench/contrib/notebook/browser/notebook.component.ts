@@ -219,9 +219,19 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		}
 	}
 
-	//Saves scrollTop value on scroll change
-	public scrollHandler(event: Event) {
-		this._scrollTop = (<HTMLElement>event.srcElement).scrollTop;
+	/**
+	 * Saves scrollTop value on scroll change.
+	 * If virtual scroller is enabled, call fetchMore when scrollbar is at the bottom of the page.
+	 * @param event Scroll event
+	 * @param viewPortInfo Current viewport info (used for virtual scroller)
+	 */
+	public scrollHandler(event: Event, viewPortInfo?: IPageInfo) {
+		let element = <HTMLElement>event.srcElement;
+		this._scrollTop = element.scrollTop;
+
+		if (this.virtualScrollerEnabled && (viewPortInfo.scrollEndPosition + 300) >= element.scrollHeight) {
+			this.fetchMore(viewPortInfo);
+		}
 	}
 
 	public unselectActiveCell() {
