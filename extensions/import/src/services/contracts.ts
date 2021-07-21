@@ -56,6 +56,37 @@ export interface ColumnInfo {
  * PROSEDiscoveryRequest
  * Send this request to create a new PROSE session with a new file and preview it
  */
+const transformationGenerationRequestName = 'flatfile/transformationGeneration';
+
+export interface TransformationGenerationParams {
+	columnNames: string[];
+	transformationExamples: string[];
+}
+
+export interface TransformationGenerationResponse {
+	transformationPreview: string[];
+}
+
+
+/**
+* PROSEDiscoveryRequest
+* Send this request to create a new PROSE session with a new file and preview it
+*/
+const transformationFinalizationRequestName = 'flatfile/transformationFinalization';
+
+export interface TransformationFinalizationParams {
+	derivedColumnName: string;
+}
+
+export interface TransformationFinalizationResponse {
+	numTransformations: number;
+}
+
+
+/**
+ * PROSEDiscoveryRequest
+ * Send this request to create a new PROSE session with a new file and preview it
+ */
 const proseDiscoveryRequestName = 'flatfile/proseDiscovery';
 
 export interface PROSEDiscoveryParams {
@@ -134,6 +165,14 @@ export namespace ChangeColumnSettingsRequest {
 	export const type = new RequestType<ChangeColumnSettingsParams, ChangeColumnSettingsResponse, void, void>(changeColumnSettingsRequestName);
 }
 
+export namespace TransformationGenerationRequest {
+	export const type = new RequestType<TransformationGenerationParams, TransformationGenerationResponse, void, void>(transformationGenerationRequestName);
+}
+
+export namespace TransformationFinalizationRequest {
+	export const type = new RequestType<TransformationFinalizationParams, TransformationFinalizationResponse, void, void>(transformationFinalizationRequestName);
+}
+
 
 export interface FlatFileProvider {
 	providerId?: string;
@@ -142,4 +181,6 @@ export interface FlatFileProvider {
 	sendInsertDataRequest(params: InsertDataParams): Thenable<InsertDataResponse>;
 	sendGetColumnInfoRequest(params: GetColumnInfoParams): Thenable<GetColumnInfoResponse>;
 	sendChangeColumnSettingsRequest(params: ChangeColumnSettingsParams): Thenable<ChangeColumnSettingsResponse>;
+	sendTransformationGenerationRequest(params: TransformationGenerationParams): Thenable<TransformationGenerationResponse>;
+	sendTransformationFinalizationRequest(params: TransformationFinalizationParams): Thenable<TransformationFinalizationResponse>;
 }

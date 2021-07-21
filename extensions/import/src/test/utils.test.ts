@@ -6,7 +6,7 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { ImportDataModel, ColumnMetadata } from '../wizard/api/models';
-import { FlatFileProvider, PROSEDiscoveryParams, InsertDataParams, GetColumnInfoParams, ChangeColumnSettingsParams, PROSEDiscoveryResponse, InsertDataResponse, ChangeColumnSettingsResponse, GetColumnInfoResponse } from '../services/contracts';
+import { FlatFileProvider, PROSEDiscoveryParams, InsertDataParams, GetColumnInfoParams, ChangeColumnSettingsParams, PROSEDiscoveryResponse, InsertDataResponse, ChangeColumnSettingsResponse, GetColumnInfoResponse, TransformationFinalizationResponse, TransformationFinalizationParams, TransformationGenerationParams, TransformationGenerationResponse } from '../services/contracts';
 
 export class ImportTestUtils {
 
@@ -167,6 +167,10 @@ export class TestImportDataModel implements ImportDataModel {
 	schema: string;
 	filePath: string;
 	fileType: string;
+	transPreviews: string[][];
+	originalProseColumns: ColumnMetadata[];
+	derivedColumnName: string;
+	newFileSelected: boolean;
 }
 
 export class TestFlatFileProvider implements FlatFileProvider {
@@ -181,6 +185,12 @@ export class TestFlatFileProvider implements FlatFileProvider {
 		throw new Error('Method not implemented.');
 	}
 	sendChangeColumnSettingsRequest(params: ChangeColumnSettingsParams): Thenable<ChangeColumnSettingsResponse> {
+		throw new Error('Method not implemented.');
+	}
+	sendTransformationGenerationRequest(params: TransformationGenerationParams): Thenable<TransformationGenerationResponse> {
+		throw new Error('Method not implemented.');
+	}
+	sendTransformationFinalizationRequest(params: TransformationFinalizationParams): Thenable<TransformationFinalizationResponse> {
 		throw new Error('Method not implemented.');
 	}
 

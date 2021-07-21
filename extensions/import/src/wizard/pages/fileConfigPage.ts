@@ -85,7 +85,6 @@ export class FileConfigPage extends ImportPage {
 		this._schemaLoader = schemaLoader;
 	}
 
-
 	private tableNames: string[] = [];
 
 	async start(): Promise<boolean> {
@@ -244,6 +243,8 @@ export class FileConfigPage extends ImportPage {
 		}).component();
 
 		this.fileButton.onDidClick(async (click) => {
+			this.model.transPreviews = [];
+			this.model.newFileSelected = true;
 			let fileUris = await vscode.window.showOpenDialog(
 				{
 					canSelectFiles: true,
@@ -306,7 +307,7 @@ export class FileConfigPage extends ImportPage {
 			actions: [this.fileButton]
 		};
 	}
-
+	// TODO: FIX ISSUE WHERE USERS COME BACK TO FILE CONFIG BUT CANT CHANGE TABLE NAME
 	private async createTableNameBox(): Promise<azdata.FormComponent> {
 		this.tableNameTextBox = this.view.modelBuilder.inputBox().withValidation((name) => {
 			let tableName = name.value;

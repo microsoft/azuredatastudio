@@ -19,6 +19,10 @@ export interface ImportDataModel {
 	schema: string;
 	filePath: string;
 	fileType: string;
+	transPreviews: string[][];
+	originalProseColumns: ColumnMetadata[];
+	derivedColumnName: string;
+	newFileSelected: boolean;
 }
 
 /**

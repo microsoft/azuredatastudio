@@ -2,10 +2,11 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-
+// TODO: move derived button here and add the new transformed column to the preview when the transformation is applied
 import * as azdata from 'azdata';
 import { ImportPage } from '../api/importPage';
 import * as constants from '../../common/constants';
+import { DerivedColumnDialog } from '../../dialogs/derivedColumnDialog';
 
 export class ProsePreviewPage extends ImportPage {
 
@@ -15,6 +16,7 @@ export class ProsePreviewPage extends ImportPage {
 	private _refresh: azdata.ButtonComponent;
 	private _resultTextComponent: azdata.TextComponent;
 	private _isSuccess: boolean;
+	private _createDerivedColumnButton: azdata.ButtonComponent;
 
 	public get table(): azdata.TableComponent {
 		return this._table;
@@ -64,6 +66,8 @@ export class ProsePreviewPage extends ImportPage {
 		this._isSuccess = isSuccess;
 	}
 
+
+
 	async start(): Promise<boolean> {
 		this.table = this.view.modelBuilder.table().withProperties<azdata.TableComponentProperties>({
 			data: undefined,
@@ -78,6 +82,26 @@ export class ProsePreviewPage extends ImportPage {
 
 		this.refresh.onDidClick(async () => {
 			await this.onPageEnter();
+		});
+
+		this._createDerivedColumnButton = this.view.modelBuilder.button().withProps({
+			label: constants.createDerivedColumn
+		}).component();
+
+		this._createDerivedColumnButton.onDidClick(async (e) => {
+			const derivedColumnDialog = new DerivedColumnDialog(this.model, this.provider);
+			const response = await derivedColumnDialog.openDialog();
+			if (response) {
+				(<string[]>this.table.columns).push(this.model.derivedColumnName);
+				const newTable = this.table.data;
+				const thisTrans = this.model.transPreviews[this.model.transPreviews.length - 1];
+				for (let index = 0; index < thisTrans.length; index++) {
+					newTable[index].push(thisTrans[index]);
+				}
+				this.table.updateProperties({
+					data: newTable,
+				});
+			}
 		});
 
 		this.loading = this.view.modelBuilder.loadingComponent().component();
@@ -96,6 +120,10 @@ export class ProsePreviewPage extends ImportPage {
 				component: this.table,
 				title: '',
 				actions: [this.refresh]
+			},
+			{
+				component: this._createDerivedColumnButton,
+				title: ''
 			}
 		]).component();
 
@@ -107,18 +135,26 @@ export class ProsePreviewPage extends ImportPage {
 	}
 
 	async onPageEnter(): Promise<boolean> {
-		this.loading.loading = true;
 		let proseResult: boolean;
 		let error: string;
-		try {
-			proseResult = await this.handleProse();
-		} catch (ex) {
-			error = ex.toString();
+		if (this.model.newFileSelected) {
+			this.loading.loading = true;
+			try {
+				proseResult = await this.handleProse();
+			} catch (ex) {
+				error = ex.toString();
+			}
+			this.model.newFileSelected = false;
+			this.loading.loading = false;
 		}
-
-		this.loading.loading = false;
-		if (proseResult) {
-			await this.populateTable(this.model.proseDataPreview, this.model.proseColumns.map(c => c.columnName));
+		if (!this.model.newFileSelected || proseResult) {
+			const tempTable = JSON.parse(JSON.stringify(this.model.proseDataPreview));
+			for (let index = 0; index < this.model.transPreviews.length; index++) {
+				for (let index2 = 0; index2 < this.model.proseDataPreview.length; index2++) {
+					tempTable[index2].push(this.model.transPreviews[index][index2]);
+				}
+			}
+			await this.populateTable(tempTable, this.model.proseColumns.map(c => c.columnName));
 			this.isSuccess = true;
 			if (this.form) {
 				this.resultTextComponent.value = constants.successTitleText;
@@ -170,9 +206,16 @@ export class ProsePreviewPage extends ImportPage {
 		}
 
 		this.model.proseColumns = [];
+		this.model.originalProseColumns = [];
 		if (response.columnInfo) {
 			response.columnInfo.forEach((column) => {
 				this.model.proseColumns.push({
+					columnName: column.name,
+					dataType: column.sqlType,
+					primaryKey: false,
+					nullable: column.isNullable
+				});
+				this.model.originalProseColumns.push({
 					columnName: column.name,
 					dataType: column.sqlType,
 					primaryKey: false,
@@ -205,6 +248,9 @@ export class ProsePreviewPage extends ImportPage {
 	}
 
 	private async emptyTable() {
-		this.table.updateProperties([]);
+		this.table.updateProperties({
+			data: [],
+			columns: []
+		});
 	}
 }
