@@ -2,7 +2,6 @@ import { nb } from 'azdata';
 import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { INotebookView } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViews';
 import { CellTypes } from 'sql/workbench/services/notebook/common/contracts';
-import { Disposable } from 'vs/base/common/lifecycle';
 
 class VisInfo<T> {
 	public width: number;
@@ -96,37 +95,24 @@ class CellDisplayGroup extends DisplayGroup<ICellModel> {
 	}
 }
 
-export class AutoDash extends Disposable {
-	private readonly _displayGroup: CellDisplayGroup;
+export function generateLayout(initialView: INotebookView): void {
+	let displayGroup: CellDisplayGroup = new CellDisplayGroup();
 
-	constructor() {
-		super();
-		this._displayGroup = new CellDisplayGroup();
-	}
+	const cells = initialView.cells;
 
-	containsGraph(output: string): boolean {
-		return output.includes('output-canvas');
-	}
+	cells.forEach((cell, idx) => {
+		displayGroup.addCell(cell, initialView);
+	});
 
-	generateLayout(initialView: INotebookView): INotebookView {
-		const cells = initialView.cells;
+	displayGroup.visInfos.forEach((v) => {
+		if (!v.display) {
+			initialView.hideCell(v.cell);
+		}
 
-		cells.forEach((cell, idx) => {
-			this._displayGroup.addCell(cell, initialView);
-		});
+		if (v.width || v.height) {
+			initialView.resizeCell(v.cell, v.width, v.height);
+		}
+	});
 
-		this._displayGroup.visInfos.forEach((v) => {
-			if (!v.display) {
-				initialView.hideCell(v.cell);
-			}
-
-			if (v.width || v.height) {
-				initialView.resizeCell(v.cell, v.width, v.height);
-			}
-		});
-
-		initialView.compactCells();
-
-		return initialView;
-	}
+	initialView.compactCells();
 }

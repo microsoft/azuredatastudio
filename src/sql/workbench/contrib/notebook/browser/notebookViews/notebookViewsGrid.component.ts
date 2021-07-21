@@ -13,7 +13,15 @@ import { localize } from 'vs/nls';
 import { NotebookViewsExtension } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViewsExtension';
 import { CellChangeEvent, INotebookView, INotebookViewCell } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViews';
 import { AngularDisposable } from 'sql/base/browser/lifecycle';
-import { AutoDash } from 'sql/workbench/services/notebook/browser/notebookViews/autodash';
+import { generateLayout } from 'sql/workbench/services/notebook/browser/notebookViews/autodash';
+
+export interface INotebookViewsGridOptions {
+	cellHeight?: number;
+}
+
+const defaultGridOptions: INotebookViewsGridOptions = {
+	cellHeight: 60
+};
 
 @Component({
 	selector: 'notebook-views-grid-component',
@@ -35,9 +43,11 @@ export class NotebookViewsGridComponent extends AngularDisposable implements OnI
 	protected _loaded: boolean;
 
 	constructor(
+		protected _options: INotebookViewsGridOptions,
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
 	) {
 		super();
+		this._options = { ...defaultGridOptions, ..._options };
 		this._loaded = false;
 	}
 
@@ -149,7 +159,7 @@ export class NotebookViewsGridComponent extends AngularDisposable implements OnI
 	private resizeCells(): void {
 		this._items.forEach((i: NotebookViewsCardComponent) => {
 			if (i.elementRef) {
-				const cellHeight = 60;
+				const cellHeight = this._options.cellHeight;
 
 				const naturalHeight = i.elementRef.nativeElement.clientHeight;
 				const heightInCells = Math.ceil(naturalHeight / cellHeight);
@@ -164,10 +174,9 @@ export class NotebookViewsGridComponent extends AngularDisposable implements OnI
 	}
 
 	private runAutoLayout(view: INotebookView): void {
-		const autodash = new AutoDash();
-
+		//Resize the cells before regenerating layout so that we know the natural height of the cells
 		this.resizeCells();
-		autodash.generateLayout(view);
+		generateLayout(view);
 	}
 
 	private detectChanges(): void {
