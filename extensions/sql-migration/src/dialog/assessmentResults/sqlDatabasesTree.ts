@@ -145,7 +145,7 @@ export class SqlDatabaseTree {
 					{
 						displayName: '',
 						valueType: azdata.DeclarativeDataType.boolean,
-						width: 20,
+						width: 10,
 						isReadOnly: false,
 						showCheckAll: true,
 						headerCssStyles: headerLeft,
@@ -153,14 +153,14 @@ export class SqlDatabaseTree {
 					{
 						displayName: constants.DATABASE,
 						valueType: azdata.DeclarativeDataType.string,
-						width: 100,
+						width: 95,
 						isReadOnly: true,
 						headerCssStyles: headerLeft
 					},
 					{
 						displayName: constants.ISSUES,
 						valueType: azdata.DeclarativeDataType.string,
-						width: 30,
+						width: 45,
 						isReadOnly: true,
 						headerCssStyles: headerRight,
 					}
@@ -223,8 +223,7 @@ export class SqlDatabaseTree {
 		if (this._databaseTableValues && value?.length > 0) {
 			const filter: number[] = [];
 			this._databaseTableValues.forEach((row, index) => {
-				const flexContainer: azdata.FlexContainer = row[1]?.value as azdata.FlexContainer;
-				const textComponent: azdata.TextComponent = flexContainer.items[1] as azdata.TextComponent;
+				const textComponent: azdata.TextComponent = row[1] as azdata.TextComponent;
 				const cellText = textComponent.value?.toLowerCase();
 				const searchText: string = value.toLowerCase();
 				if (cellText?.includes(searchText)) {
@@ -241,20 +240,23 @@ export class SqlDatabaseTree {
 	private createInstanceComponent(): azdata.DivContainer {
 		this._instanceTable = this._view.modelBuilder.declarativeTable().withProps(
 			{
+				CSSStyles: {
+					'table-layout': 'fixed'
+				},
+				width: 200,
 				enableRowSelection: true,
-				width: 170,
 				columns: [
 					{
 						displayName: constants.INSTANCE,
-						valueType: azdata.DeclarativeDataType.component,
-						width: 130,
+						valueType: azdata.DeclarativeDataType.string,
+						width: 105,
 						isReadOnly: true,
 						headerCssStyles: headerLeft
 					},
 					{
 						displayName: constants.WARNINGS,
 						valueType: azdata.DeclarativeDataType.string,
-						width: 30,
+						width: 45,
 						isReadOnly: true,
 						headerCssStyles: headerRight
 					}
@@ -263,6 +265,7 @@ export class SqlDatabaseTree {
 
 		const instanceContainer = this._view.modelBuilder.divContainer().withItems([this._instanceTable]).withProps({
 			CSSStyles: {
+				'width': '200px',
 				'margin': '19px 8px 0px 34px'
 			}
 		}).component();
