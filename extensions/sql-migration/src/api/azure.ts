@@ -403,7 +403,8 @@ export interface StartDatabaseMigrationRequest {
 			username: string,
 			password: string
 		},
-		scope: string
+		scope: string,
+		autoCutoverConfiguration?: AutoCutoverConfiguration
 	}
 }
 

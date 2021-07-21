@@ -18,13 +18,21 @@ export enum TelemetryViews {
 	MigrationStatusDialog = 'MigrationStatusDialog',
 	MigrationWizardAccountSelectionPage = 'MigrationWizardAccountSelectionPage',
 	MigrationWizardTargetSelectionPage = 'MigrationWizardTargetSelectionPage',
+	MigrationWizardSummaryPage = 'MigrationWizardSummaryPage',
+	StartMigrationService = 'StartMigrationSerivce'
 }
 
 export enum TelemetryAction {
 	ServerAssessment = 'ServerAssessment',
 	ServerAssessmentIssues = 'ServerAssessmentIssues',
+	ServerAssessmentError = 'ServerAssessmentError',
 	DatabaseAssessment = 'DatabaseAsssessment',
-	DatabaseAssessmentWarning = 'DatabaseAssessmentWarning'
+	DatabaseAssessmentWarning = 'DatabaseAssessmentWarning',
+	DatabaseAssessmentError = 'DatabaseAssessmentError',
+	StartMigration = 'StartMigration',
+	CutoverMigration = 'CutoverMigration',
+	CancelMigration = 'CancelMigration',
+	MigrationStatus = 'MigrationStatus'
 }
 
 export function sendSqlMigrationActionEvent(telemetryView: TelemetryViews, telemetryAction: TelemetryAction, additionalProps: TelemetryEventProperties, additionalMeasurements: TelemetryEventMeasures): void {
