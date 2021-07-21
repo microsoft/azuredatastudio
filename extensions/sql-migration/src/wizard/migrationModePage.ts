@@ -62,11 +62,10 @@ export class MigrationModePage extends MigrationWizardPage {
 			}
 		}).component();
 
-		this.migrationStateModel._databaseBackup.migrationMode = MigrationMode.ONLINE;
-
 		onlineButton.onDidChangeCheckedState((e) => {
 			if (e) {
 				this.migrationStateModel._databaseBackup.migrationMode = MigrationMode.ONLINE;
+				this.migrationStateModel.refreshDatabaseBackupPage = true;
 			}
 		});
 
@@ -91,6 +90,7 @@ export class MigrationModePage extends MigrationWizardPage {
 		offlineButton.onDidChangeCheckedState((e) => {
 			if (e) {
 				this.migrationStateModel._databaseBackup.migrationMode = MigrationMode.OFFLINE;
+				this.migrationStateModel.refreshDatabaseBackupPage = true;
 			}
 		});
 

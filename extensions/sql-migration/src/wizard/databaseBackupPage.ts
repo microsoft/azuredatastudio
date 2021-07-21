@@ -13,7 +13,8 @@ import { IconPathHelper } from '../constants/iconPathHelper';
 import { WIZARD_INPUT_COMPONENT_WIDTH } from './wizardController';
 import { findDropDownItemIndex, selectDropDownIndex } from '../api/utils';
 
-const WIZARD_TABLE_COLUMN_WIDTH = '200px';
+// const WIZARD_TABLE_COLUMN_WIDTH = '200px';
+const WIZARD_TABLE_COLUMN_WIDTH = '150px';
 
 export class DatabaseBackupPage extends MigrationWizardPage {
 	private _view!: azdata.ModelView;
@@ -479,7 +480,6 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 					headerCssStyles: headerCssStyles,
 					isReadOnly: true,
 					width: WIZARD_TABLE_COLUMN_WIDTH,
-					// _todo: need to update this dynamically...
 				}
 			]
 		}).component();
@@ -651,6 +651,10 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 	public async onPageEnter(): Promise<void> {
 
 		if (this.migrationStateModel.refreshDatabaseBackupPage) {
+
+			const lastColumnIndex = this._blobContainerTargetDatabaseNamesTable.columns.length - 1;
+			this._blobContainerTargetDatabaseNamesTable.columns[lastColumnIndex].hidden = this.migrationStateModel._databaseBackup?.migrationMode === MigrationMode.ONLINE;
+
 			const connectionProfile = await this.migrationStateModel.getSourceConnectionProfile();
 			const queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>((await this.migrationStateModel.getSourceConnectionProfile()).providerId, azdata.DataProviderType.QueryProvider);
 			const query = 'select SUSER_NAME()';
