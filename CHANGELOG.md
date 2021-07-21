@@ -1,5 +1,19 @@
 # Change Log
 
+## Version 1.31.0
+* Release date: July 21, 2021
+* Release status: General Availability
+* New Notebook Features:
+    * WYSIWYG link improvements 
+* Query Editor Features:
+ 
+* Extension Updates:
+    * SQL Database Projects
+    *  Import
+    *  SandDance
+* Bug Fixes
+  * Accessibility bug fixes 
+
 ## Version 1.30.0
 * Release date: June 17, 2021
 * Release status: General Availability
