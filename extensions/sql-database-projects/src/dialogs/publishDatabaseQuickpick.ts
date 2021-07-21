@@ -69,14 +69,26 @@ export async function launchPublishDatabaseQuickpick(project: Project): Promise<
 		// so exit the flow.
 		return;
 	}
+	quickPick.hide(); // Hide the quickpick immediately so it isn't showing while the API loads
 
 	// 2. Select connection
-	const api = await getVscodeMssqlApi();
-	const connectionProfile = await api.promptForConnection();
-	if (!connectionProfile) {
-		return;
+	const vscodeMssqlApi = await getVscodeMssqlApi();
+	let dbs: string[] | undefined = undefined;
+	while (!dbs) {
+		const connectionProfile = await vscodeMssqlApi.promptForConnection(true);
+		if (!connectionProfile) {
+			return;
+		}
+		// Get the list of databases now to validate that the connection is valid and re-prompt them if it isn't
+		try {
+			dbs = await vscodeMssqlApi.listDatabases(connectionProfile);
+		} catch (err) {
+			// no-op, the mssql extension handles showing the error to the user. We'll just go
+			// back and prompt the user for a connection again
+		}
 	}
-	const dbs = ['db1', 'db2'];
+
+	// 3. Select database
 	const dbQuickpicks = dbs.map(db => {
 		return {
 			label: db,
@@ -93,10 +105,9 @@ export async function launchPublishDatabaseQuickpick(project: Project): Promise<
 	}
 
 	dbQuickpicks.push({ label: constants.createNew, dbName: '', isCreateNew: true });
-	// 3. Select database
-	// TODO@chgagnon: Hook up to MSSQL
-	let databaseName = '';
-	while (databaseName === '') {
+
+	let databaseName: string | undefined = undefined;
+	while (!databaseName) {
 		const selectedDatabase = await vscode.window.showQuickPick(
 			dbQuickpicks,
 			{ title: constants.selectDatabase, ignoreFocusOut: true });
@@ -116,7 +127,6 @@ export async function launchPublishDatabaseQuickpick(project: Project): Promise<
 			// If user cancels out of this just return them to the db select quickpick in case they changed their mind
 		}
 	}
-
 
 	// 4. Modify sqlcmd vars
 	// If a publish profile is provided then the values from there will overwrite the ones in the
