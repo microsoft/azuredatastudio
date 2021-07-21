@@ -198,9 +198,9 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 					rowCssStyles: cssStyles.tableRow
 				}
 			],
-			data: [
-				[loc.kibanaDashboard, this._kibanaLoading, loc.kibanaDashboardDescription],
-				[loc.grafanaDashboard, this._grafanaLoading, loc.grafanaDashboardDescription]]
+			dataValues: [
+				[{ value: loc.kibanaDashboard }, { value: this._kibanaLoading }, { value: loc.kibanaDashboardDescription }],
+				[{ value: loc.grafanaDashboard }, { value: this._grafanaLoading }, { value: loc.grafanaDashboardDescription }]]
 		}).component();
 
 		rootContainer.addItem(endpointsTable);
