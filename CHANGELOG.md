@@ -5,12 +5,10 @@
 * Release status: General Availability
 * New Notebook Features:
     * WYSIWYG link improvements 
-* Query Editor Features:
- 
 * Extension Updates:
-    * SQL Database Projects
-    *  Import
-    *  SandDance
+    * Import
+    * SandDance 
+    * SQL Database Projects 
 * Bug Fixes
   * Accessibility bug fixes 
 
