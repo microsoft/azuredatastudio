@@ -187,7 +187,7 @@ describe('Manage Package Dialog', () => {
 			setFilter: undefined!,
 			data: [],
 			columns: [],
-			setDataValues: undefined!,
+			setDataValues: undefined!
 		});
 
 		let loadingComponent: () => azdata.LoadingComponent = () => Object.assign({}, componentBase, {

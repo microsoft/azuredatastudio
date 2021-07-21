@@ -110,7 +110,7 @@ export function createViewContext(): ViewTestContext {
 		setFilter: undefined!,
 		data: [],
 		columns: [],
-		setDataValues: undefined!,
+		setDataValues: undefined!
 	});
 
 	let loadingComponent: () => azdata.LoadingComponent = () => Object.assign({}, componentBase, {
