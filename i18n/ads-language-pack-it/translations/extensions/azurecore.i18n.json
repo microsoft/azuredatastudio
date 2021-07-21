@@ -41,6 +41,7 @@
 		"dist/azureResource/utils": {
 			"azure.resource.error": "Errore: {0}",
 			"azure.accounts.getResourceGroups.queryError": "Errore durante il recupero dei gruppi di risorse per l'account {0} ({1}) sottoscrizione {2} ({3}) tenant {4}: {5}",
+			"azure.accounts.getLocations.queryError": "Errore durante il recupero delle posizioni per l'account {0} ({1}) sottoscrizione {2} ({3}) tenant {4} : {5}",
 			"azure.accounts.runResourceQuery.errors.invalidQuery": "Query non valida",
 			"azure.accounts.getSubscriptions.queryError": "Errore durante il recupero delle sottoscrizioni per l'account {0} tenant {1}: {2}",
 			"azure.accounts.getSelectedSubscriptions.queryError": "Errore durante il recupero delle sottoscrizioni per l'account {0}: {1}"
@@ -105,7 +106,7 @@
 			"azurecore.azureArcsqlManagedInstance": "Istanza gestita di SQL- Azure Arc",
 			"azurecore.azureArcService": "Servizio dati - Azure Arc",
 			"azurecore.sqlServerArc": "SQL Server - Azure Arc",
-			"azurecore.azureArcPostgres": "PostgreSQL Hyperscale con abilitazione di Azure Arc",
+			"azurecore.azureArcPostgres": "PostgreSQL Hyperscale abilitato per Azure Arc",
 			"azure.unableToOpenAzureLink": "Non è possibile aprire il collegamento, mancano i valori richiesti",
 			"azure.azureResourcesGridTitle": "Risorse di Azure (anteprima)",
 			"azurecore.invalidAzureAccount": "Account non valido",
@@ -141,7 +142,9 @@
 		"dist/azureResource/tree/flatAccountTreeNode": {
 			"azure.resource.tree.accountTreeNode.titleLoading": "{0} - Caricamento...",
 			"azure.resource.tree.accountTreeNode.title": "{0} ({1}/{2} sottoscrizioni)",
-			"azure.resource.tree.accountTreeNode.credentialError": "Non è stato possibile ottenere le credenziali per l'account {0}. Passare alla finestra di dialogo degli account e aggiornare l'account."
+			"azure.resource.tree.accountTreeNode.credentialError": "Non è stato possibile ottenere le credenziali per l'account {0}. Passare alla finestra di dialogo degli account e aggiornare l'account.",
+			"azure.resource.throttleerror": "Le richieste da questo account sono state limitate. Per riprovare, selezionare un numero inferiore di sottoscrizioni.",
+			"azure.resource.tree.loadresourceerror": "Si è verificato un errore durante il caricamento delle risorse di Azure: {0}"
 		},
 		"dist/azureResource/tree/accountNotSignedInTreeNode": {
 			"azure.resource.tree.accountNotSignedInTreeNode.signInLabel": "Accedi ad Azure..."
@@ -202,6 +205,9 @@
 		},
 		"dist/azureResource/providers/kusto/kustoTreeDataProvider": {
 			"azure.resource.providers.KustoContainerLabel": "Cluster di Esplora dati di Azure"
+		},
+		"dist/azureResource/providers/azuremonitor/azuremonitorTreeDataProvider": {
+			"azure.resource.providers.AzureMonitorContainerLabel": "Azure Monitor Workspace"
 		},
 		"dist/azureResource/providers/postgresServer/postgresServerTreeDataProvider": {
 			"azure.resource.providers.databaseServer.treeDataProvider.postgresServerContainerLabel": "Server di Database di Azure per PostgreSQL"

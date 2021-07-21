@@ -132,7 +132,7 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 					rowCssStyles: cssStyles.tableRow
 				}
 			],
-			data: []
+			dataValues: []
 		}).component();
 
 		this._databasesMessage = this.modelView.modelBuilder.text()
@@ -198,9 +198,9 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 					rowCssStyles: cssStyles.tableRow
 				}
 			],
-			data: [
-				[loc.kibanaDashboard, this._kibanaLoading, loc.kibanaDashboardDescription],
-				[loc.grafanaDashboard, this._grafanaLoading, loc.grafanaDashboardDescription]]
+			dataValues: [
+				[{ value: loc.kibanaDashboard }, { value: this._kibanaLoading }, { value: loc.kibanaDashboardDescription }],
+				[{ value: loc.grafanaDashboard }, { value: this._grafanaLoading }, { value: loc.grafanaDashboardDescription }]]
 		}).component();
 
 		rootContainer.addItem(endpointsTable);
@@ -366,7 +366,13 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 		// If we were able to get the databases it means we have a good connection so update the username too
 		this._instanceProperties.miaaAdmin = this._miaaModel.username || this._instanceProperties.miaaAdmin;
 		this.refreshDisplayedProperties();
-		this._databasesTable.data = this._miaaModel.databases.map(d => [d.name, getDatabaseStateDisplayText(d.status)]);
+		let databaseDisplayText = this._miaaModel.databases.map(d => [d.name, getDatabaseStateDisplayText(d.status)]);
+		let databasesTextValues = databaseDisplayText.map(d => {
+			return d.map((value): azdata.DeclarativeTableCellValue => {
+				return { value: value };
+			});
+		});
+		this._databasesTable.setDataValues(databasesTextValues);
 		this._databasesTableLoading.loading = false;
 
 		if (this._miaaModel.databasesLastUpdated) {

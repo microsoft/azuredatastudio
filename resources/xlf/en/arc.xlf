@@ -559,11 +559,11 @@
     <trans-unit id="arc.resetPassword">
       <source xml:lang="en">Reset Password</source>
     </trans-unit>
-    <trans-unit id="arc.addExtensions">
-      <source xml:lang="en">Add extensions</source>
+    <trans-unit id="arc.loadExtensions">
+      <source xml:lang="en">Load extensions</source>
     </trans-unit>
-    <trans-unit id="arc.dropExtensions">
-      <source xml:lang="en">Drop extensions</source>
+    <trans-unit id="arc.unloadExtensions">
+      <source xml:lang="en">Unload extensions</source>
     </trans-unit>
     <trans-unit id="arc.noExtensions">
       <source xml:lang="en">No extensions listed in configuration.</source>

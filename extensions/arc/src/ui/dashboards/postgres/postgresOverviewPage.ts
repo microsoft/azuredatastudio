@@ -139,9 +139,9 @@ export class PostgresOverviewPage extends DashboardPage {
 					rowCssStyles: cssStyles.tableRow
 				}
 			],
-			data: [
-				[loc.kibanaDashboard, this.kibanaLoading, loc.kibanaDashboardDescription],
-				[loc.grafanaDashboard, this.grafanaLoading, loc.grafanaDashboardDescription]]
+			dataValues: [
+				[{ value: loc.kibanaDashboard }, { value: this.kibanaLoading }, { value: loc.kibanaDashboardDescription }],
+				[{ value: loc.grafanaDashboard }, { value: this.grafanaLoading }, { value: loc.grafanaDashboardDescription }]]
 		}).component();
 		content.addItem(endpointsTable);
 
@@ -150,6 +150,8 @@ export class PostgresOverviewPage extends DashboardPage {
 			value: loc.serverGroupNodes,
 			CSSStyles: titleCSS
 		}).component());
+
+
 
 		this.podStatusTable = this.modelView.modelBuilder.declarativeTable().withProps({
 			width: '100%',
@@ -185,7 +187,7 @@ export class PostgresOverviewPage extends DashboardPage {
 					rowCssStyles: cssStyles.tableRow
 				}
 			],
-			data: [this.podStatusData.map(p => [p.podName, p.type, p.status])]
+			dataValues: this.createPodStatusDataValues()
 		}).component();
 
 
@@ -389,6 +391,15 @@ export class PostgresOverviewPage extends DashboardPage {
 		return podModels;
 	}
 
+	private createPodStatusDataValues(): azdata.DeclarativeTableCellValue[][] {
+		let podDataValue: (string | azdata.Component)[][] = this.podStatusData.map(p => [p.podName, p.type, p.status]);
+		return podDataValue.map(p => {
+			return p.map((value): azdata.DeclarativeTableCellValue => {
+				return { value: value };
+			});
+		});
+	}
+
 	private refreshDashboardLinks(): void {
 		if (this._postgresModel.config) {
 			const kibanaUrl = this._postgresModel.config.status.logSearchDashboard ?? '';
@@ -406,7 +417,7 @@ export class PostgresOverviewPage extends DashboardPage {
 	private refreshServerNodes(): void {
 		if (this._postgresModel.config) {
 			this.podStatusData = this.getPodStatus();
-			this.podStatusTable.data = this.podStatusData.map(p => [p.podName, p.type, p.status]);
+			this.podStatusTable.setDataValues(this.createPodStatusDataValues());
 			this.serverGroupNodesLoading.loading = false;
 		}
 	}
