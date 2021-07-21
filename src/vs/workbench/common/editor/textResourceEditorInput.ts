@@ -190,24 +190,23 @@ export abstract class AbstractTextResourceEditorInput extends EditorInput implem
 		return false;
 	}
 
-	// {{SQL CARBON EDIT}} - Added handling for resultsVisible (used to preserve results for QueryEditorInput saves)
-	override save(group: GroupIdentifier, options?: ITextFileSaveOptions, resultsVisible?: boolean): Promise<IEditorInput | undefined> {
+	override save(group: GroupIdentifier, options?: ITextFileSaveOptions): Promise<IEditorInput | undefined> {
 
 		// If this is neither an `untitled` resource, nor a resource
 		// we can handle with the file service, we can only "Save As..."
 		if (this.resource.scheme !== Schemas.untitled && !this.fileService.canHandleResource(this.resource)) {
-			return this.saveAs(group, options, resultsVisible);
+			return this.saveAs(group, options);
 		}
 
 		// Normal save
-		return this.doSave(options, false, resultsVisible);
+		return this.doSave(options, false);
 	}
 
-	override saveAs(group: GroupIdentifier, options?: ITextFileSaveOptions, resultsVisible?: boolean): Promise<IEditorInput | undefined> {
-		return this.doSave(options, true, resultsVisible);
+	override saveAs(group: GroupIdentifier, options?: ITextFileSaveOptions): Promise<IEditorInput | undefined> {
+		return this.doSave(options, true);
 	}
 
-	private async doSave(options: ITextFileSaveOptions | undefined, saveAs: boolean, resultsVisible?: boolean): Promise<IEditorInput | undefined> {
+	private async doSave(options: ITextFileSaveOptions | undefined, saveAs: boolean): Promise<IEditorInput | undefined> {
 
 		// Save / Save As
 		let target: URI | undefined;
@@ -228,14 +227,11 @@ export abstract class AbstractTextResourceEditorInput extends EditorInput implem
 			target.scheme !== this.resource.scheme ||
 			(saveAs && !isEqual(target, this.preferredResource))
 		) {
-			let result = this.editorService.createEditorInput({ resource: target });
-			result['resultsVisible'] = resultsVisible;
-			return result;
+			return this.editorService.createEditorInput({ resource: target });
 		}
 
 		return this;
 	}
-	// {{SQL CARBON EDIT}} - End
 
 	override async revert(group: GroupIdentifier, options?: IRevertOptions): Promise<void> {
 		await this.textFileService.revert(this.resource, options);
