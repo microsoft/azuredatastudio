@@ -110,9 +110,6 @@ export class QueryEditorState extends Disposable {
 	}
 }
 
-export interface IQueryEditorInput extends IEditorInput {
-	resultsVisible?: boolean;
-}
 
 /**
  * Input for the QueryEditor. This input is simply a wrapper around a QueryResultsInput for the QueryResultsEditor
@@ -233,38 +230,9 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 	}
 
 	override saveAs(group: GroupIdentifier, options?: ISaveOptions): Promise<IEditorInput | undefined> {
-		return this.doSave(options, true);
-		//return this.text.saveAs(group, options);
+		return this.text.saveAs(group, options, this.state.resultsVisible);
 	}
 
-	public async doSave(options: ITextFileSaveOptions | undefined, saveAs: boolean): Promise<IEditorInput | undefined> {
-
-		// Save / Save As
-		let target: URI | undefined;
-		if (saveAs) {
-			target = await this.text.textFileService.saveAs(this.resource, undefined, { ...options, suggestedTarget: this.text.preferredResource });
-		} else {
-			target = await this.text.textFileService.save(this.resource, options);
-		}
-
-		if (!target) {
-			return undefined; // save cancelled
-		}
-
-		// If this save operation results in a new editor, either
-		// because it was saved to disk (e.g. from untitled) or
-		// through an explicit "Save As", make sure to replace it.
-		if (
-			target.scheme !== this.resource.scheme ||
-			(saveAs && !isEqual(target, this.text.preferredResource))
-		) {
-			let newInput: IQueryEditorInput = this.text.editorService.createEditorInput({ resource: target });
-			newInput.resultsVisible = this.state.resultsVisible;
-			return newInput;
-		}
-
-		return this;
-	}
 
 
 

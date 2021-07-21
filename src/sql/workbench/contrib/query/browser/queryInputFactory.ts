@@ -13,7 +13,7 @@ import { FileQueryEditorInput } from 'sql/workbench/contrib/query/common/fileQue
 import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
 import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
 import { ILanguageAssociation } from 'sql/workbench/services/languageAssociation/common/languageAssociation';
-import { QueryEditorInput, IQueryEditorInput } from 'sql/workbench/common/editor/query/queryEditorInput';
+import { QueryEditorInput } from 'sql/workbench/common/editor/query/queryEditorInput';
 import { getCurrentGlobalConnection } from 'sql/workbench/browser/taskUtilities';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import { IConnectionManagementService, IConnectionCompletionOptions, ConnectionType } from 'sql/platform/connection/common/connectionManagement';
@@ -81,7 +81,8 @@ export class QueryEditorLanguageAssociation implements ILanguageAssociation {
 		} else {
 			return undefined;
 		}
-		if ((activeEditor as IQueryEditorInput).resultsVisible) {
+		// If the original query editor had the results visible, make sure to set results visible for the replacement editor.
+		if ((activeEditor as any).resultsVisible) {
 			queryEditorInput.state.resultsVisible = true;
 		}
 

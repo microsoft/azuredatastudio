@@ -25,9 +25,9 @@ export abstract class AbstractTextResourceEditorInput extends EditorInput implem
 	constructor(
 		public readonly resource: URI,
 		preferredResource: URI | undefined,
-		@IEditorService public readonly editorService: IEditorService, // {{SQL CARBON EDIT}} - Required in Query Editor Input.
+		@IEditorService protected readonly editorService: IEditorService,
 		@IEditorGroupsService protected readonly editorGroupService: IEditorGroupsService,
-		@ITextFileService public readonly textFileService: ITextFileService, // {{SQL CARBON EDIT}} - Required in Query Editor Input.
+		@ITextFileService protected readonly textFileService: ITextFileService,
 		@ILabelService protected readonly labelService: ILabelService,
 		@IFileService protected readonly fileService: IFileService,
 		@IFilesConfigurationService protected readonly filesConfigurationService: IFilesConfigurationService
@@ -202,11 +202,12 @@ export abstract class AbstractTextResourceEditorInput extends EditorInput implem
 		return this.doSave(options, false);
 	}
 
-	override saveAs(group: GroupIdentifier, options?: ITextFileSaveOptions): Promise<IEditorInput | undefined> {
-		return this.doSave(options, true);
+	// {{SQL CARBON EDIT}} - Added handling for resultsVisible (used to preserve results in case of save as)
+	override saveAs(group: GroupIdentifier, options?: ITextFileSaveOptions, resultsVisible?: boolean): Promise<IEditorInput | undefined> {
+		return this.doSave(options, true, resultsVisible);
 	}
 
-	public async doSave(options: ITextFileSaveOptions | undefined, saveAs: boolean): Promise<IEditorInput | undefined> { // {{SQL CARBON EDIT}} - Needed in QueryEditor.
+	public async doSave(options: ITextFileSaveOptions | undefined, saveAs: boolean, resultsVisible?: boolean): Promise<IEditorInput | undefined> {
 
 		// Save / Save As
 		let target: URI | undefined;
@@ -227,11 +228,14 @@ export abstract class AbstractTextResourceEditorInput extends EditorInput implem
 			target.scheme !== this.resource.scheme ||
 			(saveAs && !isEqual(target, this.preferredResource))
 		) {
-			return this.editorService.createEditorInput({ resource: target });
+			let result = this.editorService.createEditorInput({ resource: target });
+			result['resultsVisible'] = resultsVisible;
+			return result;
 		}
 
 		return this;
 	}
+	// {{SQL CARBON EDIT}} - End
 
 	override async revert(group: GroupIdentifier, options?: IRevertOptions): Promise<void> {
 		await this.textFileService.revert(this.resource, options);
