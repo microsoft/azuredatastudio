@@ -6,7 +6,6 @@
 import { localize } from 'vs/nls';
 import { URI } from 'vs/base/common/uri';
 import { IFileEditorInput, Verbosity, GroupIdentifier, IMoveResult, isTextEditorPane } from 'vs/workbench/common/editor';
-import { AbstractTextResourceEditorInput } from 'vs/workbench/common/editor/textResourceEditorInput';
 import { BinaryEditorModel } from 'vs/workbench/common/editor/binaryEditorModel';
 import { FileOperationError, FileOperationResult, IFileService } from 'vs/platform/files/common/files';
 import { ITextFileService, TextFileEditorModelState, TextFileResolveReason, TextFileOperationError, TextFileOperationResult, ITextFileEditorModel, EncodingMode } from 'vs/workbench/services/textfile/common/textfiles';
@@ -22,6 +21,7 @@ import { isEqual } from 'vs/base/common/resources';
 import { Event } from 'vs/base/common/event';
 import { IEditorViewState } from 'vs/editor/common/editorCommon';
 import { Schemas } from 'vs/base/common/network';
+import { QueryEditorTextInput } from 'sql/workbench/common/editor/query/queryEditorInput';
 
 const enum ForceOpenAs {
 	None,
@@ -32,7 +32,7 @@ const enum ForceOpenAs {
 /**
  * A file editor input is the input type for the file editor of file system resources.
  */
-export class FileEditorInput extends AbstractTextResourceEditorInput implements IFileEditorInput {
+export class FileEditorInput extends QueryEditorTextInput implements IFileEditorInput {
 
 	override get typeId(): string {
 		return FILE_EDITOR_INPUT_ID;
