@@ -19,8 +19,6 @@ import { startsWith } from 'vs/base/common/strings';
 import { IRange } from 'vs/editor/common/core/range';
 import { AbstractTextResourceEditorInput } from 'vs/workbench/common/editor/textResourceEditorInput';
 import { IQueryEditorConfiguration } from 'sql/platform/query/common/query';
-import { isEqual } from 'vs/base/common/resources';
-import { ITextFileSaveOptions } from 'vs/workbench/services/textfile/common/textfiles';
 
 const MAX_SIZE = 13;
 
@@ -109,7 +107,6 @@ export class QueryEditorState extends Disposable {
 		return this._isSqlCmdMode;
 	}
 }
-
 
 /**
  * Input for the QueryEditor. This input is simply a wrapper around a QueryResultsInput for the QueryResultsEditor
@@ -232,9 +229,6 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 	override saveAs(group: GroupIdentifier, options?: ISaveOptions): Promise<IEditorInput | undefined> {
 		return this.text.saveAs(group, options, this.state.resultsVisible);
 	}
-
-
-
 
 	// Called to get the tooltip of the tab
 	public override getTitle(): string {

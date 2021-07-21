@@ -207,7 +207,7 @@ export abstract class AbstractTextResourceEditorInput extends EditorInput implem
 		return this.doSave(options, true, resultsVisible);
 	}
 
-	public async doSave(options: ITextFileSaveOptions | undefined, saveAs: boolean, resultsVisible?: boolean): Promise<IEditorInput | undefined> {
+	private async doSave(options: ITextFileSaveOptions | undefined, saveAs: boolean, resultsVisible?: boolean): Promise<IEditorInput | undefined> {
 
 		// Save / Save As
 		let target: URI | undefined;
