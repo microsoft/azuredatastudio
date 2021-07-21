@@ -202,7 +202,7 @@ export abstract class AbstractTextResourceEditorInput extends EditorInput implem
 		return this.doSave(options, false);
 	}
 
-	// {{SQL CARBON EDIT}} - Added handling for resultsVisible (used to preserve results in case of save as)
+	// {{SQL CARBON EDIT}} - Added handling for resultsVisible (used to preserve results for QueryEditorInput in case of save as)
 	override saveAs(group: GroupIdentifier, options?: ITextFileSaveOptions, resultsVisible?: boolean): Promise<IEditorInput | undefined> {
 		return this.doSave(options, true, resultsVisible);
 	}
