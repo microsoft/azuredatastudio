@@ -192,10 +192,9 @@ export class AzTool implements azExt.IAzApi {
 		const output = await executeAzCommand(`"${this._path}"`, ['--version']);
 		this._semVersion = new SemVer(parseVersion(output.stdout));
 		return {
-			logs: [],
-			stdout: output.stdout.split(os.EOL),
-			stderr: output.stderr.split(os.EOL),
-			result: output.stdout
+			stdout: output.stdout
+			// stderr: output.stderr.split(os.EOL), TODOCANYE
+			// result: output.stdout
 		};
 	}
 
@@ -211,10 +210,7 @@ export class AzTool implements azExt.IAzApi {
 
 			const output = JSON.parse(result.stdout);
 			return {
-				logs: <string[]>output.log,
-				stdout: <string[]>output.stdout,
-				stderr: <string[]>output.stderr,
-				result: <R>output.result
+				stdout: <R>output
 			};
 		} catch (err) {
 			if (err instanceof ExitCodeError) {

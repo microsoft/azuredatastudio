@@ -29,7 +29,7 @@ export class PostgresDashboard extends Dashboard {
 		await super.showDashboard();
 
 		// Kick off the model refresh but don't wait on it since that's all handled with callbacks anyways
-		this._controllerModel.refresh().catch(err => console.log(`Error refreshing controller model for Postgres dashboard ${err}`));
+		this._controllerModel.refresh(false, this._controllerModel.info.namespace).catch(err => console.log(`Error refreshing controller model for Postgres dashboard ${err}`));
 		this._postgresModel.refresh().catch(err => console.log(`Error refreshing Postgres model for Postgres dashboard ${err}`));
 	}
 

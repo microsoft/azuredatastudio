@@ -74,7 +74,7 @@ export class MiaaModel extends ResourceModel {
 		try {
 			try {
 				const result = await this._azApi.az.sql.miarc.show(this.info.name, this.controllerModel.info.namespace, this.controllerModel.azAdditionalEnvVars);
-				this._config = result.result;
+				this._config = result.stdout;
 				this.configLastUpdated = new Date();
 				this._onConfigUpdated.fire(this._config);
 			} catch (err) {

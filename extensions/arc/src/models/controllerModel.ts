@@ -63,15 +63,15 @@ export class ControllerModel {
 		if (node) {
 			this.treeDataProvider.refreshNode(node);
 		} else {
-			await this.refresh(false);
+			await this.refresh(false, this.info.namespace);
 		}
 	}
-	public async refresh(showErrors: boolean = true, namespace?: string): Promise<void> {
+	public async refresh(showErrors: boolean = true, namespace: string): Promise<void> {
 		// First need to log in to ensure that we're able to authenticate with the controller
 		const newRegistrations: Registration[] = [];
 		await Promise.all([
 			this._azApi.az.arcdata.dc.config.show(namespace, this.azAdditionalEnvVars).then(result => {
-				this._controllerConfig = result.result;
+				this._controllerConfig = result.stdout;
 				this.configLastUpdated = new Date();
 				this._onConfigUpdated.fire(this._controllerConfig);
 			}).catch(err => {
@@ -85,7 +85,7 @@ export class ControllerModel {
 				throw err;
 			}),
 			this._azApi.az.arcdata.dc.endpoint.list(namespace, this.azAdditionalEnvVars).then(result => {
-				this._endpoints = result.result;
+				this._endpoints = result.stdout;
 				this.endpointsLastUpdated = new Date();
 				this._onEndpointsUpdated.fire(this._endpoints);
 			}).catch(err => {
@@ -99,17 +99,17 @@ export class ControllerModel {
 				throw err;
 			}),
 			Promise.all([
-				// this._azApi.az.postgres.arcserver.list(namespace, this.azAdditionalEnvVars).then(result => {
-				// 	newRegistrations.push(...result.result.map(r => {
-				// 		return {
-				// 			instanceName: r.name,
-				// 			state: r.state,
-				// 			instanceType: ResourceType.postgresInstances
-				// 		};
-				// 	}));
-				// }),
+				this._azApi.az.postgres.arcserver.list(namespace, this.azAdditionalEnvVars).then(result => {
+					newRegistrations.push(...result.stdout.map(r => {
+						return {
+							instanceName: r.name,
+							state: r.state,
+							instanceType: ResourceType.postgresInstances
+						};
+					}));
+				}),
 				this._azApi.az.sql.miarc.list(namespace, this.azAdditionalEnvVars).then(result => {
-					newRegistrations.push(...result.result.map(r => {
+					newRegistrations.push(...result.stdout.map(r => {
 						return {
 							instanceName: r.name,
 							state: r.state,

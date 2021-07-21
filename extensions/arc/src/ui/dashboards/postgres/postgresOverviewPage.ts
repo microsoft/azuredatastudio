@@ -289,7 +289,7 @@ export class PostgresOverviewPage extends DashboardPage {
 
 					await Promise.all([
 						this._postgresModel.refresh(),
-						this._controllerModel.refresh()
+						this._controllerModel.refresh(false, this._controllerModel.info.namespace)
 					]);
 				} catch (error) {
 					vscode.window.showErrorMessage(loc.refreshFailed(error));

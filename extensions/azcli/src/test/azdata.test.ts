@@ -6,9 +6,6 @@
 import * as should from 'should';
 import * as sinon from 'sinon';
 import * as childProcess from '../common/childProcess';
-import * as utils from '../common/utils';
-import * as os from 'os';
-import * as fs from 'fs';
 import * as azdata from '../azdata';
 
 describe('az', function () {
@@ -171,4 +168,4 @@ describe('az', function () {
 		}
 	});
 
-}
+});

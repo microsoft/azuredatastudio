@@ -13,7 +13,7 @@
     "azdata": ">=1.6.0"
   },
   "activationEvents": [
-    "onCommand:az.resource.deploy",
+    "onCommand:azdata.resource.deploy",
     "onCommand:az.openNotebookInputDialog"
   ],
   "main": "./out/main",
@@ -39,7 +39,7 @@
     ],
     "commands": [
       {
-        "command": "az.resource.deploy",
+        "command": "azdata.resource.deploy",
         "title": "%deploy-resource-command-name%",
         "category": "%deploy-resource-command-category%"
       },
@@ -58,7 +58,7 @@
       ],
       "dataExplorer/action": [
         {
-          "command": "az.resource.deploy",
+          "command": "azdata.resource.deploy",
           "group": "secondary"
         }
       ]
