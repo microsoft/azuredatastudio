@@ -21,6 +21,14 @@
       <source xml:lang="en">Close</source>
     </trans-unit>
   </body></file>
+  <file original="src/sql/base/browser/ui/propertiesContainer/togglePropertiesAction" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="hideProperties">
+      <source xml:lang="en">Hide properties</source>
+    </trans-unit>
+    <trans-unit id="showProperties">
+      <source xml:lang="en">Show Properties</source>
+    </trans-unit>
+  </body></file>
   <file original="src/sql/base/browser/ui/selectBox/selectBox" source-language="en" datatype="plaintext"><body>
     <trans-unit id="alertErrorMessage">
       <source xml:lang="en">Error: {0}</source>
@@ -3277,12 +3285,6 @@ Error: {1}</source>
     <trans-unit id="profiler.clearDataPrompt">
       <source xml:lang="en">Are you sure you want to clear the data?</source>
     </trans-unit>
-    <trans-unit id="profiler.yes">
-      <source xml:lang="en">Yes</source>
-    </trans-unit>
-    <trans-unit id="profiler.no">
-      <source xml:lang="en">No</source>
-    </trans-unit>
     <trans-unit id="profilerAction.autoscrollOn">
       <source xml:lang="en">Auto Scroll: On</source>
     </trans-unit>
@@ -3832,6 +3834,11 @@ Error: {1}</source>
     </trans-unit>
     <trans-unit id="topOperationsTitle">
       <source xml:lang="en">Top Operations</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/workbench/contrib/resourceDeployment/browser/resourceDeployment.contribution" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="deployment.title">
+      <source xml:lang="en">New Deployment...</source>
     </trans-unit>
   </body></file>
   <file original="src/sql/workbench/contrib/resourceViewer/browser/resourceViewer.contribution" source-language="en" datatype="plaintext"><body>

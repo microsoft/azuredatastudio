@@ -60,6 +60,8 @@ suite('Dashboard Properties Widget Tests', () => {
 			serverEdition: undefined,
 			azureVersion: undefined,
 			osVersion: undefined,
+			cpuCount: undefined,
+			physicalMemoryInMb: undefined,
 			options: {},
 		};
 

@@ -1,0 +1,918 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file original="extensions/sql-database-projects/package" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="title.projectsView">
+        <source xml:lang="en">Projects</source>
+        <target state="translated">프로젝트</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.displayName">
+        <source xml:lang="en">Database Projects</source>
+        <target state="translated">데이터베이스 프로젝트</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.description">
+        <source xml:lang="en">Design and publish SQL database schemas</source>
+        <target state="translated">SQL 데이터베이스 스키마 디자인 및 게시</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.new">
+        <source xml:lang="en">New Database Project</source>
+        <target state="translated">새 데이터베이스 프로젝트</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.open">
+        <source xml:lang="en">Open Database Project</source>
+        <target state="translated">데이터베이스 프로젝트 열기</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.close">
+        <source xml:lang="en">Close Database Project</source>
+        <target state="translated">데이터베이스 프로젝트 닫기</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.build">
+        <source xml:lang="en">Build</source>
+        <target state="translated">빌드</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.publish">
+        <source xml:lang="en">Publish</source>
+        <target state="translated">게시</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.createProjectFromDatabase">
+        <source xml:lang="en">Create Project From Database</source>
+        <target state="translated">데이터베이스에서 프로젝트 만들기</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.properties">
+        <source xml:lang="en">Properties</source>
+        <target state="translated">속성</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.schemaCompare">
+        <source xml:lang="en">Schema Compare</source>
+        <target state="translated">스키마 비교</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.delete">
+        <source xml:lang="en">Delete</source>
+        <target state="translated">삭제</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.exclude">
+        <source xml:lang="en">Exclude from project</source>
+        <target state="translated">프로젝트에서 제외</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.validateExternalStreamingJob">
+        <source xml:lang="en">Validate External Streaming Job</source>
+        <target state="translated">외부 스트리밍 작업 유효성 검사</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.newScript">
+        <source xml:lang="en">Add Script</source>
+        <target state="translated">스크립트 추가</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.newPreDeploymentScript">
+        <source xml:lang="en">Add Pre-Deployment Script</source>
+        <target state="translated">배포 전 스크립트 추가</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.newPostDeploymentScript">
+        <source xml:lang="en">Add Post-Deployment Script</source>
+        <target state="translated">배포 후 스크립트 추가</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.newTable">
+        <source xml:lang="en">Add Table</source>
+        <target state="translated">테이블 추가</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.newView">
+        <source xml:lang="en">Add View</source>
+        <target state="translated">보기 추가</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.newStoredProcedure">
+        <source xml:lang="en">Add Stored Procedure</source>
+        <target state="translated">저장 프로시저 추가</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.newExternalStreamingJob">
+        <source xml:lang="en">Add External Streaming Job</source>
+        <target state="translated">외부 스트리밍 작업 추가</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.newItem">
+        <source xml:lang="en">Add Item...</source>
+        <target state="translated">항목 추가...</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.newFolder">
+        <source xml:lang="en">Add Folder</source>
+        <target state="translated">폴더 추가</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.addDatabaseReference">
+        <source xml:lang="en">Add Database Reference</source>
+        <target state="translated">데이터베이스 참조 추가</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.openContainingFolder">
+        <source xml:lang="en">Open Containing Folder</source>
+        <target state="translated">상위 폴더 열기</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.editProjectFile">
+        <source xml:lang="en">Edit .sqlproj File</source>
+        <target state="translated">.sqlproj 파일 편집</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.changeTargetPlatform">
+        <source xml:lang="en">Change Target Platform</source>
+        <target state="translated">대상 플랫폼 변경</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.Settings">
+        <source xml:lang="en">Database Projects</source>
+        <target state="translated">데이터베이스 프로젝트</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.netCoreInstallLocation">
+        <source xml:lang="en">Full path to .NET Core SDK on the machine.</source>
+        <target state="translated">컴퓨터에서 .NET Core SDK에 대한 전체 경로입니다.</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.netCoreDoNotAsk">
+        <source xml:lang="en">Whether to prompt the user to install .NET Core when not detected.</source>
+        <target state="translated">검색되지 않는 경우 사용자에게 .NET Core를 설치할지 사용자에게 묻는 메시지를 표시할지 여부입니다.</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.welcome">
+        <source xml:lang="en">No database projects currently open.
+[New Project](command:sqlDatabaseProjects.new)
+[Open Project](command:sqlDatabaseProjects.open)
+[Create Project From Database](command:sqlDatabaseProjects.importDatabase)</source>
+        <target state="translated">현재 열려 있는 데이터베이스 프로젝트가 없습니다.
+[새 프로젝트] (command: sqlDatabaseProjects.new)
+[프로젝트 열기] (command: sqlDatabaseProjects)
+[데이터베이스에서 프로젝트 만들기] (command: sqlDatabaseProjects. importDatabase)</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/sql-database-projects/dist/common/constants" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="emptyProjectTypeDisplayName">
+        <source xml:lang="en">SQL Database</source>
+        <target state="translated">SQL Database</target>
+      </trans-unit>
+      <trans-unit id="emptyProjectTypeDescription">
+        <source xml:lang="en">Develop and publish schemas for SQL databases starting from an empty project</source>
+        <target state="translated">빈 프로젝트에서 시작하는 SQL 데이터베이스에 대한 스키마 개발 및 게시</target>
+      </trans-unit>
+      <trans-unit id="edgeProjectTypeDisplayName">
+        <source xml:lang="en">SQL Edge</source>
+        <target state="translated">SQL Edge</target>
+      </trans-unit>
+      <trans-unit id="edgeProjectTypeDescription">
+        <source xml:lang="en">Start with the core pieces to develop and publish schemas for SQL Edge</source>
+        <target state="translated">SQL Edge에 대한 스키마를 개발하고 게시하는 핵심 부분부터 시작합니다.</target>
+      </trans-unit>
+      <trans-unit id="addItemAction">
+        <source xml:lang="en">Add Item</source>
+        <target state="translated">항목 추가</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareAction">
+        <source xml:lang="en">Schema Compare</source>
+        <target state="translated">스키마 비교</target>
+      </trans-unit>
+      <trans-unit id="buildAction">
+        <source xml:lang="en">Build</source>
+        <target state="translated">빌드</target>
+      </trans-unit>
+      <trans-unit id="publishAction">
+        <source xml:lang="en">Publish</source>
+        <target state="translated">게시</target>
+      </trans-unit>
+      <trans-unit id="changeTargetPlatformAction">
+        <source xml:lang="en">Change Target Platform</source>
+        <target state="translated">대상 플랫폼 변경</target>
+      </trans-unit>
+      <trans-unit id="Status">
+        <source xml:lang="en">Status</source>
+        <target state="translated">상태</target>
+      </trans-unit>
+      <trans-unit id="Time">
+        <source xml:lang="en">Time</source>
+        <target state="translated">시간</target>
+      </trans-unit>
+      <trans-unit id="Date">
+        <source xml:lang="en">Date</source>
+        <target state="translated">날짜</target>
+      </trans-unit>
+      <trans-unit id="TargetPlatform">
+        <source xml:lang="en">Target Platform</source>
+        <target state="translated">대상 플랫폼</target>
+      </trans-unit>
+      <trans-unit id="TargetServer">
+        <source xml:lang="en">Target Server</source>
+        <target state="translated">대상 서버</target>
+      </trans-unit>
+      <trans-unit id="TargetDatabase">
+        <source xml:lang="en">Target Database</source>
+        <target state="translated">대상 데이터베이스</target>
+      </trans-unit>
+      <trans-unit id="BuildHistory">
+        <source xml:lang="en">Build History</source>
+        <target state="translated">빌드 기록</target>
+      </trans-unit>
+      <trans-unit id="PublishHistory">
+        <source xml:lang="en">Publish History</source>
+        <target state="translated">게시 기록</target>
+      </trans-unit>
+      <trans-unit id="Success">
+        <source xml:lang="en">Success</source>
+        <target state="translated">성공</target>
+      </trans-unit>
+      <trans-unit id="Failed">
+        <source xml:lang="en">Failed</source>
+        <target state="translated">실패</target>
+      </trans-unit>
+      <trans-unit id="InProgress">
+        <source xml:lang="en">In progress</source>
+        <target state="translated">진행 중</target>
+      </trans-unit>
+      <trans-unit id="hr">
+        <source xml:lang="en">hr</source>
+        <target state="translated">시간</target>
+      </trans-unit>
+      <trans-unit id="min">
+        <source xml:lang="en">min</source>
+        <target state="translated">분</target>
+      </trans-unit>
+      <trans-unit id="sec">
+        <source xml:lang="en">sec</source>
+        <target state="translated">초</target>
+      </trans-unit>
+      <trans-unit id="msec">
+        <source xml:lang="en">msec</source>
+        <target state="translated">밀리초</target>
+      </trans-unit>
+      <trans-unit id="at">
+        <source xml:lang="en">at</source>
+        <target state="translated">위치</target>
+      </trans-unit>
+      <trans-unit id="dataSourcesNodeName">
+        <source xml:lang="en">Data Sources</source>
+        <target state="translated">데이터 원본</target>
+      </trans-unit>
+      <trans-unit id="databaseReferencesNodeName">
+        <source xml:lang="en">Database References</source>
+        <target state="translated">데이터베이스 참조</target>
+      </trans-unit>
+      <trans-unit id="sqlConnectionStringFriendly">
+        <source xml:lang="en">SQL connection string</source>
+        <target state="translated">SQL 연결 문자열</target>
+      </trans-unit>
+      <trans-unit id="yesString">
+        <source xml:lang="en">Yes</source>
+        <target state="translated">예</target>
+      </trans-unit>
+      <trans-unit id="noString">
+        <source xml:lang="en">No</source>
+        <target state="translated">아니요</target>
+      </trans-unit>
+      <trans-unit id="okString">
+        <source xml:lang="en">Ok</source>
+        <target state="translated">확인</target>
+      </trans-unit>
+      <trans-unit id="selectString">
+        <source xml:lang="en">Select</source>
+        <target state="translated">선택</target>
+      </trans-unit>
+      <trans-unit id="dacpacFiles">
+        <source xml:lang="en">dacpac Files</source>
+        <target state="translated">DACPAC 파일</target>
+      </trans-unit>
+      <trans-unit id="publishSettingsFiles">
+        <source xml:lang="en">Publish Settings File</source>
+        <target state="translated">설정 파일 게시</target>
+      </trans-unit>
+      <trans-unit id="file">
+        <source xml:lang="en">File</source>
+        <target state="translated">파일</target>
+      </trans-unit>
+      <trans-unit id="flat">
+        <source xml:lang="en">Flat</source>
+        <target state="translated">플랫</target>
+      </trans-unit>
+      <trans-unit id="objectType">
+        <source xml:lang="en">Object Type</source>
+        <target state="translated">개체 형식</target>
+      </trans-unit>
+      <trans-unit id="schema">
+        <source xml:lang="en">Schema</source>
+        <target state="translated">스키마</target>
+      </trans-unit>
+      <trans-unit id="schemaObjectType">
+        <source xml:lang="en">Schema/Object Type</source>
+        <target state="translated">스키마/개체 형식</target>
+      </trans-unit>
+      <trans-unit id="defaultProjectNameStarter">
+        <source xml:lang="en">DatabaseProject</source>
+        <target state="translated">DatabaseProject</target>
+      </trans-unit>
+      <trans-unit id="reloadProject">
+        <source xml:lang="en">Would you like to reload your database project?</source>
+        <target state="translated">데이터베이스 프로젝트를 다시 로드하시겠습니까?</target>
+      </trans-unit>
+      <trans-unit id="newObjectNamePrompt">
+        <source xml:lang="en">New {0} name:</source>
+        <target state="translated">새 {0} 이름:</target>
+      </trans-unit>
+      <trans-unit id="deleteConfirmation">
+        <source xml:lang="en">Are you sure you want to delete {0}?</source>
+        <target state="translated">{0}을(를) 삭제하시겠습니까?</target>
+      </trans-unit>
+      <trans-unit id="deleteConfirmationContents">
+        <source xml:lang="en">Are you sure you want to delete {0} and all of its contents?</source>
+        <target state="translated">{0} 및 모든 내용을 삭제하시겠습니까?</target>
+      </trans-unit>
+      <trans-unit id="deleteReferenceConfirmation">
+        <source xml:lang="en">Are you sure you want to delete the reference to {0}?</source>
+        <target state="translated">{0}에 대한 참조를 삭제하시겠습니까?</target>
+      </trans-unit>
+      <trans-unit id="selectTargetPlatform">
+        <source xml:lang="en">Current target platform: {0}. Select new target platform</source>
+        <target state="translated">현재 대상 플랫폼: {0}입니다. 새 대상 플랫폼 선택</target>
+      </trans-unit>
+      <trans-unit id="currentTargetPlatform">
+        <source xml:lang="en">Target platform of the project {0} is now {1}</source>
+        <target state="translated">이제 프로젝트 {0}의 대상 플랫폼이 {1}입니다.</target>
+      </trans-unit>
+      <trans-unit id="publishDialogName">
+        <source xml:lang="en">Publish project</source>
+        <target state="translated">프로젝트 게시</target>
+      </trans-unit>
+      <trans-unit id="publish">
+        <source xml:lang="en">Publish</source>
+        <target state="translated">게시</target>
+      </trans-unit>
+      <trans-unit id="cancelButtonText">
+        <source xml:lang="en">Cancel</source>
+        <target state="translated">취소</target>
+      </trans-unit>
+      <trans-unit id="generateScriptButtonText">
+        <source xml:lang="en">Generate Script</source>
+        <target state="translated">스크립트 생성</target>
+      </trans-unit>
+      <trans-unit id="databaseNameLabel">
+        <source xml:lang="en">Database</source>
+        <target state="translated">데이터베이스</target>
+      </trans-unit>
+      <trans-unit id="targetConnectionLabel">
+        <source xml:lang="en">Connection</source>
+        <target state="translated">연결</target>
+      </trans-unit>
+      <trans-unit id="dataSourceRadioButtonLabel">
+        <source xml:lang="en">Data sources</source>
+        <target state="translated">데이터 원본</target>
+      </trans-unit>
+      <trans-unit id="connectionRadioButtonLabel">
+        <source xml:lang="en">Connections</source>
+        <target state="translated">연결</target>
+      </trans-unit>
+      <trans-unit id="dataSourceDropdownTitle">
+        <source xml:lang="en">Data source</source>
+        <target state="translated">데이터 원본</target>
+      </trans-unit>
+      <trans-unit id="noDataSourcesText">
+        <source xml:lang="en">No data sources in this project</source>
+        <target state="translated">이 프로젝트에 데이터 원본이 없습니다.</target>
+      </trans-unit>
+      <trans-unit id="loadProfilePlaceholderText">
+        <source xml:lang="en">Load profile...</source>
+        <target state="translated">프로필 로드...</target>
+      </trans-unit>
+      <trans-unit id="profileReadError">
+        <source xml:lang="en">Error loading the publish profile. {0}</source>
+        <target state="translated">게시 프로필을 로드하는 동안 오류가 발생했습니다. {0}</target>
+      </trans-unit>
+      <trans-unit id="sqlCmdTableLabel">
+        <source xml:lang="en">SQLCMD Variables</source>
+        <target state="translated">SQLCMD 변수</target>
+      </trans-unit>
+      <trans-unit id="sqlCmdVariableColumn">
+        <source xml:lang="en">Name</source>
+        <target state="translated">이름</target>
+      </trans-unit>
+      <trans-unit id="sqlCmdValueColumn">
+        <source xml:lang="en">Value</source>
+        <target state="translated">값</target>
+      </trans-unit>
+      <trans-unit id="reloadValuesFromProjectButtonTitle">
+        <source xml:lang="en">Reload values from project</source>
+        <target state="translated">프로젝트에서 값 다시 로드</target>
+      </trans-unit>
+      <trans-unit id="profile">
+        <source xml:lang="en">Profile</source>
+        <target state="translated">프로필</target>
+      </trans-unit>
+      <trans-unit id="selectConnection">
+        <source xml:lang="en">Select connection</source>
+        <target state="translated">연결 선택</target>
+      </trans-unit>
+      <trans-unit id="server">
+        <source xml:lang="en">Server</source>
+        <target state="translated">서버</target>
+      </trans-unit>
+      <trans-unit id="default">
+        <source xml:lang="en">default</source>
+        <target state="translated">기본값</target>
+      </trans-unit>
+      <trans-unit id="selectProfileToUse">
+        <source xml:lang="en">Select publish profile to load</source>
+        <target state="translated">로드할 게시 프로필 선택</target>
+      </trans-unit>
+      <trans-unit id="selectProfile">
+        <source xml:lang="en">Select Profile</source>
+        <target state="translated">프로필 선택</target>
+      </trans-unit>
+      <trans-unit id="dontUseProfile">
+        <source xml:lang="en">Don't use profile</source>
+        <target state="translated">프로필 사용 안 함</target>
+      </trans-unit>
+      <trans-unit id="browseForProfile">
+        <source xml:lang="en">Browse for profile</source>
+        <target state="translated">프로필 찾아보기</target>
+      </trans-unit>
+      <trans-unit id="chooseAction">
+        <source xml:lang="en">Choose action</source>
+        <target state="translated">작업 선택</target>
+      </trans-unit>
+      <trans-unit id="chooseSqlcmdVarsToModify">
+        <source xml:lang="en">Choose SQLCMD variables to modify</source>
+        <target state="translated">수정할 SQLCMD 변수 선택</target>
+      </trans-unit>
+      <trans-unit id="enterNewValueForVar">
+        <source xml:lang="en">Enter new value for variable '{0}'</source>
+        <target state="translated">'{0}' 변수의 새 값을 입력합니다.</target>
+      </trans-unit>
+      <trans-unit id="resetAllVars">
+        <source xml:lang="en">Reset all variables</source>
+        <target state="translated">모든 변수 다시 설정</target>
+      </trans-unit>
+      <trans-unit id="createNew">
+        <source xml:lang="en">&lt;Create New&gt;</source>
+        <target state="translated">&lt;새로 만들기&gt;</target>
+      </trans-unit>
+      <trans-unit id="enterNewDatabaseName">
+        <source xml:lang="en">Enter new database name</source>
+        <target state="translated">새 데이터베이스 이름 입력</target>
+      </trans-unit>
+      <trans-unit id="newDatabaseTitle">
+        <source xml:lang="en">{0} (new)</source>
+        <note>Name is the name of a new database being created</note>
+        <target state="translated">{0}(신규)</target>
+      </trans-unit>
+      <trans-unit id="selectDatabase">
+        <source xml:lang="en">Select database</source>
+        <target state="translated">데이터베이스 선택</target>
+      </trans-unit>
+      <trans-unit id="done">
+        <source xml:lang="en">Done</source>
+        <target state="translated">완료</target>
+      </trans-unit>
+      <trans-unit id="nameMustNotBeEmpty">
+        <source xml:lang="en">Name must not be empty</source>
+        <target state="translated">이름은 비워 둘 수 없습니다.</target>
+      </trans-unit>
+      <trans-unit id="addDatabaseReferencedialogName">
+        <source xml:lang="en">Add database reference</source>
+        <target state="translated">데이터베이스 참조 추가</target>
+      </trans-unit>
+      <trans-unit id="addDatabaseReferenceOkButtonText">
+        <source xml:lang="en">Add reference</source>
+        <target state="translated">참조 추가</target>
+      </trans-unit>
+      <trans-unit id="referenceRadioButtonsGroupTitle">
+        <source xml:lang="en">Type</source>
+        <target state="translated">형식</target>
+      </trans-unit>
+      <trans-unit id="projectRadioButtonTitle">
+        <source xml:lang="en">Project</source>
+        <target state="translated">Project</target>
+      </trans-unit>
+      <trans-unit id="systemDatabaseRadioButtonTitle">
+        <source xml:lang="en">System database</source>
+        <target state="translated">시스템 데이터베이스</target>
+      </trans-unit>
+      <trans-unit id="dacpacText">
+        <source xml:lang="en">Data-tier application (.dacpac)</source>
+        <target state="translated">데이터 계층 애플리케이션(.dacpac)</target>
+      </trans-unit>
+      <trans-unit id="dacpacPlaceholder">
+        <source xml:lang="en">Select .dacpac</source>
+        <target state="translated">.dacpac 선택</target>
+      </trans-unit>
+      <trans-unit id="loadDacpacButton">
+        <source xml:lang="en">Select .dacpac</source>
+        <target state="translated">.dacpac 선택</target>
+      </trans-unit>
+      <trans-unit id="locationDropdown">
+        <source xml:lang="en">Location</source>
+        <target state="translated">위치</target>
+      </trans-unit>
+      <trans-unit id="sameDatabase">
+        <source xml:lang="en">Same database</source>
+        <target state="translated">동일한 데이터베이스</target>
+      </trans-unit>
+      <trans-unit id="differentDbSameServer">
+        <source xml:lang="en">Different database, same server</source>
+        <target state="translated">동일한 서버의 다른 데이터베이스</target>
+      </trans-unit>
+      <trans-unit id="differentDbDifferentServer">
+        <source xml:lang="en">Different database, different server</source>
+        <target state="translated">다른 서버의 다른 데이터베이스</target>
+      </trans-unit>
+      <trans-unit id="databaseName">
+        <source xml:lang="en">Database name</source>
+        <target state="translated">데이터베이스 이름</target>
+      </trans-unit>
+      <trans-unit id="databaseVariable">
+        <source xml:lang="en">Database variable</source>
+        <target state="translated">데이터베이스 변수</target>
+      </trans-unit>
+      <trans-unit id="serverName">
+        <source xml:lang="en">Server name</source>
+        <target state="translated">서버 이름</target>
+      </trans-unit>
+      <trans-unit id="serverVariable">
+        <source xml:lang="en">Server variable</source>
+        <target state="translated">서버 변수</target>
+      </trans-unit>
+      <trans-unit id="suppressMissingDependenciesErrors">
+        <source xml:lang="en">Suppress errors caused by unresolved references in the referenced project</source>
+        <target state="translated">참조 프로젝트의 확인되지 않은 참조로 인한 오류를 표시하지 않습니다.</target>
+      </trans-unit>
+      <trans-unit id="exampleUsage">
+        <source xml:lang="en">Example Usage</source>
+        <target state="translated">사용 예제</target>
+      </trans-unit>
+      <trans-unit id="enterSystemDbName">
+        <source xml:lang="en">Enter a database name for this system database</source>
+        <target state="translated">이 시스템 데이터베이스에 대한 데이터베이스 이름을 입력하십시오.</target>
+      </trans-unit>
+      <trans-unit id="databaseNameRequiredVariableOptional">
+        <source xml:lang="en">A database name is required. The database variable is optional.</source>
+        <target state="translated">데이터베이스 이름이 필요합니다. 데이터베이스 변수는 선택 사항입니다.</target>
+      </trans-unit>
+      <trans-unit id="databaseNameServerNameVariableRequired">
+        <source xml:lang="en">A database name, server name, and server variable are required. The database variable is optional</source>
+        <target state="translated">데이터베이스 이름, 서버 이름 및 서버 변수가 필요합니다. 데이터베이스 변수는 선택 사항입니다.</target>
+      </trans-unit>
+      <trans-unit id="databaseProject">
+        <source xml:lang="en">Database project</source>
+        <target state="translated">데이터베이스 프로젝트</target>
+      </trans-unit>
+      <trans-unit id="dacpacNotOnSameDrive">
+        <source xml:lang="en">Dacpac references need to be located on the same drive as the project file. The project file is located at {0}</source>
+        <target state="translated">Dacpac 참조는 프로젝트 파일과 동일한 드라이브에 있어야 합니다. 프로젝트 파일이 {0}에 있습니다.</target>
+      </trans-unit>
+      <trans-unit id="createProjectFromDatabaseDialogName">
+        <source xml:lang="en">Create project from database</source>
+        <target state="translated">데이터베이스에서 프로젝트 만들기</target>
+      </trans-unit>
+      <trans-unit id="createProjectDialogOkButtonText">
+        <source xml:lang="en">Create</source>
+        <target state="translated">만들기</target>
+      </trans-unit>
+      <trans-unit id="sourceDatabase">
+        <source xml:lang="en">Source database</source>
+        <target state="translated">원본 데이터베이스</target>
+      </trans-unit>
+      <trans-unit id="targetProject">
+        <source xml:lang="en">Target project</source>
+        <target state="translated">대상 프로젝트</target>
+      </trans-unit>
+      <trans-unit id="createProjectSettings">
+        <source xml:lang="en">Settings</source>
+        <target state="translated">설정</target>
+      </trans-unit>
+      <trans-unit id="projectNameLabel">
+        <source xml:lang="en">Name</source>
+        <target state="translated">이름</target>
+      </trans-unit>
+      <trans-unit id="projectNamePlaceholderText">
+        <source xml:lang="en">Enter project name</source>
+        <target state="translated">프로젝트 이름 입력</target>
+      </trans-unit>
+      <trans-unit id="projectLocationLabel">
+        <source xml:lang="en">Location</source>
+        <target state="translated">위치</target>
+      </trans-unit>
+      <trans-unit id="projectLocationPlaceholderText">
+        <source xml:lang="en">Select location to create project</source>
+        <target state="translated">프로젝트를 만들 위치 선택</target>
+      </trans-unit>
+      <trans-unit id="browseButtonText">
+        <source xml:lang="en">Browse folder</source>
+        <target state="translated">폴더 찾아보기</target>
+      </trans-unit>
+      <trans-unit id="folderStructureLabel">
+        <source xml:lang="en">Folder structure</source>
+        <target state="translated">폴더 구조</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.projectParentDirectoryNotExistError">
+        <source xml:lang="en">The selected project location '{0}' does not exist or is not a directory.</source>
+        <target state="translated">선택한 프로젝트 위치 '{0}'이(가) 없거나 디렉터리가 아닙니다.</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.projectDirectoryAlreadyExistError">
+        <source xml:lang="en">There is already a directory named '{0}' in the selected location: '{1}'.</source>
+        <target state="translated">선택한 위치 '{1}'에 이름이 '{0}'인 디렉터리가 이미 있습니다..</target>
+      </trans-unit>
+      <trans-unit id="multipleSqlProjFilesSelected">
+        <source xml:lang="en">Multiple .sqlproj files selected; please select only one.</source>
+        <target state="translated">여러 .sqlproj 파일이 선택되었습니다. 하나만 선택하세요.</target>
+      </trans-unit>
+      <trans-unit id="noSqlProjFilesSelected">
+        <source xml:lang="en">No .sqlproj file selected; please select one.</source>
+        <target state="translated">Sqlproj 파일을 선택하지 않았습니다. 하나를 선택하세요.</target>
+      </trans-unit>
+      <trans-unit id="noDataSourcesFile">
+        <source xml:lang="en">No {0} found</source>
+        <target state="translated">{0}을(를) 찾을 수 없음</target>
+      </trans-unit>
+      <trans-unit id="missingVersion">
+        <source xml:lang="en">Missing 'version' entry in {0}</source>
+        <target state="translated">{0}에 '버전' 항목이 없습니다.</target>
+      </trans-unit>
+      <trans-unit id="unrecognizedDataSourcesVersion">
+        <source xml:lang="en">Unrecognized version: </source>
+        <target state="translated">인식할 수 없는 버전: </target>
+      </trans-unit>
+      <trans-unit id="unknownDataSourceType">
+        <source xml:lang="en">Unknown data source type: </source>
+        <target state="translated">알 수 없는 데이터 원본 유형: </target>
+      </trans-unit>
+      <trans-unit id="invalidSqlConnectionString">
+        <source xml:lang="en">Invalid SQL connection string</source>
+        <target state="translated">잘못된 SQL 연결 문자열</target>
+      </trans-unit>
+      <trans-unit id="extractTargetRequired">
+        <source xml:lang="en">Target information for extract is required to create database project.</source>
+        <target state="translated">데이터베이스 프로젝트를 만들려면 추출에 대한 대상 정보가 필요합니다.</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareNotInstalled">
+        <source xml:lang="en">Schema compare extension installation is required to run schema compare</source>
+        <target state="translated">스키마 비교를 실행하려면 스키마 비교 확장 설치가 필요합니다.</target>
+      </trans-unit>
+      <trans-unit id="buildFailedCannotStartSchemaCompare">
+        <source xml:lang="en">Schema compare could not start because build failed</source>
+        <target state="translated">빌드 실패로 인해 스키마 비교를 시작할 수 없습니다.</target>
+      </trans-unit>
+      <trans-unit id="updateProjectForRoundTrip">
+        <source xml:lang="en">To build this project, Azure Data Studio needs to update targets, references, and system database references. If the project is created in SSDT, it will continue to work in both tools. Do you want Azure Data Studio to update the project?</source>
+        <target state="translated">이 프로젝트를 빌드하려면 Azure Data Studio에서 대상, 참조 및 시스템 데이터베이스 참조를 업데이트해야 합니다. 프로젝트가 SSDT에서 만들어지면 두 도구 모두에서 계속 작동합니다. Azure Data Studio에서 프로젝트를 업데이트하시겠습니까?</target>
+      </trans-unit>
+      <trans-unit id="updateProjectDatabaseReferencesForRoundTrip">
+        <source xml:lang="en">To build this project, Azure Data Studio needs to update system database references. If the project is created in SSDT, it will continue to work in both tools. Do you want Azure Data Studio to update the project?</source>
+        <target state="translated">이 프로젝트를 빌드하려면 Azure Data Studio에서 시스템 데이터베이스 참조를 업데이트해야 합니다. 프로젝트가 SSDT에서 만들어지면 두 도구 모두에서 계속 작동합니다. Azure Data Studio에서 프로젝트를 업데이트하시겠습니까?</target>
+      </trans-unit>
+      <trans-unit id="databaseReferenceTypeRequired">
+        <source xml:lang="en">Database reference type is required for adding a reference to a database</source>
+        <target state="translated">데이터베이스에 참조를 추가하려면 데이터베이스 참조 형식이 필요합니다.</target>
+      </trans-unit>
+      <trans-unit id="systemDatabaseReferenceRequired">
+        <source xml:lang="en">System database selection is required for adding a reference to a system database</source>
+        <target state="translated">시스템 데이터베이스에 대한 참조를 추가하려면 시스템 데이터베이스를 선택해야 합니다.</target>
+      </trans-unit>
+      <trans-unit id="dacpacFileLocationRequired">
+        <source xml:lang="en">Dacpac file location is required for adding a reference to a database</source>
+        <target state="translated">데이터베이스에 대한 참조를 추가하려면 Dacpac 파일 위치가 필요합니다.</target>
+      </trans-unit>
+      <trans-unit id="databaseLocation">
+        <source xml:lang="en">Database location is required for adding a reference to a database</source>
+        <target state="translated">데이터베이스에 대한 참조를 추가하려면 데이터베이스 위치가 필요합니다.</target>
+      </trans-unit>
+      <trans-unit id="databaseNameRequired">
+        <source xml:lang="en">Database name is required for adding a reference to a different database</source>
+        <target state="translated">다른 데이터베이스에 대한 참조를 추가하려면 데이터베이스 이름이 필요합니다.</target>
+      </trans-unit>
+      <trans-unit id="invalidDataSchemaProvider">
+        <source xml:lang="en">Invalid DSP in .sqlproj file</source>
+        <target state="translated">.sqlproj 파일의 DSP가 잘못되었습니다.</target>
+      </trans-unit>
+      <trans-unit id="invalidDatabaseReference">
+        <source xml:lang="en">Invalid database reference in .sqlproj file</source>
+        <target state="translated">.sqlproj 파일의 데이터베이스 참조가 잘못되었습니다.</target>
+      </trans-unit>
+      <trans-unit id="databaseSelectionRequired">
+        <source xml:lang="en">Database selection is required to create a project from a database</source>
+        <target state="translated">데이터베이스에서 프로젝트를 만들려면 데이터베이스를 선택해야 합니다.</target>
+      </trans-unit>
+      <trans-unit id="databaseReferenceAlreadyExists">
+        <source xml:lang="en">A reference to this database already exists in this project</source>
+        <target state="translated">이 데이터베이스에 대한 참조가 이 프로젝트에 이미 있습니다.</target>
+      </trans-unit>
+      <trans-unit id="outsideFolderPath">
+        <source xml:lang="en">Items with absolute path outside project folder are not supported. Please make sure the paths in the project file are relative to project folder.</source>
+        <target state="translated">프로젝트 폴더 외부에 절대 경로가 있는 항목은 지원되지 않습니다. 프로젝트 파일의 경로가 프로젝트 폴더에 상대적인지 확인하세요.</target>
+      </trans-unit>
+      <trans-unit id="parentTreeItemUnknown">
+        <source xml:lang="en">Cannot access parent of provided tree item</source>
+        <target state="translated">제공된 트리 항목의 부모에 액세스할 수 없습니다.</target>
+      </trans-unit>
+      <trans-unit id="prePostDeployCount">
+        <source xml:lang="en">To successfully build, update the project to have one pre-deployment script and/or one post-deployment script</source>
+        <target state="translated">성공적으로 빌드하려면 프로젝트를 배포 전 스크립트 하나 및/또는 배포 후 스크립트 하나를 보유하도록 업데이트합니다.</target>
+      </trans-unit>
+      <trans-unit id="invalidProjectReload">
+        <source xml:lang="en">Cannot access provided database project. Only valid, open database projects can be reloaded.</source>
+        <target state="translated">제공된 데이터베이스 프로젝트에 액세스할 수 없습니다. 유효한 개방형 데이터베이스 프로젝트만 다시 로드할 수 있습니다.</target>
+      </trans-unit>
+      <trans-unit id="externalStreamingJobValidationPassed">
+        <source xml:lang="en">Validation of external streaming job passed.</source>
+        <target state="translated">외부 스트리밍 작업의 유효성 검사를 통과했습니다.</target>
+      </trans-unit>
+      <trans-unit id="projectAlreadyOpened">
+        <source xml:lang="en">Project '{0}' is already opened.</source>
+        <target state="translated">프로젝트 '{0}'이(가) 이미 열려 있습니다.</target>
+      </trans-unit>
+      <trans-unit id="projectAlreadyExists">
+        <source xml:lang="en">A project named {0} already exists in {1}.</source>
+        <target state="translated">이름이 {0}인 프로젝트가 이미 {1}에 있습니다.</target>
+      </trans-unit>
+      <trans-unit id="noFileExist">
+        <source xml:lang="en">File {0} doesn't exist</source>
+        <target state="translated">파일 {0}이(가) 존재하지 않습니다.</target>
+      </trans-unit>
+      <trans-unit id="fileOrFolderDoesNotExist">
+        <source xml:lang="en">File or directory '{0}' doesn't exist</source>
+        <target state="translated">파일 또는 디렉터리 '{0}'이(가) 없습니다.</target>
+      </trans-unit>
+      <trans-unit id="cannotResolvePath">
+        <source xml:lang="en">Cannot resolve path {0}</source>
+        <target state="translated">경로 {0}를 확인할 수 없습니다.</target>
+      </trans-unit>
+      <trans-unit id="fileAlreadyExists">
+        <source xml:lang="en">A file with the name '{0}' already exists on disk at this location. Please choose another name.</source>
+        <target state="translated">이름이 '{0}'인 파일이 이 위치의 디스크에 이미 있습니다. 다른 이름을 선택하세요.</target>
+      </trans-unit>
+      <trans-unit id="folderAlreadyExists">
+        <source xml:lang="en">A folder with the name '{0}' already exists on disk at this location. Please choose another name.</source>
+        <target state="translated">이름이 '{0}'인 폴더가 이 위치의 디스크에 이미 있습니다. 다른 이름을 선택하세요.</target>
+      </trans-unit>
+      <trans-unit id="fileAlreadyAddedToProject">
+        <source xml:lang="en">A file with the path '{0}' has already been added to the project</source>
+        <target state="translated">경로가 '{0}'인 파일이 프로젝트에 이미 추가되었습니다.</target>
+      </trans-unit>
+      <trans-unit id="folderAlreadyAddedToProject">
+        <source xml:lang="en">A folder with the path '{0}' has already been added to the project</source>
+        <target state="translated">경로가 '{0}'인 폴더가 프로젝트에 이미 추가되었습니다.</target>
+      </trans-unit>
+      <trans-unit id="invalidInput">
+        <source xml:lang="en">Invalid input: {0}</source>
+        <target state="translated">잘못된 입력: {0}</target>
+      </trans-unit>
+      <trans-unit id="invalidPropertyValue">
+        <source xml:lang="en">Invalid value specified for the property '{0}' in .sqlproj file</source>
+        <target state="translated">.sqlproj 파일의 '{0}' 속성에 잘못된 값이 지정되었습니다.</target>
+      </trans-unit>
+      <trans-unit id="unableToCreatePublishConnection">
+        <source xml:lang="en">Unable to construct connection: {0}</source>
+        <target state="translated">연결을 구성할 수 없음: {0}</target>
+      </trans-unit>
+      <trans-unit id="cicularProjectReference">
+        <source xml:lang="en">Circular reference from project {0} to project {1}</source>
+        <target state="translated">프로젝트에서 {0}프로젝트로의{1} 순환 참조</target>
+      </trans-unit>
+      <trans-unit id="mssqlNotFound">
+        <source xml:lang="en">Could not get mssql extension's install location at {0}</source>
+        <target state="translated">{0}에서 mssql 확장의 설치 위치를 가져올 수 없습니다.</target>
+      </trans-unit>
+      <trans-unit id="projBuildFailed">
+        <source xml:lang="en">Build failed. Check output pane for more details. {0}</source>
+        <target state="translated">빌드하지 못했습니다. 자세한 내용은 출력 창을 확인하세요. {0}</target>
+      </trans-unit>
+      <trans-unit id="unexpectedProjectContext">
+        <source xml:lang="en">Unable to establish project context.  Command invoked from unexpected location: {0}</source>
+        <target state="translated">프로젝트 컨텍스트를 설정할 수 없습니다.  예기치 않은 위치에서 호출된 명령: {0}</target>
+      </trans-unit>
+      <trans-unit id="unableToPerformAction">
+        <source xml:lang="en">Unable to locate '{0}' target: '{1}'</source>
+        <target state="translated">'{0}' 대상을 찾을 수 없습니다. '{1}'</target>
+      </trans-unit>
+      <trans-unit id="unableToFindFile">
+        <source xml:lang="en">Unable to find {1} with path '{0}'</source>
+        <target state="translated">경로가 '{0}'인 {1}을(를) 찾을 수 없습니다.</target>
+      </trans-unit>
+      <trans-unit id="deployScriptExists">
+        <source xml:lang="en">A {0} script already exists. The new script will not be included in build.</source>
+        <target state="translated">{0} 스크립트가 이미 있습니다. 새 스크립트는 빌드에 포함되지 않습니다.</target>
+      </trans-unit>
+      <trans-unit id="notValidVariableName">
+        <source xml:lang="en">The variable name '{0}' is not valid.</source>
+        <target state="translated">'{0}'은(는) 잘못된 변수 이름입니다.</target>
+      </trans-unit>
+      <trans-unit id="cantAddCircularProjectReference">
+        <source xml:lang="en">A reference to project '{0}' cannot be added. Adding this project as a reference would cause a circular dependency</source>
+        <target state="translated">'{0}' 프로젝트에 대한 참조를 추가할 수 없습니다. 이 프로젝트를 참조로 추가하면 순환 종속성이 발생합니다.</target>
+      </trans-unit>
+      <trans-unit id="unableToFindSqlCmdVariable">
+        <source xml:lang="en">Unable to find SQLCMD variable '{0}'</source>
+        <target state="translated">SQLCMD 변수 '{0}'을(를) 찾을 수 없습니다.</target>
+      </trans-unit>
+      <trans-unit id="unableToFindReference">
+        <source xml:lang="en">Unable to find database reference {0}</source>
+        <target state="translated">데이터베이스 참조 {0}를 찾을 수 없습니다.</target>
+      </trans-unit>
+      <trans-unit id="invalidGuid">
+        <source xml:lang="en">Specified GUID is invalid: {0}</source>
+        <target state="translated">지정한 GUID가 잘못됨: {0}</target>
+      </trans-unit>
+      <trans-unit id="invalidTargetPlatform">
+        <source xml:lang="en">Invalid target platform: {0}. Supported target platforms: {1}</source>
+        <target state="translated">잘못된 대상 플랫폼: {0}. 지원되는 대상 플랫폼: {1}</target>
+      </trans-unit>
+      <trans-unit id="deleteAction">
+        <source xml:lang="en">Delete</source>
+        <target state="translated">삭제</target>
+      </trans-unit>
+      <trans-unit id="excludeAction">
+        <source xml:lang="en">Exclude</source>
+        <target state="translated">제외</target>
+      </trans-unit>
+      <trans-unit id="fileObject">
+        <source xml:lang="en">file</source>
+        <target state="translated">파일</target>
+      </trans-unit>
+      <trans-unit id="folderObject">
+        <source xml:lang="en">folder</source>
+        <target state="translated">폴더</target>
+      </trans-unit>
+      <trans-unit id="folderFriendlyName">
+        <source xml:lang="en">Folder</source>
+        <target state="translated">폴더</target>
+      </trans-unit>
+      <trans-unit id="scriptFriendlyName">
+        <source xml:lang="en">Script</source>
+        <target state="translated">스크립트</target>
+      </trans-unit>
+      <trans-unit id="tableFriendlyName">
+        <source xml:lang="en">Table</source>
+        <target state="translated">테이블</target>
+      </trans-unit>
+      <trans-unit id="viewFriendlyName">
+        <source xml:lang="en">View</source>
+        <target state="translated">보기</target>
+      </trans-unit>
+      <trans-unit id="storedProcedureFriendlyName">
+        <source xml:lang="en">Stored Procedure</source>
+        <target state="translated">저장 프로시저</target>
+      </trans-unit>
+      <trans-unit id="dataSource">
+        <source xml:lang="en">Data Source</source>
+        <target state="translated">데이터 원본</target>
+      </trans-unit>
+      <trans-unit id="fileFormat">
+        <source xml:lang="en">File Format</source>
+        <target state="translated">파일 형식</target>
+      </trans-unit>
+      <trans-unit id="externalStream">
+        <source xml:lang="en">External Stream</source>
+        <target state="translated">외부 스트림</target>
+      </trans-unit>
+      <trans-unit id="externalStreamingJobFriendlyName">
+        <source xml:lang="en">External Streaming Job</source>
+        <target state="translated">외부 스트리밍 작업</target>
+      </trans-unit>
+      <trans-unit id="preDeployScriptFriendlyName">
+        <source xml:lang="en">Script.PreDeployment</source>
+        <target state="translated">Script.PreDeployment</target>
+      </trans-unit>
+      <trans-unit id="postDeployScriptFriendlyName">
+        <source xml:lang="en">Script.PostDeployment</source>
+        <target state="translated">Script.PostDeployment</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/sql-database-projects/dist/tools/netcoreTool" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="sqlDatabaseProjects.NetCoreInstallationConfirmation">
+        <source xml:lang="en">The .NET Core SDK cannot be located. Project build will not work. Please install .NET Core SDK version 3.1 or update the .Net Core SDK location in settings if already installed.</source>
+        <target state="translated">.NET Core SDK를 찾을 수 없습니다. 프로젝트 빌드가 작동하지 않습니다. .NET Core SDK 버전 3.1을 설치하거나 이미 설치된 경우 설정에서 .Net Core SDK 위치를 업데이트하세요.</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.UpdateNetCoreLocation">
+        <source xml:lang="en">Update Location</source>
+        <target state="translated">업데이트 위치</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.InstallNetCore">
+        <source xml:lang="en">Install</source>
+        <target state="translated">설치</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.doNotAskAgain">
+        <source xml:lang="en">Don't Ask Again</source>
+        <target state="translated">다시 묻지 않음</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.outputChannel">
+        <source xml:lang="en">Database Projects</source>
+        <target state="translated">데이터베이스 프로젝트</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProject.RunCommand.ErroredOut">
+        <source xml:lang="en">	&gt;&gt;&gt; {0}   … errored out: {1}</source>
+        <target state="translated">	&gt;&gt;&gt; {0}    ... 오류가 발생했습니다. {1}</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.RunStreamedCommand.ExitedWithCode">
+        <source xml:lang="en">    &gt;&gt;&gt; {0}    … exited with code: {1}</source>
+        <target state="translated">    &gt;&gt;&gt; {0}    … 종료됨(코드: {1})</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.RunStreamedCommand.ExitedWithSignal">
+        <source xml:lang="en">    &gt;&gt;&gt; {0}   … exited with signal: {1}</source>
+        <target state="translated">    &gt;&gt;&gt; {0}    … 종료됨(신호: {1})</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.RunCommand.stdout">
+        <source xml:lang="en">    stdout: </source>
+        <target state="translated">    stdout: </target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.RunCommand.stderr">
+        <source xml:lang="en">    stderr: </source>
+        <target state="translated">    stderr: </target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

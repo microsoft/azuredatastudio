@@ -317,7 +317,9 @@ describe('Utils Tests', function () {
 			isCloud: false,
 			azureVersion: -1,
 			osVersion: '',
-			options: {}
+			options: {},
+			cpuCount: -1,
+			physicalMemoryInMb: -1
 		};
 		it('empty endpoints does not error', () => {
 			const serverInfo = Object.assign({}, baseServerInfo);

@@ -17,6 +17,10 @@
 	flex-flow: column;
 	padding-right: 10px;
 }
+.info-button .info-icon .icon {
+	background-size: cover;
+	background-repeat: no-repeat;
+}
 .info-button .info-text {
 	display: flex;
 	flex-flow: column;
