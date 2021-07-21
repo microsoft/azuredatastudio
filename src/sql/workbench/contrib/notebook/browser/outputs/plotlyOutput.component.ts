@@ -140,9 +140,7 @@ export class PlotlyOutputComponent extends AngularDisposable implements IMimeCom
 	}
 
 	private resize() {
-		if (this._initialized) {
-			this._plotly.Plots.resize(this._plotDiv);
-		}
+		this._plotly.Plots.resize(this._plotDiv);
 	}
 
 	public hasError(): boolean {
