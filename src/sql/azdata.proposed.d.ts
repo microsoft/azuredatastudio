@@ -294,6 +294,12 @@ declare module 'azdata' {
 		 * @param v The new data values
 		 */
 		setDataValues(v: DeclarativeTableCellValue[][]): Promise<void>;
+
+		/**
+		 * Sets the columns to hide in the table. undefined will not hide any columns
+		 * @param colIndexes The column indexes that will be hidden in the table
+		 */
+		setHiddenColumns(colIndexes: number[] | undefined): void;
 	}
 
 	/*

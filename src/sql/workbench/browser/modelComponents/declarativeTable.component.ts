@@ -43,6 +43,7 @@ export default class DeclarativeTableComponent extends ContainerBase<any, azdata
 
 	private _data: azdata.DeclarativeTableCellValue[][] = [];
 	private _filteredRowIndexes: number[] | undefined = undefined;
+	private _hiddenColumnIndexes: number[] | undefined = undefined;
 	private columns: azdata.DeclarativeTableColumn[] = [];
 	private _colorTheme: IColorTheme;
 	private _hasFocus: boolean;
@@ -408,6 +409,11 @@ export default class DeclarativeTableComponent extends ContainerBase<any, azdata
 		if (action === ModelViewAction.Filter) {
 			this._filteredRowIndexes = args[0];
 		}
+
+		if (action === ModelViewAction.HideColumns) {
+			this._hiddenColumnIndexes = args[0];
+		}
+
 		this._changeRef.detectChanges();
 	}
 
@@ -465,5 +471,12 @@ export default class DeclarativeTableComponent extends ContainerBase<any, azdata
 		if (row !== this.selectedRow) {
 			this.setPropertyFromUI<number>((properties, value) => { properties.selectedRow = value; }, row);
 		}
+	}
+
+	public showColumn(colIndex: number): boolean {
+		if (this._hiddenColumnIndexes === undefined) {
+			return true;
+		}
+		return this._hiddenColumnIndexes.includes(colIndex) ? false : true;
 	}
 }
