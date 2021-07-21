@@ -1622,10 +1622,6 @@ class DeclarativeTableWrapper extends ComponentWrapper implements azdata.Declara
 		this.setProperty('selectedRow', v);
 	}
 
-	public setHiddenColumns(colIndexes: number[]): void {
-		this._proxy.$doAction(this._handle, this._id, ModelViewAction.HideColumns, colIndexes);
-	}
-
 	public override toComponentShape(): IComponentShape {
 		// Overridden to ensure we send the correct properties mapping.
 		return <IComponentShape>{

@@ -111,7 +111,6 @@ export function createViewContext(): ViewTestContext {
 		data: [],
 		columns: [],
 		setDataValues: undefined!,
-		setHiddenColumns: undefined!
 	});
 
 	let loadingComponent: () => azdata.LoadingComponent = () => Object.assign({}, componentBase, {

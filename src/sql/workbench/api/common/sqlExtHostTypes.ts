@@ -184,8 +184,7 @@ export enum ModelComponentTypes {
 export enum ModelViewAction {
 	SelectTab = 'selectTab',
 	AppendData = 'appendData',
-	Filter = 'filter',
-	HideColumns = 'hideColumns'
+	Filter = 'filter'
 }
 
 export enum ColumnSizingMode {
