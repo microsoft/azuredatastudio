@@ -206,8 +206,7 @@ export abstract class AbstractTextResourceEditorInput extends EditorInput implem
 		return this.doSave(options, true);
 	}
 
-	//{{SQL CARBON EDIT}} - Needed in QueryEditor.
-	public async doSave(options: ITextFileSaveOptions | undefined, saveAs: boolean): Promise<IEditorInput | undefined> {
+	public async doSave(options: ITextFileSaveOptions | undefined, saveAs: boolean): Promise<IEditorInput | undefined> { // {{SQL CARBON EDIT}} - Needed in QueryEditor.
 
 		// Save / Save As
 		let target: URI | undefined;
