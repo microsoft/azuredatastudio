@@ -16,7 +16,7 @@ import { azureResource } from 'azureResource';
 
 export class AzureMonitorTreeDataProvider extends ResourceTreeDataProviderBase<azureResource.AzureResourceDatabaseServer> {
 	private static readonly containerId = 'azure.resource.providers.AzureMonitorContainer';
-	private static readonly containerLabel = localize('azure.resource.providers.AzureMonitorContainerLabel', "Azure Monitor Workspace");
+	private static readonly containerLabel = localize('azure.resource.providers.AzureMonitorContainerLabel', "Azure Monitor Logs workspace");
 
 	public constructor(
 		databaseServerService: IAzureResourceService<azureResource.AzureResourceDatabaseServer>,
@@ -50,7 +50,10 @@ export class AzureMonitorTreeDataProvider extends ResourceTreeDataProviderBase<a
 				providerName: 'LOGANALYTICS',
 				saveProfile: false,
 				options: {},
-				azureAccount: account.key.accountId
+				azureAccount: account.key.accountId,
+				azureTenantId: databaseServer.tenant,
+				azureResourceId: databaseServer.id,
+				azurePortalEndpoint: account.properties.providerSettings.settings.portalEndpoint
 			},
 			childProvider: 'LOGANALYTICS',
 			type: ExtensionNodeType.Server

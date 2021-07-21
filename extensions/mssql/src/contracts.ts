@@ -1014,18 +1014,13 @@ export namespace ProfilerSessionCreatedNotification {
 // ------------------------------- < SQL Profiler > ------------------------------------
 
 /// ------------------------------- <Sql Migration> -----------------------------
-
-export interface SqlMigrationAssessmentResult extends azdata.ResultStatus {
-	items: mssql.SqlMigrationAssessmentResultItem[];
-}
-
 export interface SqlMigrationAssessmentParams {
 	ownerUri: string;
 	databases: string[];
 }
 
 export namespace GetSqlMigrationAssessmentItemsRequest {
-	export const type = new RequestType<SqlMigrationAssessmentParams, SqlMigrationAssessmentResult, void, void>('migration/getassessments');
+	export const type = new RequestType<SqlMigrationAssessmentParams, mssql.AssessmentResult, void, void>('migration/getassessments');
 }
 
 // ------------------------------- <Sql Migration> -----------------------------

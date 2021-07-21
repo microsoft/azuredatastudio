@@ -29,7 +29,7 @@ export class SqlMigrationService implements mssql.ISqlMigrationService {
 		context.registerService(constants.SqlMigrationService, this);
 	}
 
-	async getAssessments(ownerUri: string, databases: string[]): Promise<mssql.SqlMigrationAssessmentResult | undefined> {
+	async getAssessments(ownerUri: string, databases: string[]): Promise<mssql.AssessmentResult | undefined> {
 		let params: contracts.SqlMigrationAssessmentParams = { ownerUri: ownerUri, databases: databases };
 		try {
 			return this.client.sendRequest(contracts.GetSqlMigrationAssessmentItemsRequest.type, params);

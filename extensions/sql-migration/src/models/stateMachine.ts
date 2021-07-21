@@ -175,34 +175,27 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	}
 
 	public async getDatabaseAssessments(): Promise<ServerAssessement> {
+		const excludeDbs: string[] = [
+			'master',
+			'tempdb',
+			'msdb',
+			'model'
+		];
 		const ownerUri = await azdata.connection.getUriForConnection(this.sourceConnectionId);
 		// stress test backend & dialog component
 		const assessmentResults = await this.migrationService.getAssessments(
 			ownerUri,
 			this._databaseAssessment
 		);
-		const serverLevelAssessments: mssql.SqlMigrationAssessmentResultItem[] = [];
-		const databaseLevelAssessments = this._databaseAssessment.map(db => {
+		const dbAssessments = assessmentResults?.assessmentResult.databases.filter(d => !excludeDbs.includes(d.name)).map(d => {
 			return {
-				name: db,
-				issues: <mssql.SqlMigrationAssessmentResultItem[]>[]
+				name: d.name,
+				issues: d.items.filter(i => i.appliesToMigrationTargetPlatform === MigrationTargetType.SQLMI) ?? []
 			};
 		});
-
-		assessmentResults?.items.forEach((item) => {
-			if (item.appliesToMigrationTargetPlatform === MigrationTargetType.SQLMI) {
-				const dbIndex = this._databaseAssessment.indexOf(item.databaseName);
-				if (dbIndex === -1) {
-					serverLevelAssessments.push(item);
-				} else {
-					databaseLevelAssessments[dbIndex].issues.push(item);
-				}
-			}
-		});
-
 		this._assessmentResults = {
-			issues: serverLevelAssessments,
-			databaseAssessments: databaseLevelAssessments
+			issues: assessmentResults?.assessmentResult.items?.filter(i => i.appliesToMigrationTargetPlatform === MigrationTargetType.SQLMI) ?? [],
+			databaseAssessments: dbAssessments! ?? []
 		};
 
 		return this._assessmentResults;

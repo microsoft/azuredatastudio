@@ -35,14 +35,14 @@ export class OpenExistingDialog extends DialogBase {
 
 	async validate(): Promise<boolean> {
 		try {
-			if (await this.workspaceService.validateWorkspace() === false) {
-				return false;
-			}
-
 			if (this.localRadioButton?.checked) {
 				await this.validateFile(this.filePathTextBox!.value!, constants.Project.toLowerCase());
 			} else {
 				await this.validateClonePath(<string>this.localClonePathTextBox!.value);
+			}
+
+			if (await this.workspaceService.validateWorkspace() === false) {
+				return false;
 			}
 			return true;
 		}
