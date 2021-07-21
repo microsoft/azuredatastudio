@@ -392,8 +392,8 @@ export class PostgresOverviewPage extends DashboardPage {
 	}
 
 	private createPodStatusDataValues(): azdata.DeclarativeTableCellValue[][] {
-		let podData: (string | azdata.Component)[][] = this.podStatusData.map(p => [p.podName, p.type, p.status]);
-		return podData.map(p => {
+		let podDataValue: (string | azdata.Component)[][] = this.podStatusData.map(p => [p.podName, p.type, p.status]);
+		return podDataValue.map(p => {
 			return p.map((value): azdata.DeclarativeTableCellValue => {
 				return { value: value };
 			});
