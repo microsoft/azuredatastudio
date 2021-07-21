@@ -40,7 +40,7 @@ export class MigrationCutoverDialogModel {
 			TelemetryViews.MigrationCutoverDialog,
 			TelemetryAction.MigrationStatus,
 			{
-				'sessionId': this._migration.sessionId ?? '',
+				'sessionId': this._migration.sessionId!,
 				'migrationStatus': this.migrationStatus.properties.migrationStatus
 			},
 			{}
@@ -61,7 +61,7 @@ export class MigrationCutoverDialogModel {
 					TelemetryViews.MigrationCutoverDialog,
 					TelemetryAction.CutoverMigration,
 					{
-						'sessionId': this._migration.sessionId ?? '',
+						'sessionId': this._migration.sessionId!,
 						'migrationEndTime': new Date().toString()
 					},
 					{}
@@ -86,8 +86,8 @@ export class MigrationCutoverDialogModel {
 					TelemetryViews.MigrationCutoverDialog,
 					TelemetryAction.CancelMigration,
 					{
-						'sessionId': this._migration.sessionId ?? '',
-						'migrationEndTime': new Date().toString()
+						'sessionId': this._migration.sessionId!,
+						'cutoverStartTime': new Date().toString()
 					},
 					{}
 				);
