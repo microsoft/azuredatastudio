@@ -65,13 +65,13 @@ export class PostgresOverviewPage extends DashboardPage {
 
 		// Properties
 		this.properties = this.modelView.modelBuilder.propertiesContainer()
-			.withProperties<azdata.PropertiesContainerComponentProperties>({
+			.withProps({
 				propertyItems: this.getProperties()
 			}).component();
 
 		this.propertiesLoading = this.modelView.modelBuilder.loadingComponent()
 			.withItem(this.properties)
-			.withProperties<azdata.LoadingComponentProperties>({
+			.withProps({
 				loading: !this._controllerModel.registrationsLastUpdated && !this._postgresModel.configLastUpdated
 			}).component();
 
@@ -79,7 +79,7 @@ export class PostgresOverviewPage extends DashboardPage {
 
 		// Service endpoints
 		const titleCSS = { ...cssStyles.title, 'margin-block-start': '2em', 'margin-block-end': '0' };
-		content.addItem(this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+		content.addItem(this.modelView.modelBuilder.text().withProps({
 			value: loc.serviceEndpoints,
 			CSSStyles: titleCSS
 		}).component());
@@ -89,13 +89,13 @@ export class PostgresOverviewPage extends DashboardPage {
 		this.grafanaLink = this.modelView.modelBuilder.hyperlink().component();
 
 		this.kibanaLoading = this.modelView.modelBuilder.loadingComponent()
-			.withProperties<azdata.LoadingComponentProperties>(
+			.withProps(
 				{ loading: !this._postgresModel?.configLastUpdated }
 			)
 			.component();
 
 		this.grafanaLoading = this.modelView.modelBuilder.loadingComponent()
-			.withProperties<azdata.LoadingComponentProperties>(
+			.withProps(
 				{ loading: !this._postgresModel?.configLastUpdated }
 			)
 			.component();
@@ -105,7 +105,7 @@ export class PostgresOverviewPage extends DashboardPage {
 		this.kibanaLoading.component = this.kibanaLink;
 		this.grafanaLoading.component = this.grafanaLink;
 
-		const endpointsTable = this.modelView.modelBuilder.declarativeTable().withProperties<azdata.DeclarativeTableProperties>({
+		const endpointsTable = this.modelView.modelBuilder.declarativeTable().withProps({
 			width: '100%',
 			columns: [
 				{
@@ -146,7 +146,7 @@ export class PostgresOverviewPage extends DashboardPage {
 		content.addItem(endpointsTable);
 
 		// Server Group Nodes
-		content.addItem(this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+		content.addItem(this.modelView.modelBuilder.text().withProps({
 			value: loc.serverGroupNodes,
 			CSSStyles: titleCSS
 		}).component());
@@ -194,7 +194,7 @@ export class PostgresOverviewPage extends DashboardPage {
 
 		this.serverGroupNodesLoading = this.modelView.modelBuilder.loadingComponent()
 			.withItem(this.podStatusTable)
-			.withProperties<azdata.LoadingComponentProperties>({
+			.withProps({
 				loading: !this._postgresModel.configLastUpdated
 			}).component();
 
@@ -208,7 +208,7 @@ export class PostgresOverviewPage extends DashboardPage {
 
 	protected get toolbarContainer(): azdata.ToolbarContainer {
 		// Reset password
-		const resetPasswordButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
+		const resetPasswordButton = this.modelView.modelBuilder.button().withProps({
 			label: loc.resetPassword,
 			iconPath: IconPathHelper.edit
 		}).component();
@@ -236,7 +236,7 @@ export class PostgresOverviewPage extends DashboardPage {
 			}));
 
 		// Delete service
-		this.deleteButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
+		this.deleteButton = this.modelView.modelBuilder.button().withProps({
 			label: loc.deleteText,
 			iconPath: IconPathHelper.delete
 		}).component();
@@ -274,7 +274,7 @@ export class PostgresOverviewPage extends DashboardPage {
 			}));
 
 		// Refresh
-		const refreshButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
+		const refreshButton = this.modelView.modelBuilder.button().withProps({
 			label: loc.refresh,
 			iconPath: IconPathHelper.refresh
 		}).component();
@@ -301,7 +301,7 @@ export class PostgresOverviewPage extends DashboardPage {
 			}));
 
 		// Open in Azure portal
-		const openInAzurePortalButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
+		const openInAzurePortalButton = this.modelView.modelBuilder.button().withProps({
 			label: loc.openInAzurePortal,
 			iconPath: IconPathHelper.openInTab
 		}).component();

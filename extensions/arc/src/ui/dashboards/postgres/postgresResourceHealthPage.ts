@@ -133,7 +133,7 @@ export class PostgresResourceHealthPage extends DashboardPage {
 		this.podConditionsContainer.addItem(this.podConditionsTable);
 		this.podConditionsLoading = this.modelView.modelBuilder.loadingComponent()
 			.withItem(this.podConditionsContainer)
-			.withProperties<azdata.LoadingComponentProperties>({
+			.withProps({
 				loading: !this._postgresModel.configLastUpdated
 			}).component();
 
