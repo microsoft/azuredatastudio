@@ -61,6 +61,7 @@ const transformationGenerationRequestName = 'flatfile/transformationGeneration';
 export interface TransformationGenerationParams {
 	columnNames: string[];
 	transformationExamples: string[];
+	transformationExampleRowIndices: number[];
 }
 
 export interface TransformationGenerationResponse {

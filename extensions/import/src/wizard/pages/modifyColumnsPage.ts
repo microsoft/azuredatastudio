@@ -128,7 +128,6 @@ export class ModifyColumnsPage extends ImportPage {
 	}
 
 	async onPageEnter(): Promise<boolean> {
-		console.log(this.table);
 		this.loading.loading = true;
 		await this.populateTable();
 		this.instance.changeNextButtonLabel(constants.importDataText);
@@ -138,7 +137,6 @@ export class ModifyColumnsPage extends ImportPage {
 	}
 
 	override async onPageLeave(): Promise<boolean> {
-		console.log(this.table);
 		await this.emptyTable();
 		this.instance.changeNextButtonLabel(constants.nextText);
 		return undefined;

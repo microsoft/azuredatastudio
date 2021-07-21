@@ -134,12 +134,15 @@ export class DerivedColumnDialog {
 					requiredColNames[index] = transformationTable.columns[index].displayName;
 				}
 				const transExamples = [];
+				const transExampleIndices = [];
 				for (let index = 0; index < specifyTransTable.dataValues.length; index++) {
 					transExamples[index] = specifyTransTable.dataValues[index][0].value as string;
+					transExampleIndices.push(index);
 				}
 				const response = await this._provider.sendTransformationGenerationRequest({
 					columnNames: requiredColNames,
-					transformationExamples: transExamples
+					transformationExamples: transExamples,
+					transformationExampleRowIndices: transExampleIndices
 				});
 				this.currentTransformation = response.transformationPreview;
 				for (let index = 0; index < this.currentTransformation.length; index++) {
