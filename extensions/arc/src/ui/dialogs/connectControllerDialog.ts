@@ -226,7 +226,7 @@ export class ConnectToControllerDialog extends ControllerDialogBase {
 	protected override initializeFields(controllerInfo: ControllerInfo | undefined, password: string | undefined) {
 		super.initializeFields(controllerInfo, password);
 		this.rememberPwCheckBox = this.modelBuilder.checkBox()
-			.withProperties<azdata.CheckBoxProperties>({
+			.withProps({
 				label: loc.rememberPassword,
 				checked: controllerInfo?.rememberPassword
 			}).component();
