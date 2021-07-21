@@ -223,7 +223,7 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 	}
 
 	override save(group: GroupIdentifier, options?: ISaveOptions): Promise<IEditorInput | undefined> {
-		return this.text.save(group, options);
+		return this.text.save(group, options, this.state.resultsVisible);
 	}
 
 	override saveAs(group: GroupIdentifier, options?: ISaveOptions): Promise<IEditorInput | undefined> {

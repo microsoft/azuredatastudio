@@ -190,19 +190,19 @@ export abstract class AbstractTextResourceEditorInput extends EditorInput implem
 		return false;
 	}
 
-	override save(group: GroupIdentifier, options?: ITextFileSaveOptions): Promise<IEditorInput | undefined> {
+	// {{SQL CARBON EDIT}} - Added handling for resultsVisible (used to preserve results for QueryEditorInput saves)
+	override save(group: GroupIdentifier, options?: ITextFileSaveOptions, resultsVisible?: boolean): Promise<IEditorInput | undefined> {
 
 		// If this is neither an `untitled` resource, nor a resource
 		// we can handle with the file service, we can only "Save As..."
 		if (this.resource.scheme !== Schemas.untitled && !this.fileService.canHandleResource(this.resource)) {
-			return this.saveAs(group, options);
+			return this.saveAs(group, options, resultsVisible);
 		}
 
 		// Normal save
-		return this.doSave(options, false);
+		return this.doSave(options, false, resultsVisible);
 	}
 
-	// {{SQL CARBON EDIT}} - Added handling for resultsVisible (used to preserve results for QueryEditorInput in case of save as)
 	override saveAs(group: GroupIdentifier, options?: ITextFileSaveOptions, resultsVisible?: boolean): Promise<IEditorInput | undefined> {
 		return this.doSave(options, true, resultsVisible);
 	}
