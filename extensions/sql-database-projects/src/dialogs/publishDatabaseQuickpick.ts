@@ -5,7 +5,6 @@
 
 import * as vscode from 'vscode';
 import * as constants from '../common/constants';
-import { IGenerateScriptSettings, IPublishSettings } from '../models/IPublishSettings';
 import { Project } from '../models/project';
 import { PublishProfile, readPublishProfile } from '../models/publishProfile/publishProfile';
 import { promptForPublishProfile } from './publishDatabaseDialog';
@@ -188,17 +187,12 @@ export async function launchPublishDatabaseQuickpick(project: Project): Promise<
 
 	// TODO@chgagnon: Get deployment options
 	// 6. Generate script/publish
-	let settings: IPublishSettings | IGenerateScriptSettings = {
-		databaseName: databaseName,
-		serverName: '', // TODO@chgagnon: Get from connection profile
-		connectionUri: '', // TODO@chgagnon: Get from connection profile
-		sqlCmdVariables: undefined, // this.getSqlCmdVariablesForPublish(),
-		deploymentOptions: undefined, // await this.getDeploymentOptions(),
-		profileUsed: true, // this.profileUsed,
-	};
-
-	// TODO@chgagnon Consolidate creation of the settings into one place
-	if (action === constants.publish) {
-		(settings as IPublishSettings).upgradeExisting = true;
-	}
+	// let settings: IDeploySettings | IGenerateScriptSettings = {
+	// 	databaseName: databaseName,
+	// 	serverName: connectionProfile!.server,
+	// 	connectionUri: '', // TODO@chgagnon: Get from connection profile
+	// 	sqlCmdVariables: sqlCmdVariables,
+	// 	deploymentOptions: undefined, // await this.getDeploymentOptions(),
+	// 	profileUsed: !!publishProfile
+	// };
 }
