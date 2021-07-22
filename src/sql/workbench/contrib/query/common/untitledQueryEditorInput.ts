@@ -4,17 +4,16 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { QueryEditorInput } from 'sql/workbench/common/editor/query/queryEditorInput';
-import { FileQueryEditorInput } from 'sql/workbench/common/editor/query/fileQueryEditorInput';
-import { GroupIdentifier, ISaveOptions, IEditorInput } from 'vs/workbench/common/editor';
 import { QueryResultsInput } from 'sql/workbench/common/editor/query/queryResultsInput';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { IQueryModelService } from 'sql/workbench/services/query/common/queryModel';
-
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IResolvedTextEditorModel } from 'vs/editor/common/services/resolverService';
 import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
 import { IUntitledTextEditorModel } from 'vs/workbench/services/untitled/common/untitledTextEditorModel';
 import { EncodingMode, IEncodingSupport } from 'vs/workbench/services/textfile/common/textfiles';
+import { GroupIdentifier, ISaveOptions, IEditorInput } from 'vs/workbench/common/editor';
+import { FileQueryEditorInput } from 'sql/workbench/contrib/query/common/fileQueryEditorInput';
 
 export class UntitledQueryEditorInput extends QueryEditorInput implements IEncodingSupport {
 
@@ -26,7 +25,7 @@ export class UntitledQueryEditorInput extends QueryEditorInput implements IEncod
 		results: QueryResultsInput,
 		@IConnectionManagementService connectionManagementService: IConnectionManagementService,
 		@IQueryModelService queryModelService: IQueryModelService,
-		@IConfigurationService configurationService: IConfigurationService
+		@IConfigurationService configurationService: IConfigurationService,
 	) {
 		super(description, text, results, connectionManagementService, queryModelService, configurationService);
 	}
