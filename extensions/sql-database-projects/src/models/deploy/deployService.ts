@@ -13,6 +13,7 @@ let path = require('path');
 import * as childProcess from 'child_process';
 import * as vscode from 'vscode';
 import * as os from 'os';
+import { ConnectionResult } from 'azdata';
 
 interface ValidationResult {
 	errorMessage: string;
@@ -114,33 +115,78 @@ export class DeployService {
 	}
 
 	private async getConnection(profile: IDeployProfile): Promise<string | undefined> {
-		if (utils.getAzdataApi()) {
-			const connection = await this.retry('Connecting to SQL Server on Docker', async () => {
-				return await utils.getAzdataApi()!.connection.connect({
-					password: profile.password,
-					serverName: `${profile.serverName},${profile.port}`,
-					savePassword: true,
-					userName: profile.userName,
-					providerName: 'MSSQL',
-					saveProfile: true,
-					id: '',
-					connectionName: `${constants.connectionNamePrefix} ${profile.dbName}`,
-					options: [],
-					authenticationType: 'SqlLogin'
+		const getAzdataApi = await utils.getAzdataApi();
+		const vscodeMssqlApi = getAzdataApi ? undefined : await utils.getVscodeMssqlApi();
 
-				}, true, false);
-			}, (connection) => {
-				const connected = connection !== undefined && connection.connectionId !== undefined;
-				return { validated: connected, errorMessage: connected ? '' : `Connection failed error: ${connection?.errorMessage}` };
-			}, (connection) => {
-				return connection.connectionId;
-			});
+		const connectionProfile = {
+			password: profile.password,
+			serverName: `${profile.serverName},${profile.port}`,
+			server: `${profile.serverName},${profile.port}`,
+			port: profile.port,
+			database: '',
+			savePassword: true,
+			userName: profile.userName,
+			user: profile.userName,
+			providerName: 'MSSQL',
+			saveProfile: true,
+			id: '',
+			connectionName: `${constants.connectionNamePrefix} ${profile.dbName}`,
+			options: [],
+			authenticationType: 'SqlLogin',
+			email: '',
+			accountId: '',
+			azureAccountToken: '',
+			encrypt: true,
+			trustServerCertificate: true,
+			persistSecurityInfo: false,
+			connectTimeout: 30,
+			connectRetryCount: 4,
+			connectRetryInterval: 3,
+			applicationName: 'SQL Project',
+			workstationId: '',
+			applicationIntent: '',
+			currentLanguage: '',
+			pooling: true,
+			maxPoolSize: 5,
+			minPoolSize: 2,
+			loadBalanceTimeout: 30,
+			replication: false,
+			attachDbFilename: '',
+			failoverPartner: '',
+			multiSubnetFailover: false,
+			multipleActiveResultSets: false,
+			packetSize: 8000,
+			typeSystemVersion: '',
+			connectionString: ''
+		};
 
-			if (connection) {
-				return await utils.getAzdataApi()!.connection.getUriForConnection(connection.connectionId);
+		const connection = await this.retry('Connecting to SQL Server on Docker', async () => {
+			if (getAzdataApi) {
+				return await getAzdataApi.connection.connect(connectionProfile, true, false);
+			} else if (vscodeMssqlApi) {
+				return await vscodeMssqlApi.connect(connectionProfile);
 			}
-		} else {
-			// TODO: use mssql extension API connection
+			return undefined;
+		}, (connection) => {
+			const connectionResult = <ConnectionResult>connection;
+			if (connectionResult) {
+				const connected = connectionResult !== undefined && connectionResult.connectionId !== undefined;
+				return { validated: connected, errorMessage: connected ? '' : `Connection failed error: ${connectionResult?.errorMessage}` };
+			} else {
+				return { validated: connection !== undefined, errorMessage: 'Connection failed' };
+			}
+		}, (connection) => {
+			const connectionResult = <ConnectionResult>connection;
+			return connectionResult ? connectionResult.connectionId : <string>connection;
+		});
+
+		if (connection) {
+			const connectionResult = <ConnectionResult>connection;
+			if (getAzdataApi) {
+				return await getAzdataApi.connection.getUriForConnection(connectionResult.connectionId);
+			} else {
+				return <string>connection;
+			}
 		}
 
 		return undefined;
@@ -284,7 +330,6 @@ RUN ["/bin/bash", "/opt/commands/start.sh"]
 			if (child.stderr) {
 				child.stderr.on('data', data => { this.outputDataChunk(data, '    stderr: '); });
 			}
-
 		});
 	}
 

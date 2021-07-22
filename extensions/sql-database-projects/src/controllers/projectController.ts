@@ -251,7 +251,7 @@ export class ProjectsController {
 			if (deployProfile) {
 				const connection = await this.deployService.deploy(deployProfile, project);
 				if (connection) {
-					const settings: IPublishSettings = {
+					const settings = {
 						serverName: deployProfile.serverName,
 						connectionUri: connection,
 						databaseName: deployProfile.dbName,
@@ -259,7 +259,7 @@ export class ProjectsController {
 						// TODO: Set deploymentOptions
 						// TODO: Set sqlCmdVariables
 					};
-					const publishResult = await this.publishProjectCallback(project, settings);
+					const publishResult = await this.publishOrScriptProject(project, settings, true);
 					if (publishResult && publishResult.success) {
 
 						// Update app settings if requested by user
