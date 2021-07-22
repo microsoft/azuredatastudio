@@ -138,6 +138,13 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	public _targetType!: MigrationTargetType;
 	public refreshDatabaseBackupPage!: boolean;
 
+	public excludeDbs: string[] = [
+		'master',
+		'tempdb',
+		'msdb',
+		'model'
+	];
+
 	constructor(
 		private readonly _extensionContext: vscode.ExtensionContext,
 		private readonly _sourceConnectionId: string,
@@ -163,31 +170,19 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		this._stateChangeEventEmitter.fire({ oldState, newState: this.currentState });
 	}
 	public async getDatabases(): Promise<string[]> {
-		const excludeDbs: string[] = [
-			'master',
-			'tempdb',
-			'msdb',
-			'model'
-		];
 		let temp = await azdata.connection.listDatabases(this.sourceConnectionId);
-		let finalResult = temp.filter((name) => !excludeDbs.includes(name));
+		let finalResult = temp.filter((name) => !this.excludeDbs.includes(name));
 		return finalResult;
 	}
 
 	public async getDatabaseAssessments(): Promise<ServerAssessement> {
-		const excludeDbs: string[] = [
-			'master',
-			'tempdb',
-			'msdb',
-			'model'
-		];
 		const ownerUri = await azdata.connection.getUriForConnection(this.sourceConnectionId);
 		// stress test backend & dialog component
 		const assessmentResults = await this.migrationService.getAssessments(
 			ownerUri,
 			this._databaseAssessment
 		);
-		const dbAssessments = assessmentResults?.assessmentResult.databases.filter(d => !excludeDbs.includes(d.name)).map(d => {
+		const dbAssessments = assessmentResults?.assessmentResult.databases.filter(d => !this.excludeDbs.includes(d.name)).map(d => {
 			return {
 				name: d.name,
 				issues: d.items.filter(i => i.appliesToMigrationTargetPlatform === MigrationTargetType.SQLMI) ?? []
