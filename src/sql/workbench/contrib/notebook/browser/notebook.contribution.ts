@@ -335,6 +335,11 @@ configurationRegistry.registerConfiguration({
 			'default': 200,
 			'minimum': 10,
 			'description': localize('notebook.maxRichTextUndoHistory', "The maximum number of changes stored in the undo history for the notebook Rich Text editor.")
+		},
+		'notebook.enableInfiniteScroll': {
+			'type': 'boolean',
+			'default': true,
+			'description': localize('notebook.enabledInfiniteScroll', "Enable infinite scroll for notebooks.")
 		}
 	}
 });

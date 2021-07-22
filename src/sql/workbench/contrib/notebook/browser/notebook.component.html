@@ -9,7 +9,7 @@
 	</div>
 	<div #container class="scrollable" style="flex: 1 1 auto; position: relative; outline: none" (click)="unselectActiveCell()" (scroll)="scrollHandler($event)">
 		<loading-spinner [loading]="isLoading"></loading-spinner>
-		<div *ngFor="let cell of cells">
+		<div *ngFor="let cell of cellsBuffer">
 			<div id="{{ cell.id }}" class="notebook-cell" (click)="selectCell(cell, $event)" [class.active]="cell.active">
 				<cell-toolbar-component *ngIf="cell.active" [cellModel]="cell" [model]="model"></cell-toolbar-component>
 				<code-cell-component *ngIf="cell.cellType === 'code'" [cellModel]="cell" [model]="model" [activeCellId]="activeCellId">
@@ -18,6 +18,7 @@
 				</text-cell-component>
 			</div>
 		</div>
+		<loading-spinner [loading]="isLoadingMoreCells"></loading-spinner>
 		<div class="notebook-cell" *ngIf="(!cells || !cells.length) && !isLoading">
 			<placeholder-cell-component [cellModel]="cell" [model]="model">
 			</placeholder-cell-component>

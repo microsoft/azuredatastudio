@@ -73,6 +73,8 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 
 	protected _actionBar: Taskbar;
 	protected isLoading: boolean;
+	protected cellsBuffer: ICellModel[] = [];
+	protected isLoadingMoreCells: boolean = false;
 	private _modelReadyDeferred = new Deferred<NotebookModel>();
 	private _trustedAction: TrustedAction;
 	private _runAllCellsAction: RunAllCellsAction;
@@ -82,6 +84,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	private navigationResult: nb.NavigationResult;
 	public previewFeaturesEnabled: boolean = false;
 	public doubleClickEditEnabled: boolean;
+	public infiniteScrollEnabled: boolean = false;
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
@@ -106,6 +109,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		super();
 		this.isLoading = true;
 		this.doubleClickEditEnabled = this._configurationService.getValue('notebook.enableDoubleClickEdit');
+		this.infiniteScrollEnabled = this._configurationService.getValue('notebook.enableInfiniteScroll');
 		this._register(this._configurationService.onDidChangeConfiguration(e => {
 			this.previewFeaturesEnabled = this._configurationService.getValue('workbench.enablePreviewFeatures');
 		}));
@@ -214,9 +218,18 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		}
 	}
 
-	//Saves scrollTop value on scroll change
+	/**
+	 * Saves scrollTop value on scroll change.
+	 * If infinite scroll is enabled, call fetchMore when scrollbar is at the bottom of the page.
+	 * @param event Scroll event
+	 */
 	public scrollHandler(event: Event) {
-		this._scrollTop = (<HTMLElement>event.srcElement).scrollTop;
+		let element = <HTMLElement>event.target;
+		this._scrollTop = element.scrollTop;
+
+		if (this.infiniteScrollEnabled && !this.isLoadingMoreCells && this._scrollTop + element.offsetHeight + 1 >= element.scrollHeight) {
+			this.fetchMore();
+		}
 	}
 
 	public unselectActiveCell() {
@@ -273,9 +286,29 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		}
 	}
 
+	private fetchMore(): void {
+		if (this.cellsBuffer.length === this.cells.length) {
+			return;
+		}
+		this.isLoadingMoreCells = true;
+		this.detectChanges();
+		setTimeout(() => {
+			let chunk: ICellModel[] = this.fetchNextChunk(this.cellsBuffer.length, 10);
+			this.cellsBuffer = this.cellsBuffer.concat(chunk);
+			this.isLoadingMoreCells = false;
+			this.detectChanges();
+		}, 500);
+	}
+
+	private fetchNextChunk(startIndex: number, chunkSize: number): ICellModel[] {
+		let endIndex: number | undefined = startIndex + chunkSize > this.cells.length ? undefined : startIndex + chunkSize;
+		return this.cells.slice(startIndex, endIndex);
+	}
+
 	private async doLoad(): Promise<void> {
 		try {
 			await this.registerModel();
+			this.cellsBuffer = this.infiniteScrollEnabled ? this.cells.slice(0, 20) : this.cells;
 			this._modelReadyDeferred.resolve(this._model);
 			this.notebookService.addNotebookEditor(this);
 			await this._model.onClientSessionReady;
@@ -355,6 +388,11 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	private handleContentChanged(change: NotebookContentChange) {
 		if (change.changeType === NotebookChangeType.TrustChanged) {
 			this._trustedAction.trusted = this._model.trustedMode;
+		}
+
+		if (change.changeType === NotebookChangeType.CellsModified) {
+			let endIndex = this.cellsBuffer.length;
+			this.cellsBuffer = this.cells.slice(0, endIndex + 1);
 		}
 
 		// Note: for now we just need to set dirty state and refresh the UI.
