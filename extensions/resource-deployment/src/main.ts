@@ -46,10 +46,10 @@ export async function activate(context: vscode.ExtensionContext): Promise<rd.IEx
 		}
 	};
 
-	vscode.commands.registerCommand('az.resource.sql-image.deploy', () => {
+	vscode.commands.registerCommand('azdata.resource.sql-image.deploy', () => {
 		openDialog('sql-image');
 	});
-	vscode.commands.registerCommand('az.resource.sql-bdc.deploy', () => {
+	vscode.commands.registerCommand('azdata.resource.sql-bdc.deploy', () => {
 		openDialog('sql-bdc');
 	});
 	/**
@@ -79,7 +79,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<rd.IEx
 			openDialog(defaultDeploymentType, resourceTypeNameFilters, optionValuesFilter, initialVariableValues);
 		}
 	});
-	vscode.commands.registerCommand('az.openNotebookInputDialog', (dialogInfo: NotebookBasedDialogInfo) => {
+	vscode.commands.registerCommand('azdata.openNotebookInputDialog', (dialogInfo: NotebookBasedDialogInfo) => {
 		const dialog = new DeploymentInputDialog(notebookService, platformService, toolsService, dialogInfo);
 		dialog.open();
 	});

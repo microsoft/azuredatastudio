@@ -14,7 +14,7 @@
   },
   "activationEvents": [
     "onCommand:azdata.resource.deploy",
-    "onCommand:az.openNotebookInputDialog"
+    "onCommand:azdata.openNotebookInputDialog"
   ],
   "main": "./out/main",
   "repository": {
@@ -44,7 +44,7 @@
         "category": "%deploy-resource-command-category%"
       },
       {
-        "command": "az.openNotebookInputDialog",
+        "command": "azdata.openNotebookInputDialog",
         "title": "Open notebook input dialog",
         "category": "Notebook"
       }
@@ -52,7 +52,7 @@
     "menus": {
       "commandPalette": [
         {
-          "command": "az.openNotebookInputDialog",
+          "command": "azdata.openNotebookInputDialog",
           "when": "false"
         }
       ],
