@@ -37,7 +37,8 @@ steps:
       node build/azure-pipelines/publish-types/check-version.js
     displayName: Check version
 
-  # {{SQL CARBON EDIT}} Reference our own stuff
+  # {{SQL CARBON EDIT}} Modify to fit our own scenario - specifically currently we need to use a fork of the repo since we don't
+  # have an account with push access to DT
   - bash: |
       git config --global user.email "ads@microsoft.com"
       git config --global user.name "Azure Data Studio"
@@ -48,6 +49,11 @@ steps:
       TAG_VERSION=$(git describe --tags `git rev-list --tags --max-count=1`)
 
       cd DefinitelyTyped
+
+      # Sync up to latest from the DT repo
+      git remote add upstream https://github.com/DefinitelyTyped/DefinitelyTyped.git
+      git merge upstream/master
+      git push origin
 
       git diff --color | cat
       git add -A
