@@ -133,7 +133,7 @@ export class NotebookViewsGridComponent extends AngularDisposable implements OnI
 	}
 
 	/**
-	 * Updates the grid based on changes to the view model
+	 * Updates the grid layout based on changes to the view model
 	 */
 	private updateGrid(): void {
 		if (!this._grid || !this.activeView) {
