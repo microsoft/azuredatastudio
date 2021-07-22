@@ -99,7 +99,7 @@ export class SparkAdvancedTab {
 				});
 
 			this._driverCoresInputBox = builder.inputBox()
-				.withProperties<azdata.InputBoxProperties>({ inputType: 'number', min: 1 })
+				.withProps({ inputType: 'number', min: 1 })
 				.component();
 
 			formContainer.addFormItem(
@@ -124,7 +124,7 @@ export class SparkAdvancedTab {
 				});
 
 			this._executorCoresInputBox = builder.inputBox()
-				.withProperties<azdata.InputBoxProperties>({ inputType: 'number', min: 1 })
+				.withProps({ inputType: 'number', min: 1 })
 				.component();
 			formContainer.addFormItem(
 				{
@@ -137,7 +137,7 @@ export class SparkAdvancedTab {
 				});
 
 			this._executorCountInputBox = builder.inputBox()
-				.withProperties<azdata.InputBoxProperties>({ inputType: 'number', min: 1 })
+				.withProps({ inputType: 'number', min: 1 })
 				.component();
 			formContainer.addFormItem(
 				{

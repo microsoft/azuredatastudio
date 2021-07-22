@@ -56,6 +56,10 @@ export abstract class ComponentBase<TPropertyBag extends azdata.ComponentPropert
 			this.modelStore.registerComponent(this);
 			this._validations.push(() => this.modelStore.validate(this));
 		}
+		this.fireEvent({
+			eventType: ComponentEventType.onComponentLoaded,
+			args: undefined
+		});
 	}
 
 	abstract ngAfterViewInit(): void;

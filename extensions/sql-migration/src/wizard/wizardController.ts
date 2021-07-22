@@ -15,6 +15,7 @@ import { AccountsSelectionPage } from './accountsSelectionPage';
 import { IntergrationRuntimePage } from './integrationRuntimePage';
 import { SummaryPage } from './summaryPage';
 import { MigrationModePage } from './migrationModePage';
+import { DatabaseSelectorPage } from './databaseSelectorPage';
 
 export const WIZARD_INPUT_COMPONENT_WIDTH = '600px';
 export class WizardController {
@@ -38,6 +39,7 @@ export class WizardController {
 		wizard.generateScriptButton.hidden = true;
 		const skuRecommendationPage = new SKURecommendationPage(wizard, stateModel);
 		const migrationModePage = new MigrationModePage(wizard, stateModel);
+		const databaseSelectorPage = new DatabaseSelectorPage(wizard, stateModel);
 		const azureAccountsPage = new AccountsSelectionPage(wizard, stateModel);
 		const databaseBackupPage = new DatabaseBackupPage(wizard, stateModel);
 		const integrationRuntimePage = new IntergrationRuntimePage(wizard, stateModel);
@@ -45,6 +47,7 @@ export class WizardController {
 
 		const pages: MigrationWizardPage[] = [
 			azureAccountsPage,
+			databaseSelectorPage,
 			skuRecommendationPage,
 			migrationModePage,
 			databaseBackupPage,
