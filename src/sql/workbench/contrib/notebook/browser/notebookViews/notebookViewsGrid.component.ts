@@ -76,6 +76,7 @@ export class NotebookViewsGridComponent extends AngularDisposable implements OnI
 	}
 
 	ngAfterContentChecked() {
+		//If activeView has changed or not present, we will destroy the grid in order to rebuild it later.
 		if (!this.activeView || this.activeView.guid !== this.activeView.guid) {
 			if (this._grid) {
 				this.destroyGrid();
@@ -85,6 +86,7 @@ export class NotebookViewsGridComponent extends AngularDisposable implements OnI
 	}
 
 	ngAfterViewChecked() {
+		// If activeView has changed, rebuild the grid
 		if (!this.activeView || this.activeView.guid !== this.activeView.guid) {
 
 			if (!this._grid) {
