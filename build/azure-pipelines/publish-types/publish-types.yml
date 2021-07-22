@@ -40,7 +40,7 @@ steps:
   # {{SQL CARBON EDIT}} Modify to fit our own scenario - specifically currently we need to use a fork of the repo since we don't
   # have an account with push access to DT
   - bash: |
-      git config --global user.email "ads@microsoft.com"
+      git config --global user.email "azuredatastudio@microsoft.com"
       git config --global user.name "Azure Data Studio"
 
       git clone https://$(GITHUB_TOKEN)@$(REPO) --depth=1
