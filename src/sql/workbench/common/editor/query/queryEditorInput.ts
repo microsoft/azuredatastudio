@@ -12,12 +12,12 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 
 import { IConnectionManagementService, IConnectableInput, INewConnectionParams, RunQueryOnConnectionMode } from 'sql/platform/connection/common/connectionManagement';
 import { QueryResultsInput } from 'sql/workbench/common/editor/query/queryResultsInput';
-import { QueryTextEditorInput } from 'sql/workbench/common/editor/query/queryTextEditorInput';
 import { IQueryModelService } from 'sql/workbench/services/query/common/queryModel';
 
 import { ExecutionPlanOptions } from 'azdata';
 import { startsWith } from 'vs/base/common/strings';
 import { IRange } from 'vs/editor/common/core/range';
+import { AbstractTextResourceEditorInput } from 'vs/workbench/common/editor/textResourceEditorInput';
 import { IQueryEditorConfiguration } from 'sql/platform/query/common/query';
 
 const MAX_SIZE = 13;
@@ -121,7 +121,7 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 
 	constructor(
 		private _description: string | undefined,
-		protected _text: QueryTextEditorInput,
+		protected _text: AbstractTextResourceEditorInput,
 		protected _results: QueryResultsInput,
 		@IConnectionManagementService private readonly connectionManagementService: IConnectionManagementService,
 		@IQueryModelService private readonly queryModelService: IQueryModelService,
@@ -174,7 +174,7 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 
 	// Getters for private properties
 	public get uri(): string { return this.resource!.toString(true); }
-	public get text(): QueryTextEditorInput { return this._text; }
+	public get text(): AbstractTextResourceEditorInput { return this._text; }
 	public get results(): QueryResultsInput { return this._results; }
 	// Description is shown beside the tab name in the combobox of open editors
 	public override getDescription(): string | undefined { return this._description; }
@@ -223,11 +223,11 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 	}
 
 	override save(group: GroupIdentifier, options?: ISaveOptions): Promise<IEditorInput | undefined> {
-		return this.text.save(group, options, this.state.resultsVisible);
+		return this.text.save(group, options);
 	}
 
 	override saveAs(group: GroupIdentifier, options?: ISaveOptions): Promise<IEditorInput | undefined> {
-		return this.text.saveAs(group, options, this.state.resultsVisible);
+		return this.text.saveAs(group, options);
 	}
 
 	// Called to get the tooltip of the tab

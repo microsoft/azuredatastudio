@@ -4,13 +4,15 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { QueryEditorInput } from 'sql/workbench/common/editor/query/queryEditorInput';
-import { UntitledQueryTextEditorInput } from 'sql/workbench/common/editor/query/queryTextEditorInput';
+import { FileQueryEditorInput } from 'sql/workbench/common/editor/query/fileQueryEditorInput';
+import { GroupIdentifier, ISaveOptions, IEditorInput } from 'vs/workbench/common/editor';
 import { QueryResultsInput } from 'sql/workbench/common/editor/query/queryResultsInput';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { IQueryModelService } from 'sql/workbench/services/query/common/queryModel';
 
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IResolvedTextEditorModel } from 'vs/editor/common/services/resolverService';
+import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
 import { IUntitledTextEditorModel } from 'vs/workbench/services/untitled/common/untitledTextEditorModel';
 import { EncodingMode, IEncodingSupport } from 'vs/workbench/services/textfile/common/textfiles';
 
@@ -20,7 +22,7 @@ export class UntitledQueryEditorInput extends QueryEditorInput implements IEncod
 
 	constructor(
 		description: string | undefined,
-		text: UntitledQueryTextEditorInput,
+		text: UntitledTextEditorInput,
 		results: QueryResultsInput,
 		@IConnectionManagementService connectionManagementService: IConnectionManagementService,
 		@IQueryModelService queryModelService: IQueryModelService,
@@ -33,12 +35,25 @@ export class UntitledQueryEditorInput extends QueryEditorInput implements IEncod
 		return this.text.resolve();
 	}
 
-	public override get text(): UntitledQueryTextEditorInput {
-		return this._text as UntitledQueryTextEditorInput;
+	public override get text(): UntitledTextEditorInput {
+		return this._text as UntitledTextEditorInput;
 	}
 
 	public get hasAssociatedFilePath(): boolean {
 		return this.text.model.hasAssociatedFilePath;
+	}
+
+	override async save(group: GroupIdentifier, options?: ISaveOptions): Promise<IEditorInput | undefined> {
+		let preProcessed = await this.text.save(group, options);
+		preProcessed = (preProcessed as FileQueryEditorInput);
+		preProcessed['resultsVisible'] = this.state.resultsVisible;
+		return preProcessed;
+	}
+
+	override async saveAs(group: GroupIdentifier, options?: ISaveOptions): Promise<IEditorInput | undefined> {
+		let preProcessed: FileQueryEditorInput = await this.text.saveAs(group, options) as FileQueryEditorInput;
+		preProcessed.state.resultsVisible = this.state.resultsVisible;
+		return preProcessed;
 	}
 
 	public setMode(mode: string): void {
