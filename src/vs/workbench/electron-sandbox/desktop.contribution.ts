@@ -24,8 +24,8 @@ import { IJSONContributionRegistry, Extensions as JSONExtensions } from 'vs/plat
 import { IJSONSchema } from 'vs/base/common/jsonSchema';
 
 // eslint-disable-next-line code-import-patterns
-import { SELECT_INSTALL_VSIX_EXTENSION_COMMAND_ID } from 'vs/workbench/contrib/extensions/common/extensions';
-import * as locConstants from 'sql/base/common/locConstants'; // {{SQL CARBON EDIT}}
+//import { SELECT_INSTALL_VSIX_EXTENSION_COMMAND_ID } from 'vs/workbench/contrib/extensions/common/extensions';
+//import * as locConstants from 'sql/base/common/locConstants'; // {{SQL CARBON EDIT}}
 
 // Actions
 (function registerActions(): void {
@@ -110,6 +110,7 @@ import * as locConstants from 'sql/base/common/locConstants'; // {{SQL CARBON ED
 // Menu
 (function registerMenu(): void {
 
+	/* TODO - DISABLE THIS FOR SAW
 	MenuRegistry.appendMenuItem(MenuId.MenubarFileMenu, { // {{SQL CARBON EDIT}} - Add install VSIX menu item
 		group: '5.1_installExtension',
 		command: {
@@ -117,7 +118,7 @@ import * as locConstants from 'sql/base/common/locConstants'; // {{SQL CARBON ED
 			title: locConstants.desktopContributionMiinstallVsix
 		}
 	});
-
+	*/
 
 	MenuRegistry.appendMenuItem(MenuId.MenubarFileMenu, {
 		group: '6_close',
