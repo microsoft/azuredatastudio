@@ -540,7 +540,6 @@ Includes non-masked style declarations. */
 .masked-pseudo-after:after {
 	height: 23px;
 	right: 0;
-	top: 2px;
 	width: 30px;
 }
 
