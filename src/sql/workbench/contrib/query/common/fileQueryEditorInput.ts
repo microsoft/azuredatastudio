@@ -4,11 +4,11 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { QueryEditorInput } from 'sql/workbench/common/editor/query/queryEditorInput';
+import { FileQueryTextEditorInput } from 'sql/workbench/common/editor/query/queryTextEditorInput';
 import { QueryResultsInput } from 'sql/workbench/common/editor/query/queryResultsInput';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { IQueryModelService } from 'sql/workbench/services/query/common/queryModel';
 
-import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IMoveResult, GroupIdentifier } from 'vs/workbench/common/editor';
 import { BinaryEditorModel } from 'vs/workbench/common/editor/binaryEditorModel';
@@ -21,7 +21,7 @@ export class FileQueryEditorInput extends QueryEditorInput {
 
 	constructor(
 		description: string,
-		text: FileEditorInput,
+		text: FileQueryTextEditorInput,
 		results: QueryResultsInput,
 		@IConnectionManagementService connectionManagementService: IConnectionManagementService,
 		@IQueryModelService queryModelService: IQueryModelService,
@@ -34,8 +34,8 @@ export class FileQueryEditorInput extends QueryEditorInput {
 		return this.text.resolve();
 	}
 
-	public override get text(): FileEditorInput {
-		return this._text as FileEditorInput;
+	public override get text(): FileQueryTextEditorInput {
+		return this._text as FileQueryTextEditorInput;
 	}
 
 	override get typeId(): string {

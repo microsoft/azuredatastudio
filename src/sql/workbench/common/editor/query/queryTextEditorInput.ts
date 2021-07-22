@@ -3,25 +3,28 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { localize } from 'vs/nls';
+
 import { URI } from 'vs/base/common/uri';
-import { IFileEditorInput, Verbosity, GroupIdentifier, IMoveResult, isTextEditorPane } from 'vs/workbench/common/editor';
-import { AbstractTextResourceEditorInput } from 'vs/workbench/common/editor/textResourceEditorInput';
+import { Schemas } from 'vs/base/common/network';
+import { GroupIdentifier, IEditorInput, IEditorInputWithPreferredResource, Verbosity, IFileEditorInput, IMoveResult, isTextEditorPane } from 'vs/workbench/common/editor';
+import { IUntitledTextEditorModel } from 'vs/workbench/services/untitled/common/untitledTextEditorModel';
+import { EncodingMode, IEncodingSupport, IModeSupport, ITextFileService, ITextFileSaveOptions, TextFileEditorModelState, TextFileResolveReason, TextFileOperationError, TextFileOperationResult, ITextFileEditorModel, } from 'vs/workbench/services/textfile/common/textfiles';
+import { ILabelService } from 'vs/platform/label/common/label';
+import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
+import { IFileService, FileOperationError, FileOperationResult } from 'vs/platform/files/common/files';
+import { IFilesConfigurationService } from 'vs/workbench/services/filesConfiguration/common/filesConfigurationService';
+import { isEqual } from 'vs/base/common/resources';
 import { BinaryEditorModel } from 'vs/workbench/common/editor/binaryEditorModel';
-import { FileOperationError, FileOperationResult, IFileService } from 'vs/platform/files/common/files';
-import { ITextFileService, TextFileEditorModelState, TextFileResolveReason, TextFileOperationError, TextFileOperationResult, ITextFileEditorModel, EncodingMode } from 'vs/workbench/services/textfile/common/textfiles';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IReference, dispose, DisposableStore } from 'vs/base/common/lifecycle';
 import { ITextModelService } from 'vs/editor/common/services/resolverService';
-import { FILE_EDITOR_INPUT_ID, TEXT_FILE_EDITOR_ID, BINARY_FILE_EDITOR_ID } from 'vs/workbench/contrib/files/common/files';
-import { ILabelService } from 'vs/platform/label/common/label';
-import { IFilesConfigurationService } from 'vs/workbench/services/filesConfiguration/common/filesConfigurationService';
-import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
-import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
-import { isEqual } from 'vs/base/common/resources';
-import { Event } from 'vs/base/common/event';
+//import { FILE_EDITOR_INPUT_ID, TEXT_FILE_EDITOR_ID, BINARY_FILE_EDITOR_ID } from 'vs/workbench/contrib/files/common/files';
+//import { Event } from 'vs/base/common/event';
 import { IEditorViewState } from 'vs/editor/common/editorCommon';
-import { Schemas } from 'vs/base/common/network';
+//import { decorateFileEditorLabel } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
+
+import { AbstractTextResourceEditorInput } from 'vs/workbench/common/editor/textResourceEditorInput';
 
 const enum ForceOpenAs {
 	None,
@@ -29,13 +32,186 @@ const enum ForceOpenAs {
 	Binary
 }
 
+export abstract class QueryTextEditorInput extends AbstractTextResourceEditorInput implements IEditorInputWithPreferredResource {
+	override save(group: GroupIdentifier, options?: ITextFileSaveOptions, resultsVisible?: boolean): Promise<IEditorInput | undefined> {
+
+		// If this is neither an `untitled` resource, nor a resource
+		// we can handle with the file service, we can only "Save As..."
+		if (this.resource.scheme !== Schemas.untitled && !this.fileService.canHandleResource(this.resource)) {
+			return this.saveAs(group, options, resultsVisible);
+		}
+
+		// Normal save
+		return this.doSaveQuery(options, false, resultsVisible);
+	}
+
+	override saveAs(group: GroupIdentifier, options?: ITextFileSaveOptions, resultsVisible?: boolean): Promise<IEditorInput | undefined> {
+		return this.doSaveQuery(options, true, resultsVisible);
+	}
+
+	private async doSaveQuery(options: ITextFileSaveOptions | undefined, saveAs: boolean, resultsVisible?: boolean): Promise<IEditorInput | undefined> {
+
+		// Save / Save As
+		let target: URI | undefined;
+		if (saveAs) {
+			target = await this.textFileService.saveAs(this.resource, undefined, { ...options, suggestedTarget: this.preferredResource });
+		} else {
+			target = await this.textFileService.save(this.resource, options);
+		}
+
+		if (!target) {
+			return undefined; // save cancelled
+		}
+
+		// If this save operation results in a new editor, either
+		// because it was saved to disk (e.g. from untitled) or
+		// through an explicit "Save As", make sure to replace it.
+		if (
+			target.scheme !== this.resource.scheme ||
+			(saveAs && !isEqual(target, this.preferredResource))
+		) {
+			let result = this.editorService.createEditorInput({ resource: target });
+			result['resultsVisible'] = resultsVisible;
+			return result;
+		}
+
+		return this;
+	}
+	// {{SQL CARBON EDIT}} - End
+}
+
 /**
- * A file editor input is the input type for the file editor of file system resources.
+ * An editor input to be used for untitled query text buffers. Based on UntitledTextEditorInput but extending QueryTextEditorInput.
  */
-export class FileEditorInput extends AbstractTextResourceEditorInput implements IFileEditorInput {
+export class UntitledQueryTextEditorInput extends QueryTextEditorInput implements IEncodingSupport, IModeSupport {
+
+	static readonly ID: string = 'workbench.editors.untitledEditorInput';
 
 	override get typeId(): string {
-		return FILE_EDITOR_INPUT_ID;
+		return UntitledQueryTextEditorInput.ID;
+	}
+
+	private modelResolve: Promise<void> | undefined = undefined;
+
+	constructor(
+		public readonly model: IUntitledTextEditorModel,
+		@ITextFileService textFileService: ITextFileService,
+		@ILabelService labelService: ILabelService,
+		@IEditorService editorService: IEditorService,
+		@IEditorGroupsService editorGroupService: IEditorGroupsService,
+		@IFileService fileService: IFileService,
+		@IFilesConfigurationService filesConfigurationService: IFilesConfigurationService
+	) {
+		super(model.resource, undefined, editorService, editorGroupService, textFileService, labelService, fileService, filesConfigurationService);
+
+		this.registerModelListeners(model);
+	}
+
+	private registerModelListeners(model: IUntitledTextEditorModel): void {
+
+		// re-emit some events from the model
+		this._register(model.onDidChangeDirty(() => this._onDidChangeDirty.fire()));
+		this._register(model.onDidChangeName(() => this._onDidChangeLabel.fire()));
+
+		// a reverted untitled text editor model renders this input disposed
+		this._register(model.onDidRevert(() => this.dispose()));
+	}
+
+	override getName(): string {
+		return this.model.name;
+	}
+
+	override getDescription(verbosity: Verbosity = Verbosity.MEDIUM): string | undefined {
+
+		// Without associated path: only use if name and description differ
+		if (!this.model.hasAssociatedFilePath) {
+			const descriptionCandidate = this.resource.path;
+			if (descriptionCandidate !== this.getName()) {
+				return descriptionCandidate;
+			}
+
+			return undefined;
+		}
+
+		// With associated path: delegate to parent
+		return super.getDescription(verbosity);
+	}
+
+	override getTitle(verbosity: Verbosity): string {
+
+		// Without associated path: check if name and description differ to decide
+		// if description should appear besides the name to distinguish better
+		if (!this.model.hasAssociatedFilePath) {
+			const name = this.getName();
+			const description = this.getDescription();
+			if (description && description !== name) {
+				return `${name} • ${description}`;
+			}
+
+			return name;
+		}
+
+		// With associated path: delegate to parent
+		return super.getTitle(verbosity);
+	}
+
+	override isDirty(): boolean {
+		return this.model.isDirty();
+	}
+
+	getEncoding(): string | undefined {
+		return this.model.getEncoding();
+	}
+
+	setEncoding(encoding: string, mode: EncodingMode /* ignored, we only have Encode */): Promise<void> {
+		return this.model.setEncoding(encoding);
+	}
+
+	setMode(mode: string): void {
+		this.model.setMode(mode);
+	}
+
+	getMode(): string | undefined {
+		return this.model.getMode();
+	}
+
+	override async resolve(): Promise<IUntitledTextEditorModel> {
+		if (!this.modelResolve) {
+			this.modelResolve = this.model.resolve();
+		}
+
+		await this.modelResolve;
+
+		return this.model;
+	}
+
+	override matches(otherInput: unknown): boolean {
+		if (otherInput === this) {
+			return true;
+		}
+
+		if (otherInput instanceof UntitledQueryTextEditorInput) {
+			return isEqual(otherInput.resource, this.resource);
+		}
+
+		return false;
+	}
+
+	override dispose(): void {
+		this.modelResolve = undefined;
+
+		super.dispose();
+	}
+}
+
+/**
+ * A file query text editor input is the input type for the query file editor of file system resources. Based on FileEditorInput but extending QueryTextEditorInput.
+ */
+export class FileQueryTextEditorInput extends QueryTextEditorInput implements IFileEditorInput {
+
+	override get typeId(): string {
+		//return FILE_EDITOR_INPUT_ID;
+		return '';
 	}
 
 	private preferredName: string | undefined;
@@ -125,10 +301,10 @@ export class FileEditorInput extends AbstractTextResourceEditorInput implements 
 		this.modelListeners.add(model.onDidSaveError(() => this._onDidChangeDirty.fire()));
 
 		// remove model association once it gets disposed
-		this.modelListeners.add(Event.once(model.onWillDispose)(() => {
-			this.modelListeners.clear();
-			this.model = undefined;
-		}));
+		// this.modelListeners.add(Event.once(model.onWillDispose)(() => {
+		// 	this.modelListeners.clear();
+		// 	this.model = undefined;
+		// }));
 	}
 
 	override getName(): string {
@@ -186,9 +362,10 @@ export class FileEditorInput extends AbstractTextResourceEditorInput implements 
 	}
 
 	private decorateLabel(label: string): string {
-		const orphaned = this.model?.hasState(TextFileEditorModelState.ORPHAN);
-		const readonly = this.isReadonly();
-		return decorateFileEditorLabel(label, { orphaned: !!orphaned, readonly });
+		// const orphaned = this.model?.hasState(TextFileEditorModelState.ORPHAN);
+		// const readonly = this.isReadonly();
+		//return decorateFileEditorLabel(label, { orphaned: !!orphaned, readonly });
+		return '';
 	}
 
 	getEncoding(): string | undefined {
@@ -267,7 +444,8 @@ export class FileEditorInput extends AbstractTextResourceEditorInput implements 
 	}
 
 	override getPreferredEditorId(candidates: string[]): string {
-		return this.forceOpenAs === ForceOpenAs.Binary ? BINARY_FILE_EDITOR_ID : TEXT_FILE_EDITOR_ID;
+		//return this.forceOpenAs === ForceOpenAs.Binary ? BINARY_FILE_EDITOR_ID : TEXT_FILE_EDITOR_ID;
+		return '';
 	}
 
 	override resolve(): Promise<ITextFileEditorModel | BinaryEditorModel> {
@@ -367,7 +545,7 @@ export class FileEditorInput extends AbstractTextResourceEditorInput implements 
 			return true;
 		}
 
-		if (otherInput instanceof FileEditorInput) {
+		if (otherInput instanceof FileQueryTextEditorInput) {
 			return isEqual(otherInput.resource, this.resource);
 		}
 
@@ -389,20 +567,4 @@ export class FileEditorInput extends AbstractTextResourceEditorInput implements 
 		dispose(this.cachedTextFileModelReference);
 		this.cachedTextFileModelReference = undefined;
 	}
-}
-
-export function decorateFileEditorLabel(label: string, state: { orphaned: boolean, readonly: boolean }): string {
-	if (state.orphaned && state.readonly) {
-		return localize('orphanedReadonlyFile', "{0} (deleted, read-only)", label);
-	}
-
-	if (state.orphaned) {
-		return localize('orphanedFile', "{0} (deleted)", label);
-	}
-
-	if (state.readonly) {
-		return localize('readonlyFile', "{0} (read-only)", label);
-	}
-
-	return label;
 }

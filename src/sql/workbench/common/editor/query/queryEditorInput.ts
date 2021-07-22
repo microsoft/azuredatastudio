@@ -7,20 +7,17 @@ import { localize } from 'vs/nls';
 import { IDisposable, Disposable } from 'vs/base/common/lifecycle';
 import { Emitter } from 'vs/base/common/event';
 import { URI } from 'vs/base/common/uri';
-import { Schemas } from 'vs/base/common/network';
-import { isEqual } from 'vs/base/common/resources';
-import { ITextFileSaveOptions } from 'vs/workbench/services/textfile/common/textfiles';
-import { EditorInput, GroupIdentifier, IRevertOptions, ISaveOptions, IEditorInput, IEditorInputWithPreferredResource } from 'vs/workbench/common/editor';
+import { EditorInput, GroupIdentifier, IRevertOptions, ISaveOptions, IEditorInput } from 'vs/workbench/common/editor';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
 import { IConnectionManagementService, IConnectableInput, INewConnectionParams, RunQueryOnConnectionMode } from 'sql/platform/connection/common/connectionManagement';
 import { QueryResultsInput } from 'sql/workbench/common/editor/query/queryResultsInput';
+import { QueryTextEditorInput } from 'sql/workbench/common/editor/query/queryTextEditorInput';
 import { IQueryModelService } from 'sql/workbench/services/query/common/queryModel';
 
 import { ExecutionPlanOptions } from 'azdata';
 import { startsWith } from 'vs/base/common/strings';
 import { IRange } from 'vs/editor/common/core/range';
-import { AbstractTextResourceEditorInput } from 'vs/workbench/common/editor/textResourceEditorInput';
 import { IQueryEditorConfiguration } from 'sql/platform/query/common/query';
 
 const MAX_SIZE = 13;
@@ -111,53 +108,6 @@ export class QueryEditorState extends Disposable {
 	}
 }
 
-export abstract class QueryEditorTextInput extends AbstractTextResourceEditorInput implements IEditorInputWithPreferredResource {
-	override save(group: GroupIdentifier, options?: ITextFileSaveOptions, resultsVisible?: boolean): Promise<IEditorInput | undefined> {
-
-		// If this is neither an `untitled` resource, nor a resource
-		// we can handle with the file service, we can only "Save As..."
-		if (this.resource.scheme !== Schemas.untitled && !this.fileService.canHandleResource(this.resource)) {
-			return this.saveAs(group, options, resultsVisible);
-		}
-
-		// Normal save
-		return this.doSaveQuery(options, false, resultsVisible);
-	}
-
-	override saveAs(group: GroupIdentifier, options?: ITextFileSaveOptions, resultsVisible?: boolean): Promise<IEditorInput | undefined> {
-		return this.doSaveQuery(options, true, resultsVisible);
-	}
-
-	private async doSaveQuery(options: ITextFileSaveOptions | undefined, saveAs: boolean, resultsVisible?: boolean): Promise<IEditorInput | undefined> {
-
-		// Save / Save As
-		let target: URI | undefined;
-		if (saveAs) {
-			target = await this.textFileService.saveAs(this.resource, undefined, { ...options, suggestedTarget: this.preferredResource });
-		} else {
-			target = await this.textFileService.save(this.resource, options);
-		}
-
-		if (!target) {
-			return undefined; // save cancelled
-		}
-
-		// If this save operation results in a new editor, either
-		// because it was saved to disk (e.g. from untitled) or
-		// through an explicit "Save As", make sure to replace it.
-		if (
-			target.scheme !== this.resource.scheme ||
-			(saveAs && !isEqual(target, this.preferredResource))
-		) {
-			let result = this.editorService.createEditorInput({ resource: target });
-			result['resultsVisible'] = resultsVisible;
-			return result;
-		}
-
-		return this;
-	}
-	// {{SQL CARBON EDIT}} - End
-}
 /**
  * Input for the QueryEditor. This input is simply a wrapper around a QueryResultsInput for the QueryResultsEditor
  * and a UntitledEditorInput for the SQL File Editor.
@@ -171,7 +121,7 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 
 	constructor(
 		private _description: string | undefined,
-		protected _text: QueryEditorTextInput,
+		protected _text: QueryTextEditorInput,
 		protected _results: QueryResultsInput,
 		@IConnectionManagementService private readonly connectionManagementService: IConnectionManagementService,
 		@IQueryModelService private readonly queryModelService: IQueryModelService,
@@ -224,7 +174,7 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 
 	// Getters for private properties
 	public get uri(): string { return this.resource!.toString(true); }
-	public get text(): QueryEditorTextInput { return this._text; }
+	public get text(): QueryTextEditorInput { return this._text; }
 	public get results(): QueryResultsInput { return this._results; }
 	// Description is shown beside the tab name in the combobox of open editors
 	public override getDescription(): string | undefined { return this._description; }

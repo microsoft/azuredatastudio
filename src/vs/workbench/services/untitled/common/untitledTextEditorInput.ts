@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Verbosity } from 'vs/workbench/common/editor';
-import { QueryEditorTextInput } from 'sql/workbench/common/editor/query/queryEditorInput';
+import { AbstractTextResourceEditorInput } from 'vs/workbench/common/editor/textResourceEditorInput';
 import { IUntitledTextEditorModel } from 'vs/workbench/services/untitled/common/untitledTextEditorModel';
 import { EncodingMode, IEncodingSupport, IModeSupport, ITextFileService } from 'vs/workbench/services/textfile/common/textfiles';
 import { ILabelService } from 'vs/platform/label/common/label';
@@ -17,7 +17,7 @@ import { isEqual } from 'vs/base/common/resources';
 /**
  * An editor input to be used for untitled text buffers.
  */
-export class UntitledTextEditorInput extends QueryEditorTextInput implements IEncodingSupport, IModeSupport {
+export class UntitledTextEditorInput extends AbstractTextResourceEditorInput implements IEncodingSupport, IModeSupport {
 
 	static readonly ID: string = 'workbench.editors.untitledEditorInput';
 

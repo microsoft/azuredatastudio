@@ -4,13 +4,13 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { QueryEditorInput } from 'sql/workbench/common/editor/query/queryEditorInput';
+import { UntitledQueryTextEditorInput } from 'sql/workbench/common/editor/query/queryTextEditorInput';
 import { QueryResultsInput } from 'sql/workbench/common/editor/query/queryResultsInput';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { IQueryModelService } from 'sql/workbench/services/query/common/queryModel';
 
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IResolvedTextEditorModel } from 'vs/editor/common/services/resolverService';
-import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
 import { IUntitledTextEditorModel } from 'vs/workbench/services/untitled/common/untitledTextEditorModel';
 import { EncodingMode, IEncodingSupport } from 'vs/workbench/services/textfile/common/textfiles';
 
@@ -20,7 +20,7 @@ export class UntitledQueryEditorInput extends QueryEditorInput implements IEncod
 
 	constructor(
 		description: string | undefined,
-		text: UntitledTextEditorInput,
+		text: UntitledQueryTextEditorInput,
 		results: QueryResultsInput,
 		@IConnectionManagementService connectionManagementService: IConnectionManagementService,
 		@IQueryModelService queryModelService: IQueryModelService,
@@ -33,8 +33,8 @@ export class UntitledQueryEditorInput extends QueryEditorInput implements IEncod
 		return this.text.resolve();
 	}
 
-	public override get text(): UntitledTextEditorInput {
-		return this._text as UntitledTextEditorInput;
+	public override get text(): UntitledQueryTextEditorInput {
+		return this._text as UntitledQueryTextEditorInput;
 	}
 
 	public get hasAssociatedFilePath(): boolean {
