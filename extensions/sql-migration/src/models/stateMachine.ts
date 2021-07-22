@@ -237,8 +237,8 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				);
 			});
 
-			const startTime = new Date(this._assessmentApiResponse.startedOn).getTime();
-			const endTime = new Date(this._assessmentApiResponse.endedOn).getTime();
+			const startTime = new Date(this._assessmentApiResponse.startTime).getTime();
+			const endTime = new Date(this._assessmentApiResponse.endedTime).getTime();
 
 			sendSqlMigrationActionEvent(
 				TelemetryViews.MigrationWizardTargetSelectionPage,
@@ -247,8 +247,8 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 					'sessionId': this._sessionId,
 					'tenantId': this._azureAccount.properties.tenants[0].id,
 					'hashedServerName': hashString(this._assessmentApiResponse.assessmentResult.name),
-					'startTime': this._assessmentApiResponse.startedOn,
-					'endTime': this._assessmentApiResponse.endedOn,
+					'startTime': this._assessmentApiResponse.startTime,
+					'endTime': this._assessmentApiResponse.endedTime,
 					'serverVersion': this._assessmentApiResponse.assessmentResult.serverVersion,
 					'serverEdition': this._assessmentApiResponse.assessmentResult.serverEdition,
 					'platform': this._assessmentApiResponse.assessmentResult.serverHostPlatform,

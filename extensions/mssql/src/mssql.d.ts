@@ -591,8 +591,8 @@ export interface ServerAssessmentProperties {
 }
 
 export interface AssessmentResult {
-	startedOn: string;
-	endedOn: string;
+	startTime: string;
+	endedTime: string;
 	assessmentResult: ServerAssessmentProperties;
 	rawAssessmentResult: any;
 	errors: ErrorModel[];
