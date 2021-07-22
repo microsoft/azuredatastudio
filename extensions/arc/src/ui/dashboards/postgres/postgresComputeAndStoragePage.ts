@@ -550,11 +550,9 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 			return false;
 		} else if ((!component.valid)) {
 			this.discardButton.enabled = true;
-			this.discardButton.focus();
 			return false;
 		} else {
 			this.saveButton.enabled = true;
-			this.saveButton.focus();
 			this.discardButton.enabled = true;
 			return true;
 		}
