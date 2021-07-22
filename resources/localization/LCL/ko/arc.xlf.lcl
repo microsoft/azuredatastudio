@@ -1120,6 +1120,9 @@
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.loadExtensions" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Load extensions]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[확장 로드]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2116,6 +2119,9 @@
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.unloadExtensions" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Unload extensions]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[확장 언로드]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
