@@ -14,6 +14,8 @@ import { IUntitledTextEditorModel } from 'vs/workbench/services/untitled/common/
 import { EncodingMode, IEncodingSupport } from 'vs/workbench/services/textfile/common/textfiles';
 import { GroupIdentifier, ISaveOptions, IEditorInput } from 'vs/workbench/common/editor';
 import { FileQueryEditorInput } from 'sql/workbench/contrib/query/common/fileQueryEditorInput';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
 
 export class UntitledQueryEditorInput extends QueryEditorInput implements IEncodingSupport {
 
@@ -26,6 +28,7 @@ export class UntitledQueryEditorInput extends QueryEditorInput implements IEncod
 		@IConnectionManagementService connectionManagementService: IConnectionManagementService,
 		@IQueryModelService queryModelService: IQueryModelService,
 		@IConfigurationService configurationService: IConfigurationService,
+		@IInstantiationService private readonly instantiationService: IInstantiationService,
 	) {
 		super(description, text, results, connectionManagementService, queryModelService, configurationService);
 	}
@@ -44,15 +47,16 @@ export class UntitledQueryEditorInput extends QueryEditorInput implements IEncod
 
 	override async save(group: GroupIdentifier, options?: ISaveOptions): Promise<IEditorInput | undefined> {
 		let preProcessed = await this.text.save(group, options);
-		preProcessed = (preProcessed as FileQueryEditorInput);
-		preProcessed['resultsVisible'] = this.state.resultsVisible;
-		return preProcessed;
+		let newFileQueryInput = this.instantiationService.createInstance(FileQueryEditorInput, '', (preProcessed as FileEditorInput), this._results);
+		newFileQueryInput.state.resultsVisible = this.state.resultsVisible;
+		return newFileQueryInput;
 	}
 
 	override async saveAs(group: GroupIdentifier, options?: ISaveOptions): Promise<IEditorInput | undefined> {
-		let preProcessed: FileQueryEditorInput = await this.text.saveAs(group, options) as FileQueryEditorInput;
-		preProcessed.state.resultsVisible = this.state.resultsVisible;
-		return preProcessed;
+		let preProcessed = await this.text.saveAs(group, options);
+		let newFileQueryInput = this.instantiationService.createInstance(FileQueryEditorInput, '', (preProcessed as FileEditorInput), this._results);
+		newFileQueryInput.state.resultsVisible = this.state.resultsVisible;
+		return newFileQueryInput;
 	}
 
 	public setMode(mode: string): void {
