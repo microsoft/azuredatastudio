@@ -244,7 +244,7 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 								cancellable: false
 							},
 							async (_progress, _token) => {
-								return await this._azApi.az.sql.miarc.delete(this._miaaModel.info.name, '', this._controllerModel.azAdditionalEnvVars);
+								return await this._azApi.az.sql.miarc.delete(this._miaaModel.info.name, this._controllerModel.info.namespace, this._controllerModel.azAdditionalEnvVars);
 							}
 						);
 						await this._controllerModel.refreshTreeNode();

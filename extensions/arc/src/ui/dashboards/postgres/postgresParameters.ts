@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
-import * as az from 'azdata';
+import * as azdata from 'azdata';
 import * as azExt from 'az-ext';
 import * as loc from '../../../localizedConstants';
 import { UserCancelledError } from '../../../common/api';
@@ -16,22 +16,22 @@ import { debounce, instanceOfCheckBox } from '../../../common/utils';
 export type ParametersModel = {
 	parameterName: string,
 	originalValue: string,
-	valueComponent: az.TextComponent | az.DropDownComponent | az.CheckBoxComponent,
-	information?: az.ButtonComponent,
+	valueComponent: azdata.TextComponent | azdata.DropDownComponent | azdata.CheckBoxComponent,
+	information?: azdata.ButtonComponent,
 	description: string,
-	resetButton: az.ButtonComponent
+	resetButton: azdata.ButtonComponent
 };
 
 export abstract class PostgresParametersPage extends DashboardPage {
-	private searchBox!: az.InputBoxComponent;
-	protected _parametersTable!: az.DeclarativeTableComponent;
-	private parameterContainer!: az.DivContainer;
-	private parametersTableLoading?: az.LoadingComponent;
+	private searchBox!: azdata.InputBoxComponent;
+	protected _parametersTable!: azdata.DeclarativeTableComponent;
+	private parameterContainer!: azdata.DivContainer;
+	private parametersTableLoading?: azdata.LoadingComponent;
 
-	private discardButton!: az.ButtonComponent;
-	private saveButton!: az.ButtonComponent;
-	private resetAllButton!: az.ButtonComponent;
-	private connectToServerButton?: az.ButtonComponent;
+	private discardButton!: azdata.ButtonComponent;
+	private saveButton!: azdata.ButtonComponent;
+	private resetAllButton!: azdata.ButtonComponent;
+	private connectToServerButton?: azdata.ButtonComponent;
 
 	protected _parameters: ParametersModel[] = [];
 	private changedComponentValues: Set<string> = new Set();
@@ -39,7 +39,7 @@ export abstract class PostgresParametersPage extends DashboardPage {
 
 	protected readonly _azApi: azExt.IExtension;
 
-	constructor(modelView: az.ModelView, dashboard: az.window.ModelViewDashboard, protected _postgresModel: PostgresModel) {
+	constructor(modelView: azdata.ModelView, dashboard: azdata.window.ModelViewDashboard, protected _postgresModel: PostgresModel) {
 		super(modelView, dashboard);
 
 		this._azApi = vscode.extensions.getExtension(azExt.extension.name)?.exports;
@@ -55,7 +55,7 @@ export abstract class PostgresParametersPage extends DashboardPage {
 
 	protected abstract get engineSettings(): EngineSettingsModel[];
 
-	protected get container(): az.Component {
+	protected get container(): azdata.Component {
 		const root = this.modelView.modelBuilder.divContainer().component();
 		const content = this.modelView.modelBuilder.divContainer().component();
 		root.addItem(content, { CSSStyles: { 'margin': '20px' } });
@@ -82,7 +82,7 @@ export abstract class PostgresParametersPage extends DashboardPage {
 			columns: [
 				{
 					displayName: loc.parameterName,
-					valueType: az.DeclarativeDataType.string,
+					valueType: azdata.DeclarativeDataType.string,
 					isReadOnly: true,
 					width: '20%',
 					headerCssStyles: cssStyles.tableHeader,
@@ -90,7 +90,7 @@ export abstract class PostgresParametersPage extends DashboardPage {
 				},
 				{
 					displayName: loc.value,
-					valueType: az.DeclarativeDataType.component,
+					valueType: azdata.DeclarativeDataType.component,
 					isReadOnly: false,
 					width: '20%',
 					headerCssStyles: cssStyles.tableHeader,
@@ -98,7 +98,7 @@ export abstract class PostgresParametersPage extends DashboardPage {
 				},
 				{
 					displayName: loc.description,
-					valueType: az.DeclarativeDataType.string,
+					valueType: azdata.DeclarativeDataType.string,
 					isReadOnly: true,
 					width: '50%',
 					headerCssStyles: cssStyles.tableHeader,
@@ -108,7 +108,7 @@ export abstract class PostgresParametersPage extends DashboardPage {
 				},
 				{
 					displayName: loc.resetToDefault,
-					valueType: az.DeclarativeDataType.component,
+					valueType: azdata.DeclarativeDataType.component,
 					isReadOnly: false,
 					width: '10%',
 					headerCssStyles: cssStyles.tableHeader,
@@ -127,7 +127,7 @@ export abstract class PostgresParametersPage extends DashboardPage {
 		return root;
 	}
 
-	protected get toolbarContainer(): az.ToolbarContainer {
+	protected get toolbarContainer(): azdata.ToolbarContainer {
 		// Save Edits
 		this.saveButton = this.modelView.modelBuilder.button().withProps({
 			label: loc.saveText,
@@ -384,7 +384,7 @@ export abstract class PostgresParametersPage extends DashboardPage {
 		this._parametersTable.setFilter(filteredRowIndexes);
 	}
 
-	private handleOnTextChanged(component: az.InputBoxComponent, name: string, currentValue: string | undefined): boolean {
+	private handleOnTextChanged(component: azdata.InputBoxComponent, name: string, currentValue: string | undefined): boolean {
 		if (!component.valid) {
 			// If invalid value return false and enable discard button
 			this.discardButton.enabled = true;
@@ -441,7 +441,7 @@ export abstract class PostgresParametersPage extends DashboardPage {
 			})
 		);
 
-		let valueComponent: az.Component;
+		let valueComponent: azdata.Component;
 		if (engineSetting.type === 'enum') {
 			// If type is enum, component should be drop down menu
 			let values: string[] = [];
