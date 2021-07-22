@@ -39,10 +39,10 @@ steps:
 
   # {{SQL CARBON EDIT}} Reference our own stuff
   - bash: |
-      git config --global user.email "chgagnon@microsoft.com"
-      git config --global user.name "ADS"
+      git config --global user.email "ads@microsoft.com"
+      git config --global user.name "Azure Data Studio"
 
-      git clone https://$(GITHUB_TOKEN)@github.com/Charles-Gagnon/DefinitelyTyped --depth=1
+      git clone https://$(GITHUB_TOKEN)@$(REPO) --depth=1
       node build/azure-pipelines/publish-types/update-types.js
 
       TAG_VERSION=$(git describe --tags `git rev-list --tags --max-count=1`)
