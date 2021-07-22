@@ -59,11 +59,12 @@ export const ASSESSMENT_COMPLETED = (serverName: string): string => {
 	return localize('sql.migration.generic.congratulations', "We have completed the assessment of your SQL Server Instance '{0}'.", serverName);
 };
 export function ASSESSMENT_TILE(serverName: string): string {
-	return localize('sql.migration.assessment', "Assessment Dialog for '{0}'", serverName);
+	return localize('sql.migration.assessment', "Assessment results for '{0}'", serverName);
 }
 export function CAN_BE_MIGRATED(eligibleDbs: number, totalDbs: number): string {
 	return localize('sql.migration.can.be.migrated', "{0} out of {1} databases can be migrated", eligibleDbs, totalDbs);
 }
+export const ASSESSMENT_MIGRATION_WARNING = localize('sql.migration.assessment.migration.warning', "Databases that are not ready for migration to Azure SQL Managed Instance can be migrated to SQL Server on Azure Virtual Machines.");
 
 // Accounts page
 export const ACCOUNTS_SELECTION_PAGE_TITLE = localize('sql.migration.wizard.account.title', "Azure Account");
@@ -224,6 +225,7 @@ export const RESOURCE_GROUP_CREATED = localize('sql.migration.rg.created', "Reso
 export const NAME_OF_NEW_RESOURCE_GROUP = localize('sql.migration.name.of.new.rg', "Name of new Resource group");
 // common strings
 export const LEARN_MORE = localize('sql.migration.learn.more', "Learn more");
+export const LEARN_MORE_ABOUT_PRE_REQS = localize('sql.migration.learn.more.pre.reqs', "Learn more about things you need before starting a migration.");
 export const SUBSCRIPTION = localize('sql.migration.subscription', "Subscription");
 export const STORAGE_ACCOUNT = localize('sql.migration.storage.account', "Storage Account");
 export const RESOURCE_GROUP = localize('sql.migration.resourceGroups', "Resource group");
