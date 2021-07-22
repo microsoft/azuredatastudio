@@ -82,7 +82,9 @@ export class QueryEditorLanguageAssociation implements ILanguageAssociation {
 			return undefined;
 		}
 		// If the original query editor had the results visible, make sure to set results visible for the replacement editor.
-		//queryEditorInput.state.resultsVisible = true;
+		if ((activeEditor as any).resultsVisible) {
+			queryEditorInput.state.resultsVisible = true;
+		}
 		const profile = getCurrentGlobalConnection(this.objectExplorerService, this.connectionManagementService, this.editorService);
 		if (profile) {
 			const options: IConnectionCompletionOptions = {
