@@ -42,8 +42,9 @@ export const dropText = localize('arc.drop', "Drop");
 export const saveText = localize('arc.save', "Save");
 export const discardText = localize('arc.discard', "Discard");
 export const resetPassword = localize('arc.resetPassword', "Reset Password");
-export const addExtensions = localize('arc.addExtensions', "Add extensions");
-export const dropExtension = localize('arc.dropExtension', "Drop extension");
+export const loadExtensions = localize('arc.loadExtensions', "Load extensions");
+export const unloadExtensions = localize('arc.unloadExtensions', "Unload extensions");
+export const noExtensions = localize('arc.noExtensions', "No extensions listed in configuration.");
 export const openInAzurePortal = localize('arc.openInAzurePortal', "Open in Azure Portal");
 export const resourceGroup = localize('arc.resourceGroup', "Resource Group");
 export const region = localize('arc.region', "Region");
@@ -72,6 +73,7 @@ export const grafanaDashboard = localize('arc.grafanaDashboard', "Grafana Dashbo
 export const kibanaDashboardDescription = localize('arc.kibanaDashboardDescription', "Dashboard for viewing logs");
 export const grafanaDashboardDescription = localize('arc.grafanaDashboardDescription', "Dashboard for viewing metrics");
 export const serviceEndpoints = localize('arc.serviceEndpoints', "Service endpoints");
+export const serviceEndpointsTable = localize('arc.serviceEndpointsTable', "Service endpoints table");
 export const databases = localize('arc.databases', "Databases");
 export const endpoint = localize('arc.endpoint', "Endpoint");
 export const description = localize('arc.description', "Description");
@@ -206,6 +208,8 @@ export const noWorkerPods = localize('arc.noWorkerPods', "No worker pods in this
 export const podsReady = localize('arc.podsReady', "pods ready");
 export const podsPresent = localize('arc.podsPresent', "Pods Present");
 export const podsUsedDescription = localize('arc.podsUsedDescription', "Select a pod in the dropdown below for detailed health information.");
+export const podsUsedDescriptionAria = localize('arc.podsUsedDescriptionAria', "Select a pod in the dropdown below for detailed health information");
+export const podConditionsTable = localize('arc.podConditionsTable', "Pod conditions table");
 export const connectToPostgresDescription = localize('arc.connectToPostgresDescription', "A connection to the server is required to show and set database engine settings, which will require the PostgreSQL Extension to be installed.");
 export const postgresExtension = localize('arc.postgresExtension', "microsoft.azuredatastudio-postgresql");
 export const podInitialized = localize('arc.podInitialized', "Pod is initialized.");
@@ -223,7 +227,7 @@ export function extensionInstalled(name: string): string { return localize('arc.
 export function updatingInstance(name: string): string { return localize('arc.updatingInstance', "Updating instance '{0}'...", name); }
 export function instanceDeleted(name: string): string { return localize('arc.instanceDeleted', "Instance '{0}' deleted", name); }
 export function instanceUpdated(name: string): string { return localize('arc.instanceUpdated', "Instance '{0}' updated", name); }
-export function extensionDropped(name: string): string { return localize('arc.extensionDropped', "Extension '{0}' deleted", name); }
+export function extensionsDropped(name: string): string { return localize('arc.extensionsDropped', "Extensions '{0}' dropped", name); }
 export function extensionsAdded(name: string): string { return localize('arc.extensionsAdded', "Extensions '{0}' added", name); }
 export function copiedToClipboard(name: string): string { return localize('arc.copiedToClipboard', "{0} copied to clipboard", name); }
 export function clickTheTroubleshootButton(resourceType: string): string { return localize('arc.clickTheTroubleshootButton', "Click the troubleshoot button to open the Azure Arc {0} troubleshooting notebook.", resourceType); }

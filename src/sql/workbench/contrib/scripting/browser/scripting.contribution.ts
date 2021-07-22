@@ -273,6 +273,7 @@ MenuRegistry.appendMenuItem(MenuId.ExplorerWidgetContext, {
 	when:
 		ContextKeyExpr.and(
 			ItemContextKey.ConnectionProvider.notEqualsTo('kusto'),
+			ItemContextKey.ConnectionProvider.notEqualsTo('loganalytics'),
 			ContextKeyExpr.or(
 				ItemContextKey.ItemType.isEqualTo('view'),
 				ItemContextKey.ItemType.isEqualTo('table')
@@ -288,7 +289,10 @@ MenuRegistry.appendMenuItem(MenuId.ExplorerWidgetContext, {
 	},
 	when:
 		ContextKeyExpr.and(
-			ItemContextKey.ConnectionProvider.isEqualTo('kusto'),
+			ContextKeyExpr.or(
+				ItemContextKey.ConnectionProvider.isEqualTo('kusto'),
+				ItemContextKey.ConnectionProvider.isEqualTo('loganalytics')
+			),
 			ItemContextKey.ItemType.isEqualTo('table')
 		),
 	order: 2
@@ -310,6 +314,7 @@ MenuRegistry.appendMenuItem(MenuId.ExplorerWidgetContext, {
 			ItemContextKey.ItemType.isEqualTo('table'),
 			MssqlNodeContext.EngineEdition.notEqualsTo(DatabaseEngineEdition.SqlOnDemand.toString()),
 			ItemContextKey.ConnectionProvider.notEqualsTo('kusto'),
+			ItemContextKey.ConnectionProvider.notEqualsTo('loganalytics'),
 			MssqlNodeContext.EngineEdition.notEqualsTo(DatabaseEngineEdition.SqlDataWarehouse.toString())
 		),
 	order: 2
@@ -371,7 +376,10 @@ MenuRegistry.appendMenuItem(MenuId.ExplorerWidgetContext, {
 		id: commands.ExplorerScriptCreateAction.ID,
 		title: commands.ExplorerScriptCreateAction.LABEL
 	},
-	when: ContextKeyExpr.and(ItemContextKey.ItemType.notEqualsTo('database'), ItemContextKey.ConnectionProvider.notEqualsTo('kusto')),
+	when: ContextKeyExpr.and(
+		ItemContextKey.ItemType.notEqualsTo('database'),
+		ItemContextKey.ConnectionProvider.notEqualsTo('kusto'),
+		ItemContextKey.ConnectionProvider.notEqualsTo('loganalytics')),
 	order: 2
 });
 //#endregion

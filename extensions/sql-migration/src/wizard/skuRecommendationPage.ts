@@ -403,13 +403,13 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	private changeTargetType(newTargetType: string) {
 		if (newTargetType === MigrationTargetType.SQLMI) {
 			this._viewAssessmentsHelperText.value = constants.SKU_RECOMMENDATION_VIEW_ASSESSMENT_MI;
-			this._databaseSelectedHelperText.value = constants.TOTAL_DATABASES_SELECTED(this.migrationStateModel._miDbs.length, this.migrationStateModel._serverDatabases.length);
+			this._databaseSelectedHelperText.value = constants.TOTAL_DATABASES_SELECTED(this.migrationStateModel._miDbs.length, this.migrationStateModel._databaseAssessment.length);
 			this.migrationStateModel._targetType = MigrationTargetType.SQLMI;
 			this._azureSubscriptionText.value = constants.SELECT_AZURE_MI;
 			this.migrationStateModel._migrationDbs = this.migrationStateModel._miDbs;
 		} else {
 			this._viewAssessmentsHelperText.value = constants.SKU_RECOMMENDATION_VIEW_ASSESSMENT_VM;
-			this._databaseSelectedHelperText.value = constants.TOTAL_DATABASES_SELECTED(this.migrationStateModel._vmDbs.length, this.migrationStateModel._serverDatabases.length);
+			this._databaseSelectedHelperText.value = constants.TOTAL_DATABASES_SELECTED(this.migrationStateModel._vmDbs.length, this.migrationStateModel._databaseAssessment.length);
 			this.migrationStateModel._targetType = MigrationTargetType.SQLVM;
 			this._azureSubscriptionText.value = constants.SELECT_AZURE_VM;
 			this.migrationStateModel._migrationDbs = this.migrationStateModel._vmDbs;
@@ -424,7 +424,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		const serverName = (await this.migrationStateModel.getSourceConnectionProfile()).serverName;
 		this._igComponent.value = constants.ASSESSMENT_COMPLETED(serverName);
 		try {
-			await this.migrationStateModel.getServerAssessments();
+			await this.migrationStateModel.getDatabaseAssessments();
 			this._detailsComponent.value = constants.SKU_RECOMMENDATION_ALL_SUCCESSFUL(this.migrationStateModel._assessmentResults.databaseAssessments.length);
 		} catch (e) {
 			console.log(e);
@@ -607,7 +607,12 @@ export class SKURecommendationPage extends MigrationWizardPage {
 
 	private createAssessmentProgress(): azdata.FlexContainer {
 
-		this._assessmentLoader = this._view.modelBuilder.loadingComponent().component();
+		this._assessmentLoader = this._view.modelBuilder.loadingComponent().withProps({
+			CSSStyles: {
+				'margin-top': '15px'
+			}
+		}).component();
+
 		this._assessmentProgress = this._view.modelBuilder.text().withProps({
 			value: constants.ASSESSMENT_IN_PROGRESS,
 			CSSStyles: {

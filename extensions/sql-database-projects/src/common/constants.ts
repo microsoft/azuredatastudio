@@ -4,6 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as nls from 'vscode-nls';
+import { SqlTargetPlatform } from 'sqldbproj';
+import * as utils from '../common/utils';
 
 const localize = nls.loadMessageBundle();
 
@@ -101,7 +103,7 @@ export const connectionRadioButtonLabel = localize('connectionRadioButtonLabel',
 export const dataSourceDropdownTitle = localize('dataSourceDropdownTitle', "Data source");
 export const noDataSourcesText = localize('noDataSourcesText', "No data sources in this project");
 export const loadProfilePlaceholderText = localize('loadProfilePlaceholderText', "Load profile...");
-export const profileReadError = localize('profileReadError', "Could not load the profile file.");
+export const profileReadError = (err: any) => localize('profileReadError', "Error loading the publish profile. {0}", utils.getErrorMessage(err));
 export const sqlCmdTableLabel = localize('sqlCmdTableLabel', "SQLCMD Variables");
 export const sqlCmdVariableColumn = localize('sqlCmdVariableColumn', "Name");
 export const sqlCmdValueColumn = localize('sqlCmdValueColumn', "Value");
@@ -110,7 +112,8 @@ export const profile = localize('profile', "Profile");
 export const selectConnection = localize('selectConnection', "Select connection");
 export const server = localize('server', "Server");
 export const defaultUser = localize('default', "default");
-export const selectProfile = localize('selectProfile', "Select publish profile to load");
+export const selectProfileToUse = localize('selectProfileToUse', "Select publish profile to load");
+export const selectProfile = localize('selectProfile', "Select Profile");
 export const dontUseProfile = localize('dontUseProfile', "Don't use profile");
 export const browseForProfile = localize('browseForProfile', "Browse for profile");
 export const chooseAction = localize('chooseAction', "Choose action");
@@ -257,6 +260,9 @@ export function notValidVariableName(name: string) { return localize('notValidVa
 export function cantAddCircularProjectReference(project: string) { return localize('cantAddCircularProjectReference', "A reference to project '{0}' cannot be added. Adding this project as a reference would cause a circular dependency", project); }
 export function unableToFindSqlCmdVariable(variableName: string) { return localize('unableToFindSqlCmdVariable', "Unable to find SQLCMD variable '{0}'", variableName); }
 export function unableToFindDatabaseReference(reference: string) { return localize('unableToFindReference', "Unable to find database reference {0}", reference); }
+export function invalidGuid(guid: string) { return localize('invalidGuid', "Specified GUID is invalid: {0}", guid); }
+export function invalidTargetPlatform(targetPlatform: string, supportedTargetPlatforms: string[]) { return localize('invalidTargetPlatform', "Invalid target platform: {0}. Supported target platforms: {1}", targetPlatform, supportedTargetPlatforms.toString()); }
+
 
 // Action types
 export const deleteAction = localize('deleteAction', 'Delete');
@@ -380,31 +386,30 @@ export const sameDatabaseExampleUsage = 'SELECT * FROM [Schema1].[Table1]';
 export function differentDbSameServerExampleUsage(db: string) { return `SELECT * FROM [${db}].[Schema1].[Table1]`; }
 export function differentDbDifferentServerExampleUsage(server: string, db: string) { return `SELECT * FROM [${server}].[${db}].[Schema1].[Table1]`; }
 
-export const sqlServer2005 = 'SQL Server 2005';
-export const sqlServer2008 = 'SQL Server 2008';
-export const sqlServer2012 = 'SQL Server 2012';
-export const sqlServer2014 = 'SQL Server 2014';
-export const sqlServer2016 = 'SQL Server 2016';
-export const sqlServer2017 = 'SQL Server 2017';
-export const sqlServer2019 = 'SQL Server 2019';
-export const sqlAzure = 'Microsoft Azure SQL Database';
-export const sqlDW = 'Microsoft Azure SQL Data Warehouse';
-
+// Target platforms
 export const targetPlatformToVersion: Map<string, string> = new Map<string, string>([
-	[sqlServer2005, '90'],
-	[sqlServer2008, '100'],
-	[sqlServer2012, '110'],
-	[sqlServer2014, '120'],
-	[sqlServer2016, '130'],
-	[sqlServer2017, '140'],
-	[sqlServer2019, '150'],
-	[sqlAzure, 'AzureV12'],
-	[sqlDW, 'Dw']
+	[SqlTargetPlatform.sqlServer2005, '90'],
+	[SqlTargetPlatform.sqlServer2008, '100'],
+	[SqlTargetPlatform.sqlServer2012, '110'],
+	[SqlTargetPlatform.sqlServer2014, '120'],
+	[SqlTargetPlatform.sqlServer2016, '130'],
+	[SqlTargetPlatform.sqlServer2017, '140'],
+	[SqlTargetPlatform.sqlServer2019, '150'],
+	[SqlTargetPlatform.sqlAzure, 'AzureV12'],
+	[SqlTargetPlatform.sqlDW, 'Dw']
 ]);
 
 // DW is special since the system dacpac folder has a different name from the target platform
 export const AzureDwFolder = 'AzureDw';
 
+export const defaultTargetPlatform = SqlTargetPlatform.sqlServer2019;
+export const defaultDSP = targetPlatformToVersion.get(defaultTargetPlatform)!;
+
+/**
+ * Returns the name of the target platform of the version of sql
+ * @param version version of sql
+ * @returns target platform name
+ */
 export function getTargetPlatformFromVersion(version: string): string {
 	return Array.from(targetPlatformToVersion.keys()).filter(k => targetPlatformToVersion.get(k) === version)[0];
 }

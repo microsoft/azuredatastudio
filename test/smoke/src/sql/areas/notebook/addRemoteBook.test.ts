@@ -16,7 +16,7 @@ export function setup() {
 
 	describe('AddRemoteBookDialog', () => {
 
-		it('can open remote book', async function () {
+		it.skip('can open remote book', async function () { // Skip until the rate limit issue can be fixed
 			const app = this.app as Application;
 			await app.workbench.quickaccess.runCommand(AddRemoteBookCommand);
 			await app.workbench.addRemoteBookDialog.setLocation('GitHub');

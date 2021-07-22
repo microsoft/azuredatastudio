@@ -230,37 +230,43 @@ export class SqlMigrationServiceDetailsDialog {
 		const copyKey1Button = view.modelBuilder
 			.button()
 			.withProps({
+				title: constants.COPY_KEY1,
 				iconPath: IconPathHelper.copy,
 				height: IMAGE_SIZE,
 				width: IMAGE_SIZE,
+				ariaLabel: constants.COPY_KEY1,
 			})
 			.component();
 
 		copyKey1Button.onDidClick((e) => {
 			vscode.env.clipboard.writeText(keys.authKey1);
-			vscode.window.showInformationMessage(constants.SERVICE_KEY_COPIED_HELP);
+			vscode.window.showInformationMessage(constants.SERVICE_KEY1_COPIED_HELP);
 		});
 
 		const copyKey2Button = view.modelBuilder
 			.button()
 			.withProps({
+				title: constants.COPY_KEY2,
 				iconPath: IconPathHelper.copy,
 				height: IMAGE_SIZE,
 				width: IMAGE_SIZE,
+				ariaLabel: constants.COPY_KEY2,
 			})
 			.component();
 
 		copyKey2Button.onDidClick((e) => {
 			vscode.env.clipboard.writeText(keys.authKey2);
-			vscode.window.showInformationMessage(constants.SERVICE_KEY_COPIED_HELP);
+			vscode.window.showInformationMessage(constants.SERVICE_KEY2_COPIED_HELP);
 		});
 
 		const refreshKey1Button = view.modelBuilder
 			.button()
 			.withProps({
+				title: constants.REFRESH_KEY1,
 				iconPath: IconPathHelper.refresh,
 				height: IMAGE_SIZE,
 				width: IMAGE_SIZE,
+				ariaLabel: constants.REFRESH_KEY1,
 			})
 			.component();
 		refreshKey1Button.onDidClick(
@@ -269,9 +275,11 @@ export class SqlMigrationServiceDetailsDialog {
 		const refreshKey2Button = view.modelBuilder
 			.button()
 			.withProps({
+				title: constants.REFRESH_KEY2,
 				iconPath: IconPathHelper.refresh,
 				height: IMAGE_SIZE,
 				width: IMAGE_SIZE,
+				ariaLabel: constants.REFRESH_KEY2,
 			})
 			.component();
 		refreshKey2Button.onDidClick(

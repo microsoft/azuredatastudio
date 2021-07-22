@@ -39,7 +39,9 @@ export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvide
 			projectFileExtension: constants.sqlprojExtension.replace(/\./g, ''),
 			displayName: constants.emptyProjectTypeDisplayName,
 			description: constants.emptyProjectTypeDescription,
-			icon: IconPathHelper.colorfulSqlProject
+			icon: IconPathHelper.colorfulSqlProject,
+			targetPlatforms: Array.from(constants.targetPlatformToVersion.keys()),
+			defaultTargetPlatform: constants.defaultTargetPlatform
 		},
 		{
 			id: constants.edgeSqlDatabaseProjectTypeId,
@@ -57,11 +59,12 @@ export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvide
 	 * @param projectTypeId the ID of the project/template
 	 * @returns Uri of the newly created project file
 	 */
-	async createProject(name: string, location: vscode.Uri, projectTypeId: string): Promise<vscode.Uri> {
+	async createProject(name: string, location: vscode.Uri, projectTypeId: string, targetPlatform?: sqldbproj.SqlTargetPlatform): Promise<vscode.Uri> {
 		const projectFile = await this.projectController.createNewProject({
 			newProjName: name,
 			folderUri: location,
-			projectTypeId: projectTypeId
+			projectTypeId: projectTypeId,
+			targetPlatform: targetPlatform
 		});
 
 		return vscode.Uri.file(projectFile);

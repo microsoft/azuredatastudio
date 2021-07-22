@@ -9260,924 +9260,92 @@
 		"vs/workbench/services/workspaces/browser/workspaceTrustEditorInput": {
 			"workspaceTrustEditorInputName": "工作區信任"
 		},
-		"sql/platform/clipboard/browser/clipboardService": {
-			"imageCopyingNotSupported": "不支援複製映像"
-		},
-		"sql/workbench/update/electron-browser/releaseNotes": {
-			"gettingStarted": "開始",
-			"showReleaseNotes": "顯示入門指南",
-			"miGettingStarted": "開始使用(&&S)"
-		},
-		"sql/workbench/contrib/queryHistory/electron-browser/queryHistory": {
-			"queryHistoryConfigurationTitle": "查詢歷史記錄",
-			"queryHistoryCaptureEnabled": "是否啟用了查詢歷史記錄擷取。若未啟用，將不會擷取已經執行的查詢。",
-			"viewCategory": "檢視",
-			"miViewQueryHistory": "查詢歷史記錄(&&Q)",
-			"queryHistory": "查詢歷史記錄"
-		},
-		"sql/workbench/contrib/commandLine/electron-browser/commandLine": {
-			"connectingLabel": "正在連線: {0}",
-			"runningCommandLabel": "正在執行命令: {0}",
-			"openingNewQueryLabel": "正在開啟新查詢: {0}",
-			"warnServerRequired": "因為未提供伺服器資訊，所以無法連線",
-			"errConnectUrl": "因為發生錯誤 {0}，導致無法開啟 URL",
-			"connectServerDetail": "這會連線到伺服器 {0}",
-			"confirmConnect": "確定要連線嗎?",
-			"open": "開啟(&&O)",
-			"connectingQueryLabel": "正在連線到查詢檔案"
-		},
-		"sql/workbench/services/tasks/common/tasksService": {
-			"InProgressWarning": "1 個或更多的工作正在進行中。是否確實要退出?",
-			"taskService.yes": "是",
-			"taskService.no": "否"
-		},
-		"sql/workbench/contrib/welcome/gettingStarted/browser/abstractEnablePreviewFeatures": {
-			"enablePreviewFeatures.notice": "預覽功能可讓您完整存取新功能及改善的功能，增強您在 Azure Data Studio 的體驗。您可以參閱[這裡]({0})深入了解預覽功能。是否要啟用預覽功能?",
-			"enablePreviewFeatures.yes": "是 (建議)",
-			"enablePreviewFeatures.no": "否",
-			"enablePreviewFeatures.never": "不，不要再顯示"
-		},
-		"sql/workbench/contrib/queryHistory/browser/queryHistoryActions": {
-			"toggleQueryHistory": "切換查詢歷史記錄",
-			"queryHistory.delete": "刪除",
-			"queryHistory.clearLabel": "清除所有歷史記錄",
-			"queryHistory.openQuery": "開啟查詢",
-			"queryHistory.runQuery": "執行查詢",
-			"queryHistory.toggleCaptureLabel": "切換查詢歷史記錄擷取",
-			"queryHistory.disableCapture": "暫停查詢歷史記錄擷取",
-			"queryHistory.enableCapture": "開始查詢歷史記錄擷取"
-		},
-		"sql/workbench/contrib/queryHistory/browser/queryHistoryView": {
-			"noQueriesMessage": "沒有查詢可顯示。",
-			"queryHistory.regTreeAriaLabel": "查詢歷史記錄"
-		},
-		"sql/workbench/services/errorMessage/browser/errorMessageService": {
-			"error": "錯誤",
-			"warning": "警告",
-			"info": "資訊",
-			"ignore": "忽略"
-		},
-		"sql/platform/serialization/common/serializationService": {
-			"saveAsNotSupported": "正在將結果儲存為其他格式，但此資料提供者已停用該格式。",
-			"noSerializationProvider": "因為未註冊任何提供者，所以無法序列化資料",
-			"unknownSerializationError": "因為發生未知錯誤，導致序列化失敗"
-		},
-		"sql/workbench/services/admin/common/adminService": {
-			"adminService.providerIdNotValidError": "必需連線以便與 adminservice 互動",
-			"adminService.noHandlerRegistered": "未註冊處理常式"
-		},
-		"sql/workbench/services/fileBrowser/browser/fileBrowserDialogController": {
-			"filebrowser.selectFile": "選擇檔案"
-		},
-		"sql/workbench/services/assessment/common/assessmentService": {
-			"asmt.providerIdNotValidError": "需要連線才能與評定服務互動",
-			"asmt.noHandlerRegistered": "未註冊任何處理常式"
-		},
-		"sql/workbench/contrib/query/common/resultsGrid.contribution": {
-			"resultsGridConfigurationTitle": "結果方格與訊息",
-			"fontFamily": "控制字型家族。",
-			"fontWeight": "控制字型粗細。",
-			"fontSize": "控制字型大小 (像素)。",
-			"letterSpacing": "控制字母間距 (像素)。",
-			"rowHeight": "控制列高 (像素)",
-			"cellPadding": "控制資料格填補值 (像素)",
-			"autoSizeColumns": "自動調整初始結果的欄寬大小。大量欄位或大型資料格可能會造成效能問題",
-			"maxColumnWidth": "自動調整大小之欄位的寬度上限 (像素)"
-		},
-		"sql/workbench/contrib/dataExplorer/browser/dataExplorer.contribution": {
-			"dataExplorer.view": "檢視",
-			"databaseConnections": "資料庫連線",
-			"datasource.connections": "資料來源連線",
-			"datasource.connectionGroups": "資料來源群組",
-			"startupConfig": "啟動組態",
-			"startup.alwaysShowServersView": "預設為在 Azure Data Studio 啟動時要顯示的伺服器檢視即為 True；如應顯示上次開啟的檢視則為 False"
-		},
-		"sql/workbench/contrib/dataExplorer/browser/nodeActions.common.contribution": {
-			"disconnect": "中斷連線",
-			"refresh": "重新整理"
-		},
-		"sql/workbench/browser/actions.contribution": {
-			"previewFeatures.configTitle": "預覽功能",
-			"previewFeatures.configEnable": "啟用未發佈的預覽功能",
-			"showConnectDialogOnStartup": "啟動時顯示連線對話方塊",
-			"enableObsoleteApiUsageNotificationTitle": "淘汰 API 通知",
-			"enableObsoleteApiUsageNotification": "啟用/停用使用淘汰的 API 通知"
-		},
-		"sql/workbench/contrib/accounts/browser/accounts.contribution": {
-			"status.problems": "問題"
-		},
-		"sql/workbench/contrib/tasks/browser/tasks.contribution": {
-			"inProgressTasksChangesBadge": "{0} 正在執行的工作",
-			"viewCategory": "檢視",
-			"tasks": "工作",
-			"miViewTasks": "工作(&&T)"
-		},
-		"sql/workbench/contrib/connection/browser/connection.contribution": {
-			"sql.maxRecentConnectionsDescription": "連線列表內最近使用的連線數上限。",
-			"sql.defaultEngineDescription": "要使用的預設 SQL 引擎。這會驅動 .sql 檔案中的預設語言提供者，以及建立新連線時要使用的預設。",
-			"connection.parseClipboardForConnectionStringDescription": "嘗試在連線對話方塊開啟或已執行貼上時剖析剪貼簿的內容。"
-		},
-		"sql/workbench/contrib/objectExplorer/common/serverGroup.contribution": {
-			"serverGroup.colors": "在物件總管 Viewlet 中使用的伺服器群組調色盤。",
-			"serverGroup.autoExpand": "物件總管 Viewlet 中的自動展開伺服器群組。",
-			"serverTree.useAsyncServerTree": "(預覽) 針對伺服器檢視及連線對話方塊使用新的非同步伺服器樹狀結構，並支援動態節點篩選等新功能。"
-		},
-		"sql/workbench/contrib/accounts/browser/accountManagement.contribution": {
-			"carbon.extension.contributes.account.id": "帳戶類型的識別碼",
-			"carbon.extension.contributes.account.icon": "(選用) 用於 UI 中表示 accpunt 的圖示。任一檔案路徑或主題化的設定。",
-			"carbon.extension.contributes.account.icon.light": "使用亮色主題時的圖示路徑",
-			"carbon.extension.contributes.account.icon.dark": "使用暗色主題時的圖像路徑",
-			"carbon.extension.contributes.account": "將圖示貢獻給帳戶供應者。"
-		},
-		"sql/workbench/contrib/editData/browser/editData.contribution": {
-			"showEditDataSqlPaneOnStartup": "啟動時顯示 [編輯資料] SQL 窗格"
-		},
-		"sql/workbench/contrib/dashboard/browser/widgets/insights/views/charts/types/barChart.contribution": {
-			"yAxisMin": "y 軸的最小值",
-			"yAxisMax": "y 軸的最大值",
-			"barchart.yAxisLabel": "Y 軸的標籤",
-			"xAxisMin": "X 軸的最小值",
-			"xAxisMax": "X 軸的最大值",
-			"barchart.xAxisLabel": "X 軸標籤"
-		},
-		"sql/workbench/contrib/resourceViewer/browser/resourceViewer.contribution": {
-			"resourceViewer": "資源檢視器"
-		},
-		"sql/workbench/contrib/dashboard/browser/widgets/insights/views/charts/types/lineChart.contribution": {
-			"dataTypeDescription": "指定圖表資料集的資料屬性。"
-		},
-		"sql/workbench/contrib/dashboard/browser/widgets/insights/views/countInsight.contribution": {
-			"countInsightDescription": "為結果集中的每一個資料行，在資料列 0 中先顯示計數值，再顯示資料行名稱。例如，支援 '1 Healthy'，'3 Unhealthy'；其中 'Healthy' 為資料行名稱，1 為資料列 1 中資料格 1 的值"
-		},
-		"sql/workbench/contrib/dashboard/browser/widgets/insights/views/tableInsight.contribution": {
-			"tableInsightDescription": "在簡單資料表中顯示結果"
-		},
-		"sql/workbench/contrib/dashboard/browser/widgets/insights/views/imageInsight.contribution": {
-			"imageInsightDescription": "顯示映像，如使用 ggplot2 R 查詢返回的映像。",
-			"imageFormatDescription": "預期格式是什麼 - 是 JPEG、PNG 或其他格式?",
-			"encodingDescription": "此編碼為十六進位、base64 或是其他格式?"
-		},
-		"sql/workbench/contrib/dashboard/browser/dashboard.contribution": {
-			"manage": "管理",
-			"dashboard.editor.label": "儀表板"
-		},
-		"sql/workbench/contrib/dashboard/browser/containers/dashboardWebviewContainer.contribution": {
-			"dashboard.container.webview": "顯示在此索引標籤的 Web 檢視。"
-		},
-		"sql/workbench/contrib/dashboard/browser/containers/dashboardControlHostContainer.contribution": {
-			"dashboard.container.controlhost": "會在此索引標籤中顯示的 controlhost。"
-		},
-		"sql/workbench/contrib/dashboard/browser/containers/dashboardWidgetContainer.contribution": {
-			"dashboard.container.widgets": "顯示在此索引標籤中的小工具清單。",
-			"widgetContainer.invalidInputs": "延伸模組的 widgets-container 中應有 widgets 的清單。"
-		},
-		"sql/workbench/contrib/dashboard/browser/containers/dashboardGridContainer.contribution": {
-			"dashboard.container.gridtab.items": "顯示在此索引標籤的小工具或 Web 檢視的清單。",
-			"gridContainer.invalidInputs": "延伸模組的 widgets-container 中應有 widgets 或 webviews。"
-		},
-		"sql/workbench/contrib/dashboard/browser/containers/dashboardContainer.contribution": {
-			"azdata.extension.contributes.dashboard.container.id": "此容器的唯一識別碼。",
-			"azdata.extension.contributes.dashboard.container.container": "顯示於索引標籤的容器。",
-			"azdata.extension.contributes.containers": "提供一個或多個儀表板容器，讓使用者可增加至其儀表板中。",
-			"dashboardContainer.contribution.noIdError": "為延伸模組指定的儀表板容器中沒有任何識別碼。",
-			"dashboardContainer.contribution.noContainerError": "為延伸模組指定的儀表板容器中沒有任何容器。",
-			"dashboardContainer.contribution.moreThanOneDashboardContainersError": "至少須為每個空間定義剛好 1 個儀表板容器。",
-			"dashboardTab.contribution.unKnownContainerType": "延伸模組的儀表板容器中有不明的容器類型定義。"
-		},
-		"sql/workbench/contrib/dashboard/browser/containers/dashboardNavSection.contribution": {
-			"dashboard.container.left-nav-bar.id": "導覽區的唯一識別碼。將傳遞給任何要求的延伸模組。",
-			"dashboard.container.left-nav-bar.icon": "(選用) 用於 UI 中表示導覽區的圖示。任一檔案路徑或主題化的設定。",
-			"dashboard.container.left-nav-bar.icon.light": "使用亮色主題時的圖示路徑",
-			"dashboard.container.left-nav-bar.icon.dark": "使用暗色主題時的圖像路徑",
-			"dashboard.container.left-nav-bar.title": "顯示給使用者的導覽區標題。",
-			"dashboard.container.left-nav-bar.container": "顯示在此導覽區的容器。",
-			"dashboard.container.left-nav-bar": "在導覽區顯示儀表板容器清單。",
-			"navSection.missingTitle.error": "為延伸模組指定的導覽區段中沒有標題。",
-			"navSection.missingContainer.error": "為延伸模組指定的導覽區段中沒有任何容器。",
-			"navSection.moreThanOneDashboardContainersError": "至少須為每個空間定義剛好 1 個儀表板容器。",
-			"navSection.invalidContainer.error": "NAV_SECTION 中的 NAV_SECTION 對延伸模組而言是無效的容器。"
-		},
-		"sql/workbench/contrib/dashboard/browser/containers/dashboardModelViewContainer.contribution": {
-			"dashboard.container.modelview": "將在此索引標籤中顯示的 model-backed 檢視。"
-		},
-		"sql/workbench/contrib/backup/browser/backup.contribution": {
-			"backup": "備份"
-		},
-		"sql/workbench/contrib/restore/browser/restore.contribution": {
-			"restore": "還原",
-			"backup": "還原"
-		},
-		"sql/workbench/contrib/azure/browser/azure.contribution": {
-			"azure.openInAzurePortal.title": "在 Azure 入口網站中開啟"
-		},
-		"sql/workbench/common/editor/query/queryEditorInput": {
-			"disconnected": "已中斷連線"
-		},
-		"sql/workbench/services/objectExplorer/browser/objectExplorerViewTreeShim": {
-			"noProviderFound": "因為找不到必要的連線提供者 ‘{0}’，所以無法展開",
-			"loginCanceled": "已取消使用者",
-			"firewallCanceled": "已取消防火牆對話方塊"
-		},
-		"sql/workbench/services/jobManagement/common/jobManagementService": {
-			"providerIdNotValidError": "需要連線才能與 JobManagementService 互動",
-			"noHandlerRegistered": "未註冊任何處理常式"
-		},
-		"sql/workbench/services/fileBrowser/common/fileBrowserService": {
-			"fileBrowserErrorMessage": "載入檔案瀏覽器時發生錯誤。",
-			"fileBrowserErrorDialogTitle": "檔案瀏覽器錯誤"
-		},
-		"sql/workbench/contrib/connection/common/connectionProviderExtension": {
-			"schema.providerId": "提供者的通用識別碼。",
-			"schema.displayName": "提供者的顯示名稱",
-			"schema.notebookKernelAlias": "提供者的筆記本核心別名",
-			"schema.iconPath": "伺服器類型的圖示路徑",
-			"schema.connectionOptions": "連線選項"
-		},
-		"sql/workbench/contrib/dashboard/browser/core/dashboardTab.contribution": {
-			"azdata.extension.contributes.dashboard.tab.id": "此索引標籤的唯一識別碼。將傳遞給任何要求的延伸模組。",
-			"azdata.extension.contributes.dashboard.tab.title": "顯示給使用者的索引標籤的標題。",
-			"azdata.extension.contributes.dashboard.tab.description": "此索引標籤的描述將顯示給使用者。",
-			"azdata.extension.contributes.tab.when": "必須為 True 以顯示此項目的條件",
-			"azdata.extension.contributes.tab.provider": "定義與此索引標籤相容的連線類型。若未設定，則預設值為 'MSSQL'",
-			"azdata.extension.contributes.dashboard.tab.container": "將在此索引標籤中顯示的容器。",
-			"azdata.extension.contributes.dashboard.tab.alwaysShow": "是否應一律顯示此索引標籤或僅當使用者增加時顯示。",
-			"azdata.extension.contributes.dashboard.tab.isHomeTab": "是否應將此索引標籤用作連線類型的首頁索引標籤。",
-			"azdata.extension.contributes.dashboard.tab.group": "此索引標籤所屬群組的唯一識別碼，常用 (群組) 的值: 常用。",
-			"dazdata.extension.contributes.dashboard.tab.icon": "(選用) 用於在 UI 中代表此索引標籤的圖示。這會是檔案路徑或可設定佈景主題的組態",
-			"azdata.extension.contributes.dashboard.tab.icon.light": "使用亮色主題時的圖示路徑",
-			"azdata.extension.contributes.dashboard.tab.icon.dark": "使用暗色主題時的圖像路徑",
-			"azdata.extension.contributes.tabs": "提供一或多個索引標籤，讓使用者可將其增加至儀表板中。",
-			"dashboardTab.contribution.noTitleError": "未為延伸模組指定標題。",
-			"dashboardTab.contribution.noDescriptionWarning": "未指定要顯示的描述。",
-			"dashboardTab.contribution.noContainerError": "未為延伸模組指定任何容器。",
-			"dashboardTab.contribution.moreThanOneDashboardContainersError": "每個空間必須明確定義 1 個儀表板容器",
-			"azdata.extension.contributes.dashboard.tabGroup.id": "此索引標籤群組的唯一識別碼。",
-			"azdata.extension.contributes.dashboard.tabGroup.title": "索引標籤群組的標題。",
-			"azdata.extension.contributes.tabGroups": "提供一或多個索引標籤群組，讓使用者可將其增加至儀表板中。",
-			"dashboardTabGroup.contribution.noIdError": "沒有為索引標籤群組指定任何識別碼。",
-			"dashboardTabGroup.contribution.noTitleError": "沒有為索引標籤群組指定任何標題。",
-			"administrationTabGroup": "管理",
-			"monitoringTabGroup": "監視",
-			"performanceTabGroup": "效能",
-			"securityTabGroup": "安全性",
-			"troubleshootingTabGroup": "疑難排解",
-			"settingsTabGroup": "設定",
-			"databasesTabDescription": "資料庫索引標籤",
-			"databasesTabTitle": "資料庫"
-		},
-		"sql/workbench/contrib/queryHistory/browser/queryHistoryRenderer": {
-			"succeeded": "成功",
-			"failed": "失敗"
-		},
-		"sql/workbench/services/connection/browser/connectionDialogService": {
-			"connectionError": "連線錯誤",
-			"kerberosErrorStart": "因為 Kerberos 錯誤導致連線失敗。",
-			"kerberosHelpLink": "您可於 {0} 取得設定 Kerberos 的說明",
-			"kerberosKinit": "如果您之前曾連線，則可能需要重新執行 kinit。"
-		},
-		"sql/workbench/services/accountManagement/browser/accountManagementService": {
-			"accountManagementService.close": "關閉",
-			"loggingIn": "正在新增帳戶...",
-			"refreshFailed": "使用者已取消重新整理帳戶"
-		},
-		"sql/workbench/contrib/query/browser/query.contribution": {
-			"queryResultsEditor.name": "查詢結果",
-			"queryEditor.name": "查詢編輯器",
-			"newQuery": "新增查詢",
-			"queryEditorConfigurationTitle": "查詢編輯器",
-			"queryEditor.results.saveAsCsv.includeHeaders": "若設定為 true，會在將結果另存為 CSV 時包含資料行標題",
-			"queryEditor.results.saveAsCsv.delimiter": "另存為 CSV 時，用在值之間的自訂分隔符號",
-			"queryEditor.results.saveAsCsv.lineSeperator": "將結果另存為 CSV 時，用於分隔資料列的字元",
-			"queryEditor.results.saveAsCsv.textIdentifier": "將結果另存為 CSV 時，用於括住文字欄位的字元",
-			"queryEditor.results.saveAsCsv.encoding": "將結果另存為 CSV 時，要使用的檔案編碼",
-			"queryEditor.results.saveAsXml.formatted": "若設定為 true，會在將結果另存為 XML 時將輸出格式化",
-			"queryEditor.results.saveAsXml.encoding": "將結果另存為 XML 時，要使用的檔案編碼",
-			"queryEditor.results.streaming": "啟用結果串流；包含些許輕微視覺效果問題",
-			"queryEditor.results.copyIncludeHeaders": "從結果檢視中複製結果的組態選項",
-			"queryEditor.results.copyRemoveNewLine": "從結果檢視中複製多行結果的組態選項",
-			"queryEditor.results.optimizedTable": "(實驗性) 在結果中使用最佳化的資料表。可能會缺少某些功能，這些功能仍在開發中。",
-			"queryEditor.messages.showBatchTime": "是否顯示個別批次的執行時間",
-			"queryEditor.messages.wordwrap": "自動換行訊息",
-			"queryEditor.chart.defaultChartType": "從查詢結果開啟圖表檢視器時要使用的預設圖表類型",
-			"queryEditor.tabColorMode.off": "將停用索引標籤著色功能",
-			"queryEditor.tabColorMode.border": "在每個編輯器索引標籤的上邊框著上符合相關伺服器群組的色彩",
-			"queryEditor.tabColorMode.fill": "每個編輯器索引標籤的背景色彩將與相關的伺服器群組相符",
-			"queryEditor.tabColorMode": "依據連線的伺服器群組控制索引標籤如何著色",
-			"queryEditor.showConnectionInfoInTitle": "控制是否要在標題中顯示索引標籤的連線資訊。",
-			"queryEditor.promptToSaveGeneratedFiles": "提示儲存產生的 SQL 檔案",
-			"queryShortcutDescription": "設定按鍵繫結關係 workbench.action.query.shortcut{0} 以執行捷徑文字作為程序呼叫。任何選擇的文字在查詢編輯器中將作為參數傳遞"
-		},
-		"sql/workbench/contrib/profiler/browser/profiler.contribution": {
-			"profiler.settings.viewTemplates": "指定檢視範本",
-			"profiler.settings.sessionTemplates": "指定工作階段範本",
-			"profiler.settings.Filters": "分析工具篩選條件"
-		},
-		"sql/workbench/contrib/scripting/browser/scripting.contribution": {
-			"scriptAsCreate": "建立指令碼",
-			"scriptAsDelete": "將指令碼編寫為 Drop",
-			"scriptAsSelect": "選取前 1000",
-			"scriptAsExecute": "作為指令碼執行",
-			"scriptAsAlter": "修改指令碼",
-			"editData": "編輯資料",
-			"scriptSelect": "選取前 1000",
-			"scriptKustoSelect": "取用 10 筆",
-			"scriptCreate": "建立指令碼",
-			"scriptExecute": "作為指令碼執行",
-			"scriptAlter": "修改指令碼",
-			"scriptDelete": "將指令碼編寫為 Drop",
-			"refreshNode": "重新整理"
-		},
-		"sql/workbench/services/query/common/queryModelService": {
-			"commitEditFailed": "認可資料列失敗: ",
-			"runQueryBatchStartMessage": "已開始執行以下查詢:",
-			"runQueryStringBatchStartMessage": "已開始執行查詢 \"{0}\"",
-			"runQueryBatchStartLine": "第 {0} 行",
-			"msgCancelQueryFailed": "取消查詢失敗: {0}",
-			"updateCellFailed": "更新資料格失敗: "
-		},
-		"sql/workbench/services/notebook/browser/notebookServiceImpl": {
-			"notebookUriNotDefined": "建立筆記本管理員時未傳遞任何 URI",
-			"notebookServiceNoProvider": "Notebook 提供者不存在"
-		},
-		"sql/workbench/contrib/notebook/browser/notebook.contribution": {
-			"notebookEditor.name": "Notebook 編輯器",
-			"newNotebook": "新增 Notebook",
-			"newQuery": "新增 Notebook",
-			"workbench.action.setWorkspaceAndOpen": "設定工作區並開啟",
-			"notebook.sqlStopOnError": "SQL 核心: 當資料格發生錯誤時，停止執行 Notebook。",
-			"notebook.showAllKernels": "(預覽) 顯示目前筆記本提供者的所有核心。",
-			"notebook.allowADSCommands": "允許筆記本執行 Azure Data Studio 命令。",
-			"notebook.enableDoubleClickEdit": "為筆記本中的文字資料格啟用按兩下編輯的功能",
-			"notebook.setRichTextViewByDefault": "預設將文字資料格設定為 RTF 檢視模式",
-			"notebook.saveConnectionName": "(預覽) 儲存筆記本中繼資料中的連線名稱。",
-			"notebook.markdownPreviewLineHeight": "控制筆記本 Markdown 預覽中使用的行高。此數字相對於字型大小。",
-			"notebookExplorer.view": "檢視",
-			"searchConfigurationTitle": "搜尋筆記本",
-			"exclude": "設定 Glob 模式，在全文檢索搜尋中排除檔案與資料夾，並快速開啟。繼承 `#files.exclude#` 設定的所有 Glob 模式。深入了解 Glob 模式 [這裡](https://code.visualstudio.com/docs/editor/codebasics#_advanced-search-options)。",
-			"exclude.boolean": "要符合檔案路徑的 Glob 模式。設為 True 或 False 可啟用或停用模式。",
-			"exclude.when": "在相符檔案同層級上額外的檢查。請使用 $(basename) 作為相符檔案名稱的變數。",
-			"useRipgrep": " 此設定已淘汰，現在會回復至 \"search.usePCRE2\"。",
-			"useRipgrepDeprecated": "已淘汰。請考慮使用 \"search.usePCRE2\" 來取得進階 regex 功能支援。",
-			"search.maintainFileSearchCache": "若啟用，searchService 程序在處於非使用狀態一小時後會保持運作，而不是關閉。這會將檔案搜尋快取保留在記憶體中。",
-			"useIgnoreFiles": "控制是否在搜尋檔案時使用 `.gitignore` 和 `.ignore` 檔案。",
-			"useGlobalIgnoreFiles": "控制是否要在搜尋檔案時使用全域 `.gitignore` 和 `.ignore` 檔案。",
-			"search.quickOpen.includeSymbols": "是否在 Quick Open 的檔案結果中，包含全域符號搜尋中的結果。",
-			"search.quickOpen.includeHistory": "是否要在 Quick Open 中包含檔案結果中，來自最近開啟檔案的結果。",
-			"filterSortOrder.default": "歷程記錄項目會依據所使用的篩選值，依相關性排序。相關性愈高的項目排在愈前面。",
-			"filterSortOrder.recency": "依使用時序排序歷程記錄項目。最近開啟的項目顯示在最前面。",
-			"filterSortOrder": "控制篩選時，快速開啟的編輯器歷程記錄排列順序。",
-			"search.followSymlinks": "控制是否要在搜尋時遵循 symlink。",
-			"search.smartCase": "若模式為全小寫，搜尋時不會區分大小寫; 否則會區分大小寫。",
-			"search.globalFindClipboard": "控制搜尋檢視應讀取或修改 macOS 上的共用尋找剪貼簿。 ",
-			"search.location": "控制搜尋要顯示為資訊看板中的檢視，或顯示為面板區域中的面板以增加水平空間。",
-			"search.location.deprecationMessage": "這個設定已淘汰。請改用搜尋檢視的操作功能表。",
-			"search.collapseResults.auto": "10 個結果以下的檔案將會展開，其他檔案則會摺疊。",
-			"search.collapseAllResults": "控制要摺疊或展開搜尋結果。",
-			"search.useReplacePreview": "控制是否要在選取或取代相符項目時開啟 [取代預覽]。",
-			"search.showLineNumbers": "控制是否要為搜尋結果顯示行號。",
-			"search.usePCRE2": "是否要在文字搜尋中使用 PCRE2 規則運算式引擎。這可使用部分進階功能，如 lookahead 和 backreferences。但是，並不支援所有 PCRE2 功能，僅支援 JavaScript 也支援的功能。",
-			"usePCRE2Deprecated": "已淘汰。當使用僅有 PCRE2 支援的 regex 功能時，會自動使用 PCRE 2。",
-			"search.actionsPositionAuto": "當搜尋檢視較窄時，將動作列放在右邊，當搜尋檢視較寬時，立即放於內容之後。",
-			"search.actionsPositionRight": "永遠將動作列放在右邊。",
-			"search.actionsPosition": "控制動作列在搜尋檢視列上的位置。",
-			"search.searchOnType": "鍵入的同時搜尋所有檔案。",
-			"search.seedWithNearestWord": "允許在使用中的編輯器沒有選取項目時，從最接近游標的文字植入搜尋。",
-			"search.seedOnFocus": "聚焦在搜尋檢視時，將工作區搜尋查詢更新為編輯器的選取文字。按一下或觸發 'workbench.views.search.focus' 命令時，即會發生此動作。",
-			"search.searchOnTypeDebouncePeriod": "啟用 `#search.searchOnType#` 時，控制字元鍵入和搜尋開始之間的逾時 (毫秒)。當 `search.searchOnType` 停用時無效。",
-			"search.searchEditor.doubleClickBehaviour.selectWord": "點兩下選擇游標下的單字。",
-			"search.searchEditor.doubleClickBehaviour.goToLocation": "按兩下將會在正在使用的編輯器群組中開啟結果。",
-			"search.searchEditor.doubleClickBehaviour.openLocationToSide": "按兩下就會在側邊的編輯器群組中開啟結果，如果不存在就會建立一個。",
-			"search.searchEditor.doubleClickBehaviour": "設定在搜尋編輯器中按兩下結果的效果。",
-			"searchSortOrder.default": "結果會根據資料夾和檔案名稱排序，按字母順序排列。",
-			"searchSortOrder.filesOnly": "結果會忽略資料夾順序並根據檔案名稱排序，按字母順序排列。",
-			"searchSortOrder.type": "結果會根據副檔名排序，按字母順序排列。",
-			"searchSortOrder.modified": "結果會根據最後修改日期降冪排序。",
-			"searchSortOrder.countDescending": "結果會根據每個檔案的計數降冪排序。",
-			"searchSortOrder.countAscending": "結果會根據每個檔案的計數升冪排序。",
-			"search.sortOrder": "控制搜尋結果的排列順序。"
-		},
-		"sql/workbench/contrib/query/browser/queryActions": {
-			"newQueryTask.newQuery": "新增查詢",
-			"runQueryLabel": "執行",
-			"cancelQueryLabel": "取消",
-			"estimatedQueryPlan": "說明",
-			"actualQueryPlan": "實際",
-			"disconnectDatabaseLabel": "中斷連線",
-			"changeConnectionDatabaseLabel": "變更連線",
-			"connectDatabaseLabel": "連線",
-			"enablesqlcmdLabel": "啟用 SQLCMD",
-			"disablesqlcmdLabel": "停用 SQLCMD",
-			"selectDatabase": "選擇資料庫",
-			"changeDatabase.failed": "變更資料庫失敗",
-			"changeDatabase.failedWithError": "無法變更資料庫 {0}",
-			"queryEditor.exportSqlAsNotebook": "匯出為筆記本"
-		},
-		"sql/workbench/services/errorMessage/browser/errorMessageDialog": {
-			"errorMessageDialog.ok": "確定",
-			"errorMessageDialog.close": "關閉",
-			"errorMessageDialog.action": "動作",
-			"copyDetails": "複製詳細資訊"
-		},
-		"sql/workbench/services/serverGroup/common/serverGroupViewModel": {
-			"serverGroup.addServerGroup": "新增伺服器群組",
-			"serverGroup.editServerGroup": "編輯伺服器群組"
-		},
-		"sql/workbench/common/editor/query/queryResultsInput": {
-			"extensionsInputName": "延伸模組"
-		},
-		"sql/workbench/services/objectExplorer/browser/objectExplorerService": {
-			"OeSessionFailedError": "建立物件總管工作階段失敗",
-			"nodeExpansionError": "多個錯誤:"
-		},
-		"sql/workbench/services/resourceProvider/browser/firewallRuleDialogController": {
-			"firewallDialog.addAccountErrorTitle": "新增帳戶時發生錯誤",
-			"firewallRuleError": "防火牆規則錯誤"
-		},
-		"sql/workbench/api/browser/mainThreadExtensionManagement": {
-			"workbench.generalObsoleteApiNotification": "載入的延伸模組中，有一些使用淘汰的 API。請參閱「開發人員工具」視窗 [主控台] 索引標籤中的詳細資訊",
-			"dontShowAgain": "不要再顯示"
-		},
-		"sql/workbench/contrib/dataExplorer/browser/dataExplorerExtensionPoint": {
-			"vscode.extension.contributes.view.id": "檢視的識別碼。請使用此識別碼透過 `vscode.window.registerTreeDataProviderForView` API 登錄資料提供者。並藉由將 `onView:${id}` 事件登錄至 `activationEvents` 以觸發啟用您的延伸模組。",
-			"vscode.extension.contributes.view.name": "使用人性化顯示名稱。會顯示",
-			"vscode.extension.contributes.view.when": "必須為 True 以顯示此檢視的條件",
-			"extension.contributes.dataExplorer": "提供檢視給編輯者",
-			"extension.dataExplorer": "將檢視提供到活動列中的資料總管容器",
-			"dataExplorer.contributed": "在參與檢視容器中提供檢視",
-			"duplicateView1": "無法在檢視容器 '{1}' 中以同一個識別碼 '{0}' 註冊多個檢視",
-			"duplicateView2": "已在檢視容器 '{1}' 中註冊識別碼為 '{0}' 的檢視",
-			"requirearray": "項目必須為陣列",
-			"requirestring": "屬性 '{0}' 為強制項目且必須屬於 `string` 類型",
-			"optstring": "屬性 `{0}` 可以省略或必須屬於 `string` 類型"
-		},
-		"sql/workbench/contrib/configuration/common/configurationUpgrader": {
-			"workbench.configuration.upgradeUser": "您使用者設定中的 {1} 已取代 {0}。",
-			"workbench.configuration.upgradeWorkspace": "您工作區設定中的 {1} 已取代 {0}。"
-		},
-		"sql/workbench/browser/actions": {
-			"manage": "管理",
-			"showDetails": "顯示詳細資訊",
-			"configureDashboardLearnMore": "深入了解",
-			"clearSavedAccounts": "清除所有儲存的帳戶"
-		},
-		"sql/workbench/contrib/tasks/browser/tasksActions": {
-			"toggleTasks": "切換工作"
-		},
-		"sql/workbench/contrib/connection/browser/connectionStatus": {
-			"status.connection.status": "連線狀態"
-		},
-		"sql/workbench/contrib/connection/common/connectionTreeProviderExentionPoint": {
-			"connectionTreeProvider.schema.name": "樹狀提供者向使用者顯示的名稱",
-			"connectionTreeProvider.schema.id": "提供者的識別碼，必須與註冊樹狀資料提供者時的識別碼相同，而且必須以 `connectionDialog/` 開頭"
-		},
-		"sql/workbench/contrib/dashboard/browser/widgets/insights/views/charts/chartInsight.contribution": {
-			"chartInsightDescription": "將查詢結果以圖表方式顯示在儀表板上",
-			"colorMapDescription": "對應 'column name' -> 色彩。例如，新增 'column1': red 可確保資料行使用紅色",
-			"legendDescription": "指定圖表圖例的優先位置和可見度。這些是您查詢中的欄位名稱，並對應到每個圖表項目的標籤",
-			"labelFirstColumnDescription": "若 dataDirection 是水平的，設定為 True 時則使用第一個欄位值為其圖例。",
-			"columnsAsLabels": "若 dataDirection 是垂直的，設定為 True 時則使用欄位名稱為其圖例。",
-			"dataDirectionDescription": "定義是否從行 (垂直) 或列 (水平) 讀取資料。對於時間序列，當呈現方向為垂直時會被忽略。",
-			"showTopNData": "如已設定 showTopNData，則僅顯示圖表中的前 N 個資料。"
-		},
-		"sql/platform/dashboard/browser/insightRegistry": {
-			"schema.dashboardWidgets.InsightsRegistry": "儀表板中使用的小工具"
-		},
-		"sql/workbench/browser/editor/resourceViewer/resourceViewerInput": {
-			"resourceViewer.showActions": "顯示動作",
-			"resourceViewerInput.resourceViewer": "資源檢視器"
-		},
-		"sql/workbench/contrib/resourceViewer/common/resourceViewerViewExtensionPoint": {
-			"extension.contributes.resourceView.resource.id": "資源的識別碼。",
-			"extension.contributes.resourceView.resource.name": "使用人性化顯示名稱。會顯示",
-			"extension.contributes.resourceView.resource.icon": "資源圖示的路徑。",
-			"extension.contributes.resourceViewResources": "將資源提供給資源檢視",
-			"requirestring": "屬性 '{0}' 為強制項目且必須屬於 `string` 類型",
-			"optstring": "屬性 `{0}` 可以省略或必須屬於 `string` 類型"
-		},
-		"sql/workbench/contrib/resourceViewer/browser/resourceViewerView": {
-			"resourceViewer.ariaLabel": "資源檢視器樹狀結構"
-		},
-		"sql/platform/dashboard/browser/widgetRegistry": {
-			"schema.dashboardWidgets.all": "儀表板中使用的小工具",
-			"schema.dashboardWidgets.database": "儀表板中使用的小工具",
-			"schema.dashboardWidgets.server": "儀表板中使用的小工具"
-		},
-		"sql/workbench/contrib/dashboard/browser/pages/dashboardPageContribution": {
-			"azdata.extension.contributes.widget.when": "必須為 True 以顯示此項目的條件",
-			"azdata.extension.contributes.widget.hideHeader": "是否要隱藏 Widget 的標題，預設值為 false",
-			"dashboardpage.tabName": "容器的標題",
-			"dashboardpage.rowNumber": "方格中元件的資料列",
-			"dashboardpage.rowSpan": "方格中元件的 rowspan。預設值為 1。使用 '*' 即可設定方格中的資料列數。",
-			"dashboardpage.colNumber": "方格中元件的資料行",
-			"dashboardpage.colspan": "方格內元件的 colspan。預設值為 1。使用 '*' 即可設定方格中的資料行數。",
-			"azdata.extension.contributes.dashboardPage.tab.id": "此索引標籤的唯一識別碼。將傳遞給任何要求的延伸模組。",
-			"dashboardTabError": "未知的延伸模組索引標籤或未安裝。"
-		},
-		"sql/workbench/contrib/dashboard/browser/pages/databaseDashboardPage.contribution": {
-			"dashboardDatabaseProperties": "啟用或禁用屬性小工具",
-			"dashboard.databaseproperties": "顯示屬性值",
-			"dashboard.databaseproperties.displayName": "顯示屬性的名稱",
-			"dashboard.databaseproperties.value": "資料庫資訊物件中的值",
-			"dashboard.databaseproperties.ignore": "指定要忽略的特定值",
-			"recoveryModel": "復原模式",
-			"lastDatabaseBackup": "上次資料庫備份",
-			"lastLogBackup": "上次記錄備份",
-			"compatibilityLevel": "相容性層級",
-			"owner": "擁有者",
-			"dashboardDatabase": "自訂 \"資料庫儀表板\" 頁",
-			"objectsWidgetTitle": "搜尋",
-			"dashboardDatabaseTabs": "自訂資料庫儀表板索引標籤"
-		},
-		"sql/workbench/contrib/dashboard/browser/pages/serverDashboardPage.contribution": {
-			"dashboardServerProperties": "啟用或禁用屬性小工具",
-			"dashboard.serverproperties": "顯示屬性值",
-			"dashboard.serverproperties.displayName": "顯示屬性的名稱",
-			"dashboard.serverproperties.value": "伺服器資訊物件中的值",
-			"version": "版本",
-			"edition": "版本",
-			"computerName": "電腦名稱",
-			"osVersion": "作業系統版本",
-			"explorerWidgetsTitle": "搜尋",
-			"dashboardServer": "自訂伺服器儀表板頁面",
-			"dashboardServerTabs": "自訂伺服器儀表板索引標籤"
-		},
-		"sql/workbench/contrib/dashboard/browser/dashboardActions": {
-			"ManageAction": "管理"
-		},
-		"sql/workbench/contrib/dashboard/browser/dashboardIconUtil": {
-			"opticon": "屬性 `icon` 可以省略，否則必須為字串或類似 `{dark, light}` 的常值"
-		},
-		"sql/workbench/contrib/dashboard/browser/widgets/insights/insightsWidgetSchemas": {
-			"insightWidgetDescription": "新增一個可查詢伺服器或資料庫並以多種方式呈現結果的小工具，如圖表、計數總結等。",
-			"insightIdDescription": "用於快取見解結果的唯一識別碼。",
-			"insightQueryDescription": "要執行的 SQL 查詢。這僅會回傳 1 個結果集。",
-			"insightQueryFileDescription": "[選用] 包含查詢之檔案的路徑。這會在未設定 'query' 時使用",
-			"insightAutoRefreshIntervalDescription": "[選用] 自動重新整理間隔 (分鐘)，如未設定，就不會自動重新整理",
-			"actionTypes": "要使用的動作",
-			"actionDatabaseDescription": "此動作的目標資料庫；可使用格式 '${ columnName }'，以使用資料驅動的資料行名稱。",
-			"actionServerDescription": "此動作的目標伺服器；可使用格式 '${ columnName }'，以使用資料驅動的資料列名稱。",
-			"actionUserDescription": "請指定執行此動作的使用者；可使用格式 '${ columnName }'，以使用資料驅動的資料行名稱。",
-			"carbon.extension.contributes.insightType.id": "見解識別碼",
-			"carbon.extension.contributes.insights": "在儀表板選擇區提供見解。"
-		},
-		"sql/workbench/contrib/backup/browser/backupActions": {
-			"backupAction.backup": "備份",
-			"backup.isPreviewFeature": "您必須啟用預覽功能才能使用備份",
-			"backup.commandNotSupported": "Azure SQL 資料庫不支援備份命令。",
-			"backup.commandNotSupportedForServer": "伺服器內容中不支援備份命令。請選取資料庫並再試一次。"
-		},
-		"sql/workbench/contrib/restore/browser/restoreActions": {
-			"restoreAction.restore": "還原",
-			"restore.isPreviewFeature": "您必須啟用預覽功能才能使用還原",
-			"restore.commandNotSupported": "Azure SQL 資料庫不支援還原命令。"
-		},
-		"sql/workbench/contrib/extensions/browser/extensionsActions": {
-			"showRecommendations": "顯示建議",
-			"Install Extensions": "安裝延伸模組",
-			"openExtensionAuthoringDocs": "撰寫延伸模組..."
-		},
-		"sql/workbench/browser/editData/editDataInput": {
-			"connectionFailure": "編輯資料工作階段連線失敗"
-		},
-		"sql/workbench/browser/modal/optionsDialog": {
-			"optionsDialog.ok": "確定",
-			"optionsDialog.cancel": "取消"
-		},
-		"sql/workbench/services/dashboard/browser/newDashboardTabDialogImpl": {
-			"newDashboardTab.openDashboardExtensions": "開啟儀表板延伸模組",
-			"newDashboardTab.ok": "確定",
-			"newDashboardTab.cancel": "取消",
-			"newdashboardTabDialog.noExtensionLabel": "目前沒有安裝任何儀表板延伸模組。請前往延伸模組能管理員探索建議的延伸模組。"
-		},
-		"sql/workbench/services/fileBrowser/browser/fileBrowserDialog": {
-			"filebrowser.filepath": "選擇的路徑",
-			"fileFilter": "檔案類型",
-			"fileBrowser.ok": "確定",
-			"fileBrowser.discard": "捨棄"
-		},
-		"sql/workbench/services/insights/browser/insightsDialogController": {
-			"insightsInputError": "沒有傳遞給見解彈出式視窗的連線設定",
-			"insightsError": "見解錯誤",
-			"insightsFileError": "讀取查詢檔案時發生錯誤:",
-			"insightsConfigError": "解析見解設定時發生錯誤。找不到查詢陣列/字串或 queryfile"
-		},
-		"sql/workbench/services/accountManagement/browser/accountPickerImpl": {
-			"azureAccount": "Azure 帳戶",
-			"azureTenant": "Azure 租用戶"
-		},
-		"sql/workbench/contrib/dataExplorer/browser/dataExplorerViewlet": {
-			"showDataExplorer": "顯示連線",
-			"dataExplorer.servers": "伺服器",
-			"dataexplorer.name": "連線"
-		},
-		"sql/workbench/contrib/tasks/browser/tasksView": {
-			"noTaskMessage": "沒有工作歷程記錄可顯示。",
-			"taskHistory.regTreeAriaLabel": "工作歷程記錄",
-			"taskError": "工作錯誤"
-		},
-		"sql/workbench/services/connection/browser/connectionActions": {
-			"ClearRecentlyUsedLabel": "清除清單",
-			"ClearedRecentConnections": "最近的連線清單已清除",
-			"connectionAction.yes": "是",
-			"connectionAction.no": "否",
-			"clearRecentConnectionMessage": "您確定要刪除清單中的所有連線嗎?",
-			"connectionDialog.yes": "是",
-			"connectionDialog.no": "否",
-			"delete": "刪除",
-			"connectionAction.GetCurrentConnectionString": "取得目前的連接字串",
-			"connectionAction.connectionString": "連接字串無法使用",
-			"connectionAction.noConnection": "沒有可用的有效連線"
-		},
-		"sql/workbench/services/objectExplorer/browser/connectionTreeAction": {
-			"connectionTree.refresh": "重新整理",
-			"connectionTree.editConnection": "編輯連線",
-			"DisconnectAction": "中斷連線",
-			"connectionTree.addConnection": "新增連線",
-			"connectionTree.addServerGroup": "新增伺服器群組",
-			"connectionTree.editServerGroup": "編輯伺服器群組",
-			"activeConnections": "顯示使用中的連線",
-			"showAllConnections": "顯示所有連線",
-			"recentConnections": "最近的連線",
-			"deleteConnection": "刪除連線",
-			"deleteConnectionGroup": "刪除群組"
-		},
-		"sql/workbench/contrib/editData/browser/editDataActions": {
-			"editData.run": "執行",
-			"disposeEditFailure": "處理編輯失敗，出現錯誤:",
-			"editData.stop": "停止",
-			"editData.showSql": "顯示 SQL 窗格",
-			"editData.closeSql": "關閉 SQL 窗格"
-		},
-		"sql/workbench/browser/editor/profiler/profilerInput": {
-			"profilerInput.profiler": "分析工具",
-			"profilerInput.notConnected": "未連線",
-			"profiler.sessionStopped": "伺服器 {0} 上的 XEvent 分析工具工作階段意外停止。",
-			"profiler.sessionCreationError": "啟動新的工作階段時發生錯誤",
-			"profiler.eventsLost": "{0} 的 XEvent 分析工具工作階段遺失事件。"
-		},
-		"sql/workbench/browser/modelComponents/loadingComponent.component": {
+		"sql/base/browser/ui/loadingSpinner/loadingSpinner.component": {
 			"loadingMessage": "正在載入",
 			"loadingCompletedMessage": "已完成載入"
 		},
-		"sql/workbench/services/serverGroup/browser/serverGroupDialog": {
-			"ServerGroupsDialogTitle": "伺服器群組",
-			"serverGroup.ok": "確定",
-			"serverGroup.cancel": "取消",
-			"connectionGroupName": "伺服器群組名稱",
-			"MissingGroupNameError": "需要群組名稱。",
-			"groupDescription": "群組描述",
-			"groupColor": "群組色彩"
+		"sql/base/browser/ui/panel/panel.component": {
+			"hideTextLabel": "隱藏文字標籤",
+			"showTextLabel": "顯示文字標籤"
 		},
-		"sql/workbench/services/accountManagement/browser/accountDialogController": {
-			"accountDialog.addAccountErrorTitle": "新增帳戶時發生錯誤"
-		},
-		"sql/workbench/services/insights/browser/insightsDialogView": {
-			"insights.item": "項目",
-			"insights.value": "值",
-			"insightsDetailView.name": "見解詳細資料",
-			"property": "屬性",
-			"value": "值",
-			"InsightsDialogTitle": "見解",
-			"insights.dialog.items": "項目",
-			"insights.dialog.itemDetails": "項目詳細資訊"
-		},
-		"sql/workbench/services/accountManagement/browser/autoOAuthDialogController": {
-			"oauthFlyoutIsAlreadyOpen": "無法啟動自動 OAuth。自動 OAuth 已在進行中。"
-		},
-		"sql/workbench/services/profiler/browser/profilerColumnEditorDialog": {
-			"eventSort": "依事件排序",
-			"nameColumn": "依資料行排序",
-			"profilerColumnDialog.profiler": "分析工具",
-			"profilerColumnDialog.ok": "確定",
-			"profilerColumnDialog.cancel": "取消"
-		},
-		"sql/workbench/services/profiler/browser/profilerFilterDialog": {
-			"profilerFilterDialog.clear": "全部清除",
-			"profilerFilterDialog.apply": "套用",
-			"profilerFilterDialog.ok": "確定",
-			"profilerFilterDialog.cancel": "取消",
-			"profilerFilterDialog.title": "篩選",
-			"profilerFilterDialog.remove": "移除此子句",
-			"profilerFilterDialog.saveFilter": "儲存篩選",
-			"profilerFilterDialog.loadFilter": "載入篩選",
-			"profilerFilterDialog.addClauseText": "新增子句",
-			"profilerFilterDialog.fieldColumn": "欄位",
-			"profilerFilterDialog.operatorColumn": "運算子",
-			"profilerFilterDialog.valueColumn": "值",
-			"profilerFilterDialog.isNullOperator": "為 Null",
-			"profilerFilterDialog.isNotNullOperator": "非 Null",
-			"profilerFilterDialog.containsOperator": "包含",
-			"profilerFilterDialog.notContainsOperator": "不包含",
-			"profilerFilterDialog.startsWithOperator": "開頭是",
-			"profilerFilterDialog.notStartsWithOperator": "開頭不是"
-		},
-		"sql/workbench/contrib/editData/browser/gridActions": {
-			"saveAsCsv": "另存為 CSV",
-			"saveAsJson": "另存為 JSON",
-			"saveAsExcel": "另存為 Excel",
-			"saveAsXml": "另存為 XML",
-			"copySelection": "複製",
-			"copyWithHeaders": "隨標題一併複製",
-			"selectAll": "全選"
-		},
-		"sql/workbench/contrib/dashboard/browser/dashboardRegistry": {
-			"dashboard.properties.property": "定義顯示於儀表板上的屬性",
-			"dashboard.properties.property.displayName": "做為屬性標籤的值",
-			"dashboard.properties.property.value": "要在物件中存取的值",
-			"dashboard.properties.property.ignore": "指定要忽略的值",
-			"dashboard.properties.property.default": "如果忽略或沒有值，則顯示預設值",
-			"dashboard.properties.flavor": "定義儀表板屬性變體",
-			"dashboard.properties.flavor.id": "類別的變體的識別碼",
-			"dashboard.properties.flavor.condition": "使用此變體的條件",
-			"dashboard.properties.flavor.condition.field": "要比較的欄位",
-			"dashboard.properties.flavor.condition.operator": "用於比較的運算子",
-			"dashboard.properties.flavor.condition.value": "用於比較該欄位的值",
-			"dashboard.properties.databaseProperties": "顯示資料庫頁的屬性",
-			"dashboard.properties.serverProperties": "顯示伺服器頁的屬性",
-			"carbon.extension.dashboard": "定義此提供者支援儀表板",
-			"dashboard.id": "提供者識別碼 (例如 MSSQL)",
-			"dashboard.properties": "在儀表板上顯示的屬性值"
-		},
-		"sql/workbench/browser/modelComponents/inputbox.component": {
-			"invalidValueError": "值無效",
-			"period": "{0}. {1}"
-		},
-		"sql/workbench/browser/modelComponents/dropdown.component": {
-			"loadingMessage": "正在載入",
-			"loadingCompletedMessage": "已完成載入"
-		},
-		"sql/workbench/browser/modelComponents/declarativeTable.component": {
-			"blankValue": "空白",
-			"checkAllColumnLabel": "選取資料行中的所有核取方塊: {0}"
-		},
-		"sql/workbench/api/common/extHostModelViewTree": {
-			"treeView.notRegistered": "未註冊識別碼為 '{0}' 的樹狀檢視。"
-		},
-		"sql/workbench/services/editData/common/editQueryRunner": {
-			"query.initEditExecutionFailed": "初始化編輯資料工作階段失敗:"
-		},
-		"sql/workbench/services/notebook/common/notebookRegistry": {
-			"carbon.extension.contributes.notebook.provider": "筆記本提供者的識別碼。",
-			"carbon.extension.contributes.notebook.fileExtensions": "應向此筆記本提供者註冊的檔案副檔名",
-			"carbon.extension.contributes.notebook.standardKernels": "應為此筆記本提供者之標準的核心",
-			"vscode.extension.contributes.notebook.providers": "提供筆記本提供者。",
-			"carbon.extension.contributes.notebook.magic": "資料格 magic 的名稱，例如 '%%sql'。",
-			"carbon.extension.contributes.notebook.language": "資料格中包含此資料格 magic 時，要使用的資料格語言",
-			"carbon.extension.contributes.notebook.executionTarget": "這個 magic 指示的選擇性執行目標，例如 Spark vs SQL",
-			"carbon.extension.contributes.notebook.kernels": "適用於像是 python3、pyspark、sql 等等的選擇性核心集",
-			"vscode.extension.contributes.notebook.languagemagics": "提供筆記本語言。"
-		},
-		"sql/workbench/api/browser/mainThreadNotebookDocumentsAndEditors": {
-			"runActiveCell": "F5 快速鍵需要選取程式碼資料格。請選取要執行的程式碼資料格。",
-			"clearResultActiveCell": "清除結果需要選取程式碼資料格。請選取要執行的程式碼資料格。"
-		},
-		"sql/workbench/services/notebook/browser/interfaces": {
-			"sqlKernel": "SQL"
-		},
-		"sql/workbench/contrib/editData/browser/editDataEditor": {
-			"maxRowTaskbar": "最大資料列數:"
-		},
-		"sql/workbench/contrib/profiler/browser/profilerEditor": {
-			"profiler.viewSelectAccessibleName": "選取檢視",
-			"profiler.sessionSelectAccessibleName": "選取工作階段",
-			"profiler.sessionSelectLabel": "選取工作階段:",
-			"profiler.viewSelectLabel": "選取檢視:",
-			"text": "文字",
-			"label": "標籤",
-			"profilerEditor.value": "值",
-			"details": "詳細資料"
-		},
-		"sql/workbench/contrib/query/browser/statusBarItems": {
-			"status.query.timeElapsed": "已耗用時間",
-			"status.query.rowCount": "資料列計數",
-			"rowCount": "{0} 個資料列",
-			"query.status.executing": "執行查詢中...",
-			"status.query.status": "執行狀態",
-			"status.query.selection-summary": "選取摘要",
-			"status.query.summaryText": "平均: {0} 計數: {1} 總和: {2}"
-		},
-		"sql/workbench/contrib/query/browser/flavorStatus": {
-			"chooseSqlLang": "選擇 SQL 語言 ",
-			"changeProvider": "變更 SQL 語言提供者",
-			"status.query.flavor": "SQL 語言的變體",
-			"changeSqlProvider": "變更 SQL 引擎提供者",
-			"alreadyConnected": "使用引擎 {0} 的連線已存在。若要變更，請中斷或變更連線",
-			"noEditor": "目前無使用中的文字編輯器",
-			"pickSqlProvider": "選擇語言提供者"
-		},
-		"sql/workbench/contrib/notebook/browser/outputs/plotlyOutput.component": {
-			"plotlyError": "顯示 Plotly 圖表時發生錯誤: {0}"
-		},
-		"sql/workbench/contrib/notebook/browser/outputs/mimeRenderer.component": {
-			"noRendererFound": "找不到輸出的 {0} 轉譯器。其有下列 MIME 類型: {1}",
-			"safe": "(安全)"
-		},
-		"sql/workbench/browser/scriptingActions": {
-			"scriptSelect": "選取前 1000",
-			"scriptKustoSelect": "取用 10 筆",
-			"scriptExecute": "作為指令碼執行",
-			"scriptAlter": "修改指令碼",
-			"editData": "編輯資料",
-			"scriptCreate": "建立指令碼",
-			"scriptDelete": "將指令碼編寫為 Drop"
-		},
-		"sql/workbench/api/common/extHostNotebookDocumentsAndEditors": {
-			"providerRequired": "必須將具有有效 providerId 的 NotebookProvider 傳遞給此方法"
-		},
-		"sql/workbench/api/common/extHostNotebook": {
-			"providerRequired": "必須將具有有效 providerId 的 NotebookProvider 傳遞給此方法",
-			"errNoProvider": "找不到任何筆記本提供者",
-			"errNoManager": "找不到管理員",
-			"noServerManager": "筆記本 {0} 的 Notebook 管理員沒有伺服器管理員。無法對其執行作業",
-			"noContentManager": "筆記本 {0} 的 Notebook 管理員沒有內容管理員。無法對其執行作業",
-			"noSessionManager": "筆記本 {0} 的 Notebook 管理員沒有工作階段管理員。無法對其執行作業"
-		},
-		"sql/workbench/services/connection/browser/connectionManagementService": {
-			"connection.noAzureAccount": "無法取得連線的 Azure 帳戶權杖",
-			"connectionNotAcceptedError": "連線未被接受",
-			"connectionService.yes": "是",
-			"connectionService.no": "否",
-			"cancelConnectionConfirmation": "您確定要取消此連線嗎?"
-		},
-		"sql/workbench/contrib/webview/browser/webViewDialog": {
-			"webViewDialog.ok": "確定",
-			"webViewDialog.close": "關閉"
-		},
-		"sql/workbench/contrib/notebook/browser/notebookActions": {
-			"loading": "正在載入核心...",
-			"changing": "正在變更核心...",
-			"AttachTo": "連結至 ",
-			"Kernel": "核心 ",
-			"loadingContexts": "正在載入內容...",
-			"changeConnection": "變更連線",
-			"selectConnection": "選取連線",
-			"localhost": "localhost",
-			"noKernel": "沒有核心",
-			"clearResults": "清除結果",
-			"trustLabel": "受信任",
-			"untrustLabel": "不受信任",
-			"collapseAllCells": "摺疊資料格",
-			"expandAllCells": "展開資料格",
-			"noContextAvailable": "無",
-			"newNotebookAction": "新增 Notebook",
-			"notebook.findNext": "尋找下一個字串",
-			"notebook.findPrevious": "尋找前一個字串"
-		},
-		"sql/workbench/contrib/queryPlan/browser/queryPlan": {
-			"queryPlanTitle": "查詢計劃"
-		},
-		"sql/workbench/contrib/resourceViewer/browser/resourceViewerActions": {
-			"resourceViewer.refresh": "重新整理"
-		},
-		"sql/workbench/services/dialog/browser/dialogPane": {
-			"wizardPageNumberDisplayText": "步驟 {0}"
-		},
-		"sql/base/parts/editableDropdown/browser/dropdown": {
-			"editableDropdown.errorValidate": "必須是清單中的選項",
-			"selectBox": "選取方塊"
+		"sql/base/browser/ui/panel/tabActions": {
+			"closeTab": "關閉"
 		},
 		"sql/base/browser/ui/selectBox/selectBox": {
 			"alertErrorMessage": "錯誤: {0}",
 			"alertWarningMessage": "警告: {0}",
 			"alertInfoMessage": "資訊: {0}"
 		},
-		"sql/workbench/services/connection/browser/connectionDialogWidget": {
-			"connection": "連線",
-			"connecting": "正在連線",
-			"connectType": "連線類型",
-			"recentConnectionTitle": "最近的連線",
-			"savedConnectionTitle": "已儲存的連線",
-			"connectionDetailsTitle": "連線詳細資料",
-			"connectionDialog.connect": "連線",
-			"connectionDialog.cancel": "取消",
-			"connectionDialog.recentConnections": "最近的連線",
-			"noRecentConnections": "沒有最近使用的連線",
-			"connectionDialog.savedConnections": "已儲存的連線",
-			"noSavedConnections": "沒有已儲存的連線"
+		"sql/base/browser/ui/table/formatters": {
+			"tableCell.NoDataAvailable": "沒有可用資料"
 		},
-		"sql/workbench/services/fileBrowser/browser/fileBrowserTreeView": {
-			"fileBrowser.regTreeAriaLabel": "樹狀結構檔案瀏覽器"
+		"sql/base/browser/ui/table/plugins/checkboxSelectColumn.plugin": {
+			"selectDeselectAll": "選擇/取消全選"
 		},
-		"sql/workbench/services/resourceProvider/browser/firewallRuleDialog": {
-			"from": "從",
-			"to": "至",
-			"createNewFirewallRule": "建立新的防火牆規則",
-			"firewall.ok": "確定",
-			"firewall.cancel": "取消",
-			"firewallRuleDialogDescription": "您的用戶端 IP 位址無法存取伺服器。登錄到 Azure 帳戶並建立新的防火牆規則以啟用存取權限。",
-			"firewallRuleHelpDescription": "深入了解防火牆設定",
-			"filewallRule": "防火牆規則",
-			"addIPAddressLabel": "新增我的用戶端 IP",
-			"addIpRangeLabel": "新增我的子網路 IP 範圍"
+		"sql/base/browser/ui/table/plugins/headerFilter.plugin": {
+			"headerFilter.showFilter": "顯示篩選",
+			"table.selectAll": "全選",
+			"table.searchPlaceHolder": "搜尋",
+			"tableFilter.visibleCount": "{0} 個結果",
+			"tableFilter.selectedCount": "已選取 {0} 個",
+			"table.sortAscending": "遞增排序",
+			"table.sortDescending": "遞減排序",
+			"headerFilter.ok": "確定",
+			"headerFilter.clear": "清除",
+			"headerFilter.cancel": "取消",
+			"table.filterOptions": "篩選選項"
 		},
-		"sql/workbench/services/fileBrowser/common/fileBrowserViewModel": {
-			"allFiles": "所有檔案"
+		"sql/base/browser/ui/table/plugins/loadingSpinner.plugin": {
+			"loadingSpinner.loading": "正在載入"
 		},
-		"sql/workbench/services/insights/common/insightsUtils": {
-			"insightsDidNotFindResolvedFile": "無法在以下任一路徑找到查詢檔案 :\r\n {0}"
+		"sql/base/browser/ui/table/plugins/rowDetailView": {
+			"rowDetailView.loadError": "正在載入錯誤..."
 		},
-		"sql/workbench/services/accountManagement/browser/accountListRenderer": {
-			"refreshCredentials": "您需要重新整理此帳戶的登入資訊。"
+		"sql/base/browser/ui/taskbar/overflowActionbar": {
+			"toggleMore": "切換更多"
+		},
+		"sql/base/common/locConstants": {
+			"azuredatastudio": "Azure Data Studio",
+			"default": "啟用自動更新檢查。Azure Data Studio 會自動並定期檢查更新。",
+			"enableWindowsBackgroundUpdates": "啟用以在 Windows 背景中下載並安裝新的 Azure Data Studio 版本",
+			"showReleaseNotes": "在更新後顯示版本資訊。版本資訊會在新的網頁瀏覽器視窗中開啟。",
+			"dashboard.toolbar": "儀表板工具列動作功能表",
+			"notebook.cellTitle": "筆記本儲存格標題功能表",
+			"notebook.title": "筆記本標題功能表",
+			"notebook.toolbar": "筆記本工具列功能表",
+			"dataExplorer.action": "Dataexplorer 檢視容器標題動作功能表",
+			"dataExplorer.context": "Dataexplorer 項目操作功能表",
+			"objectExplorer.context": "物件總管項目操作功能表",
+			"connectionDialogBrowseTree.context": "連線對話方塊的瀏覽樹狀操作功能表",
+			"dataGrid.context": "資料格項目操作功能表",
+			"extensionsPolicy": "設定下載延伸模組的安全性原則。",
+			"InstallVSIXAction.allowNone": "您的延伸模組原則不允許安裝延伸模組。請變更您的延伸模組原則，然後再試一次。",
+			"InstallVSIXAction.successReload": "延伸模組 {0} 已從 VSIX 安裝完成。請重新載入 Azure Data Studio 以啟用此延伸模組。",
+			"postUninstallTooltip": "請重新載入 Azure Data Studio 以完成此延伸模組的解除安裝。",
+			"postUpdateTooltip": "請重新載入 Azure Data Studio 以啟用更新的延伸模組。",
+			"enable locally": "請重新載入 Azure Data Studio 以在本機啟用此延伸模組。",
+			"postEnableTooltip": "請重新載入 Azure Data Studio 以啟用此延伸模組。",
+			"postDisableTooltip": "請重新載入 Azure Data Studio 以停用此延伸模組。",
+			"uninstallExtensionComplete": "請重新載入 Azure Data Studio 以完成延伸模組 {0} 的解除安裝。",
+			"enable remote": "請重新載入 Azure Data Studio 以在 {0} 中啟用此延伸模組。",
+			"installExtensionCompletedAndReloadRequired": "延伸模組 {0} 安裝完成。請重新載入 Azure Data Studio 以啟用此延伸模組。",
+			"ReinstallAction.successReload": "請重新載入 Azure Data Studio 以完成重新安裝延伸模組 {0}。",
+			"recommendedExtensions": "Marketplace",
+			"scenarioTypeUndefined": "必須提供延伸模組建議的案例類型。",
+			"incompatible": "由於延伸模組 ‘{0}’ 與 Azure Data Studio '{1}' 不相容，所以無法安裝延伸模組。",
+			"newQuery": "新增查詢",
+			"miNewQuery": "新增查詢(&&Q)",
+			"miNewNotebook": "新增筆記本(&&N)",
+			"maxMemoryForLargeFilesMB": "控制當嘗試開啟大型檔案時，Azure Data Studio 在重新啟動後可用的記憶體。效果與在命令列上指定 `--max-memory=NEWSIZE` 相同。",
+			"updateLocale": "您想要變更 Azure Data Studio 的 UI 語言為 {0} 並重新啟動嗎?",
+			"activateLanguagePack": "若要在 {0} 中使用 Azure Data Studio，Azure Data Studio 需要重新啟動。",
+			"watermark.newSqlFile": "新增 SQL 檔案",
+			"watermark.newNotebook": "新增筆記本",
+			"miinstallVsix": "從 VSIX 套件安裝延伸模組"
+		},
+		"sql/base/parts/editableDropdown/browser/dropdown": {
+			"editableDropdown.errorValidate": "必須是清單中的選項",
+			"selectBox": "選取方塊"
 		},
 		"sql/platform/accounts/common/accountActions": {
 			"addAccount": "新增帳戶",
@@ -10190,354 +9358,24 @@
 			"refreshAccount": "重新輸入您的認證",
 			"NoAccountToRefresh": "沒有要重新整理的帳戶"
 		},
-		"sql/workbench/contrib/notebook/browser/notebookExplorer/notebookExplorerViewlet": {
-			"showNotebookExplorer": "顯示筆記本",
-			"notebookExplorer.searchResults": "搜尋結果",
-			"searchPathNotFoundError": "找不到搜尋路徑: {0}",
-			"notebookExplorer.name": "筆記本"
+		"sql/platform/clipboard/browser/clipboardService": {
+			"imageCopyingNotSupported": "不支援複製映像"
 		},
-		"sql/workbench/contrib/query/browser/keyboardQueryActions": {
-			"focusOnCurrentQueryKeyboardAction": "聚焦於目前的查詢",
-			"runQueryKeyboardAction": "執行查詢",
-			"runCurrentQueryKeyboardAction": "執行目前查詢",
-			"copyQueryWithResultsKeyboardAction": "與結果一併複製查詢",
-			"queryActions.queryResultsCopySuccess": "已成功複製查詢與結果。",
-			"runCurrentQueryWithActualPlanKeyboardAction": "使用實際計畫執行目前的查詢",
-			"cancelQueryKeyboardAction": "取消查詢",
-			"refreshIntellisenseKeyboardAction": "重新整理 IntelliSense 快取",
-			"toggleQueryResultsKeyboardAction": "切換查詢結果",
-			"ToggleFocusBetweenQueryEditorAndResultsAction": "在查詢與結果之間切換焦點",
-			"queryShortcutNoEditor": "要執行的捷徑需要編輯器參數",
-			"parseSyntaxLabel": "剖析查詢",
-			"queryActions.parseSyntaxSuccess": "已成功完成命令",
-			"queryActions.parseSyntaxFailure": "命令失敗:",
-			"queryActions.notConnected": "請連線至伺服器"
+		"sql/platform/connection/common/connectionConfig": {
+			"invalidServerName": "伺服器群組名稱已經存在。"
 		},
-		"sql/workbench/contrib/tasks/browser/tasksRenderer": {
-			"succeeded": "成功",
-			"failed": "失敗",
-			"inProgress": "進行中",
-			"notStarted": "未啟動",
-			"canceled": "已取消",
-			"canceling": "取消中"
+		"sql/platform/dashboard/browser/insightRegistry": {
+			"schema.dashboardWidgets.InsightsRegistry": "儀表板中使用的小工具"
 		},
-		"sql/workbench/contrib/dashboard/browser/widgets/insights/views/charts/chartInsight.component": {
-			"chartErrorMessage": "無法以指定的資料顯示圖表"
+		"sql/platform/dashboard/browser/widgetRegistry": {
+			"schema.dashboardWidgets.all": "儀表板中使用的小工具",
+			"schema.dashboardWidgets.database": "儀表板中使用的小工具",
+			"schema.dashboardWidgets.server": "儀表板中使用的小工具"
 		},
-		"sql/workbench/contrib/resourceViewer/browser/resourceViewerTable": {
-			"resourceViewerTable.openError": "開啟連結時發生錯誤: {0}",
-			"resourceViewerTable.commandError": "執行命令 '{0}' 時發生錯誤: {1}"
-		},
-		"sql/workbench/contrib/notebook/browser/outputs/gridOutput.component": {
-			"copyFailed": "複製失敗。錯誤: {0}",
-			"notebook.showChart": "顯示圖表",
-			"notebook.showTable": "顯示資料表"
-		},
-		"sql/workbench/contrib/notebook/browser/cellViews/textCell.component": {
-			"doubleClickEdit": "<i>按兩下即可編輯</i>",
-			"addContent": "<i>在這裡新增內容...</i>"
-		},
-		"sql/workbench/contrib/scripting/browser/scriptingActions": {
-			"refreshError": "重新整理節點 '{0}' 時發生錯誤: {1}"
-		},
-		"sql/workbench/api/common/extHostModelViewDialog": {
-			"dialogDoneLabel": "完成",
-			"dialogCancelLabel": "取消",
-			"generateScriptLabel": "產生指令碼",
-			"dialogNextLabel": "下一個",
-			"dialogPreviousLabel": "上一個",
-			"dashboardNotInitialized": "索引標籤未初始化"
-		},
-		"sql/workbench/browser/modal/optionsDialogHelper": {
-			"optionsDialog.missingRequireField": "是必要的。",
-			"optionsDialog.invalidInput": "輸入無效。預期為數字。"
-		},
-		"sql/workbench/services/restore/browser/restoreDialog": {
-			"backupFilePath": "備份檔案路徑",
-			"targetDatabase": "目標資料庫",
-			"restoreDialog.restore": "還原",
-			"restoreDialog.restoreTitle": "還原資料庫",
-			"restoreDialog.database": "資料庫",
-			"restoreDialog.backupFile": "備份檔案",
-			"RestoreDialogTitle": "還原資料庫",
-			"restoreDialog.cancel": "取消",
-			"restoreDialog.script": "指令碼",
-			"source": "來源",
-			"restoreFrom": "還原自",
-			"missingBackupFilePathError": "需要備份檔案路徑。",
-			"multipleBackupFilePath": "請輸入一或多個用逗號分隔的檔案路徑",
-			"database": "資料庫",
-			"destination": "目的地",
-			"restoreTo": "還原到",
-			"restorePlan": "還原計劃",
-			"backupSetsToRestore": "要還原的備份組",
-			"restoreDatabaseFileAs": "將資料庫檔案還原為",
-			"restoreDatabaseFileDetails": "還原資料庫檔詳細資訊",
-			"logicalFileName": "邏輯檔案名稱",
-			"fileType": "檔案類型",
-			"originalFileName": "原始檔案名稱",
-			"restoreAs": "還原為",
-			"restoreOptions": "還原選項",
-			"taillogBackup": "結尾記錄備份",
-			"serverConnection": "伺服器連線",
-			"generalTitle": "一般",
-			"filesTitle": "檔案",
-			"optionsTitle": "選項"
-		},
-		"sql/workbench/services/insights/browser/insightDialogActions": {
-			"workbench.action.insights.copySelection": "複製資料格"
-		},
-		"sql/workbench/services/dialog/common/dialogTypes": {
-			"dialogModalDoneButtonLabel": "完成",
-			"dialogModalCancelButtonLabel": "取消"
-		},
-		"sql/workbench/services/accountManagement/browser/autoOAuthDialog": {
-			"copyAndOpen": "複製並開啟",
-			"oauthDialog.cancel": "取消",
-			"userCode": "使用者代碼",
-			"website": "網站"
-		},
-		"sql/workbench/browser/modelComponents/componentBase": {
-			"invalidIndex": "索引 {0} 無效。"
-		},
-		"sql/workbench/services/connection/browser/cmsConnectionWidget": {
-			"serverDescription": "伺服器描述 (選用)"
-		},
-		"sql/workbench/services/connection/browser/advancedPropertiesController": {
-			"connectionAdvancedProperties": "進階屬性",
-			"advancedProperties.discard": "捨棄"
-		},
-		"sql/workbench/services/notebook/common/localContentManager": {
-			"nbformatNotRecognized": "無法識別 nbformat v{0}.{1}",
-			"nbNotSupported": "檔案不具備有效的筆記本格式",
-			"unknownCellType": "資料格類型 {0} 不明",
-			"unrecognizedOutput": "無法識別輸出類型 {0}",
-			"invalidMimeData": "{0} 的資料應為字串或字串的陣列",
-			"unrecognizedOutputType": "無法識別輸出類型 {0}"
-		},
-		"sql/workbench/contrib/welcome/page/browser/welcomePage": {
-			"welcomePage": "歡迎使用",
-			"welcomePage.adminPack": "SQL 管理員套件",
-			"welcomePage.showAdminPack": "SQL 管理員套件",
-			"welcomePage.adminPackDescription": "SQL Server 的管理員套件是一套熱門的資料庫管理延伸模組，可協助您管理 SQL Server",
-			"welcomePage.powershell": "PowerShell",
-			"welcomePage.powershellDescription": "使用 Azure Data Studio 的豐富查詢編輯器來寫入及執行 PowerShell 指令碼",
-			"welcomePage.dataVirtualization": "資料虛擬化",
-			"welcomePage.dataVirtualizationDescription": "使用 SQL Server 2019 將資料虛擬化，並使用互動式精靈建立外部資料表",
-			"welcomePage.PostgreSQL": "PostgreSQL",
-			"welcomePage.PostgreSQLDescription": "使用 Azure Data Studio 進行連線、查詢及管理 Postgres 資料庫",
-			"welcomePage.extensionPackAlreadyInstalled": "支援功能{0}已被安裝。",
-			"welcomePage.willReloadAfterInstallingExtensionPack": "{0} 的其他支援安裝完成後，將會重新載入此視窗。",
-			"welcomePage.installingExtensionPack": "正在安裝 {0} 的其他支援...",
-			"welcomePage.extensionPackNotFound": "找不到ID為{1}的{0}支援功能.",
-			"welcomePage.newConnection": "新增連線",
-			"welcomePage.newQuery": "新增查詢",
-			"welcomePage.newNotebook": "新增筆記本",
-			"welcomePage.deployServer": "部署伺服器",
-			"welcome.title": "歡迎使用",
-			"welcomePage.new": "新增",
-			"welcomePage.open": "開啟…",
-			"welcomePage.openFile": "開啟檔案…",
-			"welcomePage.openFolder": "開啟資料夾…",
-			"welcomePage.startTour": "開始導覽",
-			"closeTourBar": "關閉快速導覽列",
-			"WelcomePage.TakeATour": "要進行 Azure Data Studio 的快速導覽嗎?",
-			"WelcomePage.welcome": "歡迎使用!",
-			"welcomePage.openFolderWithPath": "透過路徑 {1} 開啟資料夾 {0}",
-			"welcomePage.install": "安裝",
-			"welcomePage.installKeymap": "安裝 {0} 鍵盤對應",
-			"welcomePage.installExtensionPack": "安裝 {0} 的其他支援",
-			"welcomePage.installed": "已安裝",
-			"welcomePage.installedKeymap": "已安裝 {0} 按鍵對應",
-			"welcomePage.installedExtensionPack": "已安裝 {0} 支援",
-			"ok": "確定",
-			"details": "詳細資料",
-			"welcomePage.background": "歡迎頁面的背景色彩。"
-		},
-		"sql/workbench/contrib/profiler/browser/profilerResourceEditor": {
-			"profilerTextEditorAriaLabel": "事件文字的分析工具編輯器。唯讀"
-		},
-		"sql/workbench/services/query/common/resultSerializer": {
-			"msgSaveFailed": "無法儲存結果。",
-			"resultsSerializer.saveAsFileTitle": "選擇結果檔案",
-			"resultsSerializer.saveAsFileExtensionCSVTitle": "CSV (以逗號分隔)",
-			"resultsSerializer.saveAsFileExtensionJSONTitle": "JSON",
-			"resultsSerializer.saveAsFileExtensionExcelTitle": "Excel 活頁簿",
-			"resultsSerializer.saveAsFileExtensionXMLTitle": "XML",
-			"resultsSerializer.saveAsFileExtensionTXTTitle": "純文字",
-			"savingFile": "正在儲存檔案...",
-			"msgSaveSucceeded": "已成功將結果儲存至 {0}",
-			"openFile": "開啟檔案"
-		},
-		"sql/base/browser/ui/panel/panel.component": {
-			"hideTextLabel": "隱藏文字標籤",
-			"showTextLabel": "顯示文字標籤"
-		},
-		"sql/workbench/browser/modelComponents/queryTextEditor": {
-			"queryTextEditorAriaLabel": "檢視模型的 modelview 程式碼編輯器。"
-		},
-		"sql/workbench/browser/modal/modal": {
-			"infoAltText": "資訊",
-			"warningAltText": "警告",
-			"errorAltText": "錯誤",
-			"showMessageDetails": "顯示詳細資訊",
-			"copyMessage": "複製",
-			"closeMessage": "關閉",
-			"modal.back": "返回",
-			"hideMessageDetails": "隱藏詳細資料"
-		},
-		"sql/workbench/services/accountManagement/browser/accountDialog": {
-			"accountExplorer.name": "帳戶",
-			"linkedAccounts": "連結的帳戶",
-			"accountDialog.close": "關閉",
-			"accountDialog.noAccountLabel": "沒有任何已連結帳戶。請新增帳戶。",
-			"accountDialog.addConnection": "新增帳戶",
-			"accountDialog.noCloudsRegistered": "您未啟用任何雲端。前往 [設定] -> [搜尋 Azure 帳戶組態] -> 啟用至少一個雲端",
-			"accountDialog.didNotPickAuthProvider": "您未選取任何驗證提供者。請再試一次。"
-		},
-		"sql/workbench/services/query/common/queryRunner": {
-			"query.ExecutionFailedError": "由於意外錯誤導致執行失敗: {0} {1}",
-			"query.message.executionTime": "總執行時間: {0}",
-			"query.message.startQueryWithRange": "已於第 {0} 行開始執行查詢",
-			"query.message.startQuery": "已開始執行批次 {0}",
-			"elapsedBatchTime": "批次執行時間: {0}",
-			"copyFailed": "複製失敗。錯誤: {0}"
-		},
-		"sql/workbench/contrib/welcome2/page/browser/az_data_welcome_page": {
-			"welcomePage.azdata": "Azure Data Studio",
-			"welcomePage.start": "開始",
-			"welcomePage.newConnection": "新增連線",
-			"welcomePage.newQuery": "新增查詢",
-			"welcomePage.newNotebook": "新增筆記本",
-			"welcomePage.openFileMac": "開啟檔案",
-			"welcomePage.openFileLinuxPC": "開啟檔案",
-			"welcomePage.deploy": "部署",
-			"welcomePage.newDeployment": "新增部署…",
-			"welcomePage.recent": "最近使用",
-			"welcomePage.moreRecent": "更多...",
-			"welcomePage.noRecentFolders": "沒有最近使用的資料夾",
-			"welcomePage.help": "說明",
-			"welcomePage.gettingStarted": "使用者入門",
-			"welcomePage.productDocumentation": "文件",
-			"welcomePage.reportIssue": "回報問題或功能要求",
-			"welcomePage.gitHubRepository": "GitHub 存放庫",
-			"welcomePage.releaseNotes": "版本資訊",
-			"welcomePage.showOnStartup": "啟動時顯示歡迎頁面",
-			"welcomePage.customize": "自訂",
-			"welcomePage.extensions": "延伸模組",
-			"welcomePage.extensionDescription": "下載所需延伸模組，包括 SQL Server 系統管理員套件等",
-			"welcomePage.keyboardShortcut": "鍵盤快速鍵",
-			"welcomePage.keyboardShortcutDescription": "尋找您最愛的命令並予加自訂",
-			"welcomePage.colorTheme": "色彩佈景主題",
-			"welcomePage.colorThemeDescription": "將編輯器和您的程式碼設定成您喜愛的外觀",
-			"welcomePage.learn": "了解",
-			"welcomePage.showCommands": "尋找及執行所有命令",
-			"welcomePage.showCommandsDescription": "從命令選擇區快速存取及搜尋命令 ({0})",
-			"welcomePage.azdataBlog": "探索最新版本中的新功能",
-			"welcomePage.azdataBlogDescription": "展示新功能的新每月部落格文章",
-			"welcomePage.followTwitter": "追蹤我們的 Twitter",
-			"welcomePage.followTwitterDescription": "掌握社群如何使用 Azure Data Studio 的最新消息，並可直接與工程師對話。"
-		},
-		"sql/workbench/contrib/profiler/browser/profilerActions": {
-			"profilerAction.connect": "連線",
-			"profilerAction.disconnect": "中斷連線",
-			"start": "開始",
-			"create": "新增工作階段",
-			"profilerAction.pauseCapture": "暫停",
-			"profilerAction.resumeCapture": "繼續",
-			"profilerStop.stop": "停止",
-			"profiler.clear": "清除資料",
-			"profiler.clearDataPrompt": "確定要清除資料嗎?",
-			"profiler.yes": "是",
-			"profiler.no": "否",
-			"profilerAction.autoscrollOn": "自動捲動: 開啟",
-			"profilerAction.autoscrollOff": "自動捲動: 關閉",
-			"profiler.toggleCollapsePanel": "切換折疊面板",
-			"profiler.editColumns": "編輯資料行",
-			"profiler.findNext": "尋找下一個字串",
-			"profiler.findPrevious": "尋找前一個字串",
-			"profilerAction.newProfiler": "啟動分析工具",
-			"profiler.filter": "篩選...",
-			"profiler.clearFilter": "清除篩選",
-			"profiler.clearFilterPrompt": "確定要清除篩選嗎?"
-		},
-		"sql/workbench/contrib/profiler/browser/profilerTableEditor": {
-			"ProfilerTableEditor.eventCountFiltered": "事件 (已篩選): {0}/{1}",
-			"ProfilerTableEditor.eventCount": "事件: {0}",
-			"status.eventCount": "事件計數"
-		},
-		"sql/base/browser/ui/table/formatters": {
-			"tableCell.NoDataAvailable": "沒有可用資料"
-		},
-		"sql/workbench/contrib/query/browser/queryResultsView": {
-			"resultsTabTitle": "結果",
-			"messagesTabTitle": "訊息"
-		},
-		"sql/workbench/browser/scriptingUtils": {
-			"scriptSelectNotFound": "在物件上呼叫選取的指令碼時沒有回傳任何指令碼",
-			"selectOperationName": "選擇",
-			"createOperationName": "建立",
-			"insertOperationName": "插入",
-			"updateOperationName": "更新",
-			"deleteOperationName": "刪除",
-			"scriptNotFoundForObject": "在物件 {1} 指令碼為 {0} 時無回傳任何指令碼",
-			"scriptingFailed": "指令碼失敗",
-			"scriptNotFound": "指令碼為 {0} 時無回傳任何指令"
-		},
-		"sql/platform/theme/common/colors": {
-			"tableHeaderBackground": "資料表標題背景色彩",
-			"tableHeaderForeground": "資料表標題前景色彩",
-			"listFocusAndSelectionBackground": "當清單/資料表處於使用狀態時，所選項目與聚焦項目的清單/資料表背景色彩",
-			"tableCellOutline": "資料格的外框色彩。",
-			"disabledInputBoxBackground": "已停用輸入方塊背景。",
-			"disabledInputBoxForeground": "已停用輸入方塊前景。",
-			"buttonFocusOutline": "聚焦時按鈕外框色彩。",
-			"disabledCheckboxforeground": "已停用核取方塊前景。",
-			"agentTableBackground": "SQL Agent 資料表背景色彩。",
-			"agentCellBackground": "SQL Agent 資料表資料格背景色彩。",
-			"agentTableHoverBackground": "SQL Agent 資料表暫留背景色彩。",
-			"agentJobsHeadingColor": "SQL Agent 標題背景色彩。",
-			"agentCellBorderColor": "SQL Agent 資料表資料格邊框色彩。",
-			"resultsErrorColor": "結果訊息錯誤色彩。"
-		},
-		"sql/workbench/contrib/backup/browser/backup.component": {
-			"backup.backupName": "備份名稱",
-			"backup.recoveryModel": "復原模式",
-			"backup.backupType": "備份類型",
-			"backup.backupDevice": "備份檔案",
-			"backup.algorithm": "演算法",
-			"backup.certificateOrAsymmetricKey": "憑證或非對稱金鑰",
-			"backup.media": "媒體",
-			"backup.mediaOption": "備份到現有的媒體集",
-			"backup.mediaOptionFormat": "備份到新媒體集",
-			"backup.existingMediaAppend": "附加至現有的備份組",
-			"backup.existingMediaOverwrite": "覆寫所有現有的備份集",
-			"backup.newMediaSetName": "新增媒體集名稱",
-			"backup.newMediaSetDescription": "新增媒體集描述",
-			"backup.checksumContainer": "在寫入媒體前執行檢查碼",
-			"backup.verifyContainer": "完成後驗證備份",
-			"backup.continueOnErrorContainer": "錯誤時繼續",
-			"backup.expiration": "逾期",
-			"backup.setBackupRetainDays": "設定備份保留天數",
-			"backup.copyOnly": "僅複製備份",
-			"backup.advancedConfiguration": "進階組態",
-			"backup.compression": "壓縮",
-			"backup.setBackupCompression": "設定備份壓縮",
-			"backup.encryption": "加密",
-			"backup.transactionLog": "交易記錄",
-			"backup.truncateTransactionLog": "截斷交易記錄",
-			"backup.backupTail": "備份最後的記錄",
-			"backup.reliability": "可靠性",
-			"backup.mediaNameRequired": "需要媒體名稱",
-			"backup.noEncryptorWarning": "沒有憑證或非對稱金鑰可用",
-			"addFile": "增加檔案",
-			"removeFile": "移除檔案",
-			"backupComponent.invalidInput": "輸入無效。值必須大於或等於 0。",
-			"backupComponent.script": "指令碼",
-			"backupComponent.backup": "備份",
-			"backupComponent.cancel": "取消",
-			"backup.containsBackupToUrlError": "僅支援備份到檔案",
-			"backup.backupFileRequired": "需要備份檔案路徑"
+		"sql/platform/serialization/common/serializationService": {
+			"saveAsNotSupported": "正在將結果儲存為其他格式，但此資料提供者已停用該格式。",
+			"noSerializationProvider": "因為未註冊任何提供者，所以無法序列化資料",
+			"unknownSerializationError": "因為發生未知錯誤，導致序列化失敗"
 		},
 		"sql/platform/theme/common/colorRegistry": {
 			"tileBorder": "磚的框線色彩",
@@ -10587,231 +9425,184 @@
 			"calloutDialogBodyBackground": "圖說文字對話方塊內文背景。",
 			"calloutDialogShadowColor": "圖說文字對話方塊陰影色彩。"
 		},
-		"sql/workbench/contrib/views/browser/treeView": {
-			"no-dataprovider": "沒有任何已註冊的資料提供者可提供檢視資料。",
-			"refresh": "重新整理",
-			"collapseAll": "全部摺疊",
-			"command-error": "執行命令 {1} 時發生錯誤: {0}。這可能是貢獻 {1} 的延伸模組所引起。"
+		"sql/platform/theme/common/colors": {
+			"tableHeaderBackground": "資料表標題背景色彩",
+			"tableHeaderForeground": "資料表標題前景色彩",
+			"listFocusAndSelectionBackground": "當清單/資料表處於使用狀態時，所選項目與聚焦項目的清單/資料表背景色彩",
+			"tableCellOutline": "資料格的外框色彩。",
+			"disabledInputBoxBackground": "已停用輸入方塊背景。",
+			"disabledInputBoxForeground": "已停用輸入方塊前景。",
+			"buttonFocusOutline": "聚焦時按鈕外框色彩。",
+			"disabledCheckboxforeground": "已停用核取方塊前景。",
+			"agentTableBackground": "SQL Agent 資料表背景色彩。",
+			"agentCellBackground": "SQL Agent 資料表資料格背景色彩。",
+			"agentTableHoverBackground": "SQL Agent 資料表暫留背景色彩。",
+			"agentJobsHeadingColor": "SQL Agent 標題背景色彩。",
+			"agentCellBorderColor": "SQL Agent 資料表資料格邊框色彩。",
+			"resultsErrorColor": "結果訊息錯誤色彩。"
 		},
-		"sql/workbench/contrib/notebook/browser/cellViews/codeActions": {
-			"notebook.failed": "請選取作用資料格並再試一次",
-			"runCell": "執行資料格",
-			"stopCell": "取消執行",
-			"errorRunCell": "上一個執行發生錯誤。按一下即可重新執行"
+		"sql/workbench/api/browser/mainThreadExtensionManagement": {
+			"workbench.generalObsoleteApiNotification": "載入的延伸模組中，有一些使用淘汰的 API。請參閱「開發人員工具」視窗 [主控台] 索引標籤中的詳細資訊",
+			"dontShowAgain": "不要再顯示"
 		},
-		"sql/workbench/contrib/tasks/common/tasksAction": {
-			"cancelTask.cancel": "取消",
-			"errorMsgFromCancelTask": "工作無法取消。",
-			"taskAction.script": "指令碼"
-		},
-		"sql/base/browser/ui/taskbar/overflowActionbar": {
-			"toggleMore": "切換更多"
-		},
-		"sql/base/browser/ui/table/plugins/loadingSpinner.plugin": {
-			"loadingSpinner.loading": "正在載入"
-		},
-		"sql/workbench/contrib/dashboard/browser/services/breadcrumb.service": {
-			"homeCrumb": "首頁"
-		},
-		"sql/workbench/contrib/dashboard/browser/containers/dashboardErrorContainer.component": {
-			"dashboardNavSection.loadTabError": "\"{0}\" 區段有無效的內容。請連絡延伸模組擁有者。"
-		},
-		"sql/workbench/contrib/jobManagement/browser/agentView.component": {
-			"jobview.Jobs": "作業",
-			"jobview.Notebooks": "Notebooks",
-			"jobview.Alerts": "警示",
-			"jobview.Proxies": "Proxy",
-			"jobview.Operators": "運算子"
-		},
-		"sql/workbench/contrib/dashboard/browser/pages/serverDashboardPage.component": {
-			"serverPageName": "伺服器屬性"
-		},
-		"sql/workbench/contrib/dashboard/browser/pages/databaseDashboardPage.component": {
-			"databasePageName": "資料庫屬性"
-		},
-		"sql/base/browser/ui/table/plugins/checkboxSelectColumn.plugin": {
-			"selectDeselectAll": "選擇/取消全選"
-		},
-		"sql/base/browser/ui/table/plugins/headerFilter.plugin": {
-			"headerFilter.showFilter": "顯示篩選",
-			"headerFilter.ok": "確定",
-			"headerFilter.clear": "清除",
-			"headerFilter.cancel": "取消"
-		},
-		"sql/workbench/services/objectExplorer/browser/treeCreationUtils": {
-			"treeAriaLabel": "最近的連線",
-			"serversAriaLabel": "伺服器",
-			"treeCreation.regTreeAriaLabel": "伺服器"
-		},
-		"sql/workbench/services/restore/common/constants": {
-			"backup.filterBackupFiles": "備份檔案",
-			"backup.allFiles": "所有檔案"
-		},
-		"sql/workbench/contrib/notebook/browser/notebookExplorer/notebookSearchWidget": {
-			"label.Search": "搜尋: 輸入搜尋字詞，然後按 Enter 鍵搜尋或按 Esc 鍵取消",
-			"search.placeHolder": "搜尋"
-		},
-		"sql/workbench/contrib/dashboard/browser/services/dashboardServiceInterface.service": {
-			"dashboard.changeDatabaseFailure": "變更資料庫失敗"
-		},
-		"sql/workbench/contrib/jobManagement/browser/alertsView.component": {
-			"jobAlertColumns.name": "名稱",
-			"jobAlertColumns.lastOccurrenceDate": "上次發生",
-			"jobAlertColumns.enabled": "啟用",
-			"jobAlertColumns.delayBetweenResponses": "回應之間的延遲 (秒)",
-			"jobAlertColumns.categoryName": "類別名稱"
-		},
-		"sql/workbench/contrib/jobManagement/browser/operatorsView.component": {
-			"jobOperatorsView.name": "名稱",
-			"jobOperatorsView.emailAddress": "電子郵件地址",
-			"jobOperatorsView.enabled": "啟用"
-		},
-		"sql/workbench/contrib/jobManagement/browser/proxiesView.component": {
-			"jobProxiesView.accountName": "帳戶名稱",
-			"jobProxiesView.credentialName": "認證名稱",
-			"jobProxiesView.description": "描述",
-			"jobProxiesView.isEnabled": "啟用"
-		},
-		"sql/workbench/contrib/dashboard/browser/widgets/explorer/explorerWidget.component": {
-			"loadingObjects": "正在載入物件",
-			"loadingDatabases": "正在載入資料庫",
-			"loadingObjectsCompleted": "已完成載入物件。",
-			"loadingDatabasesCompleted": "已完成載入資料庫。",
-			"seachObjects": "依類型名稱搜尋 (t:、v:、f: 或 sp:)",
-			"searchDatabases": "搜尋資料庫",
-			"dashboard.explorer.objectError": "無法載入物件",
-			"dashboard.explorer.databaseError": "無法載入資料庫"
-		},
-		"sql/workbench/contrib/dashboard/browser/widgets/properties/propertiesWidget.component": {
-			"loadingProperties": "正在載入屬性",
-			"loadingPropertiesCompleted": "已完成載入屬性",
-			"dashboard.properties.error": "無法載入儀表板屬性"
-		},
-		"sql/workbench/contrib/dashboard/browser/widgets/insights/insightsWidget.component": {
-			"insightsWidgetLoadingMessage": "正在載入 {0}",
-			"insightsWidgetLoadingCompletedMessage": "已完成載入 {0}",
-			"insights.autoRefreshOffState": "自動重新整理: 關閉",
-			"insights.lastUpdated": "最近更新: {0} {1}",
-			"noResults": "沒有可顯示的結果"
-		},
-		"sql/workbench/contrib/jobManagement/browser/jobStepsView.component": {
-			"agent.steps": "步驟"
-		},
-		"sql/workbench/contrib/query/browser/actions": {
-			"saveAsCsv": "另存為 CSV",
-			"saveAsJson": "另存為 JSON",
-			"saveAsExcel": "另存為 Excel",
-			"saveAsXml": "另存為 XML",
-			"jsonEncoding": "匯出至 JSON 時將不會儲存結果編碼，請務必在建立檔案後儲存所需的編碼。",
-			"saveToFileNotSupported": "回溯資料來源不支援儲存為檔案",
-			"copySelection": "複製",
-			"copyWithHeaders": "隨標題一同複製",
-			"selectAll": "全選",
-			"maximize": "最大化",
-			"restore": "還原",
-			"chart": "圖表",
-			"visualizer": "視覺化檢視"
+		"sql/workbench/api/browser/mainThreadNotebookDocumentsAndEditors": {
+			"runActiveCell": "F5 快速鍵需要選取程式碼資料格。請選取要執行的程式碼資料格。",
+			"clearResultActiveCell": "清除結果需要選取程式碼資料格。請選取要執行的程式碼資料格。"
 		},
 		"sql/workbench/api/common/extHostModelView": {
 			"unknownComponentType": "未知元件類型。必須使用 ModelBuilder 建立物件",
 			"invalidIndex": "索引 {0} 無效。",
 			"unknownConfig": "元件設定不明，必須使用 ModelBuilder 才能建立設定物件"
 		},
-		"sql/workbench/contrib/jobManagement/browser/jobHistory.component": {
-			"stepRow.stepID": "步驟識別碼",
-			"stepRow.stepName": "步驟名稱",
-			"stepRow.message": "訊息"
+		"sql/workbench/api/common/extHostModelViewDialog": {
+			"dialogDoneLabel": "完成",
+			"dialogCancelLabel": "取消",
+			"generateScriptLabel": "產生指令碼",
+			"dialogNextLabel": "下一個",
+			"dialogPreviousLabel": "上一個",
+			"dashboardNotInitialized": "索引標籤未初始化"
 		},
-		"sql/workbench/contrib/notebook/browser/find/notebookFindWidget": {
-			"label.find": "尋找",
-			"placeholder.find": "尋找",
-			"label.previousMatchButton": "上一個相符",
-			"label.nextMatchButton": "下一個相符",
-			"label.closeButton": "關閉",
-			"title.matchesCountLimit": "您的搜尋傳回了大量結果，只會將前 999 個相符項目醒目提示。",
-			"label.matchesLocation": "{0}/{1} 個",
-			"label.noResults": "沒有任何結果"
+		"sql/workbench/api/common/extHostModelViewTree": {
+			"treeView.notRegistered": "未註冊識別碼為 '{0}' 的樹狀檢視。"
 		},
-		"sql/workbench/contrib/charts/browser/chartView": {
-			"horizontalBarAltName": "水平橫條圖",
-			"barAltName": "橫條圖",
-			"lineAltName": "折線圖",
-			"pieAltName": "圓形圖",
-			"scatterAltName": "散佈圖",
-			"timeSeriesAltName": "時間序列",
-			"imageAltName": "映像",
-			"countAltName": "計數",
-			"tableAltName": "資料表",
-			"doughnutAltName": "環圈圖",
-			"charting.failedToGetRows": "無法取得資料集的資料列以繪製圖表。",
-			"charting.unsupportedType": "不支援圖表類型 '{0}'。"
+		"sql/workbench/api/common/extHostNotebook": {
+			"providerRequired": "必須將具有有效 providerId 的 NotebookProvider 傳遞給此方法",
+			"errNoProvider": "找不到任何筆記本提供者",
+			"errNoManager": "找不到管理員",
+			"noServerManager": "筆記本 {0} 的 Notebook 管理員沒有伺服器管理員。無法對其執行作業",
+			"noContentManager": "筆記本 {0} 的 Notebook 管理員沒有內容管理員。無法對其執行作業",
+			"noSessionManager": "筆記本 {0} 的 Notebook 管理員沒有工作階段管理員。無法對其執行作業"
 		},
-		"sql/workbench/contrib/notebook/browser/cellViews/code.component": {
-			"parametersText": "參數"
+		"sql/workbench/api/common/extHostNotebookDocumentsAndEditors": {
+			"providerRequired": "必須將具有有效 providerId 的 NotebookProvider 傳遞給此方法"
 		},
-		"sql/workbench/services/connection/browser/localizedConstants": {
-			"onDidConnectMessage": "已連線到",
-			"onDidDisconnectMessage": "已中斷連線",
-			"unsavedGroupLabel": "未儲存的連線"
+		"sql/workbench/browser/actions": {
+			"manage": "管理",
+			"showDetails": "顯示詳細資訊",
+			"configureDashboardLearnMore": "深入了解",
+			"clearSavedAccounts": "清除所有儲存的帳戶"
 		},
-		"sql/workbench/services/connection/browser/connectionBrowseTab": {
-			"connectionDialog.browser": "瀏覽 (預覽)",
-			"connectionDialog.FilterPlaceHolder": "在此鍵入以篩選清單",
-			"connectionDialog.FilterInputTitle": "篩選連線",
-			"connectionDialog.ApplyingFilter": "正在套用篩選",
-			"connectionDialog.RemovingFilter": "正在移除篩選",
-			"connectionDialog.FilterApplied": "已套用篩選",
-			"connectionDialog.FilterRemoved": "已移除篩選",
-			"savedConnections": "已儲存的連線",
-			"savedConnection": "已儲存的連線",
-			"connectionBrowserTree": "連線瀏覽器樹狀結構"
+		"sql/workbench/browser/actions.contribution": {
+			"previewFeatures.configTitle": "預覽功能",
+			"previewFeatures.configEnable": "啟用未發佈的預覽功能",
+			"showConnectDialogOnStartup": "啟動時顯示連線對話方塊",
+			"enableObsoleteApiUsageNotificationTitle": "淘汰 API 通知",
+			"enableObsoleteApiUsageNotification": "啟用/停用使用淘汰的 API 通知"
 		},
-		"sql/workbench/contrib/extensions/browser/staticRecommendations": {
-			"defaultRecommendations": "Azure Data Studio 建議使用此延伸模組。"
+		"sql/workbench/browser/editData/editDataInput": {
+			"connectionFailure": "編輯資料工作階段連線失敗"
 		},
-		"sql/workbench/contrib/extensions/browser/scenarioRecommendations": {
-			"neverShowAgain": "不要再顯示",
-			"ExtensionsRecommended": "Azure Data Studio 有延伸模組建議。",
-			"VisualizerExtensionsRecommended": "Azure Data Studio 有資料視覺效果的延伸模組建議。\r\n安裝之後，即可選取視覺化檢視圖示，將查詢結果視覺化。",
-			"installAll": "全部安裝",
-			"showRecommendations": "顯示建議",
-			"scenarioTypeUndefined": "必須提供延伸模組建議的案例類型。"
+		"sql/workbench/browser/editor/profiler/profilerInput": {
+			"profilerInput.profiler": "分析工具",
+			"profilerInput.notConnected": "未連線",
+			"profiler.sessionStopped": "伺服器 {0} 上的 XEvent 分析工具工作階段意外停止。",
+			"profiler.sessionCreationError": "啟動新的工作階段時發生錯誤",
+			"profiler.eventsLost": "{0} 的 XEvent 分析工具工作階段遺失事件。"
 		},
-		"sql/workbench/contrib/welcome/page/browser/az_data_welcome_page": {
-			"welcomePage.previewBody": "這個功能頁面仍在預覽階段。預覽功能會引進新功能，並逐步成為產品中永久的一部分。這些功能雖然穩定，但在使用上仍需要改善。歡迎您在功能開發期間提供早期的意見反應。",
-			"welcomePage.preview": "預覽",
-			"welcomePage.createConnection": "建立連線",
-			"welcomePage.createConnectionBody": "透過連線對話方塊連線到資料庫執行個體。",
-			"welcomePage.runQuery": "執行查詢",
-			"welcomePage.runQueryBody": "透過查詢編輯器與資料互動。",
-			"welcomePage.createNotebook": "建立筆記本",
-			"welcomePage.createNotebookBody": "使用原生筆記本編輯器建置新的筆記本。",
-			"welcomePage.deployServer": "部署伺服器",
-			"welcomePage.deployServerBody": "在您選擇的平台上建立關聯式資料服務的新執行個體。",
-			"welcomePage.resources": "資源",
-			"welcomePage.history": "記錄",
-			"welcomePage.name": "名稱",
-			"welcomePage.location": "位置",
-			"welcomePage.moreRecent": "顯示更多",
-			"welcomePage.showOnStartup": "啟動時顯示歡迎頁面",
-			"welcomePage.usefuLinks": "實用的連結",
-			"welcomePage.gettingStarted": "使用者入門",
-			"welcomePage.gettingStartedBody": "探索 Azure Data Studio 提供的功能，並了解如何充分利用。",
-			"welcomePage.documentation": "文件",
-			"welcomePage.documentationBody": "如需快速入門、操作指南及 PowerShell、API 等參考，請瀏覽文件中心。",
-			"welcomePage.videoDescriptionOverview": "Azure Data Studio 概觀",
-			"welcomePage.videoDescriptionIntroduction": "Azure Data Studio Notebooks 簡介 | 公開的資料",
-			"welcomePage.extensions": "延伸模組",
-			"welcomePage.showAll": "全部顯示",
-			"welcomePage.learnMore": "深入了解 "
+		"sql/workbench/browser/editor/resourceViewer/resourceViewerInput": {
+			"resourceViewer.showActions": "顯示動作",
+			"resourceViewerInput.resourceViewer": "資源檢視器"
 		},
-		"sql/workbench/contrib/jobManagement/browser/notebookHistory.component": {
-			"notebookHistory.dateCreatedTooltip": "建立日期:",
-			"notebookHistory.notebookErrorTooltip": "Notebook 錯誤:",
-			"notebookHistory.ErrorTooltip": "作業錯誤:",
-			"notebookHistory.pinnedTitle": "已釘選",
-			"notebookHistory.recentRunsTitle": "最近的執行",
-			"notebookHistory.pastRunsTitle": "過去的執行"
+		"sql/workbench/browser/modal/modal": {
+			"infoAltText": "資訊",
+			"warningAltText": "警告",
+			"errorAltText": "錯誤",
+			"showMessageDetails": "顯示詳細資訊",
+			"copyMessage": "複製",
+			"closeMessage": "關閉",
+			"modal.back": "返回",
+			"hideMessageDetails": "隱藏詳細資料"
+		},
+		"sql/workbench/browser/modal/optionsDialog": {
+			"optionsDialog.ok": "確定",
+			"optionsDialog.cancel": "取消"
+		},
+		"sql/workbench/browser/modal/optionsDialogHelper": {
+			"optionsDialog.missingRequireField": "是必要的。",
+			"optionsDialog.invalidInput": "輸入無效。預期為數字。"
+		},
+		"sql/workbench/browser/modelComponents/componentBase": {
+			"invalidIndex": "索引 {0} 無效。"
+		},
+		"sql/workbench/browser/modelComponents/declarativeTable.component": {
+			"blankValue": "空白",
+			"checkAllColumnLabel": "選取資料行中的所有核取方塊: {0}",
+			"declarativeTable.showActions": "顯示動作"
+		},
+		"sql/workbench/browser/modelComponents/dropdown.component": {
+			"loadingMessage": "正在載入",
+			"loadingCompletedMessage": "已完成載入"
+		},
+		"sql/workbench/browser/modelComponents/inputbox.component": {
+			"invalidValueError": "值無效",
+			"period": "{0}. {1}"
+		},
+		"sql/workbench/browser/modelComponents/loadingComponent.component": {
+			"loadingMessage": "正在載入",
+			"loadingCompletedMessage": "已完成載入"
+		},
+		"sql/workbench/browser/modelComponents/queryTextEditor": {
+			"queryTextEditorAriaLabel": "檢視模型的 modelview 程式碼編輯器。"
+		},
+		"sql/workbench/browser/modelComponents/viewBase": {
+			"componentTypeNotRegistered": "找不到類型 {0} 的元件"
+		},
+		"sql/workbench/browser/parts/editor/editorStatusModeSelect": {
+			"languageChangeUnsupported": "無法變更尚未儲存之檔案的編輯器類型"
+		},
+		"sql/workbench/browser/scriptingActions": {
+			"scriptSelect": "選取前 1000",
+			"scriptKustoSelect": "取用 10 筆",
+			"scriptExecute": "作為指令碼執行",
+			"scriptAlter": "修改指令碼",
+			"editData": "編輯資料",
+			"scriptCreate": "建立指令碼",
+			"scriptDelete": "將指令碼編寫為 Drop"
+		},
+		"sql/workbench/browser/scriptingUtils": {
+			"scriptSelectNotFound": "在物件上呼叫選取的指令碼時沒有回傳任何指令碼",
+			"selectOperationName": "選擇",
+			"createOperationName": "建立",
+			"insertOperationName": "插入",
+			"updateOperationName": "更新",
+			"deleteOperationName": "刪除",
+			"scriptNotFoundForObject": "在物件 {1} 指令碼為 {0} 時無回傳任何指令碼",
+			"scriptingFailed": "指令碼失敗",
+			"scriptNotFound": "指令碼為 {0} 時無回傳任何指令"
+		},
+		"sql/workbench/common/editor/query/queryEditorInput": {
+			"disconnected": "已中斷連線"
+		},
+		"sql/workbench/common/editor/query/queryResultsInput": {
+			"extensionsInputName": "延伸模組"
+		},
+		"sql/workbench/common/theme": {
+			"verticalTabActiveBackground": "垂直索引標籤的作用中索引標籤背景色彩",
+			"dashboardBorder": "儀表板中框線的色彩",
+			"dashboardWidget": "儀表板 Widget 標題的色彩",
+			"dashboardWidgetSubtext": "儀表板 Widget 次文字的色彩",
+			"propertiesContainerPropertyValue": "屬性容器元件中顯示的屬性值色彩",
+			"propertiesContainerPropertyName": "屬性容器元件中顯示的屬性名稱色彩",
+			"toolbarOverflowShadow": "工具列溢位陰影色彩"
+		},
+		"sql/workbench/contrib/accounts/browser/accountManagement.contribution": {
+			"carbon.extension.contributes.account.id": "帳戶類型的識別碼",
+			"carbon.extension.contributes.account.icon": "(選用) 用於 UI 中表示 accpunt 的圖示。任一檔案路徑或主題化的設定。",
+			"carbon.extension.contributes.account.icon.light": "使用亮色主題時的圖示路徑",
+			"carbon.extension.contributes.account.icon.dark": "使用暗色主題時的圖像路徑",
+			"carbon.extension.contributes.account": "將圖示貢獻給帳戶供應者。"
+		},
+		"sql/workbench/contrib/assessment/browser/asmtActions": {
+			"asmtaction.server.getitems": "檢視適用的規則",
+			"asmtaction.database.getitems": "檢視適用於 {0} 的規則",
+			"asmtaction.server.invokeitems": "叫用評定",
+			"asmtaction.database.invokeitems": "為 {0} 叫用評定",
+			"asmtaction.exportasscript": "匯出為指令碼",
+			"asmtaction.showsamples": "檢視所有規則，並前往 GitHub 深入了解",
+			"asmtaction.generatehtmlreport": "建立 HTML 報表",
+			"asmtaction.openReport": "已儲存報表。要開啟嗎?",
+			"asmtaction.label.open": "開啟",
+			"asmtaction.label.cancel": "取消"
 		},
 		"sql/workbench/contrib/assessment/browser/asmtResultsView.component": {
 			"asmt.NoResultsInitial": "沒有任何可顯示的項目。請叫用評定以取得結果",
@@ -10820,110 +9611,6 @@
 			"asmt.column.severity": "嚴重性",
 			"asmt.TargetInstanceComplient": "執行個體 {0} 完全符合最佳做法。做得好!",
 			"asmt.TargetDatabaseComplient": "資料庫 {0} 完全符合最佳做法。做得好!"
-		},
-		"sql/workbench/contrib/charts/browser/chartTab": {
-			"chartTabTitle": "圖表"
-		},
-		"sql/workbench/contrib/queryPlan/browser/topOperations": {
-			"topOperations.operation": "作業",
-			"topOperations.object": "物件",
-			"topOperations.estCost": "估計成本",
-			"topOperations.estSubtreeCost": "估計的樹狀子目錄成本",
-			"topOperations.actualRows": "實際資料列數",
-			"topOperations.estRows": "估計資料列數",
-			"topOperations.actualExecutions": "實際執行次數",
-			"topOperations.estCPUCost": "估計 CPU 成本",
-			"topOperations.estIOCost": "估計 IO 成本",
-			"topOperations.parallel": "平行作業",
-			"topOperations.actualRebinds": "實際重新繫結數",
-			"topOperations.estRebinds": "估計重新繫結數",
-			"topOperations.actualRewinds": "實際倒轉數",
-			"topOperations.estRewinds": "估計倒轉數",
-			"topOperations.partitioned": "已分割",
-			"topOperationsTitle": "最前幾項操作"
-		},
-		"sql/workbench/contrib/objectExplorer/browser/serverTreeView": {
-			"servers.noConnections": "找不到連線。",
-			"serverTree.addConnection": "新增連線"
-		},
-		"sql/workbench/services/connection/browser/connectionWidget": {
-			"connectionWidget.AddAzureAccount": "新增帳戶...",
-			"defaultDatabaseOption": "<預設>",
-			"loadingDatabaseOption": "正在載入...",
-			"serverGroup": "伺服器群組",
-			"defaultServerGroup": "<預設>",
-			"addNewServerGroup": "新增群組...",
-			"noneServerGroup": "<不要儲存>",
-			"connectionWidget.missingRequireField": "{0} 為必要項。",
-			"connectionWidget.fieldWillBeTrimmed": "{0} 將受到修剪。",
-			"rememberPassword": "記住密碼",
-			"connection.azureAccountDropdownLabel": "帳戶",
-			"connectionWidget.refreshAzureCredentials": "重新整理帳戶登入資訊",
-			"connection.azureTenantDropdownLabel": "Azure AD 租用戶",
-			"connectionName": "名稱 (選用)",
-			"advanced": "進階...",
-			"connectionWidget.invalidAzureAccount": "您必須選取帳戶"
-		},
-		"sql/workbench/contrib/backup/common/constants": {
-			"backup.labelDatabase": "資料庫",
-			"backup.labelFilegroup": "檔案與檔案群組",
-			"backup.labelFull": "完整",
-			"backup.labelDifferential": "差異",
-			"backup.labelLog": "交易記錄",
-			"backup.labelDisk": "磁碟",
-			"backup.labelUrl": "URL",
-			"backup.defaultCompression": "使用預設伺服器設定",
-			"backup.compressBackup": "壓縮備份",
-			"backup.doNotCompress": "不要壓縮備份",
-			"backup.serverCertificate": "伺服器憑證",
-			"backup.asymmetricKey": "非對稱金鑰"
-		},
-		"sql/workbench/contrib/notebook/browser/notebookExplorer/notebookSearch": {
-			"searchWithoutFolder": "您尚未開啟任何包含筆記本/書籍的資料夾。",
-			"openNotebookFolder": "開啟筆記本",
-			"searchMaxResultsWarning": "結果集只包含所有符合項的子集。請提供更具體的搜尋條件以縮小結果範圍。",
-			"searchInProgress": "正在搜尋... - ",
-			"noResultsIncludesExcludes": "在 '{0}' 中找不到排除 '{1}' 的結果 - ",
-			"noResultsIncludes": "在 '{0}' 中找不到結果 - ",
-			"noResultsExcludes": "找不到排除 '{0}' 的結果 - ",
-			"noResultsFound": "找不到任何結果。請檢閱您所設定排除的設定，並檢查您的 gitignore 檔案 -",
-			"rerunSearch.message": "再次搜尋",
-			"cancelSearch.message": "取消搜尋",
-			"rerunSearchInAll.message": "在所有檔案中再次搜尋",
-			"openSettings.message": "開啟設定",
-			"ariaSearchResultsStatus": "搜尋傳回 {1} 個檔案中的 {0} 個結果",
-			"ToggleCollapseAndExpandAction.label": "切換折疊和展開",
-			"CancelSearchAction.label": "取消搜尋",
-			"ExpandAllAction.label": "全部展開",
-			"CollapseDeepestExpandedLevelAction.label": "全部摺疊",
-			"ClearSearchResultsAction.label": "清除搜尋結果"
-		},
-		"sql/workbench/contrib/welcome/page/browser/gettingStartedTour": {
-			"GuidedTour.connections": "連線",
-			"GuidedTour.makeConnections": "從 SQL Server、Azure 等處進行連線、查詢及管理您的連線。",
-			"GuidedTour.one": "1",
-			"GuidedTour.next": "下一個",
-			"GuidedTour.notebooks": "筆記本",
-			"GuidedTour.gettingStartedNotebooks": "開始在單一位置建立您自己的筆記本或筆記本系列。",
-			"GuidedTour.two": "2",
-			"GuidedTour.extensions": "延伸模組",
-			"GuidedTour.addExtensions": "安裝由我們 (Microsoft) 及第三方社群 (您!) 所開發的延伸模組，來擴充 Azure Data Studio 的功能。",
-			"GuidedTour.three": "3",
-			"GuidedTour.settings": "設定",
-			"GuidedTour.makeConnesetSettings": "根據您的喜好自訂 Azure Data Studio。您可以進行自動儲存及索引標籤大小等 [設定]、將 [鍵盤快速鍵] 個人化，以及切換至您喜歡的 [色彩佈景主題]。",
-			"GuidedTour.four": "4",
-			"GuidedTour.welcomePage": "歡迎頁面",
-			"GuidedTour.discoverWelcomePage": "在歡迎頁面中探索常用功能、最近開啟的檔案及建議的延伸模組。如需詳細資訊，以了解如何開始使用 Azure Data Studio，請參閱我們的影片及文件。",
-			"GuidedTour.five": "5",
-			"GuidedTour.finish": "完成",
-			"guidedTour": "使用者歡迎導覽",
-			"hideGuidedTour": "隱藏歡迎導覽",
-			"GuidedTour.readMore": "深入了解",
-			"help": "說明"
-		},
-		"sql/workbench/contrib/editData/browser/editDataGridActions": {
-			"deleteRow": "刪除資料列",
-			"revertRow": "還原目前的資料列"
 		},
 		"sql/workbench/contrib/assessment/common/strings": {
 			"asmt.section.api.title": "API 資訊",
@@ -10947,171 +9634,81 @@
 			"asmt.column.helpLink": "說明連結",
 			"asmt.sqlReport.severityMsg": "{0}: {1} 個項目"
 		},
-		"sql/workbench/contrib/query/browser/messagePanel": {
-			"messagePanel": "訊息面板",
-			"copy": "複製",
-			"copyAll": "全部複製"
+		"sql/workbench/contrib/azure/browser/azure.contribution": {
+			"azure.openInAzurePortal.title": "在 Azure 入口網站中開啟"
 		},
-		"sql/base/browser/ui/loadingSpinner/loadingSpinner.component": {
-			"loadingMessage": "正在載入",
-			"loadingCompletedMessage": "已完成載入"
+		"sql/workbench/contrib/backup/browser/backup.component": {
+			"backup.backupName": "備份名稱",
+			"backup.recoveryModel": "復原模式",
+			"backup.backupType": "備份類型",
+			"backup.backupDevice": "備份檔案",
+			"backup.algorithm": "演算法",
+			"backup.certificateOrAsymmetricKey": "憑證或非對稱金鑰",
+			"backup.media": "媒體",
+			"backup.mediaOption": "備份到現有的媒體集",
+			"backup.mediaOptionFormat": "備份到新媒體集",
+			"backup.existingMediaAppend": "附加至現有的備份組",
+			"backup.existingMediaOverwrite": "覆寫所有現有的備份集",
+			"backup.newMediaSetName": "新增媒體集名稱",
+			"backup.newMediaSetDescription": "新增媒體集描述",
+			"backup.checksumContainer": "在寫入媒體前執行檢查碼",
+			"backup.verifyContainer": "完成後驗證備份",
+			"backup.continueOnErrorContainer": "錯誤時繼續",
+			"backup.expiration": "逾期",
+			"backup.setBackupRetainDays": "設定備份保留天數",
+			"backup.copyOnly": "僅複製備份",
+			"backup.advancedConfiguration": "進階組態",
+			"backup.compression": "壓縮",
+			"backup.setBackupCompression": "設定備份壓縮",
+			"backup.encryption": "加密",
+			"backup.transactionLog": "交易記錄",
+			"backup.truncateTransactionLog": "截斷交易記錄",
+			"backup.backupTail": "備份最後的記錄",
+			"backup.reliability": "可靠性",
+			"backup.mediaNameRequired": "需要媒體名稱",
+			"backup.noEncryptorWarning": "沒有憑證或非對稱金鑰可用",
+			"addFile": "增加檔案",
+			"removeFile": "移除檔案",
+			"backupComponent.invalidInput": "輸入無效。值必須大於或等於 0。",
+			"backupComponent.script": "指令碼",
+			"backupComponent.backup": "備份",
+			"backupComponent.cancel": "取消",
+			"backup.containsBackupToUrlError": "僅支援備份到檔案",
+			"backup.backupFileRequired": "需要備份檔案路徑"
 		},
-		"sql/workbench/contrib/notebook/browser/cellViews/placeholderCell.component": {
-			"clickOn": "按一下",
-			"plusCode": "+ 程式碼",
-			"or": "或",
-			"plusText": "+ 文字",
-			"toAddCell": "新增程式碼或文字資料格"
+		"sql/workbench/contrib/backup/browser/backup.contribution": {
+			"backup": "備份"
 		},
-		"sql/workbench/contrib/notebook/browser/cellViews/stdin.component": {
-			"stdInLabel": "Stdin: "
+		"sql/workbench/contrib/backup/browser/backupActions": {
+			"backup.isPreviewFeature": "您必須啟用預覽功能才能使用備份",
+			"backup.commandNotSupportedForServer": "資料庫內容中不支援備份命令。請選取資料庫並再試一次。",
+			"backup.commandNotSupported": "Azure SQL 資料庫不支援備份命令。",
+			"backupAction.backup": "備份"
 		},
-		"sql/workbench/contrib/notebook/browser/cellViews/collapse.component": {
-			"expandCellContents": "展開程式碼資料格內容",
-			"collapseCellContents": "摺疊程式碼資料格內容"
+		"sql/workbench/contrib/backup/common/constants": {
+			"backup.labelDatabase": "資料庫",
+			"backup.labelFilegroup": "檔案與檔案群組",
+			"backup.labelFull": "完整",
+			"backup.labelDifferential": "差異",
+			"backup.labelLog": "交易記錄",
+			"backup.labelDisk": "磁碟",
+			"backup.labelUrl": "URL",
+			"backup.defaultCompression": "使用預設伺服器設定",
+			"backup.compressBackup": "壓縮備份",
+			"backup.doNotCompress": "不要壓縮備份",
+			"backup.serverCertificate": "伺服器憑證",
+			"backup.asymmetricKey": "非對稱金鑰"
 		},
-		"sql/workbench/contrib/query/browser/gridPanel": {
-			"xmlShowplan": "XML 執行程序表",
-			"resultsGrid": "結果方格"
-		},
-		"sql/workbench/contrib/notebook/browser/cellViews/cellToolbar.component": {
-			"buttonAdd": "新增資料格",
-			"optionCodeCell": "程式碼資料格",
-			"optionTextCell": "文字資料格",
-			"buttonMoveDown": "下移資料格",
-			"buttonMoveUp": "上移資料格",
-			"buttonDelete": "刪除",
-			"codeCellsPreview": "新增資料格",
-			"codePreview": "程式碼資料格",
-			"textPreview": "文字資料格"
-		},
-		"sql/workbench/services/notebook/browser/sql/sqlSessionManager": {
-			"sqlKernelError": "SQL 核心錯誤",
-			"connectionRequired": "必須選擇連線來執行筆記本資料格",
-			"sqlMaxRowsDisplayed": "目前顯示前 {0} 列。"
-		},
-		"sql/workbench/contrib/jobManagement/browser/jobsView.component": {
-			"jobColumns.name": "名稱",
-			"jobColumns.lastRun": "上次執行",
-			"jobColumns.nextRun": "下次執行",
-			"jobColumns.enabled": "啟用",
-			"jobColumns.status": "狀態",
-			"jobColumns.category": "分類",
-			"jobColumns.runnable": "可執行",
-			"jobColumns.schedule": "排程",
-			"jobColumns.lastRunOutcome": "上次執行結果",
-			"jobColumns.previousRuns": "先前的執行內容",
-			"jobsView.noSteps": "沒有任何此作業可用的步驟。",
-			"jobsView.error": "錯誤:"
-		},
-		"sql/workbench/browser/modelComponents/viewBase": {
-			"componentTypeNotRegistered": "找不到類型 {0} 的元件"
-		},
-		"sql/workbench/contrib/profiler/browser/profilerFindWidget": {
-			"label.find": "尋找",
-			"placeholder.find": "尋找",
-			"label.previousMatchButton": "上一個符合項目",
-			"label.nextMatchButton": "下一個符合項目",
-			"label.closeButton": "關閉",
-			"title.matchesCountLimit": "您的搜尋傳回了大量結果，只會將前 999 個相符項目醒目提示。",
-			"label.matchesLocation": "{1} 的 {0}",
-			"label.noResults": "查無結果"
-		},
-		"sql/workbench/contrib/dashboard/browser/widgets/explorer/explorerView": {
-			"dashboard.explorer.namePropertyDisplayValue": "名稱",
-			"dashboard.explorer.schemaDisplayValue": "結構描述",
-			"dashboard.explorer.objectTypeDisplayValue": "類型"
-		},
-		"sql/workbench/contrib/dashboard/browser/widgets/insights/actions": {
-			"insights.runQuery": "執行查詢"
-		},
-		"sql/workbench/contrib/notebook/browser/cellViews/output.component": {
-			"noMimeTypeFound": "找不到輸出的 {0} 轉譯器。其有下列 MIME 類型: {1}",
-			"safe": "安全",
-			"noSelectorFound": "找不到選取器 {0} 的元件",
-			"componentRenderError": "轉譯元件時發生錯誤: {0}"
-		},
-		"sql/workbench/services/objectExplorer/browser/serverTreeRenderer": {
-			"loading": "正在載入..."
-		},
-		"sql/workbench/services/objectExplorer/browser/asyncServerTreeRenderer": {
-			"loading": "正在載入..."
-		},
-		"sql/workbench/contrib/dashboard/browser/core/actions": {
-			"editDashboard": "編輯",
-			"editDashboardExit": "結束",
-			"refreshWidget": "重新整理",
-			"toggleMore": "顯示動作",
-			"deleteWidget": "刪除小工具",
-			"clickToUnpin": "按一下以取消釘選",
-			"clickToPin": "按一下以釘選",
-			"addFeatureAction.openInstalledFeatures": "開啟已安裝的功能",
-			"collapseWidget": "摺疊小工具",
-			"expandWidget": "展開小工具"
-		},
-		"sql/workbench/contrib/dashboard/browser/core/dashboardHelper": {
-			"unknownDashboardContainerError": "{0} 是不明容器。"
-		},
-		"sql/workbench/contrib/jobManagement/browser/notebooksView.component": {
-			"notebookColumns.name": "名稱",
-			"notebookColumns.targetDatbase": "目標資料庫",
-			"notebookColumns.lastRun": "上次執行",
-			"notebookColumns.nextRun": "下次執行",
-			"notebookColumns.status": "狀態",
-			"notebookColumns.lastRunOutcome": "上次執行結果",
-			"notebookColumns.previousRuns": "先前的執行內容",
-			"notebooksView.noSteps": "沒有任何此作業可用的步驟。",
-			"notebooksView.error": "錯誤:",
-			"notebooksView.notebookError": "Notebook 錯誤:"
-		},
-		"sql/base/browser/ui/table/plugins/rowDetailView": {
-			"rowDetailView.loadError": "正在載入錯誤..."
-		},
-		"sql/workbench/contrib/dashboard/browser/widgets/explorer/explorerTable": {
-			"dashboard.explorer.actions": "顯示動作",
-			"explorerSearchNoMatchResultMessage": "找不到相符的項目",
-			"explorerSearchSingleMatchResultMessage": "已將搜尋清單篩選為 1 個項目",
-			"explorerSearchMatchResultMessage": "已將搜尋清單篩選為 {0} 個項目"
-		},
-		"sql/workbench/services/jobManagement/browser/jobManagementUtilities": {
-			"agentUtilities.failed": "失敗",
-			"agentUtilities.succeeded": "已成功",
-			"agentUtilities.retry": "重試",
-			"agentUtilities.canceled": "已取消",
-			"agentUtilities.inProgress": "正在進行",
-			"agentUtilities.statusUnknown": "狀態未知",
-			"agentUtilities.executing": "正在執行",
-			"agentUtilities.waitingForThread": "正在等候執行緒",
-			"agentUtilities.betweenRetries": "正在重試",
-			"agentUtilities.idle": "閒置",
-			"agentUtilities.suspended": "暫止",
-			"agentUtilities.obsolete": "[已淘汰]",
-			"agentUtilities.yes": "是",
-			"agentUtilities.no": "否",
-			"agentUtilities.notScheduled": "未排程",
-			"agentUtilities.neverRun": "從未執行"
-		},
-		"sql/workbench/contrib/notebook/browser/cellViews/markdownToolbar.component": {
-			"buttonBold": "粗體",
-			"buttonItalic": "斜體",
-			"buttonUnderline": "底線",
-			"buttonHighlight": "醒目提示",
-			"buttonCode": "程式碼",
-			"buttonLink": "連結",
-			"buttonList": "清單",
-			"buttonOrderedList": "排序清單",
-			"buttonImage": "影像",
-			"buttonPreview": "Markdown 預覽切換 - 關閉",
-			"dropdownHeading": "標題",
-			"optionHeading1": "標題 1",
-			"optionHeading2": "標題 2",
-			"optionHeading3": "標題 3",
-			"optionParagraph": "段落",
-			"callout.insertLinkHeading": "插入連結",
-			"callout.insertImageHeading": "插入影像",
-			"richTextViewButton": "RTF 檢視",
-			"splitViewButton": "分割檢視",
-			"markdownViewButton": "Markdown 檢視"
+		"sql/workbench/contrib/charts/browser/actions": {
+			"createInsightLabel": "建立見解",
+			"createInsightNoEditor": "啟用的編輯器不是 SQL 編輯器，無法建立見解",
+			"myWidgetName": "我的小工具",
+			"configureChartLabel": "設定圖表",
+			"copyChartLabel": "複製為映像",
+			"chartNotFound": "找不到要儲存的圖表",
+			"saveImageLabel": "另存為映像",
+			"resultsSerializer.saveAsFileExtensionPNGTitle": "PNG",
+			"chartSaved": "已將圖表儲存到路徑: {0}"
 		},
 		"sql/workbench/contrib/charts/browser/chartOptions": {
 			"dataDirectionLabel": "資料方向",
@@ -11135,45 +9732,432 @@
 			"encodingOption": "編碼",
 			"imageFormatOption": "映像格式"
 		},
-		"sql/base/browser/ui/panel/tabActions": {
-			"closeTab": "關閉"
+		"sql/workbench/contrib/charts/browser/chartTab": {
+			"chartTabTitle": "圖表"
 		},
-		"sql/platform/connection/common/connectionConfig": {
-			"invalidServerName": "伺服器群組名稱已經存在。"
+		"sql/workbench/contrib/charts/browser/chartView": {
+			"horizontalBarAltName": "水平橫條圖",
+			"barAltName": "橫條圖",
+			"lineAltName": "折線圖",
+			"pieAltName": "圓形圖",
+			"scatterAltName": "散佈圖",
+			"timeSeriesAltName": "時間序列",
+			"imageAltName": "映像",
+			"countAltName": "計數",
+			"tableAltName": "資料表",
+			"doughnutAltName": "環圈圖",
+			"charting.failedToGetRows": "無法取得資料集的資料列以繪製圖表。",
+			"charting.unsupportedType": "不支援圖表類型 '{0}'。"
+		},
+		"sql/workbench/contrib/charts/browser/charts.contribution": {
+			"builtinChartsConfigurationTitle": "內建圖表",
+			"builtinCharts.maxRowCountDescription": "要顯示之圖表的資料列數目上限。警告: 增加此數目可能會影響效能。"
+		},
+		"sql/workbench/contrib/charts/browser/configureChartDialog": {
+			"configureChartDialog.close": "關閉"
+		},
+		"sql/workbench/contrib/charts/browser/graphInsight": {
+			"series": "系列 {0}"
+		},
+		"sql/workbench/contrib/charts/browser/imageInsight": {
+			"invalidImage": "資料表不含有效的映像"
+		},
+		"sql/workbench/contrib/charts/browser/utils": {
+			"charts.maxAllowedRowsExceeded": "已超過內建圖表的資料列計數上限，只會使用最先 {0} 個資料列。若要設定值，您可以開啟使用者設定並搜尋: 'builtinCharts.maxRowCount'。",
+			"charts.neverShowAgain": "不要再顯示"
+		},
+		"sql/workbench/contrib/commandLine/electron-browser/commandLine": {
+			"connectingLabel": "正在連線: {0}",
+			"runningCommandLabel": "正在執行命令: {0}",
+			"openingNewQueryLabel": "正在開啟新查詢: {0}",
+			"warnServerRequired": "因為未提供伺服器資訊，所以無法連線",
+			"errConnectUrl": "因為發生錯誤 {0}，導致無法開啟 URL",
+			"connectServerDetail": "這會連線到伺服器 {0}",
+			"confirmConnect": "確定要連線嗎?",
+			"open": "開啟(&&O)",
+			"connectingQueryLabel": "正在連線到查詢檔案"
+		},
+		"sql/workbench/contrib/configuration/common/configurationUpgrader": {
+			"workbench.configuration.upgradeUser": "您使用者設定中的 {1} 已取代 {0}。",
+			"workbench.configuration.upgradeWorkspace": "您工作區設定中的 {1} 已取代 {0}。"
+		},
+		"sql/workbench/contrib/connection/browser/connection.contribution": {
+			"sql.maxRecentConnectionsDescription": "連線列表內最近使用的連線數上限。",
+			"sql.defaultEngineDescription": "要使用的預設 SQL 引擎。這會驅動 .sql 檔案中的預設語言提供者，以及建立新連線時要使用的預設。",
+			"connection.parseClipboardForConnectionStringDescription": "嘗試在連線對話方塊開啟或已執行貼上時剖析剪貼簿的內容。"
+		},
+		"sql/workbench/contrib/connection/browser/connectionStatus": {
+			"status.connection.status": "連線狀態"
+		},
+		"sql/workbench/contrib/connection/common/connectionProviderExtension": {
+			"schema.providerId": "提供者的通用識別碼。",
+			"schema.displayName": "提供者的顯示名稱",
+			"schema.notebookKernelAlias": "提供者的筆記本核心別名",
+			"schema.iconPath": "伺服器類型的圖示路徑",
+			"schema.connectionOptions": "連線選項"
+		},
+		"sql/workbench/contrib/connection/common/connectionTreeProviderExentionPoint": {
+			"connectionTreeProvider.schema.name": "樹狀提供者向使用者顯示的名稱",
+			"connectionTreeProvider.schema.id": "提供者的識別碼，必須與註冊樹狀資料提供者時的識別碼相同，而且必須以 `connectionDialog/` 開頭"
+		},
+		"sql/workbench/contrib/dashboard/browser/containers/dashboardContainer.contribution": {
+			"azdata.extension.contributes.dashboard.container.id": "此容器的唯一識別碼。",
+			"azdata.extension.contributes.dashboard.container.container": "顯示於索引標籤的容器。",
+			"azdata.extension.contributes.containers": "提供一個或多個儀表板容器，讓使用者可增加至其儀表板中。",
+			"dashboardContainer.contribution.noIdError": "為延伸模組指定的儀表板容器中沒有任何識別碼。",
+			"dashboardContainer.contribution.noContainerError": "為延伸模組指定的儀表板容器中沒有任何容器。",
+			"dashboardContainer.contribution.moreThanOneDashboardContainersError": "至少須為每個空間定義剛好 1 個儀表板容器。",
+			"dashboardTab.contribution.unKnownContainerType": "延伸模組的儀表板容器中有不明的容器類型定義。"
+		},
+		"sql/workbench/contrib/dashboard/browser/containers/dashboardControlHostContainer.contribution": {
+			"dashboard.container.controlhost": "會在此索引標籤中顯示的 controlhost。"
+		},
+		"sql/workbench/contrib/dashboard/browser/containers/dashboardErrorContainer.component": {
+			"dashboardNavSection.loadTabError": "\"{0}\" 區段有無效的內容。請連絡延伸模組擁有者。"
+		},
+		"sql/workbench/contrib/dashboard/browser/containers/dashboardGridContainer.contribution": {
+			"dashboard.container.gridtab.items": "顯示在此索引標籤的小工具或 Web 檢視的清單。",
+			"gridContainer.invalidInputs": "延伸模組的 widgets-container 中應有 widgets 或 webviews。"
+		},
+		"sql/workbench/contrib/dashboard/browser/containers/dashboardModelViewContainer.contribution": {
+			"dashboard.container.modelview": "將在此索引標籤中顯示的 model-backed 檢視。"
+		},
+		"sql/workbench/contrib/dashboard/browser/containers/dashboardNavSection.contribution": {
+			"dashboard.container.left-nav-bar.id": "導覽區的唯一識別碼。將傳遞給任何要求的延伸模組。",
+			"dashboard.container.left-nav-bar.icon": "(選用) 用於 UI 中表示導覽區的圖示。任一檔案路徑或主題化的設定。",
+			"dashboard.container.left-nav-bar.icon.light": "使用亮色主題時的圖示路徑",
+			"dashboard.container.left-nav-bar.icon.dark": "使用暗色主題時的圖像路徑",
+			"dashboard.container.left-nav-bar.title": "顯示給使用者的導覽區標題。",
+			"dashboard.container.left-nav-bar.container": "顯示在此導覽區的容器。",
+			"dashboard.container.left-nav-bar": "在導覽區顯示儀表板容器清單。",
+			"navSection.missingTitle.error": "為延伸模組指定的導覽區段中沒有標題。",
+			"navSection.missingContainer.error": "為延伸模組指定的導覽區段中沒有任何容器。",
+			"navSection.moreThanOneDashboardContainersError": "至少須為每個空間定義剛好 1 個儀表板容器。",
+			"navSection.invalidContainer.error": "NAV_SECTION 中的 NAV_SECTION 對延伸模組而言是無效的容器。"
+		},
+		"sql/workbench/contrib/dashboard/browser/containers/dashboardWebviewContainer.contribution": {
+			"dashboard.container.webview": "顯示在此索引標籤的 Web 檢視。"
+		},
+		"sql/workbench/contrib/dashboard/browser/containers/dashboardWidgetContainer.contribution": {
+			"dashboard.container.widgets": "顯示在此索引標籤中的小工具清單。",
+			"widgetContainer.invalidInputs": "延伸模組的 widgets-container 中應有 widgets 的清單。"
+		},
+		"sql/workbench/contrib/dashboard/browser/core/actions": {
+			"editDashboard": "編輯",
+			"editDashboardExit": "結束",
+			"refreshWidget": "重新整理",
+			"toggleMore": "顯示動作",
+			"deleteWidget": "刪除小工具",
+			"clickToUnpin": "按一下以取消釘選",
+			"clickToPin": "按一下以釘選",
+			"addFeatureAction.openInstalledFeatures": "開啟已安裝的功能",
+			"collapseWidget": "摺疊小工具",
+			"expandWidget": "展開小工具"
+		},
+		"sql/workbench/contrib/dashboard/browser/core/dashboardHelper": {
+			"unknownDashboardContainerError": "{0} 是不明容器。"
 		},
 		"sql/workbench/contrib/dashboard/browser/core/dashboardPage.component": {
 			"home": "首頁",
 			"missingConnectionInfo": "此儀表板上找不到連線資訊",
 			"dashboard.generalTabGroupHeader": "一般"
 		},
-		"sql/workbench/contrib/charts/browser/actions": {
-			"createInsightLabel": "建立見解",
-			"createInsightNoEditor": "啟用的編輯器不是 SQL 編輯器，無法建立見解",
-			"myWidgetName": "我的小工具",
-			"configureChartLabel": "設定圖表",
-			"copyChartLabel": "複製為映像",
-			"chartNotFound": "找不到要儲存的圖表",
-			"saveImageLabel": "另存為映像",
-			"resultsSerializer.saveAsFileExtensionPNGTitle": "PNG",
-			"chartSaved": "已將圖表儲存到路徑: {0}"
+		"sql/workbench/contrib/dashboard/browser/core/dashboardTab.contribution": {
+			"azdata.extension.contributes.dashboard.tab.id": "此索引標籤的唯一識別碼。將傳遞給任何要求的延伸模組。",
+			"azdata.extension.contributes.dashboard.tab.title": "顯示給使用者的索引標籤的標題。",
+			"azdata.extension.contributes.dashboard.tab.description": "此索引標籤的描述將顯示給使用者。",
+			"azdata.extension.contributes.tab.when": "必須為 True 以顯示此項目的條件",
+			"azdata.extension.contributes.tab.provider": "定義與此索引標籤相容的連線類型。若未設定，則預設值為 'MSSQL'",
+			"azdata.extension.contributes.dashboard.tab.container": "將在此索引標籤中顯示的容器。",
+			"azdata.extension.contributes.dashboard.tab.alwaysShow": "是否應一律顯示此索引標籤或僅當使用者增加時顯示。",
+			"azdata.extension.contributes.dashboard.tab.isHomeTab": "是否應將此索引標籤用作連線類型的首頁索引標籤。",
+			"azdata.extension.contributes.dashboard.tab.group": "此索引標籤所屬群組的唯一識別碼，常用 (群組) 的值: 常用。",
+			"dazdata.extension.contributes.dashboard.tab.icon": "(選用) 用於在 UI 中代表此索引標籤的圖示。這會是檔案路徑或可設定佈景主題的組態",
+			"azdata.extension.contributes.dashboard.tab.icon.light": "使用亮色主題時的圖示路徑",
+			"azdata.extension.contributes.dashboard.tab.icon.dark": "使用暗色主題時的圖像路徑",
+			"azdata.extension.contributes.tabs": "提供一或多個索引標籤，讓使用者可將其增加至儀表板中。",
+			"dashboardTab.contribution.noTitleError": "未為延伸模組指定標題。",
+			"dashboardTab.contribution.noDescriptionWarning": "未指定要顯示的描述。",
+			"dashboardTab.contribution.noContainerError": "未為延伸模組指定任何容器。",
+			"dashboardTab.contribution.moreThanOneDashboardContainersError": "每個空間必須明確定義 1 個儀表板容器",
+			"azdata.extension.contributes.dashboard.tabGroup.id": "此索引標籤群組的唯一識別碼。",
+			"azdata.extension.contributes.dashboard.tabGroup.title": "索引標籤群組的標題。",
+			"azdata.extension.contributes.tabGroups": "提供一或多個索引標籤群組，讓使用者可將其增加至儀表板中。",
+			"dashboardTabGroup.contribution.noIdError": "沒有為索引標籤群組指定任何識別碼。",
+			"dashboardTabGroup.contribution.noTitleError": "沒有為索引標籤群組指定任何標題。",
+			"administrationTabGroup": "管理",
+			"monitoringTabGroup": "監視",
+			"performanceTabGroup": "效能",
+			"securityTabGroup": "安全性",
+			"troubleshootingTabGroup": "疑難排解",
+			"settingsTabGroup": "設定",
+			"databasesTabDescription": "資料庫索引標籤",
+			"databasesTabTitle": "資料庫"
 		},
-		"sql/workbench/contrib/notebook/browser/notebook.component": {
-			"addCodeLabel": "新增程式碼",
-			"addTextLabel": "新增文字",
-			"createFile": "建立檔案",
-			"displayFailed": "無法顯示內容: {0}",
-			"codeCellsPreview": "新增資料格",
-			"codePreview": "程式碼資料格",
-			"textPreview": "文字資料格",
-			"runAllPreview": "全部執行",
-			"addCell": "資料格",
-			"code": "程式碼",
-			"text": "文字",
-			"runAll": "執行資料格",
-			"previousButtonLabel": "< 上一步",
-			"nextButtonLabel": "下一步 >",
-			"cellNotFound": "無法在此模型中找到 URI 為 {0} 的資料格",
-			"cellRunFailed": "執行資料格失敗 - 如需詳細資訊，請參閱目前所選資料格之輸出中的錯誤。"
+		"sql/workbench/contrib/dashboard/browser/dashboard.contribution": {
+			"manage": "管理",
+			"dashboard.editor.label": "儀表板"
+		},
+		"sql/workbench/contrib/dashboard/browser/dashboardActions": {
+			"ManageAction": "管理"
+		},
+		"sql/workbench/contrib/dashboard/browser/dashboardIconUtil": {
+			"opticon": "屬性 `icon` 可以省略，否則必須為字串或類似 `{dark, light}` 的常值"
+		},
+		"sql/workbench/contrib/dashboard/browser/dashboardRegistry": {
+			"dashboard.properties.property": "定義顯示於儀表板上的屬性",
+			"dashboard.properties.property.displayName": "做為屬性標籤的值",
+			"dashboard.properties.property.value": "要在物件中存取的值",
+			"dashboard.properties.property.ignore": "指定要忽略的值",
+			"dashboard.properties.property.default": "如果忽略或沒有值，則顯示預設值",
+			"dashboard.properties.flavor": "定義儀表板屬性變體",
+			"dashboard.properties.flavor.id": "類別的變體的識別碼",
+			"dashboard.properties.flavor.condition": "使用此變體的條件",
+			"dashboard.properties.flavor.condition.field": "要比較的欄位",
+			"dashboard.properties.flavor.condition.operator": "用於比較的運算子",
+			"dashboard.properties.flavor.condition.value": "用於比較該欄位的值",
+			"dashboard.properties.databaseProperties": "顯示資料庫頁的屬性",
+			"dashboard.properties.serverProperties": "顯示伺服器頁的屬性",
+			"carbon.extension.dashboard": "定義此提供者支援儀表板",
+			"dashboard.id": "提供者識別碼 (例如 MSSQL)",
+			"dashboard.properties": "在儀表板上顯示的屬性值"
+		},
+		"sql/workbench/contrib/dashboard/browser/pages/dashboardPageContribution": {
+			"azdata.extension.contributes.widget.when": "必須為 True 以顯示此項目的條件",
+			"azdata.extension.contributes.widget.hideHeader": "是否要隱藏 Widget 的標題，預設值為 false",
+			"dashboardpage.tabName": "容器的標題",
+			"dashboardpage.rowNumber": "方格中元件的資料列",
+			"dashboardpage.rowSpan": "方格中元件的 rowspan。預設值為 1。使用 '*' 即可設定方格中的資料列數。",
+			"dashboardpage.colNumber": "方格中元件的資料行",
+			"dashboardpage.colspan": "方格內元件的 colspan。預設值為 1。使用 '*' 即可設定方格中的資料行數。",
+			"azdata.extension.contributes.dashboardPage.tab.id": "此索引標籤的唯一識別碼。將傳遞給任何要求的延伸模組。",
+			"dashboardTabError": "未知的延伸模組索引標籤或未安裝。"
+		},
+		"sql/workbench/contrib/dashboard/browser/pages/databaseDashboardPage.component": {
+			"databasePageName": "資料庫屬性"
+		},
+		"sql/workbench/contrib/dashboard/browser/pages/databaseDashboardPage.contribution": {
+			"dashboardDatabaseProperties": "啟用或禁用屬性小工具",
+			"dashboard.databaseproperties": "顯示屬性值",
+			"dashboard.databaseproperties.displayName": "顯示屬性的名稱",
+			"dashboard.databaseproperties.value": "資料庫資訊物件中的值",
+			"dashboard.databaseproperties.ignore": "指定要忽略的特定值",
+			"recoveryModel": "復原模式",
+			"lastDatabaseBackup": "上次資料庫備份",
+			"lastLogBackup": "上次記錄備份",
+			"compatibilityLevel": "相容性層級",
+			"owner": "擁有者",
+			"dashboardDatabase": "自訂 \"資料庫儀表板\" 頁",
+			"objectsWidgetTitle": "搜尋",
+			"dashboardDatabaseTabs": "自訂資料庫儀表板索引標籤"
+		},
+		"sql/workbench/contrib/dashboard/browser/pages/serverDashboardPage.component": {
+			"serverPageName": "伺服器屬性"
+		},
+		"sql/workbench/contrib/dashboard/browser/pages/serverDashboardPage.contribution": {
+			"dashboardServerProperties": "啟用或禁用屬性小工具",
+			"dashboard.serverproperties": "顯示屬性值",
+			"dashboard.serverproperties.displayName": "顯示屬性的名稱",
+			"dashboard.serverproperties.value": "伺服器資訊物件中的值",
+			"version": "版本",
+			"edition": "版本",
+			"computerName": "電腦名稱",
+			"osVersion": "作業系統版本",
+			"explorerWidgetsTitle": "搜尋",
+			"dashboardServer": "自訂伺服器儀表板頁面",
+			"dashboardServerTabs": "自訂伺服器儀表板索引標籤"
+		},
+		"sql/workbench/contrib/dashboard/browser/services/breadcrumb.service": {
+			"homeCrumb": "首頁"
+		},
+		"sql/workbench/contrib/dashboard/browser/services/dashboardServiceInterface.service": {
+			"dashboard.changeDatabaseFailure": "變更資料庫失敗"
+		},
+		"sql/workbench/contrib/dashboard/browser/widgets/explorer/explorerTable": {
+			"dashboard.explorer.actions": "顯示動作",
+			"explorerSearchNoMatchResultMessage": "找不到相符的項目",
+			"explorerSearchSingleMatchResultMessage": "已將搜尋清單篩選為 1 個項目",
+			"explorerSearchMatchResultMessage": "已將搜尋清單篩選為 {0} 個項目"
+		},
+		"sql/workbench/contrib/dashboard/browser/widgets/explorer/explorerView": {
+			"dashboard.explorer.namePropertyDisplayValue": "名稱",
+			"dashboard.explorer.schemaDisplayValue": "結構描述",
+			"dashboard.explorer.objectTypeDisplayValue": "類型"
+		},
+		"sql/workbench/contrib/dashboard/browser/widgets/explorer/explorerWidget.component": {
+			"loadingObjects": "正在載入物件",
+			"loadingDatabases": "正在載入資料庫",
+			"loadingObjectsCompleted": "已完成載入物件。",
+			"loadingDatabasesCompleted": "已完成載入資料庫。",
+			"seachObjects": "依類型名稱搜尋 (t:、v:、f: 或 sp:)",
+			"searchDatabases": "搜尋資料庫",
+			"dashboard.explorer.objectError": "無法載入物件",
+			"dashboard.explorer.databaseError": "無法載入資料庫"
+		},
+		"sql/workbench/contrib/dashboard/browser/widgets/insights/actions": {
+			"insights.runQuery": "執行查詢"
+		},
+		"sql/workbench/contrib/dashboard/browser/widgets/insights/insightsWidget.component": {
+			"insightsWidgetLoadingMessage": "正在載入 {0}",
+			"insightsWidgetLoadingCompletedMessage": "已完成載入 {0}",
+			"insights.autoRefreshOffState": "自動重新整理: 關閉",
+			"insights.lastUpdated": "最近更新: {0} {1}",
+			"noResults": "沒有可顯示的結果"
+		},
+		"sql/workbench/contrib/dashboard/browser/widgets/insights/insightsWidgetSchemas": {
+			"insightWidgetDescription": "新增一個可查詢伺服器或資料庫並以多種方式呈現結果的小工具，如圖表、計數總結等。",
+			"insightIdDescription": "用於快取見解結果的唯一識別碼。",
+			"insightQueryDescription": "要執行的 SQL 查詢。這僅會回傳 1 個結果集。",
+			"insightQueryFileDescription": "[選用] 包含查詢之檔案的路徑。這會在未設定 'query' 時使用",
+			"insightAutoRefreshIntervalDescription": "[選用] 自動重新整理間隔 (分鐘)，如未設定，就不會自動重新整理",
+			"actionTypes": "要使用的動作",
+			"actionDatabaseDescription": "此動作的目標資料庫；可使用格式 '${ columnName }'，以使用資料驅動的資料行名稱。",
+			"actionServerDescription": "此動作的目標伺服器；可使用格式 '${ columnName }'，以使用資料驅動的資料列名稱。",
+			"actionUserDescription": "請指定執行此動作的使用者；可使用格式 '${ columnName }'，以使用資料驅動的資料行名稱。",
+			"carbon.extension.contributes.insightType.id": "見解識別碼",
+			"carbon.extension.contributes.insights": "在儀表板選擇區提供見解。"
+		},
+		"sql/workbench/contrib/dashboard/browser/widgets/insights/views/charts/chartInsight.component": {
+			"chartErrorMessage": "無法以指定的資料顯示圖表"
+		},
+		"sql/workbench/contrib/dashboard/browser/widgets/insights/views/charts/chartInsight.contribution": {
+			"chartInsightDescription": "將查詢結果以圖表方式顯示在儀表板上",
+			"colorMapDescription": "對應 'column name' -> 色彩。例如，新增 'column1': red 可確保資料行使用紅色",
+			"legendDescription": "指定圖表圖例的優先位置和可見度。這些是您查詢中的欄位名稱，並對應到每個圖表項目的標籤",
+			"labelFirstColumnDescription": "若 dataDirection 是水平的，設定為 True 時則使用第一個欄位值為其圖例。",
+			"columnsAsLabels": "若 dataDirection 是垂直的，設定為 True 時則使用欄位名稱為其圖例。",
+			"dataDirectionDescription": "定義是否從行 (垂直) 或列 (水平) 讀取資料。對於時間序列，當呈現方向為垂直時會被忽略。",
+			"showTopNData": "如已設定 showTopNData，則僅顯示圖表中的前 N 個資料。"
+		},
+		"sql/workbench/contrib/dashboard/browser/widgets/insights/views/charts/types/barChart.contribution": {
+			"yAxisMin": "y 軸的最小值",
+			"yAxisMax": "y 軸的最大值",
+			"barchart.yAxisLabel": "Y 軸的標籤",
+			"xAxisMin": "X 軸的最小值",
+			"xAxisMax": "X 軸的最大值",
+			"barchart.xAxisLabel": "X 軸標籤"
+		},
+		"sql/workbench/contrib/dashboard/browser/widgets/insights/views/charts/types/lineChart.contribution": {
+			"dataTypeDescription": "指定圖表資料集的資料屬性。"
+		},
+		"sql/workbench/contrib/dashboard/browser/widgets/insights/views/countInsight.contribution": {
+			"countInsightDescription": "為結果集中的每一個資料行，在資料列 0 中先顯示計數值，再顯示資料行名稱。例如，支援 '1 Healthy'，'3 Unhealthy'；其中 'Healthy' 為資料行名稱，1 為資料列 1 中資料格 1 的值"
+		},
+		"sql/workbench/contrib/dashboard/browser/widgets/insights/views/imageInsight.contribution": {
+			"imageInsightDescription": "顯示映像，如使用 ggplot2 R 查詢返回的映像。",
+			"imageFormatDescription": "預期格式是什麼 - 是 JPEG、PNG 或其他格式?",
+			"encodingDescription": "此編碼為十六進位、base64 或是其他格式?"
+		},
+		"sql/workbench/contrib/dashboard/browser/widgets/insights/views/tableInsight.contribution": {
+			"tableInsightDescription": "在簡單資料表中顯示結果"
+		},
+		"sql/workbench/contrib/dashboard/browser/widgets/properties/propertiesWidget.component": {
+			"loadingProperties": "正在載入屬性",
+			"loadingPropertiesCompleted": "已完成載入屬性",
+			"dashboard.properties.error": "無法載入儀表板屬性"
+		},
+		"sql/workbench/contrib/dataExplorer/browser/dataExplorer.contribution": {
+			"databaseConnections": "資料庫連線",
+			"datasource.connections": "資料來源連線",
+			"datasource.connectionGroups": "資料來源群組",
+			"connectionsSortOrder.dateAdded": "儲存的連線依新增的日期排序。",
+			"connectionsSortOrder.displayName": "儲存的連線依其顯示名稱以字母順序排序。",
+			"datasource.connectionsSortOrder": "控制儲存連線和連線群組的排列順序。",
+			"startupConfig": "啟動組態",
+			"startup.alwaysShowServersView": "預設為在 Azure Data Studio 啟動時要顯示的伺服器檢視即為 True；如應顯示上次開啟的檢視則為 False"
+		},
+		"sql/workbench/contrib/dataExplorer/browser/dataExplorerExtensionPoint": {
+			"vscode.extension.contributes.view.id": "檢視的識別碼。請使用此識別碼透過 `vscode.window.registerTreeDataProviderForView` API 登錄資料提供者。並藉由將 `onView:${id}` 事件登錄至 `activationEvents` 以觸發啟用您的延伸模組。",
+			"vscode.extension.contributes.view.name": "使用人性化顯示名稱。會顯示",
+			"vscode.extension.contributes.view.when": "必須為 True 以顯示此檢視的條件",
+			"extension.contributes.dataExplorer": "提供檢視給編輯者",
+			"extension.dataExplorer": "將檢視提供到活動列中的資料總管容器",
+			"dataExplorer.contributed": "在參與檢視容器中提供檢視",
+			"duplicateView1": "無法在檢視容器 '{1}' 中以同一個識別碼 '{0}' 註冊多個檢視",
+			"duplicateView2": "已在檢視容器 '{1}' 中註冊識別碼為 '{0}' 的檢視",
+			"requirearray": "項目必須為陣列",
+			"requirestring": "屬性 '{0}' 為強制項目且必須屬於 `string` 類型",
+			"optstring": "屬性 `{0}` 可以省略或必須屬於 `string` 類型"
+		},
+		"sql/workbench/contrib/dataExplorer/browser/dataExplorerViewlet": {
+			"dataExplorer.servers": "伺服器",
+			"dataexplorer.name": "連線",
+			"showDataExplorer": "顯示連線"
+		},
+		"sql/workbench/contrib/dataExplorer/browser/nodeActions.common.contribution": {
+			"disconnect": "中斷連線",
+			"refresh": "重新整理"
+		},
+		"sql/workbench/contrib/editData/browser/editData.contribution": {
+			"showEditDataSqlPaneOnStartup": "啟動時顯示 [編輯資料] SQL 窗格"
+		},
+		"sql/workbench/contrib/editData/browser/editDataActions": {
+			"editData.run": "執行",
+			"disposeEditFailure": "處理編輯失敗，出現錯誤:",
+			"editData.stop": "停止",
+			"editData.showSql": "顯示 SQL 窗格",
+			"editData.closeSql": "關閉 SQL 窗格"
+		},
+		"sql/workbench/contrib/editData/browser/editDataEditor": {
+			"maxRowTaskbar": "最大資料列數:"
+		},
+		"sql/workbench/contrib/editData/browser/editDataGridActions": {
+			"deleteRow": "刪除資料列",
+			"revertRow": "還原目前的資料列"
+		},
+		"sql/workbench/contrib/editData/browser/gridActions": {
+			"saveAsCsv": "另存為 CSV",
+			"saveAsJson": "另存為 JSON",
+			"saveAsExcel": "另存為 Excel",
+			"saveAsXml": "另存為 XML",
+			"copySelection": "複製",
+			"copyWithHeaders": "隨標題一併複製",
+			"selectAll": "全選"
+		},
+		"sql/workbench/contrib/extensions/browser/contributionRenders": {
+			"tabs": "儀表板索引標籤 ({0})",
+			"tabId": "識別碼",
+			"tabTitle": "標題",
+			"tabDescription": "描述",
+			"insights": "儀表板見解 ({0})",
+			"insightId": "識別碼",
+			"name": "名稱",
+			"insight condition": "時間"
+		},
+		"sql/workbench/contrib/extensions/browser/extensions.contribution": {
+			"workbench.extensions.getExtensionFromGallery.description": "從資源庫取得延伸模組資訊",
+			"workbench.extensions.getExtensionFromGallery.arg.name": "延伸模組識別碼",
+			"notFound": "找不到延伸模組 '{0}'。"
+		},
+		"sql/workbench/contrib/extensions/browser/extensionsActions": {
+			"showRecommendations": "顯示建議",
+			"Install Extensions": "安裝延伸模組",
+			"openExtensionAuthoringDocs": "撰寫延伸模組..."
+		},
+		"sql/workbench/contrib/extensions/browser/scenarioRecommendations": {
+			"neverShowAgain": "不要再顯示",
+			"ExtensionsRecommended": "Azure Data Studio 有延伸模組建議。",
+			"VisualizerExtensionsRecommended": "Azure Data Studio 有資料視覺效果的延伸模組建議。\r\n安裝之後，即可選取視覺化檢視圖示，將查詢結果視覺化。",
+			"installAll": "全部安裝",
+			"showRecommendations": "顯示建議",
+			"scenarioTypeUndefined": "必須提供延伸模組建議的案例類型。"
+		},
+		"sql/workbench/contrib/extensions/browser/staticRecommendations": {
+			"defaultRecommendations": "Azure Data Studio 建議使用此延伸模組。"
+		},
+		"sql/workbench/contrib/jobManagement/browser/agentView.component": {
+			"jobview.Jobs": "作業",
+			"jobview.Notebooks": "Notebooks",
+			"jobview.Alerts": "警示",
+			"jobview.Proxies": "Proxy",
+			"jobview.Operators": "運算子"
+		},
+		"sql/workbench/contrib/jobManagement/browser/alertsView.component": {
+			"jobAlertColumns.name": "名稱",
+			"jobAlertColumns.lastOccurrenceDate": "上次發生",
+			"jobAlertColumns.enabled": "啟用",
+			"jobAlertColumns.delayBetweenResponses": "回應之間的延遲 (秒)",
+			"jobAlertColumns.categoryName": "類別名稱"
 		},
 		"sql/workbench/contrib/jobManagement/browser/jobActions": {
 			"jobaction.successLabel": "成功",
@@ -11227,77 +10211,58 @@
 			"notebookaction.renameNotebook": "重新命名",
 			"notebookaction.openLatestRun": "開啟最近一次執行"
 		},
-		"sql/workbench/contrib/assessment/browser/asmtActions": {
-			"asmtaction.server.getitems": "檢視適用的規則",
-			"asmtaction.database.getitems": "檢視適用於 {0} 的規則",
-			"asmtaction.server.invokeitems": "叫用評定",
-			"asmtaction.database.invokeitems": "為 {0} 叫用評定",
-			"asmtaction.exportasscript": "匯出為指令碼",
-			"asmtaction.showsamples": "檢視所有規則，並前往 GitHub 深入了解",
-			"asmtaction.generatehtmlreport": "建立 HTML 報表",
-			"asmtaction.openReport": "已儲存報表。要開啟嗎?",
-			"asmtaction.label.open": "開啟",
-			"asmtaction.label.cancel": "取消"
+		"sql/workbench/contrib/jobManagement/browser/jobHistory.component": {
+			"stepRow.stepID": "步驟識別碼",
+			"stepRow.stepName": "步驟名稱",
+			"stepRow.message": "訊息"
 		},
-		"sql/workbench/contrib/preferences/browser/sqlSettingsLayout": {
-			"data": "資料",
-			"connection": "連線",
-			"queryEditor": "查詢編輯器",
-			"notebook": "Notebook",
-			"dashboard": "儀表板",
-			"profiler": "分析工具"
+		"sql/workbench/contrib/jobManagement/browser/jobStepsView.component": {
+			"agent.steps": "步驟"
 		},
-		"sql/workbench/contrib/extensions/browser/contributionRenders": {
-			"tabs": "儀表板索引標籤 ({0})",
-			"tabId": "識別碼",
-			"tabTitle": "標題",
-			"tabDescription": "描述",
-			"insights": "儀表板見解 ({0})",
-			"insightId": "識別碼",
-			"name": "名稱",
-			"insight condition": "時間"
+		"sql/workbench/contrib/jobManagement/browser/jobsView.component": {
+			"jobColumns.name": "名稱",
+			"jobColumns.lastRun": "上次執行",
+			"jobColumns.nextRun": "下次執行",
+			"jobColumns.enabled": "啟用",
+			"jobColumns.status": "狀態",
+			"jobColumns.category": "分類",
+			"jobColumns.runnable": "可執行",
+			"jobColumns.schedule": "排程",
+			"jobColumns.lastRunOutcome": "上次執行結果",
+			"jobColumns.previousRuns": "先前的執行內容",
+			"jobsView.noSteps": "沒有任何此作業可用的步驟。",
+			"jobsView.error": "錯誤:"
 		},
-		"sql/workbench/contrib/charts/browser/imageInsight": {
-			"invalidImage": "資料表不含有效的映像"
+		"sql/workbench/contrib/jobManagement/browser/notebookHistory.component": {
+			"notebookHistory.dateCreatedTooltip": "建立日期:",
+			"notebookHistory.notebookErrorTooltip": "Notebook 錯誤:",
+			"notebookHistory.ErrorTooltip": "作業錯誤:",
+			"notebookHistory.pinnedTitle": "已釘選",
+			"notebookHistory.recentRunsTitle": "最近的執行",
+			"notebookHistory.pastRunsTitle": "過去的執行"
 		},
-		"sql/workbench/contrib/notebook/browser/cellToolbarActions": {
-			"moreActionsLabel": "更多",
-			"editLabel": "編輯",
-			"closeLabel": "關閉",
-			"convertCell": "轉換資料格",
-			"runAllAbove": "執行上方的資料格",
-			"runAllBelow": "執行下方的資料格",
-			"codeAbove": "在上方插入程式碼",
-			"codeBelow": "在下方插入程式碼",
-			"markdownAbove": "在上方插入文字",
-			"markdownBelow": "在下方插入文字",
-			"collapseCell": "摺疊資料格",
-			"expandCell": "展開資料格",
-			"makeParameterCell": "製作參數資料格",
-			"RemoveParameterCell": "移除參數資料格",
-			"clear": "清除結果"
+		"sql/workbench/contrib/jobManagement/browser/notebooksView.component": {
+			"notebookColumns.name": "名稱",
+			"notebookColumns.targetDatbase": "目標資料庫",
+			"notebookColumns.lastRun": "上次執行",
+			"notebookColumns.nextRun": "下次執行",
+			"notebookColumns.status": "狀態",
+			"notebookColumns.lastRunOutcome": "上次執行結果",
+			"notebookColumns.previousRuns": "先前的執行內容",
+			"notebooksView.noSteps": "沒有任何此作業可用的步驟。",
+			"notebooksView.error": "錯誤:",
+			"notebooksView.notebookError": "Notebook 錯誤:"
 		},
-		"sql/workbench/services/notebook/browser/models/clientSession": {
-			"clientSession.unknownError": "啟動筆記本工作階段時發生錯誤",
-			"ServerNotStarted": "伺服器因為不明原因而未啟動",
-			"kernelRequiresConnection": "找不到核心 {0}。會改用預設核心。"
+		"sql/workbench/contrib/jobManagement/browser/operatorsView.component": {
+			"jobOperatorsView.name": "名稱",
+			"jobOperatorsView.emailAddress": "電子郵件地址",
+			"jobOperatorsView.enabled": "啟用"
 		},
-		"sql/workbench/contrib/charts/browser/graphInsight": {
-			"series": "系列 {0}"
-		},
-		"sql/workbench/contrib/charts/browser/configureChartDialog": {
-			"configureChartDialog.close": "關閉"
-		},
-		"sql/workbench/services/notebook/browser/models/notebookModel": {
-			"injectedParametersMsg": "# 個插入的參數\r\n",
-			"kernelRequiresConnection": "請選取要為此核心執行資料格的連線",
-			"deleteCellFailed": "無法刪除資料格。",
-			"changeKernelFailedRetry": "無法變更核心。將會使用核心 {0}。錯誤為: {1}",
-			"changeKernelFailed": "因為錯誤所以無法變更核心: {0}",
-			"changeContextFailed": "無法變更內容: {0}",
-			"startSessionFailed": "無法啟動工作階段: {0}",
-			"shutdownClientSessionError": "關閉筆記本時發生用戶端工作階段錯誤: {0}",
-			"ProviderNoManager": "找不到提供者 {0} 的筆記本管理員"
+		"sql/workbench/contrib/jobManagement/browser/proxiesView.component": {
+			"jobProxiesView.accountName": "帳戶名稱",
+			"jobProxiesView.credentialName": "認證名稱",
+			"jobProxiesView.description": "描述",
+			"jobProxiesView.isEnabled": "啟用"
 		},
 		"sql/workbench/contrib/notebook/browser/calloutDialog/common/constants": {
 			"callout.insertButton": "插入",
@@ -11317,6 +10282,940 @@
 			"linkCallout.linkAddressLabel": "位址",
 			"linkCallout.linkAddressPlaceholder": "連結到現有的檔案或網頁"
 		},
+		"sql/workbench/contrib/notebook/browser/cellToolbarActions": {
+			"moreActionsLabel": "更多",
+			"editLabel": "編輯",
+			"closeLabel": "關閉",
+			"convertCell": "轉換資料格",
+			"runAllAbove": "執行上方的資料格",
+			"runAllBelow": "執行下方的資料格",
+			"codeAbove": "在上方插入程式碼",
+			"codeBelow": "在下方插入程式碼",
+			"markdownAbove": "在上方插入文字",
+			"markdownBelow": "在下方插入文字",
+			"collapseCell": "摺疊資料格",
+			"expandCell": "展開資料格",
+			"makeParameterCell": "製作參數資料格",
+			"RemoveParameterCell": "移除參數資料格",
+			"clear": "清除結果"
+		},
+		"sql/workbench/contrib/notebook/browser/cellViews/cellToolbar.component": {
+			"buttonAdd": "新增資料格",
+			"optionCodeCell": "程式碼資料格",
+			"optionTextCell": "文字資料格",
+			"buttonMoveDown": "下移資料格",
+			"buttonMoveUp": "上移資料格",
+			"buttonDelete": "刪除",
+			"codeCellsPreview": "新增資料格",
+			"codePreview": "程式碼資料格",
+			"textPreview": "文字資料格"
+		},
+		"sql/workbench/contrib/notebook/browser/cellViews/code.component": {
+			"parametersText": "參數"
+		},
+		"sql/workbench/contrib/notebook/browser/cellViews/codeActions": {
+			"notebook.failed": "請選取作用資料格並再試一次",
+			"runCell": "執行資料格",
+			"stopCell": "取消執行",
+			"errorRunCell": "上一個執行發生錯誤。按一下即可重新執行"
+		},
+		"sql/workbench/contrib/notebook/browser/cellViews/collapse.component": {
+			"expandCellContents": "展開程式碼資料格內容",
+			"collapseCellContents": "摺疊程式碼資料格內容"
+		},
+		"sql/workbench/contrib/notebook/browser/cellViews/markdownToolbar.component": {
+			"buttonBold": "粗體",
+			"buttonItalic": "斜體",
+			"buttonUnderline": "底線",
+			"buttonHighlight": "醒目提示",
+			"buttonCode": "程式碼",
+			"buttonLink": "連結",
+			"buttonList": "清單",
+			"buttonOrderedList": "排序清單",
+			"buttonImage": "影像",
+			"buttonPreview": "Markdown 預覽切換 - 關閉",
+			"dropdownHeading": "標題",
+			"optionHeading1": "標題 1",
+			"optionHeading2": "標題 2",
+			"optionHeading3": "標題 3",
+			"optionParagraph": "段落",
+			"callout.insertLinkHeading": "插入連結",
+			"callout.insertImageHeading": "插入影像",
+			"richTextViewButton": "RTF 檢視",
+			"splitViewButton": "分割檢視",
+			"markdownViewButton": "Markdown 檢視"
+		},
+		"sql/workbench/contrib/notebook/browser/cellViews/output.component": {
+			"noMimeTypeFound": "找不到輸出的 {0} 轉譯器。其有下列 MIME 類型: {1}",
+			"safe": "安全",
+			"noSelectorFound": "找不到選取器 {0} 的元件",
+			"componentRenderError": "轉譯元件時發生錯誤: {0}"
+		},
+		"sql/workbench/contrib/notebook/browser/cellViews/placeholderCell.component": {
+			"clickOn": "按一下",
+			"plusCode": "+ 程式碼",
+			"or": "或",
+			"plusText": "+ 文字",
+			"toAddCell": "新增程式碼或文字資料格",
+			"plusCodeAriaLabel": "新增程式碼儲存格",
+			"plusTextAriaLabel": "新增文字儲存格"
+		},
+		"sql/workbench/contrib/notebook/browser/cellViews/stdin.component": {
+			"stdInLabel": "Stdin: "
+		},
+		"sql/workbench/contrib/notebook/browser/cellViews/textCell.component": {
+			"doubleClickEdit": "<i>按兩下即可編輯</i>",
+			"addContent": "<i>在這裡新增內容...</i>"
+		},
+		"sql/workbench/contrib/notebook/browser/find/notebookFindWidget": {
+			"label.find": "尋找",
+			"placeholder.find": "尋找",
+			"label.previousMatchButton": "上一個相符",
+			"label.nextMatchButton": "下一個相符",
+			"label.closeButton": "關閉",
+			"title.matchesCountLimit": "您的搜尋傳回了大量結果，只會將前 999 個相符項目醒目提示。",
+			"label.matchesLocation": "{0}/{1} 個",
+			"label.noResults": "沒有任何結果"
+		},
+		"sql/workbench/contrib/notebook/browser/notebook.component": {
+			"addCodeLabel": "新增程式碼",
+			"addTextLabel": "新增文字",
+			"createFile": "建立檔案",
+			"displayFailed": "無法顯示內容: {0}",
+			"codeCellsPreview": "新增資料格",
+			"codePreview": "程式碼資料格",
+			"textPreview": "文字資料格",
+			"runAllPreview": "全部執行",
+			"addCell": "資料格",
+			"code": "程式碼",
+			"text": "文字",
+			"runAll": "執行資料格",
+			"previousButtonLabel": "< 上一步",
+			"nextButtonLabel": "下一步 >",
+			"cellNotFound": "無法在此模型中找到 URI 為 {0} 的資料格",
+			"cellRunFailed": "執行資料格失敗 - 如需詳細資訊，請參閱目前所選資料格之輸出中的錯誤。"
+		},
+		"sql/workbench/contrib/notebook/browser/notebook.contribution": {
+			"newNotebook": "新增 Notebook",
+			"newQuery": "新增 Notebook",
+			"workbench.action.setWorkspaceAndOpen": "設定工作區並開啟",
+			"notebook.sqlStopOnError": "SQL 核心: 當資料格發生錯誤時，停止執行 Notebook。",
+			"notebook.showAllKernels": "(預覽) 顯示目前筆記本提供者的所有核心。",
+			"notebook.allowADSCommands": "允許筆記本執行 Azure Data Studio 命令。",
+			"notebook.enableDoubleClickEdit": "為筆記本中的文字資料格啟用按兩下編輯的功能",
+			"notebook.richTextModeDescription": "文字顯示為 RTF 文字 (也稱為 WYSIWYG)。",
+			"notebook.splitViewModeDescription": "Markdown 會在左側顯示，並在右側呈現文字預覽。",
+			"notebook.markdownModeDescription": "文字顯示為 Markdown。",
+			"notebook.defaultTextEditMode": "用於文字儲存格的預設編輯模式",
+			"notebook.saveConnectionName": "(預覽) 儲存筆記本中繼資料中的連線名稱。",
+			"notebook.markdownPreviewLineHeight": "控制筆記本 Markdown 預覽中使用的行高。此數字相對於字型大小。",
+			"notebook.showRenderedNotebookinDiffEditor": "(預覽) 在 Diff 編輯器中顯示轉譯的筆記本。",
+			"notebook.maxRichTextUndoHistory": "筆記本 RTF 文字編輯器復原歷程記錄中儲存的變更數目上限。",
+			"searchConfigurationTitle": "搜尋筆記本",
+			"exclude": "設定 Glob 模式，在全文檢索搜尋中排除檔案與資料夾，並快速開啟。繼承 `#files.exclude#` 設定的所有 Glob 模式。深入了解 Glob 模式 [這裡](https://code.visualstudio.com/docs/editor/codebasics#_advanced-search-options)。",
+			"exclude.boolean": "要符合檔案路徑的 Glob 模式。設為 True 或 False 可啟用或停用模式。",
+			"exclude.when": "在相符檔案同層級上額外的檢查。請使用 $(basename) 作為相符檔案名稱的變數。",
+			"useRipgrep": " 此設定已淘汰，現在會回復至 \"search.usePCRE2\"。",
+			"useRipgrepDeprecated": "已淘汰。請考慮使用 \"search.usePCRE2\" 來取得進階 regex 功能支援。",
+			"search.maintainFileSearchCache": "若啟用，searchService 程序在處於非使用狀態一小時後會保持運作，而不是關閉。這會將檔案搜尋快取保留在記憶體中。",
+			"useIgnoreFiles": "控制是否在搜尋檔案時使用 `.gitignore` 和 `.ignore` 檔案。",
+			"useGlobalIgnoreFiles": "控制是否要在搜尋檔案時使用全域 `.gitignore` 和 `.ignore` 檔案。",
+			"search.quickOpen.includeSymbols": "是否在 Quick Open 的檔案結果中，包含全域符號搜尋中的結果。",
+			"search.quickOpen.includeHistory": "是否要在 Quick Open 中包含檔案結果中，來自最近開啟檔案的結果。",
+			"filterSortOrder.default": "歷程記錄項目會依據所使用的篩選值，依相關性排序。相關性愈高的項目排在愈前面。",
+			"filterSortOrder.recency": "依使用時序排序歷程記錄項目。最近開啟的項目顯示在最前面。",
+			"filterSortOrder": "控制篩選時，快速開啟的編輯器歷程記錄排列順序。",
+			"search.followSymlinks": "控制是否要在搜尋時遵循 symlink。",
+			"search.smartCase": "若模式為全小寫，搜尋時不會區分大小寫; 否則會區分大小寫。",
+			"search.globalFindClipboard": "控制搜尋檢視應讀取或修改 macOS 上的共用尋找剪貼簿。 ",
+			"search.location": "控制搜尋要顯示為資訊看板中的檢視，或顯示為面板區域中的面板以增加水平空間。",
+			"search.location.deprecationMessage": "這個設定已淘汰。請改用搜尋檢視的操作功能表。",
+			"search.collapseResults.auto": "10 個結果以下的檔案將會展開，其他檔案則會摺疊。",
+			"search.collapseAllResults": "控制要摺疊或展開搜尋結果。",
+			"search.useReplacePreview": "控制是否要在選取或取代相符項目時開啟 [取代預覽]。",
+			"search.showLineNumbers": "控制是否要為搜尋結果顯示行號。",
+			"search.usePCRE2": "是否要在文字搜尋中使用 PCRE2 規則運算式引擎。這可使用部分進階功能，如 lookahead 和 backreferences。但是，並不支援所有 PCRE2 功能，僅支援 JavaScript 也支援的功能。",
+			"usePCRE2Deprecated": "已淘汰。當使用僅有 PCRE2 支援的 regex 功能時，會自動使用 PCRE 2。",
+			"search.actionsPositionAuto": "當搜尋檢視較窄時，將動作列放在右邊，當搜尋檢視較寬時，立即放於內容之後。",
+			"search.actionsPositionRight": "永遠將動作列放在右邊。",
+			"search.actionsPosition": "控制動作列在搜尋檢視列上的位置。",
+			"search.searchOnType": "鍵入的同時搜尋所有檔案。",
+			"search.seedWithNearestWord": "允許在使用中的編輯器沒有選取項目時，從最接近游標的文字植入搜尋。",
+			"search.seedOnFocus": "聚焦在搜尋檢視時，將工作區搜尋查詢更新為編輯器的選取文字。按一下或觸發 'workbench.views.search.focus' 命令時，即會發生此動作。",
+			"search.searchOnTypeDebouncePeriod": "啟用 `#search.searchOnType#` 時，控制字元鍵入和搜尋開始之間的逾時 (毫秒)。當 `search.searchOnType` 停用時無效。",
+			"search.searchEditor.doubleClickBehaviour.selectWord": "點兩下選擇游標下的單字。",
+			"search.searchEditor.doubleClickBehaviour.goToLocation": "按兩下將會在正在使用的編輯器群組中開啟結果。",
+			"search.searchEditor.doubleClickBehaviour.openLocationToSide": "按兩下就會在側邊的編輯器群組中開啟結果，如果不存在就會建立一個。",
+			"search.searchEditor.doubleClickBehaviour": "設定在搜尋編輯器中按兩下結果的效果。",
+			"searchSortOrder.default": "結果會根據資料夾和檔案名稱排序，按字母順序排列。",
+			"searchSortOrder.filesOnly": "結果會忽略資料夾順序並根據檔案名稱排序，按字母順序排列。",
+			"searchSortOrder.type": "結果會根據副檔名排序，按字母順序排列。",
+			"searchSortOrder.modified": "結果會根據最後修改日期降冪排序。",
+			"searchSortOrder.countDescending": "結果會根據每個檔案的計數降冪排序。",
+			"searchSortOrder.countAscending": "結果會根據每個檔案的計數升冪排序。",
+			"search.sortOrder": "控制搜尋結果的排列順序。"
+		},
+		"sql/workbench/contrib/notebook/browser/notebookActions": {
+			"loading": "正在載入核心...",
+			"changing": "正在變更核心...",
+			"AttachTo": "連結至 ",
+			"Kernel": "核心 ",
+			"loadingContexts": "正在載入內容...",
+			"changeConnection": "變更連線",
+			"selectConnection": "選取連線",
+			"localhost": "localhost",
+			"noKernel": "沒有核心",
+			"kernelNotSupported": "由於不支援核心程序，因此此筆記本無法以參數執行。請使用支援的核心程序和格式。[深入了解] (https://docs.microsoft.com/sql/azure-data-studio/notebooks/notebooks-parameterization)。",
+			"noParametersCell": "在新增參數儲存格之前，此筆記本無法以參數執行。[深入了解](https://docs.microsoft.com/sql/azure-data-studio/notebooks/notebooks-parameterization)。",
+			"noParametersInCell": "在參數新增至參數儲存格之前，此筆記本無法以參數執行。[深入了解](https://docs.microsoft.com/sql/azure-data-studio/notebooks/notebooks-parameterization)。",
+			"clearResults": "清除結果",
+			"trustLabel": "受信任",
+			"untrustLabel": "不受信任",
+			"collapseAllCells": "摺疊資料格",
+			"expandAllCells": "展開資料格",
+			"runParameters": "執行 (設有參數)",
+			"noContextAvailable": "無",
+			"newNotebookAction": "新增 Notebook",
+			"notebook.findNext": "尋找下一個字串",
+			"notebook.findPrevious": "尋找前一個字串"
+		},
+		"sql/workbench/contrib/notebook/browser/notebookEditor": {
+			"notebookEditor.name": "Notebook Editor"
+		},
+		"sql/workbench/contrib/notebook/browser/notebookExplorer/notebookExplorerViewlet": {
+			"notebookExplorer.searchResults": "搜尋結果",
+			"searchPathNotFoundError": "找不到搜尋路徑: {0}",
+			"notebookExplorer.name": "筆記本"
+		},
+		"sql/workbench/contrib/notebook/browser/notebookExplorer/notebookSearch": {
+			"searchWithoutFolder": "您尚未開啟任何包含筆記本/書籍的資料夾。",
+			"openNotebookFolder": "開啟筆記本",
+			"searchMaxResultsWarning": "結果集只包含所有符合項的子集。請提供更具體的搜尋條件以縮小結果範圍。",
+			"searchInProgress": "正在搜尋... - ",
+			"noResultsIncludesExcludes": "在 '{0}' 中找不到排除 '{1}' 的結果 - ",
+			"noResultsIncludes": "在 '{0}' 中找不到結果 - ",
+			"noResultsExcludes": "找不到排除 '{0}' 的結果 - ",
+			"noResultsFound": "找不到任何結果。請檢閱您所設定排除的設定，並檢查您的 gitignore 檔案 -",
+			"rerunSearch.message": "再次搜尋",
+			"rerunSearchInAll.message": "在所有檔案中再次搜尋",
+			"openSettings.message": "開啟設定",
+			"ariaSearchResultsStatus": "搜尋傳回 {1} 個檔案中的 {0} 個結果",
+			"ToggleCollapseAndExpandAction.label": "切換折疊和展開",
+			"CancelSearchAction.label": "取消搜尋",
+			"ExpandAllAction.label": "全部展開",
+			"CollapseDeepestExpandedLevelAction.label": "全部摺疊",
+			"ClearSearchResultsAction.label": "清除搜尋結果"
+		},
+		"sql/workbench/contrib/notebook/browser/notebookExplorer/notebookSearchWidget": {
+			"label.Search": "搜尋: 輸入搜尋字詞，然後按 Enter 鍵搜尋或按 Esc 鍵取消",
+			"search.placeHolder": "搜尋"
+		},
+		"sql/workbench/contrib/notebook/browser/notebookViews/notebookViews.component": {
+			"cellNotFound": "無法在此模型中找到 URI 為 {0} 的資料格",
+			"cellRunFailed": "執行資料格失敗 - 如需詳細資訊，請參閱目前所選資料格之輸出中的錯誤。"
+		},
+		"sql/workbench/contrib/notebook/browser/notebookViews/notebookViewsCodeCell.component": {
+			"viewsCodeCell.emptyCellText": "請執行此儲存格以檢視輸出。"
+		},
+		"sql/workbench/contrib/notebook/browser/notebookViews/notebookViewsGrid.component": {
+			"emptyText": "此檢視為空白。請按一下 [插入儲存格] 按鈕，將儲存格新增至此檢視。"
+		},
+		"sql/workbench/contrib/notebook/browser/outputs/gridOutput.component": {
+			"copyFailed": "複製失敗。錯誤: {0}",
+			"notebook.showChart": "顯示圖表",
+			"notebook.showTable": "顯示資料表"
+		},
+		"sql/workbench/contrib/notebook/browser/outputs/mimeRenderer.component": {
+			"noRendererFound": "找不到輸出的 {0} 轉譯器。其有下列 MIME 類型: {1}",
+			"safe": "(安全)"
+		},
+		"sql/workbench/contrib/notebook/browser/outputs/plotlyOutput.component": {
+			"plotlyError": "顯示 Plotly 圖表時發生錯誤: {0}"
+		},
+		"sql/workbench/contrib/objectExplorer/browser/serverTreeView": {
+			"servers.noConnections": "找不到連線。",
+			"serverTree.addConnection": "新增連線"
+		},
+		"sql/workbench/contrib/objectExplorer/common/serverGroup.contribution": {
+			"serverGroup.colors": "在物件總管 Viewlet 中使用的伺服器群組調色盤。",
+			"serverGroup.autoExpand": "物件總管 Viewlet 中的自動展開伺服器群組。",
+			"serverTree.useAsyncServerTree": "(預覽) 針對伺服器檢視及連線對話方塊使用新的非同步伺服器樹狀結構，並支援動態節點篩選等新功能。"
+		},
+		"sql/workbench/contrib/preferences/browser/sqlSettingsLayout": {
+			"data": "資料",
+			"connection": "連線",
+			"queryEditor": "查詢編輯器",
+			"notebook": "Notebook",
+			"dashboard": "儀表板",
+			"profiler": "分析工具",
+			"builtinCharts": "內建圖表"
+		},
+		"sql/workbench/contrib/profiler/browser/profiler.contribution": {
+			"profiler.settings.viewTemplates": "指定檢視範本",
+			"profiler.settings.sessionTemplates": "指定工作階段範本",
+			"profiler.settings.Filters": "分析工具篩選條件"
+		},
+		"sql/workbench/contrib/profiler/browser/profilerActions": {
+			"profilerAction.connect": "連線",
+			"profilerAction.disconnect": "中斷連線",
+			"start": "開始",
+			"create": "新增工作階段",
+			"profilerAction.pauseCapture": "暫停",
+			"profilerAction.resumeCapture": "繼續",
+			"profilerStop.stop": "停止",
+			"profiler.clear": "清除資料",
+			"profiler.clearDataPrompt": "確定要清除資料嗎?",
+			"profiler.yes": "是",
+			"profiler.no": "否",
+			"profilerAction.autoscrollOn": "自動捲動: 開啟",
+			"profilerAction.autoscrollOff": "自動捲動: 關閉",
+			"profiler.toggleCollapsePanel": "切換折疊面板",
+			"profiler.editColumns": "編輯資料行",
+			"profiler.findNext": "尋找下一個字串",
+			"profiler.findPrevious": "尋找前一個字串",
+			"profilerAction.newProfiler": "啟動分析工具",
+			"profiler.filter": "篩選...",
+			"profiler.clearFilter": "清除篩選",
+			"profiler.clearFilterPrompt": "確定要清除篩選嗎?"
+		},
+		"sql/workbench/contrib/profiler/browser/profilerEditor": {
+			"profiler.viewSelectAccessibleName": "選取檢視",
+			"profiler.sessionSelectAccessibleName": "選取工作階段",
+			"profiler.sessionSelectLabel": "選取工作階段:",
+			"profiler.viewSelectLabel": "選取檢視:",
+			"text": "文字",
+			"label": "標籤",
+			"profilerEditor.value": "值",
+			"details": "詳細資料"
+		},
+		"sql/workbench/contrib/profiler/browser/profilerFindWidget": {
+			"label.find": "尋找",
+			"placeholder.find": "尋找",
+			"label.previousMatchButton": "上一個符合項目",
+			"label.nextMatchButton": "下一個符合項目",
+			"label.closeButton": "關閉",
+			"title.matchesCountLimit": "您的搜尋傳回了大量結果，只會將前 999 個相符項目醒目提示。",
+			"label.matchesLocation": "{1} 的 {0}",
+			"label.noResults": "查無結果"
+		},
+		"sql/workbench/contrib/profiler/browser/profilerResourceEditor": {
+			"profilerTextEditorAriaLabel": "事件文字的分析工具編輯器。唯讀"
+		},
+		"sql/workbench/contrib/profiler/browser/profilerTableEditor": {
+			"ProfilerTableEditor.eventCountFiltered": "事件 (已篩選): {0}/{1}",
+			"ProfilerTableEditor.eventCount": "事件: {0}",
+			"status.eventCount": "事件計數"
+		},
+		"sql/workbench/contrib/query/browser/actions": {
+			"saveAsCsv": "另存為 CSV",
+			"saveAsJson": "另存為 JSON",
+			"saveAsExcel": "另存為 Excel",
+			"saveAsXml": "另存為 XML",
+			"jsonEncoding": "匯出至 JSON 時將不會儲存結果編碼，請務必在建立檔案後儲存所需的編碼。",
+			"saveToFileNotSupported": "回溯資料來源不支援儲存為檔案",
+			"copySelection": "複製",
+			"copyWithHeaders": "隨標題一同複製",
+			"selectAll": "全選",
+			"maximize": "最大化",
+			"restore": "還原",
+			"chart": "圖表",
+			"visualizer": "視覺化檢視"
+		},
+		"sql/workbench/contrib/query/browser/flavorStatus": {
+			"chooseSqlLang": "選擇 SQL 語言 ",
+			"changeProvider": "變更 SQL 語言提供者",
+			"status.query.flavor": "SQL 語言的變體",
+			"changeSqlProvider": "變更 SQL 引擎提供者",
+			"alreadyConnected": "使用引擎 {0} 的連線已存在。若要變更，請中斷或變更連線",
+			"noEditor": "目前無使用中的文字編輯器",
+			"pickSqlProvider": "選擇語言提供者"
+		},
+		"sql/workbench/contrib/query/browser/gridPanel": {
+			"xmlShowplan": "XML 執行程序表",
+			"resultsGrid": "結果方格",
+			"resultsGrid.maxRowCountExceeded": "已超過篩選/排序的資料列計數上限。若要更新，您可以前往使用者設定並變更設定: ' queryEditor. inMemoryDataProcessingThreshold '"
+		},
+		"sql/workbench/contrib/query/browser/keyboardQueryActions": {
+			"focusOnCurrentQueryKeyboardAction": "聚焦於目前的查詢",
+			"runQueryKeyboardAction": "執行查詢",
+			"runCurrentQueryKeyboardAction": "執行目前查詢",
+			"copyQueryWithResultsKeyboardAction": "與結果一併複製查詢",
+			"queryActions.queryResultsCopySuccess": "已成功複製查詢與結果。",
+			"runCurrentQueryWithActualPlanKeyboardAction": "使用實際計畫執行目前的查詢",
+			"cancelQueryKeyboardAction": "取消查詢",
+			"refreshIntellisenseKeyboardAction": "重新整理 IntelliSense 快取",
+			"toggleQueryResultsKeyboardAction": "切換查詢結果",
+			"ToggleFocusBetweenQueryEditorAndResultsAction": "在查詢與結果之間切換焦點",
+			"queryShortcutNoEditor": "要執行的捷徑需要編輯器參數",
+			"parseSyntaxLabel": "剖析查詢",
+			"queryActions.parseSyntaxSuccess": "已成功完成命令",
+			"queryActions.parseSyntaxFailure": "命令失敗:",
+			"queryActions.notConnected": "請連線至伺服器"
+		},
+		"sql/workbench/contrib/query/browser/messagePanel": {
+			"messagePanel": "訊息面板",
+			"copy": "複製",
+			"copyAll": "全部複製"
+		},
+		"sql/workbench/contrib/query/browser/query.contribution": {
+			"queryResultsEditor.name": "查詢結果",
+			"newQuery": "新增查詢",
+			"queryEditorConfigurationTitle": "查詢編輯器",
+			"queryEditor.results.saveAsCsv.includeHeaders": "若設定為 true，會在將結果另存為 CSV 時包含資料行標題",
+			"queryEditor.results.saveAsCsv.delimiter": "另存為 CSV 時，用在值之間的自訂分隔符號",
+			"queryEditor.results.saveAsCsv.lineSeperator": "將結果另存為 CSV 時，用於分隔資料列的字元",
+			"queryEditor.results.saveAsCsv.textIdentifier": "將結果另存為 CSV 時，用於括住文字欄位的字元",
+			"queryEditor.results.saveAsCsv.encoding": "將結果另存為 CSV 時，要使用的檔案編碼",
+			"queryEditor.results.saveAsXml.formatted": "若設定為 true，會在將結果另存為 XML 時將輸出格式化",
+			"queryEditor.results.saveAsXml.encoding": "將結果另存為 XML 時，要使用的檔案編碼",
+			"queryEditor.results.streaming": "啟用結果串流；包含些許輕微視覺效果問題",
+			"queryEditor.results.copyIncludeHeaders": "從結果檢視中複製結果的組態選項",
+			"queryEditor.results.copyRemoveNewLine": "從結果檢視中複製多行結果的組態選項",
+			"queryEditor.results.optimizedTable": "(實驗性) 在結果中使用最佳化的資料表。可能會缺少某些功能，這些功能仍在開發中。",
+			"queryEditor.inMemoryDataProcessingThreshold": "控制允許在記憶體中篩選及排序的資料列數目上限。如果超過此數目，就會停用排序和篩選。警告: 增加此數目可能會影響效能。",
+			"queryEditor.results.openAfterSave": "是否要在儲存結果後在 Azure Data Studio 中開啟檔案。",
+			"queryEditor.messages.showBatchTime": "是否顯示個別批次的執行時間",
+			"queryEditor.messages.wordwrap": "自動換行訊息",
+			"queryEditor.chart.defaultChartType": "從查詢結果開啟圖表檢視器時要使用的預設圖表類型",
+			"queryEditor.tabColorMode.off": "將停用索引標籤著色功能",
+			"queryEditor.tabColorMode.border": "在每個編輯器索引標籤的上邊框著上符合相關伺服器群組的色彩",
+			"queryEditor.tabColorMode.fill": "每個編輯器索引標籤的背景色彩將與相關的伺服器群組相符",
+			"queryEditor.tabColorMode": "依據連線的伺服器群組控制索引標籤如何著色",
+			"queryEditor.showConnectionInfoInTitle": "控制是否要在標題中顯示索引標籤的連線資訊。",
+			"queryEditor.promptToSaveGeneratedFiles": "提示儲存產生的 SQL 檔案",
+			"queryShortcutDescription": "設定按鍵繫結關係 workbench.action.query.shortcut{0} 以執行捷徑文字作為程序呼叫或查詢執行。任何選取的文字在查詢編輯器中會於查詢結尾作為參數傳遞，或您可將它以 {arg} 參考"
+		},
+		"sql/workbench/contrib/query/browser/queryActions": {
+			"newQueryTask.newQuery": "新增查詢",
+			"runQueryLabel": "執行",
+			"cancelQueryLabel": "取消",
+			"estimatedQueryPlan": "說明",
+			"actualQueryPlan": "實際",
+			"disconnectDatabaseLabel": "中斷連線",
+			"changeConnectionDatabaseLabel": "變更連線",
+			"connectDatabaseLabel": "連線",
+			"enablesqlcmdLabel": "啟用 SQLCMD",
+			"disablesqlcmdLabel": "停用 SQLCMD",
+			"selectDatabase": "選擇資料庫",
+			"changeDatabase.failed": "變更資料庫失敗",
+			"changeDatabase.failedWithError": "無法變更資料庫: {0}",
+			"queryEditor.exportSqlAsNotebook": "匯出為筆記本"
+		},
+		"sql/workbench/contrib/query/browser/queryEditor": {
+			"queryEditor.name": "Query Editor"
+		},
+		"sql/workbench/contrib/query/browser/queryResultsView": {
+			"resultsTabTitle": "結果",
+			"messagesTabTitle": "訊息"
+		},
+		"sql/workbench/contrib/query/browser/statusBarItems": {
+			"status.query.timeElapsed": "已耗用時間",
+			"status.query.rowCount": "資料列計數",
+			"rowCount": "{0} 個資料列",
+			"query.status.executing": "執行查詢中...",
+			"status.query.status": "執行狀態",
+			"status.query.selection-summary": "選取摘要",
+			"status.query.summaryText": "平均: {0} 計數: {1} 總和: {2}"
+		},
+		"sql/workbench/contrib/query/common/resultsGrid.contribution": {
+			"resultsGridConfigurationTitle": "結果方格與訊息",
+			"fontFamily": "控制字型家族。",
+			"fontWeight": "控制字型粗細。",
+			"fontSize": "控制字型大小 (像素)。",
+			"letterSpacing": "控制字母間距 (像素)。",
+			"rowHeight": "控制列高 (像素)",
+			"cellPadding": "控制資料格填補值 (像素)",
+			"autoSizeColumns": "自動調整初始結果的欄寬大小。大量欄位或大型資料格可能會造成效能問題",
+			"maxColumnWidth": "自動調整大小之欄位的寬度上限 (像素)"
+		},
+		"sql/workbench/contrib/queryHistory/browser/queryHistoryActions": {
+			"toggleQueryHistory": "切換查詢歷史記錄",
+			"queryHistory.delete": "刪除",
+			"queryHistory.clearLabel": "清除所有歷史記錄",
+			"queryHistory.openQuery": "開啟查詢",
+			"queryHistory.runQuery": "執行查詢",
+			"queryHistory.toggleCaptureLabel": "切換查詢歷史記錄擷取",
+			"queryHistory.disableCapture": "暫停查詢歷史記錄擷取",
+			"queryHistory.enableCapture": "開始查詢歷史記錄擷取"
+		},
+		"sql/workbench/contrib/queryHistory/browser/queryHistoryRenderer": {
+			"succeeded": "成功",
+			"failed": "失敗"
+		},
+		"sql/workbench/contrib/queryHistory/browser/queryHistoryView": {
+			"noQueriesMessage": "沒有查詢可顯示。",
+			"queryHistory.regTreeAriaLabel": "查詢歷史記錄"
+		},
+		"sql/workbench/contrib/queryHistory/electron-browser/queryHistory": {
+			"queryHistoryConfigurationTitle": "查詢歷史記錄",
+			"queryHistoryCaptureEnabled": "是否啟用了查詢歷史記錄擷取。若未啟用，將不會擷取已經執行的查詢。",
+			"queryHistory.clearLabel": "清除所有歷史記錄",
+			"queryHistory.disableCapture": "暫停查詢歷史記錄擷取",
+			"queryHistory.enableCapture": "開始查詢歷史記錄擷取",
+			"viewCategory": "檢視",
+			"miViewQueryHistory": "查詢歷史記錄(&&Q)",
+			"queryHistory": "查詢歷史記錄"
+		},
+		"sql/workbench/contrib/queryPlan/browser/queryPlan": {
+			"queryPlanTitle": "查詢計劃"
+		},
+		"sql/workbench/contrib/queryPlan/browser/queryPlanEditor": {
+			"queryPlanEditor": "Query Plan Editor"
+		},
+		"sql/workbench/contrib/queryPlan/browser/topOperations": {
+			"topOperations.operation": "作業",
+			"topOperations.object": "物件",
+			"topOperations.estCost": "估計成本",
+			"topOperations.estSubtreeCost": "估計的樹狀子目錄成本",
+			"topOperations.actualRows": "實際資料列數",
+			"topOperations.estRows": "估計資料列數",
+			"topOperations.actualExecutions": "實際執行次數",
+			"topOperations.estCPUCost": "估計 CPU 成本",
+			"topOperations.estIOCost": "估計 IO 成本",
+			"topOperations.parallel": "平行作業",
+			"topOperations.actualRebinds": "實際重新繫結數",
+			"topOperations.estRebinds": "估計重新繫結數",
+			"topOperations.actualRewinds": "實際倒轉數",
+			"topOperations.estRewinds": "估計倒轉數",
+			"topOperations.partitioned": "已分割",
+			"topOperationsTitle": "最前幾項操作"
+		},
+		"sql/workbench/contrib/resourceViewer/browser/resourceViewer.contribution": {
+			"resourceViewer": "資源檢視器"
+		},
+		"sql/workbench/contrib/resourceViewer/browser/resourceViewerActions": {
+			"resourceViewer.refresh": "重新整理"
+		},
+		"sql/workbench/contrib/resourceViewer/browser/resourceViewerTable": {
+			"resourceViewerTable.openError": "開啟連結時發生錯誤: {0}",
+			"resourceViewerTable.commandError": "執行命令 '{0}' 時發生錯誤: {1}"
+		},
+		"sql/workbench/contrib/resourceViewer/browser/resourceViewerView": {
+			"resourceViewer.ariaLabel": "資源檢視器樹狀結構"
+		},
+		"sql/workbench/contrib/resourceViewer/common/resourceViewerViewExtensionPoint": {
+			"extension.contributes.resourceView.resource.id": "資源的識別碼。",
+			"extension.contributes.resourceView.resource.name": "使用人性化顯示名稱。會顯示",
+			"extension.contributes.resourceView.resource.icon": "資源圖示的路徑。",
+			"extension.contributes.resourceViewResources": "將資源提供給資源檢視",
+			"requirestring": "屬性 '{0}' 為強制項目且必須屬於 `string` 類型",
+			"optstring": "屬性 `{0}` 可以省略或必須屬於 `string` 類型"
+		},
+		"sql/workbench/contrib/restore/browser/restore.contribution": {
+			"restore": "還原",
+			"backup": "還原"
+		},
+		"sql/workbench/contrib/restore/browser/restoreActions": {
+			"restore.isPreviewFeature": "您必須啟用預覽功能才能使用還原",
+			"restore.commandNotSupportedOutsideContext": "伺服器內容中不支援還原命令。請選取伺服器或資料庫並再試一次。",
+			"restore.commandNotSupported": "Azure SQL 資料庫不支援還原命令。",
+			"restoreAction.restore": "還原"
+		},
+		"sql/workbench/contrib/scripting/browser/scripting.contribution": {
+			"scriptAsCreate": "建立指令碼",
+			"scriptAsDelete": "將指令碼編寫為 Drop",
+			"scriptAsSelect": "選取前 1000",
+			"scriptAsExecute": "作為指令碼執行",
+			"scriptAsAlter": "修改指令碼",
+			"editData": "編輯資料",
+			"scriptSelect": "選取前 1000",
+			"scriptKustoSelect": "取用 10 筆",
+			"scriptCreate": "建立指令碼",
+			"scriptExecute": "作為指令碼執行",
+			"scriptAlter": "修改指令碼",
+			"scriptDelete": "將指令碼編寫為 Drop",
+			"refreshNode": "重新整理"
+		},
+		"sql/workbench/contrib/scripting/browser/scriptingActions": {
+			"refreshError": "重新整理節點 '{0}' 時發生錯誤: {1}"
+		},
+		"sql/workbench/contrib/tasks/browser/tasks.contribution": {
+			"inProgressTasksChangesBadge": "{0} 正在執行的工作",
+			"viewCategory": "檢視",
+			"tasks": "工作",
+			"miViewTasks": "工作(&&T)"
+		},
+		"sql/workbench/contrib/tasks/browser/tasksActions": {
+			"toggleTasks": "切換工作"
+		},
+		"sql/workbench/contrib/tasks/browser/tasksRenderer": {
+			"succeeded": "成功",
+			"failed": "失敗",
+			"inProgress": "進行中",
+			"notStarted": "未啟動",
+			"canceled": "已取消",
+			"canceling": "取消中"
+		},
+		"sql/workbench/contrib/tasks/browser/tasksView": {
+			"noTaskMessage": "沒有工作歷程記錄可顯示。",
+			"taskHistory.regTreeAriaLabel": "工作歷程記錄",
+			"taskError": "工作錯誤"
+		},
+		"sql/workbench/contrib/tasks/common/tasksAction": {
+			"cancelTask.cancel": "取消",
+			"errorMsgFromCancelTask": "工作取消失敗。",
+			"taskAction.script": "指令碼"
+		},
+		"sql/workbench/contrib/views/browser/treeView": {
+			"no-dataprovider": "沒有任何已註冊的資料提供者可提供檢視資料。",
+			"refresh": "重新整理",
+			"collapseAll": "全部摺疊",
+			"command-error": "執行命令 {1} 時發生錯誤: {0}。這可能是貢獻 {1} 的延伸模組所引起。"
+		},
+		"sql/workbench/contrib/webview/browser/webViewDialog": {
+			"webViewDialog.ok": "確定",
+			"webViewDialog.close": "關閉"
+		},
+		"sql/workbench/contrib/welcome/gettingStarted/browser/abstractEnablePreviewFeatures": {
+			"enablePreviewFeatures.notice": "預覽功能可讓您完整存取新功能及改善的功能，增強您在 Azure Data Studio 的體驗。您可以參閱[這裡]({0})深入了解預覽功能。是否要啟用預覽功能?",
+			"enablePreviewFeatures.yes": "是 (建議)",
+			"enablePreviewFeatures.no": "否",
+			"enablePreviewFeatures.never": "不，不要再顯示"
+		},
+		"sql/workbench/contrib/welcome/page/browser/az_data_welcome_page": {
+			"welcomePage.previewBody": "這個功能頁面仍在預覽階段。預覽功能會引進新功能，並逐步成為產品中永久的一部分。這些功能雖然穩定，但在使用上仍需要改善。歡迎您在功能開發期間提供早期的意見反應。",
+			"welcomePage.preview": "預覽",
+			"welcomePage.createConnection": "建立連線",
+			"welcomePage.createConnectionBody": "透過連線對話方塊連線到資料庫執行個體。",
+			"welcomePage.runQuery": "執行查詢",
+			"welcomePage.runQueryBody": "透過查詢編輯器與資料互動。",
+			"welcomePage.createNotebook": "建立筆記本",
+			"welcomePage.createNotebookBody": "使用原生筆記本編輯器建置新的筆記本。",
+			"welcomePage.deployServer": "部署伺服器",
+			"welcomePage.deployServerBody": "在您選擇的平台上建立關聯式資料服務的新執行個體。",
+			"welcomePage.resources": "資源",
+			"welcomePage.history": "記錄",
+			"welcomePage.name": "名稱",
+			"welcomePage.location": "位置",
+			"welcomePage.moreRecent": "顯示更多",
+			"welcomePage.showOnStartup": "啟動時顯示歡迎頁面",
+			"welcomePage.usefuLinks": "實用的連結",
+			"welcomePage.gettingStarted": "使用者入門",
+			"welcomePage.gettingStartedBody": "探索 Azure Data Studio 提供的功能，並了解如何充分利用。",
+			"welcomePage.documentation": "文件",
+			"welcomePage.documentationBody": "如需快速入門、操作指南及 PowerShell、API 等參考，請瀏覽文件中心。",
+			"welcomePage.videos": "影片",
+			"welcomePage.videoDescriptionOverview": "Azure Data Studio 概觀",
+			"welcomePage.videoDescriptionIntroduction": "Azure Data Studio Notebooks 簡介 | 公開的資料",
+			"welcomePage.extensions": "延伸模組",
+			"welcomePage.showAll": "全部顯示",
+			"welcomePage.learnMore": "深入了解 "
+		},
+		"sql/workbench/contrib/welcome/page/browser/gettingStartedTour": {
+			"GuidedTour.connections": "連線",
+			"GuidedTour.makeConnections": "從 SQL Server、Azure 等處進行連線、查詢及管理您的連線。",
+			"GuidedTour.one": "1",
+			"GuidedTour.next": "下一個",
+			"GuidedTour.notebooks": "筆記本",
+			"GuidedTour.gettingStartedNotebooks": "開始在單一位置建立您自己的筆記本或筆記本系列。",
+			"GuidedTour.two": "2",
+			"GuidedTour.extensions": "延伸模組",
+			"GuidedTour.addExtensions": "安裝由我們 (Microsoft) 及第三方社群 (您!) 所開發的延伸模組，來擴充 Azure Data Studio 的功能。",
+			"GuidedTour.three": "3",
+			"GuidedTour.settings": "設定",
+			"GuidedTour.makeConnesetSettings": "根據您的喜好自訂 Azure Data Studio。您可以進行自動儲存及索引標籤大小等 [設定]、將 [鍵盤快速鍵] 個人化，以及切換至您喜歡的 [色彩佈景主題]。",
+			"GuidedTour.four": "4",
+			"GuidedTour.welcomePage": "歡迎頁面",
+			"GuidedTour.discoverWelcomePage": "在歡迎頁面中探索常用功能、最近開啟的檔案及建議的延伸模組。如需詳細資訊，以了解如何開始使用 Azure Data Studio，請參閱我們的影片及文件。",
+			"GuidedTour.five": "5",
+			"GuidedTour.finish": "完成",
+			"guidedTour": "使用者歡迎導覽",
+			"hideGuidedTour": "隱藏歡迎導覽",
+			"GuidedTour.readMore": "深入了解",
+			"help": "說明"
+		},
+		"sql/workbench/contrib/welcome/page/browser/welcomePage": {
+			"welcomePage": "歡迎使用",
+			"welcomePage.adminPack": "SQL 管理員套件",
+			"welcomePage.showAdminPack": "SQL 管理員套件",
+			"welcomePage.adminPackDescription": "SQL Server 的管理員套件是一套熱門的資料庫管理延伸模組，可協助您管理 SQL Server",
+			"welcomePage.sqlServerAgent": "SQL Server Agent",
+			"welcomePage.sqlServerProfiler": "SQL Server Profiler",
+			"welcomePage.sqlServerImport": "SQL Server 匯入",
+			"welcomePage.sqlServerDacpac": "SQL Server Dacpac",
+			"welcomePage.powershell": "PowerShell",
+			"welcomePage.powershellDescription": "使用 Azure Data Studio 的豐富查詢編輯器來寫入及執行 PowerShell 指令碼",
+			"welcomePage.dataVirtualization": "資料虛擬化",
+			"welcomePage.dataVirtualizationDescription": "使用 SQL Server 2019 將資料虛擬化，並使用互動式精靈建立外部資料表",
+			"welcomePage.PostgreSQL": "PostgreSQL",
+			"welcomePage.PostgreSQLDescription": "使用 Azure Data Studio 進行連線、查詢及管理 Postgres 資料庫",
+			"welcomePage.extensionPackAlreadyInstalled": "支援功能{0}已被安裝。",
+			"welcomePage.willReloadAfterInstallingExtensionPack": "{0} 的其他支援安裝完成後，將會重新載入此視窗。",
+			"welcomePage.installingExtensionPack": "正在安裝 {0} 的其他支援...",
+			"welcomePage.extensionPackNotFound": "找不到ID為{1}的{0}支援功能.",
+			"welcomePage.newConnection": "新增連線",
+			"welcomePage.newQuery": "新增查詢",
+			"welcomePage.newNotebook": "新增筆記本",
+			"welcomePage.deployServer": "部署伺服器",
+			"welcome.title": "歡迎使用",
+			"welcomePage.new": "新增",
+			"welcomePage.open": "開啟…",
+			"welcomePage.openFile": "開啟檔案…",
+			"welcomePage.openFolder": "開啟資料夾…",
+			"welcomePage.startTour": "開始導覽",
+			"closeTourBar": "關閉快速導覽列",
+			"WelcomePage.TakeATour": "要進行 Azure Data Studio 的快速導覽嗎?",
+			"WelcomePage.welcome": "歡迎使用!",
+			"welcomePage.openFolderWithPath": "透過路徑 {1} 開啟資料夾 {0}",
+			"welcomePage.install": "安裝",
+			"welcomePage.installKeymap": "安裝 {0} 鍵盤對應",
+			"welcomePage.installExtensionPack": "安裝 {0} 的其他支援",
+			"welcomePage.installed": "已安裝",
+			"welcomePage.installedKeymap": "已安裝 {0} 按鍵對應",
+			"welcomePage.installedExtensionPack": "已安裝 {0} 支援",
+			"ok": "確定",
+			"details": "詳細資料",
+			"welcomePage.background": "歡迎頁面的背景色彩。"
+		},
+		"sql/workbench/contrib/welcome2/page/browser/az_data_welcome_page": {
+			"welcomePage.azdata": "Azure Data Studio",
+			"welcomePage.start": "開始",
+			"welcomePage.newConnection": "新增連線",
+			"welcomePage.newQuery": "新增查詢",
+			"welcomePage.newNotebook": "新增筆記本",
+			"welcomePage.openFileMac": "開啟檔案",
+			"welcomePage.openFileLinuxPC": "開啟檔案",
+			"welcomePage.deploy": "部署",
+			"welcomePage.newDeployment": "新增部署…",
+			"welcomePage.recent": "最近使用",
+			"welcomePage.moreRecent": "更多...",
+			"welcomePage.noRecentFolders": "沒有最近使用的資料夾",
+			"welcomePage.help": "說明",
+			"welcomePage.gettingStarted": "使用者入門",
+			"welcomePage.productDocumentation": "文件",
+			"welcomePage.reportIssue": "回報問題或功能要求",
+			"welcomePage.gitHubRepository": "GitHub 存放庫",
+			"welcomePage.releaseNotes": "版本資訊",
+			"welcomePage.showOnStartup": "啟動時顯示歡迎頁面",
+			"welcomePage.customize": "自訂",
+			"welcomePage.extensions": "延伸模組",
+			"welcomePage.extensionDescription": "下載所需延伸模組，包括 SQL Server 系統管理員套件等",
+			"welcomePage.keyboardShortcut": "鍵盤快速鍵",
+			"welcomePage.keyboardShortcutDescription": "尋找您最愛的命令並予加自訂",
+			"welcomePage.colorTheme": "色彩佈景主題",
+			"welcomePage.colorThemeDescription": "將編輯器和您的程式碼設定成您喜愛的外觀",
+			"welcomePage.learn": "了解",
+			"welcomePage.showCommands": "尋找及執行所有命令",
+			"welcomePage.showCommandsDescription": "從命令選擇區快速存取及搜尋命令 ({0})",
+			"welcomePage.azdataBlog": "探索最新版本中的新功能",
+			"welcomePage.azdataBlogDescription": "展示新功能的新每月部落格文章",
+			"welcomePage.followTwitter": "追蹤我們的 Twitter",
+			"welcomePage.followTwitterDescription": "掌握社群如何使用 Azure Data Studio 的最新消息，並可直接與工程師對話。"
+		},
+		"sql/workbench/services/accountManagement/browser/accountDialog": {
+			"accountExplorer.name": "帳戶",
+			"linkedAccounts": "連結的帳戶",
+			"accountDialog.close": "關閉",
+			"accountDialog.noAccountLabel": "沒有任何已連結帳戶。請新增帳戶。",
+			"accountDialog.addConnection": "新增帳戶",
+			"accountDialog.noCloudsRegistered": "您未啟用任何雲端。前往 [設定] -> [搜尋 Azure 帳戶組態] -> 啟用至少一個雲端",
+			"accountDialog.didNotPickAuthProvider": "您未選取任何驗證提供者。請再試一次。"
+		},
+		"sql/workbench/services/accountManagement/browser/accountDialogController": {
+			"accountDialog.addAccountErrorTitle": "新增帳戶時發生錯誤"
+		},
+		"sql/workbench/services/accountManagement/browser/accountListRenderer": {
+			"refreshCredentials": "您需要重新整理此帳戶的登入資訊。"
+		},
+		"sql/workbench/services/accountManagement/browser/accountManagementService": {
+			"accountManagementService.close": "關閉",
+			"loggingIn": "正在新增帳戶...",
+			"refreshFailed": "使用者已取消重新整理帳戶"
+		},
+		"sql/workbench/services/accountManagement/browser/accountPickerImpl": {
+			"azureAccount": "Azure 帳戶",
+			"azureTenant": "Azure 租用戶"
+		},
+		"sql/workbench/services/accountManagement/browser/autoOAuthDialog": {
+			"copyAndOpen": "複製並開啟",
+			"oauthDialog.cancel": "取消",
+			"userCode": "使用者代碼",
+			"website": "網站"
+		},
+		"sql/workbench/services/accountManagement/browser/autoOAuthDialogController": {
+			"oauthFlyoutIsAlreadyOpen": "無法啟動自動 OAuth。自動 OAuth 已在進行中。"
+		},
+		"sql/workbench/services/admin/common/adminService": {
+			"adminService.providerIdNotValidError": "必需連線以便與 adminservice 互動",
+			"adminService.noHandlerRegistered": "未註冊處理常式"
+		},
+		"sql/workbench/services/assessment/common/assessmentService": {
+			"asmt.providerIdNotValidError": "需要連線才能與評定服務互動",
+			"asmt.noHandlerRegistered": "未註冊任何處理常式"
+		},
+		"sql/workbench/services/connection/browser/advancedPropertiesController": {
+			"connectionAdvancedProperties": "進階屬性",
+			"advancedProperties.discard": "捨棄"
+		},
+		"sql/workbench/services/connection/browser/cmsConnectionWidget": {
+			"serverDescription": "伺服器描述 (選用)"
+		},
+		"sql/workbench/services/connection/browser/connectionActions": {
+			"ClearRecentlyUsedLabel": "清除清單",
+			"ClearedRecentConnections": "最近的連線清單已清除",
+			"connectionAction.yes": "是",
+			"connectionAction.no": "否",
+			"clearRecentConnectionMessage": "您確定要刪除清單中的所有連線嗎?",
+			"connectionDialog.yes": "是",
+			"connectionDialog.no": "否",
+			"delete": "刪除",
+			"connectionAction.GetCurrentConnectionString": "取得目前的連接字串",
+			"connectionAction.connectionString": "連接字串無法使用",
+			"connectionAction.noConnection": "沒有可用的有效連線"
+		},
+		"sql/workbench/services/connection/browser/connectionBrowseTab": {
+			"connectionDialog.browser": "瀏覽",
+			"connectionDialog.FilterPlaceHolder": "在此鍵入以篩選清單",
+			"connectionDialog.FilterInputTitle": "篩選連線",
+			"connectionDialog.ApplyingFilter": "正在套用篩選",
+			"connectionDialog.RemovingFilter": "正在移除篩選",
+			"connectionDialog.FilterApplied": "已套用篩選",
+			"connectionDialog.FilterRemoved": "已移除篩選",
+			"savedConnections": "已儲存的連線",
+			"savedConnection": "已儲存的連線",
+			"connectionBrowserTree": "連線瀏覽器樹狀結構"
+		},
+		"sql/workbench/services/connection/browser/connectionDialogService": {
+			"connectionError": "連線錯誤",
+			"kerberosErrorStart": "因為 Kerberos 錯誤導致連線失敗。",
+			"kerberosHelpLink": "您可於 {0} 取得設定 Kerberos 的說明",
+			"kerberosKinit": "如果您之前曾連線，則可能需要重新執行 kinit。"
+		},
+		"sql/workbench/services/connection/browser/connectionDialogWidget": {
+			"connection": "連線",
+			"connecting": "正在連線",
+			"connectType": "連線類型",
+			"recentConnectionTitle": "最近",
+			"connectionDetailsTitle": "連線詳細資料",
+			"connectionDialog.connect": "連線",
+			"connectionDialog.cancel": "取消",
+			"connectionDialog.recentConnections": "最近的連線",
+			"noRecentConnections": "沒有最近使用的連線"
+		},
+		"sql/workbench/services/connection/browser/connectionManagementService": {
+			"connection.noAzureAccount": "無法取得連線的 Azure 帳戶權杖",
+			"connectionNotAcceptedError": "連線未被接受",
+			"connectionService.yes": "是",
+			"connectionService.no": "否",
+			"cancelConnectionConfirmation": "您確定要取消此連線嗎?"
+		},
+		"sql/workbench/services/connection/browser/connectionWidget": {
+			"connectionWidget.AddAzureAccount": "新增帳戶...",
+			"defaultDatabaseOption": "<預設>",
+			"loadingDatabaseOption": "正在載入...",
+			"serverGroup": "伺服器群組",
+			"defaultServerGroup": "<預設>",
+			"addNewServerGroup": "新增群組...",
+			"noneServerGroup": "<不要儲存>",
+			"connectionWidget.missingRequireField": "{0} 為必要項。",
+			"connectionWidget.fieldWillBeTrimmed": "{0} 將受到修剪。",
+			"rememberPassword": "記住密碼",
+			"connection.azureAccountDropdownLabel": "帳戶",
+			"connectionWidget.refreshAzureCredentials": "重新整理帳戶登入資訊",
+			"connection.azureTenantDropdownLabel": "Azure AD 租用戶",
+			"connectionName": "名稱 (選用)",
+			"advanced": "進階...",
+			"connectionWidget.invalidAzureAccount": "您必須選取帳戶"
+		},
+		"sql/workbench/services/connection/browser/localizedConstants": {
+			"onDidConnectMessage": "已連線到",
+			"onDidDisconnectMessage": "已中斷連線",
+			"unsavedGroupLabel": "未儲存的連線"
+		},
+		"sql/workbench/services/dashboard/browser/newDashboardTabDialogImpl": {
+			"newDashboardTab.openDashboardExtensions": "開啟儀表板延伸模組",
+			"newDashboardTab.ok": "確定",
+			"newDashboardTab.cancel": "取消",
+			"newdashboardTabDialog.noExtensionLabel": "目前沒有安裝任何儀表板延伸模組。請前往延伸模組能管理員探索建議的延伸模組。"
+		},
+		"sql/workbench/services/dialog/browser/dialogPane": {
+			"wizardPageNumberDisplayText": "步驟 {0}"
+		},
+		"sql/workbench/services/dialog/common/dialogTypes": {
+			"dialogModalDoneButtonLabel": "完成",
+			"dialogModalCancelButtonLabel": "取消"
+		},
+		"sql/workbench/services/editData/common/editQueryRunner": {
+			"query.initEditExecutionFailed": "初始化編輯資料工作階段失敗:"
+		},
+		"sql/workbench/services/errorMessage/browser/errorMessageDialog": {
+			"errorMessageDialog.ok": "確定",
+			"errorMessageDialog.close": "關閉",
+			"errorMessageDialog.action": "動作",
+			"copyDetails": "複製詳細資訊"
+		},
+		"sql/workbench/services/errorMessage/browser/errorMessageService": {
+			"error": "錯誤",
+			"warning": "警告",
+			"info": "資訊",
+			"ignore": "忽略"
+		},
+		"sql/workbench/services/fileBrowser/browser/fileBrowserDialog": {
+			"filebrowser.filepath": "選擇的路徑",
+			"fileFilter": "檔案類型",
+			"fileBrowser.ok": "確定",
+			"fileBrowser.discard": "捨棄"
+		},
+		"sql/workbench/services/fileBrowser/browser/fileBrowserDialogController": {
+			"filebrowser.selectFile": "選擇檔案"
+		},
+		"sql/workbench/services/fileBrowser/browser/fileBrowserTreeView": {
+			"fileBrowser.regTreeAriaLabel": "樹狀結構檔案瀏覽器"
+		},
+		"sql/workbench/services/fileBrowser/common/fileBrowserService": {
+			"fileBrowserErrorMessage": "載入檔案瀏覽器時發生錯誤。",
+			"fileBrowserErrorDialogTitle": "檔案瀏覽器錯誤"
+		},
+		"sql/workbench/services/fileBrowser/common/fileBrowserViewModel": {
+			"allFiles": "所有檔案"
+		},
+		"sql/workbench/services/insights/browser/insightDialogActions": {
+			"workbench.action.insights.copySelection": "複製資料格"
+		},
+		"sql/workbench/services/insights/browser/insightsDialogController": {
+			"insightsInputError": "沒有傳遞給見解彈出式視窗的連線設定",
+			"insightsError": "見解錯誤",
+			"insightsFileError": "讀取查詢檔案時發生錯誤:",
+			"insightsConfigError": "解析見解設定時發生錯誤。找不到查詢陣列/字串或 queryfile"
+		},
+		"sql/workbench/services/insights/browser/insightsDialogView": {
+			"insights.item": "項目",
+			"insights.value": "值",
+			"insightsDetailView.name": "見解詳細資料",
+			"property": "屬性",
+			"value": "值",
+			"InsightsDialogTitle": "見解",
+			"insights.dialog.items": "項目",
+			"insights.dialog.itemDetails": "項目詳細資訊"
+		},
+		"sql/workbench/services/insights/common/insightsUtils": {
+			"insightsDidNotFindResolvedFile": "無法在以下任一路徑找到查詢檔案 :\r\n {0}"
+		},
+		"sql/workbench/services/jobManagement/browser/jobManagementUtilities": {
+			"agentUtilities.failed": "失敗",
+			"agentUtilities.succeeded": "已成功",
+			"agentUtilities.retry": "重試",
+			"agentUtilities.canceled": "已取消",
+			"agentUtilities.inProgress": "正在進行",
+			"agentUtilities.statusUnknown": "狀態未知",
+			"agentUtilities.executing": "正在執行",
+			"agentUtilities.waitingForThread": "正在等候執行緒",
+			"agentUtilities.betweenRetries": "正在重試",
+			"agentUtilities.idle": "閒置",
+			"agentUtilities.suspended": "暫止",
+			"agentUtilities.obsolete": "[已淘汰]",
+			"agentUtilities.yes": "是",
+			"agentUtilities.no": "否",
+			"agentUtilities.notScheduled": "未排程",
+			"agentUtilities.neverRun": "從未執行"
+		},
+		"sql/workbench/services/jobManagement/common/jobManagementService": {
+			"providerIdNotValidError": "需要連線才能與 JobManagementService 互動",
+			"noHandlerRegistered": "未註冊任何處理常式"
+		},
+		"sql/workbench/services/notebook/browser/interfaces": {
+			"sqlKernel": "SQL"
+		},
 		"sql/workbench/services/notebook/browser/models/cell": {
 			"runCellCancelled": "已取消資料格執行",
 			"executionCanceled": "已取消執行查詢",
@@ -11325,12 +11224,223 @@
 			"noDefaultKernel": "沒有任何可供此筆記本使用的核心",
 			"commandSuccessful": "已成功執行命令"
 		},
+		"sql/workbench/services/notebook/browser/models/clientSession": {
+			"clientSession.unknownError": "啟動筆記本工作階段時發生錯誤",
+			"ServerNotStarted": "伺服器因為不明原因而未啟動",
+			"kernelRequiresConnection": "找不到核心 {0}。會改用預設核心。"
+		},
 		"sql/workbench/services/notebook/browser/models/notebookContexts": {
 			"selectConnection": "選取連線",
 			"localhost": "localhost"
 		},
-		"sql/workbench/browser/parts/editor/editorStatusModeSelect": {
-			"languageChangeUnsupported": "無法變更尚未儲存之檔案的編輯器類型"
+		"sql/workbench/services/notebook/browser/models/notebookModel": {
+			"injectedParametersMsg": "# 個插入的參數\r\n",
+			"kernelRequiresConnection": "請選取要為此核心執行資料格的連線",
+			"deleteCellFailed": "無法刪除資料格。",
+			"changeKernelFailedRetry": "無法變更核心。將會使用核心 {0}。錯誤為: {1}",
+			"changeKernelFailed": "因為錯誤所以無法變更核心: {0}",
+			"changeContextFailed": "無法變更內容: {0}",
+			"startSessionFailed": "無法啟動工作階段: {0}",
+			"shutdownClientSessionError": "關閉筆記本時發生用戶端工作階段錯誤: {0}",
+			"ProviderNoManager": "找不到提供者 {0} 的筆記本管理員"
+		},
+		"sql/workbench/services/notebook/browser/notebookServiceImpl": {
+			"notebookUriNotDefined": "建立筆記本管理員時未傳遞任何 URI",
+			"notebookServiceNoProvider": "Notebook 提供者不存在"
+		},
+		"sql/workbench/services/notebook/browser/notebookViews/notebookViewModel": {
+			"notebookView.nameTaken": "此筆記本中已有名稱為 {0} 的檢視。"
+		},
+		"sql/workbench/services/notebook/browser/sql/sqlSessionManager": {
+			"sqlKernelError": "SQL 核心錯誤",
+			"connectionRequired": "必須選擇連線來執行筆記本資料格",
+			"sqlMaxRowsDisplayed": "目前顯示前 {0} 列。"
+		},
+		"sql/workbench/services/notebook/common/contracts": {
+			"notebook.richTextEditMode": "RTF 文字",
+			"notebook.splitViewEditMode": "分割檢視",
+			"notebook.markdownEditMode": "Markdown"
+		},
+		"sql/workbench/services/notebook/common/localContentManager": {
+			"nbformatNotRecognized": "無法識別 nbformat v{0}.{1}",
+			"nbNotSupported": "檔案不具備有效的筆記本格式",
+			"unknownCellType": "資料格類型 {0} 不明",
+			"unrecognizedOutput": "無法識別輸出類型 {0}",
+			"invalidMimeData": "{0} 的資料應為字串或字串的陣列",
+			"unrecognizedOutputType": "無法識別輸出類型 {0}"
+		},
+		"sql/workbench/services/notebook/common/notebookRegistry": {
+			"carbon.extension.contributes.notebook.provider": "筆記本提供者的識別碼。",
+			"carbon.extension.contributes.notebook.fileExtensions": "應向此筆記本提供者註冊的檔案副檔名",
+			"carbon.extension.contributes.notebook.standardKernels": "應為此筆記本提供者之標準的核心",
+			"vscode.extension.contributes.notebook.providers": "提供筆記本提供者。",
+			"carbon.extension.contributes.notebook.magic": "資料格 magic 的名稱，例如 '%%sql'。",
+			"carbon.extension.contributes.notebook.language": "資料格中包含此資料格 magic 時，要使用的資料格語言",
+			"carbon.extension.contributes.notebook.executionTarget": "這個 magic 指示的選擇性執行目標，例如 Spark vs SQL",
+			"carbon.extension.contributes.notebook.kernels": "適用於像是 python3、pyspark、sql 等等的選擇性核心集",
+			"vscode.extension.contributes.notebook.languagemagics": "提供筆記本語言。"
+		},
+		"sql/workbench/services/objectExplorer/browser/asyncServerTreeRenderer": {
+			"loading": "正在載入..."
+		},
+		"sql/workbench/services/objectExplorer/browser/connectionTreeAction": {
+			"connectionTree.refresh": "重新整理",
+			"connectionTree.editConnection": "編輯連線",
+			"DisconnectAction": "中斷連線",
+			"connectionTree.addConnection": "新增連線",
+			"connectionTree.addServerGroup": "新增伺服器群組",
+			"connectionTree.editServerGroup": "編輯伺服器群組",
+			"activeConnections": "顯示使用中的連線",
+			"showAllConnections": "顯示所有連線",
+			"deleteConnection": "刪除連線",
+			"deleteConnectionGroup": "刪除群組"
+		},
+		"sql/workbench/services/objectExplorer/browser/objectExplorerService": {
+			"OeSessionFailedError": "建立物件總管工作階段失敗",
+			"nodeExpansionError": "多個錯誤:"
+		},
+		"sql/workbench/services/objectExplorer/browser/objectExplorerViewTreeShim": {
+			"noProviderFound": "因為找不到必要的連線提供者 ‘{0}’，所以無法展開",
+			"loginCanceled": "已取消使用者",
+			"firewallCanceled": "已取消防火牆對話方塊"
+		},
+		"sql/workbench/services/objectExplorer/browser/serverTreeRenderer": {
+			"loading": "正在載入..."
+		},
+		"sql/workbench/services/objectExplorer/browser/treeCreationUtils": {
+			"treeAriaLabel": "最近的連線",
+			"serversAriaLabel": "伺服器",
+			"treeCreation.regTreeAriaLabel": "伺服器"
+		},
+		"sql/workbench/services/profiler/browser/profilerColumnEditorDialog": {
+			"eventSort": "依事件排序",
+			"nameColumn": "依資料行排序",
+			"profilerColumnDialog.profiler": "分析工具",
+			"profilerColumnDialog.ok": "確定",
+			"profilerColumnDialog.cancel": "取消"
+		},
+		"sql/workbench/services/profiler/browser/profilerFilterDialog": {
+			"profilerFilterDialog.clear": "全部清除",
+			"profilerFilterDialog.apply": "套用",
+			"profilerFilterDialog.ok": "確定",
+			"profilerFilterDialog.cancel": "取消",
+			"profilerFilterDialog.title": "篩選",
+			"profilerFilterDialog.remove": "移除此子句",
+			"profilerFilterDialog.saveFilter": "儲存篩選",
+			"profilerFilterDialog.loadFilter": "載入篩選",
+			"profilerFilterDialog.addClauseText": "新增子句",
+			"profilerFilterDialog.fieldColumn": "欄位",
+			"profilerFilterDialog.operatorColumn": "運算子",
+			"profilerFilterDialog.valueColumn": "值",
+			"profilerFilterDialog.isNullOperator": "為 Null",
+			"profilerFilterDialog.isNotNullOperator": "非 Null",
+			"profilerFilterDialog.containsOperator": "包含",
+			"profilerFilterDialog.notContainsOperator": "不包含",
+			"profilerFilterDialog.startsWithOperator": "開頭是",
+			"profilerFilterDialog.notStartsWithOperator": "開頭不是"
+		},
+		"sql/workbench/services/query/common/queryModelService": {
+			"commitEditFailed": "認可資料列失敗: ",
+			"runQueryBatchStartMessage": "已開始執行以下查詢:",
+			"runQueryStringBatchStartMessage": "已開始執行查詢 \"{0}\"",
+			"runQueryBatchStartLine": "第 {0} 行",
+			"msgCancelQueryFailed": "取消查詢失敗: {0}",
+			"updateCellFailed": "更新資料格失敗: "
+		},
+		"sql/workbench/services/query/common/queryRunner": {
+			"query.ExecutionFailedError": "由於意外錯誤導致執行失敗: {0} {1}",
+			"query.message.executionTime": "總執行時間: {0}",
+			"query.message.startQueryWithRange": "已於第 {0} 行開始執行查詢",
+			"query.message.startQuery": "已開始執行批次 {0}",
+			"elapsedBatchTime": "批次執行時間: {0}",
+			"copyFailed": "複製失敗。錯誤: {0}"
+		},
+		"sql/workbench/services/query/common/resultSerializer": {
+			"msgSaveFailed": "無法儲存結果。",
+			"resultsSerializer.saveAsFileTitle": "選擇結果檔案",
+			"resultsSerializer.saveAsFileExtensionCSVTitle": "CSV (以逗號分隔)",
+			"resultsSerializer.saveAsFileExtensionJSONTitle": "JSON",
+			"resultsSerializer.saveAsFileExtensionExcelTitle": "Excel 活頁簿",
+			"resultsSerializer.saveAsFileExtensionXMLTitle": "XML",
+			"resultsSerializer.saveAsFileExtensionTXTTitle": "純文字",
+			"savingFile": "正在儲存檔案...",
+			"msgSaveSucceeded": "已成功將結果儲存至 {0}",
+			"openFile": "開啟檔案"
+		},
+		"sql/workbench/services/resourceProvider/browser/firewallRuleDialog": {
+			"from": "從",
+			"to": "至",
+			"createNewFirewallRule": "建立新的防火牆規則",
+			"firewall.ok": "確定",
+			"firewall.cancel": "取消",
+			"firewallRuleDialogDescription": "您的用戶端 IP 位址無法存取伺服器。登錄到 Azure 帳戶並建立新的防火牆規則以啟用存取權限。",
+			"firewallRuleHelpDescription": "深入了解防火牆設定",
+			"filewallRule": "防火牆規則",
+			"addIPAddressLabel": "新增我的用戶端 IP",
+			"addIpRangeLabel": "新增我的子網路 IP 範圍"
+		},
+		"sql/workbench/services/resourceProvider/browser/firewallRuleDialogController": {
+			"firewallDialog.addAccountErrorTitle": "新增帳戶時發生錯誤",
+			"firewallRuleError": "防火牆規則錯誤"
+		},
+		"sql/workbench/services/restore/browser/restoreDialog": {
+			"backupFilePath": "備份檔案路徑",
+			"targetDatabase": "目標資料庫",
+			"restoreDialog.restore": "還原",
+			"restoreDialog.restoreTitle": "還原資料庫",
+			"restoreDialog.database": "資料庫",
+			"restoreDialog.backupFile": "備份檔案",
+			"RestoreDialogTitle": "還原資料庫",
+			"restoreDialog.cancel": "取消",
+			"restoreDialog.script": "指令碼",
+			"source": "來源",
+			"restoreFrom": "還原自",
+			"missingBackupFilePathError": "需要備份檔案路徑。",
+			"multipleBackupFilePath": "請輸入一或多個用逗號分隔的檔案路徑",
+			"database": "資料庫",
+			"destination": "目的地",
+			"restoreTo": "還原到",
+			"restorePlan": "還原計劃",
+			"backupSetsToRestore": "要還原的備份組",
+			"restoreDatabaseFileAs": "將資料庫檔案還原為",
+			"restoreDatabaseFileDetails": "還原資料庫檔詳細資訊",
+			"logicalFileName": "邏輯檔案名稱",
+			"fileType": "檔案類型",
+			"originalFileName": "原始檔案名稱",
+			"restoreAs": "還原為",
+			"restoreOptions": "還原選項",
+			"taillogBackup": "結尾記錄備份",
+			"serverConnection": "伺服器連線",
+			"generalTitle": "一般",
+			"filesTitle": "檔案",
+			"optionsTitle": "選項"
+		},
+		"sql/workbench/services/restore/common/constants": {
+			"backup.filterBackupFiles": "備份檔案",
+			"backup.allFiles": "所有檔案"
+		},
+		"sql/workbench/services/serverGroup/browser/serverGroupDialog": {
+			"ServerGroupsDialogTitle": "伺服器群組",
+			"serverGroup.ok": "確定",
+			"serverGroup.cancel": "取消",
+			"connectionGroupName": "伺服器群組名稱",
+			"MissingGroupNameError": "需要群組名稱。",
+			"groupDescription": "群組描述",
+			"groupColor": "群組色彩"
+		},
+		"sql/workbench/services/serverGroup/common/serverGroupViewModel": {
+			"serverGroup.addServerGroup": "新增伺服器群組",
+			"serverGroup.editServerGroup": "編輯伺服器群組"
+		},
+		"sql/workbench/services/tasks/common/tasksService": {
+			"InProgressWarning": "1 個或更多的工作正在進行中。是否確實要退出?",
+			"taskService.yes": "是",
+			"taskService.no": "否"
+		},
+		"sql/workbench/update/electron-browser/releaseNotes": {
+			"gettingStarted": "開始",
+			"showReleaseNotes": "顯示入門指南",
+			"miGettingStarted": "開始使用(&&S)"
 		}
 	}
 }

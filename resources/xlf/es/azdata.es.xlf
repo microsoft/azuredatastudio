@@ -1,0 +1,329 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file original="extensions/azdata/package" source-language="en" datatype="plaintext" target-language="es">
+    <body>
+      <trans-unit id="azdata.displayName">
+        <source xml:lang="en">Azure Data CLI</source>
+        <target state="translated">CLI de Azure Data</target>
+      </trans-unit>
+      <trans-unit id="azdata.description">
+        <source xml:lang="en">Support for Azure Data CLI.</source>
+        <target state="translated">Compatibilidad con la CLI Azure Data.</target>
+      </trans-unit>
+      <trans-unit id="azdata.config.title">
+        <source xml:lang="en">Azure Data CLI Configuration</source>
+        <target state="translated">Configuración de la CLI Azure Data</target>
+      </trans-unit>
+      <trans-unit id="azdata.config.debug">
+        <source xml:lang="en">Log debug info to the output channel for all executed azdata commands</source>
+        <target state="translated">Registrar información de depuración en el canal de salida para todos los comandos azdata ejecutados</target>
+      </trans-unit>
+      <trans-unit id="command.category">
+        <source xml:lang="en">Azure Data CLI</source>
+        <target state="translated">CLI de Azure Data</target>
+      </trans-unit>
+      <trans-unit id="azdata.acceptEula.command.name">
+        <source xml:lang="en">Accept Eula</source>
+        <target state="translated">Aceptar CLUF</target>
+      </trans-unit>
+      <trans-unit id="azdata.install.command.name">
+        <source xml:lang="en">Install</source>
+        <target state="translated">Instalar</target>
+      </trans-unit>
+      <trans-unit id="azdata.update.command.name">
+        <source xml:lang="en">Check for Update</source>
+        <target state="translated">Buscar actualización</target>
+      </trans-unit>
+      <trans-unit id="azdata.category">
+        <source xml:lang="en">Azure Data CLI</source>
+        <target state="translated">CLI de Azure Data</target>
+      </trans-unit>
+      <trans-unit id="azdata.acceptEula.description">
+        <source xml:lang="en">Choose how acceptance of EULA for the Azure Data CLI is done</source>
+        <target state="translated">Elija cómo se lleva a cabo la aceptación del CLUF de la CLI de Azure Data.</target>
+      </trans-unit>
+      <trans-unit id="azdata.acceptEula.prompt.description">
+        <source xml:lang="en">The user will be prompted for acceptance of EULA for the Azure Data CLI</source>
+        <target state="translated">Se solicitará al usuario que acepte el CLUF para la CLI de Azure Data.</target>
+      </trans-unit>
+      <trans-unit id="azdata.acceptEula.dontPrompt.description">
+        <source xml:lang="en">The user will not be prompted for acceptance of EULA for the Azure Data CLI</source>
+        <target state="translated">No se solicitará al usuario que acepte el CLUF para la CLI de Azure Data.</target>
+      </trans-unit>
+      <trans-unit id="azdata.install.description">
+        <source xml:lang="en">Choose how install of Azure Data CLI is done</source>
+        <target state="translated">Elija cómo se realizará la instalación de la CLI de Azure Data</target>
+      </trans-unit>
+      <trans-unit id="azdata.install.prompt.description">
+        <source xml:lang="en">The user will be prompted for installation of the Azure Data CLI</source>
+        <target state="translated">Se solicitará al usuario que instale la CLI de Azure Data</target>
+      </trans-unit>
+      <trans-unit id="azdata.install.dontPrompt.description">
+        <source xml:lang="en">The user will not be prompted for installation of the Azure Data CLI</source>
+        <target state="translated">No se solicitará al usuario que instale la CLI de Azure Data</target>
+      </trans-unit>
+      <trans-unit id="azdata.update.description">
+        <source xml:lang="en">Choose whether you will be prompted when an update of the Azure Data CLI is available.</source>
+        <target state="translated">Elija si desea que se le pregunte cuando haya una actualización de la CLI de Azure Data disponible.</target>
+      </trans-unit>
+      <trans-unit id="azdata.requiredUpdate.description">
+        <source xml:lang="en">Choose whether you will be prompted when a required update of the Azure Data CLI is available.</source>
+        <target state="translated">Elija si desea que se le pregunte cuando esté disponible una actualización necesaria de la CLI de Azure Data.</target>
+      </trans-unit>
+      <trans-unit id="azdata.update.prompt.description">
+        <source xml:lang="en">The user will be prompted for update of the Azure Data CLI</source>
+        <target state="translated">Se solicitará al usuario que actualice la CLI de Azure Data.</target>
+      </trans-unit>
+      <trans-unit id="azdata.update.dontPrompt.description">
+        <source xml:lang="en">The user will not be prompted for update of the Azure Data CLI</source>
+        <target state="translated">No se preguntará al usuario si desea actualizar la CLI de Azure Data.</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/azdata/dist/localizedConstants" source-language="en" datatype="plaintext" target-language="es">
+    <body>
+      <trans-unit id="azdata.azdata">
+        <source xml:lang="en">Azure Data CLI</source>
+        <target state="translated">CLI de Azure Data</target>
+      </trans-unit>
+      <trans-unit id="azdata.searchingForAzdata">
+        <source xml:lang="en">Searching for existing Azure Data CLI installation...</source>
+        <target state="translated">Buscando la instalación existente de la CLI de Azure Data...</target>
+      </trans-unit>
+      <trans-unit id="azdata.foundExistingAzdata">
+        <source xml:lang="en">Found existing Azure Data CLI installation of version (v{0}) at path:{1}</source>
+        <target state="translated">Se encontró una instalación existente de la versión (v{0}) de la CLI de Azure Data en la ruta de acceso:{1}</target>
+      </trans-unit>
+      <trans-unit id="azdata.downloadingProgressMb">
+        <source xml:lang="en">Downloading ({0} / {1} MB)</source>
+        <target state="translated">Descargando ({0} / {1} MB)</target>
+      </trans-unit>
+      <trans-unit id="azdata.downloadFinished">
+        <source xml:lang="en">Download finished</source>
+        <target state="translated">Descarga finalizada</target>
+      </trans-unit>
+      <trans-unit id="azdata.installingAzdata">
+        <source xml:lang="en">Installing Azure Data CLI...</source>
+        <target state="translated">Se está instalando la CLI de Azure Data</target>
+      </trans-unit>
+      <trans-unit id="azdata.updatingAzdata">
+        <source xml:lang="en">Updating Azure Data CLI...</source>
+        <target state="translated">Actualizando la CLI de Azure Data...</target>
+      </trans-unit>
+      <trans-unit id="azdata.azdataInstalled">
+        <source xml:lang="en">Azure Data CLI was successfully installed. Restarting Azure Data Studio is required to complete configuration - features will not be activated until this is done.</source>
+        <target state="translated">La CLI de Azure Data se instaló correctamente. Es necesario reiniciar Azure Data Studio para completar la configuración: las características no se activarán hasta que se haya realizado esta operación.</target>
+      </trans-unit>
+      <trans-unit id="azdata.azdataUpdated">
+        <source xml:lang="en">Azure Data CLI was successfully updated to version: {0}.</source>
+        <target state="translated">La CLI de Azure Data se actualizó correctamente a la versión: {0}.</target>
+      </trans-unit>
+      <trans-unit id="azdata.yes">
+        <source xml:lang="en">Yes</source>
+        <target state="translated">Sí</target>
+      </trans-unit>
+      <trans-unit id="azdata.no">
+        <source xml:lang="en">No</source>
+        <target state="translated">No</target>
+      </trans-unit>
+      <trans-unit id="azdata.accept">
+        <source xml:lang="en">Accept</source>
+        <target state="translated">Aceptar</target>
+      </trans-unit>
+      <trans-unit id="azdata.decline">
+        <source xml:lang="en">Decline</source>
+        <target state="translated">Rechazar</target>
+      </trans-unit>
+      <trans-unit id="azdata.doNotAskAgain">
+        <source xml:lang="en">Don't Ask Again</source>
+        <target state="translated">No volver a preguntar</target>
+      </trans-unit>
+      <trans-unit id="azdata.askLater">
+        <source xml:lang="en">Ask Later</source>
+        <target state="translated">Preguntar más tarde</target>
+      </trans-unit>
+      <trans-unit id="azdata.downloadingTo">
+        <source xml:lang="en">Downloading {0} from {1} to {2}</source>
+        <target state="translated">Descargando {0} de {1} a {2}</target>
+      </trans-unit>
+      <trans-unit id="azdata.executingCommand">
+        <source xml:lang="en">Executing command: '{0} {1}'</source>
+        <target state="translated">Ejecutando el comando: “{0} {1}”</target>
+      </trans-unit>
+      <trans-unit id="azdata.stdoutOutput">
+        <source xml:lang="en">stdout: {0}</source>
+        <target state="translated">stdout: {0}</target>
+      </trans-unit>
+      <trans-unit id="azdata.stderrOutput">
+        <source xml:lang="en">stderr: {0}</source>
+        <target state="translated">stderr: {0}</target>
+      </trans-unit>
+      <trans-unit id="azdata.checkingLatestAzdataVersion">
+        <source xml:lang="en">Checking for latest available version of Azure Data CLI</source>
+        <target state="translated">Buscando la última versión disponible de la CLI de Azure Data</target>
+      </trans-unit>
+      <trans-unit id="azdata.gettingTextContentsOfUrl">
+        <source xml:lang="en">Getting text contents of resource at URL {0}</source>
+        <target state="translated">Obteniendo el contenido de texto del recurso en la dirección URL {0}</target>
+      </trans-unit>
+      <trans-unit id="azdata.versionForUpdate">
+        <source xml:lang="en">Found version: {0} that Azure Data CLI can be updated to from current version: {1}.</source>
+        <target state="translated">Versión encontrada: {0} en la que se puede actualizar la CLI de Azure Data a partir de la versión actual: {1}.</target>
+      </trans-unit>
+      <trans-unit id="azdata.latestAzdataVersionAvailable">
+        <source xml:lang="en">Latest available Azure Data CLI version: {0}.</source>
+        <target state="translated">Última versión disponible de CLI de Azure Data: {0}.</target>
+      </trans-unit>
+      <trans-unit id="azdata.couldNotFindAzdata">
+        <source xml:lang="en">Could not find Azure Data CLI. Error: {0}</source>
+        <target state="translated">No se pudo encontrar la CLI de Azure Data. Error: {0}</target>
+      </trans-unit>
+      <trans-unit id="azdata.currentlyInstalledVersionIsLatest">
+        <source xml:lang="en">Currently installed version of Azure Data CLI: {0} is same or newer than any other version available</source>
+        <target state="translated">Versión de la CLI de Azure Data instalada actualmente: {0} es igual o más reciente que cualquier otra versión disponible</target>
+      </trans-unit>
+      <trans-unit id="azdata.promptLog">
+        <source xml:lang="en">Prompting the user to accept the following: {0}</source>
+        <target state="translated">Se pide al usuario que acepte lo siguiente: {0}</target>
+      </trans-unit>
+      <trans-unit id="azdata.couldNotFindAzdataWithPrompt">
+        <source xml:lang="en">Could not find Azure Data CLI, install it now? If not then some features will not be able to function.</source>
+        <target state="translated">No se pudo encontrar la CLI de Azure Data, ¿desea instalarla ahora? De lo contrario, algunas características no podrán funcionar.</target>
+      </trans-unit>
+      <trans-unit id="azdata.promptForAzdataUpdate">
+        <source xml:lang="en">A new version of Azure Data CLI ( {0} ) is available, do you wish to update to it now?</source>
+        <target state="translated">Hay disponible una nueva versión de CLI de Azure Data ({0}), ¿desea actualizarla ahora?</target>
+      </trans-unit>
+      <trans-unit id="azdata.promptForRequiredAzdataUpdate">
+        <source xml:lang="en">This extension requires Azure Data CLI &gt;= {0} to be installed, do you wish to update to the latest version ({1}) now? If you do not then some functionality may not work.</source>
+        <target state="translated">Esta extensión requiere que la CLI de Azure Data sea &gt;= {0} para instalarse, ¿desea actualizar a la última versión ({1}) ahora? Si no es así, es posible que algunas funcionalidades no funcionen.</target>
+      </trans-unit>
+      <trans-unit id="azdata.requiredVersionNotAvailable">
+        <source xml:lang="en">This extension requires Azure Data CLI &gt;= {0} to be installed, but the current version available is only {1}. Install the correct version manually from [here](https://docs.microsoft.com/sql/azdata/install/deploy-install-azdata) and then restart Azure Data Studio.</source>
+        <target state="translated">Esta extensión requiere que la CLI de Azure Data sea &gt;= {0} para instalarse, pero la versión actual disponible solo es {1}. Instale la versión correcta manualmente desde [aquí] (https://docs.microsoft.com/sql/azdata/install/deploy-install-azdata) y, a continuación, reinicie Azure Data Studio.</target>
+      </trans-unit>
+      <trans-unit id="azdata.missingRequiredVersion">
+        <source xml:lang="en">Azure Data CLI &gt;= {0} is required for this feature. Run the 'Azure Data CLI: Check for Update' command to install this and then try again.</source>
+        <target state="translated">Se requiere que la CLI de Azure Data sea &gt;= {0} para esta característica. Ejecute el comando “CLI de Azure Data: buscar actualización” para instalarla y vuelva a intentarlo.</target>
+      </trans-unit>
+      <trans-unit id="azdata.downloadError">
+        <source xml:lang="en">Error while downloading</source>
+        <target state="translated">Error durante la descarga</target>
+      </trans-unit>
+      <trans-unit id="azdata.installError">
+        <source xml:lang="en">Error installing Azure Data CLI: {0}</source>
+        <target state="translated">Error al instalar la CLI de Azure Data: {0}</target>
+      </trans-unit>
+      <trans-unit id="azdata.updateError">
+        <source xml:lang="en">Error updating Azure Data CLI: {0}</source>
+        <target state="translated">Error al actualizar CLI de Azure Data: {0}</target>
+      </trans-unit>
+      <trans-unit id="azdata.platformUnsupported">
+        <source xml:lang="en">Platform '{0}' is currently unsupported</source>
+        <target state="translated">La plataforma "{0}" no se admite actualmente</target>
+      </trans-unit>
+      <trans-unit id="azdata.unexpectedCommandError">
+        <source xml:lang="en">Unexpected error executing command: {0}</source>
+        <target state="translated">Error inesperado al ejecutar el comando: {0}</target>
+      </trans-unit>
+      <trans-unit id="azdata.unexpectedExitCode">
+        <source xml:lang="en">Unexpected exit code from command: {1} ({0})</source>
+        <target state="translated">Código de salida inesperado desde el comando: {1} ({0})</target>
+      </trans-unit>
+      <trans-unit id="azdata.noAzdata">
+        <source xml:lang="en">No Azure Data CLI is available, run the command 'Azure Data CLI: Install' to enable the features that require it.</source>
+        <target state="translated">No hay disponible ninguna instancia de CLI de Azure Data, ejecute el comando “CLI de Azure Data: instalar” para habilitar las características que lo requieren.</target>
+      </trans-unit>
+      <trans-unit id="azdata.noAzdataWithLink">
+        <source xml:lang="en">No Azure Data CLI is available, [install the Azure Data CLI](command:azdata.install) to enable the features that require it.</source>
+        <target state="translated">No hay disponible ninguna instancia de CLI de Azure Data, [instalar la CLI de Azure Data](command:azdata.install) para habilitar las características que lo requieren.</target>
+      </trans-unit>
+      <trans-unit id="azdata.skipInstall">
+        <source xml:lang="en">Skipping installation of Azure Data CLI, since the operation was not user requested and config option: {0}.{1} is {2}</source>
+        <target state="translated">Se va a omitir la instalación de CLI de Azure Data, ya que el usuario no solicitó la operación y la opción de configuración: {0}.{1} es {2}</target>
+      </trans-unit>
+      <trans-unit id="azdata.skipUpdate">
+        <source xml:lang="en">Skipping update of Azure Data CLI, since the operation was not user requested and config option: {0}.{1} is {2}</source>
+        <target state="translated">Se omitirá la actualización de la CLI de Azure Data, ya que la operación no la solicitó el usuario y la opción de configuración: {0}.{1} es {2}</target>
+      </trans-unit>
+      <trans-unit id="azdata.skipRequiredUpdate">
+        <source xml:lang="en">Skipping required update of Azure Data CLI, since the operation was not user requested and config option: {0}.{1} is {2}</source>
+        <target state="translated">Se omitirá la actualización necesaria de la CLI de Azure Data, ya que la operación no la solicitó el usuario y la opción de configuración: {0}.{1} es {2}</target>
+      </trans-unit>
+      <trans-unit id="azdata.noReleaseVersion">
+        <source xml:lang="en">No release version available for platform '{0}'
+Release info: ${1}</source>
+        <target state="translated">No hay ninguna versión de lanzamiento disponible para la plataforma “{0}”
+Información de la versión: ${1}</target>
+      </trans-unit>
+      <trans-unit id="azdata.noDownloadLink">
+        <source xml:lang="en">No download link available for platform '{0}'
+Release info: ${1}</source>
+        <target state="translated">No hay ningún vínculo de descarga disponible para la plataforma “{0}"
+Información de la versión: ${1}</target>
+      </trans-unit>
+      <trans-unit id="azdata.failedToParseReleaseInfo">
+        <source xml:lang="en">Failed to parse the JSON of contents at: {0}.
+File contents:
+{1}
+Error: {2}</source>
+        <target state="translated">No se pudo analizar el JSON del contenido en: {0}.
+Contenido del archivo:
+{1}
+Error: {2}</target>
+      </trans-unit>
+      <trans-unit id="azdata.azdataUserSettingReadLog">
+        <source xml:lang="en">Azure Data CLI user setting: {0}.{1} read, value: {2}</source>
+        <target state="translated">Configuración de usuario de la CLI de Azure Data: {0}.{1} lectura, valor: {2}</target>
+      </trans-unit>
+      <trans-unit id="azdata.azdataUserSettingUpdatedLog">
+        <source xml:lang="en">Azure Data CLI user setting: {0}.{1} updated, newValue: {2}</source>
+        <target state="translated">Configuración de usuario de CLI de Azure Data: {0}.{1} actualizado, newValue: {2}</target>
+      </trans-unit>
+      <trans-unit id="azdata.userResponseInstall">
+        <source xml:lang="en">User Response on prompt to install Azure Data CLI: {0}</source>
+        <target state="translated">Respuesta del usuario al mensaje para instalar la CLI de Azure Data: {0}</target>
+      </trans-unit>
+      <trans-unit id="azdata.userResponseUpdate">
+        <source xml:lang="en">User Response on prompt to update Azure Data CLI: {0}</source>
+        <target state="translated">Respuesta del usuario en el mensaje de actualización de la CLI de Azure Data: {0}</target>
+      </trans-unit>
+      <trans-unit id="azdata.userRequestedInstall">
+        <source xml:lang="en">User requested to install Azure Data CLI using 'Azure Data CLI: Install' command</source>
+        <target state="translated">El usuario solicitó instalar la CLI de Azure Data a través del comando “CLI de Azure: instalar”</target>
+      </trans-unit>
+      <trans-unit id="azdata.userRequestedUpdate">
+        <source xml:lang="en">User requested to update Azure Data CLI using 'Azure Data CLI: Check for Update' command</source>
+        <target state="translated">El usuario solicitó la actualización de CLI de Azure Data con el comando “CLI de Azure Data: buscar actualizaciones”</target>
+      </trans-unit>
+      <trans-unit id="azdata.acceptEula">
+        <source xml:lang="en">User requested to be prompted for accepting EULA by invoking 'Azure Data CLI: Accept EULA' command</source>
+        <target state="translated">El usuario solicitó que se le pregunte al aceptar el CLUF invocando el comando "CLI de Azure Data: aceptar CLUF"</target>
+      </trans-unit>
+      <trans-unit id="azdata.updateCheckSkipped">
+        <source xml:lang="en">No check for new Azure Data CLI version availability performed as Azure Data CLI was not found to be installed</source>
+        <target state="translated">No se encontró ninguna comprobación de la disponibilidad de la nueva versión de la CLI de Azure Data que se ha realizado como CLI de Azure Data para instalarse</target>
+      </trans-unit>
+      <trans-unit id="azdata.eulaNotAccepted">
+        <source xml:lang="en">Microsoft Privacy statement and Azure Data CLI license terms have not been accepted. Execute the command: [Azure Data CLI: Accept EULA](command:azdata.acceptEula) to accept EULA to enable the features that requires Azure Data CLI.</source>
+        <target state="translated">No se han aceptado la declaración de privacidad de Microsoft ni los términos de licencia de la CLI de Azure Data. Ejecutar el comando: [CLI de Azure Data: aceptar CLUF] (comando: azdata.acceptEula) para aceptar el CLUF con el fin de habilitar las características que requieren la CLI de Azure Data.</target>
+      </trans-unit>
+      <trans-unit id="azdata.promptForEula">
+        <source xml:lang="en">It is required to accept the [Microsoft Privacy Statement]({0}) and the [Azure Data CLI license terms]({1}) to use this extension. Declining this will result in some features not working.</source>
+        <target state="translated">Es necesario aceptar la [Declaración de privacidad de Microsoft] ({0}) y los [Términos de licencia de la CLI de Azure Data] ({1}) para usar esta extensión. Si esto se rechaza, algunas características no funcionarán.</target>
+      </trans-unit>
+      <trans-unit id="azdata.promptForEulaResponse">
+        <source xml:lang="en">User response to EULA prompt: {0}</source>
+        <target state="translated">Respuesta del usuario a la solicitud de CLUF: {0}</target>
+      </trans-unit>
+      <trans-unit id="azdata.eulaAcceptedStateOnStartup">
+        <source xml:lang="en">'EULA Accepted' state on startup: {0}</source>
+        <target state="translated">Estado "CLUF aceptado" en el inicio: {0}</target>
+      </trans-unit>
+      <trans-unit id="azdata.endpointOrNamespaceRequired">
+        <source xml:lang="en">Either an endpoint or a namespace must be specified</source>
+        <target state="translated">Se debe especificar un punto de conexión o un espacio de nombres</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

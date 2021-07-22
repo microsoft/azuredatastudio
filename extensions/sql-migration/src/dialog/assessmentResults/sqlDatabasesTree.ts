@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 import * as azdata from 'azdata';
 import { SqlMigrationAssessmentResultItem, SqlMigrationImpactedObjectInfo } from '../../../../mssql/src/mssql';
-import { IconPath, IconPathHelper } from '../../constants/iconPathHelper';
 import { MigrationStateModel, MigrationTargetType } from '../../models/stateMachine';
 import * as constants from '../../constants/strings';
 import { debounce } from '../../api/utils';
@@ -128,7 +127,7 @@ export class SqlDatabaseTree {
 				'font-weight': 'bold',
 				'margin': '0px 8px 0px 36px'
 			},
-			value: constants.DATABASES(this.selectedDbs.length, this._model._serverDatabases.length)
+			value: constants.DATABASES(0, this._model._databaseAssessment.length)
 		}).component();
 		return this._databaseCount;
 	}
@@ -146,22 +145,22 @@ export class SqlDatabaseTree {
 					{
 						displayName: '',
 						valueType: azdata.DeclarativeDataType.boolean,
-						width: 20,
+						width: 10,
 						isReadOnly: false,
 						showCheckAll: true,
 						headerCssStyles: headerLeft,
 					},
 					{
 						displayName: constants.DATABASE,
-						valueType: azdata.DeclarativeDataType.component,
-						width: 100,
+						valueType: azdata.DeclarativeDataType.string,
+						width: 95,
 						isReadOnly: true,
 						headerCssStyles: headerLeft
 					},
 					{
 						displayName: constants.ISSUES,
 						valueType: azdata.DeclarativeDataType.string,
-						width: 30,
+						width: 45,
 						isReadOnly: true,
 						headerCssStyles: headerRight,
 					}
@@ -170,7 +169,7 @@ export class SqlDatabaseTree {
 		).component();
 		this._databaseTable.onDataChanged(() => {
 			this._databaseCount.updateProperties({
-				'value': constants.DATABASES(this.selectedDbs().length, this._model._serverDatabases.length)
+				'value': constants.DATABASES(this.selectedDbs().length, this._model._databaseAssessment.length)
 			});
 		});
 		this._databaseTable.onRowSelected(async (e) => {
@@ -224,8 +223,7 @@ export class SqlDatabaseTree {
 		if (this._databaseTableValues && value?.length > 0) {
 			const filter: number[] = [];
 			this._databaseTableValues.forEach((row, index) => {
-				const flexContainer: azdata.FlexContainer = row[1]?.value as azdata.FlexContainer;
-				const textComponent: azdata.TextComponent = flexContainer.items[1] as azdata.TextComponent;
+				const textComponent: azdata.TextComponent = row[1] as azdata.TextComponent;
 				const cellText = textComponent.value?.toLowerCase();
 				const searchText: string = value.toLowerCase();
 				if (cellText?.includes(searchText)) {
@@ -242,20 +240,23 @@ export class SqlDatabaseTree {
 	private createInstanceComponent(): azdata.DivContainer {
 		this._instanceTable = this._view.modelBuilder.declarativeTable().withProps(
 			{
+				CSSStyles: {
+					'table-layout': 'fixed'
+				},
+				width: 200,
 				enableRowSelection: true,
-				width: 170,
 				columns: [
 					{
 						displayName: constants.INSTANCE,
-						valueType: azdata.DeclarativeDataType.component,
-						width: 130,
+						valueType: azdata.DeclarativeDataType.string,
+						width: 105,
 						isReadOnly: true,
 						headerCssStyles: headerLeft
 					},
 					{
 						displayName: constants.WARNINGS,
 						valueType: azdata.DeclarativeDataType.string,
-						width: 30,
+						width: 45,
 						isReadOnly: true,
 						headerCssStyles: headerRight
 					}
@@ -264,6 +265,7 @@ export class SqlDatabaseTree {
 
 		const instanceContainer = this._view.modelBuilder.divContainer().withItems([this._instanceTable]).withProps({
 			CSSStyles: {
+				'width': '200px',
 				'margin': '19px 8px 0px 34px'
 			}
 		}).component();
@@ -279,7 +281,7 @@ export class SqlDatabaseTree {
 			});
 			this._recommendation.value = constants.WARNINGS_DETAILS;
 			this._recommendationTitle.value = constants.WARNINGS_COUNT(this._activeIssues.length);
-			if (this._model._targetType === MigrationTargetType.SQLMI) {
+			if (this._targetType === MigrationTargetType.SQLMI) {
 				await this.refreshResults();
 			}
 		});
@@ -362,7 +364,7 @@ export class SqlDatabaseTree {
 
 	private createNoIssuesText(): azdata.FlexContainer {
 		let message: azdata.TextComponent;
-		if (this._model._targetType === MigrationTargetType.SQLVM) {
+		if (this._targetType === MigrationTargetType.SQLVM) {
 			message = this._view.modelBuilder.text().withProps({
 				value: constants.NO_ISSUES_FOUND_VM,
 				CSSStyles: {
@@ -453,9 +455,10 @@ export class SqlDatabaseTree {
 		const impactedObjectsTitle = this._view.modelBuilder.text().withProps({
 			value: constants.IMPACTED_OBJECTS,
 			CSSStyles: {
-				'font-size': '14px',
+				'font-size': '13px',
 				'width': '280px',
-				'margin': '10px 0px 0px 0px'
+				'margin': '10px 0px 0px 0px',
+				'font-weight': 'bold'
 			}
 		}).component();
 
@@ -513,35 +516,30 @@ export class SqlDatabaseTree {
 			CSSStyles: {
 				'font-size': '13px',
 				'line-size': '18px',
-				'margin': '12px 0px 0px 0px'
+				'margin': '12px 0px 0px 0px',
+				'font-weight': 'bold'
 			}
 		}).component();
-
+		const objectDescriptionStyle = {
+			'font-size': '12px',
+			'line-size': '18px',
+			'margin': '5px 0px 0px 0px',
+			'text-align': 'justify',
+			'word-wrap': 'break-word'
+		};
 		this._objectDetailsType = this._view.modelBuilder.text().withProps({
 			value: constants.TYPES_LABEL,
-			CSSStyles: {
-				'font-size': '13px',
-				'line-size': '18px',
-				'margin': '5px 0px 0px 0px'
-			}
+			CSSStyles: objectDescriptionStyle
 		}).component();
 
 		this._objectDetailsName = this._view.modelBuilder.text().withProps({
 			value: constants.NAMES_LABEL,
-			CSSStyles: {
-				'font-size': '13px',
-				'line-size': '18px',
-				'margin': '5px 0px 0px 0px'
-			}
+			CSSStyles: objectDescriptionStyle
 		}).component();
 
 		this._objectDetailsSample = this._view.modelBuilder.text().withProps({
 			value: '',
-			CSSStyles: {
-				'font-size': '13px',
-				'line-size': '18px',
-				'margin': '5px 0px 0px 0px'
-			}
+			CSSStyles: objectDescriptionStyle
 		}).component();
 
 		const container = this._view.modelBuilder.flexContainer().withItems([impactedObjectsTitle, this._impactedObjectsTable, objectDetailsTitle, this._objectDetailsType, this._objectDetailsName, this._objectDetailsSample]).withLayout({
@@ -552,53 +550,42 @@ export class SqlDatabaseTree {
 	}
 
 	private createDescription(): azdata.FlexContainer {
+		const labelStyle = {
+			'font-size': '13px',
+			'width': '200px',
+			'font-weight': 'bold',
+			'margin': '10px 35px 0px 0px'
+		};
+		const textStyle = {
+			'font-size': '12px',
+			'width': '200px',
+			'margin': '3px 35px 0px 0px',
+			'text-align': 'justify',
+			'word-wrap': 'break-word'
+		};
 		const descriptionTitle = this._view.modelBuilder.text().withProps({
 			value: constants.DESCRIPTION,
-			CSSStyles: {
-				'font-size': '14px',
-				'width': '200px',
-				'margin': '10px 35px 0px 0px'
-			}
+			CSSStyles: labelStyle
 		}).component();
 		this._descriptionText = this._view.modelBuilder.text().withProps({
-			CSSStyles: {
-				'font-size': '12px',
-				'width': '200px',
-				'margin': '3px 35px 0px 0px'
-			}
+			CSSStyles: textStyle
 		}).component();
 
 		const recommendationTitle = this._view.modelBuilder.text().withProps({
 			value: constants.RECOMMENDATION,
-			CSSStyles: {
-				'font-size': '14px',
-				'width': '200px',
-				'margin': '12px 35px 0px 0px'
-			}
+			CSSStyles: labelStyle
 		}).component();
 		this._recommendationText = this._view.modelBuilder.text().withProps({
-			CSSStyles: {
-				'font-size': '12px',
-				'width': '200px',
-				'margin': '3px 35px 0px 0px'
-			}
+			CSSStyles: textStyle
 		}).component();
 		const moreInfo = this._view.modelBuilder.text().withProps({
 			value: constants.MORE_INFO,
-			CSSStyles: {
-				'font-size': '14px',
-				'width': '200px',
-				'margin': '15px 35px 0px 0px'
-			}
+			CSSStyles: labelStyle
 		}).component();
 		this._moreInfo = this._view.modelBuilder.hyperlink().withProps({
 			label: '',
 			url: '',
-			CSSStyles: {
-				'font-size': '12px',
-				'width': '200px',
-				'margin': '3px 35px 0px 0px'
-			},
+			CSSStyles: textStyle,
 			showLinkIcon: true
 		}).component();
 
@@ -705,7 +692,6 @@ export class SqlDatabaseTree {
 			'text-overflow': 'ellipsis',
 			'width': '200px',
 			'overflow': 'hidden',
-			'border-bottom': '1px solid'
 		};
 
 		this._assessmentResultsTable = this._view.modelBuilder.declarativeTable().withProps(
@@ -756,7 +742,7 @@ export class SqlDatabaseTree {
 	}
 
 	public async refreshResults(): Promise<void> {
-		if (this._model._targetType === MigrationTargetType.SQLMI) {
+		if (this._targetType === MigrationTargetType.SQLMI) {
 			if (this._activeIssues.length === 0) {
 				/// show no issues here
 				this._assessmentsTable.updateCssStyles({
@@ -826,8 +812,7 @@ export class SqlDatabaseTree {
 	public async initialize(): Promise<void> {
 		let instanceTableValues: azdata.DeclarativeTableCellValue[][] = [];
 		this._databaseTableValues = [];
-		const excludedDatabases = ['master', 'msdb', 'tempdb', 'model'];
-		this._dbNames = (await azdata.connection.listDatabases(this._model.sourceConnectionId)).filter(db => !excludedDatabases.includes(db));
+		this._dbNames = this._model._databaseAssessment;
 		const selectedDbs = (this._targetType === MigrationTargetType.SQLVM) ? this._model._vmDbs : this._model._miDbs;
 		this._serverName = (await this._model.getSourceConnectionProfile()).serverName;
 
@@ -835,7 +820,8 @@ export class SqlDatabaseTree {
 			instanceTableValues = [
 				[
 					{
-						value: this.createIconTextCell(IconPathHelper.sqlServerLogo, this._serverName),
+						// value: this.createIconTextCell(IconPathHelper.sqlServerLogo, this._serverName),
+						value: this._serverName,
 						style: styleLeft
 					},
 					{
@@ -852,7 +838,8 @@ export class SqlDatabaseTree {
 							style: styleLeft
 						},
 						{
-							value: this.createIconTextCell(IconPathHelper.sqlDatabaseLogo, db),
+							// value: this.createIconTextCell(IconPathHelper.sqlDatabaseLogo, db),
+							value: db,
 							style: styleLeft
 						},
 						{
@@ -866,7 +853,8 @@ export class SqlDatabaseTree {
 			instanceTableValues = [
 				[
 					{
-						value: this.createIconTextCell(IconPathHelper.sqlServerLogo, this._serverName),
+						// value: this.createIconTextCell(IconPathHelper.sqlServerLogo, this._serverName),
+						value: this._serverName,
 						style: styleLeft
 					},
 					{
@@ -893,7 +881,8 @@ export class SqlDatabaseTree {
 							enabled: selectable
 						},
 						{
-							value: this.createIconTextCell((selectable) ? IconPathHelper.sqlDatabaseLogo : IconPathHelper.sqlDatabaseWarningLogo, db.name),
+							// value: this.createIconTextCell((selectable) ? IconPathHelper.sqlDatabaseLogo : IconPathHelper.sqlDatabaseWarningLogo, db.name),
+							value: db.name,
 							style: styleLeft
 						},
 						{
@@ -908,41 +897,4 @@ export class SqlDatabaseTree {
 		await this._databaseTable.setDataValues(this._databaseTableValues);
 	}
 
-	private createIconTextCell(icon: IconPath, text: string): azdata.FlexContainer {
-
-		const iconComponent = this._view.modelBuilder.image().withProps({
-			iconPath: icon,
-			iconWidth: '16px',
-			iconHeight: '16px',
-			width: '20px',
-			height: '20px'
-		}).component();
-		const textComponent = this._view.modelBuilder.text().withProps({
-			value: text,
-			title: text,
-			CSSStyles: {
-				'margin': '0px',
-				'width': '110px'
-			}
-		}).component();
-
-		const cellContainer = this._view.modelBuilder.flexContainer().withProps({
-			CSSStyles: {
-				'justify-content': 'left'
-			}
-		}).component();
-		cellContainer.addItem(iconComponent, {
-			flex: '0',
-			CSSStyles: {
-				'width': '32px'
-			}
-		});
-		cellContainer.addItem(textComponent, {
-			CSSStyles: {
-				'width': 'auto'
-			}
-		});
-
-		return cellContainer;
-	}
 }
