@@ -42,7 +42,7 @@ steps:
       git config --global user.email "chgagnon@microsoft.com"
       git config --global user.name "ADS"
 
-      git clone https://$(GITHUB_TOKEN)@github.com/DefinitelyTyped/DefinitelyTyped.git --depth=1
+      git clone https://$(GITHUB_TOKEN)@github.com/Charles-Gagnon/DefinitelyTyped --depth=1
       node build/azure-pipelines/publish-types/update-types.js
 
       TAG_VERSION=$(git describe --tags `git rev-list --tags --max-count=1`)
