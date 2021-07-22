@@ -68,7 +68,7 @@ export class CreateBookDialog {
 			this.view = view;
 
 			const jupyterBookDocumentation = this.view.modelBuilder.hyperlink()
-				.withProperties<azdata.HyperlinkComponentProperties>({
+				.withProps({
 					label: loc.learnMore,
 					url: 'https://jupyterbook.org/intro.html',
 					CSSStyles: { 'margin-bottom': '0px', 'margin-top': '0px', 'font-size': 'small' }

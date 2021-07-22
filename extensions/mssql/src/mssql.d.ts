@@ -599,5 +599,5 @@ export interface AssessmentResult {
 }
 
 export interface ISqlMigrationService {
-	getAssessments(ownerUri: string): Promise<AssessmentResult | undefined>;
+	getAssessments(ownerUri: string, databases: string[]): Promise<AssessmentResult | undefined>;
 }

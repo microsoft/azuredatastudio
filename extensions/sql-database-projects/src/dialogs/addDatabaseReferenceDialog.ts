@@ -496,7 +496,7 @@ export class AddDatabaseReferenceDialog {
 	}
 
 	private createLabel(value: string, required: boolean = false): azdataType.TextComponent {
-		const label = this.view!.modelBuilder.text().withProperties<azdataType.TextComponentProperties>({
+		const label = this.view!.modelBuilder.text().withProps({
 			value: value,
 			width: cssStyles.addDatabaseReferenceDialogLabelWidth,
 			requiredIndicator: required
