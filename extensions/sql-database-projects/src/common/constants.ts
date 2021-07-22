@@ -25,6 +25,7 @@ export const databaseSchemaProvider = 'DatabaseSchemaProvider';
 export const emptySqlDatabaseProjectTypeId = 'EmptySqlDbProj';
 export const emptyProjectTypeDisplayName = localize('emptyProjectTypeDisplayName', "SQL Database");
 export const emptyProjectTypeDescription = localize('emptyProjectTypeDescription', "Develop and publish schemas for SQL databases starting from an empty project");
+export const projectsOutputChannel = localize('sqlDatabaseProjects.outputChannel', "Database Projects");
 
 export const edgeSqlDatabaseProjectTypeId = 'SqlDbEdgeProj';
 export const edgeProjectTypeDisplayName = localize('edgeProjectTypeDisplayName', "SQL Edge");
@@ -122,6 +123,40 @@ export const newDatabaseTitle = (name: string) => localize({ key: 'newDatabaseTi
 export const selectDatabase = localize('selectDatabase', "Select database");
 export const done = localize('done', "Done");
 export const nameMustNotBeEmpty = localize('nameMustNotBeEmpty', "Name must not be empty");
+
+// Deploy
+export const selectDeployOption = localize('selectDeployOption', "Select where to deploy the project to");
+export const deployToExistingServer = localize('deployToExistingServer', "Deploy to existing server");
+export const deployToDockerContainer = localize('deployToDockerContainer', "Deploy to docker container");
+export const enterPortNumber = localize('enterPortNumber', "Enter port number");
+export const enterConnectionStringEnvName = localize('enterConnectionStringEnvName', "Enter connection string environment variable name");
+export const enterConnectionStringTemplate = localize('enterConnectionStringTemplate', "Enter connection string template");
+export const enterPassword = localize('enterPassword', "Enter password");
+export const portMustNotBeNumber = localize('portMustNotBeNumber', "Port must be number");
+export const valueCannotBeEmpty = localize('valueCannotBeEmpty', "value cannot be empty");
+export const dockerImageLabelPrefix = 'source=sqldbproject';
+export const dockerImageNamePrefix = 'sqldbproject';
+export const connectionNamePrefix = 'SQLDbProject';
+export const dockerBaseImage = 'mcr.microsoft.com/azure-sql-edge:latest';
+export const commandsFolderName = 'commands';
+export const mssqlFolderName = '.mssql';
+export const dockerFileName = 'Dockerfile';
+export const startCommandName = 'start.sh';
+export const defaultPortNumber = '1433';
+export const defaultConnectionStringEnvVarName = 'SQLConnectionString';
+export const defaultConnectionStringTemplate = 'Data Source={#SERVER#},{#PORT#};Initial Catalog={#DATABASE#};User id={#USER#};Password={#SA_PASSWORD#};';
+export const azureFunctionLocalSettingsFileName = 'local.settings.json';
+export const msgYes = localize('msgYes', "Yes");
+export const msgNo = localize('msgNo', "No");
+export const enterPortNumberDescription = localize('enterPortNumberDescription', "Enter port number or press enter to use the default value");
+export const enterPasswordDescription = localize('enterPasswordDescription', "Enter password or press enter to generate new password");
+export const enterConnStringTemplateDescription = localize('enterConnStringTemplateDescription', "Enter a template for SQL connection string");
+export const appSettingPrompt = localize('appSettingPrompt', "Would you like to update local.settings.json with new connection string?");
+export const enterConnectionStringEnvNameDescription = localize('enterConnectionStringEnvNameDescription', "Enter environment variable for SQL connection string");
+export const deployDbTaskName = localize('deployDbTaskName', "Deploying SQL Db Project Locally");
+export const deployProjectSucceed = localize('deployProjectSucceed', "Database project deployed successfully");
+export function taskFailedError(taskName: string, err: string): string { return localize('mls.taskFailedError.error', "Failed to complete task '{0}'. Error: {1}", taskName, err); }
+export function deployProjectFailed(errorMessage: string) { return localize('deployProjectFailed', "Failed to deploy project. Check output pane for more details. {0}", errorMessage); }
 
 // Add Database Reference dialog strings
 

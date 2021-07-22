@@ -35,6 +35,8 @@ import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/t
 import { IconPathHelper } from '../common/iconHelper';
 import { DashboardData, PublishData, Status } from '../models/dashboardData/dashboardData';
 import { launchPublishDatabaseQuickpick } from '../dialogs/publishDatabaseQuickpick';
+import { launchDeployDatabaseQuickpick } from '../dialogs/deployDatabaseQuickpick';
+import { DeployService } from '../models/deploy/deployService';
 
 const maxTableLength = 10;
 
@@ -48,12 +50,14 @@ export class ProjectsController {
 	private buildHelper: BuildHelper;
 	private buildInfo: DashboardData[] = [];
 	private publishInfo: PublishData[] = [];
+	private deployService: DeployService;
 
 	projFileWatchers = new Map<string, vscode.FileSystemWatcher>();
 
-	constructor() {
-		this.netCoreTool = new NetCoreTool();
+	constructor(private _outputChannel?: vscode.OutputChannel) {
+		this.netCoreTool = new NetCoreTool(this._outputChannel);
 		this.buildHelper = new BuildHelper();
+		this.deployService = new DeployService(this._outputChannel);
 	}
 
 	public getDashboardPublishData(projectFile: string): (string | dataworkspace.IconCellValue)[][] {
@@ -226,6 +230,52 @@ export class ProjectsController {
 	}
 
 	/**
+	 * Deploys a project
+	 * @param treeNode a treeItem in a project's hierarchy, to be used to obtain a Project
+	 */
+	public async deployProject(treeNode: dataworkspace.WorkspaceTreeItem): Promise<void>;
+	public async deployProject(treeNode: dataworkspace.WorkspaceTreeItem): Promise<void>;
+	/**
+	 * Builds and publishes a project
+	 * @param project Project to be built and published
+	 */
+	public async deployProject(project: Project): Promise<void>;
+	public async deployProject(context: Project | dataworkspace.WorkspaceTreeItem): Promise<void> {
+		const project: Project = this.getProjectFromContext(context);
+		try {
+			let deployProfile = await launchDeployDatabaseQuickpick(project);
+			if (deployProfile) {
+				const connection = await this.deployService.deploy(deployProfile, project);
+				if (connection) {
+					const settings: IPublishSettings = {
+						serverName: deployProfile.serverName,
+						connectionUri: connection,
+						databaseName: deployProfile.dbName,
+						upgradeExisting: true,
+						// TODO: Set deploymentOptions
+						// TODO: Set sqlCmdVariables
+					};
+					const publishResult = await this.publishProjectCallback(project, settings);
+					if (publishResult && publishResult.success) {
+
+						// Update app settings if requested by user
+						//
+						this.deployService.updateAppSettings(deployProfile);
+						vscode.window.showInformationMessage(constants.deployProjectSucceed);
+					} else {
+						vscode.window.showErrorMessage(constants.deployProjectFailed(publishResult?.errorMessage || ''));
+					}
+				} else {
+					vscode.window.showErrorMessage(constants.deployProjectFailed('Failed to open a connection to the deployed database'));
+				}
+			}
+		} catch (error) {
+			vscode.window.showErrorMessage(constants.deployProjectFailed(error));
+		}
+		return;
+	}
+
+	/**
 	 * Builds and publishes a project
 	 * @param treeNode a treeItem in a project's hierarchy, to be used to obtain a Project
 	 */
@@ -302,7 +352,6 @@ export class ProjectsController {
 					// TODO@chgagnon Fix typing
 					result = await (dacFxService as mssqlVscode.IDacFxService).deployDacpac(tempPath, settings.databaseName, (<IPublishSettings>settings).upgradeExisting, settings.connectionUri, <mssqlVscode.TaskExecutionMode><any>azdataApi!.TaskExecutionMode.execute, settings.sqlCmdVariables, <mssqlVscode.DeploymentOptions><any>settings.deploymentOptions);
 				}
-
 			}
 			else {
 				telemetryProps.publishAction = 'generateScript';
