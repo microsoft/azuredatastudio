@@ -48,6 +48,7 @@ declare module 'vscode-mssql' {
         /**
          * Lists the databases for a given connection. Must be given an already-opened connection to succeed.
          * @param connectionUri The URI of the connection to list the databases for.
+         * @returns The list of database names
          */
         listDatabases(connectionUri: string): Promise<string[]>;
     }
