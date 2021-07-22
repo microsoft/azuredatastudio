@@ -100,22 +100,42 @@ export class Dialog extends ModelViewPane {
 	}
 }
 
+export interface DialogButtonProperties {
+	label: string;
+	enabled: boolean;
+	hidden: boolean;
+	focused?: boolean;
+	position?: azdata.window.DialogButtonPosition;
+	secondary?: boolean;
+}
+
 export class DialogButton implements azdata.window.Button {
-	private _label: string;
-	private _enabled: boolean;
-	private _hidden: boolean;
-	private _focused: boolean | undefined;
+	private _hidden: boolean = false;
+	private _focused?: boolean;
 	private _position?: azdata.window.DialogButtonPosition;
-	private _secondary: boolean | undefined;
+	private _secondary?: boolean;
 	private _onClick: Emitter<void> = new Emitter<void>();
 	public readonly onClick: Event<void> = this._onClick.event;
 	private _onUpdate: Emitter<void> = new Emitter<void>();
 	public readonly onUpdate: Event<void> = this._onUpdate.event;
 
-	constructor(label: string, enabled: boolean) {
-		this._label = label;
-		this._enabled = enabled;
-		this._hidden = false;
+	constructor(private _label: string, private _enabled: boolean) { }
+
+	/**
+	 * Sets all the values for the dialog button and then fires the onUpdate event once - this should be
+	 * preferred to be used when setting multiple properties to reduce overhead of event listeners having
+	 * to process multiple events.
+	 * Note that all current values are overwritten with the ones passed in.
+	 * @param properties The property values to set for this dialog button
+	 */
+	public setProperties(properties: DialogButtonProperties) {
+		this._enabled = properties.enabled;
+		this._focused = properties.focused;
+		this._hidden = properties.hidden;
+		this._label = properties.label;
+		this._position = properties.position;
+		this._secondary = properties.secondary;
+		this._onUpdate.fire();
 	}
 
 	public get label(): string {

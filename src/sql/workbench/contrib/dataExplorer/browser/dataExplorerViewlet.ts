@@ -5,7 +5,6 @@
 
 import { localize } from 'vs/nls';
 import { IWorkbenchContribution } from 'vs/workbench/common/contributions';
-import { IAction } from 'vs/base/common/actions';
 import { toggleClass, Dimension } from 'vs/base/browser/dom';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
@@ -20,8 +19,6 @@ import { Extensions as ViewContainerExtensions, IViewDescriptor, IViewsRegistry,
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 import { Registry } from 'vs/platform/registry/common/platform';
-import { IMenuService, MenuId } from 'vs/platform/actions/common/actions';
-import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { ViewPane } from 'vs/workbench/browser/parts/views/viewPane';
 import { ViewPaneContainer } from 'vs/workbench/browser/parts/views/viewPaneContainer';
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
@@ -67,8 +64,6 @@ export class DataExplorerViewPaneContainer extends ViewPaneContainer {
 		@IContextMenuService contextMenuService: IContextMenuService,
 		@IExtensionService extensionService: IExtensionService,
 		@IConfigurationService configurationService: IConfigurationService,
-		@IMenuService private menuService: IMenuService,
-		@IContextKeyService private contextKeyService: IContextKeyService,
 		@IViewDescriptorService viewDescriptorService: IViewDescriptorService
 	) {
 		super(VIEWLET_ID, { mergeViewWithContainerWhenSingleView: true }, instantiationService, configurationService, layoutService, contextMenuService, telemetryService, extensionService, themeService, storageService, contextService, viewDescriptorService);
@@ -91,18 +86,6 @@ export class DataExplorerViewPaneContainer extends ViewPaneContainer {
 
 	override getOptimalWidth(): number {
 		return 400;
-	}
-
-	getSecondaryActions(): IAction[] {
-		let menu = this.menuService.createMenu(MenuId.DataExplorerAction, this.contextKeyService);
-		let actions: IAction[] = [];
-		menu.getActions({}).forEach(group => {
-			if (group[0] === 'secondary') {
-				actions.push(...group[1]);
-			}
-		});
-		menu.dispose();
-		return actions;
 	}
 
 	protected override createView(viewDescriptor: IViewDescriptor, options: IViewletViewOptions): ViewPane {

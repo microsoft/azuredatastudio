@@ -112,7 +112,7 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 		this._databasesContainer.addItem(this._connectToServerLoading, { CSSStyles: { 'margin-top': '20px' } });
 
 		this._databasesTableLoading = this.modelView.modelBuilder.loadingComponent().component();
-		this._databasesTable = this.modelView.modelBuilder.declarativeTable().withProperties<azdata.DeclarativeTableProperties>({
+		this._databasesTable = this.modelView.modelBuilder.declarativeTable().withProps({
 			width: '100%',
 			columns: [
 				{
@@ -132,11 +132,11 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 					rowCssStyles: cssStyles.tableRow
 				}
 			],
-			data: []
+			dataValues: []
 		}).component();
 
 		this._databasesMessage = this.modelView.modelBuilder.text()
-			.withProperties<azdata.TextComponentProperties>({ CSSStyles: { 'text-align': 'center' } })
+			.withProps({ CSSStyles: { 'text-align': 'center' } })
 			.component();
 
 		// Update loaded components with data
@@ -162,9 +162,9 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 
 		// Service endpoints
 		const titleCSS = { ...cssStyles.title, 'margin-block-start': '2em', 'margin-block-end': '0' };
-		rootContainer.addItem(this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: loc.serviceEndpoints, CSSStyles: titleCSS }).component());
+		rootContainer.addItem(this.modelView.modelBuilder.text().withProps({ value: loc.serviceEndpoints, CSSStyles: titleCSS }).component());
 
-		const endpointsTable = this.modelView.modelBuilder.declarativeTable().withProperties<azdata.DeclarativeTableProperties>({
+		const endpointsTable = this.modelView.modelBuilder.declarativeTable().withProps({
 			width: '100%',
 			columns: [
 				{
@@ -198,15 +198,15 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 					rowCssStyles: cssStyles.tableRow
 				}
 			],
-			data: [
-				[loc.kibanaDashboard, this._kibanaLoading, loc.kibanaDashboardDescription],
-				[loc.grafanaDashboard, this._grafanaLoading, loc.grafanaDashboardDescription]]
+			dataValues: [
+				[{ value: loc.kibanaDashboard }, { value: this._kibanaLoading }, { value: loc.kibanaDashboardDescription }],
+				[{ value: loc.grafanaDashboard }, { value: this._grafanaLoading }, { value: loc.grafanaDashboardDescription }]]
 		}).component();
 
 		rootContainer.addItem(endpointsTable);
 
 		// Databases
-		rootContainer.addItem(this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: loc.databases, CSSStyles: titleCSS }).component());
+		rootContainer.addItem(this.modelView.modelBuilder.text().withProps({ value: loc.databases, CSSStyles: titleCSS }).component());
 		this.disposables.push(
 			this._connectToServerButton!.onDidClick(async () => {
 				this._connectToServerButton!.enabled = false;
@@ -227,7 +227,7 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 
 	public get toolbarContainer(): azdata.ToolbarContainer {
 
-		const deleteButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
+		const deleteButton = this.modelView.modelBuilder.button().withProps({
 			label: loc.deleteText,
 			iconPath: IconPathHelper.delete
 		}).component();
@@ -265,7 +265,7 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 			}));
 
 		// Refresh
-		const refreshButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
+		const refreshButton = this.modelView.modelBuilder.button().withProps({
 			label: loc.refresh,
 			iconPath: IconPathHelper.refresh
 		}).component();
@@ -285,7 +285,7 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 				}
 			}));
 
-		this._openInAzurePortalButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
+		this._openInAzurePortalButton = this.modelView.modelBuilder.button().withProps({
 			label: loc.openInAzurePortal,
 			iconPath: IconPathHelper.openInTab,
 			enabled: !!this._controllerModel.controllerConfig
@@ -302,7 +302,7 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 				}
 			}));
 
-		const troubleshootButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
+		const troubleshootButton = this.modelView.modelBuilder.button().withProps({
 			label: loc.troubleshoot,
 			iconPath: IconPathHelper.wrench
 		}).component();
@@ -366,7 +366,13 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 		// If we were able to get the databases it means we have a good connection so update the username too
 		this._instanceProperties.miaaAdmin = this._miaaModel.username || this._instanceProperties.miaaAdmin;
 		this.refreshDisplayedProperties();
-		this._databasesTable.data = this._miaaModel.databases.map(d => [d.name, getDatabaseStateDisplayText(d.status)]);
+		let databaseDisplayText = this._miaaModel.databases.map(d => [d.name, getDatabaseStateDisplayText(d.status)]);
+		let databasesTextValues = databaseDisplayText.map(d => {
+			return d.map((value): azdata.DeclarativeTableCellValue => {
+				return { value: value };
+			});
+		});
+		this._databasesTable.setDataValues(databasesTextValues);
 		this._databasesTableLoading.loading = false;
 
 		if (this._miaaModel.databasesLastUpdated) {

@@ -424,15 +424,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/cms/out/cmsResource/tree/treeProvider" source-language="en" datatype="plaintext" target-language="zh-Hans">
-    <body>
-      <trans-unit id="cms.resource.tree.treeProvider.loadingLabel">
-        <source xml:lang="en">Loading ...</source>
-        <target state="translated">正在加载…</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/cms/out/cmsResource/tree/cmsResourceTreeNode" source-language="en" datatype="plaintext" target-language="zh-Hans">
+  <file original="extensions/cms/dist/cmsResource/tree/cmsResourceTreeNode" source-language="en" datatype="plaintext" target-language="zh-Hans">
     <body>
       <trans-unit id="cms.resource.cmsResourceTreeNode.noResourcesLabel">
         <source xml:lang="en">No resources found</source>
@@ -440,7 +432,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/cms/out/cmsResource/tree/cmsResourceEmptyTreeNode" source-language="en" datatype="plaintext" target-language="zh-Hans">
+  <file original="extensions/cms/dist/cmsResource/tree/cmsResourceEmptyTreeNode" source-language="en" datatype="plaintext" target-language="zh-Hans">
     <body>
       <trans-unit id="cms.resource.tree.CmsTreeNode.addCmsServerLabel">
         <source xml:lang="en">Add Central Management Server...</source>
@@ -448,15 +440,27 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/cms/out/cmsResource/cmsResourceCommands" source-language="en" datatype="plaintext" target-language="zh-Hans">
+  <file original="extensions/cms/dist/cmsResource/tree/treeProvider" source-language="en" datatype="plaintext" target-language="zh-Hans">
+    <body>
+      <trans-unit id="cms.resource.tree.treeProvider.loadError">
+        <source xml:lang="en">Unexpected error occurred while loading saved servers {0}</source>
+        <target state="translated">加载已保存的服务器时出现意外错误 {0}</target>
+      </trans-unit>
+      <trans-unit id="cms.resource.tree.treeProvider.loadingLabel">
+        <source xml:lang="en">Loading ...</source>
+        <target state="translated">正在加载…</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/cms/dist/cmsResource/cmsResourceCommands" source-language="en" datatype="plaintext" target-language="zh-Hans">
     <body>
       <trans-unit id="cms.errors.sameCmsServerName">
         <source xml:lang="en">Central Management Server Group already has a Registered Server with the name {0}</source>
         <target state="translated">中央管理服务器组已具有名称为 {0} 的注册服务器</target>
       </trans-unit>
       <trans-unit id="cms.errors.azureNotAllowed">
-        <source xml:lang="en">Azure SQL Database Servers cannot be used as Central Management Servers</source>
-        <target state="translated">无法将 Azure SQL 数据库服务器用作中央管理服务器</target>
+        <source xml:lang="en">Azure SQL Servers cannot be used as Central Management Servers</source>
+        <target state="translated">无法将 Azure SQL Server 用作中央管理服务器</target>
       </trans-unit>
       <trans-unit id="cms.confirmDeleteServer">
         <source xml:lang="en">Are you sure you want to delete</source>
@@ -500,7 +504,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/cms/out/cmsUtils" source-language="en" datatype="plaintext" target-language="zh-Hans">
+  <file original="extensions/cms/dist/cmsUtils" source-language="en" datatype="plaintext" target-language="zh-Hans">
     <body>
       <trans-unit id="cms.errors.sameServerUnderCms">
         <source xml:lang="en">You cannot add a shared registered server with the same name as the Configuration Server</source>

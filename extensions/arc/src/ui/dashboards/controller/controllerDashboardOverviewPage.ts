@@ -67,8 +67,8 @@ export class ControllerDashboardOverviewPage extends DashboardPage {
 		this._propertiesLoadingComponent = this.modelView.modelBuilder.loadingComponent().component();
 
 		this._arcResourcesLoadingComponent = this.modelView.modelBuilder.loadingComponent().component();
-		this._arcResourcesTable = this.modelView.modelBuilder.declarativeTable().withProperties<azdata.DeclarativeTableProperties>({
-			data: [],
+		this._arcResourcesTable = this.modelView.modelBuilder.declarativeTable().withProps({
+			dataValues: [],
 			columns: [
 				{
 					displayName: '',
@@ -126,7 +126,7 @@ export class ControllerDashboardOverviewPage extends DashboardPage {
 
 		// Resources
 		const arcResourcesTitle = this.modelView.modelBuilder.text()
-			.withProperties<azdata.TextComponentProperties>({ value: loc.arcResources })
+			.withProps({ value: loc.arcResources })
 			.component();
 
 		contentContainer.addItem(arcResourcesTitle, {
@@ -140,7 +140,7 @@ export class ControllerDashboardOverviewPage extends DashboardPage {
 
 	public get toolbarContainer(): azdata.ToolbarContainer {
 
-		const newInstance = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
+		const newInstance = this.modelView.modelBuilder.button().withProps({
 			label: loc.newInstance,
 			iconPath: IconPathHelper.add
 		}).component();
@@ -156,7 +156,7 @@ export class ControllerDashboardOverviewPage extends DashboardPage {
 			}));
 
 		// Refresh
-		const refreshButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
+		const refreshButton = this.modelView.modelBuilder.button().withProps({
 			label: loc.refresh,
 			iconPath: IconPathHelper.refresh
 		}).component();
@@ -173,7 +173,7 @@ export class ControllerDashboardOverviewPage extends DashboardPage {
 				}
 			}));
 
-		this._openInAzurePortalButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
+		this._openInAzurePortalButton = this.modelView.modelBuilder.button().withProps({
 			label: loc.openInAzurePortal,
 			iconPath: IconPathHelper.openInTab,
 			enabled: !!this._controllerModel.controllerConfig
@@ -190,7 +190,7 @@ export class ControllerDashboardOverviewPage extends DashboardPage {
 				}
 			}));
 
-		const troubleshootButton = this.modelView.modelBuilder.button().withProperties<azdata.ButtonProperties>({
+		const troubleshootButton = this.modelView.modelBuilder.button().withProps({
 			label: loc.troubleshoot,
 			iconPath: IconPathHelper.wrench
 		}).component();
@@ -224,12 +224,12 @@ export class ControllerDashboardOverviewPage extends DashboardPage {
 		this.controllerProperties.instanceNamespace = config?.metadata.namespace || this.controllerProperties.instanceNamespace;
 		this.refreshDisplayedProperties();
 
-		this._arcResourcesTable.data = this._controllerModel.registrations
+		let registrations: (string | azdata.ImageComponent | azdata.HyperlinkComponent)[][] = this._controllerModel.registrations
 			.filter(r => r.instanceType !== ResourceType.dataControllers)
 			.map(r => {
 				const iconPath = getResourceTypeIcon(r.instanceType ?? '');
 				const imageComponent = this.modelView.modelBuilder.image()
-					.withProperties<azdata.ImageComponentProperties>({
+					.withProps({
 						width: iconSize,
 						height: iconSize,
 						iconPath: iconPath,
@@ -238,7 +238,7 @@ export class ControllerDashboardOverviewPage extends DashboardPage {
 					}).component();
 
 				const nameComponent = this.modelView.modelBuilder.hyperlink()
-					.withProperties<azdata.HyperlinkComponentProperties>({
+					.withProps({
 						label: r.instanceName || '',
 						url: ''
 					}).component();
@@ -249,6 +249,13 @@ export class ControllerDashboardOverviewPage extends DashboardPage {
 
 				return [imageComponent, nameComponent, resourceTypeToDisplayName(r.instanceType), r.state];
 			});
+
+		let registrationsData = registrations.map(r => {
+			return r.map((value): azdata.DeclarativeTableCellValue => {
+				return { value: value };
+			});
+		});
+		this._arcResourcesTable.setDataValues(registrationsData);
 		this._arcResourcesLoadingComponent.loading = !this._controllerModel.registrationsLastUpdated;
 	}
 

@@ -16,6 +16,8 @@ import { IQueryManagementService } from 'sql/workbench/services/query/common/que
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { ILogService } from 'vs/platform/log/common/log';
+import { URI } from 'vs/base/common/uri';
+import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadQueryEditor)
 export class MainThreadQueryEditor extends Disposable implements MainThreadQueryEditorShape {
@@ -29,7 +31,8 @@ export class MainThreadQueryEditor extends Disposable implements MainThreadQuery
 		@IQueryModelService private _queryModelService: IQueryModelService,
 		@IEditorService private _editorService: IEditorService,
 		@IQueryManagementService private _queryManagementService: IQueryManagementService,
-		@ILogService private _logService: ILogService
+		@ILogService private _logService: ILogService,
+		@IQueryEditorService private _queryEditorService: IQueryEditorService
 	) {
 		super();
 		if (extHostContext) {
@@ -144,5 +147,10 @@ export class MainThreadQueryEditor extends Disposable implements MainThreadQuery
 
 	public $setQueryExecutionOptions(fileUri: string, options: azdata.QueryExecutionOptions): Thenable<void> {
 		return this._queryManagementService.setQueryExecutionOptions(fileUri, options);
+	}
+
+	public async $createQueryDocument(options?: { content?: string }, providerId?: string): Promise<URI> {
+		const queryInput = await this._queryEditorService.newSqlEditor({ initalContent: options.content }, providerId);
+		return queryInput.resource;
 	}
 }

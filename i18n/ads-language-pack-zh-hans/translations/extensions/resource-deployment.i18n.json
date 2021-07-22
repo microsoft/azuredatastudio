@@ -103,6 +103,10 @@
 			"azdataEulaNotAccepted": "部署无法继续。Azure 数据 CLI 许可条款尚未被接受。请接受 EULA 以启用需要 Azure 数据 CLI 的功能。",
 			"azdataEulaDeclined": "部署无法继续。Azure 数据 CLI 许可条款被拒绝。你可以接受 EULA 以继续，也可以取消此操作",
 			"deploymentDialog.RecheckEulaButton": "接受 EULA 并选择",
+			"resourceDeployment.extensionRequiredPrompt": "部署此资源需要“{0}”扩展，现在是否希望安装此扩展?",
+			"resourceDeployment.install": "安装",
+			"resourceDeployment.installingExtension": "正在安装扩展“{0}”...",
+			"resourceDeployment.unknownExtension": "未知扩展“{0}”",
 			"resourceTypePickerDialog.title": "选择部署选项",
 			"resourceTypePickerDialog.resourceSearchPlaceholder": "筛选资源...",
 			"resourceTypePickerDialog.tagsListViewTitle": "类别",
@@ -264,7 +268,6 @@
 			"notebookType": "笔记本类型"
 		},
 		"dist/main": {
-			"resourceDeployment.FailedToLoadExtension": "未能加载扩展: {0}，在 package.json 的资源类型定义中检测到错误，请查看调试控制台以了解详细信息。",
 			"resourceDeployment.UnknownResourceType": "未定义资源类型: {0}"
 		},
 		"dist/services/notebookService": {
@@ -562,8 +565,8 @@
 		},
 		"dist/ui/toolsAndEulaSettingsPage": {
 			"notebookWizard.toolsAndEulaPageTitle": "部署先决条件",
-			"deploymentDialog.FailedEulaValidation": "若要继续，必须接受最终用户许可协议(EULA)条款",
 			"deploymentDialog.FailedToolsInstallation": "仍未发现某些工具。请确保它们已安装，正在运行且可发现",
+			"deploymentDialog.FailedEulaValidation": "若要继续，必须接受最终用户许可协议(EULA)条款",
 			"deploymentDialog.loadingRequiredToolsCompleted": "所需工具信息加载已完成",
 			"deploymentDialog.loadingRequiredTools": "正在加载所需的工具信息",
 			"resourceDeployment.AgreementTitle": "接受使用条款",
@@ -605,18 +608,9 @@
 		"dist/services/tools/azdataTool": {
 			"resourceDeployment.AzdataDescription": "Azure 数据命令行界面",
 			"resourceDeployment.AzdataDisplayName": "Azure 数据 CLI",
+			"deploy.azdataExtMissing": "必须安装 Azure Data CLI 以部署此资源。请通过扩展库安装，然后重试。",
 			"deployCluster.GetToolVersionErrorInformation": "检索版本信息时出错。有关详细信息，请参阅输出通道“{0}”",
-			"deployCluster.GetToolVersionError": "检索版本信息时出错。{0}收到无效输出，获取版本命令输出:“{1}”",
-			"resourceDeployment.Azdata.DeletingPreviousAzdata.msi": "正在删除以前下载的 Azdata.msi (如果存在)…",
-			"resourceDeployment.Azdata.DownloadingAndInstallingAzdata": "正在下载 Azdata.msi 并安装 azdata-cli…",
-			"resourceDeployment.Azdata.DisplayingInstallationLog": "正在显示安装日志…",
-			"resourceDeployment.Azdata.TappingBrewRepository": "正在访问 azdata-cli 的 brew 存储库…",
-			"resourceDeployment.Azdata.UpdatingBrewRepository": "正在更新 azdata-cli 安装的 brew 存储库…",
-			"resourceDeployment.Azdata.InstallingAzdata": "正在安装 azdata…",
-			"resourceDeployment.Azdata.AptGetUpdate": "正在更新存储库信息…",
-			"resourceDeployment.Azdata.AptGetPackages": "正在获取 azdata 安装所需的包…",
-			"resourceDeployment.Azdata.DownloadAndInstallingSigningKey": "正在下载并安装 azdata 的签名密钥…",
-			"resourceDeployment.Azdata.AddingAzdataRepositoryInformation": "正在添加 azdata 存储库信息…"
+			"deployCluster.GetToolVersionError": "检索版本信息时出错。{0}收到无效输出，获取版本命令输出:“{1}”"
 		},
 		"dist/services/tools/azdataToolOld": {
 			"resourceDeployment.AzdataDescription": "Azure 数据命令行界面",
