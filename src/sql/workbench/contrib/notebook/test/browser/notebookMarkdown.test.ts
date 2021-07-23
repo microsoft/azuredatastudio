@@ -69,6 +69,16 @@ suite('NotebookMarkdownRenderer', () => {
 		assert.strict(markedPath, '<p>....\test.ipynb</p>');
 	});
 
+	test('email renders properly', () => {
+		let result: HTMLElement = notebookMarkdownRenderer.renderMarkdown({ value: `[test@email.com](mailto:test@email.com)` });
+		assert.strictEqual(result.innerHTML, `<p>test@email.com</p>`);
+	});
+
+	test('link to https with query parameters', () => {
+		let result: HTMLElement = notebookMarkdownRenderer.renderMarkdown({ value: `[test](https://www.google.com?test=&test2=)` });
+		assert.strictEqual(result.innerHTML, `<p>test</p>`);
+	});
+
 	test('cell attachment image', () => {
 		let result: HTMLElement = notebookMarkdownRenderer.renderMarkdown({ value: `![altText](attachment:ads.png)`, isTrusted: true }, { cellAttachments: JSON.parse('{"ads.png":{"image/png":"iVBORw0KGgoAAAANSUhEUgAAAggg=="}}') });
 		assert.strictEqual(result.innerHTML, `<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAggg==" alt="altText"></p>`, 'Cell attachment basic test failed when trusted');
