@@ -12,7 +12,7 @@ import { PostgresModel } from '../../../models/postgresModel';
 
 export type PodHealthModel = {
 	condition: string,
-	details?: azdata.Component,
+	details: azdata.Component,
 	lastUpdate: string
 };
 
@@ -90,6 +90,7 @@ export class PostgresResourceHealthPage extends DashboardPage {
 		this.podConditionsContainer = this.modelView.modelBuilder.divContainer().component();
 		this.podConditionsTable = this.modelView.modelBuilder.declarativeTable().withProps({
 			width: '100%',
+			ariaLabel: loc.podConditionsTable,
 			columns: [
 				{
 					displayName: loc.condition,
@@ -119,10 +120,13 @@ export class PostgresResourceHealthPage extends DashboardPage {
 					rowCssStyles: cssStyles.tableRow
 				}
 			],
-			data: [this.coordinatorData.map(p => [p.condition, p.details, p.lastUpdate])]
+			dataValues: this.createPodConditionsDataValues(this.coordinatorData)
 		}).component();
 
-		this.podDropDown = this.modelView.modelBuilder.dropDown().withProps({ width: '150px' }).component();
+		this.podDropDown = this.modelView.modelBuilder.dropDown().withProps({
+			width: '150px',
+			ariaLabel: loc.podsUsedDescriptionAria
+		}).component();
 		this.disposables.push(
 			this.podDropDown.onValueChanged(() => {
 				this.podConditionsTable.setFilter(this.podConditionsTableIndexes.get(String(this.podDropDown.value)));
@@ -133,7 +137,7 @@ export class PostgresResourceHealthPage extends DashboardPage {
 		this.podConditionsContainer.addItem(this.podConditionsTable);
 		this.podConditionsLoading = this.modelView.modelBuilder.loadingComponent()
 			.withItem(this.podConditionsContainer)
-			.withProperties<azdata.LoadingComponentProperties>({
+			.withProps({
 				loading: !this._postgresModel.configLastUpdated
 			}).component();
 
@@ -234,9 +238,18 @@ export class PostgresResourceHealthPage extends DashboardPage {
 			this.podConditionsTableIndexes.set(p.name, indexes);
 		});
 
-		this.podConditionsTable.data = this.podsData.map(p => [p.condition, p.details, p.lastUpdate]);
+		this.podConditionsTable.setDataValues(this.createPodConditionsDataValues(this.podsData));
 
 		return podNames;
+	}
+
+	private createPodConditionsDataValues(podInfo: PodHealthModel[]): azdata.DeclarativeTableCellValue[][] {
+		let podDataValues: (string | azdata.Component)[][] = podInfo.map(p => [p.condition, p.details, p.lastUpdate]);
+		return podDataValues.map(p => {
+			return p.map((value): azdata.DeclarativeTableCellValue => {
+				return { value: value };
+			});
+		});
 	}
 
 	private findPodIssues(): string[] {

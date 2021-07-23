@@ -1,0 +1,1703 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file original="extensions/arc/package" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="arc.displayName">
+        <source xml:lang="en">Azure Arc</source>
+        <target state="translated">Azure Arc</target>
+      </trans-unit>
+      <trans-unit id="arc.description">
+        <source xml:lang="en">Support for Azure Arc</source>
+        <target state="translated">Azure Arc 지원</target>
+      </trans-unit>
+      <trans-unit id="arc.configuration.title">
+        <source xml:lang="en">Azure Arc</source>
+        <target state="translated">Azure Arc</target>
+      </trans-unit>
+      <trans-unit id="arc.view.title">
+        <source xml:lang="en">Azure Arc Controllers</source>
+        <target state="translated">Azure Arc 컨트롤러</target>
+      </trans-unit>
+      <trans-unit id="arc.view.welcome.connect">
+        <source xml:lang="en">No Azure Arc controllers registered. [Learn More](https://azure.microsoft.com/services/azure-arc/)
+[Connect Controller](command:arc.connectToController)</source>
+        <target state="translated">등록된 Azure Arc 컨트롤러가 없습니다.[자세한 정보] (https://azure.microsoft.com/services/azure-arc/)
+[컨트롤러 연결](command:arc.connectToController)</target>
+      </trans-unit>
+      <trans-unit id="arc.view.welcome.loading">
+        <source xml:lang="en">Loading controllers...</source>
+        <target state="translated">컨트롤러를 로드하는 중...</target>
+      </trans-unit>
+      <trans-unit id="command.createController.title">
+        <source xml:lang="en">Create New Azure Arc Controller</source>
+        <target state="translated">새 Azure Arc 컨트롤러 만들기</target>
+      </trans-unit>
+      <trans-unit id="command.connectToController.title">
+        <source xml:lang="en">Connect to Existing Azure Arc Controller</source>
+        <target state="translated">기존 Azure Arc 컨트롤러에 연결</target>
+      </trans-unit>
+      <trans-unit id="command.removeController.title">
+        <source xml:lang="en">Remove Controller</source>
+        <target state="translated">컨트롤러 제거</target>
+      </trans-unit>
+      <trans-unit id="command.refresh.title">
+        <source xml:lang="en">Refresh</source>
+        <target state="translated">새로 고침</target>
+      </trans-unit>
+      <trans-unit id="command.editConnection.title">
+        <source xml:lang="en">Edit Connection</source>
+        <target state="translated">연결 편집</target>
+      </trans-unit>
+      <trans-unit id="arc.openDashboard">
+        <source xml:lang="en">Manage</source>
+        <target state="translated">관리</target>
+      </trans-unit>
+      <trans-unit id="resource.type.azure.arc.display.name">
+        <source xml:lang="en">Azure Arc data controller (preview)</source>
+        <target state="translated">Azure Arc 데이터 컨트롤러(미리 보기)</target>
+      </trans-unit>
+      <trans-unit id="resource.type.azure.arc.description">
+        <source xml:lang="en">Creates an Azure Arc data controller</source>
+        <target state="translated">Azure Arc 데이터 컨트롤러 만들기</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.new.wizard.title">
+        <source xml:lang="en">Create Azure Arc data controller</source>
+        <target state="translated">Azure Arc 데이터 컨트롤러 만들기</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.cluster.environment.title">
+        <source xml:lang="en">What is your target existing Kubernetes cluster environment?</source>
+        <target state="translated">대상 기존 Kubernetes 클러스터 환경은 무엇인가요?</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.select.cluster.title">
+        <source xml:lang="en">Select from existing Kubernetes clusters</source>
+        <target state="translated">기존 Kubernetes 클러스터에서 선택</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.kube.cluster.context">
+        <source xml:lang="en">Cluster context</source>
+        <target state="translated">클러스터 컨텍스트</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.cluster.config.profile.title">
+        <source xml:lang="en">Choose the config profile</source>
+        <target state="translated">구성 프로필 선택</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.cluster.config.profile">
+        <source xml:lang="en">Config profile</source>
+        <target state="translated">구성 프로필</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.cluster.config.profile.loading">
+        <source xml:lang="en">Loading config profiles</source>
+        <target state="translated">구성 프로필 로드 중</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.cluster.config.profile.loadingcompleted">
+        <source xml:lang="en">Loading config profiles complete</source>
+        <target state="translated">구성 프로필 로드 완료</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.create.azureconfig.title">
+        <source xml:lang="en">Azure Configuration</source>
+        <target state="translated">Azure 구성</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.create.controllerconfig.title">
+        <source xml:lang="en">Controller Configuration</source>
+        <target state="translated">컨트롤러 구성</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.project.details.title">
+        <source xml:lang="en">Azure details</source>
+        <target state="translated">Azure 세부 정보</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.project.details.description">
+        <source xml:lang="en">Select the subscription to manage deployed resources and costs. Use resource groups like folders to organize and manage all your resources.</source>
+        <target state="translated">배포된 리소스 및 비용을 관리할 구독을 선택합니다. 폴더와 같은 리소스 그룹을 사용하여 모든 리소스를 구성하고 관리합니다.</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.details.title">
+        <source xml:lang="en">Data controller details</source>
+        <target state="translated">데이터 컨트롤러 세부 정보</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.details.description">
+        <source xml:lang="en">Provide a namespace, name and storage class for your Azure Arc data controller. This name will be used to identify your Arc instance for remote management and monitoring.</source>
+        <target state="translated">Azure Arc 데이터 컨트롤러에 대한 네임스페이스, 이름 및 스토리지 클래스를 제공합니다. 이 이름은 원격 관리 및 모니터링을 위해 Arc 인스턴스를 식별하는 데 사용됩니다.</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.namespace">
+        <source xml:lang="en">Data controller namespace</source>
+        <target state="translated">데이터 컨트롤러 네임스페이스</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.namespace.validation.description">
+        <source xml:lang="en">Namespace must consist of lower case alphanumeric characters or '-', start/end with an alphanumeric character, and be 63 characters or fewer in length.</source>
+        <target state="translated">네임스페이스는 소문자 영숫자 문자 또는 '-'로 구성되어야 하며, 시작/끝은 영숫자 문자로 구성되어야 하며 길이는 63자 이하여야 합니다.</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.name">
+        <source xml:lang="en">Data controller name</source>
+        <target state="translated">데이터 컨트롤러 이름</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.name.validation.description">
+        <source xml:lang="en">Name must consist of lower case alphanumeric characters, '-' or '.', start/end with an alphanumeric character and be 253 characters or less in length.</source>
+        <target state="translated">이름은 소문자 영숫자 문자, '-' 또는 '.'로 구성되어야 하며, 시작/끝은 영숫자 문자로 구성되어야 하며 길이는 253자 이하여야 합니다.</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.location">
+        <source xml:lang="en">Location</source>
+        <target state="translated">위치</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.admin.account.title">
+        <source xml:lang="en">Administrator account</source>
+        <target state="translated">관리자 계정</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.admin.account.name">
+        <source xml:lang="en">Data controller login</source>
+        <target state="translated">데이터 컨트롤러 로그인</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.admin.account.password">
+        <source xml:lang="en">Password</source>
+        <target state="translated">암호</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.admin.account.confirm.password">
+        <source xml:lang="en">Confirm password</source>
+        <target state="translated">암호 확인</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.create.summary.title">
+        <source xml:lang="en">Review your configuration</source>
+        <target state="translated">구성 검토</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.summary.arc.data.controller">
+        <source xml:lang="en">Azure Arc data controller</source>
+        <target state="translated">Azure Arc 데이터 컨트롤러</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.summary.estimated.cost.per.month">
+        <source xml:lang="en">Estimated cost per month</source>
+        <target state="translated">월별 예상 비용</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.summary.arc.by.microsoft">
+        <source xml:lang="en">by Microsoft</source>
+        <target state="translated">Microsoft 제공</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.summary.free">
+        <source xml:lang="en">Free</source>
+        <target state="translated">무료</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.summary.arc.terms.of.use">
+        <source xml:lang="en">Terms of use</source>
+        <target state="translated">사용 약관</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.summary.arc.terms.separator">
+        <source xml:lang="en">|</source>
+        <target state="translated">|</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.summary.arc.terms.privacy.policy">
+        <source xml:lang="en">Privacy policy</source>
+        <target state="translated">개인정보처리방침</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.summary.terms">
+        <source xml:lang="en">Terms</source>
+        <target state="translated">사용 약관</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.summary.terms.description">
+        <source xml:lang="en">By clicking 'Script to notebook', I (a) agree to the legal terms and privacy statement(s) associated with the Marketplace offering(s) listed above; (b) authorize Microsoft to bill my current payment method for the fees associated with the offering(s), with the same billing frequency as my Azure subscription; and (c) agree that Microsoft may share my contact, usage and transactional information with the provider(s) of the offering(s) for support, billing and other transactional activities. Microsoft does not provide rights for third-party offerings. For additional details see {0}.</source>
+        <target state="translated">"전자 필기장으로 스크립트"를 클릭함으로써 (a) 위에 열거된 해당 Marketplace 제품 및 서비스와 관련된 약관 및 개인정보처리방침에 동의하고, (b) Microsoft가 현재 결제 방법으로 제품 및 서비스와 관련된 요금을 Azure 구독과 동일한 대금 청구 주기로 청구하도록 권한을 부여하는 데 동의합니다. 또한 (c) Microsoft가 지원, 청구 및 기타 거래 활동을 목적으로 연락처, 사용량 그리고 거래 정보를 제품 및 서비스 공급자와 공유할 수 있다는 데 동의합니다. Microsoft는 타사 제품 및 서비스에 대한 권리를 제공하지 않습니다. 자세한 내용은 {0}를 참조하세요.</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.summary.terms.link.text">
+        <source xml:lang="en">Azure Marketplace Terms</source>
+        <target state="translated">Azure Marketplace 약관</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.summary.kubernetes">
+        <source xml:lang="en">Kubernetes</source>
+        <target state="translated">Kubernetes</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.summary.kube.config.file.path">
+        <source xml:lang="en">Kube config file path</source>
+        <target state="translated">Kube 구성 파일 경로</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.summary.cluster.context">
+        <source xml:lang="en">Cluster context</source>
+        <target state="translated">클러스터 컨텍스트</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.summary.profile">
+        <source xml:lang="en">Config profile</source>
+        <target state="translated">구성 프로필</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.summary.username">
+        <source xml:lang="en">Username</source>
+        <target state="translated">사용자 이름</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.summary.azure">
+        <source xml:lang="en">Azure</source>
+        <target state="translated">Azure</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.summary.subscription">
+        <source xml:lang="en">Subscription</source>
+        <target state="translated">구독</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.summary.resource.group">
+        <source xml:lang="en">Resource group</source>
+        <target state="translated">리소스 그룹</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.summary.data.controller.name">
+        <source xml:lang="en">Data controller name</source>
+        <target state="translated">데이터 컨트롤러 이름</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.summary.data.controller.namespace">
+        <source xml:lang="en">Data controller namespace</source>
+        <target state="translated">데이터 컨트롤러 네임스페이스</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.summary.controller">
+        <source xml:lang="en">Controller</source>
+        <target state="translated">컨트롤러</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.summary.location">
+        <source xml:lang="en">Location</source>
+        <target state="translated">위치</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.agreement">
+        <source xml:lang="en">I accept {0} and {1}.</source>
+        <target state="translated">{0} 및 {1}에 동의합니다.</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.readmore">
+        <source xml:lang="en">Read more</source>
+        <target state="translated">자세한 정보</target>
+      </trans-unit>
+      <trans-unit id="microsoft.agreement.privacy.statement">
+        <source xml:lang="en">Microsoft Privacy Statement</source>
+        <target state="translated">Microsoft 개인정보처리방침</target>
+      </trans-unit>
+      <trans-unit id="deploy.script.action">
+        <source xml:lang="en">Script to notebook</source>
+        <target state="translated">Notebook에 스크립트</target>
+      </trans-unit>
+      <trans-unit id="deploy.done.action">
+        <source xml:lang="en">Deploy</source>
+        <target state="translated">배포</target>
+      </trans-unit>
+      <trans-unit id="resource.type.arc.sql.display.name">
+        <source xml:lang="en">Azure SQL managed instance - Azure Arc (preview)</source>
+        <target state="translated">Azure SQL Managed Instance - Azure Arc(미리 보기)</target>
+      </trans-unit>
+      <trans-unit id="resource.type.arc.postgres.display.name">
+        <source xml:lang="en">PostgreSQL Hyperscale server groups - Azure Arc (preview)</source>
+        <target state="translated">PostgreSQL 하이퍼스케일 서버 그룹 - Azure Arc(미리 보기)</target>
+      </trans-unit>
+      <trans-unit id="resource.type.arc.sql.description">
+        <source xml:lang="en">Managed SQL Instance service for app developers in a customer-managed environment</source>
+        <target state="translated">고객 관리형 환경의 앱 개발자를 위한 관리형 SQL 인스턴스 서비스</target>
+      </trans-unit>
+      <trans-unit id="resource.type.arc.postgres.description">
+        <source xml:lang="en">Deploy PostgreSQL Hyperscale server groups into an Azure Arc environment</source>
+        <target state="translated">Azure Arc 환경에 PostgreSQL 하이퍼스케일 서버 그룹 배포</target>
+      </trans-unit>
+      <trans-unit id="arc.controller">
+        <source xml:lang="en">Target Azure Arc Controller</source>
+        <target state="translated">대상 Azure Arc 컨트롤러</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.wizard.title">
+        <source xml:lang="en">Deploy Azure SQL managed instance - Azure Arc (preview)</source>
+        <target state="translated">Azure SQL Managed Instance - Azure Arc(미리 보기)</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.wizard.page1.title">
+        <source xml:lang="en">Provide Azure SQL managed instance parameters</source>
+        <target state="translated">Azure SQL 관리되는 인스턴스 매개 변수 제공</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.connection.settings.section.title">
+        <source xml:lang="en">SQL Connection information</source>
+        <target state="translated">SQL 연결 정보</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.instance.settings.section.title">
+        <source xml:lang="en">SQL Instance settings</source>
+        <target state="translated">SQL 인스턴스 설정</target>
+      </trans-unit>
+      <trans-unit id="arc.azure.section.title">
+        <source xml:lang="en">Azure information</source>
+        <target state="translated">Azure 정보</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.instance.name">
+        <source xml:lang="en">Instance name</source>
+        <target state="translated">인스턴스 이름</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.username">
+        <source xml:lang="en">Username</source>
+        <target state="translated">사용자 이름</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.invalid.username">
+        <source xml:lang="en">sa username is disabled, please choose another username</source>
+        <target state="translated">sa 사용자 이름을 사용할 수 없습니다. 다른 사용자 이름을 선택하세요.</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.invalid.instance.name">
+        <source xml:lang="en">Instance name must consist of lower case alphanumeric characters or '-', start with a letter, end with an alphanumeric character, and be 13 characters or fewer in length.</source>
+        <target state="translated">인스턴스 이름은 소문자 영숫자 또는 '-'로 구성되어야 하며, 문자로 시작하고 영숫자로 끝나며 길이가 13자 이하여야 합니다.</target>
+      </trans-unit>
+      <trans-unit id="arc.storage-class.dc.label">
+        <source xml:lang="en">Storage Class</source>
+        <target state="translated">스토리지 클래스</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.storage-class.dc.description">
+        <source xml:lang="en">The storage class to be used for all data and logs persistent volumes for all data controller pods that require them.</source>
+        <target state="translated">모든 데이터에 사용할 스토리지 클래스이며 필요한 모든 데이터 컨트롤러 Pod의 영구 볼륨을 기록합니다.</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.replicas.label">
+        <source xml:lang="en">Replicas</source>
+        <target state="translated">복제본</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.replicas.description">
+        <source xml:lang="en">The number of SQL Managed Instance replicas that will be deployed in your Kubernetes cluster for high availability purposes</source>
+        <target state="translated">고가용성을 위해 Kubernetes 클러스터에 배포될 SQL Managed Instance의 복제본 수</target>
+      </trans-unit>
+      <trans-unit id="arc.storage-class.data.label">
+        <source xml:lang="en">Storage Class (Data)</source>
+        <target state="translated">스토리지 클래스(데이터)</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.storage-class.data.description">
+        <source xml:lang="en">The storage class to be used for data (.mdf)</source>
+        <target state="translated">데이터에 사용할 스토리지 클래스(.mdf)</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.storage-class.data.description">
+        <source xml:lang="en">The storage class to be used for data persistent volumes</source>
+        <target state="translated">데이터 영구 볼륨에 사용할 스토리지 클래스입니다.</target>
+      </trans-unit>
+      <trans-unit id="arc.storage-class.logs.label">
+        <source xml:lang="en">Storage Class (Logs)</source>
+        <target state="translated">스토리지 클래스(로그)</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.storage-class.logs.description">
+        <source xml:lang="en">The storage class to be used for logs (/var/log)</source>
+        <target state="translated">로그에 사용할 스토리지 클래스(/var/log)</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.storage-class.logs.description">
+        <source xml:lang="en">The storage class to be used for logs persistent volumes</source>
+        <target state="translated">로그 영구 볼륨에 사용할 스토리지 클래스입니다.</target>
+      </trans-unit>
+      <trans-unit id="arc.storage-class.backups.label">
+        <source xml:lang="en">Storage Class (Backups)</source>
+        <target state="translated">스토리지 클래스(백업)</target>
+      </trans-unit>
+      <trans-unit id="arc.cores-limit.label">
+        <source xml:lang="en">Cores Limit</source>
+        <target state="translated">코어 제한</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.cores-limit.description">
+        <source xml:lang="en">The cores limit of the managed instance as an integer.</source>
+        <target state="translated">정수로 관리되는 인스턴스의 코어 제한입니다.</target>
+      </trans-unit>
+      <trans-unit id="arc.cores-request.label">
+        <source xml:lang="en">Cores Request</source>
+        <target state="translated">코어 요청</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.cores-request.description">
+        <source xml:lang="en">The request for cores of the managed instance as an integer.</source>
+        <target state="translated">정수로 관리되는 인스턴스의 코어에 대한 요청입니다.</target>
+      </trans-unit>
+      <trans-unit id="arc.memory-limit.label">
+        <source xml:lang="en">Memory Limit</source>
+        <target state="translated">메모리 제한</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.memory-limit.description">
+        <source xml:lang="en">The limit of the capacity of the managed instance as an integer.</source>
+        <target state="translated">정수로 관리되는 인스턴스의 용량 제한입니다.</target>
+      </trans-unit>
+      <trans-unit id="arc.memory-request.label">
+        <source xml:lang="en">Memory Request</source>
+        <target state="translated">메모리 요청</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.memory-request.description">
+        <source xml:lang="en">The request for the capacity of the managed instance as an integer amount of memory in GBs.</source>
+        <target state="translated">관리되는 인스턴스의 용량에 대한 요청(GB의 정수 메모리 양)입니다.</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.storage-class.backups.description">
+        <source xml:lang="en">The storage class to be used for backup persistent volumes</source>
+        <target state="translated">백업 영구 볼륨에 사용할 스토리지 클래스입니다.</target>
+      </trans-unit>
+      <trans-unit id="arc.password">
+        <source xml:lang="en">Password</source>
+        <target state="translated">암호</target>
+      </trans-unit>
+      <trans-unit id="arc.confirm.password">
+        <source xml:lang="en">Confirm password</source>
+        <target state="translated">암호 확인</target>
+      </trans-unit>
+      <trans-unit id="arc.azure.account">
+        <source xml:lang="en">Azure account</source>
+        <target state="translated">Azure 계정</target>
+      </trans-unit>
+      <trans-unit id="arc.azure.subscription">
+        <source xml:lang="en">Azure subscription</source>
+        <target state="translated">Azure 구독</target>
+      </trans-unit>
+      <trans-unit id="arc.azure.resource.group">
+        <source xml:lang="en">Azure resource group</source>
+        <target state="translated">Azure 리소스 그룹</target>
+      </trans-unit>
+      <trans-unit id="arc.azure.location">
+        <source xml:lang="en">Azure location</source>
+        <target state="translated">Azure 위치</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.wizard.title">
+        <source xml:lang="en">Deploy an Azure Arc-enabled PostgreSQL Hyperscale server group (Preview)</source>
+        <target state="translated">Azure Arc가 사용 가능한 PostgreSQL 하이퍼스케일 서버 그룹 배포(미리 보기)</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.wizard.page1.title">
+        <source xml:lang="en">Provide Azure enabled PostgreSQL Hyperscale server group parameters</source>
+        <target state="translated">Azure 지원 PostgreSQL 하이퍼스케일 서버 그룹 매개 변수 제공</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.settings.section.title">
+        <source xml:lang="en">General settings</source>
+        <target state="translated">일반 설정</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.settings.resource.worker.title">
+        <source xml:lang="en">Worker Nodes Compute Configuration</source>
+        <target state="translated">작업자 노드 컴퓨팅 구성</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.settings.resource.coordinator.title">
+        <source xml:lang="en">Coordinator Node Compute Configuration</source>
+        <target state="translated">코디네이터 노드 컴퓨팅 구성</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.settings.storage.title">
+        <source xml:lang="en">Storage settings</source>
+        <target state="translated">저장소 설정</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.server.group.name">
+        <source xml:lang="en">Server group name</source>
+        <target state="translated">서버 그룹 이름</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.server.group.name.validation.description">
+        <source xml:lang="en">Server group name must consist of lower case alphanumeric characters or '-', start with a letter, end with an alphanumeric character, and be 11 characters or fewer in length.</source>
+        <target state="translated">서버 그룹 이름은 소문자 영숫자 또는 '-'로 구성되어야 하며 문자로 시작하고 영숫자로 끝나며 길이가 11자 이하여야 합니다.</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.server.group.workers.label">
+        <source xml:lang="en">Number of workers</source>
+        <target state="translated">작업자 수</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.server.group.workers.description">
+        <source xml:lang="en">The number of worker nodes to provision in a sharded cluster, or zero (the default) for single-node Postgres.</source>
+        <target state="translated">분할된 클러스터에서 프로비전할 작업자 노드 수 또는 단일 노드 Postgres의 경우 0(기본값)입니다.</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.server.group.port">
+        <source xml:lang="en">Port</source>
+        <target state="translated">포트</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.server.group.engine.version">
+        <source xml:lang="en">Engine Version</source>
+        <target state="translated">엔진 버전</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.server.group.extensions.label">
+        <source xml:lang="en">Extensions</source>
+        <target state="translated">확장</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.server.group.extensions.description">
+        <source xml:lang="en">A comma-separated list of the Postgres extensions that should be loaded on startup. Please refer to the postgres documentation for supported values.</source>
+        <target state="translated">시작 시 로드해야 하는 Postgres 확장의 쉼표로 구분된 목록입니다. 지원되는 값은 Postgres 설명서를 참조하세요.</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.server.group.volume.size.data.label">
+        <source xml:lang="en">Volume Size GB (Data)</source>
+        <target state="translated">볼륨 크기 GB(데이터)</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.server.group.volume.size.data.description">
+        <source xml:lang="en">The size of the storage volume to be used for data in GB.</source>
+        <target state="translated">데이터에 사용할 스토리지 볼륨의 크기(GB)입니다.</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.server.group.volume.size.logs.label">
+        <source xml:lang="en">Volume Size GB (Logs)</source>
+        <target state="translated">볼륨 크기 GB(로그)</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.server.group.volume.size.logs.description">
+        <source xml:lang="en">The size of the storage volume to be used for logs in GB.</source>
+        <target state="translated">로그에 사용할 저장소 볼륨의 크기(GB)입니다.</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.server.group.volume.size.backups.label">
+        <source xml:lang="en">Volume Size GB (Backups)</source>
+        <target state="translated">볼륨 크기 GB(백업)</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.server.group.volume.size.backups.description">
+        <source xml:lang="en">The size of the storage volume to be used for backups in GB.</source>
+        <target state="translated">백업에 사용할 저장소 볼륨의 크기(GB)입니다.</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.server.group.workers.cores.request.label">
+        <source xml:lang="en">CPU request (cores per node)</source>
+        <target state="translated">CPU 요청(노드당 코어 수)</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.server.group.workers.cores.request.description">
+        <source xml:lang="en">The minimum number of CPU cores that must be available per node to schedule the service. Fractional cores are supported.</source>
+        <target state="translated">서비스를 예약하기 위해 노드당 사용할 수 있어야 하는 최소 CPU 코어 수입니다. 소수 코어가 지원됩니다.</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.server.group.workers.cores.limit.label">
+        <source xml:lang="en">CPU limit (cores per node)</source>
+        <target state="translated">CPU 제한(노드당 코어 수)</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.server.group.workers.cores.limit.description">
+        <source xml:lang="en">The maximum number of CPU cores for the Postgres instance that can be used per node. Fractional cores are supported.</source>
+        <target state="translated">노드당 사용할 수 있는 Postgres 인스턴스의 최대 CPU 코어 수입니다. 소수 코어가 지원됩니다.</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.server.group.workers.memory.request.label">
+        <source xml:lang="en">Memory request (GB per node)</source>
+        <target state="translated">메모리 요청(노드당 GB)</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.server.group.workers.memory.request.description">
+        <source xml:lang="en">The memory request of the Postgres instance per node in GB.</source>
+        <target state="translated">노드당 Postgres 인스턴스의 메모리 요청(GB)입니다.</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.server.group.workers.memory.limit.label">
+        <source xml:lang="en">Memory limit (GB per node)</source>
+        <target state="translated">메모리 제한(노드당 GB)</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.server.group.workers.memory.limit.description">
+        <source xml:lang="en">The memory limit of the Postgres instance per node in GB.</source>
+        <target state="translated">노드당 Postgres 인스턴스의 메모리 제한(GB)입니다.</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.server.group.coordinator.cores.request.label">
+        <source xml:lang="en">CPU request</source>
+        <target state="translated">CPU 요청</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.server.group.coordinator.cores.request.description">
+        <source xml:lang="en">The minimum number of CPU cores that must be available on the coordinator node to schedule the service. Fractional cores are supported.</source>
+        <target state="translated">서비스를 예약하기 위해 코디네이터 노드에서 사용할 수 있어야 하는 최소 CPU 코어 수입니다. 소수 코어가 지원됩니다.</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.server.group.coordinator.cores.limit.label">
+        <source xml:lang="en">CPU limit</source>
+        <target state="translated">CPU 제한</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.server.group.coordinator.cores.limit.description">
+        <source xml:lang="en">The maximum number of CPU cores for the Postgres instance that can be used on the coordinator node. Fractional cores are supported.</source>
+        <target state="translated">코디네이터 노드에서 사용할 수 있는 Postgres 인스턴스의 최대 CPU 코어 수입니다. 소수 코어가 지원됩니다.</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.server.group.coordinator.memory.request.label">
+        <source xml:lang="en">Memory request (GB)</source>
+        <target state="translated">메모리 요청(GB)</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.server.group.coordinator.memory.request.description">
+        <source xml:lang="en">The memory request of the Postgres instance on the coordinator node in GB.</source>
+        <target state="translated">코디네이터 노드에 있는 Postgres 인스턴스의 메모리 요청(GB)입니다.</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.server.group.coordinator.memory.limit.label">
+        <source xml:lang="en">Memory limit (GB)</source>
+        <target state="translated">메모리 제한(GB)</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.server.group.coordinator.memory.limit.description">
+        <source xml:lang="en">The memory limit of the Postgres instance on the coordinator node in GB.</source>
+        <target state="translated">코디네이터 노드의 Postgres 인스턴스 메모리 제한(GB)입니다.</target>
+      </trans-unit>
+      <trans-unit id="arc.agreement">
+        <source xml:lang="en">I accept {0} and {1}.</source>
+        <target state="translated">{0} 및 {1}에 동의합니다.</target>
+      </trans-unit>
+      <trans-unit id="arc.agreement.sql.terms.conditions">
+        <source xml:lang="en">Azure SQL managed instance - Azure Arc terms and conditions</source>
+        <target state="translated">Azure SQL Managed Instance - Azure Arc 사용 약관</target>
+      </trans-unit>
+      <trans-unit id="arc.agreement.postgres.terms.conditions">
+        <source xml:lang="en">Azure Arc-enabled PostgreSQL Hyperscale terms and conditions</source>
+        <target state="translated">Azure Arc 지원 PostgreSQL 하이퍼스케일 사용 약관</target>
+      </trans-unit>
+      <trans-unit id="should.be.integer">
+        <source xml:lang="en">Value must be an integer</source>
+        <target state="translated">값은 정수여야 함</target>
+      </trans-unit>
+      <trans-unit id="worker.node.count.should.not.be.one">
+        <source xml:lang="en">Value of 1 is not supported.</source>
+        <target state="translated">값 1은 지원되지 않습니다.</target>
+      </trans-unit>
+      <trans-unit id="requested.cores.less.than.or.equal.to.cores.limit">
+        <source xml:lang="en">Requested cores must be less than or equal to cores limit</source>
+        <target state="translated">요청된 코어는 코어 제한보다 작거나 같아야 합니다.</target>
+      </trans-unit>
+      <trans-unit id="cores.limit.greater.than.or.equal.to.requested.cores">
+        <source xml:lang="en">Cores limit must be greater than or equal to requested cores</source>
+        <target state="translated">코어 제한은 요청된 코어보다 크거나 같아야 합니다.</target>
+      </trans-unit>
+      <trans-unit id="requested.memory.less.than.or.equal.to.memory.limit">
+        <source xml:lang="en">Requested memory must be less than or equal to memory limit</source>
+        <target state="translated">요청한 메모리는 메모리 제한보다 작거나 같아야 합니다.</target>
+      </trans-unit>
+      <trans-unit id="memory.limit.greater.than.or.equal.to.requested.memory">
+        <source xml:lang="en">Memory limit must be greater than or equal to requested memory</source>
+        <target state="translated">메모리 제한은 요청된 메모리보다 크거나 같아야 합니다.</target>
+      </trans-unit>
+      <trans-unit id="arc.agreement.sql.help.text">
+        <source xml:lang="en">Azure Arc enabled Managed Instance provides SQL Server access and feature compatibility that can be deployed on the infrastructure of your choice. While this service is in preview, it has some feature limitations compared to SQL Managed Instance on Azure. {0}</source>
+        <target state="translated">Azure Arc 지원 Managed Instance는 원하는 인프라에 배포할 수 있는 SQL Server 액세스 및 기능 호환성을 제공합니다. 이 서비스는 미리 보기 상태이지만 Azure의 SQL Managed Instance에 비해 몇 가지 기능 제한이 있습니다. {0}</target>
+      </trans-unit>
+      <trans-unit id="arc.agreement.sql.help.text.learn.more">
+        <source xml:lang="en">Learn more</source>
+        <target state="translated">자세히 알아보기</target>
+      </trans-unit>
+      <trans-unit id="arc.agreement.sql.help.text.learn.more.ariaLabel">
+        <source xml:lang="en">Learn more about Azure Arc enabled Managed Instance</source>
+        <target state="translated">Azure Arc 지원 Managed Instance 대해 자세히 알아보기</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/arc/dist/localizedConstants" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="arc.arcDeploymentDeprecation">
+        <source xml:lang="en">The Arc Deployment extension has been replaced by the Arc extension and has been uninstalled.</source>
+        <target state="translated">Arc 배포 확장이 Arc 확장으로 대체되었으며 제거되었습니다.</target>
+      </trans-unit>
+      <trans-unit id="arc.controllerDashboard">
+        <source xml:lang="en">Azure Arc Data Controller Dashboard (Preview) - {0}</source>
+        <target state="translated">Azure Arc 데이터 컨트롤러 대시보드(미리 보기) - {0}</target>
+      </trans-unit>
+      <trans-unit id="arc.miaaDashboard">
+        <source xml:lang="en">SQL managed instance - Azure Arc Dashboard (Preview) - {0}</source>
+        <target state="translated">Azure SQL Managed Instance - Azure Arc(미리 보기) - {0}</target>
+      </trans-unit>
+      <trans-unit id="arc.postgresDashboard">
+        <source xml:lang="en">PostgreSQL Hyperscale - Azure Arc Dashboard (Preview) - {0}</source>
+        <target state="translated">PostgreSQL 하이퍼스케일 - Azure Arc 대시보드(미리 보기) - {0}</target>
+      </trans-unit>
+      <trans-unit id="arc.dataControllersType">
+        <source xml:lang="en">Azure Arc Data Controller</source>
+        <target state="translated">Azure Arc 데이터 컨트롤러</target>
+      </trans-unit>
+      <trans-unit id="arc.pgSqlType">
+        <source xml:lang="en">PostgreSQL Hyperscale - Azure Arc</source>
+        <target state="translated">PostgreSQL 하이퍼스케일 – Azure Arc</target>
+      </trans-unit>
+      <trans-unit id="arc.miaaType">
+        <source xml:lang="en">SQL managed instance - Azure Arc</source>
+        <target state="translated">SQL 관리형 인스턴스 - Azure Arc</target>
+      </trans-unit>
+      <trans-unit id="arc.overview">
+        <source xml:lang="en">Overview</source>
+        <target state="translated">개요</target>
+      </trans-unit>
+      <trans-unit id="arc.connectionStrings">
+        <source xml:lang="en">Connection Strings</source>
+        <target state="translated">연결 문자열</target>
+      </trans-unit>
+      <trans-unit id="arc.preloaded Extensions">
+        <source xml:lang="en">Preloaded Extensions</source>
+        <target state="translated">미리 로드된 확장</target>
+      </trans-unit>
+      <trans-unit id="arc.networking">
+        <source xml:lang="en">Networking</source>
+        <target state="translated">네트워킹</target>
+      </trans-unit>
+      <trans-unit id="arc.properties">
+        <source xml:lang="en">Properties</source>
+        <target state="translated">속성</target>
+      </trans-unit>
+      <trans-unit id="arc.settings">
+        <source xml:lang="en">Settings</source>
+        <target state="translated">설정</target>
+      </trans-unit>
+      <trans-unit id="arc.security">
+        <source xml:lang="en">Security</source>
+        <target state="translated">보안</target>
+      </trans-unit>
+      <trans-unit id="arc.computeAndStorage">
+        <source xml:lang="en">Compute + Storage</source>
+        <target state="translated">컴퓨팅 + 스토리지</target>
+      </trans-unit>
+      <trans-unit id="arc.coordinatorNodeParameters">
+        <source xml:lang="en">Coordinator Node Parameters</source>
+        <target state="translated">코디네이터 노드 매개 변수</target>
+      </trans-unit>
+      <trans-unit id="arc.workerNodeParameters">
+        <source xml:lang="en">Worker Node Parameters</source>
+        <target state="translated">작업자 노드 매개 변수</target>
+      </trans-unit>
+      <trans-unit id="arc.compute">
+        <source xml:lang="en">Compute</source>
+        <target state="translated">컴퓨팅</target>
+      </trans-unit>
+      <trans-unit id="arc.backup">
+        <source xml:lang="en">Backup</source>
+        <target state="translated">백업</target>
+      </trans-unit>
+      <trans-unit id="arc.newSupportRequest">
+        <source xml:lang="en">New support request</source>
+        <target state="translated">새 지원 요청</target>
+      </trans-unit>
+      <trans-unit id="arc.diagnoseAndSolveProblems">
+        <source xml:lang="en">Diagnose and solve problems</source>
+        <target state="translated">문제 진단 및 해결</target>
+      </trans-unit>
+      <trans-unit id="arc.supportAndTroubleshooting">
+        <source xml:lang="en">Support + troubleshooting</source>
+        <target state="translated">지원 + 문제 해결</target>
+      </trans-unit>
+      <trans-unit id="arc.resourceHealth">
+        <source xml:lang="en">Resource health</source>
+        <target state="translated">리소스 상태</target>
+      </trans-unit>
+      <trans-unit id="arc.parameterName">
+        <source xml:lang="en">Parameter Name</source>
+        <target state="translated">매개 변수 이름</target>
+      </trans-unit>
+      <trans-unit id="arc.value">
+        <source xml:lang="en">Value</source>
+        <target state="translated">값</target>
+      </trans-unit>
+      <trans-unit id="arc.createNew">
+        <source xml:lang="en">New Instance</source>
+        <target state="translated">새 인스턴스</target>
+      </trans-unit>
+      <trans-unit id="arc.delete">
+        <source xml:lang="en">Delete</source>
+        <target state="translated">삭제</target>
+      </trans-unit>
+      <trans-unit id="arc.learnMore">
+        <source xml:lang="en">Learn More.</source>
+        <target state="translated">자세히 알아보세요.</target>
+      </trans-unit>
+      <trans-unit id="arc.drop">
+        <source xml:lang="en">Drop</source>
+        <target state="translated">삭제</target>
+      </trans-unit>
+      <trans-unit id="arc.save">
+        <source xml:lang="en">Save</source>
+        <target state="translated">저장</target>
+      </trans-unit>
+      <trans-unit id="arc.discard">
+        <source xml:lang="en">Discard</source>
+        <target state="translated">삭제</target>
+      </trans-unit>
+      <trans-unit id="arc.resetPassword">
+        <source xml:lang="en">Reset Password</source>
+        <target state="translated">암호 재설정</target>
+      </trans-unit>
+      <trans-unit id="arc.addExtensions">
+        <source xml:lang="en">Add extensions</source>
+        <target state="translated">확장 추가</target>
+      </trans-unit>
+      <trans-unit id="arc.dropExtensions">
+        <source xml:lang="en">Drop extensions</source>
+        <target state="translated">확장 삭제</target>
+      </trans-unit>
+      <trans-unit id="arc.openInAzurePortal">
+        <source xml:lang="en">Open in Azure Portal</source>
+        <target state="translated">Azure Portal에서 열기</target>
+      </trans-unit>
+      <trans-unit id="arc.resourceGroup">
+        <source xml:lang="en">Resource Group</source>
+        <target state="translated">리소스 그룹</target>
+      </trans-unit>
+      <trans-unit id="arc.region">
+        <source xml:lang="en">Region</source>
+        <target state="translated">지역</target>
+      </trans-unit>
+      <trans-unit id="arc.subscriptionId">
+        <source xml:lang="en">Subscription ID</source>
+        <target state="translated">구독 ID</target>
+      </trans-unit>
+      <trans-unit id="arc.state">
+        <source xml:lang="en">State</source>
+        <target state="translated">상태</target>
+      </trans-unit>
+      <trans-unit id="arc.connectionMode">
+        <source xml:lang="en">Connection Mode</source>
+        <target state="translated">연결 모드</target>
+      </trans-unit>
+      <trans-unit id="arc.namespace">
+        <source xml:lang="en">Namespace</source>
+        <target state="translated">네임스페이스</target>
+      </trans-unit>
+      <trans-unit id="arc.externalEndpoint">
+        <source xml:lang="en">External Endpoint</source>
+        <target state="translated">외부 엔드포인트</target>
+      </trans-unit>
+      <trans-unit id="arc.name">
+        <source xml:lang="en">Name</source>
+        <target state="translated">이름</target>
+      </trans-unit>
+      <trans-unit id="arc.type">
+        <source xml:lang="en">Type</source>
+        <target state="translated">형식</target>
+      </trans-unit>
+      <trans-unit id="arc.status">
+        <source xml:lang="en">Status</source>
+        <target state="translated">상태</target>
+      </trans-unit>
+      <trans-unit id="arc.miaaAdmin">
+        <source xml:lang="en">Managed instance admin</source>
+        <target state="translated">관리되는 인스턴스 관리자</target>
+      </trans-unit>
+      <trans-unit id="arc.controllerEndpoint">
+        <source xml:lang="en">Controller endpoint</source>
+        <target state="translated">컨트롤러 엔드포인트</target>
+      </trans-unit>
+      <trans-unit id="arc.extensionName">
+        <source xml:lang="en">Extension name</source>
+        <target state="translated">확장 이름</target>
+      </trans-unit>
+      <trans-unit id="arc.extensionsDescription">
+        <source xml:lang="en">PostgreSQL provides the ability to extend the functionality of your database by using extensions. Extensions allow for bundling multiple related SQL objects together in a single package that can be loaded or removed from your database with a single command. After being loaded in the database, extensions can function like built-in features.</source>
+        <target state="translated">PostgreSQL은 확장을 사용하여 데이터베이스의 기능을 확장할 수 있도록 합니다. 확장을 사용하면 단일 명령으로 데이터베이스에서 로드하거나 제거할 수 있는 단일 패키지에서 여러 관련 SQL 개체를 함께 묶을 수 있습니다. 데이터베이스에 로드된 후 확장은 기본 제공 기능처럼 작동할 수 있습니다.</target>
+      </trans-unit>
+      <trans-unit id="arc.extensionsFunction">
+        <source xml:lang="en">Some extensions must be loaded into PostgreSQL at startup time before they can be used. These preloaded extensions can be viewed and edited  below.</source>
+        <target state="translated">일부 확장을 사용하려면 시작 시 PostgreSQL에 로드해야 합니다. 이러한 미리 로드된 확장은 아래에서 보고 편집할 수 있습니다.</target>
+      </trans-unit>
+      <trans-unit id="arc.extensionsLearnMore">
+        <source xml:lang="en">Learn more about PostgreSQL extensions.</source>
+        <target state="translated">PostgreSQL 확장에 대해 자세히 알아보세요.</target>
+      </trans-unit>
+      <trans-unit id="arc.extensionsTableLoading">
+        <source xml:lang="en">Table of preloaded extensions are loading.</source>
+        <target state="translated">미리 로드된 확장의 테이블이 로드되고 있습니다.</target>
+      </trans-unit>
+      <trans-unit id="arc.extensionsTableLabel">
+        <source xml:lang="en">Table of preloaded extensions.</source>
+        <target state="translated">미리 로드된 확장의 테이블입니다.</target>
+      </trans-unit>
+      <trans-unit id="arc.extensionsTableLoadingComplete">
+        <source xml:lang="en">Preloaded extensions can now be viewed.</source>
+        <target state="translated">이제 미리 로드된 확장을 볼 수 있습니다.</target>
+      </trans-unit>
+      <trans-unit id="arc.extensionsAddList">
+        <source xml:lang="en">Extensions</source>
+        <target state="translated">확장</target>
+      </trans-unit>
+      <trans-unit id="arc.extensionsAddDialog">
+        <source xml:lang="en">PostgreSQL provides the ability to extend the functionality of your database by using extensions.</source>
+        <target state="translated">PostgreSQL은 확장을 사용하여 데이터베이스의 기능을 확장할 수 있도록 합니다.</target>
+      </trans-unit>
+      <trans-unit id="arc.dataController">
+        <source xml:lang="en">Data controller</source>
+        <target state="translated">데이터 컨트롤러</target>
+      </trans-unit>
+      <trans-unit id="arc.kibanaDashboard">
+        <source xml:lang="en">Kibana Dashboard</source>
+        <target state="translated">Kibana 대시보드</target>
+      </trans-unit>
+      <trans-unit id="arc.grafanaDashboard">
+        <source xml:lang="en">Grafana Dashboard</source>
+        <target state="translated">Grafana 대시보드</target>
+      </trans-unit>
+      <trans-unit id="arc.kibanaDashboardDescription">
+        <source xml:lang="en">Dashboard for viewing logs</source>
+        <target state="translated">로그를 보기 위한 대시보드</target>
+      </trans-unit>
+      <trans-unit id="arc.grafanaDashboardDescription">
+        <source xml:lang="en">Dashboard for viewing metrics</source>
+        <target state="translated">메트릭을 보기 위한 대시보드</target>
+      </trans-unit>
+      <trans-unit id="arc.serviceEndpoints">
+        <source xml:lang="en">Service endpoints</source>
+        <target state="translated">서비스 엔드포인트</target>
+      </trans-unit>
+      <trans-unit id="arc.databases">
+        <source xml:lang="en">Databases</source>
+        <target state="translated">데이터베이스</target>
+      </trans-unit>
+      <trans-unit id="arc.endpoint">
+        <source xml:lang="en">Endpoint</source>
+        <target state="translated">엔드포인트</target>
+      </trans-unit>
+      <trans-unit id="arc.description">
+        <source xml:lang="en">Description</source>
+        <target state="translated">설명</target>
+      </trans-unit>
+      <trans-unit id="arc.yes">
+        <source xml:lang="en">Yes</source>
+        <target state="translated">예</target>
+      </trans-unit>
+      <trans-unit id="arc.no">
+        <source xml:lang="en">No</source>
+        <target state="translated">아니요</target>
+      </trans-unit>
+      <trans-unit id="arc.feedback">
+        <source xml:lang="en">Feedback</source>
+        <target state="translated">피드백</target>
+      </trans-unit>
+      <trans-unit id="arc.selectConnectionString">
+        <source xml:lang="en">Select from available client connection strings below.</source>
+        <target state="translated">아래에서 사용 가능한 클라이언트 연결 문자열 중에서 선택합니다.</target>
+      </trans-unit>
+      <trans-unit id="arc.addingWorkerNodes">
+        <source xml:lang="en">adding worker nodes</source>
+        <target state="translated">작업자 노드 추가</target>
+      </trans-unit>
+      <trans-unit id="arc.workerNodesDescription">
+        <source xml:lang="en">Expand your server group and scale your database by adding worker nodes.</source>
+        <target state="translated">작업자 노드를 추가하여 서버 그룹을 확장하고 데이터베이스 크기를 조정합니다.</target>
+      </trans-unit>
+      <trans-unit id="arc.workerNodesConfigurationInformation">
+        <source xml:lang="en">You can configure the number of CPU cores and storage size that will apply to all worker nodes. Adjust the number of CPU cores and memory settings for your server group. To reset the requests and/or limits, pass in empty value.</source>
+        <target state="translated">모든 작업자 노드에 적용되는 CPU 코어 수와 스토리지 크기를 구성할 수 있습니다. 서버 그룹의 CPU 코어 수 및 메모리 설정을 조정합니다. 요청 및/또는 제한을 초기화하려면 빈 값을 전달하세요.</target>
+      </trans-unit>
+      <trans-unit id="arc.coordinatorNodeConfigurationInformation">
+        <source xml:lang="en">You can configure the number of CPU cores and storage size that will apply to the coordinator node. Adjust the number of CPU cores and memory settings for your server group. To reset the requests and/or limits, pass in empty value.</source>
+        <target state="translated">코디네이터 노드에 적용되는 CPU 코어 수와 스토리지 크기를 구성할 수 있습니다. 서버 그룹의 CPU 코어 수 및 메모리 설정을 조정합니다. 요청 및/또는 제한을 초기화하려면 빈 값을 전달하세요.</target>
+      </trans-unit>
+      <trans-unit id="arc.workerNodeInformation">
+        <source xml:lang="en">It is possible to scale in and out your server group by reducing or increasing the number of worker nodes. The value must be 0 or greater than 1.</source>
+        <target state="translated">작업자 노드 수를 줄이거나 늘려서 서버 그룹을 확장 및 축소할 수 있습니다. 값은 0이거나 1보다 커야 합니다.</target>
+      </trans-unit>
+      <trans-unit id="arc.workerOneNodeValidationMessage">
+        <source xml:lang="en">Value of 1 is not supported.</source>
+        <target state="translated">값 1은 지원되지 않습니다.</target>
+      </trans-unit>
+      <trans-unit id="arc.vCores">
+        <source xml:lang="en">vCores</source>
+        <target state="translated">vCore</target>
+      </trans-unit>
+      <trans-unit id="arc.ram">
+        <source xml:lang="en">RAM</source>
+        <target state="translated">RAM</target>
+      </trans-unit>
+      <trans-unit id="arc.refresh">
+        <source xml:lang="en">Refresh</source>
+        <target state="translated">새로 고침</target>
+      </trans-unit>
+      <trans-unit id="arc.resetAllToDefault">
+        <source xml:lang="en">Reset all to default</source>
+        <target state="translated">모두 기본값으로 다시 설정</target>
+      </trans-unit>
+      <trans-unit id="arc.resetToDefault">
+        <source xml:lang="en">Reset to default</source>
+        <target state="translated">기본값으로 다시 설정</target>
+      </trans-unit>
+      <trans-unit id="arc.troubleshoot">
+        <source xml:lang="en">Troubleshoot</source>
+        <target state="translated">문제 해결</target>
+      </trans-unit>
+      <trans-unit id="arc.clickTheNewSupportRequestButton">
+        <source xml:lang="en">Click the new support request button to file a support request in the Azure Portal.</source>
+        <target state="translated">[새 지원 요청] 단추를 클릭하여 Azure Portal에서 지원 요청을 제출합니다.</target>
+      </trans-unit>
+      <trans-unit id="arc.supportRequestNote">
+        <source xml:lang="en">Note that the resource configuration must have been uploaded to Azure first in order to open a support request.</source>
+        <target state="translated">지원 요청을 열려면 먼저 리소스 구성을 Azure에 업로드해야 합니다.</target>
+      </trans-unit>
+      <trans-unit id="arc.running">
+        <source xml:lang="en">Running</source>
+        <target state="translated">실행</target>
+      </trans-unit>
+      <trans-unit id="arc.ready">
+        <source xml:lang="en">Ready</source>
+        <target state="translated">준비</target>
+      </trans-unit>
+      <trans-unit id="arc.notReady">
+        <source xml:lang="en">Not Ready</source>
+        <target state="translated">준비되지 않음</target>
+      </trans-unit>
+      <trans-unit id="arc.pending">
+        <source xml:lang="en">Pending</source>
+        <target state="translated">보류 중</target>
+      </trans-unit>
+      <trans-unit id="arc.failed">
+        <source xml:lang="en">Failed</source>
+        <target state="translated">실패</target>
+      </trans-unit>
+      <trans-unit id="arc.unknown">
+        <source xml:lang="en">Unknown</source>
+        <target state="translated">알 수 없음</target>
+      </trans-unit>
+      <trans-unit id="arc.direct">
+        <source xml:lang="en">Direct</source>
+        <target state="translated">직접</target>
+      </trans-unit>
+      <trans-unit id="arc.indirect">
+        <source xml:lang="en">Indirect</source>
+        <target state="translated">간접</target>
+      </trans-unit>
+      <trans-unit id="arc.loading">
+        <source xml:lang="en">Loading...</source>
+        <target state="translated">로드하는 중...</target>
+      </trans-unit>
+      <trans-unit id="arc.refreshToEnterCredentials">
+        <source xml:lang="en">Refresh node to enter credentials</source>
+        <target state="translated">자격 증명을 입력하려면 노드 새로 고침</target>
+      </trans-unit>
+      <trans-unit id="arc.noInstancesAvailable">
+        <source xml:lang="en">No instances available</source>
+        <target state="translated">인스턴스를 사용할 수 없음</target>
+      </trans-unit>
+      <trans-unit id="arc.connecToServer">
+        <source xml:lang="en">Connect to Server</source>
+        <target state="translated">서버에 연결</target>
+      </trans-unit>
+      <trans-unit id="arc.connectToController">
+        <source xml:lang="en">Connect to Existing Controller</source>
+        <target state="translated">기존 컨트롤러에 연결</target>
+      </trans-unit>
+      <trans-unit id="arc.connectToMSSql">
+        <source xml:lang="en">Connect to SQL managed instance - Azure Arc ({0})</source>
+        <target state="translated">SQL Managed Instance에 연결 - Azure Arc({0})</target>
+      </trans-unit>
+      <trans-unit id="arc.connectToPGSql">
+        <source xml:lang="en">Connect to PostgreSQL Hyperscale - Azure Arc ({0})</source>
+        <target state="translated">PostgreSQL 하이퍼스케일에 연결 - Azure Arc({0})</target>
+      </trans-unit>
+      <trans-unit id="arc.passwordToController">
+        <source xml:lang="en">Provide Password to Controller</source>
+        <target state="translated">컨트롤러에 암호 제공</target>
+      </trans-unit>
+      <trans-unit id="arc.controllerUrl">
+        <source xml:lang="en">Controller URL</source>
+        <target state="translated">컨트롤러 URL</target>
+      </trans-unit>
+      <trans-unit id="arc.controllerUrlPlaceholder">
+        <source xml:lang="en">https://&lt;IP or hostname&gt;:&lt;port&gt;</source>
+        <target state="translated">https://&lt;IP 또는 호스트 이름&gt;:&lt;port&gt;</target>
+      </trans-unit>
+      <trans-unit id="arc.controllerUrlDescription">
+        <source xml:lang="en">The Controller URL is necessary if there are multiple clusters with the same namespace - this should generally not be necessary.</source>
+        <target state="translated">동일한 네임스페이스를 사용하는 클러스터가 여러 개 있는 경우 컨트롤러 URL이 필요합니다. 일반적으로 필요하지 않습니다.</target>
+      </trans-unit>
+      <trans-unit id="arc.serverEndpoint">
+        <source xml:lang="en">Server Endpoint</source>
+        <target state="translated">서버 엔드포인트</target>
+      </trans-unit>
+      <trans-unit id="arc.controllerName">
+        <source xml:lang="en">Name</source>
+        <target state="translated">이름</target>
+      </trans-unit>
+      <trans-unit id="arc.controllerNameDescription">
+        <source xml:lang="en">The name to display in the tree view, this is not applied to the controller itself.</source>
+        <target state="translated">트리 뷰에 표시할 이름이며 컨트롤러 자체에 적용되지 않습니다.</target>
+      </trans-unit>
+      <trans-unit id="arc.controllerKubeConfig">
+        <source xml:lang="en">Kube Config File Path</source>
+        <target state="translated">Kube 구성 파일 경로</target>
+      </trans-unit>
+      <trans-unit id="arc.controllerClusterContext">
+        <source xml:lang="en">Cluster Context</source>
+        <target state="translated">클러스터 컨텍스트</target>
+      </trans-unit>
+      <trans-unit id="arc.defaultControllerName">
+        <source xml:lang="en">arc-dc</source>
+        <target state="translated">arc-dc</target>
+      </trans-unit>
+      <trans-unit id="arc.postgresProviderName">
+        <source xml:lang="en">PGSQL</source>
+        <target state="translated">PGSQL</target>
+      </trans-unit>
+      <trans-unit id="arc.miaaProviderName">
+        <source xml:lang="en">MSSQL</source>
+        <target state="translated">MSSQL</target>
+      </trans-unit>
+      <trans-unit id="arc.controllerUsername">
+        <source xml:lang="en">Controller Username</source>
+        <target state="translated">컨트롤러 사용자 이름</target>
+      </trans-unit>
+      <trans-unit id="arc.controllerPassword">
+        <source xml:lang="en">Controller Password</source>
+        <target state="translated">컨트롤러 암호</target>
+      </trans-unit>
+      <trans-unit id="arc.username">
+        <source xml:lang="en">Username</source>
+        <target state="translated">사용자 이름</target>
+      </trans-unit>
+      <trans-unit id="arc.password">
+        <source xml:lang="en">Password</source>
+        <target state="translated">암호</target>
+      </trans-unit>
+      <trans-unit id="arc.rememberPassword">
+        <source xml:lang="en">Remember Password</source>
+        <target state="translated">암호 저장</target>
+      </trans-unit>
+      <trans-unit id="arc.connect">
+        <source xml:lang="en">Connect</source>
+        <target state="translated">연결</target>
+      </trans-unit>
+      <trans-unit id="arc.cancel">
+        <source xml:lang="en">Cancel</source>
+        <target state="translated">취소</target>
+      </trans-unit>
+      <trans-unit id="arc.ok">
+        <source xml:lang="en">Ok</source>
+        <target state="translated">확인</target>
+      </trans-unit>
+      <trans-unit id="arc.on">
+        <source xml:lang="en">On</source>
+        <target state="translated">켜짐</target>
+      </trans-unit>
+      <trans-unit id="arc.off">
+        <source xml:lang="en">Off</source>
+        <target state="translated">끄기</target>
+      </trans-unit>
+      <trans-unit id="arc.notConfigured">
+        <source xml:lang="en">Not Configured</source>
+        <target state="translated">구성되지 않음</target>
+      </trans-unit>
+      <trans-unit id="arc.online">
+        <source xml:lang="en">Online</source>
+        <target state="translated">온라인</target>
+      </trans-unit>
+      <trans-unit id="arc.offline">
+        <source xml:lang="en">Offline</source>
+        <target state="translated">오프라인</target>
+      </trans-unit>
+      <trans-unit id="arc.restoring">
+        <source xml:lang="en">Restoring</source>
+        <target state="translated">복원</target>
+      </trans-unit>
+      <trans-unit id="arc.recovering">
+        <source xml:lang="en">Recovering</source>
+        <target state="translated">복구 중</target>
+      </trans-unit>
+      <trans-unit id="arc.recoveringPending">
+        <source xml:lang="en">Recovery Pending</source>
+        <target state="translated">복구 보류 중</target>
+      </trans-unit>
+      <trans-unit id="arc.suspect">
+        <source xml:lang="en">Suspect</source>
+        <target state="translated">주의 대상</target>
+      </trans-unit>
+      <trans-unit id="arc.emergency">
+        <source xml:lang="en">Emergency</source>
+        <target state="translated">비상</target>
+      </trans-unit>
+      <trans-unit id="arc.coordinatorEndpoint">
+        <source xml:lang="en">Coordinator endpoint</source>
+        <target state="translated">코디네이터 엔드포인트</target>
+      </trans-unit>
+      <trans-unit id="arc.postgresAdminUsername">
+        <source xml:lang="en">Admin username</source>
+        <target state="translated">관리자 사용자 이름</target>
+      </trans-unit>
+      <trans-unit id="arc.nodeConfiguration">
+        <source xml:lang="en">Node configuration</source>
+        <target state="translated">노드 구성</target>
+      </trans-unit>
+      <trans-unit id="arc.postgresVersion">
+        <source xml:lang="en">PostgreSQL version</source>
+        <target state="translated">PostgreSQL 버전</target>
+      </trans-unit>
+      <trans-unit id="arc.serverGroupType">
+        <source xml:lang="en">Server group type</source>
+        <target state="translated">서버 그룹 유형</target>
+      </trans-unit>
+      <trans-unit id="arc.serverGroupNodes">
+        <source xml:lang="en">Server group nodes</source>
+        <target state="translated">서버 그룹 노드</target>
+      </trans-unit>
+      <trans-unit id="arc.fullyQualifiedDomain">
+        <source xml:lang="en">Fully qualified domain</source>
+        <target state="translated">정규화된 도메인</target>
+      </trans-unit>
+      <trans-unit id="arc.postgresArcProductName">
+        <source xml:lang="en">Azure Database for PostgreSQL - Azure Arc</source>
+        <target state="translated">Azure Database for PostgreSQL - Azure Arc</target>
+      </trans-unit>
+      <trans-unit id="arc.coordinator">
+        <source xml:lang="en">Coordinator</source>
+        <target state="translated">코디네이터</target>
+      </trans-unit>
+      <trans-unit id="arc.worker">
+        <source xml:lang="en">Worker</source>
+        <target state="translated">작업자</target>
+      </trans-unit>
+      <trans-unit id="arc.monitor">
+        <source xml:lang="en">Monitor</source>
+        <target state="translated">모니터</target>
+      </trans-unit>
+      <trans-unit id="arc.available">
+        <source xml:lang="en">Available</source>
+        <target state="translated">사용 가능</target>
+      </trans-unit>
+      <trans-unit id="arc.issuesDetected">
+        <source xml:lang="en">Issues Detected</source>
+        <target state="translated">문제 검색됨</target>
+      </trans-unit>
+      <trans-unit id="arc.newDatabase">
+        <source xml:lang="en">New Database</source>
+        <target state="translated">새 데이터베이스</target>
+      </trans-unit>
+      <trans-unit id="arc.databaseName">
+        <source xml:lang="en">Database name</source>
+        <target state="translated">데이터베이스 이름</target>
+      </trans-unit>
+      <trans-unit id="arc.enterNewPassword">
+        <source xml:lang="en">Enter a new password</source>
+        <target state="translated">새 암호 입력</target>
+      </trans-unit>
+      <trans-unit id="arc.confirmNewPassword">
+        <source xml:lang="en">Confirm the new password</source>
+        <target state="translated">새 암호 확인</target>
+      </trans-unit>
+      <trans-unit id="arc.learnAboutPostgresClients">
+        <source xml:lang="en">Learn more about Azure PostgreSQL Hyperscale client interfaces</source>
+        <target state="translated">Azure PostgreSQL 하이퍼스케일 클라이언트 인터페이스에 대한 자세한 정보</target>
+      </trans-unit>
+      <trans-unit id="arc.coordinatorNodeParametersDescription">
+        <source xml:lang="en"> These server parameters of the Coordinator node can be set to custom (non-default) values. Search to find parameters.</source>
+        <target state="translated">코디네이터 노드의 이러한 서버 매개 변수는 사용자 지정(기본값이 아닌) 값으로 설정할 수 있습니다. 검색하여 매개 변수를 찾습니다.</target>
+      </trans-unit>
+      <trans-unit id="arc.workerNodesParametersDescription">
+        <source xml:lang="en"> These server parameters of the Worker nodes can be set to custom (non-default) values. Search to find parameters.</source>
+        <target state="translated"> 작업자 노드의 이러한 서버 매개 변수는 사용자 지정(기본값이 아닌) 값으로 설정할 수 있습니다. 검색하여 매개 변수를 찾습니다.</target>
+      </trans-unit>
+      <trans-unit id="arc.learnAboutNodeParameters">
+        <source xml:lang="en">Learn more about database engine settings for Azure Arc-enabled PostgreSQL Hyperscale</source>
+        <target state="translated">Azure Arc 지원 PostgreSQL 하이퍼스케일의 데이터베이스 엔진 설정에 대한 자세한 정보</target>
+      </trans-unit>
+      <trans-unit id="arc.noNodeParametersFound">
+        <source xml:lang="en">No worker server parameters found...</source>
+        <target state="translated">작업자 서버 매개 변수를 찾을 수 없습니다...</target>
+      </trans-unit>
+      <trans-unit id="arc.searchToFilter">
+        <source xml:lang="en">Search to filter items...</source>
+        <target state="translated">필터링 항목 검색...</target>
+      </trans-unit>
+      <trans-unit id="arc.scalingCompute">
+        <source xml:lang="en">scaling compute vCores and memory.</source>
+        <target state="translated">계산 vCore 및 메모리 크기를 조정합니다.</target>
+      </trans-unit>
+      <trans-unit id="arc.postgresComputeAndStorageDescriptionPartOne">
+        <source xml:lang="en">You can scale your Azure Arc-enabled</source>
+        <target state="translated">Azure Arc 지원의 크기를 조정할 수 있습니다.</target>
+      </trans-unit>
+      <trans-unit id="arc.miaaComputeAndStorageDescriptionPartOne">
+        <source xml:lang="en">You can scale your Azure SQL managed instance - Azure Arc by</source>
+        <target state="translated">Azure SQL Managed Instance - Azure Arc의 크기를 조정할 수 있습니다.</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.computeAndStorageDescriptionPartTwo">
+        <source xml:lang="en">PostgreSQL Hyperscale server group by</source>
+        <target state="translated">PostgreSQL 하이퍼스케일 서버 그룹 기준</target>
+      </trans-unit>
+      <trans-unit id="arc.computeAndStorageDescriptionPartThree">
+        <source xml:lang="en">without downtime and by</source>
+        <target state="translated">가동 중지 시간 없이</target>
+      </trans-unit>
+      <trans-unit id="arc.computeAndStorageDescriptionPartFour">
+        <source xml:lang="en">Before doing so, you need to ensure</source>
+        <target state="translated">이렇게 하려면 먼저 다음을 확인해야 합니다.</target>
+      </trans-unit>
+      <trans-unit id="arc.computeAndStorageDescriptionPartFive">
+        <source xml:lang="en">there are sufficient resources available</source>
+        <target state="translated">사용 가능한 리소스가 충분합니다.</target>
+      </trans-unit>
+      <trans-unit id="arc.resourceHealthDescription">
+        <source xml:lang="en">Resource health can tell you if your resource is running as expected.</source>
+        <target state="translated">리소스 상태는 리소스가 예상대로 실행되고 있는지를 알려줄 수 있습니다.</target>
+      </trans-unit>
+      <trans-unit id="arc.computeAndStorageDescriptionPartSix">
+        <source xml:lang="en">in your Kubernetes cluster to honor this configuration.</source>
+        <target state="translated">Kubernetes 클러스터에서 이 구성을 준수합니다.</target>
+      </trans-unit>
+      <trans-unit id="arc.node">
+        <source xml:lang="en">node</source>
+        <target state="translated">노드</target>
+      </trans-unit>
+      <trans-unit id="arc.nodes">
+        <source xml:lang="en">nodes</source>
+        <target state="translated">노드</target>
+      </trans-unit>
+      <trans-unit id="arc.workerNodes">
+        <source xml:lang="en">Worker Nodes</source>
+        <target state="translated">작업자 노드</target>
+      </trans-unit>
+      <trans-unit id="arc.coordinatorNode">
+        <source xml:lang="en">Coordinator Node</source>
+        <target state="translated">코디네이터 노드</target>
+      </trans-unit>
+      <trans-unit id="arc.storagePerNode">
+        <source xml:lang="en">storage per node</source>
+        <target state="translated">노드당 스토리지</target>
+      </trans-unit>
+      <trans-unit id="arc.workerNodeCount">
+        <source xml:lang="en">Worker node count</source>
+        <target state="translated">작업자 노드 수</target>
+      </trans-unit>
+      <trans-unit id="arc.configurationPerNode">
+        <source xml:lang="en">Configuration (per node)</source>
+        <target state="translated">구성(노드당)</target>
+      </trans-unit>
+      <trans-unit id="arc.configurationCoordinatorNode">
+        <source xml:lang="en">Configuration</source>
+        <target state="translated">구성</target>
+      </trans-unit>
+      <trans-unit id="arc.coresLimit">
+        <source xml:lang="en">CPU limit</source>
+        <target state="translated">CPU 제한</target>
+      </trans-unit>
+      <trans-unit id="arc.workerCoresLimit">
+        <source xml:lang="en">Worker Nodes CPU limit</source>
+        <target state="translated">작업자 노드 CPU 제한</target>
+      </trans-unit>
+      <trans-unit id="arc.coordinatorCoresLimit">
+        <source xml:lang="en">Coordinator Node CPU limit</source>
+        <target state="translated">코디네이터 노드 CPU 제한</target>
+      </trans-unit>
+      <trans-unit id="arc.coresRequest">
+        <source xml:lang="en">CPU request</source>
+        <target state="translated">CPU 요청</target>
+      </trans-unit>
+      <trans-unit id="arc.workerCoresRequest">
+        <source xml:lang="en">Worker Nodes CPU request</source>
+        <target state="translated">작업자 노드 CPU 요청</target>
+      </trans-unit>
+      <trans-unit id="arc.coordinatorCoresRequest">
+        <source xml:lang="en">Coordinator Node CPU request</source>
+        <target state="translated">코디네이터 노드 CPU 요청</target>
+      </trans-unit>
+      <trans-unit id="arc.memoryLimit">
+        <source xml:lang="en">Memory limit (in GB)</source>
+        <target state="translated">메모리 제한(GB)</target>
+      </trans-unit>
+      <trans-unit id="arc.workerMemoryLimit">
+        <source xml:lang="en">Worker Nodes Memory limit (in GB)</source>
+        <target state="translated">작업자 노드 메모리 제한(GB)</target>
+      </trans-unit>
+      <trans-unit id="arc.coordinatorMemoryLimit">
+        <source xml:lang="en">Coordinator Node Memory limit (in GB)</source>
+        <target state="translated">코디네이터 노드 메모리 제한(GB)</target>
+      </trans-unit>
+      <trans-unit id="arc.memoryRequest">
+        <source xml:lang="en">Memory request (in GB)</source>
+        <target state="translated">메모리 요청(GB)</target>
+      </trans-unit>
+      <trans-unit id="arc.workerMemoryRequest">
+        <source xml:lang="en">Worker Nodes Memory request (in GB)</source>
+        <target state="translated">작업자 노드 메모리 요청(GB)</target>
+      </trans-unit>
+      <trans-unit id="arc.coordinatorMemoryRequest">
+        <source xml:lang="en">Coordinator Node Memory request (in GB)</source>
+        <target state="translated">코디네이터 노드 메모리 요청(GB)</target>
+      </trans-unit>
+      <trans-unit id="arc.arcResources">
+        <source xml:lang="en">Azure Arc Resources</source>
+        <target state="translated">Azure Arc 리소스</target>
+      </trans-unit>
+      <trans-unit id="arc.enterANonEmptyPassword">
+        <source xml:lang="en">Enter a non empty password or press escape to exit.</source>
+        <target state="translated">비어 있지 않은 암호를 입력하거나 Esc 키를 눌러 종료합니다.</target>
+      </trans-unit>
+      <trans-unit id="arc.thePasswordsDoNotMatch">
+        <source xml:lang="en">The passwords do not match. Confirm the password or press escape to exit.</source>
+        <target state="translated">암호가 일치하지 않습니다. 암호를 확인하거나 ESC 키를 눌러 종료합니다.</target>
+      </trans-unit>
+      <trans-unit id="arc.passwordReset">
+        <source xml:lang="en">Password reset successfully</source>
+        <target state="translated">암호 재설정 성공</target>
+      </trans-unit>
+      <trans-unit id="arc.condition">
+        <source xml:lang="en">Condition</source>
+        <target state="translated">조건</target>
+      </trans-unit>
+      <trans-unit id="arc.details">
+        <source xml:lang="en">Details</source>
+        <target state="translated">세부 정보</target>
+      </trans-unit>
+      <trans-unit id="arc.lastTransition">
+        <source xml:lang="en">Last transition</source>
+        <target state="translated">마지막 전환</target>
+      </trans-unit>
+      <trans-unit id="arc.noExternalEndpoint">
+        <source xml:lang="en">No External Endpoint has been configured so this information isn't available.</source>
+        <target state="translated">외부 엔드포인트가 구성되지 않았으므로 이 정보를 사용할 수 없습니다.</target>
+      </trans-unit>
+      <trans-unit id="arc.noWorkerPods">
+        <source xml:lang="en">No worker pods in this configuration.</source>
+        <target state="translated">이 구성에는 작업자 Pod가 없습니다.</target>
+      </trans-unit>
+      <trans-unit id="arc.podsReady">
+        <source xml:lang="en">pods ready</source>
+        <target state="translated">Pod 준비</target>
+      </trans-unit>
+      <trans-unit id="arc.podsPresent">
+        <source xml:lang="en">Pods Present</source>
+        <target state="translated">Pod 있음</target>
+      </trans-unit>
+      <trans-unit id="arc.podsUsedDescription">
+        <source xml:lang="en">Select a pod in the dropdown below for detailed health information.</source>
+        <target state="translated">자세한 상태 정보를 보려면 아래 드롭다운에서 Pod를 선택합니다.</target>
+      </trans-unit>
+      <trans-unit id="arc.connectToPostgresDescription">
+        <source xml:lang="en">A connection to the server is required to show and set database engine settings, which will require the PostgreSQL Extension to be installed.</source>
+        <target state="translated">PostgreSQL 확장을 설치해야 하는 데이터베이스 엔진 설정을 표시하고 설정하려면 서버에 연결해야 합니다.</target>
+      </trans-unit>
+      <trans-unit id="arc.postgresExtension">
+        <source xml:lang="en">microsoft.azuredatastudio-postgresql</source>
+        <target state="translated">microsoft.azuredatastudio-postgresql</target>
+      </trans-unit>
+      <trans-unit id="arc.podInitialized">
+        <source xml:lang="en">Pod is initialized.</source>
+        <target state="translated">Pod가 초기화됩니다.</target>
+      </trans-unit>
+      <trans-unit id="arc.podReady">
+        <source xml:lang="en">Pod is ready.</source>
+        <target state="translated">Pod가 준비되었습니다.</target>
+      </trans-unit>
+      <trans-unit id="arc.noPodIssuesDetected">
+        <source xml:lang="en">There aren’t any known issues affecting this PostgreSQL Hyperscale instance.</source>
+        <target state="translated">이 PostgreSQL 하이퍼스케일 인스턴스에 영향을 주는 알려진 문제는 없습니다.</target>
+      </trans-unit>
+      <trans-unit id="arc.podIssuesDetected">
+        <source xml:lang="en">The pods listed below are experiencing issues that may affect performance or availability.</source>
+        <target state="translated">아래에 나열된 Pod에는 성능 또는 가용성에 영향을 줄 수 있는 문제가 있습니다.</target>
+      </trans-unit>
+      <trans-unit id="arc.containerReady">
+        <source xml:lang="en">Pod containers are ready.</source>
+        <target state="translated">Pod 컨테이너가 준비되었습니다.</target>
+      </trans-unit>
+      <trans-unit id="arc.podScheduled">
+        <source xml:lang="en">Pod is schedulable.</source>
+        <target state="translated">Pod를 예약할 수 있습니다.</target>
+      </trans-unit>
+      <trans-unit id="arc.loadingClusterContextCompleted">
+        <source xml:lang="en">Loading cluster contexts completed</source>
+        <target state="translated">클러스터 컨텍스트 로드 완료</target>
+      </trans-unit>
+      <trans-unit id="arc.rangeSetting">
+        <source xml:lang="en">Value is expected to be in the range {0} - {1}</source>
+        <target state="translated">값이 {0}-{1} 범위에 있어야 합니다.</target>
+      </trans-unit>
+      <trans-unit id="arc.databaseCreated">
+        <source xml:lang="en">Database {0} created</source>
+        <target state="translated">데이터베이스 {0} 생성됨</target>
+      </trans-unit>
+      <trans-unit id="arc.deletingInstance">
+        <source xml:lang="en">Deleting instance '{0}'...</source>
+        <target state="translated">인스턴스 '{0}'을(를) 삭제하는 중...</target>
+      </trans-unit>
+      <trans-unit id="arc.installingExtension">
+        <source xml:lang="en">Installing extension '{0}'...</source>
+        <target state="translated">'{0}' 확장을 설치하는 중...</target>
+      </trans-unit>
+      <trans-unit id="arc.extensionInstalled">
+        <source xml:lang="en">Extension '{0}' has been installed.</source>
+        <target state="translated">'{0}' 확장이 설치되었습니다.</target>
+      </trans-unit>
+      <trans-unit id="arc.updatingInstance">
+        <source xml:lang="en">Updating instance '{0}'...</source>
+        <target state="translated">인스턴스 {0} 업데이트 중...</target>
+      </trans-unit>
+      <trans-unit id="arc.instanceDeleted">
+        <source xml:lang="en">Instance '{0}' deleted</source>
+        <target state="translated">인스턴스 '{0}'이(가) 삭제됨</target>
+      </trans-unit>
+      <trans-unit id="arc.instanceUpdated">
+        <source xml:lang="en">Instance '{0}' updated</source>
+        <target state="translated">인스턴스 '{0}'이(가) 업데이트됨</target>
+      </trans-unit>
+      <trans-unit id="arc.extensionsDropped">
+        <source xml:lang="en">Extensions '{0}' dropped</source>
+        <target state="translated">'{0}' 확장을 삭제했습니다.</target>
+      </trans-unit>
+      <trans-unit id="arc.extensionsAdded">
+        <source xml:lang="en">Extensions '{0}' added</source>
+        <target state="translated">확장 '{0}'이(가) 추가됨</target>
+      </trans-unit>
+      <trans-unit id="arc.copiedToClipboard">
+        <source xml:lang="en">{0} copied to clipboard</source>
+        <target state="translated">클립보드에 복사된 {0}</target>
+      </trans-unit>
+      <trans-unit id="arc.clickTheTroubleshootButton">
+        <source xml:lang="en">Click the troubleshoot button to open the Azure Arc {0} troubleshooting notebook.</source>
+        <target state="translated">[문제 해결] 단추를 클릭하여 Azure Arc {0} 문제 해결 Notebook을 엽니다.</target>
+      </trans-unit>
+      <trans-unit id="arc.dataStorage">
+        <source xml:lang="en">{0} data</source>
+        <target state="translated">{0} 데이터</target>
+      </trans-unit>
+      <trans-unit id="arc.logStorage">
+        <source xml:lang="en">{0} log</source>
+        <target state="translated">{0} 로그</target>
+      </trans-unit>
+      <trans-unit id="arc.backupsStorage">
+        <source xml:lang="en">{0} backups</source>
+        <target state="translated">백업 {0}개</target>
+      </trans-unit>
+      <trans-unit id="arc.numVCore">
+        <source xml:lang="en">{0} vCore</source>
+        <target state="translated">vCore {0}</target>
+      </trans-unit>
+      <trans-unit id="arc.numVCores">
+        <source xml:lang="en">{0} vCores</source>
+        <target state="translated">vCore {0}개</target>
+      </trans-unit>
+      <trans-unit id="arc.updated">
+        <source xml:lang="en">Updated {0}</source>
+        <target state="translated">업데이트된 {0}</target>
+      </trans-unit>
+      <trans-unit id="arc.copyConnectionStringToClipboard">
+        <source xml:lang="en">Copy {0} Connection String to clipboard</source>
+        <note>{0} is the name of the type of connection string (e.g. Java)</note>
+        <target state="translated">{0} 연결 문자열을 클립보드에 복사</target>
+      </trans-unit>
+      <trans-unit id="arc.copyValueToClipboard">
+        <source xml:lang="en">Copy {0} to clipboard</source>
+        <note>{0} is the name of the type of value being copied (e.g. Coordinator endpoint)</note>
+        <target state="translated">{0}을(를) 클립보드에 복사</target>
+      </trans-unit>
+      <trans-unit id="arc.pgConnectionRequired">
+        <source xml:lang="en">A connection is required to show and set database engine settings.</source>
+        <target state="translated">데이터베이스 엔진 설정을 표시하고 설정하려면 연결이 필요합니다.</target>
+      </trans-unit>
+      <trans-unit id="arc.miaaConnectionRequired">
+        <source xml:lang="en">A connection is required to list the databases on this instance.</source>
+        <target state="translated">이 인스턴스의 데이터베이스를 나열하려면 연결이 필요합니다.</target>
+      </trans-unit>
+      <trans-unit id="arc.couldNotFindControllerRegistration">
+        <source xml:lang="en">Could not find controller registration.</source>
+        <target state="translated">컨트롤러 등록을 찾을 수 없습니다.</target>
+      </trans-unit>
+      <trans-unit id="arc.dropMultipleExtensions">
+        <source xml:lang="en">Currently dropping another extension, try again once that is completed.</source>
+        <target state="translated">현재 다른 확장을 삭제하고 있습니다. 완료된 후 다시 시도하세요.</target>
+      </trans-unit>
+      <trans-unit id="arc.updateExtensionsFailed">
+        <source xml:lang="en">Editing extensions failed. {0}</source>
+        <target state="translated">확장을 편집하지 못했습니다. {0}</target>
+      </trans-unit>
+      <trans-unit id="arc.refreshFailed">
+        <source xml:lang="en">Refresh failed. {0}</source>
+        <target state="translated">새로 고치지 못했습니다. {0}</target>
+      </trans-unit>
+      <trans-unit id="arc.resetFailed">
+        <source xml:lang="en">Reset failed. {0}</source>
+        <target state="translated">다시 설정하지 못했습니다. {0}</target>
+      </trans-unit>
+      <trans-unit id="arc.openDashboardFailed">
+        <source xml:lang="en">Error opening dashboard. {0}</source>
+        <target state="translated">대시보드를 여는 동안 오류가 발생했습니다. {0}</target>
+      </trans-unit>
+      <trans-unit id="arc.instanceDeletionFailed">
+        <source xml:lang="en">Failed to delete instance {0}. {1}</source>
+        <target state="translated">{0} 인스턴스를 삭제하지 못했습니다. {1}</target>
+      </trans-unit>
+      <trans-unit id="arc.instanceUpdateFailed">
+        <source xml:lang="en">Failed to update instance {0}. {1}</source>
+        <target state="translated">인스턴스 {0}을(를) 업데이트하지 못했습니다. {1}</target>
+      </trans-unit>
+      <trans-unit id="arc.pageDiscardFailed">
+        <source xml:lang="en">Failed to discard user input. {0}</source>
+        <target state="translated">사용자 입력을 삭제하지 못했습니다. {0}</target>
+      </trans-unit>
+      <trans-unit id="arc.databaseCreationFailed">
+        <source xml:lang="en">Failed to create database {0}. {1}</source>
+        <target state="translated">{0} 데이터베이스를 만들지 못했습니다. {1}</target>
+      </trans-unit>
+      <trans-unit id="arc.connectToControllerFailed">
+        <source xml:lang="en">Could not connect to controller {0}. {1}</source>
+        <target state="translated">컨트롤러 {0}에 연결할 수 없습니다. {1}</target>
+      </trans-unit>
+      <trans-unit id="arc.connectToMSSqlFailed">
+        <source xml:lang="en">Could not connect to SQL managed instance - Azure Arc Instance {0}. {1}</source>
+        <target state="translated">SQL Managed Instance - Azure Arc 인스턴스 {0}에 연결할 수 없습니다. {1}</target>
+      </trans-unit>
+      <trans-unit id="arc.connectToPGSqlFailed">
+        <source xml:lang="en">Could not connect to PostgreSQL Hyperscale - Azure Arc Instance {0}. {1}</source>
+        <target state="translated">PostgreSQL 하이퍼스케일 - Azure Arc 인스턴스 {0}에 연결할 수 없습니다. {1}</target>
+      </trans-unit>
+      <trans-unit id="arc.missingExtension">
+        <source xml:lang="en">The {0} extension is required to view engine settings. Do you wish to install it now?</source>
+        <target state="translated">엔진 설정을 보려면 {0} 확장이 필요합니다. 지금 설치하시겠습니까?</target>
+      </trans-unit>
+      <trans-unit id="arc.extensionInstallationFailed">
+        <source xml:lang="en">Failed to install extension {0}.</source>
+        <target state="translated">확장 {0}을(를) 설치하지 못했습니다.</target>
+      </trans-unit>
+      <trans-unit id="arc.fetchConfigFailed">
+        <source xml:lang="en">An unexpected error occurred retrieving the config for '{0}'. {1}</source>
+        <target state="translated">'{0}'에 대한 구성을 검색하는 동안 예기치 않은 오류가 발생했습니다. {1}</target>
+      </trans-unit>
+      <trans-unit id="arc.fetchEndpointsFailed">
+        <source xml:lang="en">An unexpected error occurred retrieving the endpoints for '{0}'. {1}</source>
+        <target state="translated">'{0}'에 대한 엔드포인트를 검색하는 동안 예기치 않은 오류가 발생했습니다. {1}</target>
+      </trans-unit>
+      <trans-unit id="arc.fetchRegistrationsFailed">
+        <source xml:lang="en">An unexpected error occurred retrieving the registrations for '{0}'. {1}</source>
+        <target state="translated">'{0}'에 대한 등록을 검색하는 동안 예기치 않은 오류가 발생했습니다. {1}</target>
+      </trans-unit>
+      <trans-unit id="arc.fetchDatabasesFailed">
+        <source xml:lang="en">An unexpected error occurred retrieving the databases for '{0}'. {1}</source>
+        <target state="translated">'{0}'에 대한 데이터베이스를 검색하는 동안 예기치 않은 오류가 발생했습니다. {1}</target>
+      </trans-unit>
+      <trans-unit id="arc.fetchEngineSettingsFailed">
+        <source xml:lang="en">An unexpected error occurred retrieving the engine settings for '{0}'. {1}</source>
+        <target state="translated">'{0}'에 대한 엔진 설정을 검색하는 동안 예기치 않은 오류가 발생했습니다. {1}</target>
+      </trans-unit>
+      <trans-unit id="arc.numberOfIssuesDetected">
+        <source xml:lang="en">• {0} ({1} issues)</source>
+        <target state="translated">•{0} (문제 {1}개)</target>
+      </trans-unit>
+      <trans-unit id="arc.instanceDeletionWarning">
+        <source xml:lang="en">Warning! Deleting an instance is permanent and cannot be undone. To delete the instance '{0}' type the name '{0}' below to proceed.</source>
+        <target state="translated">경고! 인스턴스 삭제는 영구적이므로 실행 취소할 수 없습니다. 인스턴스 '{0}'을(를) 삭제하려면 아래에 '{0}' 이름을 입력하고 계속합니다.</target>
+      </trans-unit>
+      <trans-unit id="arc.invalidInstanceDeletionName">
+        <source xml:lang="en">The value '{0}' does not match the instance name. Try again or press escape to exit</source>
+        <target state="translated">'{0}' 값이 인스턴스 이름과 일치하지 않습니다. 다시 시도하거나 Esc 키를 눌러 종료합니다.</target>
+      </trans-unit>
+      <trans-unit id="arc.couldNotFindAzureResource">
+        <source xml:lang="en">Could not find Azure resource for {0}</source>
+        <target state="translated">{0}에 대한 Azure 리소스를 찾을 수 없습니다.</target>
+      </trans-unit>
+      <trans-unit id="arc.passwordResetFailed">
+        <source xml:lang="en">Failed to reset password. {0}</source>
+        <target state="translated">암호를 다시 설정하지 못했습니다. {0}</target>
+      </trans-unit>
+      <trans-unit id="arc.errorConnectingToController">
+        <source xml:lang="en">Error connecting to controller. {0}</source>
+        <target state="translated">컨트롤러에 연결하는 동안 오류가 발생했습니다. {0}</target>
+      </trans-unit>
+      <trans-unit id="arc.passwordAcquisitionFailed">
+        <source xml:lang="en">Failed to acquire password. {0}</source>
+        <target state="translated">암호를 가져오지 못했습니다. {0}</target>
+      </trans-unit>
+      <trans-unit id="arc.loginFailed">
+        <source xml:lang="en">Error logging into controller - wrong username or password</source>
+        <target state="translated">컨트롤러에 로그인하는 동안 오류 발생 - 잘못된 사용자 이름 또는 암호</target>
+      </trans-unit>
+      <trans-unit id="arc.errorVerifyingPassword">
+        <source xml:lang="en">Error encountered while verifying password. {0}</source>
+        <target state="translated">암호를 확인하는 동안 오류가 발생했습니다. {0}</target>
+      </trans-unit>
+      <trans-unit id="noControllersConnected">
+        <source xml:lang="en">No Azure Arc controllers are currently connected. Please run the command: 'Connect to Existing Azure Arc Controller' and then try again</source>
+        <target state="translated">현재 연결된 Azure Arc 컨트롤러가 없습니다. '기존 Azure Arc 컨트롤러에 연결' 명령을 실행한 후 다시 시도하세요.</target>
+      </trans-unit>
+      <trans-unit id="getVariableValue.unknownVariableName">
+        <source xml:lang="en">Attempt to get variable value for unknown variable:{0}</source>
+        <target state="translated">알 수 없는 변수 {0}의 변수 값을 가져오려고 시도합니다.</target>
+      </trans-unit>
+      <trans-unit id="getIsPassword.unknownVariableName">
+        <source xml:lang="en">Attempt to get isPassword for unknown variable:{0}</source>
+        <target state="translated">알 수 없는 변수 {0}의 isPassword를 가져오려고 시도합니다.</target>
+      </trans-unit>
+      <trans-unit id="noControllerInfoFound">
+        <source xml:lang="en">Controller Info could not be found with name: {0}</source>
+        <target state="translated">이름이 {0}인 컨트롤러 정보를 찾을 수 없습니다.</target>
+      </trans-unit>
+      <trans-unit id="noPasswordFound">
+        <source xml:lang="en">Password could not be retrieved for controller: {0} and user did not provide a password. Please retry later.</source>
+        <target state="translated">{0} 컨트롤러에 대한 암호를 검색할 수 없으며 사용자가 암호를 제공하지 않았습니다. 나중에 다시 시도하세요.</target>
+      </trans-unit>
+      <trans-unit id="clusterContextNotFound">
+        <source xml:lang="en">Cluster Context with name: {0} not found in the Kube config file</source>
+        <target state="translated">이름이 {0}인 클러스터 컨텍스트를 Kube 구성 파일에서 찾을 수 없습니다.</target>
+      </trans-unit>
+      <trans-unit id="noCurrentClusterContext">
+        <source xml:lang="en">No current cluster context was found in the kube config file</source>
+        <target state="translated">kube 구성 파일에서 현재 클러스터 컨텍스트를 찾을 수 없습니다.</target>
+      </trans-unit>
+      <trans-unit id="filePicker.browse">
+        <source xml:lang="en">Browse</source>
+        <target state="translated">찾아보기</target>
+      </trans-unit>
+      <trans-unit id="button.label">
+        <source xml:lang="en">Select</source>
+        <target state="translated">선택</target>
+      </trans-unit>
+      <trans-unit id="noContextFound">
+        <source xml:lang="en">No 'contexts' found in the config file: {0}</source>
+        <target state="translated">구성 파일 {0}에서 '컨텍스트'를 찾을 수 없습니다.</target>
+      </trans-unit>
+      <trans-unit id="noCurrentContextFound">
+        <source xml:lang="en">No context is marked as 'current-context' in the config file: {0}</source>
+        <target state="translated">구성 파일에 'current-context'로 표시된 컨텍스트가 없습니다. {0}</target>
+      </trans-unit>
+      <trans-unit id="noNameInContext">
+        <source xml:lang="en">No name field was found in a cluster context in the config file: {0}</source>
+        <target state="translated">구성 파일의 클러스터 컨텍스트에서 이름 필드를 찾을 수 없습니다. {0}</target>
+      </trans-unit>
+      <trans-unit id="arc.userCancelledError">
+        <source xml:lang="en">User cancelled the dialog</source>
+        <target state="translated">사용자가 대화 상자를 취소했습니다.</target>
+      </trans-unit>
+      <trans-unit id="clusterContextConfigNoLongerValid">
+        <source xml:lang="en">The cluster context information specified by config file: {0} and cluster context: {1} is no longer valid. Error is:
+	{2}
+ Do you want to update this information?</source>
+        <target state="translated">구성 파일에서 지정한 클러스터 컨텍스트 정보: {0} 및 클러스터 컨텍스트: {1}은(는) 더 이상 유효하지 않습니다. 오류:
+{2}
+ 이 정보를 업데이트하시겠습니까?</target>
+      </trans-unit>
+      <trans-unit id="arc.invalidConfigPath">
+        <source xml:lang="en">Invalid config path</source>
+        <target state="translated">잘못된 구성 경로</target>
+      </trans-unit>
+      <trans-unit id="arc.loadingClusterContextsError">
+        <source xml:lang="en">Error loading cluster contexts. {0}</source>
+        <target state="translated">클러스터 컨텍스트를 로드하는 동안 오류가 발생했습니다. {0}</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

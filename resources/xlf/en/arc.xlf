@@ -559,11 +559,14 @@
     <trans-unit id="arc.resetPassword">
       <source xml:lang="en">Reset Password</source>
     </trans-unit>
-    <trans-unit id="arc.addExtensions">
-      <source xml:lang="en">Add extensions</source>
+    <trans-unit id="arc.loadExtensions">
+      <source xml:lang="en">Load extensions</source>
     </trans-unit>
-    <trans-unit id="arc.dropExtensions">
-      <source xml:lang="en">Drop extensions</source>
+    <trans-unit id="arc.unloadExtensions">
+      <source xml:lang="en">Unload extensions</source>
+    </trans-unit>
+    <trans-unit id="arc.noExtensions">
+      <source xml:lang="en">No extensions listed in configuration.</source>
     </trans-unit>
     <trans-unit id="arc.openInAzurePortal">
       <source xml:lang="en">Open in Azure Portal</source>
@@ -648,6 +651,9 @@
     </trans-unit>
     <trans-unit id="arc.serviceEndpoints">
       <source xml:lang="en">Service endpoints</source>
+    </trans-unit>
+    <trans-unit id="arc.serviceEndpointsTable">
+      <source xml:lang="en">Service endpoints table</source>
     </trans-unit>
     <trans-unit id="arc.databases">
       <source xml:lang="en">Databases</source>
@@ -1038,6 +1044,12 @@
     </trans-unit>
     <trans-unit id="arc.podsUsedDescription">
       <source xml:lang="en">Select a pod in the dropdown below for detailed health information.</source>
+    </trans-unit>
+    <trans-unit id="arc.podsUsedDescriptionAria">
+      <source xml:lang="en">Select a pod in the dropdown below for detailed health information</source>
+    </trans-unit>
+    <trans-unit id="arc.podConditionsTable">
+      <source xml:lang="en">Pod conditions table</source>
     </trans-unit>
     <trans-unit id="arc.connectToPostgresDescription">
       <source xml:lang="en">A connection to the server is required to show and set database engine settings, which will require the PostgreSQL Extension to be installed.</source>
