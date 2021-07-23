@@ -196,7 +196,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		};
 
 		// Generating all the telemetry asynchronously as we don't need to block the user for it.
-		this.generateAssessmentTelemetry();
+		this.generateAssessmentTelemetry().catch(e => console.error(e));
 		return this._assessmentResults;
 	}
 
