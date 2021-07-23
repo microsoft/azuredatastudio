@@ -135,14 +135,11 @@ export class NotebookMarkdownRenderer {
 			} else {
 				// HTML Encode href
 				let uri = URI.parse(href);
-				if (uri.scheme === 'mailto') {
-					href = href.replace(/</g, '&lt;')
-						.replace(/>/g, '&gt;')
-						.replace(/"/g, '&quot;')
-						.replace(/'/g, '&#39;');
+				// mailto uris do not need additional encoding of &, otherwise it would not render properly
+				if (uri.scheme !== 'mailto') {
+					href = href.replace(/&(?!amp;)/g, '&amp;');
 				} else {
-					href = href.replace(/&(?!amp;)/g, '&amp;')
-						.replace(/</g, '&lt;')
+					href = href.replace(/</g, '&lt;')
 						.replace(/>/g, '&gt;')
 						.replace(/"/g, '&quot;')
 						.replace(/'/g, '&#39;');
