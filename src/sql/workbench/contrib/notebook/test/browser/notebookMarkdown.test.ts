@@ -69,13 +69,8 @@ suite('NotebookMarkdownRenderer', () => {
 		assert.strict(markedPath, '<p>....\test.ipynb</p>');
 	});
 
-	test('email in markdown format renders properly', () => {
+	test('email renders properly', () => {
 		let result: HTMLElement = notebookMarkdownRenderer.renderMarkdown({ value: `[test@email.com](mailto:test@email.com)`, isTrusted: true });
-		assert.strictEqual(result.innerHTML, `<p><a href="mailto:test@email.com" data-href="mailto:test@email.com" title="mailto:test@email.com">test@email.com</a></p>`);
-	});
-
-	test('email inserted directly renders properly', () => {
-		let result: HTMLElement = notebookMarkdownRenderer.renderMarkdown({ value: `test@email.com`, isTrusted: true });
 		assert.strictEqual(result.innerHTML, `<p><a href="mailto:test@email.com" data-href="mailto:test@email.com" title="mailto:test@email.com">test@email.com</a></p>`);
 	});
 
