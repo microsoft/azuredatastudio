@@ -222,11 +222,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 			const serverAssessmentErrorsMap: Map<number, number> = new Map();
 			this._assessmentApiResponse.assessmentResult.errors.forEach(e => {
-				if (serverAssessmentErrorsMap.has(e.errorId)) {
-					serverAssessmentErrorsMap.set(e.errorId, serverAssessmentErrorsMap.get(e.errorId)! + 1);
-				} else {
-					serverAssessmentErrorsMap.set(e.errorId, 1);
-				}
+				serverAssessmentErrorsMap.set(e.errorId, serverAssessmentErrorsMap.get(e.errorId) ?? 0 + 1);
 			});
 
 			let serverErrors: { [key: string]: number } = {};
@@ -299,19 +295,11 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				);
 
 				d.items.forEach(i => {
-					if (databaseWarningsMap.has(i.ruleId)) {
-						databaseWarningsMap.set(i.ruleId, databaseWarningsMap.get(i.ruleId)! + i.impactedObjects.length);
-					} else {
-						databaseWarningsMap.set(i.ruleId, i.impactedObjects.length);
-					}
+					databaseWarningsMap.set(i.ruleId, databaseWarningsMap.get(i.ruleId) ?? 0 + i.impactedObjects.length);
 				});
 
 				d.errors.forEach(e => {
-					if (databaseErrorsMap.has(e.errorId)) {
-						databaseErrorsMap.set(e.errorId, databaseErrorsMap.get(e.errorId)! + 1);
-					} else {
-						databaseErrorsMap.set(e.errorId, 1);
-					}
+					databaseErrorsMap.set(e.errorId, databaseErrorsMap.get(e.errorId) ?? 0 + 1);
 				});
 
 			});
