@@ -50,6 +50,7 @@ export class UntitledQueryEditorInput extends QueryEditorInput implements IEncod
 		// let newFileQueryInput = this.instantiationService.createInstance(FileQueryEditorInput, '', (preProcessed as FileEditorInput), this._results);
 		// newFileQueryInput.state.resultsVisible = this.state.resultsVisible;
 		// return newFileQueryInput;
+		preProcessed['results'] = this.results;
 		preProcessed['resultsVisible'] = this.state.resultsVisible;
 		return preProcessed;
 	}

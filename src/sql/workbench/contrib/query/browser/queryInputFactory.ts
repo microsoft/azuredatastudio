@@ -23,6 +23,7 @@ import { IFileService } from 'vs/platform/files/common/files';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
 import { IQueryEditorConfiguration } from 'sql/platform/query/common/query';
+import { queryeditor } from 'azdata';
 
 const editorInputFactoryRegistry = Registry.as<IEditorInputFactoryRegistry>(EditorExtensions.EditorInputFactories);
 
@@ -72,7 +73,10 @@ export class QueryEditorLanguageAssociation implements ILanguageAssociation {
 	}
 
 	syncConvertinput(activeEditor: IEditorInput): QueryEditorInput | undefined {
-		const queryResultsInput = this.instantiationService.createInstance(QueryResultsInput, activeEditor.resource.toString(true));
+		let queryResultsInput = this.instantiationService.createInstance(QueryResultsInput, activeEditor.resource.toString(true));
+		if ((activeEditor as any).results) {
+			queryResultsInput = (activeEditor as any).results;
+		}
 		let queryEditorInput: QueryEditorInput;
 		if (activeEditor instanceof FileEditorInput) {
 			queryEditorInput = this.instantiationService.createInstance(FileQueryEditorInput, '', activeEditor, queryResultsInput);
