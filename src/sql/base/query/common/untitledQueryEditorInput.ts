@@ -47,11 +47,11 @@ export class UntitledQueryEditorInput extends QueryEditorInput implements IEncod
 
 	override async save(group: GroupIdentifier, options?: ISaveOptions): Promise<IEditorInput | undefined> {
 		let preProcessed = await this.text.save(group, options);
-		let newFileQueryInput = this.instantiationService.createInstance(FileQueryEditorInput, '', (preProcessed as FileEditorInput), this._results);
-		newFileQueryInput.state.resultsVisible = this.state.resultsVisible;
-		return newFileQueryInput;
-		// preProcessed['resultsVisible'] = this.state.resultsVisible;
-		// return preProcessed;
+		// let newFileQueryInput = this.instantiationService.createInstance(FileQueryEditorInput, '', (preProcessed as FileEditorInput), this._results);
+		// newFileQueryInput.state.resultsVisible = this.state.resultsVisible;
+		// return newFileQueryInput;
+		preProcessed['resultsVisible'] = this.state.resultsVisible;
+		return preProcessed;
 	}
 
 	override async saveAs(group: GroupIdentifier, options?: ISaveOptions): Promise<IEditorInput | undefined> {
