@@ -40,13 +40,13 @@ export class NetCoreTool {
 
 	private static _outputChannel: vscode.OutputChannel = vscode.window.createOutputChannel(projectsOutputChannel);
 
-	private isNetCoreVersionSupported: boolean | undefined;
+	private netCoreInstallationPresent: boolean | undefined;
 
 	private osPlatform: string = os.platform();
 
 	public async findOrInstallNetCore(): Promise<boolean> {
-		this.setIsNetCoreVersionSupported();
-		if ((!this.isNetCoreInstallationPresent || !this.isNetCoreVersionSupported) &&
+		this.netCoreInstallationPresent = this.isNetCoreInstallationPresent;
+		if ((!this.netCoreInstallationPresent || !this.isNetCoreVersionSupported) &&
 			vscode.workspace.getConfiguration(DBProjectConfigurationKey)[NetCoreDoNotAskAgainKey] !== true) {
 			await this.showInstallDialog();
 			return false;
@@ -56,7 +56,7 @@ export class NetCoreTool {
 
 	public async showInstallDialog(): Promise<void> {
 		let result;
-		if (!this.isNetCoreInstallationPresent) {
+		if (!this.netCoreInstallationPresent) {
 			result = await vscode.window.showInformationMessage(NetCoreInstallationConfirmation, UpdateNetCoreLocation, InstallNetCore, DoNotAskAgain);
 		} else {
 			result = await vscode.window.showInformationMessage(NetCoreSupportedVersionInstallationConfirmation, UpdateNetCoreLocation, InstallNetCore, DoNotAskAgain);
@@ -75,7 +75,7 @@ export class NetCoreTool {
 		}
 	}
 
-	private get isNetCoreInstallationPresent(): Boolean {
+	private get isNetCoreInstallationPresent(): boolean {
 		return (!isNullOrUndefined(this.netcoreInstallLocation) && fs.existsSync(this.netcoreInstallLocation));
 	}
 
@@ -110,38 +110,49 @@ export class NetCoreTool {
 		return undefined;
 	}
 
-	private setIsNetCoreVersionSupported(): void {
+	private get isNetCoreVersionSupported(): boolean | undefined {
 		try {
 			let spawnSync = require('child_process').spawnSync;
-			let child;
+			let child, child2;
 
 			if (this.osPlatform === winPlatform) {
 				child = spawnSync('powershell.exe', ['dotnet --version'], {
 					encoding: 'utf-8'
 				});
 			} else if (this.osPlatform === macPlatform) {
-				child = spawnSync('dotnet --version');
+				child = spawnSync('dotnet --version', [], {
+					encoding: 'utf-8',
+					shell: true
+				});
 			} else if (this.osPlatform === linuxPlatform) {
 				child = spawnSync('ls', ['dotnet --version']);
+				child2 = spawnSync('dotnet --version', [], {
+					encoding: 'utf-8',
+					shell: true
+				});
 			} else {
-				return;
+				return undefined;
 			}
 
+			console.error('Version:', String(child.stdout));
+			console.error('Error:', String(child.error));
+			console.error('Version:', String(child2.stdout));
+			console.error('Error:', String(child2.error));
 			let versions = String(child.stdout).split('.', 2);
 
 			if (Number(versions[0]) < 3) {
-				this.isNetCoreVersionSupported = false;
+				return false;
 			} else if (Number(versions[0]) > 3) {
-				this.isNetCoreVersionSupported = true;
+				return true;
 			} else {	// major version = 3
 				if (Number(versions[1]) >= 1) {
-					this.isNetCoreVersionSupported = true;
+					return true;
 				} else {
-					this.isNetCoreVersionSupported = false;
+					return false;
 				}
 			}
 		} catch (err) {
-			this.isNetCoreVersionSupported = undefined;
+			return undefined;
 		}
 	}
 
@@ -151,7 +162,7 @@ export class NetCoreTool {
 		}
 
 		if (!(await this.findOrInstallNetCore())) {
-			if (!this.isNetCoreInstallationPresent) {
+			if (!this.netCoreInstallationPresent) {
 				throw new Error(NetCoreInstallationConfirmation);
 			} else {
 				throw new Error(NetCoreSupportedVersionInstallationConfirmation);
