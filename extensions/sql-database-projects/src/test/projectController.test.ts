@@ -15,6 +15,7 @@ import * as templates from '../templates/templates';
 import * as testUtils from './testUtils';
 import * as constants from '../common/constants';
 import * as mssql from '../../../mssql';
+import * as utils from '../common/utils';
 
 import { SqlDatabaseProjectTreeViewProvider } from '../controllers/databaseProjectTreeViewProvider';
 import { ProjectsController } from '../controllers/projectController';
@@ -22,8 +23,6 @@ import { promises as fs } from 'fs';
 import { createContext, TestContext, mockDacFxResult, mockConnectionProfile } from './testContext';
 import { Project, reservedProjectFolders, SystemDatabase, FileProjectEntry, SystemDatabaseReferenceProjectEntry } from '../models/project';
 import { PublishDatabaseDialog } from '../dialogs/publishDatabaseDialog';
-import { IPublishSettings, IGenerateScriptSettings } from '../models/IPublishSettings';
-import { exists } from '../common/utils';
 import { ProjectRootTreeItem } from '../models/tree/projectTreeItem';
 import { FolderNode, FileNode } from '../models/tree/fileFolderTreeItem';
 import { BaseProjectTreeItem } from '../models/tree/baseTreeItem';
@@ -198,10 +197,10 @@ describe('ProjectsController', function (): void {
 				should(proj.postDeployScripts.length).equal(0);
 				should(proj.noneDeployScripts.length).equal(0);
 
-				should(await exists(scriptEntry.fsUri.fsPath)).equal(false, 'script is supposed to be deleted');
-				should(await exists(preDeployEntry.fsUri.fsPath)).equal(false, 'pre-deployment script is supposed to be deleted');
-				should(await exists(postDeployEntry.fsUri.fsPath)).equal(false, 'post-deployment script is supposed to be deleted');
-				should(await exists(noneEntry.fsUri.fsPath)).equal(false, 'none entry pre-deployment script is supposed to be deleted');
+				should(await utils.exists(scriptEntry.fsUri.fsPath)).equal(false, 'script is supposed to be deleted');
+				should(await utils.exists(preDeployEntry.fsUri.fsPath)).equal(false, 'pre-deployment script is supposed to be deleted');
+				should(await utils.exists(postDeployEntry.fsUri.fsPath)).equal(false, 'post-deployment script is supposed to be deleted');
+				should(await utils.exists(noneEntry.fsUri.fsPath)).equal(false, 'none entry pre-deployment script is supposed to be deleted');
 			});
 
 			it('Should delete database references', async function (): Promise<void> {
@@ -259,10 +258,10 @@ describe('ProjectsController', function (): void {
 				should(proj.postDeployScripts.length).equal(0);
 				should(proj.noneDeployScripts.length).equal(0);
 
-				should(await exists(scriptEntry.fsUri.fsPath)).equal(true, 'script is supposed to still exist on disk');
-				should(await exists(preDeployEntry.fsUri.fsPath)).equal(true, 'pre-deployment script is supposed to still exist on disk');
-				should(await exists(postDeployEntry.fsUri.fsPath)).equal(true, 'post-deployment script is supposed to still exist on disk');
-				should(await exists(noneEntry.fsUri.fsPath)).equal(true, 'none entry pre-deployment script is supposed to still exist on disk');
+				should(await utils.exists(scriptEntry.fsUri.fsPath)).equal(true, 'script is supposed to still exist on disk');
+				should(await utils.exists(preDeployEntry.fsUri.fsPath)).equal(true, 'pre-deployment script is supposed to still exist on disk');
+				should(await utils.exists(postDeployEntry.fsUri.fsPath)).equal(true, 'post-deployment script is supposed to still exist on disk');
+				should(await utils.exists(noneEntry.fsUri.fsPath)).equal(true, 'none entry pre-deployment script is supposed to still exist on disk');
 			});
 
 			it('Should delete folders with excluded items', async function (): Promise<void> {
@@ -287,9 +286,9 @@ describe('ProjectsController', function (): void {
 
 				// Confirm result
 				should(proj.files.some(x => x.relativePath === 'UpperFolder')).equal(false, 'UpperFolder should not be part of proj file any more');
-				should(await exists(scriptEntry.fsUri.fsPath)).equal(false, 'script is supposed to be deleted from disk');
-				should(await exists(lowerFolder.projectUri.fsPath)).equal(false, 'LowerFolder is supposed to be deleted from disk');
-				should(await exists(upperFolder.projectUri.fsPath)).equal(false, 'UpperFolder is supposed to be deleted from disk');
+				should(await utils.exists(scriptEntry.fsUri.fsPath)).equal(false, 'script is supposed to be deleted from disk');
+				should(await utils.exists(lowerFolder.projectUri.fsPath)).equal(false, 'LowerFolder is supposed to be deleted from disk');
+				should(await utils.exists(upperFolder.projectUri.fsPath)).equal(false, 'UpperFolder is supposed to be deleted from disk');
 			});
 
 			it('Should reload correctly after changing sqlproj file', async function (): Promise<void> {
@@ -386,12 +385,12 @@ describe('ProjectsController', function (): void {
 				let projController = TypeMoq.Mock.ofType(ProjectsController);
 				projController.callBase = true;
 				projController.setup(x => x.getPublishDialog(TypeMoq.It.isAny())).returns(() => publishDialog.object);
-				projController.setup(x => x.publishProjectCallback(TypeMoq.It.isAny(), TypeMoq.It.is((_): _ is IPublishSettings => true))).returns(() => {
+				projController.setup(x => x.publishOrScriptProject(TypeMoq.It.isAny(), TypeMoq.It.isAny(), true)).returns(() => {
 					holler = publishHoller;
 					return Promise.resolve(undefined);
 				});
 
-				projController.setup(x => x.publishProjectCallback(TypeMoq.It.isAny(), TypeMoq.It.is((_): _ is IGenerateScriptSettings => true))).returns(() => {
+				projController.setup(x => x.publishOrScriptProject(TypeMoq.It.isAny(), TypeMoq.It.isAny(), false)).returns(() => {
 					holler = generateHoller;
 					return Promise.resolve(undefined);
 				});
@@ -426,12 +425,11 @@ describe('ProjectsController', function (): void {
 					builtDacpacPath = await testUtils.createTestFile(fakeDacpacContents, 'output.dacpac');
 					return builtDacpacPath;
 				});
-
-				projController.setup(x => x.getDaxFxService()).returns(() => Promise.resolve(testContext.dacFxService.object));
+				sinon.stub(utils, 'getDacFxService').resolves(testContext.dacFxService.object);
 
 				const proj = await testUtils.createTestProject(baselines.openProjectFileBaseline);
 
-				await projController.object.publishProjectCallback(proj, { connectionUri: '', databaseName: '' , serverName: ''});
+				await projController.object.publishOrScriptProject(proj, { connectionUri: '', databaseName: '' , serverName: ''}, false);
 
 				should(builtDacpacPath).not.equal('', 'built dacpac path should be set');
 				should(publishedDacpacPath).not.equal('', 'published dacpac path should be set');

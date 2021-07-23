@@ -20,13 +20,13 @@ import { PublishDatabaseDialog } from '../dialogs/publishDatabaseDialog';
 import { Project, reservedProjectFolders, FileProjectEntry, SqlProjectReferenceProjectEntry, IDatabaseReferenceProjectEntry } from '../models/project';
 import { SqlDatabaseProjectTreeViewProvider } from './databaseProjectTreeViewProvider';
 import { FolderNode, FileNode } from '../models/tree/fileFolderTreeItem';
-import { IPublishSettings, IGenerateScriptSettings } from '../models/IPublishSettings';
+import { IDeploySettings } from '../models/IDeploySettings';
 import { BaseProjectTreeItem } from '../models/tree/baseTreeItem';
 import { ProjectRootTreeItem } from '../models/tree/projectTreeItem';
 import { ImportDataModel } from '../models/api/import';
 import { NetCoreTool, DotNetCommandOptions } from '../tools/netcoreTool';
 import { BuildHelper } from '../tools/buildHelper';
-import { PublishProfile, load } from '../models/publishProfile/publishProfile';
+import { readPublishProfile } from '../models/publishProfile/publishProfile';
 import { AddDatabaseReferenceDialog } from '../dialogs/addDatabaseReferenceDialog';
 import { ISystemDatabaseReferenceSettings, IDacpacReferenceSettings, IProjectReferenceSettings } from '../models/IDatabaseReferenceSettings';
 import { DatabaseReferenceTreeItem } from '../models/tree/databaseReferencesTreeItem';
@@ -34,12 +34,10 @@ import { CreateProjectFromDatabaseDialog } from '../dialogs/createProjectFromDat
 import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
 import { IconPathHelper } from '../common/iconHelper';
 import { DashboardData, PublishData, Status } from '../models/dashboardData/dashboardData';
-import { SqlTargetPlatform } from 'sqldbproj';
 import { launchPublishDatabaseQuickpick } from '../dialogs/publishDatabaseQuickpick';
+import { SqlTargetPlatform } from 'sqldbproj';
 
 const maxTableLength = 10;
-
-export type IDacFxService = mssql.IDacFxService | mssqlVscode.IDacFxService;
 
 /**
  * Controller for managing lifecycle of projects
@@ -133,7 +131,11 @@ export class ProjectsController {
 			.send();
 
 		if (creationParams.projectGuid && !UUID.isUUID(creationParams.projectGuid)) {
-			throw new Error(`Specified GUID is invalid: '${creationParams.projectGuid}'`);
+			throw new Error(constants.invalidGuid(creationParams.projectGuid));
+		}
+
+		if (creationParams.targetPlatform && !constants.targetPlatformToVersion.get(creationParams.targetPlatform)) {
+			throw new Error(constants.invalidTargetPlatform(creationParams.targetPlatform, Array.from(constants.targetPlatformToVersion.keys())));
 		}
 
 		const macroDict: Record<string, string> = {
@@ -242,9 +244,9 @@ export class ProjectsController {
 		if (utils.getAzdataApi()) {
 			let publishDatabaseDialog = this.getPublishDialog(project);
 
-			publishDatabaseDialog.publish = async (proj, prof) => await this.publishProjectCallback(proj, prof);
-			publishDatabaseDialog.generateScript = async (proj, prof) => await this.publishProjectCallback(proj, prof);
-			publishDatabaseDialog.readPublishProfile = async (profileUri) => await this.readPublishProfileCallback(profileUri);
+			publishDatabaseDialog.publish = async (proj, prof) => this.publishOrScriptProject(proj, prof, true);
+			publishDatabaseDialog.generateScript = async (proj, prof) => this.publishOrScriptProject(proj, prof, false);
+			publishDatabaseDialog.readPublishProfile = async (profileUri) => readPublishProfile(profileUri);
 
 			publishDatabaseDialog.openDialog();
 
@@ -255,7 +257,14 @@ export class ProjectsController {
 		}
 	}
 
-	public async publishProjectCallback(project: Project, settings: IPublishSettings | IGenerateScriptSettings): Promise<mssql.DacFxResult | undefined> {
+	/**
+	 * Builds and either deploys or generates a deployment script for the specified project.
+	 * @param project The project to deploy
+	 * @param settings The settings used to configure the deployment
+	 * @param publish Whether to publish the deployment or just generate a script
+	 * @returns The DacFx result of the deployment
+	 */
+	public async publishOrScriptProject(project: Project, settings: IDeploySettings, publish: boolean): Promise<mssql.DacFxResult | undefined> {
 		const telemetryProps: Record<string, string> = {};
 		const telemetryMeasures: Record<string, number> = {};
 		const buildStartTime = new Date().getTime();
@@ -279,7 +288,7 @@ export class ProjectsController {
 		const tempPath = path.join(os.tmpdir(), `${path.parse(dacpacPath).name}_${new Date().getTime()}${constants.sqlprojExtension}`);
 		await fs.copyFile(dacpacPath, tempPath);
 
-		const dacFxService = await this.getDaxFxService();
+		const dacFxService = await utils.getDacFxService();
 
 		let result: mssql.DacFxResult;
 		telemetryProps.profileUsed = (settings.profileUsed ?? false).toString();
@@ -296,17 +305,16 @@ export class ProjectsController {
 
 		try {
 			const azdataApi = utils.getAzdataApi();
-			if ((<IPublishSettings>settings).upgradeExisting) {
+			if (publish) {
 				telemetryProps.publishAction = 'deploy';
 				if (azdataApi) {
-					result = await (dacFxService as mssql.IDacFxService).deployDacpac(tempPath, settings.databaseName, (<IPublishSettings>settings).upgradeExisting, settings.connectionUri, azdataApi.TaskExecutionMode.execute, settings.sqlCmdVariables, settings.deploymentOptions);
+					result = await (dacFxService as mssql.IDacFxService).deployDacpac(tempPath, settings.databaseName, true, settings.connectionUri, azdataApi.TaskExecutionMode.execute, settings.sqlCmdVariables, settings.deploymentOptions);
 				} else {
 					// TODO@chgagnon Fix typing
-					result = await (dacFxService as mssqlVscode.IDacFxService).deployDacpac(tempPath, settings.databaseName, (<IPublishSettings>settings).upgradeExisting, settings.connectionUri, <mssqlVscode.TaskExecutionMode><any>azdataApi!.TaskExecutionMode.execute, settings.sqlCmdVariables, <mssqlVscode.DeploymentOptions><any>settings.deploymentOptions);
+					result = await (dacFxService as mssqlVscode.IDacFxService).deployDacpac(tempPath, settings.databaseName, true, settings.connectionUri, <mssqlVscode.TaskExecutionMode><any>azdataApi!.TaskExecutionMode.execute, settings.sqlCmdVariables, <mssqlVscode.DeploymentOptions><any>settings.deploymentOptions);
 				}
 
-			}
-			else {
+			} else {
 				telemetryProps.publishAction = 'generateScript';
 				if (azdataApi) {
 					result = await (dacFxService as mssql.IDacFxService).generateDeployScript(tempPath, settings.databaseName, settings.connectionUri, azdataApi.TaskExecutionMode.script, settings.sqlCmdVariables, settings.deploymentOptions);
@@ -347,17 +355,6 @@ export class ProjectsController {
 			.send();
 
 		return result;
-	}
-
-	public async readPublishProfileCallback(profileUri: vscode.Uri): Promise<PublishProfile> {
-		try {
-			const dacFxService = await this.getDaxFxService();
-			const profile = await load(profileUri, dacFxService);
-			return profile;
-		} catch (e) {
-			vscode.window.showErrorMessage(constants.profileReadError);
-			throw e;
-		}
 	}
 
 	public async schemaCompare(treeNode: dataworkspace.WorkspaceTreeItem): Promise<void> {
@@ -740,7 +737,7 @@ export class ProjectsController {
 
 		const streamingJobDefinition: string = (await fs.readFile(node.element.fileSystemUri.fsPath)).toString();
 
-		const dacFxService = await this.getDaxFxService();
+		const dacFxService = await utils.getDacFxService();
 		const actionStartTime = new Date().getTime();
 
 		const result: mssql.ValidateStreamingJobResult = await dacFxService.validateStreamingJob(dacpacPath, streamingJobDefinition);
@@ -830,21 +827,6 @@ export class ProjectsController {
 			throw new Error(constants.unexpectedProjectContext(context.projectUri.path));
 		}
 	}
-
-	public async getDaxFxService(): Promise<IDacFxService> {
-		if (utils.getAzdataApi()) {
-			const ext: vscode.Extension<mssql.IExtension> = vscode.extensions.getExtension(mssql.extension.name)!;
-			const extensionApi = await ext.activate();
-			return extensionApi.dacFx;
-		} else {
-			const ext: vscode.Extension<mssqlVscode.IExtension> = vscode.extensions.getExtension(mssql.extension.name)!;
-			const extensionApi = await ext.activate();
-			return extensionApi.dacFx;
-		}
-
-	}
-
-
 
 	private async promptForNewObjectName(itemType: templates.ProjectScriptType, _project: Project, folderPath: string, fileExtension?: string): Promise<string | undefined> {
 		const suggestedName = itemType.friendlyName.replace(/\s+/g, '');

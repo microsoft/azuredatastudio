@@ -26,7 +26,7 @@ export class RadioOptionsGroup {
 		private _loadingCompleteMessage: string,
 		private _loadingCompleteErrorMessage: (error: any) => string
 	) {
-		this._divContainer = this._modelBuilder.divContainer().withProperties<azdata.DivContainerProperties>({ clickable: false }).component();
+		this._divContainer = this._modelBuilder.divContainer().withProps({ clickable: false }).component();
 		this._loadingBuilder = this._modelBuilder.loadingComponent().withItem(this._divContainer);
 	}
 
@@ -42,7 +42,7 @@ export class RadioOptionsGroup {
 			const options = optionsInfo.values!;
 			let defaultValue: string = optionsInfo.defaultValue!;
 			options.forEach((option: string) => {
-				const radioOption = this._modelBuilder.radioButton().withProperties<azdata.RadioButtonProperties>({
+				const radioOption = this._modelBuilder.radioButton().withProps({
 					label: option,
 					checked: option === defaultValue,
 					name: this._groupName,

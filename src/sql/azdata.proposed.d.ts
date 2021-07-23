@@ -269,6 +269,7 @@ declare module 'azdata' {
 		rowCssStyles?: CssStyles;
 		ariaLabel?: string;
 		showCheckAll?: boolean;
+		hidden?: boolean;
 	}
 
 
@@ -572,6 +573,19 @@ declare module 'azdata' {
 	export interface SliderComponent extends Component, SliderComponentProperties {
 		onChanged: vscode.Event<number>;
 		onInput: vscode.Event<number>;
+	}
+
+	/**
+	 * The heading levels an HTML heading element can be.
+	 */
+	export type HeadingLevel = 1 | 2 | 3 | 4 | 5 | 6;
+
+	export interface TextComponentProperties {
+		/**
+		 * The heading level for this component - if set the text component will be created as an h#
+		 * HTML element with this value being the #.
+		 */
+		headingLevel?: HeadingLevel;
 	}
 
 	export namespace nb {
@@ -1002,5 +1016,12 @@ declare module 'azdata' {
 	 */
 	export interface VisualizationOptions {
 		type: VisualizationType;
+	}
+
+	export interface PropertiesContainerComponentProperties {
+		/**
+		 * Whether to show the button that will hide/show the content of the container. Default value is false.
+		 */
+		showToggleButton?: boolean;
 	}
 }

@@ -163,13 +163,13 @@ export class SchemaCompareMainWindow {
 
 				this.sourceName = getEndpointName(this.sourceEndpointInfo);
 				this.targetName = ' ';
-				this.sourceNameComponent = this.view.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
+				this.sourceNameComponent = this.view.modelBuilder.inputBox().withProps({
 					value: this.sourceName,
 					title: this.sourceName,
 					enabled: false
 				}).component();
 
-				this.targetNameComponent = this.view.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
+				this.targetNameComponent = this.view.modelBuilder.inputBox().withProps({
 					value: this.targetName,
 					title: this.targetName,
 					enabled: false

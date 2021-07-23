@@ -31,11 +31,11 @@ export class DeploymentProfilePage extends ResourceTypePage {
 	public initialize(): void {
 		this.pageObject.registerContent(async (view: azdata.ModelView): Promise<void> => {
 			this._container = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column' }).component();
-			const hintText = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+			const hintText = view.modelBuilder.text().withProps({
 				value: localize('deployCluster.ProfileHintText', "Note: The settings of the deployment profile can be customized in later steps.")
 			}).component();
 			const container = createFlexContainer(view, [this._container, hintText], false);
-			this._loadingComponent = view.modelBuilder.loadingComponent().withItem(container).withProperties<azdata.LoadingComponentProperties>({
+			this._loadingComponent = view.modelBuilder.loadingComponent().withItem(container).withProps({
 				loading: true,
 				loadingText: localize('deployCluster.loadingProfiles', "Loading profiles"),
 				loadingCompletedText: localize('deployCluster.loadingProfilesCompleted', "Loading profiles completed"),
@@ -121,7 +121,7 @@ export class DeploymentProfilePage extends ResourceTypePage {
 		const groupName = 'profileGroup';
 		const radioButtons = profiles.map(profile => {
 			const checked = profile.profileName === defaultProfile;
-			const radioButton = view.modelBuilder.radioButton().withProperties<azdata.RadioButtonProperties>({
+			const radioButton = view.modelBuilder.radioButton().withProps({
 				label: profile.profileName,
 				checked: checked,
 				name: groupName
@@ -147,7 +147,7 @@ export class DeploymentProfilePage extends ResourceTypePage {
 			[localize('deployCluster.hdfsLabel', "HDFS + Spark"), ...profiles.map(profile => profile.hdfsReplicas.toString())]
 		];
 
-		return view.modelBuilder.table().withProperties<azdata.TableComponentProperties>({
+		return view.modelBuilder.table().withProps({
 			columns: [this.createDescriptionColumn(localize('deployCluster.ServiceName', "Service")), ...this.createProfileColumns(profiles)],
 			data: data,
 			title: serviceScaleTableTitle,
@@ -162,7 +162,7 @@ export class DeploymentProfilePage extends ResourceTypePage {
 			[localize('deployCluster.dataStorageType', "Data"), ...profiles.map(profile => profile.controllerDataStorageSize.toString())],
 			[localize('deployCluster.logsStorageType', "Logs"), ...profiles.map(profile => profile.controllerLogsStorageSize.toString())]
 		];
-		return view.modelBuilder.table().withProperties<azdata.TableComponentProperties>({
+		return view.modelBuilder.table().withProps({
 			columns: [this.createDescriptionColumn(localize('deployCluster.StorageType', "Storage type")), ...this.createProfileColumns(profiles)],
 			data: data,
 			title: storageTableTitle,
@@ -184,7 +184,7 @@ export class DeploymentProfilePage extends ResourceTypePage {
 			data.push([localize('deployCluster.hadr', "High Availability"), ...profiles.map(profile => profile.sqlServerReplicas > 1 ? YesText : NoText)]);
 		}
 
-		return view.modelBuilder.table().withProperties<azdata.TableComponentProperties>({
+		return view.modelBuilder.table().withProps({
 			columns: [this.createDescriptionColumn(localize('deployCluster.featureText', "Feature")), ...this.createProfileColumns(profiles)],
 			data: data,
 			title: featureTableTitle,
