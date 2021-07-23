@@ -205,10 +205,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 			let serverIssues: { [key: string]: number } = {};
 			this._assessmentResults.issues.forEach(i => {
-				serverIssues = {
-					...serverIssues,
-					[i.ruleId]: i.impactedObjects.length
-				};
+				serverIssues[i.ruleId] = i.impactedObjects.length;
 			});
 
 			sendSqlMigrationActionEvent(
@@ -227,10 +224,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 			let serverErrors: { [key: string]: number } = {};
 			serverAssessmentErrorsMap.forEach((v, k) => {
-				serverIssues = {
-					...serverIssues,
-					[k.toString()]: v
-				};
+				serverErrors[k] = v;
 			});
 
 			sendSqlMigrationActionEvent(
@@ -305,10 +299,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			});
 			let databaseWarnings: { [key: string]: number } = {};
 			databaseWarningsMap.forEach((v, k) => {
-				databaseWarnings = {
-					...databaseWarnings,
-					[k]: v
-				};
+				databaseIssues[k] = v;
 			});
 
 			sendSqlMigrationActionEvent(
@@ -322,10 +313,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 			let databaseIssues: { [key: string]: number } = {};
 			databaseErrorsMap.forEach((v, k) => {
-				databaseIssues = {
-					...databaseWarnings,
-					[k]: v
-				};
+				databaseIssues[k] = v;
 			});
 
 			sendSqlMigrationActionEvent(
