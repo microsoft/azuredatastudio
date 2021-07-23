@@ -42,6 +42,7 @@ export class MigrationCutoverDialog {
 	private _fileCount!: azdata.TextComponent;
 	private fileTable!: azdata.TableComponent;
 	private _autoRefreshHandle!: any;
+	private _emptyTable! : azdata.ImageComponent;
 
 	readonly _infoFieldWidth: string = '250px';
 
@@ -258,6 +259,13 @@ export class MigrationCutoverDialog {
 					fontSize: '12px'
 				}).component();
 
+				this._emptyTable = view.modelBuilder.image().withProps({
+					CSSStyles: {
+						'display': 'none'
+					},
+					iconPath: IconPathHelper.emptyTable
+				}).component();
+
 				const formBuilder = view.modelBuilder.formContainer().withFormItems(
 					[
 						{ component: this.migrationContainerHeader() },
@@ -265,7 +273,8 @@ export class MigrationCutoverDialog {
 						{ component: flexInfo },
 						{ component: this._view.modelBuilder.separator().withProps({ width: 1000 }).component() },
 						{ component: this._fileCount },
-						{ component: this.fileTable }
+						{ component: this.fileTable },
+						{ component: this._emptyTable}
 					],
 					{ horizontal: false }
 				);
@@ -550,6 +559,13 @@ export class MigrationCutoverDialog {
 					lastAppliedBackupFileTakenOn = activeBackupSet.backupFinishDate;
 				}
 			});
+
+			if(tableData.length === 0)
+			{
+				this._emptyTable.updateCssStyles({
+					'display': 'block'
+				});
+			}
 
 			this._sourceDatabase.value = sourceDatabaseName;
 			this._serverName.value = sqlServerName;

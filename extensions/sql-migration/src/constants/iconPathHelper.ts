@@ -34,6 +34,7 @@ export class IconPathHelper {
 	public static completingCutover: IconPath;
 	public static migrationService: IconPath;
 	public static sendFeedback: IconPath;
+	public static emptyTable: IconPath;
 
 	public static setExtensionContext(context: vscode.ExtensionContext) {
 		IconPathHelper.copy = {
@@ -128,5 +129,9 @@ export class IconPathHelper {
 			light: context.asAbsolutePath('images/sendFeedback.svg'),
 			dark: context.asAbsolutePath('images/sendFeedback.svg')
 		};
+		IconPathHelper.emptyTable = {
+			light: context.asAbsolutePath('images/emptyTable.svg'),
+			dark: context.asAbsolutePath('images/emptyTable.svg')
+		}
 	}
 }
