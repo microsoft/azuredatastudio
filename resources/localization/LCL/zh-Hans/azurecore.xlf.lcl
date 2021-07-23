@@ -20,8 +20,8 @@
         <Item ItemId=";(...) ers.AzureMonitorContainerLabel" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[Azure Monitor Logs workspace]]></Val>
-            <Tgt Cat="Text" Stat="Update" Orig="New">
-              <Val><![CDATA[Azure Monitor 工作区]]></Val>
+            <Tgt Cat="Text" Stat="Loc" Orig="New">
+              <Val><![CDATA[Azure Monitor 日志工作区]]></Val>
             </Tgt>
             <Prev Cat="Text">
               <Val><![CDATA[Azure Monitor Workspace]]></Val>
