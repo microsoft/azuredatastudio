@@ -5,7 +5,7 @@
 
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
-import * as azExt from 'az-ext';
+import * as azdataExt from 'azdata-ext';
 import * as loc from '../../../localizedConstants';
 import { IconPathHelper, cssStyles } from '../../../constants';
 import { DashboardPage } from '../../components/dashboardPage';
@@ -22,11 +22,11 @@ export class PostgresExtensionsPage extends DashboardPage {
 	private dropExtensionsButton!: azdata.ButtonComponent;
 	private extensionsLink!: azdata.HyperlinkComponent;
 
-	private readonly _azApi: azExt.IExtension;
+	private readonly _azdataApi: azdataExt.IExtension;
 
 	constructor(modelView: azdata.ModelView, dashboard: azdata.window.ModelViewDashboard, private _postgresModel: PostgresModel) {
 		super(modelView, dashboard);
-		this._azApi = vscode.extensions.getExtension(azExt.extension.name)?.exports;
+		this._azdataApi = vscode.extensions.getExtension(azdataExt.extension.name)?.exports;
 
 		this.disposables.push(
 			this._postgresModel.onConfigUpdated(() => this.eventuallyRunOnInitialized(() => this.handleConfigUpdated())));
@@ -138,13 +138,12 @@ export class PostgresExtensionsPage extends DashboardPage {
 							},
 							async (_progress, _token): Promise<void> => {
 
-								await this._azApi.az.postgres.arcserver.edit(
+								await this._azdataApi.azdata.arc.postgres.server.edit(
 									this._postgresModel.info.name,
 									{
 										extensions: extensionList
 									},
-									this._postgresModel.controllerModel.info.namespace,
-									this._postgresModel.controllerModel.azAdditionalEnvVars);
+									this._postgresModel.controllerModel.azdataAdditionalEnvVars);
 
 								try {
 									await this._postgresModel.refresh();
@@ -268,13 +267,12 @@ export class PostgresExtensionsPage extends DashboardPage {
 				cancellable: false
 			},
 			async (_progress, _token): Promise<void> => {
-				await this._azApi.az.postgres.arcserver.edit(
+				await this._azdataApi.azdata.arc.postgres.server.edit(
 					this._postgresModel.info.name,
 					{
 						extensions: this.extensionNames.join()
 					},
-					this._postgresModel.controllerModel.info.namespace,
-					this._postgresModel.controllerModel.azAdditionalEnvVars
+					this._postgresModel.controllerModel.azdataAdditionalEnvVars
 				);
 			}
 		);

@@ -9,11 +9,7 @@ export const debugConfigKey = 'logDebugInfo';
 
 
 // context keys && memento keys
-export const azFound = 'azdata.found';
+export const azFound = 'az.found';
 
 // other constants
-export const azHostname = 'https://aka.ms';
-export const azUri = 'azdata-msi'; // TODOCANYE
-export const azReleaseJson = 'azdata/release.json';
-export const microsoftPrivacyStatementUrl = 'https://privacy.microsoft.com/privacystatement';
-export const latestAzArcExtensionVersion = '0.0.2';
+export const latestAzArcExtensionVersion = '1.0.0';

@@ -36,27 +36,27 @@ export class PostgresCoordinatorNodeParametersPage extends PostgresParametersPag
 	}
 
 	protected async saveParameterEdits(engineSettings: string): Promise<void> {
-		await this._azApi.az.postgres.arcserver.edit(
+		await this._azdataApi.azdata.arc.postgres.server.edit(
 			this._postgresModel.info.name,
 			{ coordinatorEngineSettings: engineSettings },
-			this._postgresModel.controllerModel.info.namespace,
-			this._postgresModel.controllerModel.azAdditionalEnvVars);
+			this._postgresModel.controllerModel.azdataAdditionalEnvVars,
+			this._postgresModel.controllerModel.controllerContext);
 
 	}
 
 	protected async resetAllParameters(): Promise<void> {
-		await this._azApi.az.postgres.arcserver.edit(
+		await this._azdataApi.azdata.arc.postgres.server.edit(
 			this._postgresModel.info.name,
 			{ coordinatorEngineSettings: `''`, replaceEngineSettings: true },
-			this._postgresModel.controllerModel.info.namespace,
-			this._postgresModel.controllerModel.azAdditionalEnvVars);
+			this._postgresModel.controllerModel.azdataAdditionalEnvVars,
+			this._postgresModel.controllerModel.controllerContext);
 	}
 
 	protected async resetParameter(parameterName: string): Promise<void> {
-		await this._azApi.az.postgres.arcserver.edit(
+		await this._azdataApi.azdata.arc.postgres.server.edit(
 			this._postgresModel.info.name,
 			{ coordinatorEngineSettings: parameterName + '=' },
-			this._postgresModel.controllerModel.info.namespace,
-			this._postgresModel.controllerModel.azAdditionalEnvVars);
+			this._postgresModel.controllerModel.azdataAdditionalEnvVars,
+			this._postgresModel.controllerModel.controllerContext);
 	}
 }

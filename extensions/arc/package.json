@@ -18,7 +18,7 @@
     "onView:azureArc"
   ],
   "extensionDependencies": [
-    "Microsoft.azcli",
+    "Microsoft.azdata",
     "Microsoft.resource-deployment"
   ],
   "repository": {
@@ -519,7 +519,8 @@
                 "name": "kubectl"
               },
               {
-                "name": "azure-cli"
+                "name": "azdata",
+                "version": "20.3.4"
               }
             ],
             "when": true
@@ -837,7 +838,8 @@
                 "name": "kubectl"
               },
               {
-                "name": "azure-cli"
+                "name": "azdata",
+                "version": "20.3.4"
               }
             ],
             "when": "true"
@@ -1065,7 +1067,8 @@
               "name": "kubectl"
             },
             {
-              "name": "azure-cli"
+              "name": "azdata",
+              "version": "20.3.4"
             }
           ],
           "when": "mi-type=arc-mi"

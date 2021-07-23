@@ -17,7 +17,7 @@ import * as loc from './localizedConstants';
 /**
  * The latest Az CLI arcdata extension version for this extension to function properly
  */
-export const LATEST_AZ_ARC_EXTENSION_VERSION = new SemVer(latestAzArcExtensionVersion); // TODOCANYE change to 0.0.2 when release happens
+export const LATEST_AZ_ARC_EXTENSION_VERSION = new SemVer(latestAzArcExtensionVersion);
 
 /**
  * Interface for an object to interact with the az tool installed on the box.
