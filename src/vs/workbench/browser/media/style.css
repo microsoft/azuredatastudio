@@ -76,9 +76,9 @@ body.web {
 	cursor: pointer;
 }
 
-.monaco-workbench a {
-	text-decoration: none;
-}
+/* .monaco-workbench a {
+	text-decoration: none; {{SQL CARBON EDIT}} Underline links
+} */
 
 .monaco-workbench a:active {
 	color: inherit;
