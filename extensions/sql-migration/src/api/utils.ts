@@ -162,10 +162,6 @@ export function hashString(value: string): string {
 	return crypto.createHash('sha512').update(value).digest('hex');
 }
 
-export function getTime(): number {
-	return new Date().getTime();
-}
-
 export function debounce(delay: number): Function {
 	return decorate((fn, key) => {
 		const timerKey = `$debounce$${key}`;

@@ -77,6 +77,7 @@ export class MigrationCutoverDialogModel {
 	public async cancelMigration(): Promise<void> {
 		try {
 			if (this.migrationStatus) {
+				const cutoverStartTime = new Date().toString();
 				await stopMigration(
 					this._migration.azureAccount,
 					this._migration.subscription,
@@ -87,7 +88,7 @@ export class MigrationCutoverDialogModel {
 					TelemetryAction.CancelMigration,
 					{
 						'sessionId': this._migration.sessionId!,
-						'cutoverStartTime': new Date().toString()
+						'cutoverStartTime': cutoverStartTime
 					},
 					{}
 				);
