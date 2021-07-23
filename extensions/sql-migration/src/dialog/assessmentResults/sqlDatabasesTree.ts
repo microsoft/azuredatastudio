@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import * as azdata from 'azdata';
+import * as vscode from 'vscode';
 import { SqlMigrationAssessmentResultItem, SqlMigrationImpactedObjectInfo } from '../../../../mssql/src/mssql';
 import { MigrationStateModel, MigrationTargetType } from '../../models/stateMachine';
 import * as constants from '../../constants/strings';
@@ -77,6 +78,7 @@ export class SqlDatabaseTree {
 	private _serverName!: string;
 	private _dbNames!: string[];
 	private _databaseCount!: azdata.TextComponent;
+	private _disposables: vscode.Disposable[] = [];
 
 	constructor(
 		private _model: MigrationStateModel,
@@ -99,6 +101,10 @@ export class SqlDatabaseTree {
 		this._rootContainer.addItem(this._resultComponent, { flex: '0 0 auto' });
 		this._rootContainer.addItem(selectDbMessage, { flex: '1 1 auto' });
 
+		this._disposables.push(this._view.onClosed(e => {
+			this._disposables.forEach(
+				d => { try { d.dispose(); } catch { } });
+		}));
 		return this._rootContainer;
 	}
 
@@ -167,12 +173,14 @@ export class SqlDatabaseTree {
 				]
 			}
 		).component();
-		this._databaseTable.onDataChanged(() => {
+
+		this._disposables.push(this._databaseTable.onDataChanged(() => {
 			this._databaseCount.updateProperties({
 				'value': constants.DATABASES(this.selectedDbs().length, this._model._databaseAssessment.length)
 			});
-		});
-		this._databaseTable.onRowSelected(async (e) => {
+		}));
+
+		this._disposables.push(this._databaseTable.onRowSelected(async (e) => {
 			if (this._targetType === MigrationTargetType.SQLMI) {
 				this._activeIssues = this._model._assessmentResults?.databaseAssessments[e.row].issues;
 			} else {
@@ -188,7 +196,7 @@ export class SqlDatabaseTree {
 				'display': 'none'
 			});
 			await this.refreshResults();
-		});
+		}));
 
 		const tableContainer = this._view.modelBuilder.divContainer().withItems([this._databaseTable]).withProps({
 			CSSStyles: {
@@ -206,7 +214,7 @@ export class SqlDatabaseTree {
 			width: 200
 		}).component();
 
-		resourceSearchBox.onTextChanged(value => this._filterTableList(value));
+		this._disposables.push(resourceSearchBox.onTextChanged(value => this._filterTableList(value)));
 
 		const searchContainer = this._view.modelBuilder.divContainer().withItems([resourceSearchBox]).withProps({
 			CSSStyles: {
@@ -270,7 +278,7 @@ export class SqlDatabaseTree {
 			}
 		}).component();
 
-		this._instanceTable.onRowSelected(async (e) => {
+		this._disposables.push(this._instanceTable.onRowSelected(async (e) => {
 			this._activeIssues = this._model._assessmentResults?.issues;
 			this._dbName.value = this._serverName;
 			this._resultComponent.updateCssStyles({
@@ -284,7 +292,7 @@ export class SqlDatabaseTree {
 			if (this._targetType === MigrationTargetType.SQLMI) {
 				await this.refreshResults();
 			}
-		});
+		}));
 
 		return instanceContainer;
 	}
@@ -506,10 +514,10 @@ export class SqlDatabaseTree {
 			}
 		).component();
 
-		this._impactedObjectsTable.onRowSelected((e) => {
+		this._disposables.push(this._impactedObjectsTable.onRowSelected((e) => {
 			const impactedObject = e.row > -1 ? this._impactedObjects[e.row] : undefined;
 			this.refreshImpactedObject(impactedObject);
-		});
+		}));
 
 		const objectDetailsTitle = this._view.modelBuilder.text().withProps({
 			value: constants.OBJECT_DETAILS,
@@ -714,10 +722,10 @@ export class SqlDatabaseTree {
 			}
 		).component();
 
-		this._assessmentResultsTable.onRowSelected(async (e) => {
+		this._disposables.push(this._assessmentResultsTable.onRowSelected(async (e) => {
 			const selectedIssue = e.row > -1 ? this._activeIssues[e.row] : undefined;
 			await this.refreshAssessmentDetails(selectedIssue);
-		});
+		}));
 
 		const container = this._view.modelBuilder.flexContainer().withItems([this._assessmentResultsTable]).withLayout({
 			flexFlow: 'column',

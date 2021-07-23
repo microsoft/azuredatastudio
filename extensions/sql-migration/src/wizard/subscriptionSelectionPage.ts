@@ -179,7 +179,7 @@ export class SubscriptionSelectionPage extends MigrationWizardPage {
 	}
 
 	public async onPageLeave(): Promise<void> {
-		this.disposables.forEach(d => d.dispose());
+		this.disposables.forEach(d => { try { d.dispose(); } catch { } });
 	}
 
 	protected async handleStateChange(e: StateChangeEvent): Promise<void> {
