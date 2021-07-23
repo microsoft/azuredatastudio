@@ -1603,6 +1603,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/arc/dist/localizedConstants.arc.podConditionsTable" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Pod conditions table]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Pod 條件表格]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.podInitialized" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Pod is initialized.]]></Val>
@@ -1662,6 +1671,15 @@
           <Val><![CDATA[Select a pod in the dropdown below for detailed health information.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[請在下方的下拉式清單中選取 Pod，以取得詳細的健康情況資訊。]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/arc/dist/localizedConstants.arc.podsUsedDescriptionAria" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Select a pod in the dropdown below for detailed health information]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[請在下方的下拉式清單中選取 Pod，以取得詳細的健康情況資訊]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2004,6 +2022,15 @@
           <Val><![CDATA[Service endpoints]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[服務端點]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/arc/dist/localizedConstants.arc.serviceEndpointsTable" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Service endpoints table]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[服務端點表格]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
