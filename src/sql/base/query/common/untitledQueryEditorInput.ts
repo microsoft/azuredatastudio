@@ -46,22 +46,21 @@ export class UntitledQueryEditorInput extends QueryEditorInput implements IEncod
 	}
 
 	override async save(group: GroupIdentifier, options?: ISaveOptions): Promise<IEditorInput | undefined> {
-		let preProcessed = await this.text.save(group, options);
-		// let newFileQueryInput = this.instantiationService.createInstance(FileQueryEditorInput, '', (preProcessed as FileEditorInput), this._results);
-		// newFileQueryInput.state.resultsVisible = this.state.resultsVisible;
-		// return newFileQueryInput;
-		preProcessed['results'] = this.results;
-		preProcessed['resultsVisible'] = this.state.resultsVisible;
-		return preProcessed;
+		let preProcessed = await this.text.saveAs(group, options);
+		let newFileQueryInput = this.instantiationService.createInstance(FileQueryEditorInput, '', (preProcessed as FileEditorInput), this._results);
+		newFileQueryInput.state.resultsVisible = this.state.resultsVisible;
+		newFileQueryInput.state.isSaving = true;
+		//need to find way to add URIs into input.
+		return newFileQueryInput;
 	}
 
 	override async saveAs(group: GroupIdentifier, options?: ISaveOptions): Promise<IEditorInput | undefined> {
 		let preProcessed = await this.text.saveAs(group, options);
 		let newFileQueryInput = this.instantiationService.createInstance(FileQueryEditorInput, '', (preProcessed as FileEditorInput), this._results);
 		newFileQueryInput.state.resultsVisible = this.state.resultsVisible;
+		newFileQueryInput.state.isSaving = true;
+		//need to find way to add URIs into input.
 		return newFileQueryInput;
-		// preProcessed['resultsVisible'] = this.state.resultsVisible;
-		// return preProcessed;
 	}
 
 	public setMode(mode: string): void {

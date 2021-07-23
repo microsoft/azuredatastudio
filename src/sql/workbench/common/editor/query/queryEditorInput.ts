@@ -52,6 +52,9 @@ export class QueryEditorState extends Disposable {
 	private _onChange = this._register(new Emitter<IQueryEditorStateChange>());
 	public onChange = this._onChange.event;
 
+
+	public isSaving: boolean = false;
+
 	public set connected(val: boolean) {
 		if (val !== this._connected) {
 			this._connected = val;
@@ -314,9 +317,14 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 	}
 
 	public override dispose() {
-		super.dispose(); // we want to dispose first so that for future logic we know we are disposed
-		this.queryModelService.disposeQuery(this.uri);
-		this.connectionManagementService.disconnectEditor(this, true);
+		if (!this.state.isSaving) {
+			// TODO - Need to handle URI changes on the sqltoolsservice.
+			super.dispose(); // we want to dispose first so that for future logic we know we are disposed
+			this.queryModelService.disposeQuery(this.uri);
+			this.connectionManagementService.disconnectEditor(this, true);
+		} else {
+			this.state.isSaving = false;
+		}
 	}
 
 	public get isSharedSession(): boolean {
