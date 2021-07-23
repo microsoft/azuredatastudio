@@ -205,7 +205,10 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 			let serverIssues: { [key: string]: number } = {};
 			this._assessmentResults.issues.forEach(i => {
-				serverIssues[i.ruleId] = i.impactedObjects.length;
+				serverIssues = {
+					...serverIssues,
+					[i.ruleId]: i.impactedObjects.length
+				};
 			});
 
 			sendSqlMigrationActionEvent(
@@ -224,7 +227,10 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 			let serverErrors: { [key: string]: number } = {};
 			serverAssessmentErrorsMap.forEach((v, k) => {
-				serverErrors[k] = v;
+				serverIssues = {
+					...serverIssues,
+					[k.toString()]: v
+				};
 			});
 
 			sendSqlMigrationActionEvent(
@@ -299,7 +305,10 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			});
 			let databaseWarnings: { [key: string]: number } = {};
 			databaseWarningsMap.forEach((v, k) => {
-				databaseIssues[k] = v;
+				databaseWarnings = {
+					...databaseWarnings,
+					[k]: v
+				};
 			});
 
 			sendSqlMigrationActionEvent(
@@ -311,9 +320,12 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				databaseWarnings
 			);
 
-			let databaseIssues: { [key: string]: number } = {};
+			let databaseErrors: { [key: string]: number } = {};
 			databaseErrorsMap.forEach((v, k) => {
-				databaseIssues[k] = v;
+				databaseErrors = {
+					...databaseWarnings,
+					[k]: v
+				};
 			});
 
 			sendSqlMigrationActionEvent(
@@ -322,7 +334,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				{
 					'sessionId': this._sessionId,
 				},
-				databaseIssues
+				databaseErrors
 			);
 
 		} catch (e) {
@@ -857,7 +869,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 							'serverName': this._targetServerInstance.name,
 							'tenantId': this._azureAccount.properties.tenants[0].id,
 							'location': this._targetServerInstance.location,
-							'sqlMigrationService': this._sqlMigrationService.id,
+							'sqlMigrationServiceId': this._sqlMigrationService.id,
 							'irRegistered': (this._nodeNames.length > 0).toString()
 						},
 						{
