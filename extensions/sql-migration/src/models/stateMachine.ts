@@ -200,19 +200,23 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 	private async generateAssessmentTelemetry(): Promise<void> {
 		try {
+
+			let serverIssues: { [key: string]: number } = {};
 			this._assessmentResults.issues.forEach(i => {
-				sendSqlMigrationActionEvent(
-					TelemetryViews.MigrationWizardTargetSelectionPage,
-					TelemetryAction.ServerAssessmentIssues,
-					{
-						'sessionId': this._sessionId,
-						'ruleId': i.ruleId
-					},
-					{
-						'count': i.impactedObjects.length
-					}
-				);
+				serverIssues = {
+					...serverIssues,
+					[i.ruleId]: i.impactedObjects.length
+				};
 			});
+
+			sendSqlMigrationActionEvent(
+				TelemetryViews.MigrationWizardTargetSelectionPage,
+				TelemetryAction.ServerAssessmentIssues,
+				{
+					'sessionId': this._sessionId,
+				},
+				serverIssues
+			);
 
 			const serverAssessmentErrorsMap: Map<number, number> = new Map();
 			this._assessmentApiResponse.assessmentResult.errors.forEach(e => {
@@ -223,19 +227,22 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				}
 			});
 
+			let serverErrors: { [key: string]: number } = {};
 			serverAssessmentErrorsMap.forEach((v, k) => {
-				sendSqlMigrationActionEvent(
-					TelemetryViews.MigrationWizardTargetSelectionPage,
-					TelemetryAction.ServerAssessmentError,
-					{
-						'sessionId': this._sessionId
-					},
-					{
-						'errorId': k,
-						'count': v
-					}
-				);
+				serverIssues = {
+					...serverIssues,
+					[k.toString()]: v
+				};
 			});
+
+			sendSqlMigrationActionEvent(
+				TelemetryViews.MigrationWizardTargetSelectionPage,
+				TelemetryAction.ServerAssessmentError,
+				{
+					'sessionId': this._sessionId,
+				},
+				serverErrors
+			);
 
 			const startTime = new Date(this._assessmentApiResponse.startTime).getTime();
 			const endTime = new Date(this._assessmentApiResponse.endedTime).getTime();
@@ -257,10 +264,10 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				{
 					'issuesCount': this._assessmentResults.issues.length,
 					'warningsCount': this._assessmentResults.databaseAssessments.reduce((count, d) => count + d.issues.length, 0),
-					'duration': endTime - startTime,
+					'durationInMilliseconds': endTime - startTime,
 					'databaseCount': this._assessmentResults.databaseAssessments.length,
 					'serverHostCpuCount': this._assessmentApiResponse.assessmentResult.cpuCoreCount,
-					'serverHostPhysicalMemory': this._assessmentApiResponse.assessmentResult.physicalServerMemory,
+					'serverHostPhysicalMemoryInBytes': this._assessmentApiResponse.assessmentResult.physicalServerMemory,
 					'serverDatabases': this._assessmentApiResponse.assessmentResult.numberOfUserDatabases,
 					'serverDatabasesReadyForMigration': this._assessmentApiResponse.assessmentResult.sqlManagedInstanceTargetReadiness.numberOfDatabasesReadyForMigration,
 					'offlineDatabases': this._assessmentApiResponse.assessmentResult.sqlManagedInstanceTargetReadiness.numberOfNonOnlineDatabases
@@ -283,9 +290,9 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 					{
 						'warningsCount': d.items.length,
 						'errorsCount': d.errors.length,
-						'assessmentTime': d.assessmentTimeInMilliseconds,
+						'assessmentTimeMs': d.assessmentTimeInMilliseconds,
 						'numberOfBlockerIssues': d.sqlManagedInstanceTargetReadiness.numOfBlockerIssues,
-						'databaseSize': d.databaseSize
+						'databaseSizeInMb': d.databaseSize
 					}
 				);
 
@@ -306,34 +313,39 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				});
 
 			});
-
+			let databaseWarnings: { [key: string]: number } = {};
 			databaseWarningsMap.forEach((v, k) => {
-				sendSqlMigrationActionEvent(
-					TelemetryViews.MigrationWizardTargetSelectionPage,
-					TelemetryAction.DatabaseAssessmentWarning,
-					{
-						'sessionId': this._sessionId,
-						'ruleId': k
-					},
-					{
-						'count': v
-					}
-				);
+				databaseWarnings = {
+					...databaseWarnings,
+					[k]: v
+				};
 			});
 
+			sendSqlMigrationActionEvent(
+				TelemetryViews.MigrationWizardTargetSelectionPage,
+				TelemetryAction.DatabaseAssessmentWarning,
+				{
+					'sessionId': this._sessionId,
+				},
+				databaseWarnings
+			);
+
+			let databaseIssues: { [key: string]: number } = {};
 			databaseErrorsMap.forEach((v, k) => {
-				sendSqlMigrationActionEvent(
-					TelemetryViews.MigrationWizardTargetSelectionPage,
-					TelemetryAction.DatabaseAssessmentError,
-					{
-						'sessionId': this._sessionId
-					},
-					{
-						'errorId': k,
-						'count': v
-					}
-				);
+				databaseIssues = {
+					...databaseWarnings,
+					[k]: v
+				};
 			});
+
+			sendSqlMigrationActionEvent(
+				TelemetryViews.MigrationWizardTargetSelectionPage,
+				TelemetryAction.DatabaseAssessmentError,
+				{
+					'sessionId': this._sessionId,
+				},
+				databaseIssues
+			);
 
 		} catch (e) {
 			console.log(e);
@@ -868,9 +880,10 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 							'tenantId': this._azureAccount.properties.tenants[0].id,
 							'location': this._targetServerInstance.location,
 							'sqlMigrationService': this._sqlMigrationService.id,
+							'irRegistered': (this._nodeNames.length > 0).toString()
 						},
 						{
-							'irRegistered': this._nodeNames.length > 0 ? 1 : 0
+
 						}
 					);
 
