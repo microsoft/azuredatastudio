@@ -70,13 +70,13 @@ suite('NotebookMarkdownRenderer', () => {
 	});
 
 	test('email renders properly', () => {
-		let result: HTMLElement = notebookMarkdownRenderer.renderMarkdown({ value: `[test@email.com](mailto:test@email.com)` });
-		assert.strictEqual(result.innerHTML, `<p>test@email.com</p>`);
+		let result: HTMLElement = notebookMarkdownRenderer.renderMarkdown({ value: `[test@email.com](mailto:test@email.com)`, isTrusted: true });
+		assert.strictEqual(result.innerHTML, `<p><a href="mailto:test@email.com" data-href="mailto:test@email.com" title="mailto:test@email.com">test@email.com</a></p>`);
 	});
 
 	test('link to https with query parameters', () => {
-		let result: HTMLElement = notebookMarkdownRenderer.renderMarkdown({ value: `[test](https://www.google.com?test=&test2=)` });
-		assert.strictEqual(result.innerHTML, `<p>test</p>`);
+		let result: HTMLElement = notebookMarkdownRenderer.renderMarkdown({ value: `[test](https://www.test.com?test=&test2=)`, isTrusted: true });
+		assert.strictEqual(result.innerHTML, `<p><a href="https://www.test.com?test=&amp;test2=" data-href="https://www.test.com?test=&amp;test2=" title="https://www.test.com?test=&amp;test2=">test</a></p>`);
 	});
 
 	test('cell attachment image', () => {
