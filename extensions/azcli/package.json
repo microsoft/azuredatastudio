@@ -9,7 +9,7 @@
   "icon": "images/extension.png",
   "engines": {
     "vscode": "*",
-    "az": ">=1.26.0"
+    "azdata": ">=1.26.0"
   },
   "activationEvents": [
     "*"
@@ -36,10 +36,6 @@
         }
       }
     ],
-    "commands": [],
-    "menus": {
-      "commandPalette": []
-    },
     "resourceDeploymentOptionsSources": [
       {
         "id": "arc.controller.config.profiles"
