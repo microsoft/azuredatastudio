@@ -9,6 +9,7 @@ import { Project } from '../models/project';
 import { PublishProfile, readPublishProfile } from '../models/publishProfile/publishProfile';
 import { promptForPublishProfile } from './publishDatabaseDialog';
 import { getVscodeMssqlApi } from '../common/utils';
+import { IConnectionInfo } from 'vscode-mssql';
 
 /**
  * Create flow for Publishing a database using only VS Code-native APIs such as QuickPick
@@ -72,15 +73,19 @@ export async function launchPublishDatabaseQuickpick(project: Project): Promise<
 
 	// 2. Select connection
 	const vscodeMssqlApi = await getVscodeMssqlApi();
+	let connectionProfile: IConnectionInfo | undefined = undefined;
+	let connectionUri: string = '';
 	let dbs: string[] | undefined = undefined;
 	while (!dbs) {
-		const connectionProfile = await vscodeMssqlApi.promptForConnection(true);
+		connectionProfile = await vscodeMssqlApi.promptForConnection(true);
 		if (!connectionProfile) {
+			// User cancelled
 			return;
 		}
 		// Get the list of databases now to validate that the connection is valid and re-prompt them if it isn't
 		try {
-			dbs = await vscodeMssqlApi.listDatabases(connectionProfile);
+			connectionUri = await vscodeMssqlApi.connect(connectionProfile);
+			dbs = await vscodeMssqlApi.listDatabases(connectionUri);
 		} catch (err) {
 			// no-op, the mssql extension handles showing the error to the user. We'll just go
 			// back and prompt the user for a connection again

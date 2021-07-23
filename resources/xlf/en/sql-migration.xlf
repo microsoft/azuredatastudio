@@ -996,6 +996,21 @@ This may take some time.</source>
     <trans-unit id="sql.migration.username">
       <source xml:lang="en">Username</source>
     </trans-unit>
+    <trans-unit id="sql.migration.size">
+      <source xml:lang="en">Size (MB)</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.last.backup">
+      <source xml:lang="en">Last backup</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.database.migration">
+      <source xml:lang="en">Databases for migration</source>
+    </trans-unit>
+    <trans-unit id="sql.migrate.text">
+      <source xml:lang="en">Select database(s) that you want to migrate to Azure SQL</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.offline.caps">
+      <source xml:lang="en">OFFLINE</source>
+    </trans-unit>
     <trans-unit id="sql.migration.issues">
       <source xml:lang="en">Issues</source>
     </trans-unit>
@@ -1058,6 +1073,9 @@ This may take some time.</source>
     </trans-unit>
     <trans-unit id="sql.migration.databases">
       <source xml:lang="en">Databases ({0}/{1})</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.databases.selected">
+      <source xml:lang="en">{0}/{1} Databases Selected</source>
     </trans-unit>
     <trans-unit id="sql.migration.issues.count">
       <source xml:lang="en">Issues ({0})</source>
