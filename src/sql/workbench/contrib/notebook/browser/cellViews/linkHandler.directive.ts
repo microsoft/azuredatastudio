@@ -65,8 +65,14 @@ export class LinkHandlerDirective {
 				this.notebookService.navigateTo(this.notebookUri, uri.fragment);
 			} else {
 				if (uri.scheme === 'file') {
-					let exists = await this.fileService.exists(uri);
-					if (!exists) {
+					// this will check to see if both cases where file contains %20 (encoded) and file contains spaces (decoded) exists
+					let encodedFileExists = await this.fileService.exists(uri);
+					let decodedFileExists = await this.fileService.exists(URI.parse(content));
+					// If the encoded file is not found then we need to check if decoded path is found and set the uri to open that file
+					if (!encodedFileExists && decodedFileExists) {
+						uri = URI.parse(content);
+					}
+					if (!encodedFileExists && !decodedFileExists) {
 						let relPath = relative(this.workbenchFilePath.fsPath, uri.fsPath);
 						let path = resolve(this.notebookUri.fsPath, relPath);
 						try {
