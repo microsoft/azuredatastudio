@@ -56,7 +56,7 @@ export class LinkHandlerDirective {
 	private async handleLink(content: string): Promise<void> {
 		let uri: URI | undefined;
 		try {
-			uri = URI.parse(content);
+			uri = URI.parse(encodeURI(content));
 		} catch {
 			// ignore
 		}
