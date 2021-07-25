@@ -113,31 +113,13 @@ export class NetCoreTool {
 	private get isNetCoreVersionSupported(): boolean | undefined {
 		try {
 			let spawnSync = require('child_process').spawnSync;
-			let child, child2;
+			let child;
 
-			if (this.osPlatform === winPlatform) {
-				child = spawnSync('powershell.exe', ['dotnet --version'], {
-					encoding: 'utf-8'
-				});
-			} else if (this.osPlatform === macPlatform) {
-				child = spawnSync('dotnet --version', [], {
-					encoding: 'utf-8',
-					shell: true
-				});
-			} else if (this.osPlatform === linuxPlatform) {
-				child = spawnSync('ls', ['dotnet --version']);
-				child2 = spawnSync('dotnet --version', [], {
-					encoding: 'utf-8',
-					shell: true
-				});
-			} else {
-				return undefined;
-			}
+			child = spawnSync('dotnet --version', [], {
+				encoding: 'utf-8',
+				shell: true
+			});
 
-			console.error('Version:', String(child.stdout));
-			console.error('Error:', String(child.error));
-			console.error('Version:', String(child2.stdout));
-			console.error('Error:', String(child2.error));
 			let versions = String(child.stdout).split('.', 2);
 
 			if (Number(versions[0]) < 3) {
