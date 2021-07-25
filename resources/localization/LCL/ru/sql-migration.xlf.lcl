@@ -2696,7 +2696,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Canceling]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Отменяется]]></Val>
+            <Val><![CDATA[Выполняется отмена]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
