@@ -1132,6 +1132,10 @@
     <trans-unit id="arc.updated">
       <source xml:lang="en">Updated {0}</source>
     </trans-unit>
+    <trans-unit id="arc.connectionString">
+      <source xml:lang="en">Connection string for {0}</source>
+      <note>{0} is the name of the type of connection string (e.g. Java)</note>
+    </trans-unit>
     <trans-unit id="arc.copyConnectionStringToClipboard">
       <source xml:lang="en">Copy {0} Connection String to clipboard</source>
       <note>{0} is the name of the type of connection string (e.g. Java)</note>
