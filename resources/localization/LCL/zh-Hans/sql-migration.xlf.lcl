@@ -60,7 +60,7 @@
           <Val><![CDATA[Data Uploaded/Size]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[已上传数据/大小]]></Val>
-          </Tgt>https://github.githubassets.com/images/spinners/octocat-spinner-128.gif
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
