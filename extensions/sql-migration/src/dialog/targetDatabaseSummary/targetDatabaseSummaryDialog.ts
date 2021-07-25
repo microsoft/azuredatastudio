@@ -111,12 +111,12 @@ export class TargetDatabaseSummaryDialog {
 					headerCssStyles: headerCssStyle
 				}, {
 					valueType: azdata.DeclarativeDataType.string,
-					displayName: constants.LAST_BACKUP_FILE,
+					displayName: constants.BLOB_CONTAINER_LAST_BACKUP_FILE,
 					isReadOnly: true,
 					width: columnWidth,
 					rowCssStyles: rowCssStyle,
 					headerCssStyles: headerCssStyle,
-					hideColumn: this._model._databaseBackup.migrationMode !== MigrationMode.ONLINE
+					hidden: this._model._databaseBackup.migrationMode === MigrationMode.ONLINE
 				});
 			}
 

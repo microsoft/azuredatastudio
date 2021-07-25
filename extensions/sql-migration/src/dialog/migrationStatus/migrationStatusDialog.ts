@@ -283,7 +283,7 @@ export class MigrationStatusDialog {
 				return [
 					{ value: this._getDatabaserHyperLink(migration) },
 					{ value: this._getMigrationStatus(migration) },
-					{ value: loc.ONLINE },
+					{ value: this._getMigrationMode(migration) },
 					{ value: this._getMigrationTargetType(migration) },
 					{ value: migration.targetManagedInstance.name },
 					{ value: migration.controller.name },
@@ -372,6 +372,13 @@ export class MigrationStatusDialog {
 		return migration.targetManagedInstance.type === 'microsoft.sql/managedinstances'
 			? loc.SQL_MANAGED_INSTANCE
 			: loc.SQL_VIRTUAL_MACHINE;
+	}
+
+	private _getMigrationMode(migration: MigrationContext): string {
+		if (migration.migrationContext.properties.provisioningState === 'Creating') {
+			return '---';
+		}
+		return migration.migrationContext.properties.autoCutoverConfiguration?.autoCutover?.valueOf() ? loc.OFFLINE : loc.ONLINE;
 	}
 
 	private _getMigrationStatus(migration: MigrationContext): azdata.FlexContainer {

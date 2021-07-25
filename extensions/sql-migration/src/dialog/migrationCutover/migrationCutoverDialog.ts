@@ -12,6 +12,7 @@ import { convertByteSizeToReadableUnit, convertIsoTimeToLocalTime, getSqlServerN
 import { EOL } from 'os';
 import * as vscode from 'vscode';
 import { ConfirmCutoverDialog } from './confirmCutoverDialog';
+import { MigrationMode } from '../../models/stateMachine';
 
 const refreshFrequency: SupportedAutoRefreshIntervals = 30000;
 
@@ -48,6 +49,7 @@ export class MigrationCutoverDialog {
 	constructor(migration: MigrationContext) {
 		this._model = new MigrationCutoverDialogModel(migration);
 		this._dialogObject = azdata.window.createModelViewDialog('', 'MigrationCutoverDialog', 'wide');
+		this.isOfflineMigration = this._model._migration.migrationContext.properties.autoCutoverConfiguration?.autoCutover?.valueOf() ? true : false;
 	}
 
 	async initialize(): Promise<void> {
@@ -258,15 +260,23 @@ export class MigrationCutoverDialog {
 					fontSize: '12px'
 				}).component();
 
-				const formBuilder = view.modelBuilder.formContainer().withFormItems(
-					[
-						{ component: this.migrationContainerHeader() },
-						{ component: this._view.modelBuilder.separator().withProps({ width: 1000 }).component() },
-						{ component: flexInfo },
+				let formItems = [
+					{ component: this.migrationContainerHeader() },
+					{ component: this._view.modelBuilder.separator().withProps({ width: 1000 }).component() },
+					{ component: flexInfo },
+				];
+
+				if (this._shouldDisplayBackupFileTable()) {
+					const onlineMigrationFormItems = [
 						{ component: this._view.modelBuilder.separator().withProps({ width: 1000 }).component() },
 						{ component: this._fileCount },
 						{ component: this.fileTable }
-					],
+					];
+					formItems = [...formItems, ...onlineMigrationFormItems];
+				}
+
+				const formBuilder = view.modelBuilder.formContainer().withFormItems(
+					formItems,
 					{ horizontal: false }
 				);
 				const form = formBuilder.withLayout({ width: '100%' }).component();
@@ -371,9 +381,12 @@ export class MigrationCutoverDialog {
 			await this.refreshStatus();
 		});
 
-		headerActions.addItem(this._cutoverButton, {
-			flex: '0'
-		});
+		if (this._isProvisioned() && this._isOnlineMigration()) {
+			// _todo: should we just not create the cutover button if offline?
+			headerActions.addItem(this._cutoverButton, {
+				flex: '0'
+			});
+		}
 
 		this._cancelButton = this._view.modelBuilder.button().withProps({
 			iconPath: IconPathHelper.cancel,
@@ -532,19 +545,22 @@ export class MigrationCutoverDialog {
 
 			this._model.migrationStatus.properties.migrationStatusDetails?.activeBackupSets?.forEach((activeBackupSet) => {
 
-				tableData.push(
-					{
-						fileName: activeBackupSet.listOfBackupFiles[0].fileName,
-						type: activeBackupSet.backupType,
-						status: activeBackupSet.listOfBackupFiles[0].status,
-						dataUploaded: `${convertByteSizeToReadableUnit(activeBackupSet.listOfBackupFiles[0].dataWritten)}/ ${convertByteSizeToReadableUnit(activeBackupSet.listOfBackupFiles[0].totalSize)}`,
-						copyThroughput: (activeBackupSet.listOfBackupFiles[0].copyThroughput / 1024).toFixed(2),
-						backupStartTime: activeBackupSet.backupStartDate,
-						firstLSN: activeBackupSet.firstLSN,
-						lastLSN: activeBackupSet.lastLSN
+				if (this._shouldDisplayBackupFileTable()) {
+					tableData.push(
+						{
+							fileName: activeBackupSet.listOfBackupFiles[0].fileName,
+							type: activeBackupSet.backupType,
+							status: activeBackupSet.listOfBackupFiles[0].status,
+							dataUploaded: `${convertByteSizeToReadableUnit(activeBackupSet.listOfBackupFiles[0].dataWritten)}/ ${convertByteSizeToReadableUnit(activeBackupSet.listOfBackupFiles[0].totalSize)}`,
+							copyThroughput: (activeBackupSet.listOfBackupFiles[0].copyThroughput / 1024).toFixed(2),
+							backupStartTime: activeBackupSet.backupStartDate,
+							firstLSN: activeBackupSet.firstLSN,
+							lastLSN: activeBackupSet.lastLSN
 
-					}
-				);
+						}
+					);
+				}
+
 				if (activeBackupSet.listOfBackupFiles[0].fileName === this._model.migrationStatus.properties.migrationStatusDetails?.lastRestoredFilename) {
 					lastAppliedSSN = activeBackupSet.lastLSN;
 					lastAppliedBackupFileTakenOn = activeBackupSet.backupFinishDate;
@@ -567,10 +583,6 @@ export class MigrationCutoverDialog {
 			// Displaying storage accounts and blob container for azure blob backups.
 			if (isBlobMigration) {
 				backupLocation = `${this._model._migration.migrationContext.properties.backupConfiguration.sourceLocation?.azureBlob?.storageAccountResourceId.split('/').pop()} - ${this._model._migration.migrationContext.properties.backupConfiguration.sourceLocation?.azureBlob?.blobContainerName}`;
-				this._fileCount.display = 'none';
-				this.fileTable.updateCssStyles({
-					'display': 'none'
-				});
 			} else {
 				backupLocation = this._model._migration.migrationContext.properties.backupConfiguration?.sourceLocation?.fileShare?.path! ?? '-';
 			}
@@ -580,23 +592,25 @@ export class MigrationCutoverDialog {
 			this._lastAppliedBackupFile.value = this._model.migrationStatus.properties.migrationStatusDetails?.lastRestoredFilename ?? '-';
 			this._lastAppliedBackupTakenOn.value = lastAppliedBackupFileTakenOn! ? convertIsoTimeToLocalTime(lastAppliedBackupFileTakenOn).toLocaleString() : '-';
 
-			this._fileCount.value = loc.ACTIVE_BACKUP_FILES_ITEMS(tableData.length);
+			if (this._shouldDisplayBackupFileTable()) {
+				this._fileCount.value = loc.ACTIVE_BACKUP_FILES_ITEMS(tableData.length);
 
-			// Sorting files in descending order of backupStartTime
-			tableData.sort((file1, file2) => new Date(file1.backupStartTime) > new Date(file2.backupStartTime) ? - 1 : 1);
+				// Sorting files in descending order of backupStartTime
+				tableData.sort((file1, file2) => new Date(file1.backupStartTime) > new Date(file2.backupStartTime) ? - 1 : 1);
 
-			this.fileTable.data = tableData.map((row) => {
-				return [
-					row.fileName,
-					row.type,
-					row.status,
-					row.dataUploaded,
-					row.copyThroughput,
-					convertIsoTimeToLocalTime(row.backupStartTime).toLocaleString(),
-					row.firstLSN,
-					row.lastLSN
-				];
-			});
+				this.fileTable.data = tableData.map((row) => {
+					return [
+						row.fileName,
+						row.type,
+						row.status,
+						row.dataUploaded,
+						row.copyThroughput,
+						convertIsoTimeToLocalTime(row.backupStartTime).toLocaleString(),
+						row.firstLSN,
+						row.lastLSN
+					];
+				});
+			}
 
 			if (migrationStatusTextValue === MigrationStatus.InProgress) {
 				const restoredCount = (this._model.migrationStatus.properties.migrationStatusDetails?.activeBackupSets?.filter(a => a.listOfBackupFiles[0].status === 'Restored'))?.length ?? 0;
@@ -648,6 +662,26 @@ export class MigrationCutoverDialog {
 			flexContainer: flexContainer,
 			text: textComponent
 		};
+	}
+
+	private _isProvisioned(): boolean {
+		return this._model._migration.migrationContext.properties.provisioningState === 'Succeeded';
+	}
+
+	private _isOnlineMigration(): boolean {
+		let migrationMode = null;
+		if (this._isProvisioned()) {
+			migrationMode = this._model._migration.migrationContext.properties.autoCutoverConfiguration?.autoCutover?.valueOf() ? MigrationMode.OFFLINE : MigrationMode.ONLINE;
+		}
+		return migrationMode === MigrationMode.ONLINE;
+	}
+
+	private _isBlobMigration(): boolean {
+		return this._model._migration.migrationContext.properties.backupConfiguration.sourceLocation?.azureBlob !== undefined;
+	}
+
+	private _shouldDisplayBackupFileTable(): boolean {
+		return this._isProvisioned() && this._isOnlineMigration() && !this._isBlobMigration();
 	}
 }
 
