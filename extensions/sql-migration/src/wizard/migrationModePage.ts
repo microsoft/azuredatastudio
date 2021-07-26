@@ -29,10 +29,10 @@ export class MigrationModePage extends MigrationWizardPage {
 	}
 
 	public async onPageEnter(): Promise<void> {
+		this.originalMigrationMode = this.migrationStateModel._databaseBackup.migrationMode;
 		this.wizard.registerNavigationValidator((e) => {
 			return true;
 		});
-		this.originalMigrationMode = this.migrationStateModel._databaseBackup.migrationMode;
 	}
 	public async onPageLeave(): Promise<void> {
 		if (this.originalMigrationMode !== this.migrationStateModel._databaseBackup.migrationMode) {

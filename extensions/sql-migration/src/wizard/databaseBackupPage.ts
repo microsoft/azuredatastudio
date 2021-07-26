@@ -19,6 +19,9 @@ const WIZARD_TABLE_COLUMN_WIDTH = '150px';
 export class DatabaseBackupPage extends MigrationWizardPage {
 	private _view!: azdata.ModelView;
 
+	private _networkShareButton!: azdata.RadioButtonComponent;
+	private _blobContainerButton!: azdata.RadioButtonComponent;
+
 	private _networkShareContainer!: azdata.FlexContainer;
 	private _windowsUserAccountText!: azdata.InputBoxComponent;
 	private _passwordText!: azdata.InputBoxComponent;
@@ -104,7 +107,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			}
 		}).component();
 
-		const networkShareButton = this._view.modelBuilder.radioButton()
+		this._networkShareButton = this._view.modelBuilder.radioButton()
 			.withProps({
 				name: buttonGroup,
 				label: constants.DATABASE_BACKUP_NC_NETWORK_SHARE_RADIO_LABEL,
@@ -113,13 +116,13 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				}
 			}).component();
 
-		networkShareButton.onDidChangeCheckedState((e) => {
+		this._networkShareButton.onDidChangeCheckedState((e) => {
 			if (e) {
 				this.switchNetworkContainerFields(NetworkContainerType.NETWORK_SHARE);
 			}
 		});
 
-		const blobContainerButton = this._view.modelBuilder.radioButton()
+		this._blobContainerButton = this._view.modelBuilder.radioButton()
 			.withProps({
 				name: buttonGroup,
 				label: constants.DATABASE_BACKUP_NC_BLOB_STORAGE_RADIO_LABEL,
@@ -128,7 +131,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				}
 			}).component();
 
-		blobContainerButton.onDidChangeCheckedState((e) => {
+		this._blobContainerButton.onDidChangeCheckedState((e) => {
 			if (e) {
 				this.switchNetworkContainerFields(NetworkContainerType.BLOB_CONTAINER);
 			}
@@ -137,8 +140,8 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 		const flexContainer = this._view.modelBuilder.flexContainer().withItems(
 			[
 				selectLocationText,
-				networkShareButton,
-				blobContainerButton
+				this._networkShareButton,
+				this._blobContainerButton
 			]
 		).withLayout({
 			flexFlow: 'column'
@@ -654,6 +657,13 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			const lastBackupFileColumnIndex = this._blobContainerTargetDatabaseNamesTable.columns.length - 1;
 			this._blobContainerTargetDatabaseNamesTable.columns[lastBackupFileColumnIndex].hidden = !isOfflineMigration;
 
+			this._networkShareButton.checked = false;
+			this._blobContainerButton.checked = false;
+			this._networkShareContainer.updateCssStyles({ 'display': 'none' });
+			this._blobContainer.updateCssStyles({ 'display': 'none' });
+			this._networkTableContainer.display = 'none';
+			this._blobTableContainer.display = 'none';
+
 			const connectionProfile = await this.migrationStateModel.getSourceConnectionProfile();
 			const queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>((await this.migrationStateModel.getSourceConnectionProfile()).providerId, azdata.DataProviderType.QueryProvider);
 			const query = 'select SUSER_NAME()';
@@ -872,24 +882,24 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 					break;
 				case NetworkContainerType.BLOB_CONTAINER:
 					this._blobContainerResourceGroupDropdowns.forEach(v => {
-						if ((<azdata.CategoryValue>v.value).displayName === constants.RESOURCE_GROUP_NOT_FOUND) {
+						if (v.value === undefined || (<azdata.CategoryValue>v.value).displayName === constants.RESOURCE_GROUP_NOT_FOUND) {
 							errors.push(constants.INVALID_RESOURCE_GROUP_ERROR);
 						}
 					});
 					this._blobContainerStorageAccountDropdowns.forEach(v => {
-						if ((<azdata.CategoryValue>v.value).displayName === constants.NO_STORAGE_ACCOUNT_FOUND) {
+						if (v.value === undefined || (<azdata.CategoryValue>v.value).displayName === constants.NO_STORAGE_ACCOUNT_FOUND) {
 							errors.push(constants.INVALID_STORAGE_ACCOUNT_ERROR);
 						}
 					});
 					this._blobContainerDropdowns.forEach(v => {
-						if ((<azdata.CategoryValue>v.value).displayName === constants.NO_BLOBCONTAINERS_FOUND) {
+						if (v.value === undefined || (<azdata.CategoryValue>v.value).displayName === constants.NO_BLOBCONTAINERS_FOUND) {
 							errors.push(constants.INVALID_BLOBCONTAINER_ERROR);
 						}
 					});
 
 					if (this.migrationStateModel._databaseBackup.migrationMode === MigrationMode.OFFLINE) {
 						this._blobContainerLastBackupFileDropdowns.forEach(v => {
-							if ((<azdata.CategoryValue>v.value).displayName === constants.NO_FILE_NAMES_FOUND) {
+							if (v.value === undefined || (<azdata.CategoryValue>v.value).displayName === constants.NO_FILE_NAMES_FOUND) {
 								errors.push(constants.INVALID_LAST_BACKUP_FILE_ERROR);
 							}
 						});

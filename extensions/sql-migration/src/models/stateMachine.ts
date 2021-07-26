@@ -601,20 +601,21 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		let blobLastBackupFileValues: azdata.CategoryValue[] = [];
 		try {
 			this._lastFileNames = await getBlobs(this._azureAccount, subscription, storageAccount, blobContainer.name);
-			this._lastFileNames.forEach((blob) => {
-				blobLastBackupFileValues.push({
-					name: blob.name, // _todo: is it ok for this to be blob.name, there is no blob.id
-					displayName: `${blob.name}`
-				});
-			});
-
-			if (blobLastBackupFileValues.length === 0) {
+			if (this._lastFileNames.length === 0) {
 				blobLastBackupFileValues = [
 					{
 						displayName: constants.NO_FILE_NAMES_FOUND,
 						name: ''
 					}
 				];
+			} else {
+				const sortedFileNames = this._lastFileNames.sort((a, b) => new Date(b.properties.lastModified).getTime() - new Date(a.properties.lastModified).getTime());
+				sortedFileNames.forEach((blob) => {
+					blobLastBackupFileValues.push({
+						name: blob.name,
+						displayName: `${blob.name}`,
+					});
+				});
 			}
 		} catch (e) {
 			console.log(e);
