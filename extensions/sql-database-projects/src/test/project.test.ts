@@ -13,7 +13,7 @@ import * as constants from '../common/constants';
 
 import { promises as fs } from 'fs';
 import { Project, EntryType, SystemDatabase, SystemDatabaseReferenceProjectEntry, SqlProjectReferenceProjectEntry } from '../models/project';
-import { exists, convertSlashesForSqlProj, trimChars, trimUri } from '../common/utils';
+import { exists, convertSlashesForSqlProj } from '../common/utils';
 import { Uri, window } from 'vscode';
 import { IDacpacReferenceSettings, IProjectReferenceSettings, ISystemDatabaseReferenceSettings } from '../models/IDatabaseReferenceSettings';
 import { SqlTargetPlatform } from 'sqldbproj';
@@ -99,7 +99,7 @@ describe('Project: sqlproj content operations', function (): void {
 	it('Should add Folder and Build entries to sqlproj', async function (): Promise<void> {
 		const project = await Project.openProject(projFilePath);
 
-		const folderPath = 'Stored Procedures';
+		const folderPath = 'Stored Procedures\\';
 		const scriptPath = path.join(folderPath, 'Fake Stored Proc.sql');
 		const scriptContents = 'SELECT \'This is not actually a stored procedure.\'';
 
@@ -582,43 +582,7 @@ describe('Project: sqlproj content operations', function (): void {
 
 	});
 
-	it('Should not allow adding duplicate file/folder entries in new sqlproj by default', async function (): Promise<void> {
-		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
-		const project: Project = await Project.openProject(projFilePath);
-		const fileList = await testUtils.createListOfFiles(path.dirname(projFilePath));
-
-		// 1. Add a folder to the project
-		const existingFolderUri = fileList[2];
-		const folderStats =  await fs.stat(existingFolderUri.fsPath);
-		should(folderStats.isDirectory()).equal(true, 'Third entry in fileList should be a subfolder');
-		await project.addToProject([existingFolderUri]);
-
-		// Try adding the folder to the project again
-		const folderRelativePath = trimChars(trimUri(Uri.file(projFilePath), existingFolderUri), '');
-		await testUtils.shouldThrowSpecificError(async () => await project.addToProject([existingFolderUri]), constants.folderAlreadyAddedToProject(folderRelativePath));
-
-		// 2. Add a file to the project
-		let existingFileUri = fileList[1];
-		let fileStats = await fs.stat(existingFileUri.fsPath);
-		should(fileStats.isFile()).equal(true, 'Second entry in fileList should be a file');
-		await project.addToProject([existingFileUri]);
-
-		// Try adding the file to the project again
-		let fileRelativePath = trimChars(trimUri(Uri.file(projFilePath), existingFileUri), '/');
-		await testUtils.shouldThrowSpecificError(async () => await project.addToProject([existingFileUri]), constants.fileAlreadyAddedToProject(fileRelativePath));
-
-		// 3. Add a file from subfolder to the project
-		existingFileUri = fileList[3];
-		fileStats = await fs.stat(existingFileUri.fsPath);
-		should(fileStats.isFile()).equal(true, 'Fourth entry in fileList should be a file');
-		await project.addToProject([existingFileUri]);
-
-		// Try adding the file from subfolder to the project again
-		fileRelativePath = trimChars(trimUri(Uri.file(projFilePath), existingFileUri), '/');
-		await testUtils.shouldThrowSpecificError(async () => await project.addToProject([existingFileUri]), constants.fileAlreadyAddedToProject(fileRelativePath));
-	});
-
-	it('Should ignore duplicate file/folder entries in new sqlproj if requested', async function (): Promise<void> {
+	it('Should ignore duplicate file/folder entries in new sqlproj', async function (): Promise<void> {
 		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
 		const project: Project = await Project.openProject(projFilePath);
 		const fileList = await testUtils.createListOfFiles(path.dirname(projFilePath));
@@ -632,7 +596,7 @@ describe('Project: sqlproj content operations', function (): void {
 		should(project.files.length).equal(1, 'New folder entry should be added to the project');
 
 		// Add the folder to the project again
-		should(await project.addToProject([existingFolderUri], true))
+		should(await project.addToProject([existingFolderUri]))
 			.equal(folderEntry, 'Original folder entry should be returned when adding same folder for a second time');
 		should(project.files.length).equal(1, 'No new entries should be added to the project when adding same folder for a second time');
 
@@ -645,7 +609,7 @@ describe('Project: sqlproj content operations', function (): void {
 		should(project.files.length).equal(2, 'New file entry should be added to the project');
 
 		// Add the file to the project again
-		should(await project.addToProject([existingFileUri], true))
+		should(await project.addToProject([existingFileUri]))
 			.equal(fileEntry, 'Original file entry should be returned when adding same file for a second time');
 		should(project.files.length).equal(2, 'No new entries should be added to the project when adding same file for a second time');
 
@@ -658,12 +622,12 @@ describe('Project: sqlproj content operations', function (): void {
 		should(project.files.length).equal(3, 'New file entry should be added to the project');
 
 		// Add the file from subfolder to the project again
-		should(await project.addToProject([existingFileUri], true))
+		should(await project.addToProject([existingFileUri]))
 			.equal(fileEntry, 'Original file entry should be returned when adding same file for a second time');
 		should(project.files.length).equal(3, 'No new entries should be added to the project when adding same file for a second time');
 	});
 
-	it('Should not allow adding duplicate file entries in existing sqlproj by default', async function (): Promise<void> {
+	it('Should ignore duplicate file entries in existing sqlproj', async function (): Promise<void> {
 		// Create new sqlproj
 		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
 		const fileList = await testUtils.createListOfFiles(path.dirname(projFilePath));
@@ -680,31 +644,45 @@ describe('Project: sqlproj content operations', function (): void {
 		project = await Project.openProject(projFilePath);
 
 		// Try adding the same file to the project again
-		const fileRelativePath = trimChars(trimUri(Uri.file(projFilePath), existingFileUri), '/');
-		await testUtils.shouldThrowSpecificError(async () => await project.addToProject([existingFileUri]), constants.fileAlreadyAddedToProject(fileRelativePath));
+		await project.addToProject([existingFileUri]);
 	});
 
-	it('Should ignore duplicate file entries in existing sqlproj if requested', async function (): Promise<void> {
+	it('Should not overwrite existing files', async function (): Promise<void> {
 		// Create new sqlproj
 		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
 		const fileList = await testUtils.createListOfFiles(path.dirname(projFilePath));
 
 		let project: Project = await Project.openProject(projFilePath);
 
-		// Add a file to the project
+		// Add a file entry to the project with explicit content
 		let existingFileUri = fileList[3];
 		let fileStats = await fs.stat(existingFileUri.fsPath);
 		should(fileStats.isFile()).equal(true, 'Fourth entry in fileList should be a file');
-		await project.addToProject([existingFileUri]);
 
-		// Reopen existing project
-		project = await Project.openProject(projFilePath);
-
-		// Try adding the same file to the project again
-		await project.addToProject([existingFileUri], true);
+		const relativePath = path.relative(path.dirname(projFilePath), existingFileUri.fsPath);
+		await testUtils.shouldThrowSpecificError(
+			async () => await project.addScriptItem(relativePath, 'Hello World!'),
+			`A file with the name '${path.parse(relativePath).name}' already exists on disk at this location. Please choose another name.`);
 	});
 
-	it('Project entry relative path should not change after round-trip', async function (): Promise<void> {
+	it('Should not add folders outside of the project folder', async function (): Promise<void> {
+		// Create new sqlproj
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
+
+		let project: Project = await Project.openProject(projFilePath);
+
+		// Try adding a project root folder itself
+		await testUtils.shouldThrowSpecificError(
+			async () => await project.addToProject([Uri.parse(path.dirname(projFilePath))]),
+			"Items with absolute path outside project folder are not supported. Please make sure the paths in the project file are relative to project folder.");
+
+		// Try adding a parent of the project folder
+		await testUtils.shouldThrowSpecificError(
+			async () => await project.addToProject([Uri.parse(path.dirname(path.dirname(projFilePath)))]),
+			"Items with absolute path outside project folder are not supported. Please make sure the paths in the project file are relative to project folder.");
+	});
+
+	it('Project entry relative path should not change after reload', async function (): Promise<void> {
 		// Create new sqlproj
 		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
 		const projectFolder = path.dirname(projFilePath);
@@ -736,9 +714,9 @@ describe('Project: sqlproj content operations', function (): void {
 		should(project.files.length).equal(2, 'Two entries are expected in the loaded project');
 
 		fileEntry = project.files.find(f => f.relativePath.endsWith('test.sql'));
-		should.exist(fileEntry, 'Entry for the file should be present in the project after round-trip');
+		should.exist(fileEntry, 'Entry for the file should be present in the project after reload');
 		if (fileEntry) {
-			should(fileEntry.relativePath).equal(originalRelativePath, 'Relative path should match after a round-trip');
+			should(fileEntry.relativePath).equal(originalRelativePath, 'Relative path should match after reload');
 		}
 	});
 
@@ -787,7 +765,7 @@ describe('Project: sqlproj content operations', function (): void {
 		should(project.files.map(f => ({ type: f.type, relativePath: f.relativePath })))
 			.containDeep([
 				{ type: EntryType.Folder, relativePath: 'foo\\' },
-				{ type: EntryType.Folder, relativePath: 'foo\\bar' }]);
+				{ type: EntryType.Folder, relativePath: 'foo\\bar\\' }]);
 	});
 
 	it('Should not add duplicate intermediate folders to project', async function (): Promise<void> {
@@ -818,6 +796,34 @@ describe('Project: sqlproj content operations', function (): void {
 				{ type: EntryType.Folder, relativePath: 'foo\\bar\\' },
 				{ type: EntryType.File, relativePath: 'foo\\bar\\test.sql' },
 				{ type: EntryType.File, relativePath: 'foo\\bar\\test2.sql' }]);
+	});
+
+	it('Should not add duplicate intermediate folders to project when folder is explicitly added', async function (): Promise<void> {
+		// Create new sqlproj
+		projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
+		const projectFolder = path.dirname(projFilePath);
+
+		// Create file under nested folders structure
+		const newFile = path.join(projectFolder, 'foo', 'bar', 'test.sql');
+		await fs.mkdir(path.dirname(newFile), { recursive: true });
+		await fs.writeFile(newFile, '');
+
+		const explicitIntermediateFolder = path.join(projectFolder, 'foo', 'bar');
+		await fs.mkdir(explicitIntermediateFolder, { recursive: true });
+
+		// Open empty project
+		let project: Project = await Project.openProject(projFilePath);
+
+		// Add file and folder to the project
+		await project.addToProject([Uri.file(newFile), Uri.file(explicitIntermediateFolder)]);
+
+		// Validate that intermediate folders were added to the project
+		should(project.files.length).equal(3, 'Three entries are expected in the project');
+		should(project.files.map(f => ({ type: f.type, relativePath: f.relativePath })))
+			.containDeep([
+				{ type: EntryType.Folder, relativePath: 'foo\\' },
+				{ type: EntryType.Folder, relativePath: 'foo\\bar\\' },
+				{ type: EntryType.File, relativePath: 'foo\\bar\\test.sql' }]);
 	});
 });
 

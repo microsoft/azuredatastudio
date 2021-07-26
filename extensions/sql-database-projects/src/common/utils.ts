@@ -37,7 +37,7 @@ export function trimUri(innerUri: vscode.Uri, outerUri: vscode.Uri): string {
 	if (path.isAbsolute(outerUri.path)
 		&& innerParts.length > 0 && outerParts.length > 0
 		&& innerParts[0].toLowerCase() !== outerParts[0].toLowerCase()) {
-		throw new Error(constants.ousiderFolderPath);
+		throw new Error(constants.outsideFolderPath);
 	}
 
 	while (innerParts.length > 0 && outerParts.length > 0 && innerParts[0].toLocaleLowerCase() === outerParts[0].toLocaleLowerCase()) {
@@ -72,13 +72,13 @@ export function trimChars(input: string, chars: string): string {
 
 /**
  * Ensures that folder path terminates with the slash.
- * Windows-style slash (`\`) is used by default.
+ * By default SSDT-style slash (`\`) is used.
  *
  * @param path Folder path to ensure trailing slash for.
  * @param slashCharacter Slash character to ensure is present at the end of the path.
  * @returns Path that ends with the given slash character.
  */
-export function ensureTrailingSlash(path: string, slashCharacter: string = '\\'): string {
+export function ensureTrailingSlash(path: string, slashCharacter: string = constants.SqlProjPathSeparator): string {
 	return path.endsWith(slashCharacter) ? path : path + slashCharacter;
 }
 
@@ -134,13 +134,13 @@ export function getPlatformSafeFileEntryPath(filePath: string): string {
 }
 
 /**
- * Standardizes slashes to be "\\" for consistency between platforms and compatibility with SSDT
+ * Standardizes slashes to be "\" for consistency between platforms and compatibility with SSDT
  *
  * @param filePath Path to the file of folder.
  */
 export function convertSlashesForSqlProj(filePath: string): string {
 	return filePath.includes('/')
-		? filePath.split('/').join('\\')
+		? filePath.split('/').join(constants.SqlProjPathSeparator)
 		: filePath;
 }
 
