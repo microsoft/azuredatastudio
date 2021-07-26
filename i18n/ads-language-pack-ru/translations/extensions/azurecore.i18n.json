@@ -41,6 +41,7 @@
 		"dist/azureResource/utils": {
 			"azure.resource.error": "Ошибка: {0}",
 			"azure.accounts.getResourceGroups.queryError": "Ошибка при получении групп ресурсов для учетной записи {0} ({1}) в подписке {2} ({3}) и клиенте {4}: {5}",
+			"azure.accounts.getLocations.queryError": "Ошибка при получении местоположений для учетной записи {0} ({1}) в подписке {2} ({3}) и клиенте {4}: {5}",
 			"azure.accounts.runResourceQuery.errors.invalidQuery": "Недопустимый запрос",
 			"azure.accounts.getSubscriptions.queryError": "Ошибка при получении подписок для учетной записи {0} в клиенте {1}: {2}",
 			"azure.accounts.getSelectedSubscriptions.queryError": "Ошибка при получении подписок для учетной записи {0}: {1}"
@@ -105,7 +106,7 @@
 			"azurecore.azureArcsqlManagedInstance": "Управляемый экземпляр SQL — Azure Arc",
 			"azurecore.azureArcService": "Служба данных — Azure Arc",
 			"azurecore.sqlServerArc": "SQL Server — Azure Arc",
-			"azurecore.azureArcPostgres": "Гипермасштабирование для PostgreSQL с поддержкой Azure Arc",
+			"azurecore.azureArcPostgres": "Гипермасштабирование для PostgreSQL с поддержкой Azure Arc",
 			"azure.unableToOpenAzureLink": "Не удается открыть ссылку, отсутствуют обязательные значения",
 			"azure.azureResourcesGridTitle": "Ресурсы Azure (предварительная версия)",
 			"azurecore.invalidAzureAccount": "Недопустимая учетная запись",
@@ -141,7 +142,9 @@
 		"dist/azureResource/tree/flatAccountTreeNode": {
 			"azure.resource.tree.accountTreeNode.titleLoading": "{0} — загрузка…",
 			"azure.resource.tree.accountTreeNode.title": "{0} (выбрано подписок: {1} из {2})",
-			"azure.resource.tree.accountTreeNode.credentialError": "Не удалось получить учетные данные для учетной записи {0}. Перейдите в диалоговое окно учетных записей и обновите учетную запись."
+			"azure.resource.tree.accountTreeNode.credentialError": "Не удалось получить учетные данные для учетной записи {0}. Перейдите в диалоговое окно учетных записей и обновите учетную запись.",
+			"azure.resource.throttleerror": "Запросы от этой учетной записи были ограничены. Чтобы повторить попытку, выберите меньшее количество подписок.",
+			"azure.resource.tree.loadresourceerror": "При загрузке ресурсов Azure произошла ошибка: {0}"
 		},
 		"dist/azureResource/tree/accountNotSignedInTreeNode": {
 			"azure.resource.tree.accountNotSignedInTreeNode.signInLabel": "Вход в Azure…"
@@ -202,6 +205,9 @@
 		},
 		"dist/azureResource/providers/kusto/kustoTreeDataProvider": {
 			"azure.resource.providers.KustoContainerLabel": "Кластер Azure Data Explorer"
+		},
+		"dist/azureResource/providers/azuremonitor/azuremonitorTreeDataProvider": {
+			"azure.resource.providers.AzureMonitorContainerLabel": "Azure Monitor Workspace"
 		},
 		"dist/azureResource/providers/postgresServer/postgresServerTreeDataProvider": {
 			"azure.resource.providers.databaseServer.treeDataProvider.postgresServerContainerLabel": "Сервер Базы данных Azure для PostgreSQL"

@@ -20,7 +20,7 @@ import { PublishDatabaseDialog } from '../dialogs/publishDatabaseDialog';
 import { Project, reservedProjectFolders, FileProjectEntry, SqlProjectReferenceProjectEntry, IDatabaseReferenceProjectEntry } from '../models/project';
 import { SqlDatabaseProjectTreeViewProvider } from './databaseProjectTreeViewProvider';
 import { FolderNode, FileNode } from '../models/tree/fileFolderTreeItem';
-import { IPublishSettings, IGenerateScriptSettings } from '../models/IPublishSettings';
+import { IDeploySettings } from '../models/IDeploySettings';
 import { BaseProjectTreeItem } from '../models/tree/baseTreeItem';
 import { ProjectRootTreeItem } from '../models/tree/projectTreeItem';
 import { ImportDataModel } from '../models/api/import';
@@ -244,8 +244,8 @@ export class ProjectsController {
 		if (utils.getAzdataApi()) {
 			let publishDatabaseDialog = this.getPublishDialog(project);
 
-			publishDatabaseDialog.publish = async (proj, prof) => this.publishProjectCallback(proj, prof);
-			publishDatabaseDialog.generateScript = async (proj, prof) => this.publishProjectCallback(proj, prof);
+			publishDatabaseDialog.publish = async (proj, prof) => this.publishOrScriptProject(proj, prof, true);
+			publishDatabaseDialog.generateScript = async (proj, prof) => this.publishOrScriptProject(proj, prof, false);
 			publishDatabaseDialog.readPublishProfile = async (profileUri) => readPublishProfile(profileUri);
 
 			publishDatabaseDialog.openDialog();
@@ -257,7 +257,14 @@ export class ProjectsController {
 		}
 	}
 
-	public async publishProjectCallback(project: Project, settings: IPublishSettings | IGenerateScriptSettings): Promise<mssql.DacFxResult | undefined> {
+	/**
+	 * Builds and either deploys or generates a deployment script for the specified project.
+	 * @param project The project to deploy
+	 * @param settings The settings used to configure the deployment
+	 * @param publish Whether to publish the deployment or just generate a script
+	 * @returns The DacFx result of the deployment
+	 */
+	public async publishOrScriptProject(project: Project, settings: IDeploySettings, publish: boolean): Promise<mssql.DacFxResult | undefined> {
 		const telemetryProps: Record<string, string> = {};
 		const telemetryMeasures: Record<string, number> = {};
 		const buildStartTime = new Date().getTime();
@@ -298,17 +305,16 @@ export class ProjectsController {
 
 		try {
 			const azdataApi = utils.getAzdataApi();
-			if ((<IPublishSettings>settings).upgradeExisting) {
+			if (publish) {
 				telemetryProps.publishAction = 'deploy';
 				if (azdataApi) {
-					result = await (dacFxService as mssql.IDacFxService).deployDacpac(tempPath, settings.databaseName, (<IPublishSettings>settings).upgradeExisting, settings.connectionUri, azdataApi.TaskExecutionMode.execute, settings.sqlCmdVariables, settings.deploymentOptions);
+					result = await (dacFxService as mssql.IDacFxService).deployDacpac(tempPath, settings.databaseName, true, settings.connectionUri, azdataApi.TaskExecutionMode.execute, settings.sqlCmdVariables, settings.deploymentOptions);
 				} else {
 					// TODO@chgagnon Fix typing
-					result = await (dacFxService as mssqlVscode.IDacFxService).deployDacpac(tempPath, settings.databaseName, (<IPublishSettings>settings).upgradeExisting, settings.connectionUri, <mssqlVscode.TaskExecutionMode><any>azdataApi!.TaskExecutionMode.execute, settings.sqlCmdVariables, <mssqlVscode.DeploymentOptions><any>settings.deploymentOptions);
+					result = await (dacFxService as mssqlVscode.IDacFxService).deployDacpac(tempPath, settings.databaseName, true, settings.connectionUri, <mssqlVscode.TaskExecutionMode><any>azdataApi!.TaskExecutionMode.execute, settings.sqlCmdVariables, <mssqlVscode.DeploymentOptions><any>settings.deploymentOptions);
 				}
 
-			}
-			else {
+			} else {
 				telemetryProps.publishAction = 'generateScript';
 				if (azdataApi) {
 					result = await (dacFxService as mssql.IDacFxService).generateDeployScript(tempPath, settings.databaseName, settings.connectionUri, azdataApi.TaskExecutionMode.script, settings.sqlCmdVariables, settings.deploymentOptions);

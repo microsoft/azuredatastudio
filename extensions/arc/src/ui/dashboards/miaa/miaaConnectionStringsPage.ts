@@ -41,12 +41,12 @@ export class MiaaConnectionStringsPage extends DashboardPage {
 		const content = this.modelView.modelBuilder.divContainer().component();
 		root.addItem(content, { CSSStyles: { 'margin': '20px' } });
 
-		content.addItem(this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+		content.addItem(this.modelView.modelBuilder.text().withProps({
 			value: loc.connectionStrings,
 			CSSStyles: { ...cssStyles.title }
 		}).component());
 
-		const info = this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+		const info = this.modelView.modelBuilder.text().withProps({
 			value: `${loc.selectConnectionString}`,
 			CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
 		}).component();
@@ -60,7 +60,7 @@ export class MiaaConnectionStringsPage extends DashboardPage {
 		content.addItem(this._keyValueContainer.container);
 
 		this._connectionStringsMessage = this.modelView.modelBuilder.text()
-			.withProperties<azdata.TextComponentProperties>({ CSSStyles: { 'text-align': 'center' } })
+			.withProps({ CSSStyles: { 'text-align': 'center' } })
 			.component();
 		content.addItem(this._connectionStringsMessage);
 

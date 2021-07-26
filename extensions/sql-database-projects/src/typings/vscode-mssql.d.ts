@@ -27,9 +27,30 @@ declare module 'vscode-mssql' {
         readonly dacFx: IDacFxService;
 
         /**
-         * Prompts the user to select an existing connection or create a new one, and then returns the result
+         * Service for accessing SchemaCompare functionality
          */
-        promptForConnection(): Promise<IConnectionInfo | undefined>
+        readonly schemaCompare: ISchemaCompareService;
+
+        /**
+         * Prompts the user to select an existing connection or create a new one, and then returns the result
+         * @param ignoreFocusOut Whether the quickpick prompt ignores focus out (default false)
+         */
+        promptForConnection(ignoreFocusOut?: boolean): Promise<IConnectionInfo | undefined>;
+
+        /**
+         * Attempts to create a new connection for the given connection info. An error is thrown and displayed
+         * to the user if an error occurs while connecting.
+         * @param connectionInfo The connection info
+         * @returns The URI associated with this connection
+         */
+        connect(connectionInfo: IConnectionInfo): Promise<string>;
+
+        /**
+         * Lists the databases for a given connection. Must be given an already-opened connection to succeed.
+         * @param connectionUri The URI of the connection to list the databases for.
+         * @returns The list of database names
+         */
+        listDatabases(connectionUri: string): Promise<string[]>;
     }
 
     /**
@@ -202,6 +223,10 @@ declare module 'vscode-mssql' {
         objectType = 3,
         schema = 4,
         schemaObjectType = 5
+    }
+
+    export interface ISchemaCompareService {
+        schemaCompareGetDefaultOptions(): Thenable<SchemaCompareOptionsResult>;
     }
 
     export interface IDacFxService {
@@ -457,6 +482,12 @@ declare module 'vscode-mssql' {
     export interface ValidateStreamingJobParams {
         packageFilePath: string;
         createStreamingJobTsql: string;
+    }
+
+    export interface SchemaCompareGetOptionsParams { }
+
+    export interface SchemaCompareOptionsResult extends ResultStatus {
+        defaultDeploymentOptions: DeploymentOptions;
     }
 
 }

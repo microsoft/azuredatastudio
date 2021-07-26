@@ -16,7 +16,7 @@ export class SqlAssessmentResult {
 	}
 
 	private createTitleComponent(view: azdata.ModelView): azdata.TextComponent {
-		const title = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+		const title = view.modelBuilder.text().withProps({
 			value: 'Azure SQL Managed Instance does not support multiple log files', // TODO: Get this string from the actual results
 		});
 
@@ -24,7 +24,7 @@ export class SqlAssessmentResult {
 	}
 
 	private createImpactComponent(view: azdata.ModelView): azdata.TextComponent {
-		const impact = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+		const impact = view.modelBuilder.text().withProps({
 			title: 'Impact', // TODO localize
 			value: 'SQL Server allows a database to log transactions across multiple files. This databases uses multiple log files' // TODO: Get this string from the actual results
 		});
@@ -33,7 +33,7 @@ export class SqlAssessmentResult {
 	}
 
 	private createRecommendationComponent(view: azdata.ModelView): azdata.TextComponent {
-		const recommendation = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+		const recommendation = view.modelBuilder.text().withProps({
 			title: 'Recommendation', // TODO localize
 			value: 'Azure SQL Managed Instance allows a single log file per database only. Please delete all but one of the log files before migrating this database.' // TODO: Get this string from the actual results
 		});
@@ -42,7 +42,7 @@ export class SqlAssessmentResult {
 	}
 
 	private createMoreInfoComponent(view: azdata.ModelView): azdata.TextComponent {
-		const moreInfo = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+		const moreInfo = view.modelBuilder.text().withProps({
 			title: 'More info', // TODO localize
 			value: '{0}',
 			links: [
@@ -57,7 +57,7 @@ export class SqlAssessmentResult {
 	}
 
 	private createImpactedObjectsComponent(view: azdata.ModelView): azdata.TableComponent {
-		const impactedObjects = view.modelBuilder.table().withProperties<azdata.TableComponentProperties>({
+		const impactedObjects = view.modelBuilder.table().withProps({
 			title: 'Impacted Objects',
 			columns: [
 				'Type', // TODO localize

@@ -404,7 +404,8 @@ export interface StartDatabaseMigrationRequest {
 			username: string,
 			password: string
 		},
-		scope: string
+		scope: string,
+		autoCutoverConfiguration?: AutoCutoverConfiguration
 	}
 }
 
@@ -423,7 +424,7 @@ export interface DatabaseMigration {
 export interface DatabaseMigrationProperties {
 	scope: string;
 	provisioningState: 'Succeeded' | 'Failed' | 'Creating';
-	migrationStatus: 'InProgress' | 'Failed' | 'Succeeded' | 'Creating' | 'Completing' | 'Cancelling';
+	migrationStatus: 'InProgress' | 'Failed' | 'Succeeded' | 'Creating' | 'Completing' | 'Canceling';
 	migrationStatusDetails?: MigrationStatusDetails;
 	startedOn: string;
 	endedOn: string;
