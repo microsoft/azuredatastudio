@@ -41,6 +41,7 @@
 		"dist/azureResource/utils": {
 			"azure.resource.error": "Error: {0}",
 			"azure.accounts.getResourceGroups.queryError": "Error al obtener los grupos de recursos para la cuenta {0} ({1}), suscripción {2} ({3}), inquilino {4}: {5}.",
+			"azure.accounts.getLocations.queryError": "Error al capturar ubicaciones para la cuenta {0} ({1}), suscripción {2} ({3}), inquilino {4}: {5}.",
 			"azure.accounts.runResourceQuery.errors.invalidQuery": "Consulta no válida",
 			"azure.accounts.getSubscriptions.queryError": "Error al obtener las suscripciones de la cuenta {0}, inquilino {1}: {2}.",
 			"azure.accounts.getSelectedSubscriptions.queryError": "Error al recuperar las suscripciones de la cuenta {0}: {1}."
@@ -141,7 +142,9 @@
 		"dist/azureResource/tree/flatAccountTreeNode": {
 			"azure.resource.tree.accountTreeNode.titleLoading": "{0}: carga en curso...",
 			"azure.resource.tree.accountTreeNode.title": "{0} ({1} de {2} suscripciones)",
-			"azure.resource.tree.accountTreeNode.credentialError": "No se pudieron obtener las credenciales de la cuenta {0}. Vaya al cuadro de diálogo de las cuentas y actualice la cuenta."
+			"azure.resource.tree.accountTreeNode.credentialError": "No se pudieron obtener las credenciales de la cuenta {0}. Vaya al cuadro de diálogo de las cuentas y actualice la cuenta.",
+			"azure.resource.throttleerror": "Las solicitudes de esta cuenta se han acelerado Para volver a intentarlo, seleccione un número menor de suscripciones.",
+			"azure.resource.tree.loadresourceerror": "Se ha producido un error al cargar los recursos de Azure: {0}"
 		},
 		"dist/azureResource/tree/accountNotSignedInTreeNode": {
 			"azure.resource.tree.accountNotSignedInTreeNode.signInLabel": "Inicie sesión en Azure..."
@@ -202,6 +205,9 @@
 		},
 		"dist/azureResource/providers/kusto/kustoTreeDataProvider": {
 			"azure.resource.providers.KustoContainerLabel": "Clúster de Azure Data Explorer"
+		},
+		"dist/azureResource/providers/azuremonitor/azuremonitorTreeDataProvider": {
+			"azure.resource.providers.AzureMonitorContainerLabel": "Azure Monitor Workspace"
 		},
 		"dist/azureResource/providers/postgresServer/postgresServerTreeDataProvider": {
 			"azure.resource.providers.databaseServer.treeDataProvider.postgresServerContainerLabel": "Servidor de Azure Database for PostgreSQL"

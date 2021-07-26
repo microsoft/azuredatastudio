@@ -59,8 +59,8 @@
     url: hadr/backup-to-blob
   - title: Create Failover Cluster
     url: hadr/configure-failover
-  - title: Create Availability Group
-    url: hadr/configure-ag
+#  - title: Create Availability Group
+#    url: hadr/configure-ag
 - title: Offline Migration
   url: /offline-migration/readme
   not_numbered: true

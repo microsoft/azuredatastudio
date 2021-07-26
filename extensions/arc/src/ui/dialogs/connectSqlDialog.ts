@@ -35,22 +35,22 @@ export abstract class ConnectToSqlDialog extends InitializingComponent {
 			this.modelBuilder = view.modelBuilder;
 
 			this.serverNameInputBox = this.modelBuilder.inputBox()
-				.withProperties<azdata.InputBoxProperties>({
+				.withProps({
 					value: connectionProfile?.serverName,
 					enabled: false
 				}).component();
 			this.usernameInputBox = this.modelBuilder.inputBox()
-				.withProperties<azdata.InputBoxProperties>({
+				.withProps({
 					value: connectionProfile?.userName
 				}).component();
 			this.passwordInputBox = this.modelBuilder.inputBox()
-				.withProperties<azdata.InputBoxProperties>({
+				.withProps({
 					inputType: 'password',
 					value: connectionProfile?.password
 				})
 				.component();
 			this.rememberPwCheckBox = this.modelBuilder.checkBox()
-				.withProperties<azdata.CheckBoxProperties>({
+				.withProps({
 					label: loc.rememberPassword,
 					checked: connectionProfile?.savePassword
 				}).component();

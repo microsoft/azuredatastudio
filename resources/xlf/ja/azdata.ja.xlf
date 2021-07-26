@@ -1,0 +1,329 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file original="extensions/azdata/package" source-language="en" datatype="plaintext" target-language="ja">
+    <body>
+      <trans-unit id="azdata.displayName">
+        <source xml:lang="en">Azure Data CLI</source>
+        <target state="translated">Azure Data CLI</target>
+      </trans-unit>
+      <trans-unit id="azdata.description">
+        <source xml:lang="en">Support for Azure Data CLI.</source>
+        <target state="translated">Azure Data CLI 対応。</target>
+      </trans-unit>
+      <trans-unit id="azdata.config.title">
+        <source xml:lang="en">Azure Data CLI Configuration</source>
+        <target state="translated">Azure Data CLI の構成</target>
+      </trans-unit>
+      <trans-unit id="azdata.config.debug">
+        <source xml:lang="en">Log debug info to the output channel for all executed azdata commands</source>
+        <target state="translated">すべての実行済み azdata コマンドの出力チャネルにデバッグ情報を記録します</target>
+      </trans-unit>
+      <trans-unit id="command.category">
+        <source xml:lang="en">Azure Data CLI</source>
+        <target state="translated">Azure Data CLI</target>
+      </trans-unit>
+      <trans-unit id="azdata.acceptEula.command.name">
+        <source xml:lang="en">Accept Eula</source>
+        <target state="translated">マイクロソフト ソフトウェア ライセンス条項に同意</target>
+      </trans-unit>
+      <trans-unit id="azdata.install.command.name">
+        <source xml:lang="en">Install</source>
+        <target state="translated">インストール</target>
+      </trans-unit>
+      <trans-unit id="azdata.update.command.name">
+        <source xml:lang="en">Check for Update</source>
+        <target state="translated">更新の確認</target>
+      </trans-unit>
+      <trans-unit id="azdata.category">
+        <source xml:lang="en">Azure Data CLI</source>
+        <target state="translated">Azure Data CLI</target>
+      </trans-unit>
+      <trans-unit id="azdata.acceptEula.description">
+        <source xml:lang="en">Choose how acceptance of EULA for the Azure Data CLI is done</source>
+        <target state="translated">Azure Data CLI の EULA への同意方法の選択が完了しました</target>
+      </trans-unit>
+      <trans-unit id="azdata.acceptEula.prompt.description">
+        <source xml:lang="en">The user will be prompted for acceptance of EULA for the Azure Data CLI</source>
+        <target state="translated">ユーザーに Azure Data CLI の EULA への同意を促すダイアログが表示されます</target>
+      </trans-unit>
+      <trans-unit id="azdata.acceptEula.dontPrompt.description">
+        <source xml:lang="en">The user will not be prompted for acceptance of EULA for the Azure Data CLI</source>
+        <target state="translated">ユーザーに Azure Data CLI の EULA への同意を促すダイアログが表示されません</target>
+      </trans-unit>
+      <trans-unit id="azdata.install.description">
+        <source xml:lang="en">Choose how install of Azure Data CLI is done</source>
+        <target state="translated">Azure Data CLI のインストール方法の選択</target>
+      </trans-unit>
+      <trans-unit id="azdata.install.prompt.description">
+        <source xml:lang="en">The user will be prompted for installation of the Azure Data CLI</source>
+        <target state="translated">ユーザーに Azure Data CLI のインストールを促すダイアログが表示されます</target>
+      </trans-unit>
+      <trans-unit id="azdata.install.dontPrompt.description">
+        <source xml:lang="en">The user will not be prompted for installation of the Azure Data CLI</source>
+        <target state="translated">ユーザーに Azure Data CLI のインストールを促すダイアログが表示されません</target>
+      </trans-unit>
+      <trans-unit id="azdata.update.description">
+        <source xml:lang="en">Choose whether you will be prompted when an update of the Azure Data CLI is available.</source>
+        <target state="translated">Azure Data CLI が更新可能になった場合にダイアログを表示するかどうかを選択します。</target>
+      </trans-unit>
+      <trans-unit id="azdata.requiredUpdate.description">
+        <source xml:lang="en">Choose whether you will be prompted when a required update of the Azure Data CLI is available.</source>
+        <target state="translated">利用可能な Azure Data CLI の更新が必要な場合にダイアログを表示するかどうかを選択します。</target>
+      </trans-unit>
+      <trans-unit id="azdata.update.prompt.description">
+        <source xml:lang="en">The user will be prompted for update of the Azure Data CLI</source>
+        <target state="translated">ユーザーに Azure Data CLI の更新を促すダイアログが表示されます</target>
+      </trans-unit>
+      <trans-unit id="azdata.update.dontPrompt.description">
+        <source xml:lang="en">The user will not be prompted for update of the Azure Data CLI</source>
+        <target state="translated">ユーザーに Azure Data CLI の更新を促すダイアログが表示されません</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/azdata/dist/localizedConstants" source-language="en" datatype="plaintext" target-language="ja">
+    <body>
+      <trans-unit id="azdata.azdata">
+        <source xml:lang="en">Azure Data CLI</source>
+        <target state="translated">Azure Data CLI</target>
+      </trans-unit>
+      <trans-unit id="azdata.searchingForAzdata">
+        <source xml:lang="en">Searching for existing Azure Data CLI installation...</source>
+        <target state="translated">既存の Azure Data CLI のインストールを検索しています...</target>
+      </trans-unit>
+      <trans-unit id="azdata.foundExistingAzdata">
+        <source xml:lang="en">Found existing Azure Data CLI installation of version (v{0}) at path:{1}</source>
+        <target state="translated">バージョン (v{0}) の既存の Azure Data CLI のインストールが、パス {1} で見つかりました。</target>
+      </trans-unit>
+      <trans-unit id="azdata.downloadingProgressMb">
+        <source xml:lang="en">Downloading ({0} / {1} MB)</source>
+        <target state="translated">ダウンロード中 ({0} / {1} MB)</target>
+      </trans-unit>
+      <trans-unit id="azdata.downloadFinished">
+        <source xml:lang="en">Download finished</source>
+        <target state="translated">ダウンロードが完了しました</target>
+      </trans-unit>
+      <trans-unit id="azdata.installingAzdata">
+        <source xml:lang="en">Installing Azure Data CLI...</source>
+        <target state="translated">Azure Data CLI をインストールしています...</target>
+      </trans-unit>
+      <trans-unit id="azdata.updatingAzdata">
+        <source xml:lang="en">Updating Azure Data CLI...</source>
+        <target state="translated">Azure Data CLI を更新しています...</target>
+      </trans-unit>
+      <trans-unit id="azdata.azdataInstalled">
+        <source xml:lang="en">Azure Data CLI was successfully installed. Restarting Azure Data Studio is required to complete configuration - features will not be activated until this is done.</source>
+        <target state="translated">Azure Data CLI が正常にインストールされました。構成を完了するには、Azure Data Studio を再起動する必要があります。この操作が完了するまで、機能はアクティブ化されません。</target>
+      </trans-unit>
+      <trans-unit id="azdata.azdataUpdated">
+        <source xml:lang="en">Azure Data CLI was successfully updated to version: {0}.</source>
+        <target state="translated">Azure Data CLI がバージョン {0} に正常に更新されました</target>
+      </trans-unit>
+      <trans-unit id="azdata.yes">
+        <source xml:lang="en">Yes</source>
+        <target state="translated">はい</target>
+      </trans-unit>
+      <trans-unit id="azdata.no">
+        <source xml:lang="en">No</source>
+        <target state="translated">いいえ</target>
+      </trans-unit>
+      <trans-unit id="azdata.accept">
+        <source xml:lang="en">Accept</source>
+        <target state="translated">承諾する</target>
+      </trans-unit>
+      <trans-unit id="azdata.decline">
+        <source xml:lang="en">Decline</source>
+        <target state="translated">同意しない</target>
+      </trans-unit>
+      <trans-unit id="azdata.doNotAskAgain">
+        <source xml:lang="en">Don't Ask Again</source>
+        <target state="translated">今後このメッセージを表示しない</target>
+      </trans-unit>
+      <trans-unit id="azdata.askLater">
+        <source xml:lang="en">Ask Later</source>
+        <target state="translated">後で依頼する</target>
+      </trans-unit>
+      <trans-unit id="azdata.downloadingTo">
+        <source xml:lang="en">Downloading {0} from {1} to {2}</source>
+        <target state="translated">{0} を {1} から {2} にダウンロードしています</target>
+      </trans-unit>
+      <trans-unit id="azdata.executingCommand">
+        <source xml:lang="en">Executing command: '{0} {1}'</source>
+        <target state="translated">コマンドの実行中: '{0} {1}'</target>
+      </trans-unit>
+      <trans-unit id="azdata.stdoutOutput">
+        <source xml:lang="en">stdout: {0}</source>
+        <target state="translated">stdout: {0}</target>
+      </trans-unit>
+      <trans-unit id="azdata.stderrOutput">
+        <source xml:lang="en">stderr: {0}</source>
+        <target state="translated">stderr: {0}</target>
+      </trans-unit>
+      <trans-unit id="azdata.checkingLatestAzdataVersion">
+        <source xml:lang="en">Checking for latest available version of Azure Data CLI</source>
+        <target state="translated">Azure Data CLI の使用可能な最新バージョンを確認しています</target>
+      </trans-unit>
+      <trans-unit id="azdata.gettingTextContentsOfUrl">
+        <source xml:lang="en">Getting text contents of resource at URL {0}</source>
+        <target state="translated">URL {0} でリソースのテキスト コンテンツを取得しています</target>
+      </trans-unit>
+      <trans-unit id="azdata.versionForUpdate">
+        <source xml:lang="en">Found version: {0} that Azure Data CLI can be updated to from current version: {1}.</source>
+        <target state="translated">バージョン {0} が見つかりました。Azure Data CLI は、現在のバージョンから {1} を更新できます。</target>
+      </trans-unit>
+      <trans-unit id="azdata.latestAzdataVersionAvailable">
+        <source xml:lang="en">Latest available Azure Data CLI version: {0}.</source>
+        <target state="translated">Azure Data CLI の最新バージョン: {0}。</target>
+      </trans-unit>
+      <trans-unit id="azdata.couldNotFindAzdata">
+        <source xml:lang="en">Could not find Azure Data CLI. Error: {0}</source>
+        <target state="translated">Azure Data CLI が見つかりませんでした。エラー: {0}</target>
+      </trans-unit>
+      <trans-unit id="azdata.currentlyInstalledVersionIsLatest">
+        <source xml:lang="en">Currently installed version of Azure Data CLI: {0} is same or newer than any other version available</source>
+        <target state="translated">現在インストールされている Azure Data CL {0} は、使用可能な他のバージョンと同じか、それより新しいバージョンです</target>
+      </trans-unit>
+      <trans-unit id="azdata.promptLog">
+        <source xml:lang="en">Prompting the user to accept the following: {0}</source>
+        <target state="translated">ユーザーが次に同意するよう促すダイアログの表示: {0}</target>
+      </trans-unit>
+      <trans-unit id="azdata.couldNotFindAzdataWithPrompt">
+        <source xml:lang="en">Could not find Azure Data CLI, install it now? If not then some features will not be able to function.</source>
+        <target state="translated">Azure Data CLI が見つかりませんでした。今すぐインストールしますか? そうでない場合は、一部の機能が動作しない可能性があります。</target>
+      </trans-unit>
+      <trans-unit id="azdata.promptForAzdataUpdate">
+        <source xml:lang="en">A new version of Azure Data CLI ( {0} ) is available, do you wish to update to it now?</source>
+        <target state="translated">Azure Data CLI の新しいバージョン ( {0} ) が利用できます。今すぐ更新しますか?</target>
+      </trans-unit>
+      <trans-unit id="azdata.promptForRequiredAzdataUpdate">
+        <source xml:lang="en">This extension requires Azure Data CLI &gt;= {0} to be installed, do you wish to update to the latest version ({1}) now? If you do not then some functionality may not work.</source>
+        <target state="translated">この拡張機能を使用するには、Azure Data CLI &gt;= {0} がインストールされている必要がありますが、今すぐ最新バージョン ({1}) に更新しますか? 更新しない場合、一部の機能が動作しない可能性があります。</target>
+      </trans-unit>
+      <trans-unit id="azdata.requiredVersionNotAvailable">
+        <source xml:lang="en">This extension requires Azure Data CLI &gt;= {0} to be installed, but the current version available is only {1}. Install the correct version manually from [here](https://docs.microsoft.com/sql/azdata/install/deploy-install-azdata) and then restart Azure Data Studio.</source>
+        <target state="translated">この拡張機能を使用するには、Azure Data CLI &gt;= {0} がインストールされている必要がありますが、現在利用可能なバージョンは {1} のみです。正しいバージョンを [こちら](https://docs.microsoft.com/sql/azdata/install/deploy-install-azdata) で手動でインストールしてから、Azure Data Studio を再起動します。</target>
+      </trans-unit>
+      <trans-unit id="azdata.missingRequiredVersion">
+        <source xml:lang="en">Azure Data CLI &gt;= {0} is required for this feature. Run the 'Azure Data CLI: Check for Update' command to install this and then try again.</source>
+        <target state="translated">この機能には、Azure Data CLI &gt;= {0} が必要です。'Azure Data CLI: Check for Update' コマンドを実行してからこれをインストールして、もう一度お試しください。</target>
+      </trans-unit>
+      <trans-unit id="azdata.downloadError">
+        <source xml:lang="en">Error while downloading</source>
+        <target state="translated">ダウンロード中のエラー</target>
+      </trans-unit>
+      <trans-unit id="azdata.installError">
+        <source xml:lang="en">Error installing Azure Data CLI: {0}</source>
+        <target state="translated">Azure Data CLI のインストール中にエラー {0} が発生しました</target>
+      </trans-unit>
+      <trans-unit id="azdata.updateError">
+        <source xml:lang="en">Error updating Azure Data CLI: {0}</source>
+        <target state="translated">Azure Data CLI を更新中に発生したエラー: {0}</target>
+      </trans-unit>
+      <trans-unit id="azdata.platformUnsupported">
+        <source xml:lang="en">Platform '{0}' is currently unsupported</source>
+        <target state="translated">プラットフォーム '{0}' は現在サポート外です</target>
+      </trans-unit>
+      <trans-unit id="azdata.unexpectedCommandError">
+        <source xml:lang="en">Unexpected error executing command: {0}</source>
+        <target state="translated">コマンド {0} の実行中に予期しないエラーが発生しました</target>
+      </trans-unit>
+      <trans-unit id="azdata.unexpectedExitCode">
+        <source xml:lang="en">Unexpected exit code from command: {1} ({0})</source>
+        <target state="translated">コマンドからの予期しない終了コード: {1} ({0})</target>
+      </trans-unit>
+      <trans-unit id="azdata.noAzdata">
+        <source xml:lang="en">No Azure Data CLI is available, run the command 'Azure Data CLI: Install' to enable the features that require it.</source>
+        <target state="translated">使用可能な Azure Data CLI がありません。コマンド 'Azure Data CLI: Install' を実行し、それを必要とする機能を有効にします。</target>
+      </trans-unit>
+      <trans-unit id="azdata.noAzdataWithLink">
+        <source xml:lang="en">No Azure Data CLI is available, [install the Azure Data CLI](command:azdata.install) to enable the features that require it.</source>
+        <target state="translated">使用可能な Azure Data CLI がありません。[Azure Data CLI の更新] (コマンド: azdata. install) を行い、それを必要とする機能を有効にします。</target>
+      </trans-unit>
+      <trans-unit id="azdata.skipInstall">
+        <source xml:lang="en">Skipping installation of Azure Data CLI, since the operation was not user requested and config option: {0}.{1} is {2}</source>
+        <target state="translated">この操作はユーザーが要求したものではなく、構成オプション {0} でもないため、Azure Data CLI のインストールをスキップします。{1} は {2} です</target>
+      </trans-unit>
+      <trans-unit id="azdata.skipUpdate">
+        <source xml:lang="en">Skipping update of Azure Data CLI, since the operation was not user requested and config option: {0}.{1} is {2}</source>
+        <target state="translated">この操作はユーザーが要求したものではなく、構成オプション {0} でもないため、Azure Data CLI の更新をスキップします。{1} は {2} です</target>
+      </trans-unit>
+      <trans-unit id="azdata.skipRequiredUpdate">
+        <source xml:lang="en">Skipping required update of Azure Data CLI, since the operation was not user requested and config option: {0}.{1} is {2}</source>
+        <target state="translated">この操作はユーザーが要求したものではなく、構成オプション {0} でもないため、Azure Data CLI の更新をスキップします。{1} は {2} です</target>
+      </trans-unit>
+      <trans-unit id="azdata.noReleaseVersion">
+        <source xml:lang="en">No release version available for platform '{0}'
+Release info: ${1}</source>
+        <target state="translated">プラットフォーム '{0}'
+リリース情報に利用可能なリリース バージョンがありません: ${1}</target>
+      </trans-unit>
+      <trans-unit id="azdata.noDownloadLink">
+        <source xml:lang="en">No download link available for platform '{0}'
+Release info: ${1}</source>
+        <target state="translated">プラットフォーム '{0}'
+リリース情報に利用可能なダウンロード リンクがありません: ${1}</target>
+      </trans-unit>
+      <trans-unit id="azdata.failedToParseReleaseInfo">
+        <source xml:lang="en">Failed to parse the JSON of contents at: {0}.
+File contents:
+{1}
+Error: {2}</source>
+        <target state="translated">{0} でコンテンツの JSON を解析できませんでした。
+ファイル コンテンツ: 
+{1}
+エラー: {2}</target>
+      </trans-unit>
+      <trans-unit id="azdata.azdataUserSettingReadLog">
+        <source xml:lang="en">Azure Data CLI user setting: {0}.{1} read, value: {2}</source>
+        <target state="translated">Azure Data CLI のユーザー設定: {0}。{1} が読み取られ、値: {2}</target>
+      </trans-unit>
+      <trans-unit id="azdata.azdataUserSettingUpdatedLog">
+        <source xml:lang="en">Azure Data CLI user setting: {0}.{1} updated, newValue: {2}</source>
+        <target state="translated">Azure Data CLI のユーザー設定: {0}。{1} が更新され、newValue: {2}</target>
+      </trans-unit>
+      <trans-unit id="azdata.userResponseInstall">
+        <source xml:lang="en">User Response on prompt to install Azure Data CLI: {0}</source>
+        <target state="translated">Azure Data CLI のインストールを促すダイアログの表示でのユーザー応答: {0}</target>
+      </trans-unit>
+      <trans-unit id="azdata.userResponseUpdate">
+        <source xml:lang="en">User Response on prompt to update Azure Data CLI: {0}</source>
+        <target state="translated">Azure Data CLI の更新を促すダイアログの表示でのユーザー応答: {0}</target>
+      </trans-unit>
+      <trans-unit id="azdata.userRequestedInstall">
+        <source xml:lang="en">User requested to install Azure Data CLI using 'Azure Data CLI: Install' command</source>
+        <target state="translated">ユーザーが 'Azure Data CLI: Install' コマンドを使用して Azure Data CLI のインストールを要求しました</target>
+      </trans-unit>
+      <trans-unit id="azdata.userRequestedUpdate">
+        <source xml:lang="en">User requested to update Azure Data CLI using 'Azure Data CLI: Check for Update' command</source>
+        <target state="translated">ユーザーが 'Azure Data CLI: 更新の確認' コマンドを使用して Azure Data CLI の更新を要求しました</target>
+      </trans-unit>
+      <trans-unit id="azdata.acceptEula">
+        <source xml:lang="en">User requested to be prompted for accepting EULA by invoking 'Azure Data CLI: Accept EULA' command</source>
+        <target state="translated">ユーザーが 'Azure Data CLI: EULA の承諾' コマンドを呼び出して EULA を承諾するダイアログの表示を要求しました</target>
+      </trans-unit>
+      <trans-unit id="azdata.updateCheckSkipped">
+        <source xml:lang="en">No check for new Azure Data CLI version availability performed as Azure Data CLI was not found to be installed</source>
+        <target state="translated">Azure Data CLI がインストールされていないことが判明したため、新しい Azure Data CLI バージョンの可用性のチェックが実行されませんでした。</target>
+      </trans-unit>
+      <trans-unit id="azdata.eulaNotAccepted">
+        <source xml:lang="en">Microsoft Privacy statement and Azure Data CLI license terms have not been accepted. Execute the command: [Azure Data CLI: Accept EULA](command:azdata.acceptEula) to accept EULA to enable the features that requires Azure Data CLI.</source>
+        <target state="translated">Microsoft のプライバシーに関する声明と Azure Data CLI ライセンス条項が承諾されていません。コマンド [Azure Data CLI: Accept EULA] (コマンド: azdata.acceptEula) を実行して EULA に同意し、Azure Data CLI を必要とする機能を有効化します。</target>
+      </trans-unit>
+      <trans-unit id="azdata.promptForEula">
+        <source xml:lang="en">It is required to accept the [Microsoft Privacy Statement]({0}) and the [Azure Data CLI license terms]({1}) to use this extension. Declining this will result in some features not working.</source>
+        <target state="translated">この拡張機能を使用するには、[Microsoft プライバシーに関する声明] ({0}) および [Azure Data CLI ライセンス条項] ({1}) に同意する必要があります。これを拒否すると、一部の機能が動作しなくなります。</target>
+      </trans-unit>
+      <trans-unit id="azdata.promptForEulaResponse">
+        <source xml:lang="en">User response to EULA prompt: {0}</source>
+        <target state="translated">EULA プロンプトに対するユーザーの応答: {0}</target>
+      </trans-unit>
+      <trans-unit id="azdata.eulaAcceptedStateOnStartup">
+        <source xml:lang="en">'EULA Accepted' state on startup: {0}</source>
+        <target state="translated">スタートアップ時の 'EULA 承諾済み' 状態: {0}</target>
+      </trans-unit>
+      <trans-unit id="azdata.endpointOrNamespaceRequired">
+        <source xml:lang="en">Either an endpoint or a namespace must be specified</source>
+        <target state="translated">エンドポイントまたは名前空間のいずれかを指定しなければなりません</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>
