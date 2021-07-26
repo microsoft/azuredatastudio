@@ -1603,6 +1603,15 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/arc/dist/localizedConstants.arc.podConditionsTable" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Pod conditions table]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Tabela de condições Pod]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.podInitialized" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Pod is initialized.]]></Val>
@@ -1662,6 +1671,15 @@
           <Val><![CDATA[Select a pod in the dropdown below for detailed health information.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Selecione um pod na lista suspensa abaixo para obter informações detalhadas sobre a integridade.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/arc/dist/localizedConstants.arc.podsUsedDescriptionAria" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Select a pod in the dropdown below for detailed health information]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Selecionar uma cápsula no menu suspenso abaixo para informação detalhada sobre integridade]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -2004,6 +2022,15 @@
           <Val><![CDATA[Service endpoints]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Pontos de extremidade de serviço]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/arc/dist/localizedConstants.arc.serviceEndpointsTable" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Service endpoints table]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Tabela de ponto de extremidade de serviço]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -3398,7 +3425,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Provide Azure enabled PostgreSQL Hyperscale server group parameters]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Fornece parâmetros de grupo de servidores PostgreSQL Hyperscale habilitados para Azure]]></Val>
+            <Val><![CDATA[Fornece parâmetros de grupo de servidores de Hiperescala PostgreSQL habilitados para Azure]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -3740,7 +3767,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Deploy PostgreSQL Hyperscale server groups into an Azure Arc environment]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Implantar grupos de servidores PostgreSQL Hyperscale em um ambiente Azure Arc]]></Val>
+            <Val><![CDATA[Implantar grupos de servidores de Hiperescala PostgreSQL em um ambiente Azure Arc]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -3749,7 +3776,7 @@
         <Str Cat="Text">
           <Val><![CDATA[PostgreSQL Hyperscale server groups - Azure Arc (preview)]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Grupos de servidores PostgreSQL Hyperscale - Azure Arc (visualização)]]></Val>
+            <Val><![CDATA[Grupos de servidores de Hiperescala do PostgreSQL - Azure Arc (pré-visualização)]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

@@ -4,10 +4,11 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
+import * as vscode from 'vscode';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
 import { MigrationStateModel, StateChangeEvent } from '../models/stateMachine';
 import * as constants from '../constants/strings';
-import { IconPath, IconPathHelper } from '../constants/iconPathHelper';
+// import { IconPath, IconPathHelper } from '../constants/iconPathHelper';
 import { debounce } from '../api/utils';
 
 const headerLeft: azdata.CssStyles = {
@@ -41,6 +42,7 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 	private _dbNames!: string[];
 	private _dbCount!: azdata.TextComponent;
 	private _databaseTableValues!: azdata.DeclarativeTableCellValue[][];
+	private _disposables: vscode.Disposable[] = [];
 
 	constructor(wizard: azdata.window.Wizard, migrationStateModel: MigrationStateModel) {
 		super(wizard, azdata.window.createWizardPage(constants.SOURCE_CONFIGURATION, 'MigrationModePage'), migrationStateModel);
@@ -55,6 +57,11 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 			width: '100%'
 		}).component();
 		flex.addItem(await this.createRootContainer(view), { flex: '1 1 auto' });
+
+		this._disposables.push(this._view.onClosed(e => {
+			this._disposables.forEach(
+				d => { try { d.dispose(); } catch { } });
+		}));
 
 		await view.initializeModel(flex);
 	}
@@ -82,7 +89,7 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 			width: 200
 		}).component();
 
-		resourceSearchBox.onTextChanged(value => this._filterTableList(value));
+		this._disposables.push(resourceSearchBox.onTextChanged(value => this._filterTableList(value)));
 
 		const searchContainer = this._view.modelBuilder.divContainer().withItems([resourceSearchBox]).withProps({
 			CSSStyles: {
@@ -142,7 +149,8 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 					enabled: selectable
 				},
 				{
-					value: this.createIconTextCell(IconPathHelper.sqlDatabaseLogo, finalResult[index].options.name),
+					// value: this.createIconTextCell(IconPathHelper.sqlDatabaseLogo, finalResult[index].options.name),
+					value: finalResult[index].options.name,
 					style: styleLeft
 				},
 				{
@@ -207,7 +215,8 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 					},
 					{
 						displayName: constants.DATABASE,
-						valueType: azdata.DeclarativeDataType.component,
+						// valueType: azdata.DeclarativeDataType.component,
+						valueType: azdata.DeclarativeDataType.string,
 						width: 100,
 						isReadOnly: true,
 						headerCssStyles: headerLeft
@@ -238,11 +247,11 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 		).component();
 
 		await this._databaseSelectorTable.setDataValues(this._databaseTableValues);
-		this._databaseSelectorTable.onDataChanged(() => {
+		this._disposables.push(this._databaseSelectorTable.onDataChanged(() => {
 			this._dbCount.updateProperties({
 				'value': constants.DATABASES_SELECTED(this.selectedDbs().length, this._databaseTableValues.length)
 			});
-		});
+		}));
 		const flex = view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'column',
 			height: '100%',
@@ -271,42 +280,41 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 		return result;
 	}
 
-	private createIconTextCell(icon: IconPath, text: string): azdata.FlexContainer {
+	// private createIconTextCell(icon: IconPath, text: string): azdata.FlexContainer {
+	// const iconComponent = this._view.modelBuilder.image().withProps({
+	// 		iconPath: icon,
+	// 		iconWidth: '16px',
+	// 		iconHeight: '16px',
+	// 		width: '20px',
+	// 		height: '20px'
+	// 	}).component();
+	// 	const textComponent = this._view.modelBuilder.text().withProps({
+	// 		value: text,
+	// 		title: text,
+	// 		CSSStyles: {
+	// 			'margin': '0px',
+	// 			'width': '110px'
+	// 		}
+	// 	}).component();
 
-		const iconComponent = this._view.modelBuilder.image().withProps({
-			iconPath: icon,
-			iconWidth: '16px',
-			iconHeight: '16px',
-			width: '20px',
-			height: '20px'
-		}).component();
-		const textComponent = this._view.modelBuilder.text().withProps({
-			value: text,
-			title: text,
-			CSSStyles: {
-				'margin': '0px',
-				'width': '110px'
-			}
-		}).component();
+	// 	const cellContainer = this._view.modelBuilder.flexContainer().withProps({
+	// 		CSSStyles: {
+	// 			'justify-content': 'left'
+	// 		}
+	// 	}).component();
+	// 	cellContainer.addItem(iconComponent, {
+	// 		flex: '0',
+	// 		CSSStyles: {
+	// 			'width': '32px'
+	// 		}
+	// 	});
+	// 	cellContainer.addItem(textComponent, {
+	// 		CSSStyles: {
+	// 			'width': 'auto'
+	// 		}
+	// 	});
 
-		const cellContainer = this._view.modelBuilder.flexContainer().withProps({
-			CSSStyles: {
-				'justify-content': 'left'
-			}
-		}).component();
-		cellContainer.addItem(iconComponent, {
-			flex: '0',
-			CSSStyles: {
-				'width': '32px'
-			}
-		});
-		cellContainer.addItem(textComponent, {
-			CSSStyles: {
-				'width': 'auto'
-			}
-		});
-
-		return cellContainer;
-	}
+	// 	return cellContainer;
+	// }
 
 }
