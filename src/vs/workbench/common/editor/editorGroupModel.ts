@@ -12,7 +12,7 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { dispose, Disposable, DisposableStore } from 'vs/base/common/lifecycle';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { coalesce } from 'vs/base/common/arrays';
-import { doHandleUpgrade } from 'sql/workbench/services/languageAssociation/common/doHandleUpgrade';
+import { doHandleUpgrade } from 'sql/workbench/services/languageAssociation/common/doHandleUpgrade'; // {{SQL CARBON EDIT}}
 
 const EditorOpenPositioning = {
 	LEFT: 'left',
@@ -821,9 +821,12 @@ export class EditorGroupModel extends Disposable {
 
 			const editorSerializer = registry.getEditorInputSerializer(e.id);
 			if (editorSerializer) {
-				editor = doHandleUpgrade(editorSerializer.deserialize(this.instantiationService, e.value)); // {{SQL CARBON EDIT}} handle upgrade path to new serialization
-				if (editor) {
-					this.registerEditorListeners(editor);
+				const deserializedEditor = editorSerializer.deserialize(this.instantiationService, e.value);
+				if (deserializedEditor instanceof EditorInput) {
+					editor = doHandleUpgrade(deserializedEditor); // {{SQL CARBON EDIT}} handle upgrade path to new serialization
+					if (editor) {
+						this.registerEditorListeners(editor);
+					}
 				}
 			}
 
