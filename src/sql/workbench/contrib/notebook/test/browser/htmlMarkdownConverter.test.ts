@@ -7,14 +7,18 @@ import * as assert from 'assert';
 import { HTMLMarkdownConverter } from 'sql/workbench/contrib/notebook/browser/htmlMarkdownConverter';
 import * as path from 'vs/base/common/path';
 import { URI } from 'vs/base/common/uri';
+import { TestConfigurationService } from 'sql/platform/connection/test/common/testConfigurationService';
+import { ConfigurationTarget } from 'vs/platform/configuration/common/configuration';
 
 
 suite('HTML Markdown Converter', function (): void {
 	let htmlMarkdownConverter: HTMLMarkdownConverter;
 	let htmlString: string;
+	let configurationService: TestConfigurationService;
 
 	suiteSetup(() => {
-		htmlMarkdownConverter = new HTMLMarkdownConverter(URI.file('/tmp/notebook.ipynb'));
+		configurationService = new TestConfigurationService();
+		htmlMarkdownConverter = new HTMLMarkdownConverter(URI.file('/tmp/notebook.ipynb'), configurationService);
 		htmlString = '';
 	});
 
@@ -125,6 +129,7 @@ suite('HTML Markdown Converter', function (): void {
 	});
 
 	test('Should transform <a> tag', () => {
+		configurationService.updateValue('notebook.keepAbsolutePath', false, ConfigurationTarget.USER);
 		htmlString = '<a href="/tmp/stuff.png">stuff</a>';
 		assert.equal(htmlMarkdownConverter.convert(htmlString), `[stuff](.${path.sep}stuff.png)`, 'Basic link test failed');
 		htmlString = '<a href="/tmp/stuff.png"/>';
@@ -151,6 +156,16 @@ suite('HTML Markdown Converter', function (): void {
 		assert.equal(htmlMarkdownConverter.convert(htmlString), '[hello](http://www.microsoft.com/images/msft.png#Hello)', 'Http link containing # sign failed');
 	});
 
+	test('Should transform <a> tag with keeping absolute path with setting', () => {
+		configurationService.updateValue('notebook.keepAbsolutePath', true, ConfigurationTarget.USER);
+		htmlString = '<a href="/tmp/stuff.png">stuff</a>';
+		assert.strictEqual(htmlMarkdownConverter.convert(htmlString), `[stuff](/tmp/stuff.png)`, 'Basic link test failed');
+		htmlString = '<a href="https://www.microsoft.com/images/msft.png">&lt;msft&gt</a>';
+		assert.strictEqual(htmlMarkdownConverter.convert(htmlString), '[\\<msft\\>](https://www.microsoft.com/images/msft.png)', 'Non-HTML tag as link test failed to escape');
+		htmlString = '<table><thead><tr><th><p><a href="https://www.microsoft.com/">Test</a></p></th><th><p>Test2</p></th></tr></thead><tbody><tr><td><p>testP</p></td><td><p>test</p></td></tr></tbody></table>';
+		assert.strictEqual(htmlMarkdownConverter.convert(htmlString), `| [Test](https://www.microsoft.com/) | Test2 |\n| --- | --- |\n| testP | test |`, 'Table with link in cell failed');
+	});
+
 	test('Should transform <li> tags', () => {
 		htmlString = '<ul><li>Test</li></ul>';
 		assert.equal(htmlMarkdownConverter.convert(htmlString), `- Test`, 'Basic unordered list test failed');
@@ -175,6 +190,7 @@ suite('HTML Markdown Converter', function (): void {
 	});
 
 	test('Should keep < > tag', () => {
+		configurationService.updateValue('notebook.keepAbsolutePath', false, ConfigurationTarget.USER);
 		htmlString = '&lt;test&gt';
 		assert.equal(htmlMarkdownConverter.convert(htmlString), '\\<test\\>', 'Non-HTML tag test failed to escape');
 		htmlString = '&lt;test&gt<span style="background:red">message</span>&lt;test&gt';
@@ -245,6 +261,7 @@ suite('HTML Markdown Converter', function (): void {
 	});
 
 	test('Should keep highlight and link tags in tables', () => {
+		configurationService.updateValue('notebook.keepAbsolutePath', false, ConfigurationTarget.USER);
 		htmlString = '<table><thead><tr><th><mark>Test</mark></th><th>Test2</th></tr></thead><tbody><tr><td><p>testP</p></td><td>test</td></tr></tbody></table>';
 		assert.equal(htmlMarkdownConverter.convert(htmlString), `| <mark>Test</mark> | Test2 |\n| --- | --- |\n| testP | test |`, 'Table with simple nested paragraph failed');
 		htmlString = '<table><thead><tr><th><p><a href="https://www.microsoft.com/">Test</a></p></th><th><p>Test2</p></th></tr></thead><tbody><tr><td><p>testP</p></td><td><p>test</p></td></tr></tbody></table>';

@@ -8,6 +8,8 @@ import { URI } from 'vs/base/common/uri';
 import * as path from 'vs/base/common/path';
 import * as turndownPluginGfm from 'sql/workbench/contrib/notebook/browser/turndownPluginGfm';
 import { replaceInvalidLinkPath } from 'sql/workbench/contrib/notebook/common/utils';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { Inject } from '@angular/core';
 
 // These replacements apply only to text. Here's how it's handled from Turndown:
 // if (node.nodeType === 3) {
@@ -30,10 +32,12 @@ const markdownReplacements = [
 	[/</g, '\\<'], // Added to ensure sample text like <hello> is escaped
 	[/>/g, '\\>'], // Added to ensure sample text like <hello> is escaped
 ];
+const keepAbsolutePathConfigName = 'notebook.keepAbsolutePath';
+
 export class HTMLMarkdownConverter {
 	private turndownService: TurndownService;
 
-	constructor(private notebookUri: URI) {
+	constructor(private notebookUri: URI, @Inject(IConfigurationService) private _configurationService: IConfigurationService) {
 		this.turndownService = new TurndownService({ 'emDelimiter': '_', 'bulletListMarker': '-', 'headingStyle': 'atx', blankReplacement: blankReplacement });
 		this.setTurndownOptions();
 	}
@@ -143,16 +147,19 @@ export class HTMLMarkdownConverter {
 					notebookLink = href ? URI.parse(href) : URI.file(node.title);
 				}
 				const notebookFolder = this.notebookUri ? path.join(path.dirname(this.notebookUri.fsPath), path.sep) : '';
-				if (notebookLink.fsPath !== this.notebookUri.fsPath) {
-					let relativePath = findPathRelativeToContent(notebookFolder, notebookLink);
-					if (relativePath) {
-						return `[${node.innerText}](${relativePath})`;
+				if (notebookLink.fsPath !== this.notebookUri.fsPath && notebookLink.scheme === 'file') {
+					if (this._configurationService.getValue(keepAbsolutePathConfigName) === false) {
+						let relativePath = findPathRelativeToContent(notebookFolder, notebookLink);
+						if (relativePath) {
+							return `[${node.innerText}](${relativePath})`;
+						}
+					} else {
+						return `[${node.innerText}](${node.pathname})`;
 					}
-				} else if (notebookLink?.fragment) {
+				} else if (notebookLink?.fragment && notebookLink.scheme === 'file') {
 					// if the anchor link is to a section in the same notebook then just add the fragment
 					return `[${content}](${notebookLink.fragment})`;
 				}
-
 				return `[${content}](${href})`;
 			}
 		});
