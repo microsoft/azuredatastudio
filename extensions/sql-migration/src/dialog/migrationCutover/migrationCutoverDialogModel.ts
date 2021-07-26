@@ -5,6 +5,7 @@
 
 import { getMigrationStatus, DatabaseMigration, startMigrationCutover, stopMigration, getMigrationAsyncOperationDetails, AzureAsyncOperationResource } from '../../api/azure';
 import { MigrationContext } from '../../models/migrationLocalStorage';
+import { sendSqlMigrationActionEvent, TelemetryAction, TelemetryViews } from '../../telemtery';
 
 export enum MigrationStatus {
 	Failed = 'Failed',
@@ -34,6 +35,16 @@ export class MigrationCutoverDialogModel {
 			this._migration.subscription,
 			this._migration.migrationContext
 		));
+
+		sendSqlMigrationActionEvent(
+			TelemetryViews.MigrationCutoverDialog,
+			TelemetryAction.MigrationStatus,
+			{
+				'sessionId': this._migration.sessionId!,
+				'migrationStatus': this.migrationStatus.properties.migrationStatus
+			},
+			{}
+		);
 		// Logging status to help debugging.
 		console.log(this.migrationStatus);
 	}
@@ -41,11 +52,21 @@ export class MigrationCutoverDialogModel {
 	public async startCutover(): Promise<DatabaseMigration | undefined> {
 		try {
 			if (this.migrationStatus) {
-				return await startMigrationCutover(
+				const cutover = await startMigrationCutover(
 					this._migration.azureAccount,
 					this._migration.subscription,
 					this.migrationStatus
 				);
+				sendSqlMigrationActionEvent(
+					TelemetryViews.MigrationCutoverDialog,
+					TelemetryAction.CutoverMigration,
+					{
+						'sessionId': this._migration.sessionId!,
+						'migrationEndTime': new Date().toString()
+					},
+					{}
+				);
+				return cutover;
 			}
 		} catch (error) {
 			console.log(error);
@@ -56,10 +77,20 @@ export class MigrationCutoverDialogModel {
 	public async cancelMigration(): Promise<void> {
 		try {
 			if (this.migrationStatus) {
+				const cutoverStartTime = new Date().toString();
 				await stopMigration(
 					this._migration.azureAccount,
 					this._migration.subscription,
 					this.migrationStatus
+				);
+				sendSqlMigrationActionEvent(
+					TelemetryViews.MigrationCutoverDialog,
+					TelemetryAction.CancelMigration,
+					{
+						'sessionId': this._migration.sessionId!,
+						'cutoverStartTime': cutoverStartTime
+					},
+					{}
 				);
 			}
 		} catch (error) {
