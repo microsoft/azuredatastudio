@@ -49,7 +49,6 @@ export class MigrationCutoverDialog {
 	constructor(migration: MigrationContext) {
 		this._model = new MigrationCutoverDialogModel(migration);
 		this._dialogObject = azdata.window.createModelViewDialog('', 'MigrationCutoverDialog', 'wide');
-		this.isOfflineMigration = this._model._migration.migrationContext.properties.autoCutoverConfiguration?.autoCutover?.valueOf() ? true : false;
 	}
 
 	async initialize(): Promise<void> {

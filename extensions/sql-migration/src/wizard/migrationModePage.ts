@@ -4,13 +4,13 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import * as vscode from 'vscode';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
 import { MigrationMode, MigrationStateModel, StateChangeEvent } from '../models/stateMachine';
 import * as constants from '../constants/strings';
 
 export class MigrationModePage extends MigrationWizardPage {
 	private _view!: azdata.ModelView;
+	private originalMigrationMode!: MigrationMode;
 
 	constructor(wizard: azdata.window.Wizard, migrationStateModel: MigrationStateModel) {
 		super(wizard, azdata.window.createWizardPage(constants.DATABASE_BACKUP_MIGRATION_MODE_LABEL, 'MigrationModePage'), migrationStateModel);
@@ -32,8 +32,13 @@ export class MigrationModePage extends MigrationWizardPage {
 		this.wizard.registerNavigationValidator((e) => {
 			return true;
 		});
+		this.originalMigrationMode = this.migrationStateModel._databaseBackup.migrationMode;
 	}
 	public async onPageLeave(): Promise<void> {
+		if (this.originalMigrationMode !== this.migrationStateModel._databaseBackup.migrationMode) {
+			this.migrationStateModel.refreshDatabaseBackupPage = true;
+		}
+
 		this.wizard.registerNavigationValidator((e) => {
 			return true;
 		});
@@ -65,7 +70,6 @@ export class MigrationModePage extends MigrationWizardPage {
 		onlineButton.onDidChangeCheckedState((e) => {
 			if (e) {
 				this.migrationStateModel._databaseBackup.migrationMode = MigrationMode.ONLINE;
-				this.migrationStateModel.refreshDatabaseBackupPage = true;
 			}
 		});
 
@@ -90,7 +94,6 @@ export class MigrationModePage extends MigrationWizardPage {
 		offlineButton.onDidChangeCheckedState((e) => {
 			if (e) {
 				this.migrationStateModel._databaseBackup.migrationMode = MigrationMode.OFFLINE;
-				this.migrationStateModel.refreshDatabaseBackupPage = true;
 			}
 		});
 
