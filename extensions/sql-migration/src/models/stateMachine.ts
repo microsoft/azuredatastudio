@@ -242,8 +242,8 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				serverErrors
 			);
 
-			const startTime = new Date(this._assessmentApiResponse.startTime).getTime();
-			const endTime = new Date(this._assessmentApiResponse.endedTime).getTime();
+			const startTime = new Date(this._assessmentApiResponse.startTime);
+			const endTime = new Date(this._assessmentApiResponse.endedTime);
 
 			sendSqlMigrationActionEvent(
 				TelemetryViews.MigrationWizardTargetSelectionPage,
@@ -252,8 +252,8 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 					'sessionId': this._sessionId,
 					'tenantId': this._azureAccount.properties.tenants[0].id,
 					'hashedServerName': hashString(this._assessmentApiResponse.assessmentResult.name),
-					'startTime': this._assessmentApiResponse.startTime,
-					'endTime': this._assessmentApiResponse.endedTime,
+					'startTime': startTime.toString(),
+					'endTime': endTime.toString(),
 					'serverVersion': this._assessmentApiResponse.assessmentResult.serverVersion,
 					'serverEdition': this._assessmentApiResponse.assessmentResult.serverEdition,
 					'platform': this._assessmentApiResponse.assessmentResult.serverHostPlatform,
@@ -262,7 +262,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				{
 					'issuesCount': this._assessmentResults.issues.length,
 					'warningsCount': this._assessmentResults.databaseAssessments.reduce((count, d) => count + d.issues.length, 0),
-					'durationInMilliseconds': endTime - startTime,
+					'durationInMilliseconds': endTime.getTime() - startTime.getTime(),
 					'databaseCount': this._assessmentResults.databaseAssessments.length,
 					'serverHostCpuCount': this._assessmentApiResponse.assessmentResult.cpuCoreCount,
 					'serverHostPhysicalMemoryInBytes': this._assessmentApiResponse.assessmentResult.physicalServerMemory,
@@ -873,7 +873,6 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 							'irRegistered': (this._nodeNames.length > 0).toString()
 						},
 						{
-
 						}
 					);
 
