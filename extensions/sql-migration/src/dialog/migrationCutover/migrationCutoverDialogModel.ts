@@ -27,13 +27,15 @@ export class MigrationCutoverDialogModel {
 			this.migrationOpStatus = (await getMigrationAsyncOperationDetails(
 				this._migration.azureAccount,
 				this._migration.subscription,
-				this._migration.asyncUrl
+				this._migration.asyncUrl,
+				this._migration.sessionId!
 			));
 		}
 		this.migrationStatus = (await getMigrationStatus(
 			this._migration.azureAccount,
 			this._migration.subscription,
-			this._migration.migrationContext
+			this._migration.migrationContext,
+			this._migration.sessionId!,
 		));
 
 		sendSqlMigrationActionEvent(
@@ -55,7 +57,8 @@ export class MigrationCutoverDialogModel {
 				const cutover = await startMigrationCutover(
 					this._migration.azureAccount,
 					this._migration.subscription,
-					this.migrationStatus
+					this.migrationStatus,
+					this._migration.sessionId!
 				);
 				sendSqlMigrationActionEvent(
 					TelemetryViews.MigrationCutoverDialog,
@@ -81,7 +84,8 @@ export class MigrationCutoverDialogModel {
 				await stopMigration(
 					this._migration.azureAccount,
 					this._migration.subscription,
-					this.migrationStatus
+					this.migrationStatus,
+					this._migration.sessionId!
 				);
 				sendSqlMigrationActionEvent(
 					TelemetryViews.MigrationCutoverDialog,
