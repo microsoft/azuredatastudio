@@ -203,44 +203,27 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	private async generateAssessmentTelemetry(): Promise<void> {
 		try {
 
-			let serverIssues: { [key: string]: number } = {};
-			this._assessmentResults.issues.forEach(i => {
-				serverIssues = {
-					...serverIssues,
-					[i.ruleId]: i.impactedObjects.length
+			let serverIssues = this._assessmentResults.issues.map(i => {
+				return {
+					ruleId: i.ruleId,
+					count: i.impactedObjects.length
 				};
 			});
-
-			sendSqlMigrationActionEvent(
-				TelemetryViews.MigrationWizardTargetSelectionPage,
-				TelemetryAction.ServerAssessmentIssues,
-				{
-					'sessionId': this._sessionId,
-				},
-				serverIssues
-			);
 
 			const serverAssessmentErrorsMap: Map<number, number> = new Map();
 			this._assessmentApiResponse.assessmentResult.errors.forEach(e => {
 				serverAssessmentErrorsMap.set(e.errorId, serverAssessmentErrorsMap.get(e.errorId) ?? 0 + 1);
 			});
 
-			let serverErrors: { [key: string]: number } = {};
+			let serverErrors: { errorId: number, count: number }[] = [];
 			serverAssessmentErrorsMap.forEach((v, k) => {
-				serverIssues = {
-					...serverIssues,
-					[k.toString()]: v
-				};
+				serverErrors.push(
+					{
+						errorId: k,
+						count: v
+					}
+				);
 			});
-
-			sendSqlMigrationActionEvent(
-				TelemetryViews.MigrationWizardTargetSelectionPage,
-				TelemetryAction.ServerAssessmentError,
-				{
-					'sessionId': this._sessionId,
-				},
-				serverErrors
-			);
 
 			const startTime = new Date(this._assessmentApiResponse.startTime);
 			const endTime = new Date(this._assessmentApiResponse.endedTime);
@@ -257,7 +240,9 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 					'serverVersion': this._assessmentApiResponse.assessmentResult.serverVersion,
 					'serverEdition': this._assessmentApiResponse.assessmentResult.serverEdition,
 					'platform': this._assessmentApiResponse.assessmentResult.serverHostPlatform,
-					'engineEdition': this._assessmentApiResponse.assessmentResult.serverEngineEdition
+					'engineEdition': this._assessmentApiResponse.assessmentResult.serverEngineEdition,
+					'serverIssues': JSON.stringify(serverIssues),
+					'serverErrors': JSON.stringify(serverErrors)
 				},
 				{
 					'issuesCount': this._assessmentResults.issues.length,
@@ -303,12 +288,14 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				});
 
 			});
-			let databaseWarnings: { [key: string]: number } = {};
+
+			let databaseWarnings: { warningId: string, count: number }[] = [];
+
 			databaseWarningsMap.forEach((v, k) => {
-				databaseWarnings = {
-					...databaseWarnings,
-					[k]: v
-				};
+				databaseWarnings.push({
+					warningId: k,
+					count: v
+				});
 			});
 
 			sendSqlMigrationActionEvent(
@@ -316,16 +303,17 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				TelemetryAction.DatabaseAssessmentWarning,
 				{
 					'sessionId': this._sessionId,
+					'warnings': JSON.stringify(databaseWarnings)
 				},
-				databaseWarnings
+				{}
 			);
 
-			let databaseErrors: { [key: string]: number } = {};
+			let databaseErrors: { errorId: number, count: number }[] = [];
 			databaseErrorsMap.forEach((v, k) => {
-				databaseErrors = {
-					...databaseWarnings,
-					[k]: v
-				};
+				databaseErrors.push({
+					errorId: k,
+					count: v
+				});
 			});
 
 			sendSqlMigrationActionEvent(
@@ -333,8 +321,9 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				TelemetryAction.DatabaseAssessmentError,
 				{
 					'sessionId': this._sessionId,
+					'errors': JSON.stringify(databaseErrors)
 				},
-				databaseErrors
+				{}
 			);
 
 		} catch (e) {
