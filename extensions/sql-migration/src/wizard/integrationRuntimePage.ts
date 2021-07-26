@@ -94,7 +94,7 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 		await view.initializeModel(this._form.component());
 	}
 
-	public async onPageEnter(): Promise<void> {
+	public async onPageEnter(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
 
 		this._subscription.value = this.migrationStateModel._targetSubscription.name;
 		this._location.value = await getLocationDisplayName(this.migrationStateModel._targetServerInstance.location);
@@ -130,7 +130,7 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 		});
 	}
 
-	public async onPageLeave(): Promise<void> {
+	public async onPageLeave(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
 		this.wizard.registerNavigationValidator((pageChangeInfo) => {
 			return true;
 		});

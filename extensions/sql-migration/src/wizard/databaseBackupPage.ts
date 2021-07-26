@@ -651,7 +651,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 	}
 
 
-	public async onPageEnter(): Promise<void> {
+	public async onPageEnter(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
 		if (this.migrationStateModel.refreshDatabaseBackupPage) {
 			const isOfflineMigration = this.migrationStateModel._databaseBackup?.migrationMode === MigrationMode.OFFLINE;
 			const lastBackupFileColumnIndex = this._blobContainerTargetDatabaseNamesTable.columns.length - 1;
@@ -943,26 +943,27 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 		});
 	}
 
-	public async onPageLeave(): Promise<void> {
+	public async onPageLeave(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
 		try {
-			switch (this.migrationStateModel._databaseBackup.networkContainerType) {
-				case NetworkContainerType.BLOB_CONTAINER:
-					for (let i = 0; i < this.migrationStateModel._databaseBackup.blobs.length; i++) {
-						const storageAccount = this.migrationStateModel._databaseBackup.blobs[i].storageAccount;
-						this.migrationStateModel._databaseBackup.blobs[i].storageKey = (await getStorageAccountAccessKeys(
+			if (pageChangeInfo.newPage > pageChangeInfo.lastPage) {
+				switch (this.migrationStateModel._databaseBackup.networkContainerType) {
+					case NetworkContainerType.BLOB_CONTAINER:
+						for (let i = 0; i < this.migrationStateModel._databaseBackup.blobs.length; i++) {
+							const storageAccount = this.migrationStateModel._databaseBackup.blobs[i].storageAccount;
+							this.migrationStateModel._databaseBackup.blobs[i].storageKey = (await getStorageAccountAccessKeys(
+								this.migrationStateModel._azureAccount,
+								this.migrationStateModel._databaseBackup.subscription,
+								storageAccount)).keyName1;
+						}
+						break;
+					case NetworkContainerType.NETWORK_SHARE:
+						const storageAccount = this.migrationStateModel._databaseBackup.networkShare.storageAccount;
+						this.migrationStateModel._databaseBackup.networkShare.storageKey = (await getStorageAccountAccessKeys(
 							this.migrationStateModel._azureAccount,
 							this.migrationStateModel._databaseBackup.subscription,
 							storageAccount)).keyName1;
-					}
-					break;
-				case NetworkContainerType.NETWORK_SHARE:
-					const storageAccount = this.migrationStateModel._databaseBackup.networkShare.storageAccount;
-
-					this.migrationStateModel._databaseBackup.networkShare.storageKey = (await getStorageAccountAccessKeys(
-						this.migrationStateModel._azureAccount,
-						this.migrationStateModel._databaseBackup.subscription,
-						storageAccount)).keyName1;
-					break;
+						break;
+				}
 			}
 		} finally {
 			this.wizard.registerNavigationValidator((pageChangeInfo) => {
@@ -990,7 +991,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 		this._blobTableContainer.display = (containerType === NetworkContainerType.BLOB_CONTAINER) ? 'inline' : 'none';
 
 		//Preserving the database Names between the 2 tables.
-		this.migrationStateModel._targetDatabaseNames.forEach((v, index) => {
+		this.migrationStateModel._targetDatabaseNames?.forEach((v, index) => {
 			this._networkShareTargetDatabaseNames[index].value = v;
 			this._blobContainerTargetDatabaseNames[index].value = v;
 		});

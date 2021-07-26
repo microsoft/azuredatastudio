@@ -62,8 +62,8 @@ export class WizardController {
 			const newPage = pageChangeInfo.newPage;
 			const lastPage = pageChangeInfo.lastPage;
 
-			await pages[lastPage]?.onPageLeave();
-			await pages[newPage]?.onPageEnter();
+			await pages[lastPage]?.onPageLeave(pageChangeInfo);
+			await pages[newPage]?.onPageEnter(pageChangeInfo);
 		});
 
 		wizard.registerNavigationValidator(async validator => {
@@ -77,7 +77,9 @@ export class WizardController {
 		});
 
 		await Promise.all(wizardSetupPromises);
-		await pages[0].onPageEnter();
+		wizard.onPageChanged(async (pageChangeInfo: azdata.window.WizardPageChangeInfo) => {
+			await pages[0].onPageEnter(pageChangeInfo);
+		});
 
 		wizard.doneButton.onClick(async (e) => {
 			await stateModel.startMigration();

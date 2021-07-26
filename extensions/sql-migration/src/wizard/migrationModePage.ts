@@ -28,13 +28,13 @@ export class MigrationModePage extends MigrationWizardPage {
 		await view.initializeModel(form.component());
 	}
 
-	public async onPageEnter(): Promise<void> {
+	public async onPageEnter(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
 		this.originalMigrationMode = this.migrationStateModel._databaseBackup.migrationMode;
 		this.wizard.registerNavigationValidator((e) => {
 			return true;
 		});
 	}
-	public async onPageLeave(): Promise<void> {
+	public async onPageLeave(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
 		if (this.originalMigrationMode !== this.migrationStateModel._databaseBackup.migrationMode) {
 			this.migrationStateModel.refreshDatabaseBackupPage = true;
 		}
