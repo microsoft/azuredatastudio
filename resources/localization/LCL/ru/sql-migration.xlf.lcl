@@ -67,6 +67,9 @@
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migrate.text" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Select database(s) that you want to migrate to Azure SQL]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Выберите базы данных, которые вы хотите переместить в Azure SQL]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -829,6 +832,9 @@
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.database.migration" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Databases for migration]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Базы данных для миграции]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -952,6 +958,9 @@
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.databases.selected" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[{0}/{1} Databases Selected]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Выбрано баз данных: {0}/{1}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2041,6 +2050,9 @@
       <Item ItemId=";extensions/sql-migration/dist/constants/strings.sql.migration.offline.caps" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[OFFLINE]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[OFFLINE]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
