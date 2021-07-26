@@ -18,7 +18,15 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import * as DOM from 'vs/base/browser/dom';
 import { ILogService } from 'vs/platform/log/common/log';
 import { attachLinkStyler } from 'vs/platform/theme/common/styler';
-import { IThemeService } from 'vs/platform/theme/common/themeService';
+import { IColorTheme, ICssStyleCollector, IThemeService, registerThemingParticipant } from 'vs/platform/theme/common/themeService';
+import { errorForeground } from 'vs/platform/theme/common/colorRegistry';
+
+export enum TextType {
+	Normal = 'Normal',
+	Error = 'Error'
+}
+
+const errorTextClass = 'error-text';
 
 @Component({
 	selector: 'modelview-text',
@@ -97,9 +105,22 @@ export default class TextComponent extends TitledComponent<azdata.TextComponentP
 		this.setPropertyFromUI<azdata.HeadingLevel | undefined>((properties, value) => { properties.headingLevel = value; }, newValue);
 	}
 
+	public get textType(): azdata.TextType | undefined {
+		return this.getPropertyOrDefault<azdata.TextType | undefined>(props => props.textType, undefined);
+	}
+
+	public set textType(newValue: azdata.TextType | undefined) {
+		this.setPropertyFromUI<azdata.TextType | undefined>((properties, value) => { properties.textType = value; }, newValue);
+	}
+
 	public override setProperties(properties: { [key: string]: any; }): void {
 		super.setProperties(properties);
 		this.updateText();
+		if (this.textType === TextType.Error) {
+			(this._el.nativeElement as HTMLElement).classList.add(errorTextClass);
+		} else {
+			(this._el.nativeElement as HTMLElement).classList.remove(errorTextClass);
+		}
 		this._changeRef.detectChanges();
 	}
 
@@ -174,3 +195,14 @@ export default class TextComponent extends TitledComponent<azdata.TextComponentP
 		return element;
 	}
 }
+
+registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) => {
+	const errorForegroundColor = theme.getColor(errorForeground);
+	if (errorForegroundColor) {
+		collector.addRule(`
+		modelview-text.${errorTextClass} {
+			color: ${errorForegroundColor};
+		}
+		`);
+	}
+});
