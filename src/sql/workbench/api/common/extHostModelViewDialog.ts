@@ -26,7 +26,7 @@ class ModelViewPanelImpl implements azdata.window.ModelViewPanel {
 	public handle: number;
 	protected _modelViewId: string;
 	protected _valid: boolean = true;
-	protected _onValidityChanged: vscode.Event<boolean>;
+	protected _onValidityChanged: Event<boolean>;
 
 	constructor(private _viewType: string,
 		protected _extHostModelViewDialog: ExtHostModelViewDialog,
