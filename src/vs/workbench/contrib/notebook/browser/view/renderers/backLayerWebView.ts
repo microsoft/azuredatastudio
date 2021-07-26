@@ -34,7 +34,7 @@ import { IScopedRendererMessaging } from 'vs/workbench/contrib/notebook/common/n
 import { INotebookService } from 'vs/workbench/contrib/notebook/common/notebookService';
 import { IWebviewService, WebviewContentPurpose, WebviewElement } from 'vs/workbench/contrib/webview/browser/webview';
 import { IWorkbenchEnvironmentService } from 'vs/workbench/services/environment/common/environmentService';
-import { ICreationRequestMessage, IMarkupCellInitialization, FromWebviewMessage, IClickedDataUrlMessage, IContentWidgetTopRequest, IControllerPreload, ToWebviewMessage } from './webviewMessages';
+import { ICreationRequestMessage, IMarkupCellInitialization, FromWebviewMessage, IClickedDataUrlMessage, IContentWidgetTopRequest, IControllerPreload, ToWebviewMessage, IDimensionMessage, IMouseEnterMessage, IMouseLeaveMessage, IOutputFocusMessage, IOutputBlurMessage, IWheelMessage, IBlurOutputMessage, ICustomKernelMessage, ICustomRendererMessage, IClickMarkupCellMessage, IContextMenuMarkupCellMessage, IToggleMarkupPreviewMessage, IMouseEnterMarkupCellMessage, IMouseLeaveMarkupCellMessage, ICellDragStartMessage, ICellDragMessage, ICellDropMessage, ICellDragEndMessage, ITelemetryFoundUnrenderedMarkdownMath } from './webviewMessages';
 
 export interface ICachedInset<K extends ICommonCellInfo> {
 	outputId: string;
@@ -442,13 +442,13 @@ var requirejs = (function() {
 				return;
 			}
 
-			switch (data.type) {
+			switch ((data as FromWebviewMessage).type) { // {{SQL CARBON EDIT}} Cast to FromWebviewMessage to fix missing property error
 				case 'initialized':
 					this.initializeWebViewState();
 					break;
 				case 'dimension':
 					{
-						for (const update of data.updates) {
+						for (const update of (data as IDimensionMessage).updates) { // {{SQL CARBON EDIT}}
 							const height = update.height;
 							if (update.isOutput) {
 								const resolvedResult = this.resolveOutputId(update.id);
@@ -465,7 +465,7 @@ var requirejs = (function() {
 					}
 				case 'mouseenter':
 					{
-						const resolvedResult = this.resolveOutputId(data.id);
+						const resolvedResult = this.resolveOutputId((data as IMouseEnterMessage).id); // {{SQL CARBON EDIT}}
 						if (resolvedResult) {
 							const latestCell = this.notebookEditor.getCellByInfo(resolvedResult.cellInfo);
 							if (latestCell) {
@@ -476,7 +476,7 @@ var requirejs = (function() {
 					}
 				case 'mouseleave':
 					{
-						const resolvedResult = this.resolveOutputId(data.id);
+						const resolvedResult = this.resolveOutputId((data as IMouseLeaveMessage).id); // {{SQL CARBON EDIT}}
 						if (resolvedResult) {
 							const latestCell = this.notebookEditor.getCellByInfo(resolvedResult.cellInfo);
 							if (latestCell) {
@@ -487,7 +487,7 @@ var requirejs = (function() {
 					}
 				case 'outputFocus':
 					{
-						const resolvedResult = this.resolveOutputId(data.id);
+						const resolvedResult = this.resolveOutputId((data as IOutputFocusMessage).id); // {{SQL CARBON EDIT}}
 						if (resolvedResult) {
 							const latestCell = this.notebookEditor.getCellByInfo(resolvedResult.cellInfo);
 							if (latestCell) {
@@ -498,7 +498,7 @@ var requirejs = (function() {
 					}
 				case 'outputBlur':
 					{
-						const resolvedResult = this.resolveOutputId(data.id);
+						const resolvedResult = this.resolveOutputId((data as IOutputBlurMessage).id); // {{SQL CARBON EDIT}}
 						if (resolvedResult) {
 							const latestCell = this.notebookEditor.getCellByInfo(resolvedResult.cellInfo);
 							if (latestCell) {
@@ -517,7 +517,7 @@ var requirejs = (function() {
 				case 'did-scroll-wheel':
 					{
 						this.notebookEditor.triggerScroll({
-							...data.payload,
+							...(data as IWheelMessage).payload, // {{SQL CARBON EDIT}}
 							preventDefault: () => { },
 							stopPropagation: () => { }
 						});
@@ -525,38 +525,46 @@ var requirejs = (function() {
 					}
 				case 'focus-editor':
 					{
-						const cell = this.notebookEditor.getCellById(data.cellId);
-						if (cell) {
-							if (data.focusNext) {
-								this.notebookEditor.focusNextNotebookCell(cell, 'editor');
+						let blurOutputMessageData = (data as IBlurOutputMessage); // {{SQL CARBON EDIT}}
+						const resolvedResult = this.resolveOutputId(blurOutputMessageData.id);
+						if (resolvedResult) {
+							const latestCell = this.notebookEditor.getCellByInfo(resolvedResult.cellInfo);
+							if (!latestCell) {
+								return;
+							}
+
+							if (blurOutputMessageData.focusNext) {
+								this.notebookEditor.focusNextNotebookCell(latestCell, 'editor');
 							} else {
-								this.notebookEditor.focusNotebookCell(cell, 'editor');
+								this.notebookEditor.focusNotebookCell(latestCell, 'editor');
 							}
 						}
 						break;
 					}
 				case 'clicked-data-url':
 					{
-						this._onDidClickDataLink(data);
+						this._onDidClickDataLink(data as IClickedDataUrlMessage); // {{SQL CARBON EDIT}}
 						break;
 					}
 				case 'customKernelMessage':
 					{
-						this._onMessage.fire({ message: data.message });
+						this._onMessage.fire({ message: (data as ICustomKernelMessage).message }); // {{SQL CARBON EDIT}}
 						break;
 					}
 				case 'customRendererMessage':
 					{
-						this.rendererMessaging?.postMessage(data.rendererId, data.message);
+						let rendererMessageData = data as ICustomRendererMessage; // {{SQL CARBON EDIT}}
+						this.rendererMessaging?.postMessage(rendererMessageData.rendererId, rendererMessageData.message);
 						break;
 					}
 				case 'clickMarkupCell':
 					{
-						const cell = this.notebookEditor.getCellById(data.cellId);
+						let clickMarkupCellData = data as IClickMarkupCellMessage; // {{SQL CARBON EDIT}}
+						const cell = this.notebookEditor.getCellById(clickMarkupCellData.cellId);
 						if (cell) {
-							if (data.shiftKey || (isMacintosh ? data.metaKey : data.ctrlKey)) {
+							if (clickMarkupCellData.shiftKey || (isMacintosh ? clickMarkupCellData.metaKey : clickMarkupCellData.ctrlKey)) {
 								// Modify selection
-								this.notebookEditor.toggleNotebookCellSelection(cell, /* fromPrevious */ data.shiftKey);
+								this.notebookEditor.toggleNotebookCellSelection(cell, /* fromPrevious */ clickMarkupCellData.shiftKey);
 							} else {
 								// Normal click
 								this.notebookEditor.focusNotebookCell(cell, 'container', { skipReveal: true });
@@ -566,7 +574,8 @@ var requirejs = (function() {
 					}
 				case 'contextMenuMarkupCell':
 					{
-						const cell = this.notebookEditor.getCellById(data.cellId);
+						let menuMarkupCellData = data as IContextMenuMarkupCellMessage; // {{SQL CARBON EDIT}}
+						const cell = this.notebookEditor.getCellById(menuMarkupCellData.cellId);
 						if (cell) {
 							// Focus the cell first
 							this.notebookEditor.focusNotebookCell(cell, 'container', { skipReveal: true });
@@ -582,8 +591,8 @@ var requirejs = (function() {
 									return result;
 								},
 								getAnchor: () => ({
-									x: webviewRect.x + data.clientX,
-									y: webviewRect.y + data.clientY
+									x: webviewRect.x + menuMarkupCellData.clientX,
+									y: webviewRect.y + menuMarkupCellData.clientY
 								})
 							});
 						}
@@ -591,16 +600,17 @@ var requirejs = (function() {
 					}
 				case 'toggleMarkupPreview':
 					{
-						const cell = this.notebookEditor.getCellById(data.cellId);
+						let markupPreviewData = data as IToggleMarkupPreviewMessage; // {{SQL CARBON EDIT}}
+						const cell = this.notebookEditor.getCellById(markupPreviewData.cellId);
 						if (cell) {
-							this.notebookEditor.setMarkdownCellEditState(data.cellId, CellEditState.Editing);
+							this.notebookEditor.setMarkdownCellEditState(markupPreviewData.cellId, CellEditState.Editing);
 							this.notebookEditor.focusNotebookCell(cell, 'editor', { skipReveal: true });
 						}
 						break;
 					}
 				case 'mouseEnterMarkupCell':
 					{
-						const cell = this.notebookEditor.getCellById(data.cellId);
+						const cell = this.notebookEditor.getCellById((data as IMouseEnterMarkupCellMessage).cellId); // {{SQL CARBON EDIT}}
 						if (cell instanceof MarkdownCellViewModel) {
 							cell.cellIsHovered = true;
 						}
@@ -608,7 +618,7 @@ var requirejs = (function() {
 					}
 				case 'mouseLeaveMarkupCell':
 					{
-						const cell = this.notebookEditor.getCellById(data.cellId);
+						const cell = this.notebookEditor.getCellById((data as IMouseLeaveMarkupCellMessage).cellId); // {{SQL CARBON EDIT}}
 						if (cell instanceof MarkdownCellViewModel) {
 							cell.cellIsHovered = false;
 						}
@@ -616,26 +626,29 @@ var requirejs = (function() {
 					}
 				case 'cell-drag-start':
 					{
-						this.notebookEditor.markdownCellDragStart(data.cellId, data);
+						let cellDragStartData = data as ICellDragStartMessage; // {{SQL CARBON EDIT}}
+						this.notebookEditor.markdownCellDragStart(cellDragStartData.cellId, cellDragStartData);
 						break;
 					}
 				case 'cell-drag':
 					{
-						this.notebookEditor.markdownCellDrag(data.cellId, data);
+						let cellDragData = data as ICellDragMessage; // {{SQL CARBON EDIT}}
+						this.notebookEditor.markdownCellDrag(cellDragData.cellId, cellDragData);
 						break;
 					}
 				case 'cell-drop':
 					{
-						this.notebookEditor.markdownCellDrop(data.cellId, {
-							dragOffsetY: data.dragOffsetY,
-							ctrlKey: data.ctrlKey,
-							altKey: data.altKey,
+						let cellDropData = data as ICellDropMessage; // {{SQL CARBON EDIT}}
+						this.notebookEditor.markdownCellDrop(cellDropData.cellId, {
+							dragOffsetY: cellDropData.dragOffsetY,
+							ctrlKey: cellDropData.ctrlKey,
+							altKey: cellDropData.altKey,
 						});
 						break;
 					}
 				case 'cell-drag-end':
 					{
-						this.notebookEditor.markdownCellDragEnd(data.cellId);
+						this.notebookEditor.markdownCellDragEnd((data as ICellDragEndMessage).cellId); // {{SQL CARBON EDIT}}
 						break;
 					}
 
@@ -655,7 +668,7 @@ var requirejs = (function() {
 						};
 
 						this.telemetryService.publicLog2<TelemetryEvent, Classification>('notebook/markdown/foundUnrenderedLatex', {
-							latexDirective: data.latexDirective
+							latexDirective: (data as ITelemetryFoundUnrenderedMarkdownMath).latexDirective // {{SQL CARBON EDIT}}
 						});
 						break;
 					}
@@ -807,7 +820,6 @@ var requirejs = (function() {
 			this.hiddenInsetMapping.delete(request.output);
 
 			return {
-				cellId: request.cell.id,
 				outputId: id,
 				cellTop: request.cellTop,
 				outputOffset: request.outputOffset,

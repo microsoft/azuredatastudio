@@ -59,7 +59,7 @@ export interface IScrollAckMessage extends BaseToWebviewMessage {
 
 export interface IBlurOutputMessage extends BaseToWebviewMessage {
 	readonly type: 'focus-editor';
-	readonly cellId: string;
+	readonly id: string;
 	readonly focusNext?: boolean;
 }
 
@@ -174,7 +174,6 @@ export interface ICreationRequestMessage {
 }
 
 export interface IContentWidgetTopRequest {
-	readonly cellId: string;
 	readonly outputId: string;
 	readonly cellTop: number;
 	readonly outputOffset: number;
