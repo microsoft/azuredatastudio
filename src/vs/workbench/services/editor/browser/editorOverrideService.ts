@@ -72,9 +72,9 @@ export class EditorOverrideService extends Disposable implements IEditorOverride
 
 	async resolveEditorOverride(editor: IEditorInput, options: IEditorOptions | ITextEditorOptions | undefined, group: IEditorGroup): Promise<IEditorInputWithOptionsAndGroup | undefined> {
 		// If it was an override before we await for the extensions to activate and then proceed with overriding or else they won't be registered
-		if (this.cache && editor.resource && this.resourceMatchesCache(editor.resource)) {
-			await this.extensionService.whenInstalledExtensionsRegistered();
-		}
+		//if (this.cache && editor.resource && this.resourceMatchesCache(editor.resource)) { // {{SQL CARBON EDIT}} Always wait for extensions so that our language-based overrides (SQL/Notebooks) will always have those registered
+		await this.extensionService.whenInstalledExtensionsRegistered();
+		//}
 
 		if (options?.override === EditorOverride.DISABLED) {
 			throw new Error(`Calling resolve editor override when override is explicitly disabled!`);
