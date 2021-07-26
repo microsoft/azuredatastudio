@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IDeployProfile } from './deployProfile';
+import { AppSettingType, IDeployProfile, ILocalDbSetting } from './deployProfile';
 import * as UUID from 'vscode-languageclient/lib/utils/uuid';
 import { Project } from '../project';
 import * as constants from '../../common/constants';
@@ -24,86 +24,113 @@ export class DeployService {
 	constructor(private _outputChannel?: vscode.OutputChannel) {
 	}
 
-	public updateAppSettings(profile: IDeployProfile): void {
+	private createConnectionStringTemplate(runtime: string | undefined): string {
+		switch (runtime?.toLocaleLowerCase()) {
+			case 'dotnet':
+				return constants.defaultConnectionStringTemplate;
+				break;
+			// TODO: add connection strings for other languages
+			default:
+				break;
+		}
+		return '';
+	}
 
+	private findAppRuntime(profile: IDeployProfile, appSettingContent: any): string | undefined {
+		switch (profile.appSettingType) {
+			case AppSettingType.AzureFunction:
+				return <string>appSettingContent?.Values['FUNCTIONS_WORKER_RUNTIME'];
+			default:
+		}
+		return undefined;
+	}
+
+	public updateAppSettings(profile: IDeployProfile): void {
 		// Update app settings
+		//
 		if (profile.appSettingFile) {
 			this.logToOutput(`Updating app setting: ${profile.appSettingFile}`);
-			let connectionString = profile.connectionStringTemplate?.
-				replace('{#SERVER#}', profile.serverName).
-				replace('{#PORT#}', profile.port.toString()).
-				replace('{#USER#}', profile.userName).
-				replace('{#SA_PASSWORD#}', profile.password).
-				replace('{#DATABASE#}', profile.dbName);
 
 			let content = JSON.parse(fse.readFileSync(profile.appSettingFile, 'utf8'));
-			if (content && profile.envVariableName) {
-				if (!content.Values) {
-					content.Values = [];
+			if (content && content.Values) {
+				// Find the runtime and generate the connection string for the runtime
+				//
+				const runtime = this.findAppRuntime(profile, content);
+				let connectionStringTemplate = this.createConnectionStringTemplate(runtime);
+				let connectionString = connectionStringTemplate?.
+					replace('{#SERVER#}', profile?.localDbSetting?.serverName || '').
+					replace('{#PORT#}', profile?.localDbSetting?.port?.toString() || '').
+					replace('{#USER#}', profile?.localDbSetting?.userName || '').
+					replace('{#SA_PASSWORD#}', profile?.localDbSetting?.password || '').
+					replace('{#DATABASE#}', profile?.localDbSetting?.dbName || '');
+
+				if (profile.envVariableName) {
+					content.Values[profile.envVariableName] = connectionString;
+					fse.writeFileSync(profile.appSettingFile, JSON.stringify(content, undefined, 4));
 				}
-				content.Values[profile.envVariableName] = connectionString;
-				fse.writeFileSync(profile.appSettingFile, JSON.stringify(content, undefined, 4));
+				this.logToOutput(`app setting '${profile.appSettingFile}' has been updated`);
 			}
-			this.logToOutput(`app setting '${profile.appSettingFile}' has been updated`);
 		}
 	}
 
 	public async deploy(profile: IDeployProfile, project: Project): Promise<string | undefined> {
 
 		return await this.executeTask(constants.deployDbTaskName, async () => {
-			const projectName = project.projectFileName;
-			const imageLabel = `${constants.dockerImageLabelPrefix}_${projectName}`;
-			const imageName = `${constants.dockerImageNamePrefix}-${projectName}-${UUID.generateUuid().toLowerCase()}`;
-			const root = project.projectFolderPath;
-			const mssqlFolderPath = path.join(root, constants.mssqlFolderName);
-			const commandsFolderPath = path.join(mssqlFolderPath, constants.commandsFolderName);
-			const dockerFilePath = path.join(mssqlFolderPath, constants.dockerFileName);
-			const startFilePath = path.join(commandsFolderPath, constants.startCommandName);
+			if (profile.localDbSetting) {
+				const projectName = project.projectFileName;
+				const imageLabel = `${constants.dockerImageLabelPrefix}_${projectName}`;
+				const imageName = `${constants.dockerImageNamePrefix}-${projectName}-${UUID.generateUuid().toLowerCase()}`;
+				const root = project.projectFolderPath;
+				const mssqlFolderPath = path.join(root, constants.mssqlFolderName);
+				const commandsFolderPath = path.join(mssqlFolderPath, constants.commandsFolderName);
+				const dockerFilePath = path.join(mssqlFolderPath, constants.dockerFileName);
+				const startFilePath = path.join(commandsFolderPath, constants.startCommandName);
 
-			this.logToOutput('Cleaning existing deployments...');
-			// Clean up existing docker image
-			await this.cleanDockerObjects(`docker ps -q -a --filter label=${imageLabel}`, ['docker stop', 'docker rm']);
-			await this.cleanDockerObjects(`docker images -f label=${imageLabel} -q`, [`docker rmi -f `]);
+				this.logToOutput('Cleaning existing deployments...');
+				// Clean up existing docker image
+				await this.cleanDockerObjects(`docker ps -q -a --filter label=${imageLabel}`, ['docker stop', 'docker rm']);
+				await this.cleanDockerObjects(`docker images -f label=${imageLabel} -q`, [`docker rmi -f `]);
 
-			this.logToOutput('Creating deployment settings ...');
-			// Create commands
-			//
-			await this.createCommands(mssqlFolderPath, commandsFolderPath, dockerFilePath, startFilePath, imageLabel);
+				this.logToOutput('Creating deployment settings ...');
+				// Create commands
+				//
+				await this.createCommands(mssqlFolderPath, commandsFolderPath, dockerFilePath, startFilePath, imageLabel);
 
-			this.logToOutput('Building and running the docker container ...');
-			// Building the image and running the docker
-			//
-			const createdDockerId: string | undefined = await this.buildAndRunDockerContainer(dockerFilePath, imageName, root, profile, imageLabel);
-			this.logToOutput(`Docker container created. Id: ${createdDockerId}`);
+				this.logToOutput('Building and running the docker container ...');
+				// Building the image and running the docker
+				//
+				const createdDockerId: string | undefined = await this.buildAndRunDockerContainer(dockerFilePath, imageName, root, profile.localDbSetting, imageLabel);
+				this.logToOutput(`Docker container created. Id: ${createdDockerId}`);
 
 
-			// Waiting a bit to make sure docker container doesn't crash
-			//
-			const runningDockerId = await this.retry('Validating the docker container', async () => {
-				return await this.executeCommand(`docker ps -q -a --filter label=${imageLabel} -q`);
-			}, (dockerId) => {
-				return { validated: dockerId !== undefined, errorMessage: 'Docker container is not running' };
-			}, (dockerId) => {
-				return dockerId;
-			}
-			);
+				// Waiting a bit to make sure docker container doesn't crash
+				//
+				const runningDockerId = await this.retry('Validating the docker container', async () => {
+					return await this.executeCommand(`docker ps -q -a --filter label=${imageLabel} -q`);
+				}, (dockerId) => {
+					return { validated: dockerId !== undefined, errorMessage: 'Docker container is not running' };
+				}, (dockerId) => {
+					return dockerId;
+				}
+				);
 
-			if (runningDockerId) {
-				this.logToOutput(`Docker created id: ${runningDockerId}`);
-				return await this.getConnection(profile);
+				if (runningDockerId) {
+					this.logToOutput(`Docker created id: ${runningDockerId}`);
+					return await this.getConnection(profile.localDbSetting);
 
-			} else {
-				this.logToOutput(`Failed to run the docker container`);
-				if (createdDockerId) {
-					// Get the docker logs if docker was created but crashed
-					await this.executeCommand(`Docker logs: ${createdDockerId}`);
+				} else {
+					this.logToOutput(`Failed to run the docker container`);
+					if (createdDockerId) {
+						// Get the docker logs if docker was created but crashed
+						await this.executeCommand(`Docker logs: ${createdDockerId}`);
+					}
 				}
 			}
 			return undefined;
 		});
 	}
 
-	private async buildAndRunDockerContainer(dockerFilePath: string, imageName: string, root: string, profile: IDeployProfile, imageLabel: string): Promise<string | undefined> {
+	private async buildAndRunDockerContainer(dockerFilePath: string, imageName: string, root: string, profile: ILocalDbSetting, imageLabel: string): Promise<string | undefined> {
 		this.logToOutput('Building docker image ...');
 		await this.executeCommand(`docker pull ${constants.dockerBaseImage}`);
 		await this.executeCommand(`docker build -f ${dockerFilePath} -t ${imageName} ${root}`);
@@ -114,7 +141,7 @@ export class DeployService {
 		return await this.executeCommand(`docker ps -q -a --filter label=${imageLabel} -q`);
 	}
 
-	private async getConnection(profile: IDeployProfile): Promise<string | undefined> {
+	private async getConnection(profile: ILocalDbSetting): Promise<string | undefined> {
 		const getAzdataApi = await utils.getAzdataApi();
 		const vscodeMssqlApi = getAzdataApi ? undefined : await utils.getVscodeMssqlApi();
 

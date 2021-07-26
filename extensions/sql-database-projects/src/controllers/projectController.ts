@@ -248,18 +248,16 @@ export class ProjectsController {
 		const project: Project = this.getProjectFromContext(context);
 		try {
 			let deployProfile = await launchDeployDatabaseQuickpick(project);
-			if (deployProfile) {
-				const connection = await this.deployService.deploy(deployProfile, project);
-				if (connection) {
-					const settings = {
-						serverName: deployProfile.serverName,
-						connectionUri: connection,
-						databaseName: deployProfile.dbName,
-						upgradeExisting: true,
-						// TODO: Set deploymentOptions
-						// TODO: Set sqlCmdVariables
-					};
-					const publishResult = await this.publishOrScriptProject(project, settings, true);
+			if (deployProfile && deployProfile.deploySettings) {
+				let connectionUri: string | undefined;
+				if (deployProfile.localDbSetting) {
+					connectionUri = await this.deployService.deploy(deployProfile, project);
+					if (connectionUri) {
+						deployProfile.deploySettings.connectionUri = connectionUri;
+					}
+				}
+				if (deployProfile.deploySettings.connectionUri) {
+					const publishResult = await this.publishOrScriptProject(project, deployProfile.deploySettings, true);
 					if (publishResult && publishResult.success) {
 
 						// Update app settings if requested by user
