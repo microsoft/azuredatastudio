@@ -102,6 +102,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	public _authenticationType!: MigrationSourceAuthenticationType;
 	public _sqlServerUsername!: string;
 	public _sqlServerPassword!: string;
+	public _databaseAssessment!: string[];
 
 	public _subscriptions!: azureResource.AzureResourceSubscription[];
 
@@ -120,7 +121,6 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	public _blobContainers!: azureResource.BlobContainer[];
 	public _refreshNetworkShareLocation!: azureResource.BlobContainer[];
 	public _targetDatabaseNames!: string[];
-	public _serverDatabases!: string[];
 
 	public _sqlMigrationServiceResourceGroup!: string;
 	public _sqlMigrationService!: SqlMigrationService;
@@ -137,6 +137,13 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	public _miDbs: string[] = [];
 	public _targetType!: MigrationTargetType;
 	public refreshDatabaseBackupPage!: boolean;
+
+	public excludeDbs: string[] = [
+		'master',
+		'tempdb',
+		'msdb',
+		'model'
+	];
 
 	constructor(
 		private readonly _extensionContext: vscode.ExtensionContext,
@@ -162,28 +169,25 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		this._currentState = newState;
 		this._stateChangeEventEmitter.fire({ oldState, newState: this.currentState });
 	}
+	public async getDatabases(): Promise<string[]> {
+		let temp = await azdata.connection.listDatabases(this.sourceConnectionId);
+		let finalResult = temp.filter((name) => !this.excludeDbs.includes(name));
+		return finalResult;
+	}
 
-	public async getServerAssessments(): Promise<ServerAssessement> {
-		const excludeDbs: string[] = [
-			'master',
-			'tempdb',
-			'msdb',
-			'model'
-		];
-
+	public async getDatabaseAssessments(): Promise<ServerAssessement> {
 		const ownerUri = await azdata.connection.getUriForConnection(this.sourceConnectionId);
-
+		// stress test backend & dialog component
 		const assessmentResults = await this.migrationService.getAssessments(
-			ownerUri
+			ownerUri,
+			this._databaseAssessment
 		);
-		this._serverDatabases = await (await azdata.connection.listDatabases(this.sourceConnectionId)).filter((name) => !excludeDbs.includes(name));
-		const dbAssessments = assessmentResults?.assessmentResult.databases.filter(d => !excludeDbs.includes(d.name)).map(d => {
+		const dbAssessments = assessmentResults?.assessmentResult.databases.filter(d => !this.excludeDbs.includes(d.name)).map(d => {
 			return {
 				name: d.name,
 				issues: d.items.filter(i => i.appliesToMigrationTargetPlatform === MigrationTargetType.SQLMI) ?? []
 			};
 		});
-
 		this._assessmentResults = {
 			issues: assessmentResults?.assessmentResult.items?.filter(i => i.appliesToMigrationTargetPlatform === MigrationTargetType.SQLMI) ?? [],
 			databaseAssessments: dbAssessments! ?? []
@@ -192,7 +196,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		return this._assessmentResults;
 	}
 
-	public getDatabaseAssessments(databaseName: string): mssql.SqlMigrationAssessmentResultItem[] | undefined {
+	public findDatabaseAssessments(databaseName: string): mssql.SqlMigrationAssessmentResultItem[] | undefined {
 		return this._assessmentResults.databaseAssessments.find(databaseAsssessment => databaseAsssessment.name === databaseName)?.issues;
 	}
 

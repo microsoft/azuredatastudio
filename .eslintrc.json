@@ -749,7 +749,7 @@
 					"rxjs/**",
 					"ng2-charts",
 					"chart.js",
-					"plotly.js-dist-min",
+					"plotly.js",
 					"angular2-grid",
 					"html-query-plan",
 					"turndown",

@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
+import * as vscode from 'vscode';
 import { azureResource } from 'azureResource';
 import { EventEmitter } from 'events';
 import { createResourceGroup } from '../../api/azure';
@@ -13,6 +14,7 @@ export class CreateResourceGroupDialog {
 	private _dialogObject!: azdata.window.Dialog;
 	private _view!: azdata.ModelView;
 	private _creationEvent: EventEmitter = new EventEmitter;
+	private _disposables: vscode.Disposable[] = [];
 
 	constructor(private _azureAccount: azdata.Account, private _subscription: azureResource.AzureResourceSubscription, private _location: string) {
 		this._dialogObject = azdata.window.createModelViewDialog(
@@ -63,11 +65,11 @@ export class CreateResourceGroupDialog {
 				return valid;
 			}).component();
 
-			resourceGroupName.onTextChanged(e => {
+			this._disposables.push(resourceGroupName.onTextChanged(e => {
 				errorBox.updateCssStyles({
 					'display': 'none'
 				});
-			});
+			}));
 
 			const okButton = view.modelBuilder.button().withProps({
 				label: constants.OK,
@@ -75,7 +77,7 @@ export class CreateResourceGroupDialog {
 				enabled: false
 			}).component();
 
-			okButton.onDidClick(async e => {
+			this._disposables.push(okButton.onDidClick(async e => {
 				errorBox.updateCssStyles({
 					'display': 'none'
 				});
@@ -95,16 +97,16 @@ export class CreateResourceGroupDialog {
 				} finally {
 					loading.loading = false;
 				}
-			});
+			}));
 
 			const cancelButton = view.modelBuilder.button().withProps({
 				label: constants.CANCEL,
 				width: '80px'
 			}).component();
 
-			cancelButton.onDidClick(e => {
+			this._disposables.push(cancelButton.onDidClick(e => {
 				this._creationEvent.emit('done', undefined);
-			});
+			}));
 
 			const loading = view.modelBuilder.loadingComponent().withProps({
 				loading: false,
@@ -174,6 +176,12 @@ export class CreateResourceGroupDialog {
 					'padding': '0px !important'
 				}
 			}).component();
+
+			this._disposables.push(this._view.onClosed(e => {
+				this._disposables.forEach(
+					d => { try { d.dispose(); } catch { } });
+			}));
+
 			return view.initializeModel(form).then(v => {
 				resourceGroupName.focus();
 			});
