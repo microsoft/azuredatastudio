@@ -188,3 +188,9 @@ export function decorate(decorator: (fn: Function, key: string) => Function): Fu
 		descriptor[fnKey] = decorator(fn, key);
 	};
 }
+
+export function getSessionIdHeader(sessionId: string): { [key: string]: string } {
+	return {
+		'SqlMigrationSessionId': sessionId
+	};
+}
