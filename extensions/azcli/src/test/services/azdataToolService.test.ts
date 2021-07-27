@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as should from 'should';
-import { AzTool } from '../../azdata';
+import { AzTool } from '../../az';
 import { AzToolService } from '../../services/azToolService';
 
 describe('azToolService', function (): void {

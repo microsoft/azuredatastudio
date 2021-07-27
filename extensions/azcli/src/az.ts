@@ -4,14 +4,13 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azExt from 'az-ext';
-import * as fs from 'fs';
 import * as os from 'os';
 import { SemVer } from 'semver';
 import * as vscode from 'vscode';
-import { executeCommand, ExitCodeError, ProcessOutput } from './common/childProcess';
+import { executeCommand, ProcessOutput } from './common/childProcess';
 import Logger from './common/logger';
-import { NoAzureCLIError, searchForCmd } from './common/utils';
-import { azConfigSection, azFound, debugConfigKey, latestAzArcExtensionVersion } from './constants';
+import { AzureCLIArcExtError, searchForCmd } from './common/utils';
+import { azConfigSection, debugConfigKey, latestAzArcExtensionVersion } from './constants';
 import * as loc from './localizedConstants';
 
 /**
@@ -76,7 +75,7 @@ export class AzTool implements azExt.IAzApi {
 					'--connectivity-mode', connectivityMode,
 					'--resource-group', resourceGroup,
 					'--location', location,
-					'--azure-subscription', subscription];
+					'--subscription', subscription];
 				if (profileName) {
 					args.push('--profile-name', profileName);
 				}
@@ -193,7 +192,7 @@ export class AzTool implements azExt.IAzApi {
 		this._semVersion = new SemVer(parseVersion(output.stdout));
 		return {
 			stdout: output.stdout
-			// stderr: output.stderr.split(os.EOL), TODOCANYE
+			// stderr: output.stderr.split(os.EOL)
 			// result: output.stdout
 		};
 	}
@@ -205,36 +204,12 @@ export class AzTool implements azExt.IAzApi {
 	 */
 	public async executeCommand<R>(args: string[], additionalEnvVars?: azExt.AdditionalEnvVars): Promise<azExt.AzOutput<R>> {
 		try {
-			// JSON OUTPUT
 			const result = await executeAzCommand(`"${this._path}"`, args.concat(['--output', 'json']), additionalEnvVars);
-
 			const output = JSON.parse(result.stdout);
 			return {
 				stdout: <R>output
 			};
 		} catch (err) {
-			if (err instanceof ExitCodeError) {
-				try {
-					// For az internal errors the output is JSON and so we need to do some extra parsing here
-					// to get the correct stderr out. The actual value we get is something like
-					// ERROR: { stderr: '...' }
-					// so we also need to trim off the start that isn't a valid JSON blob
-					err.stderr = JSON.parse(err.stderr.substring(err.stderr.indexOf('{'), err.stderr.indexOf('}') + 1)).stderr;
-				} catch {
-					// it means this was probably some other generic error (such as command not being found)
-					// check if az still exists if it does then rethrow the original error if not then emit a new specific error.
-					try {
-						await fs.promises.access(this._path);
-						//this.path exists
-					} catch (e) {
-						// this.path does not exist
-						await vscode.commands.executeCommand('setContext', azFound, false);
-						throw new NoAzureCLIError();
-					}
-					throw err; // rethrow the original error
-				}
-
-			}
 			throw err;
 		}
 	}
@@ -253,7 +228,6 @@ export async function findAz(): Promise<IAzTool> {
 		return az;
 	} catch (err) {
 		Logger.log(loc.noAzureCLI);
-		// Logger.log(loc.couldNotFindAz(err));
 		throw err;
 	}
 }
@@ -265,6 +239,10 @@ export async function findAz(): Promise<IAzTool> {
 function parseVersion(raw: string): string {
 	// Currently the version is a multi-line string that contains other version information such
 	// as the Python installation, with the first line holding the version of az itself.
+	//
+	// The output of az --version looks like:
+	// azure-cli                         2.26.1
+	// ...
 	const start = raw.search('azure-cli');
 	const end = raw.search('core');
 	raw = raw.slice(start, end).replace('azure-cli', '');
@@ -278,9 +256,18 @@ function parseVersion(raw: string): string {
 function parseArcExtensionVersion(raw: string): string {
 	// Currently the version is a multi-line string that contains other version information such
 	// as the Python installation and any extensions.
+	//
+	// The output of az --version looks like:
+	// azure-cli                         2.26.1
+	// ...
+	// Extensions:
+	// arcdata                            1.0.0
+	// connectedk8s                       1.1.5
+	// ...
 	const start = raw.search('arcdata');
 	if (start === -1) {
 		vscode.window.showErrorMessage(loc.arcdataExtensionNotInstalled);
+		throw new AzureCLIArcExtError();
 	} else {
 		raw = raw.slice(start + 7);
 		raw = raw.split(os.EOL)[0].trim();
@@ -289,7 +276,6 @@ function parseArcExtensionVersion(raw: string): string {
 }
 
 async function executeAzCommand(command: string, args: string[], additionalEnvVars: azExt.AdditionalEnvVars = {}): Promise<ProcessOutput> {
-	additionalEnvVars = Object.assign(additionalEnvVars, { 'ACCEPT_EULA': 'yes' });
 	const debug = vscode.workspace.getConfiguration(azConfigSection).get(debugConfigKey);
 	if (debug) {
 		args.push('--debug');
