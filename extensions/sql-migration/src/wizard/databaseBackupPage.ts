@@ -13,7 +13,6 @@ import { IconPathHelper } from '../constants/iconPathHelper';
 import { WIZARD_INPUT_COMPONENT_WIDTH } from './wizardController';
 import { findDropDownItemIndex, selectDropDownIndex } from '../api/utils';
 
-// const WIZARD_TABLE_COLUMN_WIDTH = '200px';
 const WIZARD_TABLE_COLUMN_WIDTH = '150px';
 
 export class DatabaseBackupPage extends MigrationWizardPage {
@@ -658,11 +657,12 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			this._blobContainerTargetDatabaseNamesTable.columns[lastBackupFileColumnIndex].hidden = !isOfflineMigration;
 
 			this._networkShareButton.checked = false;
-			this._blobContainerButton.checked = false;
-			this._networkShareContainer.updateCssStyles({ 'display': 'none' });
-			this._blobContainer.updateCssStyles({ 'display': 'none' });
 			this._networkTableContainer.display = 'none';
+			this._networkShareContainer.updateCssStyles({ 'display': 'none' });
+
+			this._blobContainerButton.checked = false;
 			this._blobTableContainer.display = 'none';
+			this._blobContainer.updateCssStyles({ 'display': 'none' });
 
 			const connectionProfile = await this.migrationStateModel.getSourceConnectionProfile();
 			const queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>((await this.migrationStateModel.getSourceConnectionProfile()).providerId, azdata.DataProviderType.QueryProvider);
@@ -744,6 +744,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 					width: WIZARD_TABLE_COLUMN_WIDTH,
 					editable: true,
 					fireOnTextChange: true,
+					required: true,
 				}).component();
 
 				const blobContainerStorageAccountDropdown = this._view.modelBuilder.dropDown().withProps({
@@ -751,7 +752,10 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 					width: WIZARD_TABLE_COLUMN_WIDTH,
 					editable: true,
 					fireOnTextChange: true,
-					enabled: false
+					required: true,
+					enabled: false,
+					showInputTooltip: true,
+					value: constants.SELECT_RESOURCE_GROUP_TOOLTIP,
 				}).component();
 
 				const blobContainerDropdown = this._view.modelBuilder.dropDown().withProps({
@@ -759,7 +763,10 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 					width: WIZARD_TABLE_COLUMN_WIDTH,
 					editable: true,
 					fireOnTextChange: true,
-					enabled: false
+					required: true,
+					enabled: false,
+					showInputTooltip: true,
+					value: constants.SELECT_STORAGE_ACCOUNT_TOOLTIP,
 				}).component();
 
 				const blobContainerLastBackupFileDropdown = this._view.modelBuilder.dropDown().withProps({
@@ -767,7 +774,10 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 					width: WIZARD_TABLE_COLUMN_WIDTH,
 					editable: true,
 					fireOnTextChange: true,
-					enabled: false
+					required: true,
+					enabled: false,
+					showInputTooltip: true,
+					value: constants.SELECT_BLOB_CONTAINER_TOOLTIP,
 				}).component();
 
 				blobContainerResourceDropdown.onValueChanged(async (value) => {
@@ -798,13 +808,12 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 					const selectedIndex = findDropDownItemIndex(blobContainerDropdown, value);
 					if (selectedIndex > -1 && value !== constants.NO_BLOBCONTAINERS_FOUND) {
 						this.migrationStateModel._databaseBackup.blobs[index].blobContainer = this.migrationStateModel.getBlobContainer(selectedIndex);
-
 						if (this.migrationStateModel._databaseBackup.migrationMode === MigrationMode.OFFLINE) {
 							await this.loadBlobLastBackupFileDropdown(index);
 							blobContainerLastBackupFileDropdown.updateProperties({ enabled: true });
 						}
 					} else {
-						blobContainerLastBackupFileDropdown.updateProperties({ enabled: false });
+						this.disableBlobTableDropdowns(index, constants.BLOB_CONTAINER);
 					}
 				});
 				this._blobContainerDropdowns.push(blobContainerDropdown);
@@ -881,26 +890,26 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 					}
 					break;
 				case NetworkContainerType.BLOB_CONTAINER:
-					this._blobContainerResourceGroupDropdowns.forEach(v => {
-						if (v.value === undefined || (<azdata.CategoryValue>v.value).displayName === constants.RESOURCE_GROUP_NOT_FOUND) {
-							errors.push(constants.INVALID_RESOURCE_GROUP_ERROR);
+					this._blobContainerResourceGroupDropdowns.forEach((v, index) => {
+						if (this.shouldDisplayBlobDropdownError(v, [constants.RESOURCE_GROUP_NOT_FOUND])) {
+							errors.push(constants.INVALID_BLOB_RESOURCE_GROUP_ERROR(this.migrationStateModel._migrationDbs[index]));
 						}
 					});
-					this._blobContainerStorageAccountDropdowns.forEach(v => {
-						if (v.value === undefined || (<azdata.CategoryValue>v.value).displayName === constants.NO_STORAGE_ACCOUNT_FOUND) {
-							errors.push(constants.INVALID_STORAGE_ACCOUNT_ERROR);
+					this._blobContainerStorageAccountDropdowns.forEach((v, index) => {
+						if (this.shouldDisplayBlobDropdownError(v, [constants.NO_STORAGE_ACCOUNT_FOUND, constants.SELECT_RESOURCE_GROUP_TOOLTIP])) {
+							errors.push(constants.INVALID_BLOB_STORAGE_ACCOUNT_ERROR(this.migrationStateModel._migrationDbs[index]));
 						}
 					});
-					this._blobContainerDropdowns.forEach(v => {
-						if (v.value === undefined || (<azdata.CategoryValue>v.value).displayName === constants.NO_BLOBCONTAINERS_FOUND) {
-							errors.push(constants.INVALID_BLOBCONTAINER_ERROR);
+					this._blobContainerDropdowns.forEach((v, index) => {
+						if (this.shouldDisplayBlobDropdownError(v, [constants.NO_BLOBCONTAINERS_FOUND, constants.SELECT_STORAGE_ACCOUNT_TOOLTIP])) {
+							errors.push(constants.INVALID_BLOB_CONTAINER_ERROR(this.migrationStateModel._migrationDbs[index]));
 						}
 					});
 
 					if (this.migrationStateModel._databaseBackup.migrationMode === MigrationMode.OFFLINE) {
-						this._blobContainerLastBackupFileDropdowns.forEach(v => {
-							if (v.value === undefined || (<azdata.CategoryValue>v.value).displayName === constants.NO_FILE_NAMES_FOUND) {
-								errors.push(constants.INVALID_LAST_BACKUP_FILE_ERROR);
+						this._blobContainerLastBackupFileDropdowns.forEach((v, index) => {
+							if (this.shouldDisplayBlobDropdownError(v, [constants.NO_FILE_NAMES_FOUND, constants.SELECT_BLOB_CONTAINER_TOOLTIP])) {
+								errors.push(constants.INVALID_BLOB_LAST_BACKUP_FILE_ERROR(this.migrationStateModel._migrationDbs[index]));
 							}
 						});
 					}
@@ -1126,5 +1135,33 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 		} finally {
 			this._blobContainerLastBackupFileDropdowns[index].loading = false;
 		}
+	}
+
+	private shouldDisplayBlobDropdownError(v: azdata.DropDownComponent, errorStrings: string[]) {
+		return v.value === undefined || errorStrings.includes((<azdata.CategoryValue>v.value).displayName);
+	}
+
+	private disableBlobTableDropdowns(rowIndex: number, columnName: string): void {
+		const emptyValues: azdata.CategoryValue[] = [];
+		const dropdownProps = {
+			enabled: false,
+			loading: false
+		};
+
+		if (this.migrationStateModel._databaseBackup?.migrationMode === MigrationMode.OFFLINE) {
+			this._blobContainerLastBackupFileDropdowns[rowIndex].value = constants.SELECT_BLOB_CONTAINER_TOOLTIP;
+			this._blobContainerLastBackupFileDropdowns[rowIndex].values = emptyValues;
+			this._blobContainerLastBackupFileDropdowns[rowIndex]?.updateProperties(dropdownProps);
+			if (columnName === constants.BLOB_CONTAINER) { return; }
+		}
+
+		this._blobContainerDropdowns[rowIndex].value = constants.SELECT_STORAGE_ACCOUNT_TOOLTIP;
+		this._blobContainerDropdowns[rowIndex].values = emptyValues;
+		this._blobContainerDropdowns[rowIndex].updateProperties(dropdownProps);
+		if (columnName === constants.STORAGE_ACCOUNT) { return; }
+
+		this._blobContainerStorageAccountDropdowns[rowIndex].value = constants.SELECT_RESOURCE_GROUP_TOOLTIP;
+		this._blobContainerStorageAccountDropdowns[rowIndex].values = emptyValues;
+		this._blobContainerStorageAccountDropdowns[rowIndex].updateProperties(dropdownProps);
 	}
 }

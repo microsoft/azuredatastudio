@@ -1024,4 +1024,8 @@ declare module 'azdata' {
 		 */
 		showToggleButton?: boolean;
 	}
+
+	export interface DropDownProperties extends LoadingComponentProperties {
+		showInputTooltip?: boolean;
+	}
 }

@@ -15,8 +15,8 @@ export class TargetDatabaseSummaryDialog {
 	constructor(private _model: MigrationStateModel) {
 		let dialogWidth: azdata.window.DialogWidth;
 		if (this._model._databaseBackup.networkContainerType === NetworkContainerType.BLOB_CONTAINER) {
-			this._tableLength = 600;
-			dialogWidth = 'medium';
+			this._tableLength = 800;
+			dialogWidth = 900;
 		} else {
 			this._tableLength = 200;
 			dialogWidth = 'narrow';

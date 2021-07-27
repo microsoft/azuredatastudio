@@ -134,8 +134,18 @@ export const INVALID_SUBSCRIPTION_ERROR = localize('sql.migration.invalid.subscr
 export const INVALID_LOCATION_ERROR = localize('sql.migration.invalid.location.error', "Please select a valid location to proceed.");
 export const INVALID_STORAGE_ACCOUNT_ERROR = localize('sql.migration.invalid.storageAccount.error', "Please select a valid storage account to proceed.");
 export const INVALID_FILESHARE_ERROR = localize('sql.migration.invalid.fileShare.error', "Please select a valid file share to proceed.");
-export const INVALID_BLOBCONTAINER_ERROR = localize('sql.migration.invalid.blobContainer.error', "Please select a valid blob container to proceed.");
-export const INVALID_LAST_BACKUP_FILE_ERROR = localize('sql.migration.invalid.fileName.error', "Please select a last backup file to proceed.");
+export function INVALID_BLOB_RESOURCE_GROUP_ERROR(sourceDb: string): string {
+	return localize('sql.migration.invalid.blob.resourceGroup.error', "Please select a valid resource group for source database '{0}' to proceed.", sourceDb);
+}
+export function INVALID_BLOB_STORAGE_ACCOUNT_ERROR(sourceDb: string): string {
+	return localize('sql.migration.invalid.blob.storageAccount.error', "Please select a valid storage account for source database '{0}' to proceed.", sourceDb);
+}
+export function INVALID_BLOB_CONTAINER_ERROR(sourceDb: string): string {
+	return localize('sql.migration.invalid.blob.container.error', "Please select a valid blob container for source database '{0}' to proceed.", sourceDb);
+}
+export function INVALID_BLOB_LAST_BACKUP_FILE_ERROR(sourceDb: string): string {
+	return localize('sql.migration.invalid.blob.lastBackupFile.error', "Please select a valid last backup file for source database '{0}' to proceed.", sourceDb);
+}
 export const INVALID_NETWORK_SHARE_LOCATION = localize('sql.migration.invalid.network.share.location', "Invalid network share location format. Example: {0}", '\\\\Servername.domainname.com\\Backupfolder');
 export const INVALID_USER_ACCOUNT = localize('sql.migration.invalid.user.account', "Invalid user account format. Example: {0}", 'Domain\\username');
 export function TARGET_NETWORK_SHARE_LOCATION(dbName: string): string {
@@ -160,6 +170,9 @@ export function SQL_SOURCE_DETAILS(authMethod: MigrationSourceAuthenticationType
 			return localize('sql.migration.source.details.sqlAuth', "Enter the SQL Authentication credential used for connecting to SQL Server Instance {0}. ​ This credential will be used to for connecting to SQL Server instance and identifying valid backup file(s)", serverName);
 	}
 }
+export const SELECT_RESOURCE_GROUP_TOOLTIP = localize('sql.migration.blob.resourceGroup.tooltip', "Select a resource group value first.");
+export const SELECT_STORAGE_ACCOUNT_TOOLTIP = localize('sql.migration.blob.storageAccount.tooltip', "Select a storage account value first.");
+export const SELECT_BLOB_CONTAINER_TOOLTIP = localize('sql.migration.blob.container.tooltip', "Select a blob container value first.");
 
 // integration runtime page
 export const IR_PAGE_TITLE = localize('sql.migration.ir.page.title', "Azure Database Migration Service");
