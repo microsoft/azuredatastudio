@@ -671,17 +671,15 @@ describe('Project: sqlproj content operations', function (): void {
 
 		let project: Project = await Project.openProject(projFilePath);
 
-		// Try adding a project root folder itself
-		await testUtils.shouldThrowSpecificError(
-			async () => await project.addToProject([Uri.file(path.dirname(projFilePath))]),
-			"Items with absolute path outside project folder are not supported. Please make sure the paths in the project file are relative to project folder.",
-			"Project folder should not be added.");
+		// Try adding project root folder itself - this is silently ignored
+		await project.addToProject([Uri.file(path.dirname(projFilePath))]);
+		should.equal(project.files.length, 0, 'Nothing should be added to the project');
 
 		// Try adding a parent of the project folder
 		await testUtils.shouldThrowSpecificError(
 			async () => await project.addToProject([Uri.file(path.dirname(path.dirname(projFilePath)))]),
-			"Items with absolute path outside project folder are not supported. Please make sure the paths in the project file are relative to project folder.",
-			"Folders outside the project folder should not be added.");
+			'Items with absolute path outside project folder are not supported. Please make sure the paths in the project file are relative to project folder.',
+			'Folders outside the project folder should not be added.');
 	});
 
 	it('Project entry relative path should not change after reload', async function (): Promise<void> {
