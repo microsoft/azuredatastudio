@@ -39,7 +39,7 @@ export function escapeUrl(unescapedUrl: string): string {
  * Removes single or double quotes that enclose another string.
  * @param quotedText The text to unquote
  */
-export function removeWrappingQuotes(quotedText: string): string {
+export function unquoteText(quotedText: string): string {
 	let doubleQuotesRegex = /^[\"\'](.*)[\"\']$/;
 	let matches = doubleQuotesRegex.exec(quotedText);
 	if (matches && matches[1]) {
