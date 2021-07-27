@@ -8,7 +8,7 @@ import { SqlMigrationAssessmentResultItem, SqlMigrationImpactedObjectInfo } from
 import { MigrationStateModel, MigrationTargetType } from '../../models/stateMachine';
 import * as constants from '../../constants/strings';
 import { debounce } from '../../api/utils';
-import { IconPathHelper } from '../../constants/iconPathHelper';
+import { IconPath, IconPathHelper } from '../../constants/iconPathHelper';
 
 const styleLeft: azdata.CssStyles = {
 	'border': 'none',
@@ -155,7 +155,7 @@ export class SqlDatabaseTree {
 		this._databaseTable = this._view.modelBuilder.declarativeTable().withProps(
 			{
 				enableRowSelection: true,
-				width: 210,
+				width: 230,
 				CSSStyles: {
 					'table-layout': 'fixed'
 				},
@@ -163,16 +163,17 @@ export class SqlDatabaseTree {
 					{
 						displayName: '',
 						valueType: azdata.DeclarativeDataType.boolean,
-						width: 10,
+						width: 20,
 						isReadOnly: false,
 						showCheckAll: true,
 						headerCssStyles: headerLeft,
 					},
 					{
 						displayName: constants.DATABASE,
-						valueType: azdata.DeclarativeDataType.component,
-						// valueType: azdata.DeclarativeDataType.string,
-						width: 140,
+						// undo when bug #16445 is fixed
+						// valueType: azdata.DeclarativeDataType.component,
+						valueType: azdata.DeclarativeDataType.string,
+						width: 160,
 						isReadOnly: true,
 						headerCssStyles: headerLeft
 					},
@@ -224,7 +225,7 @@ export class SqlDatabaseTree {
 		let resourceSearchBox = this._view.modelBuilder.inputBox().withProps({
 			stopEnterPropagation: true,
 			placeHolder: constants.SEARCH,
-			width: 240
+			width: 260
 		}).component();
 
 		this._disposables.push(resourceSearchBox.onTextChanged(value => this._filterTableList(value)));
@@ -243,9 +244,13 @@ export class SqlDatabaseTree {
 		if (this._databaseTableValues && value?.length > 0) {
 			const filter: number[] = [];
 			this._databaseTableValues.forEach((row, index) => {
-				const textComponent: azdata.TextComponent = row[1] as azdata.TextComponent;
-				const cellText = textComponent.value?.toLowerCase();
-				const searchText: string = value.toLowerCase();
+				// undo when bug #16445 is fixed
+				// const flexContainer: azdata.FlexContainer = row[1]?.value as azdata.FlexContainer;
+				// const textComponent: azdata.TextComponent = flexContainer?.items[1] as azdata.TextComponent;
+				// const cellText = textComponent?.value?.toLowerCase();
+				const text = row[1]?.value as string;
+				const cellText = text?.toLowerCase();
+				const searchText: string = value?.toLowerCase();
 				if (cellText?.includes(searchText)) {
 					filter.push(index);
 				}
@@ -260,17 +265,18 @@ export class SqlDatabaseTree {
 	private createInstanceComponent(): azdata.DivContainer {
 		this._instanceTable = this._view.modelBuilder.declarativeTable().withProps(
 			{
+				enableRowSelection: true,
+				width: 240,
 				CSSStyles: {
 					'table-layout': 'fixed'
 				},
-				width: 200,
-				enableRowSelection: true,
 				columns: [
 					{
 						displayName: constants.INSTANCE,
-						valueType: azdata.DeclarativeDataType.component,
-						// valueType: azdata.DeclarativeDataType.string,
-						width: 170,
+						// undo when bug #16445 is fixed
+						// valueType: azdata.DeclarativeDataType.component,
+						valueType: azdata.DeclarativeDataType.string,
+						width: 190,
 						isReadOnly: true,
 						headerCssStyles: headerLeft
 					},
@@ -812,18 +818,26 @@ export class SqlDatabaseTree {
 		}
 
 		const assessmentResults: azdata.DeclarativeTableCellValue[][] = this._activeIssues
-			.map((v) => [
+			.sort((e1, e2) => {
+				if (blockingIssues.includes(e1.ruleId)) { return -1; }
+				if (blockingIssues.includes(e2.ruleId)) { return 1; }
+
+				return e1.checkId.localeCompare(e2.checkId);
+			}).map((v) => [
 				{
 					value: this._view.modelBuilder
 						.image()
 						.withProps({
 							iconPath: blockingIssues.includes(v.ruleId)
-								? IconPathHelper.warning
+								? IconPathHelper.error
 								: undefined,
 							iconHeight: 16,
 							iconWidth: 16,
 							height: 16,
 							width: 16,
+							title: blockingIssues.includes(v.ruleId)
+								? constants.ASSESSMENT_BLOCKING_ISSUE_TITLE
+								: '',
 						})
 						.component()
 				},
@@ -865,8 +879,7 @@ export class SqlDatabaseTree {
 			instanceTableValues = [
 				[
 					{
-						// value: this.createIconTextCell(IconPathHelper.sqlServerLogo, this._serverName),
-						value: this._serverName,
+						value: this.createIconTextCell(IconPathHelper.sqlServerLogo, this._serverName),
 						style: styleLeft
 					},
 					{
@@ -883,8 +896,7 @@ export class SqlDatabaseTree {
 							style: styleLeft
 						},
 						{
-							// value: this.createIconTextCell(IconPathHelper.sqlDatabaseLogo, db),
-							value: db,
+							value: this.createIconTextCell(IconPathHelper.sqlDatabaseLogo, db),
 							style: styleLeft
 						},
 						{
@@ -898,8 +910,7 @@ export class SqlDatabaseTree {
 			instanceTableValues = [
 				[
 					{
-						// value: this.createIconTextCell(IconPathHelper.sqlServerLogo, this._serverName),
-						value: this._serverName,
+						value: this.createIconTextCell(IconPathHelper.sqlServerLogo, this._serverName),
 						style: styleLeft
 					},
 					{
@@ -926,8 +937,7 @@ export class SqlDatabaseTree {
 							enabled: selectable
 						},
 						{
-							// value: this.createIconTextCell((selectable) ? IconPathHelper.sqlDatabaseLogo : IconPathHelper.sqlDatabaseWarningLogo, db.name),
-							value: db.name,
+							value: this.createIconTextCell((selectable) ? IconPathHelper.sqlDatabaseLogo : IconPathHelper.sqlDatabaseWarningLogo, db.name),
 							style: styleLeft
 						},
 						{
@@ -942,7 +952,16 @@ export class SqlDatabaseTree {
 		await this._databaseTable.setDataValues(this._databaseTableValues);
 	}
 
+	// undo when bug #16445 is fixed
+	private createIconTextCell(icon: IconPath, text: string): string {
+		return text;
+	}
 	// private createIconTextCell(icon: IconPath, text: string): azdata.FlexContainer {
+	// 	const cellContainer = this._view.modelBuilder.flexContainer().withProps({
+	// 		CSSStyles: {
+	// 			'justify-content': 'left'
+	// 		}
+	// 	}).component();
 
 	// 	const iconComponent = this._view.modelBuilder.image().withProps({
 	// 		iconPath: icon,
@@ -951,26 +970,22 @@ export class SqlDatabaseTree {
 	// 		width: '20px',
 	// 		height: '20px'
 	// 	}).component();
-	// 	const textComponent = this._view.modelBuilder.text().withProps({
-	// 		value: text,
-	// 		title: text,
-	// 		CSSStyles: {
-	// 			'margin': '0px',
-	// 			'width': '100%'
-	// 		}
-	// 	}).component();
-
-	// 	const cellContainer = this._view.modelBuilder.flexContainer().withProps({
-	// 		CSSStyles: {
-	// 			'justify-content': 'left'
-	// 		}
-	// 	}).component();
 	// 	cellContainer.addItem(iconComponent, {
 	// 		flex: '0',
 	// 		CSSStyles: {
 	// 			'width': '32px'
 	// 		}
 	// 	});
+
+	// 	const textComponent = this._view.modelBuilder.text().withProps({
+	// 		value: text,
+	// 		title: text,
+	// 		CSSStyles: {
+	// 			'margin': '0px',
+	// 			'width': '100%',
+	// 		}
+	// 	}).component();
+
 	// 	cellContainer.addItem(textComponent, {
 	// 		CSSStyles: {
 	// 			'width': 'auto'
@@ -979,4 +994,5 @@ export class SqlDatabaseTree {
 
 	// 	return cellContainer;
 	// }
+	// undo when bug #16445 is fixed
 }

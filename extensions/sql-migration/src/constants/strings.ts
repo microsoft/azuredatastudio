@@ -18,6 +18,7 @@ export const SOURCE_CONFIGURATION_PAGE_TITLE = localize('sql.migration.wizard.so
 // //#endregion
 
 // Assessments Progress Page
+export const ASSESSMENT_BLOCKING_ISSUE_TITLE = localize('sql.migration.assessments.blocking.issue', 'This is a blocking issue that will prevent the database migration from succeeding.');
 export const ASSESSMENT_PROGRESS = localize('sql.migration.assessments.progress', "Assessments Progress");
 export const ASSESSMENT_IN_PROGRESS = localize('sql.migration.assessment.in.progress', "Assessment in progress");
 export function ASSESSMENT_IN_PROGRESS_CONTENT(dbName: string) {
