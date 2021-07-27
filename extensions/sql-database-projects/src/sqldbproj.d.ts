@@ -27,6 +27,13 @@ declare module 'sqldbproj' {
 		 * Opens and loads a .sqlproj file
 		 */
 		openProject(projectFilePath: string): Promise<ISqlProject>;
+
+		/**
+		 * Opens the data workspace new project dialog with only the sql database template
+		 * @param allowedTargetPlatforms specific target platforms to allow. If not specified, all target platforms for sql will be listed
+		 * @returns uri of the created the project or undefined if no project was created
+		 */
+		openSqlNewProjectDialog(allowedTargetPlatforms?: SqlTargetPlatform[]): Promise<vscode.Uri | undefined>;
 	}
 
 	export interface ISqlProject {
