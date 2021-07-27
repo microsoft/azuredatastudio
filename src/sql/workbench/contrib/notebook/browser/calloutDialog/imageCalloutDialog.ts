@@ -197,9 +197,17 @@ export class ImageCalloutDialog extends Modal {
 		this._register(styler.attachCheckboxStyler(this._imageEmbedCheckbox, this._themeService));
 	}
 
+	private readonly doubleQuotesRegex = /^\"(.*)\"$/;
 	public insert(): void {
 		this.hide('ok');
 		let imgPath = this._imageUrlInputBox.value;
+
+		// Remove any quotes around URL
+		let matches = this.doubleQuotesRegex.exec(imgPath);
+		if (matches && matches[1]) {
+			imgPath = matches[1];
+		}
+
 		let imageName = path.basename(imgPath);
 		this._selectionComplete.resolve({
 			embedImage: this._imageEmbedCheckbox.checked,
