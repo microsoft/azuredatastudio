@@ -133,11 +133,16 @@ export class HTMLMarkdownConverter {
 			filter: 'a',
 			replacement: (content, node) => {
 				let href = node.href;
+				let nodeValue = node.attributes.href.nodeValue;
 				let notebookLink: URI | undefined;
 				const isAnchorLinkInFile = (node.attributes.href?.nodeValue.startsWith('#') || href.includes('#')) && href.startsWith('file://');
 				if (isAnchorLinkInFile) {
 					notebookLink = getUriAnchorLink(node, this.notebookUri);
 				} else {
+					// Unsaved notebooks will have incorrect href with the base of the app and the relative link
+					if (href !== nodeValue) {
+						href = nodeValue;
+					}
 					//On Windows, if notebook is not trusted then the href attr is removed for all non-web URL links
 					// href contains either a hyperlink or a URI-encoded absolute path. (See resolveUrls method in notebookMarkdown.ts)
 					notebookLink = href ? URI.parse(href) : URI.file(node.title);
@@ -307,6 +312,10 @@ function isInsideTable(node): boolean {
 export function findPathRelativeToContent(notebookFolder: string, contentPath: URI | undefined): string {
 	if (notebookFolder) {
 		if (contentPath?.scheme === 'file') {
+			// Root folder so therefore we do not need to join
+			if (notebookFolder === './') {
+				return contentPath.fsPath;
+			}
 			let relativePath = contentPath.fragment ? path.relative(notebookFolder, contentPath.fsPath).concat('#', contentPath.fragment) : path.relative(notebookFolder, contentPath.fsPath);
 			//if path contains whitespaces then it's not identified as a link
 			relativePath = relativePath.replace(/\s/g, '%20');
