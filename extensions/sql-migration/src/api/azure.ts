@@ -8,6 +8,7 @@ import * as azdata from 'azdata';
 import * as azurecore from 'azurecore';
 import { azureResource } from 'azureResource';
 import * as constants from '../constants/strings';
+import { getSessionIdHeader } from './utils';
 
 async function getAzureCoreAPI(): Promise<azurecore.IExtension> {
 	const api = (await vscode.extensions.getExtension(azurecore.extension.name)?.activate()) as azurecore.IExtension;
@@ -131,10 +132,10 @@ export async function getBlobContainers(account: azdata.Account, subscription: S
 	return blobContainers!;
 }
 
-export async function getSqlMigrationService(account: azdata.Account, subscription: Subscription, resourceGroupName: string, regionName: string, sqlMigrationServiceName: string): Promise<SqlMigrationService> {
+export async function getSqlMigrationService(account: azdata.Account, subscription: Subscription, resourceGroupName: string, regionName: string, sqlMigrationServiceName: string, sessionId: string): Promise<SqlMigrationService> {
 	const api = await getAzureCoreAPI();
 	const path = `/subscriptions/${subscription.id}/resourceGroups/${resourceGroupName}/providers/Microsoft.DataMigration/sqlMigrationServices/${sqlMigrationServiceName}?api-version=2020-09-01-preview`;
-	const response = await api.makeAzureRestRequest(account, subscription, path, azurecore.HttpRequestMethod.GET, undefined, true);
+	const response = await api.makeAzureRestRequest(account, subscription, path, azurecore.HttpRequestMethod.GET, undefined, true, undefined, getSessionIdHeader(sessionId));
 	if (response.errors.length > 0) {
 		throw new Error(response.errors.toString());
 	}
@@ -142,10 +143,10 @@ export async function getSqlMigrationService(account: azdata.Account, subscripti
 	return response.response.data;
 }
 
-export async function getSqlMigrationServices(account: azdata.Account, subscription: Subscription, regionName: string): Promise<SqlMigrationService[]> {
+export async function getSqlMigrationServices(account: azdata.Account, subscription: Subscription, sessionId: string): Promise<SqlMigrationService[]> {
 	const api = await getAzureCoreAPI();
 	const path = `/subscriptions/${subscription.id}/providers/Microsoft.DataMigration/sqlMigrationServices?api-version=2020-09-01-preview`;
-	const response = await api.makeAzureRestRequest(account, subscription, path, azurecore.HttpRequestMethod.GET, undefined, true);
+	const response = await api.makeAzureRestRequest(account, subscription, path, azurecore.HttpRequestMethod.GET, undefined, true, undefined, getSessionIdHeader(sessionId));
 	if (response.errors.length > 0) {
 		throw new Error(response.errors.toString());
 	}
@@ -156,13 +157,13 @@ export async function getSqlMigrationServices(account: azdata.Account, subscript
 	return response.response.data.value;
 }
 
-export async function createSqlMigrationService(account: azdata.Account, subscription: Subscription, resourceGroupName: string, regionName: string, sqlMigrationServiceName: string): Promise<SqlMigrationService> {
+export async function createSqlMigrationService(account: azdata.Account, subscription: Subscription, resourceGroupName: string, regionName: string, sqlMigrationServiceName: string, sessionId: string): Promise<SqlMigrationService> {
 	const api = await getAzureCoreAPI();
 	const path = `/subscriptions/${subscription.id}/resourceGroups/${resourceGroupName}/providers/Microsoft.DataMigration/sqlMigrationServices/${sqlMigrationServiceName}?api-version=2020-09-01-preview`;
 	const requestBody = {
 		'location': regionName
 	};
-	const response = await api.makeAzureRestRequest(account, subscription, path, azurecore.HttpRequestMethod.PUT, requestBody, true);
+	const response = await api.makeAzureRestRequest(account, subscription, path, azurecore.HttpRequestMethod.PUT, requestBody, true, undefined, getSessionIdHeader(sessionId));
 	if (response.errors.length > 0) {
 		throw new Error(response.errors.toString());
 	}
@@ -170,7 +171,7 @@ export async function createSqlMigrationService(account: azdata.Account, subscri
 	const maxRetry = 5;
 	let i = 0;
 	for (i = 0; i < maxRetry; i++) {
-		const asyncResponse = await api.makeAzureRestRequest(account, subscription, asyncUrl.replace('https://management.azure.com/', ''), azurecore.HttpRequestMethod.GET, undefined, true);
+		const asyncResponse = await api.makeAzureRestRequest(account, subscription, asyncUrl.replace('https://management.azure.com/', ''), azurecore.HttpRequestMethod.GET, undefined, true, undefined, getSessionIdHeader(sessionId));
 		const creationStatus = asyncResponse.response.data.status;
 		if (creationStatus === 'Succeeded') {
 			break;
@@ -185,10 +186,10 @@ export async function createSqlMigrationService(account: azdata.Account, subscri
 	return response.response.data;
 }
 
-export async function getSqlMigrationServiceAuthKeys(account: azdata.Account, subscription: Subscription, resourceGroupName: string, regionName: string, sqlMigrationServiceName: string): Promise<SqlMigrationServiceAuthenticationKeys> {
+export async function getSqlMigrationServiceAuthKeys(account: azdata.Account, subscription: Subscription, resourceGroupName: string, regionName: string, sqlMigrationServiceName: string, sessionId: string): Promise<SqlMigrationServiceAuthenticationKeys> {
 	const api = await getAzureCoreAPI();
 	const path = `/subscriptions/${subscription.id}/resourceGroups/${resourceGroupName}/providers/Microsoft.DataMigration/sqlMigrationServices/${sqlMigrationServiceName}/ListAuthKeys?api-version=2020-09-01-preview`;
-	const response = await api.makeAzureRestRequest(account, subscription, path, azurecore.HttpRequestMethod.POST, undefined, true);
+	const response = await api.makeAzureRestRequest(account, subscription, path, azurecore.HttpRequestMethod.POST, undefined, true, undefined, getSessionIdHeader(sessionId));
 	if (response.errors.length > 0) {
 		throw new Error(response.errors.toString());
 	}
@@ -198,7 +199,7 @@ export async function getSqlMigrationServiceAuthKeys(account: azdata.Account, su
 	};
 }
 
-export async function regenerateSqlMigrationServiceAuthKey(account: azdata.Account, subscription: Subscription, resourceGroupName: string, regionName: string, sqlMigrationServiceName: string, keyName: string): Promise<SqlMigrationServiceAuthenticationKeys> {
+export async function regenerateSqlMigrationServiceAuthKey(account: azdata.Account, subscription: Subscription, resourceGroupName: string, regionName: string, sqlMigrationServiceName: string, keyName: string, sessionId: string): Promise<SqlMigrationServiceAuthenticationKeys> {
 	const api = await getAzureCoreAPI();
 	const path = `/subscriptions/${subscription.id}/resourceGroups/${resourceGroupName}/providers/Microsoft.DataMigration/sqlMigrationServices/${sqlMigrationServiceName}/regenerateAuthKeys?api-version=2020-09-01-preview`;
 	const requestBody = {
@@ -206,7 +207,7 @@ export async function regenerateSqlMigrationServiceAuthKey(account: azdata.Accou
 		'keyName': keyName,
 	};
 
-	const response = await api.makeAzureRestRequest(account, subscription, path, azurecore.HttpRequestMethod.POST, requestBody, true);
+	const response = await api.makeAzureRestRequest(account, subscription, path, azurecore.HttpRequestMethod.POST, requestBody, true, undefined, getSessionIdHeader(sessionId));
 	if (response.errors.length > 0) {
 		throw new Error(response.errors.toString());
 	}
@@ -228,20 +229,20 @@ export async function getStorageAccountAccessKeys(account: azdata.Account, subsc
 	};
 }
 
-export async function getSqlMigrationServiceMonitoringData(account: azdata.Account, subscription: Subscription, resourceGroupName: string, regionName: string, sqlMigrationService: string): Promise<IntegrationRuntimeMonitoringData> {
+export async function getSqlMigrationServiceMonitoringData(account: azdata.Account, subscription: Subscription, resourceGroupName: string, regionName: string, sqlMigrationService: string, sessionId: string): Promise<IntegrationRuntimeMonitoringData> {
 	const api = await getAzureCoreAPI();
 	const path = `/subscriptions/${subscription.id}/resourceGroups/${resourceGroupName}/providers/Microsoft.DataMigration/sqlMigrationServices/${sqlMigrationService}/monitoringData?api-version=2020-09-01-preview`;
-	const response = await api.makeAzureRestRequest(account, subscription, path, azurecore.HttpRequestMethod.GET, undefined, true);
+	const response = await api.makeAzureRestRequest(account, subscription, path, azurecore.HttpRequestMethod.GET, undefined, true, undefined, getSessionIdHeader(sessionId));
 	if (response.errors.length > 0) {
 		throw new Error(response.errors.toString());
 	}
 	return response.response.data;
 }
 
-export async function startDatabaseMigration(account: azdata.Account, subscription: Subscription, regionName: string, targetServer: SqlManagedInstance | SqlVMServer, targetDatabaseName: string, requestBody: StartDatabaseMigrationRequest): Promise<StartDatabaseMigrationResponse> {
+export async function startDatabaseMigration(account: azdata.Account, subscription: Subscription, regionName: string, targetServer: SqlManagedInstance | SqlVMServer, targetDatabaseName: string, requestBody: StartDatabaseMigrationRequest, sessionId: string): Promise<StartDatabaseMigrationResponse> {
 	const api = await getAzureCoreAPI();
 	const path = `${targetServer.id}/providers/Microsoft.DataMigration/databaseMigrations/${targetDatabaseName}?api-version=2020-09-01-preview`;
-	const response = await api.makeAzureRestRequest(account, subscription, path, azurecore.HttpRequestMethod.PUT, requestBody, true);
+	const response = await api.makeAzureRestRequest(account, subscription, path, azurecore.HttpRequestMethod.PUT, requestBody, true, undefined, getSessionIdHeader(sessionId));
 	if (response.errors.length > 0) {
 		throw new Error(response.errors.toString());
 	}
@@ -253,10 +254,10 @@ export async function startDatabaseMigration(account: azdata.Account, subscripti
 	};
 }
 
-export async function getDatabaseMigration(account: azdata.Account, subscription: Subscription, regionName: string, migrationId: string): Promise<DatabaseMigration> {
+export async function getDatabaseMigration(account: azdata.Account, subscription: Subscription, regionName: string, migrationId: string, sessionId: string): Promise<DatabaseMigration> {
 	const api = await getAzureCoreAPI();
 	const path = `${migrationId}?api-version=2020-09-01-preview`;
-	const response = await api.makeAzureRestRequest(account, subscription, path, azurecore.HttpRequestMethod.GET, undefined, true);
+	const response = await api.makeAzureRestRequest(account, subscription, path, azurecore.HttpRequestMethod.GET, undefined, true, undefined, getSessionIdHeader(sessionId));
 	if (response.errors.length > 0) {
 		if (response.response.status === 404 && response.response.data.error.code === 'ResourceDoesNotExist') {
 			throw new Error(response.response.data.error.code);
@@ -266,49 +267,49 @@ export async function getDatabaseMigration(account: azdata.Account, subscription
 	return response.response.data;
 }
 
-export async function getMigrationStatus(account: azdata.Account, subscription: Subscription, migration: DatabaseMigration): Promise<DatabaseMigration> {
+export async function getMigrationStatus(account: azdata.Account, subscription: Subscription, migration: DatabaseMigration, sessionId: string): Promise<DatabaseMigration> {
 	const api = await getAzureCoreAPI();
 	const path = `${migration.id}?$expand=MigrationStatusDetails&api-version=2020-09-01-preview`;
-	const response = await api.makeAzureRestRequest(account, subscription, path, azurecore.HttpRequestMethod.GET, undefined, true);
+	const response = await api.makeAzureRestRequest(account, subscription, path, azurecore.HttpRequestMethod.GET, undefined, true, undefined, getSessionIdHeader(sessionId));
 	if (response.errors.length > 0) {
 		throw new Error(response.errors.toString());
 	}
 	return response.response.data;
 }
 
-export async function getMigrationAsyncOperationDetails(account: azdata.Account, subscription: Subscription, url: string): Promise<AzureAsyncOperationResource> {
+export async function getMigrationAsyncOperationDetails(account: azdata.Account, subscription: Subscription, url: string, sessionId: string): Promise<AzureAsyncOperationResource> {
 	const api = await getAzureCoreAPI();
-	const response = await api.makeAzureRestRequest(account, subscription, url.replace('https://management.azure.com/', ''), azurecore.HttpRequestMethod.GET, undefined, true);
+	const response = await api.makeAzureRestRequest(account, subscription, url.replace('https://management.azure.com/', ''), azurecore.HttpRequestMethod.GET, undefined, true, undefined, getSessionIdHeader(sessionId));
 	if (response.errors.length > 0) {
 		throw new Error(response.errors.toString());
 	}
 	return response.response.data;
 }
 
-export async function listMigrationsBySqlMigrationService(account: azdata.Account, subscription: Subscription, sqlMigrationService: SqlMigrationService): Promise<DatabaseMigration[]> {
+export async function listMigrationsBySqlMigrationService(account: azdata.Account, subscription: Subscription, sqlMigrationService: SqlMigrationService, sessionId: string): Promise<DatabaseMigration[]> {
 	const api = await getAzureCoreAPI();
 	const path = `${sqlMigrationService.id}/listMigrations?$expand=MigrationStatusDetails&api-version=2020-09-01-preview`;
-	const response = await api.makeAzureRestRequest(account, subscription, path, azurecore.HttpRequestMethod.GET, undefined, true);
+	const response = await api.makeAzureRestRequest(account, subscription, path, azurecore.HttpRequestMethod.GET, undefined, true, undefined, getSessionIdHeader(sessionId));
 	if (response.errors.length > 0) {
 		throw new Error(response.errors.toString());
 	}
 	return response.response.data.value;
 }
 
-export async function startMigrationCutover(account: azdata.Account, subscription: Subscription, migrationStatus: DatabaseMigration): Promise<any> {
+export async function startMigrationCutover(account: azdata.Account, subscription: Subscription, migrationStatus: DatabaseMigration, sessionId: string): Promise<any> {
 	const api = await getAzureCoreAPI();
 	const path = `${migrationStatus.id}/operations/${migrationStatus.properties.migrationOperationId}/cutover?api-version=2020-09-01-preview`;
-	const response = await api.makeAzureRestRequest(account, subscription, path, azurecore.HttpRequestMethod.POST, undefined, true);
+	const response = await api.makeAzureRestRequest(account, subscription, path, azurecore.HttpRequestMethod.POST, undefined, true, undefined, getSessionIdHeader(sessionId));
 	if (response.errors.length > 0) {
 		throw new Error(response.errors.toString());
 	}
 	return response.response.data.value;
 }
 
-export async function stopMigration(account: azdata.Account, subscription: Subscription, migrationStatus: DatabaseMigration): Promise<void> {
+export async function stopMigration(account: azdata.Account, subscription: Subscription, migrationStatus: DatabaseMigration, sessionId: string): Promise<void> {
 	const api = await getAzureCoreAPI();
 	const path = `${migrationStatus.id}/operations/${migrationStatus.properties.migrationOperationId}/cancel?api-version=2020-09-01-preview`;
-	const response = await api.makeAzureRestRequest(account, subscription, path, azurecore.HttpRequestMethod.POST, undefined, true);
+	const response = await api.makeAzureRestRequest(account, subscription, path, azurecore.HttpRequestMethod.POST, undefined, true, undefined, getSessionIdHeader(sessionId));
 	if (response.errors.length > 0) {
 		throw new Error(response.errors.toString());
 	}
