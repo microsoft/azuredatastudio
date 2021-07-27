@@ -6,7 +6,7 @@
 import * as should from 'should';
 import * as sinon from 'sinon';
 import * as childProcess from '../common/childProcess';
-import * as azdata from '../azdata';
+import * as azdata from '../az';
 
 describe('az', function () {
 	afterEach(function (): void {

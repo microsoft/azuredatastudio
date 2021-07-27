@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azExt from 'az-ext';
-import { IAzTool } from './azdata';
+import { IAzTool } from './az';
 import Logger from './common/logger';
 import { NoAzureCLIError } from './common/utils';
 import * as loc from './localizedConstants';

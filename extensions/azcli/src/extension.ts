@@ -7,7 +7,7 @@ import * as azExt from 'az-ext';
 import * as rd from 'resource-deployment';
 import * as vscode from 'vscode';
 import { getExtensionApi } from './api';
-import { findAz } from './azdata';
+import { findAz } from './az';
 import { ArcControllerConfigProfilesOptionsSource } from './providers/arcControllerConfigProfilesOptionsSource';
 import { AzToolService } from './services/azToolService';
 

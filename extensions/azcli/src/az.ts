@@ -76,7 +76,7 @@ export class AzTool implements azExt.IAzApi {
 					'--connectivity-mode', connectivityMode,
 					'--resource-group', resourceGroup,
 					'--location', location,
-					'--azure-subscription', subscription];
+					'--subscription', subscription];
 				if (profileName) {
 					args.push('--profile-name', profileName);
 				}

@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IAzTool } from '../azdata';
+import { IAzTool } from '../az';
 
 export class AzToolService {
 	private _localAz: IAzTool | undefined;
