@@ -36,7 +36,7 @@ const keepAbsolutePathConfigName = 'notebook.keepAbsolutePath';
 export class HTMLMarkdownConverter {
 	private turndownService: TurndownService;
 
-	constructor(private notebookUri: URI, @IConfigurationService private configurationService: IConfigurationService) {
+	constructor(private notebookUri: URI, @IConfigurationService private configurationService: IConfigurationService,) {
 		this.turndownService = new TurndownService({ 'emDelimiter': '_', 'bulletListMarker': '-', 'headingStyle': 'atx', blankReplacement: blankReplacement });
 		this.setTurndownOptions();
 	}

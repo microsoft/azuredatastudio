@@ -156,14 +156,28 @@ suite('HTML Markdown Converter', function (): void {
 		assert.equal(htmlMarkdownConverter.convert(htmlString), '[hello](http://www.microsoft.com/images/msft.png#Hello)', 'Http link containing # sign failed');
 	});
 
-	test('Should transform <a> tag with keeping absolute path with setting', () => {
+	test('Should transform <a> tag with absolute path setting on', () => {
 		configurationService.updateValue('notebook.keepAbsolutePath', true, ConfigurationTarget.USER);
 		htmlString = '<a href="/tmp/stuff.png">stuff</a>';
 		assert.strictEqual(htmlMarkdownConverter.convert(htmlString), `[stuff](/tmp/stuff.png)`, 'Basic link test failed');
-		htmlString = '<a href="https://www.microsoft.com/images/msft.png">&lt;msft&gt</a>';
-		assert.strictEqual(htmlMarkdownConverter.convert(htmlString), '[\\<msft\\>](https://www.microsoft.com/images/msft.png)', 'Non-HTML tag as link test failed to escape');
-		htmlString = '<table><thead><tr><th><p><a href="https://www.microsoft.com/">Test</a></p></th><th><p>Test2</p></th></tr></thead><tbody><tr><td><p>testP</p></td><td><p>test</p></td></tr></tbody></table>';
-		assert.strictEqual(htmlMarkdownConverter.convert(htmlString), `| [Test](https://www.microsoft.com/) | Test2 |\n| --- | --- |\n| testP | test |`, 'Table with link in cell failed');
+		htmlString = '<a href="/tmp/stuff.png"/>';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), `[](/tmp/stuff.png)`, 'Basic link test no label failed');
+		htmlString = '<a href="/tmp/my stuff.png"/>';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), `[](/tmp/my%20stuff.png)`, 'Basic link test no label space filename failed');
+		htmlString = '<a href="/stuff.png">stuff</a>';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), `[stuff](/stuff.png)`, 'Basic link test above folder failed');
+		htmlString = '<a href="/tmp/inner/stuff.png">stuff</a>';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), `[stuff](/tmp/inner/stuff.png)`, 'Basic link test below folder failed');
+		htmlString = '<a href="https://www.microsoft.com/images/msft.png">msft</a>';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), '[msft](https://www.microsoft.com/images/msft.png)', 'Basic https link test failed');
+		htmlString = '<a href="http://www.microsoft.com/images/msft.png">msft</a>';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), '[msft](http://www.microsoft.com/images/msft.png)', 'Basic http link test failed');
+		htmlString = 'Test <a href="http://www.microsoft.com/images/msft.png">msft</a>';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), 'Test [msft](http://www.microsoft.com/images/msft.png)', 'Basic http link + text test failed');
+		htmlString = '<a href="#hello">hello</a>';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), '[hello](#hello)', 'Basic link to a section failed');
+		htmlString = '<a href="http://www.microsoft.com/images/msft.png#Hello">hello</a>';
+		assert.equal(htmlMarkdownConverter.convert(htmlString), '[hello](http://www.microsoft.com/images/msft.png#Hello)', 'Http link containing # sign failed');
 	});
 
 	test('Should transform <li> tags', () => {
@@ -190,7 +204,6 @@ suite('HTML Markdown Converter', function (): void {
 	});
 
 	test('Should keep < > tag', () => {
-		configurationService.updateValue('notebook.keepAbsolutePath', false, ConfigurationTarget.USER);
 		htmlString = '&lt;test&gt';
 		assert.equal(htmlMarkdownConverter.convert(htmlString), '\\<test\\>', 'Non-HTML tag test failed to escape');
 		htmlString = '&lt;test&gt<span style="background:red">message</span>&lt;test&gt';
@@ -261,7 +274,6 @@ suite('HTML Markdown Converter', function (): void {
 	});
 
 	test('Should keep highlight and link tags in tables', () => {
-		configurationService.updateValue('notebook.keepAbsolutePath', false, ConfigurationTarget.USER);
 		htmlString = '<table><thead><tr><th><mark>Test</mark></th><th>Test2</th></tr></thead><tbody><tr><td><p>testP</p></td><td>test</td></tr></tbody></table>';
 		assert.equal(htmlMarkdownConverter.convert(htmlString), `| <mark>Test</mark> | Test2 |\n| --- | --- |\n| testP | test |`, 'Table with simple nested paragraph failed');
 		htmlString = '<table><thead><tr><th><p><a href="https://www.microsoft.com/">Test</a></p></th><th><p>Test2</p></th></tr></thead><tbody><tr><td><p>testP</p></td><td><p>test</p></td></tr></tbody></table>';
