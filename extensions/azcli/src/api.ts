@@ -13,7 +13,6 @@ import { AzToolService } from './services/azToolService';
 /**
  * Validates that :
  *	- Az is installed
- *	- The Az CLI has been accepted
  * @param az The az tool to check
  */
 export function validateAz(az: IAzTool | undefined) {

@@ -1,7 +1,7 @@
 {
   "name": "azcli",
-  "displayName": "%az.displayName%",
-  "description": "%az.description%",
+  "displayName": "%azcli.arc.displayName%",
+  "description": "%azcli.arc.description%",
   "version": "0.1.0",
   "publisher": "Microsoft",
   "preview": true,
@@ -26,19 +26,19 @@
     "configuration": [
       {
         "type": "object",
-        "title": "%az.config.title%",
+        "title": "%azcli.arc.config.title%",
         "properties": {
           "azcli.logDebugInfo": {
             "type": "boolean",
             "default": false,
-            "description": "%az.config.debug%"
+            "description": "%azcli.arc.config.debug%"
           }
         }
       }
     ],
     "resourceDeploymentOptionsSources": [
       {
-        "id": "arc.controller.config.profiles"
+        "id": "azcli.arc.controller.config.profiles"
       }
     ]
   },
