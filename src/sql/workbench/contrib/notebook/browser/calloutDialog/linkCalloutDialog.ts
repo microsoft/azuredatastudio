@@ -155,10 +155,17 @@ export class LinkCalloutDialog extends Modal {
 		this.cancel();
 	}
 
+	private readonly doubleQuotesRegex = /^\"(.*)\"$/;
 	public insert(): void {
 		this.hide('ok');
 		let escapedLabel = escapeLabel(this._linkTextInputBox.value);
 		let escapedUrl = escapeUrl(this._linkUrlInputBox.value);
+
+		// Remove any quotes around URL
+		let matches = this.doubleQuotesRegex.exec(escapedUrl);
+		if (matches && matches[1]) {
+			escapedUrl = matches[1];
+		}
 
 		if (this._previouslySelectedRange) {
 			// Reset selection to previous state before callout was open
