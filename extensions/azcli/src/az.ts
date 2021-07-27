@@ -10,7 +10,7 @@ import { SemVer } from 'semver';
 import * as vscode from 'vscode';
 import { executeCommand, ExitCodeError, ProcessOutput } from './common/childProcess';
 import Logger from './common/logger';
-import { NoAzureCLIError, searchForCmd } from './common/utils';
+import { AzureCLIArcExtError, NoAzureCLIError, searchForCmd } from './common/utils';
 import { azConfigSection, azFound, debugConfigKey, latestAzArcExtensionVersion } from './constants';
 import * as loc from './localizedConstants';
 
@@ -192,9 +192,8 @@ export class AzTool implements azExt.IAzApi {
 		const output = await executeAzCommand(`"${this._path}"`, ['--version']);
 		this._semVersion = new SemVer(parseVersion(output.stdout));
 		return {
-			stdout: output.stdout
-			// stderr: output.stderr.split(os.EOL), TODOCANYE
-			// result: output.stdout
+			stdout: output.stdout,
+			stderr: output.stderr.split(os.EOL)
 		};
 	}
 
@@ -210,7 +209,8 @@ export class AzTool implements azExt.IAzApi {
 
 			const output = JSON.parse(result.stdout);
 			return {
-				stdout: <R>output
+				stdout: <R>output,
+				stderr: <string[]>output
 			};
 		} catch (err) {
 			if (err instanceof ExitCodeError) {
@@ -253,7 +253,6 @@ export async function findAz(): Promise<IAzTool> {
 		return az;
 	} catch (err) {
 		Logger.log(loc.noAzureCLI);
-		// Logger.log(loc.couldNotFindAz(err));
 		throw err;
 	}
 }
@@ -265,6 +264,10 @@ export async function findAz(): Promise<IAzTool> {
 function parseVersion(raw: string): string {
 	// Currently the version is a multi-line string that contains other version information such
 	// as the Python installation, with the first line holding the version of az itself.
+	//
+	// The output of az --version looks like:
+	// azure-cli                         2.26.1
+	// ...
 	const start = raw.search('azure-cli');
 	const end = raw.search('core');
 	raw = raw.slice(start, end).replace('azure-cli', '');
@@ -278,9 +281,18 @@ function parseVersion(raw: string): string {
 function parseArcExtensionVersion(raw: string): string {
 	// Currently the version is a multi-line string that contains other version information such
 	// as the Python installation and any extensions.
+	//
+	// The output of az --version looks like:
+	// azure-cli                         2.26.1
+	// ...
+	// Extensions:
+	// arcdata                            1.0.0
+	// connectedk8s                       1.1.5
+	// ...
 	const start = raw.search('arcdata');
 	if (start === -1) {
 		vscode.window.showErrorMessage(loc.arcdataExtensionNotInstalled);
+		throw new AzureCLIArcExtError();
 	} else {
 		raw = raw.slice(start + 7);
 		raw = raw.split(os.EOL)[0].trim();

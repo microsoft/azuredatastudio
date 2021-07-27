@@ -16,6 +16,17 @@ export class NoAzureCLIError extends Error implements azExt.ErrorWithLink {
 		return loc.noAzureCLI;
 	}
 }
+
+export class AzureCLIArcExtError extends Error implements azExt.ErrorWithLink {
+	constructor() {
+		super(loc.arcdataExtensionNotInstalled);
+	}
+
+	public get messageWithLink(): string {
+		return loc.arcdataExtensionNotInstalled;
+	}
+}
+
 /**
  * Searches for the first instance of the specified executable in the PATH environment variable
  * @param exe The executable to search for

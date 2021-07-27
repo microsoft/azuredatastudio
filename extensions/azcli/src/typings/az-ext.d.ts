@@ -259,6 +259,7 @@ declare module 'az-ext' {
 
 	export interface AzOutput<R> {
 		stdout: R,
+		stderr: string[],
 		code?: number
 	}
 
