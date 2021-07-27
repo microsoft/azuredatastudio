@@ -26,6 +26,7 @@ import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox';
 import { RadioButton } from 'sql/base/browser/ui/radioButton/radioButton';
 import { attachCalloutDialogStyler } from 'sql/workbench/common/styler';
 import * as path from 'vs/base/common/path';
+import { removeWrappingQuotes } from 'sql/workbench/contrib/notebook/browser/calloutDialog/common/utils';
 
 export interface IImageCalloutDialogOptions {
 	insertTitle?: string,
@@ -197,17 +198,9 @@ export class ImageCalloutDialog extends Modal {
 		this._register(styler.attachCheckboxStyler(this._imageEmbedCheckbox, this._themeService));
 	}
 
-	private readonly doubleQuotesRegex = /^\"(.*)\"$/;
 	public insert(): void {
 		this.hide('ok');
-		let imgPath = this._imageUrlInputBox.value;
-
-		// Remove any quotes around URL
-		let matches = this.doubleQuotesRegex.exec(imgPath);
-		if (matches && matches[1]) {
-			imgPath = matches[1];
-		}
-
+		let imgPath = removeWrappingQuotes(this._imageUrlInputBox.value);
 		let imageName = path.basename(imgPath);
 		this._selectionComplete.resolve({
 			embedImage: this._imageEmbedCheckbox.checked,
