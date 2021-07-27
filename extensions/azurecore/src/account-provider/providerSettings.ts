@@ -220,7 +220,12 @@ const germanyAzureSettings: ProviderSettings = {
 				endpoint: 'https://vault.microsoftazure.de',
 				azureResourceId: AzureResource.AzureKeyVault
 			},
-			redirectUri: 'https://vscode-redirect.azurewebsites.net/'
+			redirectUri: 'https://vscode-redirect.azurewebsites.net/',
+			scopes: [
+				'openid', 'email', 'profile', 'offline_access',
+				'https://management.microsoftazure.de/user_impersonation'
+			],
+			portalEndpoint: 'https://portal.microsoftazure.de/'
 		}
 	}
 };
@@ -231,8 +236,13 @@ const chinaAzureSettings: ProviderSettings = {
 		displayName: localize('chinaCloudDisplayName', "Azure (China)"),
 		id: 'azure_chinaCloud',
 		settings: {
-			host: 'https://login.chinacloudapi.cn/',
+			host: 'https://login.partner.microsoftonline.cn/',
 			clientId: 'a69788c6-1d43-44ed-9ca3-b83e194da255',
+			microsoftResource: {
+				id: SettingIds.marm,
+				endpoint: 'https://management.core.chinacloudapi.cn/',
+				azureResourceId: AzureResource.MicrosoftResourceManagement
+			},
 			graphResource: {
 				id: SettingIds.graph,
 				endpoint: 'https://graph.chinacloudapi.cn',
@@ -245,8 +255,13 @@ const chinaAzureSettings: ProviderSettings = {
 			},
 			armResource: {
 				id: SettingIds.arm,
-				endpoint: 'https://managemement.chinacloudapi.net',
+				endpoint: 'https://management.chinacloudapi.cn',
 				azureResourceId: AzureResource.ResourceManagement
+			},
+			sqlResource: {
+				id: SettingIds.sql,
+				endpoint: 'https://database.chinacloudapi.cn/',
+				azureResourceId: AzureResource.Sql
 			},
 			azureKeyVaultResource: {
 				id: SettingIds.vault,
@@ -258,8 +273,12 @@ const chinaAzureSettings: ProviderSettings = {
 				endpoint: 'https://api.loganalytics.azure.cn',
 				azureResourceId: AzureResource.AzureLogAnalytics,
 			},
-			redirectUri: 'https://vscode-redirect.azurewebsites.net/'
-
+			redirectUri: 'https://vscode-redirect.azurewebsites.net/',
+			scopes: [
+				'openid', 'email', 'profile', 'offline_access',
+				'https://management.chinacloudapi.cn/user_impersonation'
+			],
+			portalEndpoint: 'https://portal.azure.cn/'
 		}
 	}
 };
