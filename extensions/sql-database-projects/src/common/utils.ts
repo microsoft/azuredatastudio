@@ -13,6 +13,7 @@ import * as dataworkspace from 'dataworkspace';
 import * as mssql from '../../../mssql';
 import * as vscodeMssql from 'vscode-mssql';
 import { promises as fs } from 'fs';
+import { Project } from '../models/project';
 
 /**
  * Consolidates on the error message string
@@ -253,6 +254,7 @@ export function getDataWorkspaceExtensionApi(): dataworkspace.IExtension {
 }
 
 export type IDacFxService = mssql.IDacFxService | vscodeMssql.IDacFxService;
+export type ISchemaCompareService = mssql.ISchemaCompareService | vscodeMssql.ISchemaCompareService;
 
 export async function getDacFxService(): Promise<IDacFxService> {
 	if (getAzdataApi()) {
@@ -265,18 +267,40 @@ export async function getDacFxService(): Promise<IDacFxService> {
 	}
 }
 
+export async function getSchemaCompareService(): Promise<ISchemaCompareService> {
+	if (getAzdataApi()) {
+		const ext = vscode.extensions.getExtension(mssql.extension.name) as vscode.Extension<mssql.IExtension>;
+		const api = await ext.activate();
+		return api.schemaCompare;
+	} else {
+		const api = await getVscodeMssqlApi();
+		return api.schemaCompare;
+	}
+}
+
 export async function getVscodeMssqlApi(): Promise<vscodeMssql.IExtension> {
 	const ext = vscode.extensions.getExtension(vscodeMssql.extension.name) as vscode.Extension<vscodeMssql.IExtension>;
 	return ext.activate();
 }
 
 /*
- * Returns the default deployment options from DacFx
+ * Returns the default deployment options from DacFx, filtered to appropriate options for the given project.
  */
-export async function GetDefaultDeploymentOptions(): Promise<mssql.DeploymentOptions> {
-	const service = (vscode.extensions.getExtension(mssql.extension.name)!.exports as mssql.IExtension).schemaCompare;
-	const result = await service.schemaCompareGetDefaultOptions();
+export async function getDefaultPublishDeploymentOptions(project: Project): Promise<mssql.DeploymentOptions | vscodeMssql.DeploymentOptions> {
+	const schemaCompareService = await getSchemaCompareService();
+	const result = await schemaCompareService.schemaCompareGetDefaultOptions();
+	const deploymentOptions = result.defaultDeploymentOptions;
+	// re-include database-scoped credentials
+	if (getAzdataApi()) {
+		deploymentOptions.excludeObjectTypes = (deploymentOptions as mssql.DeploymentOptions).excludeObjectTypes.filter(x => x !== mssql.SchemaObjectType.DatabaseScopedCredentials);
+	} else {
+		deploymentOptions.excludeObjectTypes = (deploymentOptions as vscodeMssql.DeploymentOptions).excludeObjectTypes.filter(x => x !== vscodeMssql.SchemaObjectType.DatabaseScopedCredentials);
+	}
 
+	// this option needs to be true for same database references validation to work
+	if (project.databaseReferences.length > 0) {
+		deploymentOptions.includeCompositeObjects = true;
+	}
 	return result.defaultDeploymentOptions;
 }
 

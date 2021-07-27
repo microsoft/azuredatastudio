@@ -887,3 +887,8 @@ export enum ButtonType {
 	Normal = 'Normal',
 	Informational = 'Informational'
 }
+
+export enum TextType {
+	Normal = 'Normal',
+	Error = 'Error'
+}
