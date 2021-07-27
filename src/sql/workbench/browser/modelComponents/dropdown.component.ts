@@ -302,13 +302,6 @@ export default class DropDownComponent extends ComponentBase<azdata.DropDownProp
 		});
 	}
 
-	// public get disabledTooltip(): string {
-	// 	return this.getPropertyOrDefault<string>((props) => props.disabledTooltip, '');
-	// }
-
-	// public set disabledTooltip(newValue: string) {
-	// 	this.setPropertyFromUI<string>((props, value) => props.disabledTooltip = value, newValue);
-	// }
 	public get showInputTooltip(): boolean {
 		return this.getPropertyOrDefault<boolean>((props) => props.showInputTooltip, false);
 	}

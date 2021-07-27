@@ -6,10 +6,12 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import * as os from 'os';
-import * as constants from './../common/constants';
 import { promises as fs } from 'fs';
 import * as utils from '../common/utils';
-import { mssqlNotFound } from '../common/constants';
+import { sqlToolsServiceNotFound } from '../common/constants';
+import * as mssql from '../../../mssql/src/mssql';
+import * as vscodeMssql from 'vscode-mssql';
+import * as sqldbproj from 'sqldbproj';
 
 const buildDirectory = 'BuildDirectory';
 const buildFiles: string[] = [
@@ -33,7 +35,7 @@ export class BuildHelper {
 	private initialized: boolean = false;
 
 	constructor() {
-		this.extensionDir = vscode.extensions.getExtension(constants.sqlDatabaseProjectExtensionId)?.extensionPath ?? '';
+		this.extensionDir = vscode.extensions.getExtension(sqldbproj.extension.name)?.extensionPath ?? '';
 		this.extensionBuildDir = path.join(this.extensionDir, buildDirectory);
 	}
 
@@ -59,18 +61,35 @@ export class BuildHelper {
 		this.initialized = true;
 	}
 
-	// get mssql sqltoolsservice path
+	/**
+	 * Gets the path to the SQL Tools Service installation
+	 * @returns
+	 */
 	private async getBuildDirPathFromMssqlTools(): Promise<string> {
-		const mssqlConfigDir = vscode.extensions.getExtension(constants.mssqlExtensionId)?.extensionPath ?? '';
+		let mssqlConfigDir = '';
+		if (utils.getAzdataApi()) {
+			mssqlConfigDir = vscode.extensions.getExtension(mssql.extension.name)?.extensionPath ?? '';
+		} else {
+			// VS Code MSSQL extension has its tools service config in a slightly different spot
+			mssqlConfigDir = path.join(vscode.extensions.getExtension(vscodeMssql.extension.name)?.extensionPath ?? '', 'out', 'src');
+		}
+
 		if (await utils.exists(path.join(mssqlConfigDir, 'config.json'))) {
 			const rawConfig = await fs.readFile(path.join(mssqlConfigDir, 'config.json'));
 			const config = JSON.parse(rawConfig.toString());
-			const installDir = config.installDirectory?.replace('{#version#}', config.version).replace('{#platform#}', this.getPlatform());
+			let installDir = '';
+			if (utils.getAzdataApi()) {
+				installDir = config.installDirectory?.replace('{#version#}', config.version).replace('{#platform#}', this.getPlatform());
+			} else {
+				// VS Code MSSQL extension has its config.json
+				installDir = config.service?.installDir?.replace('{#version#}', config.version).replace('{#platform#}', this.getPlatform());
+			}
+
 			if (installDir) {
 				return path.join(mssqlConfigDir, installDir);
 			}
 		}
-		throw new Error(mssqlNotFound(mssqlConfigDir));
+		throw new Error(sqlToolsServiceNotFound(mssqlConfigDir));
 	}
 
 	private getPlatform(): string {

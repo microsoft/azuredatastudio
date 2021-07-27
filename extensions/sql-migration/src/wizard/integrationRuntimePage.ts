@@ -34,6 +34,7 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 	private _copy2!: azdata.ButtonComponent;
 	private _refresh1!: azdata.ButtonComponent;
 	private _refresh2!: azdata.ButtonComponent;
+	private _disposables: vscode.Disposable[] = [];
 
 	constructor(wizard: azdata.window.Wizard, migrationStateModel: MigrationStateModel) {
 		super(wizard, azdata.window.createWizardPage(constants.IR_PAGE_TITLE), migrationStateModel);
@@ -50,14 +51,14 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 			}
 		}).component();
 
-		createNewMigrationService.onDidClick(async (e) => {
+		this._disposables.push(createNewMigrationService.onDidClick(async (e) => {
 			const dialog = new CreateSqlMigrationServiceDialog();
 			const createdDmsResult = await dialog.createNewDms(this.migrationStateModel, (<azdata.CategoryValue>this._resourceGroupDropdown.value).displayName);
 			this.migrationStateModel._sqlMigrationServiceResourceGroup = createdDmsResult.resourceGroup;
 			this.migrationStateModel._sqlMigrationService = createdDmsResult.service;
 			await this.loadResourceGroupDropdown();
 			await this.populateDms(createdDmsResult.resourceGroup);
-		});
+		}));
 
 		this._statusLoadingComponent = view.modelBuilder.loadingComponent().withItem(this.createDMSDetailsContainer()).component();
 
@@ -91,6 +92,12 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 
 				]
 			);
+
+		this._disposables.push(this._view.onClosed(e => {
+			this._disposables.forEach(
+				d => { try { d.dispose(); } catch { } });
+		}));
+
 		await view.initializeModel(this._form.component());
 	}
 
@@ -187,12 +194,12 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 			fireOnTextChange: true,
 		}).component();
 
-		this._resourceGroupDropdown.onValueChanged(async (value) => {
+		this._disposables.push(this._resourceGroupDropdown.onValueChanged(async (value) => {
 			const selectedIndex = findDropDownItemIndex(this._resourceGroupDropdown, value);
 			if (selectedIndex > -1) {
 				await this.populateDms(value);
 			}
-		});
+		}));
 
 		const migrationServcieDropdownLabel = this._view.modelBuilder.text().withProps({
 			value: constants.IR_PAGE_TITLE,
@@ -209,7 +216,7 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 			fireOnTextChange: true,
 		}).component();
 
-		this._dmsDropdown.onValueChanged(async (value) => {
+		this._disposables.push(this._dmsDropdown.onValueChanged(async (value) => {
 			if (value && value !== constants.SQL_MIGRATION_SERVICE_NOT_FOUND_ERROR) {
 				if (this.migrationStateModel._databaseBackup.networkContainerType === NetworkContainerType.NETWORK_SHARE) {
 					this._dmsInfoContainer.display = 'inline';
@@ -225,7 +232,7 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 			} else {
 				this._dmsInfoContainer.display = 'none';
 			}
-		});
+		}));
 
 		const flexContainer = this._view.modelBuilder.flexContainer().withItems([
 			descriptionText,
@@ -267,14 +274,14 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 			ariaLabel: constants.REFRESH,
 		}).component();
 
-		this._refreshButton.onDidClick(async (e) => {
+		this._disposables.push(this._refreshButton.onDidClick(async (e) => {
 			this._connectionStatusLoader.loading = true;
 			try {
 				await this.loadStatus();
 			} finally {
 				this._connectionStatusLoader.loading = false;
 			}
-		});
+		}));
 
 		const connectionLabelContainer = this._view.modelBuilder.flexContainer().withProps({
 			CSSStyles: {
@@ -318,10 +325,10 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 			ariaLabel: constants.COPY_KEY1,
 		}).component();
 
-		this._copy1.onDidClick(async (e) => {
+		this._disposables.push(this._copy1.onDidClick(async (e) => {
 			await vscode.env.clipboard.writeText(<string>this._authKeyTable.dataValues![0][1].value);
 			vscode.window.showInformationMessage(constants.SERVICE_KEY1_COPIED_HELP);
-		});
+		}));
 
 		this._copy2 = this._view.modelBuilder.button().withProps({
 			title: constants.COPY_KEY2,
@@ -329,10 +336,10 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 			ariaLabel: constants.COPY_KEY2,
 		}).component();
 
-		this._copy2.onDidClick(async (e) => {
+		this._disposables.push(this._copy2.onDidClick(async (e) => {
 			await vscode.env.clipboard.writeText(<string>this._authKeyTable.dataValues![1][1].value);
 			vscode.window.showInformationMessage(constants.SERVICE_KEY2_COPIED_HELP);
-		});
+		}));
 
 		this._refresh1 = this._view.modelBuilder.button().withProps({
 			title: constants.REFRESH_KEY1,

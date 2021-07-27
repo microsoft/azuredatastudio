@@ -7,6 +7,7 @@ import { CategoryValue, DropDownComponent } from 'azdata';
 import { DAYS, HRS, MINUTE, SEC } from '../constants/strings';
 import { AdsMigrationStatus } from '../dialog/migrationStatus/migrationStatusDialogModel';
 import { MigrationContext } from '../models/migrationLocalStorage';
+import * as crypto from 'crypto';
 
 export function deepClone<T>(obj: T): T {
 	if (!obj || typeof obj !== 'object') {
@@ -155,6 +156,10 @@ export function findDropDownItemIndex(dropDown: DropDownComponent, value: string
 	}
 
 	return -1;
+}
+
+export function hashString(value: string): string {
+	return crypto.createHash('sha512').update(value).digest('hex');
 }
 
 export function debounce(delay: number): Function {

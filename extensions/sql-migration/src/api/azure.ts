@@ -398,10 +398,6 @@ export interface StartDatabaseMigrationRequest {
 	properties: {
 		sourceDatabaseName: string,
 		migrationService: string,
-		autoCutoverConfiguration: {
-			autoCutover?: boolean,
-			lastBackupName?: string
-		},
 		backupConfiguration: {
 			targetLocation?: {
 				storageAccountResourceId: string,
@@ -415,7 +411,11 @@ export interface StartDatabaseMigrationRequest {
 			username: string,
 			password: string
 		},
-		scope: string
+		scope: string,
+		autoCutoverConfiguration?: {
+			autoCutover?: boolean,
+			lastBackupName?: string
+		},
 	}
 }
 
@@ -434,7 +434,7 @@ export interface DatabaseMigration {
 export interface DatabaseMigrationProperties {
 	scope: string;
 	provisioningState: 'Succeeded' | 'Failed' | 'Creating';
-	migrationStatus: 'InProgress' | 'Failed' | 'Succeeded' | 'Creating' | 'Completing' | 'Cancelling';
+	migrationStatus: 'InProgress' | 'Failed' | 'Succeeded' | 'Creating' | 'Completing' | 'Canceling';
 	migrationStatusDetails?: MigrationStatusDetails;
 	startedOn: string;
 	endedOn: string;

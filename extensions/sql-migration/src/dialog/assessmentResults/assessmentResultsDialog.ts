@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
+import * as vscode from 'vscode';
 import { MigrationStateModel, MigrationTargetType } from '../../models/stateMachine';
 import { SqlDatabaseTree } from './sqlDatabasesTree';
 import { SqlMigrationImpactedObjectInfo } from '../../../../mssql/src/mssql';
@@ -26,9 +27,8 @@ export class AssessmentResultsDialog {
 
 	// Dialog Name for Telemetry
 	public dialogName: string | undefined;
-
 	private _tree: SqlDatabaseTree;
-
+	private _disposables: vscode.Disposable[] = [];
 
 	constructor(public ownerUri: string, public model: MigrationStateModel, public title: string, private _skuRecommendationPage: SKURecommendationPage, private _targetType: MigrationTargetType) {
 		this._model = model;
@@ -46,6 +46,11 @@ export class AssessmentResultsDialog {
 					}).component();
 					flex.addItem(await this._tree.createRootContainer(view), { flex: '1 1 auto' });
 
+					this._disposables.push(view.onClosed(e => {
+						this._disposables.forEach(
+							d => { try { d.dispose(); } catch { } });
+					}));
+
 					await view.initializeModel(flex);
 					resolve();
 				} catch (ex) {
@@ -61,10 +66,10 @@ export class AssessmentResultsDialog {
 			this.dialog = azdata.window.createModelViewDialog(this.title, this.title, 'wide');
 
 			this.dialog.okButton.label = AssessmentResultsDialog.OkButtonText;
-			this.dialog.okButton.onClick(async () => await this.execute());
+			this._disposables.push(this.dialog.okButton.onClick(async () => await this.execute()));
 
 			this.dialog.cancelButton.label = AssessmentResultsDialog.CancelButtonText;
-			this.dialog.cancelButton.onClick(async () => await this.cancel());
+			this._disposables.push(this.dialog.cancelButton.onClick(async () => await this.cancel()));
 
 			const dialogSetupPromises: Thenable<void>[] = [];
 

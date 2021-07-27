@@ -580,12 +580,24 @@ declare module 'azdata' {
 	 */
 	export type HeadingLevel = 1 | 2 | 3 | 4 | 5 | 6;
 
+	/**
+	 * The type of text this is - used to determine display color.
+	 */
+	export enum TextType {
+		Normal = 'Normal',
+		Error = 'Error'
+	}
+
 	export interface TextComponentProperties {
 		/**
 		 * The heading level for this component - if set the text component will be created as an h#
 		 * HTML element with this value being the #.
 		 */
 		headingLevel?: HeadingLevel;
+		/**
+		 * The type to display the text as - used to determine the color of the text. Default is Normal.
+		 */
+		textType?: TextType;
 	}
 
 	export namespace nb {

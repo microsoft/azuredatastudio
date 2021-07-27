@@ -411,10 +411,10 @@ export const FINISH_TIME = localize('sql.migration.finish.time', "Finish Time");
 
 export function STATUS_VALUE(status: string, count: number): string {
 	if (count > 0) {
-		return localize('sql.migration.status.error.count.some', "{0} (", StatusLookup[status]);
+		return localize('sql.migration.status.error.count.some', "{0} (", StatusLookup[status] ?? status);
 	}
 
-	return localize('sql.migration.status.error.count.none', "{0}", StatusLookup[status]);
+	return localize('sql.migration.status.error.count.none', "{0}", StatusLookup[status] ?? status);
 }
 
 export interface LookupTable<T> {
@@ -426,7 +426,7 @@ export const StatusLookup: LookupTable<string | undefined> = {
 	['Succeeded']: localize('sql.migration.status.succeeded', 'Succeeded'),
 	['Creating']: localize('sql.migration.status.creating', 'Creating'),
 	['Completing']: localize('sql.migration.status.completing', 'Completing'),
-	['Cancelling']: localize('sql.migration.status.cancelling', 'Cancelling'),
+	['Canceling']: localize('sql.migration.status.canceling', 'Canceling'),
 	['Failed']: localize('sql.migration.status.failed', 'Failed'),
 	default: undefined,
 };
@@ -480,6 +480,11 @@ export const SOURCE_CREDENTIALS = localize('sql.migration.source.credentials', "
 export const ENTER_YOUR_SQL_CREDS = localize('sql.migration.enter.your.sql.cred', "Enter the credential for source SQL Server instance. This credential will be used while migrating database(s) to Azure SQL.");
 export const SERVER = localize('sql.migration.server', "Server");
 export const USERNAME = localize('sql.migration.username', "Username");
+export const SIZE = localize('sql.migration.size', "Size (MB)");
+export const LAST_BACKUP = localize('sql.migration.last.backup', "Last backup");
+export const DATABASE_FOR_MIGRATION = localize('sql.migration.database.migration', "Databases for migration");
+export const DATABASE_MIGRATE_TEXT = localize('sql.migrate.text', "Select database(s) that you want to migrate to Azure SQL");
+export const OFFLINE_CAPS = localize('sql.migration.offline.caps', "OFFLINE");
 
 //Assessment Dialog
 export const ISSUES = localize('sql.migration.issues', "Issues");
@@ -508,6 +513,9 @@ export function IMPACT_OBJECT_NAME(objectName?: string): string {
 }
 export function DATABASES(selectedCount: number, totalCount: number): string {
 	return localize('sql.migration.databases', "Databases ({0}/{1})", selectedCount, totalCount);
+}
+export function DATABASES_SELECTED(selectedCount: number, totalCount: number): string {
+	return localize('sql.migration.databases.selected', "{0}/{1} Databases Selected", selectedCount, totalCount);
 }
 export function ISSUES_COUNT(totalCount: number): string {
 	return localize('sql.migration.issues.count', "Issues ({0})", totalCount);
