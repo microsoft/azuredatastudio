@@ -112,8 +112,7 @@ export default class ListViewComponent extends ComponentBase<azdata.ListViewComp
 		if (this.selectedOptionId) {
 			this._optionsList.setSelection([this.options.map(v => v.id).indexOf(this.selectedOptionId)]);
 		}
-
-
+		this._optionsList.ariaLabel = this.ariaLabel;
 	}
 
 	public selectOptionByIdx(idx: number): void {
