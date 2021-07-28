@@ -5,4 +5,3 @@ tsconfig.json
 yarn.lock
 out
 extension.webpack.config.js
-package.vscode.json

@@ -7,4 +7,3 @@ coverConfig.json
 extension.webpack.config.js
 *.vsix
 yarn.lock
-package.vscode.json
