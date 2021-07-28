@@ -8,13 +8,15 @@ import * as constants from '../common/constants';
 import { Project } from '../models/project';
 import { PublishProfile, readPublishProfile } from '../models/publishProfile/publishProfile';
 import { promptForPublishProfile } from './publishDatabaseDialog';
-import { getVscodeMssqlApi } from '../common/utils';
+import { getDefaultPublishDeploymentOptions, getVscodeMssqlApi } from '../common/utils';
 import { IConnectionInfo } from 'vscode-mssql';
+import { ProjectsController } from '../controllers/projectController';
+import { IDeploySettings } from '../models/IDeploySettings';
 
 /**
  * Create flow for Publishing a database using only VS Code-native APIs such as QuickPick
  */
-export async function launchPublishDatabaseQuickpick(project: Project): Promise<void> {
+export async function launchPublishDatabaseQuickpick(project: Project, projectController: ProjectsController): Promise<void> {
 
 	// 1. Select publish settings file (optional)
 	// Create custom quickpick so we can control stuff like displaying the loading indicator
@@ -192,12 +194,13 @@ export async function launchPublishDatabaseQuickpick(project: Project): Promise<
 
 	// TODO@chgagnon: Get deployment options
 	// 6. Generate script/publish
-	// let settings: IDeploySettings | IGenerateScriptSettings = {
-	// 	databaseName: databaseName,
-	// 	serverName: connectionProfile!.server,
-	// 	connectionUri: '', // TODO@chgagnon: Get from connection profile
-	// 	sqlCmdVariables: sqlCmdVariables,
-	// 	deploymentOptions: undefined, // await this.getDeploymentOptions(),
-	// 	profileUsed: !!publishProfile
-	// };
+	let settings: IDeploySettings = {
+		databaseName: databaseName,
+		serverName: connectionProfile!.server,
+		connectionUri: connectionUri,
+		sqlCmdVariables: sqlCmdVariables,
+		deploymentOptions: await getDefaultPublishDeploymentOptions(project),
+		profileUsed: !!publishProfile
+	};
+	await projectController.publishOrScriptProject(project, settings, action === constants.publish);
 }
