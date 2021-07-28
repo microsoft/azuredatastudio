@@ -115,6 +115,7 @@
 					"vs/nls",
 					"vs/css!./**/*",
 					"**/{vs,sql}/base/{common,browser}/**",
+					"**/{vs,sql}/platform/**/{common,browser}/**",
 					"@angular/*",
 					"rxjs/*"
 				]
