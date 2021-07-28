@@ -182,15 +182,11 @@ export class DashboardWidget {
 		const preRequisiteLearnMoreLink = view.modelBuilder.hyperlink().withProps({
 			label: loc.LEARN_MORE,
 			ariaLabel: loc.LEARN_MORE_ABOUT_PRE_REQS,
-			url: '', //TODO: add link for the pre req document.
+			url: 'https://aka.ms/azuresqlmigrationextension',
 			CSSStyles: {
 				'padding-left': '10px'
 			}
 		}).component();
-
-		this._disposables.push(preRequisiteLearnMoreLink.onDidClick((value) => {
-			vscode.window.showInformationMessage(loc.COMING_SOON);
-		}));
 
 		const preReqContainer = view.modelBuilder.flexContainer().withItems([
 			preRequisiteListTitle,

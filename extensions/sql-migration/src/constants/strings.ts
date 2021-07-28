@@ -312,7 +312,6 @@ export const MIGRATION_CUTOVER_CARD = localize('sql.migration.cutover.card', "Co
 export const SUCCESSFULLY_MIGRATED_TO_AZURE_SQL = localize('sql.migration.successfully.migrated.to.azure.sql', "Successfully migrated to Azure SQL");
 export const MIGRATION_NOT_STARTED = localize('sql.migration.migration.not.started', "Migration not started");
 export const CHOOSE_TO_MIGRATE_TO_AZURE_SQL = localize('sql.migration.choose.to.migrate.to.azure.sql', "Choose to migrate to Azure SQL");
-export const COMING_SOON = localize('sql.migration.coming.soon', "Coming soon");
 export const SHOW_STATUS = localize('sql.migration.show.status', "Show status");
 export function MIGRATION_INPROGRESS_WARNING(count: number) {
 	switch (count) {
