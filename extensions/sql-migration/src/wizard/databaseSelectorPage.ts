@@ -229,29 +229,28 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 						// undo when bug #16445 is fixed
 						// valueType: azdata.DeclarativeDataType.component,
 						valueType: azdata.DeclarativeDataType.string,
-						width: '*',
-						// width: 300,
+						width: '100%',
 						isReadOnly: true,
 						headerCssStyles: headerLeft
 					},
 					{
 						displayName: constants.STATUS,
 						valueType: azdata.DeclarativeDataType.string,
-						width: 60,
+						width: 100,
 						isReadOnly: true,
 						headerCssStyles: headerLeft
 					},
 					{
 						displayName: constants.SIZE,
 						valueType: azdata.DeclarativeDataType.string,
-						width: 60,
+						width: 125,
 						isReadOnly: true,
 						headerCssStyles: headerRight
 					},
 					{
 						displayName: constants.LAST_BACKUP,
 						valueType: azdata.DeclarativeDataType.string,
-						width: 60,
+						width: 150,
 						isReadOnly: true,
 						headerCssStyles: headerLeft
 					}
