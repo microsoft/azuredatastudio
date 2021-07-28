@@ -66,7 +66,7 @@ export class WizardController {
 		this.extensionContext.subscriptions.push(this._wizardObject.onPageChanged(async (pageChangeInfo: azdata.window.WizardPageChangeInfo) => {
 			const newPage = pageChangeInfo.newPage;
 			const lastPage = pageChangeInfo.lastPage;
-			this.generateWizardTelemetry(pageChangeInfo).catch(e => console.log(e));
+			this.sendPageButtonActionEvent(pageChangeInfo).catch(e => console.log(e));
 			await pages[lastPage]?.onPageLeave();
 			await pages[newPage]?.onPageEnter();
 		}));
@@ -91,7 +91,7 @@ export class WizardController {
 		this._wizardObject.cancelButton.onClick(e => {
 			sendSqlMigrationActionEvent(
 				TelemetryViews.SqlMigrationWizard,
-				TelemetryAction.PageButtonAction,
+				TelemetryAction.PageButtonClick,
 				{
 					'sessionId': this._model._sessionId,
 					'buttonPressed': 'cancel',
@@ -102,7 +102,7 @@ export class WizardController {
 		this._wizardObject.doneButton.onClick(e => {
 			sendSqlMigrationActionEvent(
 				TelemetryViews.SqlMigrationWizard,
-				TelemetryAction.PageButtonAction,
+				TelemetryAction.PageButtonClick,
 				{
 					'sessionId': this._model._sessionId,
 					'buttonPressed': 'done',
@@ -111,12 +111,12 @@ export class WizardController {
 		});
 	}
 
-	private async generateWizardTelemetry(pageChangeInfo: azdata.window.WizardPageChangeInfo) {
+	private async sendPageButtonActionEvent(pageChangeInfo: azdata.window.WizardPageChangeInfo) {
 		const buttonPressed = pageChangeInfo.newPage > pageChangeInfo.lastPage ? 'next' : 'prev';
 		const pageTitle = this._wizardObject.pages[pageChangeInfo.lastPage].title;
 		sendSqlMigrationActionEvent(
 			TelemetryViews.SqlMigrationWizard,
-			TelemetryAction.PageButtonAction,
+			TelemetryAction.PageButtonClick,
 			{
 				'sessionId': this._model._sessionId,
 				'buttonPressed': buttonPressed,

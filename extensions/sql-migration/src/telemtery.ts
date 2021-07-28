@@ -34,7 +34,7 @@ export enum TelemetryAction {
 	CutoverMigration = 'CutoverMigration',
 	CancelMigration = 'CancelMigration',
 	MigrationStatus = 'MigrationStatus',
-	PageButtonAction = 'PageButtonAction'
+	PageButtonClick = 'PageButtonClick'
 }
 
 export function sendSqlMigrationActionEvent(telemetryView: TelemetryViews, telemetryAction: TelemetryAction, additionalProps: TelemetryEventProperties, additionalMeasurements: TelemetryEventMeasures): void {
