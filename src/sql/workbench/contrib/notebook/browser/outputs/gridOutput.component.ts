@@ -23,7 +23,7 @@ import { localize } from 'vs/nls';
 import { IAction } from 'vs/base/common/actions';
 import { AngularDisposable } from 'sql/base/browser/lifecycle';
 import { IMimeComponent } from 'sql/workbench/contrib/notebook/browser/outputs/mimeRegistry';
-import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
+import { CellExecutionState, ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { MimeModel } from 'sql/workbench/services/notebook/browser/outputs/mimemodel';
 import { GridTableState } from 'sql/workbench/common/editor/query/gridTableState';
 import { GridTableBase } from 'sql/workbench/contrib/query/browser/gridPanel';
@@ -114,8 +114,17 @@ export class GridOutputComponent extends AngularDisposable implements IMimeCompo
 					this.updateResult(e.resultSet, e.rows);
 				}
 			}));
+			if (this._cellModel.executionState === CellExecutionState.Running) {
+				await this.renderGrid();
+			} else {
+				this._register(this._cellModel.onRenderGridOutputs(() => {
+					setTimeout(async () => {
+						await this.renderGrid();
+						this._cellModel.resolveGridOutputsRendered();
+					}, 500);
+				}));
+			}
 		}
-		await this.renderGrid();
 	}
 
 	async renderGrid(): Promise<void> {

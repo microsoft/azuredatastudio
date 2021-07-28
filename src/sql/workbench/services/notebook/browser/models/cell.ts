@@ -31,6 +31,7 @@ import { Disposable } from 'vs/base/common/lifecycle';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { IInsightOptions } from 'sql/workbench/common/editor/query/chartState';
+import { Deferred } from 'sql/base/common/promise';
 
 let modelId = 0;
 const ads_execute_command = 'ads_execute_command';
@@ -53,6 +54,8 @@ export class CellModel extends Disposable implements ICellModel {
 	private _outputsIdMap: Map<nb.ICellOutput, QueryResultId> = new Map<nb.ICellOutput, QueryResultId>();
 	private _renderedOutputTextContent: string[] = [];
 	private _isEditMode: boolean;
+	private _onRenderGridOutputs = new Emitter<void>();
+	private _gridOutputsRendered = new Deferred<void>();
 	private _onOutputsChanged = new Emitter<IOutputChangedEvent>();
 	private _onTableUpdated = new Emitter<ITableUpdatedEvent>();
 	private _onCellModeChanged = new Emitter<boolean>();
@@ -122,6 +125,22 @@ export class CellModel extends Disposable implements ICellModel {
 
 	public get onCollapseStateChanged(): Event<boolean> {
 		return this._onCollapseStateChanged.event;
+	}
+
+	public get onRenderGridOutputs(): Event<void> {
+		return this._onRenderGridOutputs.event;
+	}
+
+	public renderGridOutputs(): void {
+		this._onRenderGridOutputs.fire();
+	}
+
+	public resolveGridOutputsRendered(): void {
+		this._gridOutputsRendered.resolve();
+	}
+
+	public get gridOutputsRendered(): Promise<void> {
+		return this._gridOutputsRendered.promise;
 	}
 
 	public get onOutputsChanged(): Event<IOutputChangedEvent> {
