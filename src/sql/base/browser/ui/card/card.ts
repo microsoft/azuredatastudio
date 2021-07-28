@@ -71,12 +71,13 @@ export class Card extends Widget {
 		return this._cardElement;
 	}
 
-	public set content(content: string) {
-		this._contentWrapper.innerHTML = content;
+	public set content(content: HTMLElement) {
+		this._contentWrapper.firstChild?.remove();
+		this._contentWrapper.appendChild(content);
 	}
 
-	public get content() {
-		return this._contentWrapper.innerHTML;
+	public get content(): HTMLElement {
+		return <HTMLElement>this._contentWrapper.firstChild;
 	}
 
 	public get showRadioButton(): boolean {
