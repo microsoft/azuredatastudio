@@ -259,6 +259,8 @@ declare module 'azurecore' {
 		getBlobContainers(account: azdata.Account, subscription: azureResource.AzureResourceSubscription, storageAccount: azureResource.AzureGraphResource, ignoreErrors?: boolean): Promise<GetBlobContainersResult>;
 		getFileShares(account: azdata.Account, subscription: azureResource.AzureResourceSubscription, storageAccount: azureResource.AzureGraphResource, ignoreErrors?: boolean): Promise<GetFileSharesResult>;
 		createResourceGroup(account: azdata.Account, subscription: azureResource.AzureResourceSubscription, resourceGroupName: string, location: string, ignoreErrors?: boolean): Promise<CreateResourceGroupResult>;
+		getStorageAccountAccessKey(account: azdata.Account, subscription: azureResource.AzureResourceSubscription, storageAccount: azureResource.AzureGraphResource, ignoreErrors?: boolean): Promise<GetStorageAccountAccessKeyResult>;
+		getBlobs(account: azdata.Account, subscription: azureResource.AzureResourceSubscription, storageAccount: azureResource.AzureGraphResource, containerName: string, ignoreErrors?: boolean): Promise<GetBlobsResult>;
 		/**
 		 * Makes Azure REST requests to create, retrieve, update or delete access to azure service's resources.
 		 * For reference to different service URLs, See https://docs.microsoft.com/rest/api/?view=Azure
@@ -269,8 +271,9 @@ declare module 'azurecore' {
 		 * @param requestBody Optional request body to be used in PUT and POST requests.
 		 * @param ignoreErrors When this flag is set the method will not throw any runtime or service errors and will return the errors in errors array.
 		 * @param host Use this to override the host. The default host is https://management.azure.com
+		 * @param requestHeaders Provide additional request headers
 		 */
-		makeAzureRestRequest(account: azdata.Account, subscription: azureResource.AzureResourceSubscription, path: string, requestType: HttpRequestMethod, requestBody?: any, ignoreErrors?: boolean, host?: string): Promise<AzureRestResponse>;
+		makeAzureRestRequest(account: azdata.Account, subscription: azureResource.AzureResourceSubscription, path: string, requestType: HttpRequestMethod, requestBody?: any, ignoreErrors?: boolean, host?: string, requestHeaders?: { [key: string]: string }): Promise<AzureRestResponse>;
 		/**
 		 * Converts a region value (@see AzureRegion) into the localized Display Name
 		 * @param region The region value
@@ -294,4 +297,6 @@ declare module 'azurecore' {
 	export type CreateResourceGroupResult = { resourceGroup: azureResource.AzureResourceResourceGroup, errors: Error[] };
 	export type ResourceQueryResult<T extends azureResource.AzureGraphResource> = { resources: T[], errors: Error[] };
 	export type AzureRestResponse = { response: any, errors: Error[] };
+	export type GetBlobsResult = { blobs: azureResource.Blob[], errors: Error[] };
+	export type GetStorageAccountAccessKeyResult = { keyName1: string, keyName2: string, errors: Error[] };
 }

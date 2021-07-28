@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file original="extensions/query-history/package" source-language="en" datatype="plaintext" target-language="ru">
+    <body>
+      <trans-unit id="queryHistory.displayName">
+        <source xml:lang="en">Query History</source>
+        <target state="translated">Журнал запросов</target>
+      </trans-unit>
+      <trans-unit id="queryHistory.description">
+        <source xml:lang="en">View and run previously executed queries</source>
+        <target state="translated">Просмотр и запуск ранее выполненных запросов</target>
+      </trans-unit>
+      <trans-unit id="queryHistory.clear">
+        <source xml:lang="en">Clear All History</source>
+        <target state="translated">Очистить весь журнал</target>
+      </trans-unit>
+      <trans-unit id="queryHistory.toggleCapture">
+        <source xml:lang="en">Toggle Query History Capture</source>
+        <target state="translated">Включить или отключить ведение Журнала запросов</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

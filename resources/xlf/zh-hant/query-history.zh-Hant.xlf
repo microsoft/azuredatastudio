@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file original="extensions/query-history/package" source-language="en" datatype="plaintext" target-language="zh-Hant">
+    <body>
+      <trans-unit id="queryHistory.displayName">
+        <source xml:lang="en">Query History</source>
+        <target state="translated">查詢歷史記錄</target>
+      </trans-unit>
+      <trans-unit id="queryHistory.description">
+        <source xml:lang="en">View and run previously executed queries</source>
+        <target state="translated">檢視及執行先前執行的查詢</target>
+      </trans-unit>
+      <trans-unit id="queryHistory.clear">
+        <source xml:lang="en">Clear All History</source>
+        <target state="translated">清除所有歷史記錄</target>
+      </trans-unit>
+      <trans-unit id="queryHistory.toggleCapture">
+        <source xml:lang="en">Toggle Query History Capture</source>
+        <target state="translated">切換查詢歷史記錄擷取</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

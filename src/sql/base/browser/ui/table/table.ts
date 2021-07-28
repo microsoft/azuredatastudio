@@ -80,6 +80,23 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 		this._container = document.createElement('div');
 		this._container.className = 'monaco-table';
 		this._register(DOM.addDisposableListener(this._container, DOM.EventType.FOCUS, () => {
+			if (!this.grid.getActiveCell() && this._data.getLength() > 0) {
+				// When the table receives focus and there are currently no active cell, the focus should go to the first focusable cell.
+				let cellToFocus = undefined;
+				for (let col = 0; col < this.columns.length; col++) {
+					// some cells are not keyboard focusable (e.g. row number column), we need to find the first focusable cell.
+					if (this.grid.canCellBeActive(0, col)) {
+						cellToFocus = {
+							row: 0,
+							cell: col
+						};
+						break;
+					}
+				}
+				if (cellToFocus) {
+					this.grid.setActiveCell(cellToFocus.row, cellToFocus.cell);
+				}
+			}
 			clearTimeout(this._classChangeTimeout);
 			this._classChangeTimeout = setTimeout(() => {
 				this._container.classList.add('focused');
@@ -121,6 +138,14 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 		this.mapMouseEvent(this._grid.onHeaderClick, this._onHeaderClick);
 		this.mapMouseEvent(this._grid.onDblClick, this._onDoubleClick);
 		this._grid.onColumnsResized.subscribe(() => this._onColumnResize.fire());
+		this._grid.onRendered.subscribe(() => {
+			if (!this._grid.getActiveCell()) {
+				this._container.tabIndex = this._data.getLength() > 0 ? 0 : -1;
+			}
+		});
+		this._grid.onActiveCellChanged.subscribe((e, data) => {
+			this._container.tabIndex = -1;
+		});
 	}
 
 	public rerenderGrid() {

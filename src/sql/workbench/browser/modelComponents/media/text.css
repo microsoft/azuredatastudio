@@ -3,6 +3,11 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+modelview-text div#textContainer {
+	margin-block-start: 1em;
+	margin-block-end: 1em;
+}
+
 .modelview-text-tooltip {
 	background-size: 12px 12px;
 	background-repeat: no-repeat;
@@ -41,8 +46,4 @@
 
 .modelview-text-tooltip:focus .modelview-text-tooltip-content, .modelview-text-tooltip:hover .modelview-text-tooltip-content {
 	visibility: visible;
-}
-
-.modelview-text-link {
-	text-decoration: underline !important;
 }

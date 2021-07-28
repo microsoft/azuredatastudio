@@ -244,7 +244,8 @@ export enum ComponentEventType {
 	onComponentCreated,
 	onCellAction,
 	onEnterKeyPressed,
-	onInput
+	onInput,
+	onComponentLoaded
 }
 
 export interface IComponentEventArgs {
@@ -885,4 +886,9 @@ export enum ButtonType {
 	File = 'File',
 	Normal = 'Normal',
 	Informational = 'Informational'
+}
+
+export enum TextType {
+	Normal = 'Normal',
+	Error = 'Error'
 }

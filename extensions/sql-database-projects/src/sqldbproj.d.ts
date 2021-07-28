@@ -18,14 +18,22 @@ declare module 'sqldbproj' {
 		 * @param name name of the project
 		 * @param location the parent directory
 		 * @param projectTypeId the ID of the project/template
+		 * @param targetPlatform the target platform for the project. Default is SQL Server 2019
 		 * @returns Uri of the newly created project file
 		 */
-		createProject(name: string, location: vscode.Uri, projectTypeId: string): Promise<vscode.Uri>;
+		createProject(name: string, location: vscode.Uri, projectTypeId: string, targetPlatform: SqlTargetPlatform): Promise<vscode.Uri>;
 
 		/**
 		 * Opens and loads a .sqlproj file
 		 */
 		openProject(projectFilePath: string): Promise<ISqlProject>;
+
+		/**
+		 * Opens the data workspace new project dialog with only the sql database template
+		 * @param allowedTargetPlatforms specific target platforms to allow. If not specified, all target platforms for sql will be listed
+		 * @returns uri of the created the project or undefined if no project was created
+		 */
+		openSqlNewProjectDialog(allowedTargetPlatforms?: SqlTargetPlatform[]): Promise<vscode.Uri | undefined>;
 	}
 
 	export interface ISqlProject {
@@ -129,5 +137,20 @@ declare module 'sqldbproj' {
 	export interface IFileProjectEntry {
 		fsUri: vscode.Uri;
 		relativePath: string;
+	}
+
+	/**
+	 * Target platforms for a sql project
+	 */
+	export const enum SqlTargetPlatform {
+		sqlServer2005 = 'SQL Server 2005',
+		sqlServer2008 = 'SQL Server 2008',
+		sqlServer2012 = 'SQL Server 2012',
+		sqlServer2014 = 'SQL Server 2014',
+		sqlServer2016 = 'SQL Server 2016',
+		sqlServer2017 = 'SQL Server 2017',
+		sqlServer2019 = 'SQL Server 2019',
+		sqlAzure = 'Microsoft Azure SQL Database',
+		sqlDW = 'Microsoft Azure SQL Data Warehouse'
 	}
 }

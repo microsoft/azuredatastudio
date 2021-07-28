@@ -9,12 +9,12 @@ import { MigrationStateModel } from '../models/stateMachine';
 import * as loc from '../constants/strings';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
 import { SKURecommendationPage } from './skuRecommendationPage';
-// import { SubscriptionSelectionPage } from './subscriptionSelectionPage';
 import { DatabaseBackupPage } from './databaseBackupPage';
 import { AccountsSelectionPage } from './accountsSelectionPage';
 import { IntergrationRuntimePage } from './integrationRuntimePage';
 import { SummaryPage } from './summaryPage';
 import { MigrationModePage } from './migrationModePage';
+import { DatabaseSelectorPage } from './databaseSelectorPage';
 
 export const WIZARD_INPUT_COMPONENT_WIDTH = '600px';
 export class WizardController {
@@ -38,6 +38,7 @@ export class WizardController {
 		wizard.generateScriptButton.hidden = true;
 		const skuRecommendationPage = new SKURecommendationPage(wizard, stateModel);
 		const migrationModePage = new MigrationModePage(wizard, stateModel);
+		const databaseSelectorPage = new DatabaseSelectorPage(wizard, stateModel);
 		const azureAccountsPage = new AccountsSelectionPage(wizard, stateModel);
 		const databaseBackupPage = new DatabaseBackupPage(wizard, stateModel);
 		const integrationRuntimePage = new IntergrationRuntimePage(wizard, stateModel);
@@ -45,6 +46,7 @@ export class WizardController {
 
 		const pages: MigrationWizardPage[] = [
 			azureAccountsPage,
+			databaseSelectorPage,
 			skuRecommendationPage,
 			migrationModePage,
 			databaseBackupPage,
@@ -58,13 +60,13 @@ export class WizardController {
 		wizardSetupPromises.push(...pages.map(p => p.registerWizardContent()));
 		wizardSetupPromises.push(wizard.open());
 
-		wizard.onPageChanged(async (pageChangeInfo: azdata.window.WizardPageChangeInfo) => {
+		this.extensionContext.subscriptions.push(wizard.onPageChanged(async (pageChangeInfo: azdata.window.WizardPageChangeInfo) => {
 			const newPage = pageChangeInfo.newPage;
 			const lastPage = pageChangeInfo.lastPage;
 
 			await pages[lastPage]?.onPageLeave();
 			await pages[newPage]?.onPageEnter();
-		});
+		}));
 
 		wizard.registerNavigationValidator(async validator => {
 			// const lastPage = validator.lastPage;
@@ -79,9 +81,9 @@ export class WizardController {
 		await Promise.all(wizardSetupPromises);
 		await pages[0].onPageEnter();
 
-		wizard.doneButton.onClick(async (e) => {
+		this.extensionContext.subscriptions.push(wizard.doneButton.onClick(async (e) => {
 			await stateModel.startMigration();
-		});
+		}));
 	}
 }
 
@@ -94,11 +96,27 @@ export function createInformationRow(view: azdata.ModelView, label: string, valu
 			})
 		.withItems(
 			[
-				createLabelTextComponent(view, label),
-				createTextCompononent(view, value)
+				createLabelTextComponent(view, label,
+					{
+						'margin': '0px',
+						'width': '300px',
+						'font-size': '13px',
+						'line-height': '24px'
+					}
+				),
+				createTextCompononent(view, value,
+					{
+						'margin': '0px',
+						'width': '300px',
+						'font-size': '13px',
+						'line-height': '24px'
+					}
+				)
 			],
 			{
-				CSSStyles: { 'margin-right': '5px' }
+				CSSStyles: {
+					'margin-right': '5px'
+				}
 			})
 		.component();
 }
@@ -114,13 +132,13 @@ export function createHeadingTextComponent(view: azdata.ModelView, value: string
 
 
 export function createLabelTextComponent(view: azdata.ModelView, value: string, styles: { [key: string]: string; } = { 'width': '300px' }): azdata.TextComponent {
-	const component = createTextCompononent(view, value);
-	component.updateCssStyles(styles);
+	const component = createTextCompononent(view, value, styles);
 	return component;
 }
 
-export function createTextCompononent(view: azdata.ModelView, value: string): azdata.TextComponent {
+export function createTextCompononent(view: azdata.ModelView, value: string, styles: { [key: string]: string; } = { 'width': '300px' }): azdata.TextComponent {
 	return view.modelBuilder.text().withProps({
-		value: value
+		value: value,
+		CSSStyles: styles
 	}).component();
 }

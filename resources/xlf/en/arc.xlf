@@ -437,6 +437,9 @@
     <trans-unit id="should.be.integer">
       <source xml:lang="en">Value must be an integer</source>
     </trans-unit>
+    <trans-unit id="worker.node.count.should.not.be.one">
+      <source xml:lang="en">Value of 1 is not supported.</source>
+    </trans-unit>
     <trans-unit id="requested.cores.less.than.or.equal.to.cores.limit">
       <source xml:lang="en">Requested cores must be less than or equal to cores limit</source>
     </trans-unit>
@@ -454,6 +457,9 @@
     </trans-unit>
     <trans-unit id="arc.agreement.sql.help.text.learn.more">
       <source xml:lang="en">Learn more</source>
+    </trans-unit>
+    <trans-unit id="arc.agreement.sql.help.text.learn.more.ariaLabel">
+      <source xml:lang="en">Learn more about Azure Arc enabled Managed Instance</source>
     </trans-unit>
   </body></file>
   <file original="extensions/arc/dist/localizedConstants" source-language="en" datatype="plaintext"><body>
@@ -553,11 +559,14 @@
     <trans-unit id="arc.resetPassword">
       <source xml:lang="en">Reset Password</source>
     </trans-unit>
-    <trans-unit id="arc.addExtensions">
-      <source xml:lang="en">Add extensions</source>
+    <trans-unit id="arc.loadExtensions">
+      <source xml:lang="en">Load extensions</source>
     </trans-unit>
-    <trans-unit id="arc.dropExtension">
-      <source xml:lang="en">Drop extension</source>
+    <trans-unit id="arc.unloadExtensions">
+      <source xml:lang="en">Unload extensions</source>
+    </trans-unit>
+    <trans-unit id="arc.noExtensions">
+      <source xml:lang="en">No extensions listed in configuration.</source>
     </trans-unit>
     <trans-unit id="arc.openInAzurePortal">
       <source xml:lang="en">Open in Azure Portal</source>
@@ -643,6 +652,9 @@
     <trans-unit id="arc.serviceEndpoints">
       <source xml:lang="en">Service endpoints</source>
     </trans-unit>
+    <trans-unit id="arc.serviceEndpointsTable">
+      <source xml:lang="en">Service endpoints table</source>
+    </trans-unit>
     <trans-unit id="arc.databases">
       <source xml:lang="en">Databases</source>
     </trans-unit>
@@ -677,7 +689,10 @@
       <source xml:lang="en">You can configure the number of CPU cores and storage size that will apply to the coordinator node. Adjust the number of CPU cores and memory settings for your server group. To reset the requests and/or limits, pass in empty value.</source>
     </trans-unit>
     <trans-unit id="arc.workerNodeInformation">
-      <source xml:lang="en">It is possible to scale in and out your server group by reducing or increasing the number of worker nodes.</source>
+      <source xml:lang="en">It is possible to scale in and out your server group by reducing or increasing the number of worker nodes. The value must be 0 or greater than 1.</source>
+    </trans-unit>
+    <trans-unit id="arc.workerOneNodeValidationMessage">
+      <source xml:lang="en">Value of 1 is not supported.</source>
     </trans-unit>
     <trans-unit id="arc.vCores">
       <source xml:lang="en">vCores</source>
@@ -1030,6 +1045,12 @@
     <trans-unit id="arc.podsUsedDescription">
       <source xml:lang="en">Select a pod in the dropdown below for detailed health information.</source>
     </trans-unit>
+    <trans-unit id="arc.podsUsedDescriptionAria">
+      <source xml:lang="en">Select a pod in the dropdown below for detailed health information</source>
+    </trans-unit>
+    <trans-unit id="arc.podConditionsTable">
+      <source xml:lang="en">Pod conditions table</source>
+    </trans-unit>
     <trans-unit id="arc.connectToPostgresDescription">
       <source xml:lang="en">A connection to the server is required to show and set database engine settings, which will require the PostgreSQL Extension to be installed.</source>
     </trans-unit>
@@ -1081,8 +1102,8 @@
     <trans-unit id="arc.instanceUpdated">
       <source xml:lang="en">Instance '{0}' updated</source>
     </trans-unit>
-    <trans-unit id="arc.extensionDropped">
-      <source xml:lang="en">Extension '{0}' deleted</source>
+    <trans-unit id="arc.extensionsDropped">
+      <source xml:lang="en">Extensions '{0}' dropped</source>
     </trans-unit>
     <trans-unit id="arc.extensionsAdded">
       <source xml:lang="en">Extensions '{0}' added</source>
@@ -1110,6 +1131,10 @@
     </trans-unit>
     <trans-unit id="arc.updated">
       <source xml:lang="en">Updated {0}</source>
+    </trans-unit>
+    <trans-unit id="arc.connectionString">
+      <source xml:lang="en">Connection string for {0}</source>
+      <note>{0} is the name of the type of connection string (e.g. Java)</note>
     </trans-unit>
     <trans-unit id="arc.copyConnectionStringToClipboard">
       <source xml:lang="en">Copy {0} Connection String to clipboard</source>

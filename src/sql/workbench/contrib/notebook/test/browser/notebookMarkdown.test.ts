@@ -53,13 +53,35 @@ suite('NotebookMarkdownRenderer', () => {
 	});
 
 	test('link from relative file path', () => {
-		notebookMarkdownRenderer.setNotebookURI(URI.parse('maddy/temp/file1.txt'));
+		notebookMarkdownRenderer.setNotebookURI(URI.parse(`foo/temp/file1.txt`));
 		let result: HTMLElement = notebookMarkdownRenderer.renderMarkdown({ value: `[Link to relative path](../test/.build/someimageurl)`, isTrusted: true });
 		if (process.platform === 'win32') {
-			assert.strictEqual(result.innerHTML, `<p><a href="\\maddy\\test\\.build\\someimageurl" data-href="\\maddy\\test\\.build\\someimageurl" title="\\maddy\\test\\.build\\someimageurl">Link to relative path</a></p>`);
+			assert.strictEqual(result.innerHTML, `<p><a href="\\foo\\test\\.build\\someimageurl" data-href="\\foo\\test\\.build\\someimageurl" title="\\foo\\test\\.build\\someimageurl">Link to relative path</a></p>`);
 		} else {
-			assert.strictEqual(result.innerHTML, `<p><a href="/maddy/test/.build/someimageurl" data-href="/maddy/test/.build/someimageurl" title="/maddy/test/.build/someimageurl">Link to relative path</a></p>`);
+			assert.strictEqual(result.innerHTML, `<p><a href="/foo/test/.build/someimageurl" data-href="/foo/test/.build/someimageurl" title="/foo/test/.build/someimageurl">Link to relative path</a></p>`);
 		}
+	});
+
+	// marked js test that alters the relative path requiring regex replace to resolve path properly
+	// Issue tracked here: https://github.com/markedjs/marked/issues/2135
+	test('marked js compiles relative link incorrectly', () => {
+		const markedPath = marked.parse('..\\..\\test.ipynb');
+		assert.strict(markedPath, '<p>....\test.ipynb</p>');
+	});
+
+	test('email in markdown format renders properly', () => {
+		let result: HTMLElement = notebookMarkdownRenderer.renderMarkdown({ value: `[test@email.com](mailto:test@email.com)`, isTrusted: true });
+		assert.strictEqual(result.innerHTML, `<p><a href="mailto:test@email.com" data-href="mailto:test@email.com" title="mailto:test@email.com">test@email.com</a></p>`);
+	});
+
+	test('email inserted directly renders properly', () => {
+		let result: HTMLElement = notebookMarkdownRenderer.renderMarkdown({ value: `test@email.com`, isTrusted: true });
+		assert.strictEqual(result.innerHTML, `<p><a href="mailto:test@email.com" data-href="mailto:test@email.com" title="mailto:test@email.com">test@email.com</a></p>`);
+	});
+
+	test('link to https with query parameters', () => {
+		let result: HTMLElement = notebookMarkdownRenderer.renderMarkdown({ value: `[test](https://www.test.com?test=&test2=)`, isTrusted: true });
+		assert.strictEqual(result.innerHTML, `<p><a href="https://www.test.com?test=&amp;test2=" data-href="https://www.test.com?test=&amp;test2=" title="https://www.test.com?test=&amp;test2=">test</a></p>`);
 	});
 
 	test('cell attachment image', () => {

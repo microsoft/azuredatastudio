@@ -13,7 +13,7 @@ declare module 'vscode-mssql' {
 
 
     export const enum extension {
-        name = 'Microsoft.mssql'
+        name = 'ms-mssql.mssql'
     }
 
     /**
@@ -21,7 +21,199 @@ declare module 'vscode-mssql' {
     */
     export interface IExtension {
 
+        /**
+         * Service for accessing DacFx functionality
+         */
         readonly dacFx: IDacFxService;
+
+        /**
+         * Service for accessing SchemaCompare functionality
+         */
+        readonly schemaCompare: ISchemaCompareService;
+
+        /**
+         * Prompts the user to select an existing connection or create a new one, and then returns the result
+         * @param ignoreFocusOut Whether the quickpick prompt ignores focus out (default false)
+         */
+        promptForConnection(ignoreFocusOut?: boolean): Promise<IConnectionInfo | undefined>;
+
+        /**
+         * Attempts to create a new connection for the given connection info. An error is thrown and displayed
+         * to the user if an error occurs while connecting.
+         * @param connectionInfo The connection info
+         * @returns The URI associated with this connection
+         */
+        connect(connectionInfo: IConnectionInfo): Promise<string>;
+
+        /**
+         * Lists the databases for a given connection. Must be given an already-opened connection to succeed.
+         * @param connectionUri The URI of the connection to list the databases for.
+         * @returns The list of database names
+         */
+        listDatabases(connectionUri: string): Promise<string[]>;
+    }
+
+    /**
+     * Information about a database connection
+     */
+    export interface IConnectionInfo {
+        /**
+         * server name
+         */
+        server: string;
+
+        /**
+         * database name
+         */
+        database: string;
+
+        /**
+         * user name
+         */
+        user: string;
+
+        /**
+         * password
+         */
+        password: string;
+
+        /**
+         * email
+         */
+        email: string;
+
+        /**
+         * accountId
+         */
+        accountId: string;
+
+        /**
+         * The port number to connect to.
+         */
+        port: number;
+
+        /**
+         * Gets or sets the authentication to use.
+         */
+        authenticationType: string;
+
+        /**
+         * Gets or sets the azure account token to use.
+         */
+        azureAccountToken: string;
+
+        /**
+         * Gets or sets a Boolean value that indicates whether SQL Server uses SSL encryption for all data sent between the client and server if
+         * the server has a certificate installed.
+         */
+        encrypt: boolean;
+
+        /**
+         * Gets or sets a value that indicates whether the channel will be encrypted while bypassing walking the certificate chain to validate trust.
+         */
+        trustServerCertificate: boolean;
+
+        /**
+         * Gets or sets a Boolean value that indicates if security-sensitive information, such as the password, is not returned as part of the connection
+         * if the connection is open or has ever been in an open state.
+         */
+        persistSecurityInfo: boolean;
+
+        /**
+         * Gets or sets the length of time (in seconds) to wait for a connection to the server before terminating the attempt and generating an error.
+         */
+        connectTimeout: number;
+
+        /**
+         * The number of reconnections attempted after identifying that there was an idle connection failure.
+         */
+        connectRetryCount: number;
+
+        /**
+         * Amount of time (in seconds) between each reconnection attempt after identifying that there was an idle connection failure.
+         */
+        connectRetryInterval: number;
+
+        /**
+         * Gets or sets the name of the application associated with the connection string.
+         */
+        applicationName: string;
+
+        /**
+         * Gets or sets the name of the workstation connecting to SQL Server.
+         */
+        workstationId: string;
+
+        /**
+         * Declares the application workload type when connecting to a database in an SQL Server Availability Group.
+         */
+        applicationIntent: string;
+
+        /**
+         * Gets or sets the SQL Server Language record name.
+         */
+        currentLanguage: string;
+
+        /**
+         * Gets or sets a Boolean value that indicates whether the connection will be pooled or explicitly opened every time that the connection is requested.
+         */
+        pooling: boolean;
+
+        /**
+         * Gets or sets the maximum number of connections allowed in the connection pool for this specific connection string.
+         */
+        maxPoolSize: number;
+
+        /**
+         * Gets or sets the minimum number of connections allowed in the connection pool for this specific connection string.
+         */
+        minPoolSize: number;
+
+        /**
+         * Gets or sets the minimum time, in seconds, for the connection to live in the connection pool before being destroyed.
+         */
+        loadBalanceTimeout: number;
+
+        /**
+         * Gets or sets a Boolean value that indicates whether replication is supported using the connection.
+         */
+        replication: boolean;
+
+        /**
+         * Gets or sets a string that contains the name of the primary data file. This includes the full path name of an attachable database.
+         */
+        attachDbFilename: string;
+
+        /**
+         * Gets or sets the name or address of the partner server to connect to if the primary server is down.
+         */
+        failoverPartner: string;
+
+        /**
+         * If your application is connecting to an AlwaysOn availability group (AG) on different subnets, setting MultiSubnetFailover=true
+         * provides faster detection of and connection to the (currently) active server.
+         */
+        multiSubnetFailover: boolean;
+
+        /**
+         * When true, an application can maintain multiple active result sets (MARS).
+         */
+        multipleActiveResultSets: boolean;
+
+        /**
+         * Gets or sets the size in bytes of the network packets used to communicate with an instance of SQL Server.
+         */
+        packetSize: number;
+
+        /**
+         * Gets or sets a string value that indicates the type system the application expects.
+         */
+        typeSystemVersion: string;
+
+        /**
+         * Gets or sets the connection string to use for this connection.
+         */
+        connectionString: string;
     }
 
     export const enum ExtractTarget {
@@ -31,6 +223,10 @@ declare module 'vscode-mssql' {
         objectType = 3,
         schema = 4,
         schemaObjectType = 5
+    }
+
+    export interface ISchemaCompareService {
+        schemaCompareGetDefaultOptions(): Thenable<SchemaCompareOptionsResult>;
     }
 
     export interface IDacFxService {
@@ -45,7 +241,7 @@ declare module 'vscode-mssql' {
         validateStreamingJob(packageFilePath: string, createStreamingJobTsql: string): Thenable<ValidateStreamingJobResult>;
     }
 
-    export enum TaskExecutionMode {
+    export const enum TaskExecutionMode {
         execute = 0,
         script = 1,
         executeAndScript = 2
@@ -286,6 +482,12 @@ declare module 'vscode-mssql' {
     export interface ValidateStreamingJobParams {
         packageFilePath: string;
         createStreamingJobTsql: string;
+    }
+
+    export interface SchemaCompareGetOptionsParams { }
+
+    export interface SchemaCompareOptionsResult extends ResultStatus {
+        defaultDeploymentOptions: DeploymentOptions;
     }
 
 }

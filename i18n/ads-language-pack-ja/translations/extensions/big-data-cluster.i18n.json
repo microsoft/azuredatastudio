@@ -50,7 +50,7 @@
 			"bdc-data-size-field": "データの容量 (GB)",
 			"bdc-log-size-field": "ログの容量 (GB)",
 			"bdc-agreement": "{0}、{1}、{2} に同意します。",
-			"microsoft-privacy-statement": "Microsoft のプライバシーに関する声明",
+			"microsoft-privacy-statement": "Microsoft プライバシー ステートメント",
 			"bdc-agreement-azdata-eula": "azdata ライセンス条項",
 			"bdc-agreement-bdc-eula": "SQL Server ライセンス条項"
 		},

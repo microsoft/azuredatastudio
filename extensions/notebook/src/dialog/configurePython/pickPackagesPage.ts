@@ -35,12 +35,12 @@ export class PickPackagesPage extends BasePage {
 	public async initialize(): Promise<boolean> {
 		if (this.model.kernelName) {
 			// Wizard was started for a specific kernel, so don't populate any other options
-			this.kernelLabel = this.view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+			this.kernelLabel = this.view.modelBuilder.text().withProps({
 				value: this.model.kernelName
 			}).component();
 		} else {
 			let dropdownValues = [python3DisplayName, pysparkDisplayName, sparkScalaDisplayName, sparkRDisplayName, powershellDisplayName, allKernelsName];
-			this.kernelDropdown = this.view.modelBuilder.dropDown().withProperties<azdata.DropDownProperties>({
+			this.kernelDropdown = this.view.modelBuilder.dropDown().withProps({
 				value: dropdownValues[0],
 				values: dropdownValues,
 				width: '300px'
@@ -53,7 +53,7 @@ export class PickPackagesPage extends BasePage {
 		let nameColumn = localize('configurePython.pkgNameColumn', "Name");
 		let existingVersionColumn = localize('configurePython.existingVersionColumn', "Existing Version");
 		let requiredVersionColumn = localize('configurePython.requiredVersionColumn', "Required Version");
-		this.requiredPackagesTable = this.view.modelBuilder.declarativeTable().withProperties<azdata.DeclarativeTableProperties>({
+		this.requiredPackagesTable = this.view.modelBuilder.declarativeTable().withProps({
 			columns: [{
 				displayName: nameColumn,
 				ariaLabel: nameColumn,
