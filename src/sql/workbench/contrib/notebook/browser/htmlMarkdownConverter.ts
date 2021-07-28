@@ -9,6 +9,7 @@ import * as path from 'vs/base/common/path';
 import * as turndownPluginGfm from 'sql/workbench/contrib/notebook/browser/turndownPluginGfm';
 import { replaceInvalidLinkPath } from 'sql/workbench/contrib/notebook/common/utils';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { NotebookLinkHandler } from 'sql/workbench/contrib/notebook/browser/notebookLinkHandler';
 
 // These replacements apply only to text. Here's how it's handled from Turndown:
 // if (node.nodeType === 3) {
@@ -31,7 +32,6 @@ const markdownReplacements = [
 	[/</g, '\\<'], // Added to ensure sample text like <hello> is escaped
 	[/>/g, '\\>'], // Added to ensure sample text like <hello> is escaped
 ];
-const keepAbsolutePathConfigName = 'notebook.keepAbsolutePath';
 
 export class HTMLMarkdownConverter {
 	private turndownService: TurndownService;
@@ -135,30 +135,8 @@ export class HTMLMarkdownConverter {
 		this.turndownService.addRule('a', {
 			filter: 'a',
 			replacement: (content, node) => {
-				let href = node.href;
-				let notebookLink: URI | undefined;
-				const isAnchorLinkInFile = (node.attributes.href?.nodeValue.startsWith('#') || href.includes('#')) && href.startsWith('file://');
-				if (isAnchorLinkInFile) {
-					notebookLink = getUriAnchorLink(node, this.notebookUri);
-				} else {
-					//On Windows, if notebook is not trusted then the href attr is removed for all non-web URL links
-					// href contains either a hyperlink or a URI-encoded absolute path. (See resolveUrls method in notebookMarkdown.ts)
-					notebookLink = href ? URI.parse(href) : URI.file(node.title);
-				}
-				const notebookFolder = this.notebookUri ? path.join(path.dirname(this.notebookUri.fsPath), path.sep) : '';
-				if (notebookLink.fsPath !== this.notebookUri.fsPath && notebookLink.scheme === 'file') {
-					if (this.configurationService.getValue(keepAbsolutePathConfigName) === false) {
-						let relativePath = findPathRelativeToContent(notebookFolder, notebookLink);
-						if (relativePath) {
-							return `[${node.innerText}](${relativePath})`;
-						}
-					} else {
-						return `[${node.innerText}](${node.pathname})`;
-					}
-				} else if (notebookLink?.fragment && notebookLink.scheme === 'file') {
-					// if the anchor link is to a section in the same notebook then just add the fragment
-					return `[${content}](${notebookLink.fragment})`;
-				}
+				const linkHandler = new NotebookLinkHandler(this.notebookUri, node, this.configurationService);
+				const href = linkHandler.getLinkUrl();
 				return `[${content}](${href})`;
 			}
 		});

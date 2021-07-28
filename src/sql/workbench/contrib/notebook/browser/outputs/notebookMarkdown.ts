@@ -108,6 +108,7 @@ export class NotebookMarkdownRenderer {
 			return '<img ' + attributes.join(' ') + '>';
 		};
 		renderer.link = (href: string, title: string, text: string): string => {
+			let hrefAbsolute: boolean = path.isAbsolute(href);
 			href = this.cleanUrl(!markdown.isTrusted, notebookFolder, href);
 			if (href === null) {
 				return text;
@@ -144,7 +145,7 @@ export class NotebookMarkdownRenderer {
 						.replace(/"/g, '&quot;')
 						.replace(/'/g, '&#39;');
 				}
-				return `<a href=${href} data-href="${href}" title="${title || href}">${text}</a>`;
+				return `<a href=${href} data-href="${href}" title="${title || href}" is-absolute=${hrefAbsolute}>${text}</a>`;
 			}
 		};
 		renderer.paragraph = (text): string => {
