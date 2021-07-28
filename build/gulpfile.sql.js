@@ -140,14 +140,10 @@ gulp.task('package-external-extensions', task.series(
 							delete data.contributes.menus[menu];
 						});
 						return data;
-					}), { /* beautify: false */ }))
-					.pipe(gulp.dest(packageDir))
-					.pipe(rename('package.vscode.json'))
+					}), { beautify: false }))
 					.pipe(gulp.dest(packageDir));
-				await new Promise(resolve => packageJsonStream.on('finish', resolve));
-				const pkgJson = require(vscodeManifestFullPath);
-				const vsixDirectory = path.join(root, '.build', 'extensions');
-				mkdirp.sync(vsixDirectory);
+				await new Promise(resolve => packageJsonStream.on('finish', resolve)); // Wait for the files to finish being updated before packaging
+				const pkgJson = JSON.parse(fs.readFileSync(packageManifestPath));
 				const packagePath = path.join(vsixDirectory, `${pkgJson.name}-${pkgJson.version}.vsix`);
 				console.info('Creating vsix for ' + packageDir + ' result:' + packagePath);
 				return vsce.createVSIX({
