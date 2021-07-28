@@ -19,7 +19,7 @@ export class Card extends Widget {
 	private _onChange = new Emitter<boolean>();
 	public readonly onChange: Event<boolean> = this._onChange.event;
 
-	constructor() {
+	constructor(container: HTMLElement) {
 		super();
 
 		// Contains all the content added to the card via the content property
@@ -30,6 +30,8 @@ export class Card extends Widget {
 
 		this._radioButton = new RadioButton(true);
 		this._radioButtonContainer = this._cardElement.appendChild(this._radioButton.content);
+
+		container.appendChild(this._cardElement);
 
 		this.onclick(this._cardElement, e => this.onclicked());
 
