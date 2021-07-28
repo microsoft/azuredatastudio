@@ -43,7 +43,7 @@ import { ItemContextKey } from 'sql/workbench/contrib/dashboard/browser/widgets/
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { Disposable, DisposableStore } from 'vs/base/common/lifecycle';
 import { IModeService } from 'vs/editor/common/services/modeService';
-import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
+import { FileEditorInput } from 'vs/workbench/contrib/files/browser/editors/fileEditorInput';
 import { IEditorOverrideService, ContributedEditorPriority } from 'vs/workbench/services/editor/common/editorOverrideService';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { ILogService } from 'vs/platform/log/common/log';
@@ -528,7 +528,7 @@ export class QueryEditorOverrideContribution extends Disposable implements IWork
 			// Create the selector from the list of all the language extensions we want to associate with the
 			// query editor (filtering out any languages which didn't have any extensions registered yet)
 			const selector = `*{${langExtensions.join(',')}}`;
-			this._registeredOverrides.add(this._editorOverrideService.registerContributionPoint(
+			this._registeredOverrides.add(this._editorOverrideService.registerEditor(
 				selector,
 				{
 					id: QueryEditor.ID,

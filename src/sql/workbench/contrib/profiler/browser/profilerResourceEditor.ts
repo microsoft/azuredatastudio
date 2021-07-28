@@ -6,7 +6,7 @@
 import { IEditorOptions } from 'vs/editor/common/config/editorOptions';
 import * as nls from 'vs/nls';
 import * as DOM from 'vs/base/browser/dom';
-import { ResourceEditorModel } from 'vs/workbench/common/editor/resourceEditorModel';
+import { TextResourceEditorModel } from 'vs/workbench/common/editor/textResourceEditorModel';
 import * as editorCommon from 'vs/editor/common/editorCommon';
 
 import { BaseTextEditor } from 'vs/workbench/browser/parts/editor/textEditor';
@@ -77,7 +77,7 @@ export class ProfilerResourceEditor extends BaseTextEditor {
 
 	override async setInput(input: UntitledTextEditorInput, options: EditorOptions, context: IEditorOpenContext): Promise<void> {
 		await super.setInput(input, options, context, CancellationToken.None);
-		const editorModel = await this.input.resolve() as ResourceEditorModel;
+		const editorModel = await this.input.resolve() as TextResourceEditorModel;
 		await editorModel.resolve();
 		this.getControl().setModel(editorModel.textEditorModel);
 	}

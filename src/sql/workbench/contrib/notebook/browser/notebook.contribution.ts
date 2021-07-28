@@ -57,7 +57,7 @@ import { INotebookManager } from 'sql/workbench/services/notebook/browser/notebo
 import { NotebookExplorerViewletViewsContribution } from 'sql/workbench/contrib/notebook/browser/notebookExplorer/notebookExplorerViewlet';
 import { Disposable, DisposableStore } from 'vs/base/common/lifecycle';
 import { ContributedEditorPriority, IEditorOverrideService } from 'vs/workbench/services/editor/common/editorOverrideService';
-import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
+import { FileEditorInput } from 'vs/workbench/contrib/files/browser/editors/fileEditorInput';
 import { IModeService } from 'vs/editor/common/services/modeService';
 import { ILogService } from 'vs/platform/log/common/log';
 import { DiffEditorInput } from 'vs/workbench/common/editor/diffEditorInput';
@@ -696,7 +696,7 @@ export class NotebookEditorOverrideContribution extends Disposable implements IW
 			// Create the selector from the list of all the language extensions we want to associate with the
 			// notebook editor (filtering out any languages which didn't have any extensions registered yet)
 			const selector = `*{${langExtensions.join(',')}}`;
-			this._registeredOverrides.add(this._editorOverrideService.registerContributionPoint(
+			this._registeredOverrides.add(this._editorOverrideService.registerEditor(
 				selector,
 				{
 					id: NotebookEditor.ID,
