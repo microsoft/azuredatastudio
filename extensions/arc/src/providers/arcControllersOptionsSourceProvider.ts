@@ -39,11 +39,8 @@ export class ArcControllersOptionsSourceProvider implements rd.IOptionsSourcePro
 	public getIsPassword(variableName: string): boolean {
 		switch (variableName) {
 			case 'namespace': return false;
-			case 'endpoint': return false;
-			case 'username': return false;
 			case 'kubeConfig': return false;
 			case 'clusterContext': return false;
-			case 'password': return true;
 			default: throw new Error(loc.isPasswordFetchForUnsupportedVariable(variableName));
 		}
 	}
