@@ -66,7 +66,7 @@ export class WizardController {
 		this.extensionContext.subscriptions.push(this._wizardObject.onPageChanged(async (pageChangeInfo: azdata.window.WizardPageChangeInfo) => {
 			const newPage = pageChangeInfo.newPage;
 			const lastPage = pageChangeInfo.lastPage;
-			this.sendPageButtonActionEvent(pageChangeInfo).catch(e => console.log(e));
+			this.sendPageButtonClickEvent(pageChangeInfo).catch(e => console.log(e));
 			await pages[lastPage]?.onPageLeave();
 			await pages[newPage]?.onPageEnter();
 		}));
@@ -111,7 +111,7 @@ export class WizardController {
 		});
 	}
 
-	private async sendPageButtonActionEvent(pageChangeInfo: azdata.window.WizardPageChangeInfo) {
+	private async sendPageButtonClickEvent(pageChangeInfo: azdata.window.WizardPageChangeInfo) {
 		const buttonPressed = pageChangeInfo.newPage > pageChangeInfo.lastPage ? 'next' : 'prev';
 		const pageTitle = this._wizardObject.pages[pageChangeInfo.lastPage].title;
 		sendSqlMigrationActionEvent(
