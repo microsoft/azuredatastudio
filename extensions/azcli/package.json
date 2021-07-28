@@ -1,7 +1,7 @@
 {
   "name": "azcli",
-  "displayName": "%azdata.displayName%",
-  "description": "%azdata.description%",
+  "displayName": "%azcli.arc.displayName%",
+  "description": "%azcli.arc.description%",
   "version": "0.1.0",
   "publisher": "Microsoft",
   "preview": true,
@@ -26,104 +26,19 @@
     "configuration": [
       {
         "type": "object",
-        "title": "%azdata.config.title%",
+        "title": "%azcli.arc.config.title%",
         "properties": {
           "azcli.logDebugInfo": {
             "type": "boolean",
             "default": false,
-            "description": "%azdata.config.debug%"
-          },
-          "azcli.acceptEula": {
-            "type": "string",
-            "default": "prompt",
-            "enum": [
-              "dontPrompt",
-              "prompt"
-            ],
-            "enumDescriptions": [
-              "%azdata.acceptEula.dontPrompt.description%",
-              "%azdata.acceptEula.prompt.description%"
-            ],
-            "description": "%azdata.acceptEula.description%"
-          },
-          "azcli.install": {
-            "type": "string",
-            "default": "prompt",
-            "enum": [
-              "dontPrompt",
-              "prompt"
-            ],
-            "enumDescriptions": [
-              "%azdata.install.dontPrompt.description%",
-              "%azdata.install.prompt.description%"
-            ],
-            "description": "%azdata.install.description%"
-          },
-          "azcli.update": {
-            "type": "string",
-            "default": "prompt",
-            "enum": [
-              "dontPrompt",
-              "prompt"
-            ],
-            "enumDescriptions": [
-              "%azdata.update.dontPrompt.description%",
-              "%azdata.update.prompt.description%"
-            ],
-            "description": "%azdata.update.description%"
-          },
-          "azcli.requiredUpdate": {
-            "type": "string",
-            "default": "prompt",
-            "enum": [
-              "dontPrompt",
-              "prompt"
-            ],
-            "enumDescriptions": [
-              "%azdata.update.dontPrompt.description%",
-              "%azdata.update.prompt.description%"
-            ],
-            "description": "%azdata.requiredUpdate.description%"
+            "description": "%azcli.arc.config.debug%"
           }
         }
       }
     ],
-    "commands": [
-      {
-        "command": "azcli.acceptEula",
-        "title": "%azdata.acceptEula.command.name%",
-        "category": "%command.category%"
-      },
-      {
-        "command": "azcli.install",
-        "title": "%azdata.install.command.name%",
-        "category": "%command.category%"
-      },
-      {
-        "command": "azcli.update",
-        "title": "%azdata.update.command.name%",
-        "category": "%command.category%"
-      }
-    ],
-    "menus": {
-      "commandPalette": [
-        {
-          "command": "azcli.acceptEula",
-          "when": "!azcli.eulaAccepted"
-        },
-        {
-          "command": "azcli.install",
-          "when": "!azcli.found"
-        },
-        {
-          "command": "azcli.update",
-          "when": "azcli.found"
-        }
-      ]
-    },
     "resourceDeploymentOptionsSources": [
       {
-        "id": "arc.controller.config.profiles"
+        "id": "azcli.arc.controller.config.profiles"
       }
     ]
   },

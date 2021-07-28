@@ -14,8 +14,6 @@ export const dataSourcesFileName = 'datasources.json';
 export const sqlprojExtension = '.sqlproj';
 export const sqlFileExtension = '.sql';
 export const schemaCompareExtensionId = 'microsoft.schema-compare';
-export const sqlDatabaseProjectExtensionId = 'microsoft.sql-database-projects';
-export const mssqlExtensionId = 'microsoft.mssql';
 export const master = 'master';
 export const masterDacpac = 'master.dacpac';
 export const msdb = 'msdb';
@@ -215,7 +213,7 @@ export function invalidInput(input: string) { return localize('invalidInput', "I
 export function invalidProjectPropertyValue(propertyName: string) { return localize('invalidPropertyValue', "Invalid value specified for the property '{0}' in .sqlproj file", propertyName); }
 export function unableToCreatePublishConnection(input: string) { return localize('unableToCreatePublishConnection', "Unable to construct connection: {0}", input); }
 export function circularProjectReference(project1: string, project2: string) { return localize('cicularProjectReference', "Circular reference from project {0} to project {1}", project1, project2); }
-export function mssqlNotFound(mssqlConfigDir: string) { return localize('mssqlNotFound', "Could not get mssql extension's install location at {0}", mssqlConfigDir); }
+export function sqlToolsServiceNotFound(sqlToolsServiceDir: string) { return localize('mssqlNotFound', "Could not get SQL Tools Service install location at {0}", sqlToolsServiceDir); }
 export function projBuildFailed(errorMessage: string) { return localize('projBuildFailed', "Build failed. Check output pane for more details. {0}", errorMessage); }
 export function unexpectedProjectContext(uri: string) { return localize('unexpectedProjectContext', "Unable to establish project context.  Command invoked from unexpected location: {0}", uri); }
 export function unableToPerformAction(action: string, uri: string) { return localize('unableToPerformAction', "Unable to locate '{0}' target: '{1}'", action, uri); }
