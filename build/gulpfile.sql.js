@@ -129,7 +129,7 @@ gulp.task('package-external-extensions', task.series(
 				const packageManifestPath = path.join(packageDir, 'package.json');
 				const json = require('gulp-json-editor');
 				const packageJsonStream = gulp.src(packageManifestPath) // Create stream for the original package.json
-					.pipe(json((data => { // And now use gulp-json-editor to modify the contents
+					.pipe(json(data => { // And now use gulp-json-editor to modify the contents
 						const updateData = JSON.parse(fs.readFileSync(vscodeManifestFullPath)); // Read in the set of values to replace from package.vscode.json
 						Object.keys(updateData).forEach(key => {
 							data[key] = updateData[key];
@@ -140,7 +140,7 @@ gulp.task('package-external-extensions', task.series(
 							delete data.contributes.menus[menu];
 						});
 						return data;
-					}), { beautify: false }))
+					}, { beautify: false }))
 					.pipe(gulp.dest(packageDir));
 				await new Promise(resolve => packageJsonStream.on('finish', resolve)); // Wait for the files to finish being updated before packaging
 				const pkgJson = JSON.parse(fs.readFileSync(packageManifestPath));
