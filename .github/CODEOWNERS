@@ -7,6 +7,7 @@
 /extensions/azdata/ @Charles-Gagnon
 /extensions/big-data-cluster/ @Charles-Gagnon
 /extensions/dacpac/ @kisantia
+/extensions/notebook @azure-data-studio-notebook-devs
 /extensions/query-history/ @Charles-Gagnon
 /extensions/resource-deployment/ @Charles-Gagnon
 /extensions/schema-compare/ @kisantia
@@ -14,3 +15,6 @@
 /extensions/mssql/config.json @Charles-Gagnon @alanrenmsft @kburtram
 
 /src/sql/*.d.ts @alanrenmsft @Charles-Gagnon
+/src/sql/workbench/browser/modelComponents @Charles-Gagnon @alanrenmsft
+/src/sql/workbench/api @Charles-Gagnon @alanrenmsft
+/src/sql/**/notebook @azure-data-studio-notebook-devs
