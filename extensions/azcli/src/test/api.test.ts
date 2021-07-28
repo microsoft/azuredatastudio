@@ -59,8 +59,6 @@
 // 			await assertCallback(api.az.getSemVersion(), 'getSemVersion');
 // 			await assertCallback(api.az.version(), 'version');
 
-// 			await assertCallback(api.az.arcdata.dc.create('', '', '', '', '', ''), 'arc dc create');
-
 // 			await assertCallback(api.az.arcdata.dc.config.list(), 'arc dc config list');
 // 			await assertCallback(api.az.arcdata.dc.config.show(), 'arc dc config show');
 

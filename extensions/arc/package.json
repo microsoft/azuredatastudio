@@ -910,6 +910,7 @@
                           "source": {
                             "providerId": "arc.controllers",
                             "variableNames": {
+                              "namespace": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_NAMESPACE",
                               "kubeConfig": "AZDATA_NB_VAR_CONTROLLER_KUBECONFIG",
                               "clusterContext": "AZDATA_NB_VAR_CONTROLLER_KUBECTL_CONTEXT"
                             }
