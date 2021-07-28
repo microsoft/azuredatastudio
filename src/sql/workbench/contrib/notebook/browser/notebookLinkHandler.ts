@@ -31,10 +31,10 @@ export class NotebookLinkHandler {
 
 	/**
 	 * Function to get the link for LinkCalloutDialog or htmlMarkdownConverter
-	 * Always return a relative path given a absolute or relative path.
-	 * Only return absolute path if Keep Absolute setting is enabled for absolute paths.
+	 * Always return a relative path given a absolute or relative path, unless
+	 * keep absolute setting is enabled then we don't convert absolute paths to relative paths
 	 * Given a anchor element then we must traverse
-	 * @returns the file link or web link in string
+	 * @returns the file link or web link as a string
 	 */
 	public getLinkUrl(): string {
 		switch (typeof this._link) {
@@ -50,28 +50,32 @@ export class NotebookLinkHandler {
 					const linkUrl = path.resolve(this._notebookDirectory, relativePath);
 					return linkUrl;
 				}
+				// if link contains anchor or is absolute path then just return the link
 				return this._link;
 			}
 			// cases where we pass the HTMLAnchorElement
 			case 'object': {
 				if (this._notebookUriLink && this._isFile) {
-					if (!this._isAbsolutePath) {
-						let targetUri: URI;
+					let targetUri: URI;
+					// Does not convert absolute path to relative path if keep Absolute Path setting is enabled
+					if (this._isAbsolutePath && this._configurationService.getValue(keepAbsolutePathConfigName) === true) {
+						return this._href;
+					} else {
 						if (this._isAnchorLink) {
 							targetUri = this.getUriAnchorLink(this._link, this._notebookURI);
 						} else {
 							targetUri = this._notebookUriLink;
 						}
 						// returns relative path of target notebook whether anchored or not
-						if (this._notebookUriLink.fsPath !== path.posix.sep) {
+						if (this._notebookUriLink.fsPath !== this._notebookURI.fsPath) {
 							return findPathRelativeToContent(this._notebookDirectory, targetUri);
+						} else if (targetUri?.fragment) {
+							// if the anchor link is to a section in the same notebook then just add the fragment
+							return targetUri.fragment;
 						}
-						return targetUri.fragment;
-						// Does not convert absolute path to relative path
-					} else if (this._isFile && this._isAbsolutePath && this._configurationService.getValue(keepAbsolutePathConfigName) === true) {
-						return this._href;
 					}
 				}
+				// Web links
 				return this._href || '';
 			}
 		}
@@ -81,7 +85,7 @@ export class NotebookLinkHandler {
 	 * Creates a URI for for a link with a anchor (#)
 	 * @param node is the HTMLAnchorElement of the target notebook
 	 * @param notebookUri is current notebook URI
-	 * @returns URI
+	 * @returns URI of the link with the anchor
 	 */
 	public getUriAnchorLink(node, notebookUri: URI): URI {
 		const sectionLinkToAnotherFile = node.href.includes('#') && !node.attributes.href?.nodeValue.startsWith('#');
