@@ -42,7 +42,7 @@ export class MigrationCutoverDialog {
 	private _fileCount!: azdata.TextComponent;
 	private fileTable!: azdata.TableComponent;
 	private _autoRefreshHandle!: any;
-	private _emptyTable! : azdata.ImageComponent;
+	private _emptyTableFill! : azdata.FlexContainer;
 
 	readonly _infoFieldWidth: string = '250px';
 
@@ -259,12 +259,56 @@ export class MigrationCutoverDialog {
 					fontSize: '12px'
 				}).component();
 
-				this._emptyTable = view.modelBuilder.image().withProps({
-					CSSStyles: {
-						'display': 'none'
-					},
-					iconPath: IconPathHelper.emptyTable
+				const _emptyTableImage = view.modelBuilder.image().withProps({
+
+					iconPath: IconPathHelper.emptyTable,
+					iconHeight: '100px',
+					iconWidth: '100px',
+					height: '100px',
+					width: '100px',
+					CSSStyles:{
+						'text-align':'center'
+					}
+
 				}).component();
+
+				const _emptyTableText = view.modelBuilder.text().withProps({
+					value: "No backup files to show",
+					CSSStyles:{
+						'text-align':'center',
+						'font-size':'large',
+						'font-weight':'bold',
+						'width':'300px'
+					}
+				}).component();
+
+				const _emptyTableSubText = view.modelBuilder.text().withProps({
+					value: "If you expected to see results, please check the connection to the sql server instance",
+					CSSStyles:{
+						'text-align':'center',
+						'margin-top':'0px',
+						'font-size': '15px',
+						'width':'300px'
+					}
+				}).component();
+
+				this._emptyTableFill = view.modelBuilder.flexContainer()
+					.withLayout({
+						flexFlow: 'column',
+						alignItems: 'center'
+					})
+					.withItems([
+						_emptyTableImage,
+						_emptyTableText,
+						_emptyTableSubText
+					], { CSSStyles: {
+
+					} })
+					.withProps({
+						width: 1000,
+						display: 'none'
+					})
+					.component();
 
 				const formBuilder = view.modelBuilder.formContainer().withFormItems(
 					[
@@ -274,7 +318,7 @@ export class MigrationCutoverDialog {
 						{ component: this._view.modelBuilder.separator().withProps({ width: 1000 }).component() },
 						{ component: this._fileCount },
 						{ component: this.fileTable },
-						{ component: this._emptyTable}
+						{ component: this._emptyTableFill}
 					],
 					{ horizontal: false }
 				);
@@ -562,9 +606,11 @@ export class MigrationCutoverDialog {
 
 			if(tableData.length === 0)
 			{
-				this._emptyTable.updateCssStyles({
-					'display': 'block'
+				this._emptyTableFill.updateCssStyles({
+					'display': 'flex'
 				});
+				this.fileTable.height= '50px';
+
 			}
 
 			this._sourceDatabase.value = sourceDatabaseName;
