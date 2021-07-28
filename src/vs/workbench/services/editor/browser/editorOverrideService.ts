@@ -47,7 +47,7 @@ export class EditorOverrideService extends Disposable implements IEditorOverride
 
 	// Data Stores
 	private _editors: Map<string | glob.IRelativePattern, RegisteredEditors> = new Map<string | glob.IRelativePattern, RegisteredEditors>();
-	private cache: Set<string> | undefined;
+	// private cache: Set<string> | undefined; {{SQL CARBON EDIT}} Remove unused
 
 	constructor(
 		@IEditorGroupsService private readonly editorGroupService: IEditorGroupsService,
@@ -60,7 +60,7 @@ export class EditorOverrideService extends Disposable implements IEditorOverride
 	) {
 		super();
 		// Read in the cache on statup
-		this.cache = new Set<string>(JSON.parse(this.storageService.get(EditorOverrideService.overrideCacheStorageID, StorageScope.GLOBAL, JSON.stringify([]))));
+		// this.cache = new Set<string>(JSON.parse(this.storageService.get(EditorOverrideService.overrideCacheStorageID, StorageScope.GLOBAL, JSON.stringify([])))); {{SQL CARBON EDIT}} Remove unused
 		this.storageService.remove(EditorOverrideService.overrideCacheStorageID, StorageScope.GLOBAL);
 		this.convertOldAssociationFormat();
 
@@ -70,21 +70,18 @@ export class EditorOverrideService extends Disposable implements IEditorOverride
 		}));
 
 		// When extensions have registered we no longer need the cache
+		/* {{SQL CARBON EDIT}} Remove unused
 		this.extensionService.onDidRegisterExtensions(() => {
 			this.cache = undefined;
 		});
-
-		// When the setting changes we want to ensure that it is properly converted
-		this._register(this.configurationService.onDidChangeConfiguration(() => {
-			this.convertOldAssociationFormat();
-		}));
+		*/
 	}
 
 	async resolveEditorOverride(editor: IEditorInput, options: IEditorOptions | undefined, group: IEditorGroup): Promise<IEditorInputWithOptionsAndGroup | undefined> {
 		// If it was an override before we await for the extensions to activate and then proceed with overriding or else they won't be registered
-		if (this.cache && editor.resource && this.resourceMatchesCache(editor.resource)) {
-			await this.extensionService.whenInstalledExtensionsRegistered();
-		}
+		//if (this.cache && editor.resource && this.resourceMatchesCache(editor.resource)) { // {{SQL CARBON EDIT}} Always wait for extensions so that our language-based overrides (SQL/Notebooks) will always have those registered
+		await this.extensionService.whenInstalledExtensionsRegistered();
+		//}
 
 		if (options?.override === EditorOverride.DISABLED) {
 			throw new Error(`Calling resolve editor override when override is explicitly disabled!`);
@@ -613,6 +610,7 @@ export class EditorOverrideService extends Disposable implements IEditorOverride
 		this.storageService.store(EditorOverrideService.overrideCacheStorageID, JSON.stringify(Array.from(cacheStorage)), StorageScope.GLOBAL, StorageTarget.MACHINE);
 	}
 
+	/* {{SQL CARBON EDIT}} Remove unused
 	private resourceMatchesCache(resource: URI): boolean {
 		if (!this.cache) {
 			return false;
@@ -625,6 +623,7 @@ export class EditorOverrideService extends Disposable implements IEditorOverride
 		}
 		return false;
 	}
+	*/
 }
 
 registerSingleton(IEditorOverrideService, EditorOverrideService);

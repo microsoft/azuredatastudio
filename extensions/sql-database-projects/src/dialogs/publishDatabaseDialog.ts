@@ -11,7 +11,7 @@ import * as utils from '../common/utils';
 import { Project } from '../models/project';
 import { SqlConnectionDataSource } from '../models/dataSources/sqlConnectionStringSource';
 import { IDeploySettings } from '../models/IDeploySettings';
-import { DeploymentOptions, SchemaObjectType } from '../../../mssql/src/mssql';
+import { DeploymentOptions } from '../../../mssql/src/mssql';
 import { IconPathHelper } from '../common/iconHelper';
 import { cssStyles } from '../common/uiConstants';
 import { getConnectionName } from './utils';
@@ -221,15 +221,8 @@ export class PublishDatabaseDialog {
 		// eventually, database options will be configurable in this dialog
 		// but for now, just send the default DacFx deployment options if no options were loaded from a publish profile
 		if (!this.deploymentOptions) {
-			this.deploymentOptions = await utils.GetDefaultDeploymentOptions();
-
-			// re-include database-scoped credentials
-			this.deploymentOptions.excludeObjectTypes = this.deploymentOptions.excludeObjectTypes.filter(x => x !== SchemaObjectType.DatabaseScopedCredentials);
-
-			// this option needs to be true for same database references validation to work
-			if (this.project.databaseReferences.length > 0) {
-				this.deploymentOptions.includeCompositeObjects = true;
-			}
+			// We only use the dialog in ADS context currently so safe to cast to the mssql DeploymentOptions here
+			this.deploymentOptions = await utils.getDefaultPublishDeploymentOptions(this.project) as DeploymentOptions;
 		}
 
 		return this.deploymentOptions;

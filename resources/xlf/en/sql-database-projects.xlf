@@ -569,7 +569,7 @@
       <source xml:lang="en">Circular reference from project {0} to project {1}</source>
     </trans-unit>
     <trans-unit id="mssqlNotFound">
-      <source xml:lang="en">Could not get mssql extension's install location at {0}</source>
+      <source xml:lang="en">Could not get SQL Tools Service install location at {0}</source>
     </trans-unit>
     <trans-unit id="projBuildFailed">
       <source xml:lang="en">Build failed. Check output pane for more details. {0}</source>

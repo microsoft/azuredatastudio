@@ -68,7 +68,7 @@ export class RadioGroupLoadingComponentBuilder implements azdata.ComponentBuilde
 			});
 		}
 		catch (e) {
-			const errorLoadingRadioOptionsLabel = this._view!.modelBuilder.text().withProps({ value: getErrorMessage(e), CSSStyles: { 'color': 'Red' } }).component();
+			const errorLoadingRadioOptionsLabel = this._view!.modelBuilder.text().withProps({ value: getErrorMessage(e), textType: azdata.TextType.Error }).component();
 			this._optionsDivContainer.addItem(errorLoadingRadioOptionsLabel);
 		}
 		this.component().loading = false;

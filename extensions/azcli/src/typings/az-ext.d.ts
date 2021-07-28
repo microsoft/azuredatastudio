@@ -3,18 +3,17 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-declare module 'azdata-ext' {
+declare module 'az-ext' {
 	import { SemVer } from 'semver';
-	import * as vscode from 'vscode';
 
 	/**
-	 * Covers defining what the azdata extension exports to other extensions
+	 * Covers defining what the az extension exports to other extensions
 	 *
 	 * IMPORTANT: THIS IS NOT A HARD DEFINITION unlike vscode; therefore no enums or classes should be defined here
 	 * (const enums get evaluated when typescript -> javascript so those are fine)
 	 */
 	export const enum extension {
-		name = 'Microsoft.azdata'
+		name = 'Microsoft.azcli'
 	}
 
 	export type AdditionalEnvVars = { [key: string]: string };
@@ -258,11 +257,8 @@ declare module 'azdata-ext' {
 		}
 	}
 
-	export interface AzdataOutput<R> {
-		logs: string[],
-		result: R,
-		stderr: string[],
-		stdout: string[],
+	export interface AzOutput<R> {
+		stdout: R,
 		code?: number
 	}
 
@@ -270,92 +266,76 @@ declare module 'azdata-ext' {
 		endpoint?: string,
 		namespace?: string
 	}
-	export interface IAzdataApi {
-		arc: {
+	export interface IAzApi {
+		arcdata: {
 			dc: {
-				create(namespace: string, name: string, connectivityMode: string, resourceGroup: string, location: string, subscription: string, profileName?: string, storageClass?: string, additionalEnvVars?: AdditionalEnvVars, azdataContext?: string): Promise<AzdataOutput<void>>,
+				create(namespace: string, name: string, connectivityMode: string, resourceGroup: string, location: string, subscription: string, profileName?: string, storageClass?: string, additionalEnvVars?: AdditionalEnvVars): Promise<AzOutput<void>>,
 				endpoint: {
-					list(additionalEnvVars?: AdditionalEnvVars, azdataContext?: string): Promise<AzdataOutput<DcEndpointListResult[]>>
+					list(namespace?: string, additionalEnvVars?: AdditionalEnvVars): Promise<AzOutput<DcEndpointListResult[]>>
 				},
 				config: {
-					list(additionalEnvVars?: AdditionalEnvVars, azdataContext?: string): Promise<AzdataOutput<DcConfigListResult[]>>,
-					show(additionalEnvVars?: AdditionalEnvVars, azdataContext?: string): Promise<AzdataOutput<DcConfigShowResult>>
-				}
-			},
-			postgres: {
-				server: {
-					delete(name: string, additionalEnvVars?: AdditionalEnvVars, azdataContext?: string): Promise<AzdataOutput<void>>,
-					list(additionalEnvVars?: AdditionalEnvVars, azdataContext?: string): Promise<AzdataOutput<PostgresServerListResult[]>>,
-					show(name: string, additionalEnvVars?: AdditionalEnvVars, azdataContext?: string): Promise<AzdataOutput<PostgresServerShowResult>>,
-					edit(
-						name: string,
-						args: {
-							adminPassword?: boolean,
-							coresLimit?: string,
-							coresRequest?: string,
-							coordinatorEngineSettings?: string,
-							engineSettings?: string,
-							extensions?: string,
-							memoryLimit?: string,
-							memoryRequest?: string,
-							noWait?: boolean,
-							port?: number,
-							replaceEngineSettings?: boolean,
-							workerEngineSettings?: string,
-							workers?: number
-						},
-						additionalEnvVars?: AdditionalEnvVars,
-						azdataContext?: string
-					): Promise<AzdataOutput<void>>
-				}
-			},
-			sql: {
-				mi: {
-					delete(name: string, additionalEnvVars?: AdditionalEnvVars, azdataContext?: string): Promise<AzdataOutput<void>>,
-					list(additionalEnvVars?: AdditionalEnvVars, azdataContext?: string): Promise<AzdataOutput<SqlMiListResult[]>>,
-					show(name: string, additionalEnvVars?: AdditionalEnvVars, azdataContext?: string): Promise<AzdataOutput<SqlMiShowResult>>,
-					edit(
-						name: string,
-						args: {
-							coresLimit?: string,
-							coresRequest?: string,
-							memoryLimit?: string,
-							memoryRequest?: string,
-							noWait?: boolean,
-						},
-						additionalEnvVars?: AdditionalEnvVars,
-						azdataContext?: string
-					): Promise<AzdataOutput<void>>
+					list(additionalEnvVars?: AdditionalEnvVars): Promise<AzOutput<DcConfigListResult[]>>,
+					show(namespace?: string, additionalEnvVars?: AdditionalEnvVars): Promise<AzOutput<DcConfigShowResult>>
 				}
 			}
 		},
+		postgres: {
+			arcserver: {
+				delete(name: string, namespace?: string, additionalEnvVars?: AdditionalEnvVars): Promise<AzOutput<void>>,
+				list(namespace?: string, additionalEnvVars?: AdditionalEnvVars): Promise<AzOutput<PostgresServerListResult[]>>,
+				show(name: string, namespace?: string, additionalEnvVars?: AdditionalEnvVars): Promise<AzOutput<PostgresServerShowResult>>,
+				edit(
+					name: string,
+					args: {
+						adminPassword?: boolean,
+						coresLimit?: string,
+						coresRequest?: string,
+						coordinatorEngineSettings?: string,
+						engineSettings?: string,
+						extensions?: string,
+						memoryLimit?: string,
+						memoryRequest?: string,
+						noWait?: boolean,
+						port?: number,
+						replaceEngineSettings?: boolean,
+						workerEngineSettings?: string,
+						workers?: number
+					},
+					namespace?: string,
+					additionalEnvVars?: AdditionalEnvVars
+				): Promise<AzOutput<void>>
+			}
+		},
+		sql: {
+			miarc: {
+				delete(name: string, namespace?: string, additionalEnvVars?: AdditionalEnvVars): Promise<AzOutput<void>>,
+				list(namespace?: string, additionalEnvVars?: AdditionalEnvVars): Promise<AzOutput<SqlMiListResult[]>>,
+				show(name: string, namespace?: string, additionalEnvVars?: AdditionalEnvVars): Promise<AzOutput<SqlMiShowResult>>,
+				edit(
+					name: string,
+					args: {
+						coresLimit?: string,
+						coresRequest?: string,
+						memoryLimit?: string,
+						memoryRequest?: string,
+						noWait?: boolean,
+					},
+					namespace?: string,
+					additionalEnvVars?: AdditionalEnvVars
+				): Promise<AzOutput<void>>
+			}
+		},
 		getPath(): Promise<string>,
-		login(endpointOrNamespace: EndpointOrNamespace, username: string, password: string, additionalEnvVars?: AdditionalEnvVars, azdataContext?: string): Promise<AzdataOutput<void>>,
 		/**
-		 * The semVersion corresponding to this installation of azdata. version() method should have been run
+		 * The semVersion corresponding to this installation of az. version() method should have been run
 		 * before fetching this value to ensure that correct value is returned. This is almost always correct unless
-		 * Azdata has gotten reinstalled in the background after this IAzdataApi object was constructed.
+		 * Az has gotten reinstalled in the background after this IAzApi object was constructed.
 		 */
 		getSemVersion(): Promise<SemVer>,
-		version(): Promise<AzdataOutput<string>>
+		version(): Promise<AzOutput<string>>
 	}
 
 	export interface IExtension {
-		azdata: IAzdataApi;
-
-		/**
-		 * returns true if AZDATA CLI EULA has been previously accepted by the user.
-		 */
-		isEulaAccepted(): Promise<boolean>;
-
-		/**
-		 * Prompts user to accept EULA. Stores and returns the user response to EULA prompt.
-		 * @param requireUserAction - if the prompt is required to be acted upon by the user. This is typically 'true' when this method is called to address an Error when the EULA needs to be accepted to proceed.
-		 *
-		 * pre-requisite, the calling code has to ensure that the EULA has not yet been previously accepted by the user. The code can use @see isEulaAccepted() call to ascertain this.
-		 * returns true if the user accepted the EULA.
-		 */
-		promptForEula(requireUserAction?: boolean): Promise<boolean>;
-
+		az: IAzApi;
 	}
 }
