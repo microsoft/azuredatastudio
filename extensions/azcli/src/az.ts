@@ -135,15 +135,15 @@ export class AzTool implements azExt.IAzApi {
 				if (args.adminPassword) { argsArray.push('--admin-password'); }
 				if (args.coresLimit) { argsArray.push('--cores-limit', args.coresLimit); }
 				if (args.coresRequest) { argsArray.push('--cores-request', args.coresRequest); }
-				if (args.coordinatorEngineSettings) { argsArray.push('--coordinator-engine-settings', args.coordinatorEngineSettings); }
+				if (args.coordinatorEngineSettings) { argsArray.push('--coordinator-settings', args.coordinatorEngineSettings); }
 				if (args.engineSettings) { argsArray.push('--engine-settings', args.engineSettings); }
 				if (args.extensions) { argsArray.push('--extensions', args.extensions); }
 				if (args.memoryLimit) { argsArray.push('--memory-limit', args.memoryLimit); }
 				if (args.memoryRequest) { argsArray.push('--memory-request', args.memoryRequest); }
 				if (args.noWait) { argsArray.push('--no-wait'); }
 				if (args.port) { argsArray.push('--port', args.port.toString()); }
-				if (args.replaceEngineSettings) { argsArray.push('--replace-engine-settings'); }
-				if (args.workerEngineSettings) { argsArray.push('--worker-engine-settings', args.workerEngineSettings); }
+				if (args.replaceEngineSettings) { argsArray.push('--replace-settings'); }
+				if (args.workerEngineSettings) { argsArray.push('--worker-settings', args.workerEngineSettings); }
 				if (args.workers !== undefined) { argsArray.push('--workers', args.workers.toString()); }
 				return this.executeCommand<void>(argsArray, additionalEnvVars);
 			}
