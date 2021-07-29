@@ -36,19 +36,6 @@ export function getAzApi(azToolService: AzToolService): azExt.IAzApi {
 	return {
 		arcdata: {
 			dc: {
-				create: async (
-					namespace: string,
-					name: string,
-					connectivityMode: string,
-					resourceGroup: string,
-					location: string,
-					subscription: string,
-					profileName?: string,
-					storageClass?: string,
-					additionalEnvVars?: azExt.AdditionalEnvVars) => {
-					validateAz(azToolService.localAz);
-					return azToolService.localAz!.arcdata.dc.create(namespace, name, connectivityMode, resourceGroup, location, subscription, profileName, storageClass, additionalEnvVars);
-				},
 				endpoint: {
 					list: async (namespace: string, additionalEnvVars?: azExt.AdditionalEnvVars) => {
 						validateAz(azToolService.localAz);

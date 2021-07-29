@@ -4,13 +4,14 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azExt from 'az-ext';
+import * as fs from 'fs';
 import * as os from 'os';
 import { SemVer } from 'semver';
 import * as vscode from 'vscode';
-import { executeCommand, ProcessOutput } from './common/childProcess';
+import { executeCommand, ExitCodeError, ProcessOutput } from './common/childProcess';
 import Logger from './common/logger';
-import { AzureCLIArcExtError, searchForCmd } from './common/utils';
-import { azConfigSection, debugConfigKey, latestAzArcExtensionVersion } from './constants';
+import { AzureCLIArcExtError, NoAzureCLIError, searchForCmd } from './common/utils';
+import { azConfigSection, azFound, debugConfigKey, latestAzArcExtensionVersion } from './constants';
 import * as loc from './localizedConstants';
 
 /**
@@ -191,9 +192,8 @@ export class AzTool implements azExt.IAzApi {
 		const output = await executeAzCommand(`"${this._path}"`, ['--version']);
 		this._semVersion = new SemVer(parseVersion(output.stdout));
 		return {
-			stdout: output.stdout
-			// stderr: output.stderr.split(os.EOL)
-			// result: output.stdout
+			stdout: output.stdout,
+			stderr: output.stderr.split(os.EOL)
 		};
 	}
 
@@ -204,12 +204,37 @@ export class AzTool implements azExt.IAzApi {
 	 */
 	public async executeCommand<R>(args: string[], additionalEnvVars?: azExt.AdditionalEnvVars): Promise<azExt.AzOutput<R>> {
 		try {
+			// JSON OUTPUT
 			const result = await executeAzCommand(`"${this._path}"`, args.concat(['--output', 'json']), additionalEnvVars);
+
 			const output = JSON.parse(result.stdout);
 			return {
-				stdout: <R>output
+				stdout: <R>output,
+				stderr: <string[]>output
 			};
 		} catch (err) {
+			if (err instanceof ExitCodeError) {
+				try {
+					// For az internal errors the output is JSON and so we need to do some extra parsing here
+					// to get the correct stderr out. The actual value we get is something like
+					// ERROR: { stderr: '...' }
+					// so we also need to trim off the start that isn't a valid JSON blob
+					err.stderr = JSON.parse(err.stderr.substring(err.stderr.indexOf('{'), err.stderr.indexOf('}') + 1)).stderr;
+				} catch {
+					// it means this was probably some other generic error (such as command not being found)
+					// check if az still exists if it does then rethrow the original error if not then emit a new specific error.
+					try {
+						await fs.promises.access(this._path);
+						//this.path exists
+					} catch (e) {
+						// this.path does not exist
+						await vscode.commands.executeCommand('setContext', azFound, false);
+						throw new NoAzureCLIError();
+					}
+					throw err; // rethrow the original error
+				}
+
+			}
 			throw err;
 		}
 	}

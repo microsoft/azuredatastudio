@@ -5,7 +5,7 @@
 
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
-import * as azdataExt from 'azdata-ext';
+import * as azExt from 'az-ext';
 import * as loc from '../../../localizedConstants';
 import { UserCancelledError } from '../../../common/api';
 import { IconPathHelper, cssStyles } from '../../../constants';
@@ -37,12 +37,12 @@ export abstract class PostgresParametersPage extends DashboardPage {
 	private changedComponentValues: Set<string> = new Set();
 	private parameterUpdates: Map<string, string> = new Map();
 
-	protected readonly _azdataApi: azdataExt.IExtension;
+	protected readonly _azApi: azExt.IExtension;
 
 	constructor(modelView: azdata.ModelView, dashboard: azdata.window.ModelViewDashboard, protected _postgresModel: PostgresModel) {
 		super(modelView, dashboard);
 
-		this._azdataApi = vscode.extensions.getExtension(azdataExt.extension.name)?.exports;
+		this._azApi = vscode.extensions.getExtension(azExt.extension.name)?.exports;
 
 		this.initializeSearchBox();
 

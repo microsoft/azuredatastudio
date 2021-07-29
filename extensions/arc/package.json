@@ -18,7 +18,7 @@
     "onView:azureArc"
   ],
   "extensionDependencies": [
-    "Microsoft.azdata",
+    "Microsoft.azcli",
     "Microsoft.resource-deployment"
   ],
   "repository": {
@@ -519,8 +519,7 @@
                 "name": "kubectl"
               },
               {
-                "name": "azdata",
-                "version": "20.3.4"
+                "name": "azure-cli"
               }
             ],
             "when": true
@@ -573,11 +572,8 @@
                               "providerId": "arc.controllers",
                               "variableNames": {
                                 "namespace": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_NAMESPACE",
-                                "endpoint": "AZDATA_NB_VAR_CONTROLLER_ENDPOINT",
-                                "username": "AZDATA_NB_VAR_CONTROLLER_USERNAME",
                                 "kubeConfig": "AZDATA_NB_VAR_CONTROLLER_KUBECONFIG",
-                                "clusterContext": "AZDATA_NB_VAR_CONTROLLER_KUBECTL_CONTEXT",
-                                "password": "AZDATA_NB_VAR_CONTROLLER_PASSWORD"
+                                "clusterContext": "AZDATA_NB_VAR_CONTROLLER_KUBECTL_CONTEXT"
                               }
                             },
                             "optionsType": "dropdown"
@@ -838,8 +834,7 @@
                 "name": "kubectl"
               },
               {
-                "name": "azdata",
-                "version": "20.3.4"
+                "name": "azure-cli"
               }
             ],
             "when": "true"
@@ -915,11 +910,9 @@
                           "source": {
                             "providerId": "arc.controllers",
                             "variableNames": {
-                              "endpoint": "AZDATA_NB_VAR_CONTROLLER_ENDPOINT",
-                              "username": "AZDATA_NB_VAR_CONTROLLER_USERNAME",
+                              "namespace": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_NAMESPACE",
                               "kubeConfig": "AZDATA_NB_VAR_CONTROLLER_KUBECONFIG",
-                              "clusterContext": "AZDATA_NB_VAR_CONTROLLER_KUBECTL_CONTEXT",
-                              "password": "AZDATA_NB_VAR_CONTROLLER_PASSWORD"
+                              "clusterContext": "AZDATA_NB_VAR_CONTROLLER_KUBECTL_CONTEXT"
                             }
                           },
                           "optionsType": "dropdown"
@@ -1067,8 +1060,7 @@
               "name": "kubectl"
             },
             {
-              "name": "azdata",
-              "version": "20.3.4"
+              "name": "azure-cli"
             }
           ],
           "when": "mi-type=arc-mi"
