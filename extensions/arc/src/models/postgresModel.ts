@@ -26,8 +26,6 @@ export type EngineSettingsModel = {
 	type: string | undefined
 };
 
-export const validExtensions = ['citus', 'pgaudit', 'pgautofailover', 'pg_cron', 'pg_partman', 'plv8', 'postgis', 'postgis_raster', 'postgis_sfcgal', 'postgis_tiger_geocoder', 'tdigest'];
-
 export class PostgresModel extends ResourceModel {
 	private _config?: azExt.PostgresServerShowResult;
 	public workerNodesEngineSettings: EngineSettingsModel[] = [];

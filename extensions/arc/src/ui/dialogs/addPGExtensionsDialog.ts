@@ -8,8 +8,9 @@ import { Deferred } from '../../common/promise';
 import * as loc from '../../localizedConstants';
 import { cssStyles } from '../../constants';
 import { InitializingComponent } from '../components/initializingComponent';
-import { PostgresModel, validExtensions } from '../../models/postgresModel';
+import { PostgresModel } from '../../models/postgresModel';
 
+export const validExtensions = ['citus', 'pgaudit', 'pgautofailover', 'pg_cron', 'pg_partman', 'plv8', 'postgis', 'postgis_raster', 'postgis_sfcgal', 'postgis_tiger_geocoder', 'tdigest'];
 
 export class AddPGExtensionsDialog extends InitializingComponent {
 	protected modelBuilder!: azdata.ModelBuilder;
