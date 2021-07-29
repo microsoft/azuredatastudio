@@ -11,8 +11,7 @@ import { initializeWizardPage, InputComponent, InputComponentInfo, setModelValue
 import { ResourceTypePage } from '../resourceTypePage';
 import { WizardPageInfo } from '../wizardPageInfo';
 import { NotebookWizardModel } from './notebookWizardModel';
-
-const localize = nls.loadMessageBundle();
+import * as loc from '../../localizedConstants';
 
 export class NotebookWizardPage extends ResourceTypePage {
 
@@ -135,10 +134,7 @@ export class NotebookWizardPage extends ResourceTypePage {
 			this.wizard.wizardObject.message = {
 				text: messages.length === 1
 					? messages[0]
-					: localize(
-						"wizardPage.ValidationError",
-						"There are some errors on this page, click 'Show Details' to view the errors."
-					),
+					: loc.multipleValidationErrors,
 				description: messages.length === 1 ? undefined : messages.join(EOL),
 				level: azdata.window.MessageLevel.Error,
 			};
