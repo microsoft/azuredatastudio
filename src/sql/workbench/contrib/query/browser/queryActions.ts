@@ -700,6 +700,9 @@ export class ListDatabasesActionItem extends Disposable implements IActionViewIt
 			return;
 		}
 
+		// Remove the pool instance from database name in the dropdown
+		dbName = this.removePoolInstanceName(dbName);
+
 		this.connectionManagementService.changeDatabase(this._editor.input.uri, dbName)
 			.then(
 				result => {
@@ -718,6 +721,15 @@ export class ListDatabasesActionItem extends Disposable implements IActionViewIt
 						message: nls.localize('changeDatabase.failedWithError', "Failed to change database: {0}", getErrorMessage(error))
 					});
 				});
+	}
+
+	// Removes the DB pool instance name from the database name
+	private removePoolInstanceName(dbName: string): string {
+		if (dbName.includes('@')) {
+			return dbName.split('@')[0];
+		} else {
+			return dbName;
+		}
 	}
 
 	private getCurrentDatabaseName(): string | undefined {
