@@ -439,6 +439,10 @@ declare module 'azdata' {
 		 * Note: this is currently only implemented for boolean type (checkbox).
 		 */
 		enabled?: boolean;
+		/**
+		 * Value of the placeholder when the cell type is input box
+		 */
+		placeholder?: string;
 	}
 
 	/**
