@@ -353,6 +353,7 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 			ariaLabel: constants.REFRESH_KEY2,
 		}).component();
 		this._authKeyTable = this._view.modelBuilder.declarativeTable().withProps({
+			ariaLabel: constants.DATABASE_MIGRATION_SERVICE_AUTHENTICATION_KEYS,
 			columns: [
 				{
 					displayName: constants.NAME,
