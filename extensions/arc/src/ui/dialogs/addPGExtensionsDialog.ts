@@ -48,7 +48,7 @@ export class AddPGExtensionsDialog extends InitializingComponent {
 					value: '',
 					ariaLabel: loc.extensionsAddList,
 					enabled: true,
-					validationErrorMessage: loc.extensionsAddErrorrMessage(validExtensions.join())
+					validationErrorMessage: loc.extensionsAddErrorrMessage(validExtensions.join(','))
 				}).withValidation((component) => {
 					if (!component.value) {
 						return true;
