@@ -54,6 +54,9 @@
     <trans-unit id="sql.migration.wizard.source_configuration.title">
       <source xml:lang="en">SQL Source Configuration</source>
     </trans-unit>
+    <trans-unit id="sql.migration.assessments.blocking.issue">
+      <source xml:lang="en">This is a blocking issue that will prevent the database migration from succeeding.</source>
+    </trans-unit>
     <trans-unit id="sql.migration.assessments.progress">
       <source xml:lang="en">Assessments Progress</source>
     </trans-unit>
@@ -136,10 +139,19 @@ This may take some time.</source>
       <source xml:lang="en">We have completed the assessment of your SQL Server Instance '{0}'.</source>
     </trans-unit>
     <trans-unit id="sql.migration.assessment">
-      <source xml:lang="en">Assessment Dialog for '{0}'</source>
+      <source xml:lang="en">Assessment results for '{0}'</source>
     </trans-unit>
     <trans-unit id="sql.migration.can.be.migrated">
       <source xml:lang="en">{0} out of {1} databases can be migrated</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.assessment.migration.warning">
+      <source xml:lang="en">Databases that are not ready for migration to Azure SQL Managed Instance can be migrated to SQL Server on Azure Virtual Machines.</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.databases.table.title">
+      <source xml:lang="en">Databases</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.sql.server.instance">
+      <source xml:lang="en">SQL Server Instance</source>
     </trans-unit>
     <trans-unit id="sql.migration.wizard.account.title">
       <source xml:lang="en">Azure Account</source>
@@ -381,6 +393,9 @@ This may take some time.</source>
     <trans-unit id="sql.migration.dms.portal.info">
       <source xml:lang="en">Please note that any existing Azure Database Migration Service (DMS) in Azure portal will not show up in Azure Data Studio. DMS created in Azure Data Studio will not be visible in Azure portal yet.</source>
     </trans-unit>
+    <trans-unit id="sql.migration.database.migration.service.authentication.keys">
+      <source xml:lang="en">Database migration service authentication keys</source>
+    </trans-unit>
     <trans-unit id="sql.migration.services.dialog.title">
       <source xml:lang="en">Create Azure Database Migration Service</source>
     </trans-unit>
@@ -512,6 +527,9 @@ This may take some time.</source>
     </trans-unit>
     <trans-unit id="sql.migration.learn.more">
       <source xml:lang="en">Learn more</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.learn.more.pre.reqs">
+      <source xml:lang="en">Learn more about things you need before starting a migration.</source>
     </trans-unit>
     <trans-unit id="sql.migration.subscription">
       <source xml:lang="en">Subscription</source>
@@ -725,9 +743,6 @@ This may take some time.</source>
     </trans-unit>
     <trans-unit id="sql.migration.choose.to.migrate.to.azure.sql">
       <source xml:lang="en">Choose to migrate to Azure SQL</source>
-    </trans-unit>
-    <trans-unit id="sql.migration.coming.soon">
-      <source xml:lang="en">Coming soon</source>
     </trans-unit>
     <trans-unit id="sql.migration.show.status">
       <source xml:lang="en">Show status</source>
