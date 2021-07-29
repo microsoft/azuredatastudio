@@ -6,18 +6,22 @@ import { replaceInvalidLinkPath } from 'sql/workbench/contrib/notebook/common/ut
 const keepAbsolutePathConfigName = 'notebook.keepAbsolutePath';
 
 export class NotebookLinkHandler {
-	private _notebookUriLink: URI | undefined;
-	private _href: string | undefined;
+	private _notebookUriLink: URI;
+	private _href: string;
 	private _notebookDirectory: string;
-	private _isAnchorLink: boolean | undefined;
-	private _isFile: boolean | undefined;
-	private _isAbsolutePath: boolean | undefined;
+	private _isAnchorLink: boolean;
+	private _isFile: boolean;
+	public readonly isAbsolutePath: boolean;
 
-	constructor(private _notebookURI: URI, private _link: string | HTMLAnchorElement, private _configurationService: IConfigurationService) {
+	constructor(
+		private _notebookURI: URI,
+		private _link: string | HTMLAnchorElement,
+		@IConfigurationService private _configurationService: IConfigurationService,
+	) {
 		if (typeof this._link === 'string') {
 			this._notebookUriLink = URI.parse(this._link);
 			this._isFile = this._notebookUriLink.scheme === 'file';
-			this._isAbsolutePath = path.isAbsolute(this._link);
+			this.isAbsolutePath = path.isAbsolute(this._link);
 			this._isAnchorLink = this._link.includes('#') && this._isFile;
 		} else {
 			// HTMLAnchorElement
@@ -25,7 +29,7 @@ export class NotebookLinkHandler {
 			this._href = this._link.attributes['href']?.nodeValue;
 			this._isFile = this._link.protocol === 'file:';
 			this._isAnchorLink = this._notebookUriLink?.fragment ? true : false;
-			this._isAbsolutePath = this._link.attributes['is-absolute']?.nodeValue === 'true' ? true : false;
+			this.isAbsolutePath = this._link.attributes['is-absolute']?.nodeValue === 'true' ? true : false;
 		}
 		this._notebookDirectory = this._notebookURI ? path.dirname(this._notebookURI.fsPath) : '';
 	}
@@ -39,50 +43,47 @@ export class NotebookLinkHandler {
 	 * @returns the file link or web link
 	 */
 	public getLinkUrl(): string {
-		switch (typeof this._link) {
-			// cases where we only have the href link
-			case 'string': {
-				// Does not convert absolute path to relative path
-				if (this._isFile && this._isAbsolutePath && this._configurationService.getValue(keepAbsolutePathConfigName) === true) {
-					return this._link;
-				}
-				// sets the string to absolute path to be used to resolve
-				if (this._isFile && !this._isAbsolutePath && !this._isAnchorLink) {
-					const relativePath = (this._link).replace(/\\/g, path.posix.sep);
-					const linkUrl = path.resolve(this._notebookDirectory, relativePath);
-					return linkUrl;
-				}
-				/**
-				 * We return the absolute path for the link so that it will get used in the as the href for the anchor HTML element
-				 * (in linkCalloutDialog document.execCommand('insertHTML') and therefore will call getLinkURL() with HTMLAnchorElement to then get the relative path
-				*/
+		// cases where we only have the href link
+		if (typeof this._link === 'string') {
+			// Does not convert absolute path to relative path
+			if (this._isFile && this.isAbsolutePath && this._configurationService.getValue(keepAbsolutePathConfigName) === true) {
 				return this._link;
 			}
+			// sets the string to absolute path to be used to resolve
+			if (this._isFile && !this.isAbsolutePath && !this._isAnchorLink) {
+				const relativePath = (this._link).replace(/\\/g, path.posix.sep);
+				const linkUrl = path.resolve(this._notebookDirectory, relativePath);
+				return linkUrl;
+			}
+			/**
+			 * We return the absolute path for the link so that it will get used in the as the href for the anchor HTML element
+			 * (in linkCalloutDialog document.execCommand('insertHTML') and therefore will call getLinkURL() with HTMLAnchorElement to then get the relative path
+			*/
+			return this._link;
+		} else {
 			// cases where we pass the HTMLAnchorElement
-			case 'object': {
-				if (this._notebookUriLink && this._isFile) {
-					let targetUri: URI;
-					// Does not convert absolute path to relative path if keep Absolute Path setting is enabled
-					if (this._isAbsolutePath && this._configurationService.getValue(keepAbsolutePathConfigName) === true) {
-						return this._href;
+			if (this._notebookUriLink && this._isFile) {
+				let targetUri: URI;
+				// Does not convert absolute path to relative path if keep Absolute Path setting is enabled
+				if (this.isAbsolutePath && this._configurationService.getValue(keepAbsolutePathConfigName) === true) {
+					return this._href;
+				} else {
+					if (this._isAnchorLink) {
+						targetUri = this.getUriAnchorLink(this._link, this._notebookURI);
 					} else {
-						if (this._isAnchorLink) {
-							targetUri = this.getUriAnchorLink(this._link, this._notebookURI);
-						} else {
-							targetUri = this._notebookUriLink;
-						}
-						// returns relative path of target notebook to the current notebook directory
-						if (this._notebookUriLink.fsPath !== this._notebookURI.fsPath && !targetUri?.fragment) {
-							return findPathRelativeToContent(this._notebookDirectory, targetUri);
-						} else {
-							// if the anchor link is to a section in the same notebook then just add the fragment
-							return targetUri.fragment;
-						}
+						targetUri = this._notebookUriLink;
+					}
+					// returns relative path of target notebook to the current notebook directory
+					if (this._notebookUriLink.fsPath !== this._notebookURI.fsPath && !targetUri?.fragment) {
+						return findPathRelativeToContent(this._notebookDirectory, targetUri);
+					} else {
+						// if the anchor link is to a section in the same notebook then just add the fragment
+						return targetUri.fragment;
 					}
 				}
-				// Web links
-				return this._href || '';
 			}
+			// Web links
+			return this._href || '';
 		}
 	}
 
@@ -104,9 +105,6 @@ export class NotebookLinkHandler {
 		}
 	}
 
-	public get isAbsolutePath(): boolean {
-		return this._isAbsolutePath;
-	}
 }
 
 /**
