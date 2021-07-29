@@ -10,8 +10,8 @@ import { SemVer } from 'semver';
 import * as vscode from 'vscode';
 import { executeCommand, ExitCodeError, ProcessOutput } from './common/childProcess';
 import Logger from './common/logger';
-import { AzureCLIArcExtError, NoAzureCLIError, searchForCmd } from './common/utils';
-import { azConfigSection, azFound, azRequiredUpdateKey, debugConfigKey, latestAzArcExtensionVersion } from './constants';
+import { NoAzureCLIError, searchForCmd } from './common/utils';
+import { azConfigSection, azFound, debugConfigKey, latestAzArcExtensionVersion } from './constants';
 import * as loc from './localizedConstants';
 
 /**
@@ -271,7 +271,8 @@ function parseArcExtensionVersion(raw: string): string {
 	// ...
 	const start = raw.search('arcdata');
 	if (start === -1) {
-		throw new AzureCLIArcExtError();
+		// Commented the install/update prompts out until DoNotAskAgain is implemented
+		//throw new AzureCLIArcExtError();
 	} else {
 		raw = raw.slice(start + 7);
 		raw = raw.split(os.EOL)[0].trim();
@@ -287,11 +288,11 @@ async function executeAzCommand(command: string, args: string[], additionalEnvVa
 	return executeCommand(command, args, additionalEnvVars);
 }
 
-
-async function setConfig(key: string, value: string): Promise<void> {
-	const config = vscode.workspace.getConfiguration(azConfigSection);
-	await config.update(key, value, vscode.ConfigurationTarget.Global);
-}
+// Commented the install/update prompts out until DoNotAskAgain is implemented
+// async function setConfig(key: string, value: string): Promise<void> {
+// 	const config = vscode.workspace.getConfiguration(azConfigSection);
+// 	await config.update(key, value, vscode.ConfigurationTarget.Global);
+// }
 
 /**
  * // TODOCANYE
@@ -301,18 +302,20 @@ async function findSpecificAz(): Promise<IAzTool> {
 	const versionOutput = await executeAzCommand(`"${path}"`, ['--version']);
 	const version = parseArcExtensionVersion(versionOutput.stdout);
 	const semVersion = new SemVer(version);
-	let response: string | undefined;
+	//let response: string | undefined;
 
 	if (LATEST_AZ_ARC_EXTENSION_VERSION.compare(semVersion) === 1) {
 		// If there is a greater version of az arc extension available, prompt to update
-		const responses = [loc.askLater, loc.doNotAskAgain];
-		response = await vscode.window.showInformationMessage(loc.requiredArcDataVersionNotAvailable(latestAzArcExtensionVersion, version), ...responses);
-		if (response === loc.doNotAskAgain) {
-			await setConfig(azRequiredUpdateKey, AzDeployOption.dontPrompt);
-		}
+		// Commented the install/update prompts out until DoNotAskAgain is implemented
+		// const responses = [loc.askLater, loc.doNotAskAgain];
+		// response = await vscode.window.showInformationMessage(loc.requiredArcDataVersionNotAvailable(latestAzArcExtensionVersion, version), ...responses);
+		// if (response === loc.doNotAskAgain) {
+		// 	await setConfig(azRequiredUpdateKey, AzDeployOption.dontPrompt);
+		// }
 	} else if (LATEST_AZ_ARC_EXTENSION_VERSION.compare(semVersion) === -1) {
 		// Current version should not be greater than latest version
-		vscode.window.showErrorMessage(loc.unsupportedArcDataVersion(latestAzArcExtensionVersion, version));
+		// Commented the install/update prompts out until DoNotAskAgain is implemented
+		// vscode.window.showErrorMessage(loc.unsupportedArcDataVersion(latestAzArcExtensionVersion, version));
 	}
 	return new AzTool(path, version);
 }
