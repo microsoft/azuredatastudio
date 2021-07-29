@@ -132,7 +132,15 @@ export class HTMLMarkdownConverter {
 		this.turndownService.addRule('a', {
 			filter: 'a',
 			replacement: (content, node) => {
-				let href = node.href;
+				let href: string;
+				let hrefContainsSpace = node.attributes.href.nodeValue.includes(' ');
+
+				if (hrefContainsSpace) {
+					href = node.attributes.href.nodeValue;
+				} else {
+					href = node.href;
+				}
+
 				let notebookLink: URI | undefined;
 				const isAnchorLinkInFile = (node.attributes.href?.nodeValue.startsWith('#') || href.includes('#')) && href.startsWith('file://');
 				if (isAnchorLinkInFile) {

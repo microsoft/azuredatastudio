@@ -21,7 +21,6 @@ import { TextModel } from 'vs/editor/common/model/textModel';
 import { IEditor } from 'vs/editor/common/editorCommon';
 import * as path from 'vs/base/common/path';
 import { URI } from 'vs/base/common/uri';
-import { escape } from 'vs/base/common/strings';
 import { IImageCalloutDialogOptions, ImageCalloutDialog } from 'sql/workbench/contrib/notebook/browser/calloutDialog/imageCalloutDialog';
 import { TextCellEditModes } from 'sql/workbench/services/notebook/common/contracts';
 
@@ -251,7 +250,7 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 				}
 				// Otherwise, re-focus on the output element, and insert the link directly.
 				this.output?.nativeElement?.focus();
-				document.execCommand('insertHTML', false, `<a href="${escape(linkUrl)}">${escape(linkCalloutResult?.insertUnescapedLinkLabel)}</a>`);
+				document.execCommand('insertHTML', false, `<a href="${linkUrl}">${linkCalloutResult?.insertUnescapedLinkLabel}</a>`);
 				return;
 			}
 		} else if (type === MarkdownButtonType.IMAGE_PREVIEW) {
