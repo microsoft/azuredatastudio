@@ -261,7 +261,7 @@ export class PostgresExtensionsPage extends DashboardPage {
 	 */
 	public async dropExtension(): Promise<void> {
 		this.droppedExtensions.forEach(d => {
-			let index = this.droppedExtensions.indexOf(d, 0);
+			let index = this.extensionNames.indexOf(d, 0);
 			this.extensionNames.splice(index, 1);
 		});
 
