@@ -211,6 +211,7 @@ export class MigrationCutoverDialog {
 				}).component();
 
 				this.fileTable = view.modelBuilder.table().withProps({
+					ariaLabel: loc.ACTIVE_BACKUP_FILES,
 					columns: [
 						{
 							value: loc.ACTIVE_BACKUP_FILES,
