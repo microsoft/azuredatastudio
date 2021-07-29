@@ -8,7 +8,8 @@ import { Deferred } from '../../common/promise';
 import * as loc from '../../localizedConstants';
 import { cssStyles } from '../../constants';
 import { InitializingComponent } from '../components/initializingComponent';
-import { PostgresModel } from '../../models/postgresModel';
+import { PostgresModel, validExtensions } from '../../models/postgresModel';
+
 
 export class AddPGExtensionsDialog extends InitializingComponent {
 	protected modelBuilder!: azdata.ModelBuilder;
@@ -16,8 +17,6 @@ export class AddPGExtensionsDialog extends InitializingComponent {
 	protected extensionsListInputBox!: azdata.InputBoxComponent;
 
 	protected _completionPromise = new Deferred<string | undefined>();
-
-	private validExtensions = ['citus', 'pgaudit', 'pgautofailover', 'pg_cron', 'pg_partman', 'plv8', 'postgis', 'postgis_raster', 'postgis_sfcgal', 'postgis_tiger_geocoder', 'tdigest'];
 
 	constructor(protected _model: PostgresModel) {
 		super();
@@ -30,7 +29,7 @@ export class AddPGExtensionsDialog extends InitializingComponent {
 			this.modelBuilder = view.modelBuilder;
 
 			const info = this.modelBuilder.text().withProps({
-				value: loc.extensionsAddFunction,
+				value: loc.extensionsAddFunction(validExtensions.join(', ')),
 				CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
 			}).component();
 
@@ -48,22 +47,14 @@ export class AddPGExtensionsDialog extends InitializingComponent {
 					value: '',
 					ariaLabel: loc.extensionsAddList,
 					enabled: true,
-					validationErrorMessage: loc.extensionsAddErrorrMessage
+					validationErrorMessage: loc.extensionsAddErrorrMessage(validExtensions.join())
 				}).withValidation((component) => {
 					if (!component.value) {
 						return true;
 					}
 
-					let validExtension = true;
-
 					let newExtensions = component.value.split(',');
-					newExtensions.forEach(e => {
-						if (!this.validExtensions.includes(e)) {
-							validExtension = false;
-						}
-					});
-
-					return validExtension;
+					return newExtensions.every(e => validExtensions.includes(e));
 				}).component();
 
 			let formModel = this.modelBuilder.formContainer()
