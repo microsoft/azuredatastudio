@@ -5,7 +5,6 @@
 import * as azdata from 'azdata';
 import { EOL } from 'os';
 import * as vscode from 'vscode';
-import * as nls from 'vscode-nls';
 import { InitialVariableValues, NotebookWizardPageInfo } from '../../interfaces';
 import { initializeWizardPage, InputComponent, InputComponentInfo, setModelValues, Validator } from '../modelViewUtils';
 import { ResourceTypePage } from '../resourceTypePage';
