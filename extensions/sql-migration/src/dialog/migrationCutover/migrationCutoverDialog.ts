@@ -495,7 +495,7 @@ export class MigrationCutoverDialog {
 		const classVariable = this;
 		clearInterval(this._autoRefreshHandle);
 		if (interval !== -1) {
-			this._autoRefreshHandle = setInterval(function () { classVariable.refreshStatus(); }, interval);
+			this._autoRefreshHandle = setInterval(async function () { await classVariable.refreshStatus(); }, interval);
 		}
 	}
 
