@@ -129,7 +129,7 @@ export const NO_LOCATION_FOUND = localize('sql.migration.no.location.found', "No
 export const NO_STORAGE_ACCOUNT_FOUND = localize('sql.migration.no.storageAccount.found', "No storage account found");
 export const NO_FILESHARES_FOUND = localize('sql.migration.no.fileShares.found', "No file shares found");
 export const NO_BLOBCONTAINERS_FOUND = localize('sql.migration.no.blobContainers.found', "No blob containers found");
-export const NO_FILE_NAMES_FOUND = localize('sql.migration.no.fileNames.found', "No file names found");
+export const NO_BLOBFILES_FOUND = localize('sql.migration.no.blobFiles.found', "No blob files found");
 export const INVALID_SUBSCRIPTION_ERROR = localize('sql.migration.invalid.subscription.error', "Please select a valid subscription to proceed.");
 export const INVALID_LOCATION_ERROR = localize('sql.migration.invalid.location.error', "Please select a valid location to proceed.");
 export const INVALID_STORAGE_ACCOUNT_ERROR = localize('sql.migration.invalid.storageAccount.error', "Please select a valid storage account to proceed.");
@@ -170,9 +170,9 @@ export function SQL_SOURCE_DETAILS(authMethod: MigrationSourceAuthenticationType
 			return localize('sql.migration.source.details.sqlAuth', "Enter the SQL Authentication credential used for connecting to SQL Server Instance {0}. ​ This credential will be used to for connecting to SQL Server instance and identifying valid backup file(s)", serverName);
 	}
 }
-export const SELECT_RESOURCE_GROUP_TOOLTIP = localize('sql.migration.blob.resourceGroup.tooltip', "Select a resource group value first.");
-export const SELECT_STORAGE_ACCOUNT_TOOLTIP = localize('sql.migration.blob.storageAccount.tooltip', "Select a storage account value first.");
-export const SELECT_BLOB_CONTAINER_TOOLTIP = localize('sql.migration.blob.container.tooltip', "Select a blob container value first.");
+export const SELECT_RESOURCE_GROUP = localize('sql.migration.blob.resourceGroup.select', "Select a resource group value first.");
+export const SELECT_STORAGE_ACCOUNT = localize('sql.migration.blob.storageAccount.select', "Select a storage account value first.");
+export const SELECT_BLOB_CONTAINER = localize('sql.migration.blob.container.select', "Select a blob container value first.");
 
 // integration runtime page
 export const IR_PAGE_TITLE = localize('sql.migration.ir.page.title', "Azure Database Migration Service");

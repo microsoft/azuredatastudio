@@ -16,6 +16,11 @@ import { findDropDownItemIndex, selectDropDownIndex } from '../api/utils';
 
 const WIZARD_TABLE_COLUMN_WIDTH = '150px';
 
+const blobResourceGroupErrorStrings = [constants.RESOURCE_GROUP_NOT_FOUND];
+const blobStorageAccountErrorStrings = [constants.NO_STORAGE_ACCOUNT_FOUND, constants.SELECT_RESOURCE_GROUP];
+const blobContainerErrorStrings = [constants.NO_BLOBCONTAINERS_FOUND, constants.SELECT_STORAGE_ACCOUNT];
+const blobFileErrorStrings = [constants.NO_BLOBFILES_FOUND, constants.SELECT_BLOB_CONTAINER];
+
 export class DatabaseBackupPage extends MigrationWizardPage {
 	private _view!: azdata.ModelView;
 
@@ -757,7 +762,6 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 					required: true,
 					enabled: false,
 					showInputTooltip: true,
-					value: constants.SELECT_RESOURCE_GROUP_TOOLTIP,
 				}).component();
 
 				const blobContainerDropdown = this._view.modelBuilder.dropDown().withProps({
@@ -768,7 +772,6 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 					required: true,
 					enabled: false,
 					showInputTooltip: true,
-					value: constants.SELECT_STORAGE_ACCOUNT_TOOLTIP,
 				}).component();
 
 				const blobContainerLastBackupFileDropdown = this._view.modelBuilder.dropDown().withProps({
@@ -779,36 +782,35 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 					required: true,
 					enabled: false,
 					showInputTooltip: true,
-					value: constants.SELECT_BLOB_CONTAINER_TOOLTIP,
 				}).component();
 
 				this._disposables.push(blobContainerResourceDropdown.onValueChanged(async (value) => {
 					const selectedIndex = findDropDownItemIndex(blobContainerResourceDropdown, value);
-					if (selectedIndex > -1 && value !== constants.RESOURCE_GROUP_NOT_FOUND) {
+					if (selectedIndex > -1 && !blobResourceGroupErrorStrings.includes(value)) {
 						this.migrationStateModel._databaseBackup.blobs[index].resourceGroup = this.migrationStateModel.getAzureResourceGroup(selectedIndex);
 						await this.loadBlobStorageDropdown(index);
 						blobContainerStorageAccountDropdown.updateProperties({ enabled: true });
 					} else {
-						blobContainerStorageAccountDropdown.updateProperties({ enabled: false });
+						this.disableBlobTableDropdowns(index, constants.RESOURCE_GROUP);
 					}
 				}));
 				this._blobContainerResourceGroupDropdowns.push(blobContainerResourceDropdown);
 
 				this._disposables.push(blobContainerStorageAccountDropdown.onValueChanged(async (value) => {
 					const selectedIndex = findDropDownItemIndex(blobContainerStorageAccountDropdown, value);
-					if (selectedIndex > -1 && value !== constants.NO_STORAGE_ACCOUNT_FOUND) {
+					if (selectedIndex > -1 && !blobStorageAccountErrorStrings.includes(value)) {
 						this.migrationStateModel._databaseBackup.blobs[index].storageAccount = this.migrationStateModel.getStorageAccount(selectedIndex);
 						await this.loadBlobContainerDropdown(index);
 						blobContainerDropdown.updateProperties({ enabled: true });
 					} else {
-						blobContainerDropdown.updateProperties({ enabled: false });
+						this.disableBlobTableDropdowns(index, constants.STORAGE_ACCOUNT);
 					}
 				}));
 				this._blobContainerStorageAccountDropdowns.push(blobContainerStorageAccountDropdown);
 
 				this._disposables.push(blobContainerDropdown.onValueChanged(async (value) => {
 					const selectedIndex = findDropDownItemIndex(blobContainerDropdown, value);
-					if (selectedIndex > -1 && value !== constants.NO_BLOBCONTAINERS_FOUND) {
+					if (selectedIndex > -1 && !blobContainerErrorStrings.includes(value)) {
 						this.migrationStateModel._databaseBackup.blobs[index].blobContainer = this.migrationStateModel.getBlobContainer(selectedIndex);
 						if (this.migrationStateModel._databaseBackup.migrationMode === MigrationMode.OFFLINE) {
 							await this.loadBlobLastBackupFileDropdown(index);
@@ -823,7 +825,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				if (this.migrationStateModel._databaseBackup.migrationMode === MigrationMode.OFFLINE) {
 					this._disposables.push(blobContainerLastBackupFileDropdown.onValueChanged(value => {
 						const selectedIndex = findDropDownItemIndex(blobContainerLastBackupFileDropdown, value);
-						if (selectedIndex > -1 && value !== constants.NO_FILE_NAMES_FOUND) {
+						if (selectedIndex > -1 && !blobFileErrorStrings.includes(value)) {
 							this.migrationStateModel._databaseBackup.blobs[index].lastBackupFile = this.migrationStateModel.getBlobLastBackupFileName(selectedIndex);
 						}
 					}));
@@ -869,7 +871,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				});
 				data.push(targetRow);
 			});
-			this._blobContainerTargetDatabaseNamesTable.dataValues = data;
+			await this._blobContainerTargetDatabaseNamesTable.setDataValues(data);
 
 			await this.getSubscriptionValues();
 			this.migrationStateModel.refreshDatabaseBackupPage = false;
@@ -898,19 +900,19 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 						}
 					});
 					this._blobContainerStorageAccountDropdowns.forEach((v, index) => {
-						if (this.shouldDisplayBlobDropdownError(v, [constants.NO_STORAGE_ACCOUNT_FOUND, constants.SELECT_RESOURCE_GROUP_TOOLTIP])) {
+						if (this.shouldDisplayBlobDropdownError(v, [constants.NO_STORAGE_ACCOUNT_FOUND, constants.SELECT_RESOURCE_GROUP])) {
 							errors.push(constants.INVALID_BLOB_STORAGE_ACCOUNT_ERROR(this.migrationStateModel._migrationDbs[index]));
 						}
 					});
 					this._blobContainerDropdowns.forEach((v, index) => {
-						if (this.shouldDisplayBlobDropdownError(v, [constants.NO_BLOBCONTAINERS_FOUND, constants.SELECT_STORAGE_ACCOUNT_TOOLTIP])) {
+						if (this.shouldDisplayBlobDropdownError(v, [constants.NO_BLOBCONTAINERS_FOUND, constants.SELECT_STORAGE_ACCOUNT])) {
 							errors.push(constants.INVALID_BLOB_CONTAINER_ERROR(this.migrationStateModel._migrationDbs[index]));
 						}
 					});
 
 					if (this.migrationStateModel._databaseBackup.migrationMode === MigrationMode.OFFLINE) {
 						this._blobContainerLastBackupFileDropdowns.forEach((v, index) => {
-							if (this.shouldDisplayBlobDropdownError(v, [constants.NO_FILE_NAMES_FOUND, constants.SELECT_BLOB_CONTAINER_TOOLTIP])) {
+							if (this.shouldDisplayBlobDropdownError(v, [constants.NO_BLOBFILES_FOUND, constants.SELECT_BLOB_CONTAINER])) {
 								errors.push(constants.INVALID_BLOB_LAST_BACKUP_FILE_ERROR(this.migrationStateModel._migrationDbs[index]));
 							}
 						});
@@ -1041,7 +1043,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			await this._blobContainerDropdowns[i].validate();
 
 			if (this.migrationStateModel._databaseBackup.migrationMode === MigrationMode.OFFLINE) {
-				await this._blobContainerLastBackupFileDropdowns[i].validate();
+				await this._blobContainerLastBackupFileDropdowns[i]?.validate();
 			}
 		}
 	}
@@ -1140,30 +1142,27 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 	}
 
 	private shouldDisplayBlobDropdownError(v: azdata.DropDownComponent, errorStrings: string[]) {
-		return v.value === undefined || errorStrings.includes((<azdata.CategoryValue>v.value).displayName);
+		return v.value === undefined || errorStrings.includes((<azdata.CategoryValue>v.value)?.displayName);
 	}
 
 	private disableBlobTableDropdowns(rowIndex: number, columnName: string): void {
-		const emptyValues: azdata.CategoryValue[] = [];
-		const dropdownProps = {
-			enabled: false,
-			loading: false
-		};
+		const dropdownProps = { enabled: false, loading: false };
+		const createDropdownValuesWithPrereq = (displayName: string, name: string = '') => [{ displayName, name }];
 
 		if (this.migrationStateModel._databaseBackup?.migrationMode === MigrationMode.OFFLINE) {
-			this._blobContainerLastBackupFileDropdowns[rowIndex].value = constants.SELECT_BLOB_CONTAINER_TOOLTIP;
-			this._blobContainerLastBackupFileDropdowns[rowIndex].values = emptyValues;
+			this._blobContainerLastBackupFileDropdowns[rowIndex].values = createDropdownValuesWithPrereq(constants.SELECT_BLOB_CONTAINER);
+			selectDropDownIndex(this._blobContainerLastBackupFileDropdowns[rowIndex], 0);
 			this._blobContainerLastBackupFileDropdowns[rowIndex]?.updateProperties(dropdownProps);
 			if (columnName === constants.BLOB_CONTAINER) { return; }
 		}
 
-		this._blobContainerDropdowns[rowIndex].value = constants.SELECT_STORAGE_ACCOUNT_TOOLTIP;
-		this._blobContainerDropdowns[rowIndex].values = emptyValues;
+		this._blobContainerDropdowns[rowIndex].values = createDropdownValuesWithPrereq(constants.SELECT_STORAGE_ACCOUNT);
+		selectDropDownIndex(this._blobContainerDropdowns[rowIndex], 0);
 		this._blobContainerDropdowns[rowIndex].updateProperties(dropdownProps);
 		if (columnName === constants.STORAGE_ACCOUNT) { return; }
 
-		this._blobContainerStorageAccountDropdowns[rowIndex].value = constants.SELECT_RESOURCE_GROUP_TOOLTIP;
-		this._blobContainerStorageAccountDropdowns[rowIndex].values = emptyValues;
+		this._blobContainerStorageAccountDropdowns[rowIndex].values = createDropdownValuesWithPrereq(constants.SELECT_RESOURCE_GROUP);
+		selectDropDownIndex(this._blobContainerStorageAccountDropdowns[rowIndex], 0);
 		this._blobContainerStorageAccountDropdowns[rowIndex].updateProperties(dropdownProps);
 	}
 }

@@ -748,13 +748,12 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			if (this._lastFileNames.length === 0) {
 				blobLastBackupFileValues = [
 					{
-						displayName: constants.NO_FILE_NAMES_FOUND,
+						displayName: constants.NO_BLOBFILES_FOUND,
 						name: ''
 					}
 				];
 			} else {
-				const sortedFileNames = this._lastFileNames.sort((a, b) => new Date(b.properties.lastModified).getTime() - new Date(a.properties.lastModified).getTime());
-				sortedFileNames.forEach((blob) => {
+				this._lastFileNames.forEach((blob) => {
 					blobLastBackupFileValues.push({
 						name: blob.name,
 						displayName: `${blob.name}`,
@@ -765,7 +764,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			console.log(e);
 			blobLastBackupFileValues = [
 				{
-					displayName: constants.NO_FILE_NAMES_FOUND,
+					displayName: constants.NO_BLOBFILES_FOUND,
 					name: ''
 				}
 			];
