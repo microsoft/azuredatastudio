@@ -479,6 +479,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 
 		const keyComponent = this.modelView.modelBuilder.text().withProps({
 			value: loc.workerNodeCount,
+			requiredIndicator: true,
 			CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
 		}).component();
 
@@ -488,6 +489,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		const information = this.modelView.modelBuilder.button().withProps({
 			iconPath: IconPathHelper.information,
 			title: loc.workerNodesInformation,
+			ariaLabel: loc.workerNodesInformation,
 			width: '15px',
 			height: '15px',
 			enabled: false
@@ -547,6 +549,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		if (component.value === originalValue) {
 			return false;
 		} else if ((!component.valid)) {
+			this.discardButton.enabled = true;
 			return false;
 		} else {
 			this.saveButton.enabled = true;
@@ -584,6 +587,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		const information = this.modelView.modelBuilder.button().withProps({
 			iconPath: IconPathHelper.information,
 			title: description,
+			ariaLabel: description,
 			width: '15px',
 			height: '15px',
 			enabled: false
