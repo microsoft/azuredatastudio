@@ -44,6 +44,8 @@ export class MigrationCutoverDialog {
 	private _autoRefreshHandle!: any;
 	private _disposables: vscode.Disposable[] = [];
 
+	private isRefreshing = false;
+
 	readonly _infoFieldWidth: string = '250px';
 
 	constructor(migration: MigrationContext) {
@@ -278,8 +280,8 @@ export class MigrationCutoverDialog {
 						d => { try { d.dispose(); } catch { } });
 				}));
 
-				return view.initializeModel(form).then((value) => {
-					this.refreshStatus();
+				return view.initializeModel(form).then(async (value) => {
+					await this.refreshStatus();
 				});
 			} catch (e) {
 				console.log(e);
@@ -498,7 +500,12 @@ export class MigrationCutoverDialog {
 
 
 	private async refreshStatus(): Promise<void> {
+		if (this.isRefreshing) {
+			return;
+		}
+
 		try {
+			this.isRefreshing = true;
 			this._refreshLoader.loading = true;
 			this._cutoverButton.enabled = false;
 			this._cancelButton.enabled = false;
@@ -614,8 +621,10 @@ export class MigrationCutoverDialog {
 			}
 		} catch (e) {
 			console.log(e);
+		} finally {
+			this.isRefreshing = false;
+			this._refreshLoader.loading = false;
 		}
-		this._refreshLoader.loading = false;
 	}
 
 	private createInfoField(label: string, value: string): {
