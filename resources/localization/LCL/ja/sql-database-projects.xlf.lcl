@@ -975,10 +975,13 @@
       </Item>
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.mssqlNotFound" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Could not get mssql extension's install location at {0}]]></Val>
+          <Val><![CDATA[Could not get SQL Tools Service install location at {0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[{0} で mssql 拡張機能のインストール場所を取得できませんでした]]></Val>
+            <Val><![CDATA[{0} で SQL ツール サービスのインストール場所を取得できませんでした]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[Could not get mssql extension's install location at {0}]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
