@@ -1,6 +1,7 @@
 import { URI } from 'vs/base/common/uri';
 import * as path from 'vs/base/common/path';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { replaceInvalidLinkPath } from 'sql/workbench/contrib/notebook/common/utils';
 
 const keepAbsolutePathConfigName = 'notebook.keepAbsolutePath';
 
@@ -119,6 +120,8 @@ export function findPathRelativeToContent(notebookFolder: string, contentPath: U
 		let relativePath = contentPath.fragment ? path.relative(notebookFolder, contentPath.fsPath).concat('#', contentPath.fragment) : path.relative(notebookFolder, contentPath.fsPath);
 		//if path contains whitespaces then it's not identified as a link
 		relativePath = relativePath.replace(/\s/g, '%20');
+		// if relativePath contains improper directory format due to marked js parsing returning an invalid path (ex. ....\) then we need to replace it to ensure the directories are formatted properly (ex. ..\..\)
+		relativePath = replaceInvalidLinkPath(relativePath);
 		if (relativePath.startsWith(path.join('..', path.sep)) || relativePath.startsWith(path.join('.', path.sep))) {
 			return relativePath;
 		} else {
