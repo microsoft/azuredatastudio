@@ -31,10 +31,11 @@ export class NotebookLinkHandler {
 
 	/**
 	 * Function to get the link for LinkCalloutDialog or htmlMarkdownConverter
-	 * Always return a relative path given a absolute or relative path, unless
-	 * keep absolute setting is enabled then we don't convert absolute paths to relative paths
-	 * Given a anchor element then we must traverse
-	 * @returns the file link or web link as a string
+	 * When a user inserts a new link via the LinkCalloutDialog it will go through the string case to
+	 * get the absolute path of the file and then will be converted to anchor element that will be called again
+	 * to the object case in which we will find the relative path of the file unless the user has the
+	 * keep absolute setting enabled then we don't convert absolute paths to relative paths
+	 * @returns the file link or web link
 	 */
 	public getLinkUrl(): string {
 		switch (typeof this._link) {
@@ -44,13 +45,16 @@ export class NotebookLinkHandler {
 				if (this._isFile && this._isAbsolutePath && this._configurationService.getValue(keepAbsolutePathConfigName) === true) {
 					return this._link;
 				}
-				// returns the relative path of the target link to the current notebook
+				// sets the string to absolute path to be used to resolve
 				if (this._isFile && !this._isAbsolutePath && !this._isAnchorLink) {
 					const relativePath = (this._link).replace(/\\/g, path.posix.sep);
 					const linkUrl = path.resolve(this._notebookDirectory, relativePath);
 					return linkUrl;
 				}
-				// if link contains anchor or is absolute path then just return the link
+				/**
+				 * We return the absolute path for the link so that it will get used in the as the href for the anchor HTML element
+				 * (in linkCalloutDialog document.execCommand('insertHTML') and therefore will call getLinkURL() with HTMLAnchorElement to then get the relative path
+				*/
 				return this._link;
 			}
 			// cases where we pass the HTMLAnchorElement
@@ -66,10 +70,10 @@ export class NotebookLinkHandler {
 						} else {
 							targetUri = this._notebookUriLink;
 						}
-						// returns relative path of target notebook whether anchored or not
-						if (this._notebookUriLink.fsPath !== this._notebookURI.fsPath) {
+						// returns relative path of target notebook to the current notebook directory
+						if (this._notebookUriLink.fsPath !== this._notebookURI.fsPath && !targetUri?.fragment) {
 							return findPathRelativeToContent(this._notebookDirectory, targetUri);
-						} else if (targetUri?.fragment) {
+						} else {
 							// if the anchor link is to a section in the same notebook then just add the fragment
 							return targetUri.fragment;
 						}

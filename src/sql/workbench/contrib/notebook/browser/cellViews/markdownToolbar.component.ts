@@ -349,12 +349,8 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 				return '';
 			}
 			const parentNode = anchorNode.parentNode as HTMLAnchorElement;
-			if (parentNode?.protocol === 'file:') {
-				// Pathname starts with / per https://developer.mozilla.org/en-US/docs/Web/API/HTMLAnchorElement/pathname so trim it off
-				return parentNode.pathname?.slice(1) || '';
-			} else {
-				return parentNode.href || '';
-			}
+			const linkHandler = new NotebookLinkHandler(this.cellModel?.notebookModel?.notebookUri, parentNode, this._configurationService);
+			return linkHandler.getLinkUrl();
 		} else {
 			const editorControl = this.getCellEditorControl();
 			const selection = editorControl?.getSelection();
