@@ -33,6 +33,8 @@ export class MigrationStatusDialog {
 	private _autoRefreshHandle!: NodeJS.Timeout;
 	private _disposables: vscode.Disposable[] = [];
 
+	private isRefreshing = false;
+
 	constructor(migrations: MigrationContext[], private _filter: AdsMigrationStatus) {
 		this._model = new MigrationStatusDialogModel(migrations);
 		this._dialogObject = azdata.window.createModelViewDialog(loc.MIGRATION_STATUS, 'MigrationControllerDialog', 'wide');
@@ -109,19 +111,16 @@ export class MigrationStatusDialog {
 		}));
 
 		this._refresh = this._view.modelBuilder.button().withProps({
-			iconPath: {
-				light: IconPathHelper.refresh.light,
-				dark: IconPathHelper.refresh.dark
-			},
+			iconPath: IconPathHelper.refresh,
 			iconHeight: '16px',
 			iconWidth: '20px',
 			height: '30px',
 			label: loc.REFRESH_BUTTON_LABEL,
 		}).component();
 
-		this._disposables.push(this._refresh.onDidClick((e) => {
-			this.refreshTable();
-		}));
+		this._disposables.push(
+			this._refresh.onDidClick(
+				async (e) => { await this.refreshTable(); }));
 
 		const flexContainer = this._view.modelBuilder.flexContainer().withProps({
 			width: 900,
@@ -169,7 +168,7 @@ export class MigrationStatusDialog {
 		const classVariable = this;
 		clearInterval(this._autoRefreshHandle);
 		if (interval !== -1) {
-			this._autoRefreshHandle = setInterval(function () { classVariable.refreshTable(); }, interval);
+			this._autoRefreshHandle = setInterval(async function () { await classVariable.refreshTable(); }, interval);
 		}
 	}
 
@@ -447,11 +446,22 @@ export class MigrationStatusDialog {
 	}
 
 	private async refreshTable(): Promise<void> {
-		this._refreshLoader.loading = true;
-		const currentConnection = await azdata.connection.getCurrentConnection();
-		this._model._migrations = await MigrationLocalStorage.getMigrationsBySourceConnections(currentConnection, true);
-		await this.populateMigrationTable();
-		this._refreshLoader.loading = false;
+		if (this.isRefreshing) {
+			return;
+		}
+
+		this.isRefreshing = true;
+		try {
+			this._refreshLoader.loading = true;
+			const currentConnection = await azdata.connection.getCurrentConnection();
+			this._model._migrations = await MigrationLocalStorage.getMigrationsBySourceConnections(currentConnection, true);
+			await this.populateMigrationTable();
+		} catch (e) {
+			console.log(e);
+		} finally {
+			this.isRefreshing = false;
+			this._refreshLoader.loading = false;
+		}
 	}
 
 	private createStatusTable(): azdata.DeclarativeTableComponent {
