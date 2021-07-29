@@ -82,9 +82,9 @@ export class WizardController {
 		});
 
 		await Promise.all(wizardSetupPromises);
-		wizard.onPageChanged(async (pageChangeInfo: azdata.window.WizardPageChangeInfo) => {
+		this.extensionContext.subscriptions.push(this._wizardObject.onPageChanged(async (pageChangeInfo: azdata.window.WizardPageChangeInfo) => {
 			await pages[0].onPageEnter(pageChangeInfo);
-		});
+		}));
 
 		this.extensionContext.subscriptions.push(this._wizardObject.doneButton.onClick(async (e) => {
 			await stateModel.startMigration();

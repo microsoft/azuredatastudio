@@ -560,7 +560,7 @@ export class MigrationCutoverDialog {
 							type: activeBackupSet.backupType,
 							status: activeBackupSet.listOfBackupFiles[0].status,
 							dataUploaded: `${convertByteSizeToReadableUnit(activeBackupSet.listOfBackupFiles[0].dataWritten)}/ ${convertByteSizeToReadableUnit(activeBackupSet.listOfBackupFiles[0].totalSize)}`,
-							copyThroughput: (activeBackupSet.listOfBackupFiles[0].copyThroughput / 1024).toFixed(2),
+							copyThroughput: (activeBackupSet.listOfBackupFiles[0].copyThroughput) ? (activeBackupSet.listOfBackupFiles[0].copyThroughput / 1024).toFixed(2) : '-',
 							backupStartTime: activeBackupSet.backupStartDate,
 							firstLSN: activeBackupSet.firstLSN,
 							lastLSN: activeBackupSet.lastLSN
