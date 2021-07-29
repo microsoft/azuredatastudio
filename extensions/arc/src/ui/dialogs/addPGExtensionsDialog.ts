@@ -17,6 +17,9 @@ export class AddPGExtensionsDialog extends InitializingComponent {
 
 	protected _completionPromise = new Deferred<string | undefined>();
 
+
+	private validExtensions = ['citus', 'pgaudit', 'pgautofailover', 'pg_cron', 'pg_partman', 'plv8', 'postgis', 'postgis_raster', 'postgis_sfcgal', 'postgis_tiger_geocoder', 'tdigest'];
+
 	constructor(protected _model: PostgresModel) {
 		super();
 	}
@@ -28,7 +31,7 @@ export class AddPGExtensionsDialog extends InitializingComponent {
 			this.modelBuilder = view.modelBuilder;
 
 			const info = this.modelBuilder.text().withProps({
-				value: loc.extensionsFunction,
+				value: loc.extensionsAddFunction,
 				CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
 			}).component();
 
@@ -45,7 +48,24 @@ export class AddPGExtensionsDialog extends InitializingComponent {
 				.withProps({
 					value: '',
 					ariaLabel: loc.extensionsAddList,
-					enabled: true
+					enabled: true,
+					validationErrorMessage: loc.extensionsAddErrorrMessage
+				}).withValidation((component) => {
+					if (!component.value) {
+						return true;
+					}
+
+					let validExtension = true;
+
+					let newExtensions = component.value.split(',');
+					newExtensions.forEach(e => {
+						if (!this.validExtensions.includes(e)) {
+							validExtension = false;
+						}
+					});
+
+					return validExtension;
+
 				}).component();
 
 			let formModel = this.modelBuilder.formContainer()
@@ -56,7 +76,8 @@ export class AddPGExtensionsDialog extends InitializingComponent {
 						},
 						{
 							component: this.extensionsListInputBox,
-							title: loc.extensionsAddList
+							title: loc.extensionsAddList,
+							required: true
 						}
 					],
 					title: ''
