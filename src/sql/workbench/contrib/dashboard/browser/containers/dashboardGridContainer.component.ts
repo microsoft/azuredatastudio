@@ -47,31 +47,31 @@ export interface GridModelViewConfig extends GridCellConfig {
 	selector: 'dashboard-grid-container',
 	template: `
 		<div class="fullsize" style="display: flex; flex-direction: column">
-		<div scrollable [horizontalScroll]="${ScrollbarVisibility.Auto}" [verticalScroll]="${ScrollbarVisibility.Auto}">
-		<table class="grid-table">
-			<tr *ngFor="let row of rows" class="grid-table-row">
-				<ng-container *ngFor="let col of cols">
-					<ng-container *ngIf="getContent(row,col) !== undefined">
-						<td class="table-cell" [colSpan]=getColspan(row,col) [rowSpan]=getRowspan(row,col)
-							[width]="getWidgetWidth(row,col)" [height]="getWidgetHeight(row,col)">
+			<table class="grid-table">
+				<div scrollable [horizontalScroll]="${ScrollbarVisibility.Auto}" [verticalScroll]="${ScrollbarVisibility.Auto}">
+					<tr *ngFor="let row of rows" class="grid-table-row">
+						<ng-container *ngFor="let col of cols">
+							<ng-container *ngIf="getContent(row,col) !== undefined">
+								<td class="table-cell" [colSpan]=getColspan(row,col) [rowSpan]=getRowspan(row,col)
+									[width]="getWidgetWidth(row,col)" [height]="getWidgetHeight(row,col)">
 
-							<dashboard-widget-wrapper *ngIf="isWidget(row,col)" [_config]="getWidgetContent(row,col)"
-								style="position:absolute;" [style.width]="getWidgetWidth(row,col)"
-								[style.height]="getWidgetHeight(row,col)">
-							</dashboard-widget-wrapper>
+									<dashboard-widget-wrapper *ngIf="isWidget(row,col)" [_config]="getWidgetContent(row,col)"
+										style="position:absolute;" [style.width]="getWidgetWidth(row,col)"
+										[style.height]="getWidgetHeight(row,col)">
+									</dashboard-widget-wrapper>
 
-							<webview-content *ngIf="isWebview(row,col)" [webviewId]="getWebviewId(row,col)">
-							</webview-content>
+									<webview-content *ngIf="isWebview(row,col)" [webviewId]="getWebviewId(row,col)">
+									</webview-content>
 
-							<modelview-content *ngIf="isModelView(row,col)" [modelViewId]="getModelViewId(row,col)">
-							</modelview-content>
+									<modelview-content *ngIf="isModelView(row,col)" [modelViewId]="getModelViewId(row,col)">
+									</modelview-content>
 
-						</td>
-					</ng-container>
-				</ng-container>
-			</tr>
-		</table>
-		</div>
+								</td>
+							</ng-container>
+						</ng-container>
+					</tr>
+				</div>
+			</table>
 		</div>
 	`,
 	providers: [{ provide: TabChild, useExisting: forwardRef(() => DashboardGridContainer) }]

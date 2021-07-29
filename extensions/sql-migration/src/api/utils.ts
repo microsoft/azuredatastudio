@@ -195,6 +195,12 @@ export function decorate(decorator: (fn: Function, key: string) => Function): Fu
 	};
 }
 
+export function getSessionIdHeader(sessionId: string): { [key: string]: string } {
+	return {
+		'SqlMigrationSessionId': sessionId
+	};
+}
+
 export function getMigrationStatusImage(status: string): IconPath {
 	switch (status) {
 		case 'InProgress':

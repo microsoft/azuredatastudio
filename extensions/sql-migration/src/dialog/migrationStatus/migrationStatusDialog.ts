@@ -485,6 +485,7 @@ export class MigrationStatusDialog {
 		};
 
 		this._statusTable = this._view.modelBuilder.declarativeTable().withProps({
+			ariaLabel: loc.MIGRATION_STATUS,
 			columns: [
 				{
 					displayName: loc.DATABASE,
