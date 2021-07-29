@@ -1,5 +1,11 @@
 # Change Log
 
+## Version 1.31.1
+* Release date: July 29, 2021
+* Release status: General Availability
+## Hotfix Release
+- Fix for [#16436 Database Connection Toolbar Missing](https://github.com/microsoft/azuredatastudio/issues/16436)
+
 ## Version 1.31.0
 * Release date: July 21, 2021
 * Release status: General Availability
