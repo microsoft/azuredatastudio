@@ -236,6 +236,10 @@ export class PostgresExtensionsPage extends DashboardPage {
 			CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
 		}).component();
 
+		if (name === 'citus') {
+			checkBox.enabled = false;
+		}
+
 		this.disposables.push(
 			checkBox.onChanged(() => {
 				if (checkBox.checked) {
