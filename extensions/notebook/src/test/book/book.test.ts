@@ -758,7 +758,9 @@ describe('BooksTreeViewTests', function () {
 				it('openNotebookAsUntitled should open a notebook as untitled file in the editor @UNSTABLE@', async () => {
 					let notebookPath = run.folderPaths.notebook2File;
 					await bookTreeViewProvider.openNotebookAsUntitled(notebookPath);
-					should(azdata.nb.notebookDocuments.find(doc => doc.uri.scheme === 'untitled')).not.be.undefined();
+					const docInfo = azdata.nb.notebookDocuments.map(doc => (`\n\n Notebook path: ${notebookPath} \n\n The document is untitled: ${doc.isUntitled} \n\n Document uri fsPath: ${doc.uri.fsPath}`));
+					let isDocUntitled = azdata.nb.notebookDocuments.findIndex(doc => doc.isUntitled && notebookPath === doc.uri.fsPath) !== -1;
+					should(isDocUntitled).be.true(`The notebook is not opened as untitled ${docInfo}`);
 				});
 
 				it('openExternalLink should open link', async () => {
