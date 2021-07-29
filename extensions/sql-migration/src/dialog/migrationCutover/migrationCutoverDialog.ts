@@ -9,12 +9,13 @@ import { IconPathHelper } from '../../constants/iconPathHelper';
 import { MigrationContext } from '../../models/migrationLocalStorage';
 import { MigrationCutoverDialogModel, MigrationStatus } from './migrationCutoverDialogModel';
 import * as loc from '../../constants/strings';
-import { convertByteSizeToReadableUnit, convertIsoTimeToLocalTime, getSqlServerName, SupportedAutoRefreshIntervals } from '../../api/utils';
+import { convertByteSizeToReadableUnit, convertIsoTimeToLocalTime, getSqlServerName, getMigrationStatusImage, SupportedAutoRefreshIntervals } from '../../api/utils';
 import { EOL } from 'os';
 import { ConfirmCutoverDialog } from './confirmCutoverDialog';
 import { MigrationMode } from '../../models/stateMachine';
 
 const refreshFrequency: SupportedAutoRefreshIntervals = 30000;
+const statusImageSize: number = 14;
 
 export class MigrationCutoverDialog {
 	private _dialogObject!: azdata.window.Dialog;
@@ -35,13 +36,14 @@ export class MigrationCutoverDialog {
 	private _targetServer!: azdata.TextComponent;
 	private _targetVersion!: azdata.TextComponent;
 	private _migrationStatus!: azdata.TextComponent;
+	private _migrationStatusIcon!: azdata.ImageComponent;
 	private _fullBackupFile!: azdata.TextComponent;
 	private _backupLocation!: azdata.TextComponent;
 	private _lastAppliedLSN!: azdata.TextComponent;
 	private _lastAppliedBackupFile!: azdata.TextComponent;
 	private _lastAppliedBackupTakenOn!: azdata.TextComponent;
 	private _fileCount!: azdata.TextComponent;
-	private fileTable!: azdata.TableComponent;
+	private _fileTable!: azdata.TableComponent;
 	private _autoRefreshHandle!: any;
 	private _disposables: vscode.Disposable[] = [];
 
@@ -113,11 +115,12 @@ export class MigrationCutoverDialog {
 					}
 				});
 
-				const migrationStatus = this.createInfoField(loc.MIGRATION_STATUS, '');
+				const migrationStatus = this.createInfoField(loc.MIGRATION_STATUS, '', IconPathHelper.info); // need a placeholder icon
 				const fullBackupFileOn = this.createInfoField(loc.FULL_BACKUP_FILES, '');
 				const backupLocation = this.createInfoField(loc.BACKUP_LOCATION, '');
 
 				this._migrationStatus = migrationStatus.text;
+				this._migrationStatusIcon = migrationStatus.icon!;
 				this._fullBackupFile = fullBackupFileOn.text;
 				this._backupLocation = backupLocation.text;
 
@@ -211,7 +214,7 @@ export class MigrationCutoverDialog {
 					}
 				}).component();
 
-				this.fileTable = view.modelBuilder.table().withProps({
+				this._fileTable = view.modelBuilder.table().withProps({
 					columns: [
 						{
 							value: loc.ACTIVE_BACKUP_FILES,
@@ -257,23 +260,20 @@ export class MigrationCutoverDialog {
 					data: [],
 					width: '1100px',
 					height: '300px',
-					fontSize: '12px'
+					fontSize: '12px',
+					CSSStyles: {
+						'display': 'none',
+					}
 				}).component();
 
 				let formItems = [
 					{ component: this.migrationContainerHeader() },
 					{ component: this._view.modelBuilder.separator().withProps({ width: 1000 }).component() },
 					{ component: flexInfo },
+					{ component: this._view.modelBuilder.separator().withProps({ width: 1000 }).component() },
+					{ component: this._fileCount },
+					{ component: this._fileTable }
 				];
-
-				if (this._shouldDisplayBackupFileTable()) {
-					const onlineMigrationFormItems = [
-						{ component: this._view.modelBuilder.separator().withProps({ width: 1000 }).component() },
-						{ component: this._fileCount },
-						{ component: this.fileTable }
-					];
-					formItems = [...formItems, ...onlineMigrationFormItems];
-				}
 
 				const formBuilder = view.modelBuilder.formContainer().withFormItems(
 					formItems,
@@ -373,7 +373,8 @@ export class MigrationCutoverDialog {
 			width: '150px',
 			enabled: false,
 			CSSStyles: {
-				'font-size': '13px'
+				'font-size': '13px',
+				'display': 'none'
 			}
 		}).component();
 
@@ -384,12 +385,9 @@ export class MigrationCutoverDialog {
 			await this.refreshStatus();
 		}));
 
-		if (this._isProvisioned() && this._isOnlineMigration()) {
-			// _todo: should we just not create the cutover button if offline?
-			headerActions.addItem(this._cutoverButton, {
-				flex: '0'
-			});
-		}
+		headerActions.addItem(this._cutoverButton, {
+			flex: '0'
+		});
 
 		this._cancelButton = this._view.modelBuilder.button().withProps({
 			iconPath: IconPathHelper.cancel,
@@ -398,6 +396,7 @@ export class MigrationCutoverDialog {
 			label: loc.CANCEL_MIGRATION,
 			height: '20px',
 			width: '150px',
+			enabled: false,
 			CSSStyles: {
 				'font-size': '13px'
 			}
@@ -501,16 +500,24 @@ export class MigrationCutoverDialog {
 	}
 
 	private setAutoRefresh(interval: SupportedAutoRefreshIntervals): void {
-		const classVariable = this;
-		clearInterval(this._autoRefreshHandle);
-		if (interval !== -1) {
-			this._autoRefreshHandle = setInterval(function () { classVariable.refreshStatus(); }, interval);
+		const shouldRefresh = (status: string | undefined) => !status || status in ['InProgress', 'Creating', 'Completing', 'Creating'];
+		if (shouldRefresh(this.getMigrationStatus())) {
+			const classVariable = this;
+			clearInterval(this._autoRefreshHandle);
+			if (interval !== -1) {
+				this._autoRefreshHandle = setInterval(function () { classVariable.refreshStatus(); }, interval);
+			}
 		}
 	}
 
-
 	private async refreshStatus(): Promise<void> {
 		try {
+			if (this._isProvisioned() && this._isOnlineMigration()) {
+				this._cutoverButton.updateCssStyles({
+					display: 'inline'
+				});
+			}
+
 			this._refreshLoader.loading = true;
 			this._cutoverButton.enabled = false;
 			this._cancelButton.enabled = false;
@@ -538,11 +545,8 @@ export class MigrationCutoverDialog {
 				targetServerVersion = loc.AZURE_SQL_DATABASE_VIRTUAL_MACHINE;
 			}
 
-			const migrationStatusTextValue = this._model.migrationStatus.properties.migrationStatus ? this._model.migrationStatus.properties.migrationStatus : this._model.migrationStatus.properties.provisioningState;
-
 			let lastAppliedSSN: string;
 			let lastAppliedBackupFileTakenOn: string;
-
 
 			const tableData: ActiveBackupFileSchema[] = [];
 
@@ -578,7 +582,10 @@ export class MigrationCutoverDialog {
 			this._targetServer.value = targetServerName;
 			this._targetVersion.value = targetServerVersion;
 
+			const migrationStatusTextValue = this.getMigrationStatus();
 			this._migrationStatus.value = migrationStatusTextValue ?? '---';
+			this._migrationStatusIcon.iconPath = getMigrationStatusImage(migrationStatusTextValue);
+
 			this._fullBackupFile.value = this._model.migrationStatus?.properties?.migrationStatusDetails?.fullBackupSetInfo?.listOfBackupFiles[0]?.fileName! ?? '-';
 			let backupLocation;
 
@@ -596,12 +603,19 @@ export class MigrationCutoverDialog {
 			this._lastAppliedBackupTakenOn.value = lastAppliedBackupFileTakenOn! ? convertIsoTimeToLocalTime(lastAppliedBackupFileTakenOn).toLocaleString() : '-';
 
 			if (this._shouldDisplayBackupFileTable()) {
+				this._fileCount.updateCssStyles({
+					display: 'inline'
+				});
+				this._fileTable.updateCssStyles({
+					display: 'inline'
+				});
+
 				this._fileCount.value = loc.ACTIVE_BACKUP_FILES_ITEMS(tableData.length);
 
 				// Sorting files in descending order of backupStartTime
 				tableData.sort((file1, file2) => new Date(file1.backupStartTime) > new Date(file2.backupStartTime) ? - 1 : 1);
 
-				this.fileTable.data = tableData.map((row) => {
+				this._fileTable.data = tableData.map((row) => {
 					return [
 						row.fileName,
 						row.type,
@@ -631,9 +645,10 @@ export class MigrationCutoverDialog {
 		this._refreshLoader.loading = false;
 	}
 
-	private createInfoField(label: string, value: string): {
+	private createInfoField(label: string, value: string, iconPath?: azdata.IconPath): {
 		flexContainer: azdata.FlexContainer,
-		text: azdata.TextComponent
+		text: azdata.TextComponent,
+		icon?: azdata.ImageComponent
 	} {
 		const flexContainer = this._view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'column'
@@ -660,15 +675,49 @@ export class MigrationCutoverDialog {
 				'font-size': '12px'
 			}
 		}).component();
-		flexContainer.addItem(textComponent);
-		return {
-			flexContainer: flexContainer,
-			text: textComponent
-		};
+
+		if (iconPath) {
+			const iconComponent = this._view.modelBuilder.image()
+				.withProps({
+					iconPath: (iconPath !== IconPathHelper.info) ? iconPath : undefined, // info icon is a placeholder
+					iconHeight: statusImageSize,
+					iconWidth: statusImageSize,
+					height: statusImageSize,
+					width: statusImageSize,
+					CSSStyles: {
+						'margin': '6px 3px 0 0',
+						'padding': '0'
+					}
+				}).component();
+
+			const iconTextComponent = this._view.modelBuilder.flexContainer()
+				.withItems([
+					iconComponent,
+					textComponent
+				]).withProps({
+					CSSStyles: {
+						'margin': '0',
+						'padding': '0'
+					},
+					display: 'inline-flex'
+				}).component();
+			flexContainer.addItem(iconTextComponent);
+			return {
+				flexContainer: flexContainer,
+				text: textComponent,
+				icon: iconComponent
+			};
+		} else {
+			flexContainer.addItem(textComponent);
+			return {
+				flexContainer: flexContainer,
+				text: textComponent,
+			};
+		}
 	}
 
 	private _isProvisioned(): boolean {
-		return this._model._migration.migrationContext.properties.provisioningState === 'Succeeded';
+		return this._model._migration.migrationContext.properties.provisioningState === 'Succeeded' || this._model._migration.migrationContext.properties.migrationStatus === 'Completing';
 	}
 
 	private _isOnlineMigration(): boolean {
@@ -685,6 +734,10 @@ export class MigrationCutoverDialog {
 
 	private _shouldDisplayBackupFileTable(): boolean {
 		return this._isProvisioned() && this._isOnlineMigration() && !this._isBlobMigration();
+	}
+
+	private getMigrationStatus(): string {
+		return this._model._migration.migrationContext.properties.migrationStatus ?? this._model._migration.migrationContext.properties.provisioningState;
 	}
 }
 

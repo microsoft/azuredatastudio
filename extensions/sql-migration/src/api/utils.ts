@@ -3,7 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { CategoryValue, DropDownComponent } from 'azdata';
+import { CategoryValue, DropDownComponent, IconPath } from 'azdata';
+import { IconPathHelper } from '../constants/iconPathHelper';
 import { DAYS, HRS, MINUTE, SEC } from '../constants/strings';
 import { AdsMigrationStatus } from '../dialog/migrationStatus/migrationStatusDialogModel';
 import { MigrationContext } from '../models/migrationLocalStorage';
@@ -192,4 +193,22 @@ export function decorate(decorator: (fn: Function, key: string) => Function): Fu
 
 		descriptor[fnKey] = decorator(fn, key);
 	};
+}
+
+export function getMigrationStatusImage(status: string): IconPath {
+	switch (status) {
+		case 'InProgress':
+			return IconPathHelper.inProgressMigration;
+		case 'Succeeded':
+			return IconPathHelper.completedMigration;
+		case 'Creating':
+			return IconPathHelper.notStartedMigration;
+		case 'Completing':
+			return IconPathHelper.completingCutover;
+		case 'Canceling':
+			return IconPathHelper.cancel;
+		case 'Failed':
+		default:
+			return IconPathHelper.error;
+	}
 }
