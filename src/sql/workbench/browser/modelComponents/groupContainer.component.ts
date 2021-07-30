@@ -25,15 +25,18 @@ import { ILogService } from 'vs/platform/log/common/log';
 		<div *ngIf="hasHeader()" [class]="getHeaderClass()" (click)="changeState()" (keydown)="onKeyDown($event)" [tabindex]="isCollapsible()? 0 : -1" [attr.role]="isCollapsible() ? 'button' : null" [attr.aria-expanded]="isCollapsible() ? !collapsed : null">
 				{{_containerLayout.header}}
 		</div>
-		<div #container *ngIf="items" class="modelview-group-container" [ngStyle]="CSSStyles">
-			<ng-container *ngFor="let item of items">
-			<div class="modelview-group-row" >
-				<div  class="modelview-group-cell">
-				<model-component-wrapper  [descriptor]="item.descriptor" [modelStore]="modelStore" >
-				</model-component-wrapper>
+		<!-- This extra is needed so that the expanded state of the header is updated correctly. See
+		<div>
+			<div #container *ngIf="items" class="modelview-group-container" [ngStyle]="CSSStyles">
+				<ng-container *ngFor="let item of items">
+				<div class="modelview-group-row" >
+					<div  class="modelview-group-cell">
+					<model-component-wrapper  [descriptor]="item.descriptor" [modelStore]="modelStore" >
+					</model-component-wrapper>
+					</div>
 				</div>
+				</ng-container>
 			</div>
-			</ng-container>
 		</div>
 	`
 })
