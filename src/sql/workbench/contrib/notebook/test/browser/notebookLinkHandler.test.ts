@@ -118,5 +118,11 @@ suite('Noteboook Link Handler', function (): void {
 
 		result = new NotebookLinkHandler(notebookUri, Object.assign(document.createElement('a'), { href: '/tmp/inner/stuff.png' }), configurationService);
 		assert.strictEqual(result.getLinkUrl(), `.${path.sep}inner${path.sep}stuff.png`, 'Basic link test below folder failed');
+
+		result = new NotebookLinkHandler(notebookUri, Object.assign(document.createElement('a'), { href: '/tmp/my stuff.png' }), configurationService);
+		assert.strictEqual(result.getLinkUrl(), `.${path.sep}my%20stuff.png`, 'Basic link test with space filename failed');
+
+		result = new NotebookLinkHandler(notebookUri, Object.assign(document.createElement('a'), { href: '/tmp/my%20stuff.png' }), configurationService);
+		assert.strictEqual(result.getLinkUrl(), `.${path.sep}my%20stuff.png`, 'Basic link test with space filename failed');
 	});
 });

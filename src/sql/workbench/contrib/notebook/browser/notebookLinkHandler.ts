@@ -78,7 +78,7 @@ export class NotebookLinkHandler {
 				let targetUri: URI;
 				// Does not convert absolute path to relative path if keep Absolute Path setting is enabled
 				if (this.isAbsolutePath && this._configurationService.getValue(keepAbsolutePathConfigName) === true) {
-					return this._href;
+					return escape(this._href);
 				} else {
 					if (this._isAnchorLink) {
 						targetUri = this.getUriAnchorLink(this._link, this._notebookURI);
