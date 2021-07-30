@@ -1235,8 +1235,7 @@ export interface ExtHostDocumentsAndEditorsShape {
 export interface ExtHostTreeViewsShape {
 	// {{SQL CARBON EDIT}}
 	$getChildren(treeViewId: string, treeItemHandle?: string): Promise<sqlITreeItem[]>;
-	// {{SQL CARBON EDIT}}
-	$onDrop?(treeViewId: string, treeDataTransfer: TreeDataTransferDTO, newParentTreeItemHandle: string): Promise<void>;
+	$onDrop(treeViewId: string, treeDataTransfer: TreeDataTransferDTO, newParentTreeItemHandle: string): Promise<void>;
 	$setExpanded(treeViewId: string, treeItemHandle: string, expanded: boolean): void;
 	$setSelection(treeViewId: string, treeItemHandles: string[]): void;
 	$setVisible(treeViewId: string, visible: boolean): void;
