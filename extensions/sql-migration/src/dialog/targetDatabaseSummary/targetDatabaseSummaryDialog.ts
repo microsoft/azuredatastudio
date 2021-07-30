@@ -136,6 +136,7 @@ export class TargetDatabaseSummaryDialog {
 			});
 
 			const databaseTable: azdata.DeclarativeTableComponent = this._view.modelBuilder.declarativeTable().withProps({
+				ariaLabel: constants.DATABASE_TO_BE_MIGRATED,
 				columns: columns,
 				dataValues: tableRows,
 				width: this._tableLength

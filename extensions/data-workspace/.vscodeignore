@@ -1,5 +1,7 @@
-coverageConfig.json
+coverConfig.json
 coverage
 src
 tsconfig.json
 yarn.lock
+out
+extension.webpack.config.js

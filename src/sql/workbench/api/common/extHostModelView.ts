@@ -1377,6 +1377,13 @@ class TextComponentWrapper extends ComponentWrapper implements azdata.TextCompon
 	public set headingLevel(headingLevel: azdata.HeadingLevel | undefined) {
 		this.setProperty('headingLevel', headingLevel);
 	}
+
+	public get textType(): azdata.TextType | undefined {
+		return this.properties['textType'];
+	}
+	public set textType(type: azdata.TextType | undefined) {
+		this.setProperty('textType', type);
+	}
 }
 
 class ImageComponentWrapper extends ComponentWithIconWrapper implements azdata.ImageComponentProperties {

@@ -353,6 +353,7 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 			ariaLabel: constants.REFRESH_KEY2,
 		}).component();
 		this._authKeyTable = this._view.modelBuilder.declarativeTable().withProps({
+			ariaLabel: constants.DATABASE_MIGRATION_SERVICE_AUTHENTICATION_KEYS,
 			columns: [
 				{
 					displayName: constants.NAME,
@@ -463,21 +464,24 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 					this.migrationStateModel._targetSubscription,
 					this.migrationStateModel._sqlMigrationService.properties.resourceGroup,
 					this.migrationStateModel._sqlMigrationService.location,
-					this.migrationStateModel._sqlMigrationService.name);
+					this.migrationStateModel._sqlMigrationService.name,
+					this.migrationStateModel._sessionId);
 				this.migrationStateModel._sqlMigrationService = migrationService;
 				const migrationServiceMonitoringStatus = await getSqlMigrationServiceMonitoringData(
 					this.migrationStateModel._azureAccount,
 					this.migrationStateModel._targetSubscription,
 					this.migrationStateModel._sqlMigrationService.properties.resourceGroup,
 					this.migrationStateModel._sqlMigrationService.location,
-					this.migrationStateModel._sqlMigrationService!.name);
+					this.migrationStateModel._sqlMigrationService!.name,
+					this.migrationStateModel._sessionId);
 				this.migrationStateModel._nodeNames = migrationServiceMonitoringStatus.nodes.map(node => node.nodeName);
 				const migrationServiceAuthKeys = await getSqlMigrationServiceAuthKeys(
 					this.migrationStateModel._azureAccount,
 					this.migrationStateModel._targetSubscription,
 					this.migrationStateModel._sqlMigrationService.properties.resourceGroup,
 					this.migrationStateModel._sqlMigrationService.location,
-					this.migrationStateModel._sqlMigrationService!.name
+					this.migrationStateModel._sqlMigrationService!.name,
+					this.migrationStateModel._sessionId
 				);
 
 				this.migrationStateModel._nodeNames = migrationServiceMonitoringStatus.nodes.map((node) => {
