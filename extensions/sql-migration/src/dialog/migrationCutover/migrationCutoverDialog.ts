@@ -508,6 +508,12 @@ export class MigrationCutoverDialog {
 			errors.push(this._model.migrationStatus.properties.migrationFailureError?.message);
 			errors.push(this._model.migrationStatus.properties.migrationStatusDetails?.fileUploadBlockingErrors ?? []);
 			errors.push(this._model.migrationStatus.properties.migrationStatusDetails?.restoreBlockingReason);
+			errors.push(JSON.stringify(
+				{
+					'async-operation-details': this._model.migrationOpStatus,
+					'details': this._model.migrationStatus
+				}
+				, null, '\t'));
 			this._dialogObject.message = {
 				text: errors.filter(e => e !== undefined).join(EOL),
 				level: (this._model.migrationStatus.properties.migrationStatus === MigrationStatus.InProgress || this._model.migrationStatus.properties.migrationStatus === 'Completing') ? azdata.window.MessageLevel.Warning : azdata.window.MessageLevel.Error
