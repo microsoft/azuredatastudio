@@ -7,6 +7,7 @@ import { URI } from 'vs/base/common/uri';
 import * as path from 'vs/base/common/path';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { replaceInvalidLinkPath } from 'sql/workbench/contrib/notebook/common/utils';
+import { isWindows } from 'vs/base/common/platform';
 
 const keepAbsolutePathConfigName = 'notebook.keepAbsolutePath';
 
@@ -32,7 +33,7 @@ export class NotebookLinkHandler {
 			// HTMLAnchorElement
 			// windows files need to use the link.href instead as it contains the file:// prefix
 			// which enables us to get the proper relative path
-			if (process.platform === 'win32') {
+			if (isWindows) {
 				this._href = this._link.href;
 			} else {
 				this._href = this._link.attributes['href']?.nodeValue;
