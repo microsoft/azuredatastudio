@@ -184,36 +184,33 @@ export class AzTool implements azExt.IAzApi {
 	 */
 	public async executeCommand<R>(args: string[], additionalEnvVars?: azExt.AdditionalEnvVars): Promise<azExt.AzOutput<R>> {
 		try {
-			// JSON OUTPUT
 			const result = await executeAzCommand(`"${this._path}"`, args.concat(['--output', 'json']), additionalEnvVars);
 
-			const output = JSON.parse(result.stdout);
+			let stdout = <R><unknown>result.stdout;
+			let stderr = <string[]><unknown>result.stderr;
+
+			try {
+				// Automatically try parsing the JSON. This is expected to fail for some az commands such as resource delete.
+				stdout = JSON.parse(result.stdout);
+			} catch (err) {
+				// If the output was not pure JSON, catch the error and log it here.
+				Logger.log(loc.azOutputParseErrorCaught(args.concat(['--output', 'json']).toString()));
+			}
+
 			return {
-				stdout: <R>output,
-				stderr: <string[]>output
+				stdout: <R>stdout,
+				stderr: <string[]>stderr
 			};
 		} catch (err) {
 			if (err instanceof ExitCodeError) {
 				try {
-					// For az internal errors the output is JSON and so we need to do some extra parsing here
-					// to get the correct stderr out. The actual value we get is something like
-					// ERROR: { stderr: '...' }
-					// so we also need to trim off the start that isn't a valid JSON blob
-					err.stderr = JSON.parse(err.stderr.substring(err.stderr.indexOf('{'), err.stderr.indexOf('}') + 1)).stderr;
-				} catch {
-					// it means this was probably some other generic error (such as command not being found)
-					// check if az still exists if it does then rethrow the original error if not then emit a new specific error.
-					try {
-						await fs.promises.access(this._path);
-						//this.path exists
-					} catch (e) {
-						// this.path does not exist
-						await vscode.commands.executeCommand('setContext', azFound, false);
-						throw new NoAzureCLIError();
-					}
-					throw err; // rethrow the original error
+					await fs.promises.access(this._path);
+					//this.path exists
+				} catch (e) {
+					// this.path does not exist
+					await vscode.commands.executeCommand('setContext', azFound, false);
+					throw new NoAzureCLIError();
 				}
-
 			}
 			throw err;
 		}

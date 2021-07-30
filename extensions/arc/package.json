@@ -190,7 +190,7 @@
                           "editable": false,
                           "options": {
                             "source": {
-                              "providerId": "arc.controller.config.profiles",
+                              "providerId": "azcli.arc.controller.config.profiles",
                               "loadingText": "%arc.data.controller.cluster.config.profile.loading%",
                               "loadingCompletedText": "%arc.data.controller.cluster.config.profile.loadingcompleted%"
                             },
@@ -288,6 +288,21 @@
                           "description": "%arc.sql.storage-class.dc.description%",
                           "variableName": "AZDATA_NB_VAR_ARC_DATA_CONTROLLER_STORAGE_CLASS",
                           "type": "kube_storage_class",
+                          "required": true
+                        },
+                        {
+                          "label": "%arc.data.controller.infrastructure%",
+                          "defaultValue": "azure",
+                          "variableName": "AZDATA_NB_VAR_ARC_INFRASTRUCTURE",
+                          "type": "infrastructure",
+                          "infrastructure": [
+                            "azure",
+                            "gcp",
+                            "aws",
+                            "alibaba",
+                            "onpremises",
+                            "other"
+                          ],
                           "required": true
                         }
                       ]
@@ -507,6 +522,12 @@
                           "type": "readonly_text",
                           "isEvaluated": true,
                           "defaultValue": "$(AZDATA_NB_VAR_ARC_DATA_CONTROLLER_NAME)"
+                        },
+                        {
+                          "label": "%arc.data.controller.summary.data.controller.infrastructure%",
+                          "type": "readonly_text",
+                          "isEvaluated": true,
+                          "defaultValue": "$(AZDATA_NB_VAR_ARC_INFRASTRUCTURE)"
                         }
                       ]
                     }

@@ -32,3 +32,4 @@ export const requiredArcDataVersionNotAvailable = (requiredVersion: string, curr
 export const unsupportedArcDataVersion = (requiredVersion: string, currentVersion: string): string => localize('az.unsupportedArcDataVersion', "Your downloaded version {1} of the Azure CLI extension 'arcdata' is not yet supported. The latest version is is {0}. Install the correct version manually from [here](https://docs.microsoft.com/en-us/azure/azure-arc/data/install-arcdata-extension) and then restart Azure Data Studio.", requiredVersion, currentVersion);
 export const doNotAskAgain = localize('az.doNotAskAgain', "Don't Ask Again");
 export const askLater = localize('az.askLater', "Ask Later");
+export const azOutputParseErrorCaught = (command: string): string => localize('az.azOutputParseErrorCaught', "An error occurred while parsing the output of az command: {0}. The output is not JSON.", command);
