@@ -28,18 +28,18 @@ export interface BookTreeItemFormat {
 	title: string;
 	contentPath: string;
 	root: string;
-	tableOfContents: IJupyterBookToc;
+	//tableOfContents: IJupyterBookToc;
 	page: any;
 	type: BookTreeItemType;
 	treeItemCollapsibleState: number;
 	isUntitled: boolean;
 	version?: BookVersion;
 	parent?: BookTreeItem;
-	children?: BookTreeItem[];
+	children?: string;
 }
 
 export class BookTreeItem extends vscode.TreeItem {
-	private _sections: JupyterBookSection[] | undefined;
+	private _sections: string | undefined;
 	private _uri: string | undefined;
 	private _previousUri: string;
 	private _nextUri: string;
@@ -48,11 +48,12 @@ export class BookTreeItem extends vscode.TreeItem {
 	private _rootContentPath: string;
 	private _tableOfContentsPath: string;
 
-	constructor(public book: BookTreeItemFormat, icons: any) {
+	constructor(public book: BookTreeItemFormat, icons: any, tableOfContents: IJupyterBookToc) {
 		super(book.title, book.treeItemCollapsibleState);
 		if (book.type === BookTreeItemType.Book) {
 			this.collapsibleState = book.treeItemCollapsibleState;
-			this._sections = book.page;
+			this._sections = JSON.stringify(this.book.page);
+			// this._sections = Object.assign({}, this._sections);
 			if (book.isUntitled) {
 				this.contextValue = BookTreeItemType.providedBook;
 			} else {
@@ -61,7 +62,7 @@ export class BookTreeItem extends vscode.TreeItem {
 		} else {
 			if (book.page && book.page.sections && book.page.sections.length > 0) {
 				this.contextValue = BookTreeItemType.section;
-			} else if (book.type === BookTreeItemType.Notebook && !book.tableOfContents.sections) {
+			} else if (book.type === BookTreeItemType.Notebook && !tableOfContents.sections) {
 				if (book.isUntitled) {
 					this.contextValue = BookTreeItemType.unsavedNotebook;
 				} else {
@@ -73,7 +74,7 @@ export class BookTreeItem extends vscode.TreeItem {
 			} else {
 				this.contextValue = book.type === BookTreeItemType.Notebook ? (isBookItemPinned(book.contentPath) ? BookTreeItemType.pinnedNotebook : getNotebookType(book)) : BookTreeItemType.Markdown;
 			}
-			this.setPageVariables();
+			this.setPageVariables(tableOfContents);
 			this.setCommand();
 		}
 		this.iconPath = icons;
@@ -84,7 +85,7 @@ export class BookTreeItem extends vscode.TreeItem {
 		}
 		else {
 			// if it's a section, book or a notebook's book then we set the table of contents path.
-			if (this.book.type === BookTreeItemType.Book || this.contextValue === BookTreeItemType.section || this.contextValue === BookTreeItemType.savedBookNotebook || book.tableOfContents.sections && book.type === BookTreeItemType.Markdown) {
+			if (this.book.type === BookTreeItemType.Book || this.contextValue === BookTreeItemType.section || this.contextValue === BookTreeItemType.savedBookNotebook || tableOfContents.sections && book.type === BookTreeItemType.Markdown) {
 				this._tableOfContentsPath = getTocPath(this.book.version, this.book.root);
 			}
 			this._rootContentPath = getContentPath(this.book.version, this.book.root, '');
@@ -93,19 +94,20 @@ export class BookTreeItem extends vscode.TreeItem {
 		}
 	}
 
-	private setPageVariables(): void {
+	private setPageVariables(tableOfContents: IJupyterBookToc): void {
 		this.collapsibleState = (this.book.page.sections || this.book.page.subsections) && this.book.page.expand_sections ?
 			vscode.TreeItemCollapsibleState.Expanded :
 			this.book.page.sections || this.book.page.subsections ?
 				vscode.TreeItemCollapsibleState.Collapsed :
 				vscode.TreeItemCollapsibleState.None;
-		this._sections = this.book.page.sections || this.book.page.subsections;
+		this._sections = JSON.stringify(this.book.page.sections);
+		// this._sections = Object.assign({}, this._sections);
 		this._uri = this.book.page.file ? this.book.page.file?.replace(/\\/g, '/') : this.book.page.url?.replace(/\\/g, '/');
 
-		if (this.book.tableOfContents.sections) {
-			let index = (this.book.tableOfContents.sections.indexOf(this.book.page));
-			this.setPreviousUri(index);
-			this.setNextUri(index);
+		if (tableOfContents.sections) {
+			let index = (tableOfContents.sections.findIndex((entry) => entry.file === this.book.page.file));
+			this.setPreviousUri(index, tableOfContents);
+			this.setNextUri(index, tableOfContents);
 		}
 	}
 
@@ -120,13 +122,13 @@ export class BookTreeItem extends vscode.TreeItem {
 		}
 	}
 
-	private setPreviousUri(index: number): void {
+	private setPreviousUri(index: number, tableOfContents: IJupyterBookToc): void {
 		let i = --index;
 		while (i > -1) {
 			let pathToNotebook: string;
-			if (this.book.tableOfContents.sections[i].file) {
+			if (tableOfContents.sections[i].file) {
 				// The Notebook editor expects a posix path for the resource (it will still resolve to the correct fsPath based on OS)
-				pathToNotebook = getContentPath(this.book.version, this.book.root, this.book.tableOfContents.sections[i].file);
+				pathToNotebook = getContentPath(this.book.version, this.book.root, tableOfContents.sections[i].file);
 				pathToNotebook = pathToNotebook.concat('.ipynb');
 			}
 			// eslint-disable-next-line no-sync
@@ -138,13 +140,13 @@ export class BookTreeItem extends vscode.TreeItem {
 		}
 	}
 
-	private setNextUri(index: number): void {
+	private setNextUri(index: number, tableOfContents: IJupyterBookToc): void {
 		let i = ++index;
-		while (i < this.book.tableOfContents.sections.length) {
+		while (i < tableOfContents.sections.length) {
 			let pathToNotebook: string;
-			if (this.book.tableOfContents.sections[i].file) {
+			if (tableOfContents.sections[i].file) {
 				// The Notebook editor expects a posix path for the resource (it will still resolve to the correct fsPath based on OS)
-				pathToNotebook = getContentPath(this.book.version, this.book.root, this.book.tableOfContents.sections[i].file);
+				pathToNotebook = getContentPath(this.book.version, this.book.root, tableOfContents.sections[i].file);
 				pathToNotebook = pathToNotebook.concat('.ipynb');
 			}
 			// eslint-disable-next-line no-sync
@@ -176,11 +178,11 @@ export class BookTreeItem extends vscode.TreeItem {
 		return this._tableOfContentsPath;
 	}
 
-	public get tableOfContents(): IJupyterBookToc {
-		return this.book.tableOfContents;
-	}
+	// public get tableOfContents(): IJupyterBookToc {
+	// 	return this.tableOfContents;
+	// }
 
-	public get sections(): JupyterBookSection[] {
+	public get sections(): string | undefined {
 		return this._sections;
 	}
 
@@ -198,19 +200,19 @@ export class BookTreeItem extends vscode.TreeItem {
 		this._uri = uri;
 	}
 
-	public set sections(sections: JupyterBookSection[]) {
-		this._sections = sections;
-	}
+	// public set sections(sections: JupyterBookSection[]) {
+	// 	this._sections = sections;
+	// }
 
 	public set tableOfContentsPath(tocPath: string) {
 		this._tableOfContentsPath = tocPath;
 	}
 
-	public get children(): BookTreeItem[] | undefined {
+	public get children(): string | undefined {
 		return this.book.children;
 	}
 
-	public set children(children: BookTreeItem[] | undefined) {
+	public set children(children: string | undefined) {
 		this.book.children = children;
 	}
 
@@ -219,7 +221,7 @@ export class BookTreeItem extends vscode.TreeItem {
 	}
 
 	public set parent(parent: BookTreeItem) {
-		this.book.parent = parent;
+		this.book.parent = Object.assign({}, parent);
 	}
 
 	/**

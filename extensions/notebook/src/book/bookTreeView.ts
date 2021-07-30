@@ -29,7 +29,7 @@ interface BookSearchResults {
 	bookPaths: string[];
 }
 
-export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeItem>, azdata.nb.NavigationProvider {
+export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeItem>, azdata.nb.NavigationProvider, vscode.DragAndDropController<BookTreeItem> {
 	private _onDidChangeTreeData: vscode.EventEmitter<BookTreeItem | undefined> = new vscode.EventEmitter<BookTreeItem | undefined>();
 	readonly onDidChangeTreeData: vscode.Event<BookTreeItem | undefined> = this._onDidChangeTreeData.event;
 	private _extensionContext: vscode.ExtensionContext;
@@ -54,7 +54,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		this.prompter = new CodeAdapter();
 		this._bookTrustManager = new BookTrustManager(this.books);
 		this.bookTocManager = new BookTocManager();
-		this._bookViewer = vscode.window.createTreeView(this.viewId, { showCollapseAll: true, treeDataProvider: this });
+		this._bookViewer = vscode.window.createTreeView(this.viewId, { showCollapseAll: true, treeDataProvider: this, dragAndDropController: this });
 		this._bookViewer.onDidChangeVisibility(async e => {
 			await this.initialized;
 			// Whenever the viewer changes visibility then try and reveal the currently active document
@@ -341,7 +341,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 					const sectionToOpen = bookRoot.findChildSection(urlToOpen);
 					urlPath = sectionToOpen?.file;
 				} else {
-					urlPath = this.currentBook.bookItems[0].tableOfContents.sections[0].file;
+					urlPath = this.currentBook.bookItems[0].book.page[0].file;
 				}
 			}
 			if (urlPath) {
@@ -715,4 +715,15 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		}
 		return Promise.resolve(result);
 	}
+
+	async onDrop(sources: vscode.TreeDataTransfer, target: BookTreeItem): Promise<void> {
+		let treeItems = JSON.parse(await sources.items.get('text/treeitems')!.asString());
+		if (treeItems) {
+
+		}
+	}
+
+	dispose(): void { }
+
+	supportedTypes = ['text/treeitems'];
 }
