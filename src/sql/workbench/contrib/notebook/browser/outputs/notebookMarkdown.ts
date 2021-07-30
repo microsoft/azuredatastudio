@@ -144,7 +144,7 @@ export class NotebookMarkdownRenderer {
 					.replace(/>/g, '&gt;')
 					.replace(/"/g, '&quot;')
 					.replace(/'/g, '&#39;');
-				return `<a href=${href} data-href="${href}" title="${title || href}">${text}</a>`;
+				return `<a href=${href} data-href="${href}" title="${title || href} is-absolute=${hrefAbsolute}">${text}</a>`;
 			}
 		};
 		renderer.paragraph = (text): string => {
