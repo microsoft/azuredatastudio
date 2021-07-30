@@ -3172,7 +3172,7 @@ declare module 'azdata' {
 	 * Properties representing the card component, can be used
 	 * when using ModelBuilder to create the component
 	 */
-	export interface CardProperties extends ComponentProperties, ComponentWithIconProperties {
+	export interface CardProperties extends ComponentWithIconProperties {
 		label: string;
 		value?: string | undefined;
 		actions?: ActionDescriptor[] | undefined;
@@ -3402,7 +3402,7 @@ declare module 'azdata' {
 		requiredIndicator?: boolean | undefined;
 	}
 
-	export interface ImageComponentProperties extends ComponentProperties, ComponentWithIconProperties {
+	export interface ImageComponentProperties extends ComponentWithIconProperties {
 	}
 
 	export interface GroupContainerProperties extends ComponentProperties {
@@ -3501,7 +3501,7 @@ declare module 'azdata' {
 		isAutoResizable: boolean;
 	}
 
-	export interface ButtonProperties extends ComponentProperties, ComponentWithIconProperties {
+	export interface ButtonProperties extends ComponentWithIconProperties {
 		/**
 		 * The label for the button
 		 */
