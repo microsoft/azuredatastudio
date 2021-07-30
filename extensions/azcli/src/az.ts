@@ -186,8 +186,8 @@ export class AzTool implements azExt.IAzApi {
 		try {
 			const result = await executeAzCommand(`"${this._path}"`, args.concat(['--output', 'json']), additionalEnvVars);
 
-			let stdout = <R><unknown>result.stdout;
-			let stderr = <string[]><unknown>result.stderr;
+			let stdout = <unknown>result.stdout;
+			let stderr = <unknown>result.stderr;
 
 			try {
 				// Automatically try parsing the JSON. This is expected to fail for some az commands such as resource delete.
