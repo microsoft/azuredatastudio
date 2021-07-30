@@ -15,7 +15,7 @@ import { IJupyterBookToc, JupyterBookSection } from '../contracts/content';
 import { convertFrom, getContentPath, BookVersion } from './bookVersionHandler';
 import { debounce, IPinnedNotebook } from '../common/utils';
 import { Deferred } from '../common/promise';
-import { parse } from 'vscode-languageclient/lib/utils/uuid';
+
 const fsPromises = fileServices.promises;
 const content = 'content';
 
@@ -229,11 +229,10 @@ export class BookModel {
 	}
 
 	public async getSections(element: BookTreeItem): Promise<BookTreeItem[]> {
-		//let tableOfContents: IJupyterBookToc = element.tableOfContents;
 		const fileContents = await fsPromises.readFile(element.tableOfContentsPath, 'utf-8');
 		let tableOfContents: any = yaml.safeLoad(fileContents.toString());
 		const parsedTOC: IJupyterBookToc = { sections: this.parseJupyterSections(this._bookVersion, tableOfContents) };
-		let sections: JupyterBookSection[] = JSON.parse(element.sections);
+		let sections: JupyterBookSection[] = element.sections;
 		let root: string = element.root;
 		let book: BookTreeItemFormat = element.book;
 		let treeItems: BookTreeItem[] = [];

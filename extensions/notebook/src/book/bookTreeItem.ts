@@ -39,7 +39,7 @@ export interface BookTreeItemFormat {
 }
 
 export class BookTreeItem extends vscode.TreeItem {
-	private _sections: string | undefined;
+	private _sections: JupyterBookSection[] | undefined;
 	private _uri: string | undefined;
 	private _previousUri: string;
 	private _nextUri: string;
@@ -50,10 +50,10 @@ export class BookTreeItem extends vscode.TreeItem {
 
 	constructor(public book: BookTreeItemFormat, icons: any) {
 		super(book.title, book.treeItemCollapsibleState);
+		const parsedTOC = JSON.parse(this.book.tableOfContents);
 		if (book.type === BookTreeItemType.Book) {
 			this.collapsibleState = book.treeItemCollapsibleState;
-			this._sections = JSON.stringify(this.book.page);
-			// this._sections = Object.assign({}, this._sections);
+			this._sections = this.book.page;
 			if (book.isUntitled) {
 				this.contextValue = BookTreeItemType.providedBook;
 			} else {
@@ -62,7 +62,7 @@ export class BookTreeItem extends vscode.TreeItem {
 		} else {
 			if (book.page && book.page.sections && book.page.sections.length > 0) {
 				this.contextValue = BookTreeItemType.section;
-			} else if (book.type === BookTreeItemType.Notebook && !tableOfContents.sections) {
+			} else if (book.type === BookTreeItemType.Notebook && !parsedTOC.sections) {
 				if (book.isUntitled) {
 					this.contextValue = BookTreeItemType.unsavedNotebook;
 				} else {
@@ -74,7 +74,7 @@ export class BookTreeItem extends vscode.TreeItem {
 			} else {
 				this.contextValue = book.type === BookTreeItemType.Notebook ? (isBookItemPinned(book.contentPath) ? BookTreeItemType.pinnedNotebook : getNotebookType(book)) : BookTreeItemType.Markdown;
 			}
-			this.setPageVariables(tableOfContents);
+			this.setPageVariables(parsedTOC);
 			this.setCommand();
 		}
 		this.iconPath = icons;
@@ -85,7 +85,7 @@ export class BookTreeItem extends vscode.TreeItem {
 		}
 		else {
 			// if it's a section, book or a notebook's book then we set the table of contents path.
-			if (this.book.type === BookTreeItemType.Book || this.contextValue === BookTreeItemType.section || this.contextValue === BookTreeItemType.savedBookNotebook || tableOfContents.sections && book.type === BookTreeItemType.Markdown) {
+			if (this.book.type === BookTreeItemType.Book || this.contextValue === BookTreeItemType.section || this.contextValue === BookTreeItemType.savedBookNotebook || parsedTOC.sections && book.type === BookTreeItemType.Markdown) {
 				this._tableOfContentsPath = getTocPath(this.book.version, this.book.root);
 			}
 			this._rootContentPath = getContentPath(this.book.version, this.book.root, '');
@@ -100,8 +100,7 @@ export class BookTreeItem extends vscode.TreeItem {
 			this.book.page.sections || this.book.page.subsections ?
 				vscode.TreeItemCollapsibleState.Collapsed :
 				vscode.TreeItemCollapsibleState.None;
-		this._sections = JSON.stringify(this.book.page.sections);
-		// this._sections = Object.assign({}, this._sections);
+		this._sections = this.book.page.sections;
 		this._uri = this.book.page.file ? this.book.page.file?.replace(/\\/g, '/') : this.book.page.url?.replace(/\\/g, '/');
 
 		if (tableOfContents.sections) {
@@ -178,11 +177,11 @@ export class BookTreeItem extends vscode.TreeItem {
 		return this._tableOfContentsPath;
 	}
 
-	// public get tableOfContents(): IJupyterBookToc {
-	// 	return this.tableOfContents;
-	// }
+	public get tableOfContents(): IJupyterBookToc {
+		return this.tableOfContents;
+	}
 
-	public get sections(): string | undefined {
+	public get sections(): JupyterBookSection[] {
 		return this._sections;
 	}
 
@@ -200,7 +199,7 @@ export class BookTreeItem extends vscode.TreeItem {
 		this._uri = uri;
 	}
 
-	public set sections(sections: string | undefined) {
+	public set sections(sections: JupyterBookSection[] | undefined) {
 		this._sections = sections;
 	}
 

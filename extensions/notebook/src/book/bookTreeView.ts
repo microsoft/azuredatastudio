@@ -23,6 +23,7 @@ import { CreateBookDialog } from '../dialog/createBookDialog';
 import { AddFileDialog } from '../dialog/addFileDialog';
 import { getContentPath } from './bookVersionHandler';
 import { TelemetryReporter, BookTelemetryView, NbTelemetryActions } from '../telemetry';
+import { JupyterBookSection } from '../contracts/content';
 
 interface BookSearchResults {
 	notebookPaths: string[];
@@ -54,7 +55,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		this.prompter = new CodeAdapter();
 		this._bookTrustManager = new BookTrustManager(this.books);
 		this.bookTocManager = new BookTocManager();
-		this._bookViewer = vscode.window.createTreeView(this.viewId, { showCollapseAll: true, treeDataProvider: this, dragAndDropController: this });
+		this._bookViewer = vscode.window.createTreeView(this.viewId, { showCollapseAll: true, canSelectMany: true, treeDataProvider: this, dragAndDropController: this });
 		this._bookViewer.onDidChangeVisibility(async e => {
 			await this.initialized;
 			// Whenever the viewer changes visibility then try and reveal the currently active document
@@ -174,7 +175,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		if (pickedBook && movingElement) {
 			const updateBook = this.books.find(book => book.bookPath === pickedBook.detail).bookItems[0];
 			if (updateBook) {
-				let bookSections = updateBook.sections;
+				let bookSections: JupyterBookSection[] = updateBook.sections;
 				while (bookSections) {
 					bookOptions = [{ label: loc.labelAddToLevel, detail: pickedSection ? pickedSection.detail : '' }];
 					bookSections.forEach(section => {
