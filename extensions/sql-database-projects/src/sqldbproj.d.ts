@@ -6,7 +6,8 @@
 declare module 'sqldbproj' {
 	import * as vscode from 'vscode';
 	export const enum extension {
-		name = 'Microsoft.sql-database-projects'
+		name = 'Microsoft.sql-database-projects',
+		vsCodeName = 'Microsoft.sql-database-projects-vscode'
 	}
 
 	/**

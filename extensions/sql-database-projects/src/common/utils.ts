@@ -249,7 +249,8 @@ export function getSqlProjectsInWorkspace(): Promise<vscode.Uri[]> {
 }
 
 export function getDataWorkspaceExtensionApi(): dataworkspace.IExtension {
-	const extension = vscode.extensions.getExtension(dataworkspace.extension.name)!;
+	const dataworkspaceExtName = getAzdataApi() ? dataworkspace.extension.name : dataworkspace.extension.vscodeName;
+	const extension = vscode.extensions.getExtension(dataworkspaceExtName)!;
 	return extension.exports;
 }
 
