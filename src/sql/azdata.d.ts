@@ -3172,7 +3172,7 @@ declare module 'azdata' {
 	 * Properties representing the card component, can be used
 	 * when using ModelBuilder to create the component
 	 */
-	export interface CardProperties extends ComponentProperties, ComponentWithIcon {
+	export interface CardProperties extends ComponentProperties, ComponentWithIconProperties {
 		label: string;
 		value?: string | undefined;
 		actions?: ActionDescriptor[] | undefined;
@@ -3243,7 +3243,7 @@ declare module 'azdata' {
 	export type ThemedIconPath = { light: string | vscode.Uri; dark: string | vscode.Uri };
 	export type IconPath = string | vscode.Uri | ThemedIconPath;
 
-	export interface ComponentWithIcon extends ComponentWithIconProperties { }
+	export interface ComponentWithIcon extends Component, ComponentWithIconProperties { }
 
 	export interface ComponentWithIconProperties extends ComponentProperties {
 		/**
@@ -3402,7 +3402,7 @@ declare module 'azdata' {
 		requiredIndicator?: boolean | undefined;
 	}
 
-	export interface ImageComponentProperties extends ComponentProperties, ComponentWithIcon {
+	export interface ImageComponentProperties extends ComponentProperties, ComponentWithIconProperties {
 	}
 
 	export interface GroupContainerProperties extends ComponentProperties {
@@ -3501,7 +3501,7 @@ declare module 'azdata' {
 		isAutoResizable: boolean;
 	}
 
-	export interface ButtonProperties extends ComponentProperties, ComponentWithIcon {
+	export interface ButtonProperties extends ComponentProperties, ComponentWithIconProperties {
 		/**
 		 * The label for the button
 		 */
@@ -3712,7 +3712,7 @@ declare module 'azdata' {
 		minimumHeight: number;
 	}
 
-	export interface ButtonComponent extends Component, ButtonProperties {
+	export interface ButtonComponent extends ComponentWithIcon, ButtonProperties {
 		/**
 		 * An event called when the button is clicked
 		 */
