@@ -86,7 +86,7 @@ export class ExtHostModelViewTreeViews implements ExtHostModelViewTreeViewsShape
 		return Promise.resolve(undefined);
 	}
 
-	async $onDrop(treeViewId: string, treeDataTransferDTO: TreeDataTransferDTO, newParentItemHandle: string): Promise<void> {
+	$onDrop(treeViewId: string, treeDataTransferDTO: TreeDataTransferDTO, newParentItemHandle: string): Promise<void> {
 		return Promise.resolve(undefined);
 	}
 
