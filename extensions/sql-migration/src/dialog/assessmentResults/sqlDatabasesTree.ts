@@ -616,6 +616,7 @@ export class SqlDatabaseTree {
 			label: '',
 			url: '',
 			CSSStyles: textStyle,
+			ariaLabel: constants.MORE_INFO,
 			showLinkIcon: true
 		}).component();
 
