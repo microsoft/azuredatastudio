@@ -13,6 +13,8 @@ export class DerivedColumnDialog {
 	private _doneEmitter: EventEmitter = new EventEmitter();
 	private currentTransformation: string[] = [];
 	private currentDerivedColumnName: string = '';
+	private _view!: azdata.ModelView;
+	private _specifyTransformations: azdata.InputBoxComponent[] = [];
 
 	constructor(private _model: ImportDataModel, private _provider: FlatFileProvider) {
 	}
@@ -26,6 +28,7 @@ export class DerivedColumnDialog {
 
 		let tab = azdata.window.createTab('');
 		tab.registerContent(async (view: azdata.ModelView) => {
+			this._view = view;
 			const columnTable = view.modelBuilder.declarativeTable().withProps({
 				columns: [
 					{
@@ -105,8 +108,12 @@ export class DerivedColumnDialog {
 			const transformationTableData: azdata.DeclarativeTableCellValue[][] = [];
 			for (let index = 0; index < this._model.proseDataPreview.length; index++) {
 				const tableRow: azdata.DeclarativeTableCellValue[] = [];
+				this._specifyTransformations.push(this._view.modelBuilder.inputBox().withProps({
+					value: '',
+					placeHolder: 'Specify Transformation'
+				}).component());
 				tableRow.push({
-					value: ''
+					value: this._specifyTransformations[index]
 				});
 				transformationTableData.push(tableRow);
 			}
@@ -115,7 +122,7 @@ export class DerivedColumnDialog {
 				columns: [
 					{
 						displayName: 'Specify Transformation',
-						valueType: azdata.DeclarativeDataType.string,
+						valueType: azdata.DeclarativeDataType.component,
 						isReadOnly: false,
 						width: '200px'
 					}
@@ -123,13 +130,55 @@ export class DerivedColumnDialog {
 				dataValues: transformationTableData
 			}).component();
 
+			// const delay = (function(){
+			// 	let timer:NodeJS.Timeout;
+			// 	return function(callback: any, ms: number){
+			// 	clearTimeout (timer);
+			// 	timer = setTimeout(callback, ms);
+			//    };
+			//   })();
 
+			// this._specifyTransformations.forEach(i => {
+			// 	i.onTextChanged(async e => {
+			// 		delay(async ()=>{
+			// 			const requiredColNames = [];
+			// 			const numCols = transformationTable.columns.length - 1;
+			// 			for (let index = 0; index < numCols; index++) {
+			// 				requiredColNames[index] = transformationTable.columns[index].displayName;
+			// 			}
+			// 			const transExamples = [];
+			// 			const transExampleIndices = [];
+
+			// 			for (let index = 0; index < transformationTable.dataValues.length; index++) {
+			// 				const example =(<azdata.InputBoxComponent>transformationTable.dataValues[index][numCols].value).value as string;
+			// 				if (example === '') {
+			// 					continue;
+			// 				}
+			// 				transExamples.push(example);
+			// 				transExampleIndices.push(index);
+			// 			}
+
+			// 			const response = await this._provider.sendLearnTransformationRequest({
+			// 				columnNames: requiredColNames,
+			// 				transformationExamples: transExamples,
+			// 				transformationExampleRowIndices: transExampleIndices
+			// 			});
+			// 			this.currentTransformation = response.transformationPreview;
+			// 			for (let index = 0; index < this.currentTransformation.length; index++) {
+			// 				(<azdata.InputBoxComponent>transformationTable.dataValues[index][transformationTable.columns.length - 1].value).placeHolder = this.currentTransformation[index];
+
+			// 			}
+			// 			transformationContainer.clearItems();
+			// 			transformationContainer.addItem(transformationTable);
+			// 			transformationContainer.addItem(applyButton);
+			// 		}, 1000);
+			// 	});
+			// })
 
 			const applyButton = view.modelBuilder.button().withProps({
 				label: 'Apply',
 				// width: '200px'
 			}).component();
-
 
 			applyButton.onDidClick(async e => {
 				const requiredColNames = [];
@@ -141,7 +190,7 @@ export class DerivedColumnDialog {
 				const transExampleIndices = [];
 
 				for (let index = 0; index < transformationTable.dataValues.length; index++) {
-					const example = transformationTable.dataValues[index][numCols].value as string;
+					const example = (<azdata.InputBoxComponent>transformationTable.dataValues[index][numCols].value).value as string;
 					if (example === '') {
 						continue;
 					}
@@ -156,7 +205,7 @@ export class DerivedColumnDialog {
 				});
 				this.currentTransformation = response.transformationPreview;
 				for (let index = 0; index < this.currentTransformation.length; index++) {
-					transformationTable.dataValues[index][transformationTable.columns.length - 1] = { value: this.currentTransformation[index] };
+					(<azdata.InputBoxComponent>transformationTable.dataValues[index][transformationTable.columns.length - 1].value).placeHolder = this.currentTransformation[index];
 
 				}
 				transformationContainer.clearItems();
