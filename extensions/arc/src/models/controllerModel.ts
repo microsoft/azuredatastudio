@@ -67,7 +67,6 @@ export class ControllerModel {
 		}
 	}
 	public async refresh(showErrors: boolean = true, namespace: string): Promise<void> {
-		// First need to log in to ensure that we're able to authenticate with the controller
 		const newRegistrations: Registration[] = [];
 		await Promise.all([
 			this._azApi.az.arcdata.dc.config.show(namespace, this.azAdditionalEnvVars).then(result => {
