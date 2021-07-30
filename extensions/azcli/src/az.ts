@@ -15,7 +15,7 @@ import { azConfigSection, azFound, debugConfigKey, latestAzArcExtensionVersion }
 import * as loc from './localizedConstants';
 
 /**
- * The latest Az CLI arcdata extension version for this extension to function properly
+ * The latest Azure CLI arcdata extension version for this extension to function properly
  */
 export const LATEST_AZ_ARC_EXTENSION_VERSION = new SemVer(latestAzArcExtensionVersion);
 
@@ -218,9 +218,9 @@ export class AzTool implements azExt.IAzApi {
 }
 
 /**
- * Finds the existing installation of az, or throws an error if it couldn't find it
+ * Finds and returns the existing installation of Azure CLI, or throws an error if it can't find it
  * or encountered an unexpected error.
- * The promise is rejected when Az is not found.
+ * The promise is rejected when Azure CLI is not found.
  */
 export async function findAz(): Promise<IAzTool> {
 	Logger.log(loc.searchingForAz);
@@ -292,7 +292,9 @@ async function executeAzCommand(command: string, args: string[], additionalEnvVa
 // }
 
 /**
- * // TODOCANYE
+ * Find user's local Azure CLI. Execute az --version and parse out the version number.
+ * If an update is needed, prompt the user to update via link. Return the AzTool.
+ * Currently commented out because Don't Prompt Again is not properly implemented.
  */
 async function findSpecificAz(): Promise<IAzTool> {
 	const path = await ((process.platform === 'win32') ? searchForCmd('az.cmd') : searchForCmd('az'));
