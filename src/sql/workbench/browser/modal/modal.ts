@@ -582,6 +582,11 @@ export abstract class Modal extends Disposable implements IThemable {
 			}
 			DOM.removeNode(this._messageDetail!);
 			this.messagesElementVisible = !!this._messageSummaryText;
+			// Read out the description to screen readers so they don't have to
+			// search around for the alert box to hear the extra information
+			if (description) {
+				alert(description);
+			}
 			this.updateExpandMessageState();
 		}
 	}
