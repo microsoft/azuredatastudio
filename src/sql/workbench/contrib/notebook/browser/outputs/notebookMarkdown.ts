@@ -108,6 +108,7 @@ export class NotebookMarkdownRenderer {
 			return '<img ' + attributes.join(' ') + '>';
 		};
 		renderer.link = (href: string, title: string, text: string): string => {
+			// check for isAbsolute prior to escaping and replacement
 			let hrefAbsolute: boolean = path.isAbsolute(href);
 			href = this.cleanUrl(!markdown.isTrusted, notebookFolder, href);
 			if (href === null) {
@@ -121,7 +122,7 @@ export class NotebookMarkdownRenderer {
 			// only remove markdown escapes if it's a hyperlink, filepath usually can start with .{}_
 			// and the below function escapes them if it encounters in the path.
 			// dev note: using path.isAbsolute instead of isPathLocal since the latter accepts resolver (IRenderMime.IResolver) to check isLocal
-			if (!path.isAbsolute(href)) {
+			if (!hrefAbsolute) {
 				href = removeMarkdownEscapes(href);
 			}
 			if (

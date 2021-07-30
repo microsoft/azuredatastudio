@@ -336,10 +336,10 @@ configurationRegistry.registerConfiguration({
 			'minimum': 10,
 			'description': localize('notebook.maxRichTextUndoHistory', "The maximum number of changes stored in the undo history for the notebook Rich Text editor.")
 		},
-		'notebook.keepAbsolutePath': {
+		'notebook.useAbsoluteFilePaths': {
 			'type': 'boolean',
 			'default': false,
-			'description': localize('notebook.keepAbsolutePath', "Keeps absolute notebook path instead of converting to relative path")
+			'description': localize('notebook.useAbsoluteFilePaths', "Use absolute file paths when linking to other notebooks.")
 		}
 	}
 });
