@@ -25,7 +25,7 @@ import { ILogService } from 'vs/platform/log/common/log';
 		<div *ngIf="hasHeader()" [class]="getHeaderClass()" (click)="changeState()" (keydown)="onKeyDown($event)" [tabindex]="isCollapsible()? 0 : -1" [attr.role]="isCollapsible() ? 'button' : null" [attr.aria-expanded]="isCollapsible() ? !collapsed : null">
 				{{_containerLayout.header}}
 		</div>
-		<!-- This extra is needed so that the expanded state of the header is updated correctly. See
+		<!-- This extra div is needed so that the expanded state of the header is updated correctly. See https://github.com/microsoft/azuredatastudio/pull/16499 for more details -->
 		<div>
 			<div #container *ngIf="items" class="modelview-group-container" [ngStyle]="CSSStyles">
 				<ng-container *ngFor="let item of items">
