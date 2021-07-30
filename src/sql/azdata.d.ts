@@ -3514,12 +3514,6 @@ declare module 'azdata' {
 		 * The content of the currently selected file
 		 */
 		fileContent?: string | undefined;
-		/**
-		 * @deprecated This will be moved to `ComponentWithIconProperties`
-		 *
-		 * The title for the button. This title will show when hovered over
-		 */
-		title?: string | undefined;
 	}
 
 	export interface LoadingComponentProperties extends ComponentProperties {
