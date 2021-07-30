@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import * as azdataExt from 'azdata-ext';
+import * as azExt from 'az-ext';
 import * as azurecore from 'azurecore';
 import * as vscode from 'vscode';
 import { getDatabaseStateDisplayText, promptForInstanceDeletion } from '../../../common/utils';
@@ -34,7 +34,7 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 	private _connectToServerButton!: azdata.ButtonComponent;
 	private _databasesTableLoading!: azdata.LoadingComponent;
 
-	private readonly _azdataApi: azdataExt.IExtension;
+	private readonly _azApi: azExt.IExtension;
 	private readonly _azurecoreApi: azurecore.IExtension;
 
 	private _instanceProperties = {
@@ -50,7 +50,7 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 
 	constructor(modelView: azdata.ModelView, dashboard: azdata.window.ModelViewDashboard, private _controllerModel: ControllerModel, private _miaaModel: MiaaModel) {
 		super(modelView, dashboard);
-		this._azdataApi = vscode.extensions.getExtension(azdataExt.extension.name)?.exports;
+		this._azApi = vscode.extensions.getExtension(azExt.extension.name)?.exports;
 		this._azurecoreApi = vscode.extensions.getExtension(azurecore.extension.name)?.exports;
 
 		this._instanceProperties.miaaAdmin = this._miaaModel.username || this._instanceProperties.miaaAdmin;
@@ -75,7 +75,7 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 	}
 
 	protected async refresh(): Promise<void> {
-		await Promise.all([this._controllerModel.refresh(), this._miaaModel.refresh()]);
+		await Promise.all([this._controllerModel.refresh(false, this._controllerModel.info.namespace), this._miaaModel.refresh()]);
 	}
 
 	public get container(): azdata.Component {
@@ -244,7 +244,7 @@ export class MiaaDashboardOverviewPage extends DashboardPage {
 								cancellable: false
 							},
 							async (_progress, _token) => {
-								return await this._azdataApi.azdata.arc.sql.mi.delete(this._miaaModel.info.name, this._controllerModel.azdataAdditionalEnvVars, this._controllerModel.controllerContext);
+								return await this._azApi.az.sql.miarc.delete(this._miaaModel.info.name, this._controllerModel.info.namespace, this._controllerModel.azAdditionalEnvVars);
 							}
 						);
 						await this._controllerModel.refreshTreeNode();
