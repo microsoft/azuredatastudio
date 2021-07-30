@@ -1040,11 +1040,4 @@ declare module 'azdata' {
 		 */
 		showToggleButton?: boolean;
 	}
-
-	export interface DropDownProperties extends LoadingComponentProperties {
-		/**
-		 * Whether to show tooltip when hovering on input box.
-		 */
-		showInputTooltip?: boolean;
-	}
 }
