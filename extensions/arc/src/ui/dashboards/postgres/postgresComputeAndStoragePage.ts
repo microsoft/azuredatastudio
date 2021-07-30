@@ -487,16 +487,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		const keyContainer = this.modelView.modelBuilder.flexContainer().withLayout({ alignItems: 'center' }).component();
 		keyContainer.addItem(keyComponent, { CSSStyles: { 'margin-right': '0px', 'margin-bottom': '15px' } });
 
-		/* const information = this.modelView.modelBuilder.button().withProps({
-			iconPath: IconPathHelper.information,
-			title: loc.workerNodesInformation,
-			ariaLabel: loc.workerNodesInformation,
-			width: '15px',
-			height: '15px'
-		}).component();
-
-		keyContainer.addItem(information, { CSSStyles: { 'margin-left': '5px', 'margin-bottom': '15px' } });
-		 */flexContainer.addItem(keyContainer, keyFlex);
+		flexContainer.addItem(keyContainer, keyFlex);
 
 		const inputContainer = this.modelView.modelBuilder.flexContainer().withLayout({ alignItems: 'center' }).component();
 		inputContainer.addItem(this.workerCountBox, { CSSStyles: { 'margin-bottom': '15px', 'min-width': '50px', 'max-width': '225px' } });
@@ -578,21 +569,13 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 
 		const titleComponent = this.modelView.modelBuilder.text().withProps({
 			value: title,
+			description: description,
 			CSSStyles: { ...cssStyles.title, 'font-weight': 'bold', 'margin-block-start': '0px', 'margin-block-end': '0px' }
 		}).component();
 
 		const titleContainer = this.modelView.modelBuilder.flexContainer().withLayout({ alignItems: 'center' }).component();
 		titleContainer.addItem(titleComponent, { CSSStyles: { 'margin-right': '0px', 'margin-bottom': '15px' } });
 
-		const information = this.modelView.modelBuilder.button().withProps({
-			iconPath: IconPathHelper.information,
-			title: description,
-			ariaLabel: description,
-			width: '15px',
-			height: '15px'
-		}).component();
-
-		titleContainer.addItem(information, { CSSStyles: { 'margin-left': '5px', 'margin-bottom': '15px' } });
 		flexContainer.addItem(titleContainer, titleFlex);
 
 		let configurationSection = this.modelView.modelBuilder.divContainer().component();
