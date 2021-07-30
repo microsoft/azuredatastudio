@@ -491,8 +491,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 			title: loc.workerNodesInformation,
 			ariaLabel: loc.workerNodesInformation,
 			width: '15px',
-			height: '15px',
-			enabled: false
+			height: '15px'
 		}).component();
 
 		keyContainer.addItem(information, { CSSStyles: { 'margin-left': '5px', 'margin-bottom': '15px' } });
@@ -589,8 +588,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 			title: description,
 			ariaLabel: description,
 			width: '15px',
-			height: '15px',
-			enabled: false
+			height: '15px'
 		}).component();
 
 		titleContainer.addItem(information, { CSSStyles: { 'margin-left': '5px', 'margin-bottom': '15px' } });
