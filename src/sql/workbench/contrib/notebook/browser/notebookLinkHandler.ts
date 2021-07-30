@@ -30,8 +30,14 @@ export class NotebookLinkHandler {
 			this._isAnchorLink = this._link.includes('#') && this._isFile;
 		} else {
 			// HTMLAnchorElement
-			this._notebookUriLink = this._link.attributes['href']?.nodeValue ? URI.parse(this._link.attributes['href']?.nodeValue) : undefined;
-			this._href = this._link.attributes['href']?.nodeValue;
+			// windows files need to use the link.href instead as it contains the file:// prefix
+			// which enables us to get the proper relative path
+			if (process.platform === 'win32') {
+				this._href = this._link.href;
+			} else {
+				this._href = this._link.attributes['href']?.nodeValue;
+			}
+			this._notebookUriLink = this._href ? URI.parse(this._href) : undefined;
 			this._isFile = this._link.protocol === 'file:';
 			this._isAnchorLink = this._notebookUriLink?.fragment ? true : false;
 			this.isAbsolutePath = this._link.attributes['is-absolute']?.nodeValue === 'true' ? true : false;
@@ -76,7 +82,9 @@ export class NotebookLinkHandler {
 					if (this._isAnchorLink) {
 						targetUri = this.getUriAnchorLink(this._link, this._notebookURI);
 					} else {
-						targetUri = this._notebookUriLink;
+						//On Windows, if notebook is not trusted then the href attr is removed for all non-web URL links
+						// href contains either a hyperlink or a URI-encoded absolute path. (See resolveUrls method in notebookMarkdown.ts)
+						targetUri = this._link ? this._notebookUriLink : URI.file(this._link.title);
 					}
 					// returns relative path of target notebook to the current notebook directory
 					if (this._notebookUriLink.fsPath !== this._notebookURI.fsPath && !targetUri?.fragment) {
