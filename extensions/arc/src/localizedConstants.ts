@@ -61,6 +61,8 @@ export const controllerEndpoint = localize('arc.controllerEndpoint', "Controller
 export const extensionName = localize('arc.extensionName', "Extension name");
 export const extensionsDescription = localize('arc.extensionsDescription', "PostgreSQL provides the ability to extend the functionality of your database by using extensions. Extensions allow for bundling multiple related SQL objects together in a single package that can be loaded or removed from your database with a single command. After being loaded in the database, extensions can function like built-in features.");
 export const extensionsFunction = localize('arc.extensionsFunction', "Some extensions must be loaded into PostgreSQL at startup time before they can be used. These preloaded extensions can be viewed and edited  below.");
+export function extensionsAddFunction(extensions: string): string { return localize('arc.extensionsAddFunction', "Some extensions must be loaded into PostgreSQL at startup time before they can be used. To edit, type in comma separated list of valid extensions: ({0}).", extensions); }
+export function extensionsAddErrorrMessage(extensions: string): string { return localize('arc.extensionsAddErrorrMessage', "Value should be either of the following: ({0}).", extensions); }
 export const extensionsLearnMore = localize('arc.extensionsLearnMore', "Learn more about PostgreSQL extensions.");
 export const extensionsTableLoading = localize('arc.extensionsTableLoading', "Table of preloaded extensions are loading.");
 export const extensionsTableLabel = localize('arc.extensionsTableLabel', "Table of preloaded extensions.");

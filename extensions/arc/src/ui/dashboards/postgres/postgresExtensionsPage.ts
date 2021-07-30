@@ -236,6 +236,10 @@ export class PostgresExtensionsPage extends DashboardPage {
 			CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
 		}).component();
 
+		if (name === 'citus') {
+			checkBox.enabled = false;
+		}
+
 		this.disposables.push(
 			checkBox.onChanged(() => {
 				if (checkBox.checked) {
@@ -257,7 +261,7 @@ export class PostgresExtensionsPage extends DashboardPage {
 	 */
 	public async dropExtension(): Promise<void> {
 		this.droppedExtensions.forEach(d => {
-			let index = this.droppedExtensions.indexOf(d, 0);
+			let index = this.extensionNames.indexOf(d, 0);
 			this.extensionNames.splice(index, 1);
 		});
 
