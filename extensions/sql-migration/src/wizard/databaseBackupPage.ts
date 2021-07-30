@@ -761,7 +761,6 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 					fireOnTextChange: true,
 					required: true,
 					enabled: false,
-					showInputTooltip: true,
 				}).component();
 
 				const blobContainerDropdown = this._view.modelBuilder.dropDown().withProps({
@@ -771,7 +770,6 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 					fireOnTextChange: true,
 					required: true,
 					enabled: false,
-					showInputTooltip: true,
 				}).component();
 
 				const blobContainerLastBackupFileDropdown = this._view.modelBuilder.dropDown().withProps({
@@ -781,7 +779,6 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 					fireOnTextChange: true,
 					required: true,
 					enabled: false,
-					showInputTooltip: true,
 				}).component();
 
 				this._disposables.push(blobContainerResourceDropdown.onValueChanged(async (value) => {

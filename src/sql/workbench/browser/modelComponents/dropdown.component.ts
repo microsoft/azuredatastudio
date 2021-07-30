@@ -145,10 +145,6 @@ export default class DropDownComponent extends ComponentBase<azdata.DropDownProp
 			}
 			this._editableDropdown.enabled = this.enabled;
 			this._editableDropdown.fireOnTextChange = this.fireOnTextChange;
-
-			if (this.showInputTooltip) {
-				this._editableDropdown.input.setTooltip(this._editableDropdown.value);
-			}
 		} else {
 			this._selectBox.setOptions(this.getValues());
 			this._selectBox.selectWithOptionName(this.getSelectedValue());
@@ -300,13 +296,5 @@ export default class DropDownComponent extends ComponentBase<azdata.DropDownProp
 		return this.mergeCss(super.CSSStyles, {
 			'width': this.getWidth()
 		});
-	}
-
-	public get showInputTooltip(): boolean {
-		return this.getPropertyOrDefault<boolean>((props) => props.showInputTooltip, false);
-	}
-
-	public set showInputTooltip(newValue: boolean) {
-		this.setPropertyFromUI<boolean>((props, value) => props.showInputTooltip = value, newValue);
 	}
 }
