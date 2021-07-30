@@ -145,7 +145,12 @@ export default class DropDownComponent extends ComponentBase<azdata.DropDownProp
 			}
 			this._editableDropdown.enabled = this.enabled;
 			this._editableDropdown.fireOnTextChange = this.fireOnTextChange;
-			this._editableDropdown.input.setTooltip(!this.enabled ? this._editableDropdown.input.value : '');
+
+			if (!this.enabled) {
+				this._editableDropdown.input.setTooltip(this._editableDropdown.input.value);
+			} else if (this._editableDropdown.input.inputElement.title) {
+				this._editableDropdown.input.setTooltip('');
+			}
 		} else {
 			this._selectBox.setOptions(this.getValues());
 			this._selectBox.selectWithOptionName(this.getSelectedValue());
