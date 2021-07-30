@@ -857,7 +857,11 @@ declare module 'azdata' {
 		/**
 		 * Azure Log Analytics
 		 */
-		AzureLogAnalytics = 8
+		AzureLogAnalytics = 8,
+		/**
+		 * Azure Storage
+		 */
+		AzureStorage = 9
 	}
 
 	export interface ButtonProperties {
