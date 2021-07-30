@@ -28,7 +28,7 @@ export interface BookTreeItemFormat {
 	title: string;
 	contentPath: string;
 	root: string;
-	//tableOfContents: IJupyterBookToc;
+	tableOfContents: string;
 	page: any;
 	type: BookTreeItemType;
 	treeItemCollapsibleState: number;
@@ -48,7 +48,7 @@ export class BookTreeItem extends vscode.TreeItem {
 	private _rootContentPath: string;
 	private _tableOfContentsPath: string;
 
-	constructor(public book: BookTreeItemFormat, icons: any, tableOfContents: IJupyterBookToc) {
+	constructor(public book: BookTreeItemFormat, icons: any) {
 		super(book.title, book.treeItemCollapsibleState);
 		if (book.type === BookTreeItemType.Book) {
 			this.collapsibleState = book.treeItemCollapsibleState;
@@ -200,9 +200,9 @@ export class BookTreeItem extends vscode.TreeItem {
 		this._uri = uri;
 	}
 
-	// public set sections(sections: JupyterBookSection[]) {
-	// 	this._sections = sections;
-	// }
+	public set sections(sections: string | undefined) {
+		this._sections = sections;
+	}
 
 	public set tableOfContentsPath(tocPath: string) {
 		this._tableOfContentsPath = tocPath;
@@ -232,7 +232,7 @@ export class BookTreeItem extends vscode.TreeItem {
 		if (!url) {
 			return undefined;
 		}
-		return this.findChildSectionRecur(this as JupyterBookSection, url);
+		return this.findChildSectionRecur(this.book as JupyterBookSection, url);
 	}
 
 	private findChildSectionRecur(section: JupyterBookSection, url: string): JupyterBookSection | undefined {

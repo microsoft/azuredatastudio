@@ -15,6 +15,7 @@ import { IJupyterBookToc, JupyterBookSection } from '../contracts/content';
 import { convertFrom, getContentPath, BookVersion } from './bookVersionHandler';
 import { debounce, IPinnedNotebook } from '../common/utils';
 import { Deferred } from '../common/promise';
+import { parse } from 'vscode-languageclient/lib/utils/uuid';
 const fsPromises = fileServices.promises;
 const content = 'content';
 
@@ -144,8 +145,8 @@ export class BookModel {
 			title: this.pinnedNotebookDetails?.title ?? pathDetails.name,
 			contentPath: this.bookPath,
 			root: this.pinnedNotebookDetails?.bookPath ?? pathDetails.dir,
-			//tableOfContents: { sections: undefined },
-			page: { sections: undefined },
+			tableOfContents: undefined,
+			page: undefined,
 			type: BookTreeItemType.Notebook,
 			treeItemCollapsibleState: vscode.TreeItemCollapsibleState.Expanded,
 			isUntitled: this.openAsUntitled,
@@ -153,8 +154,7 @@ export class BookModel {
 			{
 				light: this._extensionContext.asAbsolutePath('resources/light/notebook.svg'),
 				dark: this._extensionContext.asAbsolutePath('resources/dark/notebook_inverse.svg')
-			},
-			{ sections: undefined }
+			}
 		);
 		this._bookItems.push(notebookItem);
 		this._rootNode = notebookItem;
@@ -193,7 +193,7 @@ export class BookModel {
 					title: config.title,
 					contentPath: this._tableOfContentsPath,
 					root: this.bookPath,
-					//tableOfContents: { sections: this.parseJupyterSections(this._bookVersion, tableOfContents) },
+					tableOfContents: JSON.stringify(parsedTOC),
 					page: tableOfContents,
 					type: BookTreeItemType.Book,
 					treeItemCollapsibleState: collapsibleState,
@@ -204,7 +204,6 @@ export class BookModel {
 						light: this._extensionContext.asAbsolutePath('resources/light/book.svg'),
 						dark: this._extensionContext.asAbsolutePath('resources/dark/book_inverse.svg')
 					},
-					parsedTOC
 				);
 				this._rootNode = book;
 				this._bookItems.push(book);
@@ -244,7 +243,7 @@ export class BookModel {
 					title: sections[i].title,
 					contentPath: undefined,
 					root: root,
-					//tableOfContents: Object.assign({}, tableOfContents),
+					tableOfContents: JSON.stringify(parsedTOC),
 					page: sections[i],
 					type: BookTreeItemType.ExternalLink,
 					treeItemCollapsibleState: vscode.TreeItemCollapsibleState.Collapsed,
@@ -256,7 +255,6 @@ export class BookModel {
 						light: this._extensionContext.asAbsolutePath('resources/light/link.svg'),
 						dark: this._extensionContext.asAbsolutePath('resources/dark/link_inverse.svg')
 					},
-					parsedTOC
 				);
 
 				treeItems.push(externalLink);
@@ -271,7 +269,7 @@ export class BookModel {
 						title: sections[i].title ? sections[i].title : sections[i].file,
 						contentPath: pathToNotebook,
 						root: root,
-						//tableOfContents: Object.assign({}, tableOfContents),
+						tableOfContents: JSON.stringify(parsedTOC),
 						page: sections[i],
 						type: BookTreeItemType.Notebook,
 						treeItemCollapsibleState: vscode.TreeItemCollapsibleState.Collapsed,
@@ -282,8 +280,7 @@ export class BookModel {
 						{
 							light: this._extensionContext.asAbsolutePath('resources/light/notebook.svg'),
 							dark: this._extensionContext.asAbsolutePath('resources/dark/notebook_inverse.svg')
-						},
-						parsedTOC
+						}
 					);
 
 					if (this.openAsUntitled) {
@@ -304,7 +301,7 @@ export class BookModel {
 						title: sections[i].title ? sections[i].title : sections[i].file,
 						contentPath: pathToMarkdown,
 						root: root,
-						//tableOfContents: Object.assign({}, tableOfContents),
+						tableOfContents: JSON.stringify(parsedTOC),
 						page: sections[i],
 						type: BookTreeItemType.Markdown,
 						treeItemCollapsibleState: vscode.TreeItemCollapsibleState.Collapsed,
@@ -316,7 +313,6 @@ export class BookModel {
 							light: this._extensionContext.asAbsolutePath('resources/light/markdown.svg'),
 							dark: this._extensionContext.asAbsolutePath('resources/dark/markdown_inverse.svg')
 						},
-						parsedTOC
 					);
 					if (this.openAsUntitled) {
 						if (!this._allNotebooks.get(path.basename(pathToMarkdown))) {
