@@ -53,7 +53,6 @@ export class BuildHelper {
 		}
 
 		const buildfilesPath = await this.getBuildDirPathFromMssqlTools();
-		console.log(`BUILD FILES ${buildfilesPath}`);
 		buildFiles.forEach(async (fileName) => {
 			if (await (utils.exists(path.join(buildfilesPath, fileName)))) {
 				await fs.copyFile(path.join(buildfilesPath, fileName), path.join(this.extensionBuildDir, fileName));
