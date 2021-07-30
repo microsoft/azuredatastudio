@@ -175,10 +175,6 @@ export class ConnectToControllerDialog extends ControllerDialogBase {
 		return this.namespaceInputBox;
 	}
 
-	protected override initializeFields(controllerInfo: ControllerInfo | undefined) {
-		super.initializeFields(controllerInfo);
-	}
-
 	constructor(treeDataProvider: AzureArcTreeDataProvider) {
 		super(treeDataProvider, loc.connectToController);
 	}
