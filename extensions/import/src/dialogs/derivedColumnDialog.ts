@@ -61,7 +61,7 @@ export class DerivedColumnDialog {
 				//TODO: Add or remove columns and data from the transformation table
 				if (e.value) {
 					console.group(e.value);
-					transformationTable.columns.push(
+					transformationTable.columns.splice(transformationTable.columns.length - 1, 0,
 						{
 							displayName: this._model.proseColumns[e.row].columnName,
 							valueType: azdata.DeclarativeDataType.string,
@@ -70,7 +70,7 @@ export class DerivedColumnDialog {
 						}
 					);
 					for (let index = 0; index < this._model.proseDataPreview.length; index++) {
-						transformationTable.dataValues[index].push({ value: this._model.proseDataPreview[index][e.row] });
+						transformationTable.dataValues[index].splice(transformationTable.dataValues[index].length - 1, 0, { value: this._model.proseDataPreview[index][e.row] });
 					}
 				}
 				else {
@@ -88,6 +88,7 @@ export class DerivedColumnDialog {
 				}
 				transformationContainer.clearItems();
 				transformationContainer.addItem(transformationTable);
+				transformationContainer.addItem(applyButton);
 			});
 
 
@@ -102,124 +103,66 @@ export class DerivedColumnDialog {
 			columnContainer.addItem(columnTable);
 
 			const transformationTableData: azdata.DeclarativeTableCellValue[][] = [];
+			for (let index = 0; index < this._model.proseDataPreview.length; index++) {
+				const tableRow: azdata.DeclarativeTableCellValue[] = [];
+				tableRow.push({
+					value: ''
+				});
+				transformationTableData.push(tableRow);
+			}
 
 			const transformationTable = view.modelBuilder.declarativeTable().withProps({
 				columns: [
+					{
+						displayName: 'Specify Transformation',
+						valueType: azdata.DeclarativeDataType.string,
+						isReadOnly: false,
+						width: '200px'
+					}
 				],
+				dataValues: transformationTableData
 			}).component();
-			for (let index = 0; index < this._model.proseDataPreview.length; index++) {
-				const tableRow: azdata.DeclarativeTableCellValue[] = [];
-				transformationTableData.push(tableRow);
-			}
-			transformationTable.dataValues = transformationTableData;
 
 
 
 			const applyButton = view.modelBuilder.button().withProps({
-				label: 'Apply'
-			}).component();
-
-			const addButton = view.modelBuilder.button().withProps({
-				label: 'Add'
-			}).component();
-
-			const removeButton = view.modelBuilder.button().withProps({
-				label: 'Remove'
+				label: 'Apply',
+				// width: '200px'
 			}).component();
 
 
 			applyButton.onDidClick(async e => {
 				const requiredColNames = [];
-				for (let index = 0; index < transformationTable.columns.length; index++) {
+				const numCols = transformationTable.columns.length - 1;
+				for (let index = 0; index < numCols; index++) {
 					requiredColNames[index] = transformationTable.columns[index].displayName;
 				}
 				const transExamples = [];
 				const transExampleIndices = [];
-				for (let index = 0; index < specifyTransTable.dataValues.length; index++) {
-					transExamples[index] = specifyTransTable.dataValues[index][0].value as string;
+
+				for (let index = 0; index < transformationTable.dataValues.length; index++) {
+					const example = transformationTable.dataValues[index][numCols].value as string;
+					if (example === '') {
+						continue;
+					}
+					transExamples.push(example);
 					transExampleIndices.push(index);
 				}
-				const response = await this._provider.sendTransformationGenerationRequest({
+
+				const response = await this._provider.sendLearnTransformationRequest({
 					columnNames: requiredColNames,
 					transformationExamples: transExamples,
 					transformationExampleRowIndices: transExampleIndices
 				});
 				this.currentTransformation = response.transformationPreview;
 				for (let index = 0; index < this.currentTransformation.length; index++) {
-					previewTable.dataValues[index][0] = { value: this.currentTransformation[index] };
+					transformationTable.dataValues[index][transformationTable.columns.length - 1] = { value: this.currentTransformation[index] };
 
 				}
-				previewContainer.clearItems();
-				previewContainer.addItem(previewTable);
+				transformationContainer.clearItems();
+				transformationContainer.addItem(transformationTable);
+				transformationContainer.addItem(applyButton);
 			});
-
-			addButton.onDidClick(async e => {
-				if (specifyTransTable.dataValues.length < this._model.proseDataPreview.length) {
-					const tableRow: azdata.DeclarativeTableCellValue[] = [];
-					tableRow.push({
-						value: ''
-					});
-					specifyTransTable.dataValues.push(tableRow);
-					specifyTransContainer.clearItems();
-					specifyTransContainer.addItem(specifyTransTable);
-					specifyTransContainer.addItem(applyButton);
-					specifyTransContainer.addItem(addButton);
-					specifyTransContainer.addItem(removeButton);
-				}
-			});
-
-			removeButton.onDidClick(async e => {
-				if (specifyTransTable.dataValues.length > 0) {
-					specifyTransTable.dataValues.pop();
-					specifyTransContainer.clearItems();
-					specifyTransContainer.addItem(specifyTransTable);
-					specifyTransContainer.addItem(applyButton);
-					specifyTransContainer.addItem(addButton);
-					specifyTransContainer.addItem(removeButton);
-				}
-			});
-
-			const previewTable = view.modelBuilder.declarativeTable().withProps({
-				columns: [
-					{
-						displayName: 'Preview',
-						valueType: azdata.DeclarativeDataType.string,
-						isReadOnly: true,
-						width: '150px'
-					}
-				],
-			}).component();
-
-			const previewTableData: azdata.DeclarativeTableCellValue[][] = [];
-			this._model.proseDataPreview.forEach(c => {
-				const tableRow: azdata.DeclarativeTableCellValue[] = [];
-				tableRow.push({
-					value: '-'
-				});
-				previewTableData.push(tableRow);
-			});
-			previewTable.dataValues = previewTableData;
-
-
-			const specifyTransTable = view.modelBuilder.declarativeTable().withProps({
-				columns: [
-					{
-						displayName: 'Specify Transformation',
-						valueType: azdata.DeclarativeDataType.string,
-						isReadOnly: false,
-						width: '100px'
-					}
-				],
-			}).component();
-
-			const specifyTransTableData: azdata.DeclarativeTableCellValue[][] = [];
-			const specifyTransTableRow: azdata.DeclarativeTableCellValue[] = [];
-			specifyTransTableRow.push({
-				value: ''
-			});
-			specifyTransTableData.push(specifyTransTableRow);
-			specifyTransTable.dataValues = specifyTransTableData;
-
 
 			const specifyDerivedColNameTable = view.modelBuilder.declarativeTable().withProps({
 				columns: [
@@ -246,23 +189,14 @@ export class DerivedColumnDialog {
 
 			const transformationContainer = view.modelBuilder.flexContainer().withLayout({
 				flexFlow: 'column',
-				width: '400px'
+				width: '700px'
 			}).withProps({
 				CSSStyles: {
 					'overflow-x': 'scroll'
 				}
 			}).component();
-
-
-			const previewContainer = view.modelBuilder.flexContainer().withLayout({
-				flexFlow: 'column',
-				width: '150px'
-			}).withProps({
-				CSSStyles: {
-					'overflow-x': 'scroll'
-				}
-			}).component();
-			previewContainer.addItem(previewTable);
+			transformationContainer.addItem(transformationTable);
+			transformationContainer.addItem(applyButton);
 
 			const specifyDerivedColNameContainer = view.modelBuilder.flexContainer().withLayout({
 				flexFlow: 'column',
@@ -273,19 +207,6 @@ export class DerivedColumnDialog {
 				}
 			}).component();
 			specifyDerivedColNameContainer.addItem(specifyDerivedColNameTable);
-
-			const specifyTransContainer = view.modelBuilder.flexContainer().withLayout({
-				flexFlow: 'column',
-				width: '100px'
-			}).withProps({
-				CSSStyles: {
-					'overflow-x': 'scroll'
-				}
-			}).component();
-			specifyTransContainer.addItem(specifyTransTable);
-			specifyTransContainer.addItem(applyButton);
-			specifyTransContainer.addItem(addButton);
-			specifyTransContainer.addItem(removeButton);
 
 			const flexGrid = view.modelBuilder.flexContainer().withLayout({
 				flexFlow: 'row',
@@ -301,19 +222,7 @@ export class DerivedColumnDialog {
 			flexGrid.addItem(transformationContainer, {
 				flex: '0',
 				CSSStyles: {
-					width: '400px'
-				}
-			});
-			flexGrid.addItem(specifyTransContainer, {
-				flex: '0',
-				CSSStyles: {
-					width: '100px'
-				}
-			});
-			flexGrid.addItem(previewContainer, {
-				flex: '0',
-				CSSStyles: {
-					width: '150px'
+					width: '700px'
 				}
 			});
 			flexGrid.addItem(specifyDerivedColNameContainer, {
@@ -352,7 +261,7 @@ export class DerivedColumnDialog {
 		return new Promise((resolve) => {
 			this._doneEmitter.once('done', async () => {
 				if (this.currentTransformation.length > 0) {
-					await this._provider.sendTransformationFinalizationRequest({
+					await this._provider.sendSaveTransformationRequest({
 						derivedColumnName: this.currentDerivedColumnName
 					});
 					this._model.transPreviews.push(this.currentTransformation);

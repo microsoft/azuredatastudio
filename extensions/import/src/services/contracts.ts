@@ -56,15 +56,15 @@ export interface ColumnInfo {
  * PROSEDiscoveryRequest
  * Send this request to create a new PROSE session with a new file and preview it
  */
-const transformationGenerationRequestName = 'flatfile/transformationGeneration';
+const learnTransformationRequestName = 'flatfile/learnTransformation';
 
-export interface TransformationGenerationParams {
+export interface LearnTransformationParams {
 	columnNames: string[];
 	transformationExamples: string[];
 	transformationExampleRowIndices: number[];
 }
 
-export interface TransformationGenerationResponse {
+export interface LearnTransformationResponse {
 	transformationPreview: string[];
 }
 
@@ -73,13 +73,13 @@ export interface TransformationGenerationResponse {
 * PROSEDiscoveryRequest
 * Send this request to create a new PROSE session with a new file and preview it
 */
-const transformationFinalizationRequestName = 'flatfile/transformationFinalization';
+const saveTransformationRequestName = 'flatfile/saveTransformation';
 
-export interface TransformationFinalizationParams {
+export interface SaveTransformationParams {
 	derivedColumnName: string;
 }
 
-export interface TransformationFinalizationResponse {
+export interface SaveTransformationResponse {
 	numTransformations: number;
 }
 
@@ -166,12 +166,12 @@ export namespace ChangeColumnSettingsRequest {
 	export const type = new RequestType<ChangeColumnSettingsParams, ChangeColumnSettingsResponse, void, void>(changeColumnSettingsRequestName);
 }
 
-export namespace TransformationGenerationRequest {
-	export const type = new RequestType<TransformationGenerationParams, TransformationGenerationResponse, void, void>(transformationGenerationRequestName);
+export namespace LearnTransformationRequest {
+	export const type = new RequestType<LearnTransformationParams, LearnTransformationResponse, void, void>(learnTransformationRequestName);
 }
 
-export namespace TransformationFinalizationRequest {
-	export const type = new RequestType<TransformationFinalizationParams, TransformationFinalizationResponse, void, void>(transformationFinalizationRequestName);
+export namespace SaveTransformationRequest {
+	export const type = new RequestType<SaveTransformationParams, SaveTransformationResponse, void, void>(saveTransformationRequestName);
 }
 
 
@@ -182,6 +182,6 @@ export interface FlatFileProvider {
 	sendInsertDataRequest(params: InsertDataParams): Thenable<InsertDataResponse>;
 	sendGetColumnInfoRequest(params: GetColumnInfoParams): Thenable<GetColumnInfoResponse>;
 	sendChangeColumnSettingsRequest(params: ChangeColumnSettingsParams): Thenable<ChangeColumnSettingsResponse>;
-	sendTransformationGenerationRequest(params: TransformationGenerationParams): Thenable<TransformationGenerationResponse>;
-	sendTransformationFinalizationRequest(params: TransformationFinalizationParams): Thenable<TransformationFinalizationResponse>;
+	sendLearnTransformationRequest(params: LearnTransformationParams): Thenable<LearnTransformationResponse>;
+	sendSaveTransformationRequest(params: SaveTransformationParams): Thenable<SaveTransformationResponse>;
 }
