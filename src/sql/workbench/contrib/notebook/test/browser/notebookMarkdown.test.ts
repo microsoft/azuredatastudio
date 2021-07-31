@@ -54,11 +54,11 @@ suite('NotebookMarkdownRenderer', () => {
 
 	test('link from relative file path', () => {
 		notebookMarkdownRenderer.setNotebookURI(URI.parse(`foo/temp/file1.txt`));
-		let result: HTMLElement = notebookMarkdownRenderer.renderMarkdown({ value: `[Link to relative path](../test/.build/someimageurl)`, isTrusted: true });
+		let result: HTMLElement = notebookMarkdownRenderer.renderMarkdown({ value: `[Link to relative path](../test/build/someimageurl)`, isTrusted: true });
 		if (process.platform === 'win32') {
-			assert.strictEqual(result.innerHTML, `<p><a href="\\foo\\test\\.build\\someimageurl" data-href="\\foo\\test\\.build\\someimageurl" title="\\foo\\test\\.build\\someimageurl" is-absolute="false">Link to relative path</a></p>`);
+			assert.strictEqual(result.innerHTML, `<p><a href="\\foo\\test\\build\\someimageurl" data-href="\\foo\\test\\build\\someimageurl" title="\\foo\\test\\build\\someimageurl" is-absolute="false">Link to relative path</a></p>`);
 		} else {
-			assert.strictEqual(result.innerHTML, `<p><a href="/foo/test/.build/someimageurl" data-href="/foo/test/.build/someimageurl" title="/foo/test/.build/someimageurl" is-absolute="false">Link to relative path</a></p>`);
+			assert.strictEqual(result.innerHTML, `<p><a href="/foo/test/build/someimageurl" data-href="/foo/test/build/someimageurl" title="/foo/test/build/someimageurl" is-absolute="false">Link to relative path</a></p>`);
 		}
 	});
 
