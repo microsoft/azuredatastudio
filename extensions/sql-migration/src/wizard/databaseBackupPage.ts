@@ -1150,8 +1150,8 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			this._blobContainerLastBackupFileDropdowns[rowIndex].values = createDropdownValuesWithPrereq(constants.SELECT_BLOB_CONTAINER);
 			selectDropDownIndex(this._blobContainerLastBackupFileDropdowns[rowIndex], 0);
 			this._blobContainerLastBackupFileDropdowns[rowIndex]?.updateProperties(dropdownProps);
-			if (columnName === constants.BLOB_CONTAINER) { return; }
 		}
+		if (columnName === constants.BLOB_CONTAINER) { return; }
 
 		this._blobContainerDropdowns[rowIndex].values = createDropdownValuesWithPrereq(constants.SELECT_STORAGE_ACCOUNT);
 		selectDropDownIndex(this._blobContainerDropdowns[rowIndex], 0);

@@ -425,7 +425,7 @@ export class MigrationCutoverDialog {
 	}
 
 	private setAutoRefresh(interval: SupportedAutoRefreshIntervals): void {
-		const shouldRefresh = (status: string | undefined) => !status || status in ['InProgress', 'Creating', 'Completing', 'Creating'];
+		const shouldRefresh = (status: string | undefined) => !status || ['InProgress', 'Creating', 'Completing', 'Creating'].includes(status);
 		if (shouldRefresh(this.getMigrationStatus())) {
 			const classVariable = this;
 			clearInterval(this._autoRefreshHandle);
@@ -449,8 +449,6 @@ export class MigrationCutoverDialog {
 
 			this.isRefreshing = true;
 			this._refreshLoader.loading = true;
-			this._cutoverButton.enabled = false;
-			this._cancelButton.enabled = false;
 			await this._model.fetchStatus();
 			const errors = [];
 			errors.push(this._model.migrationOpStatus.error?.message);
@@ -663,7 +661,8 @@ export class MigrationCutoverDialog {
 	}
 
 	private _isProvisioned(): boolean {
-		return this._model._migration.migrationContext.properties.provisioningState === 'Succeeded' || this._model._migration.migrationContext.properties.migrationStatus === 'Completing';
+		const { migrationStatus, provisioningState } = this._model._migration.migrationContext.properties;
+		return provisioningState === 'Succeeded' || migrationStatus === 'Completing' || migrationStatus === 'Canceling';
 	}
 
 	private _isOnlineMigration(): boolean {
@@ -683,7 +682,10 @@ export class MigrationCutoverDialog {
 	}
 
 	private getMigrationStatus(): string {
-		return this._model._migration.migrationContext.properties.migrationStatus ?? this._model._migration.migrationContext.properties.provisioningState;
+		if (this._model.migrationStatus) {
+			return this._model.migrationStatus.properties.migrationStatus ?? this._model.migrationStatus.properties.provisioningState;
+		}
+		return this._model._migration.migrationContext.properties.migrationStatus;
 	}
 }
 

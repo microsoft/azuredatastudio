@@ -874,6 +874,12 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 								}
 							}
 						};
+
+						if (this._databaseBackup.migrationMode === MigrationMode.OFFLINE) {
+							requestBody.properties.autoCutoverConfiguration = {
+								autoCutover: (this._databaseBackup.migrationMode === MigrationMode.OFFLINE ? true : false)
+							};
+						}
 						break;
 				}
 				requestBody.properties.sourceDatabaseName = this._migrationDbs[i];
