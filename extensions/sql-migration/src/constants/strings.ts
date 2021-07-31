@@ -133,11 +133,23 @@ export const NO_LOCATION_FOUND = localize('sql.migration.no.location.found', "No
 export const NO_STORAGE_ACCOUNT_FOUND = localize('sql.migration.no.storageAccount.found', "No storage account found");
 export const NO_FILESHARES_FOUND = localize('sql.migration.no.fileShares.found', "No file shares found");
 export const NO_BLOBCONTAINERS_FOUND = localize('sql.migration.no.blobContainers.found', "No blob containers found");
+export const NO_BLOBFILES_FOUND = localize('sql.migration.no.blobFiles.found', "No blob files found");
 export const INVALID_SUBSCRIPTION_ERROR = localize('sql.migration.invalid.subscription.error', "Please select a valid subscription to proceed.");
 export const INVALID_LOCATION_ERROR = localize('sql.migration.invalid.location.error', "Please select a valid location to proceed.");
 export const INVALID_STORAGE_ACCOUNT_ERROR = localize('sql.migration.invalid.storageAccount.error', "Please select a valid storage account to proceed.");
 export const INVALID_FILESHARE_ERROR = localize('sql.migration.invalid.fileShare.error', "Please select a valid file share to proceed.");
-export const INVALID_BLOBCONTAINER_ERROR = localize('sql.migration.invalid.blobContainer.error', "Please select a valid blob container to proceed.");
+export function INVALID_BLOB_RESOURCE_GROUP_ERROR(sourceDb: string): string {
+	return localize('sql.migration.invalid.blob.resourceGroup.error', "Please select a valid resource group for source database '{0}' to proceed.", sourceDb);
+}
+export function INVALID_BLOB_STORAGE_ACCOUNT_ERROR(sourceDb: string): string {
+	return localize('sql.migration.invalid.blob.storageAccount.error', "Please select a valid storage account for source database '{0}' to proceed.", sourceDb);
+}
+export function INVALID_BLOB_CONTAINER_ERROR(sourceDb: string): string {
+	return localize('sql.migration.invalid.blob.container.error', "Please select a valid blob container for source database '{0}' to proceed.", sourceDb);
+}
+export function INVALID_BLOB_LAST_BACKUP_FILE_ERROR(sourceDb: string): string {
+	return localize('sql.migration.invalid.blob.lastBackupFile.error', "Please select a valid last backup file for source database '{0}' to proceed.", sourceDb);
+}
 export const INVALID_NETWORK_SHARE_LOCATION = localize('sql.migration.invalid.network.share.location', "Invalid network share location format. Example: {0}", '\\\\Servername.domainname.com\\Backupfolder');
 export const INVALID_USER_ACCOUNT = localize('sql.migration.invalid.user.account', "Invalid user account format. Example: {0}", 'Domain\\username');
 export function TARGET_NETWORK_SHARE_LOCATION(dbName: string): string {
@@ -162,6 +174,9 @@ export function SQL_SOURCE_DETAILS(authMethod: MigrationSourceAuthenticationType
 			return localize('sql.migration.source.details.sqlAuth', "Enter the SQL Authentication credential used for connecting to SQL Server Instance {0}. ​ This credential will be used to for connecting to SQL Server instance and identifying valid backup file(s)", serverName);
 	}
 }
+export const SELECT_RESOURCE_GROUP = localize('sql.migration.blob.resourceGroup.select', "Select a resource group value first.");
+export const SELECT_STORAGE_ACCOUNT = localize('sql.migration.blob.storageAccount.select', "Select a storage account value first.");
+export const SELECT_BLOB_CONTAINER = localize('sql.migration.blob.container.select', "Select a blob container value first.");
 
 // integration runtime page
 export const IR_PAGE_TITLE = localize('sql.migration.ir.page.title', "Azure Database Migration Service");
@@ -270,6 +285,7 @@ export const SUMMARY_AZURE_STORAGE = localize('sql.migration.summary.azure.stora
 export const SUMMARY_IR_NODE = localize('sql.migration.ir.node', "Integration Runtime node");
 export const NETWORK_SHARE = localize('sql.migration.network.share', "Network Share");
 export const BLOB_CONTAINER = localize('sql.migration.blob.container.title', "Blob Container");
+export const BLOB_CONTAINER_LAST_BACKUP_FILE = localize('sql.migration.blob.container.last.backup.file.label', "Last Backup File");
 export const BLOB_CONTAINER_RESOURCE_GROUP = localize('sql.migration.blob.container.label', "Blob container resource group");
 export const BLOB_CONTAINER_STORAGE_ACCOUNT = localize('sql.migration.blob.container.storage.account.label', "Blob container storage account");
 export const FILE_SHARE = localize('sql.migration.file.share.title', "File Share");
