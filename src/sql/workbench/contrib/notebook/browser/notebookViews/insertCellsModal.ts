@@ -2,7 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-
+import 'vs/css!./media/insertCellsModal';
 import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox';
 import { Button } from 'sql/base/browser/ui/button/button';
 import { IClipboardService } from 'sql/platform/clipboard/common/clipboardService';
@@ -30,7 +30,7 @@ import { attachButtonStyler } from 'vs/platform/theme/common/styler';
 import { toJpeg } from 'html-to-image';
 
 export class CellOptionsModel {
-	private _optionsMap: { [name: string]: any } = {};
+	private _optionsMap: { [name: string]: { optionMetadata: ServiceOption, defaultValue: string, currentValue: boolean } } = {};
 
 	constructor(
 		optionsMetadata: ServiceOption[],
@@ -41,32 +41,23 @@ export class CellOptionsModel {
 			let defaultValue = this.getDisplayValue(optionMetadata, optionMetadata.defaultValue);
 			this._optionsMap[optionMetadata.name] = {
 				optionMetadata: optionMetadata,
-				defaultValue: defaultValue,
+				defaultValue: optionMetadata.defaultValue,
 				currentValue: defaultValue
 			};
 		});
 	}
 
-	private getDisplayValue(optionMetadata: ServiceOption, optionValue: any): any {
-		let displayValue: any;
+	private getDisplayValue(optionMetadata: ServiceOption, optionValue: string): boolean {
+		let displayValue: boolean = false;
 		switch (optionMetadata.valueType) {
 			case ServiceOptionType.boolean:
 				displayValue = DialogHelper.getBooleanValueFromStringOrBoolean(optionValue);
 				break;
-			case ServiceOptionType.category:
-				let optionName = optionValue;
-				if (!optionName && optionMetadata.categoryValues[0]) {
-					optionName = optionMetadata.categoryValues[0].name;
-				}
-				displayValue = DialogHelper.getCategoryDisplayName(optionMetadata.categoryValues, optionName);
-				break;
-			case ServiceOptionType.string:
-				displayValue = optionValue ? optionValue : '';
 		}
 		return displayValue;
 	}
 
-	restoreCells() {
+	restoreCells(): void {
 		for (let key in this._optionsMap) {
 			let optionElement = this._optionsMap[key];
 			if (optionElement.currentValue === true) {
@@ -86,10 +77,7 @@ export class CellOptionsModel {
 	}
 
 	public getOptionValue(optionName: string): any {
-		if (this._optionsMap[optionName]) {
-			return this._optionsMap[optionName].currentValue;
-		}
-		return undefined;
+		return this._optionsMap[optionName]?.currentValue;
 	}
 }
 
@@ -146,7 +134,6 @@ export class InsertCellsModal extends Modal {
 		DOM.append(container, grid);
 
 		this.createOptions(grid)
-			.then(() => { })
 			.catch((e) => { this.setError(localize("insertCellsModal.thumbnailError", "Error: Unable to generate thumbnails.")); });
 	}
 
@@ -163,7 +150,7 @@ export class InsertCellsModal extends Modal {
 		cellsAvailableToInsert.forEach(async (cell) => {
 			const optionWidget = this.createCheckBoxHelper(
 				container,
-				'<div class="loading-spinner-container"><div class="loading-spinner codicon in-progress"></div></div>',//cell.renderedOutputTextContent[0]?.substr(0, 20) ?? localize("insertCellsModal.untitled", "Untitled Cell : {0}", cell.cellGuid),
+				'<div class="loading-spinner-container"><div class="loading-spinner codicon in-progress"></div></div>',
 				false,
 				() => this.onOptionChecked(cell.cellGuid)
 			);
@@ -281,27 +268,6 @@ export class InsertCellsModal extends Modal {
 }
 
 registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) => {
-	collector.addRule(`
-		#insert-dialog-cell-grid .loading-spinner-container {
-			flex: 1;
-			align-self: center;
-		}
-	`);
-
-	collector.addRule(`
-		#insert-dialog-cell-grid .loading-spinner {
-			margin: auto;
-		}
-	`);
-
-	collector.addRule(`
-		#insert-dialog-cell-grid input[type="checkbox"] {
-			display: flex;
-			-webkit-appearance: none;
-			outline: none !important;
-		}
-	`);
-
 	const inputBorderColor = theme.getColor(inputBorder);
 	if (inputBorderColor) {
 		collector.addRule(`
