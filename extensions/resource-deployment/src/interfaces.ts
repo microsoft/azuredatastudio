@@ -451,7 +451,7 @@ export enum ToolType {
 	AzCli,
 	KubeCtl,
 	Docker,
-	Azdata
+	AzdataToolOld
 }
 
 export const enum ToolStatus {

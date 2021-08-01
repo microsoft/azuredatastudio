@@ -14,7 +14,8 @@ import { IPlatformService } from '../../services/platformService';
 const tools: { name: string; type: ToolType }[] = [
 	{ name: 'azure-cli', type: ToolType.AzCli },
 	{ name: 'docker', type: ToolType.Docker },
-	{ name: 'kubectl', type: ToolType.KubeCtl }
+	{ name: 'kubectl', type: ToolType.KubeCtl },
+	{ name: 'azdata', type: ToolType.AzdataToolOld }
 ];
 const mockPlatformService = TypeMoq.Mock.ofType<IPlatformService>();
 const toolsService = new ToolsService(mockPlatformService.object);
