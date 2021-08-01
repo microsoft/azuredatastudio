@@ -36,12 +36,9 @@ declare module 'arc' {
 	export type ControllerInfo = {
 		id: string,
 		kubeConfigFilePath: string,
-		kubeClusterContext: string
-		endpoint: string | undefined,
+		kubeClusterContext: string,
 		namespace: string,
 		name: string,
-		username: string,
-		rememberPassword: boolean,
 		resources: ResourceInfo[]
 	};
 
@@ -51,7 +48,5 @@ declare module 'arc' {
 	}
 	export interface IExtension {
 		getRegisteredDataControllers(): Promise<DataController[]>;
-		getControllerPassword(controllerInfo: ControllerInfo): Promise<string>;
-		reacquireControllerPassword(controllerInfo: ControllerInfo, password: string, retryCount?: number): Promise<string>;
 	}
 }
