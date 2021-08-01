@@ -2,7 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import 'vs/css!./media/insertCellsModal';
+import 'vs/css!./insertCellsModal';
 import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox';
 import { Button } from 'sql/base/browser/ui/button/button';
 import { IClipboardService } from 'sql/platform/clipboard/common/clipboardService';
