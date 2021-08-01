@@ -8,6 +8,7 @@
 /// <reference path='../../../../src/sql/azdata.proposed.d.ts'/>
 /// <reference path='../../../arc/src/typings/arc.d.ts'/>
 /// <reference path='../../../azcli/src/typings/az-ext.d.ts'/>
+/// <reference path='../../../azdata/src/typings/azdata-ext.d.ts'/>
 /// <reference path='../../../azurecore/src/azurecore.d.ts'/>
 /// <reference path='../../../azurecore/src/azureResource/azure-resource.d.ts'/>
 /// <reference types='@types/node'/>
