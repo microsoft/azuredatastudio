@@ -87,6 +87,7 @@ export class InsertCellsModal extends Modal {
 	private _submitButton: Button;
 	private _cancelButton: Button;
 	private _optionsMap: { [name: string]: Checkbox } = {};
+	private _maxTitleLength: number = 20;
 
 	constructor(
 		private onInsert: (cell: ICellModel) => any,
@@ -189,7 +190,7 @@ export class InsertCellsModal extends Modal {
 		const cellsAvailableToInsert = activeView.hiddenCells;
 		return cellsAvailableToInsert.map((cell) => ({
 			name: cell.cellGuid,
-			displayName: cell.renderedOutputTextContent[0]?.substr(0, 20) ?? localize("insertCellsModal.untitled", "Untitled Cell : {0}", cell.cellGuid),
+			displayName: truncate(cell.renderedOutputTextContent[0] ?? '', this._maxTitleLength) || localize("insertCellsModal.untitled", "Untitled Cell : {0}", cell.cellGuid),
 			description: '',
 			groupName: undefined,
 			valueType: ServiceOptionType.boolean,
