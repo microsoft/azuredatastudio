@@ -49,6 +49,8 @@ export class DashboardWidget {
 	private _autoRefreshHandle!: NodeJS.Timeout;
 	private _disposables: vscode.Disposable[] = [];
 
+	private isRefreshing: boolean = false;
+
 	constructor() {
 	}
 
@@ -181,15 +183,12 @@ export class DashboardWidget {
 
 		const preRequisiteLearnMoreLink = view.modelBuilder.hyperlink().withProps({
 			label: loc.LEARN_MORE,
-			url: '', //TODO: add link for the pre req document.
+			ariaLabel: loc.LEARN_MORE_ABOUT_PRE_REQS,
+			url: 'https://aka.ms/azuresqlmigrationextension',
 			CSSStyles: {
 				'padding-left': '10px'
 			}
 		}).component();
-
-		this._disposables.push(preRequisiteLearnMoreLink.onDidClick((value) => {
-			vscode.window.showInformationMessage(loc.COMING_SOON);
-		}));
 
 		const preReqContainer = view.modelBuilder.flexContainer().withItems([
 			preRequisiteListTitle,
@@ -245,14 +244,19 @@ export class DashboardWidget {
 	}
 
 	private setAutoRefresh(interval: SupportedAutoRefreshIntervals): void {
-		let classVariable = this;
+		const classVariable = this;
 		clearInterval(this._autoRefreshHandle);
 		if (interval !== -1) {
-			this._autoRefreshHandle = setInterval(function () { classVariable.refreshMigrations(); }, interval);
+			this._autoRefreshHandle = setInterval(async function () { await classVariable.refreshMigrations(); }, interval);
 		}
 	}
 
 	private async refreshMigrations(): Promise<void> {
+		if (this.isRefreshing) {
+			return;
+		}
+
+		this.isRefreshing = true;
 		this._viewAllMigrationsButton.enabled = false;
 		this._migrationStatusCardLoadingContainer.loading = true;
 		try {
@@ -307,6 +311,7 @@ export class DashboardWidget {
 		} catch (error) {
 			console.log(error);
 		} finally {
+			this.isRefreshing = false;
 			this._migrationStatusCardLoadingContainer.loading = false;
 			this._viewAllMigrationsButton.enabled = true;
 		}

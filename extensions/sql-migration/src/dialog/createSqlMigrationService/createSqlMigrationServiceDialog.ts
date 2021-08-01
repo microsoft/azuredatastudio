@@ -346,7 +346,12 @@ export class CreateSqlMigrationServiceDialog {
 	private async populateResourceGroups(): Promise<void> {
 		this.migrationServiceResourceGroupDropdown.loading = true;
 		try {
-			this.migrationServiceResourceGroupDropdown.values = await this._model.getAzureResourceGroupDropdownValues(this._model._targetSubscription);
+			this.migrationServiceResourceGroupDropdown.values = (await this._model.getAzureResourceGroupDropdownValues(this._model._targetSubscription)).map(v => {
+				return {
+					name: v.displayName,
+					displayName: v.displayName
+				};
+			});
 			const selectedResourceGroupValue = this.migrationServiceResourceGroupDropdown.values.find(v => v.name.toLowerCase() === this._resourceGroupPreset.toLowerCase());
 			this.migrationServiceResourceGroupDropdown.value = (selectedResourceGroupValue) ? selectedResourceGroupValue : this.migrationServiceResourceGroupDropdown.values[0];
 		} finally {
@@ -428,6 +433,7 @@ export class CreateSqlMigrationServiceDialog {
 
 
 		this.migrationServiceAuthKeyTable = this._view.modelBuilder.declarativeTable().withProps({
+			ariaLabel: constants.DATABASE_MIGRATION_SERVICE_AUTHENTICATION_KEYS,
 			columns: [
 				{
 					displayName: constants.NAME,
