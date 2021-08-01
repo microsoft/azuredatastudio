@@ -496,6 +496,18 @@ export class MigrationCutoverDialog {
 		}
 	}
 
+	private getMigrationDetails(): string {
+		if (this._model.migrationOpStatus) {
+			return (JSON.stringify(
+				{
+					'async-operation-details': this._model.migrationOpStatus,
+					'details': this._model.migrationStatus
+				}
+				, undefined, 2));
+		} else {
+			return (JSON.stringify(this._model.migrationStatus, undefined, 2));
+		}
+	}
 
 	private async refreshStatus(): Promise<void> {
 		try {
@@ -508,19 +520,10 @@ export class MigrationCutoverDialog {
 			errors.push(this._model.migrationStatus.properties.migrationFailureError?.message);
 			errors.push(this._model.migrationStatus.properties.migrationStatusDetails?.fileUploadBlockingErrors ?? []);
 			errors.push(this._model.migrationStatus.properties.migrationStatusDetails?.restoreBlockingReason);
-			if (this._model.migrationOpStatus) {
-				errors.push(JSON.stringify(
-					{
-						'async-operation-details': this._model.migrationOpStatus,
-						'details': this._model.migrationStatus
-					}
-					, undefined, 2));
-			} else {
-				errors.push(JSON.stringify(this._model.migrationStatus, undefined, 2));
-			}
 			this._dialogObject.message = {
 				text: errors.filter(e => e !== undefined).join(EOL),
-				level: (this._model.migrationStatus.properties.migrationStatus === MigrationStatus.InProgress || this._model.migrationStatus.properties.migrationStatus === 'Completing') ? azdata.window.MessageLevel.Warning : azdata.window.MessageLevel.Error
+				level: (this._model.migrationStatus.properties.migrationStatus === MigrationStatus.InProgress || this._model.migrationStatus.properties.migrationStatus === 'Completing') ? azdata.window.MessageLevel.Warning : azdata.window.MessageLevel.Error,
+				description: this.getMigrationDetails()
 			};
 			const sqlServerInfo = await azdata.connection.getServerInfo((await azdata.connection.getCurrentConnection()).connectionId);
 			const sqlServerName = this._model._migration.sourceConnectionProfile.serverName;
