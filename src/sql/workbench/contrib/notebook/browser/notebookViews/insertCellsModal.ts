@@ -29,8 +29,14 @@ import { NotebookViewsExtension } from 'sql/workbench/services/notebook/browser/
 import { attachButtonStyler } from 'vs/platform/theme/common/styler';
 import { toJpeg } from 'html-to-image';
 
+type CellOption = {
+	optionMetadata: ServiceOption,
+	defaultValue: string,
+	currentValue: boolean
+};
+
 export class CellOptionsModel {
-	private _optionsMap: { [name: string]: { optionMetadata: ServiceOption, defaultValue: string, currentValue: boolean } } = {};
+	private _optionsMap: { [name: string]: CellOption } = {};
 
 	constructor(
 		optionsMetadata: ServiceOption[],
