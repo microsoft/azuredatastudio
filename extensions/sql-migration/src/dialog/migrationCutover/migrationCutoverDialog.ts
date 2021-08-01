@@ -42,7 +42,10 @@ export class MigrationCutoverDialog {
 	private _fileCount!: azdata.TextComponent;
 	private fileTable!: azdata.TableComponent;
 	private _autoRefreshHandle!: any;
-	private _emptyTableFill! : azdata.FlexContainer;
+	private _emptyTableFill!: azdata.FlexContainer;
+	private _disposables: vscode.Disposable[] = [];
+
+	private isRefreshing = false;
 
 	readonly _infoFieldWidth: string = '250px';
 
@@ -266,29 +269,29 @@ export class MigrationCutoverDialog {
 					iconWidth: '100px',
 					height: '100px',
 					width: '100px',
-					CSSStyles:{
-						'text-align':'center'
+					CSSStyles: {
+						'text-align': 'center'
 					}
 
 				}).component();
 
 				const _emptyTableText = view.modelBuilder.text().withProps({
-					value: "No backup files to show",
-					CSSStyles:{
-						'text-align':'center',
-						'font-size':'large',
-						'font-weight':'bold',
-						'width':'300px'
+					value: loc.EMPTY_TABLE_TEXT,
+					CSSStyles: {
+						'text-align': 'center',
+						'font-size': 'large',
+						'font-weight': 'bold',
+						'width': '300px'
 					}
 				}).component();
 
 				const _emptyTableSubText = view.modelBuilder.text().withProps({
-					value: "If you expected to see results, please check the connection to the sql server instance",
-					CSSStyles:{
-						'text-align':'center',
-						'margin-top':'0px',
+					value: loc.EMPTY_TABLE_SUBTEXT,
+					CSSStyles: {
+						'text-align': 'center',
+						'margin-top': '0px',
 						'font-size': '15px',
-						'width':'300px'
+						'width': '300px'
 					}
 				}).component();
 
@@ -301,9 +304,7 @@ export class MigrationCutoverDialog {
 						_emptyTableImage,
 						_emptyTableText,
 						_emptyTableSubText
-					], { CSSStyles: {
-
-					} })
+					])
 					.withProps({
 						width: 1000,
 						display: 'none'
@@ -318,7 +319,7 @@ export class MigrationCutoverDialog {
 						{ component: this._view.modelBuilder.separator().withProps({ width: 1000 }).component() },
 						{ component: this._fileCount },
 						{ component: this.fileTable },
-						{ component: this._emptyTableFill}
+						{ component: this._emptyTableFill }
 					],
 					{ horizontal: false }
 				);
@@ -604,12 +605,11 @@ export class MigrationCutoverDialog {
 				}
 			});
 
-			if(tableData.length === 0)
-			{
+			if (tableData.length === 0) {
 				this._emptyTableFill.updateCssStyles({
 					'display': 'flex'
 				});
-				this.fileTable.height= '50px';
+				this.fileTable.height = '50px';
 
 			}
 
