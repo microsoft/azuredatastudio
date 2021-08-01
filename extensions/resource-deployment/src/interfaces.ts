@@ -450,7 +450,8 @@ export interface ToolRequirementInfo {
 export enum ToolType {
 	AzCli,
 	KubeCtl,
-	Docker
+	Docker,
+	Azdata
 }
 
 export const enum ToolStatus {
