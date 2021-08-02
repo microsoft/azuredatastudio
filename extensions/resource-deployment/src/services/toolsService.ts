@@ -5,10 +5,9 @@
 import { ITool } from '../interfaces';
 import { DockerTool } from './tools/dockerTool';
 import { AzCliTool } from './tools/azCliTool';
-import { AzdataTool } from './tools/azdataTool';
 import { KubeCtlTool } from './tools/kubeCtlTool';
 import { IPlatformService } from './platformService';
-import { AzdataToolOld } from './tools/azdataToolOld';
+import { AzdataTool } from './tools/azdataTool';
 
 export interface IToolsService {
 	getToolByName(toolName: string): ITool | undefined;
@@ -25,7 +24,6 @@ export class ToolsService implements IToolsService {
 				new DockerTool(this._platformService),
 				new AzCliTool(this._platformService),
 				new AzdataTool(this._platformService),
-				new AzdataToolOld(this._platformService),
 				new KubeCtlTool(this._platformService)
 			].map<[string, ITool]>((tool: ITool) => [tool.name, tool])
 		);

@@ -361,7 +361,20 @@ export default class DeclarativeTableComponent extends ContainerBase<any, azdata
 		return localize('declarativeTable.showActions', "Show Actions");
 	}
 
-	public onContextMenuRequested(event: MouseEvent, row: number, column: number) {
+	public onContextMenuButtonKeyDown(event: KeyboardEvent, row: number, column: number): void {
+		const keyboardEvent = new StandardKeyboardEvent(event);
+		if (keyboardEvent.keyCode === KeyCode.Space ||
+			keyboardEvent.keyCode === KeyCode.Enter) {
+			this.showContextMenu(event, row, column);
+		}
+	}
+
+	public onContextMenuButtonClick(event: MouseEvent, row: number, column: number): void {
+		this.showContextMenu(event, row, column);
+	}
+
+	private showContextMenu(event: MouseEvent | KeyboardEvent, row: number, column: number): void {
+		EventHelper.stop(event, true);
 		const cellValue = this.data[row][column].value as azdata.DeclarativeTableMenuCellValue;
 		const actions: IAction[] = [];
 		let addSeparator = false;

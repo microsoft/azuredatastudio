@@ -45,7 +45,7 @@
 							<model-component-wrapper *ngIf="isComponent(c) && getItemDescriptor(cellData.value)"
 								[descriptor]="getItemDescriptor(cellData.value)" [modelStore]="modelStore">
 							</model-component-wrapper>
-							<button *ngIf="isContextMenuColumn(c)" [title]="contextMenuButtonTitle" [attr.aria-label]="contextMenuButtonTitle" class="codicon toggle-more" (click)="onContextMenuRequested($event,r,c)">
+							<button *ngIf="isContextMenuColumn(c)" [title]="contextMenuButtonTitle" [attr.aria-label]="contextMenuButtonTitle" class="codicon toggle-more" (click)="onContextMenuButtonClick($event,r,c)" (keydown)="onContextMenuButtonKeyDown($event,r,c)">
 							</button>
 						</td>
 					</ng-container>

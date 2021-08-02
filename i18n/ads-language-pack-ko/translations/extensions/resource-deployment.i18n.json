@@ -259,9 +259,6 @@
 			"resourceDeployment.Kubectl.BackupCurrentBinary": "설치 위치의 기존 kubectl을 백업하는 중...",
 			"resourceDeployment.Kubectl.MoveToSystemPath": "PATH에서 설치 위치로 kubectl을 이동하는 중..."
 		},
-		"dist/ui/notebookWizard/notebookWizardPage": {
-			"wizardPage.ValidationError": "이 페이지에 오류가 있습니다. 오류를 보려면 '세부 정보 표시'를 클릭합니다."
-		},
 		"dist/ui/deploymentInputDialog": {
 			"deploymentDialog.OpenNotebook": "Notebook 열기",
 			"deploymentDialog.OkButtonText": "확인",
@@ -376,8 +373,7 @@
 			"deployCluster.SubdomainDescription": "이 SQL Server 빅 데이터 클러스터에 사용할 고유한 DNS 하위 도메인입니다. 제공되지 않으면 클러스터 이름이 기본값으로 사용됩니다.",
 			"deployCluster.AccountPrefix": "계정 접두사",
 			"deployCluster.AccountPrefixDescription": "AD 계정 SQL Server 빅 데이터 클러스터의 고유한 접두사가 생성됩니다. 제공되지 않으면 하위 도메인 이름이 기본값으로 사용됩니다. 하위 도메인이 제공되지 않으면 클러스터 이름이 기본값으로 사용됩니다.",
-			"deployCluster.AdminPasswordField": "암호",
-			"deployCluster.ValidationError": "이 페이지에 오류가 있습니다. 오류를 보려면 '세부 정보 표시'를 클릭합니다."
+			"deployCluster.AdminPasswordField": "암호"
 		},
 		"dist/ui/deployClusterWizard/pages/serviceSettingsPage": {
 			"deployCluster.ServiceSettingsPageTitle": "서비스 설정",

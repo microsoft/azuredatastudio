@@ -2,8 +2,6 @@
 
 Welcome to Microsoft Azure CLI Extension for Azure Data Studio!
 
-**This extension is only applicable to customers in the Azure Arc data services public preview. Other usage is not supported at this time.**
-
 ## Overview
 
 This extension adds support for the Azure CLI (az) within Azure Data Studio.

@@ -449,6 +449,7 @@ export abstract class Modal extends Disposable implements IThemable {
 			if (context[context.length - 1] === this._staticKey) {
 				let event = new StandardKeyboardEvent(e);
 				if (event.equals(KeyCode.Enter)) {
+					DOM.EventHelper.stop(e, true);
 					this.onAccept(event);
 				} else if (event.equals(KeyCode.Escape)) {
 					DOM.EventHelper.stop(e, true);
@@ -582,6 +583,11 @@ export abstract class Modal extends Disposable implements IThemable {
 			}
 			DOM.removeNode(this._messageDetail!);
 			this.messagesElementVisible = !!this._messageSummaryText;
+			// Read out the description to screen readers so they don't have to
+			// search around for the alert box to hear the extra information
+			if (description) {
+				alert(description);
+			}
 			this.updateExpandMessageState();
 		}
 	}

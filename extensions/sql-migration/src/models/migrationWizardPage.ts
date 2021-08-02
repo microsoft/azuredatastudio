@@ -33,8 +33,8 @@ export abstract class MigrationWizardPage {
 		return this.wizardPage;
 	}
 
-	public abstract onPageEnter(): Promise<void>;
-	public abstract onPageLeave(): Promise<void>;
+	public abstract onPageEnter(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void>;
+	public abstract onPageLeave(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void>;
 
 	private readonly stateChanges: (() => Promise<void>)[] = [];
 	protected async onStateChangeEvent(e: StateChangeEvent) {

@@ -718,8 +718,8 @@
   <file original="extensions/azurecore/dist/azureResource/providers/azuremonitor/azuremonitorTreeDataProvider" source-language="en" datatype="plaintext" target-language="zh-Hans">
     <body>
       <trans-unit id="azure.resource.providers.AzureMonitorContainerLabel">
-        <source xml:lang="en">Azure Monitor Workspace</source>
-        <target state="translated">Azure Monitor 工作区</target>
+        <source xml:lang="en">Azure Monitor Logs workspace</source>
+        <target state="translated">Azure Monitor 日志工作区</target>
       </trans-unit>
     </body>
   </file>
@@ -777,7 +777,7 @@
     <body>
       <trans-unit id="azure.resource.providers.postgresArcServer.treeDataProvider.postgresServerContainerLabel">
         <source xml:lang="en">PostgreSQL Hyperscale – Azure Arc</source>
-        <target state="translated">超大规模 PostgreSQL – Azure Arc</target>
+        <target state="translated">PostgreSQL 超大规模 – Azure Arc</target>
       </trans-unit>
     </body>
   </file>
