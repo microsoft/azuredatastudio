@@ -40,7 +40,7 @@ export class CellOptionsModel {
 
 	constructor(
 		optionsMetadata: ServiceOption[],
-		private onInsert: (cell: ICellModel) => any,
+		private onInsert: (cell: ICellModel) => void,
 		private _context: NotebookViewsExtension,
 	) {
 		optionsMetadata.forEach(optionMetadata => {
@@ -76,13 +76,13 @@ export class CellOptionsModel {
 		}
 	}
 
-	public setOptionValue(optionName: string, value: any): void {
+	public setOptionValue(optionName: string, value: boolean): void {
 		if (this._optionsMap[optionName]) {
 			this._optionsMap[optionName].currentValue = value;
 		}
 	}
 
-	public getOptionValue(optionName: string): any {
+	public getOptionValue(optionName: string): boolean {
 		return this._optionsMap[optionName]?.currentValue;
 	}
 }
@@ -96,7 +96,7 @@ export class InsertCellsModal extends Modal {
 	private _maxTitleLength: number = 20;
 
 	constructor(
-		private onInsert: (cell: ICellModel) => any,
+		private onInsert: (cell: ICellModel) => void,
 		private _context: NotebookViewsExtension,
 		private _containerRef: ViewContainerRef,
 		private _componentFactoryResolver: ComponentFactoryResolver,
@@ -255,7 +255,7 @@ export class InsertCellsModal extends Modal {
 		}
 	}
 
-	public async generateScreenshot(cell: ICellModel, screenshotWidth: number = 300, screenshowHeight: number = 300, backgroundColor: string = '#ffffff'): Promise<any> {
+	public async generateScreenshot(cell: ICellModel, screenshotWidth: number = 300, screenshowHeight: number = 300, backgroundColor: string = '#ffffff'): Promise<string> {
 		let componentFactory = this._componentFactoryResolver.resolveComponentFactory(TextCellComponent);
 		let component = this._containerRef.createComponent(componentFactory);
 
