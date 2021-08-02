@@ -229,9 +229,6 @@ export class BookModel {
 	}
 
 	public async getSections(element: BookTreeItem): Promise<BookTreeItem[]> {
-		const fileContents = await fsPromises.readFile(element.tableOfContentsPath, 'utf-8');
-		let tableOfContents: any = yaml.safeLoad(fileContents.toString());
-		const parsedTOC: IJupyterBookToc = { sections: this.parseJupyterSections(this._bookVersion, tableOfContents) };
 		let sections: JupyterBookSection[] = element.sections;
 		let root: string = element.root;
 		let book: BookTreeItemFormat = element.book;
@@ -242,7 +239,7 @@ export class BookModel {
 					title: sections[i].title,
 					contentPath: undefined,
 					root: root,
-					tableOfContents: JSON.stringify(parsedTOC),
+					tableOfContents: element.book.tableOfContents,
 					page: sections[i],
 					type: BookTreeItemType.ExternalLink,
 					treeItemCollapsibleState: vscode.TreeItemCollapsibleState.Collapsed,
@@ -268,7 +265,7 @@ export class BookModel {
 						title: sections[i].title ? sections[i].title : sections[i].file,
 						contentPath: pathToNotebook,
 						root: root,
-						tableOfContents: JSON.stringify(parsedTOC),
+						tableOfContents: element.book.tableOfContents,
 						page: sections[i],
 						type: BookTreeItemType.Notebook,
 						treeItemCollapsibleState: vscode.TreeItemCollapsibleState.Collapsed,
@@ -300,7 +297,7 @@ export class BookModel {
 						title: sections[i].title ? sections[i].title : sections[i].file,
 						contentPath: pathToMarkdown,
 						root: root,
-						tableOfContents: JSON.stringify(parsedTOC),
+						tableOfContents: element.book.tableOfContents,
 						page: sections[i],
 						type: BookTreeItemType.Markdown,
 						treeItemCollapsibleState: vscode.TreeItemCollapsibleState.Collapsed,

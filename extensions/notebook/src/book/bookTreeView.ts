@@ -45,6 +45,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	public viewId: string;
 	public books: BookModel[] = [];
 	public currentBook: BookModel;
+	supportedTypes = ['text/treeitems'];
 
 	constructor(workspaceFolders: vscode.WorkspaceFolder[], extensionContext: vscode.ExtensionContext, openAsUntitled: boolean, view: string, public providerId: string) {
 		this._openAsUntitled = openAsUntitled;
@@ -209,17 +210,17 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	}
 
 	async editBook(movingElement: BookTreeItem): Promise<void> {
-		TelemetryReporter.sendActionEvent(BookTelemetryView, NbTelemetryActions.MoveNotebook);
-		const selectionResults = await this.getSelectionQuickPick(movingElement);
-		if (selectionResults) {
-			const pickedSection = selectionResults.quickPickSection;
-			const updateBook = selectionResults.book;
-			const targetSection = pickedSection.detail !== undefined ? updateBook.findChildSection(pickedSection.detail) : undefined;
-			const sourceBook = this.books.find(book => book.bookPath === movingElement.book.root);
-			const targetBook = this.books.find(book => book.bookPath === updateBook.book.root);
-			this.bookTocManager = new BookTocManager(sourceBook, targetBook);
-			await this.bookTocManager.updateBook(movingElement, updateBook, targetSection);
-		}
+		// TelemetryReporter.sendActionEvent(BookTelemetryView, NbTelemetryActions.MoveNotebook);
+		// const selectionResults = await this.getSelectionQuickPick(movingElement);
+		// if (selectionResults) {
+		// 	const pickedSection = selectionResults.quickPickSection;
+		// 	const updateBook = selectionResults.book;
+		// 	const targetSection = pickedSection.detail !== undefined ? updateBook.findChildSection(pickedSection.detail) : undefined;
+		// 	const sourceBook = this.books.find(book => book.bookPath === movingElement.book.root);
+		// 	const targetBook = this.books.find(book => book.bookPath === updateBook.book.root);
+		// 	this.bookTocManager = new BookTocManager(sourceBook, targetBook);
+		// 	await this.bookTocManager.updateBook(movingElement, updateBook, targetSection);
+		// }
 	}
 
 	async openBook(bookPath: string, urlToOpen?: string, showPreview?: boolean, isNotebook?: boolean): Promise<void> {
@@ -718,13 +719,46 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	}
 
 	async onDrop(sources: vscode.TreeDataTransfer, target: BookTreeItem): Promise<void> {
-		let treeItems = JSON.parse(await sources.items.get('text/treeitems')!.asString());
-		if (treeItems) {
+		let treeItems = JSON.parse(await sources.items.get('text/treeitems')!.asString()) as BookTreeItem[];
+		// get local roots
+		let rootItems = this.getLocalRoots(treeItems);
+		// filter target from sources
+		rootItems = rootItems.filter(item => item.resourceUri !== target.resourceUri);
+		if (rootItems && target) {
+			const sourcesByBook = new Map<BookModel, BookTreeItem[]>();
+			for (let item of rootItems) {
+				const book = this.books.find(book => book.bookPath === item.book.root);
+				if (sourcesByBook.has(book)) {
+					const tmpItem = sourcesByBook.get(book);
+					sourcesByBook.set(book, [...tmpItem, item]);
+				} else {
+					sourcesByBook.set(book, [item]);
+				}
+			}
+			const targetBook = this.books.find(book => book.bookPath === target.book.root);
 
+			for (let [book, items] of sourcesByBook) {
+				this.bookTocManager = new BookTocManager(book, targetBook);
+				await this.bookTocManager.updateBook(items, target);
+			}
 		}
 	}
 
-	dispose(): void { }
+	public getLocalRoots(bookItems: BookTreeItem[]): BookTreeItem[] {
+		const localRoots = [];
+		for (let i = 0; i < bookItems.length; i++) {
+			const parent = bookItems[i].book.parent;
+			if (parent) {
+				const isInList = bookItems.find(item => item.resourceUri.path === parent.resourceUri.path && parent.contextValue !== 'savedBook');
+				if (isInList === undefined) {
+					localRoots.push(bookItems[i]);
+				}
+			} else {
+				localRoots.push(bookItems[i]);
+			}
+		}
+		return localRoots;
+	}
 
-	supportedTypes = ['text/treeitems'];
+	dispose: () => {};
 }
