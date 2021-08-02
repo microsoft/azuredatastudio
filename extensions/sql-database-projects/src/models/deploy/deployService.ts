@@ -147,8 +147,8 @@ export class DeployService {
 
 		const connectionProfile = {
 			password: profile.password,
-			serverName: `${profile.serverName},${profile.port}`,
-			server: `${profile.serverName},${profile.port}`,
+			serverName: `${profile.serverName}`,
+			server: `${profile.serverName}`,
 			port: profile.port,
 			database: '',
 			savePassword: true,
