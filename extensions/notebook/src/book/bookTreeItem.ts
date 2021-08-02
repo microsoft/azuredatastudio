@@ -39,21 +39,21 @@ export interface BookTreeItemFormat {
 }
 
 export class BookTreeItem extends vscode.TreeItem {
-	private _sections: JupyterBookSection[] | undefined;
-	private _uri: string | undefined;
+	public sections: JupyterBookSection[] | undefined;
+	public uri: string | undefined;
 	private _previousUri: string;
 	private _nextUri: string;
 	public override command: vscode.Command;
 	public override resourceUri: vscode.Uri;
-	private _rootContentPath: string;
-	private _tableOfContentsPath: string;
+	public rootContentPath: string;
+	public tableOfContentsPath: string;
 
 	constructor(public book: BookTreeItemFormat, icons: any) {
 		super(book.title, book.treeItemCollapsibleState);
 		const parsedTOC = JSON.parse(this.book.tableOfContents);
 		if (book.type === BookTreeItemType.Book) {
 			this.collapsibleState = book.treeItemCollapsibleState;
-			this._sections = this.book.page;
+			this.sections = this.book.page;
 			if (book.isUntitled) {
 				this.contextValue = BookTreeItemType.providedBook;
 			} else {
@@ -78,18 +78,18 @@ export class BookTreeItem extends vscode.TreeItem {
 			this.setCommand();
 		}
 		this.iconPath = icons;
-		this._tableOfContentsPath = undefined;
+		this.tableOfContentsPath = undefined;
 
 		if (this.book.type === BookTreeItemType.ExternalLink) {
-			this.tooltip = `${this._uri}`;
+			this.tooltip = `${this.uri}`;
 		}
 		else {
 			// if it's a section, book or a notebook's book then we set the table of contents path.
 			if (this.book.type === BookTreeItemType.Book || this.contextValue === BookTreeItemType.section || this.contextValue === BookTreeItemType.savedBookNotebook || parsedTOC.sections && book.type === BookTreeItemType.Markdown) {
-				this._tableOfContentsPath = getTocPath(this.book.version, this.book.root);
+				this.tableOfContentsPath = getTocPath(this.book.version, this.book.root);
 			}
-			this._rootContentPath = getContentPath(this.book.version, this.book.root, '');
-			this.tooltip = this.book.type === BookTreeItemType.Book ? this._rootContentPath : this.book.contentPath;
+			this.rootContentPath = getContentPath(this.book.version, this.book.root, '');
+			this.tooltip = this.book.type === BookTreeItemType.Book ? this.rootContentPath : this.book.contentPath;
 			this.resourceUri = this.book.type === BookTreeItemType.Book ? vscode.Uri.file(this.book.root) : vscode.Uri.file(this.book.contentPath);
 		}
 	}
@@ -100,8 +100,8 @@ export class BookTreeItem extends vscode.TreeItem {
 			this.book.page.sections || this.book.page.subsections ?
 				vscode.TreeItemCollapsibleState.Collapsed :
 				vscode.TreeItemCollapsibleState.None;
-		this._sections = this.book.page.sections;
-		this._uri = this.book.page.file ? this.book.page.file?.replace(/\\/g, '/') : this.book.page.url?.replace(/\\/g, '/');
+		this.sections = this.book.page.sections;
+		this.uri = this.book.page.file ? this.book.page.file?.replace(/\\/g, '/') : this.book.page.url?.replace(/\\/g, '/');
 
 		if (tableOfContents.sections) {
 			let index = (tableOfContents.sections.findIndex((entry) => entry.file === this.book.page.file));
@@ -117,7 +117,7 @@ export class BookTreeItem extends vscode.TreeItem {
 		} else if (this.book.type === BookTreeItemType.Markdown) {
 			this.command = { command: 'bookTreeView.openMarkdown', title: loc.openMarkdownCommand, arguments: [this.book.contentPath], };
 		} else if (this.book.type === BookTreeItemType.ExternalLink) {
-			this.command = { command: 'bookTreeView.openExternalLink', title: loc.openExternalLinkCommand, arguments: [this._uri], };
+			this.command = { command: 'bookTreeView.openExternalLink', title: loc.openExternalLinkCommand, arguments: [this.uri], };
 		}
 	}
 
@@ -161,29 +161,29 @@ export class BookTreeItem extends vscode.TreeItem {
 		return this.book.title;
 	}
 
-	public get uri(): string | undefined {
-		return this._uri;
-	}
+	// public get uri(): string | undefined {
+	// 	return this._uri;
+	// }
 
 	public get root(): string {
 		return this.book.root;
 	}
 
-	public get rootContentPath(): string {
-		return this._rootContentPath;
-	}
+	// public get rootContentPath(): string {
+	// 	return this._rootContentPath;
+	// }
 
-	public get tableOfContentsPath(): string {
-		return this._tableOfContentsPath;
-	}
+	// public get tableOfContentsPath(): string {
+	// 	return this._tableOfContentsPath;
+	// }
 
 	public get tableOfContents(): IJupyterBookToc {
 		return this.tableOfContents;
 	}
 
-	public get sections(): JupyterBookSection[] {
-		return this._sections;
-	}
+	// public get sections(): JupyterBookSection[] {
+	// 	return this._sections;
+	// }
 
 	public get previousUri(): string {
 		return this._previousUri;
@@ -195,17 +195,17 @@ export class BookTreeItem extends vscode.TreeItem {
 
 	public override readonly tooltip: string;
 
-	public set uri(uri: string) {
-		this._uri = uri;
-	}
+	// public set uri(uri: string) {
+	// 	this._uri = uri;
+	// }
 
-	public set sections(sections: JupyterBookSection[] | undefined) {
-		this._sections = sections;
-	}
+	// public set sections(sections: JupyterBookSection[] | undefined) {
+	// 	this._sections = sections;
+	// }
 
-	public set tableOfContentsPath(tocPath: string) {
-		this._tableOfContentsPath = tocPath;
-	}
+	// public set tableOfContentsPath(tocPath: string) {
+	// 	this._tableOfContentsPath = tocPath;
+	// }
 
 	public get children(): string | undefined {
 		return this.book.children;

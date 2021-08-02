@@ -88,7 +88,7 @@ describe('BookTrustManagerTests', function () {
 					let bookTreeItemFormat1: BookTreeItemFormat = {
 						contentPath: undefined,
 						root: '/temp/SubFolder/',
-						tableOfContents: {
+						tableOfContents: JSON.stringify({
 							sections: [
 								{
 									url: path.join(path.sep, 'sample', 'notebook')
@@ -97,7 +97,7 @@ describe('BookTrustManagerTests', function () {
 									url: path.join(path.sep, 'sample', 'notebook2')
 								}
 							]
-						},
+						}),
 						isUntitled: undefined,
 						page: undefined,
 						title: undefined,
@@ -108,13 +108,13 @@ describe('BookTrustManagerTests', function () {
 					let bookTreeItemFormat2: BookTreeItemFormat = {
 						contentPath: undefined,
 						root: '/temp/SubFolder2/',
-						tableOfContents: {
+						tableOfContents: JSON.stringify({
 							sections: [
 								{
 									url: path.join(path.sep, 'sample', 'notebook')
 								}
 							]
-						},
+						}),
 						isUntitled: undefined,
 						page: undefined,
 						title: undefined,
@@ -125,13 +125,13 @@ describe('BookTrustManagerTests', function () {
 					let bookTreeItemFormat3: BookTreeItemFormat = {
 						contentPath: undefined,
 						root: '/temp2/SubFolder3/',
-						tableOfContents: {
+						tableOfContents: JSON.stringify({
 							sections: [
 								{
 									url: path.join(path.sep, 'sample', 'notebook')
 								}
 							]
-						},
+						}),
 						isUntitled: undefined,
 						page: undefined,
 						title: undefined,
@@ -275,7 +275,7 @@ describe('BookTrustManagerTests', function () {
 					let bookTreeItemFormat1: BookTreeItemFormat = {
 						contentPath: undefined,
 						root: '/temp/SubFolder/',
-						tableOfContents: {
+						tableOfContents: JSON.stringify({
 							sections: [
 								{
 									url: path.join(path.sep, 'sample', 'notebook')
@@ -284,7 +284,7 @@ describe('BookTrustManagerTests', function () {
 									url: path.join(path.sep, 'sample', 'notebook2')
 								}
 							]
-						},
+						}),
 						isUntitled: undefined,
 						page: undefined,
 						title: undefined,
@@ -295,7 +295,7 @@ describe('BookTrustManagerTests', function () {
 					let bookTreeItemFormat2: BookTreeItemFormat = {
 						contentPath: undefined,
 						root: '/temp/SubFolder2/',
-						tableOfContents: {
+						tableOfContents: JSON.stringify({
 							sections: [
 								{
 									url: path.join(path.sep, 'sample', 'notebook')
@@ -304,7 +304,7 @@ describe('BookTrustManagerTests', function () {
 									url: path.join(path.sep, 'sample', 'notebook2')
 								}
 							]
-						},
+						}),
 						isUntitled: undefined,
 						page: undefined,
 						title: undefined,
