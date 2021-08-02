@@ -110,7 +110,7 @@ import * as locConstants from 'sql/base/common/locConstants'; // {{SQL CARBON ED
 // Menu
 (function registerMenu(): void {
 
-	if (product.quality !== 'saw') {
+	if (product.quality !== 'saw') { // {{SQL CARBON EDIT}} - Remove items that are not required
 		MenuRegistry.appendMenuItem(MenuId.MenubarFileMenu, { // {{SQL CARBON EDIT}} - Add install VSIX menu item
 			group: '5.1_installExtension',
 			command: {
