@@ -4,20 +4,20 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as arc from 'arc';
-import * as azdataExt from 'azdata-ext';
+import * as azExt from 'az-ext';
 import * as azurecore from 'azurecore';
 import * as vscode from 'vscode';
 
 export interface IApiService {
 	readonly azurecoreApi: azurecore.IExtension;
-	readonly azdataApi: azdataExt.IExtension;
+	readonly azApi: azExt.IExtension;
 	readonly arcApi: arc.IExtension;
 }
 
 class ApiService implements IApiService {
 	constructor() { }
 	public get azurecoreApi() { return vscode.extensions.getExtension(azurecore.extension.name)?.exports; }
-	public get azdataApi() { return vscode.extensions.getExtension(azdataExt.extension.name)?.exports; }
+	public get azApi() { return vscode.extensions.getExtension(azExt.extension.name)?.exports; }
 	public get arcApi() { return vscode.extensions.getExtension(arc.extension.name)?.exports; }
 }
 

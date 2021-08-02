@@ -1,5 +1,5 @@
-src/**
-out/**
+src
+out
 tsconfig.json
 .gitignore
 coverage

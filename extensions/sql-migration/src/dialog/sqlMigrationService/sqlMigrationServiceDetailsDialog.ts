@@ -30,6 +30,7 @@ export class SqlMigrationServiceDetailsDialog {
 
 	private _dialog: azdata.window.Dialog;
 	private _migrationServiceAuthKeyTable!: azdata.DeclarativeTableComponent;
+	private _disposables: vscode.Disposable[] = [];
 
 	constructor(private migrationContext: MigrationContext) {
 		this._dialog = azdata.window.createModelViewDialog(
@@ -41,9 +42,16 @@ export class SqlMigrationServiceDetailsDialog {
 
 	async initialize(): Promise<void> {
 		this._dialog.registerContent(
-			async (view: azdata.ModelView) => await this.createServiceContent(
-				view,
-				this.migrationContext));
+			async (view: azdata.ModelView) => {
+				this._disposables.push(view.onClosed(e => {
+					this._disposables.forEach(
+						d => { try { d.dispose(); } catch { } });
+				}));
+
+				await this.createServiceContent(
+					view,
+					this.migrationContext);
+			});
 
 		this._dialog.okButton.label = constants.SQL_MIGRATION_SERVICE_DETAILS_BUTTON_LABEL;
 		this._dialog.okButton.focused = true;
@@ -58,7 +66,8 @@ export class SqlMigrationServiceDetailsDialog {
 			migrationContext.subscription,
 			migrationContext.controller.properties.resourceGroup,
 			migrationContext.controller.location,
-			migrationContext.controller.name
+			migrationContext.controller.name,
+			this.migrationContext.sessionId!
 		));
 		const serviceNodeName = serviceNode.nodes?.map(node => node.nodeName).join(', ')
 			|| constants.SQL_MIGRATION_SERVICE_DETAILS_STATUS_UNAVAILABLE;
@@ -201,7 +210,8 @@ export class SqlMigrationServiceDetailsDialog {
 			migrationContext.controller.properties.resourceGroup,
 			migrationContext.controller.location.toUpperCase(),
 			migrationContext.controller.name,
-			keyName);
+			keyName,
+			migrationContext.sessionId!);
 
 		if (keys?.authKey1 && keyName === AUTH_KEY1) {
 			await this._updateTableCell(this._migrationServiceAuthKeyTable, 0, 1, keys.authKey1, constants.SERVICE_KEY1_LABEL);
@@ -225,7 +235,8 @@ export class SqlMigrationServiceDetailsDialog {
 			migrationContext.subscription,
 			migrationContext.controller.properties.resourceGroup,
 			migrationContext.controller.location.toUpperCase(),
-			migrationContext.controller.name);
+			migrationContext.controller.name,
+			migrationContext.sessionId!);
 
 		const copyKey1Button = view.modelBuilder
 			.button()
@@ -238,10 +249,10 @@ export class SqlMigrationServiceDetailsDialog {
 			})
 			.component();
 
-		copyKey1Button.onDidClick((e) => {
+		this._disposables.push(copyKey1Button.onDidClick((e) => {
 			vscode.env.clipboard.writeText(keys.authKey1);
 			vscode.window.showInformationMessage(constants.SERVICE_KEY1_COPIED_HELP);
-		});
+		}));
 
 		const copyKey2Button = view.modelBuilder
 			.button()
@@ -254,10 +265,10 @@ export class SqlMigrationServiceDetailsDialog {
 			})
 			.component();
 
-		copyKey2Button.onDidClick((e) => {
+		this._disposables.push(copyKey2Button.onDidClick((e) => {
 			vscode.env.clipboard.writeText(keys.authKey2);
 			vscode.window.showInformationMessage(constants.SERVICE_KEY2_COPIED_HELP);
-		});
+		}));
 
 		const refreshKey1Button = view.modelBuilder
 			.button()
@@ -269,8 +280,8 @@ export class SqlMigrationServiceDetailsDialog {
 				ariaLabel: constants.REFRESH_KEY1,
 			})
 			.component();
-		refreshKey1Button.onDidClick(
-			async (e) => await this._regenerateAuthKey(view, migrationContext, AUTH_KEY1));
+		this._disposables.push(refreshKey1Button.onDidClick(
+			async (e) => await this._regenerateAuthKey(view, migrationContext, AUTH_KEY1)));
 
 		const refreshKey2Button = view.modelBuilder
 			.button()
@@ -282,8 +293,8 @@ export class SqlMigrationServiceDetailsDialog {
 				ariaLabel: constants.REFRESH_KEY2,
 			})
 			.component();
-		refreshKey2Button.onDidClick(
-			async (e) => await this._regenerateAuthKey(view, migrationContext, AUTH_KEY2));
+		this._disposables.push(refreshKey2Button.onDidClick(
+			async (e) => await this._regenerateAuthKey(view, migrationContext, AUTH_KEY2)));
 
 		this._migrationServiceAuthKeyTable.updateProperties({
 			dataValues: [

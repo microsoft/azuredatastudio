@@ -437,7 +437,8 @@ export enum AzureResource {
 	MicrosoftResourceManagement = 5,
 	AzureDevOps = 6,
 	MsGraph = 7,
-	AzureLogAnalytics = 8
+	AzureLogAnalytics = 8,
+	AzureStorage = 9
 }
 
 export class TreeItem extends vsExtTypes.TreeItem {
@@ -886,4 +887,9 @@ export enum ButtonType {
 	File = 'File',
 	Normal = 'Normal',
 	Informational = 'Informational'
+}
+
+export enum TextType {
+	Normal = 'Normal',
+	Error = 'Error'
 }

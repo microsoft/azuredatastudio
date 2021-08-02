@@ -173,13 +173,13 @@ export class SubscriptionSelectionPage extends MigrationWizardPage {
 		selectDropDownIndex(this.productDropDown!.component, 0);
 	}
 
-	public async onPageEnter(): Promise<void> {
+	public async onPageEnter(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
 		this.disposables.push(this.migrationStateModel.stateChangeEvent(async (e) => this.onStateChangeEvent(e)));
 		await this.populateAccountValues();
 	}
 
-	public async onPageLeave(): Promise<void> {
-		this.disposables.forEach(d => d.dispose());
+	public async onPageLeave(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
+		this.disposables.forEach(d => { try { d.dispose(); } catch { } });
 	}
 
 	protected async handleStateChange(e: StateChangeEvent): Promise<void> {

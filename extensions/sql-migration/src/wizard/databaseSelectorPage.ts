@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
+import * as vscode from 'vscode';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
 import { MigrationStateModel, StateChangeEvent } from '../models/stateMachine';
 import * as constants from '../constants/strings';
@@ -19,6 +20,15 @@ const headerLeft: azdata.CssStyles = {
 	'border-bottom': '1px solid'
 };
 
+const headerRight: azdata.CssStyles = {
+	'border': 'none',
+	'text-align': 'right',
+	'white-space': 'nowrap',
+	'text-overflow': 'ellipsis',
+	'overflow': 'hidden',
+	'border-bottom': '1px solid'
+};
+
 const styleLeft: azdata.CssStyles = {
 	'border': 'none',
 	'text-align': 'left',
@@ -27,9 +37,9 @@ const styleLeft: azdata.CssStyles = {
 	'overflow': 'hidden',
 };
 
-const styleCenter: azdata.CssStyles = {
+const styleRight: azdata.CssStyles = {
 	'border': 'none',
-	'text-align': 'center',
+	'text-align': 'right',
 	'white-space': 'nowrap',
 	'text-overflow': 'ellipsis',
 	'overflow': 'hidden',
@@ -41,6 +51,7 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 	private _dbNames!: string[];
 	private _dbCount!: azdata.TextComponent;
 	private _databaseTableValues!: azdata.DeclarativeTableCellValue[][];
+	private _disposables: vscode.Disposable[] = [];
 
 	constructor(wizard: azdata.window.Wizard, migrationStateModel: MigrationStateModel) {
 		super(wizard, azdata.window.createWizardPage(constants.SOURCE_CONFIGURATION, 'MigrationModePage'), migrationStateModel);
@@ -55,6 +66,11 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 			width: '100%'
 		}).component();
 		flex.addItem(await this.createRootContainer(view), { flex: '1 1 auto' });
+
+		this._disposables.push(this._view.onClosed(e => {
+			this._disposables.forEach(
+				d => { try { d.dispose(); } catch { } });
+		}));
 
 		await view.initializeModel(flex);
 	}
@@ -82,7 +98,8 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 			width: 200
 		}).component();
 
-		resourceSearchBox.onTextChanged(value => this._filterTableList(value));
+		this._disposables.push(
+			resourceSearchBox.onTextChanged(value => this._filterTableList(value)));
 
 		const searchContainer = this._view.modelBuilder.divContainer().withItems([resourceSearchBox]).withProps({
 			CSSStyles: {
@@ -99,10 +116,13 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 		if (this._databaseTableValues && value?.length > 0) {
 			const filter: number[] = [];
 			this._databaseTableValues.forEach((row, index) => {
-				const flexContainer: azdata.FlexContainer = row[1]?.value as azdata.FlexContainer;
-				const textComponent: azdata.TextComponent = flexContainer.items[1] as azdata.TextComponent;
-				const cellText = textComponent.value?.toLowerCase();
-				const searchText: string = value.toLowerCase();
+				// undo when bug #16445 is fixed
+				// const flexContainer: azdata.FlexContainer = row[1]?.value as azdata.FlexContainer;
+				// const textComponent: azdata.TextComponent = flexContainer?.items[1] as azdata.TextComponent;
+				// const cellText = textComponent?.value?.toLowerCase();
+				const text = row[1]?.value as string;
+				const cellText = text?.toLowerCase();
+				const searchText: string = value?.toLowerCase();
 				if (cellText?.includes(searchText)) {
 					filter.push(index);
 				}
@@ -138,7 +158,7 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 			this._databaseTableValues.push([
 				{
 					value: false,
-					style: styleCenter,
+					style: styleLeft,
 					enabled: selectable
 				},
 				{
@@ -151,7 +171,7 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 				},
 				{
 					value: `${finalResult[index].options.sizeInMB}`,
-					style: styleLeft
+					style: styleRight
 				},
 				{
 					value: `${finalResult[index].options.lastBackup}`,
@@ -191,45 +211,46 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 		this._databaseSelectorTable = this._view.modelBuilder.declarativeTable().withProps(
 			{
 				enableRowSelection: true,
-				width: '800px',
+				width: '100%',
 				CSSStyles: {
-					'table-layout': 'fixed',
 					'border': 'none'
 				},
 				columns: [
 					{
 						displayName: '',
 						valueType: azdata.DeclarativeDataType.boolean,
-						width: 1,
+						width: 20,
 						isReadOnly: false,
 						showCheckAll: true,
 						headerCssStyles: headerLeft,
 					},
 					{
 						displayName: constants.DATABASE,
-						valueType: azdata.DeclarativeDataType.component,
-						width: 100,
+						// undo when bug #16445 is fixed
+						// valueType: azdata.DeclarativeDataType.component,
+						valueType: azdata.DeclarativeDataType.string,
+						width: '100%',
 						isReadOnly: true,
 						headerCssStyles: headerLeft
 					},
 					{
 						displayName: constants.STATUS,
 						valueType: azdata.DeclarativeDataType.string,
-						width: 20,
+						width: 100,
 						isReadOnly: true,
 						headerCssStyles: headerLeft
 					},
 					{
 						displayName: constants.SIZE,
 						valueType: azdata.DeclarativeDataType.string,
-						width: 30,
+						width: 125,
 						isReadOnly: true,
-						headerCssStyles: headerLeft
+						headerCssStyles: headerRight
 					},
 					{
 						displayName: constants.LAST_BACKUP,
 						valueType: azdata.DeclarativeDataType.string,
-						width: 50,
+						width: 150,
 						isReadOnly: true,
 						headerCssStyles: headerLeft
 					}
@@ -238,18 +259,17 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 		).component();
 
 		await this._databaseSelectorTable.setDataValues(this._databaseTableValues);
-		this._databaseSelectorTable.onDataChanged(() => {
+		this._disposables.push(this._databaseSelectorTable.onDataChanged(() => {
 			this._dbCount.updateProperties({
 				'value': constants.DATABASES_SELECTED(this.selectedDbs().length, this._databaseTableValues.length)
 			});
-		});
+		}));
 		const flex = view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'column',
 			height: '100%',
-			width: '100%'
 		}).withProps({
 			CSSStyles: {
-				'margin': '0px 0px 0px 28px'
+				'margin': '0px  28px 0px 28px'
 			}
 		}).component();
 		flex.addItem(title, { flex: '0 0 auto' });
@@ -271,42 +291,48 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 		return result;
 	}
 
-	private createIconTextCell(icon: IconPath, text: string): azdata.FlexContainer {
-
-		const iconComponent = this._view.modelBuilder.image().withProps({
-			iconPath: icon,
-			iconWidth: '16px',
-			iconHeight: '16px',
-			width: '20px',
-			height: '20px'
-		}).component();
-		const textComponent = this._view.modelBuilder.text().withProps({
-			value: text,
-			title: text,
-			CSSStyles: {
-				'margin': '0px',
-				'width': '110px'
-			}
-		}).component();
-
-		const cellContainer = this._view.modelBuilder.flexContainer().withProps({
-			CSSStyles: {
-				'justify-content': 'left'
-			}
-		}).component();
-		cellContainer.addItem(iconComponent, {
-			flex: '0',
-			CSSStyles: {
-				'width': '32px'
-			}
-		});
-		cellContainer.addItem(textComponent, {
-			CSSStyles: {
-				'width': 'auto'
-			}
-		});
-
-		return cellContainer;
+	// undo when bug #16445 is fixed
+	private createIconTextCell(icon: IconPath, text: string): string {
+		return text;
 	}
+	// private createIconTextCell(icon: IconPath, text: string): azdata.FlexContainer {
+	// 	const cellContainer = this._view.modelBuilder.flexContainer().withProps({
+	// 		CSSStyles: {
+	// 			'justify-content': 'left'
+	// 		}
+	// 	}).component();
+
+	// 	const iconComponent = this._view.modelBuilder.image().withProps({
+	// 		iconPath: icon,
+	// 		iconWidth: '16px',
+	// 		iconHeight: '16px',
+	// 		width: '20px',
+	// 		height: '20px'
+	// 	}).component();
+	// 	cellContainer.addItem(iconComponent, {
+	// 		flex: '0',
+	// 		CSSStyles: {
+	// 			'width': '32px'
+	// 		}
+	// 	});
+
+	// 	const textComponent = this._view.modelBuilder.text().withProps({
+	// 		value: text,
+	// 		title: text,
+	// 		CSSStyles: {
+	// 			'margin': '0px',
+	// 			'width': '110px'
+	// 		}
+	// 	}).component();
+
+	// 	cellContainer.addItem(textComponent, {
+	// 		CSSStyles: {
+	// 			'width': 'auto'
+	// 		}
+	// 	});
+
+	// 	return cellContainer;
+	// }
+	// undo when bug #16445 is fixed
 
 }

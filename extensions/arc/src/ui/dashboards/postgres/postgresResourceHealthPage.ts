@@ -90,6 +90,7 @@ export class PostgresResourceHealthPage extends DashboardPage {
 		this.podConditionsContainer = this.modelView.modelBuilder.divContainer().component();
 		this.podConditionsTable = this.modelView.modelBuilder.declarativeTable().withProps({
 			width: '100%',
+			ariaLabel: loc.podConditionsTable,
 			columns: [
 				{
 					displayName: loc.condition,
@@ -122,7 +123,10 @@ export class PostgresResourceHealthPage extends DashboardPage {
 			dataValues: this.createPodConditionsDataValues(this.coordinatorData)
 		}).component();
 
-		this.podDropDown = this.modelView.modelBuilder.dropDown().withProps({ width: '150px' }).component();
+		this.podDropDown = this.modelView.modelBuilder.dropDown().withProps({
+			width: '150px',
+			ariaLabel: loc.podsUsedDescriptionAria
+		}).component();
 		this.disposables.push(
 			this.podDropDown.onValueChanged(() => {
 				this.podConditionsTable.setFilter(this.podConditionsTableIndexes.get(String(this.podDropDown.value)));

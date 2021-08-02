@@ -10,7 +10,7 @@ import { MigrationContext, MigrationLocalStorage } from '../../models/migrationL
 import { MigrationCutoverDialog } from '../migrationCutover/migrationCutoverDialog';
 import { AdsMigrationStatus, MigrationStatusDialogModel } from './migrationStatusDialogModel';
 import * as loc from '../../constants/strings';
-import { convertTimeDifferenceToDuration, filterMigrations, SupportedAutoRefreshIntervals } from '../../api/utils';
+import { convertTimeDifferenceToDuration, filterMigrations, getMigrationStatusImage, SupportedAutoRefreshIntervals } from '../../api/utils';
 import { SqlMigrationServiceDetailsDialog } from '../sqlMigrationService/sqlMigrationServiceDetailsDialog';
 import { ConfirmCutoverDialog } from '../migrationCutover/confirmCutoverDialog';
 import { MigrationCutoverDialogModel } from '../migrationCutover/migrationCutoverDialogModel';
@@ -31,6 +31,9 @@ export class MigrationStatusDialog {
 	private _statusTable!: azdata.DeclarativeTableComponent;
 	private _refreshLoader!: azdata.LoadingComponent;
 	private _autoRefreshHandle!: NodeJS.Timeout;
+	private _disposables: vscode.Disposable[] = [];
+
+	private isRefreshing = false;
 
 	constructor(migrations: MigrationContext[], private _filter: AdsMigrationStatus) {
 		this._model = new MigrationStatusDialogModel(migrations);
@@ -48,9 +51,9 @@ export class MigrationStatusDialog {
 				width: '220px'
 			}).component();
 
-			this._statusDropdown.onValueChanged((value) => {
+			this._disposables.push(this._statusDropdown.onValueChanged((value) => {
 				this.populateMigrationTable();
-			});
+			}));
 
 			if (this._filter) {
 				this._statusDropdown.value = (<azdata.CategoryValue[]>this._statusDropdown.values).find((value) => {
@@ -76,17 +79,20 @@ export class MigrationStatusDialog {
 				}
 			);
 			const form = formBuilder.withLayout({ width: '100%' }).component();
-			this._view.onClosed(e => {
+			this._disposables.push(this._view.onClosed(e => {
 				clearInterval(this._autoRefreshHandle);
-			});
+				this._disposables.forEach(
+					d => { try { d.dispose(); } catch { } });
+			}));
+
 			return view.initializeModel(form);
 		});
 		this._dialogObject.content = [tab];
 		this._dialogObject.cancelButton.hidden = true;
 		this._dialogObject.okButton.label = loc.CLOSE;
-		this._dialogObject.okButton.onClick(e => {
+		this._disposables.push(this._dialogObject.okButton.onClick(e => {
 			clearInterval(this._autoRefreshHandle);
-		});
+		}));
 		azdata.window.openDialog(this._dialogObject);
 	}
 
@@ -100,24 +106,21 @@ export class MigrationStatusDialog {
 			width: '360px'
 		}).component();
 
-		this._searchBox.onTextChanged((value) => {
+		this._disposables.push(this._searchBox.onTextChanged((value) => {
 			this.populateMigrationTable();
-		});
+		}));
 
 		this._refresh = this._view.modelBuilder.button().withProps({
-			iconPath: {
-				light: IconPathHelper.refresh.light,
-				dark: IconPathHelper.refresh.dark
-			},
+			iconPath: IconPathHelper.refresh,
 			iconHeight: '16px',
 			iconWidth: '20px',
 			height: '30px',
 			label: loc.REFRESH_BUTTON_LABEL,
 		}).component();
 
-		this._refresh.onDidClick((e) => {
-			this.refreshTable();
-		});
+		this._disposables.push(
+			this._refresh.onDidClick(
+				async (e) => { await this.refreshTable(); }));
 
 		const flexContainer = this._view.modelBuilder.flexContainer().withProps({
 			width: 900,
@@ -165,12 +168,12 @@ export class MigrationStatusDialog {
 		const classVariable = this;
 		clearInterval(this._autoRefreshHandle);
 		if (interval !== -1) {
-			this._autoRefreshHandle = setInterval(function () { classVariable.refreshTable(); }, interval);
+			this._autoRefreshHandle = setInterval(async function () { await classVariable.refreshTable(); }, interval);
 		}
 	}
 
 	private registerCommands(): void {
-		vscode.commands.registerCommand(
+		this._disposables.push(vscode.commands.registerCommand(
 			'sqlmigration.cutover',
 			async (migrationId: string) => {
 				try {
@@ -186,9 +189,9 @@ export class MigrationStatusDialog {
 				} catch (e) {
 					console.log(e);
 				}
-			});
+			}));
 
-		vscode.commands.registerCommand(
+		this._disposables.push(vscode.commands.registerCommand(
 			'sqlmigration.view.database',
 			async (migrationId: string) => {
 				try {
@@ -198,9 +201,9 @@ export class MigrationStatusDialog {
 				} catch (e) {
 					console.log(e);
 				}
-			});
+			}));
 
-		vscode.commands.registerCommand(
+		this._disposables.push(vscode.commands.registerCommand(
 			'sqlmigration.view.target',
 			async (migrationId: string) => {
 				try {
@@ -210,9 +213,9 @@ export class MigrationStatusDialog {
 				} catch (e) {
 					console.log(e);
 				}
-			});
+			}));
 
-		vscode.commands.registerCommand(
+		this._disposables.push(vscode.commands.registerCommand(
 			'sqlmigration.view.service',
 			async (migrationId: string) => {
 				try {
@@ -222,9 +225,9 @@ export class MigrationStatusDialog {
 				} catch (e) {
 					console.log(e);
 				}
-			});
+			}));
 
-		vscode.commands.registerCommand(
+		this._disposables.push(vscode.commands.registerCommand(
 			'sqlmigration.copy.migration',
 			async (migrationId: string) => {
 				try {
@@ -244,9 +247,9 @@ export class MigrationStatusDialog {
 				} catch (e) {
 					console.log(e);
 				}
-			});
+			}));
 
-		vscode.commands.registerCommand(
+		this._disposables.push(vscode.commands.registerCommand(
 			'sqlmigration.cancel.migration',
 			async (migrationId: string) => {
 				try {
@@ -265,7 +268,7 @@ export class MigrationStatusDialog {
 				} catch (e) {
 					console.log(e);
 				}
-			});
+			}));
 	}
 
 	private async populateMigrationTable(): Promise<void> {
@@ -283,7 +286,7 @@ export class MigrationStatusDialog {
 				return [
 					{ value: this._getDatabaserHyperLink(migration) },
 					{ value: this._getMigrationStatus(migration) },
-					{ value: loc.ONLINE },
+					{ value: this._getMigrationMode(migration) },
 					{ value: this._getMigrationTargetType(migration) },
 					{ value: migration.targetManagedInstance.name },
 					{ value: migration.controller.name },
@@ -296,14 +299,7 @@ export class MigrationStatusDialog {
 					{ value: this._getMigrationTime(migration.migrationContext.properties.endedOn) },
 					{
 						value: {
-							commands: [
-								'sqlmigration.cutover',
-								'sqlmigration.view.database',
-								'sqlmigration.view.target',
-								'sqlmigration.view.service',
-								'sqlmigration.copy.migration',
-								'sqlmigration.cancel.migration',
-							],
+							commands: this._getMenuCommands(migration),
 							context: migration.migrationContext.id
 						},
 					}
@@ -336,8 +332,8 @@ export class MigrationStatusDialog {
 				CSSStyles: statusCellStyles
 			}).component();
 
-		databaseHyperLink.onDidClick(
-			async (e) => await (new MigrationCutoverDialog(migration)).initialize());
+		this._disposables.push(databaseHyperLink.onDidClick(
+			async (e) => await (new MigrationCutoverDialog(migration)).initialize()));
 
 		return this._view.modelBuilder
 			.flexContainer()
@@ -374,6 +370,27 @@ export class MigrationStatusDialog {
 			: loc.SQL_VIRTUAL_MACHINE;
 	}
 
+	private _getMigrationMode(migration: MigrationContext): string {
+		if (migration.migrationContext.properties.provisioningState === 'Creating') {
+			return '---';
+		}
+		return migration.migrationContext.properties.autoCutoverConfiguration?.autoCutover?.valueOf() ? loc.OFFLINE : loc.ONLINE;
+	}
+
+	private _getMenuCommands(migration: MigrationContext): string[] {
+		let menuCommands = [
+			'sqlmigration.view.database',
+			'sqlmigration.view.target',
+			'sqlmigration.view.service',
+			'sqlmigration.copy.migration',
+			'sqlmigration.cancel.migration',
+		];
+		if (this._getMigrationMode(migration) === loc.ONLINE) {
+			menuCommands.unshift('sqlmigration.cutover');
+		}
+		return menuCommands;
+	}
+
 	private _getMigrationStatus(migration: MigrationContext): azdata.FlexContainer {
 		const properties = migration.migrationContext.properties;
 		const migrationStatus = properties.migrationStatus ?? properties.provisioningState;
@@ -401,7 +418,7 @@ export class MigrationStatusDialog {
 				// migration status icon
 				this._view.modelBuilder.image()
 					.withProps({
-						iconPath: this._statusImageMap(status),
+						iconPath: getMigrationStatusImage(status),
 						iconHeight: statusImageSize,
 						iconWidth: statusImageSize,
 						height: statusImageSize,
@@ -443,11 +460,22 @@ export class MigrationStatusDialog {
 	}
 
 	private async refreshTable(): Promise<void> {
-		this._refreshLoader.loading = true;
-		const currentConnection = await azdata.connection.getCurrentConnection();
-		this._model._migrations = await MigrationLocalStorage.getMigrationsBySourceConnections(currentConnection, true);
-		await this.populateMigrationTable();
-		this._refreshLoader.loading = false;
+		if (this.isRefreshing) {
+			return;
+		}
+
+		this.isRefreshing = true;
+		try {
+			this._refreshLoader.loading = true;
+			const currentConnection = await azdata.connection.getCurrentConnection();
+			this._model._migrations = await MigrationLocalStorage.getMigrationsBySourceConnections(currentConnection, true);
+			await this.populateMigrationTable();
+		} catch (e) {
+			console.log(e);
+		} finally {
+			this.isRefreshing = false;
+			this._refreshLoader.loading = false;
+		}
 	}
 
 	private createStatusTable(): azdata.DeclarativeTableComponent {
@@ -467,6 +495,7 @@ export class MigrationStatusDialog {
 		};
 
 		this._statusTable = this._view.modelBuilder.declarativeTable().withProps({
+			ariaLabel: loc.MIGRATION_STATUS,
 			columns: [
 				{
 					displayName: loc.DATABASE,
@@ -551,24 +580,6 @@ export class MigrationStatusDialog {
 			]
 		}).component();
 		return this._statusTable;
-	}
-
-	private _statusImageMap(status: string): azdata.IconPath {
-		switch (status) {
-			case 'InProgress':
-				return IconPathHelper.inProgressMigration;
-			case 'Succeeded':
-				return IconPathHelper.completedMigration;
-			case 'Creating':
-				return IconPathHelper.notStartedMigration;
-			case 'Completing':
-				return IconPathHelper.completingCutover;
-			case 'Cancelling':
-				return IconPathHelper.cancel;
-			case 'Failed':
-			default:
-				return IconPathHelper.error;
-		}
 	}
 
 	private _statusInfoMap(status: string): azdata.IconPath {

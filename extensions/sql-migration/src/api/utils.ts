@@ -3,10 +3,12 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { CategoryValue, DropDownComponent } from 'azdata';
+import { CategoryValue, DropDownComponent, IconPath } from 'azdata';
+import { IconPathHelper } from '../constants/iconPathHelper';
 import { DAYS, HRS, MINUTE, SEC } from '../constants/strings';
 import { AdsMigrationStatus } from '../dialog/migrationStatus/migrationStatusDialogModel';
 import { MigrationContext } from '../models/migrationLocalStorage';
+import * as crypto from 'crypto';
 
 export function deepClone<T>(obj: T): T {
 	if (!obj || typeof obj !== 'object') {
@@ -157,6 +159,10 @@ export function findDropDownItemIndex(dropDown: DropDownComponent, value: string
 	return -1;
 }
 
+export function hashString(value: string): string {
+	return crypto.createHash('sha512').update(value).digest('hex');
+}
+
 export function debounce(delay: number): Function {
 	return decorate((fn, key) => {
 		const timerKey = `$debounce$${key}`;
@@ -187,4 +193,28 @@ export function decorate(decorator: (fn: Function, key: string) => Function): Fu
 
 		descriptor[fnKey] = decorator(fn, key);
 	};
+}
+
+export function getSessionIdHeader(sessionId: string): { [key: string]: string } {
+	return {
+		'SqlMigrationSessionId': sessionId
+	};
+}
+
+export function getMigrationStatusImage(status: string): IconPath {
+	switch (status) {
+		case 'InProgress':
+			return IconPathHelper.inProgressMigration;
+		case 'Succeeded':
+			return IconPathHelper.completedMigration;
+		case 'Creating':
+			return IconPathHelper.notStartedMigration;
+		case 'Completing':
+			return IconPathHelper.completingCutover;
+		case 'Canceling':
+			return IconPathHelper.cancel;
+		case 'Failed':
+		default:
+			return IconPathHelper.error;
+	}
 }
