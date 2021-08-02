@@ -191,11 +191,8 @@ export class HideCellAction extends Action {
 		super(HideCellAction.ID, HideCellAction.LABEL, HideCellAction.ICON);
 	}
 
-	override run(): Promise<void> {
-		return new Promise<void>((resolve) => {
-			this.hideFn.apply(this.context);
-			resolve();
-		});
+	override async run(): Promise<void> {
+		this.hideFn.apply(this.context);
 	}
 }
 

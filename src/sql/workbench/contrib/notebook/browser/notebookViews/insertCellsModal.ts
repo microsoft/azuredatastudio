@@ -77,7 +77,7 @@ export class CellOptionsModel {
 	}
 
 	public setOptionValue(optionName: string, value: boolean): void {
-		if (this._optionsMap[optionName]) {
+		if (this._optionsMap[optionName] !== undefined) {
 			this._optionsMap[optionName].currentValue = value;
 		}
 	}
