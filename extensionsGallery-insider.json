@@ -4207,7 +4207,7 @@
 					"extensionId": "83",
 					"extensionName": "azuremonitor",
 					"displayName": "Azure Monitor Logs",
-					"shortDescription": "Azure Monitor extension for Azure Data Studio",
+					"shortDescription": "Azure Monitor Logs extension for Azure Data Studio",
 					"publisher": {
 						"displayName": "Microsoft",
 						"publisherId": "Microsoft",
