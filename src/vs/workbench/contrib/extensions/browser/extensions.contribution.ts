@@ -74,7 +74,7 @@ import { EditorExtensions } from 'vs/workbench/common/editor';
 import { WORKSPACE_TRUST_EXTENSION_SUPPORT } from 'vs/workbench/services/workspaces/common/workspaceTrust';
 import { IStorageService, StorageScope, StorageTarget } from 'vs/platform/storage/common/storage'; // {{SQL CARBON EDIT}}
 import * as locConstants from 'sql/base/common/locConstants'; // {{SQL CARBON EDIT}}
-import product from 'vs/platform/product/common/product';
+import product from 'vs/platform/product/common/product'; // {{SQL CARBON EDIT}}
 
 // Singletons
 registerSingleton(IExtensionsWorkbenchService, ExtensionsWorkbenchService);
@@ -677,7 +677,7 @@ class ExtensionsContributions extends Disposable implements IWorkbenchContributi
 			}
 		});
 
-		if (product.quality !== 'saw') {
+		if (product.quality !== 'saw') { // {{SQL CARBON EDIT}} - Remove items that are not required
 
 			this.registerExtensionAction({
 				id: 'workbench.extensions.action.disableAllWorkspace',
