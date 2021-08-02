@@ -23,7 +23,7 @@
 			"notebook.collapseBookItems.description": "Notebooks ビューレットのルート レベルでブック項目を折りたたみます",
 			"notebook.remoteBookDownloadTimeout.description": "GitHub ブックのダウンロードのタイムアウト (ミリ秒)",
 			"notebook.pinnedNotebooks.description": "ユーザーによって現在のワークスペースにピン留めされているノートブック",
-			"notebook.allowRoot.description": "Allow Jupyter server to run as root user",
+			"notebook.allowRoot.description": "Jupyter サーバーをルート ユーザーとして実行することを許可します",
 			"notebook.command.new": "新しいノートブック",
 			"notebook.command.open": "ノートブックを開く",
 			"notebook.analyzeJupyterNotebook": "ノートブックで分析",

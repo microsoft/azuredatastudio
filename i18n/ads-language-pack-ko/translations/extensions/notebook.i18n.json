@@ -23,7 +23,7 @@
 			"notebook.collapseBookItems.description": "Notebook 뷰렛에서 루트 수준의 Book 항목 축소",
 			"notebook.remoteBookDownloadTimeout.description": "GitHub 문서의 다운로드 시간 제한(밀리초)",
 			"notebook.pinnedNotebooks.description": "사용자가 현재 작업 영역에 고정한 Notebook",
-			"notebook.allowRoot.description": "Allow Jupyter server to run as root user",
+			"notebook.allowRoot.description": "Jupyter 서버를 루트 사용자로 실행하도록 허용",
 			"notebook.command.new": "새 Notebook",
 			"notebook.command.open": "Notebook 열기",
 			"notebook.analyzeJupyterNotebook": "Notebook에서 분석",
