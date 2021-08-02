@@ -9,7 +9,7 @@ import * as TypeMoq from 'typemoq';
 import { ToolsService } from '../../services/toolsService';
 import { ITool, ToolType } from '../../interfaces';
 import { IPlatformService } from '../../services/platformService';
-import { AzdataToolName } from '../../services/tools/azdataToolOld';
+import { AzdataToolName } from '../../services/tools/azdataTool';
 
 
 const tools: { name: string; type: ToolType }[] = [
