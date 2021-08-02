@@ -43,7 +43,7 @@ export class SummaryPage extends MigrationWizardPage {
 		await view.initializeModel(form.component());
 	}
 
-	public async onPageEnter(): Promise<void> {
+	public async onPageEnter(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
 		const targetDatabaseSummary = new TargetDatabaseSummaryDialog(this.migrationStateModel);
 		const targetDatabaseHyperlink = this._view.modelBuilder.hyperlink().withProps({
 			url: '',
@@ -120,7 +120,7 @@ export class SummaryPage extends MigrationWizardPage {
 		}
 	}
 
-	public async onPageLeave(): Promise<void> {
+	public async onPageLeave(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
 		this._flexContainer.clearItems();
 		this.wizard.registerNavigationValidator(async (pageChangeInfo) => {
 			return true;

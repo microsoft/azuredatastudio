@@ -8,7 +8,7 @@ import * as constants from '../common/constants';
 import { AppSettingType, IDeployProfile, ILocalDbSetting } from '../models/deploy/deployProfile';
 import { Project } from '../models/project';
 import * as generator from 'generate-password';
-import { launchPublishDatabaseQuickpick } from './publishDatabaseQuickpick';
+import { getPublishDatabaseSettings } from './publishDatabaseQuickpick';
 let path = require('path');
 let fse = require('fs-extra');
 
@@ -52,7 +52,7 @@ export async function launchDeployDatabaseQuickpick(project: Project): Promise<I
 			symbols: true,
 			lowercase: true,
 			uppercase: true,
-			exclude: '`' // Exclude the chars that cannot be included in the password. Some chars can make the command fail in the terminal
+			exclude: '`"\'' // Exclude the chars that cannot be included in the password. Some chars can make the command fail in the terminal
 		});
 		password = await vscode.window.showInputBox(
 			{
@@ -76,7 +76,7 @@ export async function launchDeployDatabaseQuickpick(project: Project): Promise<I
 			port: +portNumber,
 		};
 	}
-	let deploySettings = await launchPublishDatabaseQuickpick(project, deployOption !== constants.deployToDockerContainer);
+	let deploySettings = await getPublishDatabaseSettings(project, deployOption !== constants.deployToDockerContainer);
 
 	// TODO: Ask for SQL CMD Variables or profile
 

@@ -75,6 +75,11 @@ export class Notebook {
 		return this.code.waitForTextContent(selector, undefined, c => accept(c.replace(/\u00a0/g, ' ')));
 	}
 
+	async waitForColorization(spanNumber: string, color: string): Promise<void> {
+		const span = `span:nth-child(${spanNumber})[class="${color}"]`;
+		await this.code.waitForElement(span);
+	}
+
 	public async selectAllTextInEditor(): Promise<void> {
 		const editor = '.notebook-cell.active .monaco-editor';
 		await this.code.waitAndClick(editor);
@@ -113,6 +118,18 @@ export class Notebook {
 	 */
 	async getCellIds(): Promise<string[]> {
 		return (await this.code.waitForElements('div.notebook-cell', false)).map(cell => cell.attributes['id']);
+	}
+
+	// Code Cell Actions
+
+	async waitForSuggestionWidget(): Promise<void> {
+		const suggestionWidgetSelector = 'div.editor-widget.suggest-widget';
+		await this.code.waitForElement(suggestionWidgetSelector);
+	}
+
+	async waitForSuggestionResult(expectedResult: string): Promise<void> {
+		const expectedResultSelector = `div.editor-widget.suggest-widget div.monaco-list-row.focused[aria-label="${expectedResult}"]`;
+		await this.code.waitForElement(expectedResultSelector);
 	}
 
 	// Text Cell Actions

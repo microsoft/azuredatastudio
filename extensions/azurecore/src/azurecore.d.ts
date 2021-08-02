@@ -124,6 +124,11 @@ declare module 'azurecore' {
 		azureLogAnalyticsResource?: Resource;
 
 		/**
+		 * Information that describes the Azure Storage resourceI
+		 */
+		azureStorageResource?: Resource;
+
+		/**
 		 * A list of tenant IDs to authenticate against. If defined, then these IDs will be used
 		 * instead of querying the tenants endpoint of the armResource
 		 */
@@ -159,6 +164,11 @@ declare module 'azurecore' {
 		 * Endpoint url used to access the resource
 		 */
 		endpoint: string;
+
+		/**
+		 * Endpoint suffix used to access the resource
+		 */
+		endpointSuffix?: string;
 
 		/**
 		 * Resource ID for azdata
@@ -271,8 +281,9 @@ declare module 'azurecore' {
 		 * @param requestBody Optional request body to be used in PUT and POST requests.
 		 * @param ignoreErrors When this flag is set the method will not throw any runtime or service errors and will return the errors in errors array.
 		 * @param host Use this to override the host. The default host is https://management.azure.com
+		 * @param requestHeaders Provide additional request headers
 		 */
-		makeAzureRestRequest(account: azdata.Account, subscription: azureResource.AzureResourceSubscription, path: string, requestType: HttpRequestMethod, requestBody?: any, ignoreErrors?: boolean, host?: string): Promise<AzureRestResponse>;
+		makeAzureRestRequest(account: azdata.Account, subscription: azureResource.AzureResourceSubscription, path: string, requestType: HttpRequestMethod, requestBody?: any, ignoreErrors?: boolean, host?: string, requestHeaders?: { [key: string]: string }): Promise<AzureRestResponse>;
 		/**
 		 * Converts a region value (@see AzureRegion) into the localized Display Name
 		 * @param region The region value

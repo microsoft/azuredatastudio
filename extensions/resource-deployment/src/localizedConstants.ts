@@ -15,6 +15,7 @@ export const subscription = localize('azure.account.subscription', "Subscription
 export const subscriptionDescription = localize('azure.account.subscriptionDescription', "Change the currently selected subscriptions through the 'Select Subscriptions' action on an account listed in the 'Azure' tree view of the 'Connections' viewlet");
 export const resourceGroup = localize('azure.account.resourceGroup', "Resource Group");
 export const location = localize('azure.account.location', "Azure Location");
+export const infrastructure = localize('azure.account.infrastructure', "Infrastructure");
 export const browse = localize('filePicker.browse', "Browse");
 export const select = localize('button.label', "Select");
 export const kubeConfigFilePath = localize('kubeConfigClusterPicker.kubeConfigFilePath', "Kube config file path");
