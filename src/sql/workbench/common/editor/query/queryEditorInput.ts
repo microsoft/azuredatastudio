@@ -324,6 +324,7 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 			this.connectionManagementService.disconnectEditor(this, true);
 		} else {
 			this.state.isSaving = false;
+			//this.queryModelService.renameQuery(this.getName(), this.uri)
 		}
 	}
 
