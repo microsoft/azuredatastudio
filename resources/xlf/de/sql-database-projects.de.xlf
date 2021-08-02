@@ -762,8 +762,8 @@
         <target state="translated">Zirkelbezug vom Projekt {0} zum Projekt {1}</target>
       </trans-unit>
       <trans-unit id="mssqlNotFound">
-        <source xml:lang="en">Could not get mssql extension's install location at {0}</source>
-        <target state="translated">Der Installationsspeicherort der MSSQL-Erweiterung unter {0} konnte nicht abgerufen werden</target>
+        <source xml:lang="en">Could not get SQL Tools Service install location at {0}</source>
+        <target state="translated">Der SQL Tools-Dienst Installationsspeicherort konnte nicht unter {0} abgerufen werden.</target>
       </trans-unit>
       <trans-unit id="projBuildFailed">
         <source xml:lang="en">Build failed. Check output pane for more details. {0}</source>
@@ -803,11 +803,11 @@
       </trans-unit>
       <trans-unit id="invalidGuid">
         <source xml:lang="en">Specified GUID is invalid: {0}</source>
-        <target state="new">Specified GUID is invalid: {0}</target>
+        <target state="translated">Die angegebene GUID ist ungültig: {0}</target>
       </trans-unit>
       <trans-unit id="invalidTargetPlatform">
         <source xml:lang="en">Invalid target platform: {0}. Supported target platforms: {1}</source>
-        <target state="new">Invalid target platform: {0}. Supported target platforms: {1}</target>
+        <target state="translated">Ungültige Zielplattform: {0}. Unterstützte Zielplattformen: {1}</target>
       </trans-unit>
       <trans-unit id="deleteAction">
         <source xml:lang="en">Delete</source>
