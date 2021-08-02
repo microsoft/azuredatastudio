@@ -54,6 +54,7 @@ export class QueryEditorState extends Disposable {
 
 
 	public isSaving: boolean = false;
+	public oldUri: string = '';
 
 	public set connected(val: boolean) {
 		if (val !== this._connected) {
@@ -324,7 +325,7 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 			this.connectionManagementService.disconnectEditor(this, true);
 		} else {
 			this.state.isSaving = false;
-			//this.queryModelService.renameQuery(this.getName(), this.uri)
+			//this.queryModelService.renameQuery(this.uri, this.oldUri)
 		}
 	}
 
