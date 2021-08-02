@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { OnInit, Component, Input, Inject, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
+import { OnInit, Component, Input, Inject, ViewChild, ElementRef, ChangeDetectorRef, ChangeDetectionStrategy, forwardRef } from '@angular/core';
 import * as azdata from 'azdata';
 
 import { IGridDataProvider, getResultsString } from 'sql/workbench/services/query/common/gridDataProvider';
@@ -51,6 +51,7 @@ import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 
 @Component({
 	selector: GridOutputComponent.SELECTOR,
+	changeDetection: ChangeDetectionStrategy.OnPush,
 	template: `
 	<loading-spinner [loading]="isLoading"></loading-spinner>
 	<div #output class="notebook-cellTable"></div>`
@@ -71,9 +72,9 @@ export class GridOutputComponent extends AngularDisposable implements IMimeCompo
 	protected isLoading: boolean = false;
 
 	constructor(
+		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
 		@Inject(IInstantiationService) private instantiationService: IInstantiationService,
-		@Inject(IThemeService) private readonly themeService: IThemeService,
-		// @Inject(forwardRef(() => ChangeDetectorRef)) private _changeref: ChangeDetectorRef
+		@Inject(IThemeService) private readonly themeService: IThemeService
 	) {
 		super();
 	}
@@ -127,7 +128,7 @@ export class GridOutputComponent extends AngularDisposable implements IMimeCompo
 						await this.renderGrid();
 						this.setLoading(false);
 						this._cellModel.resolveGridOutputsRendered();
-					}, 500);
+					}, 0);
 				}));
 			}
 		}
@@ -135,7 +136,9 @@ export class GridOutputComponent extends AngularDisposable implements IMimeCompo
 
 	setLoading(isLoading: boolean): void {
 		this.isLoading = isLoading;
-		// this._changeref.detectChanges();
+		if (!(this._changeRef['destroyed'])) {
+			this._changeRef.detectChanges();
+		}
 	}
 
 	async renderGrid(): Promise<void> {
@@ -595,7 +598,3 @@ export class NotebookChartAction extends ToggleableAction {
 		}
 	}
 }
-function forwardRef(arg0: () => any): any {
-	throw new Error('Function not implemented.');
-}
-
