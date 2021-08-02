@@ -461,7 +461,7 @@ describe('BookTocManagerTests', function () {
 
 				it('Add section to book', async () => {
 					bookTocManager = new BookTocManager(sourceBookModel, targetBookModel);
-					await bookTocManager.updateBook([sectionA], targetBook, undefined);
+					await bookTocManager.updateBook(sectionA, targetBook, undefined);
 					const listFiles = await fs.promises.readdir(path.join(run.targetBook.bookContentFolderPath, 'sectionA'));
 					const listSourceFiles = await fs.promises.readdir(path.join(run.sourceBook.bookContentFolderPath));
 					should(JSON.stringify(listSourceFiles).includes('sectionA')).be.false('The source book files should not contain the section A files');
@@ -470,7 +470,7 @@ describe('BookTocManagerTests', function () {
 
 				it('Add section to section', async () => {
 					bookTocManager = new BookTocManager(sourceBookModel, targetBookModel);
-					await bookTocManager.updateBook([sectionB], sectionC, {
+					await bookTocManager.updateBook(sectionB, sectionC, {
 						'title': 'Notebook 6',
 						'file': path.posix.join(path.posix.sep, 'sectionC', 'notebook6')
 					});
@@ -482,7 +482,7 @@ describe('BookTocManagerTests', function () {
 
 				it('Add notebook to book', async () => {
 					bookTocManager = new BookTocManager(undefined, targetBookModel);
-					await bookTocManager.updateBook([notebook], targetBook);
+					await bookTocManager.updateBook(notebook, targetBook);
 					const listFiles = await fs.promises.readdir(run.targetBook.bookContentFolderPath);
 					should(JSON.stringify(listFiles).includes('notebook5.ipynb')).be.true('Notebook 5 should be under the target book content folder');
 				});
