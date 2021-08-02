@@ -762,8 +762,8 @@
         <target state="translated">프로젝트에서 {0}프로젝트로의{1} 순환 참조</target>
       </trans-unit>
       <trans-unit id="mssqlNotFound">
-        <source xml:lang="en">Could not get mssql extension's install location at {0}</source>
-        <target state="translated">{0}에서 mssql 확장의 설치 위치를 가져올 수 없습니다.</target>
+        <source xml:lang="en">Could not get SQL Tools Service install location at {0}</source>
+        <target state="translated">{0}의 SQL 도구 서비스 설치 위치를 가져오지 못했습니다.</target>
       </trans-unit>
       <trans-unit id="projBuildFailed">
         <source xml:lang="en">Build failed. Check output pane for more details. {0}</source>
