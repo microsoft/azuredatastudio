@@ -2,7 +2,7 @@
 	"name": "ads-language-pack-ru",
 	"displayName": "Russian Language Pack for Azure Data Studio",
 	"description": "Language pack extension for Russian",
-	"version": "1.31.0",
+	"version": "1.32.0",
 	"publisher": "Microsoft",
 	"repository": {
 		"type": "git",

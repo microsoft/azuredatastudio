@@ -2,7 +2,7 @@
 	"name": "ads-language-pack-es",
 	"displayName": "Spanish Language Pack for Azure Data Studio",
 	"description": "Language pack extension for Spanish",
-	"version": "1.31.0",
+	"version": "1.32.0",
 	"publisher": "Microsoft",
 	"repository": {
 		"type": "git",
