@@ -514,8 +514,8 @@ describe('BookTocManagerTests', function () {
 
 				it('Add duplicated notebook to book', async () => {
 					bookTocManager = new BookTocManager(undefined, targetBookModel);
-					await bookTocManager.updateBook([notebook], targetBook);
-					await bookTocManager.updateBook([duplicatedNotebook], targetBook);
+					await bookTocManager.updateBook(notebook, targetBook);
+					await bookTocManager.updateBook(duplicatedNotebook, targetBook);
 					const listFiles = await fs.promises.readdir(run.targetBook.bookContentFolderPath);
 					should(JSON.stringify(listFiles).includes('notebook5 - 2.ipynb')).be.true('Should rename the notebook to notebook5 - 2.ipynb');
 					should(JSON.stringify(listFiles).includes('notebook5.ipynb')).be.true('Should keep notebook5.ipynb');
