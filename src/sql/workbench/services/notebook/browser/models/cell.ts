@@ -132,7 +132,11 @@ export class CellModel extends Disposable implements ICellModel {
 	}
 
 	public renderGridOutputs(): void {
-		this._onRenderGridOutputs.fire();
+		if (this.outputs.find(output => output.output_type === 'execute_result')) {
+			this._onRenderGridOutputs.fire();
+		} else {
+			this.resolveGridOutputsRendered();
+		}
 	}
 
 	public resolveGridOutputsRendered(): void {
