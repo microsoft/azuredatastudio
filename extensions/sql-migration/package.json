@@ -15,6 +15,7 @@
   "activationEvents": [
     "onDashboardOpen",
     "onCommand:sqlmigration.start",
+    "onCommand:sqlmigration.newsupportrequest",
     "onCommand:sqlmigration.sendfeedback",
     "onCommand:sqlmigration.openNotebooks"
   ],
@@ -33,6 +34,12 @@
         "title": "%start-migration-command%",
         "category": "%migration-command-category%",
         "icon": "./images/migration.svg"
+      },
+      {
+        "command": "sqlmigration.newsupportrequest",
+        "title": "%new-support-request-command%",
+        "category": "%migration-command-category%",
+        "icon": "./images/newSupportRequest.svg"
       },
       {
         "command": "sqlmigration.sendfeedback",
@@ -78,6 +85,10 @@
     ],
     "menu": {
       "commandPalette": [
+        {
+          "command": "sqlmigration.newsupportrequest",
+          "when": "false"
+        },
         {
           "command": "sqlmigration.sendfeedback",
           "when": "false"
@@ -128,6 +139,7 @@
               "widget": {
                 "tasks-widget": [
                   "sqlmigration.start",
+                  "sqlmigration.newsupportrequest",
                   "sqlmigration.sendfeedback"
                 ]
               }
