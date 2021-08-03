@@ -147,7 +147,7 @@ export class DeployService {
 
 		const connectionProfile = {
 			password: profile.password,
-			serverName: `${profile.serverName}`,
+			serverName: `${profile.serverName},${profile.port}`,
 			server: `${profile.serverName}`,
 			port: profile.port,
 			database: '',
@@ -162,7 +162,7 @@ export class DeployService {
 			authenticationType: 'SqlLogin',
 			email: '',
 			accountId: '',
-			azureAccountToken: '',
+			azureAccountToken: undefined,
 			encrypt: true,
 			trustServerCertificate: true,
 			persistSecurityInfo: false,
