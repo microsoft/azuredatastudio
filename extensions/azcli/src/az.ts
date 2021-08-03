@@ -230,7 +230,7 @@ function parseVersion(raw: string): string {
 	// ...
 	const start = raw.search('azure-cli');
 	const end = raw.search('core');
-	raw = raw.slice(start, end).replace('azure-cli', '');
+	raw = raw.slice(start, end).replace('azure-cli', '').replace('*', '');
 	return raw.trim();
 }
 
@@ -303,8 +303,16 @@ export async function findAzAndCheckArcdata(): Promise<IAzTool> {
 	}
 
 	const versionOutput = await executeAzCommand(`"${path}"`, ['--version']);
-	const azVersion = parseVersion(versionOutput.stdout);
-	const arcVersion = parseArcExtensionVersion(versionOutput.stdout);
+
+	let azVersion = undefined;
+	let arcVersion = undefined;
+	try {
+		azVersion = parseVersion(versionOutput.stdout);
+		arcVersion = parseArcExtensionVersion(versionOutput.stdout);
+	} catch (err) {
+		Logger.log(loc.parseVersionError);
+		throw err;
+	}
 
 	if (arcVersion === undefined) {
 		// If no arcdata was found, prompt to install
