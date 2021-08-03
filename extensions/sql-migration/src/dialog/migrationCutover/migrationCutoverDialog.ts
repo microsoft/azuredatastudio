@@ -518,7 +518,7 @@ export class MigrationCutoverDialog {
 			this.showInfoField(this._fullBackupFileOnInfoField);
 
 			let backupLocation;
-			const isBlobMigration = this._isBlobMigration();
+			const isBlobMigration = this._model.isBlobMigration();
 			// Displaying storage accounts and blob container for azure blob backups.
 			if (isBlobMigration) {
 				backupLocation = `${this._model._migration.migrationContext.properties.backupConfiguration.sourceLocation?.azureBlob?.storageAccountResourceId.split('/').pop()} - ${this._model._migration.migrationContext.properties.backupConfiguration.sourceLocation?.azureBlob?.blobContainerName}`;
@@ -673,12 +673,8 @@ export class MigrationCutoverDialog {
 		return migrationMode === MigrationMode.ONLINE;
 	}
 
-	private _isBlobMigration(): boolean {
-		return this._model._migration.migrationContext.properties.backupConfiguration.sourceLocation?.azureBlob !== undefined;
-	}
-
 	private _shouldDisplayBackupFileTable(): boolean {
-		return this._isProvisioned() && this._isOnlineMigration() && !this._isBlobMigration();
+		return this._isProvisioned() && this._isOnlineMigration() && !this._model.isBlobMigration();
 	}
 
 	private getMigrationStatus(): string {
