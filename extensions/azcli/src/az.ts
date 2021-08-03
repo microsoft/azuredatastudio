@@ -281,16 +281,16 @@ async function setConfig(key: string, value: string): Promise<void> {
 
 /**
  * Finds and returns the user's locally installed Azure CLI tool. Checks to see if arcdata extension is
- * installed and updated. If no Azure CLI is found, the user will be prompted to install it and an
- * undefined object is returned.
+ * installed and updated. If no Azure CLI is found, error will be thrown.
  */
-export async function findAzAndCheckArcdata(): Promise<IAzTool | undefined> {
-	const path = await ((process.platform === 'win32') ? searchForCmd('az.cmd') : searchForCmd('az'));
-
+export async function findAzAndCheckArcdata(): Promise<IAzTool> {
 	let response: string | undefined;
 	const responses = [loc.askLater, loc.doNotAskAgain];
+	let path = undefined;
 
-	if (path === undefined) {
+	try {
+		path = await ((process.platform === 'win32') ? searchForCmd('az.cmd') : searchForCmd('az'));
+	} catch (err) {
 		// If no Azure CLI was found, prompt to install
 		const azInstallNeededConfig = <AzDeployOption>getConfig(azCliInstallKey);
 		if (azInstallNeededConfig !== AzDeployOption.dontPrompt) {
@@ -299,7 +299,7 @@ export async function findAzAndCheckArcdata(): Promise<IAzTool | undefined> {
 				await setConfig(azCliInstallKey, AzDeployOption.dontPrompt);
 			}
 		}
-		return undefined;
+		throw err;
 	}
 
 	const versionOutput = await executeAzCommand(`"${path}"`, ['--version']);
