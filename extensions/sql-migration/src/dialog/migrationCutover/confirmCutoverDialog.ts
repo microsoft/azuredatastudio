@@ -152,7 +152,7 @@ export class ConfirmCutoverDialog {
 			CSSStyles: {
 				'font-size': '13px',
 				'line-height': '18px',
-				'font-weight': 'bold',
+				'font-weight': 'bold'
 			}
 		}).component();
 

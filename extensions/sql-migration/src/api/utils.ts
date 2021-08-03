@@ -220,11 +220,5 @@ export function getMigrationStatusImage(status: string): IconPath {
 }
 
 export function get12HourTime(date: Date): string {
-	let hours = date.getHours();
-	const ampm = hours >= 12 ? 'pm' : 'am';
-	hours = hours % 12;
-	hours = hours ? hours : 12; // the hour '0' should be '12'
-	let minutes = date.getMinutes();
-	const minutesString = minutes < 10 ? '0' + minutes : minutes;
-	return hours + ':' + minutesString + ' ' + ampm;
+	return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 }
