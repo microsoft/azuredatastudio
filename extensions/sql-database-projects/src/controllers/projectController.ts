@@ -275,7 +275,7 @@ export class ProjectsController {
 
 						// Update app settings if requested by user
 						//
-						this.deployService.updateAppSettings(deployProfile);
+						await this.deployService.updateAppSettings(deployProfile);
 						vscode.window.showInformationMessage(constants.deployProjectSucceed);
 					} else {
 						vscode.window.showErrorMessage(constants.deployProjectFailed(publishResult?.errorMessage || ''));

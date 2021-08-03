@@ -45,7 +45,7 @@ export class DeployService {
 		return undefined;
 	}
 
-	public updateAppSettings(profile: IDeployProfile): void {
+	public async updateAppSettings(profile: IDeployProfile): Promise<void> {
 		// Update app settings
 		//
 		if (profile.appSettingFile) {
@@ -53,22 +53,30 @@ export class DeployService {
 
 			let content = JSON.parse(fse.readFileSync(profile.appSettingFile, 'utf8'));
 			if (content && content.Values) {
-				// Find the runtime and generate the connection string for the runtime
-				//
-				const runtime = this.findAppRuntime(profile, content);
-				let connectionStringTemplate = this.createConnectionStringTemplate(runtime);
-				let connectionString = connectionStringTemplate?.
-					replace('{#SERVER#}', profile?.localDbSetting?.serverName || '').
-					replace('{#PORT#}', profile?.localDbSetting?.port?.toString() || '').
-					replace('{#USER#}', profile?.localDbSetting?.userName || '').
-					replace('{#SA_PASSWORD#}', profile?.localDbSetting?.password || '').
-					replace('{#DATABASE#}', profile?.localDbSetting?.dbName || '');
+				let connectionString: string | undefined = '';
+				if (profile.localDbSetting) {
+					// Find the runtime and generate the connection string for the runtime
+					//
+					const runtime = this.findAppRuntime(profile, content);
+					let connectionStringTemplate = this.createConnectionStringTemplate(runtime);
+					connectionString = connectionStringTemplate?.
+						replace('{#SERVER#}', profile?.localDbSetting?.serverName || '').
+						replace('{#PORT#}', profile?.localDbSetting?.port?.toString() || '').
+						replace('{#USER#}', profile?.localDbSetting?.userName || '').
+						replace('{#SA_PASSWORD#}', profile?.localDbSetting?.password || '').
+						replace('{#DATABASE#}', profile?.localDbSetting?.dbName || '');
+				} else if (profile.deploySettings?.connectionUri) {
+					connectionString = await this.getConnectionString(profile.deploySettings?.connectionUri);
+				}
 
-				if (profile.envVariableName) {
+				if (connectionString && profile.envVariableName) {
 					content.Values[profile.envVariableName] = connectionString;
 					fse.writeFileSync(profile.appSettingFile, JSON.stringify(content, undefined, 4));
+					this.logToOutput(`app setting '${profile.appSettingFile}' has been updated`);
+
+				} else {
+					this.logToOutput(`Failed to update app setting '${profile.appSettingFile}'`);
 				}
-				this.logToOutput(`app setting '${profile.appSettingFile}' has been updated`);
 			}
 		}
 	}
@@ -141,6 +149,21 @@ export class DeployService {
 		return await this.executeCommand(`docker ps -q -a --filter label=${imageLabel} -q`);
 	}
 
+	private async getConnectionString(connectionUri: string): Promise<string | undefined> {
+		const getAzdataApi = await utils.getAzdataApi();
+		//const vscodeMssqlApi = getAzdataApi ? undefined : await utils.getVscodeMssqlApi();
+		if (getAzdataApi) {
+			const connection = await getAzdataApi.connection.getConnection(connectionUri);
+			if (connection) {
+				return await getAzdataApi.connection.getConnectionString(connection.connectionId, true);
+			}
+		}
+		// TODO: vscode connections string
+
+		return undefined;
+
+	}
+
 	private async getConnection(profile: ILocalDbSetting): Promise<string | undefined> {
 		const getAzdataApi = await utils.getAzdataApi();
 		const vscodeMssqlApi = getAzdataApi ? undefined : await utils.getVscodeMssqlApi();
@@ -165,7 +188,7 @@ export class DeployService {
 			azureAccountToken: undefined,
 			encrypt: true,
 			trustServerCertificate: true,
-			persistSecurityInfo: false,
+			persistSecurityInfo: true,
 			connectTimeout: 30,
 			connectRetryCount: 4,
 			connectRetryInterval: 3,
