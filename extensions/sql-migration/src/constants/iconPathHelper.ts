@@ -36,6 +36,7 @@ export class IconPathHelper {
 	public static sendFeedback: IconPath;
 	public static expandButtonClosed: IconPath;
 	public static expandButtonOpen: IconPath;
+	public static newSupportRequest: IconPath;
 
 	public static setExtensionContext(context: vscode.ExtensionContext) {
 		IconPathHelper.copy = {
@@ -137,6 +138,10 @@ export class IconPathHelper {
 		IconPathHelper.expandButtonOpen = {
 			light: context.asAbsolutePath('images/expandButtonOpenLight.svg'),
 			dark: context.asAbsolutePath('images/expandButtonOpenDark.svg')
+		};
+		IconPathHelper.newSupportRequest = {
+			light: context.asAbsolutePath('images/newSupportRequest.svg'),
+			dark: context.asAbsolutePath('images/newSupportRequest.svg')
 		};
 	}
 }

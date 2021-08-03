@@ -271,7 +271,7 @@ export const AZURE_SQL = localize('sql.migration.azure.sql', "Azure SQL");
 export const CLOSE = localize('sql.migration.close', "Close");
 export const DATA_UPLOADED = localize('sql.migraiton.data.uploaded.size', "Data Uploaded/Size");
 export const COPY_THROUGHPUT = localize('sql.migration.copy.throughput', "Copy Throughput (MBPS)");
-
+export const NEW_SUPPORT_REQUEST = localize('sql.migration.newsupportrequest', "New support request");
 
 //Summary Page
 export const SUMMARY_PAGE_TITLE = localize('sql.migration.summary.page.title', "Summary");

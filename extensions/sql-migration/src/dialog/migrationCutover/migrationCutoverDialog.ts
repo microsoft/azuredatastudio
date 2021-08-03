@@ -28,6 +28,7 @@ export class MigrationCutoverDialog {
 	private _cancelButton!: azdata.ButtonComponent;
 	private _refreshLoader!: azdata.LoadingComponent;
 	private _copyDatabaseMigrationDetails!: azdata.ButtonComponent;
+	private _newSupportRequest!: azdata.ButtonComponent;
 
 	private _sourceDatabaseInfoField!: InfoFieldSchema;
 	private _sourceDetailsInfoField!: InfoFieldSchema;
@@ -319,6 +320,29 @@ export class MigrationCutoverDialog {
 		}));
 
 		headerActions.addItem(this._copyDatabaseMigrationDetails, {
+			flex: '0',
+			CSSStyles: {
+				'margin-left': '5px'
+			}
+		});
+
+		// create new support request button.  Hiding button until sql migration support has been setup.
+		this._newSupportRequest = this._view.modelBuilder.button().withProps({
+			label: loc.NEW_SUPPORT_REQUEST,
+			iconPath: IconPathHelper.newSupportRequest,
+			iconHeight: '16px',
+			iconWidth: '16px',
+			height: '20px',
+			width: '140px',
+		}).component();
+
+		this._newSupportRequest.onDidClick(async (e) => {
+			const serviceId = this._model._migration.controller.id;
+			const supportUrl = `https://portal.azure.com/#resource${serviceId}/supportrequest`;
+			await vscode.env.openExternal(vscode.Uri.parse(supportUrl));
+		});
+
+		headerActions.addItem(this._newSupportRequest, {
 			flex: '0',
 			CSSStyles: {
 				'margin-left': '5px'
