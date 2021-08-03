@@ -384,7 +384,7 @@ export const NO = localize('sql.migration.no', "No");
 //Migration confirm cutover dialog
 export const COMPLETING_CUTOVER_WARNING = localize('sql.migration.completing.cutover.warning', "Completing cutover without restoring all the backup(s) may result in loss of data.");
 export const BUSINESS_CRITICAL_INFO = localize('sql.migration.bc.info', "Managed Instance migration cutover for Business Critical service tier can take significantly longer than General Purpose as three secondary replicas have to be seeded for Always On High Availability group. This operation duration depends on the size of data. Seeding speed in 90% of cases is 220 GB/hour or higher.");
-export const CUTOVER_HELP_MAIN = localize('sql.migration.cutover.help.main', "Perform following steps before you complete cutover.");
+export const CUTOVER_HELP_MAIN = localize('sql.migration.cutover.help.main', "Perform the following steps before you complete cutover.");
 export const CUTOVER_HELP_STEP1 = localize('sql.migration.cutover.step.1', "1. Stop all the incoming transactions coming to the source database.");
 export const CUTOVER_HELP_STEP2_NETWORK_SHARE = localize('sql.migration.cutover.step.2.network.share', "2. Take final transaction log backup and provide it in the network share location.");
 export const CUTOVER_HELP_STEP2_BLOB_CONTAINER = localize('sql.migration.cutover.step.2.blob', "2. Take final differential or transaction log backup and provide it in the Azure Storage Blob Container.");
