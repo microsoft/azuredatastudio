@@ -421,6 +421,12 @@ export default class QueryRunner extends Disposable {
 		super.dispose();
 	}
 
+	public renameQuery(oldUri: string, newUri: string): Promise<void> {
+		return this.queryManagementService.renameQuery(oldUri, newUri).then(r => r, error => {
+			return error;
+		});
+	}
+
 	get totalElapsedMilliseconds(): number {
 		return this._totalElapsedMilliseconds;
 	}
