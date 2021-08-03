@@ -247,35 +247,35 @@ function parseVersion(raw: string): string {
 	// ...
 	const start = raw.search('azure-cli');
 	const end = raw.search('core');
-	raw = raw.slice(start, end).replace('azure-cli', '');
+	raw = raw.slice(start, end).replace('azure-cli', '').replace('*', '');
 	return raw.trim();
 }
 
-/**
- * Parses out the arcdata extension version from the raw az version output
- * @param raw The raw version output from az --version
- */
-function parseArcExtensionVersion(raw: string): string {
-	// Currently the version is a multi-line string that contains other version information such
-	// as the Python installation and any extensions.
-	//
-	// The output of az --version looks like:
-	// azure-cli                         2.26.1
-	// ...
-	// Extensions:
-	// arcdata                            1.0.0
-	// connectedk8s                       1.1.5
-	// ...
-	const start = raw.search('arcdata');
-	if (start === -1) {
-		// Commented the install/update prompts out until DoNotAskAgain is implemented
-		//throw new AzureCLIArcExtError();
-	} else {
-		raw = raw.slice(start + 7);
-		raw = raw.split(os.EOL)[0].trim();
-	}
-	return raw.trim();
-}
+// /**
+//  * Parses out the arcdata extension version from the raw az version output
+//  * @param raw The raw version output from az --version
+//  */
+// function parseArcExtensionVersion(raw: string): string {
+// 	// Currently the version is a multi-line string that contains other version information such
+// 	// as the Python installation and any extensions.
+// 	//
+// 	// The output of az --version looks like:
+// 	// azure-cli                         2.26.1
+// 	// ...
+// 	// Extensions:
+// 	// arcdata                            1.0.0
+// 	// connectedk8s                       1.1.5
+// 	// ...
+// 	const start = raw.search('arcdata');
+// 	if (start === -1) {
+// 		// Commented the install/update prompts out until DoNotAskAgain is implemented
+// 		//throw new AzureCLIArcExtError();
+// 	} else {
+// 		raw = raw.slice(start + 7);
+// 		raw = raw.split(os.EOL)[0].trim();
+// 	}
+// 	return raw.trim();
+// }
 
 async function executeAzCommand(command: string, args: string[], additionalEnvVars: azExt.AdditionalEnvVars = {}): Promise<ProcessOutput> {
 	const debug = vscode.workspace.getConfiguration(azConfigSection).get(debugConfigKey);
@@ -299,22 +299,29 @@ async function executeAzCommand(command: string, args: string[], additionalEnvVa
 async function findSpecificAz(): Promise<IAzTool> {
 	const path = await ((process.platform === 'win32') ? searchForCmd('az.cmd') : searchForCmd('az'));
 	const versionOutput = await executeAzCommand(`"${path}"`, ['--version']);
-	const version = parseArcExtensionVersion(versionOutput.stdout);
-	const semVersion = new SemVer(version);
+	try {
+		const version = parseVersion(versionOutput.stdout);
+		return new AzTool(path, version);
+	} catch (err) {
+		Logger.log(loc.parseVersionError);
+		throw err;
+	}
+	//const version = parseVersion(versionOutput.stdout);
+	//const semVersion = new SemVer(version);
 	//let response: string | undefined;
 
-	if (LATEST_AZ_ARC_EXTENSION_VERSION.compare(semVersion) === 1) {
-		// If there is a greater version of az arc extension available, prompt to update
-		// Commented the install/update prompts out until DoNotAskAgain is implemented
-		// const responses = [loc.askLater, loc.doNotAskAgain];
-		// response = await vscode.window.showInformationMessage(loc.requiredArcDataVersionNotAvailable(latestAzArcExtensionVersion, version), ...responses);
-		// if (response === loc.doNotAskAgain) {
-		// 	await setConfig(azRequiredUpdateKey, AzDeployOption.dontPrompt);
-		// }
-	} else if (LATEST_AZ_ARC_EXTENSION_VERSION.compare(semVersion) === -1) {
-		// Current version should not be greater than latest version
-		// Commented the install/update prompts out until DoNotAskAgain is implemented
-		// vscode.window.showErrorMessage(loc.unsupportedArcDataVersion(latestAzArcExtensionVersion, version));
-	}
-	return new AzTool(path, version);
+	// if (LATEST_AZ_ARC_EXTENSION_VERSION.compare(semVersion) === 1) {
+	// 	// If there is a greater version of az arc extension available, prompt to update
+	// 	// Commented the install/update prompts out until DoNotAskAgain is implemented
+	// 	// const responses = [loc.askLater, loc.doNotAskAgain];
+	// 	// response = await vscode.window.showInformationMessage(loc.requiredArcDataVersionNotAvailable(latestAzArcExtensionVersion, version), ...responses);
+	// 	// if (response === loc.doNotAskAgain) {
+	// 	// 	await setConfig(azRequiredUpdateKey, AzDeployOption.dontPrompt);
+	// 	// }
+	// } else if (LATEST_AZ_ARC_EXTENSION_VERSION.compare(semVersion) === -1) {
+	// 	// Current version should not be greater than latest version
+	// 	// Commented the install/update prompts out until DoNotAskAgain is implemented
+	// 	// vscode.window.showErrorMessage(loc.unsupportedArcDataVersion(latestAzArcExtensionVersion, version));
+	// }
+	// return new AzTool(path, version);
 }

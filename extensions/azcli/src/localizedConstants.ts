@@ -33,3 +33,4 @@ export const unsupportedArcDataVersion = (requiredVersion: string, currentVersio
 export const doNotAskAgain = localize('az.doNotAskAgain', "Don't Ask Again");
 export const askLater = localize('az.askLater', "Ask Later");
 export const azOutputParseErrorCaught = (command: string): string => localize('az.azOutputParseErrorCaught', "An error occurred while parsing the output of az command: {0}. The output is not JSON.", command);
+export const parseVersionError = localize('az.parseVersionError', "An error occurred while parsing the output of az --version.");
