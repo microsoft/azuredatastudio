@@ -6,8 +6,9 @@
 // config setting keys
 export const azConfigSection: string = 'azcli';
 export const debugConfigKey = 'logDebugInfo';
-export const azRequiredUpdateKey: string = 'requiredUpdate';
-
+export const azArcdataInstallKey: string = 'arcdataInstall';
+export const azArcdataUpdateKey: string = 'arcdataUpdate';
+export const azCliInstallKey: string = 'azInstall';
 
 // context keys && memento keys
 export const azFound = 'az.found';

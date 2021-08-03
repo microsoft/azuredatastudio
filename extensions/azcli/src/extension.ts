@@ -7,14 +7,14 @@ import * as azExt from 'az-ext';
 import * as rd from 'resource-deployment';
 import * as vscode from 'vscode';
 import { getExtensionApi } from './api';
-import { findAz } from './az';
+import { findAzAndCheckArcdata } from './az';
 import { ArcControllerConfigProfilesOptionsSource } from './providers/arcControllerConfigProfilesOptionsSource';
 import { AzToolService } from './services/azToolService';
 
 export async function activate(context: vscode.ExtensionContext): Promise<azExt.IExtension> {
 	const azToolService = new AzToolService();
 
-	azToolService.localAz = await findAz();
+	azToolService.localAz = await findAzAndCheckArcdata();
 
 	const azApi = getExtensionApi(azToolService);
 
