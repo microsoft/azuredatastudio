@@ -45,30 +45,26 @@ declare module 'sqldbproj' {
 
 		/**
 		 * Adds the list of sql files and directories to the project, and saves the project file
+		 *
 		 * @param list list of files and folder Uris. Files and folders must already exist. No files or folders will be added if any do not exist.
-		 * @param doNotThrowOnDuplicate Flag that indicates whether duplicate entries should be ignored or throw an error.
 		 */
-		addToProject(list: vscode.Uri[], doNotThrowOnDuplicate?: boolean): Promise<void>;
+		addToProject(list: vscode.Uri[]): Promise<void>;
 
 		/**
 		 * Adds a folder to the project, and saves the project file
+		 *
 		 * @param relativeFolderPath Relative path of the folder
-		 * @param doNotThrowOnDuplicate
-		 *	Flag that indicates whether duplicate entries should be ignored or throw an error. If flag is set to `true` and
-		 *	item already exists in the project file, then existing entry will be returned.
 		 */
-		addFolderItem(relativeFolderPath: string, doNotThrowOnDuplicate?: boolean): Promise<IFileProjectEntry>;
+		addFolderItem(relativeFolderPath: string): Promise<IFileProjectEntry>;
 
 		/**
 		 * Writes a file to disk if contents are provided, adds that file to the project, and writes it to disk
+		 *
 		 * @param relativeFilePath Relative path of the file
 		 * @param contents Contents to be written to the new file
 		 * @param itemType Type of the project entry to add. This maps to the build action for the item.
-		 * @param doNotThrowOnDuplicate
-		 *	Flag that indicates whether duplicate entries should be ignored or throw an error. If flag is set to `true` and
-		 *	item already exists in the project file, then existing entry will be returned.
 		 */
-		addScriptItem(relativeFilePath: string, contents?: string, itemType?: string, doNotThrowOnDuplicate?: boolean): Promise<IFileProjectEntry>;
+		addScriptItem(relativeFilePath: string, contents?: string, itemType?: string): Promise<IFileProjectEntry>;
 
 		/**
 		 * Adds a SQLCMD variable to the project
