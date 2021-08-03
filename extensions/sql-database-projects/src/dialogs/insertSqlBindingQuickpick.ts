@@ -1,28 +1,5 @@
-// import * as path from 'path';
 import * as vscode from 'vscode';
 import * as constants from '../common/constants';
-// import * as utils from '../common/utils';
-// import * as glob from 'fast-glob';
-
-// async function getAzureFunctions(uri: vscode.Uri): Promise<string[]> {
-// if (!uri) {
-// 	return [];
-// }
-
-
-// // get all the azure functions in the file
-// const params: GetAzureFunctionsParams = {
-// 	filePath: uri.fsPath
-// };
-
-// const result = await this._client.sendRequest(GetAzureFunctionsRequest.type, params);
-
-// if (result.success) {
-// 	return result.azureFunctions;
-// } else {
-// 	throw new Error(result.errorMessage);
-// }
-// }
 
 export async function launchInsertSqlBindingQuickpick(uri: vscode.Uri): Promise<void> {
 	if (!uri) {
@@ -31,7 +8,7 @@ export async function launchInsertSqlBindingQuickpick(uri: vscode.Uri): Promise<
 		uri = vscode.window.activeTextEditor!.document.uri;
 	}
 
-	// input or output binding
+	// 1. select input or output binding
 	const intputOutputItems: vscode.QuickPickItem[] = [{ label: constants.input }, { label: constants.output }];
 
 	const selectedBinding = (await vscode.window.showQuickPick(intputOutputItems, {
@@ -59,6 +36,7 @@ export async function launchInsertSqlBindingQuickpick(uri: vscode.Uri): Promise<
 		items.push({ label: aFName });
 	}
 
+	// 2. select Azure function from the current file
 	const azureFunctionName = (await vscode.window.showQuickPick(items, {
 		canPickMany: false,
 		title: constants.selectAzureFunction,
@@ -69,6 +47,7 @@ export async function launchInsertSqlBindingQuickpick(uri: vscode.Uri): Promise<
 		return;
 	}
 
+	// 3. ask for object name for the binding
 	const objectName = await vscode.window.showInputBox({
 		prompt: selectedBinding === constants.input ? constants.sqlObjectToQuery : constants.sqlTableToUpsert,
 		value: constants.placeHolderObject,
@@ -79,6 +58,7 @@ export async function launchInsertSqlBindingQuickpick(uri: vscode.Uri): Promise<
 		return;
 	}
 
+	// 4. ask for connection string setting name
 	// TODO: load local settings from local.settings.json like in LocalAppSettingListStep in vscode-azurefunctions repo
 	const connectionStringSetting = await vscode.window.showInputBox({
 		prompt: constants.connectionStringSetting,
@@ -90,22 +70,7 @@ export async function launchInsertSqlBindingQuickpick(uri: vscode.Uri): Promise<
 		return;
 	}
 
-	// const params: InsertSqlBindingParams = {
-	// 	filePath: uri.fsPath,
-	// 	functionName: azureFunctionName,
-	// 	objectName: objectName,
-	// 	bindingType: selectedBinding === 'input' ? BindingType.input : BindingType.output,
-	// 	connectionStringSetting: connectionStringSetting
-	// };
-
-	// const result = await this._client.sendRequest(InsertSqlBindingRequest.type, params);
-
-	// // TODO - add nuget package to the azure functions project
-	// // command: dotnet add generated-azfunctions/Pets.Namespace.csproj package Microsoft.Azure.WebJobs.Extensions.Sql -v 1.0.0-preview3
-	// const functionsProject = getFunctionsProject(uri);
-
-	// if (!result.success) {
-	// 	vscode.window.showErrorMessage(result.errorMessage);
-	// }
+	// TODO: hook up actually adding binding
+	// 5. insert binding
 }
 
