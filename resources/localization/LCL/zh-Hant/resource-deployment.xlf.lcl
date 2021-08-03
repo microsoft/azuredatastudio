@@ -63,9 +63,9 @@
           <Disp Icon="Str" />
         </Item>
       </Item>
-      <Item ItemId=";@extensions/resource-deployment/dist/services/tools/azdataToolOld.resourceDeployment.Azdata.AddingAzdataRepository" ItemType="0" PsrId="308" Leaf="false">
+      <Item ItemId=";@extensions/resource-deployment/dist/services/tools/azdataTool.resourceDeployment.Azdata.AddingAzdataRepositoryInf" ItemType="0" PsrId="308" Leaf="false">
         <Disp Icon="Dir" LocTbl="false" />
-        <Item ItemId=";(...) Information" ItemType="0" PsrId="308" Leaf="true">
+        <Item ItemId=";(...) ormation" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[adding the azdata repository information …]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -75,33 +75,9 @@
           <Disp Icon="Str" />
         </Item>
       </Item>
-      <Item ItemId=";@extensions/resource-deployment/dist/services/tools/azdataToolOld.resourceDeployment.Azdata.DeletingPreviousAzdata" ItemType="0" PsrId="308" Leaf="false">
+      <Item ItemId=";@extensions/resource-deployment/dist/services/tools/azdataTool.resourceDeployment.Azdata.DownloadAndInstallingSign" ItemType="0" PsrId="308" Leaf="false">
         <Disp Icon="Dir" LocTbl="false" />
-        <Item ItemId=";(...) .msi" ItemType="0" PsrId="308" Leaf="true">
-          <Str Cat="Text">
-            <Val><![CDATA[deleting previously downloaded Azdata.msi if one exists …]]></Val>
-            <Tgt Cat="Text" Stat="Loc" Orig="New">
-              <Val><![CDATA[正在刪除先前下載的 Azdata.msi (如果有的話)…]]></Val>
-            </Tgt>
-          </Str>
-          <Disp Icon="Str" />
-        </Item>
-      </Item>
-      <Item ItemId=";@extensions/resource-deployment/dist/services/tools/azdataToolOld.resourceDeployment.Azdata.DisplayingInstallation" ItemType="0" PsrId="308" Leaf="false">
-        <Disp Icon="Dir" LocTbl="false" />
-        <Item ItemId=";(...) Log" ItemType="0" PsrId="308" Leaf="true">
-          <Str Cat="Text">
-            <Val><![CDATA[displaying the installation log …]]></Val>
-            <Tgt Cat="Text" Stat="Loc" Orig="New">
-              <Val><![CDATA[正在顯示安裝記錄…]]></Val>
-            </Tgt>
-          </Str>
-          <Disp Icon="Str" />
-        </Item>
-      </Item>
-      <Item ItemId=";@extensions/resource-deployment/dist/services/tools/azdataToolOld.resourceDeployment.Azdata.DownloadAndInstallingS" ItemType="0" PsrId="308" Leaf="false">
-        <Disp Icon="Dir" LocTbl="false" />
-        <Item ItemId=";(...) igningKey" ItemType="0" PsrId="308" Leaf="true">
+        <Item ItemId=";(...) ingKey" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[downloading and installing the signing key for azdata …]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -111,9 +87,9 @@
           <Disp Icon="Str" />
         </Item>
       </Item>
-      <Item ItemId=";@extensions/resource-deployment/dist/services/tools/azdataToolOld.resourceDeployment.Azdata.DownloadingAndInstalli" ItemType="0" PsrId="308" Leaf="false">
+      <Item ItemId=";@extensions/resource-deployment/dist/services/tools/azdataTool.resourceDeployment.Azdata.DownloadingAndInstallingA" ItemType="0" PsrId="308" Leaf="false">
         <Disp Icon="Dir" LocTbl="false" />
-        <Item ItemId=";(...) ngAzdata" ItemType="0" PsrId="308" Leaf="true">
+        <Item ItemId=";(...) zdata" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[downloading Azdata.msi and installing azdata-cli …]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2955,29 +2931,65 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/resource-deployment/dist/services/tools/azdataTool.deploy.azdataExtMissing" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/resource-deployment/dist/services/tools/azdataTool.resourceDeployment.Azdata.AptGetPackages" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[The Azure Data CLI extension must be installed to deploy this resource. Please install it through the extension gallery and try again.]]></Val>
+          <Val><![CDATA[getting packages needed for azdata installation …]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[必須安裝 Azure Data CLI 延伸模組，以部署此資源。請透過延伸模組庫安裝，然後再試一次。]]></Val>
+            <Val><![CDATA[正在取得安裝 azdata 所需的套件…]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/resource-deployment/dist/services/tools/azdataTool.deployCluster.GetToolVersionError" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/resource-deployment/dist/services/tools/azdataTool.resourceDeployment.Azdata.AptGetUpdate" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Error retrieving version information.{0}Invalid output received, get version command output: '{1}' ]]></Val>
+          <Val><![CDATA[updating repository information …]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[擷取版本資訊時發生錯誤。{0}接收到的輸出無效，請取得版本命令輸出: '{1}']]></Val>
+            <Val><![CDATA[正在更新存放庫資訊…]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/resource-deployment/dist/services/tools/azdataTool.deployCluster.GetToolVersionErrorInformation" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/resource-deployment/dist/services/tools/azdataTool.resourceDeployment.Azdata.DeletingPreviousAzdata.msi" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Error retrieving version information. See output channel '{0}' for more details]]></Val>
+          <Val><![CDATA[deleting previously downloaded Azdata.msi if one exists …]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[擷取版本資訊時發生錯誤。如需詳細資料，請參閱輸出通道 '{0}']]></Val>
+            <Val><![CDATA[正在刪除先前下載的 Azdata.msi (如果有的話)…]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/resource-deployment/dist/services/tools/azdataTool.resourceDeployment.Azdata.DisplayingInstallationLog" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[displaying the installation log …]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[正在顯示安裝記錄…]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/resource-deployment/dist/services/tools/azdataTool.resourceDeployment.Azdata.InstallingAzdata" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[installing azdata …]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[正在安裝 azdata…]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/resource-deployment/dist/services/tools/azdataTool.resourceDeployment.Azdata.TappingBrewRepository" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[tapping into the brew repository for azdata-cli …]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[點選 Brew 存放庫以取得 azdata-cli…]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/resource-deployment/dist/services/tools/azdataTool.resourceDeployment.Azdata.UpdatingBrewRepository" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[updating the brew repository for azdata-cli installation …]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[正在更新 Brew 存放庫以安裝 azdata-cli…]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -3003,69 +3015,6 @@
           <Prev Cat="Text">
             <Val><![CDATA[azdata]]></Val>
           </Prev>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/resource-deployment/dist/services/tools/azdataToolOld.resourceDeployment.Azdata.AptGetPackages" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[getting packages needed for azdata installation …]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[正在取得安裝 azdata 所需的套件…]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/resource-deployment/dist/services/tools/azdataToolOld.resourceDeployment.Azdata.AptGetUpdate" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[updating repository information …]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[正在更新存放庫資訊…]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/resource-deployment/dist/services/tools/azdataToolOld.resourceDeployment.Azdata.InstallingAzdata" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[installing azdata …]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[正在安裝 azdata…]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/resource-deployment/dist/services/tools/azdataToolOld.resourceDeployment.Azdata.TappingBrewRepository" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[tapping into the brew repository for azdata-cli …]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[點選 Brew 存放庫以取得 azdata-cli…]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/resource-deployment/dist/services/tools/azdataToolOld.resourceDeployment.Azdata.UpdatingBrewRepository" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[updating the brew repository for azdata-cli installation …]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[正在更新 Brew 存放庫以安裝 azdata-cli…]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/resource-deployment/dist/services/tools/azdataToolOld.resourceDeployment.AzdataDescription" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Azure Data command line interface]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Azure Data 命令列介面]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/resource-deployment/dist/services/tools/azdataToolOld.resourceDeployment.AzdataDisplayName" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Azure Data CLI]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Azure Data CLI]]></Val>
-          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3951,15 +3900,6 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/resource-deployment/dist/ui/deployClusterWizard/pages/clusterSettingsPage.deployCluster.ValidationError" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[There are some errors on this page, click 'Show Details' to view the errors.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[此頁面有一些錯誤，按一下 [顯示詳細資料]5D; 即可檢視錯誤。]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";extensions/resource-deployment/dist/ui/deployClusterWizard/pages/deploymentProfilePage.deployCluster.ServiceName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Service]]></Val>
@@ -4739,15 +4679,6 @@
           <Val><![CDATA[Unexpected error fetching available kubectl storage classes : {0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[擷取可用的 kubectl 儲存體類別時發生未預期的錯誤: {0}]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/resource-deployment/dist/ui/notebookWizard/notebookWizardPage.wizardPage.ValidationError" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[There are some errors on this page, click 'Show Details' to view the errors.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[此頁面有一些錯誤，按一下 [顯示詳細資料]5D; 即可檢視錯誤。]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
