@@ -9,7 +9,7 @@ import { MigrationCutoverDialogModel } from './migrationCutoverDialogModel';
 import * as constants from '../../constants/strings';
 import { SqlManagedInstance } from '../../api/azure';
 import { IconPathHelper } from '../../constants/iconPathHelper';
-import { get12HourTime } from '../../api/utils';
+import { convertByteSizeToReadableUnit, get12HourTime } from '../../api/utils';
 
 export class ConfirmCutoverDialog {
 	private _dialogObject!: azdata.window.Dialog;
@@ -320,12 +320,12 @@ export class ConfirmCutoverDialog {
 				{
 					value: constants.STATUS,
 					type: azdata.ColumnType.text,
-					width: 100
+					width: 80
 				},
 				{
-					value: constants.STATUS,
+					value: constants.SIZE_COLUMN_HEADER,
 					type: azdata.ColumnType.text,
-					width: 50
+					width: 70
 				}
 			],
 			data: [],
@@ -347,7 +347,7 @@ export class ConfirmCutoverDialog {
 				return [
 					f.fileName,
 					f.status,
-					f.totalSize
+					convertByteSizeToReadableUnit(f.totalSize)
 				];
 			});
 		} else {

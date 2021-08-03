@@ -406,7 +406,7 @@ export function CUTOVER_IN_PROGRESS(dbName: string): string {
 export const MIGRATION_CANNOT_CANCEL = localize('sql.migration.cannot.cancel', 'Migration is not in progress and cannot be cancelled.');
 export const MIGRATION_CANNOT_CUTOVER = localize('sql.migration.cannot.cutover', 'Migration is not in progress and cannot be cutover.');
 export const FILE_NAME = localize('sql.migration.file.name', "File name");
-export const SIZE_GB = localize('sql.migration.size.gb', "Size (GB)");
+export const SIZE_COLUMN_HEADER = localize('sql.migration.size.column.header', "Size");
 export const NO_PENDING_BACKUPS = localize('sql.migration.no.pending.backups', "No pending backups. Click refresh to check current status.");
 //Migration status dialog
 export const SEARCH_FOR_MIGRATIONS = localize('sql.migration.search.for.migration', "Search for migrations");

@@ -327,7 +327,10 @@ export class MigrationCutoverDialog {
 
 		this._refreshLoader = this._view.modelBuilder.loadingComponent().withProps({
 			loading: false,
-			height: '15px'
+			CSSStyles: {
+				'height': '8px',
+				'margin-top': '4px'
+			}
 		}).component();
 
 		headerActions.addItem(this._refreshLoader, {
