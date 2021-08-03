@@ -90,8 +90,16 @@ export class DerivedColumnDialog {
 					}
 				}
 				transformationContainer.clearItems();
-				transformationContainer.addItem(transformationTable);
-				transformationContainer.addItem(applyButton);
+				transformationContainer.addItem(transformationTable, {
+					CSSStyles: {
+						'width': 'auto'
+					}
+				});
+				transformationContainer.addItem(applyButton, {
+					CSSStyles: {
+						'align-self': 'flex-end'
+					}
+				});
 			});
 
 
@@ -130,54 +138,13 @@ export class DerivedColumnDialog {
 				dataValues: transformationTableData
 			}).component();
 
-			// const delay = (function(){
-			// 	let timer:NodeJS.Timeout;
-			// 	return function(callback: any, ms: number){
-			// 	clearTimeout (timer);
-			// 	timer = setTimeout(callback, ms);
-			//    };
-			//   })();
-
-			// this._specifyTransformations.forEach(i => {
-			// 	i.onTextChanged(async e => {
-			// 		delay(async ()=>{
-			// 			const requiredColNames = [];
-			// 			const numCols = transformationTable.columns.length - 1;
-			// 			for (let index = 0; index < numCols; index++) {
-			// 				requiredColNames[index] = transformationTable.columns[index].displayName;
-			// 			}
-			// 			const transExamples = [];
-			// 			const transExampleIndices = [];
-
-			// 			for (let index = 0; index < transformationTable.dataValues.length; index++) {
-			// 				const example =(<azdata.InputBoxComponent>transformationTable.dataValues[index][numCols].value).value as string;
-			// 				if (example === '') {
-			// 					continue;
-			// 				}
-			// 				transExamples.push(example);
-			// 				transExampleIndices.push(index);
-			// 			}
-
-			// 			const response = await this._provider.sendLearnTransformationRequest({
-			// 				columnNames: requiredColNames,
-			// 				transformationExamples: transExamples,
-			// 				transformationExampleRowIndices: transExampleIndices
-			// 			});
-			// 			this.currentTransformation = response.transformationPreview;
-			// 			for (let index = 0; index < this.currentTransformation.length; index++) {
-			// 				(<azdata.InputBoxComponent>transformationTable.dataValues[index][transformationTable.columns.length - 1].value).placeHolder = this.currentTransformation[index];
-
-			// 			}
-			// 			transformationContainer.clearItems();
-			// 			transformationContainer.addItem(transformationTable);
-			// 			transformationContainer.addItem(applyButton);
-			// 		}, 1000);
-			// 	});
-			// })
 
 			const applyButton = view.modelBuilder.button().withProps({
 				label: 'Apply',
-				// width: '200px'
+				width: '200px',
+				CSSStyles: {
+					'margin-right': 0
+				}
 			}).component();
 
 			applyButton.onDidClick(async e => {
@@ -209,8 +176,16 @@ export class DerivedColumnDialog {
 
 				}
 				transformationContainer.clearItems();
-				transformationContainer.addItem(transformationTable);
-				transformationContainer.addItem(applyButton);
+				transformationContainer.addItem(transformationTable, {
+					CSSStyles: {
+						'width': 'auto'
+					}
+				});
+				transformationContainer.addItem(applyButton, {
+					CSSStyles: {
+						'align-self': 'flex-end'
+					}
+				});
 			});
 
 			const specifyDerivedColNameTable = view.modelBuilder.declarativeTable().withProps({
@@ -237,6 +212,26 @@ export class DerivedColumnDialog {
 			specifyDerivedColNameTable.dataValues = specifyDerivedColNameTableData;
 
 			const transformationContainer = view.modelBuilder.flexContainer().withLayout({
+				flexFlow: 'column'
+			}).withProps({
+				CSSStyles: {
+					'overflow-x': 'scroll',
+					'width': 'auto'
+				}
+			}).component();
+			transformationContainer.addItem(transformationTable, {
+				CSSStyles: {
+					'width': 'auto'
+				}
+			});
+			transformationContainer.addItem(applyButton, {
+				CSSStyles: {
+					'align-self': 'flex-end'
+				}
+			});
+
+
+			const wrapTransformationContainer = view.modelBuilder.flexContainer().withLayout({
 				flexFlow: 'column',
 				width: '700px'
 			}).withProps({
@@ -244,8 +239,9 @@ export class DerivedColumnDialog {
 					'overflow-x': 'scroll'
 				}
 			}).component();
-			transformationContainer.addItem(transformationTable);
-			transformationContainer.addItem(applyButton);
+			wrapTransformationContainer.addItem(transformationContainer);
+
+
 
 			const specifyDerivedColNameContainer = view.modelBuilder.flexContainer().withLayout({
 				flexFlow: 'column',
@@ -268,7 +264,7 @@ export class DerivedColumnDialog {
 					width: '150px'
 				}
 			});
-			flexGrid.addItem(transformationContainer, {
+			flexGrid.addItem(wrapTransformationContainer, {
 				flex: '0',
 				CSSStyles: {
 					width: '700px'
@@ -293,7 +289,6 @@ export class DerivedColumnDialog {
 			const form = formBuilder.withLayout({ width: '100%' }).component();
 			return view.initializeModel(form);
 		});
-
 
 		this._dialogObject.okButton.onClick(e => {
 			this._doneEmitter.emit('done');
