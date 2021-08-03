@@ -23,11 +23,12 @@ import { TextCellComponent } from 'sql/workbench/contrib/notebook/browser/cellVi
 import { ComponentFactoryResolver, ViewContainerRef } from '@angular/core';
 import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
-import { inputBorder, inputValidationInfoBorder, editorBackground } from 'vs/platform/theme/common/colorRegistry';
+import { inputBorder, inputValidationInfoBorder } from 'vs/platform/theme/common/colorRegistry';
 import { localize } from 'vs/nls';
 import { NotebookViewsExtension } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViewsExtension';
 import { attachButtonStyler } from 'vs/platform/theme/common/styler';
 import { toJpeg } from 'html-to-image';
+import { truncate } from 'vs/base/common/strings';
 
 type CellOption = {
 	optionMetadata: ServiceOption,
@@ -82,7 +83,7 @@ export class CellOptionsModel {
 		}
 	}
 
-	public getOptionValue(optionName: string): boolean {
+	public getOptionValue(optionName: string): boolean | undefined {
 		return this._optionsMap[optionName]?.currentValue;
 	}
 }
@@ -151,8 +152,6 @@ export class InsertCellsModal extends Modal {
 	private async createOptions(container: HTMLElement): Promise<void> {
 		const activeView = this._context.getActiveView();
 		const cellsAvailableToInsert = activeView.hiddenCells;
-
-		this._themeService.getColorTheme().getColor(editorBackground);
 
 		cellsAvailableToInsert.forEach(async (cell) => {
 			const optionWidget = this.createCheckBoxHelper(

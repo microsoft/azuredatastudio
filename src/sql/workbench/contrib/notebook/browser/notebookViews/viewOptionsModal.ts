@@ -78,7 +78,7 @@ export class ViewOptionsModal extends Modal {
 					if (this._view.name !== value && !this._view.nameAvailable(value)) {
 						return ({ type: MessageType.ERROR, content: localize('viewOptionsModal.nameTaken', "This view name has already been taken.") });
 					}
-					return null;
+					return undefined;
 				}
 			},
 			ariaLabel: localize('viewOptionsModal.name', "View Name")

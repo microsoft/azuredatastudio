@@ -37,13 +37,10 @@ export class ViewSettingsAction extends Action {
 		super(ViewSettingsAction.ID, ViewSettingsAction.LABEL, ViewSettingsAction.ICON);
 	}
 
-	override run(): Promise<void> {
-		return new Promise<void>((resolve) => {
-			const optionsModal = this._instantiationService.createInstance(ViewOptionsModal, this._context.getActiveView());
-			optionsModal.render();
-			optionsModal.open();
-			resolve();
-		});
+	override async run(): Promise<void> {
+		const optionsModal = this._instantiationService.createInstance(ViewOptionsModal, this._context.getActiveView());
+		optionsModal.render();
+		optionsModal.open();
 	}
 }
 
