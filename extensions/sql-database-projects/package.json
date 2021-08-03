@@ -153,6 +153,10 @@
         "command": "sqlDatabaseProjects.changeTargetPlatform",
         "title": "%sqlDatabaseProjects.changeTargetPlatform%",
         "category": "%sqlDatabaseProjects.displayName%"
+      },
+      {
+        "command": "sqlDatabaseProjects.insertSqlInputBinding",
+        "title": "%sqlDatabaseProjects.insertSqlInputBinding%"
       }
     ],
     "menus": {
@@ -246,6 +250,9 @@
         {
           "command": "sqlDatabaseProjects.changeTargetPlatform",
           "when": "false"
+        },
+        {
+          "command": "sqlDatabaseProjects.insertSqlInputBinding"
         }
       ],
       "view/item/context": [
