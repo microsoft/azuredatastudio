@@ -139,7 +139,7 @@ suite('NotebookMarkdownRenderer', () => {
 		});
 
 		test('5', function (): void {
-			const markdown = `Some text\r\n\n      \Some more text`;
+			const markdown = `Some text\n\n      Some more text`;
 			const expectedValue = '<p>Some text</p><pre><code>  Some more text</code></pre>\n';
 			const result = notebookMarkdownRenderer.renderMarkdown({ value: markdown, isTrusted: true }).innerHTML;
 			assert.strictEqual(result, expectedValue);
