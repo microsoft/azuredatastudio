@@ -331,7 +331,8 @@ declare module 'az-ext' {
 		 * before fetching this value to ensure that correct value is returned. This is almost always correct unless
 		 * Az has gotten reinstalled in the background after this IAzApi object was constructed.
 		 */
-		getSemVersion(): Promise<SemVer>,
+		getSemVersionAz(): Promise<SemVer>,
+		getSemVersionArc(): Promise<SemVer>,
 		version(): Promise<AzOutput<string>>
 	}
 

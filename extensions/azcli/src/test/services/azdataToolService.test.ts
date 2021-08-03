@@ -11,7 +11,7 @@ describe('azToolService', function (): void {
 	it('Tool should be set correctly', async function (): Promise<void> {
 		const service = new AzToolService();
 		should(service.localAz).be.undefined();
-		service.localAz = new AzTool('my path', '1.0.0');
+		service.localAz = new AzTool('my path', '2.26.0', '1.0.0');
 		should(service).not.be.undefined();
 	});
 });

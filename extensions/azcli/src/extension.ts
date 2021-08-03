@@ -13,7 +13,6 @@ import { AzToolService } from './services/azToolService';
 
 export async function activate(context: vscode.ExtensionContext): Promise<azExt.IExtension> {
 	const azToolService = new AzToolService();
-
 	azToolService.localAz = await findAz();
 
 	const azApi = getExtensionApi(azToolService);

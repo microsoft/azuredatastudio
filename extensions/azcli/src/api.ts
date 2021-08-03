@@ -127,9 +127,13 @@ export function getAzApi(azToolService: AzToolService): azExt.IAzApi {
 			throwIfNoAz(azToolService.localAz);
 			return azToolService.localAz.getPath();
 		},
-		getSemVersion: async () => {
+		getSemVersionAz: async () => {
 			throwIfNoAz(azToolService.localAz);
-			return azToolService.localAz.getSemVersion();
+			return azToolService.localAz.getSemVersionAz();
+		},
+		getSemVersionArc: async () => {
+			throwIfNoAz(azToolService.localAz);
+			return azToolService.localAz.getSemVersionArc();
 		},
 		version: async () => {
 			throwIfNoAz(azToolService.localAz);

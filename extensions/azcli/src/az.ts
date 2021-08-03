@@ -41,19 +41,30 @@ export interface IAzTool extends azExt.IAzApi {
  */
 export class AzTool implements azExt.IAzApi {
 
-	private _semVersion: SemVer;
+	private _semVersionAz: SemVer;
+	private _semVersionArc: SemVer;
 
-	constructor(private _path: string, version: string) {
-		this._semVersion = new SemVer(version);
+	constructor(private _path: string, versionAz: string, versionArc: string) {
+		this._semVersionAz = new SemVer(versionAz);
+		this._semVersionArc = new SemVer(versionArc);
 	}
 
 	/**
-	 * The semVersion corresponding to this installation of az. version() method should have been run
+	 * The semVersion corresponding to this installation of Azure CLI. version() method should have been run
 	 * before fetching this value to ensure that correct value is returned. This is almost always correct unless
 	 * Az has gotten reinstalled in the background after this IAzApi object was constructed.
 	 */
-	public async getSemVersion(): Promise<SemVer> {
-		return this._semVersion;
+	public async getSemVersionAz(): Promise<SemVer> {
+		return this._semVersionAz;
+	}
+
+	/**
+	 * The semVersion corresponding to this installation of Azure CLI arcdata extension. version() method should have been run
+	 * before fetching this value to ensure that correct value is returned. This is almost always correct unless
+	 * arcdata has gotten reinstalled in the background after this IAzApi object was constructed.
+	 */
+	public async getSemVersionArc(): Promise<SemVer> {
+		return this._semVersionArc;
 	}
 
 	/**
@@ -170,7 +181,7 @@ export class AzTool implements azExt.IAzApi {
 	 */
 	public async version(): Promise<azExt.AzOutput<string>> {
 		const output = await executeAzCommand(`"${this._path}"`, ['--version']);
-		this._semVersion = new SemVer(parseVersion(output.stdout));
+		this._semVersionAz = new SemVer(<string>parseVersion(output.stdout));
 		return {
 			stdout: output.stdout,
 			stderr: output.stderr.split(os.EOL)
@@ -226,7 +237,7 @@ export async function findAz(): Promise<IAzTool> {
 	Logger.log(loc.searchingForAz);
 	try {
 		const az = await findAzAndCheckArcdata();
-		Logger.log(loc.foundExistingAz(await az.getPath(), (await az.getSemVersion()).raw));
+		Logger.log(loc.foundExistingAz(await az.getPath(), (await az.getSemVersionAz()).raw));
 		return az;
 	} catch (err) {
 		Logger.log(loc.noAzureCLI);
@@ -234,22 +245,19 @@ export async function findAz(): Promise<IAzTool> {
 	}
 }
 
-
 /**
  * Parses out the Azure CLI version from the raw az version output
  * @param raw The raw version output from az --version
  */
-function parseVersion(raw: string): string {
+function parseVersion(raw: string): string | undefined {
 	// Currently the version is a multi-line string that contains other version information such
 	// as the Python installation, with the first line holding the version of az itself.
 	//
 	// The output of az --version looks like:
 	// azure-cli                         2.26.1
 	// ...
-	const start = raw.search('azure-cli');
-	const end = raw.search('core');
-	raw = raw.slice(start, end).replace('azure-cli', '').replace('*', '');
-	return raw.trim();
+	const exp = new RegExp(/azure-cli\s*(\d*.\d*.\d*)/);
+	return exp.exec(raw)?.pop();
 }
 
 /**
@@ -267,14 +275,8 @@ function parseArcExtensionVersion(raw: string): string | undefined {
 	// arcdata                            1.0.0
 	// connectedk8s                       1.1.5
 	// ...
-	const start = raw.search('arcdata');
-	if (start === -1) {
-		return undefined;
-	} else {
-		raw = raw.slice(start + 7);
-		raw = raw.split(os.EOL)[0].trim();
-	}
-	return raw.trim();
+	const exp = new RegExp(/arcdata\s*(\d*.\d*.\d*)/);
+	return exp.exec(raw)?.pop();
 }
 
 async function executeAzCommand(command: string, args: string[], additionalEnvVars: azExt.AdditionalEnvVars = {}): Promise<ProcessOutput> {
@@ -295,7 +297,6 @@ async function setConfig(key: string, value: string): Promise<void> {
 	const config = vscode.workspace.getConfiguration(azConfigSection);
 	await config.update(key, value, vscode.ConfigurationTarget.Global);
 }
-
 
 /**
  * Finds and returns the user's locally installed Azure CLI tool. Checks to see if arcdata extension is
@@ -358,5 +359,5 @@ export async function findAzAndCheckArcdata(): Promise<IAzTool> {
 		}
 	}
 
-	return new AzTool(path, <string>azVersion);
+	return new AzTool(path, <string>azVersion, <string>arcVersion);
 }
