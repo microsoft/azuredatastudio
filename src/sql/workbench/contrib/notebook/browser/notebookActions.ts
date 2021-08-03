@@ -193,19 +193,17 @@ export class NotebookViewsActionProvider implements IActionProvider {
 		views: NotebookViewsExtension,
 		modelReady: Promise<INotebookModel>,
 		@INotebookService private _notebookService: INotebookService,
+		@INotificationService private _notificationService: INotificationService,
 		@IInstantiationService private instantiationService: IInstantiationService) {
 
-		if (modelReady) {
-			modelReady
-				.then((model) => {
-					this.views = views;
-					this.viewMode = model.viewMode;
-					this.updateView();
-				})
-				.catch((err) => {
-					// No-op for now
-				});
-		}
+		modelReady?.then((model) => {
+			this.views = views;
+			this.viewMode = model.viewMode;
+			this.updateView();
+		})
+			.catch((err) => {
+				this._notificationService.error(getErrorMessage(err));
+			});
 	}
 
 	getActions(): IAction[] {
@@ -234,7 +232,7 @@ export class NotebookViewsActionProvider implements IActionProvider {
 		}
 
 		views.forEach((view) => {
-			const option = new DashboardViewAction(view.guid, view.name, 'button', this._notebookService);
+			const option = new DashboardViewAction(view.guid, view.name, 'button', this._notebookService, this._notificationService);
 			this._options.push(option);
 
 			if (this.viewMode === ViewMode.Views && this.views.getActiveView() === view) {
@@ -268,6 +266,7 @@ export class DashboardViewAction extends Action {
 	constructor(
 		id: string, label: string, cssClass: string,
 		@INotebookService private _notebookService: INotebookService,
+		@INotificationService private _notificationService: INotificationService,
 	) {
 		super(id, label, cssClass);
 	}
@@ -278,8 +277,12 @@ export class DashboardViewAction extends Action {
 			let views = editor.views;
 			const view = views.getViews().find(view => view.guid === this.id);
 
-			views.setActiveView(view);
-			editor.model.viewMode = ViewMode.Views;
+			if (view) {
+				views.setActiveView(view);
+				editor.model.viewMode = ViewMode.Views;
+			} else {
+				this._notificationService.error(localize('viewNotFound', "Unable to find view: {0}", this.id));
+			}
 		}
 	}
 }

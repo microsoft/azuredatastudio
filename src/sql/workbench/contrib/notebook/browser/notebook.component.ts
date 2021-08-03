@@ -451,7 +451,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			let viewsDropdownContainer;
 			if (this._configurationService.getValue<boolean>('notebookViews.enabled')) {
 				let viewsContainer = document.createElement('li');
-				let viewsActionsProvider = new NotebookViewsActionProvider(viewsContainer, this.views, this.modelReady, this.notebookService, this.instantiationService);
+				let viewsActionsProvider = new NotebookViewsActionProvider(viewsContainer, this.views, this.modelReady, this.notebookService, this.notificationService, this.instantiationService);
 				let viewsButton = new Action('notebook.OpenViews', localize('views', "Views"), 'notebook-button masked-pseudo code');
 				viewsDropdownContainer = DOM.$('li.action-item');
 				viewsDropdownContainer.setAttribute('role', 'presentation');
