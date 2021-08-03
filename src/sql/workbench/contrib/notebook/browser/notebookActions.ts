@@ -32,11 +32,11 @@ import { URI } from 'vs/base/common/uri';
 import { Emitter, Event } from 'vs/base/common/event';
 import { IActionProvider } from 'vs/base/browser/ui/dropdown/dropdown';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { NotebookViewsExtension } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViewsExtension';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
 import { KernelsLanguage } from 'sql/workbench/services/notebook/common/notebookConstants';
+import { INotebookViews } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViews';
 
 const msgLoading = localize('loading', "Loading kernels...");
 export const msgChanging = localize('changing', "Changing kernel...");
@@ -183,14 +183,14 @@ export abstract class ToggleableAction extends Action {
 }
 
 export class NotebookViewsActionProvider implements IActionProvider {
-	private _options: Action[];
-	private views: NotebookViewsExtension;
+	private _options: Action[] = [];
+	private views: INotebookViews;
 	private viewMode: ViewMode;
 	private readonly _optionsUpdated = new Emitter<boolean>();
 
 	constructor(
 		container: HTMLElement,
-		views: NotebookViewsExtension,
+		views: INotebookViews,
 		modelReady: Promise<INotebookModel>,
 		@INotebookService private _notebookService: INotebookService,
 		@INotificationService private _notificationService: INotificationService,

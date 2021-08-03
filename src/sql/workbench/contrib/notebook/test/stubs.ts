@@ -20,6 +20,7 @@ import { IContextViewProvider, IDelegate } from 'vs/base/browser/ui/contextview/
 import { IEditorPane } from 'vs/workbench/common/editor';
 import { INotebookShowOptions } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { NotebookViewsExtension } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViewsExtension';
+import { INotebookView, INotebookViewCell, INotebookViews } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViews';
 
 export class NotebookModelStub implements INotebookModel {
 	constructor(private _languageInfo?: nb.ILanguageInfo, private _cells?: ICellModel[], private _testContents?: nb.INotebookContents) {
@@ -758,4 +759,69 @@ export class ContextViewProviderStub implements IContextViewProvider {
 	layout(): void {
 		throw new Error('Method not implemented.');
 	}
+}
+
+export class NotebookViewStub implements INotebookView {
+	guid: string = '';
+	onDeleted: vsEvent.Event<INotebookView>;
+	cells: readonly ICellModel[] = [];
+	hiddenCells: readonly ICellModel[];
+	name: string = '';
+	initialize(): void {
+		throw new Error('Method not implemented.');
+	}
+	nameAvailable(name: string): boolean {
+		throw new Error('Method not implemented.');
+	}
+	getCellMetadata(cell: ICellModel): INotebookViewCell {
+		throw new Error('Method not implemented.');
+	}
+	hideCell(cell: ICellModel): void {
+		throw new Error('Method not implemented.');
+	}
+	moveCell(cell: ICellModel, x: number, y: number): void {
+		throw new Error('Method not implemented.');
+	}
+	resizeCell(cell: ICellModel, width: number, height: number): void {
+		throw new Error('Method not implemented.');
+	}
+	getCell(guid: string): Readonly<ICellModel> {
+		throw new Error('Method not implemented.');
+	}
+	insertCell(cell: ICellModel): void {
+		throw new Error('Method not implemented.');
+	}
+	save(): void {
+		throw new Error('Method not implemented.');
+	}
+	delete(): void {
+		throw new Error('Method not implemented.');
+	}
+}
+
+export class NotebookViewsStub implements INotebookViews {
+	notebook: INotebookModel;
+	onViewDeleted: vsEvent.Event<void>;
+	createNewView(name?: string): INotebookView {
+		throw new Error('Method not implemented.');
+	}
+	removeView(guid: string): void {
+		throw new Error('Method not implemented.');
+	}
+	generateDefaultViewName(): string {
+		throw new Error('Method not implemented.');
+	}
+	getViews(): INotebookView[] {
+		throw new Error('Method not implemented.');
+	}
+	getActiveView(): INotebookView {
+		throw new Error('Method not implemented.');
+	}
+	setActiveView(view: INotebookView): void {
+		throw new Error('Method not implemented.');
+	}
+	viewNameIsTaken(name: string): boolean {
+		throw new Error('Method not implemented.');
+	}
+
 }
