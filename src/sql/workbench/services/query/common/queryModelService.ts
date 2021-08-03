@@ -409,6 +409,19 @@ export class QueryModelService implements IQueryModelService {
 		}
 	}
 
+	public async renameQuery(newUri: string, oldUri: string): Promise<void> {
+		// Get existing query runner
+		let queryRunner = this.internalGetQueryRunner(oldUri);
+		if (queryRunner) {
+			await queryRunner.disposeQuery();
+		}
+		// remove the old key and set new key with same query info as old uri.
+		if (this._queryInfoMap.has(oldUri)) {
+			this._queryInfoMap.set(newUri, this._queryInfoMap.get(oldUri));
+			this._queryInfoMap.delete(oldUri);
+		}
+	}
+
 	// EDIT DATA METHODS /////////////////////////////////////////////////////
 	async initializeEdit(ownerUri: string, schemaName: string, objectName: string, objectType: string, rowLimit: number, queryString: string): Promise<void> {
 		// Reuse existing query runner if it exists
