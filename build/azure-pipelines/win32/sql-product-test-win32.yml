@@ -44,14 +44,14 @@ steps:
     SecretsFilter: 'ads-integration-test-azure-server,ads-integration-test-azure-server-password,ads-integration-test-azure-server-username,ads-integration-test-bdc-server,ads-integration-test-bdc-server-password,ads-integration-test-bdc-server-username,ads-integration-test-standalone-server,ads-integration-test-standalone-server-password,ads-integration-test-standalone-server-username,ads-integration-test-standalone-server-2019,ads-integration-test-standalone-server-password-2019,ads-integration-test-standalone-server-username-2019'
 
 - powershell: |
-  . build/azure-pipelines/win32/exec.ps1
-  $ErrorActionPreference = "Stop"
-  $AppRoot = "$(agent.builddirectory)\azuredatastudio-win32-x64"
-  $AppProductJson = Get-Content -Raw -Path "$AppRoot\resources\app\product.json" | ConvertFrom-Json
-  $AppNameShort = $AppProductJson.nameShort
-  exec { $env:INTEGRATION_TEST_ELECTRON_PATH = "$AppRoot\$AppNameShort.exe"; .\scripts\test-extensions-unit.bat }
-displayName: Run stable extension unit tests
-condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
+    . build/azure-pipelines/win32/exec.ps1
+    $ErrorActionPreference = "Stop"
+    $AppRoot = "$(agent.builddirectory)\azuredatastudio-win32-x64"
+    $AppProductJson = Get-Content -Raw -Path "$AppRoot\resources\app\product.json" | ConvertFrom-Json
+    $AppNameShort = $AppProductJson.nameShort
+    exec { $env:INTEGRATION_TEST_ELECTRON_PATH = "$AppRoot\$AppNameShort.exe"; .\scripts\test-extensions-unit.bat }
+  displayName: Run stable extension unit tests
+  condition: and(succeeded(), eq(variables['RUN_TESTS'], 'true'))
 
 - powershell: |
     . build/azure-pipelines/win32/exec.ps1
