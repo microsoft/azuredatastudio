@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import * as constants from '../common/constants';
 
-export async function launchInsertSqlBindingQuickpick(uri: vscode.Uri | undefined): Promise<void> {
+export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined): Promise<void> {
 	if (!uri) {
 		// this command only shows in the command palette when the active editor is a .cs file, so we can safely assume that's the scenario
 		// when this is called without a uri

@@ -155,8 +155,8 @@
         "category": "%sqlDatabaseProjects.displayName%"
       },
       {
-        "command": "sqlDatabaseProjects.insertSqlInputBinding",
-        "title": "%sqlDatabaseProjects.insertSqlInputBinding%",
+        "command": "sqlDatabaseProjects.addSqlBinding",
+        "title": "%sqlDatabaseProjects.addSqlBinding%",
         "category": "%azureFunctions.displayName%"
       }
     ],
@@ -253,7 +253,7 @@
           "when": "false"
         },
         {
-          "command": "sqlDatabaseProjects.insertSqlInputBinding",
+          "command": "sqlDatabaseProjects.addSqlBinding",
           "when": "editorLangId == csharp && !azdataAvailable"
         }
       ],
