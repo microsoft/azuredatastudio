@@ -19,7 +19,6 @@ import { IRange } from 'vs/editor/common/core/range';
 import { AbstractTextResourceEditorInput } from 'vs/workbench/common/editor/textResourceEditorInput';
 import { IQueryEditorConfiguration } from 'sql/platform/query/common/query';
 //import { FileQueryEditorInput } from 'sql/workbench/common/query/fileQueryEditorInput';
-import { FileEditorInput } from 'sql/workbench/common/query/fileEditorInput';
 import { FileQueryEditorInput } from 'sql/workbench/services/query/common/fileQueryEditorInput';
 //import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
@@ -234,7 +233,7 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 	override async save(group: GroupIdentifier, options?: ISaveOptions): Promise<IEditorInput | undefined> {
 		//return this.text.save(group, options);
 		let preProcessed = await this.text.saveAs(group, options);
-		let newFileQueryInput = this.instantiationService.createInstance(FileQueryEditorInput, '', (preProcessed as FileEditorInput), this._results);
+		let newFileQueryInput = this.instantiationService.createInstance(FileQueryEditorInput, '', (preProcessed as any), this._results);
 		newFileQueryInput.state.resultsVisible = this.state.resultsVisible;
 		newFileQueryInput.state.isSaving = true;
 		newFileQueryInput.state.oldUri = this.uri;
@@ -245,7 +244,7 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 	override async saveAs(group: GroupIdentifier, options?: ISaveOptions): Promise<IEditorInput | undefined> {
 		//return this.text.saveAs(group, options);
 		let preProcessed = await this.text.saveAs(group, options);
-		let newFileQueryInput = this.instantiationService.createInstance(FileQueryEditorInput, '', (preProcessed as FileEditorInput), this._results);
+		let newFileQueryInput = this.instantiationService.createInstance(FileQueryEditorInput, '', (preProcessed as any), this._results);
 		newFileQueryInput.state.resultsVisible = this.state.resultsVisible;
 		newFileQueryInput.state.isSaving = true;
 		newFileQueryInput.state.oldUri = this.uri;
