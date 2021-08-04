@@ -12,10 +12,7 @@ import { IResolvedTextEditorModel } from 'vs/editor/common/services/resolverServ
 import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
 import { IUntitledTextEditorModel } from 'vs/workbench/services/untitled/common/untitledTextEditorModel';
 import { EncodingMode, IEncodingSupport } from 'vs/workbench/services/textfile/common/textfiles';
-import { GroupIdentifier, ISaveOptions, IEditorInput } from 'vs/workbench/common/editor';
-import { FileQueryEditorInput } from 'sql/workbench/contrib/query/common/fileQueryEditorInput';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
 
 export class UntitledQueryEditorInput extends QueryEditorInput implements IEncodingSupport {
 
@@ -28,9 +25,9 @@ export class UntitledQueryEditorInput extends QueryEditorInput implements IEncod
 		@IConnectionManagementService connectionManagementService: IConnectionManagementService,
 		@IQueryModelService queryModelService: IQueryModelService,
 		@IConfigurationService configurationService: IConfigurationService,
-		@IInstantiationService private readonly instantiationService: IInstantiationService,
+		@IInstantiationService instantiationService: IInstantiationService
 	) {
-		super(description, text, results, connectionManagementService, queryModelService, configurationService);
+		super(description, text, results, connectionManagementService, queryModelService, configurationService, instantiationService);
 	}
 
 	public override resolve(): Promise<IUntitledTextEditorModel & IResolvedTextEditorModel> {
@@ -45,25 +42,25 @@ export class UntitledQueryEditorInput extends QueryEditorInput implements IEncod
 		return this.text.model.hasAssociatedFilePath;
 	}
 
-	override async save(group: GroupIdentifier, options?: ISaveOptions): Promise<IEditorInput | undefined> {
-		let preProcessed = await this.text.saveAs(group, options);
-		let newFileQueryInput = this.instantiationService.createInstance(FileQueryEditorInput, '', (preProcessed as FileEditorInput), this._results);
-		newFileQueryInput.state.resultsVisible = this.state.resultsVisible;
-		newFileQueryInput.state.isSaving = true;
-		newFileQueryInput.state.oldUri = this.uri;
-		//need to find way to add URIs into input.
-		return newFileQueryInput;
-	}
+	// override async save(group: GroupIdentifier, options?: ISaveOptions): Promise<IEditorInput | undefined> {
+	// 	let preProcessed = await this.text.saveAs(group, options);
+	// 	let newFileQueryInput = this.instantiationService.createInstance(FileQueryEditorInput, '', (preProcessed as FileEditorInput), this._results);
+	// 	newFileQueryInput.state.resultsVisible = this.state.resultsVisible;
+	// 	newFileQueryInput.state.isSaving = true;
+	// 	newFileQueryInput.state.oldUri = this.uri;
+	// 	//need to find way to add URIs into input.
+	// 	return newFileQueryInput;
+	// }
 
-	override async saveAs(group: GroupIdentifier, options?: ISaveOptions): Promise<IEditorInput | undefined> {
-		let preProcessed = await this.text.saveAs(group, options);
-		let newFileQueryInput = this.instantiationService.createInstance(FileQueryEditorInput, '', (preProcessed as FileEditorInput), this._results);
-		newFileQueryInput.state.resultsVisible = this.state.resultsVisible;
-		newFileQueryInput.state.isSaving = true;
-		newFileQueryInput.state.oldUri = this.uri;
-		//need to find way to add URIs into input.
-		return newFileQueryInput;
-	}
+	// override async saveAs(group: GroupIdentifier, options?: ISaveOptions): Promise<IEditorInput | undefined> {
+	// 	let preProcessed = await this.text.saveAs(group, options);
+	// 	let newFileQueryInput = this.instantiationService.createInstance(FileQueryEditorInput, '', (preProcessed as FileEditorInput), this._results);
+	// 	newFileQueryInput.state.resultsVisible = this.state.resultsVisible;
+	// 	newFileQueryInput.state.isSaving = true;
+	// 	newFileQueryInput.state.oldUri = this.uri;
+	// 	//need to find way to add URIs into input.
+	// 	return newFileQueryInput;
+	// }
 
 	public setMode(mode: string): void {
 		this.text.setMode(mode);

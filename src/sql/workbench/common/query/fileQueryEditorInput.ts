@@ -8,7 +8,7 @@ import { QueryResultsInput } from 'sql/workbench/common/editor/query/queryResult
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { IQueryModelService } from 'sql/workbench/services/query/common/queryModel';
 
-import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
+import { FileEditorInput } from 'sql/workbench/common/query/fileEditorInput';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IMoveResult, GroupIdentifier } from 'vs/workbench/common/editor';
 import { BinaryEditorModel } from 'vs/workbench/common/editor/binaryEditorModel';
@@ -27,7 +27,7 @@ export class FileQueryEditorInput extends QueryEditorInput {
 		@IConnectionManagementService connectionManagementService: IConnectionManagementService,
 		@IQueryModelService queryModelService: IQueryModelService,
 		@IConfigurationService configurationService: IConfigurationService,
-		@IInstantiationService instantiationService: IInstantiationService,
+		@IInstantiationService instantiationService: IInstantiationService
 	) {
 		super(description, text, results, connectionManagementService, queryModelService, configurationService, instantiationService);
 	}
