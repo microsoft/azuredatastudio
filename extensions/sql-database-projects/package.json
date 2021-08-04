@@ -253,7 +253,7 @@
         },
         {
           "command": "sqlDatabaseProjects.insertSqlInputBinding",
-          "when": "editorLangId == csharp"
+          "when": "editorLangId == csharp && !azdataAvailable"
         }
       ],
       "view/item/context": [

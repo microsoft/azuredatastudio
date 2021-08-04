@@ -70,7 +70,7 @@ export default class MainController implements vscode.Disposable {
 		vscode.commands.registerCommand('sqlDatabaseProjects.changeTargetPlatform', async (node: WorkspaceTreeItem) => { await this.projectsController.changeTargetPlatform(node); });
 		vscode.commands.registerCommand('sqlDatabaseProjects.validateExternalStreamingJob', async (node: WorkspaceTreeItem) => { await this.projectsController.validateExternalStreamingJob(node); });
 
-		vscode.commands.registerCommand('sqlDatabaseProjects.insertSqlInputBinding', async (uri: vscode.Uri) => { await launchInsertSqlBindingQuickpick(uri); });
+		vscode.commands.registerCommand('sqlDatabaseProjects.insertSqlInputBinding', async (uri: vscode.Uri | undefined) => { await launchInsertSqlBindingQuickpick(uri); });
 
 		IconPathHelper.setExtensionContext(this.extensionContext);
 

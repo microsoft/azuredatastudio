@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import * as constants from '../common/constants';
 
-export async function launchInsertSqlBindingQuickpick(uri: vscode.Uri): Promise<void> {
+export async function launchInsertSqlBindingQuickpick(uri: vscode.Uri | undefined): Promise<void> {
 	if (!uri) {
 		// this command only shows in the command palette when the active editor is a .cs file, so we can safely assume that's the scenario
 		// when this is called without a uri
@@ -9,13 +9,13 @@ export async function launchInsertSqlBindingQuickpick(uri: vscode.Uri): Promise<
 	}
 
 	// 1. select input or output binding
-	const intputOutputItems: vscode.QuickPickItem[] = [{ label: constants.input }, { label: constants.output }];
+	const inputOutputItems: string[] = [constants.input, constants.output];
 
-	const selectedBinding = (await vscode.window.showQuickPick(intputOutputItems, {
+	const selectedBinding = (await vscode.window.showQuickPick(inputOutputItems, {
 		canPickMany: false,
 		title: constants.selectBindingType,
 		ignoreFocusOut: true
-	}))?.label;
+	}));
 
 	if (!selectedBinding) {
 		return;
@@ -30,18 +30,12 @@ export async function launchInsertSqlBindingQuickpick(uri: vscode.Uri): Promise<
 		return;
 	}
 
-	const items: vscode.QuickPickItem[] = [];
-
-	for (const aFName of azureFunctions) {
-		items.push({ label: aFName });
-	}
-
 	// 2. select Azure function from the current file
-	const azureFunctionName = (await vscode.window.showQuickPick(items, {
+	const azureFunctionName = (await vscode.window.showQuickPick(azureFunctions, {
 		canPickMany: false,
 		title: constants.selectAzureFunction,
 		ignoreFocusOut: true
-	}))?.label;
+	}));
 
 	if (!azureFunctionName) {
 		return;
