@@ -83,7 +83,7 @@ export class NotebookLinkHandler {
 			 * We return the absolute path for the link so that it will get used in the as the href for the anchor HTML element
 			 * (in linkCalloutDialog document.execCommand('insertHTML') and therefore will call getLinkURL() with HTMLAnchorElement to then get the relative path
 			*/
-			return encodeURI(this._link);
+			return this._link;
 		} else {
 			// cases where we pass the HTMLAnchorElement
 			if (this._notebookUriLink && this._isFile) {
