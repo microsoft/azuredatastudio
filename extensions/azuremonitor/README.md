@@ -1,16 +1,16 @@
-# Azure Monitor extension for Azure Data Studio (Preview)
+# Azure Monitor Logs extension for Azure Data Studio (Preview)
 
-Connect and query Azure Monitor workspaces with Azure Data Studio, a modern data editor available for Linux, MacOS, and Windows. This extension enables you to interact with Azure Monitor using Azure Data Studio features like:
+Connect and query Log Analytics workspaces with Azure Data Studio, a modern data editor available for Linux, MacOS, and Windows. This extension enables you to interact with Azure Monitor Logs using Azure Data Studio features like:
 
-- Connect to Azure Monitor.
+- Connect to Log Analytics workspaces.
 - Searchable object explorer view for database objects.
 - Query authoring and editing with Intellisense and syntax highlighting.
-- Create a notebook with Azure Monitor.
+- Create a notebook with Azure Monitor Logs.
 - View query results and save to CSV, JSON, XML, Excel, or as a chart.
 
-## Connect to an Azure Monitor workspace
+## Connect to an Log Analytics workspace
 
-You can connect to an Azure Monitor cluster with Azure Data Studio.
+You can connect to an Log Analytics workspace with Azure Data Studio.
 
 Select **New Connection** and choose **Azure Monitor Logs** for the **Connection Type**.
 
