@@ -742,6 +742,7 @@
 					"chart.js",
 					"plotly.js",
 					"angular2-grid",
+					"html-to-image",
 					"html-query-plan",
 					"turndown",
 					"gridstack",

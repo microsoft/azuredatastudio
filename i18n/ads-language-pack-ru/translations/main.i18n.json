@@ -10411,6 +10411,7 @@
 			"notebook.markdownPreviewLineHeight": "Определяет высоту строки, используемую в области предварительного просмотра Markdown в записной книжке. Это значение задается относительно размера шрифта.",
 			"notebook.showRenderedNotebookinDiffEditor": "(Предварительный просмотр) Показать преобразованный для просмотра блокнот в редакторе несовпадений.",
 			"notebook.maxRichTextUndoHistory": "Максимальное количество изменений, сохраняемых в журнале отмены для редактора форматированного текста записной книжки.",
+			"notebook.useAbsoluteFilePaths": "Use absolute file paths when linking to other notebooks.",
 			"searchConfigurationTitle": "Поиск в записных книжках",
 			"exclude": "Настройка стандартных масок для исключения файлов и папок при полнотекстовом поиске и быстром открытии. Наследует все стандартные маски от параметра \"#files.exclude#\". Дополнительные сведения о стандартных масках см. [здесь](https://code.visualstudio.com/docs/editor/codebasics#_advanced-search-options).",
 			"exclude.boolean": "Стандартная маска, соответствующая путям к файлам. Задайте значение true или false, чтобы включить или отключить маску.",
@@ -10480,7 +10481,7 @@
 			"notebook.findPrevious": "Найти предыдущую строку"
 		},
 		"sql/workbench/contrib/notebook/browser/notebookEditor": {
-			"notebookEditor.name": "Notebook Editor"
+			"notebookEditor.name": "Редактор записной книжки"
 		},
 		"sql/workbench/contrib/notebook/browser/notebookExplorer/notebookExplorerViewlet": {
 			"notebookExplorer.searchResults": "Результаты поиска",
@@ -10565,8 +10566,6 @@
 			"profilerStop.stop": "Остановить",
 			"profiler.clear": "Очистить данные",
 			"profiler.clearDataPrompt": "Вы действительно хотите очистить данные?",
-			"profiler.yes": "Да",
-			"profiler.no": "Нет",
 			"profilerAction.autoscrollOn": "Автоматическая прокрутка: вкл",
 			"profilerAction.autoscrollOff": "Автоматическая прокрутка: выкл",
 			"profiler.toggleCollapsePanel": "Переключить свернутую панель",
@@ -10702,7 +10701,7 @@
 			"queryEditor.exportSqlAsNotebook": "Экспортировать в виде записной книжки"
 		},
 		"sql/workbench/contrib/query/browser/queryEditor": {
-			"queryEditor.name": "Query Editor"
+			"queryEditor.name": "Редактор запросов"
 		},
 		"sql/workbench/contrib/query/browser/queryResultsView": {
 			"resultsTabTitle": "Результаты",
@@ -10760,7 +10759,7 @@
 			"queryPlanTitle": "План запроса"
 		},
 		"sql/workbench/contrib/queryPlan/browser/queryPlanEditor": {
-			"queryPlanEditor": "Query Plan Editor"
+			"queryPlanEditor": "Редактор планов запросов"
 		},
 		"sql/workbench/contrib/queryPlan/browser/topOperations": {
 			"topOperations.operation": "Операция",
@@ -11441,6 +11440,13 @@
 			"gettingStarted": "Начать работу",
 			"showReleaseNotes": "Показать раздел \"Приступая к работе\"",
 			"miGettingStarted": "Приступая к р&&аботе"
+		},
+		"sql/base/browser/ui/propertiesContainer/togglePropertiesAction": {
+			"hideProperties": "Скрыть свойства",
+			"showProperties": "Показать свойства"
+		},
+		"sql/workbench/contrib/resourceDeployment/browser/resourceDeployment.contribution": {
+			"deployment.title": "Новое развертывание..."
 		}
 	}
 }

@@ -101,6 +101,9 @@
     <trans-unit id="arc.data.controller.location">
       <source xml:lang="en">Location</source>
     </trans-unit>
+    <trans-unit id="arc.data.controller.infrastructure">
+      <source xml:lang="en">Infrastructure</source>
+    </trans-unit>
     <trans-unit id="arc.data.controller.admin.account.title">
       <source xml:lang="en">Administrator account</source>
     </trans-unit>
@@ -175,6 +178,9 @@
     </trans-unit>
     <trans-unit id="arc.data.controller.summary.data.controller.namespace">
       <source xml:lang="en">Data controller namespace</source>
+    </trans-unit>
+    <trans-unit id="arc.data.controller.summary.data.controller.infrastructure">
+      <source xml:lang="en">Data controller infrastructure</source>
     </trans-unit>
     <trans-unit id="arc.data.controller.summary.controller">
       <source xml:lang="en">Controller</source>
@@ -453,7 +459,7 @@
       <source xml:lang="en">Memory limit must be greater than or equal to requested memory</source>
     </trans-unit>
     <trans-unit id="arc.agreement.sql.help.text">
-      <source xml:lang="en">Azure Arc enabled Managed Instance provides SQL Server access and feature compatibility that can be deployed on the infrastructure of your choice. While this service is in preview, it has some feature limitations compared to SQL Managed Instance on Azure. {0}</source>
+      <source xml:lang="en">Azure Arc enabled Managed Instance provides SQL Server access and feature compatibility that can be deployed on the infrastructure of your choice. {0}</source>
     </trans-unit>
     <trans-unit id="arc.agreement.sql.help.text.learn.more">
       <source xml:lang="en">Learn more</source>
@@ -615,6 +621,12 @@
     </trans-unit>
     <trans-unit id="arc.extensionsFunction">
       <source xml:lang="en">Some extensions must be loaded into PostgreSQL at startup time before they can be used. These preloaded extensions can be viewed and edited  below.</source>
+    </trans-unit>
+    <trans-unit id="arc.extensionsAddFunction">
+      <source xml:lang="en">Some extensions must be loaded into PostgreSQL at startup time before they can be used. To edit, type in comma separated list of valid extensions: ({0}).</source>
+    </trans-unit>
+    <trans-unit id="arc.extensionsAddErrorrMessage">
+      <source xml:lang="en">Value should be either of the following: ({0}).</source>
     </trans-unit>
     <trans-unit id="arc.extensionsLearnMore">
       <source xml:lang="en">Learn more about PostgreSQL extensions.</source>

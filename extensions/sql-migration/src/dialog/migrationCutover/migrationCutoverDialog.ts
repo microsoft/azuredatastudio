@@ -28,6 +28,7 @@ export class MigrationCutoverDialog {
 	private _cancelButton!: azdata.ButtonComponent;
 	private _refreshLoader!: azdata.LoadingComponent;
 	private _copyDatabaseMigrationDetails!: azdata.ButtonComponent;
+	private _newSupportRequest!: azdata.ButtonComponent;
 
 	private _sourceDatabaseInfoField!: InfoFieldSchema;
 	private _sourceDetailsInfoField!: InfoFieldSchema;
@@ -306,19 +307,35 @@ export class MigrationCutoverDialog {
 
 		this._disposables.push(this._copyDatabaseMigrationDetails.onDidClick(async (e) => {
 			await this.refreshStatus();
-			if (this._model.migrationOpStatus) {
-				vscode.env.clipboard.writeText(JSON.stringify({
-					'async-operation-details': this._model.migrationOpStatus,
-					'details': this._model.migrationStatus
-				}, undefined, 2));
-			} else {
-				vscode.env.clipboard.writeText(JSON.stringify(this._model.migrationStatus, undefined, 2));
-			}
+			vscode.env.clipboard.writeText(this.getMigrationDetails());
 
 			vscode.window.showInformationMessage(loc.DETAILS_COPIED);
 		}));
 
 		headerActions.addItem(this._copyDatabaseMigrationDetails, {
+			flex: '0',
+			CSSStyles: {
+				'margin-left': '5px'
+			}
+		});
+
+		// create new support request button.  Hiding button until sql migration support has been setup.
+		this._newSupportRequest = this._view.modelBuilder.button().withProps({
+			label: loc.NEW_SUPPORT_REQUEST,
+			iconPath: IconPathHelper.newSupportRequest,
+			iconHeight: '16px',
+			iconWidth: '16px',
+			height: '20px',
+			width: '140px',
+		}).component();
+
+		this._newSupportRequest.onDidClick(async (e) => {
+			const serviceId = this._model._migration.controller.id;
+			const supportUrl = `https://portal.azure.com/#resource${serviceId}/supportrequest`;
+			await vscode.env.openExternal(vscode.Uri.parse(supportUrl));
+		});
+
+		headerActions.addItem(this._newSupportRequest, {
 			flex: '0',
 			CSSStyles: {
 				'margin-left': '5px'
@@ -435,6 +452,19 @@ export class MigrationCutoverDialog {
 		}
 	}
 
+	private getMigrationDetails(): string {
+		if (this._model.migrationOpStatus) {
+			return (JSON.stringify(
+				{
+					'async-operation-details': this._model.migrationOpStatus,
+					'details': this._model.migrationStatus
+				}
+				, undefined, 2));
+		} else {
+			return (JSON.stringify(this._model.migrationStatus, undefined, 2));
+		}
+	}
+
 	private async refreshStatus(): Promise<void> {
 		if (this.isRefreshing) {
 			return;
@@ -457,7 +487,8 @@ export class MigrationCutoverDialog {
 			errors.push(this._model.migrationStatus.properties.migrationStatusDetails?.restoreBlockingReason);
 			this._dialogObject.message = {
 				text: errors.filter(e => e !== undefined).join(EOL),
-				level: (this._model.migrationStatus.properties.migrationStatus === MigrationStatus.InProgress || this._model.migrationStatus.properties.migrationStatus === 'Completing') ? azdata.window.MessageLevel.Warning : azdata.window.MessageLevel.Error
+				level: (this._model.migrationStatus.properties.migrationStatus === MigrationStatus.InProgress || this._model.migrationStatus.properties.migrationStatus === 'Completing') ? azdata.window.MessageLevel.Warning : azdata.window.MessageLevel.Error,
+				description: this.getMigrationDetails()
 			};
 			const sqlServerInfo = await azdata.connection.getServerInfo((await azdata.connection.getCurrentConnection()).connectionId);
 			const sqlServerName = this._model._migration.sourceConnectionProfile.serverName;

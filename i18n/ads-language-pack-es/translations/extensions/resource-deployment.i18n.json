@@ -259,9 +259,6 @@
 			"resourceDeployment.Kubectl.BackupCurrentBinary": "Se está realizando una copia de seguridad de cualquier kubectl existente en la ubicación de la instalación...",
 			"resourceDeployment.Kubectl.MoveToSystemPath": "Se está moviendo kubectl a la ubicación de la instalación en PATH..."
 		},
-		"dist/ui/notebookWizard/notebookWizardPage": {
-			"wizardPage.ValidationError": "Hay algunos errores en esta página, haga clic en \"Mostrar detalles\" para verlos."
-		},
 		"dist/ui/deploymentInputDialog": {
 			"deploymentDialog.OpenNotebook": "Abrir cuaderno",
 			"deploymentDialog.OkButtonText": "Aceptar",
@@ -376,8 +373,7 @@
 			"deployCluster.SubdomainDescription": "Subdominio DNS único que se va a usar para este clúster de macrodatos de SQL Server. Si no se proporciona, se usará el nombre del clúster como valor predeterminado.",
 			"deployCluster.AccountPrefix": "Prefijo de cuenta",
 			"deployCluster.AccountPrefixDescription": "Prefijo único para las cuentas de AD que el clúster de macrodatos de SQL Server generará. Si no se proporciona, se usará el nombre del subdominio como valor predeterminado. Si no se proporciona un subdominio, se utilizará el nombre del clúster como valor predeterminado.",
-			"deployCluster.AdminPasswordField": "Contraseña",
-			"deployCluster.ValidationError": "Hay algunos errores en esta página, haga clic en \"Mostrar detalles\" para verlos."
+			"deployCluster.AdminPasswordField": "Contraseña"
 		},
 		"dist/ui/deployClusterWizard/pages/serviceSettingsPage": {
 			"deployCluster.ServiceSettingsPageTitle": "Configuración del servicio",

@@ -270,7 +270,7 @@
       </trans-unit>
       <trans-unit id="resource.type.arc.postgres.display.name">
         <source xml:lang="en">PostgreSQL Hyperscale server groups - Azure Arc (preview)</source>
-        <target state="translated">Группы серверов гипермасштабирования для PostgreSQL — Azure Arc (предварительная версия)</target>
+        <target state="translated">Группы серверов гипермасштабирования PostgreSQL — Azure Arc (предварительная версия)</target>
       </trans-unit>
       <trans-unit id="resource.type.arc.sql.description">
         <source xml:lang="en">Managed SQL Instance service for app developers in a customer-managed environment</source>
@@ -278,7 +278,7 @@
       </trans-unit>
       <trans-unit id="resource.type.arc.postgres.description">
         <source xml:lang="en">Deploy PostgreSQL Hyperscale server groups into an Azure Arc environment</source>
-        <target state="translated">Развертывание групп серверов гипермасштабирования для PostgreSQL в среде Azure Arc</target>
+        <target state="translated">Развертывание групп серверов гипермасштабирования PostgreSQL в среде Azure Arc</target>
       </trans-unit>
       <trans-unit id="arc.controller">
         <source xml:lang="en">Target Azure Arc Controller</source>
@@ -578,7 +578,7 @@
       </trans-unit>
       <trans-unit id="arc.agreement.postgres.terms.conditions">
         <source xml:lang="en">Azure Arc-enabled PostgreSQL Hyperscale terms and conditions</source>
-        <target state="translated">Условия использования Гипермасштабирования PostgreSQL с поддержкой Azure Arc</target>
+        <target state="translated">Условия использования гипермасштабирования PostgreSQL с поддержкой Azure Arc</target>
       </trans-unit>
       <trans-unit id="should.be.integer">
         <source xml:lang="en">Value must be an integer</source>
@@ -748,13 +748,17 @@
         <source xml:lang="en">Reset Password</source>
         <target state="translated">Сброс пароля</target>
       </trans-unit>
-      <trans-unit id="arc.addExtensions">
-        <source xml:lang="en">Add extensions</source>
-        <target state="translated">Добавление расширений</target>
+      <trans-unit id="arc.loadExtensions">
+        <source xml:lang="en">Load extensions</source>
+        <target state="translated">Загрузить расширения</target>
       </trans-unit>
-      <trans-unit id="arc.dropExtensions">
-        <source xml:lang="en">Drop extensions</source>
-        <target state="translated">Удалить расширения</target>
+      <trans-unit id="arc.unloadExtensions">
+        <source xml:lang="en">Unload extensions</source>
+        <target state="translated">Отменить загрузку расширений</target>
+      </trans-unit>
+      <trans-unit id="arc.noExtensions">
+        <source xml:lang="en">No extensions listed in configuration.</source>
+        <target state="translated">В конфигурации не перечислены расширения.</target>
       </trans-unit>
       <trans-unit id="arc.openInAzurePortal">
         <source xml:lang="en">Open in Azure Portal</source>
@@ -867,6 +871,10 @@
       <trans-unit id="arc.serviceEndpoints">
         <source xml:lang="en">Service endpoints</source>
         <target state="translated">Конечные точки службы</target>
+      </trans-unit>
+      <trans-unit id="arc.serviceEndpointsTable">
+        <source xml:lang="en">Service endpoints table</source>
+        <target state="translated">Таблица конечных точек службы</target>
       </trans-unit>
       <trans-unit id="arc.databases">
         <source xml:lang="en">Databases</source>
@@ -1388,6 +1396,14 @@
         <source xml:lang="en">Select a pod in the dropdown below for detailed health information.</source>
         <target state="translated">Выберите pod в раскрывающемся списке ниже, чтобы получить подробные сведения о работоспособности.</target>
       </trans-unit>
+      <trans-unit id="arc.podsUsedDescriptionAria">
+        <source xml:lang="en">Select a pod in the dropdown below for detailed health information</source>
+        <target state="translated">Выберите pod в раскрывающемся списке ниже, чтобы получить подробные сведения о работоспособности</target>
+      </trans-unit>
+      <trans-unit id="arc.podConditionsTable">
+        <source xml:lang="en">Pod conditions table</source>
+        <target state="translated">Таблица условий pod</target>
+      </trans-unit>
       <trans-unit id="arc.connectToPostgresDescription">
         <source xml:lang="en">A connection to the server is required to show and set database engine settings, which will require the PostgreSQL Extension to be installed.</source>
         <target state="translated">Для отображения и настройки параметров ядра СУБД требуется подключение к серверу, которое потребует установки расширения PostgreSQL.</target>
@@ -1495,6 +1511,11 @@
       <trans-unit id="arc.updated">
         <source xml:lang="en">Updated {0}</source>
         <target state="translated">Обновлено: {0}</target>
+      </trans-unit>
+      <trans-unit id="arc.connectionString">
+        <source xml:lang="en">Connection string for {0}</source>
+        <note>{0} is the name of the type of connection string (e.g. Java)</note>
+        <target state="translated">Строка подключения для {0}</target>
       </trans-unit>
       <trans-unit id="arc.copyConnectionStringToClipboard">
         <source xml:lang="en">Copy {0} Connection String to clipboard</source>

@@ -23,7 +23,7 @@
 			"notebook.collapseBookItems.description": "在 Notebooks Viewlet 中的根層級摺疊書籍項目",
 			"notebook.remoteBookDownloadTimeout.description": "GitHub 書籍的下載逾時 (毫秒)",
 			"notebook.pinnedNotebooks.description": "目前工作區之使用者所釘選的筆記本",
-			"notebook.allowRoot.description": "Allow Jupyter server to run as root user",
+			"notebook.allowRoot.description": "允許 Jupyter 伺服器以根使用者身分執行",
 			"notebook.command.new": "新增 Notebook",
 			"notebook.command.open": "開啟 Notebook",
 			"notebook.analyzeJupyterNotebook": "在 Notebook 中分析",
