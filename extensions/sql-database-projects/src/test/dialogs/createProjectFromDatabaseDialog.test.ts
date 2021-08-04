@@ -93,7 +93,7 @@ describe('Create Project From Database Dialog', () => {
 		let model: ImportDataModel;
 
 		const expectedImportDataModel: ImportDataModel  = {
-			serverId: 'My Id',
+			connectionUri: 'My Id',
 			database: 'My Database',
 			projName: 'testProject',
 			filePath: 'testLocation',
