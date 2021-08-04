@@ -280,9 +280,6 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			this.notebookService.addNotebookEditor(this);
 			await this._model.onClientSessionReady;
 			this.detectChanges();
-			// Render grid outputs after the rest of the notebook is loaded to prevent
-			// long initial rendering time for large notebooks.
-			this._model.renderGridOutputs();
 		} catch (error) {
 			if (error) {
 				// Offer to create a file from the error if we have a file not found and the name is valid

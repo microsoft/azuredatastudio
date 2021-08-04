@@ -110,6 +110,10 @@ export class NotebookEditorComponent extends AngularDisposable {
 		this._register(model.layoutChanged(() => this.detectChanges()));
 
 		this.detectChanges();
+
+		// Render grid outputs after the rest of the notebook is loaded to prevent
+		// long initial rendering time for large notebooks.
+		this._model.renderGridOutputs();
 	}
 
 	private async setNotebookManager(): Promise<void> {
