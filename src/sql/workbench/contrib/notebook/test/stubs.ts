@@ -762,11 +762,14 @@ export class ContextViewProviderStub implements IContextViewProvider {
 }
 
 export class NotebookViewStub implements INotebookView {
+	isNew: boolean;
+	name: string = '';
 	guid: string = '';
-	onDeleted: vsEvent.Event<INotebookView>;
 	cells: readonly ICellModel[] = [];
 	hiddenCells: readonly ICellModel[];
-	name: string = '';
+	displayedCells: readonly ICellModel[];
+
+	onDeleted: vsEvent.Event<INotebookView>;
 	initialize(): void {
 		throw new Error('Method not implemented.');
 	}
@@ -783,6 +786,12 @@ export class NotebookViewStub implements INotebookView {
 		throw new Error('Method not implemented.');
 	}
 	resizeCell(cell: ICellModel, width: number, height: number): void {
+		throw new Error('Method not implemented.');
+	}
+	compactCells() {
+		throw new Error('Method not implemented.');
+	}
+	markAsViewed(): void {
 		throw new Error('Method not implemented.');
 	}
 	getCell(guid: string): Readonly<ICellModel> {
