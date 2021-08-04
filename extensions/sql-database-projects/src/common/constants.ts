@@ -134,7 +134,7 @@ export const enterConnectionStringEnvName = localize('enterConnectionStringEnvNa
 export const enterConnectionStringTemplate = localize('enterConnectionStringTemplate', "Enter connection string template");
 export const enterPassword = localize('enterPassword', "Enter password or press enter to use the generated password");
 export const portMustNotBeNumber = localize('portMustNotBeNumber', "Port must be number");
-export const valueCannotBeEmpty = localize('valueCannotBeEmpty', "value cannot be empty");
+export const valueCannotBeEmpty = localize('valueCannotBeEmpty', "Value cannot be empty");
 export const dockerImageLabelPrefix = 'source=sqldbproject';
 export const dockerImageNamePrefix = 'sqldbproject';
 export const connectionNamePrefix = 'SQLDbProject';
@@ -154,8 +154,23 @@ export const appSettingPrompt = localize('appSettingPrompt', "Would you like to 
 export const enterConnectionStringEnvNameDescription = localize('enterConnectionStringEnvNameDescription', "Enter environment variable for SQL connection string");
 export const deployDbTaskName = localize('deployDbTaskName', "Deploying SQL Db Project Locally");
 export const deployProjectSucceed = localize('deployProjectSucceed', "Database project deployed successfully");
-export function taskFailedError(taskName: string, err: string): string { return localize('mls.taskFailedError.error', "Failed to complete task '{0}'. Error: {1}", taskName, err); }
+export const cleaningDockerImagesMessage = localize('cleaningDockerImagesMessage', "Cleaning existing deployments...");
+export const creatingDeploymentSettingsMessage = localize('creatingDeploymentSettingsMessage', "Creating deployment settings ...");
+export const runningDockerMessage = localize('runningDockerMessage', "Building and running the docker container ...");
+export const dockerContainerNotRunningErrorMessage = localize('dockerContainerNotRunningErrorMessage', "Docker container is not running");
+export const dockerContainerFailedToRunErrorMessage = localize('dockerContainerFailedToRunErrorMessage', "Failed to run the docker container");
+export const connectingToSqlServerOnDockerMessage = localize('connectingToSqlServerOnDockerMessage', "Connecting to SQL Server on Docker");
+export function taskFailedError(taskName: string, err: string): string { return localize('taskFailedError.error', "Failed to complete task '{0}'. Error: {1}", taskName, err); }
 export function deployProjectFailed(errorMessage: string) { return localize('deployProjectFailed', "Failed to deploy project. Check output pane for more details. {0}", errorMessage); }
+export function deployAppSettingUpdateFailed(appSetting: string) { return localize('deployAppSettingUpdateFailed', "Failed to update app setting '{0}'", appSetting); }
+export function connectionFailedError(error: string) { return localize('connectionFailedError', "Connection failed error: '{0}'", error); }
+export function dockerContainerCreatedMessage(id: string) { return localize('dockerContainerCreatedMessage', "Docker created id: '{0}'", id); }
+export function dockerLogMessage(log: string) { return localize('dockerLogMessage', "Docker logs: '{0}'", log); }
+export function retryWaitMessage(numberOfSeconds: number, name: string) { return localize('retryWaitMessage', "Waiting for {0} seconds before another attempt for operation '{1}'", numberOfSeconds, name); }
+export function retryRunMessage(attemptNumber: number, numberOfAttempts: number, name: string) { return localize('retryRunMessage', "Running operation '{2}' Attempt {0} from {1}", attemptNumber, numberOfAttempts, name); }
+export function retrySucceedMessage(name: string, result: string) { return localize('retrySucceedMessage', "Operation '{0}' completed Successfully. Result: {1}", name, result); }
+export function retryFailedMessage(name: string, result: string, error: string) { return localize('retryFailedMessage', "Operation '{0}' failed. Re-trying... Current Result: {1}. Error: '{2}'", name, result, error); }
+export function retryMessage(name: string, error: string) { return localize('retryMessage', "Operation '{0}' failed. Re-trying... Error: '{1}'", name, error); }
 
 // Add Database Reference dialog strings
 

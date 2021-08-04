@@ -66,7 +66,7 @@ export class ProjectsController {
 
 	projFileWatchers = new Map<string, vscode.FileSystemWatcher>();
 
-	constructor(private _outputChannel?: vscode.OutputChannel) {
+	constructor(private _outputChannel: vscode.OutputChannel) {
 		this.netCoreTool = new NetCoreTool(this._outputChannel);
 		this.buildHelper = new BuildHelper();
 		this.deployService = new DeployService(this._outputChannel);
@@ -250,13 +250,6 @@ export class ProjectsController {
 	 * Deploys a project
 	 * @param treeNode a treeItem in a project's hierarchy, to be used to obtain a Project
 	 */
-	public async deployProject(treeNode: dataworkspace.WorkspaceTreeItem): Promise<void>;
-	public async deployProject(treeNode: dataworkspace.WorkspaceTreeItem): Promise<void>;
-	/**
-	 * Builds and publishes a project
-	 * @param project Project to be built and published
-	 */
-	public async deployProject(project: Project): Promise<void>;
 	public async deployProject(context: Project | dataworkspace.WorkspaceTreeItem): Promise<void> {
 		const project: Project = this.getProjectFromContext(context);
 		try {

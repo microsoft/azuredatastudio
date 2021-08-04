@@ -18,7 +18,6 @@ let fse = require('fs-extra');
 export async function launchDeployDatabaseQuickpick(project: Project): Promise<IDeployProfile | undefined> {
 
 	// Show options to user for deploy to existing server or docker
-	//const deployOption = constants.deployToDockerContainer;
 
 	const deployOption = await vscode.window.showQuickPick(
 		[constants.deployToExistingServer, constants.deployToDockerContainer],
@@ -32,21 +31,20 @@ export async function launchDeployDatabaseQuickpick(project: Project): Promise<I
 	let localDbSetting: ILocalDbSetting | undefined;
 	// Deploy to docker selected
 	if (deployOption === constants.deployToDockerContainer) {
-		let portNumber = await vscode.window.showInputBox(
-			{
-				title: constants.enterPortNumber,
-				ignoreFocusOut: true,
-				value: constants.defaultPortNumber,
-				validateInput: input => isNaN(+input) ? constants.portMustNotBeNumber : undefined
-			}
-		) ?? '';
+		let portNumber = await vscode.window.showInputBox({
+			title: constants.enterPortNumber,
+			ignoreFocusOut: true,
+			value: constants.defaultPortNumber,
+			validateInput: input => isNaN(+input) ? constants.portMustNotBeNumber : undefined
+		}
+		);
 
 		// Return when user hits escape
 		if (!portNumber) {
 			return undefined;
 		}
 
-		let password = generator.generate({
+		let password: string | undefined = generator.generate({
 			length: 10,
 			numbers: true,
 			symbols: true,
@@ -54,14 +52,13 @@ export async function launchDeployDatabaseQuickpick(project: Project): Promise<I
 			uppercase: true,
 			exclude: '`"\'' // Exclude the chars that cannot be included in the password. Some chars can make the command fail in the terminal
 		});
-		password = await vscode.window.showInputBox(
-			{
-				title: constants.enterPassword,
-				ignoreFocusOut: true,
-				value: password,
-				password: true
-			}
-		) ?? '';
+		password = await vscode.window.showInputBox({
+			title: constants.enterPassword,
+			ignoreFocusOut: true,
+			value: password,
+			password: true
+		}
+		);
 
 		// Return when user hits escape
 		if (!password) {
@@ -78,9 +75,14 @@ export async function launchDeployDatabaseQuickpick(project: Project): Promise<I
 	}
 	let deploySettings = await getPublishDatabaseSettings(project, deployOption !== constants.deployToDockerContainer);
 
+	// Return when user hits escape
+	if (!deploySettings) {
+		return undefined;
+	}
+
 	// TODO: Ask for SQL CMD Variables or profile
 
-	let envVarName = '';
+	let envVarName: string | undefined = '';
 	const integrateWithAzureFunctions: boolean = true; //TODO: get value from settings or quickpick
 
 	//TODO: find a better way to find if AF or local settings is in the project
@@ -103,6 +105,11 @@ export async function launchDeployDatabaseQuickpick(project: Project): Promise<I
 			};
 		}), options);
 
+		// Return when user hits escape
+		if (!result) {
+			return undefined;
+		}
+
 		if (result !== undefined && choices[result.label] || false) {
 			envVarName = await vscode.window.showInputBox(
 				{
@@ -112,7 +119,12 @@ export async function launchDeployDatabaseQuickpick(project: Project): Promise<I
 					validateInput: input => input === '' ? constants.valueCannotBeEmpty : undefined,
 					placeHolder: constants.enterConnectionStringEnvNameDescription
 				}
-			) ?? '';
+			);
+
+			// Return when user hits escape
+			if (!envVarName) {
+				return undefined;
+			}
 		}
 	}
 

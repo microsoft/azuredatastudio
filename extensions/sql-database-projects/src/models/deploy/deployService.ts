@@ -21,7 +21,7 @@ interface ValidationResult {
 }
 export class DeployService {
 
-	constructor(private _outputChannel?: vscode.OutputChannel) {
+	constructor(private _outputChannel: vscode.OutputChannel) {
 	}
 
 	private createConnectionStringTemplate(runtime: string | undefined): string {
@@ -75,7 +75,7 @@ export class DeployService {
 					this.logToOutput(`app setting '${profile.appSettingFile}' has been updated`);
 
 				} else {
-					this.logToOutput(`Failed to update app setting '${profile.appSettingFile}'`);
+					this.logToOutput(constants.deployAppSettingUpdateFailed(profile.appSettingFile));
 				}
 			}
 		}
@@ -94,17 +94,19 @@ export class DeployService {
 				const dockerFilePath = path.join(mssqlFolderPath, constants.dockerFileName);
 				const startFilePath = path.join(commandsFolderPath, constants.startCommandName);
 
-				this.logToOutput('Cleaning existing deployments...');
+				this.logToOutput(constants.cleaningDockerImagesMessage);
 				// Clean up existing docker image
+
 				await this.cleanDockerObjects(`docker ps -q -a --filter label=${imageLabel}`, ['docker stop', 'docker rm']);
 				await this.cleanDockerObjects(`docker images -f label=${imageLabel} -q`, [`docker rmi -f `]);
 
-				this.logToOutput('Creating deployment settings ...');
+				this.logToOutput(constants.creatingDeploymentSettingsMessage);
 				// Create commands
 				//
+
 				await this.createCommands(mssqlFolderPath, commandsFolderPath, dockerFilePath, startFilePath, imageLabel);
 
-				this.logToOutput('Building and running the docker container ...');
+				this.logToOutput(constants.runningDockerMessage);
 				// Building the image and running the docker
 				//
 				const createdDockerId: string | undefined = await this.buildAndRunDockerContainer(dockerFilePath, imageName, root, profile.localDbSetting, imageLabel);
@@ -116,23 +118,24 @@ export class DeployService {
 				const runningDockerId = await this.retry('Validating the docker container', async () => {
 					return await this.executeCommand(`docker ps -q -a --filter label=${imageLabel} -q`);
 				}, (dockerId) => {
-					return { validated: dockerId !== undefined, errorMessage: 'Docker container is not running' };
+					return { validated: dockerId !== undefined, errorMessage: constants.dockerContainerNotRunningErrorMessage };
 				}, (dockerId) => {
 					return dockerId;
 				}
 				);
 
 				if (runningDockerId) {
-					this.logToOutput(`Docker created id: ${runningDockerId}`);
+					this.logToOutput(constants.dockerContainerCreatedMessage(runningDockerId));
 					return await this.getConnection(profile.localDbSetting);
 
 				} else {
-					this.logToOutput(`Failed to run the docker container`);
+					this.logToOutput(constants.dockerContainerFailedToRunErrorMessage);
 					if (createdDockerId) {
 						// Get the docker logs if docker was created but crashed
-						await this.executeCommand(`Docker logs: ${createdDockerId}`);
+						await this.executeCommand(constants.dockerLogMessage(createdDockerId));
 					}
 				}
+
 			}
 			return undefined;
 		});
@@ -210,7 +213,7 @@ export class DeployService {
 			connectionString: ''
 		};
 
-		const connection = await this.retry('Connecting to SQL Server on Docker', async () => {
+		const connection = await this.retry(constants.connectingToSqlServerOnDockerMessage, async () => {
 			if (getAzdataApi) {
 				return await getAzdataApi.connection.connect(connectionProfile, true, false);
 			} else if (vscodeMssqlApi) {
@@ -220,10 +223,10 @@ export class DeployService {
 		}, (connection) => {
 			const connectionResult = <ConnectionResult>connection;
 			if (connectionResult) {
-				const connected = connectionResult !== undefined && connectionResult.connectionId !== undefined;
-				return { validated: connected, errorMessage: connected ? '' : `Connection failed error: ${connectionResult?.errorMessage}` };
+				const connected = connectionResult !== undefined && connectionResult.connected && connectionResult.connectionId !== undefined;
+				return { validated: connected, errorMessage: connected ? '' : constants.connectionFailedError(connectionResult?.errorMessage) };
 			} else {
-				return { validated: connection !== undefined, errorMessage: 'Connection failed' };
+				return { validated: connection !== undefined, errorMessage: constants.connectionFailedError('') };
 			}
 		}, (connection) => {
 			const connectionResult = <ConnectionResult>connection;
@@ -276,22 +279,22 @@ export class DeployService {
 		numberOfAttempts: number = 10,
 		waitInSeconds: number = 2): Promise<T | undefined> {
 		for (let count = 0; count < numberOfAttempts; count++) {
-			this.logToOutput(`Waiting for ${waitInSeconds / 1000} seconds before another attempt for operation '${name}'`);
+			this.logToOutput(constants.retryWaitMessage(waitInSeconds / 1000, name));
 			await new Promise(c => setTimeout(c, waitInSeconds * 1000));
-			this.logToOutput(`Running operation '${name}' Attempt ${count} from ${numberOfAttempts}`);
+			this.logToOutput(constants.retryRunMessage(count, numberOfAttempts, name));
 
 			try {
 				let result = await attempt();
 				const validationResult = verify(result);
 				if (validationResult.validated) {
-					this.logToOutput(`Operation '${name}' completed Successfully. Result: ${formatResult(result)}`);
+					this.logToOutput(constants.retrySucceedMessage(name, formatResult(result)));
 					return result;
 				} else {
-					this.logToOutput(`Operation '${name}' failed. Re-trying... Current Result: ${formatResult(result)}. Error: '${validationResult.errorMessage}'`);
+					this.logToOutput(constants.retryFailedMessage(name, formatResult(result), validationResult.errorMessage));
 				}
 
 			} catch (err) {
-				this.logToOutput(`Operation '${name}' failed. Re-trying... Error: '${err}'`);
+				this.logToOutput(constants.retryMessage(name, err));
 			}
 		}
 
@@ -312,14 +315,14 @@ export class DeployService {
 
 		// Start command
 		//
-		this.createFile(startFilePath, 'echo starting the container!');
+		await this.createFile(startFilePath, 'echo starting the container!');
 		if (os.platform() !== 'win32') {
 			await this.executeCommand(`chmod +x ${startFilePath}`);
 		}
 
 		// Create the Dockerfile
 		//
-		this.createFile(dockerFilePath,
+		await this.createFile(dockerFilePath,
 			`
 FROM ${constants.dockerBaseImage}
 ENV ACCEPT_EULA=Y
@@ -337,12 +340,12 @@ RUN ["/bin/bash", "/opt/commands/start.sh"]
 		}
 	}
 
-	private createFile(filePath: string, content: string): void {
+	private async createFile(filePath: string, content: string): Promise<void> {
 		this.logToOutput(`Creating file ${filePath}, content:${content}`);
-		fse.writeFile(filePath, content);
+		await fse.writeFile(filePath, content);
 	}
 
-	private async cleanDockerObjects(commandToGetObjects: string, commandsToClean: string[]): Promise<void> {
+	public async cleanDockerObjects(commandToGetObjects: string, commandsToClean: string[]): Promise<void> {
 		let currentIds = await this.executeCommand(commandToGetObjects);
 		if (currentIds) {
 			const ids = currentIds.split(/\r?\n/);
@@ -374,10 +377,10 @@ RUN ["/bin/bash", "/opt/commands/start.sh"]
 
 			// Add listeners to print stdout and stderr if an output channel was provided
 
-			if (child.stdout) {
+			if (child?.stdout) {
 				child.stdout.on('data', data => { this.outputDataChunk(data, '    stdout: '); });
 			}
-			if (child.stderr) {
+			if (child?.stderr) {
 				child.stderr.on('data', data => { this.outputDataChunk(data, '    stderr: '); });
 			}
 		});
