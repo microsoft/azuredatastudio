@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { OnInit, Component, Input, Inject, ViewChild, ElementRef, ChangeDetectorRef, ChangeDetectionStrategy, forwardRef } from '@angular/core';
+import { OnInit, Component, Input, Inject, ViewChild, ElementRef, ChangeDetectorRef, forwardRef } from '@angular/core';
 import * as azdata from 'azdata';
 
 import { IGridDataProvider, getResultsString } from 'sql/workbench/services/query/common/gridDataProvider';
@@ -51,7 +51,6 @@ import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 
 @Component({
 	selector: GridOutputComponent.SELECTOR,
-	changeDetection: ChangeDetectionStrategy.OnPush,
 	template: `
 	<loading-spinner [loading]="isLoading"></loading-spinner>
 	<div #output class="notebook-cellTable"></div>`
@@ -69,14 +68,17 @@ export class GridOutputComponent extends AngularDisposable implements IMimeCompo
 	private _batchId: number | undefined;
 	private _id: number | undefined;
 	private _layoutCalledOnce: boolean = false;
+	private _incrementalGridRenderingEnabled: boolean;
 	protected isLoading: boolean = false;
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
 		@Inject(IInstantiationService) private instantiationService: IInstantiationService,
-		@Inject(IThemeService) private readonly themeService: IThemeService
+		@Inject(IThemeService) private readonly themeService: IThemeService,
+		@Inject(IConfigurationService) private configurationService: IConfigurationService
 	) {
 		super();
+		this._incrementalGridRenderingEnabled = this.configurationService.getValue('notebook.enableIncrementalGridRendering');
 	}
 
 	@Input() set bundleOptions(value: MimeModel.IOptions) {
@@ -119,7 +121,7 @@ export class GridOutputComponent extends AngularDisposable implements IMimeCompo
 					this.updateResult(e.resultSet, e.rows);
 				}
 			}));
-			if (this._cellModel.executionState === CellExecutionState.Running) {
+			if (this._cellModel.executionState === CellExecutionState.Running || !this._incrementalGridRenderingEnabled) {
 				await this.renderGrid();
 			} else {
 				this.setLoading(true);
