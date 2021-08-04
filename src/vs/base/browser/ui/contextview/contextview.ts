@@ -319,10 +319,34 @@ export class ContextView extends Disposable {
 		this.view.classList.toggle('fixed', this.useFixedPosition);
 
 		const containerPosition = DOM.getDomNodePagePosition(this.container!);
-		this.view.style.top = `${top - (this.useFixedPosition ? DOM.getDomNodePagePosition(this.view).top : containerPosition.top)}px`;
-		this.view.style.left = `${left - (this.useFixedPosition ? DOM.getDomNodePagePosition(this.view).left : containerPosition.left)}px`;
+
+		// {{SQL CARBON EDIT}} - START
+		let previousTopPositionForView: number = this.useFixedPosition ? DOM.getDomNodePagePosition(this.view).top : containerPosition.top;
+		let previousLeftPositionForView: number = this.useFixedPosition ? DOM.getDomNodePagePosition(this.view).left : containerPosition.left;
+
+		// Confirm that the anchor is an HTML element AND check if new position will appear at the origin (0, 0) of the window, so we can avoid and keep current top and left values.
+		if (DOM.isHTMLElement(anchor) && this.isNewPositionAtOrigin(top, left, previousTopPositionForView, previousLeftPositionForView)) {
+			this.view.style.top = `${top}px`;
+			this.view.style.left = `${left}px`;
+		}
+		// If anchor is not an HTML element OR it won't appear at the origin, then continue using pre-exisitng behavior
+		else {
+			this.view.style.top = `${top - previousTopPositionForView}px`;
+			this.view.style.left = `${left - previousLeftPositionForView}px`;
+		}
+		// {{SQL CARBON EDIT}} - END
+
 		this.view.style.width = 'initial';
 	}
+
+	// {{SQL CARBON EDIT}} - START
+	private isNewPositionAtOrigin(top: number, left: number, previousTopPositionForView: number, previousLeftPositionForView: number): boolean {
+		const newTopOffset: number = top - previousTopPositionForView;
+		const newLeftOffset: number = left - previousLeftPositionForView;
+
+		return newTopOffset === 0 && newLeftOffset === 0;
+	}
+	// {{SQL CARBON EDIT}} - END
 
 	hide(data?: unknown): void {
 		const delegate = this.delegate;
