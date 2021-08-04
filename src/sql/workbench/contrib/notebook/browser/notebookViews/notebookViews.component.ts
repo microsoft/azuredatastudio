@@ -63,6 +63,7 @@ export class NotebookViewComponent extends AngularDisposable implements INoteboo
 	private _runAllCellsAction: RunAllCellsAction;
 	private _scrollTop: number;
 	public _cellsAwaitingInput: ICellModel[] = [];
+	public readonly cellsAwaitingInputModalTitle: string = localize('cellAwaitingInputTitle', "Cell Awaiting Input");
 
 	constructor(
 		@Inject(IBootstrapParams) private _notebookParams: INotebookParams,
@@ -356,9 +357,5 @@ export class NotebookViewComponent extends AngularDisposable implements INoteboo
 
 	public get cellsAwaitingInput(): ICellModel[] {
 		return this._gridstack.hiddenItems.filter(i => this._cellsAwaitingInput.includes(i.cell)).map(i => i.cell);
-	}
-
-	public get cellsAwaitingInputModalTitle(): string {
-		return localize('cellAwaitingInputTitle', "Cell Awaiting Input");
 	}
 }
