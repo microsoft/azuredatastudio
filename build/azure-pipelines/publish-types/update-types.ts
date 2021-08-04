@@ -75,7 +75,7 @@ function getNewFileHeader(tag: string) {
 		``,
 		`/*---------------------------------------------------------------------------------------------`,
 		` *  Copyright (c) Microsoft Corporation. All rights reserved.`,
-		` *  Licensed under the MIT License.`,
+		` *  Licensed under the Source EULA.`,
 		` *  See https://github.com/Microsoft/azuredatastudio/blob/main/LICENSE.txt for license information.`,
 		` *--------------------------------------------------------------------------------------------*/`,
 		``,
