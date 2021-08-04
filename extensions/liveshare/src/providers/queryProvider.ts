@@ -59,6 +59,10 @@ export class QueryProvider {
 			return true;
 		});
 
+		this._sharedService.onRequest(constants.renameQueryRequest, (args: any) => {
+			return true;
+		});
+
 		this._sharedService.onRequest(constants.saveResultsRequest, (args: any) => {
 			return true;
 		});
@@ -128,6 +132,12 @@ export class QueryProvider {
 
 		let disposeQuery = (ownerUri: string): Thenable<void> => {
 			return self._sharedServiceProxy.request(constants.disposeQueryRequest, [{
+				ownerUri: ownerUri
+			}]);
+		};
+
+		let renameQuery = (ownerUri: string): Thenable<void> => {
+			return self._sharedServiceProxy.request(constants.renameQueryRequest, [{
 				ownerUri: ownerUri
 			}]);
 		};
@@ -208,6 +218,7 @@ export class QueryProvider {
 			deleteRow,
 			disposeEdit,
 			disposeQuery,
+			renameQuery,
 			getEditRows,
 			getQueryRows,
 			setQueryExecutionOptions,
