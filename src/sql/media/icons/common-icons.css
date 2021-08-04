@@ -210,15 +210,6 @@
 	background: url("newquery.svg") center center no-repeat;
 }
 
-.vs .codicon.icon-notebook-view {
-	background: url("notebook_view.svg") center center no-repeat;
-}
-
-.vs .codicon.icon-notebook-view::before {
-	-webkit-mask-image: url("notebook_view.svg");
-	mask-image: url("notebook_view.svg");
-}
-
 .vs .codicon.info,
 .hc-black .codicon.info,
 .vs-dark .codicon.info {
@@ -580,11 +571,6 @@ Includes non-masked style declarations. */
 .masked-pseudo.start-outline:before {
 	-webkit-mask-image: url("start-outline.svg");
 	mask-image: url("start-outline.svg");
-}
-
-.masked-pseudo.stop:before {
-	-webkit-mask-image: url("stop_cell_solidanimation_inverse.svg");
-	mask-image: url("stop_cell_solidanimation_inverse.svg");
 }
 
 .masked-pseudo.code:before {

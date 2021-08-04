@@ -87,12 +87,12 @@ export class NotebookViewModel implements INotebookView {
 		return this.cells.filter(cell => this.getCellMetadata(cell)?.hidden);
 	}
 
-	public get displayedCells(): Readonly<ICellModel[]> {
-		return this.cells.filter(cell => !this.getCellMetadata(cell)?.hidden);
-	}
-
 	public get cells(): Readonly<ICellModel[]> {
 		return this._notebookViews.notebook.cells;
+	}
+
+	public get displayedCells(): Readonly<ICellModel[]> {
+		return this.cells.filter(cell => !this.getCellMetadata(cell)?.hidden);
 	}
 
 	public getCell(guid: string): Readonly<ICellModel> {

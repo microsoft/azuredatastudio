@@ -878,5 +878,3 @@ export class NotebookFindPreviousAction implements IEditorAction {
 		return true;
 	}
 }
-
-

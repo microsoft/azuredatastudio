@@ -6,9 +6,9 @@
 import { nb } from 'azdata';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, forwardRef, Inject, Input, OnChanges, SimpleChange } from '@angular/core';
 import { CodeCellComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/codeCell.component';
-import { localize } from 'vs/nls';
 import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { CellModel } from 'sql/workbench/services/notebook/browser/models/cell';
+import { localize } from 'vs/nls';
 
 export const CODE_SELECTOR: string = 'views-code-cell-component';
 
@@ -65,6 +65,9 @@ export class NotebookViewsCodeCellComponent extends CodeCellComponent implements
 		return this.cellModel.outputs;
 	}
 
+	/**
+	 * Override the cell model for Views.
+	 */
 	get viewCellModel(): ICellModel {
 		return new NotebookViewsCellModel(this.cellModel.toJSON(), { notebook: this.cellModel.notebookModel, isTrusted: this.cellModel.trustedMode });
 	}
@@ -75,6 +78,9 @@ export class NotebookViewsCodeCellComponent extends CodeCellComponent implements
 }
 
 export class NotebookViewsCellModel extends CellModel {
+	/**
+	 * Override the cell output.
+	 */
 	public override get outputs(): Array<nb.ICellOutput> {
 		return super.outputs
 			.filter((output: nb.IDisplayResult) => output.data === undefined || output?.data['text/plain'] !== '<IPython.core.display.HTML object>')

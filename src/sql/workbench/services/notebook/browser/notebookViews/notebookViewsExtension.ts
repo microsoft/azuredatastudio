@@ -74,7 +74,7 @@ export class NotebookViewsExtension extends NotebookExtension<INotebookViewMetad
 		return view;
 	}
 
-	public removeView(guid: string): void {
+	public removeView(guid: string) {
 		let viewToRemove = this._metadata.views.findIndex(view => view.guid === guid);
 		if (viewToRemove !== -1) {
 			let removedView = this._metadata.views.splice(viewToRemove, 1);

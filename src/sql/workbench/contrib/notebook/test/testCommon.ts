@@ -7,13 +7,13 @@ import { QueryTextEditor } from 'sql/workbench/browser/modelComponents/queryText
 import * as stubs from 'sql/workbench/contrib/notebook/test/stubs';
 import { INotebookModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { INotebookParams } from 'sql/workbench/services/notebook/browser/notebookService';
-import { NotebookViewsExtension } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViewsExtension';
 import * as dom from 'vs/base/browser/dom';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { NullTelemetryService } from 'vs/platform/telemetry/common/telemetryUtils';
 import { TestThemeService } from 'vs/platform/theme/test/common/testThemeService';
 import { TestEditorGroupsService, TestEditorService, TestTextResourceConfigurationService } from 'vs/workbench/test/browser/workbenchTestServices';
 import { TestStorageService } from 'vs/workbench/test/common/workbenchTestServices';
+import { NotebookViewsExtension } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViewsExtension';
 
 // Typically you will pass in either editor or the instantiationService parameter.
 // Leave both undefined when you want the underlying object(s) to have an undefined editor.
