@@ -36,7 +36,7 @@ import { IconPathHelper } from '../common/iconHelper';
 import { DashboardData, PublishData, Status } from '../models/dashboardData/dashboardData';
 import { launchPublishDatabaseQuickpick } from '../dialogs/publishDatabaseQuickpick';
 import { SqlTargetPlatform } from 'sqldbproj';
-import { createNewProjectWithQuickpick } from '../dialogs/createProjectFromDatabaseQuickpick';
+import { createNewProjectFromDatabaseWithQuickpick } from '../dialogs/createProjectFromDatabaseQuickpick';
 
 const maxTableLength = 10;
 
@@ -874,7 +874,7 @@ export class ProjectsController {
 
 			return createProjectFromDatabaseDialog;
 		} else {
-			const model = await createNewProjectWithQuickpick();
+			const model = await createNewProjectFromDatabaseWithQuickpick();
 			if (model) {
 				await this.createProjectFromDatabaseCallback(model);
 			}

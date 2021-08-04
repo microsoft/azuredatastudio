@@ -15,7 +15,7 @@ import { mapExtractTargetEnum } from './createProjectFromDatabaseDialog';
 /**
  * Create flow for a New Project using only VS Code-native APIs such as QuickPick
  */
-export async function createNewProjectWithQuickpick(): Promise<ImportDataModel | undefined> {
+export async function createNewProjectFromDatabaseWithQuickpick(): Promise<ImportDataModel | undefined> {
 
 	// 1. Select connection
 	const vscodeMssqlApi = await getVscodeMssqlApi();
@@ -104,7 +104,7 @@ export async function createNewProjectWithQuickpick(): Promise<ImportDataModel |
 	// 5: Prompt for folder structure
 	const folderStructure = await vscode.window.showQuickPick(
 		[constants.file, constants.flat, constants.objectType, constants.schema, constants.schemaObjectType],
-		{ title: constants.selectDatabase, ignoreFocusOut: true, });
+		{ title: constants.selectFolderStructure, ignoreFocusOut: true, });
 	if (!folderStructure) {
 		// User cancelled
 		return undefined;

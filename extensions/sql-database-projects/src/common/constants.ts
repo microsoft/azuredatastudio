@@ -166,6 +166,7 @@ export const projectNamePlaceholderText = localize('projectNamePlaceholderText',
 export const projectLocationLabel = localize('projectLocationLabel', "Location");
 export const projectLocationPlaceholderText = localize('projectLocationPlaceholderText', "Select location to create project");
 export const browseButtonText = localize('browseButtonText', "Browse folder");
+export const selectFolderStructure = localize('selectFolderStructure', "Select folder structure");
 export const folderStructureLabel = localize('folderStructureLabel', "Folder structure");
 export const WorkspaceFileExtension = '.code-workspace';
 export const browseEllipsis = localize('browseEllipsis', "Browse...");
