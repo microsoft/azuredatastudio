@@ -36,5 +36,6 @@
 	"sqlDatabaseProjects.netCoreDoNotAsk": "Whether to prompt the user to install .NET Core when not detected.",
 	"sqlDatabaseProjects.welcome": "No database projects currently open.\n[New Project](command:sqlDatabaseProjects.new)\n[Open Project](command:sqlDatabaseProjects.open)\n[Create Project From Database](command:sqlDatabaseProjects.importDatabase)",
 
-	"sqlDatabaseProjects.insertSqlInputBinding":"Insert SQL Binding into Azure Function"
+	"sqlDatabaseProjects.insertSqlInputBinding":"Add SQL Binding",
+	"azureFunctions.displayName": "Azure Functions"
 }

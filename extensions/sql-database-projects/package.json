@@ -156,7 +156,8 @@
       },
       {
         "command": "sqlDatabaseProjects.insertSqlInputBinding",
-        "title": "%sqlDatabaseProjects.insertSqlInputBinding%"
+        "title": "%sqlDatabaseProjects.insertSqlInputBinding%",
+        "category": "%azureFunctions.displayName%"
       }
     ],
     "menus": {
