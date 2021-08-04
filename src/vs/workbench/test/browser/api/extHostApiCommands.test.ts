@@ -49,7 +49,7 @@ import 'vs/editor/contrib/parameterHints/provideSignatureHelp';
 import 'vs/editor/contrib/smartSelect/smartSelect';
 import 'vs/editor/contrib/suggest/suggest';
 import 'vs/editor/contrib/rename/rename';
-import 'vs/editor/contrib/inlineHints/inlineHintsController';
+import 'vs/editor/contrib/inlayHints/inlayHintsController';
 
 const defaultSelector = { scheme: 'far' };
 const model: ITextModel = createTextModel(
@@ -1213,15 +1213,13 @@ suite('ExtHostLanguageFeatureCommands', function () {
 
 		await rpcProtocol.sync();
 
-		const value = await commands.executeCommand<vscode.InlineHint[]>('vscode.executeInlineHintProvider', model.uri, new types.Range(0, 0, 20, 20));
+		const value = await commands.executeCommand<vscode.InlayHint[]>('vscode.executeInlayHintProvider', model.uri, new types.Range(0, 0, 20, 20));
 		assert.strictEqual(value.length, 1);
 
 		const [first] = value;
 		assert.strictEqual(first.text, 'Foo');
-		assert.strictEqual(first.range.start.line, 0);
-		assert.strictEqual(first.range.start.character, 1);
-		assert.strictEqual(first.range.end.line, 2);
-		assert.strictEqual(first.range.end.character, 3);
+		assert.strictEqual(first.position.line, 0);
+		assert.strictEqual(first.position.character, 1);
 	});
 
 	test('Inline Hints, merge', async function () {
@@ -1241,23 +1239,17 @@ suite('ExtHostLanguageFeatureCommands', function () {
 
 		await rpcProtocol.sync();
 
-		const value = await commands.executeCommand<vscode.InlineHint[]>('vscode.executeInlineHintProvider', model.uri, new types.Range(0, 0, 20, 20));
+		const value = await commands.executeCommand<vscode.InlayHint[]>('vscode.executeInlayHintProvider', model.uri, new types.Range(0, 0, 20, 20));
 		assert.strictEqual(value.length, 2);
 
 		const [first, second] = value;
 		assert.strictEqual(first.text, 'Foo');
-		assert.strictEqual(first.range.start.line, 0);
-		assert.strictEqual(first.range.start.character, 1);
-		assert.strictEqual(first.range.end.line, 2);
-		assert.strictEqual(first.range.end.character, 3);
-		assert.ok(first.description instanceof types.MarkdownString);
-		assert.strictEqual((<types.MarkdownString>first.description).value, '**Hello**');
+		assert.strictEqual(first.position.line, 0);
+		assert.strictEqual(first.position.character, 1);
 
 		assert.strictEqual(second.text, 'Bar');
-		assert.strictEqual(second.range.start.line, 10);
-		assert.strictEqual(second.range.start.character, 11);
-		assert.strictEqual(second.range.end.line, 12);
-		assert.strictEqual(second.range.end.character, 13);
+		assert.strictEqual(second.position.line, 10);
+		assert.strictEqual(second.position.character, 11);
 	});
 
 	test('Inline Hints, bad provider', async function () {
@@ -1266,23 +1258,21 @@ suite('ExtHostLanguageFeatureCommands', function () {
 				return [new types.InlineHint('Foo', new types.Range(0, 1, 2, 3))];
 			}
 		}));
-		disposables.push(extHost.registerInlineHintsProvider(nullExtensionDescription, defaultSelector, <vscode.InlineHintsProvider>{
-			provideInlineHints() {
+		disposables.push(extHost.registerInlayHintsProvider(nullExtensionDescription, defaultSelector, <vscode.InlayHintsProvider>{
+			provideInlayHints() {
 				throw new Error();
 			}
 		}));
 
 		await rpcProtocol.sync();
 
-		const value = await commands.executeCommand<vscode.InlineHint[]>('vscode.executeInlineHintProvider', model.uri, new types.Range(0, 0, 20, 20));
+		const value = await commands.executeCommand<vscode.InlayHint[]>('vscode.executeInlayHintProvider', model.uri, new types.Range(0, 0, 20, 20));
 		assert.strictEqual(value.length, 1);
 
 		const [first] = value;
 		assert.strictEqual(first.text, 'Foo');
-		assert.strictEqual(first.range.start.line, 0);
-		assert.strictEqual(first.range.start.character, 1);
-		assert.strictEqual(first.range.end.line, 2);
-		assert.strictEqual(first.range.end.character, 3);
+		assert.strictEqual(first.position.line, 0);
+		assert.strictEqual(first.position.character, 1);
 	});
 
 	// --- selection ranges
