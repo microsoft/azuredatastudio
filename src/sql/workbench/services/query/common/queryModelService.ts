@@ -413,7 +413,7 @@ export class QueryModelService implements IQueryModelService {
 		// Get existing query runner
 		let queryRunner = this.internalGetQueryRunner(oldUri);
 		if (queryRunner) {
-			await queryRunner.disposeQuery();
+			await queryRunner.renameQuery(newUri, oldUri);
 		}
 		// remove the old key and set new key with same query info as old uri.
 		if (this._queryInfoMap.has(oldUri)) {
