@@ -13,13 +13,15 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { IConnectionManagementService, IConnectableInput, INewConnectionParams, RunQueryOnConnectionMode } from 'sql/platform/connection/common/connectionManagement';
 import { QueryResultsInput } from 'sql/workbench/common/editor/query/queryResultsInput';
 import { IQueryModelService } from 'sql/workbench/services/query/common/queryModel';
-import { FileEditorInput } from 'sql/workbench/common/query/fileEditorInput';
 import { ExecutionPlanOptions } from 'azdata';
 import { startsWith } from 'vs/base/common/strings';
 import { IRange } from 'vs/editor/common/core/range';
 import { AbstractTextResourceEditorInput } from 'vs/workbench/common/editor/textResourceEditorInput';
 import { IQueryEditorConfiguration } from 'sql/platform/query/common/query';
 import { FileQueryEditorInput } from 'sql/workbench/common/query/fileQueryEditorInput';
+import { FileEditorInput } from 'sql/workbench/common/query/fileEditorInput';
+//import { FileQueryEditorInput } from 'sql/workbench/contrib/query/common/fileQueryEditorInput';
+//import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 const MAX_SIZE = 13;
