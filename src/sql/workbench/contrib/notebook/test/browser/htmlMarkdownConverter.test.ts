@@ -136,12 +136,12 @@ suite('HTML Markdown Converter', function (): void {
 		assert.strictEqual(htmlMarkdownConverter.convert(htmlString), `[](.${path.sep}stuff.png)`, 'Basic link test no label failed');
 		htmlString = '<a href="/tmp/my stuff.png"</a>';
 		assert.strictEqual(htmlMarkdownConverter.convert(htmlString), `[](.${path.sep}my%20stuff.png)`, 'Basic link test no label space filename failed');
+		htmlString = '<a href="/tmp/my%20stuff.png"</a>';
+		assert.strictEqual(htmlMarkdownConverter.convert(htmlString), `[](.${path.sep}my%2520stuff.png)`, 'Basic link test no label %20 filename failed');
 		htmlString = '<a href="/stuff.png">stuff</a>';
 		assert.strictEqual(htmlMarkdownConverter.convert(htmlString), `[stuff](..${path.sep}stuff.png)`, 'Basic link test above folder failed');
 		htmlString = '<a href="/tmp/inner/stuff.png">stuff</a>';
 		assert.strictEqual(htmlMarkdownConverter.convert(htmlString), `[stuff](.${path.sep}inner${path.sep}stuff.png)`, 'Basic link test below folder failed');
-		// htmlString = '<a href="e:\\some\\other\\path.png"/>';
-		// assert.strictEqual(htmlMarkdownConverter.convert(htmlString), '[](e:\\some\\other\\path.png)', 'link test different drive failed');
 		htmlString = '<a href="https://www.microsoft.com/images/msft.png">msft</a>';
 		assert.strictEqual(htmlMarkdownConverter.convert(htmlString), '[msft](https://www.microsoft.com/images/msft.png)', 'Basic https link test failed');
 		htmlString = '<a href="http://www.microsoft.com/images/msft.png">msft</a>';

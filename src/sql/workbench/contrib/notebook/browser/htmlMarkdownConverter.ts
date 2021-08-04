@@ -121,7 +121,7 @@ export class HTMLMarkdownConverter {
 			filter: 'img',
 			replacement: (content, node) => {
 				if (node?.src) {
-					let imgPath = URI.parse(node.src);
+					let imgPath = URI.parse(encodeURI(node.src));
 					const notebookFolder: string = this.notebookUri ? path.join(path.dirname(this.notebookUri.fsPath), path.sep) : '';
 					let relativePath = findPathRelativeToContent(notebookFolder, imgPath);
 					if (relativePath) {

@@ -24,8 +24,20 @@ export class NotebookLinkHandler {
 		private _link: string | HTMLAnchorElement,
 		@IConfigurationService private _configurationService: IConfigurationService,
 	) {
+		/**
+		 * If link is string
+		 * 	- string link is passed in via onInsertButtonClick (markdownToolbar.component.ts)
+		 *  - string in form of 'https://','http://', or 'file://'
+		 * If link is HTMLAnchorElement
+		 * 	- the node element is passed in via getCurrentLinkUrl() in markdownToolbar.component.ts
+		 * 	- the node element is passed in via anchor rule in htmlMarkdownConverter.ts
+		 * The link / href we receive is not escaped initially so we need to encode the special characters
+		 * such as space and %20 to return the proper path.
+		 * The link that we return should be the encoded, as that will allow the linkHandler to then decode the
+		 * link via uri.parse to open the correct file or web link.
+		 */
 		if (typeof this._link === 'string') {
-			this._notebookUriLink = URI.parse(this._link);
+			this._notebookUriLink = URI.parse(encodeURI(this._link));
 			this._isFile = this._notebookUriLink.scheme === 'file';
 			this.isAbsolutePath = path.isAbsolute(this._link);
 			this._isAnchorLink = this._link.includes('#') && this._isFile;
@@ -38,7 +50,7 @@ export class NotebookLinkHandler {
 			} else {
 				this._href = this._link.attributes['href']?.nodeValue;
 			}
-			this._notebookUriLink = this._href ? URI.parse(this._href) : undefined;
+			this._notebookUriLink = this._href ? URI.parse(encodeURI(this._href)) : undefined;
 			this._isFile = this._link.protocol === 'file:';
 			this._isAnchorLink = this._notebookUriLink?.fragment ? true : false;
 			this.isAbsolutePath = this._link.attributes['is-absolute']?.nodeValue === 'true' ? true : false;
@@ -59,7 +71,7 @@ export class NotebookLinkHandler {
 		if (typeof this._link === 'string') {
 			// Does not convert absolute path to relative path
 			if (this._isFile && this.isAbsolutePath && this._configurationService.getValue(keepAbsolutePathConfigName) === true) {
-				return this._link;
+				return encodeURI(this._link);
 			}
 			// sets the string to absolute path to be used to resolve
 			if (this._isFile && !this.isAbsolutePath && !this._isAnchorLink) {
@@ -71,7 +83,7 @@ export class NotebookLinkHandler {
 			 * We return the absolute path for the link so that it will get used in the as the href for the anchor HTML element
 			 * (in linkCalloutDialog document.execCommand('insertHTML') and therefore will call getLinkURL() with HTMLAnchorElement to then get the relative path
 			*/
-			return this._link;
+			return encodeURI(this._link);
 		} else {
 			// cases where we pass the HTMLAnchorElement
 			if (this._notebookUriLink && this._isFile) {
@@ -89,7 +101,7 @@ export class NotebookLinkHandler {
 					}
 					// returns relative path of target notebook to the current notebook directory
 					if (this._notebookUriLink.fsPath !== this._notebookURI.fsPath && !targetUri?.fragment) {
-						return findPathRelativeToContent(this._notebookDirectory, targetUri);
+						return encodeURI(findPathRelativeToContent(this._notebookDirectory, targetUri));
 					} else {
 						// if the anchor link is to a section in the same notebook then just add the fragment
 						return targetUri.fragment;
@@ -130,8 +142,6 @@ export class NotebookLinkHandler {
 export function findPathRelativeToContent(notebookFolder: string, contentPath: URI | undefined): string {
 	if (contentPath?.scheme === 'file') {
 		let relativePath = contentPath.fragment ? path.relative(notebookFolder, contentPath.fsPath).concat('#', contentPath.fragment) : path.relative(notebookFolder, contentPath.fsPath);
-		//if path contains whitespaces then it's not identified as a link
-		relativePath = relativePath.replace(/\s/g, '%20');
 		// if relativePath contains improper directory format due to marked js parsing returning an invalid path (ex. ....\) then we need to replace it to ensure the directories are formatted properly (ex. ..\..\)
 		relativePath = replaceInvalidLinkPath(relativePath);
 		if (relativePath.startsWith(path.join('..', path.sep)) || relativePath.startsWith(path.join('.', path.sep))) {
