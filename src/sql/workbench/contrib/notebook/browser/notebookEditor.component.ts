@@ -73,7 +73,9 @@ export class NotebookEditorComponent extends AngularDisposable {
 		await this.loadModel();
 		// Render grid outputs after the rest of the notebook is loaded to prevent
 		// long initial rendering time for large notebooks.
-		this._model.renderGridOutputs();
+		if (this._configurationService.getValue('notebook.enableIncrementalGridRendering')) {
+			this._model.renderGridOutputs();
+		}
 	}
 
 	private async loadModel(): Promise<void> {
