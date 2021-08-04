@@ -550,12 +550,6 @@
     <trans-unit id="folderAlreadyExists">
       <source xml:lang="en">A folder with the name '{0}' already exists on disk at this location. Please choose another name.</source>
     </trans-unit>
-    <trans-unit id="fileAlreadyAddedToProject">
-      <source xml:lang="en">A file with the path '{0}' has already been added to the project</source>
-    </trans-unit>
-    <trans-unit id="folderAlreadyAddedToProject">
-      <source xml:lang="en">A folder with the path '{0}' has already been added to the project</source>
-    </trans-unit>
     <trans-unit id="invalidInput">
       <source xml:lang="en">Invalid input: {0}</source>
     </trans-unit>
@@ -569,7 +563,7 @@
       <source xml:lang="en">Circular reference from project {0} to project {1}</source>
     </trans-unit>
     <trans-unit id="mssqlNotFound">
-      <source xml:lang="en">Could not get mssql extension's install location at {0}</source>
+      <source xml:lang="en">Could not get SQL Tools Service install location at {0}</source>
     </trans-unit>
     <trans-unit id="projBuildFailed">
       <source xml:lang="en">Build failed. Check output pane for more details. {0}</source>
@@ -597,6 +591,12 @@
     </trans-unit>
     <trans-unit id="unableToFindReference">
       <source xml:lang="en">Unable to find database reference {0}</source>
+    </trans-unit>
+    <trans-unit id="invalidGuid">
+      <source xml:lang="en">Specified GUID is invalid: {0}</source>
+    </trans-unit>
+    <trans-unit id="invalidTargetPlatform">
+      <source xml:lang="en">Invalid target platform: {0}. Supported target platforms: {1}</source>
     </trans-unit>
     <trans-unit id="deleteAction">
       <source xml:lang="en">Delete</source>

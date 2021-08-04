@@ -1,0 +1,879 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file original="extensions/machine-learning/package" source-language="en" datatype="plaintext" target-language="ru">
+    <body>
+      <trans-unit id="displayName">
+        <source xml:lang="en">Machine Learning</source>
+        <target state="translated">Машинное обучение</target>
+      </trans-unit>
+      <trans-unit id="description">
+        <source xml:lang="en">Machine Learning</source>
+        <target state="translated">Машинное обучение</target>
+      </trans-unit>
+      <trans-unit id="title.tasks">
+        <source xml:lang="en">Tasks</source>
+        <target state="translated">Задачи</target>
+      </trans-unit>
+      <trans-unit id="title.documents">
+        <source xml:lang="en">Documents</source>
+        <target state="translated">Документы</target>
+      </trans-unit>
+      <trans-unit id="title.configurations">
+        <source xml:lang="en">Configurations</source>
+        <target state="translated">Конфигурации</target>
+      </trans-unit>
+      <trans-unit id="title.endpoints">
+        <source xml:lang="en">Endpoints</source>
+        <target state="translated">Конечные точки</target>
+      </trans-unit>
+      <trans-unit id="ml.command.managePackages">
+        <source xml:lang="en">Manage packages in database</source>
+        <target state="translated">Управление пакетами в базе данных</target>
+      </trans-unit>
+      <trans-unit id="ml.command.manageLanguages">
+        <source xml:lang="en">Manage external languages</source>
+        <target state="translated">Управление внешними языками</target>
+      </trans-unit>
+      <trans-unit id="ml.command.predictModel">
+        <source xml:lang="en">Make prediction</source>
+        <target state="translated">Создать прогноз</target>
+      </trans-unit>
+      <trans-unit id="ml.command.manageModels">
+        <source xml:lang="en">Manage models</source>
+        <target state="translated">Управление моделями</target>
+      </trans-unit>
+      <trans-unit id="ml.command.importModel">
+        <source xml:lang="en">Import model</source>
+        <target state="translated">Импортировать модель</target>
+      </trans-unit>
+      <trans-unit id="ml.configuration.title">
+        <source xml:lang="en">Machine Learning Configurations</source>
+        <target state="translated">Конфигурации Машинного обучения</target>
+      </trans-unit>
+      <trans-unit id="ml.pythonPath.description">
+        <source xml:lang="en">Local path to a preexisting Python installation used by Machine Learning.</source>
+        <target state="translated">Локальный путь к существующей установке Python, используемой Машинным обучением.</target>
+      </trans-unit>
+      <trans-unit id="ml.enablePython.description">
+        <source xml:lang="en">Enable Python package management in database.</source>
+        <target state="translated">Включите управление пакетами Python в базе данных.</target>
+      </trans-unit>
+      <trans-unit id="ml.enableR.description">
+        <source xml:lang="en">Enable R package management in database.</source>
+        <target state="translated">Включите управление пакетами R в базе данных.</target>
+      </trans-unit>
+      <trans-unit id="ml.rPath.description">
+        <source xml:lang="en">Local path to a preexisting R installation used by Machine Learning.</source>
+        <target state="translated">Локальный путь к существующей установке R, используемой Машинным обучением.</target>
+      </trans-unit>
+      <trans-unit id="ml.command.dependencies">
+        <source xml:lang="en">Install Machine Learning Dependencies</source>
+        <target state="translated">Установить зависимости Машинного обучения</target>
+      </trans-unit>
+      <trans-unit id="ml.command.enableExternalScript">
+        <source xml:lang="en">Enable External script</source>
+        <target state="translated">Включить внешний сценарий</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/machine-learning/dist/common/constants" source-language="en" datatype="plaintext" target-language="ru">
+    <body>
+      <trans-unit id="msgYes">
+        <source xml:lang="en">Yes</source>
+        <target state="translated">Да</target>
+      </trans-unit>
+      <trans-unit id="msgNo">
+        <source xml:lang="en">No</source>
+        <target state="translated">Нет</target>
+      </trans-unit>
+      <trans-unit id="mls.managePackages.error">
+        <source xml:lang="en">Package management is not supported for the server. Make sure you have Python or R installed.</source>
+        <target state="translated">Управление пакетами не поддерживается для этого сервера. Убедитесь, что на компьютере установлен Python или R.</target>
+      </trans-unit>
+      <trans-unit id="notebookExtensionFailedError">
+        <source xml:lang="en">The extension failed to load because of it's dependency to Notebook extension. Please check the output log for Notebook extension to get more details</source>
+        <target state="translated">Не удалось загрузить расширение из-за его зависимости от расширения записной книжки. Дополнительные сведения см. в выходном журнале для расширения записной книжки</target>
+      </trans-unit>
+      <trans-unit id="mls.verifyOdbcDriverError.error">
+        <source xml:lang="en">'{0}' is required  for package management. Please make sure it is installed and set up correctly.</source>
+        <target state="translated">Для управления пакетами требуется "{0}". Проверьте, что проведена установка и правильная настройка.</target>
+      </trans-unit>
+      <trans-unit id="mls.taskFailedError.error">
+        <source xml:lang="en">Failed to complete task '{0}'. Error: {1}</source>
+        <target state="translated">Не удалось выполнить задачу "{0}". Ошибка: {1}</target>
+      </trans-unit>
+      <trans-unit id="mls.cannotFindPython.error">
+        <source xml:lang="en">Cannot find Python executable '{0}'. Please make sure Python is installed and configured correctly</source>
+        <target state="translated">Не удается найти исполняемый файл Python "{0}". Убедитесь, что Python правильно установлен и настроен.</target>
+      </trans-unit>
+      <trans-unit id="mls.cannotFindR.error">
+        <source xml:lang="en">Cannot find R executable '{0}'. Please make sure R is installed and configured correctly</source>
+        <target state="translated">Не удается найти исполняемый файл R "{0}". Убедитесь, что R правильно установлен и настроен.</target>
+      </trans-unit>
+      <trans-unit id="mls.installPackageMngDependencies.msgTaskName">
+        <source xml:lang="en">Verifying package management dependencies</source>
+        <target state="translated">Проверка зависимостей управления пакетами</target>
+      </trans-unit>
+      <trans-unit id="mls.installModelMngDependencies.msgTaskName">
+        <source xml:lang="en">Verifying model management dependencies</source>
+        <target state="translated">Проверка зависимостей управления моделями</target>
+      </trans-unit>
+      <trans-unit id="mls.noResultError">
+        <source xml:lang="en">No Result returned</source>
+        <target state="translated">Результаты не возвращены</target>
+      </trans-unit>
+      <trans-unit id="mls.requiredPackagesNotInstalled">
+        <source xml:lang="en">The required packages are not installed</source>
+        <target state="translated">Требуемые пакеты не установлены</target>
+      </trans-unit>
+      <trans-unit id="mls.confirmEnableExternalScripts">
+        <source xml:lang="en">External script is required for package management. Are you sure you want to enable that.</source>
+        <target state="translated">Для управления пакетами требуется внешний скрипт. Вы действительно хотите включить этот пункт.</target>
+      </trans-unit>
+      <trans-unit id="mls.enableExternalScriptsError">
+        <source xml:lang="en">Failed to enable External script.</source>
+        <target state="translated">Не удалось включить внешний сценарий.</target>
+      </trans-unit>
+      <trans-unit id="mls.externalScriptsIsRequiredError">
+        <source xml:lang="en">External script configuration is required for this action.</source>
+        <target state="translated">Для этого действия требуется конфигурация внешнего скрипта.</target>
+      </trans-unit>
+      <trans-unit id="mls.confirmInstallPythonPackages">
+        <source xml:lang="en">Are you sure you want to install required packages?</source>
+        <target state="translated">Вы действительно хотите установить необходимые пакеты?</target>
+      </trans-unit>
+      <trans-unit id="mls.installDependencies.confirmInstallPythonPackages">
+        <source xml:lang="en">The following Python packages are required to install: {0}</source>
+        <target state="translated">Для установки требуются следующие пакеты Python: {0}</target>
+      </trans-unit>
+      <trans-unit id="mls.installDependencies.confirmInstallRPackages">
+        <source xml:lang="en">The following R packages are required to install: {0}</source>
+        <target state="translated">Для установки требуются следующие пакеты R: {0}</target>
+      </trans-unit>
+      <trans-unit id="models.confirmDeleteModel">
+        <source xml:lang="en">Are you sure you want to delete model '{0}?</source>
+        <target state="translated">Действительно удалить модель '{0}?</target>
+      </trans-unit>
+      <trans-unit id="mls.installDependencies.packages">
+        <source xml:lang="en">Installing required packages ...</source>
+        <target state="translated">Устанавливаются обязательные пакеты...</target>
+      </trans-unit>
+      <trans-unit id="mls.installDependencies.packagesAlreadyInstalled">
+        <source xml:lang="en">Required packages are already installed.</source>
+        <target state="translated">Обязательные пакеты уже установлены.</target>
+      </trans-unit>
+      <trans-unit id="mls.installDependencies.getPackagesError">
+        <source xml:lang="en">Failed to get installed python packages. Error: {0}</source>
+        <target state="translated">Не удалось установить пакеты Python. Ошибка: {0}</target>
+      </trans-unit>
+      <trans-unit id="mls.packageManager.NoConnection">
+        <source xml:lang="en">No connection selected</source>
+        <target state="translated">Подключение не выбрано</target>
+      </trans-unit>
+      <trans-unit id="mls.notebookExtensionNotLoaded">
+        <source xml:lang="en">Notebook extension is not loaded</source>
+        <target state="translated">Расширение записной книжки не загружено</target>
+      </trans-unit>
+      <trans-unit id="mls.mssqlExtensionNotLoaded">
+        <source xml:lang="en">MSSQL extension is not loaded</source>
+        <target state="translated">Расширение MSSQL не загружено</target>
+      </trans-unit>
+      <trans-unit id="mls.enabledMessage">
+        <source xml:lang="en">Machine Learning Services Enabled</source>
+        <target state="translated">Службы машинного обучения включены</target>
+      </trans-unit>
+      <trans-unit id="mls.configUpdateFailed">
+        <source xml:lang="en">Failed to modify Machine Learning Services configurations</source>
+        <target state="translated">Не удалось изменить конфигурации Службы машинного обучения</target>
+      </trans-unit>
+      <trans-unit id="mls.enableButtonTitle">
+        <source xml:lang="en">Enable</source>
+        <target state="translated">Включить</target>
+      </trans-unit>
+      <trans-unit id="mls.disableButtonTitle">
+        <source xml:lang="en">Disable</source>
+        <target state="translated">Отключить</target>
+      </trans-unit>
+      <trans-unit id="mls.configTitle">
+        <source xml:lang="en">Config</source>
+        <target state="translated">Конфигурация</target>
+      </trans-unit>
+      <trans-unit id="mls.configStatus">
+        <source xml:lang="en">Enabled</source>
+        <target state="translated">Включено</target>
+      </trans-unit>
+      <trans-unit id="mls.configAction">
+        <source xml:lang="en">Action</source>
+        <target state="translated">Действие</target>
+      </trans-unit>
+      <trans-unit id="mls.externalExecuteScriptTitle">
+        <source xml:lang="en">External Execute Script</source>
+        <target state="translated">Внешний скрипт выполнения</target>
+      </trans-unit>
+      <trans-unit id="mls.pythonLanguageTitle">
+        <source xml:lang="en">Python</source>
+        <target state="translated">Python</target>
+      </trans-unit>
+      <trans-unit id="mls.rLanguageTitle">
+        <source xml:lang="en">R</source>
+        <target state="translated">R</target>
+      </trans-unit>
+      <trans-unit id="mls.downloadError">
+        <source xml:lang="en">Error while downloading</source>
+        <target state="translated">Ошибка при скачивании</target>
+      </trans-unit>
+      <trans-unit id="mls.invalidModelIdError">
+        <source xml:lang="en">Invalid model id. model url: {0}</source>
+        <target state="translated">Недопустимый ИД модели. URL-адрес модели: {0}</target>
+      </trans-unit>
+      <trans-unit id="mls.noArtifactError">
+        <source xml:lang="en">Model doesn't have any artifact. model url: {0}</source>
+        <target state="translated">Модель не имеет артефактов. URL-адрес модели: {0}</target>
+      </trans-unit>
+      <trans-unit id="mls.downloadingProgress">
+        <source xml:lang="en">Downloading</source>
+        <target state="translated">Идет скачивание</target>
+      </trans-unit>
+      <trans-unit id="mls.pythonConfigError">
+        <source xml:lang="en">Python executable is not configured</source>
+        <target state="translated">Исполняемый файл Python не настроен</target>
+      </trans-unit>
+      <trans-unit id="mls.rConfigError">
+        <source xml:lang="en">R executable is not configured</source>
+        <target state="translated">Исполняемый файл R не настроен</target>
+      </trans-unit>
+      <trans-unit id="mls.installingDependencies">
+        <source xml:lang="en">Installing dependencies ...</source>
+        <target state="translated">Установка зависимостей...</target>
+      </trans-unit>
+      <trans-unit id="mls.resourceNotFound">
+        <source xml:lang="en">Could not find the specified resource</source>
+        <target state="translated">Не удалось найти указанный ресурс</target>
+      </trans-unit>
+      <trans-unit id="mls.latestVersion">
+        <source xml:lang="en">Latest</source>
+        <target state="translated">Последняя</target>
+      </trans-unit>
+      <trans-unit id="mls.httpGetRequestError">
+        <source xml:lang="en">Package info request failed with error: {0} {1}</source>
+        <target state="translated">Запрос сведений о пакете завершился с ошибкой: {0} {1}</target>
+      </trans-unit>
+      <trans-unit id="azure.resource.error">
+        <source xml:lang="en">Error: {0}</source>
+        <target state="translated">Ошибка: {0}</target>
+      </trans-unit>
+      <trans-unit id="notSupportedEventArg">
+        <source xml:lang="en">Not supported event args</source>
+        <target state="translated">Аргументы события не поддерживаются</target>
+      </trans-unit>
+      <trans-unit id="extLang.installTabTitle">
+        <source xml:lang="en">Installed</source>
+        <target state="translated">Установлено</target>
+      </trans-unit>
+      <trans-unit id="extLang.languageCreatedDate">
+        <source xml:lang="en">Installed</source>
+        <target state="translated">Установлено</target>
+      </trans-unit>
+      <trans-unit id="extLang.languagePlatform">
+        <source xml:lang="en">Platform</source>
+        <target state="translated">Платформа</target>
+      </trans-unit>
+      <trans-unit id="extLang.delete">
+        <source xml:lang="en">Delete</source>
+        <target state="translated">Удалить</target>
+      </trans-unit>
+      <trans-unit id="editTitle">
+        <source xml:lang="en">Edit</source>
+        <target state="translated">Изменить</target>
+      </trans-unit>
+      <trans-unit id="extLang.installButtonText">
+        <source xml:lang="en">Install</source>
+        <target state="translated">Установить</target>
+      </trans-unit>
+      <trans-unit id="extLang.CancelButtonText">
+        <source xml:lang="en">Cancel</source>
+        <target state="translated">Отмена</target>
+      </trans-unit>
+      <trans-unit id="extLang.DoneButtonText">
+        <source xml:lang="en">Close</source>
+        <target state="translated">Закрыть</target>
+      </trans-unit>
+      <trans-unit id="extLang.OkButtonText">
+        <source xml:lang="en">OK</source>
+        <target state="translated">ОК</target>
+      </trans-unit>
+      <trans-unit id="extLang.SaveButtonText">
+        <source xml:lang="en">Save</source>
+        <target state="translated">Сохранить</target>
+      </trans-unit>
+      <trans-unit id="extLang.languageName">
+        <source xml:lang="en">Name</source>
+        <target state="translated">Имя</target>
+      </trans-unit>
+      <trans-unit id="extLang.newLanguageTabTitle">
+        <source xml:lang="en">Add new</source>
+        <target state="translated">Добавить новый</target>
+      </trans-unit>
+      <trans-unit id="extLang.fileBrowserTabTitle">
+        <source xml:lang="en">File Browser</source>
+        <target state="translated">Браузер файлов</target>
+      </trans-unit>
+      <trans-unit id="extLang.DialogTitle">
+        <source xml:lang="en">Languages</source>
+        <target state="translated">Языки</target>
+      </trans-unit>
+      <trans-unit id="extLang.Target">
+        <source xml:lang="en">Target</source>
+        <target state="translated">Целевой объект</target>
+      </trans-unit>
+      <trans-unit id="extLang.Local">
+        <source xml:lang="en">localhost</source>
+        <target state="translated">localhost</target>
+      </trans-unit>
+      <trans-unit id="extLang.extensionFilePath">
+        <source xml:lang="en">Language extension path</source>
+        <target state="translated">Путь к расширению языка</target>
+      </trans-unit>
+      <trans-unit id="extLang.extensionFileLocation">
+        <source xml:lang="en">Language extension location</source>
+        <target state="translated">Расположение расширения языка</target>
+      </trans-unit>
+      <trans-unit id="extLang.extensionFileName">
+        <source xml:lang="en">Extension file Name</source>
+        <target state="translated">Имя расширения файла</target>
+      </trans-unit>
+      <trans-unit id="extLang.envVariables">
+        <source xml:lang="en">Environment variables</source>
+        <target state="translated">Переменные окружения</target>
+      </trans-unit>
+      <trans-unit id="extLang.parameters">
+        <source xml:lang="en">Parameters</source>
+        <target state="translated">Параметры</target>
+      </trans-unit>
+      <trans-unit id="extLang.selectedPath">
+        <source xml:lang="en">Selected Path</source>
+        <target state="translated">Выбранный путь</target>
+      </trans-unit>
+      <trans-unit id="extLang.installFailedError">
+        <source xml:lang="en">Failed to install language</source>
+        <target state="translated">Не удается установить язык</target>
+      </trans-unit>
+      <trans-unit id="extLang.updateFailedError">
+        <source xml:lang="en">Failed to update language</source>
+        <target state="translated">Не удалось обновить язык</target>
+      </trans-unit>
+      <trans-unit id="models.modelUpdateFailedError">
+        <source xml:lang="en">Failed to update the model</source>
+        <target state="translated">Не удалось обновить модель</target>
+      </trans-unit>
+      <trans-unit id="models.modelsListEmptyMessage">
+        <source xml:lang="en">No models found</source>
+        <target state="translated">Модели не найдены</target>
+      </trans-unit>
+      <trans-unit id="models.selectModelTableMessage">
+        <source xml:lang="en">Select table</source>
+        <target state="translated">Выберите таблицу</target>
+      </trans-unit>
+      <trans-unit id="models.selectModelDatabaseMessage">
+        <source xml:lang="en">Select Database</source>
+        <target state="translated">Выберите базу данных</target>
+      </trans-unit>
+      <trans-unit id="models.azureModelsListEmptyTitle">
+        <source xml:lang="en">No models found</source>
+        <target state="translated">Модели не найдены.</target>
+      </trans-unit>
+      <trans-unit id="models.azureModelsListEmptyDescription">
+        <source xml:lang="en">Select another Azure ML workspace</source>
+        <target state="translated">Выберите другую рабочую область Azure ML</target>
+      </trans-unit>
+      <trans-unit id="models.modelsListEmptyDescription">
+        <source xml:lang="en">Select another database or table</source>
+        <target state="translated">Выберите другую базу данных или таблицу</target>
+      </trans-unit>
+      <trans-unit id="databaseName">
+        <source xml:lang="en">Database</source>
+        <target state="translated">База данных</target>
+      </trans-unit>
+      <trans-unit id="databaseToStoreInfo">
+        <source xml:lang="en">Select a database to store the new model.</source>
+        <target state="translated">Выберите базу данных, в которой будет хранится новая модель.</target>
+      </trans-unit>
+      <trans-unit id="tableToStoreInfo">
+        <source xml:lang="en">Select an existing table that conforms the model schema or create a new one to store the imported model.</source>
+        <target state="translated">Выберите существующую таблицу, соответствующую схеме модели, или создайте новую, чтобы сохранить импортированную модель.</target>
+      </trans-unit>
+      <trans-unit id="tableName">
+        <source xml:lang="en">Table</source>
+        <target state="translated">Таблица</target>
+      </trans-unit>
+      <trans-unit id="modelTableInfo">
+        <source xml:lang="en">Select a model table to view the list of existing / imported models.</source>
+        <target state="translated">Выберите таблицу моделей, чтобы просмотреть список существующих или импортированных моделей.</target>
+      </trans-unit>
+      <trans-unit id="modelDatabaseInfo">
+        <source xml:lang="en">Select a database where existing / imported models are stored.</source>
+        <target state="translated">Выберите базу данных, в которой хранятся существующие или импортированные модели.</target>
+      </trans-unit>
+      <trans-unit id="existingTableName">
+        <source xml:lang="en">Existing table</source>
+        <target state="translated">Существующая таблица</target>
+      </trans-unit>
+      <trans-unit id="newTableName">
+        <source xml:lang="en">New table</source>
+        <target state="translated">Создать таблицу</target>
+      </trans-unit>
+      <trans-unit id="models.name">
+        <source xml:lang="en">Name</source>
+        <target state="translated">Имя</target>
+      </trans-unit>
+      <trans-unit id="models.fileName">
+        <source xml:lang="en">File</source>
+        <target state="translated">Файл</target>
+      </trans-unit>
+      <trans-unit id="models.description">
+        <source xml:lang="en">Description</source>
+        <target state="translated">Описание</target>
+      </trans-unit>
+      <trans-unit id="models.created">
+        <source xml:lang="en">Date created</source>
+        <target state="translated">Дата создания</target>
+      </trans-unit>
+      <trans-unit id="models.imported">
+        <source xml:lang="en">Date imported</source>
+        <target state="translated">Дата импорта</target>
+      </trans-unit>
+      <trans-unit id="models.framework">
+        <source xml:lang="en">Framework</source>
+        <target state="translated">Платформа</target>
+      </trans-unit>
+      <trans-unit id="models.frameworkVersion">
+        <source xml:lang="en">Framework version</source>
+        <target state="translated">Версия платформы</target>
+      </trans-unit>
+      <trans-unit id="models.version">
+        <source xml:lang="en">Version</source>
+        <target state="translated">Версия</target>
+      </trans-unit>
+      <trans-unit id="models.browseButton">
+        <source xml:lang="en">...</source>
+        <target state="new">...</target>
+      </trans-unit>
+      <trans-unit id="models.azureAccount">
+        <source xml:lang="en">Azure account</source>
+        <target state="translated">Учетная запись Azure</target>
+      </trans-unit>
+      <trans-unit id="models.azureSignIn">
+        <source xml:lang="en">Azure sign in or refresh account</source>
+        <target state="translated">Учетная запись входа или обновления Azure</target>
+      </trans-unit>
+      <trans-unit id="predict.columnDatabase">
+        <source xml:lang="en">Source database</source>
+        <target state="translated">База данных-источник</target>
+      </trans-unit>
+      <trans-unit id="predict.columnDatabaseInfo">
+        <source xml:lang="en">Select the database containing the dataset to apply the prediction.</source>
+        <target state="translated">Выберите базу данных, содержащую набор данных для применения прогноза.</target>
+      </trans-unit>
+      <trans-unit id="predict.columnTable">
+        <source xml:lang="en">Source table</source>
+        <target state="translated">Исходная таблица</target>
+      </trans-unit>
+      <trans-unit id="predict.columnTableInfo">
+        <source xml:lang="en">Select the table containing the dataset to apply the prediction.</source>
+        <target state="translated">Выберите таблицу, содержащую набор данных для применения прогноза.</target>
+      </trans-unit>
+      <trans-unit id="predict.inputColumns">
+        <source xml:lang="en">Model Input mapping</source>
+        <target state="translated">Сопоставление входных данных модели</target>
+      </trans-unit>
+      <trans-unit id="predict.outputColumns">
+        <source xml:lang="en">Model output</source>
+        <target state="translated">Выходные данные модели</target>
+      </trans-unit>
+      <trans-unit id="predict.columnName">
+        <source xml:lang="en">Source columns</source>
+        <target state="translated">Исходные столбцы</target>
+      </trans-unit>
+      <trans-unit id="predict.dataTypeName">
+        <source xml:lang="en">Type</source>
+        <target state="translated">Тип</target>
+      </trans-unit>
+      <trans-unit id="predict.displayName">
+        <source xml:lang="en">Display  name</source>
+        <target state="translated">Отображаемое имя</target>
+      </trans-unit>
+      <trans-unit id="predict.inputName">
+        <source xml:lang="en">Model input</source>
+        <target state="translated">Входные данные модели</target>
+      </trans-unit>
+      <trans-unit id="predict.selectColumnTitle">
+        <source xml:lang="en">Select column...</source>
+        <target state="translated">Выбрать столбец...</target>
+      </trans-unit>
+      <trans-unit id="models.selectModelDatabaseTitle">
+        <source xml:lang="en">Select database with models</source>
+        <target state="translated">Выберите базу данных с моделями</target>
+      </trans-unit>
+      <trans-unit id="models.selectModelTableTitle">
+        <source xml:lang="en">Select tables with models</source>
+        <target state="translated">Выбор таблиц с моделями</target>
+      </trans-unit>
+      <trans-unit id="predict.selectDatabaseTitle">
+        <source xml:lang="en">Select database</source>
+        <target state="translated">Выберите базу данных</target>
+      </trans-unit>
+      <trans-unit id="predict.selectTableTitle">
+        <source xml:lang="en">Select table</source>
+        <target state="translated">Выберите таблицу</target>
+      </trans-unit>
+      <trans-unit id="predict.outputName">
+        <source xml:lang="en">Name</source>
+        <target state="translated">Имя</target>
+      </trans-unit>
+      <trans-unit id="models.azureSubscription">
+        <source xml:lang="en">Azure subscription</source>
+        <target state="translated">Подписка Azure</target>
+      </trans-unit>
+      <trans-unit id="models.azureGroup">
+        <source xml:lang="en">Resource group</source>
+        <target state="translated">Группа ресурсов</target>
+      </trans-unit>
+      <trans-unit id="models.azureModelWorkspace">
+        <source xml:lang="en">Azure ML workspace</source>
+        <target state="translated">Рабочая область машинного обучения Azure</target>
+      </trans-unit>
+      <trans-unit id="models.azureModelFilter">
+        <source xml:lang="en">Filter</source>
+        <target state="translated">Фильтр</target>
+      </trans-unit>
+      <trans-unit id="models.azureModels">
+        <source xml:lang="en">Models</source>
+        <target state="translated">Модели</target>
+      </trans-unit>
+      <trans-unit id="models.azureModelsTitle">
+        <source xml:lang="en">Azure models</source>
+        <target state="translated">Модели Azure</target>
+      </trans-unit>
+      <trans-unit id="models.localModelsTitle">
+        <source xml:lang="en">Local models</source>
+        <target state="translated">Локальные модели</target>
+      </trans-unit>
+      <trans-unit id="models.modelSourcesTitle">
+        <source xml:lang="en">Source location</source>
+        <target state="translated">Исходное расположение</target>
+      </trans-unit>
+      <trans-unit id="models.modelSourcePageTitle">
+        <source xml:lang="en">Select model source type</source>
+        <target state="translated">Выберите тип источника модели</target>
+      </trans-unit>
+      <trans-unit id="models.localModelSourceDescriptionForImport">
+        <source xml:lang="en">‘File Upload’ is selected. This allows you to import a model file from your local machine into a model database in this SQL instance. Click ‘Next’ to continue.​</source>
+        <target state="translated">Выбрано "Отправка файла". Это позволяет импортировать файл модели с локального компьютера в базу данных модели в этом экземпляре SQL. Нажмите "Далее", чтобы продолжить.​</target>
+      </trans-unit>
+      <trans-unit id="models.azureModelSourceDescriptionForImport">
+        <source xml:lang="en">‘Azure Machine Learning’ is selected. This allows you to import models stored in Azure Machine Learning workspaces in a model database in this SQL instance. Click ‘Next’ to continue.​​</source>
+        <target state="translated">Выбрано "Машинное обучение Azure". С его помощью вы можете импортировать модели, хранящиеся в рабочих областях "Машинного обучения Azure" в базе данных модели в этом экземпляре SQL. Нажмите кнопку "Далее", чтобы продолжить.​​</target>
+      </trans-unit>
+      <trans-unit id="models.localModelSourceDescriptionForPredict">
+        <source xml:lang="en">‘File Upload’ is selected. This allows you to upload a model file from your local machine.  Click ‘Next’ to continue.​​</source>
+        <target state="translated">Выбрано "Отправка файла". Это позволит отправить файл модели с локального компьютера. Нажмите "Далее", чтобы продолжить.​​</target>
+      </trans-unit>
+      <trans-unit id="models.importedModelSourceDescriptionForPredict">
+        <source xml:lang="en">‘Imported Models’ is selected. This allows you to choose from models stored in a model table in your database.  Click ‘Next’ to continue.​</source>
+        <target state="translated">Выбрано "Импортированные модели". Это позволяет выбирать из моделей, хранящихся в таблице моделей из базы данных. Нажмите "Далее", чтобы продолжить.​</target>
+      </trans-unit>
+      <trans-unit id="models.azureModelSourceDescriptionForPredict">
+        <source xml:lang="en">‘Azure Machine Learning’ is selected. This allows you to choose from models stored in Azure Machine Learning workspaces. Click ‘Next’ to continue.​</source>
+        <target state="translated">Выбрано "Машинное обучение Azure". С его помощью вы можете выбрать модели, хранящиеся в рабочих областях "Машинного обучения Azure". Нажмите кнопку "Далее", чтобы продолжить.​</target>
+      </trans-unit>
+      <trans-unit id="models.modelImportTargetPageTitle">
+        <source xml:lang="en">Select or enter the location to import the models to</source>
+        <target state="translated">Выберите или введите расположение для импорта моделей в</target>
+      </trans-unit>
+      <trans-unit id="models.columnSelectionPageTitle">
+        <source xml:lang="en">Map source data to model</source>
+        <target state="translated">Сопоставление исходных данных с моделью</target>
+      </trans-unit>
+      <trans-unit id="models.modelDetailsPageTitle">
+        <source xml:lang="en">Enter model details</source>
+        <target state="translated">Введите сведения о модели</target>
+      </trans-unit>
+      <trans-unit id="models.modelLocalSourceTitle">
+        <source xml:lang="en">Source files</source>
+        <target state="translated">Исходные файлы</target>
+      </trans-unit>
+      <trans-unit id="models.modelLocalSourceTooltip">
+        <source xml:lang="en">File paths of the models to import</source>
+        <target state="translated">Пути к файлам моделей для импорта</target>
+      </trans-unit>
+      <trans-unit id="models.onnxNotSupportedError">
+        <source xml:lang="en">ONNX runtime is not supported in current server</source>
+        <target state="translated">Среда выполнения ONNX не поддерживается на текущем сервере</target>
+      </trans-unit>
+      <trans-unit id="models.currentModelsTitle">
+        <source xml:lang="en">Models</source>
+        <target state="translated">Модели</target>
+      </trans-unit>
+      <trans-unit id="models.importModelDoneButton">
+        <source xml:lang="en">Import</source>
+        <target state="translated">Импортировать</target>
+      </trans-unit>
+      <trans-unit id="models.predictModel">
+        <source xml:lang="en">Predict</source>
+        <target state="translated">Прогноз</target>
+      </trans-unit>
+      <trans-unit id="models.RegisterWizard">
+        <source xml:lang="en">Import models</source>
+        <target state="translated">Модели импорта</target>
+      </trans-unit>
+      <trans-unit id="models.viewImportModelsTitle">
+        <source xml:lang="en">View and import models</source>
+        <target state="translated">Просмотр и импорт моделей</target>
+      </trans-unit>
+      <trans-unit id="models.viewImportModelsDesc">
+        <source xml:lang="en">Machine Learning models can be stored in one or more databases and tables. Select the model database and table to view the models within them.</source>
+        <target state="translated">Модели машинного обучения можно хранить в одной или нескольких базах данных и таблицах. Выберите базу данных модели и таблицу для просмотра моделей в них.</target>
+      </trans-unit>
+      <trans-unit id="models.viewImportModeledForPredictDesc">
+        <source xml:lang="en">The models are stored in one or more databases and tables. Select the model database and table to view models in them.</source>
+        <target state="translated">Модели хранятся в одной или нескольких базах данных и таблицах. Выберите базу данных модели и таблицу для просмотра моделей в них.</target>
+      </trans-unit>
+      <trans-unit id="models.learnMoreLink">
+        <source xml:lang="en">Learn more.</source>
+        <target state="translated">Дополнительные сведения.</target>
+      </trans-unit>
+      <trans-unit id="models.importModelTitle">
+        <source xml:lang="en">Import or view models</source>
+        <target state="translated">Импорт и просмотр моделей</target>
+      </trans-unit>
+      <trans-unit id="models.editModelTitle">
+        <source xml:lang="en">Edit model</source>
+        <target state="translated">Изменить модель</target>
+      </trans-unit>
+      <trans-unit id="models.importModelDesc">
+        <source xml:lang="en">Import or view machine learning models stored in database</source>
+        <target state="translated">Импорт или просмотр моделей машинного обучения, хранящихся в базе данных</target>
+      </trans-unit>
+      <trans-unit id="models.makePredictionTitle">
+        <source xml:lang="en">Make predictions</source>
+        <target state="translated">Создать прогнозы</target>
+      </trans-unit>
+      <trans-unit id="models.makePredictionDesc">
+        <source xml:lang="en">Generate a predicted value or scores using a managed model</source>
+        <target state="translated">Создание прогнозного значения или оценок с помощью управляемой модели</target>
+      </trans-unit>
+      <trans-unit id="models.createNotebookTitle">
+        <source xml:lang="en">Create notebook</source>
+        <target state="translated">Создать записную книжку</target>
+      </trans-unit>
+      <trans-unit id="models.createNotebookDesc">
+        <source xml:lang="en">Run experiments and create models in a notebook</source>
+        <target state="translated">Запуск экспериментов и создание моделей в записной книжке</target>
+      </trans-unit>
+      <trans-unit id="models.modelRegisteredSuccessfully">
+        <source xml:lang="en">Model registered successfully</source>
+        <target state="translated">Модель зарегистрирована</target>
+      </trans-unit>
+      <trans-unit id="models.modelUpdatedSuccessfully">
+        <source xml:lang="en">Model updated successfully</source>
+        <target state="translated">Модель обновлена</target>
+      </trans-unit>
+      <trans-unit id="models.modelFailedToRegistered">
+        <source xml:lang="en">Model failed to register</source>
+        <target state="translated">Не удалось зарегистрировать модель</target>
+      </trans-unit>
+      <trans-unit id="models.localModelSource">
+        <source xml:lang="en">File upload</source>
+        <target state="translated">Отправка файла</target>
+      </trans-unit>
+      <trans-unit id="models.localModelPageTitle">
+        <source xml:lang="en">Upload model file</source>
+        <target state="translated">Отправка файла модели</target>
+      </trans-unit>
+      <trans-unit id="models.azureModelSource">
+        <source xml:lang="en">Azure Machine Learning</source>
+        <target state="translated">Машинное обучение Azure</target>
+      </trans-unit>
+      <trans-unit id="models.azureModelPageTitle">
+        <source xml:lang="en">Import from Azure Machine Learning</source>
+        <target state="translated">Импорт из "Машинного обучения Azure"</target>
+      </trans-unit>
+      <trans-unit id="models.importedModelsPageTitle">
+        <source xml:lang="en">Select imported model</source>
+        <target state="translated">Выбор импортированной модели</target>
+      </trans-unit>
+      <trans-unit id="models.registeredModelsSource">
+        <source xml:lang="en">Imported models</source>
+        <target state="translated">Импортированные модели</target>
+      </trans-unit>
+      <trans-unit id="models.downloadModelMsgTaskName">
+        <source xml:lang="en">Downloading Model from Azure</source>
+        <target state="translated">Скачивание модели из Azure</target>
+      </trans-unit>
+      <trans-unit id="models.invalidAzureResourceError">
+        <source xml:lang="en">Invalid Azure resource</source>
+        <target state="translated">Недопустимый ресурс Azure</target>
+      </trans-unit>
+      <trans-unit id="models.invalidModelToRegisterError">
+        <source xml:lang="en">Invalid model to register</source>
+        <target state="translated">Недопустимая модель для регистрации</target>
+      </trans-unit>
+      <trans-unit id="models.invalidModelToPredictError">
+        <source xml:lang="en">Invalid model to predict</source>
+        <target state="translated">Недопустимая модель для прогнозирования</target>
+      </trans-unit>
+      <trans-unit id="models.invalidModelParametersError">
+        <source xml:lang="en">Please select valid source table and model parameters</source>
+        <target state="translated">Выберите допустимые параметры исходной таблицы и модели</target>
+      </trans-unit>
+      <trans-unit id="models.invalidModelToSelectError">
+        <source xml:lang="en">Please select a valid model</source>
+        <target state="translated">Выберите допустимую модель</target>
+      </trans-unit>
+      <trans-unit id="models.invalidModelImportTargetError">
+        <source xml:lang="en">Please select a valid table</source>
+        <target state="translated">Выберите допустимую таблицу</target>
+      </trans-unit>
+      <trans-unit id="models.columnDataTypeMismatchWarningHelper">
+        <source xml:lang="en">Click to review warning details</source>
+        <target state="translated">Щелкните, чтобы просмотреть подробности предупреждения</target>
+      </trans-unit>
+      <trans-unit id="models.columnDataTypeMismatchWarningHeading">
+        <source xml:lang="en">Differences in data type</source>
+        <target state="translated">Различия в типе данных</target>
+      </trans-unit>
+      <trans-unit id="models.columnDataTypeMismatchWarning">
+        <source xml:lang="en">The data type of the source table column does not match the required input field’s type.</source>
+        <target state="translated">Тип данных столбца исходной таблицы не совпадает с требуемым типом поля ввода.</target>
+      </trans-unit>
+      <trans-unit id="models.outputColumnDataTypeNotSupportedWarning">
+        <source xml:lang="en">The data type of output column does not match the output field’s type.</source>
+        <target state="translated">Тип данных выходного столбца не соответствует типу поля выходных данных.</target>
+      </trans-unit>
+      <trans-unit id="models.modelNameRequiredError">
+        <source xml:lang="en">Model name is required.</source>
+        <target state="translated">Требуется указать имя модели.</target>
+      </trans-unit>
+      <trans-unit id="models.modelsRequiredError">
+        <source xml:lang="en">Please select at least one model to import.</source>
+        <target state="translated">Выберите хотя бы одну модель для импорта.</target>
+      </trans-unit>
+      <trans-unit id="models.updateModelFailedError">
+        <source xml:lang="en">Failed to update the model</source>
+        <target state="translated">Не удалось обновить модель</target>
+      </trans-unit>
+      <trans-unit id="models.modelSchemaIsAcceptedMessage">
+        <source xml:lang="en">Table meets requirements!</source>
+        <target state="translated">Таблица соответствует требованиям!</target>
+      </trans-unit>
+      <trans-unit id="models.selectModelsTableMessage">
+        <source xml:lang="en">Select models table</source>
+        <target state="translated">Выберите таблицу моделей</target>
+      </trans-unit>
+      <trans-unit id="models.modelSchemaIsNotAcceptedMessage">
+        <source xml:lang="en">Invalid table structure!</source>
+        <target state="translated">Недопустимая структура таблицы!</target>
+      </trans-unit>
+      <trans-unit id="models.importModelFailedError">
+        <source xml:lang="en">Failed to register the model: {0} ,file: {1}</source>
+        <target state="translated">Не удалось зарегистрировать модель: {0}, файл: {1}</target>
+      </trans-unit>
+      <trans-unit id="models.invalidImportTableError">
+        <source xml:lang="en">Invalid table for importing models. database name: {0} ,table name: {1}</source>
+        <target state="translated">Недопустимая таблица для импорта моделей. Имя базы данных: {0}, имя таблицы: {1}</target>
+      </trans-unit>
+      <trans-unit id="models.invalidImportTableSchemaError">
+        <source xml:lang="en">Table schema is not supported for model import. Database name: {0}, table name: {1}.</source>
+        <target state="translated">Схема таблицы не поддерживается для импорта модели. Имя базы данных: {0}, имя таблицы: {1}.</target>
+      </trans-unit>
+      <trans-unit id="models.loadModelParameterFailedError">
+        <source xml:lang="en">Failed to load model parameters'</source>
+        <target state="translated">Не удалось загрузить параметры модели</target>
+      </trans-unit>
+      <trans-unit id="models.unsupportedModelParameterType">
+        <source xml:lang="en">unsupported</source>
+        <target state="translated">не поддерживается</target>
+      </trans-unit>
+      <trans-unit id="dashboardTitle">
+        <source xml:lang="en">Machine Learning</source>
+        <target state="translated">Машинное обучение</target>
+      </trans-unit>
+      <trans-unit id="dashboardDesc">
+        <source xml:lang="en">Machine Learning for SQL databases</source>
+        <target state="translated">Машинное обучение для баз данных SQL</target>
+      </trans-unit>
+      <trans-unit id="dashboardLinksTitle">
+        <source xml:lang="en">Useful links</source>
+        <target state="translated">Полезные ссылки</target>
+      </trans-unit>
+      <trans-unit id="dashboardVideoLinksTitle">
+        <source xml:lang="en">Video tutorials</source>
+        <target state="translated">Видеоучебники</target>
+      </trans-unit>
+      <trans-unit id="showMoreTitle">
+        <source xml:lang="en">Show more</source>
+        <target state="translated">Показать больше</target>
+      </trans-unit>
+      <trans-unit id="showLessTitle">
+        <source xml:lang="en">Show less</source>
+        <target state="translated">Показать меньше</target>
+      </trans-unit>
+      <trans-unit id="learnMoreTitle">
+        <source xml:lang="en">Learn more</source>
+        <target state="translated">Дополнительные сведения</target>
+      </trans-unit>
+      <trans-unit id="sqlMlDocTitle">
+        <source xml:lang="en">SQL machine learning documentation</source>
+        <target state="translated">Документация по машинному обучению SQL</target>
+      </trans-unit>
+      <trans-unit id="sqlMlExtDocTitle">
+        <source xml:lang="en">Machine Learning extension in Azure Data Studio</source>
+        <target state="translated">Расширение Машинного обучение в Azure Data Studio</target>
+      </trans-unit>
+      <trans-unit id="sqlMlExtDocDesc">
+        <source xml:lang="en">Learn how to use Machine Learning extension in Azure Data Studio, to manage packages, make predictions, and import models.</source>
+        <target state="translated">Узнайте, как использовать расширение Машинного обучения в Azure Data Studio, чтобы управлять пакетами, создавать прогнозы и импортировать модели.</target>
+      </trans-unit>
+      <trans-unit id="sqlMlDocDesc">
+        <source xml:lang="en">Learn how to use machine learning in SQL Server and SQL on Azure, to run Python and R scripts on relational data.</source>
+        <target state="translated">Узнайте, как использовать машинное обучение в SQL Server и SQL в Azure для выполнения сценариев Python и R для реляционных данных.</target>
+      </trans-unit>
+      <trans-unit id="sqlMlsDocTitle">
+        <source xml:lang="en">SQL Server Machine Learning Services (Python and R)</source>
+        <target state="translated">Службы машинного обучения SQL Server (Python и R)</target>
+      </trans-unit>
+      <trans-unit id="sqlMlsDocDesc">
+        <source xml:lang="en">Get started with Machine Learning Services on SQL Server and how to install it on Windows and Linux.</source>
+        <target state="translated">Начните работу со Службами машинного обучения на SQL Server и узнайте, как установить их в Windows и Linux.</target>
+      </trans-unit>
+      <trans-unit id="sqlMlsMIDocTitle">
+        <source xml:lang="en">Machine Learning Services in Azure SQL Managed Instance</source>
+        <target state="translated">Службы машинного обучения в управляемом экземпляре SQL Azure</target>
+      </trans-unit>
+      <trans-unit id="sqlMlsMIDocDesc">
+        <source xml:lang="en">Get started with Machine Learning Services in Azure SQL Managed Instances.</source>
+        <target state="translated">Начните работу со Службами машинного обучения в управляемых экземплярах SQL Azure.</target>
+      </trans-unit>
+      <trans-unit id="mlsInstallObdcDocTitle">
+        <source xml:lang="en">Install the Microsoft ODBC driver for SQL Server</source>
+        <target state="translated">Установка Microsoft ODBC Driver for SQL Server</target>
+      </trans-unit>
+      <trans-unit id="mlsInstallOdbcDocDesc">
+        <source xml:lang="en">This document explains how to install the Microsoft ODBC Driver for SQL Server.</source>
+        <target state="translated">В этом документе объясняется, как установить Microsoft ODBC Driver for SQL Server.</target>
+      </trans-unit>
+      <trans-unit id="onnxOnEdgeOdbcDocTitle">
+        <source xml:lang="en">Machine learning and AI with ONNX in SQL Database Edge Preview</source>
+        <target state="translated">Машинное обучение и ИИ с ONNX в предварительной версии базы данных SQL для пограничных вычислений</target>
+      </trans-unit>
+      <trans-unit id="onnxOnEdgeOdbcDocDesc">
+        <source xml:lang="en">Get started with machine learning in Azure SQL Database Edge</source>
+        <target state="translated">Начало работы с машинным обучением в базе данных SQL Azure для пограничных вычислений</target>
+      </trans-unit>
+      <trans-unit id="ml.dataCount">
+        <source xml:lang="en">Showing {0} model(s)</source>
+        <target state="translated">Отображение моделей: {0}</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

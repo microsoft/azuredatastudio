@@ -17,17 +17,21 @@ export interface INotebookView {
 	readonly guid: string;
 	readonly onDeleted: Event<INotebookView>;
 
+	isNew: boolean;
 	cells: Readonly<ICellModel[]>;
 	hiddenCells: Readonly<ICellModel[]>;
+	displayedCells: Readonly<ICellModel[]>;
 	name: string;
 	initialize(): void;
 	nameAvailable(name: string): boolean;
 	getCellMetadata(cell: ICellModel): INotebookViewCell;
 	hideCell(cell: ICellModel): void;
 	moveCell(cell: ICellModel, x: number, y: number): void;
+	compactCells();
 	resizeCell(cell: ICellModel, width: number, height: number): void;
 	getCell(guid: string): Readonly<ICellModel>;
 	insertCell(cell: ICellModel): void;
+	markAsViewed(): void;
 	save(): void;
 	delete(): void;
 }

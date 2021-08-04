@@ -382,12 +382,9 @@ export abstract class Modal extends Disposable implements IThemable {
 	 * Set focusable elements in the modal dialog
 	 */
 	public setInitialFocusedElement() {
-		// Try to find focusable element in dialog pane rather than overall container. _modalBodySection contains items in the pane for a wizard.
-		// This ensures that we are setting the focus on a useful element in the form when possible.
-		const focusableElements = getFocusableElements(this._modalBodySection ?? this._bodyContainer!);
-
-		if (focusableElements && focusableElements.length > 0) {
-			(<HTMLElement>focusableElements[0]).focus();
+		const focusableElements = getFocusableElements(this._modalDialog!);
+		if (focusableElements?.length > 0) {
+			focusableElements[0].focus();
 		}
 	}
 
@@ -452,6 +449,7 @@ export abstract class Modal extends Disposable implements IThemable {
 			if (context[context.length - 1] === this._staticKey) {
 				let event = new StandardKeyboardEvent(e);
 				if (event.equals(KeyCode.Enter)) {
+					DOM.EventHelper.stop(e, true);
 					this.onAccept(event);
 				} else if (event.equals(KeyCode.Escape)) {
 					DOM.EventHelper.stop(e, true);
@@ -585,6 +583,11 @@ export abstract class Modal extends Disposable implements IThemable {
 			}
 			DOM.removeNode(this._messageDetail!);
 			this.messagesElementVisible = !!this._messageSummaryText;
+			// Read out the description to screen readers so they don't have to
+			// search around for the alert box to hear the extra information
+			if (description) {
+				alert(description);
+			}
 			this.updateExpandMessageState();
 		}
 	}

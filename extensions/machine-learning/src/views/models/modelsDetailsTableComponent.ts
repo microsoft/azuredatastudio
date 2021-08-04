@@ -28,7 +28,7 @@ export class ModelsDetailsTableComponent extends ModelViewBase implements IDataC
 	 */
 	public registerComponent(modelBuilder: azdata.ModelBuilder): azdata.Component {
 		this._table = modelBuilder.declarativeTable()
-			.withProperties<azdata.DeclarativeTableProperties>(
+			.withProps(
 				{
 					columns: [
 						{ // File Name

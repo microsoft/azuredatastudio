@@ -10,8 +10,8 @@ import * as utils from '../common/utils';
 
 import { Project } from '../models/project';
 import { SqlConnectionDataSource } from '../models/dataSources/sqlConnectionStringSource';
-import { IPublishSettings, IGenerateScriptSettings } from '../models/IPublishSettings';
-import { DeploymentOptions, SchemaObjectType } from '../../../mssql/src/mssql';
+import { IDeploySettings } from '../models/IDeploySettings';
+import { DeploymentOptions } from '../../../mssql/src/mssql';
 import { IconPathHelper } from '../common/iconHelper';
 import { cssStyles } from '../common/uiConstants';
 import { getConnectionName } from './utils';
@@ -46,8 +46,8 @@ export class PublishDatabaseDialog {
 
 	private toDispose: vscode.Disposable[] = [];
 
-	public publish: ((proj: Project, profile: IPublishSettings) => any) | undefined;
-	public generateScript: ((proj: Project, profile: IGenerateScriptSettings) => any) | undefined;
+	public publish: ((proj: Project, profile: IDeploySettings) => any) | undefined;
+	public generateScript: ((proj: Project, profile: IDeploySettings) => any) | undefined;
 	public readPublishProfile: ((profileUri: vscode.Uri) => any) | undefined;
 
 	constructor(private project: Project) {
@@ -182,10 +182,9 @@ export class PublishDatabaseDialog {
 	}
 
 	public async publishClick(): Promise<void> {
-		const settings: IPublishSettings = {
+		const settings: IDeploySettings = {
 			databaseName: this.getTargetDatabaseName(),
 			serverName: this.getServerName(),
-			upgradeExisting: true,
 			connectionUri: await this.getConnectionUri(),
 			sqlCmdVariables: this.getSqlCmdVariablesForPublish(),
 			deploymentOptions: await this.getDeploymentOptions(),
@@ -202,7 +201,7 @@ export class PublishDatabaseDialog {
 		TelemetryReporter.sendActionEvent(TelemetryViews.SqlProjectPublishDialog, TelemetryActions.generateScriptClicked);
 
 		const sqlCmdVars = this.getSqlCmdVariablesForPublish();
-		const settings: IGenerateScriptSettings = {
+		const settings: IDeploySettings = {
 			databaseName: this.getTargetDatabaseName(),
 			serverName: this.getServerName(),
 			connectionUri: await this.getConnectionUri(),
@@ -213,9 +212,7 @@ export class PublishDatabaseDialog {
 
 		utils.getAzdataApi()!.window.closeDialog(this.dialog);
 
-		if (this.generateScript) {
-			await this.generateScript!(this.project, settings);
-		}
+		await this.generateScript?.(this.project, settings);
 
 		this.dispose();
 	}
@@ -224,15 +221,8 @@ export class PublishDatabaseDialog {
 		// eventually, database options will be configurable in this dialog
 		// but for now, just send the default DacFx deployment options if no options were loaded from a publish profile
 		if (!this.deploymentOptions) {
-			this.deploymentOptions = await utils.GetDefaultDeploymentOptions();
-
-			// re-include database-scoped credentials
-			this.deploymentOptions.excludeObjectTypes = this.deploymentOptions.excludeObjectTypes.filter(x => x !== SchemaObjectType.DatabaseScopedCredentials);
-
-			// this option needs to be true for same database references validation to work
-			if (this.project.databaseReferences.length > 0) {
-				this.deploymentOptions.includeCompositeObjects = true;
-			}
+			// We only use the dialog in ADS context currently so safe to cast to the mssql DeploymentOptions here
+			this.deploymentOptions = await utils.getDefaultPublishDeploymentOptions(this.project) as DeploymentOptions;
 		}
 
 		return this.deploymentOptions;
@@ -368,7 +358,7 @@ export class PublishDatabaseDialog {
 			width: cssStyles.publishDialogTextboxWidth
 		}).component();
 
-		const profileLabel = view.modelBuilder.text().withProperties<azdataType.TextComponentProperties>({
+		const profileLabel = view.modelBuilder.text().withProps({
 			value: constants.profile,
 			width: cssStyles.publishDialogLabelWidth
 		}).component();
@@ -383,7 +373,7 @@ export class PublishDatabaseDialog {
 		this.targetConnectionTextBox = this.createTargetConnectionComponent(view);
 		const selectConnectionButton: azdataType.Component = this.createSelectConnectionButton(view);
 
-		const serverLabel = view.modelBuilder.text().withProperties<azdataType.TextComponentProperties>({
+		const serverLabel = view.modelBuilder.text().withProps({
 			value: constants.server,
 			requiredIndicator: true,
 			width: cssStyles.publishDialogLabelWidth
@@ -410,7 +400,7 @@ export class PublishDatabaseDialog {
 			this.tryEnableGenerateScriptAndOkButtons();
 		});
 
-		const databaseLabel = view.modelBuilder.text().withProperties<azdataType.TextComponentProperties>({
+		const databaseLabel = view.modelBuilder.text().withProps({
 			value: constants.databaseNameLabel,
 			requiredIndicator: true,
 			width: cssStyles.publishDialogLabelWidth
@@ -424,7 +414,7 @@ export class PublishDatabaseDialog {
 	private createSqlCmdTable(view: azdataType.ModelView): azdataType.DeclarativeTableComponent {
 		this.sqlCmdVars = { ...this.project.sqlCmdVariables };
 
-		const table = view.modelBuilder.declarativeTable().withProperties<azdataType.DeclarativeTableProperties>({
+		const table = view.modelBuilder.declarativeTable().withProps({
 			ariaLabel: constants.sqlCmdTableLabel,
 			dataValues: this.convertSqlCmdVarsToTableFormat(this.sqlCmdVars),
 			columns: [

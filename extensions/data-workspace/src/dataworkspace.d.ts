@@ -7,7 +7,8 @@ declare module 'dataworkspace' {
 	import * as azdata from 'azdata';
 	import * as vscode from 'vscode';
 	export const enum extension {
-		name = 'Microsoft.data-workspace'
+		name = 'Microsoft.data-workspace',
+		vscodeName = 'Microsoft.data-workspace-vscode'
 	}
 
 	/**
@@ -40,6 +41,13 @@ declare module 'dataworkspace' {
 		  * Verifies that a workspace is open or if it should be automatically created
 		  */
 		validateWorkspace(): Promise<boolean>;
+
+		/**
+		 * Opens the new project dialog with only the specified project type
+		 * @param projectType project type to open the dialog for
+		 * @returns the uri of the created the project or undefined if no project was created
+		 */
+		openSpecificProjectNewProjectDialog(projectType: IProjectType): Promise<vscode.Uri | undefined>;
 	}
 
 	/**

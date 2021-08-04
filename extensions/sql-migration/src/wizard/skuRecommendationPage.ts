@@ -4,11 +4,11 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
+import * as vscode from 'vscode';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
 import { MigrationStateModel, MigrationTargetType, StateChangeEvent } from '../models/stateMachine';
 import { AssessmentResultsDialog } from '../dialog/assessmentResults/assessmentResultsDialog';
 import * as constants from '../constants/strings';
-import * as vscode from 'vscode';
 import { EOL } from 'os';
 import { IconPath, IconPathHelper } from '../constants/iconPathHelper';
 import { WIZARD_INPUT_COMPONENT_WIDTH } from './wizardController';
@@ -46,6 +46,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	private _databaseSelectedHelperText!: azdata.TextComponent;
 	private assessmentGroupContainer!: azdata.FlexContainer;
 	private _targetContainer!: azdata.FlexContainer;
+	private _disposables: vscode.Disposable[] = [];
 
 	private _supportedProducts: Product[] = [
 		{
@@ -148,6 +149,11 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		this._rootContainer.addItem(this._assessmentComponent, { flex: '0 0 auto' });
 		this._rootContainer.addItem(this._formContainer.component(), { flex: '0 0 auto' });
 
+		this._disposables.push(this._view.onClosed(e => {
+			this._disposables.forEach(
+				d => { try { d.dispose(); } catch { } });
+		}));
+
 		await this._view.initializeModel(this._rootContainer);
 	}
 
@@ -209,12 +215,12 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			});
 		});
 
-		this._rbg.onSelectionChanged((value) => {
+		this._disposables.push(this._rbg.onSelectionChanged((value) => {
 			if (value) {
 				this.assessmentGroupContainer.display = 'inline';
 				this.changeTargetType(value.cardId);
 			}
-		});
+		}));
 
 		this._rbgLoader = this._view.modelBuilder.loadingComponent().withItem(
 			this._rbg
@@ -247,7 +253,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		let miDialog = new AssessmentResultsDialog('ownerUri', this.migrationStateModel, constants.ASSESSMENT_TILE(serverName), this, MigrationTargetType.SQLMI);
 		let vmDialog = new AssessmentResultsDialog('ownerUri', this.migrationStateModel, constants.ASSESSMENT_TILE(serverName), this, MigrationTargetType.SQLVM);
 
-		button.onDidClick(async (e) => {
+		this._disposables.push(button.onDidClick(async (e) => {
 			if (this._rbg.selectedCardId === MigrationTargetType.SQLVM) {
 				this._rbg.selectedCardId = MigrationTargetType.SQLVM;
 				await vmDialog.openDialog();
@@ -255,7 +261,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 				this._rbg.selectedCardId = MigrationTargetType.SQLMI;
 				await miDialog.openDialog();
 			}
-		});
+		}));
 
 		this._databaseSelectedHelperText = this._view.modelBuilder.text().withProps({
 			CSSStyles: {
@@ -296,7 +302,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			editable: true,
 			fireOnTextChange: true,
 		}).component();
-		this._managedInstanceSubscriptionDropdown.onValueChanged(async (value) => {
+		this._disposables.push(this._managedInstanceSubscriptionDropdown.onValueChanged(async (value) => {
 			const selectedIndex = findDropDownItemIndex(this._managedInstanceSubscriptionDropdown, value);
 			if (selectedIndex > -1) {
 				this.migrationStateModel._targetSubscription = this.migrationStateModel.getSubscription(selectedIndex);
@@ -304,7 +310,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 				this.migrationStateModel._sqlMigrationService = undefined!;
 				await this.populateLocationAndResourceGroupDropdown();
 			}
-		});
+		}));
 
 		const azureLocationLabel = this._view.modelBuilder.text().withProps({
 			value: constants.LOCATION,
@@ -320,13 +326,13 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			editable: true,
 			fireOnTextChange: true,
 		}).component();
-		this._azureLocationDropdown.onValueChanged(async (value) => {
+		this._disposables.push(this._azureLocationDropdown.onValueChanged(async (value) => {
 			const selectedIndex = findDropDownItemIndex(this._azureLocationDropdown, value);
 			if (selectedIndex > -1) {
 				this.migrationStateModel._location = this.migrationStateModel.getLocation(selectedIndex);
 				await this.populateResourceInstanceDropdown();
 			}
-		});
+		}));
 
 		const azureResourceGroupLabel = this._view.modelBuilder.text().withProps({
 			value: constants.RESOURCE_GROUP,
@@ -342,13 +348,13 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			editable: true,
 			fireOnTextChange: true,
 		}).component();
-		this._azureResourceGroupDropdown.onValueChanged(async (value) => {
+		this._disposables.push(this._azureResourceGroupDropdown.onValueChanged(async (value) => {
 			const selectedIndex = findDropDownItemIndex(this._azureResourceGroupDropdown, value);
 			if (selectedIndex > -1) {
 				this.migrationStateModel._resourceGroup = this.migrationStateModel.getAzureResourceGroup(selectedIndex);
 				await this.populateResourceInstanceDropdown();
 			}
-		});
+		}));
 		this._resourceDropdownLabel = this._view.modelBuilder.text().withProps({
 			value: constants.MANAGED_INSTANCE,
 			width: WIZARD_INPUT_COMPONENT_WIDTH,
@@ -364,7 +370,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			editable: true,
 			fireOnTextChange: true,
 		}).component();
-		this._resourceDropdown.onValueChanged(value => {
+		this._disposables.push(this._resourceDropdown.onValueChanged(value => {
 			const selectedIndex = findDropDownItemIndex(this._resourceDropdown, value);
 			if (selectedIndex > -1 &&
 				value !== constants.NO_MANAGED_INSTANCE_FOUND &&
@@ -376,7 +382,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 					this.migrationStateModel._targetServerInstance = this.migrationStateModel.getManagedInstance(selectedIndex);
 				}
 			}
-		});
+		}));
 
 		return this._view.modelBuilder.flexContainer().withItems(
 			[
@@ -403,13 +409,13 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	private changeTargetType(newTargetType: string) {
 		if (newTargetType === MigrationTargetType.SQLMI) {
 			this._viewAssessmentsHelperText.value = constants.SKU_RECOMMENDATION_VIEW_ASSESSMENT_MI;
-			this._databaseSelectedHelperText.value = constants.TOTAL_DATABASES_SELECTED(this.migrationStateModel._miDbs.length, this.migrationStateModel._serverDatabases.length);
+			this._databaseSelectedHelperText.value = constants.TOTAL_DATABASES_SELECTED(this.migrationStateModel._miDbs.length, this.migrationStateModel._databaseAssessment.length);
 			this.migrationStateModel._targetType = MigrationTargetType.SQLMI;
 			this._azureSubscriptionText.value = constants.SELECT_AZURE_MI;
 			this.migrationStateModel._migrationDbs = this.migrationStateModel._miDbs;
 		} else {
 			this._viewAssessmentsHelperText.value = constants.SKU_RECOMMENDATION_VIEW_ASSESSMENT_VM;
-			this._databaseSelectedHelperText.value = constants.TOTAL_DATABASES_SELECTED(this.migrationStateModel._vmDbs.length, this.migrationStateModel._serverDatabases.length);
+			this._databaseSelectedHelperText.value = constants.TOTAL_DATABASES_SELECTED(this.migrationStateModel._vmDbs.length, this.migrationStateModel._databaseAssessment.length);
 			this.migrationStateModel._targetType = MigrationTargetType.SQLVM;
 			this._azureSubscriptionText.value = constants.SELECT_AZURE_VM;
 			this.migrationStateModel._migrationDbs = this.migrationStateModel._vmDbs;
@@ -424,7 +430,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		const serverName = (await this.migrationStateModel.getSourceConnectionProfile()).serverName;
 		this._igComponent.value = constants.ASSESSMENT_COMPLETED(serverName);
 		try {
-			await this.migrationStateModel.getServerAssessments();
+			await this.migrationStateModel.getDatabaseAssessments();
 			this._detailsComponent.value = constants.SKU_RECOMMENDATION_ALL_SUCCESSFUL(this.migrationStateModel._assessmentResults.databaseAssessments.length);
 		} catch (e) {
 			console.log(e);
@@ -487,7 +493,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	}
 
 
-	public async onPageEnter(): Promise<void> {
+	public async onPageEnter(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
 		this.wizard.registerNavigationValidator((pageChangeInfo) => {
 			const errors: string[] = [];
 			this.wizard.message = {
@@ -546,7 +552,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		this.wizard.nextButton.enabled = true;
 	}
 
-	public async onPageLeave(): Promise<void> {
+	public async onPageLeave(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
 		this.eventListener?.dispose();
 		this.wizard.message = {
 			text: '',

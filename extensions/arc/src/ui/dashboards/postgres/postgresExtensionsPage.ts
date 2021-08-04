@@ -5,7 +5,7 @@
 
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
-import * as azdataExt from 'azdata-ext';
+import * as azExt from 'az-ext';
 import * as loc from '../../../localizedConstants';
 import { IconPathHelper, cssStyles } from '../../../constants';
 import { DashboardPage } from '../../components/dashboardPage';
@@ -22,11 +22,11 @@ export class PostgresExtensionsPage extends DashboardPage {
 	private dropExtensionsButton!: azdata.ButtonComponent;
 	private extensionsLink!: azdata.HyperlinkComponent;
 
-	private readonly _azdataApi: azdataExt.IExtension;
+	private readonly _azApi: azExt.IExtension;
 
 	constructor(modelView: azdata.ModelView, dashboard: azdata.window.ModelViewDashboard, private _postgresModel: PostgresModel) {
 		super(modelView, dashboard);
-		this._azdataApi = vscode.extensions.getExtension(azdataExt.extension.name)?.exports;
+		this._azApi = vscode.extensions.getExtension(azExt.extension.name)?.exports;
 
 		this.disposables.push(
 			this._postgresModel.onConfigUpdated(() => this.eventuallyRunOnInitialized(() => this.handleConfigUpdated())));
@@ -114,15 +114,15 @@ export class PostgresExtensionsPage extends DashboardPage {
 	protected get toolbarContainer(): azdata.ToolbarContainer {
 		// Add extensions
 		this.addExtensionsButton = this.modelView.modelBuilder.button().withProps({
-			label: loc.addExtensions,
-			ariaLabel: loc.addExtensions,
+			label: loc.loadExtensions,
+			ariaLabel: loc.loadExtensions,
 			iconPath: IconPathHelper.add
 		}).component();
 
 		this.disposables.push(
 			this.addExtensionsButton.onDidClick(async () => {
 				const addExtDialog = new AddPGExtensionsDialog(this._postgresModel);
-				addExtDialog.showDialog(loc.addExtensions);
+				addExtDialog.showDialog(loc.loadExtensions);
 
 				let extArg = await addExtDialog.waitForClose();
 				if (extArg) {
@@ -138,12 +138,13 @@ export class PostgresExtensionsPage extends DashboardPage {
 							},
 							async (_progress, _token): Promise<void> => {
 
-								await this._azdataApi.azdata.arc.postgres.server.edit(
+								await this._azApi.az.postgres.arcserver.edit(
 									this._postgresModel.info.name,
 									{
 										extensions: extensionList
 									},
-									this._postgresModel.controllerModel.azdataAdditionalEnvVars);
+									this._postgresModel.controllerModel.info.namespace,
+									this._postgresModel.controllerModel.azAdditionalEnvVars);
 
 								try {
 									await this._postgresModel.refresh();
@@ -165,9 +166,9 @@ export class PostgresExtensionsPage extends DashboardPage {
 
 		// Drop extensions
 		this.dropExtensionsButton = this.modelView.modelBuilder.button().withProps({
-			label: loc.dropExtensions,
-			ariaLabel: loc.addExtensions,
-			iconPath: IconPathHelper.add,
+			label: loc.unloadExtensions,
+			ariaLabel: loc.unloadExtensions,
+			iconPath: IconPathHelper.delete,
 			enabled: false
 		}).component();
 
@@ -202,12 +203,18 @@ export class PostgresExtensionsPage extends DashboardPage {
 
 	private refreshExtensionsTable(): void {
 		let extensions = this._postgresModel.config!.spec.engine.extensions;
-		let extensionBasicData = extensions.map(e => {
-			this.extensionNames.push(e.name);
-			return [this.createDropCheckBox(e.name), e.name];
-		});
-
 		let extenesionFinalData: azdata.DeclarativeTableCellValue[][] = [];
+		let extensionBasicData: (string | azdata.CheckBoxComponent | azdata.ImageComponent)[][] = [];
+
+		if (extensions) {
+			extensionBasicData = extensions.map(e => {
+				this.extensionNames.push(e.name);
+				return [this.createDropCheckBox(e.name), e.name];
+			});
+		} else {
+			extensionBasicData = [[this.modelView.modelBuilder.image().component(), loc.noExtensions]];
+		}
+
 		extenesionFinalData = extensionBasicData.map(e => {
 			return e.map((value): azdata.DeclarativeTableCellValue => {
 				return { value: value };
@@ -225,14 +232,19 @@ export class PostgresExtensionsPage extends DashboardPage {
 	public createDropCheckBox(name: string): azdata.CheckBoxComponent {
 		// Can select extensions to drop
 		let checkBox = this.modelView.modelBuilder.checkBox().withProps({
-			ariaLabel: loc.dropExtensions,
+			ariaLabel: loc.unloadExtensions,
 			CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
 		}).component();
+
+		if (name === 'citus') {
+			checkBox.enabled = false;
+		}
 
 		this.disposables.push(
 			checkBox.onChanged(() => {
 				if (checkBox.checked) {
 					this.droppedExtensions.push(name);
+					this.dropExtensionsButton.focus();
 				} else {
 					let index = this.droppedExtensions.indexOf(name, 0);
 					this.droppedExtensions.splice(index, 1);
@@ -249,7 +261,7 @@ export class PostgresExtensionsPage extends DashboardPage {
 	 */
 	public async dropExtension(): Promise<void> {
 		this.droppedExtensions.forEach(d => {
-			let index = this.droppedExtensions.indexOf(d, 0);
+			let index = this.extensionNames.indexOf(d, 0);
 			this.extensionNames.splice(index, 1);
 		});
 
@@ -260,12 +272,13 @@ export class PostgresExtensionsPage extends DashboardPage {
 				cancellable: false
 			},
 			async (_progress, _token): Promise<void> => {
-				await this._azdataApi.azdata.arc.postgres.server.edit(
+				await this._azApi.az.postgres.arcserver.edit(
 					this._postgresModel.info.name,
 					{
 						extensions: this.extensionNames.join()
 					},
-					this._postgresModel.controllerModel.azdataAdditionalEnvVars
+					this._postgresModel.controllerModel.info.namespace,
+					this._postgresModel.controllerModel.azAdditionalEnvVars
 				);
 			}
 		);
@@ -277,6 +290,7 @@ export class PostgresExtensionsPage extends DashboardPage {
 			this.extensionsLink.url = `https://www.postgresql.org/docs/${this._postgresModel.engineVersion}/external-extensions.html`;
 			this.extensionNames = [];
 			this.refreshExtensionsTable();
+			this.addExtensionsButton.focus();
 		}
 	}
 }

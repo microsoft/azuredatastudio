@@ -125,7 +125,7 @@ export class ColumnsTable extends ModelViewBase implements IDataComponent<Predic
 		}
 		this._table = modelBuilder.declarativeTable()
 
-			.withProperties<azdata.DeclarativeTableProperties>(
+			.withProps(
 				{
 					columns: columnHeader,
 					data: [],

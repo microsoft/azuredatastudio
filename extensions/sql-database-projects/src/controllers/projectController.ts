@@ -20,7 +20,7 @@ import { PublishDatabaseDialog } from '../dialogs/publishDatabaseDialog';
 import { Project, reservedProjectFolders, FileProjectEntry, SqlProjectReferenceProjectEntry, IDatabaseReferenceProjectEntry } from '../models/project';
 import { SqlDatabaseProjectTreeViewProvider } from './databaseProjectTreeViewProvider';
 import { FolderNode, FileNode } from '../models/tree/fileFolderTreeItem';
-import { IPublishSettings, IGenerateScriptSettings } from '../models/IPublishSettings';
+import { IDeploySettings } from '../models/IDeploySettings';
 import { BaseProjectTreeItem } from '../models/tree/baseTreeItem';
 import { ProjectRootTreeItem } from '../models/tree/projectTreeItem';
 import { ImportDataModel } from '../models/api/import';
@@ -38,6 +38,19 @@ import { launchPublishDatabaseQuickpick } from '../dialogs/publishDatabaseQuickp
 import { SqlTargetPlatform } from 'sqldbproj';
 
 const maxTableLength = 10;
+
+/**
+ * This is a duplicate of the TaskExecutionMode from azdata.d.ts/vscode-mssql.d.ts, which is needed
+ * for using when running in VS Code since we don't have an actual implementation of the enum at runtime
+ * (unlike azdata which is injected by the extension host). Even specifying it as a const enum in the
+ * typings file currently doesn't work as the TypeScript compiler doesn't currently inline const enum
+ * values imported as "import type" https://github.com/microsoft/TypeScript/issues/40344
+ */
+export enum TaskExecutionMode {
+	execute = 0,
+	script = 1,
+	executeAndScript = 2
+}
 
 /**
  * Controller for managing lifecycle of projects
@@ -244,26 +257,31 @@ export class ProjectsController {
 		if (utils.getAzdataApi()) {
 			let publishDatabaseDialog = this.getPublishDialog(project);
 
-			publishDatabaseDialog.publish = async (proj, prof) => this.publishProjectCallback(proj, prof);
-			publishDatabaseDialog.generateScript = async (proj, prof) => this.publishProjectCallback(proj, prof);
+			publishDatabaseDialog.publish = async (proj, prof) => this.publishOrScriptProject(proj, prof, true);
+			publishDatabaseDialog.generateScript = async (proj, prof) => this.publishOrScriptProject(proj, prof, false);
 			publishDatabaseDialog.readPublishProfile = async (profileUri) => readPublishProfile(profileUri);
 
 			publishDatabaseDialog.openDialog();
 
 			return publishDatabaseDialog;
 		} else {
-			launchPublishDatabaseQuickpick(project);
+			launchPublishDatabaseQuickpick(project, this);
 			return undefined;
 		}
 	}
 
-	public async publishProjectCallback(project: Project, settings: IPublishSettings | IGenerateScriptSettings): Promise<mssql.DacFxResult | undefined> {
+	/**
+	 * Builds and either deploys or generates a deployment script for the specified project.
+	 * @param project The project to deploy
+	 * @param settings The settings used to configure the deployment
+	 * @param publish Whether to publish the deployment or just generate a script
+	 * @returns The DacFx result of the deployment
+	 */
+	public async publishOrScriptProject(project: Project, settings: IDeploySettings, publish: boolean): Promise<mssql.DacFxResult | undefined> {
 		const telemetryProps: Record<string, string> = {};
 		const telemetryMeasures: Record<string, number> = {};
 		const buildStartTime = new Date().getTime();
-
 		const dacpacPath = await this.buildProject(project);
-
 		const buildEndTime = new Date().getTime();
 		telemetryMeasures.buildDuration = buildEndTime - buildStartTime;
 		telemetryProps.buildSucceeded = (dacpacPath !== '').toString();
@@ -280,7 +298,6 @@ export class ProjectsController {
 		// copy dacpac to temp location before publishing
 		const tempPath = path.join(os.tmpdir(), `${path.parse(dacpacPath).name}_${new Date().getTime()}${constants.sqlprojExtension}`);
 		await fs.copyFile(dacpacPath, tempPath);
-
 		const dacFxService = await utils.getDacFxService();
 
 		let result: mssql.DacFxResult;
@@ -298,23 +315,22 @@ export class ProjectsController {
 
 		try {
 			const azdataApi = utils.getAzdataApi();
-			if ((<IPublishSettings>settings).upgradeExisting) {
+			if (publish) {
 				telemetryProps.publishAction = 'deploy';
 				if (azdataApi) {
-					result = await (dacFxService as mssql.IDacFxService).deployDacpac(tempPath, settings.databaseName, (<IPublishSettings>settings).upgradeExisting, settings.connectionUri, azdataApi.TaskExecutionMode.execute, settings.sqlCmdVariables, settings.deploymentOptions);
+					result = await (dacFxService as mssql.IDacFxService).deployDacpac(tempPath, settings.databaseName, true, settings.connectionUri, azdataApi.TaskExecutionMode.execute, settings.sqlCmdVariables, settings.deploymentOptions as mssql.DeploymentOptions);
 				} else {
-					// TODO@chgagnon Fix typing
-					result = await (dacFxService as mssqlVscode.IDacFxService).deployDacpac(tempPath, settings.databaseName, (<IPublishSettings>settings).upgradeExisting, settings.connectionUri, <mssqlVscode.TaskExecutionMode><any>azdataApi!.TaskExecutionMode.execute, settings.sqlCmdVariables, <mssqlVscode.DeploymentOptions><any>settings.deploymentOptions);
+					// Have to cast to unknown first to get around compiler error since the mssqlVscode doesn't exist as an actual module at runtime
+					result = await (dacFxService as mssqlVscode.IDacFxService).deployDacpac(tempPath, settings.databaseName, true, settings.connectionUri, TaskExecutionMode.execute as unknown as mssqlVscode.TaskExecutionMode, settings.sqlCmdVariables, settings.deploymentOptions as mssqlVscode.DeploymentOptions);
 				}
 
-			}
-			else {
+			} else {
 				telemetryProps.publishAction = 'generateScript';
 				if (azdataApi) {
-					result = await (dacFxService as mssql.IDacFxService).generateDeployScript(tempPath, settings.databaseName, settings.connectionUri, azdataApi.TaskExecutionMode.script, settings.sqlCmdVariables, settings.deploymentOptions);
+					result = await (dacFxService as mssql.IDacFxService).generateDeployScript(tempPath, settings.databaseName, settings.connectionUri, azdataApi.TaskExecutionMode.script, settings.sqlCmdVariables, settings.deploymentOptions as mssql.DeploymentOptions);
 				} else {
-					// TODO@chgagnon Fix typing
-					result = await (dacFxService as mssqlVscode.IDacFxService).generateDeployScript(tempPath, settings.databaseName, settings.connectionUri, <any>undefined/*mssqlVscode.TaskExecutionMode.script*/, settings.sqlCmdVariables, <mssqlVscode.DeploymentOptions><any>settings.deploymentOptions);
+					// Have to cast to unknown first to get around compiler error since the mssqlVscode doesn't exist as an actual module at runtime
+					result = await (dacFxService as mssqlVscode.IDacFxService).generateDeployScript(tempPath, settings.databaseName, settings.connectionUri, TaskExecutionMode.script as unknown as mssqlVscode.TaskExecutionMode, settings.sqlCmdVariables, settings.deploymentOptions as mssqlVscode.DeploymentOptions);
 				}
 
 			}
@@ -331,10 +347,8 @@ export class ProjectsController {
 			const currentPublishIndex = this.publishInfo.findIndex(d => d.startDate === currentPublishTimeInfo);
 			this.publishInfo[currentPublishIndex].status = Status.failed;
 			this.publishInfo[currentPublishIndex].timeToCompleteAction = utils.timeConversion(timeToFailurePublish);
-
 			throw err;
 		}
-
 		const actionEndTime = new Date().getTime();
 		const timeToPublish = actionEndTime - actionStartTime;
 		telemetryProps.actionDuration = timeToPublish.toString();

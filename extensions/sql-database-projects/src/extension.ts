@@ -4,12 +4,14 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
+import { getAzdataApi } from './common/utils';
 import MainController from './controllers/mainController';
 import { SqlDatabaseProjectProvider } from './projectProvider/projectProvider';
 
 let controllers: MainController[] = [];
 
 export function activate(context: vscode.ExtensionContext): Promise<SqlDatabaseProjectProvider> {
+	vscode.commands.executeCommand('setContext', 'azdataAvailable', !!getAzdataApi());
 	// Start the main controller
 	const mainController = new MainController(context);
 	controllers.push(mainController);

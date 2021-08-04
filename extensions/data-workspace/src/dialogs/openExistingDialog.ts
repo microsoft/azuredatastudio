@@ -98,7 +98,7 @@ export class OpenExistingDialog extends DialogBase {
 	}
 
 	protected async initialize(view: azdataType.ModelView): Promise<void> {
-		this.localRadioButton = view.modelBuilder.radioButton().withProperties<azdataType.RadioButtonProperties>({
+		this.localRadioButton = view.modelBuilder.radioButton().withProps({
 			name: 'location',
 			label: constants.Local,
 			checked: true
@@ -112,7 +112,7 @@ export class OpenExistingDialog extends DialogBase {
 			}
 		}));
 
-		this.remoteGitRepoRadioButton = view.modelBuilder.radioButton().withProperties<azdataType.RadioButtonProperties>({
+		this.remoteGitRepoRadioButton = view.modelBuilder.radioButton().withProps({
 			name: 'location',
 			label: constants.RemoteGitRepo
 		}).component();
@@ -134,7 +134,7 @@ export class OpenExistingDialog extends DialogBase {
 			}
 		}));
 
-		const gitRepoTextBox = view.modelBuilder.inputBox().withProperties<azdataType.InputBoxProperties>({
+		const gitRepoTextBox = view.modelBuilder.inputBox().withProps({
 			ariaLabel: constants.GitRepoUrlTitle,
 			placeHolder: constants.GitRepoUrlPlaceholder,
 			required: true,
@@ -150,7 +150,7 @@ export class OpenExistingDialog extends DialogBase {
 			component: gitRepoTextBox
 		};
 
-		this.localClonePathTextBox = view.modelBuilder.inputBox().withProperties<azdataType.InputBoxProperties>({
+		this.localClonePathTextBox = view.modelBuilder.inputBox().withProps({
 			ariaLabel: constants.LocalClonePathTitle,
 			placeHolder: constants.LocalClonePathPlaceholder,
 			required: true,
@@ -161,7 +161,7 @@ export class OpenExistingDialog extends DialogBase {
 			this.localClonePathTextBox!.updateProperty('title', this.localClonePathTextBox!.value!);
 		}));
 
-		const localClonePathBrowseFolderButton = view.modelBuilder.button().withProperties<azdataType.ButtonProperties>({
+		const localClonePathBrowseFolderButton = view.modelBuilder.button().withProps({
 			ariaLabel: constants.BrowseButtonText,
 			iconPath: IconPathHelper.folder,
 			width: '18px',
@@ -190,7 +190,7 @@ export class OpenExistingDialog extends DialogBase {
 			required: true
 		};
 
-		this.filePathTextBox = view.modelBuilder.inputBox().withProperties<azdataType.InputBoxProperties>({
+		this.filePathTextBox = view.modelBuilder.inputBox().withProps({
 			ariaLabel: constants.LocationSelectorTitle,
 			placeHolder: constants.ProjectFilePlaceholder,
 			required: true,
@@ -201,7 +201,7 @@ export class OpenExistingDialog extends DialogBase {
 			this.filePathTextBox!.updateProperty('title', this.filePathTextBox!.value!);
 		}));
 
-		const localProjectBrowseFolderButton = view.modelBuilder.button().withProperties<azdataType.ButtonProperties>({
+		const localProjectBrowseFolderButton = view.modelBuilder.button().withProps({
 			ariaLabel: constants.BrowseButtonText,
 			iconPath: IconPathHelper.folder,
 			width: '18px',
