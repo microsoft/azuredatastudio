@@ -77,11 +77,29 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 
 	public async onPageEnter(): Promise<void> {
 		this.wizard.registerNavigationValidator((pageChangeInfo) => {
+			this.wizard.message = {
+				text: '',
+				level: azdata.window.MessageLevel.Error
+			};
+			if (pageChangeInfo.newPage < pageChangeInfo.lastPage) {
+				return true;
+			}
+			if (this.selectedDbs().length === 0) {
+				this.wizard.message = {
+					text: constants.SELECT_DATABASE_TO_CONTINUE,
+					level: azdata.window.MessageLevel.Error
+				};
+				return false;
+			}
 			return true;
 		});
 	}
 	public async onPageLeave(): Promise<void> {
 		this.migrationStateModel._databaseAssessment = this.selectedDbs();
+		this.wizard.message = {
+			text: '',
+			level: azdata.window.MessageLevel.Error
+		};
 		this.wizard.registerNavigationValidator((pageChangeInfo) => {
 			return true;
 		});
