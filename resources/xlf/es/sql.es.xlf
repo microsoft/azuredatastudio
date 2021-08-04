@@ -32,6 +32,18 @@
       </trans-unit>
     </body>
   </file>
+  <file original="src/sql/base/browser/ui/propertiesContainer/togglePropertiesAction" source-language="en" datatype="plaintext" target-language="es">
+    <body>
+      <trans-unit id="hideProperties">
+        <source xml:lang="en">Hide properties</source>
+        <target state="translated">Ocultar propiedades</target>
+      </trans-unit>
+      <trans-unit id="showProperties">
+        <source xml:lang="en">Show Properties</source>
+        <target state="translated">Mostrar propiedades</target>
+      </trans-unit>
+    </body>
+  </file>
   <file original="src/sql/base/browser/ui/selectBox/selectBox" source-language="en" datatype="plaintext" target-language="es">
     <body>
       <trans-unit id="alertErrorMessage">
@@ -4037,6 +4049,10 @@ Error: {1}</target>
         <source xml:lang="en">The maximum number of changes stored in the undo history for the notebook Rich Text editor.</source>
         <target state="translated">Número máximo de cambios almacenados en el historial de deshacer del editor de texto enriquecido del cuaderno</target>
       </trans-unit>
+      <trans-unit id="notebook.useAbsoluteFilePaths">
+        <source xml:lang="en">Use absolute file paths when linking to other notebooks.</source>
+        <target state="new">Use absolute file paths when linking to other notebooks.</target>
+      </trans-unit>
       <trans-unit id="searchConfigurationTitle">
         <source xml:lang="en">Search Notebooks</source>
         <target state="translated">Búsqueda de cuadernos</target>
@@ -4588,14 +4604,6 @@ Error: {1}</target>
       <trans-unit id="profiler.clearDataPrompt">
         <source xml:lang="en">Are you sure you want to clear the data?</source>
         <target state="translated">¿Está seguro de que quiere borrar los datos?</target>
-      </trans-unit>
-      <trans-unit id="profiler.yes">
-        <source xml:lang="en">Yes</source>
-        <target state="translated">Sí</target>
-      </trans-unit>
-      <trans-unit id="profiler.no">
-        <source xml:lang="en">No</source>
-        <target state="translated">No</target>
       </trans-unit>
       <trans-unit id="profilerAction.autoscrollOn">
         <source xml:lang="en">Auto Scroll: On</source>
@@ -5289,7 +5297,7 @@ Error: {1}</target>
     <body>
       <trans-unit id="queryPlanEditor">
         <source xml:lang="en">Query Plan Editor</source>
-        <target state="new">Query Plan Editor</target>
+        <target state="translated">Editor de planes de consulta</target>
       </trans-unit>
     </body>
   </file>
@@ -5358,6 +5366,14 @@ Error: {1}</target>
       <trans-unit id="topOperationsTitle">
         <source xml:lang="en">Top Operations</source>
         <target state="translated">Operaciones principales</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/sql/workbench/contrib/resourceDeployment/browser/resourceDeployment.contribution" source-language="en" datatype="plaintext" target-language="es">
+    <body>
+      <trans-unit id="deployment.title">
+        <source xml:lang="en">New Deployment...</source>
+        <target state="translated">Nueva implementación...</target>
       </trans-unit>
     </body>
   </file>

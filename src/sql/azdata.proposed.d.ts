@@ -269,6 +269,7 @@ declare module 'azdata' {
 		rowCssStyles?: CssStyles;
 		ariaLabel?: string;
 		showCheckAll?: boolean;
+		hidden?: boolean;
 	}
 
 
@@ -574,6 +575,31 @@ declare module 'azdata' {
 		onInput: vscode.Event<number>;
 	}
 
+	/**
+	 * The heading levels an HTML heading element can be.
+	 */
+	export type HeadingLevel = 1 | 2 | 3 | 4 | 5 | 6;
+
+	/**
+	 * The type of text this is - used to determine display color.
+	 */
+	export enum TextType {
+		Normal = 'Normal',
+		Error = 'Error'
+	}
+
+	export interface TextComponentProperties {
+		/**
+		 * The heading level for this component - if set the text component will be created as an h#
+		 * HTML element with this value being the #.
+		 */
+		headingLevel?: HeadingLevel;
+		/**
+		 * The type to display the text as - used to determine the color of the text. Default is Normal.
+		 */
+		textType?: TextType;
+	}
+
 	export namespace nb {
 		/**
 		 * An event that is emitted when the active Notebook editor is changed.
@@ -831,7 +857,11 @@ declare module 'azdata' {
 		/**
 		 * Azure Log Analytics
 		 */
-		AzureLogAnalytics = 8
+		AzureLogAnalytics = 8,
+		/**
+		 * Azure Storage
+		 */
+		AzureStorage = 9
 	}
 
 	export interface ButtonProperties {
@@ -1002,5 +1032,12 @@ declare module 'azdata' {
 	 */
 	export interface VisualizationOptions {
 		type: VisualizationType;
+	}
+
+	export interface PropertiesContainerComponentProperties {
+		/**
+		 * Whether to show the button that will hide/show the content of the container. Default value is false.
+		 */
+		showToggleButton?: boolean;
 	}
 }

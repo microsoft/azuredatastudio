@@ -10,6 +10,8 @@ import { cssStyles } from '../../constants';
 import { InitializingComponent } from '../components/initializingComponent';
 import { PostgresModel } from '../../models/postgresModel';
 
+export const validExtensions = ['citus', 'pgaudit', 'pgautofailover', 'pg_cron', 'pg_partman', 'plv8', 'postgis', 'postgis_raster', 'postgis_sfcgal', 'postgis_tiger_geocoder', 'tdigest'];
+
 export class AddPGExtensionsDialog extends InitializingComponent {
 	protected modelBuilder!: azdata.ModelBuilder;
 
@@ -27,12 +29,12 @@ export class AddPGExtensionsDialog extends InitializingComponent {
 		dialog.registerContent(async view => {
 			this.modelBuilder = view.modelBuilder;
 
-			const info = this.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
-				value: loc.extensionsFunction,
+			const info = this.modelBuilder.text().withProps({
+				value: loc.extensionsAddFunction(validExtensions.join(', ')),
 				CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
 			}).component();
 
-			const link = this.modelBuilder.hyperlink().withProperties<azdata.HyperlinkComponentProperties>({
+			const link = this.modelBuilder.hyperlink().withProps({
 				label: loc.extensionsLearnMore,
 				url: 'https://docs.microsoft.com/azure/azure-arc/data/using-extensions-in-postgresql-hyperscale-server-group',
 			}).component();
@@ -42,10 +44,18 @@ export class AddPGExtensionsDialog extends InitializingComponent {
 			infoAndLink.addItem(link);
 
 			this.extensionsListInputBox = this.modelBuilder.inputBox()
-				.withProperties<azdata.InputBoxProperties>({
+				.withProps({
 					value: '',
 					ariaLabel: loc.extensionsAddList,
-					enabled: true
+					enabled: true,
+					validationErrorMessage: loc.extensionsAddErrorrMessage(validExtensions.join(','))
+				}).withValidation((component) => {
+					if (!component.value) {
+						return true;
+					}
+
+					let newExtensions = component.value.split(',');
+					return newExtensions.every(e => validExtensions.includes(e));
 				}).component();
 
 			let formModel = this.modelBuilder.formContainer()
@@ -56,7 +66,8 @@ export class AddPGExtensionsDialog extends InitializingComponent {
 						},
 						{
 							component: this.extensionsListInputBox,
-							title: loc.extensionsAddList
+							title: loc.extensionsAddList,
+							required: true
 						}
 					],
 					title: ''
@@ -67,7 +78,7 @@ export class AddPGExtensionsDialog extends InitializingComponent {
 		});
 
 		dialog.registerCloseValidator(async () => await this.validate());
-		dialog.okButton.label = loc.addExtensions;
+		dialog.okButton.label = loc.loadExtensions;
 		dialog.cancelButton.label = loc.cancel;
 		azdata.window.openDialog(dialog);
 		return dialog;

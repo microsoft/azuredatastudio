@@ -32,6 +32,18 @@
       </trans-unit>
     </body>
   </file>
+  <file original="src/sql/base/browser/ui/propertiesContainer/togglePropertiesAction" source-language="en" datatype="plaintext" target-language="zh-Hant">
+    <body>
+      <trans-unit id="hideProperties">
+        <source xml:lang="en">Hide properties</source>
+        <target state="translated">隱藏屬性</target>
+      </trans-unit>
+      <trans-unit id="showProperties">
+        <source xml:lang="en">Show Properties</source>
+        <target state="translated">顯示屬性</target>
+      </trans-unit>
+    </body>
+  </file>
   <file original="src/sql/base/browser/ui/selectBox/selectBox" source-language="en" datatype="plaintext" target-language="zh-Hant">
     <body>
       <trans-unit id="alertErrorMessage">
@@ -4037,6 +4049,10 @@ Error: {1}</source>
         <source xml:lang="en">The maximum number of changes stored in the undo history for the notebook Rich Text editor.</source>
         <target state="translated">筆記本 RTF 文字編輯器復原歷程記錄中儲存的變更數目上限。</target>
       </trans-unit>
+      <trans-unit id="notebook.useAbsoluteFilePaths">
+        <source xml:lang="en">Use absolute file paths when linking to other notebooks.</source>
+        <target state="new">Use absolute file paths when linking to other notebooks.</target>
+      </trans-unit>
       <trans-unit id="searchConfigurationTitle">
         <source xml:lang="en">Search Notebooks</source>
         <target state="translated">搜尋筆記本</target>
@@ -4588,14 +4604,6 @@ Error: {1}</source>
       <trans-unit id="profiler.clearDataPrompt">
         <source xml:lang="en">Are you sure you want to clear the data?</source>
         <target state="translated">確定要清除資料嗎?</target>
-      </trans-unit>
-      <trans-unit id="profiler.yes">
-        <source xml:lang="en">Yes</source>
-        <target state="translated">是</target>
-      </trans-unit>
-      <trans-unit id="profiler.no">
-        <source xml:lang="en">No</source>
-        <target state="translated">否</target>
       </trans-unit>
       <trans-unit id="profilerAction.autoscrollOn">
         <source xml:lang="en">Auto Scroll: On</source>
@@ -5289,7 +5297,7 @@ Error: {1}</source>
     <body>
       <trans-unit id="queryPlanEditor">
         <source xml:lang="en">Query Plan Editor</source>
-        <target state="new">Query Plan Editor</target>
+        <target state="translated">查詢計畫編輯器</target>
       </trans-unit>
     </body>
   </file>
@@ -5358,6 +5366,14 @@ Error: {1}</source>
       <trans-unit id="topOperationsTitle">
         <source xml:lang="en">Top Operations</source>
         <target state="translated">最前幾項操作</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/sql/workbench/contrib/resourceDeployment/browser/resourceDeployment.contribution" source-language="en" datatype="plaintext" target-language="zh-Hant">
+    <body>
+      <trans-unit id="deployment.title">
+        <source xml:lang="en">New Deployment...</source>
+        <target state="translated">新部署…</target>
       </trans-unit>
     </body>
   </file>

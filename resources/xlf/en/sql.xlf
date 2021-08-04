@@ -21,6 +21,14 @@
       <source xml:lang="en">Close</source>
     </trans-unit>
   </body></file>
+  <file original="src/sql/base/browser/ui/propertiesContainer/togglePropertiesAction" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="hideProperties">
+      <source xml:lang="en">Hide properties</source>
+    </trans-unit>
+    <trans-unit id="showProperties">
+      <source xml:lang="en">Show Properties</source>
+    </trans-unit>
+  </body></file>
   <file original="src/sql/base/browser/ui/selectBox/selectBox" source-language="en" datatype="plaintext"><body>
     <trans-unit id="alertErrorMessage">
       <source xml:lang="en">Error: {0}</source>
@@ -2879,6 +2887,9 @@ Error: {1}</source>
     <trans-unit id="notebook.maxRichTextUndoHistory">
       <source xml:lang="en">The maximum number of changes stored in the undo history for the notebook Rich Text editor.</source>
     </trans-unit>
+    <trans-unit id="notebook.useAbsoluteFilePaths">
+      <source xml:lang="en">Use absolute file paths when linking to other notebooks.</source>
+    </trans-unit>
     <trans-unit id="searchConfigurationTitle">
       <source xml:lang="en">Search Notebooks</source>
     </trans-unit>
@@ -3276,12 +3287,6 @@ Error: {1}</source>
     </trans-unit>
     <trans-unit id="profiler.clearDataPrompt">
       <source xml:lang="en">Are you sure you want to clear the data?</source>
-    </trans-unit>
-    <trans-unit id="profiler.yes">
-      <source xml:lang="en">Yes</source>
-    </trans-unit>
-    <trans-unit id="profiler.no">
-      <source xml:lang="en">No</source>
     </trans-unit>
     <trans-unit id="profilerAction.autoscrollOn">
       <source xml:lang="en">Auto Scroll: On</source>

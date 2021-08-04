@@ -48,7 +48,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 				.sort((a: ResourceType, b: ResourceType) => {
 					return (a.displayIndex || Number.MAX_VALUE) - (b.displayIndex || Number.MAX_VALUE);
 				});
-			this._cardGroup = view.modelBuilder.radioCardGroup().withProperties<azdata.RadioCardGroupComponentProperties>({
+			this._cardGroup = view.modelBuilder.radioCardGroup().withProps({
 				cards: this._resourceTypes.map((resourceType) => {
 					return this.createOrGetCard(resourceType);
 				}),
@@ -142,7 +142,8 @@ export class ResourceTypePickerDialog extends DialogBase {
 				'margin-top': '35px'
 			},
 			options: items,
-			selectedOptionId: items[0].id
+			selectedOptionId: items[0].id,
+			ariaLabel: loc.resourceTypeCategoryListViewTitle
 		}).component();
 		this._toDispose.push(listView.onDidClick((e) => {
 			this._resourceSearchBox.value = '';

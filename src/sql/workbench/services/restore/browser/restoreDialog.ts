@@ -334,8 +334,7 @@ export class RestoreDialog extends Modal {
 				render: c => {
 					DOM.append(c, generalTab);
 				},
-				layout: () => { },
-				focus: () => this._restoreFromSelectBox ? this._restoreFromSelectBox.focus() : generalTab.focus()
+				layout: () => { }
 			}
 		});
 
@@ -346,8 +345,7 @@ export class RestoreDialog extends Modal {
 				layout: () => { },
 				render: c => {
 					c.appendChild(fileContentElement);
-				},
-				focus: () => this._optionsMap[this._relocateDatabaseFilesOption] ? this._optionsMap[this._relocateDatabaseFilesOption].focus() : fileContentElement.focus()
+				}
 			}
 		});
 
@@ -358,8 +356,7 @@ export class RestoreDialog extends Modal {
 				layout: () => { },
 				render: c => {
 					c.appendChild(optionsContentElement);
-				},
-				focus: () => this._optionsMap[this._withReplaceDatabaseOption] ? this._optionsMap[this._withReplaceDatabaseOption].focus() : optionsContentElement.focus()
+				}
 			}
 		});
 
