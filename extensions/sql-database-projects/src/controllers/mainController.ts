@@ -13,7 +13,7 @@ import { NetCoreTool } from '../tools/netcoreTool';
 import { IconPathHelper } from '../common/iconHelper';
 import { WorkspaceTreeItem } from 'dataworkspace';
 import { SqlDatabaseProjectProvider } from '../projectProvider/projectProvider';
-import { launchAddSqlBindingQuickpick } from '../dialogs/insertSqlBindingQuickpick';
+import { launchAddSqlBindingQuickpick } from '../dialogs/addSqlBindingQuickpick';
 
 /**
  * The main controller class that initializes the extension
