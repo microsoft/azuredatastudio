@@ -108,6 +108,8 @@ export class NotebookMarkdownRenderer {
 			return '<img ' + attributes.join(' ') + '>';
 		};
 		renderer.link = (href: string, title: string, text: string): string => {
+			// check for isAbsolute prior to escaping and replacement
+			let hrefAbsolute: boolean = path.isAbsolute(href);
 			href = this.cleanUrl(!markdown.isTrusted, notebookFolder, href);
 			if (href === null) {
 				return text;
@@ -120,7 +122,7 @@ export class NotebookMarkdownRenderer {
 			// only remove markdown escapes if it's a hyperlink, filepath usually can start with .{}_
 			// and the below function escapes them if it encounters in the path.
 			// dev note: using path.isAbsolute instead of isPathLocal since the latter accepts resolver (IRenderMime.IResolver) to check isLocal
-			if (!path.isAbsolute(href)) {
+			if (!hrefAbsolute) {
 				href = removeMarkdownEscapes(href);
 			}
 			if (
@@ -138,13 +140,12 @@ export class NotebookMarkdownRenderer {
 				// mailto uris do not need additional encoding of &, otherwise it would not render properly
 				if (uri.scheme !== 'mailto') {
 					href = href.replace(/&(?!amp;)/g, '&amp;');
-				} else {
-					href = href.replace(/</g, '&lt;')
-						.replace(/>/g, '&gt;')
-						.replace(/"/g, '&quot;')
-						.replace(/'/g, '&#39;');
 				}
-				return `<a href=${href} data-href="${href}" title="${title || href}">${text}</a>`;
+				href = href.replace(/</g, '&lt;')
+					.replace(/>/g, '&gt;')
+					.replace(/"/g, '&quot;')
+					.replace(/'/g, '&#39;');
+				return `<a href=${href} data-href="${href}" title="${title || href}" is-absolute=${hrefAbsolute}>${text}</a>`;
 			}
 		};
 		renderer.paragraph = (text): string => {

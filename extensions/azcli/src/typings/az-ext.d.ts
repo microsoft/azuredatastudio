@@ -259,6 +259,7 @@ declare module 'az-ext' {
 
 	export interface AzOutput<R> {
 		stdout: R,
+		stderr: string[],
 		code?: number
 	}
 
@@ -269,7 +270,6 @@ declare module 'az-ext' {
 	export interface IAzApi {
 		arcdata: {
 			dc: {
-				create(namespace: string, name: string, connectivityMode: string, resourceGroup: string, location: string, subscription: string, profileName?: string, storageClass?: string, additionalEnvVars?: AdditionalEnvVars): Promise<AzOutput<void>>,
 				endpoint: {
 					list(namespace?: string, additionalEnvVars?: AdditionalEnvVars): Promise<AzOutput<DcEndpointListResult[]>>
 				},

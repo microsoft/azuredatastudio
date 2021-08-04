@@ -5,7 +5,7 @@
 
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
-import * as azdataExt from 'azdata-ext';
+import * as azExt from 'az-ext';
 import * as loc from '../../../localizedConstants';
 import { IconPathHelper, cssStyles } from '../../../constants';
 import { DashboardPage } from '../../components/dashboardPage';
@@ -22,11 +22,11 @@ export class PostgresExtensionsPage extends DashboardPage {
 	private dropExtensionsButton!: azdata.ButtonComponent;
 	private extensionsLink!: azdata.HyperlinkComponent;
 
-	private readonly _azdataApi: azdataExt.IExtension;
+	private readonly _azApi: azExt.IExtension;
 
 	constructor(modelView: azdata.ModelView, dashboard: azdata.window.ModelViewDashboard, private _postgresModel: PostgresModel) {
 		super(modelView, dashboard);
-		this._azdataApi = vscode.extensions.getExtension(azdataExt.extension.name)?.exports;
+		this._azApi = vscode.extensions.getExtension(azExt.extension.name)?.exports;
 
 		this.disposables.push(
 			this._postgresModel.onConfigUpdated(() => this.eventuallyRunOnInitialized(() => this.handleConfigUpdated())));
@@ -138,12 +138,13 @@ export class PostgresExtensionsPage extends DashboardPage {
 							},
 							async (_progress, _token): Promise<void> => {
 
-								await this._azdataApi.azdata.arc.postgres.server.edit(
+								await this._azApi.az.postgres.arcserver.edit(
 									this._postgresModel.info.name,
 									{
 										extensions: extensionList
 									},
-									this._postgresModel.controllerModel.azdataAdditionalEnvVars);
+									this._postgresModel.controllerModel.info.namespace,
+									this._postgresModel.controllerModel.azAdditionalEnvVars);
 
 								try {
 									await this._postgresModel.refresh();
@@ -235,6 +236,10 @@ export class PostgresExtensionsPage extends DashboardPage {
 			CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
 		}).component();
 
+		if (name === 'citus') {
+			checkBox.enabled = false;
+		}
+
 		this.disposables.push(
 			checkBox.onChanged(() => {
 				if (checkBox.checked) {
@@ -256,7 +261,7 @@ export class PostgresExtensionsPage extends DashboardPage {
 	 */
 	public async dropExtension(): Promise<void> {
 		this.droppedExtensions.forEach(d => {
-			let index = this.droppedExtensions.indexOf(d, 0);
+			let index = this.extensionNames.indexOf(d, 0);
 			this.extensionNames.splice(index, 1);
 		});
 
@@ -267,12 +272,13 @@ export class PostgresExtensionsPage extends DashboardPage {
 				cancellable: false
 			},
 			async (_progress, _token): Promise<void> => {
-				await this._azdataApi.azdata.arc.postgres.server.edit(
+				await this._azApi.az.postgres.arcserver.edit(
 					this._postgresModel.info.name,
 					{
 						extensions: this.extensionNames.join()
 					},
-					this._postgresModel.controllerModel.azdataAdditionalEnvVars
+					this._postgresModel.controllerModel.info.namespace,
+					this._postgresModel.controllerModel.azAdditionalEnvVars
 				);
 			}
 		);

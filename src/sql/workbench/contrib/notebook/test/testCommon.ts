@@ -13,15 +13,17 @@ import { NullTelemetryService } from 'vs/platform/telemetry/common/telemetryUtil
 import { TestThemeService } from 'vs/platform/theme/test/common/testThemeService';
 import { TestEditorGroupsService, TestEditorService, TestTextResourceConfigurationService } from 'vs/workbench/test/browser/workbenchTestServices';
 import { TestStorageService } from 'vs/workbench/test/common/workbenchTestServices';
+import { NotebookViewsExtension } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViewsExtension';
 
 // Typically you will pass in either editor or the instantiationService parameter.
 // Leave both undefined when you want the underlying object(s) to have an undefined editor.
 export class NotebookEditorStub extends stubs.NotebookEditorStub {
 	// Normally one needs to provide either the editor or the instantiationService as the constructor parameter
-	constructor({ cellGuid, instantiationService, editor, model, notebookParams }: { cellGuid?: string; instantiationService?: IInstantiationService; editor?: QueryTextEditor; model?: INotebookModel, notebookParams?: INotebookParams } = {}) {
+	constructor({ cellGuid, instantiationService, editor, model, views, notebookParams }: { cellGuid?: string; instantiationService?: IInstantiationService; editor?: QueryTextEditor; model?: INotebookModel, views?: NotebookViewsExtension, notebookParams?: INotebookParams } = {}) {
 		super();
 		this.cells = [];
 		this.model = model;
+		this.views = views;
 		this.notebookParams = notebookParams;
 		this.cellEditors = [new CellEditorProviderStub({ cellGuid: cellGuid, instantiationService: instantiationService, editor: editor })];
 		this.id = this.notebookParams?.notebookUri?.toString();

@@ -25,6 +25,9 @@
     <trans-unit id="send-feedback-command">
       <source xml:lang="en">Feedback</source>
     </trans-unit>
+    <trans-unit id="new-support-request-command">
+      <source xml:lang="en">New support request</source>
+    </trans-unit>
     <trans-unit id="migration-context-menu-category">
       <source xml:lang="en">Migration Context Menu</source>
     </trans-unit>
@@ -53,6 +56,9 @@
     </trans-unit>
     <trans-unit id="sql.migration.wizard.source_configuration.title">
       <source xml:lang="en">SQL Source Configuration</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.assessments.blocking.issue">
+      <source xml:lang="en">This is a blocking issue that will prevent the database migration from succeeding.</source>
     </trans-unit>
     <trans-unit id="sql.migration.assessments.progress">
       <source xml:lang="en">Assessments Progress</source>
@@ -136,10 +142,19 @@ This may take some time.</source>
       <source xml:lang="en">We have completed the assessment of your SQL Server Instance '{0}'.</source>
     </trans-unit>
     <trans-unit id="sql.migration.assessment">
-      <source xml:lang="en">Assessment Dialog for '{0}'</source>
+      <source xml:lang="en">Assessment results for '{0}'</source>
     </trans-unit>
     <trans-unit id="sql.migration.can.be.migrated">
       <source xml:lang="en">{0} out of {1} databases can be migrated</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.assessment.migration.warning">
+      <source xml:lang="en">Databases that are not ready for migration to Azure SQL Managed Instance can be migrated to SQL Server on Azure Virtual Machines.</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.databases.table.title">
+      <source xml:lang="en">Databases</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.sql.server.instance">
+      <source xml:lang="en">SQL Server Instance</source>
     </trans-unit>
     <trans-unit id="sql.migration.wizard.account.title">
       <source xml:lang="en">Azure Account</source>
@@ -291,6 +306,9 @@ This may take some time.</source>
     <trans-unit id="sql.migration.no.blobContainers.found">
       <source xml:lang="en">No blob containers found</source>
     </trans-unit>
+    <trans-unit id="sql.migration.no.blobFiles.found">
+      <source xml:lang="en">No blob files found</source>
+    </trans-unit>
     <trans-unit id="sql.migration.invalid.subscription.error">
       <source xml:lang="en">Please select a valid subscription to proceed.</source>
     </trans-unit>
@@ -303,8 +321,17 @@ This may take some time.</source>
     <trans-unit id="sql.migration.invalid.fileShare.error">
       <source xml:lang="en">Please select a valid file share to proceed.</source>
     </trans-unit>
-    <trans-unit id="sql.migration.invalid.blobContainer.error">
-      <source xml:lang="en">Please select a valid blob container to proceed.</source>
+    <trans-unit id="sql.migration.invalid.blob.resourceGroup.error">
+      <source xml:lang="en">Please select a valid resource group for source database '{0}' to proceed.</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.invalid.blob.storageAccount.error">
+      <source xml:lang="en">Please select a valid storage account for source database '{0}' to proceed.</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.invalid.blob.container.error">
+      <source xml:lang="en">Please select a valid blob container for source database '{0}' to proceed.</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.invalid.blob.lastBackupFile.error">
+      <source xml:lang="en">Please select a valid last backup file for source database '{0}' to proceed.</source>
     </trans-unit>
     <trans-unit id="sql.migration.invalid.network.share.location">
       <source xml:lang="en">Invalid network share location format. Example: {0}</source>
@@ -341,6 +368,15 @@ This may take some time.</source>
     </trans-unit>
     <trans-unit id="sql.migration.source.details.sqlAuth">
       <source xml:lang="en">Enter the SQL Authentication credential used for connecting to SQL Server Instance {0}. ​ This credential will be used to for connecting to SQL Server instance and identifying valid backup file(s)</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.blob.resourceGroup.select">
+      <source xml:lang="en">Select a resource group value first.</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.blob.storageAccount.select">
+      <source xml:lang="en">Select a storage account value first.</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.blob.container.select">
+      <source xml:lang="en">Select a blob container value first.</source>
     </trans-unit>
     <trans-unit id="sql.migration.ir.page.title">
       <source xml:lang="en">Azure Database Migration Service</source>
@@ -380,6 +416,9 @@ This may take some time.</source>
     </trans-unit>
     <trans-unit id="sql.migration.dms.portal.info">
       <source xml:lang="en">Please note that any existing Azure Database Migration Service (DMS) in Azure portal will not show up in Azure Data Studio. DMS created in Azure Data Studio will not be visible in Azure portal yet.</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.database.migration.service.authentication.keys">
+      <source xml:lang="en">Database migration service authentication keys</source>
     </trans-unit>
     <trans-unit id="sql.migration.services.dialog.title">
       <source xml:lang="en">Create Azure Database Migration Service</source>
@@ -513,6 +552,9 @@ This may take some time.</source>
     <trans-unit id="sql.migration.learn.more">
       <source xml:lang="en">Learn more</source>
     </trans-unit>
+    <trans-unit id="sql.migration.learn.more.pre.reqs">
+      <source xml:lang="en">Learn more about things you need before starting a migration.</source>
+    </trans-unit>
     <trans-unit id="sql.migration.subscription">
       <source xml:lang="en">Subscription</source>
     </trans-unit>
@@ -576,6 +618,9 @@ This may take some time.</source>
     <trans-unit id="sql.migration.copy.throughput">
       <source xml:lang="en">Copy Throughput (MBPS)</source>
     </trans-unit>
+    <trans-unit id="sql.migration.newsupportrequest">
+      <source xml:lang="en">New support request</source>
+    </trans-unit>
     <trans-unit id="sql.migration.summary.page.title">
       <source xml:lang="en">Summary</source>
     </trans-unit>
@@ -608,6 +653,9 @@ This may take some time.</source>
     </trans-unit>
     <trans-unit id="sql.migration.blob.container.title">
       <source xml:lang="en">Blob Container</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.blob.container.last.backup.file.label">
+      <source xml:lang="en">Last Backup File</source>
     </trans-unit>
     <trans-unit id="sql.migration.blob.container.label">
       <source xml:lang="en">Blob container resource group</source>
@@ -725,9 +773,6 @@ This may take some time.</source>
     </trans-unit>
     <trans-unit id="sql.migration.choose.to.migrate.to.azure.sql">
       <source xml:lang="en">Choose to migrate to Azure SQL</source>
-    </trans-unit>
-    <trans-unit id="sql.migration.coming.soon">
-      <source xml:lang="en">Coming soon</source>
     </trans-unit>
     <trans-unit id="sql.migration.show.status">
       <source xml:lang="en">Show status</source>

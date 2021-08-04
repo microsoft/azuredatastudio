@@ -18,7 +18,8 @@ const enum SettingIds {
 	ossrdbms = 'ossrdbms',
 	vault = 'vault',
 	ado = 'ado',
-	ala = 'ala'
+	ala = 'ala',
+	storage = 'storage'
 }
 
 const publicAzureSettings: ProviderSettings = {
@@ -74,6 +75,12 @@ const publicAzureSettings: ProviderSettings = {
 				endpoint: 'https://api.loganalytics.io',
 				azureResourceId: AzureResource.AzureLogAnalytics,
 			},
+			azureStorageResource: {
+				id: SettingIds.storage,
+				endpoint: '',
+				endpointSuffix: '.core.windows.net',
+				azureResourceId: AzureResource.AzureStorage
+			},
 			redirectUri: 'https://vscode-redirect.azurewebsites.net/',
 			scopes: [
 				'openid', 'email', 'profile', 'offline_access',
@@ -128,6 +135,12 @@ const usGovAzureSettings: ProviderSettings = {
 				endpoint: 'https://api.loganalytics.us',
 				azureResourceId: AzureResource.AzureLogAnalytics,
 			},
+			azureStorageResource: {
+				id: SettingIds.storage,
+				endpoint: '',
+				endpointSuffix: '.core.usgovcloudapi.net',
+				azureResourceId: AzureResource.AzureStorage
+			},
 			redirectUri: 'https://vscode-redirect.azurewebsites.net/',
 			scopes: [
 				'openid', 'email', 'profile', 'offline_access',
@@ -181,6 +194,12 @@ const usNatAzureSettings: ProviderSettings = {
 				endpoint: 'https://api.loganalytics.azure.eaglex.ic.gov',
 				azureResourceId: AzureResource.AzureLogAnalytics,
 			},
+			azureStorageResource: {
+				id: SettingIds.storage,
+				endpoint: '',
+				endpointSuffix: '.core.eaglex.ic.gov',
+				azureResourceId: AzureResource.AzureStorage
+			},
 			redirectUri: 'https://vscode-redirect.azurewebsites.net/',
 			scopes: [
 				'openid', 'email', 'profile', 'offline_access',
@@ -219,6 +238,12 @@ const germanyAzureSettings: ProviderSettings = {
 				id: SettingIds.vault,
 				endpoint: 'https://vault.microsoftazure.de',
 				azureResourceId: AzureResource.AzureKeyVault
+			},
+			azureStorageResource: {
+				id: SettingIds.storage,
+				endpoint: '',
+				endpointSuffix: '.core.cloudapi.de',
+				azureResourceId: AzureResource.AzureStorage
 			},
 			redirectUri: 'https://vscode-redirect.azurewebsites.net/',
 			scopes: [
@@ -272,6 +297,12 @@ const chinaAzureSettings: ProviderSettings = {
 				id: SettingIds.ala,
 				endpoint: 'https://api.loganalytics.azure.cn',
 				azureResourceId: AzureResource.AzureLogAnalytics,
+			},
+			azureStorageResource: {
+				id: SettingIds.storage,
+				endpoint: '',
+				endpointSuffix: '.core.chinacloudapi.cn',
+				azureResourceId: AzureResource.AzureStorage
 			},
 			redirectUri: 'https://vscode-redirect.azurewebsites.net/',
 			scopes: [

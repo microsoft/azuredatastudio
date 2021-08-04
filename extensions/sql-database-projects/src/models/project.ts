@@ -306,80 +306,63 @@ export class Project implements ISqlProject {
 
 	/**
 	 * Adds a folder to the project, and saves the project file
+	 *
 	 * @param relativeFolderPath Relative path of the folder
-	 * @param doNotThrowOnDuplicate
-	 *	Flag that indicates whether duplicate entries should be ignored or throw an error. If flag is set to `true` and
-	 *	item already exists in the project file, then existing entry will be returned.
 	 */
-	public async addFolderItem(relativeFolderPath: string, doNotThrowOnDuplicate?: boolean): Promise<FileProjectEntry> {
-		const absoluteFolderPath = path.join(this.projectFolderPath, relativeFolderPath);
-		const normalizedRelativeFolderPath = utils.convertSlashesForSqlProj(relativeFolderPath);
+	public async addFolderItem(relativeFolderPath: string): Promise<FileProjectEntry> {
+		const folderEntry = await this.ensureFolderItems(relativeFolderPath);
 
-		// check if folder already has been added to sqlproj
-		const existingEntry = this.files.find(f => f.relativePath.toUpperCase() === normalizedRelativeFolderPath.toUpperCase());
-		if (existingEntry) {
-			if (!doNotThrowOnDuplicate) {
-				throw new Error(constants.folderAlreadyAddedToProject((relativeFolderPath)));
-			}
-
-			return existingEntry;
+		if (folderEntry) {
+			return folderEntry;
+		} else {
+			throw new Error(constants.outsideFolderPath);
 		}
-
-		// If folder doesn't exist, create it
-		let exists = await utils.exists(absoluteFolderPath);
-		if (!exists) {
-			await fs.mkdir(absoluteFolderPath, { recursive: true });
-		}
-
-		const folderEntry = this.createFileProjectEntry(normalizedRelativeFolderPath, EntryType.Folder);
-		this._files.push(folderEntry);
-
-		await this.addToProjFile(folderEntry);
-		return folderEntry;
 	}
 
 	/**
 	 * Writes a file to disk if contents are provided, adds that file to the project, and writes it to disk
+	 *
 	 * @param relativeFilePath Relative path of the file
 	 * @param contents Contents to be written to the new file
 	 * @param itemType Type of the project entry to add. This maps to the build action for the item.
-	 * @param doNotThrowOnDuplicate
-	 *	Flag that indicates whether duplicate entries should be ignored or throw an error. If flag is set to `true` and
-	 *	item already exists in the project file, then existing entry will be returned.
 	 */
-	public async addScriptItem(relativeFilePath: string, contents?: string, itemType?: string, doNotThrowOnDuplicate?: boolean): Promise<FileProjectEntry> {
+	public async addScriptItem(relativeFilePath: string, contents?: string, itemType?: string): Promise<FileProjectEntry> {
 		const absoluteFilePath = path.join(this.projectFolderPath, relativeFilePath);
 
-		// check if file already exists if content was passed to write to a new file
-		if (contents !== undefined && contents !== '' && await utils.exists(absoluteFilePath)) {
-			throw new Error(constants.fileAlreadyExists(path.parse(absoluteFilePath).name));
+		if (contents) {
+			// Create the file if contents were passed in and file does not exist yet
+			await fs.mkdir(path.dirname(absoluteFilePath), { recursive: true });
+
+			try {
+				await fs.writeFile(absoluteFilePath, contents, { flag: 'wx' });
+			} catch (error) {
+				if (error.code === 'EEXIST') {
+					// Throw specialized error, if file already exists
+					throw new Error(constants.fileAlreadyExists(path.parse(absoluteFilePath).name));
+				}
+
+				throw error;
+			}
+		} else {
+			// If no contents were provided, then check that file already exists
+			let exists = await utils.exists(absoluteFilePath);
+			if (!exists) {
+				throw new Error(constants.noFileExist(absoluteFilePath));
+			}
 		}
 
+		// Ensure that parent folder item exist in the project for the corresponding file path
+		await this.ensureFolderItems(path.relative(this.projectFolderPath, path.dirname(absoluteFilePath)));
+
+		// Check if file already has been added to sqlproj
 		const normalizedRelativeFilePath = utils.convertSlashesForSqlProj(relativeFilePath);
 
-		// check if file already has been added to sqlproj
 		const existingEntry = this.files.find(f => f.relativePath.toUpperCase() === normalizedRelativeFilePath.toUpperCase());
 		if (existingEntry) {
-			if (!doNotThrowOnDuplicate) {
-				throw new Error(constants.fileAlreadyAddedToProject((relativeFilePath)));
-			}
-
 			return existingEntry;
 		}
 
-		// create the file if contents were passed in
-		if (contents) {
-			await fs.mkdir(path.dirname(absoluteFilePath), { recursive: true });
-			await fs.writeFile(absoluteFilePath, contents);
-		}
-
-		// check that file exists
-		let exists = await utils.exists(absoluteFilePath);
-		if (!exists) {
-			throw new Error(constants.noFileExist(absoluteFilePath));
-		}
-
-		// update sqlproj XML
+		// Update sqlproj XML
 		const fileEntry = this.createFileProjectEntry(normalizedRelativeFilePath, EntryType.File);
 
 		let xmlTag;
@@ -1033,10 +1016,10 @@ export class Project implements ISqlProject {
 
 	/**
 	 * Adds the list of sql files and directories to the project, and saves the project file
+	 *
 	 * @param list list of files and folder Uris. Files and folders must already exist. No files or folders will be added if any do not exist.
-	 * @param doNotThrowOnDuplicate Flag that indicates whether duplicate entries should be ignored or throw an error.
 	 */
-	public async addToProject(list: Uri[], doNotThrowOnDuplicate?: boolean): Promise<void> {
+	public async addToProject(list: Uri[]): Promise<void> {
 		// verify all files/folders exist. If not all exist, none will be added
 		for (let file of list) {
 			const exists = await utils.exists(file.fsPath);
@@ -1053,9 +1036,9 @@ export class Project implements ISqlProject {
 				const fileStat = await fs.stat(file.fsPath);
 
 				if (fileStat.isFile() && file.fsPath.toLowerCase().endsWith(constants.sqlFileExtension)) {
-					await this.addScriptItem(relativePath, undefined, undefined, doNotThrowOnDuplicate);
+					await this.addScriptItem(relativePath);
 				} else if (fileStat.isDirectory()) {
-					await this.addFolderItem(relativePath, doNotThrowOnDuplicate);
+					await this.addFolderItem(relativePath);
 				}
 			}
 		}
@@ -1105,6 +1088,56 @@ export class Project implements ISqlProject {
 		}
 
 		return firstPropertyElement.childNodes[0].data;
+	}
+
+	/**
+	 * Adds all folders in the path to the project and saves the project file, if provided path is under the project folder.
+	 * If path is outside the project folder, then no action is taken.
+	 *
+	 * @param relativeFolderPath Relative folder path to add folders from.
+	 * @returns Project entry for the last folder in the path, if path is under the project folder; otherwise `undefined`.
+	 */
+	private async ensureFolderItems(relativeFolderPath: string): Promise<FileProjectEntry | undefined> {
+		const absoluteFolderPath = path.join(this.projectFolderPath, relativeFolderPath);
+		const normalizedProjectFolderPath = path.normalize(this.projectFolderPath);
+
+		// Only add folders within the project folder. When adding files outside the project folder,
+		// they should be copied to the project root and there will be no additional folders to add.
+		if (!absoluteFolderPath.toUpperCase().startsWith(normalizedProjectFolderPath.toUpperCase())) {
+			return;
+		}
+
+		// If folder doesn't exist, create it
+		await fs.mkdir(absoluteFolderPath, { recursive: true });
+
+		// Add project file entries for all folders in the path.
+		// SSDT expects all folders to be explicitly listed in the project file, so we construct
+		// folder paths for all intermediate folders and ensure they are present in the project as well.
+		// We do not use `path.relative` here, because it may return '.' if paths are the same,
+		// but in our case we actually want an empty string, that will result in an empty segments
+		// array and nothing will be added.
+		const relativePath = utils.convertSlashesForSqlProj(absoluteFolderPath.substring(normalizedProjectFolderPath.length));
+		const pathSegments = utils.trimChars(relativePath, ' \\').split(constants.SqlProjPathSeparator);
+		let folderEntryPath = '';
+		let folderEntry: FileProjectEntry | undefined;
+
+		// Add folder items for all segments, including the requested folder itself
+		for (let segment of pathSegments) {
+			if (segment) {
+				folderEntryPath += segment + constants.SqlProjPathSeparator;
+				folderEntry =
+					this.files.find(f => utils.ensureTrailingSlash(f.relativePath.toUpperCase()) === folderEntryPath.toUpperCase());
+
+				if (!folderEntry) {
+					// If there is no <Folder/> item for the folder - add it
+					folderEntry = this.createFileProjectEntry(folderEntryPath, EntryType.Folder);
+					this.files.push(folderEntry);
+					await this.addToProjFile(folderEntry);
+				}
+			}
+		}
+
+		return folderEntry;
 	}
 }
 

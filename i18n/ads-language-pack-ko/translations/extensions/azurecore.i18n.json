@@ -106,7 +106,7 @@
 			"azurecore.azureArcsqlManagedInstance": "SQL 관리형 인스턴스 - Azure Arc",
 			"azurecore.azureArcService": "Data Service - Azure Arc",
 			"azurecore.sqlServerArc": "SQL Server - Azure Arc",
-			"azurecore.azureArcPostgres": "Azure Arc가 지원되는 PostgreSQL 하이퍼스케일",
+			"azurecore.azureArcPostgres": "Azure Arc 지원 PostgreSQL 하이퍼스케일",
 			"azure.unableToOpenAzureLink": "링크를 열 수 없음, 필요한 값이 없음",
 			"azure.azureResourcesGridTitle": "Azure 리소스(미리 보기)",
 			"azurecore.invalidAzureAccount": "잘못된 계정",
@@ -207,7 +207,7 @@
 			"azure.resource.providers.KustoContainerLabel": "Azure 데이터 탐색기 클러스터"
 		},
 		"dist/azureResource/providers/azuremonitor/azuremonitorTreeDataProvider": {
-			"azure.resource.providers.AzureMonitorContainerLabel": "Azure Monitor Workspace"
+			"azure.resource.providers.AzureMonitorContainerLabel": "Azure Monitor 로그 작업 영역"
 		},
 		"dist/azureResource/providers/postgresServer/postgresServerTreeDataProvider": {
 			"azure.resource.providers.databaseServer.treeDataProvider.postgresServerContainerLabel": "Azure Database for PostgreSQL 서버"
@@ -225,7 +225,7 @@
 			"azure.resource.providers.sqlInstanceArcContainerLabel": "SQL 관리형 인스턴스 - Azure Arc"
 		},
 		"dist/azureResource/providers/postgresArcServer/postgresServerTreeDataProvider": {
-			"azure.resource.providers.postgresArcServer.treeDataProvider.postgresServerContainerLabel": "PostgreSQL 하이퍼스케일 – Azure Arc"
+			"azure.resource.providers.postgresArcServer.treeDataProvider.postgresServerContainerLabel": "PostgreSQL 하이퍼스케일 - Azure Arc"
 		},
 		"dist/azureResource/tree/connectionDialogTreeProvider": {
 			"azure.resource.tree.treeProvider.loadingLabel": "로드하는 중...",
