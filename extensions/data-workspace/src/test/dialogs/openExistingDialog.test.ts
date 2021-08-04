@@ -62,18 +62,18 @@ suite('Open Existing Dialog', function (): void {
 	test('project browse', async function (): Promise<void> {
 		const workspaceServiceMock = TypeMoq.Mock.ofType<WorkspaceService>();
 		workspaceServiceMock.setup(x => x.getAllProjectTypes()).returns(() => Promise.resolve([testProjectType]));
-		sinon.stub(vscode.window, 'showOpenDialog').returns(Promise.resolve([]));
+		const showOpenDialogStub = sinon.stub(vscode.window, 'showOpenDialog').returns(Promise.resolve([]));
 
 		const dialog = new OpenExistingDialog(workspaceServiceMock.object);
 		await dialog.open();
 		should.equal(dialog.filePathTextBox!.value ?? '', '', 'Project file should initially be empty');
-		await dialog.projectBrowse();
+		await dialog.onBrowseButtonClick();
 		should.equal(dialog.filePathTextBox!.value ?? '', '', 'Project file should not be set when no file is selected');
 
-		sinon.restore();
+		showOpenDialogStub.restore();
 		const projectFile = vscode.Uri.file(generateUniqueProjectFilePath('testproj'));
 		sinon.stub(vscode.window, 'showOpenDialog').returns(Promise.resolve([projectFile]));
-		await dialog.projectBrowse();
+		await dialog.onBrowseButtonClick();
 		should.equal(dialog.filePathTextBox!.value, projectFile.fsPath, 'Project file should be set');
 	});
 });

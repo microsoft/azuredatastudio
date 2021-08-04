@@ -32,11 +32,11 @@ import { URI } from 'vs/base/common/uri';
 import { Emitter, Event } from 'vs/base/common/event';
 import { IActionProvider } from 'vs/base/browser/ui/dropdown/dropdown';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { NotebookViewsExtension } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViewsExtension';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
 import { KernelsLanguage } from 'sql/workbench/services/notebook/common/notebookConstants';
+import { INotebookViews } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViews';
 
 const msgLoading = localize('loading', "Loading kernels...");
 export const msgChanging = localize('changing', "Changing kernel...");
@@ -182,30 +182,28 @@ export abstract class ToggleableAction extends Action {
 	}
 }
 
-export class NotebookViewsOptions implements IActionProvider {
-	private _options: Action[];
-	private views: NotebookViewsExtension;
+export class NotebookViewsActionProvider implements IActionProvider {
+	private _options: Action[] = [];
+	private views: INotebookViews;
 	private viewMode: ViewMode;
 	private readonly _optionsUpdated = new Emitter<boolean>();
 
 	constructor(
 		container: HTMLElement,
-		views: NotebookViewsExtension,
+		views: INotebookViews,
 		modelReady: Promise<INotebookModel>,
 		@INotebookService private _notebookService: INotebookService,
+		@INotificationService private _notificationService: INotificationService,
 		@IInstantiationService private instantiationService: IInstantiationService) {
 
-		if (modelReady) {
-			modelReady
-				.then((model) => {
-					this.views = views;
-					this.viewMode = model.viewMode;
-					this.updateView();
-				})
-				.catch((err) => {
-					// No-op for now
-				});
-		}
+		modelReady?.then((model) => {
+			this.views = views;
+			this.viewMode = model.viewMode;
+			this.updateView();
+		})
+			.catch((err) => {
+				this._notificationService.error(getErrorMessage(err));
+			});
 	}
 
 	getActions(): IAction[] {
@@ -216,7 +214,9 @@ export class NotebookViewsOptions implements IActionProvider {
 		return this._options;
 	}
 
-	// Update SelectBox values
+	/**
+	 * Update SelectBox values
+	 */
 	public updateView() {
 		const backToNotebookButton = this.instantiationService.createInstance(NotebookViewAction, 'notebookView.backToNotebook', localize('notebookViewLabel', 'Editor'), 'notebook-button');
 		const newViewButton = this.instantiationService.createInstance(CreateNotebookViewAction, 'notebookView.newView', localize('newViewLabel', 'Create New View'), 'notebook-button notebook-button-newview');
@@ -232,7 +232,7 @@ export class NotebookViewsOptions implements IActionProvider {
 		}
 
 		views.forEach((view) => {
-			const option = new DashboardViewAction(view.guid, view.name, 'button', this._notebookService);
+			const option = new DashboardViewAction(view.guid, view.name, 'button', this._notebookService, this._notificationService);
 			this._options.push(option);
 
 			if (this.viewMode === ViewMode.Views && this.views.getActiveView() === view) {
@@ -259,32 +259,37 @@ export class NotebookViewsOptions implements IActionProvider {
 	}
 }
 
+/**
+ * Action to open a Notebook View
+ */
 export class DashboardViewAction extends Action {
 	constructor(
 		id: string, label: string, cssClass: string,
 		@INotebookService private _notebookService: INotebookService,
+		@INotificationService private _notificationService: INotificationService,
 	) {
 		super(id, label, cssClass);
 	}
 
-	public override run(context: URI): Promise<void> {
-		return new Promise<void>((resolve, reject) => {
-			try {
-				const editor = this._notebookService.findNotebookEditor(context);
-				let views = editor.views;
-				const view = views.getViews().find(view => view.guid === this.id);
+	public override async run(context: URI): Promise<void> {
+		if (context) {
+			const editor = this._notebookService.findNotebookEditor(context);
+			let views = editor.views;
+			const view = views.getViews().find(view => view.guid === this.id);
 
+			if (view) {
 				views.setActiveView(view);
 				editor.model.viewMode = ViewMode.Views;
-
-				resolve();
-			} catch (e) {
-				reject(e);
+			} else {
+				this._notificationService.error(localize('viewNotFound', "Unable to find view: {0}", this.id));
 			}
-		});
+		}
 	}
 }
 
+/**
+ * Action to open enter the default notebook editor
+ */
 export class NotebookViewAction extends Action {
 	constructor(
 		id: string, label: string, cssClass: string,

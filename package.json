@@ -1,7 +1,7 @@
 {
   "name": "azuredatastudio",
-  "version": "1.31.0",
-  "distro": "9eab1e6d6180c1a560a4a50eb9e6e99641549329 ",
+  "version": "1.32.0",
+  "distro": "9c5f9c1fe9efe543ee235b94d5fdc57553c2d271",
   "author": {
     "name": "Microsoft Corporation"
   },
@@ -84,8 +84,8 @@
     "iconv-lite-umd": "0.6.8",
     "jquery": "3.5.0",
     "jschardet": "2.3.0",
-    "mark.js": "^8.11.1",
     "keytar": "7.2.0",
+    "mark.js": "^8.11.1",
     "minimist": "^1.2.5",
     "native-is-elevated": "0.4.3",
     "native-keymap": "2.2.1",
@@ -159,7 +159,7 @@
     "cssnano": "^4.1.11",
     "debounce": "^1.0.0",
     "deemon": "^1.4.0",
-    "electron": "12.0.4",
+    "electron": "12.0.7",
     "eslint": "6.8.0",
     "eslint-plugin-jsdoc": "^19.1.0",
     "eslint-plugin-mocha": "8.0.0",
@@ -224,8 +224,8 @@
     "style-loader": "^1.0.0",
     "temp-write": "^3.4.0",
     "ts-loader": "^6.2.1",
-    "typemoq": "^0.3.2",
     "tsec": "0.1.4",
+    "typemoq": "^0.3.2",
     "typescript": "^4.3.0-dev.20210426",
     "typescript-formatter": "7.1.0",
     "underscore": "^1.12.1",

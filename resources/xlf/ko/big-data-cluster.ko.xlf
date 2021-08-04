@@ -12,15 +12,15 @@
       </trans-unit>
       <trans-unit id="command.connectController.title">
         <source xml:lang="en">Connect to Existing Controller</source>
-        <target state="new">Connect to Existing Controller</target>
+        <target state="translated">기존 컨트롤러에 연결</target>
       </trans-unit>
       <trans-unit id="command.createController.title">
         <source xml:lang="en">Create New Controller</source>
-        <target state="new">Create New Controller</target>
+        <target state="translated">새 컨트롤러 만들기</target>
       </trans-unit>
       <trans-unit id="command.removeController.title">
         <source xml:lang="en">Remove Controller</source>
-        <target state="new">Remove Controller</target>
+        <target state="translated">컨트롤러 제거</target>
       </trans-unit>
       <trans-unit id="command.refreshController.title">
         <source xml:lang="en">Refresh</source>
@@ -49,16 +49,136 @@
       <trans-unit id="bdc.view.welcome.connect">
         <source xml:lang="en">No SQL Big Data Cluster controllers registered. [Learn More](https://docs.microsoft.com/sql/big-data-cluster/big-data-cluster-overview)
 [Connect Controller](command:bigDataClusters.command.connectController)</source>
-        <target state="new">No SQL Big Data Cluster controllers registered. [Learn More](https://docs.microsoft.com/sql/big-data-cluster/big-data-cluster-overview)
-[Connect Controller](command:bigDataClusters.command.connectController)</target>
+        <target state="translated">등록된 SQL 빅 데이터 클러스터 컨트롤러가 없습니다. [자세한 정보](https://docs.microsoft.com/sql/big-data-cluster/big-data-cluster-overview)
+[컨트롤러 연결](command:bigDataClusters.command.connectController)</target>
       </trans-unit>
       <trans-unit id="bdc.view.welcome.loading">
         <source xml:lang="en">Loading controllers...</source>
-        <target state="new">Loading controllers...</target>
+        <target state="translated">컨트롤러를 로드하는 중...</target>
       </trans-unit>
       <trans-unit id="bdc.ignoreSslVerification.desc">
         <source xml:lang="en">Ignore SSL verification errors against SQL Server Big Data Cluster endpoints such as HDFS, Spark, and Controller if true</source>
         <target state="translated">True인 경우 HDFS, Spark 및 Controller와 같은 SQL Server 빅 데이터 클러스터 엔드포인트를 대상으로 SSL 확인 오류 무시</target>
+      </trans-unit>
+      <trans-unit id="resource-type-sql-bdc-display-name">
+        <source xml:lang="en">SQL Server Big Data Cluster</source>
+        <target state="translated">SQL Server 빅 데이터 클러스터</target>
+      </trans-unit>
+      <trans-unit id="resource-type-sql-bdc-description">
+        <source xml:lang="en">SQL Server Big Data Cluster allows you to deploy scalable clusters of SQL Server, Spark, and HDFS containers running on Kubernetes</source>
+        <target state="translated">SQL Server 빅 데이터 클러스터를 사용하면 Kubernetes에서 실행되는 SQL Server, Spark 및 HDFS 컨테이너의 확장 가능한 클러스터를 배포할 수 있습니다.</target>
+      </trans-unit>
+      <trans-unit id="version-display-name">
+        <source xml:lang="en">Version</source>
+        <target state="translated">버전</target>
+      </trans-unit>
+      <trans-unit id="bdc-2019-display-name">
+        <source xml:lang="en">SQL Server 2019</source>
+        <target state="translated">SQL Server 2019</target>
+      </trans-unit>
+      <trans-unit id="bdc-deployment-target">
+        <source xml:lang="en">Deployment target</source>
+        <target state="translated">배포 대상</target>
+      </trans-unit>
+      <trans-unit id="bdc-deployment-target-new-aks">
+        <source xml:lang="en">New Azure Kubernetes Service Cluster</source>
+        <target state="translated">새 Azure Kubernetes Service 클러스터</target>
+      </trans-unit>
+      <trans-unit id="bdc-deployment-target-existing-aks">
+        <source xml:lang="en">Existing Azure Kubernetes Service Cluster</source>
+        <target state="translated">기존 Azure Kubernetes Service 클러스터</target>
+      </trans-unit>
+      <trans-unit id="bdc-deployment-target-existing-kubeadm">
+        <source xml:lang="en">Existing Kubernetes Cluster (kubeadm)</source>
+        <target state="translated">기존 Kubernetes 클러스터(kubeadm)</target>
+      </trans-unit>
+      <trans-unit id="bdc-deployment-target-existing-aro">
+        <source xml:lang="en">Existing Azure Red Hat OpenShift cluster</source>
+        <target state="translated">기존 Azure Red Hat OpenShift 클러스터</target>
+      </trans-unit>
+      <trans-unit id="bdc-deployment-target-existing-openshift">
+        <source xml:lang="en">Existing OpenShift cluster</source>
+        <target state="translated">기존 OpenShift 클러스터</target>
+      </trans-unit>
+      <trans-unit id="bdc-cluster-settings-section-title">
+        <source xml:lang="en">SQL Server Big Data Cluster settings</source>
+        <target state="translated">SQL Server 빅 데이터 클러스터 설정</target>
+      </trans-unit>
+      <trans-unit id="bdc-cluster-name-field">
+        <source xml:lang="en">Cluster name</source>
+        <target state="translated">클러스터 이름</target>
+      </trans-unit>
+      <trans-unit id="bdc-controller-username-field">
+        <source xml:lang="en">Controller username</source>
+        <target state="translated">컨트롤러 사용자 이름</target>
+      </trans-unit>
+      <trans-unit id="bdc-password-field">
+        <source xml:lang="en">Password</source>
+        <target state="translated">암호</target>
+      </trans-unit>
+      <trans-unit id="bdc-confirm-password-field">
+        <source xml:lang="en">Confirm password</source>
+        <target state="translated">암호 확인</target>
+      </trans-unit>
+      <trans-unit id="bdc-azure-settings-section-title">
+        <source xml:lang="en">Azure settings</source>
+        <target state="translated">Azure 설정</target>
+      </trans-unit>
+      <trans-unit id="bdc-azure-subscription-id-field">
+        <source xml:lang="en">Subscription id</source>
+        <target state="translated">구독 ID</target>
+      </trans-unit>
+      <trans-unit id="bdc-azure-subscription-id-placeholder">
+        <source xml:lang="en">Use my default Azure subscription</source>
+        <target state="translated">내 기본 Azure 구독 사용</target>
+      </trans-unit>
+      <trans-unit id="bdc-azure-resource-group-field">
+        <source xml:lang="en">Resource group name</source>
+        <target state="translated">리소스 그룹 이름</target>
+      </trans-unit>
+      <trans-unit id="bdc-azure-region-field">
+        <source xml:lang="en">Region</source>
+        <target state="translated">지역</target>
+      </trans-unit>
+      <trans-unit id="bdc-azure-aks-name-field">
+        <source xml:lang="en">AKS cluster name</source>
+        <target state="translated">AKS 클러스터 이름</target>
+      </trans-unit>
+      <trans-unit id="bdc-azure-vm-size-field">
+        <source xml:lang="en">VM size</source>
+        <target state="translated">VM 크기</target>
+      </trans-unit>
+      <trans-unit id="bdc-azure-vm-count-field">
+        <source xml:lang="en">VM count</source>
+        <target state="translated">VM 수</target>
+      </trans-unit>
+      <trans-unit id="bdc-storage-class-field">
+        <source xml:lang="en">Storage class name</source>
+        <target state="translated">스토리지 클래스 이름</target>
+      </trans-unit>
+      <trans-unit id="bdc-data-size-field">
+        <source xml:lang="en">Capacity for data (GB)</source>
+        <target state="translated">데이터 용량(GB)</target>
+      </trans-unit>
+      <trans-unit id="bdc-log-size-field">
+        <source xml:lang="en">Capacity for logs (GB)</source>
+        <target state="translated">로그 용량(GB)</target>
+      </trans-unit>
+      <trans-unit id="bdc-agreement">
+        <source xml:lang="en">I accept {0}, {1} and {2}.</source>
+        <target state="translated">{0}, {1} 및 {2}에 동의합니다.</target>
+      </trans-unit>
+      <trans-unit id="microsoft-privacy-statement">
+        <source xml:lang="en">Microsoft Privacy Statement</source>
+        <target state="translated">Microsoft 개인정보처리방침</target>
+      </trans-unit>
+      <trans-unit id="bdc-agreement-azdata-eula">
+        <source xml:lang="en">azdata License Terms</source>
+        <target state="translated">azdata 사용 조건</target>
+      </trans-unit>
+      <trans-unit id="bdc-agreement-bdc-eula">
+        <source xml:lang="en">SQL Server License Terms</source>
+        <target state="translated">SQL Server 사용 조건</target>
       </trans-unit>
     </body>
   </file>
@@ -254,299 +374,299 @@
     <body>
       <trans-unit id="bdc.dashboard.status">
         <source xml:lang="en">Status Icon</source>
-        <target state="new">Status Icon</target>
+        <target state="translated">상태 아이콘</target>
       </trans-unit>
       <trans-unit id="bdc.dashboard.instance">
         <source xml:lang="en">Instance</source>
-        <target state="new">Instance</target>
+        <target state="translated">인스턴스</target>
       </trans-unit>
       <trans-unit id="bdc.dashboard.state">
         <source xml:lang="en">State</source>
-        <target state="new">State</target>
+        <target state="translated">상태</target>
       </trans-unit>
       <trans-unit id="bdc.dashboard.view">
         <source xml:lang="en">View</source>
-        <target state="new">View</target>
+        <target state="translated">보기</target>
       </trans-unit>
       <trans-unit id="bdc.dashboard.notAvailable">
         <source xml:lang="en">N/A</source>
-        <target state="new">N/A</target>
+        <target state="translated">해당 없음</target>
       </trans-unit>
       <trans-unit id="bdc.dashboard.healthStatusDetails">
         <source xml:lang="en">Health Status Details</source>
-        <target state="new">Health Status Details</target>
+        <target state="translated">상태 세부 정보</target>
       </trans-unit>
       <trans-unit id="bdc.dashboard.metricsAndLogs">
         <source xml:lang="en">Metrics and Logs</source>
-        <target state="new">Metrics and Logs</target>
+        <target state="translated">메트릭 및 로그</target>
       </trans-unit>
       <trans-unit id="bdc.dashboard.healthStatus">
         <source xml:lang="en">Health Status</source>
-        <target state="new">Health Status</target>
+        <target state="translated">상태</target>
       </trans-unit>
       <trans-unit id="bdc.dashboard.nodeMetrics">
         <source xml:lang="en">Node Metrics</source>
-        <target state="new">Node Metrics</target>
+        <target state="translated">노드 메트릭</target>
       </trans-unit>
       <trans-unit id="bdc.dashboard.sqlMetrics">
         <source xml:lang="en">SQL Metrics</source>
-        <target state="new">SQL Metrics</target>
+        <target state="translated">SQL 메트릭</target>
       </trans-unit>
       <trans-unit id="bdc.dashboard.logs">
         <source xml:lang="en">Logs</source>
-        <target state="new">Logs</target>
+        <target state="translated">로그</target>
       </trans-unit>
       <trans-unit id="bdc.dashboard.viewNodeMetrics">
         <source xml:lang="en">View Node Metrics {0}</source>
-        <target state="new">View Node Metrics {0}</target>
+        <target state="translated">노드 메트릭 {0} 보기</target>
       </trans-unit>
       <trans-unit id="bdc.dashboard.viewSqlMetrics">
         <source xml:lang="en">View SQL Metrics {0}</source>
-        <target state="new">View SQL Metrics {0}</target>
+        <target state="translated">SQL 메트릭 {0} 보기</target>
       </trans-unit>
       <trans-unit id="bdc.dashboard.viewLogs">
         <source xml:lang="en">View Kibana Logs {0}</source>
-        <target state="new">View Kibana Logs {0}</target>
+        <target state="translated">Kibana 로그 {0} 보기</target>
       </trans-unit>
       <trans-unit id="bdc.dashboard.lastUpdated">
         <source xml:lang="en">Last Updated : {0}</source>
-        <target state="new">Last Updated : {0}</target>
+        <target state="translated">마지막으로 업데이트한 날짜: {0}</target>
       </trans-unit>
       <trans-unit id="basicAuthName">
         <source xml:lang="en">Basic</source>
-        <target state="new">Basic</target>
+        <target state="translated">기본</target>
       </trans-unit>
       <trans-unit id="integratedAuthName">
         <source xml:lang="en">Windows Authentication</source>
-        <target state="new">Windows Authentication</target>
+        <target state="translated">Windows 인증</target>
       </trans-unit>
       <trans-unit id="addNewController">
         <source xml:lang="en">Add New Controller</source>
-        <target state="new">Add New Controller</target>
+        <target state="translated">새 컨트롤러 추가</target>
       </trans-unit>
       <trans-unit id="url">
         <source xml:lang="en">URL</source>
-        <target state="new">URL</target>
+        <target state="translated">URL</target>
       </trans-unit>
       <trans-unit id="username">
         <source xml:lang="en">Username</source>
-        <target state="new">Username</target>
+        <target state="translated">사용자 이름</target>
       </trans-unit>
       <trans-unit id="password">
         <source xml:lang="en">Password</source>
-        <target state="new">Password</target>
+        <target state="translated">암호</target>
       </trans-unit>
       <trans-unit id="rememberPassword">
         <source xml:lang="en">Remember Password</source>
-        <target state="new">Remember Password</target>
+        <target state="translated">암호 저장</target>
       </trans-unit>
       <trans-unit id="clusterManagementUrl">
         <source xml:lang="en">Cluster Management URL</source>
-        <target state="new">Cluster Management URL</target>
+        <target state="translated">클러스터 관리 URL</target>
       </trans-unit>
       <trans-unit id="textAuthCapital">
         <source xml:lang="en">Authentication type</source>
-        <target state="new">Authentication type</target>
+        <target state="translated">인증 유형</target>
       </trans-unit>
       <trans-unit id="hdsf.dialog.connection.section">
         <source xml:lang="en">Cluster Connection</source>
-        <target state="new">Cluster Connection</target>
+        <target state="translated">클러스터 연결</target>
       </trans-unit>
       <trans-unit id="add">
         <source xml:lang="en">Add</source>
-        <target state="new">Add</target>
+        <target state="translated">추가</target>
       </trans-unit>
       <trans-unit id="cancel">
         <source xml:lang="en">Cancel</source>
-        <target state="new">Cancel</target>
+        <target state="translated">취소</target>
       </trans-unit>
       <trans-unit id="ok">
         <source xml:lang="en">OK</source>
-        <target state="new">OK</target>
+        <target state="translated">확인</target>
       </trans-unit>
       <trans-unit id="bdc.dashboard.refresh">
         <source xml:lang="en">Refresh</source>
-        <target state="new">Refresh</target>
+        <target state="translated">새로 고침</target>
       </trans-unit>
       <trans-unit id="bdc.dashboard.troubleshoot">
         <source xml:lang="en">Troubleshoot</source>
-        <target state="new">Troubleshoot</target>
+        <target state="translated">문제 해결</target>
       </trans-unit>
       <trans-unit id="bdc.dashboard.bdcOverview">
         <source xml:lang="en">Big Data Cluster overview</source>
-        <target state="new">Big Data Cluster overview</target>
+        <target state="translated">빅 데이터 클러스터 개요</target>
       </trans-unit>
       <trans-unit id="bdc.dashboard.clusterDetails">
         <source xml:lang="en">Cluster Details</source>
-        <target state="new">Cluster Details</target>
+        <target state="translated">클러스터 세부 정보</target>
       </trans-unit>
       <trans-unit id="bdc.dashboard.clusterOverview">
         <source xml:lang="en">Cluster Overview</source>
-        <target state="new">Cluster Overview</target>
+        <target state="translated">클러스터 개요</target>
       </trans-unit>
       <trans-unit id="bdc.dashboard.serviceEndpoints">
         <source xml:lang="en">Service Endpoints</source>
-        <target state="new">Service Endpoints</target>
+        <target state="translated">서비스 엔드포인트</target>
       </trans-unit>
       <trans-unit id="bdc.dashboard.clusterProperties">
         <source xml:lang="en">Cluster Properties</source>
-        <target state="new">Cluster Properties</target>
+        <target state="translated">클러스터 속성</target>
       </trans-unit>
       <trans-unit id="bdc.dashboard.clusterState">
         <source xml:lang="en">Cluster State</source>
-        <target state="new">Cluster State</target>
+        <target state="translated">클러스터 상태</target>
       </trans-unit>
       <trans-unit id="bdc.dashboard.serviceName">
         <source xml:lang="en">Service Name</source>
-        <target state="new">Service Name</target>
+        <target state="translated">서비스 이름</target>
       </trans-unit>
       <trans-unit id="bdc.dashboard.service">
         <source xml:lang="en">Service</source>
-        <target state="new">Service</target>
+        <target state="translated">서비스</target>
       </trans-unit>
       <trans-unit id="bdc.dashboard.endpoint">
         <source xml:lang="en">Endpoint</source>
-        <target state="new">Endpoint</target>
+        <target state="translated">엔드포인트</target>
       </trans-unit>
       <trans-unit id="copiedEndpoint">
         <source xml:lang="en">Endpoint '{0}' copied to clipboard</source>
-        <target state="new">Endpoint '{0}' copied to clipboard</target>
+        <target state="translated">엔드포인트 '{0}'이(가) 클립보드에 복사됨</target>
       </trans-unit>
       <trans-unit id="bdc.dashboard.copy">
         <source xml:lang="en">Copy</source>
-        <target state="new">Copy</target>
+        <target state="translated">복사</target>
       </trans-unit>
       <trans-unit id="bdc.dashboard.viewDetails">
         <source xml:lang="en">View Details</source>
-        <target state="new">View Details</target>
+        <target state="translated">세부 정보 보기</target>
       </trans-unit>
       <trans-unit id="bdc.dashboard.viewErrorDetails">
         <source xml:lang="en">View Error Details</source>
-        <target state="new">View Error Details</target>
+        <target state="translated">오류 세부 정보 보기</target>
       </trans-unit>
       <trans-unit id="connectController.dialog.title">
         <source xml:lang="en">Connect to Controller</source>
-        <target state="new">Connect to Controller</target>
+        <target state="translated">컨트롤러에 연결</target>
       </trans-unit>
       <trans-unit id="mount.main.section">
         <source xml:lang="en">Mount Configuration</source>
-        <target state="new">Mount Configuration</target>
+        <target state="translated">탑재 구성</target>
       </trans-unit>
       <trans-unit id="mount.task.name">
         <source xml:lang="en">Mounting HDFS folder on path {0}</source>
-        <target state="new">Mounting HDFS folder on path {0}</target>
+        <target state="translated">경로 {0}에 HDFS 폴더를 탑재하는 중</target>
       </trans-unit>
       <trans-unit id="refreshmount.task.name">
         <source xml:lang="en">Refreshing HDFS Mount on path {0}</source>
-        <target state="new">Refreshing HDFS Mount on path {0}</target>
+        <target state="translated">경로 {0}에서 HDFS 탑재를 새로 고치는 중</target>
       </trans-unit>
       <trans-unit id="deletemount.task.name">
         <source xml:lang="en">Deleting HDFS Mount on path {0}</source>
-        <target state="new">Deleting HDFS Mount on path {0}</target>
+        <target state="translated">경로 {0}에서 HDFS 탑재를 삭제하는 중</target>
       </trans-unit>
       <trans-unit id="mount.task.submitted">
         <source xml:lang="en">Mount creation has started</source>
-        <target state="new">Mount creation has started</target>
+        <target state="translated">탑재 만들기를 시작했습니다.</target>
       </trans-unit>
       <trans-unit id="refreshmount.task.submitted">
         <source xml:lang="en">Refresh mount request submitted</source>
-        <target state="new">Refresh mount request submitted</target>
+        <target state="translated">탑재 새로 고침 요청이 제출됨</target>
       </trans-unit>
       <trans-unit id="deletemount.task.submitted">
         <source xml:lang="en">Delete mount request submitted</source>
-        <target state="new">Delete mount request submitted</target>
+        <target state="translated">탑재 삭제 요청이 제출됨</target>
       </trans-unit>
       <trans-unit id="mount.task.complete">
         <source xml:lang="en">Mounting HDFS folder is complete</source>
-        <target state="new">Mounting HDFS folder is complete</target>
+        <target state="translated">HDFS 폴더 탑재가 완료되었습니다.</target>
       </trans-unit>
       <trans-unit id="mount.task.inprogress">
         <source xml:lang="en">Mounting is likely to complete, check back later to verify</source>
-        <target state="new">Mounting is likely to complete, check back later to verify</target>
+        <target state="translated">탑재가 완료될 수 있습니다. 나중에 다시 확인하세요.</target>
       </trans-unit>
       <trans-unit id="mount.dialog.title">
         <source xml:lang="en">Mount HDFS Folder</source>
-        <target state="new">Mount HDFS Folder</target>
+        <target state="translated">HDFS 폴더 탑재</target>
       </trans-unit>
       <trans-unit id="mount.hdfsPath.title">
         <source xml:lang="en">HDFS Path</source>
-        <target state="new">HDFS Path</target>
+        <target state="translated">HDFS 경로</target>
       </trans-unit>
       <trans-unit id="mount.hdfsPath.info">
         <source xml:lang="en">Path to a new (non-existing) directory which you want to associate with the mount</source>
-        <target state="new">Path to a new (non-existing) directory which you want to associate with the mount</target>
+        <target state="translated">탑재와 연결하려는 새(기존 항목 아님) 디렉터리의 경로</target>
       </trans-unit>
       <trans-unit id="mount.remoteUri.title">
         <source xml:lang="en">Remote URI</source>
-        <target state="new">Remote URI</target>
+        <target state="translated">원격 URI</target>
       </trans-unit>
       <trans-unit id="mount.remoteUri.info">
         <source xml:lang="en">The URI to the remote data source. Example for ADLS: abfs://fs@saccount.dfs.core.windows.net/</source>
-        <target state="new">The URI to the remote data source. Example for ADLS: abfs://fs@saccount.dfs.core.windows.net/</target>
+        <target state="translated">원격 데이터 원본에 대한 URI입니다. ADLS의 예: abfs://fs@saccount.dfs.core.windows.net/</target>
       </trans-unit>
       <trans-unit id="mount.credentials.title">
         <source xml:lang="en">Credentials</source>
-        <target state="new">Credentials</target>
+        <target state="translated">자격 증명</target>
       </trans-unit>
       <trans-unit id="mount.credentials.info">
         <source xml:lang="en">Mount credentials for authentication to remote data source for reads</source>
-        <target state="new">Mount credentials for authentication to remote data source for reads</target>
+        <target state="translated">읽기 위해 원격 데이터 원본에 인증용 자격 증명 탑재</target>
       </trans-unit>
       <trans-unit id="refreshmount.dialog.title">
         <source xml:lang="en">Refresh Mount</source>
-        <target state="new">Refresh Mount</target>
+        <target state="translated">탑재 새로 고침</target>
       </trans-unit>
       <trans-unit id="deleteMount.dialog.title">
         <source xml:lang="en">Delete Mount</source>
-        <target state="new">Delete Mount</target>
+        <target state="translated">탑재 삭제</target>
       </trans-unit>
       <trans-unit id="bdc.dashboard.loadingClusterStateCompleted">
         <source xml:lang="en">Loading cluster state completed</source>
-        <target state="new">Loading cluster state completed</target>
+        <target state="translated">클러스터 상태 로드 완료</target>
       </trans-unit>
       <trans-unit id="bdc.dashboard.loadingHealthStatusCompleted">
         <source xml:lang="en">Loading health status completed</source>
-        <target state="new">Loading health status completed</target>
+        <target state="translated">상태 로드 완료</target>
       </trans-unit>
       <trans-unit id="err.controller.username.required">
         <source xml:lang="en">Username is required</source>
-        <target state="new">Username is required</target>
+        <target state="translated">사용자 이름이 필요합니다.</target>
       </trans-unit>
       <trans-unit id="err.controller.password.required">
         <source xml:lang="en">Password is required</source>
-        <target state="new">Password is required</target>
+        <target state="translated">암호는 필수입니다.</target>
       </trans-unit>
       <trans-unit id="endpointsError">
         <source xml:lang="en">Unexpected error retrieving BDC Endpoints: {0}</source>
-        <target state="new">Unexpected error retrieving BDC Endpoints: {0}</target>
+        <target state="translated">BDC 엔드포인트를 검색하는 동안 예기치 않은 오류 발생: {0}</target>
       </trans-unit>
       <trans-unit id="bdc.dashboard.noConnection">
         <source xml:lang="en">The dashboard requires a connection. Please click retry to enter your credentials.</source>
-        <target state="new">The dashboard requires a connection. Please click retry to enter your credentials.</target>
+        <target state="translated">대시보드에 연결이 필요합니다. 자격 증명을 입력하려면 다시 시도를 클릭하세요.</target>
       </trans-unit>
       <trans-unit id="bdc.dashboard.unexpectedError">
         <source xml:lang="en">Unexpected error occurred: {0}</source>
-        <target state="new">Unexpected error occurred: {0}</target>
+        <target state="translated">예기치 않은 오류가 발생했습니다. {0}</target>
       </trans-unit>
       <trans-unit id="mount.hdfs.loginerror1">
         <source xml:lang="en">Login to controller failed</source>
-        <target state="new">Login to controller failed</target>
+        <target state="translated">컨트롤러에 로그인하지 못함</target>
       </trans-unit>
       <trans-unit id="mount.hdfs.loginerror2">
         <source xml:lang="en">Login to controller failed: {0}</source>
-        <target state="new">Login to controller failed: {0}</target>
+        <target state="translated">컨트롤러에 로그인하지 못함: {0}</target>
       </trans-unit>
       <trans-unit id="mount.err.formatting">
         <source xml:lang="en">Bad formatting of credentials at {0}</source>
-        <target state="new">Bad formatting of credentials at {0}</target>
+        <target state="translated">{0}에 있는 자격 증명 형식이 잘못됨</target>
       </trans-unit>
       <trans-unit id="mount.task.error">
         <source xml:lang="en">Error mounting folder: {0}</source>
-        <target state="new">Error mounting folder: {0}</target>
+        <target state="translated">폴더 탑재 오류: {0}</target>
       </trans-unit>
       <trans-unit id="mount.error.unknown">
         <source xml:lang="en">Unknown error occurred during the mount process</source>
-        <target state="new">Unknown error occurred during the mount process</target>
+        <target state="translated">탑재 프로세스 중에 알 수 없는 오류가 발생했습니다.</target>
       </trans-unit>
     </body>
   </file>
@@ -566,7 +686,7 @@
       </trans-unit>
       <trans-unit id="bdc.error.getClusterConfig">
         <source xml:lang="en">Error retrieving cluster config from {0}</source>
-        <target state="new">Error retrieving cluster config from {0}</target>
+        <target state="translated">{0}에서 클러스터 구성을 검색하는 동안 오류 발생</target>
       </trans-unit>
       <trans-unit id="bdc.error.getEndPoints">
         <source xml:lang="en">Error retrieving endpoints from {0}</source>
@@ -582,7 +702,7 @@
       </trans-unit>
       <trans-unit id="bdc.error.statusHdfs">
         <source xml:lang="en">Error getting mount status</source>
-        <target state="new">Error getting mount status</target>
+        <target state="translated">탑재 상태를 가져오는 동안 오류 발생</target>
       </trans-unit>
       <trans-unit id="bdc.error.refreshHdfs">
         <source xml:lang="en">Error refreshing mount</source>
@@ -602,7 +722,7 @@
       </trans-unit>
       <trans-unit id="bdc.dashboard.title">
         <source xml:lang="en">Big Data Cluster Dashboard -</source>
-        <target state="new">Big Data Cluster Dashboard -</target>
+        <target state="translated">빅 데이터 클러스터 대시보드 -</target>
       </trans-unit>
       <trans-unit id="textYes">
         <source xml:lang="en">Yes</source>
@@ -614,7 +734,7 @@
       </trans-unit>
       <trans-unit id="textConfirmRemoveController">
         <source xml:lang="en">Are you sure you want to remove '{0}'?</source>
-        <target state="new">Are you sure you want to remove '{0}'?</target>
+        <target state="translated">'{0}'을(를) 제거하시겠습니까?</target>
       </trans-unit>
     </body>
   </file>
@@ -622,7 +742,7 @@
     <body>
       <trans-unit id="bdc.controllerTreeDataProvider.error">
         <source xml:lang="en">Unexpected error loading saved controllers: {0}</source>
-        <target state="new">Unexpected error loading saved controllers: {0}</target>
+        <target state="translated">저장된 컨트롤러를 로드하는 동안 예기치 않은 오류 발생: {0}</target>
       </trans-unit>
     </body>
   </file>

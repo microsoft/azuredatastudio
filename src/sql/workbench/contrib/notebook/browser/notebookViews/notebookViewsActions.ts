@@ -25,9 +25,8 @@ import { ToggleMoreActions } from 'sql/workbench/contrib/notebook/browser/cellTo
 import { NotebookViewsExtension } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViewsExtension';
 import { INotebookView } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViews';
 
-
 export class ViewSettingsAction extends Action {
-	private static readonly ID = 'viewSettings';
+	private static readonly ID = 'notebookView.viewSettings';
 	private static readonly LABEL = undefined;
 	private static readonly ICON = 'notebook-button settings masked-icon';
 
@@ -38,17 +37,15 @@ export class ViewSettingsAction extends Action {
 		super(ViewSettingsAction.ID, ViewSettingsAction.LABEL, ViewSettingsAction.ICON);
 	}
 
-	override run(): Promise<void> {
-		return new Promise<void>((resolve) => {
-			const optionsModal = this._instantiationService.createInstance(ViewOptionsModal, this._context.getActiveView());
-			optionsModal.render();
-			optionsModal.open();
-		});
+	override async run(): Promise<void> {
+		const optionsModal = this._instantiationService.createInstance(ViewOptionsModal, this._context.getActiveView());
+		optionsModal.render();
+		optionsModal.open();
 	}
 }
 
 export class DeleteViewAction extends Action {
-	private static readonly ID = 'viewSettings';
+	private static readonly ID = 'notebookView.deleteView';
 	private static readonly LABEL = undefined;
 	private static readonly ICON = 'notebook-button delete masked-icon';
 
@@ -88,7 +85,7 @@ export class DeleteViewAction extends Action {
 }
 
 export class InsertCellAction extends Action {
-	private static readonly ID = 'viewSettings';
+	private static readonly ID = 'notebookView.insertCell';
 	private static readonly LABEL = localize('insertCells', "Insert Cells");
 	private static readonly ICON = 'notebook-button masked-pseudo add-new';
 
@@ -103,19 +100,15 @@ export class InsertCellAction extends Action {
 	}
 
 	override async run(): Promise<void> {
-		try {
-			const optionsModal = this._instantiationService.createInstance(InsertCellsModal, this.onInsert, this._context, this._containerRef, this._componentFactoryResolver);
-			optionsModal.render();
-			optionsModal.open();
-		} catch (e) {
-			throw new Error();
-		}
+		const optionsModal = this._instantiationService.createInstance(InsertCellsModal, this.onInsert, this._context, this._containerRef, this._componentFactoryResolver);
+		optionsModal.render();
+		optionsModal.open();
 	}
 }
 
 export class RunCellAction extends MultiStateAction<CellExecutionState> {
 	public static ID = 'notebookView.runCell';
-	public static LABEL = 'Run cell';
+	public static LABEL = localize('runCell', "Run cell");
 	private _executionChangedDisposable: IDisposable;
 	private _context: CellContext;
 	constructor(context: CellContext, @INotificationService private notificationService: INotificationService,
@@ -184,7 +177,7 @@ export class RunCellAction extends MultiStateAction<CellExecutionState> {
 }
 
 export class HideCellAction extends Action {
-	private static readonly ID = 'hideCell';
+	private static readonly ID = 'notebookView.hideCell';
 	private static readonly LABEL = undefined;
 	private static readonly ICON = 'notebook-button delete masked-icon';
 
@@ -195,11 +188,8 @@ export class HideCellAction extends Action {
 		super(HideCellAction.ID, HideCellAction.LABEL, HideCellAction.ICON);
 	}
 
-	override run(): Promise<void> {
-		return new Promise<void>((resolve) => {
-			this.hideFn.apply(this.context);
-			resolve();
-		});
+	override async run(): Promise<void> {
+		this.hideFn.apply(this.context);
 	}
 }
 
@@ -235,7 +225,6 @@ export class ViewCellToggleMoreActions {
 	) {
 		this._actions.push(
 			instantiationService.createInstance(ViewCellInNotebook, 'viewCellInNotebook', localize('viewCellInNotebook', "View Cell In Notebook")),
-			//new Separator(),
 		);
 	}
 
@@ -248,7 +237,6 @@ export class ViewCellToggleMoreActions {
 		this._moreActions = new ActionBar(this._moreActionsElement, { orientation: ActionsOrientation.VERTICAL, ariaLabel: localize('moreActionsLabel', "More") });
 		this._moreActions.context = { target: this._moreActionsElement };
 		let validActions = this._actions.filter(a => a instanceof Separator || a instanceof CellActionBase && a.canRun(context));
-		//removeDuplicatedAndStartingSeparators(validActions);
 		this._moreActions.push(this.instantiationService.createInstance(ToggleMoreActions, validActions, context), { icon: true, label: false });
 	}
 }

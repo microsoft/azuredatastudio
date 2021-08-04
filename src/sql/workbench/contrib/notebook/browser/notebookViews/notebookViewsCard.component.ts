@@ -64,6 +64,15 @@ export class NotebookViewsCardComponent extends AngularDisposable implements OnI
 		this.detectChanges();
 	}
 
+	ngAfterViewInit() {
+		this.initialize();
+	}
+
+	public initialize(): void {
+		this.initActionBar();
+		this.detectChanges();
+	}
+
 	initActionBar() {
 		if (this._actionbarRef) {
 			let taskbarContent: ITaskbarContent[] = [];
@@ -87,16 +96,6 @@ export class NotebookViewsCardComponent extends AngularDisposable implements OnI
 
 			this._actionbar.setContent(taskbarContent);
 		}
-
-	}
-
-	ngAfterViewInit() {
-		this.initialize();
-	}
-
-	public initialize(): void {
-		this.initActionBar();
-		this.detectChanges();
 	}
 
 	get elementRef(): ElementRef {

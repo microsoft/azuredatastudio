@@ -32,7 +32,7 @@ import { NotebookViewsGridComponent } from 'sql/workbench/contrib/notebook/brows
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { DeleteViewAction, InsertCellAction, ViewSettingsAction } from 'sql/workbench/contrib/notebook/browser/notebookViews/notebookViewsActions';
 import { DropdownMenuActionViewItem } from 'sql/base/browser/ui/buttonMenu/buttonMenu';
-import { NotebookViewsOptions as NotebookViewsDropdownSelectionProvider, AddCellAction, RunAllCellsAction } from 'sql/workbench/contrib/notebook/browser/notebookActions';
+import { NotebookViewsActionProvider, AddCellAction, RunAllCellsAction } from 'sql/workbench/contrib/notebook/browser/notebookActions';
 import * as DOM from 'vs/base/browser/dom';
 import { AnchorAlignment } from 'vs/base/browser/ui/contextview/contextview';
 import { LabeledMenuItemActionItem } from 'sql/platform/actions/browser/menuEntryActionViewItem';
@@ -265,7 +265,7 @@ export class NotebookViewComponent extends AngularDisposable implements INoteboo
 		let viewOptions = this._instantiationService.createInstance(ViewSettingsAction, this.views);
 
 		let viewsContainer = document.createElement('li');
-		let viewsActionsProvider = new NotebookViewsDropdownSelectionProvider(viewsContainer, this.views, this.modelReady, this._notebookService, this._instantiationService);
+		let viewsActionsProvider = new NotebookViewsActionProvider(viewsContainer, this.views, this.modelReady, this._notebookService, this._notificationService, this._instantiationService);
 		let viewsButton = this._instantiationService.createInstance(AddCellAction, 'notebook.OpenViews', undefined, 'notebook-button masked-pseudo code');
 		let viewsDropdownContainer = DOM.$('li.action-item');
 		viewsDropdownContainer.setAttribute('role', 'presentation');

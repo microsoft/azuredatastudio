@@ -35,14 +35,14 @@ export class OpenExistingDialog extends DialogBase {
 
 	async validate(): Promise<boolean> {
 		try {
-			if (await this.workspaceService.validateWorkspace() === false) {
-				return false;
-			}
-
 			if (this.localRadioButton?.checked) {
 				await this.validateFile(this.filePathTextBox!.value!, constants.Project.toLowerCase());
 			} else {
 				await this.validateClonePath(<string>this.localClonePathTextBox!.value);
+			}
+
+			if (await this.workspaceService.validateWorkspace() === false) {
+				return false;
 			}
 			return true;
 		}
@@ -98,7 +98,7 @@ export class OpenExistingDialog extends DialogBase {
 	}
 
 	protected async initialize(view: azdataType.ModelView): Promise<void> {
-		this.localRadioButton = view.modelBuilder.radioButton().withProperties<azdataType.RadioButtonProperties>({
+		this.localRadioButton = view.modelBuilder.radioButton().withProps({
 			name: 'location',
 			label: constants.Local,
 			checked: true
@@ -112,7 +112,7 @@ export class OpenExistingDialog extends DialogBase {
 			}
 		}));
 
-		this.remoteGitRepoRadioButton = view.modelBuilder.radioButton().withProperties<azdataType.RadioButtonProperties>({
+		this.remoteGitRepoRadioButton = view.modelBuilder.radioButton().withProps({
 			name: 'location',
 			label: constants.RemoteGitRepo
 		}).component();
@@ -134,7 +134,7 @@ export class OpenExistingDialog extends DialogBase {
 			}
 		}));
 
-		const gitRepoTextBox = view.modelBuilder.inputBox().withProperties<azdataType.InputBoxProperties>({
+		const gitRepoTextBox = view.modelBuilder.inputBox().withProps({
 			ariaLabel: constants.GitRepoUrlTitle,
 			placeHolder: constants.GitRepoUrlPlaceholder,
 			required: true,
@@ -150,7 +150,7 @@ export class OpenExistingDialog extends DialogBase {
 			component: gitRepoTextBox
 		};
 
-		this.localClonePathTextBox = view.modelBuilder.inputBox().withProperties<azdataType.InputBoxProperties>({
+		this.localClonePathTextBox = view.modelBuilder.inputBox().withProps({
 			ariaLabel: constants.LocalClonePathTitle,
 			placeHolder: constants.LocalClonePathPlaceholder,
 			required: true,
@@ -161,7 +161,7 @@ export class OpenExistingDialog extends DialogBase {
 			this.localClonePathTextBox!.updateProperty('title', this.localClonePathTextBox!.value!);
 		}));
 
-		const localClonePathBrowseFolderButton = view.modelBuilder.button().withProperties<azdataType.ButtonProperties>({
+		const localClonePathBrowseFolderButton = view.modelBuilder.button().withProps({
 			ariaLabel: constants.BrowseButtonText,
 			iconPath: IconPathHelper.folder,
 			width: '18px',
@@ -190,7 +190,7 @@ export class OpenExistingDialog extends DialogBase {
 			required: true
 		};
 
-		this.filePathTextBox = view.modelBuilder.inputBox().withProperties<azdataType.InputBoxProperties>({
+		this.filePathTextBox = view.modelBuilder.inputBox().withProps({
 			ariaLabel: constants.LocationSelectorTitle,
 			placeHolder: constants.ProjectFilePlaceholder,
 			required: true,
@@ -201,15 +201,13 @@ export class OpenExistingDialog extends DialogBase {
 			this.filePathTextBox!.updateProperty('title', this.filePathTextBox!.value!);
 		}));
 
-		const localProjectBrowseFolderButton = view.modelBuilder.button().withProperties<azdataType.ButtonProperties>({
+		const localProjectBrowseFolderButton = view.modelBuilder.button().withProps({
 			ariaLabel: constants.BrowseButtonText,
 			iconPath: IconPathHelper.folder,
 			width: '18px',
 			height: '16px'
 		}).component();
-		this.register(localProjectBrowseFolderButton.onDidClick(async () => {
-			await this.projectBrowse();
-		}));
+		this.register(localProjectBrowseFolderButton.onDidClick(() => this.onBrowseButtonClick()));
 
 		const flexContainer = this.createHorizontalContainer(view, [this.filePathTextBox, localProjectBrowseFolderButton]);
 		flexContainer.updateCssStyles({ 'margin-top': '-10px' });
@@ -225,27 +223,29 @@ export class OpenExistingDialog extends DialogBase {
 		this.initDialogComplete?.resolve();
 	}
 
-	public async projectBrowse(): Promise<void> {
-		const filters: { [name: string]: string[] } = {};
-		const projectTypes = await this.workspaceService.getAllProjectTypes();
-		filters[constants.AllProjectTypes] = [...new Set(projectTypes.map(type => type.projectFileExtension))];
-		projectTypes.forEach(type => {
-			filters[type.displayName] = [type.projectFileExtension];
-		});
-
-		const fileUris = await vscode.window.showOpenDialog({
-			canSelectFiles: true,
-			canSelectFolders: false,
-			canSelectMany: false,
-			openLabel: constants.SelectProjectFileActionName,
-			filters: filters
-		});
-
-		if (!fileUris || fileUris.length === 0) {
-			return;
+	public async onBrowseButtonClick(): Promise<void> {
+		const projectFilePath = await browseForProject(this.workspaceService);
+		if (projectFilePath) {
+			this.filePathTextBox!.value = projectFilePath.fsPath;
 		}
-
-		const projectFilePath = fileUris[0].fsPath;
-		this.filePathTextBox!.value = projectFilePath;
 	}
+}
+
+export async function browseForProject(workspaceService: IWorkspaceService): Promise<vscode.Uri | undefined> {
+	const filters: { [name: string]: string[] } = {};
+	const projectTypes = await workspaceService.getAllProjectTypes();
+	filters[constants.AllProjectTypes] = [...new Set(projectTypes.map(type => type.projectFileExtension))];
+	projectTypes.forEach(type => {
+		filters[type.displayName] = [type.projectFileExtension];
+	});
+
+	const fileUris = await vscode.window.showOpenDialog({
+		canSelectFiles: true,
+		canSelectFolders: false,
+		canSelectMany: false,
+		openLabel: constants.SelectProjectFileActionName,
+		filters: filters
+	});
+
+	return fileUris?.[0];
 }

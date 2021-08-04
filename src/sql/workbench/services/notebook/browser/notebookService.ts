@@ -21,7 +21,6 @@ import { NotebookViewsExtension } from 'sql/workbench/services/notebook/browser/
 import { IEditorPane } from 'vs/workbench/common/editor';
 import { INotebookInput } from 'sql/workbench/services/notebook/browser/interface';
 import { INotebookShowOptions } from 'sql/workbench/api/common/sqlExtHost.protocol';
-
 export const SERVICE_ID = 'sqlNotebookService';
 export const INotebookService = createDecorator<INotebookService>(SERVICE_ID);
 

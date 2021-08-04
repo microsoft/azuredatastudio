@@ -26,19 +26,9 @@ const ext = require('./lib/extensions');
 
 const extensionsPath = path.join(path.dirname(__dirname), 'extensions');
 
-// {{SQL CARBON EDIT}}
+// {{SQL CARBON EDIT}} - TODO: Import needs to be updated to work with langpacks.
 const sqlLocalizedExtensions = [
-	'admin-tool-ext-win',
-	'agent',
-	'cms',
-	'dacpac',
 	'import',
-	'machine-learning',
-	'profiler',
-	'schema-compare',
-	'server-report',
-	'sql-assessment',
-	'sql-database-projects'
 ];
 
 // {{SQL CARBON EDIT}} Not doing this for us right now

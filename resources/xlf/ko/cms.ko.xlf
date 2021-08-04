@@ -424,15 +424,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/cms/out/cmsResource/tree/treeProvider" source-language="en" datatype="plaintext" target-language="ko">
-    <body>
-      <trans-unit id="cms.resource.tree.treeProvider.loadingLabel">
-        <source xml:lang="en">Loading ...</source>
-        <target state="translated">로드하는 중...</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/cms/out/cmsResource/tree/cmsResourceTreeNode" source-language="en" datatype="plaintext" target-language="ko">
+  <file original="extensions/cms/dist/cmsResource/tree/cmsResourceTreeNode" source-language="en" datatype="plaintext" target-language="ko">
     <body>
       <trans-unit id="cms.resource.cmsResourceTreeNode.noResourcesLabel">
         <source xml:lang="en">No resources found</source>
@@ -440,7 +432,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/cms/out/cmsResource/tree/cmsResourceEmptyTreeNode" source-language="en" datatype="plaintext" target-language="ko">
+  <file original="extensions/cms/dist/cmsResource/tree/cmsResourceEmptyTreeNode" source-language="en" datatype="plaintext" target-language="ko">
     <body>
       <trans-unit id="cms.resource.tree.CmsTreeNode.addCmsServerLabel">
         <source xml:lang="en">Add Central Management Server...</source>
@@ -448,15 +440,27 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/cms/out/cmsResource/cmsResourceCommands" source-language="en" datatype="plaintext" target-language="ko">
+  <file original="extensions/cms/dist/cmsResource/tree/treeProvider" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="cms.resource.tree.treeProvider.loadError">
+        <source xml:lang="en">Unexpected error occurred while loading saved servers {0}</source>
+        <target state="translated">저장된 서버를 로드하는 동안 예기치 않은 오류가 발생했습니다. {0}</target>
+      </trans-unit>
+      <trans-unit id="cms.resource.tree.treeProvider.loadingLabel">
+        <source xml:lang="en">Loading ...</source>
+        <target state="translated">로드하는 중...</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/cms/dist/cmsResource/cmsResourceCommands" source-language="en" datatype="plaintext" target-language="ko">
     <body>
       <trans-unit id="cms.errors.sameCmsServerName">
         <source xml:lang="en">Central Management Server Group already has a Registered Server with the name {0}</source>
         <target state="translated">중앙 관리 서버 그룹에 이름이 {0}인 등록된 서버가 이미 있습니다.</target>
       </trans-unit>
       <trans-unit id="cms.errors.azureNotAllowed">
-        <source xml:lang="en">Azure SQL Database Servers cannot be used as Central Management Servers</source>
-        <target state="translated">Azure SQL Database 서버는 중앙 관리 서버로 사용할 수 없습니다.</target>
+        <source xml:lang="en">Azure SQL Servers cannot be used as Central Management Servers</source>
+        <target state="translated">Azure SQL Server는 중앙 관리 서버로 사용될 수 없습니다.</target>
       </trans-unit>
       <trans-unit id="cms.confirmDeleteServer">
         <source xml:lang="en">Are you sure you want to delete</source>
@@ -500,7 +504,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/cms/out/cmsUtils" source-language="en" datatype="plaintext" target-language="ko">
+  <file original="extensions/cms/dist/cmsUtils" source-language="en" datatype="plaintext" target-language="ko">
     <body>
       <trans-unit id="cms.errors.sameServerUnderCms">
         <source xml:lang="en">You cannot add a shared registered server with the same name as the Configuration Server</source>

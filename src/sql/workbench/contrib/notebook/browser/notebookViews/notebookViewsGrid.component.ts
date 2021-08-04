@@ -2,7 +2,8 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import 'vs/css!./cellToolbar';
+
+import 'vs/css!./notebookViewsGrid';
 import { Component, OnInit, ViewChildren, QueryList, Input, Inject, forwardRef, ChangeDetectorRef, ViewEncapsulation, ChangeDetectionStrategy } from '@angular/core';
 import { NotebookViewsCardComponent } from 'sql/workbench/contrib/notebook/browser/notebookViews/notebookViewsCard.component';
 import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
@@ -12,13 +13,17 @@ import { localize } from 'vs/nls';
 import { NotebookViewsExtension } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViewsExtension';
 import { CellChangeEvent, INotebookView, INotebookViewCell } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViews';
 import { AngularDisposable } from 'sql/base/browser/lifecycle';
-import { AutoDash } from 'sql/workbench/services/notebook/browser/notebookViews/autodash';
+import { generateLayout } from 'sql/workbench/services/notebook/browser/notebookViews/autodash';
+
+export interface INotebookViewsGridOptions {
+	cellHeight?: number;
+}
 
 @Component({
 	selector: 'notebook-views-grid-component',
 	templateUrl: decodeURI(require.toUrl('./notebookViewsGrid.component.html')),
 	changeDetection: ChangeDetectionStrategy.OnPush,
-	encapsulation: ViewEncapsulation.None,
+	encapsulation: ViewEncapsulation.None
 })
 export class NotebookViewsGridComponent extends AngularDisposable implements OnInit {
 	@Input() cells: ICellModel[];
@@ -29,9 +34,12 @@ export class NotebookViewsGridComponent extends AngularDisposable implements OnI
 	@ViewChildren(NotebookViewsCardComponent) private _items: QueryList<NotebookViewsCardComponent>;
 
 	protected _grid: GridStack;
-	protected _activeView: INotebookView;
 	protected _gridEnabled: boolean;
 	protected _loaded: boolean;
+
+	protected _options: INotebookViewsGridOptions = {
+		cellHeight: 60
+	};;
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
@@ -56,7 +64,7 @@ export class NotebookViewsGridComponent extends AngularDisposable implements OnI
 
 	ngAfterViewInit() {
 		const self = this;
-		this._activeView = this.activeView;
+		this.activeView = this.activeView;
 
 		this.createGrid();
 
@@ -69,7 +77,7 @@ export class NotebookViewsGridComponent extends AngularDisposable implements OnI
 	}
 
 	ngAfterContentChecked() {
-		if (!this._activeView || this.activeView.guid !== this._activeView.guid) {
+		if (!this.activeView || this.activeView.guid !== this.activeView.guid) {
 			if (this._grid) {
 				this.destroyGrid();
 				this._grid = undefined;
@@ -78,8 +86,8 @@ export class NotebookViewsGridComponent extends AngularDisposable implements OnI
 	}
 
 	ngAfterViewChecked() {
-		if (!this._activeView || this.activeView.guid !== this._activeView.guid) {
-			this._activeView = this.activeView;
+		if (!this.activeView || this.activeView.guid !== this.activeView.guid) {
+			this.activeView = this.activeView;
 
 			if (!this._grid) {
 				this.createGrid();
@@ -125,7 +133,7 @@ export class NotebookViewsGridComponent extends AngularDisposable implements OnI
 	}
 
 	/**
-	 * Updates the grid based on changes to the view model
+	 * Updates the grid layout based on changes to the view model
 	 */
 	private updateGrid(): void {
 		if (!this._grid || !this.activeView) {
@@ -148,7 +156,7 @@ export class NotebookViewsGridComponent extends AngularDisposable implements OnI
 	private resizeCells(): void {
 		this._items.forEach((i: NotebookViewsCardComponent) => {
 			if (i.elementRef) {
-				const cellHeight = 60;
+				const cellHeight = this._options.cellHeight;
 
 				const naturalHeight = i.elementRef.nativeElement.clientHeight;
 				const heightInCells = Math.ceil(naturalHeight / cellHeight);
@@ -163,10 +171,9 @@ export class NotebookViewsGridComponent extends AngularDisposable implements OnI
 	}
 
 	private runAutoLayout(view: INotebookView): void {
-		const autodash = new AutoDash();
-
+		//Resize the cells before regenerating layout so that we know the natural height of the cells
 		this.resizeCells();
-		autodash.generateLayout(view);
+		generateLayout(view);
 	}
 
 	private detectChanges(): void {

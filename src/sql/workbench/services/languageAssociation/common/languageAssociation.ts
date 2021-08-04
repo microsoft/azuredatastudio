@@ -25,6 +25,10 @@ type ILanguageAssociationSignature<Services extends BrandedService[]> = new (...
 
 export interface ILanguageAssociationRegistry {
 	registerLanguageAssociation<Services extends BrandedService[]>(languages: string[], contribution: ILanguageAssociationSignature<Services>, isDefault?: boolean): IDisposable;
+	/**
+	 * Gets the registered association for a language if one is registered
+	 * @param language The case-insensitive language ID to get the association for
+	 */
 	getAssociationForLanguage(language: string): ILanguageAssociation | undefined;
 	readonly defaultAssociation: [string, ILanguageAssociation] | undefined;
 
@@ -54,6 +58,7 @@ const languageAssociationRegistry = new class implements ILanguageAssociationReg
 	}
 
 	registerLanguageAssociation(languages: string[], contribution: ILanguageAssociationSignature<BrandedService[]>, isDefault?: boolean): IDisposable {
+		languages = languages.map(lang => lang.toLowerCase());
 		for (const language of languages) {
 			this.associationContructors.set(language, contribution);
 		}
@@ -71,7 +76,7 @@ const languageAssociationRegistry = new class implements ILanguageAssociationReg
 	}
 
 	getAssociationForLanguage(language: string): ILanguageAssociation | undefined {
-		return this.associationsInstances.get(language);
+		return this.associationsInstances.get(language.toLowerCase());
 	}
 
 	get defaultAssociation(): [string, ILanguageAssociation] | undefined {

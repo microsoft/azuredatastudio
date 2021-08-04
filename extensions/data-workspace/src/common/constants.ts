@@ -46,12 +46,13 @@ export const ProjectDirectoryAlreadyExistErrorShort = (projectName: string) => {
 export const SelectProjectType = localize('dataworkspace.selectProjectType', "Select Project Type");
 export const SelectProjectLocation = localize('dataworkspace.selectProjectLocation', "Select Project Location");
 export const NameCannotBeEmpty = localize('dataworkspace.nameCannotBeEmpty', "Name cannot be empty");
+export const TargetPlatform = localize('dataworkspace.targetPlatform', "Target Platform");
+
 //Open Existing Dialog
 export const OpenExistingDialogTitle = localize('dataworkspace.openExistingDialogTitle', "Open Existing Project");
 export const FileNotExistError = (fileType: string, filePath: string): string => { return localize('dataworkspace.fileNotExistError', "The selected {0} file '{1}' does not exist or is not a file.", fileType, filePath); };
 export const CloneParentDirectoryNotExistError = (location: string): string => { return localize('dataworkspace.cloneParentDirectoryNotExistError', "The selected clone path '{0}' does not exist or is not a directory.", location); };
 export const Project = localize('dataworkspace.project', "Project");
-export const Workspace = localize('dataworkspace.workspace', "Workspace");
 export const LocationSelectorTitle = localize('dataworkspace.locationSelectorTitle', "Location");
 export const ProjectFilePlaceholder = localize('dataworkspace.projectFilePlaceholder', "Select project file");
 export const WorkspacePlaceholder = localize('dataworkspace.workspacePlaceholder', "Select workspace ({0}) file", WorkspaceFileExtension);

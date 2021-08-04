@@ -115,6 +115,7 @@ describe('Jupyter Session Manager', function (): void {
 			}
 		};
 		mockJupyterManager.setup(m => m.startNew(TypeMoq.It.isAny())).returns(() => Promise.resolve(expectedSessionInfo));
+		mockJupyterManager.setup(m => m.specs).returns(() => undefined);
 
 		// When I call startSession
 		let session = await sessionManager.startNew(sessionOptions, true);
@@ -288,6 +289,8 @@ describe('Jupyter Session', function (): void {
 			isCloud: false,
 			azureVersion: 0,
 			osVersion: '',
+			cpuCount: 0,
+			physicalMemoryInMb: -1,
 			options: {
 				isBigDataCluster: true
 			}

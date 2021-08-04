@@ -9,7 +9,7 @@ import { WorkspaceService } from './services/workspaceService';
 import { WorkspaceTreeItem, IExtension } from 'dataworkspace';
 import { DataWorkspaceExtension } from './common/dataWorkspaceExtension';
 import { NewProjectDialog } from './dialogs/newProjectDialog';
-import { OpenExistingDialog } from './dialogs/openExistingDialog';
+import { browseForProject, OpenExistingDialog } from './dialogs/openExistingDialog';
 import { IWorkspaceService } from './common/interfaces';
 import { IconPathHelper } from './common/iconHelper';
 import { ProjectDashboard } from './dialogs/projectDashboard';
@@ -17,6 +17,8 @@ import { getAzdataApi } from './common/utils';
 import { createNewProjectWithQuickpick } from './dialogs/newProjectQuickpick';
 
 export async function activate(context: vscode.ExtensionContext): Promise<IExtension> {
+	const azdataApi = getAzdataApi();
+	vscode.commands.executeCommand('setContext', 'azdataAvailable', !!azdataApi);
 	const workspaceService = new WorkspaceService();
 
 	const workspaceTreeDataProvider = new WorkspaceTreeDataProvider(workspaceService);
@@ -31,19 +33,25 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 	setProjectProviderContextValue(workspaceService);
 
 	context.subscriptions.push(vscode.commands.registerCommand('projects.new', async () => {
-		if (getAzdataApi()) {
+		if (azdataApi) {
 			const dialog = new NewProjectDialog(workspaceService);
 			await dialog.open();
 		} else {
 			await createNewProjectWithQuickpick(workspaceService);
 		}
-
 	}));
 
 	context.subscriptions.push(vscode.commands.registerCommand('projects.openExisting', async () => {
-		const dialog = new OpenExistingDialog(workspaceService);
-		await dialog.open();
-
+		if (azdataApi) {
+			const dialog = new OpenExistingDialog(workspaceService);
+			await dialog.open();
+		} else {
+			const projectFileUri = await browseForProject(workspaceService);
+			if (!projectFileUri) {
+				return;
+			}
+			await workspaceService.addProjectsToWorkspace([projectFileUri]);
+		}
 	}));
 
 	context.subscriptions.push(vscode.commands.registerCommand('dataworkspace.refresh', () => {

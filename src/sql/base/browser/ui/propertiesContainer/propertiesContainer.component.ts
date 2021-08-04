@@ -4,9 +4,11 @@
  *--------------------------------------------------------------------------------------------*/
 
 import 'vs/css!./media/propertiesContainer';
-import { Component, Inject, forwardRef, ChangeDetectorRef, OnInit, OnDestroy } from '@angular/core';
+import { Component, Inject, forwardRef, ChangeDetectorRef, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import * as DOM from 'vs/base/browser/dom';
 import { Disposable } from 'vs/base/common/lifecycle';
+import { ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
+import { TogglePropertiesAction } from 'sql/base/browser/ui/propertiesContainer/togglePropertiesAction';
 
 enum GridDisplayLayout {
 	twoColumns = 'twoColumns',
@@ -27,15 +29,29 @@ export interface PropertyItem {
 	selector: 'properties-container',
 	templateUrl: decodeURI(require.toUrl('./propertiesContainer.component.html'))
 })
-export class PropertiesContainer extends Disposable implements OnInit, OnDestroy {
+export class PropertiesContainer extends Disposable implements OnInit, OnDestroy, AfterViewInit {
 	public gridDisplayLayout = GridDisplayLayout.twoColumns;
 	public propertyLayout = PropertyLayoutDirection.row;
 	private _propertyItems: PropertyItem[] = [];
+	private _showToggleButton: boolean = false;
+	private _actionbar: ActionBar;
+	private _togglePropertiesAction: TogglePropertiesAction = new TogglePropertiesAction();
+	@ViewChild('actionbar', { read: ElementRef }) private _actionbarRef: ElementRef;
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef
 	) {
 		super();
+	}
+
+	ngAfterViewInit(): void {
+		this._togglePropertiesAction.onDidChange((e) => {
+			if (e.expanded !== undefined) {
+				this._changeRef.detectChanges();
+			}
+		});
+		this._actionbar = new ActionBar(this._actionbarRef.nativeElement);
+		this._actionbar.push(this._togglePropertiesAction, { icon: true, label: false });
 	}
 
 	ngOnInit() {
@@ -73,5 +89,16 @@ export class PropertiesContainer extends Disposable implements OnInit, OnDestroy
 
 	public get propertyItems(): PropertyItem[] {
 		return this._propertyItems;
+	}
+
+	public get showToggleButton(): boolean {
+		return this._showToggleButton;
+	}
+
+	public set showToggleButton(v: boolean) {
+		if (this._showToggleButton !== v) {
+			this._showToggleButton = v;
+			this._changeRef.detectChanges();
+		}
 	}
 }

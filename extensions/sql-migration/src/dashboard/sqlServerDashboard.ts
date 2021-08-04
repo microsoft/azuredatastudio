@@ -37,7 +37,6 @@ export class DashboardWidget {
 	private _migrationStatusCardLoadingContainer!: azdata.LoadingComponent;
 	private _view!: azdata.ModelView;
 
-
 	private _inProgressMigrationButton!: StatusCard;
 	private _inProgressWarningMigrationButton!: StatusCard;
 	private _successfulMigrationButton!: StatusCard;
@@ -48,6 +47,9 @@ export class DashboardWidget {
 	private _viewAllMigrationsButton!: azdata.ButtonComponent;
 
 	private _autoRefreshHandle!: NodeJS.Timeout;
+	private _disposables: vscode.Disposable[] = [];
+
+	private isRefreshing: boolean = false;
 
 	constructor() {
 	}
@@ -94,10 +96,13 @@ export class DashboardWidget {
 					'margin-top': '20px'
 				}
 			});
-			await view.initializeModel(container);
-			this._view.onClosed((e) => {
+			this._disposables.push(this._view.onClosed(e => {
 				clearInterval(this._autoRefreshHandle);
-			});
+				this._disposables.forEach(
+					d => { try { d.dispose(); } catch { } });
+			}));
+
+			await view.initializeModel(container);
 			this.refreshMigrations();
 		});
 	}
@@ -178,15 +183,12 @@ export class DashboardWidget {
 
 		const preRequisiteLearnMoreLink = view.modelBuilder.hyperlink().withProps({
 			label: loc.LEARN_MORE,
-			url: '', //TODO: add link for the pre req document.
+			ariaLabel: loc.LEARN_MORE_ABOUT_PRE_REQS,
+			url: 'https://aka.ms/azuresqlmigrationextension',
 			CSSStyles: {
 				'padding-left': '10px'
 			}
 		}).component();
-
-		preRequisiteLearnMoreLink.onDidClick((value) => {
-			vscode.window.showInformationMessage(loc.COMING_SOON);
-		});
 
 		const preReqContainer = view.modelBuilder.flexContainer().withItems([
 			preRequisiteListTitle,
@@ -233,23 +235,28 @@ export class DashboardWidget {
 				'border': '1px solid'
 			}
 		}).component();
-		buttonContainer.onDidClick(async () => {
+		this._disposables.push(buttonContainer.onDidClick(async () => {
 			if (taskMetaData.command) {
 				await vscode.commands.executeCommand(taskMetaData.command);
 			}
-		});
+		}));
 		return view.modelBuilder.divContainer().withItems([buttonContainer]).component();
 	}
 
 	private setAutoRefresh(interval: SupportedAutoRefreshIntervals): void {
-		let classVariable = this;
+		const classVariable = this;
 		clearInterval(this._autoRefreshHandle);
 		if (interval !== -1) {
-			this._autoRefreshHandle = setInterval(function () { classVariable.refreshMigrations(); }, interval);
+			this._autoRefreshHandle = setInterval(async function () { await classVariable.refreshMigrations(); }, interval);
 		}
 	}
 
 	private async refreshMigrations(): Promise<void> {
+		if (this.isRefreshing) {
+			return;
+		}
+
+		this.isRefreshing = true;
 		this._viewAllMigrationsButton.enabled = false;
 		this._migrationStatusCardLoadingContainer.loading = true;
 		try {
@@ -270,9 +277,9 @@ export class DashboardWidget {
 			if (warningCount > 0) {
 				this._inProgressWarningMigrationButton.warningText!.value = loc.MIGRATION_INPROGRESS_WARNING(warningCount);
 				this._inProgressMigrationButton.container.display = 'none';
-				this._inProgressWarningMigrationButton.container.display = 'inline';
+				this._inProgressWarningMigrationButton.container.display = '';
 			} else {
-				this._inProgressMigrationButton.container.display = 'inline';
+				this._inProgressMigrationButton.container.display = '';
 				this._inProgressWarningMigrationButton.container.display = 'none';
 			}
 
@@ -286,8 +293,8 @@ export class DashboardWidget {
 			const failedMigrations = filterMigrations(migrations, AdsMigrationStatus.FAILED);
 			const failedCount = failedMigrations.length;
 			if (failedCount > 0) {
-				this._failedMigrationButton.container.display = 'inline';
-				this._failedMigrationButton.count.value = failedMigrations.length.toString();
+				this._failedMigrationButton.container.display = '';
+				this._failedMigrationButton.count.value = failedCount.toString();
 			} else {
 				this._failedMigrationButton.container.display = 'none';
 			}
@@ -295,7 +302,7 @@ export class DashboardWidget {
 			const completingCutoverMigrations = filterMigrations(migrations, AdsMigrationStatus.COMPLETING);
 			const cutoverCount = completingCutoverMigrations.length;
 			if (cutoverCount > 0) {
-				this._completingMigrationButton.container.display = 'inline';
+				this._completingMigrationButton.container.display = '';
 				this._completingMigrationButton.count.value = cutoverCount.toString();
 			} else {
 				this._completingMigrationButton.container.display = 'none';
@@ -304,6 +311,7 @@ export class DashboardWidget {
 		} catch (error) {
 			console.log(error);
 		} finally {
+			this.isRefreshing = false;
 			this._migrationStatusCardLoadingContainer.loading = false;
 			this._viewAllMigrationsButton.enabled = true;
 		}
@@ -327,6 +335,7 @@ export class DashboardWidget {
 				'margin-bottom': '0px',
 				'width': '300px',
 				'font-size': '14px',
+				'font-weight': 'bold'
 			}
 		}).component();
 
@@ -342,9 +351,7 @@ export class DashboardWidget {
 		const flex = this._view.modelBuilder.flexContainer().withProps({
 			CSSStyles: {
 				'width': '400px',
-				'height': '50px',
-				'margin-top': '10px',
-				'border': '1px solid',
+				'height': '50px'
 			}
 		}).component();
 
@@ -374,8 +381,14 @@ export class DashboardWidget {
 
 		const compositeButton = this._view.modelBuilder.divContainer().withItems([flex]).withProps({
 			ariaRole: 'button',
-			ariaLabel: 'show status',
-			clickable: true
+			ariaLabel: loc.SHOW_STATUS,
+			clickable: true,
+			CSSStyles: {
+				'width': '400px',
+				'border': '1px solid',
+				'margin-top': '10px',
+				'height': '50px'
+			}
 		}).component();
 		return {
 			container: compositeButton,
@@ -456,8 +469,6 @@ export class DashboardWidget {
 			CSSStyles: {
 				'width': '400px',
 				'height': '70px',
-				'margin-top': '10px',
-				'border': '1px solid'
 			}
 		}).component();
 
@@ -488,7 +499,13 @@ export class DashboardWidget {
 		const compositeButton = this._view.modelBuilder.divContainer().withItems([flex]).withProps({
 			ariaRole: 'button',
 			ariaLabel: 'show status',
-			clickable: true
+			clickable: true,
+			CSSStyles: {
+				'width': '400px',
+				'height': '70px',
+				'margin-top': '10px',
+				'border': '1px solid'
+			}
 		}).component();
 		return {
 			container: compositeButton,
@@ -549,25 +566,26 @@ export class DashboardWidget {
 			}
 		}).component();
 
-		this._viewAllMigrationsButton.onDidClick(async (e) => {
+		this._disposables.push(this._viewAllMigrationsButton.onDidClick(async (e) => {
 			const migrationStatus = await this.getCurrentMigrations();
 			new MigrationStatusDialog(migrationStatus ? migrationStatus : await this.getMigrations(), AdsMigrationStatus.ALL).initialize();
-		});
+		}));
 
 		const refreshButton = view.modelBuilder.hyperlink().withProps({
 			label: loc.REFRESH,
 			url: '',
+			ariaRole: 'button',
 			CSSStyles: {
 				'text-align': 'right',
 				'font-size': '13px'
 			}
 		}).component();
 
-		refreshButton.onDidClick(async (e) => {
+		this._disposables.push(refreshButton.onDidClick(async (e) => {
 			refreshButton.enabled = false;
 			await this.refreshMigrations();
 			refreshButton.enabled = true;
-		});
+		}));
 
 		const buttonContainer = view.modelBuilder.flexContainer().withLayout({
 			justifyContent: 'flex-end',
@@ -604,10 +622,10 @@ export class DashboardWidget {
 			IconPathHelper.inProgressMigration,
 			loc.MIGRATION_IN_PROGRESS
 		);
-		this._inProgressMigrationButton.container.onDidClick(async (e) => {
+		this._disposables.push(this._inProgressMigrationButton.container.onDidClick(async (e) => {
 			const dialog = new MigrationStatusDialog(await this.getCurrentMigrations(), AdsMigrationStatus.ONGOING);
 			dialog.initialize();
-		});
+		}));
 
 		this._migrationStatusCardsContainer.addItem(
 			this._inProgressMigrationButton.container
@@ -618,10 +636,10 @@ export class DashboardWidget {
 			loc.MIGRATION_IN_PROGRESS,
 			''
 		);
-		this._inProgressWarningMigrationButton.container.onDidClick(async (e) => {
+		this._disposables.push(this._inProgressWarningMigrationButton.container.onDidClick(async (e) => {
 			const dialog = new MigrationStatusDialog(await this.getCurrentMigrations(), AdsMigrationStatus.ONGOING);
 			dialog.initialize();
-		});
+		}));
 
 		this._migrationStatusCardsContainer.addItem(
 			this._inProgressWarningMigrationButton.container
@@ -631,10 +649,10 @@ export class DashboardWidget {
 			IconPathHelper.completedMigration,
 			loc.MIGRATION_COMPLETED
 		);
-		this._successfulMigrationButton.container.onDidClick(async (e) => {
+		this._disposables.push(this._successfulMigrationButton.container.onDidClick(async (e) => {
 			const dialog = new MigrationStatusDialog(await this.getCurrentMigrations(), AdsMigrationStatus.SUCCEEDED);
 			dialog.initialize();
-		});
+		}));
 		this._migrationStatusCardsContainer.addItem(
 			this._successfulMigrationButton.container
 		);
@@ -644,10 +662,10 @@ export class DashboardWidget {
 			IconPathHelper.completingCutover,
 			loc.MIGRATION_CUTOVER_CARD
 		);
-		this._completingMigrationButton.container.onDidClick(async (e) => {
+		this._disposables.push(this._completingMigrationButton.container.onDidClick(async (e) => {
 			const dialog = new MigrationStatusDialog(await this.getCurrentMigrations(), AdsMigrationStatus.COMPLETING);
 			dialog.initialize();
-		});
+		}));
 		this._migrationStatusCardsContainer.addItem(
 			this._completingMigrationButton.container
 		);
@@ -656,10 +674,10 @@ export class DashboardWidget {
 			IconPathHelper.error,
 			loc.MIGRATION_FAILED
 		);
-		this._failedMigrationButton.container.onDidClick(async (e) => {
+		this._disposables.push(this._failedMigrationButton.container.onDidClick(async (e) => {
 			const dialog = new MigrationStatusDialog(await this.getCurrentMigrations(), AdsMigrationStatus.FAILED);
 			dialog.initialize();
-		});
+		}));
 		this._migrationStatusCardsContainer.addItem(
 			this._failedMigrationButton.container
 		);
@@ -668,9 +686,9 @@ export class DashboardWidget {
 			IconPathHelper.notStartedMigration,
 			loc.MIGRATION_NOT_STARTED
 		);
-		this._notStartedMigrationCard.container.onDidClick((e) => {
+		this._disposables.push(this._notStartedMigrationCard.container.onDidClick((e) => {
 			vscode.window.showInformationMessage('Feature coming soon');
-		});
+		}));
 
 		this._migrationStatusCardLoadingContainer = view.modelBuilder.loadingComponent().withItem(this._migrationStatusCardsContainer).component();
 
@@ -833,11 +851,11 @@ export class DashboardWidget {
 				'margin': '0px'
 			}
 		}).component();
-		video1Container.onDidClick(async () => {
+		this._disposables.push(video1Container.onDidClick(async () => {
 			if (linkMetaData.link) {
 				await vscode.env.openExternal(vscode.Uri.parse(linkMetaData.link));
 			}
-		});
+		}));
 		videosContainer.addItem(video1Container, {
 			CSSStyles: {
 				'background-image': `url(${vscode.Uri.file(<string>linkMetaData.iconPath?.light)})`,

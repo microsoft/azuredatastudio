@@ -36,7 +36,7 @@ class SQLMigration {
 
 				input.items = NotebookPathHelper.getAllMigrationNotebooks();
 
-				input.onDidAccept(async (e) => {
+				this.context.subscriptions.push(input.onDidAccept(async (e) => {
 					const selectedNotebook = input.selectedItems[0];
 					if (selectedNotebook) {
 						try {
@@ -50,12 +50,15 @@ class SQLMigration {
 						}
 						input.hide();
 					}
-				});
+				}));
 
 				input.show();
 			}),
 			azdata.tasks.registerTask('sqlmigration.start', async () => {
 				await this.launchMigrationWizard();
+			}),
+			azdata.tasks.registerTask('sqlmigration.newsupportrequest', async () => {
+				await this.launchNewSupportRequest();
 			}),
 			azdata.tasks.registerTask('sqlmigration.sendfeedback', async () => {
 				const actionId = 'workbench.action.openIssueReporter';
@@ -83,6 +86,11 @@ class SQLMigration {
 		}
 		const wizardController = new WizardController(this.context);
 		await wizardController.openWizard(connectionId);
+	}
+
+	async launchNewSupportRequest(): Promise<void> {
+		await vscode.env.openExternal(vscode.Uri.parse(
+			`https://portal.azure.com/#blade/Microsoft_Azure_Support/HelpAndSupportBlade/newsupportrequest`));
 	}
 
 	stop(): void {

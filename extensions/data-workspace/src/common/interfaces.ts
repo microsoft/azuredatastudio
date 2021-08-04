@@ -71,8 +71,9 @@ export interface IWorkspaceService {
 	 * @param name The name of the project
 	 * @param location The location of the project
 	 * @param projectTypeId The project type id
+	 * @param projectTargetPlatform The target platform of the project
 	 */
-	createProject(name: string, location: vscode.Uri, projectTypeId: string): Promise<vscode.Uri>;
+	createProject(name: string, location: vscode.Uri, projectTypeId: string, projectTargetPlatform?: string): Promise<vscode.Uri>;
 
 	/**
 	 * Clones git repository and adds projects to workspace

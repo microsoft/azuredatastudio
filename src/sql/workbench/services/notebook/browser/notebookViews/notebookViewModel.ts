@@ -15,6 +15,10 @@ export const GRID_COLUMNS = 12;
 
 export class ViewNameTakenError extends Error { }
 
+function cellCollides(c1: INotebookViewCell, c2: INotebookViewCell): boolean {
+	return !((c1.y + c1.height <= c2.y) || (c1.x + c1.width <= c2.x) || (c1.x + c1.width <= c2.x) || (c2.x + c2.width <= c1.x));
+}
+
 export class NotebookViewModel implements INotebookView {
 	private _onDeleted = new Emitter<INotebookView>();
 	private _isNew: boolean = false;
@@ -140,17 +144,13 @@ export class NotebookViewModel implements INotebookView {
 					continue;
 				}
 
-				if (!cellsPlaced.find((c2) => this.cellCollides(c2, { ...c1, x: row, y: column }))) {
+				if (!cellsPlaced.find((c2) => cellCollides(c2, { ...c1, x: row, y: column }))) {
 					this._notebookViews.updateCell(cell, this, { x: row, y: column });
 					cellsPlaced.push({ ...c1, x: row, y: column });
 					break;
 				}
 			}
 		});
-	}
-
-	private cellCollides(c1: INotebookViewCell, c2: INotebookViewCell): boolean {
-		return !((c1.y + c1.height <= c2.y) || (c1.x + c1.width <= c2.x) || (c1.x + c1.width <= c2.x) || (c2.x + c2.width <= c1.x));
 	}
 
 	public save() {

@@ -40,7 +40,8 @@ export abstract class BasePage {
 	 * Sets up a navigation validator.
 	 * This will be called right before onPageEnter().
 	 */
-	public abstract setupNavigationValidator(): void;
+	public setupNavigationValidator(): void {
+	}
 
 	public async getServerValues(): Promise<{ connection: azdata.connection.Connection, displayName: string, name: string }[]> {
 		let cons = await azdata.connection.getActiveConnections();

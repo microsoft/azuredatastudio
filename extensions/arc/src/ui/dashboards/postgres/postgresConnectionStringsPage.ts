@@ -38,17 +38,17 @@ export class PostgresConnectionStringsPage extends DashboardPage {
 		const content = this.modelView.modelBuilder.divContainer().component();
 		root.addItem(content, { CSSStyles: { 'margin': '20px' } });
 
-		content.addItem(this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+		content.addItem(this.modelView.modelBuilder.text().withProps({
 			value: loc.connectionStrings,
 			CSSStyles: { ...cssStyles.title }
 		}).component());
 
-		const info = this.modelView.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+		const info = this.modelView.modelBuilder.text().withProps({
 			value: loc.selectConnectionString,
 			CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
 		}).component();
 
-		const link = this.modelView.modelBuilder.hyperlink().withProperties<azdata.HyperlinkComponentProperties>({
+		const link = this.modelView.modelBuilder.hyperlink().withProps({
 			label: loc.learnAboutPostgresClients,
 			url: 'https://docs.microsoft.com/azure/azure-arc/data/get-connection-endpoints-and-connection-strings-postgres-hyperscale',
 		}).component();
@@ -63,7 +63,7 @@ export class PostgresConnectionStringsPage extends DashboardPage {
 
 		this.connectionStringsLoading = this.modelView.modelBuilder.loadingComponent()
 			.withItem(this.keyValueContainer.container)
-			.withProperties<azdata.LoadingComponentProperties>({
+			.withProps({
 				loading: !this._postgresModel.configLastUpdated
 			}).component();
 

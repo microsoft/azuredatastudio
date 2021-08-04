@@ -581,7 +581,9 @@
 					"iconv-lite-umd",
 					"jschardet",
 					"@angular/*",
-					"rxjs/**"
+					"rxjs/**",
+					"sanitize-html",
+					"ansi_up"
 				]
 			},
 			{
@@ -738,13 +740,12 @@
 					"rxjs/**",
 					"ng2-charts",
 					"chart.js",
-					"plotly.js-dist-min",
+					"plotly.js",
 					"angular2-grid",
 					"html-to-image",
 					"html-query-plan",
 					"turndown",
 					"gridstack",
-					"gridstack/**",
 					"mark.js",
 					"vscode-textmate",
 					"vscode-oniguruma",

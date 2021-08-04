@@ -2,7 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-
+import 'vs/css!./insertCellsModal';
 import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox';
 import { Button } from 'sql/base/browser/ui/button/button';
 import { IClipboardService } from 'sql/platform/clipboard/common/clipboardService';
@@ -23,50 +23,48 @@ import { TextCellComponent } from 'sql/workbench/contrib/notebook/browser/cellVi
 import { ComponentFactoryResolver, ViewContainerRef } from '@angular/core';
 import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
-import { inputBorder, inputValidationInfoBorder, editorBackground } from 'vs/platform/theme/common/colorRegistry';
+import { inputBorder, inputValidationInfoBorder } from 'vs/platform/theme/common/colorRegistry';
 import { localize } from 'vs/nls';
 import { NotebookViewsExtension } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViewsExtension';
 import { attachButtonStyler } from 'vs/platform/theme/common/styler';
 import { toJpeg } from 'html-to-image';
+import { truncate } from 'vs/base/common/strings';
+
+type CellOption = {
+	optionMetadata: ServiceOption,
+	defaultValue: string,
+	currentValue: boolean
+};
 
 export class CellOptionsModel {
-	private _optionsMap: { [name: string]: any } = {};
+	private _optionsMap: { [name: string]: CellOption } = {};
 
 	constructor(
 		optionsMetadata: ServiceOption[],
-		private onInsert: (cell: ICellModel) => any,
+		private onInsert: (cell: ICellModel) => void,
 		private _context: NotebookViewsExtension,
 	) {
 		optionsMetadata.forEach(optionMetadata => {
 			let defaultValue = this.getDisplayValue(optionMetadata, optionMetadata.defaultValue);
 			this._optionsMap[optionMetadata.name] = {
 				optionMetadata: optionMetadata,
-				defaultValue: defaultValue,
+				defaultValue: optionMetadata.defaultValue,
 				currentValue: defaultValue
 			};
 		});
 	}
 
-	private getDisplayValue(optionMetadata: ServiceOption, optionValue: any): any {
-		let displayValue: any;
+	private getDisplayValue(optionMetadata: ServiceOption, optionValue: string): boolean {
+		let displayValue: boolean = false;
 		switch (optionMetadata.valueType) {
 			case ServiceOptionType.boolean:
 				displayValue = DialogHelper.getBooleanValueFromStringOrBoolean(optionValue);
 				break;
-			case ServiceOptionType.category:
-				let optionName = optionValue;
-				if (!optionName && optionMetadata.categoryValues[0]) {
-					optionName = optionMetadata.categoryValues[0].name;
-				}
-				displayValue = DialogHelper.getCategoryDisplayName(optionMetadata.categoryValues, optionName);
-				break;
-			case ServiceOptionType.string:
-				displayValue = optionValue ? optionValue : '';
 		}
 		return displayValue;
 	}
 
-	restoreCells() {
+	restoreCells(): void {
 		for (let key in this._optionsMap) {
 			let optionElement = this._optionsMap[key];
 			if (optionElement.currentValue === true) {
@@ -79,17 +77,14 @@ export class CellOptionsModel {
 		}
 	}
 
-	public setOptionValue(optionName: string, value: any): void {
-		if (this._optionsMap[optionName]) {
+	public setOptionValue(optionName: string, value: boolean): void {
+		if (this._optionsMap[optionName] !== undefined) {
 			this._optionsMap[optionName].currentValue = value;
 		}
 	}
 
-	public getOptionValue(optionName: string): any {
-		if (this._optionsMap[optionName]) {
-			return this._optionsMap[optionName].currentValue;
-		}
-		return undefined;
+	public getOptionValue(optionName: string): boolean | undefined {
+		return this._optionsMap[optionName]?.currentValue;
 	}
 }
 
@@ -99,9 +94,10 @@ export class InsertCellsModal extends Modal {
 	private _submitButton: Button;
 	private _cancelButton: Button;
 	private _optionsMap: { [name: string]: Checkbox } = {};
+	private _maxTitleLength: number = 20;
 
 	constructor(
-		private onInsert: (cell: ICellModel) => any,
+		private onInsert: (cell: ICellModel) => void,
 		private _context: NotebookViewsExtension,
 		private _containerRef: ViewContainerRef,
 		private _componentFactoryResolver: ComponentFactoryResolver,
@@ -146,7 +142,6 @@ export class InsertCellsModal extends Modal {
 		DOM.append(container, grid);
 
 		this.createOptions(grid)
-			.then(() => { })
 			.catch((e) => { this.setError(localize("insertCellsModal.thumbnailError", "Error: Unable to generate thumbnails.")); });
 	}
 
@@ -158,12 +153,10 @@ export class InsertCellsModal extends Modal {
 		const activeView = this._context.getActiveView();
 		const cellsAvailableToInsert = activeView.hiddenCells;
 
-		this._themeService.getColorTheme().getColor(editorBackground);
-
 		cellsAvailableToInsert.forEach(async (cell) => {
 			const optionWidget = this.createCheckBoxHelper(
 				container,
-				'<div class="loading-spinner-container"><div class="loading-spinner codicon in-progress"></div></div>',//cell.renderedOutputTextContent[0]?.substr(0, 20) ?? localize("insertCellsModal.untitled", "Untitled Cell : {0}", cell.cellGuid),
+				'<div class="loading-spinner-container"><div class="loading-spinner codicon in-progress"></div></div>',
 				false,
 				() => this.onOptionChecked(cell.cellGuid)
 			);
@@ -202,7 +195,7 @@ export class InsertCellsModal extends Modal {
 		const cellsAvailableToInsert = activeView.hiddenCells;
 		return cellsAvailableToInsert.map((cell) => ({
 			name: cell.cellGuid,
-			displayName: cell.renderedOutputTextContent[0]?.substr(0, 20) ?? localize("insertCellsModal.untitled", "Untitled Cell : {0}", cell.cellGuid),
+			displayName: truncate(cell.renderedOutputTextContent[0] ?? '', this._maxTitleLength) || localize("insertCellsModal.untitled", "Untitled Cell : {0}", cell.cellGuid),
 			description: '',
 			groupName: undefined,
 			valueType: ServiceOptionType.boolean,
@@ -261,7 +254,7 @@ export class InsertCellsModal extends Modal {
 		}
 	}
 
-	public async generateScreenshot(cell: ICellModel, screenshotWidth: number = 300, screenshowHeight: number = 300, backgroundColor: string = '#ffffff'): Promise<any> {
+	public async generateScreenshot(cell: ICellModel, screenshotWidth: number = 300, screenshowHeight: number = 300, backgroundColor: string = '#ffffff'): Promise<string> {
 		let componentFactory = this._componentFactoryResolver.resolveComponentFactory(TextCellComponent);
 		let component = this._containerRef.createComponent(componentFactory);
 
@@ -281,27 +274,6 @@ export class InsertCellsModal extends Modal {
 }
 
 registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) => {
-	collector.addRule(`
-		#insert-dialog-cell-grid .loading-spinner-container {
-			flex: 1;
-			align-self: center;
-		}
-	`);
-
-	collector.addRule(`
-		#insert-dialog-cell-grid .loading-spinner {
-			margin: auto;
-		}
-	`);
-
-	collector.addRule(`
-		#insert-dialog-cell-grid input[type="checkbox"] {
-			display: flex;
-			-webkit-appearance: none;
-			outline: none !important;
-		}
-	`);
-
 	const inputBorderColor = theme.getColor(inputBorder);
 	if (inputBorderColor) {
 		collector.addRule(`
