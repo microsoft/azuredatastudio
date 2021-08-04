@@ -34,6 +34,8 @@ export class IconPathHelper {
 	public static completingCutover: IconPath;
 	public static migrationService: IconPath;
 	public static sendFeedback: IconPath;
+	public static expandButtonClosed: IconPath;
+	public static expandButtonOpen: IconPath;
 	public static newSupportRequest: IconPath;
 
 	public static setExtensionContext(context: vscode.ExtensionContext) {
@@ -128,6 +130,14 @@ export class IconPathHelper {
 		IconPathHelper.sendFeedback = {
 			light: context.asAbsolutePath('images/sendFeedback.svg'),
 			dark: context.asAbsolutePath('images/sendFeedback.svg')
+		};
+		IconPathHelper.expandButtonClosed = {
+			light: context.asAbsolutePath('images/expandButtonClosedLight.svg'),
+			dark: context.asAbsolutePath('images/expandButtonClosedDark.svg')
+		};
+		IconPathHelper.expandButtonOpen = {
+			light: context.asAbsolutePath('images/expandButtonOpenLight.svg'),
+			dark: context.asAbsolutePath('images/expandButtonOpenDark.svg')
 		};
 		IconPathHelper.newSupportRequest = {
 			light: context.asAbsolutePath('images/newSupportRequest.svg'),

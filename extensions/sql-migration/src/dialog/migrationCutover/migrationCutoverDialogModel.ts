@@ -3,9 +3,10 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { getMigrationStatus, DatabaseMigration, startMigrationCutover, stopMigration, getMigrationAsyncOperationDetails, AzureAsyncOperationResource } from '../../api/azure';
+import { getMigrationStatus, DatabaseMigration, startMigrationCutover, stopMigration, getMigrationAsyncOperationDetails, AzureAsyncOperationResource, BackupFileInfo } from '../../api/azure';
 import { MigrationContext } from '../../models/migrationLocalStorage';
 import { sendSqlMigrationActionEvent, TelemetryAction, TelemetryViews } from '../../telemtery';
+import * as constants from '../../constants/strings';
 
 export enum MigrationStatus {
 	Failed = 'Failed',
@@ -101,5 +102,41 @@ export class MigrationCutoverDialogModel {
 			console.log(error);
 		}
 		return undefined!;
+	}
+
+	public isBlobMigration(): boolean {
+		return this._migration.migrationContext.properties.backupConfiguration.sourceLocation?.azureBlob !== undefined;
+	}
+
+	public confirmCutoverStepsString(): string {
+		if (this.isBlobMigration()) {
+			return `${constants.CUTOVER_HELP_STEP1}
+			${constants.CUTOVER_HELP_STEP2_BLOB_CONTAINER}
+			${constants.CUTOVER_HELP_STEP3_BLOB_CONTAINER}`;
+		} else {
+			return `${constants.CUTOVER_HELP_STEP1}
+			${constants.CUTOVER_HELP_STEP2_NETWORK_SHARE}
+			${constants.CUTOVER_HELP_STEP3_NETWORK_SHARE}`;
+		}
+	}
+
+	public getLastBackupFileRestoredName(): string | undefined {
+		return this.migrationStatus.properties.migrationStatusDetails?.lastRestoredFilename;
+	}
+
+	public getPendingLogBackupsCount(): number | undefined {
+		return this.migrationStatus.properties.migrationStatusDetails?.pendingLogBackupsCount;
+	}
+
+	public getPendingfiles(): BackupFileInfo[] {
+		const files: BackupFileInfo[] = [];
+		this.migrationStatus.properties.migrationStatusDetails?.activeBackupSets?.forEach(abs => {
+			abs.listOfBackupFiles.forEach(f => {
+				if (f.status !== 'Restored') {
+					files.push(f);
+				}
+			});
+		});
+		return files;
 	}
 }
