@@ -352,7 +352,7 @@ configurationRegistry.registerConfiguration({
 		'notebookViews.enabled': {
 			'type': 'boolean',
 			'default': false,
-			'description': localize('notebookViews.enabled', "(Preview) enable notebook views")
+			'description': localize('notebookViews.enabled', "(Preview) Enable notebook views")
 		}
 	}
 });
