@@ -28,7 +28,7 @@ export class UntitledQueryEditorInput extends QueryEditorInput implements IEncod
 		@IConnectionManagementService connectionManagementService: IConnectionManagementService,
 		@IQueryModelService queryModelService: IQueryModelService,
 		@IConfigurationService configurationService: IConfigurationService,
-		@IInstantiationService private readonly instantiationService: IInstantiationService,
+		@IInstantiationService private readonly instantiationService: IInstantiationService
 	) {
 		super(description, text, results, connectionManagementService, queryModelService, configurationService);
 	}
