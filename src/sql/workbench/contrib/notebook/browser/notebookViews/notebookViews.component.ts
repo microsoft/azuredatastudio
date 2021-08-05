@@ -64,6 +64,7 @@ export class NotebookViewComponent extends AngularDisposable implements INoteboo
 	private _scrollTop: number;
 	public _cellsAwaitingInput: ICellModel[] = [];
 	public readonly cellsAwaitingInputModalTitle: string = localize('cellAwaitingInputTitle', "Cell Awaiting Input");
+	public readonly loadingMessage = localize('loading', "Loading");
 
 	constructor(
 		@Inject(IBootstrapParams) private _notebookParams: INotebookParams,
