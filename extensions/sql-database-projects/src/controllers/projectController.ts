@@ -874,12 +874,14 @@ export class ProjectsController {
 
 			return createProjectFromDatabaseDialog;
 		} else {
-			// The profile we get from VS Code is for the overall server connection and isn't updated based on the database node
-			// the command was launched from like it is in ADS. So get the actual database name from the MSSQL extension and
-			// update the connection info here.
-			const treeNodeContext = context as mssqlVscode.ITreeNodeInfo;
-			const databaseName = (await utils.getVscodeMssqlApi()).getDatabaseNameFromTreeNode(treeNodeContext);
-			(profile as mssqlVscode.IConnectionInfo).database = databaseName;
+			if (context) {
+				// The profile we get from VS Code is for the overall server connection and isn't updated based on the database node
+				// the command was launched from like it is in ADS. So get the actual database name from the MSSQL extension and
+				// update the connection info here.
+				const treeNodeContext = context as mssqlVscode.ITreeNodeInfo;
+				const databaseName = (await utils.getVscodeMssqlApi()).getDatabaseNameFromTreeNode(treeNodeContext);
+				(profile as mssqlVscode.IConnectionInfo).database = databaseName;
+			}
 			const model = await createNewProjectFromDatabaseWithQuickpick(profile as mssqlVscode.IConnectionInfo);
 			if (model) {
 				await this.createProjectFromDatabaseCallback(model);
