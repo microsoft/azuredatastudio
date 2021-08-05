@@ -134,10 +134,12 @@ export class NotebookViewComponent extends AngularDisposable implements INoteboo
 			for (let i = startIndex; i < endIndex; i++) {
 				statusNotification.updateMessage(localize('runningCell', "Running cell {0} of {1}", (i + 1), (endIndex)));
 				statusNotification.progress.worked(i);
-				let cellStatus = await this.runCell(codeCells[i]);
-				if (!cellStatus) {
-					statusNotification.close();
-					throw new Error(localize('cellRunFailed', "Run Cells failed - See error in output of the currently selected cell for more information."));
+				try {
+					await this.runCell(codeCells[i]);
+				} catch (error) {
+					statusNotification.updateSeverity(Severity.Error);
+					statusNotification.updateMessage(localize('cellRunFailed', "Run Cells failed - See error in output of the currently selected cell for more information."));
+					return false;
 				}
 			}
 			statusNotification.close();
