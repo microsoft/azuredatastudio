@@ -36,6 +36,7 @@ import { IconPathHelper } from '../common/iconHelper';
 import { DashboardData, PublishData, Status } from '../models/dashboardData/dashboardData';
 import { launchPublishDatabaseQuickpick } from '../dialogs/publishDatabaseQuickpick';
 import { SqlTargetPlatform } from 'sqldbproj';
+import { AutorestHelper } from '../tools/autorestHelper';
 
 const maxTableLength = 10;
 
@@ -766,6 +767,48 @@ export class ProjectsController {
 			.send();
 
 		return result;
+	}
+
+	public async generateFromSwagger() {
+		const filters: { [name: string]: string[] } = {};
+		filters['Swagger/OpenAPI spec'] = ['yaml'];
+
+		let uris = await vscode.window.showOpenDialog({
+			canSelectFiles: true,
+			canSelectFolders: false,
+			canSelectMany: false,
+			openLabel: 'Select Swagger/OpenAPI spec file',
+			filters: filters
+		});
+
+		if (!uris) {
+			return;
+		}
+
+		const swaggerPath: string = uris[0].fsPath;
+
+		const folders = await vscode.window.showOpenDialog({
+			canSelectFiles: false,
+			canSelectFolders: true,
+			canSelectMany: false,
+			openLabel: 'Select location for project',
+			defaultUri: vscode.workspace.workspaceFolders?.[0].uri ?? undefined
+		});
+
+		if (!folders) {
+			return;
+		}
+
+		const outputFolder: string = path.join(folders[0].fsPath, path.basename(swaggerPath, '.yaml'));
+
+		if (await utils.exists(outputFolder)) {
+			throw new Error(`Path '${outputFolder}' already exists.  Select another location.`);
+		}
+
+		await fs.mkdir(outputFolder);
+
+		const autorestHelper = new AutorestHelper();
+		await autorestHelper.generateAutorestFiles(swaggerPath, outputFolder);
 	}
 
 	//#region Helper methods

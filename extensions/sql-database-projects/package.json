@@ -153,6 +153,11 @@
         "command": "sqlDatabaseProjects.changeTargetPlatform",
         "title": "%sqlDatabaseProjects.changeTargetPlatform%",
         "category": "%sqlDatabaseProjects.displayName%"
+      },
+      {
+        "command": "sqlDatabaseProjects.generateProjectFromSwagger",
+        "title": "%sqlDatabaseProjects.generateProjectFromSwagger%",
+        "category": "%sqlDatabaseProjects.displayName%"
       }
     ],
     "menus": {
