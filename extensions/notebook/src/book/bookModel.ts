@@ -198,7 +198,6 @@ export class BookModel {
 					treeItemCollapsibleState: collapsibleState,
 					isUntitled: this.openAsUntitled,
 				},
-
 					{
 						light: this._extensionContext.asAbsolutePath('resources/light/book.svg'),
 						dark: this._extensionContext.asAbsolutePath('resources/dark/book_inverse.svg')
