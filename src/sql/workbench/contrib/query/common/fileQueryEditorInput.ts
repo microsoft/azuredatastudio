@@ -14,6 +14,7 @@ import { IMoveResult, GroupIdentifier } from 'vs/workbench/common/editor';
 import { BinaryEditorModel } from 'vs/workbench/common/editor/binaryEditorModel';
 import { EncodingMode, ITextFileEditorModel } from 'vs/workbench/services/textfile/common/textfiles';
 import { URI } from 'vs/base/common/uri';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 export class FileQueryEditorInput extends QueryEditorInput {
 
@@ -26,8 +27,9 @@ export class FileQueryEditorInput extends QueryEditorInput {
 		@IConnectionManagementService connectionManagementService: IConnectionManagementService,
 		@IQueryModelService queryModelService: IQueryModelService,
 		@IConfigurationService configurationService: IConfigurationService,
+		@IInstantiationService instantiationService: IInstantiationService,
 	) {
-		super(description, text, results, connectionManagementService, queryModelService, configurationService);
+		super(description, text, results, connectionManagementService, queryModelService, configurationService, instantiationService);
 	}
 
 	public override resolve(): Promise<ITextFileEditorModel | BinaryEditorModel> {
