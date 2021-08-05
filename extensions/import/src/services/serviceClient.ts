@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { SqlOpsDataClient, ClientOptions } from 'dataprotocol-client';
-import { ServerProvider, Events } from 'service-downloader';
+import { ServerProvider, Events } from '@microsoft/ads-service-downloader';
 import { ServerOptions, TransportKind } from 'vscode-languageclient';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
