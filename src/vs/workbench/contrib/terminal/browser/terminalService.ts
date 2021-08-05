@@ -486,7 +486,7 @@ export class TerminalService implements ITerminalService {
 			const newIndex = index < this._terminalGroups.length ? index : this._terminalGroups.length - 1;
 			this.setActiveGroupByIndex(newIndex);
 			const activeInstance = this.getActiveInstance();
-			if (this._onActiveInstanceChanged && activeInstance?.hadFocusOnExit) {
+			if (activeInstance) {
 				activeInstance.focus(true);
 			}
 		} else if (activeGroupIndex >= this._terminalGroups.length) {

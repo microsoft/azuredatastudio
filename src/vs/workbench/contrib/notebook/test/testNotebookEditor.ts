@@ -192,6 +192,7 @@ function _createTestNotebookEditor(instantiationService: TestInstantiationServic
 		}
 		override onDidChangeModel: Event<NotebookTextModel | undefined> = new Emitter<NotebookTextModel | undefined>().event;
 		override get viewModel() { return viewModel; }
+		override get textModel() { return viewModel.notebookDocument; }
 		override hasModel(): this is IActiveNotebookEditor {
 			return !!this.viewModel;
 		}
@@ -215,6 +216,10 @@ function _createTestNotebookEditor(instantiationService: TestInstantiationServic
 		override hasOutputTextSelection() {
 			return false;
 		}
+		override changeModelDecorations() { return null; }
+		override focusElement() { }
+		override setCellEditorSelection() { }
+		override async revealRangeInCenterIfOutsideViewportAsync() { }
 	};
 
 	return notebookEditor;

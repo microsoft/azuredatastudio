@@ -355,7 +355,7 @@ export enum IndentAction {
 	Outdent = 3
 }
 
-export enum InlineHintKind {
+export enum InlayHintKind {
 	Other = 0,
 	Type = 1,
 	Parameter = 2

@@ -79,15 +79,16 @@ registerAction2(class extends Action2 {
 		});
 	}
 
-	async run(accessor: ServicesAccessor, context?: { id: string, extension: string }): Promise<void> {
+	async run(accessor: ServicesAccessor, context?: { id: string, extension: string }): Promise<boolean> {
 		const notebookKernelService = accessor.get(INotebookKernelService);
 		const editorService = accessor.get(IEditorService);
 		const quickInputService = accessor.get(IQuickInputService);
 		const labelService = accessor.get(ILabelService);
+		const logService = accessor.get(ILogService);
 
 		const editor = getNotebookEditorFromEditorPane(editorService.activeEditorPane);
 		if (!editor || !editor.hasModel()) {
-			return;
+			return false;
 		}
 
 		if (context && (typeof context.id !== 'string' || typeof context.extension !== 'string')) {
@@ -100,7 +101,7 @@ registerAction2(class extends Action2 {
 
 		if (selected && context && selected.id === context.id && ExtensionIdentifier.equals(selected.extension, context.extension)) {
 			// current kernel is wanted kernel -> done
-			return;
+			return true;
 		}
 
 		let newKernel: INotebookKernel | undefined;
@@ -111,6 +112,10 @@ registerAction2(class extends Action2 {
 					newKernel = candidate;
 					break;
 				}
+			}
+			if (!newKernel) {
+				logService.warn(`wanted kernel DOES NOT EXIST, wanted: ${wantedId}, all: ${all.map(k => k.id)}`);
+				return false;
 			}
 		}
 
@@ -154,7 +159,9 @@ registerAction2(class extends Action2 {
 
 		if (newKernel) {
 			notebookKernelService.selectKernelForNotebook(newKernel, notebook);
+			return true;
 		}
+		return false;
 	}
 });
 

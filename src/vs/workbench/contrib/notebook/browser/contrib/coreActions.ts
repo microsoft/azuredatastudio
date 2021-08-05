@@ -1541,14 +1541,14 @@ registerAction2(class ChangeCellLanguageAction extends NotebookCellAction<ICellR
 
 	protected override getCellContextFromArgs(accessor: ServicesAccessor, context?: ICellRange, ...additionalArgs: any[]): IChangeCellContext | undefined {
 		if (!context || typeof context.start !== 'number' || typeof context.end !== 'number' || context.start >= context.end) {
-			return undefined;
+			return undefined; // {{SQL CARBON EDIT}} Strict nulls
 		}
 
 		const language = additionalArgs.length && typeof additionalArgs[0] === 'string' ? additionalArgs[0] : undefined;
 		const activeEditorContext = this.getEditorContextFromArgsOrActive(accessor);
 
 		if (!activeEditorContext || !activeEditorContext.notebookEditor.viewModel || context.start >= activeEditorContext.notebookEditor.viewModel.length) {
-			return undefined; // {{SQL CARBON EDIT}} Fix strict null
+			return undefined; // {{SQL CARBON EDIT}} Strict nulls
 		}
 
 		// TODO@rebornix, support multiple cells

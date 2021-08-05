@@ -13,6 +13,7 @@ import { INotebookKernelService } from 'vs/workbench/contrib/notebook/common/not
 export class NotebookEditorContextKeys {
 
 	private readonly _notebookKernelCount: IContextKey<number>;
+	private readonly _notebookKernelSelected: IContextKey<boolean>;
 	private readonly _interruptibleKernel: IContextKey<boolean>;
 	private readonly _someCellRunning: IContextKey<boolean>;
 	private readonly _hasOutputs: IContextKey<boolean>;
@@ -30,6 +31,7 @@ export class NotebookEditorContextKeys {
 		@IContextKeyService contextKeyService: IContextKeyService,
 	) {
 		this._notebookKernelCount = NOTEBOOK_KERNEL_COUNT.bindTo(contextKeyService);
+		this._notebookKernelSelected = NOTEBOOK_KERNEL_SELECTED.bindTo(contextKeyService);
 		this._interruptibleKernel = NOTEBOOK_INTERRUPTIBLE_KERNEL.bindTo(contextKeyService);
 		this._someCellRunning = NOTEBOOK_HAS_RUNNING_CELL.bindTo(contextKeyService);
 		this._useConsolidatedOutputButton = NOTEBOOK_USE_CONSOLIDATED_OUTPUT_BUTTON.bindTo(contextKeyService);
@@ -139,6 +141,7 @@ export class NotebookEditorContextKeys {
 		const { selected, all } = this._notebookKernelService.getMatchingKernel(this._editor.viewModel.notebookDocument);
 		this._notebookKernelCount.set(all.length);
 		this._interruptibleKernel.set(selected?.implementsInterrupt ?? false);
+		this._notebookKernelSelected.set(Boolean(selected));
 	}
 
 	private _updateForNotebookOptions(): void {

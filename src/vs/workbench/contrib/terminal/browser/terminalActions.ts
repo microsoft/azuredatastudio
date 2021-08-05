@@ -1434,13 +1434,6 @@ export function registerTerminalActions() {
 			await terminalService.doWithActiveInstance(async t => terminalService.unsplitInstance(t));
 		}
 	});
-	MenuRegistry.appendMenuItem(MenuId.TerminalTabInlineActions, {
-		command: {
-			id: TERMINAL_COMMAND_ID.SPLIT_INSTANCE,
-			title: localize('workbench.action.terminal.splitInstance', "Split Terminal"),
-		},
-		group: ContextMenuGroup.Create
-	});
 	registerAction2(class extends Action2 {
 		constructor() {
 			super({
@@ -1613,7 +1606,7 @@ export function registerTerminalActions() {
 			super({
 				id: TerminalCommandId.KillInstance,
 				title: {
-					value: localize('workbench.action.terminal.killInstance', "Kill Terminal"), original: 'Kill Terminal'
+					value: localize('workbench.action.terminal.kill.short', "Kill Terminal"), original: 'Kill Terminal'
 				},
 				f1: false,
 				category,
@@ -1643,13 +1636,6 @@ export function registerTerminalActions() {
 				focusNext(accessor);
 			}
 		}
-	});
-	MenuRegistry.appendMenuItem(MenuId.TerminalTabInlineActions, {
-		command: {
-			id: TERMINAL_COMMAND_ID.KILL_INSTANCE,
-			title: localize('workbench.action.terminal.killInstance', "Kill Terminal")
-		},
-		group: ContextMenuGroup.Kill
 	});
 	registerAction2(class extends Action2 {
 		constructor() {
