@@ -232,10 +232,10 @@ export class AzTool implements azExt.IAzApi {
  * Finds and returns the existing installation of Azure CLI, or throws an error and returns undefined if it
  * can't find an installed Azure CLI or encountered an unexpected error.
  */
-export async function findAz(): Promise<IAzTool | undefined> {
+export async function findAz(userRequested: boolean = false): Promise<IAzTool | undefined> {
 	Logger.log(loc.searchingForAz);
 	try {
-		const az = await findAzAndCheckArcdata();
+		const az = await findAzAndCheckArcdata(userRequested);
 		Logger.log(loc.foundExistingAz(await az.getPath(), (await az.getSemVersionAz()).raw));
 		return az;
 	} catch (err) {
@@ -301,7 +301,7 @@ async function setConfig(key: string, value: string): Promise<void> {
  * Finds and returns the user's locally installed Azure CLI tool. Checks to see if arcdata extension is
  * installed and updated. If no Azure CLI is found, error will be thrown.
  */
-export async function findAzAndCheckArcdata(): Promise<IAzTool> {
+export async function findAzAndCheckArcdata(userRequested: boolean = false): Promise<IAzTool> {
 	let response: string | undefined;
 	const responses = [loc.askLater, loc.doNotAskAgain];
 	let path = undefined;
@@ -311,7 +311,7 @@ export async function findAzAndCheckArcdata(): Promise<IAzTool> {
 	} catch (err) {
 		// If no Azure CLI was found, prompt to install
 		const azInstallNeededConfig = <AzDeployOption>getConfig(azCliInstallKey);
-		if (azInstallNeededConfig !== AzDeployOption.dontPrompt) {
+		if (azInstallNeededConfig !== AzDeployOption.dontPrompt && userRequested) {
 			response = await vscode.window.showErrorMessage(loc.noAzureCLI, ...responses);
 			if (response === loc.doNotAskAgain) {
 				await setConfig(azCliInstallKey, AzDeployOption.dontPrompt);
@@ -332,10 +332,10 @@ export async function findAzAndCheckArcdata(): Promise<IAzTool> {
 		throw err;
 	}
 
-	if (arcVersion === undefined) {
+	if (arcVersion === undefined && !userRequested) {
 		// If no arcdata was found, prompt to install
 		const arcInstallNeededConfig = <AzDeployOption>getConfig(azArcdataInstallKey);
-		if (arcInstallNeededConfig !== AzDeployOption.dontPrompt) {
+		if (arcInstallNeededConfig !== AzDeployOption.dontPrompt && userRequested) {
 			response = await vscode.window.showInformationMessage(loc.arcdataExtensionNotInstalled, ...responses);
 			if (response === loc.doNotAskAgain) {
 				await setConfig(azArcdataInstallKey, AzDeployOption.dontPrompt);
@@ -346,7 +346,7 @@ export async function findAzAndCheckArcdata(): Promise<IAzTool> {
 		const semVersion = new SemVer(<string>arcVersion);
 		const arcUpdateNeededConfig = <AzDeployOption>getConfig(azArcdataUpdateKey);
 
-		if (LATEST_AZ_ARC_EXTENSION_VERSION.compare(semVersion) === 1 && arcUpdateNeededConfig !== AzDeployOption.dontPrompt) {
+		if (LATEST_AZ_ARC_EXTENSION_VERSION.compare(semVersion) === 1 && arcUpdateNeededConfig !== AzDeployOption.dontPrompt && userRequested) {
 			// If there is a greater version of arcdata extension available, prompt to update
 			response = await vscode.window.showInformationMessage(loc.requiredArcDataVersionNotAvailable(latestAzArcExtensionVersion, <string>arcVersion), ...responses);
 			if (response === loc.doNotAskAgain) {
