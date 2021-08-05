@@ -43,7 +43,8 @@ export class WorkspaceService implements IWorkspaceService {
 				return false;
 			}
 		} else {
-			// workspace is open or we're running in vs code
+			// workspace is open or we're running in VS Code. VS Code doesn't require reloading the window when creating a workspace or
+			// adding the first item to an open workspace and so this check is unnecessary there.
 			return true;
 		}
 	}
