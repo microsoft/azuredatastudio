@@ -136,6 +136,8 @@ export class GridOutputComponent extends AngularDisposable implements IMimeCompo
 				await this.renderGrid();
 			} else {
 				this.loading = true;
+				// setTimeout adds the renderGrid call to a queue that gets called after all current tasks get executed -
+				// this allows the rest of the notebook to render first before rendering grids incrementally.
 				setTimeout(async () => {
 					await this.renderGrid();
 					this.loading = false;
