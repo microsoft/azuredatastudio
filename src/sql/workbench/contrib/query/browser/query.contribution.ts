@@ -30,7 +30,7 @@ import { LifecyclePhase } from 'vs/workbench/services/lifecycle/common/lifecycle
 import { TimeElapsedStatusBarContributions, RowCountStatusBarContributions, QueryStatusStatusBarContributions, QueryResultSelectionSummaryStatusBarContribution } from 'sql/workbench/contrib/query/browser/statusBarItems';
 import { SqlFlavorStatusbarItem, ChangeFlavorAction } from 'sql/workbench/contrib/query/browser/flavorStatus';
 import { EditorExtensions, IEditorInputFactoryRegistry } from 'vs/workbench/common/editor';
-import { FileQueryEditorInput } from 'sql/workbench/contrib/query/common/fileQueryEditorInput';
+import { FileQueryEditorInput } from 'sql/workbench/services/query/common/fileQueryEditorInput';
 import { FileQueryEditorInputSerializer, QueryEditorLanguageAssociation, UntitledQueryEditorInputSerializer } from 'sql/workbench/contrib/query/browser/queryInputFactory';
 import { UntitledQueryEditorInput } from 'sql/workbench/common/editor/query/untitledQueryEditorInput';
 import { ILanguageAssociationRegistry, Extensions as LanguageAssociationExtensions } from 'sql/workbench/services/languageAssociation/common/languageAssociation';
