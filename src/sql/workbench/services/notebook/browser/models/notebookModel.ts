@@ -388,7 +388,6 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return !ids ? [] : ids;
 	}
 
-
 	public async loadContents(isTrusted = false, forceLayoutChange = false): Promise<void> {
 		try {
 			this._isLoading = true;
