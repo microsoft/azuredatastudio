@@ -229,11 +229,10 @@ export class AzTool implements azExt.IAzApi {
 }
 
 /**
- * Finds and returns the existing installation of Azure CLI, or throws an error if it can't find it
- * or encountered an unexpected error.
- * The promise is rejected when Azure CLI is not found.
+ * Finds and returns the existing installation of Azure CLI, or throws an error and returns undefined if it
+ * can't find an installed Azure CLI or encountered an unexpected error.
  */
-export async function findAz(): Promise<IAzTool> {
+export async function findAz(): Promise<IAzTool | undefined> {
 	Logger.log(loc.searchingForAz);
 	try {
 		const az = await findAzAndCheckArcdata();
@@ -241,7 +240,7 @@ export async function findAz(): Promise<IAzTool> {
 		return az;
 	} catch (err) {
 		Logger.log(loc.noAzureCLI);
-		throw err;
+		return undefined;
 	}
 }
 
