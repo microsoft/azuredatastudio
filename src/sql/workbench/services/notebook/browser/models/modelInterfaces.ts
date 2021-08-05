@@ -503,10 +503,6 @@ export interface ICellModel {
 	readonly outputs: ReadonlyArray<nb.ICellOutput>;
 	getOutputId(output: nb.ICellOutput): QueryResultId | undefined;
 	renderedOutputTextContent?: string[];
-	renderGridOutputs(): void;
-	readonly onRenderGridOutputs: Event<void>;
-	resolveGridOutputsRendered(): void;
-	readonly gridOutputsRendered: Promise<void>;
 	readonly onOutputsChanged: Event<IOutputChangedEvent>;
 	readonly onTableUpdated: Event<ITableUpdatedEvent>;
 	readonly onExecutionStateChange: Event<CellExecutionState>;

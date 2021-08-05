@@ -125,13 +125,10 @@ export class GridOutputComponent extends AngularDisposable implements IMimeCompo
 				await this.renderGrid();
 			} else {
 				this.setLoading(true);
-				this._register(this._cellModel.onRenderGridOutputs(() => {
-					setTimeout(async () => {
-						await this.renderGrid();
-						this.setLoading(false);
-						this._cellModel.resolveGridOutputsRendered();
-					}, 0);
-				}));
+				setTimeout(async () => {
+					await this.renderGrid();
+					this.setLoading(false);
+				});
 			}
 		}
 	}
