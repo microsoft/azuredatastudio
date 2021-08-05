@@ -18,10 +18,6 @@ import { startsWith } from 'vs/base/common/strings';
 import { IRange } from 'vs/editor/common/core/range';
 import { AbstractTextResourceEditorInput } from 'vs/workbench/common/editor/textResourceEditorInput';
 import { IQueryEditorConfiguration } from 'sql/platform/query/common/query';
-//import { FileQueryEditorInput } from 'sql/workbench/common/query/fileQueryEditorInput';
-import { FileQueryEditorInput } from 'sql/workbench/services/query/common/fileQueryEditorInput';
-//import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
-import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 const MAX_SIZE = 13;
 
@@ -132,8 +128,7 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 		protected _results: QueryResultsInput,
 		@IConnectionManagementService private readonly connectionManagementService: IConnectionManagementService,
 		@IQueryModelService private readonly queryModelService: IQueryModelService,
-		@IConfigurationService private readonly configurationService: IConfigurationService,
-		@IInstantiationService private readonly instantiationService: IInstantiationService
+		@IConfigurationService private readonly configurationService: IConfigurationService
 	) {
 		super();
 
@@ -230,26 +225,12 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 		}
 	}
 
-	override async save(group: GroupIdentifier, options?: ISaveOptions): Promise<IEditorInput | undefined> {
-		//return this.text.save(group, options);
-		let preProcessed = await this.text.saveAs(group, options);
-		let newFileQueryInput = this.instantiationService.createInstance(FileQueryEditorInput, '', (preProcessed as any), this._results);
-		newFileQueryInput.state.resultsVisible = this.state.resultsVisible;
-		newFileQueryInput.state.isSaving = true;
-		newFileQueryInput.state.oldUri = this.uri;
-		//need to find way to add URIs into input.
-		return newFileQueryInput;
+	override save(group: GroupIdentifier, options?: ISaveOptions): Promise<IEditorInput | undefined> {
+		return this.text.save(group, options);
 	}
 
-	override async saveAs(group: GroupIdentifier, options?: ISaveOptions): Promise<IEditorInput | undefined> {
-		//return this.text.saveAs(group, options);
-		let preProcessed = await this.text.saveAs(group, options);
-		let newFileQueryInput = this.instantiationService.createInstance(FileQueryEditorInput, '', (preProcessed as any), this._results);
-		newFileQueryInput.state.resultsVisible = this.state.resultsVisible;
-		newFileQueryInput.state.isSaving = true;
-		newFileQueryInput.state.oldUri = this.uri;
-		//need to find way to add URIs into input.
-		return newFileQueryInput;
+	override saveAs(group: GroupIdentifier, options?: ISaveOptions): Promise<IEditorInput | undefined> {
+		return this.text.saveAs(group, options);
 	}
 
 	// Called to get the tooltip of the tab

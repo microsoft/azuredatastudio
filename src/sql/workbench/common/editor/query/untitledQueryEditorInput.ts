@@ -27,7 +27,7 @@ export class UntitledQueryEditorInput extends QueryEditorInput implements IEncod
 		@IConfigurationService configurationService: IConfigurationService,
 		@IInstantiationService instantiationService: IInstantiationService
 	) {
-		super(description, text, results, connectionManagementService, queryModelService, configurationService, instantiationService);
+		super(description, text, results, connectionManagementService, queryModelService, configurationService);
 	}
 
 	public override resolve(): Promise<IUntitledTextEditorModel & IResolvedTextEditorModel> {
@@ -41,26 +41,6 @@ export class UntitledQueryEditorInput extends QueryEditorInput implements IEncod
 	public get hasAssociatedFilePath(): boolean {
 		return this.text.model.hasAssociatedFilePath;
 	}
-
-	// override async save(group: GroupIdentifier, options?: ISaveOptions): Promise<IEditorInput | undefined> {
-	// 	let preProcessed = await this.text.saveAs(group, options);
-	// 	let newFileQueryInput = this.instantiationService.createInstance(FileQueryEditorInput, '', (preProcessed as FileEditorInput), this._results);
-	// 	newFileQueryInput.state.resultsVisible = this.state.resultsVisible;
-	// 	newFileQueryInput.state.isSaving = true;
-	// 	newFileQueryInput.state.oldUri = this.uri;
-	// 	//need to find way to add URIs into input.
-	// 	return newFileQueryInput;
-	// }
-
-	// override async saveAs(group: GroupIdentifier, options?: ISaveOptions): Promise<IEditorInput | undefined> {
-	// 	let preProcessed = await this.text.saveAs(group, options);
-	// 	let newFileQueryInput = this.instantiationService.createInstance(FileQueryEditorInput, '', (preProcessed as FileEditorInput), this._results);
-	// 	newFileQueryInput.state.resultsVisible = this.state.resultsVisible;
-	// 	newFileQueryInput.state.isSaving = true;
-	// 	newFileQueryInput.state.oldUri = this.uri;
-	// 	//need to find way to add URIs into input.
-	// 	return newFileQueryInput;
-	// }
 
 	public setMode(mode: string): void {
 		this.text.setMode(mode);

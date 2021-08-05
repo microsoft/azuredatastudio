@@ -29,7 +29,7 @@ export class FileQueryEditorInput extends QueryEditorInput {
 		@IConfigurationService configurationService: IConfigurationService,
 		@IInstantiationService instantiationService: IInstantiationService,
 	) {
-		super(description, text, results, connectionManagementService, queryModelService, configurationService, instantiationService);
+		super(description, text, results, connectionManagementService, queryModelService, configurationService);
 	}
 
 	public override resolve(): Promise<ITextFileEditorModel | BinaryEditorModel> {
