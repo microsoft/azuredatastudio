@@ -15,7 +15,6 @@ import { IJupyterBookToc, JupyterBookSection } from '../contracts/content';
 import { convertFrom, getContentPath, BookVersion } from './bookVersionHandler';
 import { debounce, IPinnedNotebook } from '../common/utils';
 import { Deferred } from '../common/promise';
-
 const fsPromises = fileServices.promises;
 const content = 'content';
 
@@ -145,8 +144,8 @@ export class BookModel {
 			title: this.pinnedNotebookDetails?.title ?? pathDetails.name,
 			contentPath: this.bookPath,
 			root: this.pinnedNotebookDetails?.bookPath ?? pathDetails.dir,
-			tableOfContents: undefined,
-			page: undefined,
+			tableOfContents: { sections: undefined },
+			page: { sections: undefined },
 			type: BookTreeItemType.Notebook,
 			treeItemCollapsibleState: vscode.TreeItemCollapsibleState.Expanded,
 			isUntitled: this.openAsUntitled,
@@ -203,7 +202,7 @@ export class BookModel {
 					{
 						light: this._extensionContext.asAbsolutePath('resources/light/book.svg'),
 						dark: this._extensionContext.asAbsolutePath('resources/dark/book_inverse.svg')
-					},
+					}
 				);
 				this._rootNode = book;
 				this._bookItems.push(book);
@@ -250,7 +249,7 @@ export class BookModel {
 					{
 						light: this._extensionContext.asAbsolutePath('resources/light/link.svg'),
 						dark: this._extensionContext.asAbsolutePath('resources/dark/link_inverse.svg')
-					},
+					}
 				);
 
 				treeItems.push(externalLink);
@@ -308,7 +307,7 @@ export class BookModel {
 						{
 							light: this._extensionContext.asAbsolutePath('resources/light/markdown.svg'),
 							dark: this._extensionContext.asAbsolutePath('resources/dark/markdown_inverse.svg')
-						},
+						}
 					);
 					if (this.openAsUntitled) {
 						if (!this._allNotebooks.get(path.basename(pathToMarkdown))) {

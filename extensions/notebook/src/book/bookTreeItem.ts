@@ -103,7 +103,7 @@ export class BookTreeItem extends vscode.TreeItem {
 		this.uri = this.book.page.file ? this.book.page.file?.replace(/\\/g, '/') : this.book.page.url?.replace(/\\/g, '/');
 
 		if (this.book.tableOfContents.sections) {
-			let index = (this.book.tableOfContents.sections.findIndex((entry) => entry.file === this.book.page.file));
+			let index = (this.book.tableOfContents.sections.indexOf(this.book.page));
 			this.setPreviousUri(index);
 			this.setNextUri(index);
 		}
@@ -203,7 +203,7 @@ export class BookTreeItem extends vscode.TreeItem {
 		if (!url) {
 			return undefined;
 		}
-		return this.findChildSectionRecur(this.book as JupyterBookSection, url);
+		return this.findChildSectionRecur(this as JupyterBookSection, url);
 	}
 
 	private findChildSectionRecur(section: JupyterBookSection, url: string): JupyterBookSection | undefined {

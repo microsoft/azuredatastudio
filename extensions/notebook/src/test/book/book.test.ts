@@ -962,13 +962,12 @@ describe('BooksTreeViewTests', function () {
 					let bookItem = book.bookItems[0];
 
 					let bookDetails = bookItem.book;
-					let tableOfContents = bookDetails.tableOfContents;
 
 					should(bookDetails.type).equal(BookTreeItemType.Book);
 					should(bookDetails.title).equal(run.contents.bookTitle);
 					should(bookDetails.contentPath).equal(run.folderPaths.tableOfContentsFile.replace(/\\/g, '/'));
 					should(bookDetails.root).equal(run.folderPaths.bookFolderPath.replace(/\\/g, '/'));
-					should(tableOfContents.sections).not.equal(undefined);
+					should(bookDetails.tableOfContents.sections).not.equal(undefined);
 					should(bookDetails.page).not.equal(undefined);
 				};
 
@@ -980,13 +979,12 @@ describe('BooksTreeViewTests', function () {
 					should(book.getAllNotebooks().get(vscode.Uri.file(run.folderPaths.standaloneNotebookFile).fsPath)).equal(bookItem);
 
 					let bookDetails = bookItem.book;
-					let tableOfContents = bookDetails.tableOfContents;
 
 					should(bookDetails.type).equal(BookTreeItemType.Notebook);
 					should(bookDetails.title).equal(run.contents.standaloneNotebookTitle);
 					should(bookDetails.contentPath).equal(run.folderPaths.standaloneNotebookFile.replace(/\\/g, '/'));
 					should(bookDetails.root).equal(run.folderPaths.notebookFolderPath.replace(/\\/g, '/'));
-					should(tableOfContents.sections).equal(undefined);
+					should(bookDetails.tableOfContents.sections).equal(undefined);
 					should(bookDetails.page.sections).equal(undefined);
 				};
 			});

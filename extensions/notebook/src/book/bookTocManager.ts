@@ -342,7 +342,7 @@ export class BookTocManager implements IBookTocManager {
 		this.newSection.title = section.title;
 		this.newSection.file = path.posix.join(path.parse(uri).dir, fileName);
 		if (section.sections) {
-			const files = section.sections;
+			const files = section.sections as JupyterBookSection[];
 			const movedSections = await this.traverseSections(files);
 			this.newSection.sections = movedSections;
 			this._modifiedDirectory.add(path.dirname(section.book.contentPath));

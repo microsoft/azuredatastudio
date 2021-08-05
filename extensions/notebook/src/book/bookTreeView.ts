@@ -23,7 +23,6 @@ import { CreateBookDialog } from '../dialog/createBookDialog';
 import { AddFileDialog } from '../dialog/addFileDialog';
 import { getContentPath } from './bookVersionHandler';
 import { TelemetryReporter, BookTelemetryView, NbTelemetryActions } from '../telemetry';
-import { JupyterBookSection } from '../contracts/content';
 
 interface BookSearchResults {
 	notebookPaths: string[];
@@ -45,7 +44,6 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	public viewId: string;
 	public books: BookModel[] = [];
 	public currentBook: BookModel;
-
 	supportedTypes = ['text/treeitems'];
 
 	constructor(workspaceFolders: vscode.WorkspaceFolder[], extensionContext: vscode.ExtensionContext, openAsUntitled: boolean, view: string, public providerId: string) {
@@ -177,7 +175,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		if (pickedBook && movingElement) {
 			const updateBook = this.books.find(book => book.bookPath === pickedBook.detail).bookItems[0];
 			if (updateBook) {
-				let bookSections: JupyterBookSection[] = updateBook.sections;
+				let bookSections = updateBook.sections;
 				while (bookSections) {
 					bookOptions = [{ label: loc.labelAddToLevel, detail: pickedSection ? pickedSection.detail : '' }];
 					bookSections.forEach(section => {
@@ -344,7 +342,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 					const sectionToOpen = bookRoot.findChildSection(urlToOpen);
 					urlPath = sectionToOpen?.file;
 				} else {
-					urlPath = this.currentBook.bookItems[0].book.page[0].file;
+					urlPath = this.currentBook.bookItems[0].tableOfContents.sections[0].file;
 				}
 			}
 			if (urlPath) {

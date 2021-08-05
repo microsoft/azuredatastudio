@@ -295,7 +295,7 @@ describe('BookTrustManagerTests', function () {
 					let bookTreeItemFormat2: BookTreeItemFormat = {
 						contentPath: undefined,
 						root: '/temp/SubFolder2/',
-						tableOfContents:{
+						tableOfContents: {
 							sections: [
 								{
 									url: path.join(path.sep, 'sample', 'notebook')
