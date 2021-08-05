@@ -80,6 +80,7 @@ export class NotebookViewsCodeCellComponent extends CodeCellComponent implements
 export class NotebookViewsCellModel extends CellModel {
 	/**
 	 * Override the cell output.
+	 * - Hide plain text messages
 	 */
 	public override get outputs(): Array<nb.ICellOutput> {
 		return super.outputs

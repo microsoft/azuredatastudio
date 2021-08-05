@@ -107,7 +107,7 @@ export class NotebookViewsCardComponent extends AngularDisposable implements OnI
 		this.onChange.emit({ cell: this.cell, event: event });
 	}
 
-	get modal(): boolean {
+	get displayInputModal(): boolean {
 		return this.awaitingInput;
 	}
 
@@ -158,7 +158,10 @@ export class NotebookViewsCardComponent extends AngularDisposable implements OnI
 		return this.data?.y;
 	}
 
-	public get display(): boolean {
+	/**
+	 * Whether to display the card
+	 */
+	public get visible(): boolean {
 		if (!this.activeView) {
 			return true;
 		}
@@ -170,6 +173,9 @@ export class NotebookViewsCardComponent extends AngularDisposable implements OnI
 		return !!this.activeView.displayedCells.find(c => c.cellGuid === this.cell.cellGuid);
 	}
 
+	/**
+	 * Is the cell expecting input
+	 */
 	public get awaitingInput(): boolean {
 		return this.cell.future && this.cell.future.inProgress;
 	}
