@@ -153,6 +153,10 @@
         "command": "sqlDatabaseProjects.changeTargetPlatform",
         "title": "%sqlDatabaseProjects.changeTargetPlatform%",
         "category": "%sqlDatabaseProjects.displayName%"
+      },
+      {
+        "command": "sqlDatabaseProjects.addSqlBinding",
+        "title": "%sqlDatabaseProjects.addSqlBinding%"
       }
     ],
     "menus": {
@@ -246,6 +250,10 @@
         {
           "command": "sqlDatabaseProjects.changeTargetPlatform",
           "when": "false"
+        },
+        {
+          "command": "sqlDatabaseProjects.addSqlBinding",
+          "when": "editorLangId == csharp && !azdataAvailable"
         }
       ],
       "view/item/context": [
