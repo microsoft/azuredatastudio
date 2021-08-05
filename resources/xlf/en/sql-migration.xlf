@@ -886,19 +886,31 @@ This may take some time.</source>
       <source xml:lang="en">Managed Instance migration cutover for Business Critical service tier can take significantly longer than General Purpose as three secondary replicas have to be seeded for Always On High Availability group. This operation duration depends on the size of data. Seeding speed in 90% of cases is 220 GB/hour or higher.</source>
     </trans-unit>
     <trans-unit id="sql.migration.cutover.help.main">
-      <source xml:lang="en">When you are ready to do the migration cutover, perform the following steps to complete the database migration. Please note that the database is ready for cutover only after a full backup has been restored on the target Azure SQL Database Managed Instance.</source>
+      <source xml:lang="en">Perform the following steps before you complete cutover.</source>
     </trans-unit>
     <trans-unit id="sql.migration.cutover.step.1">
       <source xml:lang="en">1. Stop all the incoming transactions coming to the source database.</source>
     </trans-unit>
-    <trans-unit id="sql.migration.cutover.step.2">
+    <trans-unit id="sql.migration.cutover.step.2.network.share">
       <source xml:lang="en">2. Take final transaction log backup and provide it in the network share location.</source>
     </trans-unit>
-    <trans-unit id="sql.migration.cutover.step.3">
+    <trans-unit id="sql.migration.cutover.step.2.blob">
+      <source xml:lang="en">2. Take final differential or transaction log backup and provide it in the Azure Storage Blob Container.</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.cutover.step.3.network.share">
       <source xml:lang="en">3. Make sure all the log backups are restored on target database. The "Log backups(s) pending restore" should be zero.</source>
     </trans-unit>
+    <trans-unit id="sql.migration.cutover.step.3.blob">
+      <source xml:lang="en">3. Make sure all the log backups are restored on target database. The "Log backups(s) pending restore" should be zero.</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.cutover.last.file.restored">
+      <source xml:lang="en">Last file restored: {0}</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.last.scan.completed">
+      <source xml:lang="en">Last scan completed: {0}</source>
+    </trans-unit>
     <trans-unit id="sql.migartion.cutover.pending.backup">
-      <source xml:lang="en">Pending log backups: {0}</source>
+      <source xml:lang="en">Log backups pending restore: {0}</source>
     </trans-unit>
     <trans-unit id="sql.migration.confirm.checkbox.message">
       <source xml:lang="en">I confirm there are no additional log backup(s) to provide and want to complete cutover.</source>
@@ -911,6 +923,15 @@ This may take some time.</source>
     </trans-unit>
     <trans-unit id="sql.migration.cannot.cutover">
       <source xml:lang="en">Migration is not in progress and cannot be cutover.</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.file.name">
+      <source xml:lang="en">File name</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.size.column.header">
+      <source xml:lang="en">Size</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.no.pending.backups">
+      <source xml:lang="en">No pending backups. Click refresh to check current status.</source>
     </trans-unit>
     <trans-unit id="sql.migration.search.for.migration">
       <source xml:lang="en">Search for migrations</source>

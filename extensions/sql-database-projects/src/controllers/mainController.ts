@@ -13,6 +13,7 @@ import { NetCoreTool } from '../tools/netcoreTool';
 import { IconPathHelper } from '../common/iconHelper';
 import { WorkspaceTreeItem } from 'dataworkspace';
 import { SqlDatabaseProjectProvider } from '../projectProvider/projectProvider';
+import { launchAddSqlBindingQuickpick } from '../dialogs/addSqlBindingQuickpick';
 
 /**
  * The main controller class that initializes the extension
@@ -68,6 +69,8 @@ export default class MainController implements vscode.Disposable {
 		vscode.commands.registerCommand('sqlDatabaseProjects.exclude', async (node: WorkspaceTreeItem) => { await this.projectsController.exclude(node); });
 		vscode.commands.registerCommand('sqlDatabaseProjects.changeTargetPlatform', async (node: WorkspaceTreeItem) => { await this.projectsController.changeTargetPlatform(node); });
 		vscode.commands.registerCommand('sqlDatabaseProjects.validateExternalStreamingJob', async (node: WorkspaceTreeItem) => { await this.projectsController.validateExternalStreamingJob(node); });
+
+		vscode.commands.registerCommand('sqlDatabaseProjects.addSqlBinding', async (uri: vscode.Uri | undefined) => { await launchAddSqlBindingQuickpick(uri); });
 
 		IconPathHelper.setExtensionContext(this.extensionContext);
 

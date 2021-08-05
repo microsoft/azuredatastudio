@@ -384,12 +384,20 @@ export const NO = localize('sql.migration.no', "No");
 //Migration confirm cutover dialog
 export const COMPLETING_CUTOVER_WARNING = localize('sql.migration.completing.cutover.warning', "Completing cutover without restoring all the backup(s) may result in loss of data.");
 export const BUSINESS_CRITICAL_INFO = localize('sql.migration.bc.info', "Managed Instance migration cutover for Business Critical service tier can take significantly longer than General Purpose as three secondary replicas have to be seeded for Always On High Availability group. This operation duration depends on the size of data. Seeding speed in 90% of cases is 220 GB/hour or higher.");
-export const CUTOVER_HELP_MAIN = localize('sql.migration.cutover.help.main', "When you are ready to do the migration cutover, perform the following steps to complete the database migration. Please note that the database is ready for cutover only after a full backup has been restored on the target Azure SQL Database Managed Instance.");
+export const CUTOVER_HELP_MAIN = localize('sql.migration.cutover.help.main', "Perform the following steps before you complete cutover.");
 export const CUTOVER_HELP_STEP1 = localize('sql.migration.cutover.step.1', "1. Stop all the incoming transactions coming to the source database.");
-export const CUTOVER_HELP_STEP2 = localize('sql.migration.cutover.step.2', "2. Take final transaction log backup and provide it in the network share location.");
-export const CUTOVER_HELP_STEP3 = localize('sql.migration.cutover.step.3', "3. Make sure all the log backups are restored on target database. The \"Log backups(s) pending restore\" should be zero.");
+export const CUTOVER_HELP_STEP2_NETWORK_SHARE = localize('sql.migration.cutover.step.2.network.share', "2. Take final transaction log backup and provide it in the network share location.");
+export const CUTOVER_HELP_STEP2_BLOB_CONTAINER = localize('sql.migration.cutover.step.2.blob', "2. Take final differential or transaction log backup and provide it in the Azure Storage Blob Container.");
+export const CUTOVER_HELP_STEP3_NETWORK_SHARE = localize('sql.migration.cutover.step.3.network.share', "3. Make sure all the log backups are restored on target database. The \"Log backups(s) pending restore\" should be zero.");
+export const CUTOVER_HELP_STEP3_BLOB_CONTAINER = localize('sql.migration.cutover.step.3.blob', "3. Make sure all the log backups are restored on target database. The \"Log backups(s) pending restore\" should be zero.");
+export function LAST_FILE_RESTORED(fileName: string): string {
+	return localize('sql.migration.cutover.last.file.restored', "Last file restored: {0}", fileName);
+}
+export function LAST_SCAN_COMPLETED(time: string): string {
+	return localize('sql.migration.last.scan.completed', "Last scan completed: {0}", time);
+}
 export function PENDING_BACKUPS(count: number): string {
-	return localize('sql.migartion.cutover.pending.backup', "Pending log backups: {0}", count);
+	return localize('sql.migartion.cutover.pending.backup', "Log backups pending restore: {0}", count);
 }
 export const CONFIRM_CUTOVER_CHECKBOX = localize('sql.migration.confirm.checkbox.message', "I confirm there are no additional log backup(s) to provide and want to complete cutover.");
 export function CUTOVER_IN_PROGRESS(dbName: string): string {
@@ -397,7 +405,9 @@ export function CUTOVER_IN_PROGRESS(dbName: string): string {
 }
 export const MIGRATION_CANNOT_CANCEL = localize('sql.migration.cannot.cancel', 'Migration is not in progress and cannot be cancelled.');
 export const MIGRATION_CANNOT_CUTOVER = localize('sql.migration.cannot.cutover', 'Migration is not in progress and cannot be cutover.');
-
+export const FILE_NAME = localize('sql.migration.file.name', "File name");
+export const SIZE_COLUMN_HEADER = localize('sql.migration.size.column.header', "Size");
+export const NO_PENDING_BACKUPS = localize('sql.migration.no.pending.backups', "No pending backups. Click refresh to check current status.");
 //Migration status dialog
 export const SEARCH_FOR_MIGRATIONS = localize('sql.migration.search.for.migration', "Search for migrations");
 export const ONLINE = localize('sql.migration.online', "Online");
