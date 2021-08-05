@@ -307,14 +307,7 @@ export class MigrationCutoverDialog {
 
 		this._disposables.push(this._copyDatabaseMigrationDetails.onDidClick(async (e) => {
 			await this.refreshStatus();
-			if (this._model.migrationOpStatus) {
-				vscode.env.clipboard.writeText(JSON.stringify({
-					'async-operation-details': this._model.migrationOpStatus,
-					'details': this._model.migrationStatus
-				}, undefined, 2));
-			} else {
-				vscode.env.clipboard.writeText(JSON.stringify(this._model.migrationStatus, undefined, 2));
-			}
+			vscode.env.clipboard.writeText(this.getMigrationDetails());
 
 			vscode.window.showInformationMessage(loc.DETAILS_COPIED);
 		}));
@@ -351,7 +344,10 @@ export class MigrationCutoverDialog {
 
 		this._refreshLoader = this._view.modelBuilder.loadingComponent().withProps({
 			loading: false,
-			height: '15px'
+			CSSStyles: {
+				'height': '8px',
+				'margin-top': '4px'
+			}
 		}).component();
 
 		headerActions.addItem(this._refreshLoader, {
@@ -459,6 +455,19 @@ export class MigrationCutoverDialog {
 		}
 	}
 
+	private getMigrationDetails(): string {
+		if (this._model.migrationOpStatus) {
+			return (JSON.stringify(
+				{
+					'async-operation-details': this._model.migrationOpStatus,
+					'details': this._model.migrationStatus
+				}
+				, undefined, 2));
+		} else {
+			return (JSON.stringify(this._model.migrationStatus, undefined, 2));
+		}
+	}
+
 	private async refreshStatus(): Promise<void> {
 		if (this.isRefreshing) {
 			return;
@@ -481,7 +490,8 @@ export class MigrationCutoverDialog {
 			errors.push(this._model.migrationStatus.properties.migrationStatusDetails?.restoreBlockingReason);
 			this._dialogObject.message = {
 				text: errors.filter(e => e !== undefined).join(EOL),
-				level: (this._model.migrationStatus.properties.migrationStatus === MigrationStatus.InProgress || this._model.migrationStatus.properties.migrationStatus === 'Completing') ? azdata.window.MessageLevel.Warning : azdata.window.MessageLevel.Error
+				level: (this._model.migrationStatus.properties.migrationStatus === MigrationStatus.InProgress || this._model.migrationStatus.properties.migrationStatus === 'Completing') ? azdata.window.MessageLevel.Warning : azdata.window.MessageLevel.Error,
+				description: this.getMigrationDetails()
 			};
 			const sqlServerInfo = await azdata.connection.getServerInfo((await azdata.connection.getCurrentConnection()).connectionId);
 			const sqlServerName = this._model._migration.sourceConnectionProfile.serverName;
@@ -542,7 +552,7 @@ export class MigrationCutoverDialog {
 			this.showInfoField(this._fullBackupFileOnInfoField);
 
 			let backupLocation;
-			const isBlobMigration = this._isBlobMigration();
+			const isBlobMigration = this._model.isBlobMigration();
 			// Displaying storage accounts and blob container for azure blob backups.
 			if (isBlobMigration) {
 				backupLocation = `${this._model._migration.migrationContext.properties.backupConfiguration.sourceLocation?.azureBlob?.storageAccountResourceId.split('/').pop()} - ${this._model._migration.migrationContext.properties.backupConfiguration.sourceLocation?.azureBlob?.blobContainerName}`;
@@ -697,12 +707,8 @@ export class MigrationCutoverDialog {
 		return migrationMode === MigrationMode.ONLINE;
 	}
 
-	private _isBlobMigration(): boolean {
-		return this._model._migration.migrationContext.properties.backupConfiguration.sourceLocation?.azureBlob !== undefined;
-	}
-
 	private _shouldDisplayBackupFileTable(): boolean {
-		return this._isProvisioned() && this._isOnlineMigration() && !this._isBlobMigration();
+		return this._isProvisioned() && this._isOnlineMigration() && !this._model.isBlobMigration();
 	}
 
 	private getMigrationStatus(): string {

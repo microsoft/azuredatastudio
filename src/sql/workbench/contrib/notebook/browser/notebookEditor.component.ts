@@ -24,6 +24,7 @@ import { IAction, SubmenuAction } from 'vs/base/common/actions';
 import { IMenuService, MenuId } from 'vs/platform/actions/common/actions';
 import { fillInActions } from 'vs/platform/actions/browser/menuEntryActionViewItem';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { NotebookViewsExtension } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViewsExtension';
 
 export const NOTEBOOKEDITOR_SELECTOR: string = 'notebookeditor-component';
 
@@ -35,6 +36,8 @@ export class NotebookEditorComponent extends AngularDisposable {
 	private profile: IConnectionProfile;
 	private notebookManagers: INotebookManager[] = [];
 	private _model: NotebookModel;
+
+	public views: NotebookViewsExtension;
 
 	constructor(
 		@Inject(ILogService) private readonly logService: ILogService,
@@ -103,6 +106,8 @@ export class NotebookEditorComponent extends AngularDisposable {
 		let trusted = await this.notebookService.isNotebookTrustCached(this._notebookParams.notebookUri, this.isDirty());
 		this._model = this._register(model);
 		await this.model.loadContents(trusted);
+
+		this.views = new NotebookViewsExtension(this.model);
 
 		this._register(model.viewModeChanged((mode) => this.onViewModeChanged()));
 		this._register(model.contentChanged((change) => this.handleContentChanged(change)));

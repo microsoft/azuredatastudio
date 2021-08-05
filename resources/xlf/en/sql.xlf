@@ -2819,6 +2819,12 @@ Error: {1}</source>
     <trans-unit id="addCell">
       <source xml:lang="en">Cell</source>
     </trans-unit>
+    <trans-unit id="views">
+      <source xml:lang="en">Views</source>
+    </trans-unit>
+    <trans-unit id="editor">
+      <source xml:lang="en">Editor</source>
+    </trans-unit>
     <trans-unit id="code">
       <source xml:lang="en">Code</source>
     </trans-unit>
@@ -3060,6 +3066,15 @@ Error: {1}</source>
     <trans-unit id="clearResults">
       <source xml:lang="en">Clear Results</source>
     </trans-unit>
+    <trans-unit id="notebookViewLabel">
+      <source xml:lang="en">Editor</source>
+    </trans-unit>
+    <trans-unit id="newViewLabel">
+      <source xml:lang="en">Create New View</source>
+    </trans-unit>
+    <trans-unit id="viewNotFound">
+      <source xml:lang="en">Unable to find view: {0}</source>
+    </trans-unit>
     <trans-unit id="trustLabel">
       <source xml:lang="en">Trusted</source>
     </trans-unit>
@@ -3165,12 +3180,67 @@ Error: {1}</source>
       <source xml:lang="en">Search</source>
     </trans-unit>
   </body></file>
+  <file original="src/sql/workbench/contrib/notebook/browser/notebookViews/insertCellsModal" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="insertCellsModal.title">
+      <source xml:lang="en">Insert cells</source>
+    </trans-unit>
+    <trans-unit id="insertCellsModal.selectCells">
+      <source xml:lang="en">Select cell sources</source>
+    </trans-unit>
+    <trans-unit id="insertCellsModal.thumbnailError">
+      <source xml:lang="en">Error: Unable to generate thumbnails.</source>
+    </trans-unit>
+    <trans-unit id="insertCellsModal.untitled">
+      <source xml:lang="en">Untitled Cell : {0}</source>
+    </trans-unit>
+    <trans-unit id="insertCellsModal.Insert">
+      <source xml:lang="en">Insert</source>
+    </trans-unit>
+    <trans-unit id="insertCellsModal.Cancel">
+      <source xml:lang="en">Cancel</source>
+    </trans-unit>
+  </body></file>
   <file original="src/sql/workbench/contrib/notebook/browser/notebookViews/notebookViews.component" source-language="en" datatype="plaintext"><body>
     <trans-unit id="cellNotFound">
       <source xml:lang="en">cell with URI {0} was not found in this model</source>
     </trans-unit>
     <trans-unit id="cellRunFailed">
       <source xml:lang="en">Run Cells failed - See error in output of the currently selected cell for more information.</source>
+    </trans-unit>
+    <trans-unit id="runAllPreview">
+      <source xml:lang="en">Run all</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/workbench/contrib/notebook/browser/notebookViews/notebookViewsActions" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="viewsUnableToRemove">
+      <source xml:lang="en">Unable to remove view</source>
+    </trans-unit>
+    <trans-unit id="confirmDelete">
+      <source xml:lang="en">Are you sure you want to delete view "{0}"?</source>
+    </trans-unit>
+    <trans-unit id="delete">
+      <source xml:lang="en">&amp;&amp;Delete</source>
+    </trans-unit>
+    <trans-unit id="insertCells">
+      <source xml:lang="en">Insert Cells</source>
+    </trans-unit>
+    <trans-unit id="runCell">
+      <source xml:lang="en">Run cell</source>
+    </trans-unit>
+    <trans-unit id="stopCell">
+      <source xml:lang="en">Cancel execution</source>
+    </trans-unit>
+    <trans-unit id="errorRunCell">
+      <source xml:lang="en">Error on last run. Click to run again</source>
+    </trans-unit>
+    <trans-unit id="unableToNavigateToCell">
+      <source xml:lang="en">Unable to navigate to notebook cell.</source>
+    </trans-unit>
+    <trans-unit id="viewCellInNotebook">
+      <source xml:lang="en">View Cell In Notebook</source>
+    </trans-unit>
+    <trans-unit id="moreActionsLabel">
+      <source xml:lang="en">More</source>
     </trans-unit>
   </body></file>
   <file original="src/sql/workbench/contrib/notebook/browser/notebookViews/notebookViewsCodeCell.component" source-language="en" datatype="plaintext"><body>
@@ -3181,6 +3251,26 @@ Error: {1}</source>
   <file original="src/sql/workbench/contrib/notebook/browser/notebookViews/notebookViewsGrid.component" source-language="en" datatype="plaintext"><body>
     <trans-unit id="emptyText">
       <source xml:lang="en">This view is empty. Add a cell to this view by clicking the Insert Cells button.</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/workbench/contrib/notebook/browser/notebookViews/viewOptionsModal" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="viewOptionsModal.title">
+      <source xml:lang="en">Configure View</source>
+    </trans-unit>
+    <trans-unit id="viewOptionsModal.name">
+      <source xml:lang="en">View Name</source>
+    </trans-unit>
+    <trans-unit id="viewOptionsModal.missingRequireField">
+      <source xml:lang="en">This field is required.</source>
+    </trans-unit>
+    <trans-unit id="viewOptionsModal.nameTaken">
+      <source xml:lang="en">This view name has already been taken.</source>
+    </trans-unit>
+    <trans-unit id="save">
+      <source xml:lang="en">Save</source>
+    </trans-unit>
+    <trans-unit id="cancel">
+      <source xml:lang="en">Cancel</source>
     </trans-unit>
   </body></file>
   <file original="src/sql/workbench/contrib/notebook/browser/outputs/gridOutput.component" source-language="en" datatype="plaintext"><body>
@@ -5008,6 +5098,11 @@ Error: {1}</source>
   <file original="src/sql/workbench/services/notebook/browser/notebookViews/notebookViewModel" source-language="en" datatype="plaintext"><body>
     <trans-unit id="notebookView.nameTaken">
       <source xml:lang="en">A view with the name {0} already exists in this notebook.</source>
+    </trans-unit>
+  </body></file>
+  <file original="src/sql/workbench/services/notebook/browser/notebookViews/notebookViewsExtension" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="notebookView.untitledView">
+      <source xml:lang="en">Untitled View</source>
     </trans-unit>
   </body></file>
   <file original="src/sql/workbench/services/notebook/browser/sql/sqlSessionManager" source-language="en" datatype="plaintext"><body>
