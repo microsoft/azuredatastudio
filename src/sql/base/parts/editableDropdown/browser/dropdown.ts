@@ -136,8 +136,14 @@ export class Dropdown extends Disposable implements IListVirtualDelegate<string>
 			}
 		});
 
+		/*
+			This event listener is intended to close the expanded drop down when the ADS shell window is resized
+			to prevent the list from rendering incorrectly at the top left corner of the window.
+		 */
 		this._register(DOM.addDisposableListener(window, DOM.EventType.RESIZE, () => {
-			this._hideList();
+			if (this._isDropDownVisible) {
+				this._hideList();
+			}
 		}));
 
 		this._register(DOM.addStandardDisposableListener(this._input.inputElement, DOM.EventType.KEY_DOWN, (e: StandardKeyboardEvent) => {
