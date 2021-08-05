@@ -6,7 +6,7 @@
 import { Component, Input } from '@angular/core';
 
 @Component({
-	selector: 'views-modal-component',
+	selector: 'notebook-views-modal-component',
 	template: `
 		<div [class.modal]="modal">
 			<div class="content">
