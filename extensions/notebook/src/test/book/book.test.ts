@@ -962,7 +962,7 @@ describe('BooksTreeViewTests', function () {
 					let bookItem = book.bookItems[0];
 
 					let bookDetails = bookItem.book;
-					let tableOfContents = JSON.parse(bookDetails.tableOfContents);
+					let tableOfContents = bookDetails.tableOfContents;
 
 					should(bookDetails.type).equal(BookTreeItemType.Book);
 					should(bookDetails.title).equal(run.contents.bookTitle);
@@ -980,7 +980,7 @@ describe('BooksTreeViewTests', function () {
 					should(book.getAllNotebooks().get(vscode.Uri.file(run.folderPaths.standaloneNotebookFile).fsPath)).equal(bookItem);
 
 					let bookDetails = bookItem.book;
-					let tableOfContents = JSON.parse(bookDetails.tableOfContents);
+					let tableOfContents = bookDetails.tableOfContents;
 
 					should(bookDetails.type).equal(BookTreeItemType.Notebook);
 					should(bookDetails.title).equal(run.contents.standaloneNotebookTitle);

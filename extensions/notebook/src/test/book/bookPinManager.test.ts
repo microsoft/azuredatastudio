@@ -56,7 +56,7 @@ describe('BookPinManagerTests', function () {
 			let bookTreeItemFormat1: BookTreeItemFormat = {
 				contentPath: '/temp/SubFolder/content/sample/notebook1.ipynb',
 				root: '/temp/SubFolder/',
-				tableOfContents: JSON.stringify({
+				tableOfContents: {
 					sections: [
 						{
 							url: path.join(path.sep, 'sample', 'notebook1')
@@ -65,7 +65,7 @@ describe('BookPinManagerTests', function () {
 							url: path.join(path.sep, 'sample', 'notebook2')
 						}
 					]
-				}),
+				},
 				isUntitled: undefined,
 				page: undefined,
 				title: undefined,
@@ -76,13 +76,13 @@ describe('BookPinManagerTests', function () {
 			let bookTreeItemFormat2: BookTreeItemFormat = {
 				contentPath: '/temp/SubFolder2/content/sample/notebook.ipynb',
 				root: '/temp/SubFolder2/',
-				tableOfContents: JSON.stringify({
+				tableOfContents: {
 					sections: [
 						{
 							url: path.join(path.sep, 'sample', 'notebook')
 						}
 					]
-				}),
+				},
 				isUntitled: undefined,
 				page: undefined,
 				title: undefined,
@@ -93,13 +93,13 @@ describe('BookPinManagerTests', function () {
 			let bookTreeItemFormat3: BookTreeItemFormat = {
 				contentPath: '/temp2/SubFolder3/content/sample/notebook.ipynb',
 				root: '/temp2/SubFolder3/',
-				tableOfContents: JSON.stringify({
+				tableOfContents: {
 					sections: [
 						{
 							url: path.join(path.sep, 'sample', 'notebook')
 						}
 					]
-				}),
+				},
 				isUntitled: undefined,
 				page: undefined,
 				title: undefined,

@@ -64,9 +64,9 @@ function createBookTreeItemFormat(item: any, root: string, version: BookVersion)
 		title: item.sectionName,
 		contentPath: item.contentPath,
 		root: root,
-		tableOfContents: JSON.stringify({
+		tableOfContents: {
 			sections: sections
-		}),
+		},
 		isUntitled: undefined,
 		treeItemCollapsibleState: undefined,
 		type: item.type,
@@ -378,9 +378,9 @@ describe('BookTocManagerTests', function () {
 					let targetBookTreeItemFormat: BookTreeItemFormat = {
 						contentPath: run.targetBook.readme,
 						root: run.targetBook.rootBookFolderPath,
-						tableOfContents: JSON.stringify({
+						tableOfContents: {
 							sections: run.targetBook.toc
-						}),
+						},
 						isUntitled: undefined,
 						title: 'Target Book',
 						treeItemCollapsibleState: undefined,

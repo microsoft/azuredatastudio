@@ -193,7 +193,7 @@ export class BookModel {
 					title: config.title,
 					contentPath: this._tableOfContentsPath,
 					root: this.bookPath,
-					tableOfContents: JSON.stringify(parsedTOC),
+					tableOfContents: parsedTOC,
 					page: tableOfContents,
 					type: BookTreeItemType.Book,
 					treeItemCollapsibleState: collapsibleState,
@@ -229,9 +229,6 @@ export class BookModel {
 	}
 
 	public async getSections(element: BookTreeItem): Promise<BookTreeItem[]> {
-		const fileContents = await fsPromises.readFile(element.tableOfContentsPath, 'utf-8');
-		let tableOfContents: any = yaml.safeLoad(fileContents.toString());
-		const parsedTOC: IJupyterBookToc = { sections: this.parseJupyterSections(this._bookVersion, tableOfContents) };
 		let sections: JupyterBookSection[] = element.sections;
 		let root: string = element.root;
 		let book: BookTreeItemFormat = element.book;
@@ -242,13 +239,13 @@ export class BookModel {
 					title: sections[i].title,
 					contentPath: undefined,
 					root: root,
-					tableOfContents: JSON.stringify(parsedTOC),
+					tableOfContents: element.tableOfContents,
 					page: sections[i],
 					type: BookTreeItemType.ExternalLink,
 					treeItemCollapsibleState: vscode.TreeItemCollapsibleState.Collapsed,
 					isUntitled: this.openAsUntitled,
 					version: book.version,
-					parent: Object.assign({}, element)
+					parent: element
 				},
 					{
 						light: this._extensionContext.asAbsolutePath('resources/light/link.svg'),
@@ -268,13 +265,13 @@ export class BookModel {
 						title: sections[i].title ? sections[i].title : sections[i].file,
 						contentPath: pathToNotebook,
 						root: root,
-						tableOfContents: JSON.stringify(parsedTOC),
+						tableOfContents: element.tableOfContents,
 						page: sections[i],
 						type: BookTreeItemType.Notebook,
 						treeItemCollapsibleState: vscode.TreeItemCollapsibleState.Collapsed,
 						isUntitled: this.openAsUntitled,
 						version: book.version,
-						parent: Object.assign({}, element)
+						parent: element
 					},
 						{
 							light: this._extensionContext.asAbsolutePath('resources/light/notebook.svg'),
@@ -300,13 +297,13 @@ export class BookModel {
 						title: sections[i].title ? sections[i].title : sections[i].file,
 						contentPath: pathToMarkdown,
 						root: root,
-						tableOfContents: JSON.stringify(parsedTOC),
+						tableOfContents: element.tableOfContents,
 						page: sections[i],
 						type: BookTreeItemType.Markdown,
 						treeItemCollapsibleState: vscode.TreeItemCollapsibleState.Collapsed,
 						isUntitled: this.openAsUntitled,
 						version: book.version,
-						parent: Object.assign({}, element)
+						parent: element
 					},
 						{
 							light: this._extensionContext.asAbsolutePath('resources/light/markdown.svg'),

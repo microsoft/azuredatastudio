@@ -46,6 +46,8 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	public books: BookModel[] = [];
 	public currentBook: BookModel;
 
+	supportedTypes = ['text/treeitems'];
+
 	constructor(workspaceFolders: vscode.WorkspaceFolder[], extensionContext: vscode.ExtensionContext, openAsUntitled: boolean, view: string, public providerId: string) {
 		this._openAsUntitled = openAsUntitled;
 		this._extensionContext = extensionContext;
@@ -725,6 +727,4 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	}
 
 	dispose(): void { }
-
-	supportedTypes = ['text/treeitems'];
 }
