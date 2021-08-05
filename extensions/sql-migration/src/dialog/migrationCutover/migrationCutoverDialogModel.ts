@@ -7,13 +7,6 @@ import { getMigrationStatus, DatabaseMigration, startMigrationCutover, stopMigra
 import { MigrationContext } from '../../models/migrationLocalStorage';
 import { sendSqlMigrationActionEvent, TelemetryAction, TelemetryViews } from '../../telemtery';
 
-export enum MigrationStatus {
-	Failed = 'Failed',
-	Succeeded = 'Succeeded',
-	InProgress = 'InProgress',
-	Canceled = 'Canceled'
-}
-
 export class MigrationCutoverDialogModel {
 
 	public migrationStatus!: DatabaseMigration;
