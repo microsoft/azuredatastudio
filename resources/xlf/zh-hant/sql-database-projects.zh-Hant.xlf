@@ -762,8 +762,8 @@
         <target state="translated">從專案 {0} 到專案 {1} 的循環參考</target>
       </trans-unit>
       <trans-unit id="mssqlNotFound">
-        <source xml:lang="en">Could not get mssql extension's install location at {0}</source>
-        <target state="translated">無法在 {0} 取得 mssql 延伸模組的安裝位置</target>
+        <source xml:lang="en">Could not get SQL Tools Service install location at {0}</source>
+        <target state="translated">無法取得 SQL Tools Service 安裝位置於 {0}</target>
       </trans-unit>
       <trans-unit id="projBuildFailed">
         <source xml:lang="en">Build failed. Check output pane for more details. {0}</source>

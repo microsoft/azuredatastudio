@@ -35,7 +35,8 @@ export class BuildHelper {
 	private initialized: boolean = false;
 
 	constructor() {
-		this.extensionDir = vscode.extensions.getExtension(sqldbproj.extension.name)?.extensionPath ?? '';
+		const extName = utils.getAzdataApi() ? sqldbproj.extension.name : sqldbproj.extension.vsCodeName;
+		this.extensionDir = vscode.extensions.getExtension(extName)?.extensionPath ?? '';
 		this.extensionBuildDir = path.join(this.extensionDir, buildDirectory);
 	}
 
@@ -52,7 +53,6 @@ export class BuildHelper {
 		}
 
 		const buildfilesPath = await this.getBuildDirPathFromMssqlTools();
-
 		buildFiles.forEach(async (fileName) => {
 			if (await (utils.exists(path.join(buildfilesPath, fileName)))) {
 				await fs.copyFile(path.join(buildfilesPath, fileName), path.join(this.extensionBuildDir, fileName));
@@ -81,8 +81,12 @@ export class BuildHelper {
 			if (utils.getAzdataApi()) {
 				installDir = config.installDirectory?.replace('{#version#}', config.version).replace('{#platform#}', this.getPlatform());
 			} else {
-				// VS Code MSSQL extension has its config.json
-				installDir = config.service?.installDir?.replace('{#version#}', config.version).replace('{#platform#}', this.getPlatform());
+				// VS Code MSSQL extension has a slightly different format for its config.json
+				installDir = config.service?.installDir?.replace('{#version#}', config.service.version).replace('{#platform#}', this.getPlatform());
+				if (installDir) {
+					// The path to the install location is relative to one directory above where the config is so account for that here
+					installDir = path.join('..', installDir);
+				}
 			}
 
 			if (installDir) {

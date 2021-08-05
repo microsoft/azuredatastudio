@@ -33,6 +33,7 @@
 	"arc.data.controller.name": "Data controller name",
 	"arc.data.controller.name.validation.description": "Name must consist of lower case alphanumeric characters, '-' or '.', start/end with an alphanumeric character and be 253 characters or less in length.",
 	"arc.data.controller.location": "Location",
+	"arc.data.controller.infrastructure": "Infrastructure",
 	"arc.data.controller.admin.account.title": "Administrator account",
 	"arc.data.controller.admin.account.name": "Data controller login",
 	"arc.data.controller.admin.account.password": "Password",
@@ -58,6 +59,7 @@
 	"arc.data.controller.summary.resource.group": "Resource group",
 	"arc.data.controller.summary.data.controller.name": "Data controller name",
 	"arc.data.controller.summary.data.controller.namespace": "Data controller namespace",
+	"arc.data.controller.summary.data.controller.infrastructure": "Data controller infrastructure",
 	"arc.data.controller.summary.controller": "Controller",
 	"arc.data.controller.summary.location": "Location",
 	"arc.data.controller.agreement": "I accept {0} and {1}.",
@@ -153,7 +155,7 @@
 	"cores.limit.greater.than.or.equal.to.requested.cores": "Cores limit must be greater than or equal to requested cores",
 	"requested.memory.less.than.or.equal.to.memory.limit": "Requested memory must be less than or equal to memory limit",
 	"memory.limit.greater.than.or.equal.to.requested.memory": "Memory limit must be greater than or equal to requested memory",
-	"arc.agreement.sql.help.text": "Azure Arc enabled Managed Instance provides SQL Server access and feature compatibility that can be deployed on the infrastructure of your choice. While this service is in preview, it has some feature limitations compared to SQL Managed Instance on Azure. {0}",
+	"arc.agreement.sql.help.text": "Azure Arc enabled Managed Instance provides SQL Server access and feature compatibility that can be deployed on the infrastructure of your choice. {0}",
 	"arc.agreement.sql.help.text.learn.more": "Learn more",
 	"arc.agreement.sql.help.text.learn.more.ariaLabel": "Learn more about Azure Arc enabled Managed Instance"
 }

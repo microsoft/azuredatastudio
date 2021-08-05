@@ -17,12 +17,6 @@ describe('az', function () {
 		let executeCommandStub: sinon.SinonStub;
 		const namespace = 'arc4';
 		const name = 'cy-dc-4';
-		const connectivityMode = 'direct';
-		const resourceGroup = 'canye-rg-2';
-		const location = 'eastus2euap';
-		const subscription = 'a5082b19-8a6e-4bc5-8fdd-8ef39dfebc39';
-		const profileName = 'myProfileName';
-		const storageClass = 'local-storage';
 
 		beforeEach(function (): void {
 			executeCommandStub = sinon.stub(childProcess, 'executeCommand').resolves({ stdout: '{}', stderr: '' });
@@ -30,19 +24,6 @@ describe('az', function () {
 
 		describe('arcdata', function (): void {
 			describe('dc', function (): void {
-				it('create', async function (): Promise<void> {
-					await azTool.arcdata.dc.create(namespace, name, connectivityMode, resourceGroup, location, subscription, profileName, storageClass);
-					verifyExecuteCommandCalledWithArgs([
-						'arcdata', 'dc', 'create',
-						namespace,
-						name,
-						connectivityMode,
-						resourceGroup,
-						location,
-						subscription,
-						profileName,
-						storageClass]);
-				});
 				describe('endpoint', async function (): Promise<void> {
 					it('list', async function (): Promise<void> {
 						await azTool.arcdata.dc.endpoint.list(namespace);

@@ -5,7 +5,7 @@
 
 import { PGResourceInfo } from 'arc';
 import * as azdata from 'azdata';
-import * as azdataExt from 'azdata-ext';
+import * as azExt from 'az-ext';
 import * as vscode from 'vscode';
 import * as loc from '../localizedConstants';
 import { ConnectToPGSqlDialog } from '../ui/dialogs/connectPGDialog';
@@ -27,12 +27,12 @@ export type EngineSettingsModel = {
 };
 
 export class PostgresModel extends ResourceModel {
-	private _config?: azdataExt.PostgresServerShowResult;
+	private _config?: azExt.PostgresServerShowResult;
 	public workerNodesEngineSettings: EngineSettingsModel[] = [];
 	public coordinatorNodeEngineSettings: EngineSettingsModel[] = [];
-	private readonly _azdataApi: azdataExt.IExtension;
+	private readonly _azApi: azExt.IExtension;
 
-	private readonly _onConfigUpdated = new vscode.EventEmitter<azdataExt.PostgresServerShowResult>();
+	private readonly _onConfigUpdated = new vscode.EventEmitter<azExt.PostgresServerShowResult>();
 	public onConfigUpdated = this._onConfigUpdated.event;
 	public configLastUpdated?: Date;
 	public engineSettingsLastUpdated?: Date;
@@ -42,11 +42,11 @@ export class PostgresModel extends ResourceModel {
 
 	constructor(_controllerModel: ControllerModel, private _pgInfo: PGResourceInfo, registration: Registration, private _treeDataProvider: AzureArcTreeDataProvider) {
 		super(_controllerModel, _pgInfo, registration);
-		this._azdataApi = <azdataExt.IExtension>vscode.extensions.getExtension(azdataExt.extension.name)?.exports;
+		this._azApi = <azExt.IExtension>vscode.extensions.getExtension(azExt.extension.name)?.exports;
 	}
 
 	/** Returns the configuration of Postgres */
-	public get config(): azdataExt.PostgresServerShowResult | undefined {
+	public get config(): azExt.PostgresServerShowResult | undefined {
 		return this._config;
 	}
 
@@ -118,7 +118,7 @@ export class PostgresModel extends ResourceModel {
 		}
 		this._refreshPromise = new Deferred();
 		try {
-			this._config = (await this._azdataApi.azdata.arc.postgres.server.show(this.info.name, this.controllerModel.azdataAdditionalEnvVars, this.controllerModel.controllerContext)).result;
+			this._config = (await this._azApi.az.postgres.arcserver.show(this.info.name, this.controllerModel.info.namespace, this.controllerModel.azAdditionalEnvVars)).stdout;
 			this.configLastUpdated = new Date();
 			this._onConfigUpdated.fire(this._config);
 			this._refreshPromise.resolve();
