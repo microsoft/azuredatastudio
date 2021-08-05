@@ -222,6 +222,14 @@ export function getMigrationStatusImage(status: string): IconPath {
 	}
 }
 
+export function get12HourTime(date: Date | undefined): string {
+	const localeTimeStringOptions: Intl.DateTimeFormatOptions = {
+		hour: '2-digit',
+		minute: '2-digit'
+	};
+	return (date ? date : new Date()).toLocaleTimeString([], localeTimeStringOptions);
+}
+
 export function clearDialogMessage(dialog: window.Dialog): void {
 	dialog.message = {
 		text: ''
