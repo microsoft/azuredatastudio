@@ -11,6 +11,7 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { GroupIdentifier, ISaveOptions, IEditorInput } from 'vs/workbench/common/editor';
 import { FileQueryEditorInput } from 'sql/workbench/contrib/query/common/fileQueryEditorInput';
 import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
+import { AbstractTextResourceEditorInput } from 'vs/workbench/common/editor/textResourceEditorInput';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 export class TitledQueryEditorInput extends QueryEditorInput {
@@ -18,8 +19,8 @@ export class TitledQueryEditorInput extends QueryEditorInput {
 	public static readonly ID = 'workbench.editorInput.TitledQueryInput';
 
 	constructor(
-		description: string,
-		text: FileEditorInput,
+		description: string | undefined,
+		text: AbstractTextResourceEditorInput,
 		results: QueryResultsInput,
 		@IConnectionManagementService connectionManagementService: IConnectionManagementService,
 		@IQueryModelService queryModelService: IQueryModelService,
@@ -37,7 +38,7 @@ export class TitledQueryEditorInput extends QueryEditorInput {
 	override async save(group: GroupIdentifier, options?: ISaveOptions): Promise<IEditorInput | undefined> {
 		//return this.text.save(group, options);
 		let preProcessed = await this.text.saveAs(group, options);
-		let newFileQueryInput = this.instantiationService.createInstance(FileQueryEditorInput, '', (preProcessed as any), this._results);
+		let newFileQueryInput = this.instantiationService.createInstance(FileQueryEditorInput, '', (preProcessed as FileEditorInput), this._results);
 		newFileQueryInput.state.resultsVisible = this.state.resultsVisible;
 		newFileQueryInput.state.isSaving = true;
 		newFileQueryInput.state.oldUri = this.uri;
@@ -48,7 +49,7 @@ export class TitledQueryEditorInput extends QueryEditorInput {
 	override async saveAs(group: GroupIdentifier, options?: ISaveOptions): Promise<IEditorInput | undefined> {
 		//return this.text.saveAs(group, options);
 		let preProcessed = await this.text.saveAs(group, options);
-		let newFileQueryInput = this.instantiationService.createInstance(FileQueryEditorInput, '', (preProcessed as any), this._results);
+		let newFileQueryInput = this.instantiationService.createInstance(FileQueryEditorInput, '', (preProcessed as FileEditorInput), this._results);
 		newFileQueryInput.state.resultsVisible = this.state.resultsVisible;
 		newFileQueryInput.state.isSaving = true;
 		newFileQueryInput.state.oldUri = this.uri;
