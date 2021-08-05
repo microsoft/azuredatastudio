@@ -52,7 +52,7 @@ import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 @Component({
 	selector: GridOutputComponent.SELECTOR,
 	template: `
-	<loading-spinner [loading]="isLoading"></loading-spinner>
+	<loading-spinner [loading]="loading"></loading-spinner>
 	<div #output class="notebook-cellTable"></div>`
 })
 export class GridOutputComponent extends AngularDisposable implements IMimeComponent, OnInit {
@@ -69,7 +69,7 @@ export class GridOutputComponent extends AngularDisposable implements IMimeCompo
 	private _id: number | undefined;
 	private _layoutCalledOnce: boolean = false;
 	private _incrementalGridRenderingEnabled: boolean;
-	protected isLoading: boolean = false;
+	private _isLoading: boolean = false;
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
@@ -109,6 +109,17 @@ export class GridOutputComponent extends AngularDisposable implements IMimeCompo
 		this._cellOutput = value;
 	}
 
+	get loading(): boolean {
+		return this._isLoading;
+	}
+
+	@Input() set loading(isLoading: boolean) {
+		this._isLoading = isLoading;
+		if (!(this._changeRef['destroyed'])) {
+			this._changeRef.detectChanges();
+		}
+	}
+
 	async ngOnInit() {
 		if (this.cellModel) {
 			let outputId: QueryResultId = this.cellModel.getOutputId(this._cellOutput);
@@ -124,21 +135,15 @@ export class GridOutputComponent extends AngularDisposable implements IMimeCompo
 			if (this._cellModel.executionState === CellExecutionState.Running || !this._incrementalGridRenderingEnabled) {
 				await this.renderGrid();
 			} else {
-				this.setLoading(true);
+				this.loading = true;
 				setTimeout(async () => {
 					await this.renderGrid();
-					this.setLoading(false);
+					this.loading = false;
 				});
 			}
 		}
 	}
 
-	setLoading(isLoading: boolean): void {
-		this.isLoading = isLoading;
-		if (!(this._changeRef['destroyed'])) {
-			this._changeRef.detectChanges();
-		}
-	}
 
 	async renderGrid(): Promise<void> {
 		if (!this._bundleOptions || !this._cellModel || !this.mimeType) {
