@@ -962,7 +962,6 @@ describe('BooksTreeViewTests', function () {
 					let bookItem = book.bookItems[0];
 
 					let bookDetails = bookItem.book;
-
 					should(bookDetails.type).equal(BookTreeItemType.Book);
 					should(bookDetails.title).equal(run.contents.bookTitle);
 					should(bookDetails.contentPath).equal(run.folderPaths.tableOfContentsFile.replace(/\\/g, '/'));
@@ -979,7 +978,6 @@ describe('BooksTreeViewTests', function () {
 					should(book.getAllNotebooks().get(vscode.Uri.file(run.folderPaths.standaloneNotebookFile).fsPath)).equal(bookItem);
 
 					let bookDetails = bookItem.book;
-
 					should(bookDetails.type).equal(BookTreeItemType.Notebook);
 					should(bookDetails.title).equal(run.contents.standaloneNotebookTitle);
 					should(bookDetails.contentPath).equal(run.folderPaths.standaloneNotebookFile.replace(/\\/g, '/'));

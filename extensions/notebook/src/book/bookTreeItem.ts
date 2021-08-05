@@ -52,7 +52,7 @@ export class BookTreeItem extends vscode.TreeItem {
 		super(book.title, book.treeItemCollapsibleState);
 		if (book.type === BookTreeItemType.Book) {
 			this.collapsibleState = book.treeItemCollapsibleState;
-			this.sections = this.book.page;
+			this.sections = book.page;
 			if (book.isUntitled) {
 				this.contextValue = BookTreeItemType.providedBook;
 			} else {
@@ -61,7 +61,7 @@ export class BookTreeItem extends vscode.TreeItem {
 		} else {
 			if (book.page && book.page.sections && book.page.sections.length > 0) {
 				this.contextValue = BookTreeItemType.section;
-			} else if (book.type === BookTreeItemType.Notebook && !this.tableOfContents.sections) {
+			} else if (book.type === BookTreeItemType.Notebook && !book.tableOfContents.sections) {
 				if (book.isUntitled) {
 					this.contextValue = BookTreeItemType.unsavedNotebook;
 				} else {
@@ -99,7 +99,7 @@ export class BookTreeItem extends vscode.TreeItem {
 			this.book.page.sections || this.book.page.subsections ?
 				vscode.TreeItemCollapsibleState.Collapsed :
 				vscode.TreeItemCollapsibleState.None;
-		this.sections = this.book.page.sections;
+		this.sections = this.book.page.sections || this.book.page.subsections;
 		this.uri = this.book.page.file ? this.book.page.file?.replace(/\\/g, '/') : this.book.page.url?.replace(/\\/g, '/');
 
 		if (this.book.tableOfContents.sections) {
