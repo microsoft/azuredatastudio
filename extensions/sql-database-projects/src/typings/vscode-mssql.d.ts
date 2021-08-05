@@ -55,6 +55,12 @@ declare module 'vscode-mssql' {
          */
         listDatabases(connectionUri: string): Promise<string[]>;
 
+        /**
+         * Gets the database name for the node - which is the database name of the connection for a server node, the database name
+         * for nodes at or under a database node or a default value if it's neither of those.
+         * @param node The node to get the database name of
+         * @returns The database name
+         */
         getDatabaseNameFromTreeNode(node: ITreeNodeInfo): string;
 
     }
