@@ -10411,6 +10411,7 @@
 			"notebook.markdownPreviewLineHeight": "Controla a altura da linha usada na versão prévia de markdown do notebook. Este número é relativo ao tamanho da fonte.",
 			"notebook.showRenderedNotebookinDiffEditor": "(Visualização) Mostrar bloco de anotações renderizado no editor de dif.",
 			"notebook.maxRichTextUndoHistory": "O número máximo de alterações armazenadas no histórico de desfazer do editor de Rich Text do bloco de anotações.",
+			"notebook.useAbsoluteFilePaths": "Use absolute file paths when linking to other notebooks.",
 			"searchConfigurationTitle": "Pesquisar Notebooks",
 			"exclude": "Configurar padrões glob para excluir arquivos e pastas em pesquisas de texto completo e abrir rapidamente. Herda todos os padrões glob da configuração `#files.exclude#`. Leia mais sobre padrões glob [aqui] (https://code.visualstudio.com/docs/editor/codebasics#_advanced-search-options).",
 			"exclude.boolean": "O padrão glob ao qual corresponder os caminhos do arquivo. Defina como true ou false para habilitar ou desabilitar o padrão.",
@@ -10480,7 +10481,7 @@
 			"notebook.findPrevious": "Encontrar Cadeia de Caracteres Anterior"
 		},
 		"sql/workbench/contrib/notebook/browser/notebookEditor": {
-			"notebookEditor.name": "Notebook Editor"
+			"notebookEditor.name": "Editor do Notebook"
 		},
 		"sql/workbench/contrib/notebook/browser/notebookExplorer/notebookExplorerViewlet": {
 			"notebookExplorer.searchResults": "Resultados da Pesquisa",
@@ -10565,8 +10566,6 @@
 			"profilerStop.stop": "Parar",
 			"profiler.clear": "Limpar Dados",
 			"profiler.clearDataPrompt": "Tem certeza de que deseja limpar os dados?",
-			"profiler.yes": "Sim",
-			"profiler.no": "Não",
 			"profilerAction.autoscrollOn": "Rolagem Automática: Ativada",
 			"profilerAction.autoscrollOff": "Rolagem Automática: Desativada",
 			"profiler.toggleCollapsePanel": "Alternar Painel Recolhido",
@@ -10702,7 +10701,7 @@
 			"queryEditor.exportSqlAsNotebook": "Exportar o Notebook"
 		},
 		"sql/workbench/contrib/query/browser/queryEditor": {
-			"queryEditor.name": "Query Editor"
+			"queryEditor.name": "Editor de Consultas"
 		},
 		"sql/workbench/contrib/query/browser/queryResultsView": {
 			"resultsTabTitle": "Resultados",
@@ -10760,7 +10759,7 @@
 			"queryPlanTitle": "Plano de Consulta"
 		},
 		"sql/workbench/contrib/queryPlan/browser/queryPlanEditor": {
-			"queryPlanEditor": "Query Plan Editor"
+			"queryPlanEditor": "Editor de Plano de Consulta"
 		},
 		"sql/workbench/contrib/queryPlan/browser/topOperations": {
 			"topOperations.operation": "Operação",
@@ -11441,6 +11440,13 @@
 			"gettingStarted": "Introdução",
 			"showReleaseNotes": "Mostrar Introdução",
 			"miGettingStarted": "I&&ntrodução"
+		},
+		"sql/base/browser/ui/propertiesContainer/togglePropertiesAction": {
+			"hideProperties": "Ocultar propriedades",
+			"showProperties": "Mostrar Propriedades"
+		},
+		"sql/workbench/contrib/resourceDeployment/browser/resourceDeployment.contribution": {
+			"deployment.title": "Nova Implantação..."
 		}
 	}
 }

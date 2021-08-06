@@ -3,8 +3,9 @@
 # Syntax can be found here: https://docs.github.com/free-pro-team@latest/github/creating-cloning-and-archiving-repositories/about-code-owners#codeowners-syntax
 
 /extensions/admin-tool-ext-win @Charles-Gagnon
-/extensions/arc/ @Charles-Gagnon
-/extensions/azdata/ @Charles-Gagnon
+/extensions/arc/ @Charles-Gagnon @swells @candiceye
+/extensions/azcli/ @Charles-Gagnon @swells @candiceye
+/extensions/azdata/ @Charles-Gagnon @swells @candiceye
 /extensions/big-data-cluster/ @Charles-Gagnon
 /extensions/dacpac/ @kisantia
 /extensions/notebook @azure-data-studio-notebook-devs

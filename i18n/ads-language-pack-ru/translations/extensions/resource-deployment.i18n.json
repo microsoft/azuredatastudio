@@ -259,9 +259,6 @@
 			"resourceDeployment.Kubectl.BackupCurrentBinary": "архивация имеющихся версий kubectl в расположении установки…",
 			"resourceDeployment.Kubectl.MoveToSystemPath": "перемещение kubectl в расположение установки, указанное в переменной PATH…"
 		},
-		"dist/ui/notebookWizard/notebookWizardPage": {
-			"wizardPage.ValidationError": "На этой странице есть ошибки, для их просмотра щелкните \"Показать сведения\"."
-		},
 		"dist/ui/deploymentInputDialog": {
 			"deploymentDialog.OpenNotebook": "Открыть записную книжку",
 			"deploymentDialog.OkButtonText": "OK",
@@ -376,8 +373,7 @@
 			"deployCluster.SubdomainDescription": "Уникальный поддомен DNS, который будет использоваться для этого кластера больших данных SQL Server. Если не указан, то в качестве значения по умолчанию будет использоваться имя кластера.",
 			"deployCluster.AccountPrefix": "Префикс учетной записи",
 			"deployCluster.AccountPrefixDescription": "Уникальный префикс для учетных записей AD, которые будет создавать кластер больших данных SQL Server. Если не указан, то в качестве значения по умолчанию будет использоваться имя поддомена. Если поддомен не указан, то в качестве значения по умолчанию будет использоваться имя кластера.",
-			"deployCluster.AdminPasswordField": "Пароль",
-			"deployCluster.ValidationError": "На этой странице есть ошибки, для их просмотра щелкните \"Показать сведения\"."
+			"deployCluster.AdminPasswordField": "Пароль"
 		},
 		"dist/ui/deployClusterWizard/pages/serviceSettingsPage": {
 			"deployCluster.ServiceSettingsPageTitle": "Параметры службы",

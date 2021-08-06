@@ -11,6 +11,7 @@ import * as constants from '../constants/strings';
 
 export class MigrationModePage extends MigrationWizardPage {
 	private _view!: azdata.ModelView;
+	private originalMigrationMode!: MigrationMode;
 	private _disposables: vscode.Disposable[] = [];
 
 	constructor(wizard: azdata.window.Wizard, migrationStateModel: MigrationStateModel) {
@@ -34,12 +35,17 @@ export class MigrationModePage extends MigrationWizardPage {
 		await view.initializeModel(form.component());
 	}
 
-	public async onPageEnter(): Promise<void> {
+	public async onPageEnter(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
+		this.originalMigrationMode = this.migrationStateModel._databaseBackup.migrationMode;
 		this.wizard.registerNavigationValidator((e) => {
 			return true;
 		});
 	}
-	public async onPageLeave(): Promise<void> {
+	public async onPageLeave(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
+		if (this.originalMigrationMode !== this.migrationStateModel._databaseBackup.migrationMode) {
+			this.migrationStateModel.refreshDatabaseBackupPage = true;
+		}
+
 		this.wizard.registerNavigationValidator((e) => {
 			return true;
 		});
@@ -68,8 +74,6 @@ export class MigrationModePage extends MigrationWizardPage {
 			}
 		}).component();
 
-		this.migrationStateModel._databaseBackup.migrationMode = MigrationMode.ONLINE;
-
 		this._disposables.push(onlineButton.onDidChangeCheckedState((e) => {
 			if (e) {
 				this.migrationStateModel._databaseBackup.migrationMode = MigrationMode.ONLINE;
@@ -96,9 +100,7 @@ export class MigrationModePage extends MigrationWizardPage {
 
 		this._disposables.push(offlineButton.onDidChangeCheckedState((e) => {
 			if (e) {
-				vscode.window.showInformationMessage('Feature coming soon');
-				onlineButton.checked = true;
-				//this.migrationStateModel._databaseBackup.migrationCutover = MigrationCutover.OFFLINE; TODO: Enable when offline mode is supported.
+				this.migrationStateModel._databaseBackup.migrationMode = MigrationMode.OFFLINE;
 			}
 		}));
 

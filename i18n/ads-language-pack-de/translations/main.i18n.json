@@ -10411,6 +10411,7 @@
 			"notebook.markdownPreviewLineHeight": "Hiermit wird die in der Notebook-Markdownvorschau verwendete Zeilenhöhe gesteuert. Diese Zahl ist relativ zum Schriftgrad.",
 			"notebook.showRenderedNotebookinDiffEditor": "(Vorschau) Gerendertes Notebook im Diff-Editor anzeigen.",
 			"notebook.maxRichTextUndoHistory": "Die maximale Anzahl von Änderungen, die im Verlauf des Rücksetzens für den Notizbuch-Rich-Text-Editor gespeichert sind.",
+			"notebook.useAbsoluteFilePaths": "Use absolute file paths when linking to other notebooks.",
 			"searchConfigurationTitle": "Notebooks suchen",
 			"exclude": "Konfigurieren Sie Globmuster für das Ausschließen von Dateien und Ordnern aus Volltextsuchen und Quick Open. Alle Globmuster werden von der Einstellung #files.exclude# geerbt. Weitere Informationen zu Globmustern finden Sie [hier](https://code.visualstudio.com/docs/editor/codebasics#_advanced-search-options).",
 			"exclude.boolean": "Das Globmuster, mit dem Dateipfade verglichen werden sollen. Legen Sie diesen Wert auf \"true\" oder \"false\" fest, um das Muster zu aktivieren bzw. zu deaktivieren.",
@@ -10480,7 +10481,7 @@
 			"notebook.findPrevious": "Vorhergehende Zeichenfolge suchen"
 		},
 		"sql/workbench/contrib/notebook/browser/notebookEditor": {
-			"notebookEditor.name": "Notebook Editor"
+			"notebookEditor.name": "Notebook-Editor"
 		},
 		"sql/workbench/contrib/notebook/browser/notebookExplorer/notebookExplorerViewlet": {
 			"notebookExplorer.searchResults": "Suchergebnisse",
@@ -10565,8 +10566,6 @@
 			"profilerStop.stop": "Beenden",
 			"profiler.clear": "Daten löschen",
 			"profiler.clearDataPrompt": "Möchten Sie die Daten löschen?",
-			"profiler.yes": "Ja",
-			"profiler.no": "Nein",
 			"profilerAction.autoscrollOn": "Automatisches Scrollen: Ein",
 			"profilerAction.autoscrollOff": "Automatisches Scrollen: Aus",
 			"profiler.toggleCollapsePanel": "Ausgeblendeten Bereich umschalten",
@@ -10702,7 +10701,7 @@
 			"queryEditor.exportSqlAsNotebook": "Als Notebook exportieren"
 		},
 		"sql/workbench/contrib/query/browser/queryEditor": {
-			"queryEditor.name": "Query Editor"
+			"queryEditor.name": "Abfrage-Editor"
 		},
 		"sql/workbench/contrib/query/browser/queryResultsView": {
 			"resultsTabTitle": "Ergebnisse",
@@ -10760,7 +10759,7 @@
 			"queryPlanTitle": "Abfrageplan"
 		},
 		"sql/workbench/contrib/queryPlan/browser/queryPlanEditor": {
-			"queryPlanEditor": "Query Plan Editor"
+			"queryPlanEditor": "Abfrageplan-Editor"
 		},
 		"sql/workbench/contrib/queryPlan/browser/topOperations": {
 			"topOperations.operation": "Vorgang",
@@ -11441,6 +11440,13 @@
 			"gettingStarted": "Erste Schritte",
 			"showReleaseNotes": "\"Erste Schritte\" anzeigen",
 			"miGettingStarted": "Erste &&Schritte"
+		},
+		"sql/base/browser/ui/propertiesContainer/togglePropertiesAction": {
+			"hideProperties": "Eigenschaften verbergen",
+			"showProperties": "Eigenschaften anzeigen"
+		},
+		"sql/workbench/contrib/resourceDeployment/browser/resourceDeployment.contribution": {
+			"deployment.title": "Neue Bereitstellung…"
 		}
 	}
 }

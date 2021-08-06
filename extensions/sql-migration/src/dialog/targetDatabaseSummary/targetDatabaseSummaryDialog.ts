@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import { MigrationStateModel, NetworkContainerType } from '../../models/stateMachine';
+import { MigrationMode, MigrationStateModel, NetworkContainerType } from '../../models/stateMachine';
 import * as constants from '../../constants/strings';
 
 export class TargetDatabaseSummaryDialog {
@@ -15,8 +15,8 @@ export class TargetDatabaseSummaryDialog {
 	constructor(private _model: MigrationStateModel) {
 		let dialogWidth: azdata.window.DialogWidth;
 		if (this._model._databaseBackup.networkContainerType === NetworkContainerType.BLOB_CONTAINER) {
-			this._tableLength = 600;
-			dialogWidth = 'medium';
+			this._tableLength = 800;
+			dialogWidth = 900;
 		} else {
 			this._tableLength = 200;
 			dialogWidth = 'narrow';
@@ -109,6 +109,14 @@ export class TargetDatabaseSummaryDialog {
 					width: columnWidth,
 					rowCssStyles: rowCssStyle,
 					headerCssStyles: headerCssStyle
+				}, {
+					valueType: azdata.DeclarativeDataType.string,
+					displayName: constants.BLOB_CONTAINER_LAST_BACKUP_FILE,
+					isReadOnly: true,
+					width: columnWidth,
+					rowCssStyles: rowCssStyle,
+					headerCssStyles: headerCssStyle,
+					hidden: this._model._databaseBackup.migrationMode === MigrationMode.ONLINE
 				});
 			}
 
@@ -131,6 +139,12 @@ export class TargetDatabaseSummaryDialog {
 					}, {
 						value: this._model._databaseBackup.blobs[index].blobContainer.name
 					});
+
+					if (this._model._databaseBackup.migrationMode === MigrationMode.OFFLINE) {
+						tableRow.push({
+							value: this._model._databaseBackup.blobs[index].lastBackupFile!
+						});
+					}
 				}
 				tableRows.push(tableRow);
 			});
