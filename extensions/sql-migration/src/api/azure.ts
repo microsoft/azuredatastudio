@@ -177,7 +177,7 @@ export async function createSqlMigrationService(account: azdata.Account, subscri
 		throw new Error(response.errors.toString());
 	}
 	const asyncUrl = response.response.headers['azure-asyncoperation'];
-	const maxRetry = 5;
+	const maxRetry = 24;
 	let i = 0;
 	for (i = 0; i < maxRetry; i++) {
 		const asyncResponse = await api.makeAzureRestRequest(account, subscription, asyncUrl.replace('https://management.azure.com/', ''), azurecore.HttpRequestMethod.GET, undefined, true, undefined, getSessionIdHeader(sessionId));
@@ -187,7 +187,7 @@ export async function createSqlMigrationService(account: azdata.Account, subscri
 		} else if (creationStatus === ProvisioningState.Failed) {
 			throw new Error(asyncResponse.errors.toString());
 		}
-		await new Promise(resolve => setTimeout(resolve, 3000)); //adding  3 sec delay before getting creation status
+		await new Promise(resolve => setTimeout(resolve, 5000)); //adding  5 sec delay before getting creation status
 	}
 	if (i === maxRetry) {
 		throw new Error(constants.DMS_PROVISIONING_FAILED);

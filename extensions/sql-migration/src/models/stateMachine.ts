@@ -128,7 +128,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	public _targetDatabaseNames!: string[];
 
 	public _sqlMigrationServiceResourceGroup!: string;
-	public _sqlMigrationService!: SqlMigrationService;
+	public _sqlMigrationService!: SqlMigrationService | undefined;
 	public _sqlMigrationServices!: SqlMigrationService[];
 	public _nodeNames!: string[];
 
@@ -924,7 +924,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 							'serverName': this._targetServerInstance.name,
 							'tenantId': this._azureAccount.properties.tenants[0].id,
 							'location': this._targetServerInstance.location,
-							'sqlMigrationServiceId': Buffer.from(this._sqlMigrationService.id).toString('base64'),
+							'sqlMigrationServiceId': Buffer.from(this._sqlMigrationService?.id!).toString('base64'),
 							'irRegistered': (this._nodeNames.length > 0).toString()
 						},
 						{
@@ -937,7 +937,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 						this._targetServerInstance,
 						this._azureAccount,
 						this._targetSubscription,
-						this._sqlMigrationService,
+						this._sqlMigrationService!,
 						response.asyncUrl,
 						this._sessionId
 					);
