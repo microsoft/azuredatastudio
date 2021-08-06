@@ -279,6 +279,10 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		return container;
 	}
 
+	private createIconTextCell(icon: IconPath, text: string): string {
+		return text;
+	}
+
 	private createTargetDropdownContainer(): azdata.FlexContainer {
 		this._azureSubscriptionText = this._view.modelBuilder.text().withProps({
 			CSSStyles: {
@@ -290,6 +294,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 
 		const managedInstanceSubscriptionDropdownLabel = this._view.modelBuilder.text().withProps({
 			value: constants.SUBSCRIPTION,
+			description: this.createIconTextCell(IconPathHelper.info, constants.SKU_RECOMMENDATION_SUBSCRIPTION_INFO),
 			width: WIZARD_INPUT_COMPONENT_WIDTH,
 			CSSStyles: {
 				'font-size': '13px',
@@ -314,6 +319,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 
 		const azureLocationLabel = this._view.modelBuilder.text().withProps({
 			value: constants.LOCATION,
+			description: this.createIconTextCell(IconPathHelper.info, constants.SKU_RECOMMENDATION_LOCATION_INFO),
 			width: WIZARD_INPUT_COMPONENT_WIDTH,
 			CSSStyles: {
 				'font-size': '13px',
@@ -337,6 +343,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		const azureResourceGroupLabel = this._view.modelBuilder.text().withProps({
 			value: constants.RESOURCE_GROUP,
 			width: WIZARD_INPUT_COMPONENT_WIDTH,
+			description: this.createIconTextCell(IconPathHelper.info, constants.SKU_RECOMMENDATION_RESOURCE_GROUP_INFO),
 			CSSStyles: {
 				'font-size': '13px',
 				'font-weight': 'bold',

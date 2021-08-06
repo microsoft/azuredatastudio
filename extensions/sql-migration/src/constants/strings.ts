@@ -39,6 +39,9 @@ export const SKU_RECOMMENDATION_SOME_SUCCESSFUL = (migratableCount: number, data
 };
 export const SKU_RECOMMENDATION_CHOOSE_A_TARGET = localize('sql.migration.wizard.sku.choose_a_target', "Choose your Azure SQL target");
 
+export const SKU_RECOMMENDATION_SUBSCRIPTION_INFO = localize('sql.migration.sku.subscription', "Subscription Info Tooltip");
+export const SKU_RECOMMENDATION_LOCATION_INFO = localize('sql.migration.sku.location', "Location Info Tooltip");
+export const SKU_RECOMMENDATION_RESOURCE_GROUP_INFO = localize('sql.migration.sku.resource_group', "Resource Group Info Tooltip");
 export const SKU_RECOMMENDATION_NONE_SUCCESSFUL = localize('sql.migration.sku.none', "Based on the results of our source configuration scans, none of your databases can be migrated to Azure SQL.");
 export const SKU_RECOMMENDATION_MI_CARD_TEXT = localize('sql.migration.sku.mi.card.title', "Azure SQL Managed Instance (PaaS)");
 export const SKU_RECOMMENDATION_VM_CARD_TEXT = localize('sql.migration.sku.vm.card.title', "SQL Server on Azure Virtual Machine (IaaS)");
@@ -270,7 +273,9 @@ export const TARGET = localize('sql.migration.target', "Target");
 export const AZURE_SQL = localize('sql.migration.azure.sql', "Azure SQL");
 export const CLOSE = localize('sql.migration.close', "Close");
 export const DATA_UPLOADED = localize('sql.migraiton.data.uploaded.size', "Data Uploaded/Size");
+export const DATA_UPLOADED_INFO = localize('sql.migraiton.data.uploaded.info', "Data uploaded to Azure storage account compared to total size.");
 export const COPY_THROUGHPUT = localize('sql.migration.copy.throughput', "Copy Throughput (MBPS)");
+export const COPY_THROUGHPUT_INFO = localize('sql.migration.copy.throughput.info', "Rate of data transfer, calculated by the actual amount of data uploaded to Azure Storage Account divided by duration of copy run.");
 export const NEW_SUPPORT_REQUEST = localize('sql.migration.newsupportrequest', "New support request");
 
 //Summary Page

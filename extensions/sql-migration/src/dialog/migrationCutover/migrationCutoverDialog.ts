@@ -5,7 +5,7 @@
 
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
-import { IconPathHelper } from '../../constants/iconPathHelper';
+import { IconPath, IconPathHelper } from '../../constants/iconPathHelper';
 import { MigrationContext } from '../../models/migrationLocalStorage';
 import { MigrationCutoverDialogModel, MigrationStatus } from './migrationCutoverDialogModel';
 import * as loc from '../../constants/strings';
@@ -55,6 +55,10 @@ export class MigrationCutoverDialog {
 	constructor(migration: MigrationContext) {
 		this._model = new MigrationCutoverDialogModel(migration);
 		this._dialogObject = azdata.window.createModelViewDialog('', 'MigrationCutoverDialog', 'wide');
+	}
+
+	private createIconTextCell(icon: IconPath, text: string): string {
+		return text;
 	}
 
 	async initialize(): Promise<void> {
