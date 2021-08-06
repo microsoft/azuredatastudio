@@ -88,6 +88,10 @@ export class QueryResultsInput extends EditorInput {
 		return this._uri;
 	}
 
+	set uri(newUri: string) {
+		this._uri = newUri;
+	}
+
 	get resource(): URI | undefined {
 		return undefined;
 	}

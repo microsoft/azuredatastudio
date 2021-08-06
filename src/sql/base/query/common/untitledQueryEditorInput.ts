@@ -49,12 +49,17 @@ export class UntitledQueryEditorInput extends QueryEditorInput implements IEncod
 		let preProcessed = await this.text.saveAs(group, options);
 		// TODO: Need to find way of generating new URI for results so that it won't break.
 
-		// let newFileQueryInput = this.instantiationService.createInstance(FileQueryEditorInput, '', (preProcessed as FileEditorInput), this._results);
+		let newResults = this._results;
+		newResults.uri = preProcessed.resource.toString();
+		//console.log('newResults uri is ' + newResults.uri);
+		let newFileQueryInput = this.instantiationService.createInstance(FileQueryEditorInput, '', (preProcessed as FileEditorInput), this._results);
 		// newFileQueryInput.state.resultsVisible = this.state.resultsVisible;
 		// this.state.isSaving = true;
 		// this.state.oldUri = this.uri;
 		// //need to find way to add URIs into input.
 		// return newFileQueryInput;
+
+		//console.log('newFileQuery uri is ' + newFileQueryInput.uri);
 		return preProcessed;
 	}
 
