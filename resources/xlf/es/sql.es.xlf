@@ -3957,6 +3957,14 @@ Error: {1}</target>
         <source xml:lang="en">Cell</source>
         <target state="translated">Celda</target>
       </trans-unit>
+      <trans-unit id="views">
+        <source xml:lang="en">Views</source>
+        <target state="new">Views</target>
+      </trans-unit>
+      <trans-unit id="editor">
+        <source xml:lang="en">Editor</source>
+        <target state="new">Editor</target>
+      </trans-unit>
       <trans-unit id="code">
         <source xml:lang="en">Code</source>
         <target state="translated">Código</target>
@@ -4051,7 +4059,11 @@ Error: {1}</target>
       </trans-unit>
       <trans-unit id="notebook.useAbsoluteFilePaths">
         <source xml:lang="en">Use absolute file paths when linking to other notebooks.</source>
-        <target state="new">Use absolute file paths when linking to other notebooks.</target>
+        <target state="translated">Use rutas a archivos absolutas para la vinculación con otros cuadernos.</target>
+      </trans-unit>
+      <trans-unit id="notebook.enableIncrementalGridRendering">
+        <source xml:lang="en">Enable incremental grid rendering for notebooks. This will improve the initial rendering time for large notebooks. There may be performance issues when interacting with the notebook while the rest of the grids are rendering.</source>
+        <target state="new">Enable incremental grid rendering for notebooks. This will improve the initial rendering time for large notebooks. There may be performance issues when interacting with the notebook while the rest of the grids are rendering.</target>
       </trans-unit>
       <trans-unit id="searchConfigurationTitle">
         <source xml:lang="en">Search Notebooks</source>
@@ -4281,6 +4293,18 @@ Error: {1}</target>
         <source xml:lang="en">Clear Results</source>
         <target state="translated">Borrar resultados</target>
       </trans-unit>
+      <trans-unit id="notebookViewLabel">
+        <source xml:lang="en">Editor</source>
+        <target state="new">Editor</target>
+      </trans-unit>
+      <trans-unit id="newViewLabel">
+        <source xml:lang="en">Create New View</source>
+        <target state="new">Create New View</target>
+      </trans-unit>
+      <trans-unit id="viewNotFound">
+        <source xml:lang="en">Unable to find view: {0}</source>
+        <target state="new">Unable to find view: {0}</target>
+      </trans-unit>
       <trans-unit id="trustLabel">
         <source xml:lang="en">Trusted</source>
         <target state="translated">De confianza</target>
@@ -4427,6 +4451,34 @@ Error: {1}</target>
       </trans-unit>
     </body>
   </file>
+  <file original="src/sql/workbench/contrib/notebook/browser/notebookViews/insertCellsModal" source-language="en" datatype="plaintext" target-language="es">
+    <body>
+      <trans-unit id="insertCellsModal.title">
+        <source xml:lang="en">Insert cells</source>
+        <target state="new">Insert cells</target>
+      </trans-unit>
+      <trans-unit id="insertCellsModal.selectCells">
+        <source xml:lang="en">Select cell sources</source>
+        <target state="new">Select cell sources</target>
+      </trans-unit>
+      <trans-unit id="insertCellsModal.thumbnailError">
+        <source xml:lang="en">Error: Unable to generate thumbnails.</source>
+        <target state="new">Error: Unable to generate thumbnails.</target>
+      </trans-unit>
+      <trans-unit id="insertCellsModal.untitled">
+        <source xml:lang="en">Untitled Cell : {0}</source>
+        <target state="new">Untitled Cell : {0}</target>
+      </trans-unit>
+      <trans-unit id="insertCellsModal.Insert">
+        <source xml:lang="en">Insert</source>
+        <target state="new">Insert</target>
+      </trans-unit>
+      <trans-unit id="insertCellsModal.Cancel">
+        <source xml:lang="en">Cancel</source>
+        <target state="new">Cancel</target>
+      </trans-unit>
+    </body>
+  </file>
   <file original="src/sql/workbench/contrib/notebook/browser/notebookViews/notebookViews.component" source-language="en" datatype="plaintext" target-language="es">
     <body>
       <trans-unit id="cellNotFound">
@@ -4436,6 +4488,54 @@ Error: {1}</target>
       <trans-unit id="cellRunFailed">
         <source xml:lang="en">Run Cells failed - See error in output of the currently selected cell for more information.</source>
         <target state="translated">Error al ejecutar las celdas. Para más información, vea el error en la salida de la celda seleccionada actualmente.</target>
+      </trans-unit>
+      <trans-unit id="runAllPreview">
+        <source xml:lang="en">Run all</source>
+        <target state="new">Run all</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/sql/workbench/contrib/notebook/browser/notebookViews/notebookViewsActions" source-language="en" datatype="plaintext" target-language="es">
+    <body>
+      <trans-unit id="viewsUnableToRemove">
+        <source xml:lang="en">Unable to remove view</source>
+        <target state="new">Unable to remove view</target>
+      </trans-unit>
+      <trans-unit id="confirmDelete">
+        <source xml:lang="en">Are you sure you want to delete view "{0}"?</source>
+        <target state="new">Are you sure you want to delete view "{0}"?</target>
+      </trans-unit>
+      <trans-unit id="delete">
+        <source xml:lang="en">&amp;&amp;Delete</source>
+        <target state="new">&amp;&amp;Delete</target>
+      </trans-unit>
+      <trans-unit id="insertCells">
+        <source xml:lang="en">Insert Cells</source>
+        <target state="new">Insert Cells</target>
+      </trans-unit>
+      <trans-unit id="runCell">
+        <source xml:lang="en">Run cell</source>
+        <target state="new">Run cell</target>
+      </trans-unit>
+      <trans-unit id="stopCell">
+        <source xml:lang="en">Cancel execution</source>
+        <target state="new">Cancel execution</target>
+      </trans-unit>
+      <trans-unit id="errorRunCell">
+        <source xml:lang="en">Error on last run. Click to run again</source>
+        <target state="new">Error on last run. Click to run again</target>
+      </trans-unit>
+      <trans-unit id="unableToNavigateToCell">
+        <source xml:lang="en">Unable to navigate to notebook cell.</source>
+        <target state="new">Unable to navigate to notebook cell.</target>
+      </trans-unit>
+      <trans-unit id="viewCellInNotebook">
+        <source xml:lang="en">View Cell In Notebook</source>
+        <target state="new">View Cell In Notebook</target>
+      </trans-unit>
+      <trans-unit id="moreActionsLabel">
+        <source xml:lang="en">More</source>
+        <target state="new">More</target>
       </trans-unit>
     </body>
   </file>
@@ -4452,6 +4552,34 @@ Error: {1}</target>
       <trans-unit id="emptyText">
         <source xml:lang="en">This view is empty. Add a cell to this view by clicking the Insert Cells button.</source>
         <target state="translated">Esta vista está vacía. Agregue una celda a esta vista haciendo clic en el botón Insertar celdas.</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/sql/workbench/contrib/notebook/browser/notebookViews/viewOptionsModal" source-language="en" datatype="plaintext" target-language="es">
+    <body>
+      <trans-unit id="viewOptionsModal.title">
+        <source xml:lang="en">Configure View</source>
+        <target state="new">Configure View</target>
+      </trans-unit>
+      <trans-unit id="viewOptionsModal.name">
+        <source xml:lang="en">View Name</source>
+        <target state="new">View Name</target>
+      </trans-unit>
+      <trans-unit id="viewOptionsModal.missingRequireField">
+        <source xml:lang="en">This field is required.</source>
+        <target state="new">This field is required.</target>
+      </trans-unit>
+      <trans-unit id="viewOptionsModal.nameTaken">
+        <source xml:lang="en">This view name has already been taken.</source>
+        <target state="new">This view name has already been taken.</target>
+      </trans-unit>
+      <trans-unit id="save">
+        <source xml:lang="en">Save</source>
+        <target state="new">Save</target>
+      </trans-unit>
+      <trans-unit id="cancel">
+        <source xml:lang="en">Cancel</source>
+        <target state="new">Cancel</target>
       </trans-unit>
     </body>
   </file>
@@ -7013,6 +7141,14 @@ Error: {1}</target>
       <trans-unit id="notebookView.nameTaken">
         <source xml:lang="en">A view with the name {0} already exists in this notebook.</source>
         <target state="translated">Ya existe una vista con el nombre {0} en este cuaderno.</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/sql/workbench/services/notebook/browser/notebookViews/notebookViewsExtension" source-language="en" datatype="plaintext" target-language="es">
+    <body>
+      <trans-unit id="notebookView.untitledView">
+        <source xml:lang="en">Untitled View</source>
+        <target state="new">Untitled View</target>
       </trans-unit>
     </body>
   </file>

@@ -27,6 +27,9 @@ export const SKU_RECOMMENDATION_PAGE_TITLE = localize('sql.migration.wizard.sku.
 export const SKU_RECOMMENDATION_ALL_SUCCESSFUL = (databaseCount: number): string => {
 	return localize('sql.migration.wizard.sku.all', "Based on the assessment results, all {0} of your database(s) in an online state can be migrated to Azure SQL.", databaseCount);
 };
+export const SKU_RECOMMENDATION_ASSESSMENT_ERROR = (serverName: string): string => {
+	return localize('sql.migration.wizard.sku.assessment.error', "An error occurred while assessing the server '{0}'.", serverName);
+};
 export const SKU_RECOMMENDATION_CHOOSE_A_TARGET = localize('sql.migration.wizard.sku.choose_a_target', "Choose your Azure SQL target");
 export const SKU_RECOMMENDATION_MI_CARD_TEXT = localize('sql.migration.sku.mi.card.title', "Azure SQL Managed Instance (PaaS)");
 export const SKU_RECOMMENDATION_VM_CARD_TEXT = localize('sql.migration.sku.vm.card.title', "SQL Server on Azure Virtual Machine (IaaS)");
