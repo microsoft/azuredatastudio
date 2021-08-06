@@ -54,7 +54,7 @@ export class QueryEditorState extends Disposable {
 
 
 	public isSaving: boolean = false;
-	public oldUri: string = '';
+	public newUri: string = '';
 
 	public set connected(val: boolean) {
 		if (val !== this._connected) {
