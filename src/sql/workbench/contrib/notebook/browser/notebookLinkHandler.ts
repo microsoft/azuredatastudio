@@ -143,7 +143,7 @@ export function findPathRelativeToContent(notebookFolder: string, contentPath: U
 	if (contentPath?.scheme === 'file') {
 		let relativePath = contentPath.fragment ? path.relative(notebookFolder, contentPath.fsPath).concat('#', contentPath.fragment) : path.relative(notebookFolder, contentPath.fsPath);
 		// if relativePath contains improper directory format due to marked js parsing returning an invalid path (ex. ....\) then we need to replace it to ensure the directories are formatted properly (ex. ..\..\)
-		relativePath = replaceInvalidLinkPath(relativePath);
+		relativePath = encodeURI(replaceInvalidLinkPath(relativePath)).replace(/%5C/g, '\\');
 		if (relativePath.startsWith(path.join('..', path.sep)) || relativePath.startsWith(path.join('.', path.sep))) {
 			return relativePath;
 		} else {

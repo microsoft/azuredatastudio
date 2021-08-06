@@ -132,11 +132,11 @@ suite('HTML Markdown Converter', function (): void {
 		configurationService.updateValue('notebook.keepAbsolutePath', false, ConfigurationTarget.USER);
 		htmlString = '<a href="/tmp/stuff.png">stuff</a>';
 		assert.strictEqual(htmlMarkdownConverter.convert(htmlString), `[stuff](.${path.sep}stuff.png)`, 'Basic link test failed');
-		htmlString = '<a href="/tmp/stuff.png"</a>';
+		htmlString = '<a href="/tmp/stuff.png"></a>';
 		assert.strictEqual(htmlMarkdownConverter.convert(htmlString), `[](.${path.sep}stuff.png)`, 'Basic link test no label failed');
-		htmlString = '<a href="/tmp/my stuff.png"</a>';
+		htmlString = '<a href="/tmp/my stuff.png"></a>';
 		assert.strictEqual(htmlMarkdownConverter.convert(htmlString), `[](.${path.sep}my%20stuff.png)`, 'Basic link test no label space filename failed');
-		htmlString = '<a href="/tmp/my%20stuff.png"</a>';
+		htmlString = '<a href="/tmp/my%20stuff.png"></a>';
 		assert.strictEqual(htmlMarkdownConverter.convert(htmlString), `[](.${path.sep}my%2520stuff.png)`, 'Basic link test no label %20 filename failed');
 		htmlString = '<a href="/stuff.png">stuff</a>';
 		assert.strictEqual(htmlMarkdownConverter.convert(htmlString), `[stuff](..${path.sep}stuff.png)`, 'Basic link test above folder failed');

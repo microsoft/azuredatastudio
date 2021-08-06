@@ -121,7 +121,7 @@ export class HTMLMarkdownConverter {
 			filter: 'img',
 			replacement: (content, node) => {
 				if (node?.src) {
-					let imgPath = URI.parse(encodeURI(node.src));
+					let imgPath = URI.parse(node.src);
 					const notebookFolder: string = this.notebookUri ? path.join(path.dirname(this.notebookUri.fsPath), path.sep) : '';
 					let relativePath = findPathRelativeToContent(notebookFolder, imgPath);
 					if (relativePath) {
@@ -136,7 +136,7 @@ export class HTMLMarkdownConverter {
 			replacement: (content, node) => {
 				const linkHandler = new NotebookLinkHandler(this.notebookUri, node, this.configurationService);
 				const href = linkHandler.getLinkUrl();
-				return `[${content}](${href})`;
+				return `[${content}](${decodeURI(href)})`;
 			}
 		});
 		// Only nested list case differs from original turndown rule
