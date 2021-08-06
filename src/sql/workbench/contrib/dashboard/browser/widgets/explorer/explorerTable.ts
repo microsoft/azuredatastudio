@@ -72,7 +72,8 @@ export class ExplorerTable extends Disposable {
 		this._actionsColumn = new ButtonColumn<Slick.SlickData>({
 			id: 'actions',
 			iconCssClass: 'toggle-more',
-			title: ShowActionsText
+			title: ShowActionsText,
+			name: 'Actions'
 		});
 		this._table.registerPlugin(this._actionsColumn);
 		this._register(this._actionsColumn.onClick((args) => {
