@@ -5,7 +5,6 @@
 
 import { AzureAccount } from 'azurecore';
 import * as nls from 'vscode-nls';
-import { SupportedAutoRefreshIntervals } from '../api/utils';
 import { MigrationStatus } from '../models/migrationLocalStorage';
 import { MigrationSourceAuthenticationType } from '../models/stateMachine';
 const localize = nls.loadMessageBundle();
@@ -15,32 +14,20 @@ const localize = nls.loadMessageBundle();
 export function WIZARD_TITLE(instanceName: string): string {
 	return localize('sql-migration.wizard.title', "Migrate '{0}' to Azure SQL", instanceName);
 }
-export const SOURCE_CONFIGURATION_PAGE_TITLE = localize('sql.migration.wizard.source_configuration.title', "SQL Source Configuration");
 // //#endregion
 
 // Assessments Progress Page
 export const ASSESSMENT_BLOCKING_ISSUE_TITLE = localize('sql.migration.assessments.blocking.issue', 'This is a blocking issue that will prevent the database migration from succeeding.');
-export const ASSESSMENT_PROGRESS = localize('sql.migration.assessments.progress', "Assessments Progress");
 export const ASSESSMENT_IN_PROGRESS = localize('sql.migration.assessment.in.progress', "Assessment in progress");
 export function ASSESSMENT_IN_PROGRESS_CONTENT(dbName: string) {
 	return localize('sql.migration.assessment.in.progress.content', "We are assessing the databases in your SQL server instance {0} to identify the right Azure SQL target.\n\nThis may take some time.", dbName);
 }
-export const COLLECTING_SOURCE_CONFIGURATIONS = localize('sql.migration.collecting_source_configurations', "Collecting source configurations");
-export const COLLECTING_SOURCE_CONFIGURATIONS_INFO = localize('sql.migration.collecting_source_configurations.info', "We need to collect some information about how your data is configured currently.\nThis may take some time.");
-export const COLLECTING_SOURCE_CONFIGURATIONS_ERROR = (error: string = ''): string => {
-	return localize('sql.migration.collecting_source_configurations.error', "There was an error when gathering information about your data configuration. {0}", error);
-};
 
 export const SKU_RECOMMENDATION_PAGE_TITLE = localize('sql.migration.wizard.sku.title', "Azure SQL Target");
 export const SKU_RECOMMENDATION_ALL_SUCCESSFUL = (databaseCount: number): string => {
 	return localize('sql.migration.wizard.sku.all', "Based on the assessment results, all {0} of your database(s) in an online state can be migrated to Azure SQL.", databaseCount);
 };
-export const SKU_RECOMMENDATION_SOME_SUCCESSFUL = (migratableCount: number, databaseCount: number): string => {
-	return localize('sql.migration.wizard.sku.some', "Based on the source configuration scan result, {0} out of {1} of your databases can be migrated to Azure SQL.", migratableCount, databaseCount);
-};
 export const SKU_RECOMMENDATION_CHOOSE_A_TARGET = localize('sql.migration.wizard.sku.choose_a_target', "Choose your Azure SQL target");
-
-export const SKU_RECOMMENDATION_NONE_SUCCESSFUL = localize('sql.migration.sku.none', "Based on the source configuration scan result, none of your databases can be migrated to Azure SQL.");
 export const SKU_RECOMMENDATION_MI_CARD_TEXT = localize('sql.migration.sku.mi.card.title', "Azure SQL Managed Instance (PaaS)");
 export const SKU_RECOMMENDATION_VM_CARD_TEXT = localize('sql.migration.sku.vm.card.title', "SQL Server on Azure Virtual Machine (IaaS)");
 export const SELECT_AZURE_MI = localize('sql.migration.select.azure.mi', "Select your target Azure subscription and your target Azure SQL Managed Instance");
@@ -85,13 +72,8 @@ export function ACCOUNT_ACCESS_ERROR(account: AzureAccount, error: Error) {
 // database backup page
 export const DATABASE_BACKUP_PAGE_TITLE = localize('sql.migration.database.page.title', "Database Backup");
 export const DATABASE_BACKUP_PAGE_DESCRIPTION = localize('sql.migration.database.page.description', "Select the location of your database backups to use for migration.");
-
 export const DATABASE_BACKUP_NC_NETWORK_SHARE_RADIO_LABEL = localize('sql.migration.nc.network.share.radio.label', "My database backups are on a network share");
 export const DATABASE_BACKUP_NC_BLOB_STORAGE_RADIO_LABEL = localize('sql.migration.nc.blob.storage.radio.label', "My database backups are in an Azure Storage Blob Container");
-export const DATABASE_BACKUP_NC_FILE_SHARE_RADIO_LABEL = localize('sql.migration.nc.file.share.radio.label', "My database backups are in an Azure Storage File Share (coming soon)");
-
-
-
 export const DATABASE_BACKUP_NETWORK_SHARE_HEADER_TEXT = localize('sql.migration.network.share.header.text', "Network share details");
 export const DATABASE_BACKUP_NC_NETWORK_SHARE_HELP_TEXT = localize('sql.migration.network.share.help.text', "Provide the network share location that contains backups and the user credentials that has read access to the share");
 export const DATABASE_BACKUP_NETWORK_SHARE_LOCATION_LABEL = localize('sql.migration.network.share.location.label', "Network share location that contains backups.");
@@ -101,30 +83,17 @@ export const DATABASE_BACKUP_NETWORK_SHARE_PASSWORD_LABEL = localize('sql.migrat
 export const DATABASE_BACKUP_NETWORK_SHARE_PASSWORD_PLACEHOLDER = localize('sql.migration.network.share.password.placeholder', "Enter password");
 export const DATABASE_BACKUP_NETWORK_SHARE_AZURE_ACCOUNT_HEADER = localize('sql.migration.network.share.azure.header', "Storage account details");
 export const DATABASE_BACKUP_NETWORK_SHARE_AZURE_ACCOUNT_HELP = localize('sql.migration.network.share.azure.help', "Provide the Azure storage account where backups will be uploaded to.");
-export const DATABASE_BACKUP_NETWORK_SHARE_SUBSCRIPTION_LABEL = localize('sql.migration.network.share.subscription.label', "Select the subscription that contains the storage account.");
-export const DATABASE_BACKUP_SUBSCRIPTION_PLACEHOLDER = localize('sql.migration.network.share.subscription.placeholder', "Select subscription");
-export const DATABASE_BACKUP_NETWORK_SHARE_NETWORK_STORAGE_ACCOUNT_LABEL = localize('sql.migration.network.share.storage.account.label', "Select the storage account where backup files will be copied.");
-export const DATABASE_BACKUP_STORAGE_ACCOUNT_PLACEHOLDER = localize('sql.migration.network.share.storage.account.placeholder', "Select account");
 export const DUPLICATE_NAME_ERROR = localize('sql.migration.unique.name', "Select a unique name for this target database");
 export function DATABASE_ALREADY_EXISTS_MI(dbName: string, targetName: string): string {
 	return localize('sql.migration.database.already.exists', "Database '{0}' already exists on the target managed instance '{1}'.", dbName, targetName);
 }
 export const DATABASE_BACKUP_BLOB_STORAGE_SUBSCRIPTION_LABEL = localize('sql.migration.blob.storage.subscription.label', "Select the subscription that contains the storage account.");
-export const DATABASE_BACKUP_BLOB_STORAGE_ACCOUNT_LABEL = localize('sql.migration.blob.storage.account.label', "Select the storage account that contains the backup files.");
-export const DATABASE_BACKUP_BLOB_STORAGE_ACCOUNT_CONTAINER_LABEL = localize('sql.migration.blob.storage.container.label', "Select the container that contains the backup files.");
-export const DATABASE_BACKUP_BLOB_STORAGE_ACCOUNT_CONTAINER_PLACEHOLDER = localize('sql.migration.blob.storage.container.placeholder', "Select container");
-export const DATABASE_BACKUP_FILE_SHARE_SUBSCRIPTION_LABEL = localize('sql.migration.file.share.subscription.label', "Select the subscription that contains the file share.");
-export const DATABASE_BACKUP_FILE_SHARE_STORAGE_ACCOUNT_LABEL = localize('sql.migration.file.share.storage.account.label', "Select the storage account that contains the file share.");
-export const DATABASE_BACKUP_FILE_SHARE_LABEL = localize('sql.migration.file.share.label', "Select the file share that contains the backup files.");
-export const DATABASE_BACKUP_FILE_SHARE_PLACEHOLDER = localize('sql.migration.file.share.placeholder', "Select share");
 export const DATABASE_BACKUP_MIGRATION_MODE_LABEL = localize('sql.migration.database.migration.mode.label', "Migration mode");
 export const DATABASE_BACKUP_MIGRATION_MODE_DESCRIPTION = localize('sql.migration.database.migration.mode.description', "To migrate to the Azure SQL target, choose a migration mode based on your downtime requirements.");
 export const DATABASE_BACKUP_MIGRATION_MODE_ONLINE_LABEL = localize('sql.migration.database.migration.mode.online.label', "Online migration");
 export const DATABASE_BACKUP_MIGRATION_MODE_ONLINE_DESCRIPTION = localize('sql.migration.database.migration.mode.online.description', "Application downtime is limited to cutover at the end of migration.");
 export const DATABASE_BACKUP_MIGRATION_MODE_OFFLINE_DESCRIPTION = localize('sql.migration.database.migration.mode.offline.description', "Application downtime will start when the migration starts.");
 export const DATABASE_BACKUP_MIGRATION_MODE_OFFLINE_LABEL = localize('sql.migration.database.migration.mode.offline.label', "Offline migration");
-export const DATABASE_BACKUP_EMAIL_NOTIFICATION_LABEL = localize('sql.migration.database.backup.email.notification.label', "Email notifications");
-export const DATABASE_BACKUP_EMAIL_NOTIFICATION_CHECKBOX_LABEL = localize('sql.migration.database.backup.email.notification.checkbox.label', "Notify me when migration is complete");
 export const NO_SUBSCRIPTIONS_FOUND = localize('sql.migration.no.subscription.found', "No subscription found");
 export const NO_LOCATION_FOUND = localize('sql.migration.no.location.found', "No location found");
 export const NO_STORAGE_ACCOUNT_FOUND = localize('sql.migration.no.storageAccount.found', "No storage account found");
@@ -134,7 +103,6 @@ export const NO_BLOBFILES_FOUND = localize('sql.migration.no.blobFiles.found', "
 export const INVALID_SUBSCRIPTION_ERROR = localize('sql.migration.invalid.subscription.error', "To continue, select a valid subscription.");
 export const INVALID_LOCATION_ERROR = localize('sql.migration.invalid.location.error', "To continue, select a valid location.");
 export const INVALID_STORAGE_ACCOUNT_ERROR = localize('sql.migration.invalid.storageAccount.error', "To continue, select a valid storage account.");
-export const INVALID_FILESHARE_ERROR = localize('sql.migration.invalid.fileShare.error', "To continue, select a valid file share.");
 export function INVALID_BLOB_RESOURCE_GROUP_ERROR(sourceDb: string): string {
 	return localize('sql.migration.invalid.blob.resourceGroup.error', "To continue, select a valid resource group for source database '{0}'.", sourceDb);
 }
@@ -149,18 +117,6 @@ export function INVALID_BLOB_LAST_BACKUP_FILE_ERROR(sourceDb: string): string {
 }
 export const INVALID_NETWORK_SHARE_LOCATION = localize('sql.migration.invalid.network.share.location', "Invalid network share location format. Example: {0}", '\\\\Servername.domainname.com\\Backupfolder');
 export const INVALID_USER_ACCOUNT = localize('sql.migration.invalid.user.account', "Invalid user account format. Example: {0}", 'Domain\\username');
-export function TARGET_NETWORK_SHARE_LOCATION(dbName: string): string {
-	return localize('sql.migration.network.share.location', "Network share location to read backups for database ‘{0}’", dbName);
-}
-export function TARGET_FILE_SHARE(dbName: string): string {
-	return localize('sql.migration.file.share', "Select the file share that contains the backup files for ‘{0}’", dbName);
-}
-export function TARGET_BLOB_CONTAINER(dbName: string): string {
-	return localize('sql.migration.blob.container', "Select the container that contains the backup files for ‘{0}’", dbName);
-}
-export const ENTER_NETWORK_SHARE_INFORMATION = localize('sql.migration.enter.network.share.information', "Enter target names for selected source database(s)");
-export const ENTER_BLOB_CONTAINER_INFORMATION = localize('sql.migration.blob.container.information', "Enter the target name and select the blob container location for selected databases");
-export const ENTER_FILE_SHARE_INFORMATION = localize('sql.migration.enter.file.share.information', "Enter the target name and select the file share location of selected databases");
 export const INVALID_TARGET_NAME_ERROR = localize('sql.migration.invalid.target.name.error', "Enter a valid name for the target database.");
 export const PROVIDE_UNIQUE_CONTAINERS = localize('sql.migration.provide.unique.containers', "Provide a unique container for each target database. Databases affected: ");
 export function SQL_SOURCE_DETAILS(authMethod: MigrationSourceAuthenticationType, serverName: string): string {
@@ -178,10 +134,6 @@ export const SELECT_BLOB_CONTAINER = localize('sql.migration.blob.container.sele
 // integration runtime page
 export const IR_PAGE_TITLE = localize('sql.migration.ir.page.title', "Azure Database Migration Service");
 export const IR_PAGE_DESCRIPTION = localize('sql.migration.ir.page.description', "Azure Database Migration Service orchestrates database migration activities and tracks their progress. You can select an existing Database Migration Service as an Azure SQL target if you have created one previously, or create a new one below.");
-export const IR_PAGE_NOTE = localize('sql.migration.ir.page.note', "Note: Database Migration Service will run in your Azure subscription in the chosen resource group and does not incur any cost for running it.");
-export const SELECT_A_SQL_MIGRATION_SERVICE = localize('sql.migration.select.a.migration.service', "Select Azure Database Migration Service");
-export const DEFAULT_SETUP_BUTTON = localize('sql.migration.default.setup.button', "Setup with defaults: Add Database Migration Service with one click express setup using default options.");
-export const CUSTOM_SETUP_BUTTON = localize('sql.migration.custom.setup.button', "Custom setup: Add Database Migration Service after customizing most options.");
 export const SQL_MIGRATION_SERVICE_NOT_FOUND_ERROR = localize('sql.migration.ir.page.sql.migration.service.not.found', "No Database Migration Service found. Create a new one");
 export const CREATE_NEW = localize('sql.migration.create.new', "Create new");
 export const INVALID_SERVICE_ERROR = localize('sql.migration.invalid.migration.service.error', "Select a valid Data Migration Service.");
@@ -226,12 +178,10 @@ export const RESOURCE_GROUP_NOT_FOUND = localize('sql.migration.resource.group.n
 export const INVALID_RESOURCE_GROUP_ERROR = localize('sql.migration.invalid.resourceGroup.error', " To continue, select a valid resource group.");
 export const INVALID_SERVICE_NAME_ERROR = localize('sql.migration.invalid.service.name.error', "Enter a valid name for the Migration Service.");
 export const SERVICE_NOT_FOUND = localize('sql.migration.service.not.found', "No Migration Services found. To continue, create a new one.");
-export const SERVICE_NOT_SETUP_ERROR = localize('sql.migration.service.not.setup', "To continue, add a Migration Service.");
 export const SERVICE_STATUS_REFRESH_ERROR = localize('sql.migration.service.status.refresh.error', 'An error occurred while refreshing the migration service creation status.');
 export const MANAGED_INSTANCE = localize('sql.migration.managed.instance', "Azure SQL Managed Instance");
 export const NO_MANAGED_INSTANCE_FOUND = localize('sql.migration.no.managedInstance.found', "No managed instance found");
 export const NO_VIRTUAL_MACHINE_FOUND = localize('sql.migration.no.virtualMachine.found', "No virtual machine found");
-export const TARGET_SELECTION_PAGE_TITLE = localize('sql.migration.target.page.title', "Choose the target Azure SQL");
 export const RESOURCE_GROUP_DESCRIPTION = localize('sql.migration.resource.group.description', "A resource group is a container that holds related resources for an Azure solution.");
 export const OK = localize('sql.migration.ok', "OK");
 export function NEW_RESOURCE_GROUP(resourceGroupName: string): string {
@@ -250,16 +200,12 @@ export const LEARN_MORE_ABOUT_PRE_REQS = localize('sql.migration.learn.more.pre.
 export const SUBSCRIPTION = localize('sql.migration.subscription', "Subscription");
 export const STORAGE_ACCOUNT = localize('sql.migration.storage.account', "Storage account");
 export const RESOURCE_GROUP = localize('sql.migration.resourceGroups', "Resource group");
-export const REGION = localize('sql.migration.region', "Region");
 export const NAME = localize('sql.migration.name', "Name");
 export const LOCATION = localize('sql.migration.location', "Location");
-export const NEW = localize('sql.migration.new', "New");
 export const REFRESH = localize('sql.migration.refresh', "Refresh");
-export const SUBMIT = localize('sql.migration.submit', "Submit");
 export const CREATE = localize('sql.migration.create', "Create");
 export const CANCEL = localize('sql.migration.cancel', "Cancel");
 export const TYPE = localize('sql.migration.type', "Type");
-export const PATH = localize('sql.migration.path', "Path");
 export const USER_ACCOUNT = localize('sql.migration.path.user.account', "User Account");
 export const VIEW_ALL = localize('sql.migration.view.all', "View All");
 export const TARGET = localize('sql.migration.target', "Target");
@@ -271,27 +217,21 @@ export const NEW_SUPPORT_REQUEST = localize('sql.migration.newSupportRequest', "
 
 //Summary Page
 export const SUMMARY_PAGE_TITLE = localize('sql.migration.summary.page.title', "Summary");
-export const AZURE_ACCOUNT_LINKED = localize('sql.migration.summary.azure.account.linked', "Azure account linked");
-export const MIGRATION_TARGET = localize('sql.migration.summary.migration.target', "Migration target");
 export const SUMMARY_MI_TYPE = localize('sql.migration.summary.mi.type', "Azure SQL Managed Instance");
 export const SUMMARY_VM_TYPE = localize('sql.migration.summary.vm.type', "SQL Server on Azure Virtual Machine");
 export const SUMMARY_DATABASE_COUNT_LABEL = localize('sql.migration.summary.database.count', "Database(s) for migration");
 export const SUMMARY_AZURE_STORAGE_SUBSCRIPTION = localize('sql.migration.summary.azure.storage.subscription', "Azure storage subscription");
 export const SUMMARY_AZURE_STORAGE = localize('sql.migration.summary.azure.storage', "Azure storage");
-export const SUMMARY_IR_NODE = localize('sql.migration.ir.node', "Integration runtime node");
 export const NETWORK_SHARE = localize('sql.migration.network.share', "Network Share");
 export const BLOB_CONTAINER = localize('sql.migration.blob.container.title', "Blob Container");
 export const BLOB_CONTAINER_LAST_BACKUP_FILE = localize('sql.migration.blob.container.last.backup.file.label', "Last Backup File");
 export const BLOB_CONTAINER_RESOURCE_GROUP = localize('sql.migration.blob.container.label', "Blob container resource group");
 export const BLOB_CONTAINER_STORAGE_ACCOUNT = localize('sql.migration.blob.container.storage.account.label', "Blob container storage account");
-export const FILE_SHARE = localize('sql.migration.file.share.title', "File Share");
-export const MIGRATION_STARTED = localize('sql.migration.started.notification', "Migration in progress");
 export const SOURCE_DATABASES = localize('sql.migration.source.databases', "Source Database(s)");
 export const MODE = localize('sql.migration.mode', "Mode");
 export const BACKUP_LOCATION = localize('sql.migration.backup.location', "Backup Location");
 export const AZURE_STORAGE_ACCOUNT_TO_UPLOAD_BACKUPS = localize('sql.migration.azure.storage.account.to.upload.backups', "Azure Storage Account to Upload Backups");
 export const SHIR = localize('sql.migration.shir', "Self-hosted integration runtime node");
-export const TARGET_NAME = localize('sql.migration.summary.target.name', "Target Databases:");
 export const DATABASE_TO_BE_MIGRATED = localize('sql.migration.database.to.be.migrated', "Database to be migrated");
 export function COUNT_DATABASES(count: number): string {
 	return (count === 1) ? localize('sql.migration.count.database.single', "{0} database", count) : localize('sql.migration.count.database.multiple', "{0} databases", count);
@@ -309,8 +249,6 @@ export const DASHBOARD_DESCRIPTION = localize('sql.migration.dashboard.descripti
 export const DASHBOARD_MIGRATE_TASK_BUTTON_TITLE = localize('sql.migration.dashboard.migrate.task.button', "Migrate to Azure SQL");
 export const DASHBOARD_MIGRATE_TASK_BUTTON_DESCRIPTION = localize('sql.migration.dashboard.migrate.task.button.description', "Migrate SQL Server instance to Azure SQL.");
 export const DATABASE_MIGRATION_STATUS = localize('sql.migration.database.migration.status', "Database Migration Status");
-export const HELP_VIDEO1_TITLE = localize('sql.migration.dashboard.video1.title', "Migrate SQL Server to SQL Managed Instance");
-export const HELP_VIDEO2_TITLE = localize('sql.migration.dashboard.video2.title', "Migrate SQL Server to Azure SQL on a Virtual Machine.");
 export const HELP_LINK1_TITLE = localize('sql.migration.dashboard.link1.title', "Assessment rules for Azure SQL Managed Instance");
 export const HELP_LINK1_DESCRIPTION = localize('sql.migration.dashboard.link1.description', "See the list of rules used to determine whether your SQL Server instance can be migrated to Azure SQL Managed Instance.");
 export const HELP_TITLE = localize('sql.migration.dashboard.help.title', "Help Articles and Video Links");
@@ -320,12 +258,9 @@ export const PRE_REQ_2 = localize('sql.migration.pre.req.2', "Azure SQL Managed 
 export const PRE_REQ_3 = localize('sql.migration.pre.req.3', "Backup location details");
 export const MIGRATION_IN_PROGRESS = localize('sql.migration.migration.in.progress', "Database migration in progress");
 export const MIGRATION_FAILED = localize('sql.migration.failed', "Migration failed");
-export const LOG_SHIPPING_IN_PROGRESS = localize('sql.migration.log.shipping.in.progress', "Log shipping in progress");
 export const MIGRATION_COMPLETED = localize('sql.migration.migration.completed', "Migration completed");
 export const MIGRATION_CUTOVER_CARD = localize('sql.migration.cutover.card', "Completing cutover");
-export const SUCCESSFULLY_MIGRATED_TO_AZURE_SQL = localize('sql.migration.successfully.migrated.to.azure.sql', "Successfully migrated to Azure SQL");
 export const MIGRATION_NOT_STARTED = localize('sql.migration.migration.not.started', "Migration not started");
-export const CHOOSE_TO_MIGRATE_TO_AZURE_SQL = localize('sql.migration.choose.to.migrate.to.azure.sql', "Choose to migrate to Azure SQL");
 export const SHOW_STATUS = localize('sql.migration.show.status', "Show status");
 export function MIGRATION_INPROGRESS_WARNING(count: number) {
 	switch (count) {
@@ -336,9 +271,6 @@ export function MIGRATION_INPROGRESS_WARNING(count: number) {
 	}
 }
 export const FEEDBACK_ISSUE_TITLE = localize('sql.migration.feedback.issue.title', "Feedback on the migration experience");
-
-// Azure APIs
-export const EASTUS2EUAP = localize('sql.migration.eastus2euap', 'East US 2 EUAP');
 
 //Migration cutover dialog
 export const MIGRATION_CUTOVER = localize('sql.migration.cutover', "Migration cutover");
@@ -538,32 +470,6 @@ export function WARNINGS_COUNT(totalCount: number): string {
 	return localize('sql.migration.warnings.count', "Warnings ({0})", totalCount);
 }
 export const AUTHENTICATION_TYPE = localize('sql.migration.authentication.type', "Authentication Type");
-export const SQL_LOGIN = localize('sql.migration.sql.login', "SQL Login");
-export const WINDOWS_AUTHENTICATION = localize('sql.migration.windows.auth', "Windows Authentication");
 
 export const REFRESH_BUTTON_LABEL = localize('sql.migration.status.refresh.label', 'Refresh');
 
-//AutoRefresh
-export function AUTO_REFRESH_BUTTON_TEXT(interval: SupportedAutoRefreshIntervals): string {
-	switch (interval) {
-		case -1:
-			return localize('sql.migration.auto.refresh.off', 'Auto Refresh: Off');
-		case 15000:
-			return localize('sql.migration.auto.refresh.15.seconds', 'Auto refresh: 15 seconds');
-		case 30000:
-			return localize('sql.migration.auto.refresh.30.seconds', 'Auto refresh: 30 seconds');
-		case 60000:
-			return localize('sql.migration.auto.refresh.1.min', 'Auto refresh: 1 minute');
-		case 180000:
-			return localize('sql.migration.auto.refresh.3.min', 'Auto refresh: 3 minutes');
-		case 300000:
-			return localize('sql.migration.auto.refresh.5.min', 'Auto refresh: 5 minutes');
-	}
-}
-
-export const SELECT_THE_REFRESH_INTERVAL = localize('sql.migration.select.the.refresh.interval', "Select the refresh interval");
-export const OFF = localize('sql.migration.off', "Off");
-export const EVERY_30_SECOND = localize('sql.migration.every.30.second', "Every 30 seconds");
-export const EVERY_1_MINUTE = localize('sql.migration.every.1.minute', "Every 1 minute");
-export const EVERY_3_MINUTES = localize('sql.migration.every.3.minutes', "Every 3 minutes");
-export const EVERY_5_MINUTES = localize('sql.migration.every.5.minutes', "Every 5 minutes");
