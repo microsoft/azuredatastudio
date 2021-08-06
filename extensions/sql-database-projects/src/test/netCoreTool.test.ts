@@ -9,7 +9,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as vscode from 'vscode';
 import * as sinon from 'sinon';
-import { NetCoreTool, DBProjectConfigurationKey, NetCoreInstallLocationKey, NetCoreMacDefaultPath, NetCoreLinuxDefaultPath } from '../tools/netcoreTool';
+import { NetCoreTool, DBProjectConfigurationKey, NetCoreInstallLocationKey, NetCoreNonWindowsDefaultPath } from '../tools/netcoreTool';
 import { getQuotedPath } from '../common/utils';
 import { isNullOrUndefined } from 'util';
 import { generateTestFolderPath } from './testUtils';
@@ -45,15 +45,9 @@ describe('NetCoreTool: Net core tests', function (): void {
 			should(result).true('dotnet is either not present or in programfiles by default');
 		}
 
-		if (os.platform() === 'linux') {
-			//check that path should start with /usr/share
-			let result = isNullOrUndefined(netcoreTool.netcoreInstallLocation) || netcoreTool.netcoreInstallLocation.toLowerCase().startsWith(NetCoreLinuxDefaultPath);
-			should(result).true('dotnet is either not present or in /usr/share by default');
-		}
-
-		if (os.platform() === 'darwin') {
+		if (os.platform() === 'linux' || os.platform() === 'darwin') {
 			//check that path should start with /usr/local/share
-			let result = isNullOrUndefined(netcoreTool.netcoreInstallLocation) || netcoreTool.netcoreInstallLocation.toLowerCase().startsWith(NetCoreMacDefaultPath);
+			let result = isNullOrUndefined(netcoreTool.netcoreInstallLocation) || netcoreTool.netcoreInstallLocation.toLowerCase().startsWith(NetCoreNonWindowsDefaultPath);
 			should(result).true('dotnet is either not present or in /usr/local/share by default');
 		}
 	});
