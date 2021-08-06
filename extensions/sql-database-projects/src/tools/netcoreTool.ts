@@ -19,7 +19,8 @@ const localize = nls.loadMessageBundle();
 export const DBProjectConfigurationKey: string = 'sqlDatabaseProjects';
 export const NetCoreInstallLocationKey: string = 'netCoreSDKLocation';
 export const NetCoreDoNotAskAgainKey: string = 'netCoreDoNotAsk';
-export const NextCoreNonWindowsDefaultPath = '/usr/local/share';
+export const NetCoreMacDefaultPath = '/usr/local/share';
+export const NetCoreLinuxDefaultPath = '/usr/share';
 export const winPlatform: string = 'win32';
 export const macPlatform: string = 'darwin';
 export const linuxPlatform: string = 'linux';
@@ -100,15 +101,20 @@ export class NetCoreTool {
 	private get defaultLocalInstallLocationByDistribution(): string | undefined {
 		switch (this.osPlatform) {
 			case winPlatform: return this.defaultWindowsLocation;
-			case macPlatform:
-			case linuxPlatform: return this.defaultnonWindowsLocation;
+			case macPlatform: return this.defaultMacLocation;
+			case linuxPlatform: return this.defaultLinuxLocation;
 			default: return undefined;
 		}
 	}
 
-	private get defaultnonWindowsLocation(): string | undefined {
-		const defaultNonWindowsInstallLocation = NextCoreNonWindowsDefaultPath; //default folder for net core sdk
-		return this.getDotnetPathIfPresent(defaultNonWindowsInstallLocation) ||
+	private get defaultMacLocation(): string | undefined {
+		return this.getDotnetPathIfPresent(NetCoreMacDefaultPath) ||			//default folder for net core sdk
+			this.getDotnetPathIfPresent(os.homedir()) ||
+			undefined;
+	}
+
+	private get defaultLinuxLocation(): string | undefined {
+		return this.getDotnetPathIfPresent(NetCoreLinuxDefaultPath) ||			//default folder for net core sdk
 			this.getDotnetPathIfPresent(os.homedir()) ||
 			undefined;
 	}
