@@ -213,7 +213,7 @@ export class DeployService {
 			connectionString: undefined
 		};
 
-		const connection = await this.retry(constants.connectingToSqlServerOnDockerMessage, async () => {
+		let connection = await this.retry(constants.connectingToSqlServerOnDockerMessage, async () => {
 			if (getAzdataApi) {
 				return await getAzdataApi.connection.connect(connectionProfile, true, false);
 			} else if (vscodeMssqlApi) {
@@ -231,7 +231,16 @@ export class DeployService {
 		}, (connection) => {
 			const connectionResult = <ConnectionResult>connection;
 			return connectionResult ? connectionResult.connectionId : <string>connection;
-		});
+		}, 5, 5); // Try 5 times and wait 5 seconds before each try
+
+		// TODO: this is just for test to see what's going on with connecting to server in vscode
+		if (!connection && !getAzdataApi && vscodeMssqlApi) {
+			let connectionProfile = await vscodeMssqlApi.promptForConnection(true);
+			if (connectionProfile) {
+				this.logToOutput(`connecting to ${JSON.stringify(connectionProfile)}`);
+				connection = await vscodeMssqlApi.connect(connectionProfile);
+			}
+		}
 
 		if (connection) {
 			const connectionResult = <ConnectionResult>connection;
@@ -279,7 +288,7 @@ export class DeployService {
 		numberOfAttempts: number = 10,
 		waitInSeconds: number = 2): Promise<T | undefined> {
 		for (let count = 0; count < numberOfAttempts; count++) {
-			this.logToOutput(constants.retryWaitMessage(waitInSeconds / 1000, name));
+			this.logToOutput(constants.retryWaitMessage(waitInSeconds * 1000, name));
 			await new Promise(c => setTimeout(c, waitInSeconds * 1000));
 			this.logToOutput(constants.retryRunMessage(count, numberOfAttempts, name));
 
