@@ -48,7 +48,7 @@ export async function createNewProjectFromDatabaseWithQuickpick(connectionInfo?:
 	}
 
 	// Move the database for the given connection up to the top
-	if (connectionProfile.database && connectionProfile.database !== 'master') {
+	if (connectionProfile.database && connectionProfile.database !== constants.master) {
 		const index = dbs.indexOf(connectionProfile.database);
 		if (index >= 0) {
 			dbs.splice(index, 1);
