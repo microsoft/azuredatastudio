@@ -10387,6 +10387,8 @@
 			"textPreview": "텍스트 셀",
 			"runAllPreview": "모두 실행",
 			"addCell": "셀",
+			"views": "뷰",
+			"editor": "편집기",
 			"code": "코드",
 			"text": "텍스트",
 			"runAll": "셀 실행",
@@ -10411,7 +10413,8 @@
 			"notebook.markdownPreviewLineHeight": "Notebook markdown 미리 보기에서 사용되는 줄 높이를 제어합니다. 해당 숫자는 글꼴 크기에 상대적입니다.",
 			"notebook.showRenderedNotebookinDiffEditor": "(미리 보기) diff 편집기에서 렌더링된 전자 필기장을 표시합니다.",
 			"notebook.maxRichTextUndoHistory": "전자 필기장 서식 있는 텍스트 편집기의 실행 취소 기록에 저장된 최대 변경 내용 수입니다.",
-			"notebook.useAbsoluteFilePaths": "Use absolute file paths when linking to other notebooks.",
+			"notebook.useAbsoluteFilePaths": "다른 노트북에 연결할 때 절대 파일 경로를 사용하세요.",
+			"notebook.enableIncrementalGridRendering": "Enable incremental grid rendering for notebooks. This will improve the initial rendering time for large notebooks. There may be performance issues when interacting with the notebook while the rest of the grids are rendering.",
 			"searchConfigurationTitle": "Notebook 검색",
 			"exclude": "전체 텍스트 검색 및 빠른 열기에서 glob 패턴을 구성하여 파일 및 폴더를 제외합니다. `#files.exclude#` 설정에서 모든 glob 패턴을 상속합니다. [여기](https://code.visualstudio.com/docs/editor/codebasics#_advanced-search-options)에서 glob 패턴에 대해 자세히 알아보세요.",
 			"exclude.boolean": "파일 경로를 일치시킬 GLOB 패턴입니다. 패턴을 사용하거나 사용하지 않도록 설정하려면 true 또는 false로 설정하세요.",
@@ -10470,6 +10473,9 @@
 			"noParametersCell": "이 전자 필기장은 매개 변수 셀이 추가될 때까지 매개 변수를 사용하여 실행할 수 없습니다. [자세히 알아보기] (https://docs.microsoft.com/sql/azure-data-studio/notebooks/notebooks-parameterization).",
 			"noParametersInCell": "매개 변수 셀에 추가된 매개 변수가 있을 때까지 이 전자 필기장을 매개 변수로 실행할 수 없습니다. [자세한 정보] (https://docs.microsoft.com/sql/azure-data-studio/notebooks/notebooks-parameterization).",
 			"clearResults": "결과 지우기",
+			"notebookViewLabel": "편집기",
+			"newViewLabel": "Create New View",
+			"viewNotFound": "Unable to find view: {0}",
 			"trustLabel": "신뢰할 수 있음",
 			"untrustLabel": "신뢰할 수 없음",
 			"collapseAllCells": "셀 축소",
@@ -10513,7 +10519,8 @@
 		},
 		"sql/workbench/contrib/notebook/browser/notebookViews/notebookViews.component": {
 			"cellNotFound": "이 모델에서 URI가 {0}인 셀을 찾을 수 없습니다.",
-			"cellRunFailed": "셀 실행 실패 - 자세한 내용은 현재 선택한 셀의 출력 오류를 참조하세요."
+			"cellRunFailed": "셀 실행 실패 - 자세한 내용은 현재 선택한 셀의 출력 오류를 참조하세요.",
+			"runAllPreview": "모두 실행"
 		},
 		"sql/workbench/contrib/notebook/browser/notebookViews/notebookViewsCodeCell.component": {
 			"viewsCodeCell.emptyCellText": "출력을 보려면 이 셀을 실행하세요."
@@ -11447,6 +11454,37 @@
 		},
 		"sql/workbench/contrib/resourceDeployment/browser/resourceDeployment.contribution": {
 			"deployment.title": "새 배포..."
+		},
+		"sql/workbench/contrib/notebook/browser/notebookViews/insertCellsModal": {
+			"insertCellsModal.title": "셀 삽입",
+			"insertCellsModal.selectCells": "셀 원본 선택",
+			"insertCellsModal.thumbnailError": "오류: 미리 보기를 생성할 수 없습니다.",
+			"insertCellsModal.untitled": "제목 없는 셀: {0}",
+			"insertCellsModal.Insert": "삽입",
+			"insertCellsModal.Cancel": "취소"
+		},
+		"sql/workbench/contrib/notebook/browser/notebookViews/notebookViewsActions": {
+			"viewsUnableToRemove": "Unable to remove view",
+			"confirmDelete": "'{0}' 보기를 삭제할까요?",
+			"delete": "삭제(&&D)",
+			"insertCells": "셀 삽입",
+			"runCell": "셀 실행",
+			"stopCell": "실행 취소",
+			"errorRunCell": "Error on last run. Click to run again",
+			"unableToNavigateToCell": "전자 필기장 셀로 이동할 수 없습니다.",
+			"viewCellInNotebook": "전자 필기장의 셀 보기",
+			"moreActionsLabel": "자세히"
+		},
+		"sql/workbench/contrib/notebook/browser/notebookViews/viewOptionsModal": {
+			"viewOptionsModal.title": "보기 구성",
+			"viewOptionsModal.name": "뷰 이름",
+			"viewOptionsModal.missingRequireField": "This field is required.",
+			"viewOptionsModal.nameTaken": "This view name has already been taken.",
+			"save": "저장",
+			"cancel": "취소"
+		},
+		"sql/workbench/services/notebook/browser/notebookViews/notebookViewsExtension": {
+			"notebookView.untitledView": "제목 없는 보기"
 		}
 	}
 }
