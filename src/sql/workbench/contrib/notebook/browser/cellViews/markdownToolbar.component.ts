@@ -244,6 +244,7 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 				let linkUrl = notebookLink.getLinkUrl();
 				// Otherwise, re-focus on the output element, and insert the link directly.
 				this.output?.nativeElement?.focus();
+				// link is encoded as it will be used converted via htmlMarkdownConverter
 				document.execCommand('insertHTML', false, `<a href="${linkUrl}" is-absolute=${notebookLink.isAbsolutePath}>${escape(linkCalloutResult?.insertUnescapedLinkLabel)}</a>`);
 				return;
 			}

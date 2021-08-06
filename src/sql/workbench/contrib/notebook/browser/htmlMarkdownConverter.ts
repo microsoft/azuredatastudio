@@ -136,6 +136,7 @@ export class HTMLMarkdownConverter {
 			replacement: (content, node) => {
 				const linkHandler = new NotebookLinkHandler(this.notebookUri, node, this.configurationService);
 				const href = linkHandler.getLinkUrl();
+				// we output the decodedURI for markdown rendering
 				return `[${content}](${decodeURI(href)})`;
 			}
 		});
