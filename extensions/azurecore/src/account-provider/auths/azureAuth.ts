@@ -227,6 +227,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 	 * @param refreshToken
 	 */
 	public async refreshToken(tenant: Tenant, resource: Resource, refreshToken: RefreshToken | undefined): Promise<OAuthTokenResponse> {
+		Logger.pii(`Refreshing token. token=${JSON.stringify(refreshToken)}`);
 		if (refreshToken) {
 			const postData: RefreshTokenPostData = {
 				grant_type: 'refresh_token',
@@ -387,6 +388,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 			accessTokenString = await this.tokenCache.getCredential(`${accountKey.accountId}_access_${resource.id}_${tenant.id}`);
 			refreshTokenString = await this.tokenCache.getCredential(`${accountKey.accountId}_refresh_${resource.id}_${tenant.id}`);
 			expiresOn = this.memdb.get(`${accountKey.accountId}_${tenant.id}_${resource.id}`);
+			Logger.pii(`GetSavedToken access=${accessTokenString} refresh=${refreshTokenString} expiresOn=${expiresOn}`);
 		} catch (ex) {
 			Logger.error(ex);
 			throw new AzureAuthError(getMsg, 'Getting account from cache failed', ex);
@@ -394,6 +396,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 
 		try {
 			if (!accessTokenString) {
+				Logger.log('No access token found');
 				return undefined;
 			}
 			const accessToken: AccessToken = JSON.parse(accessTokenString);
@@ -564,7 +567,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 
 		// Intercept response and print out the response for future debugging
 		const response = await axios.post(url, qs.stringify(postData), config);
-		Logger.pii(url, postData, response.data);
+		Logger.pii('POST request ', url, postData, response.data);
 		return response;
 	}
 
@@ -578,7 +581,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 		};
 
 		const response = await axios.get(url, config);
-		Logger.pii(url, response.data);
+		Logger.pii('GET request ', url, response.data);
 		return response;
 	}
 
