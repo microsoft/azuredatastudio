@@ -755,7 +755,7 @@ describe('BooksTreeViewTests', function () {
 					should(showNotebookSpy.calledWith(vscode.Uri.file(notebookPath))).be.true(`Should have opened the notebook from ${notebookPath} in the editor.`);
 				});
 
-				it('openNotebookAsUntitled should open a notebook as untitled file in the editor @UNSTABLE@', async () => {
+				it('openNotebookAsUntitled should open a notebook as untitled file in the editor', async () => {
 					let notebookPath = run.folderPaths.notebook2File;
 					await bookTreeViewProvider.openNotebookAsUntitled(notebookPath);
 					const docInfo = azdata.nb.notebookDocuments.map(doc => (`\n\n Notebook path: ${notebookPath} \n\n The document is untitled: ${doc.isUntitled} \n\n Document uri fsPath: ${doc.uri.fsPath}`));
