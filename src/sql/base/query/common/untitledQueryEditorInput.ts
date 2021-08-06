@@ -47,22 +47,28 @@ export class UntitledQueryEditorInput extends QueryEditorInput implements IEncod
 
 	override async save(group: GroupIdentifier, options?: ISaveOptions): Promise<IEditorInput | undefined> {
 		let preProcessed = await this.text.saveAs(group, options);
-		let newFileQueryInput = this.instantiationService.createInstance(FileQueryEditorInput, '', (preProcessed as FileEditorInput), this._results);
-		newFileQueryInput.state.resultsVisible = this.state.resultsVisible;
-		newFileQueryInput.state.isSaving = true;
-		newFileQueryInput.state.oldUri = this.uri;
-		//need to find way to add URIs into input.
-		return newFileQueryInput;
+		// TODO: Need to find way of generating new URI for results so that it won't break.
+
+		// let newFileQueryInput = this.instantiationService.createInstance(FileQueryEditorInput, '', (preProcessed as FileEditorInput), this._results);
+		// newFileQueryInput.state.resultsVisible = this.state.resultsVisible;
+		// this.state.isSaving = true;
+		// this.state.oldUri = this.uri;
+		// //need to find way to add URIs into input.
+		// return newFileQueryInput;
+		return preProcessed;
 	}
 
 	override async saveAs(group: GroupIdentifier, options?: ISaveOptions): Promise<IEditorInput | undefined> {
 		let preProcessed = await this.text.saveAs(group, options);
-		let newFileQueryInput = this.instantiationService.createInstance(FileQueryEditorInput, '', (preProcessed as FileEditorInput), this._results);
-		newFileQueryInput.state.resultsVisible = this.state.resultsVisible;
-		newFileQueryInput.state.isSaving = true;
-		newFileQueryInput.state.oldUri = this.uri;
-		//need to find way to add URIs into input.
-		return newFileQueryInput;
+		// TODO: Need to find way of generating new URI for results so that it won't break.
+
+		// let newFileQueryInput = this.instantiationService.createInstance(FileQueryEditorInput, '', (preProcessed as FileEditorInput), this._results);
+		// newFileQueryInput.state.resultsVisible = this.state.resultsVisible;
+		// this.state.isSaving = true;
+		// this.state.oldUri = this.uri;
+		// //need to find way to add URIs into input.
+		// return newFileQueryInput;
+		return preProcessed;
 	}
 
 	public setMode(mode: string): void {
