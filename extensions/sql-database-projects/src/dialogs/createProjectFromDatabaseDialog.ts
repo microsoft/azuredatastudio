@@ -269,7 +269,7 @@ export class CreateProjectFromDatabaseDialog {
 
 		this.projectLocationTextBox = view.modelBuilder.inputBox().withProps({
 			value: '',
-			ariaLabel: constants.projectLocationLabel,
+			ariaLabel: constants.location,
 			placeHolder: constants.projectLocationPlaceholderText,
 			width: cssStyles.createProjectFromDatabaseTextboxWidth
 		}).component();
@@ -280,7 +280,7 @@ export class CreateProjectFromDatabaseDialog {
 		});
 
 		const projectLocationLabel = view.modelBuilder.text().withProps({
-			value: constants.projectLocationLabel,
+			value: constants.location,
 			requiredIndicator: true,
 			width: cssStyles.createProjectFromDatabaseLabelWidth
 		}).component();

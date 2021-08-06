@@ -583,7 +583,7 @@ describe('ProjectsController', function (): void {
 			});
 
 			let dialog = await projController.object.addDatabaseReference(proj);
-			await dialog.addReferenceClick();
+			await dialog!.addReferenceClick();
 
 			should(holler).equal(addDbRefHoller, 'executionCallback() is supposed to have been setup and called for add database reference scenario');
 		});
