@@ -97,6 +97,9 @@
 [Open Project](command:sqlDatabaseProjects.open)
 [Create Project From Database](command:sqlDatabaseProjects.importDatabase)</source>
     </trans-unit>
+    <trans-unit id="sqlDatabaseProjects.addSqlBinding">
+      <source xml:lang="en">Add SQL Binding</source>
+    </trans-unit>
   </body></file>
   <file original="extensions/sql-database-projects/dist/common/constants" source-language="en" datatype="plaintext"><body>
     <trans-unit id="emptyProjectTypeDisplayName">
@@ -442,8 +445,17 @@
     <trans-unit id="browseButtonText">
       <source xml:lang="en">Browse folder</source>
     </trans-unit>
+    <trans-unit id="selectFolderStructure">
+      <source xml:lang="en">Select folder structure</source>
+    </trans-unit>
     <trans-unit id="folderStructureLabel">
       <source xml:lang="en">Folder structure</source>
+    </trans-unit>
+    <trans-unit id="browseEllipsis">
+      <source xml:lang="en">Browse...</source>
+    </trans-unit>
+    <trans-unit id="selectProjectLocation">
+      <source xml:lang="en">Select project location</source>
     </trans-unit>
     <trans-unit id="dataworkspace.projectParentDirectoryNotExistError">
       <source xml:lang="en">The selected project location '{0}' does not exist or is not a directory.</source>
@@ -550,6 +562,9 @@
     <trans-unit id="folderAlreadyExists">
       <source xml:lang="en">A folder with the name '{0}' already exists on disk at this location. Please choose another name.</source>
     </trans-unit>
+    <trans-unit id="folderAlreadyExistsChooseNewLocation">
+      <source xml:lang="en">A folder with the name '{0}' already exists on disk at this location. Please choose another location.</source>
+    </trans-unit>
     <trans-unit id="invalidInput">
       <source xml:lang="en">Invalid input: {0}</source>
     </trans-unit>
@@ -642,6 +657,33 @@
     </trans-unit>
     <trans-unit id="postDeployScriptFriendlyName">
       <source xml:lang="en">Script.PostDeployment</source>
+    </trans-unit>
+    <trans-unit id="input">
+      <source xml:lang="en">Input</source>
+    </trans-unit>
+    <trans-unit id="output">
+      <source xml:lang="en">Output</source>
+    </trans-unit>
+    <trans-unit id="selectBindingType">
+      <source xml:lang="en">Select type of binding</source>
+    </trans-unit>
+    <trans-unit id="selectAzureFunction">
+      <source xml:lang="en">Select an Azure function in the current file to add SQL binding to</source>
+    </trans-unit>
+    <trans-unit id="sqlObjectToQuery">
+      <source xml:lang="en">SQL object to query</source>
+    </trans-unit>
+    <trans-unit id="sqlTableToUpsert">
+      <source xml:lang="en">SQL table to upsert into</source>
+    </trans-unit>
+    <trans-unit id="connectionStringSetting">
+      <source xml:lang="en">Connection string setting name</source>
+    </trans-unit>
+    <trans-unit id="connectionStringSettingPlaceholder">
+      <source xml:lang="en">Connection string setting specified in "local.settings.json"</source>
+    </trans-unit>
+    <trans-unit id="noAzureFunctionsInFile">
+      <source xml:lang="en">No Azure functions in the current active file</source>
     </trans-unit>
   </body></file>
   <file original="extensions/sql-database-projects/dist/tools/netcoreTool" source-language="en" datatype="plaintext"><body>

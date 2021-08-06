@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { SqlOpsDataClient, ClientOptions, SqlOpsFeature } from 'dataprotocol-client';
-import { IConfig, ServerProvider } from 'service-downloader';
+import { IConfig, ServerProvider } from '@microsoft/ads-service-downloader';
 import { ServerOptions, RPCMessageType, ClientCapabilities, ServerCapabilities, TransportKind } from 'vscode-languageclient';
 import { Disposable } from 'vscode';
 import * as UUID from 'vscode-languageclient/lib/utils/uuid';
