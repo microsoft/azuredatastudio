@@ -45,9 +45,6 @@ export const SKU_RECOMMENDATION_MI_CARD_TEXT = localize('sql.migration.sku.mi.ca
 export const SKU_RECOMMENDATION_VM_CARD_TEXT = localize('sql.migration.sku.vm.card.title', "SQL Server on Azure Virtual Machine (IaaS)");
 export const SELECT_AZURE_MI = localize('sql.migration.select.azure.mi', "Select your target Azure subscription and your target Azure SQL Managed Instance");
 export const SELECT_AZURE_VM = localize('sql.migration.select.azure.vm', "Select your target Azure Subscription and your target SQL Server on Azure Virtual Machine for your target.");
-export const SUBSCRIPTION_SELECTION_PAGE_TITLE = localize('sql.migration.wizard.subscription.title', "Azure Subscription Selection");
-export const SUBSCRIPTION_SELECTION_AZURE_ACCOUNT_TITLE = localize('sql.migration.wizard.subscription.azure.account.title', "Azure Account");
-export const SUBSCRIPTION_SELECTION_AZURE_SUBSCRIPTION_TITLE = localize('sql.migration.wizard.subscription.azure.subscription.title', "Azure Subscription");
 export const SKU_RECOMMENDATION_VIEW_ASSESSMENT_MI = localize('sql.migration.sku.recommendation.view.assessment.mi', "To migrate to Azure SQL Managed Instance (PaaS), view assessment results and select one or more database(s).");
 export const SKU_RECOMMENDATION_VIEW_ASSESSMENT_VM = localize('sql.migration.sku.recommendation.view.assessment.vm', "To migrate to SQL Server on Azure Virtual Machine (IaaS), view assessment results and select one or more database(s).");
 export const VIEW_SELECT_BUTTON_LABEL = localize('sql.migration.view.select.button.label', "View/Select");
@@ -120,7 +117,7 @@ export const DATABASE_BACKUP_FILE_SHARE_SUBSCRIPTION_LABEL = localize('sql.migra
 export const DATABASE_BACKUP_FILE_SHARE_STORAGE_ACCOUNT_LABEL = localize('sql.migration.file.share.storage.account.label', "Select the storage account that contains the file share.");
 export const DATABASE_BACKUP_FILE_SHARE_LABEL = localize('sql.migration.file.share.label', "Select the file share that contains the backup files.");
 export const DATABASE_BACKUP_FILE_SHARE_PLACEHOLDER = localize('sql.migration.file.share.placeholder', "Select share");
-export const DATABASE_BACKUP_MIGRATION_MODE_LABEL = localize('sql.migration.database.migration.mode.label', "Migration Mode");
+export const DATABASE_BACKUP_MIGRATION_MODE_LABEL = localize('sql.migration.database.migration.mode.label', "Migration mode");
 export const DATABASE_BACKUP_MIGRATION_MODE_DESCRIPTION = localize('sql.migration.database.migration.mode.description', "To migrate to the Azure SQL target, choose a migration mode based on your downtime requirements.");
 export const DATABASE_BACKUP_MIGRATION_MODE_ONLINE_LABEL = localize('sql.migration.database.migration.mode.online.label', "Online migration");
 export const DATABASE_BACKUP_MIGRATION_MODE_ONLINE_DESCRIPTION = localize('sql.migration.database.migration.mode.online.description', "Application downtime is limited to cutover at the end of migration.");
@@ -180,12 +177,12 @@ export const SELECT_BLOB_CONTAINER = localize('sql.migration.blob.container.sele
 
 // integration runtime page
 export const IR_PAGE_TITLE = localize('sql.migration.ir.page.title', "Azure Database Migration Service");
-export const IR_PAGE_DESCRIPTION = localize('sql.migration.ir.page.description', "Azure Database Migration Service (DMS) orchestrates database migration activities and tracks their progress. You can select an existing DMS as an Azure SQL target if you have created one previously, or create a new one below.");
-export const IR_PAGE_NOTE = localize('sql.migration.ir.page.note', "Note: DMS will run in your Azure subscription in the chosen resource group and does not incur any cost for running it.");
+export const IR_PAGE_DESCRIPTION = localize('sql.migration.ir.page.description', "Azure Database Migration Service orchestrates database migration activities and tracks their progress. You can select an existing Database Migration Service as an Azure SQL target if you have created one previously, or create a new one below.");
+export const IR_PAGE_NOTE = localize('sql.migration.ir.page.note', "Note: Database Migration Service will run in your Azure subscription in the chosen resource group and does not incur any cost for running it.");
 export const SELECT_A_SQL_MIGRATION_SERVICE = localize('sql.migration.select.a.migration.service', "Select Azure Database Migration Service");
-export const DEFAULT_SETUP_BUTTON = localize('sql.migration.default.setup.button', "Setup with defaults: Add DMS with one click express setup using default options.");
-export const CUSTOM_SETUP_BUTTON = localize('sql.migration.custom.setup.button', "Custom setup: Add DMS after customizing most options.");
-export const SQL_MIGRATION_SERVICE_NOT_FOUND_ERROR = localize('sql.migration.ir.page.sql.migration.service.not.found', "No DMS found. Create a new one");
+export const DEFAULT_SETUP_BUTTON = localize('sql.migration.default.setup.button', "Setup with defaults: Add Database Migration Service with one click express setup using default options.");
+export const CUSTOM_SETUP_BUTTON = localize('sql.migration.custom.setup.button', "Custom setup: Add Database Migration Service after customizing most options.");
+export const SQL_MIGRATION_SERVICE_NOT_FOUND_ERROR = localize('sql.migration.ir.page.sql.migration.service.not.found', "No Database Migration Service found. Create a new one");
 export const CREATE_NEW = localize('sql.migration.create.new', "Create new");
 export const INVALID_SERVICE_ERROR = localize('sql.migration.invalid.migration.service.error', "Select a valid Data Migration Service.");
 export const SERVICE_OFFLINE_ERROR = localize('sql.migration.invalid.migration.service.offline.error', "Select a Data Migration Service that is connected to a node.");
@@ -193,8 +190,8 @@ export const AUTHENTICATION_KEYS = localize('sql.migration.authentication.types'
 export function SQL_MIGRATION_SERVICE_DETAILS_HEADER(sqlMigrationServiceName: string) {
 	return localize('sql.migration.service.header', "Azure Database Migration Service \"{0}\" details:`", sqlMigrationServiceName);
 }
-export const DMS_PORTAL_INFO = localize('sql.migration.dms.portal.info', "Any existing Azure Data Migration Services (DMS) in the Azure portal do not appear in Azure Data Studio. Any DMS created in Azure Data Studio will not be visible in the Azure portal yet.");
-export const DATABASE_MIGRATION_SERVICE_AUTHENTICATION_KEYS = localize('sql.migration.database.migration.service.authentication.keys', "Database migration service authentication keys");
+export const DMS_PORTAL_INFO = localize('sql.migration.dms.portal.info', "Any existing Azure Data Migration Service in the Azure portal do not appear in Azure Data Studio. Any Database Migration Service created in Azure Data Studio will not be visible in the Azure portal yet.");
+export const DATABASE_MIGRATION_SERVICE_AUTHENTICATION_KEYS = localize('sql.migration.database.migration.service.authentication.keys', "Database Migration Service authentication keys");
 // create migration service dialog
 export const CREATE_MIGRATION_SERVICE_TITLE = localize('sql.migration.services.dialog.title', "Create Azure Database Migration Service");
 export const MIGRATION_SERVICE_DIALOG_DESCRIPTION = localize('sql.migration.services.container.description', "Enter the SQL Authentication credentials used to connect to SQL Server Instance {0}. These credentials will be used to connect to the SQL Server instance and identifying valid backup file(s).");
@@ -241,8 +238,8 @@ export function NEW_RESOURCE_GROUP(resourceGroupName: string): string {
 	return localize('sql.migration.new.resource.group', "(new) {0}", resourceGroupName);
 }
 export const TEST_CONNECTION = localize('sql.migration.test.connection', "Test connection");
-export const DATA_MIGRATION_SERVICE_CREATED_SUCCESSFULLY = localize('sql.migration.database.migration.service.created.successfully', "Successfully created a database migration service.");
-export const DMS_PROVISIONING_FAILED = localize('sql.migration.dms.provision.failed', "Failed to provision a database migration service. Wait a few minutes and then try again.");
+export const DATA_MIGRATION_SERVICE_CREATED_SUCCESSFULLY = localize('sql.migration.database.migration.service.created.successfully', "Successfully created a Database Migration Service.");
+export const DMS_PROVISIONING_FAILED = localize('sql.migration.dms.provision.failed', "Failed to provision a Database Migration Service. Wait a few minutes and then try again.");
 export const APPLY = localize('sql.migration.apply', "Apply");
 export const CREATING_RESOURCE_GROUP = localize('sql.migration.creating.rg.loading', "Creating resource group");
 export const RESOURCE_GROUP_CREATED = localize('sql.migration.rg.created', "Resource group created");
@@ -420,7 +417,7 @@ export const AZURE_SQL_TARGET = localize('sql.migration.azure.sql.target', "Azur
 export const SQL_MANAGED_INSTANCE = localize('sql.migration.sql.managed.instance', "SQL Managed Instance");
 export const SQL_VIRTUAL_MACHINE = localize('sql.migration.sql.virtual.machine', "SQL Virtual Machine");
 export const TARGET_AZURE_SQL_INSTANCE_NAME = localize('sql.migration.target.azure.sql.instance.name', "Azure SQL Target Name");
-export const MIGRATION_MODE = localize('sql.migration.cutover.type', "Migration Mode");
+export const MIGRATION_MODE = localize('sql.migration.cutover.type', "Migration mode");
 export const START_TIME = localize('sql.migration.start.time', "Start Time");
 export const FINISH_TIME = localize('sql.migration.finish.time', "Finish Time");
 
