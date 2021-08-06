@@ -13,6 +13,7 @@ import { azureResource } from 'azureResource';
 import { IconPathHelper } from '../../constants/iconPathHelper';
 import { CreateResourceGroupDialog } from '../createResourceGroup/createResourceGroupDialog';
 import * as EventEmitter from 'events';
+import { clearDialogMessage } from '../../api/utils';
 
 export class CreateSqlMigrationServiceDialog {
 
@@ -89,6 +90,7 @@ export class CreateSqlMigrationServiceDialog {
 				}
 
 				try {
+					clearDialogMessage(this._dialogObject);
 					this._selectedResourceGroup = resourceGroup;
 					this._createdMigrationService = await createSqlMigrationService(this._model._azureAccount, subscription, resourceGroup, location, serviceName!, this._model._sessionId);
 					if (this._createdMigrationService.error) {
@@ -97,9 +99,6 @@ export class CreateSqlMigrationServiceDialog {
 						this.setFormEnabledState(true);
 						return;
 					}
-					this._dialogObject.message = {
-						text: ''
-					};
 
 					if (this._isBlobContainerUsed) {
 						this._dialogObject.okButton.enabled = true;
@@ -511,9 +510,15 @@ export class CreateSqlMigrationServiceDialog {
 		let migrationServiceStatus!: SqlMigrationService;
 		for (let i = 0; i < maxRetries; i++) {
 			try {
+				clearDialogMessage(this._dialogObject);
 				migrationServiceStatus = await getSqlMigrationService(this._model._azureAccount, subscription, resourceGroup, location, this._createdMigrationService.name, this._model._sessionId);
 				break;
 			} catch (e) {
+				this._dialogObject.message = {
+					text: constants.SERVICE_STATUS_REFRESH_ERROR,
+					description: e.message,
+					level: azdata.window.MessageLevel.Error
+				};
 				console.log(e);
 			}
 			await new Promise(r => setTimeout(r, 5000));

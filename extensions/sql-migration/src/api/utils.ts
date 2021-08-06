@@ -3,11 +3,11 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { CategoryValue, DropDownComponent, IconPath } from 'azdata';
+import { window, CategoryValue, DropDownComponent, IconPath } from 'azdata';
 import { IconPathHelper } from '../constants/iconPathHelper';
 import { DAYS, HRS, MINUTE, SEC } from '../constants/strings';
 import { AdsMigrationStatus } from '../dialog/migrationStatus/migrationStatusDialogModel';
-import { MigrationContext } from '../models/migrationLocalStorage';
+import { MigrationStatus, MigrationContext, ProvisioningState } from '../models/migrationLocalStorage';
 import * as crypto from 'crypto';
 
 export function deepClone<T>(obj: T): T {
@@ -97,23 +97,26 @@ export function filterMigrations(databaseMigrations: MigrationContext[], statusF
 		filteredMigration = databaseMigrations.filter((value) => {
 			const status = value.migrationContext.properties.migrationStatus;
 			const provisioning = value.migrationContext.properties.provisioningState;
-			return status === 'InProgress' || status === 'Creating' || provisioning === 'Creating';
+			return status === MigrationStatus.InProgress
+				|| status === MigrationStatus.Creating
+				|| provisioning === MigrationStatus.Creating;
 		});
 	} else if (statusFilter === AdsMigrationStatus.SUCCEEDED) {
 		filteredMigration = databaseMigrations.filter((value) => {
 			const status = value.migrationContext.properties.migrationStatus;
-			return status === 'Succeeded';
+			return status === MigrationStatus.Succeeded;
 		});
 	} else if (statusFilter === AdsMigrationStatus.FAILED) {
 		filteredMigration = databaseMigrations.filter((value) => {
 			const status = value.migrationContext.properties.migrationStatus;
 			const provisioning = value.migrationContext.properties.provisioningState;
-			return status === 'Failed' || provisioning === 'Failed';
+			return status === MigrationStatus.Failed
+				|| provisioning === ProvisioningState.Failed;
 		});
 	} else if (statusFilter === AdsMigrationStatus.COMPLETING) {
 		filteredMigration = databaseMigrations.filter((value) => {
 			const status = value.migrationContext.properties.migrationStatus;
-			return status === 'Completing';
+			return status === MigrationStatus.Completing;
 		});
 	}
 	if (databaseNameFilter) {
@@ -203,17 +206,17 @@ export function getSessionIdHeader(sessionId: string): { [key: string]: string }
 
 export function getMigrationStatusImage(status: string): IconPath {
 	switch (status) {
-		case 'InProgress':
+		case MigrationStatus.InProgress:
 			return IconPathHelper.inProgressMigration;
-		case 'Succeeded':
+		case MigrationStatus.Succeeded:
 			return IconPathHelper.completedMigration;
-		case 'Creating':
+		case MigrationStatus.Creating:
 			return IconPathHelper.notStartedMigration;
-		case 'Completing':
+		case MigrationStatus.Completing:
 			return IconPathHelper.completingCutover;
-		case 'Canceling':
+		case MigrationStatus.Canceling:
 			return IconPathHelper.cancel;
-		case 'Failed':
+		case MigrationStatus.Failed:
 		default:
 			return IconPathHelper.error;
 	}
@@ -225,4 +228,10 @@ export function get12HourTime(date: Date | undefined): string {
 		minute: '2-digit'
 	};
 	return (date ? date : new Date()).toLocaleTimeString([], localeTimeStringOptions);
+}
+
+export function clearDialogMessage(dialog: window.Dialog): void {
+	dialog.message = {
+		text: ''
+	};
 }
