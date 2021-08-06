@@ -188,13 +188,13 @@ export class NotebookViewsCardComponent extends AngularDisposable implements OnI
 registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) => {
 	const cellBorderColor = theme.getColor(cellBorder);
 	if (cellBorderColor) {
-		collector.addRule(`.notebookEditor .notebook-cell.active .actionbar { border-color: ${cellBorderColor};}`);
-		collector.addRule(`.notebookEditor .notebook-cell.active .actionbar .codicon:before { background-color: ${cellBorderColor};}`);
+		collector.addRule(`.notebookEditor .nb-grid-stack .notebook-cell.active .actionbar { border-color: ${cellBorderColor};}`);
+		collector.addRule(`.notebookEditor .nb-grid-stack .notebook-cell.active .actionbar .codicon:before { background-color: ${cellBorderColor};}`);
 	}
 
 	// Cell toolbar background
 	const notebookToolbarSelectBackgroundColor = theme.getColor(notebookToolbarSelectBackground);
 	if (notebookToolbarSelectBackgroundColor) {
-		collector.addRule(`.notebookEditor .notebook-cell.active .actionbar { background-color: ${notebookToolbarSelectBackgroundColor};}`);
+		collector.addRule(`.notebookEditor .nb-grid-stack .notebook-cell.active .actionbar { background-color: ${notebookToolbarSelectBackgroundColor};}`);
 	}
 });
