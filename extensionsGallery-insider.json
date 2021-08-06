@@ -4215,14 +4215,14 @@
 					},
 					"versions": [
 						{
-							"version": "0.1.0",
-							"lastUpdated": "07/09/2021",
+							"version": "0.1.1",
+							"lastUpdated": "08/06/2021",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/azuremonitor/azuremonitor-0.1.0.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/azuremonitor/azuremonitor-0.1.1.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
