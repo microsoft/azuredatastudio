@@ -45,6 +45,7 @@ export class NotebookEditorComponent extends AngularDisposable {
 	public views: NotebookViewsExtension;
 	public activeView: INotebookView;
 	public viewMode: ViewMode;
+	public ViewMode = ViewMode;
 
 	constructor(
 		@Inject(ILogService) private readonly logService: ILogService,
