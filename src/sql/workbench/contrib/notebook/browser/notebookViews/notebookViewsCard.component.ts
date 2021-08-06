@@ -138,24 +138,24 @@ export class NotebookViewsCardComponent extends AngularDisposable implements OnI
 		this.changed('hide');
 	}
 
-	public get data(): any {
+	public get metadata(): INotebookViewCell {
 		return this._metadata;
 	}
 
 	public get width(): number {
-		return this.data?.width ? this.data.width : DEFAULT_VIEW_CARD_WIDTH;
+		return this.metadata?.width ? this.metadata.width : DEFAULT_VIEW_CARD_WIDTH;
 	}
 
 	public get height(): number {
-		return this.data?.height ? this.data.height : DEFAULT_VIEW_CARD_HEIGHT;
+		return this.metadata?.height ? this.metadata.height : DEFAULT_VIEW_CARD_HEIGHT;
 	}
 
 	public get x(): number {
-		return this.data?.x;
+		return this.metadata?.x;
 	}
 
 	public get y(): number {
-		return this.data?.y;
+		return this.metadata?.y;
 	}
 
 	/**

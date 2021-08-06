@@ -2,7 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import 'vs/css!./modal';
+import 'vs/css!./notebookViewsModal';
 import { Component, Input } from '@angular/core';
 import { calloutDialogBodyBackground, calloutDialogForeground, calloutDialogInteriorBorder } from 'sql/platform/theme/common/colorRegistry';
 import { IColorTheme, ICssStyleCollector, registerThemingParticipant } from 'vs/platform/theme/common/themeService';

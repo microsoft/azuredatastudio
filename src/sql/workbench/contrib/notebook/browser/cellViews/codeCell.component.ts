@@ -39,7 +39,7 @@ export class CodeCellComponent extends CellView implements OnInit, OnChanges {
 	}
 
 	private _model: NotebookModel;
-	protected _activeCellId: string;
+	private _activeCellId: string;
 
 	public inputDeferred: Deferred<string>;
 	public stdIn: nb.IStdinMessage;

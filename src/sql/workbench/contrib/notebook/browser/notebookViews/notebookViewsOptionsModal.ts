@@ -55,7 +55,7 @@ export class ViewOptionsModal extends Modal {
 	}
 
 	protected renderBody(container: HTMLElement): void {
-		const formWrapper = DOM.$<HTMLDivElement>('div#view-options-form');
+		const formWrapper = DOM.$<HTMLDivElement>('div#notebookviews-options-form');
 		formWrapper.style.padding = '10px';
 
 		DOM.append(container, formWrapper);

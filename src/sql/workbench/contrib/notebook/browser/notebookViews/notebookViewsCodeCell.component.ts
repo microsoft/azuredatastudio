@@ -55,7 +55,7 @@ export class NotebookViewsCodeCellComponent extends CodeCellComponent implements
 		for (let propName in changes) {
 			if (propName === 'activeCellId') {
 				let changedProp = changes[propName];
-				super._activeCellId = changedProp.currentValue;
+				super.activeCellId = changedProp.currentValue;
 				break;
 			}
 		}

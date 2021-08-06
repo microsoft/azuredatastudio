@@ -49,7 +49,7 @@ export class NotebookViewComponent extends AngularDisposable implements INoteboo
 	@Input() model: NotebookModel;
 	@Input() activeView: INotebookView;
 	@Input() views: NotebookViewsExtension;
-	@Input() notebookMeta: INotebookViewMetadata;
+	@Input() notebookMetadata: INotebookViewMetadata;
 
 	@ViewChild('container', { read: ElementRef }) private _container: ElementRef;
 	@ViewChild('viewsToolbar', { read: ElementRef }) private _viewsToolbar: ElementRef;

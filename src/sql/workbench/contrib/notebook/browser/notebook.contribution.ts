@@ -346,13 +346,13 @@ configurationRegistry.registerConfiguration({
 
 configurationRegistry.registerConfiguration({
 	'id': 'notebookViews',
-	'title': 'Notebook Views',
+	'title': localize('notebookViews', 'Notebook Views'),
 	'type': 'object',
 	'properties': {
 		'notebookViews.enabled': {
 			'type': 'boolean',
 			'default': false,
-			'description': localize('notebookViews.enabled', "(Preview) Enable notebook views")
+			'description': localize('notebookViews.enabled', "(Preview) Enable Notebook Views")
 		}
 	}
 });
