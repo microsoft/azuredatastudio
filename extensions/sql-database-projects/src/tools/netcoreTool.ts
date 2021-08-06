@@ -23,7 +23,13 @@ export const NextCoreNonWindowsDefaultPath = '/usr/local/share';
 export const winPlatform: string = 'win32';
 export const macPlatform: string = 'darwin';
 export const linuxPlatform: string = 'linux';
+export const minSupportedNetCoreVersion: string = '3.1.0';
 
+export const enum netCoreInstallState {
+	netCoreNotPresent,
+	netCoreVersionNotSupported,
+	netCoreVersionSupported
+}
 
 const dotnet = os.platform() === 'win32' ? 'dotnet.exe' : 'dotnet';
 
@@ -39,21 +45,27 @@ export class NetCoreTool {
 	private static _outputChannel: vscode.OutputChannel = vscode.window.createOutputChannel(projectsOutputChannel);
 	private osPlatform: string = os.platform();
 	private netCoreSdkInstalledVersion: string | undefined;
-	private netCoreError: netCoreFindError = netCoreFindError.noError;
+	private netCoreInstallState: netCoreInstallState = netCoreInstallState.netCoreVersionSupported;
 
+	/**
+	 * This method presents the installation dialog for .NET Core, if not already present/supported
+	 * @returns True if .NET version was found and is supported
+	 * 			False if .NET version isn't present or present but not supported
+	 */
 	public async findOrInstallNetCore(): Promise<boolean> {
-		this.netCoreError = netCoreFindError.noError;
-		if ((!this.isNetCoreInstallationPresent || !await this.isNetCoreVersionSupported()) &&
-			vscode.workspace.getConfiguration(DBProjectConfigurationKey)[NetCoreDoNotAskAgainKey] !== true) {
-			await this.showInstallDialog();
+		if ((!this.isNetCoreInstallationPresent || !await this.isNetCoreVersionSupported())) {
+			if (vscode.workspace.getConfiguration(DBProjectConfigurationKey)[NetCoreDoNotAskAgainKey] !== true) {
+				await this.showInstallDialog();
+			}
 			return false;
 		}
+		this.netCoreInstallState = netCoreInstallState.netCoreVersionSupported;
 		return true;
 	}
 
 	public async showInstallDialog(): Promise<void> {
 		let result;
-		if (this.netCoreError === netCoreFindError.netCoreNotPresent) {
+		if (this.netCoreInstallState === netCoreInstallState.netCoreNotPresent) {
 			result = await vscode.window.showInformationMessage(NetCoreInstallationConfirmation, UpdateNetCoreLocation, InstallNetCore, DoNotAskAgain);
 		} else {
 			result = await vscode.window.showInformationMessage(NetCoreSupportedVersionInstallationConfirmation(this.netCoreSdkInstalledVersion!), UpdateNetCoreLocation, InstallNetCore, DoNotAskAgain);
@@ -75,7 +87,7 @@ export class NetCoreTool {
 	private get isNetCoreInstallationPresent(): boolean {
 		const netCoreInstallationPresent = (!isNullOrUndefined(this.netcoreInstallLocation) && fs.existsSync(this.netcoreInstallLocation));
 		if (!netCoreInstallationPresent) {
-			this.netCoreError = netCoreFindError.netCoreNotPresent;
+			this.netCoreInstallState = netCoreInstallState.netCoreNotPresent;
 		}
 		return netCoreInstallationPresent;
 	}
@@ -86,9 +98,12 @@ export class NetCoreTool {
 	}
 
 	private get defaultLocalInstallLocationByDistribution(): string | undefined {
-		return (this.osPlatform === winPlatform) ? this.defaultWindowsLocation :
-			(this.osPlatform === macPlatform || this.osPlatform === linuxPlatform) ? this.defaultnonWindowsLocation :
-				undefined;
+		switch (this.osPlatform) {
+			case winPlatform: return this.defaultWindowsLocation;
+			case macPlatform:
+			case linuxPlatform: return this.defaultnonWindowsLocation;
+			default: return undefined;
+		}
 	}
 
 	private get defaultnonWindowsLocation(): string | undefined {
@@ -133,7 +148,7 @@ export class NetCoreTool {
 
 			isSupported = await this.onExit(child);
 			if (!isSupported) {
-				this.netCoreError = netCoreFindError.netCoreVersionNotSupported;
+				this.netCoreInstallState = netCoreInstallState.netCoreVersionNotSupported;
 			}
 			return isSupported;
 		} catch (err) {
@@ -146,12 +161,13 @@ export class NetCoreTool {
 		return new Promise((resolve, reject) => {
 			childProcess.on('exit', () => {
 				let isSupported: boolean = false;
-				if (semver.gte(this.netCoreSdkInstalledVersion!, '3.1.0')) {
+				if (semver.gte(this.netCoreSdkInstalledVersion!, minSupportedNetCoreVersion)) {		// Net core version greater than or equal to 3.1 are supported for Build
 					isSupported = true;
 				}
 				resolve(isSupported);
 			});
-			childProcess.on('error', () => {
+			childProcess.on('error', (err) => {
+				console.log(err);
 				reject(undefined);
 			});
 		});
@@ -163,7 +179,7 @@ export class NetCoreTool {
 		}
 
 		if (!(await this.findOrInstallNetCore())) {
-			if (this.netCoreError === netCoreFindError.netCoreNotPresent) {
+			if (this.netCoreInstallState === netCoreInstallState.netCoreNotPresent) {
 				throw new Error(NetCoreInstallationConfirmation);
 			} else {
 				throw new Error(NetCoreSupportedVersionInstallationConfirmation(this.netCoreSdkInstalledVersion!));
@@ -227,10 +243,4 @@ export class NetCoreTool {
 				outputChannel.appendLine(header + line);
 			});
 	}
-}
-
-export const enum netCoreFindError {
-	netCoreNotPresent,
-	netCoreVersionNotSupported,
-	noError
 }
