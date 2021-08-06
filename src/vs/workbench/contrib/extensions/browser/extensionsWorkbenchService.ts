@@ -303,18 +303,12 @@ ${this.description}
 			return this.galleryService.getChangelog(this.gallery, token);
 		}
 
-		const changelogUrl = this.local && this.local.changelogUrl;
-
-		if (!changelogUrl) {
-			if (this.type === ExtensionType.System) {
-				// {{SQL CARBON EDIT}}
-				return Promise.resolve('Please check the [Azure Data Studio Release Notes](command:update.showCurrentReleaseNotes) for changes to the built-in extensions.');
-			}
-
-			return Promise.reject(new Error('not available'));
+		if (this.type === ExtensionType.System) {
+			// {{SQL CARBON EDIT}}
+			return Promise.resolve('Please check the [Azure Data Studio Release Notes](command:update.showCurrentReleaseNotes) for changes to the built-in extensions.');
 		}
 
-		return this.fileService.readFile(changelogUrl).then(content => content.value.toString());
+		return Promise.reject(new Error('not available'));
 	}
 
 	get dependencies(): string[] {
@@ -591,8 +585,8 @@ export class ExtensionsWorkbenchService extends Disposable implements IExtension
 			if (e.affectsConfiguration(AutoUpdateConfigurationKey)) {
 				// {{SQL CARBON EDIT}}
 				// if (this.isAutoUpdateEnabled()) {
-				//	this.checkForUpdates();
-				//}
+				// 	this.checkForUpdates();
+				// }
 			}
 			if (e.affectsConfiguration(AutoCheckUpdatesConfigurationKey)) {
 				if (this.isAutoCheckUpdatesEnabled()) {

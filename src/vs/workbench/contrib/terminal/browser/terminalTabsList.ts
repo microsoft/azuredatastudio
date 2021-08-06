@@ -14,7 +14,7 @@ import { localize } from 'vs/nls';
 import * as DOM from 'vs/base/browser/dom';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
-import { IMenu, MenuItemAction } from 'vs/platform/actions/common/actions';
+import { MenuItemAction } from 'vs/platform/actions/common/actions';
 import { MenuEntryActionViewItem } from 'vs/platform/actions/browser/menuEntryActionViewItem';
 import { IS_SPLIT_TERMINAL_CONTEXT_KEY, KEYBINDING_CONTEXT_TERMINAL_TABS_SINGULAR_SELECTION, TerminalCommandId } from 'vs/workbench/contrib/terminal/common/terminal';
 import { TerminalSettingId } from 'vs/platform/terminal/common/terminal';
@@ -61,7 +61,6 @@ export class TerminalTabList extends WorkbenchList<ITerminalInstance> {
 
 	constructor(
 		container: HTMLElement,
-		inlineMenu: IMenu,
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@IListService listService: IListService,
 		@IThemeService themeService: IThemeService,
@@ -186,9 +185,9 @@ export class TerminalTabList extends WorkbenchList<ITerminalInstance> {
 
 class TerminalTabsRenderer implements IListRenderer<ITerminalInstance, ITerminalTabEntryTemplate> {
 	templateId = 'terminal.tabs';
+
 	constructor(
 		private readonly _container: HTMLElement,
-		private readonly _inlineMenu: IMenu,
 		private readonly _labels: ResourceLabels,
 		private readonly _getSelection: () => ITerminalInstance[],
 		@IInstantiationService private readonly _instantiationService: IInstantiationService,
@@ -446,14 +445,24 @@ class TerminalTabsRenderer implements IListRenderer<ITerminalInstance, ITerminal
 		];
 		// TODO: Cache these in a way that will use the correct instance
 		template.actionBar.clear();
-		for (const [, action] of actions) {
-			for (const a of action) {
-				a.item.icon = a.id === TERMINAL_COMMAND_ID.KILL_INSTANCE ? Codicon.trashcan : Codicon.splitHorizontal;
-				if ('item' in a) {
-					template.actionBar.push(a, { icon: true, label: false, keybinding: this._keybindingService.lookupKeybinding(a.id)?.getLabel() });
+		for (const action of actions) {
+			template.actionBar.push(action, { icon: true, label: false, keybinding: this._keybindingService.lookupKeybinding(action.id)?.getLabel() });
+		}
+	}
+
+	private _runForSelectionOrInstance(instance: ITerminalInstance, callback: (instance: ITerminalInstance) => void) {
+		const selection = this._getSelection();
+		if (selection.includes(instance)) {
+			for (const s of selection) {
+				if (s) {
+					callback(s);
 				}
 			}
+		} else {
+			callback(instance);
 		}
+		this._terminalService.focusTabs();
+		this._listService.lastFocusedList?.focusNext();
 	}
 }
 

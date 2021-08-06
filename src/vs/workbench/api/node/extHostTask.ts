@@ -3,17 +3,18 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-// import * as path from 'vs/base/common/path';
+// import * as path from 'vs/base/common/path'; {{SQL CARBON EDIT}}
 
-import { UriComponents } from 'vs/base/common/uri';
+import { UriComponents } from 'vs/base/common/uri'; // {{SQL CARBON EDIT}} Remove URI
 import { win32 } from 'vs/base/node/processes';
 import * as types from 'vs/workbench/api/common/extHostTypes';
 import { IExtHostWorkspace } from 'vs/workbench/api/common/extHostWorkspace';
 import type * as vscode from 'vscode';
 import * as tasks from '../common/shared/tasks';
-// import { ExtHostVariableResolverService } from 'vs/workbench/api/common/extHostDebugService';
+// import { ExtHostVariableResolverService } from 'vs/workbench/api/common/extHostDebugService'; {{SQL CARBON EDIT}}
 import { IExtHostDocumentsAndEditors } from 'vs/workbench/api/common/extHostDocumentsAndEditors';
 import { IExtHostConfiguration } from 'vs/workbench/api/common/extHostConfiguration';
+// import { IWorkspaceFolder } from 'vs/platform/workspace/common/workspace'; {{SQL CARBON EDIT}}
 import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
 import { IExtHostTerminalService } from 'vs/workbench/api/common/extHostTerminalService';
 import { IExtHostRpcService } from 'vs/workbench/api/common/extHostRpcService';
@@ -22,7 +23,7 @@ import { ExtHostTaskBase, TaskHandleDTO, TaskDTO, CustomExecutionDTO, HandlerDat
 import { Schemas } from 'vs/base/common/network';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IExtHostApiDeprecationService } from 'vs/workbench/api/common/extHostApiDeprecationService';
-import { IExtHostEditorTabs } from 'vs/workbench/api/common/extHostEditorTabs';
+// import { IExtHostEditorTabs } from 'vs/workbench/api/common/extHostEditorTabs'; {{SQL CARBON EDIT}}
 
 export class ExtHostTask extends ExtHostTaskBase {
 	// private _variableResolver: ExtHostVariableResolverService | undefined; {{SQL CARBON EDIT}}
@@ -36,7 +37,7 @@ export class ExtHostTask extends ExtHostTaskBase {
 		@IExtHostTerminalService extHostTerminalService: IExtHostTerminalService,
 		@ILogService logService: ILogService,
 		@IExtHostApiDeprecationService deprecationService: IExtHostApiDeprecationService,
-		@IExtHostEditorTabs private readonly editorTabs: IExtHostEditorTabs
+		// @IExtHostEditorTabs private readonly editorTabs: IExtHostEditorTabs {{SQL CARBON EDIT}}
 	) {
 		super(extHostRpc, initData, workspaceService, editorService, configurationService, extHostTerminalService, logService, deprecationService);
 		if (initData.remote.isRemote && initData.remote.authority) {
@@ -129,7 +130,7 @@ export class ExtHostTask extends ExtHostTaskBase {
 	// private async getVariableResolver(workspaceFolders: vscode.WorkspaceFolder[]): Promise<ExtHostVariableResolverService> {
 	// 	if (this._variableResolver === undefined) {
 	// 		const configProvider = await this._configurationService.getConfigProvider();
-	// 		this._variableResolver = new ExtHostVariableResolverService(workspaceFolders, this._editorService, configProvider, this.workspaceService);
+	// 		this._variableResolver = new ExtHostVariableResolverService(workspaceFolders, this._editorService, configProvider, this.editorTabs, this.workspaceService);
 	// 	}
 	// 	return this._variableResolver;
 	// }

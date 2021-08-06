@@ -7,6 +7,7 @@ import * as nls from 'vs/nls';
 import * as path from 'vs/base/common/path';
 import * as pfs from 'vs/base/node/pfs';
 import { toDisposable, Disposable } from 'vs/base/common/lifecycle';
+// import { isNonEmptyArray } from 'vs/base/common/arrays'; {{SQL CARBON EDIT}}
 import { zip, IFile } from 'vs/base/node/zip';
 import {
 	IExtensionManagementService, IExtensionGalleryService, ILocalExtension,
