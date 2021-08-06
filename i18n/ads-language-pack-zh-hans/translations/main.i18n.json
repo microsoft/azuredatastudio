@@ -10387,6 +10387,8 @@
 			"textPreview": "文本单元格",
 			"runAllPreview": "全部运行",
 			"addCell": "单元格",
+			"views": "Views",
+			"editor": "Editor",
 			"code": "代码",
 			"text": "文本",
 			"runAll": "运行单元格",
@@ -10411,7 +10413,8 @@
 			"notebook.markdownPreviewLineHeight": "控制笔记本 Markdown 预览中使用的行高。此数字与字号相关。",
 			"notebook.showRenderedNotebookinDiffEditor": "(预览)在差异编辑器中显示呈现的笔记本。",
 			"notebook.maxRichTextUndoHistory": "笔记本格式文本编辑器的撤消历史记录中存储的最大更改数。",
-			"notebook.useAbsoluteFilePaths": "Use absolute file paths when linking to other notebooks.",
+			"notebook.useAbsoluteFilePaths": "链接到其他笔记本时使用绝对文件路径。",
+			"notebook.enableIncrementalGridRendering": "Enable incremental grid rendering for notebooks. This will improve the initial rendering time for large notebooks. There may be performance issues when interacting with the notebook while the rest of the grids are rendering.",
 			"searchConfigurationTitle": "搜索笔记本",
 			"exclude": "配置glob模式以在全文本搜索和快速打开中排除文件和文件夹。从“＃files.exclude＃”设置继承所有glob模式。在[此处](https://code.visualstudio.com/docs/editor/codebasics#_advanced-search-options)了解更多关于glob模式的信息",
 			"exclude.boolean": "匹配文件路径所依据的 glob 模式。设置为 true 或 false 可启用或禁用该模式。",
@@ -10470,6 +10473,9 @@
 			"noParametersCell": "在添加参数单元格之前，此笔记本无法使用参数运行。[了解详细信息] (https://docs.microsoft.com/sql/azure-data-studio/notebooks/notebooks-parameterization)。",
 			"noParametersInCell": "在将参数添加到参数单元格之前，此笔记本无法使用参数运行。[了解详细信息] (https://docs.microsoft.com/sql/azure-data-studio/notebooks/notebooks-parameterization)。",
 			"clearResults": "清除结果",
+			"notebookViewLabel": "Editor",
+			"newViewLabel": "Create New View",
+			"viewNotFound": "Unable to find view: {0}",
 			"trustLabel": "受信任",
 			"untrustLabel": "不受信任",
 			"collapseAllCells": "折叠单元格",
@@ -10513,7 +10519,8 @@
 		},
 		"sql/workbench/contrib/notebook/browser/notebookViews/notebookViews.component": {
 			"cellNotFound": "未在此模型中找到具有 URI {0} 的单元格",
-			"cellRunFailed": "单元格运行失败 - 有关详细信息，请参阅当前所选单元格输出中的错误。"
+			"cellRunFailed": "单元格运行失败 - 有关详细信息，请参阅当前所选单元格输出中的错误。",
+			"runAllPreview": "Run all"
 		},
 		"sql/workbench/contrib/notebook/browser/notebookViews/notebookViewsCodeCell.component": {
 			"viewsCodeCell.emptyCellText": "请运行此单元格以查看输出。"
@@ -11447,6 +11454,37 @@
 		},
 		"sql/workbench/contrib/resourceDeployment/browser/resourceDeployment.contribution": {
 			"deployment.title": "新建部署..."
+		},
+		"sql/workbench/contrib/notebook/browser/notebookViews/insertCellsModal": {
+			"insertCellsModal.title": "Insert cells",
+			"insertCellsModal.selectCells": "Select cell sources",
+			"insertCellsModal.thumbnailError": "Error: Unable to generate thumbnails.",
+			"insertCellsModal.untitled": "Untitled Cell : {0}",
+			"insertCellsModal.Insert": "Insert",
+			"insertCellsModal.Cancel": "Cancel"
+		},
+		"sql/workbench/contrib/notebook/browser/notebookViews/notebookViewsActions": {
+			"viewsUnableToRemove": "Unable to remove view",
+			"confirmDelete": "Are you sure you want to delete view \"{0}\"?",
+			"delete": "&&Delete",
+			"insertCells": "Insert Cells",
+			"runCell": "Run cell",
+			"stopCell": "Cancel execution",
+			"errorRunCell": "Error on last run. Click to run again",
+			"unableToNavigateToCell": "Unable to navigate to notebook cell.",
+			"viewCellInNotebook": "View Cell In Notebook",
+			"moreActionsLabel": "More"
+		},
+		"sql/workbench/contrib/notebook/browser/notebookViews/viewOptionsModal": {
+			"viewOptionsModal.title": "Configure View",
+			"viewOptionsModal.name": "View Name",
+			"viewOptionsModal.missingRequireField": "This field is required.",
+			"viewOptionsModal.nameTaken": "This view name has already been taken.",
+			"save": "Save",
+			"cancel": "Cancel"
+		},
+		"sql/workbench/services/notebook/browser/notebookViews/notebookViewsExtension": {
+			"notebookView.untitledView": "Untitled View"
 		}
 	}
 }
