@@ -779,7 +779,7 @@ export class NotebookTextModel extends Disposable implements INotebookTextModel 
 		let k: keyof NotebookCellInternalMetadata;
 		for (k in internalMetadata) {
 			const value = internalMetadata[k] ?? undefined;
-			newInternalMetadata[k] = value as any;
+			newInternalMetadata[k] = value as never; // {{SQL CARBON EDIT}} Cast to never to fix type assertion error
 		}
 
 		cell.internalMetadata = newInternalMetadata;

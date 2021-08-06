@@ -151,31 +151,32 @@ export class UntitledFileWorkingCopy<M extends IUntitledFileWorkingCopyModel> ex
 		let untitledContents: VSBufferReadableStream;
 
 		// Check for backups or use initial value or empty
-		const backup = await this.workingCopyBackupService.resolve(this);
+		let specificThis = (this as UntitledFileWorkingCopy<M>); // {{SQL CARBON EDIT}} Fix type assertion error from predicate function
+		const backup = await specificThis.workingCopyBackupService.resolve(this);
 		if (backup) {
-			this.trace('[untitled file working copy] resolve() - with backup');
+			specificThis.trace('[untitled file working copy] resolve() - with backup');
 
 			untitledContents = backup.value;
-		} else if (this.initialValue) {
-			this.trace('[untitled file working copy] resolve() - with initial contents');
+		} else if (specificThis.initialValue) {
+			specificThis.trace('[untitled file working copy] resolve() - with initial contents');
 
-			untitledContents = this.initialValue;
+			untitledContents = specificThis.initialValue;
 		} else {
-			this.trace('[untitled file working copy] resolve() - empty');
+			specificThis.trace('[untitled file working copy] resolve() - empty');
 
 			untitledContents = emptyStream();
 		}
 
 		// Create model
-		await this.doCreateModel(untitledContents);
+		await specificThis.doCreateModel(untitledContents);
 
 		// Untitled associated to file path are dirty right away as well as untitled with content
-		this.setDirty(this.hasAssociatedFilePath || !!backup || !!this.initialValue);
+		specificThis.setDirty(specificThis.hasAssociatedFilePath || !!backup || !!specificThis.initialValue);
 
 		// If we have initial contents, make sure to emit this
 		// as the appropiate events to the outside.
-		if (!!backup || this.initialValue) {
-			this._onDidChangeContent.fire();
+		if (!!backup || specificThis.initialValue) {
+			specificThis._onDidChangeContent.fire();
 		}
 	}
 

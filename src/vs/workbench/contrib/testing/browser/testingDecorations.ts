@@ -531,7 +531,7 @@ class RunSingleTestDecoration extends RunTestDecoration implements ITestDecorati
 
 	protected override defaultRun() {
 		if (!this.test.item.runnable) {
-			return;
+			return undefined; // {{SQL CARBON EDIT}} Strict nulls
 		}
 
 		return this.testService.runTests({
@@ -542,7 +542,7 @@ class RunSingleTestDecoration extends RunTestDecoration implements ITestDecorati
 
 	protected override defaultDebug() {
 		if (!this.test.item.debuggable) {
-			return;
+			return undefined; // {{SQL CARBON EDIT}} Strict nulls
 		}
 
 		return this.testService.runTests({

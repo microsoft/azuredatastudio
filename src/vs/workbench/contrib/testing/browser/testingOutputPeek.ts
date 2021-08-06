@@ -734,14 +734,14 @@ class MarkdownTestMessagePeek extends Disposable implements IPeekOutputRenderer 
 	}
 
 	public update(_dto: TestDto, message: ITestMessage): void {
-		if (isDiffable(message) || typeof message.message === 'string') {
+		if (isDiffable(message) || typeof (message as ITestMessage).message === 'string') { // {{SQL CARBON EDIT}}
 			return this.textPreview.clear();
 		}
 
 		this.textPreview.value = new ScrollableMarkdownMessage(
 			this.container,
 			this.markdown.getValue(),
-			message.message as IMarkdownString,
+			(message as ITestMessage).message as IMarkdownString, // {{SQL CARBON EDIT}}
 		);
 	}
 
@@ -765,7 +765,7 @@ class PlainTextMessagePeek extends Disposable implements IPeekOutputRenderer {
 	}
 
 	public async update({ messageUri }: TestDto, message: ITestMessage) {
-		if (isDiffable(message) || typeof message.message !== 'string') {
+		if (isDiffable(message) || typeof (message as ITestMessage).message !== 'string') { // {{SQL CARBON EDIT}}
 			return this.clear();
 		}
 
@@ -784,7 +784,12 @@ class PlainTextMessagePeek extends Disposable implements IPeekOutputRenderer {
 		}
 
 		this.widget.value.setModel(modelRef.object.textEditorModel);
-		this.widget.value.updateOptions(this.getOptions(isMultiline(message.message)));
+
+		// {{SQL CARBON EDIT}} Fix type assertion error from predicate function
+		let innerMessage = (message as ITestMessage).message;
+		let innerMessageContent = typeof innerMessage !== 'string' ? innerMessage.value : innerMessage;
+		this.widget.value.updateOptions(this.getOptions(isMultiline(innerMessageContent)));
+		// {{SQL CARBON EDIT}} - End
 	}
 
 	private clear() {

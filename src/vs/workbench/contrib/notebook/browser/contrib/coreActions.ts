@@ -257,7 +257,7 @@ export abstract class NotebookMultiCellAction<T> extends Action2 {
 
 		const editor = getNotebookEditorFromEditorPane(accessor.get(IEditorService).activeEditorPane);
 		if (!editor || !editor.hasModel()) {
-			return;
+			return undefined; // {{SQL CARBON EDIT}} Strict nulls
 		}
 
 		return editor;
@@ -364,7 +364,7 @@ function getEditorFromArgsOrActivePane(accessor: ServicesAccessor, context?: Uri
 
 	const editor = getNotebookEditorFromEditorPane(accessor.get(IEditorService).activeEditorPane);
 	if (!editor || !editor.hasModel()) {
-		return;
+		return undefined; // {{SQL CARBON EDIT}} Strict nulls
 	}
 
 	return editor;
@@ -382,7 +382,7 @@ function parseMultiCellExecutionArgs(accessor: ServicesAccessor, ...args: any[])
 	if (isMultiCellArgs(firstArg)) {
 		const editor = getEditorFromArgsOrActivePane(accessor, firstArg.document);
 		if (!editor) {
-			return;
+			return undefined; // {{SQL CARBON EDIT}} Strict nulls
 		}
 
 		const ranges = firstArg.ranges;
@@ -399,7 +399,7 @@ function parseMultiCellExecutionArgs(accessor: ServicesAccessor, ...args: any[])
 		const secondArg = args[1];
 		const editor = getEditorFromArgsOrActivePane(accessor, secondArg);
 		if (!editor) {
-			return;
+			return undefined; // {{SQL CARBON EDIT}} Strict nulls
 		}
 
 		return {

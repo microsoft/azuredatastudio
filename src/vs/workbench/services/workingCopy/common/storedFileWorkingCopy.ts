@@ -603,7 +603,7 @@ export class StoredFileWorkingCopy<M extends IStoredFileWorkingCopyModel> extend
 
 		// Create new model otherwise
 		else {
-			await this.doCreateModel(content.value);
+			await (this as StoredFileWorkingCopy<M>).doCreateModel(content.value); // {{SQL CARBON EDIT}}
 		}
 
 		// Update working copy dirty flag. This is very important to call
@@ -803,7 +803,7 @@ export class StoredFileWorkingCopy<M extends IStoredFileWorkingCopyModel> extend
 		// Scenario B: save is very slow (e.g. network share) and the user manages to change the working copy and trigger another save
 		//             while the first save has not returned yet.
 		//
-		if (this.saveSequentializer.hasPending()) {
+		if ((this.saveSequentializer as TaskSequentializer).hasPending()) { // {{SQL CARBON EDIT}}
 			this.trace(`[stored file working copy] doSave(${versionId}) - exit - because busy saving`);
 
 			// Indicate to the save sequentializer that we want to
@@ -813,10 +813,10 @@ export class StoredFileWorkingCopy<M extends IStoredFileWorkingCopyModel> extend
 			// participants and pending snapshots from the
 			// save operation, but not the actual save which does
 			// not support cancellation yet.
-			this.saveSequentializer.cancelPending();
+			(this.saveSequentializer as TaskSequentializer).cancelPending();// {{SQL CARBON EDIT}}
 
 			// Register this as the next upcoming save and return
-			return this.saveSequentializer.setNext(() => this.doSave(options));
+			return (this.saveSequentializer as TaskSequentializer).setNext(() => this.doSave(options));// {{SQL CARBON EDIT}}
 		}
 
 		// Push all edit operations to the undo stack so that the user has a chance to
@@ -827,7 +827,7 @@ export class StoredFileWorkingCopy<M extends IStoredFileWorkingCopyModel> extend
 
 		const saveCancellation = new CancellationTokenSource();
 
-		return this.saveSequentializer.setPending(versionId, (async () => {
+		return (this.saveSequentializer as TaskSequentializer).setPending(versionId, (async () => { // {{SQL CARBON EDIT}}
 
 			// A save participant can still change the working copy now
 			// and since we are so close to saving we do not want to trigger
