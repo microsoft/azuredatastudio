@@ -39,7 +39,8 @@
 			"sqlDatabaseProjects.Settings": "Проекты баз данных",
 			"sqlDatabaseProjects.netCoreInstallLocation": "Полный путь к пакету SDK для .NET Core на компьютере.",
 			"sqlDatabaseProjects.netCoreDoNotAsk": "Следует ли предлагать пользователю установить .NET Core, если он не будет обнаружен.",
-			"sqlDatabaseProjects.welcome": "В настоящее время нет открытых проектов баз данных.\r\n[Новый проект](command:sqlDatabaseProjects.new)\r\n[Открыть проект](command:sqlDatabaseProjects.open)\r\n[Создать проект из базы данных](command:sqlDatabaseProjects.importDatabase)"
+			"sqlDatabaseProjects.welcome": "В настоящее время нет открытых проектов баз данных.\r\n[Новый проект](command:sqlDatabaseProjects.new)\r\n[Открыть проект](command:sqlDatabaseProjects.open)\r\n[Создать проект из базы данных](command:sqlDatabaseProjects.importDatabase)",
+			"sqlDatabaseProjects.addSqlBinding": "Add SQL Binding"
 		},
 		"dist/common/constants": {
 			"emptyProjectTypeDisplayName": "База данных SQL",
@@ -156,7 +157,10 @@
 			"projectLocationLabel": "Расположение",
 			"projectLocationPlaceholderText": "Выберите расположение для создания проекта",
 			"browseButtonText": "Поиск папки",
+			"selectFolderStructure": "Select folder structure",
 			"folderStructureLabel": "Структура папок",
+			"browseEllipsis": "Browse...",
+			"selectProjectLocation": "Select project location",
 			"dataworkspace.projectParentDirectoryNotExistError": "Выбранное расположение проекта \"{0}\" не существует или не является каталогом.",
 			"dataworkspace.projectDirectoryAlreadyExistError": "Каталог с именем \"{0}\" уже существует в выбранном расположении: \"{1}\".",
 			"multipleSqlProjFilesSelected": "Выбрано несколько файлов. sqlproj. Выберите только один файл.",
@@ -192,8 +196,7 @@
 			"cannotResolvePath": "Не удается сопоставить путь {0}",
 			"fileAlreadyExists": "Файл с именем \"{0}\" уже существует на диске в данном расположении. Выберите другое имя.",
 			"folderAlreadyExists": "Папка с именем \"{0}\" уже существует на диске в данном расположении. Выберите другое имя.",
-			"fileAlreadyAddedToProject": "Файл с путем \"{0}\" уже добавлен в проект",
-			"folderAlreadyAddedToProject": "Папка с путем \"{0}\" уже добавлена в проект",
+			"folderAlreadyExistsChooseNewLocation": "A folder with the name '{0}' already exists on disk at this location. Please choose another location.",
 			"invalidInput": "Недопустимые входные данные: {0}",
 			"invalidPropertyValue": "Указано недопустимое значение для свойства: \"{0}\" в файле SQLPROJ",
 			"unableToCreatePublishConnection": "Не удалось создать подключение: {0}",
@@ -224,7 +227,16 @@
 			"externalStream": "Внешний поток",
 			"externalStreamingJobFriendlyName": "Задание внешней потоковой передачи",
 			"preDeployScriptFriendlyName": "Script.PreDeployment",
-			"postDeployScriptFriendlyName": "Script.PostDeployment"
+			"postDeployScriptFriendlyName": "Script.PostDeployment",
+			"input": "Input",
+			"output": "Output",
+			"selectBindingType": "Select type of binding",
+			"selectAzureFunction": "Select an Azure function in the current file to add SQL binding to",
+			"sqlObjectToQuery": "SQL object to query",
+			"sqlTableToUpsert": "SQL table to upsert into",
+			"connectionStringSetting": "Connection string setting name",
+			"connectionStringSettingPlaceholder": "Connection string setting specified in \"local.settings.json\"",
+			"noAzureFunctionsInFile": "No Azure functions in the current active file"
 		},
 		"dist/tools/netcoreTool": {
 			"sqlDatabaseProjects.NetCoreInstallationConfirmation": "Не удается найти пакет SDK для .NET Core. Сборка проекта не подойдет. Установите пакет .NET Core SDK версии 3.1 или обновите расположение .NET Core SDK в параметрах , если они уже установлены.",

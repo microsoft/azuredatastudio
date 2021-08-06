@@ -6,6 +6,7 @@
 import { AzureAccount } from 'azurecore';
 import * as nls from 'vscode-nls';
 import { SupportedAutoRefreshIntervals } from '../api/utils';
+import { MigrationStatus } from '../models/migrationLocalStorage';
 import { MigrationSourceAuthenticationType } from '../models/stateMachine';
 const localize = nls.loadMessageBundle();
 
@@ -33,6 +34,9 @@ export const COLLECTING_SOURCE_CONFIGURATIONS_ERROR = (error: string = ''): stri
 export const SKU_RECOMMENDATION_PAGE_TITLE = localize('sql.migration.wizard.sku.title', "Azure SQL Target");
 export const SKU_RECOMMENDATION_ALL_SUCCESSFUL = (databaseCount: number): string => {
 	return localize('sql.migration.wizard.sku.all', "Based on the assessment results, all {0} of your database(s) in online state can be migrated to Azure SQL.", databaseCount);
+};
+export const SKU_RECOMMENDATION_ASSESSMENT_ERROR = (serverName: string): string => {
+	return localize('sql.migration.qizard.sku.assessment.error', "An error occurred while assessing the server '{0}'.", serverName);
 };
 export const SKU_RECOMMENDATION_SOME_SUCCESSFUL = (migratableCount: number, databaseCount: number): string => {
 	return localize('sql.migration.wizard.sku.some', "Based on the results of our source configuration scans, {0} out of {1} of your databases can be migrated to Azure SQL.", migratableCount, databaseCount);
@@ -231,6 +235,7 @@ export const INVALID_REGION_ERROR = localize('sql.migration.invalid.region.error
 export const INVALID_SERVICE_NAME_ERROR = localize('sql.migration.invalid.service.name.error', "Please enter a valid name for the Migration Service.");
 export const SERVICE_NOT_FOUND = localize('sql.migration.service.not.found', "No Migration Services found. Please create a new one.");
 export const SERVICE_NOT_SETUP_ERROR = localize('sql.migration.service.not.setup', "Please add a Migration Service to proceed.");
+export const SERVICE_STATUS_REFRESH_ERROR = localize('sql.migration.service.status.refresh.error', 'An error occurred while refreshing the migration service creation status.');
 export const MANAGED_INSTANCE = localize('sql.migration.managed.instance', "Azure SQL managed instance");
 export const NO_MANAGED_INSTANCE_FOUND = localize('sql.migration.no.managedInstance.found', "No managed instance found");
 export const NO_VIRTUAL_MACHINE_FOUND = localize('sql.migration.no.virtualMachine.found', "No virtual machine found");
@@ -360,6 +365,8 @@ export const LAST_APPLIED_LSN = localize('sql.migration.last.applied.lsn', "Last
 export const LAST_APPLIED_BACKUP_FILES = localize('sql.migration.last.applied.backup.files', "Last applied backup files");
 export const LAST_APPLIED_BACKUP_FILES_TAKEN_ON = localize('sql.migration.last.applied.files.taken.on', "Last applied backup files taken on");
 export const ACTIVE_BACKUP_FILES = localize('sql.migration.active.backup.files', "Active Backup files");
+export const MIGRATION_STATUS_REFRESH_ERROR = localize('sql.migration.cutover.status.refresh.error', 'An error occurred while refreshing the migration status.');
+export const MIGRATION_CANCELLATION_ERROR = localize('sql.migration.cancel.error', 'An error occurred while canceling the migration.');
 export const STATUS = localize('sql.migration.status', "Status");
 export const BACKUP_START_TIME = localize('sql.migration.backup.start.time', "Backup start time");
 export const FIRST_LSN = localize('sql.migration.first.lsn', "First LSN");
@@ -446,7 +453,9 @@ export const StatusLookup: LookupTable<string | undefined> = {
 };
 
 export function STATUS_WARNING_COUNT(status: string, count: number): string | undefined {
-	if (status === 'InProgress' || status === 'Creating' || status === 'Completing') {
+	if (status === MigrationStatus.InProgress ||
+		status === MigrationStatus.Creating ||
+		status === MigrationStatus.Completing) {
 		switch (count) {
 			case 0:
 				return undefined;

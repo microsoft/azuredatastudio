@@ -9,6 +9,7 @@ import * as azurecore from 'azurecore';
 import { azureResource } from 'azureResource';
 import * as constants from '../constants/strings';
 import { getSessionIdHeader } from './utils';
+import { ProvisioningState } from '../models/migrationLocalStorage';
 
 async function getAzureCoreAPI(): Promise<azurecore.IExtension> {
 	const api = (await vscode.extensions.getExtension(azurecore.extension.name)?.activate()) as azurecore.IExtension;
@@ -176,17 +177,17 @@ export async function createSqlMigrationService(account: azdata.Account, subscri
 		throw new Error(response.errors.toString());
 	}
 	const asyncUrl = response.response.headers['azure-asyncoperation'];
-	const maxRetry = 5;
+	const maxRetry = 24;
 	let i = 0;
 	for (i = 0; i < maxRetry; i++) {
 		const asyncResponse = await api.makeAzureRestRequest(account, subscription, asyncUrl.replace('https://management.azure.com/', ''), azurecore.HttpRequestMethod.GET, undefined, true, undefined, getSessionIdHeader(sessionId));
 		const creationStatus = asyncResponse.response.data.status;
-		if (creationStatus === 'Succeeded') {
+		if (creationStatus === ProvisioningState.Succeeded) {
 			break;
-		} else if (creationStatus === 'Failed') {
+		} else if (creationStatus === ProvisioningState.Failed) {
 			throw new Error(asyncResponse.errors.toString());
 		}
-		await new Promise(resolve => setTimeout(resolve, 3000)); //adding  3 sec delay before getting creation status
+		await new Promise(resolve => setTimeout(resolve, 5000)); //adding  5 sec delay before getting creation status
 	}
 	if (i === maxRetry) {
 		throw new Error(constants.DMS_PROVISIONING_FAILED);

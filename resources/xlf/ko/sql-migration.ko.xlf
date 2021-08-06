@@ -34,6 +34,10 @@
         <source xml:lang="en">Feedback</source>
         <target state="translated">피드백</target>
       </trans-unit>
+      <trans-unit id="new-support-request-command">
+        <source xml:lang="en">New support request</source>
+        <target state="translated">새 지원 요청</target>
+      </trans-unit>
       <trans-unit id="migration-context-menu-category">
         <source xml:lang="en">Migration Context Menu</source>
         <target state="translated">마이그레이션 상황에 맞는 메뉴</target>
@@ -51,8 +55,8 @@
         <target state="translated">Azure SQL 대상 세부 정보</target>
       </trans-unit>
       <trans-unit id="view-service-menu">
-        <source xml:lang="en">Dataase Migration Service details</source>
-        <target state="translated">Dataase 마이그레이션 서비스 세부 정보</target>
+        <source xml:lang="en">Database Migration Service details</source>
+        <target state="new">Database Migration Service details</target>
       </trans-unit>
       <trans-unit id="copy-migration-menu">
         <source xml:lang="en">Copy migration details</source>
@@ -76,7 +80,7 @@
       </trans-unit>
       <trans-unit id="sql.migration.assessments.blocking.issue">
         <source xml:lang="en">This is a blocking issue that will prevent the database migration from succeeding.</source>
-        <target state="new">This is a blocking issue that will prevent the database migration from succeeding.</target>
+        <target state="translated">이 문제는 데이터베이스 마이그레이션이 성공하는 것을 막는 차단 문제입니다.</target>
       </trans-unit>
       <trans-unit id="sql.migration.assessments.progress">
         <source xml:lang="en">Assessments Progress</source>
@@ -190,7 +194,7 @@ This may take some time.</source>
       </trans-unit>
       <trans-unit id="sql.migration.assessment">
         <source xml:lang="en">Assessment results for '{0}'</source>
-        <target state="new">Assessment results for '{0}'</target>
+        <target state="translated">‘{0}’에 대한 평가 결과</target>
       </trans-unit>
       <trans-unit id="sql.migration.can.be.migrated">
         <source xml:lang="en">{0} out of {1} databases can be migrated</source>
@@ -198,15 +202,15 @@ This may take some time.</source>
       </trans-unit>
       <trans-unit id="sql.migration.assessment.migration.warning">
         <source xml:lang="en">Databases that are not ready for migration to Azure SQL Managed Instance can be migrated to SQL Server on Azure Virtual Machines.</source>
-        <target state="new">Databases that are not ready for migration to Azure SQL Managed Instance can be migrated to SQL Server on Azure Virtual Machines.</target>
+        <target state="translated">Azure SQL Managed Instance로의 마이그레이션이 준비가 되지 않은 데이터베이스는 Azure Virtual Machines SQL Server에서 마이그레이션할 수 있습니다.</target>
       </trans-unit>
       <trans-unit id="sql.migration.databases.table.title">
         <source xml:lang="en">Databases</source>
-        <target state="new">Databases</target>
+        <target state="translated">데이터베이스</target>
       </trans-unit>
       <trans-unit id="sql.migration.sql.server.instance">
         <source xml:lang="en">SQL Server Instance</source>
-        <target state="new">SQL Server Instance</target>
+        <target state="translated">SQL Server 인스턴스</target>
       </trans-unit>
       <trans-unit id="sql.migration.wizard.account.title">
         <source xml:lang="en">Azure Account</source>
@@ -410,7 +414,7 @@ This may take some time.</source>
       </trans-unit>
       <trans-unit id="sql.migration.no.blobFiles.found">
         <source xml:lang="en">No blob files found</source>
-        <target state="new">No blob files found</target>
+        <target state="translated">BLOB 파일을 찾을 수 없습니다.</target>
       </trans-unit>
       <trans-unit id="sql.migration.invalid.subscription.error">
         <source xml:lang="en">Please select a valid subscription to proceed.</source>
@@ -430,19 +434,19 @@ This may take some time.</source>
       </trans-unit>
       <trans-unit id="sql.migration.invalid.blob.resourceGroup.error">
         <source xml:lang="en">Please select a valid resource group for source database '{0}' to proceed.</source>
-        <target state="new">Please select a valid resource group for source database '{0}' to proceed.</target>
+        <target state="translated">계속하려면 원본 데이터베이스 '{0}'에 대한 유효한 리소스 그룹을 선택하세요.</target>
       </trans-unit>
       <trans-unit id="sql.migration.invalid.blob.storageAccount.error">
         <source xml:lang="en">Please select a valid storage account for source database '{0}' to proceed.</source>
-        <target state="new">Please select a valid storage account for source database '{0}' to proceed.</target>
+        <target state="translated">계속하려면 원본 데이터베이스 '{0}'에 대한 유효한 저장소 계정을 선택하세요.</target>
       </trans-unit>
       <trans-unit id="sql.migration.invalid.blob.container.error">
         <source xml:lang="en">Please select a valid blob container for source database '{0}' to proceed.</source>
-        <target state="new">Please select a valid blob container for source database '{0}' to proceed.</target>
+        <target state="translated">계속하려면 원본 데이터베이스 '{0}'에 대해 유효한 BLOB 컨테이너를 선택하세요.</target>
       </trans-unit>
       <trans-unit id="sql.migration.invalid.blob.lastBackupFile.error">
         <source xml:lang="en">Please select a valid last backup file for source database '{0}' to proceed.</source>
-        <target state="new">Please select a valid last backup file for source database '{0}' to proceed.</target>
+        <target state="translated">계속하려면 원본 데이터베이스 '{0}'에 대한 유효한 마지막 백업 파일을 선택하세요.</target>
       </trans-unit>
       <trans-unit id="sql.migration.invalid.network.share.location">
         <source xml:lang="en">Invalid network share location format. Example: {0}</source>
@@ -494,15 +498,15 @@ This may take some time.</source>
       </trans-unit>
       <trans-unit id="sql.migration.blob.resourceGroup.select">
         <source xml:lang="en">Select a resource group value first.</source>
-        <target state="new">Select a resource group value first.</target>
+        <target state="translated">먼저 리소스 그룹 값을 선택합니다.</target>
       </trans-unit>
       <trans-unit id="sql.migration.blob.storageAccount.select">
         <source xml:lang="en">Select a storage account value first.</source>
-        <target state="new">Select a storage account value first.</target>
+        <target state="translated">먼저 스토리지 계정 값을 선택합니다.</target>
       </trans-unit>
       <trans-unit id="sql.migration.blob.container.select">
         <source xml:lang="en">Select a blob container value first.</source>
-        <target state="new">Select a blob container value first.</target>
+        <target state="translated">먼저 Blob 컨테이너 값을 선택합니다.</target>
       </trans-unit>
       <trans-unit id="sql.migration.ir.page.title">
         <source xml:lang="en">Azure Database Migration Service</source>
@@ -558,7 +562,7 @@ This may take some time.</source>
       </trans-unit>
       <trans-unit id="sql.migration.database.migration.service.authentication.keys">
         <source xml:lang="en">Database migration service authentication keys</source>
-        <target state="new">Database migration service authentication keys</target>
+        <target state="translated">데이터베이스 마이그레이션 서비스 인증 키</target>
       </trans-unit>
       <trans-unit id="sql.migration.services.dialog.title">
         <source xml:lang="en">Create Azure Database Migration Service</source>
@@ -676,6 +680,10 @@ This may take some time.</source>
         <source xml:lang="en">Please add a Migration Service to proceed.</source>
         <target state="translated">계속하려면 마이그레이션 서비스를 추가하세요.</target>
       </trans-unit>
+      <trans-unit id="sql.migration.service.status.refresh.error">
+        <source xml:lang="en">An error occurred while refreshing the migration service creation status.</source>
+        <target state="new">An error occurred while refreshing the migration service creation status.</target>
+      </trans-unit>
       <trans-unit id="sql.migration.managed.instance">
         <source xml:lang="en">Azure SQL managed instance</source>
         <target state="translated">Azure SQL Managed Instance</target>
@@ -738,7 +746,7 @@ This may take some time.</source>
       </trans-unit>
       <trans-unit id="sql.migration.learn.more.pre.reqs">
         <source xml:lang="en">Learn more about things you need before starting a migration.</source>
-        <target state="new">Learn more about things you need before starting a migration.</target>
+        <target state="translated">마이그레이션을 시작하기 전에 필요한 사항에 대해 자세히 알아보세요.</target>
       </trans-unit>
       <trans-unit id="sql.migration.subscription">
         <source xml:lang="en">Subscription</source>
@@ -824,6 +832,10 @@ This may take some time.</source>
         <source xml:lang="en">Copy Throughput (MBPS)</source>
         <target state="translated">처리량 복사(MBPS)</target>
       </trans-unit>
+      <trans-unit id="sql.migration.newsupportrequest">
+        <source xml:lang="en">New support request</source>
+        <target state="translated">새 지원 요청</target>
+      </trans-unit>
       <trans-unit id="sql.migration.summary.page.title">
         <source xml:lang="en">Summary</source>
         <target state="translated">요약</target>
@@ -870,7 +882,7 @@ This may take some time.</source>
       </trans-unit>
       <trans-unit id="sql.migration.blob.container.last.backup.file.label">
         <source xml:lang="en">Last Backup File</source>
-        <target state="new">Last Backup File</target>
+        <target state="translated">마지막 백업 파일</target>
       </trans-unit>
       <trans-unit id="sql.migration.blob.container.label">
         <source xml:lang="en">Blob container resource group</source>
@@ -1108,6 +1120,14 @@ This may take some time.</source>
         <source xml:lang="en">Active Backup files</source>
         <target state="translated">활성 백업 파일</target>
       </trans-unit>
+      <trans-unit id="sql.migration.cutover.status.refresh.error">
+        <source xml:lang="en">An error occurred while refreshing the migration status.</source>
+        <target state="new">An error occurred while refreshing the migration status.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.cancel.error">
+        <source xml:lang="en">An error occurred while canceling the migration.</source>
+        <target state="new">An error occurred while canceling the migration.</target>
+      </trans-unit>
       <trans-unit id="sql.migration.status">
         <source xml:lang="en">Status</source>
         <target state="translated">상태</target>
@@ -1177,24 +1197,40 @@ This may take some time.</source>
         <target state="translated">중요 비즈니스용 서비스 계층에 대한 Managed Instance 마이그레이션 컷오버는 Always On 고가용성 그룹에 대해 세 개의 보조 복제본을 시드해야 하므로 범용보다 훨씬 더 오래 걸릴 수 있습니다. 이 작업 기간은 데이터 크기에 따라 달라집니다. 사례의 90%에서 시드 속도는 220GB/시간 이상입니다.</target>
       </trans-unit>
       <trans-unit id="sql.migration.cutover.help.main">
-        <source xml:lang="en">When you are ready to do the migration cutover, perform the following steps to complete the database migration. Please note that the database is ready for cutover only after a full backup has been restored on the target Azure SQL Database Managed Instance.</source>
-        <target state="translated">단독형 마이그레이션을 수행할 준비가 되면 다음 단계를 수행하여 데이터베이스 마이그레이션을 완료합니다. 데이터베이스에 대해 단독형 마이그레이션을 수행할 준비를 갖추려면 먼저 대상 Azure SQL Database Managed Instance에서 전체 백업을 수행해야 합니다.</target>
+        <source xml:lang="en">Perform the following steps before you complete cutover.</source>
+        <target state="new">Perform the following steps before you complete cutover.</target>
       </trans-unit>
       <trans-unit id="sql.migration.cutover.step.1">
         <source xml:lang="en">1. Stop all the incoming transactions coming to the source database.</source>
         <target state="translated">1. 원본 데이터베이스로 들어오는 모든 트랙잭션을 중지합니다.</target>
       </trans-unit>
-      <trans-unit id="sql.migration.cutover.step.2">
+      <trans-unit id="sql.migration.cutover.step.2.network.share">
         <source xml:lang="en">2. Take final transaction log backup and provide it in the network share location.</source>
         <target state="translated">2. 최종 트랜잭션 로그 백업을 수행하고 네트워크 공유 위치에 제공합니다.</target>
       </trans-unit>
-      <trans-unit id="sql.migration.cutover.step.3">
+      <trans-unit id="sql.migration.cutover.step.2.blob">
+        <source xml:lang="en">2. Take final differential or transaction log backup and provide it in the Azure Storage Blob Container.</source>
+        <target state="new">2. Take final differential or transaction log backup and provide it in the Azure Storage Blob Container.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.cutover.step.3.network.share">
         <source xml:lang="en">3. Make sure all the log backups are restored on target database. The "Log backups(s) pending restore" should be zero.</source>
         <target state="translated">3. 모든 로그 백업이 대상 데이터베이스에서 복원되었는지 확인합니다. "로그 백업 보류 중인 복원"은 0이어야 합니다.</target>
       </trans-unit>
+      <trans-unit id="sql.migration.cutover.step.3.blob">
+        <source xml:lang="en">3. Make sure all the log backups are restored on target database. The "Log backups(s) pending restore" should be zero.</source>
+        <target state="new">3. Make sure all the log backups are restored on target database. The "Log backups(s) pending restore" should be zero.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.cutover.last.file.restored">
+        <source xml:lang="en">Last file restored: {0}</source>
+        <target state="new">Last file restored: {0}</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.last.scan.completed">
+        <source xml:lang="en">Last scan completed: {0}</source>
+        <target state="new">Last scan completed: {0}</target>
+      </trans-unit>
       <trans-unit id="sql.migartion.cutover.pending.backup">
-        <source xml:lang="en">Pending log backups: {0}</source>
-        <target state="translated">보류 중인 로그 백업: {0}</target>
+        <source xml:lang="en">Log backups pending restore: {0}</source>
+        <target state="new">Log backups pending restore: {0}</target>
       </trans-unit>
       <trans-unit id="sql.migration.confirm.checkbox.message">
         <source xml:lang="en">I confirm there are no additional log backup(s) to provide and want to complete cutover.</source>
@@ -1211,6 +1247,18 @@ This may take some time.</source>
       <trans-unit id="sql.migration.cannot.cutover">
         <source xml:lang="en">Migration is not in progress and cannot be cutover.</source>
         <target state="translated">마이그레이션이 진행 중이 아니므로 중단할 수 없습니다.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.file.name">
+        <source xml:lang="en">File name</source>
+        <target state="translated">파일 이름</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.size.column.header">
+        <source xml:lang="en">Size</source>
+        <target state="translated">크기</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.no.pending.backups">
+        <source xml:lang="en">No pending backups. Click refresh to check current status.</source>
+        <target state="new">No pending backups. Click refresh to check current status.</target>
       </trans-unit>
       <trans-unit id="sql.migration.search.for.migration">
         <source xml:lang="en">Search for migrations</source>

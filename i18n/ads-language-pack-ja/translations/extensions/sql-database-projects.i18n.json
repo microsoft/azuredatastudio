@@ -39,7 +39,8 @@
 			"sqlDatabaseProjects.Settings": "データベース プロジェクト",
 			"sqlDatabaseProjects.netCoreInstallLocation": "マシン上の .NET Core SDK への完全なパス。",
 			"sqlDatabaseProjects.netCoreDoNotAsk": "検出されなかった場合に、ユーザーに .NET Core をインストールを求めるかどうか。",
-			"sqlDatabaseProjects.welcome": "現在開いているデータベースプロジェクトはありません。\r\n[新しいプロジェクト] (command:sqlDatabaseProjects.new)\r\n[プロジェクトを開く] (command:sqlDatabaseProjects.open)\r\n[データベースからプロジェクトを作成する] (command:sqlDatabaseProjects. importDatabase)"
+			"sqlDatabaseProjects.welcome": "現在開いているデータベースプロジェクトはありません。\r\n[新しいプロジェクト] (command:sqlDatabaseProjects.new)\r\n[プロジェクトを開く] (command:sqlDatabaseProjects.open)\r\n[データベースからプロジェクトを作成する] (command:sqlDatabaseProjects. importDatabase)",
+			"sqlDatabaseProjects.addSqlBinding": "Add SQL Binding"
 		},
 		"dist/common/constants": {
 			"emptyProjectTypeDisplayName": "SQL データベース",
@@ -156,7 +157,10 @@
 			"projectLocationLabel": "場所",
 			"projectLocationPlaceholderText": "プロジェクトを作成する場所の選択",
 			"browseButtonText": "フォルダーの参照",
+			"selectFolderStructure": "Select folder structure",
 			"folderStructureLabel": "フォルダー構造",
+			"browseEllipsis": "Browse...",
+			"selectProjectLocation": "Select project location",
 			"dataworkspace.projectParentDirectoryNotExistError": "選択したプロジェクトの場所 '{0}' は存在しないか、ディレクトリではありません。",
 			"dataworkspace.projectDirectoryAlreadyExistError": "選択された場所 '{1}' には、すでに '{0}' という名前のディレクトリが存在します。",
 			"multipleSqlProjFilesSelected": "複数の .sqlproj ファイルが選択されています。1 つだけ選択してください。",
@@ -192,8 +196,7 @@
 			"cannotResolvePath": "パス {0} を解決できません",
 			"fileAlreadyExists": "'{0}' という名前のファイルが、ディスク上のこの場所に既に存在します。別の名前を選択してください。",
 			"folderAlreadyExists": "'{0}' という名前のフォルダーが、ディスク上のこの場所に既に存在します。別の名前を選択してください。",
-			"fileAlreadyAddedToProject": "パス '{0}' を含むファイルは、すでにプロジェクトに追加されています",
-			"folderAlreadyAddedToProject": "パス '{0}' を含むフォルダーは、すでにプロジェクトに追加されています",
+			"folderAlreadyExistsChooseNewLocation": "A folder with the name '{0}' already exists on disk at this location. Please choose another location.",
 			"invalidInput": "無効な入力: {0}",
 			"invalidPropertyValue": ".sqlproj ファイルのプロパティ '{0}' に無効な値が指定されました: '{0}'",
 			"unableToCreatePublishConnection": "接続を構築できません: {0}",
@@ -224,7 +227,16 @@
 			"externalStream": "外部ストリーム",
 			"externalStreamingJobFriendlyName": "外部ストリーミング ジョブ",
 			"preDeployScriptFriendlyName": "Script.PreDeployment",
-			"postDeployScriptFriendlyName": "Script.PostDeployment"
+			"postDeployScriptFriendlyName": "Script.PostDeployment",
+			"input": "Input",
+			"output": "Output",
+			"selectBindingType": "Select type of binding",
+			"selectAzureFunction": "Select an Azure function in the current file to add SQL binding to",
+			"sqlObjectToQuery": "SQL object to query",
+			"sqlTableToUpsert": "SQL table to upsert into",
+			"connectionStringSetting": "Connection string setting name",
+			"connectionStringSettingPlaceholder": "Connection string setting specified in \"local.settings.json\"",
+			"noAzureFunctionsInFile": "No Azure functions in the current active file"
 		},
 		"dist/tools/netcoreTool": {
 			"sqlDatabaseProjects.NetCoreInstallationConfirmation": ".NET Core SDK が見つかりません。プロジェクトのビルドは機能しません。.NET Core SDK バージョン 3.1 をインストールするか、既にインストールされている場合は [設定] で .Net Core SDK の場所を更新してください。",

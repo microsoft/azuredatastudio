@@ -39,7 +39,8 @@
 			"sqlDatabaseProjects.Settings": "Datenbankprojekte",
 			"sqlDatabaseProjects.netCoreInstallLocation": "Vollständiger Pfad zum .NET Core SDK auf dem Computer.",
 			"sqlDatabaseProjects.netCoreDoNotAsk": "Gibt an, ob der Benutzer aufgefordert wird, .NET Core zu installieren, wenn keine Installation erkannt wird.",
-			"sqlDatabaseProjects.welcome": "Derzeit sind keine Datenbankprojekte geöffnet.\r\n[New Project](command:sqlDatabaseProjects.new)\r\n[Open Project](command:sqlDatabaseProjects.open)\r\n[Create Project From Database](command:sqlDatabaseProjects.importDatabase)"
+			"sqlDatabaseProjects.welcome": "Derzeit sind keine Datenbankprojekte geöffnet.\r\n[New Project](command:sqlDatabaseProjects.new)\r\n[Open Project](command:sqlDatabaseProjects.open)\r\n[Create Project From Database](command:sqlDatabaseProjects.importDatabase)",
+			"sqlDatabaseProjects.addSqlBinding": "Add SQL Binding"
 		},
 		"dist/common/constants": {
 			"emptyProjectTypeDisplayName": "SQL-Datenbank",
@@ -156,7 +157,10 @@
 			"projectLocationLabel": "Standort",
 			"projectLocationPlaceholderText": "Speicherort zum Erstellen des Projekts auswählen",
 			"browseButtonText": "Ordner durchsuchen",
+			"selectFolderStructure": "Select folder structure",
 			"folderStructureLabel": "Ordnerstruktur",
+			"browseEllipsis": "Browse...",
+			"selectProjectLocation": "Select project location",
 			"dataworkspace.projectParentDirectoryNotExistError": "Der ausgewählte Projektspeicherort \"{0}\" ist nicht vorhanden oder kein Verzeichnis.",
 			"dataworkspace.projectDirectoryAlreadyExistError": "Es ist bereits ein Verzeichnis mit dem Namen \"{0}\" am ausgewählten Speicherort vorhanden: \"{1}\".",
 			"multipleSqlProjFilesSelected": "Mehrere SQLPROJ-Dateien ausgewählt; wählen Sie nur eine aus.",
@@ -192,8 +196,7 @@
 			"cannotResolvePath": "Der Pfad \"{0}\" kann nicht aufgelöst werden.",
 			"fileAlreadyExists": "Auf dem Datenträger ist an diesem Speicherort bereits eine Datei mit dem Namen \"{0}\" vorhanden. Wählen Sie einen anderen Namen.",
 			"folderAlreadyExists": "Auf dem Datenträger ist an diesem Speicherort bereits ein Ordner mit dem Namen \"{0}\" vorhanden. Wählen Sie einen anderen Namen.",
-			"fileAlreadyAddedToProject": "Dem Projekt wurde bereits eine Datei mit dem Pfad \"{0}\" hinzugefügt",
-			"folderAlreadyAddedToProject": "Dem Projekt wurde bereits ein Ordner mit dem Pfad \"{0}\" hinzugefügt.",
+			"folderAlreadyExistsChooseNewLocation": "A folder with the name '{0}' already exists on disk at this location. Please choose another location.",
 			"invalidInput": "Ungültige Eingabe: {0}",
 			"invalidPropertyValue": "Für die Eigenschaft \"{0}\" in der SQLPROJ-Datei wurde ein ungültiger Wert angegeben.",
 			"unableToCreatePublishConnection": "Verbindung kann nicht hergestellt werden: {0}",
@@ -224,7 +227,16 @@
 			"externalStream": "Externer Stream",
 			"externalStreamingJobFriendlyName": "Externer Streamingauftrag",
 			"preDeployScriptFriendlyName": "Script.PreDeployment",
-			"postDeployScriptFriendlyName": "Script.PostDeployment"
+			"postDeployScriptFriendlyName": "Script.PostDeployment",
+			"input": "Input",
+			"output": "Output",
+			"selectBindingType": "Select type of binding",
+			"selectAzureFunction": "Select an Azure function in the current file to add SQL binding to",
+			"sqlObjectToQuery": "SQL object to query",
+			"sqlTableToUpsert": "SQL table to upsert into",
+			"connectionStringSetting": "Connection string setting name",
+			"connectionStringSettingPlaceholder": "Connection string setting specified in \"local.settings.json\"",
+			"noAzureFunctionsInFile": "No Azure functions in the current active file"
 		},
 		"dist/tools/netcoreTool": {
 			"sqlDatabaseProjects.NetCoreInstallationConfirmation": "Das .NET Core SDK kann nicht gefunden werden. Der Projektbuild funktioniert nicht. Installieren Sie .NET Core SDK Version 3.1 oder aktualisieren Sie den Speicherort des .NET Core SDK in den Einstellungen, sofern bereits installiert.",

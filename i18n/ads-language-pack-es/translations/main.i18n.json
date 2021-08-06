@@ -10387,6 +10387,8 @@
 			"textPreview": "Celda de texto",
 			"runAllPreview": "Ejecutar todo",
 			"addCell": "Celda",
+			"views": "Views",
+			"editor": "Editor",
 			"code": "Código",
 			"text": "Texto",
 			"runAll": "Ejecutar celdas",
@@ -10411,7 +10413,8 @@
 			"notebook.markdownPreviewLineHeight": "Controla la altura de línea utilizada en la vista previa de Markdown del cuaderno. Este número es relativo al tamaño de la fuente.",
 			"notebook.showRenderedNotebookinDiffEditor": "(Vista preliminar) Mostrar el bloc de notas representado en el editor.",
 			"notebook.maxRichTextUndoHistory": "Número máximo de cambios almacenados en el historial de deshacer del editor de texto enriquecido del cuaderno",
-			"notebook.useAbsoluteFilePaths": "Use absolute file paths when linking to other notebooks.",
+			"notebook.useAbsoluteFilePaths": "Use rutas a archivos absolutas para la vinculación con otros cuadernos.",
+			"notebook.enableIncrementalGridRendering": "Enable incremental grid rendering for notebooks. This will improve the initial rendering time for large notebooks. There may be performance issues when interacting with the notebook while the rest of the grids are rendering.",
 			"searchConfigurationTitle": "Búsqueda de cuadernos",
 			"exclude": "Configure patrones globales para excluir archivos y carpetas en búsquedas de texto completo y abrir los patrones de uso rápido. Hereda todos los patrones globales de la configuración \"#files.exclude\". Lea más acerca de los patrones globales [aquí](https://code.visualstudio.com/docs/editor/codebasics-_advanced-search-options).",
 			"exclude.boolean": "El patrón global con el que se harán coincidir las rutas de acceso de los archivos. Establézcalo en true o false para habilitarlo o deshabilitarlo.",
@@ -10470,6 +10473,9 @@
 			"noParametersCell": "Este bloc de notas no se puede ejecutar con parámetros hasta que se agregue una celda de parámetro. [Más información] (https://docs.microsoft.com/sql/azure-data-studio/notebooks/notebooks-parameterization).",
 			"noParametersInCell": "Este cuaderno no se puede ejecutar con los parámetros hasta que se agregue una celda de parámetro. [Más información](https://docs.microsoft.com/sql/azure-data-studio/notebooks/notebooks-parameterization).",
 			"clearResults": "Borrar resultados",
+			"notebookViewLabel": "Editor",
+			"newViewLabel": "Create New View",
+			"viewNotFound": "Unable to find view: {0}",
 			"trustLabel": "De confianza",
 			"untrustLabel": "No de confianza",
 			"collapseAllCells": "Contraer celdas",
@@ -10513,7 +10519,8 @@
 		},
 		"sql/workbench/contrib/notebook/browser/notebookViews/notebookViews.component": {
 			"cellNotFound": "no se encontró la celda con URI {0} en este modelo",
-			"cellRunFailed": "Error al ejecutar las celdas. Para más información, vea el error en la salida de la celda seleccionada actualmente."
+			"cellRunFailed": "Error al ejecutar las celdas. Para más información, vea el error en la salida de la celda seleccionada actualmente.",
+			"runAllPreview": "Run all"
 		},
 		"sql/workbench/contrib/notebook/browser/notebookViews/notebookViewsCodeCell.component": {
 			"viewsCodeCell.emptyCellText": "Ejecute esta celda para ver las salidas."
@@ -11447,6 +11454,37 @@
 		},
 		"sql/workbench/contrib/resourceDeployment/browser/resourceDeployment.contribution": {
 			"deployment.title": "Nueva implementación..."
+		},
+		"sql/workbench/contrib/notebook/browser/notebookViews/insertCellsModal": {
+			"insertCellsModal.title": "Insert cells",
+			"insertCellsModal.selectCells": "Select cell sources",
+			"insertCellsModal.thumbnailError": "Error: Unable to generate thumbnails.",
+			"insertCellsModal.untitled": "Untitled Cell : {0}",
+			"insertCellsModal.Insert": "Insert",
+			"insertCellsModal.Cancel": "Cancel"
+		},
+		"sql/workbench/contrib/notebook/browser/notebookViews/notebookViewsActions": {
+			"viewsUnableToRemove": "Unable to remove view",
+			"confirmDelete": "Are you sure you want to delete view \"{0}\"?",
+			"delete": "&&Delete",
+			"insertCells": "Insert Cells",
+			"runCell": "Run cell",
+			"stopCell": "Cancel execution",
+			"errorRunCell": "Error on last run. Click to run again",
+			"unableToNavigateToCell": "Unable to navigate to notebook cell.",
+			"viewCellInNotebook": "View Cell In Notebook",
+			"moreActionsLabel": "More"
+		},
+		"sql/workbench/contrib/notebook/browser/notebookViews/viewOptionsModal": {
+			"viewOptionsModal.title": "Configure View",
+			"viewOptionsModal.name": "View Name",
+			"viewOptionsModal.missingRequireField": "This field is required.",
+			"viewOptionsModal.nameTaken": "This view name has already been taken.",
+			"save": "Save",
+			"cancel": "Cancel"
+		},
+		"sql/workbench/services/notebook/browser/notebookViews/notebookViewsExtension": {
+			"notebookView.untitledView": "Untitled View"
 		}
 	}
 }
