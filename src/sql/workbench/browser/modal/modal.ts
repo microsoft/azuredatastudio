@@ -449,6 +449,7 @@ export abstract class Modal extends Disposable implements IThemable {
 			if (context[context.length - 1] === this._staticKey) {
 				let event = new StandardKeyboardEvent(e);
 				if (event.equals(KeyCode.Enter)) {
+					DOM.EventHelper.stop(e, true);
 					this.onAccept(event);
 				} else if (event.equals(KeyCode.Escape)) {
 					DOM.EventHelper.stop(e, true);
