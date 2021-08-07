@@ -126,8 +126,8 @@ export class NetCoreTool {
 	}
 
 	/**
-	 * This function checks if the installed dotnet version is 3.1 or greater.
-	 * Versions lower than 3.1 aren't supported for building projects.
+	 * This function checks if the installed dotnet version is atleast minSupportedNetCoreVersion.
+	 * Versions lower than minSupportedNetCoreVersion aren't supported for building projects.
 	 * Returns: True if installed dotnet version is supported, false otherwise.
 	 * 			Undefined if dotnet isn't installed.
 	 */
@@ -136,40 +136,48 @@ export class NetCoreTool {
 			const spawn = child_process.spawn;
 			let child: child_process.ChildProcessWithoutNullStreams;
 			let isSupported: boolean | undefined = undefined;
+			const stdoutBuffers: Buffer[] = [];
 
 			child = spawn('dotnet --version', [], {
 				shell: true
 			});
 
-			child.stdout.on('data', (data) => {
-				this.netCoreSdkInstalledVersion = String(data);
+			child.stdout.on('data', (b: Buffer) => stdoutBuffers.push(b));
+
+			await new Promise((resolve, reject) => {
+				child.on('exit', () => {
+					this.netCoreSdkInstalledVersion = Buffer.concat(stdoutBuffers).toString('utf8').trim();
+
+					try {
+						if (semver.gte(this.netCoreSdkInstalledVersion, minSupportedNetCoreVersion)) {		// Net core version greater than or equal to minSupportedNetCoreVersion are supported for Build
+							isSupported = true;
+						} else {
+							isSupported = false;
+						}
+						resolve({ stdout: this.netCoreSdkInstalledVersion });
+					} catch (err) {
+						console.log(err);
+						reject(err);
+					}
+				});
+				child.on('error', (err) => {
+					console.log(err);
+					reject(err);
+				});
 			});
 
-			isSupported = await this.onExit(child);
-			if (!isSupported) {
+			if (isSupported) {
+				this.netCoreInstallState = netCoreInstallState.netCoreVersionSupported;
+			} else {
 				this.netCoreInstallState = netCoreInstallState.netCoreVersionNotSupported;
 			}
+
 			return isSupported;
 		} catch (err) {
 			console.log(err);
+			this.netCoreInstallState = netCoreInstallState.netCoreVersionNotSupported;
 			return undefined;
 		}
-	}
-
-	private onExit(childProcess: child_process.ChildProcess): Promise<boolean | undefined> {
-		return new Promise((resolve, reject) => {
-			childProcess.on('exit', () => {
-				let isSupported: boolean = false;
-				if (semver.gte(this.netCoreSdkInstalledVersion!, minSupportedNetCoreVersion)) {		// Net core version greater than or equal to 3.1 are supported for Build
-					isSupported = true;
-				}
-				resolve(isSupported);
-			});
-			childProcess.on('error', (err) => {
-				console.log(err);
-				reject(undefined);
-			});
-		});
 	}
 
 	public async runDotnetCommand(options: DotNetCommandOptions): Promise<string> {
