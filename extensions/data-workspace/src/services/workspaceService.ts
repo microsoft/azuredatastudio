@@ -13,6 +13,7 @@ import { IWorkspaceService } from '../common/interfaces';
 import { ProjectProviderRegistry } from '../common/projectProviderRegistry';
 import Logger from '../common/logger';
 import { TelemetryReporter, TelemetryViews, TelemetryActions } from '../common/telemetry';
+import { getAzdataApi } from '../common/utils';
 
 export class WorkspaceService implements IWorkspaceService {
 	private _onDidWorkspaceProjectsChange: vscode.EventEmitter<void> = new vscode.EventEmitter<void>();
@@ -31,10 +32,10 @@ export class WorkspaceService implements IWorkspaceService {
 	}
 
 	/**
-	 * Verify that a workspace is open or that if one isn't, it's ok to create a workspace and restart ADS
+	 * Verify that a workspace is open or that if one isn't and we're running in ADS, it's ok to create a workspace and restart ADS
 	 */
 	async validateWorkspace(): Promise<boolean> {
-		if (!vscode.workspace.workspaceFolders || vscode.workspace.workspaceFolders.length === 0) {
+		if (getAzdataApi() && (!vscode.workspace.workspaceFolders || vscode.workspace.workspaceFolders.length === 0)) {
 			const result = await vscode.window.showWarningMessage(constants.RestartConfirmation, { modal: true }, constants.OkButtonText);
 			if (result === constants.OkButtonText) {
 				return true;
@@ -42,7 +43,8 @@ export class WorkspaceService implements IWorkspaceService {
 				return false;
 			}
 		} else {
-			// workspace is open
+			// workspace is open or we're running in VS Code. VS Code doesn't require reloading the window when creating a workspace or
+			// adding the first item to an open workspace and so this check is unnecessary there.
 			return true;
 		}
 	}

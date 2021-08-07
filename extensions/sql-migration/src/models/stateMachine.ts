@@ -128,7 +128,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	public _targetDatabaseNames!: string[];
 
 	public _sqlMigrationServiceResourceGroup!: string;
-	public _sqlMigrationService!: SqlMigrationService;
+	public _sqlMigrationService!: SqlMigrationService | undefined;
 	public _sqlMigrationServices!: SqlMigrationService[];
 	public _nodeNames!: string[];
 
@@ -138,6 +138,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 	private _skuRecommendations: SKURecommendations | undefined;
 	public _assessmentResults!: ServerAssessement;
+	public _runAssessments: boolean = true;
 	private _assessmentApiResponse!: mssql.AssessmentResult;
 
 	public _vmDbs: string[] = [];
@@ -186,16 +187,27 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 	public async getDatabaseAssessments(): Promise<ServerAssessement> {
 		const ownerUri = await azdata.connection.getUriForConnection(this.sourceConnectionId);
-		this._assessmentApiResponse = (await this.migrationService.getAssessments(ownerUri, this._databaseAssessment))!;
-		this._assessmentResults = {
-			issues: this._assessmentApiResponse.assessmentResult.items,
-			databaseAssessments: this._assessmentApiResponse.assessmentResult.databases.map(d => {
-				return {
-					name: d.name,
-					issues: d.items
-				};
-			})
-		};
+		try {
+			this._assessmentApiResponse = (await this.migrationService.getAssessments(ownerUri, this._databaseAssessment))!;
+			this._assessmentResults = {
+				issues: this._assessmentApiResponse?.assessmentResult?.items ?? [],
+				databaseAssessments: this._assessmentApiResponse?.assessmentResult?.databases?.map(d => {
+					return {
+						name: d.name,
+						issues: d.items,
+						errors: d.errors
+					};
+				}) ?? [],
+				errors: this._assessmentApiResponse?.errors ?? []
+			};
+		} catch (error) {
+			this._assessmentResults = {
+				issues: [],
+				databaseAssessments: [],
+				errors: [],
+				assessmentError: error
+			};
+		}
 
 		// Generating all the telemetry asynchronously as we don't need to block the user for it.
 		this.generateAssessmentTelemetry().catch(e => console.error(e));
@@ -528,7 +540,6 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		return this._resourceGroups[index];
 	}
 
-
 	public async getManagedInstanceValues(subscription: azureResource.AzureResourceSubscription, location: azureResource.AzureLocation, resourceGroup: azureResource.AzureResourceResourceGroup): Promise<azdata.CategoryValue[]> {
 		let managedInstanceValues: azdata.CategoryValue[] = [];
 		if (!this._azureAccount) {
@@ -536,7 +547,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		}
 		try {
 			this._targetManagedInstances = (await getAvailableManagedInstanceProducts(this._azureAccount, subscription)).filter((mi) => {
-				if (mi.location.toLowerCase() === location.name.toLowerCase() && mi.resourceGroup?.toLowerCase() === resourceGroup.name.toLowerCase()) {
+				if (mi.location.toLowerCase() === location.name.toLowerCase() && mi.resourceGroup?.toLowerCase() === resourceGroup?.name.toLowerCase()) {
 					return true;
 				}
 				return false;
@@ -581,21 +592,25 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	public async getSqlVirtualMachineValues(subscription: azureResource.AzureResourceSubscription, location: azureResource.AzureLocation, resourceGroup: azureResource.AzureResourceResourceGroup): Promise<azdata.CategoryValue[]> {
 		let virtualMachineValues: azdata.CategoryValue[] = [];
 		try {
-			this._targetSqlVirtualMachines = (await getAvailableSqlVMs(this._azureAccount, subscription, resourceGroup)).filter((virtualMachine) => {
-				if (virtualMachine.location === location.name) {
-					if (virtualMachine.properties.sqlImageOffer) {
-						return virtualMachine.properties.sqlImageOffer.toLowerCase().includes('-ws'); //filtering out all non windows sql vms.
+			if (this._azureAccount && subscription && resourceGroup) {
+				this._targetSqlVirtualMachines = (await getAvailableSqlVMs(this._azureAccount, subscription, resourceGroup)).filter((virtualMachine) => {
+					if (virtualMachine.location === location.name) {
+						if (virtualMachine.properties.sqlImageOffer) {
+							return virtualMachine.properties.sqlImageOffer.toLowerCase().includes('-ws'); //filtering out all non windows sql vms.
+						}
+						return true; // Returning all VMs that don't have this property as we don't want to accidentally skip valid vms.
 					}
-					return true; // Returning all VMs that don't have this property as we don't want to accidentally skip valid vms.
-				}
-				return false;
-			});
-			virtualMachineValues = this._targetSqlVirtualMachines.map((virtualMachine) => {
-				return {
-					name: virtualMachine.id,
-					displayName: `${virtualMachine.name}`
-				};
-			});
+					return false;
+				});
+				virtualMachineValues = this._targetSqlVirtualMachines.map((virtualMachine) => {
+					return {
+						name: virtualMachine.id,
+						displayName: `${virtualMachine.name}`
+					};
+				});
+			} else {
+				this._targetSqlVirtualMachines = [];
+			}
 
 			if (virtualMachineValues.length === 0) {
 				virtualMachineValues = [
@@ -909,7 +924,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 							'serverName': this._targetServerInstance.name,
 							'tenantId': this._azureAccount.properties.tenants[0].id,
 							'location': this._targetServerInstance.location,
-							'sqlMigrationServiceId': Buffer.from(this._sqlMigrationService.id).toString('base64'),
+							'sqlMigrationServiceId': Buffer.from(this._sqlMigrationService?.id!).toString('base64'),
 							'irRegistered': (this._nodeNames.length > 0).toString()
 						},
 						{
@@ -922,7 +937,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 						this._targetServerInstance,
 						this._azureAccount,
 						this._targetSubscription,
-						this._sqlMigrationService,
+						this._sqlMigrationService!,
 						response.asyncUrl,
 						this._sessionId
 					);
@@ -944,5 +959,8 @@ export interface ServerAssessement {
 	databaseAssessments: {
 		name: string;
 		issues: mssql.SqlMigrationAssessmentResultItem[];
+		errors?: mssql.ErrorModel[];
 	}[];
+	errors?: mssql.ErrorModel[];
+	assessmentError?: Error;
 }

@@ -39,7 +39,8 @@
 			"sqlDatabaseProjects.Settings": "데이터베이스 프로젝트",
 			"sqlDatabaseProjects.netCoreInstallLocation": "컴퓨터에서 .NET Core SDK에 대한 전체 경로입니다.",
 			"sqlDatabaseProjects.netCoreDoNotAsk": "검색되지 않는 경우 사용자에게 .NET Core를 설치할지 사용자에게 묻는 메시지를 표시할지 여부입니다.",
-			"sqlDatabaseProjects.welcome": "현재 열려 있는 데이터베이스 프로젝트가 없습니다.\r\n[새 프로젝트] (command: sqlDatabaseProjects.new)\r\n[프로젝트 열기] (command: sqlDatabaseProjects)\r\n[데이터베이스에서 프로젝트 만들기] (command: sqlDatabaseProjects. importDatabase)"
+			"sqlDatabaseProjects.welcome": "현재 열려 있는 데이터베이스 프로젝트가 없습니다.\r\n[새 프로젝트] (command: sqlDatabaseProjects.new)\r\n[프로젝트 열기] (command: sqlDatabaseProjects)\r\n[데이터베이스에서 프로젝트 만들기] (command: sqlDatabaseProjects. importDatabase)",
+			"sqlDatabaseProjects.addSqlBinding": "Add SQL Binding"
 		},
 		"dist/common/constants": {
 			"emptyProjectTypeDisplayName": "SQL Database",
@@ -156,7 +157,10 @@
 			"projectLocationLabel": "위치",
 			"projectLocationPlaceholderText": "프로젝트를 만들 위치 선택",
 			"browseButtonText": "폴더 찾아보기",
+			"selectFolderStructure": "Select folder structure",
 			"folderStructureLabel": "폴더 구조",
+			"browseEllipsis": "Browse...",
+			"selectProjectLocation": "Select project location",
 			"dataworkspace.projectParentDirectoryNotExistError": "선택한 프로젝트 위치 '{0}'이(가) 없거나 디렉터리가 아닙니다.",
 			"dataworkspace.projectDirectoryAlreadyExistError": "선택한 위치 '{1}'에 이름이 '{0}'인 디렉터리가 이미 있습니다..",
 			"multipleSqlProjFilesSelected": "여러 .sqlproj 파일이 선택되었습니다. 하나만 선택하세요.",
@@ -192,8 +196,7 @@
 			"cannotResolvePath": "경로 {0}를 확인할 수 없습니다.",
 			"fileAlreadyExists": "이름이 '{0}'인 파일이 이 위치의 디스크에 이미 있습니다. 다른 이름을 선택하세요.",
 			"folderAlreadyExists": "이름이 '{0}'인 폴더가 이 위치의 디스크에 이미 있습니다. 다른 이름을 선택하세요.",
-			"fileAlreadyAddedToProject": "경로가 '{0}'인 파일이 프로젝트에 이미 추가되었습니다.",
-			"folderAlreadyAddedToProject": "경로가 '{0}'인 폴더가 프로젝트에 이미 추가되었습니다.",
+			"folderAlreadyExistsChooseNewLocation": "A folder with the name '{0}' already exists on disk at this location. Please choose another location.",
 			"invalidInput": "잘못된 입력: {0}",
 			"invalidPropertyValue": ".sqlproj 파일의 '{0}' 속성에 잘못된 값이 지정되었습니다.",
 			"unableToCreatePublishConnection": "연결을 구성할 수 없음: {0}",
@@ -224,7 +227,16 @@
 			"externalStream": "외부 스트림",
 			"externalStreamingJobFriendlyName": "외부 스트리밍 작업",
 			"preDeployScriptFriendlyName": "Script.PreDeployment",
-			"postDeployScriptFriendlyName": "Script.PostDeployment"
+			"postDeployScriptFriendlyName": "Script.PostDeployment",
+			"input": "Input",
+			"output": "Output",
+			"selectBindingType": "Select type of binding",
+			"selectAzureFunction": "Select an Azure function in the current file to add SQL binding to",
+			"sqlObjectToQuery": "SQL object to query",
+			"sqlTableToUpsert": "SQL table to upsert into",
+			"connectionStringSetting": "Connection string setting name",
+			"connectionStringSettingPlaceholder": "Connection string setting specified in \"local.settings.json\"",
+			"noAzureFunctionsInFile": "No Azure functions in the current active file"
 		},
 		"dist/tools/netcoreTool": {
 			"sqlDatabaseProjects.NetCoreInstallationConfirmation": ".NET Core SDK를 찾을 수 없습니다. 프로젝트 빌드가 작동하지 않습니다. .NET Core SDK 버전 3.1을 설치하거나 이미 설치된 경우 설정에서 .Net Core SDK 위치를 업데이트하세요.",

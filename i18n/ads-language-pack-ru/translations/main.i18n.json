@@ -10387,6 +10387,8 @@
 			"textPreview": "Текстовая ячейка",
 			"runAllPreview": "Выполнить все",
 			"addCell": "Ячейка",
+			"views": "Views",
+			"editor": "Editor",
 			"code": "Код",
 			"text": "Текст",
 			"runAll": "Выполнить ячейки",
@@ -10411,7 +10413,8 @@
 			"notebook.markdownPreviewLineHeight": "Определяет высоту строки, используемую в области предварительного просмотра Markdown в записной книжке. Это значение задается относительно размера шрифта.",
 			"notebook.showRenderedNotebookinDiffEditor": "(Предварительный просмотр) Показать преобразованный для просмотра блокнот в редакторе несовпадений.",
 			"notebook.maxRichTextUndoHistory": "Максимальное количество изменений, сохраняемых в журнале отмены для редактора форматированного текста записной книжки.",
-			"notebook.useAbsoluteFilePaths": "Use absolute file paths when linking to other notebooks.",
+			"notebook.useAbsoluteFilePaths": "Используйте абсолютные пути к файлам при связывании с другими записными книжками.",
+			"notebook.enableIncrementalGridRendering": "Enable incremental grid rendering for notebooks. This will improve the initial rendering time for large notebooks. There may be performance issues when interacting with the notebook while the rest of the grids are rendering.",
 			"searchConfigurationTitle": "Поиск в записных книжках",
 			"exclude": "Настройка стандартных масок для исключения файлов и папок при полнотекстовом поиске и быстром открытии. Наследует все стандартные маски от параметра \"#files.exclude#\". Дополнительные сведения о стандартных масках см. [здесь](https://code.visualstudio.com/docs/editor/codebasics#_advanced-search-options).",
 			"exclude.boolean": "Стандартная маска, соответствующая путям к файлам. Задайте значение true или false, чтобы включить или отключить маску.",
@@ -10470,6 +10473,9 @@
 			"noParametersCell": "Эта записная книжка не может работать с параметрами до тех пор, пока не будет добавлена ячейка параметров. [Подробнее] (https://docs.microsoft.com/sql/azure-data-studio/notebooks/notebooks-parameterization).",
 			"noParametersInCell": "Эта записная книжка не может работать с параметрами до тех пор, пока в ячейку параметров не будут добавлены параметры. [Подробнее](https://docs.microsoft.com/sql/azure-data-studio/notebooks/notebooks-parameterization).",
 			"clearResults": "Очистить результаты",
+			"notebookViewLabel": "Editor",
+			"newViewLabel": "Create New View",
+			"viewNotFound": "Unable to find view: {0}",
 			"trustLabel": "Доверенный",
 			"untrustLabel": "Не доверенный",
 			"collapseAllCells": "Свернуть ячейки",
@@ -10513,7 +10519,8 @@
 		},
 		"sql/workbench/contrib/notebook/browser/notebookViews/notebookViews.component": {
 			"cellNotFound": "ячейка с URI {0} не найдена в этой модели",
-			"cellRunFailed": "Не удалось выполнить ячейки. Дополнительные сведения об ошибке см. в выходных данных текущей выбранной ячейки."
+			"cellRunFailed": "Не удалось выполнить ячейки. Дополнительные сведения об ошибке см. в выходных данных текущей выбранной ячейки.",
+			"runAllPreview": "Run all"
 		},
 		"sql/workbench/contrib/notebook/browser/notebookViews/notebookViewsCodeCell.component": {
 			"viewsCodeCell.emptyCellText": "Запустите эту ячейку, чтобы просмотреть выходные данные."
@@ -11447,6 +11454,37 @@
 		},
 		"sql/workbench/contrib/resourceDeployment/browser/resourceDeployment.contribution": {
 			"deployment.title": "Новое развертывание..."
+		},
+		"sql/workbench/contrib/notebook/browser/notebookViews/insertCellsModal": {
+			"insertCellsModal.title": "Insert cells",
+			"insertCellsModal.selectCells": "Select cell sources",
+			"insertCellsModal.thumbnailError": "Error: Unable to generate thumbnails.",
+			"insertCellsModal.untitled": "Untitled Cell : {0}",
+			"insertCellsModal.Insert": "Insert",
+			"insertCellsModal.Cancel": "Cancel"
+		},
+		"sql/workbench/contrib/notebook/browser/notebookViews/notebookViewsActions": {
+			"viewsUnableToRemove": "Unable to remove view",
+			"confirmDelete": "Are you sure you want to delete view \"{0}\"?",
+			"delete": "&&Delete",
+			"insertCells": "Insert Cells",
+			"runCell": "Run cell",
+			"stopCell": "Cancel execution",
+			"errorRunCell": "Error on last run. Click to run again",
+			"unableToNavigateToCell": "Unable to navigate to notebook cell.",
+			"viewCellInNotebook": "View Cell In Notebook",
+			"moreActionsLabel": "More"
+		},
+		"sql/workbench/contrib/notebook/browser/notebookViews/viewOptionsModal": {
+			"viewOptionsModal.title": "Configure View",
+			"viewOptionsModal.name": "View Name",
+			"viewOptionsModal.missingRequireField": "This field is required.",
+			"viewOptionsModal.nameTaken": "This view name has already been taken.",
+			"save": "Save",
+			"cancel": "Cancel"
+		},
+		"sql/workbench/services/notebook/browser/notebookViews/notebookViewsExtension": {
+			"notebookView.untitledView": "Untitled View"
 		}
 	}
 }

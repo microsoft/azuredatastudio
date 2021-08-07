@@ -36,6 +36,7 @@ import { IconPathHelper } from '../common/iconHelper';
 import { DashboardData, PublishData, Status } from '../models/dashboardData/dashboardData';
 import { launchPublishDatabaseQuickpick } from '../dialogs/publishDatabaseQuickpick';
 import { SqlTargetPlatform } from 'sqldbproj';
+import { createNewProjectFromDatabaseWithQuickpick } from '../dialogs/createProjectFromDatabaseQuickpick';
 
 const maxTableLength = 10;
 
@@ -862,15 +863,32 @@ export class ProjectsController {
 	 * Creates a new SQL database project from the existing database,
 	 * prompting the user for a name, file path location and extract target
 	 */
-	public async createProjectFromDatabase(context: azdataType.IConnectionProfile | any): Promise<CreateProjectFromDatabaseDialog> {
+	public async createProjectFromDatabase(context: azdataType.IConnectionProfile | mssqlVscode.ITreeNodeInfo | undefined): Promise<CreateProjectFromDatabaseDialog | undefined> {
 		const profile = this.getConnectionProfileFromContext(context);
-		let createProjectFromDatabaseDialog = this.getCreateProjectFromDatabaseDialog(profile);
+		if (utils.getAzdataApi()) {
+			let createProjectFromDatabaseDialog = this.getCreateProjectFromDatabaseDialog(profile as azdataType.IConnectionProfile);
 
-		createProjectFromDatabaseDialog.createProjectFromDatabaseCallback = async (model) => await this.createProjectFromDatabaseCallback(model);
+			createProjectFromDatabaseDialog.createProjectFromDatabaseCallback = async (model) => await this.createProjectFromDatabaseCallback(model);
 
-		await createProjectFromDatabaseDialog.openDialog();
+			await createProjectFromDatabaseDialog.openDialog();
 
-		return createProjectFromDatabaseDialog;
+			return createProjectFromDatabaseDialog;
+		} else {
+			if (context) {
+				// The profile we get from VS Code is for the overall server connection and isn't updated based on the database node
+				// the command was launched from like it is in ADS. So get the actual database name from the MSSQL extension and
+				// update the connection info here.
+				const treeNodeContext = context as mssqlVscode.ITreeNodeInfo;
+				const databaseName = (await utils.getVscodeMssqlApi()).getDatabaseNameFromTreeNode(treeNodeContext);
+				(profile as mssqlVscode.IConnectionInfo).database = databaseName;
+			}
+			const model = await createNewProjectFromDatabaseWithQuickpick(profile as mssqlVscode.IConnectionInfo);
+			if (model) {
+				await this.createProjectFromDatabaseCallback(model);
+			}
+			return undefined;
+		}
+
 	}
 
 	public getCreateProjectFromDatabaseDialog(profile: azdataType.IConnectionProfile | undefined): CreateProjectFromDatabaseDialog {
@@ -915,24 +933,25 @@ export class ProjectsController {
 		}
 	}
 
-	private getConnectionProfileFromContext(context: azdataType.IConnectionProfile | any): azdataType.IConnectionProfile | undefined {
+	private getConnectionProfileFromContext(context: azdataType.IConnectionProfile | mssqlVscode.ITreeNodeInfo | undefined): azdataType.IConnectionProfile | mssqlVscode.IConnectionInfo | undefined {
 		if (!context) {
 			return undefined;
 		}
 
 		// depending on where import new project is launched from, the connection profile could be passed as just
 		// the profile or it could be wrapped in another object
-		return (<any>context).connectionProfile ? (<any>context).connectionProfile : context;
+		return (<any>context)?.connectionProfile ?? (context as mssqlVscode.ITreeNodeInfo).connectionInfo ?? context;
 	}
 
 	public async createProjectFromDatabaseApiCall(model: ImportDataModel): Promise<void> {
-		let ext = vscode.extensions.getExtension(mssql.extension.name)!;
+		const service = await utils.getDacFxService();
+		const azdataApi = utils.getAzdataApi();
 
-		const service = (await ext.activate() as mssql.IExtension).dacFx;
-		const ownerUri = await utils.getAzdataApi()!.connection.getUriForConnection(model.serverId);
-
-		await service.createProjectFromDatabase(model.database, model.filePath, model.projName, model.version, ownerUri, model.extractTarget, utils.getAzdataApi()!.TaskExecutionMode.execute);
-
+		if (azdataApi) {
+			await (service as mssql.IDacFxService).createProjectFromDatabase(model.database, model.filePath, model.projName, model.version, model.connectionUri, model.extractTarget as mssql.ExtractTarget, azdataApi.TaskExecutionMode.execute);
+		} else {
+			await (service as mssqlVscode.IDacFxService).createProjectFromDatabase(model.database, model.filePath, model.projName, model.version, model.connectionUri, model.extractTarget as mssqlVscode.ExtractTarget, TaskExecutionMode.execute as unknown as mssqlVscode.TaskExecutionMode);
+		}
 		// TODO: Check for success; throw error
 	}
 
