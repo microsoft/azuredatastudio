@@ -2,6 +2,20 @@
 # yarn lockfile v1
 
 
+"@microsoft/ads-service-downloader@0.2.2":
+  version "0.2.2"
+  resolved "https://registry.yarnpkg.com/@microsoft/ads-service-downloader/-/ads-service-downloader-0.2.2.tgz#1a32c62eadb77fdab23eed257aaa5b590ccf2ce4"
+  integrity sha512-sEvp1dCQu8ZnUyrjX9qUo/S9IIvXkPCkCSuJ4IhuGEmGm2/++evixOtUgRKWYSRRvL1QskIUjZ0I59m6bKJ5yQ==
+  dependencies:
+    async-retry "^1.2.3"
+    eventemitter2 "^5.0.1"
+    http-proxy-agent "^2.1.0"
+    https-proxy-agent "^2.2.3"
+    mkdirp "^0.5.1"
+    tar "^6.1.6"
+    tmp "^0.0.33"
+    yauzl "^2.10.0"
+
 "@types/caseless@*":
   version "0.12.2"
   resolved "https://registry.yarnpkg.com/@types/caseless/-/caseless-0.12.2.tgz#f65d3d6389e01eeb458bd54dc8f52b95a9463bc8"
@@ -355,24 +369,10 @@ semver@^5.5.0:
   resolved "https://registry.yarnpkg.com/semver/-/semver-5.7.0.tgz#790a7cf6fea5459bac96110b29b60412dc8ff96b"
   integrity sha512-Ya52jSX2u7QKghxeoFGpLwCtGlt7j0oY9DYb5apt9nPlJ42ID+ulTXESnt/qAQcoSERyZ5sl3LDIOw0nAn/5DA==
 
-service-downloader@0.2.1:
-  version "0.2.1"
-  resolved "https://registry.yarnpkg.com/service-downloader/-/service-downloader-0.2.1.tgz#8bd756bc4bc0cbfdf04fe71d4337f19ce6196203"
-  integrity sha512-5IEy2nyMJj/f41pI65b8RMeJyCecGNrMmNCpUW8hckZ9cBMyX+VCp8GjYoM6Mz/X0XSaGVz7V5gtCWjfeJI7gA==
-  dependencies:
-    async-retry "^1.2.3"
-    eventemitter2 "^5.0.1"
-    http-proxy-agent "^2.1.0"
-    https-proxy-agent "^2.2.3"
-    mkdirp "^0.5.1"
-    tar "^6.0.1"
-    tmp "^0.0.33"
-    yauzl "^2.10.0"
-
-tar@^6.0.1:
-  version "6.0.5"
-  resolved "https://registry.yarnpkg.com/tar/-/tar-6.0.5.tgz#bde815086e10b39f1dcd298e89d596e1535e200f"
-  integrity sha512-0b4HOimQHj9nXNEAA7zWwMM91Zhhba3pspja6sQbgTpynOJf+bkjBnfybNYzbpLbnwXnbyB4LOREvlyXLkCHSg==
+tar@^6.1.6:
+  version "6.1.6"
+  resolved "https://registry.yarnpkg.com/tar/-/tar-6.1.6.tgz#c23d797b0a1efe5d479b1490805c5443f3560c5d"
+  integrity sha512-oaWyu5dQbHaYcyZCTfyPpC+VmI62/OM2RTUYavTk1MDr1cwW5Boi3baeYQKiZbY2uSQJGr+iMOzb/JFxLrft+g==
   dependencies:
     chownr "^2.0.0"
     fs-minipass "^2.0.0"

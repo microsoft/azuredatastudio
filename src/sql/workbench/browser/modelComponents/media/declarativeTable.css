@@ -28,6 +28,10 @@
 	cursor: pointer;
 }
 
+.declarative-table .declarative-table-cell .codicon.toggle-more:focus {
+	outline-style: solid;
+}
+
 .declarative-table checkbox input[type='checkbox'] {
 	margin: 3px;
 }

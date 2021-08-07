@@ -259,9 +259,6 @@
 			"resourceDeployment.Kubectl.BackupCurrentBinary": "Am Installationsspeicherort vorhandenes kubectl wird gesichert…",
 			"resourceDeployment.Kubectl.MoveToSystemPath": "kubectl wird in den Installationspfad in PATH verschoben…"
 		},
-		"dist/ui/notebookWizard/notebookWizardPage": {
-			"wizardPage.ValidationError": "Es liegen Fehler auf dieser Seite vor. Klicken Sie auf \"Details anzeigen\", um diese anzuzeigen."
-		},
 		"dist/ui/deploymentInputDialog": {
 			"deploymentDialog.OpenNotebook": "Notebook öffnen",
 			"deploymentDialog.OkButtonText": "OK",
@@ -376,8 +373,7 @@
 			"deployCluster.SubdomainDescription": "Eine eindeutige DNS-Unterdomäne, die für diesen SQL Server-Big Data-Cluster verwendet werden soll. Wenn keine Angabe vorliegt, wird der Clustername als Standardwert verwendet.",
 			"deployCluster.AccountPrefix": "Kontopräfix",
 			"deployCluster.AccountPrefixDescription": "Ein eindeutiges Präfix für AD-Konten, die vom SQL Server-Big Data-Cluster generiert werden. Wenn keine Angabe vorliegt, wird der Name der Unterdomäne als Standardwert verwendet. Wenn keine Unterdomäne angegeben wird, dient der Clustername als Standardwert.",
-			"deployCluster.AdminPasswordField": "Kennwort",
-			"deployCluster.ValidationError": "Es liegen Fehler auf dieser Seite vor. Klicken Sie auf \"Details anzeigen\", um diese anzuzeigen."
+			"deployCluster.AdminPasswordField": "Kennwort"
 		},
 		"dist/ui/deployClusterWizard/pages/serviceSettingsPage": {
 			"deployCluster.ServiceSettingsPageTitle": "Diensteinstellungen",
@@ -606,13 +602,6 @@
 			"resourceDeployment.AziCli.ScriptedInstall": "Skript zum Installieren der Azure CLI wird heruntergeladen und aufgerufen…"
 		},
 		"dist/services/tools/azdataTool": {
-			"resourceDeployment.AzdataDescription": "Azure Data-Befehlszeilenschnittstelle",
-			"resourceDeployment.AzdataDisplayName": "Azure Data CLI",
-			"deploy.azdataExtMissing": "Die Azure Data CLI-Erweiterung muss installiert sein, damit diese Ressource bereitgestellt werden kann. Installieren Sie sie über den Erweiterungskatalog, und versuchen Sie es noch mal.",
-			"deployCluster.GetToolVersionErrorInformation": "Fehler beim Abrufen der Versionsinformationen. Weitere Informationen finden Sie im Ausgabekanal \"{0}\".",
-			"deployCluster.GetToolVersionError": "Fehler beim Abrufen der Versionsinformationen.{0}Ungültige Ausgabe empfangen, Versionsbefehlsausgabe abrufen: {1} "
-		},
-		"dist/services/tools/azdataToolOld": {
 			"resourceDeployment.AzdataDescription": "Azure Data-Befehlszeilenschnittstelle",
 			"resourceDeployment.AzdataDisplayName": "Azure Data CLI",
 			"resourceDeployment.Azdata.DeletingPreviousAzdata.msi": "Zuvor heruntergeladene Datei \"Azdata.msi\" wird ggf. gelöscht…",

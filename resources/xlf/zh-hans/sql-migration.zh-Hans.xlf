@@ -34,33 +34,37 @@
         <source xml:lang="en">Feedback</source>
         <target state="translated">反馈</target>
       </trans-unit>
+      <trans-unit id="new-support-request-command">
+        <source xml:lang="en">New support request</source>
+        <target state="translated">新建支持请求</target>
+      </trans-unit>
       <trans-unit id="migration-context-menu-category">
         <source xml:lang="en">Migration Context Menu</source>
-        <target state="new">Migration Context Menu</target>
+        <target state="translated">迁移上下文菜单</target>
       </trans-unit>
       <trans-unit id="complete-cutover-menu">
         <source xml:lang="en">Complete cutover</source>
-        <target state="new">Complete cutover</target>
+        <target state="translated">完成直接转换</target>
       </trans-unit>
       <trans-unit id="database-details-menu">
         <source xml:lang="en">Database details</source>
-        <target state="new">Database details</target>
+        <target state="translated">数据库详细信息</target>
       </trans-unit>
       <trans-unit id="view-target-menu">
         <source xml:lang="en">Azure SQL Target details</source>
-        <target state="new">Azure SQL Target details</target>
+        <target state="translated">Azure SQL 目标详细信息</target>
       </trans-unit>
       <trans-unit id="view-service-menu">
-        <source xml:lang="en">Dataase Migration Service details</source>
-        <target state="new">Dataase Migration Service details</target>
+        <source xml:lang="en">Database Migration Service details</source>
+        <target state="new">Database Migration Service details</target>
       </trans-unit>
       <trans-unit id="copy-migration-menu">
         <source xml:lang="en">Copy migration details</source>
-        <target state="new">Copy migration details</target>
+        <target state="translated">复制迁移详细信息</target>
       </trans-unit>
       <trans-unit id="cancel-migration-menu">
         <source xml:lang="en">Cancel migration</source>
-        <target state="new">Cancel migration</target>
+        <target state="translated">取消迁移</target>
       </trans-unit>
     </body>
   </file>
@@ -73,6 +77,10 @@
       <trans-unit id="sql.migration.wizard.source_configuration.title">
         <source xml:lang="en">SQL Source Configuration</source>
         <target state="translated">SQL 源配置</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.assessments.blocking.issue">
+        <source xml:lang="en">This is a blocking issue that will prevent the database migration from succeeding.</source>
+        <target state="translated">这是一个阻止性问题，将阻止数据库迁移成功。</target>
       </trans-unit>
       <trans-unit id="sql.migration.assessments.progress">
         <source xml:lang="en">Assessments Progress</source>
@@ -186,12 +194,24 @@ This may take some time.</source>
         <target state="translated">我们已完成对 SQL Server 实例“{0}”的评估。</target>
       </trans-unit>
       <trans-unit id="sql.migration.assessment">
-        <source xml:lang="en">Assessment Dialog for '{0}'</source>
-        <target state="translated">“{0}”的评估对话框</target>
+        <source xml:lang="en">Assessment results for '{0}'</source>
+        <target state="translated">“{0}”的评估结果</target>
       </trans-unit>
       <trans-unit id="sql.migration.can.be.migrated">
         <source xml:lang="en">{0} out of {1} databases can be migrated</source>
         <target state="translated">可以迁移 {1} 个数据库中的 {0} 个</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.assessment.migration.warning">
+        <source xml:lang="en">Databases that are not ready for migration to Azure SQL Managed Instance can be migrated to SQL Server on Azure Virtual Machines.</source>
+        <target state="translated">尚未准备好迁移到 Azure SQL 托管实例的数据库可以迁移到 Azure 虚拟机上的SQL Server。</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.databases.table.title">
+        <source xml:lang="en">Databases</source>
+        <target state="translated">数据库</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sql.server.instance">
+        <source xml:lang="en">SQL Server Instance</source>
+        <target state="translated">SQL Server 实例</target>
       </trans-unit>
       <trans-unit id="sql.migration.wizard.account.title">
         <source xml:lang="en">Azure Account</source>
@@ -227,7 +247,7 @@ This may take some time.</source>
       </trans-unit>
       <trans-unit id="azure.accounts.accountAccessError">
         <source xml:lang="en">An error occurred while accessing the selected account '{0}'. Please click the 'Link Account' button and refresh the account or select a different account. Error '{1}'</source>
-        <target state="new">An error occurred while accessing the selected account '{0}'. Please click the 'Link Account' button and refresh the account or select a different account. Error '{1}'</target>
+        <target state="translated">访问所选帐户 "{0}" 时出错。请单击“链接帐户”按钮并刷新帐户或选择其他帐户。错误 "{1}"</target>
       </trans-unit>
       <trans-unit id="sql.migration.database.page.title">
         <source xml:lang="en">Database Backup</source>
@@ -393,6 +413,10 @@ This may take some time.</source>
         <source xml:lang="en">No blob containers found</source>
         <target state="translated">找不到任何 blob 容器</target>
       </trans-unit>
+      <trans-unit id="sql.migration.no.blobFiles.found">
+        <source xml:lang="en">No blob files found</source>
+        <target state="translated">未找到 Blob 文件</target>
+      </trans-unit>
       <trans-unit id="sql.migration.invalid.subscription.error">
         <source xml:lang="en">Please select a valid subscription to proceed.</source>
         <target state="translated">请选择有效的订阅以继续。</target>
@@ -409,9 +433,21 @@ This may take some time.</source>
         <source xml:lang="en">Please select a valid file share to proceed.</source>
         <target state="translated">请选择有效的文件共享以继续。</target>
       </trans-unit>
-      <trans-unit id="sql.migration.invalid.blobContainer.error">
-        <source xml:lang="en">Please select a valid blob container to proceed.</source>
-        <target state="translated">请选择有效的 Blob 容器以继续。</target>
+      <trans-unit id="sql.migration.invalid.blob.resourceGroup.error">
+        <source xml:lang="en">Please select a valid resource group for source database '{0}' to proceed.</source>
+        <target state="translated">请为源数据库“{0}”选择有效的资源组以继续。</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.invalid.blob.storageAccount.error">
+        <source xml:lang="en">Please select a valid storage account for source database '{0}' to proceed.</source>
+        <target state="translated">请为源数据库“{0}”选择有效的存储帐户以继续。</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.invalid.blob.container.error">
+        <source xml:lang="en">Please select a valid blob container for source database '{0}' to proceed.</source>
+        <target state="translated">请为源数据库“{0}”选择有效的 blob 容器以继续。</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.invalid.blob.lastBackupFile.error">
+        <source xml:lang="en">Please select a valid last backup file for source database '{0}' to proceed.</source>
+        <target state="translated">请为源数据库“{0}”选择有效的上一个备份文件以继续。</target>
       </trans-unit>
       <trans-unit id="sql.migration.invalid.network.share.location">
         <source xml:lang="en">Invalid network share location format. Example: {0}</source>
@@ -460,6 +496,18 @@ This may take some time.</source>
       <trans-unit id="sql.migration.source.details.sqlAuth">
         <source xml:lang="en">Enter the SQL Authentication credential used for connecting to SQL Server Instance {0}. ​ This credential will be used to for connecting to SQL Server instance and identifying valid backup file(s)</source>
         <target state="translated">输入用于连接到 SQL Server 实例 {0} 的 SQL 身份验证凭据。​ 此凭据将用于连接到 SQL Server 实例并标识有效的备份文件</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.blob.resourceGroup.select">
+        <source xml:lang="en">Select a resource group value first.</source>
+        <target state="translated">首先选择资源组值。</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.blob.storageAccount.select">
+        <source xml:lang="en">Select a storage account value first.</source>
+        <target state="translated">首先选择存储帐户值。</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.blob.container.select">
+        <source xml:lang="en">Select a blob container value first.</source>
+        <target state="translated">首先选择一个 Blob 容器值。</target>
       </trans-unit>
       <trans-unit id="sql.migration.ir.page.title">
         <source xml:lang="en">Azure Database Migration Service</source>
@@ -512,6 +560,10 @@ This may take some time.</source>
       <trans-unit id="sql.migration.dms.portal.info">
         <source xml:lang="en">Please note that any existing Azure Database Migration Service (DMS) in Azure portal will not show up in Azure Data Studio. DMS created in Azure Data Studio will not be visible in Azure portal yet.</source>
         <target state="translated">请注意，Azure 门户中的任何现有 Azure 数据库迁移服务(DMS)都不会显示在 Azure Data Studio 中。在 Azure Data Studio 中创建的 DMS 在 Azure 门户 中将仍不可见。</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.database.migration.service.authentication.keys">
+        <source xml:lang="en">Database migration service authentication keys</source>
+        <target state="translated">数据库迁移服务身份验证密钥</target>
       </trans-unit>
       <trans-unit id="sql.migration.services.dialog.title">
         <source xml:lang="en">Create Azure Database Migration Service</source>
@@ -629,6 +681,10 @@ This may take some time.</source>
         <source xml:lang="en">Please add a Migration Service to proceed.</source>
         <target state="translated">请添加迁移服务以继续。</target>
       </trans-unit>
+      <trans-unit id="sql.migration.service.status.refresh.error">
+        <source xml:lang="en">An error occurred while refreshing the migration service creation status.</source>
+        <target state="new">An error occurred while refreshing the migration service creation status.</target>
+      </trans-unit>
       <trans-unit id="sql.migration.managed.instance">
         <source xml:lang="en">Azure SQL managed instance</source>
         <target state="translated">Azure SQL 托管实例</target>
@@ -688,6 +744,10 @@ This may take some time.</source>
       <trans-unit id="sql.migration.learn.more">
         <source xml:lang="en">Learn more</source>
         <target state="translated">了解详细信息</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.learn.more.pre.reqs">
+        <source xml:lang="en">Learn more about things you need before starting a migration.</source>
+        <target state="translated">在开始迁移之前，请了解有关所需内容的详细信息。</target>
       </trans-unit>
       <trans-unit id="sql.migration.subscription">
         <source xml:lang="en">Subscription</source>
@@ -773,6 +833,10 @@ This may take some time.</source>
         <source xml:lang="en">Copy Throughput (MBPS)</source>
         <target state="translated">复制吞吐量(MBPS)</target>
       </trans-unit>
+      <trans-unit id="sql.migration.newsupportrequest">
+        <source xml:lang="en">New support request</source>
+        <target state="translated">新建支持请求</target>
+      </trans-unit>
       <trans-unit id="sql.migration.summary.page.title">
         <source xml:lang="en">Summary</source>
         <target state="translated">摘要</target>
@@ -816,6 +880,10 @@ This may take some time.</source>
       <trans-unit id="sql.migration.blob.container.title">
         <source xml:lang="en">Blob Container</source>
         <target state="translated">Blob 容器</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.blob.container.last.backup.file.label">
+        <source xml:lang="en">Last Backup File</source>
+        <target state="translated">上一个备份文件</target>
       </trans-unit>
       <trans-unit id="sql.migration.blob.container.label">
         <source xml:lang="en">Blob container resource group</source>
@@ -973,10 +1041,6 @@ This may take some time.</source>
         <source xml:lang="en">Choose to migrate to Azure SQL</source>
         <target state="translated">选择迁移到 Azure SQL</target>
       </trans-unit>
-      <trans-unit id="sql.migration.coming.soon">
-        <source xml:lang="en">Coming soon</source>
-        <target state="translated">即将推出</target>
-      </trans-unit>
       <trans-unit id="sql.migration.show.status">
         <source xml:lang="en">Show status</source>
         <target state="translated">显示状态</target>
@@ -1031,7 +1095,7 @@ This may take some time.</source>
       </trans-unit>
       <trans-unit id="sql.migration.migration.status">
         <source xml:lang="en">Migration Status</source>
-        <target state="new">Migration Status</target>
+        <target state="translated">迁移状态</target>
       </trans-unit>
       <trans-unit id="sql.migration.migration.status.filter">
         <source xml:lang="en">Migration status filter</source>
@@ -1056,6 +1120,14 @@ This may take some time.</source>
       <trans-unit id="sql.migration.active.backup.files">
         <source xml:lang="en">Active Backup files</source>
         <target state="translated">活动备份文件</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.cutover.status.refresh.error">
+        <source xml:lang="en">An error occurred while refreshing the migration status.</source>
+        <target state="new">An error occurred while refreshing the migration status.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.cancel.error">
+        <source xml:lang="en">An error occurred while canceling the migration.</source>
+        <target state="new">An error occurred while canceling the migration.</target>
       </trans-unit>
       <trans-unit id="sql.migration.status">
         <source xml:lang="en">Status</source>
@@ -1126,24 +1198,40 @@ This may take some time.</source>
         <target state="translated">业务关键服务层级的托管实例迁移直接转换需要的时间可能远多于常规用途，因为必须为始终打开高可用性组设置三个次要副本的种子。此操作持续时间取决于数据的大小。在 90% 的情况下，设置种子的速度为 220 GB/小时或更高。</target>
       </trans-unit>
       <trans-unit id="sql.migration.cutover.help.main">
-        <source xml:lang="en">When you are ready to do the migration cutover, perform the following steps to complete the database migration. Please note that the database is ready for cutover only after a full backup has been restored on the target Azure SQL Database Managed Instance.</source>
-        <target state="translated">准备好执行直接转换迁移时，按照下列步骤操作，以完成数据库迁移。请注意，只有当完整备份在目标 Azure SQL 数据库托管实例上还原后，数据库才可供执行直接转换迁移。</target>
+        <source xml:lang="en">Perform the following steps before you complete cutover.</source>
+        <target state="new">Perform the following steps before you complete cutover.</target>
       </trans-unit>
       <trans-unit id="sql.migration.cutover.step.1">
         <source xml:lang="en">1. Stop all the incoming transactions coming to the source database.</source>
         <target state="translated">1. 停止传入源数据库的所有传入事务。</target>
       </trans-unit>
-      <trans-unit id="sql.migration.cutover.step.2">
+      <trans-unit id="sql.migration.cutover.step.2.network.share">
         <source xml:lang="en">2. Take final transaction log backup and provide it in the network share location.</source>
         <target state="translated">2. 进行最终事务日志备份，并在网络共享位置提供它。</target>
       </trans-unit>
-      <trans-unit id="sql.migration.cutover.step.3">
+      <trans-unit id="sql.migration.cutover.step.2.blob">
+        <source xml:lang="en">2. Take final differential or transaction log backup and provide it in the Azure Storage Blob Container.</source>
+        <target state="new">2. Take final differential or transaction log backup and provide it in the Azure Storage Blob Container.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.cutover.step.3.network.share">
         <source xml:lang="en">3. Make sure all the log backups are restored on target database. The "Log backups(s) pending restore" should be zero.</source>
         <target state="translated">3. 确保在目标数据库上还原所有日志备份。“日志备份挂起还原”应为零。</target>
       </trans-unit>
+      <trans-unit id="sql.migration.cutover.step.3.blob">
+        <source xml:lang="en">3. Make sure all the log backups are restored on target database. The "Log backups(s) pending restore" should be zero.</source>
+        <target state="new">3. Make sure all the log backups are restored on target database. The "Log backups(s) pending restore" should be zero.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.cutover.last.file.restored">
+        <source xml:lang="en">Last file restored: {0}</source>
+        <target state="new">Last file restored: {0}</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.last.scan.completed">
+        <source xml:lang="en">Last scan completed: {0}</source>
+        <target state="new">Last scan completed: {0}</target>
+      </trans-unit>
       <trans-unit id="sql.migartion.cutover.pending.backup">
-        <source xml:lang="en">Pending log backups: {0}</source>
-        <target state="translated">挂起日志备份: {0}</target>
+        <source xml:lang="en">Log backups pending restore: {0}</source>
+        <target state="new">Log backups pending restore: {0}</target>
       </trans-unit>
       <trans-unit id="sql.migration.confirm.checkbox.message">
         <source xml:lang="en">I confirm there are no additional log backup(s) to provide and want to complete cutover.</source>
@@ -1155,11 +1243,23 @@ This may take some time.</source>
       </trans-unit>
       <trans-unit id="sql.migration.cannot.cancel">
         <source xml:lang="en">Migration is not in progress and cannot be cancelled.</source>
-        <target state="new">Migration is not in progress and cannot be cancelled.</target>
+        <target state="translated">迁移未进行，无法取消。</target>
       </trans-unit>
       <trans-unit id="sql.migration.cannot.cutover">
         <source xml:lang="en">Migration is not in progress and cannot be cutover.</source>
-        <target state="new">Migration is not in progress and cannot be cutover.</target>
+        <target state="translated">迁移未进行，无法直接转换。</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.file.name">
+        <source xml:lang="en">File name</source>
+        <target state="new">File name</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.size.column.header">
+        <source xml:lang="en">Size</source>
+        <target state="new">Size</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.no.pending.backups">
+        <source xml:lang="en">No pending backups. Click refresh to check current status.</source>
+        <target state="new">No pending backups. Click refresh to check current status.</target>
       </trans-unit>
       <trans-unit id="sql.migration.search.for.migration">
         <source xml:lang="en">Search for migrations</source>
@@ -1215,7 +1315,7 @@ This may take some time.</source>
       </trans-unit>
       <trans-unit id="sql.migration.status.error.count.some">
         <source xml:lang="en">{0} (</source>
-        <target state="new">{0} (</target>
+        <target state="translated">{0} (</target>
       </trans-unit>
       <trans-unit id="sql.migration.status.error.count.none">
         <source xml:lang="en">{0}</source>
@@ -1223,43 +1323,43 @@ This may take some time.</source>
       </trans-unit>
       <trans-unit id="sql.migration.status.inprogress">
         <source xml:lang="en">In progress</source>
-        <target state="new">In progress</target>
+        <target state="translated">进行中</target>
       </trans-unit>
       <trans-unit id="sql.migration.status.succeeded">
         <source xml:lang="en">Succeeded</source>
-        <target state="new">Succeeded</target>
+        <target state="translated">成功</target>
       </trans-unit>
       <trans-unit id="sql.migration.status.creating">
         <source xml:lang="en">Creating</source>
-        <target state="new">Creating</target>
+        <target state="translated">正在创建</target>
       </trans-unit>
       <trans-unit id="sql.migration.status.completing">
         <source xml:lang="en">Completing</source>
-        <target state="new">Completing</target>
+        <target state="translated">正在完成</target>
       </trans-unit>
-      <trans-unit id="sql.migration.status.cancelling">
-        <source xml:lang="en">Cancelling</source>
-        <target state="new">Cancelling</target>
+      <trans-unit id="sql.migration.status.canceling">
+        <source xml:lang="en">Canceling</source>
+        <target state="translated">正在取消</target>
       </trans-unit>
       <trans-unit id="sql.migration.status.failed">
         <source xml:lang="en">Failed</source>
-        <target state="new">Failed</target>
+        <target state="translated">失败</target>
       </trans-unit>
       <trans-unit id="sql.migration.status.warning.count.single">
         <source xml:lang="en">{0} Warning)</source>
-        <target state="new">{0} Warning)</target>
+        <target state="translated">{0} 个警告)</target>
       </trans-unit>
       <trans-unit id="sql.migration.status.warning.count.multiple">
         <source xml:lang="en">{0} Warnings)</source>
-        <target state="new">{0} Warnings)</target>
+        <target state="translated">{0} 条警告)</target>
       </trans-unit>
       <trans-unit id="sql.migration.status.error.count.single">
         <source xml:lang="en">{0} Error)</source>
-        <target state="new">{0} Error)</target>
+        <target state="translated">{0} 个错误)</target>
       </trans-unit>
       <trans-unit id="sql.migration.status.error.count.multiple">
         <source xml:lang="en">{0} Errors)</source>
-        <target state="new">{0} Errors)</target>
+        <target state="translated">{0} 个错误)</target>
       </trans-unit>
       <trans-unit id="sql.migration.hrs">
         <source xml:lang="en">{0} hrs</source>
@@ -1332,6 +1432,26 @@ This may take some time.</source>
       <trans-unit id="sql.migration.username">
         <source xml:lang="en">Username</source>
         <target state="translated">用户名</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.size">
+        <source xml:lang="en">Size (MB)</source>
+        <target state="translated">大小(MB)</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.last.backup">
+        <source xml:lang="en">Last backup</source>
+        <target state="translated">上次备份时间</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.database.migration">
+        <source xml:lang="en">Databases for migration</source>
+        <target state="translated">要迁移的数据库</target>
+      </trans-unit>
+      <trans-unit id="sql.migrate.text">
+        <source xml:lang="en">Select database(s) that you want to migrate to Azure SQL</source>
+        <target state="translated">选择要迁移到 Azure SQL 的数据库</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.offline.caps">
+        <source xml:lang="en">OFFLINE</source>
+        <target state="translated">脱机</target>
       </trans-unit>
       <trans-unit id="sql.migration.issues">
         <source xml:lang="en">Issues</source>
@@ -1417,6 +1537,10 @@ This may take some time.</source>
         <source xml:lang="en">Databases ({0}/{1})</source>
         <target state="translated">数据库({0}/{1})</target>
       </trans-unit>
+      <trans-unit id="sql.migration.databases.selected">
+        <source xml:lang="en">{0}/{1} Databases Selected</source>
+        <target state="translated">已选择 {0}/{1} 个数据库</target>
+      </trans-unit>
       <trans-unit id="sql.migration.issues.count">
         <source xml:lang="en">Issues ({0})</source>
         <target state="translated">问题({0})</target>
@@ -1439,7 +1563,7 @@ This may take some time.</source>
       </trans-unit>
       <trans-unit id="sql.migration.status.refresh.label">
         <source xml:lang="en">Refresh</source>
-        <target state="new">Refresh</target>
+        <target state="translated">刷新</target>
       </trans-unit>
       <trans-unit id="sql.migration.auto.refresh.off">
         <source xml:lang="en">Auto Refresh: Off</source>

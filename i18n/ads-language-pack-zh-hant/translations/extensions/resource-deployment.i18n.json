@@ -259,9 +259,6 @@
 			"resourceDeployment.Kubectl.BackupCurrentBinary": "正在備份安裝位置中任何現有的 kubectl…",
 			"resourceDeployment.Kubectl.MoveToSystemPath": "正在將 kubectl 移至路徑中的安裝位置…"
 		},
-		"dist/ui/notebookWizard/notebookWizardPage": {
-			"wizardPage.ValidationError": "此頁面有一些錯誤，按一下 [顯示詳細資料] 即可檢視錯誤。"
-		},
 		"dist/ui/deploymentInputDialog": {
 			"deploymentDialog.OpenNotebook": "開啟筆記本",
 			"deploymentDialog.OkButtonText": "確定",
@@ -376,8 +373,7 @@
 			"deployCluster.SubdomainDescription": "供此 SQL Server 巨量資料叢集使用的唯一 DNS 子網域。若未提供，則會使用叢集名稱作為預設值。",
 			"deployCluster.AccountPrefix": "帳戶首碼",
 			"deployCluster.AccountPrefixDescription": "將為 SQL Server 巨量資料叢集 AD 帳戶產生唯一首碼。若未提供，則會使用子網域名稱作為預設值。若未提供子網域，則會使用叢集名稱作為預設值。",
-			"deployCluster.AdminPasswordField": "密碼",
-			"deployCluster.ValidationError": "此頁面有一些錯誤，按一下 [顯示詳細資料] 即可檢視錯誤。"
+			"deployCluster.AdminPasswordField": "密碼"
 		},
 		"dist/ui/deployClusterWizard/pages/serviceSettingsPage": {
 			"deployCluster.ServiceSettingsPageTitle": "服務設定",
@@ -606,13 +602,6 @@
 			"resourceDeployment.AziCli.ScriptedInstall": "正在下載並叫用指令碼以安裝 azure-cli…"
 		},
 		"dist/services/tools/azdataTool": {
-			"resourceDeployment.AzdataDescription": "Azure Data 命令列介面",
-			"resourceDeployment.AzdataDisplayName": "Azure Data CLI",
-			"deploy.azdataExtMissing": "必須安裝 Azure Data CLI 延伸模組，以部署此資源。請透過延伸模組庫安裝，然後再試一次。",
-			"deployCluster.GetToolVersionErrorInformation": "擷取版本資訊時發生錯誤。如需詳細資料，請參閱輸出通道 '{0}'",
-			"deployCluster.GetToolVersionError": "擷取版本資訊時發生錯誤。{0}接收到的輸出無效，請取得版本命令輸出: '{1}'"
-		},
-		"dist/services/tools/azdataToolOld": {
 			"resourceDeployment.AzdataDescription": "Azure Data 命令列介面",
 			"resourceDeployment.AzdataDisplayName": "Azure Data CLI",
 			"resourceDeployment.Azdata.DeletingPreviousAzdata.msi": "正在刪除先前下載的 Azdata.msi (如果有的話)…",

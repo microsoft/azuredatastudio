@@ -259,9 +259,6 @@
 			"resourceDeployment.Kubectl.BackupCurrentBinary": "sauvegarde de tout kubectl existant dans l'emplacement d'installation...",
 			"resourceDeployment.Kubectl.MoveToSystemPath": "déplacement de kubectl dans l'emplacement d'installation dans PATH..."
 		},
-		"dist/ui/notebookWizard/notebookWizardPage": {
-			"wizardPage.ValidationError": "Cette page a des erreurs, cliquez sur 'Afficher les détails' pour les voir."
-		},
 		"dist/ui/deploymentInputDialog": {
 			"deploymentDialog.OpenNotebook": "Ouvrir le notebook",
 			"deploymentDialog.OkButtonText": "OK",
@@ -376,8 +373,7 @@
 			"deployCluster.SubdomainDescription": "Sous-domaine DNS unique à utiliser pour ce cluster Big Data SQL Server. S'il n'est pas fourni, le nom de cluster est utilisé comme valeur par défaut.",
 			"deployCluster.AccountPrefix": "Préfixe du compte",
 			"deployCluster.AccountPrefixDescription": "Préfixe unique pour les comptes AD que le cluster Big Data SQL Server génère. S'il n'est pas fourni, le nom du sous-domaine est utilisé comme valeur par défaut. Si aucun sous-domaine n'est fourni, le nom du cluster est utilisé comme valeur par défaut.",
-			"deployCluster.AdminPasswordField": "Mot de passe",
-			"deployCluster.ValidationError": "Cette page a des erreurs, cliquez sur 'Afficher les détails' pour les voir."
+			"deployCluster.AdminPasswordField": "Mot de passe"
 		},
 		"dist/ui/deployClusterWizard/pages/serviceSettingsPage": {
 			"deployCluster.ServiceSettingsPageTitle": "Paramètres de service",
@@ -606,13 +602,6 @@
 			"resourceDeployment.AziCli.ScriptedInstall": "télécharger et appeler un script pour installer azure-cli..."
 		},
 		"dist/services/tools/azdataTool": {
-			"resourceDeployment.AzdataDescription": "Interface de ligne de commande Azure Data",
-			"resourceDeployment.AzdataDisplayName": "Azure Data CLI",
-			"deploy.azdataExtMissing": "L’extension CLI de données Azure doit être installée pour déployer cette ressource. Veuillez l’installer via la galerie d’extensions et essayer à nouveau.",
-			"deployCluster.GetToolVersionErrorInformation": "Erreur de récupération des informations de version. Voir le canal de sortie « {0} » pour plus de détails",
-			"deployCluster.GetToolVersionError": "Erreur de récupération des informations de version.{0}Sortie non valide reçue, sortie de la commande get version : « {1} » "
-		},
-		"dist/services/tools/azdataToolOld": {
 			"resourceDeployment.AzdataDescription": "Interface de ligne de commande Azure Data",
 			"resourceDeployment.AzdataDisplayName": "Azure Data CLI",
 			"resourceDeployment.Azdata.DeletingPreviousAzdata.msi": "suppression du fichier Azdata.msi précédemment téléchargé, le cas échéant...",

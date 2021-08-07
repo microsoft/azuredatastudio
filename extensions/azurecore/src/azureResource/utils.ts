@@ -333,8 +333,9 @@ export async function getSelectedSubscriptions(appContext: AppContext, account?:
  * @param requestBody Optional request body to be used in PUT and POST requests.
  * @param ignoreErrors When this flag is set the method will not throw any runtime or service errors and will return the errors in errors array.
  * @param host Use this to override the host. The default host is https://management.azure.com
+ * @param requestHeaders Provide additional request headers
  */
-export async function makeHttpRequest(account: azdata.Account, subscription: azureResource.AzureResourceSubscription, path: string, requestType: HttpRequestMethod, requestBody?: any, ignoreErrors: boolean = false, host: string = 'https://management.azure.com'): Promise<AzureRestResponse> {
+export async function makeHttpRequest(account: azdata.Account, subscription: azureResource.AzureResourceSubscription, path: string, requestType: HttpRequestMethod, requestBody?: any, ignoreErrors: boolean = false, host: string = 'https://management.azure.com', requestHeaders: { [key: string]: string } = {}): Promise<AzureRestResponse> {
 	const result: AzureRestResponse = { response: {}, errors: [] };
 
 	if (!account?.properties?.tenants || !Array.isArray(account.properties.tenants)) {
@@ -375,11 +376,14 @@ export async function makeHttpRequest(account: azdata.Account, subscription: azu
 		return result;
 	}
 
+	const reqHeaders = {
+		'Content-Type': 'application/json',
+		'Authorization': `Bearer ${securityToken.token}`,
+		...requestHeaders
+	};
+
 	const config: AxiosRequestConfig = {
-		headers: {
-			'Content-Type': 'application/json',
-			'Authorization': `Bearer ${securityToken.token}`
-		},
+		headers: reqHeaders,
 		validateStatus: () => true // Never throw
 	};
 
@@ -392,7 +396,7 @@ export async function makeHttpRequest(account: azdata.Account, subscription: azu
 	if (host) {
 		requestUrl = `${host}${path}`;
 	} else {
-		requestUrl = `https://management.azure.com${path}`;
+		requestUrl = `${account.properties.providerSettings.settings.armResource.endpoint}${path}`;
 	}
 
 	let response;
@@ -490,7 +494,7 @@ export async function getBlobs(account: azdata.Account, subscription: azureResou
 	try {
 		const sharedKeyCredential = new StorageSharedKeyCredential(storageAccount.name, storageKeys.keyName1);
 		const blobServiceClient = new BlobServiceClient(
-			`https://${storageAccount.name}.blob.core.windows.net`,
+			`https://${storageAccount.name}.blob${account.properties.providerSettings.settings.azureStorageResource.endpointSuffix}`,
 			sharedKeyCredential
 		);
 		const containerClient = blobServiceClient.getContainerClient(containerName);

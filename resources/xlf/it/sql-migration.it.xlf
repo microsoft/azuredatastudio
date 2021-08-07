@@ -34,33 +34,37 @@
         <source xml:lang="en">Feedback</source>
         <target state="translated">Feedback</target>
       </trans-unit>
+      <trans-unit id="new-support-request-command">
+        <source xml:lang="en">New support request</source>
+        <target state="translated">Nuova richiesta di supporto</target>
+      </trans-unit>
       <trans-unit id="migration-context-menu-category">
         <source xml:lang="en">Migration Context Menu</source>
-        <target state="new">Migration Context Menu</target>
+        <target state="translated">Menu di scelta rapida Migrazione</target>
       </trans-unit>
       <trans-unit id="complete-cutover-menu">
         <source xml:lang="en">Complete cutover</source>
-        <target state="new">Complete cutover</target>
+        <target state="translated">Completa cutover</target>
       </trans-unit>
       <trans-unit id="database-details-menu">
         <source xml:lang="en">Database details</source>
-        <target state="new">Database details</target>
+        <target state="translated">Dettagli di Database</target>
       </trans-unit>
       <trans-unit id="view-target-menu">
         <source xml:lang="en">Azure SQL Target details</source>
-        <target state="new">Azure SQL Target details</target>
+        <target state="translated">Dettagli di Destinazione di Azure SQL</target>
       </trans-unit>
       <trans-unit id="view-service-menu">
-        <source xml:lang="en">Dataase Migration Service details</source>
-        <target state="new">Dataase Migration Service details</target>
+        <source xml:lang="en">Database Migration Service details</source>
+        <target state="new">Database Migration Service details</target>
       </trans-unit>
       <trans-unit id="copy-migration-menu">
         <source xml:lang="en">Copy migration details</source>
-        <target state="new">Copy migration details</target>
+        <target state="translated">Dettagli di Copia migrazione</target>
       </trans-unit>
       <trans-unit id="cancel-migration-menu">
         <source xml:lang="en">Cancel migration</source>
-        <target state="new">Cancel migration</target>
+        <target state="translated">Annulla migrazione</target>
       </trans-unit>
     </body>
   </file>
@@ -73,6 +77,10 @@
       <trans-unit id="sql.migration.wizard.source_configuration.title">
         <source xml:lang="en">SQL Source Configuration</source>
         <target state="translated">Configurazione di origine SQL</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.assessments.blocking.issue">
+        <source xml:lang="en">This is a blocking issue that will prevent the database migration from succeeding.</source>
+        <target state="translated">Si tratta di un errore di blocco che impedirà la migrazione del database.</target>
       </trans-unit>
       <trans-unit id="sql.migration.assessments.progress">
         <source xml:lang="en">Assessments Progress</source>
@@ -185,12 +193,24 @@ L'operazione potrebbe richiedere del tempo.</target>
         <target state="translated">È stata completata la valutazione dell'istanza di SQL Server "{0}".</target>
       </trans-unit>
       <trans-unit id="sql.migration.assessment">
-        <source xml:lang="en">Assessment Dialog for '{0}'</source>
-        <target state="translated">Finestra di dialogo di valutazione per '{0}'</target>
+        <source xml:lang="en">Assessment results for '{0}'</source>
+        <target state="translated">Risultati valutazione per '{0}'</target>
       </trans-unit>
       <trans-unit id="sql.migration.can.be.migrated">
         <source xml:lang="en">{0} out of {1} databases can be migrated</source>
         <target state="translated">È possibile eseguire la migrazione di {0} database su {1}</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.assessment.migration.warning">
+        <source xml:lang="en">Databases that are not ready for migration to Azure SQL Managed Instance can be migrated to SQL Server on Azure Virtual Machines.</source>
+        <target state="translated">Per i database non pronti per la migrazione all'Istanza gestita di SQL di Azure, è possibile eseguire la migrazione a SQL Server nelle macchine virtuali di Microsoft Azure.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.databases.table.title">
+        <source xml:lang="en">Databases</source>
+        <target state="translated">Database</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.sql.server.instance">
+        <source xml:lang="en">SQL Server Instance</source>
+        <target state="translated">Istanza di SQL Server</target>
       </trans-unit>
       <trans-unit id="sql.migration.wizard.account.title">
         <source xml:lang="en">Azure Account</source>
@@ -226,7 +246,7 @@ L'operazione potrebbe richiedere del tempo.</target>
       </trans-unit>
       <trans-unit id="azure.accounts.accountAccessError">
         <source xml:lang="en">An error occurred while accessing the selected account '{0}'. Please click the 'Link Account' button and refresh the account or select a different account. Error '{1}'</source>
-        <target state="new">An error occurred while accessing the selected account '{0}'. Please click the 'Link Account' button and refresh the account or select a different account. Error '{1}'</target>
+        <target state="translated">Si è verificato un errore durante l'accesso all'account selezionato '{0}'. Fare clic sul pulsante 'Collega account' e aggiornare l'account oppure selezionare un account diverso. Errore: '{1}'</target>
       </trans-unit>
       <trans-unit id="sql.migration.database.page.title">
         <source xml:lang="en">Database Backup</source>
@@ -392,6 +412,10 @@ L'operazione potrebbe richiedere del tempo.</target>
         <source xml:lang="en">No blob containers found</source>
         <target state="translated">Non sono stati trovati contenitori BLOB</target>
       </trans-unit>
+      <trans-unit id="sql.migration.no.blobFiles.found">
+        <source xml:lang="en">No blob files found</source>
+        <target state="translated">Nessun file BLOB trovato</target>
+      </trans-unit>
       <trans-unit id="sql.migration.invalid.subscription.error">
         <source xml:lang="en">Please select a valid subscription to proceed.</source>
         <target state="translated">Per continuare, selezionare una sottoscrizione valida.</target>
@@ -408,9 +432,21 @@ L'operazione potrebbe richiedere del tempo.</target>
         <source xml:lang="en">Please select a valid file share to proceed.</source>
         <target state="translated">Selezionare una condivisione file valida per procedere.</target>
       </trans-unit>
-      <trans-unit id="sql.migration.invalid.blobContainer.error">
-        <source xml:lang="en">Please select a valid blob container to proceed.</source>
-        <target state="translated">Seleziona un contenitore BLOB valido per procedere.</target>
+      <trans-unit id="sql.migration.invalid.blob.resourceGroup.error">
+        <source xml:lang="en">Please select a valid resource group for source database '{0}' to proceed.</source>
+        <target state="translated">Per continuare, selezionare un gruppo di risorse valido per il database di origine '{0}'.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.invalid.blob.storageAccount.error">
+        <source xml:lang="en">Please select a valid storage account for source database '{0}' to proceed.</source>
+        <target state="translated">Per continuare, selezionare un account di archiviazione valido per il database di origine '{0}'.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.invalid.blob.container.error">
+        <source xml:lang="en">Please select a valid blob container for source database '{0}' to proceed.</source>
+        <target state="translated">Per continuare, selezionare un contenitore BLOB valido per il database di origine '{0}'.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.invalid.blob.lastBackupFile.error">
+        <source xml:lang="en">Please select a valid last backup file for source database '{0}' to proceed.</source>
+        <target state="translated">Per continuare, selezionare l'ultimo file di backup valido per il database di origine '{0}'.</target>
       </trans-unit>
       <trans-unit id="sql.migration.invalid.network.share.location">
         <source xml:lang="en">Invalid network share location format. Example: {0}</source>
@@ -459,6 +495,18 @@ L'operazione potrebbe richiedere del tempo.</target>
       <trans-unit id="sql.migration.source.details.sqlAuth">
         <source xml:lang="en">Enter the SQL Authentication credential used for connecting to SQL Server Instance {0}. ​ This credential will be used to for connecting to SQL Server instance and identifying valid backup file(s)</source>
         <target state="translated">Immettere le credenziali di autenticazione SQL utilizzate per la connessione all'istanza di SQL Server {0}. ​ Questa credenziale verrà utilizzata per connettersi all'istanza di SQL Server e identificare i file di backup validi</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.blob.resourceGroup.select">
+        <source xml:lang="en">Select a resource group value first.</source>
+        <target state="translated">Selezionare prima un valore del gruppo di risorse.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.blob.storageAccount.select">
+        <source xml:lang="en">Select a storage account value first.</source>
+        <target state="translated">Selezionare prima un valore per l'account di archiviazione.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.blob.container.select">
+        <source xml:lang="en">Select a blob container value first.</source>
+        <target state="translated">Selezionare prima un valore del contenitore BLOB.</target>
       </trans-unit>
       <trans-unit id="sql.migration.ir.page.title">
         <source xml:lang="en">Azure Database Migration Service</source>
@@ -511,6 +559,10 @@ L'operazione potrebbe richiedere del tempo.</target>
       <trans-unit id="sql.migration.dms.portal.info">
         <source xml:lang="en">Please note that any existing Azure Database Migration Service (DMS) in Azure portal will not show up in Azure Data Studio. DMS created in Azure Data Studio will not be visible in Azure portal yet.</source>
         <target state="translated">Tenere presente che qualsiasi Servizio Migrazione del database di Azure (DMS) esistente nel portale di Azure non verrà visualizzato in Azure Data Studio. Il Servizio Migrazione del database di Azure creato in Azure Data Studio non sarà ancora visibile nel portale di Azure.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.database.migration.service.authentication.keys">
+        <source xml:lang="en">Database migration service authentication keys</source>
+        <target state="translated">Chiavi di autenticazione del Servizio Migrazione del database</target>
       </trans-unit>
       <trans-unit id="sql.migration.services.dialog.title">
         <source xml:lang="en">Create Azure Database Migration Service</source>
@@ -628,6 +680,10 @@ L'operazione potrebbe richiedere del tempo.</target>
         <source xml:lang="en">Please add a Migration Service to proceed.</source>
         <target state="translated">Aggiungere un servizio di migrazione per continuare.</target>
       </trans-unit>
+      <trans-unit id="sql.migration.service.status.refresh.error">
+        <source xml:lang="en">An error occurred while refreshing the migration service creation status.</source>
+        <target state="new">An error occurred while refreshing the migration service creation status.</target>
+      </trans-unit>
       <trans-unit id="sql.migration.managed.instance">
         <source xml:lang="en">Azure SQL managed instance</source>
         <target state="translated">Istanza gestita di SQL di Azure</target>
@@ -687,6 +743,10 @@ L'operazione potrebbe richiedere del tempo.</target>
       <trans-unit id="sql.migration.learn.more">
         <source xml:lang="en">Learn more</source>
         <target state="translated">Altre informazioni</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.learn.more.pre.reqs">
+        <source xml:lang="en">Learn more about things you need before starting a migration.</source>
+        <target state="translated">Altre informazioni sulle operazioni necessarie prima di avviare una migrazione.</target>
       </trans-unit>
       <trans-unit id="sql.migration.subscription">
         <source xml:lang="en">Subscription</source>
@@ -772,6 +832,10 @@ L'operazione potrebbe richiedere del tempo.</target>
         <source xml:lang="en">Copy Throughput (MBPS)</source>
         <target state="translated">Velocità effettiva copia (MBPS)</target>
       </trans-unit>
+      <trans-unit id="sql.migration.newsupportrequest">
+        <source xml:lang="en">New support request</source>
+        <target state="translated">Nuova richiesta di supporto</target>
+      </trans-unit>
       <trans-unit id="sql.migration.summary.page.title">
         <source xml:lang="en">Summary</source>
         <target state="translated">Riepilogo</target>
@@ -815,6 +879,10 @@ L'operazione potrebbe richiedere del tempo.</target>
       <trans-unit id="sql.migration.blob.container.title">
         <source xml:lang="en">Blob Container</source>
         <target state="translated">Contenitore BLOB</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.blob.container.last.backup.file.label">
+        <source xml:lang="en">Last Backup File</source>
+        <target state="translated">Ultimo file di backup</target>
       </trans-unit>
       <trans-unit id="sql.migration.blob.container.label">
         <source xml:lang="en">Blob container resource group</source>
@@ -972,10 +1040,6 @@ L'operazione potrebbe richiedere del tempo.</target>
         <source xml:lang="en">Choose to migrate to Azure SQL</source>
         <target state="translated">Scegliere di eseguire la migrazione ad Azure SQL</target>
       </trans-unit>
-      <trans-unit id="sql.migration.coming.soon">
-        <source xml:lang="en">Coming soon</source>
-        <target state="translated">Presto disponibile</target>
-      </trans-unit>
       <trans-unit id="sql.migration.show.status">
         <source xml:lang="en">Show status</source>
         <target state="translated">Mostrare stato</target>
@@ -1030,7 +1094,7 @@ L'operazione potrebbe richiedere del tempo.</target>
       </trans-unit>
       <trans-unit id="sql.migration.migration.status">
         <source xml:lang="en">Migration Status</source>
-        <target state="new">Migration Status</target>
+        <target state="translated">Stato di migrazione</target>
       </trans-unit>
       <trans-unit id="sql.migration.migration.status.filter">
         <source xml:lang="en">Migration status filter</source>
@@ -1055,6 +1119,14 @@ L'operazione potrebbe richiedere del tempo.</target>
       <trans-unit id="sql.migration.active.backup.files">
         <source xml:lang="en">Active Backup files</source>
         <target state="translated">File di backup attivi</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.cutover.status.refresh.error">
+        <source xml:lang="en">An error occurred while refreshing the migration status.</source>
+        <target state="new">An error occurred while refreshing the migration status.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.cancel.error">
+        <source xml:lang="en">An error occurred while canceling the migration.</source>
+        <target state="new">An error occurred while canceling the migration.</target>
       </trans-unit>
       <trans-unit id="sql.migration.status">
         <source xml:lang="en">Status</source>
@@ -1125,24 +1197,40 @@ L'operazione potrebbe richiedere del tempo.</target>
         <target state="translated">La migrazione completa istanza gestita per livello di servizio business critical può richiedere molto più tempo dell’utilizzo generico perché è necessario eseguire il seeding di tre repliche secondarie per gruppo di disponibilità elevata Always On. La durata di questa operazione dipende dalle dimensioni dei dati. La velocità di seeding nel 90% dei casi è pari a 220 GB/ora o superiore.</target>
       </trans-unit>
       <trans-unit id="sql.migration.cutover.help.main">
-        <source xml:lang="en">When you are ready to do the migration cutover, perform the following steps to complete the database migration. Please note that the database is ready for cutover only after a full backup has been restored on the target Azure SQL Database Managed Instance.</source>
-        <target state="translated">Quando si è pronti per eseguire il cutover della migrazione, seguire questa procedura per completare la migrazione del database. Notare che il database è pronto per il cutover solo dopo il ripristino di un backup completo nell'Istanza gestita di database SQL di Azure di destinazione.</target>
+        <source xml:lang="en">Perform the following steps before you complete cutover.</source>
+        <target state="new">Perform the following steps before you complete cutover.</target>
       </trans-unit>
       <trans-unit id="sql.migration.cutover.step.1">
         <source xml:lang="en">1. Stop all the incoming transactions coming to the source database.</source>
         <target state="translated">1. Arrestare tutte le transazioni in ingresso nel database di origine.</target>
       </trans-unit>
-      <trans-unit id="sql.migration.cutover.step.2">
+      <trans-unit id="sql.migration.cutover.step.2.network.share">
         <source xml:lang="en">2. Take final transaction log backup and provide it in the network share location.</source>
         <target state="translated">2. Eseguire il backup del log delle transazioni finale e specificarlo nel percorso della condivisione di rete.</target>
       </trans-unit>
-      <trans-unit id="sql.migration.cutover.step.3">
+      <trans-unit id="sql.migration.cutover.step.2.blob">
+        <source xml:lang="en">2. Take final differential or transaction log backup and provide it in the Azure Storage Blob Container.</source>
+        <target state="new">2. Take final differential or transaction log backup and provide it in the Azure Storage Blob Container.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.cutover.step.3.network.share">
         <source xml:lang="en">3. Make sure all the log backups are restored on target database. The "Log backups(s) pending restore" should be zero.</source>
         <target state="translated">3. Assicurarsi che tutti i backup del log vengano ripristinati nel database di destinazione. Il valore di "Backup del log in attesa di ripristino" deve essere zero.</target>
       </trans-unit>
+      <trans-unit id="sql.migration.cutover.step.3.blob">
+        <source xml:lang="en">3. Make sure all the log backups are restored on target database. The "Log backups(s) pending restore" should be zero.</source>
+        <target state="new">3. Make sure all the log backups are restored on target database. The "Log backups(s) pending restore" should be zero.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.cutover.last.file.restored">
+        <source xml:lang="en">Last file restored: {0}</source>
+        <target state="new">Last file restored: {0}</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.last.scan.completed">
+        <source xml:lang="en">Last scan completed: {0}</source>
+        <target state="new">Last scan completed: {0}</target>
+      </trans-unit>
       <trans-unit id="sql.migartion.cutover.pending.backup">
-        <source xml:lang="en">Pending log backups: {0}</source>
-        <target state="translated">Backup dei log in sospeso: {0}</target>
+        <source xml:lang="en">Log backups pending restore: {0}</source>
+        <target state="new">Log backups pending restore: {0}</target>
       </trans-unit>
       <trans-unit id="sql.migration.confirm.checkbox.message">
         <source xml:lang="en">I confirm there are no additional log backup(s) to provide and want to complete cutover.</source>
@@ -1154,11 +1242,23 @@ L'operazione potrebbe richiedere del tempo.</target>
       </trans-unit>
       <trans-unit id="sql.migration.cannot.cancel">
         <source xml:lang="en">Migration is not in progress and cannot be cancelled.</source>
-        <target state="new">Migration is not in progress and cannot be cancelled.</target>
+        <target state="translated">La migrazione non è in corso e non può essere annullata.</target>
       </trans-unit>
       <trans-unit id="sql.migration.cannot.cutover">
         <source xml:lang="en">Migration is not in progress and cannot be cutover.</source>
-        <target state="new">Migration is not in progress and cannot be cutover.</target>
+        <target state="translated">La migrazione non è in corso e non è possibile eseguirne il cutover.</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.file.name">
+        <source xml:lang="en">File name</source>
+        <target state="new">File name</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.size.column.header">
+        <source xml:lang="en">Size</source>
+        <target state="new">Size</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.no.pending.backups">
+        <source xml:lang="en">No pending backups. Click refresh to check current status.</source>
+        <target state="new">No pending backups. Click refresh to check current status.</target>
       </trans-unit>
       <trans-unit id="sql.migration.search.for.migration">
         <source xml:lang="en">Search for migrations</source>
@@ -1214,7 +1314,7 @@ L'operazione potrebbe richiedere del tempo.</target>
       </trans-unit>
       <trans-unit id="sql.migration.status.error.count.some">
         <source xml:lang="en">{0} (</source>
-        <target state="new">{0} (</target>
+        <target state="translated">{0} (</target>
       </trans-unit>
       <trans-unit id="sql.migration.status.error.count.none">
         <source xml:lang="en">{0}</source>
@@ -1222,43 +1322,43 @@ L'operazione potrebbe richiedere del tempo.</target>
       </trans-unit>
       <trans-unit id="sql.migration.status.inprogress">
         <source xml:lang="en">In progress</source>
-        <target state="new">In progress</target>
+        <target state="translated">In corso</target>
       </trans-unit>
       <trans-unit id="sql.migration.status.succeeded">
         <source xml:lang="en">Succeeded</source>
-        <target state="new">Succeeded</target>
+        <target state="translated">Riuscita</target>
       </trans-unit>
       <trans-unit id="sql.migration.status.creating">
         <source xml:lang="en">Creating</source>
-        <target state="new">Creating</target>
+        <target state="translated">In fase di creazione</target>
       </trans-unit>
       <trans-unit id="sql.migration.status.completing">
         <source xml:lang="en">Completing</source>
-        <target state="new">Completing</target>
+        <target state="translated">In fase di completamento</target>
       </trans-unit>
-      <trans-unit id="sql.migration.status.cancelling">
-        <source xml:lang="en">Cancelling</source>
-        <target state="new">Cancelling</target>
+      <trans-unit id="sql.migration.status.canceling">
+        <source xml:lang="en">Canceling</source>
+        <target state="translated">Annullamento in corso</target>
       </trans-unit>
       <trans-unit id="sql.migration.status.failed">
         <source xml:lang="en">Failed</source>
-        <target state="new">Failed</target>
+        <target state="translated">Non riuscita</target>
       </trans-unit>
       <trans-unit id="sql.migration.status.warning.count.single">
         <source xml:lang="en">{0} Warning)</source>
-        <target state="new">{0} Warning)</target>
+        <target state="translated">{0} avviso)</target>
       </trans-unit>
       <trans-unit id="sql.migration.status.warning.count.multiple">
         <source xml:lang="en">{0} Warnings)</source>
-        <target state="new">{0} Warnings)</target>
+        <target state="translated">{0} avvisi)</target>
       </trans-unit>
       <trans-unit id="sql.migration.status.error.count.single">
         <source xml:lang="en">{0} Error)</source>
-        <target state="new">{0} Error)</target>
+        <target state="translated">{0} errore)</target>
       </trans-unit>
       <trans-unit id="sql.migration.status.error.count.multiple">
         <source xml:lang="en">{0} Errors)</source>
-        <target state="new">{0} Errors)</target>
+        <target state="translated">{0} errori)</target>
       </trans-unit>
       <trans-unit id="sql.migration.hrs">
         <source xml:lang="en">{0} hrs</source>
@@ -1331,6 +1431,26 @@ L'operazione potrebbe richiedere del tempo.</target>
       <trans-unit id="sql.migration.username">
         <source xml:lang="en">Username</source>
         <target state="translated">Nome utente</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.size">
+        <source xml:lang="en">Size (MB)</source>
+        <target state="translated">Dimensioni (MB)</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.last.backup">
+        <source xml:lang="en">Last backup</source>
+        <target state="translated">Ultimo backup</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.database.migration">
+        <source xml:lang="en">Databases for migration</source>
+        <target state="translated">Database per la migrazione</target>
+      </trans-unit>
+      <trans-unit id="sql.migrate.text">
+        <source xml:lang="en">Select database(s) that you want to migrate to Azure SQL</source>
+        <target state="translated">Selezionare i database per cui si desidera eseguire la migrazione ad Azure SQL</target>
+      </trans-unit>
+      <trans-unit id="sql.migration.offline.caps">
+        <source xml:lang="en">OFFLINE</source>
+        <target state="translated">OFFLINE</target>
       </trans-unit>
       <trans-unit id="sql.migration.issues">
         <source xml:lang="en">Issues</source>
@@ -1416,6 +1536,10 @@ L'operazione potrebbe richiedere del tempo.</target>
         <source xml:lang="en">Databases ({0}/{1})</source>
         <target state="translated">Database ({0}/{1})</target>
       </trans-unit>
+      <trans-unit id="sql.migration.databases.selected">
+        <source xml:lang="en">{0}/{1} Databases Selected</source>
+        <target state="translated">{0}/{1} database selezionati</target>
+      </trans-unit>
       <trans-unit id="sql.migration.issues.count">
         <source xml:lang="en">Issues ({0})</source>
         <target state="translated">Problemi ({0})</target>
@@ -1438,7 +1562,7 @@ L'operazione potrebbe richiedere del tempo.</target>
       </trans-unit>
       <trans-unit id="sql.migration.status.refresh.label">
         <source xml:lang="en">Refresh</source>
-        <target state="new">Refresh</target>
+        <target state="translated">Aggiorna</target>
       </trans-unit>
       <trans-unit id="sql.migration.auto.refresh.off">
         <source xml:lang="en">Auto Refresh: Off</source>
