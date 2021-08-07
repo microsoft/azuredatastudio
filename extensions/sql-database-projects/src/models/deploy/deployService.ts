@@ -71,8 +71,8 @@ export class DeployService {
 
 				if (connectionString && profile.envVariableName) {
 					content.Values[profile.envVariableName] = connectionString;
-					fse.writeFileSync(profile.appSettingFile, JSON.stringify(content, undefined, 4));
-					this.logToOutput(`app setting '${profile.appSettingFile}' has been updated`);
+					await fse.writeFileSync(profile.appSettingFile, JSON.stringify(content, undefined, 4));
+					this.logToOutput(`app setting '${profile.appSettingFile}' has been updated. env variable name: ${profile.envVariableName} connection String: ${connectionString}`);
 
 				} else {
 					this.logToOutput(constants.deployAppSettingUpdateFailed(profile.appSettingFile));
@@ -126,7 +126,7 @@ export class DeployService {
 
 				if (runningDockerId) {
 					this.logToOutput(constants.dockerContainerCreatedMessage(runningDockerId));
-					return await this.getConnection(profile.localDbSetting);
+					return await this.getConnection(profile.localDbSetting, false, 'master');
 
 				} else {
 					this.logToOutput(constants.dockerContainerFailedToRunErrorMessage);
@@ -167,80 +167,64 @@ export class DeployService {
 
 	}
 
-	private async getConnection(profile: ILocalDbSetting): Promise<string | undefined> {
+	public async getConnection(profile: ILocalDbSetting, savePassword: boolean, database: string): Promise<string | undefined> {
 		const getAzdataApi = await utils.getAzdataApi();
 		const vscodeMssqlApi = getAzdataApi ? undefined : await utils.getVscodeMssqlApi();
 
-		const connectionProfile = {
-			password: profile.password,
-			serverName: `${profile.serverName},${profile.port}`,
-			server: `${profile.serverName}`,
-			port: profile.port,
-			database: '',
-			savePassword: true,
-			userName: profile.userName,
-			user: profile.userName,
-			providerName: 'MSSQL',
-			saveProfile: true,
-			id: '',
-			connectionName: `${constants.connectionNamePrefix} ${profile.dbName}`,
-			options: [],
-			authenticationType: 'SqlLogin',
-			email: undefined,
-			accountId: undefined,
-			azureAccountToken: undefined,
-			encrypt: undefined,
-			trustServerCertificate: undefined,
-			persistSecurityInfo: undefined,
-			connectTimeout: undefined,
-			connectRetryCount: undefined,
-			connectRetryInterval: undefined,
-			applicationName: undefined,
-			workstationId: undefined,
-			applicationIntent: undefined,
-			currentLanguage: undefined,
-			pooling: undefined,
-			maxPoolSize: undefined,
-			minPoolSize: undefined,
-			loadBalanceTimeout: undefined,
-			replication: undefined,
-			attachDbFilename: undefined,
-			failoverPartner: undefined,
-			multiSubnetFailover: undefined,
-			multipleActiveResultSets: undefined,
-			packetSize: undefined,
-			typeSystemVersion: undefined,
-			connectionString: undefined
-		};
-
 		let connection = await this.retry(constants.connectingToSqlServerOnDockerMessage, async () => {
 			if (getAzdataApi) {
+				const connectionProfile = {
+					password: profile.password,
+					serverName: `${profile.serverName},${profile.port}`,
+					database: database,
+					savePassword: savePassword,
+					userName: profile.userName,
+					providerName: 'MSSQL',
+					saveProfile: true,
+					id: '',
+					connectionName: `${constants.connectionNamePrefix} ${profile.dbName}`,
+					options: [],
+					authenticationType: 'SqlLogin'
+				};
 				return await getAzdataApi.connection.connect(connectionProfile, true, false);
 			} else if (vscodeMssqlApi) {
-				return await vscodeMssqlApi.connect(connectionProfile);
+				const connectionProfile = {
+					password: profile.password,
+					server: `${profile.serverName}`,
+					port: profile.port,
+					database: database,
+					savePassword: savePassword,
+					user: profile.userName,
+					authenticationType: 'SqlLogin',
+					encrypt: false,
+					connectTimeout: 30,
+					applicationName: 'SQL Database Project'
+				};
+				this.logToOutput(JSON.stringify(connectionProfile));
+				let connectionUrl = await vscodeMssqlApi.connect(connectionProfile);
+				return connectionUrl;
+			} else {
+				return undefined;
 			}
-			return undefined;
 		}, (connection) => {
-			const connectionResult = <ConnectionResult>connection;
-			if (connectionResult) {
-				const connected = connectionResult !== undefined && connectionResult.connected && connectionResult.connectionId !== undefined;
-				return { validated: connected, errorMessage: connected ? '' : constants.connectionFailedError(connectionResult?.errorMessage) };
+			if (!connection) {
+				return { validated: false, errorMessage: constants.connectionFailedError('No result returned') };
+			} else if (getAzdataApi) {
+				const connectionResult = <ConnectionResult>connection;
+				if (connectionResult) {
+					const connected = connectionResult !== undefined && connectionResult.connected && connectionResult.connectionId !== undefined;
+					return { validated: connected, errorMessage: connected ? '' : constants.connectionFailedError(connectionResult?.errorMessage) };
+				} else {
+					return { validated: false, errorMessage: constants.connectionFailedError('') };
+				}
 			} else {
 				return { validated: connection !== undefined, errorMessage: constants.connectionFailedError('') };
 			}
-		}, (connection) => {
-			const connectionResult = <ConnectionResult>connection;
-			return connectionResult ? connectionResult.connectionId : <string>connection;
-		}, 5, 5); // Try 5 times and wait 5 seconds before each try
 
-		// TODO: this is just for test to see what's going on with connecting to server in vscode
-		if (!connection && !getAzdataApi && vscodeMssqlApi) {
-			let connectionProfile = await vscodeMssqlApi.promptForConnection(true);
-			if (connectionProfile) {
-				this.logToOutput(`connecting to ${JSON.stringify(connectionProfile)}`);
-				connection = await vscodeMssqlApi.connect(connectionProfile);
-			}
-		}
+		}, (connection) => {
+			const connectionResult = connection !== undefined && getAzdataApi ? <ConnectionResult>connection : undefined;
+			return connectionResult ? connectionResult.connectionId : <string>connection;
+		}, 10, 5); // Try 5 times and wait 5 seconds before each try
 
 		if (connection) {
 			const connectionResult = <ConnectionResult>connection;
@@ -288,7 +272,7 @@ export class DeployService {
 		numberOfAttempts: number = 10,
 		waitInSeconds: number = 2): Promise<T | undefined> {
 		for (let count = 0; count < numberOfAttempts; count++) {
-			this.logToOutput(constants.retryWaitMessage(waitInSeconds * 1000, name));
+			this.logToOutput(constants.retryWaitMessage(waitInSeconds, name));
 			await new Promise(c => setTimeout(c, waitInSeconds * 1000));
 			this.logToOutput(constants.retryRunMessage(count, numberOfAttempts, name));
 

@@ -270,6 +270,9 @@ export class ProjectsController {
 						// Update app settings if requested by user
 						//
 						await this.deployService.updateAppSettings(deployProfile);
+						if (deployProfile.localDbSetting) {
+							await this.deployService.getConnection(deployProfile.localDbSetting, true, deployProfile.localDbSetting.dbName);
+						}
 						vscode.window.showInformationMessage(constants.deployProjectSucceed);
 					} else {
 						vscode.window.showErrorMessage(constants.deployProjectFailed(publishResult?.errorMessage || ''));
