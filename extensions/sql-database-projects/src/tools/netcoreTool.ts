@@ -148,17 +148,12 @@ export class NetCoreTool {
 				child.on('exit', () => {
 					this.netCoreSdkInstalledVersion = Buffer.concat(stdoutBuffers).toString('utf8').trim();
 
-					try {
-						if (semver.gte(this.netCoreSdkInstalledVersion, minSupportedNetCoreVersion)) {		// Net core version greater than or equal to minSupportedNetCoreVersion are supported for Build
-							isSupported = true;
-						} else {
-							isSupported = false;
-						}
-						resolve({ stdout: this.netCoreSdkInstalledVersion });
-					} catch (err) {
-						console.log(err);
-						reject(err);
+					if (semver.gte(this.netCoreSdkInstalledVersion, minSupportedNetCoreVersion)) {		// Net core version greater than or equal to minSupportedNetCoreVersion are supported for Build
+						isSupported = true;
+					} else {
+						isSupported = false;
 					}
+					resolve({ stdout: this.netCoreSdkInstalledVersion });
 				});
 				child.on('error', (err) => {
 					console.log(err);
