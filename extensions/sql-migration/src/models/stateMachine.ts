@@ -190,15 +190,15 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		try {
 			this._assessmentApiResponse = (await this.migrationService.getAssessments(ownerUri, this._databaseAssessment))!;
 			this._assessmentResults = {
-				issues: this._assessmentApiResponse.assessmentResult.items,
-				databaseAssessments: this._assessmentApiResponse.assessmentResult.databases.map(d => {
+				issues: this._assessmentApiResponse?.assessmentResult?.items ?? [],
+				databaseAssessments: this._assessmentApiResponse?.assessmentResult?.databases?.map(d => {
 					return {
 						name: d.name,
 						issues: d.items,
 						errors: d.errors
 					};
-				}),
-				errors: this._assessmentApiResponse.errors
+				}) ?? [],
+				errors: this._assessmentApiResponse?.errors ?? []
 			};
 		} catch (error) {
 			this._assessmentResults = {
