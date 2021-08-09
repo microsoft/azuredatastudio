@@ -39,9 +39,10 @@ export const SKU_RECOMMENDATION_SOME_SUCCESSFUL = (migratableCount: number, data
 };
 export const SKU_RECOMMENDATION_CHOOSE_A_TARGET = localize('sql.migration.wizard.sku.choose_a_target', "Choose your Azure SQL target");
 
-export const SKU_RECOMMENDATION_SUBSCRIPTION_INFO = localize('sql.migration.sku.subscription', "Subscription Info Tooltip");
-export const SKU_RECOMMENDATION_LOCATION_INFO = localize('sql.migration.sku.location', "Location Info Tooltip");
-export const SKU_RECOMMENDATION_RESOURCE_GROUP_INFO = localize('sql.migration.sku.resource_group', "Resource Group Info Tooltip");
+export const SKU_RECOMMENDATION_SUBSCRIPTION_INFO = localize('sql.migration.sku.subscription', "Subscription");
+export const SKU_RECOMMENDATION_LOCATION_INFO = localize('sql.migration.sku.location', "Location");
+export const SKU_RECOMMENDATION_RESOURCE_GROUP_INFO = localize('sql.migration.sku.resource_group', "Resource Group");
+export const SKU_RECOMMENDATION_RESOURCE_INFO = localize('sql.migration.sku.resource', "Azure SQL managed instance");
 export const SKU_RECOMMENDATION_NONE_SUCCESSFUL = localize('sql.migration.sku.none', "Based on the results of our source configuration scans, none of your databases can be migrated to Azure SQL.");
 export const SKU_RECOMMENDATION_MI_CARD_TEXT = localize('sql.migration.sku.mi.card.title', "Azure SQL Managed Instance (PaaS)");
 export const SKU_RECOMMENDATION_VM_CARD_TEXT = localize('sql.migration.sku.vm.card.title', "SQL Server on Azure Virtual Machine (IaaS)");
@@ -101,8 +102,10 @@ export const DATABASE_BACKUP_NC_FILE_SHARE_RADIO_LABEL = localize('sql.migration
 export const DATABASE_BACKUP_NETWORK_SHARE_HEADER_TEXT = localize('sql.migration.network.share.header.text', "Network share details");
 export const DATABASE_BACKUP_NC_NETWORK_SHARE_HELP_TEXT = localize('sql.migration.network.share.help.text', "Provide the network share location that contains backups and the user credentials that has read access to the share");
 export const DATABASE_BACKUP_NETWORK_SHARE_LOCATION_LABEL = localize('sql.migration.network.share.location.label', "Network share location that contains backups.");
+export const DATABASE_BACKUP_NETWORK_SHARE_LOCATION_INFO = localize('sql.migration.network.share.location.info', "Network share location that contains backups.");
 export const DATABASE_SERVICE_ACCOUNT_INFO_TEXT = localize('sql.migration.service.account.info.text', "Ensure that the service account running the source SQL Server instance has read privileges on the network share.");
 export const DATABASE_BACKUP_NETWORK_SHARE_WINDOWS_USER_LABEL = localize('sql.migration.network.share.windows.user.label', "Windows user account with read access to the network share location.");
+export const DATABASE_BACKUP_NETWORK_SHARE_WINDOWS_USER_INFO = localize('sql.migration.network.share.windows.user.info', "Windows user account with read access to the network share location.");
 export const DATABASE_BACKUP_NETWORK_SHARE_PASSWORD_LABEL = localize('sql.migration.network.share.password.label', "Password");
 export const DATABASE_BACKUP_NETWORK_SHARE_PASSWORD_PLACEHOLDER = localize('sql.migration.network.share.password.placeholder', "Enter password");
 export const DATABASE_BACKUP_NETWORK_SHARE_AZURE_ACCOUNT_HEADER = localize('sql.migration.network.share.azure.header', "Storage account details");
@@ -201,6 +204,11 @@ export const DATABASE_MIGRATION_SERVICE_AUTHENTICATION_KEYS = localize('sql.migr
 // create migration service dialog
 export const CREATE_MIGRATION_SERVICE_TITLE = localize('sql.migration.services.dialog.title', "Create Azure Database Migration Service");
 export const MIGRATION_SERVICE_DIALOG_DESCRIPTION = localize('sql.migration.services.container.description', "Enter the information below to add a new Azure Database Migration Service.");
+export const MIGRATION_SERVICE_SUBSCRIPTION_INFO = localize('sql.migration.services.subscription', "Subscription");
+export const MIGRATION_SERVICE_LOCATION_INFO = localize('sql.migration.services.location', "Location");
+export const MIGRATION_SERVICE_RESOURCE_GROUP_INFO = localize('sql.migration.services.resourcegroup', "Resource group");
+export const MIGRATION_SERVICE_NAME_INFO = localize('sql.migration.services.name', "Name");
+export const MIGRATION_SERVICE_TARGET_INFO = localize('sql.migration.services.target', "Target");
 export const LOADING_MIGRATION_SERVICES = localize('sql.migration.service.container.loading.help', "Loading Migration Services");
 export const SERVICE_CONTAINER_HEADING = localize('sql.migration.service.container.heading', "Setup Integration Runtime");
 export const SERVICE_CONTAINER_DESCRIPTION1 = localize('sql.migration.service.container.container.description1', "Azure Database Migration Service leverages Azure Data Factory's Self-hosted Integration Runtime to upload backups from on-premise network fie share to Azure.");

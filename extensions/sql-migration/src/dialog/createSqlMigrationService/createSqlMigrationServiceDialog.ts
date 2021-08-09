@@ -10,7 +10,7 @@ import { MigrationStateModel, NetworkContainerType } from '../../models/stateMac
 import * as constants from '../../constants/strings';
 import * as os from 'os';
 import { azureResource } from 'azureResource';
-import { IconPathHelper } from '../../constants/iconPathHelper';
+import { IconPath, IconPathHelper } from '../../constants/iconPathHelper';
 import { CreateResourceGroupDialog } from '../createResourceGroup/createResourceGroupDialog';
 import * as EventEmitter from 'events';
 
@@ -205,6 +205,10 @@ export class CreateSqlMigrationServiceDialog {
 		});
 	}
 
+	private createIconTextCell(icon: IconPath, text: string): string {
+		return text;
+	}
+
 	private async migrationServiceDropdownContainer(): Promise<azdata.FlexContainer> {
 		const dialogDescription = this._view.modelBuilder.text().withProps({
 			value: constants.MIGRATION_SERVICE_DIALOG_DESCRIPTION,
@@ -215,6 +219,7 @@ export class CreateSqlMigrationServiceDialog {
 
 		const subscriptionDropdownLabel = this._view.modelBuilder.text().withProps({
 			value: constants.SUBSCRIPTION,
+			description: this.createIconTextCell(IconPathHelper.info, constants.MIGRATION_SERVICE_SUBSCRIPTION_INFO),
 			CSSStyles: {
 				'font-size': '13px',
 				'font-weight': 'bold'
@@ -228,6 +233,7 @@ export class CreateSqlMigrationServiceDialog {
 
 		const resourceGroupDropdownLabel = this._view.modelBuilder.text().withProps({
 			value: constants.RESOURCE_GROUP,
+			description: this.createIconTextCell(IconPathHelper.info, constants.MIGRATION_SERVICE_RESOURCE_GROUP_INFO),
 			CSSStyles: {
 				'font-size': '13px',
 				'font-weight': 'bold'
@@ -243,6 +249,7 @@ export class CreateSqlMigrationServiceDialog {
 
 		const migrationServiceNameLabel = this._view.modelBuilder.text().withProps({
 			value: constants.NAME,
+			description: this.createIconTextCell(IconPathHelper.info, constants.MIGRATION_SERVICE_NAME_INFO),
 			CSSStyles: {
 				'font-size': '13px',
 				'font-weight': 'bold'
@@ -276,6 +283,7 @@ export class CreateSqlMigrationServiceDialog {
 
 		const locationDropdownLabel = this._view.modelBuilder.text().withProps({
 			value: constants.LOCATION,
+			description: this.createIconTextCell(IconPathHelper.info, constants.MIGRATION_SERVICE_LOCATION_INFO),
 			CSSStyles: {
 				'font-size': '13px',
 				'font-weight': 'bold'
@@ -290,6 +298,7 @@ export class CreateSqlMigrationServiceDialog {
 
 		const targetlabel = this._view.modelBuilder.text().withProps({
 			value: constants.TARGET,
+			description: this.createIconTextCell(IconPathHelper.info, constants.MIGRATION_SERVICE_TARGET_INFO),
 			CSSStyles: {
 				'font-size': '13px',
 				'font-weight': 'bold'

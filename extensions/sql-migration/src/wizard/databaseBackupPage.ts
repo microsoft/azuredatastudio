@@ -10,7 +10,7 @@ import { getStorageAccountAccessKeys } from '../api/azure';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
 import { Blob, MigrationMode, MigrationSourceAuthenticationType, MigrationStateModel, MigrationTargetType, NetworkContainerType, StateChangeEvent } from '../models/stateMachine';
 import * as constants from '../constants/strings';
-import { IconPathHelper } from '../constants/iconPathHelper';
+import { IconPath, IconPathHelper } from '../constants/iconPathHelper';
 import { WIZARD_INPUT_COMPONENT_WIDTH } from './wizardController';
 import { findDropDownItemIndex, selectDropDownIndex } from '../api/utils';
 
@@ -159,6 +159,10 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 		return flexContainer;
 	}
 
+	private createIconTextCell(icon: IconPath, text: string): string {
+		return text;
+	}
+
 	private createNetworkDetailsContainer(): azdata.FlexContainer {
 		this._networkShareContainer = this.createNetworkShareContainer();
 		this._blobContainer = this.createBlobContainer();
@@ -244,6 +248,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 
 		const networkLocationInputBoxLabel = this._view.modelBuilder.text().withProps({
 			value: constants.DATABASE_BACKUP_NETWORK_SHARE_LOCATION_LABEL,
+			description: this.createIconTextCell(IconPathHelper.info, constants.DATABASE_BACKUP_NETWORK_SHARE_LOCATION_INFO),
 			width: WIZARD_INPUT_COMPONENT_WIDTH,
 			CSSStyles: {
 				'font-size': '13px',
@@ -286,6 +291,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 		const windowsUserAccountLabel = this._view.modelBuilder.text()
 			.withProps({
 				value: constants.DATABASE_BACKUP_NETWORK_SHARE_WINDOWS_USER_LABEL,
+				description: this.createIconTextCell(IconPathHelper.info, constants.DATABASE_BACKUP_NETWORK_SHARE_WINDOWS_USER_INFO),
 				width: WIZARD_INPUT_COMPONENT_WIDTH,
 				CSSStyles: {
 					'font-size': '13px',
