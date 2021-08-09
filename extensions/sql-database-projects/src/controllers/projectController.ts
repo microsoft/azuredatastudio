@@ -809,6 +809,37 @@ export class ProjectsController {
 
 		const autorestHelper = new AutorestHelper();
 		await autorestHelper.generateAutorestFiles(swaggerPath, outputFolder);
+
+		const newProjFilePath = await this.createNewProject({
+			newProjName: path.basename(swaggerPath, '.yaml'),
+			folderUri: vscode.Uri.file(outputFolder),
+			projectTypeId: constants.emptySqlDatabaseProjectTypeId
+		});
+
+
+		const project = await Project.openProject(newProjFilePath);
+		let fileFolderList: vscode.Uri[] = await this.getSqlFileList(outputFolder);
+
+		await project.addToProject(fileFolderList); // Add generated file structure to the project
+
+		// add project to workspace
+		const workspaceApi = utils.getDataWorkspaceExtensionApi();
+		workspaceApi.showProjectsView();
+		await workspaceApi.addProjectsToWorkspace([vscode.Uri.file(newProjFilePath)]);
+	}
+
+	private async getSqlFileList(folder: string): Promise<vscode.Uri[]> {
+		const entries = await fs.readdir(folder, { withFileTypes: true });
+
+		const folders = entries.filter(dir => dir.isDirectory()).map(dir => path.join(folder, dir.name));
+		const files = entries.filter(file => !file.isDirectory()).map(file => vscode.Uri.file(path + file.name));
+
+
+		for (const folder of folders) {
+			files.push(...await this.getSqlFileList(folder));
+		}
+
+		return files;
 	}
 
 	//#region Helper methods
