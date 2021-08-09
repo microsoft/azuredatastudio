@@ -34,6 +34,7 @@ import { IEditorProgressService } from 'vs/platform/progress/common/progress';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 
 const ShowActionsText: string = nls.localize('dashboard.explorer.actions', "Show Actions");
+const LabelColoumnActions: string = nls.localize('dashboard.explorer.actionsColumn', "Actions");
 const NameWithIconProperty: string = 'NameWithIcon';
 export const ConnectionProfilePropertyName: string = 'connection_profile';
 
@@ -73,7 +74,8 @@ export class ExplorerTable extends Disposable {
 			id: 'actions',
 			iconCssClass: 'toggle-more',
 			title: ShowActionsText,
-			name: 'Actions'
+			name: LabelColoumnActions,
+			width: 50
 		});
 		this._table.registerPlugin(this._actionsColumn);
 		this._register(this._actionsColumn.onClick((args) => {
@@ -205,11 +207,20 @@ export class ExplorerTable extends Disposable {
 					id: property.value,
 					field: property.value,
 					name: property.displayName,
-					width: columnWidth
+					width: columnWidth,
+					minWidth: 50
 				};
 			}
 		});
-		columns.push(this._actionsColumn.definition);
+		const actionsColumnDefinition = {
+			id: this._actionsColumn.definition.id,
+			width: 50,
+			formatter: this._actionsColumn.definition.formatter,
+			name: this._actionsColumn.definition.name,
+			resizable: this._actionsColumn.definition.resizable,
+			selectable: this._actionsColumn.definition.selectable
+		};
+		columns.push(actionsColumnDefinition);
 		return columns;
 	}
 
