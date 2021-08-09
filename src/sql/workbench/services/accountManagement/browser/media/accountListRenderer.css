@@ -18,11 +18,16 @@
 
 .list-row.account-picker-list .label .contextual-display-name {
 	font-size: 15px;
+	margin-top: 2px;
+	margin-bottom: 6px;
+	font-weight: normal;
 }
 
 .list-row.account-picker-list .label .display-name,
 .list-row.tenant-picker-list .label .display-name {
 	font-size: 13px;
+	margin-top: 0px;
+	font-weight: normal;
 }
 
 .list-row.account-picker-list .label .content,
