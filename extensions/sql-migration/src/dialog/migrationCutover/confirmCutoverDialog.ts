@@ -8,6 +8,8 @@ import * as vscode from 'vscode';
 import { MigrationCutoverDialogModel } from './migrationCutoverDialogModel';
 import * as constants from '../../constants/strings';
 import { SqlManagedInstance } from '../../api/azure';
+import { IconPathHelper } from '../../constants/iconPathHelper';
+import { convertByteSizeToReadableUnit, get12HourTime } from '../../api/utils';
 
 export class ConfirmCutoverDialog {
 	private _dialogObject!: azdata.window.Dialog;
@@ -19,6 +21,7 @@ export class ConfirmCutoverDialog {
 	}
 
 	async initialize(): Promise<void> {
+
 		let tab = azdata.window.createTab('');
 		tab.registerContent(async (view: azdata.ModelView) => {
 			this._view = view;
@@ -50,27 +53,19 @@ export class ConfirmCutoverDialog {
 			}).component();
 
 			const helpStepsText = this._view.modelBuilder.text().withProps({
-				value: `${constants.CUTOVER_HELP_STEP1}
-				${constants.CUTOVER_HELP_STEP2}
-				${constants.CUTOVER_HELP_STEP3}`,
+				value: this.migrationCutoverModel.confirmCutoverStepsString(),
 				CSSStyles: {
 					'font-size': '13px',
 				}
 			}).component();
 
 
-			const pendingBackupCount = this.migrationCutoverModel.migrationStatus.properties.migrationStatusDetails?.pendingLogBackupsCount ?? 0;
-			const pendingText = this._view.modelBuilder.text().withProps({
-				CSSStyles: {
-					'font-size': '13px',
-					'font-weight': 'bold'
-				},
-				value: constants.PENDING_BACKUPS(pendingBackupCount!)
-			}).component();
+			const fileContainer = this.migrationCutoverModel.isBlobMigration() ? this.createBlobFileContainer() : this.createNewtorkShareFileContainer();
 
 			const confirmCheckbox = this._view.modelBuilder.checkBox().withProps({
 				CSSStyles: {
 					'font-size': '13px',
+					'margin-bottom': '8px'
 				},
 				label: constants.CONFIRM_CUTOVER_CHECKBOX,
 			}).component();
@@ -111,7 +106,7 @@ export class ConfirmCutoverDialog {
 				separator,
 				helpMainText,
 				helpStepsText,
-				pendingText,
+				fileContainer,
 				confirmCheckbox,
 				cutoverWarning,
 				businessCriticalinfoBox
@@ -146,5 +141,220 @@ export class ConfirmCutoverDialog {
 		});
 		this._dialogObject.content = [tab];
 		azdata.window.openDialog(this._dialogObject);
+	}
+
+	private createBlobFileContainer(): azdata.FlexContainer {
+		const container = this._view.modelBuilder.flexContainer().component();
+
+		const containerHeading = this._view.modelBuilder.text().withProps({
+			value: constants.PENDING_BACKUPS(this.migrationCutoverModel.getPendingLogBackupsCount() ?? 0),
+			width: 250,
+			CSSStyles: {
+				'font-size': '13px',
+				'line-height': '18px',
+				'font-weight': 'bold'
+			}
+		}).component();
+
+		const refreshButton = this._view.modelBuilder.button().withProps({
+			iconPath: IconPathHelper.refresh,
+			iconHeight: 16,
+			iconWidth: 16,
+			width: 70,
+			height: 20,
+			label: constants.REFRESH,
+			CSSStyles: {
+				'margin-top': '13px'
+			}
+		}).component();
+
+
+		container.addItem(containerHeading, {
+			flex: '0'
+		});
+
+		refreshButton.onDidClick(async e => {
+			refreshLoader.loading = true;
+			try {
+				await this.migrationCutoverModel.fetchStatus();
+				containerHeading.value = constants.PENDING_BACKUPS(this.migrationCutoverModel.getPendingLogBackupsCount() ?? 0);
+			} catch (e) {
+				this._dialogObject.message = {
+					level: azdata.window.MessageLevel.Error,
+					text: e.toString()
+				};
+			} finally {
+				refreshLoader.loading = false;
+			}
+		});
+
+		container.addItem(refreshButton, {
+			flex: '0'
+		});
+
+		const refreshLoader = this._view.modelBuilder.loadingComponent().withProps({
+			loading: false,
+			CSSStyles: {
+				'margin-top': '8px',
+				'margin-left': '5px'
+			}
+		}).component();
+
+		container.addItem(refreshLoader, {
+			flex: '0'
+		});
+		return container;
+	}
+
+	private createNewtorkShareFileContainer(): azdata.FlexContainer {
+		const container = this._view.modelBuilder.flexContainer().withLayout({
+			flexFlow: 'column'
+		}).component();
+
+		const headingRow = this._view.modelBuilder.flexContainer().withLayout({
+			flexFlow: 'row'
+		}).component();
+
+		let expanded: boolean = false;
+		const containerHeading = this._view.modelBuilder.button().withProps({
+			label: constants.PENDING_BACKUPS(this.migrationCutoverModel.getPendingLogBackupsCount() ?? 0),
+			width: 220,
+			height: 14,
+			iconHeight: 12,
+			iconWidth: 8,
+			iconPath: IconPathHelper.expandButtonClosed,
+			CSSStyles: {
+				'font-size': '13px',
+				'line-height': '18px',
+				'font-weight': 'bold',
+				'margin': '16px 10px 0px 0px'
+			}
+		}).component();
+
+		containerHeading.onDidClick(async e => {
+			if (expanded) {
+				containerHeading.iconPath = IconPathHelper.expandButtonClosed;
+				containerHeading.iconHeight = 12;
+				fileTable.updateCssStyles({
+					'display': 'none'
+				});
+
+			} else {
+				containerHeading.iconPath = IconPathHelper.expandButtonOpen;
+				containerHeading.iconHeight = 8;
+				fileTable.updateCssStyles({
+					'display': 'inline'
+				});
+			}
+			expanded = !expanded;
+		});
+
+		const refreshButton = this._view.modelBuilder.button().withProps({
+			iconPath: IconPathHelper.refresh,
+			iconHeight: 16,
+			iconWidth: 16,
+			width: 70,
+			height: 20,
+			label: constants.REFRESH,
+			CSSStyles: {
+				'margin-top': '13px'
+			}
+		}).component();
+
+		headingRow.addItem(containerHeading, {
+			flex: '0'
+		});
+
+		refreshButton.onDidClick(async e => {
+			refreshLoader.loading = true;
+			try {
+				await this.migrationCutoverModel.fetchStatus();
+				containerHeading.label = constants.PENDING_BACKUPS(this.migrationCutoverModel.getPendingLogBackupsCount() ?? 0);
+				lastScanCompleted.value = constants.LAST_SCAN_COMPLETED(get12HourTime(new Date()));
+				this.refreshFileTable(fileTable);
+			} catch (e) {
+				this._dialogObject.message = {
+					level: azdata.window.MessageLevel.Error,
+					text: e.toString()
+				};
+			} finally {
+				refreshLoader.loading = false;
+			}
+		});
+
+		headingRow.addItem(refreshButton, {
+			flex: '0'
+		});
+
+		const refreshLoader = this._view.modelBuilder.loadingComponent().withProps({
+			loading: false,
+			CSSStyles: {
+				'margin-top': '15px',
+				'margin-left': '5px',
+				'height': '13px'
+			}
+		}).component();
+
+		headingRow.addItem(refreshLoader, {
+			flex: '0'
+		});
+
+		container.addItem(headingRow);
+
+		const lastScanCompleted = this._view.modelBuilder.text().withProps({
+			value: constants.LAST_SCAN_COMPLETED(get12HourTime(new Date())),
+			CSSStyles: {
+				'font-size': '12px',
+			}
+		}).component();
+
+		container.addItem(lastScanCompleted);
+
+		const fileTable = this._view.modelBuilder.table().withProps({
+			columns: [
+				{
+					value: constants.FILE_NAME,
+					type: azdata.ColumnType.text,
+					width: 250
+				},
+				{
+					value: constants.STATUS,
+					type: azdata.ColumnType.text,
+					width: 80
+				},
+				{
+					value: constants.SIZE_COLUMN_HEADER,
+					type: azdata.ColumnType.text,
+					width: 70
+				}
+			],
+			data: [],
+			width: 400,
+			height: 150,
+			CSSStyles: {
+				'display': 'none'
+			}
+		}).component();
+		container.addItem(fileTable);
+		this.refreshFileTable(fileTable);
+		return container;
+	}
+
+	private refreshFileTable(filetable: azdata.TableComponent) {
+		const pendingFiles = this.migrationCutoverModel.getPendingfiles();
+		if (pendingFiles.length > 0) {
+			filetable.data = pendingFiles.map(f => {
+				return [
+					f.fileName,
+					f.status,
+					convertByteSizeToReadableUnit(f.totalSize)
+				];
+			});
+		} else {
+			filetable.data = [
+				[constants.NO_PENDING_BACKUPS]
+			];
+		}
+
 	}
 }

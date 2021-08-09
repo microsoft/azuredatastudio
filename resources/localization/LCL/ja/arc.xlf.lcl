@@ -805,12 +805,18 @@
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.extensionsAddErrorrMessage" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Value should be either of the following: ({0}).]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[値は次のいずれかにする必要があります: ({0})。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.extensionsAddFunction" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Some extensions must be loaded into PostgreSQL at startup time before they can be used. To edit, type in comma separated list of valid extensions: ({0}).]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[一部の拡張機能を使用するには、起動時に PostgreSQL に読み込む必要があります。編集するには、有効な拡張機能のコンマ区切りの一覧を入力します({0})。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2500,8 +2506,8 @@
       <Item ItemId=";extensions/arc/package.arc.agreement.sql.help.text" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Azure Arc enabled Managed Instance provides SQL Server access and feature compatibility that can be deployed on the infrastructure of your choice. {0}]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Azure Arc 対応 Managed Instance により、選択したインフラストラクチャにデプロイ可能な SQL Server のアクセスと機能の互換性が得られます。このサービスはプレビュー版ですが、Azure 上の SQL Managed Instance と比較して、いくつかの機能制限があります。{0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Azure Arc 対応 Managed Instance により、選択したインフラストラクチャにデプロイ可能な SQL Server のアクセスと機能の互換性が得られます。{0}]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Azure Arc enabled Managed Instance provides SQL Server access and feature compatibility that can be deployed on the infrastructure of your choice. While this service is in preview, it has some feature limitations compared to SQL Managed Instance on Azure. {0}]]></Val>
@@ -2944,6 +2950,9 @@
       <Item ItemId=";extensions/arc/package.arc.data.controller.summary.data.controller.infrastructure" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Data controller infrastructure]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[データ コントローラー インフラストラクチャ]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>

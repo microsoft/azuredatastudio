@@ -34,6 +34,8 @@ export class IconPathHelper {
 	public static completingCutover: IconPath;
 	public static migrationService: IconPath;
 	public static sendFeedback: IconPath;
+	public static expandButtonClosed: IconPath;
+	public static expandButtonOpen: IconPath;
 	public static newSupportRequest: IconPath;
 	public static emptyTable: IconPath;
 
@@ -112,7 +114,7 @@ export class IconPathHelper {
 		};
 		IconPathHelper.info = {
 			light: context.asAbsolutePath('images/info.svg'),
-			dark: context.asAbsolutePath('images/infoBox.svg')
+			dark: context.asAbsolutePath('images/info.svg')
 		};
 		IconPathHelper.error = {
 			light: context.asAbsolutePath('images/error.svg'),
@@ -129,6 +131,14 @@ export class IconPathHelper {
 		IconPathHelper.sendFeedback = {
 			light: context.asAbsolutePath('images/sendFeedback.svg'),
 			dark: context.asAbsolutePath('images/sendFeedback.svg')
+		};
+		IconPathHelper.expandButtonClosed = {
+			light: context.asAbsolutePath('images/expandButtonClosedLight.svg'),
+			dark: context.asAbsolutePath('images/expandButtonClosedDark.svg')
+		};
+		IconPathHelper.expandButtonOpen = {
+			light: context.asAbsolutePath('images/expandButtonOpenLight.svg'),
+			dark: context.asAbsolutePath('images/expandButtonOpenDark.svg')
 		};
 		IconPathHelper.newSupportRequest = {
 			light: context.asAbsolutePath('images/newSupportRequest.svg'),

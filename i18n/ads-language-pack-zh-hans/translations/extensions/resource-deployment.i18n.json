@@ -604,13 +604,6 @@
 		"dist/services/tools/azdataTool": {
 			"resourceDeployment.AzdataDescription": "Azure 数据命令行界面",
 			"resourceDeployment.AzdataDisplayName": "Azure 数据 CLI",
-			"deploy.azdataExtMissing": "必须安装 Azure Data CLI 以部署此资源。请通过扩展库安装，然后重试。",
-			"deployCluster.GetToolVersionErrorInformation": "检索版本信息时出错。有关详细信息，请参阅输出通道“{0}”",
-			"deployCluster.GetToolVersionError": "检索版本信息时出错。{0}收到无效输出，获取版本命令输出:“{1}”"
-		},
-		"dist/services/tools/azdataToolOld": {
-			"resourceDeployment.AzdataDescription": "Azure 数据命令行界面",
-			"resourceDeployment.AzdataDisplayName": "Azure 数据 CLI",
 			"resourceDeployment.Azdata.DeletingPreviousAzdata.msi": "正在删除以前下载的 Azdata.msi (如果存在)…",
 			"resourceDeployment.Azdata.DownloadingAndInstallingAzdata": "正在下载 Azdata.msi 并安装 azdata-cli…",
 			"resourceDeployment.Azdata.DisplayingInstallationLog": "正在显示安装日志…",

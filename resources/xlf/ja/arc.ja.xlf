@@ -136,6 +136,10 @@
         <source xml:lang="en">Location</source>
         <target state="translated">場所</target>
       </trans-unit>
+      <trans-unit id="arc.data.controller.infrastructure">
+        <source xml:lang="en">Infrastructure</source>
+        <target state="translated">インフラストラクチャ</target>
+      </trans-unit>
       <trans-unit id="arc.data.controller.admin.account.title">
         <source xml:lang="en">Administrator account</source>
         <target state="translated">管理者アカウント</target>
@@ -235,6 +239,10 @@
       <trans-unit id="arc.data.controller.summary.data.controller.namespace">
         <source xml:lang="en">Data controller namespace</source>
         <target state="translated">データ コントローラー名前空間</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.summary.data.controller.infrastructure">
+        <source xml:lang="en">Data controller infrastructure</source>
+        <target state="translated">データ コントローラー インフラストラクチャ</target>
       </trans-unit>
       <trans-unit id="arc.data.controller.summary.controller">
         <source xml:lang="en">Controller</source>
@@ -605,8 +613,8 @@
         <target state="translated">メモリ制限は要求されたメモリ以上である必要があります</target>
       </trans-unit>
       <trans-unit id="arc.agreement.sql.help.text">
-        <source xml:lang="en">Azure Arc enabled Managed Instance provides SQL Server access and feature compatibility that can be deployed on the infrastructure of your choice. While this service is in preview, it has some feature limitations compared to SQL Managed Instance on Azure. {0}</source>
-        <target state="translated">Azure Arc 対応 Managed Instance により、選択したインフラストラクチャにデプロイ可能な SQL Server のアクセスと機能の互換性が得られます。このサービスはプレビュー版ですが、Azure 上の SQL Managed Instance と比較して、いくつかの機能制限があります。{0}</target>
+        <source xml:lang="en">Azure Arc enabled Managed Instance provides SQL Server access and feature compatibility that can be deployed on the infrastructure of your choice. {0}</source>
+        <target state="translated">Azure Arc 対応 Managed Instance により、選択したインフラストラクチャにデプロイ可能な SQL Server のアクセスと機能の互換性が得られます。{0}</target>
       </trans-unit>
       <trans-unit id="arc.agreement.sql.help.text.learn.more">
         <source xml:lang="en">Learn more</source>
@@ -823,6 +831,14 @@
       <trans-unit id="arc.extensionsFunction">
         <source xml:lang="en">Some extensions must be loaded into PostgreSQL at startup time before they can be used. These preloaded extensions can be viewed and edited  below.</source>
         <target state="translated">一部の拡張機能は、使用する前に起動時に PostgreSQL に読み込む必要があります。これらの事前読み込み済みの拡張機能は以下で表示し、編集することができます。</target>
+      </trans-unit>
+      <trans-unit id="arc.extensionsAddFunction">
+        <source xml:lang="en">Some extensions must be loaded into PostgreSQL at startup time before they can be used. To edit, type in comma separated list of valid extensions: ({0}).</source>
+        <target state="translated">一部の拡張機能を使用するには、起動時に PostgreSQL に読み込む必要があります。編集するには、有効な拡張機能のコンマ区切りの一覧を入力します({0})。</target>
+      </trans-unit>
+      <trans-unit id="arc.extensionsAddErrorrMessage">
+        <source xml:lang="en">Value should be either of the following: ({0}).</source>
+        <target state="translated">値は次のいずれかにする必要があります: ({0})。</target>
       </trans-unit>
       <trans-unit id="arc.extensionsLearnMore">
         <source xml:lang="en">Learn more about PostgreSQL extensions.</source>

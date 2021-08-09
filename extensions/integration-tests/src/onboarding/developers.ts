@@ -18,6 +18,7 @@ export const developers: string[] = [
 	'cssuh',
 	'ktech99',
 	'kburtram',
+	'lewissanchez',
 	'lucyzhang929',
 	'saiavishkarsreerama',
 	'smartguest',
