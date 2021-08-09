@@ -392,9 +392,8 @@ async function downloadAndInstallAzWin32(): Promise<void> {
  * Runs commands to install az on MacOS
  */
 async function installAzDarwin(): Promise<void> {
-	await executeCommand('brew', ['tap', 'microsoft/az-cli-release']);
 	await executeCommand('brew', ['update']);
-	await executeCommand('brew', ['install', 'az-cli']);
+	await executeCommand('brew', ['install', 'azure-cli']);
 }
 
 /**
@@ -404,15 +403,14 @@ async function installAzLinux(): Promise<void> {
 	// https://docs.microsoft.com/en-us/sql/big-data-cluster/deploy-install-az-linux-package
 	// Get packages needed for install process
 	await executeSudoCommand('apt-get update');
-	await executeSudoCommand('apt-get install gnupg ca-certificates curl wget software-properties-common apt-transport-https lsb-release -y');
+	await executeSudoCommand('apt-get install ca-certificates curl apt-transport-https lsb-release gnupg');
 	// Download and install the signing key
-	await executeSudoCommand('curl -sL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/microsoft.asc.gpg > /dev/null');
+	await executeSudoCommand('curl -sL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/microsoft.gpg > /dev/null');
 	// Add the az repository information
-	const release = (await executeCommand('lsb_release', ['-rs'])).stdout.trim();
-	await executeSudoCommand(`add-apt-repository "$(wget -qO- https://packages.microsoft.com/config/ubuntu/${release}/mssql-server-2019.list)"`);
+	await executeSudoCommand('AZ_REPO=$(lsb_release -cs) echo "deb [arch=amd64] https://packages.microsoft.com/repos/azure-cli/ $AZ_REPO main" | sudo tee /etc/apt/sources.list.d/azure-cli.list');
 	// Update repository information and install az
 	await executeSudoCommand('apt-get update');
-	await executeSudoCommand('apt-get install -y az-cli');
+	await executeSudoCommand('apt-get install azure-cli');
 }
 
 /**
