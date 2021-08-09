@@ -1,0 +1,235 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file original="extensions/sql-assessment/package" source-language="en" datatype="plaintext" target-language="zh-Hant">
+    <body>
+      <trans-unit id="displayName">
+        <source xml:lang="en">SQL Assessment</source>
+        <target state="translated">SQL 評定</target>
+      </trans-unit>
+      <trans-unit id="description">
+        <source xml:lang="en">SQL Assessment for Azure Data Studio (Preview) provides a mechanism to evaluate the configuration of SQL Server for best practices.</source>
+        <target state="translated">Azure Data Studio (預覽) 的 SQL 評定提供一種機制來評估 SQL Server 的設定是否為最佳做法。</target>
+      </trans-unit>
+      <trans-unit id="dashboard.tabName">
+        <source xml:lang="en">SQL Assessment</source>
+        <target state="translated">SQL 評定</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/sql-assessment/dist/localized" source-language="en" datatype="plaintext" target-language="zh-Hant">
+    <body>
+      <trans-unit id="asmt.section.api.title">
+        <source xml:lang="en">Info</source>
+        <target state="translated">資訊</target>
+      </trans-unit>
+      <trans-unit id="asmt.apiversion">
+        <source xml:lang="en">API Version</source>
+        <target state="translated">API 版本</target>
+      </trans-unit>
+      <trans-unit id="asmt.rulesetversion">
+        <source xml:lang="en">Default Ruleset</source>
+        <target state="translated">預設規則集</target>
+      </trans-unit>
+      <trans-unit id="asmt.section.instance.title">
+        <source xml:lang="en">SQL Server Instance Details</source>
+        <target state="translated">SQL Server 執行個體詳細資料</target>
+      </trans-unit>
+      <trans-unit id="asmt.serverversion">
+        <source xml:lang="en">Version</source>
+        <target state="translated">版本</target>
+      </trans-unit>
+      <trans-unit id="asmt.serveredition">
+        <source xml:lang="en">Edition</source>
+        <target state="translated">版本</target>
+      </trans-unit>
+      <trans-unit id="asmt.instancename">
+        <source xml:lang="en">Instance Name</source>
+        <target state="translated">執行個體名稱</target>
+      </trans-unit>
+      <trans-unit id="asmt.osversion">
+        <source xml:lang="en">OS Version</source>
+        <target state="translated">作業系統版本</target>
+      </trans-unit>
+      <trans-unit id="asmt.column.target">
+        <source xml:lang="en">Target</source>
+        <target state="translated">目標</target>
+      </trans-unit>
+      <trans-unit id="asmt.column.severity">
+        <source xml:lang="en">Severity</source>
+        <target state="translated">嚴重性</target>
+      </trans-unit>
+      <trans-unit id="asmt.column.message">
+        <source xml:lang="en">Message</source>
+        <target state="translated">訊息</target>
+      </trans-unit>
+      <trans-unit id="asmt.column.checkId">
+        <source xml:lang="en">Check ID</source>
+        <target state="translated">檢查識別碼</target>
+      </trans-unit>
+      <trans-unit id="asmt.column.tags">
+        <source xml:lang="en">Tags</source>
+        <target state="translated">標籤</target>
+      </trans-unit>
+      <trans-unit id="asmt.learnMore">
+        <source xml:lang="en">Learn More</source>
+        <target state="translated">深入了解</target>
+      </trans-unit>
+      <trans-unit id="asmt.sqlReportTitle">
+        <source xml:lang="en">SQL Assessment Report</source>
+        <target state="translated">SQL 評定報表</target>
+      </trans-unit>
+      <trans-unit id="asmt.sqlReport.resultForDatabase">
+        <source xml:lang="en">Results for database</source>
+        <target state="translated">資料庫的結果</target>
+      </trans-unit>
+      <trans-unit id="asmt.sqlReport.resultForInstance">
+        <source xml:lang="en">Results for server</source>
+        <target state="translated">伺服器的結果</target>
+      </trans-unit>
+      <trans-unit id="asmt.sqlReport.Error">
+        <source xml:lang="en">Error</source>
+        <target state="translated">錯誤</target>
+      </trans-unit>
+      <trans-unit id="asmt.sqlReport.Warning">
+        <source xml:lang="en">Warning</source>
+        <target state="translated">警告</target>
+      </trans-unit>
+      <trans-unit id="asmt.sqlReport.Info">
+        <source xml:lang="en">Information</source>
+        <target state="translated">資訊</target>
+      </trans-unit>
+      <trans-unit id="asmt.column.helpLink">
+        <source xml:lang="en">Help Link</source>
+        <target state="translated">說明連結</target>
+      </trans-unit>
+      <trans-unit id="asmt.sqlReport.severityMsg">
+        <source xml:lang="en">{0}: {1} item(s)</source>
+        <target state="translated">{0}: {1} 個項目</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/sql-assessment/dist/assessmentResultGrid" source-language="en" datatype="plaintext" target-language="zh-Hant">
+    <body>
+      <trans-unit id="databaseIconLabel">
+        <source xml:lang="en">Database</source>
+        <target state="translated">資料庫</target>
+      </trans-unit>
+      <trans-unit id="serverIconLabel">
+        <source xml:lang="en">Server</source>
+        <target state="translated">伺服器</target>
+      </trans-unit>
+      <trans-unit id="asmt.column.targetType">
+        <source xml:lang="en">Target Type</source>
+        <target state="translated">目標型別</target>
+      </trans-unit>
+      <trans-unit id="asmt.details.clickHere">
+        <source xml:lang="en">Click here</source>
+        <target state="translated">點擊這裡</target>
+      </trans-unit>
+      <trans-unit id="asmt.details.toLearnMore">
+        <source xml:lang="en"> to learn more.</source>
+        <target state="translated"> 以深入了解。</target>
+      </trans-unit>
+      <trans-unit id="asmt.details.ruleDescription">
+        <source xml:lang="en">Rule Description</source>
+        <target state="translated">規則說明</target>
+      </trans-unit>
+      <trans-unit id="asmt.details.recommendation">
+        <source xml:lang="en">Recommendation</source>
+        <target state="translated">建議</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/sql-assessment/dist/tabs/assessmentMainTab" source-language="en" datatype="plaintext" target-language="zh-Hant">
+    <body>
+      <trans-unit id="invokeAssessmentLabelServer">
+        <source xml:lang="en">Invoke assessment</source>
+        <target state="translated">叫用評定</target>
+      </trans-unit>
+      <trans-unit id="getAssessmentItemsServer">
+        <source xml:lang="en">View applicable rules</source>
+        <target state="translated">檢視適用的規則</target>
+      </trans-unit>
+      <trans-unit id="invokeAssessmentLabelDatabase">
+        <source xml:lang="en">Invoke assessment for {0}</source>
+        <target state="translated">為 {0} 叫用評定</target>
+      </trans-unit>
+      <trans-unit id="getAssessmentItemsDatabase">
+        <source xml:lang="en">View applicable rules for {0}</source>
+        <target state="translated">檢視適用於 {0} 的規則</target>
+      </trans-unit>
+      <trans-unit id="btnExportAsScript">
+        <source xml:lang="en">Export as script</source>
+        <target state="translated">匯出為指令碼</target>
+      </trans-unit>
+      <trans-unit id="btnGeneratehtmlreport">
+        <source xml:lang="en">Create HTML Report</source>
+        <target state="translated">建立 HTML 報告</target>
+      </trans-unit>
+      <trans-unit id="asmtaction.openReport">
+        <source xml:lang="en">Report has been saved. Do you want to open it?</source>
+        <target state="translated">已儲存報表。要開啟嗎?</target>
+      </trans-unit>
+      <trans-unit id="asmtaction.label.open">
+        <source xml:lang="en">Open</source>
+        <target state="translated">開啟</target>
+      </trans-unit>
+      <trans-unit id="asmtaction.label.cancel">
+        <source xml:lang="en">Cancel</source>
+        <target state="translated">取消</target>
+      </trans-unit>
+      <trans-unit id="btnViewSamplesShort">
+        <source xml:lang="en">View all on GitHub</source>
+        <target state="translated">在 GitHub 上檢視全部</target>
+      </trans-unit>
+      <trans-unit id="btnViewSamples">
+        <source xml:lang="en">View all rules and learn more on GitHub</source>
+        <target state="translated">檢視所有規則，並前往 GitHub 深入了解</target>
+      </trans-unit>
+      <trans-unit id="msgBoxAsmtInfo">
+        <source xml:lang="en">SQL Assessment Information</source>
+        <target state="translated">SQL 評定資訊</target>
+      </trans-unit>
+      <trans-unit id="msgBoxCopyBtn">
+        <source xml:lang="en">Copy</source>
+        <target state="translated">複製</target>
+      </trans-unit>
+      <trans-unit id="ok">
+        <source xml:lang="en">OK</source>
+        <target state="translated">確定</target>
+      </trans-unit>
+      <trans-unit id="msgBoxCopied">
+        <source xml:lang="en">SQL Assessment Information copied</source>
+        <target state="translated">已複製 SQL 評定資訊</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/sql-assessment/dist/tabs/historyTab" source-language="en" datatype="plaintext" target-language="zh-Hant">
+    <body>
+      <trans-unit id="asmt.history.back">
+        <source xml:lang="en">&lt;&lt; Back</source>
+        <target state="translated">&lt;&lt; 返回</target>
+      </trans-unit>
+      <trans-unit id="asmt.history.resultsTitle">
+        <source xml:lang="en">Assessment Results from {0}</source>
+        <target state="translated">來自 {0} 的評定結果</target>
+      </trans-unit>
+      <trans-unit id="asmt.history.summaryAsmtDate">
+        <source xml:lang="en">Assessment Date</source>
+        <target state="translated">評定日期</target>
+      </trans-unit>
+      <trans-unit id="asmt.history.summaryError">
+        <source xml:lang="en">Error</source>
+        <target state="translated">錯誤</target>
+      </trans-unit>
+      <trans-unit id="asmt.history.summaryWarning">
+        <source xml:lang="en">Warning</source>
+        <target state="translated">警告</target>
+      </trans-unit>
+      <trans-unit id="asmt.history.summaryInfo">
+        <source xml:lang="en">Information</source>
+        <target state="translated">資訊</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

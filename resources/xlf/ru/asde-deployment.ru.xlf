@@ -1,0 +1,215 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file original="extensions/asde-deployment/package" source-language="en" datatype="plaintext" target-language="ru">
+    <body>
+      <trans-unit id="extension-displayName">
+        <source xml:lang="en">Azure SQL Edge Deployment Extension</source>
+        <target state="translated">Расширение развертывания SQL Azure для пограничных вычислений</target>
+      </trans-unit>
+      <trans-unit id="extension-description">
+        <source xml:lang="en">Provides a notebook-based experience to deploy Azure SQL Edge</source>
+        <target state="translated">Обеспечивает развертывание SQL Azure для пограничных вычислений на основе записных книжек</target>
+      </trans-unit>
+      <trans-unit id="docker-container-name-field">
+        <source xml:lang="en">Container name</source>
+        <target state="translated">Имя контейнера</target>
+      </trans-unit>
+      <trans-unit id="docker-sql-password-field">
+        <source xml:lang="en">Azure SQL Edge instance (sa) password</source>
+        <target state="translated">Пароль экземпляра SQL Azure для пограничных вычислений (SA)</target>
+      </trans-unit>
+      <trans-unit id="docker-confirm-sql-password-field">
+        <source xml:lang="en">Confirm password</source>
+        <target state="translated">Подтвердить пароль</target>
+      </trans-unit>
+      <trans-unit id="docker-sql-port-field">
+        <source xml:lang="en">Azure SQL Edge Port</source>
+        <target state="translated">Порт SQL Azure для пограничных вычислений</target>
+      </trans-unit>
+      <trans-unit id="microsoft-privacy-statement">
+        <source xml:lang="en">Microsoft Privacy Statement</source>
+        <target state="translated">Заявление о конфиденциальности корпорации Майкрософт</target>
+      </trans-unit>
+      <trans-unit id="resource-type-sql-edge-display-name">
+        <source xml:lang="en">Azure SQL Edge</source>
+        <target state="translated">SQL Azure для пограничных вычислений</target>
+      </trans-unit>
+      <trans-unit id="resource-type-sql-edge-description">
+        <source xml:lang="en">Azure SQL Edge (Preview) is an optimized relational database engine geared for IoT and IoT Edge deployments.</source>
+        <target state="translated">SQL Azure для пограничных вычислений (предварительная версия) — это оптимизированное ядро реляционной СУБД, предназначенное для развертываний Интернета вещей и IoT Edge.</target>
+      </trans-unit>
+      <trans-unit id="sql-edge-type-display-name">
+        <source xml:lang="en">Deployment target</source>
+        <target state="translated">Целевой объект развертывания</target>
+      </trans-unit>
+      <trans-unit id="sql-edge-local-display-name">
+        <source xml:lang="en">Local container instance</source>
+        <target state="translated">Экземпляр локального контейнера</target>
+      </trans-unit>
+      <trans-unit id="sql-edge-remote-display-name">
+        <source xml:lang="en">Remote container instance</source>
+        <target state="translated">Удаленный экземпляр контейнера</target>
+      </trans-unit>
+      <trans-unit id="sql-edge-local-title">
+        <source xml:lang="en">Deploy Azure SQL Edge container instance on local machine</source>
+        <target state="translated">Развертывание экземпляра контейнера SQL Azure для пограничных вычислений на локальном компьютере</target>
+      </trans-unit>
+      <trans-unit id="docker-settings-section-title">
+        <source xml:lang="en">Docker settings</source>
+        <target state="translated">Параметры Docker</target>
+      </trans-unit>
+      <trans-unit id="docker-registry-field">
+        <source xml:lang="en">Registry</source>
+        <target state="translated">Реестр</target>
+      </trans-unit>
+      <trans-unit id="docker-repository-field">
+        <source xml:lang="en">Repository</source>
+        <target state="translated">Репозиторий</target>
+      </trans-unit>
+      <trans-unit id="docker-imagetag-field">
+        <source xml:lang="en">Image tag</source>
+        <target state="translated">Тег изображения</target>
+      </trans-unit>
+      <trans-unit id="docker-username-field">
+        <source xml:lang="en">Username</source>
+        <target state="translated">Имя пользователя</target>
+      </trans-unit>
+      <trans-unit id="docker-password-field">
+        <source xml:lang="en">Password</source>
+        <target state="translated">Пароль</target>
+      </trans-unit>
+      <trans-unit id="edge-agreement">
+        <source xml:lang="en">I accept {0} and {1}.</source>
+        <target state="translated">Я принимаю {0} и {1}.</target>
+      </trans-unit>
+      <trans-unit id="edge-eula">
+        <source xml:lang="en">Microsoft Azure SQL Edge License Agreement</source>
+        <target state="translated">Лицензионное соглашение SQL Microsoft Azure для пограничных вычислений</target>
+      </trans-unit>
+      <trans-unit id="sql-edge-remote-title">
+        <source xml:lang="en">Deploy Azure SQL Edge container instance on remote machine</source>
+        <target state="translated">Развертывание экземпляра контейнера SQL Azure для пограничных вычислений на удаленном компьютере</target>
+      </trans-unit>
+      <trans-unit id="remote-info-section-title">
+        <source xml:lang="en">Target machine information</source>
+        <target state="translated">Сведения о целевом компьютере</target>
+      </trans-unit>
+      <trans-unit id="edge-remote-target-field">
+        <source xml:lang="en">Name or IP address</source>
+        <target state="translated">Имя или IP-адрес</target>
+      </trans-unit>
+      <trans-unit id="edge-remote-username-field">
+        <source xml:lang="en">Username</source>
+        <target state="translated">Имя пользователя</target>
+      </trans-unit>
+      <trans-unit id="edge-remote-password-field">
+        <source xml:lang="en">Password</source>
+        <target state="translated">Пароль</target>
+      </trans-unit>
+      <trans-unit id="sql-edge-azure-display-name">
+        <source xml:lang="en">New Azure IoT Hub and VM (password authentication)</source>
+        <target state="translated">Новый Центр Интернета вещей Azure и ВМ (проверка пароля)</target>
+      </trans-unit>
+      <trans-unit id="sql-edge-azure-sshkey-display-name">
+        <source xml:lang="en">New Azure IoT Hub and VM (ssh public key authentication)</source>
+        <target state="translated">Новый Центр Интернета вещей Azure и ВМ (проверка подлинности открытого ключа SSH)</target>
+      </trans-unit>
+      <trans-unit id="sql-edge-azure-title">
+        <source xml:lang="en">Deploy Azure SQL Edge to a new Azure VM via IoT hub</source>
+        <target state="translated">Развертывание SQL Azure для пограничных вычислений на новой виртуальной машине Azure через центр Интернета вещей</target>
+      </trans-unit>
+      <trans-unit id="azure_subscription_id">
+        <source xml:lang="en">Subscription id</source>
+        <target state="translated">Идентификатор подписки</target>
+      </trans-unit>
+      <trans-unit id="azure_resource_group">
+        <source xml:lang="en">Resource group</source>
+        <target state="translated">Группа ресурсов</target>
+      </trans-unit>
+      <trans-unit id="azure_location">
+        <source xml:lang="en">Location</source>
+        <target state="translated">Расположение</target>
+      </trans-unit>
+      <trans-unit id="vm_admin">
+        <source xml:lang="en">VM admin username</source>
+        <target state="translated">Имя администратора ВМ</target>
+      </trans-unit>
+      <trans-unit id="vm_password">
+        <source xml:lang="en">VM admin password</source>
+        <target state="translated">Пароль администратора ВМ</target>
+      </trans-unit>
+      <trans-unit id="vm_password_confirm">
+        <source xml:lang="en">Confirm VM admin password</source>
+        <target state="translated">Подтвердить пароль администратора ВМ</target>
+      </trans-unit>
+      <trans-unit id="vm_password_validation_error_message">
+        <source xml:lang="en">VM password must be 12 to 123 characters in length and consists of upper case characters, lower case characters, numbers and special characters.</source>
+        <target state="translated">Пароль ВМ должен составлять в длину от 12 до 123 символов и включать символы верхнего регистра, нижнего регистра, цифры и специальные знаки.</target>
+      </trans-unit>
+      <trans-unit id="package_path">
+        <source xml:lang="en">Package file</source>
+        <target state="translated">Файл пакета</target>
+      </trans-unit>
+      <trans-unit id="package_path_description">
+        <source xml:lang="en">Path of the SQL Server package file(dacpac, bacpac) or compressed package file.</source>
+        <target state="translated">Путь к файлу пакета SQL Server (DACPAC, BACPAC) или сжатому файлу пакета.</target>
+      </trans-unit>
+      <trans-unit id="azure-info-section-title">
+        <source xml:lang="en">Azure information</source>
+        <target state="translated">Информация об Azure</target>
+      </trans-unit>
+      <trans-unit id="sqlserver-info-section-title">
+        <source xml:lang="en">Azure SQL Edge information</source>
+        <target state="translated">Сведения об SQL Azure для пограничных вычислений</target>
+      </trans-unit>
+      <trans-unit id="package-files">
+        <source xml:lang="en">SQL Server Package files</source>
+        <target state="translated">Файлы пакета SQL Server</target>
+      </trans-unit>
+      <trans-unit id="sql-edge-azure-single-device-display-name">
+        <source xml:lang="en">Existing device of an Azure IoT Hub</source>
+        <target state="translated">Существующее устройство Центра Интернета вещей Azure</target>
+      </trans-unit>
+      <trans-unit id="sql-edge-azure-single-device-title">
+        <source xml:lang="en">Deploy Azure SQL Edge to an existing device</source>
+        <target state="translated">Развертывание SQL Azure для пограничных вычислений на существующем устройстве</target>
+      </trans-unit>
+      <trans-unit id="iot-hub-name">
+        <source xml:lang="en">IoT Hub name</source>
+        <target state="translated">Имя центра Интернета вещей</target>
+      </trans-unit>
+      <trans-unit id="device-id">
+        <source xml:lang="en">Device ID</source>
+        <target state="translated">ИД устройства</target>
+      </trans-unit>
+      <trans-unit id="device-ip-address">
+        <source xml:lang="en">Device IP Address</source>
+        <target state="translated">IP-адрес устройства</target>
+      </trans-unit>
+      <trans-unit id="device-ip-address-description">
+        <source xml:lang="en">Will be used to connect to the Azure SQL Edge instance after deployment</source>
+        <target state="translated">Будет использоваться для подключения к экземпляру SQL Azure для пограничных вычислений после развертывания</target>
+      </trans-unit>
+      <trans-unit id="sql-edge-azure-multi-device-display-name">
+        <source xml:lang="en">Multiple devices of an Azure IoT Hub</source>
+        <target state="translated">Несколько устройств Центра Интернета вещей Azure</target>
+      </trans-unit>
+      <trans-unit id="sql-edge-azure-multi-device-title">
+        <source xml:lang="en">Deploy Azure SQL Edge to multiple Azure IoT devices</source>
+        <target state="translated">Развертывание SQL Azure для пограничных вычислений для нескольких устройств Интернета вещей Azure</target>
+      </trans-unit>
+      <trans-unit id="device-target-condition">
+        <source xml:lang="en">Target condition</source>
+        <target state="translated">Целевое условие</target>
+      </trans-unit>
+      <trans-unit id="device-target-condition-learn-more">
+        <source xml:lang="en">Learn more about target condition</source>
+        <target state="translated">Дополнительные сведения о целевом условии</target>
+      </trans-unit>
+      <trans-unit id="vm_ssh_public_key">
+        <source xml:lang="en">SSH public key</source>
+        <target state="translated">Открытый ключ SSH</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>
