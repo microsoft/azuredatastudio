@@ -314,7 +314,7 @@ export const CANCEL_MIGRATION_CONFIRMATION = localize('sql.cancel.migration.conf
 export const YES = localize('sql.migration.yes', "Yes");
 export const NO = localize('sql.migration.no', "No");
 export const EMPTY_TABLE_TEXT = localize('sql.migration.empty.table.text', "No backup files to show");
-export const EMPTY_TABLE_SUBTEXT = localize('sql.migration.emty.table.subtext', "If you expected to see results, please check the connection to the sql server instance");
+export const EMPTY_TABLE_SUBTEXT = localize('sql.migration.empty.table.subtext', "If results were expected, reconfirm the connection to the SQL Server Instance");
 
 //Migration confirm cutover dialog
 export const COMPLETING_CUTOVER_WARNING = localize('sql.migration.completing.cutover.warning', "Completing cutover without restoring all the backup(s) may result in a data loss.");

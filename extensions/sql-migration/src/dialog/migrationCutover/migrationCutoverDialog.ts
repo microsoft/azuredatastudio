@@ -598,14 +598,6 @@ export class MigrationCutoverDialog {
 				}
 			});
 
-			if (tableData.length === 0) {
-				this._emptyTableFill.updateCssStyles({
-					'display': 'flex'
-				});
-				this._fileTable.height = '50px';
-
-			}
-
 			this._sourceDatabaseInfoField.text.value = sourceDatabaseName;
 			this._sourceDetailsInfoField.text.value = sqlServerName;
 			this._sourceVersionInfoField.text.value = `${sqlServerVersion} ${sqlServerInfo.serverVersion}`;
@@ -636,6 +628,14 @@ export class MigrationCutoverDialog {
 			this._lastAppliedBackupTakenOnInfoField.text.value = lastAppliedBackupFileTakenOn! ? convertIsoTimeToLocalTime(lastAppliedBackupFileTakenOn).toLocaleString() : '-';
 			this.showInfoField(this._lastLSNInfoField);
 			this.showInfoField(this._lastAppliedBackupTakenOnInfoField);
+
+			if (tableData.length === 0 && this._shouldDisplayBackupFileTable()) {
+				this._emptyTableFill.updateCssStyles({
+					'display': 'flex'
+				});
+				this._fileTable.height = '50px';
+
+			}
 
 			if (this._shouldDisplayBackupFileTable()) {
 				this._fileCount.updateCssStyles({
