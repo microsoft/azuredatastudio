@@ -192,7 +192,6 @@ export async function launchPublishDatabaseQuickpick(project: Project, projectCo
 		return;
 	}
 
-	// TODO@chgagnon: Get deployment options
 	// 6. Generate script/publish
 	let settings: IDeploySettings = {
 		databaseName: databaseName,
