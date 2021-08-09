@@ -180,13 +180,13 @@ export class DeployService {
 					savePassword: savePassword,
 					userName: profile.userName,
 					providerName: 'MSSQL',
-					saveProfile: true,
+					saveProfile: false,
 					id: '',
 					connectionName: `${constants.connectionNamePrefix} ${profile.dbName}`,
 					options: [],
 					authenticationType: 'SqlLogin'
 				};
-				return await getAzdataApi.connection.connect(connectionProfile, true, false);
+				return await getAzdataApi.connection.connect(connectionProfile, false, false);
 			} else if (vscodeMssqlApi) {
 				const connectionProfile = {
 					password: profile.password,
@@ -200,7 +200,6 @@ export class DeployService {
 					connectTimeout: 30,
 					applicationName: 'SQL Database Project'
 				};
-				this.logToOutput(JSON.stringify(connectionProfile));
 				let connectionUrl = await vscodeMssqlApi.connect(connectionProfile);
 				return connectionUrl;
 			} else {
@@ -224,7 +223,7 @@ export class DeployService {
 		}, (connection) => {
 			const connectionResult = connection !== undefined && getAzdataApi ? <ConnectionResult>connection : undefined;
 			return connectionResult ? connectionResult.connectionId : <string>connection;
-		}, 10, 5); // Try 5 times and wait 5 seconds before each try
+		});
 
 		if (connection) {
 			const connectionResult = <ConnectionResult>connection;
@@ -239,10 +238,11 @@ export class DeployService {
 	}
 
 	private async executeTask<T>(taskName: string, task: () => Promise<T>): Promise<T> {
-		if (utils.getAzdataApi()) {
+		const getAzdataApi = await utils.getAzdataApi();
+		if (getAzdataApi) {
 			return new Promise<T>((resolve, reject) => {
 				let msgTaskName = taskName;
-				utils.getAzdataApi()!.tasks.startBackgroundOperation({
+				getAzdataApi!.tasks.startBackgroundOperation({
 					displayName: msgTaskName,
 					description: msgTaskName,
 					isCancelable: false,
@@ -250,17 +250,18 @@ export class DeployService {
 						try {
 							let result: T = await task();
 
-							op.updateStatus(utils.getAzdataApi()!.TaskStatus.Succeeded);
+							op.updateStatus(getAzdataApi!.TaskStatus.Succeeded);
 							resolve(result);
 						} catch (error) {
 							let errorMsg = constants.taskFailedError(taskName, error ? error.message : '');
-							op.updateStatus(utils.getAzdataApi()!.TaskStatus.Failed, errorMsg);
+							op.updateStatus(getAzdataApi!.TaskStatus.Failed, errorMsg);
 							reject(errorMsg);
 						}
 					}
 				});
 			});
 		} else {
+
 			return await task();
 		}
 	}

@@ -114,11 +114,6 @@
         "category": "%sqlDatabaseProjects.displayName%"
       },
       {
-        "command": "sqlDatabaseProjects.deployLocal",
-        "title": "%sqlDatabaseProjects.deployLocal%",
-        "category": "%sqlDatabaseProjects.displayName%"
-      },
-      {
         "command": "sqlDatabaseProjects.properties",
         "title": "%sqlDatabaseProjects.properties%",
         "category": "%sqlDatabaseProjects.displayName%"
@@ -222,10 +217,6 @@
           "when": "false"
         },
         {
-          "command": "sqlDatabaseProjects.deployLocal",
-          "when": "false"
-        },
-        {
           "command": "sqlDatabaseProjects.properties",
           "when": "false"
         },
@@ -273,11 +264,6 @@
         },
         {
           "command": "sqlDatabaseProjects.publish",
-          "when": "view == dataworkspace.views.main && viewItem == databaseProject.itemType.project",
-          "group": "1_dbProjectsFirst@2"
-        },
-        {
-          "command": "sqlDatabaseProjects.deployLocal",
           "when": "view == dataworkspace.views.main && viewItem == databaseProject.itemType.project",
           "group": "1_dbProjectsFirst@2"
         },

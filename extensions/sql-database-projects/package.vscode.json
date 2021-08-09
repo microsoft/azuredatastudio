@@ -3,5 +3,29 @@
 	"extensionDependencies": [
 		"ms-mssql.mssql",
 		"Microsoft.data-workspace-vscode"
+	],
+	"contributes": {
+		"commands": [
+			{
+				"command": "sqlDatabaseProjects.deployLocal",
+				"title": "%sqlDatabaseProjects.deployLocal%",
+				"category": "%sqlDatabaseProjects.displayName%"
+			}
+		]
+	},
+	"menus": {
+		"commandPalette": [
+			{
+				"command": "sqlDatabaseProjects.deployLocal",
+				"when": "false"
+			}
+		]
+	},
+	"view/item/context": [
+		{
+			"command": "sqlDatabaseProjects.deployLocal",
+			"when": "view == dataworkspace.views.main && viewItem == databaseProject.itemType.project",
+			"group": "1_dbProjectsFirst@2"
+		}
 	]
 }
