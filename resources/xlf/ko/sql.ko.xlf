@@ -3957,6 +3957,14 @@ Error: {1}</source>
         <source xml:lang="en">Cell</source>
         <target state="translated">셀</target>
       </trans-unit>
+      <trans-unit id="views">
+        <source xml:lang="en">Views</source>
+        <target state="translated">뷰</target>
+      </trans-unit>
+      <trans-unit id="editor">
+        <source xml:lang="en">Editor</source>
+        <target state="translated">편집기</target>
+      </trans-unit>
       <trans-unit id="code">
         <source xml:lang="en">Code</source>
         <target state="translated">코드</target>
@@ -4051,7 +4059,11 @@ Error: {1}</source>
       </trans-unit>
       <trans-unit id="notebook.useAbsoluteFilePaths">
         <source xml:lang="en">Use absolute file paths when linking to other notebooks.</source>
-        <target state="new">Use absolute file paths when linking to other notebooks.</target>
+        <target state="translated">다른 노트북에 연결할 때 절대 파일 경로를 사용하세요.</target>
+      </trans-unit>
+      <trans-unit id="notebook.enableIncrementalGridRendering">
+        <source xml:lang="en">Enable incremental grid rendering for notebooks. This will improve the initial rendering time for large notebooks. There may be performance issues when interacting with the notebook while the rest of the grids are rendering.</source>
+        <target state="new">Enable incremental grid rendering for notebooks. This will improve the initial rendering time for large notebooks. There may be performance issues when interacting with the notebook while the rest of the grids are rendering.</target>
       </trans-unit>
       <trans-unit id="searchConfigurationTitle">
         <source xml:lang="en">Search Notebooks</source>
@@ -4281,6 +4293,18 @@ Error: {1}</source>
         <source xml:lang="en">Clear Results</source>
         <target state="translated">결과 지우기</target>
       </trans-unit>
+      <trans-unit id="notebookViewLabel">
+        <source xml:lang="en">Editor</source>
+        <target state="translated">편집기</target>
+      </trans-unit>
+      <trans-unit id="newViewLabel">
+        <source xml:lang="en">Create New View</source>
+        <target state="new">Create New View</target>
+      </trans-unit>
+      <trans-unit id="viewNotFound">
+        <source xml:lang="en">Unable to find view: {0}</source>
+        <target state="new">Unable to find view: {0}</target>
+      </trans-unit>
       <trans-unit id="trustLabel">
         <source xml:lang="en">Trusted</source>
         <target state="translated">신뢰할 수 있음</target>
@@ -4427,6 +4451,34 @@ Error: {1}</source>
       </trans-unit>
     </body>
   </file>
+  <file original="src/sql/workbench/contrib/notebook/browser/notebookViews/insertCellsModal" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="insertCellsModal.title">
+        <source xml:lang="en">Insert cells</source>
+        <target state="translated">셀 삽입</target>
+      </trans-unit>
+      <trans-unit id="insertCellsModal.selectCells">
+        <source xml:lang="en">Select cell sources</source>
+        <target state="translated">셀 원본 선택</target>
+      </trans-unit>
+      <trans-unit id="insertCellsModal.thumbnailError">
+        <source xml:lang="en">Error: Unable to generate thumbnails.</source>
+        <target state="translated">오류: 미리 보기를 생성할 수 없습니다.</target>
+      </trans-unit>
+      <trans-unit id="insertCellsModal.untitled">
+        <source xml:lang="en">Untitled Cell : {0}</source>
+        <target state="translated">제목 없는 셀: {0}</target>
+      </trans-unit>
+      <trans-unit id="insertCellsModal.Insert">
+        <source xml:lang="en">Insert</source>
+        <target state="translated">삽입</target>
+      </trans-unit>
+      <trans-unit id="insertCellsModal.Cancel">
+        <source xml:lang="en">Cancel</source>
+        <target state="translated">취소</target>
+      </trans-unit>
+    </body>
+  </file>
   <file original="src/sql/workbench/contrib/notebook/browser/notebookViews/notebookViews.component" source-language="en" datatype="plaintext" target-language="ko">
     <body>
       <trans-unit id="cellNotFound">
@@ -4436,6 +4488,54 @@ Error: {1}</source>
       <trans-unit id="cellRunFailed">
         <source xml:lang="en">Run Cells failed - See error in output of the currently selected cell for more information.</source>
         <target state="translated">셀 실행 실패 - 자세한 내용은 현재 선택한 셀의 출력 오류를 참조하세요.</target>
+      </trans-unit>
+      <trans-unit id="runAllPreview">
+        <source xml:lang="en">Run all</source>
+        <target state="translated">모두 실행</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/sql/workbench/contrib/notebook/browser/notebookViews/notebookViewsActions" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="viewsUnableToRemove">
+        <source xml:lang="en">Unable to remove view</source>
+        <target state="new">Unable to remove view</target>
+      </trans-unit>
+      <trans-unit id="confirmDelete">
+        <source xml:lang="en">Are you sure you want to delete view "{0}"?</source>
+        <target state="translated">'{0}' 보기를 삭제할까요?</target>
+      </trans-unit>
+      <trans-unit id="delete">
+        <source xml:lang="en">&amp;&amp;Delete</source>
+        <target state="translated">삭제(&amp;&amp;D)</target>
+      </trans-unit>
+      <trans-unit id="insertCells">
+        <source xml:lang="en">Insert Cells</source>
+        <target state="translated">셀 삽입</target>
+      </trans-unit>
+      <trans-unit id="runCell">
+        <source xml:lang="en">Run cell</source>
+        <target state="translated">셀 실행</target>
+      </trans-unit>
+      <trans-unit id="stopCell">
+        <source xml:lang="en">Cancel execution</source>
+        <target state="translated">실행 취소</target>
+      </trans-unit>
+      <trans-unit id="errorRunCell">
+        <source xml:lang="en">Error on last run. Click to run again</source>
+        <target state="new">Error on last run. Click to run again</target>
+      </trans-unit>
+      <trans-unit id="unableToNavigateToCell">
+        <source xml:lang="en">Unable to navigate to notebook cell.</source>
+        <target state="translated">전자 필기장 셀로 이동할 수 없습니다.</target>
+      </trans-unit>
+      <trans-unit id="viewCellInNotebook">
+        <source xml:lang="en">View Cell In Notebook</source>
+        <target state="translated">전자 필기장의 셀 보기</target>
+      </trans-unit>
+      <trans-unit id="moreActionsLabel">
+        <source xml:lang="en">More</source>
+        <target state="translated">자세히</target>
       </trans-unit>
     </body>
   </file>
@@ -4452,6 +4552,34 @@ Error: {1}</source>
       <trans-unit id="emptyText">
         <source xml:lang="en">This view is empty. Add a cell to this view by clicking the Insert Cells button.</source>
         <target state="translated">이 보기는 비어 있습니다. 셀 삽입 단추를 클릭하여 이 보기에 셀을 추가합니다.</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/sql/workbench/contrib/notebook/browser/notebookViews/viewOptionsModal" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="viewOptionsModal.title">
+        <source xml:lang="en">Configure View</source>
+        <target state="translated">보기 구성</target>
+      </trans-unit>
+      <trans-unit id="viewOptionsModal.name">
+        <source xml:lang="en">View Name</source>
+        <target state="translated">뷰 이름</target>
+      </trans-unit>
+      <trans-unit id="viewOptionsModal.missingRequireField">
+        <source xml:lang="en">This field is required.</source>
+        <target state="new">This field is required.</target>
+      </trans-unit>
+      <trans-unit id="viewOptionsModal.nameTaken">
+        <source xml:lang="en">This view name has already been taken.</source>
+        <target state="new">This view name has already been taken.</target>
+      </trans-unit>
+      <trans-unit id="save">
+        <source xml:lang="en">Save</source>
+        <target state="translated">저장</target>
+      </trans-unit>
+      <trans-unit id="cancel">
+        <source xml:lang="en">Cancel</source>
+        <target state="translated">취소</target>
       </trans-unit>
     </body>
   </file>
@@ -7013,6 +7141,14 @@ Error: {1}</source>
       <trans-unit id="notebookView.nameTaken">
         <source xml:lang="en">A view with the name {0} already exists in this notebook.</source>
         <target state="translated">이름이 {0}인 보기가 이 전자 필기장에 이미 있습니다.</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/sql/workbench/services/notebook/browser/notebookViews/notebookViewsExtension" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="notebookView.untitledView">
+        <source xml:lang="en">Untitled View</source>
+        <target state="translated">제목 없는 보기</target>
       </trans-unit>
     </body>
   </file>

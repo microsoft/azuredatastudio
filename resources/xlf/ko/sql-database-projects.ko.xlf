@@ -132,6 +132,10 @@
 [프로젝트 열기] (command: sqlDatabaseProjects)
 [데이터베이스에서 프로젝트 만들기] (command: sqlDatabaseProjects. importDatabase)</target>
       </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.addSqlBinding">
+        <source xml:lang="en">Add SQL Binding</source>
+        <target state="new">Add SQL Binding</target>
+      </trans-unit>
     </body>
   </file>
   <file original="extensions/sql-database-projects/dist/common/constants" source-language="en" datatype="plaintext" target-language="ko">
@@ -593,9 +597,21 @@
         <source xml:lang="en">Browse folder</source>
         <target state="translated">폴더 찾아보기</target>
       </trans-unit>
+      <trans-unit id="selectFolderStructure">
+        <source xml:lang="en">Select folder structure</source>
+        <target state="new">Select folder structure</target>
+      </trans-unit>
       <trans-unit id="folderStructureLabel">
         <source xml:lang="en">Folder structure</source>
         <target state="translated">폴더 구조</target>
+      </trans-unit>
+      <trans-unit id="browseEllipsis">
+        <source xml:lang="en">Browse...</source>
+        <target state="new">Browse...</target>
+      </trans-unit>
+      <trans-unit id="selectProjectLocation">
+        <source xml:lang="en">Select project location</source>
+        <target state="new">Select project location</target>
       </trans-unit>
       <trans-unit id="dataworkspace.projectParentDirectoryNotExistError">
         <source xml:lang="en">The selected project location '{0}' does not exist or is not a directory.</source>
@@ -737,13 +753,9 @@
         <source xml:lang="en">A folder with the name '{0}' already exists on disk at this location. Please choose another name.</source>
         <target state="translated">이름이 '{0}'인 폴더가 이 위치의 디스크에 이미 있습니다. 다른 이름을 선택하세요.</target>
       </trans-unit>
-      <trans-unit id="fileAlreadyAddedToProject">
-        <source xml:lang="en">A file with the path '{0}' has already been added to the project</source>
-        <target state="translated">경로가 '{0}'인 파일이 프로젝트에 이미 추가되었습니다.</target>
-      </trans-unit>
-      <trans-unit id="folderAlreadyAddedToProject">
-        <source xml:lang="en">A folder with the path '{0}' has already been added to the project</source>
-        <target state="translated">경로가 '{0}'인 폴더가 프로젝트에 이미 추가되었습니다.</target>
+      <trans-unit id="folderAlreadyExistsChooseNewLocation">
+        <source xml:lang="en">A folder with the name '{0}' already exists on disk at this location. Please choose another location.</source>
+        <target state="new">A folder with the name '{0}' already exists on disk at this location. Please choose another location.</target>
       </trans-unit>
       <trans-unit id="invalidInput">
         <source xml:lang="en">Invalid input: {0}</source>
@@ -868,6 +880,42 @@
       <trans-unit id="postDeployScriptFriendlyName">
         <source xml:lang="en">Script.PostDeployment</source>
         <target state="translated">Script.PostDeployment</target>
+      </trans-unit>
+      <trans-unit id="input">
+        <source xml:lang="en">Input</source>
+        <target state="new">Input</target>
+      </trans-unit>
+      <trans-unit id="output">
+        <source xml:lang="en">Output</source>
+        <target state="new">Output</target>
+      </trans-unit>
+      <trans-unit id="selectBindingType">
+        <source xml:lang="en">Select type of binding</source>
+        <target state="new">Select type of binding</target>
+      </trans-unit>
+      <trans-unit id="selectAzureFunction">
+        <source xml:lang="en">Select an Azure function in the current file to add SQL binding to</source>
+        <target state="new">Select an Azure function in the current file to add SQL binding to</target>
+      </trans-unit>
+      <trans-unit id="sqlObjectToQuery">
+        <source xml:lang="en">SQL object to query</source>
+        <target state="new">SQL object to query</target>
+      </trans-unit>
+      <trans-unit id="sqlTableToUpsert">
+        <source xml:lang="en">SQL table to upsert into</source>
+        <target state="new">SQL table to upsert into</target>
+      </trans-unit>
+      <trans-unit id="connectionStringSetting">
+        <source xml:lang="en">Connection string setting name</source>
+        <target state="new">Connection string setting name</target>
+      </trans-unit>
+      <trans-unit id="connectionStringSettingPlaceholder">
+        <source xml:lang="en">Connection string setting specified in "local.settings.json"</source>
+        <target state="new">Connection string setting specified in "local.settings.json"</target>
+      </trans-unit>
+      <trans-unit id="noAzureFunctionsInFile">
+        <source xml:lang="en">No Azure functions in the current active file</source>
+        <target state="new">No Azure functions in the current active file</target>
       </trans-unit>
     </body>
   </file>

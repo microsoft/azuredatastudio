@@ -136,6 +136,10 @@
         <source xml:lang="en">Location</source>
         <target state="translated">위치</target>
       </trans-unit>
+      <trans-unit id="arc.data.controller.infrastructure">
+        <source xml:lang="en">Infrastructure</source>
+        <target state="translated">인프라</target>
+      </trans-unit>
       <trans-unit id="arc.data.controller.admin.account.title">
         <source xml:lang="en">Administrator account</source>
         <target state="translated">관리자 계정</target>
@@ -235,6 +239,10 @@
       <trans-unit id="arc.data.controller.summary.data.controller.namespace">
         <source xml:lang="en">Data controller namespace</source>
         <target state="translated">데이터 컨트롤러 네임스페이스</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.summary.data.controller.infrastructure">
+        <source xml:lang="en">Data controller infrastructure</source>
+        <target state="translated">데이터 컨트롤러 인프라</target>
       </trans-unit>
       <trans-unit id="arc.data.controller.summary.controller">
         <source xml:lang="en">Controller</source>
@@ -605,8 +613,8 @@
         <target state="translated">메모리 제한은 요청된 메모리보다 크거나 같아야 합니다.</target>
       </trans-unit>
       <trans-unit id="arc.agreement.sql.help.text">
-        <source xml:lang="en">Azure Arc enabled Managed Instance provides SQL Server access and feature compatibility that can be deployed on the infrastructure of your choice. While this service is in preview, it has some feature limitations compared to SQL Managed Instance on Azure. {0}</source>
-        <target state="translated">Azure Arc 지원 Managed Instance는 원하는 인프라에 배포할 수 있는 SQL Server 액세스 및 기능 호환성을 제공합니다. 이 서비스는 미리 보기 상태이지만 Azure의 SQL Managed Instance에 비해 몇 가지 기능 제한이 있습니다. {0}</target>
+        <source xml:lang="en">Azure Arc enabled Managed Instance provides SQL Server access and feature compatibility that can be deployed on the infrastructure of your choice. {0}</source>
+        <target state="translated">Azure Arc 사용 Managed Instance는 원하는 인프라에 배포할 수 있는 SQL Server 액세스 및 기능 호환성을 제공합니다. {0}</target>
       </trans-unit>
       <trans-unit id="arc.agreement.sql.help.text.learn.more">
         <source xml:lang="en">Learn more</source>
@@ -823,6 +831,14 @@
       <trans-unit id="arc.extensionsFunction">
         <source xml:lang="en">Some extensions must be loaded into PostgreSQL at startup time before they can be used. These preloaded extensions can be viewed and edited  below.</source>
         <target state="translated">일부 확장을 사용하려면 시작 시 PostgreSQL에 로드해야 합니다. 이러한 미리 로드된 확장은 아래에서 보고 편집할 수 있습니다.</target>
+      </trans-unit>
+      <trans-unit id="arc.extensionsAddFunction">
+        <source xml:lang="en">Some extensions must be loaded into PostgreSQL at startup time before they can be used. To edit, type in comma separated list of valid extensions: ({0}).</source>
+        <target state="translated">일부 확장을 사용하려면 시작 시 PostgreSQL에 로드해야 합니다. 편집하려면 유효한 확장의 쉼표로 구분된 목록을 입력합니다({0}).</target>
+      </trans-unit>
+      <trans-unit id="arc.extensionsAddErrorrMessage">
+        <source xml:lang="en">Value should be either of the following: ({0}).</source>
+        <target state="translated">값은 다음 중 하나여야 합니다({0}).</target>
       </trans-unit>
       <trans-unit id="arc.extensionsLearnMore">
         <source xml:lang="en">Learn more about PostgreSQL extensions.</source>
