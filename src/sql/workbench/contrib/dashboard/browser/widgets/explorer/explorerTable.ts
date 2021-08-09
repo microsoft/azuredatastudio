@@ -207,8 +207,7 @@ export class ExplorerTable extends Disposable {
 					id: property.value,
 					field: property.value,
 					name: property.displayName,
-					width: columnWidth,
-					minWidth: 50
+					width: columnWidth
 				};
 			}
 		});
