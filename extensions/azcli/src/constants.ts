@@ -16,5 +16,6 @@ export const azArcFound = 'az.arcfound';
 
 // other constants
 export const azHostname = 'https://aka.ms';
-export const azReleaseJson = 'az/release.json';
+export const azUri = 'installazurecliwindows';
+export const azReleaseJson = 'azdata/release.json';
 export const latestAzArcExtensionVersion = '1.0.0';

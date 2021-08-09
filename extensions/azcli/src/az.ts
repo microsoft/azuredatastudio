@@ -9,12 +9,11 @@ import * as os from 'os';
 import * as path from 'path';
 import { SemVer } from 'semver';
 import * as vscode from 'vscode';
-import { getPlatformDownloadLink } from './azReleaseInfo';
 import { executeCommand, executeSudoCommand, ExitCodeError, ProcessOutput } from './common/childProcess';
 import { HttpClient } from './common/httpClient';
 import Logger from './common/logger';
 import { AzureCLIArcExtError, NoAzureCLIError, searchForCmd } from './common/utils';
-import { azArcdataInstallKey, azConfigSection, azFound, azArcdataUpdateKey, debugConfigKey, latestAzArcExtensionVersion, azCliInstallKey, azArcFound } from './constants';
+import { azArcdataInstallKey, azConfigSection, azFound, azArcdataUpdateKey, debugConfigKey, latestAzArcExtensionVersion, azCliInstallKey, azArcFound, azHostname, azUri } from './constants';
 import * as loc from './localizedConstants';
 
 /**
@@ -377,7 +376,7 @@ export async function installAz(): Promise<void> {
  * Downloads the Windows installer and runs it
  */
 async function downloadAndInstallAzWin32(): Promise<void> {
-	const downLoadLink = await getPlatformDownloadLink();
+	const downLoadLink = `${azHostname}/${azUri}`;
 	const downloadFolder = os.tmpdir();
 	const downloadLogs = path.join(downloadFolder, 'ads_az_install_logs.log');
 	const downloadedFile = await HttpClient.downloadFile(downLoadLink, downloadFolder);
