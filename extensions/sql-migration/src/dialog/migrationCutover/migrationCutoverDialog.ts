@@ -634,7 +634,6 @@ export class MigrationCutoverDialog {
 					'display': 'flex'
 				});
 				this._fileTable.height = '50px';
-
 			}
 
 			if (this._shouldDisplayBackupFileTable()) {
