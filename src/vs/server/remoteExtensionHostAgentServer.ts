@@ -7,6 +7,8 @@ import * as fs from 'fs';
 import * as http from 'http';
 import * as net from 'net';
 import * as url from 'url';
+import * as path from 'path';
+import * as cookie from 'cookie';
 import { release, hostname } from 'os';
 import * as perf from 'vs/base/common/performance';
 import { performance } from 'perf_hooks';
@@ -377,6 +379,42 @@ export class RemoteExtensionHostAgentServer extends Disposable {
 			if (typeof desiredPath !== 'string') {
 				return serveError(req, res, 400, `Bad request.`);
 			}
+
+			let filePath: string;
+			try {
+				filePath = URI.from({ scheme: Schemas.file, path: desiredPath }).fsPath;
+			} catch (err) {
+				return serveError(req, res, 400, `Bad request.`);
+			}
+
+			const responseHeaders: Record<string, string> = Object.create(null);
+			if (this._environmentService.isBuilt) {
+				if (isEqualOrParent(filePath, this._environmentService.builtinExtensionsPath, !platform.isLinux)
+					|| isEqualOrParent(filePath, this._environmentService.extensionsPath, !platform.isLinux)
+				) {
+					responseHeaders['Cache-Control'] = 'public, max-age=31536000';
+				}
+			}
+			return serveFile(this._logService, req, res, filePath, responseHeaders);
+		}
+
+		// {{SQL CARBON EDIT}} add local webview routing
+		if (pathname.startsWith('/webview/')) {
+			const cookies = cookie.parse(req.headers.cookie || '');
+			if (cookies['vscode-tkn'] !== this._connectionToken) {
+				return serveError(req, res, 403, `Forbidden.`);
+			}
+
+			const webviewPath = decodeURI(pathname.replace(/^\/webview\//, ''));
+
+			let desiredPath: string;
+			if (/^vscode-resource/.test(webviewPath)) {
+				// handling vscode resources like extenstion assets
+				desiredPath = webviewPath.replace(/^vscode-resource(\/file)?/, '');
+			} else {
+				desiredPath = path.join(__dirname, '/../workbench/contrib/webview/browser/pre/', webviewPath);
+			}
+			desiredPath = path.normalize(desiredPath);
 
 			let filePath: string;
 			try {
