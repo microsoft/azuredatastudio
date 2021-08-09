@@ -52,10 +52,10 @@ export async function addDatabaseReferenceQuickpick(project: Project): Promise<A
 			console.log(`Unknown reference type ${referenceType}`);
 			return undefined;
 	}
-
 }
 
 async function addProjectReference(otherProjectsInWorkspace: vscode.Uri[]): Promise<IProjectReferenceSettings | undefined> {
+	// (steps continued from addDatabaseReferenceQuickpick)
 	// 2. Prompt database project
 	const otherProjectQuickpickItems: (vscode.QuickPickItem & { uri: vscode.Uri })[] = otherProjectsInWorkspace.map(p => {
 		return {
@@ -107,8 +107,8 @@ async function addProjectReference(otherProjectsInWorkspace: vscode.Uri[]): Prom
 }
 
 async function addSystemDatabaseReference(project: Project): Promise<ISystemDatabaseReferenceSettings | undefined> {
-
-	// Prompt System DB
+	// (steps continued from addDatabaseReferenceQuickpick)
+	// 2. Prompt System DB
 
 	const selectedSystemDb = await vscode.window.showQuickPick(
 		getSystemDbOptions(project),
@@ -118,10 +118,10 @@ async function addSystemDatabaseReference(project: Project): Promise<ISystemData
 		return undefined;
 	}
 
-	// Prompt DB name
+	// 3. Prompt DB name
 	const dbName = await promptDbName(selectedSystemDb);
 
-	// Prompt suppress unresolved ref errors
+	// 4. Prompt suppress unresolved ref errors
 	const suppressErrors = await promptSuppressUnresolvedRefErrors();
 
 	return {
@@ -132,6 +132,7 @@ async function addSystemDatabaseReference(project: Project): Promise<ISystemData
 }
 
 async function addDacpacReference(): Promise<IDacpacReferenceSettings | undefined> {
+	// (steps continued from addDatabaseReferenceQuickpick)
 	// 2. Prompt for location
 	const location = await promptLocation();
 	if (!location) {
