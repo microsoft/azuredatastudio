@@ -103,4 +103,53 @@ suite('NotebookMarkdownRenderer', () => {
 		result = notebookMarkdownRenderer.renderMarkdown({ value: `![altText](attachment:ads.png)`, isTrusted: true }, { cellAttachments: JSON.parse('{"ads2.png":"image/png"}') });
 		assert.strictEqual(result.innerHTML, `<p><img src="attachment:ads.png" alt="altText"></p>`, 'Cell attachment no image data failed');
 	});
+
+	/**
+	 * This suite contains tests that verify the expected parsing results for the current version of marked.js which were determined to have
+	 * changed in newer versions of marked.js being brought in. They are put here as a staging ground to keep track of these differences, but once the
+	 * differences are understood should be moved out into a generic test like the ones above.
+	 */
+	suite('parse output differences between current marked.js and newer versions', function (): void {
+		test('1', function (): void {
+			const markdown = '1) Item 1\n\n2) Item 2\n\n 1) Sub-item 1\n\n 2) Sub-item 2\n\n';
+			const expectedValue = '<ol>\n<li><p>Item 1</p></li>\n<li><p>Item 2</p><ol>\n<li><p>Sub-item 1</p></li>\n<li><p>Sub-item 2</p></li>\n</ol>\n</li>\n</ol>\n';
+			const result = notebookMarkdownRenderer.renderMarkdown({ value: markdown, isTrusted: true }).innerHTML;
+			assert.strictEqual(result, expectedValue);
+		});
+
+		test('2', function (): void {
+			const markdown = '    ![](attachment:image.png)';
+			const expectedValue = '<pre><code>![](attachment:image.png)</code></pre>\n';
+			const result = notebookMarkdownRenderer.renderMarkdown({ value: markdown, isTrusted: true }).innerHTML;
+			assert.strictEqual(result, expectedValue);
+		});
+
+		test('3', function (): void {
+			const markdown = 'Some text **%appdata%\\*****Path\\\\To\\\\Folder\\\\<******FileName**>.ext** into **...\\\\Another\\\\****Path\\\\**\n\n';
+			const expectedValue = '<p>Some text <strong>%appdata%***</strong>Path\\To\\Folder\\&lt;******FileName**&gt;.ext** into <strong>...\\Another\\**</strong>Path\\**</p>';
+			const result = notebookMarkdownRenderer.renderMarkdown({ value: markdown, isTrusted: true }).innerHTML;
+			assert.strictEqual(result, expectedValue);
+		});
+
+		test('4', function (): void {
+			const markdown = '# Heading 1\n- Some text\n\n    \n\n- ## Heading 2';
+			const expectedValue = '<h1 id="heading-1">Heading 1</h1>\n<ul>\n<li>Some text</li>\n</ul>\n<ul>\n<li><h2 id="heading-2">Heading 2</h2>\n</li>\n</ul>\n';
+			const result = notebookMarkdownRenderer.renderMarkdown({ value: markdown, isTrusted: true }).innerHTML;
+			assert.strictEqual(result, expectedValue);
+		});
+
+		test('5', function (): void {
+			const markdown = `Some text\n\n      Some more text`;
+			const expectedValue = '<p>Some text</p><pre><code>  Some more text</code></pre>\n';
+			const result = notebookMarkdownRenderer.renderMarkdown({ value: markdown, isTrusted: true }).innerHTML;
+			assert.strictEqual(result, expectedValue);
+		});
+
+		test('6', function (): void {
+			const markdown = `# heading\n##`;
+			const expectedValue = `<h1 id="heading">heading</h1>\n<p>##</p>`;
+			const result = notebookMarkdownRenderer.renderMarkdown({ value: markdown, isTrusted: true }).innerHTML;
+			assert.strictEqual(result, expectedValue);
+		});
+	});
 });

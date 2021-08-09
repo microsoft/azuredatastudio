@@ -166,8 +166,11 @@ export const projectNamePlaceholderText = localize('projectNamePlaceholderText',
 export const projectLocationLabel = localize('projectLocationLabel', "Location");
 export const projectLocationPlaceholderText = localize('projectLocationPlaceholderText', "Select location to create project");
 export const browseButtonText = localize('browseButtonText', "Browse folder");
+export const selectFolderStructure = localize('selectFolderStructure', "Select folder structure");
 export const folderStructureLabel = localize('folderStructureLabel', "Folder structure");
 export const WorkspaceFileExtension = '.code-workspace';
+export const browseEllipsis = localize('browseEllipsis', "Browse...");
+export const selectProjectLocation = localize('selectProjectLocation', "Select project location");
 export const ProjectParentDirectoryNotExistError = (location: string): string => { return localize('dataworkspace.projectParentDirectoryNotExistError', "The selected project location '{0}' does not exist or is not a directory.", location); };
 export const ProjectDirectoryAlreadyExistError = (projectName: string, location: string): string => { return localize('dataworkspace.projectDirectoryAlreadyExistError', "There is already a directory named '{0}' in the selected location: '{1}'.", projectName, location); };
 
@@ -207,6 +210,7 @@ export function fileOrFolderDoesNotExist(name: string) { return localize('fileOr
 export function cannotResolvePath(path: string) { return localize('cannotResolvePath', "Cannot resolve path {0}", path); }
 export function fileAlreadyExists(filename: string) { return localize('fileAlreadyExists', "A file with the name '{0}' already exists on disk at this location. Please choose another name.", filename); }
 export function folderAlreadyExists(filename: string) { return localize('folderAlreadyExists', "A folder with the name '{0}' already exists on disk at this location. Please choose another name.", filename); }
+export function folderAlreadyExistsChooseNewLocation(filename: string) { return localize('folderAlreadyExistsChooseNewLocation', "A folder with the name '{0}' already exists on disk at this location. Please choose another location.", filename); }
 export function invalidInput(input: string) { return localize('invalidInput', "Invalid input: {0}", input); }
 export function invalidProjectPropertyValue(propertyName: string) { return localize('invalidPropertyValue', "Invalid value specified for the property '{0}' in .sqlproj file", propertyName); }
 export function unableToCreatePublishConnection(input: string) { return localize('unableToCreatePublishConnection', "Unable to construct connection: {0}", input); }
@@ -246,6 +250,15 @@ export const externalStreamFriendlyName = localize('externalStream', "External S
 export const externalStreamingJobFriendlyName = localize('externalStreamingJobFriendlyName', "External Streaming Job");
 export const preDeployScriptFriendlyName = localize('preDeployScriptFriendlyName', "Script.PreDeployment");
 export const postDeployScriptFriendlyName = localize('postDeployScriptFriendlyName', "Script.PostDeployment");
+
+// Build
+
+export const NetCoreInstallationConfirmation: string = localize('sqlDatabaseProjects.NetCoreInstallationConfirmation', "The .NET Core SDK cannot be located. Project build will not work. Please install .NET Core SDK version 3.1 or update the .NET Core SDK location in settings if already installed.");
+export function NetCoreSupportedVersionInstallationConfirmation(installedVersion: string) { return localize('sqlDatabaseProjects.NetCoreSupportedVersionInstallationConfirmation', "Currently installed .NET Core SDK version is {0}, which is not supported. Project build will not work. Please install .NET Core SDK version 3.1 or update the .NET Core SDK supported version location in settings if already installed.", installedVersion); }
+export const UpdateNetCoreLocation: string = localize('sqlDatabaseProjects.UpdateNetCoreLocation', "Update Location");
+export const InstallNetCore: string = localize('sqlDatabaseProjects.InstallNetCore', "Install");
+export const DoNotAskAgain: string = localize('sqlDatabaseProjects.doNotAskAgain', "Don't Ask Again");
+export const projectsOutputChannel = localize('sqlDatabaseProjects.outputChannel', "Database Projects");
 
 // SqlProj file XML names
 export const ItemGroup = 'ItemGroup';
@@ -380,3 +393,16 @@ export const defaultDSP = targetPlatformToVersion.get(defaultTargetPlatform)!;
 export function getTargetPlatformFromVersion(version: string): string {
 	return Array.from(targetPlatformToVersion.keys()).filter(k => targetPlatformToVersion.get(k) === version)[0];
 }
+
+// Insert SQL binding
+export const hostFileName = 'host.json';
+export const placeHolderObject = '[dbo].[table1]';
+export const input = localize('input', "Input");
+export const output = localize('output', "Output");
+export const selectBindingType = localize('selectBindingType', "Select type of binding");
+export const selectAzureFunction = localize('selectAzureFunction', "Select an Azure function in the current file to add SQL binding to");
+export const sqlObjectToQuery = localize('sqlObjectToQuery', "SQL object to query");
+export const sqlTableToUpsert = localize('sqlTableToUpsert', "SQL table to upsert into");
+export const connectionStringSetting = localize('connectionStringSetting', "Connection string setting name");
+export const connectionStringSettingPlaceholder = localize('connectionStringSettingPlaceholder', "Connection string setting specified in \"local.settings.json\"");
+export const noAzureFunctionsInFile = localize('noAzureFunctionsInFile', "No Azure functions in the current active file");
