@@ -35,6 +35,7 @@ import { IThemeService } from 'vs/platform/theme/common/themeService';
 
 const ShowActionsText: string = nls.localize('dashboard.explorer.actions', "Show Actions");
 const LabelColoumnActions: string = nls.localize('dashboard.explorer.actionsColumn', "Actions");
+const ActionsColumnWidth: number = 50;
 const NameWithIconProperty: string = 'NameWithIcon';
 export const ConnectionProfilePropertyName: string = 'connection_profile';
 
@@ -74,8 +75,7 @@ export class ExplorerTable extends Disposable {
 			id: 'actions',
 			iconCssClass: 'toggle-more',
 			title: ShowActionsText,
-			name: LabelColoumnActions,
-			width: 50
+			name: LabelColoumnActions
 		});
 		this._table.registerPlugin(this._actionsColumn);
 		this._register(this._actionsColumn.onClick((args) => {
@@ -214,7 +214,7 @@ export class ExplorerTable extends Disposable {
 		});
 		const actionsColumnDefinition = {
 			id: this._actionsColumn.definition.id,
-			width: 50,
+			width: ActionsColumnWidth,
 			formatter: this._actionsColumn.definition.formatter,
 			name: this._actionsColumn.definition.name,
 			resizable: this._actionsColumn.definition.resizable,
