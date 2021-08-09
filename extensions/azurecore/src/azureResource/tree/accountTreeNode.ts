@@ -44,15 +44,17 @@ export class AzureResourceAccountTreeNode extends AzureResourceContainerTreeNode
 			let subscriptions: azureResource.AzureResourceSubscription[] = [];
 
 			if (this._isClearingCache) {
-				try {
-					for (const tenant of this.account.properties.tenants) {
+				for (const tenant of this.account.properties.tenants) {
+					try {
 						const token = await azdata.accounts.getAccountSecurityToken(this.account, tenant.id, azdata.AzureResource.ResourceManagement);
 
 						subscriptions.push(...(await this._subscriptionService.getSubscriptions(this.account, new TokenCredentials(token.token, token.tokenType), tenant.id) || <azureResource.AzureResourceSubscription[]>[]));
+					} catch (error) {
+						vscode.window.showErrorMessage(localize('azure.resource.tree.accountTreeNode.tenantCredentialError', "Failed to get credential for account {0} (tenant {1}). {2}", this.account.key.accountId, tenant.id, AzureResourceErrorMessageUtil.getErrorMessage(error)));
+						// throw new AzureResourceCredentialError(localize('azure.resource.tree.accountTreeNode.credentialError', "Failed to get credential for account {0}. Please refresh the account.", this.account.key.accountId), error);
 					}
-				} catch (error) {
-					throw new AzureResourceCredentialError(localize('azure.resource.tree.accountTreeNode.credentialError', "Failed to get credential for account {0}. Please refresh the account.", this.account.key.accountId), error);
 				}
+
 				this.updateCache<azureResource.AzureResourceSubscription[]>(subscriptions);
 
 				this._isClearingCache = false;
