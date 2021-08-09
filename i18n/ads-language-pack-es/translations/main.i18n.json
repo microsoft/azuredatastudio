@@ -10387,7 +10387,7 @@
 			"textPreview": "Celda de texto",
 			"runAllPreview": "Ejecutar todo",
 			"addCell": "Celda",
-			"views": "Views",
+			"views": "Vistas",
 			"editor": "Editor",
 			"code": "Código",
 			"text": "Texto",
@@ -10474,8 +10474,8 @@
 			"noParametersInCell": "Este cuaderno no se puede ejecutar con los parámetros hasta que se agregue una celda de parámetro. [Más información](https://docs.microsoft.com/sql/azure-data-studio/notebooks/notebooks-parameterization).",
 			"clearResults": "Borrar resultados",
 			"notebookViewLabel": "Editor",
-			"newViewLabel": "Create New View",
-			"viewNotFound": "Unable to find view: {0}",
+			"newViewLabel": "Crear nueva vista",
+			"viewNotFound": "No se encuentra la vista: {0}",
 			"trustLabel": "De confianza",
 			"untrustLabel": "No de confianza",
 			"collapseAllCells": "Contraer celdas",
@@ -10520,7 +10520,7 @@
 		"sql/workbench/contrib/notebook/browser/notebookViews/notebookViews.component": {
 			"cellNotFound": "no se encontró la celda con URI {0} en este modelo",
 			"cellRunFailed": "Error al ejecutar las celdas. Para más información, vea el error en la salida de la celda seleccionada actualmente.",
-			"runAllPreview": "Run all"
+			"runAllPreview": "Ejecutar todo"
 		},
 		"sql/workbench/contrib/notebook/browser/notebookViews/notebookViewsCodeCell.component": {
 			"viewsCodeCell.emptyCellText": "Ejecute esta celda para ver las salidas."
@@ -11456,35 +11456,35 @@
 			"deployment.title": "Nueva implementación..."
 		},
 		"sql/workbench/contrib/notebook/browser/notebookViews/insertCellsModal": {
-			"insertCellsModal.title": "Insert cells",
-			"insertCellsModal.selectCells": "Select cell sources",
-			"insertCellsModal.thumbnailError": "Error: Unable to generate thumbnails.",
-			"insertCellsModal.untitled": "Untitled Cell : {0}",
-			"insertCellsModal.Insert": "Insert",
-			"insertCellsModal.Cancel": "Cancel"
+			"insertCellsModal.title": "Insertar celdas",
+			"insertCellsModal.selectCells": "Seleccionar orígenes de celdas",
+			"insertCellsModal.thumbnailError": "Error: no se pueden generar miniaturas.",
+			"insertCellsModal.untitled": "Celda sin título: {0}",
+			"insertCellsModal.Insert": "Insertar",
+			"insertCellsModal.Cancel": "Cancelar"
 		},
 		"sql/workbench/contrib/notebook/browser/notebookViews/notebookViewsActions": {
-			"viewsUnableToRemove": "Unable to remove view",
-			"confirmDelete": "Are you sure you want to delete view \"{0}\"?",
-			"delete": "&&Delete",
-			"insertCells": "Insert Cells",
-			"runCell": "Run cell",
-			"stopCell": "Cancel execution",
+			"viewsUnableToRemove": "No se puede quitar la vista",
+			"confirmDelete": "¿Está seguro de que desea eliminar la vista \"{0}\"?",
+			"delete": "&&Eliminar",
+			"insertCells": "Insertar celdas",
+			"runCell": "Ejecutar celda",
+			"stopCell": "Cancelar ejecución",
 			"errorRunCell": "Error on last run. Click to run again",
-			"unableToNavigateToCell": "Unable to navigate to notebook cell.",
-			"viewCellInNotebook": "View Cell In Notebook",
-			"moreActionsLabel": "More"
+			"unableToNavigateToCell": "No se puede navegar a la celda del Bloc de notas.",
+			"viewCellInNotebook": "Ver celda en Bloc de notas",
+			"moreActionsLabel": "Más"
 		},
 		"sql/workbench/contrib/notebook/browser/notebookViews/viewOptionsModal": {
-			"viewOptionsModal.title": "Configure View",
-			"viewOptionsModal.name": "View Name",
+			"viewOptionsModal.title": "Configurar vista",
+			"viewOptionsModal.name": "Nombre de vista",
 			"viewOptionsModal.missingRequireField": "This field is required.",
-			"viewOptionsModal.nameTaken": "This view name has already been taken.",
-			"save": "Save",
-			"cancel": "Cancel"
+			"viewOptionsModal.nameTaken": "Este nombre de vista ya se está usando.",
+			"save": "Guardar",
+			"cancel": "Cancelar"
 		},
 		"sql/workbench/services/notebook/browser/notebookViews/notebookViewsExtension": {
-			"notebookView.untitledView": "Untitled View"
+			"notebookView.untitledView": "Vista sin título"
 		}
 	}
 }
