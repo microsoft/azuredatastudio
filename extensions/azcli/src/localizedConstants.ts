@@ -5,6 +5,7 @@
 
 import * as nls from 'vscode-nls';
 import { getErrorMessage } from './common/utils';
+import { azCliInstallKey, azConfigSection } from './constants';
 // import { azCliInstallKey } from './constants';
 const localize = nls.loadMessageBundle();
 
@@ -62,11 +63,11 @@ export const updateError = (err: any): string => localize('az.updateError', "Err
 export const noAz = localize('az.noAz', "No Azure CLI is available, run the command 'Azure CLI: Install' to enable the features that require it.");
 export const noAzArc = localize('az.noAzArc', "No Azure CLI arcdata extension is available.");
 export const noAzWithLink = localize('az.noAzWithLink', "No Azure CLI is available, [install the Azure CLI](command:az.install) to enable the features that require it.");
-// export const skipInstall = (config: string): string => localize('az.skipInstall', "Skipping installation of Azure CLI, since the operation was not user requested and config option: {0}.{1} is {2}", azConfigSection, azCliInstallKey, config);
+export const skipInstall = (config: string): string => localize('az.skipInstall', "Skipping installation of Azure CLI, since the operation was not user requested and config option: {0}.{1} is {2}", azConfigSection, azCliInstallKey, config);
 // export const skipUpdate = (config: string): string => localize('az.skipUpdate', "Skipping update of Azure CLI, since the operation was not user requested and config option: {0}.{1} is {2}", azConfigSection, azUpdateKey, config);
 // export const skipRequiredUpdate = (config: string): string => localize('az.skipRequiredUpdate', "Skipping required update of Azure CLI, since the operation was not user requested and config option: {0}.{1} is {2}", azConfigSection, azrequiredUpdateKey, config);
-// export const azUserSettingRead = (configName: string, configValue: string): string => localize('az.azUserSettingReadLog', "Azure CLI user setting: {0}.{1} read, value: {2}", azConfigSection, configName, configValue);
-// export const azUserSettingUpdated = (configName: string, configValue: string): string => localize('az.azUserSettingUpdatedLog', "Azure CLI user setting: {0}.{1} updated, newValue: {2}", azConfigSection, configName, configValue);
+export const azUserSettingRead = (configName: string, configValue: string): string => localize('az.azUserSettingReadLog', "Azure CLI user setting: {0}.{1} read, value: {2}", azConfigSection, configName, configValue);
+export const azUserSettingUpdated = (configName: string, configValue: string): string => localize('az.azUserSettingUpdatedLog', "Azure CLI user setting: {0}.{1} updated, newValue: {2}", azConfigSection, configName, configValue);
 export const userResponseToInstallPrompt = (response: string | undefined): string => localize('az.userResponseInstall', "User Response on prompt to install Azure CLI: {0}", response);
 export const userResponseToUpdatePrompt = (response: string | undefined): string => localize('az.userResponseUpdate', "User Response on prompt to update Azure CLI: {0}", response);
 export const userRequestedInstall = localize('az.userRequestedInstall', "User requested to install Azure CLI using 'Azure CLI: Install' command");

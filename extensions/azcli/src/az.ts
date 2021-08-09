@@ -265,6 +265,7 @@ export async function findAzAndArc(): Promise<IAzTool> {
 		} else {
 			throw AzureCLIArcExtError;
 		}
+
 		Logger.log(loc.foundExistingAz(await az.getPath(), (await az.getSemVersionAz()).raw, (await az.getSemVersionArc()).raw));
 		return az;
 	} catch (err) {
@@ -290,6 +291,8 @@ async function findSpecificAzAndArc(): Promise<[IAzTool, Boolean]> {
 	const path = await ((process.platform === 'win32') ? searchForCmd('az.cmd') : searchForCmd('az'));
 	const versionOutput = await executeAzCommand(`"${path}"`, ['--version']);
 
+	// The arcdata extension can't exist if there is no az. The function will not reach the following code
+	// if no az has been found.
 	let arcFound = false;
 	const arcVersion = parseArcExtensionVersion(versionOutput.stdout);
 	if (arcVersion !== undefined) {
@@ -300,7 +303,7 @@ async function findSpecificAzAndArc(): Promise<[IAzTool, Boolean]> {
 }
 
 /**
- * prompt user to install Az.
+ * Prompt user to install Azure CLI.
  * @param userRequested - if true this operation was requested in response to a user issued command, if false it was issued at startup by system
  * returns true if installation was done and false otherwise.
  */
@@ -312,7 +315,7 @@ async function promptToInstallAz(userRequested: boolean = false): Promise<boolea
 		Logger.log(loc.userRequestedInstall);
 	}
 	if (config === AzDeployOption.dontPrompt && !userRequested) {
-		// Logger.log(loc.skipInstall(config));
+		Logger.log(loc.skipInstall(config));
 		return false;
 	}
 	const responses = userRequested
