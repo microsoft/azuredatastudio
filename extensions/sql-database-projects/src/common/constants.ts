@@ -25,7 +25,6 @@ export const databaseSchemaProvider = 'DatabaseSchemaProvider';
 export const emptySqlDatabaseProjectTypeId = 'EmptySqlDbProj';
 export const emptyProjectTypeDisplayName = localize('emptyProjectTypeDisplayName', "SQL Database");
 export const emptyProjectTypeDescription = localize('emptyProjectTypeDescription', "Develop and publish schemas for SQL databases starting from an empty project");
-export const projectsOutputChannel = localize('sqlDatabaseProjects.outputChannel', "Database Projects");
 
 export const edgeSqlDatabaseProjectTypeId = 'SqlDbEdgeProj';
 export const edgeProjectTypeDisplayName = localize('edgeProjectTypeDisplayName', "SQL Edge");
@@ -298,6 +297,15 @@ export const externalStreamFriendlyName = localize('externalStream', "External S
 export const externalStreamingJobFriendlyName = localize('externalStreamingJobFriendlyName', "External Streaming Job");
 export const preDeployScriptFriendlyName = localize('preDeployScriptFriendlyName', "Script.PreDeployment");
 export const postDeployScriptFriendlyName = localize('postDeployScriptFriendlyName', "Script.PostDeployment");
+
+// Build
+
+export const NetCoreInstallationConfirmation: string = localize('sqlDatabaseProjects.NetCoreInstallationConfirmation', "The .NET Core SDK cannot be located. Project build will not work. Please install .NET Core SDK version 3.1 or update the .NET Core SDK location in settings if already installed.");
+export function NetCoreSupportedVersionInstallationConfirmation(installedVersion: string) { return localize('sqlDatabaseProjects.NetCoreSupportedVersionInstallationConfirmation', "Currently installed .NET Core SDK version is {0}, which is not supported. Project build will not work. Please install .NET Core SDK version 3.1 or update the .NET Core SDK supported version location in settings if already installed.", installedVersion); }
+export const UpdateNetCoreLocation: string = localize('sqlDatabaseProjects.UpdateNetCoreLocation', "Update Location");
+export const InstallNetCore: string = localize('sqlDatabaseProjects.InstallNetCore', "Install");
+export const DoNotAskAgain: string = localize('sqlDatabaseProjects.doNotAskAgain', "Don't Ask Again");
+export const projectsOutputChannel = localize('sqlDatabaseProjects.outputChannel', "Database Projects");
 
 // SqlProj file XML names
 export const ItemGroup = 'ItemGroup';
