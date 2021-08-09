@@ -12,6 +12,9 @@ export const azCliInstallKey: string = 'azInstall';
 
 // context keys && memento keys
 export const azFound = 'az.found';
+export const azArcFound = 'az.arcfound';
 
 // other constants
+export const azHostname = 'https://aka.ms';
+export const azReleaseJson = 'az/release.json';
 export const latestAzArcExtensionVersion = '1.0.0';

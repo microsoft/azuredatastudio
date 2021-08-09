@@ -6,12 +6,15 @@
 import * as azExt from 'az-ext';
 import * as fs from 'fs';
 import * as os from 'os';
+import * as path from 'path';
 import { SemVer } from 'semver';
 import * as vscode from 'vscode';
-import { executeCommand, ExitCodeError, ProcessOutput } from './common/childProcess';
+import { getPlatformDownloadLink } from './azReleaseInfo';
+import { executeCommand, executeSudoCommand, ExitCodeError, ProcessOutput } from './common/childProcess';
+import { HttpClient } from './common/httpClient';
 import Logger from './common/logger';
-import { NoAzureCLIError, searchForCmd } from './common/utils';
-import { azArcdataInstallKey, azConfigSection, azFound, azArcdataUpdateKey, debugConfigKey, latestAzArcExtensionVersion, azCliInstallKey } from './constants';
+import { AzureCLIArcExtError, NoAzureCLIError, searchForCmd } from './common/utils';
+import { azArcdataInstallKey, azConfigSection, azFound, azArcdataUpdateKey, debugConfigKey, latestAzArcExtensionVersion, azCliInstallKey, azArcFound } from './constants';
 import * as loc from './localizedConstants';
 
 /**
@@ -229,19 +232,188 @@ export class AzTool implements azExt.IAzApi {
 }
 
 /**
- * Finds and returns the existing installation of Azure CLI, or throws an error and returns undefined if it
- * can't find an installed Azure CLI or encountered an unexpected error.
+ * Checks whether az is installed - and if it is not then invokes the process of az installation.
+ * @param userRequested true means that this operation by was requested by a user by executing an ads command.
  */
-export async function findAz(userRequested: boolean = false): Promise<IAzTool | undefined> {
+export async function checkAndInstallAz(userRequested: boolean = false): Promise<IAzTool | undefined> {
+	try {
+		return await findAzAndArc(); // find currently installed Az
+	} catch (err) {
+		// Calls will be made to handle az not being installed if user declines to install on the prompt
+		if (await promptToInstallAz(userRequested)) {
+			return await findAzAndArc();
+		}
+	}
+	return undefined;
+}
+
+/**
+ * Finds the existing installation of az, or throws an error if it couldn't find it
+ * or encountered an unexpected error. If arcdata extension was not found on the az,
+ * throw an error. An AzTool will not be returned.
+ * The promise is rejected when Az is not found.
+ */
+export async function findAzAndArc(): Promise<IAzTool> {
 	Logger.log(loc.searchingForAz);
 	try {
-		const az = await findAzAndCheckArcdata(userRequested);
-		Logger.log(loc.foundExistingAz(await az.getPath(), (await az.getSemVersionAz()).raw));
+		const results = await findSpecificAzAndArc();
+		const az = results[0];
+		const arcInstalled = results[1];
+		await vscode.commands.executeCommand('setContext', azFound, true); // save a context key that az was found so that command for installing az is no longer available in commandPalette and that for updating it is.
+
+		if (arcInstalled) {
+			await vscode.commands.executeCommand('setContext', azArcFound, true); // save a context key that az was found so that command for installing az is no longer available in commandPalette and that for updating it is.
+		} else {
+			throw AzureCLIArcExtError;
+		}
+		Logger.log(loc.foundExistingAz(await az.getPath(), (await az.getSemVersionAz()).raw, (await az.getSemVersionArc()).raw));
 		return az;
 	} catch (err) {
-		Logger.log(loc.noAzureCLI);
-		return undefined;
+		if (err === AzureCLIArcExtError) {
+			Logger.log(loc.couldNotFindAzArc(err));
+			Logger.log(loc.noAzArc);
+			await vscode.commands.executeCommand('setContext', azArcFound, false);// save a context key that az was not found so that command for installing az is available in commandPalette and that for updating it is no longer available.
+		} else {
+			Logger.log(loc.couldNotFindAz(err));
+			Logger.log(loc.noAz);
+			await vscode.commands.executeCommand('setContext', azFound, false);// save a context key that az was not found so that command for installing az is available in commandPalette and that for updating it is no longer available.
+		}
+		throw err;
 	}
+}
+
+/**
+ * Find az by searching user's directories. If no az is found, this will error out and no arcdata is found.
+ * If az is found, check if arcdata extension exists on it and return true if so, false if not.
+ * Return the AzTool whether or not an arcdata extension has been found.
+ */
+async function findSpecificAzAndArc(): Promise<[IAzTool, Boolean]> {
+	const path = await ((process.platform === 'win32') ? searchForCmd('az.cmd') : searchForCmd('az'));
+	const versionOutput = await executeAzCommand(`"${path}"`, ['--version']);
+
+	let arcFound = false;
+	const arcVersion = parseArcExtensionVersion(versionOutput.stdout);
+	if (arcVersion !== undefined) {
+		arcFound = true;
+	}
+
+	return [new AzTool(path, <string>parseVersion(versionOutput.stdout), <string>arcVersion), arcFound];
+}
+
+/**
+ * prompt user to install Az.
+ * @param userRequested - if true this operation was requested in response to a user issued command, if false it was issued at startup by system
+ * returns true if installation was done and false otherwise.
+ */
+async function promptToInstallAz(userRequested: boolean = false): Promise<boolean> {
+	let response: string | undefined = loc.yes;
+	const config = <AzDeployOption>getConfig(azCliInstallKey);
+	if (userRequested) {
+		Logger.show();
+		Logger.log(loc.userRequestedInstall);
+	}
+	if (config === AzDeployOption.dontPrompt && !userRequested) {
+		// Logger.log(loc.skipInstall(config));
+		return false;
+	}
+	const responses = userRequested
+		? [loc.yes, loc.no]
+		: [loc.yes, loc.askLater, loc.doNotAskAgain];
+	if (config === AzDeployOption.prompt) {
+		Logger.log(loc.promptForAzInstallLog);
+		response = await vscode.window.showErrorMessage(loc.promptForAzInstall, ...responses);
+		Logger.log(loc.userResponseToInstallPrompt(response));
+	}
+	if (response === loc.doNotAskAgain) {
+		await setConfig(azCliInstallKey, AzDeployOption.dontPrompt);
+	} else if (response === loc.yes) {
+		try {
+			await installAz();
+			vscode.window.showInformationMessage(loc.azInstalled);
+			Logger.log(loc.azInstalled);
+			return true;
+		} catch (err) {
+			// Windows: 1602 is User cancelling installation/update - not unexpected so don't display
+			if (!(err instanceof ExitCodeError) || err.code !== 1602) {
+				vscode.window.showWarningMessage(loc.installError(err));
+				Logger.log(loc.installError(err));
+			}
+		}
+	}
+	return false;
+}
+
+/**
+ * runs the commands to install az, downloading the installation package if needed
+ */
+export async function installAz(): Promise<void> {
+	Logger.show();
+	Logger.log(loc.installingAz);
+	await vscode.window.withProgress(
+		{
+			location: vscode.ProgressLocation.Notification,
+			title: loc.installingAz,
+			cancellable: false
+		},
+		async (_progress, _token): Promise<void> => {
+			switch (process.platform) {
+				case 'win32':
+					await downloadAndInstallAzWin32();
+					break;
+				case 'darwin':
+					await installAzDarwin();
+					break;
+				case 'linux':
+					await installAzLinux();
+					break;
+				default:
+					throw new Error(loc.platformUnsupported(process.platform));
+			}
+		}
+	);
+}
+
+/**
+ * Downloads the Windows installer and runs it
+ */
+async function downloadAndInstallAzWin32(): Promise<void> {
+	const downLoadLink = await getPlatformDownloadLink();
+	const downloadFolder = os.tmpdir();
+	const downloadLogs = path.join(downloadFolder, 'ads_az_install_logs.log');
+	const downloadedFile = await HttpClient.downloadFile(downLoadLink, downloadFolder);
+
+	try {
+		await executeSudoCommand(`msiexec /qn /i "${downloadedFile}" /lvx "${downloadLogs}"`);
+	} catch (err) {
+		throw new Error(`${err.message}. See logs at ${downloadLogs} for more details.`);
+	}
+}
+
+/**
+ * Runs commands to install az on MacOS
+ */
+async function installAzDarwin(): Promise<void> {
+	await executeCommand('brew', ['tap', 'microsoft/az-cli-release']);
+	await executeCommand('brew', ['update']);
+	await executeCommand('brew', ['install', 'az-cli']);
+}
+
+/**
+ * Runs commands to install az on Linux
+ */
+async function installAzLinux(): Promise<void> {
+	// https://docs.microsoft.com/en-us/sql/big-data-cluster/deploy-install-az-linux-package
+	// Get packages needed for install process
+	await executeSudoCommand('apt-get update');
+	await executeSudoCommand('apt-get install gnupg ca-certificates curl wget software-properties-common apt-transport-https lsb-release -y');
+	// Download and install the signing key
+	await executeSudoCommand('curl -sL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/microsoft.asc.gpg > /dev/null');
+	// Add the az repository information
+	const release = (await executeCommand('lsb_release', ['-rs'])).stdout.trim();
+	await executeSudoCommand(`add-apt-repository "$(wget -qO- https://packages.microsoft.com/config/ubuntu/${release}/mssql-server-2019.list)"`);
+	// Update repository information and install az
+	await executeSudoCommand('apt-get update');
+	await executeSudoCommand('apt-get install -y az-cli');
 }
 
 /**
