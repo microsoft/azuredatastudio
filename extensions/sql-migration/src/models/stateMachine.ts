@@ -190,15 +190,15 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		try {
 			this._assessmentApiResponse = (await this.migrationService.getAssessments(ownerUri, this._databaseAssessment))!;
 			this._assessmentResults = {
-				issues: this._assessmentApiResponse.assessmentResult.items,
-				databaseAssessments: this._assessmentApiResponse.assessmentResult.databases.map(d => {
+				issues: this._assessmentApiResponse?.assessmentResult?.items ?? [],
+				databaseAssessments: this._assessmentApiResponse?.assessmentResult?.databases?.map(d => {
 					return {
 						name: d.name,
 						issues: d.items,
 						errors: d.errors
 					};
-				}),
-				errors: this._assessmentApiResponse.errors
+				}) ?? [],
+				errors: this._assessmentApiResponse?.errors ?? []
 			};
 		} catch (error) {
 			this._assessmentResults = {
@@ -794,7 +794,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	public async getSqlMigrationServiceValues(subscription: azureResource.AzureResourceSubscription, managedInstance: SqlManagedInstance, resourceGroupName: string): Promise<azdata.CategoryValue[]> {
 		let sqlMigrationServiceValues: azdata.CategoryValue[] = [];
 		try {
-			this._sqlMigrationServices = (await getSqlMigrationServices(this._azureAccount, subscription, this._sessionId)).filter(sms => sms.location.toLowerCase() === this._targetServerInstance.location.toLowerCase() && sms.properties.resourceGroup.toLowerCase() === resourceGroupName?.toLowerCase());
+			this._sqlMigrationServices = (await getSqlMigrationServices(this._azureAccount, subscription, resourceGroupName?.toLowerCase(), this._sessionId)).filter(sms => sms.location.toLowerCase() === this._targetServerInstance.location.toLowerCase());
 			this._sqlMigrationServices.forEach((sqlMigrationService) => {
 				sqlMigrationServiceValues.push({
 					name: sqlMigrationService.id,

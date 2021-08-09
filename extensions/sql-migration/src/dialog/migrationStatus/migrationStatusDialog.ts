@@ -21,6 +21,15 @@ const statusImageSize: number = 14;
 const imageCellStyles: azdata.CssStyles = { 'margin': '3px 3px 0 0', 'padding': '0' };
 const statusCellStyles: azdata.CssStyles = { 'margin': '0', 'padding': '0' };
 
+const MenuCommands = {
+	Cutover: 'sqlmigration.cutover',
+	ViewDatabase: 'sqlmigration.view.database',
+	ViewTarget: 'sqlmigration.view.target',
+	ViewService: 'sqlmigration.view.service',
+	CopyMigration: 'sqlmigration.copy.migration',
+	CancelMigration: 'sqlmigration.cancel.migration',
+};
+
 export class MigrationStatusDialog {
 	private _model: MigrationStatusDialogModel;
 	private _dialogObject!: azdata.window.Dialog;
@@ -181,7 +190,7 @@ export class MigrationStatusDialog {
 
 	private registerCommands(): void {
 		this._disposables.push(vscode.commands.registerCommand(
-			'sqlmigration.cutover',
+			MenuCommands.Cutover,
 			async (migrationId: string) => {
 				try {
 					clearDialogMessage(this._dialogObject);
@@ -206,7 +215,7 @@ export class MigrationStatusDialog {
 			}));
 
 		this._disposables.push(vscode.commands.registerCommand(
-			'sqlmigration.view.database',
+			MenuCommands.ViewDatabase,
 			async (migrationId: string) => {
 				try {
 					const migration = this._model._migrations.find(migration => migration.migrationContext.id === migrationId);
@@ -218,7 +227,7 @@ export class MigrationStatusDialog {
 			}));
 
 		this._disposables.push(vscode.commands.registerCommand(
-			'sqlmigration.view.target',
+			MenuCommands.ViewTarget,
 			async (migrationId: string) => {
 				try {
 					const migration = this._model._migrations.find(migration => migration.migrationContext.id === migrationId);
@@ -230,7 +239,7 @@ export class MigrationStatusDialog {
 			}));
 
 		this._disposables.push(vscode.commands.registerCommand(
-			'sqlmigration.view.service',
+			MenuCommands.ViewService,
 			async (migrationId: string) => {
 				try {
 					const migration = this._model._migrations.find(migration => migration.migrationContext.id === migrationId);
@@ -242,7 +251,7 @@ export class MigrationStatusDialog {
 			}));
 
 		this._disposables.push(vscode.commands.registerCommand(
-			'sqlmigration.copy.migration',
+			MenuCommands.CopyMigration,
 			async (migrationId: string) => {
 				try {
 					clearDialogMessage(this._dialogObject);
@@ -271,7 +280,7 @@ export class MigrationStatusDialog {
 			}));
 
 		this._disposables.push(vscode.commands.registerCommand(
-			'sqlmigration.cancel.migration',
+			MenuCommands.CancelMigration,
 			async (migrationId: string) => {
 				try {
 					clearDialogMessage(this._dialogObject);
@@ -406,16 +415,24 @@ export class MigrationStatusDialog {
 	}
 
 	private _getMenuCommands(migration: MigrationContext): string[] {
-		let menuCommands = [
-			'sqlmigration.view.database',
-			'sqlmigration.view.target',
-			'sqlmigration.view.service',
-			'sqlmigration.copy.migration',
-			'sqlmigration.cancel.migration',
-		];
-		if (this._getMigrationMode(migration) === loc.ONLINE) {
-			menuCommands.unshift('sqlmigration.cutover');
+		const menuCommands: string[] = [];
+		const migrationStatus = migration?.migrationContext?.properties?.migrationStatus;
+
+		if (this._getMigrationMode(migration) === loc.ONLINE &&
+			this.canCutoverMigration(migrationStatus)) {
+			menuCommands.push(MenuCommands.Cutover);
 		}
+
+		menuCommands.push(...[
+			MenuCommands.ViewDatabase,
+			MenuCommands.ViewTarget,
+			MenuCommands.ViewService,
+			MenuCommands.CopyMigration]);
+
+		if (this.canCancelMigration(migrationStatus)) {
+			menuCommands.push(MenuCommands.CancelMigration);
+		}
+
 		return menuCommands;
 	}
 
