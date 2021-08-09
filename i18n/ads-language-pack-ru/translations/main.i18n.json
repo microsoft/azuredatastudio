@@ -10387,8 +10387,8 @@
 			"textPreview": "Текстовая ячейка",
 			"runAllPreview": "Выполнить все",
 			"addCell": "Ячейка",
-			"views": "Views",
-			"editor": "Editor",
+			"views": "Представления",
+			"editor": "Редактор",
 			"code": "Код",
 			"text": "Текст",
 			"runAll": "Выполнить ячейки",
@@ -10473,7 +10473,7 @@
 			"noParametersCell": "Эта записная книжка не может работать с параметрами до тех пор, пока не будет добавлена ячейка параметров. [Подробнее] (https://docs.microsoft.com/sql/azure-data-studio/notebooks/notebooks-parameterization).",
 			"noParametersInCell": "Эта записная книжка не может работать с параметрами до тех пор, пока в ячейку параметров не будут добавлены параметры. [Подробнее](https://docs.microsoft.com/sql/azure-data-studio/notebooks/notebooks-parameterization).",
 			"clearResults": "Очистить результаты",
-			"notebookViewLabel": "Editor",
+			"notebookViewLabel": "Редактор",
 			"newViewLabel": "Create New View",
 			"viewNotFound": "Unable to find view: {0}",
 			"trustLabel": "Доверенный",
@@ -10520,7 +10520,7 @@
 		"sql/workbench/contrib/notebook/browser/notebookViews/notebookViews.component": {
 			"cellNotFound": "ячейка с URI {0} не найдена в этой модели",
 			"cellRunFailed": "Не удалось выполнить ячейки. Дополнительные сведения об ошибке см. в выходных данных текущей выбранной ячейки.",
-			"runAllPreview": "Run all"
+			"runAllPreview": "Выполнить все"
 		},
 		"sql/workbench/contrib/notebook/browser/notebookViews/notebookViewsCodeCell.component": {
 			"viewsCodeCell.emptyCellText": "Запустите эту ячейку, чтобы просмотреть выходные данные."
@@ -11460,28 +11460,28 @@
 			"insertCellsModal.selectCells": "Select cell sources",
 			"insertCellsModal.thumbnailError": "Error: Unable to generate thumbnails.",
 			"insertCellsModal.untitled": "Untitled Cell : {0}",
-			"insertCellsModal.Insert": "Insert",
-			"insertCellsModal.Cancel": "Cancel"
+			"insertCellsModal.Insert": "Вставить",
+			"insertCellsModal.Cancel": "Отмена"
 		},
 		"sql/workbench/contrib/notebook/browser/notebookViews/notebookViewsActions": {
 			"viewsUnableToRemove": "Unable to remove view",
 			"confirmDelete": "Are you sure you want to delete view \"{0}\"?",
-			"delete": "&&Delete",
+			"delete": "&&Удалить",
 			"insertCells": "Insert Cells",
-			"runCell": "Run cell",
-			"stopCell": "Cancel execution",
-			"errorRunCell": "Error on last run. Click to run again",
+			"runCell": "Выполнить ячейку",
+			"stopCell": "Отменить выполнение",
+			"errorRunCell": "Ошибка при последнем запуске. Щелкните, чтобы запустить повторно",
 			"unableToNavigateToCell": "Unable to navigate to notebook cell.",
 			"viewCellInNotebook": "View Cell In Notebook",
-			"moreActionsLabel": "More"
+			"moreActionsLabel": "Еще"
 		},
 		"sql/workbench/contrib/notebook/browser/notebookViews/viewOptionsModal": {
 			"viewOptionsModal.title": "Configure View",
-			"viewOptionsModal.name": "View Name",
-			"viewOptionsModal.missingRequireField": "This field is required.",
+			"viewOptionsModal.name": "Имя представления",
+			"viewOptionsModal.missingRequireField": "Это обязательное поле.",
 			"viewOptionsModal.nameTaken": "This view name has already been taken.",
-			"save": "Save",
-			"cancel": "Cancel"
+			"save": "Сохранить",
+			"cancel": "Отмена"
 		},
 		"sql/workbench/services/notebook/browser/notebookViews/notebookViewsExtension": {
 			"notebookView.untitledView": "Untitled View"
