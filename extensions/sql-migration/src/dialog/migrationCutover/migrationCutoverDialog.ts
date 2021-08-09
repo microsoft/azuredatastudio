@@ -126,7 +126,6 @@ export class MigrationCutoverDialog {
 				}).component();
 
 				const _emptyTableImage = view.modelBuilder.image().withProps({
-
 					iconPath: IconPathHelper.emptyTable,
 					iconHeight: '100px',
 					iconWidth: '100px',
