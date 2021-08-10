@@ -8058,6 +8058,9 @@
       <Item ItemId=";src/sql/workbench/contrib/notebook/browser/notebook.contribution.notebook.enableIncrementalGridRendering" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Enable incremental grid rendering for notebooks. This will improve the initial rendering time for large notebooks. There may be performance issues when interacting with the notebook while the rest of the grids are rendering.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Activer le rendu de grille incrémentielle pour les blocs-notes. Cela permet d’améliorer le temps de rendu initiale pour les grands notebook. Des problèmes de performances peuvent survenir lors de l’interaction avec le notebook pendant que le reste des grilles sont en cours de rendu.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
