@@ -2,8 +2,6 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-
-import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox';
 import { Button } from 'sql/base/browser/ui/button/button';
 import { IClipboardService } from 'sql/platform/clipboard/common/clipboardService';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
@@ -26,7 +24,6 @@ import { attachButtonStyler } from 'vs/platform/theme/common/styler';
 export class ViewOptionsModal extends Modal {
 	private _submitButton: Button;
 	private _cancelButton: Button;
-	private _optionsMap: { [name: string]: InputBox | Checkbox } = {};
 	private _viewNameInput: InputBox;
 
 	constructor(
@@ -140,10 +137,5 @@ export class ViewOptionsModal extends Modal {
 
 	public override dispose(): void {
 		super.dispose();
-		for (let key in this._optionsMap) {
-			let widget = this._optionsMap[key];
-			widget.dispose();
-			delete this._optionsMap[key];
-		}
 	}
 }
