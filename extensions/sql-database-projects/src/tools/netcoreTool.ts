@@ -66,9 +66,9 @@ export class NetCoreTool {
 	public async showInstallDialog(): Promise<void> {
 		let result;
 		if (this.netCoreInstallState === netCoreInstallState.netCoreNotPresent) {
-			result = await vscode.window.showInformationMessage(NetCoreInstallationConfirmation, UpdateNetCoreLocation, InstallNetCore, DoNotAskAgain);
+			result = await vscode.window.showErrorMessage(NetCoreInstallationConfirmation, UpdateNetCoreLocation, InstallNetCore, DoNotAskAgain);
 		} else {
-			result = await vscode.window.showInformationMessage(NetCoreSupportedVersionInstallationConfirmation(this.netCoreSdkInstalledVersion!), UpdateNetCoreLocation, InstallNetCore, DoNotAskAgain);
+			result = await vscode.window.showErrorMessage(NetCoreSupportedVersionInstallationConfirmation(this.netCoreSdkInstalledVersion!), UpdateNetCoreLocation, InstallNetCore, DoNotAskAgain);
 		}
 
 		if (result === UpdateNetCoreLocation) {
