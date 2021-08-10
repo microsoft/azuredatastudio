@@ -134,7 +134,6 @@ export class MigrationCutoverDialog {
 					CSSStyles: {
 						'text-align': 'center'
 					}
-
 				}).component();
 
 				const _emptyTableText = view.modelBuilder.text().withProps({
@@ -161,17 +160,14 @@ export class MigrationCutoverDialog {
 					.withLayout({
 						flexFlow: 'column',
 						alignItems: 'center'
-					})
-					.withItems([
+					}).withItems([
 						_emptyTableImage,
 						_emptyTableText,
 						_emptyTableSubText
-					])
-					.withProps({
+					]).withProps({
 						width: 1000,
 						display: 'none'
-					})
-					.component();
+					}).component();
 
 				let formItems = [
 					{ component: this.migrationContainerHeader() },
