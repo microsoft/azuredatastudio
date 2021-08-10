@@ -707,6 +707,7 @@ describe('BooksTreeViewTests', function () {
 			}
 		];
 		while (runTests--) {
+			console.log(`######### ITERATION: ${runTests} ###########`);
 			runs.forEach(function (run) {
 				describe('BookTreeViewProvider.Commands on ' + run.it, function (): void {
 					before(async () => {

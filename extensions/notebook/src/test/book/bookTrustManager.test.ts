@@ -262,6 +262,7 @@ describe('BookTrustManagerTests', function () {
 			}
 		];
 		while(runTests--){
+			console.log(`######### ITERATION: ${runTests} ###########`);
 			runs.forEach(function (run) {
 				describe('Trusting in Workspaces ' + run.it, function (): void {
 					beforeEach(() => {
