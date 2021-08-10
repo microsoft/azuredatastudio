@@ -66,6 +66,10 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		super(wizard, azdata.window.createWizardPage(constants.SKU_RECOMMENDATION_PAGE_TITLE), migrationStateModel);
 	}
 
+	private createIconTextCell(icon: IconPath, text: string): string {
+		return text;
+	}
+
 	protected async registerContent(view: azdata.ModelView) {
 		this._view = view;
 		this._igComponent = this.createStatusComponent(view); // The first component giving basic information
@@ -288,6 +292,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 
 		const managedInstanceSubscriptionDropdownLabel = this._view.modelBuilder.text().withProps({
 			value: constants.SUBSCRIPTION,
+			description: this.createIconTextCell(IconPathHelper.info, constants.SKU_RECOMMENDATION_SUBSCRIPTION_INFO),
 			width: WIZARD_INPUT_COMPONENT_WIDTH,
 			CSSStyles: {
 				'font-size': '13px',
@@ -312,6 +317,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 
 		const azureLocationLabel = this._view.modelBuilder.text().withProps({
 			value: constants.LOCATION,
+			description: this.createIconTextCell(IconPathHelper.info, constants.SKU_RECOMMENDATION_LOCATION_INFO),
 			width: WIZARD_INPUT_COMPONENT_WIDTH,
 			CSSStyles: {
 				'font-size': '13px',
@@ -334,6 +340,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 
 		const azureResourceGroupLabel = this._view.modelBuilder.text().withProps({
 			value: constants.RESOURCE_GROUP,
+			description: this.createIconTextCell(IconPathHelper.info, constants.SKU_RECOMMENDATION_RESOURCE_GROUP_INFO),
 			width: WIZARD_INPUT_COMPONENT_WIDTH,
 			CSSStyles: {
 				'font-size': '13px',
@@ -355,6 +362,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		}));
 		this._resourceDropdownLabel = this._view.modelBuilder.text().withProps({
 			value: constants.MANAGED_INSTANCE,
+			description: this.createIconTextCell(IconPathHelper.info, constants.SKU_RECOMMENDATION_RESOURCE_INFO),
 			width: WIZARD_INPUT_COMPONENT_WIDTH,
 			CSSStyles: {
 				'font-size': '13px',
