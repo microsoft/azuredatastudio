@@ -427,7 +427,7 @@ function parseVersion(raw: string): string | undefined {
 	// The output of az --version looks like:
 	// azure-cli                         2.26.1
 	// ...
-	const exp = new RegExp(/azure-cli\s*(\d*.\d*.\d*)/);
+	const exp = /azure-cli\s*(\d*.\d*.\d*)/;
 	return exp.exec(raw)?.pop();
 }
 
@@ -446,7 +446,7 @@ function parseArcExtensionVersion(raw: string): string | undefined {
 	// arcdata                            1.0.0
 	// connectedk8s                       1.1.5
 	// ...
-	const exp = new RegExp(/arcdata\s*(\d*.\d*.\d*)/);
+	const exp = /arcdata\s*(\d*.\d*.\d*)/;
 	return exp.exec(raw)?.pop();
 }
 
