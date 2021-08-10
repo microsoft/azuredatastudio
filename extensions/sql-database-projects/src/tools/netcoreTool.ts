@@ -55,7 +55,7 @@ export class NetCoreTool {
 	public async findOrInstallNetCore(): Promise<boolean> {
 		if ((!this.isNetCoreInstallationPresent || !await this.isNetCoreVersionSupported())) {
 			if (vscode.workspace.getConfiguration(DBProjectConfigurationKey)[NetCoreDoNotAskAgainKey] !== true) {
-				this.showInstallDialog();
+				this.showInstallDialog();		// Removing await so that Build and extension load process doesn't wait on user input
 			}
 			return false;
 		}
