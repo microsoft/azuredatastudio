@@ -8,6 +8,35 @@ import { ImportDataModel } from '../wizard/api/models';
 import * as EventEmitter from 'events';
 import { FlatFileProvider } from '../services/contracts';
 
+const headerLeft: azdata.CssStyles = {
+
+	'border': 'none',
+
+	'text-align': 'left',
+
+	'white-space': 'nowrap',
+
+	'text-overflow': 'ellipsis',
+
+	'overflow': 'hidden',
+
+	'border-bottom': '1px solid'
+
+};
+
+const styleLeft: azdata.CssStyles = {
+
+	'border': 'none',
+
+	'text-align': 'left',
+
+	'white-space': 'nowrap',
+
+	'text-overflow': 'ellipsis',
+
+	'overflow': 'hidden',
+
+};
 
 export class DerivedColumnDialog {
 	private _dialogObject: azdata.window.Dialog;
@@ -40,15 +69,23 @@ export class DerivedColumnDialog {
 						displayName: '',
 						valueType: azdata.DeclarativeDataType.boolean,
 						isReadOnly: false,
-						width: '50px'
+						showCheckAll: true,
+						width: '50px',
+						headerCssStyles: headerLeft,
+						rowCssStyles: styleLeft
 					},
 					{
 						displayName: 'Column',
 						valueType: azdata.DeclarativeDataType.string,
 						isReadOnly: true,
-						width: '100px'
+						width: '100px',
+						headerCssStyles: headerLeft,
+						rowCssStyles: styleLeft
 					}
 				],
+				CSSStyles: {
+					'table-layout': 'fixed'
+				}
 			}).component();
 
 			const columnTableData: azdata.DeclarativeTableCellValue[][] = [];
@@ -66,7 +103,6 @@ export class DerivedColumnDialog {
 			columnTable.dataValues = columnTableData;
 
 			columnTable.onDataChanged(e => {
-				//TODO: Add or remove columns and data from the transformation table
 				if (e.value) {
 					console.group(e.value);
 					this._transformationTable.columns.splice(this._transformationTable.columns.length - 1, 0,
@@ -94,16 +130,17 @@ export class DerivedColumnDialog {
 						this._transformationTable.dataValues[index].splice(removeIndex, 1);
 					}
 				}
-				this.clearAndAddTrasnformationContainerComponents();
+				this.clearAndAddTransformationContainerComponents();
 			});
 
 
 			const columnContainer = view.modelBuilder.flexContainer().withLayout({
 				flexFlow: 'column',
-				width: '150px',
+				width: '200px',
+				height: '100%'
 			}).withProps({
 				CSSStyles: {
-					'overflow-y': 'scroll'
+					'border-right': 'solid 1px'
 				}
 			}).component();
 			columnContainer.addItem(columnTable);
@@ -122,6 +159,7 @@ export class DerivedColumnDialog {
 			}
 
 			this._transformationTable = view.modelBuilder.declarativeTable().withProps({
+				height: '100%',
 				columns: [
 					{
 						displayName: 'Specify Transformation',
@@ -130,13 +168,16 @@ export class DerivedColumnDialog {
 						width: '200px'
 					}
 				],
+				CSSStyles: {
+					'table-layout': 'fixed'
+				},
 				dataValues: transformationTableData
 			}).component();
 
 
 			this._applyButton = view.modelBuilder.button().withProps({
 				label: 'Apply',
-				width: '200px',
+				width: '150px',
 				CSSStyles: {
 					'margin-right': 0
 				}
@@ -169,13 +210,13 @@ export class DerivedColumnDialog {
 				for (let index = 0; index < this.currentTransformation.length; index++) {
 					(<azdata.InputBoxComponent>this._transformationTable.dataValues[index][this._transformationTable.columns.length - 1].value).placeHolder = this.currentTransformation[index];
 				}
-				this.clearAndAddTrasnformationContainerComponents();
+				this.clearAndAddTransformationContainerComponents();
 			});
 
 			const specifyDerivedColNameTable = view.modelBuilder.declarativeTable().withProps({
 				columns: [
 					{
-						displayName: 'Column Name?',
+						displayName: 'Column Name',
 						valueType: azdata.DeclarativeDataType.string,
 						isReadOnly: false,
 						width: '150px'
@@ -197,36 +238,24 @@ export class DerivedColumnDialog {
 
 			this._transformationContainer = view.modelBuilder.flexContainer().withLayout({
 				flexFlow: 'column',
-			}).withProps({
-				width: 'fit-content',
-				CSSStyles: {
-					'height': '100%',
-					'overflow-x': 'scroll',
-				}
-			}).component();
-			this.clearAndAddTrasnformationContainerComponents();
-
-			const wrapTransformationContainer = view.modelBuilder.flexContainer().withLayout({
-				flexFlow: 'column',
-				width: '700px'
+				width: '700px',
+				height: '100%',
 			}).withProps({
 				CSSStyles: {
-					'overflow-x': 'scroll'
+					'overflow-y': 'auto',
+					'margin-left': '10px'
 				}
 			}).component();
-			wrapTransformationContainer.addItem(this._transformationContainer);
+			this.clearAndAddTransformationContainerComponents();
 
 
 
 			const specifyDerivedColNameContainer = view.modelBuilder.flexContainer().withLayout({
 				flexFlow: 'column',
 				width: '150px'
-			}).withProps({
-				CSSStyles: {
-					'overflow-x': 'scroll'
-				}
 			}).component();
 			specifyDerivedColNameContainer.addItem(specifyDerivedColNameTable);
+			specifyDerivedColNameContainer.addItem(this._applyButton);
 
 			const flexGrid = view.modelBuilder.flexContainer().withLayout({
 				flexFlow: 'row',
@@ -234,22 +263,16 @@ export class DerivedColumnDialog {
 				width: '100%'
 			}).component();
 			flexGrid.addItem(columnContainer, {
-				flex: '0',
-				CSSStyles: {
-					width: '150px'
-				}
+				flex: '0 0 auto'
 			});
-			flexGrid.addItem(wrapTransformationContainer, {
-				flex: '0',
+			flexGrid.addItem(this._transformationContainer, {
+				flex: '0 0 auto',
 				CSSStyles: {
-					width: '700px'
+					'overflow-y': 'auto'
 				}
 			});
 			flexGrid.addItem(specifyDerivedColNameContainer, {
-				flex: '0',
-				CSSStyles: {
-					width: '150px'
-				}
+				flex: '0 0 auto'
 			});
 			const formBuilder = view.modelBuilder.formContainer().withFormItems(
 				[
@@ -306,17 +329,17 @@ export class DerivedColumnDialog {
 		});
 	}
 
-	private clearAndAddTrasnformationContainerComponents(): void {
+	private clearAndAddTransformationContainerComponents(): void {
 		this._transformationContainer.updateCssStyles({
 			'width': 'fit-content'
 		});
 		this._transformationContainer.clearItems();
 		this._transformationContainer.addItem(this._transformationTable);
-		this._transformationContainer.addItem(this._applyButton, {
-			CSSStyles: {
-				'align-self': 'flex-end',
-				'margin-top': '10px'
-			}
-		});
+		// this._transformationContainer.addItem(this._applyButton, {
+		// 	CSSStyles: {
+		// 		'align-self': 'flex-end',
+		// 		'margin-top': '10px'
+		// 	}
+		// });
 	}
 }

@@ -74,6 +74,13 @@ export class ProsePreviewPage extends ImportPage {
 			columns: undefined,
 			forceFitColumns: azdata.ColumnSizingMode.DataFit
 		}).component();
+
+		this._createDerivedColumnButton = this.view.modelBuilder.button().withProps({
+			label: constants.createDerivedColumn,
+			width: '200px',
+			secondary: true
+		}).component();
+
 		this.refresh = this.view.modelBuilder.button().withProps({
 			label: constants.refreshText,
 			isFile: false,
@@ -83,10 +90,6 @@ export class ProsePreviewPage extends ImportPage {
 		this.refresh.onDidClick(async () => {
 			await this.onPageEnter();
 		});
-
-		this._createDerivedColumnButton = this.view.modelBuilder.button().withProps({
-			label: constants.createDerivedColumn
-		}).component();
 
 		this._createDerivedColumnButton.onDidClick(async (e) => {
 			const derivedColumnDialog = new DerivedColumnDialog(this.model, this.provider);
@@ -113,18 +116,19 @@ export class ProsePreviewPage extends ImportPage {
 
 		this.form = this.view.modelBuilder.formContainer().withFormItems([
 			{
+				component: this._createDerivedColumnButton,
+				title: ''
+			},
+			{
 				component: this.resultTextComponent,
 				title: ''
 			},
 			{
 				component: this.table,
 				title: '',
-				actions: [this.refresh]
-			},
-			{
-				component: this._createDerivedColumnButton,
-				title: ''
+				// actions: [this.refresh]
 			}
+
 		]).component();
 
 		this.loading.component = this.form;
