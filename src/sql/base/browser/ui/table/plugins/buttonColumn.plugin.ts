@@ -39,7 +39,7 @@ export class ButtonColumn<T extends Slick.SlickData> extends BaseClickableColumn
 				return `<button tabindex=-1 class="${iconCssClasses} ${buttonTypeCssClass}" title="${escapedTitle}" aria-label="${escapedTitle}">${buttonText}</button>`;
 			},
 			name: this.options.name,
-			resizable: this.options.resizable ?? this.options.showText === true,
+			resizable: this.options.resizable,
 			selectable: false
 		};
 	}
