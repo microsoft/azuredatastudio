@@ -255,19 +255,17 @@ export async function checkAndInstallAz(userRequested: boolean = false): Promise
 export async function findAzAndArc(): Promise<IAzTool> {
 	Logger.log(loc.searchingForAz);
 	try {
-		const results = await findSpecificAzAndArc();
-		const az = results[0];
-		const arcInstalled = results[1];
+		const result = await findSpecificAzAndArc();
 		await vscode.commands.executeCommand('setContext', azFound, true); // save a context key that az was found so that command for installing az is no longer available in commandPalette and that for updating it is.
 
-		if (arcInstalled) {
+		if (result.arcWasFound) {
 			await vscode.commands.executeCommand('setContext', azArcFound, true); // save a context key that az was found so that command for installing az is no longer available in commandPalette and that for updating it is.
 		} else {
 			throw AzureCLIArcExtError;
 		}
 
-		Logger.log(loc.foundExistingAz(await az.getPath(), (await az.getSemVersionAz()).raw, (await az.getSemVersionArc()).raw));
-		return az;
+		Logger.log(loc.foundExistingAz(await result.azTool.getPath(), (await result.azTool.getSemVersionAz()).raw, (await result.azTool.getSemVersionArc()).raw));
+		return result.azTool;
 	} catch (err) {
 		if (err === AzureCLIArcExtError) {
 			Logger.log(loc.couldNotFindAzArc(err));
@@ -287,7 +285,7 @@ export async function findAzAndArc(): Promise<IAzTool> {
  * If az is found, check if arcdata extension exists on it and return true if so, false if not.
  * Return the AzTool whether or not an arcdata extension has been found.
  */
-async function findSpecificAzAndArc(): Promise<[IAzTool, Boolean]> {
+async function findSpecificAzAndArc(): Promise<{ azTool: IAzTool, arcWasFound: Boolean }> {
 	const path = await ((process.platform === 'win32') ? searchForCmd('az.cmd') : searchForCmd('az'));
 	const versionOutput = await executeAzCommand(`"${path}"`, ['--version']);
 
@@ -299,7 +297,10 @@ async function findSpecificAzAndArc(): Promise<[IAzTool, Boolean]> {
 		arcFound = true;
 	}
 
-	return [new AzTool(path, <string>parseVersion(versionOutput.stdout), <string>arcVersion), arcFound];
+	return {
+		azTool: new AzTool(path, <string>parseVersion(versionOutput.stdout), <string>arcVersion),
+		arcWasFound: arcFound
+	};
 }
 
 /**
@@ -403,7 +404,6 @@ async function installAzDarwin(): Promise<void> {
  * Runs commands to install az on Linux
  */
 async function installAzLinux(): Promise<void> {
-	// https://docs.microsoft.com/en-us/sql/big-data-cluster/deploy-install-az-linux-package
 	// Get packages needed for install process
 	await executeSudoCommand('apt-get update');
 	await executeSudoCommand('apt-get install ca-certificates curl apt-transport-https lsb-release gnupg');
