@@ -13,7 +13,8 @@ import { IWorkspaceService } from '../common/interfaces';
 import { ProjectProviderRegistry } from '../common/projectProviderRegistry';
 import Logger from '../common/logger';
 import { TelemetryReporter, TelemetryViews, TelemetryActions } from '../common/telemetry';
-import { Deferred } from '../common/Promise';
+import { Deferred } from '../common/promise';
+
 
 export class WorkspaceService implements IWorkspaceService {
 	private _onDidWorkspaceProjectsChange: vscode.EventEmitter<void> = new vscode.EventEmitter<void>();
