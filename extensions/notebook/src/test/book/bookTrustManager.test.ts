@@ -228,7 +228,7 @@ describe('BookTrustManagerTests', function () {
 		let bookTrustManager: IBookTrustManager;
 		let books: BookModel[];
 		let trustedFolders: string[] = [];
-		let runTests = 200;
+		let runTests = 500;
 
 		let runs = [
 			{
