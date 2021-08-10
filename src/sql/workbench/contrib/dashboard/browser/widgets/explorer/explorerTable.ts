@@ -75,7 +75,9 @@ export class ExplorerTable extends Disposable {
 			id: 'actions',
 			iconCssClass: 'toggle-more',
 			title: ShowActionsText,
-			name: LabelColoumnActions
+			name: LabelColoumnActions,
+			width: ActionsColumnWidth,
+			resizable: false
 		});
 		this._table.registerPlugin(this._actionsColumn);
 		this._register(this._actionsColumn.onClick((args) => {
@@ -211,15 +213,7 @@ export class ExplorerTable extends Disposable {
 				};
 			}
 		});
-		const actionsColumnDefinition = {
-			id: this._actionsColumn.definition.id,
-			width: ActionsColumnWidth,
-			formatter: this._actionsColumn.definition.formatter,
-			name: this._actionsColumn.definition.name,
-			resizable: this._actionsColumn.definition.resizable,
-			selectable: this._actionsColumn.definition.selectable
-		};
-		columns.push(actionsColumnDefinition);
+		columns.push(this._actionsColumn.definition);
 		return columns;
 	}
 
