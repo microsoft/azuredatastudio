@@ -9,33 +9,20 @@ import * as EventEmitter from 'events';
 import { FlatFileProvider } from '../services/contracts';
 
 const headerLeft: azdata.CssStyles = {
-
 	'border': 'none',
-
 	'text-align': 'left',
-
 	'white-space': 'nowrap',
-
 	'text-overflow': 'ellipsis',
-
 	'overflow': 'hidden',
-
 	'border-bottom': '1px solid'
-
 };
 
 const styleLeft: azdata.CssStyles = {
-
 	'border': 'none',
-
 	'text-align': 'left',
-
 	'white-space': 'nowrap',
-
 	'text-overflow': 'ellipsis',
-
 	'overflow': 'hidden',
-
 };
 
 export class DerivedColumnDialog {
@@ -70,7 +57,7 @@ export class DerivedColumnDialog {
 						valueType: azdata.DeclarativeDataType.boolean,
 						isReadOnly: false,
 						showCheckAll: true,
-						width: '50px',
+						width: '20px',
 						headerCssStyles: headerLeft,
 						rowCssStyles: styleLeft
 					},
@@ -78,7 +65,7 @@ export class DerivedColumnDialog {
 						displayName: 'Column',
 						valueType: azdata.DeclarativeDataType.string,
 						isReadOnly: true,
-						width: '100px',
+						width: '140px',
 						headerCssStyles: headerLeft,
 						rowCssStyles: styleLeft
 					}
@@ -110,7 +97,9 @@ export class DerivedColumnDialog {
 							displayName: this._model.proseColumns[e.row].columnName,
 							valueType: azdata.DeclarativeDataType.string,
 							isReadOnly: true,
-							width: '100px'
+							width: '100px',
+							headerCssStyles: headerLeft,
+							rowCssStyles: styleLeft
 						}
 					);
 					for (let index = 0; index < this._model.proseDataPreview.length; index++) {
@@ -136,7 +125,7 @@ export class DerivedColumnDialog {
 
 			const columnContainer = view.modelBuilder.flexContainer().withLayout({
 				flexFlow: 'column',
-				width: '200px',
+				width: '180px',
 				height: '100%'
 			}).withProps({
 				CSSStyles: {
@@ -165,7 +154,9 @@ export class DerivedColumnDialog {
 						displayName: 'Specify Transformation',
 						valueType: azdata.DeclarativeDataType.component,
 						isReadOnly: false,
-						width: '200px'
+						width: '200px',
+						headerCssStyles: headerLeft,
+						rowCssStyles: styleLeft
 					}
 				],
 				CSSStyles: {
@@ -219,9 +210,15 @@ export class DerivedColumnDialog {
 						displayName: 'Column Name',
 						valueType: azdata.DeclarativeDataType.string,
 						isReadOnly: false,
-						width: '150px'
+						width: '150px',
+						headerCssStyles: headerLeft,
+						rowCssStyles: styleLeft,
 					}
 				],
+				height: '100vh',
+				CSSStyles: {
+
+				}
 			}).component();
 
 			specifyDerivedColNameTable.onDataChanged(e => {
@@ -239,11 +236,11 @@ export class DerivedColumnDialog {
 			this._transformationContainer = view.modelBuilder.flexContainer().withLayout({
 				flexFlow: 'column',
 				width: '700px',
-				height: '100%',
+				height: '100vh'
 			}).withProps({
 				CSSStyles: {
 					'overflow-y': 'auto',
-					'margin-left': '10px'
+					'margin-left': '10px',
 				}
 			}).component();
 			this.clearAndAddTransformationContainerComponents();
@@ -259,20 +256,30 @@ export class DerivedColumnDialog {
 
 			const flexGrid = view.modelBuilder.flexContainer().withLayout({
 				flexFlow: 'row',
-				height: '100%',
-				width: '100%'
+				height: '800px',
 			}).component();
 			flexGrid.addItem(columnContainer, {
-				flex: '0 0 auto'
+				flex: '0 0 auto',
+				CSSStyles: {
+					'overflow-y': 'auto',
+					'padding-right': '10px',
+					'height': '100vh'
+				}
 			});
 			flexGrid.addItem(this._transformationContainer, {
 				flex: '0 0 auto',
 				CSSStyles: {
-					'overflow-y': 'auto'
+					'overflow-y': 'auto',
+					'padding-right': '10px',
+					'height': '100vh'
 				}
 			});
 			flexGrid.addItem(specifyDerivedColNameContainer, {
-				flex: '0 0 auto'
+				flex: '0 0 auto',
+				CSSStyles: {
+					'margin-left': '10px',
+					'height': '100vh'
+				}
 			});
 			const formBuilder = view.modelBuilder.formContainer().withFormItems(
 				[
@@ -280,6 +287,7 @@ export class DerivedColumnDialog {
 						component: flexGrid
 					}
 				],
+
 				{
 					horizontal: false
 				}
