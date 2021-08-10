@@ -734,7 +734,8 @@ export class ListDatabasesActionItem extends Disposable implements IActionViewIt
 
 	/**
 	 *
-	 * @returns
+	 * @param dbName database name
+	 * @returns updated database name after stripping the pool name, if any
 	 */
 	private removePoolInstanceName(dbName: string): string {
 		if (dbName.includes('@')) {
