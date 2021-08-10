@@ -3959,11 +3959,11 @@ Error: {1}</source>
       </trans-unit>
       <trans-unit id="views">
         <source xml:lang="en">Views</source>
-        <target state="new">Views</target>
+        <target state="translated">Представления</target>
       </trans-unit>
       <trans-unit id="editor">
         <source xml:lang="en">Editor</source>
-        <target state="new">Editor</target>
+        <target state="translated">Редактор</target>
       </trans-unit>
       <trans-unit id="code">
         <source xml:lang="en">Code</source>
@@ -4295,7 +4295,7 @@ Error: {1}</source>
       </trans-unit>
       <trans-unit id="notebookViewLabel">
         <source xml:lang="en">Editor</source>
-        <target state="new">Editor</target>
+        <target state="translated">Редактор</target>
       </trans-unit>
       <trans-unit id="newViewLabel">
         <source xml:lang="en">Create New View</source>
@@ -4471,11 +4471,11 @@ Error: {1}</source>
       </trans-unit>
       <trans-unit id="insertCellsModal.Insert">
         <source xml:lang="en">Insert</source>
-        <target state="new">Insert</target>
+        <target state="translated">Вставить</target>
       </trans-unit>
       <trans-unit id="insertCellsModal.Cancel">
         <source xml:lang="en">Cancel</source>
-        <target state="new">Cancel</target>
+        <target state="translated">Отмена</target>
       </trans-unit>
     </body>
   </file>
@@ -4491,7 +4491,7 @@ Error: {1}</source>
       </trans-unit>
       <trans-unit id="runAllPreview">
         <source xml:lang="en">Run all</source>
-        <target state="new">Run all</target>
+        <target state="translated">Выполнить все</target>
       </trans-unit>
     </body>
   </file>
@@ -4507,7 +4507,7 @@ Error: {1}</source>
       </trans-unit>
       <trans-unit id="delete">
         <source xml:lang="en">&amp;&amp;Delete</source>
-        <target state="new">&amp;&amp;Delete</target>
+        <target state="translated">&amp;&amp;Удалить</target>
       </trans-unit>
       <trans-unit id="insertCells">
         <source xml:lang="en">Insert Cells</source>
@@ -4515,15 +4515,15 @@ Error: {1}</source>
       </trans-unit>
       <trans-unit id="runCell">
         <source xml:lang="en">Run cell</source>
-        <target state="new">Run cell</target>
+        <target state="translated">Выполнить ячейку</target>
       </trans-unit>
       <trans-unit id="stopCell">
         <source xml:lang="en">Cancel execution</source>
-        <target state="new">Cancel execution</target>
+        <target state="translated">Отменить выполнение</target>
       </trans-unit>
       <trans-unit id="errorRunCell">
         <source xml:lang="en">Error on last run. Click to run again</source>
-        <target state="new">Error on last run. Click to run again</target>
+        <target state="translated">Ошибка при последнем запуске. Щелкните, чтобы запустить повторно</target>
       </trans-unit>
       <trans-unit id="unableToNavigateToCell">
         <source xml:lang="en">Unable to navigate to notebook cell.</source>
@@ -4535,7 +4535,7 @@ Error: {1}</source>
       </trans-unit>
       <trans-unit id="moreActionsLabel">
         <source xml:lang="en">More</source>
-        <target state="new">More</target>
+        <target state="translated">Еще</target>
       </trans-unit>
     </body>
   </file>
@@ -4563,11 +4563,11 @@ Error: {1}</source>
       </trans-unit>
       <trans-unit id="viewOptionsModal.name">
         <source xml:lang="en">View Name</source>
-        <target state="new">View Name</target>
+        <target state="translated">Имя представления</target>
       </trans-unit>
       <trans-unit id="viewOptionsModal.missingRequireField">
         <source xml:lang="en">This field is required.</source>
-        <target state="new">This field is required.</target>
+        <target state="translated">Это обязательное поле.</target>
       </trans-unit>
       <trans-unit id="viewOptionsModal.nameTaken">
         <source xml:lang="en">This view name has already been taken.</source>
@@ -4575,11 +4575,11 @@ Error: {1}</source>
       </trans-unit>
       <trans-unit id="save">
         <source xml:lang="en">Save</source>
-        <target state="new">Save</target>
+        <target state="translated">Сохранить</target>
       </trans-unit>
       <trans-unit id="cancel">
         <source xml:lang="en">Cancel</source>
-        <target state="new">Cancel</target>
+        <target state="translated">Отмена</target>
       </trans-unit>
     </body>
   </file>
