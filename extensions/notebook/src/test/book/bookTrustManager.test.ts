@@ -228,7 +228,7 @@ describe('BookTrustManagerTests', function () {
 		let bookTrustManager: IBookTrustManager;
 		let books: BookModel[];
 		let trustedFolders: string[] = [];
-		let runTests = 500;
+		let runTests = 200;
 
 		let runs = [
 			{
@@ -262,9 +262,8 @@ describe('BookTrustManagerTests', function () {
 			}
 		];
 		while(runTests--){
-			console.log(`######### ITERATION: ${runTests} ###########`);
 			runs.forEach(function (run) {
-				describe('Trusting in Workspaces ' + run.it, function (): void {
+				describe('Trusting in Workspaces ' + run.it + `######### ITERATION: ${runTests} ###########`, function (): void {
 					beforeEach(() => {
 						trustedFolders = [];
 						// Mock Workspace Configuration
@@ -398,6 +397,7 @@ describe('BookTrustManagerTests', function () {
 					});
 
 					it('should NOT trust notebook inside trusted subfolder when absent in table of contents ', async () => {
+						console.log(`######### ITERATION: ${runTests} ###########`);
 						bookTrustManager.setBookAsTrusted('/temp/SubFolder/', true);
 
 						let notebookUri = run.book1.notInTocNb;

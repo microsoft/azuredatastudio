@@ -673,7 +673,7 @@ describe('BooksTreeViewTests', function () {
 	describe('BookTreeViewProvider.Commands', function () {
 		let rootFolderPath = path.join(os.tmpdir(), `BookTestData_${uuid.v4()}`);
 		let bookTreeViewProvider: BookTreeViewProvider;
-		let runTests = 500;
+		let runTests = 200;
 		let runs = [
 			{
 				it: 'v1',
@@ -707,9 +707,8 @@ describe('BooksTreeViewTests', function () {
 			}
 		];
 		while (runTests--) {
-			console.log(`######### ITERATION: ${runTests} ###########`);
 			runs.forEach(function (run) {
-				describe('BookTreeViewProvider.Commands on ' + run.it, function (): void {
+				describe('BookTreeViewProvider.Commands on ' + run.it + `######### ITERATION: ${runTests} ###########`, function (): void {
 					before(async () => {
 						await fs.mkdir(rootFolderPath);
 						if (run.it === 'v1') {
