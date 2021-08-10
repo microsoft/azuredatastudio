@@ -473,7 +473,6 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 				let connectionMgmtInfo = this._connectionStatusManager.findConnection(uri);
 				if (!connectionMgmtInfo) {
 					this._logService.info(`Could not find connection management info for ${uri} after connection`);
-					return connectionResult;
 				}
 				// Currently this could potentially throw an error because it expects there to always be
 				// a connection management info. See https://github.com/microsoft/azuredatastudio/issues/16556
