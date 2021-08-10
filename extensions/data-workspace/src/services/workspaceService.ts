@@ -61,7 +61,7 @@ export class WorkspaceService implements IWorkspaceService {
 		for (const projectFile of projectFiles) {
 			const relativePath = vscode.workspace.asRelativePath(projectFile, false);
 
-			if (vscode.Uri.file(relativePath).fsPath === projectFile.fsPath) {
+			if (relativePath === undefined || vscode.Uri.file(relativePath).fsPath === projectFile.fsPath) {
 				newWorkspaceFolders.push(path.dirname(projectFile.path));
 			}
 		}
@@ -73,12 +73,12 @@ export class WorkspaceService implements IWorkspaceService {
 
 		// 2. Re-detect projects from the updated set of workspace folders
 
-		const previousProjects: vscode.Uri[] = await this.getProjectsInWorkspace(undefined, true);
+		const previousProjects: string[] = await (await this.getProjectsInWorkspace(undefined, true)).map(p => p.path);
 		let newProjectAdded: boolean = false;
 		const projectsAlreadyOpen: string[] = [];
 
 		for (const projectFile of projectFiles) {
-			if (previousProjects.includes(projectFile)) {
+			if (previousProjects.includes(projectFile.path)) {
 				projectsAlreadyOpen.push(projectFile.fsPath);
 				vscode.window.showInformationMessage(constants.ProjectAlreadyOpened(projectFile.fsPath));
 			}
@@ -96,11 +96,6 @@ export class WorkspaceService implements IWorkspaceService {
 
 		if (newProjectAdded) {
 			this._onDidWorkspaceProjectsChange.fire();
-		}
-
-		// 4. Signal caller if not all projects were new
-		if (projectsAlreadyOpen.length > 0) {
-			throw new Error(constants.ProjectAlreadyOpened(projectsAlreadyOpen.join(', ')));
 		}
 	}
 
@@ -123,7 +118,7 @@ export class WorkspaceService implements IWorkspaceService {
 	 */
 	public async getProjectsInWorkspace(ext?: string, refreshFromDisk: boolean = false): Promise<vscode.Uri[]> {
 
-		if (refreshFromDisk) {
+		if (refreshFromDisk || this.openedProjects.length === 0) { // always check if nothing cached
 			await this.refreshProjectsFromDisk();
 		}
 
