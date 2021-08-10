@@ -52,7 +52,7 @@ export class WorkspaceService implements IWorkspaceService {
 	}
 
 	public async addProjectsToWorkspace(projectFiles: vscode.Uri[]): Promise<void> {
-		// 1. Update workspace folders if any of the new projects's locations aren't already included
+		// 1. Include new workspace folders if any of the new projects' locations aren't already included
 
 		const newWorkspaceFolders: string[] = [];
 
@@ -73,11 +73,11 @@ export class WorkspaceService implements IWorkspaceService {
 
 		const previousProjects: vscode.Uri[] = await this.getProjectsInWorkspace(undefined, true);
 		let newProjectAdded: boolean = false;
-		let anyProjectsAlreadyOpen: boolean = false;
+		const projectsAlreadyOpen: string[] = [];
 
 		for (const projectFile of projectFiles) {
 			if (previousProjects.includes(projectFile)) {
-				anyProjectsAlreadyOpen = true;
+				projectsAlreadyOpen.push(projectFile.fsPath);
 				vscode.window.showInformationMessage(constants.ProjectAlreadyOpened(projectFile.fsPath));
 			}
 			else {
@@ -97,8 +97,8 @@ export class WorkspaceService implements IWorkspaceService {
 		}
 
 		// 4. Signal caller if not all projects were new
-		if (anyProjectsAlreadyOpen) {
-			throw new Error('Some projects were already open in the workspace.');
+		if (projectsAlreadyOpen.length > 0) {
+			throw new Error(constants.ProjectAlreadyOpened(projectsAlreadyOpen.join(', ')));
 		}
 	}
 
@@ -111,12 +111,15 @@ export class WorkspaceService implements IWorkspaceService {
 		return projectTypes;
 	}
 
+	/**
+	 * Returns all the projects in the workspace
+	 * @param ext project extension to filter on. If this is passed in, this will only return projects with this file extension
+	 * @param refreshFromDisk whether to rescan the folder for project files, or return the cached version. Defaults to false.
+	 * @returns array of file URIs for projects
+	 */
 	public async getProjectsInWorkspace(ext?: string, refreshFromDisk: boolean = false): Promise<vscode.Uri[]> {
 		if (refreshFromDisk) {
-			const projectPromises = vscode.workspace.workspaceFolders?.map(f => this.getAllProjectsInFolder(f.uri));
-			if (!projectPromises) {
-				return [];
-			}
+			const projectPromises = vscode.workspace.workspaceFolders?.map(f => this.getAllProjectsInFolder(f.uri)) ?? [];
 			this.openedProjects = (await Promise.all(projectPromises)).reduce((prev, curr) => prev.concat(curr), []);
 		}
 
