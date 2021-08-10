@@ -241,7 +241,10 @@ export class ProjectsController {
 				.withAdditionalMeasurements({ duration: timeToFailureBuild })
 				.send();
 
-			vscode.window.showErrorMessage(constants.projBuildFailed(utils.getErrorMessage(err)));
+			const error = utils.getErrorMessage(err);
+			if (error !== (constants.NetCoreInstallationConfirmation || constants.NetCoreSupportedVersionInstallationConfirmation)) {
+				vscode.window.showErrorMessage(constants.projBuildFailed(error));
+			}
 			return '';
 		}
 	}
