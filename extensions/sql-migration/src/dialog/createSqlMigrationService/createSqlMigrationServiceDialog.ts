@@ -204,10 +204,6 @@ export class CreateSqlMigrationServiceDialog {
 		});
 	}
 
-	private createIconTextCell(icon: IconPath, text: string): string {
-		return text;
-	}
-
 	private async migrationServiceDropdownContainer(): Promise<azdata.FlexContainer> {
 		const dialogDescription = this._view.modelBuilder.text().withProps({
 			value: constants.MIGRATION_SERVICE_DIALOG_DESCRIPTION,
@@ -218,7 +214,7 @@ export class CreateSqlMigrationServiceDialog {
 
 		const subscriptionDropdownLabel = this._view.modelBuilder.text().withProps({
 			value: constants.SUBSCRIPTION,
-			description: this.createIconTextCell(IconPathHelper.info, constants.MIGRATION_SERVICE_SUBSCRIPTION_INFO),
+			description: (IconPathHelper.info, constants.MIGRATION_SERVICE_SUBSCRIPTION_INFO),
 			CSSStyles: {
 				'font-size': '13px',
 				'font-weight': 'bold'
@@ -232,7 +228,7 @@ export class CreateSqlMigrationServiceDialog {
 
 		const resourceGroupDropdownLabel = this._view.modelBuilder.text().withProps({
 			value: constants.RESOURCE_GROUP,
-			description: this.createIconTextCell(IconPathHelper.info, constants.MIGRATION_SERVICE_RESOURCE_GROUP_INFO),
+			description: (IconPathHelper.info, constants.MIGRATION_SERVICE_RESOURCE_GROUP_INFO),
 			CSSStyles: {
 				'font-size': '13px',
 				'font-weight': 'bold'
@@ -248,7 +244,7 @@ export class CreateSqlMigrationServiceDialog {
 
 		const migrationServiceNameLabel = this._view.modelBuilder.text().withProps({
 			value: constants.NAME,
-			description: this.createIconTextCell(IconPathHelper.info, constants.MIGRATION_SERVICE_NAME_INFO),
+			description: (IconPathHelper.info, constants.MIGRATION_SERVICE_NAME_INFO),
 			CSSStyles: {
 				'font-size': '13px',
 				'font-weight': 'bold'
@@ -282,7 +278,7 @@ export class CreateSqlMigrationServiceDialog {
 
 		const locationDropdownLabel = this._view.modelBuilder.text().withProps({
 			value: constants.LOCATION,
-			description: this.createIconTextCell(IconPathHelper.info, constants.MIGRATION_SERVICE_LOCATION_INFO),
+			description: (IconPathHelper.info, constants.MIGRATION_SERVICE_LOCATION_INFO),
 			CSSStyles: {
 				'font-size': '13px',
 				'font-weight': 'bold'
@@ -297,7 +293,7 @@ export class CreateSqlMigrationServiceDialog {
 
 		const targetlabel = this._view.modelBuilder.text().withProps({
 			value: constants.TARGET,
-			description: this.createIconTextCell(IconPathHelper.info, constants.MIGRATION_SERVICE_TARGET_INFO),
+			description: (IconPathHelper.info, constants.MIGRATION_SERVICE_TARGET_INFO),
 			CSSStyles: {
 				'font-size': '13px',
 				'font-weight': 'bold'
