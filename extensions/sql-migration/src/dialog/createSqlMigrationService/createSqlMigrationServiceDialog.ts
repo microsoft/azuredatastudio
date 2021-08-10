@@ -10,7 +10,7 @@ import { MigrationStateModel, NetworkContainerType } from '../../models/stateMac
 import * as constants from '../../constants/strings';
 import * as os from 'os';
 import { azureResource } from 'azureResource';
-import { IconPath, IconPathHelper } from '../../constants/iconPathHelper';
+import { IconPathHelper } from '../../constants/iconPathHelper';
 import { CreateResourceGroupDialog } from '../createResourceGroup/createResourceGroupDialog';
 import * as EventEmitter from 'events';
 import { clearDialogMessage } from '../../api/utils';
