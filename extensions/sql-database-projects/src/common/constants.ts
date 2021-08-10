@@ -69,6 +69,7 @@ export const databaseReferencesNodeName = localize('databaseReferencesNodeName',
 export const sqlConnectionStringFriendly = localize('sqlConnectionStringFriendly', "SQL connection string");
 export const yesString = localize('yesString', "Yes");
 export const noString = localize('noString', "No");
+export const noStringDefault = localize('noStringDefault', "No (default)");
 export const okString = localize('okString', "Ok");
 export const selectString = localize('selectString', "Select");
 export const dacpacFiles = localize('dacpacFiles', "dacpac Files");
@@ -79,6 +80,7 @@ export const objectType = localize('objectType', "Object Type");
 export const schema = localize('schema', "Schema");
 export const schemaObjectType = localize('schemaObjectType', "Schema/Object Type");
 export const defaultProjectNameStarter = localize('defaultProjectNameStarter', "DatabaseProject");
+export const location = localize('location', "Location");
 export const reloadProject = localize('reloadProject', "Would you like to reload your database project?");
 export function newObjectNamePrompt(objectType: string) { return localize('newObjectNamePrompt', 'New {0} name:', objectType); }
 export function deleteConfirmation(toDelete: string) { return localize('deleteConfirmation', "Are you sure you want to delete {0}?", toDelete); }
@@ -129,12 +131,10 @@ export const nameMustNotBeEmpty = localize('nameMustNotBeEmpty', "Name must not 
 export const addDatabaseReferenceDialogName = localize('addDatabaseReferencedialogName', "Add database reference");
 export const addDatabaseReferenceOkButtonText = localize('addDatabaseReferenceOkButtonText', "Add reference");
 export const referenceRadioButtonsGroupTitle = localize('referenceRadioButtonsGroupTitle', "Type");
-export const projectRadioButtonTitle = localize('projectRadioButtonTitle', "Project");
-export const systemDatabaseRadioButtonTitle = localize('systemDatabaseRadioButtonTitle', "System database");
+export const projectLabel = localize('projectLocString', "Project");
+export const systemDatabase = localize('systemDatabase', "System database");
 export const dacpacText = localize('dacpacText', "Data-tier application (.dacpac)");
-export const dacpacPlaceholder = localize('dacpacPlaceholder', "Select .dacpac");
-export const loadDacpacButton = localize('loadDacpacButton', "Select .dacpac");
-export const locationDropdown = localize('locationDropdown', "Location");
+export const selectDacpac = localize('selectDacpac', "Select .dacpac");
 export const sameDatabase = localize('sameDatabase', "Same database");
 export const differentDbSameServer = localize('differentDbSameServer', "Different database, same server");
 export const differentDbDifferentServer = localize('differentDbDifferentServer', "Different database, different server");
@@ -153,6 +153,7 @@ export const otherServer = 'OtherServer';
 export const otherSeverVariable = 'OtherServer';
 export const databaseProject = localize('databaseProject', "Database project");
 export const dacpacNotOnSameDrive = (projectLocation: string): string => { return localize('dacpacNotOnSameDrive', "Dacpac references need to be located on the same drive as the project file. The project file is located at {0}", projectLocation); };
+export const referenceType = localize('referenceType', "Reference type");
 
 // Create Project From Database dialog strings
 
@@ -163,7 +164,6 @@ export const targetProject = localize('targetProject', "Target project");
 export const createProjectSettings = localize('createProjectSettings', "Settings");
 export const projectNameLabel = localize('projectNameLabel', "Name");
 export const projectNamePlaceholderText = localize('projectNamePlaceholderText', "Enter project name");
-export const projectLocationLabel = localize('projectLocationLabel', "Location");
 export const projectLocationPlaceholderText = localize('projectLocationPlaceholderText', "Select location to create project");
 export const browseButtonText = localize('browseButtonText', "Browse folder");
 export const selectFolderStructure = localize('selectFolderStructure', "Select folder structure");

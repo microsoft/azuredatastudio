@@ -10387,8 +10387,8 @@
 			"textPreview": "Cellule de texte",
 			"runAllPreview": "Tout exécuter",
 			"addCell": "Cellule",
-			"views": "Views",
-			"editor": "Editor",
+			"views": "Vues",
+			"editor": "Éditeur",
 			"code": "Code",
 			"text": "Texte",
 			"runAll": "Exécuter les cellules",
@@ -10473,9 +10473,9 @@
 			"noParametersCell": "Ce bloc-notes ne peut pas être exécuté avec des paramètres tant qu'une cellule de paramètre n'est pas ajoutée. [En savoir plus](https://docs.microsoft.com/sql/azure-data-studio/notebooks/notebooks-parameterization).",
 			"noParametersInCell": "Ce bloc-notes ne peut pas s’exécuter avec des paramètres tant que des paramètres n’ont pas été ajoutés à la cellule de paramètres. [En savoir plus] (https://docs.microsoft.com/sql/azure-data-studio/notebooks/notebooks-parameterization).",
 			"clearResults": "Effacer les résultats",
-			"notebookViewLabel": "Editor",
-			"newViewLabel": "Create New View",
-			"viewNotFound": "Unable to find view: {0}",
+			"notebookViewLabel": "Éditeur",
+			"newViewLabel": "Créer une nouvelle vue",
+			"viewNotFound": "Affichage introuvable : {0}",
 			"trustLabel": "Approuvé",
 			"untrustLabel": "Non approuvé",
 			"collapseAllCells": "Réduire les cellules",
@@ -10520,7 +10520,7 @@
 		"sql/workbench/contrib/notebook/browser/notebookViews/notebookViews.component": {
 			"cellNotFound": "la cellule avec l'URI {0} est introuvable dans ce modèle",
 			"cellRunFailed": "L'exécution des cellules a échoué. Pour plus d'informations, consultez l'erreur dans la sortie de la cellule actuellement sélectionnée.",
-			"runAllPreview": "Run all"
+			"runAllPreview": "Tout exécuter"
 		},
 		"sql/workbench/contrib/notebook/browser/notebookViews/notebookViewsCodeCell.component": {
 			"viewsCodeCell.emptyCellText": "Exécutez cette cellule pour afficher les sorties."
@@ -11456,35 +11456,35 @@
 			"deployment.title": "Nouveau déploiement..."
 		},
 		"sql/workbench/contrib/notebook/browser/notebookViews/insertCellsModal": {
-			"insertCellsModal.title": "Insert cells",
-			"insertCellsModal.selectCells": "Select cell sources",
-			"insertCellsModal.thumbnailError": "Error: Unable to generate thumbnails.",
-			"insertCellsModal.untitled": "Untitled Cell : {0}",
-			"insertCellsModal.Insert": "Insert",
-			"insertCellsModal.Cancel": "Cancel"
+			"insertCellsModal.title": "Insérer des cellules",
+			"insertCellsModal.selectCells": "Sélectionner les sources de cellule",
+			"insertCellsModal.thumbnailError": "Erreur : impossible de générer des miniatures.",
+			"insertCellsModal.untitled": "Cellule sans titre : {0}",
+			"insertCellsModal.Insert": "Insérer",
+			"insertCellsModal.Cancel": "Annuler"
 		},
 		"sql/workbench/contrib/notebook/browser/notebookViews/notebookViewsActions": {
-			"viewsUnableToRemove": "Unable to remove view",
-			"confirmDelete": "Are you sure you want to delete view \"{0}\"?",
-			"delete": "&&Delete",
-			"insertCells": "Insert Cells",
-			"runCell": "Run cell",
-			"stopCell": "Cancel execution",
+			"viewsUnableToRemove": "Impossible de supprimer la vue",
+			"confirmDelete": "Voulez-vous vraiment supprimer la vue « {0} »0?",
+			"delete": "&&Supprimer",
+			"insertCells": "Insérer des cellules",
+			"runCell": "Exécuter la cellule",
+			"stopCell": "Annuler l'exécution",
 			"errorRunCell": "Error on last run. Click to run again",
-			"unableToNavigateToCell": "Unable to navigate to notebook cell.",
-			"viewCellInNotebook": "View Cell In Notebook",
-			"moreActionsLabel": "More"
+			"unableToNavigateToCell": "Impossible d’accéder à la cellule du bloc-notes.",
+			"viewCellInNotebook": "Afficher la cellule dans le bloc-notes",
+			"moreActionsLabel": "Plus"
 		},
 		"sql/workbench/contrib/notebook/browser/notebookViews/viewOptionsModal": {
-			"viewOptionsModal.title": "Configure View",
-			"viewOptionsModal.name": "View Name",
+			"viewOptionsModal.title": "Configurer la vue",
+			"viewOptionsModal.name": "Nom de la vue",
 			"viewOptionsModal.missingRequireField": "This field is required.",
-			"viewOptionsModal.nameTaken": "This view name has already been taken.",
-			"save": "Save",
-			"cancel": "Cancel"
+			"viewOptionsModal.nameTaken": "Ce nom de vue a déjà été pris.",
+			"save": "Enregistrer",
+			"cancel": "Annuler"
 		},
 		"sql/workbench/services/notebook/browser/notebookViews/notebookViewsExtension": {
-			"notebookView.untitledView": "Untitled View"
+			"notebookView.untitledView": "Affichage sans titre"
 		}
 	}
 }

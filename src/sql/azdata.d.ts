@@ -504,14 +504,6 @@ declare module 'azdata' {
 		 */
 		osVersion: string;
 		/**
-		 * The CPU count of the host running the server.
-		 */
-		cpuCount: number;
-		/**
-		 * The physical memory of the host running the server.
-		 */
-		physicalMemoryInMb: number;
-		/**
 		 * options for all new server properties.
 		 */
 		options: { [key: string]: any };
