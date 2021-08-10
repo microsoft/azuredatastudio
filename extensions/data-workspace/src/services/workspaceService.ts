@@ -13,6 +13,7 @@ import { IWorkspaceService } from '../common/interfaces';
 import { ProjectProviderRegistry } from '../common/projectProviderRegistry';
 import Logger from '../common/logger';
 import { TelemetryReporter, TelemetryViews, TelemetryActions } from '../common/telemetry';
+import { Deferred } from '../common/Promise';
 
 export class WorkspaceService implements IWorkspaceService {
 	private _onDidWorkspaceProjectsChange: vscode.EventEmitter<void> = new vscode.EventEmitter<void>();
@@ -111,6 +112,8 @@ export class WorkspaceService implements IWorkspaceService {
 		return projectTypes;
 	}
 
+	private getProjectsPromise: Deferred<void> | undefined = undefined;
+
 	/**
 	 * Returns all the projects in the workspace
 	 * @param ext project extension to filter on. If this is passed in, this will only return projects with this file extension
@@ -118,9 +121,9 @@ export class WorkspaceService implements IWorkspaceService {
 	 * @returns array of file URIs for projects
 	 */
 	public async getProjectsInWorkspace(ext?: string, refreshFromDisk: boolean = false): Promise<vscode.Uri[]> {
+
 		if (refreshFromDisk) {
-			const projectPromises = vscode.workspace.workspaceFolders?.map(f => this.getAllProjectsInFolder(f.uri)) ?? [];
-			this.openedProjects = (await Promise.all(projectPromises)).reduce((prev, curr) => prev.concat(curr), []);
+			await this.refreshProjectsFromDisk();
 		}
 
 		// filter by specified extension
@@ -128,6 +131,26 @@ export class WorkspaceService implements IWorkspaceService {
 			return this.openedProjects.filter(p => p.fsPath.toLowerCase().endsWith(ext.toLowerCase()));
 		} else {
 			return this.openedProjects;
+		}
+	}
+
+	private async refreshProjectsFromDisk(): Promise<void> {
+		// Only allow one disk scan to be happening at a time
+		if (this.getProjectsPromise) {
+			return this.getProjectsPromise.promise;
+		}
+
+		this.getProjectsPromise = new Deferred();
+
+		try {
+			const projectPromises = vscode.workspace.workspaceFolders?.map(f => this.getAllProjectsInFolder(f.uri)) ?? [];
+			this.openedProjects = (await Promise.all(projectPromises)).reduce((prev, curr) => prev.concat(curr), []);
+			this.getProjectsPromise.resolve();
+		} catch (err) {
+			this.getProjectsPromise.reject(err);
+			throw err;
+		} finally {
+			this.getProjectsPromise = undefined;
 		}
 	}
 
