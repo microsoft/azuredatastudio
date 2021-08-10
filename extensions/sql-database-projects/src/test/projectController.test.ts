@@ -597,7 +597,7 @@ describe('ProjectsController', function (): void {
 			const project2 = await Project.openProject(vscode.Uri.file(projPath2).fsPath);
 			const showErrorMessageSpy = sinon.spy(vscode.window, 'showErrorMessage');
 			const dataWorkspaceMock = TypeMoq.Mock.ofType<dataworkspace.IExtension>();
-			dataWorkspaceMock.setup(x => x.getProjectsInWorkspace(TypeMoq.It.isAny())).returns(() => Promise.resolve([vscode.Uri.file(project1.projectFilePath), vscode.Uri.file(project2.projectFilePath)]));
+			dataWorkspaceMock.setup(x => x.getProjectsInWorkspace(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve([vscode.Uri.file(project1.projectFilePath), vscode.Uri.file(project2.projectFilePath)]));
 			sinon.stub(vscode.extensions, 'getExtension').returns(<any>{ exports: dataWorkspaceMock.object });
 
 			// add project reference from project1 to project2

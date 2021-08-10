@@ -18,7 +18,11 @@ export class WorkspaceService implements IWorkspaceService {
 	private _onDidWorkspaceProjectsChange: vscode.EventEmitter<void> = new vscode.EventEmitter<void>();
 	readonly onDidWorkspaceProjectsChange: vscode.Event<void> = this._onDidWorkspaceProjectsChange?.event;
 
-	constructor() { }
+	private openedProjects: vscode.Uri[] = [];
+
+	constructor() {
+		this.getProjectsInWorkspace(undefined, true);
+	}
 
 	get isProjectProviderAvailable(): boolean {
 		for (const extension of vscode.extensions.all) {
@@ -47,46 +51,58 @@ export class WorkspaceService implements IWorkspaceService {
 		}
 	}
 
-	async addProjectsToWorkspace(projectFiles: vscode.Uri[]): Promise<void> {
-		if (!projectFiles || projectFiles.length === 0) {
-			return;
-		}
+	public async addProjectsToWorkspace(projectFiles: vscode.Uri[]): Promise<void> {
+		// 1. Update workspace folders if any of the new projects's locations aren't already included
 
-		const currentProjects: vscode.Uri[] = await this.getProjectsInWorkspace();
 		const newWorkspaceFolders: string[] = [];
-		let newProjectFileAdded = false;
+
 		for (const projectFile of projectFiles) {
-			if (currentProjects.findIndex((p: vscode.Uri) => p.fsPath === projectFile.fsPath) === -1) {
-				currentProjects.push(projectFile);
-				newProjectFileAdded = true;
+			const relativePath = vscode.workspace.asRelativePath(projectFile, false);
 
-				TelemetryReporter.createActionEvent(TelemetryViews.WorkspaceTreePane, TelemetryActions.ProjectAddedToWorkspace)
-					.withAdditionalProperties({
-						projectType: path.extname(projectFile.fsPath)
-					}).send();
-
-				// if the relativePath and the original path is the same, that means the project file is not under
-				// any workspace folders, we should add the parent folder of the project file to the workspace
-				const relativePath = vscode.workspace.asRelativePath(projectFile, false);
-				if (vscode.Uri.file(relativePath).fsPath === projectFile.fsPath) {
-					newWorkspaceFolders.push(path.dirname(projectFile.path));
-				}
-			} else {
-				vscode.window.showInformationMessage(constants.ProjectAlreadyOpened(projectFile.fsPath));
+			if (vscode.Uri.file(relativePath).fsPath === projectFile.fsPath) {
+				newWorkspaceFolders.push(path.dirname(projectFile.path));
 			}
-		}
-
-		if (newProjectFileAdded) {
-			this._onDidWorkspaceProjectsChange.fire();
 		}
 
 		if (newWorkspaceFolders.length > 0) {
 			// Add to the end of the workspace folders to avoid a restart of the extension host if we can
 			vscode.workspace.updateWorkspaceFolders(vscode.workspace.workspaceFolders?.length || 0, undefined, ...(newWorkspaceFolders.map(folder => ({ uri: vscode.Uri.file(folder) }))));
 		}
+
+		// 2. Re-detect projects from the updated set of workspace folders
+
+		const previousProjects: vscode.Uri[] = await this.getProjectsInWorkspace(undefined, true);
+		let newProjectAdded: boolean = false;
+		let anyProjectsAlreadyOpen: boolean = false;
+
+		for (const projectFile of projectFiles) {
+			if (previousProjects.includes(projectFile)) {
+				anyProjectsAlreadyOpen = true;
+				vscode.window.showInformationMessage(constants.ProjectAlreadyOpened(projectFile.fsPath));
+			}
+			else {
+				newProjectAdded = true;
+
+				TelemetryReporter.createActionEvent(TelemetryViews.WorkspaceTreePane, TelemetryActions.ProjectAddedToWorkspace)
+					.withAdditionalProperties({
+						projectType: path.extname(projectFile.fsPath)
+					}).send();
+			}
+		}
+
+		// 3. If any new projects are detected, fire event to refresh projects tree
+
+		if (newProjectAdded) {
+			this._onDidWorkspaceProjectsChange.fire();
+		}
+
+		// 4. Signal caller if not all projects were new
+		if (anyProjectsAlreadyOpen) {
+			throw new Error('Some projects were already open in the workspace.');
+		}
 	}
 
-	async getAllProjectTypes(): Promise<dataworkspace.IProjectType[]> {
+	public async getAllProjectTypes(): Promise<dataworkspace.IProjectType[]> {
 		await this.ensureProviderExtensionLoaded();
 		const projectTypes: dataworkspace.IProjectType[] = [];
 		ProjectProviderRegistry.providers.forEach(provider => {
@@ -95,19 +111,21 @@ export class WorkspaceService implements IWorkspaceService {
 		return projectTypes;
 	}
 
-	async getProjectsInWorkspace(ext?: string): Promise<vscode.Uri[]> {
-		const projectPromises = vscode.workspace.workspaceFolders?.map(f => this.getAllProjectsInFolder(f.uri));
-		if (!projectPromises) {
-			return [];
+	public async getProjectsInWorkspace(ext?: string, refreshFromDisk: boolean = false): Promise<vscode.Uri[]> {
+		if (refreshFromDisk) {
+			const projectPromises = vscode.workspace.workspaceFolders?.map(f => this.getAllProjectsInFolder(f.uri));
+			if (!projectPromises) {
+				return [];
+			}
+			this.openedProjects = (await Promise.all(projectPromises)).reduce((prev, curr) => prev.concat(curr), []);
 		}
-		let projects = (await Promise.all(projectPromises)).reduce((prev, curr) => prev.concat(curr), []);
 
 		// filter by specified extension
 		if (ext) {
-			projects = projects.filter(p => p.fsPath.toLowerCase().endsWith(ext.toLowerCase()));
+			return this.openedProjects.filter(p => p.fsPath.toLowerCase().endsWith(ext.toLowerCase()));
+		} else {
+			return this.openedProjects;
 		}
-
-		return projects;
 	}
 
 	/**
