@@ -310,7 +310,7 @@ async function findSpecificAzAndArc(): Promise<{ azTool: IAzTool, arcWasFound: B
  */
 async function promptToInstallAz(userRequested: boolean = false): Promise<boolean> {
 	let response: string | undefined = loc.yes;
-	const config = <AzDeployOption>getConfig(azCliInstallKey);
+	const config = <AzDeployOption>getAzConfig(azCliInstallKey);
 	if (userRequested) {
 		Logger.show();
 		Logger.log(loc.userRequestedInstall);
@@ -328,7 +328,7 @@ async function promptToInstallAz(userRequested: boolean = false): Promise<boolea
 		Logger.log(loc.userResponseToInstallPrompt(response));
 	}
 	if (response === loc.doNotAskAgain) {
-		await setConfig(azCliInstallKey, AzDeployOption.dontPrompt);
+		await setAzConfig(azCliInstallKey, AzDeployOption.dontPrompt);
 	} else if (response === loc.yes) {
 		try {
 			await installAz();
@@ -458,13 +458,13 @@ async function executeAzCommand(command: string, args: string[], additionalEnvVa
 	return executeCommand(command, args, additionalEnvVars);
 }
 
-function getConfig(key: string): AzDeployOption | undefined {
+function getAzConfig(key: string): AzDeployOption | undefined {
 	const config = vscode.workspace.getConfiguration(azConfigSection);
 	const value = <AzDeployOption>config.get<AzDeployOption>(key);
 	return value;
 }
 
-async function setConfig(key: string, value: string): Promise<void> {
+async function setAzConfig(key: string, value: string): Promise<void> {
 	const config = vscode.workspace.getConfiguration(azConfigSection);
 	await config.update(key, value, vscode.ConfigurationTarget.Global);
 }
@@ -482,11 +482,11 @@ export async function findAzAndCheckArcdata(userRequested: boolean = false): Pro
 		path = await ((process.platform === 'win32') ? searchForCmd('az.cmd') : searchForCmd('az'));
 	} catch (err) {
 		// If no Azure CLI was found, prompt to install
-		const azInstallNeededConfig = <AzDeployOption>getConfig(azCliInstallKey);
+		const azInstallNeededConfig = <AzDeployOption>getAzConfig(azCliInstallKey);
 		if (azInstallNeededConfig !== AzDeployOption.dontPrompt && userRequested) {
 			response = await vscode.window.showErrorMessage(loc.noAzureCLI, ...responses);
 			if (response === loc.doNotAskAgain) {
-				await setConfig(azCliInstallKey, AzDeployOption.dontPrompt);
+				await setAzConfig(azCliInstallKey, AzDeployOption.dontPrompt);
 			}
 		}
 		throw err;
@@ -506,23 +506,23 @@ export async function findAzAndCheckArcdata(userRequested: boolean = false): Pro
 
 	if (arcVersion === undefined && !userRequested) {
 		// If no arcdata was found, prompt to install
-		const arcInstallNeededConfig = <AzDeployOption>getConfig(azArcdataInstallKey);
+		const arcInstallNeededConfig = <AzDeployOption>getAzConfig(azArcdataInstallKey);
 		if (arcInstallNeededConfig !== AzDeployOption.dontPrompt && userRequested) {
 			response = await vscode.window.showInformationMessage(loc.arcdataExtensionNotInstalled, ...responses);
 			if (response === loc.doNotAskAgain) {
-				await setConfig(azArcdataInstallKey, AzDeployOption.dontPrompt);
+				await setAzConfig(azArcdataInstallKey, AzDeployOption.dontPrompt);
 			}
 		}
 	} else {
 		// If arcdata was found, check if it's up to date
 		const semVersion = new SemVer(<string>arcVersion);
-		const arcUpdateNeededConfig = <AzDeployOption>getConfig(azArcdataUpdateKey);
+		const arcUpdateNeededConfig = <AzDeployOption>getAzConfig(azArcdataUpdateKey);
 
 		if (LATEST_AZ_ARC_EXTENSION_VERSION.compare(semVersion) === 1 && arcUpdateNeededConfig !== AzDeployOption.dontPrompt && userRequested) {
 			// If there is a greater version of arcdata extension available, prompt to update
 			response = await vscode.window.showInformationMessage(loc.requiredArcDataVersionNotAvailable(latestAzArcExtensionVersion, <string>arcVersion), ...responses);
 			if (response === loc.doNotAskAgain) {
-				await setConfig(azArcdataUpdateKey, AzDeployOption.dontPrompt);
+				await setAzConfig(azArcdataUpdateKey, AzDeployOption.dontPrompt);
 			}
 		} else if (LATEST_AZ_ARC_EXTENSION_VERSION.compare(semVersion) === -1) {
 			// Current version should not be greater than latest version
