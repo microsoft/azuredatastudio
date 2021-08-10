@@ -57,7 +57,7 @@ describe('az', function () {
 					await azTool.postgres.arcserver.show(name, namespace);
 					verifyExecuteCommandCalledWithArgs(['postgres', 'arc-server', 'show', name, '--k8s-namespace', namespace]);
 				});
-				it('edit', async function (): Promise<void> {
+				it.skip('edit', async function (): Promise<void> {
 					const args = {
 						adminPassword: true,
 						coresLimit: 'myCoresLimit',
@@ -124,7 +124,7 @@ describe('az', function () {
 			});
 		});
 
-		it('version', async function (): Promise<void> {
+		it.skip('version', async function (): Promise<void> {
 			executeCommandStub.resolves({ stdout: '1.0.0', stderr: '' });
 			await azTool.version();
 			verifyExecuteCommandCalledWithArgs(['--version']);
