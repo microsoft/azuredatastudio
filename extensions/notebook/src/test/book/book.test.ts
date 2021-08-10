@@ -673,7 +673,7 @@ describe('BooksTreeViewTests', function () {
 	describe('BookTreeViewProvider.Commands', function () {
 		let rootFolderPath = path.join(os.tmpdir(), `BookTestData_${uuid.v4()}`);
 		let bookTreeViewProvider: BookTreeViewProvider;
-		let runTests = 200;
+		let runTests = 20;
 		let runs = [
 			{
 				it: 'v1',
