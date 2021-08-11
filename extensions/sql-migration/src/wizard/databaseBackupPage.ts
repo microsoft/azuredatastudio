@@ -362,6 +362,22 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 	}
 
 	private createBlobContainer(): azdata.FlexContainer {
+		const blobHeading = this._view.modelBuilder.text().withProps({
+			value: constants.DATABASE_BACKUP_BLOB_STORAGE_HEADER_TEXT,
+			width: WIZARD_INPUT_COMPONENT_WIDTH,
+			CSSStyles: {
+				'font-size': '14px',
+				'font-weight': 'bold'
+			}
+		}).component();
+
+		const blobHelpText = this._view.modelBuilder.text().withProps({
+			value: constants.DATABASE_BACKUP_BLOB_STORAGE_HELP_TEXT,
+			width: WIZARD_INPUT_COMPONENT_WIDTH,
+			CSSStyles: {
+				'font-size': '13px',
+			}
+		}).component();
 
 		const subscriptionLabel = this._view.modelBuilder.text()
 			.withProps({
@@ -392,6 +408,8 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 		const flexContainer = this._view.modelBuilder.flexContainer()
 			.withItems(
 				[
+					blobHeading,
+					blobHelpText,
 					subscriptionLabel,
 					this._blobContainerSubscription,
 					locationLabel,
