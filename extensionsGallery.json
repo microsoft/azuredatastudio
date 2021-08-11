@@ -1718,14 +1718,14 @@
 					},
 					"versions": [
 						{
-							"version": "0.0.2",
-							"lastUpdated": "9/12/2019",
+							"version": "0.0.3",
+							"lastUpdated": "8/11/2021",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/admin-tool-ext-win/admin-tool-ext-win-0.0.2.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/admin-tool-ext-win/admin-tool-ext-win-0.0.3.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -3624,19 +3624,19 @@
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/extensions/azdata/images/extension.png"
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/1.31.0/extensions/azdata/images/extension.png"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/extensions/azdata/README.md"
+									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/1.31.0/extensions/azdata/README.md"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Code.Manifest",
-									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/extensions/azdata/package.json"
+									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/1.31.0/extensions/azdata/package.json"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.License",
-									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt"
+									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/1.31.0/LICENSE.txt"
 								}
 							],
 							"properties": [
