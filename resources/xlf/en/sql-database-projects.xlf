@@ -494,10 +494,10 @@
       <source xml:lang="en">Schema compare could not start because build failed</source>
     </trans-unit>
     <trans-unit id="updateProjectForRoundTrip">
-      <source xml:lang="en">To build this project, Azure Data Studio needs to update targets, references, and system database references. If the project is created in SSDT, it will continue to work in both tools. Do you want Azure Data Studio to update the project?</source>
+      <source xml:lang="en">The targets, references, and system database references need to be updated to build this project. If the project is created in SSDT, it will continue to work in both tools. Do you want to update the project?</source>
     </trans-unit>
     <trans-unit id="updateProjectDatabaseReferencesForRoundTrip">
-      <source xml:lang="en">To build this project, Azure Data Studio needs to update system database references. If the project is created in SSDT, it will continue to work in both tools. Do you want Azure Data Studio to update the project?</source>
+      <source xml:lang="en">The system database references need to be updated to build this project. If the project is created in SSDT, it will continue to work in both tools. Do you want to update the project?</source>
     </trans-unit>
     <trans-unit id="databaseReferenceTypeRequired">
       <source xml:lang="en">Database reference type is required for adding a reference to a database</source>
