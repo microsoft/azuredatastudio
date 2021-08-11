@@ -54,8 +54,6 @@ export class QueryEditorState extends Disposable {
 
 
 	public isSaving: boolean = false;
-	public newUri: string = '';
-
 	public set connected(val: boolean) {
 		if (val !== this._connected) {
 			this._connected = val;
@@ -200,6 +198,10 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 		}
 	}
 
+	protected async renameQuery(newUri: string): Promise<void> {
+		await this.queryModelService.renameQuery(newUri, this.uri);
+	}
+
 	// Forwarding resource functions to the inline sql file editor
 	public override isDirty(): boolean { return this._text.isDirty(); }
 	public get resource(): URI { return this._text.resource; }
@@ -325,7 +327,6 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 			this.connectionManagementService.disconnectEditor(this, true);
 		} else {
 			this.state.isSaving = false;
-			this.queryModelService.renameQuery(this.state.newUri, this.uri);
 		}
 	}
 

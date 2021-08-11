@@ -417,7 +417,12 @@ export class QueryModelService implements IQueryModelService {
 		}
 		// remove the old key and set new key with same query info as old uri.
 		if (this._queryInfoMap.has(oldUri)) {
-			this._queryInfoMap.set(newUri, this._queryInfoMap.get(oldUri));
+			let info = this._queryInfoMap.get(oldUri);
+			if (info) {
+				info.queryRunner.uri = newUri;
+			}
+			this._queryInfoMap.set(newUri, info);
+
 			this._queryInfoMap.delete(oldUri);
 		}
 	}
