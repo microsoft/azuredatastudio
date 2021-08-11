@@ -40,7 +40,7 @@ export async function getLocations(account: azdata.Account, subscription: Subscr
 	}
 	sortResourceArrayByName(response.locations);
 
-	let filteredLocations = response.locations.filter(loc => {
+	const filteredLocations = response.locations.filter(loc => {
 		return sqlMigrationResourceLocations.includes(loc.displayName);
 	});
 
