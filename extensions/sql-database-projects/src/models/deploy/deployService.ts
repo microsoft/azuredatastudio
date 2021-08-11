@@ -49,38 +49,39 @@ export class DeployService {
 	public async updateAppSettings(profile: IDeployProfile): Promise<void> {
 		// Update app settings
 		//
-		if (profile.appSettingFile) {
-			this.logToOutput(`Updating app setting: ${profile.appSettingFile}`);
+		if (!profile.appSettingFile) {
+			return;
+		}
+		this.logToOutput(`Updating app setting: ${profile.appSettingFile}`);
 
-			let content = JSON.parse(fse.readFileSync(profile.appSettingFile, 'utf8'));
-			if (content && content.Values) {
-				let connectionString: string | undefined = '';
-				if (profile.localDbSetting) {
-					// Find the runtime and generate the connection string for the runtime
-					//
-					const runtime = this.findAppRuntime(profile, content);
-					let connectionStringTemplate = this.createConnectionStringTemplate(runtime);
-					const macroDict: Record<string, string> = {
-						'SERVER': profile?.localDbSetting?.serverName || '',
-						'PORT': profile?.localDbSetting?.port?.toString() || '',
-						'USER': profile?.localDbSetting?.userName || '',
-						'SA_PASSWORD': profile?.localDbSetting?.password || '',
-						'DATABASE': profile?.localDbSetting?.dbName || '',
-					};
+		let content = JSON.parse(fse.readFileSync(profile.appSettingFile, 'utf8'));
+		if (content && content.Values) {
+			let connectionString: string | undefined = '';
+			if (profile.localDbSetting) {
+				// Find the runtime and generate the connection string for the runtime
+				//
+				const runtime = this.findAppRuntime(profile, content);
+				let connectionStringTemplate = this.createConnectionStringTemplate(runtime);
+				const macroDict: Record<string, string> = {
+					'SERVER': profile?.localDbSetting?.serverName || '',
+					'PORT': profile?.localDbSetting?.port?.toString() || '',
+					'USER': profile?.localDbSetting?.userName || '',
+					'SA_PASSWORD': profile?.localDbSetting?.password || '',
+					'DATABASE': profile?.localDbSetting?.dbName || '',
+				};
 
-					connectionString = templates.macroExpansion(connectionStringTemplate, macroDict);
-				} else if (profile.deploySettings?.connectionUri) {
-					connectionString = await this.getConnectionString(profile.deploySettings?.connectionUri);
-				}
+				connectionString = templates.macroExpansion(connectionStringTemplate, macroDict);
+			} else if (profile.deploySettings?.connectionUri) {
+				connectionString = await this.getConnectionString(profile.deploySettings?.connectionUri);
+			}
 
-				if (connectionString && profile.envVariableName) {
-					content.Values[profile.envVariableName] = connectionString;
-					await fse.writeFileSync(profile.appSettingFile, JSON.stringify(content, undefined, 4));
-					this.logToOutput(`app setting '${profile.appSettingFile}' has been updated. env variable name: ${profile.envVariableName} connection String: ${connectionString}`);
+			if (connectionString && profile.envVariableName) {
+				content.Values[profile.envVariableName] = connectionString;
+				await fse.writeFileSync(profile.appSettingFile, JSON.stringify(content, undefined, 4));
+				this.logToOutput(`app setting '${profile.appSettingFile}' has been updated. env variable name: ${profile.envVariableName} connection String: ${connectionString}`);
 
-				} else {
-					this.logToOutput(constants.deployAppSettingUpdateFailed(profile.appSettingFile));
-				}
+			} else {
+				this.logToOutput(constants.deployAppSettingUpdateFailed(profile.appSettingFile));
 			}
 		}
 	}
