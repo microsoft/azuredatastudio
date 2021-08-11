@@ -27,7 +27,6 @@ import { inputBorder, inputValidationInfoBorder } from 'vs/platform/theme/common
 import { localize } from 'vs/nls';
 import { NotebookViewsExtension } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViewsExtension';
 import { attachButtonStyler } from 'vs/platform/theme/common/styler';
-import { toJpeg } from 'html-to-image';
 import { truncate } from 'vs/base/common/strings';
 
 type CellOption = {
@@ -161,14 +160,7 @@ export class InsertCellsModal extends Modal {
 				() => this.onOptionChecked(cell.cellGuid)
 			);
 
-			const img = await this.generateScreenshot(cell);
-			const wrapper = DOM.$<HTMLDivElement>('div.thumnail-wrapper');
-			const thumbnail = DOM.$<HTMLImageElement>('img.thumbnail');
-
-			thumbnail.src = img;
-			thumbnail.style.maxWidth = '100%';
-			DOM.append(wrapper, thumbnail);
-			optionWidget.label = wrapper.outerHTML;
+			optionWidget.label = cell.cellGuid;
 
 			this._optionsMap[cell.cellGuid] = optionWidget;
 		});
@@ -252,24 +244,6 @@ export class InsertCellsModal extends Modal {
 			widget.dispose();
 			delete this._optionsMap[key];
 		}
-	}
-
-	public async generateScreenshot(cell: ICellModel, screenshotWidth: number = 300, screenshowHeight: number = 300, backgroundColor: string = '#ffffff'): Promise<string> {
-		let componentFactory = this._componentFactoryResolver.resolveComponentFactory(TextCellComponent);
-		let component = this._containerRef.createComponent(componentFactory);
-
-		component.instance.model = this._context.notebook as NotebookModel;
-		component.instance.cellModel = cell;
-
-		component.instance.handleContentChanged();
-
-		const element: HTMLElement = component.instance.outputRef.nativeElement;
-
-		const scale = element.clientWidth / screenshotWidth;
-		const canvasWidth = element.clientWidth / scale;
-		const canvasHeight = element.clientHeight / scale;
-
-		return toJpeg(component.instance.outputRef.nativeElement, { quality: .6, canvasWidth, canvasHeight, backgroundColor });
 	}
 }
 
