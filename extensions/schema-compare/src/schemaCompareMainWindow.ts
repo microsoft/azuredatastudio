@@ -605,7 +605,6 @@ export class SchemaCompareMainWindow {
 		this.flexModel.addItem(this.waitText, { CSSStyles: { 'margin-top': '30px', 'align-self': 'center' } });
 		this.showIncludeExcludeWaitingMessage = true;
 
-		// this.differencesTable.selectedRows = null;
 		if (this.tablelistenersToDispose) {
 			this.tablelistenersToDispose.forEach(x => x.dispose());
 		}
