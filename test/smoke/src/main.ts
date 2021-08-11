@@ -61,7 +61,7 @@ const opts = minimist(args, {
 	}
 });
 
-const testRepoUrl = 'https://github.com/Microsoft/azuredatastudio-smoke-test-repo.git';
+const testRepoUrl = 'https://github.com/microsoft/azuredatastudio-smoke-test-repo.git';
 const workspacePath = path.join(testDataPath, 'azuredatastudio-smoke-test-repo');
 // {{SQL CARBON EDIT}} Let callers control extensions dir for non-packaged extensions
 let extensionsPath = opts.extensionsDir;
@@ -77,6 +77,7 @@ if (screenshotsPath) {
 	mkdirp.sync(screenshotsPath);
 }
 
+// {{SQL CARBON EDIT}} Add logs to smoke tests
 const logPath = opts.log ? path.resolve(opts.log) : null;
 if (logPath) {
 	mkdirp.sync(path.dirname(logPath));
@@ -269,7 +270,7 @@ before(async function () {
 	this.timeout(2 * 60 * 1000); // allow two minutes for setup
 	await setup();
 	this.defaultOptions = createOptions();
-	await sqlSetup(this.defaultOptions);
+	await sqlSetup(this.defaultOptions); // {{SQL CARBON EDIT}}
 });
 
 after(async function () {
