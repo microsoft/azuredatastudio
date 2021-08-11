@@ -146,16 +146,6 @@ export class Dropdown extends Disposable implements IListVirtualDelegate<string>
 			}
 		}));
 
-		/*
-			This event listener is intended to commit the database selection that was manually entered into the
-			editable drop down, so that Azure Data Studio's database selector can behave just like the one in SSMS.
-		*/
-		this._register(DOM.addDisposableListener(this._input.inputElement, DOM.EventType.BLUR, () => {
-			if (this.input.validate() === undefined) {
-				this._onValueChange.fire(this._input.value);
-			}
-		}));
-
 		this._register(DOM.addStandardDisposableListener(this._input.inputElement, DOM.EventType.KEY_DOWN, (e: StandardKeyboardEvent) => {
 			switch (e.keyCode) {
 				case KeyCode.Enter:
