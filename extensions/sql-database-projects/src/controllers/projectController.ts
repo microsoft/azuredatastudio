@@ -24,7 +24,7 @@ import { IDeploySettings } from '../models/IDeploySettings';
 import { BaseProjectTreeItem } from '../models/tree/baseTreeItem';
 import { ProjectRootTreeItem } from '../models/tree/projectTreeItem';
 import { ImportDataModel } from '../models/api/import';
-import { NetCoreTool, DotNetCommandOptions } from '../tools/netcoreTool';
+import { NetCoreTool, DotNetCommandOptions, DotNetError } from '../tools/netcoreTool';
 import { BuildHelper } from '../tools/buildHelper';
 import { readPublishProfile } from '../models/publishProfile/publishProfile';
 import { AddDatabaseReferenceDialog } from '../dialogs/addDatabaseReferenceDialog';
@@ -241,9 +241,11 @@ export class ProjectsController {
 				.withAdditionalMeasurements({ duration: timeToFailureBuild })
 				.send();
 
-			const error = utils.getErrorMessage(err);
-			if (error !== (constants.NetCoreInstallationConfirmation || constants.NetCoreSupportedVersionInstallationConfirmation)) {
-				vscode.window.showErrorMessage(constants.projBuildFailed(error));
+			const message = utils.getErrorMessage(err);
+			if (err instanceof DotNetError) {
+				vscode.window.showErrorMessage(message);
+			} else {
+				vscode.window.showErrorMessage(constants.projBuildFailed(message));
 			}
 			return '';
 		}
