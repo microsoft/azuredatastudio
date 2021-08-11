@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 import 'vs/css!./cellToolbar';
 import * as DOM from 'vs/base/browser/dom';
-import { Component, OnInit, Input, ViewChild, TemplateRef, ElementRef, Inject, Output, EventEmitter, ChangeDetectorRef, forwardRef } from '@angular/core';
+import { Component, OnInit, Input, ViewChild, TemplateRef, ElementRef, Inject, Output, EventEmitter, ChangeDetectorRef, forwardRef, SimpleChanges } from '@angular/core';
 import { CellExecutionState, ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
 import { DEFAULT_VIEW_CARD_HEIGHT, DEFAULT_VIEW_CARD_WIDTH } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViewModel';
@@ -26,6 +26,7 @@ export class NotebookViewsCardComponent extends AngularDisposable implements OnI
 	private _actionbar: Taskbar;
 	private _metadata: INotebookViewCell;
 	private _executionState: CellExecutionState;
+	private _pendingReinitialize: boolean = false;
 
 	public _cellToggleMoreActions: ViewCellToggleMoreActions;
 
@@ -51,9 +52,14 @@ export class NotebookViewsCardComponent extends AngularDisposable implements OnI
 		this.initActionBar();
 	}
 
-	ngOnChanges() {
-		if (this.activeView) {
+	ngAfterViewInit() {
+		this.initialize();
+	}
+
+	ngOnChanges(changes: SimpleChanges) {
+		if (this.activeView && changes['activeView'] && changes['activeView'].currentValue?.guid !== changes['activeView'].previousValue?.guid) {
 			this._metadata = this.activeView.getCellMetadata(this.cell);
+			this._pendingReinitialize = true;
 		}
 		this.detectChanges();
 	}
@@ -61,12 +67,22 @@ export class NotebookViewsCardComponent extends AngularDisposable implements OnI
 	ngAfterContentInit() {
 		if (this.activeView) {
 			this._metadata = this.activeView.getCellMetadata(this.cell);
+			this._pendingReinitialize = true;
 		}
 		this.detectChanges();
 	}
 
-	ngAfterViewInit() {
-		this.initialize();
+	ngAfterViewChecked() {
+		if (this._pendingReinitialize) {
+			this._pendingReinitialize = false;
+			this.initialize();
+		}
+	}
+
+	override ngOnDestroy() {
+		if (this._actionbar) {
+			this._actionbar.dispose();
+		}
 	}
 
 	public initialize(): void {
@@ -78,6 +94,10 @@ export class NotebookViewsCardComponent extends AngularDisposable implements OnI
 		if (this._actionbarRef) {
 			let taskbarContent: ITaskbarContent[] = [];
 			let context = new CellContext(this.model, this.cell);
+
+			if (this._actionbar) {
+				this._actionbar.dispose();
+			}
 
 			this._actionbar = new Taskbar(this._actionbarRef.nativeElement);
 			this._actionbar.context = { target: this._actionbarRef.nativeElement };

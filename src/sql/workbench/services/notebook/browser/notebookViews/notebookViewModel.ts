@@ -53,14 +53,21 @@ export class NotebookViewModel implements INotebookView {
 			meta = this._notebookViews.getCellMetadata(cell);
 		}
 
-		meta.views.push({
-			guid: this.guid,
-			hidden: false,
-			y: idx * DEFAULT_VIEW_CARD_HEIGHT,
-			x: 0,
-			width: DEFAULT_VIEW_CARD_WIDTH,
-			height: DEFAULT_VIEW_CARD_HEIGHT
-		});
+		// Ensure that we are not duplicting view entries in cell metadata
+		if (!meta.views.find(v => v.guid === this.guid)) {
+			meta.views.push({
+				guid: this.guid,
+				hidden: true,
+				y: idx * DEFAULT_VIEW_CARD_HEIGHT,
+				x: 0,
+				width: DEFAULT_VIEW_CARD_WIDTH,
+				height: DEFAULT_VIEW_CARD_HEIGHT
+			});
+		}
+	}
+
+	public cellInitialized(cell: ICellModel): boolean {
+		return !!this.getCellMetadata(cell);
 	}
 
 	public get name(): string {
@@ -84,7 +91,7 @@ export class NotebookViewModel implements INotebookView {
 	}
 
 	public get hiddenCells(): Readonly<ICellModel[]> {
-		return this.cells.filter(cell => this.getCellMetadata(cell)?.hidden);
+		return this.cells.filter(cell => this.getCellMetadata(cell)?.hidden !== false);
 	}
 
 	public get cells(): Readonly<ICellModel[]> {
@@ -99,16 +106,24 @@ export class NotebookViewModel implements INotebookView {
 		return this._notebookViews.notebook.cells.find(cell => cell.cellGuid === guid);
 	}
 
+	public updateCell(cell: ICellModel, currentView: INotebookView, cellData: INotebookViewCell, override: boolean = false) {
+		if (!this.cellInitialized(cell)) {
+			this.initializeCell(cell, 0);
+		}
+
+		this._notebookViews.updateCell(cell, currentView, cellData, override);
+	}
+
 	public insertCell(cell: ICellModel) {
-		this._notebookViews.updateCell(cell, this, { hidden: false });
+		this.updateCell(cell, this, { hidden: false });
 	}
 
 	public hideCell(cell: ICellModel) {
-		this._notebookViews.updateCell(cell, this, { hidden: true });
+		this.updateCell(cell, this, { hidden: true });
 	}
 
 	public moveCell(cell: ICellModel, x: number, y: number) {
-		this._notebookViews.updateCell(cell, this, { x, y });
+		this.updateCell(cell, this, { x, y });
 	}
 
 	public resizeCell(cell: ICellModel, width?: number, height?: number) {
@@ -122,7 +137,7 @@ export class NotebookViewModel implements INotebookView {
 			data.height = height;
 		}
 
-		this._notebookViews.updateCell(cell, this, data);
+		this.updateCell(cell, this, data);
 	}
 
 	public getCellSize(cell: ICellModel): any {

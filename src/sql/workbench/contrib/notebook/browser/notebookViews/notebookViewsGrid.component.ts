@@ -36,6 +36,7 @@ export class NotebookViewsGridComponent extends AngularDisposable implements OnI
 	protected _grid: GridStack;
 	protected _gridEnabled: boolean;
 	protected _loaded: boolean;
+	protected _gridView: INotebookView;
 
 	protected _options: INotebookViewsGridOptions = {
 		cellHeight: 60
@@ -77,17 +78,21 @@ export class NotebookViewsGridComponent extends AngularDisposable implements OnI
 
 	ngAfterContentChecked() {
 		//If activeView has changed or not present, we will destroy the grid in order to rebuild it later.
-		if (!this.activeView || this.activeView.guid !== this.activeView.guid) {
+		if (!this.activeView || this.activeView.guid !== this._gridView?.guid) {
 			if (this._grid) {
 				this.destroyGrid();
 				this._grid = undefined;
 			}
 		}
+		if (this.activeView) {
+			this.activeView.initialize();
+		}
 	}
 
 	ngAfterViewChecked() {
 		// If activeView has changed, rebuild the grid
-		if (!this.activeView || this.activeView.guid !== this.activeView.guid) {
+		if (this.activeView && this.activeView.guid !== this._gridView?.guid) {
+			this._gridView = this.activeView;
 
 			if (!this._grid) {
 				this.createGrid();
@@ -103,12 +108,15 @@ export class NotebookViewsGridComponent extends AngularDisposable implements OnI
 	}
 
 	private destroyGrid() {
-		this._gridEnabled = false;
-		this._grid.destroy(false);
+		if (this._grid) {
+			this._gridEnabled = false;
+			this._grid.destroy(false);
+		}
 	}
 
 	private createGrid() {
 		const isNew = this.activeView.isNew;
+
 		if (this._grid) {
 			this.destroyGrid();
 		}
