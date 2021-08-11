@@ -439,6 +439,24 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			'border-bottom': '1px solid',
 		};
 
+		const networkShareTableText = this._view.modelBuilder.text()
+			.withProps({
+				value: constants.DATABASE_BACKUP_NETWORK_SHARE_TABLE_HELP_TEXT,
+				CSSStyles: {
+					'font-size': '13px',
+					'font-weight': 'bold'
+				}
+			}).component();
+
+		const blobTableText = this._view.modelBuilder.text()
+			.withProps({
+				value: constants.DATABASE_BACKUP_BLOB_STORAGE_TABLE_HELP_TEXT,
+				CSSStyles: {
+					'font-size': '13px',
+					'font-weight': 'bold'
+				}
+			}).component();
+
 		this._newtworkShareTargetDatabaseNamesTable = this._view.modelBuilder.declarativeTable().withProps({
 			columns: [
 				{
@@ -459,6 +477,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				}
 			]
 		}).component();
+
 		this._blobContainerTargetDatabaseNamesTable = this._view.modelBuilder.declarativeTable().withProps({
 			columns: [
 				{
@@ -514,10 +533,12 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 		}).component();
 
 		this._networkTableContainer = this._view.modelBuilder.flexContainer().withItems([
+			networkShareTableText,
 			this._newtworkShareTargetDatabaseNamesTable
 		]).component();
 
 		this._blobTableContainer = this._view.modelBuilder.flexContainer().withItems([
+			blobTableText,
 			this._blobContainerTargetDatabaseNamesTable
 		]).component();
 
