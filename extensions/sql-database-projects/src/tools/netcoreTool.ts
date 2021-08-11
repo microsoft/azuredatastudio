@@ -254,7 +254,5 @@ export class NetCoreTool {
 }
 
 export class DotNetError extends Error {
-	constructor(message?: string) {
-		super(message);
-	}
+
 }
