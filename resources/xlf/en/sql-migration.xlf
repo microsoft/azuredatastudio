@@ -722,6 +722,12 @@ This may take some time.</source>
     <trans-unit id="sql.migration.no">
       <source xml:lang="en">No</source>
     </trans-unit>
+    <trans-unit id="sql.migration.empty.table.text">
+      <source xml:lang="en">No backup files to show</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.empty.table.subtext">
+      <source xml:lang="en">If results were expected, reconfirm the connection to the SQL Server Instance.</source>
+    </trans-unit>
     <trans-unit id="sql.migration.completing.cutover.warning">
       <source xml:lang="en">Completing cutover without restoring all the backup(s) may result in a data loss.</source>
     </trans-unit>

@@ -3,15 +3,13 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-//@ts-check
+interface PlatformReleaseInfo {
+	version: string; // "20.0.1"
+	link?: string; // "https://aka.ms/az-msi"
+}
 
-'use strict';
-
-const withDefaults = require('../shared.webpack.config');
-
-module.exports = withDefaults({
-	context: __dirname,
-	entry: {
-		extension: './src/extension.ts'
-	}
-});
+export interface AzReleaseInfo {
+	win32: PlatformReleaseInfo,
+	darwin: PlatformReleaseInfo,
+	linux: PlatformReleaseInfo
+}
