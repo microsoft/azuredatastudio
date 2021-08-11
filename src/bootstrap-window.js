@@ -152,7 +152,7 @@
 				'jschardet': `../node_modules/jschardet/dist/jschardet.min.js`,
 			};
 		} else {
-			loaderConfig.amdModulesPattern = /^(vs|sql)\//;
+			loaderConfig.amdModulesPattern = /^(vs|sql)\//; // {{SQL CARBON EDIT}} include sql in regex
 		}
 
 		// Cached data config (node.js loading only)
