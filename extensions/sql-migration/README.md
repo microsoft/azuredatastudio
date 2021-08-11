@@ -4,7 +4,7 @@ The Azure SQL Migration extension in Azure Data Studio brings together a simplif
 - An enhanced assessment engine that can assess SQL Server instances and identify databases that are ready for migration to Azure SQL Managed Instance or SQL Server on Azure Virtual Machines.
 - A reliable Azure service powered by Azure Database Migration service that orchestrates data movement activities to deliver a seamless migration experience with minimal downtime.
 - The ability to run migrations in either online (for migrations that require minimal downtime) or offline (for migrations where downtime persists through the duration of the migration) modes to suit your business requirements.
-- The flexibility to install self hosted integration runtime to provide your own compute for access to source SQL Server and backups in your on-premises environment.
+- The flexibility to create and configure a self-hosted integration runtime to provide your own compute for access to source SQL Server and backups in your on-premises environment.
 
 ## Installation
 From Azure Data Studio extension gallery, install the latest version of “Azure SQL Migration” extension and launch the wizard as shown below.
