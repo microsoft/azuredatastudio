@@ -9,7 +9,7 @@ import { WorkspaceService } from './services/workspaceService';
 import { WorkspaceTreeItem, IExtension } from 'dataworkspace';
 import { DataWorkspaceExtension } from './common/dataWorkspaceExtension';
 import { NewProjectDialog } from './dialogs/newProjectDialog';
-import { OpenExistingDialog } from './dialogs/openExistingDialog';
+import { browseForProject, OpenExistingDialog } from './dialogs/openExistingDialog';
 import { IWorkspaceService } from './common/interfaces';
 import { IconPathHelper } from './common/iconHelper';
 import { ProjectDashboard } from './dialogs/projectDashboard';
@@ -17,22 +17,14 @@ import { getAzdataApi } from './common/utils';
 import { createNewProjectWithQuickpick } from './dialogs/newProjectQuickpick';
 
 export async function activate(context: vscode.ExtensionContext): Promise<IExtension> {
-	const workspaceService = new WorkspaceService(context);
-
-	// this is not being awaited to not block the rest of activate function from running while loading any temp projects and
-	// checking for projects not added to the workspace yet
-	workspaceService.loadTempProjects().then(() => {
-		return workspaceService.checkForProjectsNotAddedToWorkspace();
-	}).catch(error => {
-		console.error(error);
-		vscode.window.showErrorMessage(error instanceof Error ? error.message : error);
-	});
-
-	context.subscriptions.push(vscode.workspace.onDidChangeWorkspaceFolders(() => {
-		workspaceService.checkForProjectsNotAddedToWorkspace();
-	}));
+	const azdataApi = getAzdataApi();
+	vscode.commands.executeCommand('setContext', 'azdataAvailable', !!azdataApi);
+	const workspaceService = new WorkspaceService();
 
 	const workspaceTreeDataProvider = new WorkspaceTreeDataProvider(workspaceService);
+	context.subscriptions.push(vscode.workspace.onDidChangeWorkspaceFolders(async () => {
+		await workspaceTreeDataProvider.refresh();
+	}));
 	const dataWorkspaceExtension = new DataWorkspaceExtension(workspaceService);
 	context.subscriptions.push(vscode.window.registerTreeDataProvider('dataworkspace.views.main', workspaceTreeDataProvider));
 	context.subscriptions.push(vscode.extensions.onDidChange(() => {
@@ -41,32 +33,35 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 	setProjectProviderContextValue(workspaceService);
 
 	context.subscriptions.push(vscode.commands.registerCommand('projects.new', async () => {
-		if (getAzdataApi()) {
+		if (azdataApi) {
 			const dialog = new NewProjectDialog(workspaceService);
 			await dialog.open();
 		} else {
 			await createNewProjectWithQuickpick(workspaceService);
 		}
-
 	}));
 
 	context.subscriptions.push(vscode.commands.registerCommand('projects.openExisting', async () => {
-		const dialog = new OpenExistingDialog(workspaceService, context);
-		await dialog.open();
-
+		if (azdataApi) {
+			const dialog = new OpenExistingDialog(workspaceService);
+			await dialog.open();
+		} else {
+			const projectFileUri = await browseForProject(workspaceService);
+			if (!projectFileUri) {
+				return;
+			}
+			await workspaceService.addProjectsToWorkspace([projectFileUri]);
+		}
 	}));
 
-	context.subscriptions.push(vscode.commands.registerCommand('dataworkspace.refresh', () => {
-		workspaceTreeDataProvider.refresh();
+	context.subscriptions.push(vscode.commands.registerCommand('dataworkspace.refresh', async () => {
+		await workspaceTreeDataProvider.refresh();
 	}));
 
 	context.subscriptions.push(vscode.commands.registerCommand('dataworkspace.close', () => {
 		vscode.commands.executeCommand('workbench.action.closeFolder');
 	}));
 
-	context.subscriptions.push(vscode.commands.registerCommand('projects.removeProject', async (treeItem: WorkspaceTreeItem) => {
-		await workspaceService.removeProject(vscode.Uri.file(treeItem.element.project.projectFilePath));
-	}));
 	context.subscriptions.push(vscode.commands.registerCommand('projects.manageProject', async (treeItem: WorkspaceTreeItem) => {
 		const dashboard = new ProjectDashboard(workspaceService, treeItem);
 		await dashboard.showDashboard();

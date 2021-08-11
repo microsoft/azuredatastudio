@@ -9,6 +9,7 @@ import * as sqldbproj from 'sqldbproj';
 import * as vscode from 'vscode';
 import * as constants from '../common/constants';
 import { IconPathHelper } from '../common/iconHelper';
+import { getDataWorkspaceExtensionApi } from '../common/utils';
 import { SqlDatabaseProjectTreeViewProvider } from '../controllers/databaseProjectTreeViewProvider';
 import { ProjectsController } from '../controllers/projectController';
 import { Project } from '../models/project';
@@ -31,16 +32,6 @@ export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvide
 	}
 
 	/**
-	 * Callback method when a project has been removed from the workspace view
-	 * @param projectFile The Uri of the project file
-	 */
-	RemoveProject(projectFile: vscode.Uri): Promise<void> {
-		// No resource release needed
-		console.log(`project file unloaded: ${projectFile.fsPath}`);
-		return Promise.resolve();
-	}
-
-	/**
 	 * Gets the supported project types
 	 */
 	get supportedProjectTypes(): dataworkspace.IProjectType[] {
@@ -49,7 +40,9 @@ export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvide
 			projectFileExtension: constants.sqlprojExtension.replace(/\./g, ''),
 			displayName: constants.emptyProjectTypeDisplayName,
 			description: constants.emptyProjectTypeDescription,
-			icon: IconPathHelper.colorfulSqlProject
+			icon: IconPathHelper.colorfulSqlProject,
+			targetPlatforms: Array.from(constants.targetPlatformToVersion.keys()),
+			defaultTargetPlatform: constants.defaultTargetPlatform
 		},
 		{
 			id: constants.edgeSqlDatabaseProjectTypeId,
@@ -67,11 +60,12 @@ export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvide
 	 * @param projectTypeId the ID of the project/template
 	 * @returns Uri of the newly created project file
 	 */
-	async createProject(name: string, location: vscode.Uri, projectTypeId: string): Promise<vscode.Uri> {
+	async createProject(name: string, location: vscode.Uri, projectTypeId: string, targetPlatform?: sqldbproj.SqlTargetPlatform): Promise<vscode.Uri> {
 		const projectFile = await this.projectController.createNewProject({
 			newProjName: name,
 			folderUri: location,
-			projectTypeId: projectTypeId
+			projectTypeId: projectTypeId,
+			targetPlatform: targetPlatform
 		});
 
 		return vscode.Uri.file(projectFile);
@@ -153,5 +147,25 @@ export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvide
 
 	get image(): ThemedIconPath {
 		return IconPathHelper.dashboardSqlProj;
+	}
+
+	async openSqlNewProjectDialog(allowedTargetPlatforms?: sqldbproj.SqlTargetPlatform[]): Promise<vscode.Uri | undefined> {
+		let targetPlatforms = Array.from(constants.targetPlatformToVersion.keys());
+		if (allowedTargetPlatforms) {
+			targetPlatforms = targetPlatforms.filter(p => allowedTargetPlatforms.toString().includes(p));
+		}
+
+		const projectType: dataworkspace.IProjectType = {
+			id: constants.emptySqlDatabaseProjectTypeId,
+			projectFileExtension: constants.sqlprojExtension.replace(/\./g, ''),
+			displayName: constants.emptyProjectTypeDisplayName,
+			description: constants.emptyProjectTypeDescription,
+			icon: IconPathHelper.colorfulSqlProject,
+			targetPlatforms: targetPlatforms,
+			defaultTargetPlatform: constants.defaultTargetPlatform
+		};
+
+		const projectUri = getDataWorkspaceExtensionApi().openSpecificProjectNewProjectDialog(projectType);
+		return projectUri;
 	}
 }

@@ -101,6 +101,7 @@ MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
 	},
 	when: ContextKeyExpr.and(
 		ConnectionContextKey.Provider.notEqualsTo('KUSTO'),
+		ConnectionContextKey.Provider.notEqualsTo('LOGANALYTICS'),
 		ContextKeyExpr.or(
 			TreeNodeContextKey.NodeType.isEqualTo('Table'),
 			TreeNodeContextKey.NodeType.isEqualTo('View')
@@ -115,10 +116,9 @@ MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
 		id: commands.OE_SCRIPT_AS_SELECT_COMMAND_ID,
 		title: localize('scriptKustoSelect', "Take 10")
 	},
-	when: ContextKeyExpr.and(
-		ConnectionContextKey.Provider.isEqualTo('KUSTO'),
-		TreeNodeContextKey.NodeType.isEqualTo('Table')
-	)
+	when: ContextKeyExpr.or(
+		ContextKeyExpr.and(ConnectionContextKey.Provider.isEqualTo('KUSTO'), TreeNodeContextKey.NodeType.isEqualTo('Table')),
+		ContextKeyExpr.and(ConnectionContextKey.Provider.isEqualTo('LOGANALYTICS'), TreeNodeContextKey.NodeType.isEqualTo('Table')))
 });
 
 MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
@@ -132,6 +132,7 @@ MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
 		ContextKeyExpr.and(
 			TreeNodeContextKey.NodeType.isEqualTo('Table'),
 			ConnectionContextKey.Provider.notEqualsTo('KUSTO'),
+			ConnectionContextKey.Provider.notEqualsTo('LOGANALYTICS'),
 			MssqlNodeContext.EngineEdition.notEqualsTo(DatabaseEngineEdition.SqlOnDemand.toString()),
 			MssqlNodeContext.EngineEdition.notEqualsTo(DatabaseEngineEdition.SqlDataWarehouse.toString())
 		)
@@ -147,6 +148,7 @@ MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
 	when:
 		ContextKeyExpr.and(
 			ConnectionContextKey.Provider.notEqualsTo('KUSTO'),
+			ConnectionContextKey.Provider.notEqualsTo('LOGANALYTICS'),
 			ContextKeyExpr.or(
 				TreeNodeContextKey.NodeType.isEqualTo('Table'),
 				TreeNodeContextKey.NodeType.isEqualTo('View'),
@@ -218,6 +220,7 @@ MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
 	when:
 		ContextKeyExpr.and(
 			ConnectionContextKey.Provider.notEqualsTo('KUSTO'),
+			ConnectionContextKey.Provider.notEqualsTo('LOGANALYTICS'),
 			ContextKeyExpr.or(
 				TreeNodeContextKey.NodeType.isEqualTo(NodeType.Table),
 				TreeNodeContextKey.NodeType.isEqualTo(NodeType.View),
@@ -270,6 +273,7 @@ MenuRegistry.appendMenuItem(MenuId.ExplorerWidgetContext, {
 	when:
 		ContextKeyExpr.and(
 			ItemContextKey.ConnectionProvider.notEqualsTo('kusto'),
+			ItemContextKey.ConnectionProvider.notEqualsTo('loganalytics'),
 			ContextKeyExpr.or(
 				ItemContextKey.ItemType.isEqualTo('view'),
 				ItemContextKey.ItemType.isEqualTo('table')
@@ -285,7 +289,10 @@ MenuRegistry.appendMenuItem(MenuId.ExplorerWidgetContext, {
 	},
 	when:
 		ContextKeyExpr.and(
-			ItemContextKey.ConnectionProvider.isEqualTo('kusto'),
+			ContextKeyExpr.or(
+				ItemContextKey.ConnectionProvider.isEqualTo('kusto'),
+				ItemContextKey.ConnectionProvider.isEqualTo('loganalytics')
+			),
 			ItemContextKey.ItemType.isEqualTo('table')
 		),
 	order: 2
@@ -307,6 +314,7 @@ MenuRegistry.appendMenuItem(MenuId.ExplorerWidgetContext, {
 			ItemContextKey.ItemType.isEqualTo('table'),
 			MssqlNodeContext.EngineEdition.notEqualsTo(DatabaseEngineEdition.SqlOnDemand.toString()),
 			ItemContextKey.ConnectionProvider.notEqualsTo('kusto'),
+			ItemContextKey.ConnectionProvider.notEqualsTo('loganalytics'),
 			MssqlNodeContext.EngineEdition.notEqualsTo(DatabaseEngineEdition.SqlDataWarehouse.toString())
 		),
 	order: 2
@@ -368,7 +376,10 @@ MenuRegistry.appendMenuItem(MenuId.ExplorerWidgetContext, {
 		id: commands.ExplorerScriptCreateAction.ID,
 		title: commands.ExplorerScriptCreateAction.LABEL
 	},
-	when: ContextKeyExpr.and(ItemContextKey.ItemType.notEqualsTo('database'), ItemContextKey.ConnectionProvider.notEqualsTo('kusto')),
+	when: ContextKeyExpr.and(
+		ItemContextKey.ItemType.notEqualsTo('database'),
+		ItemContextKey.ConnectionProvider.notEqualsTo('kusto'),
+		ItemContextKey.ConnectionProvider.notEqualsTo('loganalytics')),
 	order: 2
 });
 //#endregion

@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as fs from 'fs';
-import * as vscode from 'vscode';
 import type * as azdataType from 'azdata';
 
 export async function directoryExist(directoryPath: string): Promise<boolean> {
@@ -32,13 +31,6 @@ async function getFileStatus(path: string): Promise<fs.Stats | undefined> {
 	}
 }
 
-/**
- * if the current workspace is untitled, the returned URI of vscode.workspace.workspaceFile will use the `untitled` scheme
- */
-export function isCurrentWorkspaceUntitled(): boolean {
-	return !!vscode.workspace.workspaceFile && vscode.workspace.workspaceFile.scheme.toLowerCase() === 'untitled';
-}
-
 export interface IPackageInfo {
 	name: string;
 	version: string;
@@ -62,6 +54,10 @@ export function getPackageInfo(packageJson: any): IPackageInfo | undefined {
 let azdataApi: typeof azdataType | undefined = undefined;
 try {
 	azdataApi = require('azdata');
+	if (!azdataApi?.version) {
+		// webpacking makes the require return an empty object instead of throwing an error so make sure we clear the var
+		azdataApi = undefined;
+	}
 } catch {
 	// no-op
 }

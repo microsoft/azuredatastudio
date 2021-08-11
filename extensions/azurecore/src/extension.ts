@@ -29,6 +29,8 @@ import { SqlInstanceResourceService } from './azureResource/providers/sqlinstanc
 import { SqlInstanceProvider } from './azureResource/providers/sqlinstance/sqlInstanceProvider';
 import { KustoResourceService } from './azureResource/providers/kusto/kustoService';
 import { KustoProvider } from './azureResource/providers/kusto/kustoProvider';
+import { AzureMonitorResourceService } from './azureResource/providers/azuremonitor/azuremonitorService';
+import { AzureMonitorProvider } from './azureResource/providers/azuremonitor/azuremonitorProvider';
 import { PostgresServerProvider } from './azureResource/providers/postgresServer/postgresServerProvider';
 import { PostgresServerService } from './azureResource/providers/postgresServer/postgresServerService';
 import { AzureTerminalService } from './azureResource/services/terminalService';
@@ -156,6 +158,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 			const arcFeaturedEnabled = vscode.workspace.getConfiguration(constants.extensionConfigSectionName).get('enableArcFeatures');
 			const providers: azureResource.IAzureResourceProvider[] = [
 				new KustoProvider(new KustoResourceService(), extensionContext),
+				new AzureMonitorProvider(new AzureMonitorResourceService(), extensionContext),
 				new AzureResourceDatabaseServerProvider(new AzureResourceDatabaseServerService(), extensionContext),
 				new AzureResourceDatabaseProvider(new AzureResourceDatabaseService(), extensionContext),
 				new SqlInstanceProvider(new SqlInstanceResourceService(), extensionContext),
@@ -207,14 +210,35 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 			ignoreErrors: boolean): Promise<azurecore.GetFileSharesResult> {
 			return azureResourceUtils.getFileShares(account, subscription, storageAccount, ignoreErrors);
 		},
+		getStorageAccountAccessKey(account: azdata.Account,
+			subscription: azureResource.AzureResourceSubscription,
+			storageAccount: azureResource.AzureGraphResource,
+			ignoreErrors: boolean): Promise<azurecore.GetStorageAccountAccessKeyResult> {
+			return azureResourceUtils.getStorageAccountAccessKey(account, subscription, storageAccount, ignoreErrors);
+		},
+		getBlobs(account: azdata.Account,
+			subscription: azureResource.AzureResourceSubscription,
+			storageAccount: azureResource.AzureGraphResource,
+			containerName: string,
+			ignoreErrors: boolean): Promise<azurecore.GetBlobsResult> {
+			return azureResourceUtils.getBlobs(account, subscription, storageAccount, containerName, ignoreErrors);
+		},
+		createResourceGroup(account: azdata.Account,
+			subscription: azureResource.AzureResourceSubscription,
+			resourceGroupName: string,
+			location: string,
+			ignoreErrors: boolean): Promise<azurecore.CreateResourceGroupResult> {
+			return azureResourceUtils.createResourceGroup(account, subscription, resourceGroupName, location, ignoreErrors);
+		},
 		makeAzureRestRequest(account: azdata.Account,
 			subscription: azureResource.AzureResourceSubscription,
 			path: string,
 			requestType: azurecore.HttpRequestMethod,
 			requestBody: any,
 			ignoreErrors: boolean,
-			host: string = 'https://management.azure.com'): Promise<azurecore.AzureRestResponse> {
-			return azureResourceUtils.makeHttpRequest(account, subscription, path, requestType, requestBody, ignoreErrors, host);
+			host: string = 'https://management.azure.com',
+			requestHeaders: { [key: string]: string } = {}): Promise<azurecore.AzureRestResponse> {
+			return azureResourceUtils.makeHttpRequest(account, subscription, path, requestType, requestBody, ignoreErrors, host, requestHeaders);
 		},
 		getRegionDisplayName: utils.getRegionDisplayName,
 		runGraphQuery<T extends azureResource.AzureGraphResource>(account: azdata.Account,

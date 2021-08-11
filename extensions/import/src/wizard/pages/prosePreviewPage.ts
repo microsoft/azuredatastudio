@@ -69,7 +69,7 @@ export class ProsePreviewPage extends ImportPage {
 
 
 	async start(): Promise<boolean> {
-		this.table = this.view.modelBuilder.table().withProperties<azdata.TableComponentProperties>({
+		this.table = this.view.modelBuilder.table().withProps({
 			data: undefined,
 			columns: undefined,
 			forceFitColumns: azdata.ColumnSizingMode.DataFit
@@ -184,12 +184,12 @@ export class ProsePreviewPage extends ImportPage {
 		return true;
 	}
 
-	public setupNavigationValidator() {
+	public override setupNavigationValidator() {
 		this.instance.registerNavigationValidator((info) => {
 			if (info) {
 				// Prose Preview to Modify Columns
 				if (info.lastPage === 1 && info.newPage === 2) {
-					return !this.loading.loading && this.table.data && this.table.data.length > 0;
+					return this.table.data && this.table.data.length > 0;
 				}
 			}
 			return !this.loading.loading;

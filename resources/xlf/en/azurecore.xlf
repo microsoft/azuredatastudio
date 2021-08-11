@@ -285,7 +285,7 @@
       <source xml:lang="en">SQL Server - Azure Arc</source>
     </trans-unit>
     <trans-unit id="azurecore.azureArcPostgres">
-      <source xml:lang="en">Azure Arc enabled PostgreSQL Hyperscale</source>
+      <source xml:lang="en">Azure Arc-enabled PostgreSQL Hyperscale</source>
     </trans-unit>
     <trans-unit id="azure.unableToOpenAzureLink">
       <source xml:lang="en">Unable to open link, missing required values</source>
@@ -515,6 +515,11 @@
   <file original="extensions/azurecore/dist/azureResource/providers/kusto/kustoTreeDataProvider" source-language="en" datatype="plaintext"><body>
     <trans-unit id="azure.resource.providers.KustoContainerLabel">
       <source xml:lang="en">Azure Data Explorer Cluster</source>
+    </trans-unit>
+  </body></file>
+  <file original="extensions/azurecore/dist/azureResource/providers/azuremonitor/azuremonitorTreeDataProvider" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="azure.resource.providers.AzureMonitorContainerLabel">
+      <source xml:lang="en">Log Analytics workspace</source>
     </trans-unit>
   </body></file>
   <file original="extensions/azurecore/dist/azureResource/providers/postgresServer/postgresServerTreeDataProvider" source-language="en" datatype="plaintext"><body>

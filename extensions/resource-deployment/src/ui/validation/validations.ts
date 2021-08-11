@@ -25,7 +25,8 @@ export const enum ValidationType {
 	IsInteger = 'is_integer',
 	Regex = 'regex_match',
 	LessThanOrEqualsTo = '<=',
-	GreaterThanOrEqualsTo = '>='
+	GreaterThanOrEqualsTo = '>=',
+	NotEqualTo = '!='
 }
 
 export type ValidationInfo = RegexValidationInfo | IntegerValidationInfo | ComparisonValidationInfo;
@@ -55,9 +56,6 @@ export abstract class Validation {
 	get description(): string {
 		return this._description;
 	}
-	protected get onValidation(): OnValidation {
-		return this._onValidation;
-	}
 	// gets the validation result for this validation object
 	abstract validate(): Promise<ValidationResult>;
 
@@ -69,15 +67,15 @@ export abstract class Validation {
 		return this._targetValueGetter!(variable);
 	}
 
-	constructor(validation: ValidationInfo, protected _onValidation: OnValidation, protected _valueGetter: ValueGetter, protected _targetValueGetter?: TargetValueGetter, protected _onTargetValidityChangedGetter?: OnTargetValidityChangedGetter, protected _onNewDisposableCreated?: (disposable: vscode.Disposable) => void) {
+	constructor(validation: ValidationInfo, protected _valueGetter: ValueGetter, protected _targetValueGetter?: TargetValueGetter, protected _onTargetValidityChangedGetter?: OnTargetValidityChangedGetter, protected _onNewDisposableCreated?: (disposable: vscode.Disposable) => void) {
 		this._description = validation.description;
 	}
 
 }
 
 export class IntegerValidation extends Validation {
-	constructor(validation: IntegerValidationInfo, onValidation: OnValidation, valueGetter: ValueGetter) {
-		super(validation, onValidation, valueGetter);
+	constructor(validation: IntegerValidationInfo, valueGetter: ValueGetter) {
+		super(validation, valueGetter);
 	}
 
 	private async isIntegerOrEmptyOrUndefined(): Promise<boolean> {
@@ -91,7 +89,6 @@ export class IntegerValidation extends Validation {
 
 	async validate(): Promise<ValidationResult> {
 		const isValid = await this.isIntegerOrEmptyOrUndefined();
-		await this.onValidation(isValid);
 		return {
 			valid: isValid,
 			message: isValid ? undefined : this.description
@@ -106,8 +103,8 @@ export class RegexValidation extends Validation {
 		return this._regex;
 	}
 
-	constructor(validation: RegexValidationInfo, validationMessageUpdater: OnValidation, valueGetter: ValueGetter) {
-		super(validation, validationMessageUpdater, valueGetter);
+	constructor(validation: RegexValidationInfo, valueGetter: ValueGetter) {
+		super(validation, valueGetter);
 		throwUnless(validation.regex !== undefined);
 		this._regex = (typeof validation.regex === 'string') ? new RegExp(validation.regex) : validation.regex;
 	}
@@ -115,7 +112,6 @@ export class RegexValidation extends Validation {
 	async validate(): Promise<ValidationResult> {
 		const value = (await this.getValue())?.toString();
 		const isValid = isUndefinedOrEmpty(value) ? true : this.regex.test(value!);
-		await this.onValidation(isValid);
 		return {
 			valid: isValid,
 			message: isValid ? undefined : this.description
@@ -136,8 +132,8 @@ export abstract class Comparison extends Validation {
 		this._onNewDisposableCreated!(onValidityChanged(isValid => onTargetValidityChangedAction(isValid)));
 	}
 
-	constructor(validation: ComparisonValidationInfo, onValidation: OnValidation, valueGetter: ValueGetter, targetValueGetter: TargetValueGetter, onTargetValidityChangedGetter: OnTargetValidityChangedGetter, onNewDisposableCreated: (disposable: vscode.Disposable) => void) {
-		super(validation, onValidation, valueGetter, targetValueGetter, onTargetValidityChangedGetter, onNewDisposableCreated);
+	constructor(validation: ComparisonValidationInfo, valueGetter: ValueGetter, targetValueGetter: TargetValueGetter, onTargetValidityChangedGetter: OnTargetValidityChangedGetter, onNewDisposableCreated: (disposable: vscode.Disposable) => void) {
+		super(validation, valueGetter, targetValueGetter, onTargetValidityChangedGetter, onNewDisposableCreated);
 		throwUnless(validation.target !== undefined);
 		this._target = validation.target;
 	}
@@ -157,7 +153,6 @@ export abstract class Comparison extends Validation {
 	async validate(): Promise<ValidationResult> {
 		this.validateOnTargetValidityChange();
 		const isValid = await this.isComparisonSuccessful();
-		await this.onValidation(isValid);
 		return {
 			valid: isValid,
 			message: isValid ? undefined : this.description
@@ -181,22 +176,38 @@ export class GreaterThanOrEqualsValidation extends Comparison {
 	}
 }
 
-export function createValidation(validation: ValidationInfo, onValidation: OnValidation, valueGetter: ValueGetter, targetValueGetter?: TargetValueGetter, onTargetValidityChangedGetter?: OnTargetValidityChangedGetter, onDisposableCreated?: (disposable: vscode.Disposable) => void): Validation {
+export class NotEqualValidation extends Comparison {
+	async isComparisonSuccessful() {
+		const value = (await this.getValue());
+		const targetValue = this.target;
+		return (isUndefinedOrEmpty(value) || isUndefinedOrEmpty(targetValue)) ? true : value!.toString() !== targetValue!;
+	}
+}
+
+export function createValidation(validation: ValidationInfo, valueGetter: ValueGetter, targetValueGetter?: TargetValueGetter, onTargetValidityChangedGetter?: OnTargetValidityChangedGetter, onDisposableCreated?: (disposable: vscode.Disposable) => void): Validation {
 	switch (validation.type) {
-		case ValidationType.Regex: return new RegexValidation(<RegexValidationInfo>validation, onValidation, valueGetter);
-		case ValidationType.IsInteger: return new IntegerValidation(<IntegerValidationInfo>validation, onValidation, valueGetter);
-		case ValidationType.LessThanOrEqualsTo: return new LessThanOrEqualsValidation(<ComparisonValidationInfo>validation, onValidation, valueGetter, targetValueGetter!, onTargetValidityChangedGetter!, onDisposableCreated!);
-		case ValidationType.GreaterThanOrEqualsTo: return new GreaterThanOrEqualsValidation(<ComparisonValidationInfo>validation, onValidation, valueGetter, targetValueGetter!, onTargetValidityChangedGetter!, onDisposableCreated!);
+		case ValidationType.Regex: return new RegexValidation(<RegexValidationInfo>validation, valueGetter);
+		case ValidationType.IsInteger: return new IntegerValidation(<IntegerValidationInfo>validation, valueGetter);
+		case ValidationType.LessThanOrEqualsTo: return new LessThanOrEqualsValidation(<ComparisonValidationInfo>validation, valueGetter, targetValueGetter!, onTargetValidityChangedGetter!, onDisposableCreated!);
+		case ValidationType.GreaterThanOrEqualsTo: return new GreaterThanOrEqualsValidation(<ComparisonValidationInfo>validation, valueGetter, targetValueGetter!, onTargetValidityChangedGetter!, onDisposableCreated!);
+		case ValidationType.NotEqualTo: return new NotEqualValidation(<ComparisonValidationInfo>validation, valueGetter, targetValueGetter!, onTargetValidityChangedGetter!, onDisposableCreated!);
 		default: throw new Error(`unknown validation type:${validation.type}`); //dev error
 	}
 }
 
 export async function validateInputBoxComponent(component: azdata.InputBoxComponent, validations: Validation[] = []): Promise<boolean> {
+	let valid = true;
+	let message = '';
 	for (const validation of validations) {
 		const result = await validation.validate();
 		if (!result.valid) {
-			return false; //bail out on first failure, remaining validations are processed after this one has been fixed by the user.
+			valid = false;
+			message = validation.description;
+			break; //bail out on first failure, remaining validations are processed after this one has been fixed by the user.
 		}
 	}
-	return true;
+	if ((component.validationErrorMessage ?? '') !== message) { // Update the message if needed
+		component.validationErrorMessage = message;
+	}
+	return valid;
 }

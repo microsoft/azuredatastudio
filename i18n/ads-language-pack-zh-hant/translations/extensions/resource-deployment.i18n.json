@@ -103,6 +103,10 @@
 			"azdataEulaNotAccepted": "部署無法繼續。尚未接受 Azure Data CLI 授權條款。請接受 EULA 以啟用需要 Azure Data CLI 的功能。",
 			"azdataEulaDeclined": "部署無法繼續。Azure Data CLI 授權條款遭到拒絕。您可以接受 EULA 以繼續，或是取消此作業",
 			"deploymentDialog.RecheckEulaButton": "接受 EULA 並選取",
+			"resourceDeployment.extensionRequiredPrompt": "需要 ' {0} ' 延伸模組才可部署此資源，要立即安裝嗎?",
+			"resourceDeployment.install": "安裝",
+			"resourceDeployment.installingExtension": "正在安裝延伸模組 '{0}'...",
+			"resourceDeployment.unknownExtension": "未知的延伸模組 '{0}'",
 			"resourceTypePickerDialog.title": "選擇部署選項",
 			"resourceTypePickerDialog.resourceSearchPlaceholder": "篩選資源...",
 			"resourceTypePickerDialog.tagsListViewTitle": "類別",
@@ -255,16 +259,12 @@
 			"resourceDeployment.Kubectl.BackupCurrentBinary": "正在備份安裝位置中任何現有的 kubectl…",
 			"resourceDeployment.Kubectl.MoveToSystemPath": "正在將 kubectl 移至路徑中的安裝位置…"
 		},
-		"dist/ui/notebookWizard/notebookWizardPage": {
-			"wizardPage.ValidationError": "此頁面有一些錯誤，按一下 [顯示詳細資料] 即可檢視錯誤。"
-		},
 		"dist/ui/deploymentInputDialog": {
 			"deploymentDialog.OpenNotebook": "開啟筆記本",
 			"deploymentDialog.OkButtonText": "確定",
 			"notebookType": "筆記本類型"
 		},
 		"dist/main": {
-			"resourceDeployment.FailedToLoadExtension": "無法載入延伸模組: {0}，在 package.json 的資源類型定義中偵測到錯誤，請查看偵錯主控台以取得詳細資料。",
 			"resourceDeployment.UnknownResourceType": "資源類型: 未定義 {0}"
 		},
 		"dist/services/notebookService": {
@@ -373,8 +373,7 @@
 			"deployCluster.SubdomainDescription": "供此 SQL Server 巨量資料叢集使用的唯一 DNS 子網域。若未提供，則會使用叢集名稱作為預設值。",
 			"deployCluster.AccountPrefix": "帳戶首碼",
 			"deployCluster.AccountPrefixDescription": "將為 SQL Server 巨量資料叢集 AD 帳戶產生唯一首碼。若未提供，則會使用子網域名稱作為預設值。若未提供子網域，則會使用叢集名稱作為預設值。",
-			"deployCluster.AdminPasswordField": "密碼",
-			"deployCluster.ValidationError": "此頁面有一些錯誤，按一下 [顯示詳細資料] 即可檢視錯誤。"
+			"deployCluster.AdminPasswordField": "密碼"
 		},
 		"dist/ui/deployClusterWizard/pages/serviceSettingsPage": {
 			"deployCluster.ServiceSettingsPageTitle": "服務設定",
@@ -562,8 +561,8 @@
 		},
 		"dist/ui/toolsAndEulaSettingsPage": {
 			"notebookWizard.toolsAndEulaPageTitle": "部署必要條件",
-			"deploymentDialog.FailedEulaValidation": "若要繼續，您必須接受授權條款",
 			"deploymentDialog.FailedToolsInstallation": "仍未探索到某些工具。請確認這些工具已安裝、正在執行並可供探索",
+			"deploymentDialog.FailedEulaValidation": "若要繼續，您必須接受授權條款",
 			"deploymentDialog.loadingRequiredToolsCompleted": "已完成載入必要工具的資訊",
 			"deploymentDialog.loadingRequiredTools": "正在載入必要工具的資訊",
 			"resourceDeployment.AgreementTitle": "接受使用條款",
@@ -603,22 +602,6 @@
 			"resourceDeployment.AziCli.ScriptedInstall": "正在下載並叫用指令碼以安裝 azure-cli…"
 		},
 		"dist/services/tools/azdataTool": {
-			"resourceDeployment.AzdataDescription": "Azure Data 命令列介面",
-			"resourceDeployment.AzdataDisplayName": "Azure Data CLI",
-			"deployCluster.GetToolVersionErrorInformation": "擷取版本資訊時發生錯誤。如需詳細資料，請參閱輸出通道 '{0}'",
-			"deployCluster.GetToolVersionError": "擷取版本資訊時發生錯誤。{0}接收到的輸出無效，請取得版本命令輸出: '{1}'",
-			"resourceDeployment.Azdata.DeletingPreviousAzdata.msi": "正在刪除先前下載的 Azdata.msi (如果有的話)…",
-			"resourceDeployment.Azdata.DownloadingAndInstallingAzdata": "正在下載 Azdata.msi 並安裝 azdata-cli…",
-			"resourceDeployment.Azdata.DisplayingInstallationLog": "正在顯示安裝記錄…",
-			"resourceDeployment.Azdata.TappingBrewRepository": "點選 Brew 存放庫以取得 azdata-cli…",
-			"resourceDeployment.Azdata.UpdatingBrewRepository": "正在更新 Brew 存放庫以安裝 azdata-cli…",
-			"resourceDeployment.Azdata.InstallingAzdata": "正在安裝 azdata…",
-			"resourceDeployment.Azdata.AptGetUpdate": "正在更新存放庫資訊…",
-			"resourceDeployment.Azdata.AptGetPackages": "正在取得安裝 azdata 所需的套件…",
-			"resourceDeployment.Azdata.DownloadAndInstallingSigningKey": "正在下載並安裝 azdata 的簽署金鑰…",
-			"resourceDeployment.Azdata.AddingAzdataRepositoryInformation": "正在新增 azdata 存放庫資訊…"
-		},
-		"dist/services/tools/azdataToolOld": {
 			"resourceDeployment.AzdataDescription": "Azure Data 命令列介面",
 			"resourceDeployment.AzdataDisplayName": "Azure Data CLI",
 			"resourceDeployment.Azdata.DeletingPreviousAzdata.msi": "正在刪除先前下載的 Azdata.msi (如果有的話)…",

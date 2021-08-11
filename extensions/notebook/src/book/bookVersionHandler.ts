@@ -89,7 +89,7 @@ export function convertTo(version: string, section: JupyterBookSection): Jupyter
 			temp.external = section.external;
 			temp.sections = [];
 			for (let s of section.sections) {
-				const child = this.convertTo(version, s);
+				const child = convertTo(version, s);
 				temp.sections.push(child);
 			}
 			return temp;
@@ -120,7 +120,7 @@ export function convertTo(version: string, section: JupyterBookSection): Jupyter
 			temp.url = section.url;
 			temp.sections = [];
 			for (let s of section.sections) {
-				const child = this.convertTo(version, s);
+				const child = convertTo(version, s);
 				temp.sections.push(child);
 			}
 			return temp;

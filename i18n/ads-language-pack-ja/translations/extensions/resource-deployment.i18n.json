@@ -103,6 +103,10 @@
 			"azdataEulaNotAccepted": "デプロイを続行できません。Azure Data CLI ライセンス条項にまだ同意していません。Azure Data CLI を必要とする機能を有効にするには、EULA に同意してください。",
 			"azdataEulaDeclined": "デプロイを続行できません。Azure Data CLI のライセンス条項が拒否されました。EULA に同意して続行するか、この操作を取り消すことができます",
 			"deploymentDialog.RecheckEulaButton": "EULA に同意して選択",
+			"resourceDeployment.extensionRequiredPrompt": "このリソースを展開するには、'{0}' の拡張機能が必要です。今すぐインストールしますか?",
+			"resourceDeployment.install": "インストール",
+			"resourceDeployment.installingExtension": "拡張機能 '{0}' をインストールしています...",
+			"resourceDeployment.unknownExtension": "不明な拡張機能 '{0}'",
 			"resourceTypePickerDialog.title": "デプロイ オプションを選択します",
 			"resourceTypePickerDialog.resourceSearchPlaceholder": "リソースのフィルター...",
 			"resourceTypePickerDialog.tagsListViewTitle": "カテゴリ",
@@ -255,16 +259,12 @@
 			"resourceDeployment.Kubectl.BackupCurrentBinary": "インストール場所にある既存の kubectl をバックアップしています...",
 			"resourceDeployment.Kubectl.MoveToSystemPath": "kubectl を PATH のインストール場所に移動しています..."
 		},
-		"dist/ui/notebookWizard/notebookWizardPage": {
-			"wizardPage.ValidationError": "このページにはいくつかのエラーがあります。エラーを表示するには、[詳細を表示] をクリックします。"
-		},
 		"dist/ui/deploymentInputDialog": {
 			"deploymentDialog.OpenNotebook": "ノートブックを開く",
 			"deploymentDialog.OkButtonText": "OK",
 			"notebookType": "Notebook の種類"
 		},
 		"dist/main": {
-			"resourceDeployment.FailedToLoadExtension": "拡張機能を読み込めませんでした: {0}。package.json のリソースの種類の定義でエラーが検出されました。詳しくは、デバッグ コンソールを確認してください。",
 			"resourceDeployment.UnknownResourceType": "リソースの種類: {0} が定義されていません"
 		},
 		"dist/services/notebookService": {
@@ -373,8 +373,7 @@
 			"deployCluster.SubdomainDescription": "この SQL Server ビッグ データ クラスターで使用する一意の DNS サブドメイン。指定されていない場合は、クラスター名が既定値として使用されます。",
 			"deployCluster.AccountPrefix": "アカウント プレフィックス",
 			"deployCluster.AccountPrefixDescription": "SQL Server ビッグ データ クラスターによって生成される AD アカウントの一意のプレフィックス。指定されていない場合は、サブドメイン名が既定値として使用されます。サブドメインが指定されていない場合は、クラスター名が既定値として使用されます。",
-			"deployCluster.AdminPasswordField": "パスワード",
-			"deployCluster.ValidationError": "このページにはいくつかのエラーがあります。エラーを表示するには、[詳細を表示] をクリックします。"
+			"deployCluster.AdminPasswordField": "パスワード"
 		},
 		"dist/ui/deployClusterWizard/pages/serviceSettingsPage": {
 			"deployCluster.ServiceSettingsPageTitle": "サービスの設定",
@@ -562,8 +561,8 @@
 		},
 		"dist/ui/toolsAndEulaSettingsPage": {
 			"notebookWizard.toolsAndEulaPageTitle": "デプロイの前提条件",
-			"deploymentDialog.FailedEulaValidation": "進めるには、エンド ユーザー使用許諾契約 (EULA) の条件に同意する必要があります。",
 			"deploymentDialog.FailedToolsInstallation": "一部のツールがまだ検出されていません。それらがインストールされており、実行中で検出可能であることを確認してください",
+			"deploymentDialog.FailedEulaValidation": "進めるには、エンド ユーザー使用許諾契約 (EULA) の条件に同意する必要があります。",
 			"deploymentDialog.loadingRequiredToolsCompleted": "必要なツール情報の読み込みが完了しました",
 			"deploymentDialog.loadingRequiredTools": "必要なツール情報を読み込んでいます",
 			"resourceDeployment.AgreementTitle": "利用規約に同意する",
@@ -603,22 +602,6 @@
 			"resourceDeployment.AziCli.ScriptedInstall": "azure-cli をインストールするためにスクリプトをダウンロードして呼び出しています..."
 		},
 		"dist/services/tools/azdataTool": {
-			"resourceDeployment.AzdataDescription": "Azure Data コマンド ライン インターフェイス",
-			"resourceDeployment.AzdataDisplayName": "Azure Data CLI",
-			"deployCluster.GetToolVersionErrorInformation": "バージョン情報の取得でエラーが発生しました。詳細については、出力チャネル '{0}' を参照してください",
-			"deployCluster.GetToolVersionError": "バージョン情報の取得でエラーが発生しました。{0}無効な出力を受け取りました。バージョン取得コマンドの出力: '{1}'",
-			"resourceDeployment.Azdata.DeletingPreviousAzdata.msi": "以前にダウンロードされた Azdata.msi が存在する場合にそれを削除しています...",
-			"resourceDeployment.Azdata.DownloadingAndInstallingAzdata": "Azdata.msi をダウンロードして、azdata cli をインストールしています...",
-			"resourceDeployment.Azdata.DisplayingInstallationLog": "インストール ログを表示しています...",
-			"resourceDeployment.Azdata.TappingBrewRepository": "azdata-cli に brew リポジトリを利用しています...",
-			"resourceDeployment.Azdata.UpdatingBrewRepository": "azdata-cli インストール用に brew リポジトリを更新しています...",
-			"resourceDeployment.Azdata.InstallingAzdata": "azdata をインストールしています...",
-			"resourceDeployment.Azdata.AptGetUpdate": "リポジトリ情報を更新しています...",
-			"resourceDeployment.Azdata.AptGetPackages": "azdata インストールに必要なパッケージを取得しています...",
-			"resourceDeployment.Azdata.DownloadAndInstallingSigningKey": "azdata の署名キーをダウンロードしてインストールしています...",
-			"resourceDeployment.Azdata.AddingAzdataRepositoryInformation": "azdata リポジトリ情報を追加しています..."
-		},
-		"dist/services/tools/azdataToolOld": {
 			"resourceDeployment.AzdataDescription": "Azure Data コマンド ライン インターフェイス",
 			"resourceDeployment.AzdataDisplayName": "Azure Data CLI",
 			"resourceDeployment.Azdata.DeletingPreviousAzdata.msi": "以前にダウンロードされた Azdata.msi が存在する場合にそれを削除しています...",

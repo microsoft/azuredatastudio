@@ -113,7 +113,7 @@ export default class DropDownComponent extends ComponentBase<azdata.DropDownProp
 			}));
 			this._validations.push(() => !this.required || this.editable || !!this._selectBox.value);
 		}
-
+		this._validations.push(() => !this.loading);
 		this.baseInit();
 	}
 
@@ -145,6 +145,9 @@ export default class DropDownComponent extends ComponentBase<azdata.DropDownProp
 			}
 			this._editableDropdown.enabled = this.enabled;
 			this._editableDropdown.fireOnTextChange = this.fireOnTextChange;
+
+			// Add tooltip when editable dropdown is disabled to show overflow text
+			this._editableDropdown.input.setTooltip(!this.enabled ? this._editableDropdown.input.value : '');
 		} else {
 			this._selectBox.setOptions(this.getValues());
 			this._selectBox.selectWithOptionName(this.getSelectedValue());

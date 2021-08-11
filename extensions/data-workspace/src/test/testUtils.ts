@@ -31,7 +31,3 @@ export async function createProjectFile(fileExt: string, contents?: string): Pro
 export function generateUniqueProjectFilePath(fileExt: string): string {
 	return path.join(os.tmpdir(), `TestProject_${new Date().getTime()}.${fileExt}`);
 }
-
-export function generateUniqueWorkspaceFilePath(): string {
-	return path.join(os.tmpdir(), `TestWorkspace_${new Date().getTime()}.code-workspace`);
-}

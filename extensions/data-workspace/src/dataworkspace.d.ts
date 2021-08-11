@@ -7,7 +7,8 @@ declare module 'dataworkspace' {
 	import * as azdata from 'azdata';
 	import * as vscode from 'vscode';
 	export const enum extension {
-		name = 'Microsoft.data-workspace'
+		name = 'Microsoft.data-workspace',
+		vscodeName = 'Microsoft.data-workspace-vscode'
 	}
 
 	/**
@@ -17,15 +18,15 @@ declare module 'dataworkspace' {
 		/**
 		 * Returns all the projects in the workspace
 		 * @param ext project extension to filter on. If this is passed in, this will only return projects with this file extension
+		 * @param refreshFromDisk whether to rescan the folder for project files, or return the cached version. Defaults to false.
 		 */
-		getProjectsInWorkspace(ext?: string): vscode.Uri[];
+		getProjectsInWorkspace(ext?: string, refreshFromDisk?: boolean): Promise<vscode.Uri[]>;
 
 		/**
 		 * Add projects to the workspace
-		 * @param projectFiles Uris of project files to add,
-		 * @param workspaceFilePath workspace file to create if no workspace is open
+		 * @param projectFiles Uris of project files to add
 		 */
-		addProjectsToWorkspace(projectFiles: vscode.Uri[], workspaceFilePath?: vscode.Uri): Promise<void>;
+		addProjectsToWorkspace(projectFiles: vscode.Uri[]): Promise<void>;
 
 		/**
 		 * Change focus to Projects view
@@ -41,6 +42,13 @@ declare module 'dataworkspace' {
 		  * Verifies that a workspace is open or if it should be automatically created
 		  */
 		validateWorkspace(): Promise<boolean>;
+
+		/**
+		 * Opens the new project dialog with only the specified project type
+		 * @param projectType project type to open the dialog for
+		 * @returns the uri of the created the project or undefined if no project was created
+		 */
+		openSpecificProjectNewProjectDialog(projectType: IProjectType): Promise<vscode.Uri | undefined>;
 	}
 
 	/**
@@ -54,18 +62,13 @@ declare module 'dataworkspace' {
 		getProjectTreeDataProvider(projectFile: vscode.Uri): Promise<vscode.TreeDataProvider<any>>;
 
 		/**
-		 * Notify the project provider extension that the specified project file has been removed from the data workspace
-		 * @param projectFile The Uri of the project file
-		 */
-		RemoveProject(projectFile: vscode.Uri): Promise<void>;
-
-		/**
 		 *
 		 * @param name Create a project
 		 * @param location the parent directory of the project
 		 * @param projectTypeId the identifier of the selected project type
+		 * @param projectTargetPlatform the target platform of the project
 		 */
-		createProject(name: string, location: vscode.Uri, projectTypeId: string): Promise<vscode.Uri>;
+		createProject(name: string, location: vscode.Uri, projectTypeId: string, projectTargetPlatform?: string): Promise<vscode.Uri>;
 
 		/**
 		 * Gets the project data corresponding to the project file, to be placed in the dashboard container
@@ -115,7 +118,17 @@ declare module 'dataworkspace' {
 		/**
 		 * Gets the icon path of the project type
 		 */
-		readonly icon: azdata.IconPath
+		readonly icon: azdata.IconPath;
+
+		/**
+		  * Gets the target platforms that can be selected when creating a new project
+		 */
+		readonly targetPlatforms?: string[];
+
+		/**
+		 * Gets the default target platform
+		 */
+		readonly defaultTargetPlatform?: string;
 	}
 
 	/**

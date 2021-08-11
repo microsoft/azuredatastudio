@@ -70,7 +70,7 @@ interface IActionStateData {
 	commandId?: string;
 }
 
-class IMultiStateData<T> {
+export class IMultiStateData<T> {
 	private _stateMap = new Map<T, IActionStateData>();
 	constructor(mappings: { key: T, value: IActionStateData }[], private _state: T, private _baseClass?: string) {
 		if (mappings) {
@@ -120,7 +120,7 @@ class IMultiStateData<T> {
 	}
 }
 
-abstract class MultiStateAction<T> extends Action {
+export abstract class MultiStateAction<T> extends Action {
 	constructor(
 		id: string,
 		protected states: IMultiStateData<T>,

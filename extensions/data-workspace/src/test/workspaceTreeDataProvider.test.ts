@@ -7,35 +7,25 @@ import { IDashboardTable, IProjectProvider, WorkspaceTreeItem } from 'dataworksp
 import 'mocha';
 import * as should from 'should';
 import * as sinon from 'sinon';
-import * as TypeMoq from 'typemoq';
 import * as vscode from 'vscode';
 import { WorkspaceTreeDataProvider } from '../common/workspaceTreeDataProvider';
 import { WorkspaceService } from '../services/workspaceService';
 import { MockTreeDataProvider } from './projectProviderRegistry.test';
 
-interface ExtensionGlobalMemento extends vscode.Memento {
-	setKeysForSync(keys: string[]): void;
-}
-
 suite('workspaceTreeDataProvider Tests', function (): void {
-	const mockExtensionContext = TypeMoq.Mock.ofType<vscode.ExtensionContext>();
-	const mockGlobalState = TypeMoq.Mock.ofType<ExtensionGlobalMemento>();
-	mockGlobalState.setup(x => x.update(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve());
-	mockExtensionContext.setup(x => x.globalState).returns(() => mockGlobalState.object);
-
-	const workspaceService = new WorkspaceService(mockExtensionContext.object);
+	const workspaceService = new WorkspaceService();
 	const treeProvider = new WorkspaceTreeDataProvider(workspaceService);
 
 	this.afterEach(() => {
 		sinon.restore();
 	});
 
-	test('test refresh()', () => {
+	test('test refresh()', async () => {
 		const treeDataChangeHandler = sinon.stub();
 		treeProvider.onDidChangeTreeData!((e) => {
 			treeDataChangeHandler(e);
 		});
-		treeProvider.refresh();
+		await treeProvider.refresh();
 		should.strictEqual(treeDataChangeHandler.calledOnce, true);
 	});
 
@@ -63,7 +53,7 @@ suite('workspaceTreeDataProvider Tests', function (): void {
 		};
 		const children = await treeProvider.getChildren(element);
 		should.strictEqual(children.length, 0, 'children count should be 0');
-		should.strictEqual(getChildrenStub.calledWithExactly('obj1'), true, 'getChildren parameter should be obj1')
+		should.strictEqual(getChildrenStub.calledWithExactly('obj1'), true, 'getChildren parameter should be obj1');
 	});
 
 	test('test getChildren() for root element', async () => {
@@ -82,9 +72,6 @@ suite('workspaceTreeDataProvider Tests', function (): void {
 				displayName: 'sql project',
 				description: ''
 			}],
-			RemoveProject: (projectFile: vscode.Uri): Promise<void> => {
-				return Promise.resolve();
-			},
 			getProjectTreeDataProvider: (projectFile: vscode.Uri): Promise<vscode.TreeDataProvider<any>> => {
 				return Promise.resolve(treeDataProvider);
 			},
@@ -113,16 +100,17 @@ suite('workspaceTreeDataProvider Tests', function (): void {
 			}],
 			getDashboardComponents: (projectFile: string): IDashboardTable[] => {
 				return [{
-				name: 'Deployments',
-				columns: [{ displayName: 'c1', width: 75, type: 'string' }],
-				data: [['d1']]
-			},
-			{
-				name: 'Builds',
-				columns: [{ displayName: 'c1', width: 75, type: 'string' }],
-				data: [['d1']]
-			}];
-		}};
+					name: 'Deployments',
+					columns: [{ displayName: 'c1', width: 75, type: 'string' }],
+					data: [['d1']]
+				},
+				{
+					name: 'Builds',
+					columns: [{ displayName: 'c1', width: 75, type: 'string' }],
+					data: [['d1']]
+				}];
+			}
+		};
 		const getProjectProviderStub = sinon.stub(workspaceService, 'getProjectProvider');
 		getProjectProviderStub.onFirstCall().resolves(undefined);
 		getProjectProviderStub.onSecondCall().resolves(projectProvider);

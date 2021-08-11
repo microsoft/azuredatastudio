@@ -44,10 +44,6 @@ class MessagesView extends Disposable implements IPanelView {
 		this.messagePanel.layout(dimension);
 	}
 
-	focus(): void {
-		this.messagePanel.focus();
-	}
-
 	public clear() {
 		this.messagePanel.clear();
 	}
@@ -81,10 +77,6 @@ class ResultsView extends Disposable implements IPanelView {
 		this.container.style.width = `${dimension.width}px`;
 		this.container.style.height = `${dimension.height}px`;
 		this.gridPanel.layout(dimension);
-	}
-
-	focus(): void {
-		this.gridPanel.focus();
 	}
 
 	public clear() {

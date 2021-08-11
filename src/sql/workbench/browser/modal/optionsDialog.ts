@@ -192,7 +192,6 @@ export class OptionsDialog extends Modal {
 
 	public open(options: azdata.ServiceOption[], optionValues: { [name: string]: any }) {
 		this._optionValues = optionValues;
-		let firstOption: string | undefined;
 		let categoryMap = OptionsDialogHelper.groupOptionsByCategory(options);
 		clearNode(this._optionGroupsContainer!);
 		for (let category in categoryMap) {
@@ -202,18 +201,13 @@ export class OptionsDialog extends Modal {
 
 			let serviceOptions: azdata.ServiceOption[] = categoryMap[category];
 			let bodyContainer = $('table.optionsDialog-table');
+			bodyContainer.setAttribute('role', 'presentation');
 			this.fillInOptions(bodyContainer, serviceOptions);
 			append(this._optionGroupsContainer!, bodyContainer);
-
-			if (!firstOption) {
-				firstOption = serviceOptions[0].name;
-			}
 		}
 		this.updateTheme(this._themeService.getColorTheme());
-		this.show();
-		let firstOptionWidget = this._optionElements[firstOption!].optionWidget;
 		this.registerStyling();
-		setTimeout(() => firstOptionWidget.focus(), 1);
+		this.show();
 	}
 
 	protected layout(height?: number): void {

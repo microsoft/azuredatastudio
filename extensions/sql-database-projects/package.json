@@ -1,13 +1,13 @@
 {
   "name": "sql-database-projects",
   "displayName": "SQL Database Projects",
-  "description": "The SQL Database Projects extension for Azure Data Studio allows users to develop and publish database schemas.",
-  "version": "0.10.0",
+  "description": "The SQL Database Projects extension for Azure Data Studio and VS Code allows users to develop and publish database schemas.",
+  "version": "0.12.0",
   "publisher": "Microsoft",
   "preview": true,
   "engines": {
     "vscode": "^1.30.1",
-    "azdata": ">=1.28.0"
+    "azdata": ">=1.31.0"
   },
   "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt",
   "icon": "images/sqlDatabaseProjects.png",
@@ -153,6 +153,10 @@
         "command": "sqlDatabaseProjects.changeTargetPlatform",
         "title": "%sqlDatabaseProjects.changeTargetPlatform%",
         "category": "%sqlDatabaseProjects.displayName%"
+      },
+      {
+        "command": "sqlDatabaseProjects.addSqlBinding",
+        "title": "%sqlDatabaseProjects.addSqlBinding%"
       }
     ],
     "menus": {
@@ -246,6 +250,10 @@
         {
           "command": "sqlDatabaseProjects.changeTargetPlatform",
           "when": "false"
+        },
+        {
+          "command": "sqlDatabaseProjects.addSqlBinding",
+          "when": "editorLangId == csharp && !azdataAvailable"
         }
       ],
       "view/item/context": [
@@ -261,7 +269,7 @@
         },
         {
           "command": "sqlDatabaseProjects.schemaCompare",
-          "when": "view == dataworkspace.views.main && viewItem == databaseProject.itemType.project",
+          "when": "view == dataworkspace.views.main && viewItem == databaseProject.itemType.project && azdataAvailable",
           "group": "1_dbProjectsFirst@3"
         },
         {
@@ -343,6 +351,11 @@
           "command": "sqlDatabaseProjects.openContainingFolder",
           "when": "view == dataworkspace.views.main && viewItem == databaseProject.itemType.project",
           "group": "9_dbProjectsLast@8"
+        },
+        {
+          "command": "sqlDatabaseProjects.createProjectFromDatabase",
+          "when": "!azdataAvailable && view == objectExplorer && viewItem =~ /^(disconnectedServer|Server|Database)$/",
+          "group": "sqldbproj@1"
         }
       ],
       "objectExplorer/item/context": [
@@ -373,7 +386,7 @@
     "fast-glob": "^3.1.0",
     "promisify-child-process": "^3.1.1",
     "vscode-languageclient": "^5.3.0-next.1",
-    "vscode-nls": "^3.2.1",
+    "vscode-nls": "^4.1.2",
     "xml-formatter": "^2.1.0",
     "xmldom": "^0.3.0"
   },

@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 import * as vscode from 'vscode';
 import { azureResource } from 'azureResource';
-import { DatabaseMigration, SqlMigrationService, SqlManagedInstance, getMigrationStatus, AzureAsyncOperationResource, getMigrationAsyncOperationDetails, SqlVMServer } from '../api/azure';
+import { DatabaseMigration, SqlMigrationService, SqlManagedInstance, getMigrationStatus, AzureAsyncOperationResource, getMigrationAsyncOperationDetails, SqlVMServer, getSubscriptions } from '../api/azure';
 import * as azdata from 'azdata';
 
 export class MigrationLocalStorage {
@@ -16,22 +16,27 @@ export class MigrationLocalStorage {
 	}
 
 	public static async getMigrationsBySourceConnections(connectionProfile: azdata.connection.ConnectionProfile, refreshStatus?: boolean): Promise<MigrationContext[]> {
-
+		const undefinedSessionId = '{undefined}';
 		const result: MigrationContext[] = [];
 		const validMigrations: MigrationContext[] = [];
 
 		const migrationMementos: MigrationContext[] = this.context.globalState.get(this.mementoToken) || [];
 		for (let i = 0; i < migrationMementos.length; i++) {
 			const migration = migrationMementos[i];
+			migration.sessionId = migration.sessionId ?? undefinedSessionId;
 			if (migration.sourceConnectionProfile.serverName === connectionProfile.serverName) {
 				if (refreshStatus) {
 					try {
 						const backupConfiguration = migration.migrationContext.properties.backupConfiguration;
 						const sourceDatabase = migration.migrationContext.properties.sourceDatabaseName;
+
+						await this.refreshMigrationAzureAccount(migration);
+
 						migration.migrationContext = await getMigrationStatus(
 							migration.azureAccount,
 							migration.subscription,
-							migration.migrationContext
+							migration.migrationContext,
+							migration.sessionId!
 						);
 						migration.migrationContext.properties.sourceDatabaseName = sourceDatabase;
 						migration.migrationContext.properties.backupConfiguration = backupConfiguration;
@@ -39,7 +44,8 @@ export class MigrationLocalStorage {
 							migration.asyncOperationResult = await getMigrationAsyncOperationDetails(
 								migration.azureAccount,
 								migration.subscription,
-								migration.asyncUrl
+								migration.asyncUrl,
+								migration.sessionId!
 							);
 						}
 					}
@@ -60,6 +66,20 @@ export class MigrationLocalStorage {
 		return result;
 	}
 
+	public static async refreshMigrationAzureAccount(migration: MigrationContext): Promise<void> {
+		if (migration.azureAccount.isStale) {
+			const accounts = await azdata.accounts.getAllAccounts();
+			const account = accounts.find(a => !a.isStale && a.key.accountId === migration.azureAccount.key.accountId);
+			if (account) {
+				const subscriptions = await getSubscriptions(account);
+				const subscription = subscriptions.find(s => s.id === migration.subscription.id);
+				if (subscription) {
+					migration.azureAccount = account;
+				}
+			}
+		}
+	}
+
 	public static saveMigration(
 		connectionProfile: azdata.connection.ConnectionProfile,
 		migrationContext: DatabaseMigration,
@@ -67,7 +87,8 @@ export class MigrationLocalStorage {
 		azureAccount: azdata.Account,
 		subscription: azureResource.AzureResourceSubscription,
 		controller: SqlMigrationService,
-		asyncURL: string): void {
+		asyncURL: string,
+		sessionId: string): void {
 		try {
 			let migrationMementos: MigrationContext[] = this.context.globalState.get(this.mementoToken) || [];
 			migrationMementos = migrationMementos.filter(m => m.migrationContext.id !== migrationContext.id);
@@ -78,7 +99,8 @@ export class MigrationLocalStorage {
 				subscription: subscription,
 				azureAccount: azureAccount,
 				controller: controller,
-				asyncUrl: asyncURL
+				asyncUrl: asyncURL,
+				sessionId: sessionId
 			});
 			this.context.globalState.update(this.mementoToken, migrationMementos);
 		} catch (e) {
@@ -99,5 +121,22 @@ export interface MigrationContext {
 	subscription: azureResource.AzureResourceSubscription,
 	controller: SqlMigrationService,
 	asyncUrl: string,
-	asyncOperationResult?: AzureAsyncOperationResource
+	asyncOperationResult?: AzureAsyncOperationResource,
+	sessionId?: string
+}
+
+export enum MigrationStatus {
+	Failed = 'Failed',
+	Succeeded = 'Succeeded',
+	InProgress = 'InProgress',
+	Canceled = 'Canceled',
+	Completing = 'Completing',
+	Creating = 'Creating',
+	Canceling = 'Canceling'
+}
+
+export enum ProvisioningState {
+	Failed = 'Failed',
+	Succeeded = 'Succeeded',
+	Creating = 'Creating'
 }

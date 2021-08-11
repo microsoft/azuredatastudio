@@ -353,7 +353,7 @@ export class ClusterSettingsPage extends ResourceTypePage {
 
 					if (messages.length > 0) {
 						this._model.wizard.wizardObject.message = {
-							text: messages.length === 1 ? messages[0] : localize('deployCluster.ValidationError', "There are some errors on this page, click 'Show Details' to view the errors."),
+							text: messages.length === 1 ? messages[0] : localizedConstants.multipleValidationErrors,
 							description: messages.length === 1 ? undefined : messages.join(EOL),
 							level: azdata.window.MessageLevel.Error
 						};

@@ -75,6 +75,11 @@ export class Notebook {
 		return this.code.waitForTextContent(selector, undefined, c => accept(c.replace(/\u00a0/g, ' ')));
 	}
 
+	async waitForColorization(spanNumber: string, color: string): Promise<void> {
+		const span = `span:nth-child(${spanNumber})[class="${color}"]`;
+		await this.code.waitForElement(span);
+	}
+
 	public async selectAllTextInEditor(): Promise<void> {
 		const editor = '.notebook-cell.active .monaco-editor';
 		await this.code.waitAndClick(editor);
@@ -113,6 +118,18 @@ export class Notebook {
 	 */
 	async getCellIds(): Promise<string[]> {
 		return (await this.code.waitForElements('div.notebook-cell', false)).map(cell => cell.attributes['id']);
+	}
+
+	// Code Cell Actions
+
+	async waitForSuggestionWidget(): Promise<void> {
+		const suggestionWidgetSelector = 'div.editor-widget.suggest-widget';
+		await this.code.waitForElement(suggestionWidgetSelector);
+	}
+
+	async waitForSuggestionResult(expectedResult: string): Promise<void> {
+		const expectedResultSelector = `div.editor-widget.suggest-widget div.monaco-list-row.focused[aria-label="${expectedResult}"]`;
+		await this.code.waitForElement(expectedResultSelector);
 	}
 
 	// Text Cell Actions
@@ -154,12 +171,7 @@ export class Notebook {
 	}
 
 	async waitForAllResults(): Promise<void> {
-		let cellIds: string[] = [];
-		await this.code.waitForElements('div.notebook-cell', false, result => {
-			cellIds = result.map(cell => cell.attributes['id']);
-			return true;
-		});
-		await this.waitForResults(cellIds);
+		await this.waitForResults(await this.getCellIds());
 	}
 
 	async waitForActiveCellResultsGone(): Promise<void> {
@@ -174,12 +186,7 @@ export class Notebook {
 	}
 
 	async waitForAllResultsGone(): Promise<void> {
-		let cellIds: string[] = [];
-		await this.code.waitForElements('div.notebook-cell', false, result => {
-			cellIds = result.map(cell => cell.attributes['id']);
-			return true;
-		});
-		await this.waitForResultsGone(cellIds);
+		await this.waitForResultsGone(await this.getCellIds());
 	}
 
 	async waitForTrustedElements(): Promise<void> {
@@ -326,26 +333,70 @@ export class NotebookToolbar {
 
 export class NotebookView {
 	private static readonly inputBox = '.notebookExplorer-viewlet .search-widget .input-box';
-	private static actualResult = '.search-view .result-messages';
+	private static searchResult = '.search-view .result-messages';
+	private static notebookTreeItem = '.split-view-view .tree-explorer-viewlet-tree-view .monaco-list-row';
+	private static selectedItem = '.focused.selected';
+	private static pinnedNotebooksSelector = '.split-view-view .tree-explorer-viewlet-tree-view .monaco-list[aria-label="Pinned notebooks"] .monaco-list-row';
 
 	constructor(private code: Code, private quickAccess: QuickAccess) { }
 
-	async focus(): Promise<void> {
+	async focusSearchResultsView(): Promise<void> {
 		return this.quickAccess.runCommand('Notebooks: Focus on Search Results View');
+	}
+
+	async focusNotebooksView(): Promise<void> {
+		return this.quickAccess.runCommand('Notebooks: Focus on Notebooks View');
+	}
+
+	async focusPinnedNotebooksView(): Promise<void> {
+		return this.quickAccess.runCommand('Notebooks: Focus on Pinned notebooks View');
 	}
 
 	async searchInNotebook(expr: string): Promise<IElement> {
 		await this.waitForSetSearchValue(expr);
 		await this.code.dispatchKeybinding('enter');
-		let selector = `${NotebookView.actualResult} `;
+		let selector = NotebookView.searchResult;
 		if (expr) {
-			selector += '.message';
+			selector += ' .message';
 		}
-		return await this.code.waitForElement(selector, undefined);
+		return this.code.waitForElement(selector, undefined);
 	}
 
 	async waitForSetSearchValue(text: string): Promise<void> {
 		const textArea = `${NotebookView.inputBox} textarea`;
 		await this.code.waitForTypeInEditor(textArea, text);
+	}
+
+	/**
+	 * Helper function
+	 * @returns tree item ids from Notebooks View
+	 */
+	async getNotebookTreeItemIds(): Promise<string[]> {
+		return (await this.code.waitForElements(NotebookView.notebookTreeItem, false)).map(item => item.attributes['id']);
+	}
+
+	/**
+	 * Pin the first notebook in the Notebooks View
+	 */
+	async pinNotebook(): Promise<void> {
+		const notebookIds = await this.getNotebookTreeItemIds();
+		await this.code.waitAndDoubleClick(`${NotebookView.notebookTreeItem}[id="${notebookIds[0]}"]`);
+		await this.code.waitAndClick(`${NotebookView.notebookTreeItem}${NotebookView.selectedItem} .codicon-pinned`);
+	}
+
+	/**
+	 * Unpin the only pinned notebook.
+	 * Previously pinned by the pinNotebook method.
+	 */
+	async unpinNotebook(): Promise<void> {
+		await this.code.waitAndClick(NotebookView.pinnedNotebooksSelector);
+		await this.code.waitAndClick(`${NotebookView.pinnedNotebooksSelector} .actions a[title="Unpin Notebook"]`);
+	}
+
+	/**
+	 * When pinning a notebook, the pinned notebook view will show.
+	 */
+	async waitForPinnedNotebookView(): Promise<void> {
+		await this.code.waitForElement(NotebookView.pinnedNotebooksSelector);
 	}
 }

@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
+import { ICellModel, INotebookModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { Event } from 'vs/base/common/event';
 
 export type CellChangeEventType = 'hide' | 'insert' | 'active';
@@ -17,17 +17,21 @@ export interface INotebookView {
 	readonly guid: string;
 	readonly onDeleted: Event<INotebookView>;
 
+	isNew: boolean;
 	cells: Readonly<ICellModel[]>;
 	hiddenCells: Readonly<ICellModel[]>;
+	displayedCells: Readonly<ICellModel[]>;
 	name: string;
 	initialize(): void;
 	nameAvailable(name: string): boolean;
 	getCellMetadata(cell: ICellModel): INotebookViewCell;
 	hideCell(cell: ICellModel): void;
 	moveCell(cell: ICellModel, x: number, y: number): void;
+	compactCells();
 	resizeCell(cell: ICellModel, width: number, height: number): void;
 	getCell(guid: string): Readonly<ICellModel>;
 	insertCell(cell: ICellModel): void;
+	markAsViewed(): void;
 	save(): void;
 	delete(): void;
 }
@@ -57,4 +61,17 @@ export interface INotebookViewMetadata {
  */
 export interface INotebookViewCellMetadata {
 	views: INotebookViewCell[];
+}
+
+export interface INotebookViews {
+	onViewDeleted: Event<void>;
+	notebook: INotebookModel;
+
+	createNewView(name?: string): INotebookView;
+	removeView(guid: string): void;
+	generateDefaultViewName(): string;
+	getViews(): INotebookView[];
+	getActiveView(): INotebookView;
+	setActiveView(view: INotebookView): void;
+	viewNameIsTaken(name: string): boolean;
 }

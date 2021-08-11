@@ -34,13 +34,13 @@ import { INotificationService } from 'vs/platform/notification/common/notificati
 import { MergeGroupMode, IMergeGroupOptions, GroupsArrangement, IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
 import { addDisposableListener, EventType, EventHelper, Dimension, scheduleAtNextAnimationFrame, findParentWithClass, clearNode } from 'vs/base/browser/dom';
 import { localize } from 'vs/nls';
-import { IEditorGroupsAccessor, IEditorGroupView, EditorServiceImpl, IEditorGroupTitleHeight } from 'vs/workbench/browser/parts/editor/editor';
+import { IEditorGroupsAccessor, IEditorGroupView, IEditorGroupTitleHeight } from 'vs/workbench/browser/parts/editor/editor'; // {{SQL CARBON EDIT}} Remove unused
 import { CloseOneEditorAction, UnpinEditorAction } from 'vs/workbench/browser/parts/editor/editorActions';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { BreadcrumbsControl } from 'vs/workbench/browser/parts/editor/breadcrumbsControl';
 import { IFileService } from 'vs/platform/files/common/files';
 import { withNullAsUndefined, assertAllDefined, assertIsDefined } from 'vs/base/common/types';
-import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
+// import { IEditorService } from 'vs/workbench/services/editor/common/editorService'; {{SQL CARBON EDIT}} Remove unused
 import { basenameOrAuthority } from 'vs/base/common/resources';
 import { RunOnceScheduler } from 'vs/base/common/async';
 import { IPathService } from 'vs/workbench/services/path/common/pathService';
@@ -50,9 +50,8 @@ import { ColorScheme } from 'vs/platform/theme/common/theme';
 import { isSafari } from 'vs/base/browser/browser';
 import { equals } from 'vs/base/common/objects';
 
-// {{SQL CARBON EDIT}} -- Display the editor's tab color
-import { IQueryEditorConfiguration } from 'sql/platform/query/common/query';
-// {{SQL CARBON EDIT}} -- End
+import { IQueryEditorConfiguration } from 'sql/platform/query/common/query'; // {{SQL CARBON EDIT}}
+import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService'; // {{SQL CARBON EDIT}}
 
 interface IEditorInputLabel {
 	name?: string;
@@ -122,7 +121,7 @@ export class TabsTitleControl extends TitleControl {
 		@IThemeService themeService: IThemeService,
 		@IConfigurationService configurationService: IConfigurationService,
 		@IFileService fileService: IFileService,
-		@IEditorService private readonly editorService: EditorServiceImpl,
+		@IQueryEditorService private readonly queryEditorService: IQueryEditorService, // {{SQL CARBON EDIT}}
 		@IPathService private readonly pathService: IPathService,
 		@IEditorGroupsService private readonly editorGroupService: IEditorGroupsService
 	) {
@@ -220,7 +219,7 @@ export class TabsTitleControl extends TitleControl {
 
 		// New file when double clicking on tabs container (but not tabs)
 		[TouchEventType.Tap, EventType.DBLCLICK].forEach(eventType => {
-			this._register(addDisposableListener(tabsContainer, eventType, (e: MouseEvent | GestureEvent) => {
+			this._register(addDisposableListener(tabsContainer, eventType, async (e: MouseEvent | GestureEvent) => {
 				if (eventType === EventType.DBLCLICK) {
 					if (e.target !== tabsContainer) {
 						return; // ignore if target is not tabs container
@@ -236,13 +235,15 @@ export class TabsTitleControl extends TitleControl {
 				}
 
 				EventHelper.stop(e);
-				// {{SQL CARBON EDIT}} - use editor service to open editor, which will go through the override step and resolve to UntitledQueryEditorInput.
-				this.editorService.openEditor(
-					this.editorService.createEditorInput({ forceUntitled: true }),
+				// {{SQL CARBON EDIT}} - Create our own editor input so we open an untitled query editor
+				const queryEditorInput = await this.queryEditorService.newSqlEditor({ connectWithGlobal: true, open: false });
+				this.group.openEditor(
+					queryEditorInput,
 					{
 						pinned: true,			// untitled is always pinned
 						index: this.group.count // always at the end
-					}, this.group);
+					}
+				);
 			}));
 		});
 
