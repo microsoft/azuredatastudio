@@ -10,7 +10,7 @@ import { WelcomePageContribution, WelcomePageAction, WelcomeInputSerializer } fr
 import {
 	WelcomeInputSerializer as WelcomeInputSerializer2, DEFAULT_STARTUP_EDITOR_CONFIG,
 	WelcomePageContribution as WelcomePageContribution2, WelcomePageAction as WelcomePageAction2
-} from 'vs/workbench/contrib/welcome/page/browser/welcomePage'; // {{SQL CARBON EDIT}} use our welcome pag
+} from 'vs/workbench/contrib/welcome/page/browser/welcomePage'; // {{SQL CARBON EDIT}} use our welcome page
 import { IWorkbenchActionRegistry, Extensions as ActionExtensions, CATEGORIES } from 'vs/workbench/common/actions';
 import { SyncActionDescriptor, MenuRegistry, MenuId } from 'vs/platform/actions/common/actions';
 import { IConfigurationRegistry, Extensions as ConfigurationExtensions } from 'vs/platform/configuration/common/configurationRegistry';
