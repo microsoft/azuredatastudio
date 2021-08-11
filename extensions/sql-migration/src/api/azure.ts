@@ -45,7 +45,7 @@ export async function getLocations(account: azdata.Account, subscription: Subscr
 	});
 
 	// Only including the regions that have migration service deployed for public preview.
-	const publicPreviewInclude = [
+	const publicPreviewLocations = [
 		'eastus',
 		'canadaeast',
 		'canadacentral',
@@ -67,7 +67,7 @@ export async function getLocations(account: azdata.Account, subscription: Subscr
 		'northcentralus'
 	];
 
-	return filteredLocations.filter(v => publicPreviewInclude.includes(v.name));
+	return filteredLocations.filter(v => publicPreviewLocations.includes(v.name));
 }
 
 export type AzureProduct = azureResource.AzureGraphResource;
