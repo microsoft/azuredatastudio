@@ -335,6 +335,16 @@ configurationRegistry.registerConfiguration({
 			'default': 200,
 			'minimum': 10,
 			'description': localize('notebook.maxRichTextUndoHistory', "The maximum number of changes stored in the undo history for the notebook Rich Text editor.")
+		},
+		'notebook.useAbsoluteFilePaths': {
+			'type': 'boolean',
+			'default': false,
+			'description': localize('notebook.useAbsoluteFilePaths', "Use absolute file paths when linking to other notebooks.")
+		},
+		'notebook.enableIncrementalGridRendering': {
+			'type': 'boolean',
+			'default': false,
+			'description': localize('notebook.enableIncrementalGridRendering', "Enable incremental grid rendering for notebooks. This will improve the initial rendering time for large notebooks. There may be performance issues when interacting with the notebook while the rest of the grids are rendering.")
 		}
 	}
 });

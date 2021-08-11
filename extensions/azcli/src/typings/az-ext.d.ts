@@ -259,6 +259,7 @@ declare module 'az-ext' {
 
 	export interface AzOutput<R> {
 		stdout: R,
+		stderr: string[],
 		code?: number
 	}
 
@@ -269,7 +270,6 @@ declare module 'az-ext' {
 	export interface IAzApi {
 		arcdata: {
 			dc: {
-				create(namespace: string, name: string, connectivityMode: string, resourceGroup: string, location: string, subscription: string, profileName?: string, storageClass?: string, additionalEnvVars?: AdditionalEnvVars): Promise<AzOutput<void>>,
 				endpoint: {
 					list(namespace?: string, additionalEnvVars?: AdditionalEnvVars): Promise<AzOutput<DcEndpointListResult[]>>
 				},
@@ -327,11 +327,17 @@ declare module 'az-ext' {
 		},
 		getPath(): Promise<string>,
 		/**
-		 * The semVersion corresponding to this installation of az. version() method should have been run
+		 * The semVersion corresponding to this installation of the Azure CLI. version() method should have been run
 		 * before fetching this value to ensure that correct value is returned. This is almost always correct unless
 		 * Az has gotten reinstalled in the background after this IAzApi object was constructed.
 		 */
-		getSemVersion(): Promise<SemVer>,
+		getSemVersionAz(): Promise<SemVer>,
+		/**
+		 * The semVersion corresponding to this installation of the Azure CLI arcdata extension. version() method should
+		 * have been run before fetching this value to ensure that correct value is returned. This is almost always
+		 * correct unless az arcdata has gotten reinstalled in the background after this IAzApi object was constructed.
+		 */
+		getSemVersionArc(): Promise<SemVer>,
 		version(): Promise<AzOutput<string>>
 	}
 

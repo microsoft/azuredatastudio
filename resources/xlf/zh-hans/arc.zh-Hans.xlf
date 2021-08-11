@@ -136,6 +136,10 @@
         <source xml:lang="en">Location</source>
         <target state="translated">位置</target>
       </trans-unit>
+      <trans-unit id="arc.data.controller.infrastructure">
+        <source xml:lang="en">Infrastructure</source>
+        <target state="translated">基础结构</target>
+      </trans-unit>
       <trans-unit id="arc.data.controller.admin.account.title">
         <source xml:lang="en">Administrator account</source>
         <target state="translated">管理员帐户</target>
@@ -235,6 +239,10 @@
       <trans-unit id="arc.data.controller.summary.data.controller.namespace">
         <source xml:lang="en">Data controller namespace</source>
         <target state="translated">数据控制器命名空间</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.summary.data.controller.infrastructure">
+        <source xml:lang="en">Data controller infrastructure</source>
+        <target state="translated">数据控制器基础结构</target>
       </trans-unit>
       <trans-unit id="arc.data.controller.summary.controller">
         <source xml:lang="en">Controller</source>
@@ -605,8 +613,8 @@
         <target state="translated">内存限制必须大于或等于请求内存</target>
       </trans-unit>
       <trans-unit id="arc.agreement.sql.help.text">
-        <source xml:lang="en">Azure Arc enabled Managed Instance provides SQL Server access and feature compatibility that can be deployed on the infrastructure of your choice. While this service is in preview, it has some feature limitations compared to SQL Managed Instance on Azure. {0}</source>
-        <target state="translated">启用 Azure Arc 的托管实例提供可在所选基础结构上部署的 SQL Server 访问和功能兼容性。尽管此服务处于预览状态，但与 Azure 上的 SQL 托管实例相比，它具有一些功能限制。{0}</target>
+        <source xml:lang="en">Azure Arc enabled Managed Instance provides SQL Server access and feature compatibility that can be deployed on the infrastructure of your choice. {0}</source>
+        <target state="translated">启用了 Azure Arc 的托管实例提供了 SQL Server 访问和功能兼容性，可以在所选的基础结构上部署。{0}</target>
       </trans-unit>
       <trans-unit id="arc.agreement.sql.help.text.learn.more">
         <source xml:lang="en">Learn more</source>
@@ -748,13 +756,17 @@
         <source xml:lang="en">Reset Password</source>
         <target state="translated">重置密码</target>
       </trans-unit>
-      <trans-unit id="arc.addExtensions">
-        <source xml:lang="en">Add extensions</source>
-        <target state="translated">添加扩展</target>
+      <trans-unit id="arc.loadExtensions">
+        <source xml:lang="en">Load extensions</source>
+        <target state="translated">加载扩展</target>
       </trans-unit>
-      <trans-unit id="arc.dropExtensions">
-        <source xml:lang="en">Drop extensions</source>
-        <target state="translated">放置扩展</target>
+      <trans-unit id="arc.unloadExtensions">
+        <source xml:lang="en">Unload extensions</source>
+        <target state="translated">上传扩展</target>
+      </trans-unit>
+      <trans-unit id="arc.noExtensions">
+        <source xml:lang="en">No extensions listed in configuration.</source>
+        <target state="translated">配置中未列出任何扩展。</target>
       </trans-unit>
       <trans-unit id="arc.openInAzurePortal">
         <source xml:lang="en">Open in Azure Portal</source>
@@ -820,6 +832,14 @@
         <source xml:lang="en">Some extensions must be loaded into PostgreSQL at startup time before they can be used. These preloaded extensions can be viewed and edited  below.</source>
         <target state="translated">启动时必须将某些扩展加载到 PostgreSQL 中，然后才能使用它们。可在下面查看和编辑这些预加载的扩展。</target>
       </trans-unit>
+      <trans-unit id="arc.extensionsAddFunction">
+        <source xml:lang="en">Some extensions must be loaded into PostgreSQL at startup time before they can be used. To edit, type in comma separated list of valid extensions: ({0}).</source>
+        <target state="translated">某些扩展必须在启动时加载到 PostgreSQL 中，然后才能使用它们。若要编辑，请键入有效扩展列表，以逗号分隔: ({0})。</target>
+      </trans-unit>
+      <trans-unit id="arc.extensionsAddErrorrMessage">
+        <source xml:lang="en">Value should be either of the following: ({0}).</source>
+        <target state="translated">值应为以下值之一: ({0})。</target>
+      </trans-unit>
       <trans-unit id="arc.extensionsLearnMore">
         <source xml:lang="en">Learn more about PostgreSQL extensions.</source>
         <target state="translated">了解 PostgreSQL 扩展的详细信息。</target>
@@ -867,6 +887,10 @@
       <trans-unit id="arc.serviceEndpoints">
         <source xml:lang="en">Service endpoints</source>
         <target state="translated">服务终结点</target>
+      </trans-unit>
+      <trans-unit id="arc.serviceEndpointsTable">
+        <source xml:lang="en">Service endpoints table</source>
+        <target state="translated">服务终结点表</target>
       </trans-unit>
       <trans-unit id="arc.databases">
         <source xml:lang="en">Databases</source>
@@ -1388,6 +1412,14 @@
         <source xml:lang="en">Select a pod in the dropdown below for detailed health information.</source>
         <target state="translated">请在下面的下拉列表中选择一个 Pod，以获取详细的运行状况信息。</target>
       </trans-unit>
+      <trans-unit id="arc.podsUsedDescriptionAria">
+        <source xml:lang="en">Select a pod in the dropdown below for detailed health information</source>
+        <target state="translated">请在下面的下拉列表中选择一个 Pod，以获取详细的运行状况信息</target>
+      </trans-unit>
+      <trans-unit id="arc.podConditionsTable">
+        <source xml:lang="en">Pod conditions table</source>
+        <target state="translated">Pod 条件表</target>
+      </trans-unit>
       <trans-unit id="arc.connectToPostgresDescription">
         <source xml:lang="en">A connection to the server is required to show and set database engine settings, which will require the PostgreSQL Extension to be installed.</source>
         <target state="translated">要显示和设置数据库引擎设置，需要连接到服务器，这将需要安装 PostgreSQL 扩展。</target>
@@ -1495,6 +1527,11 @@
       <trans-unit id="arc.updated">
         <source xml:lang="en">Updated {0}</source>
         <target state="translated">已更新的 {0}</target>
+      </trans-unit>
+      <trans-unit id="arc.connectionString">
+        <source xml:lang="en">Connection string for {0}</source>
+        <note>{0} is the name of the type of connection string (e.g. Java)</note>
+        <target state="translated">{0} 的连接字符串</target>
       </trans-unit>
       <trans-unit id="arc.copyConnectionStringToClipboard">
         <source xml:lang="en">Copy {0} Connection String to clipboard</source>

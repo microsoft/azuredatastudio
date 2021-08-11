@@ -136,6 +136,10 @@
         <source xml:lang="en">Location</source>
         <target state="translated">Percorso</target>
       </trans-unit>
+      <trans-unit id="arc.data.controller.infrastructure">
+        <source xml:lang="en">Infrastructure</source>
+        <target state="translated">Infrastruttura</target>
+      </trans-unit>
       <trans-unit id="arc.data.controller.admin.account.title">
         <source xml:lang="en">Administrator account</source>
         <target state="translated">Account amministratore</target>
@@ -235,6 +239,10 @@
       <trans-unit id="arc.data.controller.summary.data.controller.namespace">
         <source xml:lang="en">Data controller namespace</source>
         <target state="translated">Spazio dei nomi del controller dei dati</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.summary.data.controller.infrastructure">
+        <source xml:lang="en">Data controller infrastructure</source>
+        <target state="translated">Infrastruttura del titolare del trattamento</target>
       </trans-unit>
       <trans-unit id="arc.data.controller.summary.controller">
         <source xml:lang="en">Controller</source>
@@ -605,8 +613,8 @@
         <target state="translated">Il limite di memoria deve essere maggiore o uguale alla memoria richiesta</target>
       </trans-unit>
       <trans-unit id="arc.agreement.sql.help.text">
-        <source xml:lang="en">Azure Arc enabled Managed Instance provides SQL Server access and feature compatibility that can be deployed on the infrastructure of your choice. While this service is in preview, it has some feature limitations compared to SQL Managed Instance on Azure. {0}</source>
-        <target state="translated">L'istanza gestita abilitata per Azure Arc fornisce l'accesso a SQL Server e la compatibilità delle funzionalità che possono essere distribuite nell'infrastruttura scelta. Sebbene questo servizio sia in anteprima, presenta alcune limitazioni di funzionalità rispetto all'Istanza gestita di database SQL di Azure. {0}</target>
+        <source xml:lang="en">Azure Arc enabled Managed Instance provides SQL Server access and feature compatibility that can be deployed on the infrastructure of your choice. {0}</source>
+        <target state="translated">L'Istanza gestita con abilitazione di Azure Arc fornisce l'accesso a SQL Server e la compatibilità delle funzionalità che possono essere distribuite nell'infrastruttura desiderata. {0}</target>
       </trans-unit>
       <trans-unit id="arc.agreement.sql.help.text.learn.more">
         <source xml:lang="en">Learn more</source>
@@ -642,7 +650,7 @@
       </trans-unit>
       <trans-unit id="arc.pgSqlType">
         <source xml:lang="en">PostgreSQL Hyperscale - Azure Arc</source>
-        <target state="translated">PostgreSQL Hyperscale – Azure Arc</target>
+        <target state="translated">PostgreSQL Hyperscale - Azure Arc</target>
       </trans-unit>
       <trans-unit id="arc.miaaType">
         <source xml:lang="en">SQL managed instance - Azure Arc</source>
@@ -748,13 +756,17 @@
         <source xml:lang="en">Reset Password</source>
         <target state="translated">Reimposta password</target>
       </trans-unit>
-      <trans-unit id="arc.addExtensions">
-        <source xml:lang="en">Add extensions</source>
-        <target state="translated">Aggiungi estensioni</target>
+      <trans-unit id="arc.loadExtensions">
+        <source xml:lang="en">Load extensions</source>
+        <target state="translated">Carica estensioni</target>
       </trans-unit>
-      <trans-unit id="arc.dropExtensions">
-        <source xml:lang="en">Drop extensions</source>
-        <target state="translated">Elimina estensioni</target>
+      <trans-unit id="arc.unloadExtensions">
+        <source xml:lang="en">Unload extensions</source>
+        <target state="translated">Scarica estensioni</target>
+      </trans-unit>
+      <trans-unit id="arc.noExtensions">
+        <source xml:lang="en">No extensions listed in configuration.</source>
+        <target state="translated">Nessuna estensione elencata nella configurazione.</target>
       </trans-unit>
       <trans-unit id="arc.openInAzurePortal">
         <source xml:lang="en">Open in Azure Portal</source>
@@ -820,6 +832,14 @@
         <source xml:lang="en">Some extensions must be loaded into PostgreSQL at startup time before they can be used. These preloaded extensions can be viewed and edited  below.</source>
         <target state="translated">Alcune estensioni devono essere caricate in PostgreSQL all'avvio prima di poter essere usate. È possibile visualizzare e modificare queste estensioni precaricate di seguito.</target>
       </trans-unit>
+      <trans-unit id="arc.extensionsAddFunction">
+        <source xml:lang="en">Some extensions must be loaded into PostgreSQL at startup time before they can be used. To edit, type in comma separated list of valid extensions: ({0}).</source>
+        <target state="translated">Alcune estensioni devono essere caricate in PostgreSQL all'ora di avvio prima di poter essere usate. Per modificare, digitare un elenco delimitato da virgole di estensioni valide: ({0}).</target>
+      </trans-unit>
+      <trans-unit id="arc.extensionsAddErrorrMessage">
+        <source xml:lang="en">Value should be either of the following: ({0}).</source>
+        <target state="translated">Il valore dovrebbe essere uno dei seguenti ({0}).</target>
+      </trans-unit>
       <trans-unit id="arc.extensionsLearnMore">
         <source xml:lang="en">Learn more about PostgreSQL extensions.</source>
         <target state="translated">Altre informazioni sulle estensioni PostgreSQL.</target>
@@ -867,6 +887,10 @@
       <trans-unit id="arc.serviceEndpoints">
         <source xml:lang="en">Service endpoints</source>
         <target state="translated">Endpoint servizio</target>
+      </trans-unit>
+      <trans-unit id="arc.serviceEndpointsTable">
+        <source xml:lang="en">Service endpoints table</source>
+        <target state="translated">Griglia degli endpoint servizio</target>
       </trans-unit>
       <trans-unit id="arc.databases">
         <source xml:lang="en">Databases</source>
@@ -1202,7 +1226,7 @@
       </trans-unit>
       <trans-unit id="arc.learnAboutPostgresClients">
         <source xml:lang="en">Learn more about Azure PostgreSQL Hyperscale client interfaces</source>
-        <target state="translated">Altre informazioni sulle interfacce client Di Azure PostgreSQL Hyperscale</target>
+        <target state="translated">Altre informazioni sulle interfacce client di Azure PostgreSQL Hyperscale</target>
       </trans-unit>
       <trans-unit id="arc.coordinatorNodeParametersDescription">
         <source xml:lang="en"> These server parameters of the Coordinator node can be set to custom (non-default) values. Search to find parameters.</source>
@@ -1388,6 +1412,14 @@
         <source xml:lang="en">Select a pod in the dropdown below for detailed health information.</source>
         <target state="translated">Selezionare un pod nell'elenco a discesa seguente per informazioni dettagliate sull'integrità.</target>
       </trans-unit>
+      <trans-unit id="arc.podsUsedDescriptionAria">
+        <source xml:lang="en">Select a pod in the dropdown below for detailed health information</source>
+        <target state="translated">Selezionare un pod nell'elenco a discesa seguente per informazioni dettagliate sull'integrità</target>
+      </trans-unit>
+      <trans-unit id="arc.podConditionsTable">
+        <source xml:lang="en">Pod conditions table</source>
+        <target state="translated">Tabella condizioni Pod</target>
+      </trans-unit>
       <trans-unit id="arc.connectToPostgresDescription">
         <source xml:lang="en">A connection to the server is required to show and set database engine settings, which will require the PostgreSQL Extension to be installed.</source>
         <target state="translated">Per visualizzare e impostare le impostazioni del motore di database, è necessaria una connessione al server che richiede l'installazione dell'estensione PostgreSQL.</target>
@@ -1406,7 +1438,7 @@
       </trans-unit>
       <trans-unit id="arc.noPodIssuesDetected">
         <source xml:lang="en">There aren’t any known issues affecting this PostgreSQL Hyperscale instance.</source>
-        <target state="translated">Non ci sono ’ problemi noti che interessano questa istanza di PostgreSQL Hyperscale.</target>
+        <target state="translated">Non ci sono problemi noti che interessano questa istanza di PostgreSQL Hyperscale.</target>
       </trans-unit>
       <trans-unit id="arc.podIssuesDetected">
         <source xml:lang="en">The pods listed below are experiencing issues that may affect performance or availability.</source>
@@ -1496,6 +1528,11 @@
         <source xml:lang="en">Updated {0}</source>
         <target state="translated">È stato completato l'aggiornamento di {0}</target>
       </trans-unit>
+      <trans-unit id="arc.connectionString">
+        <source xml:lang="en">Connection string for {0}</source>
+        <note>{0} is the name of the type of connection string (e.g. Java)</note>
+        <target state="translated">Stringa di connessione per {0}</target>
+      </trans-unit>
       <trans-unit id="arc.copyConnectionStringToClipboard">
         <source xml:lang="en">Copy {0} Connection String to clipboard</source>
         <note>{0} is the name of the type of connection string (e.g. Java)</note>
@@ -1564,7 +1601,7 @@
       </trans-unit>
       <trans-unit id="arc.connectToPGSqlFailed">
         <source xml:lang="en">Could not connect to PostgreSQL Hyperscale - Azure Arc Instance {0}. {1}</source>
-        <target state="translated">Non è stato possibile connettersi a PostgreSQL Hyperscale - Istanza di Azure Arc {0}. {1}</target>
+        <target state="translated">Non è stato possibile connettersi all’istanza di PostgreSQL Hyperscale - Azure Arc {0}. {1}</target>
       </trans-unit>
       <trans-unit id="arc.missingExtension">
         <source xml:lang="en">The {0} extension is required to view engine settings. Do you wish to install it now?</source>

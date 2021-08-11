@@ -6,23 +6,17 @@
 import * as should from 'should';
 import * as sinon from 'sinon';
 import * as childProcess from '../common/childProcess';
-import * as azdata from '../az';
+import * as az from '../az';
 
 describe('az', function () {
 	afterEach(function (): void {
 		sinon.restore();
 	});
 	describe('azTool', function (): void {
-		const azTool = new azdata.AzTool('C:/Program Files (x86)/Microsoft SDKs/Azure/CLI2/wbin/az.cmd', '2.26.0');
+		const azTool = new az.AzTool('my path', '2.26.0', '1.0.0');
 		let executeCommandStub: sinon.SinonStub;
-		const namespace = 'arc4';
-		const name = 'cy-dc-4';
-		const connectivityMode = 'direct';
-		const resourceGroup = 'canye-rg-2';
-		const location = 'eastus2euap';
-		const subscription = 'a5082b19-8a6e-4bc5-8fdd-8ef39dfebc39';
-		const profileName = 'myProfileName';
-		const storageClass = 'local-storage';
+		const namespace = 'arc';
+		const name = 'arcdc';
 
 		beforeEach(function (): void {
 			executeCommandStub = sinon.stub(childProcess, 'executeCommand').resolves({ stdout: '{}', stderr: '' });
@@ -30,19 +24,6 @@ describe('az', function () {
 
 		describe('arcdata', function (): void {
 			describe('dc', function (): void {
-				it('create', async function (): Promise<void> {
-					await azTool.arcdata.dc.create(namespace, name, connectivityMode, resourceGroup, location, subscription, profileName, storageClass);
-					verifyExecuteCommandCalledWithArgs([
-						'arcdata', 'dc', 'create',
-						namespace,
-						name,
-						connectivityMode,
-						resourceGroup,
-						location,
-						subscription,
-						profileName,
-						storageClass]);
-				});
 				describe('endpoint', async function (): Promise<void> {
 					it('list', async function (): Promise<void> {
 						await azTool.arcdata.dc.endpoint.list(namespace);
@@ -167,5 +148,4 @@ describe('az', function () {
 			args.forEach(arg => should(commandArgs).not.containEql(arg));
 		}
 	});
-
 });
