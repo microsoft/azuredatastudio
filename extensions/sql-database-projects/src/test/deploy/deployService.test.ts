@@ -92,21 +92,14 @@ describe('deploy service', function (): void {
 
 	it('Should retry connecting to the server', async function (): Promise<void> {
 		const testContext = createContext();
-		const deployProfile: IDeployProfile = {
-			appSettingType: AppSettingType.AzureFunction,
-			appSettingFile: '',
-			deploySettings: undefined,
-			envVariableName: '',
-			localDbSetting: {
-				dbName: 'test',
-				password: 'PLACEHOLDER',
-				port: 1433,
-				serverName: 'localhost',
-				userName: 'sa'
-			}
+		const localDbSettings = {
+			dbName: 'test',
+			password: 'PLACEHOLDER',
+			port: 1433,
+			serverName: 'localhost',
+			userName: 'sa'
 		};
-		const projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
-		const project1 = await Project.openProject(vscode.Uri.file(projFilePath).fsPath);
+
 		const deployService = new DeployService(testContext.outputChannel);
 		let connectionStub = sandbox.stub(azdata.connection, 'connect');
 		connectionStub.onFirstCall().returns(Promise.resolve(mockFailedConnectionResult));
@@ -114,7 +107,7 @@ describe('deploy service', function (): void {
 		sandbox.stub(azdata.connection, 'getUriForConnection').returns(Promise.resolve('connection'));
 		sandbox.stub(azdata.tasks, 'startBackgroundOperation').callThrough();
 		sandbox.stub(childProcess, 'exec').yields(undefined, 'id');
-		let connection = await deployService.deploy(deployProfile, project1);
+		let connection = await deployService.getConnection(localDbSettings, false, 'master', 2);
 		should(connection).equals('connection');
 	});
 

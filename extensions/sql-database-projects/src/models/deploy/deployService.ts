@@ -232,7 +232,7 @@ export class DeployService {
 		return connectionResult ? connectionResult.connectionId : <string>connection;
 	}
 
-	public async getConnection(profile: ILocalDbSetting, savePassword: boolean, database: string): Promise<string | undefined> {
+	public async getConnection(profile: ILocalDbSetting, savePassword: boolean, database: string, timeoutInSeconds: number = 5): Promise<string | undefined> {
 		const getAzdataApi = await utils.getAzdataApi();
 		let connection = await this.retry(
 			constants.connectingToSqlServerOnDockerMessage,
@@ -241,7 +241,7 @@ export class DeployService {
 			},
 			this.validateConnection,
 			this.formatConnectionResult,
-			5, 5);
+			5, timeoutInSeconds);
 
 		if (connection) {
 			const connectionResult = <ConnectionResult>connection;
