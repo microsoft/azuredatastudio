@@ -1779,8 +1779,8 @@
 					},
 					"versions": [
 						{
-							"version": "1.31.0",
-							"lastUpdated": "7/19/2021",
+							"version": "1.32.0",
+							"lastUpdated": "8/11/2021",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
@@ -1816,7 +1816,7 @@
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
-									"value": ">=1.31.0"
+									"value": ">=1.32.0"
 								},
 								{
 									"key": "Microsoft.VisualStudio.Services.Links.Source",
@@ -1844,8 +1844,8 @@
 					},
 					"versions": [
 						{
-							"version": "1.31.0",
-							"lastUpdated": "7/19/2021",
+							"version": "1.32.0",
+							"lastUpdated": "8/11/2021",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
@@ -1881,7 +1881,7 @@
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
-									"value": ">=1.31.0"
+									"value": ">=1.32.0"
 								},
 								{
 									"key": "Microsoft.VisualStudio.Services.Links.Source",
@@ -1909,8 +1909,8 @@
 					},
 					"versions": [
 						{
-							"version": "1.31.0",
-							"lastUpdated": "7/19/2021",
+							"version": "1.32.0",
+							"lastUpdated": "8/11/2021",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
@@ -1946,7 +1946,7 @@
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
-									"value": ">=1.31.0"
+									"value": ">=1.32.0"
 								},
 								{
 									"key": "Microsoft.VisualStudio.Services.Links.Source",
@@ -1974,8 +1974,8 @@
 					},
 					"versions": [
 						{
-							"version": "1.31.0",
-							"lastUpdated": "7/19/2021",
+							"version": "1.32.0",
+							"lastUpdated": "8/11/2021",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
@@ -2011,7 +2011,7 @@
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
-									"value": ">=1.31.0"
+									"value": ">=1.32.0"
 								},
 								{
 									"key": "Microsoft.VisualStudio.Services.Links.Source",
@@ -2039,8 +2039,8 @@
 					},
 					"versions": [
 						{
-							"version": "1.31.0",
-							"lastUpdated": "7/19/2021",
+							"version": "1.32.0",
+							"lastUpdated": "8/11/2021",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
@@ -2076,7 +2076,7 @@
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
-									"value": ">=1.31.0"
+									"value": ">=1.32.0"
 								},
 								{
 									"key": "Microsoft.VisualStudio.Services.Links.Source",
@@ -2104,8 +2104,8 @@
 					},
 					"versions": [
 						{
-							"version": "1.31.0",
-							"lastUpdated": "7/19/2021",
+							"version": "1.32.0",
+							"lastUpdated": "8/11/2021",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
@@ -2141,7 +2141,7 @@
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
-									"value": ">=1.31.0"
+									"value": ">=1.32.0"
 								},
 								{
 									"key": "Microsoft.VisualStudio.Services.Links.Source",
@@ -2169,8 +2169,8 @@
 					},
 					"versions": [
 						{
-							"version": "1.31.0",
-							"lastUpdated": "7/19/2021",
+							"version": "1.32.0",
+							"lastUpdated": "8/11/2021",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
@@ -2206,7 +2206,7 @@
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
-									"value": ">=1.31.0"
+									"value": ">=1.32.0"
 								},
 								{
 									"key": "Microsoft.VisualStudio.Services.Links.Source",
@@ -2234,8 +2234,8 @@
 					},
 					"versions": [
 						{
-							"version": "1.31.0",
-							"lastUpdated": "7/19/2021",
+							"version": "1.32.0",
+							"lastUpdated": "8/11/2021",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
@@ -2271,7 +2271,7 @@
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
-									"value": ">=1.31.0"
+									"value": ">=1.32.0"
 								},
 								{
 									"key": "Microsoft.VisualStudio.Services.Links.Source",
@@ -2299,8 +2299,8 @@
 					},
 					"versions": [
 						{
-							"version": "1.31.0",
-							"lastUpdated": "7/19/2021",
+							"version": "1.32.0",
+							"lastUpdated": "8/11/2021",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
@@ -2336,7 +2336,7 @@
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
-									"value": ">=1.31.0"
+									"value": ">=1.32.0"
 								},
 								{
 									"key": "Microsoft.VisualStudio.Services.Links.Source",
@@ -2364,8 +2364,8 @@
 					},
 					"versions": [
 						{
-							"version": "1.31.0",
-							"lastUpdated": "7/19/2021",
+							"version": "1.32.0",
+							"lastUpdated": "8/11/2021",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
@@ -2401,7 +2401,7 @@
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
-									"value": ">=1.31.0"
+									"value": ">=1.32.0"
 								},
 								{
 									"key": "Microsoft.VisualStudio.Services.Links.Source",
