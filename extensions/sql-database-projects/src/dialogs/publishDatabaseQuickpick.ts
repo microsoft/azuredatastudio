@@ -187,14 +187,6 @@ export async function getPublishDatabaseSettings(project: Project, existingConne
 		}
 	}
 
-	// 5. Select action to take
-	const action = await vscode.window.showQuickPick(
-		[constants.generateScriptButtonText, constants.publish],
-		{ title: constants.chooseAction, ignoreFocusOut: true });
-	if (!action) {
-		return;
-	}
-
 	// 6. Generate script/publish
 	let settings: IDeploySettings = {
 		databaseName: databaseName,

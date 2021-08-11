@@ -234,9 +234,14 @@ export class DeployService {
 
 	public async getConnection(profile: ILocalDbSetting, savePassword: boolean, database: string): Promise<string | undefined> {
 		const getAzdataApi = await utils.getAzdataApi();
-		let connection = await this.retry(constants.connectingToSqlServerOnDockerMessage, async () => {
-			return await this.connectToDatabase(profile, savePassword, database);
-		}, this.validateConnection, this.formatConnectionResult);
+		let connection = await this.retry(
+			constants.connectingToSqlServerOnDockerMessage,
+			async () => {
+				return await this.connectToDatabase(profile, savePassword, database);
+			},
+			this.validateConnection,
+			this.formatConnectionResult,
+			5, 5);
 
 		if (connection) {
 			const connectionResult = <ConnectionResult>connection;
@@ -341,8 +346,6 @@ COPY ${constants.mssqlFolderName}/${constants.commandsFolderName}/ /opt/commands
 RUN ["/bin/bash", "/opt/commands/start.sh"]
 `);
 	}
-
-
 
 	private async createFile(filePath: string, content: string): Promise<void> {
 		this.logToOutput(`Creating file ${filePath}, content:${content}`);
