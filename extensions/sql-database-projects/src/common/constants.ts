@@ -134,7 +134,7 @@ export const enterPortNumber = localize('enterPortNumber', "Enter port number or
 export const enterConnectionStringEnvName = localize('enterConnectionStringEnvName', "Enter connection string environment variable name");
 export const enterConnectionStringTemplate = localize('enterConnectionStringTemplate', "Enter connection string template");
 export const enterPassword = localize('enterPassword', "Enter password or press enter to use the generated password");
-export const portMustNotBeNumber = localize('portMustNotBeNumber', "Port must be number");
+export const portMustNotBeNumber = localize('portMustNotBeNumber', "Port must a be number");
 export const valueCannotBeEmpty = localize('valueCannotBeEmpty', "Value cannot be empty");
 export const dockerImageLabelPrefix = 'source=sqldbproject';
 export const dockerImageNamePrefix = 'sqldbproject';
@@ -146,12 +146,10 @@ export const dockerFileName = 'Dockerfile';
 export const startCommandName = 'start.sh';
 export const defaultPortNumber = '1433';
 export const defaultConnectionStringEnvVarName = 'SQLConnectionString';
-export const defaultConnectionStringTemplate = 'Data Source={#SERVER#},{#PORT#};Initial Catalog={#DATABASE#};User id={#USER#};Password={#SA_PASSWORD#};';
+export const defaultConnectionStringTemplate = 'Data Source=@@SERVER@@,@@PORT@@;Initial Catalog=@@DATABASE@@;User id=@@USER@@;Password=@@SA_PASSWORD@@;';
 export const azureFunctionLocalSettingsFileName = 'local.settings.json';
-export const msgYes = localize('msgYes', "Yes");
-export const msgNo = localize('msgNo', "No");
 export const enterConnStringTemplateDescription = localize('enterConnStringTemplateDescription', "Enter a template for SQL connection string");
-export const appSettingPrompt = localize('appSettingPrompt', "Would you like to update Azure Function local.settings.json with new connection string?");
+export const appSettingPrompt = localize('appSettingPrompt', "Would you like to update Azure Function local.settings.json with the new connection string?");
 export const enterConnectionStringEnvNameDescription = localize('enterConnectionStringEnvNameDescription', "Enter environment variable for SQL connection string");
 export const deployDbTaskName = localize('deployDbTaskName', "Deploying SQL Db Project Locally");
 export const deployProjectSucceed = localize('deployProjectSucceed', "Database project deployed successfully");
@@ -168,8 +166,8 @@ export function connectionFailedError(error: string) { return localize('connecti
 export function dockerContainerCreatedMessage(id: string) { return localize('dockerContainerCreatedMessage', "Docker created id: '{0}'", id); }
 export function dockerLogMessage(log: string) { return localize('dockerLogMessage', "Docker logs: '{0}'", log); }
 export function retryWaitMessage(numberOfSeconds: number, name: string) { return localize('retryWaitMessage', "Waiting for {0} seconds before another attempt for operation '{1}'", numberOfSeconds, name); }
-export function retryRunMessage(attemptNumber: number, numberOfAttempts: number, name: string) { return localize('retryRunMessage', "Running operation '{2}' Attempt {0} from {1}", attemptNumber, numberOfAttempts, name); }
-export function retrySucceedMessage(name: string, result: string) { return localize('retrySucceedMessage', "Operation '{0}' completed Successfully. Result: {1}", name, result); }
+export function retryRunMessage(attemptNumber: number, numberOfAttempts: number, name: string) { return localize('retryRunMessage', "Running operation '{2}' Attempt {0} of {1}", attemptNumber, numberOfAttempts, name); }
+export function retrySucceedMessage(name: string, result: string) { return localize('retrySucceedMessage', "Operation '{0}' completed successfully. Result: {1}", name, result); }
 export function retryFailedMessage(name: string, result: string, error: string) { return localize('retryFailedMessage', "Operation '{0}' failed. Re-trying... Current Result: {1}. Error: '{2}'", name, result, error); }
 export function retryMessage(name: string, error: string) { return localize('retryMessage', "Operation '{0}' failed. Re-trying... Error: '{1}'", name, error); }
 

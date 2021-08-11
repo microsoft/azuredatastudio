@@ -12,7 +12,7 @@ import * as semver from 'semver';
 import { isNullOrUndefined } from 'util';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
-import { DoNotAskAgain, InstallNetCore, NetCoreInstallationConfirmation, NetCoreSupportedVersionInstallationConfirmation, projectsOutputChannel, UpdateNetCoreLocation } from '../common/constants';
+import { DoNotAskAgain, InstallNetCore, NetCoreInstallationConfirmation, NetCoreSupportedVersionInstallationConfirmation, UpdateNetCoreLocation } from '../common/constants';
 import * as utils from '../common/utils';
 const localize = nls.loadMessageBundle();
 
@@ -41,7 +41,6 @@ export interface DotNetCommandOptions {
 }
 export class NetCoreTool {
 
-	private _outputChannel: vscode.OutputChannel;
 	private osPlatform: string = os.platform();
 	private netCoreSdkInstalledVersion: string | undefined;
 	private netCoreInstallState: netCoreInstallState = netCoreInstallState.netCoreVersionSupported;
@@ -63,8 +62,7 @@ export class NetCoreTool {
 	}
 
 
-	constructor(outputChannel?: vscode.OutputChannel) {
-		this._outputChannel = outputChannel ?? vscode.window.createOutputChannel(projectsOutputChannel);
+	constructor(private _outputChannel: vscode.OutputChannel) {
 	}
 
 	public async showInstallDialog(): Promise<void> {

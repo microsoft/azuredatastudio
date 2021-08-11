@@ -97,8 +97,8 @@ export async function launchDeployDatabaseQuickpick(project: Project): Promise<I
 		let options = {
 			placeHolder: constants.appSettingPrompt
 		};
-		choices[constants.msgYes] = true;
-		choices[constants.msgNo] = false;
+		choices[constants.yesString] = true;
+		choices[constants.noString] = false;
 		let result = await vscode.window.showQuickPick(Object.keys(choices).map(c => {
 			return {
 				label: c

@@ -14,6 +14,7 @@ import * as childProcess from 'child_process';
 import * as vscode from 'vscode';
 import * as os from 'os';
 import { ConnectionResult } from 'azdata';
+import * as templates from '../../templates/templates';
 
 interface ValidationResult {
 	errorMessage: string;
@@ -59,12 +60,15 @@ export class DeployService {
 					//
 					const runtime = this.findAppRuntime(profile, content);
 					let connectionStringTemplate = this.createConnectionStringTemplate(runtime);
-					connectionString = connectionStringTemplate?.
-						replace('{#SERVER#}', profile?.localDbSetting?.serverName || '').
-						replace('{#PORT#}', profile?.localDbSetting?.port?.toString() || '').
-						replace('{#USER#}', profile?.localDbSetting?.userName || '').
-						replace('{#SA_PASSWORD#}', profile?.localDbSetting?.password || '').
-						replace('{#DATABASE#}', profile?.localDbSetting?.dbName || '');
+					const macroDict: Record<string, string> = {
+						'SERVER': profile?.localDbSetting?.serverName || '',
+						'PORT': profile?.localDbSetting?.port?.toString() || '',
+						'USER': profile?.localDbSetting?.userName || '',
+						'SA_PASSWORD': profile?.localDbSetting?.password || '',
+						'DATABASE': profile?.localDbSetting?.dbName || '',
+					};
+
+					connectionString = templates.macroExpansion(connectionStringTemplate, macroDict);
 				} else if (profile.deploySettings?.connectionUri) {
 					connectionString = await this.getConnectionString(profile.deploySettings?.connectionUri);
 				}
@@ -82,61 +86,61 @@ export class DeployService {
 	}
 
 	public async deploy(profile: IDeployProfile, project: Project): Promise<string | undefined> {
-
 		return await this.executeTask(constants.deployDbTaskName, async () => {
-			if (profile.localDbSetting) {
-				const projectName = project.projectFileName;
-				const imageLabel = `${constants.dockerImageLabelPrefix}_${projectName}`;
-				const imageName = `${constants.dockerImageNamePrefix}-${projectName}-${UUID.generateUuid().toLowerCase()}`;
-				const root = project.projectFolderPath;
-				const mssqlFolderPath = path.join(root, constants.mssqlFolderName);
-				const commandsFolderPath = path.join(mssqlFolderPath, constants.commandsFolderName);
-				const dockerFilePath = path.join(mssqlFolderPath, constants.dockerFileName);
-				const startFilePath = path.join(commandsFolderPath, constants.startCommandName);
-
-				this.logToOutput(constants.cleaningDockerImagesMessage);
-				// Clean up existing docker image
-
-				await this.cleanDockerObjects(`docker ps -q -a --filter label=${imageLabel}`, ['docker stop', 'docker rm']);
-				await this.cleanDockerObjects(`docker images -f label=${imageLabel} -q`, [`docker rmi -f `]);
-
-				this.logToOutput(constants.creatingDeploymentSettingsMessage);
-				// Create commands
-				//
-
-				await this.createCommands(mssqlFolderPath, commandsFolderPath, dockerFilePath, startFilePath, imageLabel);
-
-				this.logToOutput(constants.runningDockerMessage);
-				// Building the image and running the docker
-				//
-				const createdDockerId: string | undefined = await this.buildAndRunDockerContainer(dockerFilePath, imageName, root, profile.localDbSetting, imageLabel);
-				this.logToOutput(`Docker container created. Id: ${createdDockerId}`);
-
-
-				// Waiting a bit to make sure docker container doesn't crash
-				//
-				const runningDockerId = await this.retry('Validating the docker container', async () => {
-					return await this.executeCommand(`docker ps -q -a --filter label=${imageLabel} -q`);
-				}, (dockerId) => {
-					return { validated: dockerId !== undefined, errorMessage: constants.dockerContainerNotRunningErrorMessage };
-				}, (dockerId) => {
-					return dockerId;
-				}
-				);
-
-				if (runningDockerId) {
-					this.logToOutput(constants.dockerContainerCreatedMessage(runningDockerId));
-					return await this.getConnection(profile.localDbSetting, false, 'master');
-
-				} else {
-					this.logToOutput(constants.dockerContainerFailedToRunErrorMessage);
-					if (createdDockerId) {
-						// Get the docker logs if docker was created but crashed
-						await this.executeCommand(constants.dockerLogMessage(createdDockerId));
-					}
-				}
-
+			if (!profile.localDbSetting) {
+				return undefined;
 			}
+			const projectName = project.projectFileName;
+			const imageLabel = `${constants.dockerImageLabelPrefix}_${projectName}`;
+			const imageName = `${constants.dockerImageNamePrefix}-${projectName}-${UUID.generateUuid().toLowerCase()}`;
+			const root = project.projectFolderPath;
+			const mssqlFolderPath = path.join(root, constants.mssqlFolderName);
+			const commandsFolderPath = path.join(mssqlFolderPath, constants.commandsFolderName);
+			const dockerFilePath = path.join(mssqlFolderPath, constants.dockerFileName);
+			const startFilePath = path.join(commandsFolderPath, constants.startCommandName);
+
+			this.logToOutput(constants.cleaningDockerImagesMessage);
+			// Clean up existing docker image
+
+			await this.cleanDockerObjects(`docker ps -q -a --filter label=${imageLabel}`, ['docker stop', 'docker rm']);
+			await this.cleanDockerObjects(`docker images -f label=${imageLabel} -q`, [`docker rmi -f `]);
+
+			this.logToOutput(constants.creatingDeploymentSettingsMessage);
+			// Create commands
+			//
+
+			await this.createCommands(mssqlFolderPath, commandsFolderPath, dockerFilePath, startFilePath, imageLabel);
+
+			this.logToOutput(constants.runningDockerMessage);
+			// Building the image and running the docker
+			//
+			const createdDockerId: string | undefined = await this.buildAndRunDockerContainer(dockerFilePath, imageName, root, profile.localDbSetting, imageLabel);
+			this.logToOutput(`Docker container created. Id: ${createdDockerId}`);
+
+
+			// Waiting a bit to make sure docker container doesn't crash
+			//
+			const runningDockerId = await this.retry('Validating the docker container', async () => {
+				return await this.executeCommand(`docker ps -q -a --filter label=${imageLabel} -q`);
+			}, (dockerId) => {
+				return Promise.resolve({ validated: dockerId !== undefined, errorMessage: constants.dockerContainerNotRunningErrorMessage });
+			}, (dockerId) => {
+				return Promise.resolve(dockerId);
+			}
+			);
+
+			if (runningDockerId) {
+				this.logToOutput(constants.dockerContainerCreatedMessage(runningDockerId));
+				return await this.getConnection(profile.localDbSetting, false, 'master');
+
+			} else {
+				this.logToOutput(constants.dockerContainerFailedToRunErrorMessage);
+				if (createdDockerId) {
+					// Get the docker logs if docker was created but crashed
+					await this.executeCommand(constants.dockerLogMessage(createdDockerId));
+				}
+			}
+
 			return undefined;
 		});
 	}
@@ -167,63 +171,72 @@ export class DeployService {
 
 	}
 
-	public async getConnection(profile: ILocalDbSetting, savePassword: boolean, database: string): Promise<string | undefined> {
+	private async connectToDatabase(profile: ILocalDbSetting, savePassword: boolean, database: string): Promise<ConnectionResult | string | undefined> {
 		const getAzdataApi = await utils.getAzdataApi();
 		const vscodeMssqlApi = getAzdataApi ? undefined : await utils.getVscodeMssqlApi();
+		if (getAzdataApi) {
+			const connectionProfile = {
+				password: profile.password,
+				serverName: `${profile.serverName},${profile.port}`,
+				database: database,
+				savePassword: savePassword,
+				userName: profile.userName,
+				providerName: 'MSSQL',
+				saveProfile: false,
+				id: '',
+				connectionName: `${constants.connectionNamePrefix} ${profile.dbName}`,
+				options: [],
+				authenticationType: 'SqlLogin'
+			};
+			return await getAzdataApi.connection.connect(connectionProfile, false, false);
+		} else if (vscodeMssqlApi) {
+			const connectionProfile = {
+				password: profile.password,
+				server: `${profile.serverName}`,
+				port: profile.port,
+				database: database,
+				savePassword: savePassword,
+				user: profile.userName,
+				authenticationType: 'SqlLogin',
+				encrypt: false,
+				connectTimeout: 30,
+				applicationName: 'SQL Database Project'
+			};
+			let connectionUrl = await vscodeMssqlApi.connect(connectionProfile);
+			return connectionUrl;
+		} else {
+			return undefined;
+		}
+	}
 
+	private async validateConnection(connection: ConnectionResult | string | undefined): Promise<ValidationResult> {
+		const getAzdataApi = await utils.getAzdataApi();
+		if (!connection) {
+			return { validated: false, errorMessage: constants.connectionFailedError('No result returned') };
+		} else if (getAzdataApi) {
+			const connectionResult = <ConnectionResult>connection;
+			if (connectionResult) {
+				const connected = connectionResult !== undefined && connectionResult.connected && connectionResult.connectionId !== undefined;
+				return { validated: connected, errorMessage: connected ? '' : constants.connectionFailedError(connectionResult?.errorMessage) };
+			} else {
+				return { validated: false, errorMessage: constants.connectionFailedError('') };
+			}
+		} else {
+			return { validated: connection !== undefined, errorMessage: constants.connectionFailedError('') };
+		}
+	}
+
+	private async formatConnectionResult(connection: ConnectionResult | string | undefined): Promise<string> {
+		const getAzdataApi = await utils.getAzdataApi();
+		const connectionResult = connection !== undefined && getAzdataApi ? <ConnectionResult>connection : undefined;
+		return connectionResult ? connectionResult.connectionId : <string>connection;
+	}
+
+	public async getConnection(profile: ILocalDbSetting, savePassword: boolean, database: string): Promise<string | undefined> {
+		const getAzdataApi = await utils.getAzdataApi();
 		let connection = await this.retry(constants.connectingToSqlServerOnDockerMessage, async () => {
-			if (getAzdataApi) {
-				const connectionProfile = {
-					password: profile.password,
-					serverName: `${profile.serverName},${profile.port}`,
-					database: database,
-					savePassword: savePassword,
-					userName: profile.userName,
-					providerName: 'MSSQL',
-					saveProfile: false,
-					id: '',
-					connectionName: `${constants.connectionNamePrefix} ${profile.dbName}`,
-					options: [],
-					authenticationType: 'SqlLogin'
-				};
-				return await getAzdataApi.connection.connect(connectionProfile, false, false);
-			} else if (vscodeMssqlApi) {
-				const connectionProfile = {
-					password: profile.password,
-					server: `${profile.serverName}`,
-					port: profile.port,
-					database: database,
-					savePassword: savePassword,
-					user: profile.userName,
-					authenticationType: 'SqlLogin',
-					encrypt: false,
-					connectTimeout: 30,
-					applicationName: 'SQL Database Project'
-				};
-				let connectionUrl = await vscodeMssqlApi.connect(connectionProfile);
-				return connectionUrl;
-			} else {
-				return undefined;
-			}
-		}, (connection) => {
-			if (!connection) {
-				return { validated: false, errorMessage: constants.connectionFailedError('No result returned') };
-			} else if (getAzdataApi) {
-				const connectionResult = <ConnectionResult>connection;
-				if (connectionResult) {
-					const connected = connectionResult !== undefined && connectionResult.connected && connectionResult.connectionId !== undefined;
-					return { validated: connected, errorMessage: connected ? '' : constants.connectionFailedError(connectionResult?.errorMessage) };
-				} else {
-					return { validated: false, errorMessage: constants.connectionFailedError('') };
-				}
-			} else {
-				return { validated: connection !== undefined, errorMessage: constants.connectionFailedError('') };
-			}
-
-		}, (connection) => {
-			const connectionResult = connection !== undefined && getAzdataApi ? <ConnectionResult>connection : undefined;
-			return connectionResult ? connectionResult.connectionId : <string>connection;
-		});
+			return await this.connectToDatabase(profile, savePassword, database);
+		}, this.validateConnection, this.formatConnectionResult);
 
 		if (connection) {
 			const connectionResult = <ConnectionResult>connection;
@@ -261,15 +274,15 @@ export class DeployService {
 				});
 			});
 		} else {
-
 			return await task();
 		}
 	}
 
 	private async retry<T>(
-		name: string, attempt: () => Promise<T>,
-		verify: (result: T) => ValidationResult,
-		formatResult: (result: T) => string,
+		name: string,
+		attempt: () => Promise<T>,
+		verify: (result: T) => Promise<ValidationResult>,
+		formatResult: (result: T) => Promise<string>,
 		numberOfAttempts: number = 10,
 		waitInSeconds: number = 2): Promise<T | undefined> {
 		for (let count = 0; count < numberOfAttempts; count++) {
@@ -279,12 +292,13 @@ export class DeployService {
 
 			try {
 				let result = await attempt();
-				const validationResult = verify(result);
+				const validationResult = await verify(result);
+				const formattedResult = await formatResult(result);
 				if (validationResult.validated) {
-					this.logToOutput(constants.retrySucceedMessage(name, formatResult(result)));
+					this.logToOutput(constants.retrySucceedMessage(name, formattedResult));
 					return result;
 				} else {
-					this.logToOutput(constants.retryFailedMessage(name, formatResult(result), validationResult.errorMessage));
+					this.logToOutput(constants.retryFailedMessage(name, formattedResult, validationResult.errorMessage));
 				}
 
 			} catch (err) {
@@ -304,8 +318,8 @@ export class DeployService {
 	private async createCommands(mssqlFolderPath: string, commandsFolderPath: string, dockerFilePath: string, startFilePath: string, imageLabel: string): Promise<void> {
 		// Create mssql folders if doesn't exist
 		//
-		this.createFolderIfNotExist(mssqlFolderPath);
-		this.createFolderIfNotExist(commandsFolderPath);
+		await utils.createFolderIfNotExist(mssqlFolderPath);
+		await utils.createFolderIfNotExist(commandsFolderPath);
 
 		// Start command
 		//
@@ -328,11 +342,7 @@ RUN ["/bin/bash", "/opt/commands/start.sh"]
 `);
 	}
 
-	private createFolderIfNotExist(folderName: string): void {
-		if (!fse.existsSync(folderName)) {
-			fse.mkdirSync(folderName);
-		}
-	}
+
 
 	private async createFile(filePath: string, content: string): Promise<void> {
 		this.logToOutput(`Creating file ${filePath}, content:${content}`);
@@ -340,7 +350,7 @@ RUN ["/bin/bash", "/opt/commands/start.sh"]
 	}
 
 	public async cleanDockerObjects(commandToGetObjects: string, commandsToClean: string[]): Promise<void> {
-		let currentIds = await this.executeCommand(commandToGetObjects);
+		const currentIds = await this.executeCommand(commandToGetObjects);
 		if (currentIds) {
 			const ids = currentIds.split(/\r?\n/);
 			for (let index = 0; index < ids.length; index++) {
@@ -356,7 +366,7 @@ RUN ["/bin/bash", "/opt/commands/start.sh"]
 		}
 	}
 
-	private async executeCommand(cmd: string, timeout: number = 1800000): Promise<string> {
+	private async executeCommand(cmd: string, timeout: number = 5 * 60 * 1000): Promise<string> {
 		return new Promise<string>((resolve, reject) => {
 			this.logToOutput(`    > ${cmd}`);
 			let child = childProcess.exec(cmd, {

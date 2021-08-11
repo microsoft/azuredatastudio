@@ -14,6 +14,7 @@ import * as mssql from '../../../mssql';
 import * as vscodeMssql from 'vscode-mssql';
 import { promises as fs } from 'fs';
 import { Project } from '../models/project';
+let fse = require('fs-extra');
 
 /**
  * Consolidates on the error message string
@@ -394,4 +395,11 @@ try {
  */
 export function getAzdataApi(): typeof azdataType | undefined {
 	return azdataApi;
+}
+
+export async function createFolderIfNotExist(folderPath: string): Promise<void> {
+	const folderExists = await fse.exists(folderPath);
+	if (!folderExists) {
+		await fse.mkdir(folderPath);
+	}
 }

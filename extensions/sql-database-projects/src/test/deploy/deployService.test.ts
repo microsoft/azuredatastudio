@@ -165,7 +165,7 @@ describe('deploy service', function (): void {
 
 	});
 
-	it('Should update app settings using connection uri if there is no local settings', async function (): Promise<void> {
+	it('Should update app settings using connection uri if there are no local settings', async function (): Promise<void> {
 		const testContext = createContext();
 		const projFilePath = await testUtils.createTestSqlProjFile(baselines.newProjectFileBaseline);
 		const project1 = await Project.openProject(vscode.Uri.file(projFilePath).fsPath);

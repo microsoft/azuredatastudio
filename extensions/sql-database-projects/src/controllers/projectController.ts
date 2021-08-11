@@ -70,10 +70,10 @@ export class ProjectsController {
 
 	projFileWatchers = new Map<string, vscode.FileSystemWatcher>();
 
-	constructor(private _outputChannel: vscode.OutputChannel) {
-		this.netCoreTool = new NetCoreTool(this._outputChannel);
+	constructor(outputChannel: vscode.OutputChannel) {
+		this.netCoreTool = new NetCoreTool(outputChannel);
 		this.buildHelper = new BuildHelper();
-		this.deployService = new DeployService(this._outputChannel);
+		this.deployService = new DeployService(outputChannel);
 	}
 
 	public getDashboardPublishData(projectFile: string): (string | dataworkspace.IconCellValue)[][] {
