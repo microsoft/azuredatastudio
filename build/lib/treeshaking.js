@@ -689,7 +689,7 @@ function getRealNodeSymbol(ts, checker, node) {
     // get the aliased symbol instead. This allows for goto def on an import e.g.
     //   import {A, B} from "mod";
     // to jump to the implementation directly.
-    if (symbol && symbol.flags & ts.SymbolFlags.Alias && symbol.declarations && shouldSkipAlias(node, symbol.declarations[0])) {
+    if (symbol && symbol.flags & ts.SymbolFlags.Alias && symbol.declarations && shouldSkipAlias(node, symbol.declarations[0])) { // {{SQL CARBON EDIT}} Compile fixes
         const aliased = checker.getAliasedSymbol(symbol);
         if (aliased.declarations) {
             // We should mark the import as visited

@@ -1,7 +1,7 @@
 "use strict";
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 Object.defineProperty(exports, "__esModule", { value: true });
 const got_1 = require("got");
@@ -25,7 +25,7 @@ async function downloadExtensionDetails(extension) {
     const promises = [];
     for (const fileName of contentFileNames) {
         promises.push(new Promise(resolve => {
-            (0, got_1.default)(`${repositoryContentBaseUrl}/${fileName}`)
+            got_1.default(`${repositoryContentBaseUrl}/${fileName}`)
                 .then(response => {
                 resolve({ fileName, body: response.rawBody });
             })
