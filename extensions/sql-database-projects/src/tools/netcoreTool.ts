@@ -148,15 +148,21 @@ export class NetCoreTool {
 				child.on('exit', () => {
 					this.netCoreSdkInstalledVersion = Buffer.concat(stdoutBuffers).toString('utf8').trim();
 
-					if (semver.gte(this.netCoreSdkInstalledVersion, minSupportedNetCoreVersion)) {		// Net core version greater than or equal to minSupportedNetCoreVersion are supported for Build
-						isSupported = true;
-					} else {
-						isSupported = false;
+					try {
+						if (semver.gte(this.netCoreSdkInstalledVersion, minSupportedNetCoreVersion)) {		// Net core version greater than or equal to minSupportedNetCoreVersion are supported for Build
+							isSupported = true;
+						} else {
+							isSupported = false;
+						}
+						resolve({ stdout: this.netCoreSdkInstalledVersion });
+					} catch (err) {
+						console.log(err);
+						reject(err);
 					}
-					resolve({ stdout: this.netCoreSdkInstalledVersion });
 				});
 				child.on('error', (err) => {
 					console.log(err);
+					this.netCoreInstallState = netCoreInstallState.netCoreNotPresent;
 					reject(err);
 				});
 			});
@@ -170,7 +176,7 @@ export class NetCoreTool {
 			return isSupported;
 		} catch (err) {
 			console.log(err);
-			this.netCoreInstallState = netCoreInstallState.netCoreVersionNotSupported;
+			this.netCoreInstallState = netCoreInstallState.netCoreNotPresent;
 			return undefined;
 		}
 	}
@@ -182,9 +188,9 @@ export class NetCoreTool {
 
 		if (!(await this.findOrInstallNetCore())) {
 			if (this.netCoreInstallState === netCoreInstallState.netCoreNotPresent) {
-				throw new Error(NetCoreInstallationConfirmation);
+				throw new DotNetError(NetCoreInstallationConfirmation);
 			} else {
-				throw new Error(NetCoreSupportedVersionInstallationConfirmation(this.netCoreSdkInstalledVersion!));
+				throw new DotNetError(NetCoreSupportedVersionInstallationConfirmation(this.netCoreSdkInstalledVersion!));
 			}
 		}
 
@@ -245,4 +251,8 @@ export class NetCoreTool {
 				outputChannel.appendLine(header + line);
 			});
 	}
+}
+
+export class DotNetError extends Error {
+
 }

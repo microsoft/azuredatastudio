@@ -30,6 +30,7 @@ export class MigrationCutoverDialogModel {
 			this._migration.subscription,
 			this._migration.migrationContext,
 			this._migration.sessionId!,
+			this._migration.asyncUrl
 		));
 
 		sendSqlMigrationActionEvent(
@@ -98,7 +99,7 @@ export class MigrationCutoverDialogModel {
 	}
 
 	public isBlobMigration(): boolean {
-		return this._migration.migrationContext.properties.backupConfiguration.sourceLocation?.azureBlob !== undefined;
+		return this._migration.migrationContext.properties.backupConfiguration?.sourceLocation?.azureBlob !== undefined;
 	}
 
 	public confirmCutoverStepsString(): string {
