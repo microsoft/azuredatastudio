@@ -210,6 +210,19 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 			ignoreErrors: boolean): Promise<azurecore.GetFileSharesResult> {
 			return azureResourceUtils.getFileShares(account, subscription, storageAccount, ignoreErrors);
 		},
+		getStorageAccountAccessKey(account: azdata.Account,
+			subscription: azureResource.AzureResourceSubscription,
+			storageAccount: azureResource.AzureGraphResource,
+			ignoreErrors: boolean): Promise<azurecore.GetStorageAccountAccessKeyResult> {
+			return azureResourceUtils.getStorageAccountAccessKey(account, subscription, storageAccount, ignoreErrors);
+		},
+		getBlobs(account: azdata.Account,
+			subscription: azureResource.AzureResourceSubscription,
+			storageAccount: azureResource.AzureGraphResource,
+			containerName: string,
+			ignoreErrors: boolean): Promise<azurecore.GetBlobsResult> {
+			return azureResourceUtils.getBlobs(account, subscription, storageAccount, containerName, ignoreErrors);
+		},
 		createResourceGroup(account: azdata.Account,
 			subscription: azureResource.AzureResourceSubscription,
 			resourceGroupName: string,
@@ -223,8 +236,9 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 			requestType: azurecore.HttpRequestMethod,
 			requestBody: any,
 			ignoreErrors: boolean,
-			host: string = 'https://management.azure.com'): Promise<azurecore.AzureRestResponse> {
-			return azureResourceUtils.makeHttpRequest(account, subscription, path, requestType, requestBody, ignoreErrors, host);
+			host: string = 'https://management.azure.com',
+			requestHeaders: { [key: string]: string } = {}): Promise<azurecore.AzureRestResponse> {
+			return azureResourceUtils.makeHttpRequest(account, subscription, path, requestType, requestBody, ignoreErrors, host, requestHeaders);
 		},
 		getRegionDisplayName: utils.getRegionDisplayName,
 		runGraphQuery<T extends azureResource.AzureGraphResource>(account: azdata.Account,

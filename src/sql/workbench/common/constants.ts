@@ -30,7 +30,7 @@ export const InputBoxFocusedKey = new RawContextKey<boolean>('inputBoxFocus', fa
 export const SearchInputBoxFocusedKey = new RawContextKey<boolean>('searchInputBoxFocus', false);
 
 export const enum NotebookLanguage {
-	Notebook = 'notebook',
+	Notebook = 'Notebook',
 	Ipynb = 'ipynb'
 }
 export interface INotebookSearchConfigurationProperties {
@@ -61,3 +61,8 @@ export interface INotebookSearchConfigurationProperties {
 	};
 	sortOrder: SearchSortOrder;
 }
+
+export const RESULTS_GRID_DEFAULTS = {
+	cellPadding: [5, 8, 4],
+	rowHeight: 24
+};

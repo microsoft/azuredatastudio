@@ -111,7 +111,7 @@ export class SqlAssessmentMainTab extends SqlAssessmentTab {
 		const maxNameLength: number = 40;
 
 		const btnInvokeAssessment = view.modelBuilder.button()
-			.withProperties<azdata.ButtonProperties>({
+			.withProps({
 				label: limitLongName(this.invokeAssessmentLabel, maxNameLength),
 				iconPath: targetIconPath,
 				iconHeight: iconSize,
@@ -121,7 +121,7 @@ export class SqlAssessmentMainTab extends SqlAssessmentTab {
 			}).component();
 		const btnInvokeAssessmentLoading = view.modelBuilder.loadingComponent()
 			.withItem(btnInvokeAssessment)
-			.withProperties<azdata.LoadingComponentProperties>({
+			.withProps({
 				loadingText: limitLongName(this.invokeAssessmentLabel, maxNameLength),
 				showText: true,
 				loading: false
@@ -145,7 +145,7 @@ export class SqlAssessmentMainTab extends SqlAssessmentTab {
 		}));
 
 		const btnGetAssessmentItems = view.modelBuilder.button()
-			.withProperties<azdata.ButtonProperties>({
+			.withProps({
 				label: limitLongName(this.getItemsLabel, maxNameLength),
 				iconPath: targetIconPath,
 				iconHeight: iconSize,
@@ -154,7 +154,7 @@ export class SqlAssessmentMainTab extends SqlAssessmentTab {
 			}).component();
 		const btnGetAssessmentItemsLoading = view.modelBuilder.loadingComponent()
 			.withItem(btnGetAssessmentItems)
-			.withProperties<azdata.LoadingComponentProperties>({
+			.withProps({
 				loadingText: limitLongName(this.getItemsLabel, maxNameLength),
 				showText: true,
 				loading: false
@@ -178,7 +178,7 @@ export class SqlAssessmentMainTab extends SqlAssessmentTab {
 		}));
 
 		this.btnExportAsScript = view.modelBuilder.button()
-			.withProperties<azdata.ButtonProperties>({
+			.withProps({
 				label: localize('btnExportAsScript', "Export as script"),
 				enabled: false,
 				iconPath: {
@@ -194,7 +194,7 @@ export class SqlAssessmentMainTab extends SqlAssessmentTab {
 		}));
 
 		this.btnHTMLExport = view.modelBuilder.button()
-			.withProperties<azdata.ButtonProperties>({
+			.withProps({
 				label: localize('btnGeneratehtmlreport', "Create HTML Report"),
 				enabled: false,
 				iconPath: {
@@ -230,7 +230,7 @@ export class SqlAssessmentMainTab extends SqlAssessmentTab {
 
 
 		let btnViewSamples = view.modelBuilder.button()
-			.withProperties<azdata.ButtonProperties>({
+			.withProps({
 				label: localize('btnViewSamplesShort', "View all on GitHub"),
 				iconPath: {
 					dark: this.extensionContext.asAbsolutePath('resources/dark/configuredashboard_inverse.svg'),
@@ -248,7 +248,7 @@ export class SqlAssessmentMainTab extends SqlAssessmentTab {
 		}));
 
 		let btnAPIDetails = view.modelBuilder.button()
-			.withProperties<azdata.ButtonProperties>({
+			.withProps({
 				label: LocalizedStrings.SECTION_TITLE_API,
 				iconPath: {
 					dark: this.extensionContext.asAbsolutePath('resources/dark/status_info.svg'),

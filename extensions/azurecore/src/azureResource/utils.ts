@@ -7,7 +7,7 @@ import { ResourceGraphClient } from '@azure/arm-resourcegraph';
 import { TokenCredentials } from '@azure/ms-rest-js';
 import axios, { AxiosRequestConfig } from 'axios';
 import * as azdata from 'azdata';
-import { AzureRestResponse, GetResourceGroupsResult, GetSubscriptionsResult, ResourceQueryResult, GetBlobContainersResult, GetFileSharesResult, HttpRequestMethod, GetLocationsResult, GetManagedDatabasesResult, CreateResourceGroupResult } from 'azurecore';
+import { AzureRestResponse, GetResourceGroupsResult, GetSubscriptionsResult, ResourceQueryResult, GetBlobContainersResult, GetFileSharesResult, HttpRequestMethod, GetLocationsResult, GetManagedDatabasesResult, CreateResourceGroupResult, GetBlobsResult, GetStorageAccountAccessKeyResult } from 'azurecore';
 import { azureResource } from 'azureResource';
 import { EOL } from 'os';
 import * as nls from 'vscode-nls';
@@ -16,6 +16,7 @@ import { invalidAzureAccount, invalidTenant, unableToFetchTokenError } from '../
 import { AzureResourceServiceNames } from './constants';
 import { IAzureResourceSubscriptionFilterService, IAzureResourceSubscriptionService } from './interfaces';
 import { AzureResourceGroupService } from './providers/resourceGroup/resourceGroupService';
+import { BlobServiceClient, StorageSharedKeyCredential } from '@azure/storage-blob';
 
 const localize = nls.loadMessageBundle();
 
@@ -332,8 +333,9 @@ export async function getSelectedSubscriptions(appContext: AppContext, account?:
  * @param requestBody Optional request body to be used in PUT and POST requests.
  * @param ignoreErrors When this flag is set the method will not throw any runtime or service errors and will return the errors in errors array.
  * @param host Use this to override the host. The default host is https://management.azure.com
+ * @param requestHeaders Provide additional request headers
  */
-export async function makeHttpRequest(account: azdata.Account, subscription: azureResource.AzureResourceSubscription, path: string, requestType: HttpRequestMethod, requestBody?: any, ignoreErrors: boolean = false, host: string = 'https://management.azure.com'): Promise<AzureRestResponse> {
+export async function makeHttpRequest(account: azdata.Account, subscription: azureResource.AzureResourceSubscription, path: string, requestType: HttpRequestMethod, requestBody?: any, ignoreErrors: boolean = false, host: string = 'https://management.azure.com', requestHeaders: { [key: string]: string } = {}): Promise<AzureRestResponse> {
 	const result: AzureRestResponse = { response: {}, errors: [] };
 
 	if (!account?.properties?.tenants || !Array.isArray(account.properties.tenants)) {
@@ -374,11 +376,14 @@ export async function makeHttpRequest(account: azdata.Account, subscription: azu
 		return result;
 	}
 
+	const reqHeaders = {
+		'Content-Type': 'application/json',
+		'Authorization': `Bearer ${securityToken.token}`,
+		...requestHeaders
+	};
+
 	const config: AxiosRequestConfig = {
-		headers: {
-			'Content-Type': 'application/json',
-			'Authorization': `Bearer ${securityToken.token}`
-		},
+		headers: reqHeaders,
 		validateStatus: () => true // Never throw
 	};
 
@@ -391,7 +396,7 @@ export async function makeHttpRequest(account: azdata.Account, subscription: azu
 	if (host) {
 		requestUrl = `${host}${path}`;
 	} else {
-		requestUrl = `https://management.azure.com${path}`;
+		requestUrl = `${account.properties.providerSettings.settings.armResource.endpoint}${path}`;
 	}
 
 	let response;
@@ -466,4 +471,42 @@ export async function createResourceGroup(account: azdata.Account, subscription:
 		resourceGroup: response?.response?.data,
 		errors: response.errors ? response.errors : []
 	};
+}
+
+export async function getStorageAccountAccessKey(account: azdata.Account, subscription: azureResource.AzureResourceSubscription, storageAccount: azureResource.AzureGraphResource, ignoreErrors: boolean): Promise<GetStorageAccountAccessKeyResult> {
+	const path = `/subscriptions/${subscription.id}/resourceGroups/${storageAccount.resourceGroup}/providers/Microsoft.Storage/storageAccounts/${storageAccount.name}/listKeys?api-version=2019-06-01`;
+	const response = await makeHttpRequest(account, subscription, path, HttpRequestMethod.POST, undefined, ignoreErrors);
+	return {
+		keyName1: response?.response?.data?.keys[0].value ?? '',
+		keyName2: response?.response?.data?.keys[0].value ?? '',
+		errors: response.errors ? response.errors : []
+	};
+}
+
+export async function getBlobs(account: azdata.Account, subscription: azureResource.AzureResourceSubscription, storageAccount: azureResource.AzureGraphResource, containerName: string, ignoreErrors: boolean): Promise<GetBlobsResult> {
+	const result: GetBlobsResult = { blobs: [], errors: [] };
+	const storageKeys = await getStorageAccountAccessKey(account, subscription, storageAccount, ignoreErrors);
+	if (!ignoreErrors) {
+		throw storageKeys.errors.toString();
+	} else {
+		result.errors.push(...storageKeys.errors);
+	}
+	try {
+		const sharedKeyCredential = new StorageSharedKeyCredential(storageAccount.name, storageKeys.keyName1);
+		const blobServiceClient = new BlobServiceClient(
+			`https://${storageAccount.name}.blob${account.properties.providerSettings.settings.azureStorageResource.endpointSuffix}`,
+			sharedKeyCredential
+		);
+		const containerClient = blobServiceClient.getContainerClient(containerName);
+		for await (const blob of containerClient.listBlobsFlat()) {
+			result.blobs.push(blob);
+		}
+	} catch (e) {
+		if (!ignoreErrors) {
+			throw e;
+		} else {
+			result.errors.push(e);
+		}
+	}
+	return result;
 }

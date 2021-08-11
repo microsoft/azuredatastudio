@@ -4,16 +4,17 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
-import { IExtension } from 'dataworkspace';
+import { IExtension, IProjectType } from 'dataworkspace';
 import { WorkspaceService } from '../services/workspaceService';
 import { defaultProjectSaveLocation } from './projectLocationHelper';
+import { openSpecificProjectNewProjectDialog } from '../dialogs/newProjectDialog';
 
 export class DataWorkspaceExtension implements IExtension {
 	constructor(private workspaceService: WorkspaceService) {
 	}
 
-	getProjectsInWorkspace(ext?: string): Promise<vscode.Uri[]> {
-		return this.workspaceService.getProjectsInWorkspace(ext);
+	getProjectsInWorkspace(ext?: string, refreshFromDisk?: boolean): Promise<vscode.Uri[]> {
+		return this.workspaceService.getProjectsInWorkspace(ext, refreshFromDisk);
 	}
 
 	addProjectsToWorkspace(projectFiles: vscode.Uri[]): Promise<void> {
@@ -31,4 +32,9 @@ export class DataWorkspaceExtension implements IExtension {
 	validateWorkspace(): Promise<boolean> {
 		return this.workspaceService.validateWorkspace();
 	}
+
+	openSpecificProjectNewProjectDialog(projectType: IProjectType): Promise<vscode.Uri | undefined> {
+		return openSpecificProjectNewProjectDialog(projectType, this.workspaceService);
+	}
+
 }

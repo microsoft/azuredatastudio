@@ -28,7 +28,11 @@ const editorInputFactoryRegistry = Registry.as<IEditorInputFactoryRegistry>(Edit
 
 export class QueryEditorLanguageAssociation implements ILanguageAssociation {
 	static readonly isDefault = true;
-	static readonly languages = ['sql', 'kusto', 'loganalytics'];	//TODO Add language id here for new languages supported in query editor. Make it easier to contribute new extension's languageID
+	/**
+	 * The language IDs that are associated with the query editor. These are case sensitive for comparing with what's
+	 * registered in the ModeService registry.
+	 */
+	static readonly languages = ['Kusto', 'LogAnalytics', 'SQL'];	//TODO Add language id here for new languages supported in query editor. Make it easier to contribute new extension's languageID
 
 
 	constructor(@IInstantiationService private readonly instantiationService: IInstantiationService,
@@ -47,9 +51,11 @@ export class QueryEditorLanguageAssociation implements ILanguageAssociation {
 			queryEditorInput = this.instantiationService.createInstance(FileQueryEditorInput, '', activeEditor, queryResultsInput);
 		} else if (activeEditor instanceof UntitledTextEditorInput) {
 			const content = (await activeEditor.resolve()).textEditorModel.getValue();
-			queryEditorInput = await this.queryEditorService.newSqlEditor({ resource: this.editorService.isOpened(activeEditor) ? activeEditor.resource : undefined, open: false, initalContent: content }) as UntitledQueryEditorInput;
+			queryEditorInput = await this.queryEditorService.newSqlEditor({
+				resource: this.editorService.isOpened(activeEditor) ? activeEditor.resource : undefined,
+				open: false, initalContent: content
+			}) as UntitledQueryEditorInput;
 		}
-
 		const profile = getCurrentGlobalConnection(this.objectExplorerService, this.connectionManagementService, this.editorService);
 		if (profile) {
 			const options: IConnectionCompletionOptions = {

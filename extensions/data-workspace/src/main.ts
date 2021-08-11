@@ -17,11 +17,13 @@ import { getAzdataApi } from './common/utils';
 import { createNewProjectWithQuickpick } from './dialogs/newProjectQuickpick';
 
 export async function activate(context: vscode.ExtensionContext): Promise<IExtension> {
+	const azdataApi = getAzdataApi();
+	vscode.commands.executeCommand('setContext', 'azdataAvailable', !!azdataApi);
 	const workspaceService = new WorkspaceService();
 
 	const workspaceTreeDataProvider = new WorkspaceTreeDataProvider(workspaceService);
-	context.subscriptions.push(vscode.workspace.onDidChangeWorkspaceFolders(() => {
-		workspaceTreeDataProvider.refresh();
+	context.subscriptions.push(vscode.workspace.onDidChangeWorkspaceFolders(async () => {
+		await workspaceTreeDataProvider.refresh();
 	}));
 	const dataWorkspaceExtension = new DataWorkspaceExtension(workspaceService);
 	context.subscriptions.push(vscode.window.registerTreeDataProvider('dataworkspace.views.main', workspaceTreeDataProvider));
@@ -31,7 +33,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 	setProjectProviderContextValue(workspaceService);
 
 	context.subscriptions.push(vscode.commands.registerCommand('projects.new', async () => {
-		if (getAzdataApi()) {
+		if (azdataApi) {
 			const dialog = new NewProjectDialog(workspaceService);
 			await dialog.open();
 		} else {
@@ -40,7 +42,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 	}));
 
 	context.subscriptions.push(vscode.commands.registerCommand('projects.openExisting', async () => {
-		if (getAzdataApi()) {
+		if (azdataApi) {
 			const dialog = new OpenExistingDialog(workspaceService);
 			await dialog.open();
 		} else {
@@ -52,8 +54,8 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 		}
 	}));
 
-	context.subscriptions.push(vscode.commands.registerCommand('dataworkspace.refresh', () => {
-		workspaceTreeDataProvider.refresh();
+	context.subscriptions.push(vscode.commands.registerCommand('dataworkspace.refresh', async () => {
+		await workspaceTreeDataProvider.refresh();
 	}));
 
 	context.subscriptions.push(vscode.commands.registerCommand('dataworkspace.close', () => {

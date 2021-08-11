@@ -1,7 +1,7 @@
 {
   "name": "azuremonitor",
   "description": "%azuremonitor.description%",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "publisher": "Microsoft",
   "aiKey": "AIF-444c3af9-8e69-4462-ab49-4191e6ad1916",
   "activationEvents": [
@@ -11,7 +11,7 @@
     "vscode": "*",
     "azdata": ">=1.31.0"
   },
-  "main": "./out/extension",
+  "main": "./out/main",
   "repository": {
     "type": "git",
     "url": "https://github.com/Microsoft/azuredatastudio.git"
@@ -22,7 +22,7 @@
       "providerId": "LOGANALYTICS",
       "languageMode": "loganalytics",
       "displayName": "%azuremonitor.displayName%",
-      "notebookKernelAlias": "LogAnalytics",
+      "notebookKernelAlias": "Azure Monitor Logs",
       "azureResource": "AzureLogAnalytics",
       "iconPath": [
         {
@@ -198,14 +198,14 @@
     "dataprotocol-client": "github:Microsoft/sqlops-dataprotocolclient#1.2.2",
     "figures": "^2.0.0",
     "find-remove": "1.2.1",
-    "service-downloader": "0.2.1",
+    "@microsoft/ads-service-downloader": "0.2.2",
     "vscode-extension-telemetry": "0.1.0",
     "vscode-languageclient": "5.2.1",
     "vscode-nls": "^4.0.0"
   },
   "devDependencies": {},
   "__metadata": {
-    "id": "",
+    "id": "83",
     "publisherDisplayName": "Microsoft",
     "publisherId": "Microsoft"
   }

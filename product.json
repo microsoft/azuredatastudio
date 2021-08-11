@@ -24,7 +24,7 @@
 	"requestFeatureUrl": "https://go.microsoft.com/fwlink/?linkid=2118021",
 	"privacyStatementUrl": "https://privacy.microsoft.com/privacystatement",
 	"telemetryOptOutUrl": "https://github.com/Microsoft/azuredatastudio/wiki/How-to-Disable-Telemetry-Reporting",
-	"urlProtocol": "azuredatastudio",
+	"urlProtocol": "azuredatastudio-oss",
 	"enableTelemetry": true,
 	"aiConfig": {
 		"asimovKey": "AIF-37eefaf0-8022-4671-a3fb-64752724682e"

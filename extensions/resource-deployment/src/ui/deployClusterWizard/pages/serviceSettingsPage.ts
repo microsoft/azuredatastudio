@@ -302,7 +302,7 @@ export class ServiceSettingsPage extends ResourceTypePage {
 		this.onNewInputComponentCreated(VariableNames.SQLServerLogsStorageSize_VariableName, sqlServerMasterLogsStorageClaimSizeInputInfo);
 
 		const storageSettingTable = view.modelBuilder.declarativeTable()
-			.withProperties<azdata.DeclarativeTableProperties>(
+			.withProps(
 				{
 					columns: [
 						this.createStorageSettingColumn(localize('deployCluster.ServiceName', "Service name"), false),

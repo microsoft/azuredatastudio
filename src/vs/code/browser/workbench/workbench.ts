@@ -411,7 +411,10 @@ class WindowIndicator implements IWindowIndicator {
 		throw new Error('Missing web configuration element');
 	}
 
-	const config: IWorkbenchConstructionOptions & { folderUri?: UriComponents, workspaceUri?: UriComponents } = JSON.parse(configElementAttribute);
+	const config: IWorkbenchConstructionOptions & { folderUri?: UriComponents, workspaceUri?: UriComponents } = {
+		...JSON.parse(configElementAttribute),
+		webviewEndpoint: `${window.location.origin}${window.location.pathname.replace(/\/+$/, '')}/webview`
+	}; // {{SQL CARBON EDIT}} Use local webview endpoint
 
 	// Find workspace to open and payload
 	let foundWorkspace = false;

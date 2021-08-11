@@ -6,7 +6,7 @@
 import type * as azdataType from 'azdata';
 import * as vscode from 'vscode';
 import * as path from 'path';
-import { DialogBase } from './dialogBase';
+import { Deferred, DialogBase } from './dialogBase';
 import { IWorkspaceService } from '../common/interfaces';
 import * as constants from '../common/constants';
 import { IProjectType } from 'dataworkspace';
@@ -14,17 +14,32 @@ import { directoryExist } from '../common/utils';
 import { IconPathHelper } from '../common/iconHelper';
 import { defaultProjectSaveLocation } from '../common/projectLocationHelper';
 import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
+import { WorkspaceService } from '../services/workspaceService';
 
 class NewProjectDialogModel {
 	projectTypeId: string = '';
 	projectFileExtension: string = '';
 	name: string = '';
 	location: string = '';
+	targetPlatform?: string;
 }
+
+export async function openSpecificProjectNewProjectDialog(projectType: IProjectType, workspaceService: WorkspaceService): Promise<vscode.Uri | undefined> {
+	const dialog = new NewProjectDialog(workspaceService, projectType);
+	await dialog.open();
+	await dialog.newDialogPromise;
+	return dialog.projectUri;
+}
+
 export class NewProjectDialog extends DialogBase {
 	public model: NewProjectDialogModel = new NewProjectDialogModel();
+	public formBuilder: azdataType.FormBuilder | undefined;
+	public targetPlatformDropdownFormComponent: azdataType.FormComponent | undefined;
+	public newProjectDialogComplete: Deferred<void> | undefined;
+	public newDialogPromise: Promise<void> = new Promise<void>((resolve, reject) => this.newProjectDialogComplete = { resolve, reject });
+	public projectUri: vscode.Uri | undefined;
 
-	constructor(private workspaceService: IWorkspaceService) {
+	constructor(private workspaceService: IWorkspaceService, private specificProjectType?: IProjectType) {
 		super(constants.NewProjectDialogTitle, 'NewProject', constants.CreateButtonText);
 
 		// dialog launched from Welcome message button (only visible when no current workspace) vs. "add project" button
@@ -34,9 +49,6 @@ export class NewProjectDialog extends DialogBase {
 	}
 
 	async validate(): Promise<boolean> {
-		if (await this.workspaceService.validateWorkspace() === false) {
-			return false;
-		}
 		try {
 			// the selected location should be an existing directory
 			const parentDirectoryExists = await directoryExist(this.model.location);
@@ -52,12 +64,20 @@ export class NewProjectDialog extends DialogBase {
 				return false;
 			}
 
+			if (await this.workspaceService.validateWorkspace() === false) {
+				return false;
+			}
 			return true;
 		}
 		catch (err) {
 			this.showErrorMessage(err?.message ? err.message : err);
 			return false;
 		}
+	}
+
+	override onCancelButtonClicked(): void {
+		this.newProjectDialogComplete?.resolve();
+		this.dispose();
 	}
 
 	override async onComplete(): Promise<void> {
@@ -67,7 +87,8 @@ export class NewProjectDialog extends DialogBase {
 				.withAdditionalProperties({ projectFileExtension: this.model.projectFileExtension, projectTemplateId: this.model.projectTypeId })
 				.send();
 
-			await this.workspaceService.createProject(this.model.name, vscode.Uri.file(this.model.location), this.model.projectTypeId);
+			this.projectUri = await this.workspaceService.createProject(this.model.name, vscode.Uri.file(this.model.location), this.model.projectTypeId, this.model.targetPlatform);
+			this.newProjectDialogComplete?.resolve();
 		}
 		catch (err) {
 
@@ -80,8 +101,14 @@ export class NewProjectDialog extends DialogBase {
 	}
 
 	protected async initialize(view: azdataType.ModelView): Promise<void> {
-		const allProjectTypes = await this.workspaceService.getAllProjectTypes();
-		const projectTypeRadioCardGroup = view.modelBuilder.radioCardGroup().withProperties<azdataType.RadioCardGroupComponentProperties>({
+		let allProjectTypes = await this.workspaceService.getAllProjectTypes();
+
+		// if a specific project type is specified, only show that one
+		if (this.specificProjectType && allProjectTypes.find(p => p.id === this.specificProjectType?.id)) {
+			allProjectTypes = [this.specificProjectType];
+		}
+
+		const projectTypeRadioCardGroup = view.modelBuilder.radioCardGroup().withProps({
 			cards: allProjectTypes.map((projectType: IProjectType) => {
 				return <azdataType.RadioCard>{
 					id: projectType.id,
@@ -112,9 +139,22 @@ export class NewProjectDialog extends DialogBase {
 
 		this.register(projectTypeRadioCardGroup.onSelectionChanged((e) => {
 			this.model.projectTypeId = e.cardId;
+			const selectedProject = allProjectTypes.find(p => p.id === e.cardId);
+
+			if (selectedProject?.targetPlatforms) {
+				// update the target platforms dropdown for the selected project type
+				targetPlatformDropdown.values = selectedProject?.targetPlatforms;
+				targetPlatformDropdown.value = this.getDefaultTargetPlatform(selectedProject);
+
+				this.formBuilder?.addFormItem(this.targetPlatformDropdownFormComponent!);
+			} else {
+				// remove the target version dropdown if the selected project type didn't provide values for this
+				this.formBuilder?.removeFormItem(this.targetPlatformDropdownFormComponent!);
+				this.model.targetPlatform = undefined;
+			}
 		}));
 
-		const projectNameTextBox = view.modelBuilder.inputBox().withProperties<azdataType.InputBoxProperties>({
+		const projectNameTextBox = view.modelBuilder.inputBox().withProps({
 			ariaLabel: constants.ProjectNameTitle,
 			placeHolder: constants.ProjectNamePlaceholder,
 			required: true,
@@ -126,7 +166,7 @@ export class NewProjectDialog extends DialogBase {
 			projectNameTextBox.updateProperty('title', projectNameTextBox.value);
 		}));
 
-		const locationTextBox = view.modelBuilder.inputBox().withProperties<azdataType.InputBoxProperties>({
+		const locationTextBox = view.modelBuilder.inputBox().withProps({
 			ariaLabel: constants.ProjectLocationTitle,
 			placeHolder: constants.ProjectLocationPlaceholder,
 			required: true,
@@ -138,7 +178,7 @@ export class NewProjectDialog extends DialogBase {
 			locationTextBox.updateProperty('title', locationTextBox.value);
 		}));
 
-		const browseFolderButton = view.modelBuilder.button().withProperties<azdataType.ButtonProperties>({
+		const browseFolderButton = view.modelBuilder.button().withProps({
 			ariaLabel: constants.BrowseButtonText,
 			iconPath: IconPathHelper.folder,
 			height: '16px',
@@ -159,7 +199,26 @@ export class NewProjectDialog extends DialogBase {
 			this.model.location = selectedFolder;
 		}));
 
-		const form = view.modelBuilder.formContainer().withFormItems([
+		const targetPlatformDropdown = view.modelBuilder.dropDown().withProps({
+			values: allProjectTypes[0].targetPlatforms,
+			value: this.getDefaultTargetPlatform(allProjectTypes[0]),
+			ariaLabel: constants.TargetPlatform,
+			required: true,
+			width: constants.DefaultInputWidth
+		}).component();
+
+		this.register(targetPlatformDropdown.onValueChanged(() => {
+			this.model.targetPlatform = targetPlatformDropdown.value! as string;
+		}));
+
+
+		this.targetPlatformDropdownFormComponent = {
+			title: constants.TargetPlatform,
+			required: true,
+			component: targetPlatformDropdown
+		};
+
+		this.formBuilder = view.modelBuilder.formContainer().withFormItems([
 			{
 				title: constants.TypeTitle,
 				required: true,
@@ -169,13 +228,34 @@ export class NewProjectDialog extends DialogBase {
 				title: constants.ProjectNameTitle,
 				required: true,
 				component: this.createHorizontalContainer(view, [projectNameTextBox])
-			}, {
+			},
+			{
 				title: constants.ProjectLocationTitle,
 				required: true,
 				component: this.createHorizontalContainer(view, [locationTextBox, browseFolderButton])
 			}
-		]).component();
-		await view.initializeModel(form);
+		]);
+
+		// add version dropdown if the first project type has one
+		if (allProjectTypes[0].targetPlatforms) {
+			this.formBuilder.addFormItem(this.targetPlatformDropdownFormComponent);
+		}
+
+		await view.initializeModel(this.formBuilder.component());
 		this.initDialogComplete?.resolve();
+	}
+
+	/**
+	 * Gets the default target platform of the project type if there is one
+	 * @param projectType
+	 * @returns
+	 */
+	getDefaultTargetPlatform(projectType: IProjectType): string | undefined {
+		// only return the specified default target platform if it's also included in the project type's array of target platforms
+		if (projectType.defaultTargetPlatform && projectType.targetPlatforms?.includes(projectType.defaultTargetPlatform)) {
+			return projectType.defaultTargetPlatform;
+		} else {
+			return undefined;
+		}
 	}
 }

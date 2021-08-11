@@ -18,10 +18,14 @@ import { textLinkForeground, textLinkActiveForeground, focusBorder } from 'vs/pl
 import { IOpenerService } from 'vs/platform/opener/common/opener';
 import * as DOM from 'vs/base/browser/dom';
 import { ILogService } from 'vs/platform/log/common/log';
+import { domEvent } from 'vs/base/browser/event';
+import { Event } from 'vs/base/common/event';
+import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
+import { KeyCode } from 'vs/base/common/keyCodes';
 
 @Component({
 	selector: 'modelview-hyperlink',
-	template: `<a [href]="url" [title]="title" [attr.aria-label]="ariaLabel" target="blank" [ngStyle]="CSSStyles" [class]="cssClass">{{label}}</a>`
+	template: `<a [href]="url" [title]="getDisplayedTitle()" [attr.aria-label]="ariaLabel" [attr.role]="ariaRole" target="blank" [ngStyle]="CSSStyles" [class]="cssClass">{{label}}</a>`
 })
 export default class HyperlinkComponent extends TitledComponent<azdata.HyperlinkComponentProperties> implements IComponent, OnDestroy, AfterViewInit {
 	@Input() descriptor: IComponentDescriptor;
@@ -37,7 +41,16 @@ export default class HyperlinkComponent extends TitledComponent<azdata.Hyperlink
 	}
 
 	ngAfterViewInit(): void {
-		this._register(DOM.addDisposableListener(this._el.nativeElement, 'click', (e: MouseEvent) => this.onClick(e)));
+		const onClick = domEvent(this._el.nativeElement, 'click');
+		const onEnter = Event.chain(domEvent(this._el.nativeElement, 'keydown'))
+			.map(e => new StandardKeyboardEvent(e))
+			.filter(e => e.keyCode === KeyCode.Enter)
+			.event;
+		const onOpen = Event.any<DOM.EventLike>(onClick, onEnter);
+
+		this._register(onOpen(e => {
+			this.open(e);
+		}));
 		this.baseInit();
 	}
 
@@ -73,7 +86,11 @@ export default class HyperlinkComponent extends TitledComponent<azdata.Hyperlink
 		return this.getPropertyOrDefault<boolean>((props) => props.showLinkIcon, false);
 	}
 
-	public onClick(e: MouseEvent): void {
+	public getDisplayedTitle(): string {
+		return this.title || this.url || '';
+	}
+
+	public open(e: DOM.EventLike): void {
 		this.fireEvent({
 			eventType: ComponentEventType.onDidClick,
 			args: undefined

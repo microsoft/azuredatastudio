@@ -33,6 +33,7 @@ code-component .toolbar .carbon-taskbar {
 	position: sticky;
 	top: -16px;
 	margin-top: 5px;
+	height: 29px;
 }
 
 code-component .toolbar .carbon-taskbar.monaco-toolbar .monaco-action-bar .codicon.action-label {
