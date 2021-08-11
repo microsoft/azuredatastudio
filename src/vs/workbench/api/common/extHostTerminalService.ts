@@ -392,7 +392,7 @@ export abstract class BaseExtHostTerminalService extends Disposable implements I
 		if (id === null) {
 			this._activeTerminal = undefined;
 			if (original !== this._activeTerminal) {
-				this._onDidChangeActiveTerminal.fire(this._activeTerminal.value);
+				this._onDidChangeActiveTerminal.fire(this._activeTerminal?.value); // {{SQL CARBON EDIT}}
 			}
 			return;
 		}

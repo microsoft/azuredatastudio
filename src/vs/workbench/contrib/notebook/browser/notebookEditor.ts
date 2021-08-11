@@ -163,7 +163,7 @@ export class NotebookEditor extends EditorPane {
 		const activeElement = document.activeElement;
 		const value = this._widget.value;
 
-		return !!value && (DOM.isAncestor(activeElement, <any>(value.getDomNode() || DOM.isAncestor(activeElement, value.getOverflowContainerDomNode()))));
+		return !!value && (DOM.isAncestor(activeElement, <any>(value.getDomNode() || DOM.isAncestor(activeElement, value.getOverflowContainerDomNode())))); // {{SQL CARBON EDIT}}
 	}
 
 	override async setInput(input: NotebookEditorInput, options: INotebookEditorOptions | undefined, context: IEditorOpenContext, token: CancellationToken): Promise<void> {

@@ -1599,7 +1599,7 @@ export class SearchView extends ViewPane {
 			this.preferencesService.openGlobalSettings(undefined, options);
 	}
 
-	protected onLearnMore(): void {
+	protected onLearnMore(): void { // {{SQL CARBON EDIT}}
 		this.openerService.open(URI.parse('https://go.microsoft.com/fwlink/?linkid=853977'));
 	}
 

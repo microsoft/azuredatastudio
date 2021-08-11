@@ -169,7 +169,7 @@ export class ExtensionRecommendationsService extends Disposable implements IExte
 			...this.exeBasedRecommendations.otherRecommendations,
 			...this.dynamicWorkspaceRecommendations.recommendations,
 			...this.experimentalRecommendations.recommendations,
-			...this.staticRecommendations.recommendations
+			...this.staticRecommendations.recommendations // {{SQL CARBON EDIT}}
 		];
 
 		const extensionIds = distinct(recommendations.map(e => e.extensionId))

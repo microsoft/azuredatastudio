@@ -89,7 +89,7 @@ export const NEXT_COMPRESSED_FOLDER = 'nextCompressedFolder';
 export const FIRST_COMPRESSED_FOLDER = 'firstCompressedFolder';
 export const LAST_COMPRESSED_FOLDER = 'lastCompressedFolder';
 export const NEW_UNTITLED_FILE_COMMAND_ID = 'workbench.action.files.newUntitledFile';
-export const NEW_UNTITLED_PLAIN_FILE_COMMAND_ID = 'workbench.action.files.newUntitledPlainFile';
+export const NEW_UNTITLED_PLAIN_FILE_COMMAND_ID = 'workbench.action.files.newUntitledPlainFile'; // {{SQL CARBON EDIT}}
 export const NEW_UNTITLED_FILE_LABEL = nls.localize('newUntitledFile', "New Untitled File");
 
 export const openWindowCommand = (accessor: ServicesAccessor, toOpen: IWindowOpenable[], options?: IOpenWindowOptions) => {

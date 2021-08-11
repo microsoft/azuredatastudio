@@ -180,15 +180,6 @@ export function renderMarkdown(markdown: IMarkdownString, options: MarkdownRende
 				});
 			});
 
-			// const promise = Promise.all([value, withInnerHTML]).then(values => {
-			// 	const span = <HTMLDivElement>element.querySelector(`div[data-code="${id}"]`);
-			// 	if (span) {
-			// 		DOM.reset(span, values[0]);
-			// 	}
-			// }).catch(_err => {
-			// 	// ignore
-			// });
-
 			if (options.asyncRenderCallback) {
 				promise.then(options.asyncRenderCallback);
 			}

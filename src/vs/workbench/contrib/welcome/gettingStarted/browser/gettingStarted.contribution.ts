@@ -7,7 +7,7 @@ import { localize } from 'vs/nls';
 import { GettingStartedInputSerializer, GettingStartedPage, inGettingStartedContext } from 'vs/workbench/contrib/welcome/gettingStarted/browser/gettingStarted';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { EditorExtensions, IEditorInputFactoryRegistry } from 'vs/workbench/common/editor';
-import { registerAction2, Action2, MenuId } from 'vs/platform/actions/common/actions';
+import { MenuId, registerAction2, Action2 } from 'vs/platform/actions/common/actions';
 import { IInstantiationService, ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
 import { ContextKeyEqualsExpr } from 'vs/platform/contextkey/common/contextkey';
 import { IEditorService, SIDE_GROUP } from 'vs/workbench/services/editor/common/editorService';

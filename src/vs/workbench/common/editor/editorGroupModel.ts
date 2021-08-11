@@ -12,7 +12,7 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { dispose, Disposable, DisposableStore } from 'vs/base/common/lifecycle';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { coalesce } from 'vs/base/common/arrays';
-import { doHandleUpgrade } from 'sql/workbench/services/languageAssociation/common/doHandleUpgrade';
+import { doHandleUpgrade } from 'sql/workbench/services/languageAssociation/common/doHandleUpgrade'; // {{SQL CARBON EDIT}}
 
 const EditorOpenPositioning = {
 	LEFT: 'left',

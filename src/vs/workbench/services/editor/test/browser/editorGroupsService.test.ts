@@ -13,7 +13,7 @@ import { DisposableStore } from 'vs/base/common/lifecycle';
 import { MockScopableContextKeyService } from 'vs/platform/keybinding/test/common/mockKeybindingService';
 import { ConfirmResult } from 'vs/platform/dialogs/common/dialogs';
 
-suite.skip('EditorGroupsService', () => {
+suite.skip('EditorGroupsService', () => { // {{SQL CARBON EDIT}} Skip suite
 
 	const TEST_EDITOR_ID = 'MyFileEditorForEditorGroupService';
 	const TEST_EDITOR_INPUT_ID = 'testEditorInputForEditorGroupService';

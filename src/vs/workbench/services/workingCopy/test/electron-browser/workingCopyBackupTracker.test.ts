@@ -90,6 +90,7 @@ flakySuite('WorkingCopyBackupTracker (native)', function () {
 	let accessor: TestServiceAccessor;
 	const disposables = new DisposableStore();
 
+	// {{SQL CARBON EDIT}} Add retries and timeout
 	this.retries(3);
 	this.timeout(1000 * 20);
 	setup(async () => {

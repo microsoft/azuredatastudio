@@ -288,7 +288,7 @@ class StringReader {
 	eatRe(re: RegExp) {
 		const match = re.exec(this._input.slice(this.index));
 		if (!match) {
-			return undefined;
+			return undefined; // {{SQL CARBON EDIT}} Strict nulls
 		}
 
 		this.index += match[0].length;

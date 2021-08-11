@@ -20,7 +20,7 @@ import { NullLogService } from 'vs/platform/log/common/log';
 import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
 import type { IDisposable } from 'vs/base/common/lifecycle';
 
-suite.skip('ExtHostTreeView', function () {
+suite.skip('ExtHostTreeView', function () { // {{SQL CARBON EDIT}} Skip suite
 
 	class RecordingShape extends mock<MainThreadTreeViewsShape>() {
 

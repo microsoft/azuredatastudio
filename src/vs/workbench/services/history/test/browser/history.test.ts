@@ -17,7 +17,7 @@ import { IHistoryService } from 'vs/workbench/services/history/common/history';
 import { timeout } from 'vs/base/common/async';
 import { Event } from 'vs/base/common/event';
 
-suite.skip('HistoryService', function () {
+suite.skip('HistoryService', function () { // {{SQL CARBON EDIT}} Skip suite
 
 	const TEST_EDITOR_ID = 'MyTestEditorForEditorHistory';
 	const TEST_EDITOR_INPUT_ID = 'testEditorInputForHistoyService';

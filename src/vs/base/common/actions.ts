@@ -275,6 +275,7 @@ export class SubmenuAction implements IAction {
 	}
 	protected _setExpanded(value: boolean): void {
 	}
+	// {{SQL CARBON EDIT}} - End
 }
 
 export class EmptySubmenuAction extends Action {
