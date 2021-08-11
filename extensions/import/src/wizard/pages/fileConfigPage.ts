@@ -125,7 +125,7 @@ export class FileConfigPage extends ImportPage {
 		return true;
 	}
 
-	public setupNavigationValidator() {
+	public override setupNavigationValidator() {
 	}
 
 	private async createServerDropdown(): Promise<azdata.FormComponent> {
@@ -143,8 +143,6 @@ export class FileConfigPage extends ImportPage {
 				this.model.server = connectionValue.connection;
 				await this.populateDatabaseDropdown();
 			}
-			this.model.server = connectionValue.connection;
-
 			await this.populateDatabaseDropdown();
 		});
 
