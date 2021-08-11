@@ -10,7 +10,7 @@ import { ITaskSystem } from 'vs/workbench/contrib/tasks/common/taskSystem';
 import { ExecutionEngine } from 'vs/workbench/contrib/tasks/common/tasks';
 import * as TaskConfig from '../common/taskConfiguration';
 import { AbstractTaskService } from 'vs/workbench/contrib/tasks/browser/abstractTaskService';
-import { ITaskService, TaskFilter } from 'vs/workbench/contrib/tasks/common/taskService';
+import { TaskFilter, ITaskService } from 'vs/workbench/contrib/tasks/common/taskService';
 import { registerSingleton } from 'vs/platform/instantiation/common/extensions';
 import { TerminalTaskSystem } from 'vs/workbench/contrib/tasks/browser/terminalTaskSystem';
 import { IConfirmationResult, IDialogService } from 'vs/platform/dialogs/common/dialogs';

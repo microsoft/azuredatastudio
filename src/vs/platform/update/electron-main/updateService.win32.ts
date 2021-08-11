@@ -53,8 +53,8 @@ export class Win32UpdateService extends AbstractUpdateService {
 
 	@memoize
 	get cachePath(): Promise<string> {
-		const result = path.join(tmpdir(), `sqlops-update-${this.productService.target}-${process.arch}`);
-		return fs.promises.mkdir(result, { recursive: true }).then(() => result);
+		const result = path.join(tmpdir(), `sqlops-update-${this.productService.target}-${process.arch}`); // {{SQL CARBON EDIT}}
+		return pfs.Promises.mkdir(result, { recursive: true }).then(() => result);
 	}
 
 	constructor(

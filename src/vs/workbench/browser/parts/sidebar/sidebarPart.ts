@@ -118,9 +118,6 @@ export class SidebarPart extends CompositePart<Viewlet> implements IViewletServi
 			{ hasTitle: true, borderWidth: () => (this.getColor(SIDE_BAR_BORDER) || this.getColor(contrastBorder)) ? 1 : 0 }
 		);
 
-		// let t = viewDescriptorService.getDefaultViewContainer(ViewContainerLocation.Sidebar);
-		// console.log(t.id);
-
 		this.registerListeners();
 	}
 

@@ -502,8 +502,9 @@ class ActionBarRenderer extends Disposable implements ITableRenderer<ActionBarCe
 			inputBox,
 			dom.addStandardDisposableListener(inputBox.inputElement, dom.EventType.KEY_DOWN, async (e: IKeyboardEvent) => {
 				if (e.equals(KeyCode.Enter)) {
+					e.stopPropagation();
 					if (inputBox.validate() !== MessageType.ERROR) {
-						done(true, true);
+						return done(true, true);
 					} else {
 						return done(false, true);
 					}
@@ -514,7 +515,7 @@ class ActionBarRenderer extends Disposable implements ITableRenderer<ActionBarCe
 				}
 			}),
 			dom.addDisposableListener(inputBox.inputElement, dom.EventType.BLUR, () => {
-				done(inputBox.validate() !== MessageType.ERROR, true);
+				return done(inputBox.validate() !== MessageType.ERROR, true);
 			}),
 			styler
 		];

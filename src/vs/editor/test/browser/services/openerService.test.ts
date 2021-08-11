@@ -126,33 +126,6 @@ suite('OpenerService', function () {
 		assert.strictEqual(httpsResult, false);
 	});
 
-	test('delegate to commandsService, command:someid', async function () {
-		const openerService = new OpenerService(editorService, commandService);
-
-		const id = `aCommand${Math.random()}`;
-		CommandsRegistry.registerCommand(id, function () { });
-
-		await openerService.open(URI.parse('command:' + id).with({ query: '\"123\"' }), { allowCommands: true });
-		assert.strictEqual(lastCommand!.id, id);
-		assert.strictEqual(lastCommand!.args.length, 1);
-		assert.strictEqual(lastCommand!.args[0], '123');
-
-		await openerService.open(URI.parse('command:' + id), { allowCommands: true });
-		assert.strictEqual(lastCommand!.id, id);
-		assert.strictEqual(lastCommand!.args.length, 0);
-
-		await openerService.open(URI.parse('command:' + id).with({ query: '123' }), { allowCommands: true });
-		assert.strictEqual(lastCommand!.id, id);
-		assert.strictEqual(lastCommand!.args.length, 1);
-		assert.strictEqual(lastCommand!.args[0], 123);
-
-		await openerService.open(URI.parse('command:' + id).with({ query: JSON.stringify([12, true]) }), { allowCommands: true });
-		assert.strictEqual(lastCommand!.id, id);
-		assert.strictEqual(lastCommand!.args.length, 2);
-		assert.strictEqual(lastCommand!.args[0], 12);
-		assert.strictEqual(lastCommand!.args[1], true);
-	});
-
 	test('links validated by validators go to openers', async function () {
 		const openerService = new OpenerService(editorService, commandService);
 

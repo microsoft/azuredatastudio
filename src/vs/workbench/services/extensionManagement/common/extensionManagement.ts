@@ -9,7 +9,6 @@ import { IExtension, IScannedExtension, ExtensionType, ITranslatedScannedExtensi
 import { IExtensionManagementService, IGalleryExtension, IExtensionIdentifier, ILocalExtension, InstallOptions } from 'vs/platform/extensionManagement/common/extensionManagement';
 import { URI } from 'vs/base/common/uri';
 import { IWorkspace, IWorkspaceFolder } from 'vs/platform/workspace/common/workspace'; // {{SQL CARBON EDIT}}
-import { ExtensionRecommendationReason } from 'vs/workbench/services/extensionRecommendations/common/extensionRecommendations';
 
 export interface IExtensionManagementServer {
 	id: string;
@@ -107,15 +106,11 @@ export interface IWorkbenchExtensionEnablementService {
 	updateEnablementByWorkspaceTrustRequirement(): Promise<void>;
 }
 
+// {{SQL CARBON EDIT}}
 export interface IExtensionsConfigContent {
 	recommendations: string[];
 	unwantedRecommendations: string[];
 }
-
-export type RecommendationChangeNotification = {
-	extensionId: string,
-	isRecommended: boolean
-};
 
 export type DynamicRecommendation = 'dynamic';
 export type ConfigRecommendation = 'config';
@@ -129,12 +124,7 @@ export interface IExtensionRecommendation {
 	extensionId: string;
 	sources: ExtensionRecommendationSource[];
 }
-
-export interface IExtensionRecommendationReason {
-	reasonId: ExtensionRecommendationReason;
-	reasonText: string;
-}
-
+// {{SQL CARBON EDIT}} - End
 export const IWebExtensionsScannerService = createDecorator<IWebExtensionsScannerService>('IWebExtensionsScannerService');
 export interface IWebExtensionsScannerService {
 	readonly _serviceBrand: undefined;

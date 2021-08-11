@@ -213,7 +213,7 @@ flakySuite('Storage Library', function () {
 	});
 
 	test.skip('conflicting updates', async () => { // {{SQL CARBON EDIT}} test is disabled due to failures
-		let storage = new Storage(new SQLiteStorageDatabase(join('storageDir', 'storage.db')));
+		let storage = new Storage(new SQLiteStorageDatabase(join(testDir, 'storage.db')));
 		await storage.init();
 
 		let changes = new Set<string>();
