@@ -538,11 +538,16 @@ export class MigrationCutoverDialog {
 			await this._model.fetchStatus();
 			const errors = [];
 			errors.push(this._model.migrationOpStatus.error?.message);
+			errors.push(this._model._migration.asyncOperationResult?.error?.message);
+			errors.push(this._model.migrationStatus.properties.provisioningError);
 			errors.push(this._model.migrationStatus.properties.migrationFailureError?.message);
 			errors.push(this._model.migrationStatus.properties.migrationStatusDetails?.fileUploadBlockingErrors ?? []);
 			errors.push(this._model.migrationStatus.properties.migrationStatusDetails?.restoreBlockingReason);
 			this._dialogObject.message = {
-				text: errors.filter(e => e !== undefined).join(EOL),
+				// remove undefined and duplicate error entries
+				text: errors
+					.filter((e, i, arr) => e !== undefined && i === arr.indexOf(e))
+					.join(EOL),
 				level: this._model.migrationStatus.properties.migrationStatus === MigrationStatus.InProgress
 					|| this._model.migrationStatus.properties.migrationStatus === MigrationStatus.Completing
 					? azdata.window.MessageLevel.Warning
@@ -612,9 +617,12 @@ export class MigrationCutoverDialog {
 			const isBlobMigration = this._model.isBlobMigration();
 			// Displaying storage accounts and blob container for azure blob backups.
 			if (isBlobMigration) {
-				backupLocation = `${this._model._migration.migrationContext.properties.backupConfiguration.sourceLocation?.azureBlob?.storageAccountResourceId.split('/').pop()} - ${this._model._migration.migrationContext.properties.backupConfiguration.sourceLocation?.azureBlob?.blobContainerName}`;
+				const storageAccountResourceId = this._model._migration.migrationContext.properties.backupConfiguration?.sourceLocation?.azureBlob?.storageAccountResourceId;
+				const blobContainerName = this._model._migration.migrationContext.properties.backupConfiguration?.sourceLocation?.azureBlob?.blobContainerName;
+				backupLocation = `${storageAccountResourceId?.split('/').pop()} - ${blobContainerName}`;
 			} else {
-				backupLocation = this._model._migration.migrationContext.properties.backupConfiguration?.sourceLocation?.fileShare?.path! ?? '-';
+				const fileShare = this._model._migration.migrationContext.properties.backupConfiguration?.sourceLocation?.fileShare;
+				backupLocation = fileShare?.path! ?? '-';
 			}
 			this._backupLocationInfoField.text.value = backupLocation ?? '-';
 
