@@ -256,6 +256,7 @@ export class ConnectionDialogWidget extends Modal {
 
 		this._register(this._providerTypeSelectBox.onDidSelect(selectedProviderType => {
 			this.onProviderTypeSelected(selectedProviderType.selected);
+			this.focusOnConnectionType();
 		}));
 	}
 
