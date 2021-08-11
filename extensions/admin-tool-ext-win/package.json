@@ -2,7 +2,7 @@
   "name": "admin-tool-ext-win",
   "displayName": "%adminToolExtWin.displayName%",
   "description": "%adminToolExtWin.description%",
-  "version": "0.1.1",
+  "version": "0.0.4",
   "publisher": "Microsoft",
   "preview": true,
   "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/extensions/admin-tool-ext-win/license/Azure%20Data%20Studio%20Extension%20-%20Standalone%20(free)%20Use%20Terms.txt",
