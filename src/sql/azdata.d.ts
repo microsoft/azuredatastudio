@@ -858,7 +858,6 @@ declare module 'azdata' {
 		parseSyntax(ownerUri: string, query: string): Thenable<SyntaxParseResult>;
 		getQueryRows(rowData: QueryExecuteSubsetParams): Thenable<QueryExecuteSubsetResult>;
 		disposeQuery(ownerUri: string): Thenable<void>;
-		renameQuery(newUri: string, oldUri: string): Thenable<void>;
 		saveResults(requestParams: SaveResultsRequestParams): Thenable<SaveResultRequestResult>;
 		setQueryExecutionOptions(ownerUri: string, options: QueryExecutionOptions): Thenable<void>;
 
