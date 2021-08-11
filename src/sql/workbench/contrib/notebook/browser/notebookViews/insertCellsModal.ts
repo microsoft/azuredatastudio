@@ -19,10 +19,7 @@ import { attachCheckboxStyler } from 'sql/platform/theme/common/styler';
 import { ServiceOptionType } from 'sql/platform/connection/common/interfaces';
 import { ServiceOption } from 'azdata';
 import * as DialogHelper from 'sql/workbench/browser/modal/dialogHelper';
-import { TextCellComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/textCell.component';
-import { ComponentFactoryResolver, ViewContainerRef } from '@angular/core';
 import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
-import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
 import { inputBorder, inputValidationInfoBorder } from 'vs/platform/theme/common/colorRegistry';
 import { localize } from 'vs/nls';
 import { NotebookViewsExtension } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViewsExtension';
@@ -98,8 +95,6 @@ export class InsertCellsModal extends Modal {
 	constructor(
 		private onInsert: (cell: ICellModel) => void,
 		private _context: NotebookViewsExtension,
-		private _containerRef: ViewContainerRef,
-		private _componentFactoryResolver: ComponentFactoryResolver,
 		@ILogService logService: ILogService,
 		@IThemeService themeService: IThemeService,
 		@ILayoutService layoutService: ILayoutService,

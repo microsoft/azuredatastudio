@@ -155,7 +155,7 @@ suite('Notebook Views Actions', function (): void {
 		const instantiationService = new InstantiationService();
 		sinon.stub(instantiationService, 'createInstance').withArgs(InsertCellsModal, sinon.match.any, sinon.match.any, sinon.match.any, sinon.match.any).returns(insertCellsModal.object);
 
-		const insertCellAction = new InsertCellAction((cell: ICellModel) => { }, notebookViews, undefined, undefined, instantiationService);
+		const insertCellAction = new InsertCellAction((cell: ICellModel) => { }, notebookViews, undefined);
 		await insertCellAction.run();
 
 		assert.ok(rendered);
