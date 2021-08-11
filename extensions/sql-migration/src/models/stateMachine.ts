@@ -185,12 +185,22 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		return finalResult;
 	}
 
-	public async getDatabaseAssessments(): Promise<ServerAssessement> {
+	public async getDatabaseAssessments(targetType: MigrationTargetType): Promise<ServerAssessement> {
 		const ownerUri = await azdata.connection.getUriForConnection(this.sourceConnectionId);
 		try {
-			this._assessmentApiResponse = (await this.migrationService.getAssessments(ownerUri, this._databaseAssessment))!;
+			const response = (await this.migrationService.getAssessments(ownerUri, this._databaseAssessment))!;
+			if (response?.assessmentResult) {
+				response.assessmentResult.items = response.assessmentResult.items?.filter(
+					issue => issue.appliesToMigrationTargetPlatform === targetType);
+
+				response.assessmentResult.databases?.forEach(
+					database => database.items = database.items?.filter(
+						issue => issue.appliesToMigrationTargetPlatform === targetType));
+			}
+
+			this._assessmentApiResponse = response;
 			this._assessmentResults = {
-				issues: this._assessmentApiResponse?.assessmentResult?.items ?? [],
+				issues: this._assessmentApiResponse?.assessmentResult?.items || [],
 				databaseAssessments: this._assessmentApiResponse?.assessmentResult?.databases?.map(d => {
 					return {
 						name: d.name,
