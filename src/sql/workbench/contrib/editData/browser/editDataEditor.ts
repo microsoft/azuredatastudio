@@ -7,7 +7,7 @@ import * as strings from 'vs/base/common/strings';
 import * as DOM from 'vs/base/browser/dom';
 import * as nls from 'vs/nls';
 
-import { EditorOptions, EditorInput, IEditorControl, IEditorPane, IEditorOpenContext } from 'vs/workbench/common/editor';
+import { IEditorControl, IEditorPane, IEditorOpenContext } from 'vs/workbench/common/editor';
 import { EditorPane } from 'vs/workbench/browser/parts/editor/editorPane';
 
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
@@ -38,6 +38,8 @@ import { IStorageService } from 'vs/platform/storage/common/storage';
 import { IEditorGroup } from 'vs/workbench/services/editor/common/editorGroupsService';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { IActionViewItem } from 'vs/base/browser/ui/actionbar/actionbar';
+import { EditorInput } from 'vs/workbench/common/editor/editorInput';
+import { IEditorOptions } from 'vs/platform/editor/common/editor';
 
 /**
  * Editor that hosts an action bar and a resultSetInput for an edit data session
@@ -214,7 +216,7 @@ export class EditDataEditor extends EditorPane {
 	/**
 	 * Sets the input data for this editor.
 	 */
-	public override setInput(newInput: EditDataInput, options?: EditorOptions, context?: IEditorOpenContext): Promise<void> {
+	public override setInput(newInput: EditDataInput, options?: IEditorOptions, context?: IEditorOpenContext): Promise<void> {
 		let oldInput = <EditDataInput>this.input;
 		if (!newInput.setup) {
 			this._initialized = false;
@@ -492,7 +494,7 @@ export class EditDataEditor extends EditorPane {
 	/**
 	 * Sets input for the results editor after it has been created.
 	 */
-	private _onResultsEditorCreated(resultsEditor: EditDataResultsEditor, resultsInput: EditDataResultsInput, options: EditorOptions): Promise<void> {
+	private _onResultsEditorCreated(resultsEditor: EditDataResultsEditor, resultsInput: EditDataResultsInput, options: IEditorOptions): Promise<void> {
 		this._resultsEditor = resultsEditor;
 		return this._resultsEditor.setInput(resultsInput, options, undefined);
 	}
@@ -500,7 +502,7 @@ export class EditDataEditor extends EditorPane {
 	/**
 	 * Sets input for the SQL editor after it has been created.
 	 */
-	private _onSqlEditorCreated(sqlEditor: TextResourceEditor, sqlInput: UntitledTextEditorInput, options: EditorOptions): Thenable<void> {
+	private _onSqlEditorCreated(sqlEditor: TextResourceEditor, sqlInput: UntitledTextEditorInput, options: IEditorOptions): Thenable<void> {
 		this._sqlEditor = sqlEditor;
 		return this._sqlEditor.setInput(sqlInput, options, undefined, CancellationToken.None);
 	}
@@ -520,7 +522,7 @@ export class EditDataEditor extends EditorPane {
 	 * - Opened for the first time
 	 * - Opened with a new EditDataInput
 	 */
-	private _setNewInput(newInput: EditDataInput, options?: EditorOptions): Promise<any> {
+	private _setNewInput(newInput: EditDataInput, options?: IEditorOptions): Promise<any> {
 
 		// Promises that will ensure proper ordering of editor creation logic
 		let createEditors: () => Promise<any>;
@@ -606,7 +608,7 @@ export class EditDataEditor extends EditorPane {
 	 * Handles setting input for this editor. If this new input does not match the old input (e.g. a new file
 	 * has been opened with the same editor, or we are opening the editor for the first time).
 	 */
-	private _updateInput(oldInput: EditDataInput, newInput: EditDataInput, options?: EditorOptions): Promise<void> {
+	private _updateInput(oldInput: EditDataInput, newInput: EditDataInput, options?: IEditorOptions): Promise<void> {
 		if (this._sqlEditor) {
 			this._sqlEditor.clearInput();
 		}
