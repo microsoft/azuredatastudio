@@ -50,6 +50,10 @@ export class NotebookLinkHandler {
 			} else {
 				this._href = this._link.attributes['href']?.nodeValue;
 			}
+			let spaceLink = /\s/.test(this._link.attributes['href']?.nodeValue);
+			if (spaceLink) {
+				this._href = this._link.attributes['href']?.nodeValue;
+			}
 			this._notebookUriLink = this._href ? URI.parse(encodeURI(this._href)) : undefined;
 			this._isFile = this._link.protocol === 'file:';
 			this._isAnchorLink = this._notebookUriLink?.fragment ? true : false;
