@@ -742,7 +742,8 @@ export class ListDatabasesActionItem extends Disposable implements IActionViewIt
 	 */
 	private removePoolInstanceName(dbName: string): string {
 		if (dbName.includes('@')) {
-			dbName = dbName.split('@')[0];
+			const lastIndex = dbName.lastIndexOf('@');
+			dbName = dbName.slice(0, lastIndex);
 		}
 		return dbName;
 	}
