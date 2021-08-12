@@ -188,6 +188,28 @@
         ],
         "configuration": "./language-configuration.json"
       }
+    ],
+    "grammars": [
+      {
+        "language": "loganalytics",
+        "scopeName": "source.azuremonitor",
+        "path": "./syntaxes/azuremonitor.tmLanguage"
+      }
+    ],
+    "themes": [
+      {
+        "label": "[Kuskus] Azure Monitor Logs (Dark)",
+        "uiTheme": "vs-dark",
+        "path": "./themes/kuskus-azuremonitorlogs-dark.json"
+      },
+      {
+        "label": "[Kuskus] Azure Monitor Logs 2 (Dark)",
+        "uiTheme": "vs-dark",
+        "path": "./themes/kuskus-azuremonitorlogs-2-dark.json"
+      }
+    ],
+    "outputChannels": [
+      "AzureMonitorLogs"
     ]
   },
   "scripts": {

@@ -1,0 +1,12 @@
+{
+	"tokenColors": "./Kuskus.AzureMonitorLogs.2.Dark.tmTheme",
+	"colors": {
+		"editor.background": "#222224",
+		"editorCursor.foreground": "#F8F8F0",
+		"editor.foreground": "#F8F8F2",
+		"editorWhitespace.foreground": "#3B3A32",
+		"editor.lineHighlightBackground": "#3D4247",
+		"editor.selectionBackground": "#1268AC"
+	},
+	"name": "[Kuskus] Azure Monitor Logs 2 (Dark)"
+}
