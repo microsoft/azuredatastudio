@@ -1,0 +1,115 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+.monaco-tree {
+	height: 100%;
+	width: 100%;
+	white-space: nowrap;
+	user-select: none;
+	-webkit-user-select: none;
+	-ms-user-select: none;
+	position: relative;
+}
+
+.monaco-tree > .monaco-scrollable-element {
+	height: 100%;
+}
+
+.monaco-tree > .monaco-scrollable-element > .monaco-tree-wrapper {
+	height: 100%;
+	width: 100%;
+	position: relative;
+}
+
+.monaco-tree .monaco-tree-rows {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+}
+
+.monaco-tree .monaco-tree-rows > .monaco-tree-row {
+	box-sizing:	border-box;
+	cursor: pointer;
+	overflow: hidden;
+	width: 100%;
+	touch-action: none;
+}
+
+.monaco-tree .monaco-tree-rows > .monaco-tree-row > .content {
+	position: relative;
+	height: 100%;
+}
+
+.monaco-tree-drag-image {
+	display: inline-block;
+	padding: 1px 7px;
+	border-radius: 10px;
+	font-size: 12px;
+	position: absolute;
+}
+
+/* for OS X ballistic scrolling */
+.monaco-tree .monaco-tree-rows > .monaco-tree-row.scrolling {
+	display: none;
+}
+
+/* Highlighted */
+
+.monaco-tree.highlighted .monaco-tree-rows > .monaco-tree-row:not(.highlighted) {
+	opacity: 0.3;
+}
+
+/* {{SQL CARBON EDIT}} lower css settings
+/* Expansion */
+.monaco-tree .monaco-tree-rows.show-twisties > .monaco-tree-row.has-children > .content:before {
+	content: ' ';
+	position: absolute;
+	display: block;
+	background: url('tree-collapsed-light.svg') 50% 50% no-repeat;
+	width: 16px;
+	height: 100%;
+	top: 0;
+	left: -16px;
+}
+
+.monaco-tree .monaco-tree-rows.show-twisties > .monaco-tree-row.expanded > .content:before {
+	background-image: url('tree-expanded-light.svg');
+}
+
+/* {{SQL CARBON EDIT}} -- Display a high-contrast arrow when an expandable item is selected and expanded */
+.monaco-tree.focused .monaco-tree-rows.show-twisties > .monaco-tree-row.has-children.selected.expanded:not(.loading) > .content:before {
+	background-image: url('tree-expanded-hc.svg');
+}
+
+/* {{SQL CARBON EDIT}} -- Display a high-contrast arrow when an expandable item is selected and collapsed */
+.monaco-tree.focused .monaco-tree-rows.show-twisties > .monaco-tree-row.has-children.selected:not(.loading) > .content:before {
+	background-image: url('tree-collapsed-hc.svg');
+}
+
+.monaco-tree .monaco-tree-rows > .monaco-tree-row.has-children.loading > .content:before {
+	background-image: url('loading.svg');
+}
+.vs-dark .monaco-tree .monaco-tree-rows.show-twisties > .monaco-tree-row.has-children > .content:before {
+	background-image: url('tree-collapsed-dark.svg');
+}
+
+.vs-dark .monaco-tree .monaco-tree-rows.show-twisties > .monaco-tree-row.expanded > .content:before {
+	background-image: url('tree-expanded-dark.svg');
+}
+
+.vs-dark .monaco-tree .monaco-tree-rows > .monaco-tree-row.has-children.loading > .content:before {
+	background-image: url('loading-dark.svg');
+}
+
+.hc-black .monaco-tree .monaco-tree-rows.show-twisties > .monaco-tree-row.has-children > .content:before	{
+	background-image: url('tree-collapsed-hc.svg');
+}
+
+.hc-black .monaco-tree .monaco-tree-rows.show-twisties > .monaco-tree-row.expanded > .content:before {
+	background-image: url('tree-expanded-hc.svg');
+}
+
+.hc-black .monaco-tree .monaco-tree-rows > .monaco-tree-row.has-children.loading > .content:before {
+	background-image: url('loading-hc.svg');
+}
