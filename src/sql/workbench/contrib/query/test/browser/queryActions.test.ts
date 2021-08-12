@@ -45,6 +45,22 @@ suite('SQL QueryAction Tests', () => {
 	let queryModelService: TypeMoq.Mock<TestQueryModelService>;
 	let connectionManagementService: TypeMoq.Mock<TestConnectionManagementService>;
 
+	// Mock class for server info since interfaces can't be mocked
+	const mockServerInfo: ServerInfo = {
+		serverMajorVersion: 12,
+		serverReleaseVersion: 12,
+		engineEditionId: 12,
+		serverVersion: 'Test',
+		serverLevel: 'Test',
+		serverEdition: 'Test',
+		isCloud: false,
+		azureVersion: 12,
+		osVersion: 'Test',
+		cpuCount: 0,
+		physicalMemoryInMb: 100,
+		options: undefined
+	};
+
 	setup(() => {
 
 		const contextkeyservice = new MockContextKeyService();
@@ -465,7 +481,7 @@ suite('SQL QueryAction Tests', () => {
 		// ... Mock "isConnected" in ConnectionManagementService
 		connectionManagementService.setup(x => x.isConnected(TypeMoq.It.isAnyString())).returns(() => isConnected);
 		connectionManagementService.setup(x => x.onConnectionChanged).returns(() => Event.None);
-		connectionManagementService.setup(x => x.getServerInfo(TypeMoq.It.isAny())).returns(() => <ServerInfo>{ serverEdition: 'test', serverMajorVersion: 12 });
+		connectionManagementService.setup(x => x.getServerInfo(TypeMoq.It.isAny())).returns(() => mockServerInfo);
 		connectionManagementService.setup(x => x.getConnectionProfile(TypeMoq.It.isAny())).returns(() => <IConnectionProfile>{
 			databaseName: databaseName
 		});
@@ -497,10 +513,10 @@ suite('SQL QueryAction Tests', () => {
 		// ... Create event emitter we can use to trigger db changed event
 		let dbChangedEmitter = new Emitter<IConnectionParams>();
 
-		// ... Create mock connection management service
+		// ... Create mock connection management service and server info
 		let databaseName = 'foobar';
 		connectionManagementService.setup(x => x.onConnectionChanged).returns(() => dbChangedEmitter.event);
-		connectionManagementService.setup(x => x.getServerInfo(TypeMoq.It.isAny())).returns(() => <ServerInfo>{ serverEdition: 'test', serverMajorVersion: 12 });
+		connectionManagementService.setup(x => x.getServerInfo(TypeMoq.It.isAny())).returns(() => mockServerInfo);
 		connectionManagementService.setup(x => x.getConnectionProfile(TypeMoq.It.isAny())).returns(() => <IConnectionProfile>{ databaseName: databaseName });
 		connectionManagementService.setup(x => x.changeDatabase(TypeMoq.It.isAnyString(), TypeMoq.It.isAnyString())).returns(() => Promise.resolve(true));
 
@@ -524,7 +540,7 @@ suite('SQL QueryAction Tests', () => {
 		// ... Create mock connection management service that will not claim it's connected
 		let databaseName = 'foobar';
 		connectionManagementService.setup(x => x.onConnectionChanged).returns(() => dbChangedEmitter.event);
-		connectionManagementService.setup(x => x.getServerInfo(TypeMoq.It.isAny())).returns(() => <ServerInfo>{ serverEdition: 'test', serverMajorVersion: 12 });
+		connectionManagementService.setup(x => x.getServerInfo(TypeMoq.It.isAny())).returns(() => mockServerInfo);
 		connectionManagementService.setup(x => x.getConnectionProfile(TypeMoq.It.isAny())).returns(() => <IConnectionProfile>{ databaseName: databaseName });
 		connectionManagementService.setup(x => x.changeDatabase(TypeMoq.It.isAnyString(), TypeMoq.It.isAnyString())).returns(() => Promise.resolve(true));
 
