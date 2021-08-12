@@ -129,15 +129,15 @@ export class SummaryPage extends ImportPage {
 
 		let result: InsertDataResponse;
 		let err;
-		let includePasswordInConnectionString = (this.model.server.options.authenticationType === 'Integrated') ? false : true;
 
-		const connectionString = await azdata.connection.getConnectionString(this.model.server.connectionId, includePasswordInConnectionString);
+		const currentServer = this.model.server;
+		const includePasswordInConnectionString = (currentServer.options.authenticationType === 'Integrated') ? false : true;
+		const connectionString = await azdata.connection.getConnectionString(currentServer.connectionId, includePasswordInConnectionString);
 
 		let accessToken = undefined;
-		if (this.model.server.options.authenticationType = 'AzureMFA') {
-			const connection = await azdata.connection.getCurrentConnection();
-			const azureAccount = (await azdata.accounts.getAllAccounts()).filter(v => v.key.accountId === connection.options.azureAccount)[0];
-			accessToken = await (await azdata.accounts.getAccountSecurityToken(azureAccount, connection.options.azureTenantId, azdata.AzureResource.Sql)).token;
+		if (currentServer.options.authenticationType = 'AzureMFA') {
+			const azureAccount = (await azdata.accounts.getAllAccounts()).filter(v => v.key.accountId === currentServer.options.azureAccount)[0];
+			accessToken = await (await azdata.accounts.getAccountSecurityToken(azureAccount, currentServer.options.azureTenantId, azdata.AzureResource.Sql)).token;
 		}
 
 		try {
