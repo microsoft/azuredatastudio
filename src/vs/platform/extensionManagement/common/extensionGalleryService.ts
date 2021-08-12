@@ -948,8 +948,8 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 			if (!vsCodeEngine && !azDataEngine) {
 				return null;
 			}
-			const vsCodeEngineValid = !vsCodeEngine || (vsCodeEngine && isEngineValid(vsCodeEngine, this.productService.vscodeVersion));
-			const azDataEngineValid = !azDataEngine || (azDataEngine && isEngineValid(azDataEngine, this.productService.version));
+			const vsCodeEngineValid = !vsCodeEngine || (vsCodeEngine && isEngineValid(vsCodeEngine, this.productService.vscodeVersion, this.productService.date));
+			const azDataEngineValid = !azDataEngine || (azDataEngine && isEngineValid(azDataEngine, this.productService.version, this.productService.date));
 			if (vsCodeEngineValid && azDataEngineValid) {
 				return version;
 			}

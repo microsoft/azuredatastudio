@@ -980,8 +980,8 @@ export class ExtensionsWorkbenchService extends Disposable implements IExtension
 		// This is the execution path for install/update extension from marketplace.
 		// Check both the vscode version and azure data studio version
 		// The check is added here because we want to fail fast instead of downloading the VSIX and then fail.
-		if (gallery.properties.engine && (!isEngineValid(gallery.properties.engine, this.productService.vscodeVersion)
-			|| (gallery.properties.azDataEngine && !isEngineValid(gallery.properties.azDataEngine, this.productService.version)))) {
+		if (gallery.properties.engine && (!isEngineValid(gallery.properties.engine, this.productService.vscodeVersion, this.productService.date)
+			|| (gallery.properties.azDataEngine && !isEngineValid(gallery.properties.azDataEngine, this.productService.version, this.productService.date)))) {
 			return Promise.reject(new Error(nls.localize('incompatible2', "Unable to install version '{2}' of extension '{0}' as it is not compatible with Azure Data Studio '{1}'.", extension.gallery!.identifier.id, this.productService.version, gallery.version)));
 		}
 
