@@ -19,12 +19,12 @@
         <Disp Icon="Dir" LocTbl="false" />
         <Item ItemId=";(...) ers.AzureMonitorContainerLabel" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
-            <Val><![CDATA[Azure Monitor Logs workspace]]></Val>
+            <Val><![CDATA[Log Analytics workspace]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
-              <Val><![CDATA[Azure Monitor 로그 작업 영역]]></Val>
+              <Val><![CDATA[Log Analytics 작업 영역]]></Val>
             </Tgt>
             <Prev Cat="Text">
-              <Val><![CDATA[Azure Monitor Workspace]]></Val>
+              <Val><![CDATA[Azure Monitor Logs workspace]]></Val>
             </Prev>
           </Str>
           <Disp Icon="Str" />

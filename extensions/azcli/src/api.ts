@@ -26,28 +26,31 @@ export function throwIfNoAz(localAz: IAzTool | undefined): asserts localAz {
 	}
 }
 
-export function getExtensionApi(azToolService: AzToolService): azExt.IExtension {
+export function getExtensionApi(azToolService: AzToolService, localAzDiscovered: Promise<IAzTool | undefined>): azExt.IExtension {
 	return {
-		az: getAzApi(azToolService)
+		az: getAzApi(localAzDiscovered, azToolService)
 	};
 }
 
-export function getAzApi(azToolService: AzToolService): azExt.IAzApi {
+export function getAzApi(localAzDiscovered: Promise<IAzTool | undefined>, azToolService: AzToolService): azExt.IAzApi {
 	return {
 		arcdata: {
 			dc: {
 				endpoint: {
 					list: async (namespace: string, additionalEnvVars?: azExt.AdditionalEnvVars) => {
+						await localAzDiscovered;
 						validateAz(azToolService.localAz);
 						return azToolService.localAz!.arcdata.dc.endpoint.list(namespace, additionalEnvVars);
 					}
 				},
 				config: {
 					list: async (additionalEnvVars?: azExt.AdditionalEnvVars) => {
+						await localAzDiscovered;
 						validateAz(azToolService.localAz);
 						return azToolService.localAz!.arcdata.dc.config.list(additionalEnvVars);
 					},
 					show: async (namespace: string, additionalEnvVars?: azExt.AdditionalEnvVars) => {
+						await localAzDiscovered;
 						validateAz(azToolService.localAz);
 						return azToolService.localAz!.arcdata.dc.config.show(namespace, additionalEnvVars);
 					}
@@ -57,14 +60,17 @@ export function getAzApi(azToolService: AzToolService): azExt.IAzApi {
 		postgres: {
 			arcserver: {
 				delete: async (name: string, namespace: string, additionalEnvVars?: azExt.AdditionalEnvVars) => {
+					await localAzDiscovered;
 					validateAz(azToolService.localAz);
 					return azToolService.localAz!.postgres.arcserver.delete(name, namespace, additionalEnvVars);
 				},
 				list: async (namespace: string, additionalEnvVars?: azExt.AdditionalEnvVars) => {
+					await localAzDiscovered;
 					validateAz(azToolService.localAz);
 					return azToolService.localAz!.postgres.arcserver.list(namespace, additionalEnvVars);
 				},
 				show: async (name: string, namespace: string, additionalEnvVars?: azExt.AdditionalEnvVars) => {
+					await localAzDiscovered;
 					validateAz(azToolService.localAz);
 					return azToolService.localAz!.postgres.arcserver.show(name, namespace, additionalEnvVars);
 				},
@@ -87,6 +93,7 @@ export function getAzApi(azToolService: AzToolService): azExt.IAzApi {
 					},
 					namespace: string,
 					additionalEnvVars?: azExt.AdditionalEnvVars) => {
+					await localAzDiscovered;
 					validateAz(azToolService.localAz);
 					return azToolService.localAz!.postgres.arcserver.edit(name, args, namespace, additionalEnvVars);
 				}
@@ -95,14 +102,17 @@ export function getAzApi(azToolService: AzToolService): azExt.IAzApi {
 		sql: {
 			miarc: {
 				delete: async (name: string, namespace: string, additionalEnvVars?: azExt.AdditionalEnvVars) => {
+					await localAzDiscovered;
 					validateAz(azToolService.localAz);
 					return azToolService.localAz!.sql.miarc.delete(name, namespace, additionalEnvVars);
 				},
 				list: async (namespace: string, additionalEnvVars?: azExt.AdditionalEnvVars) => {
+					await localAzDiscovered;
 					validateAz(azToolService.localAz);
 					return azToolService.localAz!.sql.miarc.list(namespace, additionalEnvVars);
 				},
 				show: async (name: string, namespace: string, additionalEnvVars?: azExt.AdditionalEnvVars) => {
+					await localAzDiscovered;
 					validateAz(azToolService.localAz);
 					return azToolService.localAz!.sql.miarc.show(name, namespace, additionalEnvVars);
 				},
@@ -118,20 +128,29 @@ export function getAzApi(azToolService: AzToolService): azExt.IAzApi {
 					namespace: string,
 					additionalEnvVars?: azExt.AdditionalEnvVars
 				) => {
+					await localAzDiscovered;
 					validateAz(azToolService.localAz);
 					return azToolService.localAz!.sql.miarc.edit(name, args, namespace, additionalEnvVars);
 				}
 			}
 		},
 		getPath: async () => {
+			await localAzDiscovered;
 			throwIfNoAz(azToolService.localAz);
 			return azToolService.localAz.getPath();
 		},
-		getSemVersion: async () => {
+		getSemVersionAz: async () => {
+			await localAzDiscovered;
 			throwIfNoAz(azToolService.localAz);
-			return azToolService.localAz.getSemVersion();
+			return azToolService.localAz.getSemVersionAz();
+		},
+		getSemVersionArc: async () => {
+			await localAzDiscovered;
+			throwIfNoAz(azToolService.localAz);
+			return azToolService.localAz.getSemVersionArc();
 		},
 		version: async () => {
+			await localAzDiscovered;
 			throwIfNoAz(azToolService.localAz);
 			return azToolService.localAz.version();
 		}

@@ -504,14 +504,6 @@ declare module 'azdata' {
 		 */
 		osVersion: string;
 		/**
-		 * The CPU count of the host running the server.
-		 */
-		cpuCount: number;
-		/**
-		 * The physical memory of the host running the server.
-		 */
-		physicalMemoryInMb: number;
-		/**
 		 * options for all new server properties.
 		 */
 		options: { [key: string]: any };
@@ -2699,7 +2691,7 @@ declare module 'azdata' {
 	}
 
 	// Building on top of flex item
-	export interface SplitViewBuilder extends ContainerBuilder<SplitViewContainer, SplitViewLayout, FlexItemLayout, SplitViewContainer> {
+	export interface SplitViewBuilder extends ContainerBuilder<SplitViewContainer, SplitViewLayout, FlexItemLayout, ComponentProperties> {
 	}
 
 	export interface DivBuilder extends ContainerBuilder<DivContainer, DivLayout, DivItemLayout, DivContainerProperties> {
