@@ -326,7 +326,7 @@ export class BookModel {
 				}
 			}
 		}
-		element.children = JSON.stringify(treeItems);
+		element.hasChildren = treeItems.length > 0;
 		this.bookItems = treeItems;
 		return treeItems;
 	}
