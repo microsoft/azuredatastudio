@@ -728,8 +728,11 @@ export class ListDatabasesActionItem extends Disposable implements IActionViewIt
 	 */
 	private isDWGen3Database(id: string): boolean {
 		const serverInfo = this.connectionManagementService.getServerInfo(id);
-		return serverInfo.serverEdition === sqlDataWarehouse &&
-			serverInfo.serverMajorVersion === gen3Version;
+		if (serverInfo) {
+			return serverInfo.serverEdition === sqlDataWarehouse &&
+				serverInfo.serverMajorVersion === gen3Version;
+		}
+		return false;
 	}
 
 	/**

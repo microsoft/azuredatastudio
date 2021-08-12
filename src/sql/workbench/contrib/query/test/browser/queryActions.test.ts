@@ -464,6 +464,7 @@ suite('SQL QueryAction Tests', () => {
 
 		// ... Mock "isConnected" in ConnectionManagementService
 		connectionManagementService.setup(x => x.isConnected(TypeMoq.It.isAnyString())).returns(() => isConnected);
+		connectionManagementService.setup(x => x.getServerInfo(TypeMoq.It.isAny())).returns(() => <ServerInfo>{ serverMajorVersion: 12, serverEdition: 'Test' });
 		connectionManagementService.setup(x => x.onConnectionChanged).returns(() => Event.None);
 		connectionManagementService.setup(x => x.getConnectionProfile(TypeMoq.It.isAny())).returns(() => <IConnectionProfile>{
 			databaseName: databaseName
@@ -523,6 +524,7 @@ suite('SQL QueryAction Tests', () => {
 		// ... Create mock connection management service that will not claim it's connected
 		let databaseName = 'foobar';
 		connectionManagementService.setup(x => x.onConnectionChanged).returns(() => dbChangedEmitter.event);
+		connectionManagementService.setup(x => x.getServerInfo(TypeMoq.It.isAny())).returns(() => <ServerInfo>{ serverMajorVersion: 12, serverEdition: 'Test' });
 		connectionManagementService.setup(x => x.getConnectionProfile(TypeMoq.It.isAny())).returns(() => <IConnectionProfile>{ databaseName: databaseName });
 		connectionManagementService.setup(x => x.changeDatabase(TypeMoq.It.isAnyString(), TypeMoq.It.isAnyString())).returns(() => Promise.resolve(true));
 

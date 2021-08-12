@@ -267,21 +267,7 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 	}
 
 	getServerInfo(profileId: string): azdata.ServerInfo {
-		const mockServerInfo: azdata.ServerInfo = {
-			serverMajorVersion: 12,
-			serverReleaseVersion: 12,
-			engineEditionId: 12,
-			serverVersion: 'Test',
-			serverLevel: 'Test',
-			serverEdition: 'Test',
-			isCloud: false,
-			azureVersion: 12,
-			osVersion: 'Test',
-			cpuCount: 0,
-			physicalMemoryInMb: 100,
-			options: undefined
-		};
-		return mockServerInfo;
+		return undefined;
 	}
 
 	getConnectionString(connectionId: string): Thenable<string> {
