@@ -192,7 +192,7 @@ describe('ProjectsController', function (): void {
 
 				// confirm result
 				should(proj.files.length).equal(1, 'number of file/folder entries'); // lowerEntry and the contained scripts should be deleted
-				should(proj.files[0].relativePath).equal('UpperFolder');
+				should(proj.files[0].relativePath).equal('UpperFolder\\');
 				should(proj.preDeployScripts.length).equal(0);
 				should(proj.postDeployScripts.length).equal(0);
 				should(proj.noneDeployScripts.length).equal(0);
@@ -253,7 +253,7 @@ describe('ProjectsController', function (): void {
 
 				// confirm result
 				should(proj.files.length).equal(1, 'number of file/folder entries'); // LowerFolder and the contained scripts should be deleted
-				should(proj.files[0].relativePath).equal('UpperFolder'); // UpperFolder should still be there
+				should(proj.files[0].relativePath).equal('UpperFolder\\'); // UpperFolder should still be there
 				should(proj.preDeployScripts.length).equal(0);
 				should(proj.postDeployScripts.length).equal(0);
 				should(proj.noneDeployScripts.length).equal(0);
@@ -490,7 +490,7 @@ describe('ProjectsController', function (): void {
 			createProjectFromDatabaseDialog.callBase = true;
 			createProjectFromDatabaseDialog.setup(x => x.handleCreateButtonClick()).returns(async () => {
 				await projController.object.createProjectFromDatabaseCallback({
-					serverId: 'My Id',
+					connectionUri: 'My Id',
 					database: 'My Database',
 					projName: 'testProject',
 					filePath: 'testLocation',
@@ -510,7 +510,7 @@ describe('ProjectsController', function (): void {
 			});
 
 			let dialog = await projController.object.createProjectFromDatabase(undefined);
-			await dialog.handleCreateButtonClick();
+			await dialog!.handleCreateButtonClick();
 
 			should(holler).equal(createProjectFromDbHoller, 'executionCallback() is supposed to have been setup and called for create project from database scenario');
 		});
@@ -519,7 +519,7 @@ describe('ProjectsController', function (): void {
 			let folderPath = await testUtils.generateTestFolderPath();
 			let projectName = 'My Project';
 			let importPath;
-			let model: ImportDataModel = { serverId: 'My Id', database: 'My Database', projName: projectName, filePath: folderPath, version: '1.0.0.0', extractTarget: mssql.ExtractTarget['file'] };
+			let model: ImportDataModel = { connectionUri: 'My Id', database: 'My Database', projName: projectName, filePath: folderPath, version: '1.0.0.0', extractTarget: mssql.ExtractTarget['file'] };
 
 			const projController = new ProjectsController();
 			projController.setFilePath(model);
@@ -532,7 +532,7 @@ describe('ProjectsController', function (): void {
 			let folderPath = await testUtils.generateTestFolderPath();
 			let projectName = 'My Project';
 			let importPath;
-			let model: ImportDataModel = { serverId: 'My Id', database: 'My Database', projName: projectName, filePath: folderPath, version: '1.0.0.0', extractTarget: mssql.ExtractTarget['schemaObjectType'] };
+			let model: ImportDataModel = { connectionUri: 'My Id', database: 'My Database', projName: projectName, filePath: folderPath, version: '1.0.0.0', extractTarget: mssql.ExtractTarget['schemaObjectType'] };
 
 			const projController = new ProjectsController();
 			projController.setFilePath(model);
@@ -583,7 +583,7 @@ describe('ProjectsController', function (): void {
 			});
 
 			let dialog = await projController.object.addDatabaseReference(proj);
-			await dialog.addReferenceClick();
+			await dialog!.addReferenceClick();
 
 			should(holler).equal(addDbRefHoller, 'executionCallback() is supposed to have been setup and called for add database reference scenario');
 		});
@@ -597,7 +597,7 @@ describe('ProjectsController', function (): void {
 			const project2 = await Project.openProject(vscode.Uri.file(projPath2).fsPath);
 			const showErrorMessageSpy = sinon.spy(vscode.window, 'showErrorMessage');
 			const dataWorkspaceMock = TypeMoq.Mock.ofType<dataworkspace.IExtension>();
-			dataWorkspaceMock.setup(x => x.getProjectsInWorkspace(TypeMoq.It.isAny())).returns(() => Promise.resolve([vscode.Uri.file(project1.projectFilePath), vscode.Uri.file(project2.projectFilePath)]));
+			dataWorkspaceMock.setup(x => x.getProjectsInWorkspace(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve([vscode.Uri.file(project1.projectFilePath), vscode.Uri.file(project2.projectFilePath)]));
 			sinon.stub(vscode.extensions, 'getExtension').returns(<any>{ exports: dataWorkspaceMock.object });
 
 			// add project reference from project1 to project2

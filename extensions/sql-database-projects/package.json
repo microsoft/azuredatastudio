@@ -1,7 +1,7 @@
 {
   "name": "sql-database-projects",
   "displayName": "SQL Database Projects",
-  "description": "The SQL Database Projects extension for Azure Data Studio allows users to develop and publish database schemas.",
+  "description": "The SQL Database Projects extension for Azure Data Studio and VS Code allows users to develop and publish database schemas.",
   "version": "0.12.0",
   "publisher": "Microsoft",
   "preview": true,
@@ -158,6 +158,10 @@
         "command": "sqlDatabaseProjects.generateProjectFromSwagger",
         "title": "%sqlDatabaseProjects.generateProjectFromSwagger%",
         "category": "%sqlDatabaseProjects.displayName%"
+      },
+      {
+        "command": "sqlDatabaseProjects.addSqlBinding",
+        "title": "%sqlDatabaseProjects.addSqlBinding%"
       }
     ],
     "menus": {
@@ -251,6 +255,10 @@
         {
           "command": "sqlDatabaseProjects.changeTargetPlatform",
           "when": "false"
+        },
+        {
+          "command": "sqlDatabaseProjects.addSqlBinding",
+          "when": "editorLangId == csharp && !azdataAvailable"
         }
       ],
       "view/item/context": [
@@ -266,7 +274,7 @@
         },
         {
           "command": "sqlDatabaseProjects.schemaCompare",
-          "when": "view == dataworkspace.views.main && viewItem == databaseProject.itemType.project",
+          "when": "view == dataworkspace.views.main && viewItem == databaseProject.itemType.project && azdataAvailable",
           "group": "1_dbProjectsFirst@3"
         },
         {
@@ -348,6 +356,11 @@
           "command": "sqlDatabaseProjects.openContainingFolder",
           "when": "view == dataworkspace.views.main && viewItem == databaseProject.itemType.project",
           "group": "9_dbProjectsLast@8"
+        },
+        {
+          "command": "sqlDatabaseProjects.createProjectFromDatabase",
+          "when": "!azdataAvailable && view == objectExplorer && viewItem =~ /^(disconnectedServer|Server|Database)$/",
+          "group": "sqldbproj@1"
         }
       ],
       "objectExplorer/item/context": [

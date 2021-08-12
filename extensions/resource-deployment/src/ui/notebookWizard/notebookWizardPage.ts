@@ -5,14 +5,12 @@
 import * as azdata from 'azdata';
 import { EOL } from 'os';
 import * as vscode from 'vscode';
-import * as nls from 'vscode-nls';
 import { InitialVariableValues, NotebookWizardPageInfo } from '../../interfaces';
 import { initializeWizardPage, InputComponent, InputComponentInfo, setModelValues, Validator } from '../modelViewUtils';
 import { ResourceTypePage } from '../resourceTypePage';
 import { WizardPageInfo } from '../wizardPageInfo';
 import { NotebookWizardModel } from './notebookWizardModel';
-
-const localize = nls.loadMessageBundle();
+import * as loc from '../../localizedConstants';
 
 export class NotebookWizardPage extends ResourceTypePage {
 
@@ -135,10 +133,7 @@ export class NotebookWizardPage extends ResourceTypePage {
 			this.wizard.wizardObject.message = {
 				text: messages.length === 1
 					? messages[0]
-					: localize(
-						"wizardPage.ValidationError",
-						"There are some errors on this page, click 'Show Details' to view the errors."
-					),
+					: loc.multipleValidationErrors,
 				description: messages.length === 1 ? undefined : messages.join(EOL),
 				level: azdata.window.MessageLevel.Error,
 			};

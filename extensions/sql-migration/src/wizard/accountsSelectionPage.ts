@@ -202,7 +202,7 @@ export class AccountsSelectionPage extends MigrationWizardPage {
 		selectDropDownIndex(this._azureAccountsDropdown, 0);
 	}
 
-	public async onPageEnter(): Promise<void> {
+	public async onPageEnter(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
 		this.wizard.registerNavigationValidator(async pageChangeInfo => {
 			try {
 				if (!this.migrationStateModel._azureAccount?.isStale) {
@@ -221,7 +221,7 @@ export class AccountsSelectionPage extends MigrationWizardPage {
 		});
 	}
 
-	public async onPageLeave(): Promise<void> {
+	public async onPageLeave(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
 	}
 
 	protected async handleStateChange(e: StateChangeEvent): Promise<void> {

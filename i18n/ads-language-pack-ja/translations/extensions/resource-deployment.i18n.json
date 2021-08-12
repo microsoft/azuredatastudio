@@ -259,9 +259,6 @@
 			"resourceDeployment.Kubectl.BackupCurrentBinary": "インストール場所にある既存の kubectl をバックアップしています...",
 			"resourceDeployment.Kubectl.MoveToSystemPath": "kubectl を PATH のインストール場所に移動しています..."
 		},
-		"dist/ui/notebookWizard/notebookWizardPage": {
-			"wizardPage.ValidationError": "このページにはいくつかのエラーがあります。エラーを表示するには、[詳細を表示] をクリックします。"
-		},
 		"dist/ui/deploymentInputDialog": {
 			"deploymentDialog.OpenNotebook": "ノートブックを開く",
 			"deploymentDialog.OkButtonText": "OK",
@@ -376,8 +373,7 @@
 			"deployCluster.SubdomainDescription": "この SQL Server ビッグ データ クラスターで使用する一意の DNS サブドメイン。指定されていない場合は、クラスター名が既定値として使用されます。",
 			"deployCluster.AccountPrefix": "アカウント プレフィックス",
 			"deployCluster.AccountPrefixDescription": "SQL Server ビッグ データ クラスターによって生成される AD アカウントの一意のプレフィックス。指定されていない場合は、サブドメイン名が既定値として使用されます。サブドメインが指定されていない場合は、クラスター名が既定値として使用されます。",
-			"deployCluster.AdminPasswordField": "パスワード",
-			"deployCluster.ValidationError": "このページにはいくつかのエラーがあります。エラーを表示するには、[詳細を表示] をクリックします。"
+			"deployCluster.AdminPasswordField": "パスワード"
 		},
 		"dist/ui/deployClusterWizard/pages/serviceSettingsPage": {
 			"deployCluster.ServiceSettingsPageTitle": "サービスの設定",
@@ -606,13 +602,6 @@
 			"resourceDeployment.AziCli.ScriptedInstall": "azure-cli をインストールするためにスクリプトをダウンロードして呼び出しています..."
 		},
 		"dist/services/tools/azdataTool": {
-			"resourceDeployment.AzdataDescription": "Azure Data コマンド ライン インターフェイス",
-			"resourceDeployment.AzdataDisplayName": "Azure Data CLI",
-			"deploy.azdataExtMissing": "このリソースをデプロイするには、Azure Data CLI 拡張機能をインストールする必要があります。拡張機能ギャラリーを使用してインストールしてから、もう一度お試しください。",
-			"deployCluster.GetToolVersionErrorInformation": "バージョン情報の取得でエラーが発生しました。詳細については、出力チャネル '{0}' を参照してください",
-			"deployCluster.GetToolVersionError": "バージョン情報の取得でエラーが発生しました。{0}無効な出力を受け取りました。バージョン取得コマンドの出力: '{1}'"
-		},
-		"dist/services/tools/azdataToolOld": {
 			"resourceDeployment.AzdataDescription": "Azure Data コマンド ライン インターフェイス",
 			"resourceDeployment.AzdataDisplayName": "Azure Data CLI",
 			"resourceDeployment.Azdata.DeletingPreviousAzdata.msi": "以前にダウンロードされた Azdata.msi が存在する場合にそれを削除しています...",

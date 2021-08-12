@@ -9,6 +9,7 @@ import * as azurecore from 'azurecore';
 import { azureResource } from 'azureResource';
 import * as constants from '../constants/strings';
 import { getSessionIdHeader } from './utils';
+import { ProvisioningState } from '../models/migrationLocalStorage';
 
 async function getAzureCoreAPI(): Promise<azurecore.IExtension> {
 	const api = (await vscode.extensions.getExtension(azurecore.extension.name)?.activate()) as azurecore.IExtension;
@@ -42,7 +43,31 @@ export async function getLocations(account: azdata.Account, subscription: Subscr
 	const filteredLocations = response.locations.filter(loc => {
 		return sqlMigrationResourceLocations.includes(loc.displayName);
 	});
-	return filteredLocations;
+
+	// Only including the regions that have migration service deployed for public preview.
+	const publicPreviewLocations = [
+		'eastus',
+		'canadaeast',
+		'canadacentral',
+		'centralus',
+		'westus2',
+		'westus',
+		'southcentralus',
+		'westeurope',
+		'uksouth',
+		'australiaeast',
+		'southeastasia',
+		'japaneast',
+		'centralindia',
+		'eastus2',
+		'eastus2euap',
+		'francecentral',
+		'southindia',
+		'australiasoutheast',
+		'northcentralus'
+	];
+
+	return filteredLocations.filter(v => publicPreviewLocations.includes(v.name));
 }
 
 export type AzureProduct = azureResource.AzureGraphResource;
@@ -132,6 +157,14 @@ export async function getBlobContainers(account: azdata.Account, subscription: S
 	return blobContainers!;
 }
 
+export async function getBlobs(account: azdata.Account, subscription: Subscription, storageAccount: StorageAccount, containerName: string): Promise<azureResource.Blob[]> {
+	const api = await getAzureCoreAPI();
+	let result = await api.getBlobs(account, subscription, storageAccount, containerName, true);
+	let blobNames = result.blobs;
+	sortResourceArrayByName(blobNames);
+	return blobNames!;
+}
+
 export async function getSqlMigrationService(account: azdata.Account, subscription: Subscription, resourceGroupName: string, regionName: string, sqlMigrationServiceName: string, sessionId: string): Promise<SqlMigrationService> {
 	const api = await getAzureCoreAPI();
 	const path = `/subscriptions/${subscription.id}/resourceGroups/${resourceGroupName}/providers/Microsoft.DataMigration/sqlMigrationServices/${sqlMigrationServiceName}?api-version=2020-09-01-preview`;
@@ -143,9 +176,9 @@ export async function getSqlMigrationService(account: azdata.Account, subscripti
 	return response.response.data;
 }
 
-export async function getSqlMigrationServices(account: azdata.Account, subscription: Subscription, sessionId: string): Promise<SqlMigrationService[]> {
+export async function getSqlMigrationServices(account: azdata.Account, subscription: Subscription, resouceGroupName: string, sessionId: string): Promise<SqlMigrationService[]> {
 	const api = await getAzureCoreAPI();
-	const path = `/subscriptions/${subscription.id}/providers/Microsoft.DataMigration/sqlMigrationServices?api-version=2020-09-01-preview`;
+	const path = `/subscriptions/${subscription.id}/resourceGroups/${resouceGroupName}/providers/Microsoft.DataMigration/sqlMigrationServices?api-version=2020-09-01-preview`;
 	const response = await api.makeAzureRestRequest(account, subscription, path, azurecore.HttpRequestMethod.GET, undefined, true, undefined, getSessionIdHeader(sessionId));
 	if (response.errors.length > 0) {
 		throw new Error(response.errors.toString());
@@ -168,17 +201,17 @@ export async function createSqlMigrationService(account: azdata.Account, subscri
 		throw new Error(response.errors.toString());
 	}
 	const asyncUrl = response.response.headers['azure-asyncoperation'];
-	const maxRetry = 5;
+	const maxRetry = 24;
 	let i = 0;
 	for (i = 0; i < maxRetry; i++) {
 		const asyncResponse = await api.makeAzureRestRequest(account, subscription, asyncUrl.replace('https://management.azure.com/', ''), azurecore.HttpRequestMethod.GET, undefined, true, undefined, getSessionIdHeader(sessionId));
 		const creationStatus = asyncResponse.response.data.status;
-		if (creationStatus === 'Succeeded') {
+		if (creationStatus === ProvisioningState.Succeeded) {
 			break;
-		} else if (creationStatus === 'Failed') {
+		} else if (creationStatus === ProvisioningState.Failed) {
 			throw new Error(asyncResponse.errors.toString());
 		}
-		await new Promise(resolve => setTimeout(resolve, 3000)); //adding  3 sec delay before getting creation status
+		await new Promise(resolve => setTimeout(resolve, 5000)); //adding  5 sec delay before getting creation status
 	}
 	if (i === maxRetry) {
 		throw new Error(constants.DMS_PROVISIONING_FAILED);
@@ -254,27 +287,27 @@ export async function startDatabaseMigration(account: azdata.Account, subscripti
 	};
 }
 
-export async function getDatabaseMigration(account: azdata.Account, subscription: Subscription, regionName: string, migrationId: string, sessionId: string): Promise<DatabaseMigration> {
+export async function getMigrationStatus(account: azdata.Account, subscription: Subscription, migration: DatabaseMigration, sessionId: string, asyncUrl: string): Promise<DatabaseMigration> {
 	const api = await getAzureCoreAPI();
-	const path = `${migrationId}?api-version=2020-09-01-preview`;
+	const migrationOperationId = getMigrationOperationId(migration, asyncUrl);
+	const path = `${migration.id}?migrationOperationId=${migrationOperationId}&$expand=MigrationStatusDetails&api-version=2020-09-01-preview`;
 	const response = await api.makeAzureRestRequest(account, subscription, path, azurecore.HttpRequestMethod.GET, undefined, true, undefined, getSessionIdHeader(sessionId));
 	if (response.errors.length > 0) {
-		if (response.response.status === 404 && response.response.data.error.code === 'ResourceDoesNotExist') {
-			throw new Error(response.response.data.error.code);
-		}
 		throw new Error(response.errors.toString());
 	}
 	return response.response.data;
 }
 
-export async function getMigrationStatus(account: azdata.Account, subscription: Subscription, migration: DatabaseMigration, sessionId: string): Promise<DatabaseMigration> {
-	const api = await getAzureCoreAPI();
-	const path = `${migration.id}?$expand=MigrationStatusDetails&api-version=2020-09-01-preview`;
-	const response = await api.makeAzureRestRequest(account, subscription, path, azurecore.HttpRequestMethod.GET, undefined, true, undefined, getSessionIdHeader(sessionId));
-	if (response.errors.length > 0) {
-		throw new Error(response.errors.toString());
+function getMigrationOperationId(migration: DatabaseMigration, asyncUrl: string): string {
+	// migrationOperationId may be undefined when provisioning has failed
+	// fall back to the operationId from the asyncUrl in the create migration response
+	if (migration.properties.migrationOperationId) {
+		return migration.properties.migrationOperationId;
 	}
-	return response.response.data;
+
+	return asyncUrl
+		? vscode.Uri.parse(asyncUrl)?.path?.split('/').reverse()[0]
+		: '';
 }
 
 export async function getMigrationAsyncOperationDetails(account: azdata.Account, subscription: Subscription, url: string, sessionId: string): Promise<AzureAsyncOperationResource> {
@@ -320,7 +353,7 @@ export async function getLocationDisplayName(location: string): Promise<string> 
 	return await api.getRegionDisplayName(location);
 }
 
-type SortableAzureResources = AzureProduct | azureResource.FileShare | azureResource.BlobContainer | azureResource.AzureResourceSubscription | SqlMigrationService;
+type SortableAzureResources = AzureProduct | azureResource.FileShare | azureResource.BlobContainer | azureResource.Blob | azureResource.AzureResourceSubscription | SqlMigrationService;
 function sortResourceArrayByName(resourceArray: SortableAzureResources[]): void {
 	if (!resourceArray) {
 		return;
@@ -405,7 +438,10 @@ export interface StartDatabaseMigrationRequest {
 			password: string
 		},
 		scope: string,
-		autoCutoverConfiguration?: AutoCutoverConfiguration
+		autoCutoverConfiguration?: {
+			autoCutover?: boolean,
+			lastBackupName?: string
+		},
 	}
 }
 
@@ -424,6 +460,7 @@ export interface DatabaseMigration {
 export interface DatabaseMigrationProperties {
 	scope: string;
 	provisioningState: 'Succeeded' | 'Failed' | 'Creating';
+	provisioningError: string;
 	migrationStatus: 'InProgress' | 'Failed' | 'Succeeded' | 'Creating' | 'Completing' | 'Canceling';
 	migrationStatusDetails?: MigrationStatusDetails;
 	startedOn: string;
@@ -469,6 +506,7 @@ export interface BackupConfiguration {
 }
 
 export interface AutoCutoverConfiguration {
+	autoCutover: boolean;
 	lastBackupName: string;
 }
 

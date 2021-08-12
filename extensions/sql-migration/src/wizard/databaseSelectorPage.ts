@@ -77,11 +77,40 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 
 	public async onPageEnter(): Promise<void> {
 		this.wizard.registerNavigationValidator((pageChangeInfo) => {
+			this.wizard.message = {
+				text: '',
+				level: azdata.window.MessageLevel.Error
+			};
+			if (pageChangeInfo.newPage < pageChangeInfo.lastPage) {
+				return true;
+			}
+			if (this.selectedDbs().length === 0) {
+				this.wizard.message = {
+					text: constants.SELECT_DATABASE_TO_CONTINUE,
+					level: azdata.window.MessageLevel.Error
+				};
+				return false;
+			}
 			return true;
 		});
 	}
 	public async onPageLeave(): Promise<void> {
-		this.migrationStateModel._databaseAssessment = this.selectedDbs();
+		const assessedDatabases = this.migrationStateModel._databaseAssessment ?? [];
+		const selectedDatabases = this.selectedDbs();
+		// run assessment if
+		// * the prior assessment had an error or
+		// * the assessed databases list is different from the selected databases list
+		this.migrationStateModel._runAssessments = !!this.migrationStateModel._assessmentResults?.assessmentError
+			|| assessedDatabases.length === 0
+			|| assessedDatabases.length !== selectedDatabases.length
+			|| assessedDatabases.some(db => selectedDatabases.indexOf(db) < 0);
+
+		this.migrationStateModel._databaseAssessment = selectedDatabases;
+		this.wizard.message = {
+			text: '',
+			level: azdata.window.MessageLevel.Error
+		};
+
 		this.wizard.registerNavigationValidator((pageChangeInfo) => {
 			return true;
 		});

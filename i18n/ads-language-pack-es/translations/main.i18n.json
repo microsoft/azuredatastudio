@@ -10387,6 +10387,8 @@
 			"textPreview": "Celda de texto",
 			"runAllPreview": "Ejecutar todo",
 			"addCell": "Celda",
+			"views": "Vistas",
+			"editor": "Editor",
 			"code": "Código",
 			"text": "Texto",
 			"runAll": "Ejecutar celdas",
@@ -10411,6 +10413,8 @@
 			"notebook.markdownPreviewLineHeight": "Controla la altura de línea utilizada en la vista previa de Markdown del cuaderno. Este número es relativo al tamaño de la fuente.",
 			"notebook.showRenderedNotebookinDiffEditor": "(Vista preliminar) Mostrar el bloc de notas representado en el editor.",
 			"notebook.maxRichTextUndoHistory": "Número máximo de cambios almacenados en el historial de deshacer del editor de texto enriquecido del cuaderno",
+			"notebook.useAbsoluteFilePaths": "Use rutas a archivos absolutas para la vinculación con otros cuadernos.",
+			"notebook.enableIncrementalGridRendering": "Enable incremental grid rendering for notebooks. This will improve the initial rendering time for large notebooks. There may be performance issues when interacting with the notebook while the rest of the grids are rendering.",
 			"searchConfigurationTitle": "Búsqueda de cuadernos",
 			"exclude": "Configure patrones globales para excluir archivos y carpetas en búsquedas de texto completo y abrir los patrones de uso rápido. Hereda todos los patrones globales de la configuración \"#files.exclude\". Lea más acerca de los patrones globales [aquí](https://code.visualstudio.com/docs/editor/codebasics-_advanced-search-options).",
 			"exclude.boolean": "El patrón global con el que se harán coincidir las rutas de acceso de los archivos. Establézcalo en true o false para habilitarlo o deshabilitarlo.",
@@ -10469,6 +10473,9 @@
 			"noParametersCell": "Este bloc de notas no se puede ejecutar con parámetros hasta que se agregue una celda de parámetro. [Más información] (https://docs.microsoft.com/sql/azure-data-studio/notebooks/notebooks-parameterization).",
 			"noParametersInCell": "Este cuaderno no se puede ejecutar con los parámetros hasta que se agregue una celda de parámetro. [Más información](https://docs.microsoft.com/sql/azure-data-studio/notebooks/notebooks-parameterization).",
 			"clearResults": "Borrar resultados",
+			"notebookViewLabel": "Editor",
+			"newViewLabel": "Crear nueva vista",
+			"viewNotFound": "No se encuentra la vista: {0}",
 			"trustLabel": "De confianza",
 			"untrustLabel": "No de confianza",
 			"collapseAllCells": "Contraer celdas",
@@ -10480,7 +10487,7 @@
 			"notebook.findPrevious": "Buscar cadena anterior"
 		},
 		"sql/workbench/contrib/notebook/browser/notebookEditor": {
-			"notebookEditor.name": "Notebook Editor"
+			"notebookEditor.name": "Editor de Notebook"
 		},
 		"sql/workbench/contrib/notebook/browser/notebookExplorer/notebookExplorerViewlet": {
 			"notebookExplorer.searchResults": "Resultados de la búsqueda",
@@ -10512,7 +10519,8 @@
 		},
 		"sql/workbench/contrib/notebook/browser/notebookViews/notebookViews.component": {
 			"cellNotFound": "no se encontró la celda con URI {0} en este modelo",
-			"cellRunFailed": "Error al ejecutar las celdas. Para más información, vea el error en la salida de la celda seleccionada actualmente."
+			"cellRunFailed": "Error al ejecutar las celdas. Para más información, vea el error en la salida de la celda seleccionada actualmente.",
+			"runAllPreview": "Ejecutar todo"
 		},
 		"sql/workbench/contrib/notebook/browser/notebookViews/notebookViewsCodeCell.component": {
 			"viewsCodeCell.emptyCellText": "Ejecute esta celda para ver las salidas."
@@ -10565,8 +10573,6 @@
 			"profilerStop.stop": "Detener",
 			"profiler.clear": "Borrar los datos",
 			"profiler.clearDataPrompt": "¿Está seguro de que quiere borrar los datos?",
-			"profiler.yes": "Sí",
-			"profiler.no": "No",
 			"profilerAction.autoscrollOn": "Desplazamiento automático: activado",
 			"profilerAction.autoscrollOff": "Desplazamiento automático: desactivado",
 			"profiler.toggleCollapsePanel": "Alternar el panel contraído",
@@ -10702,7 +10708,7 @@
 			"queryEditor.exportSqlAsNotebook": "Exportación como cuaderno"
 		},
 		"sql/workbench/contrib/query/browser/queryEditor": {
-			"queryEditor.name": "Query Editor"
+			"queryEditor.name": "Editor de consultas"
 		},
 		"sql/workbench/contrib/query/browser/queryResultsView": {
 			"resultsTabTitle": "Resultados",
@@ -10760,7 +10766,7 @@
 			"queryPlanTitle": "Plan de consulta"
 		},
 		"sql/workbench/contrib/queryPlan/browser/queryPlanEditor": {
-			"queryPlanEditor": "Query Plan Editor"
+			"queryPlanEditor": "Editor de planes de consulta"
 		},
 		"sql/workbench/contrib/queryPlan/browser/topOperations": {
 			"topOperations.operation": "Operación",
@@ -11441,6 +11447,44 @@
 			"gettingStarted": "Introducción",
 			"showReleaseNotes": "Ver introducción",
 			"miGettingStarted": "I&&ntroducción"
+		},
+		"sql/base/browser/ui/propertiesContainer/togglePropertiesAction": {
+			"hideProperties": "Ocultar propiedades",
+			"showProperties": "Mostrar propiedades"
+		},
+		"sql/workbench/contrib/resourceDeployment/browser/resourceDeployment.contribution": {
+			"deployment.title": "Nueva implementación..."
+		},
+		"sql/workbench/contrib/notebook/browser/notebookViews/insertCellsModal": {
+			"insertCellsModal.title": "Insertar celdas",
+			"insertCellsModal.selectCells": "Seleccionar orígenes de celdas",
+			"insertCellsModal.thumbnailError": "Error: no se pueden generar miniaturas.",
+			"insertCellsModal.untitled": "Celda sin título: {0}",
+			"insertCellsModal.Insert": "Insertar",
+			"insertCellsModal.Cancel": "Cancelar"
+		},
+		"sql/workbench/contrib/notebook/browser/notebookViews/notebookViewsActions": {
+			"viewsUnableToRemove": "No se puede quitar la vista",
+			"confirmDelete": "¿Está seguro de que desea eliminar la vista \"{0}\"?",
+			"delete": "&&Eliminar",
+			"insertCells": "Insertar celdas",
+			"runCell": "Ejecutar celda",
+			"stopCell": "Cancelar ejecución",
+			"errorRunCell": "Error on last run. Click to run again",
+			"unableToNavigateToCell": "No se puede navegar a la celda del Bloc de notas.",
+			"viewCellInNotebook": "Ver celda en Bloc de notas",
+			"moreActionsLabel": "Más"
+		},
+		"sql/workbench/contrib/notebook/browser/notebookViews/viewOptionsModal": {
+			"viewOptionsModal.title": "Configurar vista",
+			"viewOptionsModal.name": "Nombre de vista",
+			"viewOptionsModal.missingRequireField": "This field is required.",
+			"viewOptionsModal.nameTaken": "Este nombre de vista ya se está usando.",
+			"save": "Guardar",
+			"cancel": "Cancelar"
+		},
+		"sql/workbench/services/notebook/browser/notebookViews/notebookViewsExtension": {
+			"notebookView.untitledView": "Vista sin título"
 		}
 	}
 }

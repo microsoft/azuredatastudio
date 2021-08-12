@@ -449,6 +449,7 @@ export abstract class Modal extends Disposable implements IThemable {
 			if (context[context.length - 1] === this._staticKey) {
 				let event = new StandardKeyboardEvent(e);
 				if (event.equals(KeyCode.Enter)) {
+					DOM.EventHelper.stop(e, true);
 					this.onAccept(event);
 				} else if (event.equals(KeyCode.Escape)) {
 					DOM.EventHelper.stop(e, true);
@@ -582,6 +583,11 @@ export abstract class Modal extends Disposable implements IThemable {
 			}
 			DOM.removeNode(this._messageDetail!);
 			this.messagesElementVisible = !!this._messageSummaryText;
+			// Read out the description to screen readers so they don't have to
+			// search around for the alert box to hear the extra information
+			if (description) {
+				alert(description);
+			}
 			this.updateExpandMessageState();
 		}
 	}
@@ -592,10 +598,14 @@ export abstract class Modal extends Disposable implements IThemable {
 				DOM.prepend(this._modalContent!, this._messageElement!);
 			}
 		} else {
-			DOM.removeNode(this._messageElement!);
-			// Set the focus to first focus element if the focus is not within the dialog
-			if (!DOM.isAncestor(document.activeElement, this._bodyContainer!)) {
-				this.setInitialFocusedElement();
+			// only do the removal when the messageElement has parent element.
+			if (this._messageElement!.parentElement) {
+				// Reset the focus if keyboard focus is currently in the message area.
+				const resetFocus = DOM.isAncestor(document.activeElement, this._messageElement!);
+				this._messageElement!.remove();
+				if (resetFocus) {
+					this.setInitialFocusedElement();
+				}
 			}
 		}
 	}

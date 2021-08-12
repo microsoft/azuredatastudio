@@ -16,6 +16,7 @@ import { Emitter } from 'vs/base/common/event';
 import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
 import { assign } from 'vs/base/common/objects';
 import { ILogService } from 'vs/platform/log/common/log';
+import { TreeDataTransferDTO } from 'vs/workbench/api/common/shared/treeDataTransfer';
 
 export class ExtHostModelViewTreeViews implements ExtHostModelViewTreeViewsShape {
 	private _proxy: MainThreadModelViewShape;
@@ -82,6 +83,10 @@ export class ExtHostModelViewTreeViews implements ExtHostModelViewTreeViewsShape
 	}
 
 	$resolve(treeViewId: string, treeItemHandle: string): Promise<ITreeComponentItem | undefined> {
+		return Promise.resolve(undefined);
+	}
+
+	$onDrop(treeViewId: string, treeDataTransferDTO: TreeDataTransferDTO, newParentItemHandle: string): Promise<void> {
 		return Promise.resolve(undefined);
 	}
 

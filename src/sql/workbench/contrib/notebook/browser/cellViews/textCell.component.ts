@@ -166,6 +166,10 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		return this._activeCellId;
 	}
 
+	get outputRef(): ElementRef {
+		return this.output;
+	}
+
 	private setLoading(isLoading: boolean): void {
 		this.cellModel.loaded = !isLoading;
 		this._changeRef.detectChanges();
@@ -177,7 +181,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		this.updateTheme(this.themeService.getColorTheme());
 		this.setFocusAndScroll();
 		this.cellModel.isEditMode = false;
-		this._htmlMarkdownConverter = new HTMLMarkdownConverter(this.notebookUri);
+		this._htmlMarkdownConverter = this._instantiationService.createInstance(HTMLMarkdownConverter, this.notebookUri);
 		this._register(this.cellModel.onOutputsChanged(e => {
 			this.updatePreview();
 		}));

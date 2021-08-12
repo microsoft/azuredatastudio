@@ -974,14 +974,6 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/resource-deployment/dist/ui/notebookWizard/notebookWizardPage" source-language="en" datatype="plaintext" target-language="fr">
-    <body>
-      <trans-unit id="wizardPage.ValidationError">
-        <source xml:lang="en">There are some errors on this page, click 'Show Details' to view the errors.</source>
-        <target state="translated">Cette page a des erreurs, cliquez sur 'Afficher les détails' pour les voir.</target>
-      </trans-unit>
-    </body>
-  </file>
   <file original="extensions/resource-deployment/dist/ui/deploymentInputDialog" source-language="en" datatype="plaintext" target-language="fr">
     <body>
       <trans-unit id="deploymentDialog.OpenNotebook">
@@ -1411,10 +1403,6 @@
       <trans-unit id="deployCluster.AdminPasswordField">
         <source xml:lang="en">Password</source>
         <target state="translated">Mot de passe</target>
-      </trans-unit>
-      <trans-unit id="deployCluster.ValidationError">
-        <source xml:lang="en">There are some errors on this page, click 'Show Details' to view the errors.</source>
-        <target state="translated">Cette page a des erreurs, cliquez sur 'Afficher les détails' pour les voir.</target>
       </trans-unit>
     </body>
   </file>
@@ -2269,30 +2257,6 @@ Sélectionnez un autre abonnement contenant au moins un serveur</target>
     </body>
   </file>
   <file original="extensions/resource-deployment/dist/services/tools/azdataTool" source-language="en" datatype="plaintext" target-language="fr">
-    <body>
-      <trans-unit id="resourceDeployment.AzdataDescription">
-        <source xml:lang="en">Azure Data command line interface</source>
-        <target state="translated">Interface de ligne de commande Azure Data</target>
-      </trans-unit>
-      <trans-unit id="resourceDeployment.AzdataDisplayName">
-        <source xml:lang="en">Azure Data CLI</source>
-        <target state="translated">Azure Data CLI</target>
-      </trans-unit>
-      <trans-unit id="deploy.azdataExtMissing">
-        <source xml:lang="en">The Azure Data CLI extension must be installed to deploy this resource. Please install it through the extension gallery and try again.</source>
-        <target state="translated">L’extension CLI de données Azure doit être installée pour déployer cette ressource. Veuillez l’installer via la galerie d’extensions et essayer à nouveau.</target>
-      </trans-unit>
-      <trans-unit id="deployCluster.GetToolVersionErrorInformation">
-        <source xml:lang="en">Error retrieving version information. See output channel '{0}' for more details</source>
-        <target state="translated">Erreur de récupération des informations de version. Voir le canal de sortie « {0} » pour plus de détails</target>
-      </trans-unit>
-      <trans-unit id="deployCluster.GetToolVersionError">
-        <source xml:lang="en">Error retrieving version information.{0}Invalid output received, get version command output: '{1}' </source>
-        <target state="translated">Erreur de récupération des informations de version.{0}Sortie non valide reçue, sortie de la commande get version : « {1} » </target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/resource-deployment/dist/services/tools/azdataToolOld" source-language="en" datatype="plaintext" target-language="fr">
     <body>
       <trans-unit id="resourceDeployment.AzdataDescription">
         <source xml:lang="en">Azure Data command line interface</source>

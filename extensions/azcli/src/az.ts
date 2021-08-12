@@ -4,19 +4,27 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azExt from 'az-ext';
+import * as fs from 'fs';
 import * as os from 'os';
+import * as path from 'path';
 import { SemVer } from 'semver';
 import * as vscode from 'vscode';
-import { executeCommand, ProcessOutput } from './common/childProcess';
+import { executeCommand, executeSudoCommand, ExitCodeError, ProcessOutput } from './common/childProcess';
+import { HttpClient } from './common/httpClient';
 import Logger from './common/logger';
-import { AzureCLIArcExtError, searchForCmd } from './common/utils';
-import { azConfigSection, debugConfigKey, latestAzArcExtensionVersion } from './constants';
+import { AzureCLIArcExtError, NoAzureCLIError, searchForCmd } from './common/utils';
+import { azArcdataInstallKey, azConfigSection, azFound, debugConfigKey, latestAzArcExtensionVersion, azCliInstallKey, azArcFound, azHostname, azUri } from './constants';
 import * as loc from './localizedConstants';
 
 /**
- * The latest Az CLI arcdata extension version for this extension to function properly
+ * The latest Azure CLI arcdata extension version for this extension to function properly
  */
 export const LATEST_AZ_ARC_EXTENSION_VERSION = new SemVer(latestAzArcExtensionVersion);
+
+export const enum AzDeployOption {
+	dontPrompt = 'dontPrompt',
+	prompt = 'prompt'
+}
 
 /**
  * Interface for an object to interact with the az tool installed on the box.
@@ -35,19 +43,30 @@ export interface IAzTool extends azExt.IAzApi {
  */
 export class AzTool implements azExt.IAzApi {
 
-	private _semVersion: SemVer;
+	private _semVersionAz: SemVer;
+	private _semVersionArc: SemVer;
 
-	constructor(private _path: string, version: string) {
-		this._semVersion = new SemVer(version);
+	constructor(private _path: string, versionAz: string, versionArc: string) {
+		this._semVersionAz = new SemVer(versionAz);
+		this._semVersionArc = new SemVer(versionArc);
 	}
 
 	/**
-	 * The semVersion corresponding to this installation of az. version() method should have been run
+	 * The semVersion corresponding to this installation of Azure CLI. version() method should have been run
 	 * before fetching this value to ensure that correct value is returned. This is almost always correct unless
 	 * Az has gotten reinstalled in the background after this IAzApi object was constructed.
 	 */
-	public async getSemVersion(): Promise<SemVer> {
-		return this._semVersion;
+	public async getSemVersionAz(): Promise<SemVer> {
+		return this._semVersionAz;
+	}
+
+	/**
+	 * The semVersion corresponding to this installation of Azure CLI arcdata extension. version() method should have been run
+	 * before fetching this value to ensure that correct value is returned. This is almost always correct unless
+	 * arcdata has gotten reinstalled in the background after this IAzApi object was constructed.
+	 */
+	public async getSemVersionArc(): Promise<SemVer> {
+		return this._semVersionArc;
 	}
 
 	/**
@@ -59,31 +78,6 @@ export class AzTool implements azExt.IAzApi {
 
 	public arcdata = {
 		dc: {
-			create: (
-				namespace: string,
-				name: string,
-				connectivityMode: string,
-				resourceGroup: string,
-				location: string,
-				subscription: string,
-				profileName?: string,
-				storageClass?: string,
-				additionalEnvVars?: azExt.AdditionalEnvVars): Promise<azExt.AzOutput<void>> => {
-				const args = ['arcdata', 'dc', 'create',
-					'--k8s-namespace', namespace,
-					'--name', name,
-					'--connectivity-mode', connectivityMode,
-					'--resource-group', resourceGroup,
-					'--location', location,
-					'--subscription', subscription];
-				if (profileName) {
-					args.push('--profile-name', profileName);
-				}
-				if (storageClass) {
-					args.push('--storage-class', storageClass);
-				}
-				return this.executeCommand<void>(args, additionalEnvVars);
-			},
 			endpoint: {
 				list: (namespace: string, additionalEnvVars?: azExt.AdditionalEnvVars): Promise<azExt.AzOutput<azExt.DcEndpointListResult[]>> => {
 					return this.executeCommand<azExt.DcEndpointListResult[]>(['arcdata', 'dc', 'endpoint', 'list', '--k8s-namespace', namespace, '--use-k8s'], additionalEnvVars);
@@ -134,15 +128,15 @@ export class AzTool implements azExt.IAzApi {
 				if (args.adminPassword) { argsArray.push('--admin-password'); }
 				if (args.coresLimit) { argsArray.push('--cores-limit', args.coresLimit); }
 				if (args.coresRequest) { argsArray.push('--cores-request', args.coresRequest); }
-				if (args.coordinatorEngineSettings) { argsArray.push('--coordinator-engine-settings', args.coordinatorEngineSettings); }
+				if (args.coordinatorEngineSettings) { argsArray.push('--coordinator-settings', args.coordinatorEngineSettings); }
 				if (args.engineSettings) { argsArray.push('--engine-settings', args.engineSettings); }
 				if (args.extensions) { argsArray.push('--extensions', args.extensions); }
 				if (args.memoryLimit) { argsArray.push('--memory-limit', args.memoryLimit); }
 				if (args.memoryRequest) { argsArray.push('--memory-request', args.memoryRequest); }
 				if (args.noWait) { argsArray.push('--no-wait'); }
 				if (args.port) { argsArray.push('--port', args.port.toString()); }
-				if (args.replaceEngineSettings) { argsArray.push('--replace-engine-settings'); }
-				if (args.workerEngineSettings) { argsArray.push('--worker-engine-settings', args.workerEngineSettings); }
+				if (args.replaceEngineSettings) { argsArray.push('--replace-settings'); }
+				if (args.workerEngineSettings) { argsArray.push('--worker-settings', args.workerEngineSettings); }
 				if (args.workers !== undefined) { argsArray.push('--workers', args.workers.toString()); }
 				return this.executeCommand<void>(argsArray, additionalEnvVars);
 			}
@@ -189,11 +183,10 @@ export class AzTool implements azExt.IAzApi {
 	 */
 	public async version(): Promise<azExt.AzOutput<string>> {
 		const output = await executeAzCommand(`"${this._path}"`, ['--version']);
-		this._semVersion = new SemVer(parseVersion(output.stdout));
+		this._semVersionAz = new SemVer(<string>parseVersion(output.stdout));
 		return {
-			stdout: output.stdout
-			// stderr: output.stderr.split(os.EOL)
-			// result: output.stdout
+			stdout: output.stdout,
+			stderr: output.stderr.split(os.EOL)
 		};
 	}
 
@@ -205,55 +198,304 @@ export class AzTool implements azExt.IAzApi {
 	public async executeCommand<R>(args: string[], additionalEnvVars?: azExt.AdditionalEnvVars): Promise<azExt.AzOutput<R>> {
 		try {
 			const result = await executeAzCommand(`"${this._path}"`, args.concat(['--output', 'json']), additionalEnvVars);
-			const output = JSON.parse(result.stdout);
+
+			let stdout = <unknown>result.stdout;
+			let stderr = <unknown>result.stderr;
+
+			try {
+				// Automatically try parsing the JSON. This is expected to fail for some az commands such as resource delete.
+				stdout = JSON.parse(result.stdout);
+			} catch (err) {
+				// If the output was not pure JSON, catch the error and log it here.
+				Logger.log(loc.azOutputParseErrorCaught(args.concat(['--output', 'json']).toString()));
+			}
+
 			return {
-				stdout: <R>output
+				stdout: <R>stdout,
+				stderr: <string[]>stderr
 			};
 		} catch (err) {
+			if (err instanceof ExitCodeError) {
+				try {
+					await fs.promises.access(this._path);
+					//this.path exists
+				} catch (e) {
+					// this.path does not exist
+					await vscode.commands.executeCommand('setContext', azFound, false);
+					throw new NoAzureCLIError();
+				}
+			}
 			throw err;
 		}
 	}
 }
 
 /**
+ * Checks whether az is installed - and if it is not then invokes the process of az installation.
+ * @param userRequested true means that this operation by was requested by a user by executing an ads command.
+ */
+export async function checkAndInstallAz(userRequested: boolean = false): Promise<IAzTool | undefined> {
+	try {
+		return await findAzAndArc(); // find currently installed Az
+	} catch (err) {
+		if (err === AzureCLIArcExtError) {
+			// Az found but arcdata extension not found. Prompt user to install it, then check again.
+			if (await promptToInstallArcdata(userRequested)) {
+				return await findAzAndArc();
+			}
+		} else {
+			// No az was found. Prompt user to install it, then check again.
+			if (await promptToInstallAz(userRequested)) {
+				return await findAzAndArc();
+			}
+		}
+	}
+	// If user declines to install upon prompt, return an undefined object instead of an AzTool
+	return undefined;
+}
+
+/**
  * Finds the existing installation of az, or throws an error if it couldn't find it
- * or encountered an unexpected error.
+ * or encountered an unexpected error. If arcdata extension was not found on the az,
+ * throw an error. An AzTool will not be returned.
  * The promise is rejected when Az is not found.
  */
-export async function findAz(): Promise<IAzTool> {
+export async function findAzAndArc(): Promise<IAzTool> {
 	Logger.log(loc.searchingForAz);
 	try {
-		const az = await findSpecificAz();
-		Logger.log(loc.foundExistingAz(await az.getPath(), (await az.getSemVersion()).raw));
-		return az;
+		const azTool = await findSpecificAzAndArc();
+		await vscode.commands.executeCommand('setContext', azFound, true); // save a context key that az was found so that command for installing az is no longer available in commandPalette and that for updating it is.
+		await vscode.commands.executeCommand('setContext', azArcFound, true); // save a context key that arcdata was found so that command for installing arcdata is no longer available in commandPalette and that for updating it is.
+		Logger.log(loc.foundExistingAz(await azTool.getPath(), (await azTool.getSemVersionAz()).raw, (await azTool.getSemVersionArc()).raw));
+		return azTool;
 	} catch (err) {
-		Logger.log(loc.noAzureCLI);
+		if (err === AzureCLIArcExtError) {
+			Logger.log(loc.couldNotFindAzArc(err));
+			Logger.log(loc.noAzArc);
+			await vscode.commands.executeCommand('setContext', azArcFound, false); // save a context key that az was not found so that command for installing az is available in commandPalette and that for updating it is no longer available.
+		} else {
+			Logger.log(loc.couldNotFindAz(err));
+			Logger.log(loc.noAz);
+			await vscode.commands.executeCommand('setContext', azFound, false); // save a context key that arcdata was not found so that command for installing arcdata is available in commandPalette and that for updating it is no longer available.
+		}
 		throw err;
 	}
+}
+
+/**
+ * Find az by searching user's directories. If no az is found, this will error out and no arcdata is found.
+ * If az is found, check if arcdata extension exists on it and return true if so, false if not.
+ * Return the AzTool whether or not an arcdata extension has been found.
+ */
+async function findSpecificAzAndArc(): Promise<IAzTool> {
+	// Check if az exists
+	const path = await ((process.platform === 'win32') ? searchForCmd('az.cmd') : searchForCmd('az'));
+	const versionOutput = await executeAzCommand(`"${path}"`, ['--version']);
+
+	// The arcdata extension can't exist if there is no az. The function will not reach the following code
+	// if no az has been found. If found, check if az arcdata extension exists.
+	const arcVersion = parseArcExtensionVersion(versionOutput.stdout);
+	if (arcVersion === undefined) {
+		throw AzureCLIArcExtError;
+	}
+
+	return new AzTool(path, <string>parseVersion(versionOutput.stdout), <string>arcVersion);
+}
+
+/**
+ * Prompt user to install Azure CLI.
+ * @param userRequested - if true this operation was requested in response to a user issued command, if false it was issued at startup by system
+ * returns true if installation was done and false otherwise.
+ */
+async function promptToInstallAz(userRequested: boolean = false): Promise<boolean> {
+	let response: string | undefined = loc.yes;
+	const config = <AzDeployOption>getAzConfig(azCliInstallKey);
+	if (userRequested) {
+		Logger.show();
+		Logger.log(loc.userRequestedInstall);
+	}
+	if (config === AzDeployOption.dontPrompt && !userRequested) {
+		Logger.log(loc.skipInstall(config));
+		return false;
+	}
+	const responses = userRequested
+		? [loc.yes, loc.no]
+		: [loc.yes, loc.askLater, loc.doNotAskAgain];
+	if (config === AzDeployOption.prompt) {
+		Logger.log(loc.promptForAzInstallLog);
+		response = await vscode.window.showErrorMessage(loc.promptForAzInstall, ...responses);
+		Logger.log(loc.userResponseToInstallPrompt(response));
+	}
+	if (response === loc.doNotAskAgain) {
+		await setAzConfig(azCliInstallKey, AzDeployOption.dontPrompt);
+	} else if (response === loc.yes) {
+		try {
+			await installAz();
+			vscode.window.showInformationMessage(loc.azInstalled);
+			Logger.log(loc.azInstalled);
+			return true;
+		} catch (err) {
+			// Windows: 1602 is User cancelling installation/update - not unexpected so don't display
+			if (!(err instanceof ExitCodeError) || err.code !== 1602) {
+				vscode.window.showWarningMessage(loc.installError(err));
+				Logger.log(loc.installError(err));
+			}
+		}
+	}
+	return false;
+}
+
+/**
+ * Prompt user to install Azure CLI arcdata extension.
+ * @param userRequested - if true this operation was requested in response to a user issued command, if false it was issued at startup by system
+ * returns true if installation was done and false otherwise.
+ */
+async function promptToInstallArcdata(userRequested: boolean = false): Promise<boolean> {
+	let response: string | undefined = loc.yes;
+	const config = <AzDeployOption>getAzConfig(azArcdataInstallKey);
+	if (userRequested) {
+		Logger.show();
+		Logger.log(loc.userRequestedInstall);
+	}
+	if (config === AzDeployOption.dontPrompt && !userRequested) {
+		Logger.log(loc.skipInstall(config));
+		return false;
+	}
+	const responses = userRequested
+		? [loc.yes, loc.no]
+		: [loc.yes, loc.askLater, loc.doNotAskAgain];
+	if (config === AzDeployOption.prompt) {
+		Logger.log(loc.promptForArcdataInstallLog);
+		response = await vscode.window.showErrorMessage(loc.promptForArcdataInstall, ...responses);
+		Logger.log(loc.userResponseToInstallPrompt(response));
+	}
+	if (response === loc.doNotAskAgain) {
+		await setAzConfig(azArcdataInstallKey, AzDeployOption.dontPrompt);
+	} else if (response === loc.yes) {
+		try {
+			await installArcdata();
+			vscode.window.showInformationMessage(loc.arcdataInstalled);
+			Logger.log(loc.arcdataInstalled);
+			return true;
+		} catch (err) {
+			// Windows: 1602 is User cancelling installation/update - not unexpected so don't display
+			if (!(err instanceof ExitCodeError) || err.code !== 1602) {
+				vscode.window.showWarningMessage(loc.installError(err));
+				Logger.log(loc.installError(err));
+			}
+		}
+	}
+	return false;
+}
+
+/**
+ * runs the commands to install az, downloading the installation package if needed
+ */
+export async function installAz(): Promise<void> {
+	Logger.show();
+	Logger.log(loc.installingAz);
+	await vscode.window.withProgress(
+		{
+			location: vscode.ProgressLocation.Notification,
+			title: loc.installingAz,
+			cancellable: false
+		},
+		async (_progress, _token): Promise<void> => {
+			switch (process.platform) {
+				case 'win32':
+					await downloadAndInstallAzWin32();
+					break;
+				case 'darwin':
+					await installAzDarwin();
+					break;
+				case 'linux':
+					await installAzLinux();
+					break;
+				default:
+					throw new Error(loc.platformUnsupported(process.platform));
+			}
+		}
+	);
+}
+
+/**
+ * Downloads the Windows installer and runs it
+ */
+async function downloadAndInstallAzWin32(): Promise<void> {
+	const downLoadLink = `${azHostname}/${azUri}`;
+	const downloadFolder = os.tmpdir();
+	const downloadLogs = path.join(downloadFolder, 'ads_az_install_logs.log');
+	const downloadedFile = await HttpClient.downloadFile(downLoadLink, downloadFolder);
+
+	try {
+		await executeSudoCommand(`msiexec /qn /i "${downloadedFile}" /lvx "${downloadLogs}"`);
+	} catch (err) {
+		throw new Error(`${err.message}. See logs at ${downloadLogs} for more details.`);
+	}
+}
+
+/**
+ * Runs commands to install az on MacOS
+ */
+async function installAzDarwin(): Promise<void> {
+	await executeCommand('brew', ['update']);
+	await executeCommand('brew', ['install', 'azure-cli']);
+}
+
+/**
+ * Runs commands to install az on Linux
+ */
+async function installAzLinux(): Promise<void> {
+	// Get packages needed for install process
+	await executeSudoCommand('apt-get update');
+	await executeSudoCommand('apt-get install ca-certificates curl apt-transport-https lsb-release gnupg');
+	// Download and install the signing key
+	await executeSudoCommand('curl -sL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/microsoft.gpg > /dev/null');
+	// Add the az repository information
+	await executeSudoCommand('AZ_REPO=$(lsb_release -cs) echo "deb [arch=amd64] https://packages.microsoft.com/repos/azure-cli/ $AZ_REPO main" | sudo tee /etc/apt/sources.list.d/azure-cli.list');
+	// Update repository information and install az
+	await executeSudoCommand('apt-get update');
+	await executeSudoCommand('apt-get install azure-cli');
+}
+
+/**
+ * Runs the command to install az arcdata extension
+ */
+export async function installArcdata(): Promise<void> {
+	Logger.show();
+	Logger.log(loc.installingArcdata);
+	await vscode.window.withProgress(
+		{
+			location: vscode.ProgressLocation.Notification,
+			title: loc.installingArcdata,
+			cancellable: false
+		},
+		async (_progress, _token): Promise<void> => {
+			await executeCommand('az', ['extension', 'add', '--name', 'arcdata']);
+		}
+	);
 }
 
 /**
  * Parses out the Azure CLI version from the raw az version output
  * @param raw The raw version output from az --version
  */
-function parseVersion(raw: string): string {
+function parseVersion(raw: string): string | undefined {
 	// Currently the version is a multi-line string that contains other version information such
 	// as the Python installation, with the first line holding the version of az itself.
 	//
 	// The output of az --version looks like:
 	// azure-cli                         2.26.1
 	// ...
-	const start = raw.search('azure-cli');
-	const end = raw.search('core');
-	raw = raw.slice(start, end).replace('azure-cli', '');
-	return raw.trim();
+	const exp = /azure-cli\s*(\d*.\d*.\d*)/;
+	return exp.exec(raw)?.pop();
 }
 
 /**
  * Parses out the arcdata extension version from the raw az version output
  * @param raw The raw version output from az --version
  */
-function parseArcExtensionVersion(raw: string): string {
+function parseArcExtensionVersion(raw: string): string | undefined {
 	// Currently the version is a multi-line string that contains other version information such
 	// as the Python installation and any extensions.
 	//
@@ -264,15 +506,8 @@ function parseArcExtensionVersion(raw: string): string {
 	// arcdata                            1.0.0
 	// connectedk8s                       1.1.5
 	// ...
-	const start = raw.search('arcdata');
-	if (start === -1) {
-		vscode.window.showErrorMessage(loc.arcdataExtensionNotInstalled);
-		throw new AzureCLIArcExtError();
-	} else {
-		raw = raw.slice(start + 7);
-		raw = raw.split(os.EOL)[0].trim();
-	}
-	return raw.trim();
+	const exp = /arcdata\s*(\d*.\d*.\d*)/;
+	return exp.exec(raw)?.pop();
 }
 
 async function executeAzCommand(command: string, args: string[], additionalEnvVars: azExt.AdditionalEnvVars = {}): Promise<ProcessOutput> {
@@ -283,19 +518,13 @@ async function executeAzCommand(command: string, args: string[], additionalEnvVa
 	return executeCommand(command, args, additionalEnvVars);
 }
 
-/**
- */
-async function findSpecificAz(): Promise<IAzTool> {
-	const path = await ((process.platform === 'win32') ? searchForCmd('az.cmd') : searchForCmd('az'));
-	const versionOutput = await executeAzCommand(`"${path}"`, ['--version']);
-	const version = parseArcExtensionVersion(versionOutput.stdout);
-	const semVersion = new SemVer(version);
-	if (LATEST_AZ_ARC_EXTENSION_VERSION.compare(semVersion) === 1) {
-		// If there is a greater version of az arc extension available, prompt to update
-		vscode.window.showErrorMessage(loc.requiredArcDataVersionNotAvailable(latestAzArcExtensionVersion, version));
-	} else if (LATEST_AZ_ARC_EXTENSION_VERSION.compare(semVersion) === -1) {
-		// Current version should not be greater than latest version
-		vscode.window.showErrorMessage(loc.unsupportedArcDataVersion(latestAzArcExtensionVersion, version));
-	}
-	return new AzTool(path, version);
+function getAzConfig(key: string): AzDeployOption | undefined {
+	const config = vscode.workspace.getConfiguration(azConfigSection);
+	const value = <AzDeployOption>config.get<AzDeployOption>(key);
+	return value;
+}
+
+async function setAzConfig(key: string, value: string): Promise<void> {
+	const config = vscode.workspace.getConfiguration(azConfigSection);
+	await config.update(key, value, vscode.ConfigurationTarget.Global);
 }

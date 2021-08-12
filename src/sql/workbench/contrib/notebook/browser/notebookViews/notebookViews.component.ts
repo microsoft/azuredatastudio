@@ -26,8 +26,11 @@ import { CellType, CellTypes } from 'sql/workbench/services/notebook/common/cont
 import { isUndefinedOrNull } from 'vs/base/common/types';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { NotebookViewsExtension } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViewsExtension';
-import { INotebookView } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViews';
+import { INotebookView, INotebookViewMetadata } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViews';
 import { NotebookViewsGridComponent } from 'sql/workbench/contrib/notebook/browser/notebookViews/notebookViewsGrid.component';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { DeleteViewAction, InsertCellAction, ViewSettingsAction } from 'sql/workbench/contrib/notebook/browser/notebookViews/notebookViewsActions';
+import { RunAllCellsAction } from 'sql/workbench/contrib/notebook/browser/notebookActions';
 import { IActionViewItem } from 'vs/base/browser/ui/actionbar/actionbar';
 
 export const NOTEBOOKVIEWS_SELECTOR: string = 'notebook-view-component';
@@ -41,6 +44,7 @@ export class NotebookViewComponent extends AngularDisposable implements INoteboo
 	@Input() model: NotebookModel;
 	@Input() activeView: INotebookView;
 	@Input() views: NotebookViewsExtension;
+	@Input() notebookMeta: INotebookViewMetadata;
 
 	@ViewChild('container', { read: ElementRef }) private _container: ElementRef;
 	@ViewChild('viewsToolbar', { read: ElementRef }) private _viewsToolbar: ElementRef;
@@ -51,12 +55,13 @@ export class NotebookViewComponent extends AngularDisposable implements INoteboo
 	protected _actionBar: Taskbar;
 	public previewFeaturesEnabled: boolean = false;
 	private _modelReadyDeferred = new Deferred<NotebookModel>();
-
+	private _runAllCellsAction: RunAllCellsAction;
 	private _scrollTop: number;
 
 	constructor(
 		@Inject(IBootstrapParams) private _notebookParams: INotebookParams,
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
+		@Inject(IInstantiationService) private _instantiationService: IInstantiationService,
 		@Inject(IKeybindingService) private _keybindingService: IKeybindingService,
 		@Inject(INotificationService) private _notificationService: INotificationService,
 		@Inject(INotebookService) private _notebookService: INotebookService,
@@ -235,9 +240,25 @@ export class NotebookViewComponent extends AngularDisposable implements INoteboo
 		titleElement.style.marginRight = '25px';
 		titleElement.style.minHeight = '25px';
 
+		let insertCellsAction = this._instantiationService.createInstance(InsertCellAction, this.insertCell.bind(this), this.views);
+
+		this._runAllCellsAction = this._instantiationService.createInstance(RunAllCellsAction, 'notebook.runAllCells', localize('runAllPreview', "Run all"), 'notebook-button masked-pseudo start-outline');
+
+		let spacerElement = document.createElement('li');
+		spacerElement.style.marginLeft = 'auto';
+
+		let viewOptions = this._instantiationService.createInstance(ViewSettingsAction, this.views);
+
+		let deleteView = this._instantiationService.createInstance(DeleteViewAction, this.views);
+
 		this._actionBar.setContent([
 			{ element: titleElement },
 			{ element: Taskbar.createTaskbarSeparator() },
+			{ action: insertCellsAction },
+			{ action: this._runAllCellsAction },
+			{ element: spacerElement },
+			{ action: viewOptions },
+			{ action: deleteView }
 		]);
 	}
 

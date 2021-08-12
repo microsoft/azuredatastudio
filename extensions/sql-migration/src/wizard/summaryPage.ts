@@ -43,7 +43,7 @@ export class SummaryPage extends MigrationWizardPage {
 		await view.initializeModel(form.component());
 	}
 
-	public async onPageEnter(): Promise<void> {
+	public async onPageEnter(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
 		const targetDatabaseSummary = new TargetDatabaseSummaryDialog(this.migrationStateModel);
 		const targetDatabaseHyperlink = this._view.modelBuilder.hyperlink().withProps({
 			url: '',
@@ -108,10 +108,9 @@ export class SummaryPage extends MigrationWizardPage {
 
 				createHeadingTextComponent(this._view, constants.IR_PAGE_TITLE),
 				createInformationRow(this._view, constants.SUBSCRIPTION, this.migrationStateModel._targetSubscription.name),
-				createInformationRow(this._view, constants.LOCATION, this.migrationStateModel._sqlMigrationService.location),
-				createInformationRow(this._view, constants.SUBSCRIPTION, this.migrationStateModel._sqlMigrationService.properties.resourceGroup),
-				createInformationRow(this._view, constants.IR_PAGE_TITLE, this.migrationStateModel._targetSubscription.name),
-				createInformationRow(this._view, constants.SUBSCRIPTION, this.migrationStateModel._sqlMigrationService.name)
+				createInformationRow(this._view, constants.LOCATION, this.migrationStateModel._sqlMigrationService?.location!),
+				createInformationRow(this._view, constants.RESOURCE_GROUP, this.migrationStateModel._sqlMigrationService?.properties?.resourceGroup!),
+				createInformationRow(this._view, constants.IR_PAGE_TITLE, this.migrationStateModel._sqlMigrationService?.name!)
 			]
 		);
 
@@ -120,7 +119,7 @@ export class SummaryPage extends MigrationWizardPage {
 		}
 	}
 
-	public async onPageLeave(): Promise<void> {
+	public async onPageLeave(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
 		this._flexContainer.clearItems();
 		this.wizard.registerNavigationValidator(async (pageChangeInfo) => {
 			return true;
