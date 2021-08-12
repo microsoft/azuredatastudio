@@ -46,14 +46,14 @@
 			"objectExplorer/item/context": [
 				{
 					"command": "flatFileImport.start",
-					"when": "connectionProvider == MSSQL && nodeType && nodeType == Database && mssql:engineedition != 11",
+					"when": "connectionProvider == MSSQL && nodeType && nodeType =~ /^(Server|Database)$/ && mssql:engineedition != 11",
 					"group": "import"
 				}
 			],
 			"dataExplorer/context": [
 				{
 					"command": "flatFileImport.start",
-					"when": "connectionProvider == MSSQL && nodeType && nodeType == Database && mssql:engineedition != 11",
+					"when": "connectionProvider == MSSQL && nodeType && nodeType =~ /^(Server|Database)$/ && mssql:engineedition != 11",
 					"group": "import"
 				}
 			]

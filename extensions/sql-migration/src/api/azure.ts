@@ -43,7 +43,31 @@ export async function getLocations(account: azdata.Account, subscription: Subscr
 	const filteredLocations = response.locations.filter(loc => {
 		return sqlMigrationResourceLocations.includes(loc.displayName);
 	});
-	return filteredLocations;
+
+	// Only including the regions that have migration service deployed for public preview.
+	const publicPreviewLocations = [
+		'eastus',
+		'canadaeast',
+		'canadacentral',
+		'centralus',
+		'westus2',
+		'westus',
+		'southcentralus',
+		'westeurope',
+		'uksouth',
+		'australiaeast',
+		'southeastasia',
+		'japaneast',
+		'centralindia',
+		'eastus2',
+		'eastus2euap',
+		'francecentral',
+		'southindia',
+		'australiasoutheast',
+		'northcentralus'
+	];
+
+	return filteredLocations.filter(v => publicPreviewLocations.includes(v.name));
 }
 
 export type AzureProduct = azureResource.AzureGraphResource;
