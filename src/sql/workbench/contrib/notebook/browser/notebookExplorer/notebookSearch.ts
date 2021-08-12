@@ -164,7 +164,7 @@ export class NotebookSearchView extends SearchView {
 		}
 
 		const actionsPosition = this.searchConfig.actionsPosition;
-		dom.toggleClass(this.getContainer(), SearchView.ACTIONS_RIGHT_CLASS_NAME, actionsPosition === 'right');
+		this.getContainer().classList.toggle(SearchView.ACTIONS_RIGHT_CLASS_NAME, actionsPosition === 'right');
 
 		const messagesSize = this.messagesElement.style.display === 'none' ?
 			0 :

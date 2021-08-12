@@ -307,7 +307,7 @@ export class ProfilerEditor extends EditorPane {
 			profilerTableContainer.classList.add(VS_HC_THEME);
 		}
 		this.themeService.onDidColorThemeChange(e => {
-			DOM.removeClasses(profilerTableContainer, VS_DARK_THEME, VS_HC_THEME);
+			profilerTableContainer.classList.remove(VS_DARK_THEME, VS_HC_THEME);
 			if (e.type === ColorScheme.DARK) {
 				profilerTableContainer.classList.add(VS_DARK_THEME);
 			} else if (e.type === ColorScheme.HIGH_CONTRAST) {
