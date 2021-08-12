@@ -606,6 +606,10 @@ export class ListDatabasesActionItem extends Disposable implements IActionViewIt
 				placeholder: this._selectDatabaseString,
 				ariaLabel: this._selectDatabaseString
 			});
+
+			// setting fireOnTextChange to true allows the database selector to commit
+			// typed or pasted DB names without the need to click or press enter to make a
+			// selection.
 			this._dropdown.fireOnTextChange = true;
 			this._register(this._dropdown.onValueChange(s => this.databaseSelected(s)));
 			this._register(this._dropdown.onFocus(() => this.onDropdownFocus()));
