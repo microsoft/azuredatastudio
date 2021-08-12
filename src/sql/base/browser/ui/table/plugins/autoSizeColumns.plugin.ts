@@ -14,6 +14,8 @@ const defaultOptions: IAutoColumnSizeOptions = {
 	autoSizeOnRender: false
 };
 
+const MAX_ROWS_TO_SCAN = 10;
+
 export class AutoColumnSize<T extends Slick.SlickData> implements Slick.Plugin<T> {
 	private _grid!: Slick.Grid<T>;
 	private _$container!: JQuery;
@@ -128,7 +130,7 @@ export class AutoColumnSize<T extends Slick.SlickData> implements Slick.Plugin<T
 	}
 
 	private reSizeColumn(headerEl: JQuery, columnDef: Slick.Column<T>) {
-		let headerWidth = this.getElementWidth(headerEl[0]);
+		let headerWidth = this.getElementWidths([headerEl[0]])[0];
 		let colIndex = this._grid.getColumnIndex(columnDef.id!);
 		let origCols = this._grid.getColumns();
 		let allColumns = deepClone(origCols);
@@ -147,11 +149,17 @@ export class AutoColumnSize<T extends Slick.SlickData> implements Slick.Plugin<T
 		}
 	}
 
+	/**
+	 * For each column, find the max width of the texts in the first 10 rows.
+	 * @param columnDefs Column definitions of all columns that need to be resized
+	 * @param colIndices Column indices of all columns that need to be resized
+	 * @returns An array of the max widths of each column
+	 */
 	private getMaxColumnTextWidths(columnDefs: Slick.Column<T>[], colIndices: number[]): number[] {
 		let data = this._grid.getData() as Slick.DataProvider<T>;
 		let viewPort = this._grid.getViewport();
 		let start = Math.max(0, viewPort.top);
-		let end = Math.min(data.getLength(), 10); // Limit the number of rows we check to 10
+		let end = Math.min(data.getLength(), MAX_ROWS_TO_SCAN);
 		let allTexts: Array<string>[] = [];
 		let rowElements: JQuery[] = [];
 
@@ -180,19 +188,18 @@ export class AutoColumnSize<T extends Slick.SlickData> implements Slick.Plugin<T
 		let data = this._grid.getData() as Slick.DataProvider<T>;
 		let viewPort = this._grid.getViewport();
 		let start = Math.max(0, viewPort.top);
-		let end = Math.min(data.getLength(), 10);
+		let end = Math.min(data.getLength(), MAX_ROWS_TO_SCAN);
 		for (let i = start; i < end; i++) {
 			texts.push(data.getItem(i)[columnDef.field!]);
 		}
 		let template = this.getMaxTextTemplate(texts, columnDef, colIndex, data, rowEl);
-		let width = this.getTemplateWidth(rowEl, template);
+		let width = this.getTemplateWidths([rowEl], [template])[0];
 		this.deleteRow(rowEl);
 		return width > this._options.maxWidth! ? this._options.maxWidth! : width;
 	}
 
-	private getTemplateWidths(rowElements: JQuery[], templates: JQuery[] | HTMLElement[] | string[]): number[] {
+	private getTemplateWidths(rowElements: JQuery[], templates: (JQuery | HTMLElement | string)[]): number[] {
 		let cells: JQuery[] = [];
-		let widths: number[] = [];
 
 		// Write all changes first then read all widths to prevent layout thrashing
 		// (https://developers.google.com/web/fundamentals/performance/rendering/avoid-large-complex-layouts-and-layout-thrashing)
@@ -204,21 +211,10 @@ export class AutoColumnSize<T extends Slick.SlickData> implements Slick.Plugin<T
 			cells.push(cell);
 		});
 
-		cells.forEach((cell) => {
-			widths.push(cell.outerWidth() + 1);
-		});
-
-		return widths;
+		return cells.map(cell => cell.outerWidth() + 1);
 	}
 
-	private getTemplateWidth(rowEl: JQuery, template: JQuery | HTMLElement | string): number {
-		let cell = jQuery(rowEl.find('.slick-cell'));
-		cell.append(template);
-		jQuery(cell).find('*').css('position', 'relative');
-		return cell.outerWidth() + 1;
-	}
-
-	private getMaxTextTemplates(allTexts: string[][], columnDefs: Slick.Column<T>[], colIndices: number[], data: Slick.DataProvider<T>, rowElements: JQuery[]): JQuery[] | HTMLElement[] | string[] {
+	private getMaxTextTemplates(allTexts: string[][], columnDefs: Slick.Column<T>[], colIndices: number[], data: Slick.DataProvider<T>, rowElements: JQuery[]): (JQuery | HTMLElement | string)[] {
 		let templates = [];
 		columnDefs.forEach((columnDef, index) => {
 			templates.push(this.getMaxTextTemplate(allTexts[index], columnDef, colIndices[index], data, rowElements[index]));
@@ -284,15 +280,6 @@ export class AutoColumnSize<T extends Slick.SlickData> implements Slick.Plugin<T
 		});
 
 		return widths;
-	}
-
-	private getElementWidth(element: HTMLElement): number {
-		let width, clone = element.cloneNode(true) as HTMLElement;
-		clone.style.cssText = 'position: absolute; visibility: hidden;right: auto;text-overflow: initial;white-space: nowrap;';
-		element.parentNode!.insertBefore(clone, element);
-		width = clone.offsetWidth;
-		clone.parentNode!.removeChild(clone);
-		return width;
 	}
 
 	private getElementWidthUsingCanvas(element: JQuery, text: string): number {
