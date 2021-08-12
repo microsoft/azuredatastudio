@@ -4196,6 +4196,63 @@
 					"flags": ""
 				},
 				{
+					"extensionId": "83",
+					"extensionName": "azuremonitor",
+					"displayName": "Azure Monitor Logs",
+					"shortDescription": "Azure Monitor Logs extension for Azure Data Studio",
+					"publisher": {
+						"displayName": "Microsoft",
+						"publisherId": "Microsoft",
+						"publisherName": "Microsoft"
+					},
+					"versions": [
+						{
+							"version": "0.1.2",
+							"lastUpdated": "08/11/2021",
+							"assetUri": "",
+							"fallbackAssetUri": "fallbackAssetUri",
+							"files": [
+								{
+									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/azuremonitor/azuremonitor-0.1.2.vsix"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/extensions/azuremonitor/resources/images/azuremonitor.png"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/extensions/azuremonitor/README.md"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Code.Manifest",
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/extensions/azuremonitor/package.json"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.License",
+									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt"
+								}
+							],
+							"properties": [
+								{
+									"key": "Microsoft.VisualStudio.Code.Engine",
+									"value": "*"
+								},
+								{
+									"key": "Microsoft.VisualStudio.Services.Links.Source",
+									"value": "https://github.com/Microsoft/azuredatastudio"
+								},
+								{
+									"key": "Microsoft.AzDataEngine",
+									"value": ">=1.31.0"
+								}
+							]
+						}
+					],
+					"statistics": [],
+					"flags": "preview"
+				},
+				{
 					"extensionId": "84",
 					"extensionName": "azcli",
 					"displayName": "Azure CLI",
@@ -4259,7 +4316,7 @@
 					"metadataItems": [
 						{
 							"name": "TotalCount",
-							"count": 70
+							"count": 71
 						}
 					]
 				}
