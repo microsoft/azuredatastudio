@@ -214,7 +214,7 @@ export class CreateSqlMigrationServiceDialog {
 
 		const subscriptionDropdownLabel = this._view.modelBuilder.text().withProps({
 			value: constants.SUBSCRIPTION,
-			description: (IconPathHelper.info, constants.MIGRATION_SERVICE_SUBSCRIPTION_INFO),
+			description: constants.MIGRATION_SERVICE_SUBSCRIPTION_INFO,
 			CSSStyles: {
 				'font-size': '13px',
 				'font-weight': 'bold'
@@ -228,7 +228,7 @@ export class CreateSqlMigrationServiceDialog {
 
 		const resourceGroupDropdownLabel = this._view.modelBuilder.text().withProps({
 			value: constants.RESOURCE_GROUP,
-			description: (IconPathHelper.info, constants.MIGRATION_SERVICE_RESOURCE_GROUP_INFO),
+			description: constants.MIGRATION_SERVICE_RESOURCE_GROUP_INFO,
 			CSSStyles: {
 				'font-size': '13px',
 				'font-weight': 'bold'
@@ -244,7 +244,7 @@ export class CreateSqlMigrationServiceDialog {
 
 		const migrationServiceNameLabel = this._view.modelBuilder.text().withProps({
 			value: constants.NAME,
-			description: (IconPathHelper.info, constants.MIGRATION_SERVICE_NAME_INFO),
+			description: constants.MIGRATION_SERVICE_NAME_INFO,
 			CSSStyles: {
 				'font-size': '13px',
 				'font-weight': 'bold'
@@ -278,7 +278,7 @@ export class CreateSqlMigrationServiceDialog {
 
 		const locationDropdownLabel = this._view.modelBuilder.text().withProps({
 			value: constants.LOCATION,
-			description: (IconPathHelper.info, constants.MIGRATION_SERVICE_LOCATION_INFO),
+			description: constants.MIGRATION_SERVICE_LOCATION_INFO,
 			CSSStyles: {
 				'font-size': '13px',
 				'font-weight': 'bold'
@@ -293,7 +293,7 @@ export class CreateSqlMigrationServiceDialog {
 
 		const targetlabel = this._view.modelBuilder.text().withProps({
 			value: constants.TARGET,
-			description: (IconPathHelper.info, constants.MIGRATION_SERVICE_TARGET_INFO),
+			description: constants.MIGRATION_SERVICE_TARGET_INFO,
 			CSSStyles: {
 				'font-size': '13px',
 				'font-weight': 'bold'

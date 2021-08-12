@@ -288,7 +288,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 
 		const managedInstanceSubscriptionDropdownLabel = this._view.modelBuilder.text().withProps({
 			value: constants.SUBSCRIPTION,
-			description: (IconPathHelper.info, constants.SKU_RECOMMENDATION_SUBSCRIPTION_INFO),
+			description: constants.SKU_RECOMMENDATION_SUBSCRIPTION_INFO,
 			width: WIZARD_INPUT_COMPONENT_WIDTH,
 			CSSStyles: {
 				'font-size': '13px',
@@ -313,7 +313,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 
 		const azureLocationLabel = this._view.modelBuilder.text().withProps({
 			value: constants.LOCATION,
-			description: (IconPathHelper.info, constants.SKU_RECOMMENDATION_LOCATION_INFO),
+			description: constants.SKU_RECOMMENDATION_LOCATION_INFO,
 			width: WIZARD_INPUT_COMPONENT_WIDTH,
 			CSSStyles: {
 				'font-size': '13px',
@@ -336,7 +336,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 
 		const azureResourceGroupLabel = this._view.modelBuilder.text().withProps({
 			value: constants.RESOURCE_GROUP,
-			description: (IconPathHelper.info, constants.SKU_RECOMMENDATION_RESOURCE_GROUP_INFO),
+			description: constants.SKU_RECOMMENDATION_RESOURCE_GROUP_INFO,
 			width: WIZARD_INPUT_COMPONENT_WIDTH,
 			CSSStyles: {
 				'font-size': '13px',
@@ -358,7 +358,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		}));
 		this._resourceDropdownLabel = this._view.modelBuilder.text().withProps({
 			value: constants.MANAGED_INSTANCE,
-			description: (IconPathHelper.info, constants.SKU_RECOMMENDATION_RESOURCE_INFO),
+			description: constants.SKU_RECOMMENDATION_RESOURCE_INFO,
 			width: WIZARD_INPUT_COMPONENT_WIDTH,
 			CSSStyles: {
 				'font-size': '13px',

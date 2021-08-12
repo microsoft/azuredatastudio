@@ -244,7 +244,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 
 		const networkLocationInputBoxLabel = this._view.modelBuilder.text().withProps({
 			value: constants.DATABASE_BACKUP_NETWORK_SHARE_LOCATION_LABEL,
-			description: (IconPathHelper.info, constants.DATABASE_BACKUP_NETWORK_SHARE_LOCATION_INFO),
+			description: constants.DATABASE_BACKUP_NETWORK_SHARE_LOCATION_INFO,
 			width: WIZARD_INPUT_COMPONENT_WIDTH,
 			CSSStyles: {
 				'font-size': '13px',
@@ -287,7 +287,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 		const windowsUserAccountLabel = this._view.modelBuilder.text()
 			.withProps({
 				value: constants.DATABASE_BACKUP_NETWORK_SHARE_WINDOWS_USER_LABEL,
-				description: (IconPathHelper.info, constants.DATABASE_BACKUP_NETWORK_SHARE_WINDOWS_USER_INFO),
+				description: constants.DATABASE_BACKUP_NETWORK_SHARE_WINDOWS_USER_INFO,
 				width: WIZARD_INPUT_COMPONENT_WIDTH,
 				CSSStyles: {
 					'font-size': '13px',
