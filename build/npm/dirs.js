@@ -14,7 +14,6 @@ exports.dirs = [
 	'extensions/agent',
 	'extensions/arc',
 	'extensions/azcli',
-	'extensions/azdata',
 	'extensions/azurecore',
 	'extensions/azurehybridtoolkit',
 	'extensions/azuremonitor',
