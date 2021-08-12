@@ -39,6 +39,17 @@ export class DataService {
 	}
 
 	/**
+	 * Accessors for URI, needed when saving a untitled query to a file.
+	 */
+	public get uri(): string {
+		return this._uri;
+	}
+
+	public set uri(newUri: string) {
+		this._uri = newUri;
+	}
+
+	/**
 	 * Get a specified number of rows starting at a specified row. Should only
 	 * be used for edit sessions.
 	 * @param rowStart	The row to start retrieving from (inclusive)

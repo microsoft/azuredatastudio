@@ -420,6 +420,7 @@ export class QueryModelService implements IQueryModelService {
 			let info = this._queryInfoMap.get(oldUri);
 			if (info) {
 				info.queryRunner.uri = newUri;
+				info.dataService.uri = newUri;
 			}
 			this._queryInfoMap.set(newUri, info);
 
