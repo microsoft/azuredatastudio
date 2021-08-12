@@ -13,9 +13,6 @@ import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/u
 import { IUntitledTextEditorModel } from 'vs/workbench/services/untitled/common/untitledTextEditorModel';
 import { EncodingMode, IEncodingSupport } from 'vs/workbench/services/textfile/common/textfiles';
 import { GroupIdentifier, ISaveOptions, IEditorInput } from 'vs/workbench/common/editor';
-import { FileQueryEditorInput } from 'sql/workbench/contrib/query/common/fileQueryEditorInput';
-import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
 
 export class UntitledQueryEditorInput extends QueryEditorInput implements IEncodingSupport {
 
@@ -27,8 +24,7 @@ export class UntitledQueryEditorInput extends QueryEditorInput implements IEncod
 		results: QueryResultsInput,
 		@IConnectionManagementService connectionManagementService: IConnectionManagementService,
 		@IQueryModelService queryModelService: IQueryModelService,
-		@IConfigurationService configurationService: IConfigurationService,
-		@IInstantiationService private readonly instantiationService: IInstantiationService
+		@IConfigurationService configurationService: IConfigurationService
 	) {
 		super(description, text, results, connectionManagementService, queryModelService, configurationService);
 	}
