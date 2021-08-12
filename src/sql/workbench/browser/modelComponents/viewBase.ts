@@ -81,8 +81,8 @@ export abstract class ViewBase extends AngularDisposable implements IModelView {
 		return descriptor;
 	}
 
-	private removeComponent(component: IComponentShape): void {
-		this.logService.debug(`Removing component ${component.id} from view ${this.id}`);
+	private removeComponentChildren(component: IComponentShape): void {
+		this.logService.debug(`Removing children of component ${component.id} from view ${this.id}`);
 		if (component.itemConfigs) {
 			for (let item of component.itemConfigs) {
 				this.removeFromContainer(component.id, item);
@@ -138,8 +138,8 @@ export abstract class ViewBase extends AngularDisposable implements IModelView {
 				return;
 			}
 			this.logService.debug(`Removing component ${itemConfig.componentShape.id} from container ${containerId}`);
+			this.removeComponentChildren(itemConfig.componentShape);
 			component.removeFromContainer({ id: itemConfig.componentShape.id, type: componentRegistry.getIdForTypeMapping(itemConfig.componentShape.type) });
-			this.removeComponent(itemConfig.componentShape);
 		});
 	}
 
