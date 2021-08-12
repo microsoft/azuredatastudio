@@ -24,6 +24,6 @@ export class NotebookViewsCodeCellComponent extends CodeCellComponent {
 	}
 
 	get outputs(): nb.ICellOutput[] {
-		return this.cellModel.outputs.filter((output: nb.IDisplayResult) => output.data && output.data['text/plain'] !== '<IPython.core.display.HTML object>');
+		return this.cellModel.outputs.filter((output: nb.ICellOutput) => (output as nb.IDisplayResult)?.data && (output as nb.IDisplayResult)?.data['text/plain'] !== '<IPython.core.display.HTML object>');
 	}
 }
