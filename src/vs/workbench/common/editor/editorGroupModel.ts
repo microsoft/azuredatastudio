@@ -821,7 +821,7 @@ export class EditorGroupModel extends Disposable {
 
 			const editorSerializer = registry.getEditorInputSerializer(e.id);
 			if (editorSerializer) {
-				editor = doHandleUpgrade(editorSerializer.deserialize(this.instantiationService, e.value)); // {{SQL CARBON EDIT}} handle upgrade path to new serialization
+				editor = doHandleUpgrade(editorSerializer.deserialize(this.instantiationService, e.value) as EditorInput); // {{SQL CARBON EDIT}} handle upgrade path to new serialization
 				if (editor) {
 					this.registerEditorListeners(editor);
 				}
