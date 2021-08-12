@@ -201,7 +201,7 @@ function validateHasRequiredAssets(path, extensionName, filesJson) {
     // VSIXPackage or DownloadPage
     const vsixFile = filesJson.find(file => file.assetType === 'Microsoft.VisualStudio.Services.VSIXPackage');
     const downloadPageFile = filesJson.find(file => file.assetType === 'Microsoft.SQLOps.DownloadPage');
-    if(vsixFile && downloadPageFile) {
+    if (vsixFile && downloadPageFile) {
         throw new Error(`${path} - ${extensionName} - Can not have both VSIXPackage and DownloadPage file`);
     } else if (!vsixFile && !downloadPageFile) {
         throw new Error(`${path} - ${extensionName} - Must have file with either VSIXPackage or DownloadPage assetType`);
@@ -210,27 +210,27 @@ function validateHasRequiredAssets(path, extensionName, filesJson) {
     // Icon
     const iconFile = filesJson.find(file => file.assetType === 'Microsoft.VisualStudio.Services.Icons.Default');
     const noIconExtensions = ['poor-sql-formatter', 'qpi']; // Not all 3rd party extensions have icons so allow existing ones to pass for now
-    if(!iconFile && noIconExtensions.find(ext => ext === extensionName) === undefined) {
+    if (!iconFile && noIconExtensions.find(ext => ext === extensionName) === undefined) {
         throw new Error(`${path} - ${extensionName} - Must have an icon file`);
     }
 
     // Details
     const detailsFile = filesJson.find(file => file.assetType === 'Microsoft.VisualStudio.Services.Content.Details');
-    if(!detailsFile) {
+    if (!detailsFile) {
         throw new Error(`${path} - ${extensionName} - Must have a details file (README)`);
     }
 
     // Manifest
     const noManifestExtensions = ['plan-explorer', 'sql-prompt']; // Not all 3rd party extensions have manifests so allow existing ones to pass for now
     const manifestFile = filesJson.find(file => file.assetType === 'Microsoft.VisualStudio.Code.Manifest');
-    if(!manifestFile && noManifestExtensions.find(ext => ext === extensionName) === undefined) {
+    if (!manifestFile && noManifestExtensions.find(ext => ext === extensionName) === undefined) {
         throw new Error(`${path} - ${extensionName} - Must have a manifest file (package.json)`);
     }
 
     // License
     const noLicenseExtensions = ['sp_executesqlToSQL', 'simple-data-scripter', 'db-snapshot-creator']; // Not all 3rd party extensions have license files to link to so allow existing ones to pass for now
     const licenseFile = filesJson.find(file => file.assetType === 'Microsoft.VisualStudio.Services.Content.License');
-    if(!licenseFile && noLicenseExtensions.find(ext => ext === extensionName) === undefined) {
+    if (!licenseFile && noLicenseExtensions.find(ext => ext === extensionName) === undefined) {
         throw new Error(`${path} - ${extensionName} - Must have a license file`);
     }
 }
@@ -265,6 +265,10 @@ async function validateExtensionFile(path, extensionName, extensionFileJson) {
     }
     if (!extensionFileJson.source) {
         throw new Error(`${path} - ${extensionName} - No source\n${JSON.stringify(extensionFileJson)}`)
+    }
+    // Waka-time link is hitting rate limit for the download link so just ignore this one for now. 
+    if (extensionName === 'vscode-wakatime' && extensionFileJson.assetType === 'Microsoft.SQLOps.DownloadPage') {
+        return;
     }
     // Validate the source URL
     try {
