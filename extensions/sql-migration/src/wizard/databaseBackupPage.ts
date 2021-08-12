@@ -14,7 +14,8 @@ import { IconPathHelper } from '../constants/iconPathHelper';
 import { WIZARD_INPUT_COMPONENT_WIDTH } from './wizardController';
 import { findDropDownItemIndex, selectDropDownIndex } from '../api/utils';
 
-const WIZARD_TABLE_COLUMN_WIDTH = '150px';
+const WIZARD_TABLE_COLUMN_WIDTH = '200px';
+const WIZARD_TABLE_COLUMN_WIDTH_SMALL = '170px';
 
 const blobResourceGroupErrorStrings = [constants.RESOURCE_GROUP_NOT_FOUND];
 const blobStorageAccountErrorStrings = [constants.NO_STORAGE_ACCOUNT_FOUND, constants.SELECT_RESOURCE_GROUP];
@@ -366,6 +367,22 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 	}
 
 	private createBlobContainer(): azdata.FlexContainer {
+		const blobHeading = this._view.modelBuilder.text().withProps({
+			value: constants.DATABASE_BACKUP_BLOB_STORAGE_HEADER_TEXT,
+			width: WIZARD_INPUT_COMPONENT_WIDTH,
+			CSSStyles: {
+				'font-size': '14px',
+				'font-weight': 'bold'
+			}
+		}).component();
+
+		const blobHelpText = this._view.modelBuilder.text().withProps({
+			value: constants.DATABASE_BACKUP_BLOB_STORAGE_HELP_TEXT,
+			width: WIZARD_INPUT_COMPONENT_WIDTH,
+			CSSStyles: {
+				'font-size': '13px',
+			}
+		}).component();
 
 		const subscriptionLabel = this._view.modelBuilder.text()
 			.withProps({
@@ -396,6 +413,8 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 		const flexContainer = this._view.modelBuilder.flexContainer()
 			.withItems(
 				[
+					blobHeading,
+					blobHelpText,
 					subscriptionLabel,
 					this._blobContainerSubscription,
 					locationLabel,
@@ -425,6 +444,24 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			'border-bottom': '1px solid',
 		};
 
+		const networkShareTableText = this._view.modelBuilder.text()
+			.withProps({
+				value: constants.DATABASE_BACKUP_NETWORK_SHARE_TABLE_HELP_TEXT,
+				CSSStyles: {
+					'font-size': '13px',
+					'font-weight': 'bold'
+				}
+			}).component();
+
+		const blobTableText = this._view.modelBuilder.text()
+			.withProps({
+				value: constants.DATABASE_BACKUP_BLOB_STORAGE_TABLE_HELP_TEXT,
+				CSSStyles: {
+					'font-size': '13px',
+					'font-weight': 'bold'
+				}
+			}).component();
+
 		this._newtworkShareTargetDatabaseNamesTable = this._view.modelBuilder.declarativeTable().withProps({
 			columns: [
 				{
@@ -445,6 +482,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				}
 			]
 		}).component();
+
 		this._blobContainerTargetDatabaseNamesTable = this._view.modelBuilder.declarativeTable().withProps({
 			columns: [
 				{
@@ -494,11 +532,13 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 					headerCssStyles: headerCssStyles,
 					isReadOnly: true,
 					width: WIZARD_TABLE_COLUMN_WIDTH,
+					hidden: true
 				}
 			]
 		}).component();
 
 		this._networkTableContainer = this._view.modelBuilder.flexContainer().withItems([
+			networkShareTableText,
 			this._newtworkShareTargetDatabaseNamesTable
 		]).component();
 
@@ -511,6 +551,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			}).component();
 
 		this._blobTableContainer = this._view.modelBuilder.flexContainer().withItems([
+			blobTableText,
 			allFieldsRequiredLabel,
 			this._blobContainerTargetDatabaseNamesTable
 		]).component();
@@ -682,6 +723,9 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			const isOfflineMigration = this.migrationStateModel._databaseBackup?.migrationMode === MigrationMode.OFFLINE;
 			const lastBackupFileColumnIndex = this._blobContainerTargetDatabaseNamesTable.columns.length - 1;
 			this._blobContainerTargetDatabaseNamesTable.columns[lastBackupFileColumnIndex].hidden = !isOfflineMigration;
+			this._blobContainerTargetDatabaseNamesTable.columns.forEach(column => {
+				column.width = isOfflineMigration ? WIZARD_TABLE_COLUMN_WIDTH_SMALL : WIZARD_TABLE_COLUMN_WIDTH;
+			});
 
 			this._networkShareButton.checked = false;
 			this._networkTableContainer.display = 'none';
@@ -745,7 +789,6 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				const blobtargetDatabaseInput = this._view.modelBuilder.inputBox().withProps({
 					required: true,
 					value: db,
-					width: WIZARD_TABLE_COLUMN_WIDTH
 				}).withValidation(c => {
 					if (this._blobContainerTargetDatabaseNames.filter(t => t.value === c.value).length > 1) { //Making sure no databases have duplicate values.
 						c.validationErrorMessage = constants.DUPLICATE_NAME_ERROR;
@@ -768,7 +811,6 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 
 				const blobContainerResourceDropdown = this._view.modelBuilder.dropDown().withProps({
 					ariaLabel: constants.BLOB_CONTAINER_RESOURCE_GROUP,
-					width: WIZARD_TABLE_COLUMN_WIDTH,
 					editable: true,
 					fireOnTextChange: true,
 					required: true,
@@ -776,7 +818,6 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 
 				const blobContainerStorageAccountDropdown = this._view.modelBuilder.dropDown().withProps({
 					ariaLabel: constants.BLOB_CONTAINER_STORAGE_ACCOUNT,
-					width: WIZARD_TABLE_COLUMN_WIDTH,
 					editable: true,
 					fireOnTextChange: true,
 					required: true,
@@ -785,7 +826,6 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 
 				const blobContainerDropdown = this._view.modelBuilder.dropDown().withProps({
 					ariaLabel: constants.BLOB_CONTAINER,
-					width: WIZARD_TABLE_COLUMN_WIDTH,
 					editable: true,
 					fireOnTextChange: true,
 					required: true,
@@ -794,7 +834,6 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 
 				const blobContainerLastBackupFileDropdown = this._view.modelBuilder.dropDown().withProps({
 					ariaLabel: constants.BLOB_CONTAINER_LAST_BACKUP_FILE,
-					width: WIZARD_TABLE_COLUMN_WIDTH,
 					editable: true,
 					fireOnTextChange: true,
 					required: true,
