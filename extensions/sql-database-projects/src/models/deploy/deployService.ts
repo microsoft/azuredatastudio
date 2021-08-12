@@ -15,7 +15,6 @@ import * as os from 'os';
 import { ConnectionResult } from 'azdata';
 import * as templates from '../../templates/templates';
 
-
 export class DeployService {
 
 	constructor(private _outputChannel: vscode.OutputChannel) {
@@ -198,7 +197,29 @@ export class DeployService {
 				authenticationType: 'SqlLogin',
 				encrypt: false,
 				connectTimeout: 30,
-				applicationName: 'SQL Database Project'
+				applicationName: 'SQL Database Project',
+				accountId: undefined,
+				azureAccountToken: undefined,
+				applicationIntent: undefined,
+				attachDbFilename: undefined,
+				connectRetryCount: undefined,
+				connectRetryInterval: undefined,
+				connectionString: undefined,
+				currentLanguage: undefined,
+				email: undefined,
+				failoverPartner: undefined,
+				loadBalanceTimeout: undefined,
+				maxPoolSize: undefined,
+				minPoolSize: undefined,
+				multiSubnetFailover: undefined,
+				multipleActiveResultSets: undefined,
+				packetSize: undefined,
+				persistSecurityInfo: undefined,
+				pooling: undefined,
+				replication: undefined,
+				trustServerCertificate: undefined,
+				typeSystemVersion: undefined,
+				workstationId: undefined
 			};
 			let connectionUrl = await vscodeMssqlApi.connect(connectionProfile);
 			return connectionUrl;
