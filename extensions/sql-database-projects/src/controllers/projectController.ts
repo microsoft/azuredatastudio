@@ -286,11 +286,11 @@ export class ProjectsController {
 						vscode.window.showErrorMessage(constants.deployProjectFailed(publishResult?.errorMessage || ''));
 					}
 				} else {
-					vscode.window.showErrorMessage(constants.deployProjectFailed('Failed to open a connection to the deployed database'));
+					vscode.window.showErrorMessage(constants.deployProjectFailed(constants.deployProjectFailedMessage));
 				}
 			}
 		} catch (error) {
-			vscode.window.showErrorMessage(constants.deployProjectFailed(error));
+			vscode.window.showErrorMessage(constants.deployProjectFailed(utils.getErrorMessage(error)));
 		}
 		return;
 	}

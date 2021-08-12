@@ -8,18 +8,14 @@ import * as UUID from 'vscode-languageclient/lib/utils/uuid';
 import { Project } from '../project';
 import * as constants from '../../common/constants';
 import * as utils from '../../common/utils';
-let fse = require('fs-extra');
-let path = require('path');
-import * as childProcess from 'child_process';
+import * as fse from 'fs-extra';
+import * as path from 'path';
 import * as vscode from 'vscode';
 import * as os from 'os';
 import { ConnectionResult } from 'azdata';
 import * as templates from '../../templates/templates';
 
-interface ValidationResult {
-	errorMessage: string;
-	validated: boolean
-}
+
 export class DeployService {
 
 	constructor(private _outputChannel: vscode.OutputChannel) {
@@ -52,8 +48,9 @@ export class DeployService {
 		if (!profile.appSettingFile) {
 			return;
 		}
-		this.logToOutput(`Updating app setting: ${profile.appSettingFile}`);
+		this.logToOutput(constants.deployAppSettingUpdating(profile.appSettingFile));
 
+		// TODO: handle parsing errors
 		let content = JSON.parse(fse.readFileSync(profile.appSettingFile, 'utf8'));
 		if (content && content.Values) {
 			let connectionString: string | undefined = '';
@@ -121,13 +118,13 @@ export class DeployService {
 
 			// Waiting a bit to make sure docker container doesn't crash
 			//
-			const runningDockerId = await this.retry('Validating the docker container', async () => {
-				return await this.executeCommand(`docker ps -q -a --filter label=${imageLabel} -q`);
+			const runningDockerId = await utils.retry('Validating the docker container', async () => {
+				return await utils.executeCommand(`docker ps -q -a --filter label=${imageLabel} -q`, this._outputChannel);
 			}, (dockerId) => {
 				return Promise.resolve({ validated: dockerId !== undefined, errorMessage: constants.dockerContainerNotRunningErrorMessage });
 			}, (dockerId) => {
 				return Promise.resolve(dockerId);
-			}
+			}, this._outputChannel
 			);
 
 			if (runningDockerId) {
@@ -138,7 +135,7 @@ export class DeployService {
 				this.logToOutput(constants.dockerContainerFailedToRunErrorMessage);
 				if (createdDockerId) {
 					// Get the docker logs if docker was created but crashed
-					await this.executeCommand(constants.dockerLogMessage(createdDockerId));
+					await utils.executeCommand(constants.dockerLogMessage(createdDockerId), this._outputChannel);
 				}
 			}
 
@@ -148,18 +145,17 @@ export class DeployService {
 
 	private async buildAndRunDockerContainer(dockerFilePath: string, imageName: string, root: string, profile: ILocalDbSetting, imageLabel: string): Promise<string | undefined> {
 		this.logToOutput('Building docker image ...');
-		await this.executeCommand(`docker pull ${constants.dockerBaseImage}`);
-		await this.executeCommand(`docker build -f ${dockerFilePath} -t ${imageName} ${root}`);
-		await this.executeCommand(`docker images --filter label=${imageLabel}`);
+		await utils.executeCommand(`docker pull ${constants.dockerBaseImage}`, this._outputChannel);
+		await utils.executeCommand(`docker build -f ${dockerFilePath} -t ${imageName} ${root}`, this._outputChannel);
+		await utils.executeCommand(`docker images --filter label=${imageLabel}`, this._outputChannel);
 
 		this.logToOutput('Running docker container ...');
-		await this.executeCommand(`docker run -p ${profile.port}:1433 -e "MSSQL_SA_PASSWORD=${profile.password}" -d ${imageName}`);
-		return await this.executeCommand(`docker ps -q -a --filter label=${imageLabel} -q`);
+		await utils.executeCommand(`docker run -p ${profile.port}:1433 -e "MSSQL_SA_PASSWORD=${profile.password}" -d ${imageName}`, this._outputChannel);
+		return await utils.executeCommand(`docker ps -q -a --filter label=${imageLabel} -q`, this._outputChannel);
 	}
 
 	private async getConnectionString(connectionUri: string): Promise<string | undefined> {
 		const getAzdataApi = await utils.getAzdataApi();
-		//const vscodeMssqlApi = getAzdataApi ? undefined : await utils.getVscodeMssqlApi();
 		if (getAzdataApi) {
 			const connection = await getAzdataApi.connection.getConnection(connectionUri);
 			if (connection) {
@@ -172,6 +168,7 @@ export class DeployService {
 
 	}
 
+	// Connects to a database
 	private async connectToDatabase(profile: ILocalDbSetting, savePassword: boolean, database: string): Promise<ConnectionResult | string | undefined> {
 		const getAzdataApi = await utils.getAzdataApi();
 		const vscodeMssqlApi = getAzdataApi ? undefined : await utils.getVscodeMssqlApi();
@@ -210,7 +207,9 @@ export class DeployService {
 		}
 	}
 
-	private async validateConnection(connection: ConnectionResult | string | undefined): Promise<ValidationResult> {
+	// Validates the connection result. If using azdata API, verifies connection was successful and connection id is returns
+	// If using vscode API, verifies the connection url is returns
+	private async validateConnection(connection: ConnectionResult | string | undefined): Promise<utils.ValidationResult> {
 		const getAzdataApi = await utils.getAzdataApi();
 		if (!connection) {
 			return { validated: false, errorMessage: constants.connectionFailedError('No result returned') };
@@ -227,6 +226,7 @@ export class DeployService {
 		}
 	}
 
+	// Formats connection result to string to be able to add to log
 	private async formatConnectionResult(connection: ConnectionResult | string | undefined): Promise<string> {
 		const getAzdataApi = await utils.getAzdataApi();
 		const connectionResult = connection !== undefined && getAzdataApi ? <ConnectionResult>connection : undefined;
@@ -235,13 +235,14 @@ export class DeployService {
 
 	public async getConnection(profile: ILocalDbSetting, savePassword: boolean, database: string, timeoutInSeconds: number = 5): Promise<string | undefined> {
 		const getAzdataApi = await utils.getAzdataApi();
-		let connection = await this.retry(
+		let connection = await utils.retry(
 			constants.connectingToSqlServerOnDockerMessage,
 			async () => {
 				return await this.connectToDatabase(profile, savePassword, database);
 			},
 			this.validateConnection,
 			this.formatConnectionResult,
+			this._outputChannel,
 			5, timeoutInSeconds);
 
 		if (connection) {
@@ -284,43 +285,11 @@ export class DeployService {
 		}
 	}
 
-	private async retry<T>(
-		name: string,
-		attempt: () => Promise<T>,
-		verify: (result: T) => Promise<ValidationResult>,
-		formatResult: (result: T) => Promise<string>,
-		numberOfAttempts: number = 10,
-		waitInSeconds: number = 2): Promise<T | undefined> {
-		for (let count = 0; count < numberOfAttempts; count++) {
-			this.logToOutput(constants.retryWaitMessage(waitInSeconds, name));
-			await new Promise(c => setTimeout(c, waitInSeconds * 1000));
-			this.logToOutput(constants.retryRunMessage(count, numberOfAttempts, name));
-
-			try {
-				let result = await attempt();
-				const validationResult = await verify(result);
-				const formattedResult = await formatResult(result);
-				if (validationResult.validated) {
-					this.logToOutput(constants.retrySucceedMessage(name, formattedResult));
-					return result;
-				} else {
-					this.logToOutput(constants.retryFailedMessage(name, formattedResult, validationResult.errorMessage));
-				}
-
-			} catch (err) {
-				this.logToOutput(constants.retryMessage(name, err));
-			}
-		}
-
-		return undefined;
-	}
-
 	private logToOutput(message: string): void {
-		if (this._outputChannel) {
-			this._outputChannel.appendLine(message);
-		}
+		this._outputChannel.appendLine(message);
 	}
 
+	// Creates command file and docker file needed for deploy operation
 	private async createCommands(mssqlFolderPath: string, commandsFolderPath: string, dockerFilePath: string, startFilePath: string, imageLabel: string): Promise<void> {
 		// Create mssql folders if doesn't exist
 		//
@@ -331,7 +300,7 @@ export class DeployService {
 		//
 		await this.createFile(startFilePath, 'echo starting the container!');
 		if (os.platform() !== 'win32') {
-			await this.executeCommand(`chmod +x ${startFilePath}`);
+			await utils.executeCommand(`chmod +x ${startFilePath}`, this._outputChannel);
 		}
 
 		// Create the Dockerfile
@@ -354,7 +323,7 @@ RUN ["/bin/bash", "/opt/commands/start.sh"]
 	}
 
 	public async cleanDockerObjects(commandToGetObjects: string, commandsToClean: string[]): Promise<void> {
-		const currentIds = await this.executeCommand(commandToGetObjects);
+		const currentIds = await utils.executeCommand(commandToGetObjects, this._outputChannel);
 		if (currentIds) {
 			const ids = currentIds.split(/\r?\n/);
 			for (let index = 0; index < ids.length; index++) {
@@ -362,42 +331,10 @@ RUN ["/bin/bash", "/opt/commands/start.sh"]
 				if (id) {
 					for (let commandId = 0; commandId < commandsToClean.length; commandId++) {
 						const command = commandsToClean[commandId];
-						await this.executeCommand(`${command} ${id}`);
-
+						await utils.executeCommand(`${command} ${id}`, this._outputChannel);
 					}
 				}
 			}
 		}
-	}
-
-	private async executeCommand(cmd: string, timeout: number = 5 * 60 * 1000): Promise<string> {
-		return new Promise<string>((resolve, reject) => {
-			this.logToOutput(`    > ${cmd}`);
-			let child = childProcess.exec(cmd, {
-				timeout: timeout
-			}, (err, stdout) => {
-				if (err) {
-					reject(err);
-				} else {
-					resolve(stdout);
-				}
-			});
-
-			// Add listeners to print stdout and stderr if an output channel was provided
-
-			if (child?.stdout) {
-				child.stdout.on('data', data => { this.outputDataChunk(data, '    stdout: '); });
-			}
-			if (child?.stderr) {
-				child.stderr.on('data', data => { this.outputDataChunk(data, '    stderr: '); });
-			}
-		});
-	}
-
-	private outputDataChunk(data: string | Buffer, header: string): void {
-		data.toString().split(/\r?\n/)
-			.forEach(line => {
-				this.logToOutput(header + line);
-			});
 	}
 }

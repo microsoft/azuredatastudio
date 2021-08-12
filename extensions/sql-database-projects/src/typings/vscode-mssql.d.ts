@@ -40,7 +40,7 @@ declare module 'vscode-mssql' {
          */
         promptForConnection(ignoreFocusOut?: boolean): Promise<IConnectionInfo | undefined>;
 
-		/**
+        /**
          * Attempts to create a new connection for the given connection info. An error is thrown and displayed
          * to the user if an error occurs while connecting.
          * @param connectionInfo The connection info

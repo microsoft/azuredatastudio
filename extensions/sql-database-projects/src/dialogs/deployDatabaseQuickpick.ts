@@ -9,8 +9,8 @@ import { AppSettingType, IDeployProfile, ILocalDbSetting } from '../models/deplo
 import { Project } from '../models/project';
 import * as generator from 'generate-password';
 import { getPublishDatabaseSettings } from './publishDatabaseQuickpick';
-let path = require('path');
-let fse = require('fs-extra');
+import * as path from 'path';
+import * as fse from 'fs-extra';
 
 /**
  * Create flow for Deploying a database using only VS Code-native APIs such as QuickPick
@@ -35,7 +35,7 @@ export async function launchDeployDatabaseQuickpick(project: Project): Promise<I
 			title: constants.enterPortNumber,
 			ignoreFocusOut: true,
 			value: constants.defaultPortNumber,
-			validateInput: input => isNaN(+input) ? constants.portMustNotBeNumber : undefined
+			validateInput: input => isNaN(+input) ? constants.portMustBeNumber : undefined
 		}
 		);
 
@@ -88,7 +88,7 @@ export async function launchDeployDatabaseQuickpick(project: Project): Promise<I
 	//TODO: find a better way to find if AF or local settings is in the project
 	//
 	const localSettings = path.join(project.projectFolderPath, constants.azureFunctionLocalSettingsFileName);
-	const settingExist: boolean = fse.existsSync(localSettings);
+	const settingExist: boolean = await fse.pathExists(localSettings);
 	if (integrateWithAzureFunctions && settingExist) {
 
 		// Ask user to update app settings or not

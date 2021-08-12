@@ -16,7 +16,7 @@ import { IDeploySettings } from '../models/IDeploySettings';
 /**
  * Create flow for Publishing a database using only VS Code-native APIs such as QuickPick
  */
-export async function getPublishDatabaseSettings(project: Project, existingConnection: boolean = true): Promise<IDeploySettings | undefined> {
+export async function getPublishDatabaseSettings(project: Project, promptForConnection: boolean = true): Promise<IDeploySettings | undefined> {
 
 	// 1. Select publish settings file (optional)
 	// Create custom quickpick so we can control stuff like displaying the loading indicator
@@ -78,7 +78,7 @@ export async function getPublishDatabaseSettings(project: Project, existingConne
 	let connectionProfile: IConnectionInfo | undefined = undefined;
 	let dbs: string[] = [];
 	let connectionUri: string | undefined;
-	if (existingConnection) {
+	if (promptForConnection) {
 		const vscodeMssqlApi = await getVscodeMssqlApi();
 		while (!dbs) {
 			connectionProfile = await vscodeMssqlApi.promptForConnection(true);

@@ -418,7 +418,8 @@
     "tslint": "^5.8.0",
     "typemoq": "^2.1.0",
     "typescript": "^2.6.1",
-    "vscodetestcover": "^1.1.0"
+    "vscodetestcover": "^1.1.0",
+    "@types/fs-extra": "^5.0.0"
   },
   "__metadata": {
     "id": "70",
