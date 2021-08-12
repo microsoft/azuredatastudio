@@ -9,7 +9,7 @@ import { ITestInstantiationService, TestEditorService } from 'vs/workbench/test/
 import { URI } from 'vs/base/common/uri';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IEditorInput } from 'vs/workbench/common/editor';
-import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
+import { FileEditorInput } from 'vs/workbench/contrib/files/browser/editors/fileEditorInput';
 import { workbenchInstantiationService } from 'sql/workbench/test/workbenchTestServices';
 import { QueryEditorLanguageAssociation } from 'sql/workbench/contrib/query/browser/queryInputFactory';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
@@ -100,11 +100,11 @@ suite('Query Input Factory', () => {
 		const queryEditorLanguageAssociation = instantiationService.createInstance(QueryEditorLanguageAssociation);
 		const untitledService = instantiationService.invokeFunction(accessor => accessor.get(IUntitledTextEditorService));
 		const queryeditorservice = instantiationService.invokeFunction(accessor => accessor.get(IQueryEditorService));
-		const newsqlEditorStub = sinon.stub(queryeditorservice, 'newSqlEditor', () => {
+		const newsqlEditorStub = sinon.stub(queryeditorservice, 'newSqlEditor').callsFake(() => {
 			const untitledInput = instantiationService.createInstance(UntitledTextEditorInput, untitledService.create());
 			const queryResultsInput: QueryResultsInput = instantiationService.createInstance(QueryResultsInput, untitledInput.resource.toString());
 			let queryInput = instantiationService.createInstance(UntitledQueryEditorInput, '', untitledInput, queryResultsInput);
-			return queryInput;
+			return Promise.resolve(queryInput);
 		});
 		const input = instantiationService.createInstance(UntitledTextEditorInput, untitledService.create());
 		const response = queryEditorLanguageAssociation.convertInput(input);
@@ -148,12 +148,12 @@ suite('Query Input Factory', () => {
 		const untitledService = instantiationService.invokeFunction(accessor => accessor.get(IUntitledTextEditorService));
 		const queryeditorservice = instantiationService.invokeFunction(accessor => accessor.get(IQueryEditorService));
 		const input = instantiationService.createInstance(UntitledTextEditorInput, untitledService.create());
-		sinon.stub(editorService, 'isOpened', (editor: IEditorInput) => extUri.isEqual(editor.resource, input.resource));
-		const newsqlEditorStub = sinon.stub(queryeditorservice, 'newSqlEditor', () => {
+		sinon.stub(editorService, 'isOpened').callsFake((editor: IEditorInput) => extUri.isEqual(editor.resource, input.resource));
+		const newsqlEditorStub = sinon.stub(queryeditorservice, 'newSqlEditor').callsFake(() => {
 			const untitledInput = instantiationService.createInstance(UntitledTextEditorInput, untitledService.create());
 			const queryResultsInput: QueryResultsInput = instantiationService.createInstance(QueryResultsInput, untitledInput.resource.toString());
 			let queryInput = instantiationService.createInstance(UntitledQueryEditorInput, '', untitledInput, queryResultsInput);
-			return queryInput;
+			return Promise.resolve(queryInput);
 		});
 		const response = queryEditorLanguageAssociation.convertInput(input);
 		assert(isThenable(response));
