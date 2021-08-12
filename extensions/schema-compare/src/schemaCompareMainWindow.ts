@@ -364,8 +364,6 @@ export class SchemaCompareMainWindow {
 				this.diffEditor
 			]).component();
 
-			// this.splitView.addItem(this.differencesTable);
-			// this.splitView.addItem(this.diffEditor);
 			this.splitView.setLayout({
 				orientation: 'vertical',
 				splitViewHeight: 800
