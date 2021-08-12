@@ -174,7 +174,7 @@ export default class TextComponent extends TitledComponent<azdata.TextComponentP
 	}
 
 	public get showDiv(): boolean {
-		return !!this.description;
+		return this.requiredIndicator || !!this.description;
 	}
 
 	/**

@@ -441,7 +441,6 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 					rowCssStyles: rowCssStyle,
 					headerCssStyles: headerCssStyles,
 					isReadOnly: true,
-					requiredIndicator: true,
 					width: '300px'
 				}
 			]
@@ -503,7 +502,16 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			this._newtworkShareTargetDatabaseNamesTable
 		]).component();
 
+		const allFieldsRequiredLabel = this._view.modelBuilder.text()
+			.withProps({
+				value: constants.ALL_FIELDS_REQUIRED,
+				CSSStyles: {
+					'font-size': '13px',
+				}
+			}).component();
+
 		this._blobTableContainer = this._view.modelBuilder.flexContainer().withItems([
+			allFieldsRequiredLabel,
 			this._blobContainerTargetDatabaseNamesTable
 		]).component();
 
