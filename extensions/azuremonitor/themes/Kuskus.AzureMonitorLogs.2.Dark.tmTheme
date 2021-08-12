@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>name</key>
-	<string>[Kuskus] Azure Monitor Logs (Dark)</string>
+	<string>[Kuskus] Azure Monitor Logs 2 (Dark)</string>
 	<key>settings</key>
 	<array>
 		<dict>

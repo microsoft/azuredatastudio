@@ -203,9 +203,9 @@
         "path": "./themes/kuskus-azuremonitorlogs-dark.json"
       },
       {
-        "label": "[Kuskus] Azure Monitor Logs (Dark)",
+        "label": "[Kuskus] Azure Monitor Logs 2 (Dark)",
         "uiTheme": "vs-dark",
-        "path": "./themes/kuskus-azuremonitorlogs-explorer-dark.json"
+        "path": "./themes/kuskus-azuremonitorlogs-2-dark.json"
       }
     ],
     "outputChannels": [
