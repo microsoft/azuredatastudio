@@ -92,7 +92,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			width: 130
 		}).component();
 
-		this._disposables.push(refreshAssessmentButton.onDidClick(async (e) => {
+		this._disposables.push(refreshAssessmentButton.onDidClick(() => {
 			this.constructDetails();
 		}));
 
