@@ -770,70 +770,101 @@ export class ProjectsController {
 	}
 
 	public async generateFromSwagger() {
-		const filters: { [name: string]: string[] } = {};
-		filters['Swagger/OpenAPI spec'] = ['yaml'];
+		try {
+			// 1. select spec file
+			const filters: { [name: string]: string[] } = {};
+			filters['Swagger/OpenAPI spec'] = ['yaml'];
 
-		let uris = await vscode.window.showOpenDialog({
-			canSelectFiles: true,
-			canSelectFolders: false,
-			canSelectMany: false,
-			openLabel: 'Select Swagger/OpenAPI spec file',
-			filters: filters
-		});
+			let uris = await vscode.window.showOpenDialog({
+				canSelectFiles: true,
+				canSelectFolders: false,
+				canSelectMany: false,
+				openLabel: 'Select Swagger/OpenAPI spec file',
+				filters: filters
+			});
 
-		if (!uris) {
-			return;
+			if (!uris) {
+				return;
+			}
+
+			// 2. select location
+			const swaggerPath: string = uris[0].fsPath;
+
+			const folders = await vscode.window.showOpenDialog({
+				canSelectFiles: false,
+				canSelectFolders: true,
+				canSelectMany: false,
+				openLabel: 'Select location for project',
+				defaultUri: vscode.workspace.workspaceFolders?.[0].uri ?? undefined
+			});
+
+			if (!folders) {
+				return;
+			}
+
+			// 3. create target folder
+			const outputFolder: string = folders[0].fsPath;
+			const projectName: string = path.basename(swaggerPath, '.yaml');
+			const newProjectFolder: string = path.join(outputFolder, projectName);
+
+			if (await utils.exists(newProjectFolder)) {
+				throw new Error(`Path '${newProjectFolder}' already exists.  Select another location.`);
+			}
+
+			await fs.mkdir(newProjectFolder);
+
+			// 4. run AutoRest to generate .sql files
+			const autorestHelper = new AutorestHelper();
+			await autorestHelper.generateAutorestFiles(swaggerPath, newProjectFolder);
+
+			// 5. create new SQL project
+			const newProjFilePath = await this.createNewProject({
+				newProjName: projectName,
+				folderUri: vscode.Uri.file(outputFolder),
+				projectTypeId: constants.emptySqlDatabaseProjectTypeId
+			});
+
+			const project = await Project.openProject(newProjFilePath);
+
+			// 6. add generated files to SQL project
+			let fileFolderList: vscode.Uri[] = await this.getSqlFileList(project.projectFolderPath);
+			await project.addToProject(fileFolderList.filter(f => !f.fsPath.endsWith(constants.autorestPostDeploymentScriptName))); // Add generated file structure to the project
+
+			const postDeploymentScript: vscode.Uri | undefined = this.findPostDeploymentScript(fileFolderList);
+
+			if (postDeploymentScript) {
+				await project.addScriptItem(path.relative(project.projectFolderPath, postDeploymentScript.fsPath), undefined, templates.postDeployScript);
+			}
+
+			// 7. add project to workspace and open
+			const workspaceApi = utils.getDataWorkspaceExtensionApi();
+			await workspaceApi.addProjectsToWorkspace([vscode.Uri.file(newProjFilePath)]);
+
+			workspaceApi.showProjectsView();
+		} catch (err) {
+			vscode.window.showErrorMessage(utils.getErrorMessage(err));
+		}
+	}
+
+	private findPostDeploymentScript(files: vscode.Uri[]): vscode.Uri | undefined {
+		const results = files.filter(f => f.fsPath.endsWith(constants.autorestPostDeploymentScriptName));
+
+		switch (results.length) {
+			case 0:
+				return undefined;
+			case 1:
+				return results[0];
+			default:
+				throw new Error(`Unexpected number of ${constants.autorestPostDeploymentScriptName} files: ${results.length}`);
 		}
 
-		const swaggerPath: string = uris[0].fsPath;
-
-		const folders = await vscode.window.showOpenDialog({
-			canSelectFiles: false,
-			canSelectFolders: true,
-			canSelectMany: false,
-			openLabel: 'Select location for project',
-			defaultUri: vscode.workspace.workspaceFolders?.[0].uri ?? undefined
-		});
-
-		if (!folders) {
-			return;
-		}
-
-		const outputFolder: string = path.join(folders[0].fsPath, path.basename(swaggerPath, '.yaml'));
-
-		if (await utils.exists(outputFolder)) {
-			throw new Error(`Path '${outputFolder}' already exists.  Select another location.`);
-		}
-
-		await fs.mkdir(outputFolder);
-
-		const autorestHelper = new AutorestHelper();
-		await autorestHelper.generateAutorestFiles(swaggerPath, outputFolder);
-
-		const newProjFilePath = await this.createNewProject({
-			newProjName: path.basename(swaggerPath, '.yaml'),
-			folderUri: vscode.Uri.file(outputFolder),
-			projectTypeId: constants.emptySqlDatabaseProjectTypeId
-		});
-
-
-		const project = await Project.openProject(newProjFilePath);
-		let fileFolderList: vscode.Uri[] = await this.getSqlFileList(outputFolder);
-
-		await project.addToProject(fileFolderList); // Add generated file structure to the project
-
-		// add project to workspace
-		const workspaceApi = utils.getDataWorkspaceExtensionApi();
-		workspaceApi.showProjectsView();
-		await workspaceApi.addProjectsToWorkspace([vscode.Uri.file(newProjFilePath)]);
 	}
 
 	private async getSqlFileList(folder: string): Promise<vscode.Uri[]> {
 		const entries = await fs.readdir(folder, { withFileTypes: true });
 
 		const folders = entries.filter(dir => dir.isDirectory()).map(dir => path.join(folder, dir.name));
-		const files = entries.filter(file => !file.isDirectory()).map(file => vscode.Uri.file(path + file.name));
-
+		const files = entries.filter(file => !file.isDirectory()).map(file => vscode.Uri.file(path.join(folder, file.name)));
 
 		for (const folder of folders) {
 			files.push(...await this.getSqlFileList(folder));

@@ -4,33 +4,23 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as child_process from 'child_process';
+import { utils } from 'mocha';
+import * as which from 'which';
 
 export class AutorestHelper {
-	private autorestVersionOutput: string | undefined;
 	private autorestGenerationOutput: string | undefined;
 
 	public async detectAutorestInstallation(): Promise<boolean> {
-		const child = child_process.spawn('autorest --version', [], { shell: true });
+		try {
+			const found = await which('autorest');
+			if (found) {
+				return true;
+			}
+		} catch (err) {
+			console.log(utils.getError(err));
+		}
 
-		child.stdout.on('data', (data) => {
-			this.autorestVersionOutput = String(data);
-		});
-
-		const isDetected: boolean = await this.onDetectExit(child);
-
-		return isDetected;
-	}
-
-	private async onDetectExit(childProcess: child_process.ChildProcess): Promise<boolean> {
-		return new Promise((resolve, reject) => {
-			childProcess.on('exit', () => {
-				resolve(this.autorestVersionOutput?.startsWith('AutoRest code generation utility') ?? false);
-			});
-
-			childProcess.on('error', () => {
-				reject(false);
-			});
-		});
+		return false;
 	}
 
 	public async generateAutorestFiles(swaggerPath: string, outputFolder: string): Promise<boolean> {
@@ -39,6 +29,7 @@ export class AutorestHelper {
 			throw new Error('Autorest tool not found.  Please ensure it\'s accessible from your system path.');
 		}
 
+		// should --clear-output-folder be included? We should always be writing to a folder created just for this, but potentially risky
 		const command = `autorest --use:autorest-sql-testing --input-file="${swaggerPath}" --output-folder="${outputFolder}" --clear-output-folder`;
 
 		const child = child_process.spawn(command, [], { shell: true });

@@ -341,6 +341,9 @@ export enum DatabaseProjectItemType {
 	dataSourceRoot = 'databaseProject.itemType.dataSourceRoot',
 }
 
+// AutoRest
+export const autorestPostDeploymentScriptName = 'PostDeploymentScript.sql';
+
 // System dbs
 export const systemDbs = ['master', 'msdb', 'tempdb', 'model'];
 
