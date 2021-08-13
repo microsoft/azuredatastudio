@@ -109,14 +109,14 @@ suite('Data Resource Data Provider', function () {
 		);
 		let noHeadersFile = URI.file(path.join(tempFolderPath, 'result_noHeaders.csv'));
 		let fileDialogServiceStub = sinon.stub(fileDialogService.object, 'showSaveDialog').returns(Promise.resolve(noHeadersFile));
-		let serializerStub = sinon.stub(serializer, 'getBasicSaveParameters').returns({ resultFormat: SaveFormat.CSV as string, includeHeaders: false });
+		let serializerStub = sinon.stub(serializer, 'getBasicSaveParameters').returns(<azdata.SaveResultsRequestParams>{ resultFormat: SaveFormat.CSV as string, includeHeaders: false });
 		await dataResourceDataProvider.serializeResults(SaveFormat.CSV, undefined);
 		fileDialogServiceStub.restore();
 		serializerStub.restore();
 
 		let withHeadersFile = URI.file(path.join(tempFolderPath, 'result_withHeaders.csv'));
 		fileDialogServiceStub = sinon.stub(fileDialogService.object, 'showSaveDialog').returns(Promise.resolve(withHeadersFile));
-		serializerStub = sinon.stub(serializer, 'getBasicSaveParameters').returns({ resultFormat: SaveFormat.CSV as string, includeHeaders: true });
+		serializerStub = sinon.stub(serializer, 'getBasicSaveParameters').returns(<azdata.SaveResultsRequestParams>{ resultFormat: SaveFormat.CSV as string, includeHeaders: true });
 		await dataResourceDataProvider.serializeResults(SaveFormat.CSV, undefined);
 		fileDialogServiceStub.restore();
 		serializerStub.restore();

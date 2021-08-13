@@ -170,7 +170,7 @@ suite('Notebook Editor Model', function (): void {
 
 	teardown(() => {
 		if (accessor && accessor.textFileService && accessor.textFileService.files) {
-			(<TextFileEditorModelManager>accessor.textFileService.files).clear();
+			(<TextFileEditorModelManager>accessor.textFileService.files).dispose();
 		}
 	});
 
