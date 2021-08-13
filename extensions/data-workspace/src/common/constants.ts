@@ -20,6 +20,7 @@ export const projectNameNull = localize('projectNameNull', "Project name is null
 export const noPreviousData = (tableName: string): string => { return localize('noPreviousData', "Prior {0} for the current project will appear here, please run to see the results.", tableName); };
 export const gitCloneMessage = (url: string): string => { return localize('gitCloneMessage', "Cloning git repository '{0}'...", url); };
 export const gitCloneError = localize('gitCloneError', "Error during git clone. View git output for more details");
+export const openedProjectsUndefinedAfterRefresh = localize('openedProjectsUndefinedAfterRefresh', "List of opened projects should not be undefined after refresh from disk.");
 
 // UI
 export const OkButtonText = localize('dataworkspace.ok', "OK");
