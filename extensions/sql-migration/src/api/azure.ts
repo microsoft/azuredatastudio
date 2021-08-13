@@ -287,27 +287,34 @@ export async function startDatabaseMigration(account: azdata.Account, subscripti
 	};
 }
 
-export async function getMigrationStatus(account: azdata.Account, subscription: Subscription, migration: DatabaseMigration, sessionId: string, asyncUrl: string): Promise<DatabaseMigration> {
+export async function getMigrationStatus(account: azdata.Account, subscription: Subscription, migration: DatabaseMigration, sessionId: string): Promise<DatabaseMigration> {
+	if (!migration.id) {
+		throw new Error('NullMigrationId');
+	}
+
+	const migrationOperationId = migration.properties?.migrationOperationId;
+	if (migrationOperationId === undefined &&
+		migration.properties.provisioningState === ProvisioningState.Failed) {
+		return migration;
+	}
+
+	const path = migrationOperationId === undefined
+		? `${migration.id}?$expand=MigrationStatusDetails&api-version=2020-09-01-preview`
+		: `${migration.id}?migrationOperationId=${migrationOperationId}&$expand=MigrationStatusDetails&api-version=2020-09-01-preview`;
+
 	const api = await getAzureCoreAPI();
-	const migrationOperationId = getMigrationOperationId(migration, asyncUrl);
-	const path = `${migration.id}?migrationOperationId=${migrationOperationId}&$expand=MigrationStatusDetails&api-version=2020-09-01-preview`;
 	const response = await api.makeAzureRestRequest(account, subscription, path, azurecore.HttpRequestMethod.GET, undefined, true, undefined, getSessionIdHeader(sessionId));
 	if (response.errors.length > 0) {
 		throw new Error(response.errors.toString());
 	}
-	return response.response.data;
-}
 
-function getMigrationOperationId(migration: DatabaseMigration, asyncUrl: string): string {
-	// migrationOperationId may be undefined when provisioning has failed
-	// fall back to the operationId from the asyncUrl in the create migration response
-	if (migration.properties.migrationOperationId) {
-		return migration.properties.migrationOperationId;
+	const migrationUpdate: DatabaseMigration = response.response.data;
+	if (migration.properties) {
+		migrationUpdate.properties.sourceDatabaseName = migration.properties.sourceDatabaseName;
+		migrationUpdate.properties.backupConfiguration = migration.properties.backupConfiguration;
 	}
 
-	return asyncUrl
-		? vscode.Uri.parse(asyncUrl)?.path?.split('/').reverse()[0]
-		: '';
+	return migrationUpdate;
 }
 
 export async function getMigrationAsyncOperationDetails(account: azdata.Account, subscription: Subscription, url: string, sessionId: string): Promise<AzureAsyncOperationResource> {

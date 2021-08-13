@@ -27,9 +27,6 @@ export class MigrationLocalStorage {
 			if (migration.sourceConnectionProfile.serverName === connectionProfile.serverName) {
 				if (refreshStatus) {
 					try {
-						const backupConfiguration = migration.migrationContext.properties.backupConfiguration;
-						const sourceDatabase = migration.migrationContext.properties.sourceDatabaseName;
-
 						await this.refreshMigrationAzureAccount(migration);
 
 						if (migration.asyncUrl) {
@@ -37,27 +34,23 @@ export class MigrationLocalStorage {
 								migration.azureAccount,
 								migration.subscription,
 								migration.asyncUrl,
-								migration.sessionId!
-							);
-
-							migration.migrationContext = await getMigrationStatus(
-								migration.azureAccount,
-								migration.subscription,
-								migration.migrationContext,
-								migration.sessionId!,
-								migration.asyncUrl
-							);
-
-							migration.migrationContext.properties.sourceDatabaseName = sourceDatabase;
-							migration.migrationContext.properties.backupConfiguration = backupConfiguration;
+								migration.sessionId!);
 						}
+
+						migration.migrationContext = await getMigrationStatus(
+							migration.azureAccount,
+							migration.subscription,
+							migration.migrationContext,
+							migration.sessionId!);
 					}
 					catch (e) {
 						// Keeping only valid migrations in cache. Clearing all the migrations which return ResourceDoesNotExit error.
-						if (e.message === 'ResourceDoesNotExist') {
-							continue;
-						} else {
-							console.log(e);
+						switch (e.message) {
+							case 'ResourceDoesNotExist':
+							case 'NullMigrationId':
+								continue;
+							default:
+								console.log(e);
 						}
 					}
 				}
