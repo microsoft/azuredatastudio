@@ -333,7 +333,7 @@ class ComponentBuilderImpl<T extends azdata.Component, TPropertyBag extends azda
 	}
 
 	withValidation(validation: (component: T) => boolean | Thenable<boolean>): azdata.ComponentBuilder<T, TPropertyBag> {
-		this._component.customValidations.push(validation);
+		this._component.customValidations.push(validation as (component: ThisType<ComponentWrapper>) => boolean | Thenable<boolean>); // Use specific type to avoid type assertion error
 		return this;
 	}
 

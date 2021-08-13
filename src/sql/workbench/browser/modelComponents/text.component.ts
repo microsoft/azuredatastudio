@@ -17,7 +17,7 @@ import { Link } from 'vs/platform/opener/browser/link';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import * as DOM from 'vs/base/browser/dom';
 import { ILogService } from 'vs/platform/log/common/log';
-import { IColorTheme, ICssStyleCollector, IThemeService, registerThemingParticipant } from 'vs/platform/theme/common/themeService';
+import { IColorTheme, ICssStyleCollector, registerThemingParticipant } from 'vs/platform/theme/common/themeService';
 import { errorForeground } from 'vs/platform/theme/common/colorRegistry';
 
 export enum TextType {
@@ -51,8 +51,7 @@ export default class TextComponent extends TitledComponent<azdata.TextComponentP
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
 		@Inject(IInstantiationService) private instantiationService: IInstantiationService,
-		@Inject(ILogService) logService: ILogService,
-		@Inject(IThemeService) private themeService: IThemeService) {
+		@Inject(ILogService) logService: ILogService) {
 		super(changeRef, el, logService);
 	}
 

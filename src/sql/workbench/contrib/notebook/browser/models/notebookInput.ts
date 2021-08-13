@@ -12,7 +12,7 @@ import * as azdata from 'azdata';
 import { IStandardKernelWithProvider, getProvidersForFileName, getStandardKernelsForProvider } from 'sql/workbench/services/notebook/browser/models/notebookUtils';
 import { INotebookService, DEFAULT_NOTEBOOK_PROVIDER, IProviderInfo } from 'sql/workbench/services/notebook/browser/notebookService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { ITextModelService } from 'vs/editor/common/services/resolverService';
+import { ITextEditorModel, ITextModelService } from 'vs/editor/common/services/resolverService';
 import { INotebookModel, IContentManager, NotebookContentChange } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { TextFileEditorModel } from 'vs/workbench/services/textfile/common/textFileEditorModel';
 import { Schemas } from 'vs/base/common/network';
@@ -394,7 +394,7 @@ export abstract class NotebookInput extends EditorInput implements INotebookInpu
 				} else {
 					let resolvedInput = await this._textInput.resolve();
 					if (!(resolvedInput instanceof BinaryEditorModel)) {
-						resolvedInput.textEditorModel.onBeforeAttached();
+						(resolvedInput as ITextEditorModel).textEditorModel.onBeforeAttached();
 					}
 					textOrUntitledEditorModel = resolvedInput as TextFileEditorModel | UntitledTextEditorModel | TextResourceEditorModel;
 				}
