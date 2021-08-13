@@ -213,8 +213,8 @@ export class ActionRunner extends Disposable implements IActionRunner {
 export class Separator extends Action {
 
 	/**
- * Joins all non-empty lists of actions with separators.
- */
+	 * Joins all non-empty lists of actions with separators.
+	 */
 	public static join(...actionLists: readonly IAction[][]) {
 		let out: IAction[] = [];
 		for (const list of actionLists) {
