@@ -12,7 +12,6 @@ import * as loc from '../../constants/strings';
 import { convertByteSizeToReadableUnit, convertIsoTimeToLocalTime, getSqlServerName, getMigrationStatusImage, SupportedAutoRefreshIntervals, clearDialogMessage } from '../../api/utils';
 import { EOL } from 'os';
 import { ConfirmCutoverDialog } from './confirmCutoverDialog';
-import { MigrationMode } from '../../models/stateMachine';
 
 const refreshFrequency: SupportedAutoRefreshIntervals = 30000;
 const statusImageSize: number = 14;
@@ -278,7 +277,7 @@ export class MigrationCutoverDialog {
 			enabled: false,
 			CSSStyles: {
 				'font-size': '13px',
-				'display': 'none'
+				'display': this._isOnlineMigration() ? 'inline' : 'none'
 			}
 		}).component();
 
@@ -527,7 +526,7 @@ export class MigrationCutoverDialog {
 		try {
 			clearDialogMessage(this._dialogObject);
 
-			if (this._isProvisioned() && this._isOnlineMigration()) {
+			if (this._isOnlineMigration()) {
 				this._cutoverButton.updateCssStyles({
 					'display': 'inline'
 				});
@@ -783,11 +782,7 @@ export class MigrationCutoverDialog {
 	}
 
 	private _isOnlineMigration(): boolean {
-		let migrationMode = null;
-		if (this._isProvisioned()) {
-			migrationMode = this._model._migration.migrationContext.properties.autoCutoverConfiguration?.autoCutover?.valueOf() ? MigrationMode.OFFLINE : MigrationMode.ONLINE;
-		}
-		return migrationMode === MigrationMode.ONLINE;
+		return this._model._migration.migrationContext.properties.autoCutoverConfiguration?.autoCutover?.valueOf() ? false : true;
 	}
 
 	private _shouldDisplayBackupFileTable(): boolean {
