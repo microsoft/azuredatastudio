@@ -6,7 +6,7 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { IconPathHelper } from '../../constants/iconPathHelper';
-import { MigrationContext, MigrationLocalStorage, MigrationStatus, ProvisioningState } from '../../models/migrationLocalStorage';
+import { MigrationContext, MigrationLocalStorage, MigrationStatus } from '../../models/migrationLocalStorage';
 import { MigrationCutoverDialog } from '../migrationCutover/migrationCutoverDialog';
 import { AdsMigrationStatus, MigrationStatusDialogModel } from './migrationStatusDialogModel';
 import * as loc from '../../constants/strings';
@@ -408,9 +408,6 @@ export class MigrationStatusDialog {
 	}
 
 	private _getMigrationMode(migration: MigrationContext): string {
-		if (migration.migrationContext.properties.provisioningState === ProvisioningState.Creating) {
-			return '---';
-		}
 		return migration.migrationContext.properties.autoCutoverConfiguration?.autoCutover?.valueOf() ? loc.OFFLINE : loc.ONLINE;
 	}
 
