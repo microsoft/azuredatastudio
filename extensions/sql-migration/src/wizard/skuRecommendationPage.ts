@@ -86,6 +86,16 @@ export class SKURecommendationPage extends MigrationWizardPage {
 
 		this._detailsComponent = this.createDetailsComponent(view); // The details of what can be moved
 
+		const refreshAssessmentButton = this._view.modelBuilder.button().withProps({
+			iconPath: IconPathHelper.refresh,
+			label: constants.REFRESH_ASSESSMENT_BUTTON_LABEL,
+			width: 130
+		}).component();
+
+		this._disposables.push(refreshAssessmentButton.onDidClick(() => {
+			this.constructDetails();
+		}));
+
 		const chooseYourTargetText = this._view.modelBuilder.text().withProps({
 			value: constants.SKU_RECOMMENDATION_CHOOSE_A_TARGET,
 			CSSStyles: {
@@ -101,6 +111,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			[
 				igContainer,
 				this._detailsComponent,
+				refreshAssessmentButton,
 				chooseYourTargetText
 			]
 		).component();
