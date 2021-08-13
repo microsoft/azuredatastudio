@@ -1099,6 +1099,9 @@
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.noStringDefault" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[No (default)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[(기본값) 없음]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1315,6 +1318,9 @@
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.referenceType" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Reference type]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[참조 형식]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1782,19 +1788,25 @@
       </Item>
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.updateProjectDatabaseReferencesForRoundTrip" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[To build this project, Azure Data Studio needs to update system database references. If the project is created in SSDT, it will continue to work in both tools. Do you want Azure Data Studio to update the project?]]></Val>
+          <Val><![CDATA[The system database references need to be updated to build this project. If the project is created in SSDT, it will continue to work in both tools. Do you want to update the project?]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[이 프로젝트를 빌드하려면 Azure Data Studio에서 시스템 데이터베이스 참조를 업데이트해야 합니다. 프로젝트가 SSDT에서 만들어지면 두 도구 모두에서 계속 작동합니다. Azure Data Studio에서 프로젝트를 업데이트하시겠습니까?]]></Val>
+            <Val><![CDATA[이 프로젝트를 빌드하려면 시스템 데이터베이스 참조를 업데이트해야 합니다. 프로젝트가 SSDT에서 만들어지면 두 도구에서 계속 작동합니다. 프로젝트를 업데이트하시겠습니까?]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[To build this project, Azure Data Studio needs to update system database references. If the project is created in SSDT, it will continue to work in both tools. Do you want Azure Data Studio to update the project?]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.updateProjectForRoundTrip" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[To build this project, Azure Data Studio needs to update targets, references, and system database references. If the project is created in SSDT, it will continue to work in both tools. Do you want Azure Data Studio to update the project?]]></Val>
+          <Val><![CDATA[The targets, references, and system database references need to be updated to build this project. If the project is created in SSDT, it will continue to work in both tools. Do you want to update the project?]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[이 프로젝트를 빌드하려면 Azure Data Studio에서 대상, 참조 및 시스템 데이터베이스 참조를 업데이트해야 합니다. 프로젝트가 SSDT에서 만들어지면 두 도구 모두에서 계속 작동합니다. Azure Data Studio에서 프로젝트를 업데이트하시겠습니까?]]></Val>
+            <Val><![CDATA[이 프로젝트를 빌드하려면 대상, 참조 및 시스템 데이터베이스 참조를 업데이트해야 합니다. 프로젝트가 SSDT에서 만들어지면 두 도구에서 계속 작동합니다. 프로젝트를 업데이트하시겠습니까?]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[To build this project, Azure Data Studio needs to update targets, references, and system database references. If the project is created in SSDT, it will continue to work in both tools. Do you want Azure Data Studio to update the project?]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
