@@ -59,6 +59,7 @@ export enum AzureResource {
 	AzureDevOps = 6,
 	MsGraph = 7,
 	AzureLogAnalytics = 8,
+	AzureStorage = 9,
 	AzureKusto = 10
 }
 
