@@ -106,9 +106,9 @@ export class ResourceViewerEditor extends EditorPane {
 		});
 
 		this._inputDisposables.add(input.onColumnsChanged(columns => {
-			this._resourceViewerTable.columns = columns;
+			this._resourceViewerTable.columns = columns as any; // Cast to any to fix strict type assertion error
 		}));
-		this._resourceViewerTable.columns = input.columns;
+		this._resourceViewerTable.columns = input.columns as any;
 
 		this._inputDisposables.add(input.onDataChanged(() => {
 			this._resourceViewerTable.data = input.data;
