@@ -31,14 +31,14 @@ export interface IAction extends IDisposable {
 	enabled: boolean;
 	checked: boolean;
 	expanded: boolean | undefined; // {{SQL CARBON EDIT}}
-	run(event?: unknown): unknown;
+	run(event?: unknown): Promise<unknown>; // {{SQL CARBON EDIT}} Add promise
 }
 
 export interface IActionRunner extends IDisposable {
 	readonly onDidRun: Event<IRunEvent>;
 	readonly onBeforeRun: Event<IRunEvent>;
 
-	run(action: IAction, context?: unknown): unknown;
+	run(action: IAction, context?: unknown): Promise<unknown>; // {{SQL CARBON EDIT}} Add promise
 }
 
 export interface IActionChangeEvent {
@@ -62,9 +62,9 @@ export class Action extends Disposable implements IAction {
 	protected _enabled: boolean = true;
 	protected _checked: boolean = false;
 	protected _expanded: boolean = false; // {{SQL CARBON EDIT}}
-	protected readonly _actionCallback?: (event?: unknown) => unknown;
+	protected readonly _actionCallback?: (event?: unknown) => Promise<unknown>; // {{SQL CARBON EDIT}} Add promise
 
-	constructor(id: string, label: string = '', cssClass: string = '', enabled: boolean = true, actionCallback?: (event?: unknown) => unknown) {
+	constructor(id: string, label: string = '', cssClass: string = '', enabled: boolean = true, actionCallback?: (event?: unknown) => Promise<unknown>) { // {{SQL CARBON EDIT}} Add promise
 		super();
 		this._id = id;
 		this._label = label;
@@ -213,8 +213,8 @@ export class ActionRunner extends Disposable implements IActionRunner {
 export class Separator extends Action {
 
 	/**
-	 * Joins all non-empty lists of actions with separators.
-	 */
+ * Joins all non-empty lists of actions with separators.
+ */
 	public static join(...actionLists: readonly IAction[][]) {
 		let out: IAction[] = [];
 		for (const list of actionLists) {
