@@ -861,7 +861,11 @@ declare module 'azdata' {
 		/**
 		 * Azure Storage
 		 */
-		AzureStorage = 9
+		AzureStorage = 9,
+		/**
+		 * Kusto
+		 */
+		AzureKusto = 10
 	}
 
 	export interface ButtonProperties {

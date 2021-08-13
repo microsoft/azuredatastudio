@@ -58,7 +58,8 @@ export enum AzureResource {
 	MicrosoftResourceManagement = 5,
 	AzureDevOps = 6,
 	MsGraph = 7,
-	AzureLogAnalytics = 8
+	AzureLogAnalytics = 8,
+	AzureKusto = 10
 }
 
 export interface IAccountStore {
