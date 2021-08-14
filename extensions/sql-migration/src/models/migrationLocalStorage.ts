@@ -23,6 +23,7 @@ export class MigrationLocalStorage {
 		const migrationMementos: MigrationContext[] = this.context.globalState.get(this.mementoToken) || [];
 		for (let i = 0; i < migrationMementos.length; i++) {
 			const migration = migrationMementos[i];
+			migration.migrationContext = this.removeMigrationSecrets(migration.migrationContext);
 			migration.sessionId = migration.sessionId ?? undefinedSessionId;
 			if (migration.sourceConnectionProfile.serverName === connectionProfile.serverName) {
 				if (refreshStatus) {
@@ -90,7 +91,7 @@ export class MigrationLocalStorage {
 			migrationMementos = migrationMementos.filter(m => m.migrationContext.id !== migrationContext.id);
 			migrationMementos.push({
 				sourceConnectionProfile: connectionProfile,
-				migrationContext: migrationContext,
+				migrationContext: this.removeMigrationSecrets(migrationContext),
 				targetManagedInstance: targetMI,
 				subscription: subscription,
 				azureAccount: azureAccount,
@@ -106,6 +107,23 @@ export class MigrationLocalStorage {
 
 	public static clearMigrations() {
 		this.context.globalState.update(this.mementoToken, ([] as MigrationContext[]));
+	}
+
+	public static removeMigrationSecrets(migration: DatabaseMigration): DatabaseMigration {
+		// remove secrets from migration context
+		if (migration.properties.sourceSqlConnection?.password) {
+			migration.properties.sourceSqlConnection.password = '';
+		}
+		if (migration.properties.backupConfiguration?.sourceLocation?.fileShare?.password) {
+			migration.properties.backupConfiguration.sourceLocation.fileShare.password = '';
+		}
+		if (migration.properties.backupConfiguration?.sourceLocation?.azureBlob?.accountKey) {
+			migration.properties.backupConfiguration.sourceLocation.azureBlob.accountKey = '';
+		}
+		if (migration.properties.backupConfiguration?.targetLocation?.accountKey) {
+			migration.properties.backupConfiguration.targetLocation.accountKey = '';
+		}
+		return migration;
 	}
 }
 
