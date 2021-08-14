@@ -17,7 +17,7 @@ export function doHandleUpgrade(editor?: EditorInput): EditorInput | undefined {
 		if (editor instanceof UntitledTextEditorInput) {
 			language = editor.getMode();
 		} else {
-			language = editor.getPreferredMode();
+			language = (editor as FileEditorInput).getPreferredMode();
 		}
 		if (language) {
 			const association = languageRegistry.getAssociationForLanguage(language);
