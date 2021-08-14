@@ -861,7 +861,11 @@ declare module 'azdata' {
 		/**
 		 * Azure Storage
 		 */
-		AzureStorage = 9
+		AzureStorage = 9,
+		/**
+		 * Kusto
+		 */
+		AzureKusto = 10
 	}
 
 	export interface ButtonProperties {
@@ -1039,5 +1043,16 @@ declare module 'azdata' {
 		 * Whether to show the button that will hide/show the content of the container. Default value is false.
 		 */
 		showToggleButton?: boolean;
+	}
+
+	export interface ServerInfo {
+		/**
+		 * The CPU count of the host running the server.
+		 */
+		cpuCount?: number;
+		/**
+		 * The physical memory of the host running the server.
+		 */
+		physicalMemoryInMb?: number;
 	}
 }

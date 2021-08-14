@@ -22,8 +22,8 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 	const workspaceService = new WorkspaceService();
 
 	const workspaceTreeDataProvider = new WorkspaceTreeDataProvider(workspaceService);
-	context.subscriptions.push(vscode.workspace.onDidChangeWorkspaceFolders(() => {
-		workspaceTreeDataProvider.refresh();
+	context.subscriptions.push(vscode.workspace.onDidChangeWorkspaceFolders(async () => {
+		await workspaceTreeDataProvider.refresh();
 	}));
 	const dataWorkspaceExtension = new DataWorkspaceExtension(workspaceService);
 	context.subscriptions.push(vscode.window.registerTreeDataProvider('dataworkspace.views.main', workspaceTreeDataProvider));
@@ -54,8 +54,8 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 		}
 	}));
 
-	context.subscriptions.push(vscode.commands.registerCommand('dataworkspace.refresh', () => {
-		workspaceTreeDataProvider.refresh();
+	context.subscriptions.push(vscode.commands.registerCommand('dataworkspace.refresh', async () => {
+		await workspaceTreeDataProvider.refresh();
 	}));
 
 	context.subscriptions.push(vscode.commands.registerCommand('dataworkspace.close', () => {

@@ -46,7 +46,7 @@ declare module 'vscode-mssql' {
          * @param connectionInfo The connection info
          * @returns The URI associated with this connection
          */
-        connect(connectionInfo: IConnectionInfo): Promise<string>;
+		connect(connectionInfo: IConnectionInfo): Promise<string>;
 
         /**
          * Lists the databases for a given connection. Must be given an already-opened connection to succeed.
@@ -68,7 +68,7 @@ declare module 'vscode-mssql' {
     /**
      * Information about a database connection
      */
-    export interface IConnectionInfo {
+	 export interface IConnectionInfo {
         /**
          * server name
          */
@@ -92,12 +92,12 @@ declare module 'vscode-mssql' {
         /**
          * email
          */
-        email: string;
+        email: string | undefined;
 
         /**
          * accountId
          */
-        accountId: string;
+        accountId: string | undefined;
 
         /**
          * The port number to connect to.
@@ -112,7 +112,7 @@ declare module 'vscode-mssql' {
         /**
          * Gets or sets the azure account token to use.
          */
-        azureAccountToken: string;
+        azureAccountToken: string | undefined;
 
         /**
          * Gets or sets a Boolean value that indicates whether SQL Server uses SSL encryption for all data sent between the client and server if
@@ -123,109 +123,109 @@ declare module 'vscode-mssql' {
         /**
          * Gets or sets a value that indicates whether the channel will be encrypted while bypassing walking the certificate chain to validate trust.
          */
-        trustServerCertificate: boolean;
+        trustServerCertificate: boolean | undefined;
 
         /**
          * Gets or sets a Boolean value that indicates if security-sensitive information, such as the password, is not returned as part of the connection
          * if the connection is open or has ever been in an open state.
          */
-        persistSecurityInfo: boolean;
+        persistSecurityInfo: boolean | undefined;
 
         /**
          * Gets or sets the length of time (in seconds) to wait for a connection to the server before terminating the attempt and generating an error.
          */
-        connectTimeout: number;
+        connectTimeout: number | undefined;
 
         /**
          * The number of reconnections attempted after identifying that there was an idle connection failure.
          */
-        connectRetryCount: number;
+        connectRetryCount: number | undefined;
 
         /**
          * Amount of time (in seconds) between each reconnection attempt after identifying that there was an idle connection failure.
          */
-        connectRetryInterval: number;
+        connectRetryInterval: number | undefined;
 
         /**
          * Gets or sets the name of the application associated with the connection string.
          */
-        applicationName: string;
+        applicationName: string | undefined;
 
         /**
          * Gets or sets the name of the workstation connecting to SQL Server.
          */
-        workstationId: string;
+        workstationId: string | undefined;
 
         /**
          * Declares the application workload type when connecting to a database in an SQL Server Availability Group.
          */
-        applicationIntent: string;
+        applicationIntent: string | undefined;
 
         /**
          * Gets or sets the SQL Server Language record name.
          */
-        currentLanguage: string;
+        currentLanguage: string | undefined;
 
         /**
          * Gets or sets a Boolean value that indicates whether the connection will be pooled or explicitly opened every time that the connection is requested.
          */
-        pooling: boolean;
+        pooling: boolean | undefined;
 
         /**
          * Gets or sets the maximum number of connections allowed in the connection pool for this specific connection string.
          */
-        maxPoolSize: number;
+        maxPoolSize: number | undefined;
 
         /**
          * Gets or sets the minimum number of connections allowed in the connection pool for this specific connection string.
          */
-        minPoolSize: number;
+        minPoolSize: number | undefined;
 
         /**
          * Gets or sets the minimum time, in seconds, for the connection to live in the connection pool before being destroyed.
          */
-        loadBalanceTimeout: number;
+        loadBalanceTimeout: number | undefined;
 
         /**
          * Gets or sets a Boolean value that indicates whether replication is supported using the connection.
          */
-        replication: boolean;
+        replication: boolean | undefined;
 
         /**
          * Gets or sets a string that contains the name of the primary data file. This includes the full path name of an attachable database.
          */
-        attachDbFilename: string;
+        attachDbFilename: string | undefined;
 
         /**
          * Gets or sets the name or address of the partner server to connect to if the primary server is down.
          */
-        failoverPartner: string;
+        failoverPartner: string | undefined;
 
         /**
          * If your application is connecting to an AlwaysOn availability group (AG) on different subnets, setting MultiSubnetFailover=true
          * provides faster detection of and connection to the (currently) active server.
          */
-        multiSubnetFailover: boolean;
+        multiSubnetFailover: boolean | undefined;
 
         /**
          * When true, an application can maintain multiple active result sets (MARS).
          */
-        multipleActiveResultSets: boolean;
+        multipleActiveResultSets: boolean | undefined;
 
         /**
          * Gets or sets the size in bytes of the network packets used to communicate with an instance of SQL Server.
          */
-        packetSize: number;
+        packetSize: number | undefined;
 
         /**
          * Gets or sets a string value that indicates the type system the application expects.
          */
-        typeSystemVersion: string;
+        typeSystemVersion: string | undefined;
 
         /**
          * Gets or sets the connection string to use for this connection.
          */
-        connectionString: string;
+        connectionString: string | undefined;
     }
 
     export const enum ExtractTarget {

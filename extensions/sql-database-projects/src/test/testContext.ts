@@ -12,6 +12,7 @@ import * as mssql from '../../../mssql/src/mssql';
 export interface TestContext {
 	context: vscode.ExtensionContext;
 	dacFxService: TypeMoq.IMock<mssql.IDacFxService>;
+	outputChannel: vscode.OutputChannel;
 }
 
 export const mockDacFxResult = {
@@ -147,7 +148,16 @@ export function createContext(): TestContext {
 			secrets: undefined as any,
 			extension: undefined as any
 		},
-		dacFxService: TypeMoq.Mock.ofType(MockDacFxService)
+		dacFxService: TypeMoq.Mock.ofType(MockDacFxService),
+		outputChannel: {
+			name: '',
+			append: () => { },
+			appendLine: () => { },
+			clear: () => { },
+			show: () => { },
+			hide: () => { },
+			dispose: () => { }
+		}
 	};
 }
 

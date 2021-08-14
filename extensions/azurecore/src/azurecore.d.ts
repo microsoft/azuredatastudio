@@ -119,6 +119,11 @@ declare module 'azurecore' {
 		azureDevOpsResource?: Resource;
 
 		/**
+		 * Information that describes the Azure Kusto resource
+		 */
+		 azureKustoResource?: Resource;
+
+		/**
 		 * Information that describes the Azure Log Analytics resource
 		 */
 		azureLogAnalyticsResource?: Resource;

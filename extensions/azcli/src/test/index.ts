@@ -6,7 +6,7 @@
 import * as path from 'path';
 const testRunner = require('vscodetestcover');
 
-const suite = 'azdata Extension Tests';
+const suite = 'azcli Extension Tests';
 
 const mochaOptions: any = {
 	ui: 'bdd',
