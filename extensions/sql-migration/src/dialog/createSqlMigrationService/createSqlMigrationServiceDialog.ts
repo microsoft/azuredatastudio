@@ -229,6 +229,7 @@ export class CreateSqlMigrationServiceDialog {
 		const resourceGroupDropdownLabel = this._view.modelBuilder.text().withProps({
 			value: constants.RESOURCE_GROUP,
 			description: constants.MIGRATION_SERVICE_RESOURCE_GROUP_INFO,
+			requiredIndicator: true,
 			CSSStyles: {
 				'font-size': '13px',
 				'font-weight': 'bold'
@@ -245,6 +246,7 @@ export class CreateSqlMigrationServiceDialog {
 		const migrationServiceNameLabel = this._view.modelBuilder.text().withProps({
 			value: constants.NAME,
 			description: constants.MIGRATION_SERVICE_NAME_INFO,
+			requiredIndicator: true,
 			CSSStyles: {
 				'font-size': '13px',
 				'font-weight': 'bold'

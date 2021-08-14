@@ -24,7 +24,7 @@ import { IDeploySettings } from '../models/IDeploySettings';
 import { BaseProjectTreeItem } from '../models/tree/baseTreeItem';
 import { ProjectRootTreeItem } from '../models/tree/projectTreeItem';
 import { ImportDataModel } from '../models/api/import';
-import { NetCoreTool, DotNetCommandOptions } from '../tools/netcoreTool';
+import { NetCoreTool, DotNetCommandOptions, DotNetError } from '../tools/netcoreTool';
 import { BuildHelper } from '../tools/buildHelper';
 import { readPublishProfile } from '../models/publishProfile/publishProfile';
 import { AddDatabaseReferenceDialog } from '../dialogs/addDatabaseReferenceDialog';
@@ -35,8 +35,11 @@ import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/t
 import { IconPathHelper } from '../common/iconHelper';
 import { DashboardData, PublishData, Status } from '../models/dashboardData/dashboardData';
 import { launchPublishDatabaseQuickpick } from '../dialogs/publishDatabaseQuickpick';
+import { launchDeployDatabaseQuickpick } from '../dialogs/deployDatabaseQuickpick';
+import { DeployService } from '../models/deploy/deployService';
 import { SqlTargetPlatform } from 'sqldbproj';
 import { createNewProjectFromDatabaseWithQuickpick } from '../dialogs/createProjectFromDatabaseQuickpick';
+import { addDatabaseReferenceQuickpick } from '../dialogs/addDatabaseReferenceQuickpick';
 
 const maxTableLength = 10;
 
@@ -53,6 +56,8 @@ export enum TaskExecutionMode {
 	executeAndScript = 2
 }
 
+export type AddDatabaseReferenceSettings = ISystemDatabaseReferenceSettings | IDacpacReferenceSettings | IProjectReferenceSettings;
+
 /**
  * Controller for managing lifecycle of projects
  */
@@ -61,12 +66,14 @@ export class ProjectsController {
 	private buildHelper: BuildHelper;
 	private buildInfo: DashboardData[] = [];
 	private publishInfo: PublishData[] = [];
+	private deployService: DeployService;
 
 	projFileWatchers = new Map<string, vscode.FileSystemWatcher>();
 
-	constructor() {
-		this.netCoreTool = new NetCoreTool();
+	constructor(outputChannel: vscode.OutputChannel) {
+		this.netCoreTool = new NetCoreTool(outputChannel);
 		this.buildHelper = new BuildHelper();
+		this.deployService = new DeployService(outputChannel);
 	}
 
 	public getDashboardPublishData(projectFile: string): (string | dataworkspace.IconCellValue)[][] {
@@ -238,9 +245,54 @@ export class ProjectsController {
 				.withAdditionalMeasurements({ duration: timeToFailureBuild })
 				.send();
 
-			vscode.window.showErrorMessage(constants.projBuildFailed(utils.getErrorMessage(err)));
+			const message = utils.getErrorMessage(err);
+			if (err instanceof DotNetError) {
+				vscode.window.showErrorMessage(message);
+			} else {
+				vscode.window.showErrorMessage(constants.projBuildFailed(message));
+			}
 			return '';
 		}
+	}
+
+	/**
+	 * Deploys a project
+	 * @param treeNode a treeItem in a project's hierarchy, to be used to obtain a Project
+	 */
+	public async deployProject(context: Project | dataworkspace.WorkspaceTreeItem): Promise<void> {
+		const project: Project = this.getProjectFromContext(context);
+		try {
+			let deployProfile = await launchDeployDatabaseQuickpick(project);
+			if (deployProfile && deployProfile.deploySettings) {
+				let connectionUri: string | undefined;
+				if (deployProfile.localDbSetting) {
+					connectionUri = await this.deployService.deploy(deployProfile, project);
+					if (connectionUri) {
+						deployProfile.deploySettings.connectionUri = connectionUri;
+					}
+				}
+				if (deployProfile.deploySettings.connectionUri) {
+					const publishResult = await this.publishOrScriptProject(project, deployProfile.deploySettings, true);
+					if (publishResult && publishResult.success) {
+
+						// Update app settings if requested by user
+						//
+						await this.deployService.updateAppSettings(deployProfile);
+						if (deployProfile.localDbSetting) {
+							await this.deployService.getConnection(deployProfile.localDbSetting, true, deployProfile.localDbSetting.dbName);
+						}
+						vscode.window.showInformationMessage(constants.deployProjectSucceed);
+					} else {
+						vscode.window.showErrorMessage(constants.deployProjectFailed(publishResult?.errorMessage || ''));
+					}
+				} else {
+					vscode.window.showErrorMessage(constants.deployProjectFailed(constants.deployProjectFailedMessage));
+				}
+			}
+		} catch (error) {
+			vscode.window.showErrorMessage(constants.deployProjectFailed(utils.getErrorMessage(error)));
+		}
+		return;
 	}
 
 	/**
@@ -672,15 +724,25 @@ export class ProjectsController {
 	 * Adds a database reference to the project
 	 * @param context a treeItem in a project's hierarchy, to be used to obtain a Project
 	 */
-	public async addDatabaseReference(context: Project | dataworkspace.WorkspaceTreeItem): Promise<AddDatabaseReferenceDialog> {
+	public async addDatabaseReference(context: Project | dataworkspace.WorkspaceTreeItem): Promise<AddDatabaseReferenceDialog | undefined> {
 		const project = this.getProjectFromContext(context);
 
-		const addDatabaseReferenceDialog = this.getAddDatabaseReferenceDialog(project);
-		addDatabaseReferenceDialog.addReference = async (proj, prof) => await this.addDatabaseReferenceCallback(proj, prof, context as dataworkspace.WorkspaceTreeItem);
+		if (utils.getAzdataApi()) {
+			const addDatabaseReferenceDialog = this.getAddDatabaseReferenceDialog(project);
+			addDatabaseReferenceDialog.addReference = async (proj, settings) => await this.addDatabaseReferenceCallback(proj, settings, context as dataworkspace.WorkspaceTreeItem);
 
-		addDatabaseReferenceDialog.openDialog();
+			addDatabaseReferenceDialog.openDialog();
+			return addDatabaseReferenceDialog;
+		} else {
+			const settings = await addDatabaseReferenceQuickpick(project);
+			if (settings) {
+				await this.addDatabaseReferenceCallback(project, settings, context as dataworkspace.WorkspaceTreeItem);
+			}
+			return undefined;
+		}
 
-		return addDatabaseReferenceDialog;
+
+
 	}
 
 	/**
@@ -689,7 +751,7 @@ export class ProjectsController {
 	 * @param settings settings for the database reference
 	 * @param context a treeItem in a project's hierarchy, to be used to obtain a Project
 	 */
-	public async addDatabaseReferenceCallback(project: Project, settings: ISystemDatabaseReferenceSettings | IDacpacReferenceSettings | IProjectReferenceSettings, context: dataworkspace.WorkspaceTreeItem): Promise<void> {
+	public async addDatabaseReferenceCallback(project: Project, settings: AddDatabaseReferenceSettings, context: dataworkspace.WorkspaceTreeItem): Promise<void> {
 		try {
 			if ((<IProjectReferenceSettings>settings).projectName !== undefined) {
 				// get project path and guid

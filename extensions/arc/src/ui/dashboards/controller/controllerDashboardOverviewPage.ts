@@ -8,7 +8,7 @@ import * as azdata from 'azdata';
 import * as azurecore from 'azurecore';
 import * as vscode from 'vscode';
 import { getConnectionModeDisplayText, getResourceTypeIcon, resourceTypeToDisplayName } from '../../../common/utils';
-import { cssStyles, Endpoints, IconPathHelper, controllerTroubleshootDocsUrl, iconSize } from '../../../constants';
+import { cssStyles, IconPathHelper, controllerTroubleshootDocsUrl, iconSize } from '../../../constants';
 import * as loc from '../../../localizedConstants';
 import { ControllerModel } from '../../../models/controllerModel';
 import { DashboardPage } from '../../components/dashboardPage';
@@ -30,7 +30,6 @@ export class ControllerDashboardOverviewPage extends DashboardPage {
 		resourceGroupName: '-',
 		location: '-',
 		subscriptionId: '-',
-		controllerEndpoint: '-',
 		connectionMode: '-',
 		instanceNamespace: '-',
 	};
@@ -41,8 +40,7 @@ export class ControllerDashboardOverviewPage extends DashboardPage {
 		this._azurecoreApi = vscode.extensions.getExtension(azurecore.extension.name)?.exports;
 
 		this.disposables.push(
-			this._controllerModel.onRegistrationsUpdated(() => this.eventuallyRunOnInitialized(() => this.handleRegistrationsUpdated())),
-			this._controllerModel.onEndpointsUpdated(() => this.eventuallyRunOnInitialized(() => this.handleEndpointsUpdated())));
+			this._controllerModel.onRegistrationsUpdated(() => this.eventuallyRunOnInitialized(() => this.handleRegistrationsUpdated())));
 	}
 
 	public get title(): string {
@@ -107,7 +105,6 @@ export class ControllerDashboardOverviewPage extends DashboardPage {
 
 		// Update loaded components with data
 		this.handleRegistrationsUpdated();
-		this.handleEndpointsUpdated();
 
 		// Assign the loading component after it has data
 		this._propertiesLoadingComponent.component = this._propertiesContainer;
@@ -259,12 +256,6 @@ export class ControllerDashboardOverviewPage extends DashboardPage {
 		this._arcResourcesLoadingComponent.loading = !this._controllerModel.registrationsLastUpdated;
 	}
 
-	private handleEndpointsUpdated(): void {
-		const controllerEndpoint = this._controllerModel.getEndpoint(Endpoints.controller);
-		this.controllerProperties.controllerEndpoint = controllerEndpoint?.endpoint || this.controllerProperties.controllerEndpoint;
-		this.refreshDisplayedProperties();
-	}
-
 	private refreshDisplayedProperties(): void {
 		this._propertiesContainer.propertyItems = [
 			{
@@ -286,10 +277,6 @@ export class ControllerDashboardOverviewPage extends DashboardPage {
 			{
 				displayName: loc.type,
 				value: loc.dataControllersType
-			},
-			{
-				displayName: loc.controllerEndpoint,
-				value: this.controllerProperties.controllerEndpoint
 			},
 			{
 				displayName: loc.connectionMode,

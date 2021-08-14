@@ -185,12 +185,22 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		return finalResult;
 	}
 
-	public async getDatabaseAssessments(): Promise<ServerAssessement> {
+	public async getDatabaseAssessments(targetType: MigrationTargetType): Promise<ServerAssessement> {
 		const ownerUri = await azdata.connection.getUriForConnection(this.sourceConnectionId);
 		try {
-			this._assessmentApiResponse = (await this.migrationService.getAssessments(ownerUri, this._databaseAssessment))!;
+			const response = (await this.migrationService.getAssessments(ownerUri, this._databaseAssessment))!;
+			if (response?.assessmentResult) {
+				response.assessmentResult.items = response.assessmentResult.items?.filter(
+					issue => issue.appliesToMigrationTargetPlatform === targetType);
+
+				response.assessmentResult.databases?.forEach(
+					database => database.items = database.items?.filter(
+						issue => issue.appliesToMigrationTargetPlatform === targetType));
+			}
+
+			this._assessmentApiResponse = response;
 			this._assessmentResults = {
-				issues: this._assessmentApiResponse?.assessmentResult?.items ?? [],
+				issues: this._assessmentApiResponse?.assessmentResult?.items || [],
 				databaseAssessments: this._assessmentApiResponse?.assessmentResult?.databases?.map(d => {
 					return {
 						name: d.name,
@@ -836,6 +846,8 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			}
 		});
 
+		const isOfflineMigration = this._databaseBackup.migrationMode === MigrationMode.OFFLINE;
+
 		const requestBody: StartDatabaseMigrationRequest = {
 			location: this._sqlMigrationService?.location!,
 			properties: {
@@ -849,7 +861,9 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 					password: this._sqlServerPassword
 				},
 				scope: this._targetServerInstance.id,
-				autoCutoverConfiguration: {}
+				autoCutoverConfiguration: {
+					autoCutover: isOfflineMigration
+				}
 			}
 		};
 
@@ -868,9 +882,9 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 							}
 						};
 
-						if (this._databaseBackup.migrationMode === MigrationMode.OFFLINE) {
+						if (isOfflineMigration) {
 							requestBody.properties.autoCutoverConfiguration = {
-								autoCutover: (this._databaseBackup.migrationMode === MigrationMode.OFFLINE ? true : false),
+								autoCutover: isOfflineMigration,
 								lastBackupName: this._databaseBackup.blobs[i]?.lastBackupFile
 							};
 						}
@@ -889,12 +903,6 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 								}
 							}
 						};
-
-						if (this._databaseBackup.migrationMode === MigrationMode.OFFLINE) {
-							requestBody.properties.autoCutoverConfiguration = {
-								autoCutover: (this._databaseBackup.migrationMode === MigrationMode.OFFLINE ? true : false)
-							};
-						}
 						break;
 				}
 				requestBody.properties.sourceDatabaseName = this._migrationDbs[i];
@@ -909,15 +917,16 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				);
 				response.databaseMigration.properties.sourceDatabaseName = this._migrationDbs[i];
 				response.databaseMigration.properties.backupConfiguration = requestBody.properties.backupConfiguration!;
-				if (response.status === 201 || response.status === 200) {
+				response.databaseMigration.properties.autoCutoverConfiguration = requestBody.properties.autoCutoverConfiguration!;
 
+				if (response.status === 201 || response.status === 200) {
 					sendSqlMigrationActionEvent(
 						TelemetryViews.MigrationWizardSummaryPage,
 						TelemetryAction.StartMigration,
 						{
 							'hashedServerName': hashString(this._assessmentApiResponse.assessmentResult.name),
 							'hashedDatabaseName': hashString(this._migrationDbs[i]),
-							'migrationMode': requestBody.properties.autoCutoverConfiguration ? 'online' : 'offline',
+							'migrationMode': isOfflineMigration ? 'offline' : 'online',
 							'sessionId': this._sessionId,
 							'migrationStartTime': new Date().toString(),
 							'targetDatabaseName': this._targetDatabaseNames[i],

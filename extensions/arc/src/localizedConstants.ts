@@ -57,7 +57,6 @@ export const name = localize('arc.name', "Name");
 export const type = localize('arc.type', "Type");
 export const status = localize('arc.status', "Status");
 export const miaaAdmin = localize('arc.miaaAdmin', "Managed instance admin");
-export const controllerEndpoint = localize('arc.controllerEndpoint', "Controller endpoint");
 export const extensionName = localize('arc.extensionName', "Extension name");
 export const extensionsDescription = localize('arc.extensionsDescription', "PostgreSQL provides the ability to extend the functionality of your database by using extensions. Extensions allow for bundling multiple related SQL objects together in a single package that can be loaded or removed from your database with a single command. After being loaded in the database, extensions can function like built-in features.");
 export const extensionsFunction = localize('arc.extensionsFunction', "Some extensions must be loaded into PostgreSQL at startup time before they can be used. These preloaded extensions can be viewed and edited  below.");
