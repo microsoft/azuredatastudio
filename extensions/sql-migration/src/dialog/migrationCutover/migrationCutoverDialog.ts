@@ -145,17 +145,6 @@ export class MigrationCutoverDialog {
 					}
 				}).component();
 
-				// TODO: conditionally show empty table error message
-				// const _emptyTableSubText = view.modelBuilder.text().withProps({
-				// 	value: loc.EMPTY_TABLE_SUBTEXT,
-				// 	CSSStyles: {
-				// 		'text-align': 'center',
-				// 		'margin-top': '0px',
-				// 		'font-size': '15px',
-				// 		'width': '300px'
-				// 	}
-				// }).component();
-
 				this._emptyTableFill = view.modelBuilder.flexContainer()
 					.withLayout({
 						flexFlow: 'column',
@@ -163,7 +152,6 @@ export class MigrationCutoverDialog {
 					}).withItems([
 						_emptyTableImage,
 						_emptyTableText,
-						// _emptyTableSubText
 					]).withProps({
 						width: 1000,
 						display: 'none'
