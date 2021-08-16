@@ -3,17 +3,16 @@
 <plist version="1.0">
     <dict>
         <key>scopeName</key>
-        <string>source.kusto</string>
+        <string>source.azuremonitor</string>
 
         <key>fileTypes</key>
         <array>
-            <string>kql</string>
-            <string>kusto</string>
-			<string>csl</string>
+            <string>azuremonitor</string>
+            <string>loganalytics</string>
         </array>
 
         <key>name</key>
-        <string>kusto file</string>
+        <string>azure monitor logs file</string>
 
         <key>patterns</key>
         <!-- Kusto Query Language
@@ -27,7 +26,7 @@
                 <key>match</key>
                 <string>\b(let|set|alias|declare|pattern|restrict|access|to|set)\b</string>
                 <key>name</key>
-                <string>keyword.control.kusto</string>
+                <string>keyword.control.azuremonitor</string>
             </dict>
             <dict>
                 <!-- Special functions
@@ -45,7 +44,7 @@
                 <key>match</key>
                 <string>\b(and|or|!in|has|has_cs|hasprefix|hasprefix_cs|hassuffix|hassuffix_cs|contains|contains_cs|startswith|startswith_cs|endswith|endswith_cs|matches|regex|in|between)\b</string>
                 <key>name</key>
-                <string>keyword.operator.kusto</string>
+                <string>keyword.operator.azuremonitor</string>
             </dict>
             <!-- Scalar functions
               -  https://docs.microsoft.com/en-us/azure/kusto/query/scalarfunctions
@@ -228,7 +227,7 @@
                 <key>match</key>
                 <string>\.create-or-alter</string>
                 <key>name</key>
-                <string>keyword.control.kusto</string>
+                <string>keyword.control.azuremonitor</string>
             </dict>
             <dict>
                  <!-- User-defined functions
@@ -237,7 +236,7 @@
                 <key>match</key>
                 <string>(?<=let ).+(?=\W*=)</string>
                 <key>name</key>
-                <string>entity.function.name.lambda.kusto</string>
+                <string>entity.function.name.lambda.azuremonitor</string>
             </dict>
             <dict>
                 <!-- User-defined functions
@@ -246,7 +245,7 @@
                 <key>match</key>
                 <string>\b(with|folder|docstring|skipvalidation)\b</string>
                 <key>name</key>
-                <string>keyword.operator.kusto</string>
+                <string>keyword.operator.azuremonitor</string>
             </dict>
                 <dict>
                     <key>match</key>
@@ -279,7 +278,7 @@
                 <key>match</key>
                 <string>\b(as|consume|count|datatable|distinct|evaluate|extend|externaldata|facet|find|fork|getschema|invoke|join|limit|take|lookup|make-series|mv-expand|order|sort|project-away|project-rename|project|parse|partition|print|range|reduce|render|sample|sample-distinct|search|serialize|sort|summarize|take|top-nested|top|top-hitters|union|where)\b</string>
                 <key>name</key>
-                <string>keyword.operator.special.kusto</string>
+                <string>keyword.operator.special.azuremonitor</string>
             </dict>
                 <dict>
                     <!-- Tabular operators: evalute (plugins)
@@ -298,7 +297,7 @@
                     <key>match</key>
                     <string>\b(on|kind|hint\.remote|hint\.strategy)\b</string>
                     <key>name</key>
-                    <string>keyword.operator.kusto</string>
+                    <string>keyword.operator.azuremonitor</string>
                 </dict>
                     <dict>
                         <!-- Tabular operators: join ($left, $right)
@@ -307,7 +306,7 @@
                         <key>match</key>
                         <string>(\$left|\$right)\b</string>
                         <key>name</key>
-                        <string>keyword.other.kusto</string>
+                        <string>keyword.other.azuremonitor</string>
                     </dict>
                     <dict>
                         <!-- Tabular operators: join (kinds, strategies)
@@ -316,7 +315,7 @@
                         <key>match</key>
                         <string>\b(innerunique|inner|leftouter|rightouter|fullouter|leftanti|anti|leftantisemi|rightanti|rightantisemi|leftsemi|rightsemi|shuffle|broadcast)\b</string>
                         <key>name</key>
-                        <string>keyword.other.kusto</string>
+                        <string>keyword.other.azuremonitor</string>
                     </dict>
                 <dict>
                     <!-- Tabular operators: make-series (series analysis functions)
@@ -343,7 +342,7 @@
                     <key>match</key>
                     <string>\b(bag|array)\b</string>
                     <key>name</key>
-                    <string>keyword.operator.kusto</string>
+                    <string>keyword.operator.azuremonitor</string>
                 </dict>
                 <dict>
                     <!-- Tabular operators: order
@@ -352,7 +351,7 @@
                     <key>match</key>
                     <string>\b(asc|desc|nulls first|nulls last)\b</string>
                     <key>name</key>
-                    <string>keyword.other.kusto</string>
+                    <string>keyword.other.azuremonitor</string>
                 </dict>
                 <dict>
                     <!-- Tabular operators: parse
@@ -361,7 +360,7 @@
                     <key>match</key>
                     <string>\b(regex|simple|relaxed)\b</string>
                     <key>name</key>
-                    <string>keyword.other.kusto</string>
+                    <string>keyword.other.azuremonitor</string>
                 </dict>
                 <dict>
                     <!-- Tabular operators: render

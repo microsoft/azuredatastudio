@@ -144,7 +144,7 @@ export abstract class AbstractNativeEnvironmentService implements INativeEnviron
 			return resolve(cliExtensionsDir);
 		}
 
-		const vscodeExtensions = env['VSCODE_EXTENSIONS'];
+		const vscodeExtensions = env['ADS_EXTENSIONS'] || env['VSCODE_EXTENSIONS']; // {{SQL CARBON EDIT}} Add another option 
 		if (vscodeExtensions) {
 			return vscodeExtensions;
 		}
