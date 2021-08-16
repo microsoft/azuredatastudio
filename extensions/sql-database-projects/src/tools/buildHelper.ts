@@ -7,7 +7,7 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import { promises as fs } from 'fs';
 import * as utils from '../common/utils';
-import { sqlToolsServiceNotFound } from '../common/constants';
+import { errorFindingBuildFilesLocation } from '../common/constants';
 import * as mssql from '../../../mssql/src/mssql';
 import * as vscodeMssql from 'vscode-mssql';
 import * as sqldbproj from 'sqldbproj';
@@ -65,14 +65,15 @@ export class BuildHelper {
 	 * @returns
 	 */
 	private async getBuildDirPathFromMssqlTools(): Promise<string> {
-		let mssqlConfigDir = '';
-		if (utils.getAzdataApi()) {
-			return (vscode.extensions.getExtension(mssql.extension.name)?.exports as mssql.IExtension).sqlToolsServicePath;
-		} else {
-			return (vscode.extensions.getExtension(vscodeMssql.extension.name)?.exports as vscodeMssql.IExtension).sqlToolsServicePath;
+		try {
+			if (utils.getAzdataApi()) {
+				return (vscode.extensions.getExtension(mssql.extension.name)?.exports as mssql.IExtension).sqlToolsServicePath;
+			} else {
+				return (vscode.extensions.getExtension(vscodeMssql.extension.name)?.exports as vscodeMssql.IExtension).sqlToolsServicePath;
+			}
+		} catch (err) {
+			throw new Error(errorFindingBuildFilesLocation(err));
 		}
-
-		throw new Error(sqlToolsServiceNotFound(mssqlConfigDir));
 	}
 
 	public get extensionBuildDirPath(): string {
