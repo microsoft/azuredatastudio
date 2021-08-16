@@ -141,7 +141,7 @@ export class PromptExtensionInstallFailureAction extends Action {
 		if (this.extension.gallery && this.productService.extensionsGallery) {
 			promptChoices.push({
 				label: localize('download', "Try Downloading Manually..."),
-				run: () => this.openerService.open(URI.parse(`${this.productService.extensionsGallery!.serviceUrl}/publishers/${this.extension.publisher}/vsextensions/${this.extension.name}/${this.version}/vspackage`)).then(() => {
+				run: () => this.openerService.open(URI.parse(this.extension.gallery.assets.download?.uri ?? this.extension.gallery.assets.downloadPage.uri)).then(() => { // {{SQL CARBON EDIT}} Use links from the assets since we don't have the same marketplace
 					this.notificationService.prompt(
 						Severity.Info,
 						localize('install vsix', 'Once downloaded, please manually install the downloaded VSIX of \'{0}\'.', this.extension.identifier.id),
