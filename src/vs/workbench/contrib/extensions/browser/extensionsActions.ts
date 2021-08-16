@@ -101,7 +101,7 @@ export class PromptExtensionInstallFailureAction extends Action {
 
 	constructor(
 		private readonly extension: IExtension,
-		private readonly version: string,
+		public readonly version: string, // {{SQL CARBON EDIT}} Making public to get around compile error since we don't use this anymore (easier than updating all constructor calls)
 		private readonly installOperation: InstallOperation,
 		private readonly error: Error,
 		@IProductService private readonly productService: IProductService,
