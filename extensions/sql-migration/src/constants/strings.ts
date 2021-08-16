@@ -102,6 +102,8 @@ export const DATABASE_BACKUP_MIGRATION_MODE_ONLINE_LABEL = localize('sql.migrati
 export const DATABASE_BACKUP_MIGRATION_MODE_ONLINE_DESCRIPTION = localize('sql.migration.database.migration.mode.online.description', "Application downtime is limited to cutover at the end of migration.");
 export const DATABASE_BACKUP_MIGRATION_MODE_OFFLINE_DESCRIPTION = localize('sql.migration.database.migration.mode.offline.description', "Application downtime will start when the migration starts.");
 export const DATABASE_BACKUP_MIGRATION_MODE_OFFLINE_LABEL = localize('sql.migration.database.migration.mode.offline.label', "Offline migration");
+export const NETWORK_SHARE_PATH = localize('sql.migration.network.share.path', "\\\\Servername.domainname.com\\Backupfolder");
+export const WINDOWS_USER_ACCOUNT = localize('sql.migration.windows.user.account', "Domain\\username");
 export const NO_SUBSCRIPTIONS_FOUND = localize('sql.migration.no.subscription.found', "No subscription found");
 export const NO_LOCATION_FOUND = localize('sql.migration.no.location.found', "No location found");
 export const NO_STORAGE_ACCOUNT_FOUND = localize('sql.migration.no.storageAccount.found', "No storage account found");
@@ -123,8 +125,8 @@ export function INVALID_BLOB_CONTAINER_ERROR(sourceDb: string): string {
 export function INVALID_BLOB_LAST_BACKUP_FILE_ERROR(sourceDb: string): string {
 	return localize('sql.migration.invalid.blob.lastBackupFile.error', "To continue, select a valid last backup file for source database '{0}'.", sourceDb);
 }
-export const INVALID_NETWORK_SHARE_LOCATION = localize('sql.migration.invalid.network.share.location', "Invalid network share location format. Example: {0}", '\\\\Servername.domainname.com\\Backupfolder');
-export const INVALID_USER_ACCOUNT = localize('sql.migration.invalid.user.account', "Invalid user account format. Example: {0}", 'Domain\\username');
+export const INVALID_NETWORK_SHARE_LOCATION = localize('sql.migration.invalid.network.share.location', "Invalid network share location format. Example: {0}", NETWORK_SHARE_PATH);
+export const INVALID_USER_ACCOUNT = localize('sql.migration.invalid.user.account', "Invalid user account format. Example: {0}", WINDOWS_USER_ACCOUNT);
 export const INVALID_TARGET_NAME_ERROR = localize('sql.migration.invalid.target.name.error', "Enter a valid name for the target database.");
 export const PROVIDE_UNIQUE_CONTAINERS = localize('sql.migration.provide.unique.containers', "Provide a unique container for each target database. Databases affected: ");
 export function SQL_SOURCE_DETAILS(authMethod: MigrationSourceAuthenticationType, serverName: string): string {
@@ -222,6 +224,7 @@ export const CLOSE = localize('sql.migration.close', "Close");
 export const DATA_UPLOADED = localize('sql.migration.data.uploaded.size', "Data Uploaded/Size");
 export const COPY_THROUGHPUT = localize('sql.migration.copy.throughput', "Copy Throughput (MBPS)");
 export const NEW_SUPPORT_REQUEST = localize('sql.migration.newSupportRequest', "New support request");
+export const IMPACT = localize('sql.migration.impact', "Impact");
 export const ALL_FIELDS_REQUIRED = localize('sql.migration.all.fields.required', 'All fields are required.');
 
 //Summary Page
@@ -350,6 +353,11 @@ export const FILE_NAME = localize('sql.migration.file.name', "File name");
 export const SIZE_COLUMN_HEADER = localize('sql.migration.size.column.header', "Size");
 export const NO_PENDING_BACKUPS = localize('sql.migration.no.pending.backups', "No pending backups. Click refresh to check current status.");
 //Migration status dialog
+export const STATUS_ALL = localize('sql.migration.status.dropdown.all', "Status: All");
+export const STATUS_ONGOING = localize('sql.migration.status.dropdown.ongoing', "Status: Ongoing");
+export const STATUS_COMPLETING = localize('sql.migration.status.dropdown.completing', "Status: Completing");
+export const STATUS_SUCCEEDED = localize('sql.migration.status.dropdown.succeeded', "Status: Succeeded");
+export const STATUS_FAILED = localize('sql.migration.status.dropdown.failed', "Status: Failed");
 export const SEARCH_FOR_MIGRATIONS = localize('sql.migration.search.for.migration', "Search for migrations");
 export const ONLINE = localize('sql.migration.online', "Online");
 export const OFFLINE = localize('sql.migration.offline', "Offline");
@@ -368,7 +376,6 @@ export function STATUS_VALUE(status: string, count: number): string {
 	if (count > 0) {
 		return localize('sql.migration.status.error.count.some', "{0} (", StatusLookup[status] ?? status);
 	}
-
 	return localize('sql.migration.status.error.count.none', "{0}", StatusLookup[status] ?? status);
 }
 
@@ -383,7 +390,7 @@ export const StatusLookup: LookupTable<string | undefined> = {
 	['Completing']: localize('sql.migration.status.completing', 'Completing'),
 	['Canceling']: localize('sql.migration.status.canceling', 'Canceling'),
 	['Failed']: localize('sql.migration.status.failed', 'Failed'),
-	default: undefined,
+	default: undefined
 };
 
 export function STATUS_WARNING_COUNT(status: string, count: number): string | undefined {
