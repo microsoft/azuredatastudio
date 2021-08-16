@@ -32,7 +32,7 @@ export interface INotebookView {
 	hiddenCells: Readonly<ICellModel[]>;
 	displayedCells: Readonly<ICellModel[]>;
 	name: string;
-	initialize(): void;
+	initialize(isNew: boolean): void;
 	nameAvailable(name: string): boolean;
 	getCellMetadata(cell: ICellModel): INotebookViewCell;
 	hideCell(cell: ICellModel): void;

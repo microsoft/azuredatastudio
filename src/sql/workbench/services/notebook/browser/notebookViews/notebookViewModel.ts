@@ -39,8 +39,8 @@ export class NotebookViewModel implements INotebookView {
 		return new NotebookViewModel(view.name, notebookViews, view.guid);
 	}
 
-	public initialize(): void {
-		this._isNew = true;
+	public initialize(isNew: boolean = true): void {
+		this._isNew = isNew;
 		const cells = this._notebookViews.notebook.cells;
 		cells.forEach((cell, idx) => { this.initializeCell(cell, idx); });
 	}
