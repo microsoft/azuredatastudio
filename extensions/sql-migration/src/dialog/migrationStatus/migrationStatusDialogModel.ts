@@ -4,24 +4,25 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
+import * as loc from '../../constants/strings';
 import { MigrationContext } from '../../models/migrationLocalStorage';
 
 export class MigrationStatusDialogModel {
 	public statusDropdownValues: azdata.CategoryValue[] = [
 		{
-			displayName: 'Status: All',
+			displayName: loc.STATUS_ALL,
 			name: AdsMigrationStatus.ALL
 		}, {
-			displayName: 'Status: Ongoing',
+			displayName: loc.STATUS_ONGOING,
 			name: AdsMigrationStatus.ONGOING
 		}, {
-			displayName: 'Status: Completing',
+			displayName: loc.STATUS_COMPLETING,
 			name: AdsMigrationStatus.COMPLETING
 		}, {
-			displayName: 'Status: Succeeded',
+			displayName: loc.STATUS_SUCCEEDED,
 			name: AdsMigrationStatus.SUCCEEDED
 		}, {
-			displayName: 'Status: Failed',
+			displayName: loc.STATUS_FAILED,
 			name: AdsMigrationStatus.FAILED
 		}
 	];
