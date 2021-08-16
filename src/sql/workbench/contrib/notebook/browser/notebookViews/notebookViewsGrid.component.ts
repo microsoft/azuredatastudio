@@ -37,6 +37,7 @@ export class NotebookViewsGridComponent extends AngularDisposable implements OnI
 	protected _gridEnabled: boolean;
 	protected _loaded: boolean;
 	protected _gridView: INotebookView;
+	protected _activeCell: ICellModel;
 
 	protected _options: INotebookViewsGridOptions = {
 		cellHeight: 60
@@ -84,8 +85,13 @@ export class NotebookViewsGridComponent extends AngularDisposable implements OnI
 				this._grid = undefined;
 			}
 		}
-		if (this.activeView) {
-			this.activeView.initialize();
+		if (this.activeView && this.activeView.guid !== this._gridView?.guid) {
+			this.activeView.initialize(false);
+		}
+
+		if (this.model?.activeCell?.id !== this._activeCell?.id) {
+			this._activeCell = this.model.activeCell;
+			this.detectChanges();
 		}
 	}
 
@@ -218,6 +224,10 @@ export class NotebookViewsGridComponent extends AngularDisposable implements OnI
 				const el = this._grid.getGridItems().find(x => x.getAttribute('data-cell-id') === e.cell.cellGuid);
 				const cellData = this.activeView.getCellMetadata(e.cell);
 				this._grid.update(el, { x: cellData.x, y: cellData.y, w: cellData.width, h: cellData.height });
+			}
+
+			if (e.event === 'active') {
+				this._activeCell = e.cell;
 			}
 
 			this.detectChanges();
