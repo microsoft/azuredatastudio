@@ -5,7 +5,6 @@
 
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
-import { TokenCredentials } from '@azure/ms-rest-js';
 
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
@@ -13,7 +12,7 @@ const localize = nls.loadMessageBundle();
 import { AppContext } from '../../appContext';
 import { azureResource } from 'azureResource';
 import { TreeNode } from '../treeNode';
-import { AzureResourceCredentialError } from '../errors';
+import { AzureSubscriptionError } from '../errors';
 import { AzureResourceContainerTreeNodeBase } from './baseTreeNodes';
 import { AzureResourceItemType, AzureResourceServiceNames } from '../constants';
 import { AzureResourceSubscriptionTreeNode } from './subscriptionTreeNode';
@@ -44,17 +43,8 @@ export class AzureResourceAccountTreeNode extends AzureResourceContainerTreeNode
 			let subscriptions: azureResource.AzureResourceSubscription[] = [];
 
 			if (this._isClearingCache) {
-				try {
-					for (const tenant of this.account.properties.tenants) {
-						const token = await azdata.accounts.getAccountSecurityToken(this.account, tenant.id, azdata.AzureResource.ResourceManagement);
-
-						subscriptions.push(...(await this._subscriptionService.getSubscriptions(this.account, new TokenCredentials(token.token, token.tokenType), tenant.id) || <azureResource.AzureResourceSubscription[]>[]));
-					}
-				} catch (error) {
-					throw new AzureResourceCredentialError(localize('azure.resource.tree.accountTreeNode.credentialError', "Failed to get credential for account {0}. Please refresh the account.", this.account.key.accountId), error);
-				}
+				subscriptions = await this._subscriptionService.getAllSubscriptions(this.account);
 				this.updateCache<azureResource.AzureResourceSubscription[]>(subscriptions);
-
 				this._isClearingCache = false;
 			} else {
 				subscriptions = await this.getCachedSubscriptions();
@@ -93,7 +83,7 @@ export class AzureResourceAccountTreeNode extends AzureResourceContainerTreeNode
 				return subTreeNodes.sort((a, b) => a.subscription.name.localeCompare(b.subscription.name));
 			}
 		} catch (error) {
-			if (error instanceof AzureResourceCredentialError) {
+			if (error instanceof AzureSubscriptionError) {
 				vscode.commands.executeCommand('azure.resource.signin');
 			}
 			return [AzureResourceMessageTreeNode.create(AzureResourceErrorMessageUtil.getErrorMessage(error), this)];
