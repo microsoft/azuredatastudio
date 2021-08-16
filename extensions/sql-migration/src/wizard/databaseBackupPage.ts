@@ -255,7 +255,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			}
 		}).component();
 		this._networkSharePath = this._view.modelBuilder.inputBox().withProps({
-			placeHolder: '\\\\Servername.domainname.com\\Backupfolder',
+			placeHolder: constants.NETWORK_SHARE_PATH,
 			validationErrorMessage: constants.INVALID_NETWORK_SHARE_LOCATION,
 			width: WIZARD_INPUT_COMPONENT_WIDTH,
 			CSSStyles: {
@@ -299,7 +299,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			}).component();
 		this._windowsUserAccountText = this._view.modelBuilder.inputBox()
 			.withProps({
-				placeHolder: 'Domain\\username',
+				placeHolder: constants.WINDOWS_USER_ACCOUNT,
 				required: true,
 				validationErrorMessage: constants.INVALID_USER_ACCOUNT,
 				width: WIZARD_INPUT_COMPONENT_WIDTH
@@ -735,6 +735,8 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			this._blobTableContainer.display = 'none';
 			this._blobContainer.updateCssStyles({ 'display': 'none' });
 
+			this._targetDatabaseContainer.updateCssStyles({ 'display': 'none' });
+			this._networkShareStorageAccountDetails.updateCssStyles({ 'display': 'none' });
 			const connectionProfile = await this.migrationStateModel.getSourceConnectionProfile();
 			const queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>((await this.migrationStateModel.getSourceConnectionProfile()).providerId, azdata.DataProviderType.QueryProvider);
 			const query = 'select SUSER_NAME()';
