@@ -777,7 +777,7 @@ describe('BooksTreeViewTests', function () {
 					should(showPreviewSpy.calledOnce).be.true('Should have called showPreviewFile.');
 				});
 
-				it('should add book when bookPath contains special characters on openBook', async () => {
+				it('should add book when bookPath contains special characters on openBook @UNSTABLE@', async () => {
 					let rootFolderPath2 = path.join(os.tmpdir(), `BookTestData(1)_${uuid.v4()}`);
 					let dataFolderPath2 = path.join(rootFolderPath2, '_data');
 					let contentFolderPath2 = path.join(rootFolderPath2, 'content');
