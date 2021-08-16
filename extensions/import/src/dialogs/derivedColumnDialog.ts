@@ -32,8 +32,11 @@ export class DerivedColumnDialog {
 	private currentDerivedColumnName: string = '';
 	private _view!: azdata.ModelView;
 	private _specifyTransformations: azdata.InputBoxComponent[] = [];
+	private _headerInstructionText: azdata.TextComponent;
+	private _bodyInstructionText: azdata.TextComponent;
 
-	private _applyButton!: azdata.ButtonComponent;
+
+	private _applyButton!: azdata.window.Button;
 	private _transformationTable!: azdata.DeclarativeTableComponent;
 	private _transformationContainer!: azdata.FlexContainer;
 
@@ -41,11 +44,15 @@ export class DerivedColumnDialog {
 	}
 
 	public openDialog(): Promise<boolean> {
+		this._applyButton = azdata.window.createButton('Preview Transformation');
 		this._dialogObject = azdata.window.createModelViewDialog(
 			'Derived column',
 			'DerivedColumnDialog',
 			'wide'
 		);
+		this._dialogObject.customButtons = [this._applyButton];
+		this._applyButton.hidden = false;
+		this._dialogObject.okButton.enabled = false;
 
 		let tab = azdata.window.createTab('');
 		tab.registerContent(async (view: azdata.ModelView) => {
@@ -105,6 +112,7 @@ export class DerivedColumnDialog {
 					for (let index = 0; index < this._model.proseDataPreview.length; index++) {
 						this._transformationTable.dataValues[index].splice(this._transformationTable.dataValues[index].length - 1, 0, { value: this._model.proseDataPreview[index][e.row] });
 					}
+
 				}
 				else {
 					let removeIndex = 0;
@@ -119,7 +127,7 @@ export class DerivedColumnDialog {
 						this._transformationTable.dataValues[index].splice(removeIndex, 1);
 					}
 				}
-				this.clearAndAddTransformationContainerComponents();
+				this.clearAndAddTransformationContainerComponents(this._transformationTable.columns.length > 1);
 			});
 
 
@@ -166,15 +174,9 @@ export class DerivedColumnDialog {
 			}).component();
 
 
-			this._applyButton = view.modelBuilder.button().withProps({
-				label: 'Apply',
-				width: '150px',
-				CSSStyles: {
-					'margin-right': 0
-				}
-			}).component();
 
-			this._applyButton.onDidClick(async e => {
+
+			this._applyButton.onClick(async e => {
 				const requiredColNames = [];
 				const numCols = this._transformationTable.columns.length - 1;
 				for (let index = 0; index < numCols; index++) {
@@ -191,17 +193,19 @@ export class DerivedColumnDialog {
 					transExamples.push(example);
 					transExampleIndices.push(index);
 				}
-
-				const response = await this._provider.sendLearnTransformationRequest({
-					columnNames: requiredColNames,
-					transformationExamples: transExamples,
-					transformationExampleRowIndices: transExampleIndices
-				});
-				this.currentTransformation = response.transformationPreview;
-				for (let index = 0; index < this.currentTransformation.length; index++) {
-					(<azdata.InputBoxComponent>this._transformationTable.dataValues[index][this._transformationTable.columns.length - 1].value).placeHolder = this.currentTransformation[index];
+				if (transExamples.length > 0) {
+					const response = await this._provider.sendLearnTransformationRequest({
+						columnNames: requiredColNames,
+						transformationExamples: transExamples,
+						transformationExampleRowIndices: transExampleIndices
+					});
+					this.currentTransformation = response.transformationPreview;
+					for (let index = 0; index < this.currentTransformation.length; index++) {
+						(<azdata.InputBoxComponent>this._transformationTable.dataValues[index][this._transformationTable.columns.length - 1].value).placeHolder = this.currentTransformation[index];
+					}
+					this.clearAndAddTransformationContainerComponents(true);
 				}
-				this.clearAndAddTransformationContainerComponents();
+				this.enableDoneButton();
 			});
 
 			const specifyDerivedColNameTable = view.modelBuilder.declarativeTable().withProps({
@@ -223,6 +227,7 @@ export class DerivedColumnDialog {
 
 			specifyDerivedColNameTable.onDataChanged(e => {
 				this.currentDerivedColumnName = specifyDerivedColNameTable.dataValues[0][0].value as string;
+				this.enableDoneButton();
 			});
 
 			const specifyDerivedColNameTableData: azdata.DeclarativeTableCellValue[][] = [];
@@ -243,8 +248,35 @@ export class DerivedColumnDialog {
 					'margin-left': '10px',
 				}
 			}).component();
-			this.clearAndAddTransformationContainerComponents();
+			// this.clearAndAddTransformationContainerComponents();
 
+			this._headerInstructionText = this._view.modelBuilder.text()
+				.withProps({
+					value: 'Welcome to the Derived Column Tool! To get started, please follow the steps below:',
+					CSSStyles: {
+						'font-size': 'x-large',
+						'line-height': '22pt',
+						'margin-bottom': '0.7em'
+					}
+				}).component();
+
+			this._bodyInstructionText = this._view.modelBuilder.text()
+				.withProps({
+					value: '1. Select the columns of data on the left required to derive your new column\n\t\
+				2. Select a row and specify an example transformation that you would like applied to the rest of the column\n\t\
+				3. Click \"Preview Transformation\" to preview the transformation\n\t\
+				4. Refine your transformation until you have the desired column\n\t\
+				5. Specify the new derived column\'s name and click \"Done\"',
+					CSSStyles: {
+						'font-size': 'large',
+						'line-height': '22pt',
+						'margin-left': '1em',
+						'margin-top': '0em'
+					}
+				}).component();
+
+			this._transformationContainer.addItem(this._headerInstructionText);
+			this._transformationContainer.addItem(this._bodyInstructionText);
 
 
 			const specifyDerivedColNameContainer = view.modelBuilder.flexContainer().withLayout({
@@ -252,7 +284,6 @@ export class DerivedColumnDialog {
 				width: '150px'
 			}).component();
 			specifyDerivedColNameContainer.addItem(specifyDerivedColNameTable);
-			specifyDerivedColNameContainer.addItem(this._applyButton);
 
 			const flexGrid = view.modelBuilder.flexContainer().withLayout({
 				flexFlow: 'row',
@@ -310,23 +341,18 @@ export class DerivedColumnDialog {
 		);
 		return new Promise((resolve) => {
 			this._doneEmitter.once('done', async () => {
-				if (this.currentTransformation.length > 0) {
-					await this._provider.sendSaveTransformationRequest({
-						derivedColumnName: this.currentDerivedColumnName
-					});
-					this._model.transPreviews.push(this.currentTransformation);
-					this._model.derivedColumnName = this.currentDerivedColumnName;
-					this._model.proseColumns.push({
-						columnName: this.currentDerivedColumnName,
-						dataType: 'nvarchar(MAX)',
-						primaryKey: false,
-						nullable: true
-					});
-					resolve(true);
-				}
-				else {
-					resolve(false);
-				}
+				await this._provider.sendSaveTransformationRequest({
+					derivedColumnName: this.currentDerivedColumnName
+				});
+				this._model.transPreviews.push(this.currentTransformation);
+				this._model.derivedColumnName = this.currentDerivedColumnName;
+				this._model.proseColumns.push({
+					columnName: this.currentDerivedColumnName,
+					dataType: 'nvarchar(MAX)',
+					primaryKey: false,
+					nullable: true
+				});
+				resolve(true);
 				azdata.window.closeDialog(this._dialogObject);
 			});
 
@@ -337,17 +363,31 @@ export class DerivedColumnDialog {
 		});
 	}
 
-	private clearAndAddTransformationContainerComponents(): void {
+	private clearAndAddTransformationContainerComponents(addTable: boolean): void {
 		this._transformationContainer.updateCssStyles({
-			'width': 'fit-content'
+			'width': '700px'
 		});
 		this._transformationContainer.clearItems();
-		this._transformationContainer.addItem(this._transformationTable);
+		if (addTable) {
+			this._transformationContainer.addItem(this._transformationTable);
+		}
+		else {
+			this._transformationContainer.addItem(this._headerInstructionText);
+			this._transformationContainer.addItem(this._bodyInstructionText);
+		}
+
+
 		// this._transformationContainer.addItem(this._applyButton, {
 		// 	CSSStyles: {
 		// 		'align-self': 'flex-end',
 		// 		'margin-top': '10px'
 		// 	}
 		// });
+	}
+
+	private enableDoneButton(): void {
+		if (this.currentTransformation.length > 0 && this.currentDerivedColumnName.length > 0) {
+			this._dialogObject.okButton.enabled = true;
+		}
 	}
 }

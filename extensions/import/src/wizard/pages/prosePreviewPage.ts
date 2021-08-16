@@ -7,6 +7,7 @@ import * as azdata from 'azdata';
 import { ImportPage } from '../api/importPage';
 import * as constants from '../../common/constants';
 import { DerivedColumnDialog } from '../../dialogs/derivedColumnDialog';
+import * as vscode from 'vscode';
 
 export class ProsePreviewPage extends ImportPage {
 
@@ -16,7 +17,7 @@ export class ProsePreviewPage extends ImportPage {
 	private _refresh: azdata.ButtonComponent;
 	private _resultTextComponent: azdata.TextComponent;
 	private _isSuccess: boolean;
-	private _createDerivedColumnButton: azdata.ButtonComponent;
+
 
 	public get table(): azdata.TableComponent {
 		return this._table;
@@ -75,11 +76,7 @@ export class ProsePreviewPage extends ImportPage {
 			forceFitColumns: azdata.ColumnSizingMode.DataFit
 		}).component();
 
-		this._createDerivedColumnButton = this.view.modelBuilder.button().withProps({
-			label: constants.createDerivedColumn,
-			width: '200px',
-			secondary: true
-		}).component();
+
 
 		this.refresh = this.view.modelBuilder.button().withProps({
 			label: constants.refreshText,
@@ -91,7 +88,7 @@ export class ProsePreviewPage extends ImportPage {
 			await this.onPageEnter();
 		});
 
-		this._createDerivedColumnButton.onDidClick(async (e) => {
+		this.instance.createDerivedColumnButton.onClick(async (e) => {
 			const derivedColumnDialog = new DerivedColumnDialog(this.model, this.provider);
 			const response = await derivedColumnDialog.openDialog();
 			if (response) {
@@ -116,10 +113,6 @@ export class ProsePreviewPage extends ImportPage {
 
 		this.form = this.view.modelBuilder.formContainer().withFormItems([
 			{
-				component: this._createDerivedColumnButton,
-				title: ''
-			},
-			{
 				component: this.resultTextComponent,
 				title: ''
 			},
@@ -141,6 +134,8 @@ export class ProsePreviewPage extends ImportPage {
 	async onPageEnter(): Promise<boolean> {
 		let proseResult: boolean;
 		let error: string;
+		let enablePreviewFeatures: boolean;
+		enablePreviewFeatures = vscode.workspace.getConfiguration('workbench').get('enablePreviewFeatures');
 		if (this.model.newFileSelected) {
 			this.loading.loading = true;
 			try {
@@ -163,6 +158,7 @@ export class ProsePreviewPage extends ImportPage {
 			if (this.form) {
 				this.resultTextComponent.value = constants.successTitleText;
 			}
+			this.instance.createDerivedColumnButton.hidden = !enablePreviewFeatures;
 			return true;
 		} else {
 			await this.populateTable([], []);
@@ -175,6 +171,7 @@ export class ProsePreviewPage extends ImportPage {
 	}
 
 	override async onPageLeave(): Promise<boolean> {
+		this.instance.createDerivedColumnButton.hidden = true;
 		await this.emptyTable();
 		return true;
 	}
