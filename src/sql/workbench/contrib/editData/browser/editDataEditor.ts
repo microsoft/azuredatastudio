@@ -35,11 +35,12 @@ import { EditDataResultsEditor } from 'sql/workbench/contrib/editData/browser/ed
 import { EditDataResultsInput } from 'sql/workbench/browser/editData/editDataResultsInput';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { IStorageService } from 'vs/platform/storage/common/storage';
-import { IEditorGroup } from 'vs/workbench/services/editor/common/editorGroupsService';
+import { IEditorGroup, IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { IActionViewItem } from 'vs/base/browser/ui/actionbar/actionbar';
 import { EditorInput } from 'vs/workbench/common/editor/editorInput';
 import { IEditorOptions } from 'vs/platform/editor/common/editor';
+import { DisposableStore } from 'vs/base/common/lifecycle';
 
 /**
  * Editor that hosts an action bar and a resultSetInput for an edit data session
@@ -73,6 +74,7 @@ export class EditDataEditor extends EditorPane {
 	private _queryEditorVisible: IContextKey<boolean>;
 	private hideQueryResultsView = false;
 
+	private readonly _disposables = new DisposableStore();
 	constructor(
 		@ITelemetryService _telemetryService: ITelemetryService,
 		@IThemeService themeService: IThemeService,
@@ -81,7 +83,8 @@ export class EditDataEditor extends EditorPane {
 		@IQueryModelService private _queryModelService: IQueryModelService,
 		@IEditorDescriptorService private _editorDescriptorService: IEditorDescriptorService,
 		@IContextKeyService contextKeyService: IContextKeyService,
-		@IStorageService storageService: IStorageService
+		@IStorageService storageService: IStorageService,
+		@IEditorGroupsService editorGroupsService: IEditorGroupsService
 	) {
 		super(EditDataEditor.ID, _telemetryService, themeService, storageService);
 
@@ -89,16 +92,26 @@ export class EditDataEditor extends EditorPane {
 			this._queryEditorVisible = queryContext.QueryEditorVisibleContext.bindTo(contextKeyService);
 		}
 
-		if (_editorService) {
-			_editorService.overrideOpenEditor({
-				open: (editor, options, group) => {
-					if (this.isVisible() && (editor !== this.input || group !== this.group)) {
-						this.saveEditorViewState();
-					}
-					return {};
-				}
-			});
+		if (editorGroupsService) {
+			// Add all the initial groups to be listened to
+			editorGroupsService.whenReady.then(() => editorGroupsService.groups.forEach(group => {
+				this.registerGroupListener(group);
+			}));
+
+			// Additional groups added should also be listened to
+			this._register(editorGroupsService.onDidAddGroup((group) => this.registerGroupListener(group)));
+
+			this._register(this._disposables);
 		}
+	}
+
+	private registerGroupListener(group: IEditorGroup): void {
+		const listener = group.onWillOpenEditor(e => {
+			if (this.isVisible() && (e.editor !== this.input || group !== this.group)) {
+				this.saveEditorViewState();
+			}
+		});
+		this._disposables.add(listener);
 	}
 
 	// PUBLIC METHODS ////////////////////////////////////////////////////////////

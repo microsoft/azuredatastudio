@@ -24,7 +24,7 @@ import { URI } from 'vs/base/common/uri';
 import { Schemas } from 'vs/base/common/network';
 import * as nls from 'vs/nls';
 import { IModelService } from 'vs/editor/common/services/modelService';
-import { IDisposable } from 'vs/base/common/lifecycle';
+import { DisposableStore, IDisposable } from 'vs/base/common/lifecycle';
 import { Command } from 'vs/editor/browser/editorExtensions';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { KeyMod, KeyCode } from 'vs/base/common/keyCodes';
@@ -53,6 +53,7 @@ import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/u
 import { attachTabbedPanelStyler } from 'sql/workbench/common/styler';
 import { UntitledTextEditorModel } from 'vs/workbench/services/untitled/common/untitledTextEditorModel';
 import { IEditorOptions } from 'vs/platform/editor/common/editor';
+import { IEditorGroup, IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
 
 class BasicView implements IView {
 	public get element(): HTMLElement {
@@ -155,6 +156,7 @@ export class ProfilerEditor extends EditorPane {
 
 	private _savedTableViewStates = new Map<ProfilerInput, ProfilerTableViewState>();
 
+	private readonly _disposables = new DisposableStore();
 	constructor(
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IWorkbenchThemeService themeService: IWorkbenchThemeService,
@@ -166,21 +168,32 @@ export class ProfilerEditor extends EditorPane {
 		@IEditorService editorService: IEditorService,
 		@IStorageService storageService: IStorageService,
 		@IClipboardService private _clipboardService: IClipboardService,
-		@ITextResourcePropertiesService private readonly textResourcePropertiesService: ITextResourcePropertiesService
+		@ITextResourcePropertiesService private readonly textResourcePropertiesService: ITextResourcePropertiesService,
+		@IEditorGroupsService editorGroupsService: IEditorGroupsService
 	) {
 		super(ProfilerEditor.ID, telemetryService, themeService, storageService);
 		this._profilerEditorContextKey = CONTEXT_PROFILER_EDITOR.bindTo(this._contextKeyService);
 
-		if (editorService) {
-			editorService.overrideOpenEditor({
-				open: (editor, options, group) => {
-					if (this.isVisible() && (editor !== this.input || group !== this.group)) {
-						this.saveEditorViewState();
-					}
-					return {};
-				}
-			});
+		if (editorGroupsService) {
+			// Add all the initial groups to be listened to
+			editorGroupsService.whenReady.then(() => editorGroupsService.groups.forEach(group => {
+				this.registerGroupListener(group);
+			}));
+
+			// Additional groups added should also be listened to
+			this._register(editorGroupsService.onDidAddGroup((group) => this.registerGroupListener(group)));
+
+			this._register(this._disposables);
 		}
+	}
+
+	private registerGroupListener(group: IEditorGroup): void {
+		const listener = group.onWillOpenEditor(e => {
+			if (this.isVisible() && (e.editor !== this.input || group !== this.group)) {
+				this.saveEditorViewState();
+			}
+		});
+		this._disposables.add(listener);
 	}
 
 	protected createEditor(parent: HTMLElement): void {
