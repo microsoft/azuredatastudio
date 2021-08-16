@@ -371,7 +371,6 @@ export function STATUS_VALUE(status: string, count: number): string {
 	if (count > 0) {
 		return localize('sql.migration.status.error.count.some', "{0} (", StatusLookup[status] ?? status);
 	}
-
 	return localize('sql.migration.status.error.count.none', "{0}", StatusLookup[status] ?? status);
 }
 
@@ -386,7 +385,7 @@ export const StatusLookup: LookupTable<string | undefined> = {
 	['Completing']: localize('sql.migration.status.completing', 'Completing'),
 	['Canceling']: localize('sql.migration.status.canceling', 'Canceling'),
 	['Failed']: localize('sql.migration.status.failed', 'Failed'),
-	default: undefined,
+	default: undefined
 };
 
 export function STATUS_WARNING_COUNT(status: string, count: number): string | undefined {

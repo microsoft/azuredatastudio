@@ -10,16 +10,16 @@ export class MigrationStatusDialogModel {
 	public statusDropdownValues: azdata.CategoryValue[] = [
 		{
 			displayName: 'Status: All',
-			name: AdsMigrationStatus.ALL,
+			name: AdsMigrationStatus.ALL
 		}, {
 			displayName: 'Status: Ongoing',
-			name: AdsMigrationStatus.ONGOING,
+			name: AdsMigrationStatus.ONGOING
 		}, {
 			displayName: 'Status: Completing',
 			name: AdsMigrationStatus.COMPLETING
 		}, {
 			displayName: 'Status: Succeeded',
-			name: AdsMigrationStatus.SUCCEEDED,
+			name: AdsMigrationStatus.SUCCEEDED
 		}, {
 			displayName: 'Status: Failed',
 			name: AdsMigrationStatus.FAILED
