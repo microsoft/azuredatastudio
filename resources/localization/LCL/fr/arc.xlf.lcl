@@ -805,12 +805,18 @@
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.extensionsAddErrorrMessage" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Value should be either of the following: ({0}).]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[La valeur doit être l’une des suivantes : ({0}).]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/arc/dist/localizedConstants.arc.extensionsAddFunction" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Some extensions must be loaded into PostgreSQL at startup time before they can be used. To edit, type in comma separated list of valid extensions: ({0}).]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Certaines extensions doivent être chargées dans PostgreSQL au démarrage avant de pouvoir être utilisées. Pour modifier, tapez dans la liste séparée par des virgules des extensions valides : ({0}).]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -2500,8 +2506,8 @@
       <Item ItemId=";extensions/arc/package.arc.agreement.sql.help.text" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Azure Arc enabled Managed Instance provides SQL Server access and feature compatibility that can be deployed on the infrastructure of your choice. {0}]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[Managed Instance activé Azure Arc offre une compatibilité d’accès et de fonctionnalité SQL Server pouvant être déployée sur l’infrastructure de votre choix. Pendant que ce service est en préversion, il présente certaines limitations de fonctionnalités par rapport à SQL Managed Instance sur Azure. {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Azure Arc activé Managed Instance fournit SQL Server l’accès et la compatibilité des fonctionnalités qui peuvent être déployées sur l’infrastructure de votre choix. {0}]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Azure Arc enabled Managed Instance provides SQL Server access and feature compatibility that can be deployed on the infrastructure of your choice. While this service is in preview, it has some feature limitations compared to SQL Managed Instance on Azure. {0}]]></Val>
@@ -2944,6 +2950,9 @@
       <Item ItemId=";extensions/arc/package.arc.data.controller.summary.data.controller.infrastructure" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Data controller infrastructure]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Infrastructure du contrôleur de données]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>

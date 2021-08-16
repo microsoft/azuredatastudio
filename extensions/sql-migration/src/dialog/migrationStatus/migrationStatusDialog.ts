@@ -6,11 +6,11 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { IconPathHelper } from '../../constants/iconPathHelper';
-import { MigrationContext, MigrationLocalStorage } from '../../models/migrationLocalStorage';
+import { MigrationContext, MigrationLocalStorage, MigrationStatus } from '../../models/migrationLocalStorage';
 import { MigrationCutoverDialog } from '../migrationCutover/migrationCutoverDialog';
 import { AdsMigrationStatus, MigrationStatusDialogModel } from './migrationStatusDialogModel';
 import * as loc from '../../constants/strings';
-import { convertTimeDifferenceToDuration, filterMigrations, getMigrationStatusImage, SupportedAutoRefreshIntervals } from '../../api/utils';
+import { clearDialogMessage, convertTimeDifferenceToDuration, filterMigrations, getMigrationStatusImage, SupportedAutoRefreshIntervals } from '../../api/utils';
 import { SqlMigrationServiceDetailsDialog } from '../sqlMigrationService/sqlMigrationServiceDetailsDialog';
 import { ConfirmCutoverDialog } from '../migrationCutover/confirmCutoverDialog';
 import { MigrationCutoverDialogModel } from '../migrationCutover/migrationCutoverDialogModel';
@@ -20,6 +20,15 @@ const refreshFrequency: SupportedAutoRefreshIntervals = 180000;
 const statusImageSize: number = 14;
 const imageCellStyles: azdata.CssStyles = { 'margin': '3px 3px 0 0', 'padding': '0' };
 const statusCellStyles: azdata.CssStyles = { 'margin': '0', 'padding': '0' };
+
+const MenuCommands = {
+	Cutover: 'sqlmigration.cutover',
+	ViewDatabase: 'sqlmigration.view.database',
+	ViewTarget: 'sqlmigration.view.target',
+	ViewService: 'sqlmigration.view.service',
+	CopyMigration: 'sqlmigration.copy.migration',
+	CancelMigration: 'sqlmigration.cancel.migration',
+};
 
 export class MigrationStatusDialog {
 	private _model: MigrationStatusDialogModel;
@@ -96,8 +105,15 @@ export class MigrationStatusDialog {
 		azdata.window.openDialog(this._dialogObject);
 	}
 
-	private canCancelMigration = (status: string | undefined) => status && status in ['InProgress', 'Creating', 'Completing', 'Creating'];
-	private canCutoverMigration = (status: string | undefined) => status === 'InProgress';
+	private canCancelMigration = (status: string | undefined) => status &&
+		(
+			status === MigrationStatus.InProgress ||
+			status === MigrationStatus.Creating ||
+			status === MigrationStatus.Completing ||
+			status === MigrationStatus.Canceling
+		);
+
+	private canCutoverMigration = (status: string | undefined) => status === MigrationStatus.InProgress;
 
 	private createSearchAndRefreshContainer(): azdata.FlexContainer {
 		this._searchBox = this._view.modelBuilder.inputBox().withProps({
@@ -174,9 +190,10 @@ export class MigrationStatusDialog {
 
 	private registerCommands(): void {
 		this._disposables.push(vscode.commands.registerCommand(
-			'sqlmigration.cutover',
+			MenuCommands.Cutover,
 			async (migrationId: string) => {
 				try {
+					clearDialogMessage(this._dialogObject);
 					const migration = this._model._migrations.find(migration => migration.migrationContext.id === migrationId);
 					if (this.canCutoverMigration(migration?.migrationContext.properties.migrationStatus)) {
 						const cutoverDialogModel = new MigrationCutoverDialogModel(migration!);
@@ -187,12 +204,18 @@ export class MigrationStatusDialog {
 						await vscode.window.showInformationMessage(loc.MIGRATION_CANNOT_CUTOVER);
 					}
 				} catch (e) {
+					this._dialogObject.message = {
+						text: loc.MIGRATION_STATUS_REFRESH_ERROR,
+						description: e.message,
+						level: azdata.window.MessageLevel.Error
+					};
+
 					console.log(e);
 				}
 			}));
 
 		this._disposables.push(vscode.commands.registerCommand(
-			'sqlmigration.view.database',
+			MenuCommands.ViewDatabase,
 			async (migrationId: string) => {
 				try {
 					const migration = this._model._migrations.find(migration => migration.migrationContext.id === migrationId);
@@ -204,7 +227,7 @@ export class MigrationStatusDialog {
 			}));
 
 		this._disposables.push(vscode.commands.registerCommand(
-			'sqlmigration.view.target',
+			MenuCommands.ViewTarget,
 			async (migrationId: string) => {
 				try {
 					const migration = this._model._migrations.find(migration => migration.migrationContext.id === migrationId);
@@ -216,7 +239,7 @@ export class MigrationStatusDialog {
 			}));
 
 		this._disposables.push(vscode.commands.registerCommand(
-			'sqlmigration.view.service',
+			MenuCommands.ViewService,
 			async (migrationId: string) => {
 				try {
 					const migration = this._model._migrations.find(migration => migration.migrationContext.id === migrationId);
@@ -228,9 +251,10 @@ export class MigrationStatusDialog {
 			}));
 
 		this._disposables.push(vscode.commands.registerCommand(
-			'sqlmigration.copy.migration',
+			MenuCommands.CopyMigration,
 			async (migrationId: string) => {
 				try {
+					clearDialogMessage(this._dialogObject);
 					const migration = this._model._migrations.find(migration => migration.migrationContext.id === migrationId);
 					const cutoverDialogModel = new MigrationCutoverDialogModel(migration!);
 					await cutoverDialogModel.fetchStatus();
@@ -245,14 +269,21 @@ export class MigrationStatusDialog {
 
 					await vscode.window.showInformationMessage(loc.DETAILS_COPIED);
 				} catch (e) {
+					this._dialogObject.message = {
+						text: loc.MIGRATION_STATUS_REFRESH_ERROR,
+						description: e.message,
+						level: azdata.window.MessageLevel.Error
+					};
+
 					console.log(e);
 				}
 			}));
 
 		this._disposables.push(vscode.commands.registerCommand(
-			'sqlmigration.cancel.migration',
+			MenuCommands.CancelMigration,
 			async (migrationId: string) => {
 				try {
+					clearDialogMessage(this._dialogObject);
 					const migration = this._model._migrations.find(migration => migration.migrationContext.id === migrationId);
 					if (this.canCancelMigration(migration?.migrationContext.properties.migrationStatus)) {
 						vscode.window.showInformationMessage(loc.CANCEL_MIGRATION_CONFIRMATION, loc.YES, loc.NO).then(async (v) => {
@@ -266,6 +297,12 @@ export class MigrationStatusDialog {
 						await vscode.window.showInformationMessage(loc.MIGRATION_CANNOT_CANCEL);
 					}
 				} catch (e) {
+					this._dialogObject.message = {
+						text: loc.MIGRATION_CANCELLATION_ERROR,
+						description: e.message,
+						level: azdata.window.MessageLevel.Error
+					};
+
 					console.log(e);
 				}
 			}));
@@ -371,23 +408,28 @@ export class MigrationStatusDialog {
 	}
 
 	private _getMigrationMode(migration: MigrationContext): string {
-		if (migration.migrationContext.properties.provisioningState === 'Creating') {
-			return '---';
-		}
 		return migration.migrationContext.properties.autoCutoverConfiguration?.autoCutover?.valueOf() ? loc.OFFLINE : loc.ONLINE;
 	}
 
 	private _getMenuCommands(migration: MigrationContext): string[] {
-		let menuCommands = [
-			'sqlmigration.view.database',
-			'sqlmigration.view.target',
-			'sqlmigration.view.service',
-			'sqlmigration.copy.migration',
-			'sqlmigration.cancel.migration',
-		];
-		if (this._getMigrationMode(migration) === loc.ONLINE) {
-			menuCommands.unshift('sqlmigration.cutover');
+		const menuCommands: string[] = [];
+		const migrationStatus = migration?.migrationContext?.properties?.migrationStatus;
+
+		if (this._getMigrationMode(migration) === loc.ONLINE &&
+			this.canCutoverMigration(migrationStatus)) {
+			menuCommands.push(MenuCommands.Cutover);
 		}
+
+		menuCommands.push(...[
+			MenuCommands.ViewDatabase,
+			MenuCommands.ViewTarget,
+			MenuCommands.ViewService,
+			MenuCommands.CopyMigration]);
+
+		if (this.canCancelMigration(migrationStatus)) {
+			menuCommands.push(MenuCommands.CancelMigration);
+		}
+
 		return menuCommands;
 	}
 
@@ -466,11 +508,18 @@ export class MigrationStatusDialog {
 
 		this.isRefreshing = true;
 		try {
+			clearDialogMessage(this._dialogObject);
 			this._refreshLoader.loading = true;
 			const currentConnection = await azdata.connection.getCurrentConnection();
 			this._model._migrations = await MigrationLocalStorage.getMigrationsBySourceConnections(currentConnection, true);
 			await this.populateMigrationTable();
 		} catch (e) {
+			this._dialogObject.message = {
+				text: loc.MIGRATION_STATUS_REFRESH_ERROR,
+				description: e.message,
+				level: azdata.window.MessageLevel.Error
+			};
+
 			console.log(e);
 		} finally {
 			this.isRefreshing = false;
@@ -583,13 +632,10 @@ export class MigrationStatusDialog {
 	}
 
 	private _statusInfoMap(status: string): azdata.IconPath {
-		switch (status) {
-			case 'InProgress':
-			case 'Creating':
-			case 'Completing':
-				return IconPathHelper.warning;
-			default:
-				return IconPathHelper.error;
-		}
+		return status === MigrationStatus.InProgress
+			|| status === MigrationStatus.Creating
+			|| status === MigrationStatus.Completing
+			? IconPathHelper.warning
+			: IconPathHelper.error;
 	}
 }

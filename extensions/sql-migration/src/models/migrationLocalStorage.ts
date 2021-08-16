@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 import * as vscode from 'vscode';
 import { azureResource } from 'azureResource';
-import { DatabaseMigration, SqlMigrationService, SqlManagedInstance, getMigrationStatus, AzureAsyncOperationResource, getMigrationAsyncOperationDetails, SqlVMServer } from '../api/azure';
+import { DatabaseMigration, SqlMigrationService, SqlManagedInstance, getMigrationStatus, AzureAsyncOperationResource, getMigrationAsyncOperationDetails, SqlVMServer, getSubscriptions } from '../api/azure';
 import * as azdata from 'azdata';
 
 export class MigrationLocalStorage {
@@ -23,26 +23,35 @@ export class MigrationLocalStorage {
 		const migrationMementos: MigrationContext[] = this.context.globalState.get(this.mementoToken) || [];
 		for (let i = 0; i < migrationMementos.length; i++) {
 			const migration = migrationMementos[i];
+			migration.sessionId = migration.sessionId ?? undefinedSessionId;
 			if (migration.sourceConnectionProfile.serverName === connectionProfile.serverName) {
 				if (refreshStatus) {
 					try {
+						const autoCutoverConfiguration = migration.migrationContext.properties.autoCutoverConfiguration;
 						const backupConfiguration = migration.migrationContext.properties.backupConfiguration;
 						const sourceDatabase = migration.migrationContext.properties.sourceDatabaseName;
-						migration.migrationContext = await getMigrationStatus(
-							migration.azureAccount,
-							migration.subscription,
-							migration.migrationContext,
-							migration.sessionId ?? undefinedSessionId
-						);
-						migration.migrationContext.properties.sourceDatabaseName = sourceDatabase;
-						migration.migrationContext.properties.backupConfiguration = backupConfiguration;
+
+						await this.refreshMigrationAzureAccount(migration);
+
 						if (migration.asyncUrl) {
 							migration.asyncOperationResult = await getMigrationAsyncOperationDetails(
 								migration.azureAccount,
 								migration.subscription,
 								migration.asyncUrl,
-								migration.sessionId ?? undefinedSessionId
+								migration.sessionId!
 							);
+
+							migration.migrationContext = await getMigrationStatus(
+								migration.azureAccount,
+								migration.subscription,
+								migration.migrationContext,
+								migration.sessionId!,
+								migration.asyncUrl
+							);
+
+							migration.migrationContext.properties.sourceDatabaseName = sourceDatabase;
+							migration.migrationContext.properties.backupConfiguration = backupConfiguration;
+							migration.migrationContext.properties.autoCutoverConfiguration = autoCutoverConfiguration;
 						}
 					}
 					catch (e) {
@@ -60,6 +69,20 @@ export class MigrationLocalStorage {
 		}
 		this.context.globalState.update(this.mementoToken, validMigrations);
 		return result;
+	}
+
+	public static async refreshMigrationAzureAccount(migration: MigrationContext): Promise<void> {
+		if (migration.azureAccount.isStale) {
+			const accounts = await azdata.accounts.getAllAccounts();
+			const account = accounts.find(a => !a.isStale && a.key.accountId === migration.azureAccount.key.accountId);
+			if (account) {
+				const subscriptions = await getSubscriptions(account);
+				const subscription = subscriptions.find(s => s.id === migration.subscription.id);
+				if (subscription) {
+					migration.azureAccount = account;
+				}
+			}
+		}
 	}
 
 	public static saveMigration(
@@ -105,4 +128,20 @@ export interface MigrationContext {
 	asyncUrl: string,
 	asyncOperationResult?: AzureAsyncOperationResource,
 	sessionId?: string
+}
+
+export enum MigrationStatus {
+	Failed = 'Failed',
+	Succeeded = 'Succeeded',
+	InProgress = 'InProgress',
+	Canceled = 'Canceled',
+	Completing = 'Completing',
+	Creating = 'Creating',
+	Canceling = 'Canceling'
+}
+
+export enum ProvisioningState {
+	Failed = 'Failed',
+	Succeeded = 'Succeeded',
+	Creating = 'Creating'
 }
