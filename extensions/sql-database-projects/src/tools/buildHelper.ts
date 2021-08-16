@@ -5,7 +5,6 @@
 
 import * as vscode from 'vscode';
 import * as path from 'path';
-import * as os from 'os';
 import { promises as fs } from 'fs';
 import * as utils from '../common/utils';
 import { sqlToolsServiceNotFound } from '../common/constants';
@@ -68,39 +67,12 @@ export class BuildHelper {
 	private async getBuildDirPathFromMssqlTools(): Promise<string> {
 		let mssqlConfigDir = '';
 		if (utils.getAzdataApi()) {
-			mssqlConfigDir = vscode.extensions.getExtension(mssql.extension.name)?.extensionPath ?? '';
+			return (vscode.extensions.getExtension(mssql.extension.name)?.exports as mssql.IExtension).sqlToolsServicePath;
 		} else {
-			// VS Code MSSQL extension has its tools service config in a slightly different spot
-			mssqlConfigDir = path.join(vscode.extensions.getExtension(vscodeMssql.extension.name)?.extensionPath ?? '', 'out', 'src');
+			return (vscode.extensions.getExtension(vscodeMssql.extension.name)?.exports as vscodeMssql.IExtension).sqlToolsServicePath;
 		}
 
-		if (await utils.exists(path.join(mssqlConfigDir, 'config.json'))) {
-			const rawConfig = await fs.readFile(path.join(mssqlConfigDir, 'config.json'));
-			const config = JSON.parse(rawConfig.toString());
-			let installDir = '';
-			if (utils.getAzdataApi()) {
-				installDir = config.installDirectory?.replace('{#version#}', config.version).replace('{#platform#}', this.getPlatform());
-			} else {
-				// VS Code MSSQL extension has a slightly different format for its config.json
-				installDir = config.service?.installDir?.replace('{#version#}', config.service.version).replace('{#platform#}', this.getPlatform());
-				if (installDir) {
-					// The path to the install location is relative to one directory above where the config is so account for that here
-					installDir = path.join('..', installDir);
-				}
-			}
-
-			if (installDir) {
-				return path.join(mssqlConfigDir, installDir);
-			}
-		}
 		throw new Error(sqlToolsServiceNotFound(mssqlConfigDir));
-	}
-
-	private getPlatform(): string {
-		return os.platform() === 'win32' ? 'Windows' :
-			os.platform() === 'darwin' ? 'OSX' :
-				os.platform() === 'linux' ? 'Linux' :
-					'';
 	}
 
 	public get extensionBuildDirPath(): string {
