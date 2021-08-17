@@ -509,7 +509,8 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		this.table.setTableTitle(localize('resultsGrid', "Results grid"));
 		this.table.setSelectionModel(this.selectionModel);
 		this.table.registerPlugin(new MouseWheelSupport());
-		this.table.registerPlugin(new AutoColumnSize({ autoSizeOnRender: !this.state.columnSizes && this.configurationService.getValue('resultsGrid.autoSizeColumns'), maxWidth: this.configurationService.getValue<number>('resultsGrid.maxColumnWidth') }));
+		let autoSizeOnRender: boolean = !this.state.columnSizes && this.configurationService.getValue('resultsGrid.autoSizeColumns');
+		this.table.registerPlugin(new AutoColumnSize({ autoSizeOnRender: autoSizeOnRender, maxWidth: this.configurationService.getValue<number>('resultsGrid.maxColumnWidth') }));
 		this.table.registerPlugin(copyHandler);
 		this.table.registerPlugin(this.rowNumberColumn);
 		this.table.registerPlugin(new AdditionalKeyBindings());
@@ -537,7 +538,8 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		}));
 		if (this.enableFilteringFeature) {
 			this.filterPlugin = new HeaderFilter(this.contextViewService, this.notificationService, {
-				disabledFilterMessage: localize('resultsGrid.maxRowCountExceeded', "Max row count for filtering/sorting has been exceeded. To update it, you can go to User Settings and change the setting: 'queryEditor.results.inMemoryDataProcessingThreshold'")
+				disabledFilterMessage: localize('resultsGrid.maxRowCountExceeded', "Max row count for filtering/sorting has been exceeded. To update it, you can go to User Settings and change the setting: 'queryEditor.results.inMemoryDataProcessingThreshold'"),
+				autoSizePluginOn: autoSizeOnRender
 			});
 			this._register(attachTableFilterStyler(this.filterPlugin, this.themeService));
 			this.table.registerPlugin(this.filterPlugin);
