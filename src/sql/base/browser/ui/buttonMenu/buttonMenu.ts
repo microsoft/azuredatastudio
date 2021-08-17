@@ -51,7 +51,7 @@ export class DropdownMenuActionViewItem extends BaseActionViewItem {
 		const labelRenderer: ILabelRenderer = (el: HTMLElement): IDisposable | null => {
 			this.element = append(el, $('a.action-label.button-menu'));
 			if (this.cssClass) {
-				this.element.classList.add(this.cssClass);
+				this.element.classList.add(...this.cssClass.split(' '));
 			}
 			if (this.menuLabel) {
 				this.element.innerText = this.menuLabel;
