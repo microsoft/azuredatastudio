@@ -734,7 +734,7 @@ export class NotebookEditorOverrideContribution extends Disposable implements IW
 
 	private tryConvertInput(input: IEditorInput, lang: string): IEditorInput | undefined {
 		const langAssociation = languageAssociationRegistry.getAssociationForLanguage(lang);
-		const notebookEditorInput = langAssociation?.syncConvertinput?.(input);
+		const notebookEditorInput = langAssociation?.syncConvertInput?.(input);
 		if (!notebookEditorInput) {
 			this._logService.warn('Unable to create input for overriding editor ', input instanceof DiffEditorInput ? `${input.primary.resource.toString()} <-> ${input.secondary.resource.toString()}` : input.resource.toString());
 			return undefined;
