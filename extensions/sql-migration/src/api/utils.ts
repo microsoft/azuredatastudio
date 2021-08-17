@@ -95,27 +95,27 @@ export function filterMigrations(databaseMigrations: MigrationContext[], statusF
 		filteredMigration = databaseMigrations;
 	} else if (statusFilter === AdsMigrationStatus.ONGOING) {
 		filteredMigration = databaseMigrations.filter((value) => {
-			const status = value.migrationContext.properties.migrationStatus;
-			const provisioning = value.migrationContext.properties.provisioningState;
+			const status = value.migrationContext.properties?.migrationStatus;
+			const provisioning = value.migrationContext.properties?.provisioningState;
 			return status === MigrationStatus.InProgress
 				|| status === MigrationStatus.Creating
 				|| provisioning === MigrationStatus.Creating;
 		});
 	} else if (statusFilter === AdsMigrationStatus.SUCCEEDED) {
 		filteredMigration = databaseMigrations.filter((value) => {
-			const status = value.migrationContext.properties.migrationStatus;
+			const status = value.migrationContext.properties?.migrationStatus;
 			return status === MigrationStatus.Succeeded;
 		});
 	} else if (statusFilter === AdsMigrationStatus.FAILED) {
 		filteredMigration = databaseMigrations.filter((value) => {
-			const status = value.migrationContext.properties.migrationStatus;
-			const provisioning = value.migrationContext.properties.provisioningState;
+			const status = value.migrationContext.properties?.migrationStatus;
+			const provisioning = value.migrationContext.properties?.provisioningState;
 			return status === MigrationStatus.Failed
 				|| provisioning === ProvisioningState.Failed;
 		});
 	} else if (statusFilter === AdsMigrationStatus.COMPLETING) {
 		filteredMigration = databaseMigrations.filter((value) => {
-			const status = value.migrationContext.properties.migrationStatus;
+			const status = value.migrationContext.properties?.migrationStatus;
 			return status === MigrationStatus.Completing;
 		});
 	}

@@ -98,7 +98,6 @@ suite('NotebookViewModel', function (): void {
 
 		assert.equal(cellsWithNewView.length, 2);
 		assert.equal(viewModel.cells.length, 2);
-		assert.equal(viewModel.hiddenCells.length, 0);
 		assert.equal(viewModel.name, defaultViewName);
 	});
 
@@ -111,7 +110,6 @@ suite('NotebookViewModel', function (): void {
 
 		assert.equal(cellsWithNewView.length, 2);
 		assert.equal(viewModel.cells.length, 2);
-		assert.equal(viewModel.hiddenCells.length, 0);
 		assert.equal(viewModel.name, defaultViewName);
 	});
 
