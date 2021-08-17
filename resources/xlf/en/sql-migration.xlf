@@ -233,6 +233,12 @@ This may take some time.</source>
     <trans-unit id="sql.migration.database.migration.mode.offline.label">
       <source xml:lang="en">Offline migration</source>
     </trans-unit>
+    <trans-unit id="sql.migration.network.share.path">
+      <source xml:lang="en">\\Servername.domainname.com\Backupfolder</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.windows.user.account">
+      <source xml:lang="en">Domain\username</source>
+    </trans-unit>
     <trans-unit id="sql.migration.no.subscription.found">
       <source xml:lang="en">No subscription found</source>
     </trans-unit>
@@ -508,6 +514,9 @@ This may take some time.</source>
     </trans-unit>
     <trans-unit id="sql.migration.newSupportRequest">
       <source xml:lang="en">New support request</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.impact">
+      <source xml:lang="en">Impact</source>
     </trans-unit>
     <trans-unit id="sql.migration.all.fields.required">
       <source xml:lang="en">All fields are required.</source>
@@ -799,6 +808,21 @@ This may take some time.</source>
     </trans-unit>
     <trans-unit id="sql.migration.no.pending.backups">
       <source xml:lang="en">No pending backups. Click refresh to check current status.</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.status.dropdown.all">
+      <source xml:lang="en">Status: All</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.status.dropdown.ongoing">
+      <source xml:lang="en">Status: Ongoing</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.status.dropdown.completing">
+      <source xml:lang="en">Status: Completing</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.status.dropdown.succeeded">
+      <source xml:lang="en">Status: Succeeded</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.status.dropdown.failed">
+      <source xml:lang="en">Status: Failed</source>
     </trans-unit>
     <trans-unit id="sql.migration.search.for.migration">
       <source xml:lang="en">Search for migrations</source>
