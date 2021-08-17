@@ -181,7 +181,7 @@ function configureCommandlineSwitchesSync(cliArgs) {
 	// Read argv config
 	const argvConfig = readArgvConfigSync();
 
-	let browserCodeLoadingStrategy = typeof codeCachePath === 'string' ? 'bypassHeatCheck' : 'none';
+	let browserCodeLoadingStrategy = undefined; // {{SQL CARBON EDIT}} Set to undefined by default
 
 	Object.keys(argvConfig).forEach(argvKey => {
 		const argvValue = argvConfig[argvKey];
