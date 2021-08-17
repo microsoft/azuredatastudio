@@ -74,6 +74,9 @@ This may take some time.</source>
     <trans-unit id="sql.migration.wizard.sku.assessment.error">
       <source xml:lang="en">An error occurred while assessing the server '{0}'.</source>
     </trans-unit>
+    <trans-unit id="sql.migration.refresh.assessment.button.label">
+      <source xml:lang="en">Refresh Assessment</source>
+    </trans-unit>
     <trans-unit id="sql.migration.wizard.sku.choose_a_target">
       <source xml:lang="en">Choose your Azure SQL target</source>
     </trans-unit>
@@ -170,6 +173,9 @@ This may take some time.</source>
     <trans-unit id="sql.migration.network.share.help.text">
       <source xml:lang="en">Provide the network share location that contains backups and the user credentials that has read access to the share</source>
     </trans-unit>
+    <trans-unit id="sql.migration.network.share.storage.table.help">
+      <source xml:lang="en">Enter target database name for the selected source database(s).</source>
+    </trans-unit>
     <trans-unit id="sql.migration.network.share.location.label">
       <source xml:lang="en">Network share location that contains backups.</source>
     </trans-unit>
@@ -197,6 +203,15 @@ This may take some time.</source>
     <trans-unit id="sql.migration.database.already.exists">
       <source xml:lang="en">Database '{0}' already exists on the target managed instance '{1}'.</source>
     </trans-unit>
+    <trans-unit id="sql.migration.blob.storage.header.text">
+      <source xml:lang="en">Azure Storage Blob Container details</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.blob.storage.help.text">
+      <source xml:lang="en">Provide the Azure Storage Blob Container that contains the backups.</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.blob.storage.table.help">
+      <source xml:lang="en">Enter target database name and select resource group, storage account and container for the selected source database(s).</source>
+    </trans-unit>
     <trans-unit id="sql.migration.blob.storage.subscription.label">
       <source xml:lang="en">Select the subscription that contains the storage account.</source>
     </trans-unit>
@@ -217,6 +232,12 @@ This may take some time.</source>
     </trans-unit>
     <trans-unit id="sql.migration.database.migration.mode.offline.label">
       <source xml:lang="en">Offline migration</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.network.share.path">
+      <source xml:lang="en">\\Servername.domainname.com\Backupfolder</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.windows.user.account">
+      <source xml:lang="en">Domain\username</source>
     </trans-unit>
     <trans-unit id="sql.migration.no.subscription.found">
       <source xml:lang="en">No subscription found</source>
@@ -494,6 +515,12 @@ This may take some time.</source>
     <trans-unit id="sql.migration.newSupportRequest">
       <source xml:lang="en">New support request</source>
     </trans-unit>
+    <trans-unit id="sql.migration.impact">
+      <source xml:lang="en">Impact</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.all.fields.required">
+      <source xml:lang="en">All fields are required.</source>
+    </trans-unit>
     <trans-unit id="sql.migration.summary.page.title">
       <source xml:lang="en">Summary</source>
     </trans-unit>
@@ -722,6 +749,12 @@ This may take some time.</source>
     <trans-unit id="sql.migration.no">
       <source xml:lang="en">No</source>
     </trans-unit>
+    <trans-unit id="sql.migration.empty.table.text">
+      <source xml:lang="en">No backup files to show</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.empty.table.subtext">
+      <source xml:lang="en">If results were expected, reconfirm the connection to the SQL Server Instance.</source>
+    </trans-unit>
     <trans-unit id="sql.migration.completing.cutover.warning">
       <source xml:lang="en">Completing cutover without restoring all the backup(s) may result in a data loss.</source>
     </trans-unit>
@@ -775,6 +808,21 @@ This may take some time.</source>
     </trans-unit>
     <trans-unit id="sql.migration.no.pending.backups">
       <source xml:lang="en">No pending backups. Click refresh to check current status.</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.status.dropdown.all">
+      <source xml:lang="en">Status: All</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.status.dropdown.ongoing">
+      <source xml:lang="en">Status: Ongoing</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.status.dropdown.completing">
+      <source xml:lang="en">Status: Completing</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.status.dropdown.succeeded">
+      <source xml:lang="en">Status: Succeeded</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.status.dropdown.failed">
+      <source xml:lang="en">Status: Failed</source>
     </trans-unit>
     <trans-unit id="sql.migration.search.for.migration">
       <source xml:lang="en">Search for migrations</source>

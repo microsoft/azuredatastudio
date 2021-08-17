@@ -12,7 +12,7 @@ import * as semver from 'semver';
 import { isNullOrUndefined } from 'util';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
-import { DoNotAskAgain, InstallNetCore, NetCoreInstallationConfirmation, NetCoreSupportedVersionInstallationConfirmation, projectsOutputChannel, UpdateNetCoreLocation } from '../common/constants';
+import { DoNotAskAgain, InstallNetCore, NetCoreInstallationConfirmation, NetCoreSupportedVersionInstallationConfirmation, UpdateNetCoreLocation } from '../common/constants';
 import * as utils from '../common/utils';
 const localize = nls.loadMessageBundle();
 
@@ -39,10 +39,8 @@ export interface DotNetCommandOptions {
 	commandTitle?: string;
 	argument?: string;
 }
-
 export class NetCoreTool {
 
-	private static _outputChannel: vscode.OutputChannel = vscode.window.createOutputChannel(projectsOutputChannel);
 	private osPlatform: string = os.platform();
 	private netCoreSdkInstalledVersion: string | undefined;
 	private netCoreInstallState: netCoreInstallState = netCoreInstallState.netCoreVersionSupported;
@@ -55,7 +53,7 @@ export class NetCoreTool {
 	public async findOrInstallNetCore(): Promise<boolean> {
 		if ((!this.isNetCoreInstallationPresent || !await this.isNetCoreVersionSupported())) {
 			if (vscode.workspace.getConfiguration(DBProjectConfigurationKey)[NetCoreDoNotAskAgainKey] !== true) {
-				await this.showInstallDialog();
+				this.showInstallDialog();		// Removing await so that Build and extension load process doesn't wait on user input
 			}
 			return false;
 		}
@@ -63,12 +61,16 @@ export class NetCoreTool {
 		return true;
 	}
 
+
+	constructor(private _outputChannel: vscode.OutputChannel) {
+	}
+
 	public async showInstallDialog(): Promise<void> {
 		let result;
 		if (this.netCoreInstallState === netCoreInstallState.netCoreNotPresent) {
-			result = await vscode.window.showInformationMessage(NetCoreInstallationConfirmation, UpdateNetCoreLocation, InstallNetCore, DoNotAskAgain);
+			result = await vscode.window.showErrorMessage(NetCoreInstallationConfirmation, UpdateNetCoreLocation, InstallNetCore, DoNotAskAgain);
 		} else {
-			result = await vscode.window.showInformationMessage(NetCoreSupportedVersionInstallationConfirmation(this.netCoreSdkInstalledVersion!), UpdateNetCoreLocation, InstallNetCore, DoNotAskAgain);
+			result = await vscode.window.showErrorMessage(NetCoreSupportedVersionInstallationConfirmation(this.netCoreSdkInstalledVersion!), UpdateNetCoreLocation, InstallNetCore, DoNotAskAgain);
 		}
 
 		if (result === UpdateNetCoreLocation) {
@@ -148,15 +150,21 @@ export class NetCoreTool {
 				child.on('exit', () => {
 					this.netCoreSdkInstalledVersion = Buffer.concat(stdoutBuffers).toString('utf8').trim();
 
-					if (semver.gte(this.netCoreSdkInstalledVersion, minSupportedNetCoreVersion)) {		// Net core version greater than or equal to minSupportedNetCoreVersion are supported for Build
-						isSupported = true;
-					} else {
-						isSupported = false;
+					try {
+						if (semver.gte(this.netCoreSdkInstalledVersion, minSupportedNetCoreVersion)) {		// Net core version greater than or equal to minSupportedNetCoreVersion are supported for Build
+							isSupported = true;
+						} else {
+							isSupported = false;
+						}
+						resolve({ stdout: this.netCoreSdkInstalledVersion });
+					} catch (err) {
+						console.log(err);
+						reject(err);
 					}
-					resolve({ stdout: this.netCoreSdkInstalledVersion });
 				});
 				child.on('error', (err) => {
 					console.log(err);
+					this.netCoreInstallState = netCoreInstallState.netCoreNotPresent;
 					reject(err);
 				});
 			});
@@ -170,21 +178,21 @@ export class NetCoreTool {
 			return isSupported;
 		} catch (err) {
 			console.log(err);
-			this.netCoreInstallState = netCoreInstallState.netCoreVersionNotSupported;
+			this.netCoreInstallState = netCoreInstallState.netCoreNotPresent;
 			return undefined;
 		}
 	}
 
 	public async runDotnetCommand(options: DotNetCommandOptions): Promise<string> {
 		if (options && options.commandTitle !== undefined && options.commandTitle !== null) {
-			NetCoreTool._outputChannel.appendLine(`\t[ ${options.commandTitle} ]`);
+			this._outputChannel.appendLine(`\t[ ${options.commandTitle} ]`);
 		}
 
 		if (!(await this.findOrInstallNetCore())) {
 			if (this.netCoreInstallState === netCoreInstallState.netCoreNotPresent) {
-				throw new Error(NetCoreInstallationConfirmation);
+				throw new DotNetError(NetCoreInstallationConfirmation);
 			} else {
-				throw new Error(NetCoreSupportedVersionInstallationConfirmation(this.netCoreSdkInstalledVersion!));
+				throw new DotNetError(NetCoreSupportedVersionInstallationConfirmation(this.netCoreSdkInstalledVersion!));
 			}
 		}
 
@@ -192,9 +200,9 @@ export class NetCoreTool {
 		const command = dotnetPath + ' ' + options.argument;
 
 		try {
-			return await this.runStreamedCommand(command, NetCoreTool._outputChannel, options);
+			return await this.runStreamedCommand(command, this._outputChannel, options);
 		} catch (error) {
-			NetCoreTool._outputChannel.append(localize('sqlDatabaseProject.RunCommand.ErroredOut', "\t>>> {0}   … errored out: {1}", command, utils.getErrorMessage(error))); //errors are localized in our code where emitted, other errors are pass through from external components that are not easily localized
+			this._outputChannel.append(localize('sqlDatabaseProject.RunCommand.ErroredOut', "\t>>> {0}   … errored out: {1}", command, utils.getErrorMessage(error))); //errors are localized in our code where emitted, other errors are pass through from external components that are not easily localized
 			throw error;
 		}
 	}
@@ -245,4 +253,8 @@ export class NetCoreTool {
 				outputChannel.appendLine(header + line);
 			});
 	}
+}
+
+export class DotNetError extends Error {
+
 }

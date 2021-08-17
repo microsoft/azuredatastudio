@@ -12,6 +12,7 @@ import { AzureAccount, Tenant } from 'azurecore';
 
 export interface IAzureResourceSubscriptionService {
 	getSubscriptions(account: Account, credential: msRest.ServiceClientCredentials, tenantId: string): Promise<azureResource.AzureResourceSubscription[]>;
+	getAllSubscriptions(account: Account): Promise<azureResource.AzureResourceSubscription[]>;
 }
 
 export interface IAzureResourceSubscriptionFilterService {

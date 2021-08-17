@@ -5,11 +5,12 @@
 
 import * as TypeMoq from 'typemoq';
 import * as azdata from 'azdata';
+import * as sinon from 'sinon';
 import * as constants from '../../../common/constants';
 import { FlatFileWizard } from '../../../wizard/flatFileWizard';
 import * as should from 'should';
-import { ImportDataModel } from '../../../wizard/api/models';
-import { TestImportDataModel, TestFlatFileProvider } from '../../utils.test';
+import { ColumnMetadata, ImportDataModel } from '../../../wizard/api/models';
+import { TestImportDataModel, TestFlatFileProvider, getAzureAccounts } from '../../utils.test';
 import { ImportPage } from '../../../wizard/api/importPage';
 import { SummaryPage } from '../../../wizard/pages/summaryPage';
 import { FlatFileProvider, InsertDataResponse } from '../../../services/contracts';
@@ -34,6 +35,17 @@ describe('import extension summary page tests', function () {
 		wizard = azdata.window.createWizard(constants.wizardNameText);
 		page = azdata.window.createWizardPage(constants.page4NameText);
 
+		sinon.stub(azdata.accounts, 'getAllAccounts').returns(Promise.resolve(getAzureAccounts()));
+
+		sinon.stub(azdata.accounts, 'getAccountSecurityToken').returns(Promise.resolve({
+			token: 'azureToken',
+			tokenType: 'token'
+		}));
+		sinon.stub(azdata.connection, 'getConnectionString').returns(Promise.resolve('testConnectionString'));
+	});
+
+	this.afterEach(async () => {
+		sinon.restore();
 	});
 
 	it('checking if all components are initialized properly', async function () {
@@ -140,5 +152,81 @@ describe('import extension summary page tests', function () {
 		await summaryPage.onPageEnter();
 		should.equal(summaryPage.statusText.value, constants.summaryErrorSymbol + 'testError');
 
+	});
+
+	it('Data is inserted with correct account access token in case of Azure MFA connections', async() => {
+
+		// Creating a test AAD MFA connection
+		let testServerConnection: azdata.connection.Connection = {
+			providerName: 'testProviderName',
+			connectionId: 'testConnectionId',
+			options: {
+				azureAccount: getAzureAccounts()[1].key.accountId,
+				azureTenantId: 'azureAccount2Tenant',
+				authenticationType: 'AzureMFA'
+			}
+		};
+
+		// Overriding the behavior of getAccountSecurityToken and making sure
+		// it returns only when called with second azure test account and
+		// azureTenantId from test connection.
+		(<any>azdata.accounts)['getAccountSecurityToken'].restore();
+		sinon.stub(azdata.accounts, 'getAccountSecurityToken')
+		.withArgs(
+			getAzureAccounts()[1],
+			'azureAccount2Tenant',
+			sinon.match.any
+		).returns(
+			Promise.resolve({
+			token: 'token2',
+			tokenType: 'azureTokenType'
+		}));
+
+		// setting up connection objects in model
+		mockImportModel.object.server = testServerConnection;
+		mockImportModel.object.database = 'testDatabase';
+		mockImportModel.object.schema = 'testSchema';
+		mockImportModel.object.filePath = 'testFilePath';
+
+
+		let testSendInsertDataRequestResponse: InsertDataResponse = {
+			result: {
+				success: true,
+				errorMessage: ''
+			}
+		};
+
+		// Creating test columns
+		let testProseColumns: ColumnMetadata[] = [
+		];
+		mockImportModel.object.proseColumns = testProseColumns;
+
+		// Creating a test request params with azure account 2 token
+		let testSendInsertDataRequest = {
+			connectionString: 'testConnectionString',
+			batchSize: 500,
+			azureAccessToken: 'token2'
+		};
+
+		mockFlatFileProvider.setup(x => x.sendInsertDataRequest(testSendInsertDataRequest)).returns(async () => { return testSendInsertDataRequestResponse; });
+
+		await new Promise<void>(function (resolve) {
+			page.registerContent(async (view) => {
+				summaryPage = new SummaryPage(mockFlatFileWizard.object, page, mockImportModel.object, view, mockFlatFileProvider.object);
+				pages.set(1, summaryPage);
+				await summaryPage.start();
+				summaryPage.setupNavigationValidator();
+				resolve();
+			});
+			wizard.generateScriptButton.hidden = true;
+
+			wizard.pages = [page];
+			wizard.open();
+		});
+
+		await summaryPage.onPageEnter();
+
+		// Verifying insert data request is called with expected parameters once.
+		mockFlatFileProvider.verify(x => x.sendInsertDataRequest(testSendInsertDataRequest), TypeMoq.Times.once());
 	});
 });
