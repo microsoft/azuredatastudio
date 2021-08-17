@@ -39,8 +39,11 @@ export class NotebookViewModel implements INotebookView {
 		return new NotebookViewModel(view.name, notebookViews, view.guid);
 	}
 
-	public initialize(isNew: boolean = true): void {
-		this._isNew = isNew;
+	public initialize(isNew?: boolean): void {
+		if (isNew) {
+			this._isNew = isNew;
+		}
+
 		const cells = this._notebookViews.notebook.cells;
 		cells.forEach((cell, idx) => { this.initializeCell(cell, idx); });
 	}
@@ -57,7 +60,7 @@ export class NotebookViewModel implements INotebookView {
 		if (!meta.views.find(v => v.guid === this.guid)) {
 			meta.views.push({
 				guid: this.guid,
-				hidden: true,
+				hidden: false,
 				y: idx * DEFAULT_VIEW_CARD_HEIGHT,
 				x: 0,
 				width: DEFAULT_VIEW_CARD_WIDTH,

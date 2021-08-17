@@ -66,10 +66,12 @@ export class NotebookViewsExtension extends NotebookExtension<INotebookViewMetad
 		const viewName = name || this.generateDefaultViewName();
 
 		const view = new NotebookViewModel(viewName, this);
-		view.initialize();
+		view.initialize(true);
 
 		//Add view to the views metadata
 		this._metadata = Object.assign({}, this._metadata, { views: [...this._metadata.views, view] });
+
+		this.commit();
 
 		return view;
 	}

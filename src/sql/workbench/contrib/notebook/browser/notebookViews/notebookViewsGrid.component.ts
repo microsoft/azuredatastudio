@@ -86,7 +86,7 @@ export class NotebookViewsGridComponent extends AngularDisposable implements OnI
 			}
 		}
 		if (this.activeView && this.activeView.guid !== this._gridView?.guid) {
-			this.activeView.initialize(false);
+			this.activeView.initialize();
 		}
 
 		if (this.model?.activeCell?.id !== this._activeCell?.id) {
