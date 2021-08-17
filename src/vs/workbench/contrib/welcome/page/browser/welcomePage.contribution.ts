@@ -26,7 +26,7 @@ Registry.as<IConfigurationRegistry>(ConfigurationExtensions.Configuration)
 			'workbench.startupEditor': {
 				'scope': ConfigurationScope.RESOURCE,
 				'type': 'string',
-				'enum': ['none', 'welcomePageWithTour', 'welcomePage', 'readme', 'newUntitledFile', 'welcomePageInEmptyWorkbench', 'gettingStarted', 'gettingStartedInEmptyWorkbench'], // {{SQL CARBON EDIT}} Add our own welcomePageWithTour
+				'enum': ['none', 'welcomePageWithTour', 'welcomePage', 'readme', 'newUntitledFile', 'welcomePageInEmptyWorkbench'], // {{SQL CARBON EDIT}} Add our own welcomePageWithTour
 				'enumDescriptions': [
 					localize({ comment: ['This is the description for a setting. Values surrounded by single quotes are not to be translated.'], key: 'workbench.startupEditor.none' }, "Start without an editor."),
 					localize({ comment: ['This is the description for a setting. Values surrounded by single quotes are not to be translated.'], key: 'workbench.startupEditor.welcomePageWithTour' }, "Open the welcome page with Getting Started Tour (default)"), // {{SQL CARBON EDIT}} Add our own welcomePageWithTour
