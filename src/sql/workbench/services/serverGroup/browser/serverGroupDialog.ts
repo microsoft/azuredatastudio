@@ -128,7 +128,7 @@ export class ServerGroupDialog extends Modal {
 				this.preventDefaultKeyboardEvent(event);
 				this.focusNext();
 			} else if (event.equals(KeyCode.RightArrow) || event.equals(KeyCode.LeftArrow)) {
-				if (event.target === DOM.$('input.colorbox.server-group-color')) {
+				if (event.target === this._serverGroupContainer) {
 					this.preventDefaultKeyboardEvent(event);
 					this.focusNextColor(event.equals(KeyCode.RightArrow));
 				}
