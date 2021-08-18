@@ -94,8 +94,6 @@ describe('AzureResourceAccountTreeNode.info', function (): void {
 
 		mockSubscriptionCache = [];
 
-		sinon.stub(azdata.accounts, 'getAccountSecurityToken').returns(Promise.resolve(mockToken));
-
 		mockAppContext = new AppContext(mockExtensionContext.object);
 		mockAppContext.registerService<IAzureResourceCacheService>(AzureResourceServiceNames.cacheService, mockCacheService.object);
 		mockAppContext.registerService<IAzureResourceSubscriptionService>(AzureResourceServiceNames.subscriptionService, mockSubscriptionService.object);
