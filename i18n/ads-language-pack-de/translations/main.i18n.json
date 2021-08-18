@@ -10387,6 +10387,8 @@
 			"textPreview": "Textzelle",
 			"runAllPreview": "Alle ausführen",
 			"addCell": "Zelle",
+			"views": "Ansichten",
+			"editor": "Editor",
 			"code": "Code",
 			"text": "Text",
 			"runAll": "Zellen ausführen",
@@ -10411,7 +10413,8 @@
 			"notebook.markdownPreviewLineHeight": "Hiermit wird die in der Notebook-Markdownvorschau verwendete Zeilenhöhe gesteuert. Diese Zahl ist relativ zum Schriftgrad.",
 			"notebook.showRenderedNotebookinDiffEditor": "(Vorschau) Gerendertes Notebook im Diff-Editor anzeigen.",
 			"notebook.maxRichTextUndoHistory": "Die maximale Anzahl von Änderungen, die im Verlauf des Rücksetzens für den Notizbuch-Rich-Text-Editor gespeichert sind.",
-			"notebook.useAbsoluteFilePaths": "Use absolute file paths when linking to other notebooks.",
+			"notebook.useAbsoluteFilePaths": "Verwenden Sie absolute Dateipfade beim Verknüpfen mit anderen Notebooks.",
+			"notebook.enableIncrementalGridRendering": "Aktivieren Sie inkrementelles Rasterrendering für Notebooks. Hierdurch wird die anfängliche Renderingzeit für große Notebooks verbessert. Bei der Interaktion mit dem Notebook können Leistungsprobleme auftreten, während die restlichen Raster gerendert werden.",
 			"searchConfigurationTitle": "Notebooks suchen",
 			"exclude": "Konfigurieren Sie Globmuster für das Ausschließen von Dateien und Ordnern aus Volltextsuchen und Quick Open. Alle Globmuster werden von der Einstellung #files.exclude# geerbt. Weitere Informationen zu Globmustern finden Sie [hier](https://code.visualstudio.com/docs/editor/codebasics#_advanced-search-options).",
 			"exclude.boolean": "Das Globmuster, mit dem Dateipfade verglichen werden sollen. Legen Sie diesen Wert auf \"true\" oder \"false\" fest, um das Muster zu aktivieren bzw. zu deaktivieren.",
@@ -10470,6 +10473,9 @@
 			"noParametersCell": "Dieses Notebook kann erst mit Parametern ausgeführt werden, wenn eine Parameterzelle hinzugefügt wird. [Weitere Informationen](https://docs.microsoft.com/sql/azure-data-studio/notebooks/notebooks-parameterization).",
 			"noParametersInCell": "Dieses Notizbuch kann erst mit Parametern ausgeführt werden, wenn der Parameterzelle Parameter hinzugefügt wurden. [Weitere Informationen](https://docs.microsoft.com/sql/azure-data-studio/notebooks/notebooks-parameterization).",
 			"clearResults": "Ergebnisse löschen",
+			"notebookViewLabel": "Editor",
+			"newViewLabel": "Neue Ansicht erstellen",
+			"viewNotFound": "Ansicht nicht gefunden: {0}",
 			"trustLabel": "Vertrauenswürdig",
 			"untrustLabel": "Nicht vertrauenswürdig",
 			"collapseAllCells": "Zellen reduzieren",
@@ -10513,7 +10519,8 @@
 		},
 		"sql/workbench/contrib/notebook/browser/notebookViews/notebookViews.component": {
 			"cellNotFound": "Die Zelle mit dem URI \"{0}\" wurde in diesem Modell nicht gefunden.",
-			"cellRunFailed": "Fehler beim Ausführen von Zellen: Weitere Informationen finden Sie im Fehler in der Ausgabe der aktuell ausgewählten Zelle."
+			"cellRunFailed": "Fehler beim Ausführen von Zellen: Weitere Informationen finden Sie im Fehler in der Ausgabe der aktuell ausgewählten Zelle.",
+			"runAllPreview": "Alle ausführen"
 		},
 		"sql/workbench/contrib/notebook/browser/notebookViews/notebookViewsCodeCell.component": {
 			"viewsCodeCell.emptyCellText": "Führen Sie diese Zelle aus, um Ausgaben anzuzeigen."
@@ -11447,6 +11454,37 @@
 		},
 		"sql/workbench/contrib/resourceDeployment/browser/resourceDeployment.contribution": {
 			"deployment.title": "Neue Bereitstellung…"
+		},
+		"sql/workbench/contrib/notebook/browser/notebookViews/insertCellsModal": {
+			"insertCellsModal.title": "Zellen einfügen",
+			"insertCellsModal.selectCells": "Zellenquellen auswählen",
+			"insertCellsModal.thumbnailError": "Fehler: Miniaturansichten können nicht generiert werden.",
+			"insertCellsModal.untitled": "Zelle ohne Titel: {0}",
+			"insertCellsModal.Insert": "Einfügen",
+			"insertCellsModal.Cancel": "Abbrechen"
+		},
+		"sql/workbench/contrib/notebook/browser/notebookViews/notebookViewsActions": {
+			"viewsUnableToRemove": "Die Ansicht kann nicht entfernt werden.",
+			"confirmDelete": "Möchten Sie die Ansicht \"{0}\" löschen?",
+			"delete": "&&Löschen",
+			"insertCells": "Zellen einfügen",
+			"runCell": "Zelle ausführen",
+			"stopCell": "Ausführung abbrechen",
+			"errorRunCell": "Error on last run. Click to run again",
+			"unableToNavigateToCell": "Die Navigation zur Notebook-Zelle ist nicht möglich.",
+			"viewCellInNotebook": "Zelle in Notebook anzeigen",
+			"moreActionsLabel": "Mehr"
+		},
+		"sql/workbench/contrib/notebook/browser/notebookViews/viewOptionsModal": {
+			"viewOptionsModal.title": "Ansicht konfigurieren",
+			"viewOptionsModal.name": "Ansichtsname",
+			"viewOptionsModal.missingRequireField": "This field is required.",
+			"viewOptionsModal.nameTaken": "Dieser Ansichtsname wird bereits verwendet.",
+			"save": "Speichern",
+			"cancel": "Abbrechen"
+		},
+		"sql/workbench/services/notebook/browser/notebookViews/notebookViewsExtension": {
+			"notebookView.untitledView": "Ansicht ohne Titel"
 		}
 	}
 }

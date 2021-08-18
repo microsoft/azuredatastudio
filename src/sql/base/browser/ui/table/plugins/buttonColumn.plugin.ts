@@ -29,7 +29,7 @@ export class ButtonColumn<T extends Slick.SlickData> extends BaseClickableColumn
 	public get definition(): Slick.Column<T> {
 		return {
 			id: this.options.id || this.options.title || this.options.field,
-			width: this.options.showText === true ? this.options.width : 26,
+			width: this.options.width ?? 26,
 			formatter: (row: number, cell: number, value: any, columnDef: Slick.Column<T>, dataContext: T): string => {
 				const iconValue = getIconCellValue(this.options, dataContext);
 				const escapedTitle = escape(iconValue.title ?? '');
@@ -39,7 +39,7 @@ export class ButtonColumn<T extends Slick.SlickData> extends BaseClickableColumn
 				return `<button tabindex=-1 class="${iconCssClasses} ${buttonTypeCssClass}" title="${escapedTitle}" aria-label="${escapedTitle}">${buttonText}</button>`;
 			},
 			name: this.options.name,
-			resizable: this.options.showText === true, // Image only button has fixed width.
+			resizable: this.options.resizable,
 			selectable: false
 		};
 	}

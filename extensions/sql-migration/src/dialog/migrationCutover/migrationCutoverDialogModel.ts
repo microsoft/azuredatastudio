@@ -8,13 +8,6 @@ import { MigrationContext } from '../../models/migrationLocalStorage';
 import { sendSqlMigrationActionEvent, TelemetryAction, TelemetryViews } from '../../telemtery';
 import * as constants from '../../constants/strings';
 
-export enum MigrationStatus {
-	Failed = 'Failed',
-	Succeeded = 'Succeeded',
-	InProgress = 'InProgress',
-	Canceled = 'Canceled'
-}
-
 export class MigrationCutoverDialogModel {
 
 	public migrationStatus!: DatabaseMigration;
@@ -37,6 +30,7 @@ export class MigrationCutoverDialogModel {
 			this._migration.subscription,
 			this._migration.migrationContext,
 			this._migration.sessionId!,
+			this._migration.asyncUrl
 		));
 
 		sendSqlMigrationActionEvent(
@@ -105,7 +99,7 @@ export class MigrationCutoverDialogModel {
 	}
 
 	public isBlobMigration(): boolean {
-		return this._migration.migrationContext.properties.backupConfiguration.sourceLocation?.azureBlob !== undefined;
+		return this._migration.migrationContext.properties.backupConfiguration?.sourceLocation?.azureBlob !== undefined;
 	}
 
 	public confirmCutoverStepsString(): string {
