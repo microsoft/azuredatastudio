@@ -6,7 +6,7 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { IconPathHelper } from '../../constants/iconPathHelper';
-import { MigrationContext, MigrationLocalStorage, MigrationStatus, ProvisioningState } from '../../models/migrationLocalStorage';
+import { MigrationContext, MigrationLocalStorage, MigrationStatus } from '../../models/migrationLocalStorage';
 import { MigrationCutoverDialog } from '../migrationCutover/migrationCutoverDialog';
 import { AdsMigrationStatus, MigrationStatusDialogModel } from './migrationStatusDialogModel';
 import * as loc from '../../constants/strings';
@@ -316,7 +316,7 @@ export class MigrationStatusDialog {
 				this._searchBox.value!);
 
 			migrations.sort((m1, m2) => {
-				return new Date(m1.migrationContext.properties.startedOn) > new Date(m2.migrationContext.properties.startedOn) ? -1 : 1;
+				return new Date(m1.migrationContext.properties?.startedOn) > new Date(m2.migrationContext.properties?.startedOn) ? -1 : 1;
 			});
 
 			const data: azdata.DeclarativeTableCellValue[][] = migrations.map((migration, index) => {
@@ -408,9 +408,6 @@ export class MigrationStatusDialog {
 	}
 
 	private _getMigrationMode(migration: MigrationContext): string {
-		if (migration.migrationContext.properties.provisioningState === ProvisioningState.Creating) {
-			return '---';
-		}
 		return migration.migrationContext.properties.autoCutoverConfiguration?.autoCutover?.valueOf() ? loc.OFFLINE : loc.ONLINE;
 	}
 

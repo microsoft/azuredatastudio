@@ -114,6 +114,11 @@
         "category": "%sqlDatabaseProjects.displayName%"
       },
       {
+				"command": "sqlDatabaseProjects.deployLocal",
+				"title": "%sqlDatabaseProjects.deployLocal%",
+				"category": "%sqlDatabaseProjects.displayName%"
+			},
+      {
         "command": "sqlDatabaseProjects.properties",
         "title": "%sqlDatabaseProjects.properties%",
         "category": "%sqlDatabaseProjects.displayName%"
@@ -222,6 +227,10 @@
           "when": "false"
         },
         {
+          "command": "sqlDatabaseProjects.deployLocal",
+          "when": "false"
+        },
+        {
           "command": "sqlDatabaseProjects.properties",
           "when": "false"
         },
@@ -270,6 +279,11 @@
         {
           "command": "sqlDatabaseProjects.publish",
           "when": "view == dataworkspace.views.main && viewItem == databaseProject.itemType.project",
+          "group": "1_dbProjectsFirst@2"
+        },
+        {
+          "command": "sqlDatabaseProjects.deployLocal",
+          "when": "view == dataworkspace.views.main && viewItem == databaseProject.itemType.project && !azdataAvailable",
           "group": "1_dbProjectsFirst@2"
         },
         {
@@ -395,7 +409,9 @@
     "vscode-nls": "^4.1.2",
     "which": "^2.0.2",
     "xml-formatter": "^2.1.0",
-    "xmldom": "^0.3.0"
+    "xmldom": "^0.3.0",
+    "generate-password": "^1.6.0",
+    "fs-extra": "^5.0.0"
   },
   "devDependencies": {
     "@types/mocha": "^5.2.5",
@@ -409,7 +425,8 @@
     "tslint": "^5.8.0",
     "typemoq": "^2.1.0",
     "typescript": "^2.6.1",
-    "vscodetestcover": "^1.1.0"
+    "vscodetestcover": "^1.1.0",
+    "@types/fs-extra": "^5.0.0"
   },
   "__metadata": {
     "id": "70",

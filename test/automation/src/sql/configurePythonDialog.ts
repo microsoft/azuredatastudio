@@ -22,14 +22,11 @@ export class ConfigurePythonDialog extends Dialog {
 		const dialogPageInView = '.modal .modal-body .dialogModal-pane:not(.dialogModal-hidden)';
 		const dialogButtonInView = '.modal .modal-footer .footer-button:not(.dialogModal-hidden)';
 
-		const newPythonInstallation = `${dialogPageInView} input[aria-label="New Python installation"]`;
-		await this.code.waitAndClick(newPythonInstallation);
-
-		// Wait for the python install location to be loaded before clicking the next button.
+		// Wait up to 1 minute for the python install location to be loaded before clicking the next button.
 		// There may be a timing issue where the smoke test attempts to go to the next page before
 		// the contents are loaded, causing the test to fail.
 		const pythonInstallLocationDropdownValue = `${dialogPageInView} option[value*="/azuredatastudio-python (Default)"]`;
-		await this.code.waitForElement(pythonInstallLocationDropdownValue);
+		await this.code.waitForElement(pythonInstallLocationDropdownValue, undefined, 600);
 
 		const loadingSpinner = `${dialogPageInView} .modelview-loadingComponent-content-loading`;
 		await this.code.waitForElementGone(loadingSpinner);

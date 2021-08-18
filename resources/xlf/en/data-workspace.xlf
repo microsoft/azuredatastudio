@@ -88,6 +88,9 @@ To learn more about projects [read our docs](https://aka.ms/azuredatastudio-proj
     <trans-unit id="gitCloneError">
       <source xml:lang="en">Error during git clone. View git output for more details</source>
     </trans-unit>
+    <trans-unit id="openedProjectsUndefinedAfterRefresh">
+      <source xml:lang="en">List of opened projects should not be undefined after refresh from disk.</source>
+    </trans-unit>
     <trans-unit id="dataworkspace.ok">
       <source xml:lang="en">OK</source>
     </trans-unit>
