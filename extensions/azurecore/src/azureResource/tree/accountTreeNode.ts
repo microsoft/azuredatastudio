@@ -77,7 +77,7 @@ export class AzureResourceAccountTreeNode extends AzureResourceContainerTreeNode
 						errMsg = AzureResourceErrorMessageUtil.getErrorMessage(err);
 					}
 					if (!token) {
-						vscode.window.showWarningMessage(localize('azure.unableToAccessSubscription', "Unable to access subscription {0} ({1})}. Please [refresh the account](command:azure.resource.signin) to try again. {2}", s.name, s.id, errMsg));
+						vscode.window.showWarningMessage(localize('azure.unableToAccessSubscription', "Unable to access subscription {0} ({1}). Please [refresh the account](command:azure.resource.signin) to try again. {2}", s.name, s.id, errMsg));
 						return false;
 					}
 					return true;
