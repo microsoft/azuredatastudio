@@ -2184,7 +2184,7 @@ declare module 'azdata' {
 			 */
 			token: string,
 			/**
-			 * What type of token this is
+			 * What type of token this is (such as Bearer)
 			 */
 			tokenType?: string | undefined
 		}
