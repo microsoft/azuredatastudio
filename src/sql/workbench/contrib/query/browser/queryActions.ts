@@ -652,6 +652,11 @@ export class ListDatabasesActionItem extends Disposable implements IActionViewIt
 		if (!dbName) {
 			return;
 		}
+
+		if (dbName === this.getCurrentDatabaseName()) {
+			return;
+		}
+
 		if (!this._editor.input) {
 			this.logService.error('editor input was null');
 			return;
@@ -664,10 +669,6 @@ export class ListDatabasesActionItem extends Disposable implements IActionViewIt
 
 		let profile = this.connectionManagementService.getConnectionProfile(uri);
 		if (!profile) {
-			return;
-		}
-
-		if (dbName === this.getCurrentDatabaseName()) {
 			return;
 		}
 
