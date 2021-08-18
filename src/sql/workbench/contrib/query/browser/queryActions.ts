@@ -667,7 +667,7 @@ export class ListDatabasesActionItem extends Disposable implements IActionViewIt
 			return;
 		}
 
-		if (this._dropdown.value === this.getCurrentDatabaseName()) {
+		if (dbName === this.getCurrentDatabaseName()) {
 			return;
 		}
 
