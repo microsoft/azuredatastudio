@@ -2,7 +2,6 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-// TODO: return the new trans column to wizard, send finalize trans request
 import * as azdata from 'azdata';
 import { ImportDataModel } from '../wizard/api/models';
 import * as EventEmitter from 'events';
@@ -98,7 +97,6 @@ export class DerivedColumnDialog {
 
 			columnTable.onDataChanged(e => {
 				if (e.value) {
-					console.group(e.value);
 					this._transformationTable.columns.splice(this._transformationTable.columns.length - 1, 0,
 						{
 							displayName: this._model.proseColumns[e.row].columnName,
@@ -177,22 +175,19 @@ export class DerivedColumnDialog {
 
 
 			this._applyButton.onClick(async e => {
-				const requiredColNames = [];
-				const numCols = this._transformationTable.columns.length - 1;
-				for (let index = 0; index < numCols; index++) {
-					requiredColNames[index] = this._transformationTable.columns[index].displayName;
-				}
-				const transExamples = [];
-				const transExampleIndices = [];
 
-				for (let index = 0; index < this._transformationTable.dataValues.length; index++) {
-					const example = (<azdata.InputBoxComponent>this._transformationTable.dataValues[index][numCols].value).value as string;
+				const numCols = this._transformationTable.columns.length - 1;
+				const requiredColNames = this._transformationTable.columns.map(v => v.displayName);
+				const transExamples: string[] = [];
+				const transExampleIndices: number[] = [];
+
+				this._transformationTable.dataValues.forEach((v, index) => {
+					const example = (<azdata.InputBoxComponent>v[numCols].value).value as string;
 					if (example === '') {
-						continue;
+						transExamples.push(example);
+						transExampleIndices.push(index);
 					}
-					transExamples.push(example);
-					transExampleIndices.push(index);
-				}
+				});
 				if (transExamples.length > 0) {
 					const response = await this._provider.sendLearnTransformationRequest({
 						columnNames: requiredColNames,
@@ -205,7 +200,7 @@ export class DerivedColumnDialog {
 					}
 					this.clearAndAddTransformationContainerComponents(true);
 				}
-				this.enableDoneButton();
+				this.validatePage();
 			});
 
 			const specifyDerivedColNameTable = view.modelBuilder.declarativeTable().withProps({
@@ -220,14 +215,12 @@ export class DerivedColumnDialog {
 					}
 				],
 				height: '100vh',
-				CSSStyles: {
-
-				}
 			}).component();
 
 			specifyDerivedColNameTable.onDataChanged(e => {
+				console.log(columnContainer);
 				this.currentDerivedColumnName = specifyDerivedColNameTable.dataValues[0][0].value as string;
-				this.enableDoneButton();
+				this.validatePage();
 			});
 
 			const specifyDerivedColNameTableData: azdata.DeclarativeTableCellValue[][] = [];
@@ -248,7 +241,6 @@ export class DerivedColumnDialog {
 					'margin-left': '10px',
 				}
 			}).component();
-			// this.clearAndAddTransformationContainerComponents();
 
 			this._headerInstructionText = this._view.modelBuilder.text()
 				.withProps({
@@ -375,17 +367,9 @@ export class DerivedColumnDialog {
 			this._transformationContainer.addItem(this._headerInstructionText);
 			this._transformationContainer.addItem(this._bodyInstructionText);
 		}
-
-
-		// this._transformationContainer.addItem(this._applyButton, {
-		// 	CSSStyles: {
-		// 		'align-self': 'flex-end',
-		// 		'margin-top': '10px'
-		// 	}
-		// });
 	}
 
-	private enableDoneButton(): void {
+	private validatePage(): void {
 		if (this.currentTransformation.length > 0 && this.currentDerivedColumnName.length > 0) {
 			this._dialogObject.okButton.enabled = true;
 		}

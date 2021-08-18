@@ -104,8 +104,6 @@ export class ModifyColumnsPage extends ImportPage {
 			});
 		});
 
-
-
 		this.form = this.view.modelBuilder.formContainer()
 			.withFormItems(
 				[

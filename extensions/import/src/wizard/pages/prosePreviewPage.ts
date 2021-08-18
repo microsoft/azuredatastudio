@@ -2,7 +2,6 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-// TODO: move derived button here and add the new transformed column to the preview when the transformation is applied
 import * as azdata from 'azdata';
 import { ImportPage } from '../api/importPage';
 import * as constants from '../../common/constants';
@@ -14,10 +13,8 @@ export class ProsePreviewPage extends ImportPage {
 	private _table: azdata.TableComponent;
 	private _loading: azdata.LoadingComponent;
 	private _form: azdata.FormContainer;
-	private _refresh: azdata.ButtonComponent;
 	private _resultTextComponent: azdata.TextComponent;
 	private _isSuccess: boolean;
-
 
 	public get table(): azdata.TableComponent {
 		return this._table;
@@ -43,14 +40,6 @@ export class ProsePreviewPage extends ImportPage {
 		this._form = form;
 	}
 
-	public get refresh(): azdata.ButtonComponent {
-		return this._refresh;
-	}
-
-	public set refresh(refresh: azdata.ButtonComponent) {
-		this._refresh = refresh;
-	}
-
 	public get resultTextComponent(): azdata.TextComponent {
 		return this._resultTextComponent;
 	}
@@ -67,8 +56,6 @@ export class ProsePreviewPage extends ImportPage {
 		this._isSuccess = isSuccess;
 	}
 
-
-
 	async start(): Promise<boolean> {
 		this.table = this.view.modelBuilder.table().withProps({
 			data: undefined,
@@ -76,30 +63,19 @@ export class ProsePreviewPage extends ImportPage {
 			forceFitColumns: azdata.ColumnSizingMode.DataFit
 		}).component();
 
-
-
-		this.refresh = this.view.modelBuilder.button().withProps({
-			label: constants.refreshText,
-			isFile: false,
-			secondary: true
-		}).component();
-
-		this.refresh.onDidClick(async () => {
-			await this.onPageEnter();
-		});
-
 		this.instance.createDerivedColumnButton.onClick(async (e) => {
+			console.log(this.model.originalProseColumns);
 			const derivedColumnDialog = new DerivedColumnDialog(this.model, this.provider);
 			const response = await derivedColumnDialog.openDialog();
 			if (response) {
 				(<string[]>this.table.columns).push(this.model.derivedColumnName);
-				const newTable = this.table.data;
-				const thisTrans = this.model.transPreviews[this.model.transPreviews.length - 1];
-				for (let index = 0; index < thisTrans.length; index++) {
-					newTable[index].push(thisTrans[index]);
+				const newTableData = this.table.data;
+				const newTransformation = this.model.transPreviews[this.model.transPreviews.length - 1];
+				for (let index = 0; index < newTransformation.length; index++) {
+					newTableData[index].push(newTransformation[index]);
 				}
 				this.table.updateProperties({
-					data: newTable,
+					data: newTableData,
 				});
 			}
 		});
@@ -118,8 +94,7 @@ export class ProsePreviewPage extends ImportPage {
 			},
 			{
 				component: this.table,
-				title: '',
-				// actions: [this.refresh]
+				title: ''
 			}
 
 		]).component();
@@ -134,8 +109,7 @@ export class ProsePreviewPage extends ImportPage {
 	async onPageEnter(): Promise<boolean> {
 		let proseResult: boolean;
 		let error: string;
-		let enablePreviewFeatures: boolean;
-		enablePreviewFeatures = vscode.workspace.getConfiguration('workbench').get('enablePreviewFeatures');
+		const enablePreviewFeatures = vscode.workspace.getConfiguration('workbench').get('enablePreviewFeatures');
 		if (this.model.newFileSelected) {
 			this.loading.loading = true;
 			try {
