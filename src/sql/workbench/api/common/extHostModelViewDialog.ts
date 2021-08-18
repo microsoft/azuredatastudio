@@ -753,8 +753,7 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 
 		if (dialog.customButtons) {
 			dialog.customButtons.forEach(button => {
-				button.secondary = true;
-				this.updateButton(button);
+				this.updateButton(button, true);
 			});
 		}
 
@@ -797,7 +796,11 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 		});
 	}
 
-	public updateButton(button: azdata.window.Button): void {
+	public updateButton(button: azdata.window.Button, isCustomButton: boolean = false): void {
+		// Custom buttons are always secondary buttons.
+		if (isCustomButton) {
+			button.secondary = true;
+		}
 		let handle = this.getHandle(button);
 		this._proxy.$setButtonDetails(handle, {
 			label: button.label,
@@ -889,8 +892,7 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 		let handle = this.getHandle(page);
 		if (page.customButtons) {
 			page.customButtons.forEach(button => {
-				button.secondary = true;
-				this.updateButton(button);
+				this.updateButton(button, true);
 			});
 		}
 		return this._proxy.$setWizardPageDetails(handle, {
@@ -913,8 +915,7 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 		this.updateButton(wizard.nextButton);
 		if (wizard.customButtons) {
 			wizard.customButtons.forEach(button => {
-				button.secondary = true;
-				this.updateButton(button);
+				this.updateButton(button, true);
 			});
 		}
 		return this._proxy.$setWizardDetails(handle, {
