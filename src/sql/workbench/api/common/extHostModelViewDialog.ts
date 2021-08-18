@@ -888,7 +888,10 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 	public updateWizardPage(page: azdata.window.WizardPage): Thenable<void> {
 		let handle = this.getHandle(page);
 		if (page.customButtons) {
-			page.customButtons.forEach(button => this.updateButton(button));
+			page.customButtons.forEach(button => {
+				button.secondary = true;
+				this.updateButton(button);
+			});
 		}
 		return this._proxy.$setWizardPageDetails(handle, {
 			content: page.content,
