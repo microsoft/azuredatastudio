@@ -68,14 +68,21 @@ export class AzureResourceAccountTreeNode extends AzureResourceContainerTreeNode
 				return [AzureResourceMessageTreeNode.create(AzureResourceAccountTreeNode.noSubscriptionsLabel, this)];
 			} else {
 				// Filter out everything that we can't authenticate to.
-				subscriptions = subscriptions.filter(async s => {
-					const token = await azdata.accounts.getAccountSecurityToken(this.account, s.tenant, azdata.AzureResource.ResourceManagement);
+				const hasTokenResults = await Promise.all(subscriptions.map(async s => {
+					let token: azdata.accounts.AccountSecurityToken | undefined = undefined;
+					let errMsg = '';
+					try {
+						token = await azdata.accounts.getAccountSecurityToken(this.account, s.tenant, azdata.AzureResource.ResourceManagement);
+					} catch (err) {
+						errMsg = AzureResourceErrorMessageUtil.getErrorMessage(err);
+					}
 					if (!token) {
-						console.info(`Account does not have permissions to view subscription ${JSON.stringify(s)}.`);
+						vscode.window.showWarningMessage(localize('azure.unableToAccessSubscription', "Unable to access subscription {0} ({1})}. Please [refresh the account](command:azure.resource.signin) to try again. {2}", s.name, s.id, errMsg));
 						return false;
 					}
 					return true;
-				});
+				}));
+				subscriptions = subscriptions.filter((_s, i) => hasTokenResults[i]);
 
 				let subTreeNodes = await Promise.all(subscriptions.map(async (subscription) => {
 					return new AzureResourceSubscriptionTreeNode(this.account, subscription, subscription.tenant, this.appContext, this.treeChangeHandler, this);
