@@ -44,7 +44,7 @@ export class NotebookEditorInputAssociation implements ILanguageAssociation {
 		return undefined;
 	}
 
-	syncConvertinput(activeEditor: IEditorInput): NotebookInput | DiffNotebookInput | undefined {
+	syncConvertInput(activeEditor: IEditorInput): NotebookInput | DiffNotebookInput | undefined {
 		return this.convertInput(activeEditor);
 	}
 

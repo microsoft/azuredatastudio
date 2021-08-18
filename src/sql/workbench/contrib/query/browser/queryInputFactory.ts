@@ -71,7 +71,7 @@ export class QueryEditorLanguageAssociation implements ILanguageAssociation {
 		return queryEditorInput;
 	}
 
-	syncConvertinput(activeEditor: IEditorInput): QueryEditorInput | undefined {
+	syncConvertInput(activeEditor: IEditorInput): QueryEditorInput | undefined {
 		const queryResultsInput = this.instantiationService.createInstance(QueryResultsInput, activeEditor.resource.toString(true));
 		let queryEditorInput: QueryEditorInput;
 		if (activeEditor instanceof FileEditorInput) {

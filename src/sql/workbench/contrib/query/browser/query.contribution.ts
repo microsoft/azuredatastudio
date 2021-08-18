@@ -542,7 +542,7 @@ export class QueryEditorOverrideContribution extends Disposable implements IWork
 						resource: resource
 					}) as FileEditorInput;
 					const langAssociation = languageAssociationRegistry.getAssociationForLanguage(lang);
-					const queryEditorInput = langAssociation?.syncConvertinput?.(fileInput);
+					const queryEditorInput = langAssociation?.syncConvertInput?.(fileInput);
 					if (!queryEditorInput) {
 						this._logService.warn('Unable to create input for overriding editor ', resource);
 						return undefined;

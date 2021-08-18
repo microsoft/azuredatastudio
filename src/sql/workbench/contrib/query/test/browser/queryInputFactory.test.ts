@@ -123,7 +123,7 @@ suite('Query Input Factory', () => {
 		instantiationService.stub(IEditorService, editorService);
 		const queryEditorLanguageAssociation = instantiationService.createInstance(QueryEditorLanguageAssociation);
 		const input = createFileInput(URI.file('/test/file.sql'), undefined, undefined, undefined);
-		queryEditorLanguageAssociation.syncConvertinput(input);
+		queryEditorLanguageAssociation.syncConvertInput(input);
 		assert(connectionManagementService.numberConnects === 0, 'Convert input should not have been called connect when no global connections exist');
 	});
 
