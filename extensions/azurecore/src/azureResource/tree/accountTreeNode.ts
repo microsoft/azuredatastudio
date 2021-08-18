@@ -43,7 +43,7 @@ export class AzureResourceAccountTreeNode extends AzureResourceContainerTreeNode
 			let subscriptions: azureResource.AzureResourceSubscription[] = [];
 
 			if (this._isClearingCache) {
-				subscriptions = await this._subscriptionService.getAllSubscriptions(this.account);
+				subscriptions = await this._subscriptionService.getSubscriptions(this.account);
 				this.updateCache<azureResource.AzureResourceSubscription[]>(subscriptions);
 				this._isClearingCache = false;
 			} else {
