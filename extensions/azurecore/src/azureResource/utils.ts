@@ -353,7 +353,7 @@ export async function makeHttpRequest(account: azdata.Account, subscription: azu
 		return result;
 	}
 
-	let securityToken: { token: string, tokenType?: string };
+	let securityToken: azdata.accounts.AccountSecurityToken;
 	try {
 		securityToken = await azdata.accounts.getAccountSecurityToken(
 			account,
