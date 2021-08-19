@@ -8,7 +8,7 @@ import { TestRPCProtocol } from 'vs/workbench/test/browser/api/testRPCProtocol';
 import { ExtHostNotebookController } from 'vs/workbench/api/common/extHostNotebook';
 import { nullExtensionDescription } from 'vs/workbench/services/extensions/common/extensions';
 import { mock } from 'vs/workbench/test/common/workbenchTestServices';
-import { INotebookKernelDto2, MainContext, MainThreadCommandsShape, MainThreadNotebookKernelsShape, MainThreadNotebookShape } from 'vs/workbench/api/common/extHost.protocol';
+import { INotebookKernelDto2, MainContext, MainThreadCommandsShape, MainThreadNotebookDocumentsShape, MainThreadNotebookKernelsShape, MainThreadNotebookShape } from 'vs/workbench/api/common/extHost.protocol';
 import { ExtHostNotebookKernels } from 'vs/workbench/api/common/extHostNotebookKernels';
 import { ExtensionIdentifier } from 'vs/platform/extensions/common/extensions';
 import { IExtHostInitDataService } from 'vs/workbench/api/common/extHostInitDataService';
@@ -61,7 +61,9 @@ suite('NotebookKernel', function () {
 				kernelData.set(handle, { ...kernelData.get(handle)!, ...data, });
 			}
 		});
+		rpcProtocol.set(MainContext.MainThreadNotebookDocuments, new class extends mock<MainThreadNotebookDocumentsShape>() {
 
+		});
 		rpcProtocol.set(MainContext.MainThreadNotebook, new class extends mock<MainThreadNotebookShape>() {
 			override async $registerNotebookProvider() { }
 			override async $unregisterNotebookProvider() { }
