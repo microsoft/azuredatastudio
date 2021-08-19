@@ -3964,18 +3964,6 @@ declare module 'azdata' {
 		 */
 		export function createModelViewDialog(title: string, dialogName?: string, width?: DialogWidth): Dialog;
 
-		export interface ModelViewDashboardOptions {
-			/**
-			 * Whether to show the tab icon, default is true
-			 */
-			showIcon?: boolean;
-
-			/**
-			 * Whether to show the tab navigation pane even when there is only one tab, default is false
-			 */
-			alwaysShowTabs?: boolean;
-		}
-
 		export interface ModelViewDashboard {
 			/**
 			 * Registers the initial set of tabs for this dashboard
@@ -4000,25 +3988,6 @@ declare module 'azdata' {
 			 * @param id The ID of the tab to select
 			 */
 			selectTab(id: string): void;
-		}
-
-		export interface DashboardTab extends Tab {
-			/**
-			 * Toolbar of the tab, optional.
-			 */
-			toolbar?: ToolbarContainer;
-		}
-
-		export interface DashboardTabGroup {
-			/**
-			 * Title of the tab group
-			 */
-			title: string;
-
-			/**
-			 * Child tabs of the tab group
-			 */
-			tabs: DashboardTab[];
 		}
 
 		/**
@@ -4455,6 +4424,37 @@ declare module 'azdata' {
 		 * Get a QueryDocument object for a file URI
 		 */
 		export function getQueryDocument(fileUri: string): Thenable<QueryDocument>;
+	}
+
+	export interface DashboardTab extends Tab {
+		/**
+		 * Toolbar of the tab, optional.
+		 */
+		toolbar?: ToolbarContainer;
+	}
+
+	export interface DashboardTabGroup {
+		/**
+		 * Title of the tab group
+		 */
+		title: string;
+
+		/**
+		 * Child tabs of the tab group
+		 */
+		tabs: DashboardTab[];
+	}
+
+	export interface ModelViewDashboardOptions {
+		/**
+		 * Whether to show the tab icon, default is true
+		 */
+		showIcon?: boolean;
+
+		/**
+		 * Whether to show the tab navigation pane even when there is only one tab, default is false
+		 */
+		alwaysShowTabs?: boolean;
 	}
 
 	export interface ModelViewEditorOptions {
