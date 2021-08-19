@@ -1,5 +1,7 @@
 import * as vscode from 'vscode';
+import { BindingType } from 'vscode-mssql';
 import * as constants from '../common/constants';
+import * as utils from '../common/utils';
 
 export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined): Promise<void> {
 	if (!uri) {
@@ -8,7 +10,34 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined):
 		uri = vscode.window.activeTextEditor!.document.uri;
 	}
 
-	// 1. select input or output binding
+	// get all the Azure functions in the file
+	const azureFunctionsService = await utils.getAzureFunctionService();
+	const getAzureFunctionsResult = await azureFunctionsService.getAzureFunctions(uri.fsPath);
+
+	if (!getAzureFunctionsResult.success) {
+		vscode.window.showErrorMessage(constants.errorGettingAzureFunctions(getAzureFunctionsResult.errorMessage));
+		return;
+	}
+
+	const azureFunctions = getAzureFunctionsResult.azureFunctions;
+
+	if (azureFunctions.length === 0) {
+		vscode.window.showErrorMessage(constants.noAzureFunctionsInFile);
+		return;
+	}
+
+	// 1. select Azure function from the current file
+	const azureFunctionName = (await vscode.window.showQuickPick(azureFunctions, {
+		canPickMany: false,
+		title: constants.selectAzureFunction,
+		ignoreFocusOut: true
+	}));
+
+	if (!azureFunctionName) {
+		return;
+	}
+
+	// 2. select input or output binding
 	const inputOutputItems: string[] = [constants.input, constants.output];
 
 	const selectedBinding = (await vscode.window.showQuickPick(inputOutputItems, {
@@ -21,25 +50,7 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined):
 		return;
 	}
 
-	// get all the azure functions in the file
-	// TODO: get actual functions. Need to add in sqltoolsservice first
-	const azureFunctions = ['af1', 'af2']; //await getAzureFunctions(uri);
-
-	if (azureFunctions.length === 0) {
-		vscode.window.showErrorMessage(constants.noAzureFunctionsInFile);
-		return;
-	}
-
-	// 2. select Azure function from the current file
-	const azureFunctionName = (await vscode.window.showQuickPick(azureFunctions, {
-		canPickMany: false,
-		title: constants.selectAzureFunction,
-		ignoreFocusOut: true
-	}));
-
-	if (!azureFunctionName) {
-		return;
-	}
+	const bindingType = selectedBinding === constants.input ? BindingType.input : BindingType.output;
 
 	// 3. ask for object name for the binding
 	const objectName = await vscode.window.showInputBox({
@@ -64,7 +75,11 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined):
 		return;
 	}
 
-	// TODO: hook up actually adding binding
 	// 5. insert binding
+	const result = await azureFunctionsService.addSqlBinding(bindingType, uri.fsPath, azureFunctionName, objectName, connectionStringSetting);
+
+	if (!result.success) {
+		vscode.window.showErrorMessage(result.errorMessage);
+	}
 }
 
