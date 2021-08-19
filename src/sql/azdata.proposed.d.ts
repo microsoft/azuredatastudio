@@ -894,6 +894,20 @@ declare module 'azdata' {
 		Informational = 'Informational'
 	}
 
+	export enum CardType {
+		Image = 'Image'
+	}
+
+	export interface CardImage {
+		path: vscode.Uri,
+		size?: string, // auto|length|cover|contain|initial|inherit
+		position?: string // (left | right | center) (top | center | bottom) | x% y% | xpos ypos | initial | inherit
+	}
+
+	export interface CardProperties extends ComponentWithIconProperties {
+		image?: CardImage;
+	}
+
 	export interface InputBoxProperties {
 		/**
 		 * The maximum number of characters allowed in the input box.

@@ -150,6 +150,10 @@ export default class CardComponent extends ComponentWithIconBase<azdata.CardProp
 		}
 	}
 
+	public get imagePath(): string {
+		return this.image?.path.toString() ?? '';
+	}
+
 	private get selectable(): boolean {
 		return this.enabled && (this.cardType === 'VerticalButton' || this.cardType === 'ListItem');
 	}
@@ -164,6 +168,10 @@ export default class CardComponent extends ComponentWithIconBase<azdata.CardProp
 		return this.getPropertyOrDefault<string>((props) => props.value, '');
 	}
 
+	public get image(): azdata.CardImage | undefined {
+		return this.getPropertyOrDefault<azdata.CardImage>((props) => props.image, undefined);
+	}
+
 	public get cardType(): string {
 		return this.getPropertyOrDefault<string>((props) => props.cardType, 'Details');
 	}
@@ -176,12 +184,20 @@ export default class CardComponent extends ComponentWithIconBase<azdata.CardProp
 		this.setPropertyFromUI<boolean>((props, value) => props.selected = value, newValue);
 	}
 
+	public set image(image: azdata.CardImage) {
+		this.setPropertyFromUI<azdata.CardImage>((props, value) => props.image = value, undefined);
+	}
+
 	public get isDetailsCard(): boolean {
 		return !this.cardType || this.cardType === 'Details';
 	}
 
 	public get isListItemCard(): boolean {
 		return !this.cardType || this.cardType === 'ListItem';
+	}
+
+	public get isImageCard(): boolean {
+		return !this.cardType || this.cardType === 'image';
 	}
 
 	public get isVerticalButton(): boolean {
