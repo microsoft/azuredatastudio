@@ -64,7 +64,6 @@ export class ProsePreviewPage extends ImportPage {
 		}).component();
 
 		this.instance.createDerivedColumnButton.onClick(async (e) => {
-			console.log(this.model.originalProseColumns);
 			const derivedColumnDialog = new DerivedColumnDialog(this.model, this.provider);
 			const response = await derivedColumnDialog.openDialog();
 			if (response) {

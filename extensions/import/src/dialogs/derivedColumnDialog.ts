@@ -45,6 +45,7 @@ export class DerivedColumnDialog {
 
 	public openDialog(): Promise<boolean> {
 		this._applyButton = azdata.window.createButton(constants.previewTransformation);
+		this._applyButton.enabled = false;
 		this._dialogObject = azdata.window.createModelViewDialog(
 			constants.createDerivedColumn,
 			'DerivedColumnDialog',
@@ -56,6 +57,17 @@ export class DerivedColumnDialog {
 
 		let tab = azdata.window.createTab('');
 		tab.registerContent(async (view: azdata.ModelView) => {
+			const columnTableData: azdata.DeclarativeTableCellValue[][] = [];
+			this._model.originalProseColumns.forEach(c => {
+				const tableRow: azdata.DeclarativeTableCellValue[] = [];
+				tableRow.push({
+					value: false
+				});
+				tableRow.push({
+					value: c.columnName
+				});
+				columnTableData.push(tableRow);
+			});
 			this._view = view;
 			const columnTable = view.modelBuilder.declarativeTable().withProps({
 				columns: [
@@ -77,24 +89,13 @@ export class DerivedColumnDialog {
 						rowCssStyles: styleLeft
 					}
 				],
+				dataValues: columnTableData,
 				CSSStyles: {
 					'table-layout': 'fixed'
 				}
 			}).component();
 
-			const columnTableData: azdata.DeclarativeTableCellValue[][] = [];
-			this._model.originalProseColumns.forEach(c => {
-				const tableRow: azdata.DeclarativeTableCellValue[] = [];
-				tableRow.push({
-					value: false
-				});
-				tableRow.push({
-					value: c.columnName
-				});
-				columnTableData.push(tableRow);
-			});
-
-			columnTable.dataValues = columnTableData;
+			console.log(columnTableData);
 
 			columnTable.onDataChanged(e => {
 				if (e.value) {
@@ -126,7 +127,9 @@ export class DerivedColumnDialog {
 						this._transformationTable.dataValues[index].splice(removeIndex, 1);
 					}
 				}
-				this.clearAndAddTransformationContainerComponents(this._transformationTable.columns.length > 1);
+				const isColumnAdded = this._transformationTable.columns.length > 1;
+				this.clearAndAddTransformationContainerComponents(isColumnAdded);
+				this._applyButton.enabled = isColumnAdded;
 			});
 
 
@@ -176,15 +179,15 @@ export class DerivedColumnDialog {
 
 
 			this._applyButton.onClick(async e => {
-
 				const numCols = this._transformationTable.columns.length - 1;
 				const requiredColNames = this._transformationTable.columns.map(v => v.displayName);
+				requiredColNames.splice(-1);
 				const transExamples: string[] = [];
 				const transExampleIndices: number[] = [];
 
 				this._transformationTable.dataValues.forEach((v, index) => {
 					const example = (<azdata.InputBoxComponent>v[numCols].value).value as string;
-					if (example === '') {
+					if (example !== '') {
 						transExamples.push(example);
 						transExampleIndices.push(index);
 					}
@@ -204,6 +207,13 @@ export class DerivedColumnDialog {
 				this.validatePage();
 			});
 
+			const specifyDerivedColNameTableData: azdata.DeclarativeTableCellValue[][] = [];
+			const colNameTableRow: azdata.DeclarativeTableCellValue[] = [];
+			colNameTableRow.push({
+				value: ''
+			});
+			specifyDerivedColNameTableData.push(colNameTableRow);
+
 			const specifyDerivedColNameTable = view.modelBuilder.declarativeTable().withProps({
 				columns: [
 					{
@@ -216,21 +226,13 @@ export class DerivedColumnDialog {
 					}
 				],
 				height: '100vh',
+				dataValues: specifyDerivedColNameTableData
 			}).component();
 
 			specifyDerivedColNameTable.onDataChanged(e => {
-				console.log(columnContainer);
 				this.currentDerivedColumnName = specifyDerivedColNameTable.dataValues[0][0].value as string;
 				this.validatePage();
 			});
-
-			const specifyDerivedColNameTableData: azdata.DeclarativeTableCellValue[][] = [];
-			const colNameTableRow: azdata.DeclarativeTableCellValue[] = [];
-			colNameTableRow.push({
-				value: ''
-			});
-			specifyDerivedColNameTableData.push(colNameTableRow);
-			specifyDerivedColNameTable.dataValues = specifyDerivedColNameTableData;
 
 			this._transformationContainer = view.modelBuilder.flexContainer().withLayout({
 				flexFlow: 'column',

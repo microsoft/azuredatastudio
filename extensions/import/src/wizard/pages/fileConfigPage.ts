@@ -125,9 +125,6 @@ export class FileConfigPage extends ImportPage {
 		return true;
 	}
 
-	public override setupNavigationValidator() {
-	}
-
 	private async createServerDropdown(): Promise<azdata.FormComponent> {
 		this.serverDropdown = this.view.modelBuilder.dropDown().withProps({
 			required: true
