@@ -751,7 +751,6 @@ suite('notebook model', function (): void {
 		assert.equal(model.selectedKernelDisplayName, notebookKernelAlias);
 		assert.equal(model.currentKernelAlias, notebookKernelAlias);
 		sinon.assert.called(doChangeKernelStub);
-		doChangeKernelStub.restore();
 
 		// After closing the notebook
 		await model.handleClosed();
