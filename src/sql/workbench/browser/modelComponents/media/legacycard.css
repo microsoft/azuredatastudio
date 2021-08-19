@@ -26,6 +26,23 @@
 	min-width: 30px;
 }
 
+.model-card-legacy.image-card {
+	height: auto;
+	margin: 0;
+	display: block;
+}
+
+.model-card-legacy.image-card .card-content {
+	padding: 0;
+}
+
+.model-card-legacy.image-card .card-image {
+	position: absolute;
+	background-repeat: no-repeat;
+	height: 100%;
+	width: 100%;
+}
+
 .model-card-legacy .card-vertical-button {
 	position: relative;
 	display: flex;

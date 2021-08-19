@@ -127,6 +127,11 @@ export default class CardComponent extends ComponentWithIconBase<azdata.CardProp
 
 	public getClass(): string {
 		let cardClass = this.isListItemCard ? 'model-card-list-item-legacy' : 'model-card-legacy';
+
+		if (this.cardType === 'Image') {
+			cardClass += ' image-card';
+		}
+
 		return (this.selectable && this.selected || this._hasFocus) ? `${cardClass} selected` :
 			`${cardClass} unselected`;
 	}
@@ -159,11 +164,11 @@ export default class CardComponent extends ComponentWithIconBase<azdata.CardProp
 	}
 
 	public get imagePath(): string {
-		return this.image?.path.toString() ?? '';
+		return this.image.path.toString(true);
 	}
 
 	private get selectable(): boolean {
-		return this.enabled && (this.cardType === 'VerticalButton' || this.cardType === 'ListItem');
+		return this.enabled && (this.cardType === 'VerticalButton' || this.cardType === 'ListItem' || this.cardType === 'Image');
 	}
 
 	// CSS-bound properties
@@ -205,7 +210,7 @@ export default class CardComponent extends ComponentWithIconBase<azdata.CardProp
 	}
 
 	public get isImageCard(): boolean {
-		return !this.cardType || this.cardType === 'image';
+		return !this.cardType || this.cardType === 'Image';
 	}
 
 	public get isVerticalButton(): boolean {

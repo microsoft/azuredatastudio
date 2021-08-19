@@ -131,21 +131,7 @@ export class InsertCellsModal extends Modal {
 	}
 
 	protected renderBody(container: HTMLElement): void {
-		const grid = DOM.$<HTMLDivElement>('div#insert-dialog-cell-grid');
-
-		grid.style.display = 'grid';
-		grid.style.gridTemplateColumns = '1fr 1fr';
-		grid.style.gap = '10px';
-		grid.style.padding = '10px';
-		grid.style.overflowY = 'auto';
-		grid.style.maxHeight = 'calc(100% - 40px)';
-
-		const gridTitle = DOM.$<HTMLHeadElement>('h2.grid-title');
-		gridTitle.title = localize("insertCellsModal.selectCells", "Select cell sources");
-
-		DOM.append(container, grid);
-
-		this.createOptions(grid)
+		this.createOptions(container)
 			.catch((e) => { this.setError(localize("insertCellsModal.thumbnailError", "Error: Unable to generate thumbnails.")); });
 	}
 

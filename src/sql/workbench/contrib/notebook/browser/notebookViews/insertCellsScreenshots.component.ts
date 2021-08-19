@@ -2,10 +2,11 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import { Component, AfterViewInit, forwardRef, Inject, ComponentFactoryResolver, ViewContainerRef } from '@angular/core';
+import 'vs/css!./InsertCellsScreenshots';
+import { Component, AfterViewInit, forwardRef, Inject, ComponentFactoryResolver, ViewContainerRef, ViewChild } from '@angular/core';
 import { IBootstrapParams } from 'sql/workbench/services/bootstrap/common/bootstrapParams';
 import { IComponentEventArgs } from 'sql/platform/dashboard/browser/interfaces';
-import CardComponent, { CardImage, CardType } from 'sql/workbench/browser/modelComponents/card.component';
+import CardComponent, { CardType } from 'sql/workbench/browser/modelComponents/card.component';
 import { URI } from 'vs/base/common/uri';
 
 
@@ -20,27 +21,31 @@ export interface InsertCellsComponentParams extends IBootstrapParams {
 
 @Component({
 	selector: 'insert-cells-screenshots-component',
-	template: ``
+	template: '<div class="cells-grid"><ng-container #divContainer></ng-container></div>'
 })
 export class InsertCellsScreenshots implements AfterViewInit {
+	@ViewChild('divContainer', { read: ViewContainerRef }) _containerRef: ViewContainerRef;
+
 	constructor(
 		@Inject(IBootstrapParams) private _params: InsertCellsComponentParams,
-		@Inject(ViewContainerRef) private _containerRef: ViewContainerRef,
 		@Inject(forwardRef(() => ComponentFactoryResolver)) private _componentFactoryResolver: ComponentFactoryResolver
-	) {
-		const cellImageUri = URI.parse(this._params.thumbnails[0]);
+	) { }
 
-		let cardComponentFactory = this._componentFactoryResolver.resolveComponentFactory(CardComponent);
-		let cardComponent = this._containerRef.createComponent(cardComponentFactory);
+	ngAfterViewInit(): void {
+		this._params.thumbnails.forEach((thumbnail: string, idx: number) => {
+			const cellImageUri = URI.parse(thumbnail);
 
-		let cardImage: CardImage = {
-			path: cellImageUri,
-			size: 'cover'
-		};
+			let cardComponentFactory = this._componentFactoryResolver.resolveComponentFactory(CardComponent);
+			let cardComponent = this._containerRef.createComponent(cardComponentFactory);
 
-		cardComponent.instance.setProperties({ image: cardImage, cardType: CardType.Image });
-		cardComponent.instance.registerEventHandler(e => this._params.onClick(e));
+			let cardImage = {
+				path: cellImageUri
+			};
+
+			cardComponent.instance.setProperties({ image: cardImage, label: `Cell ${idx}`, cardType: CardType.Image });
+
+			cardComponent.instance.enabled = true;
+			cardComponent.instance.registerEventHandler(e => this._params.onClick(e));
+		});
 	}
-
-	ngAfterViewInit(): void { }
 }
