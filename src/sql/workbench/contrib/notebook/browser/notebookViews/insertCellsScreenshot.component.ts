@@ -5,9 +5,8 @@
 import { Component, AfterViewInit, forwardRef, Inject, ComponentFactoryResolver, ViewContainerRef } from '@angular/core';
 import { IBootstrapParams } from 'sql/workbench/services/bootstrap/common/bootstrapParams';
 import { IComponentEventArgs } from 'sql/platform/dashboard/browser/interfaces';
-import CardComponent from 'sql/workbench/browser/modelComponents/card.component';
+import CardComponent, { CardImage, CardType } from 'sql/workbench/browser/modelComponents/card.component';
 import { URI } from 'vs/base/common/uri';
-import { CardType, CardImage } from 'azdata';
 
 
 export interface LayoutRequestParams {
@@ -40,6 +39,7 @@ export class InsertCellsScreenshots implements AfterViewInit {
 		};
 
 		cardComponent.instance.setProperties({ image: cardImage, cardType: CardType.Image });
+		cardComponent.instance.registerEventHandler(e => this._params.onClick(e));
 	}
 
 	ngAfterViewInit(): void { }

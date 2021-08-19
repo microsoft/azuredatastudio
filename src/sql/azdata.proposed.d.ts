@@ -5,6 +5,7 @@
 
 // This is the place for API experiments and proposal.
 
+import { URI } from 'vs/base/common/uri';
 import * as vscode from 'vscode';
 
 declare module 'azdata' {
@@ -899,7 +900,7 @@ declare module 'azdata' {
 	}
 
 	export interface CardImage {
-		path: vscode.Uri,
+		path: URI,
 		size?: string, // auto|length|cover|contain|initial|inherit
 		position?: string // (left | right | center) (top | center | bottom) | x% y% | xpos ypos | initial | inherit
 	}

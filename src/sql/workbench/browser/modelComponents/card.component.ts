@@ -20,6 +20,7 @@ import * as DOM from 'vs/base/browser/dom';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/platform/dashboard/browser/interfaces';
 import { IColorTheme } from 'vs/platform/theme/common/themeService';
 import { ILogService } from 'vs/platform/log/common/log';
+import { URI } from 'vs/workbench/workbench.web.api';
 
 export interface ActionDescriptor {
 	label: string;
@@ -49,10 +50,17 @@ export interface CardDescriptionItem {
 	value?: string;
 }
 
+export interface CardImage {
+	path: URI,
+	size?: string, // auto|length|cover|contain|initial|inherit
+	position?: string // (left | right | center) (top | center | bottom) | x% y% | xpos ypos | initial | inherit
+}
+
 export enum CardType {
 	VerticalButton = 'VerticalButton',
 	Details = 'Details',
-	ListItem = 'ListItem'
+	ListItem = 'ListItem',
+	Image = 'Image'
 }
 
 @Component({

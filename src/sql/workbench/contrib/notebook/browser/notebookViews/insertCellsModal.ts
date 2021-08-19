@@ -15,17 +15,19 @@ import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IColorTheme, ICssStyleCollector, IThemeService, registerThemingParticipant } from 'vs/platform/theme/common/themeService';
 import * as DOM from 'vs/base/browser/dom';
-import { attachCheckboxStyler } from 'sql/platform/theme/common/styler';
 import { ServiceOptionType } from 'sql/platform/connection/common/interfaces';
 import { ServiceOption } from 'azdata';
 import * as DialogHelper from 'sql/workbench/browser/modal/dialogHelper';
 import { TextCellComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/textCell.component';
-import { ComponentFactoryResolver, ViewContainerRef } from '@angular/core';
+import { NgModuleRef, ComponentFactoryResolver, ViewContainerRef } from '@angular/core';
 import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
 import { inputBorder, inputValidationInfoBorder } from 'vs/platform/theme/common/colorRegistry';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { bootstrapAngular } from 'sql/workbench/services/bootstrap/browser/bootstrapService';
 import { localize } from 'vs/nls';
 import { NotebookViewsExtension } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViewsExtension';
+import { InsertCellsModule } from 'sql/workbench/contrib/notebook/browser/notebookViews/insertCellsModal.module';
 import { attachButtonStyler } from 'vs/platform/theme/common/styler';
 import { truncate } from 'vs/base/common/strings';
 import { toJpeg } from 'html-to-image';
@@ -95,6 +97,7 @@ export class InsertCellsModal extends Modal {
 	private _cancelButton: Button;
 	private _optionsMap: { [name: string]: Checkbox } = {};
 	private _maxTitleLength: number = 20;
+	private _moduleRef?: NgModuleRef<typeof InsertCellsModule>;
 
 	constructor(
 		private onInsert: (cell: ICellModel) => void,
@@ -107,6 +110,7 @@ export class InsertCellsModal extends Modal {
 		@IClipboardService clipboardService: IClipboardService,
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@IAdsTelemetryService telemetryService: IAdsTelemetryService,
+		@IInstantiationService private _instantiationService: IInstantiationService,
 		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService,
 	) {
 		super(
@@ -153,36 +157,13 @@ export class InsertCellsModal extends Modal {
 		const activeView = this._context.getActiveView();
 		const cellsAvailableToInsert = activeView.hiddenCells;
 
-		cellsAvailableToInsert.forEach(async (cell) => {
-			const optionWidget = this.createCheckBoxHelper(
-				container,
-				'<div class="loading-spinner-container"><div class="loading-spinner codicon in-progress"></div></div>',
-				false,
-				() => this.onOptionChecked(cell.cellGuid)
-			);
+		const imgs = await Promise.all(
+			cellsAvailableToInsert.map(async (cell) => {
+				return this.generateScreenshot(cell);
+			})
+		);
 
-			const img = await this.generateScreenshot(cell);
-			const wrapper = DOM.$<HTMLDivElement>('div.thumnail-wrapper');
-			const thumbnail = DOM.$<HTMLImageElement>('img.thumbnail');
-
-			thumbnail.src = img;
-			thumbnail.style.maxWidth = '100%';
-			DOM.append(wrapper, thumbnail);
-			optionWidget.label = wrapper.outerHTML;
-
-			this._optionsMap[cell.cellGuid] = optionWidget;
-		});
-	}
-
-	private createCheckBoxHelper(container: HTMLElement, label: string, isChecked: boolean, onCheck: (viaKeyboard: boolean) => void): Checkbox {
-		const checkbox = new Checkbox(DOM.append(container, DOM.$('.dialog-input-section')), {
-			label: label,
-			checked: isChecked,
-			onChange: onCheck,
-			ariaLabel: label
-		});
-		this._register(attachCheckboxStyler(checkbox, this._themeService));
-		return checkbox;
+		this.bootstrapAngular(container, imgs);
 	}
 
 	public onOptionChecked(optionName: string) {
@@ -270,6 +251,26 @@ export class InsertCellsModal extends Modal {
 			widget.dispose();
 			delete this._optionsMap[key];
 		}
+
+		if (this._moduleRef) {
+			this._moduleRef.destroy();
+		}
+	}
+
+	/**
+	 * Get the bootstrap params and perform the bootstrap
+	 */
+	private bootstrapAngular(bodyContainer: HTMLElement, imgs: string[]) {
+		this._instantiationService.invokeFunction<void, any[]>(bootstrapAngular,
+			InsertCellsModule,
+			bodyContainer,
+			'insert-cells-screenshots-component',
+			{
+				thumbnails: imgs,
+				onClick: (e) => { }
+			},
+			undefined,
+			(moduleRef: NgModuleRef<typeof InsertCellsModule>) => this._moduleRef = moduleRef);
 	}
 }
 
