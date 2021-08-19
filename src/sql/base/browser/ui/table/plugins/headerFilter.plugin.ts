@@ -34,7 +34,7 @@ export interface ITableFilterOptions {
 	 * The message to be displayed when the filter is disabled and the user tries to open the filter menu.
 	 */
 	disabledFilterMessage?: string;
-	autoSizePluginOn?: boolean
+	shouldSetColumns?: boolean
 }
 
 export interface ITableFilterStyles extends IButtonStyles, IInputBoxStyles, IListStyles, ICountBadgetyles {
@@ -86,9 +86,7 @@ export class HeaderFilter<T extends Slick.SlickData> {
 			.subscribe(this.grid.onColumnsResized, () => this.columnsResized())
 			.subscribe(this.grid.onKeyDown, async (e: DOMEvent) => { await this.handleGridKeyDown(e as KeyboardEvent); });
 
-		// If the auto size columns plugin is on, then the filter menu buttons will be added when the auto size plugin calls setColumns.
-		// This prevents us from calling setColumns twice when both plugins are on.
-		if (!this.options.autoSizePluginOn) {
+		if (!this.options.shouldSetColumns) {
 			this.grid.setColumns(this.grid.getColumns());
 		}
 
