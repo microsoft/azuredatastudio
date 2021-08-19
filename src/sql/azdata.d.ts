@@ -3395,10 +3395,6 @@ declare module 'azdata' {
 		columnName: string;
 	}
 
-	export interface ButtonCell extends TableCell {
-		columnName: string;
-	}
-
 	export interface FileBrowserTreeProperties extends ComponentProperties {
 		ownerUri: string;
 	}
