@@ -10474,8 +10474,8 @@
 			"noParametersInCell": "パラメーター セルにパラメーターが追加されるまで、パラメーターを指定してこのノートブックを実行することはできません。[詳細情報] (https://docs.microsoft.com/sql/azure-data-studio/notebooks/notebooks-parameterization)。",
 			"clearResults": "結果のクリア",
 			"notebookViewLabel": "エディター",
-			"newViewLabel": "Create New View",
-			"viewNotFound": "Unable to find view: {0}",
+			"newViewLabel": "新しいビューの作成",
+			"viewNotFound": "ビューが見つかりません: {0}",
 			"trustLabel": "信頼されています",
 			"untrustLabel": "信頼されていません",
 			"collapseAllCells": "セルを折りたたむ",
@@ -11464,9 +11464,9 @@
 			"insertCellsModal.Cancel": "キャンセル"
 		},
 		"sql/workbench/contrib/notebook/browser/notebookViews/notebookViewsActions": {
-			"viewsUnableToRemove": "Unable to remove view",
-			"confirmDelete": "Are you sure you want to delete view \"{0}\"?",
-			"delete": "&&Delete",
+			"viewsUnableToRemove": "ビューを削除できません",
+			"confirmDelete": "ビュー \"{0}\" を削除しますか?",
+			"delete": "削除(&D)",
 			"insertCells": "セルの挿入",
 			"runCell": "セルの実行",
 			"stopCell": "実行のキャンセル",

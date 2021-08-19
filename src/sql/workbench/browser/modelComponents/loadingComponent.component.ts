@@ -12,9 +12,11 @@ import * as azdata from 'azdata';
 
 import { ComponentBase } from 'sql/workbench/browser/modelComponents/componentBase';
 import { localize } from 'vs/nls';
-import { IComponent, IComponentDescriptor, IModelStore } from 'sql/platform/dashboard/browser/interfaces';
+import { ComponentEventType, IComponent, IComponentDescriptor, IModelStore } from 'sql/platform/dashboard/browser/interfaces';
 import { status } from 'vs/base/browser/ui/aria/aria';
 import { ILogService } from 'vs/platform/log/common/log';
+import { onUnexpectedError } from 'vs/base/common/errors';
+import { IDisposable } from 'vs/base/common/lifecycle';
 
 @Component({
 	selector: 'modelview-loadingComponent',
@@ -29,6 +31,7 @@ import { ILogService } from 'vs/platform/log/common/log';
 })
 export default class LoadingComponent extends ComponentBase<azdata.LoadingComponentProperties> implements IComponent, OnDestroy, AfterViewInit {
 	private _component: IComponentDescriptor;
+	private _componentEventDisposable: IDisposable;
 
 	@Input() descriptor: IComponentDescriptor;
 	@Input() modelStore: IModelStore;
@@ -64,10 +67,18 @@ export default class LoadingComponent extends ComponentBase<azdata.LoadingCompon
 		this.layout();
 	}
 
+	public override layout() {
+		super.layout();
+		if (this._component) {
+			const childComponent = this.modelStore.getComponent(this._component.id);
+			childComponent?.layout();
+		}
+	}
+
 	public override setProperties(properties: { [key: string]: any; }): void {
 		const wasLoading = this.loading;
 		super.setProperties(properties);
-		if (wasLoading && !this.loading) {
+		if (wasLoading !== this.loading) {
 			status(this.getStatusText());
 		}
 	}
@@ -95,11 +106,19 @@ export default class LoadingComponent extends ComponentBase<azdata.LoadingCompon
 
 	public addToContainer(items: { componentDescriptor: IComponentDescriptor }[]): void {
 		this._component = items[0].componentDescriptor;
+		this.modelStore.eventuallyRunOnComponent(this._component.id, (component) => {
+			this._componentEventDisposable = component.registerEventHandler(async event => {
+				if (event.eventType === ComponentEventType.validityChanged) {
+					this.validate().catch(onUnexpectedError);
+				}
+			});
+		}, false);
 		this.layout();
 	}
 
 	public removeFromContainer(_componentDescriptor: IComponentDescriptor): void {
 		this._component = undefined;
+		this._componentEventDisposable.dispose();
 		this.layout();
 	}
 

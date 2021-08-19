@@ -3,11 +3,14 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-export class AzureResourceCredentialError extends Error {
+import * as nls from 'vscode-nls';
+const localize = nls.loadMessageBundle();
+
+export class AzureSubscriptionError extends Error {
 	constructor(
-		message: string,
-		public readonly innerError: Error
+		accountName: string,
+		public readonly errors: Error[]
 	) {
-		super(message);
+		super(localize('azure.subscriptionError', "Failed to get subscriptions for account {0}. Please refresh the account.", accountName));
 	}
 }

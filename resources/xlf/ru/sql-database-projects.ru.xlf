@@ -607,7 +607,7 @@
       </trans-unit>
       <trans-unit id="browseEllipsis">
         <source xml:lang="en">Browse...</source>
-        <target state="new">Browse...</target>
+        <target state="translated">Обзор...</target>
       </trans-unit>
       <trans-unit id="selectProjectLocation">
         <source xml:lang="en">Select project location</source>
@@ -881,13 +881,37 @@
         <source xml:lang="en">Script.PostDeployment</source>
         <target state="translated">Script.PostDeployment</target>
       </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.NetCoreInstallationConfirmation">
+        <source xml:lang="en">The .NET Core SDK cannot be located. Project build will not work. Please install .NET Core SDK version 3.1 or update the .NET Core SDK location in settings if already installed.</source>
+        <target state="new">The .NET Core SDK cannot be located. Project build will not work. Please install .NET Core SDK version 3.1 or update the .NET Core SDK location in settings if already installed.</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.NetCoreSupportedVersionInstallationConfirmation">
+        <source xml:lang="en">Currently installed .NET Core SDK version is {0}, which is not supported. Project build will not work. Please install .NET Core SDK version 3.1 or update the .NET Core SDK supported version location in settings if already installed.</source>
+        <target state="new">Currently installed .NET Core SDK version is {0}, which is not supported. Project build will not work. Please install .NET Core SDK version 3.1 or update the .NET Core SDK supported version location in settings if already installed.</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.UpdateNetCoreLocation">
+        <source xml:lang="en">Update Location</source>
+        <target state="new">Update Location</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.InstallNetCore">
+        <source xml:lang="en">Install</source>
+        <target state="new">Install</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.doNotAskAgain">
+        <source xml:lang="en">Don't Ask Again</source>
+        <target state="new">Don't Ask Again</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.outputChannel">
+        <source xml:lang="en">Database Projects</source>
+        <target state="new">Database Projects</target>
+      </trans-unit>
       <trans-unit id="input">
         <source xml:lang="en">Input</source>
-        <target state="new">Input</target>
+        <target state="translated">Ввод</target>
       </trans-unit>
       <trans-unit id="output">
         <source xml:lang="en">Output</source>
-        <target state="new">Output</target>
+        <target state="translated">Выходные данные</target>
       </trans-unit>
       <trans-unit id="selectBindingType">
         <source xml:lang="en">Select type of binding</source>
@@ -921,26 +945,6 @@
   </file>
   <file original="extensions/sql-database-projects/dist/tools/netcoreTool" source-language="en" datatype="plaintext" target-language="ru">
     <body>
-      <trans-unit id="sqlDatabaseProjects.NetCoreInstallationConfirmation">
-        <source xml:lang="en">The .NET Core SDK cannot be located. Project build will not work. Please install .NET Core SDK version 3.1 or update the .Net Core SDK location in settings if already installed.</source>
-        <target state="translated">Не удается найти пакет SDK для .NET Core. Сборка проекта не подойдет. Установите пакет .NET Core SDK версии 3.1 или обновите расположение .NET Core SDK в параметрах , если они уже установлены.</target>
-      </trans-unit>
-      <trans-unit id="sqlDatabaseProjects.UpdateNetCoreLocation">
-        <source xml:lang="en">Update Location</source>
-        <target state="translated">Обновить расположение</target>
-      </trans-unit>
-      <trans-unit id="sqlDatabaseProjects.InstallNetCore">
-        <source xml:lang="en">Install</source>
-        <target state="translated">Установить</target>
-      </trans-unit>
-      <trans-unit id="sqlDatabaseProjects.doNotAskAgain">
-        <source xml:lang="en">Don't Ask Again</source>
-        <target state="translated">Больше не спрашивать</target>
-      </trans-unit>
-      <trans-unit id="sqlDatabaseProjects.outputChannel">
-        <source xml:lang="en">Database Projects</source>
-        <target state="translated">Проекты баз данных</target>
-      </trans-unit>
       <trans-unit id="sqlDatabaseProject.RunCommand.ErroredOut">
         <source xml:lang="en">	&gt;&gt;&gt; {0}   … errored out: {1}</source>
         <target state="translated">	&gt;&gt;&gt; {0}   … выдал ошибку: {1}</target>

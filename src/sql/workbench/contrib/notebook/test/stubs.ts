@@ -20,7 +20,7 @@ import { IContextViewProvider, IDelegate } from 'vs/base/browser/ui/contextview/
 import { IEditorPane } from 'vs/workbench/common/editor';
 import { INotebookShowOptions } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { NotebookViewsExtension } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViewsExtension';
-import { INotebookView, INotebookViewCell, INotebookViews } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViews';
+import { INotebookView, INotebookViewCell, INotebookViewMetadata, INotebookViews } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViews';
 
 export class NotebookModelStub implements INotebookModel {
 	constructor(private _languageInfo?: nb.ILanguageInfo, private _cells?: ICellModel[], private _testContents?: nb.INotebookContents) {
@@ -809,6 +809,8 @@ export class NotebookViewStub implements INotebookView {
 }
 
 export class NotebookViewsStub implements INotebookViews {
+	onActiveViewChanged: vsEvent.Event<void>;
+	metadata: INotebookViewMetadata;
 	notebook: INotebookModel;
 	onViewDeleted: vsEvent.Event<void>;
 	createNewView(name?: string): INotebookView {

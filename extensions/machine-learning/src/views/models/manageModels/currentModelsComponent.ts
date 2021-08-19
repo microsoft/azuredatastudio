@@ -148,6 +148,8 @@ export class CurrentModelsComponent extends ModelViewBase implements IPageView {
 
 				if (this._dataTable.isEmpty) {
 					formBuilder.addFormItem({ title: '', component: this._labelContainer });
+				} else {
+					formBuilder.removeFormItem({ title: '', component: this._labelContainer });
 				}
 				if (this._tableDataCountComponent) {
 					this._tableDataCountComponent.value = constants.getDataCount(this._dataTable.modelCounts);
@@ -200,7 +202,6 @@ export class CurrentModelsComponent extends ModelViewBase implements IPageView {
 
 	private refreshComponents(): void {
 		if (this._formBuilder) {
-			this.removeComponents(this._formBuilder);
 			this.addComponents(this._formBuilder);
 		}
 	}

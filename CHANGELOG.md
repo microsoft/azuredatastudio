@@ -1,5 +1,16 @@
 # Change Log
 
+## Version 1.32.0
+* Release date: August 18, 2021
+* Release status: General Availability
+* Extension Updates:
+    * Arc/Az CLI extensions - Azure Arc extension now uses Azure CLI instead of Azure Data CLI for deploying and interacting with Azure Arc 
+       instances    
+    *  Langpacks
+    *  SQL Database Projects
+    *  Azure Monitor
+    *  Machine Learning
+
 ## Version 1.31.1
 * Release date: July 29, 2021
 * Release status: General Availability

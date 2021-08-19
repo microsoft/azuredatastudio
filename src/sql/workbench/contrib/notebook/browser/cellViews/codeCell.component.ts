@@ -45,7 +45,7 @@ export class CodeCellComponent extends CellView implements OnInit, OnChanges {
 	public stdIn: nb.IStdinMessage;
 
 	constructor(
-		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
+		@Inject(forwardRef(() => ChangeDetectorRef)) protected _changeRef: ChangeDetectorRef,
 	) {
 		super();
 	}
@@ -110,7 +110,7 @@ export class CodeCellComponent extends CellView implements OnInit, OnChanges {
 		}
 	}
 
-	private async awaitStdIn(): Promise<void> {
+	protected async awaitStdIn(): Promise<void> {
 		try {
 			let value = await this.inputDeferred.promise;
 			this.cellModel.future.sendInputReply({ value: value });
