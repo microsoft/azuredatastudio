@@ -745,12 +745,13 @@ suite('notebook model', function (): void {
 		assert(!isUndefinedOrNull(model.context), 'context should exist after call to change context');
 
 		let notebookKernelAlias = model.context.serverCapabilities.notebookKernelAlias;
-		let doChangeKernelStub = sinon.spy(model, 'doChangeKernel' as keyof NotebookModel).withArgs(model.kernelAliases[0]);
+		let doChangeKernelStub = sinon.spy(model, 'doChangeKernel' as keyof NotebookModel);
 
 		model.changeKernel(notebookKernelAlias);
 		assert.equal(model.selectedKernelDisplayName, notebookKernelAlias);
 		assert.equal(model.currentKernelAlias, notebookKernelAlias);
-		sinon.assert.called(doChangeKernelStub);
+		sinon.assert.calledWith(doChangeKernelStub, model.kernelAliases[0]);
+		doChangeKernelStub.restore();
 
 		// After closing the notebook
 		await model.handleClosed();
