@@ -4,32 +4,36 @@
  *--------------------------------------------------------------------------------------------*/
 import 'vs/css!./cellToolbar';
 import * as DOM from 'vs/base/browser/dom';
-import { Component, OnInit, Input, ViewChild, TemplateRef, ElementRef, Inject, Output, EventEmitter, ChangeDetectorRef, forwardRef } from '@angular/core';
-import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
+import { Component, OnInit, Input, ViewChild, TemplateRef, ElementRef, Inject, Output, EventEmitter, ChangeDetectorRef, forwardRef, SimpleChanges } from '@angular/core';
+import { CellExecutionState, ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
 import { DEFAULT_VIEW_CARD_HEIGHT, DEFAULT_VIEW_CARD_WIDTH } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViewModel';
-import { NotebookViewsExtension } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViewsExtension';
-import { CellChangeEventType, INotebookView, INotebookViewCellMetadata } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViews';
+import { CellChangeEventType, INotebookView, INotebookViewCell } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViews';
 import { ITaskbarContent, Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { CellContext } from 'sql/workbench/contrib/notebook/browser/cellViews/codeActions';
 import { RunCellAction, HideCellAction, ViewCellToggleMoreActions } from 'sql/workbench/contrib/notebook/browser/notebookViews/notebookViewsActions';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { CellTypes } from 'sql/workbench/services/notebook/common/contracts';
+import { AngularDisposable } from 'sql/base/browser/lifecycle';
+import { IColorTheme, ICssStyleCollector, registerThemingParticipant } from 'vs/platform/theme/common/themeService';
+import { cellBorder, notebookToolbarSelectBackground } from 'sql/platform/theme/common/colorRegistry';
 
 @Component({
 	selector: 'view-card-component',
 	templateUrl: decodeURI(require.toUrl('./notebookViewsCard.component.html'))
 })
-export class NotebookViewsCardComponent implements OnInit {
-	public _cellToggleMoreActions: ViewCellToggleMoreActions;
-
+export class NotebookViewsCardComponent extends AngularDisposable implements OnInit {
 	private _actionbar: Taskbar;
-	private _metadata: INotebookViewCellMetadata;
-	private _activeView: INotebookView;
+	private _metadata: INotebookViewCell;
+	private _executionState: CellExecutionState;
+	private _pendingReinitialize: boolean = false;
+
+	public _cellToggleMoreActions: ViewCellToggleMoreActions;
 
 	@Input() cell: ICellModel;
 	@Input() model: NotebookModel;
-	@Input() views: NotebookViewsExtension;
+	@Input() activeView: INotebookView;
+	@Input() meta: boolean;
 	@Input() ready: boolean;
 	@Output() onChange: EventEmitter<any> = new EventEmitter();
 
@@ -39,28 +43,50 @@ export class NotebookViewsCardComponent implements OnInit {
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
-		@Inject(IInstantiationService) private _instantiationService: IInstantiationService
-	) { }
+		@Inject(IInstantiationService) private _instantiationService: IInstantiationService,
+	) {
+		super();
+	}
 
 	ngOnInit() {
 		this.initActionBar();
 	}
 
-	ngOnChanges() {
-		if (this.views) {
-			this._activeView = this.views.getActiveView();
-			this._metadata = this.views.getCellMetadata(this.cell);
+	ngAfterViewInit() {
+		this.initialize();
+	}
+
+	ngOnChanges(changes: SimpleChanges) {
+		if (this.activeView && changes['activeView'] && changes['activeView'].currentValue?.guid !== changes['activeView'].previousValue?.guid) {
+			this._metadata = this.activeView.getCellMetadata(this.cell);
+			this._pendingReinitialize = true;
 		}
+		this.detectChanges();
 	}
 
 	ngAfterContentInit() {
-		if (this.views) {
-			this._activeView = this.views.getActiveView();
-			this._metadata = this.views.getCellMetadata(this.cell);
+		if (this.activeView) {
+			this._metadata = this.activeView.getCellMetadata(this.cell);
+			this._pendingReinitialize = true;
+		}
+		this.detectChanges();
+	}
+
+	ngAfterViewChecked() {
+		if (this._pendingReinitialize) {
+			this._pendingReinitialize = false;
+			this.initialize();
 		}
 	}
 
-	ngAfterViewInit() {
+	override ngOnDestroy() {
+		if (this._actionbar) {
+			this._actionbar.dispose();
+		}
+	}
+
+	public initialize(): void {
+		this.initActionBar();
 		this.detectChanges();
 	}
 
@@ -68,6 +94,10 @@ export class NotebookViewsCardComponent implements OnInit {
 		if (this._actionbarRef) {
 			let taskbarContent: ITaskbarContent[] = [];
 			let context = new CellContext(this.model, this.cell);
+
+			if (this._actionbar) {
+				this._actionbar.dispose();
+			}
 
 			this._actionbar = new Taskbar(this._actionbarRef.nativeElement);
 			this._actionbar.context = { target: this._actionbarRef.nativeElement };
@@ -97,6 +127,10 @@ export class NotebookViewsCardComponent implements OnInit {
 		this.onChange.emit({ cell: this.cell, event: event });
 	}
 
+	get displayInputModal(): boolean {
+		return this.awaitingInput;
+	}
+
 	detectChanges() {
 		this._changeRef.detectChanges();
 	}
@@ -110,39 +144,77 @@ export class NotebookViewsCardComponent implements OnInit {
 		}
 	}
 
+	public set executionState(state: CellExecutionState) {
+		if (this._executionState !== state) {
+			this._executionState = state;
+		}
+	}
+
+	public get executionState(): CellExecutionState {
+		return this._executionState;
+	}
+
 	public hide(): void {
 		this.changed('hide');
 	}
 
-	public get data(): any {
-		return this._metadata?.views?.find(v => v.guid === this._activeView.guid);
+	public get metadata(): INotebookViewCell {
+		return this._metadata;
 	}
 
 	public get width(): number {
-		return this.data?.width ? this.data.width : DEFAULT_VIEW_CARD_WIDTH;
+		return this.metadata?.width ? this.metadata.width : DEFAULT_VIEW_CARD_WIDTH;
 	}
 
 	public get height(): number {
-		return this.data.height ? this.data.height : DEFAULT_VIEW_CARD_HEIGHT;
+		return this.metadata?.height ? this.metadata.height : DEFAULT_VIEW_CARD_HEIGHT;
 	}
 
 	public get x(): number {
-		return this.data?.x;
+		return this.metadata?.x;
 	}
 
 	public get y(): number {
-		return this.data?.y;
+		return this.metadata?.y;
 	}
 
-	public get display(): boolean {
-		if (!this._metadata || !this._activeView) {
+	/**
+	 * Whether to display the card
+	 */
+	public get visible(): boolean {
+		if (!this.activeView) {
 			return true;
 		}
 
-		return !this.data?.hidden;
+		if (!this._metadata) { //Means not initialized
+			return false;
+		}
+
+		return !!this.activeView.displayedCells.find(c => c.cellGuid === this.cell.cellGuid);
+	}
+
+	/**
+	 * Is the cell expecting input
+	 */
+	public get awaitingInput(): boolean {
+		return this.cell.future && this.cell.future.inProgress;
 	}
 
 	public get showActionBar(): boolean {
 		return this.cell.active;
 	}
 }
+
+registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) => {
+	const cellBorderColor = theme.getColor(cellBorder);
+	if (cellBorderColor) {
+		collector.addRule(`.notebookEditor .nb-grid-stack .notebook-cell.active .actionbar { border-color: ${cellBorderColor};}`);
+		collector.addRule(`.notebookEditor .nb-grid-stack .notebook-cell.active .actionbar .codicon:before { background-color: ${cellBorderColor};}`);
+	}
+
+	// Cell toolbar background
+	const notebookToolbarSelectBackgroundColor = theme.getColor(notebookToolbarSelectBackground);
+	if (notebookToolbarSelectBackgroundColor) {
+		collector.addRule(`.notebookEditor .nb-grid-stack .notebook-cell.active .actionbar { background-color: ${notebookToolbarSelectBackgroundColor};}`);
+	}
+});
