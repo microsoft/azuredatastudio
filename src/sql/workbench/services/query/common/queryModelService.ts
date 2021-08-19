@@ -249,7 +249,7 @@ export class QueryModelService implements IQueryModelService {
 		let queryRunner = this._instantiationService.createInstance(EditQueryRunner, uri);
 		let info = new QueryInfo();
 		queryRunner.onResultSet(e => {
-			this._fireQueryEvent(uri, 'resultSet', e);
+			this._fireQueryEvent(queryRunner.uri, 'resultSet', e);
 		});
 		queryRunner.onBatchStart(b => {
 			let link = undefined;
@@ -273,18 +273,18 @@ export class QueryModelService implements IQueryModelService {
 				time: new Date().toLocaleTimeString(),
 				link: link
 			};
-			this._fireQueryEvent(uri, 'message', message);
+			this._fireQueryEvent(queryRunner.uri, 'message', message);
 		});
 		queryRunner.onMessage(m => {
-			this._fireQueryEvent(uri, 'message', m);
+			this._fireQueryEvent(queryRunner.uri, 'message', m);
 		});
 		queryRunner.onQueryEnd(totalMilliseconds => {
-			this._onRunQueryComplete.fire(uri);
+			this._onRunQueryComplete.fire(queryRunner.uri);
 
 			// fire extensibility API event
 			let event: IQueryEvent = {
 				type: 'queryStop',
-				uri: uri,
+				uri: queryRunner.uri,
 				queryInfo:
 				{
 					range: info.range!,
@@ -294,15 +294,15 @@ export class QueryModelService implements IQueryModelService {
 			this._onQueryEvent.fire(event);
 
 			// fire UI event
-			this._fireQueryEvent(uri, 'complete', totalMilliseconds);
+			this._fireQueryEvent(queryRunner.uri, 'complete', totalMilliseconds);
 		});
 		queryRunner.onQueryStart(() => {
-			this._onRunQueryStart.fire(uri);
+			this._onRunQueryStart.fire(queryRunner.uri);
 
 			// fire extensibility API event
 			let event: IQueryEvent = {
 				type: 'queryStart',
-				uri: uri,
+				uri: queryRunner.uri,
 				queryInfo:
 				{
 					range: info.range!,
@@ -311,14 +311,14 @@ export class QueryModelService implements IQueryModelService {
 			};
 			this._onQueryEvent.fire(event);
 
-			this._fireQueryEvent(uri, 'start');
+			this._fireQueryEvent(queryRunner.uri, 'start');
 		});
 		queryRunner.onResultSetUpdate(() => {
-			this._onRunQueryUpdate.fire(uri);
+			this._onRunQueryUpdate.fire(queryRunner.uri);
 
 			let event: IQueryEvent = {
 				type: 'queryUpdate',
-				uri: uri,
+				uri: queryRunner.uri,
 				queryInfo:
 				{
 					range: info.range!,
@@ -327,7 +327,7 @@ export class QueryModelService implements IQueryModelService {
 			};
 			this._onQueryEvent.fire(event);
 
-			this._fireQueryEvent(uri, 'update');
+			this._fireQueryEvent(queryRunner.uri, 'update');
 		});
 
 		queryRunner.onQueryPlanAvailable(planInfo => {
@@ -348,7 +348,7 @@ export class QueryModelService implements IQueryModelService {
 		queryRunner.onVisualize(resultSetInfo => {
 			let event: IQueryEvent = {
 				type: 'visualize',
-				uri: uri,
+				uri: queryRunner.uri,
 				queryInfo:
 				{
 					range: info.range!,
@@ -360,8 +360,8 @@ export class QueryModelService implements IQueryModelService {
 		});
 
 		info.queryRunner = queryRunner;
-		info.dataService = this._instantiationService.createInstance(DataService, uri);
-		this._queryInfoMap.set(uri, info);
+		info.dataService = this._instantiationService.createInstance(DataService, queryRunner.uri);
+		this._queryInfoMap.set(queryRunner.uri, info);
 		return info;
 	}
 
