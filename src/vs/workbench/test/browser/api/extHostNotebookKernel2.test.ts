@@ -62,7 +62,7 @@ suite('NotebookKernel', function () {
 			}
 		});
 		rpcProtocol.set(MainContext.MainThreadNotebookDocuments, new class extends mock<MainThreadNotebookDocumentsShape>() {
-
+			override async $applyEdits() { }
 		});
 		rpcProtocol.set(MainContext.MainThreadNotebook, new class extends mock<MainThreadNotebookShape>() {
 			override async $registerNotebookProvider() { }
