@@ -276,11 +276,7 @@ export async function getSubscriptions(appContext: AppContext, account?: azdata.
 	const subscriptionService = appContext.getService<IAzureResourceSubscriptionService>(AzureResourceServiceNames.subscriptionService);
 	await Promise.all(account.properties.tenants.map(async (tenant: { id: string; }) => {
 		try {
-			const response = await azdata.accounts.getAccountSecurityToken(account, tenant.id, azdata.AzureResource.ResourceManagement);
-			const token = response.token;
-			const tokenType = response.tokenType;
-
-			result.subscriptions.push(...await subscriptionService.getSubscriptions(account, new TokenCredentials(token, tokenType), tenant.id));
+			result.subscriptions.push(...await subscriptionService.getSubscriptions(account, [tenant.id]));
 		} catch (err) {
 			const error = new Error(localize('azure.accounts.getSubscriptions.queryError', "Error fetching subscriptions for account {0} tenant {1} : {2}",
 				account.displayInfo.displayName,
@@ -357,7 +353,7 @@ export async function makeHttpRequest(account: azdata.Account, subscription: azu
 		return result;
 	}
 
-	let securityToken: { token: string, tokenType?: string };
+	let securityToken: azdata.accounts.AccountSecurityToken;
 	try {
 		securityToken = await azdata.accounts.getAccountSecurityToken(
 			account,
