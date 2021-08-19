@@ -58,6 +58,16 @@ export const page2NameText = localize('flatFileImport.page2Name', "Preview Data"
 export const page3NameText = localize('flatFileImport.page3Name', "Modify Columns");
 export const page4NameText = localize('flatFileImport.page4Name', "Summary");
 export const importNewFileText = localize('flatFileImport.importNewFile', "Import new file");
-export const createDerivedColumn = localize('flatFileImport.createDerivedColumns', "Create derived column");
+export const createDerivedColumn = localize('flatFileImport.createDerivedColumn', "Create derived column");
+export const specifyDerivedColNameTitle = localize('flatFileImport.specifyDerivedColNameTitle', "Column Name");
+export const specifyTransformation = localize('flatFileImport.specifyTransformation', "Specify Transformation");
+export const previewTransformation = localize('flatFileImport.previewTransformation', "Preview Transformation");
+export const columnTableTitle = localize('flatFileImport.columnTableTitle', "Column");
+export const headerIntructionText = localize('flatFileImport.headerIntructionText', "Welcome to the Derived Column Tool! To get started, please follow the steps below:");
+export const bodyInstructionText = localize('flatFileImport.bodyInstructionText', "1. Select the columns of data on the left required to derive your new column\n\t\
+2. Select a row and specify an example transformation that you would like applied to the rest of the column\n\t\
+3. Click \"Preview Transformation\" to preview the transformation\n\t\
+4. Refine your transformation until you have the desired column\n\t\
+5. Specify the new derived column\'s name and click \"Done\"");
 // SQL Queries
 export const selectSchemaQuery = `SELECT name FROM sys.schemas`;

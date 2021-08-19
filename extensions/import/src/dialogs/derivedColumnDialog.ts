@@ -6,6 +6,7 @@ import * as azdata from 'azdata';
 import { ImportDataModel } from '../wizard/api/models';
 import * as EventEmitter from 'events';
 import { FlatFileProvider } from '../services/contracts';
+import * as constants from '../common/constants';
 
 const headerLeft: azdata.CssStyles = {
 	'border': 'none',
@@ -43,9 +44,9 @@ export class DerivedColumnDialog {
 	}
 
 	public openDialog(): Promise<boolean> {
-		this._applyButton = azdata.window.createButton('Preview Transformation');
+		this._applyButton = azdata.window.createButton(constants.previewTransformation);
 		this._dialogObject = azdata.window.createModelViewDialog(
-			'Derived column',
+			constants.createDerivedColumn,
 			'DerivedColumnDialog',
 			'wide'
 		);
@@ -68,7 +69,7 @@ export class DerivedColumnDialog {
 						rowCssStyles: styleLeft
 					},
 					{
-						displayName: 'Column',
+						displayName: constants.columnTableTitle,
 						valueType: azdata.DeclarativeDataType.string,
 						isReadOnly: true,
 						width: '140px',
@@ -145,7 +146,7 @@ export class DerivedColumnDialog {
 				const tableRow: azdata.DeclarativeTableCellValue[] = [];
 				this._specifyTransformations.push(this._view.modelBuilder.inputBox().withProps({
 					value: '',
-					placeHolder: 'Specify Transformation'
+					placeHolder: constants.specifyTransformation
 				}).component());
 				tableRow.push({
 					value: this._specifyTransformations[index]
@@ -157,7 +158,7 @@ export class DerivedColumnDialog {
 				height: '100%',
 				columns: [
 					{
-						displayName: 'Specify Transformation',
+						displayName: constants.specifyTransformation,
 						valueType: azdata.DeclarativeDataType.component,
 						isReadOnly: false,
 						width: '200px',
@@ -206,7 +207,7 @@ export class DerivedColumnDialog {
 			const specifyDerivedColNameTable = view.modelBuilder.declarativeTable().withProps({
 				columns: [
 					{
-						displayName: 'Column Name',
+						displayName: constants.specifyDerivedColNameTitle,
 						valueType: azdata.DeclarativeDataType.string,
 						isReadOnly: false,
 						width: '150px',
@@ -244,7 +245,7 @@ export class DerivedColumnDialog {
 
 			this._headerInstructionText = this._view.modelBuilder.text()
 				.withProps({
-					value: 'Welcome to the Derived Column Tool! To get started, please follow the steps below:',
+					value: constants.headerIntructionText,
 					CSSStyles: {
 						'font-size': 'x-large',
 						'line-height': '22pt',
@@ -254,11 +255,7 @@ export class DerivedColumnDialog {
 
 			this._bodyInstructionText = this._view.modelBuilder.text()
 				.withProps({
-					value: '1. Select the columns of data on the left required to derive your new column\n\t\
-				2. Select a row and specify an example transformation that you would like applied to the rest of the column\n\t\
-				3. Click \"Preview Transformation\" to preview the transformation\n\t\
-				4. Refine your transformation until you have the desired column\n\t\
-				5. Specify the new derived column\'s name and click \"Done\"',
+					value: constants.bodyInstructionText,
 					CSSStyles: {
 						'font-size': 'large',
 						'line-height': '22pt',

@@ -53,8 +53,8 @@ export interface ColumnInfo {
 
 
 /**
- * PROSEDiscoveryRequest
- * Send this request to create a new PROSE session with a new file and preview it
+ * LearnTransformationRequest
+ * Send this request to learn a transformation and preview it
  */
 const learnTransformationRequestName = 'flatfile/learnTransformation';
 
@@ -70,8 +70,8 @@ export interface LearnTransformationResponse {
 
 
 /**
-* PROSEDiscoveryRequest
-* Send this request to create a new PROSE session with a new file and preview it
+* SaveTransformationRequest
+* Send this request to save a transformation to be applied on insertion into database
 */
 const saveTransformationRequestName = 'flatfile/saveTransformation';
 
