@@ -86,7 +86,8 @@ export class HeaderFilter<T extends Slick.SlickData> {
 			.subscribe(this.grid.onColumnsResized, () => this.columnsResized())
 			.subscribe(this.grid.onKeyDown, async (e: DOMEvent) => { await this.handleGridKeyDown(e as KeyboardEvent); });
 
-		// If auto size columns plugin is on, then the filter dropdown will be added when the auto size plugin sets the columns
+		// If the auto size columns plugin is on, then the filter menu buttons will be added when the auto size plugin calls setColumns.
+		// This prevents us from calling setColumns twice when both plugins are on.
 		if (!this.options.autoSizePluginOn) {
 			this.grid.setColumns(this.grid.getColumns());
 		}

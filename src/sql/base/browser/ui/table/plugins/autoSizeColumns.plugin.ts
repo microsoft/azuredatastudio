@@ -98,7 +98,7 @@ export class AutoColumnSize<T extends Slick.SlickData> implements Slick.Plugin<T
 
 			let headerWidths: number[] = this.getElementWidths(headerElements);
 			headerWidths = headerWidths.map(width => {
-				return width + 34; // 16 from .slick-sort-indicator , 18 from .slick-header-menubutton
+				return width + 34; // Add to the header width to accommodate for the sort indicator (16px) and the filter menu button (18px)
 			});
 			let maxColumnTextWidths: number[] = this.getMaxColumnTextWidths(columnDefs, colIndices);
 
