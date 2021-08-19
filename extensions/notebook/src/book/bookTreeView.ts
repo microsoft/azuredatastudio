@@ -208,18 +208,18 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		return undefined;
 	}
 
-	async editBook(movingElement: BookTreeItem): Promise<void> {
-		// TelemetryReporter.sendActionEvent(BookTelemetryView, NbTelemetryActions.MoveNotebook);
-		// const selectionResults = await this.getSelectionQuickPick(movingElement);
-		// if (selectionResults) {
-		// 	const pickedSection = selectionResults.quickPickSection;
-		// 	const updateBook = selectionResults.book;
-		// 	const targetSection = pickedSection.detail !== undefined ? updateBook.findChildSection(pickedSection.detail) : undefined;
-		// 	const sourceBook = this.books.find(book => book.bookPath === movingElement.book.root);
-		// 	const targetBook = this.books.find(book => book.bookPath === updateBook.book.root);
-		// 	this.bookTocManager = new BookTocManager(sourceBook, targetBook);
-		// 	await this.bookTocManager.updateBook(movingElement, updateBook, targetSection);
-		// }
+	async editBook(treeItems: BookTreeItem[]): Promise<void> {
+		TelemetryReporter.sendActionEvent(BookTelemetryView, NbTelemetryActions.MoveNotebook);
+		const selectionResults = await this.getSelectionQuickPick(movingElement);
+		if (selectionResults) {
+			const pickedSection = selectionResults.quickPickSection;
+			const updateBook = selectionResults.book;
+			const targetSection = pickedSection.detail !== undefined ? updateBook.findChildSection(pickedSection.detail) : undefined;
+			const sourceBook = this.books.find(book => book.bookPath === movingElement.book.root);
+			const targetBook = this.books.find(book => book.bookPath === updateBook.book.root);
+			this.bookTocManager = new BookTocManager(sourceBook, targetBook);
+			await this.bookTocManager.updateBook(movingElement, updateBook, targetSection);
+		}
 	}
 
 	async openBook(bookPath: string, urlToOpen?: string, showPreview?: boolean, isNotebook?: boolean): Promise<void> {

@@ -62,8 +62,9 @@ export async function activate(extensionContext: vscode.ExtensionContext): Promi
 		await pinnedBookTreeViewProvider.removeNotebookFromPinnedView(book);
 	}));
 
-	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.moveTo', async (book: BookTreeItem) => {
-		await bookTreeViewProvider.editBook(book);
+	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.moveTo', async (firstTreeItem: BookTreeItem, treeItems: BookTreeItem[]) => {
+		treeItems.unshift(firstTreeItem);
+		await bookTreeViewProvider.editBook(treeItems);
 	}));
 
 	let model = new RemoteBookDialogModel();
