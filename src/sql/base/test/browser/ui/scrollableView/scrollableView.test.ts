@@ -110,8 +110,6 @@ suite('ScrollableView', () => {
 
 			assert.equal(view1.size, 200, 'view1 is entire size');
 
-			await waitForAnimation();
-
 			scrollableView.addView(view2);
 
 			await waitForAnimation();
