@@ -9,13 +9,13 @@ import { IAzureResourceService } from '../../interfaces';
 import { serversQuery, DbServerGraphData } from '../databaseServer/databaseServerService';
 import { ResourceGraphClient } from '@azure/arm-resourcegraph';
 import { queryGraphResources, GraphData } from '../resourceTreeDataProviderBase';
-import { Account } from 'azdata';
+import { AzureAccount } from 'azurecore';
 
 interface DatabaseGraphData extends GraphData {
 	kind: string;
 }
 export class AzureResourceDatabaseService implements IAzureResourceService<azureResource.AzureResourceDatabase> {
-	public async getResources(subscriptions: azureResource.AzureResourceSubscription[], credential: ServiceClientCredentials, account: Account): Promise<azureResource.AzureResourceDatabase[]> {
+	public async getResources(subscriptions: azureResource.AzureResourceSubscription[], credential: ServiceClientCredentials, account: AzureAccount): Promise<azureResource.AzureResourceDatabase[]> {
 		const databases: azureResource.AzureResourceDatabase[] = [];
 		const resourceClient = new ResourceGraphClient(credential, { baseUri: account.properties.providerSettings.settings.armResource.endpoint });
 

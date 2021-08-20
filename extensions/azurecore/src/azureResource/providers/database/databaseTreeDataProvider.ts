@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { TreeItem, ExtensionNodeType, Account } from 'azdata';
+import { TreeItem, ExtensionNodeType } from 'azdata';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
@@ -13,6 +13,7 @@ import { AzureResourceItemType } from '../../../azureResource/constants';
 import { generateGuid } from '../../utils';
 import { IAzureResourceService } from '../../interfaces';
 import { ResourceTreeDataProviderBase } from '../resourceTreeDataProviderBase';
+import { AzureAccount } from 'azurecore';
 
 export class AzureResourceDatabaseTreeDataProvider extends ResourceTreeDataProviderBase<azureResource.AzureResourceDatabase> {
 
@@ -25,7 +26,7 @@ export class AzureResourceDatabaseTreeDataProvider extends ResourceTreeDataProvi
 	) {
 		super(databaseService);
 	}
-	protected getTreeItemForResource(database: azureResource.AzureResourceDatabase, account: Account): TreeItem {
+	protected getTreeItemForResource(database: azureResource.AzureResourceDatabase, account: AzureAccount): TreeItem {
 		return {
 			id: `databaseServer_${database.serverFullName}.database_${database.name}`,
 			label: this.browseConnectionMode ? `${database.serverName}/${database.name} (${AzureResourceDatabaseTreeDataProvider.containerLabel}, ${database.subscription.name})` : `${database.name} (${database.serverName})`,
