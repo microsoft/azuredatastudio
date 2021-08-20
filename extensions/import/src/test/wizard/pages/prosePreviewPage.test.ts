@@ -47,7 +47,6 @@ describe('import extension prose preview tests', function () {
 				pages.set(1, prosePreviewPage);
 				await prosePreviewPage.start();
 				prosePreviewPage.setupNavigationValidator();
-				mockImportModel.object.newFileSelected = true;
 				resolve();
 			});
 			wizard.generateScriptButton.hidden = true;
