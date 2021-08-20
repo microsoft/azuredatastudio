@@ -8,7 +8,8 @@ import * as vscode from 'vscode';
 export const ProviderId: string = 'TESTPROVIDER';
 
 /**
- * This class implements the ConnectionProvider interface that allows users to connect to the data services, this will be used by various features in ADS, e.g. connection dialog and query editor.
+ * This class implements the ConnectionProvider interface that allows users to connect to the data services.
+ * This will be used by various features in ADS, e.g. connection dialog and query editor.
  */
 export class ConnectionProvider implements azdata.ConnectionProvider {
 	private onConnectionCompleteEmitter: vscode.EventEmitter<azdata.ConnectionInfoSummary> = new vscode.EventEmitter();
