@@ -7,7 +7,7 @@ import { ResourceGraphClient } from '@azure/arm-resourcegraph';
 import { TokenCredentials } from '@azure/ms-rest-js';
 import axios, { AxiosRequestConfig } from 'axios';
 import * as azdata from 'azdata';
-import { AzureRestResponse, GetResourceGroupsResult, GetSubscriptionsResult, ResourceQueryResult, GetBlobContainersResult, GetFileSharesResult, HttpRequestMethod, GetLocationsResult, GetManagedDatabasesResult, CreateResourceGroupResult, GetBlobsResult, GetStorageAccountAccessKeyResult } from 'azurecore';
+import { AzureRestResponse, GetResourceGroupsResult, GetSubscriptionsResult, ResourceQueryResult, GetBlobContainersResult, GetFileSharesResult, HttpRequestMethod, GetLocationsResult, GetManagedDatabasesResult, CreateResourceGroupResult, GetBlobsResult, GetStorageAccountAccessKeyResult, AzureAccount } from 'azurecore';
 import { azureResource } from 'azureResource';
 import { EOL } from 'os';
 import * as nls from 'vscode-nls';
@@ -262,7 +262,7 @@ export async function runResourceQuery<T extends azureResource.AzureGraphResourc
 	return result;
 }
 
-export async function getSubscriptions(appContext: AppContext, account?: azdata.Account, ignoreErrors: boolean = false): Promise<GetSubscriptionsResult> {
+export async function getSubscriptions(appContext: AppContext, account?: AzureAccount, ignoreErrors: boolean = false): Promise<GetSubscriptionsResult> {
 	const result: GetSubscriptionsResult = { subscriptions: [], errors: [] };
 	if (!account?.properties?.tenants || !Array.isArray(account.properties.tenants)) {
 		const error = new Error(invalidAzureAccount);
@@ -276,11 +276,7 @@ export async function getSubscriptions(appContext: AppContext, account?: azdata.
 	const subscriptionService = appContext.getService<IAzureResourceSubscriptionService>(AzureResourceServiceNames.subscriptionService);
 	await Promise.all(account.properties.tenants.map(async (tenant: { id: string; }) => {
 		try {
-			const response = await azdata.accounts.getAccountSecurityToken(account, tenant.id, azdata.AzureResource.ResourceManagement);
-			const token = response.token;
-			const tokenType = response.tokenType;
-
-			result.subscriptions.push(...await subscriptionService.getSubscriptions(account, new TokenCredentials(token, tokenType), tenant.id));
+			result.subscriptions.push(...await subscriptionService.getSubscriptions(account, [tenant.id]));
 		} catch (err) {
 			const error = new Error(localize('azure.accounts.getSubscriptions.queryError', "Error fetching subscriptions for account {0} tenant {1} : {2}",
 				account.displayInfo.displayName,
@@ -357,7 +353,7 @@ export async function makeHttpRequest(account: azdata.Account, subscription: azu
 		return result;
 	}
 
-	let securityToken: { token: string, tokenType?: string };
+	let securityToken: azdata.accounts.AccountSecurityToken;
 	try {
 		securityToken = await azdata.accounts.getAccountSecurityToken(
 			account,

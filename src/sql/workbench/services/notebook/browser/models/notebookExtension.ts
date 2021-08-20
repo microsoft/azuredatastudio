@@ -5,6 +5,7 @@
 
 import { INotebookModel, ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { NotebookChangeType } from 'sql/workbench/services/notebook/common/contracts';
+import { deepClone } from 'vs/base/common/objects';
 
 export class NotebookExtension<TNotebookMeta, TCellMeta> {
 	readonly version = 1;
@@ -32,6 +33,7 @@ export class NotebookExtension<TNotebookMeta, TCellMeta> {
 		const meta = {};
 		meta[this.extensionName] = metadata;
 		cell.metadata[this.extensionNamespace] = meta;
+		cell.metadata = deepClone(cell.metadata); // creating a new reference for change detection
 		cell.sendChangeToNotebook(NotebookChangeType.CellsModified);
 	}
 }
