@@ -92,7 +92,7 @@ export class HeaderFilter<T extends Slick.SlickData> {
 			.subscribe(this.grid.onColumnsResized, () => this.columnsResized())
 			.subscribe(this.grid.onKeyDown, async (e: DOMEvent) => { await this.handleGridKeyDown(e as KeyboardEvent); });
 
-		if (this.options.refreshColumns || this.options.refreshColumns === undefined) {
+		if (this.options.refreshColumns !== false) {
 			this.grid.setColumns(this.grid.getColumns());
 		}
 
