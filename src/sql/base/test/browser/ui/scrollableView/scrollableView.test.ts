@@ -46,7 +46,7 @@ class TestView extends Disposable implements IView {
 
 }
 
-suite('ScrollableView', () => { // TODO chgagnon Fix these tests
+suite('ScrollableView', () => {
 	let container: HTMLElement;
 
 	setup(() => {
@@ -111,6 +111,8 @@ suite('ScrollableView', () => { // TODO chgagnon Fix these tests
 			assert.equal(view1.size, 200, 'view1 is entire size');
 
 			await waitForAnimation();
+
+			scrollableView.addView(view2);
 
 			await waitForAnimation();
 
