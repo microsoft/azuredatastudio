@@ -539,7 +539,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		if (this.enableFilteringFeature) {
 			this.filterPlugin = new HeaderFilter(this.contextViewService, this.notificationService, {
 				disabledFilterMessage: localize('resultsGrid.maxRowCountExceeded', "Max row count for filtering/sorting has been exceeded. To update it, navigate to User Settings and change the setting: 'queryEditor.results.inMemoryDataProcessingThreshold'"),
-				refreshColumns: !autoSizeOnRender
+				refreshColumns: !autoSizeOnRender // The auto size columns plugin refreshes the columns so we don't need to refresh twice if both plugins are on.
 			});
 			this._register(attachTableFilterStyler(this.filterPlugin, this.themeService));
 			this.table.registerPlugin(this.filterPlugin);
