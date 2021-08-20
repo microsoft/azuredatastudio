@@ -12,10 +12,11 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined):
 
 	// get all the Azure functions in the file
 	const azureFunctionsService = await utils.getAzureFunctionService();
-	const getAzureFunctionsResult = await azureFunctionsService.getAzureFunctions(uri.fsPath);
-
-	if (!getAzureFunctionsResult.success) {
-		vscode.window.showErrorMessage(constants.errorGettingAzureFunctions(getAzureFunctionsResult.errorMessage));
+	let getAzureFunctionsResult;
+	try {
+		getAzureFunctionsResult = await azureFunctionsService.getAzureFunctions(uri.fsPath);
+	} catch (e) {
+		vscode.window.showErrorMessage(e);
 		return;
 	}
 
@@ -38,7 +39,16 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined):
 	}
 
 	// 2. select input or output binding
-	const inputOutputItems: string[] = [constants.input, constants.output];
+	const inputOutputItems: (vscode.QuickPickItem & { type: BindingType })[] = [
+		{
+			label: constants.input,
+			type: BindingType.input
+		},
+		{
+			label: constants.output,
+			type: BindingType.output
+		}
+	];
 
 	const selectedBinding = (await vscode.window.showQuickPick(inputOutputItems, {
 		canPickMany: false,
@@ -50,11 +60,9 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined):
 		return;
 	}
 
-	const bindingType = selectedBinding === constants.input ? BindingType.input : BindingType.output;
-
 	// 3. ask for object name for the binding
 	const objectName = await vscode.window.showInputBox({
-		prompt: selectedBinding === constants.input ? constants.sqlObjectToQuery : constants.sqlTableToUpsert,
+		prompt: selectedBinding.type === BindingType.input ? constants.sqlObjectToQuery : constants.sqlTableToUpsert,
 		value: constants.placeHolderObject,
 		ignoreFocusOut: true
 	});
@@ -76,10 +84,14 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined):
 	}
 
 	// 5. insert binding
-	const result = await azureFunctionsService.addSqlBinding(bindingType, uri.fsPath, azureFunctionName, objectName, connectionStringSetting);
+	try {
+		const result = await azureFunctionsService.addSqlBinding(selectedBinding.type, uri.fsPath, azureFunctionName, objectName, connectionStringSetting);
 
-	if (!result.success) {
-		vscode.window.showErrorMessage(result.errorMessage);
+		if (!result.success) {
+			vscode.window.showErrorMessage(result.errorMessage);
+		}
+	} catch (e) {
+		vscode.window.showErrorMessage(e);
 	}
 }
 
