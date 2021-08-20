@@ -34,7 +34,11 @@ export interface ITableFilterOptions {
 	 * The message to be displayed when the filter is disabled and the user tries to open the filter menu.
 	 */
 	disabledFilterMessage?: string;
-	shouldSetColumns?: boolean
+	/**
+	 * The columns are refreshed by default to add the filter menu button to the headers.
+	 * Set to false to prevent the grid from being re-drawn multiple times by different plugins.
+	 */
+	refreshColumns?: boolean;
 }
 
 export interface ITableFilterStyles extends IButtonStyles, IInputBoxStyles, IListStyles, ICountBadgetyles {
@@ -45,6 +49,8 @@ interface NotificationProvider {
 }
 
 const ShowFilterText: string = localize('headerFilter.showFilter', "Show Filter");
+
+export const FilterButtonWidth: number = 34;
 
 export class HeaderFilter<T extends Slick.SlickData> {
 
@@ -86,7 +92,7 @@ export class HeaderFilter<T extends Slick.SlickData> {
 			.subscribe(this.grid.onColumnsResized, () => this.columnsResized())
 			.subscribe(this.grid.onKeyDown, async (e: DOMEvent) => { await this.handleGridKeyDown(e as KeyboardEvent); });
 
-		if (!this.options.shouldSetColumns) {
+		if (this.options.refreshColumns || this.options.refreshColumns === undefined) {
 			this.grid.setColumns(this.grid.getColumns());
 		}
 
