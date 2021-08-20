@@ -13,9 +13,9 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { TreeNode, TreeDataProvider } from './treeDataProvider';
 import * as dashboard from './modelViewDashboard';
-import { ConnectionProvider } from '../Providers/connectionProvider';
-import { IconProvider } from '../Providers/IconProvider';
-import { ObjectExplorerProvider } from '../Providers/objectExplorerProvider';
+import { ConnectionProvider } from '../providers/connectionProvider';
+import { IconProvider } from '../providers/IconProvider';
+import { ObjectExplorerProvider } from '../providers/objectExplorerProvider';
 
 /**
  * The main controller class that initializes the extension
