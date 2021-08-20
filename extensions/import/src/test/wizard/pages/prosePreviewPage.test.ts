@@ -12,7 +12,6 @@ import { ImportDataModel } from '../../../wizard/api/models';
 import { TestImportDataModel } from '../../utils.test';
 import { ImportPage } from '../../../wizard/api/importPage';
 import { ProsePreviewPage } from '../../../wizard/pages/prosePreviewPage';
-
 describe('import extension prose preview tests', function () {
 
 	// declaring mock variables
@@ -44,10 +43,11 @@ describe('import extension prose preview tests', function () {
 		await new Promise<void>(function (resolve) {
 			page.registerContent(async (view) => {
 				prosePreviewPage = new ProsePreviewPage(mockFlatFileWizard.object, page, mockImportModel.object, view, TypeMoq.It.isAny());
+				mockFlatFileWizard.object.createDerivedColumnButton = azdata.window.createButton('TestButton');
 				pages.set(1, prosePreviewPage);
 				await prosePreviewPage.start();
 				prosePreviewPage.setupNavigationValidator();
-				await prosePreviewPage.onPageEnter();
+				mockImportModel.object.newFileSelected = true;
 				resolve();
 			});
 			wizard.generateScriptButton.hidden = true;
