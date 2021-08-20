@@ -9,7 +9,6 @@ export const ProviderId: string = 'TESTPROVIDER';
 
 /**
  * This class implements the ConnectionProvider interface that allows users to connect to the data services, this will be used by various features in ADS, e.g. connection dialog and query editor.
- * Use this approach if the data service has native JavaScript SDK available, otherwise refer to mssql extension on how to leverage the dataprotocol client which has JSON/RPC support.
  */
 export class ConnectionProvider implements azdata.ConnectionProvider {
 	private onConnectionCompleteEmitter: vscode.EventEmitter<azdata.ConnectionInfoSummary> = new vscode.EventEmitter();

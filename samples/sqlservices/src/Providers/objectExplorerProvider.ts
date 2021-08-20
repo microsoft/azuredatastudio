@@ -8,7 +8,6 @@ import { ProviderId } from './connectionProvider';
 
 /**
  * This class implements the ObjectExplorerProvider interface that is responsible for providing the connection tree view content.
- * Use this approach if the data service has native JavaScript SDK available, otherwise refer to mssql extension on how to leverage the dataprotocol client which has JSON/RPC support.
  */
 export class ObjectExplorerProvider implements azdata.ObjectExplorerProvider {
 	onSessionCreatedEmitter: vscode.EventEmitter<azdata.ObjectExplorerSession> = new vscode.EventEmitter<azdata.ObjectExplorerSession>();
