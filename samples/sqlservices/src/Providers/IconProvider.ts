@@ -6,6 +6,9 @@ import * as azdata from 'azdata';
 import { ProviderId } from './connectionProvider';
 
 const IconId = 'myprovidericon';
+/**
+ * This class implements the IconProvider interface that allows users to contribute icons for the root tree node instead of using the generic server icon.
+ */
 export class IconProvider implements azdata.IconProvider {
 	public readonly providerId: string = ProviderId;
 	public handle?: number;
