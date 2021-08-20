@@ -14,8 +14,14 @@ export interface LayoutRequestParams {
 	modelViewId?: string;
 	alwaysRefresh?: boolean;
 }
+
+export interface Thumbnail {
+	id: string,
+	path: string
+}
+
 export interface InsertCellsComponentParams extends IBootstrapParams {
-	thumbnails: string[],
+	thumbnails: Thumbnail[],
 	onClick: (e: IComponentEventArgs) => void
 }
 
@@ -32,8 +38,8 @@ export class InsertCellsScreenshots implements AfterViewInit {
 	) { }
 
 	ngAfterViewInit(): void {
-		this._params.thumbnails.forEach((thumbnail: string, idx: number) => {
-			const cellImageUri = URI.parse(thumbnail);
+		this._params.thumbnails.forEach((thumbnail: Thumbnail, idx: number) => {
+			const cellImageUri = URI.parse(thumbnail.path);
 
 			let cardComponentFactory = this._componentFactoryResolver.resolveComponentFactory(CardComponent);
 			let cardComponent = this._containerRef.createComponent(cardComponentFactory);
@@ -42,7 +48,7 @@ export class InsertCellsScreenshots implements AfterViewInit {
 				path: cellImageUri
 			};
 
-			cardComponent.instance.setProperties({ image: cardImage, label: `Cell ${idx}`, cardType: CardType.Image });
+			cardComponent.instance.setProperties({ image: cardImage, label: `Cell ${idx}`, value: thumbnail.id, cardType: CardType.Image });
 
 			cardComponent.instance.enabled = true;
 			cardComponent.instance.registerEventHandler(e => this._params.onClick(e));

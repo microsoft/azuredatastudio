@@ -14,7 +14,6 @@ import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IColorTheme, ICssStyleCollector, IThemeService, registerThemingParticipant } from 'vs/platform/theme/common/themeService';
-import * as DOM from 'vs/base/browser/dom';
 import { ServiceOptionType } from 'sql/platform/connection/common/interfaces';
 import { ServiceOption } from 'azdata';
 import * as DialogHelper from 'sql/workbench/browser/modal/dialogHelper';
@@ -31,6 +30,8 @@ import { InsertCellsModule } from 'sql/workbench/contrib/notebook/browser/notebo
 import { attachButtonStyler } from 'vs/platform/theme/common/styler';
 import { truncate } from 'vs/base/common/strings';
 import { toJpeg } from 'html-to-image';
+import { IComponentEventArgs } from 'sql/platform/dashboard/browser/interfaces';
+import { Thumbnail } from 'sql/workbench/contrib/notebook/browser/notebookViews/insertCellsScreenshots.component';
 
 type CellOption = {
 	optionMetadata: ServiceOption,
@@ -143,18 +144,24 @@ export class InsertCellsModal extends Modal {
 		const activeView = this._context.getActiveView();
 		const cellsAvailableToInsert = activeView.hiddenCells;
 
-		const imgs = await Promise.all(
+		const thumbnails = await Promise.all(
 			cellsAvailableToInsert.map(async (cell) => {
-				return this.generateScreenshot(cell);
+				return {
+					id: cell.id,
+					path: await this.generateScreenshot(cell)
+				} as Thumbnail;
 			})
 		);
 
-		this.bootstrapAngular(container, imgs);
+		this.bootstrapAngular(container, thumbnails);
 	}
 
-	public onOptionChecked(optionName: string) {
-		this.viewModel.setOptionValue(optionName, (<Checkbox>this._optionsMap[optionName]).checked);
-		this.validate();
+	public onOptionChecked(e: IComponentEventArgs) {
+		if (e.args?.value) {
+			let optionName: string = e.args.value;
+			this.viewModel.setOptionValue(optionName, e.args.selected);
+			this.validate();
+		}
 	}
 
 	public async generateScreenshot(cell: ICellModel, screenshotWidth: number = 300, screenshowHeight: number = 300, backgroundColor: string = '#ffffff'): Promise<string> {
@@ -246,14 +253,14 @@ export class InsertCellsModal extends Modal {
 	/**
 	 * Get the bootstrap params and perform the bootstrap
 	 */
-	private bootstrapAngular(bodyContainer: HTMLElement, imgs: string[]) {
+	private bootstrapAngular(bodyContainer: HTMLElement, thumbnails: Thumbnail[]) {
 		this._instantiationService.invokeFunction<void, any[]>(bootstrapAngular,
 			InsertCellsModule,
 			bodyContainer,
 			'insert-cells-screenshots-component',
 			{
-				thumbnails: imgs,
-				onClick: (e) => { }
+				thumbnails,
+				onClick: (e: IComponentEventArgs) => { this.onOptionChecked(e); }
 			},
 			undefined,
 			(moduleRef: NgModuleRef<typeof InsertCellsModule>) => this._moduleRef = moduleRef);

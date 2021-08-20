@@ -33,7 +33,12 @@
 }
 
 .model-card-legacy.image-card .card-content {
+	display: block;
+	width: 100%;
+	height: 100%;
 	padding: 0;
+	min-height: 100px;
+	z-index: 0;
 }
 
 .model-card-legacy.image-card .card-image {
@@ -41,6 +46,22 @@
 	background-repeat: no-repeat;
 	height: 100%;
 	width: 100%;
+}
+
+.model-card-legacy.image-card .card-label-overlay {
+	position: absolute;
+	bottom: 0;
+	width: 100%;
+	height: 25px;
+	line-height: 25px;
+	padding: 0;
+	margin: 0;
+	display: block;
+}
+
+.model-card-legacy.image-card .card-label {
+	margin: 0;
+	padding: 0px 10px
 }
 
 .model-card-legacy .card-vertical-button {

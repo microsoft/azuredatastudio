@@ -18,7 +18,7 @@ import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import * as DOM from 'vs/base/browser/dom';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/platform/dashboard/browser/interfaces';
-import { IColorTheme } from 'vs/platform/theme/common/themeService';
+import { IColorTheme, ICssStyleCollector, registerThemingParticipant } from 'vs/platform/theme/common/themeService';
 import { ILogService } from 'vs/platform/log/common/log';
 import { URI } from 'vs/workbench/workbench.web.api';
 
@@ -265,3 +265,24 @@ export default class CardComponent extends ComponentWithIconBase<azdata.CardProp
 
 	}
 }
+
+registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) => {
+	const badgeBackgroundColor = theme.getColor(colors.badgeBackground);
+	const badgeForegroundColor = theme.getColor(colors.badgeForeground);
+	if (badgeBackgroundColor) {
+		collector.addRule(`
+		.model-card-legacy.image-card .card-label-overlay {
+			color: ${badgeForegroundColor.toString()};
+			background-color: ${badgeBackgroundColor.toString()};
+		}
+		`);
+	}
+
+	if (badgeForegroundColor) {
+		collector.addRule(`
+		.model-card-legacy.image-card .card-label {
+			color: ${badgeForegroundColor.toString()};
+		}
+		`);
+	}
+});

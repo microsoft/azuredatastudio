@@ -15,7 +15,7 @@ import { IBootstrapParams, ISelector } from 'sql/workbench/services/bootstrap/co
 import CardComponent from 'sql/workbench/browser/modelComponents/card.component';
 import DivContainer from 'sql/workbench/browser/modelComponents/divContainer.component';
 import { ModelComponentWrapper } from 'sql/workbench/browser/modelComponents/modelComponentWrapper.component';
-import { InsertCellsScreenshots } from 'sql/workbench/contrib/notebook/browser/notebookViews/insertCellsScreenshot.components';
+import { InsertCellsScreenshots } from 'sql/workbench/contrib/notebook/browser/notebookViews/insertCellsScreenshots.component';
 import ImageComponent from 'sql/workbench/browser/modelComponents/image.component';
 
 // Insertcells main angular module
