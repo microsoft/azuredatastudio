@@ -13,6 +13,9 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { TreeNode, TreeDataProvider } from './treeDataProvider';
 import * as dashboard from './modelViewDashboard';
+import { ConnectionProvider } from '../providers/connectionProvider';
+import { IconProvider } from '../providers/IconProvider';
+import { ObjectExplorerProvider } from '../providers/objectExplorerProvider';
 
 /**
  * The main controller class that initializes the extension
@@ -37,6 +40,13 @@ export default class MainController implements vscode.Disposable {
 	}
 
 	public activate(): Promise<boolean> {
+		const connectionProvider = new ConnectionProvider();
+		const iconProvider = new IconProvider();
+		const objectExplorer = new ObjectExplorerProvider();
+		azdata.dataprotocol.registerConnectionProvider(connectionProvider);
+		azdata.dataprotocol.registerIconProvider(iconProvider);
+		azdata.dataprotocol.registerObjectExplorerProvider(objectExplorer);
+
 		const buttonHtml = fs.readFileSync(path.join(__dirname, 'button.html')).toString();
 		const counterHtml = fs.readFileSync(path.join(__dirname, 'counter.html')).toString();
 		this.registerSqlServicesModelView();
