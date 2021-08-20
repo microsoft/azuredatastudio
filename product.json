@@ -44,7 +44,7 @@
 		"Microsoft.admin-tool-ext-win",
 		"Microsoft.agent",
 		"Microsoft.arc",
-		"Microsoft.azdata",
+		"Microsoft.azcli",
 		"Microsoft.azuredatastudio-postgresql",
 		"Microsoft.azurehybridtoolkit",
 		"Microsoft.cms",
