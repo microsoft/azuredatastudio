@@ -311,7 +311,7 @@ export class FileConfigPage extends ImportPage {
 			actions: [this.fileButton]
 		};
 	}
-	// TODO: FIX ISSUE WHERE USERS COME BACK TO FILE CONFIG BUT CANT CHANGE TABLE NAME
+
 	private async createTableNameBox(): Promise<azdata.FormComponent> {
 		this.tableNameTextBox = this.view.modelBuilder.inputBox().withValidation((name) => {
 			let tableName = name.value;
@@ -331,6 +331,7 @@ export class FileConfigPage extends ImportPage {
 		}).component();
 
 		this.tableNameTextBox.onTextChanged((tableName) => {
+			this.model.newFileSelected = true;
 			this.model.table = tableName;
 		});
 
