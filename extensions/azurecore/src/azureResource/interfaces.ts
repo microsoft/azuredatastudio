@@ -15,10 +15,10 @@ export interface IAzureResourceSubscriptionService {
 	 * Gets subscriptions for the given account. Any errors that occur while fetching the subscriptions for each tenant
 	 * will be displayed to the user, but this function will only throw an error if it's unable to fetch any subscriptions.
 	 * @param account The account to get the subscriptions for
-	 * @param tenants The list of tenants to get subscriptions for - if undefined then subscriptions for all tenants will be retrieved
+	 * @param tenantIds The list of tenant IDs to get subscriptions for - if undefined then subscriptions for all tenants will be retrieved
 	 * @returns The list of all subscriptions on this account that were able to be retrieved
 	 */
-	getSubscriptions(account: Account, tenants?: string[] | undefined): Promise<azureResource.AzureResourceSubscription[]>;
+	getSubscriptions(account: AzureAccount, tenantIds?: string[] | undefined): Promise<azureResource.AzureResourceSubscription[]>;
 }
 
 export interface IAzureResourceSubscriptionFilterService {

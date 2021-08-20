@@ -7,7 +7,7 @@ import { ResourceGraphClient } from '@azure/arm-resourcegraph';
 import { TokenCredentials } from '@azure/ms-rest-js';
 import axios, { AxiosRequestConfig } from 'axios';
 import * as azdata from 'azdata';
-import { AzureRestResponse, GetResourceGroupsResult, GetSubscriptionsResult, ResourceQueryResult, GetBlobContainersResult, GetFileSharesResult, HttpRequestMethod, GetLocationsResult, GetManagedDatabasesResult, CreateResourceGroupResult, GetBlobsResult, GetStorageAccountAccessKeyResult } from 'azurecore';
+import { AzureRestResponse, GetResourceGroupsResult, GetSubscriptionsResult, ResourceQueryResult, GetBlobContainersResult, GetFileSharesResult, HttpRequestMethod, GetLocationsResult, GetManagedDatabasesResult, CreateResourceGroupResult, GetBlobsResult, GetStorageAccountAccessKeyResult, AzureAccount } from 'azurecore';
 import { azureResource } from 'azureResource';
 import { EOL } from 'os';
 import * as nls from 'vscode-nls';
@@ -262,7 +262,7 @@ export async function runResourceQuery<T extends azureResource.AzureGraphResourc
 	return result;
 }
 
-export async function getSubscriptions(appContext: AppContext, account?: azdata.Account, ignoreErrors: boolean = false): Promise<GetSubscriptionsResult> {
+export async function getSubscriptions(appContext: AppContext, account?: AzureAccount, ignoreErrors: boolean = false): Promise<GetSubscriptionsResult> {
 	const result: GetSubscriptionsResult = { subscriptions: [], errors: [] };
 	if (!account?.properties?.tenants || !Array.isArray(account.properties.tenants)) {
 		const error = new Error(invalidAzureAccount);
