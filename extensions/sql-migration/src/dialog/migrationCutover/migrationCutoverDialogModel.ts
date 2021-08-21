@@ -70,6 +70,18 @@ export class MigrationCutoverDialogModel {
 		return undefined!;
 	}
 
+	public async fetchErrors() {
+		let errors = [];
+		await this.fetchStatus();
+		errors.push(this.migrationOpStatus.error?.message);
+		errors.push(this._migration.asyncOperationResult?.error?.message);
+		errors.push(this.migrationStatus.properties.provisioningError);
+		errors.push(this.migrationStatus.properties.migrationFailureError?.message);
+		errors.push(this.migrationStatus.properties.migrationStatusDetails?.fileUploadBlockingErrors ?? []);
+		errors.push(this.migrationStatus.properties.migrationStatusDetails?.restoreBlockingReason);
+		return errors;
+	}
+
 	public async cancelMigration(): Promise<void> {
 		try {
 			if (this.migrationStatus) {

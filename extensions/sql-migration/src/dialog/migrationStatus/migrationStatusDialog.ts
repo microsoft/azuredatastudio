@@ -14,6 +14,7 @@ import { clearDialogMessage, convertTimeDifferenceToDuration, filterMigrations, 
 import { SqlMigrationServiceDetailsDialog } from '../sqlMigrationService/sqlMigrationServiceDetailsDialog';
 import { ConfirmCutoverDialog } from '../migrationCutover/confirmCutoverDialog';
 import { MigrationCutoverDialogModel } from '../migrationCutover/migrationCutoverDialogModel';
+import { EOL } from 'os';
 
 const refreshFrequency: SupportedAutoRefreshIntervals = 180000;
 
@@ -450,10 +451,10 @@ export class MigrationStatusDialog {
 			warningCount++;
 		}
 
-		return this._getStatusControl(migrationStatus, warningCount);
+		return this._getStatusControl(migrationStatus, warningCount, migration);
 	}
 
-	private _getStatusControl(status: string, count: number): azdata.FlexContainer {
+	private _getStatusControl(status: string, count: number, migration: MigrationContext): azdata.FlexContainer {
 		const control = this._view.modelBuilder
 			.flexContainer()
 			.withItems([
@@ -479,22 +480,51 @@ export class MigrationStatusDialog {
 			.component();
 
 		if (count > 0) {
-			control.addItems([
-				// migration warning / error image
-				this._view.modelBuilder.image().withProps({
+			const migrationWarningImage = this._view.modelBuilder.image()
+				.withProps({
 					iconPath: this._statusInfoMap(status),
 					iconHeight: statusImageSize,
 					iconWidth: statusImageSize,
 					height: statusImageSize,
 					width: statusImageSize,
 					CSSStyles: imageCellStyles
-				}).component(),
-				// migration warning / error counts
-				this._view.modelBuilder.text().withProps({
-					value: loc.STATUS_WARNING_COUNT(status, count),
+				}).component();
+
+			const migrationWarningCount = this._view.modelBuilder.hyperlink()
+				.withProps({
+					label: loc.STATUS_WARNING_COUNT(status, count) ?? '',
+					url: '',
 					height: statusImageSize,
 					CSSStyles: statusCellStyles,
-				}).component()
+				}).component();
+			this._disposables.push(migrationWarningCount.onDidClick(async () => {
+				clearDialogMessage(this._dialogObject);
+				const cutoverDialogModel = new MigrationCutoverDialogModel(migration!);
+				const errors = await cutoverDialogModel.fetchErrors();
+				this._dialogObject.message = {
+					text: errors
+						.filter((e, i, arr) => e !== undefined && i === arr.indexOf(e))
+						.join(EOL),
+					level: status === MigrationStatus.InProgress
+						|| status === MigrationStatus.Completing
+						? azdata.window.MessageLevel.Warning
+						: azdata.window.MessageLevel.Error,
+					description: (cutoverDialogModel.migrationOpStatus) ?
+						(JSON.stringify(
+							{
+								'async-operation-details': cutoverDialogModel.migrationOpStatus,
+								'details': status
+							}
+							, undefined, 2)) :
+						(JSON.stringify(status, undefined, 2))
+				};
+			}));
+
+			control.addItems([
+				// migration warning / error image
+				migrationWarningImage,
+				// migration warning / error counts
+				migrationWarningCount
 			]);
 		}
 
