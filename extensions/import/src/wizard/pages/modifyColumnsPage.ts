@@ -145,7 +145,7 @@ export class ModifyColumnsPage extends ImportPage {
 		return undefined;
 	}
 
-	private async emptyTable() {
+	private emptyTable() {
 		this.table.updateProperties({
 			data: [],
 			columns: []

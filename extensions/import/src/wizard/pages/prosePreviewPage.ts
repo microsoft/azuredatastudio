@@ -115,6 +115,10 @@ export class ProsePreviewPage extends ImportPage {
 				proseResult = await this.handleProse();
 			} catch (ex) {
 				error = ex.toString();
+				this.instance.wizard.message = {
+					level: azdata.window.MessageLevel.Error,
+					text: error
+				};
 			}
 			this.model.newFileSelected = false;
 			this.loading.loading = false;
@@ -221,7 +225,7 @@ export class ProsePreviewPage extends ImportPage {
 		});
 	}
 
-	private async emptyTable() {
+	private emptyTable() {
 		this.table.updateProperties({
 			data: [],
 			columns: []

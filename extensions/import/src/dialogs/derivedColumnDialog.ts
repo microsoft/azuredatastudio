@@ -60,12 +60,10 @@ export class DerivedColumnDialog {
 			const columnTableData: azdata.DeclarativeTableCellValue[][] = [];
 			this._model.originalProseColumns.forEach(c => {
 				const tableRow: azdata.DeclarativeTableCellValue[] = [];
-				tableRow.push({
-					value: false
-				});
-				tableRow.push({
-					value: c.columnName
-				});
+				tableRow.push(
+					{ value: false },
+					{ value: c.columnName }
+				);
 				columnTableData.push(tableRow);
 			});
 			this._view = view;
@@ -110,7 +108,11 @@ export class DerivedColumnDialog {
 						}
 					);
 					for (let index = 0; index < this._model.proseDataPreview.length; index++) {
-						this._transformationTable.dataValues[index].splice(this._transformationTable.dataValues[index].length - 1, 0, { value: this._model.proseDataPreview[index][e.row] });
+						this._transformationTable.dataValues[index].splice(
+							this._transformationTable.dataValues[index].length - 1,
+							0,
+							{ value: this._model.proseDataPreview[index][e.row] }
+						);
 					}
 
 				}
@@ -327,9 +329,7 @@ export class DerivedColumnDialog {
 		});
 
 		this._dialogObject.content = [tab];
-		azdata.window.openDialog(
-			this._dialogObject
-		);
+		azdata.window.openDialog(this._dialogObject);
 		return new Promise((resolve) => {
 			this._doneEmitter.once('done', async () => {
 				await this._provider.sendSaveTransformationRequest({
