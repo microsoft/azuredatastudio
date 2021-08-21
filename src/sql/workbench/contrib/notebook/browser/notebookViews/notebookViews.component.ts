@@ -261,6 +261,10 @@ export class NotebookViewComponent extends AngularDisposable implements INoteboo
 
 		let insertCellsAction = this._instantiationService.createInstance(InsertCellAction, this.insertCell.bind(this), this.views, this._containerRef, this._componentFactoryResolver);
 
+		// Hide the insert cell action button if no cells can be added
+		insertCellsAction.enabled = this.activeView?.hiddenCells.length > 0;
+		this.activeView.onCellVisibilityChanged(e => { insertCellsAction.enabled = this.activeView?.hiddenCells.length > 0; });
+
 		this._runAllCellsAction = this._instantiationService.createInstance(RunAllCellsAction, 'notebook.runAllCells', localize('runAllPreview', "Run all"), 'notebook-button masked-pseudo start-outline');
 
 		let spacerElement = document.createElement('li');

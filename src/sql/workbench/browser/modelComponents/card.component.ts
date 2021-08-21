@@ -21,6 +21,7 @@ import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } fro
 import { IColorTheme, ICssStyleCollector, registerThemingParticipant } from 'vs/platform/theme/common/themeService';
 import { ILogService } from 'vs/platform/log/common/log';
 import { URI } from 'vs/workbench/workbench.web.api';
+import { SIDE_BAR_BACKGROUND, SIDE_BAR_FOREGROUND } from 'vs/workbench/common/theme';
 
 export interface ActionDescriptor {
 	label: string;
@@ -104,6 +105,8 @@ export default class CardComponent extends ComponentWithIconBase<azdata.CardProp
 	}
 
 	private _defaultBorderColor = 'rgb(214, 214, 214)';
+	private _defaultImageSize = 'contain';
+	private _defaultImagePosition = '';
 	private _hasFocus: boolean;
 
 	public onCardClick() {
@@ -165,6 +168,14 @@ export default class CardComponent extends ComponentWithIconBase<azdata.CardProp
 
 	public get imagePath(): string {
 		return this.image.path.toString(true);
+	}
+
+	public get imageSize(): string {
+		return this.image.size ?? this._defaultImageSize;
+	}
+
+	public get imagePosition(): string {
+		return this.image.position ?? this._defaultImagePosition;
 	}
 
 	private get selectable(): boolean {
@@ -267,21 +278,20 @@ export default class CardComponent extends ComponentWithIconBase<azdata.CardProp
 }
 
 registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) => {
-	const badgeBackgroundColor = theme.getColor(colors.badgeBackground);
-	const badgeForegroundColor = theme.getColor(colors.badgeForeground);
-	if (badgeBackgroundColor) {
+	const backgroundColor = theme.getColor(SIDE_BAR_BACKGROUND);
+	const foregroundColor = theme.getColor(SIDE_BAR_FOREGROUND);
+	if (backgroundColor) {
 		collector.addRule(`
 		.model-card-legacy.image-card .card-label-overlay {
-			color: ${badgeForegroundColor.toString()};
-			background-color: ${badgeBackgroundColor.toString()};
+			background-color: ${backgroundColor.toString()};
 		}
 		`);
 	}
 
-	if (badgeForegroundColor) {
+	if (foregroundColor) {
 		collector.addRule(`
 		.model-card-legacy.image-card .card-label {
-			color: ${badgeForegroundColor.toString()};
+			color: ${foregroundColor.toString()};
 		}
 		`);
 	}

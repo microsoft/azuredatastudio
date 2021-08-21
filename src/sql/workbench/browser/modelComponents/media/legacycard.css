@@ -46,6 +46,7 @@
 	background-repeat: no-repeat;
 	height: 100%;
 	width: 100%;
+	background-size: contain;
 }
 
 .model-card-legacy.image-card .card-label-overlay {

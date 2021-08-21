@@ -770,6 +770,7 @@ export class NotebookViewStub implements INotebookView {
 	displayedCells: readonly ICellModel[];
 
 	onDeleted: vsEvent.Event<INotebookView>;
+	onCellVisibilityChanged: vsEvent.Event<ICellModel>;
 	initialize(): void {
 		throw new Error('Method not implemented.');
 	}

@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import 'vs/css!./insertCellsModal';
-import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox';
 import { Button } from 'sql/base/browser/ui/button/button';
 import { IClipboardService } from 'sql/platform/clipboard/common/clipboardService';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
@@ -57,6 +56,10 @@ export class CellOptionsModel {
 		});
 	}
 
+	public get checkedOptions(): CellOption[] {
+		return Object.values(this._optionsMap).filter(o => o.currentValue === true);
+	}
+
 	private getDisplayValue(optionMetadata: ServiceOption, optionValue: string): boolean {
 		let displayValue: boolean = false;
 		switch (optionMetadata.valueType) {
@@ -96,7 +99,6 @@ export class InsertCellsModal extends Modal {
 
 	private _submitButton: Button;
 	private _cancelButton: Button;
-	private _optionsMap: { [name: string]: Checkbox } = {};
 	private _maxTitleLength: number = 20;
 	private _moduleRef?: NgModuleRef<typeof InsertCellsModule>;
 
@@ -147,7 +149,7 @@ export class InsertCellsModal extends Modal {
 		const thumbnails = await Promise.all(
 			cellsAvailableToInsert.map(async (cell) => {
 				return {
-					id: cell.id,
+					id: cell.cellGuid,
 					path: await this.generateScreenshot(cell)
 				} as Thumbnail;
 			})
@@ -213,7 +215,7 @@ export class InsertCellsModal extends Modal {
 	}
 
 	private validate() {
-		if (Object.keys(this._optionsMap).length) {
+		if (this.viewModel.checkedOptions.length) {
 			this._submitButton.enabled = true;
 		} else {
 			this._submitButton.enabled = false;
@@ -239,11 +241,6 @@ export class InsertCellsModal extends Modal {
 
 	public override dispose(): void {
 		super.dispose();
-		for (let key in this._optionsMap) {
-			let widget = this._optionsMap[key];
-			widget.dispose();
-			delete this._optionsMap[key];
-		}
 
 		if (this._moduleRef) {
 			this._moduleRef.destroy();

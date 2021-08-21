@@ -50,7 +50,7 @@
 
 		<ng-container *ngIf="isImageCard">
 			<div class="card-content">
-				<div class="card-image" [ngStyle]="{'background-image': 'url(' + imagePath + ')'}"></div>
+				<div class="card-image" [style.background-image]="'url(' + imagePath + ')'" [style.background-size]="imageSize" [style.background-position]="imagePosition"></div>
 				<div *ngIf="label" class="card-label-overlay">
 					<h4 class="card-label">{{label}}</h4>
 				</div>

@@ -48,7 +48,7 @@ export class InsertCellsScreenshots implements AfterViewInit {
 				path: cellImageUri
 			};
 
-			cardComponent.instance.setProperties({ image: cardImage, label: `Cell ${idx}`, value: thumbnail.id, cardType: CardType.Image });
+			cardComponent.instance.setProperties({ image: cardImage, label: `Cell ${idx + 1}`, value: thumbnail.id, cardType: CardType.Image });
 
 			cardComponent.instance.enabled = true;
 			cardComponent.instance.registerEventHandler(e => this._params.onClick(e));
