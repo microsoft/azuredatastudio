@@ -4,6 +4,12 @@
     <trans-unit id="dacFx.settings">
       <source xml:lang="en">Dacpac</source>
     </trans-unit>
+    <trans-unit id="dacFx.startTitle">
+      <source xml:lang="en">Data-tier Application Wizard</source>
+    </trans-unit>
+    <trans-unit id="dacFx.category">
+      <source xml:lang="en">DacFx</source>
+    </trans-unit>
     <trans-unit id="dacFx.defaultSaveLocation">
       <source xml:lang="en">Full path to folder where .DACPAC and .BACPAC files are saved by default</source>
     </trans-unit>

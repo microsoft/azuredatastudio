@@ -5,8 +5,9 @@
 
 declare module 'azureResource' {
 	import { TreeDataProvider } from 'vscode';
-	import { DataProvider, Account, TreeItem } from 'azdata';
+	import { DataProvider, TreeItem } from 'azdata';
 	import { BlobItem } from '@azure/storage-blob';
+	import { AzureAccount } from 'azurecore';
 
 	export namespace azureResource {
 
@@ -38,7 +39,7 @@ declare module 'azureResource' {
 		}
 
 		export interface IAzureResourceNode {
-			readonly account: Account;
+			readonly account: AzureAccount;
 			readonly subscription: AzureResourceSubscription;
 			readonly tenantId: string;
 			readonly treeItem: TreeItem;

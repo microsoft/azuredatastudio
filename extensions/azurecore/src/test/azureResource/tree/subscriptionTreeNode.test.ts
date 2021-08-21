@@ -5,7 +5,6 @@
 
 import * as should from 'should';
 import * as TypeMoq from 'typemoq';
-import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import 'mocha';
 import { AppContext } from '../../../appContext';
@@ -18,6 +17,7 @@ import { AzureResourceService } from '../../../azureResource/resourceService';
 import { AzureResourceResourceTreeNode } from '../../../azureResource/resourceTreeNode';
 import { IAzureResourceCacheService } from '../../../azureResource/interfaces';
 import { generateGuid } from '../../../azureResource/utils';
+import { AzureAccount } from 'azurecore';
 
 // Mock services
 let appContext: AppContext;
@@ -28,7 +28,7 @@ let mockCacheService: TypeMoq.IMock<IAzureResourceCacheService>;
 let mockTreeChangeHandler: TypeMoq.IMock<IAzureResourceTreeChangeHandler>;
 
 // Mock test data
-const mockAccount: azdata.Account = {
+const mockAccount: AzureAccount = {
 	key: {
 		accountId: 'mock_account',
 		providerId: 'mock_provider'
