@@ -184,24 +184,6 @@ export class InsertCellsModal extends Modal {
 		return toJpeg(component.instance.outputRef.nativeElement, { quality: .6, canvasWidth, canvasHeight, backgroundColor });
 	}
 
-	public async generateScreenshot(cell: ICellModel, screenshotWidth: number = 300, screenshowHeight: number = 300, backgroundColor: string = '#ffffff'): Promise<string> {
-		let componentFactory = this._componentFactoryResolver.resolveComponentFactory(TextCellComponent);
-		let component = this._containerRef.createComponent(componentFactory);
-
-		component.instance.model = this._context.notebook as NotebookModel;
-		component.instance.cellModel = cell;
-
-		component.instance.handleContentChanged();
-
-		const element: HTMLElement = component.instance.outputRef.nativeElement;
-
-		const scale = element.clientWidth / screenshotWidth;
-		const canvasWidth = element.clientWidth / scale;
-		const canvasHeight = element.clientHeight / scale;
-
-		return toJpeg(component.instance.outputRef.nativeElement, { quality: .6, canvasWidth, canvasHeight, backgroundColor });
-	}
-
 	private getOptions(): ServiceOption[] {
 		const activeView = this._context.getActiveView();
 		const cellsAvailableToInsert = activeView.hiddenCells;
