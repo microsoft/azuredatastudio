@@ -2,7 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import 'vs/css!./InsertCellsScreenshots';
+import 'vs/css!./insertCellsScreenshots';
 import { Component, AfterViewInit, forwardRef, Inject, ComponentFactoryResolver, ViewContainerRef, ViewChild } from '@angular/core';
 import { IBootstrapParams } from 'sql/workbench/services/bootstrap/common/bootstrapParams';
 import { IComponentEventArgs } from 'sql/platform/dashboard/browser/interfaces';
