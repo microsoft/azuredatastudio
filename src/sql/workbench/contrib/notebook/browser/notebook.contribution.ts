@@ -279,15 +279,7 @@ configurationRegistry.registerConfiguration({
 			'type': 'boolean',
 			'default': true,
 			'description': localize('notebook.sqlStopOnError', "SQL kernel: stop Notebook execution when error occurs in a cell.")
-		}
-	}
-});
-
-configurationRegistry.registerConfiguration({
-	'id': 'notebook',
-	'title': 'Notebook',
-	'type': 'object',
-	'properties': {
+		},
 		'notebook.showAllKernels': {
 			'type': 'boolean',
 			'default': false,
@@ -345,6 +337,11 @@ configurationRegistry.registerConfiguration({
 			'type': 'boolean',
 			'default': false,
 			'description': localize('notebook.enableIncrementalGridRendering', "Enable incremental grid rendering for notebooks. This will improve the initial rendering time for large notebooks. There may be performance issues when interacting with the notebook while the rest of the grids are rendering.")
+		},
+		'notebook.useNewMarkdownRenderer': {
+			'type': 'boolean',
+			default: true,
+			'description': localize('notebook.useNewMarkdownRenderer', "Whether to use the newer version of the markdown renderer for Notebooks.")
 		}
 	}
 });
