@@ -556,11 +556,17 @@ declare module 'vscode-mssql' {
         schema: string;
     }
 
+    /**
+     * Azure functions binding type
+     */
     export const enum BindingType {
         input,
         output
     }
 
+    /**
+     * Parameters for adding a SQL binding to an Azure function
+     */
     export interface AddSqlBindingParams {
         filePath: string;
         functionName: string;
@@ -569,10 +575,16 @@ declare module 'vscode-mssql' {
         connectionStringSetting: string;
     }
 
+    /**
+     * Parameters for getting the names of the Azure functions in a file
+     */
     export interface GetAzureFunctionsParams {
         filePath: string;
     }
 
+    /**
+     * Result from a get Azure functions request
+     */
     export interface GetAzureFunctionsResult extends ResultStatus {
         azureFunctions: string[];
     }

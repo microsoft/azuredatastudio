@@ -89,9 +89,11 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined):
 
 		if (!result.success) {
 			vscode.window.showErrorMessage(result.errorMessage);
+			return;
 		}
 	} catch (e) {
 		vscode.window.showErrorMessage(e);
+		return;
 	}
 }
 
