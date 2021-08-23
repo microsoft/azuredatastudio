@@ -7,11 +7,13 @@ import { deepClone } from 'vs/base/common/objects';
 export interface IAutoColumnSizeOptions extends Slick.PluginOptions {
 	maxWidth?: number;
 	autoSizeOnRender?: boolean;
+	extraColumnHeaderWidth?: number;
 }
 
 const defaultOptions: IAutoColumnSizeOptions = {
 	maxWidth: 212,
-	autoSizeOnRender: false
+	autoSizeOnRender: false,
+	extraColumnHeaderWidth: 0
 };
 
 // Set the max number of rows to scan to 10 since the result grid viewport in query editor is usually around 10 rows but can go up to 20 rows for notebooks.
@@ -97,6 +99,9 @@ export class AutoColumnSize<T extends Slick.SlickData> implements Slick.Plugin<T
 			}
 
 			let headerWidths: number[] = this.getElementWidths(headerElements);
+			headerWidths = headerWidths.map(width => {
+				return width + this._options.extraColumnHeaderWidth;
+			});
 			let maxColumnTextWidths: number[] = this.getMaxColumnTextWidths(columnDefs, colIndices);
 
 			for (let i = 0; i < columnDefs.length; i++) {
