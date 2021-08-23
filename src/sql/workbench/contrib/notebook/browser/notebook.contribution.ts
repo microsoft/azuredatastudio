@@ -61,6 +61,7 @@ import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileE
 import { IModeService } from 'vs/editor/common/services/modeService';
 import { ILogService } from 'vs/platform/log/common/log';
 import { DiffEditorInput } from 'vs/workbench/common/editor/diffEditorInput';
+import { useNewMarkdownRendererKey } from 'sql/workbench/contrib/notebook/common/notebookCommon';
 
 Registry.as<IEditorInputFactoryRegistry>(EditorExtensions.EditorInputFactories)
 	.registerEditorInputSerializer(FileNotebookInput.ID, FileNoteBookEditorInputSerializer);
@@ -269,8 +270,6 @@ registerAction2(class extends Action2 {
 	};
 });
 
-export const useNewMarkdownRendererKey = 'notebook.useNewMarkdownRenderer';
-
 const configurationRegistry = Registry.as<IConfigurationRegistry>(ConfigExtensions.Configuration);
 configurationRegistry.registerConfiguration({
 	'id': 'notebook',
@@ -340,7 +339,7 @@ configurationRegistry.registerConfiguration({
 			'default': false,
 			'description': localize('notebook.enableIncrementalGridRendering', "Enable incremental grid rendering for notebooks. This will improve the initial rendering time for large notebooks. There may be performance issues when interacting with the notebook while the rest of the grids are rendering.")
 		},
-		useNewMarkdownRendererKey: {
+		[useNewMarkdownRendererKey]: {
 			'type': 'boolean',
 			default: true,
 			'description': localize('notebook.useNewMarkdownRenderer', "Whether to use the newer version of the markdown renderer for Notebooks.")

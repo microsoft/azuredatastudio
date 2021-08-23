@@ -16,7 +16,7 @@ import { ImageMimeTypes } from 'sql/workbench/services/notebook/common/contracts
 import { IMarkdownStringWithCellAttachments, MarkdownRenderOptionsWithCellAttachments } from 'sql/workbench/contrib/notebook/browser/cellViews/interfaces';
 import { replaceInvalidLinkPath } from 'sql/workbench/contrib/notebook/common/utils';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { useNewMarkdownRendererKey } from 'sql/workbench/contrib/notebook/browser/notebook.contribution';
+import { useNewMarkdownRendererKey } from 'sql/workbench/contrib/notebook/common/notebookCommon';
 
 // Based off of HtmlContentRenderer
 export class NotebookMarkdownRenderer {
