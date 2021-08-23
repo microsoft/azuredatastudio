@@ -84,7 +84,7 @@ const publicAzureSettings: ProviderSettings = {
 			},
 			azureKustoResource: {
 				id: SettingIds.kusto,
-				endpoint: 'https://api.kusto.io',
+				endpoint: 'https://kusto.kusto.windows.net',
 				azureResourceId: AzureResource.AzureKusto,
 			},
 			redirectUri: 'https://vscode-redirect.azurewebsites.net/',
