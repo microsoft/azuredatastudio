@@ -246,14 +246,14 @@ jobs:
           ELECTRON_SKIP_BINARY_DOWNLOAD: 1
         run: yarn --frozen-lockfile --network-timeout 180000
 
-      - name: Run Hygiene Checks
-        run: yarn gulp hygiene
+      # - name: Run Hygiene Checks
+      #   run: yarn gulp hygiene
 
-      - name: Run Valid Layers Checks
-        run: yarn valid-layers-check
+      # - name: Run Valid Layers Checks
+      #   run: yarn valid-layers-check
 
-      - name: Run Strict Compile Options # {{SQL CARBON EDIT}} add step
-        run: yarn strict-vscode
+      # - name: Run Strict Compile Options # {{SQL CARBON EDIT}} add step
+      #   run: yarn strict-vscode
 
       # - name: Run Monaco Editor Checks {{SQL CARBON EDIT}} Remove Monaco checks
       #   run: yarn monaco-compile-check
