@@ -567,11 +567,30 @@ declare module 'vscode-mssql' {
     /**
      * Parameters for adding a SQL binding to an Azure function
      */
-    export interface AddSqlBindingParams {
+     export interface AddSqlBindingParams {
+        /**
+         * Aboslute file path of file to add SQL binding
+         */
         filePath: string;
+
+        /**
+         * Name of function to add SQL binding
+         */
         functionName: string;
+
+        /**
+         * Name of object to use in SQL binding
+         */
         objectName: string;
+
+        /**
+         * Type of Azure function binding
+         */
         bindingType: BindingType;
+
+        /**
+         * Name of SQL connection string setting specified in local.settings.json
+         */
         connectionStringSetting: string;
     }
 
@@ -579,6 +598,9 @@ declare module 'vscode-mssql' {
      * Parameters for getting the names of the Azure functions in a file
      */
     export interface GetAzureFunctionsParams {
+        /**
+         * Absolute file path of file to get Azure functions
+         */
         filePath: string;
     }
 
@@ -586,6 +608,9 @@ declare module 'vscode-mssql' {
      * Result from a get Azure functions request
      */
     export interface GetAzureFunctionsResult extends ResultStatus {
+        /**
+         * Array of names of Azure functions in the file
+         */
         azureFunctions: string[];
     }
 }
