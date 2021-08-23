@@ -78,7 +78,7 @@ export class GridPanel extends Disposable {
 	private maximizedGrid: GridTable<any> | HighPerfGridTable<any>;
 	private _state: GridPanelState | undefined;
 
-	private readonly optimized = this.configurationService.getValue<IQueryEditorConfiguration>('queryEditor').results.optimizedTable;
+	private readonly optimized = false; // this.configurationService.getValue<IQueryEditorConfiguration>('queryEditor').results.optimizedTable; Remove this option until work can be completed for this
 
 	constructor(
 		@IConfigurationService private readonly configurationService: IConfigurationService,
