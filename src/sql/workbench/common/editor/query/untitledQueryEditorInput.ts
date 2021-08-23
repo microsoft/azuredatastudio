@@ -45,6 +45,7 @@ export class UntitledQueryEditorInput extends QueryEditorInput implements IEncod
 	override async save(group: GroupIdentifier, options?: ISaveOptions): Promise<IEditorInput | undefined> {
 		let preProcessed = await this.text.saveAs(group, options);
 		this._results.uri = preProcessed.resource.toString(true);
+		// preProcessed is of type FileEditorInput, must add the necessary save data via this type of assignment without using carbon edits.
 		preProcessed['results'] = this.results;
 		preProcessed['resultsVisible'] = this.state.resultsVisible;
 		await this.renameQuery(preProcessed.resource.toString(true));
@@ -54,6 +55,7 @@ export class UntitledQueryEditorInput extends QueryEditorInput implements IEncod
 	override async saveAs(group: GroupIdentifier, options?: ISaveOptions): Promise<IEditorInput | undefined> {
 		let preProcessed = await this.text.saveAs(group, options);
 		this._results.uri = preProcessed.resource.toString(true);
+		// preProcessed is of type FileEditorInput, must add the necessary save data via this type of assignment without using carbon edits.
 		preProcessed['results'] = this.results;
 		preProcessed['resultsVisible'] = this.state.resultsVisible;
 		await this.renameQuery(preProcessed.resource.toString(true));

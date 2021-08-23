@@ -73,20 +73,21 @@ export class QueryEditorLanguageAssociation implements ILanguageAssociation {
 
 	syncConvertinput(activeEditor: IEditorInput): QueryEditorInput | undefined {
 		let queryResultsInput = this.instantiationService.createInstance(QueryResultsInput, activeEditor.resource.toString(true));
-		if ((activeEditor as any).results) {
-			queryResultsInput = (activeEditor as any).results;
-		}
 		let queryEditorInput: QueryEditorInput;
 		if (activeEditor instanceof FileEditorInput) {
+			// Handle save as from untitled file where results are stored in FileEditorInput.
+			if ((activeEditor as any).results) {
+				queryResultsInput = (activeEditor as any).results;
+			}
 			queryEditorInput = this.instantiationService.createInstance(FileQueryEditorInput, '', activeEditor, queryResultsInput);
+			// If the original untitled query editor had the results visible, make sure to set results visible for the replacement editor.
+			if ((activeEditor as any).resultsVisible) {
+				queryEditorInput.state.resultsVisible = true;
+			}
 		} else if (activeEditor instanceof UntitledTextEditorInput) {
 			queryEditorInput = this.instantiationService.createInstance(UntitledQueryEditorInput, '', activeEditor, queryResultsInput);
 		} else {
 			return undefined;
-		}
-		// If the original query editor had the results visible, make sure to set results visible for the replacement editor.
-		if ((activeEditor as any).resultsVisible) {
-			queryEditorInput.state.resultsVisible = true;
 		}
 		const profile = getCurrentGlobalConnection(this.objectExplorerService, this.connectionManagementService, this.editorService);
 		if (profile) {
