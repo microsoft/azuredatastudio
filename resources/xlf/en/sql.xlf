@@ -3573,7 +3573,7 @@ Error: {1}</source>
       <source xml:lang="en">Results grid</source>
     </trans-unit>
     <trans-unit id="resultsGrid.maxRowCountExceeded">
-      <source xml:lang="en">Max row count for filtering/sorting has been exceeded. To update it, you can go to User Settings and change the setting: 'queryEditor.results.inMemoryDataProcessingThreshold'</source>
+      <source xml:lang="en">Max row count for filtering/sorting has been exceeded. To update it, navigate to User Settings and change the setting: 'queryEditor.results.inMemoryDataProcessingThreshold'</source>
     </trans-unit>
   </body></file>
   <file original="src/sql/workbench/contrib/query/browser/keyboardQueryActions" source-language="en" datatype="plaintext"><body>
