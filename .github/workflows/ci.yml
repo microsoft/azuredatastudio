@@ -234,6 +234,27 @@ jobs:
         with:
           node-version: 12
 
+      - name: Compute node modules cache key
+        id: nodeModulesCacheKey
+        run: echo "::set-output name=value::$(node build/azure-pipelines/common/sql-computeNodeModulesCacheKey.js)"
+      - name: Cache node modules
+        id: cacheNodeModules
+        uses: actions/cache@v2
+        with:
+          path: "**/node_modules"
+          key: ${{ runner.os }}-cacheNodeModules13-${{ steps.nodeModulesCacheKey.outputs.value }}
+          restore-keys: ${{ runner.os }}-cacheNodeModules13-
+      - name: Get yarn cache directory path
+        id: yarnCacheDirPath
+        if: ${{ steps.cacheNodeModules.outputs.cache-hit != 'true' }}
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+      - name: Cache yarn directory
+        if: ${{ steps.cacheNodeModules.outputs.cache-hit != 'true' }}
+        uses: actions/cache@v2
+        with:
+          path: ${{ steps.yarnCacheDirPath.outputs.dir }}
+          key: ${{ runner.os }}-yarnCacheDir-${{ steps.nodeModulesCacheKey.outputs.value }}
+          restore-keys: ${{ runner.os }}-yarnCacheDir-
       - name: Setup Build Environment # {{SQL CARBON EDIT}} Add step to install required packages if we need to run yarn
         if: ${{ steps.cacheNodeModules.outputs.cache-hit != 'true' }}
         run: |
@@ -246,14 +267,14 @@ jobs:
           ELECTRON_SKIP_BINARY_DOWNLOAD: 1
         run: yarn --frozen-lockfile --network-timeout 180000
 
-      # - name: Run Hygiene Checks
-      #   run: yarn gulp hygiene
+      - name: Run Hygiene Checks
+        run: yarn gulp hygiene
 
-      # - name: Run Valid Layers Checks
-      #   run: yarn valid-layers-check
+      - name: Run Valid Layers Checks
+        run: yarn valid-layers-check
 
-      # - name: Run Strict Compile Options # {{SQL CARBON EDIT}} add step
-      #   run: yarn strict-vscode
+      - name: Run Strict Compile Options # {{SQL CARBON EDIT}} add step
+        run: yarn strict-vscode
 
       # - name: Run Monaco Editor Checks {{SQL CARBON EDIT}} Remove Monaco checks
       #   run: yarn monaco-compile-check
