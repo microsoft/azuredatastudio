@@ -392,6 +392,13 @@ const queryEditorConfiguration: IConfigurationNode = {
 			'description': localize('queryEditor.results.copyRemoveNewLine', "Configuration options for copying multi-line results from the Results View"),
 			'default': true
 		},
+		/* Removing this for now until work can be completed on it
+		'queryEditor.results.optimizedTable': {
+			'type': 'boolean',
+			'description': localize('queryEditor.results.optimizedTable', "(Experimental) Use a optimized table in the results out. Some functionality might be missing and in the works."),
+			'default': false
+		},
+		*/
 		'queryEditor.results.inMemoryDataProcessingThreshold': {
 			'type': 'number',
 			'default': 5000,
