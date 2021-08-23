@@ -321,12 +321,11 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 
 	public override dispose() {
 		if (!this.state.isSaving) {
-			// TODO - Need to handle URI changes on the sqltoolsservice.
 			super.dispose(); // we want to dispose first so that for future logic we know we are disposed
 			this.queryModelService.disposeQuery(this.uri);
 			this.connectionManagementService.disconnectEditor(this, true);
 		} else {
-			this.state.isSaving = false;
+			this.state.isSaving = false; // Do not dispose editor in case of untitled input to file save.
 		}
 	}
 
