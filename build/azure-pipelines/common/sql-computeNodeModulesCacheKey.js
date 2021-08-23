@@ -39,11 +39,7 @@ shasum.update(fs.readFileSync(path.join(ROOT, 'remote/.yarnrc')));
 // Adding all yarn.lock files into sha sum.
 const result = [];
 findFiles('', 'yarn.lock', result);
-console.log('Result: ' + result.length);
-result.forEach(f => {
-    shasum.update(fs.readFileSync(f));
-    console.log(`Updating SHA with ${f}`);
-});
+result.forEach(f => shasum.update(fs.readFileSync(f)));
 // Add any other command line arguments
 for (let i = 2; i < process.argv.length; i++) {
     shasum.update(process.argv[i]);
