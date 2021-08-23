@@ -89,6 +89,7 @@ export class QueryEditorLanguageAssociation implements ILanguageAssociation {
 		} else {
 			return undefined;
 		}
+
 		const profile = getCurrentGlobalConnection(this.objectExplorerService, this.connectionManagementService, this.editorService);
 		if (profile) {
 			const options: IConnectionCompletionOptions = {

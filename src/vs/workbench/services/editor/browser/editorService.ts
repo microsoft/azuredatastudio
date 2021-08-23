@@ -1228,12 +1228,11 @@ export class EditorService extends Disposable implements EditorServiceImpl {
 				break; // failed or cancelled, abort
 			}
 
-			////////
+			// Set queryEditor isSaving state to true (to indicate we do not want to dispose the current editor window).
 			let queryEditor: QueryEditorInput = editor as QueryEditorInput;
 			if (queryEditor.state) {
 				queryEditor.state.isSaving = true;
 			}
-			////////
 
 			// Replace editor preserving viewstate (either across all groups or
 			// only selected group) if the resulting editor is different from the
