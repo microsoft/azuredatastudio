@@ -115,5 +115,4 @@
 	"cms.connectionOptions.groupName.pooling": "Pooling",
 	"cms.connectionOptions.groupName.replication": "Replication",
 	"cms.connectionOptions.groupName.advanced": "Advanced"
-
 }
