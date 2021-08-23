@@ -16,6 +16,7 @@ import { ImageMimeTypes } from 'sql/workbench/services/notebook/common/contracts
 import { IMarkdownStringWithCellAttachments, MarkdownRenderOptionsWithCellAttachments } from 'sql/workbench/contrib/notebook/browser/cellViews/interfaces';
 import { replaceInvalidLinkPath } from 'sql/workbench/contrib/notebook/common/utils';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { useNewMarkdownRendererKey } from 'sql/workbench/contrib/notebook/browser/notebook.contribution';
 
 // Based off of HtmlContentRenderer
 export class NotebookMarkdownRenderer {
@@ -67,7 +68,7 @@ export class NotebookMarkdownRenderer {
 		if (!this._baseUrls.some(x => x === notebookFolder)) {
 			this._baseUrls.push(notebookFolder);
 		}
-		const useNewRenderer = this._configurationService.getValue('notebook.useNewMarkdownRenderer');
+		const useNewRenderer = this._configurationService.getValue(useNewMarkdownRendererKey);
 		const renderer = useNewRenderer ? new vsMarked.Renderer({ baseUrl: notebookFolder }) : new sqlMarked.Renderer({ baseUrl: notebookFolder });
 		renderer.image = (href: string, title: string, text: string) => {
 			const attachment = findAttachmentIfExists(href, options.cellAttachments);
