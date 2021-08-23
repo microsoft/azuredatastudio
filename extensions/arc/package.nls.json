@@ -103,6 +103,8 @@
 	"arc.sql.memory-limit.description": "The limit of the capacity of the managed instance as an integer.",
 	"arc.memory-request.label": "Memory Request",
 	"arc.sql.memory-request.description": "The request for the capacity of the managed instance as an integer amount of memory in GBs.",
+	"arc.sql.service.tier.label": "Service Tier",
+	"arc.sql.service.tier.description": "The service tier selected will affect the cost, number of replicas, requests and limits for your SQL instance.",
 	"arc.postgres.storage-class.backups.description": "The storage class to be used for backup persistent volumes",
 	"arc.password": "Password",
 	"arc.confirm.password": "Confirm password",

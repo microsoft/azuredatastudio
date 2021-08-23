@@ -1069,6 +1069,27 @@
                             "description": "%memory.limit.greater.than.or.equal.to.requested.memory%"
                           }
                         ]
+                      },
+                      {
+                        "type": "options",
+                        "label": "%arc.sql.service.tier.label%",
+                        "description": "%arc.sql.service.tier.description%",
+                        "required": true,
+                        "variableName": "AZDATA_NB_VAR_SQL_SERVICE_TIER",
+                        "options": {
+                          "values": [
+                            "Business Critical",
+                            "General Purpose"
+                          ],
+                          "defaultValue": "Business Critical",
+                          "optionsType": "radio"
+                        },
+                        "enabled": [
+                          {
+                            "target": "AZDATA_NB_VAR_SQL_REPLICAS",
+                            "value": "General Purpose"
+                          }
+                        ]
                       }
                     ]
                   }
