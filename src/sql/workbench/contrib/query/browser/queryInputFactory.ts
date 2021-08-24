@@ -8,7 +8,7 @@ import { Registry } from 'vs/platform/registry/common/platform';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { QueryResultsInput } from 'sql/workbench/common/editor/query/queryResultsInput';
 import { FILE_EDITOR_INPUT_ID } from 'vs/workbench/contrib/files/common/files';
-import { UntitledQueryEditorInput } from 'sql/workbench/common/editor/query/untitledQueryEditorInput';
+import { UntitledQueryEditorInput } from 'sql/base/query/common/untitledQueryEditorInput';
 import { FileQueryEditorInput } from 'sql/workbench/contrib/query/common/fileQueryEditorInput';
 import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
 import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
@@ -75,15 +75,7 @@ export class QueryEditorLanguageAssociation implements ILanguageAssociation {
 		let queryResultsInput = this.instantiationService.createInstance(QueryResultsInput, activeEditor.resource.toString(true));
 		let queryEditorInput: QueryEditorInput;
 		if (activeEditor instanceof FileEditorInput) {
-			// Handle save as from untitled file where results are stored in FileEditorInput.
-			if ((activeEditor as any).results) {
-				queryResultsInput = (activeEditor as any).results;
-			}
 			queryEditorInput = this.instantiationService.createInstance(FileQueryEditorInput, '', activeEditor, queryResultsInput);
-			// If the original untitled query editor had the results visible, make sure to set results visible for the replacement editor.
-			if ((activeEditor as any).resultsVisible) {
-				queryEditorInput.state.resultsVisible = true;
-			}
 		} else if (activeEditor instanceof UntitledTextEditorInput) {
 			queryEditorInput = this.instantiationService.createInstance(UntitledQueryEditorInput, '', activeEditor, queryResultsInput);
 		} else {
