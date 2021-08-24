@@ -24,7 +24,8 @@ import { IDeploySettings } from '../models/IDeploySettings';
 import { BaseProjectTreeItem } from '../models/tree/baseTreeItem';
 import { ProjectRootTreeItem } from '../models/tree/projectTreeItem';
 import { ImportDataModel } from '../models/api/import';
-import { NetCoreTool, DotNetCommandOptions, DotNetError } from '../tools/netcoreTool';
+import { NetCoreTool, DotNetError } from '../tools/netcoreTool';
+import { ShellCommandOptions } from '../tools/shellExecutionHelper';
 import { BuildHelper } from '../tools/buildHelper';
 import { readPublishProfile } from '../models/publishProfile/publishProfile';
 import { AddDatabaseReferenceDialog } from '../dialogs/addDatabaseReferenceDialog';
@@ -68,6 +69,7 @@ export class ProjectsController {
 	private buildInfo: DashboardData[] = [];
 	private publishInfo: PublishData[] = [];
 	private deployService: DeployService;
+	private autorestHelper: AutorestHelper;
 
 	projFileWatchers = new Map<string, vscode.FileSystemWatcher>();
 
@@ -75,6 +77,7 @@ export class ProjectsController {
 		this.netCoreTool = new NetCoreTool(outputChannel);
 		this.buildHelper = new BuildHelper();
 		this.deployService = new DeployService(outputChannel);
+		this.autorestHelper = new AutorestHelper(outputChannel);
 	}
 
 	public getDashboardPublishData(projectFile: string): (string | dataworkspace.IconCellValue)[][] {
@@ -216,7 +219,7 @@ export class ProjectsController {
 		// Check mssql extension for project dlls (tracking issue #10273)
 		await this.buildHelper.createBuildDirFolder();
 
-		const options: DotNetCommandOptions = {
+		const options: ShellCommandOptions = {
 			commandTitle: 'Build',
 			workingDirectory: project.projectFolderPath,
 			argument: this.buildHelper.constructBuildArguments(project.projectFilePath, this.buildHelper.extensionBuildDirPath)
@@ -877,8 +880,7 @@ export class ProjectsController {
 			await fs.mkdir(newProjectFolder);
 
 			// 4. run AutoRest to generate .sql files
-			const autorestHelper = new AutorestHelper();
-			await autorestHelper.generateAutorestFiles(swaggerPath, newProjectFolder);
+			await this.autorestHelper.generateAutorestFiles(swaggerPath, newProjectFolder);
 
 			// 5. create new SQL project
 			const newProjFilePath = await this.createNewProject({
