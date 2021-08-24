@@ -166,21 +166,26 @@ export class InsertCellsModal extends Modal {
 	}
 
 	public async generateScreenshot(cell: ICellModel, screenshotWidth: number = 300, screenshowHeight: number = 300, backgroundColor: string = '#ffffff'): Promise<string> {
-		let componentFactory = this._componentFactoryResolver.resolveComponentFactory(TextCellComponent);
-		let component = this._containerRef.createComponent(componentFactory);
+		try {
+			let componentFactory = this._componentFactoryResolver.resolveComponentFactory(TextCellComponent);
+			let component = this._containerRef.createComponent(componentFactory);
 
-		component.instance.model = this._context.notebook as NotebookModel;
-		component.instance.cellModel = cell;
+			component.instance.model = this._context.notebook as NotebookModel;
+			component.instance.cellModel = cell;
 
-		component.instance.handleContentChanged();
+			component.instance.handleContentChanged();
 
-		const element: HTMLElement = component.instance.outputRef.nativeElement;
+			const element: HTMLElement = component.instance.outputRef.nativeElement;
 
-		const scale = element.clientWidth / screenshotWidth;
-		const canvasWidth = element.clientWidth / scale;
-		const canvasHeight = element.clientHeight / scale;
+			const scale = element.clientWidth / screenshotWidth;
+			const canvasWidth = element.clientWidth / scale;
+			const canvasHeight = element.clientHeight / scale;
 
-		return toJpeg(component.instance.outputRef.nativeElement, { quality: .6, canvasWidth, canvasHeight, backgroundColor });
+			return toJpeg(component.instance.outputRef.nativeElement, { quality: .6, canvasWidth, canvasHeight, backgroundColor });
+		} catch (e) {
+			this.logService.error(`Error generating screenshot: ${e}`);
+			return '';
+		}
 	}
 
 	private getOptions(): ServiceOption[] {
