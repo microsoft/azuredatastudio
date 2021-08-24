@@ -521,9 +521,7 @@ export class MigrationStatusDialog {
 			}));
 
 			control.addItems([
-				// migration warning / error image
 				migrationWarningImage,
-				// migration warning / error counts
 				migrationWarningCount
 			]);
 		}
