@@ -4,8 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as child_process from 'child_process';
-import { utils } from 'mocha';
 import * as which from 'which';
+import * as utils from '../common/utils';
 
 export class AutorestHelper {
 	private autorestGenerationOutput: string | undefined;
@@ -17,7 +17,7 @@ export class AutorestHelper {
 				return true;
 			}
 		} catch (err) {
-			console.log(utils.getError(err));
+			console.log(utils.getErrorMessage(err));
 		}
 
 		return false;

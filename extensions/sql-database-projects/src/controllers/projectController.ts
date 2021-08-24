@@ -858,7 +858,7 @@ export class ProjectsController {
 				canSelectFolders: true,
 				canSelectMany: false,
 				openLabel: 'Select location for project',
-				defaultUri: vscode.workspace.workspaceFolders?.[0].uri ?? undefined
+				defaultUri: vscode.workspace.workspaceFolders?.[0]?.uri
 			});
 
 			if (!folders) {
