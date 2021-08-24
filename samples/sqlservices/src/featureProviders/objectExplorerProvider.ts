@@ -64,20 +64,17 @@ export class ObjectExplorerProvider implements azdata.ObjectExplorerProvider {
 					{
 						nodePath: 'root/1',
 						nodeType: '',
-						iconPath: {
-							light: this.context.asAbsolutePath('images/user.svg'),
-							dark: this.context.asAbsolutePath('images/user_inverse.svg')
+						icon: {
+							light: this.context.asAbsolutePath('images/group.svg'),
+							dark: this.context.asAbsolutePath('images/group_inverse.svg')
 						},
-						label: 'user 1',
+						label: 'obj 1',
 						isLeaf: false
 					}, {
 						nodePath: 'root/2',
 						nodeType: '',
-						iconPath: {
-							light: this.context.asAbsolutePath('images/group.svg'),
-							dark: this.context.asAbsolutePath('images/group_inverse.svg')
-						},
-						label: 'group 1',
+						icon: azdata.SqlThemeIcon.Column,
+						label: 'obj 2',
 						isLeaf: false
 					}
 				]

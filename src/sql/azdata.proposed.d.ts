@@ -924,9 +924,8 @@ declare module 'azdata' {
 
 	export interface NodeInfo {
 		/**
-		 * Path to the icon for the node. This property is optional.
-		 * Use this property if none of the icons defined in {@link SqlThemeIcon} fits the node.
+		 * Specify the icon for the node. The value could the path to the icon or and ADS icon defined in {@link SqlThemeIcon}.
 		 */
-		iconPath?: IconPath;
+		icon?: IconPath | SqlThemeIcon;
 	}
 }

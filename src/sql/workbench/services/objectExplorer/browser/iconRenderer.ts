@@ -13,7 +13,7 @@ class IconRenderer {
 
 	public registerIcon(path: IconPath | undefined): string | undefined {
 		if (!path) { return undefined; }
-		const iconPath: ThemedIconUri = this.toIconPath(path);
+		const iconPath: ThemedIconUri = this.toThemedIconUri(path);
 		const iconUid: string | undefined = this.getIconUid(iconPath);
 		if (iconUid && !this.iconRegistered.has(iconUid)) {
 			createCSSRule(`.icon#${iconUid}`, `background: ${asCSSUrl(iconPath.light || iconPath.dark)} center center no-repeat`);
@@ -25,11 +25,11 @@ class IconRenderer {
 
 	public getIconUid(path: IconPath): string | undefined {
 		if (!path) { return undefined; }
-		const iconPath: ThemedIconUri = this.toIconPath(path);
+		const iconPath: ThemedIconUri = this.toThemedIconUri(path);
 		return `icon${hash(iconPath.light.toString() + iconPath.dark.toString())}`;
 	}
 
-	private toIconPath(path: IconPath): ThemedIconUri {
+	private toThemedIconUri(path: IconPath): ThemedIconUri {
 		let light, dark: string | URI;
 
 		if (URI.isUri(path) || (typeof (path) === 'string')) {

@@ -92,12 +92,12 @@ export class TreeNode {
 
 	public iconType?: string | SqlThemeIcon;
 
-	public iconPath?: IconPath;
+	public icon?: IconPath | SqlThemeIcon;
 
 	constructor(nodeTypeId: string, label: string, isAlwaysLeaf: boolean, nodePath: string,
 		nodeSubType: string, nodeStatus?: string, parent?: TreeNode, metadata?: azdata.ObjectMetadata,
 		iconType?: string | SqlThemeIcon,
-		iconPath?: IconPath,
+		icon?: IconPath | SqlThemeIcon,
 		private _objectExplorerCallbacks?: ObjectExplorerCallbacks) {
 		this.nodeTypeId = nodeTypeId;
 		this.label = label;
@@ -109,7 +109,7 @@ export class TreeNode {
 		this.id = UUID.generateUuid();
 		this.nodeSubType = nodeSubType;
 		this.nodeStatus = nodeStatus;
-		this.iconPath = iconPath;
+		this.icon = icon;
 	}
 	public getConnectionProfile(): ConnectionProfile | undefined {
 		let currentNode: TreeNode = this;
