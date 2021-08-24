@@ -36,7 +36,6 @@ import { IUriIdentityService } from 'vs/workbench/services/uriIdentity/common/ur
 import { IModelService } from 'vs/editor/common/services/modelService';
 import { ILogService } from 'vs/platform/log/common/log';
 import { ContributedEditorPriority, DEFAULT_EDITOR_ASSOCIATION, IEditorOverrideService } from 'vs/workbench/services/editor/common/editorOverrideService';
-import { QueryEditorInput } from 'sql/workbench/common/editor/query/queryEditorInput'; // {{SQL CARBON EDIT}}
 
 type CachedEditorInput = ResourceEditorInput | IFileEditorInput | UntitledTextEditorInput;
 type OpenInEditorGroup = IEditorGroup | GroupIdentifier | SIDE_GROUP_TYPE | ACTIVE_GROUP_TYPE;
@@ -1228,12 +1227,6 @@ export class EditorService extends Disposable implements EditorServiceImpl {
 				break; // failed or cancelled, abort
 			}
 
-			// {{SQL CARBON EDIT}} - Set queryEditor isSaving state to true (to indicate we do not want to dispose the current editor window).
-			let queryEditor: QueryEditorInput = editor as QueryEditorInput;
-			if (queryEditor.state) {
-				queryEditor.state.isSaving = true;
-			}
-			// {{SQL CARBON EDIT}} - End
 
 			// Replace editor preserving viewstate (either across all groups or
 			// only selected group) if the resulting editor is different from the

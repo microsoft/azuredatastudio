@@ -53,6 +53,7 @@ export class UntitledQueryEditorInput extends QueryEditorInput implements IEncod
 		await this.renameQuery(newUri);
 		let newInput = this.instantiationService.createInstance(FileQueryEditorInput, '', (preProcessed as FileEditorInput), this.results);
 		newInput.state.resultsVisible = this.state.resultsVisible;
+		this.state.isSaving = true;
 		return newInput;
 	}
 
@@ -63,6 +64,7 @@ export class UntitledQueryEditorInput extends QueryEditorInput implements IEncod
 		await this.renameQuery(newUri);
 		let newInput = this.instantiationService.createInstance(FileQueryEditorInput, '', (preProcessed as FileEditorInput), this.results);
 		newInput.state.resultsVisible = this.state.resultsVisible;
+		this.state.isSaving = true;
 		return newInput;
 	}
 
