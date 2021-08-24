@@ -33,7 +33,7 @@
 				"runtimeExecutable": "${workspaceFolder}/scripts/sql.sh"
 			},
 			"port": 9222,
-			"timeout": 20000,
+			"timeout": 30000,
 			"env": {
 				"VSCODE_EXTHOST_WILL_SEND_SOCKET": null,
 				"VSCODE_SKIP_PRELAUNCH": "1"
@@ -104,6 +104,7 @@
 			"name": "Attach to Renderer",
 			"browserAttachLocation": "workspace",
 			"port": 9222,
+			"timeout": 30000,
 			"trace": true,
 			"outFiles": [
 				"${workspaceFolder}/out/**/*.js"
@@ -279,6 +280,7 @@
 				"Attach to Main Process",
 				"Attach to Extension Host",
 				"Attach to Shared Process",
+				"Attach to Renderer"
 			],
 			"preLaunchTask": "Ensure Prelaunch Dependencies",
 			"presentation": {
