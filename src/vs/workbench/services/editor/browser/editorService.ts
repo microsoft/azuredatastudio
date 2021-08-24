@@ -1227,7 +1227,6 @@ export class EditorService extends Disposable implements EditorServiceImpl {
 				break; // failed or cancelled, abort
 			}
 
-
 			// Replace editor preserving viewstate (either across all groups or
 			// only selected group) if the resulting editor is different from the
 			// current one.
