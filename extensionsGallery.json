@@ -4078,6 +4078,63 @@
 					"flags": ""
 				},
 				{
+					"extensionId": "81",
+					"extensionName": "sql-migration",
+					"displayName": "Azure SQL Migration",
+					"shortDescription": "This extension lets you migrate your SQL Server instance to Azure SQL.",
+					"publisher": {
+						"displayName": "Microsoft",
+						"publisherId": "Microsoft",
+						"publisherName": "Microsoft"
+					},
+					"versions": [
+						{
+							"version": "0.1.8",
+							"lastUpdated": "08/18/2021",
+							"assetUri": "",
+							"fallbackAssetUri": "fallbackAssetUri",
+							"files": [
+								{
+									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/sql-migration/sql-migration-0.1.8.vsix"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/extensions/sql-migration/images/extension.png"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/extensions/sql-migration/README.md"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Code.Manifest",
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/main/extensions/sql-migration/package.json"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.License",
+									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt"
+								}
+							],
+							"properties": [
+								{
+									"key": "Microsoft.VisualStudio.Code.Engine",
+									"value": "*"
+								},
+								{
+									"key": "Microsoft.VisualStudio.Services.Links.Source",
+									"value": "https://github.com/Microsoft/azuredatastudio"
+								},
+								{
+									"key": "Microsoft.AzDataEngine",
+									"value": ">=1.32.0"
+								}
+							]
+						}
+					],
+					"statistics": [],
+					"flags": "preview"
+				},
+				{
 					"extensionId": "82",
 					"extensionName": "ADS-add-columns",
 					"displayName": "Add Columns",
@@ -4259,7 +4316,7 @@
 					"metadataItems": [
 						{
 							"name": "TotalCount",
-							"count": 70
+							"count": 71
 						}
 					]
 				}
