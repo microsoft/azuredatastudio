@@ -10,6 +10,7 @@ import { azureResource } from 'azureResource';
 import { IAzureResourceService } from '../interfaces';
 import { AzureResourceErrorMessageUtil } from '../utils';
 import { ResourceGraphClient } from '@azure/arm-resourcegraph';
+import { AzureAccount } from 'azurecore';
 
 export abstract class ResourceTreeDataProviderBase<T extends azureResource.AzureResource> implements azureResource.IAzureResourceTreeDataProvider {
 	public browseConnectionMode: boolean = false;
@@ -49,7 +50,7 @@ export abstract class ResourceTreeDataProviderBase<T extends azureResource.Azure
 		return resources;
 	}
 
-	protected abstract getTreeItemForResource(resource: T, account: azdata.Account): azdata.TreeItem;
+	protected abstract getTreeItemForResource(resource: T, account: AzureAccount): azdata.TreeItem;
 
 	protected abstract createContainerNode(): azureResource.IAzureResourceNode;
 }
@@ -121,7 +122,7 @@ export abstract class ResourceServiceBase<T extends GraphData, U extends azureRe
 	 */
 	protected abstract get query(): string;
 
-	public async getResources(subscriptions: azureResource.AzureResourceSubscription[], credential: msRest.ServiceClientCredentials, account: azdata.Account): Promise<U[]> {
+	public async getResources(subscriptions: azureResource.AzureResourceSubscription[], credential: msRest.ServiceClientCredentials, account: AzureAccount): Promise<U[]> {
 		const convertedResources: U[] = [];
 		const resourceClient = new ResourceGraphClient(credential, { baseUri: account.properties.providerSettings.settings.armResource.endpoint });
 		const graphResources = await queryGraphResources<T>(resourceClient, subscriptions, this.query);

@@ -472,7 +472,7 @@ suite('SQL QueryAction Tests', () => {
 		connectionManagementService.setup(x => x.changeDatabase(TypeMoq.It.isAnyString(), TypeMoq.It.isAnyString())).returns(() => Promise.resolve(true));
 
 		// If I query without having initialized anything, state should be clear
-		listItem = new ListDatabasesActionItem(editor.object, undefined, connectionManagementService.object, undefined, configurationService.object, undefined);
+		listItem = new ListDatabasesActionItem(editor.object, undefined, connectionManagementService.object, undefined, undefined);
 
 		assert.equal(listItem.isEnabled(), false, 'do not expect dropdown enabled unless connected');
 		assert.equal(listItem.currentDatabaseName, undefined, 'do not expect dropdown to have entries unless connected');
@@ -505,7 +505,7 @@ suite('SQL QueryAction Tests', () => {
 		connectionManagementService.setup(x => x.changeDatabase(TypeMoq.It.isAnyString(), TypeMoq.It.isAnyString())).returns(() => Promise.resolve(true));
 
 		// ... Create a database dropdown that has been connected
-		let listItem = new ListDatabasesActionItem(editor.object, undefined, connectionManagementService.object, undefined, configurationService.object, undefined);
+		let listItem = new ListDatabasesActionItem(editor.object, undefined, connectionManagementService.object, undefined, undefined);
 		listItem.onConnected();
 
 		// If: I raise a connection changed event
@@ -529,7 +529,7 @@ suite('SQL QueryAction Tests', () => {
 		connectionManagementService.setup(x => x.changeDatabase(TypeMoq.It.isAnyString(), TypeMoq.It.isAnyString())).returns(() => Promise.resolve(true));
 
 		// ... Create a database dropdown that has been connected
-		let listItem = new ListDatabasesActionItem(editor.object, undefined, connectionManagementService.object, undefined, configurationService.object, undefined);
+		let listItem = new ListDatabasesActionItem(editor.object, undefined, connectionManagementService.object, undefined, undefined);
 		listItem.onConnected();
 
 		// If: I raise a connection changed event for the 'wrong' URI
@@ -554,7 +554,7 @@ suite('SQL QueryAction Tests', () => {
 		connectionManagementService.setup(x => x.onConnectionChanged).returns(() => dbChangedEmitter.event);
 
 		// ... Create a database dropdown
-		let listItem = new ListDatabasesActionItem(editor.object, undefined, connectionManagementService.object, undefined, configurationService.object, undefined);
+		let listItem = new ListDatabasesActionItem(editor.object, undefined, connectionManagementService.object, undefined, undefined);
 
 		// If: I raise a connection changed event
 		let eventParams = <IConnectionParams>{

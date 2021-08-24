@@ -78,6 +78,11 @@ const insertDataRequestName = 'flatfile/insertData';
 export interface InsertDataParams {
 	connectionString: string;
 	batchSize: number;
+	/**
+	 * For azure MFA connections we need to send the account token to establish a connection
+	 * from flatFile service without doing Oauth.
+	 */
+	azureAccessToken: string | undefined;
 }
 
 export interface InsertDataResponse {

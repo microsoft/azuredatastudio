@@ -231,6 +231,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 	 * @param refreshToken
 	 */
 	public async refreshToken(tenant: Tenant, resource: Resource, refreshToken: RefreshToken | undefined): Promise<OAuthTokenResponse> {
+		Logger.pii('Refreshing token', [{ name: 'token', objOrArray: refreshToken }], []);
 		if (refreshToken) {
 			const postData: RefreshTokenPostData = {
 				grant_type: 'refresh_token',
@@ -333,7 +334,6 @@ export abstract class AzureAuth implements vscode.Disposable {
 		const tenantUri = url.resolve(this.metadata.settings.armResource.endpoint, 'tenants?api-version=2019-11-01');
 		try {
 			const tenantResponse = await this.makeGetRequest(tenantUri, token.token);
-			Logger.pii('getTenants', tenantResponse.data);
 			const tenants: Tenant[] = tenantResponse.data.value.map((tenantInfo: TenantResponse) => {
 				return {
 					id: tenantInfo.tenantId,
@@ -362,7 +362,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 	private async saveToken(tenant: Tenant, resource: Resource, accountKey: azdata.AccountKey, { accessToken, refreshToken, expiresOn }: OAuthTokenResponse) {
 		const msg = localize('azure.cacheErrorAdd', "Error when adding your account to the cache.");
 		if (!tenant.id || !resource.id) {
-			Logger.pii('Tenant ID or resource ID was undefined', tenant, resource);
+			Logger.pii('Tenant ID or resource ID was undefined', [], [], tenant, resource);
 			throw new AzureAuthError(msg, 'Adding account to cache failed', undefined);
 		}
 		try {
@@ -380,7 +380,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 		const parseMsg = localize('azure.cacheErrorParse', "Error when parsing your account from the cache");
 
 		if (!tenant.id || !resource.id) {
-			Logger.pii('Tenant ID or resource ID was undefined', tenant, resource);
+			Logger.pii('Tenant ID or resource ID was undefined', [], [], tenant, resource);
 			throw new AzureAuthError(getMsg, 'Getting account from cache failed', undefined);
 		}
 
@@ -398,6 +398,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 
 		try {
 			if (!accessTokenString) {
+				Logger.log('No access token found');
 				return undefined;
 			}
 			const accessToken: AccessToken = JSON.parse(accessTokenString);
@@ -405,7 +406,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 			if (refreshTokenString) {
 				refreshToken = JSON.parse(refreshTokenString);
 			}
-
+			Logger.pii('GetSavedToken ', [{ name: 'access', objOrArray: accessToken }, { name: 'refresh', objOrArray: refreshToken }], [], `expiresOn=${expiresOn}`);
 			return {
 				accessToken, refreshToken, expiresOn
 			};
@@ -568,7 +569,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 
 		// Intercept response and print out the response for future debugging
 		const response = await axios.post(url, qs.stringify(postData), config);
-		Logger.pii(url, postData, response.data);
+		Logger.pii('POST request ', [{ name: 'data', objOrArray: postData }, { name: 'response', objOrArray: response.data }], [], url);
 		return response;
 	}
 
@@ -582,7 +583,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 		};
 
 		const response = await axios.get(url, config);
-		Logger.pii(url, response.data);
+		Logger.pii('GET request ', [{ name: 'response', objOrArray: response.data.value ?? response.data }], [], url,);
 		return response;
 	}
 
