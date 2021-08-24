@@ -20,8 +20,7 @@ import * as DOM from 'vs/base/browser/dom';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/platform/dashboard/browser/interfaces';
 import { IColorTheme, ICssStyleCollector, registerThemingParticipant } from 'vs/platform/theme/common/themeService';
 import { ILogService } from 'vs/platform/log/common/log';
-import { URI } from 'vs/workbench/workbench.web.api';
-import { SIDE_BAR_BACKGROUND, SIDE_BAR_FOREGROUND } from 'vs/workbench/common/theme';
+import { CARD_OVERLAY_BACKGROUND, CARD_OVERLAY_FOREGROUND } from 'vs/workbench/common/theme';
 
 export interface ActionDescriptor {
 	label: string;
@@ -250,8 +249,8 @@ export default class CardComponent extends ComponentWithIconBase<azdata.CardProp
 }
 
 registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) => {
-	const backgroundColor = theme.getColor(SIDE_BAR_BACKGROUND);
-	const foregroundColor = theme.getColor(SIDE_BAR_FOREGROUND);
+	const backgroundColor = theme.getColor(CARD_OVERLAY_BACKGROUND);
+	const foregroundColor = theme.getColor(CARD_OVERLAY_FOREGROUND);
 	if (backgroundColor) {
 		collector.addRule(`
 		.model-card-legacy.image-card .card-label-overlay {
