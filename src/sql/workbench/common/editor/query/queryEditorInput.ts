@@ -125,7 +125,7 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 		private _description: string | undefined,
 		protected _text: AbstractTextResourceEditorInput,
 		protected _results: QueryResultsInput,
-		@IConnectionManagementService protected readonly connectionManagementService: IConnectionManagementService,
+		@IConnectionManagementService private readonly connectionManagementService: IConnectionManagementService,
 		@IQueryModelService private readonly queryModelService: IQueryModelService,
 		@IConfigurationService private readonly configurationService: IConfigurationService
 	) {
@@ -199,6 +199,7 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 	}
 
 	protected async renameQuery(newUri: string): Promise<void> {
+		this.connectionManagementService.replaceConnectionUri(this.uri, newUri);
 		await this.queryModelService.renameQuery(newUri, this.uri);
 	}
 

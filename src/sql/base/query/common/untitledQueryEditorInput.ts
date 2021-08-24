@@ -5,7 +5,7 @@
 
 import { QueryEditorInput } from 'sql/workbench/common/editor/query/queryEditorInput';
 import { QueryResultsInput } from 'sql/workbench/common/editor/query/queryResultsInput';
-import { ConnectionType, IConnectionManagementService, IConnectionCompletionOptions } from 'sql/platform/connection/common/connectionManagement';
+import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { IQueryModelService } from 'sql/workbench/services/query/common/queryModel';
 
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
@@ -16,11 +16,7 @@ import { EncodingMode, IEncodingSupport } from 'vs/workbench/services/textfile/c
 import { GroupIdentifier, ISaveOptions, IEditorInput } from 'vs/workbench/common/editor';
 import { FileQueryEditorInput } from 'sql/workbench/contrib/query/common/fileQueryEditorInput';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-// import { getCurrentGlobalConnection } from 'sql/workbench/browser/taskUtilities';
 import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
-// import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
-// import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
-import { onUnexpectedError } from 'vs/base/common/errors';
 
 export class UntitledQueryEditorInput extends QueryEditorInput implements IEncodingSupport {
 
@@ -33,7 +29,7 @@ export class UntitledQueryEditorInput extends QueryEditorInput implements IEncod
 		@IConnectionManagementService connectionManagementService: IConnectionManagementService,
 		@IQueryModelService queryModelService: IQueryModelService,
 		@IConfigurationService configurationService: IConfigurationService,
-		@IInstantiationService private readonly instantiationService: IInstantiationService
+		@IInstantiationService private readonly instantiationService: IInstantiationService,
 	) {
 		super(description, text, results, connectionManagementService, queryModelService, configurationService);
 	}
@@ -57,17 +53,6 @@ export class UntitledQueryEditorInput extends QueryEditorInput implements IEncod
 		await this.renameQuery(newUri);
 		let newInput = this.instantiationService.createInstance(FileQueryEditorInput, '', (preProcessed as FileEditorInput), this.results);
 		newInput.state.resultsVisible = this.state.resultsVisible;
-		// const profile = getCurrentGlobalConnection(this.objectExplorerService, this.connectionManagementService, this.editorService);
-		// if (profile) {
-		// 	const options: IConnectionCompletionOptions = {
-		// 		params: { connectionType: ConnectionType.editor, runQueryOnCompletion: undefined, input: newInput },
-		// 		saveTheConnection: false,
-		// 		showDashboard: false,
-		// 		showConnectionDialogOnError: true,
-		// 		showFirewallRuleOnError: true
-		// 	};
-		// 	this.connectionManagementService.connect(profile, newUri, options).catch(err => onUnexpectedError(err));
-		// }
 		return newInput;
 	}
 
@@ -78,17 +63,6 @@ export class UntitledQueryEditorInput extends QueryEditorInput implements IEncod
 		await this.renameQuery(newUri);
 		let newInput = this.instantiationService.createInstance(FileQueryEditorInput, '', (preProcessed as FileEditorInput), this.results);
 		newInput.state.resultsVisible = this.state.resultsVisible;
-		// const profile = getCurrentGlobalConnection(this.objectExplorerService, this.connectionManagementService, this.editorService);
-		// if (profile) {
-		// 	const options: IConnectionCompletionOptions = {
-		// 		params: { connectionType: ConnectionType.editor, runQueryOnCompletion: undefined, input: newInput },
-		// 		saveTheConnection: false,
-		// 		showDashboard: false,
-		// 		showConnectionDialogOnError: true,
-		// 		showFirewallRuleOnError: true
-		// 	};
-		// 	this.connectionManagementService.connect(profile, newUri, options).catch(err => onUnexpectedError(err));
-		// }
 		return newInput;
 	}
 

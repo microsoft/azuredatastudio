@@ -50,6 +50,13 @@ export class ConnectionStatusManager {
 		return !!this.findConnection(id);
 	}
 
+	public replaceConnectionUri(oldId: string, newId: string) {
+		let info = this.findConnection(oldId);
+		info.ownerUri = newId;
+		this._connections[newId] = info;
+		delete this._connections[oldId];
+	}
+
 	public deleteConnection(id: string): void {
 		let info = this.findConnection(id);
 		if (info) {

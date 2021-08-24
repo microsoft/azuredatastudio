@@ -50,6 +50,10 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 
 	}
 
+	replaceConnectionUri(oldUri: string, newUri: string): void {
+
+	}
+
 	showConnectionDialog(params?: INewConnectionParams, options?: IConnectionCompletionOptions, model?: IConnectionProfile, connectionResult?: IConnectionResult): Promise<void> {
 		return undefined!;
 	}
