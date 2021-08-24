@@ -28,10 +28,10 @@ describe('Add File Dialog', function () {
 
 		let mockItemFormat = TypeMoq.Mock.ofType<BookTreeItemFormat>();
 		mockItemFormat.setup(f => f.contentPath).returns(() => undefined);
-
-		mockTreeItem.setup(i => i.book).returns(() => mockItemFormat.object);
-		bookTreeItem = mockTreeItem.object;
 		bookItemFormat = mockItemFormat.object;
+
+		mockTreeItem.setup(i => i.book).returns(() => bookItemFormat);
+		bookTreeItem = mockTreeItem.object;
 
 		let mockFileExtension = TypeMoq.Mock.ofType<FileExtension>();
 		fileExtension = mockFileExtension.object;
