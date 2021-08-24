@@ -103,8 +103,8 @@ MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
 		ConnectionContextKey.Provider.notEqualsTo('KUSTO'),
 		ConnectionContextKey.Provider.notEqualsTo('LOGANALYTICS'),
 		ContextKeyExpr.or(
-			TreeNodeContextKey.NodeType.isEqualTo('Table'),
-			TreeNodeContextKey.NodeType.isEqualTo('View')
+			TreeNodeContextKey.NodeType.isEqualTo(NodeType.Table),
+			TreeNodeContextKey.NodeType.isEqualTo(NodeType.View)
 		)
 	)
 });
@@ -117,8 +117,8 @@ MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
 		title: localize('scriptKustoSelect', "Take 10")
 	},
 	when: ContextKeyExpr.or(
-		ContextKeyExpr.and(ConnectionContextKey.Provider.isEqualTo('KUSTO'), TreeNodeContextKey.NodeType.isEqualTo('Table')),
-		ContextKeyExpr.and(ConnectionContextKey.Provider.isEqualTo('LOGANALYTICS'), TreeNodeContextKey.NodeType.isEqualTo('Table')))
+		ContextKeyExpr.and(ConnectionContextKey.Provider.isEqualTo('KUSTO'), TreeNodeContextKey.NodeType.isEqualTo(NodeType.Table)),
+		ContextKeyExpr.and(ConnectionContextKey.Provider.isEqualTo('LOGANALYTICS'), TreeNodeContextKey.NodeType.isEqualTo(NodeType.Table)))
 });
 
 MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
@@ -130,7 +130,7 @@ MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
 	},
 	when:
 		ContextKeyExpr.and(
-			TreeNodeContextKey.NodeType.isEqualTo('Table'),
+			TreeNodeContextKey.NodeType.isEqualTo(NodeType.Table),
 			ConnectionContextKey.Provider.notEqualsTo('KUSTO'),
 			ConnectionContextKey.Provider.notEqualsTo('LOGANALYTICS'),
 			MssqlNodeContext.EngineEdition.notEqualsTo(DatabaseEngineEdition.SqlOnDemand.toString()),
@@ -150,16 +150,19 @@ MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
 			ConnectionContextKey.Provider.notEqualsTo('KUSTO'),
 			ConnectionContextKey.Provider.notEqualsTo('LOGANALYTICS'),
 			ContextKeyExpr.or(
-				TreeNodeContextKey.NodeType.isEqualTo('Table'),
-				TreeNodeContextKey.NodeType.isEqualTo('View'),
-				TreeNodeContextKey.NodeType.isEqualTo('Schema'),
-				ContextKeyExpr.and(TreeNodeContextKey.NodeType.isEqualTo('User'), MssqlNodeContext.EngineEdition.notEqualsTo(DatabaseEngineEdition.SqlOnDemand.toString())),
-				TreeNodeContextKey.NodeType.isEqualTo('UserDefinedTableType'),
-				TreeNodeContextKey.NodeType.isEqualTo('StoredProcedure'),
-				TreeNodeContextKey.NodeType.isEqualTo('AggregateFunction'),
-				TreeNodeContextKey.NodeType.isEqualTo('PartitionFunction'),
-				TreeNodeContextKey.NodeType.isEqualTo('ScalarValuedFunction'),
-				TreeNodeContextKey.NodeType.isEqualTo('TableValuedFunction')
+				TreeNodeContextKey.NodeType.isEqualTo(NodeType.Table),
+				TreeNodeContextKey.NodeType.isEqualTo(NodeType.View),
+				TreeNodeContextKey.NodeType.isEqualTo(NodeType.Schema),
+				ContextKeyExpr.and(TreeNodeContextKey.NodeType.isEqualTo(NodeType.User), MssqlNodeContext.EngineEdition.notEqualsTo(DatabaseEngineEdition.SqlOnDemand.toString())),
+				TreeNodeContextKey.NodeType.isEqualTo(NodeType.User),
+				TreeNodeContextKey.NodeType.isEqualTo(NodeType.UserDefinedTableType),
+				TreeNodeContextKey.NodeType.isEqualTo(NodeType.StoredProcedure),
+				TreeNodeContextKey.NodeType.isEqualTo(NodeType.AggregateFunction),
+				TreeNodeContextKey.NodeType.isEqualTo(NodeType.PartitionFunction),
+				TreeNodeContextKey.NodeType.isEqualTo(NodeType.ScalarValuedFunction),
+				TreeNodeContextKey.NodeType.isEqualTo(NodeType.TableValuedFunction),
+				TreeNodeContextKey.NodeType.isEqualTo(NodeType.Trigger),
+				TreeNodeContextKey.NodeType.isEqualTo(NodeType.DatabaseTrigger)
 			)
 		)
 });
@@ -172,8 +175,8 @@ MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
 		title: localize('scriptExecute', "Script as Execute")
 	},
 	when: ContextKeyExpr.or(
-		ContextKeyExpr.and(ConnectionContextKey.Provider.isEqualTo('MSSQL'), TreeNodeContextKey.NodeType.isEqualTo('StoredProcedure')),
-		ContextKeyExpr.and(ConnectionContextKey.Provider.isEqualTo('KUSTO'), TreeNodeContextKey.NodeType.isEqualTo('Function')))
+		ContextKeyExpr.and(ConnectionContextKey.Provider.isEqualTo('MSSQL'), TreeNodeContextKey.NodeType.isEqualTo(NodeType.StoredProcedure)),
+		ContextKeyExpr.and(ConnectionContextKey.Provider.isEqualTo('KUSTO'), TreeNodeContextKey.NodeType.isEqualTo(NodeType.Function)))
 });
 
 MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
@@ -231,7 +234,9 @@ MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
 				TreeNodeContextKey.NodeType.isEqualTo(NodeType.AggregateFunction),
 				TreeNodeContextKey.NodeType.isEqualTo(NodeType.PartitionFunction),
 				TreeNodeContextKey.NodeType.isEqualTo(NodeType.ScalarValuedFunction),
-				TreeNodeContextKey.NodeType.isEqualTo(NodeType.TableValuedFunction)
+				TreeNodeContextKey.NodeType.isEqualTo(NodeType.TableValuedFunction),
+				TreeNodeContextKey.NodeType.isEqualTo(NodeType.Trigger),
+				TreeNodeContextKey.NodeType.isEqualTo(NodeType.DatabaseTrigger)
 			)
 		)
 });
