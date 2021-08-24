@@ -27,6 +27,10 @@ export class AddFileDialog {
 		this._prompter = new CodeAdapter();
 	}
 
+	public get dialog(): azdata.window.Dialog {
+		return this._dialog;
+	}
+
 	public async validatePath(folderPath: string, fileBasename: string): Promise<void> {
 		const destinationUri = path.join(folderPath, fileBasename);
 		if (await pathExists(destinationUri)) {
