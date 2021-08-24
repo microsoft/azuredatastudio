@@ -8,6 +8,6 @@ import { ShowGettingStartedAction } from 'sql/workbench/update/electron-browser/
 import { SyncActionDescriptor } from 'vs/platform/actions/common/actions';
 import { Registry } from 'vs/platform/registry/common/platform';
 
-// add product update and release notes contributions
+// add getting started contributions
 Registry.as<IWorkbenchActionRegistry>(ActionExtensions.WorkbenchActions)
 	.registerWorkbenchAction(SyncActionDescriptor.create(ShowGettingStartedAction, ShowGettingStartedAction.ID, ShowGettingStartedAction.LABEL), 'Show Getting Started');
