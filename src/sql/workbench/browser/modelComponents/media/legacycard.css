@@ -38,15 +38,17 @@
 	height: 100%;
 	padding: 0;
 	min-height: 100px;
-	z-index: 0;
 }
 
 .model-card-legacy.image-card .card-image {
 	position: absolute;
-	background-repeat: no-repeat;
 	height: 100%;
 	width: 100%;
 	background-size: contain;
+	background-position: initial;
+	background-repeat: no-repeat;
+	max-width: unset;
+	max-height: unset;
 }
 
 .model-card-legacy.image-card .card-label-overlay {
@@ -142,6 +144,7 @@
 	border-width: 1px;
 	border-color: rgb(0, 120, 215);
 	border-style: solid;
+	z-index: 1;
 }
 
 .model-card-list-item-legacy .selection-indicator-container, .model-card-legacy .selection-indicator-container {
