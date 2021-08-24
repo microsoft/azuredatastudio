@@ -3674,9 +3674,6 @@ Error: {1}</source>
     <trans-unit id="queryEditor.results.copyRemoveNewLine">
       <source xml:lang="en">Configuration options for copying multi-line results from the Results View</source>
     </trans-unit>
-    <trans-unit id="queryEditor.results.optimizedTable">
-      <source xml:lang="en">(Experimental) Use a optimized table in the results out. Some functionality might be missing and in the works.</source>
-    </trans-unit>
     <trans-unit id="queryEditor.inMemoryDataProcessingThreshold">
       <source xml:lang="en">Controls the max number of rows allowed to do filtering and sorting in memory. If the number is exceeded, sorting and filtering will be disabled. Warning: Increasing this may impact performance.</source>
     </trans-unit>
