@@ -185,7 +185,9 @@ class TreeNodeTemplate extends Disposable {
 		this._icon.classList.remove(...tokens);
 		this._icon.classList.add('icon');
 		let iconLowerCaseName = iconName.toLocaleLowerCase();
-		this._icon.classList.add(iconLowerCaseName);
+		if (iconLowerCaseName) {
+			this._icon.classList.add(iconLowerCaseName);
+		}
 
 		if (element.iconPath) {
 			iconRenderer.putIcon(this._icon, element.iconPath);

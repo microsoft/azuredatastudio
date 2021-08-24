@@ -153,7 +153,9 @@ export class ServerTreeRenderer implements IRenderer {
 		templateData.icon.classList.remove(...tokens);
 		templateData.icon.classList.add('icon');
 		let iconLowerCaseName = iconName.toLocaleLowerCase();
-		templateData.icon.classList.add(iconLowerCaseName);
+		if (iconLowerCaseName) {
+			templateData.icon.classList.add(iconLowerCaseName);
+		}
 
 		if (treeNode.iconPath) {
 			iconRenderer.putIcon(templateData.icon, treeNode.iconPath);
