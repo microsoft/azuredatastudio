@@ -303,7 +303,7 @@
 		{
 			"name": "Launch ADS & Debug Renderer and Extension Host",
 			"configurations": [
-				"Launch Azure Data Studio",
+				"Launch ADS & Debug Renderer",
 				"Attach to Extension Host"
 			],
 			"presentation": {
