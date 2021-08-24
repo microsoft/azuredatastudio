@@ -64,7 +64,15 @@ export function setup() {
 
 			await app.workbench.sqlNotebook.notebookToolbar.changeKernel('Python 3');
 			await app.workbench.configurePythonDialog.waitForConfigurePythonDialog();
-			await app.workbench.configurePythonDialog.installPython();
+			try {
+				await app.workbench.configurePythonDialog.waitForPageOneLoaded();
+			} catch (e) {
+				await app.captureScreenshot('Configure Python Dialog page one not loaded');
+				throw e;
+			}
+			await app.workbench.configurePythonDialog.next();
+			await app.workbench.configurePythonDialog.waitForPageTwoLoaded();
+			await app.workbench.configurePythonDialog.install();
 			await app.workbench.sqlNotebook.notebookToolbar.waitForKernel('Python 3');
 
 			await app.workbench.sqlNotebook.runActiveCell();
