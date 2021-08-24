@@ -4,10 +4,10 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { IWorkbenchActionRegistry, Extensions as ActionExtensions } from 'vs/workbench/common/actions';
-import { ShowCurrentReleaseNotesAction } from 'sql/workbench/update/electron-browser/releaseNotes';
+import { ShowGettingStartedAction } from 'sql/workbench/update/electron-browser/gettingStarted';
 import { SyncActionDescriptor } from 'vs/platform/actions/common/actions';
 import { Registry } from 'vs/platform/registry/common/platform';
 
-// add product update and release notes contributions
+// add getting started contributions
 Registry.as<IWorkbenchActionRegistry>(ActionExtensions.WorkbenchActions)
-	.registerWorkbenchAction(SyncActionDescriptor.create(ShowCurrentReleaseNotesAction, ShowCurrentReleaseNotesAction.ID, ShowCurrentReleaseNotesAction.LABEL), 'Show Getting Started');
+	.registerWorkbenchAction(SyncActionDescriptor.create(ShowGettingStartedAction, ShowGettingStartedAction.ID, ShowGettingStartedAction.LABEL), 'Show Getting Started');

@@ -6,13 +6,13 @@
 -->
 <ng-template #templateRef>
 	<div
-		*ngIf="display"
+		*ngIf="visible"
 		class="grid-stack-item"
 		attr.data-cell-id="{{cell.cellGuid}}"
-		attr.data-gs-width="{{width}}"
-		attr.data-gs-height="{{height}}"
-		attr.data-gs-x="{{x}}"
-		attr.data-gs-y="{{y}}"
+		attr.gs-w="{{width}}"
+		attr.gs-h="{{height}}"
+		attr.gs-x="{{x}}"
+		attr.gs-y="{{y}}"
 		(click)="selectCell(cell, $event)"
 	>
 		<div
@@ -23,7 +23,7 @@
 			<div #actionbar [style.display]="showActionBar ? 'block' : 'none'" class="actionbar"></div>
 			<div class="grid-stack-content-wrapper">
 				<div class="grid-stack-content-wrapper-inner">
-					<views-code-cell-component *ngIf="cell.cellType === 'code'" [cellModel]="cell" [model]="model" [activeCellId]="activeCellId">
+					<views-code-cell-component *ngIf="cell.cellType === 'code'" [cellModel]="cell" [model]="model" [activeCellId]="activeCellId" [visible]="visible">
 					</views-code-cell-component>
 					<text-cell-component *ngIf="cell.cellType === 'markdown'" [cellModel]="cell" [model]="model" [activeCellId]="activeCellId">
 					</text-cell-component>

@@ -99,8 +99,8 @@ export class WizardModal extends Modal {
 		this._wizard.onMessageChange(message => messageChangeHandler(message));
 	}
 
-	private addDialogButton(button: DialogButton, onSelect: () => void = () => undefined, registerClickEvent: boolean = true, requirePageValid: boolean = false): Button {
-		let buttonElement = this.addFooterButton(button.label, onSelect, button.position, button.secondary);
+	private addDialogButton(button: DialogButton, onSelect: () => void = () => undefined, registerClickEvent: boolean = true, requirePageValid: boolean = false, index?: number): Button {
+		let buttonElement = this.addFooterButton(button.label, onSelect, button.position, button.secondary, index);
 		buttonElement.enabled = button.enabled;
 		if (registerClickEvent) {
 			button.registerClickEvent(buttonElement.onDidClick);
@@ -199,6 +199,16 @@ export class WizardModal extends Modal {
 		if (dialogPaneToShow && readHeader) {
 			status(`${dialogPaneToShow.pageNumberDisplayText} ${dialogPaneToShow.title}`);
 		}
+
+		// Remove the current page's custom buttons
+		this._wizard.pages[this._wizard.currentPage]?.customButtons.forEach(button => {
+			this.removeFooterButton(button.label);
+		});
+		// Add the custom buttons for the new page
+		this._wizard.pages[index]?.customButtons.forEach((button, buttonIndex) => {
+			let buttonElement = this.addDialogButton(button, undefined, undefined, undefined, buttonIndex);
+			this.updateButtonElement(buttonElement, button);
+		});
 		this.setButtonsForPage(index);
 		this._wizard.setCurrentPage(index);
 		let currentPageValid = this._wizard.pages[this._wizard.currentPage].valid;

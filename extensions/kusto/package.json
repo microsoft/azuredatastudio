@@ -217,6 +217,7 @@
       "languageMode": "kusto",
       "notebookKernelAlias": "Kusto",
       "displayName": "%kusto.provider.displayName%",
+      "azureResource": "AzureKusto",
       "iconPath": [
         {
           "id": "kusto:cloud",

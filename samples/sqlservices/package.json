@@ -82,7 +82,122 @@
           ]
         }
       }
-    ]
+    ],
+    "connectionProvider": {
+      "providerId": "TESTPROVIDER",
+      "languageMode": "sql",
+      "notebookKernelAlias": "Test Provider",
+      "displayName": "Test Provider",
+      "iconPath": [
+        {
+          "id": "myprovidericon",
+          "path": {
+            "light": "images/user.svg",
+            "dark": "images/user_inverse.svg"
+          },
+          "default": true
+        }
+      ],
+      "connectionOptions": [
+        {
+          "specialValueType": "connectionName",
+          "isIdentity": true,
+          "name": "connectionName",
+          "displayName": "",
+          "description": "",
+          "groupName": "Source",
+          "valueType": "string",
+          "defaultValue": null,
+          "objectType": null,
+          "categoryValues": null,
+          "isRequired": false,
+          "isArray": false
+        },
+        {
+          "specialValueType": "serverName",
+          "isIdentity": true,
+          "name": "server",
+          "displayName": "Server name",
+          "description": "Server name",
+          "groupName": "Source",
+          "valueType": "string",
+          "defaultValue": null,
+          "objectType": null,
+          "categoryValues": null,
+          "isRequired": true,
+          "isArray": false
+        },
+        {
+          "specialValueType": "authType",
+          "isIdentity": true,
+          "name": "authenticationType",
+          "displayName": "Authentication type",
+          "description": "",
+          "groupName": "Security",
+          "valueType": "category",
+          "defaultValue": "SqlLogin",
+          "objectType": null,
+          "categoryValues": [
+            {
+              "displayName": "Basic",
+              "name": "SqlLogin"
+            }
+          ],
+          "isRequired": true,
+          "isArray": false
+        },
+        {
+          "specialValueType": "userName",
+          "isIdentity": true,
+          "name": "user",
+          "displayName": "Username",
+          "description": "",
+          "groupName": "Security",
+          "valueType": "string",
+          "defaultValue": null,
+          "objectType": null,
+          "categoryValues": null,
+          "isRequired": true,
+          "isArray": false
+        },
+        {
+          "specialValueType": "password",
+          "isIdentity": true,
+          "name": "password",
+          "displayName": "Password",
+          "description": "",
+          "groupName": "Security",
+          "valueType": "password",
+          "defaultValue": null,
+          "objectType": null,
+          "categoryValues": null,
+          "isRequired": true,
+          "isArray": false
+        },
+        {
+          "specialValueType": "appName",
+          "isIdentity": false,
+          "name": "applicationName",
+          "displayName": "Application Name",
+          "description": "",
+          "groupName": "Context",
+          "valueType": "string",
+          "defaultValue": null,
+          "objectType": null,
+          "categoryValues": null,
+          "isRequired": false,
+          "isArray": false
+        }
+      ]
+    },
+    "menus": {
+      "objectExplorer/item/context": [
+        {
+          "command": "sqlservices.openDialog",
+          "when": "nodeType =~ /^(Database|Server)$/ && connectionProvider == TESTPROVIDER"
+        }
+      ]
+    }
   },
   "scripts": {
     "build": "gulp build",

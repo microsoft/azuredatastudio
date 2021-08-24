@@ -29,7 +29,7 @@ interface BookSearchResults {
 	bookPaths: string[];
 }
 
-export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeItem>, azdata.nb.NavigationProvider {
+export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeItem>, azdata.nb.NavigationProvider, vscode.DragAndDropController<BookTreeItem> {
 	private _onDidChangeTreeData: vscode.EventEmitter<BookTreeItem | undefined> = new vscode.EventEmitter<BookTreeItem | undefined>();
 	readonly onDidChangeTreeData: vscode.Event<BookTreeItem | undefined> = this._onDidChangeTreeData.event;
 	private _extensionContext: vscode.ExtensionContext;
@@ -44,6 +44,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	public viewId: string;
 	public books: BookModel[] = [];
 	public currentBook: BookModel;
+	supportedTypes = ['text/treeitems'];
 
 	constructor(workspaceFolders: vscode.WorkspaceFolder[], extensionContext: vscode.ExtensionContext, openAsUntitled: boolean, view: string, public providerId: string) {
 		this._openAsUntitled = openAsUntitled;
@@ -54,7 +55,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		this.prompter = new CodeAdapter();
 		this._bookTrustManager = new BookTrustManager(this.books);
 		this.bookTocManager = new BookTocManager();
-		this._bookViewer = vscode.window.createTreeView(this.viewId, { showCollapseAll: true, treeDataProvider: this });
+		this._bookViewer = vscode.window.createTreeView(this.viewId, { showCollapseAll: true, canSelectMany: true, treeDataProvider: this, dragAndDropController: this });
 		this._bookViewer.onDidChangeVisibility(async e => {
 			await this.initialized;
 			// Whenever the viewer changes visibility then try and reveal the currently active document
@@ -470,7 +471,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 				// increment to reset the depth since parent is in the same level
 				depthOfNotebookInBook++;
 			}
-			if (!bookItemToExpand.children) {
+			if (!bookItemToExpand.hasChildren) {
 				// We haven't loaded children of this node yet so do that now so we can
 				// continue expanding and search its children
 				await this.getChildren(bookItemToExpand);
@@ -715,4 +716,13 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		}
 		return Promise.resolve(result);
 	}
+
+	async onDrop(sources: vscode.TreeDataTransfer, target: BookTreeItem): Promise<void> {
+		let treeItems = JSON.parse(await sources.items.get('text/treeitems')!.asString());
+		if (treeItems) {
+
+		}
+	}
+
+	dispose(): void { }
 }

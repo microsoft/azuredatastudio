@@ -247,6 +247,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 
 		const networkLocationInputBoxLabel = this._view.modelBuilder.text().withProps({
 			value: constants.DATABASE_BACKUP_NETWORK_SHARE_LOCATION_LABEL,
+			description: constants.DATABASE_BACKUP_NETWORK_SHARE_LOCATION_INFO,
 			width: WIZARD_INPUT_COMPONENT_WIDTH,
 			requiredIndicator: true,
 			CSSStyles: {
@@ -255,7 +256,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			}
 		}).component();
 		this._networkSharePath = this._view.modelBuilder.inputBox().withProps({
-			placeHolder: '\\\\Servername.domainname.com\\Backupfolder',
+			placeHolder: constants.NETWORK_SHARE_PATH,
 			validationErrorMessage: constants.INVALID_NETWORK_SHARE_LOCATION,
 			width: WIZARD_INPUT_COMPONENT_WIDTH,
 			CSSStyles: {
@@ -290,6 +291,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 		const windowsUserAccountLabel = this._view.modelBuilder.text()
 			.withProps({
 				value: constants.DATABASE_BACKUP_NETWORK_SHARE_WINDOWS_USER_LABEL,
+				description: constants.DATABASE_BACKUP_NETWORK_SHARE_WINDOWS_USER_INFO,
 				width: WIZARD_INPUT_COMPONENT_WIDTH,
 				requiredIndicator: true,
 				CSSStyles: {
@@ -299,7 +301,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			}).component();
 		this._windowsUserAccountText = this._view.modelBuilder.inputBox()
 			.withProps({
-				placeHolder: 'Domain\\username',
+				placeHolder: constants.WINDOWS_USER_ACCOUNT,
 				required: true,
 				validationErrorMessage: constants.INVALID_USER_ACCOUNT,
 				width: WIZARD_INPUT_COMPONENT_WIDTH
@@ -735,6 +737,8 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			this._blobTableContainer.display = 'none';
 			this._blobContainer.updateCssStyles({ 'display': 'none' });
 
+			this._targetDatabaseContainer.updateCssStyles({ 'display': 'none' });
+			this._networkShareStorageAccountDetails.updateCssStyles({ 'display': 'none' });
 			const connectionProfile = await this.migrationStateModel.getSourceConnectionProfile();
 			const queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>((await this.migrationStateModel.getSourceConnectionProfile()).providerId, azdata.DataProviderType.QueryProvider);
 			const query = 'select SUSER_NAME()';

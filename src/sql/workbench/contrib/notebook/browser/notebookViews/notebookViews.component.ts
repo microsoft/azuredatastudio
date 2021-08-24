@@ -2,8 +2,8 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import { Component, Input, ViewChildren, QueryList, ChangeDetectorRef, forwardRef, Inject, ViewChild, ElementRef } from '@angular/core';
-import { ICellModel, INotebookModel, ISingleNotebookEditOperation } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
+import { Component, Input, ViewChildren, QueryList, ChangeDetectorRef, forwardRef, Inject, ViewChild, ElementRef, ViewContainerRef, ComponentFactoryResolver } from '@angular/core';
+import { ICellModel, INotebookModel, ISingleNotebookEditOperation, NotebookContentChange } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { CodeCellComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/codeCell.component';
 import { TextCellComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/textCell.component';
 import { ICellEditorProvider, INotebookParams, INotebookService, INotebookEditor, NotebookRange, INotebookSection, DEFAULT_NOTEBOOK_PROVIDER, SQL_NOTEBOOK_PROVIDER } from 'sql/workbench/services/notebook/browser/notebookService';
@@ -11,18 +11,18 @@ import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/no
 import * as notebookUtils from 'sql/workbench/services/notebook/browser/models/notebookUtils';
 import { IBootstrapParams } from 'sql/workbench/services/bootstrap/common/bootstrapParams';
 import { Action } from 'vs/base/common/actions';
-import { LabeledMenuItemActionItem } from 'sql/platform/actions/browser/menuEntryActionViewItem';
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { MenuItemAction } from 'vs/platform/actions/common/actions';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
-import { INotificationService } from 'vs/platform/notification/common/notification';
+import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
+import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { localize } from 'vs/nls';
 import { Deferred } from 'sql/base/common/promise';
 import { AngularDisposable } from 'sql/base/browser/lifecycle';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
-import { CellType, CellTypes } from 'sql/workbench/services/notebook/common/contracts';
+import { CellType, CellTypes, NotebookChangeType } from 'sql/workbench/services/notebook/common/contracts';
 import { isUndefinedOrNull } from 'vs/base/common/types';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { NotebookViewsExtension } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViewsExtension';
@@ -30,7 +30,11 @@ import { INotebookView, INotebookViewMetadata } from 'sql/workbench/services/not
 import { NotebookViewsGridComponent } from 'sql/workbench/contrib/notebook/browser/notebookViews/notebookViewsGrid.component';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { DeleteViewAction, InsertCellAction, ViewSettingsAction } from 'sql/workbench/contrib/notebook/browser/notebookViews/notebookViewsActions';
-import { RunAllCellsAction } from 'sql/workbench/contrib/notebook/browser/notebookActions';
+import { DropdownMenuActionViewItem } from 'sql/base/browser/ui/buttonMenu/buttonMenu';
+import { NotebookViewsActionProvider, AddCellAction, RunAllCellsAction } from 'sql/workbench/contrib/notebook/browser/notebookActions';
+import * as DOM from 'vs/base/browser/dom';
+import { AnchorAlignment } from 'vs/base/browser/ui/contextview/contextview';
+import { LabeledMenuItemActionItem } from 'sql/platform/actions/browser/menuEntryActionViewItem';
 import { IActionViewItem } from 'vs/base/browser/ui/actionbar/actionbar';
 
 export const NOTEBOOKVIEWS_SELECTOR: string = 'notebook-view-component';
@@ -44,7 +48,7 @@ export class NotebookViewComponent extends AngularDisposable implements INoteboo
 	@Input() model: NotebookModel;
 	@Input() activeView: INotebookView;
 	@Input() views: NotebookViewsExtension;
-	@Input() notebookMeta: INotebookViewMetadata;
+	@Input() notebookMetadata: INotebookViewMetadata;
 
 	@ViewChild('container', { read: ElementRef }) private _container: ElementRef;
 	@ViewChild('viewsToolbar', { read: ElementRef }) private _viewsToolbar: ElementRef;
@@ -57,17 +61,23 @@ export class NotebookViewComponent extends AngularDisposable implements INoteboo
 	private _modelReadyDeferred = new Deferred<NotebookModel>();
 	private _runAllCellsAction: RunAllCellsAction;
 	private _scrollTop: number;
+	public _cellsAwaitingInput: ICellModel[] = [];
+	public readonly cellsAwaitingInputModalTitle: string = localize('cellAwaitingInputTitle', "Cell Awaiting Input");
+	public readonly loadingMessage = localize('loading', "Loading");
 
 	constructor(
 		@Inject(IBootstrapParams) private _notebookParams: INotebookParams,
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
 		@Inject(IInstantiationService) private _instantiationService: IInstantiationService,
 		@Inject(IKeybindingService) private _keybindingService: IKeybindingService,
+		@Inject(IContextMenuService) private _contextMenuService: IContextMenuService,
 		@Inject(INotificationService) private _notificationService: INotificationService,
 		@Inject(INotebookService) private _notebookService: INotebookService,
 		@Inject(IConnectionManagementService) private _connectionManagementService: IConnectionManagementService,
 		@Inject(IConfigurationService) private _configurationService: IConfigurationService,
-		@Inject(IEditorService) private _editorService: IEditorService
+		@Inject(IEditorService) private _editorService: IEditorService,
+		@Inject(ViewContainerRef) private _containerRef: ViewContainerRef,
+		@Inject(ComponentFactoryResolver) private _componentFactoryResolver: ComponentFactoryResolver,
 	) {
 		super();
 		this._register(this._configurationService.onDidChangeConfiguration(e => {
@@ -120,12 +130,19 @@ export class NotebookViewComponent extends AngularDisposable implements INoteboo
 			if (!isUndefinedOrNull(endCell)) {
 				endIndex = codeCells.findIndex(c => c.id === endCell.id);
 			}
+			let statusNotification = this._notificationService.notify({ severity: Severity.Info, message: localize('startingExecution', "Starting execution"), progress: { total: endIndex + 1, worked: 0 } });
 			for (let i = startIndex; i < endIndex; i++) {
-				let cellStatus = await this.runCell(codeCells[i]);
-				if (!cellStatus) {
-					throw new Error(localize('cellRunFailed', "Run Cells failed - See error in output of the currently selected cell for more information."));
+				statusNotification.updateMessage(localize('runningCell', "Running cell {0} of {1}", (i + 1), (endIndex)));
+				statusNotification.progress.worked(i);
+				try {
+					await this.runCell(codeCells[i]);
+				} catch (error) {
+					statusNotification.updateSeverity(Severity.Error);
+					statusNotification.updateMessage(localize('cellRunFailed', "Run Cells failed - See error in output of the currently selected cell for more information."));
+					return false;
 				}
 			}
+			statusNotification.close();
 		}
 		return true;
 	}
@@ -153,10 +170,11 @@ export class NotebookViewComponent extends AngularDisposable implements INoteboo
 
 	ngOnInit() {
 		this.initViewsToolbar();
-		this._notebookService.addNotebookEditor(this);
 		this._modelReadyDeferred.resolve(this.model);
+		this._notebookService.addNotebookEditor(this);
 		this.setScrollPosition();
 
+		this._register(this.model.contentChanged((e) => this.handleContentChanged(e)));
 		this.doLoad().catch(e => onUnexpectedError(e));
 	}
 
@@ -240,7 +258,7 @@ export class NotebookViewComponent extends AngularDisposable implements INoteboo
 		titleElement.style.marginRight = '25px';
 		titleElement.style.minHeight = '25px';
 
-		let insertCellsAction = this._instantiationService.createInstance(InsertCellAction, this.insertCell.bind(this), this.views);
+		let insertCellsAction = this._instantiationService.createInstance(InsertCellAction, this.insertCell.bind(this), this.views, this._containerRef, this._componentFactoryResolver);
 
 		this._runAllCellsAction = this._instantiationService.createInstance(RunAllCellsAction, 'notebook.runAllCells', localize('runAllPreview', "Run all"), 'notebook-button masked-pseudo start-outline');
 
@@ -248,6 +266,25 @@ export class NotebookViewComponent extends AngularDisposable implements INoteboo
 		spacerElement.style.marginLeft = 'auto';
 
 		let viewOptions = this._instantiationService.createInstance(ViewSettingsAction, this.views);
+
+		let viewsContainer = document.createElement('li');
+		let viewsActionsProvider = new NotebookViewsActionProvider(viewsContainer, this.views, this.modelReady, this._notebookService, this._notificationService, this._instantiationService);
+		let viewsButton = this._instantiationService.createInstance(AddCellAction, 'notebook.OpenViews', undefined, 'notebook-button masked-pseudo code');
+		let viewsDropdownContainer = DOM.$('li.action-item');
+		viewsDropdownContainer.setAttribute('role', 'presentation');
+		let viewsDropdownMenuActionViewItem = new DropdownMenuActionViewItem(
+			viewsButton,
+			viewsActionsProvider,
+			this._contextMenuService,
+			undefined,
+			this._actionBar.actionRunner,
+			undefined,
+			'codicon notebook-button masked-pseudo masked-pseudo-after icon-dashboard-view dropdown-arrow',
+			this.activeView?.name,
+			() => AnchorAlignment.RIGHT
+		);
+		viewsDropdownMenuActionViewItem.render(viewsDropdownContainer);
+		viewsDropdownMenuActionViewItem.setActionContext(this._notebookParams.notebookUri);
 
 		let deleteView = this._instantiationService.createInstance(DeleteViewAction, this.views);
 
@@ -257,6 +294,7 @@ export class NotebookViewComponent extends AngularDisposable implements INoteboo
 			{ action: insertCellsAction },
 			{ action: this._runAllCellsAction },
 			{ element: spacerElement },
+			{ element: viewsDropdownContainer },
 			{ action: viewOptions },
 			{ action: deleteView }
 		]);
@@ -274,6 +312,27 @@ export class NotebookViewComponent extends AngularDisposable implements INoteboo
 			return new LabeledMenuItemActionItem(action, this._keybindingService, this._notificationService, 'notebook-button fixed-width');
 		}
 		return undefined;
+	}
+
+	private handleContentChanged(change: NotebookContentChange) {
+		switch (change.changeType) {
+			case NotebookChangeType.CellAwaitingInput: {
+				const cell: ICellModel = change?.cells[0];
+				this._cellsAwaitingInput.push(cell);
+				this.detectChanges();
+				break;
+			}
+			case NotebookChangeType.CellExecuted: {
+				const cell: ICellModel = change?.cells[0];
+				const indexToRemove = this._cellsAwaitingInput.findIndex(c => c.id === cell.id);
+				if (indexToRemove >= 0) {
+					this._cellsAwaitingInput.splice(indexToRemove, 1);
+					this.model.serializationStateChanged(NotebookChangeType.CellsModified, cell);
+					this.detectChanges();
+				}
+				break;
+			}
+		}
 	}
 
 	private detectChanges(): void {
@@ -296,5 +355,9 @@ export class NotebookViewComponent extends AngularDisposable implements INoteboo
 			editors.push(...this._textCells.toArray());
 		}
 		return editors;
+	}
+
+	public get cellsAwaitingInput(): ICellModel[] {
+		return this._gridstack.hiddenItems.filter(i => this._cellsAwaitingInput.includes(i.cell)).map(i => i.cell);
 	}
 }
