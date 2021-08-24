@@ -48,12 +48,19 @@ export class QueryEditorState extends Disposable {
 	private _resultsVisible = false;
 	private _executing = false;
 	private _connecting = false;
+	private _isSaving: boolean = false;
 
 	private _onChange = this._register(new Emitter<IQueryEditorStateChange>());
 	public onChange = this._onChange.event;
 
+	public get isSaving(): boolean {
+		return this._isSaving;
+	}
 
-	public isSaving: boolean = false;
+	public set isSaving(newValue: boolean) {
+		this._isSaving = newValue;
+	}
+
 	public set connected(val: boolean) {
 		if (val !== this._connected) {
 			this._connected = val;
