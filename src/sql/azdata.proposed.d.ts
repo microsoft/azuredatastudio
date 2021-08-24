@@ -771,16 +771,6 @@ declare module 'azdata' {
 		Image = 'Image'
 	}
 
-	export interface CardImage {
-		path: vscode.Uri,
-		size?: string, // auto|length|cover|contain|initial|inherit
-		position?: string // (left | right | center) (top | center | bottom) | x% y% | xpos ypos | initial | inherit
-	}
-
-	export interface CardProperties extends ComponentWithIconProperties {
-		image?: CardImage;
-	}
-
 	export namespace workspace {
 		/**
 		 * Creates and enters a workspace at the specified location

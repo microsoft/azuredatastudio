@@ -12,7 +12,7 @@ import { ITextResourcePropertiesService } from 'vs/editor/common/services/textRe
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 import { ILogService } from 'vs/platform/log/common/log';
-import { IColorTheme, ICssStyleCollector, IThemeService, registerThemingParticipant } from 'vs/platform/theme/common/themeService';
+import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { ServiceOptionType } from 'sql/platform/connection/common/interfaces';
 import { ServiceOption } from 'azdata';
 import * as DialogHelper from 'sql/workbench/browser/modal/dialogHelper';
@@ -20,7 +20,6 @@ import { TextCellComponent } from 'sql/workbench/contrib/notebook/browser/cellVi
 import { NgModuleRef, ComponentFactoryResolver, ViewContainerRef } from '@angular/core';
 import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
-import { inputBorder, inputValidationInfoBorder } from 'vs/platform/theme/common/colorRegistry';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { bootstrapAngular } from 'sql/workbench/services/bootstrap/browser/bootstrapService';
 import { localize } from 'vs/nls';
@@ -263,27 +262,3 @@ export class InsertCellsModal extends Modal {
 			(moduleRef: NgModuleRef<typeof InsertCellsModule>) => this._moduleRef = moduleRef);
 	}
 }
-
-registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) => {
-	const inputBorderColor = theme.getColor(inputBorder);
-	if (inputBorderColor) {
-		collector.addRule(`
-		#insert-dialog-cell-grid input[type="checkbox"] + label {
-			border: 2px solid;
-			border-color: ${inputBorderColor.toString()};
-			display: flex;
-			height: 125px;
-			overflow: hidden;
-		}
-		`);
-	}
-
-	const inputActiveOptionBorderColor = theme.getColor(inputValidationInfoBorder);
-	if (inputActiveOptionBorderColor) {
-		collector.addRule(`
-		#insert-dialog-cell-grid input[type="checkbox"]:checked + label {
-			border-color: ${inputActiveOptionBorderColor.toString()};
-		}
-		`);
-	}
-});

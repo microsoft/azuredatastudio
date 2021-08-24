@@ -51,12 +51,6 @@ export interface CardDescriptionItem {
 	value?: string;
 }
 
-export interface CardImage {
-	path: URI,
-	size?: string, // auto|length|cover|contain|initial|inherit
-	position?: string // (left | right | center) (top | center | bottom) | x% y% | xpos ypos | initial | inherit
-}
-
 export enum CardType {
 	VerticalButton = 'VerticalButton',
 	Details = 'Details',
@@ -105,8 +99,6 @@ export default class CardComponent extends ComponentWithIconBase<azdata.CardProp
 	}
 
 	private _defaultBorderColor = 'rgb(214, 214, 214)';
-	private _defaultImageSize = 'contain';
-	private _defaultImagePosition = '';
 	private _hasFocus: boolean;
 
 	public onCardClick() {
@@ -166,18 +158,6 @@ export default class CardComponent extends ComponentWithIconBase<azdata.CardProp
 		}
 	}
 
-	public get imagePath(): string {
-		return this.image.path.toString(true);
-	}
-
-	public get imageSize(): string {
-		return this.image.size ?? this._defaultImageSize;
-	}
-
-	public get imagePosition(): string {
-		return this.image.position ?? this._defaultImagePosition;
-	}
-
 	private get selectable(): boolean {
 		return this.enabled && (this.cardType === 'VerticalButton' || this.cardType === 'ListItem' || this.cardType === 'Image');
 	}
@@ -192,10 +172,6 @@ export default class CardComponent extends ComponentWithIconBase<azdata.CardProp
 		return this.getPropertyOrDefault<string>((props) => props.value, '');
 	}
 
-	public get image(): azdata.CardImage | undefined {
-		return this.getPropertyOrDefault<azdata.CardImage>((props) => props.image, undefined);
-	}
-
 	public get cardType(): string {
 		return this.getPropertyOrDefault<string>((props) => props.cardType, 'Details');
 	}
@@ -206,10 +182,6 @@ export default class CardComponent extends ComponentWithIconBase<azdata.CardProp
 
 	public set selected(newValue: boolean) {
 		this.setPropertyFromUI<boolean>((props, value) => props.selected = value, newValue);
-	}
-
-	public set image(image: azdata.CardImage) {
-		this.setPropertyFromUI<azdata.CardImage>((props, value) => props.image = value, undefined);
 	}
 
 	public get isDetailsCard(): boolean {
