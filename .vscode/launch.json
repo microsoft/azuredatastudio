@@ -279,6 +279,7 @@
 				"Attach to Main Process",
 				"Attach to Extension Host",
 				"Attach to Shared Process",
+				"Attach to Renderer"
 			],
 			"preLaunchTask": "Ensure Prelaunch Dependencies",
 			"presentation": {
