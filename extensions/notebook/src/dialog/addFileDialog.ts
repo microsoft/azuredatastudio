@@ -96,7 +96,7 @@ export class AddFileDialog {
 		azdata.window.openDialog(this._dialog);
 	}
 
-	private async createFile(): Promise<boolean> {
+	public async createFile(): Promise<boolean> {
 		try {
 			const dirPath = this._bookItem.contextValue === BookTreeItemType.savedBook ? this._bookItem.rootContentPath : path.dirname(this._bookItem.book.contentPath);
 			const filePath = path.posix.join(dirPath, this._fileNameInputBox.value).concat(this._extension);
