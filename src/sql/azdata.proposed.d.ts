@@ -921,4 +921,11 @@ declare module 'azdata' {
 		 */
 		physicalMemoryInMb?: number;
 	}
+
+	export interface NodeInfo {
+		/**
+		 * Specify the icon for the node. The value could the path to the icon or and ADS icon defined in {@link SqlThemeIcon}.
+		 */
+		icon?: IconPath | SqlThemeIcon;
+	}
 }

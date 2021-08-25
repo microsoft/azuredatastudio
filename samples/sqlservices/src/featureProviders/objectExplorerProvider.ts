@@ -10,6 +10,9 @@ import { ProviderId } from './connectionProvider';
  * This class implements the ObjectExplorerProvider interface that is responsible for providing the connection tree view content.
  */
 export class ObjectExplorerProvider implements azdata.ObjectExplorerProvider {
+	constructor(private context: vscode.ExtensionContext) {
+	}
+
 	onSessionCreatedEmitter: vscode.EventEmitter<azdata.ObjectExplorerSession> = new vscode.EventEmitter<azdata.ObjectExplorerSession>();
 	onSessionCreated: vscode.Event<azdata.ObjectExplorerSession> = this.onSessionCreatedEmitter.event;
 
@@ -60,13 +63,18 @@ export class ObjectExplorerProvider implements azdata.ObjectExplorerProvider {
 				nodes: [
 					{
 						nodePath: 'root/1',
-						nodeType: 'Database',
-						label: 'abc1',
+						nodeType: '',
+						icon: {
+							light: this.context.asAbsolutePath('images/group.svg'),
+							dark: this.context.asAbsolutePath('images/group_inverse.svg')
+						},
+						label: 'obj 1',
 						isLeaf: false
 					}, {
 						nodePath: 'root/2',
-						nodeType: 'Database',
-						label: 'abc2',
+						nodeType: '',
+						icon: azdata.SqlThemeIcon.Column,
+						label: 'obj 2',
 						isLeaf: false
 					}
 				]
