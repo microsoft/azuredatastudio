@@ -59,12 +59,12 @@ describe('Add File Dialog', function () {
 		await should(dialog.validatePath(testDir, fileBasename)).be.rejected();
 
 		// Folder exists
-		fs.mkdir(testDir);
+		await fs.mkdir(testDir);
 		await should(dialog.validatePath(testDir, fileBasename)).not.be.rejected();
 
 		// File Exists, but don't choose to overwrite
 		sinon.stub(utils, 'confirmMessageDialog').resolves(false);
-		fs.createFile(testFilePath);
+		await fs.createFile(testFilePath);
 		await should(dialog.validatePath(testDir, fileBasename)).be.rejected();
 		sinon.restore();
 
