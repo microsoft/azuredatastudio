@@ -921,4 +921,11 @@ declare module 'azdata' {
 		 */
 		physicalMemoryInMb?: number;
 	}
+
+	export interface ObjectMetadata {
+		/*
+		 * Parent object name for subobjects such as triggers, indexes, etc.
+		 */
+		parentName: string;
+	}
 }
