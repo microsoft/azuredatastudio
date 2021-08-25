@@ -10,7 +10,7 @@ import { URI } from 'vs/base/common/uri';
 import { TestConfigurationService } from 'sql/platform/connection/test/common/testConfigurationService';
 
 suite('NotebookMarkdownRenderer', () => {
-	let notebookMarkdownRenderer = new NotebookMarkdownRenderer(new TestConfigurationService({ user: { 'notebook': { 'useNewMarkdownRenderer': true } } }));
+	let notebookMarkdownRenderer = new NotebookMarkdownRenderer(new TestConfigurationService({ user: { 'notebook': { 'useNewMarkdownRenderer': false } } }));
 	test('image rendering conforms to default', () => {
 		const markdown = { value: `![image](someimageurl 'caption')` };
 		const result: HTMLElement = notebookMarkdownRenderer.renderMarkdown(markdown);
