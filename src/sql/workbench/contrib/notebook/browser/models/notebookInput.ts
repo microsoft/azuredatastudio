@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { EditorInput, EditorModel, IRevertOptions, GroupIdentifier, IEditorInput } from 'vs/workbench/common/editor';
+import { IRevertOptions, GroupIdentifier, IEditorInput, EditorInputCapabilities } from 'vs/workbench/common/editor';
 import { Emitter, Event } from 'vs/base/common/event';
 import { URI } from 'vs/base/common/uri';
 import * as resources from 'vs/base/common/resources';
@@ -12,7 +12,7 @@ import * as azdata from 'azdata';
 import { IStandardKernelWithProvider, getProvidersForFileName, getStandardKernelsForProvider } from 'sql/workbench/services/notebook/browser/models/notebookUtils';
 import { INotebookService, DEFAULT_NOTEBOOK_PROVIDER, IProviderInfo } from 'sql/workbench/services/notebook/browser/notebookService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { ITextModelService } from 'vs/editor/common/services/resolverService';
+import { ITextEditorModel, ITextModelService } from 'vs/editor/common/services/resolverService';
 import { INotebookModel, IContentManager, NotebookContentChange } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { TextFileEditorModel } from 'vs/workbench/services/textfile/common/textFileEditorModel';
 import { Schemas } from 'vs/base/common/network';
@@ -25,16 +25,18 @@ import { NotebookChangeType } from 'sql/workbench/services/notebook/common/contr
 import { Deferred } from 'sql/base/common/promise';
 import { NotebookTextFileModel } from 'sql/workbench/contrib/notebook/browser/models/notebookTextFileModel';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
-import { ResourceEditorModel } from 'vs/workbench/common/editor/resourceEditorModel';
+import { TextResourceEditorModel } from 'vs/workbench/common/editor/textResourceEditorModel';
 import { UntitledTextEditorModel, IUntitledTextEditorModel } from 'vs/workbench/services/untitled/common/untitledTextEditorModel';
 import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
-import { ResourceEditorInput } from 'vs/workbench/common/editor/resourceEditorInput';
-import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
+import { AbstractResourceEditorInput } from 'vs/workbench/common/editor/resourceEditorInput';
+import { FileEditorInput } from 'vs/workbench/contrib/files/browser/editors/fileEditorInput';
 import { BinaryEditorModel } from 'vs/workbench/common/editor/binaryEditorModel';
 import { NotebookFindModel } from 'sql/workbench/contrib/notebook/browser/find/notebookFindModel';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
 import { INotebookInput } from 'sql/workbench/services/notebook/browser/interface';
+import { EditorModel } from 'vs/workbench/common/editor/editorModel';
+import { EditorInput } from 'vs/workbench/common/editor/editorInput';
 
 export type ModeViewSaveHandler = (handle: number) => Thenable<boolean>;
 
@@ -46,7 +48,7 @@ export class NotebookEditorModel extends EditorModel {
 	private _lastEditFullReplacement: boolean;
 	private _isFirstKernelChange: boolean = true;
 	constructor(public readonly notebookUri: URI,
-		private textEditorModel: ITextFileEditorModel | IUntitledTextEditorModel | ResourceEditorModel,
+		private textEditorModel: ITextFileEditorModel | IUntitledTextEditorModel | TextResourceEditorModel,
 		@INotebookService private notebookService: INotebookService,
 		@ITextResourcePropertiesService private textResourcePropertiesService: ITextResourcePropertiesService
 	) {
@@ -72,18 +74,18 @@ export class NotebookEditorModel extends EditorModel {
 		}));
 		if (this.textEditorModel instanceof UntitledTextEditorModel) {
 			this._register(this.textEditorModel.onDidChangeDirty(e => {
-				let dirty = this.textEditorModel instanceof ResourceEditorModel ? false : this.textEditorModel.isDirty();
+				let dirty = this.textEditorModel instanceof TextResourceEditorModel ? false : this.textEditorModel.isDirty();
 				this.setDirty(dirty);
 			}));
 		} else {
 			if (this.textEditorModel instanceof TextFileEditorModel) {
 				this._register(this.textEditorModel.onDidSave(() => {
-					let dirty = this.textEditorModel instanceof ResourceEditorModel ? false : this.textEditorModel.isDirty();
+					let dirty = this.textEditorModel instanceof TextResourceEditorModel ? false : this.textEditorModel.isDirty();
 					this.setDirty(dirty);
 					this.sendNotebookSerializationStateChange();
 				}));
 				this._register(this.textEditorModel.onDidChangeDirty(() => {
-					let dirty = this.textEditorModel instanceof ResourceEditorModel ? false : this.textEditorModel.isDirty();
+					let dirty = this.textEditorModel instanceof TextResourceEditorModel ? false : this.textEditorModel.isDirty();
 					this.setDirty(dirty);
 				}));
 				this._register(this.textEditorModel.onDidResolve(async (e) => {
@@ -94,7 +96,7 @@ export class NotebookEditorModel extends EditorModel {
 				}));
 			}
 		}
-		this._dirty = this.textEditorModel instanceof ResourceEditorModel ? false : this.textEditorModel.isDirty();
+		this._dirty = this.textEditorModel instanceof TextResourceEditorModel ? false : this.textEditorModel.isDirty();
 	}
 
 	public get contentString(): string {
@@ -107,7 +109,7 @@ export class NotebookEditorModel extends EditorModel {
 	}
 
 	isDirty(): boolean {
-		return this.textEditorModel instanceof ResourceEditorModel ? false : this.textEditorModel.isDirty();
+		return this.textEditorModel instanceof TextResourceEditorModel ? false : this.textEditorModel.isDirty();
 	}
 
 	public setDirty(dirty: boolean): void {
@@ -208,7 +210,7 @@ export class NotebookEditorModel extends EditorModel {
 	}
 }
 
-type TextInput = ResourceEditorInput | UntitledTextEditorInput | FileEditorInput;
+type TextInput = AbstractResourceEditorInput | UntitledTextEditorInput | FileEditorInput;
 
 export abstract class NotebookInput extends EditorInput implements INotebookInput {
 	private _providerId: string;
@@ -286,8 +288,8 @@ export abstract class NotebookInput extends EditorInput implements INotebookInpu
 		return this._title;
 	}
 
-	public override isReadonly(): boolean {
-		return false;
+	public override get capabilities(): EditorInputCapabilities {
+		return EditorInputCapabilities.None;
 	}
 
 	public async getProviderInfo(): Promise<IProviderInfo> {
@@ -384,7 +386,7 @@ export abstract class NotebookInput extends EditorInput implements INotebookInpu
 		if (this._model) {
 			return Promise.resolve(this._model);
 		} else {
-			let textOrUntitledEditorModel: ITextFileEditorModel | IUntitledTextEditorModel | ResourceEditorModel;
+			let textOrUntitledEditorModel: ITextFileEditorModel | IUntitledTextEditorModel | TextResourceEditorModel;
 			if (this.resource.scheme === Schemas.untitled) {
 				if (this._untitledEditorModel) {
 					this._untitledEditorModel.textEditorModel.onBeforeAttached();
@@ -392,15 +394,15 @@ export abstract class NotebookInput extends EditorInput implements INotebookInpu
 				} else {
 					let resolvedInput = await this._textInput.resolve();
 					if (!(resolvedInput instanceof BinaryEditorModel)) {
-						resolvedInput.textEditorModel.onBeforeAttached();
+						(resolvedInput as ITextEditorModel).textEditorModel.onBeforeAttached();
 					}
-					textOrUntitledEditorModel = resolvedInput as TextFileEditorModel | UntitledTextEditorModel | ResourceEditorModel;
+					textOrUntitledEditorModel = resolvedInput as TextFileEditorModel | UntitledTextEditorModel | TextResourceEditorModel;
 				}
 			} else {
 				const textEditorModelReference = await this.textModelService.createModelReference(this.resource);
 				textEditorModelReference.object.textEditorModel.onBeforeAttached();
 				await textEditorModelReference.object.resolve();
-				textOrUntitledEditorModel = textEditorModelReference.object as TextFileEditorModel | ResourceEditorModel;
+				textOrUntitledEditorModel = textEditorModelReference.object as TextFileEditorModel | TextResourceEditorModel;
 			}
 			this._model = this._register(this.instantiationService.createInstance(NotebookEditorModel, this.resource, textOrUntitledEditorModel));
 			this.hookDirtyListener(this._model.onDidChangeDirty, () => this._onDidChangeDirty.fire());

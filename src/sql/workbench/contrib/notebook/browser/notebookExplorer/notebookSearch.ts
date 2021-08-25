@@ -86,11 +86,11 @@ export class NotebookSearchView extends SearchView {
 		@IStorageService storageService: IStorageService,
 		@IOpenerService openerService: IOpenerService,
 		@ITelemetryService telemetryService: ITelemetryService,
-		@ICommandService readonly commandService: ICommandService,
+		@ICommandService commandService: ICommandService,
 		@IAdsTelemetryService private _telemetryService: IAdsTelemetryService,
 	) {
 
-		super(options, fileService, editorService, codeEditorService, progressService, notificationService, dialogService, contextViewService, instantiationService, viewDescriptorService, configurationService, contextService, searchWorkbenchService, contextKeyService, replaceService, textFileService, preferencesService, themeService, searchHistoryService, contextMenuService, menuService, accessibilityService, keybindingService, storageService, openerService, telemetryService);
+		super(options, fileService, editorService, codeEditorService, progressService, notificationService, dialogService, commandService, contextViewService, instantiationService, viewDescriptorService, configurationService, contextService, searchWorkbenchService, contextKeyService, replaceService, textFileService, preferencesService, themeService, searchHistoryService, contextMenuService, menuService, accessibilityService, keybindingService, storageService, openerService, telemetryService);
 
 		this.memento = new Memento(this.id, storageService);
 		this.viewletState = this.memento.getMemento(StorageScope.WORKSPACE, StorageTarget.MACHINE);
@@ -164,7 +164,7 @@ export class NotebookSearchView extends SearchView {
 		}
 
 		const actionsPosition = this.searchConfig.actionsPosition;
-		dom.toggleClass(this.getContainer(), SearchView.ACTIONS_RIGHT_CLASS_NAME, actionsPosition === 'right');
+		this.getContainer().classList.toggle(SearchView.ACTIONS_RIGHT_CLASS_NAME, actionsPosition === 'right');
 
 		const messagesSize = this.messagesElement.style.display === 'none' ?
 			0 :

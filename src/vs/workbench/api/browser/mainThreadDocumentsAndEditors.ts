@@ -20,7 +20,7 @@ import { MainThreadTextEditor } from 'vs/workbench/api/browser/mainThreadEditor'
 import { MainThreadTextEditors } from 'vs/workbench/api/browser/mainThreadEditors';
 import { ExtHostContext, ExtHostDocumentsAndEditorsShape, IDocumentsAndEditorsDelta, IExtHostContext, IModelAddedData, ITextEditorAddData, MainContext } from 'vs/workbench/api/common/extHost.protocol';
 import { BaseTextEditor } from 'vs/workbench/browser/parts/editor/textEditor';
-import { IEditorPane } from 'vs/workbench/common/editor';
+import { editorGroupToViewColumn, EditorGroupColumn, IEditorPane } from 'vs/workbench/common/editor';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
 import { IPanelService } from 'vs/workbench/services/panel/common/panelService';
@@ -30,7 +30,6 @@ import { IWorkingCopyFileService } from 'vs/workbench/services/workingCopy/commo
 import { IUriIdentityService } from 'vs/workbench/services/uriIdentity/common/uriIdentity';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { IPathService } from 'vs/workbench/services/path/common/pathService';
-import { editorGroupToViewColumn, EditorViewColumn } from 'vs/workbench/api/common/shared/editor';
 import { diffSets, diffMaps } from 'vs/base/common/collections';
 
 
@@ -410,7 +409,7 @@ export class MainThreadDocumentsAndEditors {
 		};
 	}
 
-	private _findEditorPosition(editor: MainThreadTextEditor): EditorViewColumn | undefined {
+	private _findEditorPosition(editor: MainThreadTextEditor): EditorGroupColumn | undefined {
 		for (const editorPane of this._editorService.visibleEditorPanes) {
 			if (editor.matches(editorPane)) {
 				return editorGroupToViewColumn(this._editorGroupService, editorPane.group);

@@ -29,7 +29,6 @@ import { ServiceCollection } from 'vs/platform/instantiation/common/serviceColle
 import { NullLogService } from 'vs/platform/log/common/log';
 import { TestConnectionManagementService } from 'sql/platform/connection/test/common/testConnectionManagementService';
 import { isUndefinedOrNull } from 'vs/base/common/types';
-import { assign } from 'vs/base/common/objects';
 import { NotebookEditorContentManager } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
 import { SessionManager } from 'sql/workbench/contrib/notebook/test/emptySessionClasses';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
@@ -38,7 +37,6 @@ import { uriPrefixes } from 'sql/platform/connection/common/utils';
 import { NullAdsTelemetryService } from 'sql/platform/telemetry/common/adsTelemetryService';
 import { TestConfigurationService } from 'sql/platform/connection/test/common/testConfigurationService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 
 let expectedNotebookContent: nb.INotebookContents = {
 	cells: [{
@@ -150,7 +148,7 @@ suite('notebook model', function (): void {
 		mockSessionManager = TypeMoq.Mock.ofType(SessionManager);
 		notebookManagers[0].sessionManager = mockSessionManager.object;
 		sessionReady = new Deferred<void>();
-		notificationService = TypeMoq.Mock.ofType(TestNotificationService, TypeMoq.MockBehavior.Loose);
+		notificationService = TypeMoq.Mock.ofType<INotificationService>(TestNotificationService, TypeMoq.MockBehavior.Loose);
 		capabilitiesService = new TestCapabilitiesService();
 		memento = TypeMoq.Mock.ofType(Memento, TypeMoq.MockBehavior.Loose, '');
 		memento.setup(x => x.getMemento(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => void 0);
@@ -747,13 +745,13 @@ suite('notebook model', function (): void {
 		assert(!isUndefinedOrNull(model.context), 'context should exist after call to change context');
 
 		let notebookKernelAlias = model.context.serverCapabilities.notebookKernelAlias;
-		let doChangeKernelStub = sinon.spy(model, 'doChangeKernel').withArgs(model.kernelAliases[0]);
+		let doChangeKernelStub = sinon.spy(model, 'doChangeKernel' as keyof NotebookModel);
 
 		model.changeKernel(notebookKernelAlias);
 		assert.equal(model.selectedKernelDisplayName, notebookKernelAlias);
 		assert.equal(model.currentKernelAlias, notebookKernelAlias);
-		sinon.assert.called(doChangeKernelStub);
-		sinon.restore(doChangeKernelStub);
+		sinon.assert.calledWith(doChangeKernelStub, model.kernelAliases[0]);
+		doChangeKernelStub.restore();
 
 		// After closing the notebook
 		await model.handleClosed();
@@ -774,14 +772,14 @@ suite('notebook model', function (): void {
 		assert(!isUndefinedOrNull(model.context), 'context should exist after call to change context');
 
 		let notebookKernelAlias = model.context.serverCapabilities.notebookKernelAlias;
-		let doChangeKernelStub = sinon.spy(model, 'doChangeKernel');
+		let doChangeKernelStub = sinon.spy(model, 'doChangeKernel' as keyof NotebookModel);
 
 		// Change kernel first to alias kernel and then connect to SQL connection
 		model.changeKernel(notebookKernelAlias);
 		assert.equal(model.selectedKernelDisplayName, notebookKernelAlias);
 		assert.equal(model.currentKernelAlias, notebookKernelAlias);
 		sinon.assert.called(doChangeKernelStub);
-		sinon.restore(doChangeKernelStub);
+		doChangeKernelStub.restore();
 
 		// Change to SQL connection from Fake connection
 		await changeContextWithConnectionProfile(model);
@@ -790,7 +788,7 @@ suite('notebook model', function (): void {
 		assert.equal(model.selectedKernelDisplayName, expectedKernel);
 		assert.equal(model.currentKernelAlias, undefined);
 		sinon.assert.called(doChangeKernelStub);
-		sinon.restore(doChangeKernelStub);
+		doChangeKernelStub.restore();
 
 		// After closing the notebook
 		await model.handleClosed();
@@ -815,7 +813,7 @@ suite('notebook model', function (): void {
 		defaultModelOptions.contentManager = mockContentManager.object;
 
 		// And a matching connection profile
-		let expectedConnectionProfile: IConnectionProfile = {
+		let expectedConnectionProfile = <ConnectionProfile>{
 			connectionName: connectionName,
 			serverName: '',
 			databaseName: '',
@@ -915,7 +913,7 @@ suite('notebook model', function (): void {
 		sessionReady.resolve();
 		let actualSession: IClientSession = undefined;
 
-		let options: INotebookModelOptions = assign({}, defaultModelOptions, <Partial<INotebookModelOptions>>{
+		let options: INotebookModelOptions = Object.assign({}, defaultModelOptions, <Partial<INotebookModelOptions>>{
 			factory: mockModelFactory.object
 		});
 		let model = new NotebookModel(options, undefined, logService, undefined, new NullAdsTelemetryService(), queryConnectionService.object, configurationService, capabilitiesService);
