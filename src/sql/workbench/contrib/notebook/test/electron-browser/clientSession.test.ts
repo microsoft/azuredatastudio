@@ -30,7 +30,7 @@ suite('Client Session', function (): void {
 		notebookManager = new NotebookManagerStub();
 		notebookManager.serverManager = serverManager;
 		notebookManager.sessionManager = mockSessionManager.object;
-		notificationService = TypeMoq.Mock.ofType(TestNotificationService, TypeMoq.MockBehavior.Loose);
+		notificationService = TypeMoq.Mock.ofType<INotificationService>(TestNotificationService, TypeMoq.MockBehavior.Loose);
 
 		session = new ClientSession({
 			notebookManager: notebookManager,

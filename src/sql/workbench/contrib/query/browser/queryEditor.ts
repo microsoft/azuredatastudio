@@ -8,7 +8,7 @@ import 'vs/css!./media/queryEditor';
 import { localize } from 'vs/nls';
 import * as DOM from 'vs/base/browser/dom';
 import * as path from 'vs/base/common/path';
-import { EditorOptions, IEditorControl, IEditorMemento, IEditorOpenContext } from 'vs/workbench/common/editor';
+import { IEditorControl, IEditorMemento, IEditorOpenContext } from 'vs/workbench/common/editor';
 import { EditorPane, EditorMemento } from 'vs/workbench/browser/parts/editor/editorPane';
 import { Orientation } from 'vs/base/browser/ui/sash/sash';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
@@ -28,7 +28,7 @@ import { DisposableStore } from 'vs/base/common/lifecycle';
 import { IAction } from 'vs/base/common/actions';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { BaseTextEditor } from 'vs/workbench/browser/parts/editor/textEditor';
-import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
+import { FileEditorInput } from 'vs/workbench/contrib/files/browser/editors/fileEditorInput';
 import { URI } from 'vs/base/common/uri';
 import { IFileService, FileChangesEvent } from 'vs/platform/files/common/files';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
@@ -41,6 +41,7 @@ import * as actions from 'sql/workbench/contrib/query/browser/queryActions';
 import { IRange } from 'vs/editor/common/core/range';
 import { UntitledQueryEditorInput } from 'sql/base/query/browser/untitledQueryEditorInput';
 import { IActionViewItem } from 'vs/base/browser/ui/actionbar/actionbar';
+import { IEditorOptions } from 'vs/platform/editor/common/editor';
 
 const QUERY_EDITOR_VIEW_STATE_PREFERENCE_KEY = 'queryEditorViewState';
 
@@ -337,7 +338,7 @@ export class QueryEditor extends EditorPane {
 		this.taskbar.setContent(content);
 	}
 
-	public override async setInput(newInput: QueryEditorInput, options: EditorOptions, context: IEditorOpenContext, token: CancellationToken): Promise<void> {
+	public override async setInput(newInput: QueryEditorInput, options: IEditorOptions, context: IEditorOpenContext, token: CancellationToken): Promise<void> {
 		const oldInput = this.input;
 
 		if (newInput.matches(oldInput)) {
@@ -513,7 +514,7 @@ export class QueryEditor extends EditorPane {
 		return this.currentTextEditor.getControl();
 	}
 
-	public override setOptions(options: EditorOptions): void {
+	public override setOptions(options: IEditorOptions): void {
 		this.currentTextEditor.setOptions(options);
 	}
 

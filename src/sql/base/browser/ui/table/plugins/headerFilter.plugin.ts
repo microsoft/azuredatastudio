@@ -9,7 +9,7 @@ import { FilterableColumn } from 'sql/base/browser/ui/table/interfaces';
 import { addDisposableListener, EventType, EventHelper, $, isAncestor, clearNode, append } from 'vs/base/browser/dom';
 import { DisposableStore, dispose, IDisposable } from 'vs/base/common/lifecycle';
 import { withNullAsUndefined } from 'vs/base/common/types';
-import { instanceOfIDisposableDataProvider } from 'sql/base/common/dataProvider';
+import { IDisposableDataProvider, instanceOfIDisposableDataProvider } from 'sql/base/common/dataProvider';
 import { IContextViewProvider } from 'vs/base/browser/ui/contextview/contextview';
 import { IInputBoxStyles, InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import { trapKeyboardNavigation } from 'sql/base/browser/dom';
@@ -242,7 +242,7 @@ export class HeaderFilter<T extends Slick.SlickData> {
 		let filterItems: Array<string>;
 		const dataView = this.grid.getData() as Slick.DataProvider<T>;
 		if (instanceOfIDisposableDataProvider(dataView)) {
-			filterItems = await dataView.getColumnValues(this.columnDef);
+			filterItems = await (dataView as IDisposableDataProvider<T>).getColumnValues(this.columnDef);
 		} else {
 			const filterApplied = this.grid.getColumns().findIndex((col) => {
 				const filterableColumn = col as FilterableColumn<T>;
@@ -467,7 +467,7 @@ export class HeaderFilter<T extends Slick.SlickData> {
 		this.hideMenu();
 		const dataView = this.grid.getData();
 		if (instanceOfIDisposableDataProvider(dataView)) {
-			await dataView.filter(this.grid.getColumns());
+			await (dataView as IDisposableDataProvider<T>).filter(this.grid.getColumns());
 			this.grid.invalidateAllRows();
 			this.grid.updateRowCount();
 			this.grid.render();

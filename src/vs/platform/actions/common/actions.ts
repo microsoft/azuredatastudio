@@ -41,6 +41,7 @@ export type Icon = { dark?: URI; light?: URI; } | ThemeIcon;
 export interface ICommandAction {
 	id: string;
 	title: string | ICommandActionTitle;
+	shortTitle?: string | ICommandActionTitle;
 	category?: string | ILocalizedString;
 	tooltip?: string;
 	icon?: Icon;
@@ -87,6 +88,7 @@ export class MenuId {
 	static readonly DebugWatchContext = new MenuId('DebugWatchContext');
 	static readonly DebugToolBar = new MenuId('DebugToolBar');
 	static readonly EditorContext = new MenuId('EditorContext');
+	static readonly SimpleEditorContext = new MenuId('SimpleEditorContext');
 	static readonly EditorContextCopy = new MenuId('EditorContextCopy');
 	static readonly EditorContextPeek = new MenuId('EditorContextPeek');
 	static readonly EditorTitle = new MenuId('EditorTitle');
@@ -96,6 +98,7 @@ export class MenuId {
 	static readonly ExplorerContext = new MenuId('ExplorerContext');
 	static readonly ExtensionContext = new MenuId('ExtensionContext');
 	static readonly GlobalActivity = new MenuId('GlobalActivity');
+	static readonly MenubarMainMenu = new MenuId('MenubarMainMenu');
 	static readonly MenubarAppearanceMenu = new MenuId('MenubarAppearanceMenu');
 	static readonly MenubarDebugMenu = new MenuId('MenubarDebugMenu');
 	static readonly MenubarEditMenu = new MenuId('MenubarEditMenu');
@@ -125,9 +128,12 @@ export class MenuId {
 	static readonly StatusBarWindowIndicatorMenu = new MenuId('StatusBarWindowIndicatorMenu');
 	static readonly StatusBarRemoteIndicatorMenu = new MenuId('StatusBarRemoteIndicatorMenu');
 	static readonly TestItem = new MenuId('TestItem');
+	static readonly TestPeekElement = new MenuId('TestPeekElement');
+	static readonly TestPeekTitle = new MenuId('TestPeekTitle');
 	static readonly TouchBarContext = new MenuId('TouchBarContext');
 	static readonly TitleBarContext = new MenuId('TitleBarContext');
 	static readonly TunnelContext = new MenuId('TunnelContext');
+	static readonly TunnelProtocol = new MenuId('TunnelProtocol');
 	static readonly TunnelPortInline = new MenuId('TunnelInline');
 	static readonly TunnelTitle = new MenuId('TunnelTitle');
 	static readonly TunnelLocalAddressInline = new MenuId('TunnelLocalAddressInline');
@@ -142,6 +148,7 @@ export class MenuId {
 	static readonly CommentTitle = new MenuId('CommentTitle');
 	static readonly CommentActions = new MenuId('CommentActions');
 	// static readonly NotebookToolbar = new MenuId('NotebookToolbar'); {{SQL CARBON EDIT}} We have our own toolbar
+	static readonly NotebookRightToolbar = new MenuId('NotebookRightToolbar');
 	static readonly NotebookCellTitle = new MenuId('NotebookCellTitle');
 	static readonly NotebookCellInsert = new MenuId('NotebookCellInsert');
 	static readonly NotebookCellBetween = new MenuId('NotebookCellBetween');
@@ -150,6 +157,7 @@ export class MenuId {
 	static readonly NotebookDiffCellInputTitle = new MenuId('NotebookDiffCellInputTitle');
 	static readonly NotebookDiffCellMetadataTitle = new MenuId('NotebookDiffCellMetadataTitle');
 	static readonly NotebookDiffCellOutputsTitle = new MenuId('NotebookDiffCellOutputsTitle');
+	static readonly NotebookOutputToolbar = new MenuId('NotebookOutputToolbar');
 	static readonly BulkEditTitle = new MenuId('BulkEditTitle');
 	static readonly BulkEditContext = new MenuId('BulkEditContext');
 	static readonly ObjectExplorerItemContext = new MenuId('ObjectExplorerItemContext'); // {{SQL CARBON EDIT}}
@@ -166,12 +174,13 @@ export class MenuId {
 	static readonly TimelineTitleContext = new MenuId('TimelineTitleContext');
 	static readonly AccountsContext = new MenuId('AccountsContext');
 	static readonly PanelTitle = new MenuId('PanelTitle');
-	static readonly TerminalContainerContext = new MenuId('TerminalContainerContext');
-	static readonly TerminalToolbarContext = new MenuId('TerminalToolbarContext');
-	static readonly TerminalTabsWidgetContext = new MenuId('TerminalTabsWidgetContext');
-	static readonly TerminalTabsWidgetEmptyContext = new MenuId('TerminalTabsWidgetEmptyContext');
-	static readonly TerminalSingleTabContext = new MenuId('TerminalSingleTabContext');
-	static readonly TerminalTabInlineActions = new MenuId('TerminalTabInlineActions');
+	static readonly TerminalInstanceContext = new MenuId('TerminalInstanceContext');
+	static readonly TerminalNewDropdownContext = new MenuId('TerminalNewDropdownContext');
+	static readonly TerminalTabContext = new MenuId('TerminalTabContext');
+	static readonly TerminalTabEmptyAreaContext = new MenuId('TerminalTabEmptyAreaContext');
+	static readonly TerminalInlineTabContext = new MenuId('TerminalInlineTabContext');
+	static readonly WebviewContext = new MenuId('WebviewContext');
+	static readonly InlineCompletionsActions = new MenuId('InlineCompletionsActions');
 
 	readonly id: number;
 	readonly _debugName: string;
@@ -185,6 +194,7 @@ export class MenuId {
 export interface IMenuActionOptions {
 	arg?: any;
 	shouldForwardArgs?: boolean;
+	renderShortTitle?: boolean;
 }
 
 export interface IMenu extends IDisposable {
@@ -213,7 +223,7 @@ export interface IMenuRegistry {
 	addCommand(userCommand: ICommandAction): IDisposable;
 	getCommand(id: string): ICommandAction | undefined;
 	getCommands(): ICommandsMap;
-	appendMenuItems(items: Iterable<{ id: MenuId, item: IMenuItem | ISubmenuItem; }>): IDisposable;
+	appendMenuItems(items: Iterable<{ id: MenuId, item: IMenuItem | ISubmenuItem }>): IDisposable;
 	appendMenuItem(menu: MenuId, item: IMenuItem | ISubmenuItem): IDisposable;
 	getMenuItems(loc: MenuId): Array<IMenuItem | ISubmenuItem>;
 }
@@ -264,7 +274,7 @@ export const MenuRegistry: IMenuRegistry = new class implements IMenuRegistry {
 		return this.appendMenuItems(Iterable.single({ id, item }));
 	}
 
-	appendMenuItems(items: Iterable<{ id: MenuId, item: IMenuItem | ISubmenuItem; }>): IDisposable {
+	appendMenuItems(items: Iterable<{ id: MenuId, item: IMenuItem | ISubmenuItem }>): IDisposable {
 
 		const changedIds = new Set<MenuId>();
 		const toRemove = new LinkedList<Function>();
@@ -336,7 +346,7 @@ export class ExecuteCommandAction extends Action {
 		super(id, label);
 	}
 
-	override run(...args: any[]): Promise<any> {
+	override run(...args: any[]): Promise<void> {
 		return this._commandService.executeCommand(this.id, ...args);
 	}
 }
@@ -386,7 +396,7 @@ export class MenuItemAction implements IAction {
 	readonly class: string | undefined;
 	readonly enabled: boolean;
 	readonly checked: boolean;
-	readonly expanded: boolean = false;
+	readonly expanded: boolean = false; // {{SQL CARBON EDIT}}
 
 	constructor(
 		item: ICommandAction,
@@ -396,7 +406,9 @@ export class MenuItemAction implements IAction {
 		@ICommandService private _commandService: ICommandService
 	) {
 		this.id = item.id;
-		this.label = typeof item.title === 'string' ? item.title : item.title.value;
+		this.label = options?.renderShortTitle && item.shortTitle
+			? (typeof item.shortTitle === 'string' ? item.shortTitle : item.shortTitle.value)
+			: (typeof item.title === 'string' ? item.title : item.title.value);
 		this.tooltip = item.tooltip ?? '';
 		this.enabled = !item.precondition || contextKeyService.contextMatchesRules(item.precondition);
 		this.checked = false;
@@ -429,7 +441,7 @@ export class MenuItemAction implements IAction {
 		// to bridge into the rendering world.
 	}
 
-	run(...args: any[]): Promise<any> {
+	run(...args: any[]): Promise<void> {
 		let runArgs: any[] = [];
 
 		if (this._options?.arg) {
@@ -442,8 +454,6 @@ export class MenuItemAction implements IAction {
 
 		return this._commandService.executeCommand(this.id, ...runArgs);
 	}
-
-
 }
 
 export class SyncActionDescriptor {
@@ -456,7 +466,7 @@ export class SyncActionDescriptor {
 	private readonly _keybindingContext: ContextKeyExpression | undefined;
 	private readonly _keybindingWeight: number | undefined;
 
-	public static create<Services extends BrandedService[]>(ctor: { new(id: string, label: string, ...services: Services): Action; },
+	public static create<Services extends BrandedService[]>(ctor: { new(id: string, label: string, ...services: Services): Action },
 		id: string, label: string | undefined, keybindings?: IKeybindings, keybindingContext?: ContextKeyExpression, keybindingWeight?: number
 	): SyncActionDescriptor {
 		return new SyncActionDescriptor(ctor as IConstructorSignature2<string, string | undefined, Action>, id, label, keybindings, keybindingContext, keybindingWeight);
@@ -523,7 +533,7 @@ export interface IAction2Options extends ICommandAction {
 	/**
 	 * One or many menu items.
 	 */
-	menu?: OneOrN<{ id: MenuId; } & Omit<IMenuItem, 'command'>>;
+	menu?: OneOrN<{ id: MenuId } & Omit<IMenuItem, 'command'>>;
 
 	/**
 	 * One keybinding.
@@ -539,10 +549,10 @@ export interface IAction2Options extends ICommandAction {
 
 export abstract class Action2 {
 	constructor(readonly desc: Readonly<IAction2Options>) { }
-	abstract run(accessor: ServicesAccessor, ...args: any[]): any;
+	abstract run(accessor: ServicesAccessor, ...args: any[]): void;
 }
 
-export function registerAction2(ctor: { new(): Action2; }): IDisposable {
+export function registerAction2(ctor: { new(): Action2 }): IDisposable {
 	const disposables = new DisposableStore();
 	const action = new ctor();
 

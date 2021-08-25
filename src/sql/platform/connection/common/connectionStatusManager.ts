@@ -14,7 +14,6 @@ import { join } from 'vs/base/common/path';
 import * as Utils from 'sql/platform/connection/common/utils';
 import * as azdata from 'azdata';
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
-import { startsWith } from 'vs/base/common/strings';
 import { values } from 'vs/base/common/collections';
 
 export class ConnectionStatusManager {
@@ -206,7 +205,7 @@ export class ConnectionStatusManager {
 	}
 
 	private isSharedSession(fileUri: string): boolean {
-		return !!(fileUri && startsWith(fileUri, 'vsls:'));
+		return !!(fileUri && fileUri.startsWith('vsls:'));
 	}
 
 	public isConnected(id: string): boolean {
@@ -221,7 +220,7 @@ export class ConnectionStatusManager {
 	}
 
 	public isDefaultTypeUri(uri: string): boolean {
-		return !!(uri && startsWith(uri, Utils.uriPrefixes.default));
+		return !!(uri && uri.startsWith(Utils.uriPrefixes.default));
 	}
 
 	public getProviderIdFromUri(ownerUri: string): string {
