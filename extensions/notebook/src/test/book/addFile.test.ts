@@ -3,18 +3,22 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as azdata from 'azdata';
 import * as TypeMoq from 'typemoq';
 import * as should from 'should';
+import * as os from 'os';
+import * as path from 'path';
+import * as fs from 'fs-extra';
 import { AddFileDialog } from '../../dialog/addFileDialog';
 import { IBookTocManager } from '../../book/bookTocManager';
 import { BookTreeItem, BookTreeItemFormat } from '../../book/bookTreeItem';
-import { FileExtension } from '../../common/utils';
+import * as utils from '../../common/utils';
+import * as loc from '../../common/localizedConstants';
+import * as sinon from 'sinon';
 
 describe('Add File Dialog', function () {
 	let bookTocManager: IBookTocManager;
 	let bookTreeItem: BookTreeItem;
-	let fileExtension: FileExtension;
+	let fileExtension: utils.FileExtension;
 	let bookItemFormat: BookTreeItemFormat;
 
 	beforeEach(() => {
@@ -33,7 +37,7 @@ describe('Add File Dialog', function () {
 		mockTreeItem.setup(i => i.book).returns(() => bookItemFormat);
 		bookTreeItem = mockTreeItem.object;
 
-		let mockFileExtension = TypeMoq.Mock.ofType<FileExtension>();
+		let mockFileExtension = TypeMoq.Mock.ofType<utils.FileExtension>();
 		fileExtension = mockFileExtension.object;
 	});
 
@@ -46,7 +50,28 @@ describe('Add File Dialog', function () {
 
 	it('Validate path test', async () => {
 		let dialog = new AddFileDialog(bookTocManager, bookTreeItem, fileExtension);
-		await dialog.validatePath(undefined, undefined);
-		azdata.window.closeDialog(dialog.dialog);
+
+		let tempDir = os.tmpdir();
+		let testDir = path.join(tempDir, utils.generateGuid());
+		let fileBasename = 'addFileDialogTest.txt';
+		let testFilePath = path.join(testDir, fileBasename);
+
+		// Folder doesn't exist
+		await should(dialog.validatePath(testDir, fileBasename)).be.rejectedWith(new Error(loc.msgSaveFolderError));
+
+		// Folder exists
+		fs.mkdir(testDir);
+		await should(dialog.validatePath(testDir, fileBasename)).not.be.rejected();
+
+		// File Exists, but don't choose to overwrite
+		sinon.stub(utils, 'confirmMessageDialog').resolves(false);
+		fs.createFile(testFilePath);
+		await should(dialog.validatePath(testDir, fileBasename)).be.rejectedWith(new Error(loc.msgDuplicateFileName(testFilePath)));
+		sinon.restore();
+
+		// File exists, choose to overwrite
+		sinon.stub(utils, 'confirmMessageDialog').resolves(true);
+		await should(dialog.validatePath(testDir, fileBasename)).not.be.rejected();
+		sinon.restore();
 	});
 });
