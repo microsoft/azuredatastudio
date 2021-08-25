@@ -99,32 +99,9 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined, 
 	// }
 
 
-	// get project binding was added in
-	let packageHelper = new InstallPackageHelper();
-	const project = await packageHelper.getProjectContainingFile(uri.fsPath);
-
-	// dotnet list package to check
-	const listOptions: DotNetCommandOptions = {
-		commandTitle: 'List Packages',
-		argument: packageHelper.constructListPackageArguments(project)
-	};
-
-	const netCoreTool = new NetCoreTool(outputChannel);
-	// let result = await netCoreTool.runDotnetCommand(listOptions);
-	// console.error(result);
-
-	// if (result.includes(constants.sqlExtensionPackageName)) {
-	// 	console.error('has it!');
-	// } else {
-	// 	console.error('doenst have it')
-	// dotnet add package if it doesn't exist
-	const addOptions: DotNetCommandOptions = {
-		commandTitle: 'Add Package',
-		argument: packageHelper.constructAddPackageArguments(project, constants.sqlExtensionPackageName, constants.sqlExtensionPackageVersion)
-	};
-
-	let result2 = await netCoreTool.runDotnetCommand(addOptions);
-	console.error(result2);
-	// }
+	// Add sql extension package reference to project
+	const packageHelper = new InstallPackageHelper(outputChannel);
+	const project = await packageHelper.getAFProjectContainingFile(uri.fsPath);
+	packageHelper.addPackage(project, constants.sqlExtensionPackageName, constants.sqlExtensionPackageVersion);
 }
 

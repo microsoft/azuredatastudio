@@ -8,15 +8,51 @@ import * as vscode from 'vscode';
 import * as glob from 'fast-glob';
 import * as utils from '../common/utils';
 import * as constants from '../common/constants';
+import { DotNetCommandOptions, NetCoreTool } from './netcoreTool';
 
 export class InstallPackageHelper {
+	private netCoreTool: NetCoreTool;
 
-	constructor() { }
+	constructor(outputChannel: vscode.OutputChannel) {
+		this.netCoreTool = new NetCoreTool(outputChannel);
+	}
 
-	public async getProjectContainingFile(filePath: string): Promise<string> {
+	/**
+	 * Constructs the parameters for a dotnet add package
+	 * @param projectPath full path to project to add package to
+	 * @param packageName name of package
+	 * @param packageVersion version of package
+	 * @returns string constructed with the arguments for dotnet add package
+	 */
+	public constructAddPackageArguments(projectPath: string, packageName: string, packageVersion: string): string {
+		projectPath = utils.getQuotedPath(projectPath);
+		return ` add ${projectPath} package ${packageName} -v ${packageVersion}`;
+	}
+
+	/**
+	 * Runs dotnet add package to add a package reference to the specified project
+	 * @param projectPath full path to project to add package to
+	 * @param packageName name of package
+	 * @param packageVersion version of package
+	 */
+	public async addPackage(project: string, packageName: string, packageVersion: string): Promise<void> {
+		const addOptions: DotNetCommandOptions = {
+			commandTitle: 'Add Package',
+			argument: this.constructAddPackageArguments(project, packageName, packageVersion)
+		};
+
+		await this.netCoreTool.runDotnetCommand(addOptions);
+	}
+
+	/**
+	 * Gets the Azure Functions project that contains the given file
+	 * @param filePath file that the containing project needs to be found for
+	 * @returns filepath of project
+	 */
+	public async getAFProjectContainingFile(filePath: string): Promise<string> {
 		// get csprojs in the workspace
 		const projectPromises = vscode.workspace.workspaceFolders?.map(f => this.getAllProjectsInFolder(f.uri, '.csproj')) ?? [];
-		let projects = (await Promise.all(projectPromises)).reduce((prev, curr) => prev.concat(curr), []);
+		const projects = (await Promise.all(projectPromises)).reduce((prev, curr) => prev.concat(curr), []);
 
 		// check if it's a functions project
 		let functionsProjects = [];
@@ -28,7 +64,7 @@ export class InstallPackageHelper {
 
 		// look for project folder containing file if there's more than one
 		if (functionsProjects.length > 1) {
-			// TODO:
+			// TODO
 			console.error('need to look for folder containing ' + filePath);
 			throw new Error('uh oh more than one functions project :o');
 		} else if (functionsProjects.length === 0) {
@@ -54,17 +90,6 @@ export class InstallPackageHelper {
 
 		// glob will return an array of file paths with forward slashes, so they need to be converted back if on windows
 		return (await glob(projFilter)).map(p => vscode.Uri.file(path.resolve(p)));
-	}
-
-
-	public constructListPackageArguments(projectPath: string): string {
-		projectPath = utils.getQuotedPath(projectPath);
-		return ` list ${projectPath} package`;
-	}
-
-	public constructAddPackageArguments(projectPath: string, packageName: string, packageVersion: string): string {
-		projectPath = utils.getQuotedPath(projectPath);
-		return ` add ${projectPath} package ${packageName} -v ${packageVersion}`;
 	}
 
 	// Use 'host.json' as an indicator that this is a functions project
