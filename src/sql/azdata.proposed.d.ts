@@ -903,6 +903,7 @@ declare module 'azdata' {
 	export interface VisualizationOptions {
 		type: VisualizationType;
 	}
+	
 	export interface PropertiesContainerComponentProperties {
 		/**
 		 * Whether to show the button that will hide/show the content of the container. Default value is false.
