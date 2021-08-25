@@ -6,6 +6,8 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { ProviderId } from './connectionProvider';
 
+const RootNode: string = 'root';
+
 /**
  * This class implements the ObjectExplorerProvider interface that is responsible for providing the connection tree view content.
  */
@@ -28,7 +30,7 @@ export class ObjectExplorerProvider implements azdata.ObjectExplorerProvider {
 				sessionId: '1',
 				success: true,
 				rootNode: {
-					nodePath: 'root',
+					nodePath: RootNode,
 					nodeType: 'server',
 					label: 'abc',
 					isLeaf: false
@@ -55,34 +57,20 @@ export class ObjectExplorerProvider implements azdata.ObjectExplorerProvider {
 			handler(e);
 		});
 	}
+
+	/**
+	 * This is called when a node is being expanded for the first time
+	 */
 	expandNode(nodeInfo: azdata.ExpandNodeInfo): Thenable<boolean> {
-		setTimeout(() => {
-			this.onExpandCompletedEmitter.fire({
-				sessionId: nodeInfo.sessionId,
-				nodePath: nodeInfo.nodePath,
-				nodes: [
-					{
-						nodePath: 'root/1',
-						nodeType: '',
-						icon: {
-							light: this.context.asAbsolutePath('images/group.svg'),
-							dark: this.context.asAbsolutePath('images/group_inverse.svg')
-						},
-						label: 'obj 1',
-						isLeaf: false
-					}, {
-						nodePath: 'root/2',
-						nodeType: '',
-						icon: azdata.SqlThemeIcon.Column,
-						label: 'obj 2',
-						isLeaf: false
-					}
-				]
-			});
-		}, 500);
+		this.executeExpandNode(nodeInfo);
 		return Promise.resolve(true);
 	}
+
+	/**
+	 * This is called when a node is being refreshed, This is triggered by the 'Refresh' context menu item of the node.
+	 */
 	refreshNode(nodeInfo: azdata.ExpandNodeInfo): Thenable<boolean> {
+		this.executeExpandNode(nodeInfo);
 		return Promise.resolve(true);
 	}
 	findNodes(findNodesInfo: azdata.FindNodesInfo): Thenable<azdata.ObjectExplorerFindNodesResponse> {
@@ -95,4 +83,37 @@ export class ObjectExplorerProvider implements azdata.ObjectExplorerProvider {
 	}
 	handle?: number;
 	providerId: string = ProviderId;
+
+	private executeExpandNode(nodeInfo: azdata.ExpandNodeInfo): void {
+		setTimeout(() => {
+			const timestamp = new Date(Date.now()).toLocaleTimeString();
+			this.onExpandCompletedEmitter.fire({
+				sessionId: nodeInfo.sessionId,
+				nodePath: nodeInfo.nodePath,
+				nodes: [
+					{
+						nodePath: nodeInfo.nodePath + '/1',
+						nodeType: '',
+						icon: {
+							light: this.context.asAbsolutePath('images/group.svg'),
+							dark: this.context.asAbsolutePath('images/group_inverse.svg')
+						},
+						label: `obj 1 - ${timestamp}`,
+						isLeaf: false
+					}, {
+						nodePath: nodeInfo.nodePath + '/2',
+						nodeType: '',
+						icon: azdata.SqlThemeIcon.Column,
+						label: `obj 2 - ${timestamp}`,
+						isLeaf: false
+					}
+				]
+			});
+		}, 500);
+	}
+
+	public async updateNode(node: azdata.ObjectExplorerContext): Promise<void> {
+		const node1 = await azdata.objectexplorer.getNode(node.connectionProfile.id, node.isConnectionNode ? RootNode : node.nodeInfo.nodePath);
+		await node1.refresh();
+	}
 }
