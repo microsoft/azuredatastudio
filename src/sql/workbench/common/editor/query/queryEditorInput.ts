@@ -198,9 +198,9 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 		}
 	}
 
-	protected async renameQuery(newUri: string): Promise<void> {
+	protected async changeConnectionUriForQuery(newUri: string): Promise<void> {
 		this.connectionManagementService.replaceConnectionUri(this.uri, newUri);
-		await this.queryModelService.renameQuery(newUri, this.uri);
+		await this.queryModelService.changeConnectionUriForQuery(newUri, this.uri);
 	}
 
 	// Forwarding resource functions to the inline sql file editor

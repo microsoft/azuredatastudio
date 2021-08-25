@@ -409,11 +409,11 @@ export class QueryModelService implements IQueryModelService {
 		}
 	}
 
-	public async renameQuery(newUri: string, oldUri: string): Promise<void> {
+	public async changeConnectionUriForQuery(newUri: string, oldUri: string): Promise<void> {
 		// Get existing query runner
 		let queryRunner = this.internalGetQueryRunner(oldUri);
 		if (queryRunner) {
-			await queryRunner.renameQuery(newUri, oldUri);
+			await queryRunner.changeConnectionUriForQuery(newUri, oldUri);
 		}
 		// remove the old key and set new key with same query info as old uri.
 		if (this._queryInfoMap.has(oldUri)) {

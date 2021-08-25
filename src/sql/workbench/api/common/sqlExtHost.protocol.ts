@@ -194,9 +194,9 @@ export abstract class ExtHostDataProtocolShape {
 	$disposeQuery(handle: number, ownerUri: string): Thenable<void> { throw ni(); }
 
 	/**
-	 * Renames the uri associated with a query
+	 * Changes the uri associated with a query
 	 */
-	$renameQuery(handle: number, newUri: string, oldUri: string): Thenable<void> { throw ni(); }
+	$changeConnectionUriForQuery(handle: number, newUri: string, oldUri: string): Thenable<void> { throw ni(); }
 
 	/**
 	 * Refreshes the IntelliSense cache
