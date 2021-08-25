@@ -106,6 +106,3 @@ export const title = localize('title', "Title");
 export const fileName = localize('fileName', "File Name");
 export const msgInvalidSaveFolder = localize('msgInvalidSaveFolder', "Save location path is not valid.");
 export function msgDuplicateFileName(file: string): string { return localize('msgDuplicateFileName', "File {0} already exists in the destination folder", file); }
-
-
-
