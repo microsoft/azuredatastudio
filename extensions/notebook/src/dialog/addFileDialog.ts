@@ -36,7 +36,7 @@ export class AddFileDialog {
 		if (await pathExists(destinationUri)) {
 			const doOverwrite = await confirmMessageDialog(this._prompter, loc.confirmOverwrite);
 			if (!doOverwrite) {
-				throw (new Error(loc.msgDuplicadFileName(destinationUri)));
+				throw (new Error(loc.msgDuplicateFileName(destinationUri)));
 			}
 		}
 		if (!(await pathExists(folderPath))) {

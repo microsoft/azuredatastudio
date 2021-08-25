@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-// import * as azdata from 'azdata';
+import * as azdata from 'azdata';
 import * as TypeMoq from 'typemoq';
 import * as should from 'should';
 import { AddFileDialog } from '../../dialog/addFileDialog';
@@ -38,15 +38,15 @@ describe('Add File Dialog', function () {
 	});
 
 	it('Start dialog test', async () => {
-		let dialog = new AddFileDialog(bookTocManager, bookTreeItem, fileExtension);
-		await dialog.createDialog();
-		should(dialog.dialog).not.be.undefined();
-		should(dialog.dialog.message).be.undefined();
+		let fileDialog = new AddFileDialog(bookTocManager, bookTreeItem, fileExtension);
+		await fileDialog.createDialog();
+		should(fileDialog.dialog).not.be.undefined();
+		should(fileDialog.dialog.message).be.undefined();
 	});
 
-	// it('Validate path test', async () => {
-	// 	let dialog = new AddFileDialog(bookTocManager, bookTreeItem, fileExtension);
-	// 	await dialog.validatePath(undefined, undefined);
-	// 	azdata.window.closeDialog(dialog.dialog);
-	// });
+	it('Validate path test', async () => {
+		let dialog = new AddFileDialog(bookTocManager, bookTreeItem, fileExtension);
+		await dialog.validatePath(undefined, undefined);
+		azdata.window.closeDialog(dialog.dialog);
+	});
 });

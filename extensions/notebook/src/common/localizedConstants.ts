@@ -105,7 +105,7 @@ export const confirmOverwrite = localize('confirmOverwrite', "File already exist
 export const title = localize('title', "Title");
 export const fileName = localize('fileName', "File Name");
 export const msgInvalidSaveFolder = localize('msgInvalidSaveFolder', "Save location path is not valid.");
-export function msgDuplicadFileName(file: string): string { return localize('msgDuplicadFileName', "File {0} already exists in the destination folder", file); }
+export function msgDuplicateFileName(file: string): string { return localize('msgDuplicateFileName', "File {0} already exists in the destination folder", file); }
 
 
 
