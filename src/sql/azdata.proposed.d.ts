@@ -903,7 +903,7 @@ declare module 'azdata' {
 	export interface VisualizationOptions {
 		type: VisualizationType;
 	}
-	
+
 	export interface PropertiesContainerComponentProperties {
 		/**
 		 * Whether to show the button that will hide/show the content of the container. Default value is false.
@@ -928,11 +928,11 @@ declare module 'azdata' {
 		 */
 		icon?: IconPath | SqlThemeIcon;
 	}
-  
-  export interface QueryProvider {
-    /**
-		 * Used to change queries on STS to use a new URI in case of a untitled query save.
-		 */
+
+	export interface QueryProvider {
+		/**
+			 * Used to change queries on STS to use a new URI in case of a untitled query save.
+			 */
 		renameQuery(newUri: string, oldUri: string): Thenable<void>;
-  }
+	}
 }
