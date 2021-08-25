@@ -443,7 +443,10 @@ export function getTargetPlatformFromVersion(version: string): string {
 
 // Insert SQL binding
 export const hostFileName = 'host.json';
+export const sqlExtensionPackageName = 'Microsoft.Azure.WebJobs.Extensions.Sql';
+export const sqlExtensionPackageVersion = '1.0.0-preview3';
 export const placeHolderObject = '[dbo].[table1]';
+
 export const input = localize('input', "Input");
 export const output = localize('output', "Output");
 export const selectBindingType = localize('selectBindingType', "Select type of binding");
