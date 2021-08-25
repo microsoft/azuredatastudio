@@ -304,7 +304,7 @@ export class AzureModelRegistryService {
 		if (this._amlClient) {
 			return this._amlClient;
 		} else {
-			const tokens: { token: string, tokenType?: string } | undefined = await this._apiWrapper.getAccountSecurityToken(account, tenant.id, azdata.AzureResource.ResourceManagement);
+			const tokens: azdata.accounts.AccountSecurityToken | undefined = await this._apiWrapper.getAccountSecurityToken(account, tenant.id, azdata.AzureResource.ResourceManagement);
 			let token: string = '';
 			let tokenType: string | undefined = undefined;
 			if (tokens) {

@@ -13,6 +13,14 @@ import * as dataworkspace from 'dataworkspace';
 import * as mssql from '../../../mssql';
 import * as vscodeMssql from 'vscode-mssql';
 import { promises as fs } from 'fs';
+import { Project } from '../models/project';
+import * as childProcess from 'child_process';
+import * as fse from 'fs-extra';
+
+export interface ValidationResult {
+	errorMessage: string;
+	validated: boolean
+}
 
 /**
  * Consolidates on the error message string
@@ -37,7 +45,7 @@ export function trimUri(innerUri: vscode.Uri, outerUri: vscode.Uri): string {
 	if (path.isAbsolute(outerUri.path)
 		&& innerParts.length > 0 && outerParts.length > 0
 		&& innerParts[0].toLowerCase() !== outerParts[0].toLowerCase()) {
-		throw new Error(constants.ousiderFolderPath);
+		throw new Error(constants.outsideFolderPath);
 	}
 
 	while (innerParts.length > 0 && outerParts.length > 0 && innerParts[0].toLocaleLowerCase() === outerParts[0].toLocaleLowerCase()) {
@@ -68,6 +76,18 @@ export function trimChars(input: string, chars: string): string {
 	output = output.substring(0, output.length - i);
 
 	return output;
+}
+
+/**
+ * Ensures that folder path terminates with the slash.
+ * By default SSDT-style slash (`\`) is used.
+ *
+ * @param path Folder path to ensure trailing slash for.
+ * @param slashCharacter Slash character to ensure is present at the end of the path.
+ * @returns Path that ends with the given slash character.
+ */
+export function ensureTrailingSlash(path: string, slashCharacter: string = constants.SqlProjPathSeparator): string {
+	return path.endsWith(slashCharacter) ? path : path + slashCharacter;
 }
 
 /**
@@ -122,13 +142,13 @@ export function getPlatformSafeFileEntryPath(filePath: string): string {
 }
 
 /**
- * Standardizes slashes to be "\\" for consistency between platforms and compatibility with SSDT
+ * Standardizes slashes to be "\" for consistency between platforms and compatibility with SSDT
  *
  * @param filePath Path to the file of folder.
  */
 export function convertSlashesForSqlProj(filePath: string): string {
 	return filePath.includes('/')
-		? filePath.split('/').join('\\')
+		? filePath.split('/').join(constants.SqlProjPathSeparator)
 		: filePath;
 }
 
@@ -248,31 +268,69 @@ export function getSqlProjectsInWorkspace(): Promise<vscode.Uri[]> {
 }
 
 export function getDataWorkspaceExtensionApi(): dataworkspace.IExtension {
-	const extension = vscode.extensions.getExtension(dataworkspace.extension.name)!;
+	const dataworkspaceExtName = getAzdataApi() ? dataworkspace.extension.name : dataworkspace.extension.vscodeName;
+	const extension = vscode.extensions.getExtension(dataworkspaceExtName)!;
 	return extension.exports;
 }
 
 export type IDacFxService = mssql.IDacFxService | vscodeMssql.IDacFxService;
+export type ISchemaCompareService = mssql.ISchemaCompareService | vscodeMssql.ISchemaCompareService;
 
 export async function getDacFxService(): Promise<IDacFxService> {
 	if (getAzdataApi()) {
-		let ext = vscode.extensions.getExtension(mssql.extension.name) as vscode.Extension<mssql.IExtension>;
+		const ext = vscode.extensions.getExtension(mssql.extension.name) as vscode.Extension<mssql.IExtension>;
 		const api = await ext.activate();
 		return api.dacFx;
 	} else {
-		let ext = vscode.extensions.getExtension(vscodeMssql.extension.name) as vscode.Extension<vscodeMssql.IExtension>;
-		const api = await ext.activate();
+		const api = await getVscodeMssqlApi();
 		return api.dacFx;
 	}
 }
 
-/*
- * Returns the default deployment options from DacFx
- */
-export async function GetDefaultDeploymentOptions(): Promise<mssql.DeploymentOptions> {
-	const service = (vscode.extensions.getExtension(mssql.extension.name)!.exports as mssql.IExtension).schemaCompare;
-	const result = await service.schemaCompareGetDefaultOptions();
+export async function getSchemaCompareService(): Promise<ISchemaCompareService> {
+	if (getAzdataApi()) {
+		const ext = vscode.extensions.getExtension(mssql.extension.name) as vscode.Extension<mssql.IExtension>;
+		const api = await ext.activate();
+		return api.schemaCompare;
+	} else {
+		const api = await getVscodeMssqlApi();
+		return api.schemaCompare;
+	}
+}
 
+export async function getAzureFunctionService(): Promise<vscodeMssql.IAzureFunctionsService> {
+	if (getAzdataApi()) {
+		// this isn't supported in ADS
+		throw new Error('Azure Functions service is not supported in Azure Data Studio');
+	} else {
+		const api = await getVscodeMssqlApi();
+		return api.azureFunctions;
+	}
+}
+
+export async function getVscodeMssqlApi(): Promise<vscodeMssql.IExtension> {
+	const ext = vscode.extensions.getExtension(vscodeMssql.extension.name) as vscode.Extension<vscodeMssql.IExtension>;
+	return ext.activate();
+}
+
+/*
+ * Returns the default deployment options from DacFx, filtered to appropriate options for the given project.
+ */
+export async function getDefaultPublishDeploymentOptions(project: Project): Promise<mssql.DeploymentOptions | vscodeMssql.DeploymentOptions> {
+	const schemaCompareService = await getSchemaCompareService();
+	const result = await schemaCompareService.schemaCompareGetDefaultOptions();
+	const deploymentOptions = result.defaultDeploymentOptions;
+	// re-include database-scoped credentials
+	if (getAzdataApi()) {
+		deploymentOptions.excludeObjectTypes = (deploymentOptions as mssql.DeploymentOptions).excludeObjectTypes.filter(x => x !== mssql.SchemaObjectType.DatabaseScopedCredentials);
+	} else {
+		deploymentOptions.excludeObjectTypes = (deploymentOptions as vscodeMssql.DeploymentOptions).excludeObjectTypes.filter(x => x !== vscodeMssql.SchemaObjectType.DatabaseScopedCredentials);
+	}
+
+	// this option needs to be true for same database references validation to work
+	if (project.databaseReferences.length > 0) {
+		deploymentOptions.includeCompositeObjects = true;
+	}
 	return result.defaultDeploymentOptions;
 }
 
@@ -339,6 +397,10 @@ export function timeConversion(duration: number): string {
 let azdataApi: typeof azdataType | undefined = undefined;
 try {
 	azdataApi = require('azdata');
+	if (!azdataApi?.version) {
+		// webpacking makes the require return an empty object instead of throwing an error so make sure we clear the var
+		azdataApi = undefined;
+	}
 } catch {
 	// no-op
 }
@@ -349,4 +411,80 @@ try {
  */
 export function getAzdataApi(): typeof azdataType | undefined {
 	return azdataApi;
+}
+
+export async function createFolderIfNotExist(folderPath: string): Promise<void> {
+	try {
+		await fse.mkdir(folderPath);
+	} catch {
+		// Ignore if failed
+	}
+}
+
+export async function executeCommand(cmd: string, outputChannel: vscode.OutputChannel, timeout: number = 5 * 60 * 1000): Promise<string> {
+	return new Promise<string>((resolve, reject) => {
+		if (outputChannel) {
+			outputChannel.appendLine(`    > ${cmd}`);
+		}
+		let child = childProcess.exec(cmd, {
+			timeout: timeout
+		}, (err, stdout) => {
+			if (err) {
+				reject(err);
+			} else {
+				resolve(stdout);
+			}
+		});
+
+		// Add listeners to print stdout and stderr if an output channel was provided
+
+		if (child?.stdout) {
+			child.stdout.on('data', data => { outputDataChunk(outputChannel, data, '    stdout: '); });
+		}
+		if (child?.stderr) {
+			child.stderr.on('data', data => { outputDataChunk(outputChannel, data, '    stderr: '); });
+		}
+	});
+}
+
+export function outputDataChunk(outputChannel: vscode.OutputChannel, data: string | Buffer, header: string): void {
+	data.toString().split(/\r?\n/)
+		.forEach(line => {
+			if (outputChannel) {
+				outputChannel.appendLine(header + line);
+			}
+		});
+}
+
+export async function retry<T>(
+	name: string,
+	attempt: () => Promise<T>,
+	verify: (result: T) => Promise<ValidationResult>,
+	formatResult: (result: T) => Promise<string>,
+	outputChannel: vscode.OutputChannel,
+	numberOfAttempts: number = 10,
+	waitInSeconds: number = 2
+): Promise<T | undefined> {
+	for (let count = 0; count < numberOfAttempts; count++) {
+		outputChannel.appendLine(constants.retryWaitMessage(waitInSeconds, name));
+		await new Promise(c => setTimeout(c, waitInSeconds * 1000));
+		outputChannel.appendLine(constants.retryRunMessage(count, numberOfAttempts, name));
+
+		try {
+			let result = await attempt();
+			const validationResult = await verify(result);
+			const formattedResult = await formatResult(result);
+			if (validationResult.validated) {
+				outputChannel.appendLine(constants.retrySucceedMessage(name, formattedResult));
+				return result;
+			} else {
+				outputChannel.appendLine(constants.retryFailedMessage(name, formattedResult, validationResult.errorMessage));
+			}
+
+		} catch (err) {
+			outputChannel.appendLine(constants.retryMessage(name, err));
+		}
+	}
+
+	return undefined;
 }

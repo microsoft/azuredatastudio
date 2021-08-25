@@ -11,7 +11,7 @@ import * as types from 'vs/base/common/types';
 
 import * as azdata from 'azdata';
 
-export function appendRow(container: HTMLElement, label: string, labelClass: string, cellContainerClass: string, rowContainerClass?: string | Array<string>): HTMLElement {
+export function appendRow(container: HTMLElement, label: string, labelClass: string, cellContainerClass: string, rowContainerClass?: string | Array<string>, showRequiredIndicator: boolean = false): HTMLElement {
 	let rowContainer = append(container, $('tr'));
 	if (rowContainerClass) {
 		if (types.isString(rowContainerClass)) {
@@ -20,7 +20,15 @@ export function appendRow(container: HTMLElement, label: string, labelClass: str
 			addClasses(rowContainer, ...rowContainerClass);
 		}
 	}
-	append(append(rowContainer, $(`td.${labelClass}`)), $('div')).innerText = label;
+	const labelContainer = append(append(rowContainer, $(`td.${labelClass}`)), $('div.dialog-label-container'));
+	labelContainer.style.display = 'flex';
+	append(labelContainer, $('div')).innerText = label;
+	if (showRequiredIndicator) {
+		const indicator = append(labelContainer, $('span.required-indicator'));
+		indicator.innerText = '*';
+		indicator.style.color = 'red';
+		indicator.style.marginLeft = '5px';
+	}
 	let inputCellContainer = append(rowContainer, $(`td.${cellContainerClass}`));
 
 	return inputCellContainer;

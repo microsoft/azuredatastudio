@@ -1,8 +1,8 @@
 {
   "name": "sql-database-projects",
   "displayName": "SQL Database Projects",
-  "description": "The SQL Database Projects extension for Azure Data Studio allows users to develop and publish database schemas.",
-  "version": "0.11.0",
+  "description": "The SQL Database Projects extension for Azure Data Studio and VS Code allows users to develop and publish database schemas.",
+  "version": "0.13.0",
   "publisher": "Microsoft",
   "preview": true,
   "engines": {
@@ -16,6 +16,7 @@
     "onCommand:sqlDatabaseProjects.new",
     "onCommand:sqlDatabaseProjects.open",
     "onCommand:sqlDatabaseProjects.createProjectFromDatabase",
+    "onCommand:sqlDatabaseProjects.addSqlBinding",
     "workspaceContains:**/*.sqlproj",
     "onView:dataworkspace.views.main"
   ],
@@ -114,6 +115,11 @@
         "category": "%sqlDatabaseProjects.displayName%"
       },
       {
+				"command": "sqlDatabaseProjects.deployLocal",
+				"title": "%sqlDatabaseProjects.deployLocal%",
+				"category": "%sqlDatabaseProjects.displayName%"
+			},
+      {
         "command": "sqlDatabaseProjects.properties",
         "title": "%sqlDatabaseProjects.properties%",
         "category": "%sqlDatabaseProjects.displayName%"
@@ -153,6 +159,10 @@
         "command": "sqlDatabaseProjects.changeTargetPlatform",
         "title": "%sqlDatabaseProjects.changeTargetPlatform%",
         "category": "%sqlDatabaseProjects.displayName%"
+      },
+      {
+        "command": "sqlDatabaseProjects.addSqlBinding",
+        "title": "%sqlDatabaseProjects.addSqlBinding%"
       }
     ],
     "menus": {
@@ -213,6 +223,10 @@
           "when": "false"
         },
         {
+          "command": "sqlDatabaseProjects.deployLocal",
+          "when": "false"
+        },
+        {
           "command": "sqlDatabaseProjects.properties",
           "when": "false"
         },
@@ -246,6 +260,10 @@
         {
           "command": "sqlDatabaseProjects.changeTargetPlatform",
           "when": "false"
+        },
+        {
+          "command": "sqlDatabaseProjects.addSqlBinding",
+          "when": "editorLangId == csharp && !azdataAvailable"
         }
       ],
       "view/item/context": [
@@ -260,8 +278,13 @@
           "group": "1_dbProjectsFirst@2"
         },
         {
+          "command": "sqlDatabaseProjects.deployLocal",
+          "when": "view == dataworkspace.views.main && viewItem == databaseProject.itemType.project && !azdataAvailable",
+          "group": "1_dbProjectsFirst@2"
+        },
+        {
           "command": "sqlDatabaseProjects.schemaCompare",
-          "when": "view == dataworkspace.views.main && viewItem == databaseProject.itemType.project",
+          "when": "view == dataworkspace.views.main && viewItem == databaseProject.itemType.project && azdataAvailable",
           "group": "1_dbProjectsFirst@3"
         },
         {
@@ -343,6 +366,11 @@
           "command": "sqlDatabaseProjects.openContainingFolder",
           "when": "view == dataworkspace.views.main && viewItem == databaseProject.itemType.project",
           "group": "9_dbProjectsLast@8"
+        },
+        {
+          "command": "sqlDatabaseProjects.createProjectFromDatabase",
+          "when": "!azdataAvailable && view == objectExplorer && viewItem =~ /^(disconnectedServer|Server|Database)$/",
+          "group": "sqldbproj@1"
         }
       ],
       "objectExplorer/item/context": [
@@ -375,7 +403,9 @@
     "vscode-languageclient": "^5.3.0-next.1",
     "vscode-nls": "^4.1.2",
     "xml-formatter": "^2.1.0",
-    "xmldom": "^0.3.0"
+    "xmldom": "^0.3.0",
+    "generate-password": "^1.6.0",
+    "fs-extra": "^5.0.0"
   },
   "devDependencies": {
     "@types/mocha": "^5.2.5",
@@ -389,7 +419,8 @@
     "tslint": "^5.8.0",
     "typemoq": "^2.1.0",
     "typescript": "^2.6.1",
-    "vscodetestcover": "^1.1.0"
+    "vscodetestcover": "^1.1.0",
+    "@types/fs-extra": "^5.0.0"
   },
   "__metadata": {
     "id": "70",

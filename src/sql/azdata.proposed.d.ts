@@ -257,18 +257,12 @@ declare module 'azdata' {
 		title: string;
 	}
 
-	export interface RadioButtonComponent {
-		/**
-		 * An event called when the value of radio button changes
-		 */
-		onDidChangeCheckedState: vscode.Event<boolean>;
-	}
-
 	export interface DeclarativeTableColumn {
 		headerCssStyles?: CssStyles;
 		rowCssStyles?: CssStyles;
 		ariaLabel?: string;
 		showCheckAll?: boolean;
+		hidden?: boolean;
 	}
 
 
@@ -323,10 +317,6 @@ declare module 'azdata' {
 		listView(): ComponentBuilder<ListViewComponent, ListViewComponentProperties>;
 		tabbedPanel(): TabbedPanelComponentBuilder;
 		slider(): ComponentBuilder<SliderComponent, SliderComponentProperties>;
-	}
-
-	export interface ComponentBuilder<TComponent extends Component, TPropertyBag extends ComponentProperties> {
-		withProps(properties: TPropertyBag): ComponentBuilder<TComponent, TPropertyBag>;
 	}
 
 	export interface RadioCard {
@@ -574,28 +564,32 @@ declare module 'azdata' {
 		onInput: vscode.Event<number>;
 	}
 
-	export namespace nb {
-		/**
-		 * An event that is emitted when the active Notebook editor is changed.
-		 */
-		export const onDidChangeActiveNotebookEditor: vscode.Event<NotebookEditor>;
-	}
-	export namespace window {
-		export interface ModelViewDashboard {
-			registerTabs(handler: (view: ModelView) => Thenable<(DashboardTab | DashboardTabGroup)[]>): void;
-			open(): Thenable<void>;
-			close(): Thenable<void>;
-			updateTabs(tabs: (DashboardTab | DashboardTabGroup)[]): void;
-			selectTab(id: string): void;
-		}
+	/**
+	 * The heading levels an HTML heading element can be.
+	 */
+	export type HeadingLevel = 1 | 2 | 3 | 4 | 5 | 6;
 
+	/**
+	 * The type of text this is - used to determine display color.
+	 */
+	export enum TextType {
+		Normal = 'Normal',
+		Error = 'Error'
+	}
+
+	export interface TextComponentProperties {
 		/**
-		 *
-		 * @param title The title displayed in the editor tab for the dashboard
-		 * @param name The name used to identify this dashboard in telemetry
-		 * @param options Options to configure the dashboard
+		 * The heading level for this component - if set the text component will be created as an h#
+		 * HTML element with this value being the #.
 		 */
-		export function createModelViewDashboard(title: string, name?: string, options?: ModelViewDashboardOptions): ModelViewDashboard;
+		headingLevel?: HeadingLevel;
+		/**
+		 * The type to display the text as - used to determine the color of the text. Default is Normal.
+		 */
+		textType?: TextType;
+	}
+
+	export namespace window {
 
 		export interface Dialog {
 			/**
@@ -635,40 +629,41 @@ declare module 'azdata' {
 			 * Width of the wizard
 			 */
 			width?: DialogWidth;
-
-			/**
-			 * Open the wizard. Does nothing if the wizard is already open.
-			 * @param source Where the wizard was opened from for telemetry (ex: command palette, context menu)
-			 */
-			open(source?: string): Thenable<void>;
-		}
-
-		export interface WizardPage extends ModelViewPanel {
-			/**
-			 * An optional name for the page. If provided it will be used for telemetry
-			 */
-			pageName?: string;
 		}
 
 		/**
 		 * These dialog styles affect how the dialog displays in the application.
 		 * normal: Positioned top and centered.
-		 * flyout (default): Existing panel appearance - positioned full screen height, opens from the right side of the application.
-		 * callout: Opens below or beside button clicked, contains footer section with buttons.
+		 * flyout (default): Positioned full screen height, opens from the right side of the application.
+		 * callout: Opens below or beside parent element, contains footer section with buttons.
 		 */
 		export type DialogStyle = 'normal' | 'flyout' | 'callout';
 
+		/**
+		 * Where to position the dialog relative to the parent element
+		 */
 		export type DialogPosition = 'left' | 'below';
 
 		/**
-		 * These are positional data prior to opening of dialog.
-		 * They are needed for positioning relative to the button which triggers the opening of the dialog.
-		 * Default is undefined.
+		 * The p
+		 * They are needed for positioning relative to the element which triggers the opening of the dialog.
 		 */
 		export interface IDialogProperties {
+			/**
+			 * x position of the dialog relative to the parent element
+			 */
 			xPos: number,
+			/**
+			 * y position of the dialog relative to the parent element
+			 */
 			yPos: number,
+			/**
+			 * width of the dialog
+			 */
 			width: number,
+			/**
+			 * height of the dialog
+			 */
 			height: number
 		}
 
@@ -685,57 +680,6 @@ declare module 'azdata' {
 		 */
 		export function createModelViewDialog(title: string, dialogName?: string, width?: DialogWidth, dialogStyle?: DialogStyle, dialogPosition?: DialogPosition, renderHeader?: boolean, renderFooter?: boolean, dialogProperties?: IDialogProperties): Dialog;
 
-		export interface Button {
-			/**
-			 * Specifies whether this is a secondary button. Default is false.
-			 */
-			secondary?: boolean;
-		}
-	}
-
-	export namespace workspace {
-		/**
-		 * Create a new ModelView editor
-		 * @param title The title shown in the editor tab
-		 * @param options Options to configure the editor
-		 * @param name The name used to identify the editor in telemetry
-		 */
-		export function createModelViewEditor(title: string, options?: ModelViewEditorOptions, name?: string,): ModelViewEditor;
-	}
-
-	export interface DashboardTab extends Tab {
-		/**
-		 * Toolbar of the tab, optional.
-		 */
-		toolbar?: ToolbarContainer;
-	}
-
-	export interface DashboardTabGroup {
-		/**
-		 * * Title of the tab group
-		 */
-		title: string;
-
-		/**
-		 * children of the tab group
-		 */
-		tabs: DashboardTab[];
-	}
-
-	export interface ModelViewDashboardOptions {
-		/**
-		 * Whether to show the tab icon, default is true
-		 */
-		showIcon?: boolean;
-
-		/**
-		 * Whether to show the tab navigation pane even when there is only one tab, default is false
-		 */
-		alwaysShowTabs?: boolean;
-	}
-
-	export interface Container<TLayout, TItemLayout> extends Component {
-		setItemLayout(component: Component, layout: TItemLayout): void;
 	}
 
 	export interface TaskInfo {
@@ -744,10 +688,6 @@ declare module 'azdata' {
 
 	export interface ButtonColumnOption {
 		icon?: IconPath;
-	}
-
-	export interface ButtonCell extends TableCell {
-		columnName: string;
 	}
 
 	export namespace sqlAssessment {
@@ -810,7 +750,7 @@ declare module 'azdata' {
 		 * @param resource The resource to get the token for
 		 * @return Promise to return a security token object
 		 */
-		getAccountSecurityToken(account: Account, tenant: string, resource: AzureResource): Thenable<{ token: string } | undefined>;
+		getAccountSecurityToken(account: Account, tenant: string, resource: AzureResource): Thenable<accounts.AccountSecurityToken | undefined>;
 	}
 
 	export interface AccountKey {
@@ -825,46 +765,6 @@ declare module 'azdata' {
 		 * Specifies if an account should be deleted
 		 */
 		delete?: boolean;
-	}
-
-	export enum AzureResource {
-		/**
-		 * Azure Log Analytics
-		 */
-		AzureLogAnalytics = 8
-	}
-
-	export interface ButtonProperties {
-		/**
-		* Specifies whether to use expanded layout or not.
-		*/
-		buttonType?: ButtonType;
-		/**
-		* Description text to display inside button element.
-		*/
-		description?: string;
-		/**
-		 * Specifies whether this is a secondary button. Default value is false.
-		 */
-		secondary?: boolean;
-
-		/**
-		 * The file type filter used for the file input dialog box - only used when the button type is File
-		 */
-		fileType?: string
-	}
-
-	export enum ButtonType {
-		File = 'File',
-		Normal = 'Normal',
-		Informational = 'Informational'
-	}
-
-	export interface InputBoxProperties {
-		/**
-		 * The maximum number of characters allowed in the input box.
-		 */
-		maxLength?: number;
 	}
 
 	export namespace workspace {
@@ -1003,8 +903,35 @@ declare module 'azdata' {
 	export interface VisualizationOptions {
 		type: VisualizationType;
 	}
-
-	export interface QueryProvider {
-		renameQuery(newUri: string, oldUri: string): Thenable<void>;
+	export interface PropertiesContainerComponentProperties {
+		/**
+		 * Whether to show the button that will hide/show the content of the container. Default value is false.
+		 */
+		showToggleButton?: boolean;
 	}
+
+	export interface ServerInfo {
+		/**
+		 * The CPU count of the host running the server.
+		 */
+		cpuCount?: number;
+		/**
+		 * The physical memory of the host running the server.
+		 */
+		physicalMemoryInMb?: number;
+	}
+
+	export interface NodeInfo {
+		/**
+		 * Specify the icon for the node. The value could the path to the icon or and ADS icon defined in {@link SqlThemeIcon}.
+		 */
+		icon?: IconPath | SqlThemeIcon;
+	}
+  
+  export interface QueryProvider {
+    /**
+		 * Used to change queries on STS to use a new URI in case of a untitled query save.
+		 */
+		renameQuery(newUri: string, oldUri: string): Thenable<void>;
+  }
 }

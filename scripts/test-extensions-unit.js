@@ -13,7 +13,7 @@ const extensionList = [
 	'admin-tool-ext-win',
 	'agent',
 	'arc',
-	'azdata',
+	'azcli',
 	'azurecore',
 	'cms',
 	'dacpac',

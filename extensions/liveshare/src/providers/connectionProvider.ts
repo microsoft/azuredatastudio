@@ -128,6 +128,8 @@ export class ConnectionProvider {
 						isCloud: false,
 						azureVersion: 1,
 						osVersion: '1',
+						cpuCount: 1,
+						physicalMemoryInMb: 1,
 						options: connInfo.options
 					}
 				};

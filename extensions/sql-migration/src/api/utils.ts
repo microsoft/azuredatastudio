@@ -3,10 +3,12 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { CategoryValue, DropDownComponent } from 'azdata';
+import { window, CategoryValue, DropDownComponent, IconPath } from 'azdata';
+import { IconPathHelper } from '../constants/iconPathHelper';
 import { DAYS, HRS, MINUTE, SEC } from '../constants/strings';
 import { AdsMigrationStatus } from '../dialog/migrationStatus/migrationStatusDialogModel';
-import { MigrationContext } from '../models/migrationLocalStorage';
+import { MigrationStatus, MigrationContext, ProvisioningState } from '../models/migrationLocalStorage';
+import * as crypto from 'crypto';
 
 export function deepClone<T>(obj: T): T {
 	if (!obj || typeof obj !== 'object') {
@@ -93,25 +95,28 @@ export function filterMigrations(databaseMigrations: MigrationContext[], statusF
 		filteredMigration = databaseMigrations;
 	} else if (statusFilter === AdsMigrationStatus.ONGOING) {
 		filteredMigration = databaseMigrations.filter((value) => {
-			const status = value.migrationContext.properties.migrationStatus;
-			const provisioning = value.migrationContext.properties.provisioningState;
-			return status === 'InProgress' || status === 'Creating' || provisioning === 'Creating';
+			const status = value.migrationContext.properties?.migrationStatus;
+			const provisioning = value.migrationContext.properties?.provisioningState;
+			return status === MigrationStatus.InProgress
+				|| status === MigrationStatus.Creating
+				|| provisioning === MigrationStatus.Creating;
 		});
 	} else if (statusFilter === AdsMigrationStatus.SUCCEEDED) {
 		filteredMigration = databaseMigrations.filter((value) => {
-			const status = value.migrationContext.properties.migrationStatus;
-			return status === 'Succeeded';
+			const status = value.migrationContext.properties?.migrationStatus;
+			return status === MigrationStatus.Succeeded;
 		});
 	} else if (statusFilter === AdsMigrationStatus.FAILED) {
 		filteredMigration = databaseMigrations.filter((value) => {
-			const status = value.migrationContext.properties.migrationStatus;
-			const provisioning = value.migrationContext.properties.provisioningState;
-			return status === 'Failed' || provisioning === 'Failed';
+			const status = value.migrationContext.properties?.migrationStatus;
+			const provisioning = value.migrationContext.properties?.provisioningState;
+			return status === MigrationStatus.Failed
+				|| provisioning === ProvisioningState.Failed;
 		});
 	} else if (statusFilter === AdsMigrationStatus.COMPLETING) {
 		filteredMigration = databaseMigrations.filter((value) => {
-			const status = value.migrationContext.properties.migrationStatus;
-			return status === 'Completing';
+			const status = value.migrationContext.properties?.migrationStatus;
+			return status === MigrationStatus.Completing;
 		});
 	}
 	if (databaseNameFilter) {
@@ -157,6 +162,10 @@ export function findDropDownItemIndex(dropDown: DropDownComponent, value: string
 	return -1;
 }
 
+export function hashString(value: string): string {
+	return crypto.createHash('sha512').update(value).digest('hex');
+}
+
 export function debounce(delay: number): Function {
 	return decorate((fn, key) => {
 		const timerKey = `$debounce$${key}`;
@@ -186,5 +195,43 @@ export function decorate(decorator: (fn: Function, key: string) => Function): Fu
 		}
 
 		descriptor[fnKey] = decorator(fn, key);
+	};
+}
+
+export function getSessionIdHeader(sessionId: string): { [key: string]: string } {
+	return {
+		'SqlMigrationSessionId': sessionId
+	};
+}
+
+export function getMigrationStatusImage(status: string): IconPath {
+	switch (status) {
+		case MigrationStatus.InProgress:
+			return IconPathHelper.inProgressMigration;
+		case MigrationStatus.Succeeded:
+			return IconPathHelper.completedMigration;
+		case MigrationStatus.Creating:
+			return IconPathHelper.notStartedMigration;
+		case MigrationStatus.Completing:
+			return IconPathHelper.completingCutover;
+		case MigrationStatus.Canceling:
+			return IconPathHelper.cancel;
+		case MigrationStatus.Failed:
+		default:
+			return IconPathHelper.error;
+	}
+}
+
+export function get12HourTime(date: Date | undefined): string {
+	const localeTimeStringOptions: Intl.DateTimeFormatOptions = {
+		hour: '2-digit',
+		minute: '2-digit'
+	};
+	return (date ? date : new Date()).toLocaleTimeString([], localeTimeStringOptions);
+}
+
+export function clearDialogMessage(dialog: window.Dialog): void {
+	dialog.message = {
+		text: ''
 	};
 }

@@ -10,7 +10,7 @@ import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { MockContextKeyService } from 'vs/platform/keybinding/test/common/mockKeybindingService';
 import { Deferred } from 'sql/base/common/promise';
-import { escapeLabel, escapeUrl } from 'sql/workbench/contrib/notebook/browser/calloutDialog/common/utils';
+import { escapeLabel, escapeUrl, unquoteText } from 'sql/workbench/contrib/notebook/browser/calloutDialog/common/utils';
 import { IDialogProperties } from 'sql/workbench/browser/modal/modal';
 
 suite('Link Callout Dialog', function (): void {
@@ -42,9 +42,9 @@ suite('Link Callout Dialog', function (): void {
 		linkCalloutDialog.cancel();
 		let result = await deferred.promise;
 
-		assert.equal(result.insertUnescapedLinkLabel, 'defaultLabel', 'Label not returned correctly');
-		assert.equal(result.insertUnescapedLinkUrl, undefined, 'URL not returned correctly');
-		assert.equal(result.insertEscapedMarkdown, '', 'Markdown not returned correctly');
+		assert.strictEqual(result.insertUnescapedLinkLabel, 'defaultLabel', 'Label not returned correctly');
+		assert.strictEqual(result.insertUnescapedLinkUrl, undefined, 'URL not returned correctly');
+		assert.strictEqual(result.insertEscapedMarkdown, '', 'Markdown not returned correctly');
 	});
 
 	test('Should return expected values on insert', async function (): Promise<void> {
@@ -65,9 +65,9 @@ suite('Link Callout Dialog', function (): void {
 		// And insert the dialog
 		linkCalloutDialog.insert();
 		let result = await deferred.promise;
-		assert.equal(result.insertUnescapedLinkLabel, defaultLabel, 'Label not returned correctly');
-		assert.equal(result.insertUnescapedLinkUrl, sampleUrl, 'URL not returned correctly');
-		assert.equal(result.insertEscapedMarkdown, `[${defaultLabel}](${sampleUrl})`, 'Markdown not returned correctly');
+		assert.strictEqual(result.insertUnescapedLinkLabel, defaultLabel, 'Label not returned correctly');
+		assert.strictEqual(result.insertUnescapedLinkUrl, sampleUrl, 'URL not returned correctly');
+		assert.strictEqual(result.insertEscapedMarkdown, `[${defaultLabel}](${sampleUrl})`, 'Markdown not returned correctly');
 	});
 
 	test('Should return expected values on insert when escape necessary', async function (): Promise<void> {
@@ -88,23 +88,37 @@ suite('Link Callout Dialog', function (): void {
 		// And insert the dialog
 		linkCalloutDialog.insert();
 		let result = await deferred.promise;
-		assert.equal(result.insertUnescapedLinkLabel, defaultLabel, 'Label not returned correctly');
-		assert.equal(result.insertUnescapedLinkUrl, sampleUrl, 'URL not returned correctly');
-		assert.equal(result.insertEscapedMarkdown, '[default\[\]Label](https://www.aka.ms/azuredatastudio%28%29)', 'Markdown not returned correctly');
+		assert.strictEqual(result.insertUnescapedLinkLabel, defaultLabel, 'Label not returned correctly');
+		assert.strictEqual(result.insertUnescapedLinkUrl, sampleUrl, 'URL not returned correctly');
+		assert.strictEqual(result.insertEscapedMarkdown, '[default\[\]Label](https://www.aka.ms/azuredatastudio%28%29)', 'Markdown not returned correctly');
 	});
 
 	test('Label escape', function (): void {
-		assert.equal(escapeLabel('TestLabel'), 'TestLabel', 'Basic escape label test failed');
-		assert.equal(escapeLabel('Test[]Label'), 'Test\[\]Label', 'Label test square brackets failed');
-		assert.equal(escapeLabel('<>&[]'), '&lt;&gt;&amp;\[\]', 'Label test known escaped characters failed');
-		assert.equal(escapeLabel('<>&[]()'), '&lt;&gt;&amp;\[\]()', 'Label test all escaped characters failed');
+		assert.strictEqual(escapeLabel('TestLabel'), 'TestLabel', 'Basic escape label test failed');
+		assert.strictEqual(escapeLabel('Test[]Label'), 'Test\[\]Label', 'Label test square brackets failed');
+		assert.strictEqual(escapeLabel('<>&[]'), '&lt;&gt;&amp;\[\]', 'Label test known escaped characters failed');
+		assert.strictEqual(escapeLabel('<>&[]()'), '&lt;&gt;&amp;\[\]()', 'Label test all escaped characters failed');
 	});
 
 	test('URL escape', function (): void {
-		assert.equal(escapeUrl('TestURL'), 'TestURL', 'Basic escape URL test failed');
-		assert.equal(escapeUrl('Test()URL'), 'Test%28%29URL', 'URL test square brackets failed');
-		assert.equal(escapeUrl('<>&()'), '&lt;&gt;&amp;%28%29', 'URL test known escaped characters failed');
-		assert.equal(escapeUrl('<>&()[]'), '&lt;&gt;&amp;%28%29[]', 'URL test all escaped characters failed');
+		assert.strictEqual(escapeUrl('TestURL'), 'TestURL', 'Basic escape URL test failed');
+		assert.strictEqual(escapeUrl('Test()URL'), 'Test%28%29URL', 'URL test square brackets failed');
+		assert.strictEqual(escapeUrl('<>&()'), '&lt;&gt;&amp;%28%29', 'URL test known escaped characters failed');
+		assert.strictEqual(escapeUrl('<>&()[]'), '&lt;&gt;&amp;%28%29[]', 'URL test all escaped characters failed');
+	});
+
+	test('Unquote text', function (): void {
+		assert.strictEqual(unquoteText('TestPath'), 'TestPath');
+		assert.strictEqual(unquoteText('\"TestPath\"'), 'TestPath');
+		assert.strictEqual(unquoteText('\'TestPath\''), 'TestPath');
+		assert.strictEqual(unquoteText('\'TestPath\"'), 'TestPath');
+		assert.strictEqual(unquoteText('\"TestPath\''), 'TestPath');
+		assert.strictEqual(unquoteText('\"Tes"tPa"th\"'), 'Tes"tPa"th');
+		assert.strictEqual(unquoteText('\"TestPath'), '\"TestPath');
+		assert.strictEqual(unquoteText('\'TestPath'), '\'TestPath');
+		assert.strictEqual(unquoteText('TestPath\"'), 'TestPath\"');
+		assert.strictEqual(unquoteText('TestPath\''), 'TestPath\'');
+		assert.strictEqual(unquoteText(undefined), undefined);
 	});
 
 	test('Should return file link properly', async function (): Promise<void> {
@@ -124,9 +138,9 @@ suite('Link Callout Dialog', function (): void {
 		// And insert the dialog
 		linkCalloutDialog.insert();
 		let result = await deferred.promise;
-		assert.equal(result.insertUnescapedLinkLabel, defaultLabel, 'Label not returned correctly');
-		assert.equal(result.insertUnescapedLinkUrl, sampleUrl, 'URL not returned correctly');
-		assert.equal(result.insertEscapedMarkdown, `[${defaultLabel}](${sampleUrl})`, 'Markdown not returned correctly');
+		assert.strictEqual(result.insertUnescapedLinkLabel, defaultLabel, 'Label not returned correctly');
+		assert.strictEqual(result.insertUnescapedLinkUrl, sampleUrl, 'URL not returned correctly');
+		assert.strictEqual(result.insertEscapedMarkdown, `[${defaultLabel}](${sampleUrl})`, 'Markdown not returned correctly');
 	});
 
 });

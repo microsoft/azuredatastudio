@@ -32,6 +32,7 @@ export class CmsUtils {
 	private _cmsService: mssql.ICmsService;
 	private _registeredCmsServers: ICmsResourceNodeInfo[] = [];
 
+	// [SuppressMessage("Microsoft.Security", "CS002:SecretInNextLine", Justification="Used for unit testing, not actual valid credential")]
 	public async savePassword(username: string, password: string): Promise<boolean> {
 		let provider = await this.credentialProvider();
 		let result = await provider.saveCredential(username, password);

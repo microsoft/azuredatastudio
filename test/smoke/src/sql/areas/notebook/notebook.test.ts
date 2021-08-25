@@ -31,11 +31,26 @@ export function setup() {
 		it('can perform basic code cell functionality', async function () {
 			const app = this.app as Application;
 			await app.workbench.sqlNotebook.newUntitledNotebook();
+			await app.workbench.sqlNotebook.notebookToolbar.waitForKernel('SQL');
 			await app.workbench.sqlNotebook.addCellFromPlaceholder('Code');
 			await app.workbench.sqlNotebook.waitForPlaceholderGone();
 
-			const sampleText: string = 'SELECT * FROM sys.tables';
-			await app.workbench.sqlNotebook.waitForTypeInEditor(sampleText);
+			const text1: string = 'SEL';
+			await app.workbench.sqlNotebook.waitForTypeInEditor(text1);
+			await app.code.dispatchKeybinding('ctrl+space bar');
+
+			// check for completion suggestions
+			await app.workbench.sqlNotebook.waitForSuggestionWidget();
+			await app.workbench.sqlNotebook.waitForSuggestionResult('SELECT');
+			await app.code.dispatchKeybinding('tab');
+
+			const text2: string = ' * FROM employees';
+			await app.workbench.sqlNotebook.waitForTypeInEditor(text2);
+
+			await app.workbench.sqlNotebook.waitForColorization('1', 'mtk5'); // SELECT
+			await app.workbench.sqlNotebook.waitForColorization('3', 'mtk13'); // *
+			await app.workbench.sqlNotebook.waitForColorization('5', 'mtk5'); // FROM
+			await app.workbench.sqlNotebook.waitForColorization('6', 'mtk1'); // employees
 		});
 
 		// Python Notebooks
@@ -49,7 +64,15 @@ export function setup() {
 
 			await app.workbench.sqlNotebook.notebookToolbar.changeKernel('Python 3');
 			await app.workbench.configurePythonDialog.waitForConfigurePythonDialog();
-			await app.workbench.configurePythonDialog.installPython();
+			try {
+				await app.workbench.configurePythonDialog.waitForPageOneLoaded();
+			} catch (e) {
+				await app.captureScreenshot('Configure Python Dialog page one not loaded');
+				throw e;
+			}
+			await app.workbench.configurePythonDialog.next();
+			await app.workbench.configurePythonDialog.waitForPageTwoLoaded();
+			await app.workbench.configurePythonDialog.install();
 			await app.workbench.sqlNotebook.notebookToolbar.waitForKernel('Python 3');
 
 			await app.workbench.sqlNotebook.runActiveCell();

@@ -271,7 +271,7 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 	}
 
 	getServerInfo(profileId: string): azdata.ServerInfo {
-		return undefined!;
+		return undefined;
 	}
 
 	getConnectionString(connectionId: string): Thenable<string> {

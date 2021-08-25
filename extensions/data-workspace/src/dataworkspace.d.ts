@@ -7,7 +7,8 @@ declare module 'dataworkspace' {
 	import * as azdata from 'azdata';
 	import * as vscode from 'vscode';
 	export const enum extension {
-		name = 'Microsoft.data-workspace'
+		name = 'Microsoft.data-workspace',
+		vscodeName = 'Microsoft.data-workspace-vscode'
 	}
 
 	/**
@@ -17,8 +18,9 @@ declare module 'dataworkspace' {
 		/**
 		 * Returns all the projects in the workspace
 		 * @param ext project extension to filter on. If this is passed in, this will only return projects with this file extension
+		 * @param refreshFromDisk whether to rescan the folder for project files, or return the cached version. Defaults to false.
 		 */
-		getProjectsInWorkspace(ext?: string): Promise<vscode.Uri[]>;
+		getProjectsInWorkspace(ext?: string, refreshFromDisk?: boolean): Promise<vscode.Uri[]>;
 
 		/**
 		 * Add projects to the workspace
@@ -40,6 +42,13 @@ declare module 'dataworkspace' {
 		  * Verifies that a workspace is open or if it should be automatically created
 		  */
 		validateWorkspace(): Promise<boolean>;
+
+		/**
+		 * Opens the new project dialog with only the specified project type
+		 * @param projectType project type to open the dialog for
+		 * @returns the uri of the created the project or undefined if no project was created
+		 */
+		openSpecificProjectNewProjectDialog(projectType: IProjectType): Promise<vscode.Uri | undefined>;
 	}
 
 	/**

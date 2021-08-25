@@ -104,6 +104,7 @@ function initLoader(opts) {
 			'@angular/router',
 			'angular2-grid',
 			'gridstack/dist/h5/gridstack-dd-native',
+			'html-to-image',
 			'ng2-charts',
 			'rxjs/add/observable/of',
 			'rxjs/add/observable/fromPromise',

@@ -4,21 +4,17 @@
  *--------------------------------------------------------------------------------------------*/
 
 // config setting keys
-export const azdataConfigSection: string = 'azcli';
-export const azdataAcceptEulaKey: string = 'acceptEula';
-export const azdataInstallKey: string = 'install';
-export const azdataUpdateKey: string = 'update';
-export const azdatarequiredUpdateKey: string = 'requiredUpdate';
+export const azConfigSection: string = 'azcli';
 export const debugConfigKey = 'logDebugInfo';
-
+export const azArcdataInstallKey: string = 'arcdataInstall';
+export const azArcdataUpdateKey: string = 'arcdataUpdate';
+export const azCliInstallKey: string = 'azInstall';
 
 // context keys && memento keys
-export const eulaAccepted = 'azcli.eulaAccepted';
-export const azdataFound = 'azcli.found';
+export const azFound = 'az.found';
+export const azArcFound = 'az.arcfound';
 
 // other constants
-export const azdataHostname = 'https://aka.ms';
-export const azdataUri = 'azdata-msi';
-export const azdataReleaseJson = 'azdata/release.json';
-export const microsoftPrivacyStatementUrl = 'https://privacy.microsoft.com/privacystatement';
-export const eulaUrl = 'https://aka.ms/eula-azdata-en';
+export const azHostname = 'https://aka.ms';
+export const azUri = 'installazurecliwindows';
+export const latestAzArcExtensionVersion = '1.0.0';

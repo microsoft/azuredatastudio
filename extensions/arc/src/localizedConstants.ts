@@ -42,8 +42,8 @@ export const dropText = localize('arc.drop', "Drop");
 export const saveText = localize('arc.save', "Save");
 export const discardText = localize('arc.discard', "Discard");
 export const resetPassword = localize('arc.resetPassword', "Reset Password");
-export const addExtensions = localize('arc.addExtensions', "Add extensions");
-export const dropExtensions = localize('arc.dropExtensions', "Drop extensions");
+export const loadExtensions = localize('arc.loadExtensions', "Load extensions");
+export const unloadExtensions = localize('arc.unloadExtensions', "Unload extensions");
 export const noExtensions = localize('arc.noExtensions', "No extensions listed in configuration.");
 export const openInAzurePortal = localize('arc.openInAzurePortal', "Open in Azure Portal");
 export const resourceGroup = localize('arc.resourceGroup', "Resource Group");
@@ -57,10 +57,11 @@ export const name = localize('arc.name', "Name");
 export const type = localize('arc.type', "Type");
 export const status = localize('arc.status', "Status");
 export const miaaAdmin = localize('arc.miaaAdmin', "Managed instance admin");
-export const controllerEndpoint = localize('arc.controllerEndpoint', "Controller endpoint");
 export const extensionName = localize('arc.extensionName', "Extension name");
 export const extensionsDescription = localize('arc.extensionsDescription', "PostgreSQL provides the ability to extend the functionality of your database by using extensions. Extensions allow for bundling multiple related SQL objects together in a single package that can be loaded or removed from your database with a single command. After being loaded in the database, extensions can function like built-in features.");
 export const extensionsFunction = localize('arc.extensionsFunction', "Some extensions must be loaded into PostgreSQL at startup time before they can be used. These preloaded extensions can be viewed and edited  below.");
+export function extensionsAddFunction(extensions: string): string { return localize('arc.extensionsAddFunction', "Some extensions must be loaded into PostgreSQL at startup time before they can be used. To edit, type in comma separated list of valid extensions: ({0}).", extensions); }
+export function extensionsAddErrorrMessage(extensions: string): string { return localize('arc.extensionsAddErrorrMessage', "Value should be either of the following: ({0}).", extensions); }
 export const extensionsLearnMore = localize('arc.extensionsLearnMore', "Learn more about PostgreSQL extensions.");
 export const extensionsTableLoading = localize('arc.extensionsTableLoading', "Table of preloaded extensions are loading.");
 export const extensionsTableLabel = localize('arc.extensionsTableLabel', "Table of preloaded extensions.");
@@ -73,6 +74,7 @@ export const grafanaDashboard = localize('arc.grafanaDashboard', "Grafana Dashbo
 export const kibanaDashboardDescription = localize('arc.kibanaDashboardDescription', "Dashboard for viewing logs");
 export const grafanaDashboardDescription = localize('arc.grafanaDashboardDescription', "Dashboard for viewing metrics");
 export const serviceEndpoints = localize('arc.serviceEndpoints', "Service endpoints");
+export const serviceEndpointsTable = localize('arc.serviceEndpointsTable', "Service endpoints table");
 export const databases = localize('arc.databases', "Databases");
 export const endpoint = localize('arc.endpoint', "Endpoint");
 export const description = localize('arc.description', "Description");
@@ -207,6 +209,8 @@ export const noWorkerPods = localize('arc.noWorkerPods', "No worker pods in this
 export const podsReady = localize('arc.podsReady', "pods ready");
 export const podsPresent = localize('arc.podsPresent', "Pods Present");
 export const podsUsedDescription = localize('arc.podsUsedDescription', "Select a pod in the dropdown below for detailed health information.");
+export const podsUsedDescriptionAria = localize('arc.podsUsedDescriptionAria', "Select a pod in the dropdown below for detailed health information");
+export const podConditionsTable = localize('arc.podConditionsTable', "Pod conditions table");
 export const connectToPostgresDescription = localize('arc.connectToPostgresDescription', "A connection to the server is required to show and set database engine settings, which will require the PostgreSQL Extension to be installed.");
 export const postgresExtension = localize('arc.postgresExtension', "microsoft.azuredatastudio-postgresql");
 export const podInitialized = localize('arc.podInitialized', "Pod is initialized.");
@@ -243,6 +247,7 @@ export function numVCores(vCores: string | undefined): string {
 	}
 }
 export function updated(when: string): string { return localize('arc.updated', "Updated {0}", when); }
+export function connectionString(type: string): string { return localize({ key: 'arc.connectionString', comment: ['{0} is the name of the type of connection string (e.g. Java)'] }, "Connection string for {0}", type); }
 export function copyConnectionStringToClipboard(type: string): string { return localize({ key: 'arc.copyConnectionStringToClipboard', comment: ['{0} is the name of the type of connection string (e.g. Java)'] }, "Copy {0} Connection String to clipboard", type); }
 export function copyValueToClipboard(valueName: string): string { return localize({ key: 'arc.copyValueToClipboard', comment: ['{0} is the name of the type of value being copied (e.g. Coordinator endpoint)'] }, "Copy {0} to clipboard", valueName); }
 

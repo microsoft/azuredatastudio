@@ -33,6 +33,13 @@
 	background: url("database_inverse.svg") center center no-repeat;
 }
 
+.vs-dark .codicon.icon-dashboard-view::before,
+.hc-black .codicon.icon-dashboard-view::before,
+.vs .codicon.icon-dashboard-view::before {
+	-webkit-mask-image: url("dashboard_view.svg");
+	mask-image: url("dashboard_view.svg");
+}
+
 .vs .codicon.error,
 .vs-dark .codicon.error,
 .hc-black .codicon.error {
@@ -393,6 +400,12 @@ Includes non-masked style declarations. */
 .codicon.masked-icon.insert-image::before {
 	-webkit-mask-image: url("toolbar-image.svg");
 	mask-image: url("toolbar-image.svg");
+}
+
+.codicon.masked-icon.settings::before {
+	background-image: none;
+	-webkit-mask-image: url('settings.svg');
+	mask-image: url('settings.svg');
 }
 
 .codicon.masked-icon.split-toggle-on::before {

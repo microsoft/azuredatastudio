@@ -165,8 +165,8 @@ import 'vs/workbench/contrib/cli/node/cli.contribution';
 //#endregion
 
 // {{SQL CARBON EDIT}}
-// release notes
-import 'sql/workbench/update/electron-browser/releaseNotes.contribution';
+// getting started
+import 'sql/workbench/update/electron-browser/gettingStarted.contribution';
 
 // query history
 import 'sql/workbench/contrib/queryHistory/electron-browser/queryHistory.contribution';

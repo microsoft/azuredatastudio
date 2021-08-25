@@ -132,7 +132,7 @@ export class CreateProjectFromDatabaseDialog {
 		const sourceConnectionTextBox = this.createSourceConnectionComponent(view);
 		const selectConnectionButton: azdataType.Component = this.createSelectConnectionButton(view);
 
-		const serverLabel = view.modelBuilder.text().withProperties<azdataType.TextComponentProperties>({
+		const serverLabel = view.modelBuilder.text().withProps({
 			value: constants.server,
 			requiredIndicator: true,
 			width: cssStyles.createProjectFromDatabaseLabelWidth
@@ -156,7 +156,7 @@ export class CreateProjectFromDatabaseDialog {
 			this.tryEnableCreateButton();
 		});
 
-		const databaseLabel = view.modelBuilder.text().withProperties<azdataType.TextComponentProperties>({
+		const databaseLabel = view.modelBuilder.text().withProps({
 			value: constants.databaseNameLabel,
 			requiredIndicator: true,
 			width: cssStyles.createProjectFromDatabaseLabelWidth
@@ -240,7 +240,7 @@ export class CreateProjectFromDatabaseDialog {
 	}
 
 	private createProjectNameRow(view: azdataType.ModelView): azdataType.FlexContainer {
-		this.projectNameTextBox = view.modelBuilder.inputBox().withProperties<azdataType.InputBoxProperties>({
+		this.projectNameTextBox = view.modelBuilder.inputBox().withProps({
 			ariaLabel: constants.projectNamePlaceholderText,
 			placeHolder: constants.projectNamePlaceholderText,
 			required: true,
@@ -253,7 +253,7 @@ export class CreateProjectFromDatabaseDialog {
 			this.tryEnableCreateButton();
 		});
 
-		const projectNameLabel = view.modelBuilder.text().withProperties<azdataType.TextComponentProperties>({
+		const projectNameLabel = view.modelBuilder.text().withProps({
 			value: constants.projectNameLabel,
 			requiredIndicator: true,
 			width: cssStyles.createProjectFromDatabaseLabelWidth
@@ -269,7 +269,7 @@ export class CreateProjectFromDatabaseDialog {
 
 		this.projectLocationTextBox = view.modelBuilder.inputBox().withProps({
 			value: '',
-			ariaLabel: constants.projectLocationLabel,
+			ariaLabel: constants.location,
 			placeHolder: constants.projectLocationPlaceholderText,
 			width: cssStyles.createProjectFromDatabaseTextboxWidth
 		}).component();
@@ -279,8 +279,8 @@ export class CreateProjectFromDatabaseDialog {
 			this.tryEnableCreateButton();
 		});
 
-		const projectLocationLabel = view.modelBuilder.text().withProperties<azdataType.TextComponentProperties>({
-			value: constants.projectLocationLabel,
+		const projectLocationLabel = view.modelBuilder.text().withProps({
+			value: constants.location,
 			requiredIndicator: true,
 			width: cssStyles.createProjectFromDatabaseLabelWidth
 		}).component();
@@ -292,7 +292,7 @@ export class CreateProjectFromDatabaseDialog {
 	}
 
 	private createBrowseFolderButton(view: azdataType.ModelView): azdataType.ButtonComponent {
-		const browseFolderButton = view.modelBuilder.button().withProperties<azdataType.ButtonProperties>({
+		const browseFolderButton = view.modelBuilder.button().withProps({
 			ariaLabel: constants.browseButtonText,
 			iconPath: IconPathHelper.folder_blue,
 			height: '18px',
@@ -331,7 +331,7 @@ export class CreateProjectFromDatabaseDialog {
 			this.tryEnableCreateButton();
 		});
 
-		const folderStructureLabel = view.modelBuilder.text().withProperties<azdataType.TextComponentProperties>({
+		const folderStructureLabel = view.modelBuilder.text().withProps({
 			value: constants.folderStructureLabel,
 			requiredIndicator: true,
 			width: cssStyles.createProjectFromDatabaseLabelWidth
@@ -353,34 +353,21 @@ export class CreateProjectFromDatabaseDialog {
 	}
 
 	public async handleCreateButtonClick(): Promise<void> {
+		const azdataApi = getAzdataApi()!;
+		const connectionUri = await azdataApi!.connection.getUriForConnection(this.connectionId!);
 		const model: ImportDataModel = {
-			serverId: this.connectionId!,
+			connectionUri: connectionUri,
 			database: <string>this.sourceDatabaseDropDown!.value,
 			projName: this.projectNameTextBox!.value!,
 			filePath: this.projectLocationTextBox!.value!,
 			version: '1.0.0.0',
-			extractTarget: this.mapExtractTargetEnum(<string>this.folderStructureDropDown!.value)
+			extractTarget: mapExtractTargetEnum(<string>this.folderStructureDropDown!.value)
 		};
 
-		getAzdataApi()!.window.closeDialog(this.dialog);
+		azdataApi!.window.closeDialog(this.dialog);
 		await this.createProjectFromDatabaseCallback!(model);
 
 		this.dispose();
-	}
-
-	private mapExtractTargetEnum(inputTarget: any): mssql.ExtractTarget {
-		if (inputTarget) {
-			switch (inputTarget) {
-				case constants.file: return mssql.ExtractTarget['file'];
-				case constants.flat: return mssql.ExtractTarget['flat'];
-				case constants.objectType: return mssql.ExtractTarget['objectType'];
-				case constants.schema: return mssql.ExtractTarget['schema'];
-				case constants.schemaObjectType: return mssql.ExtractTarget['schemaObjectType'];
-				default: throw new Error(constants.invalidInput(inputTarget));
-			}
-		} else {
-			throw new Error(constants.extractTargetRequired);
-		}
 	}
 
 	async validate(): Promise<boolean> {
@@ -413,5 +400,20 @@ export class CreateProjectFromDatabaseDialog {
 			text: message,
 			level: getAzdataApi()!.window.MessageLevel.Error
 		};
+	}
+}
+
+export function mapExtractTargetEnum(inputTarget: string): mssql.ExtractTarget {
+	if (inputTarget) {
+		switch (inputTarget) {
+			case constants.file: return mssql.ExtractTarget.file;
+			case constants.flat: return mssql.ExtractTarget.flat;
+			case constants.objectType: return mssql.ExtractTarget.objectType;
+			case constants.schema: return mssql.ExtractTarget.schema;
+			case constants.schemaObjectType: return mssql.ExtractTarget.schemaObjectType;
+			default: throw new Error(constants.invalidInput(inputTarget));
+		}
+	} else {
+		throw new Error(constants.extractTargetRequired);
 	}
 }

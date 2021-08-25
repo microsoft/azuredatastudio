@@ -5,11 +5,12 @@
 
 import * as vscode from 'vscode';
 import * as path from 'path';
-import * as os from 'os';
-import * as constants from './../common/constants';
 import { promises as fs } from 'fs';
 import * as utils from '../common/utils';
-import { mssqlNotFound } from '../common/constants';
+import { errorFindingBuildFilesLocation } from '../common/constants';
+import * as mssql from '../../../mssql/src/mssql';
+import * as vscodeMssql from 'vscode-mssql';
+import * as sqldbproj from 'sqldbproj';
 
 const buildDirectory = 'BuildDirectory';
 const buildFiles: string[] = [
@@ -33,7 +34,8 @@ export class BuildHelper {
 	private initialized: boolean = false;
 
 	constructor() {
-		this.extensionDir = vscode.extensions.getExtension(constants.sqlDatabaseProjectExtensionId)?.extensionPath ?? '';
+		const extName = utils.getAzdataApi() ? sqldbproj.extension.name : sqldbproj.extension.vsCodeName;
+		this.extensionDir = vscode.extensions.getExtension(extName)?.extensionPath ?? '';
 		this.extensionBuildDir = path.join(this.extensionDir, buildDirectory);
 	}
 
@@ -50,7 +52,6 @@ export class BuildHelper {
 		}
 
 		const buildfilesPath = await this.getBuildDirPathFromMssqlTools();
-
 		buildFiles.forEach(async (fileName) => {
 			if (await (utils.exists(path.join(buildfilesPath, fileName)))) {
 				await fs.copyFile(path.join(buildfilesPath, fileName), path.join(this.extensionBuildDir, fileName));
@@ -59,25 +60,20 @@ export class BuildHelper {
 		this.initialized = true;
 	}
 
-	// get mssql sqltoolsservice path
+	/**
+	 * Gets the path to the SQL Tools Service installation
+	 * @returns
+	 */
 	private async getBuildDirPathFromMssqlTools(): Promise<string> {
-		const mssqlConfigDir = vscode.extensions.getExtension(constants.mssqlExtensionId)?.extensionPath ?? '';
-		if (await utils.exists(path.join(mssqlConfigDir, 'config.json'))) {
-			const rawConfig = await fs.readFile(path.join(mssqlConfigDir, 'config.json'));
-			const config = JSON.parse(rawConfig.toString());
-			const installDir = config.installDirectory?.replace('{#version#}', config.version).replace('{#platform#}', this.getPlatform());
-			if (installDir) {
-				return path.join(mssqlConfigDir, installDir);
+		try {
+			if (utils.getAzdataApi()) {
+				return (vscode.extensions.getExtension(mssql.extension.name)?.exports as mssql.IExtension).sqlToolsServicePath;
+			} else {
+				return (vscode.extensions.getExtension(vscodeMssql.extension.name)?.exports as vscodeMssql.IExtension).sqlToolsServicePath;
 			}
+		} catch (err) {
+			throw new Error(errorFindingBuildFilesLocation(err));
 		}
-		throw new Error(mssqlNotFound(mssqlConfigDir));
-	}
-
-	private getPlatform(): string {
-		return os.platform() === 'win32' ? 'Windows' :
-			os.platform() === 'darwin' ? 'OSX' :
-				os.platform() === 'linux' ? 'Linux' :
-					'';
 	}
 
 	public get extensionBuildDirPath(): string {
