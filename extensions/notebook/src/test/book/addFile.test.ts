@@ -12,7 +12,6 @@ import { AddFileDialog } from '../../dialog/addFileDialog';
 import { IBookTocManager } from '../../book/bookTocManager';
 import { BookTreeItem, BookTreeItemFormat } from '../../book/bookTreeItem';
 import * as utils from '../../common/utils';
-import * as loc from '../../common/localizedConstants';
 import * as sinon from 'sinon';
 
 describe('Add File Dialog', function () {
@@ -57,7 +56,7 @@ describe('Add File Dialog', function () {
 		let testFilePath = path.join(testDir, fileBasename);
 
 		// Folder doesn't exist
-		await should(dialog.validatePath(testDir, fileBasename)).be.rejectedWith(new Error(loc.msgSaveFolderError));
+		await should(dialog.validatePath(testDir, fileBasename)).be.rejected();
 
 		// Folder exists
 		fs.mkdir(testDir);
@@ -66,7 +65,7 @@ describe('Add File Dialog', function () {
 		// File Exists, but don't choose to overwrite
 		sinon.stub(utils, 'confirmMessageDialog').resolves(false);
 		fs.createFile(testFilePath);
-		await should(dialog.validatePath(testDir, fileBasename)).be.rejectedWith(new Error(loc.msgDuplicateFileName(testFilePath)));
+		await should(dialog.validatePath(testDir, fileBasename)).be.rejected();
 		sinon.restore();
 
 		// File exists, choose to overwrite
