@@ -309,7 +309,6 @@ export class MigrationCutoverDialog {
 		this._disposables.push(this._cancelButton.onDidClick((e) => {
 			vscode.window.showInformationMessage(loc.CANCEL_MIGRATION_CONFIRMATION, { modal: true }, loc.YES, loc.NO).then(async (v) => {
 				if (v === loc.YES) {
-					this._cancelButton.enabled = false;
 					await this._model.cancelMigration();
 					await this.refreshStatus();
 				}
@@ -677,7 +676,6 @@ export class MigrationCutoverDialog {
 			}
 
 			this._cancelButton.enabled =
-				migrationStatusTextValue === MigrationStatus.Canceling ||
 				migrationStatusTextValue === MigrationStatus.Creating ||
 				migrationStatusTextValue === MigrationStatus.InProgress;
 
