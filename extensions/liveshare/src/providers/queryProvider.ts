@@ -59,7 +59,7 @@ export class QueryProvider {
 			return true;
 		});
 
-		this._sharedService.onNotify(constants.changeConnectionUriForQueryNotification, (args: any) => {
+		this._sharedService.onRequest(constants.changeConnectionUriForQueryRequest, (args: any) => {
 			return true;
 		});
 
@@ -137,10 +137,9 @@ export class QueryProvider {
 		};
 
 		let changeConnectionUriForQuery = (ownerUri: string): Thenable<void> => {
-			self._sharedServiceProxy.notify(constants.changeConnectionUriForQueryNotification, [{
+			return self._sharedServiceProxy.request(constants.changeConnectionUriForQueryRequest, [{
 				ownerUri: ownerUri
 			}]);
-			return Promise.resolve();
 		};
 
 		let registerOnQueryComplete = (handler: (result: azdata.QueryExecuteCompleteNotificationResult) => any): void => {
