@@ -195,11 +195,6 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 						}
 						else if (pickedSection && pickedSection.detail) {
 							bookSections = updateBook.findChildSection(pickedSection.detail).sections;
-							// if (updateBook.root === movingElement.root && pickedSection.detail === movingElement.uri) {
-							// 	pickedSection = undefined;
-							// } else {
-							// 	bookSections = updateBook.findChildSection(pickedSection.detail).sections;
-							// }
 						}
 					}
 				}
@@ -218,7 +213,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			let movingElements = treeItems.filter(item => item.uri !== pickedSection.detail);
 			const updateBook = selectionResults.book;
 			const targetSection = pickedSection.detail !== undefined ? updateBook.findChildSection(pickedSection.detail) : undefined;
-			let sourcesByBook = this.sortTreeItemsByBook(movingElements);
+			let sourcesByBook = this.getTreeItemsByBook(movingElements);
 			const targetBook = this.books.find(book => book.bookPath === updateBook.book.root);
 			for (let [book, items] of sourcesByBook) {
 				this.bookTocManager = new BookTocManager(book, targetBook);
@@ -722,7 +717,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		return Promise.resolve(result);
 	}
 
-	sortTreeItemsByBook(treeItems: BookTreeItem[]): Map<BookModel, BookTreeItem[]> {
+	getTreeItemsByBook(treeItems: BookTreeItem[]): Map<BookModel, BookTreeItem[]> {
 		const sourcesByBook = new Map<BookModel, BookTreeItem[]>();
 		for (let item of treeItems) {
 			const book = this.books.find(book => book.bookPath === item.book.root);
@@ -741,10 +736,11 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		let treeItems = JSON.parse(await sources.items.get('text/treeitems')!.asString()) as BookTreeItem[];
 		// get local roots
 		let rootItems = this.getLocalRoots(treeItems);
-		// filter target from sources
+		// filter out target from sources
 		rootItems = rootItems.filter(item => item.resourceUri !== target.resourceUri);
 		if (rootItems && target) {
-			let sourcesByBook = this.sortTreeItemsByBook(rootItems);
+			// Divide Book Tree Items by Book Model
+			let sourcesByBook = this.getTreeItemsByBook(rootItems);
 			const targetBook = this.books.find(book => book.bookPath === target.book.root);
 			for (let [book, items] of sourcesByBook) {
 				this.bookTocManager = new BookTocManager(book, targetBook);
@@ -753,6 +749,14 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		}
 	}
 
+
+	/**
+	 * From the tree items moved find the local roots since we'll move
+	 * the local branches to the new target element.
+	 * were able to successfully parse it.
+	 * @param bookItems that have been dragged and dropped
+	 * @returns a book tree item array
+	 */
 	public getLocalRoots(bookItems: BookTreeItem[]): BookTreeItem[] {
 		const localRoots = [];
 		for (let i = 0; i < bookItems.length; i++) {

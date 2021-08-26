@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 import * as should from 'should';
 import * as path from 'path';
-import { BookTocManager, hasSections, quickPickResults } from '../../book/bookTocManager';
+import { BookTocManager, hasSections } from '../../book/bookTocManager';
 import { BookTreeItem, BookTreeItemFormat, BookTreeItemType } from '../../book/bookTreeItem';
 import * as sinon from 'sinon';
 import { IJupyterBookSectionV1, IJupyterBookSectionV2, JupyterBookSection } from '../../contracts/content';
@@ -18,7 +18,6 @@ import { BookModel } from '../../book/bookModel';
 import { MockExtensionContext } from '../common/stubs';
 import { BookTreeViewProvider } from '../../book/bookTreeView';
 import { NavigationProviders } from '../../common/constants';
-import * as loc from '../../common/localizedConstants';
 import { BookVersion } from '../../book/bookVersionHandler';
 import * as yaml from 'js-yaml';
 
@@ -526,15 +525,8 @@ describe('BookTocManagerTests', function () {
 					const recoverySpy = sinon.spy(BookTocManager.prototype, 'recovery');
 					sinon.stub(BookTocManager.prototype, 'updateTOC').throws(new Error('Unexpected error.'));
 					const bookTreeViewProvider = new BookTreeViewProvider([], mockExtensionContext, false, 'bookTreeView', NavigationProviders.NotebooksNavigator);
-					const results: quickPickResults = {
-						book: targetBook,
-						quickPickSection: {
-							label: loc.labelAddToLevel,
-							description: undefined
-						}
-					};
 					bookTocManager = new BookTocManager(targetBookModel);
-					sinon.stub(bookTreeViewProvider, 'getSelectionQuickPick').returns(Promise.resolve(results));
+					sinon.stub(bookTreeViewProvider, 'editBook').returns(Promise.resolve(bookTocManager.updateBook([notebook], targetBook)));
 					try {
 						await bookTreeViewProvider.editBook([notebook]);
 					} catch (error) {
