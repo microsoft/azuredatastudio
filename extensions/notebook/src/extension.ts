@@ -63,8 +63,8 @@ export async function activate(extensionContext: vscode.ExtensionContext): Promi
 	}));
 
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.moveTo', async (firstTreeItem: BookTreeItem, treeItems: BookTreeItem[]) => {
-		treeItems.unshift(firstTreeItem);
-		await bookTreeViewProvider.editBook(treeItems);
+		let allTreeItems = treeItems ? [firstTreeItem, ...treeItems] : [firstTreeItem];
+		await bookTreeViewProvider.editBook(allTreeItems);
 	}));
 
 	let model = new RemoteBookDialogModel();

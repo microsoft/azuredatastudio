@@ -159,7 +159,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		TelemetryReporter.sendActionEvent(BookTelemetryView, NbTelemetryActions.CreateBook);
 	}
 
-	async getSelectionQuickPick(movingElement: BookTreeItem): Promise<quickPickResults> {
+	async getSelectionQuickPick(): Promise<quickPickResults> {
 		let bookOptions: vscode.QuickPickItem[] = [];
 		let pickedSection: vscode.QuickPickItem;
 		this.books.forEach(book => {
@@ -172,7 +172,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			placeHolder: loc.labelBookFolder
 		});
 
-		if (pickedBook && movingElement) {
+		if (pickedBook) {
 			const updateBook = this.books.find(book => book.bookPath === pickedBook.detail).bookItems[0];
 			if (updateBook) {
 				let bookSections = updateBook.sections;
@@ -194,11 +194,12 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 							break;
 						}
 						else if (pickedSection && pickedSection.detail) {
-							if (updateBook.root === movingElement.root && pickedSection.detail === movingElement.uri) {
-								pickedSection = undefined;
-							} else {
-								bookSections = updateBook.findChildSection(pickedSection.detail).sections;
-							}
+							bookSections = updateBook.findChildSection(pickedSection.detail).sections;
+							// if (updateBook.root === movingElement.root && pickedSection.detail === movingElement.uri) {
+							// 	pickedSection = undefined;
+							// } else {
+							// 	bookSections = updateBook.findChildSection(pickedSection.detail).sections;
+							// }
 						}
 					}
 				}
@@ -210,15 +211,19 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 
 	async editBook(treeItems: BookTreeItem[]): Promise<void> {
 		TelemetryReporter.sendActionEvent(BookTelemetryView, NbTelemetryActions.MoveNotebook);
-		const selectionResults = await this.getSelectionQuickPick(movingElement);
+		const selectionResults = await this.getSelectionQuickPick();
 		if (selectionResults) {
-			const pickedSection = selectionResults.quickPickSection;
+			let pickedSection = selectionResults.quickPickSection;
+			// filter target from sources
+			let movingElements = treeItems.filter(item => item.uri !== pickedSection.detail);
 			const updateBook = selectionResults.book;
 			const targetSection = pickedSection.detail !== undefined ? updateBook.findChildSection(pickedSection.detail) : undefined;
-			const sourceBook = this.books.find(book => book.bookPath === movingElement.book.root);
+			let sourcesByBook = this.sortTreeItemsByBook(movingElements);
 			const targetBook = this.books.find(book => book.bookPath === updateBook.book.root);
-			this.bookTocManager = new BookTocManager(sourceBook, targetBook);
-			await this.bookTocManager.updateBook(movingElement, updateBook, targetSection);
+			for (let [book, items] of sourcesByBook) {
+				this.bookTocManager = new BookTocManager(book, targetBook);
+				await this.bookTocManager.updateBook(items, targetBook.bookItems[0], targetSection);
+			}
 		}
 	}
 
@@ -717,25 +722,30 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		return Promise.resolve(result);
 	}
 
+	sortTreeItemsByBook(treeItems: BookTreeItem[]): Map<BookModel, BookTreeItem[]> {
+		const sourcesByBook = new Map<BookModel, BookTreeItem[]>();
+		for (let item of treeItems) {
+			const book = this.books.find(book => book.bookPath === item.book.root);
+			if (sourcesByBook.has(book)) {
+				const tmpItem = sourcesByBook.get(book);
+				sourcesByBook.set(book, [...tmpItem, item]);
+			} else {
+				sourcesByBook.set(book, [item]);
+			}
+		}
+		return sourcesByBook;
+	}
+
 	async onDrop(sources: vscode.TreeDataTransfer, target: BookTreeItem): Promise<void> {
+		TelemetryReporter.sendActionEvent(BookTelemetryView, NbTelemetryActions.DragAndDrop);
 		let treeItems = JSON.parse(await sources.items.get('text/treeitems')!.asString()) as BookTreeItem[];
 		// get local roots
 		let rootItems = this.getLocalRoots(treeItems);
 		// filter target from sources
 		rootItems = rootItems.filter(item => item.resourceUri !== target.resourceUri);
 		if (rootItems && target) {
-			const sourcesByBook = new Map<BookModel, BookTreeItem[]>();
-			for (let item of rootItems) {
-				const book = this.books.find(book => book.bookPath === item.book.root);
-				if (sourcesByBook.has(book)) {
-					const tmpItem = sourcesByBook.get(book);
-					sourcesByBook.set(book, [...tmpItem, item]);
-				} else {
-					sourcesByBook.set(book, [item]);
-				}
-			}
+			let sourcesByBook = this.sortTreeItemsByBook(rootItems);
 			const targetBook = this.books.find(book => book.bookPath === target.book.root);
-
 			for (let [book, items] of sourcesByBook) {
 				this.bookTocManager = new BookTocManager(book, targetBook);
 				await this.bookTocManager.updateBook(items, target);

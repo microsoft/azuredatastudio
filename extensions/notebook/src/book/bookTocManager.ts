@@ -400,10 +400,10 @@ export class BookTocManager implements IBookTocManager {
 	 * @param targetBook Book that will be modified.
 	 * @param targetSection Book section that'll be modified.
 	*/
-	public async updateBook(sources: BookTreeItem[], target: BookTreeItem, targetSection?: JupyterBookSection): Promise<void> {
+	public async updateBook(sources: BookTreeItem[], target: BookTreeItem, section?: JupyterBookSection): Promise<void> {
 		for (let element of sources) {
 			try {
-				const targetSection = target.contextValue === 'section' ? { file: target.book.page.file, title: target.book.page.title } : undefined;
+				const targetSection = section ? section : (target.contextValue === 'section' ? { file: target.book.page.file, title: target.book.page.title } : undefined);
 				if (element.contextValue === 'section') {
 					// modify the sourceBook toc and remove the section
 					const findSection: JupyterBookSection = { file: element.book.page.file, title: element.book.page.title };

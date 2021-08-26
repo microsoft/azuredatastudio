@@ -536,7 +536,7 @@ describe('BookTocManagerTests', function () {
 					bookTocManager = new BookTocManager(targetBookModel);
 					sinon.stub(bookTreeViewProvider, 'getSelectionQuickPick').returns(Promise.resolve(results));
 					try {
-						await bookTreeViewProvider.editBook(notebook);
+						await bookTreeViewProvider.editBook([notebook]);
 					} catch (error) {
 						should(recoverySpy.calledOnce).be.true('If unexpected error then recovery method is called.');
 					}
