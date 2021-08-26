@@ -422,9 +422,7 @@ export default class QueryRunner extends Disposable {
 	}
 
 	public changeConnectionUriForQuery(oldUri: string, newUri: string): Promise<void> {
-		return this.queryManagementService.changeConnectionUriForQuery(oldUri, newUri).then(r => r, error => {
-			return error;
-		});
+		return this.queryManagementService.changeConnectionUriForQuery(oldUri, newUri);
 	}
 
 	get totalElapsedMilliseconds(): number {
