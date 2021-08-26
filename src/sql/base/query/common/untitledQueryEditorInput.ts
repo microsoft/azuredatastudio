@@ -54,6 +54,9 @@ export class UntitledQueryEditorInput extends QueryEditorInput implements IEncod
 		let newInput = this.instantiationService.createInstance(FileQueryEditorInput, '', (preProcessed as FileEditorInput), this.results);
 		newInput.state.resultsVisible = this.state.resultsVisible;
 		newInput.state.connected = this.state.connected;
+		newInput.state.executing = this.state.executing;
+		newInput.state.connecting = this.state.connecting;
+		newInput.state.isSqlCmdMode = this.state.isSqlCmdMode;
 		return newInput;
 	}
 
@@ -65,6 +68,9 @@ export class UntitledQueryEditorInput extends QueryEditorInput implements IEncod
 		let newInput = this.instantiationService.createInstance(FileQueryEditorInput, '', (preProcessed as FileEditorInput), this.results);
 		newInput.state.resultsVisible = this.state.resultsVisible;
 		newInput.state.connected = this.state.connected;
+		newInput.state.executing = this.state.executing;
+		newInput.state.connecting = this.state.connecting;
+		newInput.state.isSqlCmdMode = this.state.isSqlCmdMode;
 		return newInput;
 	}
 
