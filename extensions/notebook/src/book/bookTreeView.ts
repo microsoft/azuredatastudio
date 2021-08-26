@@ -204,6 +204,10 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		return undefined;
 	}
 
+	/**
+	 * Edit a book using the menu tree item entry point
+	 * @param treeItems Elements to be moved
+	 */
 	async editBook(treeItems: BookTreeItem[]): Promise<void> {
 		TelemetryReporter.sendActionEvent(BookTelemetryView, NbTelemetryActions.MoveNotebook);
 		const selectionResults = await this.getSelectionQuickPick();
@@ -211,13 +215,13 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			let pickedSection = selectionResults.quickPickSection;
 			// filter target from sources
 			let movingElements = treeItems.filter(item => item.uri !== pickedSection.detail);
-			const updateBook = selectionResults.book;
-			const targetSection = pickedSection.detail !== undefined ? updateBook.findChildSection(pickedSection.detail) : undefined;
-			let sourcesByBook = this.getTreeItemsByBook(movingElements);
-			const targetBook = this.books.find(book => book.bookPath === updateBook.book.root);
-			for (let [book, items] of sourcesByBook) {
-				this.bookTocManager = new BookTocManager(book, targetBook);
-				await this.bookTocManager.updateBook(items, targetBook.bookItems[0], targetSection);
+			const targetBookItem = selectionResults.book;
+			const targetSection = pickedSection.detail !== undefined ? targetBookItem.findChildSection(pickedSection.detail) : undefined;
+			let sourcesByBook = this.getTreeItemsByBookModel(movingElements);
+			const targetBookModel = this.books.find(book => book.bookPath === targetBookItem.book.root);
+			for (let [bookModel, items] of sourcesByBook) {
+				this.bookTocManager = new BookTocManager(bookModel, targetBookModel);
+				await this.bookTocManager.updateBook(items, targetBookItem, targetSection);
 			}
 		}
 	}
@@ -717,7 +721,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		return Promise.resolve(result);
 	}
 
-	getTreeItemsByBook(treeItems: BookTreeItem[]): Map<BookModel, BookTreeItem[]> {
+	getTreeItemsByBookModel(treeItems: BookTreeItem[]): Map<BookModel, BookTreeItem[]> {
 		const sourcesByBook = new Map<BookModel, BookTreeItem[]>();
 		for (let item of treeItems) {
 			const book = this.books.find(book => book.bookPath === item.book.root);
@@ -740,7 +744,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		rootItems = rootItems.filter(item => item.resourceUri !== target.resourceUri);
 		if (rootItems && target) {
 			// Divide Book Tree Items by Book Model
-			let sourcesByBook = this.getTreeItemsByBook(rootItems);
+			let sourcesByBook = this.getTreeItemsByBookModel(rootItems);
 			const targetBook = this.books.find(book => book.bookPath === target.book.root);
 			for (let [book, items] of sourcesByBook) {
 				this.bookTocManager = new BookTocManager(book, targetBook);
