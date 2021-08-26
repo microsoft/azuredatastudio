@@ -244,7 +244,8 @@ export async function browseForProject(workspaceService: IWorkspaceService): Pro
 		canSelectFolders: false,
 		canSelectMany: false,
 		openLabel: constants.SelectProjectFileActionName,
-		filters: filters
+		filters: filters,
+		defaultUri: defaultProjectSaveLocation()
 	});
 
 	return fileUris?.[0];
