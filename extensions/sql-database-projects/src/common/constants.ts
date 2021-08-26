@@ -121,7 +121,7 @@ export const enterNewValueForVar = (varName: string) => localize('enterNewValueF
 export const resetAllVars = localize('resetAllVars', "Reset all variables");
 export const createNew = localize('createNew', "Create New");
 export const enterNewDatabaseName = localize('enterNewDatabaseName', "Enter new database name");
-export const newDatabaseTitle = (name: string) => localize({ key: 'newDatabaseTitle', comment: ['Name is the name of a new database being created'] }, "{0} (new)", name);
+export const newText = localize('new', "New");
 export const selectDatabase = localize('selectDatabase', "Select database");
 export const done = localize('done', "Done");
 export const nameMustNotBeEmpty = localize('nameMustNotBeEmpty', "Name must not be empty");
