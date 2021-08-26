@@ -165,7 +165,6 @@ MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
 				TreeNodeContextKey.NodeType.isEqualTo(NodeType.DatabaseTrigger),
 				TreeNodeContextKey.NodeType.isEqualTo(NodeType.Index),
 				TreeNodeContextKey.NodeType.isEqualTo(NodeType.Key),
-				TreeNodeContextKey.NodeType.isEqualTo(NodeType.Constraint),
 				TreeNodeContextKey.NodeType.isEqualTo(NodeType.User),
 				TreeNodeContextKey.NodeType.isEqualTo(NodeType.DatabaseRole),
 				TreeNodeContextKey.NodeType.isEqualTo(NodeType.ApplicationRole)
@@ -245,7 +244,6 @@ MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
 				TreeNodeContextKey.NodeType.isEqualTo(NodeType.DatabaseTrigger),
 				TreeNodeContextKey.NodeType.isEqualTo(NodeType.Index),
 				TreeNodeContextKey.NodeType.isEqualTo(NodeType.Key),
-				TreeNodeContextKey.NodeType.isEqualTo(NodeType.Constraint),
 				TreeNodeContextKey.NodeType.isEqualTo(NodeType.User),
 				TreeNodeContextKey.NodeType.isEqualTo(NodeType.DatabaseRole),
 				TreeNodeContextKey.NodeType.isEqualTo(NodeType.ApplicationRole)

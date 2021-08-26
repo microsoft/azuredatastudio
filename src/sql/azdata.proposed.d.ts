@@ -933,11 +933,11 @@ declare module 'azdata' {
 		/*
 		 * Parent object name for subobjects such as triggers, indexes, etc.
 		 */
-		parentName: string;
+		parentName?: string;
 
 		/*
 		 * Parent object type name, such as Table, View, etc.
 		 */
-		parentTypeName: string;
+		parentTypeName?: string;
 	}
 }
