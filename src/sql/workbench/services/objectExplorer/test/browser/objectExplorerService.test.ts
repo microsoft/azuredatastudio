@@ -407,7 +407,9 @@ suite('SQL Object Explorer Service tests', () => {
 			metadataTypeName: 'Database',
 			urn: '//server/db1/',
 			name: 'Db1',
-			schema: null
+			schema: null,
+			parentName: null,
+			parentTypeName: null
 		};
 		const databaseNode = new TreeNode(NodeType.Database, 'Db1', false, 'testServerName\\Db1', '', '', null, databaseMetaData, undefined, undefined);
 		databaseNode.connection = connection;
@@ -451,7 +453,9 @@ suite('SQL Object Explorer Service tests', () => {
 			metadataTypeName: 'Database',
 			urn: '//server/db1/',
 			name: 'Db1',
-			schema: undefined
+			schema: undefined,
+			parentName: undefined,
+			parentTypeName: undefined
 		};
 		const databaseName = 'Db1';
 		const databaseNode = new TreeNode(NodeType.Database, databaseName, false, 'testServerName\\Db1', '', '', undefined, databaseMetadata, undefined, undefined);
