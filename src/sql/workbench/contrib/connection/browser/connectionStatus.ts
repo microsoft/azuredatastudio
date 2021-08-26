@@ -19,6 +19,7 @@ export class ConnectionStatusbarItem extends Disposable implements IWorkbenchCon
 	private static readonly ID = 'status.connection.status';
 
 	private statusItem: IStatusbarEntryAccessor;
+	private readonly name = localize('status.connection.status', "Connection Status");
 
 	constructor(
 		@IStatusbarService private readonly statusbarService: IStatusbarService,
@@ -29,11 +30,11 @@ export class ConnectionStatusbarItem extends Disposable implements IWorkbenchCon
 		super();
 		this.statusItem = this._register(
 			this.statusbarService.addEntry({
+				name: this.name,
 				text: '',
 				ariaLabel: ''
 			},
 				ConnectionStatusbarItem.ID,
-				localize('status.connection.status', "Connection Status"),
 				StatusbarAlignment.RIGHT, 100)
 		);
 
@@ -85,7 +86,9 @@ export class ConnectionStatusbarItem extends Disposable implements IWorkbenchCon
 		}
 
 		this.statusItem.update({
-			text, ariaLabel: text, tooltip
+			name: this.name,
+			text: text,
+			ariaLabel: text, tooltip
 		});
 	}
 }

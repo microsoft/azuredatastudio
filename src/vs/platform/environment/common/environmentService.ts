@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { IProductService } from 'vs/platform/product/common/productService';
@@ -230,6 +230,9 @@ export abstract class AbstractNativeEnvironmentService implements INativeEnviron
 	@memoize
 	get telemetryLogResource(): URI { return URI.file(join(this.logsPath, 'telemetry.log')); }
 	get disableTelemetry(): boolean { return !!this.args['disable-telemetry']; }
+
+	@memoize
+	get disableWorkspaceTrust(): boolean { return !!this.args['disable-workspace-trust']; }
 
 	get args(): NativeParsedArgs { return this._args; }
 

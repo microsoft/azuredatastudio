@@ -6,7 +6,7 @@
 import { IEditorOptions } from 'vs/editor/common/config/editorOptions';
 import * as nls from 'vs/nls';
 import * as DOM from 'vs/base/browser/dom';
-import { ResourceEditorModel } from 'vs/workbench/common/editor/resourceEditorModel';
+import { TextResourceEditorModel } from 'vs/workbench/common/editor/textResourceEditorModel';
 import * as editorCommon from 'vs/editor/common/editorCommon';
 
 import { BaseTextEditor } from 'vs/workbench/browser/parts/editor/textEditor';
@@ -15,12 +15,13 @@ import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import { ITextResourceConfigurationService } from 'vs/editor/common/services/textResourceConfigurationService';
-import { EditorOptions, IEditorOpenContext } from 'vs/workbench/common/editor';
+import { IEditorOpenContext } from 'vs/workbench/common/editor';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
 import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
 import { CodeEditorWidget } from 'vs/editor/browser/widget/codeEditorWidget';
+import { ITextEditorOptions } from 'vs/platform/editor/common/editor';
 
 class ProfilerResourceCodeEditor extends CodeEditorWidget {
 
@@ -75,9 +76,9 @@ export class ProfilerResourceEditor extends BaseTextEditor {
 		return options;
 	}
 
-	override async setInput(input: UntitledTextEditorInput, options: EditorOptions, context: IEditorOpenContext): Promise<void> {
+	override async setInput(input: UntitledTextEditorInput, options: ITextEditorOptions, context: IEditorOpenContext): Promise<void> {
 		await super.setInput(input, options, context, CancellationToken.None);
-		const editorModel = await this.input.resolve() as ResourceEditorModel;
+		const editorModel = await this.input.resolve() as TextResourceEditorModel;
 		await editorModel.resolve();
 		this.getControl().setModel(editorModel.textEditorModel);
 	}

@@ -64,12 +64,7 @@ export function setup() {
 
 			await app.workbench.sqlNotebook.notebookToolbar.changeKernel('Python 3');
 			await app.workbench.configurePythonDialog.waitForConfigurePythonDialog();
-			try {
-				await app.workbench.configurePythonDialog.waitForPageOneLoaded();
-			} catch (e) {
-				await app.captureScreenshot('Configure Python Dialog page one not loaded');
-				throw e;
-			}
+			await app.workbench.configurePythonDialog.waitForPageOneLoaded();
 			await app.workbench.configurePythonDialog.next();
 			await app.workbench.configurePythonDialog.waitForPageTwoLoaded();
 			await app.workbench.configurePythonDialog.install();
@@ -96,6 +91,11 @@ export function setup() {
 
 		afterEach(async function () {
 			const app = this.app as Application;
+			// If the test failed, take a screenshot before closing the active editor.
+			if (this.currentTest!.state === 'failed') {
+				const name = this.currentTest!.fullTitle().replace(/[^a-z0-9\-]/ig, '_');
+				await app.captureScreenshot(`${name} (screenshot before revertAndCloseActiveEditor action)`);
+			}
 			await app.workbench.quickaccess.runCommand('workbench.action.revertAndCloseActiveEditor');
 		});
 

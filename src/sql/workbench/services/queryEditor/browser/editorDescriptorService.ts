@@ -3,7 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { EditorExtensions, EditorInput } from 'vs/workbench/common/editor';
+import { EditorExtensions } from 'vs/workbench/common/editor';
+import { EditorInput } from 'vs/workbench/common/editor/editorInput';
 import { IEditorDescriptor, IEditorRegistry } from 'vs/workbench/browser/editor';
 
 import { Registry } from 'vs/platform/registry/common/platform';
