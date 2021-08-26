@@ -753,7 +753,6 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		}
 	}
 
-
 	/**
 	 * From the tree items moved find the local roots since we'll move
 	 * the local branches to the new target element.
