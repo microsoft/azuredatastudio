@@ -117,59 +117,6 @@ suite('NotebookKernel', function () {
 		disposables.add(extHostDocuments);
 
 
-		rpcProtocol.set(MainContext.MainThreadNotebook, new class extends mock<MainThreadNotebookShape>() {
-			override async $registerNotebookProvider() { }
-			override async $unregisterNotebookProvider() { }
-		});
-		extHostDocumentsAndEditors = new ExtHostDocumentsAndEditors(rpcProtocol, new NullLogService());
-		extHostDocuments = new ExtHostDocuments(rpcProtocol, extHostDocumentsAndEditors);
-		const extHostStoragePaths = new class extends mock<IExtensionStoragePaths>() {
-			override workspaceValue() {
-				return URI.from({ scheme: 'test', path: generateUuid() });
-			}
-		};
-		extHostNotebooks = new ExtHostNotebookController(rpcProtocol, new ExtHostCommands(rpcProtocol, new NullLogService()), extHostDocumentsAndEditors, extHostDocuments, extHostStoragePaths);
-
-		extHostNotebookDocuments = new ExtHostNotebookDocuments(new NullLogService(), extHostNotebooks);
-
-		extHostNotebooks.$acceptDocumentAndEditorsDelta({
-			addedDocuments: [{
-				uri: notebookUri,
-				viewType: 'test',
-				versionId: 0,
-				cells: [{
-					handle: 0,
-					uri: CellUri.generate(notebookUri, 0),
-					source: ['### Heading'],
-					eol: '\n',
-					language: 'markdown',
-					cellKind: CellKind.Markup,
-					outputs: [],
-				}, {
-					handle: 1,
-					uri: CellUri.generate(notebookUri, 1),
-					source: ['console.log("aaa")', 'console.log("bbb")'],
-					eol: '\n',
-					language: 'javascript',
-					cellKind: CellKind.Code,
-					outputs: [],
-				}],
-			}],
-			addedEditors: [{
-				documentUri: notebookUri,
-				id: '_notebook_editor_0',
-				selections: [{ start: 0, end: 1 }],
-				visibleRanges: []
-			}]
-		});
-		extHostNotebooks.$acceptDocumentAndEditorsDelta({ newActiveEditor: '_notebook_editor_0' });
-
-		notebook = extHostNotebooks.notebookDocuments[0]!;
-
-		disposables.add(notebook);
-		disposables.add(extHostDocuments);
-
-
 		extHostNotebookKernels = new ExtHostNotebookKernels(
 			rpcProtocol,
 			new class extends mock<IExtHostInitDataService>() { },
