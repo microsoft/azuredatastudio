@@ -35,7 +35,7 @@ export interface BookTreeItemFormat {
 	isUntitled: boolean;
 	version?: BookVersion;
 	parent?: BookTreeItem;
-	children?: string;
+	hasChildren?: boolean;
 }
 
 export class BookTreeItem extends vscode.TreeItem {
@@ -179,12 +179,12 @@ export class BookTreeItem extends vscode.TreeItem {
 	public override readonly tooltip: string;
 
 
-	public get children(): string | undefined {
-		return this.book.children;
+	public get hasChildren(): boolean | undefined {
+		return this.book.hasChildren;
 	}
 
-	public set children(children: string | undefined) {
-		this.book.children = children;
+	public set hasChildren(hasChildren: boolean | undefined) {
+		this.book.hasChildren = hasChildren;
 	}
 
 	public get parent(): BookTreeItem {

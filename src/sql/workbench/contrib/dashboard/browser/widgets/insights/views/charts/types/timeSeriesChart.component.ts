@@ -6,7 +6,7 @@
 import LineChart, { ILineConfig } from './lineChart.component';
 import { defaultChartConfig } from 'sql/workbench/contrib/dashboard/browser/widgets/insights/views/charts/interfaces';
 
-import { mixin, deepClone, assign } from 'vs/base/common/objects';
+import { mixin, deepClone } from 'vs/base/common/objects';
 import { Color } from 'vs/base/common/color';
 import { ChangeDetectorRef, Inject, forwardRef } from '@angular/core';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
@@ -58,7 +58,7 @@ export default class TimeSeriesChart extends LineChart {
 			}
 		};
 
-		this.options = assign({}, mixin(this.options, options));
+		this.options = Object.assign({}, mixin(this.options, options));
 	}
 
 	protected override getDataAsPoint(): Array<IPointDataSet> {

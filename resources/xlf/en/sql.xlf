@@ -2902,6 +2902,12 @@ Error: {1}</source>
     <trans-unit id="notebook.enableIncrementalGridRendering">
       <source xml:lang="en">Enable incremental grid rendering for notebooks. This will improve the initial rendering time for large notebooks. There may be performance issues when interacting with the notebook while the rest of the grids are rendering.</source>
     </trans-unit>
+    <trans-unit id="notebookViews">
+      <source xml:lang="en">Notebook Views</source>
+    </trans-unit>
+    <trans-unit id="notebookViews.enabled">
+      <source xml:lang="en">(Preview) Enable Notebook Views</source>
+    </trans-unit>
     <trans-unit id="searchConfigurationTitle">
       <source xml:lang="en">Search Notebooks</source>
     </trans-unit>
@@ -3207,8 +3213,20 @@ Error: {1}</source>
     </trans-unit>
   </body></file>
   <file original="src/sql/workbench/contrib/notebook/browser/notebookViews/notebookViews.component" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="cellAwaitingInputTitle">
+      <source xml:lang="en">Cell Awaiting Input</source>
+    </trans-unit>
+    <trans-unit id="loading">
+      <source xml:lang="en">Loading</source>
+    </trans-unit>
     <trans-unit id="cellNotFound">
       <source xml:lang="en">cell with URI {0} was not found in this model</source>
+    </trans-unit>
+    <trans-unit id="startingExecution">
+      <source xml:lang="en">Starting execution</source>
+    </trans-unit>
+    <trans-unit id="runningCell">
+      <source xml:lang="en">Running cell {0} of {1}</source>
     </trans-unit>
     <trans-unit id="cellRunFailed">
       <source xml:lang="en">Run Cells failed - See error in output of the currently selected cell for more information.</source>
@@ -3555,7 +3573,7 @@ Error: {1}</source>
       <source xml:lang="en">Results grid</source>
     </trans-unit>
     <trans-unit id="resultsGrid.maxRowCountExceeded">
-      <source xml:lang="en">Max row count for filtering/sorting has been exceeded. To update it, you can go to User Settings and change the setting: 'queryEditor.results.inMemoryDataProcessingThreshold'</source>
+      <source xml:lang="en">Max row count for filtering/sorting has been exceeded. To update it, navigate to User Settings and change the setting: 'queryEditor.results.inMemoryDataProcessingThreshold'</source>
     </trans-unit>
   </body></file>
   <file original="src/sql/workbench/contrib/query/browser/keyboardQueryActions" source-language="en" datatype="plaintext"><body>
@@ -3655,9 +3673,6 @@ Error: {1}</source>
     </trans-unit>
     <trans-unit id="queryEditor.results.copyRemoveNewLine">
       <source xml:lang="en">Configuration options for copying multi-line results from the Results View</source>
-    </trans-unit>
-    <trans-unit id="queryEditor.results.optimizedTable">
-      <source xml:lang="en">(Experimental) Use a optimized table in the results out. Some functionality might be missing and in the works.</source>
     </trans-unit>
     <trans-unit id="queryEditor.inMemoryDataProcessingThreshold">
       <source xml:lang="en">Controls the max number of rows allowed to do filtering and sorting in memory. If the number is exceeded, sorting and filtering will be disabled. Warning: Increasing this may impact performance.</source>
@@ -5581,10 +5596,7 @@ Error: {1}</source>
       <source xml:lang="en">No</source>
     </trans-unit>
   </body></file>
-  <file original="src/sql/workbench/update/electron-browser/releaseNotes" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="gettingStarted">
-      <source xml:lang="en">Get Started</source>
-    </trans-unit>
+  <file original="src/sql/workbench/update/electron-browser/gettingStarted" source-language="en" datatype="plaintext"><body>
     <trans-unit id="showReleaseNotes">
       <source xml:lang="en">Show Getting Started</source>
     </trans-unit>

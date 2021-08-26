@@ -104,6 +104,7 @@
 				"restrictions": [
 					"assert",
 					"sinon",
+					"sinon-test",
 					"vs/nls",
 					"**/{vs,sql}/base/common/**",
 					"**/{vs,sql}/base/test/common/**"
@@ -141,6 +142,7 @@
 				"restrictions": [
 					"assert",
 					"sinon",
+					"sinon-test",
 					"vs/nls",
 					"**/{vs,sql}/base/{common,browser}/**",
 					"**/{vs,sql}/base/test/{common,browser}/**",
@@ -220,6 +222,7 @@
 					"assert",
 					"typemoq",
 					"sinon",
+					"sinon-test",
 					"vs/nls",
 					"azdata",
 					"**/{vs,sql}/base/common/**",
@@ -292,6 +295,7 @@
 					"typemoq",
 					"sinon",
 					"azdata",
+					"sinon-test",
 					"vs/nls",
 					"**/{vs,sql}/base/{common,browser}/**",
 					"**/{vs,sql}/base/test/{common,browser}/**",
@@ -315,6 +319,7 @@
 				"restrictions": [
 					"assert",
 					"sinon",
+					"sinon-test",
 					"vs/nls",
 					"**/{vs,sql}/base/common/**",
 					"**/{vs,sql}/platform/*/common/**",
@@ -338,6 +343,7 @@
 				"restrictions": [
 					"assert",
 					"sinon",
+					"sinon-test",
 					"vs/nls",
 					"**/{vs,sql}/base/{common,browser}/**",
 					"**/{vs,sql}/platform/*/{common,browser}/**",
@@ -361,6 +367,7 @@
 				"restrictions": [
 					"assert",
 					"sinon",
+					"sinon-test",
 					"vs/nls",
 					"**/{vs,sql}/base/common/**",
 					"**/{vs,sql}/platform/*/common/**",
@@ -387,6 +394,7 @@
 				"restrictions": [
 					"assert",
 					"sinon",
+					"sinon-test",
 					"vs/nls",
 					"**/{vs,sql}/base/{common,browser}/**",
 					"**/{vs,sql}/platform/*/{common,browser}/**",
@@ -401,6 +409,7 @@
 				"restrictions": [
 					"assert",
 					"sinon",
+					"sinon-test",
 					"vs/nls",
 					"**/{vs,sql}/base/{common,browser}/**",
 					"**/{vs,sql}/base/test/{common,browser}/**",
@@ -523,7 +532,7 @@
 					"**/{vs,sql}/platform/**",
 					"**/{vs,sql}/editor/**",
 					"**/{vs,sql}/workbench/{common,browser,node,electron-sandbox,electron-browser}/**",
-					"vs/workbench/contrib/files/common/editors/fileEditorInput",
+					"vs/workbench/contrib/files/browser/editors/fileEditorInput",
 					"**/{vs,sql}/workbench/services/**",
 					"**/{vs,sql}/workbench/test/**",
 					"*" // node modules
@@ -743,6 +752,7 @@
 					"plotly.js",
 					"angular2-grid",
 					"html-query-plan",
+					"html-to-image",
 					"turndown",
 					"gridstack",
 					"mark.js",
@@ -957,6 +967,7 @@
 					"**/{vs,sql}/**",
 					"assert",
 					"sinon",
+					"sinon-test",
 					"crypto",
 					"vscode",
 					"typemoq",
@@ -992,6 +1003,7 @@
 					"assert",
 					"typemoq",
 					"sinon",
+					"sinon-test",
 					"crypto",
 					"xterm*",
 					"azdata"
@@ -1004,6 +1016,7 @@
 					"assert",
 					"typemoq",
 					"sinon",
+					"sinon-test",
 					"crypto",
 					"xterm*"
 				]
@@ -1041,6 +1054,7 @@
 				"vscode-dts-cancellation": "warn",
 				"vscode-dts-use-thenable": "warn",
 				"vscode-dts-region-comments": "warn",
+				"vscode-dts-vscode-in-comments": "warn",
 				"vscode-dts-provider-naming": [
 					"warn",
 					{

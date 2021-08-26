@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { localize } from 'vs/nls';
@@ -8,7 +8,7 @@ import { Action2, MenuId, registerAction2 } from 'vs/platform/actions/common/act
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
 import { INotebookActionContext, NOTEBOOK_ACTIONS_CATEGORY } from 'vs/workbench/contrib/notebook/browser/contrib/coreActions';
-import { CellToolbarLocKey } from 'vs/workbench/contrib/notebook/common/notebookCommon';
+import { CellToolbarLocation } from 'vs/workbench/contrib/notebook/common/notebookCommon';
 
 const TOGGLE_CELL_TOOLBAR_POSITION = 'notebook.toggleCellToolbarPosition';
 
@@ -33,9 +33,9 @@ export class ToggleCellToolbarPositionAction extends Action2 {
 			// from toolbar
 			const viewType = editor.viewModel.viewType;
 			const configurationService = accessor.get(IConfigurationService);
-			const toolbarPosition = configurationService.getValue<string | { [key: string]: string }>(CellToolbarLocKey);
+			const toolbarPosition = configurationService.getValue<string | { [key: string]: string }>(CellToolbarLocation);
 			const newConfig = this.togglePosition(viewType, toolbarPosition);
-			await configurationService.updateValue(CellToolbarLocKey, newConfig);
+			await configurationService.updateValue(CellToolbarLocation, newConfig);
 		}
 	}
 

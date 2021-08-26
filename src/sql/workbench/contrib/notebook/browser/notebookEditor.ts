@@ -7,7 +7,7 @@ import { localize } from 'vs/nls';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { EditorPane } from 'vs/workbench/browser/parts/editor/editorPane';
-import { EditorOptions, IEditorOpenContext } from 'vs/workbench/common/editor';
+import { IEditorOpenContext } from 'vs/workbench/common/editor';
 import * as DOM from 'vs/base/browser/dom';
 import { bootstrapAngular } from 'sql/workbench/services/bootstrap/browser/bootstrapService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
@@ -35,6 +35,7 @@ import { NotebookFindDecorations } from 'sql/workbench/contrib/notebook/browser/
 import { TimeoutTimer } from 'vs/base/common/async';
 import { BaseTextEditor } from 'vs/workbench/browser/parts/editor/textEditor';
 import { onUnexpectedError } from 'vs/base/common/errors';
+import { IEditorOptions } from 'vs/platform/editor/common/editor';
 
 export class NotebookEditor extends EditorPane implements IFindNotebookController {
 
@@ -190,7 +191,7 @@ export class NotebookEditor extends EditorPane implements IFindNotebookControlle
 		}
 	}
 
-	public override async setInput(input: NotebookInput, options: EditorOptions, context: IEditorOpenContext): Promise<void> {
+	public override async setInput(input: NotebookInput, options: IEditorOptions, context: IEditorOpenContext): Promise<void> {
 		if (this.input && this.input.matches(input)) {
 			return Promise.resolve(undefined);
 		}

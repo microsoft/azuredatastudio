@@ -4,9 +4,10 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.translatePackageJSON = exports.packageRebuildExtensionsStream = exports.cleanRebuildExtensions = exports.packageExternalExtensionsStream = exports.scanBuiltinExtensions = exports.packageMarketplaceExtensionsStream = exports.packageLocalExtensionsStream = exports.vscodeExternalExtensions = exports.fromMarketplace = exports.fromLocalNormal = exports.fromLocal = void 0;
+exports.buildExtensionMedia = exports.webpackExtensions = exports.translatePackageJSON = exports.packageRebuildExtensionsStream = exports.cleanRebuildExtensions = exports.packageExternalExtensionsStream = exports.scanBuiltinExtensions = exports.packageMarketplaceExtensionsStream = exports.packageLocalExtensionsStream = exports.vscodeExternalExtensions = exports.fromMarketplace = exports.fromLocalNormal = exports.fromLocal = void 0;
 const es = require("event-stream");
 const fs = require("fs");
+const cp = require("child_process");
 const glob = require("glob");
 const gulp = require("gulp");
 const path = require("path");
@@ -23,7 +24,7 @@ const jsoncParser = require("jsonc-parser");
 const util = require('./util');
 const root = path.dirname(path.dirname(__dirname));
 const commit = util.getVersion(root);
-const sourceMappingURLBase = `https://sqlopsbuilds.blob.core.windows.net/sourcemaps/${commit}`;
+const sourceMappingURLBase = `https://sqlopsbuilds.blob.core.windows.net/sourcemaps/${commit}`; // {{SQL CARBON EDIT}}
 function minifyExtensionResources(input) {
     const jsonFilter = filter(['**/*.json', '**/*.code-snippets'], { restore: true });
     return input
@@ -144,7 +145,7 @@ function fromLocalWebpack(extensionPath, webpackConfigFileName) {
         console.error(packagedDependencies);
         result.emit('error', err);
     });
-    return result.pipe((0, stats_1.createStatsStream)(path.basename(extensionPath)));
+    return result.pipe(stats_1.createStatsStream(path.basename(extensionPath)));
 }
 function fromLocalNormal(extensionPath) {
     const result = es.through();
@@ -162,7 +163,7 @@ function fromLocalNormal(extensionPath) {
         es.readArray(files).pipe(result);
     })
         .catch(err => result.emit('error', err));
-    return result.pipe((0, stats_1.createStatsStream)(path.basename(extensionPath)));
+    return result.pipe(stats_1.createStatsStream(path.basename(extensionPath)));
 }
 exports.fromLocalNormal = fromLocalNormal;
 const baseHeaders = {
@@ -174,7 +175,7 @@ function fromMarketplace(extensionName, version, metadata) {
     const remote = require('gulp-remote-retry-src');
     const json = require('gulp-json-editor');
     const [, name] = extensionName.split('.');
-    const url = `https://sqlopsextensions.blob.core.windows.net/extensions/${name}/${name}-${version}.vsix`;
+    const url = `https://sqlopsextensions.blob.core.windows.net/extensions/${name}/${name}-${version}.vsix`; // {{SQL CARBON EDIT}}
     fancyLog('Downloading extension:', ansiColors.yellow(`${extensionName}@${version}`), '...');
     const options = {
         base: url,
@@ -346,6 +347,7 @@ function scanBuiltinExtensions(extensionsRoot, exclude = []) {
     }
 }
 exports.scanBuiltinExtensions = scanBuiltinExtensions;
+// {{SQL CARBON EDIT}} start
 function packageExternalExtensionsStream() {
     const extenalExtensionDescriptions = glob.sync('extensions/*/package.json')
         .map(manifestPath => {
@@ -361,7 +363,6 @@ function packageExternalExtensionsStream() {
     return es.merge(builtExtensions);
 }
 exports.packageExternalExtensionsStream = packageExternalExtensionsStream;
-// {{SQL CARBON EDIT}} start
 function cleanRebuildExtensions(root) {
     return Promise.all(rebuildExtensions.map(async (e) => {
         await util2.rimraf(path.join(root, e))();
@@ -408,3 +409,132 @@ function translatePackageJSON(packageJSON, packageNLSPath) {
     return packageJSON;
 }
 exports.translatePackageJSON = translatePackageJSON;
+const extensionsPath = path.join(root, 'extensions');
+// Additional projects to webpack. These typically build code for webviews
+const webpackMediaConfigFiles = [
+    'markdown-language-features/webpack.config.js',
+    'simple-browser/webpack.config.js',
+];
+// Additional projects to run esbuild on. These typically build code for webviews
+const esbuildMediaScripts = [
+    'markdown-language-features/esbuild.js',
+    'markdown-math/esbuild.js',
+];
+async function webpackExtensions(taskName, isWatch, webpackConfigLocations) {
+    const webpack = require('webpack');
+    const webpackConfigs = [];
+    for (const { configPath, outputRoot } of webpackConfigLocations) {
+        const configOrFnOrArray = require(configPath);
+        function addConfig(configOrFn) {
+            let config;
+            if (typeof configOrFn === 'function') {
+                config = configOrFn({}, {});
+                webpackConfigs.push(config);
+            }
+            else {
+                config = configOrFn;
+            }
+            if (outputRoot) {
+                config.output.path = path.join(outputRoot, path.relative(path.dirname(configPath), config.output.path));
+            }
+            webpackConfigs.push(configOrFn);
+        }
+        addConfig(configOrFnOrArray);
+    }
+    function reporter(fullStats) {
+        if (Array.isArray(fullStats.children)) {
+            for (const stats of fullStats.children) {
+                const outputPath = stats.outputPath;
+                if (outputPath) {
+                    const relativePath = path.relative(extensionsPath, outputPath).replace(/\\/g, '/');
+                    const match = relativePath.match(/[^\/]+(\/server|\/client)?/);
+                    fancyLog(`Finished ${ansiColors.green(taskName)} ${ansiColors.cyan(match[0])} with ${stats.errors.length} errors.`);
+                }
+                if (Array.isArray(stats.errors)) {
+                    stats.errors.forEach((error) => {
+                        fancyLog.error(error);
+                    });
+                }
+                if (Array.isArray(stats.warnings)) {
+                    stats.warnings.forEach((warning) => {
+                        fancyLog.warn(warning);
+                    });
+                }
+            }
+        }
+    }
+    return new Promise((resolve, reject) => {
+        if (isWatch) {
+            webpack(webpackConfigs).watch({}, (err, stats) => {
+                if (err) {
+                    reject();
+                }
+                else {
+                    reporter(stats.toJson());
+                }
+            });
+        }
+        else {
+            webpack(webpackConfigs).run((err, stats) => {
+                if (err) {
+                    fancyLog.error(err);
+                    reject();
+                }
+                else {
+                    reporter(stats.toJson());
+                    resolve();
+                }
+            });
+        }
+    });
+}
+exports.webpackExtensions = webpackExtensions;
+async function esbuildExtensions(taskName, isWatch, scripts) {
+    function reporter(stdError, script) {
+        const matches = (stdError || '').match(/\> (.+): error: (.+)?/g);
+        fancyLog(`Finished ${ansiColors.green(taskName)} ${script} with ${matches ? matches.length : 0} errors.`);
+        for (const match of matches || []) {
+            fancyLog.error(match);
+        }
+    }
+    const tasks = scripts.map(({ script, outputRoot }) => {
+        return new Promise((resolve, reject) => {
+            const args = [script];
+            if (isWatch) {
+                args.push('--watch');
+            }
+            if (outputRoot) {
+                args.push('--outputRoot', outputRoot);
+            }
+            const proc = cp.execFile(process.argv[0], args, {}, (error, _stdout, stderr) => {
+                if (error) {
+                    return reject(error);
+                }
+                reporter(stderr, script);
+                if (stderr) {
+                    return reject();
+                }
+                return resolve();
+            });
+            proc.stdout.on('data', (data) => {
+                fancyLog(`${ansiColors.green(taskName)}: ${data.toString('utf8')}`);
+            });
+        });
+    });
+    return Promise.all(tasks);
+}
+async function buildExtensionMedia(isWatch, outputRoot) {
+    return Promise.all([
+        webpackExtensions('webpacking extension media', isWatch, webpackMediaConfigFiles.map(p => {
+            return {
+                configPath: path.join(extensionsPath, p),
+                outputRoot: outputRoot ? path.join(root, outputRoot, path.dirname(p)) : undefined
+            };
+        })),
+        esbuildExtensions('esbuilding extension media', isWatch, esbuildMediaScripts.map(p => ({
+            script: path.join(extensionsPath, p),
+            outputRoot: outputRoot ? path.join(root, outputRoot, path.dirname(p)) : undefined
+        }))),
+    ]);
+}
+exports.buildExtensionMedia = buildExtensionMedia;

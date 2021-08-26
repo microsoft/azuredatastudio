@@ -63,7 +63,7 @@ function executeAction(instantiationService: IInstantiationService, editor: ICod
 	});
 }
 
-suite.skip('FindController', async () => {
+suite.skip('FindController', async () => { // {{SQL CARBON EDIT}} Skip suite
 	const queryState: { [key: string]: any; } = {};
 	let clipboardState = '';
 	const serviceCollection = new ServiceCollection();
@@ -490,7 +490,7 @@ suite.skip('FindController', async () => {
 	});
 });
 
-suite.skip('FindController query options persistence', async () => {
+suite.skip('FindController query options persistence', async () => { // {{SQL CARBON EDIT}} Skip suite
 	let queryState: { [key: string]: any; } = {};
 	queryState['editor.isRegex'] = false;
 	queryState['editor.matchCase'] = false;

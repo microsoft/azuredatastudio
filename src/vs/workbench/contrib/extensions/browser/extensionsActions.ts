@@ -18,7 +18,7 @@ import { IGalleryExtension, IExtensionGalleryService, INSTALL_ERROR_MALICIOUS, I
 import { IWorkbenchExtensionEnablementService, EnablementState, IExtensionManagementServerService, IExtensionManagementServer, IWorkbenchExtensionManagementService, IWebExtensionsScannerService } from 'vs/workbench/services/extensionManagement/common/extensionManagement';
 import { ExtensionRecommendationReason, IExtensionIgnoredRecommendationsService, IExtensionRecommendationsService } from 'vs/workbench/services/extensionRecommendations/common/extensionRecommendations';
 import { areSameExtensions } from 'vs/platform/extensionManagement/common/extensionManagementUtil';
-import { ExtensionType, ExtensionIdentifier, IExtensionDescription, IExtensionManifest, isLanguagePackExtension } from 'vs/platform/extensions/common/extensions'; // {{SQL CARBON EDIT}}
+import { ExtensionType, ExtensionIdentifier, IExtensionDescription, IExtensionManifest, isLanguagePackExtension, getWorkpaceSupportTypeMessage } from 'vs/platform/extensions/common/extensions';
 import { IInstantiationService, ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
 import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
 import { IFileService, IFileContent } from 'vs/platform/files/common/files';
@@ -59,9 +59,10 @@ import { ILogService } from 'vs/platform/log/common/log';
 import * as Constants from 'vs/workbench/contrib/logs/common/logConstants';
 import { infoIcon, manageExtensionIcon, syncEnabledIcon, syncIgnoredIcon, trustIcon, warningIcon } from 'vs/workbench/contrib/extensions/browser/extensionsIcons';
 import { isWeb } from 'vs/base/common/platform';
-import { isWorkspaceTrustEnabled } from 'vs/workbench/services/workspaces/common/workspaceTrust';
 import { IExtensionManifestPropertiesService } from 'vs/workbench/services/extensions/common/extensionManifestPropertiesService';
 import * as locConstants from 'sql/base/common/locConstants'; // {{SQL CARBON EDIT}}
+import { IWorkspaceTrustManagementService } from 'vs/platform/workspace/common/workspaceTrust';
+import { isVirtualWorkspace } from 'vs/platform/remote/common/remoteHosts';
 
 function getRelativeDateLabel(date: Date): string {
 	const delta = new Date().getTime() - date.getTime();
@@ -132,7 +133,7 @@ export class PromptExtensionInstallFailureAction extends Action {
 		}
 
 		if ([INSTALL_ERROR_INCOMPATIBLE, INSTALL_ERROR_MALICIOUS].includes(this.error.name)) {
-			await this.dialogService.show(Severity.Info, getErrorMessage(this.error), []);
+			await this.dialogService.show(Severity.Info, getErrorMessage(this.error));
 			return;
 		}
 
@@ -271,7 +272,7 @@ export abstract class AbstractInstallAction extends ExtensionAction {
 
 		const extension = await this.install(this.extension);
 
-		if (extension && extension?.local) {
+		if (extension?.local) {
 			alert(localize('installExtensionComplete', "Installing extension {0} is completed.", this.extension.displayName));
 			const runningExtension = await this.getRunningExtension(extension.local);
 			if (runningExtension && !(runningExtension.activationEvents && runningExtension.activationEvents.some(activationEent => activationEent.startsWith('onLanguage')))) {
@@ -1580,29 +1581,6 @@ export class SetProductIconThemeAction extends ExtensionAction {
 	}
 }
 
-
-export class ShowInstalledExtensionsAction extends Action {
-
-	static readonly ID = 'workbench.extensions.action.showInstalledExtensions';
-	static readonly LABEL = localize('showInstalledExtensions', "Show Installed Extensions");
-
-	constructor(
-		id: string,
-		label: string,
-		@IViewletService private readonly viewletService: IViewletService
-	) {
-		super(id, label, undefined, true);
-	}
-
-	override run(): Promise<void> {
-		return this.viewletService.openViewlet(VIEWLET_ID, true)
-			.then(viewlet => viewlet?.getViewPaneContainer() as IExtensionsViewPaneContainer)
-			.then(viewlet => {
-				viewlet.search('@installed ');
-				viewlet.focus();
-			});
-	}
-}
 export class ShowRecommendedExtensionAction extends Action {
 
 	static readonly ID = 'workbench.extensions.action.showRecommendedExtension';
@@ -2143,10 +2121,12 @@ export class SystemDisabledWarningAction extends ExtensionAction {
 	constructor(
 		@IExtensionManagementServerService private readonly extensionManagementServerService: IExtensionManagementServerService,
 		@ILabelService private readonly labelService: ILabelService,
+		@ICommandService private readonly commandService: ICommandService,
+		@IWorkspaceTrustManagementService private readonly workspaceTrustService: IWorkspaceTrustManagementService,
 		@IExtensionsWorkbenchService private readonly extensionsWorkbenchService: IExtensionsWorkbenchService,
 		@IExtensionService private readonly extensionService: IExtensionService,
-		@IConfigurationService private readonly configurationService: IConfigurationService,
 		@IExtensionManifestPropertiesService private readonly extensionManifestPropertiesService: IExtensionManifestPropertiesService,
+		@IWorkspaceContextService private readonly contextService: IWorkspaceContextService
 	) {
 		super('extensions.install', '', `${SystemDisabledWarningAction.CLASS} hide`, false);
 		this._register(this.labelService.onDidChangeFormatters(() => this.update(), this));
@@ -2162,6 +2142,7 @@ export class SystemDisabledWarningAction extends ExtensionAction {
 	update(): void {
 		this.class = `${SystemDisabledWarningAction.CLASS} hide`;
 		this.tooltip = '';
+		this.enabled = false;
 		if (
 			!this.extension ||
 			!this.extension.local ||
@@ -2171,10 +2152,17 @@ export class SystemDisabledWarningAction extends ExtensionAction {
 		) {
 			return;
 		}
-		if (this.extension.enablementState === EnablementState.DisabledByVirtualWorkspace) {
-			this.class = `${SystemDisabledWarningAction.INFO_CLASS}`;
-			this.tooltip = localize('disabled because of virtual workspace', "This extension has been disabled because it does not support virtual workspaces.");
-			return;
+
+		if (isVirtualWorkspace(this.contextService.getWorkspace())) {
+			const virtualSupportType = this.extensionManifestPropertiesService.getExtensionVirtualWorkspaceSupportType(this.extension.local.manifest);
+			if (virtualSupportType !== true) {
+				this.class = `${SystemDisabledWarningAction.INFO_CLASS}`;
+				const details = getWorkpaceSupportTypeMessage(this.extension.local.manifest.capabilities?.virtualWorkspaces);
+				this.tooltip = details || (virtualSupportType === 'limited' ?
+					localize('extension limited because of virtual workspace', "This extension has limited features because the current workspace is virtual.") :
+					localize('disabled because of virtual workspace', "This extension has been disabled because it does not support virtual workspaces."));
+				return;
+			}
 		}
 		if (this.extensionManagementServerService.localExtensionManagementServer && this.extensionManagementServerService.remoteExtensionManagementServer) {
 			if (isLanguagePackExtension(this.extension.local.manifest)) {
@@ -2217,133 +2205,26 @@ export class SystemDisabledWarningAction extends ExtensionAction {
 				return;
 			}
 		}
-		if (isWorkspaceTrustEnabled(this.configurationService) && this.extension.enablementState === EnablementState.DisabledByTrustRequirement) {
+
+		const untrustedSupportType = this.extensionManifestPropertiesService.getExtensionUntrustedWorkspaceSupportType(this.extension.local.manifest);
+		if (this.workspaceTrustService.workspaceTrustEnabled && untrustedSupportType !== true && !this.workspaceTrustService.isWorkpaceTrusted()) {
+			const untrustedDetails = getWorkpaceSupportTypeMessage(this.extension.local.manifest.capabilities?.untrustedWorkspaces);
+			this.enabled = true;
 			this.class = `${SystemDisabledWarningAction.TRUST_CLASS}`;
-			this.tooltip = localize('extension disabled because of trust requirement', "This extension has been disabled because the current workspace is not trusted");
+			this.tooltip = untrustedDetails || (untrustedSupportType === 'limited' ?
+				localize('extension limited because of trust requirement', "This extension has limited features because the current workspace is not trusted.") :
+				localize('extension disabled because of trust requirement', "This extension has been disabled because the current workspace is not trusted."));
 			return;
 		}
 	}
 
 	override run(): Promise<any> {
+		// Only enabled by the workspace trust version of this action
+		// If other actions enable, add a new member to control this
+		if (this.enabled) {
+			this.commandService.executeCommand('workbench.trust.manage');
+		}
 		return Promise.resolve(null);
-	}
-}
-
-export class DisableAllAction extends Action {
-
-	static readonly ID = 'workbench.extensions.action.disableAll';
-	static readonly LABEL = localize('disableAll', "Disable All Installed Extensions");
-
-	constructor(
-		id: string, label: string, isPrimary: boolean,
-		@IExtensionsWorkbenchService private readonly extensionsWorkbenchService: IExtensionsWorkbenchService,
-		@IWorkbenchExtensionEnablementService private readonly extensionEnablementService: IWorkbenchExtensionEnablementService
-	) {
-		super(id, label);
-		if (isPrimary) {
-			this._register(this.extensionsWorkbenchService.onChange(() => this._onDidChange.fire({ enabled: this.enabled })));
-		}
-	}
-
-	private getExtensionsToDisable(): IExtension[] {
-		return this.extensionsWorkbenchService.local.filter(e => !e.isBuiltin && !!e.local && this.extensionEnablementService.isEnabled(e.local) && this.extensionEnablementService.canChangeEnablement(e.local));
-	}
-
-	override get enabled(): boolean {
-		return this.getExtensionsToDisable().length > 0;
-	}
-
-	override run(): Promise<any> {
-		return this.extensionsWorkbenchService.setEnablement(this.getExtensionsToDisable(), EnablementState.DisabledGlobally);
-	}
-}
-
-export class DisableAllWorkspaceAction extends Action {
-
-	static readonly ID = 'workbench.extensions.action.disableAllWorkspace';
-	static readonly LABEL = localize('disableAllWorkspace', "Disable All Installed Extensions for this Workspace");
-
-	constructor(
-		id: string, label: string, isPrimary: boolean,
-		@IWorkspaceContextService private readonly workspaceContextService: IWorkspaceContextService,
-		@IExtensionsWorkbenchService private readonly extensionsWorkbenchService: IExtensionsWorkbenchService,
-		@IWorkbenchExtensionEnablementService private readonly extensionEnablementService: IWorkbenchExtensionEnablementService
-	) {
-		super(id, label);
-		if (isPrimary) {
-			this._register(Event.any(this.workspaceContextService.onDidChangeWorkbenchState, this.extensionsWorkbenchService.onChange)(() => this._onDidChange.fire({ enabled: this.enabled })));
-		}
-	}
-
-	private getExtensionsToDisable(): IExtension[] {
-		return this.extensionsWorkbenchService.local.filter(e => !e.isBuiltin && !!e.local && this.extensionEnablementService.isEnabled(e.local) && this.extensionEnablementService.canChangeEnablement(e.local));
-	}
-
-	override get enabled(): boolean {
-		return this.getExtensionsToDisable().length > 0;
-	}
-
-	override run(): Promise<any> {
-		return this.extensionsWorkbenchService.setEnablement(this.getExtensionsToDisable(), EnablementState.DisabledWorkspace);
-	}
-}
-
-export class EnableAllAction extends Action {
-
-	static readonly ID = 'workbench.extensions.action.enableAll';
-	static readonly LABEL = localize('enableAll', "Enable All Extensions");
-
-	constructor(
-		id: string, label: string, isPrimary: boolean,
-		@IExtensionsWorkbenchService private readonly extensionsWorkbenchService: IExtensionsWorkbenchService,
-		@IWorkbenchExtensionEnablementService private readonly extensionEnablementService: IWorkbenchExtensionEnablementService
-	) {
-		super(id, label);
-		if (isPrimary) {
-			this._register(this.extensionsWorkbenchService.onChange(() => this._onDidChange.fire({ enabled: this.enabled })));
-		}
-	}
-
-	private getExtensionsToEnable(): IExtension[] {
-		return this.extensionsWorkbenchService.local.filter(e => !!e.local && this.extensionEnablementService.canChangeEnablement(e.local) && !this.extensionEnablementService.isEnabled(e.local));
-	}
-
-	override get enabled(): boolean {
-		return this.getExtensionsToEnable().length > 0;
-	}
-
-	override run(): Promise<any> {
-		return this.extensionsWorkbenchService.setEnablement(this.getExtensionsToEnable(), EnablementState.EnabledGlobally);
-	}
-}
-
-export class EnableAllWorkspaceAction extends Action {
-
-	static readonly ID = 'workbench.extensions.action.enableAllWorkspace';
-	static readonly LABEL = localize('enableAllWorkspace', "Enable All Extensions for this Workspace");
-
-	constructor(
-		id: string, label: string, isPrimary: boolean,
-		@IWorkspaceContextService private readonly workspaceContextService: IWorkspaceContextService,
-		@IExtensionsWorkbenchService private readonly extensionsWorkbenchService: IExtensionsWorkbenchService,
-		@IWorkbenchExtensionEnablementService private readonly extensionEnablementService: IWorkbenchExtensionEnablementService
-	) {
-		super(id, label);
-		if (isPrimary) {
-			this._register(Event.any(this.workspaceContextService.onDidChangeWorkbenchState, this.extensionsWorkbenchService.onChange)(() => this._onDidChange.fire({ enabled: this.enabled })));
-		}
-	}
-
-	private getExtensionsToEnable(): IExtension[] {
-		return this.extensionsWorkbenchService.local.filter(e => !!e.local && this.extensionEnablementService.canChangeEnablement(e.local) && !this.extensionEnablementService.isEnabled(e.local));
-	}
-
-	override get enabled(): boolean {
-		return this.getExtensionsToEnable().length > 0;
-	}
-
-	override run(): Promise<any> {
-		return this.extensionsWorkbenchService.setEnablement(this.getExtensionsToEnable(), EnablementState.EnabledWorkspace);
 	}
 }
 
@@ -2483,7 +2364,7 @@ export class InstallSpecificVersionOfExtensionAction extends Action {
 				return this.extensionsWorkbenchService.installVersion(extension, version)
 					.then(extension => {
 						const requireReload = !(extension.local && this.extensionService.canAddExtension(toExtensionDescription(extension.local)));
-						const message = requireReload ? localize('InstallAnotherVersionExtensionAction.successReload', "Please reload Azure Data Studio to complete installing the extension {0}.", extension.identifier.id)
+						const message = requireReload ? localize('InstallAnotherVersionExtensionAction.successReload', "Please reload Azure Data Studio to complete installing the extension {0}.", extension.identifier.id) // {{SQL CARBON EDIT}}
 							: localize('InstallAnotherVersionExtensionAction.success', "Installing the extension {0} is completed.", extension.identifier.id);
 						const actions = requireReload ? [{
 							label: localize('InstallAnotherVersionExtensionAction.reloadNow', "Reload Now"),

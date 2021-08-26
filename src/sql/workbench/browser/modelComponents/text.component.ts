@@ -17,8 +17,7 @@ import { Link } from 'vs/platform/opener/browser/link';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import * as DOM from 'vs/base/browser/dom';
 import { ILogService } from 'vs/platform/log/common/log';
-import { attachLinkStyler } from 'vs/platform/theme/common/styler';
-import { IColorTheme, ICssStyleCollector, IThemeService, registerThemingParticipant } from 'vs/platform/theme/common/themeService';
+import { IColorTheme, ICssStyleCollector, registerThemingParticipant } from 'vs/platform/theme/common/themeService';
 import { errorForeground } from 'vs/platform/theme/common/colorRegistry';
 
 export enum TextType {
@@ -52,8 +51,7 @@ export default class TextComponent extends TitledComponent<azdata.TextComponentP
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
 		@Inject(IInstantiationService) private instantiationService: IInstantiationService,
-		@Inject(ILogService) logService: ILogService,
-		@Inject(IThemeService) private themeService: IThemeService) {
+		@Inject(ILogService) logService: ILogService) {
 		super(changeRef, el, logService);
 	}
 
@@ -150,7 +148,7 @@ export default class TextComponent extends TitledComponent<azdata.TextComponentP
 			const linkElement = this._register(this.instantiationService.createInstance(Link, {
 				label: link.text,
 				href: link.url
-			}));
+			}, undefined));
 			if (link.accessibilityInformation) {
 				linkElement.el.setAttribute('aria-label', link.accessibilityInformation.label);
 				if (link.accessibilityInformation.role) {
@@ -158,7 +156,6 @@ export default class TextComponent extends TitledComponent<azdata.TextComponentP
 				}
 			}
 
-			this._register(attachLinkStyler(linkElement, this.themeService));
 			(<HTMLElement>this.textContainer.nativeElement).appendChild(linkElement.el);
 
 			// And finally update the text to remove the text up through the placeholder we just added

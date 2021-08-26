@@ -471,7 +471,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 				// increment to reset the depth since parent is in the same level
 				depthOfNotebookInBook++;
 			}
-			if (!bookItemToExpand.children) {
+			if (!bookItemToExpand.hasChildren) {
 				// We haven't loaded children of this node yet so do that now so we can
 				// continue expanding and search its children
 				await this.getChildren(bookItemToExpand);

@@ -402,6 +402,12 @@ Includes non-masked style declarations. */
 	mask-image: url("toolbar-image.svg");
 }
 
+.codicon.masked-icon.settings::before {
+	background-image: none;
+	-webkit-mask-image: url('settings.svg');
+	mask-image: url('settings.svg');
+}
+
 .codicon.masked-icon.split-toggle-on::before {
 	-webkit-mask-image: url("toolbar-preview-toggle-on.svg");
 	mask-image: url("toolbar-preview-toggle-on.svg");
