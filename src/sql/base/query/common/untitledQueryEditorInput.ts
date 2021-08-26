@@ -53,7 +53,7 @@ export class UntitledQueryEditorInput extends QueryEditorInput implements IEncod
 		await this.changeConnectionUriForQuery(newUri);
 		let newInput = this.instantiationService.createInstance(FileQueryEditorInput, '', (preProcessed as FileEditorInput), this.results);
 		newInput.state.resultsVisible = this.state.resultsVisible;
-		this.state.isSaving = true;
+		newInput.state.connected = this.state.connected;
 		return newInput;
 	}
 
@@ -64,7 +64,7 @@ export class UntitledQueryEditorInput extends QueryEditorInput implements IEncod
 		await this.changeConnectionUriForQuery(newUri);
 		let newInput = this.instantiationService.createInstance(FileQueryEditorInput, '', (preProcessed as FileEditorInput), this.results);
 		newInput.state.resultsVisible = this.state.resultsVisible;
-		this.state.isSaving = true;
+		newInput.state.connected = this.state.connected;
 		return newInput;
 	}
 
