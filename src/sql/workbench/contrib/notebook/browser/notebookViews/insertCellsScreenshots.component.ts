@@ -28,7 +28,7 @@ export interface InsertCellsComponentParams extends IBootstrapParams {
 
 @Component({
 	selector: 'insert-cells-screenshots-component',
-	template: '<div class="cells-grid"><ng-container #divContainer></ng-container></div>'
+	template: '<div class="insert-cells-screenshot-grid"><ng-container #divContainer></ng-container></div>'
 })
 export class InsertCellsScreenshots implements AfterViewInit {
 	@ViewChild('divContainer', { read: ViewContainerRef }) _containerRef: ViewContainerRef;

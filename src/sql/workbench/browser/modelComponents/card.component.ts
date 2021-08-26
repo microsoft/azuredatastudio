@@ -253,7 +253,7 @@ registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) =
 	const foregroundColor = theme.getColor(CARD_OVERLAY_FOREGROUND);
 	if (backgroundColor) {
 		collector.addRule(`
-		.model-card-legacy.image-card .card-label-overlay {
+		.model-card-legacy .card-label-overlay {
 			background-color: ${backgroundColor.toString()};
 		}
 		`);

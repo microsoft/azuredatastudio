@@ -689,13 +689,13 @@ export const WINDOW_INACTIVE_BORDER = registerColor('window.inactiveBorder', {
 
 // < --- Card --- >
 export const CARD_OVERLAY_FOREGROUND = registerColor('card.overlayForeground', {
-	dark: SIDE_BAR_FOREGROUND,
-	light: SIDE_BAR_FOREGROUND,
-	hc: SIDE_BAR_FOREGROUND
+	dark: null,
+	light: null,
+	hc: null
 }, localize('cardOverlayForeground', "The card overlay foreground color."));
 
 export const CARD_OVERLAY_BACKGROUND = registerColor('card.overlayBackground', {
-	dark: SIDE_BAR_BACKGROUND,
-	light: SIDE_BAR_BACKGROUND,
-	hc: SIDE_BAR_BACKGROUND
+	dark: '#252526',
+	light: '#F3F3F3',
+	hc: '#000000'
 }, localize('cardOverlayBackground', "The card overlay background color."));
