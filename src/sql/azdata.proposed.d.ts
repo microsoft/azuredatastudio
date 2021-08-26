@@ -931,8 +931,8 @@ declare module 'azdata' {
 
 	export interface QueryProvider {
 		/**
-			 * Used to change queries on STS to use a new URI in case of a untitled query save.
-			 */
+		 * Change the URI associated with the specified connection.
+		 */
 		changeConnectionUriForQuery(newUri: string, oldUri: string): Thenable<void>;
 	}
 }

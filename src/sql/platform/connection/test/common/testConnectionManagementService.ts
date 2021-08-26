@@ -50,7 +50,7 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 
 	}
 
-	replaceConnectionUri(oldUri: string, newUri: string): void {
+	replaceConnectionUri(newUri: string, oldUri: string): void {
 
 	}
 

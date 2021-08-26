@@ -47,6 +47,11 @@ export class QueryInfo {
 		this.queryEventQueue = [];
 		this.range = [];
 	}
+
+	public changeUri(newUri: string): void {
+		this.queryRunner.uri = newUri;
+		this.dataService.uri = newUri;
+	}
 }
 
 /**
@@ -412,20 +417,30 @@ export class QueryModelService implements IQueryModelService {
 	public async changeConnectionUriForQuery(newUri: string, oldUri: string): Promise<void> {
 		// Get existing query runner
 		let queryRunner = this.internalGetQueryRunner(oldUri);
-		if (queryRunner) {
-			await queryRunner.changeConnectionUriForQuery(newUri, oldUri);
+		if (!queryRunner) {
+			let errorMessage = strings.format(nls.localize('msgNoQueryRunnerForChangeConnection', "A QueryRunner was not found for {0}"), oldUri);
+			this._notificationService.notify({
+				severity: Severity.Error,
+				message: errorMessage
+			});
+			return Promise.reject(new Error(errorMessage));
 		}
-		// remove the old key and set new key with same query info as old uri.
-		if (this._queryInfoMap.has(oldUri)) {
-			let info = this._queryInfoMap.get(oldUri);
-			if (info) {
-				info.queryRunner.uri = newUri;
-				info.dataService.uri = newUri;
-			}
-			this._queryInfoMap.set(newUri, info);
+		else if (this._queryInfoMap.has(newUri)) {
+			let errorMessage = strings.format(nls.localize('msgDuplicateUriFoundForChangeConnection', "New URI {0} already has query info associated with it."), newUri);
+			this._notificationService.notify({
+				severity: Severity.Error,
+				message: errorMessage
+			});
+			return Promise.reject(new Error(errorMessage));
+		}
 
-			this._queryInfoMap.delete(oldUri);
-		}
+		await queryRunner.changeConnectionUriForQuery(newUri, oldUri);
+
+		// remove the old key and set new key with same query info as old uri. (Info existence is checked in internalGetQueryRunner)
+		let info = this._queryInfoMap.get(oldUri);
+		info.changeUri(newUri);
+		this._queryInfoMap.set(newUri, info);
+		this._queryInfoMap.delete(oldUri);
 	}
 
 	// EDIT DATA METHODS /////////////////////////////////////////////////////

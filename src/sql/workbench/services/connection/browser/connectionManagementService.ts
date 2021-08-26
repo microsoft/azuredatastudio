@@ -1073,8 +1073,8 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	/**
 	 * Replaces connection info uri with new uri.
 	 */
-	public replaceConnectionUri(oldUri: string, newUri: string) {
-		this._connectionStatusManager.replaceConnectionUri(oldUri, newUri);
+	public replaceConnectionUri(newUri: string, oldUri: string) {
+		this._connectionStatusManager.replaceConnectionUri(newUri, oldUri);
 	}
 
 	/**

@@ -199,7 +199,7 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 	}
 
 	protected async changeConnectionUriForQuery(newUri: string): Promise<void> {
-		this.connectionManagementService.replaceConnectionUri(this.uri, newUri);
+		this.connectionManagementService.replaceConnectionUri(newUri, this.uri);
 		await this.queryModelService.changeConnectionUriForQuery(newUri, this.uri);
 	}
 
