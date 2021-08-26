@@ -17,11 +17,12 @@ import { AzureResourceErrorMessageUtil, equals } from '../utils';
 import { IAzureResourceTreeChangeHandler } from './treeChangeHandler';
 import { FlatAccountTreeNode } from './flatAccountTreeNode';
 import { Logger } from '../../utils/Logger';
+import { AzureAccount } from 'azurecore';
 
 export class ConnectionDialogTreeProvider implements vscode.TreeDataProvider<TreeNode>, IAzureResourceTreeChangeHandler {
 	public isSystemInitialized: boolean = false;
 
-	private accounts: azdata.Account[];
+	private accounts: AzureAccount[];
 	private _onDidChangeTreeData = new vscode.EventEmitter<TreeNode>();
 	private loadingAccountsPromise: Promise<void>;
 

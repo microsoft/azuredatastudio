@@ -111,7 +111,7 @@ export function registerAzureResourceCommands(appContext: AppContext, azureViewT
 		let subscriptions: azureResource.AzureResourceSubscription[] = [];
 		if (subscriptions.length === 0) {
 			try {
-				subscriptions = await subscriptionService.getAllSubscriptions(account);
+				subscriptions = await subscriptionService.getSubscriptions(account);
 			} catch (error) {
 				account.isStale = true;
 				vscode.window.showErrorMessage(AzureResourceErrorMessageUtil.getErrorMessage(error));

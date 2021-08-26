@@ -14,7 +14,7 @@
 
         {
             "name": "Debug in AzureDataStudio install",
-            "type": "azuredatastudioExtensionHost",
+            "type": "sqlopsExtensionHost",
             "request": "launch",
             "runtimeExecutable": "azuredatastudio",
             "args": [
@@ -37,7 +37,7 @@
         },
         {
             "name": "Debug in enlistment",
-            "type": "azuredatastudioExtensionHost",
+            "type": "sqlopsExtensionHost",
             "request": "launch",
             "windows": {
                 "runtimeExecutable": "${workspaceFolder}/../../scripts/sql.bat"

@@ -6,18 +6,20 @@
 import nls = require('vs/nls');
 import { Action } from 'vs/base/common/actions';
 import product from 'vs/platform/product/common/product';
-import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { URI } from 'vs/base/common/uri';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
 import { MenuRegistry, MenuId } from 'vs/platform/actions/common/actions';
-import { AbstractShowReleaseNotesAction } from 'vs/workbench/contrib/update/browser/update';
 
-export class OpenGettingStartedInBrowserAction extends Action {
+export class ShowGettingStartedAction extends Action {
+	static ID = 'update.showGettingStarted';
+	static LABEL = nls.localize('showReleaseNotes', "Show Getting Started");
 
 	constructor(
+		id = ShowGettingStartedAction.ID,
+		label = ShowGettingStartedAction.LABEL,
 		@IOpenerService private openerService: IOpenerService
 	) {
-		super('update.openGettingStartedGuide', nls.localize('gettingStarted', "Get Started"), undefined, true);
+		super(id, label, undefined, true);
 	}
 
 	override run(): Promise<any> {
@@ -26,24 +28,10 @@ export class OpenGettingStartedInBrowserAction extends Action {
 	}
 }
 
-export class ShowCurrentReleaseNotesAction extends AbstractShowReleaseNotesAction {
-
-	static ID = 'update.showGettingStarted';
-	static LABEL = nls.localize('showReleaseNotes', "Show Getting Started");
-
-	constructor(
-		id = ShowCurrentReleaseNotesAction.ID,
-		label = ShowCurrentReleaseNotesAction.LABEL,
-		@IInstantiationService instantiationService: IInstantiationService
-	) {
-		super(id, label, product.version, instantiationService);
-	}
-}
-
 MenuRegistry.appendMenuItem(MenuId.MenubarHelpMenu, {
 	group: '1_welcome',
 	command: {
-		id: ShowCurrentReleaseNotesAction.ID,
+		id: ShowGettingStartedAction.ID,
 		title: nls.localize({ key: 'miGettingStarted', comment: ['&& denotes a mnemonic'] }, "Getting &&Started")
 	},
 	order: 1

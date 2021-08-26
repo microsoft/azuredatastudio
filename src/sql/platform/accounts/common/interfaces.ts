@@ -25,7 +25,7 @@ export interface IAccountManagementService {
 	 * @deprecated
 	 */
 	getSecurityToken(account: azdata.Account, resource: azdata.AzureResource): Promise<{ [key: string]: { token: string } } | undefined>;
-	getAccountSecurityToken(account: azdata.Account, tenant: string, resource: azdata.AzureResource): Promise<{ token: string } | undefined>;
+	getAccountSecurityToken(account: azdata.Account, tenant: string, resource: azdata.AzureResource): Promise<azdata.accounts.AccountSecurityToken | undefined>;
 	removeAccount(accountKey: azdata.AccountKey): Promise<boolean>;
 	removeAccounts(): Promise<boolean>;
 	refreshAccount(account: azdata.Account): Promise<azdata.Account>;

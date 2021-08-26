@@ -2,9 +2,8 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import 'vs/css!./notebookViewsGrid';
-import { Component, Input, ViewChildren, QueryList, ChangeDetectorRef, forwardRef, Inject, ViewChild, ElementRef } from '@angular/core';
-import { ICellModel, INotebookModel, ISingleNotebookEditOperation, NotebookContentChange, } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
+import { Component, Input, ViewChildren, QueryList, ChangeDetectorRef, forwardRef, Inject, ViewChild, ElementRef, ViewContainerRef, ComponentFactoryResolver } from '@angular/core';
+import { ICellModel, INotebookModel, ISingleNotebookEditOperation, NotebookContentChange } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { CodeCellComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/codeCell.component';
 import { TextCellComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/textCell.component';
 import { ICellEditorProvider, INotebookParams, INotebookService, INotebookEditor, NotebookRange, INotebookSection, DEFAULT_NOTEBOOK_PROVIDER, SQL_NOTEBOOK_PROVIDER } from 'sql/workbench/services/notebook/browser/notebookService';
@@ -76,7 +75,9 @@ export class NotebookViewComponent extends AngularDisposable implements INoteboo
 		@Inject(INotebookService) private _notebookService: INotebookService,
 		@Inject(IConnectionManagementService) private _connectionManagementService: IConnectionManagementService,
 		@Inject(IConfigurationService) private _configurationService: IConfigurationService,
-		@Inject(IEditorService) private _editorService: IEditorService
+		@Inject(IEditorService) private _editorService: IEditorService,
+		@Inject(ViewContainerRef) private _containerRef: ViewContainerRef,
+		@Inject(ComponentFactoryResolver) private _componentFactoryResolver: ComponentFactoryResolver,
 	) {
 		super();
 		this._register(this._configurationService.onDidChangeConfiguration(e => {
@@ -257,7 +258,7 @@ export class NotebookViewComponent extends AngularDisposable implements INoteboo
 		titleElement.style.marginRight = '25px';
 		titleElement.style.minHeight = '25px';
 
-		let insertCellsAction = this._instantiationService.createInstance(InsertCellAction, this.insertCell.bind(this), this.views);
+		let insertCellsAction = this._instantiationService.createInstance(InsertCellAction, this.insertCell.bind(this), this.views, this._containerRef, this._componentFactoryResolver);
 
 		this._runAllCellsAction = this._instantiationService.createInstance(RunAllCellsAction, 'notebook.runAllCells', localize('runAllPreview', "Run all"), 'notebook-button masked-pseudo start-outline');
 
