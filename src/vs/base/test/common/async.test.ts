@@ -561,7 +561,7 @@ suite('Async', () => {
 	});
 
 	test('TaskSequentializer - pending basics', async function () {
-		const sequentializer: any = new async.TaskSequentializer();
+		const sequentializer: any = new async.TaskSequentializer(); // {{SQL CARBON EDIT}} Add any type
 
 		assert.ok(!sequentializer.hasPending());
 		assert.ok(!sequentializer.hasPending(2323));

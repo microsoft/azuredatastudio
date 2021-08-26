@@ -8,8 +8,8 @@ import { ViewOptionsModal } from 'sql/workbench/contrib/notebook/browser/noteboo
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { localize } from 'vs/nls';
 import { InsertCellsModal } from 'sql/workbench/contrib/notebook/browser/notebookViews/insertCellsModal';
-import { ComponentFactoryResolver, ViewContainerRef } from '@angular/core';
 import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
+import { ComponentFactoryResolver, ViewContainerRef } from '@angular/core';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { CellExecutionState, ICellModel, ViewMode } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { CellActionBase, CellContext, IMultiStateData, MultiStateAction } from 'sql/workbench/contrib/notebook/browser/cellViews/codeActions';

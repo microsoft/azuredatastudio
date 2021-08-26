@@ -288,7 +288,7 @@ export class ProfilerTableEditor extends EditorPane implements IProfilerControll
 				: localize('ProfilerTableEditor.eventCount', "Events: {0}", this._input.data.getLength());
 
 			this._disposeStatusbarItem();
-			this._statusbarItem = this._statusbarService.addEntry({ text: message, ariaLabel: message }, 'status.eventCount', localize('status.eventCount', "Event Count"), StatusbarAlignment.RIGHT);
+			this._statusbarItem = this._statusbarService.addEntry({ name: localize('status.eventCount', "Event Count"), text: message, ariaLabel: message }, 'status.eventCount', StatusbarAlignment.RIGHT);
 		}
 	}
 

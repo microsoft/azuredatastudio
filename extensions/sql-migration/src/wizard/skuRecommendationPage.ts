@@ -86,6 +86,16 @@ export class SKURecommendationPage extends MigrationWizardPage {
 
 		this._detailsComponent = this.createDetailsComponent(view); // The details of what can be moved
 
+		const refreshAssessmentButton = this._view.modelBuilder.button().withProps({
+			iconPath: IconPathHelper.refresh,
+			label: constants.REFRESH_ASSESSMENT_BUTTON_LABEL,
+			width: 130
+		}).component();
+
+		this._disposables.push(refreshAssessmentButton.onDidClick(() => {
+			this.constructDetails();
+		}));
+
 		const chooseYourTargetText = this._view.modelBuilder.text().withProps({
 			value: constants.SKU_RECOMMENDATION_CHOOSE_A_TARGET,
 			CSSStyles: {
@@ -101,6 +111,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			[
 				igContainer,
 				this._detailsComponent,
+				refreshAssessmentButton,
 				chooseYourTargetText
 			]
 		).component();
@@ -288,7 +299,9 @@ export class SKURecommendationPage extends MigrationWizardPage {
 
 		const managedInstanceSubscriptionDropdownLabel = this._view.modelBuilder.text().withProps({
 			value: constants.SUBSCRIPTION,
+			description: constants.SKU_RECOMMENDATION_SUBSCRIPTION_INFO,
 			width: WIZARD_INPUT_COMPONENT_WIDTH,
+			requiredIndicator: true,
 			CSSStyles: {
 				'font-size': '13px',
 				'font-weight': 'bold',
@@ -298,6 +311,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			ariaLabel: constants.SUBSCRIPTION,
 			width: WIZARD_INPUT_COMPONENT_WIDTH,
 			editable: true,
+			required: true,
 			fireOnTextChange: true,
 		}).component();
 		this._disposables.push(this._managedInstanceSubscriptionDropdown.onValueChanged(async (value) => {
@@ -312,7 +326,9 @@ export class SKURecommendationPage extends MigrationWizardPage {
 
 		const azureLocationLabel = this._view.modelBuilder.text().withProps({
 			value: constants.LOCATION,
+			description: constants.SKU_RECOMMENDATION_LOCATION_INFO,
 			width: WIZARD_INPUT_COMPONENT_WIDTH,
+			requiredIndicator: true,
 			CSSStyles: {
 				'font-size': '13px',
 				'font-weight': 'bold',
@@ -322,6 +338,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			ariaLabel: constants.LOCATION,
 			width: WIZARD_INPUT_COMPONENT_WIDTH,
 			editable: true,
+			required: true,
 			fireOnTextChange: true,
 		}).component();
 		this._disposables.push(this._azureLocationDropdown.onValueChanged(async (value) => {
@@ -334,7 +351,9 @@ export class SKURecommendationPage extends MigrationWizardPage {
 
 		const azureResourceGroupLabel = this._view.modelBuilder.text().withProps({
 			value: constants.RESOURCE_GROUP,
+			description: constants.SKU_RECOMMENDATION_RESOURCE_GROUP_INFO,
 			width: WIZARD_INPUT_COMPONENT_WIDTH,
+			requiredIndicator: true,
 			CSSStyles: {
 				'font-size': '13px',
 				'font-weight': 'bold',
@@ -344,6 +363,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			ariaLabel: constants.RESOURCE_GROUP,
 			width: WIZARD_INPUT_COMPONENT_WIDTH,
 			editable: true,
+			required: true,
 			fireOnTextChange: true,
 		}).component();
 		this._disposables.push(this._azureResourceGroupDropdown.onValueChanged(async (value) => {
@@ -353,19 +373,22 @@ export class SKURecommendationPage extends MigrationWizardPage {
 				await this.populateResourceInstanceDropdown();
 			}
 		}));
+
 		this._resourceDropdownLabel = this._view.modelBuilder.text().withProps({
 			value: constants.MANAGED_INSTANCE,
+			description: constants.SKU_RECOMMENDATION_RESOURCE_INFO,
 			width: WIZARD_INPUT_COMPONENT_WIDTH,
+			requiredIndicator: true,
 			CSSStyles: {
 				'font-size': '13px',
 				'font-weight': 'bold',
 			}
 		}).component();
-
 		this._resourceDropdown = this._view.modelBuilder.dropDown().withProps({
 			ariaLabel: constants.MANAGED_INSTANCE,
 			width: WIZARD_INPUT_COMPONENT_WIDTH,
 			editable: true,
+			required: true,
 			fireOnTextChange: true,
 		}).component();
 		this._disposables.push(this._resourceDropdown.onValueChanged(value => {
@@ -444,19 +467,34 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		const serverName = (await this.migrationStateModel.getSourceConnectionProfile()).serverName;
 		this._igComponent.value = constants.ASSESSMENT_COMPLETED(serverName);
 		try {
-			await this.migrationStateModel.getDatabaseAssessments();
+			await this.migrationStateModel.getDatabaseAssessments(MigrationTargetType.SQLMI);
 			this._detailsComponent.value = constants.SKU_RECOMMENDATION_ALL_SUCCESSFUL(this.migrationStateModel._assessmentResults.databaseAssessments.length);
 
-			const error = this.migrationStateModel._assessmentResults.assessmentError;
-			if (error) {
+			const errors: string[] = [];
+			const assessmentError = this.migrationStateModel._assessmentResults.assessmentError;
+			if (assessmentError) {
+				errors.push(`message: ${assessmentError.message}
+stack: ${assessmentError.stack}
+`);
+			}
+			if (this.migrationStateModel?._assessmentResults?.errors?.length! > 0) {
+				errors.push(...this.migrationStateModel._assessmentResults.errors?.map(e => `message: ${e.message}
+errorSummary: ${e.errorSummary}
+possibleCauses: ${e.possibleCauses}
+guidance: ${e.guidance}
+errorId: ${e.errorId}
+`)!);
+			}
+
+			if (errors.length > 0) {
 				this.wizard.message = {
 					text: constants.SKU_RECOMMENDATION_ASSESSMENT_ERROR(serverName),
-					description: error.message + EOL + error.stack,
+					description: errors.join(EOL),
 					level: azdata.window.MessageLevel.Error
 				};
 			}
 
-			this.migrationStateModel._runAssessments = !!error;
+			this.migrationStateModel._runAssessments = errors.length > 0;
 		} catch (e) {
 			console.log(e);
 		}

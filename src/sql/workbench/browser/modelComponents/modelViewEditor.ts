@@ -7,12 +7,13 @@ import 'vs/css!./media/modelViewEditor';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { EditorPane } from 'vs/workbench/browser/parts/editor/editorPane';
-import { EditorOptions, IEditorOpenContext } from 'vs/workbench/common/editor';
+import { IEditorOpenContext } from 'vs/workbench/common/editor';
 import * as DOM from 'vs/base/browser/dom';
 
 import { ModelViewInput } from 'sql/workbench/browser/modelComponents/modelViewInput';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { IStorageService } from 'vs/platform/storage/common/storage';
+import { IEditorOptions } from 'vs/platform/editor/common/editor';
 
 export class ModelViewEditor extends EditorPane {
 
@@ -62,7 +63,7 @@ export class ModelViewEditor extends EditorPane {
 		}
 	}
 
-	override async setInput(input: ModelViewInput, options?: EditorOptions, context?: IEditorOpenContext): Promise<void> {
+	override async setInput(input: ModelViewInput, options?: IEditorOptions, context?: IEditorOpenContext): Promise<void> {
 		if (this.input && this.input.matches(input)) {
 			return Promise.resolve(undefined);
 		}

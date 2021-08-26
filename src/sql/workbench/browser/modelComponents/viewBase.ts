@@ -14,7 +14,6 @@ import { Extensions, IComponentRegistry } from 'sql/platform/dashboard/browser/m
 import { AngularDisposable } from 'sql/base/browser/lifecycle';
 import { ModelStore } from 'sql/workbench/browser/modelComponents/modelStore';
 import { Event, Emitter } from 'vs/base/common/event';
-import { assign } from 'vs/base/common/objects';
 import { IModelStore, IComponentDescriptor, IComponent, ModelComponentTypes } from 'sql/platform/dashboard/browser/interfaces';
 import { ILogService } from 'vs/platform/log/common/log';
 
@@ -81,8 +80,8 @@ export abstract class ViewBase extends AngularDisposable implements IModelView {
 		return descriptor;
 	}
 
-	private removeComponent(component: IComponentShape): void {
-		this.logService.debug(`Removing component ${component.id} from view ${this.id}`);
+	private removeComponentChildren(component: IComponentShape): void {
+		this.logService.debug(`Removing children of component ${component.id} from view ${this.id}`);
 		if (component.itemConfigs) {
 			for (let item of component.itemConfigs) {
 				this.removeFromContainer(component.id, item);
@@ -138,8 +137,8 @@ export abstract class ViewBase extends AngularDisposable implements IModelView {
 				return;
 			}
 			this.logService.debug(`Removing component ${itemConfig.componentShape.id} from container ${containerId}`);
+			this.removeComponentChildren(itemConfig.componentShape);
 			component.removeFromContainer({ id: itemConfig.componentShape.id, type: componentRegistry.getIdForTypeMapping(itemConfig.componentShape.type) });
-			this.removeComponent(itemConfig.componentShape);
 		});
 	}
 
@@ -191,7 +190,7 @@ export abstract class ViewBase extends AngularDisposable implements IModelView {
 		this.queueAction(componentId, (component) => {
 			this.logService.debug(`Registering event handler for component ${componentId}`);
 			this._register(component.registerEventHandler(e => {
-				let modelViewEvent: IModelViewEventArgs = assign({
+				let modelViewEvent: IModelViewEventArgs = Object.assign({
 					componentId: componentId,
 					isRootComponent: componentId === this.rootDescriptor.id
 				}, e);

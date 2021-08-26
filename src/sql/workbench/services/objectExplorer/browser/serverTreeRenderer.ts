@@ -17,6 +17,7 @@ import { badgeRenderer, iconRenderer } from 'sql/workbench/services/objectExplor
 import { URI } from 'vs/base/common/uri';
 import { DefaultServerGroupColor } from 'sql/workbench/services/serverGroup/common/serverGroupViewModel';
 import { withNullAsUndefined } from 'vs/base/common/types';
+import { instanceOfSqlThemeIcon } from 'sql/workbench/services/objectExplorer/common/nodeType';
 
 export interface IConnectionTemplateData {
 	root: HTMLElement;
@@ -136,6 +137,8 @@ export class ServerTreeRenderer implements IRenderer {
 		let iconName: string | undefined = undefined;
 		if (treeNode.iconType) {
 			iconName = (typeof treeNode.iconType === 'string') ? treeNode.iconType : treeNode.iconType.id;
+		} else if (instanceOfSqlThemeIcon(treeNode.icon)) {
+			iconName = treeNode.icon.id;
 		} else {
 			iconName = treeNode.nodeTypeId;
 			if (treeNode.nodeStatus) {
@@ -153,10 +156,13 @@ export class ServerTreeRenderer implements IRenderer {
 		templateData.icon.classList.remove(...tokens);
 		templateData.icon.classList.add('icon');
 		let iconLowerCaseName = iconName.toLocaleLowerCase();
-		templateData.icon.classList.add(iconLowerCaseName);
+		if (iconLowerCaseName) {
+			templateData.icon.classList.add(iconLowerCaseName);
+		}
 
-		if (treeNode.iconPath) {
-			iconRenderer.putIcon(templateData.icon, treeNode.iconPath);
+		iconRenderer.removeIcon(templateData.icon);
+		if (treeNode.icon && !instanceOfSqlThemeIcon(treeNode.icon)) {
+			iconRenderer.putIcon(templateData.icon, treeNode.icon);
 		}
 
 		templateData.label.textContent = treeNode.label;

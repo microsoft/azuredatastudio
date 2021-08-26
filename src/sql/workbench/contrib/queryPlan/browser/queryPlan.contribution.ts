@@ -36,7 +36,7 @@ export class QueryPlanEditorOverrideContribution extends Disposable implements I
 	}
 
 	private registerEditorOverride(): void {
-		this._editorOverrideService.registerContributionPoint(
+		this._editorOverrideService.registerEditor(
 			'*.sqlplan',
 			{
 				id: QueryPlanEditor.ID,

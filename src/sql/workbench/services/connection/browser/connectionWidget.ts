@@ -13,7 +13,6 @@ import * as DialogHelper from 'sql/workbench/browser/modal/dialogHelper';
 import { IConnectionComponentCallbacks } from 'sql/workbench/services/connection/browser/connectionDialogService';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { ConnectionOptionSpecialType } from 'sql/workbench/api/common/sqlExtHostTypes';
-import * as Constants from 'sql/platform/connection/common/constants';
 import { ConnectionProfileGroup, IConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
 import { Dropdown } from 'sql/base/parts/editableDropdown/browser/dropdown';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
@@ -31,7 +30,6 @@ import * as DOM from 'vs/base/browser/dom';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { OS, OperatingSystem } from 'vs/base/common/platform';
 import { MessageType } from 'vs/base/browser/ui/inputbox/inputBox';
-import { endsWith, startsWith } from 'vs/base/common/strings';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { ILogService } from 'vs/platform/log/common/log';
@@ -52,7 +50,6 @@ export class ConnectionWidget extends lifecycle.Disposable {
 	private _serverNameInputBox: InputBox;
 	private _userNameInputBox: InputBox;
 	private _passwordInputBox: InputBox;
-	private _password: string;
 	private _rememberPasswordCheckBox: Checkbox;
 	private _azureAccountDropdown: SelectBox;
 	private _azureTenantDropdown: SelectBox;
@@ -225,19 +222,20 @@ export class ConnectionWidget extends lifecycle.Disposable {
 	protected addServerNameOption(): void {
 		// Server name
 		let serverNameOption = this._optionsMaps[ConnectionOptionSpecialType.serverName];
-		let serverName = DialogHelper.appendRow(this._tableContainer, serverNameOption.displayName, 'connection-label', 'connection-input');
+		let serverName = DialogHelper.appendRow(this._tableContainer, serverNameOption.displayName, 'connection-label', 'connection-input', undefined, true);
 		this._serverNameInputBox = new InputBox(serverName, this._contextViewService, {
 			validationOptions: {
 				validation: (value: string) => {
 					if (!value) {
 						return ({ type: MessageType.ERROR, content: localize('connectionWidget.missingRequireField', "{0} is required.", serverNameOption.displayName) });
-					} else if (startsWith(value, ' ') || endsWith(value, ' ')) {
+					} else if (value.startsWith(' ') || value.endsWith(' ')) {
 						return ({ type: MessageType.WARNING, content: localize('connectionWidget.fieldWillBeTrimmed', "{0} will be trimmed.", serverNameOption.displayName) });
 					}
 					return undefined;
 				}
 			},
-			ariaLabel: serverNameOption.displayName
+			ariaLabel: serverNameOption.displayName,
+			required: true
 		});
 	}
 
@@ -245,19 +243,19 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		// Username
 		let self = this;
 		let userNameOption = this._optionsMaps[ConnectionOptionSpecialType.userName];
-		let userName = DialogHelper.appendRow(this._tableContainer, userNameOption.displayName, 'connection-label', 'connection-input', 'username-row');
+		let userName = DialogHelper.appendRow(this._tableContainer, userNameOption.displayName, 'connection-label', 'connection-input', 'username-row', userNameOption.isRequired);
 		this._userNameInputBox = new InputBox(userName, this._contextViewService, {
 			validationOptions: {
 				validation: (value: string) => self.validateUsername(value, userNameOption.isRequired) ? ({ type: MessageType.ERROR, content: localize('connectionWidget.missingRequireField', "{0} is required.", userNameOption.displayName) }) : null
 			},
-			ariaLabel: userNameOption.displayName
+			ariaLabel: userNameOption.displayName,
+			required: userNameOption.isRequired
 		});
 		// Password
 		let passwordOption = this._optionsMaps[ConnectionOptionSpecialType.password];
 		let password = DialogHelper.appendRow(this._tableContainer, passwordOption.displayName, 'connection-label', 'connection-input', 'password-row');
 		this._passwordInputBox = new InputBox(password, this._contextViewService, { ariaLabel: passwordOption.displayName });
 		this._passwordInputBox.inputElement.type = 'password';
-		this._password = '';
 
 		// Remember password
 		let rememberPasswordLabel = localize('rememberPassword', "Remember password");
@@ -368,7 +366,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 				this._databaseDropdownExpanded = true;
 				if (this.serverName) {
 					this._databaseNameInputBox.values = [this._loadingDatabaseName];
-					this._callbacks.onFetchDatabases(this.serverName, this.authenticationType, this.userName, this._password, this.authToken).then(databases => {
+					this._callbacks.onFetchDatabases(this.serverName, this.authenticationType, this.userName, this.password, this.authToken).then(databases => {
 						if (databases) {
 							this._databaseNameInputBox.values = databases.sort((a, b) => a.localeCompare(b));
 						} else {
@@ -431,10 +429,6 @@ export class ConnectionWidget extends lifecycle.Disposable {
 		this._register(this._userNameInputBox.onDidChange(userName => {
 			this.setConnectButton();
 		}));
-
-		this._register(this._passwordInputBox.onDidChange(passwordInput => {
-			this._password = passwordInput;
-		}));
 	}
 
 	private onGroupSelected(selectedGroup: string) {
@@ -458,31 +452,14 @@ export class ConnectionWidget extends lifecycle.Disposable {
 
 	protected onAuthTypeSelected(selectedAuthType: string) {
 		let currentAuthType = this.getMatchingAuthType(selectedAuthType);
-		if (currentAuthType === AuthenticationType.AzureMFAAndUser) {
-			this._userNameInputBox.enable();
-			this._passwordInputBox.disable();
-			this._passwordInputBox.hideMessage();
-			this._passwordInputBox.value = '';
-			this._password = '';
-
-			this._rememberPasswordCheckBox.checked = false;
-			this._rememberPasswordCheckBox.enabled = false;
-		} else if (currentAuthType !== AuthenticationType.SqlLogin) {
-			this._userNameInputBox.disable();
-			this._passwordInputBox.disable();
-			this._userNameInputBox.hideMessage();
-			this._passwordInputBox.hideMessage();
-			this._userNameInputBox.value = '';
-			this._passwordInputBox.value = '';
-			this._password = '';
-
-			this._rememberPasswordCheckBox.checked = false;
-			this._rememberPasswordCheckBox.enabled = false;
-		} else {
-			this._userNameInputBox.enable();
-			this._passwordInputBox.enable();
-			this._rememberPasswordCheckBox.enabled = true;
-		}
+		this._userNameInputBox.hideMessage();
+		this._passwordInputBox.hideMessage();
+		this._rememberPasswordCheckBox.checked = false;
+		this._azureAccountDropdown.hideMessage();
+		this._azureTenantDropdown.hideMessage();
+		this._tableContainer.classList.add('hide-username');
+		this._tableContainer.classList.add('hide-password');
+		this._tableContainer.classList.add('hide-azure-accounts');
 
 		if (currentAuthType === AuthenticationType.AzureMFA) {
 			this.fillInAzureAccountOptions().then(async () => {
@@ -493,8 +470,6 @@ export class ConnectionWidget extends lifecycle.Disposable {
 				this._azureTenantDropdown.enable();
 			}).catch(err => this._logService.error(`Unexpected error populating Azure Account dropdown : ${err}`));
 			// Immediately show/hide appropriate elements though so user gets immediate feedback while we load accounts
-			this._tableContainer.classList.add('hide-username');
-			this._tableContainer.classList.add('hide-password');
 			this._tableContainer.classList.remove('hide-azure-accounts');
 		} else if (currentAuthType === AuthenticationType.AzureMFAAndUser) {
 			this.fillInAzureAccountOptions().then(async () => {
@@ -506,7 +481,6 @@ export class ConnectionWidget extends lifecycle.Disposable {
 			}).catch(err => this._logService.error(`Unexpected error populating Azure Account dropdown : ${err}`));
 			// Immediately show/hide appropriate elements though so user gets immediate feedback while we load accounts
 			this._tableContainer.classList.remove('hide-username');
-			this._tableContainer.classList.add('hide-password');
 			this._tableContainer.classList.remove('hide-azure-accounts');
 		} else if (currentAuthType === AuthenticationType.dSTSAuth) {
 			this._accountManagementService.getAccountsForProvider('dstsAuth').then(accounts => {
@@ -521,25 +495,9 @@ export class ConnectionWidget extends lifecycle.Disposable {
 					});
 				}
 			});
-			this._tableContainer.classList.add('hide-username');
-			this._tableContainer.classList.add('hide-password');
-			this._tableContainer.classList.add('hide-azure-accounts');
-		} else if (currentAuthType === AuthenticationType.None) {
-			this._azureAccountDropdown.disable();
-			this._azureAccountDropdown.hideMessage();
-			this._azureTenantDropdown.disable();
-			this._azureTenantDropdown.hideMessage();
-			this._tableContainer.classList.add('hide-username');
-			this._tableContainer.classList.add('hide-password');
-			this._tableContainer.classList.add('hide-azure-accounts');
-		} else {
-			this._azureAccountDropdown.disable();
-			this._azureAccountDropdown.hideMessage();
-			this._azureTenantDropdown.disable();
-			this._azureTenantDropdown.hideMessage();
+		} else if (currentAuthType === AuthenticationType.SqlLogin) {
 			this._tableContainer.classList.remove('hide-username');
 			this._tableContainer.classList.remove('hide-password');
-			this._tableContainer.classList.add('hide-azure-accounts');
 		}
 	}
 
@@ -686,8 +644,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 			this._serverNameInputBox.value = this.getModelValue(connectionInfo.serverName);
 			this._connectionNameInputBox.value = this.getModelValue(connectionInfo.connectionName);
 			this._userNameInputBox.value = this.getModelValue(connectionInfo.userName);
-			this._passwordInputBox.value = connectionInfo.password ? Constants.passwordChars : '';
-			this._password = this.getModelValue(connectionInfo.password);
+			this._passwordInputBox.value = this.getModelValue(connectionInfo.password);
 			this._saveProfile = connectionInfo.saveProfile;
 			this._azureTenantId = connectionInfo.azureTenantId;
 			if (this._databaseNameInputBox) {
@@ -847,7 +804,7 @@ export class ConnectionWidget extends lifecycle.Disposable {
 	}
 
 	public get password(): string {
-		return this._password;
+		return this._passwordInputBox.value;
 	}
 
 	public get authenticationType(): string {

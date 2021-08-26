@@ -87,11 +87,11 @@ class CellDisplayGroup extends DisplayGroup<ICellModel> {
 	}
 
 	hasGraph(cell: ICellModel): boolean {
-		return !!cell.outputs.find((o: nb.IDisplayResult) => o?.output_type === 'display_data' && o?.data.hasOwnProperty('application/vnd.plotly.v1+json'));
+		return !!cell.outputs.find((o: nb.ICellOutput) => o?.output_type === 'display_data' && (o as nb.IDisplayResult)?.data.hasOwnProperty('application/vnd.plotly.v1+json'));
 	}
 
 	hasTable(cell: ICellModel): boolean {
-		return !!cell.outputs.find((o: nb.IDisplayResult) => o?.output_type === 'display_data' && o?.data.hasOwnProperty('application/vnd.dataresource+json'));
+		return !!cell.outputs.find((o: nb.ICellOutput) => o?.output_type === 'display_data' && (o as nb.IDisplayResult)?.data.hasOwnProperty('application/vnd.dataresource+json'));
 	}
 }
 

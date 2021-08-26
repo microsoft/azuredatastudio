@@ -5,6 +5,7 @@
 
 import { nb, IConnectionProfile } from 'azdata';
 import * as vsExtTypes from 'vs/workbench/api/common/extHostTypes';
+import { URI } from 'vs/base/common/uri';
 
 // SQL added extension host types
 export enum ServiceOptionType {
@@ -438,13 +439,17 @@ export enum AzureResource {
 	AzureDevOps = 6,
 	MsGraph = 7,
 	AzureLogAnalytics = 8,
-	AzureStorage = 9
+	AzureStorage = 9,
+	AzureKusto = 10
 }
 
 export class TreeItem extends vsExtTypes.TreeItem {
 	payload?: IConnectionProfile;
 	providerHandle?: string;
 }
+
+export type ThemedIconPath = { light: string | URI; dark: string | URI };
+export type IconPath = string | URI | ThemedIconPath;
 
 export class SqlThemeIcon {
 

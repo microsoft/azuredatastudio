@@ -103,8 +103,8 @@ function initLoader(opts) {
 			'@angular/platform-browser-dynamic',
 			'@angular/router',
 			'angular2-grid',
-			'html-to-image',
 			'gridstack/dist/h5/gridstack-dd-native',
+			'html-to-image',
 			'ng2-charts',
 			'rxjs/add/observable/of',
 			'rxjs/add/observable/fromPromise',
@@ -176,6 +176,7 @@ function loadTests(opts) {
 
 	// collect unexpected errors
 	loader.require(['vs/base/common/errors'], function (errors) {
+		// {{SQL CARBON EDIT}}
 		global.window.addEventListener('unhandledrejection', event => {
 			errors.onUnexpectedError(event.reason);
 			event.preventDefault();
@@ -297,6 +298,7 @@ function runTests(opts) {
 	return loadTests(opts).then(() => {
 
 		if (opts.grep) {
+			// {{SQL CARBON EDIT}}
 			mocha.grep(new RegExp(opts.grep));
 			if (opts.invert) {
 				mocha.invert();

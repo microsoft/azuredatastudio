@@ -18,26 +18,25 @@ export class MigrationCutoverDialogModel {
 
 	public async fetchStatus(): Promise<void> {
 		if (this._migration.asyncUrl) {
-			this.migrationOpStatus = (await getMigrationAsyncOperationDetails(
+			this.migrationOpStatus = await getMigrationAsyncOperationDetails(
 				this._migration.azureAccount,
 				this._migration.subscription,
 				this._migration.asyncUrl,
-				this._migration.sessionId!
-			));
+				this._migration.sessionId!);
 		}
-		this.migrationStatus = (await getMigrationStatus(
+
+		this.migrationStatus = await getMigrationStatus(
 			this._migration.azureAccount,
 			this._migration.subscription,
 			this._migration.migrationContext,
-			this._migration.sessionId!,
-		));
+			this._migration.sessionId!);
 
 		sendSqlMigrationActionEvent(
 			TelemetryViews.MigrationCutoverDialog,
 			TelemetryAction.MigrationStatus,
 			{
 				'sessionId': this._migration.sessionId!,
-				'migrationStatus': this.migrationStatus.properties.migrationStatus
+				'migrationStatus': this.migrationStatus.properties?.migrationStatus
 			},
 			{}
 		);
@@ -98,7 +97,7 @@ export class MigrationCutoverDialogModel {
 	}
 
 	public isBlobMigration(): boolean {
-		return this._migration.migrationContext.properties.backupConfiguration.sourceLocation?.azureBlob !== undefined;
+		return this._migration.migrationContext.properties.backupConfiguration?.sourceLocation?.azureBlob !== undefined;
 	}
 
 	public confirmCutoverStepsString(): string {

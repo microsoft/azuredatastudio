@@ -27,8 +27,8 @@ import { inputBorder, inputValidationInfoBorder } from 'vs/platform/theme/common
 import { localize } from 'vs/nls';
 import { NotebookViewsExtension } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViewsExtension';
 import { attachButtonStyler } from 'vs/platform/theme/common/styler';
-import { toJpeg } from 'html-to-image';
 import { truncate } from 'vs/base/common/strings';
+import { toJpeg } from 'html-to-image';
 
 type CellOption = {
 	optionMetadata: ServiceOption,
@@ -190,6 +190,24 @@ export class InsertCellsModal extends Modal {
 		this.validate();
 	}
 
+	public async generateScreenshot(cell: ICellModel, screenshotWidth: number = 300, screenshowHeight: number = 300, backgroundColor: string = '#ffffff'): Promise<string> {
+		let componentFactory = this._componentFactoryResolver.resolveComponentFactory(TextCellComponent);
+		let component = this._containerRef.createComponent(componentFactory);
+
+		component.instance.model = this._context.notebook as NotebookModel;
+		component.instance.cellModel = cell;
+
+		component.instance.handleContentChanged();
+
+		const element: HTMLElement = component.instance.outputRef.nativeElement;
+
+		const scale = element.clientWidth / screenshotWidth;
+		const canvasWidth = element.clientWidth / scale;
+		const canvasHeight = element.clientHeight / scale;
+
+		return toJpeg(component.instance.outputRef.nativeElement, { quality: .6, canvasWidth, canvasHeight, backgroundColor });
+	}
+
 	private getOptions(): ServiceOption[] {
 		const activeView = this._context.getActiveView();
 		const cellsAvailableToInsert = activeView.hiddenCells;
@@ -252,24 +270,6 @@ export class InsertCellsModal extends Modal {
 			widget.dispose();
 			delete this._optionsMap[key];
 		}
-	}
-
-	public async generateScreenshot(cell: ICellModel, screenshotWidth: number = 300, screenshowHeight: number = 300, backgroundColor: string = '#ffffff'): Promise<string> {
-		let componentFactory = this._componentFactoryResolver.resolveComponentFactory(TextCellComponent);
-		let component = this._containerRef.createComponent(componentFactory);
-
-		component.instance.model = this._context.notebook as NotebookModel;
-		component.instance.cellModel = cell;
-
-		component.instance.handleContentChanged();
-
-		const element: HTMLElement = component.instance.outputRef.nativeElement;
-
-		const scale = element.clientWidth / screenshotWidth;
-		const canvasWidth = element.clientWidth / scale;
-		const canvasHeight = element.clientHeight / scale;
-
-		return toJpeg(component.instance.outputRef.nativeElement, { quality: .6, canvasWidth, canvasHeight, backgroundColor });
 	}
 }
 

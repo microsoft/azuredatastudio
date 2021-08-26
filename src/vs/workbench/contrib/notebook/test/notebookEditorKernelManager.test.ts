@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as assert from 'assert';
@@ -35,7 +35,7 @@ suite('NotebookEditorKernelManager', () => {
 
 		instantiationService.stub(INotebookService, new class extends mock<INotebookService>() {
 			override onDidAddNotebookDocument = Event.None;
-			override onDidRemoveNotebookDocument = Event.None;
+			override onWillRemoveNotebookDocument = Event.None;
 			override getNotebookTextModels() { return []; }
 		});
 

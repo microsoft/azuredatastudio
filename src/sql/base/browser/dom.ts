@@ -58,7 +58,7 @@ const tabbableElementsQuerySelector = 'a[href], area[href], input:not([disabled]
  */
 export function getFocusableElements(container: HTMLElement): HTMLElement[] {
 	const elements = [];
-	container.querySelectorAll(tabbableElementsQuerySelector).forEach((element: HTMLElement) => {
+	container.querySelectorAll<HTMLElement>(tabbableElementsQuerySelector).forEach((element: HTMLElement) => {
 		const style = window.getComputedStyle(element);
 		// We should only return the elements that are visible. There are many ways to hide an element, for example setting the
 		// visibility attribute to hidden/collapse, setting the display property to none, or if one of its ancestors is invisible.

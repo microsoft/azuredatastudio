@@ -24,7 +24,6 @@ import { ConnectionProfile } from 'sql/platform/connection/common/connectionProf
 import { uriPrefixes } from 'sql/platform/connection/common/utils';
 import { ILogService } from 'vs/platform/log/common/log';
 import { getErrorMessage } from 'vs/base/common/errors';
-import { startsWith } from 'vs/base/common/strings';
 import { notebookConstants } from 'sql/workbench/services/notebook/browser/interfaces';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { Deferred } from 'sql/base/common/promise';
@@ -1085,7 +1084,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			if (this._savedKernelInfo.display_name !== displayName) {
 				this._savedKernelInfo.display_name = displayName;
 			}
-			let standardKernel = this._standardKernels.find(kernel => kernel.displayName === displayName || startsWith(displayName, kernel.displayName));
+			let standardKernel = this._standardKernels.find(kernel => kernel.displayName === displayName || displayName.startsWith(kernel.displayName));
 			if (standardKernel && this._savedKernelInfo.name && this._savedKernelInfo.name !== standardKernel.name) {
 				this._savedKernelInfo.name = standardKernel.name;
 				this._savedKernelInfo.display_name = standardKernel.displayName;
