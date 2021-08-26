@@ -158,8 +158,8 @@ export async function getPublishDatabaseSettings(project: Project, promptForConn
 					key: key
 				} as vscode.QuickPickItem & { key?: string, isResetAllVars?: boolean, isDone?: boolean };
 			});
-			quickPickItems.push({ label: constants.resetAllVars, isResetAllVars: true });
-			quickPickItems.unshift({ label: constants.done, isDone: true });
+			quickPickItems.push({ label: `$(refresh) ${constants.resetAllVars}`, isResetAllVars: true });
+			quickPickItems.unshift({ label: `$(check) ${constants.done}`, isDone: true });
 			const sqlCmd = await vscode.window.showQuickPick(
 				quickPickItems,
 				{ title: constants.chooseSqlcmdVarsToModify, ignoreFocusOut: true }
