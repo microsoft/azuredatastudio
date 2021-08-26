@@ -15,20 +15,19 @@ import { createRandomIPCHandle } from 'vs/base/parts/ipc/node/ipc.net';
 import { ILogService } from 'vs/platform/log/common/log';
 import product from 'vs/platform/product/common/product';
 import { RemoteAgentConnectionContext } from 'vs/platform/remote/common/remoteAgentEnvironment';
-import { IPtyService, IShellLaunchConfig, ITerminalsLayoutInfo } from 'vs/platform/terminal/common/terminal';
+import { IPtyService, IShellLaunchConfig, ITerminalProfile, ITerminalsLayoutInfo } from 'vs/platform/terminal/common/terminal';
 import { IGetTerminalLayoutInfoArgs, ISetTerminalLayoutInfoArgs } from 'vs/platform/terminal/common/terminalProcess';
 import { IWorkspaceFolder } from 'vs/platform/workspace/common/workspace';
-import { buildUserEnvironment } from 'vs/server/extensionHostConnection';
 import { createRemoteURITransformer } from 'vs/server/remoteUriTransformer';
-import { IServerEnvironmentService } from 'vs/server/serverEnvironmentService';
 import { CLIServerBase, ICommandsExecuter } from 'vs/workbench/api/node/extHostCLIServer';
 import { IEnvironmentVariableCollection } from 'vs/workbench/contrib/terminal/common/environmentVariable';
 import { MergedEnvironmentVariableCollection } from 'vs/workbench/contrib/terminal/common/environmentVariableCollection';
 import { deserializeEnvironmentVariableCollection } from 'vs/workbench/contrib/terminal/common/environmentVariableShared';
 import { ICreateTerminalProcessArguments, ICreateTerminalProcessResult, IWorkspaceFolderData } from 'vs/workbench/contrib/terminal/common/remoteTerminalChannel';
 import * as terminalEnvironment from 'vs/workbench/contrib/terminal/common/terminalEnvironment';
-import { getMainProcessParentEnv } from 'vs/workbench/contrib/terminal/node/terminalEnvironment';
 import { AbstractVariableResolverService } from 'vs/workbench/services/configurationResolver/common/variableResolver';
+import { buildUserEnvironment } from 'vs/server/extensionHostConnection';
+import { IServerEnvironmentService } from 'vs/server/serverEnvironmentService';
 
 class CustomVariableResolver extends AbstractVariableResolverService {
 	constructor(
@@ -86,8 +85,8 @@ export class RemoteTerminalChannel extends Disposable implements IServerChannel<
 	readonly onExecuteCommand = this._onExecuteCommand.event;
 
 	constructor(
-		private readonly _logService: ILogService,
 		private readonly _environmentService: IServerEnvironmentService,
+		private readonly _logService: ILogService,
 		private readonly _ptyService: IPtyService
 	) {
 		super();
@@ -104,7 +103,8 @@ export class RemoteTerminalChannel extends Disposable implements IServerChannel<
 			case '$attachToProcess': return this._ptyService.attachToProcess.apply(this._ptyService, args);
 
 			case '$listProcesses': return this._ptyService.listProcesses.apply(this._ptyService, args);
-			case '$orphanQuestionReply': this._ptyService.orphanQuestionReply.apply(this._ptyService, args);
+			case '$orphanQuestionReply': return this._ptyService.orphanQuestionReply.apply(this._ptyService, args);
+			case '$acceptPtyHostResolvedVariables': return this._ptyService.acceptPtyHostResolvedVariables?.apply(this._ptyService, args);
 
 			case '$start': return this._ptyService.start.apply(this._ptyService, args);
 			case '$input': return this._ptyService.input.apply(this._ptyService, args);
@@ -118,10 +118,14 @@ export class RemoteTerminalChannel extends Disposable implements IServerChannel<
 
 			case '$sendCommandResult': return this._sendCommandResult(args[0], args[1], args[2]);
 			case '$getDefaultSystemShell': return this._getDefaultSystemShell.apply(this, args);
-			case '$getShellEnvironment': return this._getShellEnvironment();
+			case '$getProfiles': return this._getProfiles.apply(this, args);
+			case '$getEnvironment': return this._getEnvironment();
+			case '$getWslPath': return this._getWslPath(args[0]);
 			case '$getTerminalLayoutInfo': return this._getTerminalLayoutInfo(<IGetTerminalLayoutInfoArgs>args);
 			case '$setTerminalLayoutInfo': return this._setTerminalLayoutInfo(<ISetTerminalLayoutInfoArgs>args);
 			case '$reduceConnectionGraceTime': return this._reduceConnectionGraceTime();
+			case '$updateIcon': return this._ptyService.updateIcon.apply(this._ptyService, args);
+			case '$updateTitle': return this._ptyService.updateTitle.apply(this._ptyService, args);
 		}
 
 		throw new Error(`IPC Command ${command} not found`);
@@ -133,6 +137,7 @@ export class RemoteTerminalChannel extends Disposable implements IServerChannel<
 			case '$onPtyHostStartEvent': return this._ptyService.onPtyHostStart || Event.None;
 			case '$onPtyHostUnresponsiveEvent': return this._ptyService.onPtyHostUnresponsive || Event.None;
 			case '$onPtyHostResponsiveEvent': return this._ptyService.onPtyHostResponsive || Event.None;
+			case '$onPtyHostRequestResolveVariablesEvent': return this._ptyService.onPtyHostRequestResolveVariables || Event.None;
 			case '$onProcessDataEvent': return this._ptyService.onProcessData;
 			case '$onProcessExitEvent': return this._ptyService.onProcessExit;
 			case '$onProcessReadyEvent': return this._ptyService.onProcessReady;
@@ -160,10 +165,19 @@ export class RemoteTerminalChannel extends Disposable implements IServerChannel<
 					? args.shellLaunchConfig.cwd
 					: URI.revive(uriTransformer.transformIncoming(args.shellLaunchConfig.cwd))
 			),
-			env: args.shellLaunchConfig.env
+			env: args.shellLaunchConfig.env,
+			useShellEnvironment: args.shellLaunchConfig.useShellEnvironment
 		};
 
-		const newEnv = await buildUserEnvironment(args.resolverEnv, platform.language, false, this._environmentService, this._logService);
+
+		let baseEnv: platform.IProcessEnvironment;
+		if (args.shellLaunchConfig.useShellEnvironment) {
+			this._logService.info('*');
+			baseEnv = await buildUserEnvironment(args.resolverEnv, platform.language, false, this._environmentService, this._logService);
+		} else {
+			baseEnv = this._getEnvironment();
+		}
+		this._logService.info('baseEnv', baseEnv);
 
 		const reviveWorkspaceFolder = (workspaceData: IWorkspaceFolderData): IWorkspaceFolder => {
 			return {
@@ -178,7 +192,7 @@ export class RemoteTerminalChannel extends Disposable implements IServerChannel<
 		const workspaceFolders = args.workspaceFolders.map(reviveWorkspaceFolder);
 		const activeWorkspaceFolder = args.activeWorkspaceFolder ? reviveWorkspaceFolder(args.activeWorkspaceFolder) : undefined;
 		const activeFileResource = args.activeFileResource ? URI.revive(uriTransformer.transformIncoming(args.activeFileResource)) : undefined;
-		const customVariableResolver = new CustomVariableResolver(newEnv, workspaceFolders, activeFileResource, args.resolvedVariables);
+		const customVariableResolver = new CustomVariableResolver(baseEnv, workspaceFolders, activeFileResource, args.resolvedVariables);
 		const variableResolver = terminalEnvironment.createVariableResolver(activeWorkspaceFolder, process.env, customVariableResolver);
 
 		// Get the initial cwd
@@ -187,7 +201,6 @@ export class RemoteTerminalChannel extends Disposable implements IServerChannel<
 
 		const envPlatformKey = platform.isWindows ? 'terminal.integrated.env.windows' : (platform.isMacintosh ? 'terminal.integrated.env.osx' : 'terminal.integrated.env.linux');
 		const envFromConfig = args.configuration[envPlatformKey];
-		const baseEnv = args.configuration['terminal.integrated.inheritEnv'] ? newEnv : await this._getNonInheritedEnv(newEnv);
 		const env = terminalEnvironment.createTerminalEnvironment(
 			shellLaunchConfig,
 			envFromConfig,
@@ -219,7 +232,7 @@ export class RemoteTerminalChannel extends Disposable implements IServerChannel<
 		};
 		const cliServer = new CLIServerBase(commandsExecuter, this._logService, ipcHandlePath);
 
-		const id = await this._ptyService.createProcess(shellLaunchConfig, initialCwd, args.cols, args.rows, env, newEnv, false, args.shouldPersistTerminal, args.workspaceId, args.workspaceName);
+		const id = await this._ptyService.createProcess(shellLaunchConfig, initialCwd, args.cols, args.rows, env, baseEnv, false, args.shouldPersistTerminal, args.workspaceId, args.workspaceName);
 		this._ptyService.onProcessExit(e => e.id === id && cliServer.dispose());
 
 		return {
@@ -258,10 +271,6 @@ export class RemoteTerminalChannel extends Disposable implements IServerChannel<
 		return result;
 	}
 
-	private _getNonInheritedEnv(remoteExtHostEnv: platform.IProcessEnvironment): Promise<platform.IProcessEnvironment> {
-		return getMainProcessParentEnv(remoteExtHostEnv);
-	}
-
 	private _sendCommandResult(reqId: number, isError: boolean, serializedPayload: any): void {
 		const data = this._pendingCommands.get(reqId);
 		if (!data) {
@@ -286,8 +295,16 @@ export class RemoteTerminalChannel extends Disposable implements IServerChannel<
 		return this._ptyService.getDefaultSystemShell(osOverride);
 	}
 
-	private _getShellEnvironment(): platform.IProcessEnvironment {
+	private async _getProfiles(profiles: unknown, defaultProfile: unknown, includeDetectedProfiles?: boolean): Promise<ITerminalProfile[]> {
+		return this._ptyService.getProfiles?.(profiles, defaultProfile, includeDetectedProfiles) || [];
+	}
+
+	private _getEnvironment(): platform.IProcessEnvironment {
 		return { ...process.env };
+	}
+
+	private _getWslPath(original: string): Promise<string> {
+		return this._ptyService.getWslPath(original);
 	}
 
 	private _setTerminalLayoutInfo(args: ISetTerminalLayoutInfoArgs): void {

@@ -414,6 +414,7 @@ export class RemoteAgentEnvironmentChannel implements IServerChannel {
 				return ExtensionScanner.scanOneOrMultipleExtensions(
 					new ExtensionScannerInput(
 						product.version,
+						product.date,
 						product.commit,
 						language,
 						true, // dev mode
@@ -439,10 +440,10 @@ export class RemoteAgentEnvironmentChannel implements IServerChannel {
 	private _scanBuiltinExtensions(language: string, translations: Translations): Promise<IExtensionDescription[]> {
 		const version = product.version;
 		const commit = product.commit;
-		// const date = product.date;
+		const date = product.date;
 		const devMode = !!process.env['VSCODE_DEV'];
 
-		const input = new ExtensionScannerInput(version, commit, language, devMode, getSystemExtensionsRoot(), true, false, translations);
+		const input = new ExtensionScannerInput(version, date, commit, language, devMode, getSystemExtensionsRoot(), true, false, translations);
 		const builtinExtensions = ExtensionScanner.scanExtensions(input, this._logger);
 		let finalBuiltinExtensions: Promise<IExtensionDescription[]> = builtinExtensions;
 
@@ -459,7 +460,7 @@ export class RemoteAgentEnvironmentChannel implements IServerChannel {
 
 			const builtInExtensions = Promise.resolve(product.builtInExtensions || []);
 
-			const input = new ExtensionScannerInput(version, commit, language, devMode, getExtraDevSystemExtensionsRoot(), true, false, {});
+			const input = new ExtensionScannerInput(version, date, commit, language, devMode, getExtraDevSystemExtensionsRoot(), true, false, {});
 			const extraBuiltinExtensions = builtInExtensions
 				.then((builtInExtensions) => new ExtraBuiltInExtensionResolver(builtInExtensions))
 				.then(resolver => ExtensionScanner.scanExtensions(input, this._logger, resolver));
@@ -474,6 +475,7 @@ export class RemoteAgentEnvironmentChannel implements IServerChannel {
 		const devMode = !!process.env['VSCODE_DEV'];
 		const input = new ExtensionScannerInput(
 			product.version,
+			product.date,
 			product.commit,
 			language,
 			devMode,
@@ -490,6 +492,7 @@ export class RemoteAgentEnvironmentChannel implements IServerChannel {
 		const devMode = !!process.env['VSCODE_DEV'];
 		const input = new ExtensionScannerInput(
 			product.version,
+			product.date,
 			product.commit,
 			language,
 			devMode,

@@ -15,10 +15,10 @@ import { performance } from 'perf_hooks';
 import { VSBuffer } from 'vs/base/common/buffer';
 import { Disposable, toDisposable } from 'vs/base/common/lifecycle';
 import { generateUuid } from 'vs/base/common/uuid';
-import { readdir, rimraf } from 'vs/base/node/pfs';
+import { Promises } from 'vs/base/node/pfs';
 import { findFreePort } from 'vs/base/node/ports';
 import * as platform from 'vs/base/common/platform';
-import { PersistentProtocol } from 'vs/base/parts/ipc/common/ipc.net';
+import { PersistentProtocol, ProtocolConstants } from 'vs/base/parts/ipc/common/ipc.net';
 import { NodeSocket, WebSocketNodeSocket } from 'vs/base/parts/ipc/node/ipc.net';
 import { ConnectionType, ConnectionTypeRequest, ErrorMessage, HandshakeMessage, IRemoteExtensionHostStartParams, ITunnelConnectionStartParams, SignRequest } from 'vs/platform/remote/common/remoteAgentConnection';
 import { ExtensionHostConnection } from 'vs/server/extensionHostConnection';
@@ -302,14 +302,20 @@ export class RemoteExtensionHostAgentServer extends Disposable {
 		const extensionManagementCLIService = instantiationService.createInstance(ExtensionManagementCLIService);
 		services.set(IExtensionManagementCLIService, extensionManagementCLIService);
 
-		const ptyService = instantiationService.createInstance(PtyHostService);
+		const ptyService = instantiationService.createInstance(
+			PtyHostService,
+			{
+				GraceTime: ProtocolConstants.ReconnectionGraceTime,
+				ShortGraceTime: ProtocolConstants.ReconnectionShortGraceTime
+			}
+		);
 		services.set(IPtyService, ptyService);
 
 		return instantiationService.invokeFunction(accessor => {
 			const remoteExtensionEnvironmentChannel = new RemoteAgentEnvironmentChannel(this._connectionToken, this._environmentService, extensionManagementCLIService, this._logService, accessor.get(ITelemetryService), appInsightsAppender);
 			this._socketServer.registerChannel('remoteextensionsenvironment', remoteExtensionEnvironmentChannel);
 
-			this._socketServer.registerChannel(REMOTE_TERMINAL_CHANNEL_NAME, new RemoteTerminalChannel(this._logService, this._environmentService, ptyService));
+			this._socketServer.registerChannel(REMOTE_TERMINAL_CHANNEL_NAME, new RemoteTerminalChannel(this._environmentService, this._logService, ptyService));
 
 			const remoteFileSystemChannel = new RemoteAgentFileSystemChannel(this._logService, this._environmentService);
 			this._socketServer.registerChannel(REMOTE_FILE_SYSTEM_CHANNEL_NAME, remoteFileSystemChannel);
@@ -527,12 +533,12 @@ export class RemoteExtensionHostAgentServer extends Disposable {
 	private async _cleanupOlderLogs(logsPath: string): Promise<void> {
 		const currentLog = basename(logsPath);
 		const logsRoot = dirname(logsPath);
-		const children = await readdir(logsRoot);
+		const children = await Promises.readdir(logsRoot);
 		const allSessions = children.filter(name => /^\d{8}T\d{6}$/.test(name));
 		const oldSessions = allSessions.sort().filter((d) => d !== currentLog);
 		const toDelete = oldSessions.slice(0, Math.max(0, oldSessions.length - 9));
 
-		await Promise.all(toDelete.map(name => rimraf(join(logsRoot, name))));
+		await Promise.all(toDelete.map(name => Promises.rm(join(logsRoot, name))));
 	}
 
 	private _getRemoteAddress(socket: NodeSocket | WebSocketNodeSocket): string {
