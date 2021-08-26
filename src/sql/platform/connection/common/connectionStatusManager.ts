@@ -61,7 +61,7 @@ export class ConnectionStatusManager {
 			throw new Error('Unexpected error occurred replacing the connection URI.');
 		}
 		info.ownerUri = newId;
-		if (!this._connections[newId]) {
+		if (this._connections[newId]) {
 			this._logService.error(`New URI : '${newId}' is already in the connections list, cannot add URI to connection list`);
 			this._notificationService.notify({
 				severity: Severity.Error,
