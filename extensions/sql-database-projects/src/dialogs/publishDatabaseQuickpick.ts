@@ -100,22 +100,24 @@ export async function getPublishDatabaseSettings(project: Project, promptForConn
 	}
 
 	// 3. Select database
-	const dbQuickpicks = dbs.map(db => {
-		return {
-			label: db,
-			dbName: db
-		} as vscode.QuickPickItem & { dbName: string, isCreateNew?: boolean };
-	});
+	const dbQuickpicks = dbs
+		.filter(db => !constants.systemDbs.includes(db))
+		.map(db => {
+			return {
+				label: db
+			} as vscode.QuickPickItem & { isCreateNew?: boolean };
+		});
+	// Add Create New at the top now so it'll show second to top below the suggested name of the current project
+	dbQuickpicks.unshift({ label: `$(add) ${constants.createNew}`, isCreateNew: true });
+
 	// Ensure the project name is an option, either adding it if it doesn't already exist or moving it to the top if it does
 	const projectNameIndex = dbs.findIndex(db => db === project.projectFileName);
 	if (projectNameIndex === -1) {
-		dbQuickpicks.unshift({ label: constants.newDatabaseTitle(project.projectFileName), dbName: project.projectFileName });
+		dbQuickpicks.unshift({ label: project.projectFileName, description: constants.newText });
 	} else {
 		dbQuickpicks.splice(projectNameIndex, 1);
-		dbQuickpicks.unshift({ label: project.projectFileName, dbName: project.projectFileName });
+		dbQuickpicks.unshift({ label: project.projectFileName });
 	}
-
-	dbQuickpicks.push({ label: constants.createNew, dbName: '', isCreateNew: true });
 
 	let databaseName: string | undefined = undefined;
 	while (!databaseName) {
@@ -126,7 +128,7 @@ export async function getPublishDatabaseSettings(project: Project, promptForConn
 			// User cancelled
 			return;
 		}
-		databaseName = selectedDatabase.dbName;
+		databaseName = selectedDatabase.label;
 		if (selectedDatabase.isCreateNew) {
 			databaseName = await vscode.window.showInputBox(
 				{
