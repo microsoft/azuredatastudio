@@ -63,8 +63,9 @@ export class LinkHandlerDirective {
 		}
 		// Web mode linking to open files
 		if (isWeb) {
-			// only change scheme for file links (file links in web mode scheme is http)
-			if (uri.path.includes('.')) {
+			// only change scheme for file links (file links in web mode scheme are also http)
+			// therefore we will use the authority to understand if its a local file path
+			if (window.location.origin === uri.authority) {
 				uri = uri.with({ scheme: 'vscode-remote' });
 				this.openerService.open(uri);
 			}
