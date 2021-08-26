@@ -768,6 +768,9 @@ declare module 'azdata' {
 	}
 
 	export enum CardType {
+		/**
+		 * Card with the icon as a background image
+		 */
 		Image = 'Image'
 	}
 
