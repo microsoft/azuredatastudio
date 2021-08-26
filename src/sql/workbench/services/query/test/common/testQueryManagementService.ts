@@ -53,7 +53,7 @@ export class TestQueryManagementService implements IQueryManagementService {
 	async disposeQuery(ownerUri: string): Promise<void> {
 		return;
 	}
-	changeUriForQuery(newUri: string, oldUri: string): Promise<void> {
+	changeConnectionUriForQuery(newUri: string, oldUri: string): Promise<void> {
 		throw new Error('Method not implemented.');
 	}
 	saveResults(requestParams: azdata.SaveResultsRequestParams): Promise<azdata.SaveResultRequestResult> {

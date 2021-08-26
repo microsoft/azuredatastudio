@@ -933,6 +933,6 @@ declare module 'azdata' {
 		/**
 			 * Used to change queries on STS to use a new URI in case of a untitled query save.
 			 */
-		changeUriForQuery(newUri: string, oldUri: string): Thenable<void>;
+		changeConnectionUriForQuery(newUri: string, oldUri: string): Thenable<void>;
 	}
 }

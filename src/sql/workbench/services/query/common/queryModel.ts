@@ -59,7 +59,7 @@ export interface IQueryModelService {
 	runQueryString(uri: string, selection: string | undefined): void;
 	cancelQuery(input: QueryRunner | string): void;
 	disposeQuery(uri: string): void;
-	changeUriForQuery(newUri: string, oldUri: string);
+	changeConnectionUriForQuery(newUri: string, oldUri: string);
 	isRunningQuery(uri: string): boolean;
 
 	getDataService(uri: string): DataService;

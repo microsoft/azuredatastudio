@@ -50,7 +50,7 @@ export class UntitledQueryEditorInput extends QueryEditorInput implements IEncod
 		let preProcessed = await this.text.saveAs(group, options);
 		let newUri = preProcessed.resource.toString(true);
 		this._results.uri = newUri;
-		await this.changeUriForQuery(newUri);
+		await this.changeConnectionUriForQuery(newUri);
 		let newInput = this.instantiationService.createInstance(FileQueryEditorInput, '', (preProcessed as FileEditorInput), this.results);
 		newInput.state.resultsVisible = this.state.resultsVisible;
 		this.state.isSaving = true;
@@ -61,7 +61,7 @@ export class UntitledQueryEditorInput extends QueryEditorInput implements IEncod
 		let preProcessed = await this.text.saveAs(group, options);
 		let newUri = preProcessed.resource.toString(true);
 		this._results.uri = newUri;
-		await this.changeUriForQuery(newUri);
+		await this.changeConnectionUriForQuery(newUri);
 		let newInput = this.instantiationService.createInstance(FileQueryEditorInput, '', (preProcessed as FileEditorInput), this.results);
 		newInput.state.resultsVisible = this.state.resultsVisible;
 		this.state.isSaving = true;

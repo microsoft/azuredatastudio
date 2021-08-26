@@ -421,8 +421,8 @@ export default class QueryRunner extends Disposable {
 		super.dispose();
 	}
 
-	public changeUriForQuery(oldUri: string, newUri: string): Promise<void> {
-		return this.queryManagementService.changeUriForQuery(oldUri, newUri).then(r => r, error => {
+	public changeConnectionUriForQuery(oldUri: string, newUri: string): Promise<void> {
+		return this.queryManagementService.changeConnectionUriForQuery(oldUri, newUri).then(r => r, error => {
 			return error;
 		});
 	}
