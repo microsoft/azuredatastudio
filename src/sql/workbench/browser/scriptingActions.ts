@@ -5,7 +5,7 @@
 
 import { Action } from 'vs/base/common/actions';
 import * as nls from 'vs/nls';
-import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
+import { IQueryEditorService } from 'sql/workbench/services/queryEditor/browser/baseQueryEditorService';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { IScriptingService, ScriptOperation } from 'sql/platform/scripting/common/scriptingService';
 import { BaseActionContext } from 'sql/workbench/browser/actions';

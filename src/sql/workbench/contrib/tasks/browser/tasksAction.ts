@@ -5,9 +5,9 @@
 
 import { localize } from 'vs/nls';
 import { Action } from 'vs/base/common/actions';
-import { ITaskService } from 'sql/workbench/services/tasks/common/tasksService';
+import { ITaskService } from 'sql/workbench/services/tasks/browser/tasksService';
 import { TaskNode } from 'sql/workbench/services/tasks/common/tasksNode';
-import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
+import { IQueryEditorService } from 'sql/workbench/services/queryEditor/browser/baseQueryEditorService';
 import Severity from 'vs/base/common/severity';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 

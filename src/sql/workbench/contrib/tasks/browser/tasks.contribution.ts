@@ -10,7 +10,7 @@ import { IWorkbenchActionRegistry, Extensions as ActionExtensions } from 'vs/wor
 import { Registry } from 'vs/platform/registry/common/platform';
 import * as lifecycle from 'vs/base/common/lifecycle';
 import * as ext from 'vs/workbench/common/contributions';
-import { ITaskService } from 'sql/workbench/services/tasks/common/tasksService';
+import { ITaskService } from 'sql/workbench/services/tasks/browser/tasksService';
 import { IActivityService, NumberBadge } from 'vs/workbench/services/activity/common/activity';
 import { LifecyclePhase } from 'vs/workbench/services/lifecycle/common/lifecycle';
 import { IPanelService } from 'vs/workbench/services/panel/common/panelService';

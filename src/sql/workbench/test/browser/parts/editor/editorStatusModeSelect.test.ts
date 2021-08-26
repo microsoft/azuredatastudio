@@ -12,10 +12,10 @@ import { NotebookEditorInputAssociation } from 'sql/workbench/contrib/notebook/b
 import { workbenchInstantiationService } from 'sql/workbench/test/workbenchTestServices';
 import { INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
-import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
+import { IQueryEditorService } from 'sql/workbench/services/queryEditor/browser/baseQueryEditorService';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { ILanguageAssociationRegistry, Extensions as LanguageAssociationExtensions } from 'sql/workbench/services/languageAssociation/common/languageAssociation';
-import { TestQueryEditorService } from 'sql/workbench/services/queryEditor/test/common/testQueryEditorService';
+import { TestQueryEditorService } from 'sql/workbench/services/queryEditor/test/browser/testQueryEditorService';
 import { ITestInstantiationService, TestEditorService } from 'vs/workbench/test/browser/workbenchTestServices';
 import { NotebookServiceStub } from 'sql/workbench/contrib/notebook/test/stubs';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
