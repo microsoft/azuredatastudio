@@ -2,10 +2,9 @@ import * as vscode from 'vscode';
 import { BindingType } from 'vscode-mssql';
 import * as constants from '../common/constants';
 import * as utils from '../common/utils';
-import { InstallPackageHelper } from '../tools/installPackageHelper';
-import { DotNetCommandOptions, NetCoreTool } from '../tools/netcoreTool';
+import { PackageHelper } from '../tools/packageHelper';
 
-export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined, outputChannel: vscode.OutputChannel): Promise<void> {
+export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined, packageHelper: PackageHelper): Promise<void> {
 	if (!uri) {
 		// this command only shows in the command palette when the active editor is a .cs file, so we can safely assume that's the scenario
 		// when this is called without a uri
@@ -13,95 +12,92 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined, 
 	}
 
 	// get all the Azure functions in the file
-	// const azureFunctionsService = await utils.getAzureFunctionService();
-	// let getAzureFunctionsResult;
-	// try {
-	// 	getAzureFunctionsResult = await azureFunctionsService.getAzureFunctions(uri.fsPath);
-	// } catch (e) {
-	// 	vscode.window.showErrorMessage(e);
-	// 	return;
-	// }
+	const azureFunctionsService = await utils.getAzureFunctionService();
+	let getAzureFunctionsResult;
+	try {
+		getAzureFunctionsResult = await azureFunctionsService.getAzureFunctions(uri.fsPath);
+	} catch (e) {
+		vscode.window.showErrorMessage(e);
+		return;
+	}
 
-	// const azureFunctions = getAzureFunctionsResult.azureFunctions;
+	const azureFunctions = getAzureFunctionsResult.azureFunctions;
 
-	// if (azureFunctions.length === 0) {
-	// 	vscode.window.showErrorMessage(constants.noAzureFunctionsInFile);
-	// 	return;
-	// }
+	if (azureFunctions.length === 0) {
+		vscode.window.showErrorMessage(constants.noAzureFunctionsInFile);
+		return;
+	}
 
-	// // 1. select Azure function from the current file
-	// const azureFunctionName = (await vscode.window.showQuickPick(azureFunctions, {
-	// 	canPickMany: false,
-	// 	title: constants.selectAzureFunction,
-	// 	ignoreFocusOut: true
-	// }));
+	// 1. select Azure function from the current file
+	const azureFunctionName = (await vscode.window.showQuickPick(azureFunctions, {
+		canPickMany: false,
+		title: constants.selectAzureFunction,
+		ignoreFocusOut: true
+	}));
 
-	// if (!azureFunctionName) {
-	// 	return;
-	// }
+	if (!azureFunctionName) {
+		return;
+	}
 
-	// // 2. select input or output binding
-	// const inputOutputItems: (vscode.QuickPickItem & { type: BindingType })[] = [
-	// 	{
-	// 		label: constants.input,
-	// 		type: BindingType.input
-	// 	},
-	// 	{
-	// 		label: constants.output,
-	// 		type: BindingType.output
-	// 	}
-	// ];
+	// 2. select input or output binding
+	const inputOutputItems: (vscode.QuickPickItem & { type: BindingType })[] = [
+		{
+			label: constants.input,
+			type: BindingType.input
+		},
+		{
+			label: constants.output,
+			type: BindingType.output
+		}
+	];
 
-	// const selectedBinding = (await vscode.window.showQuickPick(inputOutputItems, {
-	// 	canPickMany: false,
-	// 	title: constants.selectBindingType,
-	// 	ignoreFocusOut: true
-	// }));
+	const selectedBinding = (await vscode.window.showQuickPick(inputOutputItems, {
+		canPickMany: false,
+		title: constants.selectBindingType,
+		ignoreFocusOut: true
+	}));
 
-	// if (!selectedBinding) {
-	// 	return;
-	// }
+	if (!selectedBinding) {
+		return;
+	}
 
-	// // 3. ask for object name for the binding
-	// const objectName = await vscode.window.showInputBox({
-	// 	prompt: selectedBinding.type === BindingType.input ? constants.sqlObjectToQuery : constants.sqlTableToUpsert,
-	// 	value: constants.placeHolderObject,
-	// 	ignoreFocusOut: true
-	// });
+	// 3. ask for object name for the binding
+	const objectName = await vscode.window.showInputBox({
+		prompt: selectedBinding.type === BindingType.input ? constants.sqlObjectToQuery : constants.sqlTableToUpsert,
+		value: constants.placeHolderObject,
+		ignoreFocusOut: true
+	});
 
-	// if (!objectName) {
-	// 	return;
-	// }
+	if (!objectName) {
+		return;
+	}
 
-	// // 4. ask for connection string setting name
-	// // TODO: load local settings from local.settings.json like in LocalAppSettingListStep in vscode-azurefunctions repo
-	// const connectionStringSetting = await vscode.window.showInputBox({
-	// 	prompt: constants.connectionStringSetting,
-	// 	placeHolder: constants.connectionStringSettingPlaceholder,
-	// 	ignoreFocusOut: true
-	// });
+	// 4. ask for connection string setting name
+	// TODO: load local settings from local.settings.json like in LocalAppSettingListStep in vscode-azurefunctions repo
+	const connectionStringSetting = await vscode.window.showInputBox({
+		prompt: constants.connectionStringSetting,
+		placeHolder: constants.connectionStringSettingPlaceholder,
+		ignoreFocusOut: true
+	});
 
-	// if (!connectionStringSetting) {
-	// 	return;
-	// }
+	if (!connectionStringSetting) {
+		return;
+	}
 
-	// // 5. insert binding
-	// try {
-	// 	const result = await azureFunctionsService.addSqlBinding(selectedBinding.type, uri.fsPath, azureFunctionName, objectName, connectionStringSetting);
+	// 5. insert binding
+	try {
+		const result = await azureFunctionsService.addSqlBinding(selectedBinding.type, uri.fsPath, azureFunctionName, objectName, connectionStringSetting);
 
-	// 	if (!result.success) {
-	// 		vscode.window.showErrorMessage(result.errorMessage);
-	// 		return;
-	// 	}
-	// } catch (e) {
-	// 	vscode.window.showErrorMessage(e);
-	// 	return;
-	// }
+		if (!result.success) {
+			vscode.window.showErrorMessage(result.errorMessage);
+			return;
+		}
+	} catch (e) {
+		vscode.window.showErrorMessage(e);
+		return;
+	}
 
-
-	// Add sql extension package reference to project
-	const packageHelper = new InstallPackageHelper(outputChannel);
-	const project = await packageHelper.getAFProjectContainingFile(uri.fsPath);
-	packageHelper.addPackage(project, constants.sqlExtensionPackageName, constants.sqlExtensionPackageVersion);
+	// 6. Add sql extension package reference to project. If the reference is already there, it doesn't get added again
+	await packageHelper.addPackageToAFProjectContainingFile(uri.fsPath, constants.sqlExtensionPackageName, constants.sqlExtensionPackageVersion);
 }
 

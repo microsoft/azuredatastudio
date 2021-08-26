@@ -456,3 +456,4 @@ export const sqlTableToUpsert = localize('sqlTableToUpsert', "SQL table to upser
 export const connectionStringSetting = localize('connectionStringSetting', "Connection string setting name");
 export const connectionStringSettingPlaceholder = localize('connectionStringSettingPlaceholder', "Connection string setting specified in \"local.settings.json\"");
 export const noAzureFunctionsInFile = localize('noAzureFunctionsInFile', "No Azure functions in the current active file");
+export const noAzureFunctionsProjectsInWorkspace = localize('noAzureFunctionsProjectsInWorkspace', "No Azure functions projects found in the workspace");
