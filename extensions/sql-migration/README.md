@@ -20,7 +20,6 @@ From Azure Data Studio extension gallery, install the latest version of “Azure
 ## Getting started
 Refer to [Migrate databases using the Azure SQL Migration extension for Azure Data Studio](https://docs.microsoft.com/azure/dms/migration-using-azure-data-studio) for detailed documentation on capabilities and concepts.
 
-## Features
 ## Azure SQL targets
 The Azure SQL Migration extension supports database target readiness assessments and migrations to the following Azure SQL targets.
 - [SQL on Azure Virtual Machines (Windows)](https://docs.microsoft.com/azure/azure-sql/virtual-machines/windows/sql-server-on-azure-vm-iaas-what-is-overview)
