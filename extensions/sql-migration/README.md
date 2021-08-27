@@ -32,14 +32,6 @@ The following migration modes are supported for the corresponding Azure SQL targ
 - Online - The source SQL Server database is available for read and write activity while database backups are continuously restored on target Azure SQL. Application downtime is limited to duration for the cutover at the end of migration.
 - Offline - The source database cannot be used for write activity while database backup files are restored on the target Azure SQL database. Application downtime persists through the start until the completion of the migration process.
 
-## Support matrix
-Azure SQL target | Migration mode
-| :--- | :---
-Azure SQL Managed Instance | [Online](https://docs.microsoft.com/azure/dms/tutorial-sql-server-managed-instance-online-ads)
-Azure SQL Managed Instance | [Offline](https://docs.microsoft.com/azure/dms/tutorial-sql-server-managed-instance-offline-ads)
-SQL Server on Azure VM | [Online](https://docs.microsoft.com/azure/dms/tutorial-sql-server-azure-vm-online-ads)
-SQL Server on Azure VM | [Offline](https://docs.microsoft.com/azure/dms/tutorial-sql-server-azure-vm-offline-ads)
-
 
 ## Need assistance or have questions/feedback
 Please reach out to DMSFeedback@microsoft.com
