@@ -38,14 +38,14 @@ describe('Add File Dialog', function () {
 		bookTreeItem = mockTreeItem.object;
 	});
 
-	it('Start dialog test', async () => {
+	it('Create dialog', async () => {
 		let fileDialog = new AddFileDialog(bookTocManager, bookTreeItem, fileExtension);
 		await fileDialog.createDialog();
 		should(fileDialog.dialog).not.be.undefined();
 		should(fileDialog.dialog.message).be.undefined();
 	});
 
-	it('Validate path test', async () => {
+	it('Validate path', async () => {
 		let fileDialog = new AddFileDialog(bookTocManager, bookTreeItem, fileExtension);
 		await fileDialog.createDialog();
 
@@ -73,7 +73,7 @@ describe('Add File Dialog', function () {
 		sinon.restore();
 	});
 
-	it('Create File test', async () => {
+	it('Create file', async () => {
 		let tempDir = os.tmpdir();
 		let testDir = path.join(tempDir, utils.generateGuid());
 		let testFileName = 'addFileDialogTest';
