@@ -864,6 +864,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 					this._logService.info(`No security tokens found for account`);
 				}
 				connection.options['azureAccountToken'] = token.token;
+				connection.options['azureAccountTokenExpiresOn'] = token.azureAccountTokenExpiresOn;
 				connection.options['password'] = '';
 				return true;
 			} else {
@@ -873,6 +874,24 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			this._logService.info(`Could not find any Azure accounts from accounts : [${accounts.map(a => `${a.key.accountId} (${a.key.providerId})`).join(',')}]`);
 		}
 		return false;
+	}
+
+	public async refreshAzureAccountTokenIfNecessary(uri: string): Promise<void> {
+		let profile = this.getConnectionProfile(uri);
+		if (!profile) {
+			return;
+		}
+		let expiry = profile.options.azureAccountTokenExpiresOn;
+		if (expiry && !Number.isNaN(expiry)) {
+			const currentTime = new Date().getTime() / 1000;
+			if (currentTime >= expiry) {
+				this._logService.info(`Access token expired for connection ${profile.id}`);
+				let connectionResult = await this.connect(profile, uri);
+				if (!connectionResult) {
+					this._logService.error(`Failed to refresh connection ${profile.id}`);
+				}
+			}
+		}
 	}
 
 	// Request Senders
@@ -917,12 +936,13 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		});
 	}
 
-	private sendListDatabasesRequest(uri: string): Thenable<azdata.ListDatabasesResult> {
+	private async sendListDatabasesRequest(uri: string): Promise<azdata.ListDatabasesResult> {
 		let providerId: string = this.getProviderIdFromUri(uri);
 		if (!providerId) {
 			return Promise.resolve(undefined);
 		}
 
+		await this.refreshAzureAccountTokenIfNecessary(uri);
 		return this._providers.get(providerId).onReady.then(provider => {
 			return provider.listDatabases(uri).then(result => {
 				if (result && result.databaseNames) {

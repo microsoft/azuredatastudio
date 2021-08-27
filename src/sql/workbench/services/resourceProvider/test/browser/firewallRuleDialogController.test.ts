@@ -229,7 +229,7 @@ function getMockAccountManagementService(resolveSecurityToken: boolean): TypeMoq
 	let accountManagementTestService = new TestAccountManagementService();
 	let mockAccountManagementService = TypeMoq.Mock.ofInstance(accountManagementTestService);
 	mockAccountManagementService.setup(x => x.getAccountSecurityToken(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny()))
-		.returns(() => resolveSecurityToken ? Promise.resolve({ token: 'token' }) : Promise.reject(null));
+		.returns(() => resolveSecurityToken ? Promise.resolve({ token: 'token', azureAccountTokenExpiresOn: 0 }) : Promise.reject(null));
 	return mockAccountManagementService;
 }
 

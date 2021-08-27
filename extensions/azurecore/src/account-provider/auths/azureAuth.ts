@@ -180,17 +180,20 @@ export abstract class AzureAuth implements vscode.Disposable {
 			const currentTime = new Date().getTime() / 1000;
 
 			let accessToken = cachedTokens.accessToken;
+			let expiresOn = Number(cachedTokens.expiresOn);
 			const remainingTime = expiry - currentTime;
 			const maxTolerance = 2 * 60; // two minutes
 
 			if (remainingTime < maxTolerance) {
 				const result = await this.refreshToken(tenant, resource, cachedTokens.refreshToken);
 				accessToken = result.accessToken;
+				expiresOn = Number(result.expiresOn);
 			}
 			// Let's just return here.
 			if (accessToken) {
 				return {
 					...accessToken,
+					azureAccountTokenExpiresOn: expiresOn,
 					tokenType: 'Bearer'
 				};
 			}
@@ -210,6 +213,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 		if (result.accessToken) {
 			return {
 				...result.accessToken,
+				azureAccountTokenExpiresOn: Number(result.expiresOn),
 				tokenType: 'Bearer'
 			};
 		}
@@ -668,6 +672,11 @@ export interface Token extends AccountKey {
 	 * Access token
 	 */
 	token: string;
+
+	/**
+	 * Access token expiry timestamp
+	 */
+	azureAccountTokenExpiresOn: number;
 
 	/**
 	 * TokenType

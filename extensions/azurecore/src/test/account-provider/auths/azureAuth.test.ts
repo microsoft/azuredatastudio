@@ -20,6 +20,7 @@ let azureAuthCodeGrant: TypeMoq.IMock<AzureAuthCodeGrant>;
 const mockToken: Token = {
 	key: 'someUniqueId',
 	token: 'test_token',
+	azureAccountTokenExpiresOn: 0,
 	tokenType: 'Bearer'
 };
 let mockAccessToken: AccessToken;
@@ -96,8 +97,8 @@ describe('Azure Authentication', function () {
 		it('token recieved for ossRdbmns resource', async function () {
 			azureAuthCodeGrant.setup(x => x.getTenants(mockToken)).returns(() => {
 				return Promise.resolve([
-				mockTenant
-			]);
+					mockTenant
+				]);
 			});
 			azureAuthCodeGrant.setup(x => x.getTokenHelper(mockTenant, provider.settings.ossRdbmsResource, TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => {
 				return Promise.resolve({

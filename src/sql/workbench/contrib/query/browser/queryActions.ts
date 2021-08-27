@@ -207,6 +207,7 @@ export class RunQueryAction extends QueryTaskbarAction {
 		if (!this.editor.isSelectionEmpty()) {
 			if (this.isConnected(this.editor)) {
 				// If we are already connected, run the query
+				this.connectionManagementService.refreshAzureAccountTokenIfNecessary(this.editor.input.uri);
 				this.runQuery(this.editor);
 			} else {
 				// If we are not already connected, prompt for connection and run the query if the
@@ -221,6 +222,7 @@ export class RunQueryAction extends QueryTaskbarAction {
 		if (!this.editor.isSelectionEmpty()) {
 			if (this.isConnected(this.editor)) {
 				// If we are already connected, run the query
+				this.connectionManagementService.refreshAzureAccountTokenIfNecessary(this.editor.input.uri);
 				this.runQuery(this.editor, true);
 			} else {
 				// If we are not already connected, prompt for connection and run the query if the
@@ -237,6 +239,7 @@ export class RunQueryAction extends QueryTaskbarAction {
 		}
 
 		if (this.isConnected(editor)) {
+			this.connectionManagementService.refreshAzureAccountTokenIfNecessary(editor.input.uri);
 			// if the selection isn't empty then execute the selection
 			// otherwise, either run the statement or the script depending on parameter
 			let selection = editor.getSelection(false);

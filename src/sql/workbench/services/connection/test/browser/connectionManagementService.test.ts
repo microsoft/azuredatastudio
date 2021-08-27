@@ -1679,6 +1679,7 @@ suite('SQL ConnectionManagementService tests', () => {
 		let testToken = 'testToken';
 		accountManagementService.setup(x => x.getAccountSecurityToken(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve({
 			token: testToken,
+			azureAccountTokenExpiresOn: 0,
 			tokenType: 'Bearer'
 		}));
 		connectionStore.setup(x => x.addSavedPassword(TypeMoq.It.is(profile => profile.authenticationType === 'AzureMFA'))).returns(profile => Promise.resolve({
@@ -1733,7 +1734,7 @@ suite('SQL ConnectionManagementService tests', () => {
 			]);
 		});
 
-		let returnedToken = { token: 'testToken', tokenType: 'Bearer' };
+		let returnedToken = { token: 'testToken', azureAccountTokenExpiresOn: 0, tokenType: 'Bearer' };
 		accountManagementService.setup(x => x.getAccountSecurityToken(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(returnedToken));
 		connectionStore.setup(x => x.addSavedPassword(TypeMoq.It.is(profile => profile.authenticationType === 'AzureMFA'))).returns(profile => Promise.resolve({
 			profile: profile,
