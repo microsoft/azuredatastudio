@@ -81,9 +81,8 @@ export class DashboardWidget {
 						url(${vscode.Uri.file(<string>IconPathHelper.migrationDashboardHeaderBackground.light)}),
 						linear-gradient(360deg, rgba(127, 181, 239, 0.15) 0%, rgba(242, 242, 242, 0) 42.2%, rgba(242, 242, 242, 0.0572917) 42.2%)
 					`,
-					'width': '870px',
-					'height': '260px',
-					'background-size': '100%'
+					'background-repeat': 'no-repeat',
+					'background-position': '91.06% 100%'
 				}
 			});
 
