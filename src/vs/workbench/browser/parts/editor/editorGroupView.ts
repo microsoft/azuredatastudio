@@ -5,7 +5,7 @@
 
 import 'vs/css!./media/editorgroupview';
 import { EditorGroupModel, IEditorOpenOptions, EditorCloseEvent, ISerializedEditorGroupModel, isSerializedEditorGroupModel } from 'vs/workbench/common/editor/editorGroupModel';
-import { GroupIdentifier, CloseDirection, IEditorCloseEvent, ActiveEditorDirtyContext, IEditorPane, EditorGroupEditorsCountContext, SaveReason, IEditorPartOptionsChangeEvent, EditorsOrder, IVisibleEditorPane, ActiveEditorStickyContext, ActiveEditorPinnedContext, EditorResourceAccessor, IEditorMoveEvent, EditorInputCapabilities, IEditorOpenEvent, IEditorInput } from 'vs/workbench/common/editor'; // {{SQL CARBON EDIT}}
+import { GroupIdentifier, CloseDirection, IEditorCloseEvent, ActiveEditorDirtyContext, IEditorPane, EditorGroupEditorsCountContext, SaveReason, IEditorPartOptionsChangeEvent, EditorsOrder, IVisibleEditorPane, ActiveEditorStickyContext, ActiveEditorPinnedContext, EditorResourceAccessor, IEditorMoveEvent, EditorInputCapabilities, IEditorOpenEvent } from 'vs/workbench/common/editor';
 import { EditorInput } from 'vs/workbench/common/editor/editorInput';
 import { SideBySideEditorInput } from 'vs/workbench/common/editor/sideBySideEditorInput';
 import { Event, Emitter, Relay } from 'vs/base/common/event';
@@ -292,8 +292,8 @@ export class EditorGroupView extends Themable implements IEditorGroupView {
 			if (this.isEmpty) {
 				EventHelper.stop(e);
 				// {{SQL CARBON EDIT}} - Create our own editor input so we open an untitled query editor
-				const queryEditorInput: IEditorInput = await this.queryEditorService.newSqlEditor({ connectWithGlobal: true, open: false });
-				this.openEditor((queryEditorInput as EditorInput), { pinned: true });
+				const queryEditorInput = await this.queryEditorService.newSqlEditor({ connectWithGlobal: true, open: false });
+				this.openEditor(queryEditorInput, { pinned: true });
 			}
 		}));
 

@@ -5,12 +5,13 @@
 
 import { IConnectableInput } from 'sql/platform/connection/common/connectionManagement';
 import { IResolvedTextEditorModel } from 'vs/editor/common/services/resolverService';
-import { EditorInputCapabilities, IEditorInput } from 'vs/workbench/common/editor';
+import { EditorInputCapabilities } from 'vs/workbench/common/editor';
+import { EditorInput } from 'vs/workbench/common/editor/editorInput';
 import { EncodingMode } from 'vs/workbench/services/textfile/common/textfiles';
 import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
 import { IUntitledTextEditorModel } from 'vs/workbench/services/untitled/common/untitledTextEditorModel';
 
-export interface IUntitledQueryEditorInput extends IEditorInput, IConnectableInput {
+export interface IUntitledQueryEditorInput extends EditorInput, IConnectableInput {
 
 	resolve(): Promise<IUntitledTextEditorModel & IResolvedTextEditorModel>;
 
