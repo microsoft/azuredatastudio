@@ -55,7 +55,7 @@ import { IFilesConfigurationService, AutoSaveMode } from 'vs/workbench/services/
 import { withNullAsUndefined } from 'vs/base/common/types';
 import { URI } from 'vs/base/common/uri';
 import { IUriIdentityService } from 'vs/workbench/services/uriIdentity/common/uriIdentity';
-import { IQueryEditorService } from 'sql/workbench/services/queryEditor/browser/baseQueryEditorService'; // {{SQL CARBON EDIT}}
+import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService'; // {{SQL CARBON EDIT}}
 
 export class EditorGroupView extends Themable implements IEditorGroupView {
 

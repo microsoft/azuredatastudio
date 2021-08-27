@@ -6,7 +6,7 @@
 import { QueryResultsInput } from 'sql/workbench/common/editor/query/queryResultsInput';
 import { EditDataInput } from 'sql/workbench/browser/editData/editDataInput';
 import { ConnectionType, IConnectableInput, IConnectionCompletionOptions, IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
-import { IQueryEditorService, INewSqlEditorOptions } from 'sql/workbench/services/queryEditor/browser/baseQueryEditorService';
+import { IQueryEditorService, INewSqlEditorOptions } from 'sql/workbench/services/queryEditor/common/queryEditorService';
 import { UntitledQueryEditorInput } from 'sql/base/query/browser/untitledQueryEditorInput';
 
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';

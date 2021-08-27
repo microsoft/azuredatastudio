@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IQueryEditorService, INewSqlEditorOptions } from 'sql/workbench/services/queryEditor/browser/baseQueryEditorService';
+import { IQueryEditorService, INewSqlEditorOptions } from 'sql/workbench/services/queryEditor/common/queryEditorService';
 import { IConnectableInput } from 'sql/platform/connection/common/connectionManagement';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { UntitledQueryEditorInput } from 'sql/base/query/browser/untitledQueryEditorInput';
