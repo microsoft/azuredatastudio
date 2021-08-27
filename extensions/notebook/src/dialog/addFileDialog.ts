@@ -27,7 +27,7 @@ export class AddFileDialog {
 		this._prompter = new CodeAdapter();
 	}
 
-	public get dialog(): azdata.window.Dialog {
+	public get dialog(): azdata.window.Dialog | undefined {
 		return this._dialog;
 	}
 
@@ -96,12 +96,20 @@ export class AddFileDialog {
 		azdata.window.openDialog(this._dialog);
 	}
 
+	public get fileName(): string | undefined {
+		return this._fileNameInputBox?.value;
+	}
+
+	public get titleName(): string | undefined {
+		return this._titleInputBox.value;
+	}
+
 	public async createFile(): Promise<boolean> {
 		try {
 			const dirPath = this._bookItem.contextValue === BookTreeItemType.savedBook ? this._bookItem.rootContentPath : path.dirname(this._bookItem.book.contentPath);
-			const filePath = path.posix.join(dirPath, this._fileNameInputBox.value).concat(this._extension);
-			await this.validatePath(dirPath, this._fileNameInputBox.value.concat(this._extension));
-			const pathDetails = new TocEntryPathHandler(filePath, this._bookItem.rootContentPath, this._titleInputBox.value);
+			const filePath = path.posix.join(dirPath, this.fileName).concat(this._extension);
+			await this.validatePath(dirPath, this.fileName.concat(this._extension));
+			const pathDetails = new TocEntryPathHandler(filePath, this._bookItem.rootContentPath, this.titleName);
 			await this._tocManager.addNewFile(pathDetails, this._bookItem);
 			return true;
 		} catch (error) {
