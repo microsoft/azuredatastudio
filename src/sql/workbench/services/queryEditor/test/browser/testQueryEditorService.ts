@@ -10,6 +10,7 @@ import { UntitledQueryEditorInput } from 'sql/base/query/browser/untitledQueryEd
 import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
 import { QueryResultsInput } from 'sql/workbench/common/editor/query/queryResultsInput';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { IUntitledQueryEditorInput } from 'sql/base/query/common/untitledQueryEditorInput';
 
 export class TestQueryEditorService implements IQueryEditorService {
 	_serviceBrand: undefined;
@@ -19,7 +20,7 @@ export class TestQueryEditorService implements IQueryEditorService {
 		@IEditorService private readonly editorService: IEditorService) {
 	}
 
-	newSqlEditor(options?: INewSqlEditorOptions): Promise<UntitledQueryEditorInput> {
+	newSqlEditor(options?: INewSqlEditorOptions): Promise<IUntitledQueryEditorInput> {
 		const base = this.editorService.createEditorInput({ forceUntitled: true }) as UntitledTextEditorInput;
 		return Promise.resolve(this.instantiationService.createInstance(UntitledQueryEditorInput, '', base, new QueryResultsInput(base.resource.toString(true))));
 	}
