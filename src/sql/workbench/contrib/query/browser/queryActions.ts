@@ -198,7 +198,7 @@ export class RunQueryAction extends QueryTaskbarAction {
 		editor: QueryEditor,
 		@IQueryModelService protected readonly queryModelService: IQueryModelService,
 		@IConnectionManagementService connectionManagementService: IConnectionManagementService,
-		@ICommandService private readonly commandService: ICommandService
+		@ICommandService private readonly commandService?: ICommandService
 	) {
 		super(connectionManagementService, editor, RunQueryAction.ID, RunQueryAction.EnabledClass);
 		this.label = nls.localize('runQueryLabel', "Run");
@@ -239,7 +239,7 @@ export class RunQueryAction extends QueryTaskbarAction {
 
 		if (this.isConnected(editor)) {
 			// Hide IntelliSense suggestions list when running query to match SSMS behavior
-			this.commandService.executeCommand('hideSuggestWidget');
+			this.commandService?.executeCommand('hideSuggestWidget');
 			// if the selection isn't empty then execute the selection
 			// otherwise, either run the statement or the script depending on parameter
 			let selection = editor.getSelection(false);
