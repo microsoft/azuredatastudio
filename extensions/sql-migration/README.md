@@ -7,7 +7,7 @@ The Azure SQL Migration extension in Azure Data Studio brings together a simplif
 - The flexibility to create and configure a self-hosted integration runtime to provide your own compute for access to source SQL Server and backups in your on-premises environment.
 
 ## Installation
-From Azure Data Studio extension gallery, install the latest version of “Azure SQL Migration” extension and launch the wizard as shown below.
+From Azure Data Studio marketplace, install the latest version of “Azure SQL Migration” extension and launch the wizard as shown below.
 
 ![migration-animation](https://raw.githubusercontent.com/microsoft/azuredatastudio/main/extensions/sql-migration/images/ADSMigration.gif)
 
@@ -33,7 +33,7 @@ The following migration modes are supported for the corresponding Azure SQL targ
 
 
 ## Need assistance or have questions/feedback
-Please reach out to DMSFeedback@microsoft.com
+Refer to [Get help from Microsoft support](https://docs.microsoft.com/en-us/sql/azure-data-studio/extensions/azure-sql-migration-extension#get-help-from-microsoft-support).
 
 
 ## Code of Conduct
