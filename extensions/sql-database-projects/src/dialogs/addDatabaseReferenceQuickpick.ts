@@ -143,7 +143,7 @@ async function addDacpacReference(): Promise<IDacpacReferenceSettings | undefine
 	// 3. Prompt for dacpac location
 	// Show quick pick with just browse option to give user context about what the file dialog is for (since that doesn't always have a title)
 	const browseSelected = await vscode.window.showQuickPick(
-		[constants.browseEllipsis],
+		[constants.browseEllipsisWithIcon],
 		{ title: constants.selectDacpac, ignoreFocusOut: true });
 	if (!browseSelected) {
 		return undefined;
