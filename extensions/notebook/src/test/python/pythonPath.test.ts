@@ -196,7 +196,7 @@ describe('PythonPathLookup', function () {
 	it('getInfoForPaths - empty array arg', async () => {
 		let getInfoStub = sinon.stub(pathLookup, 'getInfoForPath').rejects('Unexpected getInfoForPath call');
 		let result = await pathLookup.getInfoForPaths([]);
-		should(result).not.be.undefined;
+		should(result).not.be.undefined();
 		should(result.length).be.equal(0);
 		should(getInfoStub.callCount).be.equal(0);
 	});

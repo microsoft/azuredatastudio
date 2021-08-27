@@ -79,7 +79,7 @@ steps:
 
 - script: |
     set -e
-    yarn npm-run-all -lp core-ci extensions-ci hygiene eslint valid-layers-check sqllint strict-vscode
+    yarn npm-run-all -lp core-ci extensions-ci hygiene eslint valid-layers-check sqllint extensions-lint strict-vscode
   displayName: Compile & Hygiene
 
 - script: |
