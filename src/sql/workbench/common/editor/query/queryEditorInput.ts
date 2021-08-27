@@ -327,4 +327,10 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 	public get isSharedSession(): boolean {
 		return !!(this.uri && startsWith(this.uri, 'vsls:'));
 	}
+
+	public setState(oldState: QueryEditorState): void {
+		let properties = Object.keys(this.state);
+
+		properties.forEach((x, i) => x);
+	}
 }

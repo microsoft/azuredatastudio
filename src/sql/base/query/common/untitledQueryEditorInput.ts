@@ -47,7 +47,7 @@ export class UntitledQueryEditorInput extends QueryEditorInput implements IEncod
 	}
 
 	override async save(group: GroupIdentifier, options?: ISaveOptions): Promise<IEditorInput | undefined> {
-		let preProcessed = await this.text.saveAs(group, options);
+		let preProcessed = await this.text.save(group, options);
 		let newUri = preProcessed.resource.toString(true);
 		this._results.uri = newUri;
 		await this.changeConnectionUriForQuery(newUri);
@@ -57,6 +57,7 @@ export class UntitledQueryEditorInput extends QueryEditorInput implements IEncod
 		newInput.state.executing = this.state.executing;
 		newInput.state.connecting = this.state.connecting;
 		newInput.state.isSqlCmdMode = this.state.isSqlCmdMode;
+		newInput.setState(this.state);
 		return newInput;
 	}
 
