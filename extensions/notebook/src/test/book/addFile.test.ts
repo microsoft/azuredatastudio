@@ -83,11 +83,11 @@ describe('Add File Dialog', function () {
 		await fs.mkdir(testDir);
 
 		// Error case
-		let fileDialog = new AddFileDialog(bookTocManager, bookTreeItem, fileExtension);
-		await fileDialog.createDialog();
-
 		let mockBookManager = TypeMoq.Mock.ofType<IBookTocManager>();
 		mockBookManager.setup(m => m.addNewFile(TypeMoq.It.isAny(), TypeMoq.It.isAny())).throws(new Error('Expected test error.'));
+
+		let fileDialog = new AddFileDialog(mockBookManager.object, bookTreeItem, fileExtension);
+		await fileDialog.createDialog();
 
 		await should(fileDialog.createFile(testFileName, testTitle)).be.resolvedWith(false);
 		should(fileDialog.dialog?.message).not.be.undefined();
