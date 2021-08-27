@@ -10,7 +10,7 @@ import * as nls from 'vs/nls';
 import Severity from 'vs/base/common/severity';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
-import { IQueryEditorService } from 'sql/workbench/services/queryEditor/browser/baseQueryEditorService';
+import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
 import { IScriptingService, ScriptOperation } from 'sql/platform/scripting/common/scriptingService';
 
 // map for the version of SQL Server (default is 140)

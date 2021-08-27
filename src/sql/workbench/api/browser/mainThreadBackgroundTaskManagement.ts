@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ITaskService } from 'sql/workbench/services/tasks/browser/tasksService';
+import { ITaskService } from 'sql/workbench/services/tasks/common/tasksService';
 import { MainThreadBackgroundTaskManagementShape, SqlMainContext, ExtHostBackgroundTaskManagementShape, SqlExtHostContext } from 'sql/workbench/api/common/sqlExtHost.protocol';
 
 import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';

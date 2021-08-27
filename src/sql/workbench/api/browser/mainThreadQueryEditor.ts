@@ -17,7 +17,7 @@ import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { ILogService } from 'vs/platform/log/common/log';
 import { URI } from 'vs/base/common/uri';
-import { IQueryEditorService } from 'sql/workbench/services/queryEditor/browser/baseQueryEditorService';
+import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadQueryEditor)
 export class MainThreadQueryEditor extends Disposable implements MainThreadQueryEditorShape {

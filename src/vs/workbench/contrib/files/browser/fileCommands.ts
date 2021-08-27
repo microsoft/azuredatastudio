@@ -46,7 +46,7 @@ import { isPromiseCanceledError } from 'vs/base/common/errors';
 import { toAction } from 'vs/base/common/actions';
 import { EditorOverride } from 'vs/platform/editor/common/editor';
 import { hash } from 'vs/base/common/hash';
-import { IQueryEditorService } from 'sql/workbench/services/queryEditor/browser/baseQueryEditorService'; // {{SQL CARBON EDIT}} New query command
+import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService'; // {{SQL CARBON EDIT}} New query command
 
 // Commands
 

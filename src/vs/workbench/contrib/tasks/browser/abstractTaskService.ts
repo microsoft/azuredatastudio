@@ -86,7 +86,7 @@ import { Schemas } from 'vs/base/common/network';
 
 // {{SQL CARBON EDIT}}
 // integration with tasks view panel
-import { ITaskService as ISqlTaskService, TaskStatusChangeArgs } from 'sql/workbench/services/tasks/browser/tasksService';
+import { ITaskService as ISqlTaskService, TaskStatusChangeArgs } from 'sql/workbench/services/tasks/common/tasksService';
 import { TaskStatus } from 'sql/workbench/api/common/extHostBackgroundTaskManagement';
 import { TaskInfo } from 'azdata';
 

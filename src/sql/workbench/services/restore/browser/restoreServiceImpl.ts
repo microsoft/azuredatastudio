@@ -16,7 +16,7 @@ import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { ProviderConnectionInfo } from 'sql/platform/connection/common/providerConnectionInfo';
 import * as Utils from 'sql/platform/connection/common/utils';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
-import { ITaskService } from 'sql/workbench/services/tasks/browser/tasksService';
+import { ITaskService } from 'sql/workbench/services/tasks/common/tasksService';
 import { TaskStatus, TaskNode } from 'sql/workbench/services/tasks/common/tasksNode';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';

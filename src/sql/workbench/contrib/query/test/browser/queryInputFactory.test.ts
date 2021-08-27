@@ -23,7 +23,7 @@ import { UntitledQueryEditorInput } from 'sql/base/query/browser/untitledQueryEd
 import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
 import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/common/untitledTextEditorService';
 import { isThenable } from 'vs/base/common/async';
-import { IQueryEditorService } from 'sql/workbench/services/queryEditor/browser/baseQueryEditorService';
+import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
 import { QueryResultsInput } from 'sql/workbench/common/editor/query/queryResultsInput';
 import { extUri } from 'vs/base/common/resources';
 import { IResourceEditorInputIdentifier } from 'vs/platform/editor/common/editor';

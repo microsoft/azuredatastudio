@@ -159,7 +159,7 @@ import { CapabilitiesService } from 'sql/platform/capabilities/common/capabiliti
 import { ICredentialsService as sqlICredentialsService, CredentialsService } from 'sql/platform/credentials/common/credentialsService';
 import { IQueryModelService } from 'sql/workbench/services/query/common/queryModel';
 import { QueryModelService } from 'sql/workbench/services/query/common/queryModelService';
-import { IQueryEditorService } from 'sql/workbench/services/queryEditor/browser/baseQueryEditorService';
+import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
 import { QueryEditorService } from 'sql/workbench/services/queryEditor/browser/queryEditorService';
 import { IQueryManagementService, QueryManagementService } from 'sql/workbench/services/query/common/queryManagement';
 import { IResourceProviderService } from 'sql/workbench/services/resourceProvider/common/resourceProviderService';
@@ -172,7 +172,7 @@ import { IAngularEventingService } from 'sql/platform/angularEventing/browser/an
 import { AngularEventingService } from 'sql/platform/angularEventing/browser/angularEventingServiceImpl';
 import { ISerializationService, SerializationService } from 'sql/platform/serialization/common/serializationService';
 import { IMetadataService, MetadataService } from 'sql/platform/metadata/common/metadataService';
-import { ITaskService, TaskService } from 'sql/workbench/services/tasks/browser/tasksService';
+import { ITaskService, TaskService } from 'sql/workbench/services/tasks/common/tasksService';
 import { IEditorDescriptorService, EditorDescriptorService } from 'sql/workbench/services/queryEditor/browser/editorDescriptorService';
 import { IAdminService, AdminService } from 'sql/workbench/services/admin/common/adminService';
 import { IJobManagementService } from 'sql/workbench/services/jobManagement/common/interfaces';
