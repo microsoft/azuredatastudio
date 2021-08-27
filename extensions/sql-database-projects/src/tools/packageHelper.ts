@@ -20,12 +20,17 @@ export class PackageHelper {
 	 * Constructs the parameters for a dotnet add package
 	 * @param projectPath full path to project to add package to
 	 * @param packageName name of package
-	 * @param packageVersion version of package
+	 * @param packageVersion optional version of package. If none, latest will be pulled in
 	 * @returns string constructed with the arguments for dotnet add package
 	 */
-	public constructAddPackageArguments(projectPath: string, packageName: string, packageVersion: string): string {
+	public constructAddPackageArguments(projectPath: string, packageName: string, packageVersion?: string): string {
 		projectPath = utils.getQuotedPath(projectPath);
-		return ` add ${projectPath} package ${packageName} -v ${packageVersion}`;
+		if (packageVersion) {
+			return ` add ${projectPath} package ${packageName} -v ${packageVersion}`;
+		} else {
+			// pull in the latest version of the package and allow prerelease versions
+			return ` add ${projectPath} package ${packageName} --prerelease`;
+		}
 	}
 
 	/**
@@ -33,11 +38,11 @@ export class PackageHelper {
 	 * for this package version, the project file won't get updated
 	 * @param projectPath full path to project to add package to
 	 * @param packageName name of package
-	 * @param packageVersion version of package
+	 * @param packageVersion optional version of package. If none, latest will be pulled in
 	 */
-	public async addPackage(project: string, packageName: string, packageVersion: string): Promise<void> {
+	public async addPackage(project: string, packageName: string, packageVersion?: string): Promise<void> {
 		const addOptions: DotNetCommandOptions = {
-			commandTitle: 'Add Package',
+			commandTitle: constants.addPackage,
 			argument: this.constructAddPackageArguments(project, packageName, packageVersion)
 		};
 
@@ -48,12 +53,15 @@ export class PackageHelper {
 	 * Adds specified package to Azure Functions project the specified file is a part of
 	 * @param filePath full path to file to find the containing AF project of to add package reference to
 	 * @param packageName package to add reference to
-	 * @param packageVersion version of package
+	 * @param packageVersion optional version of package. If none, latest will be pulled in
 	 */
-	public async addPackageToAFProjectContainingFile(filePath: string, packageName: string, packageVersion: string): Promise<void> {
+	public async addPackageToAFProjectContainingFile(filePath: string, packageName: string, packageVersion?: string): Promise<void> {
 		try {
 			const project = await this.getAFProjectContainingFile(filePath);
 
+			// if no AF projects were found, an error gets thrown from getAFProjectContainingFile(). This check is temporary until
+			// multiple AF projects in the workspace is handled. That scenario returns undefined and shows an info message telling the
+			// user to make sure their project has the package reference
 			if (project) {
 				await this.addPackage(project, packageName, packageVersion);
 			}
