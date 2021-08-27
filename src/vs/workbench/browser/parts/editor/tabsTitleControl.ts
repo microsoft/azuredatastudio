@@ -51,7 +51,7 @@ import { isSafari } from 'vs/base/browser/browser';
 import { equals } from 'vs/base/common/objects';
 
 import { IQueryEditorConfiguration } from 'sql/platform/query/common/query'; // {{SQL CARBON EDIT}}
-import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService'; // {{SQL CARBON EDIT}}
+import { IQueryEditorService } from 'sql/workbench/services/queryEditor/browser/baseQueryEditorService'; // {{SQL CARBON EDIT}}
 
 interface IEditorInputLabel {
 	name?: string;

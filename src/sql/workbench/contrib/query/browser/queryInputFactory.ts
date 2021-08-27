@@ -21,7 +21,7 @@ import { IEditorService } from 'vs/workbench/services/editor/common/editorServic
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { IFileService } from 'vs/platform/files/common/files';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
+import { IQueryEditorService } from 'sql/workbench/services/queryEditor/browser/baseQueryEditorService';
 import { IQueryEditorConfiguration } from 'sql/platform/query/common/query';
 
 const editorInputFactoryRegistry = Registry.as<IEditorInputFactoryRegistry>(EditorExtensions.EditorInputFactories);

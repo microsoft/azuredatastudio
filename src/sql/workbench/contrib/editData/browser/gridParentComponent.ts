@@ -15,7 +15,7 @@ import { DataService } from 'sql/workbench/services/query/common/dataService';
 import * as actions from 'sql/workbench/contrib/editData/browser/gridActions';
 import * as GridContentEvents from 'sql/workbench/services/query/common/gridContentEvents';
 import { ResultsVisibleContext, ResultsGridFocussedContext, ResultsMessagesFocussedContext, QueryEditorVisibleContext } from 'sql/workbench/contrib/query/common/queryContext';
-import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
+import { IQueryEditorService } from 'sql/workbench/services/queryEditor/browser/baseQueryEditorService';
 import { CellSelectionModel } from 'sql/base/browser/ui/table/plugins/cellSelectionModel.plugin';
 
 import { IAction } from 'vs/base/common/actions';

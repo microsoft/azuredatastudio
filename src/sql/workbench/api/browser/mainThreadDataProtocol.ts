@@ -19,7 +19,7 @@ import { IAdminService } from 'sql/workbench/services/admin/common/adminService'
 import { IJobManagementService } from 'sql/workbench/services/jobManagement/common/interfaces';
 import { IBackupService } from 'sql/platform/backup/common/backupService';
 import { IRestoreService } from 'sql/workbench/services/restore/common/restoreService';
-import { ITaskService } from 'sql/workbench/services/tasks/common/tasksService';
+import { ITaskService } from 'sql/workbench/services/tasks/browser/tasksService';
 import { IProfilerService } from 'sql/workbench/services/profiler/browser/interfaces';
 import { ISerializationService } from 'sql/platform/serialization/common/serializationService';
 import { IFileBrowserService } from 'sql/workbench/services/fileBrowser/common/interfaces';

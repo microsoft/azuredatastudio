@@ -41,7 +41,7 @@ import { IPanelService } from 'vs/workbench/services/panel/common/panelService';
 import { IPathService } from 'vs/workbench/services/path/common/pathService';
 import { IPreferencesService } from 'vs/workbench/services/preferences/common/preferences';
 import { ITextFileService } from 'vs/workbench/services/textfile/common/textfiles';
-import { ITaskService as ISqlTaskService } from 'sql/workbench/services/tasks/common/tasksService'; // {{SQL CARBON EDIT}} integration with tasks view panel
+import { ITaskService as ISqlTaskService } from 'sql/workbench/services/tasks/browser/tasksService'; // {{SQL CARBON EDIT}} integration with tasks view panel
 import { IWorkspaceTrustManagementService, IWorkspaceTrustRequestService } from 'vs/platform/workspace/common/workspaceTrust';
 import { ITerminalProfileResolverService } from 'vs/workbench/contrib/terminal/common/terminal';
 

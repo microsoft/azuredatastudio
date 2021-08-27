@@ -31,7 +31,7 @@ import { Dropdown } from 'sql/base/parts/editableDropdown/browser/dropdown';
 import { Task } from 'sql/workbench/services/tasks/browser/tasksRegistry';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
-import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
+import { IQueryEditorService } from 'sql/workbench/services/queryEditor/browser/baseQueryEditorService';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { getCurrentGlobalConnection } from 'sql/workbench/browser/taskUtilities';
 import { ServicesAccessor, IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
