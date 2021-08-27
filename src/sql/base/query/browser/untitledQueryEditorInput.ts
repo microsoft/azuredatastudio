@@ -14,10 +14,11 @@ import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/u
 import { IUntitledTextEditorModel } from 'vs/workbench/services/untitled/common/untitledTextEditorModel';
 import { EncodingMode, IEncodingSupport } from 'vs/workbench/services/textfile/common/textfiles';
 import { EditorInputCapabilities } from 'vs/workbench/common/editor';
+import { UNTITLED_QUERY_EDITOR_TYPEID } from 'sql/workbench/common/constants';
 
 export class UntitledQueryEditorInput extends QueryEditorInput implements IEncodingSupport {
 
-	public static readonly ID = 'workbench.editorInput.untitledQueryInput';
+	public static readonly ID = UNTITLED_QUERY_EDITOR_TYPEID;
 
 	constructor(
 		description: string | undefined,
