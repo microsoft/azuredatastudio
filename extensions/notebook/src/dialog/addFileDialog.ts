@@ -92,24 +92,16 @@ export class AddFileDialog {
 			await this.view.initializeModel(this._formModel);
 		});
 		this._dialog.okButton.label = loc.add;
-		this._dialog.registerCloseValidator(async () => await this.createFile());
+		this._dialog.registerCloseValidator(async () => await this.createFile(this._fileNameInputBox.value, this._titleInputBox.value));
 		azdata.window.openDialog(this._dialog);
 	}
 
-	public get fileName(): string | undefined {
-		return this._fileNameInputBox?.value;
-	}
-
-	public get titleName(): string | undefined {
-		return this._titleInputBox.value;
-	}
-
-	public async createFile(): Promise<boolean> {
+	public async createFile(fileName: string, titleName: string): Promise<boolean> {
 		try {
 			const dirPath = this._bookItem.contextValue === BookTreeItemType.savedBook ? this._bookItem.rootContentPath : path.dirname(this._bookItem.book.contentPath);
-			const filePath = path.posix.join(dirPath, this.fileName).concat(this._extension);
-			await this.validatePath(dirPath, this.fileName.concat(this._extension));
-			const pathDetails = new TocEntryPathHandler(filePath, this._bookItem.rootContentPath, this.titleName);
+			const filePath = path.posix.join(dirPath, fileName).concat(this._extension);
+			await this.validatePath(dirPath, fileName.concat(this._extension));
+			const pathDetails = new TocEntryPathHandler(filePath, this._bookItem.rootContentPath, titleName);
 			await this._tocManager.addNewFile(pathDetails, this._bookItem);
 			return true;
 		} catch (error) {

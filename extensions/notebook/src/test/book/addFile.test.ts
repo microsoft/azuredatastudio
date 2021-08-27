@@ -18,9 +18,8 @@ import { TocEntryPathHandler } from '../../book/tocEntryPathHandler';
 describe('Add File Dialog', function () {
 	let bookTocManager: IBookTocManager;
 	let bookTreeItem: BookTreeItem;
-	let fileExtension: utils.FileExtension;
+	const fileExtension = utils.FileExtension.Notebook;
 	let bookItemFormat: BookTreeItemFormat;
-	const rootContentPath = 'testRoot';
 
 	beforeEach(() => {
 		let mockBookManager = TypeMoq.Mock.ofType<IBookTocManager>();
@@ -29,17 +28,14 @@ describe('Add File Dialog', function () {
 
 		let mockTreeItem = TypeMoq.Mock.ofType<BookTreeItem>();
 		mockTreeItem.setup(i => i.contextValue).returns(() => BookTreeItemType.savedBook);
-		mockTreeItem.setup(i => i.rootContentPath).returns(() => rootContentPath);
+		mockTreeItem.setup(i => i.rootContentPath).returns(() => '');
 
 		let mockItemFormat = TypeMoq.Mock.ofType<BookTreeItemFormat>();
-		mockItemFormat.setup(f => f.contentPath).returns(() => undefined);
+		mockItemFormat.setup(f => f.contentPath).returns(() => '');
 		bookItemFormat = mockItemFormat.object;
 
 		mockTreeItem.setup(i => i.book).returns(() => bookItemFormat);
 		bookTreeItem = mockTreeItem.object;
-
-		let mockFileExtension = TypeMoq.Mock.ofType<utils.FileExtension>();
-		fileExtension = mockFileExtension.object;
 	});
 
 	it('Start dialog test', async () => {
@@ -55,7 +51,7 @@ describe('Add File Dialog', function () {
 
 		let tempDir = os.tmpdir();
 		let testDir = path.join(tempDir, utils.generateGuid());
-		let fileBasename = 'addFileDialogTest.txt';
+		let fileBasename = 'addFileDialogTest.ipynb';
 		let testFilePath = path.join(testDir, fileBasename);
 
 		// Folder doesn't exist
@@ -78,37 +74,44 @@ describe('Add File Dialog', function () {
 	});
 
 	it('Create File test', async () => {
+		let tempDir = os.tmpdir();
+		let testDir = path.join(tempDir, utils.generateGuid());
+		let testFileName = 'addFileDialogTest';
+		let posixFilePath = path.posix.join(testDir, testFileName).concat(fileExtension);
+		let testTitle = 'Test Title';
+
+		await fs.mkdir(testDir);
+
+		// Error case
 		let fileDialog = new AddFileDialog(bookTocManager, bookTreeItem, fileExtension);
 		await fileDialog.createDialog();
 
-		// Error case
-		sinon.stub(fileDialog, 'fileName').returns('');
-		sinon.stub(fileDialog, 'validatePath').rejects(new Error('Expected test error'));
+		let mockBookManager = TypeMoq.Mock.ofType<IBookTocManager>();
+		mockBookManager.setup(m => m.addNewFile(TypeMoq.It.isAny(), TypeMoq.It.isAny())).throws(new Error('Expected test error.'));
 
-		await should(fileDialog.createFile()).be.resolvedWith(false);
+		await should(fileDialog.createFile(testFileName, testTitle)).be.resolvedWith(false);
 		should(fileDialog.dialog?.message).not.be.undefined();
 
 		sinon.restore();
 
 		// Success case
 		let testPathDetails: TocEntryPathHandler[] = [];
-		let mockBookManager = TypeMoq.Mock.ofType<IBookTocManager>();
+		mockBookManager = TypeMoq.Mock.ofType<IBookTocManager>();
 		mockBookManager.setup(m => m.addNewFile(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns((path, item) => { testPathDetails.push(path); return Promise.resolve(); });
 
-		fileDialog = new AddFileDialog(mockBookManager.object, bookTreeItem, fileExtension);
+		let mockTreeItem = TypeMoq.Mock.ofType<BookTreeItem>();
+		mockTreeItem.setup(i => i.contextValue).returns(() => BookTreeItemType.savedBook);
+		mockTreeItem.setup(i => i.rootContentPath).returns(() => testDir);
+
+		fileDialog = new AddFileDialog(mockBookManager.object, mockTreeItem.object, fileExtension);
 		await fileDialog.createDialog();
 
-		let testFileName = 'testFile.txt';
-		sinon.stub(fileDialog, 'fileName').returns(testFileName);
-		let testTitle = 'Test Title';
-		sinon.stub(fileDialog, 'titleName').returns(testTitle);
-		sinon.stub(fileDialog, 'validatePath').resolves();
-
-		await should(fileDialog.createFile()).be.resolvedWith(true);
+		let createFileResult = await fileDialog.createFile(testFileName, testTitle);
 		should(fileDialog.dialog.message).be.undefined();
+		should(createFileResult).be.true();
 
 		should(testPathDetails.length).be.eql(1);
-		should(testPathDetails[0]).be.deepEqual(new TocEntryPathHandler(testFileName, rootContentPath, testTitle));
+		should(testPathDetails[0]).be.deepEqual(new TocEntryPathHandler(posixFilePath, testDir, testTitle));
 
 		sinon.restore();
 	});
