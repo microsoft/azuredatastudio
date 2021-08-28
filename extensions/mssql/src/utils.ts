@@ -12,6 +12,8 @@ import * as os from 'os';
 import * as findRemoveSync from 'find-remove';
 import * as constants from './constants';
 import { promises as fs } from 'fs';
+import { IConfig, ServerProvider } from '@microsoft/ads-service-downloader';
+import { env } from 'process';
 
 const configTracingLevel = 'tracingLevel';
 const configLogRetentionMinutes = 'logRetentionMinutes';
@@ -303,4 +305,32 @@ export async function exists(path: string): Promise<boolean> {
 	} catch (e) {
 		return false;
 	}
+}
+
+export async function getOrDownloadServer(config: IConfig, handleServerEvent?: (e: string, ...args: any[]) => void): Promise<string> {
+	// This env var is used to override the base install location of STS - primarily to be used for debugging scenarios.
+	try {
+		const stsRootPath = env['ADS_SQLTOOLSSERVICE'];
+		if (stsRootPath) {
+			for (const exeFile of config.executableFiles) {
+				const serverFullPath = path.join(stsRootPath, exeFile);
+				console.log(`SEARCHING ${serverFullPath}`);
+				if (await exists(serverFullPath)) {
+					console.log(`Using ${serverFullPath} as SQL Tools Service client`);
+					return serverFullPath;
+				}
+			}
+			console.warn(`Could not find valid SQL Tools Service EXE from ${JSON.stringify(config.executableFiles)} at ${stsRootPath}, falling back to config`);
+		}
+	} catch (err) {
+		console.warn('Unexpected error getting override path for SQL Tools Service client ', err);
+		// Fall back to config if something unexpected happens here
+	}
+
+	const serverdownloader = new ServerProvider(config);
+	if (handleServerEvent) {
+		serverdownloader.eventEmitter.onAny(handleServerEvent);
+	}
+
+	return serverdownloader.getOrDownloadServer();
 }
