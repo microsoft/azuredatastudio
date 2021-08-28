@@ -351,7 +351,7 @@ export class MarkdownToolbarComponent extends AngularDisposable {
 			}
 			const parentNode = anchorNode.parentNode as HTMLAnchorElement;
 			const linkHandler = new NotebookLinkHandler(this.cellModel?.notebookModel?.notebookUri, parentNode, this._configurationService);
-			return decodeURI(linkHandler.getLinkUrl());
+			return linkHandler.getLinkUrl();
 		} else {
 			const editorControl = this.getCellEditorControl();
 			const selection = editorControl?.getSelection();

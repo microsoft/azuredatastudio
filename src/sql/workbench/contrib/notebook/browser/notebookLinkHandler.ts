@@ -50,10 +50,6 @@ export class NotebookLinkHandler {
 			} else {
 				this._href = this._link.attributes['href']?.nodeValue;
 			}
-			let spaceLink = /\s/.test(this._link.attributes['href']?.nodeValue);
-			if (spaceLink) {
-				this._href = this._link.attributes['href']?.nodeValue;
-			}
 			this._notebookUriLink = this._href ? URI.parse(encodeURI(this._href)) : undefined;
 			this._isFile = this._link.protocol === 'file:';
 			this._isAnchorLink = this._notebookUriLink?.fragment ? true : false;
@@ -75,7 +71,7 @@ export class NotebookLinkHandler {
 		if (typeof this._link === 'string') {
 			// Does not convert absolute path to relative path
 			if (this._isFile && this.isAbsolutePath && this._configurationService.getValue(keepAbsolutePathConfigName) === true) {
-				return encodeURI(this._link);
+				return this._link;
 			}
 			// sets the string to absolute path to be used to resolve
 			if (this._isFile && !this.isAbsolutePath && !this._isAnchorLink) {
@@ -87,14 +83,14 @@ export class NotebookLinkHandler {
 			 * We return the absolute path for the link so that it will get used in the as the href for the anchor HTML element
 			 * (in linkCalloutDialog document.execCommand('insertHTML') and therefore will call getLinkURL() with HTMLAnchorElement to then get the relative path
 			*/
-			return encodeURI(this._link).replace(/%5C/g, '\\');
+			return this._link;
 		} else {
 			// cases where we pass the HTMLAnchorElement
 			if (this._notebookUriLink && this._isFile) {
 				let targetUri: URI;
 				// Does not convert absolute path to relative path if keep Absolute Path setting is enabled
 				if (this.isAbsolutePath && this._configurationService.getValue(keepAbsolutePathConfigName) === true) {
-					return escape(this._href);
+					return encodeURI(this._href);
 				} else {
 					if (this._isAnchorLink) {
 						targetUri = this.getUriAnchorLink(this._link, this._notebookURI);

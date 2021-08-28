@@ -137,7 +137,7 @@ export class HTMLMarkdownConverter {
 				const linkHandler = new NotebookLinkHandler(this.notebookUri, node, this.configurationService);
 				const href = linkHandler.getLinkUrl();
 				// we output the decodedURI for markdown rendering
-				return `[${content}](${decodeURI(href)})`;
+				return `[${content}](${href})`;
 			}
 		});
 		// Only nested list case differs from original turndown rule
