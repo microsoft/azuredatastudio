@@ -877,20 +877,25 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	}
 
 	public async refreshAzureAccountTokenIfNecessary(uri: string): Promise<void> {
-		let profile = this.getConnectionProfile(uri);
+		let profile = this._connectionStatusManager.getConnectionProfile(uri);
 		if (!profile) {
+			this._logService.info(`Connection not found for uri ${uri}`);
 			return;
 		}
 		let expiry = profile.options.azureAccountTokenExpiresOn;
 		if (expiry && !Number.isNaN(expiry)) {
 			const currentTime = new Date().getTime() / 1000;
 			if (currentTime >= expiry) {
-				this._logService.info(`Access token expired for connection ${profile.id}`);
-				let connectionResult = await this.connect(profile, uri);
+				this._logService.info(`Access token expired for connection ${profile.id} with uri ${uri}`);
+				let newProfile = new ConnectionProfile(this._capabilitiesService, profile);
+				let connectionResult = await this.connect(newProfile, uri);
 				if (!connectionResult) {
-					this._logService.error(`Failed to refresh connection ${profile.id}`);
+					this._logService.error(`Failed to refresh connection ${profile.id} with uri ${uri}`);
+					this.disconnect(newProfile);
 				}
+				return;
 			}
+			this._logService.info(`No need to refresh Azure acccount token for connection ${profile.id} with uri ${uri}`);
 		}
 	}
 
@@ -936,13 +941,12 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		});
 	}
 
-	private async sendListDatabasesRequest(uri: string): Promise<azdata.ListDatabasesResult> {
+	private sendListDatabasesRequest(uri: string): Thenable<azdata.ListDatabasesResult> {
 		let providerId: string = this.getProviderIdFromUri(uri);
 		if (!providerId) {
 			return Promise.resolve(undefined);
 		}
 
-		await this.refreshAzureAccountTokenIfNecessary(uri);
 		return this._providers.get(providerId).onReady.then(provider => {
 			return provider.listDatabases(uri).then(result => {
 				if (result && result.databaseNames) {
@@ -1261,8 +1265,9 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		return this._connectionStatusManager.isConnected(fileUri) ? this._connectionStatusManager.findConnection(fileUri) : undefined;
 	}
 
-	public listDatabases(connectionUri: string): Thenable<azdata.ListDatabasesResult | undefined> {
+	public async listDatabases(connectionUri: string): Promise<azdata.ListDatabasesResult | undefined> {
 		const self = this;
+		await this.refreshAzureAccountTokenIfNecessary(connectionUri);
 		if (self.isConnected(connectionUri)) {
 			return self.sendListDatabasesRequest(connectionUri);
 		}
