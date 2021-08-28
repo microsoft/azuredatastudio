@@ -32,7 +32,7 @@ import { SqlFlavorStatusbarItem, ChangeFlavorAction } from 'sql/workbench/contri
 import { EditorExtensions, IEditorInputFactoryRegistry } from 'vs/workbench/common/editor';
 import { FileQueryEditorInput } from 'sql/workbench/contrib/query/common/fileQueryEditorInput';
 import { FileQueryEditorInputSerializer, QueryEditorLanguageAssociation, UntitledQueryEditorInputSerializer } from 'sql/workbench/contrib/query/browser/queryInputFactory';
-import { UntitledQueryEditorInput } from 'sql/base/query/common/untitledQueryEditorInput';
+import { UntitledQueryEditorInput } from 'sql/base/query/browser/untitledQueryEditorInput';
 import { ILanguageAssociationRegistry, Extensions as LanguageAssociationExtensions } from 'sql/workbench/services/languageAssociation/common/languageAssociation';
 import { NewQueryTask, OE_NEW_QUERY_ACTION_ID, DE_NEW_QUERY_COMMAND_ID } from 'sql/workbench/contrib/query/browser/queryActions';
 import { TreeNodeContextKey } from 'sql/workbench/services/objectExplorer/common/treeNodeContextKey';
