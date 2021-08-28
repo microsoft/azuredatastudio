@@ -8,7 +8,7 @@ import QueryRunner from 'sql/workbench/services/query/common/queryRunner';
 import { ICellValue, ResultSetSubset } from 'sql/workbench/services/query/common/query';
 import { DataService } from 'sql/workbench/services/query/common/dataService';
 import { IQueryModelService, IQueryEvent } from 'sql/workbench/services/query/common/queryModel';
-
+import { ILogService } from 'vs/platform/log/common/log';
 import * as azdata from 'azdata';
 
 import * as nls from 'vs/nls';
@@ -80,7 +80,8 @@ export class QueryModelService implements IQueryModelService {
 	// CONSTRUCTOR /////////////////////////////////////////////////////////
 	constructor(
 		@IInstantiationService private _instantiationService: IInstantiationService,
-		@INotificationService private _notificationService: INotificationService
+		@INotificationService private _notificationService: INotificationService,
+		@ILogService private _logService: ILogService
 	) {
 		this._queryInfoMap = new Map<string, QueryInfo>();
 		this._onRunQueryStart = new Emitter<string>();
@@ -414,27 +415,17 @@ export class QueryModelService implements IQueryModelService {
 		}
 	}
 
-	public async changeConnectionUriForQuery(newUri: string, oldUri: string): Promise<void> {
+	public async changeConnectionUri(newUri: string, oldUri: string): Promise<void> {
 		// Get existing query runner
 		let queryRunner = this.internalGetQueryRunner(oldUri);
 		if (!queryRunner) {
-			let errorMessage = strings.format(nls.localize('msgNoQueryRunnerForChangeConnection', "A QueryRunner was not found for {0}"), oldUri);
-			this._notificationService.notify({
-				severity: Severity.Error,
-				message: errorMessage
-			});
-			return Promise.reject(new Error(errorMessage));
+			this._logService.error(`A Query and QueryRunner was not found for '${oldUri}'`);
 		}
 		else if (this._queryInfoMap.has(newUri)) {
-			let errorMessage = strings.format(nls.localize('msgDuplicateUriFoundForChangeConnection', "New URI {0} already has query info associated with it."), newUri);
-			this._notificationService.notify({
-				severity: Severity.Error,
-				message: errorMessage
-			});
-			return Promise.reject(new Error(errorMessage));
+			this._logService.error(`New URI '${newUri}' already has query info associated with it.`);
 		}
 
-		await queryRunner.changeConnectionUriForQuery(newUri, oldUri);
+		await queryRunner.changeConnectionUri(newUri, oldUri);
 
 		// remove the old key and set new key with same query info as old uri. (Info existence is checked in internalGetQueryRunner)
 		let info = this._queryInfoMap.get(oldUri);

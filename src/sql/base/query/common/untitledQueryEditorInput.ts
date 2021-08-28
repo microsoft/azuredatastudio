@@ -50,14 +50,9 @@ export class UntitledQueryEditorInput extends QueryEditorInput implements IEncod
 		let preProcessed = await this.text.save(group, options);
 		let newUri = preProcessed.resource.toString(true);
 		this._results.uri = newUri;
-		await this.changeConnectionUriForQuery(newUri);
+		await this.changeConnectionUri(newUri);
 		let newInput = this.instantiationService.createInstance(FileQueryEditorInput, '', (preProcessed as FileEditorInput), this.results);
-		newInput.state.resultsVisible = this.state.resultsVisible;
-		newInput.state.connected = this.state.connected;
-		newInput.state.executing = this.state.executing;
-		newInput.state.connecting = this.state.connecting;
-		newInput.state.isSqlCmdMode = this.state.isSqlCmdMode;
-		newInput.setState(this.state);
+		newInput.state.setState(this.state);
 		return newInput;
 	}
 
@@ -65,13 +60,9 @@ export class UntitledQueryEditorInput extends QueryEditorInput implements IEncod
 		let preProcessed = await this.text.saveAs(group, options);
 		let newUri = preProcessed.resource.toString(true);
 		this._results.uri = newUri;
-		await this.changeConnectionUriForQuery(newUri);
+		await this.changeConnectionUri(newUri);
 		let newInput = this.instantiationService.createInstance(FileQueryEditorInput, '', (preProcessed as FileEditorInput), this.results);
-		newInput.state.resultsVisible = this.state.resultsVisible;
-		newInput.state.connected = this.state.connected;
-		newInput.state.executing = this.state.executing;
-		newInput.state.connecting = this.state.connecting;
-		newInput.state.isSqlCmdMode = this.state.isSqlCmdMode;
+		newInput.state.setState(this.state);
 		return newInput;
 	}
 

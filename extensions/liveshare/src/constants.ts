@@ -33,6 +33,6 @@ export const runQueryAndReturnRequest = 'runQueryAndReturn';
 export const parseSyntaxRequest = 'parseSyntax';
 export const getQueryRowsRequest = 'getQueryRows';
 export const disposeQueryRequest = 'disposeQuery';
-export const changeConnectionUriForQueryRequest = 'changeConnectionUriForQuery';
+export const changeConnectionUriRequest = 'changeConnectionUri';
 export const setQueryExecutionOptionsRequest = 'setQueryExecutionOptions';
 export const saveResultsRequest = 'saveResultsRequest';

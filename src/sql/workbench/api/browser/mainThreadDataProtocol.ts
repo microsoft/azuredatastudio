@@ -133,8 +133,8 @@ export class MainThreadDataProtocol extends Disposable implements MainThreadData
 			disposeQuery(ownerUri: string): Promise<void> {
 				return Promise.resolve(self._proxy.$disposeQuery(handle, ownerUri));
 			},
-			changeConnectionUriForQuery(newUri: string, oldUri: string): Promise<void> {
-				return Promise.resolve(self._proxy.$changeConnectionUriForQuery(handle, newUri, oldUri));
+			changeConnectionUri(newUri: string, oldUri: string): Promise<void> {
+				return Promise.resolve(self._proxy.$changeConnectionUri(handle, newUri, oldUri));
 			},
 			saveResults(requestParams: azdata.SaveResultsRequestParams): Promise<azdata.SaveResultRequestResult> {
 				let saveResultsFeatureInfo = self._serializationService.getSaveResultsFeatureMetadataProvider(requestParams.ownerUri);

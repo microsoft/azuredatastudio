@@ -59,7 +59,7 @@ export class QueryProvider {
 			return true;
 		});
 
-		this._sharedService.onRequest(constants.changeConnectionUriForQueryRequest, (args: any) => {
+		this._sharedService.onRequest(constants.changeConnectionUriRequest, (args: any) => {
 			return true;
 		});
 
@@ -136,8 +136,8 @@ export class QueryProvider {
 			}]);
 		};
 
-		let changeConnectionUriForQuery = (ownerUri: string): Thenable<void> => {
-			return self._sharedServiceProxy.request(constants.changeConnectionUriForQueryRequest, [{
+		let changeConnectionUri = (ownerUri: string): Thenable<void> => {
+			return self._sharedServiceProxy.request(constants.changeConnectionUriRequest, [{
 				ownerUri: ownerUri
 			}]);
 		};
@@ -218,7 +218,7 @@ export class QueryProvider {
 			deleteRow,
 			disposeEdit,
 			disposeQuery,
-			changeConnectionUriForQuery,
+			changeConnectionUri,
 			getEditRows,
 			getQueryRows,
 			setQueryExecutionOptions,

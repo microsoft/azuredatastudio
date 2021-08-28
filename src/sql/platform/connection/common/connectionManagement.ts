@@ -122,7 +122,7 @@ export interface IConnectionManagementService {
 	/**
 	 * Replaces a connectioninfo's associated uri with a new uri.
 	 */
-	replaceConnectionUri(newUri: string, oldUri: string): void
+	changeConnectionUri(newUri: string, oldUri: string): void
 
 	/**
 	 * Finds existing connection for given profile and purpose is any exists.

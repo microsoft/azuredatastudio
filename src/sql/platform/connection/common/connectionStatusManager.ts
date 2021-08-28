@@ -50,24 +50,14 @@ export class ConnectionStatusManager {
 		return !!this.findConnection(id);
 	}
 
-	public replaceConnectionUri(newId: string, oldId: string) {
+	public changeConnectionUri(newId: string, oldId: string) {
 		let info = this.findConnection(oldId);
 		if (!info) {
 			this._logService.error(`No connection found associated with old URI : '${oldId}'`);
-			this._notificationService.notify({
-				severity: Severity.Error,
-				message: `An unexpected error occurred while replacing the connection URI. Please [file an issue](command:workbench.action.openIssueReporter) with the title 'Unexpected Error Occurred while Replacing Connection URI' and include the log file [${join(this._environmentService.logsPath, 'renderer1.log')}](command:workbench.action.openLogsFolder)`
-			});
-			throw new Error('Unexpected error occurred replacing the connection URI.');
 		}
 		info.ownerUri = newId;
 		if (this._connections[newId]) {
 			this._logService.error(`New URI : '${newId}' is already in the connections list, cannot add URI to connection list`);
-			this._notificationService.notify({
-				severity: Severity.Error,
-				message: `An unexpected error occurred while replacing the connection URI. Please [file an issue](command:workbench.action.openIssueReporter) with the title 'Unexpected Error Occurred while Replacing Connection URI' and include the log file [${join(this._environmentService.logsPath, 'renderer1.log')}](command:workbench.action.openLogsFolder)`
-			});
-			throw new Error('Unexpected error occurred replacing the connection URI.');
 		}
 		this._connections[newId] = info;
 		delete this._connections[oldId];

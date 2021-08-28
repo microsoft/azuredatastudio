@@ -933,6 +933,6 @@ declare module 'azdata' {
 		/**
 		 * Change the URI associated with the specified connection.
 		 */
-		changeConnectionUriForQuery(newUri: string, oldUri: string): Thenable<void>;
+		changeConnectionUri(newUri: string, oldUri: string): Thenable<void>;
 	}
 }

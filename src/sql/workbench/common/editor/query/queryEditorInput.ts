@@ -106,6 +106,14 @@ export class QueryEditorState extends Disposable {
 	public get isSqlCmdMode(): boolean {
 		return this._isSqlCmdMode;
 	}
+
+	public setState(oldState: QueryEditorState): void {
+		this.connected = oldState.connected;
+		this.connecting = oldState.connecting;
+		this.resultsVisible = oldState.resultsVisible;
+		this.executing = oldState.executing;
+		this.isSqlCmdMode = oldState.isSqlCmdMode;
+	}
 }
 
 /**
@@ -196,9 +204,9 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 		}
 	}
 
-	protected async changeConnectionUriForQuery(newUri: string): Promise<void> {
-		this.connectionManagementService.replaceConnectionUri(newUri, this.uri);
-		await this.queryModelService.changeConnectionUriForQuery(newUri, this.uri);
+	protected async changeConnectionUri(newUri: string): Promise<void> {
+		this.connectionManagementService.changeConnectionUri(newUri, this.uri);
+		await this.queryModelService.changeConnectionUri(newUri, this.uri);
 	}
 
 	// Forwarding resource functions to the inline sql file editor
@@ -326,11 +334,5 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 
 	public get isSharedSession(): boolean {
 		return !!(this.uri && startsWith(this.uri, 'vsls:'));
-	}
-
-	public setState(oldState: QueryEditorState): void {
-		let properties = Object.keys(this.state);
-
-		properties.forEach((x, i) => x);
 	}
 }
