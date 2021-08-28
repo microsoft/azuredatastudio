@@ -454,9 +454,47 @@ export class MigrationStatusDialog {
 		return this._getStatusControl(migrationStatus, warningCount, migration);
 	}
 
-	private _getStatusControl(status: string, count: number, migration: MigrationContext): azdata.FlexContainer {
+	public openWarningCalloutDialog(dialogHeading: string, dialogName?: string, calloutMessageText?: string, calloutMessageLinkText?: string, calloutMessageLinkUrl?: string, dialogProperties?: azdata.window.IDialogProperties): void {
+		/**
+		 * Here a specific value is assigned to dialogWidth. This meets design guidelines.
+		 */
+		// this.openWarningCalloutDialog(constants.columnDataTypeMismatchWarningHeading, 'input-table-row-dialog', constants.columnDataTypeMismatchWarning, constants.learnMoreLink, constants.mlExtDocLink, warningButtonProperties);
+		const dialog = azdata.window.createModelViewDialog(dialogHeading, dialogName, 288, 'callout', 'left', true, false, dialogProperties);
+		const warningTab: azdata.window.DialogTab = azdata.window.createTab('warning');
+		warningTab.registerContent(async view => {
+			const warningContentContainer = view.modelBuilder.divContainer().withProps({}).component();
+			const messageTextComponent = view.modelBuilder.text().withProps({
+				value: calloutMessageText,
+				CSSStyles: {
+					'font-size': '12px',
+					'line-height': '16px',
+					'margin': '0 0 12px 0'
+				}
+			}).component();
+			warningContentContainer.addItem(messageTextComponent);
+
+			if (calloutMessageLinkText && calloutMessageLinkUrl) {
+				const messageLinkComponent = view.modelBuilder.hyperlink().withProps({
+					label: calloutMessageLinkText,
+					url: calloutMessageLinkUrl,
+					CSSStyles: {
+						'font-size': '13px',
+						'margin': '0px'
+					}
+				}).component();
+				warningContentContainer.addItem(messageLinkComponent);
+			}
+			view.initializeModel(warningContentContainer);
+		});
+		// set tab as content
+		dialog.content = [warningTab];
+
+		azdata.window.openDialog(dialog);
+	}
+
+	private _getStatusControl(status: string, count: number, migration: MigrationContext): azdata.DivContainer {
 		const control = this._view.modelBuilder
-			.flexContainer()
+			.divContainer()
 			.withItems([
 				// migration status icon
 				this._view.modelBuilder.image()
