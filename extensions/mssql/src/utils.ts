@@ -307,16 +307,26 @@ export async function exists(path: string): Promise<boolean> {
 	}
 }
 
-export async function getOrDownloadServer(config: IConfig, handleServerEvent?: (e: string, ...args: any[]) => void): Promise<string> {
+const STS_OVERRIDE_ENV_VAR = 'ADS_SQLTOOLSSERVICE';
+/**
+ * Gets the full path to the EXE for the specified tools service, downloading it in the process if necessary. The location
+ * for this can be overridden with an environment variable for debugging or other purposes.
+ * @param config The configuration values of the server to get/download
+ * @param handleServerEvent A callback for handling events from the server downloader
+ * @param displayToUser Whether to display a message to the user informing them the service was overridden
+ * @returns The path to the server exe
+ */
+export async function getOrDownloadServer(config: IConfig, handleServerEvent?: (e: string, ...args: any[]) => void, displayToUser = false): Promise<string> {
 	// This env var is used to override the base install location of STS - primarily to be used for debugging scenarios.
 	try {
-		const stsRootPath = env['ADS_SQLTOOLSSERVICE'];
+		const stsRootPath = env[STS_OVERRIDE_ENV_VAR];
 		if (stsRootPath) {
 			for (const exeFile of config.executableFiles) {
 				const serverFullPath = path.join(stsRootPath, exeFile);
-				console.log(`SEARCHING ${serverFullPath}`);
 				if (await exists(serverFullPath)) {
-					console.log(`Using ${serverFullPath} as SQL Tools Service client`);
+					if (displayToUser) {
+						vscode.window.showInformationMessage(`Using ${exeFile} from ${stsRootPath}`);
+					}
 					return serverFullPath;
 				}
 			}
