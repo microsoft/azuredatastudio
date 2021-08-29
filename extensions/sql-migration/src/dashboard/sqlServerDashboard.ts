@@ -607,6 +607,19 @@ export class DashboardWidget {
 			}
 		});
 
+		const addAccountImage = view.modelBuilder.image().withProps({
+			iconPath: IconPathHelper.addAzureAccount,
+			iconHeight: '200px',
+			iconWidth: '200px',
+			height: '200px',
+			width: '200px',
+			CSSStyles: {
+				'padding-top': '30%',
+				'margin': 'auto',
+				'display': 'none'
+			}
+		}).component();
+
 		const header = view.modelBuilder.flexContainer().withItems(
 			[
 				statusContainerTitle,
@@ -617,6 +630,17 @@ export class DashboardWidget {
 		}).component();
 
 		this._migrationStatusCardsContainer = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column' }).component();
+
+		let accounts = await azdata.accounts.getAllAccounts();
+
+		if (accounts.length === 0) {
+			addAccountImage.updateCssStyles({
+				'display': 'block'
+			});
+			this._migrationStatusCardsContainer.updateCssStyles({
+				'visibility': 'hidden'
+			});
+		}
 
 		this._inProgressMigrationButton = this.createStatusCard(
 			IconPathHelper.inProgressMigration,
@@ -702,6 +726,9 @@ export class DashboardWidget {
 				'margin': '0px'
 			}
 		}
+		);
+		statusContainer.addItem(
+			addAccountImage, {}
 		);
 
 		statusContainer.addItem(this._migrationStatusCardLoadingContainer, {
