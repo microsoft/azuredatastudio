@@ -727,6 +727,7 @@ export class DashboardWidget {
 			}
 		}
 		);
+
 		statusContainer.addItem(
 			addAccountImage, {}
 		);
