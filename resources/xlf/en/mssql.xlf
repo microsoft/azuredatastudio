@@ -1,11 +1,675 @@
 <?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file original="extensions/mssql/dist/dashboard/serviceEndpoints" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="copyText">
+      <source xml:lang="en">Copy</source>
+    </trans-unit>
+    <trans-unit id="endpoint.appproxy">
+      <source xml:lang="en">Application Proxy</source>
+    </trans-unit>
+    <trans-unit id="endpoint.controller">
+      <source xml:lang="en">Cluster Management Service</source>
+    </trans-unit>
+    <trans-unit id="endpoint.gateway">
+      <source xml:lang="en">Gateway to access HDFS files, Spark</source>
+    </trans-unit>
+    <trans-unit id="endpoint.grafana">
+      <source xml:lang="en">Metrics Dashboard</source>
+    </trans-unit>
+    <trans-unit id="endpoint.kibana">
+      <source xml:lang="en">Log Search Dashboard</source>
+    </trans-unit>
+    <trans-unit id="endpoint.livy">
+      <source xml:lang="en">Proxy for running Spark statements, jobs, applications</source>
+    </trans-unit>
+    <trans-unit id="endpoint.managementproxy">
+      <source xml:lang="en">Management Proxy</source>
+    </trans-unit>
+    <trans-unit id="endpoint.mgmtproxy">
+      <source xml:lang="en">Management Proxy</source>
+    </trans-unit>
+    <trans-unit id="endpoint.sparkHistory">
+      <source xml:lang="en">Spark Jobs Management and Monitoring Dashboard</source>
+    </trans-unit>
+    <trans-unit id="endpoint.sqlServerEndpoint">
+      <source xml:lang="en">SQL Server Master Instance Front-End</source>
+    </trans-unit>
+    <trans-unit id="endpoint.webhdfs">
+      <source xml:lang="en">HDFS File System Proxy</source>
+    </trans-unit>
+    <trans-unit id="endpoint.yarnHistory">
+      <source xml:lang="en">Spark Diagnostics and Monitoring Dashboard</source>
+    </trans-unit>
+    <trans-unit id="grafana">
+      <source xml:lang="en">Metrics Dashboard</source>
+    </trans-unit>
+    <trans-unit id="kibana">
+      <source xml:lang="en">Log Search Dashboard</source>
+    </trans-unit>
+    <trans-unit id="sparkHistory">
+      <source xml:lang="en">Spark Jobs Management and Monitoring Dashboard</source>
+    </trans-unit>
+    <trans-unit id="yarnHistory">
+      <source xml:lang="en">Spark Diagnostics and Monitoring Dashboard</source>
+    </trans-unit>
+</body></file>
+  <file original="extensions/mssql/dist/features" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="mssql.canceledLinkedAzureAccountSelection">
+      <source xml:lang="en">Azure Data Studio needs to contact Azure Key Vault to access a column master key for Always Encrypted, but no linked Azure account was selected. Please retry the query and select a linked Azure account when prompted.</source>
+    </trans-unit>
+    <trans-unit id="mssql.chooseLinkedAzureAccount">
+      <source xml:lang="en">Please select a linked Azure account:</source>
+    </trans-unit>
+    <trans-unit id="mssql.insufficientlyPrivelagedAzureAccount">
+      <source xml:lang="en">The configured Azure account for {0} does not have sufficient permissions for Azure Key Vault to access a column master key for Always Encrypted.</source>
+    </trans-unit>
+    <trans-unit id="mssql.missingLinkedAzureAccount">
+      <source xml:lang="en">Azure Data Studio needs to contact Azure Key Vault to access a column master key for Always Encrypted, but no linked Azure account is available. Please add a linked Azure account and retry the query.</source>
+    </trans-unit>
+</body></file>
+  <file original="extensions/mssql/dist/hdfs/hdfsModel" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="mssql.recursivePermissionOpError">
+      <source xml:lang="en">Error applying permission changes: {0}</source>
+    </trans-unit>
+    <trans-unit id="mssql.recursivePermissionOpProgress">
+      <source xml:lang="en">Applying permission changes to '{0}'.</source>
+    </trans-unit>
+    <trans-unit id="mssql.recursivePermissionOpStarted">
+      <source xml:lang="en">Applying permission changes recursively under '{0}'</source>
+    </trans-unit>
+    <trans-unit id="mssql.recursivePermissionOpSucceeded">
+      <source xml:lang="en">Permission changes applied successfully.</source>
+    </trans-unit>
+</body></file>
+  <file original="extensions/mssql/dist/hdfs/webhdfs" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="webhdfs.httpError400">
+      <source xml:lang="en">Bad Request</source>
+    </trans-unit>
+    <trans-unit id="webhdfs.httpError401">
+      <source xml:lang="en">Unauthorized</source>
+    </trans-unit>
+    <trans-unit id="webhdfs.httpError403">
+      <source xml:lang="en">Forbidden</source>
+    </trans-unit>
+    <trans-unit id="webhdfs.httpError404">
+      <source xml:lang="en">Not Found</source>
+    </trans-unit>
+    <trans-unit id="webhdfs.httpError500">
+      <source xml:lang="en">Internal Server Error</source>
+    </trans-unit>
+    <trans-unit id="webhdfs.invalidDataStructure">
+      <source xml:lang="en">Invalid Data Structure</source>
+    </trans-unit>
+    <trans-unit id="webhdfs.missingProperties">
+      <source xml:lang="en">Unable to create WebHDFS client due to missing options: ${0}</source>
+    </trans-unit>
+    <trans-unit id="webhdfs.undefinedArgument">
+      <source xml:lang="en">'${0}' is undefined.</source>
+    </trans-unit>
+    <trans-unit id="webhdfs.unexpectedRedirect">
+      <source xml:lang="en">Unexpected Redirect</source>
+    </trans-unit>
+    <trans-unit id="webhdfs.unknownError">
+      <source xml:lang="en">Unknown Error</source>
+    </trans-unit>
+</body></file>
+  <file original="extensions/mssql/dist/localizedConstants" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="msgMissingNodeContext">
+      <source xml:lang="en">Node Command called without any node passed</source>
+    </trans-unit>
+    <trans-unit id="mssql.accessHeader">
+      <source xml:lang="en">Access</source>
+    </trans-unit>
+    <trans-unit id="mssql.addLabel">
+      <source xml:lang="en">Add</source>
+    </trans-unit>
+    <trans-unit id="mssql.addUserOrGroup">
+      <source xml:lang="en">Add User or Group</source>
+    </trans-unit>
+    <trans-unit id="mssql.apply">
+      <source xml:lang="en">Apply</source>
+    </trans-unit>
+    <trans-unit id="mssql.applyRecursively">
+      <source xml:lang="en">Apply Recursively</source>
+    </trans-unit>
+    <trans-unit id="mssql.defaultHeader">
+      <source xml:lang="en">Default</source>
+    </trans-unit>
+    <trans-unit id="mssql.defaultUserAndGroups">
+      <source xml:lang="en">Default User and Groups</source>
+    </trans-unit>
+    <trans-unit id="mssql.delete">
+      <source xml:lang="en">Delete</source>
+    </trans-unit>
+    <trans-unit id="mssql.enterNamePlaceholder">
+      <source xml:lang="en">Enter name</source>
+    </trans-unit>
+    <trans-unit id="mssql.errorApplyingAclChanges">
+      <source xml:lang="en">Unexpected error occurred while applying changes : {0}</source>
+    </trans-unit>
+    <trans-unit id="mssql.everyone">
+      <source xml:lang="en">Everyone else</source>
+    </trans-unit>
+    <trans-unit id="mssql.executeHeader">
+      <source xml:lang="en">Execute</source>
+    </trans-unit>
+    <trans-unit id="mssql.group">
+      <source xml:lang="en">Group</source>
+    </trans-unit>
+    <trans-unit id="mssql.groupLabel">
+      <source xml:lang="en">Group</source>
+    </trans-unit>
+    <trans-unit id="mssql.inheritDefaultsLabel">
+      <source xml:lang="en">Inherit Defaults</source>
+    </trans-unit>
+    <trans-unit id="mssql.locationTitle">
+      <source xml:lang="en">Location : </source>
+    </trans-unit>
+    <trans-unit id="mssql.manageAccessTitle">
+      <source xml:lang="en">Manage Access</source>
+    </trans-unit>
+    <trans-unit id="mssql.namedUsersAndGroups">
+      <source xml:lang="en">Named Users and Groups</source>
+    </trans-unit>
+    <trans-unit id="mssql.owner">
+      <source xml:lang="en">Owner</source>
+    </trans-unit>
+    <trans-unit id="mssql.ownerPostfix">
+      <source xml:lang="en"> - Owner</source>
+    </trans-unit>
+    <trans-unit id="mssql.owningGroupPostfix">
+      <source xml:lang="en"> - Owning Group</source>
+    </trans-unit>
+    <trans-unit id="mssql.permissionsTitle">
+      <source xml:lang="en">Permissions</source>
+    </trans-unit>
+    <trans-unit id="mssql.readHeader">
+      <source xml:lang="en">Read</source>
+    </trans-unit>
+    <trans-unit id="mssql.stickyHeader">
+      <source xml:lang="en">Sticky Bit</source>
+    </trans-unit>
+    <trans-unit id="mssql.userLabel">
+      <source xml:lang="en">User</source>
+    </trans-unit>
+    <trans-unit id="mssql.userOrGroupIcon">
+      <source xml:lang="en">User or Group Icon</source>
+    </trans-unit>
+    <trans-unit id="mssql.writeHeader">
+      <source xml:lang="en">Write</source>
+    </trans-unit>
+    <trans-unit id="sparkConnectionRequired">
+      <source xml:lang="en">Please connect to the Spark cluster before View {0} History.</source>
+    </trans-unit>
+    <trans-unit id="sparkJobSubmission.GetApplicationIdFailed">
+      <source xml:lang="en">Get Application Id Failed. {0}</source>
+    </trans-unit>
+    <trans-unit id="sparkJobSubmission.LocalFileDestinationHint">
+      <source xml:lang="en">Local file will be uploaded to HDFS. </source>
+    </trans-unit>
+    <trans-unit id="sparkJobSubmission.LocalFileNotExisted">
+      <source xml:lang="en">Local file {0} does not existed. </source>
+    </trans-unit>
+    <trans-unit id="sparkJobSubmission.NoSqlBigDataClusterFound">
+      <source xml:lang="en">No SQL Server Big Data Cluster found.</source>
+    </trans-unit>
+    <trans-unit id="sparkJobSubmission.PrepareSubmitJob">
+      <source xml:lang="en">Submitting job {0} ... </source>
+    </trans-unit>
+    <trans-unit id="sparkJobSubmission.PrepareUploadingFile">
+      <source xml:lang="en">Uploading file from local {0} to HDFS folder: {1}</source>
+    </trans-unit>
+    <trans-unit id="sparkJobSubmission.SparkHistoryLinkMessage">
+      <source xml:lang="en">Spark History Url: {0} </source>
+    </trans-unit>
+    <trans-unit id="sparkJobSubmission.SubmissionEndMessage">
+      <source xml:lang="en">.......................... Submit Spark Job End ............................</source>
+    </trans-unit>
+    <trans-unit id="sparkJobSubmission.SubmitJobFailed">
+      <source xml:lang="en">Spark Job Submission Failed. {0} </source>
+    </trans-unit>
+    <trans-unit id="sparkJobSubmission.SubmitJobFinished">
+      <source xml:lang="en">The Spark Job has been submitted.</source>
+    </trans-unit>
+    <trans-unit id="sparkJobSubmission.UploadingFileFailed">
+      <source xml:lang="en">Upload file to cluster Failed. {0}</source>
+    </trans-unit>
+    <trans-unit id="sparkJobSubmission.UploadingFileSucceeded">
+      <source xml:lang="en">Upload file to cluster Succeeded!</source>
+    </trans-unit>
+    <trans-unit id="sparkJobSubmission.YarnUIMessage">
+      <source xml:lang="en">YarnUI Url: {0} </source>
+    </trans-unit>
+</body></file>
+  <file original="extensions/mssql/dist/main" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="msgSampleCodeDataFrame">
+      <source xml:lang="en">This sample code loads the file into a data frame and shows the first 10 results.</source>
+    </trans-unit>
+    <trans-unit id="mssql.errorConvertingToNotebook">
+      <source xml:lang="en">An error occurred converting the SQL document to a Notebook. Error : {0}</source>
+    </trans-unit>
+    <trans-unit id="mssql.errorConvertingToSQL">
+      <source xml:lang="en">An error occurred converting the Notebook document to SQL. Error : {0}</source>
+    </trans-unit>
+    <trans-unit id="noController">
+      <source xml:lang="en">Could not find the controller endpoint for this instance</source>
+    </trans-unit>
+    <trans-unit id="notebookFileType">
+      <source xml:lang="en">Notebooks</source>
+    </trans-unit>
+    <trans-unit id="unsupportedFileType">
+      <source xml:lang="en">Only .ipynb Notebooks are supported</source>
+    </trans-unit>
+</body></file>
+  <file original="extensions/mssql/dist/objectExplorerNodeProvider/cancelableStream" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="streamCanceled">
+      <source xml:lang="en">Stream operation canceled by the user</source>
+    </trans-unit>
+</body></file>
+  <file original="extensions/mssql/dist/objectExplorerNodeProvider/command" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="cancel">
+      <source xml:lang="en">Cancel operation?</source>
+    </trans-unit>
+    <trans-unit id="cancelTooltip">
+      <source xml:lang="en">Cancel</source>
+    </trans-unit>
+    <trans-unit id="mssql.searchServers">
+      <source xml:lang="en">Search Server Names</source>
+    </trans-unit>
+    <trans-unit id="progress">
+      <source xml:lang="en">$(sync~spin) {0}...</source>
+    </trans-unit>
+</body></file>
+  <file original="extensions/mssql/dist/objectExplorerNodeProvider/connection" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="connectionInfoOptionsMissingProperties">
+      <source xml:lang="en">Some missing properties in connectionInfo.options: {0}</source>
+    </trans-unit>
+    <trans-unit id="connectionInfoOptionsUndefined">
+      <source xml:lang="en">ConnectionInfo.options is undefined.</source>
+    </trans-unit>
+    <trans-unit id="connectionInfoUndefined">
+      <source xml:lang="en">ConnectionInfo is undefined.</source>
+    </trans-unit>
+</body></file>
+  <file original="extensions/mssql/dist/objectExplorerNodeProvider/fileSources" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="maxSizeNotice">
+      <source xml:lang="en">NOTICE: This file has been truncated at {0} for preview. </source>
+    </trans-unit>
+    <trans-unit id="maxSizeReached">
+      <source xml:lang="en">The file has been truncated at {0} for preview.</source>
+    </trans-unit>
+</body></file>
+  <file original="extensions/mssql/dist/objectExplorerNodeProvider/hdfsCommands" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="allFiles">
+      <source xml:lang="en">All Files</source>
+    </trans-unit>
+    <trans-unit id="copyPathError">
+      <source xml:lang="en">Error on copying path: {0}</source>
+    </trans-unit>
+    <trans-unit id="deleteError">
+      <source xml:lang="en">Error on deleting files: {0}</source>
+    </trans-unit>
+    <trans-unit id="enterDirName">
+      <source xml:lang="en">Enter directory name</source>
+    </trans-unit>
+    <trans-unit id="lblUploadFiles">
+      <source xml:lang="en">Upload</source>
+    </trans-unit>
+    <trans-unit id="makingDir">
+      <source xml:lang="en">Creating directory</source>
+    </trans-unit>
+    <trans-unit id="manageAccessError">
+      <source xml:lang="en">An unexpected error occurred while opening the Manage Access dialog: {0}</source>
+    </trans-unit>
+    <trans-unit id="mkDirError">
+      <source xml:lang="en">Error on making directory: {0}</source>
+    </trans-unit>
+    <trans-unit id="mkdirCanceled">
+      <source xml:lang="en">Operation was canceled</source>
+    </trans-unit>
+    <trans-unit id="msgDeleteFile">
+      <source xml:lang="en">Are you sure you want to delete this file?</source>
+    </trans-unit>
+    <trans-unit id="msgDeleteFolder">
+      <source xml:lang="en">Are you sure you want to delete this folder and its contents?</source>
+    </trans-unit>
+    <trans-unit id="previewError">
+      <source xml:lang="en">Error on previewing file: {0}</source>
+    </trans-unit>
+    <trans-unit id="previewing">
+      <source xml:lang="en">Generating preview</source>
+    </trans-unit>
+    <trans-unit id="saveCanceled">
+      <source xml:lang="en">Save operation was canceled</source>
+    </trans-unit>
+    <trans-unit id="saveError">
+      <source xml:lang="en">Error on saving file: {0}</source>
+    </trans-unit>
+    <trans-unit id="saving">
+      <source xml:lang="en">Saving HDFS Files</source>
+    </trans-unit>
+    <trans-unit id="uploadCanceled">
+      <source xml:lang="en">Upload operation was canceled</source>
+    </trans-unit>
+    <trans-unit id="uploadError">
+      <source xml:lang="en">Error uploading files: {0}</source>
+    </trans-unit>
+    <trans-unit id="uploading">
+      <source xml:lang="en">Uploading files to HDFS</source>
+    </trans-unit>
+</body></file>
+  <file original="extensions/mssql/dist/objectExplorerNodeProvider/hdfsProvider" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="errDeleteConnectionNode">
+      <source xml:lang="en">Cannot delete a connection. Only subfolders and files can be deleted.</source>
+    </trans-unit>
+    <trans-unit id="errorExpanding">
+      <source xml:lang="en">Error: {0}</source>
+    </trans-unit>
+</body></file>
+  <file original="extensions/mssql/dist/objectExplorerNodeProvider/objectExplorerNodeProvider" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="hdfsFolder">
+      <source xml:lang="en">HDFS</source>
+    </trans-unit>
+    <trans-unit id="notifyError">
+      <source xml:lang="en">Error notifying of node change: {0}</source>
+    </trans-unit>
+    <trans-unit id="prmptPwd">
+      <source xml:lang="en">Please provide the password to connect to HDFS:</source>
+    </trans-unit>
+    <trans-unit id="promptUsername">
+      <source xml:lang="en">Please provide the username to connect to HDFS:</source>
+    </trans-unit>
+    <trans-unit id="rootLabel">
+      <source xml:lang="en">Root</source>
+    </trans-unit>
+    <trans-unit id="sessionNotFound">
+      <source xml:lang="en">Session for node {0} does not exist</source>
+    </trans-unit>
+</body></file>
+  <file original="extensions/mssql/dist/prompts/confirm" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="msgNo">
+      <source xml:lang="en">No</source>
+    </trans-unit>
+    <trans-unit id="msgYes">
+      <source xml:lang="en">Yes</source>
+    </trans-unit>
+</body></file>
+  <file original="extensions/mssql/dist/sparkFeature/dialog/dialogCommands" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="errorNotSqlBigDataCluster">
+      <source xml:lang="en">The selected server does not belong to a SQL Server Big Data Cluster</source>
+    </trans-unit>
+    <trans-unit id="selectOtherServer">
+      <source xml:lang="en">Select other SQL Server</source>
+    </trans-unit>
+    <trans-unit id="sparkJobSubmission.GetFilePathFromSelectedNodeFailed">
+      <source xml:lang="en">Error Get File Path: {0}</source>
+    </trans-unit>
+    <trans-unit id="sparkJobSubmission.NoSqlSelected">
+      <source xml:lang="en">No SQL Server is selected.</source>
+    </trans-unit>
+    <trans-unit id="sparkJobSubmission.PleaseSelectSqlWithCluster">
+      <source xml:lang="en">Please select SQL Server with Big Data Cluster.</source>
+    </trans-unit>
+</body></file>
+  <file original="extensions/mssql/dist/sparkFeature/dialog/sparkJobSubmission/sparkAdvancedTab" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="sparkJobSubmission.AdvancedTabName">
+      <source xml:lang="en">ADVANCED</source>
+    </trans-unit>
+    <trans-unit id="sparkJobSubmission.ReferenceFilesList">
+      <source xml:lang="en">Reference Files</source>
+    </trans-unit>
+    <trans-unit id="sparkJobSubmission.ReferenceFilesListTooltip">
+      <source xml:lang="en">Files to be placed in executor working directory. The file path needs to be an HDFS Path. Multiple paths should be split by semicolon(;)</source>
+    </trans-unit>
+    <trans-unit id="sparkJobSubmission.ReferenceJarList">
+      <source xml:lang="en">Reference Jars</source>
+    </trans-unit>
+    <trans-unit id="sparkJobSubmission.ReferenceJarListToolTip">
+      <source xml:lang="en">Jars to be placed in executor working directory. The Jar path needs to be an HDFS Path. Multiple paths should be split by semicolon (;)</source>
+    </trans-unit>
+    <trans-unit id="sparkJobSubmission.ReferencePyList">
+      <source xml:lang="en">Reference py Files</source>
+    </trans-unit>
+    <trans-unit id="sparkJobSubmission.ReferencePyListTooltip">
+      <source xml:lang="en">Py Files to be placed in executor working directory. The file path needs to be an HDFS Path. Multiple paths should be split by semicolon(;)</source>
+    </trans-unit>
+    <trans-unit id="sparkJobSubmission.configValues">
+      <source xml:lang="en">Configuration Values</source>
+    </trans-unit>
+    <trans-unit id="sparkJobSubmission.configValuesTooltip">
+      <source xml:lang="en">List of name value pairs containing Spark configuration values. Encoded as JSON dictionary. Example: '{"name":"value", "name2":"value2"}'.</source>
+    </trans-unit>
+    <trans-unit id="sparkJobSubmission.driverCores">
+      <source xml:lang="en">Driver Cores</source>
+    </trans-unit>
+    <trans-unit id="sparkJobSubmission.driverCoresTooltip">
+      <source xml:lang="en">Amount of CPU cores to allocate to the driver.</source>
+    </trans-unit>
+    <trans-unit id="sparkJobSubmission.driverMemory">
+      <source xml:lang="en">Driver Memory</source>
+    </trans-unit>
+    <trans-unit id="sparkJobSubmission.driverMemoryTooltip">
+      <source xml:lang="en">Amount of memory to allocate to the driver. Specify units as part of value. Example 512M or 2G.</source>
+    </trans-unit>
+    <trans-unit id="sparkJobSubmission.executorCores">
+      <source xml:lang="en">Executor Cores</source>
+    </trans-unit>
+    <trans-unit id="sparkJobSubmission.executorCoresTooltip">
+      <source xml:lang="en">Amount of CPU cores to allocate to the executor.</source>
+    </trans-unit>
+    <trans-unit id="sparkJobSubmission.executorCount">
+      <source xml:lang="en">Executor Count</source>
+    </trans-unit>
+    <trans-unit id="sparkJobSubmission.executorCountTooltip">
+      <source xml:lang="en">Number of instances of the executor to run.</source>
+    </trans-unit>
+    <trans-unit id="sparkJobSubmission.executorMemory">
+      <source xml:lang="en">Executor Memory</source>
+    </trans-unit>
+    <trans-unit id="sparkJobSubmission.executorMemoryTooltip">
+      <source xml:lang="en">Amount of memory to allocate to the executor. Specify units as part of value. Example 512M or 2G.</source>
+    </trans-unit>
+    <trans-unit id="sparkJobSubmission.queueName">
+      <source xml:lang="en">Queue Name</source>
+    </trans-unit>
+    <trans-unit id="sparkJobSubmission.queueNameTooltip">
+      <source xml:lang="en">Name of the Spark queue to execute the session in.</source>
+    </trans-unit>
+</body></file>
+  <file original="extensions/mssql/dist/sparkFeature/dialog/sparkJobSubmission/sparkConfigurationTab" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="sparkJobSubmission.Arguments">
+      <source xml:lang="en">Arguments</source>
+    </trans-unit>
+    <trans-unit id="sparkJobSubmission.ArgumentsTooltip">
+      <source xml:lang="en">Command line arguments used in your main class, multiple arguments should be split by space.</source>
+    </trans-unit>
+    <trans-unit id="sparkJobSubmission.FilePathPlaceHolder">
+      <source xml:lang="en">Path to a .jar or .py file</source>
+    </trans-unit>
+    <trans-unit id="sparkJobSubmission.GeneralTabName">
+      <source xml:lang="en">GENERAL</source>
+    </trans-unit>
+    <trans-unit id="sparkJobSubmission.HDFSFileNotExisted">
+      <source xml:lang="en">The specified HDFS file does not exist. </source>
+    </trans-unit>
+    <trans-unit id="sparkJobSubmission.HDFSFileNotExistedWithPath">
+      <source xml:lang="en">{0} does not exist in Cluster or exception thrown. </source>
+    </trans-unit>
+    <trans-unit id="sparkJobSubmission.JobName">
+      <source xml:lang="en">Job Name</source>
+    </trans-unit>
+    <trans-unit id="sparkJobSubmission.JobNamePlaceHolder">
+      <source xml:lang="en">Enter a name ...</source>
+    </trans-unit>
+    <trans-unit id="sparkJobSubmission.LocalFileDestinationHintWithPath">
+      <source xml:lang="en">The selected local file will be uploaded to HDFS: {0}</source>
+    </trans-unit>
+    <trans-unit id="sparkJobSubmission.MainClass">
+      <source xml:lang="en">Main Class</source>
+    </trans-unit>
+    <trans-unit id="sparkJobSubmission.MainFilePath">
+      <source xml:lang="en">JAR/py File</source>
+    </trans-unit>
+    <trans-unit id="sparkJobSubmission.NotSpecifyJARPYPath">
+      <source xml:lang="en">Property JAR/py File is not specified.</source>
+    </trans-unit>
+    <trans-unit id="sparkJobSubmission.NotSpecifyJobName">
+      <source xml:lang="en">Property Job Name is not specified.</source>
+    </trans-unit>
+    <trans-unit id="sparkJobSubmission.NotSpecifyMainClass">
+      <source xml:lang="en">Property Main Class is not specified.</source>
+    </trans-unit>
+    <trans-unit id="sparkJobSubmission.SelectFileError">
+      <source xml:lang="en">Error in locating the file due to Error: {0}</source>
+    </trans-unit>
+    <trans-unit id="sparkJobSubmission.SparkCluster">
+      <source xml:lang="en">Spark Cluster</source>
+    </trans-unit>
+    <trans-unit id="sparkSelectLocalFile">
+      <source xml:lang="en">Select</source>
+    </trans-unit>
+</body></file>
+  <file original="extensions/mssql/dist/sparkFeature/dialog/sparkJobSubmission/sparkJobSubmissionDialog" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="sparkJobSubmission.DialogCancelButton">
+      <source xml:lang="en">Cancel</source>
+    </trans-unit>
+    <trans-unit id="sparkJobSubmission.DialogSubmitButton">
+      <source xml:lang="en">Submit</source>
+    </trans-unit>
+    <trans-unit id="sparkJobSubmission.DialogTitleNewJob">
+      <source xml:lang="en">New Job</source>
+    </trans-unit>
+    <trans-unit id="sparkJobSubmission.SparkJobSubmissionDialogInitializeError">
+      <source xml:lang="en">Parameters for SparkJobSubmissionDialog is illegal</source>
+    </trans-unit>
+    <trans-unit id="sparkJobSubmission.SubmissionStartMessage">
+      <source xml:lang="en">.......................... Submit Spark Job Start ..........................</source>
+    </trans-unit>
+    <trans-unit id="sparkJobSubmission.SubmitSparkJob">
+      <source xml:lang="en">{0} Spark Job Submission:</source>
+    </trans-unit>
+</body></file>
+  <file original="extensions/mssql/dist/sparkFeature/dialog/sparkJobSubmission/sparkJobSubmissionModel" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="sparkJobSubmission.GetApplicationIdTimeOut">
+      <source xml:lang="en">Get Application Id time out. {0}[Log]   {1}</source>
+    </trans-unit>
+    <trans-unit id="sparkJobSubmission.LivyBatchIdIsInvalid">
+      <source xml:lang="en">livyBatchId is invalid. </source>
+    </trans-unit>
+    <trans-unit id="sparkJobSubmission.PathNotSpecified.">
+      <source xml:lang="en">Property Path is not specified. </source>
+    </trans-unit>
+    <trans-unit id="sparkJobSubmission.SparkJobSubmissionModelInitializeError">
+      <source xml:lang="en">Parameters for SparkJobSubmissionModel is illegal</source>
+    </trans-unit>
+    <trans-unit id="sparkJobSubmission.localFileOrFolderNotSpecified.">
+      <source xml:lang="en">Property localFilePath or hdfsFolderPath is not specified. </source>
+    </trans-unit>
+    <trans-unit id="sparkJobSubmission.submissionArgsIsInvalid">
+      <source xml:lang="en">submissionArgs is invalid. </source>
+    </trans-unit>
+</body></file>
+  <file original="extensions/mssql/dist/sparkFeature/dialog/sparkJobSubmission/sparkJobSubmissionService" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="sparkJobSubmission.LivyNoBatchIdReturned">
+      <source xml:lang="en">No Spark job batch id is returned from response.{0}[Error] {1}</source>
+    </trans-unit>
+    <trans-unit id="sparkJobSubmission.LivyNoLogReturned">
+      <source xml:lang="en">No log is returned within response.{0}[Error] {1}</source>
+    </trans-unit>
+</body></file>
+  <file original="extensions/mssql/dist/sqlClusterLookUp" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="bdcConnectError">
+      <source xml:lang="en">Error: {0}. </source>
+    </trans-unit>
+    <trans-unit id="promptBDCPassword">
+      <source xml:lang="en">Please provide the password to connect to the BDC Controller</source>
+    </trans-unit>
+    <trans-unit id="promptBDCUsername">
+      <source xml:lang="en">{0}Please provide the username to connect to the BDC Controller:</source>
+    </trans-unit>
+    <trans-unit id="usernameAndPasswordRequired">
+      <source xml:lang="en">Username and password are required</source>
+    </trans-unit>
+</body></file>
+  <file original="extensions/mssql/dist/sqlToolsServer" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="downloadServiceDoneChannelMsg">
+      <source xml:lang="en">Done installing {0}</source>
+    </trans-unit>
+    <trans-unit id="downloadingServiceChannelMsg">
+      <source xml:lang="en">Downloading {0}</source>
+    </trans-unit>
+    <trans-unit id="downloadingServiceSizeChannelMsg">
+      <source xml:lang="en">({0} KB)</source>
+    </trans-unit>
+    <trans-unit id="downloadingServiceStatusMsg">
+      <source xml:lang="en">Downloading {0}</source>
+    </trans-unit>
+    <trans-unit id="entryExtractedChannelMsg">
+      <source xml:lang="en">Extracted {0} ({1}/{2})</source>
+    </trans-unit>
+    <trans-unit id="failedToStartServiceErrorMsg">
+      <source xml:lang="en">Failed to start {0}</source>
+    </trans-unit>
+    <trans-unit id="installedServiceChannelMsg">
+      <source xml:lang="en">Installed {0}</source>
+    </trans-unit>
+    <trans-unit id="installingServiceChannelMsg">
+      <source xml:lang="en">Installing {0} to {1}</source>
+    </trans-unit>
+    <trans-unit id="installingServiceStatusMsg">
+      <source xml:lang="en">Installing {0}</source>
+    </trans-unit>
+    <trans-unit id="serviceStartedStatusMsg">
+      <source xml:lang="en">{0} Started</source>
+    </trans-unit>
+    <trans-unit id="startingServiceStatusMsg">
+      <source xml:lang="en">Starting {0}</source>
+    </trans-unit>
+</body></file>
+  <file original="extensions/mssql/dist/telemetry" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="serviceCrashMessage">
+      <source xml:lang="en">{0} component exited unexpectedly. Please restart Azure Data Studio.</source>
+    </trans-unit>
+    <trans-unit id="viewKnownIssuesText">
+      <source xml:lang="en">View Known Issues</source>
+    </trans-unit>
+</body></file>
   <file original="extensions/mssql/package" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="cloud.databaseProperties.azureEdition">
+      <source xml:lang="en">Edition</source>
+    </trans-unit>
+    <trans-unit id="cloud.databaseProperties.compatibilityLevel">
+      <source xml:lang="en">Compatibility Level</source>
+    </trans-unit>
+    <trans-unit id="cloud.databaseProperties.owner">
+      <source xml:lang="en">Owner</source>
+    </trans-unit>
+    <trans-unit id="cloud.databaseProperties.serviceLevelObjective">
+      <source xml:lang="en">Pricing Tier</source>
+    </trans-unit>
+    <trans-unit id="cloud.serverProperties.serverEdition">
+      <source xml:lang="en">Type</source>
+    </trans-unit>
+    <trans-unit id="cloud.serverProperties.serverVersion">
+      <source xml:lang="en">Version</source>
+    </trans-unit>
+    <trans-unit id="databasesListProperties.lastBackup">
+      <source xml:lang="en">Last backup</source>
+    </trans-unit>
+    <trans-unit id="databasesListProperties.name">
+      <source xml:lang="en">Name</source>
+    </trans-unit>
+    <trans-unit id="databasesListProperties.size">
+      <source xml:lang="en">Size (MB)</source>
+    </trans-unit>
+    <trans-unit id="databasesListProperties.status">
+      <source xml:lang="en">Status</source>
+    </trans-unit>
+    <trans-unit id="json.format.enable.desc">
+      <source xml:lang="en">Enable/disable default JSON formatter (requires restart)</source>
+    </trans-unit>
     <trans-unit id="json.schemas.desc">
       <source xml:lang="en">Associate schemas to JSON files in the current project</source>
-    </trans-unit>
-    <trans-unit id="json.schemas.url.desc">
-      <source xml:lang="en">A URL to a schema or a relative path to a schema in the current directory</source>
     </trans-unit>
     <trans-unit id="json.schemas.fileMatch.desc">
       <source xml:lang="en">An array of file patterns to match against when resolving JSON files to schemas.</source>
@@ -16,81 +680,221 @@
     <trans-unit id="json.schemas.schema.desc">
       <source xml:lang="en">The schema definition for the given URL. The schema only needs to be provided to avoid accesses to the schema URL.</source>
     </trans-unit>
-    <trans-unit id="json.format.enable.desc">
-      <source xml:lang="en">Enable/disable default JSON formatter (requires restart)</source>
+    <trans-unit id="json.schemas.url.desc">
+      <source xml:lang="en">A URL to a schema or a relative path to a schema in the current directory</source>
     </trans-unit>
-    <trans-unit id="mssqlCluster.uploadFiles">
-      <source xml:lang="en">Upload files</source>
+    <trans-unit id="mssql.configuration.title">
+      <source xml:lang="en">MSSQL configuration</source>
     </trans-unit>
-    <trans-unit id="mssqlCluster.mkdir">
-      <source xml:lang="en">New directory</source>
+    <trans-unit id="mssql.connectionOptions.applicationIntent.description">
+      <source xml:lang="en">Declares the application workload type when connecting to a server</source>
     </trans-unit>
-    <trans-unit id="mssqlCluster.deleteFiles">
-      <source xml:lang="en">Delete</source>
+    <trans-unit id="mssql.connectionOptions.applicationIntent.displayName">
+      <source xml:lang="en">Application intent</source>
     </trans-unit>
-    <trans-unit id="mssqlCluster.previewFile">
-      <source xml:lang="en">Preview</source>
+    <trans-unit id="mssql.connectionOptions.applicationName.description">
+      <source xml:lang="en">The name of the application</source>
     </trans-unit>
-    <trans-unit id="mssqlCluster.saveFile">
-      <source xml:lang="en">Save</source>
+    <trans-unit id="mssql.connectionOptions.applicationName.displayName">
+      <source xml:lang="en">Application name</source>
     </trans-unit>
-    <trans-unit id="mssqlCluster.copyPath">
-      <source xml:lang="en">Copy Path</source>
+    <trans-unit id="mssql.connectionOptions.asynchronousProcessing.description">
+      <source xml:lang="en">When true, enables usage of the Asynchronous functionality in the .Net Framework Data Provider</source>
     </trans-unit>
-    <trans-unit id="mssqlCluster.manageAccess">
-      <source xml:lang="en">Manage Access</source>
+    <trans-unit id="mssql.connectionOptions.asynchronousProcessing.displayName">
+      <source xml:lang="en">Asynchronous processing</source>
     </trans-unit>
-    <trans-unit id="notebook.command.new">
-      <source xml:lang="en">New Notebook</source>
+    <trans-unit id="mssql.connectionOptions.attachDbFilename.displayName">
+      <source xml:lang="en">Attach DB filename</source>
     </trans-unit>
-    <trans-unit id="notebook.command.open">
-      <source xml:lang="en">Open Notebook</source>
+    <trans-unit id="mssql.connectionOptions.attachedDBFileName.description">
+      <source xml:lang="en">The name of the primary file, including the full path name, of an attachable database</source>
     </trans-unit>
-    <trans-unit id="tab.bigDataClusterDescription">
-      <source xml:lang="en">Tasks and information about your SQL Server Big Data Cluster</source>
+    <trans-unit id="mssql.connectionOptions.attachedDBFileName.displayName">
+      <source xml:lang="en">Attached DB file name</source>
     </trans-unit>
-    <trans-unit id="title.bigDataCluster">
-      <source xml:lang="en">SQL Server Big Data Cluster</source>
+    <trans-unit id="mssql.connectionOptions.authType.categoryValues.azureMFA">
+      <source xml:lang="en">Azure Active Directory - Universal with MFA support</source>
     </trans-unit>
-    <trans-unit id="title.submitSparkJob">
-      <source xml:lang="en">Submit Spark Job</source>
+    <trans-unit id="mssql.connectionOptions.authType.categoryValues.integrated">
+      <source xml:lang="en">Windows Authentication</source>
     </trans-unit>
-    <trans-unit id="title.newSparkJob">
-      <source xml:lang="en">New Spark Job</source>
+    <trans-unit id="mssql.connectionOptions.authType.categoryValues.sqlLogin">
+      <source xml:lang="en">SQL Login</source>
     </trans-unit>
-    <trans-unit id="title.openSparkHistory">
-      <source xml:lang="en">View Spark History</source>
+    <trans-unit id="mssql.connectionOptions.authType.description">
+      <source xml:lang="en">Specifies the method of authenticating with SQL Server</source>
     </trans-unit>
-    <trans-unit id="title.openYarnHistory">
-      <source xml:lang="en">View Yarn History</source>
+    <trans-unit id="mssql.connectionOptions.authType.displayName">
+      <source xml:lang="en">Authentication type</source>
     </trans-unit>
-    <trans-unit id="title.tasks">
-      <source xml:lang="en">Tasks</source>
+    <trans-unit id="mssql.connectionOptions.columnEncryptionSetting.description">
+      <source xml:lang="en">Enables or disables Always Encrypted for the connection</source>
     </trans-unit>
-    <trans-unit id="title.installPackages">
-      <source xml:lang="en">Install Packages</source>
+    <trans-unit id="mssql.connectionOptions.columnEncryptionSetting.displayName">
+      <source xml:lang="en">Always Encrypted</source>
     </trans-unit>
-    <trans-unit id="title.configurePython">
-      <source xml:lang="en">Configure Python for Notebooks</source>
+    <trans-unit id="mssql.connectionOptions.connectRetryCount.description">
+      <source xml:lang="en">Number of attempts to restore connection</source>
     </trans-unit>
-    <trans-unit id="title.openClusterDashboard">
-      <source xml:lang="en">Cluster
-Dashboard</source>
+    <trans-unit id="mssql.connectionOptions.connectRetryCount.displayName">
+      <source xml:lang="en">Connect retry count</source>
     </trans-unit>
-    <trans-unit id="title.searchServers">
-      <source xml:lang="en">Search: Servers</source>
+    <trans-unit id="mssql.connectionOptions.connectRetryInterval.description">
+      <source xml:lang="en">Delay between attempts to restore connection</source>
     </trans-unit>
-    <trans-unit id="title.clearSearchServerResult">
-      <source xml:lang="en">Search: Clear Search Server Results</source>
+    <trans-unit id="mssql.connectionOptions.connectRetryInterval.displayName">
+      <source xml:lang="en">Connect retry interval</source>
     </trans-unit>
-    <trans-unit id="title.endpoints">
-      <source xml:lang="en">Service Endpoints</source>
+    <trans-unit id="mssql.connectionOptions.connectTimeout.description">
+      <source xml:lang="en">The length of time (in seconds) to wait for a connection to the server before terminating the attempt and generating an error</source>
     </trans-unit>
-    <trans-unit id="title.books">
-      <source xml:lang="en">Notebooks</source>
+    <trans-unit id="mssql.connectionOptions.connectTimeout.displayName">
+      <source xml:lang="en">Connect timeout</source>
     </trans-unit>
-    <trans-unit id="title.showLogFile">
-      <source xml:lang="en">Show Log File</source>
+    <trans-unit id="mssql.connectionOptions.connectionName.description">
+      <source xml:lang="en">Custom name of the connection</source>
+    </trans-unit>
+    <trans-unit id="mssql.connectionOptions.connectionName.displayName">
+      <source xml:lang="en">Name (optional)</source>
+    </trans-unit>
+    <trans-unit id="mssql.connectionOptions.contextConnection.description">
+      <source xml:lang="en">When true, indicates the connection should be from the SQL server context. Available only when running in the SQL Server process</source>
+    </trans-unit>
+    <trans-unit id="mssql.connectionOptions.contextConnection.displayName">
+      <source xml:lang="en">Context connection</source>
+    </trans-unit>
+    <trans-unit id="mssql.connectionOptions.currentLanguage.description">
+      <source xml:lang="en">The SQL Server language record name</source>
+    </trans-unit>
+    <trans-unit id="mssql.connectionOptions.currentLanguage.displayName">
+      <source xml:lang="en">Current language</source>
+    </trans-unit>
+    <trans-unit id="mssql.connectionOptions.databaseName.description">
+      <source xml:lang="en">The name of the initial catalog or database int the data source</source>
+    </trans-unit>
+    <trans-unit id="mssql.connectionOptions.databaseName.displayName">
+      <source xml:lang="en">Database</source>
+    </trans-unit>
+    <trans-unit id="mssql.connectionOptions.enclaveAttestationProtocol.categoryValues.AAS">
+      <source xml:lang="en">Azure Attestation</source>
+    </trans-unit>
+    <trans-unit id="mssql.connectionOptions.enclaveAttestationProtocol.categoryValues.HGS">
+      <source xml:lang="en">Host Guardian Service</source>
+    </trans-unit>
+    <trans-unit id="mssql.connectionOptions.enclaveAttestationProtocol.description">
+      <source xml:lang="en">Specifies a protocol for attesting a server-side enclave used with Always Encrypted with secure enclaves</source>
+    </trans-unit>
+    <trans-unit id="mssql.connectionOptions.enclaveAttestationProtocol.displayName">
+      <source xml:lang="en">Attestation Protocol</source>
+    </trans-unit>
+    <trans-unit id="mssql.connectionOptions.enclaveAttestationUrl.description">
+      <source xml:lang="en">Specifies an endpoint for attesting a server-side enclave used with Always Encrypted with secure enclaves</source>
+    </trans-unit>
+    <trans-unit id="mssql.connectionOptions.enclaveAttestationUrl.displayName">
+      <source xml:lang="en">Enclave Attestation URL</source>
+    </trans-unit>
+    <trans-unit id="mssql.connectionOptions.encrypt.description">
+      <source xml:lang="en">When true, SQL Server uses SSL encryption for all data sent between the client and server if the server has a certificate installed</source>
+    </trans-unit>
+    <trans-unit id="mssql.connectionOptions.encrypt.displayName">
+      <source xml:lang="en">Encrypt</source>
+    </trans-unit>
+    <trans-unit id="mssql.connectionOptions.failoverPartner.description">
+      <source xml:lang="en">The name or network address of the instance of SQL Server that acts as a failover partner</source>
+    </trans-unit>
+    <trans-unit id="mssql.connectionOptions.failoverPartner.displayName">
+      <source xml:lang="en">Failover partner</source>
+    </trans-unit>
+    <trans-unit id="mssql.connectionOptions.loadBalanceTimeout.description">
+      <source xml:lang="en">The minimum amount of time (in seconds) for this connection to live in the pool before being destroyed</source>
+    </trans-unit>
+    <trans-unit id="mssql.connectionOptions.loadBalanceTimeout.displayName">
+      <source xml:lang="en">Load balance timeout</source>
+    </trans-unit>
+    <trans-unit id="mssql.connectionOptions.maxPoolSize.description">
+      <source xml:lang="en">The maximum number of connections allowed in the pool</source>
+    </trans-unit>
+    <trans-unit id="mssql.connectionOptions.maxPoolSize.displayName">
+      <source xml:lang="en">Max pool size</source>
+    </trans-unit>
+    <trans-unit id="mssql.connectionOptions.minPoolSize.description">
+      <source xml:lang="en">The minimum number of connections allowed in the pool</source>
+    </trans-unit>
+    <trans-unit id="mssql.connectionOptions.minPoolSize.displayName">
+      <source xml:lang="en">Min pool size</source>
+    </trans-unit>
+    <trans-unit id="mssql.connectionOptions.multiSubnetFailover.displayName">
+      <source xml:lang="en">Multi subnet failover</source>
+    </trans-unit>
+    <trans-unit id="mssql.connectionOptions.multipleActiveResultSets.description">
+      <source xml:lang="en">When true, multiple result sets can be returned and read from one connection</source>
+    </trans-unit>
+    <trans-unit id="mssql.connectionOptions.multipleActiveResultSets.displayName">
+      <source xml:lang="en">Multiple active result sets</source>
+    </trans-unit>
+    <trans-unit id="mssql.connectionOptions.packetSize.description">
+      <source xml:lang="en">Size in bytes of the network packets used to communicate with an instance of SQL Server</source>
+    </trans-unit>
+    <trans-unit id="mssql.connectionOptions.packetSize.displayName">
+      <source xml:lang="en">Packet size</source>
+    </trans-unit>
+    <trans-unit id="mssql.connectionOptions.password.description">
+      <source xml:lang="en">Indicates the password to be used when connecting to the data source</source>
+    </trans-unit>
+    <trans-unit id="mssql.connectionOptions.password.displayName">
+      <source xml:lang="en">Password</source>
+    </trans-unit>
+    <trans-unit id="mssql.connectionOptions.persistSecurityInfo.description">
+      <source xml:lang="en">When false, security-sensitive information, such as the password, is not returned as part of the connection</source>
+    </trans-unit>
+    <trans-unit id="mssql.connectionOptions.persistSecurityInfo.displayName">
+      <source xml:lang="en">Persist security info</source>
+    </trans-unit>
+    <trans-unit id="mssql.connectionOptions.pooling.description">
+      <source xml:lang="en">When true, the connection object is drawn from the appropriate pool, or if necessary, is created and added to the appropriate pool</source>
+    </trans-unit>
+    <trans-unit id="mssql.connectionOptions.pooling.displayName">
+      <source xml:lang="en">Pooling</source>
+    </trans-unit>
+    <trans-unit id="mssql.connectionOptions.port.displayName">
+      <source xml:lang="en">Port</source>
+    </trans-unit>
+    <trans-unit id="mssql.connectionOptions.replication.description">
+      <source xml:lang="en">Used by SQL Server in Replication</source>
+    </trans-unit>
+    <trans-unit id="mssql.connectionOptions.replication.displayName">
+      <source xml:lang="en">Replication</source>
+    </trans-unit>
+    <trans-unit id="mssql.connectionOptions.serverName.description">
+      <source xml:lang="en">Name of the SQL Server instance</source>
+    </trans-unit>
+    <trans-unit id="mssql.connectionOptions.serverName.displayName">
+      <source xml:lang="en">Server</source>
+    </trans-unit>
+    <trans-unit id="mssql.connectionOptions.trustServerCertificate.description">
+      <source xml:lang="en">When true (and encrypt=true), SQL Server uses SSL encryption for all data sent between the client and server without validating the server certificate</source>
+    </trans-unit>
+    <trans-unit id="mssql.connectionOptions.trustServerCertificate.displayName">
+      <source xml:lang="en">Trust server certificate</source>
+    </trans-unit>
+    <trans-unit id="mssql.connectionOptions.typeSystemVersion.description">
+      <source xml:lang="en">Indicates which server type system the provider will expose through the DataReader</source>
+    </trans-unit>
+    <trans-unit id="mssql.connectionOptions.typeSystemVersion.displayName">
+      <source xml:lang="en">Type system version</source>
+    </trans-unit>
+    <trans-unit id="mssql.connectionOptions.userName.description">
+      <source xml:lang="en">Indicates the user ID to be used when connecting to the data source</source>
+    </trans-unit>
+    <trans-unit id="mssql.connectionOptions.userName.displayName">
+      <source xml:lang="en">User name</source>
+    </trans-unit>
+    <trans-unit id="mssql.connectionOptions.workstationId.description">
+      <source xml:lang="en">The name of the workstation connecting to SQL Server</source>
+    </trans-unit>
+    <trans-unit id="mssql.connectionOptions.workstationId.displayName">
+      <source xml:lang="en">Workstation Id</source>
     </trans-unit>
     <trans-unit id="mssql.disabled">
       <source xml:lang="en">Disabled</source>
@@ -103,15 +907,6 @@ Dashboard</source>
     </trans-unit>
     <trans-unit id="mssql.exportSqlAsNotebook">
       <source xml:lang="en">Export SQL as Notebook</source>
-    </trans-unit>
-    <trans-unit id="mssql.configuration.title">
-      <source xml:lang="en">MSSQL configuration</source>
-    </trans-unit>
-    <trans-unit id="mssql.query.displayBitAsNumber">
-      <source xml:lang="en">Should BIT columns be displayed as numbers (1 or 0)? If false, BIT columns will be displayed as 'true' or 'false'</source>
-    </trans-unit>
-    <trans-unit id="mssql.query.maxXmlCharsToStore">
-      <source xml:lang="en">Number of XML characters to store after running a query</source>
     </trans-unit>
     <trans-unit id="mssql.format.alignColumnDefinitionsInColumns">
       <source xml:lang="en">Should column definitions be aligned?</source>
@@ -128,41 +923,77 @@ Dashboard</source>
     <trans-unit id="mssql.format.placeSelectStatementReferencesOnNewLine">
       <source xml:lang="en">Should references to objects in a select statements be split into separate lines? E.g. for 'SELECT C1, C2 FROM T1' both C1 and C2 will be on separate lines</source>
     </trans-unit>
-    <trans-unit id="mssql.logDebugInfo">
-      <source xml:lang="en">[Optional] Log debug output to the console (View -&gt; Output) and then select appropriate output channel from the dropdown</source>
-    </trans-unit>
-    <trans-unit id="mssql.tracingLevel">
-      <source xml:lang="en">[Optional] Log level for backend services. Azure Data Studio generates a file name every time it starts and if the file already exists the logs entries are appended to that file. For cleanup of old log files see logRetentionMinutes and logFilesRemovalLimit settings. The default tracingLevel does not log much. Changing verbosity could lead to extensive logging and disk space requirements for the logs. Error includes Critical, Warning includes Error, Information includes Warning and Verbose includes Information</source>
-    </trans-unit>
-    <trans-unit id="mssql.logRetentionMinutes">
-      <source xml:lang="en">Number of minutes to retain log files for backend services. Default is 1 week.</source>
-    </trans-unit>
-    <trans-unit id="mssql.logFilesRemovalLimit">
-      <source xml:lang="en">Maximum number of old files to remove upon startup that have expired mssql.logRetentionMinutes. Files that do not get cleaned up due to this limitation get cleaned up next time Azure Data Studio starts up.</source>
-    </trans-unit>
-    <trans-unit id="mssql.intelliSense.enableIntelliSense">
-      <source xml:lang="en">Should IntelliSense be enabled</source>
+    <trans-unit id="mssql.ignorePlatformWarning">
+      <source xml:lang="en">[Optional] Do not show unsupported platform warnings</source>
     </trans-unit>
     <trans-unit id="mssql.intelliSense.enableErrorChecking">
       <source xml:lang="en">Should IntelliSense error checking be enabled</source>
     </trans-unit>
-    <trans-unit id="mssql.intelliSense.enableSuggestions">
-      <source xml:lang="en">Should IntelliSense suggestions be enabled</source>
+    <trans-unit id="mssql.intelliSense.enableIntelliSense">
+      <source xml:lang="en">Should IntelliSense be enabled</source>
     </trans-unit>
     <trans-unit id="mssql.intelliSense.enableQuickInfo">
       <source xml:lang="en">Should IntelliSense quick info be enabled</source>
     </trans-unit>
+    <trans-unit id="mssql.intelliSense.enableSuggestions">
+      <source xml:lang="en">Should IntelliSense suggestions be enabled</source>
+    </trans-unit>
     <trans-unit id="mssql.intelliSense.lowerCaseSuggestions">
       <source xml:lang="en">Should IntelliSense suggestions be lowercase</source>
     </trans-unit>
-    <trans-unit id="mssql.query.setRowCount">
-      <source xml:lang="en">Maximum number of rows to return before the server stops processing your query.</source>
+    <trans-unit id="mssql.logDebugInfo">
+      <source xml:lang="en">[Optional] Log debug output to the console (View -&gt; Output) and then select appropriate output channel from the dropdown</source>
     </trans-unit>
-    <trans-unit id="mssql.query.textSize">
-      <source xml:lang="en">Maximum size of text and ntext data returned from a SELECT statement</source>
+    <trans-unit id="mssql.logFilesRemovalLimit">
+      <source xml:lang="en">Maximum number of old files to remove upon startup that have expired mssql.logRetentionMinutes. Files that do not get cleaned up due to this limitation get cleaned up next time Azure Data Studio starts up.</source>
+    </trans-unit>
+    <trans-unit id="mssql.logRetentionMinutes">
+      <source xml:lang="en">Number of minutes to retain log files for backend services. Default is 1 week.</source>
+    </trans-unit>
+    <trans-unit id="mssql.provider.displayName">
+      <source xml:lang="en">Microsoft SQL Server</source>
+    </trans-unit>
+    <trans-unit id="mssql.query.alwaysEncryptedParameterization">
+      <source xml:lang="en">Enable Parameterization for Always Encrypted</source>
+    </trans-unit>
+    <trans-unit id="mssql.query.ansiDefaults">
+      <source xml:lang="en">Enable SET ANSI_DEFAULTS</source>
+    </trans-unit>
+    <trans-unit id="mssql.query.ansiNullDefaultOn">
+      <source xml:lang="en">Enable SET ANSI_NULL_DFLT_ON</source>
+    </trans-unit>
+    <trans-unit id="mssql.query.ansiNulls">
+      <source xml:lang="en">Enable SET ANSI_NULLS</source>
+    </trans-unit>
+    <trans-unit id="mssql.query.ansiPadding">
+      <source xml:lang="en">Enable SET ANSI_PADDING</source>
+    </trans-unit>
+    <trans-unit id="mssql.query.ansiWarnings">
+      <source xml:lang="en">Enable SET ANSI_WARNINGS</source>
+    </trans-unit>
+    <trans-unit id="mssql.query.arithAbort">
+      <source xml:lang="en">Enable SET ARITHABORT option</source>
+    </trans-unit>
+    <trans-unit id="mssql.query.cursorCloseOnCommit">
+      <source xml:lang="en">Enable SET CURSOR_CLOSE_ON_COMMIT</source>
+    </trans-unit>
+    <trans-unit id="mssql.query.deadlockPriority">
+      <source xml:lang="en">Enable SET DEADLOCK_PRIORITY option</source>
+    </trans-unit>
+    <trans-unit id="mssql.query.displayBitAsNumber">
+      <source xml:lang="en">Should BIT columns be displayed as numbers (1 or 0)? If false, BIT columns will be displayed as 'true' or 'false'</source>
     </trans-unit>
     <trans-unit id="mssql.query.executionTimeout">
       <source xml:lang="en">An execution time-out of 0 indicates an unlimited wait (no time-out)</source>
+    </trans-unit>
+    <trans-unit id="mssql.query.implicitTransactions">
+      <source xml:lang="en">Enable SET IMPLICIT_TRANSACTIONS</source>
+    </trans-unit>
+    <trans-unit id="mssql.query.lockTimeout">
+      <source xml:lang="en">Enable SET LOCK TIMEOUT option (in milliseconds)</source>
+    </trans-unit>
+    <trans-unit id="mssql.query.maxXmlCharsToStore">
+      <source xml:lang="en">Number of XML characters to store after running a query</source>
     </trans-unit>
     <trans-unit id="mssql.query.noCount">
       <source xml:lang="en">Enable SET NOCOUNT option</source>
@@ -173,62 +1004,65 @@ Dashboard</source>
     <trans-unit id="mssql.query.parseOnly">
       <source xml:lang="en">Enable SET PARSEONLY option</source>
     </trans-unit>
-    <trans-unit id="mssql.query.arithAbort">
-      <source xml:lang="en">Enable SET ARITHABORT option</source>
-    </trans-unit>
-    <trans-unit id="mssql.query.statisticsTime">
-      <source xml:lang="en">Enable SET STATISTICS TIME option</source>
-    </trans-unit>
-    <trans-unit id="mssql.query.statisticsIO">
-      <source xml:lang="en">Enable SET STATISTICS IO option</source>
-    </trans-unit>
-    <trans-unit id="mssql.query.xactAbortOn">
-      <source xml:lang="en">Enable SET XACT_ABORT ON option</source>
-    </trans-unit>
-    <trans-unit id="mssql.query.transactionIsolationLevel">
-      <source xml:lang="en">Enable SET TRANSACTION ISOLATION LEVEL option</source>
-    </trans-unit>
-    <trans-unit id="mssql.query.deadlockPriority">
-      <source xml:lang="en">Enable SET DEADLOCK_PRIORITY option</source>
-    </trans-unit>
-    <trans-unit id="mssql.query.lockTimeout">
-      <source xml:lang="en">Enable SET LOCK TIMEOUT option (in milliseconds)</source>
-    </trans-unit>
     <trans-unit id="mssql.query.queryGovernorCostLimit">
       <source xml:lang="en">Enable SET QUERY_GOVERNOR_COST_LIMIT</source>
-    </trans-unit>
-    <trans-unit id="mssql.query.ansiDefaults">
-      <source xml:lang="en">Enable SET ANSI_DEFAULTS</source>
     </trans-unit>
     <trans-unit id="mssql.query.quotedIdentifier">
       <source xml:lang="en">Enable SET QUOTED_IDENTIFIER</source>
     </trans-unit>
-    <trans-unit id="mssql.query.ansiNullDefaultOn">
-      <source xml:lang="en">Enable SET ANSI_NULL_DFLT_ON</source>
+    <trans-unit id="mssql.query.setRowCount">
+      <source xml:lang="en">Maximum number of rows to return before the server stops processing your query.</source>
     </trans-unit>
-    <trans-unit id="mssql.query.implicitTransactions">
-      <source xml:lang="en">Enable SET IMPLICIT_TRANSACTIONS</source>
+    <trans-unit id="mssql.query.statisticsIO">
+      <source xml:lang="en">Enable SET STATISTICS IO option</source>
     </trans-unit>
-    <trans-unit id="mssql.query.cursorCloseOnCommit">
-      <source xml:lang="en">Enable SET CURSOR_CLOSE_ON_COMMIT</source>
+    <trans-unit id="mssql.query.statisticsTime">
+      <source xml:lang="en">Enable SET STATISTICS TIME option</source>
     </trans-unit>
-    <trans-unit id="mssql.query.ansiPadding">
-      <source xml:lang="en">Enable SET ANSI_PADDING</source>
+    <trans-unit id="mssql.query.textSize">
+      <source xml:lang="en">Maximum size of text and ntext data returned from a SELECT statement</source>
     </trans-unit>
-    <trans-unit id="mssql.query.ansiWarnings">
-      <source xml:lang="en">Enable SET ANSI_WARNINGS</source>
+    <trans-unit id="mssql.query.transactionIsolationLevel">
+      <source xml:lang="en">Enable SET TRANSACTION ISOLATION LEVEL option</source>
     </trans-unit>
-    <trans-unit id="mssql.query.ansiNulls">
-      <source xml:lang="en">Enable SET ANSI_NULLS</source>
+    <trans-unit id="mssql.query.xactAbortOn">
+      <source xml:lang="en">Enable SET XACT_ABORT ON option</source>
     </trans-unit>
-    <trans-unit id="mssql.query.alwaysEncryptedParameterization">
-      <source xml:lang="en">Enable Parameterization for Always Encrypted</source>
+    <trans-unit id="mssql.tracingLevel">
+      <source xml:lang="en">[Optional] Log level for backend services. Azure Data Studio generates a file name every time it starts and if the file already exists the logs entries are appended to that file. For cleanup of old log files see logRetentionMinutes and logFilesRemovalLimit settings. The default tracingLevel does not log much. Changing verbosity could lead to extensive logging and disk space requirements for the logs. Error includes Critical, Warning includes Error, Information includes Warning and Verbose includes Information</source>
     </trans-unit>
-    <trans-unit id="mssql.ignorePlatformWarning">
-      <source xml:lang="en">[Optional] Do not show unsupported platform warnings</source>
+    <trans-unit id="mssqlCluster.copyPath">
+      <source xml:lang="en">Copy Path</source>
     </trans-unit>
-    <trans-unit id="onprem.databaseProperties.recoveryModel">
-      <source xml:lang="en">Recovery Model</source>
+    <trans-unit id="mssqlCluster.deleteFiles">
+      <source xml:lang="en">Delete</source>
+    </trans-unit>
+    <trans-unit id="mssqlCluster.manageAccess">
+      <source xml:lang="en">Manage Access</source>
+    </trans-unit>
+    <trans-unit id="mssqlCluster.mkdir">
+      <source xml:lang="en">New directory</source>
+    </trans-unit>
+    <trans-unit id="mssqlCluster.previewFile">
+      <source xml:lang="en">Preview</source>
+    </trans-unit>
+    <trans-unit id="mssqlCluster.saveFile">
+      <source xml:lang="en">Save</source>
+    </trans-unit>
+    <trans-unit id="mssqlCluster.uploadFiles">
+      <source xml:lang="en">Upload files</source>
+    </trans-unit>
+    <trans-unit id="notebook.command.new">
+      <source xml:lang="en">New Notebook</source>
+    </trans-unit>
+    <trans-unit id="notebook.command.open">
+      <source xml:lang="en">Open Notebook</source>
+    </trans-unit>
+    <trans-unit id="objectsListProperties.name">
+      <source xml:lang="en">Name</source>
+    </trans-unit>
+    <trans-unit id="onprem.databaseProperties.compatibilityLevel">
+      <source xml:lang="en">Compatibility Level</source>
     </trans-unit>
     <trans-unit id="onprem.databaseProperties.lastBackupDate">
       <source xml:lang="en">Last Database Backup</source>
@@ -236,17 +1070,11 @@ Dashboard</source>
     <trans-unit id="onprem.databaseProperties.lastLogBackupDate">
       <source xml:lang="en">Last Log Backup</source>
     </trans-unit>
-    <trans-unit id="onprem.databaseProperties.compatibilityLevel">
-      <source xml:lang="en">Compatibility Level</source>
-    </trans-unit>
     <trans-unit id="onprem.databaseProperties.owner">
       <source xml:lang="en">Owner</source>
     </trans-unit>
-    <trans-unit id="onprem.serverProperties.serverVersion">
-      <source xml:lang="en">Version</source>
-    </trans-unit>
-    <trans-unit id="onprem.serverProperties.serverEdition">
-      <source xml:lang="en">Edition</source>
+    <trans-unit id="onprem.databaseProperties.recoveryModel">
+      <source xml:lang="en">Recovery Model</source>
     </trans-unit>
     <trans-unit id="onprem.serverProperties.machineName">
       <source xml:lang="en">Computer Name</source>
@@ -254,885 +1082,57 @@ Dashboard</source>
     <trans-unit id="onprem.serverProperties.osVersion">
       <source xml:lang="en">OS Version</source>
     </trans-unit>
-    <trans-unit id="cloud.databaseProperties.azureEdition">
+    <trans-unit id="onprem.serverProperties.serverEdition">
       <source xml:lang="en">Edition</source>
     </trans-unit>
-    <trans-unit id="cloud.databaseProperties.serviceLevelObjective">
-      <source xml:lang="en">Pricing Tier</source>
-    </trans-unit>
-    <trans-unit id="cloud.databaseProperties.compatibilityLevel">
-      <source xml:lang="en">Compatibility Level</source>
-    </trans-unit>
-    <trans-unit id="cloud.databaseProperties.owner">
-      <source xml:lang="en">Owner</source>
-    </trans-unit>
-    <trans-unit id="cloud.serverProperties.serverVersion">
+    <trans-unit id="onprem.serverProperties.serverVersion">
       <source xml:lang="en">Version</source>
     </trans-unit>
-    <trans-unit id="cloud.serverProperties.serverEdition">
-      <source xml:lang="en">Type</source>
+    <trans-unit id="tab.bigDataClusterDescription">
+      <source xml:lang="en">Tasks and information about your SQL Server Big Data Cluster</source>
     </trans-unit>
-    <trans-unit id="mssql.provider.displayName">
-      <source xml:lang="en">Microsoft SQL Server</source>
+    <trans-unit id="title.bigDataCluster">
+      <source xml:lang="en">SQL Server Big Data Cluster</source>
     </trans-unit>
-    <trans-unit id="mssql.connectionOptions.connectionName.displayName">
-      <source xml:lang="en">Name (optional)</source>
-    </trans-unit>
-    <trans-unit id="mssql.connectionOptions.connectionName.description">
-      <source xml:lang="en">Custom name of the connection</source>
-    </trans-unit>
-    <trans-unit id="mssql.connectionOptions.serverName.displayName">
-      <source xml:lang="en">Server</source>
-    </trans-unit>
-    <trans-unit id="mssql.connectionOptions.serverName.description">
-      <source xml:lang="en">Name of the SQL Server instance</source>
-    </trans-unit>
-    <trans-unit id="mssql.connectionOptions.databaseName.displayName">
-      <source xml:lang="en">Database</source>
-    </trans-unit>
-    <trans-unit id="mssql.connectionOptions.databaseName.description">
-      <source xml:lang="en">The name of the initial catalog or database int the data source</source>
-    </trans-unit>
-    <trans-unit id="mssql.connectionOptions.authType.displayName">
-      <source xml:lang="en">Authentication type</source>
-    </trans-unit>
-    <trans-unit id="mssql.connectionOptions.authType.description">
-      <source xml:lang="en">Specifies the method of authenticating with SQL Server</source>
-    </trans-unit>
-    <trans-unit id="mssql.connectionOptions.authType.categoryValues.sqlLogin">
-      <source xml:lang="en">SQL Login</source>
-    </trans-unit>
-    <trans-unit id="mssql.connectionOptions.authType.categoryValues.integrated">
-      <source xml:lang="en">Windows Authentication</source>
-    </trans-unit>
-    <trans-unit id="mssql.connectionOptions.authType.categoryValues.azureMFA">
-      <source xml:lang="en">Azure Active Directory - Universal with MFA support</source>
-    </trans-unit>
-    <trans-unit id="mssql.connectionOptions.userName.displayName">
-      <source xml:lang="en">User name</source>
-    </trans-unit>
-    <trans-unit id="mssql.connectionOptions.userName.description">
-      <source xml:lang="en">Indicates the user ID to be used when connecting to the data source</source>
-    </trans-unit>
-    <trans-unit id="mssql.connectionOptions.password.displayName">
-      <source xml:lang="en">Password</source>
-    </trans-unit>
-    <trans-unit id="mssql.connectionOptions.password.description">
-      <source xml:lang="en">Indicates the password to be used when connecting to the data source</source>
-    </trans-unit>
-    <trans-unit id="mssql.connectionOptions.applicationIntent.displayName">
-      <source xml:lang="en">Application intent</source>
-    </trans-unit>
-    <trans-unit id="mssql.connectionOptions.applicationIntent.description">
-      <source xml:lang="en">Declares the application workload type when connecting to a server</source>
-    </trans-unit>
-    <trans-unit id="mssql.connectionOptions.asynchronousProcessing.displayName">
-      <source xml:lang="en">Asynchronous processing</source>
-    </trans-unit>
-    <trans-unit id="mssql.connectionOptions.asynchronousProcessing.description">
-      <source xml:lang="en">When true, enables usage of the Asynchronous functionality in the .Net Framework Data Provider</source>
-    </trans-unit>
-    <trans-unit id="mssql.connectionOptions.connectTimeout.displayName">
-      <source xml:lang="en">Connect timeout</source>
-    </trans-unit>
-    <trans-unit id="mssql.connectionOptions.connectTimeout.description">
-      <source xml:lang="en">The length of time (in seconds) to wait for a connection to the server before terminating the attempt and generating an error</source>
-    </trans-unit>
-    <trans-unit id="mssql.connectionOptions.currentLanguage.displayName">
-      <source xml:lang="en">Current language</source>
-    </trans-unit>
-    <trans-unit id="mssql.connectionOptions.currentLanguage.description">
-      <source xml:lang="en">The SQL Server language record name</source>
-    </trans-unit>
-    <trans-unit id="mssql.connectionOptions.columnEncryptionSetting.displayName">
-      <source xml:lang="en">Always Encrypted</source>
-    </trans-unit>
-    <trans-unit id="mssql.connectionOptions.columnEncryptionSetting.description">
-      <source xml:lang="en">Enables or disables Always Encrypted for the connection</source>
-    </trans-unit>
-    <trans-unit id="mssql.connectionOptions.enclaveAttestationProtocol.displayName">
-      <source xml:lang="en">Attestation Protocol</source>
-    </trans-unit>
-    <trans-unit id="mssql.connectionOptions.enclaveAttestationProtocol.description">
-      <source xml:lang="en">Specifies a protocol for attesting a server-side enclave used with Always Encrypted with secure enclaves</source>
-    </trans-unit>
-    <trans-unit id="mssql.connectionOptions.enclaveAttestationProtocol.categoryValues.AAS">
-      <source xml:lang="en">Azure Attestation</source>
-    </trans-unit>
-    <trans-unit id="mssql.connectionOptions.enclaveAttestationProtocol.categoryValues.HGS">
-      <source xml:lang="en">Host Guardian Service</source>
-    </trans-unit>
-    <trans-unit id="mssql.connectionOptions.enclaveAttestationUrl.displayName">
-      <source xml:lang="en">Enclave Attestation URL</source>
-    </trans-unit>
-    <trans-unit id="mssql.connectionOptions.enclaveAttestationUrl.description">
-      <source xml:lang="en">Specifies an endpoint for attesting a server-side enclave used with Always Encrypted with secure enclaves</source>
-    </trans-unit>
-    <trans-unit id="mssql.connectionOptions.encrypt.displayName">
-      <source xml:lang="en">Encrypt</source>
-    </trans-unit>
-    <trans-unit id="mssql.connectionOptions.encrypt.description">
-      <source xml:lang="en">When true, SQL Server uses SSL encryption for all data sent between the client and server if the server has a certificate installed</source>
-    </trans-unit>
-    <trans-unit id="mssql.connectionOptions.persistSecurityInfo.displayName">
-      <source xml:lang="en">Persist security info</source>
-    </trans-unit>
-    <trans-unit id="mssql.connectionOptions.persistSecurityInfo.description">
-      <source xml:lang="en">When false, security-sensitive information, such as the password, is not returned as part of the connection</source>
-    </trans-unit>
-    <trans-unit id="mssql.connectionOptions.trustServerCertificate.displayName">
-      <source xml:lang="en">Trust server certificate</source>
-    </trans-unit>
-    <trans-unit id="mssql.connectionOptions.trustServerCertificate.description">
-      <source xml:lang="en">When true (and encrypt=true), SQL Server uses SSL encryption for all data sent between the client and server without validating the server certificate</source>
-    </trans-unit>
-    <trans-unit id="mssql.connectionOptions.attachedDBFileName.displayName">
-      <source xml:lang="en">Attached DB file name</source>
-    </trans-unit>
-    <trans-unit id="mssql.connectionOptions.attachedDBFileName.description">
-      <source xml:lang="en">The name of the primary file, including the full path name, of an attachable database</source>
-    </trans-unit>
-    <trans-unit id="mssql.connectionOptions.contextConnection.displayName">
-      <source xml:lang="en">Context connection</source>
-    </trans-unit>
-    <trans-unit id="mssql.connectionOptions.contextConnection.description">
-      <source xml:lang="en">When true, indicates the connection should be from the SQL server context. Available only when running in the SQL Server process</source>
-    </trans-unit>
-    <trans-unit id="mssql.connectionOptions.port.displayName">
-      <source xml:lang="en">Port</source>
-    </trans-unit>
-    <trans-unit id="mssql.connectionOptions.connectRetryCount.displayName">
-      <source xml:lang="en">Connect retry count</source>
-    </trans-unit>
-    <trans-unit id="mssql.connectionOptions.connectRetryCount.description">
-      <source xml:lang="en">Number of attempts to restore connection</source>
-    </trans-unit>
-    <trans-unit id="mssql.connectionOptions.connectRetryInterval.displayName">
-      <source xml:lang="en">Connect retry interval</source>
-    </trans-unit>
-    <trans-unit id="mssql.connectionOptions.connectRetryInterval.description">
-      <source xml:lang="en">Delay between attempts to restore connection</source>
-    </trans-unit>
-    <trans-unit id="mssql.connectionOptions.applicationName.displayName">
-      <source xml:lang="en">Application name</source>
-    </trans-unit>
-    <trans-unit id="mssql.connectionOptions.applicationName.description">
-      <source xml:lang="en">The name of the application</source>
-    </trans-unit>
-    <trans-unit id="mssql.connectionOptions.workstationId.displayName">
-      <source xml:lang="en">Workstation Id</source>
-    </trans-unit>
-    <trans-unit id="mssql.connectionOptions.workstationId.description">
-      <source xml:lang="en">The name of the workstation connecting to SQL Server</source>
-    </trans-unit>
-    <trans-unit id="mssql.connectionOptions.pooling.displayName">
-      <source xml:lang="en">Pooling</source>
-    </trans-unit>
-    <trans-unit id="mssql.connectionOptions.pooling.description">
-      <source xml:lang="en">When true, the connection object is drawn from the appropriate pool, or if necessary, is created and added to the appropriate pool</source>
-    </trans-unit>
-    <trans-unit id="mssql.connectionOptions.maxPoolSize.displayName">
-      <source xml:lang="en">Max pool size</source>
-    </trans-unit>
-    <trans-unit id="mssql.connectionOptions.maxPoolSize.description">
-      <source xml:lang="en">The maximum number of connections allowed in the pool</source>
-    </trans-unit>
-    <trans-unit id="mssql.connectionOptions.minPoolSize.displayName">
-      <source xml:lang="en">Min pool size</source>
-    </trans-unit>
-    <trans-unit id="mssql.connectionOptions.minPoolSize.description">
-      <source xml:lang="en">The minimum number of connections allowed in the pool</source>
-    </trans-unit>
-    <trans-unit id="mssql.connectionOptions.loadBalanceTimeout.displayName">
-      <source xml:lang="en">Load balance timeout</source>
-    </trans-unit>
-    <trans-unit id="mssql.connectionOptions.loadBalanceTimeout.description">
-      <source xml:lang="en">The minimum amount of time (in seconds) for this connection to live in the pool before being destroyed</source>
-    </trans-unit>
-    <trans-unit id="mssql.connectionOptions.replication.displayName">
-      <source xml:lang="en">Replication</source>
-    </trans-unit>
-    <trans-unit id="mssql.connectionOptions.replication.description">
-      <source xml:lang="en">Used by SQL Server in Replication</source>
-    </trans-unit>
-    <trans-unit id="mssql.connectionOptions.attachDbFilename.displayName">
-      <source xml:lang="en">Attach DB filename</source>
-    </trans-unit>
-    <trans-unit id="mssql.connectionOptions.failoverPartner.displayName">
-      <source xml:lang="en">Failover partner</source>
-    </trans-unit>
-    <trans-unit id="mssql.connectionOptions.failoverPartner.description">
-      <source xml:lang="en">The name or network address of the instance of SQL Server that acts as a failover partner</source>
-    </trans-unit>
-    <trans-unit id="mssql.connectionOptions.multiSubnetFailover.displayName">
-      <source xml:lang="en">Multi subnet failover</source>
-    </trans-unit>
-    <trans-unit id="mssql.connectionOptions.multipleActiveResultSets.displayName">
-      <source xml:lang="en">Multiple active result sets</source>
-    </trans-unit>
-    <trans-unit id="mssql.connectionOptions.multipleActiveResultSets.description">
-      <source xml:lang="en">When true, multiple result sets can be returned and read from one connection</source>
-    </trans-unit>
-    <trans-unit id="mssql.connectionOptions.packetSize.displayName">
-      <source xml:lang="en">Packet size</source>
-    </trans-unit>
-    <trans-unit id="mssql.connectionOptions.packetSize.description">
-      <source xml:lang="en">Size in bytes of the network packets used to communicate with an instance of SQL Server</source>
-    </trans-unit>
-    <trans-unit id="mssql.connectionOptions.typeSystemVersion.displayName">
-      <source xml:lang="en">Type system version</source>
-    </trans-unit>
-    <trans-unit id="mssql.connectionOptions.typeSystemVersion.description">
-      <source xml:lang="en">Indicates which server type system the provider will expose through the DataReader</source>
-    </trans-unit>
-    <trans-unit id="databasesListProperties.name">
-      <source xml:lang="en">Name</source>
-    </trans-unit>
-    <trans-unit id="databasesListProperties.status">
-      <source xml:lang="en">Status</source>
-    </trans-unit>
-    <trans-unit id="databasesListProperties.size">
-      <source xml:lang="en">Size (MB)</source>
-    </trans-unit>
-    <trans-unit id="databasesListProperties.lastBackup">
-      <source xml:lang="en">Last backup</source>
-    </trans-unit>
-    <trans-unit id="objectsListProperties.name">
-      <source xml:lang="en">Name</source>
-    </trans-unit>
-  </body></file>
-  <file original="extensions/mssql/dist/localizedConstants" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="msgMissingNodeContext">
-      <source xml:lang="en">Node Command called without any node passed</source>
-    </trans-unit>
-    <trans-unit id="mssql.manageAccessTitle">
-      <source xml:lang="en">Manage Access</source>
-    </trans-unit>
-    <trans-unit id="mssql.locationTitle">
-      <source xml:lang="en">Location : </source>
-    </trans-unit>
-    <trans-unit id="mssql.permissionsTitle">
-      <source xml:lang="en">Permissions</source>
-    </trans-unit>
-    <trans-unit id="mssql.ownerPostfix">
-      <source xml:lang="en"> - Owner</source>
-    </trans-unit>
-    <trans-unit id="mssql.owner">
-      <source xml:lang="en">Owner</source>
-    </trans-unit>
-    <trans-unit id="mssql.group">
-      <source xml:lang="en">Group</source>
-    </trans-unit>
-    <trans-unit id="mssql.owningGroupPostfix">
-      <source xml:lang="en"> - Owning Group</source>
-    </trans-unit>
-    <trans-unit id="mssql.everyone">
-      <source xml:lang="en">Everyone else</source>
-    </trans-unit>
-    <trans-unit id="mssql.userLabel">
-      <source xml:lang="en">User</source>
-    </trans-unit>
-    <trans-unit id="mssql.groupLabel">
-      <source xml:lang="en">Group</source>
-    </trans-unit>
-    <trans-unit id="mssql.accessHeader">
-      <source xml:lang="en">Access</source>
-    </trans-unit>
-    <trans-unit id="mssql.defaultHeader">
-      <source xml:lang="en">Default</source>
-    </trans-unit>
-    <trans-unit id="mssql.delete">
-      <source xml:lang="en">Delete</source>
-    </trans-unit>
-    <trans-unit id="mssql.stickyHeader">
-      <source xml:lang="en">Sticky Bit</source>
-    </trans-unit>
-    <trans-unit id="mssql.inheritDefaultsLabel">
-      <source xml:lang="en">Inherit Defaults</source>
-    </trans-unit>
-    <trans-unit id="mssql.readHeader">
-      <source xml:lang="en">Read</source>
-    </trans-unit>
-    <trans-unit id="mssql.writeHeader">
-      <source xml:lang="en">Write</source>
-    </trans-unit>
-    <trans-unit id="mssql.executeHeader">
-      <source xml:lang="en">Execute</source>
-    </trans-unit>
-    <trans-unit id="mssql.addUserOrGroup">
-      <source xml:lang="en">Add User or Group</source>
-    </trans-unit>
-    <trans-unit id="mssql.enterNamePlaceholder">
-      <source xml:lang="en">Enter name</source>
-    </trans-unit>
-    <trans-unit id="mssql.addLabel">
-      <source xml:lang="en">Add</source>
-    </trans-unit>
-    <trans-unit id="mssql.namedUsersAndGroups">
-      <source xml:lang="en">Named Users and Groups</source>
-    </trans-unit>
-    <trans-unit id="mssql.defaultUserAndGroups">
-      <source xml:lang="en">Default User and Groups</source>
-    </trans-unit>
-    <trans-unit id="mssql.userOrGroupIcon">
-      <source xml:lang="en">User or Group Icon</source>
-    </trans-unit>
-    <trans-unit id="mssql.apply">
-      <source xml:lang="en">Apply</source>
-    </trans-unit>
-    <trans-unit id="mssql.applyRecursively">
-      <source xml:lang="en">Apply Recursively</source>
-    </trans-unit>
-    <trans-unit id="mssql.errorApplyingAclChanges">
-      <source xml:lang="en">Unexpected error occurred while applying changes : {0}</source>
-    </trans-unit>
-    <trans-unit id="sparkJobSubmission.LocalFileDestinationHint">
-      <source xml:lang="en">Local file will be uploaded to HDFS. </source>
-    </trans-unit>
-    <trans-unit id="sparkJobSubmission.SubmissionEndMessage">
-      <source xml:lang="en">.......................... Submit Spark Job End ............................</source>
-    </trans-unit>
-    <trans-unit id="sparkJobSubmission.PrepareUploadingFile">
-      <source xml:lang="en">Uploading file from local {0} to HDFS folder: {1}</source>
-    </trans-unit>
-    <trans-unit id="sparkJobSubmission.UploadingFileSucceeded">
-      <source xml:lang="en">Upload file to cluster Succeeded!</source>
-    </trans-unit>
-    <trans-unit id="sparkJobSubmission.UploadingFileFailed">
-      <source xml:lang="en">Upload file to cluster Failed. {0}</source>
-    </trans-unit>
-    <trans-unit id="sparkJobSubmission.PrepareSubmitJob">
-      <source xml:lang="en">Submitting job {0} ... </source>
-    </trans-unit>
-    <trans-unit id="sparkJobSubmission.SubmitJobFinished">
-      <source xml:lang="en">The Spark Job has been submitted.</source>
-    </trans-unit>
-    <trans-unit id="sparkJobSubmission.SubmitJobFailed">
-      <source xml:lang="en">Spark Job Submission Failed. {0} </source>
-    </trans-unit>
-    <trans-unit id="sparkJobSubmission.YarnUIMessage">
-      <source xml:lang="en">YarnUI Url: {0} </source>
-    </trans-unit>
-    <trans-unit id="sparkJobSubmission.SparkHistoryLinkMessage">
-      <source xml:lang="en">Spark History Url: {0} </source>
-    </trans-unit>
-    <trans-unit id="sparkJobSubmission.GetApplicationIdFailed">
-      <source xml:lang="en">Get Application Id Failed. {0}</source>
-    </trans-unit>
-    <trans-unit id="sparkJobSubmission.LocalFileNotExisted">
-      <source xml:lang="en">Local file {0} does not existed. </source>
-    </trans-unit>
-    <trans-unit id="sparkJobSubmission.NoSqlBigDataClusterFound">
-      <source xml:lang="en">No SQL Server Big Data Cluster found.</source>
-    </trans-unit>
-    <trans-unit id="sparkConnectionRequired">
-      <source xml:lang="en">Please connect to the Spark cluster before View {0} History.</source>
-    </trans-unit>
-  </body></file>
-  <file original="extensions/mssql/dist/objectExplorerNodeProvider/fileSources" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="maxSizeNotice">
-      <source xml:lang="en">NOTICE: This file has been truncated at {0} for preview. </source>
-    </trans-unit>
-    <trans-unit id="maxSizeReached">
-      <source xml:lang="en">The file has been truncated at {0} for preview.</source>
-    </trans-unit>
-  </body></file>
-  <file original="extensions/mssql/dist/objectExplorerNodeProvider/command" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="progress">
-      <source xml:lang="en">$(sync~spin) {0}...</source>
-    </trans-unit>
-    <trans-unit id="cancelTooltip">
-      <source xml:lang="en">Cancel</source>
-    </trans-unit>
-    <trans-unit id="cancel">
-      <source xml:lang="en">Cancel operation?</source>
-    </trans-unit>
-    <trans-unit id="mssql.searchServers">
-      <source xml:lang="en">Search Server Names</source>
-    </trans-unit>
-  </body></file>
-  <file original="extensions/mssql/dist/sparkFeature/dialog/sparkJobSubmission/sparkJobSubmissionService" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="sparkJobSubmission.LivyNoBatchIdReturned">
-      <source xml:lang="en">No Spark job batch id is returned from response.{0}[Error] {1}</source>
-    </trans-unit>
-    <trans-unit id="sparkJobSubmission.LivyNoLogReturned">
-      <source xml:lang="en">No log is returned within response.{0}[Error] {1}</source>
-    </trans-unit>
-  </body></file>
-  <file original="extensions/mssql/dist/sqlClusterLookUp" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="promptBDCUsername">
-      <source xml:lang="en">{0}Please provide the username to connect to the BDC Controller:</source>
-    </trans-unit>
-    <trans-unit id="promptBDCPassword">
-      <source xml:lang="en">Please provide the password to connect to the BDC Controller</source>
-    </trans-unit>
-    <trans-unit id="bdcConnectError">
-      <source xml:lang="en">Error: {0}. </source>
-    </trans-unit>
-    <trans-unit id="usernameAndPasswordRequired">
-      <source xml:lang="en">Username and password are required</source>
-    </trans-unit>
-  </body></file>
-  <file original="extensions/mssql/dist/objectExplorerNodeProvider/hdfsCommands" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="allFiles">
-      <source xml:lang="en">All Files</source>
-    </trans-unit>
-    <trans-unit id="lblUploadFiles">
-      <source xml:lang="en">Upload</source>
-    </trans-unit>
-    <trans-unit id="uploading">
-      <source xml:lang="en">Uploading files to HDFS</source>
-    </trans-unit>
-    <trans-unit id="uploadCanceled">
-      <source xml:lang="en">Upload operation was canceled</source>
-    </trans-unit>
-    <trans-unit id="uploadError">
-      <source xml:lang="en">Error uploading files: {0}</source>
-    </trans-unit>
-    <trans-unit id="makingDir">
-      <source xml:lang="en">Creating directory</source>
-    </trans-unit>
-    <trans-unit id="mkdirCanceled">
-      <source xml:lang="en">Operation was canceled</source>
-    </trans-unit>
-    <trans-unit id="mkDirError">
-      <source xml:lang="en">Error on making directory: {0}</source>
-    </trans-unit>
-    <trans-unit id="enterDirName">
-      <source xml:lang="en">Enter directory name</source>
-    </trans-unit>
-    <trans-unit id="deleteError">
-      <source xml:lang="en">Error on deleting files: {0}</source>
-    </trans-unit>
-    <trans-unit id="msgDeleteFolder">
-      <source xml:lang="en">Are you sure you want to delete this folder and its contents?</source>
-    </trans-unit>
-    <trans-unit id="msgDeleteFile">
-      <source xml:lang="en">Are you sure you want to delete this file?</source>
-    </trans-unit>
-    <trans-unit id="saving">
-      <source xml:lang="en">Saving HDFS Files</source>
-    </trans-unit>
-    <trans-unit id="saveCanceled">
-      <source xml:lang="en">Save operation was canceled</source>
-    </trans-unit>
-    <trans-unit id="saveError">
-      <source xml:lang="en">Error on saving file: {0}</source>
-    </trans-unit>
-    <trans-unit id="previewing">
-      <source xml:lang="en">Generating preview</source>
-    </trans-unit>
-    <trans-unit id="previewError">
-      <source xml:lang="en">Error on previewing file: {0}</source>
-    </trans-unit>
-    <trans-unit id="copyPathError">
-      <source xml:lang="en">Error on copying path: {0}</source>
-    </trans-unit>
-    <trans-unit id="manageAccessError">
-      <source xml:lang="en">An unexpected error occurred while opening the Manage Access dialog: {0}</source>
-    </trans-unit>
-  </body></file>
-  <file original="extensions/mssql/dist/hdfs/webhdfs" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="webhdfs.invalidDataStructure">
-      <source xml:lang="en">Invalid Data Structure</source>
-    </trans-unit>
-    <trans-unit id="webhdfs.missingProperties">
-      <source xml:lang="en">Unable to create WebHDFS client due to missing options: ${0}</source>
-    </trans-unit>
-    <trans-unit id="webhdfs.undefinedArgument">
-      <source xml:lang="en">'${0}' is undefined.</source>
-    </trans-unit>
-    <trans-unit id="webhdfs.httpError400">
-      <source xml:lang="en">Bad Request</source>
-    </trans-unit>
-    <trans-unit id="webhdfs.httpError401">
-      <source xml:lang="en">Unauthorized</source>
-    </trans-unit>
-    <trans-unit id="webhdfs.httpError403">
-      <source xml:lang="en">Forbidden</source>
-    </trans-unit>
-    <trans-unit id="webhdfs.httpError404">
-      <source xml:lang="en">Not Found</source>
-    </trans-unit>
-    <trans-unit id="webhdfs.httpError500">
-      <source xml:lang="en">Internal Server Error</source>
-    </trans-unit>
-    <trans-unit id="webhdfs.unknownError">
-      <source xml:lang="en">Unknown Error</source>
-    </trans-unit>
-    <trans-unit id="webhdfs.unexpectedRedirect">
-      <source xml:lang="en">Unexpected Redirect</source>
-    </trans-unit>
-  </body></file>
-  <file original="extensions/mssql/dist/objectExplorerNodeProvider/connection" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="connectionInfoUndefined">
-      <source xml:lang="en">ConnectionInfo is undefined.</source>
-    </trans-unit>
-    <trans-unit id="connectionInfoOptionsUndefined">
-      <source xml:lang="en">ConnectionInfo.options is undefined.</source>
-    </trans-unit>
-    <trans-unit id="connectionInfoOptionsMissingProperties">
-      <source xml:lang="en">Some missing properties in connectionInfo.options: {0}</source>
-    </trans-unit>
-  </body></file>
-  <file original="extensions/mssql/dist/telemetry" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="viewKnownIssuesText">
-      <source xml:lang="en">View Known Issues</source>
-    </trans-unit>
-    <trans-unit id="serviceCrashMessage">
-      <source xml:lang="en">{0} component exited unexpectedly. Please restart Azure Data Studio.</source>
-    </trans-unit>
-  </body></file>
-  <file original="extensions/mssql/dist/main" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="msgSampleCodeDataFrame">
-      <source xml:lang="en">This sample code loads the file into a data frame and shows the first 10 results.</source>
-    </trans-unit>
-    <trans-unit id="mssql.errorConvertingToNotebook">
-      <source xml:lang="en">An error occurred converting the SQL document to a Notebook. Error : {0}</source>
-    </trans-unit>
-    <trans-unit id="mssql.errorConvertingToSQL">
-      <source xml:lang="en">An error occurred converting the Notebook document to SQL. Error : {0}</source>
-    </trans-unit>
-    <trans-unit id="notebookFileType">
+    <trans-unit id="title.books">
       <source xml:lang="en">Notebooks</source>
     </trans-unit>
-    <trans-unit id="unsupportedFileType">
-      <source xml:lang="en">Only .ipynb Notebooks are supported</source>
+    <trans-unit id="title.clearSearchServerResult">
+      <source xml:lang="en">Search: Clear Search Server Results</source>
     </trans-unit>
-    <trans-unit id="noController">
-      <source xml:lang="en">Could not find the controller endpoint for this instance</source>
+    <trans-unit id="title.configurePython">
+      <source xml:lang="en">Configure Python for Notebooks</source>
     </trans-unit>
-  </body></file>
-  <file original="extensions/mssql/dist/hdfs/hdfsModel" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="mssql.recursivePermissionOpStarted">
-      <source xml:lang="en">Applying permission changes recursively under '{0}'</source>
+    <trans-unit id="title.endpoints">
+      <source xml:lang="en">Service Endpoints</source>
     </trans-unit>
-    <trans-unit id="mssql.recursivePermissionOpSucceeded">
-      <source xml:lang="en">Permission changes applied successfully.</source>
+    <trans-unit id="title.installPackages">
+      <source xml:lang="en">Install Packages</source>
     </trans-unit>
-    <trans-unit id="mssql.recursivePermissionOpProgress">
-      <source xml:lang="en">Applying permission changes to '{0}'.</source>
+    <trans-unit id="title.newSparkJob">
+      <source xml:lang="en">New Spark Job</source>
     </trans-unit>
-    <trans-unit id="mssql.recursivePermissionOpError">
-      <source xml:lang="en">Error applying permission changes: {0}</source>
+    <trans-unit id="title.openClusterDashboard">
+      <source xml:lang="en">Cluster
+Dashboard</source>
     </trans-unit>
-  </body></file>
-  <file original="extensions/mssql/dist/prompts/confirm" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="msgYes">
-      <source xml:lang="en">Yes</source>
+    <trans-unit id="title.openSparkHistory">
+      <source xml:lang="en">View Spark History</source>
     </trans-unit>
-    <trans-unit id="msgNo">
-      <source xml:lang="en">No</source>
+    <trans-unit id="title.openYarnHistory">
+      <source xml:lang="en">View Yarn History</source>
     </trans-unit>
-  </body></file>
-  <file original="extensions/mssql/dist/sparkFeature/dialog/dialogCommands" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="selectOtherServer">
-      <source xml:lang="en">Select other SQL Server</source>
+    <trans-unit id="title.searchServers">
+      <source xml:lang="en">Search: Servers</source>
     </trans-unit>
-    <trans-unit id="sparkJobSubmission.PleaseSelectSqlWithCluster">
-      <source xml:lang="en">Please select SQL Server with Big Data Cluster.</source>
+    <trans-unit id="title.showLogFile">
+      <source xml:lang="en">Show Log File</source>
     </trans-unit>
-    <trans-unit id="sparkJobSubmission.NoSqlSelected">
-      <source xml:lang="en">No SQL Server is selected.</source>
+    <trans-unit id="title.submitSparkJob">
+      <source xml:lang="en">Submit Spark Job</source>
     </trans-unit>
-    <trans-unit id="errorNotSqlBigDataCluster">
-      <source xml:lang="en">The selected server does not belong to a SQL Server Big Data Cluster</source>
+    <trans-unit id="title.tasks">
+      <source xml:lang="en">Tasks</source>
     </trans-unit>
-    <trans-unit id="sparkJobSubmission.GetFilePathFromSelectedNodeFailed">
-      <source xml:lang="en">Error Get File Path: {0}</source>
-    </trans-unit>
-  </body></file>
-  <file original="extensions/mssql/dist/sparkFeature/dialog/sparkJobSubmission/sparkJobSubmissionDialog" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="sparkJobSubmission.SparkJobSubmissionDialogInitializeError">
-      <source xml:lang="en">Parameters for SparkJobSubmissionDialog is illegal</source>
-    </trans-unit>
-    <trans-unit id="sparkJobSubmission.DialogTitleNewJob">
-      <source xml:lang="en">New Job</source>
-    </trans-unit>
-    <trans-unit id="sparkJobSubmission.DialogCancelButton">
-      <source xml:lang="en">Cancel</source>
-    </trans-unit>
-    <trans-unit id="sparkJobSubmission.DialogSubmitButton">
-      <source xml:lang="en">Submit</source>
-    </trans-unit>
-    <trans-unit id="sparkJobSubmission.SubmitSparkJob">
-      <source xml:lang="en">{0} Spark Job Submission:</source>
-    </trans-unit>
-    <trans-unit id="sparkJobSubmission.SubmissionStartMessage">
-      <source xml:lang="en">.......................... Submit Spark Job Start ..........................</source>
-    </trans-unit>
-  </body></file>
-  <file original="extensions/mssql/dist/sparkFeature/dialog/sparkJobSubmission/sparkJobSubmissionModel" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="sparkJobSubmission.SparkJobSubmissionModelInitializeError">
-      <source xml:lang="en">Parameters for SparkJobSubmissionModel is illegal</source>
-    </trans-unit>
-    <trans-unit id="sparkJobSubmission.submissionArgsIsInvalid">
-      <source xml:lang="en">submissionArgs is invalid. </source>
-    </trans-unit>
-    <trans-unit id="sparkJobSubmission.LivyBatchIdIsInvalid">
-      <source xml:lang="en">livyBatchId is invalid. </source>
-    </trans-unit>
-    <trans-unit id="sparkJobSubmission.GetApplicationIdTimeOut">
-      <source xml:lang="en">Get Application Id time out. {0}[Log]   {1}</source>
-    </trans-unit>
-    <trans-unit id="sparkJobSubmission.localFileOrFolderNotSpecified.">
-      <source xml:lang="en">Property localFilePath or hdfsFolderPath is not specified. </source>
-    </trans-unit>
-    <trans-unit id="sparkJobSubmission.PathNotSpecified.">
-      <source xml:lang="en">Property Path is not specified. </source>
-    </trans-unit>
-  </body></file>
-  <file original="extensions/mssql/dist/sparkFeature/dialog/sparkJobSubmission/sparkConfigurationTab" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="sparkJobSubmission.GeneralTabName">
-      <source xml:lang="en">GENERAL</source>
-    </trans-unit>
-    <trans-unit id="sparkJobSubmission.JobNamePlaceHolder">
-      <source xml:lang="en">Enter a name ...</source>
-    </trans-unit>
-    <trans-unit id="sparkJobSubmission.JobName">
-      <source xml:lang="en">Job Name</source>
-    </trans-unit>
-    <trans-unit id="sparkJobSubmission.SparkCluster">
-      <source xml:lang="en">Spark Cluster</source>
-    </trans-unit>
-    <trans-unit id="sparkJobSubmission.FilePathPlaceHolder">
-      <source xml:lang="en">Path to a .jar or .py file</source>
-    </trans-unit>
-    <trans-unit id="sparkJobSubmission.LocalFileDestinationHintWithPath">
-      <source xml:lang="en">The selected local file will be uploaded to HDFS: {0}</source>
-    </trans-unit>
-    <trans-unit id="sparkJobSubmission.MainFilePath">
-      <source xml:lang="en">JAR/py File</source>
-    </trans-unit>
-    <trans-unit id="sparkJobSubmission.MainClass">
-      <source xml:lang="en">Main Class</source>
-    </trans-unit>
-    <trans-unit id="sparkJobSubmission.Arguments">
-      <source xml:lang="en">Arguments</source>
-    </trans-unit>
-    <trans-unit id="sparkJobSubmission.ArgumentsTooltip">
-      <source xml:lang="en">Command line arguments used in your main class, multiple arguments should be split by space.</source>
-    </trans-unit>
-    <trans-unit id="sparkJobSubmission.NotSpecifyJobName">
-      <source xml:lang="en">Property Job Name is not specified.</source>
-    </trans-unit>
-    <trans-unit id="sparkJobSubmission.NotSpecifyJARPYPath">
-      <source xml:lang="en">Property JAR/py File is not specified.</source>
-    </trans-unit>
-    <trans-unit id="sparkJobSubmission.NotSpecifyMainClass">
-      <source xml:lang="en">Property Main Class is not specified.</source>
-    </trans-unit>
-    <trans-unit id="sparkJobSubmission.HDFSFileNotExistedWithPath">
-      <source xml:lang="en">{0} does not exist in Cluster or exception thrown. </source>
-    </trans-unit>
-    <trans-unit id="sparkJobSubmission.HDFSFileNotExisted">
-      <source xml:lang="en">The specified HDFS file does not exist. </source>
-    </trans-unit>
-    <trans-unit id="sparkSelectLocalFile">
-      <source xml:lang="en">Select</source>
-    </trans-unit>
-    <trans-unit id="sparkJobSubmission.SelectFileError">
-      <source xml:lang="en">Error in locating the file due to Error: {0}</source>
-    </trans-unit>
-  </body></file>
-  <file original="extensions/mssql/dist/sparkFeature/dialog/sparkJobSubmission/sparkAdvancedTab" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="sparkJobSubmission.AdvancedTabName">
-      <source xml:lang="en">ADVANCED</source>
-    </trans-unit>
-    <trans-unit id="sparkJobSubmission.ReferenceJarList">
-      <source xml:lang="en">Reference Jars</source>
-    </trans-unit>
-    <trans-unit id="sparkJobSubmission.ReferenceJarListToolTip">
-      <source xml:lang="en">Jars to be placed in executor working directory. The Jar path needs to be an HDFS Path. Multiple paths should be split by semicolon (;)</source>
-    </trans-unit>
-    <trans-unit id="sparkJobSubmission.ReferencePyList">
-      <source xml:lang="en">Reference py Files</source>
-    </trans-unit>
-    <trans-unit id="sparkJobSubmission.ReferencePyListTooltip">
-      <source xml:lang="en">Py Files to be placed in executor working directory. The file path needs to be an HDFS Path. Multiple paths should be split by semicolon(;)</source>
-    </trans-unit>
-    <trans-unit id="sparkJobSubmission.ReferenceFilesList">
-      <source xml:lang="en">Reference Files</source>
-    </trans-unit>
-    <trans-unit id="sparkJobSubmission.ReferenceFilesListTooltip">
-      <source xml:lang="en">Files to be placed in executor working directory. The file path needs to be an HDFS Path. Multiple paths should be split by semicolon(;)</source>
-    </trans-unit>
-    <trans-unit id="sparkJobSubmission.driverMemory">
-      <source xml:lang="en">Driver Memory</source>
-    </trans-unit>
-    <trans-unit id="sparkJobSubmission.driverMemoryTooltip">
-      <source xml:lang="en">Amount of memory to allocate to the driver. Specify units as part of value. Example 512M or 2G.</source>
-    </trans-unit>
-    <trans-unit id="sparkJobSubmission.driverCores">
-      <source xml:lang="en">Driver Cores</source>
-    </trans-unit>
-    <trans-unit id="sparkJobSubmission.driverCoresTooltip">
-      <source xml:lang="en">Amount of CPU cores to allocate to the driver.</source>
-    </trans-unit>
-    <trans-unit id="sparkJobSubmission.executorMemory">
-      <source xml:lang="en">Executor Memory</source>
-    </trans-unit>
-    <trans-unit id="sparkJobSubmission.executorMemoryTooltip">
-      <source xml:lang="en">Amount of memory to allocate to the executor. Specify units as part of value. Example 512M or 2G.</source>
-    </trans-unit>
-    <trans-unit id="sparkJobSubmission.executorCores">
-      <source xml:lang="en">Executor Cores</source>
-    </trans-unit>
-    <trans-unit id="sparkJobSubmission.executorCoresTooltip">
-      <source xml:lang="en">Amount of CPU cores to allocate to the executor.</source>
-    </trans-unit>
-    <trans-unit id="sparkJobSubmission.executorCount">
-      <source xml:lang="en">Executor Count</source>
-    </trans-unit>
-    <trans-unit id="sparkJobSubmission.executorCountTooltip">
-      <source xml:lang="en">Number of instances of the executor to run.</source>
-    </trans-unit>
-    <trans-unit id="sparkJobSubmission.queueName">
-      <source xml:lang="en">Queue Name</source>
-    </trans-unit>
-    <trans-unit id="sparkJobSubmission.queueNameTooltip">
-      <source xml:lang="en">Name of the Spark queue to execute the session in.</source>
-    </trans-unit>
-    <trans-unit id="sparkJobSubmission.configValues">
-      <source xml:lang="en">Configuration Values</source>
-    </trans-unit>
-    <trans-unit id="sparkJobSubmission.configValuesTooltip">
-      <source xml:lang="en">List of name value pairs containing Spark configuration values. Encoded as JSON dictionary. Example: '{"name":"value", "name2":"value2"}'.</source>
-    </trans-unit>
-  </body></file>
-  <file original="extensions/mssql/dist/objectExplorerNodeProvider/objectExplorerNodeProvider" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="promptUsername">
-      <source xml:lang="en">Please provide the username to connect to HDFS:</source>
-    </trans-unit>
-    <trans-unit id="prmptPwd">
-      <source xml:lang="en">Please provide the password to connect to HDFS:</source>
-    </trans-unit>
-    <trans-unit id="sessionNotFound">
-      <source xml:lang="en">Session for node {0} does not exist</source>
-    </trans-unit>
-    <trans-unit id="notifyError">
-      <source xml:lang="en">Error notifying of node change: {0}</source>
-    </trans-unit>
-    <trans-unit id="hdfsFolder">
-      <source xml:lang="en">HDFS</source>
-    </trans-unit>
-    <trans-unit id="rootLabel">
-      <source xml:lang="en">Root</source>
-    </trans-unit>
-  </body></file>
-  <file original="extensions/mssql/dist/objectExplorerNodeProvider/hdfsProvider" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="errorExpanding">
-      <source xml:lang="en">Error: {0}</source>
-    </trans-unit>
-    <trans-unit id="errDeleteConnectionNode">
-      <source xml:lang="en">Cannot delete a connection. Only subfolders and files can be deleted.</source>
-    </trans-unit>
-  </body></file>
-  <file original="extensions/mssql/dist/objectExplorerNodeProvider/cancelableStream" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="streamCanceled">
-      <source xml:lang="en">Stream operation canceled by the user</source>
-    </trans-unit>
-  </body></file>
-  <file original="extensions/mssql/dist/dashboard/serviceEndpoints" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="grafana">
-      <source xml:lang="en">Metrics Dashboard</source>
-    </trans-unit>
-    <trans-unit id="kibana">
-      <source xml:lang="en">Log Search Dashboard</source>
-    </trans-unit>
-    <trans-unit id="sparkHistory">
-      <source xml:lang="en">Spark Jobs Management and Monitoring Dashboard</source>
-    </trans-unit>
-    <trans-unit id="yarnHistory">
-      <source xml:lang="en">Spark Diagnostics and Monitoring Dashboard</source>
-    </trans-unit>
-    <trans-unit id="copyText">
-      <source xml:lang="en">Copy</source>
-    </trans-unit>
-    <trans-unit id="endpoint.appproxy">
-      <source xml:lang="en">Application Proxy</source>
-    </trans-unit>
-    <trans-unit id="endpoint.controller">
-      <source xml:lang="en">Cluster Management Service</source>
-    </trans-unit>
-    <trans-unit id="endpoint.gateway">
-      <source xml:lang="en">Gateway to access HDFS files, Spark</source>
-    </trans-unit>
-    <trans-unit id="endpoint.managementproxy">
-      <source xml:lang="en">Management Proxy</source>
-    </trans-unit>
-    <trans-unit id="endpoint.mgmtproxy">
-      <source xml:lang="en">Management Proxy</source>
-    </trans-unit>
-    <trans-unit id="endpoint.sqlServerEndpoint">
-      <source xml:lang="en">SQL Server Master Instance Front-End</source>
-    </trans-unit>
-    <trans-unit id="endpoint.grafana">
-      <source xml:lang="en">Metrics Dashboard</source>
-    </trans-unit>
-    <trans-unit id="endpoint.kibana">
-      <source xml:lang="en">Log Search Dashboard</source>
-    </trans-unit>
-    <trans-unit id="endpoint.yarnHistory">
-      <source xml:lang="en">Spark Diagnostics and Monitoring Dashboard</source>
-    </trans-unit>
-    <trans-unit id="endpoint.sparkHistory">
-      <source xml:lang="en">Spark Jobs Management and Monitoring Dashboard</source>
-    </trans-unit>
-    <trans-unit id="endpoint.webhdfs">
-      <source xml:lang="en">HDFS File System Proxy</source>
-    </trans-unit>
-    <trans-unit id="endpoint.livy">
-      <source xml:lang="en">Proxy for running Spark statements, jobs, applications</source>
-    </trans-unit>
-  </body></file>
-  <file original="extensions/mssql/dist/sqlToolsServer" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="serviceStartedStatusMsg">
-      <source xml:lang="en">{0} Started</source>
-    </trans-unit>
-    <trans-unit id="startingServiceStatusMsg">
-      <source xml:lang="en">Starting {0}</source>
-    </trans-unit>
-    <trans-unit id="failedToStartServiceErrorMsg">
-      <source xml:lang="en">Failed to start {0}</source>
-    </trans-unit>
-    <trans-unit id="installingServiceChannelMsg">
-      <source xml:lang="en">Installing {0} to {1}</source>
-    </trans-unit>
-    <trans-unit id="installingServiceStatusMsg">
-      <source xml:lang="en">Installing {0}</source>
-    </trans-unit>
-    <trans-unit id="installedServiceChannelMsg">
-      <source xml:lang="en">Installed {0}</source>
-    </trans-unit>
-    <trans-unit id="downloadingServiceChannelMsg">
-      <source xml:lang="en">Downloading {0}</source>
-    </trans-unit>
-    <trans-unit id="downloadingServiceSizeChannelMsg">
-      <source xml:lang="en">({0} KB)</source>
-    </trans-unit>
-    <trans-unit id="downloadingServiceStatusMsg">
-      <source xml:lang="en">Downloading {0}</source>
-    </trans-unit>
-    <trans-unit id="downloadServiceDoneChannelMsg">
-      <source xml:lang="en">Done installing {0}</source>
-    </trans-unit>
-    <trans-unit id="entryExtractedChannelMsg">
-      <source xml:lang="en">Extracted {0} ({1}/{2})</source>
-    </trans-unit>
-  </body></file>
-  <file original="extensions/mssql/dist/features" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="mssql.missingLinkedAzureAccount">
-      <source xml:lang="en">Azure Data Studio needs to contact Azure Key Vault to access a column master key for Always Encrypted, but no linked Azure account is available. Please add a linked Azure account and retry the query.</source>
-    </trans-unit>
-    <trans-unit id="mssql.chooseLinkedAzureAccount">
-      <source xml:lang="en">Please select a linked Azure account:</source>
-    </trans-unit>
-    <trans-unit id="mssql.canceledLinkedAzureAccountSelection">
-      <source xml:lang="en">Azure Data Studio needs to contact Azure Key Vault to access a column master key for Always Encrypted, but no linked Azure account was selected. Please retry the query and select a linked Azure account when prompted.</source>
-    </trans-unit>
-    <trans-unit id="mssql.insufficientlyPrivelagedAzureAccount">
-      <source xml:lang="en">The configured Azure account for {0} does not have sufficient permissions for Azure Key Vault to access a column master key for Always Encrypted.</source>
-    </trans-unit>
-  </body></file>
+</body></file>
 </xliff>
