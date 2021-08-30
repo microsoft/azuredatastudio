@@ -205,7 +205,7 @@ export class ExtHostTreeViews implements ExtHostTreeViewsShape {
 }
 
 export type Root = null | undefined | void; // {{SQL CARBON EDIT}} export interface
-type TreeData<T> = { message: boolean, element: T | T[] | Root | false };
+type TreeData<T> = { message: boolean, element: T | Root | false };
 
 export interface TreeNode extends IDisposable { // {{SQL CARBON EDIT}} export interface
 	item: ITreeItem;
@@ -292,11 +292,7 @@ export class ExtHostTreeView<T> extends Disposable {
 					refreshingPromise = new Promise(c => promiseCallback = c);
 					this.refreshPromise = this.refreshPromise.then(() => refreshingPromise!);
 				}
-				if (Array.isArray(current.element)) {
-					result.elements.push(...current.element);
-				} else {
-					result.elements.push(current.element);
-				}
+				result.elements.push(current.element);
 			}
 			if (current.message) {
 				result.message = true;
