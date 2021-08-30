@@ -1713,13 +1713,13 @@ suite('SQL ConnectionManagementService tests', () => {
 		let expiredToken = {
 			token: 'expiredToken',
 			tokenType: 'Bearer',
-			azureAccountTokenExpiresOn: 0,
+			expiresOn: 0,
 		};
 
 		let freshToken = {
 			token: 'freshToken',
 			tokenType: 'Bearer',
-			azureAccountTokenExpiresOn: new Date().getTime() / 1000 + 7200,
+			expiresOn: new Date().getTime() / 1000 + 7200,
 		};
 
 		// every connectionStatusManager.connect will call accountManagementService.getAccountSecurityToken twice
@@ -1753,21 +1753,21 @@ suite('SQL ConnectionManagementService tests', () => {
 		await connect(uri, undefined, false, azureConnectionProfile);
 
 		let oldProfile = connectionStatusManager.getConnectionProfile(uri);
-		assert.strictEqual(oldProfile.options['azureAccountTokenExpiresOn'], expiredToken.azureAccountTokenExpiresOn);
+		assert.strictEqual(oldProfile.options['expiresOn'], expiredToken.expiresOn);
 
 		let refreshRes1 = await connectionManagementService.refreshAzureAccountTokenIfNecessary(uri);
 		assert.strictEqual(refreshRes1, true);
 
 		// first refresh should give us the new token
 		let newProfile1 = connectionStatusManager.getConnectionProfile(uri);
-		assert.strictEqual(newProfile1.options['azureAccountTokenExpiresOn'], freshToken.azureAccountTokenExpiresOn);
+		assert.strictEqual(newProfile1.options['expiresOn'], freshToken.expiresOn);
 
 		let refreshRes2 = await connectionManagementService.refreshAzureAccountTokenIfNecessary(uri);
 		assert.strictEqual(refreshRes2, true);
 
 		// second refresh should be a no-op
 		let newProfile2 = connectionStatusManager.getConnectionProfile(uri);
-		assert.strictEqual(newProfile2.options['azureAccountTokenExpiresOn'], freshToken.azureAccountTokenExpiresOn);
+		assert.strictEqual(newProfile2.options['expiresOn'], freshToken.expiresOn);
 	});
 
 	test('addSavedPassword fills in Azure access token for selected tenant', async () => {

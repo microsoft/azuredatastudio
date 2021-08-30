@@ -197,7 +197,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 			if (accessToken) {
 				return {
 					...accessToken,
-					azureAccountTokenExpiresOn: expiresOn,
+					expiresOn: expiresOn,
 					tokenType: 'Bearer'
 				};
 			}
@@ -217,7 +217,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 		if (result.accessToken) {
 			return {
 				...result.accessToken,
-				azureAccountTokenExpiresOn: Number(result.expiresOn),
+				expiresOn: Number(result.expiresOn),
 				tokenType: 'Bearer'
 			};
 		}
@@ -681,7 +681,7 @@ export interface Token extends AccountKey {
 	/**
 	 * Access token expiry timestamp
 	 */
-	azureAccountTokenExpiresOn?: number;
+	expiresOn?: number;
 
 	/**
 	 * TokenType

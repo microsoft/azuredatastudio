@@ -864,7 +864,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 					this._logService.info(`No security tokens found for account`);
 				}
 				connection.options['azureAccountToken'] = token.token;
-				connection.options['azureAccountTokenExpiresOn'] = token.azureAccountTokenExpiresOn;
+				connection.options['expiresOn'] = token.expiresOn;
 				connection.options['password'] = '';
 				return true;
 			} else {
@@ -893,21 +893,20 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		if (previousReconnectPromise) {
 			this._logService.info(`Found pending reconnect promise for uri ${uri}, waiting.`);
 			await previousReconnectPromise;
-			delete this._uriToReconnectPromiseMap[uri];
 		}
 
-		let expiry = profile.options.azureAccountTokenExpiresOn;
+		let expiry = profile.options.expiresOn;
 		if (typeof expiry === 'number' && !Number.isNaN(expiry)) {
 			const currentTime = new Date().getTime() / 1000;
 			if (currentTime >= expiry) {
 				this._logService.info(`Access token expired for connection ${profile.id} with uri ${uri}`);
-				let newProfile = new ConnectionProfile(this._capabilitiesService, profile);
-				let connectionResultPromise = this.connect(newProfile, uri);
+				let connectionResultPromise = this.connect(profile, uri);
 				this._uriToReconnectPromiseMap[uri] = connectionResultPromise;
 				let connectionResult = await connectionResultPromise;
+				delete this._uriToReconnectPromiseMap[uri];
 				if (!connectionResult || !connectionResult.connected) {
 					this._logService.error(`Failed to refresh connection ${profile.id} with uri ${uri}, result: ${connectionResult}`);
-					await this.disconnect(newProfile);
+					await this.disconnect(profile);
 					return false;
 				}
 				this._logService.info(`Successfully refreshed token for connection ${profile.id} with uri ${uri}, result: ${connectionResult.connected} ${connectionResult.connectionProfile}, isConnected: ${this.isConnected(uri)}, ${this._connectionStatusManager.getConnectionProfile(uri)}`);
