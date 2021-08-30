@@ -35,7 +35,7 @@ const PLATFORM = '${PLATFORM}';
 const RUNTIME = '${RUNTIME}';
 const VERSION = '${VERSION}';
 
-const sqliteUrl = `https://github.com/Microsoft/azuredatastudio-sqlite/releases/download/1.5.0/azuredatastudio-sqlite-${PLATFORM}-${RUNTIME}-${VERSION}.zip`;
+const sqliteUrl = `https://github.com/Microsoft/azuredatastudio-sqlite/releases/download/1.4.0/azuredatastudio-sqlite-${PLATFORM}-${RUNTIME}-${VERSION}.zip`;
 
 export async function setup(app: ApplicationOptions): Promise<void> {
 	console.log('*** Downloading test extensions');
