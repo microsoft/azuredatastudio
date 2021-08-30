@@ -897,7 +897,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		}
 
 		let expiry = profile.options.azureAccountTokenExpiresOn;
-		if (expiry && !Number.isNaN(expiry)) {
+		if (typeof expiry === 'number' && !Number.isNaN(expiry)) {
 			const currentTime = new Date().getTime() / 1000;
 			if (currentTime >= expiry) {
 				this._logService.info(`Access token expired for connection ${profile.id} with uri ${uri}`);

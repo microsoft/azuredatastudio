@@ -66,7 +66,8 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 				if (model.options.registeredServerDescription) {
 					this.registeredServerDescription = model.options.registeredServerDescription;
 				}
-				if (model.options.azureAccountTokenExpiresOn) {
+				let expiry = model.options.azureAccountTokenExpiresOn;
+				if (typeof expiry === 'number' && !Number.isNaN(expiry)) {
 					this.options.azureAccountTokenExpiresOn = model.options.azureAccountTokenExpiresOn;
 				}
 			}

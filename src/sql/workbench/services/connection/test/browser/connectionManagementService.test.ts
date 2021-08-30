@@ -120,7 +120,12 @@ suite('SQL ConnectionManagementService tests', () => {
 		connectionStore.setup(x => x.addSavedPassword(TypeMoq.It.is<IConnectionProfile>(
 			c => c.serverName === connectionProfileWithEmptyUnsavedPassword.serverName))).returns(
 				() => Promise.resolve({ profile: connectionProfileWithEmptyUnsavedPassword, savedCred: false }));
-		connectionStore.setup(x => x.isPasswordRequired(TypeMoq.It.isAny())).returns(() => true);
+		connectionStore.setup(x => x.isPasswordRequired(TypeMoq.It.isAny())).returns((profile) => {
+			if (profile.authenticationType === Constants.azureMFA) {
+				return false;
+			}
+			return true;
+		});
 		connectionStore.setup(x => x.getConnectionProfileGroups(false, undefined)).returns(() => [root]);
 		connectionStore.setup(x => x.savePassword(TypeMoq.It.isAny())).returns(() => Promise.resolve(true));
 
@@ -1691,6 +1696,78 @@ suite('SQL ConnectionManagementService tests', () => {
 		// Then the returned profile has the account token set
 		assert.equal(profileWithCredentials.userName, azureConnectionProfile.userName);
 		assert.equal(profileWithCredentials.options['azureAccountToken'], testToken);
+	});
+
+	test('refreshAzureAccountTokenIfNecessary refreshes Azure access token if existing token is expired', async () => {
+		let uri: string = 'Editor Uri';
+		// Set up a connection profile that uses Azure
+		let azureConnectionProfile = ConnectionProfile.fromIConnectionProfile(capabilitiesService, connectionProfile);
+		azureConnectionProfile.authenticationType = 'AzureMFA';
+		let username = 'testuser@microsoft.com';
+		azureConnectionProfile.azureAccount = username;
+		let servername = 'test-database.database.windows.net';
+		azureConnectionProfile.serverName = servername;
+		let providerId = 'azure_PublicCloud';
+		azureConnectionProfile.azureTenantId = 'testTenant';
+
+		let expiredToken = {
+			token: 'expiredToken',
+			tokenType: 'Bearer',
+			azureAccountTokenExpiresOn: 0,
+		};
+
+		let freshToken = {
+			token: 'freshToken',
+			tokenType: 'Bearer',
+			azureAccountTokenExpiresOn: new Date().getTime() / 1000 + 7200,
+		};
+
+		// every connectionStatusManager.connect will call accountManagementService.getAccountSecurityToken twice
+		accountManagementService.setup(x => x.getAccountSecurityToken(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(expiredToken));
+		accountManagementService.setup(x => x.getAccountSecurityToken(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(expiredToken));
+		accountManagementService.setup(x => x.getAccountSecurityToken(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(freshToken));
+		accountManagementService.setup(x => x.getAccountSecurityToken(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(freshToken));
+		accountManagementService.setup(x => x.getAccountSecurityToken(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(expiredToken));
+		accountManagementService.setup(x => x.getAccountSecurityToken(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve(expiredToken));
+
+		accountManagementService.setup(x => x.getAccounts()).returns(() => {
+			return Promise.resolve<azdata.Account[]>([
+				{
+					key: {
+						accountId: username,
+						providerId: providerId
+					},
+					displayInfo: undefined,
+					isStale: false,
+					properties: undefined
+				}
+			]);
+		});
+
+		connectionStore.setup(x => x.addSavedPassword(TypeMoq.It.is(profile => profile.authenticationType === 'AzureMFA'))).returns(profile => Promise.resolve({
+			profile: profile,
+			savedCred: false
+		}));
+
+		(connectionManagementService as any)._connectionStatusManager = connectionStatusManager;
+		await connect(uri, undefined, false, azureConnectionProfile);
+
+		let oldProfile = connectionStatusManager.getConnectionProfile(uri);
+		assert.strictEqual(oldProfile.options['azureAccountTokenExpiresOn'], expiredToken.azureAccountTokenExpiresOn);
+
+		let refreshRes1 = await connectionManagementService.refreshAzureAccountTokenIfNecessary(uri);
+		assert.strictEqual(refreshRes1, true);
+
+		// first refresh should give us the new token
+		let newProfile1 = connectionStatusManager.getConnectionProfile(uri);
+		assert.strictEqual(newProfile1.options['azureAccountTokenExpiresOn'], freshToken.azureAccountTokenExpiresOn);
+
+		let refreshRes2 = await connectionManagementService.refreshAzureAccountTokenIfNecessary(uri);
+		assert.strictEqual(refreshRes2, true);
+
+		// second refresh should be a no-op
+		let newProfile2 = connectionStatusManager.getConnectionProfile(uri);
+		assert.strictEqual(newProfile2.options['azureAccountTokenExpiresOn'], freshToken.azureAccountTokenExpiresOn);
 	});
 
 	test('addSavedPassword fills in Azure access token for selected tenant', async () => {
