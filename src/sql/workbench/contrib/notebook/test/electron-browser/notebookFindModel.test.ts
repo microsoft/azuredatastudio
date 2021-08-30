@@ -31,7 +31,7 @@ import { NotebookRange } from 'sql/workbench/services/notebook/browser/notebookS
 import { NotebookMarkdownRenderer } from 'sql/workbench/contrib/notebook/browser/outputs/notebookMarkdown';
 import { NullAdsTelemetryService } from 'sql/platform/telemetry/common/adsTelemetryService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { TestConfigurationService } from 'sql/platform/connection/test/common/testConfigurationService';
+import { TestConfigurationService } from 'vs/platform/configuration/test/common/testConfigurationService';
 
 let expectedNotebookContent: nb.INotebookContents = {
 	cells: [{
@@ -74,7 +74,7 @@ suite('Notebook Find Model', function (): void {
 	let defaultModelOptions: INotebookModelOptions;
 	const logService = new NullLogService();
 	let model: NotebookModel;
-	let markdownRenderer: NotebookMarkdownRenderer = new NotebookMarkdownRenderer(new TestConfigurationService());
+	let markdownRenderer: NotebookMarkdownRenderer = new NotebookMarkdownRenderer();
 	let configurationService: IConfigurationService;
 
 	setup(async () => {

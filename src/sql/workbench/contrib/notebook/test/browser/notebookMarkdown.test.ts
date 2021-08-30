@@ -7,10 +7,9 @@ import * as assert from 'assert';
 import * as marked from 'vs/base/common/marked/marked';
 import { NotebookMarkdownRenderer } from '../../browser/outputs/notebookMarkdown';
 import { URI } from 'vs/base/common/uri';
-import { TestConfigurationService } from 'sql/platform/connection/test/common/testConfigurationService';
 
 suite('NotebookMarkdownRenderer', () => {
-	let notebookMarkdownRenderer = new NotebookMarkdownRenderer(new TestConfigurationService({ user: { 'notebook': { 'useNewMarkdownRenderer': false } } }));
+	let notebookMarkdownRenderer = new NotebookMarkdownRenderer();
 	test('image rendering conforms to default', () => {
 		const markdown = { value: `![image](someimageurl 'caption')` };
 		const result: HTMLElement = notebookMarkdownRenderer.renderMarkdown(markdown);

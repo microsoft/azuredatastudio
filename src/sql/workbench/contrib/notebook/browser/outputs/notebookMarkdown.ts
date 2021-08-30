@@ -8,22 +8,19 @@ import { nb } from 'azdata';
 import { URI } from 'vs/base/common/uri';
 import { IMarkdownString, removeMarkdownEscapes } from 'vs/base/common/htmlContent';
 import { IMarkdownRenderResult } from 'vs/editor/browser/core/markdownRenderer';
-import * as sqlMarked from 'sql/base/common/marked/marked';
-import * as vsMarked from 'vs/base/common/marked/marked';
+import * as marked from 'sql/base/common/marked/marked';
 import { defaultGenerator } from 'vs/base/common/idGenerator';
 import { revive } from 'vs/base/common/marshalling';
 import { ImageMimeTypes } from 'sql/workbench/services/notebook/common/contracts';
 import { IMarkdownStringWithCellAttachments, MarkdownRenderOptionsWithCellAttachments } from 'sql/workbench/contrib/notebook/browser/cellViews/interfaces';
 import { replaceInvalidLinkPath } from 'sql/workbench/contrib/notebook/common/utils';
-import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { useNewMarkdownRendererKey } from 'sql/workbench/contrib/notebook/common/notebookCommon';
 
 // Based off of HtmlContentRenderer
 export class NotebookMarkdownRenderer {
 	private _notebookURI: URI;
 	private _baseUrls: string[] = [];
 
-	constructor(@IConfigurationService private _configurationService: IConfigurationService) {
+	constructor() {
 
 	}
 
@@ -68,8 +65,7 @@ export class NotebookMarkdownRenderer {
 		if (!this._baseUrls.some(x => x === notebookFolder)) {
 			this._baseUrls.push(notebookFolder);
 		}
-		const useNewRenderer = this._configurationService.getValue(useNewMarkdownRendererKey);
-		const renderer = useNewRenderer ? new vsMarked.Renderer({ baseUrl: notebookFolder }) : new sqlMarked.Renderer({ baseUrl: notebookFolder });
+		const renderer = new marked.Renderer({ baseUrl: notebookFolder });
 		renderer.image = (href: string, title: string, text: string) => {
 			const attachment = findAttachmentIfExists(href, options.cellAttachments);
 			// Attachments are already properly formed, so do not need cleaning. Cleaning only takes into account relative/absolute
@@ -182,22 +178,13 @@ export class NotebookMarkdownRenderer {
 			};
 		}
 
-		if (useNewRenderer) {
-			const markedOptions: vsMarked.MarkedOptions = {
-				sanitize: !markdown.isTrusted,
-				renderer,
-				baseUrl: notebookFolder
-			};
-			element.innerHTML = vsMarked.parse(markdown.value, markedOptions);
-		} else {
-			const markedOptions: sqlMarked.MarkedOptions = {
-				sanitize: !markdown.isTrusted,
-				renderer,
-				baseUrl: notebookFolder
-			};
-			element.innerHTML = sqlMarked.parse(markdown.value, markedOptions);
-		}
+		const markedOptions: marked.MarkedOptions = {
+			sanitize: !markdown.isTrusted,
+			renderer,
+			baseUrl: notebookFolder
+		};
 
+		element.innerHTML = marked.parse(markdown.value, markedOptions);
 		signalInnerHTML!();
 
 		return element;
