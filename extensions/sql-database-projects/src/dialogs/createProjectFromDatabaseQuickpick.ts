@@ -80,48 +80,42 @@ export async function createNewProjectFromDatabaseWithQuickpick(connectionInfo?:
 	}
 
 	// 4. Prompt for Project location
-	const defaultProjectSaveLoc = defaultProjectSaveLocation();
-	const browseProjectLocationOptions: string[] = [constants.browseEllipsisWithIcon];
-	if (defaultProjectSaveLoc) {
-		browseProjectLocationOptions.push(defaultProjectSaveLoc.fsPath);
+	// Show quick pick with just browse option to give user context about what the file dialog is for (since that doesn't always have a title)
+	const browseProjectLocation = await vscode.window.showQuickPick(
+		[constants.browseEllipsis],
+		{ title: constants.projectLocationPlaceholderText, ignoreFocusOut: true });
+	if (!browseProjectLocation) {
+		return undefined;
 	}
 	// We validate that the folder doesn't already exist, and if it does keep prompting them to pick a new one
+	let valid = false;
 	let projectLocation = '';
-	let browseProjectLocationTitle = constants.projectLocationPlaceholderText;
-	while (true) {
-		const browseProjectLocation = await vscode.window.showQuickPick(
-			browseProjectLocationOptions,
-			{ title: browseProjectLocationTitle, ignoreFocusOut: true });
-		if (!browseProjectLocation) {
+	while (!valid) {
+		const locations = await vscode.window.showOpenDialog({
+			canSelectFiles: false,
+			canSelectFolders: true,
+			canSelectMany: false,
+			openLabel: constants.selectString,
+			title: constants.selectProjectLocation,
+			defaultUri: defaultProjectSaveLocation()
+		});
+		if (!locations) {
 			// User cancelled
 			return undefined;
 		}
-		if (browseProjectLocation === constants.browseEllipsisWithIcon) {
-			const locations = await vscode.window.showOpenDialog({
-				canSelectFiles: false,
-				canSelectFolders: true,
-				canSelectMany: false,
-				openLabel: constants.selectString,
-				title: constants.selectProjectLocation,
-				defaultUri: defaultProjectSaveLoc
-			});
-			if (!locations) {
-				// User cancelled out of open dialog - let them choose location again
-				browseProjectLocationTitle = constants.projectLocationPlaceholderText;
-				continue;
-			}
-			projectLocation = locations[0].fsPath;
-		} else {
-			projectLocation = browseProjectLocation;
-		}
+		projectLocation = locations[0].fsPath;
 		const locationExists = await exists(path.join(projectLocation, projectName));
-		if (!locationExists) {
-			// Have a valid location so exit out now
-			break;
+		if (locationExists) {
+			// Show the browse quick pick again with the title updated with the error
+			const browseProjectLocation = await vscode.window.showQuickPick(
+				[constants.browseEllipsis],
+				{ title: constants.folderAlreadyExistsChooseNewLocation(projectName), ignoreFocusOut: true });
+			if (!browseProjectLocation) {
+				return undefined;
+			}
+		} else {
+			valid = true;
 		}
-		// Otherwise show the browse quick pick again with the title updated with the error
-		browseProjectLocationTitle = constants.folderAlreadyExistsChooseNewLocation(projectName);
-		continue;
 	}
 
 	// 5: Prompt for folder structure

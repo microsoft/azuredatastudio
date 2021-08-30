@@ -26,7 +26,6 @@ export const openedProjectsUndefinedAfterRefresh = localize('openedProjectsUndef
 export const OkButtonText = localize('dataworkspace.ok', "OK");
 export const BrowseButtonText = localize('dataworkspace.browse', "Browse");
 export const BrowseEllipsis = localize('dataworkspace.browseEllipsis', "Browse...");
-export const BrowseEllipsisWithIcon = `$(folder) ${BrowseEllipsis}`;
 export const OpenButtonText = localize('dataworkspace.open', "Open");
 export const CreateButtonText = localize('dataworkspace.create', "Create");
 export const Select = localize('dataworkspace.select', "Select");
