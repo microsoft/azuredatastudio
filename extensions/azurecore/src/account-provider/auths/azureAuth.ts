@@ -681,7 +681,7 @@ export interface Token extends AccountKey {
 	/**
 	 * Access token expiry timestamp
 	 */
-	azureAccountTokenExpiresOn: number;
+	azureAccountTokenExpiresOn?: number;
 
 	/**
 	 * TokenType

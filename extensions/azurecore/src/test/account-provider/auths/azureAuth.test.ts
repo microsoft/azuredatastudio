@@ -20,7 +20,6 @@ let azureAuthCodeGrant: TypeMoq.IMock<AzureAuthCodeGrant>;
 const mockToken: Token = {
 	key: 'someUniqueId',
 	token: 'test_token',
-	azureAccountTokenExpiresOn: 0,
 	tokenType: 'Bearer'
 };
 let mockAccessToken: AccessToken;

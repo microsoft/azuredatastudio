@@ -2190,7 +2190,7 @@ declare module 'azdata' {
 			/**
 			 * Access token expiry timestamp
 			 */
-			azureAccountTokenExpiresOn: number
+			azureAccountTokenExpiresOn?: number
 		}
 
 		/**
