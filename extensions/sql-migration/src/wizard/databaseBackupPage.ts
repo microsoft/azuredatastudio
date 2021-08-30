@@ -191,7 +191,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			}
 		}).component();
 
-		const usernameLable = this._view.modelBuilder.text().withProps({
+		const usernameLabel = this._view.modelBuilder.text().withProps({
 			value: constants.USERNAME,
 			width: WIZARD_INPUT_COMPONENT_WIDTH,
 			requiredIndicator: true,
@@ -345,7 +345,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			[
 				sqlSourceHeader,
 				this._sourceHelpText,
-				usernameLable,
+				usernameLabel,
 				this._sqlSourceUsernameInput,
 				sqlPasswordLabel,
 				this._sqlSourcepassword,
