@@ -53,11 +53,31 @@ export class MigrationStatusDialog {
 		let tab = azdata.window.createTab('');
 		tab.registerContent(async (view: azdata.ModelView) => {
 			this._view = view;
+
+			this._statusDropdown = this._view.modelBuilder.dropDown().withProps({
+				ariaLabel: loc.MIGRATION_STATUS_FILTER,
+				values: this._model.statusDropdownValues,
+				width: '220px'
+			}).component();
+
+			this._disposables.push(this._statusDropdown.onValueChanged((value) => {
+				this.populateMigrationTable();
+			}));
+
+			if (this._filter) {
+				this._statusDropdown.value = (<azdata.CategoryValue[]>this._statusDropdown.values).find((value) => {
+					return value.name === this._filter;
+				});
+			}
+
 			this.registerCommands();
 			const formBuilder = view.modelBuilder.formContainer().withFormItems(
 				[
 					{
 						component: this.createSearchAndRefreshContainer()
+					},
+					{
+						component: this._statusDropdown
 					},
 					{
 						component: this.createStatusTable()
@@ -127,29 +147,6 @@ export class MigrationStatusDialog {
 
 		flexContainer.addItem(this._searchBox, {
 			flex: '0'
-		});
-
-		this._statusDropdown = this._view.modelBuilder.dropDown().withProps({
-			ariaLabel: loc.MIGRATION_STATUS_FILTER,
-			values: this._model.statusDropdownValues,
-			width: '220px'
-		}).component();
-
-		this._disposables.push(this._statusDropdown.onValueChanged((value) => {
-			this.populateMigrationTable();
-		}));
-
-		if (this._filter) {
-			this._statusDropdown.value = (<azdata.CategoryValue[]>this._statusDropdown.values).find((value) => {
-				return value.name === this._filter;
-			});
-		}
-
-		flexContainer.addItem(this._statusDropdown, {
-			flex: '0',
-			CSSStyles: {
-				'margin-left': '20px'
-			}
 		});
 
 		flexContainer.addItem(this._refresh, {
