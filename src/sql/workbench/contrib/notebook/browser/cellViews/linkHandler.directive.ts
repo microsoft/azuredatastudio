@@ -68,6 +68,7 @@ export class LinkHandlerDirective {
 			if (window.location.host === uri.authority) {
 				uri = uri.with({ scheme: 'vscode-remote' });
 				this.openerService.open(uri);
+				return;
 			}
 		}
 		if (uri && this.openerService && this.isSupportedLink(uri)) {
