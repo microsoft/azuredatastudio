@@ -123,9 +123,9 @@ suite('Data Resource Data Provider', function () {
 		serializerStub.restore();
 
 		const noHeadersResult = await fs.readFile(noHeadersFile.fsPath);
-		assert.equal(noHeadersResult.toString(), '1 2 \n3 4 \n', 'result data should not include headers');
+		assert.strictEqual(noHeadersResult.toString(), '1 2 \n3 4 \n', 'result data should not include headers');
 
 		const withHeadersResult = await fs.readFile(withHeadersFile.fsPath);
-		assert.equal(withHeadersResult.toString(), 'col1 col2 \n1 2 \n3 4 \n', 'result data should include headers');
+		assert.strictEqual(withHeadersResult.toString(), 'col1 col2 \n1 2 \n3 4 \n', 'result data should include headers');
 	});
 });

@@ -43,24 +43,24 @@ suite('ExtHostModelViewDialog Tests', () => {
 		let title = 'dialog_title';
 		let dialog = extHostModelViewDialog.createDialog(title);
 
-		assert.equal(dialog.title, title);
-		assert.equal(dialog.okButton.enabled, true);
-		assert.equal(dialog.cancelButton.enabled, true);
+		assert.strictEqual(dialog.title, title);
+		assert.strictEqual(dialog.okButton.enabled, true);
+		assert.strictEqual(dialog.cancelButton.enabled, true);
 	});
 
 	test('Creating a tab returns a tab with the given title', () => {
 		let title = 'tab_title';
 		let tab = extHostModelViewDialog.createTab(title);
 
-		assert.equal(tab.title, title);
+		assert.strictEqual(tab.title, title);
 	});
 
 	test('Creating a button returns an enabled button with the given label', () => {
 		let label = 'button_label';
 		let button = extHostModelViewDialog.createButton(label);
 
-		assert.equal(button.label, label);
-		assert.equal(button.enabled, true);
+		assert.strictEqual(button.label, label);
+		assert.strictEqual(button.enabled, true);
 	});
 
 	test('Opening a dialog updates its tabs and buttons on the main thread', () => {
@@ -132,11 +132,11 @@ suite('ExtHostModelViewDialog Tests', () => {
 		let title = 'wizard_title';
 		let wizard = extHostModelViewDialog.createWizard(title);
 
-		assert.equal(wizard.title, title);
-		assert.equal(wizard.doneButton.enabled, true);
-		assert.equal(wizard.cancelButton.enabled, true);
-		assert.equal(wizard.nextButton.enabled, true);
-		assert.equal(wizard.backButton.enabled, true);
+		assert.strictEqual(wizard.title, title);
+		assert.strictEqual(wizard.doneButton.enabled, true);
+		assert.strictEqual(wizard.cancelButton.enabled, true);
+		assert.strictEqual(wizard.nextButton.enabled, true);
+		assert.strictEqual(wizard.backButton.enabled, true);
 		assert.deepEqual(wizard.pages, []);
 	});
 
@@ -207,9 +207,9 @@ suite('ExtHostModelViewDialog Tests', () => {
 			newPage: 1
 		};
 		extHostModelViewDialog.$onWizardPageChanged(wizardHandle, expectedPageChangeInfo);
-		assert.equal(actualPageChangeInfo.length, 1);
-		assert.equal(actualPageChangeInfo[0], expectedPageChangeInfo);
-		assert.equal(wizard.currentPage, expectedPageChangeInfo.newPage);
+		assert.strictEqual(actualPageChangeInfo.length, 1);
+		assert.strictEqual(actualPageChangeInfo[0], expectedPageChangeInfo);
+		assert.strictEqual(wizard.currentPage, expectedPageChangeInfo.newPage);
 	});
 
 	test('Validity changed events are handled correctly', () => {
@@ -232,11 +232,11 @@ suite('ExtHostModelViewDialog Tests', () => {
 
 		// Call the validity changed event on tab 2 and verify that it was handled but tab 1 is still not valid
 		extHostModelViewDialog.$onPanelValidityChanged(tabHandles[1], false);
-		assert.equal(tab1ValidityChangedEvents.length, 0);
-		assert.equal(tab1.valid, true);
-		assert.equal(tab2ValidityChangedEvents.length, 1);
-		assert.equal(tab2ValidityChangedEvents[0], false);
-		assert.equal(tab2.valid, false);
+		assert.strictEqual(tab1ValidityChangedEvents.length, 0);
+		assert.strictEqual(tab1.valid, true);
+		assert.strictEqual(tab2ValidityChangedEvents.length, 1);
+		assert.strictEqual(tab2ValidityChangedEvents[0], false);
+		assert.strictEqual(tab2.valid, false);
 	});
 
 	test('Verify validity changed events update validity for all panel types', () => {
@@ -258,11 +258,11 @@ suite('ExtHostModelViewDialog Tests', () => {
 
 		// Call the validity changed event on each object and verify that the object's validity was updated
 		extHostModelViewDialog.$onPanelValidityChanged(tabHandle, false);
-		assert.equal(tab.valid, false);
+		assert.strictEqual(tab.valid, false);
 		extHostModelViewDialog.$onPanelValidityChanged(dialogHandle, false);
-		assert.equal(dialog.valid, false);
+		assert.strictEqual(dialog.valid, false);
 		extHostModelViewDialog.$onPanelValidityChanged(pageHandle, false);
-		assert.equal(page.valid, false);
+		assert.strictEqual(page.valid, false);
 	});
 
 	test('Main thread can execute wizard navigation validation', () => {
@@ -287,8 +287,8 @@ suite('ExtHostModelViewDialog Tests', () => {
 			newPage: newPage
 		});
 		assert.notEqual(validationInfo, undefined);
-		assert.equal(validationInfo.lastPage, lastPage);
-		assert.equal(validationInfo.newPage, newPage);
+		assert.strictEqual(validationInfo.lastPage, lastPage);
+		assert.strictEqual(validationInfo.newPage, newPage);
 	});
 
 	test('Changing the wizard message sends the new message to the main thread', () => {
@@ -323,6 +323,6 @@ suite('ExtHostModelViewDialog Tests', () => {
 
 		// If I call the validation from the main thread then it should run
 		extHostModelViewDialog.$validateDialogClose(dialogHandle);
-		assert.equal(callCount, 1);
+		assert.strictEqual(callCount, 1);
 	});
 });

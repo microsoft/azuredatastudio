@@ -87,7 +87,7 @@ suite('ExtHostNotebook Tests', () => {
 				// This is because we can't easily track identity of the managers, so just track which one is assigned to
 				// a notebook by the handle ID
 				assert.notEqual(originalManagerDetails.handle, differentDetails.handle, 'Should have unique handle for each manager');
-				assert.equal(originalManagerDetails.handle, sameDetails.handle, 'Should have same handle when same URI is passed in');
+				assert.strictEqual(originalManagerDetails.handle, sameDetails.handle, 'Should have same handle when same URI is passed in');
 
 			});
 		});

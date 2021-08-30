@@ -87,7 +87,7 @@ suite('SQL QueryAction Tests', () => {
 
 		// "class should automatically get set to include the base class and the RunQueryAction class
 		let className = RunQueryAction.EnabledClass;
-		assert.equal(queryAction.class, className, 'CSS class not properly set');
+		assert.strictEqual(queryAction.class, className, 'CSS class not properly set');
 	});
 
 	test('getConnectedQueryEditorUri returns connected URI only if connected', () => {
@@ -146,24 +146,24 @@ suite('SQL QueryAction Tests', () => {
 		await queryAction.run();
 
 		// runQuery should not be run
-		assert.equal(calledRunQueryOnInput, false, 'run should not call runQuery');
+		assert.strictEqual(calledRunQueryOnInput, false, 'run should not call runQuery');
 		testQueryInput.verify(x => x.runQuery(undefined), TypeMoq.Times.never());
 
 		// and the connection dialog should open with the correct parameter details
-		assert.equal(connectionParams.connectionType, ConnectionType.editor, 'connectionType should be queryEditor');
-		assert.equal(connectionParams.runQueryOnCompletion, RunQueryOnConnectionMode.executeQuery, 'runQueryOnCompletion should be true`');
-		assert.equal(connectionParams.input.uri, testUri, 'URI should be set to the test URI');
-		assert.equal(connectionParams.input, editor.object.input, 'Editor should be set to the mock editor');
+		assert.strictEqual(connectionParams.connectionType, ConnectionType.editor, 'connectionType should be queryEditor');
+		assert.strictEqual(connectionParams.runQueryOnCompletion, RunQueryOnConnectionMode.executeQuery, 'runQueryOnCompletion should be true`');
+		assert.strictEqual(connectionParams.input.uri, testUri, 'URI should be set to the test URI');
+		assert.strictEqual(connectionParams.input, editor.object.input, 'Editor should be set to the mock editor');
 
 		// If I call run on RunQueryAction when I am connected
 		isConnected = true;
 		await queryAction.run();
 
 		//runQuery should be run, and the conneciton dialog should not open
-		assert.equal(calledRunQueryOnInput, true, 'run should call runQuery');
+		assert.strictEqual(calledRunQueryOnInput, true, 'run should call runQuery');
 		testQueryInput.verify(x => x.runQuery(undefined), TypeMoq.Times.once());
 
-		assert.equal(countCalledShowDialog, 1, 'run should not call showDialog');
+		assert.strictEqual(countCalledShowDialog, 1, 'run should not call showDialog');
 	});
 
 	test('Queries are only run if the QueryEditor selection is not empty', async () => {
@@ -205,14 +205,14 @@ suite('SQL QueryAction Tests', () => {
 		await queryAction.run();
 
 		//runQuery should be run
-		assert.equal(countCalledRunQuery, 1, 'runQuery should be called');
+		assert.strictEqual(countCalledRunQuery, 1, 'runQuery should be called');
 
 		// If I call run on RunQueryAction when I have an empty selection
 		isSelectionEmpty = true;
 		await queryAction.run();
 
 		//runQuery should not be run again
-		assert.equal(countCalledRunQuery, 1, 'runQuery should not be called again');
+		assert.strictEqual(countCalledRunQuery, 1, 'runQuery should not be called again');
 	});
 
 	test('ISelectionData is properly passed when queries are run', async () => {
@@ -276,10 +276,10 @@ suite('SQL QueryAction Tests', () => {
 		await queryAction.run();
 
 		// The conneciton dialog should open with an undefined seleciton
-		assert.equal(countCalledShowDialog, 1, 'run should call showDialog');
-		assert.equal(countCalledRunQuery, 0, 'run should not call runQuery');
-		assert.equal(showDialogConnectionParams.connectionType, ConnectionType.editor, 'connectionType should be queryEditor');
-		assert.equal(showDialogConnectionParams.queryRange, undefined, 'querySelection should be undefined');
+		assert.strictEqual(countCalledShowDialog, 1, 'run should call showDialog');
+		assert.strictEqual(countCalledRunQuery, 0, 'run should not call runQuery');
+		assert.strictEqual(showDialogConnectionParams.connectionType, ConnectionType.editor, 'connectionType should be queryEditor');
+		assert.strictEqual(showDialogConnectionParams.queryRange, undefined, 'querySelection should be undefined');
 
 		////// If I call run on RunQueryAction while disconnected and with a defined selection
 		isConnected = false;
@@ -287,14 +287,14 @@ suite('SQL QueryAction Tests', () => {
 		await queryAction.run();
 
 		// The conneciton dialog should open with the correct seleciton
-		assert.equal(countCalledShowDialog, 2, 'run should call showDialog again');
-		assert.equal(countCalledRunQuery, 0, 'run should not call runQuery');
-		assert.equal(showDialogConnectionParams.connectionType, ConnectionType.editor, 'connectionType should be queryEditor');
+		assert.strictEqual(countCalledShowDialog, 2, 'run should call showDialog again');
+		assert.strictEqual(countCalledRunQuery, 0, 'run should not call runQuery');
+		assert.strictEqual(showDialogConnectionParams.connectionType, ConnectionType.editor, 'connectionType should be queryEditor');
 		assert.notEqual(showDialogConnectionParams.queryRange, undefined, 'There should not be an undefined selection in runQuery');
-		assert.equal(showDialogConnectionParams.queryRange.startLineNumber, selectionToReturnInGetSelection.startLineNumber, 'startLine should match');
-		assert.equal(showDialogConnectionParams.queryRange.startColumn, selectionToReturnInGetSelection.startColumn, 'startColumn should match');
-		assert.equal(showDialogConnectionParams.queryRange.endLineNumber, selectionToReturnInGetSelection.endLineNumber, 'endLine should match');
-		assert.equal(showDialogConnectionParams.queryRange.endColumn, selectionToReturnInGetSelection.endColumn, 'endColumn should match');
+		assert.strictEqual(showDialogConnectionParams.queryRange.startLineNumber, selectionToReturnInGetSelection.startLineNumber, 'startLine should match');
+		assert.strictEqual(showDialogConnectionParams.queryRange.startColumn, selectionToReturnInGetSelection.startColumn, 'startColumn should match');
+		assert.strictEqual(showDialogConnectionParams.queryRange.endLineNumber, selectionToReturnInGetSelection.endLineNumber, 'endLine should match');
+		assert.strictEqual(showDialogConnectionParams.queryRange.endColumn, selectionToReturnInGetSelection.endColumn, 'endColumn should match');
 
 		////// If I call run on RunQueryAction while connected and with an undefined selection
 		isConnected = true;
@@ -302,9 +302,9 @@ suite('SQL QueryAction Tests', () => {
 		await queryAction.run();
 
 		// The query should run with an undefined selection
-		assert.equal(countCalledShowDialog, 2, 'run should not call showDialog');
-		assert.equal(countCalledRunQuery, 1, 'run should call runQuery');
-		assert.equal(runQuerySelection, undefined, 'There should be an undefined selection in runQuery');
+		assert.strictEqual(countCalledShowDialog, 2, 'run should not call showDialog');
+		assert.strictEqual(countCalledRunQuery, 1, 'run should call runQuery');
+		assert.strictEqual(runQuerySelection, undefined, 'There should be an undefined selection in runQuery');
 
 		////// If I call run on RunQueryAction while connected and with a defined selection
 		isConnected = true;
@@ -312,13 +312,13 @@ suite('SQL QueryAction Tests', () => {
 		await queryAction.run();
 
 		// The query should run with the given seleciton
-		assert.equal(countCalledShowDialog, 2, 'run should not call showDialog');
-		assert.equal(countCalledRunQuery, 2, 'run should call runQuery again');
+		assert.strictEqual(countCalledShowDialog, 2, 'run should not call showDialog');
+		assert.strictEqual(countCalledRunQuery, 2, 'run should call runQuery again');
 		assert.notEqual(runQuerySelection, undefined, 'There should not be an undefined selection in runQuery');
-		assert.equal(runQuerySelection.startLineNumber, selectionToReturnInGetSelection.startLineNumber, 'startLine should match');
-		assert.equal(runQuerySelection.startColumn, selectionToReturnInGetSelection.startColumn, 'startColumn should match');
-		assert.equal(runQuerySelection.endLineNumber, selectionToReturnInGetSelection.endLineNumber, 'endLine should match');
-		assert.equal(runQuerySelection.endColumn, selectionToReturnInGetSelection.endColumn, 'endColumn should match');
+		assert.strictEqual(runQuerySelection.startLineNumber, selectionToReturnInGetSelection.startLineNumber, 'startLine should match');
+		assert.strictEqual(runQuerySelection.startColumn, selectionToReturnInGetSelection.startColumn, 'startColumn should match');
+		assert.strictEqual(runQuerySelection.endLineNumber, selectionToReturnInGetSelection.endLineNumber, 'endLine should match');
+		assert.strictEqual(runQuerySelection.endColumn, selectionToReturnInGetSelection.endColumn, 'endColumn should match');
 	});
 
 	test('CancelQueryAction calls cancelQuery() only if URI is connected', async () => {
@@ -341,14 +341,14 @@ suite('SQL QueryAction Tests', () => {
 		await queryAction.run();
 
 		// cancelQuery should not be run
-		assert.equal(calledCancelQuery, false, 'run should not call cancelQuery');
+		assert.strictEqual(calledCancelQuery, false, 'run should not call cancelQuery');
 
 		// If I call run on CancelQueryAction when I am connected
 		isConnected = true;
 		await queryAction.run();
 
 		// cancelQuery should be run
-		assert.equal(calledCancelQuery, true, 'run should call cancelQuery');
+		assert.strictEqual(calledCancelQuery, true, 'run should call cancelQuery');
 	});
 
 	// We want to call disconnectEditor regardless of connection to be able to cancel in-progress connections
@@ -369,14 +369,14 @@ suite('SQL QueryAction Tests', () => {
 		await queryAction.run();
 
 		// disconnectEditor should be run
-		assert.equal(countCalledDisconnectEditor, 1, 'disconnectEditor should be called when URI is not connected');
+		assert.strictEqual(countCalledDisconnectEditor, 1, 'disconnectEditor should be called when URI is not connected');
 
 		// If I call run on DisconnectDatabaseAction when I am connected
 		isConnected = true;
 		await queryAction.run();
 
 		// disconnectEditor should be run again
-		assert.equal(countCalledDisconnectEditor, 2, 'disconnectEditor should be called when URI is connected');
+		assert.strictEqual(countCalledDisconnectEditor, 2, 'disconnectEditor should be called when URI is connected');
 	});
 
 	test('ConnectDatabaseAction opens dialog regardless of URI connection state', async () => {
@@ -400,22 +400,22 @@ suite('SQL QueryAction Tests', () => {
 		await queryAction.run();
 
 		// The conneciton dialog should open with the correct parameter details
-		assert.equal(countCalledShowDialog, 1, 'run should call showDialog');
-		assert.equal(connectionParams.connectionType, ConnectionType.editor, 'connectionType should be queryEditor');
-		assert.equal(connectionParams.runQueryOnCompletion, false, 'runQueryOnCompletion should be false`');
-		assert.equal(connectionParams.input.uri, testUri, 'URI should be set to the test URI');
-		assert.equal(connectionParams.input, editor.object.input, 'Editor should be set to the mock editor');
+		assert.strictEqual(countCalledShowDialog, 1, 'run should call showDialog');
+		assert.strictEqual(connectionParams.connectionType, ConnectionType.editor, 'connectionType should be queryEditor');
+		assert.strictEqual(connectionParams.runQueryOnCompletion, 0, 'runQueryOnCompletion should be false`');
+		assert.strictEqual(connectionParams.input.uri, testUri, 'URI should be set to the test URI');
+		assert.strictEqual(connectionParams.input, editor.object.input, 'Editor should be set to the mock editor');
 
 		// If I call run on ConnectDatabaseAction when I am connected
 		isConnected = true;
 		await queryAction.run();
 
 		// The conneciton dialog should open again with the correct parameter details
-		assert.equal(countCalledShowDialog, 2, 'run should call showDialog');
-		assert.equal(connectionParams.connectionType, ConnectionType.editor, 'connectionType should be queryEditor');
-		assert.equal(connectionParams.runQueryOnCompletion, false, 'runQueryOnCompletion should be false`');
-		assert.equal(connectionParams.input.uri, testUri, 'URI should be set to the test URI');
-		assert.equal(connectionParams.input, editor.object.input, 'Editor should be set to the mock editor');
+		assert.strictEqual(countCalledShowDialog, 2, 'run should call showDialog');
+		assert.strictEqual(connectionParams.connectionType, ConnectionType.editor, 'connectionType should be queryEditor');
+		assert.strictEqual(connectionParams.runQueryOnCompletion, 0, 'runQueryOnCompletion should be false`');
+		assert.strictEqual(connectionParams.input.uri, testUri, 'URI should be set to the test URI');
+		assert.strictEqual(connectionParams.input, editor.object.input, 'Editor should be set to the mock editor');
 	});
 
 	test('ChangeConnectionAction connects regardless of URI being connected', async () => {
@@ -439,21 +439,21 @@ suite('SQL QueryAction Tests', () => {
 		await queryAction.run();
 
 		// The connection dialog should open with the params set as below
-		assert.equal(calledShowDialog, 1, 'showDialog should be called when URI is connected');
-		assert.equal(connectionParams.connectionType, ConnectionType.editor, 'connectionType should be queryEditor');
-		assert.equal(connectionParams.runQueryOnCompletion, false, 'runQueryOnCompletion should be false`');
-		assert.equal(connectionParams.input.uri, testUri, 'URI should be set to the test URI');
-		assert.equal(connectionParams.input, editor.object.input, 'Editor should be set to the mock editor');
+		assert.strictEqual(calledShowDialog, 1, 'showDialog should be called when URI is connected');
+		assert.strictEqual(connectionParams.connectionType, ConnectionType.editor, 'connectionType should be queryEditor');
+		assert.strictEqual(connectionParams.runQueryOnCompletion, 0, 'runQueryOnCompletion should be false`');
+		assert.strictEqual(connectionParams.input.uri, testUri, 'URI should be set to the test URI');
+		assert.strictEqual(connectionParams.input, editor.object.input, 'Editor should be set to the mock editor');
 		// Then if I call run on ChangeConnectionAction when I am connected
 		isConnected = true;
 		await queryAction.run();
 
 		// The conneciton dialog should open with the params set as below
-		assert.equal(calledShowDialog, 2, 'showDialog should be called when URI is connected');
-		assert.equal(connectionParams.connectionType, ConnectionType.editor, 'connectionType should be queryEditor');
-		assert.equal(connectionParams.runQueryOnCompletion, false, 'runQueryOnCompletion should be false`');
-		assert.equal(connectionParams.input.uri, testUri, 'URI should be set to the test URI');
-		assert.equal(connectionParams.input, editor.object.input, 'Editor should be set to the mock editor');
+		assert.strictEqual(calledShowDialog, 2, 'showDialog should be called when URI is connected');
+		assert.strictEqual(connectionParams.connectionType, ConnectionType.editor, 'connectionType should be queryEditor');
+		assert.strictEqual(connectionParams.runQueryOnCompletion, 0, 'runQueryOnCompletion should be false`');
+		assert.strictEqual(connectionParams.input.uri, testUri, 'URI should be set to the test URI');
+		assert.strictEqual(connectionParams.input, editor.object.input, 'Editor should be set to the mock editor');
 	});
 
 	test('ListDatabaseItem shows items as expected', () => {
@@ -474,22 +474,22 @@ suite('SQL QueryAction Tests', () => {
 		// If I query without having initialized anything, state should be clear
 		listItem = new ListDatabasesActionItem(editor.object, undefined, connectionManagementService.object, undefined, undefined);
 
-		assert.equal(listItem.isEnabled(), false, 'do not expect dropdown enabled unless connected');
-		assert.equal(listItem.currentDatabaseName, undefined, 'do not expect dropdown to have entries unless connected');
+		assert.strictEqual(listItem.isEnabled(), false, 'do not expect dropdown enabled unless connected');
+		assert.strictEqual(listItem.currentDatabaseName, undefined, 'do not expect dropdown to have entries unless connected');
 
 		// When I connect, database name should be returned in the dropdown and this should be enabled
 		isConnected = true;
 		databaseName = 'master';
 		listItem.onConnected();
-		assert.equal(listItem.isEnabled(), true, 'expect dropdown enabled when connected');
-		assert.equal(listItem.currentDatabaseName, 'master', 'expect dropdown to have current DB name when connected');
+		assert.strictEqual(listItem.isEnabled(), true, 'expect dropdown enabled when connected');
+		assert.strictEqual(listItem.currentDatabaseName, 'master', 'expect dropdown to have current DB name when connected');
 
 		// When I disconnect, state should return to default
 		isConnected = false;
 		databaseName = undefined;
 		listItem.onDisconnect();
-		assert.equal(listItem.isEnabled(), false, 'do not expect dropdown enabled unless connected');
-		assert.equal(listItem.currentDatabaseName, undefined, 'do not expect dropdown to have entries unless connected');
+		assert.strictEqual(listItem.isEnabled(), false, 'do not expect dropdown enabled unless connected');
+		assert.strictEqual(listItem.currentDatabaseName, undefined, 'do not expect dropdown to have entries unless connected');
 	});
 
 	test('ListDatabaseItem - null event params', () => {
@@ -513,7 +513,7 @@ suite('SQL QueryAction Tests', () => {
 		dbChangedEmitter.fire(eventParams);
 
 		// Then: The selected database should not have changed
-		assert.equal(listItem.currentDatabaseName, databaseName);
+		assert.strictEqual(listItem.currentDatabaseName, databaseName);
 	});
 
 	test('ListDatabaseItem - wrong uri', () => {
@@ -542,7 +542,7 @@ suite('SQL QueryAction Tests', () => {
 		dbChangedEmitter.fire(eventParams);
 
 		// Then: The selected database should not have changed
-		assert.equal(listItem.currentDatabaseName, databaseName);
+		assert.strictEqual(listItem.currentDatabaseName, databaseName);
 	});
 
 	test('ListDatabaseItem - updates when connected and uri matches', () => {
@@ -567,7 +567,7 @@ suite('SQL QueryAction Tests', () => {
 
 		// Then:
 		// ... The connection should have changed to the provided database
-		assert.equal(listItem.currentDatabaseName, eventParams.connectionProfile.databaseName);
+		assert.strictEqual(listItem.currentDatabaseName, eventParams.connectionProfile.databaseName);
 	});
 
 	test('runCurrent - opens connection dialog when there are no active connections', async () => {
@@ -599,7 +599,7 @@ suite('SQL QueryAction Tests', () => {
 		await queryAction.runCurrent();
 
 		//connection dialog should open and runQueryStatement should not be called
-		assert.equal(calledRunQueryStatementOnInput, false, 'runCurrent should not call runQueryStatement');
+		assert.strictEqual(calledRunQueryStatementOnInput, false, 'runCurrent should not call runQueryStatement');
 		testQueryInput.verify(x => x.runQueryStatement(TypeMoq.It.isAny()), TypeMoq.Times.never());
 		connectionManagementService.verify(x => x.showConnectionDialog(TypeMoq.It.isAny()), TypeMoq.Times.once());
 
@@ -609,7 +609,7 @@ suite('SQL QueryAction Tests', () => {
 		await queryAction.runCurrent();
 
 		//connection dialog should not open and runQueryStatement should be called
-		assert.equal(calledRunQueryStatementOnInput, true, 'runCurrent should call runQueryStatement');
+		assert.strictEqual(calledRunQueryStatementOnInput, true, 'runCurrent should call runQueryStatement');
 		testQueryInput.verify(x => x.runQueryStatement(TypeMoq.It.isAny()), TypeMoq.Times.once());
 		//show Dialog is not called
 		connectionManagementService.verify(x => x.showConnectionDialog(TypeMoq.It.isAny()), TypeMoq.Times.once());
@@ -623,7 +623,7 @@ suite('SQL QueryAction Tests', () => {
 		queryEditor.setup(x => x.isSelectionEmpty()).returns(() => true);
 
 		//connection dialog should not open and runQueryStatement should not be called
-		assert.equal(calledRunQueryStatementOnInput, false, 'runCurrent should not call runQueryStatemet');
+		assert.strictEqual(calledRunQueryStatementOnInput, false, 'runCurrent should not call runQueryStatemet');
 		connectionManagementService.verify(x => x.showConnectionDialog(TypeMoq.It.isAny()), TypeMoq.Times.once());
 	});
 
@@ -659,8 +659,8 @@ suite('SQL QueryAction Tests', () => {
 		calledRunQueryStatementOnInput = false;
 		await queryAction.runCurrent();
 
-		assert.equal(calledRunQueryStatementOnInput, true, 'runCurrent should call runQueryStatement');
-		assert.equal(calledRunQueryOnInput, false, 'run should not call runQuery');
+		assert.strictEqual(calledRunQueryStatementOnInput, true, 'runCurrent should call runQueryStatement');
+		assert.strictEqual(calledRunQueryOnInput, false, 'run should not call runQuery');
 
 		// checking if runQuery statement is called with predefinedCursorSelection only
 		testQueryInput.verify(x => x.runQueryStatement(TypeMoq.It.isValue(predefinedCursorSelection)), TypeMoq.Times.once());
@@ -677,8 +677,8 @@ suite('SQL QueryAction Tests', () => {
 		calledRunQueryStatementOnInput = false;
 		await queryAction.runCurrent();
 
-		assert.equal(calledRunQueryStatementOnInput, false, 'runCurrent should not call runQueryStatement');
-		assert.equal(calledRunQueryOnInput, true, 'run should call runQuery');
+		assert.strictEqual(calledRunQueryStatementOnInput, false, 'runCurrent should not call runQueryStatement');
+		assert.strictEqual(calledRunQueryOnInput, true, 'run should call runQuery');
 
 		// checking if runQuery is called with predefinedRangeSelection only
 		testQueryInput.verify(x => x.runQuery(TypeMoq.It.isValue(predefinedRangeSelection)), TypeMoq.Times.once());

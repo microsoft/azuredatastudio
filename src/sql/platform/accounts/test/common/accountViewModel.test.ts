@@ -113,9 +113,9 @@ suite('Account Management Dialog ViewModel Tests', () => {
 
 				// ... The results that were returned should be an array of account provider added event params
 				assert.ok(Array.isArray(results));
-				assert.equal(results.length, 1);
-				assert.equal(results[0].addedProvider, providers[0]);
-				assert.equal(results[0].initialAccounts, accounts);
+				assert.strictEqual(results.length, 1);
+				assert.strictEqual(results[0].addedProvider, providers[0]);
+				assert.strictEqual(results[0].initialAccounts, accounts);
 			});
 	});
 
@@ -140,7 +140,7 @@ suite('Account Management Dialog ViewModel Tests', () => {
 
 				// ... The results that were returned should be an empty array
 				assert.ok(Array.isArray(results));
-				assert.equal(results.length, 0);
+				assert.strictEqual(results.length, 0);
 			});
 	});
 
@@ -165,9 +165,9 @@ suite('Account Management Dialog ViewModel Tests', () => {
 
 				// ... The results should include the provider
 				assert.ok(Array.isArray(result));
-				assert.equal(result.length, 1);
-				assert.equal(result[0].addedProvider, providers[0]);
-				assert.equal(result[0].initialAccounts, accounts);
+				assert.strictEqual(result.length, 1);
+				assert.strictEqual(result[0].addedProvider, providers[0]);
+				assert.strictEqual(result[0].initialAccounts, accounts);
 			});
 	});
 });

@@ -119,15 +119,15 @@ suite('Notebook Find Model', function (): void {
 	test('Should set notebook model on initialize', async function (): Promise<void> {
 		//initialize find
 		let notebookFindModel = new NotebookFindModel(model);
-		assert.equal(notebookFindModel.notebookModel, model, 'Failed to set notebook model');
+		assert.strictEqual(notebookFindModel.notebookModel, model, 'Failed to set notebook model');
 	});
 
 	test('Should have no decorations on initialize', async function (): Promise<void> {
 		//initialize find
 		let notebookFindModel = new NotebookFindModel(model);
-		assert.equal(notebookFindModel.findDecorations, undefined, 'findDecorations should be undefined on initialize');
-		assert.equal(notebookFindModel.getPosition(), undefined, 'currentMatch should be undefined on initialize');
-		assert.equal(notebookFindModel.getLastPosition(), undefined, 'previousMatch should be undefined on initialize');
+		assert.strictEqual(notebookFindModel.findDecorations, undefined, 'findDecorations should be undefined on initialize');
+		assert.strictEqual(notebookFindModel.getPosition(), undefined, 'currentMatch should be undefined on initialize');
+		assert.strictEqual(notebookFindModel.getLastPosition(), undefined, 'previousMatch should be undefined on initialize');
 	});
 
 	test('Should find results in the notebook', async function (): Promise<void> {
@@ -139,9 +139,9 @@ suite('Notebook Find Model', function (): void {
 		await notebookFindModel.find('markdown', false, false, max_find_count);
 
 		assert(notebookFindModel.findMatches, 'Find in notebook failed.');
-		assert.equal(notebookFindModel.findMatches.length, 2, 'Find could not find all occurrences');
-		assert.equal(notebookFindModel.findArray.length, 2, 'Find could not find all occurrences');
-		assert.equal(notebookFindModel.getFindCount(), 2, 'Find count do not match find results');
+		assert.strictEqual(notebookFindModel.findMatches.length, 2, 'Find could not find all occurrences');
+		assert.strictEqual(notebookFindModel.findArray.length, 2, 'Find could not find all occurrences');
+		assert.strictEqual(notebookFindModel.getFindCount(), 2, 'Find count do not match find results');
 	});
 
 	test('Should not find results in the notebook', async function (): Promise<void> {
@@ -149,7 +149,7 @@ suite('Notebook Find Model', function (): void {
 		let notebookFindModel = new NotebookFindModel(model);
 		await notebookFindModel.find('notFound', false, false, max_find_count);
 
-		assert.equal(notebookFindModel.findMatches.length, 0, 'Find failed');
+		assert.strictEqual(notebookFindModel.findMatches.length, 0, 'Find failed');
 	});
 
 	test('Should match find result ranges', async function (): Promise<void> {
@@ -205,7 +205,7 @@ suite('Notebook Find Model', function (): void {
 		let notebookFindModel = new NotebookFindModel(model);
 		await notebookFindModel.find('best', false, false, max_find_count);
 
-		assert.equal(notebookFindModel.findMatches.length, 1, 'Find failed on markdown link');
+		assert.strictEqual(notebookFindModel.findMatches.length, 1, 'Find failed on markdown link');
 
 		let expectedFindRange1 = new NotebookRange(model.cells[0], 1, 21, 1, 25);
 		assert.deepEqual(notebookFindModel.findMatches[0].range, expectedFindRange1, 'Find in markdown range is wrong :\n' + JSON.stringify(expectedFindRange1) + '\n ' + JSON.stringify(notebookFindModel.findMatches[0].range));
@@ -235,7 +235,7 @@ suite('Notebook Find Model', function (): void {
 		let notebookFindModel = new NotebookFindModel(model);
 		await notebookFindModel.find('x', false, false, max_find_count);
 
-		assert.equal(notebookFindModel.findMatches.length, 3, 'Find failed');
+		assert.strictEqual(notebookFindModel.findMatches.length, 3, 'Find failed');
 	});
 
 	test('Should match find results for multiple results on same line', async function (): Promise<void> {
@@ -262,7 +262,7 @@ suite('Notebook Find Model', function (): void {
 		// Intentionally not using max_find_count here, as 7 items should be found
 		await notebookFindModel.find('abc', false, false, 10);
 
-		assert.equal(notebookFindModel.findMatches.length, 7, 'Find failed to find number of matches correctly');
+		assert.strictEqual(notebookFindModel.findMatches.length, 7, 'Find failed to find number of matches correctly');
 
 		assert.deepEqual(notebookFindModel.findMatches[0].range, new NotebookRange(model.cells[0], 1, 1, 1, 4));
 		assert.deepEqual(notebookFindModel.findMatches[1].range, new NotebookRange(model.cells[0], 1, 5, 1, 8));
@@ -283,10 +283,10 @@ suite('Notebook Find Model', function (): void {
 		await notebookFindModel.find('insert', false, false, max_find_count);
 
 		assert(notebookFindModel.findMatches, 'Find in notebook failed.');
-		assert.equal(notebookFindModel.findMatches.length, 3, 'Find couldn\'t find all occurrences');
+		assert.strictEqual(notebookFindModel.findMatches.length, 3, 'Find couldn\'t find all occurrences');
 
 		await notebookFindModel.find('insert', true, false, max_find_count);
-		assert.equal(notebookFindModel.findMatches.length, 2, 'Find failed to apply match case while searching');
+		assert.strictEqual(notebookFindModel.findMatches.length, 2, 'Find failed to apply match case while searching');
 
 	});
 
@@ -295,7 +295,7 @@ suite('Notebook Find Model', function (): void {
 		let notebookFindModel = new NotebookFindModel(model);
 
 		await notebookFindModel.find('insert', true, true, max_find_count);
-		assert.equal(notebookFindModel.findMatches.length, 1, 'Find failed to apply whole word filter while searching');
+		assert.strictEqual(notebookFindModel.findMatches.length, 1, 'Find failed to apply whole word filter while searching');
 
 	});
 
@@ -322,14 +322,14 @@ suite('Notebook Find Model', function (): void {
 		let notebookFindModel = new NotebookFindModel(model);
 		// test for string with special character
 		await notebookFindModel.find('{special}', true, true, max_find_count);
-		assert.equal(notebookFindModel.findMatches.length, 1, 'Find failed for search term with special character');
+		assert.strictEqual(notebookFindModel.findMatches.length, 1, 'Find failed for search term with special character');
 		// test for only special character !!
 		await notebookFindModel.find('!!', false, false, max_find_count);
-		assert.equal(notebookFindModel.findMatches.length, 2, 'Find failed for special character');
+		assert.strictEqual(notebookFindModel.findMatches.length, 2, 'Find failed for special character');
 
 		// test for only special character combination
 		await notebookFindModel.find('!!!$}', false, false, max_find_count);
-		assert.equal(notebookFindModel.findMatches.length, 1, 'Find failed for special character combination');
+		assert.strictEqual(notebookFindModel.findMatches.length, 1, 'Find failed for special character combination');
 	});
 
 	test('Should find // characters in the search term correctly', async function (): Promise<void> {
@@ -355,13 +355,13 @@ suite('Notebook Find Model', function (): void {
 		let notebookFindModel = new NotebookFindModel(model);
 
 		await notebookFindModel.find('/', true, false, max_find_count);
-		assert.equal(notebookFindModel.findMatches.length, 2, 'Find failed to find number of / occurrences');
+		assert.strictEqual(notebookFindModel.findMatches.length, 2, 'Find failed to find number of / occurrences');
 
 		await notebookFindModel.find('//', true, false, max_find_count);
-		assert.equal(notebookFindModel.findMatches.length, 1, 'Find failed to find number of // occurrences');
+		assert.strictEqual(notebookFindModel.findMatches.length, 1, 'Find failed to find number of // occurrences');
 
 		await notebookFindModel.find('//', true, true, max_find_count);
-		assert.equal(notebookFindModel.findMatches.length, 0, 'Find failed to apply match whole word for //');
+		assert.strictEqual(notebookFindModel.findMatches.length, 0, 'Find failed to apply match whole word for //');
 	});
 
 	test('Should find results in the code cell on markdown edit', async function (): Promise<void> {
@@ -390,14 +390,14 @@ suite('Notebook Find Model', function (): void {
 		let notebookFindModel = new NotebookFindModel(model);
 		await notebookFindModel.find('SOP', false, false, max_find_count);
 
-		assert.equal(notebookFindModel.findMatches.length, 1, 'Find failed on markdown');
+		assert.strictEqual(notebookFindModel.findMatches.length, 1, 'Find failed on markdown');
 
 		// fire the edit mode on cell
 		model.cells[0].isEditMode = true;
 		notebookFindModel = new NotebookFindModel(model);
 		await notebookFindModel.find('SOP', false, false, max_find_count);
 
-		assert.equal(notebookFindModel.findMatches.length, 2, 'Find failed on markdown edit');
+		assert.strictEqual(notebookFindModel.findMatches.length, 2, 'Find failed on markdown edit');
 	});
 
 	test('Find next/previous should return the correct find index', async function (): Promise<void> {
@@ -408,13 +408,13 @@ suite('Notebook Find Model', function (): void {
 		let notebookFindModel = new NotebookFindModel(model);
 		await notebookFindModel.find('insert', false, false, max_find_count);
 
-		assert.equal(notebookFindModel.getFindIndex(), 1, 'Failed to get the correct find index');
+		assert.strictEqual(notebookFindModel.getFindIndex(), 1, 'Failed to get the correct find index');
 
 		notebookFindModel.findNext();
-		assert.equal(notebookFindModel.getFindIndex(), 2, 'Failed to get the correct find index');
+		assert.strictEqual(notebookFindModel.getFindIndex(), 2, 'Failed to get the correct find index');
 
 		notebookFindModel.findPrevious();
-		assert.equal(notebookFindModel.getFindIndex(), 1, 'Failed to get the correct find index');
+		assert.strictEqual(notebookFindModel.getFindIndex(), 1, 'Failed to get the correct find index');
 	});
 
 	test('Should clear results on clear', async function (): Promise<void> {
@@ -425,11 +425,11 @@ suite('Notebook Find Model', function (): void {
 		let notebookFindModel = new NotebookFindModel(model);
 		await notebookFindModel.find('insert', false, false, max_find_count);
 
-		assert.equal(notebookFindModel.findMatches.length, 3, 'Failed to find all occurrences');
+		assert.strictEqual(notebookFindModel.findMatches.length, 3, 'Failed to find all occurrences');
 
 		notebookFindModel.clearFind();
-		assert.equal(notebookFindModel.findMatches.length, 0, 'Failed to clear find results');
-		assert.equal(notebookFindModel.findDecorations, undefined, 'Failed to clear find decorations on clear');
+		assert.strictEqual(notebookFindModel.findMatches.length, 0, 'Failed to clear find results');
+		assert.strictEqual(notebookFindModel.findDecorations, undefined, 'Failed to clear find decorations on clear');
 	});
 
 

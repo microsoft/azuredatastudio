@@ -37,6 +37,6 @@ function verifyFormattedHtml(formattedHtml: string, expectedText: string): void 
 	let spanElement = element.children[0];
 
 	// Verify that the span element's text, not its innerHTML, matches the expected text
-	assert.equal(spanElement.textContent, testText);
+	assert.strictEqual(spanElement.textContent, testText);
 	assert.notEqual(spanElement.innerHTML, testText);
 }

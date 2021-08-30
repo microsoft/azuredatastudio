@@ -197,21 +197,21 @@ suite('MainThreadModelViewDialog Tests', () => {
 		// Then the opened dialog's content and buttons match what was set
 		mockDialogService.verify(x => x.showDialog(It.isAny(), undefined, It.isAny()), Times.once());
 		assert.notEqual(openedDialog, undefined);
-		assert.equal(openedDialog.title, dialogDetails.title);
-		assert.equal(openedDialog.okButton.label, okButtonDetails.label);
-		assert.equal(openedDialog.okButton.enabled, okButtonDetails.enabled);
-		assert.equal(openedDialog.cancelButton.label, cancelButtonDetails.label);
-		assert.equal(openedDialog.cancelButton.enabled, cancelButtonDetails.enabled);
-		assert.equal(openedDialog.customButtons.length, 2);
-		assert.equal(openedDialog.customButtons[0].label, button1Details.label);
-		assert.equal(openedDialog.customButtons[0].enabled, button1Details.enabled);
-		assert.equal(openedDialog.customButtons[1].label, button2Details.label);
-		assert.equal(openedDialog.customButtons[1].enabled, button2Details.enabled);
-		assert.equal(openedDialog.content.length, 2);
-		assert.equal((openedDialog.content[0] as DialogTab).content, tab1Details.content);
-		assert.equal((openedDialog.content[0] as DialogTab).title, tab1Details.title);
-		assert.equal((openedDialog.content[1] as DialogTab).content, tab2Details.content);
-		assert.equal((openedDialog.content[1] as DialogTab).title, tab2Details.title);
+		assert.strictEqual(openedDialog.title, dialogDetails.title);
+		assert.strictEqual(openedDialog.okButton.label, okButtonDetails.label);
+		assert.strictEqual(openedDialog.okButton.enabled, okButtonDetails.enabled);
+		assert.strictEqual(openedDialog.cancelButton.label, cancelButtonDetails.label);
+		assert.strictEqual(openedDialog.cancelButton.enabled, cancelButtonDetails.enabled);
+		assert.strictEqual(openedDialog.customButtons.length, 2);
+		assert.strictEqual(openedDialog.customButtons[0].label, button1Details.label);
+		assert.strictEqual(openedDialog.customButtons[0].enabled, button1Details.enabled);
+		assert.strictEqual(openedDialog.customButtons[1].label, button2Details.label);
+		assert.strictEqual(openedDialog.customButtons[1].enabled, button2Details.enabled);
+		assert.strictEqual(openedDialog.content.length, 2);
+		assert.strictEqual((openedDialog.content[0] as DialogTab).content, tab1Details.content);
+		assert.strictEqual((openedDialog.content[0] as DialogTab).title, tab1Details.title);
+		assert.strictEqual((openedDialog.content[1] as DialogTab).content, tab2Details.content);
+		assert.strictEqual((openedDialog.content[1] as DialogTab).title, tab2Details.title);
 	});
 
 	test('Button presses are forwarded to the extension host', () => {
@@ -253,29 +253,29 @@ suite('MainThreadModelViewDialog Tests', () => {
 		// Then the opened wizard's content and buttons match what was set
 		mockDialogService.verify(x => x.showWizard(It.isAny(), It.isAny(), It.isAny()), Times.once());
 		assert.notEqual(openedWizard, undefined);
-		assert.equal(openedWizard.title, wizardDetails.title);
-		assert.equal(openedWizard.doneButton.label, okButtonDetails.label);
-		assert.equal(openedWizard.doneButton.enabled, okButtonDetails.enabled);
-		assert.equal(openedWizard.cancelButton.label, cancelButtonDetails.label);
-		assert.equal(openedWizard.cancelButton.enabled, cancelButtonDetails.enabled);
-		assert.equal(openedWizard.customButtons.length, 0);
-		assert.equal(openedWizard.pages.length, 2);
-		assert.equal(openedWizard.currentPage, 0);
-		assert.equal(openedWizard.displayPageTitles, wizardDetails.displayPageTitles);
+		assert.strictEqual(openedWizard.title, wizardDetails.title);
+		assert.strictEqual(openedWizard.doneButton.label, okButtonDetails.label);
+		assert.strictEqual(openedWizard.doneButton.enabled, okButtonDetails.enabled);
+		assert.strictEqual(openedWizard.cancelButton.label, cancelButtonDetails.label);
+		assert.strictEqual(openedWizard.cancelButton.enabled, cancelButtonDetails.enabled);
+		assert.strictEqual(openedWizard.customButtons.length, 0);
+		assert.strictEqual(openedWizard.pages.length, 2);
+		assert.strictEqual(openedWizard.currentPage, 0);
+		assert.strictEqual(openedWizard.displayPageTitles, wizardDetails.displayPageTitles);
 		let page1 = openedWizard.pages[0];
-		assert.equal(page1.title, page1Details.title);
-		assert.equal(page1.content, page1Details.content);
-		assert.equal(page1.enabled, page1Details.enabled);
-		assert.equal(page1.valid, true);
-		assert.equal(page1.customButtons.length, 0);
-		assert.equal(page1.description, page1Details.description);
+		assert.strictEqual(page1.title, page1Details.title);
+		assert.strictEqual(page1.content, page1Details.content);
+		assert.strictEqual(page1.enabled, page1Details.enabled);
+		assert.strictEqual(page1.valid, true);
+		assert.strictEqual(page1.customButtons.length, 0);
+		assert.strictEqual(page1.description, page1Details.description);
 		let page2 = openedWizard.pages[1];
-		assert.equal(page2.title, page2Details.title);
-		assert.equal(page2.content, page2Details.content);
-		assert.equal(page2.enabled, page2Details.enabled);
-		assert.equal(page2.valid, true);
-		assert.equal(page2.customButtons.length, 2);
-		assert.equal(page2.description, page2Details.description);
+		assert.strictEqual(page2.title, page2Details.title);
+		assert.strictEqual(page2.content, page2Details.content);
+		assert.strictEqual(page2.enabled, page2Details.enabled);
+		assert.strictEqual(page2.valid, true);
+		assert.strictEqual(page2.customButtons.length, 2);
+		assert.strictEqual(page2.description, page2Details.description);
 	});
 
 	test('The extension host gets notified when wizard page change events occur', () => {
@@ -364,8 +364,8 @@ suite('MainThreadModelViewDialog Tests', () => {
 		mainThreadModelViewDialog.$setWizardDetails(wizardHandle, wizardDetails);
 
 		// Then the message gets changed on the wizard
-		assert.equal(newMessage, wizardDetails.message, 'New message was not included in the fired event');
-		assert.equal(openedWizard.message, wizardDetails.message, 'New message was not set on the wizard');
+		assert.strictEqual(newMessage, wizardDetails.message, 'New message was not included in the fired event');
+		assert.strictEqual(openedWizard.message, wizardDetails.message, 'New message was not set on the wizard');
 	});
 
 	test('Creating a dialog adds a close validation that calls the extension host', () => {

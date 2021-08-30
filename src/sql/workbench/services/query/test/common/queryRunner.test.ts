@@ -126,7 +126,7 @@ suite('Query Runner', () => {
 		runner.handleResultSetAvailable({ id: 0, batchId: 0, complete: true, rowCount: 1, columnInfo: [{ columnName: 'Microsoft SQL Server 2005 XML Showplan' }] });
 		const plan = await runner.planXml;
 		assert(getRowsStub.calledOnce);
-		assert.equal(plan, xmlPlan);
+		assert.strictEqual(plan, xmlPlan);
 		assert(runner.isQueryPlan);
 	});
 
@@ -147,7 +147,7 @@ suite('Query Runner', () => {
 		runner.handleResultSetUpdated({ id: 0, batchId: 0, complete: true, rowCount: 1, columnInfo: [{ columnName: 'Microsoft SQL Server 2005 XML Showplan' }] });
 		const plan = await runner.planXml;
 		assert(getRowsStub.calledOnce);
-		assert.equal(plan, xmlPlan);
+		assert.strictEqual(plan, xmlPlan);
 		assert(runner.isQueryPlan);
 	});
 

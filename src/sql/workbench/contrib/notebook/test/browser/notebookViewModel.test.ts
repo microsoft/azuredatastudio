@@ -96,9 +96,9 @@ suite('NotebookViewModel', function (): void {
 
 		let cellsWithNewView = notebookViews.getCells().filter(cell => cell.views.find(v => v.guid === viewModel.guid));
 
-		assert.equal(cellsWithNewView.length, 2);
-		assert.equal(viewModel.cells.length, 2);
-		assert.equal(viewModel.name, defaultViewName);
+		assert.strictEqual(cellsWithNewView.length, 2);
+		assert.strictEqual(viewModel.cells.length, 2);
+		assert.strictEqual(viewModel.name, defaultViewName);
 	});
 
 	test('initialize notebook with no metadata', async function (): Promise<void> {
@@ -108,9 +108,9 @@ suite('NotebookViewModel', function (): void {
 
 		let cellsWithNewView = notebookViews.getCells().filter(cell => cell.views.find(v => v.guid === viewModel.guid));
 
-		assert.equal(cellsWithNewView.length, 2);
-		assert.equal(viewModel.cells.length, 2);
-		assert.equal(viewModel.name, defaultViewName);
+		assert.strictEqual(cellsWithNewView.length, 2);
+		assert.strictEqual(viewModel.cells.length, 2);
+		assert.strictEqual(viewModel.name, defaultViewName);
 	});
 
 	test('rename', async function (): Promise<void> {
@@ -125,7 +125,7 @@ suite('NotebookViewModel', function (): void {
 			exceptionThrown = true;
 		}
 
-		assert.equal(view.name, `${defaultViewName} 1`);
+		assert.strictEqual(view.name, `${defaultViewName} 1`);
 		assert(!exceptionThrown);
 	});
 
@@ -155,7 +155,7 @@ suite('NotebookViewModel', function (): void {
 
 		viewModel.hideCell(cellToHide);
 
-		assert.equal(viewModel.hiddenCells.length, 1);
+		assert.strictEqual(viewModel.hiddenCells.length, 1);
 		assert(viewModel.hiddenCells.includes(cellToHide));
 	});
 
@@ -183,8 +183,8 @@ suite('NotebookViewModel', function (): void {
 		viewModel.moveCell(cellToMove, 98, 99);
 		let cellMeta = viewModel.getCellMetadata(cellToMove);
 
-		assert.equal(cellMeta.x, 98);
-		assert.equal(cellMeta.y, 99);
+		assert.strictEqual(cellMeta.x, 98);
+		assert.strictEqual(cellMeta.y, 99);
 	});
 
 	test('resize cell', async function (): Promise<void> {
@@ -197,8 +197,8 @@ suite('NotebookViewModel', function (): void {
 		viewModel.resizeCell(cellToResize, 3, 4);
 		let cellMeta = viewModel.getCellMetadata(cellToResize);
 
-		assert.equal(cellMeta.width, 3);
-		assert.equal(cellMeta.height, 4);
+		assert.strictEqual(cellMeta.width, 3);
+		assert.strictEqual(cellMeta.height, 4);
 	});
 
 	test('get cell metadata', async function (): Promise<void> {

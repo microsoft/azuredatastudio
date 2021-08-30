@@ -35,13 +35,13 @@ suite('TableDataView', () => {
 			expectedFilterStateChangeInvokeCount: number,
 			stepName: string,
 			verifyRowCountEventParameter: boolean = true) => {
-			assert.equal(rowCountEventInvokeCount, expectedRowCountChangeInvokeCount, 'RowCountChange event count - ' + stepName);
+			assert.strictEqual(rowCountEventInvokeCount, expectedRowCountChangeInvokeCount, 'RowCountChange event count - ' + stepName);
 			if (verifyRowCountEventParameter) {
-				assert.equal(rowCountEventParameter, expectedDataLength, 'Row count passed by RowCountChange event - ' + stepName);
+				assert.strictEqual(rowCountEventParameter, expectedDataLength, 'Row count passed by RowCountChange event - ' + stepName);
 			}
-			assert.equal(obj.getLength(), expectedDataLength, 'Data length - ' + stepName);
-			assert.equal(obj.getLengthNonFiltered(), expectedNonFilteredDataLength, 'Length for all data - ' + stepName);
-			assert.equal(filterStateChangeEventInvokeCount, expectedFilterStateChangeInvokeCount, 'FilterStateChange event count - ' + stepName);
+			assert.strictEqual(obj.getLength(), expectedDataLength, 'Data length - ' + stepName);
+			assert.strictEqual(obj.getLengthNonFiltered(), expectedNonFilteredDataLength, 'Length for all data - ' + stepName);
+			assert.strictEqual(filterStateChangeEventInvokeCount, expectedFilterStateChangeInvokeCount, 'FilterStateChange event count - ' + stepName);
 		};
 
 		verify(0, rowCount, rowCount, 0, 'after initialization', false);

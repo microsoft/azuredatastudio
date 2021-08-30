@@ -33,13 +33,13 @@ suite('SQL ConnectionProfileGroup tests', () => {
 	});
 
 	test('Root name should be returned as empty string', () => {
-		assert.equal(root.name, '');
+		assert.strictEqual(root.name, '');
 	});
 
 	test('Fullname should return the group full name correctly', () => {
-		assert.equal(group1Node.fullName, 'G1');
-		assert.equal(group2Node.fullName, 'G2');
-		assert.equal(group11Node.fullName, 'G1/G11');
+		assert.strictEqual(group1Node.fullName, 'G1');
+		assert.strictEqual(group2Node.fullName, 'G2');
+		assert.strictEqual(group11Node.fullName, 'G1/G11');
 	});
 
 	test('getGroupFullNameParts should return a list With ROOT in it given an empty string', () => {
@@ -154,8 +154,8 @@ suite('SQL ConnectionProfileGroup tests', () => {
 		emptyGroup.children = undefined;
 		assert(emptyGroup.hasChildren() === false, 'Group should report no children after setting children to undefined');
 		const obj = emptyGroup.toObject();
-		assert.equal(obj.id, emptyGroup.id, 'toObject result has wrong id');
-		assert.equal(obj.name, emptyGroup.name, 'toObject result has wrong name');
+		assert.strictEqual(obj.id, emptyGroup.id, 'toObject result has wrong id');
+		assert.strictEqual(obj.name, emptyGroup.name, 'toObject result has wrong name');
 		assert(emptyGroup.hasValidConnections === true, 'Expected group to have valid connections');
 		const children = emptyGroup.getChildren();
 		assert(children.length === 0, 'Expected group to have 0 children');
@@ -165,11 +165,11 @@ suite('SQL ConnectionProfileGroup tests', () => {
 		emptyGroup.connections = undefined;
 		assert(emptyGroup.hasChildren() === false, 'Group should report no children after setting connections to undefined');
 		const obj = emptyGroup.toObject();
-		assert.equal(obj.id, emptyGroup.id, 'toObject result has wrong id');
-		assert.equal(obj.name, emptyGroup.name, 'toObject result has wrong name');
+		assert.strictEqual(obj.id, emptyGroup.id, 'toObject result has wrong id');
+		assert.strictEqual(obj.name, emptyGroup.name, 'toObject result has wrong name');
 		assert(emptyGroup.hasValidConnections === true, 'Expected group to have valid connections');
 		const children = emptyGroup.getChildren();
-		assert.equal(children.length, 0, 'Expected group to have 0 children');
+		assert.strictEqual(children.length, 0, 'Expected group to have 0 children');
 	});
 
 	test('test behavior with 1 child group', () => {
@@ -177,8 +177,8 @@ suite('SQL ConnectionProfileGroup tests', () => {
 		assert(emptyGroup.hasChildren() === true, 'Group should have children if 1 child group is added');
 		assert(emptyGroup.hasValidConnections === true, 'Expected group to have valid connections');
 		const children = emptyGroup.getChildren();
-		assert.equal(children.length, 1, 'Expected group to have 1 child');
-		assert.equal(children[0].id, group1Node.id, 'Expected group child to be group1Node');
+		assert.strictEqual(children.length, 1, 'Expected group to have 1 child');
+		assert.strictEqual(children[0].id, group1Node.id, 'Expected group child to be group1Node');
 	});
 
 	test('test behavior with 1 child connection', () => {
@@ -186,8 +186,8 @@ suite('SQL ConnectionProfileGroup tests', () => {
 		assert(emptyGroup.hasChildren(), 'Group should have children if 1 child group is added');
 		assert(emptyGroup.hasValidConnections === false, 'Expected group not to have valid connections');
 		const children = emptyGroup.getChildren();
-		assert.equal(children.length, 1, 'Expected group to have 1 child');
-		assert.equal(children[0].id, connectionProfile.id, 'Expected group child to be connectionProfile');
+		assert.strictEqual(children.length, 1, 'Expected group to have 1 child');
+		assert.strictEqual(children[0].id, connectionProfile.id, 'Expected group child to be connectionProfile');
 	});
 
 	test('adding undefined groups does nothing', () => {
@@ -197,8 +197,8 @@ suite('SQL ConnectionProfileGroup tests', () => {
 		emptyGroup.addGroups([group1Node]);
 		emptyGroup.addGroups(undefined);
 		const children = emptyGroup.getChildren();
-		assert.equal(children.length, 1, 'Expected group to have 1 child still');
-		assert.equal(children[0].id, group1Node.id, 'Expected group child to be group1Node');
+		assert.strictEqual(children.length, 1, 'Expected group to have 1 child still');
+		assert.strictEqual(children[0].id, group1Node.id, 'Expected group child to be group1Node');
 	});
 
 	test('adding undefined connections does nothing', () => {
@@ -208,7 +208,7 @@ suite('SQL ConnectionProfileGroup tests', () => {
 		emptyGroup.addConnections([connectionProfile]);
 		emptyGroup.addConnections(undefined);
 		const children = emptyGroup.getChildren();
-		assert.equal(children.length, 1, 'Expected group to have 1 child still');
-		assert.equal(children[0].id, connectionProfile.id, 'Expected group child to be connectionProfile');
+		assert.strictEqual(children.length, 1, 'Expected group to have 1 child still');
+		assert.strictEqual(children[0].id, connectionProfile.id, 'Expected group child to be connectionProfile');
 	});
 });

@@ -80,7 +80,7 @@ function validate(test: TestDefinition, semVerProxy: SymVerProxyTest) {
 	for (const key in test.expected) {
 		const expected = test.expected[key];
 		if (expected) {
-			assert.equal(semVerProxy[key].toString(), expected.toString(), `validation for property ${key} failed.`);
+			assert.strictEqual(semVerProxy[key].toString(), expected.toString(), `validation for property ${key} failed.`);
 		}
 	}
 }
