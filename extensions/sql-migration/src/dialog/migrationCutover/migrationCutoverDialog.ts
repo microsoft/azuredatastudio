@@ -667,6 +667,7 @@ export class MigrationCutoverDialog {
 			}
 
 			this._cancelButton.enabled =
+				migrationStatusTextValue === MigrationStatus.Canceling ||
 				migrationStatusTextValue === MigrationStatus.Creating ||
 				migrationStatusTextValue === MigrationStatus.InProgress;
 
