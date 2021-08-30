@@ -907,7 +907,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 				let connectionResult = await connectionResultPromise;
 				if (!connectionResult || !connectionResult.connected) {
 					this._logService.error(`Failed to refresh connection ${profile.id} with uri ${uri}, result: ${connectionResult}`);
-					this.disconnect(newProfile);
+					await this.disconnect(newProfile);
 					return false;
 				}
 				this._logService.info(`Successfully refreshed token for connection ${profile.id} with uri ${uri}, result: ${connectionResult.connected} ${connectionResult.connectionProfile}, isConnected: ${this.isConnected(uri)}, ${this._connectionStatusManager.getConnectionProfile(uri)}`);
