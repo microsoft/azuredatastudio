@@ -108,10 +108,10 @@ describe('Add File Dialog', function () {
 
 		let createFileResult = await fileDialog.createFile(testFileName, testTitle);
 		should(fileDialog.dialog.message).be.undefined();
-		should(createFileResult).be.true();
+		should(createFileResult).be.true('createFile call should succeed.');
 
-		should(testPathDetails.length).be.eql(1);
-		should(testPathDetails[0]).be.deepEqual(new TocEntryPathHandler(posixFilePath, testDir, testTitle));
+		should(testPathDetails.length).eql(1, 'Should only create one TocEntryPathHandler on success.');
+		should(testPathDetails[0]).be.deepEqual(new TocEntryPathHandler(posixFilePath, testDir, testTitle), 'Should get the expected TocEntryPathHandler info on success.');
 
 		sinon.restore();
 	});
