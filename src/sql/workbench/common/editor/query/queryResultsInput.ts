@@ -46,7 +46,7 @@ export class QueryResultsInput extends EditorInput {
 		return this._state;
 	}
 
-	constructor(private _uri: string) {
+	constructor(public uri: string) {
 		super();
 	}
 
@@ -60,7 +60,7 @@ export class QueryResultsInput extends EditorInput {
 
 	override matches(other: any): boolean {
 		if (other instanceof QueryResultsInput) {
-			return (other._uri === this._uri);
+			return (other.uri === this.uri);
 		}
 
 		return false;
@@ -82,14 +82,6 @@ export class QueryResultsInput extends EditorInput {
 
 	static get ID() {
 		return 'workbench.query.queryResultsInput';
-	}
-
-	get uri(): string {
-		return this._uri;
-	}
-
-	set uri(newUri: string) {
-		this._uri = newUri;
 	}
 
 	get resource(): URI | undefined {
