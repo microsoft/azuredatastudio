@@ -616,8 +616,9 @@ export class AddDatabaseReferenceDialog {
 }
 
 export function getSystemDbOptions(project: Project): string[] {
+	const projectTargetVersion = project.getProjectTargetVersion().toLowerCase();
 	// only master is a valid system db reference for projects targeting Azure and DW
-	if (project.getProjectTargetVersion().toLowerCase().includes('azure') || project.getProjectTargetVersion().toLowerCase().includes('dw')) {
+	if (projectTargetVersion.includes('azure') || projectTargetVersion.includes('dw')) {
 		return [constants.master];
 	}
 	return [constants.master, constants.msdb];

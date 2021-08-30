@@ -21,7 +21,7 @@ export async function getPublishDatabaseSettings(project: Project, promptForConn
 	// 1. Select publish settings file (optional)
 	// Create custom quickpick so we can control stuff like displaying the loading indicator
 	const quickPick = vscode.window.createQuickPick();
-	quickPick.items = [{ label: constants.dontUseProfile }, { label: constants.browseForProfile }];
+	quickPick.items = [{ label: constants.dontUseProfile }, { label: constants.browseForProfileWithIcon }];
 	quickPick.ignoreFocusOut = true;
 	quickPick.title = constants.selectProfileToUse;
 	const profilePicked = new Promise<PublishProfile | undefined>((resolve, reject) => {
@@ -160,8 +160,8 @@ export async function getPublishDatabaseSettings(project: Project, promptForConn
 					key: key
 				} as vscode.QuickPickItem & { key?: string, isResetAllVars?: boolean, isDone?: boolean };
 			});
-			quickPickItems.push({ label: constants.resetAllVars, isResetAllVars: true });
-			quickPickItems.unshift({ label: constants.done, isDone: true });
+			quickPickItems.push({ label: `$(refresh) ${constants.resetAllVars}`, isResetAllVars: true });
+			quickPickItems.unshift({ label: `$(check) ${constants.done}`, isDone: true });
 			const sqlCmd = await vscode.window.showQuickPick(
 				quickPickItems,
 				{ title: constants.chooseSqlcmdVarsToModify, ignoreFocusOut: true }
