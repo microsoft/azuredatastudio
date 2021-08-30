@@ -22,7 +22,7 @@ import { IUntitledQueryEditorInput } from 'sql/base/query/common/untitledQueryEd
 
 export class UntitledQueryEditorInput extends QueryEditorInput implements IUntitledQueryEditorInput {
 
-  public static readonly ID = UNTITLED_QUERY_EDITOR_TYPEID;
+	public static readonly ID = UNTITLED_QUERY_EDITOR_TYPEID;
 
 	constructor(
 		description: string | undefined,

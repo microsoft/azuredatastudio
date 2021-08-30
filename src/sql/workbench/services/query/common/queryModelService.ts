@@ -8,11 +8,12 @@ import QueryRunner from 'sql/workbench/services/query/common/queryRunner';
 import { ICellValue, ResultSetSubset } from 'sql/workbench/services/query/common/query';
 import { DataService } from 'sql/workbench/services/query/common/dataService';
 import { IQueryModelService, IQueryEvent } from 'sql/workbench/services/query/common/queryModel';
-import { ILogService } from 'vs/platform/log/common/log';
+
 import * as azdata from 'azdata';
 
 import * as nls from 'vs/nls';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { ILogService } from 'vs/platform/log/common/log';
 import { Event, Emitter } from 'vs/base/common/event';
 import * as strings from 'vs/base/common/strings';
 import * as types from 'vs/base/common/types';
