@@ -30,9 +30,6 @@ export const InputBoxFocusedKey = new RawContextKey<boolean>('inputBoxFocus', fa
 export const SearchInputBoxFocusedKey = new RawContextKey<boolean>('searchInputBoxFocus', false);
 
 export const UNTITLED_NOTEBOOK_TYPEID = 'workbench.editorinputs.untitledNotebookInput';
-export const UNTITLED_QUERY_EDITOR_TYPEID = 'workbench.editorinputs.untitledQueryInput';
-export const FILE_QUERY_EDITOR_TYPEID = 'workbench.editorinputs.fileQueryInput';
-export const RESOURCE_VIEWER_TYPEID = 'workbench.editorinputs.resourceViewerInput';
 
 export const enum NotebookLanguage {
 	Notebook = 'Notebook',

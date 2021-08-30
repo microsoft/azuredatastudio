@@ -13,7 +13,6 @@ import { onUnexpectedError } from 'vs/base/common/errors';
 import { ButtonColumn } from 'sql/base/browser/ui/table/plugins/buttonColumn.plugin';
 import { getDataGridFormatter } from 'sql/workbench/services/dataGridProvider/browser/dataGridProviderUtils';
 import { FilterableColumn } from 'sql/base/browser/ui/table/interfaces';
-import { RESOURCE_VIEWER_TYPEID } from 'sql/workbench/common/constants';
 
 export interface ColumnDefinition extends FilterableColumn<azdata.DataGridItem> {
 	name: string;
@@ -23,7 +22,7 @@ export interface ColumnDefinition extends FilterableColumn<azdata.DataGridItem> 
 
 export class ResourceViewerInput extends EditorInput {
 
-	public static ID: string = RESOURCE_VIEWER_TYPEID;
+	public static ID: string = 'workbench.editorInput.resourceViewerInput';
 
 	private _dataGridProvider: DataGridProvider;
 	private _data: azdata.DataGridItem[] = [];

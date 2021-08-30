@@ -14,11 +14,10 @@ import { IMoveResult, GroupIdentifier } from 'vs/workbench/common/editor';
 import { BinaryEditorModel } from 'vs/workbench/common/editor/binaryEditorModel';
 import { EncodingMode, ITextFileEditorModel } from 'vs/workbench/services/textfile/common/textfiles';
 import { URI } from 'vs/base/common/uri';
-import { FILE_QUERY_EDITOR_TYPEID } from 'sql/workbench/common/constants';
 
 export class FileQueryEditorInput extends QueryEditorInput {
 
-	public static readonly ID = FILE_QUERY_EDITOR_TYPEID;
+	public static readonly ID = 'workbench.editorInput.fileQueryInput';
 
 	constructor(
 		description: string,

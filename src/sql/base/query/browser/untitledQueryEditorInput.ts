@@ -17,13 +17,12 @@ import { GroupIdentifier, ISaveOptions, IEditorInput } from 'vs/workbench/common
 import { FileQueryEditorInput } from 'sql/workbench/contrib/query/browser/fileQueryEditorInput';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { FileEditorInput } from 'vs/workbench/contrib/files/browser/editors/fileEditorInput';
-import { EditorInputCapabilities } from 'vs/workbench/common/editor';
-import { UNTITLED_QUERY_EDITOR_TYPEID } from 'sql/workbench/common/constants';
 import { IUntitledQueryEditorInput } from 'sql/base/query/common/untitledQueryEditorInput';
+import { EditorInputCapabilities } from 'vs/workbench/common/editor';
 
 export class UntitledQueryEditorInput extends QueryEditorInput implements IUntitledQueryEditorInput {
 
-	public static readonly ID = UNTITLED_QUERY_EDITOR_TYPEID;
+	public static readonly ID = 'workbench.editorInput.untitledQueryInput';
 
 	constructor(
 		description: string | undefined,
