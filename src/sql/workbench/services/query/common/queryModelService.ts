@@ -416,7 +416,7 @@ export class QueryModelService implements IQueryModelService {
 		}
 	}
 
-	public async changeConnectionUri(newUri: string, oldUri: string): Promise<void> {
+	public async notifyConnectionUriChanged(newUri: string, oldUri: string): Promise<void> {
 		// Get existing query runner
 		let queryRunner = this.internalGetQueryRunner(oldUri);
 		if (!queryRunner) {
@@ -426,7 +426,7 @@ export class QueryModelService implements IQueryModelService {
 			this._logService.error(`New URI '${newUri}' already has query info associated with it.`);
 		}
 
-		await queryRunner.changeConnectionUri(newUri, oldUri);
+		await queryRunner.notifyConnectionUriChanged(newUri, oldUri);
 
 		// remove the old key and set new key with same query info as old uri. (Info existence is checked in internalGetQueryRunner)
 		let info = this._queryInfoMap.get(oldUri);

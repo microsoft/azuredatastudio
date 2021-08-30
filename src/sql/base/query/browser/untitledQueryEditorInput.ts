@@ -52,7 +52,7 @@ export class UntitledQueryEditorInput extends QueryEditorInput implements IUntit
 		let preProcessed = await this.text.save(group, options);
 		let newUri = preProcessed.resource.toString(true);
 		this._results.uri = newUri;
-		await this.changeConnectionUri(newUri);
+		await this.notifyConnectionUriChanged(newUri);
 		let newInput = this.instantiationService.createInstance(FileQueryEditorInput, '', (preProcessed as FileEditorInput), this.results);
 		newInput.state.setState(this.state);
 		return newInput;
@@ -62,7 +62,7 @@ export class UntitledQueryEditorInput extends QueryEditorInput implements IUntit
 		let preProcessed = await this.text.saveAs(group, options);
 		let newUri = preProcessed.resource.toString(true);
 		this._results.uri = newUri;
-		await this.changeConnectionUri(newUri);
+		await this.notifyConnectionUriChanged(newUri);
 		let newInput = this.instantiationService.createInstance(FileQueryEditorInput, '', (preProcessed as FileEditorInput), this.results);
 		newInput.state.setState(this.state);
 		return newInput;

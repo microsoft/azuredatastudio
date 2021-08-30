@@ -196,7 +196,7 @@ export abstract class ExtHostDataProtocolShape {
 	/**
 	 * Changes the uri associated with a query
 	 */
-	$changeConnectionUri(handle: number, newUri: string, oldUri: string): Thenable<void> { throw ni(); }
+	$notifyConnectionUriChanged(handle: number, newUri: string, oldUri: string): Thenable<void> { throw ni(); }
 
 	/**
 	 * Refreshes the IntelliSense cache

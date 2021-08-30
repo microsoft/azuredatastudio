@@ -72,7 +72,7 @@ export class TestQueryProvider implements azdata.QueryProvider {
 	disposeQuery(ownerUri: string): Thenable<void> {
 		throw new Error('Method not implemented.');
 	}
-	changeConnectionUri(newUri: string, oldUri: string): Thenable<void> {
+	notifyConnectionUriChanged(newUri: string, oldUri: string): Thenable<void> {
 		throw new Error('Method not implemented.');
 	}
 	saveResults(requestParams: azdata.SaveResultsRequestParams): Thenable<azdata.SaveResultRequestResult> {

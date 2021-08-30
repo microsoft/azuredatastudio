@@ -421,8 +421,8 @@ export default class QueryRunner extends Disposable {
 		super.dispose();
 	}
 
-	public changeConnectionUri(oldUri: string, newUri: string): Promise<void> {
-		return this.queryManagementService.changeConnectionUri(oldUri, newUri);
+	public notifyConnectionUriChanged(oldUri: string, newUri: string): Promise<void> {
+		return this.queryManagementService.notifyConnectionUriChanged(oldUri, newUri);
 	}
 
 	get totalElapsedMilliseconds(): number {
