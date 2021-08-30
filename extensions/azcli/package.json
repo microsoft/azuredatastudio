@@ -104,5 +104,10 @@
     "sinon": "^9.0.2",
     "typemoq": "^2.1.0",
     "vscodetestcover": "^1.1.0"
+  },
+  "__metadata": {
+    "id": "84",
+    "publisherDisplayName": "Microsoft",
+    "publisherId": "Microsoft"
   }
 }
