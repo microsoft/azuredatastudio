@@ -131,7 +131,7 @@ suite('MainThreadNotebook Tests', () => {
 
 			// Then it shouldn't have wrappers for the content or server manager
 			assert.ok(!(manager.contentManager instanceof LocalContentManager));
-			assert.notEqual(manager.serverManager, undefined);
+			assert.notStrictEqual(manager.serverManager, undefined);
 		});
 	});
 

@@ -191,13 +191,13 @@ suite('SQL ConnectionProfileInfo tests', () => {
 		assert.strictEqual(savedProfile.groupId, connectionProfile.groupId);
 		assert.deepEqual(savedProfile.providerName, connectionProfile.providerName);
 		assert.strictEqual(savedProfile.savePassword, connectionProfile.savePassword);
-		assert.notEqual(connectionProfile.id, undefined);
+		assert.notStrictEqual(connectionProfile.id, undefined);
 		assert.strictEqual(savedProfile.id, undefined);
 	});
 
 	test('withoutPassword should create a new instance without password', () => {
 		let conn = new ConnectionProfile(capabilitiesService, connectionProfile);
-		assert.notEqual(conn.password, '');
+		assert.notStrictEqual(conn.password, '');
 		let withoutPassword = conn.withoutPassword();
 		assert.strictEqual(withoutPassword.password, '');
 	});
@@ -211,7 +211,7 @@ suite('SQL ConnectionProfileInfo tests', () => {
 	test('cloneWithDatabase should create new profile with new id', () => {
 		let conn = new ConnectionProfile(capabilitiesService, connectionProfile);
 		let newProfile = conn.cloneWithDatabase('new db');
-		assert.notEqual(newProfile.id, conn.id);
+		assert.notStrictEqual(newProfile.id, conn.id);
 		assert.strictEqual(newProfile.databaseName, 'new db');
 	});
 

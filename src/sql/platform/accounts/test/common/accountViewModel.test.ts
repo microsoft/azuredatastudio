@@ -68,9 +68,9 @@ suite('Account Management Dialog ViewModel Tests', () => {
 
 		// Then:
 		// ... All the events for the view models should be properly initialized
-		assert.notEqual(vm.addProviderEvent, undefined);
-		assert.notEqual(vm.removeProviderEvent, undefined);
-		assert.notEqual(vm.updateAccountListEvent, undefined);
+		assert.notStrictEqual(vm.addProviderEvent, undefined);
+		assert.notStrictEqual(vm.removeProviderEvent, undefined);
+		assert.notStrictEqual(vm.updateAccountListEvent, undefined);
 
 		// ... All the events should properly fire
 		let argAddProvider: AccountProviderAddedEventParams = { addedProvider: providers[0], initialAccounts: [] };

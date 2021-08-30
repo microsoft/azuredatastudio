@@ -286,7 +286,7 @@ suite('ExtHostModelViewDialog Tests', () => {
 			lastPage: lastPage,
 			newPage: newPage
 		});
-		assert.notEqual(validationInfo, undefined);
+		assert.notStrictEqual(validationInfo, undefined);
 		assert.strictEqual(validationInfo.lastPage, lastPage);
 		assert.strictEqual(validationInfo.newPage, newPage);
 	});

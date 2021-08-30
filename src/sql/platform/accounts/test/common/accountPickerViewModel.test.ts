@@ -61,7 +61,7 @@ suite('Account picker view model tests', () => {
 
 		// Then:
 		// ... The event for the view models should be properly initialized
-		assert.notEqual(vm.updateAccountListEvent, undefined);
+		assert.notStrictEqual(vm.updateAccountListEvent, undefined);
 
 		// ... The event should properly fire
 		let argUpdateAccounts: UpdateAccountListEventParams = { providerId: providers[0].id, accountList: accounts };

@@ -302,7 +302,7 @@ suite('SQL Object Explorer Service tests', () => {
 		assert.strictEqual(session.sessionId, '1234');
 		objectExplorerService.onSessionCreated(1, objectExplorerSession);
 		const node = objectExplorerService.getObjectExplorerNode(connection);
-		assert.notEqual(node, undefined);
+		assert.notStrictEqual(node, undefined);
 		assert.strictEqual(node.session.success, true);
 	});
 

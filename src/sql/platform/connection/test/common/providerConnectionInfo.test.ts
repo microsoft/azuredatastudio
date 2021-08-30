@@ -195,7 +195,7 @@ suite('SQL ProviderConnectionInfo tests', () => {
 
 		let conn2 = conn.clone();
 		conn2.serverName = conn.serverName + '1';
-		assert.notEqual(conn.serverName, conn2.serverName);
+		assert.notStrictEqual(conn.serverName, conn2.serverName);
 	});
 
 	test('constructor should initialize the options given a valid model with options', () => {
@@ -224,7 +224,7 @@ suite('SQL ProviderConnectionInfo tests', () => {
 		let conn = new ProviderConnectionInfo(capabilitiesService, connectionProfile);
 		let conn2 = new ProviderConnectionInfo(capabilitiesService, Object.assign({}, connectionProfile, { serverName: connectionProfile.serverName + '1' }));
 
-		assert.notEqual(conn.getOptionsKey(), conn2.getOptionsKey());
+		assert.notStrictEqual(conn.getOptionsKey(), conn2.getOptionsKey());
 	});
 
 	test('titleParts should return server, database and auth type as first items', () => {

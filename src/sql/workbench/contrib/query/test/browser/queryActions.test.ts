@@ -290,7 +290,7 @@ suite('SQL QueryAction Tests', () => {
 		assert.strictEqual(countCalledShowDialog, 2, 'run should call showDialog again');
 		assert.strictEqual(countCalledRunQuery, 0, 'run should not call runQuery');
 		assert.strictEqual(showDialogConnectionParams.connectionType, ConnectionType.editor, 'connectionType should be queryEditor');
-		assert.notEqual(showDialogConnectionParams.queryRange, undefined, 'There should not be an undefined selection in runQuery');
+		assert.notStrictEqual(showDialogConnectionParams.queryRange, undefined, 'There should not be an undefined selection in runQuery');
 		assert.strictEqual(showDialogConnectionParams.queryRange.startLineNumber, selectionToReturnInGetSelection.startLineNumber, 'startLine should match');
 		assert.strictEqual(showDialogConnectionParams.queryRange.startColumn, selectionToReturnInGetSelection.startColumn, 'startColumn should match');
 		assert.strictEqual(showDialogConnectionParams.queryRange.endLineNumber, selectionToReturnInGetSelection.endLineNumber, 'endLine should match');
@@ -314,7 +314,7 @@ suite('SQL QueryAction Tests', () => {
 		// The query should run with the given seleciton
 		assert.strictEqual(countCalledShowDialog, 2, 'run should not call showDialog');
 		assert.strictEqual(countCalledRunQuery, 2, 'run should call runQuery again');
-		assert.notEqual(runQuerySelection, undefined, 'There should not be an undefined selection in runQuery');
+		assert.notStrictEqual(runQuerySelection, undefined, 'There should not be an undefined selection in runQuery');
 		assert.strictEqual(runQuerySelection.startLineNumber, selectionToReturnInGetSelection.startLineNumber, 'startLine should match');
 		assert.strictEqual(runQuerySelection.startColumn, selectionToReturnInGetSelection.startColumn, 'startColumn should match');
 		assert.strictEqual(runQuerySelection.endLineNumber, selectionToReturnInGetSelection.endLineNumber, 'endLine should match');

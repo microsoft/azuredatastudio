@@ -191,7 +191,7 @@ suite('SQL QueryEditor Tests', () => {
 		};
 
 		let assertFirstInputIsSet = function () {
-			assert.notEqual(firstContainer.parentElement, undefined);
+			assert.notStrictEqual(firstContainer.parentElement, undefined);
 		};
 
 		let setSecondInput = function () {
@@ -205,16 +205,16 @@ suite('SQL QueryEditor Tests', () => {
 			secondContainer.id = secondContainerId;
 
 			// The inputs should not match
-			assert.notEqual(firstInput.getName(), secondInput.getName());
-			assert.notEqual(firstContainer.id, secondContainer.id);
+			assert.notStrictEqual(firstInput.getName(), secondInput.getName());
+			assert.notStrictEqual(firstContainer.id, secondContainer.id);
 			assert.strictEqual(firstContainer.id, firstContainerId);
 
 			// The first input should be disposed
-			assert.notEqual(firstContainer.parentElement, secondContainer.parentElement);
+			assert.notStrictEqual(firstContainer.parentElement, secondContainer.parentElement);
 			assert.strictEqual(firstContainer.parentElement, undefined);
 
 			// The second input should be added into the DOM
-			assert.notEqual(secondContainer.parentElement, undefined);
+			assert.notStrictEqual(secondContainer.parentElement, undefined);
 		};
 
 		let setFirstInputAgain = function () {
@@ -227,16 +227,16 @@ suite('SQL QueryEditor Tests', () => {
 			firstContainer = editor.sqlEditorContainer;
 
 			// The inputs should not match
-			assert.notEqual(firstInput.getName(), secondInput.getName());
-			assert.notEqual(firstContainer.id, secondContainer.id);
+			assert.notStrictEqual(firstInput.getName(), secondInput.getName());
+			assert.notStrictEqual(firstContainer.id, secondContainer.id);
 			assert.strictEqual(secondContainer.id, secondContainerId);
 
 			// The first input should be added into the DOM
 			assert.strictEqual(secondContainer.parentElement, undefined);
 
 			// The second input should be disposed
-			assert.notEqual(firstContainer.parentElement, secondContainer.parentElement);
-			assert.notEqual(firstContainer.parentElement, undefined);
+			assert.notStrictEqual(firstContainer.parentElement, secondContainer.parentElement);
+			assert.notStrictEqual(firstContainer.parentElement, undefined);
 		};
 
 		// If I create a QueryEditor

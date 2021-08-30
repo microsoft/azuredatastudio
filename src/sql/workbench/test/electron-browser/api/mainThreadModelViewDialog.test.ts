@@ -196,7 +196,7 @@ suite('MainThreadModelViewDialog Tests', () => {
 
 		// Then the opened dialog's content and buttons match what was set
 		mockDialogService.verify(x => x.showDialog(It.isAny(), undefined, It.isAny()), Times.once());
-		assert.notEqual(openedDialog, undefined);
+		assert.notStrictEqual(openedDialog, undefined);
 		assert.strictEqual(openedDialog.title, dialogDetails.title);
 		assert.strictEqual(openedDialog.okButton.label, okButtonDetails.label);
 		assert.strictEqual(openedDialog.okButton.enabled, okButtonDetails.enabled);
@@ -252,7 +252,7 @@ suite('MainThreadModelViewDialog Tests', () => {
 
 		// Then the opened wizard's content and buttons match what was set
 		mockDialogService.verify(x => x.showWizard(It.isAny(), It.isAny(), It.isAny()), Times.once());
-		assert.notEqual(openedWizard, undefined);
+		assert.notStrictEqual(openedWizard, undefined);
 		assert.strictEqual(openedWizard.title, wizardDetails.title);
 		assert.strictEqual(openedWizard.doneButton.label, okButtonDetails.label);
 		assert.strictEqual(openedWizard.doneButton.enabled, okButtonDetails.enabled);

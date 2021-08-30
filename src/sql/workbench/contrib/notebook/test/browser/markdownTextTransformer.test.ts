@@ -192,7 +192,7 @@ suite('MarkdownTextTransformer', () => {
 
 		// Test undo (removing text)
 		const valueRange = getValueRange(textModel, value);
-		assert.notEqual(valueRange, undefined, 'Could not find value in model after transformation');
+		assert.notStrictEqual(valueRange, undefined, 'Could not find value in model after transformation');
 		widget.setSelection(valueRange);
 		await markdownTextTransformer.transformText(type);
 		assert.strictEqual(textModel.getValue(), value, `Undo operation for ${MarkdownButtonType[type]} with single word selection failed`);
@@ -220,7 +220,7 @@ suite('MarkdownTextTransformer', () => {
 
 		// Test undo (removing text)
 		const valueRange = getValueRange(textModel, value);
-		assert.notEqual(valueRange, undefined, 'Could not find value in model after transformation');
+		assert.notStrictEqual(valueRange, undefined, 'Could not find value in model after transformation');
 		widget.setSelection(valueRange);
 		await markdownTextTransformer.transformText(type);
 		assert.strictEqual(textModel.getValue(), value, `Undo operation for ${MarkdownButtonType[type]} with multiple word selection failed`);
@@ -238,7 +238,7 @@ suite('MarkdownTextTransformer', () => {
 		let valueRange = getValueRange(textModel, 'Multi');
 		// Modify the range to include all the lines
 		valueRange = new Range(valueRange.startLineNumber, valueRange.startColumn, valueRange.endLineNumber + 2, 9);
-		assert.notEqual(valueRange, undefined, 'Could not find value in model after transformation');
+		assert.notStrictEqual(valueRange, undefined, 'Could not find value in model after transformation');
 		widget.setSelection(valueRange);
 		await markdownTextTransformer.transformText(type);
 		assert.strictEqual(textModel.getValue(), value, `Undo operation for ${MarkdownButtonType[type]} with multiple line selection failed`);

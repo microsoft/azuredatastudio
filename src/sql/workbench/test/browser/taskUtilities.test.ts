@@ -46,7 +46,7 @@ suite('TaskUtilities', function () {
 		// If I call getCurrentGlobalConnection, it should return the expected database profile
 		let actualProfile = TaskUtilities.getCurrentGlobalConnection(mockObjectExplorerService.object, mockConnectionManagementService.object, mockWorkbenchEditorService.object);
 		assert.strictEqual(actualProfile.databaseName, dbName);
-		assert.notEqual(actualProfile.id, serverProfile.id);
+		assert.notStrictEqual(actualProfile.id, serverProfile.id);
 		// Other connection attributes still match
 		assert.strictEqual(actualProfile.authenticationType, serverProfile.authenticationType);
 		assert.strictEqual(actualProfile.password, serverProfile.password);

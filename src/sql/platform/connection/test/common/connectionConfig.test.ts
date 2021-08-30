@@ -401,11 +401,11 @@ suite('ConnectionConfig', () => {
 		allConnections.forEach(connection => {
 			let userConnection = testConnections.find(u => u.options['serverName'] === connection.serverName);
 			if (userConnection !== undefined) {
-				assert.notEqual(connection.id, connection.getOptionsKey());
+				assert.notStrictEqual(connection.id, connection.getOptionsKey());
 				assert.ok(!!connection.id);
 			} else {
 				let workspaceConnection = workspaceConnections.find(u => u.options['serverName'] === connection.serverName);
-				assert.notEqual(connection.id, connection.getOptionsKey());
+				assert.notStrictEqual(connection.id, connection.getOptionsKey());
 				assert.strictEqual(workspaceConnection!.id, connection.id);
 			}
 		});

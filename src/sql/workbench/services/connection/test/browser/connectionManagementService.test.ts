@@ -299,7 +299,7 @@ suite('SQL ConnectionManagementService tests', () => {
 		await connect(params.input.uri);
 		let saveConnection = connectionManagementService.getConnectionProfile(params.input.uri);
 
-		assert.notEqual(saveConnection, undefined, `profile was not added to the connections`);
+		assert.notStrictEqual(saveConnection, undefined, `profile was not added to the connections`);
 		assert.strictEqual(saveConnection.serverName, connectionProfile.serverName, `Server names are different`);
 		await connectionManagementService.showConnectionDialog(params);
 		verifyShowConnectionDialog(connectionProfile, params.connectionType, params.input.uri, false);
@@ -372,7 +372,7 @@ suite('SQL ConnectionManagementService tests', () => {
 
 		await connect(uri, options);
 		verifyOptions(options);
-		assert.notEqual(paramsInOnConnectSuccess, undefined);
+		assert.notStrictEqual(paramsInOnConnectSuccess, undefined);
 		assert.strictEqual(paramsInOnConnectSuccess.connectionType, options.params.connectionType);
 	});
 
