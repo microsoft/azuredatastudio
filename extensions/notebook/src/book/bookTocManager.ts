@@ -346,7 +346,7 @@ export class BookTocManager implements IBookTocManager {
 			const movedSections = await this.traverseSections(files);
 			this.newSection.sections = movedSections;
 			this._modifiedDirectory.add(path.dirname(section.book.contentPath));
-			this.cleanUp(path.dirname(section.book.contentPath));
+			await this.cleanUp(path.dirname(section.book.contentPath));
 		}
 
 		if (bookItem.book.version === BookVersion.v1) {

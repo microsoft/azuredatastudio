@@ -41,7 +41,7 @@ describe('Github Remote Book', function () {
 			browserDownloadUrl: vscode.Uri.parse('https://github.com/microsoft/test/releases/download/v1/CU-1.0-EN.zip'),
 		};
 		let remoteLocation = loc.onGitHub;
-		controller.setRemoteBook(releaseURL, remoteLocation, asset);
+		await controller.setRemoteBook(releaseURL, remoteLocation, asset);
 		should(controller.model.remoteBook).not.null();
 		should(controller.model.remoteBook instanceof GitHubRemoteBook).be.true();
 		let book = model.remoteBook as GitHubRemoteBook;
@@ -62,7 +62,7 @@ describe('Github Remote Book', function () {
 		let remoteLocation = loc.onGitHub;
 		const createCopySpy = sinon.spy(GitHubRemoteBook.prototype, 'createLocalCopy');
 		const setPathSpy = sinon.spy(RemoteBook.prototype, 'setLocalPath');
-		controller.setRemoteBook(releaseURL, remoteLocation, asset);
+		await controller.setRemoteBook(releaseURL, remoteLocation, asset);
 		should(createCopySpy.calledOnce).be.true();
 		should(setPathSpy.calledOnce).be.true();
 	});
@@ -79,7 +79,7 @@ describe('Github Remote Book', function () {
 			browserDownloadUrl: vscode.Uri.parse('https://github.com/microsoft/test/releases/download/v1/CU-1.0-EN.zip'),
 		};
 		let remoteLocation = loc.onGitHub;
-		controller.setRemoteBook(releaseURL, remoteLocation, asset);
+		await controller.setRemoteBook(releaseURL, remoteLocation, asset);
 
 		model.remoteBook.localPath = vscode.Uri.file(os.tmpdir());
 		let setPathStub = sinon.stub(GitHubRemoteBook.prototype, 'setLocalPath');

@@ -1,0 +1,8 @@
+{
+	"parserOptions": {
+		"project": "./extensions/notebook/tsconfig.json"
+	},
+	"rules": {
+
+	}
+}
