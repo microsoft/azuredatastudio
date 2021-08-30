@@ -150,7 +150,7 @@ suite('commandLineService tests', () => {
 		let contribution = getCommandLineContribution(connectionManagementService.object, configurationService.object);
 		return contribution.processCommandLine(new TestParsedArgs()).then(() => {
 			connectionManagementService.verifyAll();
-		}, error => { assert.fail(error, null, 'processCommandLine rejected ' + error); });
+		}, error => { assert.fail('processCommandLine rejected ' + error); });
 	});
 
 	test('processCommandLine does nothing if no server name and command name is provided and the configuration \'workbench.showConnectDialogOnStartup\' is set to false, even if registered servers exist', async () => {
@@ -183,7 +183,7 @@ suite('commandLineService tests', () => {
 			await contribution.processCommandLine(new TestParsedArgs());
 			connectionManagementService.verifyAll();
 		} catch (error) {
-			assert.fail(error, null, 'processCommandLine rejected ' + error);
+			assert.fail('processCommandLine rejected ' + error);
 		}
 	});
 
