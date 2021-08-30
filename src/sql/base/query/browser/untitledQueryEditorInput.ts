@@ -49,21 +49,21 @@ export class UntitledQueryEditorInput extends QueryEditorInput implements IUntit
 	}
 
 	override async save(group: GroupIdentifier, options?: ISaveOptions): Promise<IEditorInput | undefined> {
-		let preProcessed = await this.text.save(group, options);
-		let newUri = preProcessed.resource.toString(true);
-		this._results.uri = newUri;
-		await this.notifyConnectionUriChanged(newUri);
-		let newInput = this.instantiationService.createInstance(FileQueryEditorInput, '', (preProcessed as FileEditorInput), this.results);
-		newInput.state.setState(this.state);
-		return newInput;
+		let newEditorInput = await this.text.save(group, options);
+		return this.saveProcess(newEditorInput);
+
 	}
 
 	override async saveAs(group: GroupIdentifier, options?: ISaveOptions): Promise<IEditorInput | undefined> {
-		let preProcessed = await this.text.saveAs(group, options);
-		let newUri = preProcessed.resource.toString(true);
+		let newEditorInput = await this.text.saveAs(group, options);
+		return this.saveProcess(newEditorInput);
+	}
+
+	private async saveProcess(fileEditorInput: IEditorInput): Promise<IEditorInput | undefined> {
+		let newUri = fileEditorInput.resource.toString(true);
 		this._results.uri = newUri;
 		await this.notifyConnectionUriChanged(newUri);
-		let newInput = this.instantiationService.createInstance(FileQueryEditorInput, '', (preProcessed as FileEditorInput), this.results);
+		let newInput = this.instantiationService.createInstance(FileQueryEditorInput, '', (fileEditorInput as FileEditorInput), this.results);
 		newInput.state.setState(this.state);
 		return newInput;
 	}

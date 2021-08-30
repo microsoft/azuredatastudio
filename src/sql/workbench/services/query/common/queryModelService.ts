@@ -49,7 +49,7 @@ export class QueryInfo {
 		this.range = [];
 	}
 
-	public changeUri(newUri: string): void {
+	public set uri(newUri: string) {
 		this.queryRunner.uri = newUri;
 		this.dataService.uri = newUri;
 	}
@@ -416,21 +416,23 @@ export class QueryModelService implements IQueryModelService {
 		}
 	}
 
-	public async notifyConnectionUriChanged(newUri: string, oldUri: string): Promise<void> {
+	public async changeConnectionUri(newUri: string, oldUri: string): Promise<void> {
 		// Get existing query runner
 		let queryRunner = this.internalGetQueryRunner(oldUri);
 		if (!queryRunner) {
 			this._logService.error(`A Query and QueryRunner was not found for '${oldUri}'`);
+			throw new Error(nls.localize('queryModelService.noQueryFoundForUri', 'No Query found for {0}', oldUri));
 		}
 		else if (this._queryInfoMap.has(newUri)) {
 			this._logService.error(`New URI '${newUri}' already has query info associated with it.`);
+			throw new Error(nls.localize('queryModelService.uriAlreadyHasQuery', '{0} already has an existing query', newUri));
 		}
 
-		await queryRunner.notifyConnectionUriChanged(newUri, oldUri);
+		await queryRunner.changeConnectionUri(newUri, oldUri);
 
 		// remove the old key and set new key with same query info as old uri. (Info existence is checked in internalGetQueryRunner)
 		let info = this._queryInfoMap.get(oldUri);
-		info.changeUri(newUri);
+		info.uri = newUri;
 		this._queryInfoMap.set(newUri, info);
 		this._queryInfoMap.delete(oldUri);
 	}

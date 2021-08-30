@@ -943,7 +943,7 @@ declare module 'azdata' {
 
 	export interface QueryProvider {
 		/**
-		 * Change the URI associated with the specified connection.
+		 * Notify clients that the URI for a connection has been changed.
 		 */
 		notifyConnectionUriChanged(newUri: string, oldUri: string): Thenable<void>;
 	}

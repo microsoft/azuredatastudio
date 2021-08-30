@@ -13,6 +13,7 @@ import { IEnvironmentService } from 'vs/platform/environment/common/environment'
 import { join } from 'vs/base/common/path';
 import * as Utils from 'sql/platform/connection/common/utils';
 import * as azdata from 'azdata';
+import * as nls from 'vs/nls';
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
 import { values } from 'vs/base/common/collections';
 
@@ -53,11 +54,13 @@ export class ConnectionStatusManager {
 		let info = this.findConnection(oldId);
 		if (!info) {
 			this._logService.error(`No connection found associated with old URI : '${oldId}'`);
+			throw new Error(nls.localize('connectionStatusManager.noConnectionForUri', 'Could not find connection with uri: {0}', oldId));
 		}
-		info.ownerUri = newId;
 		if (this._connections[newId]) {
 			this._logService.error(`New URI : '${newId}' is already in the connections list.`);
+			throw new Error(nls.localize('connectionStatusManager.uriAlreadyInConnectionsList', 'There is already a connection with uri: {0}', newId));
 		}
+		info.ownerUri = newId;
 		this._connections[newId] = info;
 		delete this._connections[oldId];
 	}
