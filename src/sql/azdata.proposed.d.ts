@@ -929,13 +929,6 @@ declare module 'azdata' {
 		icon?: IconPath | SqlThemeIcon;
 	}
 
-	export interface QueryProvider {
-		/**
-		 * Change the URI associated with the specified connection.
-		 */
-		changeConnectionUri(newUri: string, oldUri: string): Thenable<void>;
-	}
-
 	export interface ObjectMetadata {
 		/*
 		 * Parent object name for subobjects such as triggers, indexes, etc.
@@ -946,5 +939,12 @@ declare module 'azdata' {
 		 * Parent object type name, such as Table, View, etc.
 		 */
 		parentTypeName?: string;
+	}
+
+	export interface QueryProvider {
+		/**
+		 * Change the URI associated with the specified connection.
+		 */
+		changeConnectionUri(newUri: string, oldUri: string): Thenable<void>;
 	}
 }
