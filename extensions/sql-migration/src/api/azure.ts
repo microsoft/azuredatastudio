@@ -312,7 +312,6 @@ export async function getMigrationStatus(account: azdata.Account, subscription: 
 	if (migration.properties) {
 		migrationUpdate.properties.sourceDatabaseName = migration.properties.sourceDatabaseName;
 		migrationUpdate.properties.backupConfiguration = migration.properties.backupConfiguration;
-		migrationUpdate.properties.autoCutoverConfiguration = migration.properties.autoCutoverConfiguration;
 	}
 
 	return migrationUpdate;
