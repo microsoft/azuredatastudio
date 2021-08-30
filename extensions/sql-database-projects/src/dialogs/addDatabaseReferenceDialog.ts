@@ -139,9 +139,9 @@ export class AddDatabaseReferenceDialog {
 			this.updateEnabledInputBoxes();
 
 			if (this.currentReferenceType === ReferenceType.project) {
-				this.projectRadioButton?.focus();
+				await this.projectRadioButton?.focus();
 			} else {
-				this.systemDatabaseRadioButton?.focus();
+				await this.systemDatabaseRadioButton?.focus();
 			}
 
 			this.initDialogComplete?.resolve();
@@ -559,7 +559,7 @@ export class AddDatabaseReferenceDialog {
 		}
 
 		this.exampleUsage!.value = newText;
-		this.exampleUsage?.updateCssStyles({ 'font-style': fontStyle });
+		void this.exampleUsage?.updateCssStyles({ 'font-style': fontStyle });
 	}
 
 	private validSqlCmdVariables(): boolean {

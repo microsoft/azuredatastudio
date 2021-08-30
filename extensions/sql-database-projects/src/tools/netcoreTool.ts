@@ -53,7 +53,7 @@ export class NetCoreTool {
 	public async findOrInstallNetCore(): Promise<boolean> {
 		if ((!this.isNetCoreInstallationPresent || !await this.isNetCoreVersionSupported())) {
 			if (vscode.workspace.getConfiguration(DBProjectConfigurationKey)[NetCoreDoNotAskAgainKey] !== true) {
-				this.showInstallDialog();		// Removing await so that Build and extension load process doesn't wait on user input
+				void this.showInstallDialog();		// Removing await so that Build and extension load process doesn't wait on user input
 			}
 			return false;
 		}
@@ -226,7 +226,7 @@ export class NetCoreTool {
 		outputChannel.show();
 
 		// Add listeners to print stdout and stderr and exit code
-		child.on('exit', (code: number | null, signal: string | null) => {
+		void child.on('exit', (code: number | null, signal: string | null) => {
 			if (code !== null) {
 				outputChannel.appendLine(localize('sqlDatabaseProjects.RunStreamedCommand.ExitedWithCode', "    >>> {0}    … exited with code: {1}", command, code));
 			} else {

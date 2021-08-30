@@ -17,14 +17,14 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined, 
 	try {
 		getAzureFunctionsResult = await azureFunctionsService.getAzureFunctions(uri.fsPath);
 	} catch (e) {
-		vscode.window.showErrorMessage(e);
+		void vscode.window.showErrorMessage(e);
 		return;
 	}
 
 	const azureFunctions = getAzureFunctionsResult.azureFunctions;
 
 	if (azureFunctions.length === 0) {
-		vscode.window.showErrorMessage(constants.noAzureFunctionsInFile);
+		void vscode.window.showErrorMessage(constants.noAzureFunctionsInFile);
 		return;
 	}
 
@@ -89,11 +89,11 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined, 
 		const result = await azureFunctionsService.addSqlBinding(selectedBinding.type, uri.fsPath, azureFunctionName, objectName, connectionStringSetting);
 
 		if (!result.success) {
-			vscode.window.showErrorMessage(result.errorMessage);
+			void vscode.window.showErrorMessage(result.errorMessage);
 			return;
 		}
 	} catch (e) {
-		vscode.window.showErrorMessage(e);
+		void vscode.window.showErrorMessage(e);
 		return;
 	}
 

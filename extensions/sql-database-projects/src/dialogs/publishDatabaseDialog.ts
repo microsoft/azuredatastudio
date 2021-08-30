@@ -146,7 +146,7 @@ export class PublishDatabaseDialog {
 			let formModel = this.formBuilder.component();
 			await view.initializeModel(formModel);
 
-			this.loadProfileTextBox!.focus();
+			await this.loadProfileTextBox!.focus();
 		});
 	}
 
@@ -464,7 +464,7 @@ export class PublishDatabaseDialog {
 			this.sqlCmdVars = { ...this.project.sqlCmdVariables };
 
 			const data = this.convertSqlCmdVarsToTableFormat(this.sqlCmdVars!);
-			(<azdataType.DeclarativeTableComponent>this.sqlCmdVariablesTable)!.updateProperties({
+			await (<azdataType.DeclarativeTableComponent>this.sqlCmdVariablesTable)!.updateProperties({
 				dataValues: data
 			});
 
@@ -489,7 +489,7 @@ export class PublishDatabaseDialog {
 
 			let connectionTextboxValue: string = getConnectionName(connection);
 
-			this.updateConnectionComponents(connectionTextboxValue, this.connectionId);
+			await this.updateConnectionComponents(connectionTextboxValue, this.connectionId);
 
 			// change the database inputbox value to the connection's database if there is one
 			if (connection.options.database && connection.options.database !== constants.master) {
@@ -505,7 +505,7 @@ export class PublishDatabaseDialog {
 
 	private async updateConnectionComponents(connectionTextboxValue: string, connectionId: string) {
 		this.targetConnectionTextBox!.value = connectionTextboxValue;
-		this.targetConnectionTextBox!.updateProperty('title', connectionTextboxValue);
+		await this.targetConnectionTextBox!.updateProperty('title', connectionTextboxValue);
 
 		// populate database dropdown with the databases for this connection
 		if (connectionId) {
@@ -569,7 +569,7 @@ export class PublishDatabaseDialog {
 
 				// show file path in text box and hover text
 				this.loadProfileTextBox!.value = fileUris[0].fsPath;
-				this.loadProfileTextBox!.updateProperty('title', fileUris[0].fsPath);
+				await this.loadProfileTextBox!.updateProperty('title', fileUris[0].fsPath);
 			}
 		});
 
