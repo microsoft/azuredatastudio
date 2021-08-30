@@ -39,11 +39,11 @@ describe('Github Remote Book', function () {
 			format: 'zip',
 			url: vscode.Uri.parse('https://api.github.com/repos/microsoft/test/releases/v1/assets/1'),
 			browserDownloadUrl: vscode.Uri.parse('https://github.com/microsoft/test/releases/download/v1/CU-1.0-EN.zip'),
-		};
+		}
 		let remoteLocation = loc.onGitHub;
 		controller.setRemoteBook(releaseURL, remoteLocation, asset);
 		should(controller.model.remoteBook).not.null();
-		should(controller.model.remoteBook instanceof GitHubRemoteBook).be.true();
+		should(controller.model.remoteBook instanceof GitHubRemoteBook).be.true;
 		let book = model.remoteBook as GitHubRemoteBook;
 		should(book.asset.browserDownloadUrl.toString(false)).equal('https://github.com/microsoft/test/releases/download/v1/CU-1.0-EN.zip');
 	});
@@ -58,13 +58,13 @@ describe('Github Remote Book', function () {
 			format: 'zip',
 			url: vscode.Uri.parse('https://api.github.com/repos/microsoft/test/releases/v1/assets/1'),
 			browserDownloadUrl: vscode.Uri.parse('https://github.com/microsoft/test/releases/download/v1/CU-1.0-EN.zip'),
-		};
+		}
 		let remoteLocation = loc.onGitHub;
 		const createCopySpy = sinon.spy(GitHubRemoteBook.prototype, 'createLocalCopy');
 		const setPathSpy = sinon.spy(RemoteBook.prototype, 'setLocalPath');
 		controller.setRemoteBook(releaseURL, remoteLocation, asset);
-		should(createCopySpy.calledOnce).be.true();
-		should(setPathSpy.calledOnce).be.true();
+		should(createCopySpy.calledOnce).be.true;
+		should(setPathSpy.calledOnce).be.true;
 	});
 
 	it('Should download contents from Github', async function (): Promise<void> {
@@ -77,7 +77,7 @@ describe('Github Remote Book', function () {
 			format: 'zip',
 			url: vscode.Uri.parse('https://api.github.com/repos/microsoft/test/releases/v1/assets/1'),
 			browserDownloadUrl: vscode.Uri.parse('https://github.com/microsoft/test/releases/download/v1/CU-1.0-EN.zip'),
-		};
+		}
 		let remoteLocation = loc.onGitHub;
 		controller.setRemoteBook(releaseURL, remoteLocation, asset);
 
@@ -85,7 +85,7 @@ describe('Github Remote Book', function () {
 		let setPathStub = sinon.stub(GitHubRemoteBook.prototype, 'setLocalPath');
 		setPathStub.callsFake(function() {
 			console.log(`Downloading book in ${model.remoteBook.localPath}`);
-		});
+		})
 		const setExtractSpy = sinon.spy(GitHubRemoteBook.prototype, 'extractFiles');
 		nock('https://github.com')
 				.persist()
@@ -108,7 +108,7 @@ describe('Github Remote Book', function () {
 		nock('https://github.com')
 				.persist()
 				.get('/microsoft/test/releases/download/v1/CU-1.0-EN.zip')
-				.reply(404);
+				.reply(404)
 		const createLocalCopy =  model.remoteBook.createLocalCopy();
 		await should(createLocalCopy).be.rejected();
 	});

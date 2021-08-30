@@ -1280,10 +1280,10 @@
     "@types/request": "^2.48.2",
     "@types/stream-meter": "^0.0.22",
     "@types/through2": "^2.0.34",
+    "chai": "^4.2.0",
     "mocha": "^7.1.1",
     "mocha-junit-reporter": "^1.17.0",
     "mocha-multi-reporters": "^1.1.7",
-    "should": "^13.2.3",
     "typemoq": "^2.1.0",
     "vscodetestcover": "^1.1.0"
   }

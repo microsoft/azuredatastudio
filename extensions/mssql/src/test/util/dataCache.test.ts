@@ -5,7 +5,7 @@
 
 import { DataItemCache } from '../../util/dataCache';
 import 'mocha';
-import * as should from 'should';
+import { should } from 'chai'; should();
 import * as TypeMoq from 'typemoq';
 
 describe('DataItemCache', function (): void {
@@ -22,16 +22,17 @@ describe('DataItemCache', function (): void {
 	});
 
 	it('Should be initialized empty', function (): void {
-		should(dataItemCache).not.have.property('cachedItem').and.be.undefined();
+		dataItemCache.should.have.property('cachedItem').and.be.undefined;
 	});
 
 	it('Should be initialized as expired', function (): void {
-		should(dataItemCache.isCacheExpired()).be.true();
+		dataItemCache.isCacheExpired().should.be.true;
 	});
 
 	it('Should not be expired immediately after first data fetch', async function (): Promise<void> {
 		await dataItemCache.getData();
-		should(dataItemCache.isCacheExpired()).be.false();
+
+		dataItemCache.isCacheExpired().should.be.false;
 	});
 
 	it('Should return expected cached item from getValue()', async function (): Promise<void> {
@@ -44,7 +45,7 @@ describe('DataItemCache', function (): void {
 		await dataItemCache.getData();
 		await sleep(1.1);
 
-		should(dataItemCache.isCacheExpired()).be.true();
+		dataItemCache.isCacheExpired().should.be.true;
 	});
 
 	it('Should call fetch function once for consecutive getValue() calls prior to expiration', async function (): Promise<void> {

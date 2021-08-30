@@ -7,7 +7,7 @@ import * as should from 'should';
 import * as TypeMoq from 'typemoq';
 import * as stream from 'stream';
 import * as cp from 'child_process';
-import * as si from '../../jupyter/serverInstance';
+import * as si from '../../jupyter/serverInstance'
 import 'mocha';
 import * as sinon from 'sinon';
 import * as utils from '../../common/utils';

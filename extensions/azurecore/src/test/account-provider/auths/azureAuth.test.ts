@@ -8,7 +8,7 @@ import * as TypeMoq from 'typemoq';
 import 'mocha';
 import { AzureAuthCodeGrant } from '../../../account-provider/auths/azureAuthCodeGrant';
 import { Token, TokenClaims, AccessToken, RefreshToken, OAuthTokenResponse, TokenPostData } from '../../../account-provider/auths/azureAuth';
-import { Tenant, AzureAccount } from 'azurecore';
+import { Tenant, AzureAccount } from 'azurecore'
 import providerSettings from '../../../account-provider/providerSettings';
 import { AzureResource } from 'azdata';
 import { AxiosResponse } from 'axios';
