@@ -316,12 +316,12 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 		return this._resolveProvider<azdata.QueryProvider>(handle).disposeQuery(ownerUri);
 	}
 
-	override $notifyConnectionUriChanged(handle: number, newUri: string, oldUri: string): Thenable<void> {
+	override $connectionUriChanged(handle: number, newUri: string, oldUri: string): Thenable<void> {
 		if (this.uriTransformer) {
 			newUri = this._getTransformedUri(newUri, this.uriTransformer.transformOutgoing);
 			oldUri = this._getTransformedUri(oldUri, this.uriTransformer.transformOutgoing);
 		}
-		return this._resolveProvider<azdata.QueryProvider>(handle).notifyConnectionUriChanged(newUri, oldUri);
+		return this._resolveProvider<azdata.QueryProvider>(handle).connectionUriChanged(newUri, oldUri);
 	}
 
 	override $onQueryComplete(handle: number, result: azdata.QueryExecuteCompleteNotificationResult): void {

@@ -29,7 +29,7 @@ function createContext(): TestContext {
 			parseSyntax: () => { return Promise.reject(); },
 			getQueryRows: () => { return Promise.reject(); },
 			disposeQuery: () => { return Promise.reject(); },
-			notifyConnectionUriChanged: () => { return Promise.reject(); },
+			connectionUriChanged: () => { return Promise.reject(); },
 			saveResults: () => { return Promise.reject(); },
 			setQueryExecutionOptions: () => { return Promise.reject(); },
 			registerOnQueryComplete: () => { return Promise.reject(); },

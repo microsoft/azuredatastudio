@@ -87,7 +87,7 @@ export interface IQueryRequestHandler {
 	parseSyntax(ownerUri: string, query: string): Promise<azdata.SyntaxParseResult>;
 	getQueryRows(rowData: azdata.QueryExecuteSubsetParams): Promise<azdata.QueryExecuteSubsetResult>;
 	disposeQuery(ownerUri: string): Promise<void>;
-	notifyConnectionUriChanged(newUri: string, oldUri: string): Promise<void>;
+	connectionUriChanged(newUri: string, oldUri: string): Promise<void>;
 	saveResults(requestParams: azdata.SaveResultsRequestParams): Promise<azdata.SaveResultRequestResult>;
 	setQueryExecutionOptions(ownerUri: string, options: azdata.QueryExecutionOptions): Promise<void>;
 
@@ -273,7 +273,7 @@ export class QueryManagementService implements IQueryManagementService {
 		this._queryRunners.set(newUri, item);
 		this._queryRunners.delete(oldUri);
 		return this._runAction(oldUri, (runner) => {
-			return runner.notifyConnectionUriChanged(newUri, oldUri);
+			return runner.connectionUriChanged(newUri, oldUri);
 		});
 	}
 

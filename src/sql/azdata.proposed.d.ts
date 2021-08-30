@@ -945,6 +945,6 @@ declare module 'azdata' {
 		/**
 		 * Notify clients that the URI for a connection has been changed.
 		 */
-		notifyConnectionUriChanged(newUri: string, oldUri: string): Thenable<void>;
+		connectionUriChanged(newUri: string, oldUri: string): Thenable<void>;
 	}
 }

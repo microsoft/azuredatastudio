@@ -136,7 +136,7 @@ export class QueryProvider {
 			}]);
 		};
 
-		let notifyConnectionUriChanged = (ownerUri: string): Thenable<void> => {
+		let connectionUriChanged = (ownerUri: string): Thenable<void> => {
 			self._sharedServiceProxy.notify(constants.connectionUriChangedNotification, [{
 				ownerUri: ownerUri
 			}]);
@@ -219,7 +219,7 @@ export class QueryProvider {
 			deleteRow,
 			disposeEdit,
 			disposeQuery,
-			notifyConnectionUriChanged,
+			connectionUriChanged,
 			getEditRows,
 			getQueryRows,
 			setQueryExecutionOptions,
