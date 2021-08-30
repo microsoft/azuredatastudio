@@ -7,7 +7,7 @@ The Azure SQL Migration extension in Azure Data Studio brings together a simplif
 - The flexibility to create and configure a self-hosted integration runtime to provide your own compute for access to source SQL Server and backups in your on-premises environment.
 
 ## Installation
-From Azure Data Studio marketplace, install the latest version of “Azure SQL Migration” extension and launch the wizard as shown below.
+From Azure Data Studio extension gallery, install the latest version of “Azure SQL Migration” extension and launch the wizard as shown below.
 
 ![migration-animation](https://raw.githubusercontent.com/microsoft/azuredatastudio/main/extensions/sql-migration/images/ADSMigration.gif)
 
@@ -20,6 +20,7 @@ From Azure Data Studio marketplace, install the latest version of “Azure SQL M
 ## Getting started
 Refer to [Migrate databases using the Azure SQL Migration extension for Azure Data Studio](https://docs.microsoft.com/azure/dms/migration-using-azure-data-studio) for detailed documentation on capabilities and concepts.
 
+## Features
 ## Azure SQL targets
 The Azure SQL Migration extension supports database target readiness assessments and migrations to the following Azure SQL targets.
 - [SQL on Azure Virtual Machines (Windows)](https://docs.microsoft.com/azure/azure-sql/virtual-machines/windows/sql-server-on-azure-vm-iaas-what-is-overview)
@@ -31,9 +32,17 @@ The following migration modes are supported for the corresponding Azure SQL targ
 - Online - The source SQL Server database is available for read and write activity while database backups are continuously restored on target Azure SQL. Application downtime is limited to duration for the cutover at the end of migration.
 - Offline - The source database cannot be used for write activity while database backup files are restored on the target Azure SQL database. Application downtime persists through the start until the completion of the migration process.
 
+## Support matrix
+Azure SQL target | Migration mode
+| :--- | :---
+Azure SQL Managed Instance | [Online](https://docs.microsoft.com/azure/dms/tutorial-sql-server-managed-instance-online-ads)
+Azure SQL Managed Instance | [Offline](https://docs.microsoft.com/azure/dms/tutorial-sql-server-managed-instance-offline-ads)
+SQL Server on Azure VM | [Online](https://docs.microsoft.com/azure/dms/tutorial-sql-server-azure-vm-online-ads)
+SQL Server on Azure VM | [Offline](https://docs.microsoft.com/azure/dms/tutorial-sql-server-azure-vm-offline-ads)
+
 
 ## Need assistance or have questions/feedback
-Refer to [Get help from Microsoft support](https://docs.microsoft.com/en-us/sql/azure-data-studio/extensions/azure-sql-migration-extension#get-help-from-microsoft-support).
+Please reach out to DMSFeedback@microsoft.com
 
 
 ## Code of Conduct
