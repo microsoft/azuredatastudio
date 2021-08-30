@@ -283,7 +283,14 @@ function packageTask(platform, arch, sourceFolderName, destinationFolderName, op
 			.pipe(jsFilter)
 			.pipe(util.rewriteSourceMappingURL(sourceMappingURLBase))
 			.pipe(jsFilter.restore)
-			.pipe(createAsar(path.join(process.cwd(), 'node_modules'), ['**/*.node', '**/vscode-ripgrep/bin/*', '**/node-pty/build/Release/*', '**/*.wasm'], 'node_modules.asar'));
+			.pipe(createAsar(path.join(process.cwd(), 'node_modules'), [
+				'**/*.node',
+				'**/vscode-ripgrep/bin/*',
+				'**/node-pty/build/Release/*',
+				'**/node-pty/lib/worker/conoutSocketWorker.js',
+				'**/node-pty/lib/shared/conout.js',
+				'**/*.wasm'
+			], 'node_modules.asar'));
 
 		let all = es.merge(
 			packageJsonStream,
@@ -439,8 +446,6 @@ BUILD_TARGETS.forEach(buildTarget => {
 	}
 });
 
-// Transifex Localizations
-
 const innoSetupConfig = {
 	'zh-cn': { codePage: 'CP936', defaultInfo: { name: 'Simplified Chinese', id: '$0804', } },
 	'zh-tw': { codePage: 'CP950', defaultInfo: { name: 'Traditional Chinese', id: '$0404' } },
@@ -455,6 +460,8 @@ const innoSetupConfig = {
 	'hu': { codePage: 'CP1250' },
 	'tr': { codePage: 'CP1254' }
 };
+
+// Transifex Localizations
 
 const apiHostname = process.env.TRANSIFEX_API_URL;
 const apiName = process.env.TRANSIFEX_API_NAME;
@@ -491,7 +498,7 @@ const vscodeTranslationsExport = task.define(
 		function () {
 			const pathToMetadata = './out-vscode/nls.metadata.json';
 			const pathToExtensions = '.build/extensions/*';
-			const pathToSetup = 'build/win32/**/{Default.isl,messages.en.isl}';
+			const pathToSetup = 'build/win32/i18n/messages.en.isl';
 
 			return es.merge(
 				gulp.src(pathToMetadata).pipe(i18n.createXlfFilesForCoreBundle()),

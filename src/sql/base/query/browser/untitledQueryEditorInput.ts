@@ -13,15 +13,16 @@ import { IResolvedTextEditorModel } from 'vs/editor/common/services/resolverServ
 import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
 import { IUntitledTextEditorModel } from 'vs/workbench/services/untitled/common/untitledTextEditorModel';
 import { EncodingMode } from 'vs/workbench/services/textfile/common/textfiles';
-import { GroupIdentifier, ISaveOptions, IEditorInput } from 'vs/workbench/common/editor';
-import { FileQueryEditorInput } from 'sql/workbench/contrib/query/common/fileQueryEditorInput';
+import { GroupIdentifier, ISaveOptions, IEditorInput, EditorInputCapabilities } from 'vs/workbench/common/editor';
+import { FileQueryEditorInput } from 'sql/workbench/contrib/query/browser/fileQueryEditorInput';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
+import { FileEditorInput } from 'vs/workbench/contrib/files/browser/editors/fileEditorInput';
+import { UNTITLED_QUERY_EDITOR_TYPEID } from 'sql/workbench/common/constants';
 import { IUntitledQueryEditorInput } from 'sql/base/query/common/untitledQueryEditorInput';
 
 export class UntitledQueryEditorInput extends QueryEditorInput implements IUntitledQueryEditorInput {
 
-	public static readonly ID = 'workbench.editorInput.untitledQueryInput';
+  public static readonly ID = UNTITLED_QUERY_EDITOR_TYPEID;
 
 	constructor(
 		description: string | undefined,
@@ -87,8 +88,8 @@ export class UntitledQueryEditorInput extends QueryEditorInput implements IUntit
 		return this.text.setEncoding(encoding, mode);
 	}
 
-	override isUntitled(): boolean {
+	override get capabilities(): EditorInputCapabilities {
 		// Subclasses need to explicitly opt-in to being untitled.
-		return true;
+		return EditorInputCapabilities.Untitled;
 	}
 }

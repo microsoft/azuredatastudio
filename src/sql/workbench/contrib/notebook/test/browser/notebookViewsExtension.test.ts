@@ -132,8 +132,8 @@ suite('NotebookViews', function (): void {
 	function setupServices() {
 		mockSessionManager = TypeMoq.Mock.ofType(SessionManager);
 		notebookManagers[0].sessionManager = mockSessionManager.object;
-		notificationService = TypeMoq.Mock.ofType(TestNotificationService, TypeMoq.MockBehavior.Loose);
-		capabilitiesService = TypeMoq.Mock.ofType(TestCapabilitiesService);
+		notificationService = TypeMoq.Mock.ofType<INotificationService>(TestNotificationService, TypeMoq.MockBehavior.Loose);
+		capabilitiesService = TypeMoq.Mock.ofType<ICapabilitiesService>(TestCapabilitiesService);
 		memento = TypeMoq.Mock.ofType(Memento, TypeMoq.MockBehavior.Loose, '');
 		memento.setup(x => x.getMemento(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => void 0);
 		queryConnectionService = TypeMoq.Mock.ofType(TestConnectionManagementService, TypeMoq.MockBehavior.Loose, memento.object, undefined, new TestStorageService());

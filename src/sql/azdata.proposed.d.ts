@@ -934,5 +934,17 @@ declare module 'azdata' {
 		 * Change the URI associated with the specified connection.
 		 */
 		changeConnectionUri(newUri: string, oldUri: string): Thenable<void>;
+  }
+  
+	export interface ObjectMetadata {
+		/*
+		 * Parent object name for subobjects such as triggers, indexes, etc.
+		 */
+		parentName?: string;
+
+		/*
+		 * Parent object type name, such as Table, View, etc.
+		 */
+		parentTypeName?: string;
 	}
 }

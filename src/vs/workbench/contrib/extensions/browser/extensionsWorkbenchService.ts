@@ -303,18 +303,12 @@ ${this.description}
 			return this.galleryService.getChangelog(this.gallery, token);
 		}
 
-		const changelogUrl = this.local && this.local.changelogUrl;
-
-		if (!changelogUrl) {
-			if (this.type === ExtensionType.System) {
-				// {{SQL CARBON EDIT}}
-				return Promise.resolve('Please check the [Azure Data Studio Release Notes](command:update.showCurrentReleaseNotes) for changes to the built-in extensions.');
-			}
-
-			return Promise.reject(new Error('not available'));
+		if (this.type === ExtensionType.System) {
+			// {{SQL CARBON EDIT}}
+			return Promise.resolve('Please check the [Azure Data Studio Release Notes](command:update.showCurrentReleaseNotes) for changes to the built-in extensions.');
 		}
 
-		return this.fileService.readFile(changelogUrl).then(content => content.value.toString());
+		return Promise.reject(new Error('not available'));
 	}
 
 	get dependencies(): string[] {
@@ -591,8 +585,8 @@ export class ExtensionsWorkbenchService extends Disposable implements IExtension
 			if (e.affectsConfiguration(AutoUpdateConfigurationKey)) {
 				// {{SQL CARBON EDIT}}
 				// if (this.isAutoUpdateEnabled()) {
-				//	this.checkForUpdates();
-				//}
+				// 	this.checkForUpdates();
+				// }
 			}
 			if (e.affectsConfiguration(AutoCheckUpdatesConfigurationKey)) {
 				if (this.isAutoCheckUpdatesEnabled()) {
@@ -986,8 +980,8 @@ export class ExtensionsWorkbenchService extends Disposable implements IExtension
 		// This is the execution path for install/update extension from marketplace.
 		// Check both the vscode version and azure data studio version
 		// The check is added here because we want to fail fast instead of downloading the VSIX and then fail.
-		if (gallery.properties.engine && (!isEngineValid(gallery.properties.engine, this.productService.vscodeVersion)
-			|| (gallery.properties.azDataEngine && !isEngineValid(gallery.properties.azDataEngine, this.productService.version)))) {
+		if (gallery.properties.engine && (!isEngineValid(gallery.properties.engine, this.productService.vscodeVersion, this.productService.date)
+			|| (gallery.properties.azDataEngine && !isEngineValid(gallery.properties.azDataEngine, this.productService.version, this.productService.date)))) {
 			return Promise.reject(new Error(nls.localize('incompatible2', "Unable to install version '{2}' of extension '{0}' as it is not compatible with Azure Data Studio '{1}'.", extension.gallery!.identifier.id, this.productService.version, gallery.version)));
 		}
 

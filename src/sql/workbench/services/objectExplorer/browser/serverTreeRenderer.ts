@@ -160,6 +160,7 @@ export class ServerTreeRenderer implements IRenderer {
 			templateData.icon.classList.add(iconLowerCaseName);
 		}
 
+		iconRenderer.removeIcon(templateData.icon);
 		if (treeNode.icon && !instanceOfSqlThemeIcon(treeNode.icon)) {
 			iconRenderer.putIcon(templateData.icon, treeNode.icon);
 		}

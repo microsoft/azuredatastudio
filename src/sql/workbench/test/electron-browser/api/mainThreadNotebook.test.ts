@@ -30,7 +30,7 @@ suite('MainThreadNotebook Tests', () => {
 	let providerId = 'TestProvider';
 
 	setup(() => {
-		mockProxy = TypeMoq.Mock.ofType(ExtHostNotebookStub);
+		mockProxy = TypeMoq.Mock.ofType<ExtHostNotebookShape>(ExtHostNotebookStub);
 		let extContext = <IExtHostContext>{
 			getProxy: proxyType => mockProxy.object
 		};

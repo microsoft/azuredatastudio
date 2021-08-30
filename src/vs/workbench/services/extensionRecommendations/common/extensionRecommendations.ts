@@ -48,6 +48,7 @@ export interface IExtensionRecommendationsService {
 
 	getRecommendedExtensionsByScenario(scenarioType: string): Promise<IExtensionRecommendation[]>; // {{SQL CARBON EDIT}}
 	promptRecommendedExtensionsByScenario(scenarioType: string): void; // {{SQL CARBON EDIT}}
+	getLanguageRecommendations(): string[];
 }
 
 export type IgnoredRecommendationChangeNotification = {

@@ -113,18 +113,6 @@ export function mixin(destination: any, source: any, overwrite: boolean = true):
 	return destination;
 }
 
-/**
- * @deprecated ES6
- */
-export function assign<T>(destination: T): T;
-export function assign<T, U>(destination: T, u: U): T & U;
-export function assign<T, U, V>(destination: T, u: U, v: V): T & U & V;
-export function assign<T, U, V, W>(destination: T, u: U, v: V, w: W): T & U & V & W;
-export function assign(destination: any, ...sources: any[]): any {
-	sources.forEach(source => Object.keys(source).forEach(key => destination[key] = source[key]));
-	return destination;
-}
-
 export function equals(one: any, other: any): boolean {
 	if (one === other) {
 		return true;
@@ -237,4 +225,14 @@ export function getCaseInsensitive(target: obj, key: string): any {
 	const lowercaseKey = key.toLowerCase();
 	const equivalentKey = Object.keys(target).find(k => k.toLowerCase() === lowercaseKey);
 	return equivalentKey ? target[equivalentKey] : target[key];
+}
+
+export function filter(obj: obj, predicate: (key: string, value: any) => boolean): obj {
+	const result = Object.create(null);
+	for (const key of Object.keys(obj)) {
+		if (predicate(key, obj[key])) {
+			result[key] = obj[key];
+		}
+	}
+	return result;
 }

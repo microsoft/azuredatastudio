@@ -7,7 +7,7 @@ import { localize } from 'vs/nls';
 import { IDisposable, Disposable } from 'vs/base/common/lifecycle';
 import { Emitter } from 'vs/base/common/event';
 import { URI } from 'vs/base/common/uri';
-import { EditorInput, GroupIdentifier, IRevertOptions, ISaveOptions, IEditorInput } from 'vs/workbench/common/editor';
+import { GroupIdentifier, IRevertOptions, ISaveOptions, IEditorInput, EditorInputCapabilities } from 'vs/workbench/common/editor';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
 import { IConnectionManagementService, IConnectableInput, INewConnectionParams, RunQueryOnConnectionMode } from 'sql/platform/connection/common/connectionManagement';
@@ -15,10 +15,10 @@ import { QueryResultsInput } from 'sql/workbench/common/editor/query/queryResult
 import { IQueryModelService } from 'sql/workbench/services/query/common/queryModel';
 
 import { ExecutionPlanOptions } from 'azdata';
-import { startsWith } from 'vs/base/common/strings';
 import { IRange } from 'vs/editor/common/core/range';
 import { AbstractTextResourceEditorInput } from 'vs/workbench/common/editor/textResourceEditorInput';
 import { IQueryEditorConfiguration } from 'sql/platform/query/common/query';
+import { EditorInput } from 'vs/workbench/common/editor/editorInput';
 
 const MAX_SIZE = 13;
 
@@ -191,8 +191,8 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 		return this._text.revert(group, options);
 	}
 
-	public override isReadonly(): boolean {
-		return false;
+	public override get capabilities(): EditorInputCapabilities {
+		return EditorInputCapabilities.None;
 	}
 
 	public override matches(otherInput: any): boolean {
@@ -333,6 +333,6 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 	}
 
 	public get isSharedSession(): boolean {
-		return !!(this.uri && startsWith(this.uri, 'vsls:'));
+		return !!(this.uri && this.uri.startsWith('vsls:'));
 	}
 }
