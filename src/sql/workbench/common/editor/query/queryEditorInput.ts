@@ -107,12 +107,12 @@ export class QueryEditorState extends Disposable {
 		return this._isSqlCmdMode;
 	}
 
-	public setState(oldState: QueryEditorState): void {
-		this.connected = oldState.connected;
-		this.connecting = oldState.connecting;
-		this.resultsVisible = oldState.resultsVisible;
-		this.executing = oldState.executing;
-		this.isSqlCmdMode = oldState.isSqlCmdMode;
+	public setState(newState: QueryEditorState): void {
+		this.connected = newState.connected;
+		this.connecting = newState.connecting;
+		this.resultsVisible = newState.resultsVisible;
+		this.executing = newState.executing;
+		this.isSqlCmdMode = newState.isSqlCmdMode;
 	}
 }
 

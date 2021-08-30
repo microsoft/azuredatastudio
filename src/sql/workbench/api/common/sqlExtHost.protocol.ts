@@ -194,7 +194,7 @@ export abstract class ExtHostDataProtocolShape {
 	$disposeQuery(handle: number, ownerUri: string): Thenable<void> { throw ni(); }
 
 	/**
-	 * Changes the uri associated with a query
+	 * Notifies the client that the URI associated with a connection has changed
 	 */
 	$connectionUriChanged(handle: number, newUri: string, oldUri: string): Thenable<void> { throw ni(); }
 
