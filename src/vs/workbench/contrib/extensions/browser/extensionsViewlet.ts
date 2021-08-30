@@ -22,7 +22,7 @@ import { InstallLocalExtensionsInRemoteAction, InstallRemoteExtensionsInLocalAct
 import { IExtensionManagementService } from 'vs/platform/extensionManagement/common/extensionManagement';
 import { IWorkbenchExtensionEnablementService, IExtensionManagementServerService, IExtensionManagementServer } from 'vs/workbench/services/extensionManagement/common/extensionManagement';
 import { ExtensionsInput } from 'vs/workbench/contrib/extensions/common/extensionsInput';
-import { ExtensionsListView, EnabledExtensionsView, DisabledExtensionsView, RecommendedExtensionsView, WorkspaceRecommendedExtensionsView, BuiltInFeatureExtensionsView, BuiltInThemesExtensionsView, BuiltInProgrammingLanguageExtensionsView, ServerInstalledExtensionsView, DefaultRecommendedExtensionsView, UntrustedWorkspaceUnsupportedExtensionsView, UntrustedWorkspacePartiallySupportedExtensionsView, VirtualWorkspaceUnsupportedExtensionsView, VirtualWorkspacePartiallySupportedExtensionsView } from 'vs/workbench/contrib/extensions/browser/extensionsViews';
+import { ExtensionsListView, EnabledExtensionsView, DisabledExtensionsView, RecommendedExtensionsView, WorkspaceRecommendedExtensionsView, BuiltInFeatureExtensionsView, BuiltInThemesExtensionsView, BuiltInProgrammingLanguageExtensionsView, ServerInstalledExtensionsView, DefaultRecommendedExtensionsView, TrustRequiredOnStartExtensionsView, TrustRequiredOnDemandExtensionsView } from 'vs/workbench/contrib/extensions/browser/extensionsViews';
 import { IProgressService, ProgressLocation } from 'vs/platform/progress/common/progress';
 import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
 import Severity from 'vs/base/common/severity';
@@ -54,13 +54,12 @@ import { DragAndDropObserver } from 'vs/workbench/browser/dnd';
 import { URI } from 'vs/base/common/uri';
 import { SIDE_BAR_DRAG_AND_DROP_BACKGROUND } from 'vs/workbench/common/theme';
 import { IWorkbenchEnvironmentService } from 'vs/workbench/services/environment/common/environmentService';
-import { VirtualWorkspaceContext, WorkbenchStateContext } from 'vs/workbench/browser/contextkeys';
+import { WorkbenchStateContext } from 'vs/workbench/browser/contextkeys';
 import { ICommandService } from 'vs/platform/commands/common/commands';
-import { isIOS, isWeb } from 'vs/base/common/platform';
+import { isWeb } from 'vs/base/common/platform';
 import { installLocalInRemoteIcon } from 'vs/workbench/contrib/extensions/browser/extensionsIcons';
 import { registerAction2, Action2, MenuId } from 'vs/platform/actions/common/actions';
 import * as locConstants from 'sql/base/common/locConstants'; // {{SQL CARBON EDIT}}
-import { WorkspaceTrustContext } from 'vs/workbench/services/workspaces/common/workspaceTrust';
 
 const SearchMarketplaceExtensionsContext = new RawContextKey<boolean>('searchMarketplaceExtensions', false);
 const SearchIntalledExtensionsContext = new RawContextKey<boolean>('searchInstalledExtensions', false);
@@ -71,7 +70,8 @@ const HasInstalledExtensionsContext = new RawContextKey<boolean>('hasInstalledEx
 const HasInstalledWebExtensionsContext = new RawContextKey<boolean>('hasInstalledWebExtensions', false);
 const BuiltInExtensionsContext = new RawContextKey<boolean>('builtInExtensions', false);
 const SearchBuiltInExtensionsContext = new RawContextKey<boolean>('searchBuiltInExtensions', false);
-const SearchUnsupportedWorkspaceExtensionsContext = new RawContextKey<boolean>('searchUnsupportedWorkspaceExtensions', false);
+const TrustRequiredExtensionsContext = new RawContextKey<boolean>('trustRequiredExtensions', false);
+const SearchTrustRequiredExtensionsContext = new RawContextKey<boolean>('searchTrustRequiredExtensions', false);
 const RecommendedExtensionsContext = new RawContextKey<boolean>('recommendedExtensions', false);
 
 export class ExtensionsViewletViewsContribution implements IWorkbenchContribution {
@@ -104,7 +104,7 @@ export class ExtensionsViewletViewsContribution implements IWorkbenchContributio
 		viewDescriptors.push(...this.createBuiltinExtensionsViewDescriptors());
 
 		/* Trust Required extensions views */
-		viewDescriptors.push(...this.createUnsupportedWorkspaceExtensionsViewDescriptors());
+		viewDescriptors.push(...this.createTrustRequiredExtensionsViewDescriptors());
 
 		Registry.as<IViewsRegistry>(Extensions.ViewsRegistry).registerViews(viewDescriptors, this.container);
 	}
@@ -359,13 +359,13 @@ export class ExtensionsViewletViewsContribution implements IWorkbenchContributio
 		});
 
 		/*
-		 * View used for searching workspace unsupported extensions
+		 * View used for searching trustRequired extensions
 		 */
 		viewDescriptors.push({
-			id: 'workbench.views.extensions.searchWorkspaceUnsupported',
-			name: localize('workspaceUnsupported', "Workspace Unsupported"),
+			id: 'workbench.views.extensions.searchTrustRequired',
+			name: localize('trustRequired', "Trust Required"),
 			ctorDescriptor: new SyncDescriptor(ExtensionsListView, [{}]),
-			when: ContextKeyExpr.and(ContextKeyExpr.has('searchWorkspaceUnsupportedExtensions')),
+			when: ContextKeyExpr.and(ContextKeyExpr.has('searchTrustRequiredExtensions')),
 		});
 
 		return viewDescriptors;
@@ -420,35 +420,21 @@ export class ExtensionsViewletViewsContribution implements IWorkbenchContributio
 		return viewDescriptors;
 	}
 
-	private createUnsupportedWorkspaceExtensionsViewDescriptors(): IViewDescriptor[] {
+	private createTrustRequiredExtensionsViewDescriptors(): IViewDescriptor[] {
 		const viewDescriptors: IViewDescriptor[] = [];
 
 		viewDescriptors.push({
-			id: 'workbench.views.extensions.untrustedUnsupportedExtensions',
-			name: localize('untrustedUnsupportedExtensions', "Disabled in Restricted Mode"),
-			ctorDescriptor: new SyncDescriptor(UntrustedWorkspaceUnsupportedExtensionsView, [{}]),
-			when: ContextKeyExpr.and(WorkspaceTrustContext.IsTrusted.negate(), SearchUnsupportedWorkspaceExtensionsContext),
+			id: 'workbench.views.extensions.trustRequiredOnStartExtensions',
+			name: localize('trustRequiredOnStartExtensions', "Trust Required To Enable"),
+			ctorDescriptor: new SyncDescriptor(TrustRequiredOnStartExtensionsView, [{}]),
+			when: ContextKeyExpr.has('trustRequiredExtensions'),
 		});
 
 		viewDescriptors.push({
-			id: 'workbench.views.extensions.untrustedPartiallySupportedExtensions',
-			name: localize('untrustedPartiallySupportedExtensions', "Limited in Restricted Mode"),
-			ctorDescriptor: new SyncDescriptor(UntrustedWorkspacePartiallySupportedExtensionsView, [{}]),
-			when: ContextKeyExpr.and(WorkspaceTrustContext.IsTrusted.negate(), SearchUnsupportedWorkspaceExtensionsContext),
-		});
-
-		viewDescriptors.push({
-			id: 'workbench.views.extensions.virtualUnsupportedExtensions',
-			name: localize('virtualUnsupportedExtensions', "Disabled in Virtual Workspaces"),
-			ctorDescriptor: new SyncDescriptor(VirtualWorkspaceUnsupportedExtensionsView, [{}]),
-			when: ContextKeyExpr.and(VirtualWorkspaceContext, SearchUnsupportedWorkspaceExtensionsContext),
-		});
-
-		viewDescriptors.push({
-			id: 'workbench.views.extensions.virtualPartiallySupportedExtensions',
-			name: localize('virtualPartiallySupportedExtensions', "Limited in Virtual Workspaces"),
-			ctorDescriptor: new SyncDescriptor(VirtualWorkspacePartiallySupportedExtensionsView, [{}]),
-			when: ContextKeyExpr.and(VirtualWorkspaceContext, SearchUnsupportedWorkspaceExtensionsContext),
+			id: 'workbench.views.extensions.trustRequiredOnDemandExtensions',
+			name: localize('trustRequiredOnDemandExtensions', "Trust Required For Features"),
+			ctorDescriptor: new SyncDescriptor(TrustRequiredOnDemandExtensionsView, [{}]),
+			when: ContextKeyExpr.has('trustRequiredExtensions'),
 		});
 
 		return viewDescriptors;
@@ -469,7 +455,8 @@ export class ExtensionsViewPaneContainer extends ViewPaneContainer implements IE
 	private hasInstalledWebExtensionsContextKey: IContextKey<boolean>;
 	private builtInExtensionsContextKey: IContextKey<boolean>;
 	private searchBuiltInExtensionsContextKey: IContextKey<boolean>;
-	private searchWorkspaceUnsupportedExtensionsContextKey: IContextKey<boolean>;
+	private trustRequiredExtensionsContextKey: IContextKey<boolean>;
+	private searchTrustRequiredExtensionsContextKey: IContextKey<boolean>;
 	private recommendedExtensionsContextKey: IContextKey<boolean>;
 
 	private searchDelayer: Delayer<void>;
@@ -505,7 +492,8 @@ export class ExtensionsViewPaneContainer extends ViewPaneContainer implements IE
 		this.sortByContextKey = ExtensionsSortByContext.bindTo(contextKeyService);
 		this.searchMarketplaceExtensionsContextKey = SearchMarketplaceExtensionsContext.bindTo(contextKeyService);
 		this.searchInstalledExtensionsContextKey = SearchIntalledExtensionsContext.bindTo(contextKeyService);
-		this.searchWorkspaceUnsupportedExtensionsContextKey = SearchUnsupportedWorkspaceExtensionsContext.bindTo(contextKeyService);
+		this.trustRequiredExtensionsContextKey = TrustRequiredExtensionsContext.bindTo(contextKeyService);
+		this.searchTrustRequiredExtensionsContextKey = SearchTrustRequiredExtensionsContext.bindTo(contextKeyService);
 		this.searchOutdatedExtensionsContextKey = SearchOutdatedExtensionsContext.bindTo(contextKeyService);
 		this.searchEnabledExtensionsContextKey = SearchEnabledExtensionsContext.bindTo(contextKeyService);
 		this.searchDisabledExtensionsContextKey = SearchDisabledExtensionsContext.bindTo(contextKeyService);
@@ -543,7 +531,6 @@ export class ExtensionsViewPaneContainer extends ViewPaneContainer implements IE
 
 		const header = append(this.root, $('.header'));
 		const placeholder = localize('searchExtensions', "Search Extensions in Marketplace");
-
 		const searchValue = this.searchViewletState['query.value'] ? this.searchViewletState['query.value'] : '';
 
 		this.searchBox = this._register(this.instantiationService.createInstance(SuggestEnabledInput, `${VIEWLET_ID}.searchbox`, header, {
@@ -572,7 +559,7 @@ export class ExtensionsViewPaneContainer extends ViewPaneContainer implements IE
 		this._register(this.searchBox.onShouldFocusResults(() => this.focusListView(), this));
 
 		this._register(this.onDidChangeVisibility(visible => {
-			if (visible && !isIOS) {
+			if (visible) {
 				this.searchBox!.focus();
 			}
 		}));
@@ -624,7 +611,7 @@ export class ExtensionsViewPaneContainer extends ViewPaneContainer implements IE
 	}
 
 	override focus(): void {
-		if (this.searchBox && !isIOS) {
+		if (this.searchBox) {
 			this.searchBox.focus();
 		}
 	}
@@ -698,7 +685,8 @@ export class ExtensionsViewPaneContainer extends ViewPaneContainer implements IE
 		this.searchEnabledExtensionsContextKey.set(ExtensionsListView.isEnabledExtensionsQuery(value));
 		this.searchDisabledExtensionsContextKey.set(ExtensionsListView.isDisabledExtensionsQuery(value));
 		this.searchBuiltInExtensionsContextKey.set(ExtensionsListView.isSearchBuiltInExtensionsQuery(value));
-		this.searchWorkspaceUnsupportedExtensionsContextKey.set(ExtensionsListView.isSearchWorkspaceUnsupportedExtensionsQuery(value));
+		this.trustRequiredExtensionsContextKey.set(ExtensionsListView.isTrustRequiredExtensionsQuery(value));
+		this.searchTrustRequiredExtensionsContextKey.set(ExtensionsListView.isSearchTrustRequiredExtensionsQuery(value));
 		this.builtInExtensionsContextKey.set(ExtensionsListView.isBuiltInExtensionsQuery(value));
 		this.recommendedExtensionsContextKey.set(isRecommendedExtensionsQuery);
 		this.searchMarketplaceExtensionsContextKey.set(!!value && !ExtensionsListView.isLocalExtensionsQuery(value) && !isRecommendedExtensionsQuery);

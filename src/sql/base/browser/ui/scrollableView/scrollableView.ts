@@ -164,7 +164,7 @@ export class ScrollableView extends Disposable {
 		for (const item of this.items) {
 			if (item.domNode) {
 				DOM.clearNode(item.domNode);
-				item.domNode.remove();
+				DOM.removeNode(item.domNode);
 				item.domNode = undefined;
 			}
 			dispose(item.disposables);

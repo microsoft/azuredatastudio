@@ -1,9 +1,10 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Promises } from 'vs/base/node/pfs';
+import { promises } from 'fs';
+import { exists, writeFile } from 'vs/base/node/pfs';
 import { Event, Emitter } from 'vs/base/common/event';
 import { Disposable, IDisposable } from 'vs/base/common/lifecycle';
 import { ILogService, LogLevel } from 'vs/platform/log/common/log';
@@ -269,13 +270,13 @@ export class WorkspaceStorageMain extends BaseStorageMain implements IStorageMai
 		const workspaceStorageFolderPath = join(this.environmentService.workspaceStorageHome.fsPath, this.workspace.id);
 		const workspaceStorageDatabasePath = join(workspaceStorageFolderPath, WorkspaceStorageMain.WORKSPACE_STORAGE_NAME);
 
-		const storageExists = await Promises.exists(workspaceStorageFolderPath);
+		const storageExists = await exists(workspaceStorageFolderPath);
 		if (storageExists) {
 			return { storageFilePath: workspaceStorageDatabasePath, wasCreated: false };
 		}
 
 		// Ensure storage folder exists
-		await Promises.mkdir(workspaceStorageFolderPath, { recursive: true });
+		await promises.mkdir(workspaceStorageFolderPath, { recursive: true });
 
 		// Write metadata into folder (but do not await)
 		this.ensureWorkspaceStorageFolderMeta(workspaceStorageFolderPath);
@@ -294,9 +295,9 @@ export class WorkspaceStorageMain extends BaseStorageMain implements IStorageMai
 		if (meta) {
 			try {
 				const workspaceStorageMetaPath = join(workspaceStorageFolderPath, WorkspaceStorageMain.WORKSPACE_META_NAME);
-				const storageExists = await Promises.exists(workspaceStorageMetaPath);
+				const storageExists = await exists(workspaceStorageMetaPath);
 				if (!storageExists) {
-					await Promises.writeFile(workspaceStorageMetaPath, JSON.stringify(meta, undefined, 2));
+					await writeFile(workspaceStorageMetaPath, JSON.stringify(meta, undefined, 2));
 				}
 			} catch (error) {
 				this.logService.error(`StorageMain#ensureWorkspaceStorageFolderMeta(): Unable to create workspace storage metadata due to ${error}`);

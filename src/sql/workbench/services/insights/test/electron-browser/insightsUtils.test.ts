@@ -50,7 +50,7 @@ suite('Insights Utils tests', function () {
 		await fs.promises.mkdir(queryFileDir, { recursive: true });
 
 		queryFilePath = path.join(queryFileDir, 'test.sql');
-		await pfs.Promises.writeFile(queryFilePath, '');
+		await pfs.writeFile(queryFilePath, '');
 	});
 
 	test('resolveQueryFilePath resolves path correctly with fully qualified path', async () => {
@@ -60,12 +60,11 @@ suite('Insights Utils tests', function () {
 			undefined,
 			new TestContextService(),
 			undefined,
-			undefined,
 			undefined);
 
 		const fileService = new class extends TestFileService {
 			override exists(uri: URI): Promise<boolean> {
-				return pfs.Promises.exists(uri.fsPath);
+				return pfs.exists(uri.fsPath);
 			}
 		};
 
@@ -93,12 +92,11 @@ suite('Insights Utils tests', function () {
 			undefined,
 			contextService,
 			undefined,
-			undefined,
 			undefined);
 
 		const fileService = new class extends TestFileService {
 			override exists(uri: URI): Promise<boolean> {
-				return pfs.Promises.exists(uri.fsPath);
+				return pfs.exists(uri.fsPath);
 			}
 		};
 
@@ -126,12 +124,11 @@ suite('Insights Utils tests', function () {
 			undefined,
 			contextService,
 			undefined,
-			undefined,
 			undefined);
 
 		const fileService = new class extends TestFileService {
 			override exists(uri: URI): Promise<boolean> {
-				return pfs.Promises.exists(uri.fsPath);
+				return pfs.exists(uri.fsPath);
 			}
 		};
 
@@ -161,12 +158,11 @@ suite('Insights Utils tests', function () {
 			undefined,
 			contextService,
 			undefined,
-			undefined,
 			undefined);
 
 		const fileService = new class extends TestFileService {
 			override exists(uri: URI): Promise<boolean> {
-				return pfs.Promises.exists(uri.fsPath);
+				return pfs.exists(uri.fsPath);
 			}
 		};
 
@@ -197,12 +193,11 @@ suite('Insights Utils tests', function () {
 			undefined,
 			undefined,
 			undefined,
-			undefined,
 			undefined);
 
 		const fileService = new class extends TestFileService {
 			override exists(uri: URI): Promise<boolean> {
-				return pfs.Promises.exists(uri.fsPath);
+				return pfs.exists(uri.fsPath);
 			}
 		};
 
@@ -228,12 +223,11 @@ suite('Insights Utils tests', function () {
 			undefined,
 			undefined,
 			undefined,
-			undefined,
 			undefined);
 
 		const fileService = new class extends TestFileService {
 			override exists(uri: URI): Promise<boolean> {
-				return pfs.Promises.exists(uri.fsPath);
+				return pfs.exists(uri.fsPath);
 			}
 		};
 
@@ -254,12 +248,11 @@ suite('Insights Utils tests', function () {
 			undefined,
 			undefined,
 			undefined,
-			undefined,
 			undefined);
 
 		const fileService = new class extends TestFileService {
 			override exists(uri: URI): Promise<boolean> {
-				return pfs.Promises.exists(uri.fsPath);
+				return pfs.exists(uri.fsPath);
 			}
 		};
 

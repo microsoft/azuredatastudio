@@ -14,9 +14,11 @@ import { IIndexedDBFileSystemProvider, IndexedDB, INDEXEDDB_LOGS_OBJECT_STORE, I
 import { assertIsDefined } from 'vs/base/common/types';
 import { basename, joinPath } from 'vs/base/common/resources';
 import { bufferToReadable, bufferToStream, VSBuffer, VSBufferReadable, VSBufferReadableStream } from 'vs/base/common/buffer';
-import { flakySuite } from 'vs/base/test/common/testUtils';
 
-flakySuite('IndexedDB File Service', function () {
+suite('IndexedDB File Service', function () {
+
+	// IDB sometimes under pressure in build machines.
+	this.retries(3);
 
 	const logSchema = 'logs';
 

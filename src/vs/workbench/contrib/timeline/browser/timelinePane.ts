@@ -1051,14 +1051,13 @@ export class TimelineIdentityProvider implements IIdentityProvider<TreeElement> 
 
 class TimelineActionRunner extends ActionRunner {
 
-	override async runAction(action: IAction, { uri, item }: TimelineActionContext): Promise<void> {
+	override runAction(action: IAction, { uri, item }: TimelineActionContext): Promise<any> {
 		if (!isTimelineItem(item)) {
 			// TODO@eamodio do we need to do anything else?
-			await action.run();
-			return;
+			return action.run();
 		}
 
-		await action.run(...[
+		return action.run(...[
 			{
 				$mid: 11,
 				handle: item.handle,

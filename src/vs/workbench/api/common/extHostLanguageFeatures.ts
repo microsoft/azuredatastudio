@@ -19,7 +19,7 @@ import { regExpLeadsToEndlessLoop, regExpFlags } from 'vs/base/common/strings';
 import { IPosition } from 'vs/editor/common/core/position';
 import { IRange, Range as EditorRange } from 'vs/editor/common/core/range';
 import { isFalsyOrEmpty, isNonEmptyArray, coalesce, asArray } from 'vs/base/common/arrays';
-import { isArray, isObject } from 'vs/base/common/types';
+import { isObject } from 'vs/base/common/types';
 import { ISelection, Selection } from 'vs/editor/common/core/selection';
 import { ILogService } from 'vs/platform/log/common/log';
 import { CancellationToken } from 'vs/base/common/cancellation';
@@ -33,7 +33,6 @@ import { IExtHostApiDeprecationService } from 'vs/workbench/api/common/extHostAp
 import { Cache } from './cache';
 import { StopWatch } from 'vs/base/common/stopwatch';
 import { CancellationError } from 'vs/base/common/errors';
-import { Emitter } from 'vs/base/common/event';
 
 // --- adapter
 
@@ -1039,99 +1038,6 @@ class SuggestAdapter {
 	}
 }
 
-class InlineCompletionAdapter {
-	private readonly _cache = new Cache<vscode.InlineCompletionItem>('InlineCompletionItem');
-	private readonly _disposables = new Map<number, DisposableStore>();
-
-	constructor(
-		private readonly _documents: ExtHostDocuments,
-		private readonly _provider: vscode.InlineCompletionItemProvider,
-		private readonly _commands: CommandsConverter,
-	) { }
-
-	public async provideInlineCompletions(resource: URI, position: IPosition, context: vscode.InlineCompletionContext, token: CancellationToken): Promise<extHostProtocol.IdentifiableInlineCompletions | undefined> {
-		const doc = this._documents.getDocument(resource);
-		const pos = typeConvert.Position.to(position);
-
-		const result = await asPromise(() => this._provider.provideInlineCompletionItems(doc, pos, context, token));
-
-		if (!result) {
-			// undefined and null are valid results
-			return undefined;
-		}
-
-		if (token.isCancellationRequested) {
-			// cancelled -> return without further ado, esp no caching
-			// of results as they will leak
-			return undefined;
-		}
-
-		const normalizedResult: vscode.InlineCompletionList = isArray(result) ? { items: result } : result;
-
-		const pid = this._cache.add(normalizedResult.items);
-		let disposableStore: DisposableStore | undefined = undefined;
-
-		return {
-			pid,
-			items: normalizedResult.items.map<extHostProtocol.IdentifiableInlineCompletion>((item, idx) => {
-				let command: modes.Command | undefined = undefined;
-				if (item.command) {
-					if (!disposableStore) {
-						disposableStore = new DisposableStore();
-						this._disposables.set(pid, disposableStore);
-					}
-					command = this._commands.toInternal(item.command, disposableStore);
-				}
-
-				return ({
-					text: item.text,
-					range: item.range ? typeConvert.Range.from(item.range) : undefined,
-					command,
-					idx: idx,
-				});
-			}),
-		};
-	}
-
-	public disposeCompletions(pid: number) {
-		this._cache.delete(pid);
-		const d = this._disposables.get(pid);
-		if (d) {
-			d.clear();
-		}
-		this._disposables.delete(pid);
-	}
-
-	public handleDidShowCompletionItem(pid: number, idx: number): void {
-		const completionItem = this._cache.get(pid, idx);
-		if (completionItem) {
-			InlineCompletionController.get(this._provider).fireOnDidShowCompletionItem({
-				completionItem
-			});
-		}
-	}
-}
-
-export class InlineCompletionController<T extends vscode.InlineCompletionItem> implements vscode.InlineCompletionController<T> {
-	private static readonly map = new WeakMap<vscode.InlineCompletionItemProvider<any>, InlineCompletionController<any>>();
-
-	public static get<T extends vscode.InlineCompletionItem>(provider: vscode.InlineCompletionItemProvider<T>): InlineCompletionController<T> {
-		let existing = InlineCompletionController.map.get(provider);
-		if (!existing) {
-			existing = new InlineCompletionController();
-			InlineCompletionController.map.set(provider, existing);
-		}
-		return existing;
-	}
-
-	private readonly _onDidShowCompletionItemEmitter = new Emitter<vscode.InlineCompletionItemDidShowEvent<T>>();
-	public readonly onDidShowCompletionItem: vscode.Event<vscode.InlineCompletionItemDidShowEvent<T>> = this._onDidShowCompletionItemEmitter.event;
-
-	public fireOnDidShowCompletionItem(event: vscode.InlineCompletionItemDidShowEvent<T>): void {
-		this._onDidShowCompletionItemEmitter.fire(event);
-	}
-}
-
 class SignatureHelpAdapter {
 
 	private readonly _cache = new Cache<vscode.SignatureHelp>('SignatureHelp');
@@ -1176,16 +1082,16 @@ class SignatureHelpAdapter {
 	}
 }
 
-class InlayHintsAdapter {
+class InlineHintsAdapter {
 	constructor(
 		private readonly _documents: ExtHostDocuments,
-		private readonly _provider: vscode.InlayHintsProvider,
+		private readonly _provider: vscode.InlineHintsProvider,
 	) { }
 
-	provideInlayHints(resource: URI, range: IRange, token: CancellationToken): Promise<extHostProtocol.IInlayHintsDto | undefined> {
+	provideInlineHints(resource: URI, range: IRange, token: CancellationToken): Promise<extHostProtocol.IInlineHintsDto | undefined> {
 		const doc = this._documents.getDocument(resource);
-		return asPromise(() => this._provider.provideInlayHints(doc, typeConvert.Range.to(range), token)).then(value => {
-			return value ? { hints: value.map(typeConvert.InlayHint.from) } : undefined;
+		return asPromise(() => this._provider.provideInlineHints(doc, typeConvert.Range.to(range), token)).then(value => {
+			return value ? { hints: value.map(typeConvert.InlineHint.from) } : undefined;
 		});
 	}
 }
@@ -1199,62 +1105,50 @@ class LinkProviderAdapter {
 		private readonly _provider: vscode.DocumentLinkProvider
 	) { }
 
-	async provideLinks(resource: URI, token: CancellationToken): Promise<extHostProtocol.ILinksListDto | undefined> {
+	provideLinks(resource: URI, token: CancellationToken): Promise<extHostProtocol.ILinksListDto | undefined> {
 		const doc = this._documents.getDocument(resource);
 
-		const links = await asPromise(() => this._provider.provideDocumentLinks(doc, token));
-		if (!Array.isArray(links) || links.length === 0) {
-			// bad result
-			return undefined;
-		}
-		if (token.isCancellationRequested) {
-			// cancelled -> return without further ado, esp no caching
-			// of results as they will leak
-			return undefined;
-		}
-		if (typeof this._provider.resolveDocumentLink !== 'function') {
-			// no resolve -> no caching
-			return { links: links.filter(LinkProviderAdapter._validateLink).map(typeConvert.DocumentLink.from) };
-
-		} else {
-			// cache links for future resolving
-			const pid = this._cache.add(links);
-			const result: extHostProtocol.ILinksListDto = { links: [], id: pid };
-			for (let i = 0; i < links.length; i++) {
-
-				if (!LinkProviderAdapter._validateLink(links[i])) {
-					continue;
-				}
-
-				const dto: extHostProtocol.ILinkDto = typeConvert.DocumentLink.from(links[i]);
-				dto.cacheId = [pid, i];
-				result.links.push(dto);
+		return asPromise(() => this._provider.provideDocumentLinks(doc, token)).then(links => {
+			if (!Array.isArray(links) || links.length === 0) {
+				// bad result
+				return undefined;
 			}
-			return result;
-		}
+
+			if (token.isCancellationRequested) {
+				// cancelled -> return without further ado, esp no caching
+				// of results as they will leak
+				return undefined;
+			}
+
+			if (typeof this._provider.resolveDocumentLink !== 'function') {
+				// no resolve -> no caching
+				return { links: links.map(typeConvert.DocumentLink.from) };
+
+			} else {
+				// cache links for future resolving
+				const pid = this._cache.add(links);
+				const result: extHostProtocol.ILinksListDto = { links: [], id: pid };
+				for (let i = 0; i < links.length; i++) {
+					const dto: extHostProtocol.ILinkDto = typeConvert.DocumentLink.from(links[i]);
+					dto.cacheId = [pid, i];
+					result.links.push(dto);
+				}
+				return result;
+			}
+		});
 	}
 
-	private static _validateLink(link: vscode.DocumentLink): boolean {
-		if (link.target && link.target.path.length > 50_000) {
-			console.warn('DROPPING link because it is too long');
-			return false;
-		}
-		return true;
-	}
-
-	async resolveLink(id: extHostProtocol.ChainedCacheId, token: CancellationToken): Promise<extHostProtocol.ILinkDto | undefined> {
+	resolveLink(id: extHostProtocol.ChainedCacheId, token: CancellationToken): Promise<extHostProtocol.ILinkDto | undefined> {
 		if (typeof this._provider.resolveDocumentLink !== 'function') {
-			return undefined;
+			return Promise.resolve(undefined);
 		}
 		const item = this._cache.get(...id);
 		if (!item) {
-			return undefined;
+			return Promise.resolve(undefined);
 		}
-		const link = await asPromise(() => this._provider.resolveDocumentLink!(item, token));
-		if (!link || !LinkProviderAdapter._validateLink(link)) {
-			return undefined;
-		}
-		return typeConvert.DocumentLink.from(link);
+		return asPromise(() => this._provider.resolveDocumentLink!(item, token)).then(value => {
+			return value && typeConvert.DocumentLink.from(value) || undefined;
+		});
 	}
 
 	releaseLinks(id: number): any {
@@ -1461,7 +1355,7 @@ type Adapter = DocumentSymbolAdapter | CodeLensAdapter | DefinitionAdapter | Hov
 	| TypeDefinitionAdapter | ColorProviderAdapter | FoldingProviderAdapter | DeclarationAdapter
 	| SelectionRangeAdapter | CallHierarchyAdapter | DocumentSemanticTokensAdapter | DocumentRangeSemanticTokensAdapter
 	| EvaluatableExpressionAdapter | InlineValuesAdapter
-	| LinkedEditingRangeAdapter | InlayHintsAdapter | InlineCompletionAdapter;
+	| LinkedEditingRangeAdapter | InlineHintsAdapter;
 
 class AdapterData {
 	constructor(
@@ -1915,28 +1809,6 @@ export class ExtHostLanguageFeatures implements extHostProtocol.ExtHostLanguageF
 		this._withAdapter(handle, SuggestAdapter, adapter => adapter.releaseCompletionItems(id), undefined);
 	}
 
-	// --- ghost test
-
-	registerInlineCompletionsProvider(extension: IExtensionDescription, selector: vscode.DocumentSelector, provider: vscode.InlineCompletionItemProvider): vscode.Disposable {
-		const handle = this._addNewAdapter(new InlineCompletionAdapter(this._documents, provider, this._commands.converter), extension);
-		this._proxy.$registerInlineCompletionsSupport(handle, this._transformDocumentSelector(selector));
-		return this._createDisposable(handle);
-	}
-
-	$provideInlineCompletions(handle: number, resource: UriComponents, position: IPosition, context: modes.InlineCompletionContext, token: CancellationToken): Promise<extHostProtocol.IdentifiableInlineCompletions | undefined> {
-		return this._withAdapter(handle, InlineCompletionAdapter, adapter => adapter.provideInlineCompletions(URI.revive(resource), position, context, token), undefined);
-	}
-
-	$handleInlineCompletionDidShow(handle: number, pid: number, idx: number): void {
-		this._withAdapter(handle, InlineCompletionAdapter, async adapter => {
-			adapter.handleDidShowCompletionItem(pid, idx);
-		}, undefined);
-	}
-
-	$freeInlineCompletionsList(handle: number, pid: number): void {
-		this._withAdapter(handle, InlineCompletionAdapter, async adapter => { adapter.disposeCompletions(pid); }, undefined);
-	}
-
 	// --- parameter hints
 
 	registerSignatureHelpProvider(extension: IExtensionDescription, selector: vscode.DocumentSelector, provider: vscode.SignatureHelpProvider, metadataOrTriggerChars: string[] | vscode.SignatureHelpProviderMetadata): vscode.Disposable {
@@ -1959,23 +1831,23 @@ export class ExtHostLanguageFeatures implements extHostProtocol.ExtHostLanguageF
 
 	// --- inline hints
 
-	registerInlayHintsProvider(extension: IExtensionDescription, selector: vscode.DocumentSelector, provider: vscode.InlayHintsProvider): vscode.Disposable {
+	registerInlineHintsProvider(extension: IExtensionDescription, selector: vscode.DocumentSelector, provider: vscode.InlineHintsProvider): vscode.Disposable {
 
-		const eventHandle = typeof provider.onDidChangeInlayHints === 'function' ? this._nextHandle() : undefined;
-		const handle = this._addNewAdapter(new InlayHintsAdapter(this._documents, provider), extension);
+		const eventHandle = typeof provider.onDidChangeInlineHints === 'function' ? this._nextHandle() : undefined;
+		const handle = this._addNewAdapter(new InlineHintsAdapter(this._documents, provider), extension);
 
-		this._proxy.$registerInlayHintsProvider(handle, this._transformDocumentSelector(selector), eventHandle);
+		this._proxy.$registerInlineHintsProvider(handle, this._transformDocumentSelector(selector), eventHandle);
 		let result = this._createDisposable(handle);
 
 		if (eventHandle !== undefined) {
-			const subscription = provider.onDidChangeInlayHints!(_ => this._proxy.$emitInlayHintsEvent(eventHandle));
+			const subscription = provider.onDidChangeInlineHints!(_ => this._proxy.$emitInlineHintsEvent(eventHandle));
 			result = Disposable.from(result, subscription);
 		}
 		return result;
 	}
 
-	$provideInlayHints(handle: number, resource: UriComponents, range: IRange, token: CancellationToken): Promise<extHostProtocol.IInlayHintsDto | undefined> {
-		return this._withAdapter(handle, InlayHintsAdapter, adapter => adapter.provideInlayHints(URI.revive(resource), range, token), undefined);
+	$provideInlineHints(handle: number, resource: UriComponents, range: IRange, token: CancellationToken): Promise<extHostProtocol.IInlineHintsDto | undefined> {
+		return this._withAdapter(handle, InlineHintsAdapter, adapter => adapter.provideInlineHints(URI.revive(resource), range, token), undefined);
 	}
 
 	// --- links

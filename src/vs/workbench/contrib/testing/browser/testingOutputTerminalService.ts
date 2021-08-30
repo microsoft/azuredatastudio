@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { DeferredPromise } from 'vs/base/common/async';
@@ -11,10 +11,7 @@ import { isDefined } from 'vs/base/common/types';
 import { localize } from 'vs/nls';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { IProcessDataEvent, ITerminalChildProcess, ITerminalLaunchError, TerminalShellType } from 'vs/platform/terminal/common/terminal';
-import { IViewsService } from 'vs/workbench/common/views';
 import { ITerminalInstance, ITerminalService } from 'vs/workbench/contrib/terminal/browser/terminal';
-import { TERMINAL_VIEW_ID } from 'vs/workbench/contrib/terminal/common/terminal';
-import { testingViewIcon } from 'vs/workbench/contrib/testing/browser/icons';
 import { ITestResult } from 'vs/workbench/contrib/testing/common/testResult';
 import { ITestResultService } from 'vs/workbench/contrib/testing/common/testResultService';
 
@@ -51,18 +48,12 @@ export class TestingOutputTerminalService implements ITestingOutputTerminalServi
 	constructor(
 		@ITerminalService private readonly terminalService: ITerminalService,
 		@ITestResultService resultService: ITestResultService,
-		@IViewsService private viewsService: IViewsService,
 	) {
 		// If a result terminal is currently active and we start a new test run,
 		// stream live results there automatically.
 		resultService.onResultsChanged(evt => {
 			const active = this.terminalService.getActiveInstance();
 			if (!('started' in evt) || !active) {
-				return;
-			}
-
-			const pane = this.viewsService.getActiveViewWithId(TERMINAL_VIEW_ID);
-			if (!pane) {
 				return;
 			}
 
@@ -102,7 +93,6 @@ export class TestingOutputTerminalService implements ITestingOutputTerminalServi
 		const output = new TestOutputProcess();
 		this.showResultsInTerminal(this.terminalService.createTerminal({
 			isFeatureTerminal: true,
-			icon: testingViewIcon,
 			customPtyImplementation: () => output,
 			name: getTitle(result),
 		}), output, result);
@@ -175,14 +165,12 @@ class TestOutputProcess extends Disposable implements ITerminalChildProcess {
 
 	public readonly onProcessData = this.processDataEmitter.event;
 	public readonly onProcessExit = this._register(new Emitter<number | undefined>()).event;
-	private readonly _onProcessReady = this._register(new Emitter<{ pid: number; cwd: string; }>());
-	public readonly onProcessReady = this._onProcessReady.event;
+	public readonly onProcessReady = this._register(new Emitter<{ pid: number; cwd: string; }>()).event;
 	public readonly onProcessTitleChanged = this.titleEmitter.event;
 	public readonly onProcessShellTypeChanged = this._register(new Emitter<TerminalShellType>()).event;
 
 	public start(): Promise<ITerminalLaunchError | undefined> {
 		this.startedDeferred.complete();
-		this._onProcessReady.fire({ pid: -1, cwd: '' });
 		return Promise.resolve(undefined);
 	}
 	public shutdown(): void {

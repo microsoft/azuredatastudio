@@ -77,7 +77,6 @@ if (screenshotsPath) {
 	mkdirp.sync(screenshotsPath);
 }
 
-// {{SQL CARBON EDIT}} Add logs to smoke tests
 const logPath = opts.log ? path.resolve(opts.log) : null;
 if (logPath) {
 	mkdirp.sync(path.dirname(logPath));
@@ -221,7 +220,6 @@ async function setupRepository(): Promise<void> {
 			cp.spawnSync('git', ['clean', '-xdf'], { cwd: workspacePath });
 		}
 
-		// None of the test run the project
 		// console.log('*** Running yarn...');
 		// cp.execSync('yarn', { cwd: workspacePath, stdio: 'inherit' });
 	}
@@ -270,7 +268,7 @@ before(async function () {
 	this.timeout(2 * 60 * 1000); // allow two minutes for setup
 	await setup();
 	this.defaultOptions = createOptions();
-	await sqlSetup(this.defaultOptions); // {{SQL CARBON EDIT}}
+	await sqlSetup(this.defaultOptions);
 });
 
 after(async function () {

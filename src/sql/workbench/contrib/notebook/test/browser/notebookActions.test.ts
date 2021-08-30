@@ -577,7 +577,7 @@ suite('Notebook Actions', function (): void {
 		let setOptionsSpy: sinon.SinonSpy;
 
 		setup(async () => {
-			sandbox = sinon.createSandbox();
+			sandbox = sinon.sandbox.create();
 			container = document.createElement('div');
 			contextViewProvider = new ContextViewProviderStub();
 			const instantiationService = <TestInstantiationService>workbenchInstantiationService();

@@ -88,7 +88,7 @@ class PresentationBuilder {
 	public result: Tasks.PresentationOptions;
 
 	constructor(public parent: CommandConfigurationBuilder) {
-		this.result = { echo: false, reveal: Tasks.RevealKind.Always, revealProblems: Tasks.RevealProblemKind.Never, focus: false, panel: Tasks.PanelKind.Shared, showReuseMessage: true, clear: false, close: false };
+		this.result = { echo: false, reveal: Tasks.RevealKind.Always, revealProblems: Tasks.RevealProblemKind.Never, focus: false, panel: Tasks.PanelKind.Shared, showReuseMessage: true, clear: false };
 	}
 
 	public echo(value: boolean): PresentationBuilder {
@@ -113,11 +113,6 @@ class PresentationBuilder {
 
 	public showReuseMessage(value: boolean): PresentationBuilder {
 		this.result.showReuseMessage = value;
-		return this;
-	}
-
-	public close(value: boolean): PresentationBuilder {
-		this.result.close = value;
 		return this;
 	}
 

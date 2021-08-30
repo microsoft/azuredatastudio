@@ -4,9 +4,10 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as fs from 'fs';
+import { promisify } from 'util';
 import { rtrim } from 'vs/base/common/strings';
 import { sep, join, normalize, dirname, basename } from 'vs/base/common/path';
-import { Promises, readdirSync } from 'vs/base/node/pfs';
+import { readdirSync } from 'vs/base/node/pfs';
 
 /**
  * Copied from: https://github.com/microsoft/vscode-node-debug/blob/master/src/node/pathUtilities.ts#L83
@@ -56,7 +57,7 @@ export async function realpath(path: string): Promise<string> {
 		// calls `fs.native.realpath` which will result in subst
 		// drives to be resolved to their target on Windows
 		// https://github.com/microsoft/vscode/issues/118562
-		return await Promises.realpath(path);
+		return await promisify(fs.realpath)(path);
 	} catch (error) {
 
 		// We hit an error calling fs.realpath(). Since fs.realpath() is doing some path normalization
@@ -66,7 +67,7 @@ export async function realpath(path: string): Promise<string> {
 		// to not resolve links but to simply see if the path is read accessible or not.
 		const normalizedPath = normalizePath(path);
 
-		await Promises.access(normalizedPath, fs.constants.R_OK);
+		await fs.promises.access(normalizedPath, fs.constants.R_OK);
 
 		return normalizedPath;
 	}

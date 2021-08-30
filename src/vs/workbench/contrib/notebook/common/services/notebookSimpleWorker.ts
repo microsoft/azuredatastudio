@@ -9,7 +9,7 @@ import { URI } from 'vs/base/common/uri';
 import { IRequestHandler } from 'vs/base/common/worker/simpleWorker';
 import * as model from 'vs/editor/common/model';
 import { PieceTreeTextBufferBuilder } from 'vs/editor/common/model/pieceTreeTextBuffer/pieceTreeTextBufferBuilder';
-import { CellKind, ICellDto2, IMainCellDto, INotebookDiffResult, IOutputDto, NotebookCellInternalMetadata, NotebookCellMetadata, NotebookCellsChangedEventDto, NotebookCellsChangeType, NotebookCellsSplice2, NotebookDataDto, NotebookDocumentMetadata } from 'vs/workbench/contrib/notebook/common/notebookCommon';
+import { CellKind, ICellDto2, IMainCellDto, INotebookDiffResult, IOutputDto, NotebookCellMetadata, NotebookCellsChangedEventDto, NotebookCellsChangeType, NotebookCellsSplice2, NotebookDataDto, NotebookDocumentMetadata } from 'vs/workbench/contrib/notebook/common/notebookCommon';
 import { Range } from 'vs/editor/common/core/range';
 import { EditorWorkerHost } from 'vs/workbench/contrib/notebook/common/services/notebookWorkerServiceImpl';
 
@@ -46,8 +46,7 @@ class MirrorCell {
 		public language: string,
 		public cellKind: CellKind,
 		public outputs: IOutputDto[],
-		public metadata?: NotebookCellMetadata,
-		public internalMetadata?: NotebookCellInternalMetadata,
+		public metadata?: NotebookCellMetadata
 
 	) { }
 
@@ -71,7 +70,7 @@ class MirrorCell {
 			return this._primaryKey!;
 		}
 
-		this._hash = hash([hash(this.language), hash(this.getValue()), this.metadata, this.internalMetadata, this.outputs.map(op => ({
+		this._hash = hash([hash(this.language), hash(this.getValue()), this.metadata, this.outputs.map(op => ({
 			outputs: op.outputs,
 			metadata: op.metadata
 		}))]);
@@ -83,7 +82,7 @@ class MirrorCell {
 			return this._hash;
 		}
 
-		this._hash = hash([hash(this.getValue()), this.language, this.metadata, this.internalMetadata]);
+		this._hash = hash([hash(this.getValue()), this.language, this.metadata]);
 		return this._hash;
 	}
 }
@@ -115,9 +114,6 @@ class MirrorNotebookDocument {
 			} else if (e.kind === NotebookCellsChangeType.ChangeCellMetadata) {
 				const cell = this.cells[e.index];
 				cell.metadata = e.metadata;
-			} else if (e.kind === NotebookCellsChangeType.ChangeCellInternalMetadata) {
-				const cell = this.cells[e.index];
-				cell.internalMetadata = e.internalMetadata;
 			}
 		});
 	}

@@ -5,6 +5,7 @@
 
 import { onceDocumentLoaded } from './events';
 
+declare let acquireVsCodeApi: any;
 const vscode = acquireVsCodeApi();
 
 function getSettings() {

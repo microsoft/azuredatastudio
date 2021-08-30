@@ -9,7 +9,7 @@ import { getGalleryExtensionId, getGalleryExtensionTelemetryData, adoptToGallery
 import { getOrDefault } from 'vs/base/common/objects';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IPager } from 'vs/base/common/paging';
-import { IRequestService, asJson, asText, isSuccess } from 'vs/platform/request/common/request';
+import { IRequestService, asJson, asText } from 'vs/platform/request/common/request';
 import { IRequestOptions, IRequestContext, IHeaders } from 'vs/base/parts/request/common/request';
 import { isEngineValid } from 'vs/platform/extensions/common/extensionValidator';
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
@@ -26,48 +26,48 @@ import { optional } from 'vs/platform/instantiation/common/instantiation';
 import { joinPath } from 'vs/base/common/resources';
 
 interface IRawGalleryExtensionFile {
-	readonly assetType: string;
-	readonly source: string;
+	assetType: string;
+	source: string;
 }
 
 interface IRawGalleryExtensionProperty {
-	readonly key: string;
-	readonly value: string;
+	key: string;
+	value: string;
 }
 
 interface IRawGalleryExtensionVersion {
-	readonly version: string;
-	readonly lastUpdated: string;
-	readonly assetUri: string;
-	readonly fallbackAssetUri: string;
-	readonly files: IRawGalleryExtensionFile[];
-	readonly properties?: IRawGalleryExtensionProperty[];
+	version: string;
+	lastUpdated: string;
+	assetUri: string;
+	fallbackAssetUri: string;
+	files: IRawGalleryExtensionFile[];
+	properties?: IRawGalleryExtensionProperty[];
 }
 
 interface IRawGalleryExtensionStatistics {
-	readonly statisticName: string;
-	readonly value: number;
+	statisticName: string;
+	value: number;
 }
 
 interface IRawGalleryExtension {
-	readonly extensionId: string;
-	readonly extensionName: string;
-	readonly displayName: string;
-	readonly shortDescription: string;
-	readonly publisher: { displayName: string, publisherId: string, publisherName: string; };
-	readonly versions: IRawGalleryExtensionVersion[];
-	readonly statistics: IRawGalleryExtensionStatistics[];
-	readonly flags: string;
+	extensionId: string;
+	extensionName: string;
+	displayName: string;
+	shortDescription: string;
+	publisher: { displayName: string, publisherId: string, publisherName: string; };
+	versions: IRawGalleryExtensionVersion[];
+	statistics: IRawGalleryExtensionStatistics[];
+	flags: string;
 }
 
 interface IRawGalleryQueryResult {
-	readonly results: {
-		readonly extensions: IRawGalleryExtension[];
-		readonly resultMetadata: {
-			readonly metadataType: string;
-			readonly metadataItems: {
-				readonly name: string;
-				readonly count: number;
+	results: {
+		extensions: IRawGalleryExtension[];
+		resultMetadata: {
+			metadataType: string;
+			metadataItems: {
+				name: string;
+				count: number;
 			}[];
 		}[]
 	}[];
@@ -126,20 +126,20 @@ const PropertyType = {
 };
 
 interface ICriterium {
-	readonly filterType: FilterType;
-	readonly value?: string;
+	filterType: FilterType;
+	value?: string;
 }
 
 const DefaultPageSize = 10;
 
 interface IQueryState {
-	readonly pageNumber: number;
-	readonly pageSize: number;
-	readonly sortBy: SortBy;
-	readonly sortOrder: SortOrder;
-	readonly flags: Flags;
-	readonly criteria: ICriterium[];
-	readonly assetTypes: string[];
+	pageNumber: number;
+	pageSize: number;
+	sortBy: SortBy;
+	sortOrder: SortOrder;
+	flags: Flags;
+	criteria: ICriterium[];
+	assetTypes: string[];
 }
 
 const DefaultQueryState: IQueryState = {
@@ -152,33 +152,10 @@ const DefaultQueryState: IQueryState = {
 	assetTypes: []
 };
 
-type GalleryServiceQueryClassification = {
-	readonly filterTypes: { classification: 'SystemMetaData', purpose: 'FeatureInsight' };
-	readonly sortBy: { classification: 'SystemMetaData', purpose: 'FeatureInsight' };
-	readonly sortOrder: { classification: 'SystemMetaData', purpose: 'FeatureInsight' };
-	readonly duration: { classification: 'SystemMetaData', purpose: 'PerformanceAndHealth', 'isMeasurement': true };
-	readonly success: { classification: 'SystemMetaData', purpose: 'FeatureInsight' };
-	readonly requestBodySize: { classification: 'SystemMetaData', purpose: 'FeatureInsight' };
-	readonly responseBodySize?: { classification: 'SystemMetaData', purpose: 'FeatureInsight' };
-	readonly statusCode?: { classification: 'SystemMetaData', purpose: 'FeatureInsight' };
-	readonly errorCode?: { classification: 'SystemMetaData', purpose: 'FeatureInsight' };
-	readonly count?: { classification: 'SystemMetaData', purpose: 'FeatureInsight' };
-};
-
 type QueryTelemetryData = {
-	readonly filterTypes: string[];
-	readonly sortBy: string;
-	readonly sortOrder: string;
-};
-
-type GalleryServiceQueryEvent = QueryTelemetryData & {
-	readonly duration: number;
-	readonly success: boolean;
-	readonly requestBodySize: string;
-	readonly responseBodySize?: string;
-	readonly statusCode?: string;
-	readonly errorCode?: string;
-	readonly count?: string;
+	filterTypes: string[];
+	sortBy: string;
+	sortOrder: string;
 };
 
 class Query {
@@ -262,7 +239,7 @@ function getCoreTranslationAssets(version: IRawGalleryExtensionVersion): [string
 function getRepositoryAsset(version: IRawGalleryExtensionVersion): IGalleryExtensionAsset | null {
 	if (version.properties) {
 		const results = version.properties.filter(p => p.key === AssetType.Repository);
-		const gitRegExp = new RegExp('((git|ssh|http(s)?)|(git@[\\w.]+))(:(//)?)([\\w.@\:/\\-~]+)(.git)(/)?');
+		const gitRegExp = new RegExp('((git|ssh|http(s)?)|(git@[\w.]+))(:(//)?)([\w.@\:/\-~]+)(.git)(/)?');
 
 		const uri = results.filter(r => gitRegExp.test(r.value))[0];
 		return uri ? { uri: uri.value, fallbackUri: uri.value } : null;
@@ -403,11 +380,13 @@ function toExtension(galleryExtension: IRawGalleryExtension, version: IRawGaller
 		/* __GDPR__FRAGMENT__
 			"GalleryExtensionTelemetryData2" : {
 				"index" : { "classification": "SystemMetaData", "purpose": "FeatureInsight", "isMeasurement": true },
+				"searchText": { "classification": "CustomerContent", "purpose": "FeatureInsight" },
 				"querySource": { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
 			}
 		*/
 		telemetryData: {
 			index: ((query.pageNumber - 1) * query.pageSize) + index,
+			searchText: query.searchText,
 			querySource
 		},
 		preview: getIsPreview(galleryExtension.flags)
@@ -510,7 +489,7 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 			const versionAsset = rawExtension.versions.filter(v => v.version === version)[0];
 			if (versionAsset) {
 				const extension = toExtension(rawExtension, versionAsset, 0, query);
-				if (extension.properties.engine && isEngineValid(extension.properties.engine, this.productService.version, this.productService.date)) {
+				if (extension.properties.engine && isEngineValid(extension.properties.engine, this.productService.version)) {
 					return extension;
 				}
 			}
@@ -534,8 +513,19 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 			throw new Error('No extension gallery service configured.');
 		}
 
+		const type = options.names ? 'ids' : (options.text ? 'text' : 'all');
 		let text = options.text || '';
 		const pageSize = getOrDefault(options, o => o.pageSize, 50);
+
+		type GalleryServiceQueryClassification = {
+			type: { classification: 'SystemMetaData', purpose: 'FeatureInsight' };
+			text: { classification: 'CustomerContent', purpose: 'FeatureInsight' };
+		};
+		type GalleryServiceQueryEvent = {
+			type: string;
+			text: string;
+		};
+		this.telemetryService.publicLog2<GalleryServiceQueryEvent, GalleryServiceQueryClassification>('galleryService:query', { type, text });
 
 		let query = new Query()
 			.withFlags(Flags.IncludeLatestVersionOnly, Flags.IncludeAssetUri, Flags.IncludeStatistics, Flags.IncludeFiles, Flags.IncludeVersionProperties)
@@ -686,7 +676,6 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 				extension.extensionId && extension.extensionId.toLocaleLowerCase().indexOf(text) > -1);
 	}
 
-	// {{SQL CARBON EDIT}}
 	public static compareByField(a: any, b: any, fieldName: string): number {
 		if (a && !b) {
 			return 1;
@@ -713,7 +702,6 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 		if (!this.isEnabled()) {
 			throw new Error('No extension gallery service configured.');
 		}
-
 		// Always exclude non validated and unpublished extensions
 		query = query
 			.withFlags(query.flags, Flags.ExcludeNonValidated)
@@ -729,56 +717,34 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 			'Content-Length': String(data.length)
 		};
 
-		const startTime = new Date().getTime();
-		let context: IRequestContext | undefined, error: any, total: number = 0;
+		const context = await this.requestService.request({
+			// {{SQL CARBON EDIT}}
+			type: 'GET',
+			url: this.api('/extensionquery'),
+			data,
+			headers
+		}, token);
 
-		try {
-			context = await this.requestService.request({
-				// {{SQL CARBON EDIT}}
-				type: 'GET',
-				url: this.api('/extensionquery'),
-				data,
-				headers
-			}, token);
+		// {{SQL CARBON EDIT}}
+		let extensionPolicy: string = this.configurationService.getValue<string>(ExtensionsPolicyKey);
+		if (context.res.statusCode && context.res.statusCode >= 400 && context.res.statusCode < 500 || extensionPolicy === ExtensionsPolicy.allowNone) {
+			return { galleryExtensions: [], total: 0 };
+		}
+
+		const result = await asJson<IRawGalleryQueryResult>(context);
+		if (result) {
+			const r = result.results[0];
+			const galleryExtensions = r.extensions;
+			// const resultCount = r.resultMetadata && r.resultMetadata.filter(m => m.metadataType === 'ResultCount')[0]; {{SQL CARBON EDIT}} comment out for no unused
+			// const total = resultCount && resultCount.metadataItems.filter(i => i.name === 'TotalCount')[0].count || 0; {{SQL CARBON EDIT}} comment out for no unused
 
 			// {{SQL CARBON EDIT}}
-			let extensionPolicy: string = this.configurationService.getValue<string>(ExtensionsPolicyKey);
-			if (context.res.statusCode && context.res.statusCode >= 400 && context.res.statusCode < 500 || extensionPolicy === ExtensionsPolicy.allowNone) {
-				return { galleryExtensions: [], total: 0 };
-			}
+			let filteredExtensionsResult = this.createQueryResult(query, galleryExtensions);
 
-			const result = await asJson<IRawGalleryQueryResult>(context);
-			if (result) {
-				const r = result.results[0];
-				const galleryExtensions = r.extensions;
-				// const resultCount = r.resultMetadata && r.resultMetadata.filter(m => m.metadataType === 'ResultCount')[0]; {{SQL CARBON EDIT}} comment out for no unused
-				// const total = resultCount && resultCount.metadataItems.filter(i => i.name === 'TotalCount')[0].count || 0; {{SQL CARBON EDIT}} comment out for no unused
-
-				// {{SQL CARBON EDIT}}
-				let filteredExtensionsResult = this.createQueryResult(query, galleryExtensions);
-
-				return { galleryExtensions: filteredExtensionsResult.galleryExtensions, total: filteredExtensionsResult.total };
-				// {{SQL CARBON EDIT}} - End
-			}
-			return { galleryExtensions: [], total };
-
-		} catch (e) {
-			error = e;
-			throw e;
-		} finally {
-			this.telemetryService.publicLog2<GalleryServiceQueryEvent, GalleryServiceQueryClassification>('galleryService:query', {
-				...query.telemetryData,
-				requestBodySize: String(data.length),
-				duration: new Date().getTime() - startTime,
-				success: !!context && isSuccess(context),
-				responseBodySize: context?.res.headers['Content-Length'],
-				statusCode: context ? String(context.res.statusCode) : undefined,
-				errorCode: error
-					? isPromiseCanceledError(error) ? 'canceled' : getErrorMessage(error).startsWith('XHR timeout') ? 'timeout' : 'failed'
-					: undefined,
-				count: String(total)
-			});
+			return { galleryExtensions: filteredExtensionsResult.galleryExtensions, total: filteredExtensionsResult.total };
+			// {{SQL CARBON EDIT}} - End
 		}
+		return { galleryExtensions: [], total: 0 };
 	}
 
 	async reportStatistic(publisher: string, name: string, version: string, type: StatisticType): Promise<void> {
@@ -882,7 +848,7 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 					try {
 						engine = await this.getEngine(v);
 					} catch (error) { /* Ignore error and skip version */ }
-					if (engine && isEngineValid(engine, this.productService.version, this.productService.date)) {
+					if (engine && isEngineValid(engine, this.productService.version)) {
 						result.push({ version: v!.version, date: v!.lastUpdated });
 					}
 				}));
@@ -948,8 +914,8 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 			if (!vsCodeEngine && !azDataEngine) {
 				return null;
 			}
-			const vsCodeEngineValid = !vsCodeEngine || (vsCodeEngine && isEngineValid(vsCodeEngine, this.productService.vscodeVersion, this.productService.date));
-			const azDataEngineValid = !azDataEngine || (azDataEngine && isEngineValid(azDataEngine, this.productService.version, this.productService.date));
+			const vsCodeEngineValid = !vsCodeEngine || (vsCodeEngine && isEngineValid(vsCodeEngine, this.productService.vscodeVersion));
+			const azDataEngineValid = !azDataEngine || (azDataEngine && isEngineValid(azDataEngine, this.productService.version));
 			if (vsCodeEngineValid && azDataEngineValid) {
 				return version;
 			}
@@ -985,14 +951,13 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 
 		const version = versions[0];
 		const engine = await this.getEngine(version);
-		if (!isEngineValid(engine, this.productService.version, this.productService.date)) {
+		if (!isEngineValid(engine, this.productService.version)) {
 			return this.getLastValidExtensionVersionRecursively(extension, versions.slice(1));
 		}
 
-		return {
-			...version,
-			properties: [...(version.properties || []), { key: PropertyType.Engine, value: engine }]
-		};
+		version.properties = version.properties || [];
+		version.properties.push({ key: PropertyType.Engine, value: engine });
+		return version;
 	}
 
 	async getExtensionsReport(): Promise<IReportedExtension[]> {

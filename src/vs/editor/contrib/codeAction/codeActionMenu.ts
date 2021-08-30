@@ -11,7 +11,6 @@ import { ResolvedKeybinding } from 'vs/base/common/keyCodes';
 import { Lazy } from 'vs/base/common/lazy';
 import { Disposable, MutableDisposable } from 'vs/base/common/lifecycle';
 import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
-import { EditorOption } from 'vs/editor/common/config/editorOptions';
 import { IPosition, Position } from 'vs/editor/common/core/position';
 import { ScrollType } from 'vs/editor/common/editorCommon';
 import { CodeAction, CodeActionProviderRegistry, Command } from 'vs/editor/common/modes';
@@ -93,10 +92,8 @@ export class CodeActionMenu extends Disposable {
 		const anchor = Position.isIPosition(at) ? this._toCoords(at) : at || { x: 0, y: 0 };
 		const resolver = this._keybindingResolver.getResolver();
 
-		const useShadowDOM = this._editor.getOption(EditorOption.useShadowDOM);
-
 		this._contextMenuService.showContextMenu({
-			domForShadowRoot: useShadowDOM ? this._editor.getDomNode()! : undefined,
+			domForShadowRoot: this._editor.getDomNode()!,
 			getAnchor: () => anchor,
 			getActions: () => menuActions,
 			onHide: () => {

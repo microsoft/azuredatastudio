@@ -195,7 +195,6 @@ export abstract class AbstractEditorNavigationQuickAccessProvider implements IQu
 				{
 					range,
 					options: {
-						description: 'quick-access-range-highlight',
 						className: 'rangeHighlight',
 						isWholeLine: true
 					}
@@ -205,7 +204,6 @@ export abstract class AbstractEditorNavigationQuickAccessProvider implements IQu
 				{
 					range,
 					options: {
-						description: 'quick-access-range-highlight-overview',
 						overviewRuler: {
 							color: themeColorFromId(overviewRulerRangeHighlight),
 							position: OverviewRulerLane.Full

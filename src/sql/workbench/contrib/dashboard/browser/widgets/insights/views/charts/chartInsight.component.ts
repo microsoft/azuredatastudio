@@ -19,6 +19,7 @@ import { IThemeService, IColorTheme } from 'vs/platform/theme/common/themeServic
 import { IPointDataSet } from 'sql/workbench/contrib/charts/browser/interfaces';
 import { IInsightsView, IInsightData } from 'sql/platform/dashboard/browser/insightRegistry';
 import { ChartType, LegendPosition } from 'sql/workbench/contrib/charts/common/interfaces';
+import { createMemoizer } from 'vs/base/common/decorators';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 
 @Component({
@@ -34,6 +35,8 @@ import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 				</div>`
 })
 export abstract class ChartInsight extends Disposable implements IInsightsView {
+	protected static readonly MEMOIZER = createMemoizer();
+
 	private _isDataAvailable: boolean = false;
 	protected _hasInit: boolean = false;
 	protected _hasError: boolean = false;
@@ -129,7 +132,7 @@ export abstract class ChartInsight extends Disposable implements IInsightsView {
 
 	@Input() set data(data: IInsightData) {
 		// unmemoize chart data as the data needs to be recalced
-		this.clearMemoize();
+		ChartInsight.MEMOIZER.clear();
 		this._data = this.filterToTopNData(data);
 		if (isValidData(data)) {
 			this._isDataAvailable = true;
@@ -167,9 +170,8 @@ export abstract class ChartInsight extends Disposable implements IInsightsView {
 	}
 
 	protected clearMemoize(): void {
-		this._cachedChartData = undefined;
-		this._cachedColors = undefined;
-		this._cachedLabels = undefined;
+		// unmemoize getters since their result can be changed by a new config
+		ChartInsight.MEMOIZER.clear();
 	}
 
 	public setConfig(config: IChartConfig) {
@@ -183,85 +185,77 @@ export abstract class ChartInsight extends Disposable implements IInsightsView {
 	}
 
 	/* Typescript does not allow you to access getters/setters for super classes.
-	his is a workaround that allows us to still call base getter */
-	private _cachedChartData: Array<IDataSet>;
+		his is a workaround that allows us to still call base getter */
+	@ChartInsight.MEMOIZER
 	protected getChartData(): Array<IDataSet> {
-		if (!this._cachedChartData) {
-			if (this._config.dataDirection === 'horizontal') {
-				if (this._config.labelFirstColumn) {
-					this._cachedChartData = this._data.rows.map((row) => {
-						return {
-							data: row.map(item => Number(item)).slice(1),
-							label: row[0]
-						};
-					});
-				} else {
-					this._cachedChartData = this._data.rows.map((row, i) => {
-						return {
-							data: row.map(item => Number(item)),
-							label: 'Series' + i
-						};
-					});
-				}
+		if (this._config.dataDirection === 'horizontal') {
+			if (this._config.labelFirstColumn) {
+				return this._data.rows.map((row) => {
+					return {
+						data: row.map(item => Number(item)).slice(1),
+						label: row[0]
+					};
+				});
 			} else {
-				if (this._config.columnsAsLabels) {
-					this._cachedChartData = this._data.rows[0].slice(1).map((row, i) => {
-						return {
-							data: this._data.rows.map(row => Number(row[i + 1])),
-							label: this._data.columns[i + 1]
-						};
-					});
-				} else {
-					this._cachedChartData = this._data.rows[0].slice(1).map((row, i) => {
-						return {
-							data: this._data.rows.map(row => Number(row[i + 1])),
-							label: 'Series' + (i + 1)
-						};
-					});
-				}
+				return this._data.rows.map((row, i) => {
+					return {
+						data: row.map(item => Number(item)),
+						label: 'Series' + i
+					};
+				});
+			}
+		} else {
+			if (this._config.columnsAsLabels) {
+				return this._data.rows[0].slice(1).map((row, i) => {
+					return {
+						data: this._data.rows.map(row => Number(row[i + 1])),
+						label: this._data.columns[i + 1]
+					};
+				});
+			} else {
+				return this._data.rows[0].slice(1).map((row, i) => {
+					return {
+						data: this._data.rows.map(row => Number(row[i + 1])),
+						label: 'Series' + (i + 1)
+					};
+				});
 			}
 		}
-		return this._cachedChartData;
 	}
 
 	public get chartData(): Array<IDataSet | IPointDataSet> {
 		return this.getChartData();
 	}
 
-	private _cachedLabels: Array<string>;
+	@ChartInsight.MEMOIZER
 	public getLabels(): Array<string> {
-		if (!this._cachedLabels) {
-			if (this._config.dataDirection === 'horizontal') {
-				if (this._config.labelFirstColumn) {
-					this._cachedLabels = this._data.columns.slice(1);
-				} else {
-					this._cachedLabels = this._data.columns;
-				}
+		if (this._config.dataDirection === 'horizontal') {
+			if (this._config.labelFirstColumn) {
+				return this._data.columns.slice(1);
 			} else {
-				this._cachedLabels = this._data.rows.map(row => row[0]);
+				return this._data.columns;
 			}
+		} else {
+			return this._data.rows.map(row => row[0]);
 		}
-		return this._cachedLabels;
 	}
 
 	public get labels(): Array<string> {
 		return this.getLabels();
 	}
 
-	private _cachedColors: { backgroundColor: string[] }[];
+
+	@ChartInsight.MEMOIZER
 	public get colors(): { backgroundColor: string[] }[] {
-		if (!this._cachedColors) {
-			if (this._config && this._config.colorMap) {
-				const backgroundColor = this.labels.map((item) => {
-					return this._config.colorMap[item];
-				});
-				const colorsMap = { backgroundColor };
-				this._cachedColors = [colorsMap];
-			} else {
-				this._cachedColors = undefined;
-			}
+		if (this._config && this._config.colorMap) {
+			const backgroundColor = this.labels.map((item) => {
+				return this._config.colorMap[item];
+			});
+			const colorsMap = { backgroundColor };
+			return [colorsMap];
+		} else {
+			return undefined;
 		}
-		return this._cachedColors;
 	}
 
 	public set legendPosition(input: LegendPosition) {

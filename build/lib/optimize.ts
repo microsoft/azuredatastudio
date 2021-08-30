@@ -256,7 +256,7 @@ export function minifyTask(src: string, sourceMapBaseUrl?: string): (cb: any) =>
 					sourcemap: 'external',
 					outdir: '.',
 					platform: 'node',
-					target: ['node14.16'],
+					target: ['node12.18'],
 					write: false
 				}).then(res => {
 					const jsFile = res.outputFiles.find(f => /\.js$/.test(f.path))!;

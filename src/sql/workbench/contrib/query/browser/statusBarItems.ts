@@ -24,7 +24,6 @@ export class TimeElapsedStatusBarContributions extends Disposable implements IWo
 	private intervalTimer = new IntervalTimer();
 
 	private disposable = this._register(new DisposableStore());
-	private readonly name = localize('status.query.timeElapsed', "Time Elapsed");
 
 	constructor(
 		@IStatusbarService private readonly statusbarService: IStatusbarService,
@@ -34,11 +33,11 @@ export class TimeElapsedStatusBarContributions extends Disposable implements IWo
 		super();
 		this.statusItem = this._register(
 			this.statusbarService.addEntry({
-				name: this.name,
 				text: '',
 				ariaLabel: ''
 			},
 				TimeElapsedStatusBarContributions.ID,
+				localize('status.query.timeElapsed', "Time Elapsed"),
 				StatusbarAlignment.RIGHT, 100)
 		);
 
@@ -94,7 +93,6 @@ export class TimeElapsedStatusBarContributions extends Disposable implements IWo
 				const value = runner.queryStartTime ? Date.now() - runner.queryStartTime.getTime() : 0;
 				const timeString = parseNumAsTimeString(value, false);
 				this.statusItem.update({
-					name: this.name,
 					text: timeString,
 					ariaLabel: timeString
 				});
@@ -103,7 +101,6 @@ export class TimeElapsedStatusBarContributions extends Disposable implements IWo
 			const value = runner.queryStartTime ? Date.now() - runner.queryStartTime.getTime() : 0;
 			const timeString = parseNumAsTimeString(value, false);
 			this.statusItem.update({
-				name: this.name,
 				text: timeString,
 				ariaLabel: timeString
 			});
@@ -112,7 +109,6 @@ export class TimeElapsedStatusBarContributions extends Disposable implements IWo
 				? runner.queryEndTime.getTime() - runner.queryStartTime.getTime() : 0;
 			const timeString = parseNumAsTimeString(value, false);
 			this.statusItem.update({
-				name: this.name,
 				text: timeString,
 				ariaLabel: timeString
 			});
@@ -128,7 +124,6 @@ export class RowCountStatusBarContributions extends Disposable implements IWorkb
 	private statusItem: IStatusbarEntryAccessor;
 
 	private disposable = this._register(new DisposableStore());
-	private readonly name = localize('status.query.rowCount', "Row Count");
 
 	constructor(
 		@IStatusbarService private readonly statusbarService: IStatusbarService,
@@ -138,11 +133,11 @@ export class RowCountStatusBarContributions extends Disposable implements IWorkb
 		super();
 		this.statusItem = this._register(
 			this.statusbarService.addEntry({
-				name: this.name,
 				text: '',
 				ariaLabel: ''
 			},
 				RowCountStatusBarContributions.ID,
+				localize('status.query.rowCount', "Row Count"),
 				StatusbarAlignment.RIGHT, 100)
 		);
 
@@ -206,7 +201,7 @@ export class RowCountStatusBarContributions extends Disposable implements IWorkb
 			return p + cnt;
 		}, 0);
 		const text = localize('rowCount', "{0} rows", rowCount.toLocaleString());
-		this.statusItem.update({ name: this.name, text: text, ariaLabel: text });
+		this.statusItem.update({ text, ariaLabel: text });
 		this.show();
 	}
 }
@@ -225,11 +220,11 @@ export class QueryStatusStatusBarContributions extends Disposable implements IWo
 		super();
 		this._register(
 			this.statusbarService.addEntry({
-				name: localize('status.query.status', "Execution Status"),
 				text: localize('query.status.executing', "Executing query..."),
 				ariaLabel: localize('query.status.executing', "Executing query...")
 			},
 				QueryStatusStatusBarContributions.ID,
+				localize('status.query.status', "Execution Status"),
 				StatusbarAlignment.RIGHT, 100)
 		);
 
@@ -264,7 +259,6 @@ export class QueryStatusStatusBarContributions extends Disposable implements IWo
 export class QueryResultSelectionSummaryStatusBarContribution extends Disposable implements IWorkbenchContribution {
 	private static readonly ID = 'status.query.selection-summary';
 	private statusItem: IStatusbarEntryAccessor;
-	private readonly name = localize('status.query.selection-summary', "Selection Summary");
 
 	constructor(
 		@IStatusbarService private readonly statusbarService: IStatusbarService,
@@ -275,11 +269,11 @@ export class QueryResultSelectionSummaryStatusBarContribution extends Disposable
 		super();
 		this.statusItem = this._register(
 			this.statusbarService.addEntry({
-				name: this.name,
 				text: '',
 				ariaLabel: ''
 			},
 				QueryResultSelectionSummaryStatusBarContribution.ID,
+				localize('status.query.selection-summary', "Selection Summary"),
 				StatusbarAlignment.RIGHT, 100)
 		);
 		this._register(editorService.onDidActiveEditorChange(() => { this.hide(); }, this));
@@ -308,7 +302,6 @@ export class QueryResultSelectionSummaryStatusBarContribution extends Disposable
 		const sum = numericValues.reduce((previous, current, idx, array) => previous + current);
 		const summaryText = localize('status.query.summaryText', "Average: {0}  Count: {1}  Sum: {2}", Number((sum / numericValues.length).toFixed(3)), selectedCells.length, sum);
 		this.statusItem.update({
-			name: this.name,
 			text: summaryText,
 			ariaLabel: summaryText
 		});

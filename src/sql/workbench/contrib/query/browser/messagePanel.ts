@@ -15,7 +15,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { WorkbenchDataTree } from 'vs/platform/list/browser/listService';
 import { isArray, isString } from 'vs/base/common/types';
 import { Disposable, DisposableStore, dispose } from 'vs/base/common/lifecycle';
-import { $, Dimension, createStyleSheet, addStandardDisposableGenericMouseDownListner } from 'vs/base/browser/dom';
+import { $, Dimension, createStyleSheet, addStandardDisposableGenericMouseDownListner, toggleClass } from 'vs/base/browser/dom';
 import { resultsErrorColor } from 'sql/platform/theme/common/colors';
 import { CachedListVirtualDelegate, IIdentityProvider } from 'vs/base/browser/ui/list/list';
 import { FuzzyScore } from 'vs/base/common/filters';
@@ -34,6 +34,7 @@ import { IDataTreeViewState } from 'vs/base/browser/ui/tree/dataTree';
 import { IRange } from 'vs/editor/common/core/range';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IQueryEditorConfiguration } from 'sql/platform/query/common/query';
+import { push } from 'vs/base/common/arrays';
 
 export interface IResultMessageIntern {
 	id?: string;
@@ -108,7 +109,7 @@ export class MessagePanel extends Disposable {
 	) {
 		super();
 		const wordWrap = this.configurationService.getValue<IQueryEditorConfiguration>('queryEditor').messages.wordwrap;
-		this.container.classList.toggle('word-wrap', wordWrap);
+		toggleClass(this.container, 'word-wrap', wordWrap);
 		this.tree = <WorkbenchDataTree<Model, IResultMessageIntern, FuzzyScore>>instantiationService.createInstance(
 			WorkbenchDataTree,
 			'MessagePanel',
@@ -201,7 +202,7 @@ export class MessagePanel extends Disposable {
 
 	private onMessage(message: IQueryMessage | IQueryMessage[], setInput: boolean = false) {
 		if (isArray(message)) {
-			this.model.messages.push(...message);
+			push(this.model.messages, message);
 		} else {
 			this.model.messages.push(message);
 		}

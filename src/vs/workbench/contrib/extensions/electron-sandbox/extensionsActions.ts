@@ -4,33 +4,31 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { localize } from 'vs/nls';
+import { Action } from 'vs/base/common/actions';
 import { IFileService } from 'vs/platform/files/common/files';
 import { URI } from 'vs/base/common/uri';
 import { INativeWorkbenchEnvironmentService } from 'vs/workbench/services/environment/electron-sandbox/environmentService';
 import { INativeHostService } from 'vs/platform/native/electron-sandbox/native';
 import { Schemas } from 'vs/base/common/network';
-import { Action2 } from 'vs/platform/actions/common/actions';
-import { ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
-import { ExtensionsLocalizedLabel } from 'vs/platform/extensionManagement/common/extensionManagement';
 
-export class OpenExtensionsFolderAction extends Action2 {
+export class OpenExtensionsFolderAction extends Action {
 
-	constructor() {
-		super({
-			id: 'workbench.extensions.action.openExtensionsFolder',
-			title: { value: localize('openExtensionsFolder', "Open Extensions Folder"), original: 'Open Extensions Folder' },
-			category: ExtensionsLocalizedLabel,
-			f1: true
-		});
+	static readonly ID = 'workbench.extensions.action.openExtensionsFolder';
+	static readonly LABEL = localize('openExtensionsFolder', "Open Extensions Folder");
+
+	constructor(
+		id: string,
+		label: string,
+		@INativeHostService private readonly nativeHostService: INativeHostService,
+		@IFileService private readonly fileService: IFileService,
+		@INativeWorkbenchEnvironmentService private readonly environmentService: INativeWorkbenchEnvironmentService
+	) {
+		super(id, label, undefined, true);
 	}
 
-	async run(accessor: ServicesAccessor): Promise<void> {
-		const nativeHostService = accessor.get(INativeHostService);
-		const fileService = accessor.get(IFileService);
-		const environmentService = accessor.get(INativeWorkbenchEnvironmentService);
-
-		const extensionsHome = URI.file(environmentService.extensionsPath);
-		const file = await fileService.resolve(extensionsHome);
+	override async run(): Promise<void> {
+		const extensionsHome = URI.file(this.environmentService.extensionsPath);
+		const file = await this.fileService.resolve(extensionsHome);
 
 		let itemToShow: URI;
 		if (file.children && file.children.length > 0) {
@@ -40,7 +38,7 @@ export class OpenExtensionsFolderAction extends Action2 {
 		}
 
 		if (itemToShow.scheme === Schemas.file) {
-			return nativeHostService.showItemInFolder(itemToShow.fsPath);
+			return this.nativeHostService.showItemInFolder(itemToShow.fsPath);
 		}
 	}
 }

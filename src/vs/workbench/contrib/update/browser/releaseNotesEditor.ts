@@ -77,7 +77,7 @@ export class ReleaseNotesManager {
 			this._webviewWorkbenchService.revealWebview(this._currentReleaseNotes, activeEditorPane ? activeEditorPane.group : this._editorGroupService.activeGroup, false);
 		} else {
 			this._currentReleaseNotes = this._webviewWorkbenchService.createWebview(
-				generateUuid(),
+				'vs_code_release_notes',
 				'releaseNotes',
 				title,
 				{ group: ACTIVE_GROUP, preserveFocus: false },

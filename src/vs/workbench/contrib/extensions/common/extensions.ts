@@ -18,7 +18,7 @@ import { RawContextKey } from 'vs/platform/contextkey/common/contextkey';
 
 export const VIEWLET_ID = 'workbench.view.extensions';
 
-export const EXTENSIONS_CONFIG = '.azuredatastudio/extensions.json'; // {{SQL CARBON EDIT}}
+export const EXTENSIONS_CONFIG = '.azuredatastudio/extensions.json';
 
 export interface IExtensionsViewPaneContainer extends IViewPaneContainer {
 	readonly searchValue: string | undefined;
@@ -106,12 +106,14 @@ export interface IExtensionsWorkbenchService {
 export const ConfigurationKey = 'extensions';
 export const AutoUpdateConfigurationKey = 'extensions.autoUpdate';
 export const AutoCheckUpdatesConfigurationKey = 'extensions.autoCheckUpdates';
+export const ShowRecommendationsOnlyOnDemandKey = 'extensions.showRecommendationsOnlyOnDemand';
 export const CloseExtensionDetailsOnViewChangeKey = 'extensions.closeExtensionDetailsOnViewChange';
 
 export interface IExtensionsConfiguration {
 	autoUpdate: boolean;
 	autoCheckUpdates: boolean;
 	ignoreRecommendations: boolean;
+	showRecommendationsOnlyOnDemand: boolean;
 	closeExtensionDetailsOnViewChange: boolean;
 	// {{SQL CARBON EDIT}}
 	extensionsPolicy: string;
@@ -160,8 +162,6 @@ export const WORKSPACE_RECOMMENDATIONS_VIEW_ID = 'workbench.views.extensions.wor
 export const TOGGLE_IGNORE_EXTENSION_ACTION_ID = 'workbench.extensions.action.toggleIgnoreExtension';
 export const SELECT_INSTALL_VSIX_EXTENSION_COMMAND_ID = 'workbench.extensions.action.installVSIX';
 export const INSTALL_EXTENSION_FROM_VSIX_COMMAND_ID = 'workbench.extensions.command.installFromVSIX';
-
-export const LIST_WORKSPACE_UNSUPPORTED_EXTENSIONS_COMMAND_ID = 'workbench.extensions.action.listWorkspaceUnsupportedExtensions';
 
 // Context Keys
 export const DefaultViewsContext = new RawContextKey<boolean>('defaultExtensionViews', true);

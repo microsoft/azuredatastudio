@@ -204,7 +204,6 @@ export class DragAndDropController extends Disposable implements IEditorContribu
 	}
 
 	private static readonly _DECORATION_OPTIONS = ModelDecorationOptions.register({
-		description: 'dnd-target',
 		className: 'dnd-target'
 	});
 

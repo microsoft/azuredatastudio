@@ -10,6 +10,7 @@ import { through, readable, ThroughStream } from 'event-stream';
 import * as File from 'vinyl';
 import * as Is from 'is';
 import * as xml2js from 'xml2js';
+import * as glob from 'glob';
 import * as https from 'https';
 import * as gulp from 'gulp';
 import * as fancyLog from 'fancy-log';
@@ -30,6 +31,10 @@ export interface Language {
 
 export interface InnoSetup {
 	codePage: string; //code page for encoding (http://www.jrsoftware.org/ishelp/index.php?topic=langoptionssection)
+	defaultInfo?: {
+		name: string; // inno setup language name
+		id: string; // locale identifier (https://msdn.microsoft.com/en-us/library/dd318693.aspx)
+	};
 }
 
 export const defaultLanguages: Language[] = [
@@ -193,17 +198,14 @@ export class XLF {
 	public toString(): string {
 		this.appendHeader();
 
-		const files = Object.keys(this.files).sort();
-		for (const file of files) {
+		for (let file in this.files) {
 			this.appendNewLine(`<file original="${file}" source-language="en" datatype="plaintext"><body>`, 2);
-			const items = this.files[file].sort((a: Item, b: Item) => {
-				return a.id < b.id ? -1 : a.id > b.id ? 1 : 0;
-			});
-			for (const item of items) {
+			for (let item of this.files[file]) {
 				this.addStringItem(file, item);
 			}
-			this.appendNewLine('</body></file>');
+			this.appendNewLine('</body></file>', 2);
 		}
+
 		this.appendFooter();
 		return this.buffer.join('\r\n');
 	}
@@ -773,11 +775,12 @@ export function createXlfFilesForIsl(): ThroughStream {
 	return through(function (this: ThroughStream, file: File) {
 		let projectName: string,
 			resourceFile: string;
-		if (path.basename(file.path) === 'messages.en.isl') {
+		if (path.basename(file.path) === 'Default.isl') {
 			projectName = setupProject;
-			resourceFile = 'messages.xlf';
+			resourceFile = 'setup_default.xlf';
 		} else {
-			throw new Error(`Unknown input file ${file.path}`);
+			projectName = workbenchProject;
+			resourceFile = 'setup_messages.xlf';
 		}
 
 		let xlf = new XLF(projectName),
@@ -1045,6 +1048,35 @@ function updateResource(project: string, slug: string, xlfFile: File, apiHostnam
 	});
 }
 
+// cache resources
+let _coreAndExtensionResources: Resource[];
+
+export function pullCoreAndExtensionsXlfFiles(apiHostname: string, username: string, password: string, language: Language, externalExtensions?: Map<string>): NodeJS.ReadableStream {
+	if (!_coreAndExtensionResources) {
+		_coreAndExtensionResources = [];
+		// editor and workbench
+		const json = JSON.parse(fs.readFileSync('./build/lib/i18n.resources.json', 'utf8'));
+		_coreAndExtensionResources.push(...json.editor);
+		_coreAndExtensionResources.push(...json.workbench);
+
+		// extensions
+		let extensionsToLocalize = Object.create(null);
+		glob.sync('.build/extensions/**/*.nls.json').forEach(extension => extensionsToLocalize[extension.split('/')[2]] = true);
+		glob.sync('.build/extensions/*/node_modules/vscode-nls').forEach(extension => extensionsToLocalize[extension.split('/')[2]] = true);
+
+		Object.keys(extensionsToLocalize).forEach(extension => {
+			_coreAndExtensionResources.push({ name: extension, project: extensionsProject });
+		});
+
+		if (externalExtensions) {
+			for (let resourceName in externalExtensions) {
+				_coreAndExtensionResources.push({ name: resourceName, project: extensionsProject });
+			}
+		}
+	}
+	return pullXlfFiles(apiHostname, username, password, language, _coreAndExtensionResources);
+}
+
 export function pullSetupXlfFiles(apiHostname: string, username: string, password: string, language: Language, includeDefault: boolean): NodeJS.ReadableStream {
 	let setupResources = [{ name: 'setup_messages', project: workbenchProject }];
 	if (includeDefault) {
@@ -1176,16 +1208,20 @@ export interface TranslationPath {
 	resourceName: string;
 }
 
+export function pullI18nPackFiles(apiHostname: string, username: string, password: string, language: Language, resultingTranslationPaths: TranslationPath[]): NodeJS.ReadableStream {
+	return pullCoreAndExtensionsXlfFiles(apiHostname, username, password, language, externalExtensionsWithTranslations)
+		.pipe(prepareI18nPackFiles(externalExtensionsWithTranslations, resultingTranslationPaths, language.id === 'ps'));
+}
+
 export function prepareI18nPackFiles(externalExtensions: Map<string>, resultingTranslationPaths: TranslationPath[], pseudo = false): NodeJS.ReadWriteStream {
 	let parsePromises: Promise<ParsedXLF[]>[] = [];
 	let mainPack: I18nPack = { version: i18nPackVersion, contents: {} };
 	let extensionsPacks: Map<I18nPack> = {};
 	let errors: any[] = [];
 	return through(function (this: ThroughStream, xlf: File) {
-		let project = path.basename(path.dirname(path.dirname(xlf.relative)));
+		let project = path.basename(path.dirname(xlf.relative));
 		let resource = path.basename(xlf.relative, '.xlf');
 		let contents = xlf.contents.toString();
-		log(`Found ${project}: ${resource}`);
 		let parsePromise = pseudo ? XLF.parsePseudo(contents) : XLF.parse(contents);
 		parsePromises.push(parsePromise);
 		parsePromise.then(
@@ -1254,6 +1290,9 @@ export function prepareIslFiles(language: Language, innoSetupConfig: InnoSetup):
 		parsePromise.then(
 			resolvedFiles => {
 				resolvedFiles.forEach(file => {
+					if (path.basename(file.originalFilePath) === 'Default' && !innoSetupConfig.defaultInfo) {
+						return;
+					}
 					let translatedFile = createIslFile(file.originalFilePath, file.messages, language, innoSetupConfig);
 					stream.queue(translatedFile);
 				});
@@ -1288,9 +1327,17 @@ function createIslFile(originalFilePath: string, messages: Map<string>, language
 				let key = sections[0];
 				let translated = line;
 				if (key) {
-					let translatedMessage = messages[key];
-					if (translatedMessage) {
-						translated = `${key}=${translatedMessage}`;
+					if (key === 'LanguageName') {
+						translated = `${key}=${innoSetup.defaultInfo!.name}`;
+					} else if (key === 'LanguageID') {
+						translated = `${key}=${innoSetup.defaultInfo!.id}`;
+					} else if (key === 'LanguageCodePage') {
+						translated = `${key}=${innoSetup.codePage.substr(2)}`;
+					} else {
+						let translatedMessage = messages[key];
+						if (translatedMessage) {
+							translated = `${key}=${translatedMessage}`;
+						}
 					}
 				}
 

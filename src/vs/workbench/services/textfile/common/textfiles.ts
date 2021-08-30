@@ -476,7 +476,6 @@ export interface ITextFileEditorModel extends ITextEditorModel, IEncodingSupport
 	readonly onDidChangeContent: Event<void>;
 	readonly onDidSaveError: Event<void>;
 	readonly onDidChangeOrphaned: Event<void>;
-	readonly onDidChangeReadonly: Event<void>;
 	readonly onDidChangeEncoding: Event<void>;
 
 	hasState(state: TextFileEditorModelState): boolean;

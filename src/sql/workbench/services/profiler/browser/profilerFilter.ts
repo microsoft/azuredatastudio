@@ -4,6 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { ProfilerFilterClause, ProfilerFilter, ProfilerFilterClauseOperator } from 'sql/workbench/services/profiler/browser/interfaces';
+import { startsWith } from 'vs/base/common/strings';
+
 
 export function FilterData(filter: ProfilerFilter, data: any[]): any[] {
 	if (!data || !filter) {
@@ -72,10 +74,10 @@ function matches(item: any, clauses: ProfilerFilterClause[]): boolean {
 						match = !actualValueString || !(actualValueString.indexOf(expectedValueString) > -1);
 						break;
 					case ProfilerFilterClauseOperator.StartsWith:
-						match = actualValueString.startsWith(expectedValueString);
+						match = startsWith(actualValueString, expectedValueString);
 						break;
 					case ProfilerFilterClauseOperator.NotStartsWith:
-						match = !actualValueString || !actualValueString.startsWith(expectedValueString);
+						match = !actualValueString || !startsWith(actualValueString, expectedValueString);
 						break;
 					default:
 						throw new Error(`Not a valid operator: ${clause.operator}`);

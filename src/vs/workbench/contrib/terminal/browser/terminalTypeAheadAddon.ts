@@ -65,65 +65,61 @@ class Cursor implements ICoordinate {
 	private _y = 1;
 	private _baseY = 1;
 
-	get x() {
+	public get x() {
 		return this._x;
 	}
 
-	get y() {
+	public get y() {
 		return this._y;
 	}
 
-	get baseY() {
+	public get baseY() {
 		return this._baseY;
 	}
 
-	get coordinate(): ICoordinate {
+	public get coordinate(): ICoordinate {
 		return { x: this._x, y: this._y, baseY: this._baseY };
 	}
 
-	constructor(
-		readonly rows: number,
-		readonly cols: number,
-		private readonly _buffer: IBuffer
-	) {
-		this._x = _buffer.cursorX;
-		this._y = _buffer.cursorY;
-		this._baseY = _buffer.baseY;
+	constructor(public readonly rows: number, public readonly cols: number, private readonly buffer: IBuffer) {
+		this._x = buffer.cursorX;
+		this._y = buffer.cursorY;
+		this._baseY = buffer.baseY;
 	}
 
-	getLine() {
-		return this._buffer.getLine(this._y + this._baseY);
+	public getLine() {
+		return this.buffer.getLine(this._y + this._baseY);
 	}
 
-	getCell(loadInto?: IBufferCell) {
+	public getCell(loadInto?: IBufferCell) {
 		return this.getLine()?.getCell(this._x, loadInto);
 	}
 
-	moveTo(coordinate: ICoordinate) {
+	public moveTo(coordinate: ICoordinate) {
 		this._x = coordinate.x;
 		this._y = (coordinate.y + coordinate.baseY) - this._baseY;
 		return this.moveInstruction();
 	}
 
-	clone() {
-		const c = new Cursor(this.rows, this.cols, this._buffer);
+	public clone() {
+		const c = new Cursor(this.rows, this.cols, this.buffer);
 		c.moveTo(this);
 		return c;
 	}
 
-	move(x: number, y: number) {
+	public move(x: number, y: number) {
 		this._x = x;
 		this._y = y;
 		return this.moveInstruction();
 	}
 
-	shift(x: number = 0, y: number = 0) {
+	public shift(x: number = 0, y: number = 0) {
 		this._x += x;
 		this._y += y;
 		return this.moveInstruction();
 	}
 
-	moveInstruction() {
+	public moveInstruction() {
 		if (this._y >= this.rows) {
 			this._baseY += this._y - (this.rows - 1);
 			this._y = this.rows - 1;
@@ -219,30 +215,28 @@ export interface IPrediction {
 }
 
 class StringReader {
-	index = 0;
+	public index = 0;
 
-	get remaining() {
-		return this._input.length - this.index;
+	public get remaining() {
+		return this.input.length - this.index;
 	}
 
-	get eof() {
-		return this.index === this._input.length;
+	public get eof() {
+		return this.index === this.input.length;
 	}
 
-	get rest() {
-		return this._input.slice(this.index);
+	public get rest() {
+		return this.input.slice(this.index);
 	}
 
-	constructor(
-		private readonly _input: string
-	) { }
+	constructor(private readonly input: string) { }
 
 	/**
 	 * Advances the reader and returns the character if it matches.
 	 */
-	eatChar(char: string) {
-		if (this._input[this.index] !== char) {
-			return undefined; // {{SQL CARBON EDIT}} Strict nulls
+	public eatChar(char: string) {
+		if (this.input[this.index] !== char) {
+			return undefined;
 		}
 
 		this.index++;
@@ -252,9 +246,9 @@ class StringReader {
 	/**
 	 * Advances the reader and returns the string if it matches.
 	 */
-	eatStr(substr: string) {
-		if (this._input.slice(this.index, substr.length) !== substr) {
-			return undefined; // {{SQL CARBON EDIT}} Strict nulls
+	public eatStr(substr: string) {
+		if (this.input.slice(this.index, substr.length) !== substr) {
+			return undefined;
 		}
 
 		this.index += substr.length;
@@ -266,8 +260,8 @@ class StringReader {
 	 * before the substring is consumed, it will buffer. Index is not moved
 	 * if it's not a match.
 	 */
-	eatGradually(substr: string): MatchResult {
-		const prevIndex = this.index;
+	public eatGradually(substr: string): MatchResult {
+		let prevIndex = this.index;
 		for (let i = 0; i < substr.length; i++) {
 			if (i > 0 && this.eof) {
 				return MatchResult.Buffer;
@@ -285,10 +279,10 @@ class StringReader {
 	/**
 	 * Advances the reader and returns the regex if it matches.
 	 */
-	eatRe(re: RegExp) {
-		const match = re.exec(this._input.slice(this.index));
+	public eatRe(re: RegExp) {
+		const match = re.exec(this.input.slice(this.index));
 		if (!match) {
-			return undefined; // {{SQL CARBON EDIT}} Strict nulls
+			return undefined;
 		}
 
 		this.index += match[0].length;
@@ -298,8 +292,8 @@ class StringReader {
 	/**
 	 * Advances the reader and returns the character if the code matches.
 	 */
-	eatCharCode(min = 0, max = min + 1) {
-		const code = this._input.charCodeAt(this.index);
+	public eatCharCode(min = 0, max = min + 1) {
+		const code = this.input.charCodeAt(this.index);
 		if (code < min || code >= max) {
 			return undefined;
 		}
@@ -314,21 +308,21 @@ class StringReader {
  * after it.
  */
 class HardBoundary implements IPrediction {
-	readonly clearAfterTimeout = false;
+	public readonly clearAfterTimeout = false;
 
-	apply() {
+	public apply() {
 		return '';
 	}
 
-	rollback() {
+	public rollback() {
 		return '';
 	}
 
-	rollForwards() {
+	public rollForwards() {
 		return '';
 	}
 
-	matches() {
+	public matches() {
 		return MatchResult.Failure;
 	}
 }
@@ -338,30 +332,30 @@ class HardBoundary implements IPrediction {
  * through its `matches` request.
  */
 class TentativeBoundary implements IPrediction {
-	private _appliedCursor?: Cursor;
+	private appliedCursor?: Cursor;
 
-	constructor(readonly inner: IPrediction) { }
+	constructor(public readonly inner: IPrediction) { }
 
-	apply(buffer: IBuffer, cursor: Cursor) {
-		this._appliedCursor = cursor.clone();
-		this.inner.apply(buffer, this._appliedCursor);
+	public apply(buffer: IBuffer, cursor: Cursor) {
+		this.appliedCursor = cursor.clone();
+		this.inner.apply(buffer, this.appliedCursor);
 		return '';
 	}
 
-	rollback(cursor: Cursor) {
+	public rollback(cursor: Cursor) {
 		this.inner.rollback(cursor.clone());
 		return '';
 	}
 
-	rollForwards(cursor: Cursor, withInput: string) {
-		if (this._appliedCursor) {
-			cursor.moveTo(this._appliedCursor);
+	public rollForwards(cursor: Cursor, withInput: string) {
+		if (this.appliedCursor) {
+			cursor.moveTo(this.appliedCursor);
 		}
 
 		return withInput;
 	}
 
-	matches(input: StringReader) {
+	public matches(input: StringReader) {
 		return this.inner.matches(input);
 	}
 }
@@ -373,17 +367,17 @@ export const isTenativeCharacterPrediction = (p: unknown): p is (TentativeBounda
  * Prediction for a single alphanumeric character.
  */
 class CharacterPrediction implements IPrediction {
-	readonly affectsStyle = true;
+	public readonly affectsStyle = true;
 
-	appliedAt?: {
+	public appliedAt?: {
 		pos: ICoordinate;
 		oldAttributes: string;
 		oldChar: string;
 	};
 
-	constructor(private readonly _style: TypeAheadStyle, private readonly _char: string) { }
+	constructor(private readonly style: TypeAheadStyle, private readonly char: string) { }
 
-	apply(_: IBuffer, cursor: Cursor) {
+	public apply(_: IBuffer, cursor: Cursor) {
 		const cell = cursor.getCell();
 		this.appliedAt = cell
 			? { pos: cursor.coordinate, oldAttributes: attributesToSeq(cell), oldChar: cell.getChars() }
@@ -391,10 +385,10 @@ class CharacterPrediction implements IPrediction {
 
 		cursor.shift(1);
 
-		return this._style.apply + this._char + this._style.undo;
+		return this.style.apply + this.char + this.style.undo;
 	}
 
-	rollback(cursor: Cursor) {
+	public rollback(cursor: Cursor) {
 		if (!this.appliedAt) {
 			return ''; // not applied
 		}
@@ -404,7 +398,7 @@ class CharacterPrediction implements IPrediction {
 		return r;
 	}
 
-	rollForwards(cursor: Cursor, input: string) {
+	public rollForwards(cursor: Cursor, input: string) {
 		if (!this.appliedAt) {
 			return ''; // not applied
 		}
@@ -412,8 +406,8 @@ class CharacterPrediction implements IPrediction {
 		return cursor.clone().moveTo(this.appliedAt.pos) + input;
 	}
 
-	matches(input: StringReader, lookBehind?: IPrediction) {
-		const startIndex = input.index;
+	public matches(input: StringReader, lookBehind?: IPrediction) {
+		let startIndex = input.index;
 
 		// remove any styling CSI before checking the char
 		while (input.eatRe(CSI_STYLE_RE)) { }
@@ -422,13 +416,13 @@ class CharacterPrediction implements IPrediction {
 			return MatchResult.Buffer;
 		}
 
-		if (input.eatChar(this._char)) {
+		if (input.eatChar(this.char)) {
 			return MatchResult.Success;
 		}
 
 		if (lookBehind instanceof CharacterPrediction) {
 			// see #112842
-			const sillyZshOutcome = input.eatGradually(`\b${lookBehind._char}${this._char}`);
+			const sillyZshOutcome = input.eatGradually(`\b${lookBehind.char}${this.char}`);
 			if (sillyZshOutcome !== MatchResult.Failure) {
 				return sillyZshOutcome;
 			}
@@ -440,48 +434,48 @@ class CharacterPrediction implements IPrediction {
 }
 
 class BackspacePrediction implements IPrediction {
-	protected _appliedAt?: {
+	protected appliedAt?: {
 		pos: ICoordinate;
 		oldAttributes: string;
 		oldChar: string;
 		isLastChar: boolean;
 	};
 
-	constructor(private readonly _terminal: Terminal) { }
+	constructor(private readonly terminal: Terminal) { }
 
-	apply(_: IBuffer, cursor: Cursor) {
+	public apply(_: IBuffer, cursor: Cursor) {
 		// at eol if everything to the right is whitespace (zsh will emit a "clear line" code in this case)
 		// todo: can be optimized if `getTrimmedLength` is exposed from xterm
 		const isLastChar = !cursor.getLine()?.translateToString(undefined, cursor.x).trim();
 		const pos = cursor.coordinate;
 		const move = cursor.shift(-1);
 		const cell = cursor.getCell();
-		this._appliedAt = cell
+		this.appliedAt = cell
 			? { isLastChar, pos, oldAttributes: attributesToSeq(cell), oldChar: cell.getChars() }
 			: { isLastChar, pos, oldAttributes: '', oldChar: '' };
 
 		return move + DELETE_CHAR;
 	}
 
-	rollback(cursor: Cursor) {
-		if (!this._appliedAt) {
+	public rollback(cursor: Cursor) {
+		if (!this.appliedAt) {
 			return ''; // not applied
 		}
 
-		const { oldAttributes, oldChar, pos } = this._appliedAt;
+		const { oldAttributes, oldChar, pos } = this.appliedAt;
 		if (!oldChar) {
 			return cursor.moveTo(pos) + DELETE_CHAR;
 		}
 
-		return oldAttributes + oldChar + cursor.moveTo(pos) + attributesToSeq(core(this._terminal)._inputHandler._curAttrData);
+		return oldAttributes + oldChar + cursor.moveTo(pos) + attributesToSeq(core(this.terminal)._inputHandler._curAttrData);
 	}
 
-	rollForwards() {
+	public rollForwards() {
 		return '';
 	}
 
-	matches(input: StringReader) {
-		if (this._appliedAt?.isLastChar) {
+	public matches(input: StringReader) {
+		if (this.appliedAt?.isLastChar) {
 			const r1 = input.eatGradually(`\b${CSI}K`);
 			if (r1 !== MatchResult.Failure) {
 				return r1;
@@ -498,23 +492,23 @@ class BackspacePrediction implements IPrediction {
 }
 
 class NewlinePrediction implements IPrediction {
-	protected _prevPosition?: ICoordinate;
+	protected prevPosition?: ICoordinate;
 
-	apply(_: IBuffer, cursor: Cursor) {
-		this._prevPosition = cursor.coordinate;
+	public apply(_: IBuffer, cursor: Cursor) {
+		this.prevPosition = cursor.coordinate;
 		cursor.move(0, cursor.y + 1);
 		return '\r\n';
 	}
 
-	rollback(cursor: Cursor) {
-		return this._prevPosition ? cursor.moveTo(this._prevPosition) : '';
+	public rollback(cursor: Cursor) {
+		return this.prevPosition ? cursor.moveTo(this.prevPosition) : '';
 	}
 
-	rollForwards() {
+	public rollForwards() {
 		return ''; // does not need to rewrite
 	}
 
-	matches(input: StringReader) {
+	public matches(input: StringReader) {
 		return input.eatGradually('\r\n');
 	}
 }
@@ -524,13 +518,13 @@ class NewlinePrediction implements IPrediction {
  * prediction, but shells handle it slightly differently.
  */
 class LinewrapPrediction extends NewlinePrediction implements IPrediction {
-	override apply(_: IBuffer, cursor: Cursor) {
-		this._prevPosition = cursor.coordinate;
+	public override apply(_: IBuffer, cursor: Cursor) {
+		this.prevPosition = cursor.coordinate;
 		cursor.move(0, cursor.y + 1);
 		return ' \r';
 	}
 
-	override matches(input: StringReader) {
+	public override matches(input: StringReader) {
 		// bash and zshell add a space which wraps in the terminal, then a CR
 		const r = input.eatGradually(' \r');
 		if (r !== MatchResult.Failure) {
@@ -544,7 +538,7 @@ class LinewrapPrediction extends NewlinePrediction implements IPrediction {
 }
 
 class CursorMovePrediction implements IPrediction {
-	private _applied?: {
+	private applied?: {
 		rollForward: string;
 		prevPosition: number;
 		prevAttrs: string;
@@ -552,17 +546,17 @@ class CursorMovePrediction implements IPrediction {
 	};
 
 	constructor(
-		private readonly _direction: CursorMoveDirection,
-		private readonly _moveByWords: boolean,
-		private readonly _amount: number,
+		private readonly direction: CursorMoveDirection,
+		private readonly moveByWords: boolean,
+		private readonly amount: number,
 	) { }
 
-	apply(buffer: IBuffer, cursor: Cursor) {
+	public apply(buffer: IBuffer, cursor: Cursor) {
 		const prevPosition = cursor.x;
 		const currentCell = cursor.getCell();
 		const prevAttrs = currentCell ? attributesToSeq(currentCell) : '';
 
-		const { _amount: amount, _direction: direction, _moveByWords: moveByWords } = this;
+		const { amount, direction, moveByWords } = this;
 		const delta = direction === CursorMoveDirection.Back ? -1 : 1;
 
 		const target = cursor.clone();
@@ -574,35 +568,35 @@ class CursorMovePrediction implements IPrediction {
 			target.shift(delta * amount);
 		}
 
-		this._applied = {
+		this.applied = {
 			amount: Math.abs(cursor.x - target.x),
 			prevPosition,
 			prevAttrs,
 			rollForward: cursor.moveTo(target),
 		};
 
-		return this._applied.rollForward;
+		return this.applied.rollForward;
 	}
 
-	rollback(cursor: Cursor) {
-		if (!this._applied) {
+	public rollback(cursor: Cursor) {
+		if (!this.applied) {
 			return '';
 		}
 
-		return cursor.move(this._applied.prevPosition, cursor.y) + this._applied.prevAttrs;
+		return cursor.move(this.applied.prevPosition, cursor.y) + this.applied.prevAttrs;
 	}
 
-	rollForwards() {
+	public rollForwards() {
 		return ''; // does not need to rewrite
 	}
 
-	matches(input: StringReader) {
-		if (!this._applied) {
+	public matches(input: StringReader) {
+		if (!this.applied) {
 			return MatchResult.Failure;
 		}
 
-		const direction = this._direction;
-		const { amount, rollForward } = this._applied;
+		const direction = this.direction;
+		const { amount, rollForward } = this.applied;
 
 
 		// arg can be omitted to move one character. We don't eatGradually() here
@@ -633,38 +627,38 @@ class CursorMovePrediction implements IPrediction {
 }
 
 export class PredictionStats extends Disposable {
-	private readonly _stats: [latency: number, correct: boolean][] = [];
-	private _index = 0;
-	private readonly _addedAtTime = new WeakMap<IPrediction, number>();
-	private readonly _changeEmitter = new Emitter<void>();
-	readonly onChange = this._changeEmitter.event;
+	private readonly stats: [latency: number, correct: boolean][] = [];
+	private index = 0;
+	private readonly addedAtTime = new WeakMap<IPrediction, number>();
+	private readonly changeEmitter = new Emitter<void>();
+	public readonly onChange = this.changeEmitter.event;
 
 	/**
 	 * Gets the percent (0-1) of predictions that were accurate.
 	 */
-	get accuracy() {
+	public get accuracy() {
 		let correctCount = 0;
-		for (const [, correct] of this._stats) {
+		for (const [, correct] of this.stats) {
 			if (correct) {
 				correctCount++;
 			}
 		}
 
-		return correctCount / (this._stats.length || 1);
+		return correctCount / (this.stats.length || 1);
 	}
 
 	/**
 	 * Gets the number of recorded stats.
 	 */
-	get sampleSize() {
-		return this._stats.length;
+	public get sampleSize() {
+		return this.stats.length;
 	}
 
 	/**
 	 * Gets latency stats of successful predictions.
 	 */
-	get latency() {
-		const latencies = this._stats.filter(([, correct]) => correct).map(([s]) => s).sort();
+	public get latency() {
+		const latencies = this.stats.filter(([, correct]) => correct).map(([s]) => s).sort();
 
 		return {
 			count: latencies.length,
@@ -677,9 +671,9 @@ export class PredictionStats extends Disposable {
 	/**
 	 * Gets the maximum observed latency.
 	 */
-	get maxLatency() {
+	public get maxLatency() {
 		let max = -Infinity;
-		for (const [latency, correct] of this._stats) {
+		for (const [latency, correct] of this.stats) {
 			if (correct) {
 				max = Math.max(latency, max);
 			}
@@ -690,16 +684,16 @@ export class PredictionStats extends Disposable {
 
 	constructor(timeline: PredictionTimeline) {
 		super();
-		this._register(timeline.onPredictionAdded(p => this._addedAtTime.set(p, Date.now())));
-		this._register(timeline.onPredictionSucceeded(this._pushStat.bind(this, true)));
-		this._register(timeline.onPredictionFailed(this._pushStat.bind(this, false)));
+		this._register(timeline.onPredictionAdded(p => this.addedAtTime.set(p, Date.now())));
+		this._register(timeline.onPredictionSucceeded(this.pushStat.bind(this, true)));
+		this._register(timeline.onPredictionFailed(this.pushStat.bind(this, false)));
 	}
 
-	private _pushStat(correct: boolean, prediction: IPrediction) {
-		const started = this._addedAtTime.get(prediction)!;
-		this._stats[this._index] = [Date.now() - started, correct];
-		this._index = (this._index + 1) % statsBufferSize;
-		this._changeEmitter.fire();
+	private pushStat(correct: boolean, prediction: IPrediction) {
+		const started = this.addedAtTime.get(prediction)!;
+		this.stats[this.index] = [Date.now() - started, correct];
+		this.index = (this.index + 1) % statsBufferSize;
+		this.changeEmitter.fire();
 	}
 }
 
@@ -708,12 +702,12 @@ export class PredictionTimeline {
 	 * Expected queue of events. Only predictions for the lowest are
 	 * written into the terminal.
 	 */
-	private _expected: ({ gen: number; p: IPrediction })[] = [];
+	private expected: ({ gen: number; p: IPrediction })[] = [];
 
 	/**
 	 * Current prediction generation.
 	 */
-	private _currentGen = 0;
+	private currentGen = 0;
 
 	/**
 	 * Current cursor position -- kept outside the buffer since it can be ahead
@@ -734,58 +728,58 @@ export class PredictionTimeline {
 	 * Previously sent data that was buffered and should be prepended to the
 	 * next input.
 	 */
-	private _inputBuffer?: string;
+	private inputBuffer?: string;
 
 	/**
 	 * Whether predictions are echoed to the terminal. If false, predictions
 	 * will still be computed internally for latency metrics, but input will
 	 * never be adjusted.
 	 */
-	private _showPredictions = false;
+	private showPredictions = false;
 
 	/**
 	 * The last successfully-made prediction.
 	 */
-	private _lookBehind?: IPrediction;
+	private lookBehind?: IPrediction;
 
-	private readonly _addedEmitter = new Emitter<IPrediction>();
-	readonly onPredictionAdded = this._addedEmitter.event;
-	private readonly _failedEmitter = new Emitter<IPrediction>();
-	readonly onPredictionFailed = this._failedEmitter.event;
-	private readonly _succeededEmitter = new Emitter<IPrediction>();
-	readonly onPredictionSucceeded = this._succeededEmitter.event;
+	private readonly addedEmitter = new Emitter<IPrediction>();
+	public readonly onPredictionAdded = this.addedEmitter.event;
+	private readonly failedEmitter = new Emitter<IPrediction>();
+	public readonly onPredictionFailed = this.failedEmitter.event;
+	private readonly succeededEmitter = new Emitter<IPrediction>();
+	public readonly onPredictionSucceeded = this.succeededEmitter.event;
 
-	private get _currentGenerationPredictions() {
-		return this._expected.filter(({ gen }) => gen === this._expected[0].gen).map(({ p }) => p);
+	private get currentGenerationPredictions() {
+		return this.expected.filter(({ gen }) => gen === this.expected[0].gen).map(({ p }) => p);
 	}
 
-	get isShowingPredictions() {
-		return this._showPredictions;
+	public get isShowingPredictions() {
+		return this.showPredictions;
 	}
 
-	get length() {
-		return this._expected.length;
+	public get length() {
+		return this.expected.length;
 	}
 
-	constructor(readonly terminal: Terminal, private readonly _style: TypeAheadStyle) { }
+	constructor(public readonly terminal: Terminal, private readonly style: TypeAheadStyle) { }
 
-	setShowPredictions(show: boolean) {
-		if (show === this._showPredictions) {
+	public setShowPredictions(show: boolean) {
+		if (show === this.showPredictions) {
 			return;
 		}
 
 		// console.log('set predictions:', show);
-		this._showPredictions = show;
+		this.showPredictions = show;
 
-		const buffer = this._getActiveBuffer();
+		const buffer = this.getActiveBuffer();
 		if (!buffer) {
 			return;
 		}
 
-		const toApply = this._currentGenerationPredictions;
+		const toApply = this.currentGenerationPredictions;
 		if (show) {
 			this.clearCursor();
-			this._style.expectIncomingStyle(toApply.reduce((count, p) => p.affectsStyle ? count + 1 : count, 0));
+			this.style.expectIncomingStyle(toApply.reduce((count, p) => p.affectsStyle ? count + 1 : count, 0));
 			this.terminal.write(toApply.map(p => p.apply(buffer, this.physicalCursor(buffer))).join(''));
 		} else {
 			this.terminal.write(toApply.reverse().map(p => p.rollback(this.physicalCursor(buffer))).join(''));
@@ -795,41 +789,41 @@ export class PredictionTimeline {
 	/**
 	 * Undoes any predictions written and resets expectations.
 	 */
-	undoAllPredictions() {
-		const buffer = this._getActiveBuffer();
-		if (this._showPredictions && buffer) {
-			this.terminal.write(this._currentGenerationPredictions.reverse()
+	public undoAllPredictions() {
+		const buffer = this.getActiveBuffer();
+		if (this.showPredictions && buffer) {
+			this.terminal.write(this.currentGenerationPredictions.reverse()
 				.map(p => p.rollback(this.physicalCursor(buffer))).join(''));
 		}
 
-		this._expected = [];
+		this.expected = [];
 	}
 
 	/**
 	 * Should be called when input is incoming to the temrinal.
 	 */
-	beforeServerInput(input: string): string {
+	public beforeServerInput(input: string): string {
 		const originalInput = input;
-		if (this._inputBuffer) {
-			input = this._inputBuffer + input;
-			this._inputBuffer = undefined;
+		if (this.inputBuffer) {
+			input = this.inputBuffer + input;
+			this.inputBuffer = undefined;
 		}
 
-		if (!this._expected.length) {
-			this._clearPredictionState();
+		if (!this.expected.length) {
+			this.clearPredictionState();
 			return input;
 		}
 
-		const buffer = this._getActiveBuffer();
+		const buffer = this.getActiveBuffer();
 		if (!buffer) {
-			this._clearPredictionState();
+			this.clearPredictionState();
 			return input;
 		}
 
 		let output = '';
 
 		const reader = new StringReader(input);
-		const startingGen = this._expected[0].gen;
+		const startingGen = this.expected[0].gen;
 		const emitPredictionOmitted = () => {
 			const omit = reader.eatRe(PREDICTION_OMIT_RE);
 			if (omit) {
@@ -837,13 +831,13 @@ export class PredictionTimeline {
 			}
 		};
 
-		ReadLoop: while (this._expected.length && reader.remaining > 0) {
+		ReadLoop: while (this.expected.length && reader.remaining > 0) {
 			emitPredictionOmitted();
 
-			const { p: prediction, gen } = this._expected[0];
+			const { p: prediction, gen } = this.expected[0];
 			const cursor = this.physicalCursor(buffer);
-			const beforeTestReaderIndex = reader.index;
-			switch (prediction.matches(reader, this._lookBehind)) {
+			let beforeTestReaderIndex = reader.index;
+			switch (prediction.matches(reader, this.lookBehind)) {
 				case MatchResult.Success:
 					// if the input character matches what the next prediction expected, undo
 					// the prediction and write the real character out.
@@ -855,28 +849,28 @@ export class PredictionTimeline {
 						output += eaten;
 					}
 
-					this._succeededEmitter.fire(prediction);
-					this._lookBehind = prediction;
-					this._expected.shift();
+					this.succeededEmitter.fire(prediction);
+					this.lookBehind = prediction;
+					this.expected.shift();
 					break;
 				case MatchResult.Buffer:
 					// on a buffer, store the remaining data and completely read data
 					// to be output as normal.
-					this._inputBuffer = input.slice(beforeTestReaderIndex);
+					this.inputBuffer = input.slice(beforeTestReaderIndex);
 					reader.index = input.length;
 					break ReadLoop;
 				case MatchResult.Failure:
 					// on a failure, roll back all remaining items in this generation
 					// and clear predictions, since they are no longer valid
-					const rollback = this._expected.filter(p => p.gen === startingGen).reverse();
+					const rollback = this.expected.filter(p => p.gen === startingGen).reverse();
 					output += rollback.map(({ p }) => p.rollback(this.physicalCursor(buffer))).join('');
 					if (rollback.some(r => r.p.affectsStyle)) {
 						// reading the current style should generally be safe, since predictions
 						// always restore the style if they modify it.
 						output += attributesToSeq(core(this.terminal)._inputHandler._curAttrData);
 					}
-					this._clearPredictionState();
-					this._failedEmitter.fire(prediction);
+					this.clearPredictionState();
+					this.failedEmitter.fire(prediction);
 					break ReadLoop;
 			}
 		}
@@ -887,24 +881,24 @@ export class PredictionTimeline {
 		// reset the cursor
 		if (!reader.eof) {
 			output += reader.rest;
-			this._clearPredictionState();
+			this.clearPredictionState();
 		}
 
 		// If we passed a generation boundary, apply the current generation's predictions
-		if (this._expected.length && startingGen !== this._expected[0].gen) {
-			for (const { p, gen } of this._expected) {
-				if (gen !== this._expected[0].gen) {
+		if (this.expected.length && startingGen !== this.expected[0].gen) {
+			for (const { p, gen } of this.expected) {
+				if (gen !== this.expected[0].gen) {
 					break;
 				}
 				if (p.affectsStyle) {
-					this._style.expectIncomingStyle();
+					this.style.expectIncomingStyle();
 				}
 
 				output += p.apply(buffer, this.physicalCursor(buffer));
 			}
 		}
 
-		if (!this._showPredictions) {
+		if (!this.showPredictions) {
 			return originalInput;
 		}
 
@@ -926,20 +920,20 @@ export class PredictionTimeline {
 	 * Clears any expected predictions and stored state. Should be called when
 	 * the pty gives us something we don't recognize.
 	 */
-	private _clearPredictionState() {
-		this._expected = [];
+	private clearPredictionState() {
+		this.expected = [];
 		this.clearCursor();
-		this._lookBehind = undefined;
+		this.lookBehind = undefined;
 	}
 
 	/**
 	 * Appends a typeahead prediction.
 	 */
-	addPrediction(buffer: IBuffer, prediction: IPrediction) {
-		this._expected.push({ gen: this._currentGen, p: prediction });
-		this._addedEmitter.fire(prediction);
+	public addPrediction(buffer: IBuffer, prediction: IPrediction) {
+		this.expected.push({ gen: this.currentGen, p: prediction });
+		this.addedEmitter.fire(prediction);
 
-		if (this._currentGen !== this._expected[0].gen) {
+		if (this.currentGen !== this.expected[0].gen) {
 			prediction.apply(buffer, this.tentativeCursor(buffer));
 			return false;
 		}
@@ -947,9 +941,9 @@ export class PredictionTimeline {
 		const text = prediction.apply(buffer, this.physicalCursor(buffer));
 		this._tenativeCursor = undefined; // next read will get or clone the physical cursor
 
-		if (this._showPredictions && text) {
+		if (this.showPredictions && text) {
 			if (prediction.affectsStyle) {
-				this._style.expectIncomingStyle();
+				this.style.expectIncomingStyle();
 			}
 			// console.log('predict:', JSON.stringify(text));
 			this.terminal.write(text);
@@ -963,9 +957,9 @@ export class PredictionTimeline {
 	 * after this one will only be displayed after the give prediction matches
 	 * pty output/
 	 */
-	addBoundary(): void;
-	addBoundary(buffer: IBuffer, prediction: IPrediction): boolean;
-	addBoundary(buffer?: IBuffer, prediction?: IPrediction) {
+	public addBoundary(): void;
+	public addBoundary(buffer: IBuffer, prediction: IPrediction): boolean;
+	public addBoundary(buffer?: IBuffer, prediction?: IPrediction) {
 		let applied = false;
 		if (buffer && prediction) {
 			// We apply the prediction so that it's matched against, but wrapped
@@ -974,30 +968,30 @@ export class PredictionTimeline {
 			applied = this.addPrediction(buffer, new TentativeBoundary(prediction));
 			prediction.apply(buffer, this.tentativeCursor(buffer));
 		}
-		this._currentGen++;
+		this.currentGen++;
 		return applied;
 	}
 
 	/**
 	 * Peeks the last prediction written.
 	 */
-	peekEnd(): IPrediction | undefined {
-		return this._expected[this._expected.length - 1]?.p;
+	public peekEnd(): IPrediction | undefined {
+		return this.expected[this.expected.length - 1]?.p;
 	}
 
 	/**
 	 * Peeks the first pending prediction.
 	 */
-	peekStart(): IPrediction | undefined {
-		return this._expected[0]?.p;
+	public peekStart(): IPrediction | undefined {
+		return this.expected[0]?.p;
 	}
 
 	/**
 	 * Current position of the cursor in the terminal.
 	 */
-	physicalCursor(buffer: IBuffer) {
+	public physicalCursor(buffer: IBuffer) {
 		if (!this._physicalCursor) {
-			if (this._showPredictions) {
+			if (this.showPredictions) {
 				flushOutput(this.terminal);
 			}
 			this._physicalCursor = new Cursor(this.terminal.rows, this.terminal.cols, buffer);
@@ -1010,7 +1004,7 @@ export class PredictionTimeline {
 	 * Cursor position if all predictions and boundaries that have been inserted
 	 * so far turn out to be successfully predicted.
 	 */
-	tentativeCursor(buffer: IBuffer) {
+	public tentativeCursor(buffer: IBuffer) {
 		if (!this._tenativeCursor) {
 			this._tenativeCursor = this.physicalCursor(buffer).clone();
 		}
@@ -1018,12 +1012,12 @@ export class PredictionTimeline {
 		return this._tenativeCursor;
 	}
 
-	clearCursor() {
+	public clearCursor() {
 		this._physicalCursor = undefined;
 		this._tenativeCursor = undefined;
 	}
 
-	private _getActiveBuffer() {
+	private getActiveBuffer() {
 		const buffer = this.terminal.buffer.active;
 		return buffer.type === 'normal' ? buffer : undefined;
 	}
@@ -1110,7 +1104,7 @@ const getColorWidth = (params: (number | number[])[], pos: number) => {
 };
 
 class TypeAheadStyle implements IDisposable {
-	private static _compileArgs(args: ReadonlyArray<number>) {
+	private static compileArgs(args: ReadonlyArray<number>) {
 		return `${CSI}${args.join(';')}m`;
 	}
 
@@ -1118,16 +1112,16 @@ class TypeAheadStyle implements IDisposable {
 	 * Number of typeahead style arguments we expect to read. If this is 0 and
 	 * we see a style coming in, we know that the PTY actually wanted to update.
 	 */
-	private _expectedIncomingStyles = 0;
-	private _applyArgs!: ReadonlyArray<number>;
-	private _originalUndoArgs!: ReadonlyArray<number>;
-	private _undoArgs!: ReadonlyArray<number>;
+	private expectedIncomingStyles = 0;
+	private applyArgs!: ReadonlyArray<number>;
+	private originalUndoArgs!: ReadonlyArray<number>;
+	private undoArgs!: ReadonlyArray<number>;
 
-	apply!: string;
-	undo!: string;
-	private _csiHandler?: IDisposable;
+	public apply!: string;
+	public undo!: string;
+	private csiHandler?: IDisposable;
 
-	constructor(value: ITerminalConfiguration['localEchoStyle'], private readonly _terminal: Terminal) {
+	constructor(value: ITerminalConfiguration['localEchoStyle'], private readonly terminal: Terminal) {
 		this.onUpdate(value);
 	}
 
@@ -1135,18 +1129,18 @@ class TypeAheadStyle implements IDisposable {
 	 * Signals that a style was written to the terminal and we should watch
 	 * for it coming in.
 	 */
-	expectIncomingStyle(n = 1) {
-		this._expectedIncomingStyles += n * 2;
+	public expectIncomingStyle(n = 1) {
+		this.expectedIncomingStyles += n * 2;
 	}
 
 	/**
 	 * Starts tracking for CSI changes in the terminal.
 	 */
-	startTracking() {
-		this._expectedIncomingStyles = 0;
-		this._onDidWriteSGR(attributesToArgs(core(this._terminal)._inputHandler._curAttrData));
-		this._csiHandler = this._terminal.parser.registerCsiHandler({ final: 'm' }, args => {
-			this._onDidWriteSGR(args);
+	public startTracking() {
+		this.expectedIncomingStyles = 0;
+		this.onDidWriteSGR(attributesToArgs(core(this.terminal)._inputHandler._curAttrData));
+		this.csiHandler = this.terminal.parser.registerCsiHandler({ final: 'm' }, args => {
+			this.onDidWriteSGR(args);
 			return false;
 		});
 	}
@@ -1155,69 +1149,69 @@ class TypeAheadStyle implements IDisposable {
 	 * Stops tracking terminal CSI changes.
 	 */
 	@debounce(2000)
-	debounceStopTracking() {
-		this._stopTracking();
+	public debounceStopTracking() {
+		this.stopTracking();
 	}
 
 	/**
 	 * @inheritdoc
 	 */
-	dispose() {
-		this._stopTracking();
+	public dispose() {
+		this.stopTracking();
 	}
 
-	private _stopTracking() {
-		this._csiHandler?.dispose();
-		this._csiHandler = undefined;
+	private stopTracking() {
+		this.csiHandler?.dispose();
+		this.csiHandler = undefined;
 	}
 
-	private _onDidWriteSGR(args: (number | number[])[]) {
-		const originalUndo = this._undoArgs;
+	private onDidWriteSGR(args: (number | number[])[]) {
+		const originalUndo = this.undoArgs;
 		for (let i = 0; i < args.length;) {
 			const px = args[i];
 			const p = typeof px === 'number' ? px : px[0];
 
-			if (this._expectedIncomingStyles) {
-				if (arrayHasPrefixAt(args, i, this._undoArgs)) {
-					this._expectedIncomingStyles--;
-					i += this._undoArgs.length;
+			if (this.expectedIncomingStyles) {
+				if (arrayHasPrefixAt(args, i, this.undoArgs)) {
+					this.expectedIncomingStyles--;
+					i += this.undoArgs.length;
 					continue;
 				}
-				if (arrayHasPrefixAt(args, i, this._applyArgs)) {
-					this._expectedIncomingStyles--;
-					i += this._applyArgs.length;
+				if (arrayHasPrefixAt(args, i, this.applyArgs)) {
+					this.expectedIncomingStyles--;
+					i += this.applyArgs.length;
 					continue;
 				}
 			}
 
 			const width = p === 38 || p === 48 || p === 58 ? getColorWidth(args, i) : 1;
-			switch (this._applyArgs[0]) {
+			switch (this.applyArgs[0]) {
 				case 1:
 					if (p === 2) {
-						this._undoArgs = [22, 2];
+						this.undoArgs = [22, 2];
 					} else if (p === 22 || p === 0) {
-						this._undoArgs = [22];
+						this.undoArgs = [22];
 					}
 					break;
 				case 2:
 					if (p === 1) {
-						this._undoArgs = [22, 1];
+						this.undoArgs = [22, 1];
 					} else if (p === 22 || p === 0) {
-						this._undoArgs = [22];
+						this.undoArgs = [22];
 					}
 					break;
 				case 38:
 					if (p === 0 || p === 39 || p === 100) {
-						this._undoArgs = [39];
+						this.undoArgs = [39];
 					} else if ((p >= 30 && p <= 38) || (p >= 90 && p <= 97)) {
-						this._undoArgs = args.slice(i, i + width) as number[];
+						this.undoArgs = args.slice(i, i + width) as number[];
 					}
 					break;
 				default:
-					if (p === this._applyArgs[0]) {
-						this._undoArgs = this._applyArgs;
+					if (p === this.applyArgs[0]) {
+						this.undoArgs = this.applyArgs;
 					} else if (p === 0) {
-						this._undoArgs = this._originalUndoArgs;
+						this.undoArgs = this.originalUndoArgs;
 					}
 				// no-op
 			}
@@ -1225,23 +1219,23 @@ class TypeAheadStyle implements IDisposable {
 			i += width;
 		}
 
-		if (originalUndo !== this._undoArgs) {
-			this.undo = TypeAheadStyle._compileArgs(this._undoArgs);
+		if (originalUndo !== this.undoArgs) {
+			this.undo = TypeAheadStyle.compileArgs(this.undoArgs);
 		}
 	}
 
 	/**
 	 * Updates the current typeahead style.
 	 */
-	onUpdate(style: ITerminalConfiguration['localEchoStyle']) {
-		const { applyArgs, undoArgs } = this._getArgs(style);
-		this._applyArgs = applyArgs;
-		this._undoArgs = this._originalUndoArgs = undoArgs;
-		this.apply = TypeAheadStyle._compileArgs(this._applyArgs);
-		this.undo = TypeAheadStyle._compileArgs(this._undoArgs);
+	public onUpdate(style: ITerminalConfiguration['localEchoStyle']) {
+		const { applyArgs, undoArgs } = this.getArgs(style);
+		this.applyArgs = applyArgs;
+		this.undoArgs = this.originalUndoArgs = undoArgs;
+		this.apply = TypeAheadStyle.compileArgs(this.applyArgs);
+		this.undo = TypeAheadStyle.compileArgs(this.undoArgs);
 	}
 
-	private _getArgs(style: ITerminalConfiguration['localEchoStyle']) {
+	private getArgs(style: ITerminalConfiguration['localEchoStyle']) {
 		switch (style) {
 			case 'bold':
 				return { applyArgs: [1], undoArgs: [22] };
@@ -1273,64 +1267,64 @@ export const enum CharPredictState {
 }
 
 export class TypeAheadAddon extends Disposable implements ITerminalAddon {
-	private _typeaheadStyle?: TypeAheadStyle;
-	private _typeaheadThreshold = this._config.config.localEchoLatencyThreshold;
-	private _excludeProgramRe = compileExcludeRegexp(this._config.config.localEchoExcludePrograms);
-	protected _lastRow?: { y: number; startingX: number; endingX: number; charState: CharPredictState };
-	protected _timeline?: PredictionTimeline;
-	private _terminalTitle = '';
-	stats?: PredictionStats;
+	private typeaheadStyle?: TypeAheadStyle;
+	private typeaheadThreshold = this.config.config.localEchoLatencyThreshold;
+	private excludeProgramRe = compileExcludeRegexp(this.config.config.localEchoExcludePrograms);
+	protected lastRow?: { y: number; startingX: number; endingX: number; charState: CharPredictState };
+	protected timeline?: PredictionTimeline;
+	private terminalTitle = '';
+	public stats?: PredictionStats;
 
 	/**
 	 * Debounce that clears predictions after a timeout if the PTY doesn't apply them.
 	 */
-	private _clearPredictionDebounce?: IDisposable;
+	private clearPredictionDebounce?: IDisposable;
 
 	constructor(
-		private _processManager: ITerminalProcessManager,
-		private readonly _config: TerminalConfigHelper,
-		@ITelemetryService private readonly _telemetryService: ITelemetryService,
+		private processManager: ITerminalProcessManager,
+		private readonly config: TerminalConfigHelper,
+		@ITelemetryService private readonly telemetryService: ITelemetryService,
 	) {
 		super();
-		this._register(toDisposable(() => this._clearPredictionDebounce?.dispose()));
+		this._register(toDisposable(() => this.clearPredictionDebounce?.dispose()));
 	}
 
-	activate(terminal: Terminal): void {
-		const style = this._typeaheadStyle = this._register(new TypeAheadStyle(this._config.config.localEchoStyle, terminal));
-		const timeline = this._timeline = new PredictionTimeline(terminal, this._typeaheadStyle);
-		const stats = this.stats = this._register(new PredictionStats(this._timeline));
+	public activate(terminal: Terminal): void {
+		const style = this.typeaheadStyle = this._register(new TypeAheadStyle(this.config.config.localEchoStyle, terminal));
+		const timeline = this.timeline = new PredictionTimeline(terminal, this.typeaheadStyle);
+		const stats = this.stats = this._register(new PredictionStats(this.timeline));
 
-		timeline.setShowPredictions(this._typeaheadThreshold === 0);
-		this._register(terminal.onData(e => this._onUserData(e)));
+		timeline.setShowPredictions(this.typeaheadThreshold === 0);
+		this._register(terminal.onData(e => this.onUserData(e)));
 		this._register(terminal.onTitleChange(title => {
-			this._terminalTitle = title;
-			this._reevaluatePredictorState(stats, timeline);
+			this.terminalTitle = title;
+			this.reevaluatePredictorState(stats, timeline);
 		}));
 		this._register(terminal.onResize(() => {
 			timeline.setShowPredictions(false);
 			timeline.clearCursor();
-			this._reevaluatePredictorState(stats, timeline);
+			this.reevaluatePredictorState(stats, timeline);
 		}));
-		this._register(this._config.onConfigChanged(() => {
-			style.onUpdate(this._config.config.localEchoStyle);
-			this._typeaheadThreshold = this._config.config.localEchoLatencyThreshold;
-			this._excludeProgramRe = compileExcludeRegexp(this._config.config.localEchoExcludePrograms);
-			this._reevaluatePredictorState(stats, timeline);
+		this._register(this.config.onConfigChanged(() => {
+			style.onUpdate(this.config.config.localEchoStyle);
+			this.typeaheadThreshold = this.config.config.localEchoLatencyThreshold;
+			this.excludeProgramRe = compileExcludeRegexp(this.config.config.localEchoExcludePrograms);
+			this.reevaluatePredictorState(stats, timeline);
 		}));
-		this._register(this._timeline.onPredictionSucceeded(p => {
-			if (this._lastRow?.charState === CharPredictState.HasPendingChar && isTenativeCharacterPrediction(p) && p.inner.appliedAt) {
-				if (p.inner.appliedAt.pos.y + p.inner.appliedAt.pos.baseY === this._lastRow.y) {
-					this._lastRow.charState = CharPredictState.Validated;
+		this._register(this.timeline.onPredictionSucceeded(p => {
+			if (this.lastRow?.charState === CharPredictState.HasPendingChar && isTenativeCharacterPrediction(p) && p.inner.appliedAt) {
+				if (p.inner.appliedAt.pos.y + p.inner.appliedAt.pos.baseY === this.lastRow.y) {
+					this.lastRow.charState = CharPredictState.Validated;
 				}
 			}
 		}));
-		this._register(this._processManager.onBeforeProcessData(e => this._onBeforeProcessData(e)));
+		this._register(this.processManager.onBeforeProcessData(e => this.onBeforeProcessData(e)));
 
 		let nextStatsSend: any;
 		this._register(stats.onChange(() => {
 			if (!nextStatsSend) {
 				nextStatsSend = setTimeout(() => {
-					this._sendLatencyStats(stats);
+					this.sendLatencyStats(stats);
 					nextStatsSend = undefined;
 				}, statsSendTelemetryEvery);
 			}
@@ -1339,30 +1333,30 @@ export class TypeAheadAddon extends Disposable implements ITerminalAddon {
 				style.debounceStopTracking();
 			}
 
-			this._reevaluatePredictorState(stats, timeline);
+			this.reevaluatePredictorState(stats, timeline);
 		}));
 	}
 
-	reset() {
-		this._lastRow = undefined;
+	public reset() {
+		this.lastRow = undefined;
 	}
 
-	private _deferClearingPredictions() {
-		if (!this.stats || !this._timeline) {
+	private deferClearingPredictions() {
+		if (!this.stats || !this.timeline) {
 			return;
 		}
 
-		this._clearPredictionDebounce?.dispose();
-		if (this._timeline.length === 0 || this._timeline.peekStart()?.clearAfterTimeout === false) {
-			this._clearPredictionDebounce = undefined;
+		this.clearPredictionDebounce?.dispose();
+		if (this.timeline.length === 0 || this.timeline.peekStart()?.clearAfterTimeout === false) {
+			this.clearPredictionDebounce = undefined;
 			return;
 		}
 
-		this._clearPredictionDebounce = disposableTimeout(
+		this.clearPredictionDebounce = disposableTimeout(
 			() => {
-				this._timeline?.undoAllPredictions();
-				if (this._lastRow?.charState === CharPredictState.HasPendingChar) {
-					this._lastRow.charState = CharPredictState.Unknown;
+				this.timeline?.undoAllPredictions();
+				if (this.lastRow?.charState === CharPredictState.HasPendingChar) {
+					this.lastRow.charState = CharPredictState.Unknown;
 				}
 			},
 			Math.max(500, this.stats.maxLatency * 3 / 2),
@@ -1377,28 +1371,28 @@ export class TypeAheadAddon extends Disposable implements ITerminalAddon {
 	 * terminal cursor is not updated, causes issues.
 	 */
 	@debounce(100)
-	protected _reevaluatePredictorState(stats: PredictionStats, timeline: PredictionTimeline) {
-		this._reevaluatePredictorStateNow(stats, timeline);
+	protected reevaluatePredictorState(stats: PredictionStats, timeline: PredictionTimeline) {
+		this.reevaluatePredictorStateNow(stats, timeline);
 	}
 
-	protected _reevaluatePredictorStateNow(stats: PredictionStats, timeline: PredictionTimeline) {
-		if (this._excludeProgramRe.test(this._terminalTitle)) {
+	protected reevaluatePredictorStateNow(stats: PredictionStats, timeline: PredictionTimeline) {
+		if (this.excludeProgramRe.test(this.terminalTitle)) {
 			timeline.setShowPredictions(false);
-		} else if (this._typeaheadThreshold < 0) {
+		} else if (this.typeaheadThreshold < 0) {
 			timeline.setShowPredictions(false);
-		} else if (this._typeaheadThreshold === 0) {
+		} else if (this.typeaheadThreshold === 0) {
 			timeline.setShowPredictions(true);
 		} else if (stats.sampleSize > statsMinSamplesToTurnOn && stats.accuracy > statsMinAccuracyToTurnOn) {
 			const latency = stats.latency.median;
-			if (latency >= this._typeaheadThreshold) {
+			if (latency >= this.typeaheadThreshold) {
 				timeline.setShowPredictions(true);
-			} else if (latency < this._typeaheadThreshold / statsToggleOffThreshold) {
+			} else if (latency < this.typeaheadThreshold / statsToggleOffThreshold) {
 				timeline.setShowPredictions(false);
 			}
 		}
 	}
 
-	private _sendLatencyStats(stats: PredictionStats) {
+	private sendLatencyStats(stats: PredictionStats) {
 		/* __GDPR__
 			"terminalLatencyStats" : {
 				"min" : { "classification": "SystemMetaData", "purpose": "PerformanceAndHealth", "isMeasurement": true },
@@ -1408,20 +1402,20 @@ export class TypeAheadAddon extends Disposable implements ITerminalAddon {
 				"predictionAccuracy" : { "classification": "SystemMetaData", "purpose": "PerformanceAndHealth", "isMeasurement": true }
 			}
 		 */
-		this._telemetryService.publicLog('terminalLatencyStats', {
+		this.telemetryService.publicLog('terminalLatencyStats', {
 			...stats.latency,
 			predictionAccuracy: stats.accuracy,
 		});
 	}
 
-	private _onUserData(data: string): void {
-		if (this._timeline?.terminal.buffer.active.type !== 'normal') {
+	private onUserData(data: string): void {
+		if (this.timeline?.terminal.buffer.active.type !== 'normal') {
 			return;
 		}
 
 		// console.log('user data:', JSON.stringify(data));
 
-		const terminal = this._timeline.terminal;
+		const terminal = this.timeline.terminal;
 		const buffer = terminal.buffer.active;
 
 		// Detect programs like git log/less that use the normal buffer but don't
@@ -1436,44 +1430,44 @@ export class TypeAheadAddon extends Disposable implements ITerminalAddon {
 		// arrow or backspace-into the prompt. Record the lowest X value at which
 		// the user gave input, and mark all additions before that as tentative.
 		const actualY = buffer.baseY + buffer.cursorY;
-		if (actualY !== this._lastRow?.y) {
-			this._lastRow = { y: actualY, startingX: buffer.cursorX, endingX: buffer.cursorX, charState: CharPredictState.Unknown };
+		if (actualY !== this.lastRow?.y) {
+			this.lastRow = { y: actualY, startingX: buffer.cursorX, endingX: buffer.cursorX, charState: CharPredictState.Unknown };
 		} else {
-			this._lastRow.startingX = Math.min(this._lastRow.startingX, buffer.cursorX);
-			this._lastRow.endingX = Math.max(this._lastRow.endingX, this._timeline.physicalCursor(buffer).x);
+			this.lastRow.startingX = Math.min(this.lastRow.startingX, buffer.cursorX);
+			this.lastRow.endingX = Math.max(this.lastRow.endingX, this.timeline.physicalCursor(buffer).x);
 		}
 
 		const addLeftNavigating = (p: IPrediction) =>
-			this._timeline!.tentativeCursor(buffer).x <= this._lastRow!.startingX
-				? this._timeline!.addBoundary(buffer, p)
-				: this._timeline!.addPrediction(buffer, p);
+			this.timeline!.tentativeCursor(buffer).x <= this.lastRow!.startingX
+				? this.timeline!.addBoundary(buffer, p)
+				: this.timeline!.addPrediction(buffer, p);
 
 		const addRightNavigating = (p: IPrediction) =>
-			this._timeline!.tentativeCursor(buffer).x >= this._lastRow!.endingX - 1
-				? this._timeline!.addBoundary(buffer, p)
-				: this._timeline!.addPrediction(buffer, p);
+			this.timeline!.tentativeCursor(buffer).x >= this.lastRow!.endingX - 1
+				? this.timeline!.addBoundary(buffer, p)
+				: this.timeline!.addPrediction(buffer, p);
 
 		/** @see https://github.com/xtermjs/xterm.js/blob/1913e9512c048e3cf56bb5f5df51bfff6899c184/src/common/input/Keyboard.ts */
 		const reader = new StringReader(data);
 		while (reader.remaining > 0) {
 			if (reader.eatCharCode(127)) { // backspace
-				const previous = this._timeline.peekEnd();
+				const previous = this.timeline.peekEnd();
 				if (previous && previous instanceof CharacterPrediction) {
-					this._timeline.addBoundary();
+					this.timeline.addBoundary();
 				}
 
 				// backspace must be able to read the previously-written character in
 				// the event that it needs to undo it
-				if (this._timeline.isShowingPredictions) {
-					flushOutput(this._timeline.terminal);
+				if (this.timeline.isShowingPredictions) {
+					flushOutput(this.timeline.terminal);
 				}
 
-				if (this._timeline.tentativeCursor(buffer).x <= this._lastRow!.startingX) {
-					this._timeline.addBoundary(buffer, new BackspacePrediction(this._timeline.terminal));
+				if (this.timeline.tentativeCursor(buffer).x <= this.lastRow!.startingX) {
+					this.timeline.addBoundary(buffer, new BackspacePrediction(this.timeline.terminal));
 				} else {
 					// Backspace decrements our ability to go right.
-					this._lastRow.endingX--;
-					this._timeline!.addPrediction(buffer, new BackspacePrediction(this._timeline.terminal));
+					this.lastRow.endingX--;
+					this.timeline!.addPrediction(buffer, new BackspacePrediction(this.timeline.terminal));
 				}
 
 				continue;
@@ -1481,16 +1475,16 @@ export class TypeAheadAddon extends Disposable implements ITerminalAddon {
 
 			if (reader.eatCharCode(32, 126)) { // alphanum
 				const char = data[reader.index - 1];
-				const prediction = new CharacterPrediction(this._typeaheadStyle!, char);
-				if (this._lastRow.charState === CharPredictState.Unknown) {
-					this._timeline.addBoundary(buffer, prediction);
-					this._lastRow.charState = CharPredictState.HasPendingChar;
+				const prediction = new CharacterPrediction(this.typeaheadStyle!, char);
+				if (this.lastRow.charState === CharPredictState.Unknown) {
+					this.timeline.addBoundary(buffer, prediction);
+					this.lastRow.charState = CharPredictState.HasPendingChar;
 				} else {
-					this._timeline.addPrediction(buffer, prediction);
+					this.timeline.addPrediction(buffer, prediction);
 				}
 
-				if (this._timeline.tentativeCursor(buffer).x >= terminal.cols) {
-					this._timeline.addBoundary(buffer, new LinewrapPrediction());
+				if (this.timeline.tentativeCursor(buffer).x >= terminal.cols) {
+					this.timeline.addBoundary(buffer, new LinewrapPrediction());
 				}
 				continue;
 			}
@@ -1518,30 +1512,30 @@ export class TypeAheadAddon extends Disposable implements ITerminalAddon {
 			}
 
 			if (reader.eatChar('\r') && buffer.cursorY < terminal.rows - 1) {
-				this._timeline.addPrediction(buffer, new NewlinePrediction());
+				this.timeline.addPrediction(buffer, new NewlinePrediction());
 				continue;
 			}
 
 			// something else
-			this._timeline.addBoundary(buffer, new HardBoundary());
+			this.timeline.addBoundary(buffer, new HardBoundary());
 			break;
 		}
 
-		if (this._timeline.length === 1) {
-			this._deferClearingPredictions();
-			this._typeaheadStyle!.startTracking();
+		if (this.timeline.length === 1) {
+			this.deferClearingPredictions();
+			this.typeaheadStyle!.startTracking();
 		}
 	}
 
-	private _onBeforeProcessData(event: IBeforeProcessDataEvent): void {
-		if (!this._timeline) {
+	private onBeforeProcessData(event: IBeforeProcessDataEvent): void {
+		if (!this.timeline) {
 			return;
 		}
 
 		// console.log('incoming data:', JSON.stringify(event.data));
-		event.data = this._timeline.beforeServerInput(event.data);
+		event.data = this.timeline.beforeServerInput(event.data);
 		// console.log('emitted data:', JSON.stringify(event.data));
 
-		this._deferClearingPredictions();
+		this.deferClearingPredictions();
 	}
 }

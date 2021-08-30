@@ -16,12 +16,12 @@ export class CellOutputViewModel extends Disposable implements ICellOutputViewMo
 		return this._outputRawData;
 	}
 
-	private _pickedMimeType: IOrderedMimeType | undefined;
+	private _pickedMimeType: number = -1;
 	get pickedMimeType() {
 		return this._pickedMimeType;
 	}
 
-	set pickedMimeType(value: IOrderedMimeType | undefined) {
+	set pickedMimeType(value: number) {
 		this._pickedMimeType = value;
 	}
 
@@ -33,15 +33,6 @@ export class CellOutputViewModel extends Disposable implements ICellOutputViewMo
 		super();
 	}
 
-	hasMultiMimeType() {
-		if (this._outputRawData.outputs.length < 2) {
-			return false;
-		}
-
-		const firstMimeType = this._outputRawData.outputs[0].mime;
-		return this._outputRawData.outputs.some(output => output.mime !== firstMimeType);
-	}
-
 	supportAppend() {
 		// if there is any mime type that's not mergeable then the whole output is not mergeable.
 		return this._outputRawData.outputs.every(op => mimeTypeIsMergeable(op.mime));
@@ -49,17 +40,12 @@ export class CellOutputViewModel extends Disposable implements ICellOutputViewMo
 
 	resolveMimeTypes(textModel: NotebookTextModel, kernelProvides: readonly string[] | undefined): [readonly IOrderedMimeType[], number] {
 		const mimeTypes = this._notebookService.getMimeTypeInfo(textModel, kernelProvides, this.model);
-		let index = -1;
-		if (this._pickedMimeType) {
-			index = mimeTypes.findIndex(mimeType => mimeType.rendererId === this._pickedMimeType!.rendererId && mimeType.mimeType === this._pickedMimeType!.mimeType && mimeType.isTrusted);
+		if (this._pickedMimeType === -1) {
+			// there is at least one mimetype which is safe and can be rendered by the core
+			this._pickedMimeType = Math.max(mimeTypes.findIndex(mimeType => mimeType.rendererId !== RENDERER_NOT_AVAILABLE && mimeType.isTrusted), 0);
 		}
 
-		// there is at least one mimetype which is safe and can be rendered by the core
-		if (index === -1) {
-			index = mimeTypes.findIndex(mimeType => mimeType.rendererId !== RENDERER_NOT_AVAILABLE && mimeType.isTrusted);
-		}
-
-		return [mimeTypes, Math.max(index, 0)];
+		return [mimeTypes, this._pickedMimeType];
 	}
 
 	toRawJSON() {

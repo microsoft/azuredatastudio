@@ -29,19 +29,16 @@ interface ExpectedDecoration {
 export class TestDecorationProvider {
 
 	private static readonly collapsedDecoration = ModelDecorationOptions.register({
-		description: 'test',
 		stickiness: TrackedRangeStickiness.NeverGrowsWhenTypingAtEdges,
 		linesDecorationsClassName: 'folding'
 	});
 
 	private static readonly expandedDecoration = ModelDecorationOptions.register({
-		description: 'test',
 		stickiness: TrackedRangeStickiness.NeverGrowsWhenTypingAtEdges,
 		linesDecorationsClassName: 'folding'
 	});
 
 	private static readonly hiddenDecoration = ModelDecorationOptions.register({
-		description: 'test',
 		stickiness: TrackedRangeStickiness.NeverGrowsWhenTypingAtEdges,
 		linesDecorationsClassName: 'folding'
 	});

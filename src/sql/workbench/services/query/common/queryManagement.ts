@@ -10,6 +10,7 @@ import { IDisposable } from 'vs/base/common/lifecycle';
 import * as azdata from 'azdata';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { Event, Emitter } from 'vs/base/common/event';
+import { assign } from 'vs/base/common/objects';
 import { IAdsTelemetryService, ITelemetryEventProperties } from 'sql/platform/telemetry/common/telemetry';
 import EditQueryRunner from 'sql/workbench/services/editData/common/editQueryRunner';
 import { IRange, Range } from 'vs/editor/common/core/range';
@@ -189,7 +190,7 @@ export class QueryManagementService implements IQueryManagementService {
 			provider: providerId,
 		};
 		if (runOptions) {
-			Object.assign(data, {
+			assign(data, {
 				displayEstimatedQueryPlan: runOptions.displayEstimatedQueryPlan,
 				displayActualQueryPlan: runOptions.displayActualQueryPlan
 			});

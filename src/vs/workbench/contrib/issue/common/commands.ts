@@ -5,8 +5,6 @@
 
 export const OpenIssueReporterActionId = 'workbench.action.openIssueReporter';
 
-export const OpenIssueReporterApiCommandId = 'vscode.openIssueReporter';
-
 export interface OpenIssueReporterArgs {
 	readonly extensionId?: string;
 	readonly issueTitle?: string;

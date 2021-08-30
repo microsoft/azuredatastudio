@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { Server } from 'vs/base/parts/ipc/node/ipc.cp';
@@ -23,11 +23,7 @@ server.registerChannel(TerminalIpcChannels.Log, logChannel);
 const heartbeatService = new HeartbeatService();
 server.registerChannel(TerminalIpcChannels.Heartbeat, ProxyChannel.fromService(heartbeatService));
 
-const reconnectConstants = { GraceTime: parseInt(process.env.VSCODE_RECONNECT_GRACE_TIME || '0'), ShortGraceTime: parseInt(process.env.VSCODE_RECONNECT_SHORT_GRACE_TIME || '0') };
-delete process.env.VSCODE_RECONNECT_GRACE_TIME;
-delete process.env.VSCODE_RECONNECT_SHORT_GRACE_TIME;
-
-const ptyService = new PtyService(lastPtyId, logService, reconnectConstants);
+const ptyService = new PtyService(lastPtyId, logService);
 server.registerChannel(TerminalIpcChannels.PtyHost, ProxyChannel.fromService(ptyService));
 
 process.once('exit', () => {

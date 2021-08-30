@@ -104,6 +104,9 @@ registerSingleton(IQueryHistoryService, QueryHistoryService);
 
 //#region --- workbench contributions
 
+// Rapid Render Splash
+import 'vs/workbench/contrib/splash/electron-browser/partsSplash.contribution';
+
 // Webview
 import 'vs/workbench/contrib/webview/electron-browser/webview.contribution';
 
@@ -124,6 +127,27 @@ import 'vs/workbench/contrib/webview/electron-browser/webview.contribution';
 // Extensions Management
 import 'vs/workbench/contrib/extensions/electron-browser/extensions.contribution';
 
+// Terminal
+import 'vs/workbench/contrib/terminal/electron-browser/terminal.contribution';
+
+// External Terminal
+import 'vs/workbench/contrib/externalTerminal/node/externalTerminal.contribution';
+
+
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+//
+// NOTE: Please do NOT register services here. Use `registerSingleton()`
+//       from `workbench.common.main.ts` if the service is shared between
+//       desktop and web or `workbench.sandbox.main.ts` if the service
+//       is desktop only.
+//
+//       The `node` & `electron-browser` layer is deprecated for workbench!
+//
+// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+// CLI
+import 'vs/workbench/contrib/cli/node/cli.contribution';
 
 
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as assert from 'assert';
@@ -12,7 +12,7 @@ import { ServiceCollection } from 'vs/platform/instantiation/common/serviceColle
 import { IJSONEditingService } from 'vs/workbench/services/configuration/common/jsonEditing';
 import { TestJSONEditingService } from 'vs/workbench/services/configuration/test/common/testServices';
 import { PreferencesService } from 'vs/workbench/services/preferences/browser/preferencesService';
-import { IPreferencesService, ISettingsEditorOptions } from 'vs/workbench/services/preferences/common/preferences';
+import { IPreferencesService, SettingsEditorOptions } from 'vs/workbench/services/preferences/common/preferences';
 import { IRemoteAgentService } from 'vs/workbench/services/remote/common/remoteAgentService';
 import { TestRemoteAgentService } from 'vs/workbench/services/remote/test/common/testServices';
 import { ITestInstantiationService, TestEditorService, workbenchInstantiationService } from 'vs/workbench/test/browser/workbenchTestServices';
@@ -40,9 +40,15 @@ suite('PreferencesService', () => {
 		testObject = instantiationService.createInstance(PreferencesService);
 	});
 
+	test('openEditor is called with a SettingsEditorOptions instance', async () => {
+		testObject.openSettings(false, undefined);
+		const options = editorService.lastOpenEditorOptions as SettingsEditorOptions;
+		assert.strictEqual(options instanceof SettingsEditorOptions, true);
+	});
+
 	test('options are preserved when calling openEditor', async () => {
 		testObject.openSettings(false, 'test query');
-		const options = editorService.lastOpenEditorOptions as ISettingsEditorOptions;
+		const options = editorService.lastOpenEditorOptions as SettingsEditorOptions;
 		assert.strictEqual(options.focusSearch, true);
 		assert.strictEqual(options.override, EditorOverride.DISABLED);
 		assert.strictEqual(options.query, 'test query');

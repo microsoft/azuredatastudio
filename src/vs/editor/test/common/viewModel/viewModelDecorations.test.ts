@@ -28,7 +28,6 @@ suite('ViewModelDecorations', () => {
 			model.changeDecorations((accessor) => {
 				let createOpts = (id: string) => {
 					return {
-						description: 'test',
 						className: id,
 						inlineClassName: 'i-' + id,
 						beforeContentClassName: 'b-' + id,
@@ -166,7 +165,6 @@ suite('ViewModelDecorations', () => {
 				accessor.addDecoration(
 					new Range(1, 50, 1, 51),
 					{
-						description: 'test',
 						beforeContentClassName: 'dec1'
 					}
 				);
@@ -201,7 +199,6 @@ suite('ViewModelDecorations', () => {
 				accessor.addDecoration(
 					new Range(1, 1, 1, 1),
 					{
-						description: 'test',
 						beforeContentClassName: 'before1',
 						afterContentClassName: 'after1'
 					}

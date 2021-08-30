@@ -396,7 +396,7 @@ export class NotebookCellOutline implements IOutline<OutlineEntry> {
 
 		for (let i = 0; i < viewModel.length; i++) {
 			const cell = viewModel.viewCells[i];
-			const isMarkdown = cell.cellKind === CellKind.Markup;
+			const isMarkdown = cell.cellKind === CellKind.Markdown;
 			if (!isMarkdown && !includeCodeCells) {
 				continue;
 			}

@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { basename, isEqual, joinPath } from 'vs/base/common/resources';
@@ -18,8 +18,12 @@ import { ILogService } from 'vs/platform/log/common/log';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { Schemas } from 'vs/base/common/network';
 import { hash } from 'vs/base/common/hash';
+import { Registry } from 'vs/platform/registry/common/platform';
+import { IWorkbenchContributionsRegistry, Extensions as WorkbenchExtensions } from 'vs/workbench/common/contributions';
+import { LegacyWorkingCopyBackupRestorer } from 'vs/workbench/services/workingCopy/common/legacyBackupRestorer';
+import { LifecyclePhase } from 'vs/workbench/services/lifecycle/common/lifecycle';
 import { isEmptyObject } from 'vs/base/common/types';
-import { IWorkingCopyBackupMeta, IWorkingCopyIdentifier, NO_TYPE_ID } from 'vs/workbench/services/workingCopy/common/workingCopy';
+import { IWorkingCopyBackupMeta, IWorkingCopyIdentifier } from 'vs/workbench/services/workingCopy/common/workingCopy';
 
 export class WorkingCopyBackupsModel {
 
@@ -157,8 +161,8 @@ export abstract class WorkingCopyBackupService implements IWorkingCopyBackupServ
 		return this.impl.discardBackup(identifier);
 	}
 
-	discardBackups(filter?: { except: IWorkingCopyIdentifier[] }): Promise<void> {
-		return this.impl.discardBackups(filter);
+	discardBackups(except?: IWorkingCopyIdentifier[]): Promise<void> {
+		return this.impl.discardBackups(except);
 	}
 
 	getBackups(): Promise<IWorkingCopyIdentifier[]> {
@@ -307,22 +311,21 @@ class NativeWorkingCopyBackupServiceImpl extends Disposable implements IWorkingC
 		return `${identifier.resource.toString()}${NativeWorkingCopyBackupServiceImpl.PREAMBLE_META_SEPARATOR}${JSON.stringify({ ...meta, typeId: identifier.typeId })}${NativeWorkingCopyBackupServiceImpl.PREAMBLE_END_MARKER}`;
 	}
 
-	async discardBackups(filter?: { except: IWorkingCopyIdentifier[] }): Promise<void> {
+	async discardBackups(except?: IWorkingCopyIdentifier[]): Promise<void> {
 		const model = await this.ready;
 
 		// Discard all but some backups
-		const except = filter?.except;
 		if (Array.isArray(except) && except.length > 0) {
 			const exceptMap = new ResourceMap<boolean>();
 			for (const exceptWorkingCopy of except) {
 				exceptMap.set(this.toBackupResource(exceptWorkingCopy), true);
 			}
 
-			await Promises.settled(model.get().map(async backupResource => {
+			for (const backupResource of model.get()) {
 				if (!exceptMap.has(backupResource)) {
 					await this.doDiscardBackup(backupResource);
 				}
-			}));
+			}
 		}
 
 		// Discard all backups
@@ -404,7 +407,7 @@ class NativeWorkingCopyBackupServiceImpl extends Disposable implements IWorkingC
 		}
 
 		return {
-			typeId: typeId ?? NO_TYPE_ID,
+			typeId: typeId ?? '', // Fallback for previous backups that do not encode the typeId (TODO@bpasero remove me eventually)
 			resource: URI.parse(resourcePreamble)
 		};
 	}
@@ -532,8 +535,7 @@ export class InMemoryWorkingCopyBackupService implements IWorkingCopyBackupServi
 		this.backups.delete(this.toBackupResource(identifier));
 	}
 
-	async discardBackups(filter?: { except: IWorkingCopyIdentifier[] }): Promise<void> {
-		const except = filter?.except;
+	async discardBackups(except?: IWorkingCopyIdentifier[]): Promise<void> {
 		if (Array.isArray(except) && except.length > 0) {
 			const exceptMap = new ResourceMap<boolean>();
 			for (const exceptWorkingCopy of except) {
@@ -589,3 +591,6 @@ function hashPath(resource: URI): string {
 function hashString(str: string): string {
 	return hash(str).toString(16);
 }
+
+// Register Backup Restorer
+Registry.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench).registerWorkbenchContribution(LegacyWorkingCopyBackupRestorer, LifecyclePhase.Starting);

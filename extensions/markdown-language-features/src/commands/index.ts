@@ -3,13 +3,11 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-export { MoveCursorToPositionCommand } from './moveCursorToPosition';
 export { OpenDocumentLinkCommand } from './openDocumentLink';
-export { RefreshPreviewCommand } from './refreshPreview';
-export { ReloadPlugins } from './reloadPlugins';
-export { RenderDocument } from './renderDocument';
-export { ShowLockedPreviewToSideCommand, ShowPreviewCommand, ShowPreviewToSideCommand } from './showPreview';
-export { ShowPreviewSecuritySelectorCommand } from './showPreviewSecuritySelector';
+export { ShowPreviewCommand, ShowPreviewToSideCommand, ShowLockedPreviewToSideCommand } from './showPreview';
 export { ShowSourceCommand } from './showSource';
+export { RefreshPreviewCommand } from './refreshPreview';
+export { ShowPreviewSecuritySelectorCommand } from './showPreviewSecuritySelector';
+export { MoveCursorToPositionCommand } from './moveCursorToPosition';
 export { ToggleLockCommand } from './toggleLock';
-
+export { RenderDocument } from './renderDocument';

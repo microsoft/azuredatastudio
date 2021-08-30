@@ -4,17 +4,17 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { localize } from 'vs/nls';
-import { IMenuService, MenuId, IMenu, SubmenuItemAction, registerAction2, Action2, MenuItemAction, MenuRegistry } from 'vs/platform/actions/common/actions';
+import { IMenuService, MenuId, IMenu, SubmenuItemAction, registerAction2, Action2, MenuItemAction } from 'vs/platform/actions/common/actions';
 import { registerThemingParticipant, IThemeService } from 'vs/platform/theme/common/themeService';
 import { MenuBarVisibility, getTitleBarStyle, IWindowOpenable, getMenuBarVisibility } from 'vs/platform/windows/common/windows';
-import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey'; // {{SQL CARBON EDIT}}
+import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IAction, Action, SubmenuAction, Separator } from 'vs/base/common/actions';
 import { addDisposableListener, Dimension, EventType } from 'vs/base/browser/dom';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { isMacintosh, isWeb, isIOS, isNative } from 'vs/base/common/platform';
 import { IConfigurationService, IConfigurationChangeEvent } from 'vs/platform/configuration/common/configuration';
 import { Event, Emitter } from 'vs/base/common/event';
-import { Disposable, DisposableStore } from 'vs/base/common/lifecycle';
+import { Disposable } from 'vs/base/common/lifecycle';
 import { IRecentlyOpened, isRecentFolder, IRecent, isRecentWorkspace, IWorkspacesService } from 'vs/platform/workspaces/common/workspaces';
 import { RunOnceScheduler } from 'vs/base/common/async';
 import { MENUBAR_SELECTION_FOREGROUND, MENUBAR_SELECTION_BACKGROUND, MENUBAR_SELECTION_BORDER, TITLE_BAR_ACTIVE_FOREGROUND, TITLE_BAR_INACTIVE_FOREGROUND, ACTIVITY_BAR_FOREGROUND, ACTIVITY_BAR_INACTIVE_FOREGROUND } from 'vs/workbench/common/theme';
@@ -36,96 +36,10 @@ import { IHostService } from 'vs/workbench/services/host/browser/host';
 import { BrowserFeatures } from 'vs/base/browser/canIUse';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import { KeybindingWeight } from 'vs/platform/keybinding/common/keybindingsRegistry';
-import { IsMacNativeContext, IsWebContext } from 'vs/platform/contextkey/common/contextkeys';
+import { IsWebContext } from 'vs/platform/contextkey/common/contextkeys';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 
 export type IOpenRecentAction = IAction & { uri: URI, remoteAuthority?: string };
-
-MenuRegistry.appendMenuItem(MenuId.MenubarMainMenu, {
-	submenu: MenuId.MenubarFileMenu,
-	title: {
-		value: 'File',
-		original: 'File',
-		mnemonicTitle: localize({ key: 'mFile', comment: ['&& denotes a mnemonic'] }, "&&File"),
-	},
-	order: 1
-});
-
-MenuRegistry.appendMenuItem(MenuId.MenubarMainMenu, {
-	submenu: MenuId.MenubarEditMenu,
-	title: {
-		value: 'Edit',
-		original: 'Edit',
-		mnemonicTitle: localize({ key: 'mEdit', comment: ['&& denotes a mnemonic'] }, "&&Edit")
-	},
-	order: 2
-});
-
-/* {{SQL CARBON EDIT}} - Disable unused menus
-MenuRegistry.appendMenuItem(MenuId.MenubarMainMenu, {
-	submenu: MenuId.MenubarSelectionMenu,
-	title: {
-		value: 'Selection',
-		original: 'Selection',
-		mnemonicTitle: localize({ key: 'mSelection', comment: ['&& denotes a mnemonic'] }, "&&Selection")
-	},
-	order: 3
-});
-*/
-
-MenuRegistry.appendMenuItem(MenuId.MenubarMainMenu, {
-	submenu: MenuId.MenubarViewMenu,
-	title: {
-		value: 'View',
-		original: 'View',
-		mnemonicTitle: localize({ key: 'mView', comment: ['&& denotes a mnemonic'] }, "&&View")
-	},
-	order: 4
-});
-
-/* {{SQL CARBON EDIT}} - Disable unused menus
-MenuRegistry.appendMenuItem(MenuId.MenubarMainMenu, {
-	submenu: MenuId.MenubarGoMenu,
-	title: {
-		value: 'Go',
-		original: 'Go',
-		mnemonicTitle: localize({ key: 'mGoto', comment: ['&& denotes a mnemonic'] }, "&&Go")
-	},
-	order: 5
-});
-
-MenuRegistry.appendMenuItem(MenuId.MenubarMainMenu, {
-	submenu: MenuId.MenubarTerminalMenu,
-	title: {
-		value: 'Terminal',
-		original: 'Terminal',
-		mnemonicTitle: localize({ key: 'mTerminal', comment: ['&& denotes a mnemonic'] }, "&&Terminal")
-	},
-	order: 7,
-	when: ContextKeyExpr.has('terminalProcessSupported')
-});
-*/
-
-MenuRegistry.appendMenuItem(MenuId.MenubarMainMenu, {
-	submenu: MenuId.MenubarHelpMenu,
-	title: {
-		value: 'Help',
-		original: 'Help',
-		mnemonicTitle: localize({ key: 'mHelp', comment: ['&& denotes a mnemonic'] }, "&&Help")
-	},
-	order: 8
-});
-
-MenuRegistry.appendMenuItem(MenuId.MenubarMainMenu, {
-	submenu: MenuId.MenubarPreferencesMenu,
-	title: {
-		value: 'Preferences',
-		original: 'Preferences',
-		mnemonicTitle: localize('mPreferences', "Preferences")
-	},
-	when: IsMacNativeContext,
-	order: 9
-});
 
 export abstract class MenubarControl extends Disposable {
 
@@ -138,10 +52,28 @@ export abstract class MenubarControl extends Disposable {
 	];
 
 	protected menus: {
+		'File': IMenu;
+		'Edit': IMenu;
+		// 'Selection': IMenu; {{SQL CARBON EDIT}} - Disable unusued menus
+		'View': IMenu;
+		// 'Go': IMenu; {{SQL CARBON EDIT}} - Disable unusued menus
+		// 'Run': IMenu; {{SQL CARBON EDIT}} - Disable unusued menus
+		// 'Terminal': IMenu; {{SQL CARBON EDIT}} - Disable unusued menus
+		'Window'?: IMenu;
+		'Help': IMenu;
 		[index: string]: IMenu | undefined;
-	} = {};
+	};
 
-	protected topLevelTitles: { [menu: string]: string } = {};
+	protected topLevelTitles: { [menu: string]: string } = {
+		'File': localize({ key: 'mFile', comment: ['&& denotes a mnemonic'] }, "&&File"),
+		'Edit': localize({ key: 'mEdit', comment: ['&& denotes a mnemonic'] }, "&&Edit"),
+		// 'Selection': localize({ key: 'mSelection', comment: ['&& denotes a mnemonic'] }, "&&Selection"), {{SQL CARBON EDIT}} - Disable unused menus
+		'View': localize({ key: 'mView', comment: ['&& denotes a mnemonic'] }, "&&View"),
+		// 'Go': localize({ key: 'mGoto', comment: ['&& denotes a mnemonic'] }, "&&Go"), {{SQL CARBON EDIT}} - Disable unused menus
+		// 'Run': localize({ key: 'mRun', comment: ['&& denotes a mnemonic'] }, "&&Run"), {{SQL CARBON EDIT}} - Disable unused menus
+		// 'Terminal': localize({ key: 'mTerminal', comment: ['&& denotes a mnemonic'] }, "&&Terminal"), {{SQL CARBON EDIT}} - Disable unused menus
+		'Help': localize({ key: 'mHelp', comment: ['&& denotes a mnemonic'] }, "&&Help")
+	};
 
 	protected recentlyOpened: IRecentlyOpened = { files: [], workspaces: [] };
 
@@ -168,29 +100,17 @@ export abstract class MenubarControl extends Disposable {
 
 		super();
 
-		const mainMenu = this._register(this.menuService.createMenu(MenuId.MenubarMainMenu, this.contextKeyService));
-		const mainMenuDisposables = this._register(new DisposableStore());
-
-		const setupMenu = () => {
-			mainMenuDisposables.clear();
-			this.menus = {};
-			this.topLevelTitles = {};
-
-			const [, mainMenuActions] = mainMenu.getActions()[0];
-			for (const mainMenuAction of mainMenuActions) {
-				if (mainMenuAction instanceof SubmenuItemAction && typeof mainMenuAction.item.title !== 'string') {
-					this.menus[mainMenuAction.item.title.original] = mainMenuDisposables.add(this.menuService.createMenu(mainMenuAction.item.submenu, this.contextKeyService));
-					this.topLevelTitles[mainMenuAction.item.title.original] = mainMenuAction.item.title.mnemonicTitle ?? mainMenuAction.item.title.value;
-				}
-			}
+		// {{SQL CARBON EDIT}} - Disable unusued menus
+		this.menus = {
+			'File': this._register(this.menuService.createMenu(MenuId.MenubarFileMenu, this.contextKeyService)),
+			'Edit': this._register(this.menuService.createMenu(MenuId.MenubarEditMenu, this.contextKeyService)),
+			// 'Selection': this._register(this.menuService.createMenu(MenuId.MenubarSelectionMenu, this.contextKeyService)),
+			'View': this._register(this.menuService.createMenu(MenuId.MenubarViewMenu, this.contextKeyService)),
+			// 'Go': this._register(this.menuService.createMenu(MenuId.MenubarGoMenu, this.contextKeyService)),
+			// 'Run': this._register(this.menuService.createMenu(MenuId.MenubarDebugMenu, this.contextKeyService)),
+			// 'Terminal': this._register(this.menuService.createMenu(MenuId.MenubarTerminalMenu, this.contextKeyService)),
+			'Help': this._register(this.menuService.createMenu(MenuId.MenubarHelpMenu, this.contextKeyService))
 		};
-
-		setupMenu();
-
-		mainMenu.onDidChange(() => {
-			setupMenu();
-			this.doUpdateMenubar(true);
-		});
 
 		this.menuUpdater = this._register(new RunOnceScheduler(() => this.doUpdateMenubar(false), 200));
 
@@ -632,7 +552,6 @@ export class CustomMenubarControl extends MenubarControl {
 		this._onVisibilityChange.fire(visible);
 	}
 
-	private reinstallDisposables = this._register(new DisposableStore());
 	private setupCustomMenubar(firstTime: boolean): void {
 		// If there is no container, we cannot setup the menubar
 		if (!this.container) {
@@ -640,19 +559,14 @@ export class CustomMenubarControl extends MenubarControl {
 		}
 
 		if (firstTime) {
-			// Reset and create new menubar
-			if (this.menubar) {
-				this.reinstallDisposables.clear();
-			}
-
-			this.menubar = this.reinstallDisposables.add(new MenuBar(this.container, this.getMenuBarOptions()));
+			this.menubar = this._register(new MenuBar(this.container, this.getMenuBarOptions()));
 
 			this.accessibilityService.alwaysUnderlineAccessKeys().then(val => {
 				this.alwaysOnMnemonics = val;
 				this.menubar?.update(this.getMenuBarOptions());
 			});
 
-			this.reinstallDisposables.add(this.menubar.onFocusStateChange(focused => {
+			this._register(this.menubar.onFocusStateChange(focused => {
 				this._onFocusStateChange.fire(focused);
 
 				// When the menubar loses focus, update it to clear any pending updates
@@ -662,18 +576,18 @@ export class CustomMenubarControl extends MenubarControl {
 				}
 			}));
 
-			this.reinstallDisposables.add(this.menubar.onVisibilityChange(e => this.onDidVisibilityChange(e)));
+			this._register(this.menubar.onVisibilityChange(e => this.onDidVisibilityChange(e)));
 
 			// Before we focus the menubar, stop updates to it so that focus-related context keys will work
-			this.reinstallDisposables.add(addDisposableListener(this.container, EventType.FOCUS_IN, () => {
+			this._register(addDisposableListener(this.container, EventType.FOCUS_IN, () => {
 				this.focusInsideMenubar = true;
 			}));
 
-			this.reinstallDisposables.add(addDisposableListener(this.container, EventType.FOCUS_OUT, () => {
+			this._register(addDisposableListener(this.container, EventType.FOCUS_OUT, () => {
 				this.focusInsideMenubar = false;
 			}));
 
-			this.reinstallDisposables.add(attachMenuStyler(this.menubar, this.themeService));
+			this._register(attachMenuStyler(this.menubar, this.themeService));
 		} else {
 			this.menubar?.update(this.getMenuBarOptions());
 		}
@@ -741,7 +655,7 @@ export class CustomMenubarControl extends MenubarControl {
 		for (const title of Object.keys(this.topLevelTitles)) {
 			const menu = this.menus[title];
 			if (firstTime && menu) {
-				this.reinstallDisposables.add(menu.onDidChange(() => {
+				this._register(menu.onDidChange(() => {
 					if (!this.focusInsideMenubar) {
 						const actions: IAction[] = [];
 						updateActions(menu, actions, title);
@@ -753,7 +667,7 @@ export class CustomMenubarControl extends MenubarControl {
 
 				// For the file menu, we need to update if the web nav menu updates as well
 				if (menu === this.menus.File) {
-					this.reinstallDisposables.add(this.webNavigationMenu.onDidChange(() => {
+					this._register(this.webNavigationMenu.onDidChange(() => {
 						if (!this.focusInsideMenubar) {
 							const actions: IAction[] = [];
 							updateActions(menu, actions, title);

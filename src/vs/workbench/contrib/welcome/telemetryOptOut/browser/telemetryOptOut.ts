@@ -67,7 +67,6 @@ export abstract class AbstractTelemetryOptOut implements IWorkbenchContribution 
 	}
 
 	private showTelemetryOptOut(telemetryOptOutUrl: string): void {
-		// {{SQL CARBON EDIT}}
 		const optOutNotice = localize('telemetryOptOut.optOutNotice', "Help improve Azure Data Studio by allowing Microsoft to collect usage data. Read our [privacy statement]({0}) and learn how to [opt out]({1}).", this.privacyUrl, this.productService.telemetryOptOutUrl);
 		const optInNotice = localize('telemetryOptOut.optInNotice', "Help improve Azure Data Studio by allowing Microsoft to collect usage data. Read our [privacy statement]({0}) and learn how to [opt in]({1}).", this.privacyUrl, this.productService.telemetryOptOutUrl);
 

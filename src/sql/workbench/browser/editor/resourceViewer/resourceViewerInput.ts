@@ -5,7 +5,7 @@
 
 import * as azdata from 'azdata';
 import * as nls from 'vs/nls';
-import { EditorInput } from 'vs/workbench/common/editor/editorInput';
+import { EditorInput } from 'vs/workbench/common/editor';
 import { Event, Emitter } from 'vs/base/common/event';
 import { URI } from 'vs/base/common/uri';
 import { DataGridProvider, IDataGridProviderService } from 'sql/workbench/services/dataGridProvider/common/dataGridProviderService';

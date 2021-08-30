@@ -38,15 +38,15 @@ export class WindowsShellHelper extends Disposable implements IWindowsShellHelpe
 	private _isDisposed: boolean;
 	private _currentRequest: Promise<string> | undefined;
 	private _shellType: TerminalShellType | undefined;
-	get shellType(): TerminalShellType | undefined { return this._shellType; }
+	public get shellType(): TerminalShellType | undefined { return this._shellType; }
 	private _shellTitle: string = '';
-	get shellTitle(): string { return this._shellTitle; }
+	public get shellTitle(): string { return this._shellTitle; }
 	private readonly _onShellNameChanged = new Emitter<string>();
-	get onShellNameChanged(): Event<string> { return this._onShellNameChanged.event; }
+	public get onShellNameChanged(): Event<string> { return this._onShellNameChanged.event; }
 	private readonly _onShellTypeChanged = new Emitter<TerminalShellType>();
-	get onShellTypeChanged(): Event<TerminalShellType> { return this._onShellTypeChanged.event; }
+	public get onShellTypeChanged(): Event<TerminalShellType> { return this._onShellTypeChanged.event; }
 
-	constructor(
+	public constructor(
 		private _rootProcessId: number
 	) {
 		super();
@@ -112,7 +112,7 @@ export class WindowsShellHelper extends Disposable implements IWindowsShellHelpe
 		return this.traverseTree(tree.children[favouriteChild]);
 	}
 
-	override dispose(): void {
+	public override dispose(): void {
 		this._isDisposed = true;
 		super.dispose();
 	}
@@ -120,7 +120,7 @@ export class WindowsShellHelper extends Disposable implements IWindowsShellHelpe
 	/**
 	 * Returns the innermost shell executable running in the terminal
 	 */
-	getShellName(): Promise<string> {
+	public getShellName(): Promise<string> {
 		if (this._isDisposed) {
 			return Promise.resolve('');
 		}
@@ -141,7 +141,7 @@ export class WindowsShellHelper extends Disposable implements IWindowsShellHelpe
 		return this._currentRequest;
 	}
 
-	getShellType(executable: string): TerminalShellType {
+	public getShellType(executable: string): TerminalShellType {
 		switch (executable.toLowerCase()) {
 			case 'cmd.exe':
 				return WindowsShellType.CommandPrompt;

@@ -15,7 +15,6 @@ import { EndOfLine, Position, Range, Selection, SnippetString, TextEditorLineNum
 import type * as vscode from 'vscode';
 import { ILogService } from 'vs/platform/log/common/log';
 import { Lazy } from 'vs/base/common/lazy';
-import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
 
 export class TextEditorDecorationType {
 
@@ -23,9 +22,9 @@ export class TextEditorDecorationType {
 
 	readonly value: vscode.TextEditorDecorationType;
 
-	constructor(proxy: MainThreadTextEditorsShape, extension: IExtensionDescription, options: vscode.DecorationRenderOptions) {
+	constructor(proxy: MainThreadTextEditorsShape, options: vscode.DecorationRenderOptions) {
 		const key = TextEditorDecorationType._Keys.nextId();
-		proxy.$registerTextEditorDecorationType(extension.identifier, key, TypeConverters.DecorationRenderOptions.from(options));
+		proxy.$registerTextEditorDecorationType(key, TypeConverters.DecorationRenderOptions.from(options));
 		this.value = Object.freeze({
 			key,
 			dispose() {

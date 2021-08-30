@@ -61,12 +61,6 @@ export const CutAction = supportsCut ? registerCommand(new MultiCommand({
 		group: '',
 		title: nls.localize('actions.clipboard.cutLabel', "Cut"),
 		order: 1
-	}, {
-		menuId: MenuId.SimpleEditorContext,
-		group: CLIPBOARD_CONTEXT_MENU_GROUP,
-		title: nls.localize('actions.clipboard.cutLabel', "Cut"),
-		when: EditorContextKeys.writable,
-		order: 1,
 	}]
 })) : undefined;
 
@@ -97,11 +91,6 @@ export const CopyAction = supportsCopy ? registerCommand(new MultiCommand({
 		group: '',
 		title: nls.localize('actions.clipboard.copyLabel', "Copy"),
 		order: 1
-	}, {
-		menuId: MenuId.SimpleEditorContext,
-		group: CLIPBOARD_CONTEXT_MENU_GROUP,
-		title: nls.localize('actions.clipboard.copyLabel', "Copy"),
-		order: 2,
 	}]
 })) : undefined;
 
@@ -137,12 +126,6 @@ export const PasteAction = supportsPaste ? registerCommand(new MultiCommand({
 		group: '',
 		title: nls.localize('actions.clipboard.pasteLabel', "Paste"),
 		order: 1
-	}, {
-		menuId: MenuId.SimpleEditorContext,
-		group: CLIPBOARD_CONTEXT_MENU_GROUP,
-		title: nls.localize('actions.clipboard.pasteLabel', "Paste"),
-		when: EditorContextKeys.writable,
-		order: 4,
 	}]
 })) : undefined;
 

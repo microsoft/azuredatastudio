@@ -8,7 +8,7 @@ import { localize } from 'vs/nls';
 import { getMarks, mark } from 'vs/base/common/performance';
 import { Emitter } from 'vs/base/common/event';
 import { URI } from 'vs/base/common/uri';
-import { screen, BrowserWindow, systemPreferences, app, TouchBar, nativeImage, Rectangle, Display, TouchBarSegmentedControl, NativeImage, BrowserWindowConstructorOptions, SegmentedControlSegment, Event, WebFrameMain } from 'electron';
+import { screen, BrowserWindow, systemPreferences, app, TouchBar, nativeImage, Rectangle, Display, TouchBarSegmentedControl, NativeImage, BrowserWindowConstructorOptions, SegmentedControlSegment, Event, RenderProcessGoneDetails, WebFrameMain } from 'electron';
 import { IEnvironmentMainService } from 'vs/platform/environment/electron-main/environmentMainService';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
@@ -186,6 +186,7 @@ export class CodeWindow extends Disposable implements ICodeWindow {
 						[`--vscode-window-config=${this.configObjectUrl.resource.toString()}`],
 					v8CacheOptions: browserCodeLoadingCacheStrategy,
 					enableWebSQL: false,
+					enableRemoteModule: false,
 					spellcheck: false,
 					nativeWindowOpen: true,
 					webviewTag: true,
@@ -206,9 +207,9 @@ export class CodeWindow extends Disposable implements ICodeWindow {
 			};
 
 			if (browserCodeLoadingCacheStrategy) {
-				this.logService.info(`window: using vscode-file:// protocol and V8 cache options: ${browserCodeLoadingCacheStrategy}`);
+				this.logService.info(`window#ctor: using vscode-file:// protocol and V8 cache options: ${browserCodeLoadingCacheStrategy}`);
 			} else {
-				this.logService.info(`window: vscode-file:// protocol is explicitly disabled`);
+				this.logService.trace(`window#ctor: vscode-file:// protocol is explicitly disabled`);
 			}
 
 			// Apply icon to window
@@ -419,16 +420,7 @@ export class CodeWindow extends Disposable implements ICodeWindow {
 		// Crashes & Unresponsive & Failed to load
 		this._win.on('unresponsive', () => this.onWindowError(WindowError.UNRESPONSIVE));
 		this._win.webContents.on('render-process-gone', (event, details) => this.onWindowError(WindowError.CRASHED, details));
-		this._win.webContents.on('did-fail-load', (event, exitCode, reason) => this.onWindowError(WindowError.LOAD, { reason, exitCode }));
-
-		// Prevent windows/iframes from blocking the unload
-		// through DOM events. We have our own logic for
-		// unloading a window that should not be confused
-		// with the DOM way.
-		// (https://github.com/microsoft/vscode/issues/122736)
-		this._win.webContents.on('will-prevent-unload', event => {
-			event.preventDefault();
-		});
+		this._win.webContents.on('did-fail-load', (event, errorCode, errorDescription) => this.onWindowError(WindowError.LOAD, errorDescription));
 
 		// Window close
 		this._win.on('closed', () => {
@@ -438,7 +430,7 @@ export class CodeWindow extends Disposable implements ICodeWindow {
 		});
 
 		// Block all SVG requests from unsupported origins
-		const supportedSvgSchemes = new Set([Schemas.file, Schemas.vscodeFileResource, Schemas.vscodeRemoteResource, 'devtools']); // TODO@mjbvz: handle webview origin
+		const supportedSvgSchemes = new Set([Schemas.file, Schemas.vscodeFileResource, Schemas.vscodeRemoteResource, 'devtools']); // TODO: handle webview origin
 
 		// But allow them if the are made from inside an webview
 		const isSafeFrame = (requestFrame: WebFrameMain | undefined): boolean => {
@@ -450,16 +442,13 @@ export class CodeWindow extends Disposable implements ICodeWindow {
 			return false;
 		};
 
-		const isRequestFromSafeContext = (details: Electron.OnBeforeRequestListenerDetails | Electron.OnHeadersReceivedListenerDetails): boolean => {
-			return details.resourceType === 'xhr' || isSafeFrame(details.frame);
-		};
-
 		this._win.webContents.session.webRequest.onBeforeRequest((details, callback) => {
 			const uri = URI.parse(details.url);
 			if (uri.path.endsWith('.svg')) {
 				const isSafeResourceUrl = supportedSvgSchemes.has(uri.scheme) || uri.path.includes(Schemas.vscodeRemoteResource);
 				if (!isSafeResourceUrl) {
-					return callback({ cancel: !isRequestFromSafeContext(details) });
+					const isSafeContext = isSafeFrame(details.frame);
+					return callback({ cancel: !isSafeContext });
 				}
 			}
 
@@ -485,7 +474,8 @@ export class CodeWindow extends Disposable implements ICodeWindow {
 				// remote extension schemes have the following format
 				// http://127.0.0.1:<port>/vscode-remote-resource?path=
 				if (!uri.path.includes(Schemas.vscodeRemoteResource) && contentTypes.some(contentType => contentType.toLowerCase().includes('image/svg'))) {
-					return callback({ cancel: !isRequestFromSafeContext(details) });
+					const isSafeContext = isSafeFrame(details.frame);
+					return callback({ cancel: !isSafeContext });
 				}
 			}
 
@@ -551,19 +541,19 @@ export class CodeWindow extends Disposable implements ICodeWindow {
 	}
 
 	private async onWindowError(error: WindowError.UNRESPONSIVE): Promise<void>;
-	private async onWindowError(error: WindowError.CRASHED, details: { reason: string, exitCode: number }): Promise<void>;
-	private async onWindowError(error: WindowError.LOAD, details: { reason: string, exitCode: number }): Promise<void>;
-	private async onWindowError(type: WindowError, details?: { reason: string, exitCode: number }): Promise<void> {
+	private async onWindowError(error: WindowError.CRASHED, details: RenderProcessGoneDetails): Promise<void>;
+	private async onWindowError(error: WindowError.LOAD, details: string): Promise<void>;
+	private async onWindowError(type: WindowError, details?: string | RenderProcessGoneDetails): Promise<void> {
 
 		switch (type) {
 			case WindowError.CRASHED:
-				this.logService.error(`CodeWindow: renderer process crashed (reason: ${details?.reason || '<unknown>'}, code: ${details?.exitCode || '<unknown>'})`);
+				this.logService.error(`CodeWindow: renderer process crashed (detail: ${typeof details === 'string' ? details : details?.reason})`);
 				break;
 			case WindowError.UNRESPONSIVE:
 				this.logService.error('CodeWindow: detected unresponsive');
 				break;
 			case WindowError.LOAD:
-				this.logService.error(`CodeWindow: failed to load workbench window (reason: ${details?.reason || '<unknown>'}, code: ${details?.exitCode || '<unknown>'})`);
+				this.logService.error(`CodeWindow: failed to load workbench window: ${typeof details === 'string' ? details : details?.reason}`);
 				break;
 		}
 
@@ -579,14 +569,12 @@ export class CodeWindow extends Disposable implements ICodeWindow {
 		type WindowErrorClassification = {
 			type: { classification: 'SystemMetaData', purpose: 'PerformanceAndHealth', isMeasurement: true };
 			reason: { classification: 'SystemMetaData', purpose: 'PerformanceAndHealth', isMeasurement: true };
-			code: { classification: 'SystemMetaData', purpose: 'PerformanceAndHealth', isMeasurement: true };
 		};
 		type WindowErrorEvent = {
 			type: WindowError;
 			reason: string | undefined;
-			code: number | undefined;
 		};
-		this.telemetryService.publicLog2<WindowErrorEvent, WindowErrorClassification>('windowerror', { type, reason: details?.reason, code: details?.exitCode });
+		this.telemetryService.publicLog2<WindowErrorEvent, WindowErrorClassification>('windowerror', { type, reason: typeof details !== 'string' ? details?.reason : undefined });
 
 		// Unresponsive
 		if (type === WindowError.UNRESPONSIVE) {
@@ -625,10 +613,10 @@ export class CodeWindow extends Disposable implements ICodeWindow {
 		// Crashed
 		else if (type === WindowError.CRASHED) {
 			let message: string;
-			if (!details) {
+			if (typeof details === 'string' || !details) {
 				message = localize('appCrashed', "The window has crashed");
 			} else {
-				message = localize('appCrashedDetails', "The window has crashed (reason: '{0}', code: '{1}')", details.reason, details.exitCode ?? '<unknown>');
+				message = localize('appCrashedDetails', "The window has crashed (reason: '{0}')", details.reason);
 			}
 
 			const result = await this.dialogMainService.showMessageBox({
@@ -653,8 +641,8 @@ export class CodeWindow extends Disposable implements ICodeWindow {
 	}
 
 	private destroyWindow(): void {
-		this._onDidDestroy.fire(); 	// 'close' event will not be fired on destroy(), so signal crash via explicit event
-		this._win.destroy(); 		// make sure to destroy the window as it has crashed
+		this._onDidDestroy.fire(); // 'close' event will not be fired on destroy(), so signal crash via explicit event
+		this._win.destroy(); 	// make sure to destroy the window as it has crashed
 	}
 
 	private onDidDeleteUntitledWorkspace(workspace: IWorkspaceIdentifier): void {
@@ -791,7 +779,6 @@ export class CodeWindow extends Disposable implements ICodeWindow {
 		// Update window related properties
 		configuration.fullscreen = this.isFullScreen;
 		configuration.maximized = this._win.isMaximized();
-		configuration.partsSplash = this.themeMainService.getWindowSplash();
 
 		// Update with latest perf marks
 		mark('code/willOpenNewWindow');

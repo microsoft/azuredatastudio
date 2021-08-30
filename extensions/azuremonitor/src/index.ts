@@ -1,5 +1,5 @@
 // Copyright (c) Microsoft Corporation.
-// Licensed under the Source EULA.
+// Licensed under the MIT License.
 
 /*
  * This file imports all public APIs for this extension and used to generate index.d.ts.

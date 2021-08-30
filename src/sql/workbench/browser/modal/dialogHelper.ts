@@ -5,7 +5,7 @@
 
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
 import { Button } from 'sql/base/browser/ui/button/button';
-import { append, $ } from 'vs/base/browser/dom';
+import { append, $, addClass, addClasses } from 'vs/base/browser/dom';
 
 import * as types from 'vs/base/common/types';
 
@@ -15,9 +15,9 @@ export function appendRow(container: HTMLElement, label: string, labelClass: str
 	let rowContainer = append(container, $('tr'));
 	if (rowContainerClass) {
 		if (types.isString(rowContainerClass)) {
-			rowContainer.classList.add(rowContainerClass);
+			addClass(rowContainer, rowContainerClass);
 		} else {
-			rowContainer.classList.add(...rowContainerClass);
+			addClasses(rowContainer, ...rowContainerClass);
 		}
 	}
 	const labelContainer = append(append(rowContainer, $(`td.${labelClass}`)), $('div.dialog-label-container'));

@@ -10,8 +10,10 @@ import { IStringDictionary } from 'vs/base/common/collections';
 import * as semver from 'vs/base/common/semver/semver';
 
 export interface IMergeResult {
-	readonly local: { added: ISyncExtension[], removed: IExtensionIdentifier[], updated: ISyncExtension[] };
-	readonly remote: { added: ISyncExtension[], removed: ISyncExtension[], updated: ISyncExtension[], all: ISyncExtension[] } | null;
+	added: ISyncExtension[];
+	removed: IExtensionIdentifier[];
+	updated: ISyncExtensionWithVersion[];
+	remote: ISyncExtension[] | null;
 }
 
 export function merge(localExtensions: ISyncExtensionWithVersion[], remoteExtensions: ISyncExtension[] | null, lastSyncExtensions: ISyncExtension[] | null, skippedExtensions: ISyncExtension[], ignoredExtensions: string[]): IMergeResult {
@@ -22,17 +24,10 @@ export function merge(localExtensions: ISyncExtensionWithVersion[], remoteExtens
 	if (!remoteExtensions) {
 		const remote = localExtensions.filter(({ identifier }) => ignoredExtensions.every(id => id.toLowerCase() !== identifier.id.toLowerCase()));
 		return {
-			local: {
-				added,
-				removed,
-				updated,
-			},
-			remote: remote.length > 0 ? {
-				added: remote,
-				updated: [],
-				removed: [],
-				all: remote
-			} : null
+			added,
+			removed,
+			updated,
+			remote: remote.length > 0 ? remote : null
 		};
 	}
 
@@ -184,15 +179,7 @@ export function merge(localExtensions: ISyncExtensionWithVersion[], remoteExtens
 		newRemoteExtensionsMap.forEach((value, key) => remote.push(massageOutgoingExtension(value, key)));
 	}
 
-	return {
-		local: { added, removed, updated },
-		remote: remote.length ? {
-			added: [...remoteChanges.added].map(id => newRemoteExtensionsMap.get(id)!),
-			updated: [...remoteChanges.updated].map(id => newRemoteExtensionsMap.get(id)!),
-			removed: [...remoteChanges.removed].map(id => remoteExtensionsMap.get(id)!),
-			all: remote
-		} : null
-	};
+	return { added, removed, updated, remote: remote.length ? remote : null };
 }
 
 function compare(from: Map<string, ISyncExtension> | null, to: Map<string, ISyncExtension>, ignoredExtensions: Set<string>, { checkInstalledProperty, checkVersionProperty }: { checkInstalledProperty: boolean, checkVersionProperty: boolean } = { checkInstalledProperty: false, checkVersionProperty: false }): { added: Set<string>, removed: Set<string>, updated: Set<string> } {

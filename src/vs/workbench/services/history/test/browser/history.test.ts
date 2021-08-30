@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as assert from 'assert';
+import { EditorOptions } from 'vs/workbench/common/editor';
 import { URI } from 'vs/base/common/uri';
 import { workbenchInstantiationService, TestFileEditorInput, registerTestEditor, createEditorPart } from 'vs/workbench/test/browser/workbenchTestServices';
 import { EditorPart } from 'vs/workbench/browser/parts/editor/editorPart';
@@ -17,7 +18,7 @@ import { IHistoryService } from 'vs/workbench/services/history/common/history';
 import { timeout } from 'vs/base/common/async';
 import { Event } from 'vs/base/common/event';
 
-suite.skip('HistoryService', function () { // {{SQL CARBON EDIT}} Skip suite
+suite.skip('HistoryService', function () {
 
 	const TEST_EDITOR_ID = 'MyTestEditorForEditorHistory';
 	const TEST_EDITOR_INPUT_ID = 'testEditorInputForHistoyService';
@@ -52,11 +53,11 @@ suite.skip('HistoryService', function () { // {{SQL CARBON EDIT}} Skip suite
 		const [part, historyService, editorService] = await createServices();
 
 		const input1 = new TestFileEditorInput(URI.parse('foo://bar1'), TEST_EDITOR_INPUT_ID);
-		await part.activeGroup.openEditor(input1, { pinned: true });
+		await part.activeGroup.openEditor(input1, EditorOptions.create({ pinned: true }));
 		assert.strictEqual(part.activeGroup.activeEditor, input1);
 
 		const input2 = new TestFileEditorInput(URI.parse('foo://bar2'), TEST_EDITOR_INPUT_ID);
-		await part.activeGroup.openEditor(input2, { pinned: true });
+		await part.activeGroup.openEditor(input2, EditorOptions.create({ pinned: true }));
 		assert.strictEqual(part.activeGroup.activeEditor, input2);
 
 		let editorChangePromise = Event.toPromise(editorService.onDidActiveEditorChange);
@@ -77,10 +78,10 @@ suite.skip('HistoryService', function () { // {{SQL CARBON EDIT}} Skip suite
 		assert.strictEqual(history.length, 0);
 
 		const input1 = new TestFileEditorInput(URI.parse('foo://bar1'), TEST_EDITOR_INPUT_ID);
-		await part.activeGroup.openEditor(input1, { pinned: true });
+		await part.activeGroup.openEditor(input1, EditorOptions.create({ pinned: true }));
 
 		const input2 = new TestFileEditorInput(URI.parse('foo://bar2'), TEST_EDITOR_INPUT_ID);
-		await part.activeGroup.openEditor(input2, { pinned: true });
+		await part.activeGroup.openEditor(input2, EditorOptions.create({ pinned: true }));
 
 		history = historyService.getHistory();
 		assert.strictEqual(history.length, 2);
@@ -97,7 +98,7 @@ suite.skip('HistoryService', function () { // {{SQL CARBON EDIT}} Skip suite
 		assert.ok(!historyService.getLastActiveFile('foo'));
 
 		const input1 = new TestFileEditorInput(URI.parse('foo://bar1'), TEST_EDITOR_INPUT_ID);
-		await part.activeGroup.openEditor(input1, { pinned: true });
+		await part.activeGroup.openEditor(input1, EditorOptions.create({ pinned: true }));
 
 		assert.strictEqual(historyService.getLastActiveFile('foo')?.toString(), input1.resource.toString());
 	});
@@ -108,10 +109,10 @@ suite.skip('HistoryService', function () { // {{SQL CARBON EDIT}} Skip suite
 		const input1 = new TestFileEditorInput(URI.parse('foo://bar1'), TEST_EDITOR_INPUT_ID);
 		const input2 = new TestFileEditorInput(URI.parse('foo://bar2'), TEST_EDITOR_INPUT_ID);
 
-		await part.activeGroup.openEditor(input1, { pinned: true });
+		await part.activeGroup.openEditor(input1, EditorOptions.create({ pinned: true }));
 		assert.strictEqual(part.activeGroup.activeEditor, input1);
 
-		await part.activeGroup.openEditor(input2, { pinned: true });
+		await part.activeGroup.openEditor(input2, EditorOptions.create({ pinned: true }));
 		assert.strictEqual(part.activeGroup.activeEditor, input2);
 
 		let editorChangePromise = Event.toPromise(editorService.onDidActiveEditorChange);
@@ -144,8 +145,8 @@ suite.skip('HistoryService', function () { // {{SQL CARBON EDIT}} Skip suite
 
 		const sideGroup = part.addGroup(rootGroup, GroupDirection.RIGHT);
 
-		await rootGroup.openEditor(input1, { pinned: true });
-		await sideGroup.openEditor(input2, { pinned: true });
+		await rootGroup.openEditor(input1, EditorOptions.create({ pinned: true }));
+		await sideGroup.openEditor(input2, EditorOptions.create({ pinned: true }));
 
 		let editorChangePromise = Event.toPromise(editorService.onDidActiveEditorChange);
 		historyService.openPreviouslyUsedEditor();
@@ -168,9 +169,9 @@ suite.skip('HistoryService', function () { // {{SQL CARBON EDIT}} Skip suite
 		const input3 = new TestFileEditorInput(URI.parse('foo://bar3'), TEST_EDITOR_INPUT_ID);
 		const input4 = new TestFileEditorInput(URI.parse('foo://bar4'), TEST_EDITOR_INPUT_ID);
 
-		await part.activeGroup.openEditor(input1, { pinned: true });
-		await part.activeGroup.openEditor(input2, { pinned: true });
-		await part.activeGroup.openEditor(input3, { pinned: true });
+		await part.activeGroup.openEditor(input1, EditorOptions.create({ pinned: true }));
+		await part.activeGroup.openEditor(input2, EditorOptions.create({ pinned: true }));
+		await part.activeGroup.openEditor(input3, EditorOptions.create({ pinned: true }));
 
 		let editorChangePromise = Event.toPromise(editorService.onDidActiveEditorChange);
 		historyService.openPreviouslyUsedEditor();
@@ -178,7 +179,7 @@ suite.skip('HistoryService', function () { // {{SQL CARBON EDIT}} Skip suite
 		assert.strictEqual(part.activeGroup.activeEditor, input2);
 
 		await timeout(0);
-		await part.activeGroup.openEditor(input4, { pinned: true });
+		await part.activeGroup.openEditor(input4, EditorOptions.create({ pinned: true }));
 
 		editorChangePromise = Event.toPromise(editorService.onDidActiveEditorChange);
 		historyService.openPreviouslyUsedEditor();

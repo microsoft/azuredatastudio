@@ -107,14 +107,12 @@ export class RangeHighlightDecorations extends Disposable {
 	}
 
 	private static readonly _WHOLE_LINE_RANGE_HIGHLIGHT = ModelDecorationOptions.register({
-		description: 'codeeditor-range-highlight-whole',
 		stickiness: TrackedRangeStickiness.NeverGrowsWhenTypingAtEdges,
 		className: 'rangeHighlight',
 		isWholeLine: true
 	});
 
 	private static readonly _RANGE_HIGHLIGHT = ModelDecorationOptions.register({
-		description: 'codeeditor-range-highlight',
 		stickiness: TrackedRangeStickiness.NeverGrowsWhenTypingAtEdges,
 		className: 'rangeHighlight'
 	});

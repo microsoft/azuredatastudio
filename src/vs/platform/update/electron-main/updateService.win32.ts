@@ -53,8 +53,8 @@ export class Win32UpdateService extends AbstractUpdateService {
 
 	@memoize
 	get cachePath(): Promise<string> {
-		const result = path.join(tmpdir(), `sqlops-update-${this.productService.target}-${process.arch}`); // {{SQL CARBON EDIT}}
-		return pfs.Promises.mkdir(result, { recursive: true }).then(() => result);
+		const result = path.join(tmpdir(), `sqlops-update-${this.productService.target}-${process.arch}`);
+		return fs.promises.mkdir(result, { recursive: true }).then(() => result);
 	}
 
 	constructor(
@@ -133,7 +133,7 @@ export class Win32UpdateService extends AbstractUpdateService {
 
 				return this.cleanup(update.version).then(() => {
 					return this.getUpdatePackagePath(update.version).then(updatePackagePath => {
-						return pfs.Promises.exists(updatePackagePath).then(exists => {
+						return pfs.exists(updatePackagePath).then(exists => {
 							if (exists) {
 								return Promise.resolve(updatePackagePath);
 							}
@@ -145,7 +145,7 @@ export class Win32UpdateService extends AbstractUpdateService {
 							return this.requestService.request({ url }, CancellationToken.None)
 								.then(context => this.fileService.writeFile(URI.file(downloadPath), context.stream))
 								.then(hash ? () => checksum(downloadPath, update.hash) : () => undefined)
-								.then(() => pfs.Promises.rename(downloadPath, updatePackagePath))
+								.then(() => fs.promises.rename(downloadPath, updatePackagePath))
 								.then(() => updatePackagePath);
 						});
 					}).then(packagePath => {
@@ -191,11 +191,11 @@ export class Win32UpdateService extends AbstractUpdateService {
 		const filter = exceptVersion ? (one: string) => !(new RegExp(`${this.productService.quality}-${exceptVersion}\\.exe$`).test(one)) : () => true;
 
 		const cachePath = await this.cachePath;
-		const versions = await pfs.Promises.readdir(cachePath);
+		const versions = await pfs.readdir(cachePath);
 
 		const promises = versions.filter(filter).map(async one => {
 			try {
-				await pfs.Promises.unlink(path.join(cachePath, one));
+				await fs.promises.unlink(path.join(cachePath, one));
 			} catch (err) {
 				// ignore
 			}
@@ -220,7 +220,7 @@ export class Win32UpdateService extends AbstractUpdateService {
 
 		this.availableUpdate.updateFilePath = path.join(cachePath, `CodeSetup-${this.productService.quality}-${update.version}.flag`);
 
-		await pfs.Promises.writeFile(this.availableUpdate.updateFilePath, 'flag');
+		await pfs.writeFile(this.availableUpdate.updateFilePath, 'flag');
 		const child = spawn(this.availableUpdate.packagePath, ['/verysilent', `/update="${this.availableUpdate.updateFilePath}"`, '/nocloseapplications', '/mergetasks=runcode,!desktopicon,!quicklaunchicon'], {
 			detached: true,
 			stdio: ['ignore', 'ignore', 'ignore'],

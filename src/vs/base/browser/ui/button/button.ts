@@ -185,7 +185,6 @@ export class Button extends Disposable implements IButton {
 		this.buttonSecondaryHoverBackground = styles.buttonSecondaryHoverBackground;
 		this.buttonBorder = styles.buttonBorder;
 
-		// {{SQL CARBON EDIT}}
 		this.buttonSecondaryBorder = styles.buttonSecondaryBorder;
 		this.buttonDisabledBackground = styles.buttonDisabledBackground;
 		this.buttonDisabledForeground = styles.buttonDisabledForeground;

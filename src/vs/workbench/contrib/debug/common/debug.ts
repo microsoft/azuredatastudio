@@ -106,7 +106,6 @@ export interface IRawStoppedDetails {
 	totalFrames?: number;
 	allThreadsStopped?: boolean;
 	framesErrorMessage?: string;
-	hitBreakpointIds?: number[];
 }
 
 // model

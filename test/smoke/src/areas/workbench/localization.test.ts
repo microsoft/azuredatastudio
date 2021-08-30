@@ -10,8 +10,7 @@ export function setup() {
 		before(async function () {
 			const app = this.app as Application;
 
-			// Don't run the localization tests in dev or remote.
-			if (app.quality === Quality.Dev || app.remote) {
+			if (app.quality === Quality.Dev) {
 				return;
 			}
 
@@ -24,7 +23,7 @@ export function setup() {
 		it(`starts with 'DE' locale and verifies title and viewlets text is in German`, async function () {
 			const app = this.app as Application;
 
-			if (app.quality === Quality.Dev || app.remote) {
+			if (app.quality === Quality.Dev) {
 				this.skip();
 				return;
 			}

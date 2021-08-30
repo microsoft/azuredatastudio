@@ -32,8 +32,6 @@ export class KeyboardLayoutPickerContribution extends Disposable implements IWor
 	) {
 		super();
 
-		const name = nls.localize('status.workbench.keyboardLayout', "Keyboard Layout");
-
 		let layout = this.keyboardLayoutService.getCurrentKeyboardLayout();
 		if (layout) {
 			let layoutInfo = parseKeyboardLayoutDescription(layout);
@@ -41,12 +39,12 @@ export class KeyboardLayoutPickerContribution extends Disposable implements IWor
 
 			this.pickerElement.value = this.statusbarService.addEntry(
 				{
-					name,
 					text,
 					ariaLabel: text,
 					command: KEYBOARD_LAYOUT_OPEN_PICKER
 				},
 				'status.workbench.keyboardLayout',
+				nls.localize('status.workbench.keyboardLayout', "Keyboard Layout"),
 				StatusbarAlignment.RIGHT
 			);
 		}
@@ -58,7 +56,6 @@ export class KeyboardLayoutPickerContribution extends Disposable implements IWor
 			if (this.pickerElement.value) {
 				const text = nls.localize('keyboardLayout', "Layout: {0}", layoutInfo.label);
 				this.pickerElement.value.update({
-					name,
 					text,
 					ariaLabel: text,
 					command: KEYBOARD_LAYOUT_OPEN_PICKER
@@ -67,12 +64,12 @@ export class KeyboardLayoutPickerContribution extends Disposable implements IWor
 				const text = nls.localize('keyboardLayout', "Layout: {0}", layoutInfo.label);
 				this.pickerElement.value = this.statusbarService.addEntry(
 					{
-						name,
 						text,
 						ariaLabel: text,
 						command: KEYBOARD_LAYOUT_OPEN_PICKER
 					},
 					'status.workbench.keyboardLayout',
+					nls.localize('status.workbench.keyboardLayout', "Keyboard Layout"),
 					StatusbarAlignment.RIGHT
 				);
 			}

@@ -18,14 +18,12 @@ import { ExperimentalRecommendations } from 'vs/workbench/contrib/extensions/bro
 import { WorkspaceRecommendations } from 'vs/workbench/contrib/extensions/browser/workspaceRecommendations';
 import { FileBasedRecommendations } from 'vs/workbench/contrib/extensions/browser/fileBasedRecommendations';
 import { KeymapRecommendations } from 'vs/workbench/contrib/extensions/browser/keymapRecommendations';
-import { LanguageRecommendations } from 'vs/workbench/contrib/extensions/browser/languageRecommendations';
 import { ExtensionRecommendation } from 'vs/workbench/contrib/extensions/browser/extensionRecommendations';
 import { ConfigBasedRecommendations } from 'vs/workbench/contrib/extensions/browser/configBasedRecommendations';
 import { StaticRecommendations } from 'sql/workbench/contrib/extensions/browser/staticRecommendations';
 import { ScenarioRecommendations } from 'sql/workbench/contrib/extensions/browser/scenarioRecommendations';
 import { IExtensionRecommendationNotificationService } from 'vs/platform/extensionRecommendations/common/extensionRecommendations';
 import { IExtensionRecommendation } from 'vs/workbench/services/extensionManagement/common/extensionManagement'; // {{SQL CARBON EDIT}}
-import { timeout } from 'vs/base/common/async';
 
 type IgnoreRecommendationClassification = {
 	recommendationReason: { classification: 'SystemMetaData', purpose: 'FeatureInsight', isMeasurement: true };
@@ -46,7 +44,6 @@ export class ExtensionRecommendationsService extends Disposable implements IExte
 	private readonly keymapRecommendations: KeymapRecommendations;
 	private readonly staticRecommendations: StaticRecommendations; // {{SQL CARBON EDIT}} add ours
 	private readonly scenarioRecommendations: ScenarioRecommendations; // {{SQL CARBON EDIT}} add ours
-	private readonly languageRecommendations: LanguageRecommendations;
 
 	public readonly activationPromise: Promise<void>;
 	private sessionSeed: number;
@@ -75,7 +72,6 @@ export class ExtensionRecommendationsService extends Disposable implements IExte
 		this.keymapRecommendations = instantiationService.createInstance(KeymapRecommendations);
 		this.staticRecommendations = instantiationService.createInstance(StaticRecommendations); // {{SQL CARBON EDIT}} add ours
 		this.scenarioRecommendations = instantiationService.createInstance(ScenarioRecommendations); // {{SQL CARBON EDIT}} add ours
-		this.languageRecommendations = instantiationService.createInstance(LanguageRecommendations);
 
 		if (!this.isEnabled()) {
 			this.sessionSeed = 0;
@@ -102,7 +98,6 @@ export class ExtensionRecommendationsService extends Disposable implements IExte
 			this.keymapRecommendations.activate(),
 			this.staticRecommendations.activate(), // {{SQL CARBON EDIT}} add ours
 			this.scenarioRecommendations.activate(), // {{SQL CARBON EDIT}} add ours
-			this.languageRecommendations.activate(),
 		]);
 
 		this._register(Event.any(this.workspaceRecommendations.onDidChangeRecommendations, this.configBasedRecommendations.onDidChangeRecommendations, this.extensionRecommendationsManagementService.onDidChangeIgnoredRecommendations)(() => this._onDidChangeRecommendations.fire()));
@@ -140,8 +135,7 @@ export class ExtensionRecommendationsService extends Disposable implements IExte
 			...this.fileBasedRecommendations.recommendations,
 			...this.workspaceRecommendations.recommendations,
 			...this.keymapRecommendations.recommendations,
-			...this.staticRecommendations.recommendations, // {{SQL CARBON EDIT}} add ours
-			...this.languageRecommendations.recommendations,
+			...this.staticRecommendations.recommendations // {{SQL CARBON EDIT}} add ours
 		];
 
 		for (const { extensionId, reason } of allRecommendations) {
@@ -169,7 +163,7 @@ export class ExtensionRecommendationsService extends Disposable implements IExte
 			...this.exeBasedRecommendations.otherRecommendations,
 			...this.dynamicWorkspaceRecommendations.recommendations,
 			...this.experimentalRecommendations.recommendations,
-			...this.staticRecommendations.recommendations // {{SQL CARBON EDIT}}
+			...this.staticRecommendations.recommendations
 		];
 
 		const extensionIds = distinct(recommendations.map(e => e.extensionId))
@@ -199,10 +193,6 @@ export class ExtensionRecommendationsService extends Disposable implements IExte
 
 	getKeymapRecommendations(): string[] {
 		return this.toExtensionRecommendations(this.keymapRecommendations.recommendations);
-	}
-
-	getLanguageRecommendations(): string[] {
-		return this.toExtensionRecommendations(this.languageRecommendations.recommendations);
 	}
 
 	async getWorkspaceRecommendations(): Promise<string[]> {
@@ -253,19 +243,12 @@ export class ExtensionRecommendationsService extends Disposable implements IExte
 		return !this.extensionRecommendationsManagementService.ignoredRecommendations.includes(extensionId.toLowerCase());
 	}
 
-	// for testing
-	protected get workbenchRecommendationDelay() {
-		// remote extensions might still being installed #124119
-		return 5000;
-	}
-
 	private async promptWorkspaceRecommendations(): Promise<void> {
 		const allowedRecommendations = [...this.workspaceRecommendations.recommendations, ...this.configBasedRecommendations.importantRecommendations]
 			.map(({ extensionId }) => extensionId)
 			.filter(extensionId => this.isExtensionAllowedToBeRecommended(extensionId));
 
 		if (allowedRecommendations.length) {
-			await timeout(this.workbenchRecommendationDelay);
 			await this.extensionRecommendationNotificationService.promptWorkspaceRecommendations(allowedRecommendations);
 		}
 	}

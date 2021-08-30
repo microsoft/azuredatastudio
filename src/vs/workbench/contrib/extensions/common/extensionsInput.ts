@@ -6,8 +6,7 @@
 import { Schemas } from 'vs/base/common/network';
 import { URI } from 'vs/base/common/uri';
 import { localize } from 'vs/nls';
-import { EditorInputCapabilities } from 'vs/workbench/common/editor';
-import { EditorInput } from 'vs/workbench/common/editor/editorInput';
+import { EditorInput } from 'vs/workbench/common/editor';
 import { IExtension } from 'vs/workbench/contrib/extensions/common/extensions';
 import { areSameExtensions } from 'vs/platform/extensionManagement/common/extensionManagementUtil';
 import { join } from 'vs/base/common/path';
@@ -18,10 +17,6 @@ export class ExtensionsInput extends EditorInput {
 
 	override get typeId(): string {
 		return ExtensionsInput.ID;
-	}
-
-	override get capabilities(): EditorInputCapabilities {
-		return EditorInputCapabilities.Readonly | EditorInputCapabilities.Singleton;
 	}
 
 	override get resource() {
@@ -39,6 +34,10 @@ export class ExtensionsInput extends EditorInput {
 
 	override getName(): string {
 		return localize('extensionsInputName', "Extension: {0}", this.extension.displayName);
+	}
+
+	override canSplit(): boolean {
+		return false;
 	}
 
 	override matches(other: unknown): boolean {

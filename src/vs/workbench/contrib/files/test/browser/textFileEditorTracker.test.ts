@@ -24,9 +24,8 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { IFilesConfigurationService } from 'vs/workbench/services/filesConfiguration/common/filesConfigurationService';
 import { MockContextKeyService } from 'vs/platform/keybinding/test/common/mockKeybindingService';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
+import { whenTextEditorClosed } from 'vs/workbench/browser/editor';
 import { FILE_EDITOR_INPUT_ID } from 'vs/workbench/contrib/files/common/files';
-import { IWorkspaceTrustRequestService } from 'vs/platform/workspace/common/workspaceTrust';
-import { TestWorkspaceTrustRequestService } from 'vs/workbench/services/workspaces/test/common/testWorkspaceTrustService';
 
 suite('Files - TextFileEditorTracker', () => {
 
@@ -59,7 +58,6 @@ suite('Files - TextFileEditorTracker', () => {
 		const part = await createEditorPart(instantiationService, disposables);
 
 		instantiationService.stub(IEditorGroupsService, part);
-		instantiationService.stub(IWorkspaceTrustRequestService, new TestWorkspaceTrustRequestService(false));
 
 		const editorService: EditorService = instantiationService.createInstance(EditorService);
 		instantiationService.stub(IEditorService, editorService);
@@ -146,15 +144,15 @@ suite('Files - TextFileEditorTracker', () => {
 	test.skip('dirty untitled text file model opens as editor', async function () { // {{SQL CARBON EDIT}} tabcolormode failure
 		const accessor = await createTracker();
 
-		const untitledTextEditor = accessor.editorService.createEditorInput({ forceUntitled: true }) as UntitledTextEditorInput;
-		const model = disposables.add(await untitledTextEditor.resolve());
+		const untitledEditor = accessor.editorService.createEditorInput({ forceUntitled: true }) as UntitledTextEditorInput;
+		const model = disposables.add(await untitledEditor.resolve());
 
-		assert.ok(!accessor.editorService.isOpened(untitledTextEditor));
+		assert.ok(!accessor.editorService.isOpened(untitledEditor));
 
 		model.textEditorModel?.setValue('Super Good');
 
 		await awaitEditorOpening(accessor.editorService);
-		assert.ok(accessor.editorService.isOpened(untitledTextEditor));
+		assert.ok(accessor.editorService.isOpened(untitledEditor));
 	});
 
 	function awaitEditorOpening(editorService: IEditorService): Promise<void> {
@@ -183,5 +181,27 @@ suite('Files - TextFileEditorTracker', () => {
 				}
 			});
 		});
+	}
+
+	test('whenTextEditorClosed (single editor)', async function () {
+		return testWhenTextEditorClosed(toResource.call(this, '/path/index.txt'));
+	});
+
+	test('whenTextEditorClosed (multiple editor)', async function () {
+		return testWhenTextEditorClosed(toResource.call(this, '/path/index.txt'), toResource.call(this, '/test.html'));
+	});
+
+	async function testWhenTextEditorClosed(...resources: URI[]): Promise<void> {
+		const accessor = await createTracker(false);
+
+		for (const resource of resources) {
+			await accessor.editorService.openEditor({ resource, options: { pinned: true } });
+		}
+
+		const closedPromise = accessor.instantitionService.invokeFunction(accessor => whenTextEditorClosed(accessor, resources));
+
+		accessor.editorGroupService.activeGroup.closeAllEditors();
+
+		await closedPromise;
 	}
 });

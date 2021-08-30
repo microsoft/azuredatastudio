@@ -14,7 +14,8 @@ import { AutoSaveMode, IFilesConfigurationService } from 'vs/workbench/services/
 import { IWorkingCopyEditorHandler, IWorkingCopyEditorService } from 'vs/workbench/services/workingCopy/common/workingCopyEditorService';
 import { Promises } from 'vs/base/common/async';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
-import { EditorsOrder, IEditorInput } from 'vs/workbench/common/editor';
+import { IEditorInput } from 'vs/workbench/common/editor';
+import { EditorOverride } from 'vs/platform/editor/common/editor';
 
 /**
  * The working copy backup tracker deals with:
@@ -208,10 +209,7 @@ export abstract class WorkingCopyBackupTracker extends Disposable {
 	//#region Backup Restorer
 
 	protected readonly unrestoredBackups = new Set<IWorkingCopyIdentifier>();
-	protected readonly whenReady = this.resolveBackupsToRestore();
-
-	private _isReady = false;
-	protected get isReady(): boolean { return this._isReady; }
+	private readonly whenReady = this.resolveBackupsToRestore();
 
 	private async resolveBackupsToRestore(): Promise<void> {
 
@@ -222,8 +220,6 @@ export abstract class WorkingCopyBackupTracker extends Disposable {
 		for (const backup of await this.workingCopyBackupService.getBackups()) {
 			this.unrestoredBackups.add(backup);
 		}
-
-		this._isReady = true;
 	}
 
 	protected async restoreBackups(handler: IWorkingCopyEditorHandler): Promise<void> {
@@ -247,7 +243,7 @@ export abstract class WorkingCopyBackupTracker extends Disposable {
 
 			// Collect already opened editors for backup
 			let hasOpenedEditorForBackup = false;
-			for (const { editor } of this.editorService.getEditors(EditorsOrder.MOST_RECENTLY_ACTIVE)) {
+			for (const editor of this.editorService.editors) {
 				const isUnrestoredBackupOpened = handler.isOpen(unrestoredBackup, editor);
 				if (isUnrestoredBackupOpened) {
 					openedEditorsForBackups.push(editor);
@@ -258,7 +254,7 @@ export abstract class WorkingCopyBackupTracker extends Disposable {
 			// Otherwise, make sure to create at least one editor
 			// for the backup to show
 			if (!hasOpenedEditorForBackup) {
-				nonOpenedEditorsForBackups.push(await handler.createEditor(unrestoredBackup));
+				nonOpenedEditorsForBackups.push(handler.createEditor(unrestoredBackup));
 			}
 
 			// Remember as (potentially) restored
@@ -273,7 +269,8 @@ export abstract class WorkingCopyBackupTracker extends Disposable {
 				options: {
 					pinned: true,
 					preserveFocus: true,
-					inactive: true
+					inactive: true,
+					override: EditorOverride.DISABLED
 				}
 			})));
 

@@ -3,13 +3,13 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { asArray, coalesceInPlace, equals } from 'vs/base/common/arrays';
+import { coalesceInPlace, equals } from 'vs/base/common/arrays';
 import { illegalArgument } from 'vs/base/common/errors';
 import { IRelativePattern } from 'vs/base/common/glob';
 import { isMarkdownString, MarkdownString as BaseMarkdownString } from 'vs/base/common/htmlContent';
 import { ReadonlyMapView, ResourceMap } from 'vs/base/common/map';
-import { normalizeMimeType } from 'vs/base/common/mime';
-import { isArray, isStringArray } from 'vs/base/common/types';
+import { isFalsyOrWhitespace } from 'vs/base/common/strings';
+import { isStringArray } from 'vs/base/common/types';
 import { URI } from 'vs/base/common/uri';
 import { generateUuid } from 'vs/base/common/uuid';
 import { FileSystemProviderErrorCode, markAsFileSystemProviderError } from 'vs/platform/files/common/files';
@@ -612,7 +612,7 @@ export interface IFileCellEdit {
 	_type: FileEditType.Cell;
 	uri: URI;
 	edit?: ICellEditOperation;
-	notebookMetadata?: Record<string, any>;
+	notebookMetadata?: vscode.NotebookDocumentMetadata;
 	metadata?: vscode.WorkspaceEditEntryMetadata;
 }
 
@@ -631,7 +631,7 @@ export interface ICellOutputEdit {
 	index: number;
 	append: boolean;
 	newOutputs?: NotebookCellOutput[];
-	newMetadata?: Record<string, any>;
+	newMetadata?: vscode.NotebookCellMetadata;
 	metadata?: vscode.WorkspaceEditEntryMetadata;
 }
 
@@ -674,7 +674,7 @@ export class WorkspaceEdit implements vscode.WorkspaceEdit {
 
 	// --- notebook
 
-	replaceNotebookMetadata(uri: URI, value: Record<string, any>, metadata?: vscode.WorkspaceEditEntryMetadata): void {
+	replaceNotebookMetadata(uri: URI, value: vscode.NotebookDocumentMetadata, metadata?: vscode.WorkspaceEditEntryMetadata): void {
 		this._edits.push({ _type: FileEditType.Cell, metadata, uri, edit: { editType: CellEditType.DocumentMetadata, metadata: value }, notebookMetadata: value });
 	}
 
@@ -707,7 +707,7 @@ export class WorkspaceEdit implements vscode.WorkspaceEdit {
 		}
 	}
 
-	replaceNotebookCellMetadata(uri: URI, index: number, cellMetadata: Record<string, any>, metadata?: vscode.WorkspaceEditEntryMetadata): void {
+	replaceNotebookCellMetadata(uri: URI, index: number, cellMetadata: vscode.NotebookCellMetadata, metadata?: vscode.WorkspaceEditEntryMetadata): void {
 		this._edits.push({ _type: FileEditType.Cell, metadata, uri, edit: { editType: CellEditType.PartialMetadata, index, metadata: cellMetadata } });
 	}
 
@@ -1420,23 +1420,24 @@ export enum SignatureHelpTriggerKind {
 }
 
 
-export enum InlayHintKind {
+export enum InlineHintKind {
 	Other = 0,
 	Type = 1,
 	Parameter = 2,
 }
 
 @es5ClassCompat
-export class InlayHint {
+export class InlineHint {
 	text: string;
-	position: Position;
-	kind?: vscode.InlayHintKind;
+	range: Range;
+	kind?: vscode.InlineHintKind;
+	description?: string | vscode.MarkdownString;
 	whitespaceBefore?: boolean;
 	whitespaceAfter?: boolean;
 
-	constructor(text: string, position: Position, kind?: vscode.InlayHintKind) {
+	constructor(text: string, range: Range, kind?: vscode.InlineHintKind) {
 		this.text = text;
-		this.position = position;
+		this.range = range;
 		this.kind = kind;
 	}
 }
@@ -1544,29 +1545,6 @@ export class CompletionList {
 	constructor(items: vscode.CompletionItem[] = [], isIncomplete: boolean = false) {
 		this.items = items;
 		this.isIncomplete = isIncomplete;
-	}
-}
-
-@es5ClassCompat
-export class InlineSuggestion implements vscode.InlineCompletionItem {
-
-	text: string;
-	range?: Range;
-	command?: vscode.Command;
-
-	constructor(text: string, range?: Range, command?: vscode.Command) {
-		this.text = text;
-		this.range = range;
-		this.command = command;
-	}
-}
-
-@es5ClassCompat
-export class InlineSuggestions implements vscode.InlineCompletionList {
-	items: vscode.InlineCompletionItem[];
-
-	constructor(items: vscode.InlineCompletionItem[]) {
-		this.items = items;
 	}
 }
 
@@ -2461,11 +2439,6 @@ export class EvaluatableExpression implements vscode.EvaluatableExpression {
 	}
 }
 
-export enum InlineCompletionTriggerKind {
-	Automatic = 0,
-	Explicit = 1,
-}
-
 @es5ClassCompat
 export class InlineValueText implements vscode.InlineValueText {
 	readonly range: Range;
@@ -2983,19 +2956,102 @@ export class NotebookRange {
 	}
 }
 
-export class NotebookCellData {
+export class NotebookCellMetadata {
+	readonly inputCollapsed?: boolean;
+	readonly outputCollapsed?: boolean;
+	readonly [key: string]: any;
 
-	static validate(data: NotebookCellData): void {
-		if (typeof data.kind !== 'number') {
-			throw new Error('NotebookCellData MUST have \'kind\' property');
-		}
-		if (typeof data.value !== 'string') {
-			throw new Error('NotebookCellData MUST have \'value\' property');
-		}
-		if (typeof data.languageId !== 'string') {
-			throw new Error('NotebookCellData MUST have \'languageId\' property');
+	constructor(inputCollapsed?: boolean, outputCollapsed?: boolean);
+	constructor(data: Record<string, any>);
+	constructor(inputCollapsedOrData: (boolean | undefined) | Record<string, any>, outputCollapsed?: boolean) {
+		if (typeof inputCollapsedOrData === 'object') {
+			Object.assign(this, inputCollapsedOrData);
+		} else {
+			this.inputCollapsed = inputCollapsedOrData;
+			this.outputCollapsed = outputCollapsed;
 		}
 	}
+
+	with(change: {
+		inputCollapsed?: boolean | null,
+		outputCollapsed?: boolean | null,
+		[key: string]: any
+	}): NotebookCellMetadata {
+
+		let { inputCollapsed, outputCollapsed, ...remaining } = change;
+
+		if (inputCollapsed === undefined) {
+			inputCollapsed = this.inputCollapsed;
+		} else if (inputCollapsed === null) {
+			inputCollapsed = undefined;
+		}
+		if (outputCollapsed === undefined) {
+			outputCollapsed = this.outputCollapsed;
+		} else if (outputCollapsed === null) {
+			outputCollapsed = undefined;
+		}
+
+		if (inputCollapsed === this.inputCollapsed &&
+			outputCollapsed === this.outputCollapsed &&
+			Object.keys(remaining).length === 0
+		) {
+			return this;
+		}
+
+		return new NotebookCellMetadata(
+			{
+				inputCollapsed,
+				outputCollapsed,
+				...remaining
+			}
+		);
+	}
+}
+
+export class NotebookDocumentMetadata {
+	readonly trusted: boolean;
+	readonly [key: string]: any;
+
+	constructor(trusted?: boolean);
+	constructor(data: Record<string, any>);
+	constructor(trustedOrData: boolean | Record<string, any> = true) {
+		if (typeof trustedOrData === 'object') {
+			Object.assign(this, trustedOrData);
+			this.trusted = trustedOrData.trusted ?? true;
+		} else {
+			this.trusted = trustedOrData;
+		}
+	}
+
+	with(change: {
+		trusted?: boolean | null,
+		[key: string]: any
+	}): NotebookDocumentMetadata {
+
+		let { trusted, ...remaining } = change;
+
+		if (trusted === undefined) {
+			trusted = this.trusted;
+		} else if (trusted === null) {
+			trusted = undefined;
+		}
+
+		if (trusted === this.trusted &&
+			Object.keys(remaining).length === 0
+		) {
+			return this;
+		}
+
+		return new NotebookDocumentMetadata(
+			{
+				trusted,
+				...remaining
+			}
+		);
+	}
+}
+
+export class NotebookCellData {
 
 	static isNotebookCellDataArray(value: unknown): value is vscode.NotebookCellData[] {
 		return Array.isArray(value) && (<unknown[]>value).every(elem => NotebookCellData.isNotebookCellData(elem));
@@ -3007,31 +3063,30 @@ export class NotebookCellData {
 	}
 
 	kind: NotebookCellKind;
-	value: string;
-	languageId: string;
-	outputs?: vscode.NotebookCellOutput[];
-	metadata?: Record<string, any>;
-	executionSummary?: vscode.NotebookCellExecutionSummary;
+	source: string;
+	language: string;
+	outputs?: NotebookCellOutput[];
+	metadata?: NotebookCellMetadata;
+	latestExecutionSummary?: vscode.NotebookCellExecutionSummary;
 
-	constructor(kind: NotebookCellKind, value: string, languageId: string, outputs?: vscode.NotebookCellOutput[], metadata?: Record<string, any>, executionSummary?: vscode.NotebookCellExecutionSummary) {
+	constructor(kind: NotebookCellKind, source: string, language: string, outputs?: NotebookCellOutput[], metadata?: NotebookCellMetadata, latestExecutionSummary?: vscode.NotebookCellExecutionSummary) {
 		this.kind = kind;
-		this.value = value;
-		this.languageId = languageId;
+		this.source = source;
+		this.language = language;
 		this.outputs = outputs ?? [];
 		this.metadata = metadata;
-		this.executionSummary = executionSummary;
-
-		NotebookCellData.validate(this);
+		this.latestExecutionSummary = latestExecutionSummary;
 	}
 }
 
 export class NotebookData {
 
 	cells: NotebookCellData[];
-	metadata?: { [key: string]: any };
+	metadata: NotebookDocumentMetadata;
 
-	constructor(cells: NotebookCellData[]) {
+	constructor(cells: NotebookCellData[], metadata?: NotebookDocumentMetadata) {
 		this.cells = cells;
+		this.metadata = metadata ?? new NotebookDocumentMetadata();
 	}
 }
 
@@ -3039,105 +3094,32 @@ export class NotebookData {
 export class NotebookCellOutputItem {
 
 	static isNotebookCellOutputItem(obj: unknown): obj is vscode.NotebookCellOutputItem {
-		if (obj instanceof NotebookCellOutputItem) {
-			return true;
-		}
-		if (!obj) {
-			return false;
-		}
-		return typeof (<vscode.NotebookCellOutputItem>obj).mime === 'string'
-			&& (<vscode.NotebookCellOutputItem>obj).data instanceof Uint8Array;
-	}
-
-	static error(err: Error | { name: string, message?: string, stack?: string }): NotebookCellOutputItem {
-		const obj = {
-			name: err.name,
-			message: err.message,
-			stack: err.stack
-		};
-		return NotebookCellOutputItem.json(obj, 'application/vnd.code.notebook.error');
-	}
-
-	static stdout(value: string): NotebookCellOutputItem {
-		return NotebookCellOutputItem.text(value, 'application/vnd.code.notebook.stdout');
-	}
-
-	static stderr(value: string): NotebookCellOutputItem {
-		return NotebookCellOutputItem.text(value, 'application/vnd.code.notebook.stderr');
-	}
-
-	static bytes(value: Uint8Array, mime: string = 'application/octet-stream'): NotebookCellOutputItem {
-		return new NotebookCellOutputItem(value, mime);
-	}
-
-	static #encoder = new TextEncoder();
-
-	static text(value: string, mime: string = 'text/plain'): NotebookCellOutputItem {
-		const bytes = NotebookCellOutputItem.#encoder.encode(String(value));
-		return new NotebookCellOutputItem(bytes, mime);
-	}
-
-	static json(value: any, mime: string = 'application/json'): NotebookCellOutputItem {
-		const rawStr = JSON.stringify(value, undefined, '\t');
-		return NotebookCellOutputItem.text(rawStr, mime);
+		return obj instanceof NotebookCellOutputItem;
 	}
 
 	constructor(
-		public data: Uint8Array,
 		public mime: string,
+		public value: unknown, // JSON'able
+		public metadata?: Record<string, any>
 	) {
-		const mimeNormalized = normalizeMimeType(mime, true);
-		if (!mimeNormalized) {
-			throw new Error('INVALID mime type, must not be empty or falsy: ' + mime);
+		if (isFalsyOrWhitespace(this.mime)) {
+			throw new Error('INVALID mime type, must not be empty or falsy');
 		}
-		this.mime = mimeNormalized;
 	}
 }
 
 export class NotebookCellOutput {
 
-	static isNotebookCellOutput(candidate: any): candidate is vscode.NotebookCellOutput {
-		if (candidate instanceof NotebookCellOutput) {
-			return true;
-		}
-		if (!candidate || typeof candidate !== 'object') {
-			return false;
-		}
-		return typeof (<NotebookCellOutput>candidate).id === 'string' && isArray((<NotebookCellOutput>candidate).items);
-	}
-
-	static ensureUniqueMimeTypes(items: NotebookCellOutputItem[], warn: boolean = false): NotebookCellOutputItem[] {
-		const seen = new Set<string>();
-		const removeIdx = new Set<number>();
-		for (let i = 0; i < items.length; i++) {
-			const item = items[i];
-			const normalMime = normalizeMimeType(item.mime);
-			if (!seen.has(normalMime)) {
-				seen.add(normalMime);
-				continue;
-			}
-			// duplicated mime types... first has won
-			removeIdx.add(i);
-			if (warn) {
-				console.warn(`DUPLICATED mime type '${item.mime}' will be dropped`);
-			}
-		}
-		if (removeIdx.size === 0) {
-			return items;
-		}
-		return items.filter((_item, index) => !removeIdx.has(index));
-	}
-
 	id: string;
-	items: NotebookCellOutputItem[];
+	outputs: NotebookCellOutputItem[];
 	metadata?: Record<string, any>;
 
 	constructor(
-		items: NotebookCellOutputItem[],
+		outputs: NotebookCellOutputItem[],
 		idOrMetadata?: string | Record<string, any>,
 		metadata?: Record<string, any>
 	) {
-		this.items = NotebookCellOutput.ensureUniqueMimeTypes(items, true);
+		this.outputs = outputs;
 		if (typeof idOrMetadata === 'string') {
 			this.id = idOrMetadata;
 			this.metadata = metadata;
@@ -3149,7 +3131,7 @@ export class NotebookCellOutput {
 }
 
 export enum NotebookCellKind {
-	Markup = 1,
+	Markdown = 1,
 	Code = 2
 }
 
@@ -3174,25 +3156,17 @@ export enum NotebookEditorRevealType {
 export class NotebookCellStatusBarItem {
 	constructor(
 		public text: string,
-		public alignment: NotebookCellStatusBarAlignment) { }
+		public alignment: NotebookCellStatusBarAlignment,
+		public command?: string | vscode.Command,
+		public tooltip?: string,
+		public priority?: number,
+		public accessibilityInformation?: vscode.AccessibilityInformation) { }
 }
 
 
 export enum NotebookControllerAffinity {
 	Default = 1,
 	Preferred = 2
-}
-
-export class NotebookRendererScript {
-
-	public provides: string[];
-
-	constructor(
-		public uri: vscode.Uri,
-		provides: string | string[] = []
-	) {
-		this.provides = asArray(provides);
-	}
 }
 
 //#endregion
@@ -3254,25 +3228,6 @@ export class LinkedEditingRanges {
 	}
 }
 
-//#region ports
-export class PortAttributes {
-	private _port: number;
-	private _autoForwardAction: PortAutoForwardAction;
-	constructor(port: number, autoForwardAction: PortAutoForwardAction) {
-		this._port = port;
-		this._autoForwardAction = autoForwardAction;
-	}
-
-	get port(): number {
-		return this._port;
-	}
-
-	get autoForwardAction(): PortAutoForwardAction {
-		return this._autoForwardAction;
-	}
-}
-//#endregion ports
-
 //#region Testing
 export enum TestResultState {
 	Unset = 0,
@@ -3327,7 +3282,7 @@ const rangeComparator = (a: vscode.Range | undefined, b: vscode.Range | undefine
 
 export class TestItemImpl implements vscode.TestItem<unknown> {
 	public readonly id!: string;
-	public readonly uri!: vscode.Uri | undefined;
+	public readonly uri!: vscode.Uri;
 	public readonly children!: ReadonlyMap<string, TestItemImpl>;
 	public readonly parent!: TestItemImpl | undefined;
 
@@ -3341,7 +3296,7 @@ export class TestItemImpl implements vscode.TestItem<unknown> {
 	/** Extension-owned resolve handler */
 	public resolveHandler?: (token: vscode.CancellationToken) => void;
 
-	constructor(id: string, public label: string, uri: vscode.Uri | undefined, public data: unknown) {
+	constructor(id: string, public label: string, uri: vscode.Uri, public data: unknown) {
 		const api = getPrivateApiFor(this);
 
 		Object.defineProperties(this, {
@@ -3367,7 +3322,7 @@ export class TestItemImpl implements vscode.TestItem<unknown> {
 			range: testItemPropAccessor(api, 'range', undefined, rangeComparator),
 			description: testItemPropAccessor(api, 'description', undefined, strictEqualComparator),
 			runnable: testItemPropAccessor(api, 'runnable', true, strictEqualComparator),
-			debuggable: testItemPropAccessor(api, 'debuggable', false, strictEqualComparator),
+			debuggable: testItemPropAccessor(api, 'debuggable', true, strictEqualComparator),
 			status: testItemPropAccessor(api, 'status', TestItemStatus.Resolved, strictEqualComparator),
 			error: testItemPropAccessor(api, 'error', undefined, strictEqualComparator),
 		});

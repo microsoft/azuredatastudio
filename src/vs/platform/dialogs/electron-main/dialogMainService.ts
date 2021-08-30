@@ -6,11 +6,11 @@
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { MessageBoxOptions, MessageBoxReturnValue, SaveDialogOptions, SaveDialogReturnValue, OpenDialogOptions, OpenDialogReturnValue, dialog, FileFilter, BrowserWindow } from 'electron';
 import { Queue } from 'vs/base/common/async';
-import { IStateMainService } from 'vs/platform/state/electron-main/state';
+import { IStateService } from 'vs/platform/state/node/state';
 import { isMacintosh } from 'vs/base/common/platform';
 import { dirname } from 'vs/base/common/path';
 import { normalizeNFC } from 'vs/base/common/normalization';
-import { Promises } from 'vs/base/node/pfs';
+import { exists } from 'vs/base/node/pfs';
 import { INativeOpenDialogOptions } from 'vs/platform/dialogs/common/dialogs';
 import { withNullAsUndefined } from 'vs/base/common/types';
 import { localize } from 'vs/nls';
@@ -55,7 +55,7 @@ export class DialogMainService implements IDialogMainService {
 	private readonly noWindowDialogueQueue = new Queue<MessageBoxReturnValue | SaveDialogReturnValue | OpenDialogReturnValue>();
 
 	constructor(
-		@IStateMainService private readonly stateMainService: IStateMainService
+		@IStateService private readonly stateService: IStateService
 	) {
 	}
 
@@ -89,7 +89,8 @@ export class DialogMainService implements IDialogMainService {
 		};
 
 		// Ensure defaultPath
-		dialogOptions.defaultPath = options.defaultPath || this.stateMainService.getItem<string>(DialogMainService.workingDirPickerStorageKey);
+		dialogOptions.defaultPath = options.defaultPath || this.stateService.getItem<string>(DialogMainService.workingDirPickerStorageKey);
+
 
 		// Ensure properties
 		if (typeof options.pickFiles === 'boolean' || typeof options.pickFolders === 'boolean') {
@@ -115,12 +116,12 @@ export class DialogMainService implements IDialogMainService {
 		if (result && result.filePaths && result.filePaths.length > 0) {
 
 			// Remember path in storage for next time
-			this.stateMainService.setItem(DialogMainService.workingDirPickerStorageKey, dirname(result.filePaths[0]));
+			this.stateService.setItem(DialogMainService.workingDirPickerStorageKey, dirname(result.filePaths[0]));
 
 			return result.filePaths;
 		}
 
-		return undefined; // {{SQL CARBON EDIT}} Strict nulls
+		return undefined;
 	}
 
 	private getWindowDialogQueue<T extends MessageBoxReturnValue | SaveDialogReturnValue | OpenDialogReturnValue>(window?: BrowserWindow): Queue<T> {
@@ -194,7 +195,7 @@ export class DialogMainService implements IDialogMainService {
 
 		// Ensure the path exists (if provided)
 		if (options.defaultPath) {
-			const pathExists = await Promises.exists(options.defaultPath);
+			const pathExists = await exists(options.defaultPath);
 			if (!pathExists) {
 				options.defaultPath = undefined;
 			}

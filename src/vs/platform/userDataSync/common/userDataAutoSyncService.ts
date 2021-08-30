@@ -68,8 +68,8 @@ export class UserDataAutoSyncEnablementService extends Disposable implements _IU
 				return true;
 			case 'off':
 				return false;
+			default: return this.storageService.getBoolean(enablementKey, StorageScope.GLOBAL, !!defaultEnablement); // {{SQL CARBON EDIT}} strict-null-checks move this to a default case
 		}
-		return this.storageService.getBoolean(enablementKey, StorageScope.GLOBAL, !!defaultEnablement);
 		*/
 		return false;
 	}

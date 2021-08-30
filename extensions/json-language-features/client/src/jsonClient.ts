@@ -7,7 +7,7 @@ import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
 import {
-	workspace, window, languages, commands, ExtensionContext, extensions, Uri,
+	workspace, window, languages, commands, ExtensionContext, extensions, Uri, LanguageConfiguration,
 	Diagnostic, StatusBarAlignment, TextEditor, TextDocument, FormattingOptions, CancellationToken,
 	ProviderResult, TextEdit, Range, Position, Disposable, CompletionItem, CompletionList, CompletionContext, Hover, MarkdownString,
 } from 'vscode';
@@ -101,8 +101,12 @@ export function startClient(context: ExtensionContext, newLanguageClient: Langua
 
 	const documentSelector = ['json', 'jsonc'];
 
-	const schemaResolutionErrorStatusBarItem = window.createStatusBarItem('status.json.resolveError', StatusBarAlignment.Right, 0);
-	schemaResolutionErrorStatusBarItem.name = localize('json.resolveError', "JSON: Schema Resolution Error");
+	const schemaResolutionErrorStatusBarItem = window.createStatusBarItem({
+		id: 'status.json.resolveError',
+		name: localize('json.resolveError', "JSON: Schema Resolution Error"),
+		alignment: StatusBarAlignment.Right,
+		priority: 0,
+	});
 	schemaResolutionErrorStatusBarItem.text = '$(alert)';
 	toDispose.push(schemaResolutionErrorStatusBarItem);
 
@@ -358,6 +362,17 @@ export function startClient(context: ExtensionContext, newLanguageClient: Langua
 		}
 
 	});
+
+	const languageConfiguration: LanguageConfiguration = {
+		wordPattern: /("(?:[^\\\"]*(?:\\.)?)*"?)|[^\s{}\[\],:]+/,
+		indentationRules: {
+			increaseIndentPattern: /({+(?=([^"]*"[^"]*")*[^"}]*$))|(\[+(?=([^"]*"[^"]*")*[^"\]]*$))/,
+			decreaseIndentPattern: /^\s*[}\]],?\s*$/
+		}
+	};
+	languages.setLanguageConfiguration('json', languageConfiguration);
+	languages.setLanguageConfiguration('jsonc', languageConfiguration);
+
 }
 
 function getSchemaAssociations(_context: ExtensionContext): ISchemaAssociation[] {

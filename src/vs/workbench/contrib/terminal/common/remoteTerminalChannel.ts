@@ -18,7 +18,7 @@ import { IEditorService } from 'vs/workbench/services/editor/common/editorServic
 import { Schemas } from 'vs/base/common/network';
 import { ILabelService } from 'vs/platform/label/common/label';
 import { IEnvironmentVariableService, ISerializableEnvironmentVariableCollection } from 'vs/workbench/contrib/terminal/common/environmentVariable';
-import { IProcessDataEvent, IRequestResolveVariablesEvent, IShellLaunchConfig, IShellLaunchConfigDto, ITerminalDimensionsOverride, ITerminalEnvironment, ITerminalLaunchError, ITerminalProfile, ITerminalsLayoutInfo, ITerminalsLayoutInfoById, TerminalIcon, TerminalShellType } from 'vs/platform/terminal/common/terminal';
+import { IProcessDataEvent, IShellLaunchConfig, IShellLaunchConfigDto, ITerminalDimensionsOverride, ITerminalEnvironment, ITerminalLaunchError, ITerminalsLayoutInfo, ITerminalsLayoutInfoById, TerminalShellType } from 'vs/platform/terminal/common/terminal';
 import { IProcessDetails, IPtyHostProcessReplayEvent, ISetTerminalLayoutInfoArgs } from 'vs/platform/terminal/common/terminalProcess'; // {{SQL CARBON EDIT}} Remove unused
 import { IProcessEnvironment, OperatingSystem } from 'vs/base/common/platform';
 
@@ -37,6 +37,7 @@ export interface ICompleteTerminalConfiguration {
 	'terminal.integrated.env.windows': ITerminalEnvironment;
 	'terminal.integrated.env.osx': ITerminalEnvironment;
 	'terminal.integrated.env.linux': ITerminalEnvironment;
+	'terminal.integrated.inheritEnv': boolean;
 	'terminal.integrated.cwd': string;
 	'terminal.integrated.detectLocale': 'auto' | 'off' | 'on';
 }
@@ -72,49 +73,46 @@ export interface ICreateTerminalProcessResult {
 
 export class RemoteTerminalChannelClient {
 
-	get onPtyHostExit(): Event<void> {
+	public get onPtyHostExit(): Event<void> {
 		return this._channel.listen<void>('$onPtyHostExitEvent');
 	}
-	get onPtyHostStart(): Event<void> {
+	public get onPtyHostStart(): Event<void> {
 		return this._channel.listen<void>('$onPtyHostStartEvent');
 	}
-	get onPtyHostUnresponsive(): Event<void> {
+	public get onPtyHostUnresponsive(): Event<void> {
 		return this._channel.listen<void>('$onPtyHostUnresponsiveEvent');
 	}
-	get onPtyHostResponsive(): Event<void> {
+	public get onPtyHostResponsive(): Event<void> {
 		return this._channel.listen<void>('$onPtyHostResponsiveEvent');
 	}
-	get onPtyHostRequestResolveVariables(): Event<IRequestResolveVariablesEvent> {
-		return this._channel.listen<IRequestResolveVariablesEvent>('$onPtyHostRequestResolveVariablesEvent');
-	}
-	get onProcessData(): Event<{ id: number, event: IProcessDataEvent | string }> {
+	public get onProcessData(): Event<{ id: number, event: IProcessDataEvent | string }> {
 		return this._channel.listen<{ id: number, event: IProcessDataEvent | string }>('$onProcessDataEvent');
 	}
-	get onProcessExit(): Event<{ id: number, event: number | undefined }> {
+	public get onProcessExit(): Event<{ id: number, event: number | undefined }> {
 		return this._channel.listen<{ id: number, event: number | undefined }>('$onProcessExitEvent');
 	}
-	get onProcessReady(): Event<{ id: number, event: { pid: number, cwd: string, requireWindowsMode?: boolean } }> {
-		return this._channel.listen<{ id: number, event: { pid: number, cwd: string, requiresWindowsMode?: boolean } }>('$onProcessReadyEvent');
+	public get onProcessReady(): Event<{ id: number, event: { pid: number, cwd: string } }> {
+		return this._channel.listen<{ id: number, event: { pid: number, cwd: string } }>('$onProcessReadyEvent');
 	}
-	get onProcessReplay(): Event<{ id: number, event: IPtyHostProcessReplayEvent }> {
+	public get onProcessReplay(): Event<{ id: number, event: IPtyHostProcessReplayEvent }> {
 		return this._channel.listen<{ id: number, event: IPtyHostProcessReplayEvent }>('$onProcessReplayEvent');
 	}
-	get onProcessTitleChanged(): Event<{ id: number, event: string }> {
+	public get onProcessTitleChanged(): Event<{ id: number, event: string }> {
 		return this._channel.listen<{ id: number, event: string }>('$onProcessTitleChangedEvent');
 	}
-	get onProcessShellTypeChanged(): Event<{ id: number, event: TerminalShellType | undefined }> {
+	public get onProcessShellTypeChanged(): Event<{ id: number, event: TerminalShellType | undefined }> {
 		return this._channel.listen<{ id: number, event: TerminalShellType | undefined }>('$onProcessShellTypeChangedEvent');
 	}
-	get onProcessOverrideDimensions(): Event<{ id: number, event: ITerminalDimensionsOverride | undefined }> {
+	public get onProcessOverrideDimensions(): Event<{ id: number, event: ITerminalDimensionsOverride | undefined }> {
 		return this._channel.listen<{ id: number, event: ITerminalDimensionsOverride | undefined }>('$onProcessOverrideDimensionsEvent');
 	}
-	get onProcessResolvedShellLaunchConfig(): Event<{ id: number, event: IShellLaunchConfig }> {
+	public get onProcessResolvedShellLaunchConfig(): Event<{ id: number, event: IShellLaunchConfig }> {
 		return this._channel.listen<{ id: number, event: IShellLaunchConfig }>('$onProcessResolvedShellLaunchConfigEvent');
 	}
-	get onProcessOrphanQuestion(): Event<{ id: number }> {
+	public get onProcessOrphanQuestion(): Event<{ id: number }> {
 		return this._channel.listen<{ id: number }>('$onProcessOrphanQuestion');
 	}
-	get onExecuteCommand(): Event<{ reqId: number, commandId: string, commandArgs: any[] }> {
+	public get onExecuteCommand(): Event<{ reqId: number, commandId: string, commandArgs: any[] }> {
 		return this._channel.listen<{ reqId: number, commandId: string, commandArgs: any[] }>('$onExecuteCommand');
 	}
 
@@ -135,7 +133,7 @@ export class RemoteTerminalChannelClient {
 		return this._channel.call('$restartPtyHost', []);
 	}
 
-	async createProcess(shellLaunchConfig: IShellLaunchConfigDto, configuration: ICompleteTerminalConfiguration, activeWorkspaceRootUri: URI | undefined, shouldPersistTerminal: boolean, cols: number, rows: number): Promise<ICreateTerminalProcessResult> {
+	public async createProcess(shellLaunchConfig: IShellLaunchConfigDto, configuration: ICompleteTerminalConfiguration, activeWorkspaceRootUri: URI | undefined, shouldPersistTerminal: boolean, cols: number, rows: number): Promise<ICreateTerminalProcessResult> {
 		// Be sure to first wait for the remote configuration
 		await this._configurationService.whenRemoteConfigurationLoaded();
 
@@ -195,65 +193,55 @@ export class RemoteTerminalChannelClient {
 		return await this._channel.call<ICreateTerminalProcessResult>('$createProcess', args);
 	}
 
-	attachToProcess(id: number): Promise<void> {
+	public attachToProcess(id: number): Promise<void> {
 		return this._channel.call('$attachToProcess', [id]);
 	}
-	listProcesses(): Promise<IProcessDetails[]> {
+	public listProcesses(): Promise<IProcessDetails[]> {
 		return this._channel.call('$listProcesses');
 	}
-	reduceConnectionGraceTime(): Promise<void> {
+	public reduceConnectionGraceTime(): Promise<void> {
 		return this._channel.call('$reduceConnectionGraceTime');
 	}
-	processBinary(id: number, data: string): Promise<void> {
+	public processBinary(id: number, data: string): Promise<void> {
 		return this._channel.call('$processBinary', [id, data]);
 	}
-	start(id: number): Promise<ITerminalLaunchError | void> {
+	public start(id: number): Promise<ITerminalLaunchError | void> {
 		return this._channel.call('$start', [id]);
 	}
-	input(id: number, data: string): Promise<void> {
+	public input(id: number, data: string): Promise<void> {
 		return this._channel.call('$input', [id, data]);
 	}
-	acknowledgeDataEvent(id: number, charCount: number): Promise<void> {
+	public acknowledgeDataEvent(id: number, charCount: number): Promise<void> {
 		return this._channel.call('$acknowledgeDataEvent', [id, charCount]);
 	}
-	shutdown(id: number, immediate: boolean): Promise<void> {
+	public shutdown(id: number, immediate: boolean): Promise<void> {
 		return this._channel.call('$shutdown', [id, immediate]);
 	}
-	resize(id: number, cols: number, rows: number): Promise<void> {
+	public resize(id: number, cols: number, rows: number): Promise<void> {
 		return this._channel.call('$resize', [id, cols, rows]);
 	}
-	getInitialCwd(id: number): Promise<string> {
+	public getInitialCwd(id: number): Promise<string> {
 		return this._channel.call('$getInitialCwd', [id]);
 	}
-	getCwd(id: number): Promise<string> {
+	public getCwd(id: number): Promise<string> {
 		return this._channel.call('$getCwd', [id]);
 	}
-	orphanQuestionReply(id: number): Promise<void> {
+	public orphanQuestionReply(id: number): Promise<void> {
 		return this._channel.call('$orphanQuestionReply', [id]);
 	}
-	sendCommandResult(reqId: number, isError: boolean, payload: any): Promise<void> {
+	public sendCommandResult(reqId: number, isError: boolean, payload: any): Promise<void> {
 		return this._channel.call('$sendCommandResult', [reqId, isError, payload]);
 	}
 
-	getDefaultSystemShell(osOverride?: OperatingSystem): Promise<string> {
+	public getDefaultSystemShell(osOverride?: OperatingSystem): Promise<string> {
 		return this._channel.call('$getDefaultSystemShell', [osOverride]);
 	}
-	getProfiles(profiles: unknown, defaultProfile: unknown, includeDetectedProfiles?: boolean): Promise<ITerminalProfile[]> {
-		return this._channel.call('$getProfiles', [profiles, defaultProfile, includeDetectedProfiles]);
-	}
-	acceptPtyHostResolvedVariables(id: number, resolved: string[]) {
-		return this._channel.call('$acceptPtyHostResolvedVariables', [id, resolved]);
+
+	public getShellEnvironment(): Promise<IProcessEnvironment> {
+		return this._channel.call('$getShellEnvironment');
 	}
 
-	getEnvironment(): Promise<IProcessEnvironment> {
-		return this._channel.call('$getEnvironment');
-	}
-
-	getWslPath(original: string): Promise<string> {
-		return this._channel.call('$getWslPath', [original]);
-	}
-
-	setTerminalLayoutInfo(layout: ITerminalsLayoutInfoById): Promise<void> {
+	public setTerminalLayoutInfo(layout: ITerminalsLayoutInfoById): Promise<void> {
 		const workspace = this._workspaceContextService.getWorkspace();
 		const args: ISetTerminalLayoutInfoArgs = {
 			workspaceId: workspace.id,
@@ -272,13 +260,5 @@ export class RemoteTerminalChannelClient {
 		// };
 		// return this._channel.call<ITerminalsLayoutInfo>('$getTerminalLayoutInfo', args);
 		return Promise.resolve(undefined);
-	}
-
-	updateTitle(id: number, title: string): Promise<string> {
-		return this._channel.call('$updateTitle', [id, title]);
-	}
-
-	updateIcon(id: number, icon: TerminalIcon, color?: string): Promise<string> {
-		return this._channel.call('$updateIcon', [id, icon, color]);
 	}
 }

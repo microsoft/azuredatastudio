@@ -12,7 +12,7 @@ import { ITextResourceConfigurationService } from 'vs/editor/common/services/tex
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { AbstractTextResourceEditor } from 'vs/workbench/browser/parts/editor/textResourceEditor';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
-import { TextResourceEditorInput } from 'vs/workbench/common/editor/textResourceEditorInput';
+import { ResourceEditorInput } from 'vs/workbench/common/editor/resourceEditorInput';
 import { URI } from 'vs/base/common/uri';
 import { ITextModelService } from 'vs/editor/common/services/resolverService';
 import { LOG_SCHEME } from 'vs/workbench/contrib/output/common/output';
@@ -22,8 +22,9 @@ import { IEditorService } from 'vs/workbench/services/editor/common/editorServic
 import { ITextFileService } from 'vs/workbench/services/textfile/common/textfiles';
 import { IFileService } from 'vs/platform/files/common/files';
 import { ILabelService } from 'vs/platform/label/common/label';
+import { IFilesConfigurationService } from 'vs/workbench/services/filesConfiguration/common/filesConfigurationService';
 
-export class LogViewerInput extends TextResourceEditorInput {
+export class LogViewerInput extends ResourceEditorInput {
 
 	static override readonly ID = 'workbench.editorinputs.output';
 
@@ -36,20 +37,23 @@ export class LogViewerInput extends TextResourceEditorInput {
 		@ITextModelService textModelResolverService: ITextModelService,
 		@ITextFileService textFileService: ITextFileService,
 		@IEditorService editorService: IEditorService,
+		@IEditorGroupsService editorGroupService: IEditorGroupsService,
 		@IFileService fileService: IFileService,
-		@ILabelService labelService: ILabelService
+		@ILabelService labelService: ILabelService,
+		@IFilesConfigurationService filesConfigurationService: IFilesConfigurationService
 	) {
 		super(
 			URI.from({ scheme: LOG_SCHEME, path: outputChannelDescriptor.id }),
 			basename(outputChannelDescriptor.file.path),
 			dirname(outputChannelDescriptor.file.path),
 			undefined,
-			undefined,
 			textModelResolverService,
 			textFileService,
 			editorService,
+			editorGroupService,
 			fileService,
-			labelService
+			labelService,
+			filesConfigurationService
 		);
 	}
 }

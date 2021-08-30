@@ -9,7 +9,6 @@ import * as extHostConverter from 'vs/workbench/api/common/extHostTypeConverters
 import { CellEditType, ICellEditOperation, ICellReplaceEdit } from 'vs/workbench/contrib/notebook/common/notebookCommon';
 import * as vscode from 'vscode';
 import { ExtHostNotebookDocument } from './extHostNotebookDocument';
-import { illegalArgument } from 'vs/base/common/errors';
 
 interface INotebookEditData {
 	documentVersionId: number;
@@ -41,7 +40,7 @@ class NotebookEditorCellEditBuilder implements vscode.NotebookEditorEdit {
 		}
 	}
 
-	replaceMetadata(value: { [key: string]: any }): void {
+	replaceMetadata(value: vscode.NotebookDocumentMetadata): void {
 		this._throwIfFinalized();
 		this._collectedEdits.push({
 			editType: CellEditType.DocumentMetadata,
@@ -49,7 +48,7 @@ class NotebookEditorCellEditBuilder implements vscode.NotebookEditorEdit {
 		});
 	}
 
-	replaceCellMetadata(index: number, metadata: Record<string, any>): void {
+	replaceCellMetadata(index: number, metadata: vscode.NotebookCellMetadata): void {
 		this._throwIfFinalized();
 		this._collectedEdits.push({
 			editType: CellEditType.Metadata,
@@ -73,8 +72,6 @@ class NotebookEditorCellEditBuilder implements vscode.NotebookEditorEdit {
 }
 
 export class ExtHostNotebookEditor {
-
-	public static readonly apiEditorsToExtHost = new WeakMap<vscode.NotebookEditor, ExtHostNotebookEditor>();
 
 	private _selections: vscode.NotebookRange[] = [];
 	private _visibleRanges: vscode.NotebookRange[] = [];
@@ -108,13 +105,6 @@ export class ExtHostNotebookEditor {
 				get selections() {
 					return that._selections;
 				},
-				set selections(value: vscode.NotebookRange[]) {
-					if (!Array.isArray(value) || !value.every(extHostTypes.NotebookRange.isNotebookRange)) {
-						throw illegalArgument('selections');
-					}
-					that._selections = value;
-					that._trySetSelections(value);
-				},
 				get visibleRanges() {
 					return that._visibleRanges;
 				},
@@ -137,8 +127,6 @@ export class ExtHostNotebookEditor {
 					return that.setDecorations(decorationType, range);
 				}
 			};
-
-			ExtHostNotebookEditor.apiEditorsToExtHost.set(this._editor, this);
 		}
 		return this._editor;
 	}
@@ -157,10 +145,6 @@ export class ExtHostNotebookEditor {
 
 	_acceptSelections(selections: vscode.NotebookRange[]): void {
 		this._selections = selections;
-	}
-
-	private _trySetSelections(value: vscode.NotebookRange[]): void {
-		this._proxy.$trySetSelections(this.id, value.map(extHostConverter.NotebookRange.from));
 	}
 
 	_acceptViewColumn(value: vscode.ViewColumn | undefined) {

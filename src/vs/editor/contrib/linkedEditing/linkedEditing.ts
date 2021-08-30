@@ -39,7 +39,6 @@ export class LinkedEditingContribution extends Disposable implements IEditorCont
 	public static readonly ID = 'editor.contrib.linkedEditing';
 
 	private static readonly DECORATION = ModelDecorationOptions.register({
-		description: 'linked-editing',
 		stickiness: TrackedRangeStickiness.AlwaysGrowsWhenTypingAtEdges,
 		className: DECORATION_CLASS_NAME
 	});

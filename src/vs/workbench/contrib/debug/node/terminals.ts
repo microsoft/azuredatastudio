@@ -5,31 +5,11 @@
 
 import * as cp from 'child_process';
 import * as platform from 'vs/base/common/platform';
-import { getDriveLetter } from 'vs/base/common/extpath';
-import { LinuxExternalTerminalService, MacExternalTerminalService, WindowsExternalTerminalService } from 'vs/platform/externalTerminal/node/externalTerminalService';
-import { IExternalTerminalService } from 'vs/platform/externalTerminal/common/externalTerminal';
+import { WindowsExternalTerminalService, MacExternalTerminalService, LinuxExternalTerminalService } from 'vs/workbench/contrib/externalTerminal/node/externalTerminalService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { IExternalTerminalService } from 'vs/workbench/contrib/externalTerminal/common/externalTerminal';
 import { ExtHostConfigProvider } from 'vs/workbench/api/common/extHostConfiguration';
-
-
-
-function spawnAsPromised(command: string, args: string[]): Promise<string> {
-	return new Promise((resolve, reject) => {
-		let stdout = '';
-		const child = cp.spawn(command, args);
-		if (child.pid) {
-			child.stdout.on('data', (data: Buffer) => {
-				stdout += data.toString();
-			});
-		}
-		child.on('error', err => {
-			reject(err);
-		});
-		child.on('close', code => {
-			resolve(stdout);
-		});
-	});
-}
+import { getDriveLetter } from 'vs/base/common/extpath';
 
 let externalTerminalService: IExternalTerminalService | undefined = undefined;
 
@@ -49,17 +29,33 @@ export function runInExternalTerminal(args: DebugProtocol.RunInTerminalRequestAr
 	return externalTerminalService.runInTerminal(args.title!, args.cwd, args.args, args.env || {}, config.external || {});
 }
 
+function spawnAsPromised(command: string, args: string[]): Promise<string> {
+	return new Promise((resolve, reject) => {
+		let stdout = '';
+		const child = cp.spawn(command, args);
+		if (child.pid) {
+			child.stdout.on('data', (data: Buffer) => {
+				stdout += data.toString();
+			});
+		}
+		child.on('error', err => {
+			reject(err);
+		});
+		child.on('close', code => {
+			resolve(stdout);
+		});
+	});
+}
+
 export function hasChildProcesses(processId: number | undefined): Promise<boolean> {
 	if (processId) {
-
 		// if shell has at least one child process, assume that shell is busy
 		if (platform.isWindows) {
-			return new Promise<boolean>(async (resolve) => {
-				// See #123296
-				const windowsProcessTree = await import('windows-process-tree');
-				windowsProcessTree.getProcessTree(processId, (processTree) => {
-					resolve(processTree.children.length > 0);
-				});
+			return spawnAsPromised('wmic', ['process', 'get', 'ParentProcessId']).then(stdout => {
+				const pids = stdout.split('\r\n');
+				return pids.some(p => parseInt(p) === processId);
+			}, error => {
+				return true;
 			});
 		} else {
 			return spawnAsPromised('/usr/bin/pgrep', ['-lP', String(processId)]).then(stdout => {

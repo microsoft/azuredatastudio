@@ -7,7 +7,7 @@ import * as strings from 'vs/base/common/strings';
 import * as DOM from 'vs/base/browser/dom';
 import * as nls from 'vs/nls';
 
-import { IEditorControl, IEditorPane, IEditorOpenContext } from 'vs/workbench/common/editor';
+import { EditorOptions, EditorInput, IEditorControl, IEditorPane, IEditorOpenContext } from 'vs/workbench/common/editor';
 import { EditorPane } from 'vs/workbench/browser/parts/editor/editorPane';
 
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
@@ -35,12 +35,9 @@ import { EditDataResultsEditor } from 'sql/workbench/contrib/editData/browser/ed
 import { EditDataResultsInput } from 'sql/workbench/browser/editData/editDataResultsInput';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { IStorageService } from 'vs/platform/storage/common/storage';
-import { IEditorGroup, IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
+import { IEditorGroup } from 'vs/workbench/services/editor/common/editorGroupsService';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { IActionViewItem } from 'vs/base/browser/ui/actionbar/actionbar';
-import { EditorInput } from 'vs/workbench/common/editor/editorInput';
-import { IEditorOptions } from 'vs/platform/editor/common/editor';
-import { DisposableStore } from 'vs/base/common/lifecycle';
 
 /**
  * Editor that hosts an action bar and a resultSetInput for an edit data session
@@ -74,7 +71,6 @@ export class EditDataEditor extends EditorPane {
 	private _queryEditorVisible: IContextKey<boolean>;
 	private hideQueryResultsView = false;
 
-	private readonly _disposables = new DisposableStore();
 	constructor(
 		@ITelemetryService _telemetryService: ITelemetryService,
 		@IThemeService themeService: IThemeService,
@@ -83,8 +79,7 @@ export class EditDataEditor extends EditorPane {
 		@IQueryModelService private _queryModelService: IQueryModelService,
 		@IEditorDescriptorService private _editorDescriptorService: IEditorDescriptorService,
 		@IContextKeyService contextKeyService: IContextKeyService,
-		@IStorageService storageService: IStorageService,
-		@IEditorGroupsService editorGroupsService: IEditorGroupsService
+		@IStorageService storageService: IStorageService
 	) {
 		super(EditDataEditor.ID, _telemetryService, themeService, storageService);
 
@@ -92,26 +87,16 @@ export class EditDataEditor extends EditorPane {
 			this._queryEditorVisible = queryContext.QueryEditorVisibleContext.bindTo(contextKeyService);
 		}
 
-		if (editorGroupsService) {
-			// Add all the initial groups to be listened to
-			editorGroupsService.whenReady.then(() => editorGroupsService.groups.forEach(group => {
-				this.registerGroupListener(group);
-			}));
-
-			// Additional groups added should also be listened to
-			this._register(editorGroupsService.onDidAddGroup((group) => this.registerGroupListener(group)));
-
-			this._register(this._disposables);
+		if (_editorService) {
+			_editorService.overrideOpenEditor({
+				open: (editor, options, group) => {
+					if (this.isVisible() && (editor !== this.input || group !== this.group)) {
+						this.saveEditorViewState();
+					}
+					return {};
+				}
+			});
 		}
-	}
-
-	private registerGroupListener(group: IEditorGroup): void {
-		const listener = group.onWillOpenEditor(e => {
-			if (this.isVisible() && (e.editor !== this.input || group !== this.group)) {
-				this.saveEditorViewState();
-			}
-		});
-		this._disposables.add(listener);
 	}
 
 	// PUBLIC METHODS ////////////////////////////////////////////////////////////
@@ -229,7 +214,7 @@ export class EditDataEditor extends EditorPane {
 	/**
 	 * Sets the input data for this editor.
 	 */
-	public override setInput(newInput: EditDataInput, options?: IEditorOptions, context?: IEditorOpenContext): Promise<void> {
+	public override setInput(newInput: EditDataInput, options?: EditorOptions, context?: IEditorOpenContext): Promise<void> {
 		let oldInput = <EditDataInput>this.input;
 		if (!newInput.setup) {
 			this._initialized = false;
@@ -507,7 +492,7 @@ export class EditDataEditor extends EditorPane {
 	/**
 	 * Sets input for the results editor after it has been created.
 	 */
-	private _onResultsEditorCreated(resultsEditor: EditDataResultsEditor, resultsInput: EditDataResultsInput, options: IEditorOptions): Promise<void> {
+	private _onResultsEditorCreated(resultsEditor: EditDataResultsEditor, resultsInput: EditDataResultsInput, options: EditorOptions): Promise<void> {
 		this._resultsEditor = resultsEditor;
 		return this._resultsEditor.setInput(resultsInput, options, undefined);
 	}
@@ -515,7 +500,7 @@ export class EditDataEditor extends EditorPane {
 	/**
 	 * Sets input for the SQL editor after it has been created.
 	 */
-	private _onSqlEditorCreated(sqlEditor: TextResourceEditor, sqlInput: UntitledTextEditorInput, options: IEditorOptions): Thenable<void> {
+	private _onSqlEditorCreated(sqlEditor: TextResourceEditor, sqlInput: UntitledTextEditorInput, options: EditorOptions): Thenable<void> {
 		this._sqlEditor = sqlEditor;
 		return this._sqlEditor.setInput(sqlInput, options, undefined, CancellationToken.None);
 	}
@@ -535,7 +520,7 @@ export class EditDataEditor extends EditorPane {
 	 * - Opened for the first time
 	 * - Opened with a new EditDataInput
 	 */
-	private _setNewInput(newInput: EditDataInput, options?: IEditorOptions): Promise<any> {
+	private _setNewInput(newInput: EditDataInput, options?: EditorOptions): Promise<any> {
 
 		// Promises that will ensure proper ordering of editor creation logic
 		let createEditors: () => Promise<any>;
@@ -621,7 +606,7 @@ export class EditDataEditor extends EditorPane {
 	 * Handles setting input for this editor. If this new input does not match the old input (e.g. a new file
 	 * has been opened with the same editor, or we are opening the editor for the first time).
 	 */
-	private _updateInput(oldInput: EditDataInput, newInput: EditDataInput, options?: IEditorOptions): Promise<void> {
+	private _updateInput(oldInput: EditDataInput, newInput: EditDataInput, options?: EditorOptions): Promise<void> {
 		if (this._sqlEditor) {
 			this._sqlEditor.clearInput();
 		}

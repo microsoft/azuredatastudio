@@ -64,12 +64,7 @@ export class OnEnterSupport {
 					reg: rule.previousLineText,
 					text: previousLineText
 				}].every((obj): boolean => {
-					if (!obj.reg) {
-						return true;
-					}
-
-					obj.reg.lastIndex = 0; // To disable the effect of the "g" flag.
-					return obj.reg.test(obj.text);
+					return obj.reg ? obj.reg.test(obj.text) : true;
 				});
 
 				if (regResult) {

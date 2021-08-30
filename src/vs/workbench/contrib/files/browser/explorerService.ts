@@ -6,7 +6,7 @@
 import { Event } from 'vs/base/common/event';
 import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
 import { DisposableStore } from 'vs/base/common/lifecycle';
-import { IFilesConfiguration, ISortOrderConfiguration, SortOrder, LexicographicOptions } from 'vs/workbench/contrib/files/common/files';
+import { IFilesConfiguration, SortOrder } from 'vs/workbench/contrib/files/common/files';
 import { ExplorerItem, ExplorerModel } from 'vs/workbench/contrib/files/common/explorerModel';
 import { URI } from 'vs/base/common/uri';
 import { FileOperationEvent, FileOperation, IFileService, FileChangesEvent, FileChangeType, IResolveFileOptions } from 'vs/platform/files/common/files';
@@ -33,7 +33,6 @@ export class ExplorerService implements IExplorerService {
 	private readonly disposables = new DisposableStore();
 	private editable: { stat: ExplorerItem, data: IEditableData } | undefined;
 	private _sortOrder: SortOrder;
-	private _lexicographicOptions: LexicographicOptions;
 	private cutItems: ExplorerItem[] | undefined;
 	private view: IExplorerView | undefined;
 	private model: ExplorerModel;
@@ -51,7 +50,6 @@ export class ExplorerService implements IExplorerService {
 		@IProgressService private readonly progressService: IProgressService
 	) {
 		this._sortOrder = this.configurationService.getValue('explorer.sortOrder');
-		this._lexicographicOptions = this.configurationService.getValue('explorer.sortOrderLexicographicOptions');
 
 		this.model = new ExplorerModel(this.contextService, this.uriIdentityService, this.fileService);
 		this.disposables.add(this.model);
@@ -127,11 +125,8 @@ export class ExplorerService implements IExplorerService {
 		return this.model.roots;
 	}
 
-	get sortOrderConfiguration(): ISortOrderConfiguration {
-		return {
-			sortOrder: this._sortOrder,
-			lexicographicOptions: this._lexicographicOptions,
-		};
+	get sortOrder(): SortOrder {
+		return this._sortOrder;
 	}
 
 	registerView(contextProvider: IExplorerView): void {
@@ -231,7 +226,7 @@ export class ExplorerService implements IExplorerService {
 		}
 
 		// Stat needs to be resolved first and then revealed
-		const options: IResolveFileOptions = { resolveTo: [resource], resolveMetadata: this._sortOrder === SortOrder.Modified };
+		const options: IResolveFileOptions = { resolveTo: [resource], resolveMetadata: this.sortOrder === SortOrder.Modified };
 		const root = this.findClosestRoot(resource);
 		if (!root) {
 			return undefined;
@@ -283,7 +278,7 @@ export class ExplorerService implements IExplorerService {
 				// Add the new file to its parent (Model)
 				await Promise.all(parents.map(async p => {
 					// We have to check if the parent is resolved #29177
-					const resolveMetadata = this._sortOrder === `modified`;
+					const resolveMetadata = this.sortOrder === `modified`;
 					if (!p.isDirectoryResolved) {
 						const stat = await this.fileService.resolve(p.resource, { resolveMetadata });
 						if (stat) {
@@ -353,22 +348,13 @@ export class ExplorerService implements IExplorerService {
 	}
 
 	private async onConfigurationUpdated(configuration: IFilesConfiguration, event?: IConfigurationChangeEvent): Promise<void> {
-		let shouldRefresh = false;
-
-		const configSortOrder = configuration?.explorer?.sortOrder || SortOrder.Default;
+		const configSortOrder = configuration?.explorer?.sortOrder || 'default';
 		if (this._sortOrder !== configSortOrder) {
-			shouldRefresh = this._sortOrder !== undefined;
-			this._sortOrder = configSortOrder as SortOrder; // {{SQL CARBON EDIT}} strict-null-checks;
-		}
-
-		const configLexicographicOptions = configuration?.explorer?.sortOrderLexicographicOptions || LexicographicOptions.Default;
-		if (this._lexicographicOptions !== configLexicographicOptions) {
-			shouldRefresh = shouldRefresh || this._lexicographicOptions !== undefined;
-			this._lexicographicOptions = configLexicographicOptions;
-		}
-
-		if (shouldRefresh) {
-			await this.refresh();
+			const shouldRefresh = this._sortOrder !== undefined;
+			this._sortOrder = configSortOrder as SortOrder; // {{SQL CARBON EDIT}} strict-null-checks
+			if (shouldRefresh) {
+				await this.refresh();
+			}
 		}
 	}
 

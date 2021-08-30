@@ -10,11 +10,6 @@ import { IUndoRedoService } from 'vs/platform/undoRedo/common/undoRedo';
 import { IModeService } from 'vs/editor/common/services/modeService';
 
 suite('NotebookTextModel', () => {
-
-	function valueBytesFromString(value: string) {
-		return Array.from(new TextEncoder().encode(value));
-	}
-
 	const instantiationService = setupInstantiationService();
 	const modeService = instantiationService.get(IModeService);
 	instantiationService.spy(IUndoRedoService, 'pushElement');
@@ -189,7 +184,7 @@ suite('NotebookTextModel', () => {
 					editType: CellEditType.Output,
 					outputs: [{
 						outputId: 'someId',
-						outputs: [{ mime: 'text/markdown', valueBytes: valueBytesFromString('_Hello_') }]
+						outputs: [{ mime: 'text/markdown', value: '_Hello_' }]
 					}]
 				}], true, undefined, () => undefined, undefined);
 
@@ -203,7 +198,7 @@ suite('NotebookTextModel', () => {
 					append: true,
 					outputs: [{
 						outputId: 'someId2',
-						outputs: [{ mime: 'text/markdown', valueBytes: valueBytesFromString('_Hello2_') }]
+						outputs: [{ mime: 'text/markdown', value: '_Hello2_' }]
 					}]
 				}], true, undefined, () => undefined, undefined);
 
@@ -219,7 +214,7 @@ suite('NotebookTextModel', () => {
 					editType: CellEditType.Output,
 					outputs: [{
 						outputId: 'someId3',
-						outputs: [{ mime: 'text/plain', valueBytes: valueBytesFromString('Last, replaced output') }]
+						outputs: [{ mime: 'text/plain', value: 'Last, replaced output' }]
 					}]
 				}], true, undefined, () => undefined, undefined);
 
@@ -247,7 +242,7 @@ suite('NotebookTextModel', () => {
 						append: true,
 						outputs: [{
 							outputId: 'append1',
-							outputs: [{ mime: 'text/markdown', valueBytes: valueBytesFromString('append 1') }]
+							outputs: [{ mime: 'text/markdown', value: 'append 1' }]
 						}]
 					},
 					{
@@ -256,7 +251,7 @@ suite('NotebookTextModel', () => {
 						append: true,
 						outputs: [{
 							outputId: 'append2',
-							outputs: [{ mime: 'text/markdown', valueBytes: valueBytesFromString('append 2') }]
+							outputs: [{ mime: 'text/markdown', value: 'append 2' }]
 						}]
 					}
 				], true, undefined, () => undefined, undefined);
@@ -299,7 +294,7 @@ suite('NotebookTextModel', () => {
 				textModel.applyEdits([{
 					index: 0,
 					editType: CellEditType.Metadata,
-					metadata: { customProperty: 15 },
+					metadata: { executionOrder: 15 },
 				}], true, undefined, () => undefined, undefined);
 
 				textModel.applyEdits([{
@@ -309,7 +304,7 @@ suite('NotebookTextModel', () => {
 				}], true, undefined, () => undefined, undefined);
 
 				assert.strictEqual(textModel.cells.length, 1);
-				assert.strictEqual(textModel.cells[0].metadata.customProperty, undefined);
+				assert.strictEqual(textModel.cells[0].metadata?.executionOrder, undefined);
 			}
 		);
 	});
@@ -325,7 +320,7 @@ suite('NotebookTextModel', () => {
 				textModel.applyEdits([{
 					index: 0,
 					editType: CellEditType.PartialMetadata,
-					metadata: { customProperty: 15 },
+					metadata: { executionOrder: 15 },
 				}], true, undefined, () => undefined, undefined);
 
 				textModel.applyEdits([{
@@ -335,7 +330,7 @@ suite('NotebookTextModel', () => {
 				}], true, undefined, () => undefined, undefined);
 
 				assert.strictEqual(textModel.cells.length, 1);
-				assert.strictEqual(textModel.cells[0].metadata.customProperty, 15);
+				assert.strictEqual(textModel.cells[0].metadata?.executionOrder, 15);
 			}
 		);
 	});
@@ -423,7 +418,7 @@ suite('NotebookTextModel', () => {
 			const success1 = model.applyEdits(
 				[{
 					editType: CellEditType.Output, index: 0, outputs: [
-						{ outputId: 'out1', outputs: [{ mime: 'application/x.notebook.stream', valueBytes: [1] }] }
+						{ outputId: 'out1', outputs: [{ mime: 'application/x.notebook.stream', value: 1 }] }
 					],
 					append: false
 				}], true, undefined, () => undefined, undefined, false
@@ -435,7 +430,7 @@ suite('NotebookTextModel', () => {
 			const success2 = model.applyEdits(
 				[{
 					editType: CellEditType.Output, index: 0, outputs: [
-						{ outputId: 'out2', outputs: [{ mime: 'application/x.notebook.stream', valueBytes: [1] }] }
+						{ outputId: 'out2', outputs: [{ mime: 'application/x.notebook.stream', value: 1 }] }
 					],
 					append: true
 				}], true, undefined, () => undefined, undefined, false
@@ -462,7 +457,7 @@ suite('NotebookTextModel', () => {
 				const success = model.applyEdits(
 					[{
 						editType: CellEditType.Output, index: 0, outputs: [
-							{ outputId: 'out1', outputs: [{ mime: 'application/x.notebook.stream', valueBytes: [1] }] }
+							{ outputId: 'out1', outputs: [{ mime: 'application/x.notebook.stream', value: 1 }] }
 						],
 						append: false
 					}], true, undefined, () => undefined, undefined, false
@@ -568,14 +563,14 @@ suite('NotebookTextModel', () => {
 
 	test('Destructive sorting in _doApplyEdits #121994', async function () {
 		await withTestNotebook([
-			['var a = 1;', 'javascript', CellKind.Code, [{ outputId: 'i42', outputs: [{ mime: 'm/ime', valueBytes: valueBytesFromString('test') }] }], {}]
+			['var a = 1;', 'javascript', CellKind.Code, [{ outputId: 'i42', outputs: [{ mime: 'm/ime', value: 'test' }] }], {}]
 		], async (editor) => {
 
 			const notebook = editor.viewModel.notebookDocument;
 
 			assert.strictEqual(notebook.cells[0].outputs.length, 1);
 			assert.strictEqual(notebook.cells[0].outputs[0].outputs.length, 1);
-			assert.deepStrictEqual(notebook.cells[0].outputs[0].outputs[0].valueBytes, valueBytesFromString('test'));
+			assert.strictEqual(notebook.cells[0].outputs[0].outputs[0].value, 'test');
 
 			const edits: ICellEditOperation[] = [
 				{
@@ -584,7 +579,7 @@ suite('NotebookTextModel', () => {
 				{
 					editType: CellEditType.Output, handle: 0, append: true, outputs: [{
 						outputId: 'newOutput',
-						outputs: [{ mime: 'text/plain', valueBytes: valueBytesFromString('cba') }, { mime: 'application/foo', valueBytes: valueBytesFromString('cba') }]
+						outputs: [{ mime: 'text/plain', value: 'cba' }, { mime: 'application/foo', value: 'cba' }]
 					}]
 				}
 			];
@@ -598,9 +593,9 @@ suite('NotebookTextModel', () => {
 
 	test('Destructive sorting in _doApplyEdits #121994. cell splice between output changes', async function () {
 		await withTestNotebook([
-			['var a = 1;', 'javascript', CellKind.Code, [{ outputId: 'i42', outputs: [{ mime: 'm/ime', valueBytes: valueBytesFromString('test') }] }], {}],
-			['var b = 2;', 'javascript', CellKind.Code, [{ outputId: 'i43', outputs: [{ mime: 'm/ime', valueBytes: valueBytesFromString('test') }] }], {}],
-			['var c = 3;', 'javascript', CellKind.Code, [{ outputId: 'i44', outputs: [{ mime: 'm/ime', valueBytes: valueBytesFromString('test') }] }], {}]
+			['var a = 1;', 'javascript', CellKind.Code, [{ outputId: 'i42', outputs: [{ mime: 'm/ime', value: 'test' }] }], {}],
+			['var b = 2;', 'javascript', CellKind.Code, [{ outputId: 'i43', outputs: [{ mime: 'm/ime', value: 'test' }] }], {}],
+			['var c = 3;', 'javascript', CellKind.Code, [{ outputId: 'i44', outputs: [{ mime: 'm/ime', value: 'test' }] }], {}]
 		], async (editor) => {
 			const notebook = editor.viewModel.notebookDocument;
 
@@ -614,7 +609,7 @@ suite('NotebookTextModel', () => {
 				{
 					editType: CellEditType.Output, index: 2, append: true, outputs: [{
 						outputId: 'newOutput',
-						outputs: [{ mime: 'text/plain', valueBytes: valueBytesFromString('cba') }, { mime: 'application/foo', valueBytes: valueBytesFromString('cba') }]
+						outputs: [{ mime: 'text/plain', value: 'cba' }, { mime: 'application/foo', value: 'cba' }]
 					}]
 				}
 			];
@@ -631,9 +626,9 @@ suite('NotebookTextModel', () => {
 
 	test('Destructive sorting in _doApplyEdits #121994. cell splice between output changes 2', async function () {
 		await withTestNotebook([
-			['var a = 1;', 'javascript', CellKind.Code, [{ outputId: 'i42', outputs: [{ mime: 'm/ime', valueBytes: valueBytesFromString('test') }] }], {}],
-			['var b = 2;', 'javascript', CellKind.Code, [{ outputId: 'i43', outputs: [{ mime: 'm/ime', valueBytes: valueBytesFromString('test') }] }], {}],
-			['var c = 3;', 'javascript', CellKind.Code, [{ outputId: 'i44', outputs: [{ mime: 'm/ime', valueBytes: valueBytesFromString('test') }] }], {}]
+			['var a = 1;', 'javascript', CellKind.Code, [{ outputId: 'i42', outputs: [{ mime: 'm/ime', value: 'test' }] }], {}],
+			['var b = 2;', 'javascript', CellKind.Code, [{ outputId: 'i43', outputs: [{ mime: 'm/ime', value: 'test' }] }], {}],
+			['var c = 3;', 'javascript', CellKind.Code, [{ outputId: 'i44', outputs: [{ mime: 'm/ime', value: 'test' }] }], {}]
 		], async (editor) => {
 			const notebook = editor.viewModel.notebookDocument;
 
@@ -641,7 +636,7 @@ suite('NotebookTextModel', () => {
 				{
 					editType: CellEditType.Output, index: 1, append: true, outputs: [{
 						outputId: 'newOutput',
-						outputs: [{ mime: 'text/plain', valueBytes: valueBytesFromString('cba') }, { mime: 'application/foo', valueBytes: valueBytesFromString('cba') }]
+						outputs: [{ mime: 'text/plain', value: 'cba' }, { mime: 'application/foo', value: 'cba' }]
 					}]
 				},
 				{
@@ -650,7 +645,7 @@ suite('NotebookTextModel', () => {
 				{
 					editType: CellEditType.Output, index: 1, append: true, outputs: [{
 						outputId: 'newOutput2',
-						outputs: [{ mime: 'text/plain', valueBytes: valueBytesFromString('cba') }, { mime: 'application/foo', valueBytes: valueBytesFromString('cba') }]
+						outputs: [{ mime: 'text/plain', value: 'cba' }, { mime: 'application/foo', value: 'cba' }]
 					}]
 				}
 			];

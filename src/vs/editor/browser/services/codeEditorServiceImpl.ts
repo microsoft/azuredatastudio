@@ -123,7 +123,7 @@ export abstract class CodeEditorServiceImpl extends AbstractCodeEditorService {
 		this._editorStyleSheets.delete(editorId);
 	}
 
-	public registerDecorationType(description: string, key: string, options: IDecorationRenderOptions, parentTypeKey?: string, editor?: ICodeEditor): void {
+	public registerDecorationType(key: string, options: IDecorationRenderOptions, parentTypeKey?: string, editor?: ICodeEditor): void {
 		let provider = this._decorationOptionProviders.get(key);
 		if (!provider) {
 			const styleSheet = this._getOrCreateStyleSheet(editor);
@@ -134,7 +134,7 @@ export abstract class CodeEditorServiceImpl extends AbstractCodeEditorService {
 				options: options || Object.create(null)
 			};
 			if (!parentTypeKey) {
-				provider = new DecorationTypeOptionsProvider(description, this._themeService, styleSheet, providerArgs);
+				provider = new DecorationTypeOptionsProvider(this._themeService, styleSheet, providerArgs);
 			} else {
 				provider = new DecorationSubTypeOptionsProvider(this._themeService, styleSheet, providerArgs);
 			}
@@ -240,7 +240,6 @@ export class DecorationTypeOptionsProvider implements IModelDecorationOptionsPro
 	private readonly _styleSheet: GlobalStyleSheet | RefCountedStyleSheet;
 	public refCount: number;
 
-	public description: string;
 	public className: string | undefined;
 	public inlineClassName: string | undefined;
 	public inlineClassNameAffectsLetterSpacing: boolean | undefined;
@@ -251,9 +250,7 @@ export class DecorationTypeOptionsProvider implements IModelDecorationOptionsPro
 	public overviewRuler: IModelDecorationOverviewRulerOptions | undefined;
 	public stickiness: TrackedRangeStickiness | undefined;
 
-	constructor(description: string, themeService: IThemeService, styleSheet: GlobalStyleSheet | RefCountedStyleSheet, providerArgs: ProviderArguments) {
-		this.description = description;
-
+	constructor(themeService: IThemeService, styleSheet: GlobalStyleSheet | RefCountedStyleSheet, providerArgs: ProviderArguments) {
 		this._styleSheet = styleSheet;
 		this._styleSheet.ref();
 		this.refCount = 0;
@@ -308,7 +305,6 @@ export class DecorationTypeOptionsProvider implements IModelDecorationOptionsPro
 			return this;
 		}
 		return {
-			description: this.description,
 			inlineClassName: this.inlineClassName,
 			beforeContentClassName: this.beforeContentClassName,
 			afterContentClassName: this.afterContentClassName,

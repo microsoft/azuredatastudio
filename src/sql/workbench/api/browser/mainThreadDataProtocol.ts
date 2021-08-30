@@ -25,6 +25,7 @@ import { ISerializationService } from 'sql/platform/serialization/common/seriali
 import { IFileBrowserService } from 'sql/workbench/services/fileBrowser/common/interfaces';
 import { IExtHostContext } from 'vs/workbench/api/common/extHost.protocol';
 import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
+import { assign } from 'vs/base/common/objects';
 import { serializableToMap } from 'sql/base/common/map';
 import { IAssessmentService } from 'sql/workbench/services/assessment/common/interfaces';
 import { IDataGridProviderService } from 'sql/workbench/services/dataGridProvider/common/dataGridProviderService';
@@ -572,7 +573,7 @@ export class MainThreadDataProtocol extends Disposable implements MainThreadData
 	}
 
 	public $onObjectExplorerNodeExpanded(providerId: string, expandResponse: azdata.ObjectExplorerExpandInfo): void {
-		let expandInfo: NodeExpandInfoWithProviderId = Object.assign({ providerId: providerId }, expandResponse);
+		let expandInfo: NodeExpandInfoWithProviderId = assign({ providerId: providerId }, expandResponse);
 		this._objectExplorerService.onNodeExpanded(expandInfo);
 	}
 

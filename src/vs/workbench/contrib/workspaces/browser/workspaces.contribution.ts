@@ -16,7 +16,6 @@ import { joinPath } from 'vs/base/common/resources';
 import { IHostService } from 'vs/workbench/services/host/browser/host';
 import { IQuickInputService, IQuickPickItem } from 'vs/platform/quickinput/common/quickInput';
 import { hasWorkspaceFileExtension } from 'vs/platform/workspaces/common/workspaces';
-import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
 
 /**
  * A workbench contribution that will look for `.code-workspace` files in the root of the
@@ -29,8 +28,7 @@ export class WorkspacesFinderContribution extends Disposable implements IWorkben
 		@INotificationService private readonly notificationService: INotificationService,
 		@IFileService private readonly fileService: IFileService,
 		@IQuickInputService private readonly quickInputService: IQuickInputService,
-		@IHostService private readonly hostService: IHostService,
-		@IStorageService private readonly storageService: IStorageService
+		@IHostService private readonly hostService: IHostService
 	) {
 		super();
 
@@ -62,10 +60,7 @@ export class WorkspacesFinderContribution extends Disposable implements IWorkben
 			this.notificationService.prompt(Severity.Info, localize('workspaceFound', "This folder contains a workspace file '{0}'. Do you want to open it? [Learn more]({1}) about workspace files.", workspaceFile, 'https://go.microsoft.com/fwlink/?linkid=2025315'), [{
 				label: localize('openWorkspace', "Open Workspace"),
 				run: () => this.hostService.openWindow([{ workspaceUri: joinPath(folder, workspaceFile) }])
-			}], {
-				neverShowAgain,
-				silent: !this.storageService.isNew(StorageScope.WORKSPACE) // https://github.com/microsoft/vscode/issues/125315
-			});
+			}], { neverShowAgain });
 		}
 
 		// Prompt to select a workspace from many
@@ -81,10 +76,7 @@ export class WorkspacesFinderContribution extends Disposable implements IWorkben
 							}
 						});
 				}
-			}], {
-				neverShowAgain,
-				silent: !this.storageService.isNew(StorageScope.WORKSPACE) // https://github.com/microsoft/vscode/issues/125315
-			});
+			}], { neverShowAgain });
 		}
 	}
 }

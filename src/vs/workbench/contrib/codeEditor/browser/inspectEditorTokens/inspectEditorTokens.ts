@@ -416,17 +416,10 @@ class InspectEditorTokensWidget extends Disposable implements IContentWidget {
 		const fontStyleLabels = new Array<HTMLElement | string>();
 
 		function addStyle(key: 'bold' | 'italic' | 'underline') {
-			let label: HTMLElement | string | undefined;
 			if (semantic && semantic[key]) {
-				label = $('span.tiw-metadata-semantic', undefined, key);
+				fontStyleLabels.push($('span.tiw-metadata-semantic', undefined, key));
 			} else if (tm && tm[key]) {
-				label = key;
-			}
-			if (label) {
-				if (fontStyleLabels.length) {
-					fontStyleLabels.push(' ');
-				}
-				fontStyleLabels.push(label);
+				fontStyleLabels.push(key);
 			}
 		}
 		addStyle('bold');
@@ -435,7 +428,7 @@ class InspectEditorTokensWidget extends Disposable implements IContentWidget {
 		if (fontStyleLabels.length) {
 			elements.push($('tr', undefined,
 				$('td.tiw-metadata-key', undefined, 'font style' as string),
-				$('td.tiw-metadata-value', undefined, ...fontStyleLabels)
+				$('td.tiw-metadata-value', undefined, fontStyleLabels.join(' '))
 			));
 		}
 		return elements;

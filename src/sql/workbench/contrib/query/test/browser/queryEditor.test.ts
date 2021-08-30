@@ -73,8 +73,8 @@ suite('SQL QueryEditor Tests', () => {
 
 		// Mock EditorDescriptorService to give us a mock editor description
 		let descriptor: IEditorDescriptor = {
-			typeId: 'id',
-			name: 'name',
+			getId: function (): string { return 'id'; },
+			getName: function (): string { return 'name'; },
 			describes: function (obj: any): boolean { return true; },
 			instantiate(instantiationService: IInstantiationService): EditorPane { return undefined; }
 		};

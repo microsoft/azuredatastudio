@@ -19,7 +19,7 @@ import { IWindowsMainService, IWindowsCountChangedEvent, OpenContext } from 'vs/
 import { IWorkspacesHistoryMainService } from 'vs/platform/workspaces/electron-main/workspacesHistoryMainService';
 import { IMenubarData, IMenubarKeybinding, MenubarMenuItem, isMenubarMenuItemSeparator, isMenubarMenuItemSubmenu, isMenubarMenuItemAction, IMenubarMenu, isMenubarMenuItemRecentAction, IMenubarMenuRecentItemAction } from 'vs/platform/menubar/common/menubar';
 import { URI } from 'vs/base/common/uri';
-import { IStateMainService } from 'vs/platform/state/electron-main/state';
+import { IStateService } from 'vs/platform/state/node/state';
 import { ILifecycleMainService } from 'vs/platform/lifecycle/electron-main/lifecycleMainService';
 import { WorkbenchActionExecutedEvent, WorkbenchActionExecutedClassification } from 'vs/base/common/actions';
 import { INativeHostMainService } from 'vs/platform/native/electron-main/nativeHostMainService';
@@ -70,7 +70,7 @@ export class Menubar {
 		@IEnvironmentMainService private readonly environmentMainService: IEnvironmentMainService,
 		@ITelemetryService private readonly telemetryService: ITelemetryService,
 		@IWorkspacesHistoryMainService private readonly workspacesHistoryMainService: IWorkspacesHistoryMainService,
-		@IStateMainService private readonly stateMainService: IStateMainService,
+		@IStateService private readonly stateService: IStateService,
 		@ILifecycleMainService private readonly lifecycleMainService: ILifecycleMainService,
 		@ILogService private readonly logService: ILogService,
 		@INativeHostMainService private readonly nativeHostMainService: INativeHostMainService,
@@ -100,7 +100,7 @@ export class Menubar {
 	}
 
 	private restoreCachedMenubarData() {
-		const menubarData = this.stateMainService.getItem<IMenubarData>(Menubar.lastKnownMenubarStorageKey);
+		const menubarData = this.stateService.getItem<IMenubarData>(Menubar.lastKnownMenubarStorageKey);
 		if (menubarData) {
 			if (menubarData.menus) {
 				this.menubarMenus = menubarData.menus;
@@ -200,7 +200,7 @@ export class Menubar {
 		this.keybindings = menubarData.keybindings;
 
 		// Save off new menu and keybindings
-		this.stateMainService.setItem(Menubar.lastKnownMenubarStorageKey, menubarData);
+		this.stateService.setItem(Menubar.lastKnownMenubarStorageKey, menubarData);
 
 		this.scheduleUpdateMenu();
 	}
@@ -286,60 +286,53 @@ export class Menubar {
 		}
 
 		// File
-		if (this.shouldDrawMenu('File')) {
-			const fileMenu = new Menu();
-			const fileMenuItem = new MenuItem({ label: this.mnemonicLabel(nls.localize({ key: 'mFile', comment: ['&& denotes a mnemonic'] }, "&&File")), submenu: fileMenu });
-			this.setMenuById(fileMenu, 'File');
-			menubar.append(fileMenuItem);
-		}
+		const fileMenu = new Menu();
+		const fileMenuItem = new MenuItem({ label: this.mnemonicLabel(nls.localize({ key: 'mFile', comment: ['&& denotes a mnemonic'] }, "&&File")), submenu: fileMenu });
+
+		this.setMenuById(fileMenu, 'File');
+		menubar.append(fileMenuItem);
 
 		// Edit
-		if (this.shouldDrawMenu('Edit')) {
-			const editMenu = new Menu();
-			const editMenuItem = new MenuItem({ label: this.mnemonicLabel(nls.localize({ key: 'mEdit', comment: ['&& denotes a mnemonic'] }, "&&Edit")), submenu: editMenu });
-			this.setMenuById(editMenu, 'Edit');
-			menubar.append(editMenuItem);
-		}
+		const editMenu = new Menu();
+		const editMenuItem = new MenuItem({ label: this.mnemonicLabel(nls.localize({ key: 'mEdit', comment: ['&& denotes a mnemonic'] }, "&&Edit")), submenu: editMenu });
+
+		this.setMenuById(editMenu, 'Edit');
+		menubar.append(editMenuItem);
 
 		// Selection
-		/*if (this.shouldDrawMenu('Selection')) {
-			const selectionMenu = new Menu();
-			const selectionMenuItem = new MenuItem({ label: this.mnemonicLabel(nls.localize({ key: 'mSelection', comment: ['&& denotes a mnemonic'] }, "&&Selection")), submenu: selectionMenu });
-			this.setMenuById(selectionMenu, 'Selection');
-			menubar.append(selectionMenuItem);
-		}  {{SQL CARBON EDIT}} - Disable unused menus */
+		/*const selectionMenu = new Menu();
+		const selectionMenuItem = new MenuItem({ label: this.mnemonicLabel(nls.localize({ key: 'mSelection', comment: ['&& denotes a mnemonic'] }, "&&Selection")), submenu: selectionMenu });
+
+		this.setMenuById(selectionMenu, 'Selection');
+		menubar.append(selectionMenuItem);  {{SQL CARBON EDIT}} - Disable unused menus */
 
 		// View
-		if (this.shouldDrawMenu('View')) {
-			const viewMenu = new Menu();
-			const viewMenuItem = new MenuItem({ label: this.mnemonicLabel(nls.localize({ key: 'mView', comment: ['&& denotes a mnemonic'] }, "&&View")), submenu: viewMenu });
-			this.setMenuById(viewMenu, 'View');
-			menubar.append(viewMenuItem);
-		}
+		const viewMenu = new Menu();
+		const viewMenuItem = new MenuItem({ label: this.mnemonicLabel(nls.localize({ key: 'mView', comment: ['&& denotes a mnemonic'] }, "&&View")), submenu: viewMenu });
+
+		this.setMenuById(viewMenu, 'View');
+		menubar.append(viewMenuItem);
 
 		// Go
-		/* if (this.shouldDrawMenu('Go')) {
-			const gotoMenu = new Menu();
-			const gotoMenuItem = new MenuItem({ label: this.mnemonicLabel(nls.localize({ key: 'mGoto', comment: ['&& denotes a mnemonic'] }, "&&Go")), submenu: gotoMenu });
-			this.setMenuById(gotoMenu, 'Go');
-			menubar.append(gotoMenuItem);
-		}  {{SQL CARBON EDIT}} - Disable unused menus */
+		/* const gotoMenu = new Menu();
+		const gotoMenuItem = new MenuItem({ label: this.mnemonicLabel(nls.localize({ key: 'mGoto', comment: ['&& denotes a mnemonic'] }, "&&Go")), submenu: gotoMenu });
+
+		this.setMenuById(gotoMenu, 'Go');
+		menubar.append(gotoMenuItem);  {{SQL CARBON EDIT}} - Disable unused menus */
 
 		// Debug
-		/* if (this.shouldDrawMenu('Run')) {
-			const debugMenu = new Menu();
-			const debugMenuItem = new MenuItem({ label: this.mnemonicLabel(nls.localize({ key: 'mRun', comment: ['&& denotes a mnemonic'] }, "&&Run")), submenu: debugMenu });
-			this.setMenuById(debugMenu, 'Run');
-			menubar.append(debugMenuItem);
-		}  {{SQL CARBON EDIT}} - Disable unused menus */
+		/*const debugMenu = new Menu();
+		const debugMenuItem = new MenuItem({ label: this.mnemonicLabel(nls.localize({ key: 'mRun', comment: ['&& denotes a mnemonic'] }, "&&Run")), submenu: debugMenu });
+
+		this.setMenuById(debugMenu, 'Run');
+		menubar.append(debugMenuItem); {{SQL CARBON EDIT}} - Disable unused menus */
 
 		// Terminal
-		/* if (this.shouldDrawMenu('Terminal')) {
-			const terminalMenu = new Menu();
-			const terminalMenuItem = new MenuItem({ label: this.mnemonicLabel(nls.localize({ key: 'mTerminal', comment: ['&& denotes a mnemonic'] }, "&&Terminal")), submenu: terminalMenu });
-			this.setMenuById(terminalMenu, 'Terminal');
-			menubar.append(terminalMenuItem);
-		}  {{SQL CARBON EDIT}} - Disable unused menus */
+		/*const terminalMenu = new Menu();
+		const terminalMenuItem = new MenuItem({ label: this.mnemonicLabel(nls.localize({ key: 'mTerminal', comment: ['&& denotes a mnemonic'] }, "&&Terminal")), submenu: terminalMenu });
+
+		this.setMenuById(terminalMenu, 'Terminal');
+		menubar.append(terminalMenuItem);  {{SQL CARBON EDIT}} - Disable unused menus */
 
 		// Mac: Window
 		let macWindowMenuItem: MenuItem | undefined;
@@ -354,12 +347,11 @@ export class Menubar {
 		}
 
 		// Help
-		if (this.shouldDrawMenu('Help')) {
-			const helpMenu = new Menu();
-			const helpMenuItem = new MenuItem({ label: this.mnemonicLabel(nls.localize({ key: 'mHelp', comment: ['&& denotes a mnemonic'] }, "&&Help")), submenu: helpMenu, role: 'help' });
-			this.setMenuById(helpMenu, 'Help');
-			menubar.append(helpMenuItem);
-		}
+		const helpMenu = new Menu();
+		const helpMenuItem = new MenuItem({ label: this.mnemonicLabel(nls.localize({ key: 'mHelp', comment: ['&& denotes a mnemonic'] }, "&&Help")), submenu: helpMenu, role: 'help' });
+
+		this.setMenuById(helpMenu, 'Help');
+		menubar.append(helpMenuItem);
 
 		if (menubar.items && menubar.items.length > 0) {
 			Menu.setApplicationMenu(menubar);

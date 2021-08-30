@@ -289,7 +289,7 @@ class ResourceLabelWidget extends IconLabel {
 		@IModelService private readonly modelService: IModelService,
 		@IDecorationsService private readonly decorationsService: IDecorationsService,
 		@ILabelService private readonly labelService: ILabelService,
-		// @ITextFileService private readonly textFileService: ITextFileService, {{SQL CARBON EDIT}}
+		// @ITextFileService private readonly textFileService: ITextFileService,
 		@IWorkspaceContextService private readonly contextService: IWorkspaceContextService
 	) {
 		super(container, options);

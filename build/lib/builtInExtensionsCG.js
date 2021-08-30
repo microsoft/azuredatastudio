@@ -1,7 +1,7 @@
 "use strict";
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 Object.defineProperty(exports, "__esModule", { value: true });
 const got_1 = require("got");
@@ -12,8 +12,8 @@ const ansiColors = require("ansi-colors");
 const root = path.dirname(path.dirname(__dirname));
 const rootCG = path.join(root, 'extensionsCG');
 const productjson = JSON.parse(fs.readFileSync(path.join(__dirname, '../../product.json'), 'utf8'));
-const builtInExtensions = productjson.builtInExtensions || [];
-const webBuiltInExtensions = productjson.webBuiltInExtensions || [];
+const builtInExtensions = productjson.builtInExtensions;
+const webBuiltInExtensions = productjson.webBuiltInExtensions;
 const token = process.env['VSCODE_MIXIN_PASSWORD'] || process.env['GITHUB_TOKEN'] || undefined;
 const contentBasePath = 'raw.githubusercontent.com';
 const contentFileNames = ['package.json', 'package-lock.json', 'yarn.lock'];
@@ -25,7 +25,7 @@ async function downloadExtensionDetails(extension) {
     const promises = [];
     for (const fileName of contentFileNames) {
         promises.push(new Promise(resolve => {
-            got_1.default(`${repositoryContentBaseUrl}/${fileName}`)
+            (0, got_1.default)(`${repositoryContentBaseUrl}/${fileName}`)
                 .then(response => {
                 resolve({ fileName, body: response.rawBody });
             })

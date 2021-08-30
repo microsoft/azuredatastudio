@@ -65,9 +65,6 @@ export interface ITestResultService {
 	getStateById(extId: string): [results: ITestResult, item: TestResultItem] | undefined;
 }
 
-export const isRunningTests = (service: ITestResultService) =>
-	service.results.length > 0 && service.results[0].completedAt === undefined;
-
 export const ITestResultService = createDecorator<ITestResultService>('testResultService');
 
 export class TestResultService implements ITestResultService {
@@ -215,7 +212,7 @@ export class TestResultService implements ITestResultService {
 	}
 
 	private updateIsRunning() {
-		this.isRunning.set(isRunningTests(this));
+		this.isRunning.set(this.results.length > 0 && this.results[0].completedAt === undefined);
 	}
 
 	protected async persistImmediately() {

@@ -52,18 +52,18 @@ export class MarkdownRenderer {
 	}
 
 	render(markdown: IMarkdownString | undefined, options?: MarkdownRenderOptions, markedOptions?: MarkedOptions): IMarkdownRenderResult {
-		const disposables = new DisposableStore();
+		const disposeables = new DisposableStore();
 
 		let element: HTMLElement;
 		if (!markdown) {
 			element = document.createElement('span');
 		} else {
-			element = renderMarkdown(markdown, { ...this._getRenderOptions(markdown, disposables), ...options }, markedOptions);
+			element = renderMarkdown(markdown, { ...this._getRenderOptions(markdown, disposeables), ...options }, markedOptions);
 		}
 
 		return {
 			element,
-			dispose: () => disposables.dispose()
+			dispose: () => disposeables.dispose()
 		};
 	}
 

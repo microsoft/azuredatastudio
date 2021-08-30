@@ -493,11 +493,11 @@ export class TreeView extends HeightMap {
 		}
 
 		if (this.context.options.alwaysFocused) {
-			this.domNode.classList.add('focused');
+			DOM.addClass(this.domNode, 'focused');
 		}
 
 		if (!this.context.options.paddingOnRow) {
-			this.domNode.classList.add('no-row-padding');
+			DOM.addClass(this.domNode, 'no-row-padding');
 		}
 
 		this.wrapper = document.createElement('div');
@@ -1023,7 +1023,7 @@ export class TreeView extends HeightMap {
 			viewItem.addClass(trait);
 		}
 		if (trait === 'highlighted') {
-			this.domNode.classList.add(trait);
+			DOM.addClass(this.domNode, trait);
 
 			// Ugly Firefox fix: input fields can't be selected if parent nodes are draggable
 			if (viewItem) {
@@ -1043,7 +1043,7 @@ export class TreeView extends HeightMap {
 			viewItem.removeClass(trait);
 		}
 		if (trait === 'highlighted') {
-			this.domNode.classList.remove(trait);
+			DOM.removeClass(this.domNode, trait);
 
 			// Ugly Firefox fix: input fields can't be selected if parent nodes are draggable
 			if (this.highlightedItemWasDraggable) {
@@ -1056,7 +1056,7 @@ export class TreeView extends HeightMap {
 	private onModelFocusChange(): void {
 		const focus = this.model && this.model.getFocus();
 
-		this.domNode.classList.toggle('no-focused-item', !focus);
+		DOM.toggleClass(this.domNode, 'no-focused-item', !focus);
 
 		// ARIA
 		if (focus) {
@@ -1512,7 +1512,7 @@ export class TreeView extends HeightMap {
 
 	private onFocus(): void {
 		if (!this.context.options.alwaysFocused) {
-			this.domNode.classList.add('focused');
+			DOM.addClass(this.domNode, 'focused');
 		}
 
 		this._onDOMFocus.fire();
@@ -1520,7 +1520,7 @@ export class TreeView extends HeightMap {
 
 	private onBlur(): void {
 		if (!this.context.options.alwaysFocused) {
-			this.domNode.classList.remove('focused');
+			DOM.removeClass(this.domNode, 'focused');
 		}
 
 		this.domNode.removeAttribute('aria-activedescendant'); // ARIA

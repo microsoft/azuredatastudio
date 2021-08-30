@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as assert from 'assert';
@@ -34,7 +34,7 @@ suite('NotebookKernelService', () => {
 		instantiationService = setupInstantiationService();
 		instantiationService.stub(INotebookService, new class extends mock<INotebookService>() {
 			override onDidAddNotebookDocument = onDidAddNotebookDocument.event;
-			override onWillRemoveNotebookDocument = Event.None;
+			override onDidRemoveNotebookDocument = Event.None;
 			override getNotebookTextModels() { return []; }
 		});
 		kernelService = instantiationService.createInstance(NotebookKernelService);
@@ -102,7 +102,7 @@ suite('NotebookKernelService', () => {
 		assert.ok(info.all[1] === kernel);
 	});
 
-	test('onDidChangeSelectedNotebooks not fired on initial notebook open #121904', function () {
+	test('onDidChangeNotebookAssociation not fired on initial notebook open #121904', function () {
 
 		const uri = URI.parse('foo:///one');
 		const jupyter = { uri, viewType: 'jupyter' };
@@ -123,7 +123,7 @@ suite('NotebookKernelService', () => {
 		assert.strictEqual(info.selected === jupyterKernel, true);
 	});
 
-	test('onDidChangeSelectedNotebooks not fired on initial notebook open #121904, p2', async function () {
+	test('onDidChangeNotebookAssociation not fired on initial notebook open #121904, p2', async function () {
 
 		const uri = URI.parse('foo:///one');
 		const jupyter = { uri, viewType: 'jupyter' };

@@ -19,7 +19,6 @@ import { CATEGORIES } from 'vs/workbench/common/actions';
 import { assertIsDefined } from 'vs/base/common/types';
 import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 import { HIDE_NOTIFICATIONS_CENTER, HIDE_NOTIFICATION_TOAST } from 'vs/workbench/browser/parts/notifications/notificationsCommands';
-import { isIOS } from 'vs/base/common/platform';
 
 class TwitterFeedbackService implements IFeedbackDelegate {
 
@@ -71,7 +70,7 @@ export class FeedbackStatusbarConribution extends Disposable implements IWorkben
 	) {
 		super();
 
-		if (productService.sendASmile && !isIOS) {
+		if (productService.sendASmile) {
 			this.createFeedbackStatusEntry();
 			this.registerListeners();
 		}
@@ -80,7 +79,7 @@ export class FeedbackStatusbarConribution extends Disposable implements IWorkben
 	private createFeedbackStatusEntry(): void {
 
 		// Status entry
-		this.entry = this._register(this.statusbarService.addEntry(this.getStatusEntry(), 'status.feedback', StatusbarAlignment.RIGHT, -100 /* towards the end of the right hand side */));
+		this.entry = this._register(this.statusbarService.addEntry(this.getStatusEntry(), 'status.feedback', localize('status.feedback', "Tweet Feedback"), StatusbarAlignment.RIGHT, -100 /* towards the end of the right hand side */));
 
 		// Command to toggle
 		CommandsRegistry.registerCommand(FeedbackStatusbarConribution.TOGGLE_FEEDBACK_COMMAND, () => this.toggleFeedback());
@@ -136,7 +135,6 @@ export class FeedbackStatusbarConribution extends Disposable implements IWorkben
 
 	private getStatusEntry(showBeak?: boolean): IStatusbarEntry {
 		return {
-			name: localize('status.feedback.name', "Feedback"),
 			text: '$(feedback)',
 			ariaLabel: localize('status.feedback', "Tweet Feedback"),
 			tooltip: localize('status.feedback', "Tweet Feedback"),

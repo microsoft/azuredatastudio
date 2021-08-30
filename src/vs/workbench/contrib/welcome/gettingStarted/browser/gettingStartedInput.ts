@@ -1,11 +1,11 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import 'vs/css!./gettingStarted';
 import { localize } from 'vs/nls';
-import { EditorInput } from 'vs/workbench/common/editor/editorInput';
+import { EditorInput } from 'vs/workbench/common/editor';
 import { URI } from 'vs/base/common/uri';
 import { Schemas } from 'vs/base/common/network';
 
@@ -14,14 +14,13 @@ export const gettingStartedInputTypeId = 'workbench.editors.gettingStartedInput'
 export class GettingStartedInput extends EditorInput {
 
 	static readonly ID = gettingStartedInputTypeId;
-	static readonly RESOURCE = URI.from({ scheme: Schemas.walkThrough, authority: 'vscode_getting_started_page' });
 
 	override get typeId(): string {
 		return GettingStartedInput.ID;
 	}
 
 	get resource(): URI | undefined {
-		return GettingStartedInput.RESOURCE;
+		return URI.from({ scheme: Schemas.walkThrough, authority: 'vscode_getting_started_page' });
 	}
 
 	override matches(other: unknown) {

@@ -12,7 +12,7 @@ import { Event, Emitter } from 'vs/base/common/event';
 import { IWorkingCopyBackupService } from 'vs/workbench/services/workingCopy/common/workingCopyBackup';
 import { ITextResourceConfigurationService } from 'vs/editor/common/services/textResourceConfigurationService';
 import { ITextModel } from 'vs/editor/common/model';
-import { createTextBufferFactoryFromStream } from 'vs/editor/common/model/textModel';
+import { createTextBufferFactory, createTextBufferFactoryFromStream } from 'vs/editor/common/model/textModel';
 import { ITextEditorModel } from 'vs/editor/common/services/resolverService';
 import { IWorkingCopyService } from 'vs/workbench/services/workingCopy/common/workingCopyService';
 import { IWorkingCopy, WorkingCopyCapabilities, IWorkingCopyBackup, NO_TYPE_ID } from 'vs/workbench/services/workingCopy/common/workingCopy';
@@ -63,6 +63,12 @@ export interface IUntitledTextEditorModel extends ITextEditorModel, IModeSupport
 	 * Resolves the untitled model.
 	 */
 	resolve(): Promise<void>;
+
+	/**
+	 * Updates the value of the untitled model optionally allowing to ignore dirty.
+	 * The model must be resolved for this method to work.
+	 */
+	setValue(value: string, ignoreDirty?: boolean): void;
 }
 
 export class UntitledTextEditorModel extends BaseTextEditorModel implements IUntitledTextEditorModel {
@@ -93,10 +99,6 @@ export class UntitledTextEditorModel extends BaseTextEditorModel implements IUnt
 
 	readonly capabilities = WorkingCopyCapabilities.Untitled;
 
-	//#region Name
-
-	private configuredLabelFormat: 'content' | 'name' = 'content';
-
 	private cachedModelFirstLineWords: string | undefined = undefined;
 	get name(): string {
 		// Take name from first line if present and only if
@@ -110,12 +112,17 @@ export class UntitledTextEditorModel extends BaseTextEditorModel implements IUnt
 		return this.labelService.getUriBasenameLabel(this.resource);
 	}
 
-	//#endregion
+	private dirty = this.hasAssociatedFilePath || !!this.initialValue;
+	private ignoreDirtyOnModelContentChange = false;
 
+	private versionId = 0;
+
+	private configuredEncoding: string | undefined;
+	private configuredLabelFormat: 'content' | 'name' = 'content';
 
 	constructor(
-		readonly resource: URI,
-		readonly hasAssociatedFilePath: boolean,
+		public readonly resource: URI,
+		public readonly hasAssociatedFilePath: boolean,
 		private readonly initialValue: string | undefined,
 		private preferredMode: string | undefined,
 		private preferredEncoding: string | undefined,
@@ -146,7 +153,7 @@ export class UntitledTextEditorModel extends BaseTextEditorModel implements IUnt
 	private registerListeners(): void {
 
 		// Config Changes
-		this._register(this.textResourceConfigurationService.onDidChangeConfiguration(() => this.onConfigurationChange(true)));
+		this._register(this.textResourceConfigurationService.onDidChangeConfiguration(e => this.onConfigurationChange(true)));
 	}
 
 	private onConfigurationChange(fromEvent: boolean): void {
@@ -172,8 +179,9 @@ export class UntitledTextEditorModel extends BaseTextEditorModel implements IUnt
 		}
 	}
 
-
-	//#region Mode
+	getVersionId(): number {
+		return this.versionId;
+	}
 
 	private _hasModeSetExplicitly: boolean = false;
 	get hasModeSetExplicitly(): boolean { return this._hasModeSetExplicitly; }
@@ -208,13 +216,6 @@ export class UntitledTextEditorModel extends BaseTextEditorModel implements IUnt
 		return this.preferredMode;
 	}
 
-	//#endregion
-
-
-	//#region Encoding
-
-	private configuredEncoding: string | undefined;
-
 	getEncoding(): string | undefined {
 		return this.preferredEncoding || this.configuredEncoding;
 	}
@@ -229,12 +230,24 @@ export class UntitledTextEditorModel extends BaseTextEditorModel implements IUnt
 		}
 	}
 
-	//#endregion
+	setValue(value: string, ignoreDirty?: boolean): void {
+		if (ignoreDirty) {
+			this.ignoreDirtyOnModelContentChange = true;
+		}
+
+		try {
+			this.updateTextEditorModel(createTextBufferFactory(value));
+		} finally {
+			this.ignoreDirtyOnModelContentChange = false;
+		}
+	}
+
+	override isReadonly(): boolean {
+		return false;
+	}
 
 
 	//#region Dirty
-
-	private dirty = this.hasAssociatedFilePath || !!this.initialValue;
 
 	isDirty(): boolean {
 		return this.dirty;
@@ -349,16 +362,19 @@ export class UntitledTextEditorModel extends BaseTextEditorModel implements IUnt
 	}
 
 	private onModelContentChanged(textEditorModel: ITextModel, e: IModelContentChangedEvent): void {
+		this.versionId++;
 
-		// mark the untitled text editor as non-dirty once its content becomes empty and we do
-		// not have an associated path set. we never want dirty indicator in that case.
-		if (!this.hasAssociatedFilePath && textEditorModel.getLineCount() === 1 && textEditorModel.getLineContent(1) === '') {
-			this.setDirty(false);
-		}
+		if (!this.ignoreDirtyOnModelContentChange) {
+			// mark the untitled text editor as non-dirty once its content becomes empty and we do
+			// not have an associated path set. we never want dirty indicator in that case.
+			if (!this.hasAssociatedFilePath && textEditorModel.getLineCount() === 1 && textEditorModel.getLineContent(1) === '') {
+				this.setDirty(false);
+			}
 
-		// turn dirty otherwise
-		else {
-			this.setDirty(true);
+			// turn dirty otherwise
+			else {
+				this.setDirty(true);
+			}
 		}
 
 		// Check for name change if first line changed in the range of 0-FIRST_LINE_NAME_CANDIDATE_MAX_LENGTH columns
@@ -407,9 +423,4 @@ export class UntitledTextEditorModel extends BaseTextEditorModel implements IUnt
 	}
 
 	//#endregion
-
-
-	override isReadonly(): boolean {
-		return false;
-	}
 }

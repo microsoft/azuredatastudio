@@ -85,7 +85,7 @@ export class NotebookViewsCellModel extends CellModel {
 	 */
 	public override get outputs(): Array<nb.ICellOutput> {
 		return super.outputs
-			.filter((output: nb.ICellOutput) => (output as nb.IDisplayResult)?.data === undefined || (output as nb.IDisplayResult)?.data['text/plain'] !== '<IPython.core.display.HTML object>')
+			.filter((output: nb.IDisplayResult) => output.data === undefined || output?.data['text/plain'] !== '<IPython.core.display.HTML object>')
 			.map((output: nb.ICellOutput) => ({ ...output }))
 			.map((output: nb.ICellOutput) => { output.metadata = { ...output.metadata }; return output; });
 	}

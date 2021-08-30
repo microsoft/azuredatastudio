@@ -10,11 +10,13 @@ import { Disposable, IDisposable } from 'vs/base/common/lifecycle';
 import { IDimension } from 'vs/editor/common/editorCommon';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
-import { CellFocusMode, CodeCellRenderTemplate, IActiveNotebookEditor } from 'vs/workbench/contrib/notebook/browser/notebookBrowser';
+import { EDITOR_BOTTOM_PADDING } from 'vs/workbench/contrib/notebook/browser/constants';
+import { CellFocusMode, CodeCellRenderTemplate, getEditorTopPadding, IActiveNotebookEditor } from 'vs/workbench/contrib/notebook/browser/notebookBrowser';
 import { CellOutputContainer } from 'vs/workbench/contrib/notebook/browser/view/renderers/cellOutput';
 import { ClickTargetType } from 'vs/workbench/contrib/notebook/browser/view/renderers/cellWidgets';
 import { CodeCellViewModel } from 'vs/workbench/contrib/notebook/browser/viewModel/codeCellViewModel';
 import { INotebookCellStatusBarService } from 'vs/workbench/contrib/notebook/common/notebookCellStatusBarService';
+import { ITextFileService } from 'vs/workbench/services/textfile/common/textfiles';
 
 
 export class CodeCell extends Disposable {
@@ -30,17 +32,16 @@ export class CodeCell extends Disposable {
 		private templateData: CodeCellRenderTemplate,
 		@IInstantiationService private readonly instantiationService: IInstantiationService,
 		@INotebookCellStatusBarService readonly notebookCellStatusBarService: INotebookCellStatusBarService,
-		@IOpenerService readonly openerService: IOpenerService
+		@IOpenerService readonly openerService: IOpenerService,
+		@ITextFileService readonly textFileService: ITextFileService
 	) {
 		super();
 
 		const width = this.viewCell.layoutInfo.editorWidth;
 		const lineNum = this.viewCell.lineCount;
 		const lineHeight = this.viewCell.layoutInfo.fontInfo?.lineHeight || 17;
-		const editorPadding = this.notebookEditor.notebookOptions.computeEditorPadding(this.viewCell.internalMetadata);
-
 		const editorHeight = this.viewCell.layoutInfo.editorHeight === 0
-			? lineNum * lineHeight + editorPadding.top + editorPadding.bottom
+			? lineNum * lineHeight + getEditorTopPadding() + EDITOR_BOTTOM_PADDING
 			: this.viewCell.layoutInfo.editorHeight;
 
 		this.layoutEditor(
@@ -89,11 +90,10 @@ export class CodeCell extends Disposable {
 		}));
 		updateForFocusMode();
 
-		const updateEditorOptions = () => templateData.editor?.updateOptions({ readOnly: notebookEditor.viewModel.options.isReadOnly, padding: notebookEditor.notebookOptions.computeEditorPadding(viewCell.internalMetadata) });
-		updateEditorOptions();
+		templateData.editor?.updateOptions({ readOnly: notebookEditor.viewModel.options.isReadOnly });
 		this._register(viewCell.onDidChangeState((e) => {
-			if (e.metadataChanged || e.internalMetadataChanged) {
-				updateEditorOptions();
+			if (e.metadataChanged) {
+				templateData.editor?.updateOptions({ readOnly: notebookEditor.viewModel.options.isReadOnly });
 
 				if (this.updateForCollapseState()) {
 					this.relayoutCell();
@@ -173,7 +173,7 @@ export class CodeCell extends Disposable {
 		// Mouse click handlers
 		this._register(templateData.statusBar.onDidClick(e => {
 			if (e.type !== ClickTargetType.ContributedCommandItem) {
-				const target = templateData.editor.getTargetAtClientPoint(e.event.clientX, e.event.clientY - this.notebookEditor.notebookOptions.computeEditorStatusbarHeight(viewCell.internalMetadata));
+				const target = templateData.editor.getTargetAtClientPoint(e.event.clientX, e.event.clientY - viewCell.getEditorStatusbarHeight());
 				if (target?.position) {
 					templateData.editor.setPosition(target.position);
 					templateData.editor.focus();
@@ -224,11 +224,11 @@ export class CodeCell extends Disposable {
 
 		this.viewCell.layoutChange({});
 
-		if (this.viewCell.metadata.inputCollapsed && this.viewCell.metadata.outputCollapsed) {
+		if (this.viewCell.metadata?.inputCollapsed && this.viewCell.metadata.outputCollapsed) {
 			this.viewUpdateAllCollapsed();
-		} else if (this.viewCell.metadata.inputCollapsed) {
+		} else if (this.viewCell.metadata?.inputCollapsed) {
 			this.viewUpdateInputCollapsed();
-		} else if (this.viewCell.metadata.outputCollapsed && this.viewCell.outputsViewModels.length) {
+		} else if (this.viewCell.metadata?.outputCollapsed && this.viewCell.outputsViewModels.length) {
 			this.viewUpdateOutputCollapsed();
 		} else {
 			this.viewUpdateExpanded();
@@ -292,10 +292,6 @@ export class CodeCell extends Disposable {
 	}
 
 	private onCellWidthChange(): void {
-		if (!this.templateData.editor.hasModel()) {
-			return;
-		}
-
 		const realContentHeight = this.templateData.editor.getContentHeight();
 		this.viewCell.editorHeight = realContentHeight;
 		this.relayoutCell();

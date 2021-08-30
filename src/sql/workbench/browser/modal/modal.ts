@@ -161,7 +161,7 @@ export abstract class Modal extends Disposable implements IThemable {
 	 * (hyoshi - 10/2/2017 tracked by https://github.com/Microsoft/carbon/issues/1836)
 	 */
 	public setWide(isWide: boolean): void {
-		this._bodyContainer!.classList.toggle('wide', isWide);
+		DOM.toggleClass(this._bodyContainer!, 'wide', isWide);
 	}
 
 	/**
@@ -356,18 +356,18 @@ export abstract class Modal extends Disposable implements IThemable {
 		if (this.shouldShowExpandMessageButton) {
 			DOM.append(this._detailsButtonContainer!, this._toggleMessageDetailButton!.element);
 		} else {
-			this._toggleMessageDetailButton!.element.remove();
+			DOM.removeNode(this._toggleMessageDetailButton!.element);
 		}
 	}
 
 	private toggleMessageDetail() {
-		const isExpanded = this._messageSummary!.classList.contains(MESSAGE_EXPANDED_MODE_CLASS);
-		this._messageSummary!.classList.toggle(MESSAGE_EXPANDED_MODE_CLASS, !isExpanded);
+		const isExpanded = DOM.hasClass(this._messageSummary!, MESSAGE_EXPANDED_MODE_CLASS);
+		DOM.toggleClass(this._messageSummary!, MESSAGE_EXPANDED_MODE_CLASS, !isExpanded);
 		this._toggleMessageDetailButton!.label = isExpanded ? SHOW_DETAILS_TEXT : localize('hideMessageDetails', "Hide Details");
 
 		if (this._messageDetailText) {
 			if (isExpanded) {
-				this._messageDetail!.remove();
+				DOM.removeNode(this._messageDetail!);
 			} else {
 				DOM.append(this._messageBody!, this._messageDetail!);
 			}
@@ -576,8 +576,8 @@ export abstract class Modal extends Disposable implements IThemable {
 					severityText = WARNING_ALT_TEXT;
 				}
 				levelClasses.forEach(level => {
-					this._messageIcon!.classList.toggle(level, selectedLevel === level);
-					this._messageElement!.classList.toggle(level, selectedLevel === level);
+					DOM.toggleClass(this._messageIcon!, level, selectedLevel === level);
+					DOM.toggleClass(this._messageElement!, level, selectedLevel === level);
 				});
 
 				this._messageIcon!.title = severityText;
@@ -586,7 +586,7 @@ export abstract class Modal extends Disposable implements IThemable {
 				this._messageSummary!.title = message!;
 				this._messageDetail!.innerText = description;
 			}
-			this._messageDetail!.remove();
+			DOM.removeNode(this._messageDetail!);
 			this.messagesElementVisible = !!this._messageSummaryText;
 			// Read out the description to screen readers so they don't have to
 			// search around for the alert box to hear the extra information

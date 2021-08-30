@@ -10,7 +10,6 @@ import { IExtensionService } from 'vs/workbench/services/extensions/common/exten
 import { NotebookInput } from 'sql/workbench/contrib/notebook/browser/models/notebookInput';
 import { INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
 import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
-import { EditorInputCapabilities } from 'vs/workbench/common/editor';
 
 export class UntitledNotebookInput extends NotebookInput {
 	public static ID: string = 'workbench.editorinputs.untitledNotebookInput';
@@ -35,9 +34,9 @@ export class UntitledNotebookInput extends NotebookInput {
 		this.textInput.setMode(mode);
 	}
 
-	override get capabilities(): EditorInputCapabilities {
+	override isUntitled(): boolean {
 		// Subclasses need to explicitly opt-in to being untitled.
-		return EditorInputCapabilities.Untitled;
+		return true;
 	}
 
 	override get typeId(): string {

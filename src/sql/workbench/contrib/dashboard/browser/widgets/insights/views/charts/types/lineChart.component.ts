@@ -50,25 +50,22 @@ export default class LineChart extends BarChart {
 
 	protected override clearMemoize() {
 		super.clearMemoize();
-		this._cachedPointData = undefined;
+		LineChart.MEMOIZER.clear();
 	}
 
-	private _cachedPointData: Array<IPointDataSet>;
+	@LineChart.MEMOIZER
 	protected getDataAsPoint(): Array<IPointDataSet> {
-		if (!this._cachedPointData) {
-			const dataSetMap: { [label: string]: IPointDataSet } = {};
-			this._data.rows.map(row => {
-				if (row && row.length >= 3) {
-					const legend = row[0];
-					if (!dataSetMap[legend]) {
-						dataSetMap[legend] = { label: legend, data: [], fill: false };
-					}
-					dataSetMap[legend].data.push({ x: Number(row[1]), y: Number(row[2]) });
+		const dataSetMap: { [label: string]: IPointDataSet } = {};
+		this._data.rows.map(row => {
+			if (row && row.length >= 3) {
+				const legend = row[0];
+				if (!dataSetMap[legend]) {
+					dataSetMap[legend] = { label: legend, data: [], fill: false };
 				}
-			});
-			this._cachedPointData = values(dataSetMap);
-		}
-		return this._cachedPointData;
+				dataSetMap[legend].data.push({ x: Number(row[1]), y: Number(row[2]) });
+			}
+		});
+		return values(dataSetMap);
 	}
 
 	public override get labels(): Array<string> {

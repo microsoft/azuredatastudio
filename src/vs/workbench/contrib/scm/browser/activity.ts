@@ -154,12 +154,11 @@ export class SCMStatusController implements IWorkbenchContribution {
 			ariaLabel = ariaLabel ? `${ariaLabel}, ${label}` : label;
 
 			disposables.add(this.statusbarService.addEntry({
-				name: localize('status.scm', "Source Control"),
 				text: command.title,
 				ariaLabel: `${ariaLabel}${command.tooltip ? ` - ${command.tooltip}` : ''}`,
 				tooltip,
 				command: command.id ? command : undefined
-			}, 'status.scm', MainThreadStatusBarAlignment.LEFT, 10000));
+			}, 'status.scm', localize('status.scm', "Source Control"), MainThreadStatusBarAlignment.LEFT, 10000));
 		}
 
 		this.statusBarDisposable = disposables;

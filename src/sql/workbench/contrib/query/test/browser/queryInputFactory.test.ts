@@ -9,7 +9,7 @@ import { ITestInstantiationService, TestEditorService } from 'vs/workbench/test/
 import { URI } from 'vs/base/common/uri';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IEditorInput } from 'vs/workbench/common/editor';
-import { FileEditorInput } from 'vs/workbench/contrib/files/browser/editors/fileEditorInput';
+import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
 import { workbenchInstantiationService } from 'sql/workbench/test/workbenchTestServices';
 import { QueryEditorLanguageAssociation } from 'sql/workbench/contrib/query/browser/queryInputFactory';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
@@ -26,13 +26,12 @@ import { isThenable } from 'vs/base/common/async';
 import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
 import { QueryResultsInput } from 'sql/workbench/common/editor/query/queryResultsInput';
 import { extUri } from 'vs/base/common/resources';
-import { IResourceEditorInputIdentifier } from 'vs/platform/editor/common/editor';
 
 suite('Query Input Factory', () => {
 	let instantiationService: ITestInstantiationService;
 
 	function createFileInput(resource: URI, preferredResource?: URI, preferredMode?: string, preferredName?: string, preferredDescription?: string): FileEditorInput {
-		return instantiationService.createInstance(FileEditorInput, resource, preferredResource, preferredName, preferredDescription, undefined, preferredMode, undefined);
+		return instantiationService.createInstance(FileEditorInput, resource, preferredResource, preferredName, preferredDescription, undefined, preferredMode);
 	}
 
 	test('sync query editor input is connected if global connection exists (OE)', async () => {
@@ -101,11 +100,11 @@ suite('Query Input Factory', () => {
 		const queryEditorLanguageAssociation = instantiationService.createInstance(QueryEditorLanguageAssociation);
 		const untitledService = instantiationService.invokeFunction(accessor => accessor.get(IUntitledTextEditorService));
 		const queryeditorservice = instantiationService.invokeFunction(accessor => accessor.get(IQueryEditorService));
-		const newsqlEditorStub = sinon.stub(queryeditorservice, 'newSqlEditor').callsFake(() => {
+		const newsqlEditorStub = sinon.stub(queryeditorservice, 'newSqlEditor', () => {
 			const untitledInput = instantiationService.createInstance(UntitledTextEditorInput, untitledService.create());
 			const queryResultsInput: QueryResultsInput = instantiationService.createInstance(QueryResultsInput, untitledInput.resource.toString());
 			let queryInput = instantiationService.createInstance(UntitledQueryEditorInput, '', untitledInput, queryResultsInput);
-			return Promise.resolve(queryInput);
+			return queryInput;
 		});
 		const input = instantiationService.createInstance(UntitledTextEditorInput, untitledService.create());
 		const response = queryEditorLanguageAssociation.convertInput(input);
@@ -123,7 +122,7 @@ suite('Query Input Factory', () => {
 		instantiationService.stub(IEditorService, editorService);
 		const queryEditorLanguageAssociation = instantiationService.createInstance(QueryEditorLanguageAssociation);
 		const input = createFileInput(URI.file('/test/file.sql'), undefined, undefined, undefined);
-		queryEditorLanguageAssociation.syncConvertInput(input);
+		queryEditorLanguageAssociation.syncConvertinput(input);
 		assert(connectionManagementService.numberConnects === 0, 'Convert input should not have been called connect when no global connections exist');
 	});
 
@@ -149,12 +148,12 @@ suite('Query Input Factory', () => {
 		const untitledService = instantiationService.invokeFunction(accessor => accessor.get(IUntitledTextEditorService));
 		const queryeditorservice = instantiationService.invokeFunction(accessor => accessor.get(IQueryEditorService));
 		const input = instantiationService.createInstance(UntitledTextEditorInput, untitledService.create());
-		sinon.stub(editorService, 'isOpened').callsFake((editor: IResourceEditorInputIdentifier) => extUri.isEqual(editor.resource, input.resource));
-		const newsqlEditorStub = sinon.stub(queryeditorservice, 'newSqlEditor').callsFake(() => {
+		sinon.stub(editorService, 'isOpened', (editor: IEditorInput) => extUri.isEqual(editor.resource, input.resource));
+		const newsqlEditorStub = sinon.stub(queryeditorservice, 'newSqlEditor', () => {
 			const untitledInput = instantiationService.createInstance(UntitledTextEditorInput, untitledService.create());
 			const queryResultsInput: QueryResultsInput = instantiationService.createInstance(QueryResultsInput, untitledInput.resource.toString());
 			let queryInput = instantiationService.createInstance(UntitledQueryEditorInput, '', untitledInput, queryResultsInput);
-			return Promise.resolve(queryInput);
+			return queryInput;
 		});
 		const response = queryEditorLanguageAssociation.convertInput(input);
 		assert(isThenable(response));

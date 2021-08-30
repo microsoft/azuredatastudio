@@ -86,14 +86,15 @@ function createKeywordMatcher(arr: string[], caseInsensitive: boolean = false): 
  * @example /@@text/ will not be replaced and will become /@text/.
  */
 function compileRegExp(lexer: monarchCommon.ILexerMin, str: string): RegExp {
-	// @@ must be interpreted as a literal @, so we replace all occurences of @@ with a placeholder character
-	str = str.replace(/@@/g, `\x01`);
-
 	let n = 0;
 	let hadExpansion: boolean;
 	do {
 		hadExpansion = false;
-		str = str.replace(/@(\w+)/g, function (s, attr?) {
+		str = str.replace(/(.|^)@(\w+)/g, function (s, charBeforeAtSign, attr?) {
+			if (charBeforeAtSign === '@') {
+				// do not expand @@
+				return s;
+			}
 			hadExpansion = true;
 			let sub = '';
 			if (typeof (lexer[attr]) === 'string') {
@@ -107,13 +108,13 @@ function compileRegExp(lexer: monarchCommon.ILexerMin, str: string): RegExp {
 					throw monarchCommon.createError(lexer, 'attribute reference \'' + attr + '\' must be a string, used at: ' + str);
 				}
 			}
-			return (monarchCommon.empty(sub) ? '' : '(?:' + sub + ')');
+			return charBeforeAtSign + (monarchCommon.empty(sub) ? '' : '(?:' + sub + ')');
 		});
 		n++;
 	} while (hadExpansion && n < 5);
 
 	// handle escaped @@
-	str = str.replace(/\x01/g, '@');
+	str = str.replace(/@@/g, '@');
 
 	let flags = (lexer.ignoreCase ? 'i' : '') + (lexer.unicode ? 'u' : '');
 	return new RegExp(str, flags);

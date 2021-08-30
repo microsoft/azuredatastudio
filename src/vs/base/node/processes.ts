@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as path from 'vs/base/common/path';
+import * as fs from 'fs';
 import * as pfs from 'vs/base/node/pfs';
 import * as cp from 'child_process';
 import * as nls from 'vs/nls';
@@ -456,8 +457,8 @@ export namespace win32 {
 		}
 
 		async function fileExists(path: string): Promise<boolean> {
-			if (await pfs.Promises.exists(path)) {
-				return !((await pfs.Promises.stat(path)).isDirectory());
+			if (await pfs.exists(path)) {
+				return !((await fs.promises.stat(path)).isDirectory());
 			}
 			return false;
 		}

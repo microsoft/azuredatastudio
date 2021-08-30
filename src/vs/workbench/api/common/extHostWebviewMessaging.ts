@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { VSBuffer } from 'vs/base/common/buffer';
@@ -21,9 +21,9 @@ class ArrayBufferSet {
 
 export function serializeWebviewMessage(
 	message: any,
-	options: { serializeBuffersForPostMessage?: boolean }
+	transfer?: readonly ArrayBuffer[]
 ): { message: string, buffers: VSBuffer[] } {
-	if (options.serializeBuffersForPostMessage) {
+	if (transfer) {
 		// Extract all ArrayBuffers from the message and replace them with references.
 		const arrayBuffers = new ArrayBufferSet();
 

@@ -57,11 +57,6 @@
 		const configuration = await preloadGlobals.context.resolveConfiguration();
 		performance.mark('code/didWaitForWindowConfig');
 
-		// Signal DOM modifications are now OK
-		if (typeof options?.canModifyDOM === 'function') {
-			options.canModifyDOM(configuration);
-		}
-
 		// Developer settings
 		const {
 			forceDisableShowDevtoolsOnError,
@@ -91,8 +86,13 @@
 			globalThis.MonacoBootstrap.enableASARSupport(configuration.appRoot);
 		}
 
-		// Get the nls configuration into the process.env as early as possible
-		const nlsConfig = globalThis.MonacoBootstrap.setupNLS();
+		// Signal DOM modifications are now OK
+		if (typeof options?.canModifyDOM === 'function') {
+			options.canModifyDOM(configuration);
+		}
+
+		// Get the nls configuration into the process.env as early as possible  (TODO@sandbox non-sandboxed only)
+		const nlsConfig = safeProcess.sandboxed ? { availableLanguages: {} } : globalThis.MonacoBootstrap.setupNLS();
 
 		let locale = nlsConfig.availableLanguages['*'] || 'en';
 		if (locale === 'zh-tw') {
@@ -152,13 +152,13 @@
 				'jschardet': `../node_modules/jschardet/dist/jschardet.min.js`,
 			};
 		} else {
-			loaderConfig.amdModulesPattern = /^(vs|sql)\//; // {{SQL CARBON EDIT}} include sql in regex
+			loaderConfig.amdModulesPattern = /^(vs|sql)\//;
 		}
 
-		// Cached data config (node.js loading only)
-		if (!useCustomProtocol && configuration.codeCachePath) {
+		// Cached data config
+		if (configuration.nodeCachedDataDir) {
 			loaderConfig.nodeCachedData = {
-				path: configuration.codeCachePath,
+				path: configuration.nodeCachedDataDir,
 				seed: modulePaths.join('')
 			};
 		}
@@ -186,6 +186,13 @@
 		// Actually require the main module as specified
 		require(modulePaths, async result => {
 			try {
+
+				// Wait for process environment being fully resolved
+				performance.mark('code/willWaitForShellEnv');
+				if (!safeProcess.env['VSCODE_SKIP_PROCESS_ENV_PATCHING'] /* TODO@bpasero for https://github.com/microsoft/vscode/issues/108804 */) {
+					await safeProcess.shellEnv();
+				}
+				performance.mark('code/didWaitForShellEnv');
 
 				// Callback only after process environment is resolved
 				const callbackResult = resultCallback(result, configuration);

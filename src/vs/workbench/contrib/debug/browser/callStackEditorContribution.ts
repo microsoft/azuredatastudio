@@ -24,7 +24,6 @@ const stickiness = TrackedRangeStickiness.NeverGrowsWhenTypingAtEdges;
 
 // we need a separate decoration for glyph margin, since we do not want it on each line of a multi line statement.
 const TOP_STACK_FRAME_MARGIN: IModelDecorationOptions = {
-	description: 'top-stack-frame-margin',
 	glyphMarginClassName: ThemeIcon.asClassName(debugStackframe),
 	stickiness,
 	overviewRuler: {
@@ -33,7 +32,6 @@ const TOP_STACK_FRAME_MARGIN: IModelDecorationOptions = {
 	}
 };
 const FOCUSED_STACK_FRAME_MARGIN: IModelDecorationOptions = {
-	description: 'focused-stack-frame-margin',
 	glyphMarginClassName: ThemeIcon.asClassName(debugStackframeFocused),
 	stickiness,
 	overviewRuler: {
@@ -42,17 +40,14 @@ const FOCUSED_STACK_FRAME_MARGIN: IModelDecorationOptions = {
 	}
 };
 const TOP_STACK_FRAME_DECORATION: IModelDecorationOptions = {
-	description: 'top-stack-frame-decoration',
 	isWholeLine: true,
 	className: 'debug-top-stack-frame-line',
 	stickiness
 };
 const TOP_STACK_FRAME_INLINE_DECORATION: IModelDecorationOptions = {
-	description: 'top-stack-frame-inline-decoration',
 	beforeContentClassName: 'debug-top-stack-frame-column'
 };
 const FOCUSED_STACK_FRAME_DECORATION: IModelDecorationOptions = {
-	description: 'focused-stack-frame-decoration',
 	isWholeLine: true,
 	className: 'debug-focused-stack-frame-line',
 	stickiness

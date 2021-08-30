@@ -388,36 +388,36 @@ suite('Workbench - Terminal Typeahead', () => {
 });
 
 class TestTypeAheadAddon extends TypeAheadAddon {
-	unlockMakingPredictions() {
-		this._lastRow = { y: 1, startingX: 100, endingX: 100, charState: CharPredictState.Validated };
+	public unlockMakingPredictions() {
+		this.lastRow = { y: 1, startingX: 100, endingX: 100, charState: CharPredictState.Validated };
 	}
 
-	lockMakingPredictions() {
-		this._lastRow = undefined;
+	public lockMakingPredictions() {
+		this.lastRow = undefined;
 	}
 
-	unlockNavigating() {
-		this._lastRow = { y: 1, startingX: 1, endingX: 1, charState: CharPredictState.Validated };
+	public unlockNavigating() {
+		this.lastRow = { y: 1, startingX: 1, endingX: 1, charState: CharPredictState.Validated };
 	}
 
-	reevaluateNow() {
-		this._reevaluatePredictorStateNow(this.stats!, this._timeline!);
+	public reevaluateNow() {
+		this.reevaluatePredictorStateNow(this.stats!, this.timeline!);
 	}
 
-	get isShowing() {
-		return !!this._timeline?.isShowingPredictions;
+	public get isShowing() {
+		return !!this.timeline?.isShowingPredictions;
 	}
 
-	undoAllPredictions() {
-		this._timeline?.undoAllPredictions();
+	public undoAllPredictions() {
+		this.timeline?.undoAllPredictions();
 	}
 
-	physicalCursor(buffer: IBuffer) {
-		return this._timeline?.physicalCursor(buffer);
+	public physicalCursor(buffer: IBuffer) {
+		return this.timeline?.physicalCursor(buffer);
 	}
 
-	tentativeCursor(buffer: IBuffer) {
-		return this._timeline?.tentativeCursor(buffer);
+	public tentativeCursor(buffer: IBuffer) {
+		return this.timeline?.tentativeCursor(buffer);
 	}
 }
 

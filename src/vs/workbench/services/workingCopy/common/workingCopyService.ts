@@ -9,7 +9,7 @@ import { Event, Emitter } from 'vs/base/common/event';
 import { URI } from 'vs/base/common/uri';
 import { Disposable, IDisposable, toDisposable, DisposableStore, dispose } from 'vs/base/common/lifecycle';
 import { ResourceMap } from 'vs/base/common/map';
-import { IWorkingCopy, IWorkingCopyIdentifier } from 'vs/workbench/services/workingCopy/common/workingCopy';
+import { IWorkingCopy } from 'vs/workbench/services/workingCopy/common/workingCopy';
 import { Schemas } from 'vs/base/common/network'; // {{SQL CARBON EDIT}} @chlafreniere need to block working copies of notebook editors from being tracked
 
 export const IWorkingCopyService = createDecorator<IWorkingCopyService>('workingCopyService');
@@ -90,19 +90,6 @@ export interface IWorkingCopyService {
 	 * resource.
 	 */
 	registerWorkingCopy(workingCopy: IWorkingCopy): IDisposable;
-
-	/**
-	 * Whether a working copy with the given resource or identifier
-	 * exists.
-	 */
-	has(identifier: IWorkingCopyIdentifier): boolean;
-	has(resource: URI): boolean;
-
-	/**
-	 * Returns a working copy with the given identifier or `undefined`
-	 * if no such working copy exists.
-	 */
-	get(identifier: IWorkingCopyIdentifier): IWorkingCopy | undefined;
 
 	//#endregion
 }
@@ -192,20 +179,6 @@ export class WorkingCopyService extends Disposable implements IWorkingCopyServic
 		if (workingCopy.isDirty()) {
 			this._onDidChangeDirty.fire(workingCopy);
 		}
-	}
-
-	has(identifier: IWorkingCopyIdentifier): boolean;
-	has(resource: URI): boolean;
-	has(resourceOrIdentifier: URI | IWorkingCopyIdentifier): boolean {
-		if (URI.isUri(resourceOrIdentifier)) {
-			return this.mapResourceToWorkingCopies.has(resourceOrIdentifier);
-		}
-
-		return this.mapResourceToWorkingCopies.get(resourceOrIdentifier.resource)?.has(resourceOrIdentifier.typeId) ?? false;
-	}
-
-	get(identifier: IWorkingCopyIdentifier): IWorkingCopy | undefined {
-		return this.mapResourceToWorkingCopies.get(identifier.resource)?.get(identifier.typeId);
 	}
 
 	//#endregion

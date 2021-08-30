@@ -3,8 +3,10 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { SqlIconId } from 'sql/base/common/codicons'; // {{SQL CARBON EDIT}}
+import { SqlIconId } from 'sql/base/common/codicons';
+import { codiconStartMarker } from 'vs/base/common/codicon';
 import { Emitter, Event } from 'vs/base/common/event';
+import { localize } from 'vs/nls';
 
 export interface IIconRegistry {
 	readonly all: IterableIterator<Codicon>;
@@ -46,8 +48,8 @@ const _registry = new Registry();
 
 export const iconRegistry: IIconRegistry = _registry;
 
-export function registerCodicon(id: string, def: Codicon): Codicon {
-	return new Codicon(id, def);
+export function registerCodicon(id: string, def: Codicon, description?: string): Codicon {
+	return new Codicon(id, def, description);
 }
 
 // Selects all codicon names encapsulated in the `$()` syntax and wraps the
@@ -112,6 +114,7 @@ export namespace CSSIcon {
 			}
 			return classNames;
 		}
+
 	}
 
 	export function asClassName(icon: CSSIcon): string {
@@ -583,8 +586,36 @@ export namespace Codicon {
 	export const filterFilled = new Codicon('filter-filled', { fontCharacter: '\\ebce' });
 	export const wand = new Codicon('wand', { fontCharacter: '\\ebcf' });
 	export const debugLineByLine = new Codicon('debug-line-by-line', { fontCharacter: '\\ebd0' });
-	export const inspect = new Codicon('inspect', { fontCharacter: '\\ebd1' });
 
-	export const dropDownButton = new Codicon('drop-down-button', Codicon.chevronDown.definition);
+	export const dropDownButton = new Codicon('drop-down-button', Codicon.chevronDown.definition, localize('dropDownButton', 'Icon for drop down buttons.'));
 }
 
+// common icons
+
+
+
+
+const escapeCodiconsRegex = /(\\)?\$\([a-z0-9\-]+?(?:~[a-z0-9\-]*?)?\)/gi;
+export function escapeCodicons(text: string): string {
+	return text.replace(escapeCodiconsRegex, (match, escaped) => escaped ? match : `\\${match}`);
+}
+
+const markdownEscapedCodiconsRegex = /\\\$\([a-z0-9\-]+?(?:~[a-z0-9\-]*?)?\)/gi;
+export function markdownEscapeEscapedCodicons(text: string): string {
+	// Need to add an extra \ for escaping in markdown
+	return text.replace(markdownEscapedCodiconsRegex, match => `\\${match}`);
+}
+
+const markdownUnescapeCodiconsRegex = /(\\)?\$\\\(([a-z0-9\-]+?(?:~[a-z0-9\-]*?)?)\\\)/gi;
+export function markdownUnescapeCodicons(text: string): string {
+	return text.replace(markdownUnescapeCodiconsRegex, (match, escaped, codicon) => escaped ? match : `$(${codicon})`);
+}
+
+const stripCodiconsRegex = /(\s)?(\\)?\$\([a-z0-9\-]+?(?:~[a-z0-9\-]*?)?\)(\s)?/gi;
+export function stripCodicons(text: string): string {
+	if (text.indexOf(codiconStartMarker) === -1) {
+		return text;
+	}
+
+	return text.replace(stripCodiconsRegex, (match, preWhitespace, escaped, postWhitespace) => escaped ? match : preWhitespace || postWhitespace || '');
+}

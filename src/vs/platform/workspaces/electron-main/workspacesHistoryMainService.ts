@@ -5,7 +5,7 @@
 
 import { localize } from 'vs/nls';
 import { coalesce } from 'vs/base/common/arrays';
-import { IStateMainService } from 'vs/platform/state/electron-main/state';
+import { IStateService } from 'vs/platform/state/node/state';
 import { app, JumpListCategory, JumpListItem } from 'electron';
 import { ILogService } from 'vs/platform/log/common/log';
 import { normalizeDriveLetter, splitName } from 'vs/base/common/labels';
@@ -17,7 +17,7 @@ import { ThrottledDelayer } from 'vs/base/common/async';
 import { originalFSPath, basename, extUriBiasedIgnorePathCase } from 'vs/base/common/resources';
 import { URI } from 'vs/base/common/uri';
 import { Schemas } from 'vs/base/common/network';
-import { Promises } from 'vs/base/node/pfs';
+import { exists } from 'vs/base/node/pfs';
 import { ILifecycleMainService, LifecycleMainPhase } from 'vs/platform/lifecycle/electron-main/lifecycleMainService';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { Disposable } from 'vs/base/common/lifecycle';
@@ -62,7 +62,7 @@ export class WorkspacesHistoryMainService extends Disposable implements IWorkspa
 	private readonly macOSRecentDocumentsUpdater = this._register(new ThrottledDelayer<void>(800));
 
 	constructor(
-		@IStateMainService private readonly stateMainService: IStateMainService,
+		@IStateService private readonly stateService: IStateService,
 		@ILogService private readonly logService: ILogService,
 		@IWorkspacesManagementMainService private readonly workspacesManagementMainService: IWorkspacesManagementMainService,
 		@ILifecycleMainService private readonly lifecycleMainService: ILifecycleMainService
@@ -190,7 +190,7 @@ export class WorkspacesHistoryMainService extends Disposable implements IWorkspa
 			const loc = location(mru.workspaces[i]);
 			if (loc.scheme === Schemas.file) {
 				const workspacePath = originalFSPath(loc);
-				if (await Promises.exists(workspacePath)) {
+				if (await exists(workspacePath)) {
 					workspaceEntries.push(workspacePath);
 					entries++;
 				}
@@ -210,7 +210,7 @@ export class WorkspacesHistoryMainService extends Disposable implements IWorkspa
 					continue;
 				}
 
-				if (await Promises.exists(filePath)) {
+				if (await exists(filePath)) {
 					fileEntries.push(filePath);
 					entries++;
 				}
@@ -291,7 +291,7 @@ export class WorkspacesHistoryMainService extends Disposable implements IWorkspa
 	}
 
 	private getRecentlyOpenedFromStorage(): IRecentlyOpened {
-		const storedRecents = this.stateMainService.getItem<RecentlyOpenedStorageData>(WorkspacesHistoryMainService.recentlyOpenedStorageKey);
+		const storedRecents = this.stateService.getItem<RecentlyOpenedStorageData>(WorkspacesHistoryMainService.recentlyOpenedStorageKey);
 
 		return restoreRecentlyOpened(storedRecents, this.logService);
 	}
@@ -299,7 +299,7 @@ export class WorkspacesHistoryMainService extends Disposable implements IWorkspa
 	private saveRecentlyOpened(recent: IRecentlyOpened): void {
 		const serialized = toStoreData(recent);
 
-		this.stateMainService.setItem(WorkspacesHistoryMainService.recentlyOpenedStorageKey, serialized);
+		this.stateService.setItem(WorkspacesHistoryMainService.recentlyOpenedStorageKey, serialized);
 	}
 
 	updateWindowsJumpList(): void {

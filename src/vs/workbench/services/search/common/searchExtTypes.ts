@@ -225,24 +225,6 @@ export enum TextSearchCompleteMessageType {
 }
 
 /**
- * A message regarding a completed search.
- */
-export interface TextSearchCompleteMessage {
-	/**
-	 * Markdown text of the message.
-	 */
-	text: string,
-	/**
-	 * Whether the source of the message is trusted, command links are disabled for untrusted message sources.
-	 */
-	trusted?: boolean,
-	/**
-	 * The message type, this affects how the message will be rendered.
-	 */
-	type: TextSearchCompleteMessageType,
-}
-
-/**
  * Information collected when text search is complete.
  */
 export interface TextSearchComplete {
@@ -262,7 +244,7 @@ export interface TextSearchComplete {
 	 * - Click to [run a command](command:workbench.action.OpenQuickPick)
 	 * - Click to [open a website](https://aka.ms)
 	 */
-	message?: TextSearchCompleteMessage | TextSearchCompleteMessage[];
+	message?: { text: string, type: TextSearchCompleteMessageType } | { text: string, type: TextSearchCompleteMessageType }[];
 }
 
 /**

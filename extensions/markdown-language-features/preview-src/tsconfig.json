@@ -8,10 +8,5 @@
 			"DOM",
 			"DOM.Iterable"
 		]
-	},
-	"typeAcquisition": {
-		"include": [
-			"@types/vscode-webview"
-		]
 	}
 }

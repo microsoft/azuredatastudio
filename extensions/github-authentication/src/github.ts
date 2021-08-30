@@ -6,10 +6,12 @@
 import * as vscode from 'vscode';
 import { v4 as uuid } from 'uuid';
 import { Keychain } from './common/keychain';
-import { GitHubServer, uriHandler, NETWORK_ERROR } from './githubServer';
+import { GitHubServer, NETWORK_ERROR } from './githubServer';
 import Logger from './common/logger';
 import { arrayEquals } from './common/utils';
 import { ExperimentationTelemetry } from './experimentationService';
+
+export const onDidChangeSessions = new vscode.EventEmitter<vscode.AuthenticationProviderAuthenticationSessionsChangeEvent>();
 
 interface SessionData {
 	id: string;
@@ -22,29 +24,18 @@ interface SessionData {
 	accessToken: string;
 }
 
-export enum AuthProviderType {
-	github = 'github',
-	'github-enterprise' = 'github-enterprise'
-}
-
-
-export class GitHubAuthenticationProvider implements vscode.AuthenticationProvider {
+export class GitHubAuthenticationProvider {
 	private _sessions: vscode.AuthenticationSession[] = [];
-	private _sessionChangeEmitter = new vscode.EventEmitter<vscode.AuthenticationProviderAuthenticationSessionsChangeEvent>();
 	private _githubServer: GitHubServer;
 
 	private _keychain: Keychain;
 
-	constructor(private context: vscode.ExtensionContext, private type: AuthProviderType, private telemetryReporter: ExperimentationTelemetry) {
-		this._keychain = new Keychain(context, `${type}.auth`);
-		this._githubServer = new GitHubServer(type, telemetryReporter);
+	constructor(context: vscode.ExtensionContext, telemetryReporter: ExperimentationTelemetry) {
+		this._keychain = new Keychain(context);
+		this._githubServer = new GitHubServer(telemetryReporter);
 	}
 
-	get onDidChangeSessions() {
-		return this._sessionChangeEmitter.event;
-	}
-
-	public async initialize(): Promise<void> {
+	public async initialize(context: vscode.ExtensionContext): Promise<void> {
 		try {
 			this._sessions = await this.readSessions();
 			await this.verifySessions();
@@ -52,17 +43,7 @@ export class GitHubAuthenticationProvider implements vscode.AuthenticationProvid
 			// Ignore, network request failed
 		}
 
-		let friendlyName = 'GitHub';
-		if (this.type === AuthProviderType.github) {
-			this.context.subscriptions.push(vscode.window.registerUriHandler(uriHandler));
-		}
-		if (this.type === AuthProviderType['github-enterprise']) {
-			friendlyName = 'GitHub Enterprise';
-		}
-
-		this.context.subscriptions.push(vscode.commands.registerCommand(`${this.type}.provide-token`, () => this.manuallyProvideToken()));
-		this.context.subscriptions.push(vscode.authentication.registerAuthenticationProvider(this.type, friendlyName, this, { supportsMultipleAccounts: false }));
-		this.context.subscriptions.push(this.context.secrets.onDidChange(() => this.checkForUpdates()));
+		context.subscriptions.push(context.secrets.onDidChange(() => this.checkForUpdates()));
 	}
 
 	async getSessions(scopes?: string[]): Promise<vscode.AuthenticationSession[]> {
@@ -71,21 +52,12 @@ export class GitHubAuthenticationProvider implements vscode.AuthenticationProvid
 			: this._sessions;
 	}
 
-	private async afterTokenLoad(token: string): Promise<void> {
-		if (this.type === AuthProviderType.github) {
-			this._githubServer.checkIsEdu(token);
-		}
-		if (this.type === AuthProviderType['github-enterprise']) {
-			this._githubServer.checkEnterpriseVersion(token);
-		}
-	}
-
 	private async verifySessions(): Promise<void> {
 		const verifiedSessions: vscode.AuthenticationSession[] = [];
 		const verificationPromises = this._sessions.map(async session => {
 			try {
 				await this._githubServer.getUserInfo(session.accessToken);
-				this.afterTokenLoad(session.accessToken);
+				this._githubServer.checkIsEdu(session.accessToken);
 				verifiedSessions.push(session);
 			} catch (e) {
 				// Remove sessions that return unauthorized response
@@ -125,7 +97,7 @@ export class GitHubAuthenticationProvider implements vscode.AuthenticationProvid
 			}
 		});
 
-		this._sessions.forEach(session => {
+		this._sessions.map(session => {
 			const matchesExisting = storedSessions.some(s => s.id === session.id);
 			// Another window has logged out, remove from our state
 			if (!matchesExisting) {
@@ -140,7 +112,7 @@ export class GitHubAuthenticationProvider implements vscode.AuthenticationProvid
 		});
 
 		if (added.length || removed.length) {
-			this._sessionChangeEmitter.fire({ added, removed, changed: [] });
+			onDidChangeSessions.fire({ added, removed, changed: [] });
 		}
 	}
 
@@ -191,41 +163,12 @@ export class GitHubAuthenticationProvider implements vscode.AuthenticationProvid
 		return this._sessions;
 	}
 
-	public async createSession(scopes: string[]): Promise<vscode.AuthenticationSession> {
-		try {
-			/* __GDPR__
-				"login" : { }
-			*/
-			this.telemetryReporter?.sendTelemetryEvent('login');
-
-			const token = await this._githubServer.login(scopes.join(' '));
-			this.afterTokenLoad(token);
-			const session = await this.tokenToSession(token, scopes);
-			await this.setToken(session);
-			this._sessionChangeEmitter.fire({ added: [session], removed: [], changed: [] });
-
-			Logger.info('Login success!');
-
-			return session;
-		} catch (e) {
-			// If login was cancelled, do not notify user.
-			if (e.message === 'Cancelled') {
-				/* __GDPR__
-					"loginCancelled" : { }
-				*/
-				this.telemetryReporter?.sendTelemetryEvent('loginCancelled');
-				throw e;
-			}
-
-			/* __GDPR__
-				"loginFailed" : { }
-			*/
-			this.telemetryReporter?.sendTelemetryEvent('loginFailed');
-
-			vscode.window.showErrorMessage(`Sign in failed: ${e}`);
-			Logger.error(e);
-			throw e;
-		}
+	public async createSession(scopes: string): Promise<vscode.AuthenticationSession> {
+		const token = await this._githubServer.login(scopes);
+		const session = await this.tokenToSession(token, scopes.split(' '));
+		this._githubServer.checkIsEdu(token);
+		await this.setToken(session);
+		return session;
 	}
 
 	public async manuallyProvideToken(): Promise<void> {
@@ -253,33 +196,18 @@ export class GitHubAuthenticationProvider implements vscode.AuthenticationProvid
 		await this.storeSessions();
 	}
 
-	public async removeSession(id: string) {
-		try {
-			/* __GDPR__
-				"logout" : { }
-			*/
-			this.telemetryReporter?.sendTelemetryEvent('logout');
-
-			Logger.info(`Logging out of ${id}`);
-			const sessionIndex = this._sessions.findIndex(session => session.id === id);
-			if (sessionIndex > -1) {
-				const session = this._sessions[sessionIndex];
-				this._sessions.splice(sessionIndex, 1);
-				this._sessionChangeEmitter.fire({ added: [], removed: [session], changed: [] });
-			} else {
-				Logger.error('Session not found');
-			}
-
-			await this.storeSessions();
-		} catch (e) {
-			/* __GDPR__
-				"logoutFailed" : { }
-			*/
-			this.telemetryReporter?.sendTelemetryEvent('logoutFailed');
-
-			vscode.window.showErrorMessage(`Sign out failed: ${e}`);
-			Logger.error(e);
-			throw e;
+	public async removeSession(id: string): Promise<vscode.AuthenticationSession | undefined> {
+		Logger.info(`Logging out of ${id}`);
+		const sessionIndex = this._sessions.findIndex(session => session.id === id);
+		let session: vscode.AuthenticationSession | undefined;
+		if (sessionIndex > -1) {
+			session = this._sessions[sessionIndex];
+			this._sessions.splice(sessionIndex, 1);
+		} else {
+			Logger.error('Session not found');
 		}
+
+		await this.storeSessions();
+		return session;
 	}
 }

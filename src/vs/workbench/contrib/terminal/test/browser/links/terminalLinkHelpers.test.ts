@@ -157,7 +157,7 @@ const TEST_WIDE_CHAR = '文';
 const TEST_NULL_CHAR = 'C';
 
 function createBufferLineArray(lines: { text: string, width: number }[]): IBufferLine[] {
-	const result: IBufferLine[] = [];
+	let result: IBufferLine[] = [];
 	lines.forEach((l, i) => {
 		result.push(new TestBufferLine(
 			l.text,
@@ -178,9 +178,9 @@ class TestBufferLine implements IBufferLine {
 	}
 	getCell(x: number): IBufferCell | undefined {
 		// Create a fake line of cells and use that to resolve the width
-		const cells: string[] = [];
+		let cells: string[] = [];
 		let wideNullCellOffset = 0; // There is no null 0 width char after a wide char
-		const emojiOffset = 0; // Skip chars as emoji are multiple characters
+		let emojiOffset = 0; // Skip chars as emoji are multiple characters
 		for (let i = 0; i <= x - wideNullCellOffset + emojiOffset; i++) {
 			let char = this._text.charAt(i);
 			if (char === '\ud83d') {

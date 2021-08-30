@@ -4,10 +4,10 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as assert from 'assert';
+import { ITextModel, FindMatch } from 'vs/editor/common/model';
+import { editorMatchesToTextSearchResults, addContextToEditorMatches } from 'vs/workbench/services/search/common/searchHelpers';
 import { Range } from 'vs/editor/common/core/range';
-import { FindMatch, ITextModel } from 'vs/editor/common/model';
-import { ISearchRange, ITextQuery, ITextSearchContext, QueryType } from 'vs/workbench/services/search/common/search';
-import { addContextToEditorMatches, editorMatchesToTextSearchResults } from 'vs/workbench/services/search/common/searchHelpers';
+import { ITextQuery, QueryType, ITextSearchContext } from 'vs/workbench/services/search/common/search';
 
 suite('SearchHelpers', () => {
 	suite('editorMatchesToTextSearchResults', () => {
@@ -17,29 +17,12 @@ suite('SearchHelpers', () => {
 			}
 		};
 
-		function assertRangesEqual(actual: ISearchRange | ISearchRange[], expected: ISearchRange[]) {
-			if (!Array.isArray(actual)) {
-				// All of these tests are for arrays...
-				throw new Error('Expected array of ranges');
-			}
-
-			assert.strictEqual(actual.length, expected.length);
-
-			// These are sometimes Range, sometimes SearchRange
-			actual.forEach((r, i) => {
-				const expectedRange = expected[i];
-				assert.deepStrictEqual(
-					{ startLineNumber: r.startLineNumber, startColumn: r.startColumn, endLineNumber: r.endLineNumber, endColumn: r.endColumn },
-					{ startLineNumber: expectedRange.startLineNumber, startColumn: expectedRange.startColumn, endLineNumber: expectedRange.endLineNumber, endColumn: expectedRange.endColumn });
-			});
-		}
-
 		test('simple', () => {
 			const results = editorMatchesToTextSearchResults([new FindMatch(new Range(6, 1, 6, 2), null)], mockTextModel);
 			assert.strictEqual(results.length, 1);
 			assert.strictEqual(results[0].preview.text, '6\n');
-			assertRangesEqual(results[0].preview.matches, [new Range(0, 0, 0, 1)]);
-			assertRangesEqual(results[0].ranges, [new Range(5, 0, 5, 1)]);
+			assert.deepEqual(results[0].preview.matches, [new Range(0, 0, 0, 1)]);
+			assert.deepEqual(results[0].ranges, [new Range(5, 0, 5, 1)]);
 		});
 
 		test('multiple', () => {
@@ -51,20 +34,20 @@ suite('SearchHelpers', () => {
 				],
 				mockTextModel);
 			assert.strictEqual(results.length, 2);
-			assertRangesEqual(results[0].preview.matches, [
+			assert.deepEqual(results[0].preview.matches, [
 				new Range(0, 0, 0, 1),
 				new Range(0, 3, 2, 1),
 			]);
-			assertRangesEqual(results[0].ranges, [
+			assert.deepEqual(results[0].ranges, [
 				new Range(5, 0, 5, 1),
 				new Range(5, 3, 7, 1),
 			]);
 			assert.strictEqual(results[0].preview.text, '6\n7\n8\n');
 
-			assertRangesEqual(results[1].preview.matches, [
+			assert.deepEqual(results[1].preview.matches, [
 				new Range(0, 0, 1, 2),
 			]);
-			assertRangesEqual(results[1].ranges, [
+			assert.deepEqual(results[1].ranges, [
 				new Range(8, 0, 9, 2),
 			]);
 			assert.strictEqual(results[1].preview.text, '9\n10\n');

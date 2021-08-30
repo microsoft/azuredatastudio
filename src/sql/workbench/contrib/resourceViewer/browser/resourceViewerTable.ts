@@ -95,7 +95,7 @@ export class ResourceViewerTable extends Disposable {
 	}
 
 	public set columns(columns: Slick.Column<Slick.SlickData>[]) {
-		this._resourceViewerTable.columns = columns as any; // Cast to any to fix strict type assertion error
+		this._resourceViewerTable.columns = columns;
 		this._resourceViewerTable.autosizeColumns();
 	}
 
@@ -128,7 +128,7 @@ export class ResourceViewerTable extends Disposable {
 		const columns = this._resourceViewerTable.grid.getColumns();
 		let value = true;
 		for (let i = 0; i < columns.length; i++) {
-			const col: FilterableColumn<Slick.SlickData> = columns[i] as any; // Cast to any to fix strict type assertion error
+			const col: FilterableColumn<Slick.SlickData> = columns[i];
 			if (!col.field) {
 				continue;
 			}

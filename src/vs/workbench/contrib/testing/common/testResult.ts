@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { newWriteableBufferStream, VSBuffer, VSBufferReadableStream, VSBufferWriteableStream } from 'vs/base/common/buffer';
@@ -9,7 +9,6 @@ import { Lazy } from 'vs/base/common/lazy';
 import { DisposableStore } from 'vs/base/common/lifecycle';
 import { URI } from 'vs/base/common/uri';
 import { Range } from 'vs/editor/common/core/range';
-import { localize } from 'vs/nls';
 import { TestResultState } from 'vs/workbench/api/common/extHostTypes';
 import { IComputedStateAccessor, refreshComputedState } from 'vs/workbench/contrib/testing/common/getComputedState';
 import { ExtensionRunTestsRequest, ISerializedTestResults, ITestItem, ITestMessage, ITestRunTask, ITestTaskState, RunTestsRequest, TestIdPath, TestResultItem } from 'vs/workbench/contrib/testing/common/testCollection';
@@ -38,11 +37,6 @@ export interface ITestResult {
 	readonly isAutoRun?: boolean;
 
 	/**
-	 * Human-readable name of the test result.
-	 */
-	readonly name: string;
-
-	/**
 	 * Gets all tests involved in the run.
 	 */
 	tests: IterableIterator<TestResultItem>;
@@ -69,21 +63,19 @@ export interface ITestResult {
 	toJSON(): ISerializedTestResults | undefined;
 }
 
-export const resultItemParents = function* (results: ITestResult, item: TestResultItem) {
-	let i: TestResultItem | undefined = item;
-	while (i) {
-		yield i;
-		i = i.parent ? results.getStateById(i.parent) : undefined;
-	}
-};
-
 export const getPathForTestInResult = (test: TestResultItem, results: ITestResult): TestIdPath => {
-	const path: TestIdPath = [];
-	for (const node of resultItemParents(results, test)) {
-		path.unshift(node.item.extId);
+	const path = [test];
+	while (true) {
+		const parentId = path[0].parent;
+		const parent = parentId && results.getStateById(parentId);
+		if (!parent) {
+			break;
+		}
+
+		path.unshift(parent);
 	}
 
-	return path;
+	return path.map(t => t.item.extId);
 };
 
 /**
@@ -109,16 +101,6 @@ export const sumCounts = (counts: Iterable<TestStateCount>) => {
 	}
 
 	return total;
-};
-
-export const maxCountPriority = (counts: Readonly<TestStateCount>) => {
-	for (const state of statesInOrder) {
-		if (counts[state] > 0) {
-			return state;
-		}
-	}
-
-	return TestResultState.Unset;
 };
 
 /**
@@ -243,7 +225,6 @@ export class LiveTestResult implements ITestResult {
 	public readonly onChange = this.changeEmitter.event;
 	public readonly onComplete = this.completeEmitter.event;
 	public readonly tasks: ITestRunTask[] = [];
-	public readonly name = localize('runFinished', 'Test run at {0}', new Date().toLocaleString());
 
 	/**
 	 * Test IDs directly included in this run.
@@ -363,7 +344,6 @@ export class LiveTestResult implements ITestResult {
 		const index = this.mustGetTaskIndex(taskId);
 		if (duration !== undefined) {
 			entry.tasks[index].duration = duration;
-			entry.ownDuration = Math.max(entry.ownDuration || 0, duration);
 		}
 
 		this.fireUpdateAndRefresh(entry, index, state);
@@ -483,7 +463,7 @@ export class LiveTestResult implements ITestResult {
 		entry.ownComputedState = newOwnComputed;
 		this.counts[previousOwnComputed]--;
 		this.counts[newOwnComputed]++;
-		refreshComputedState(this.computedStateAccessor, entry).forEach(t =>
+		refreshComputedState(this.computedStateAccessor, entry, t =>
 			this.changeEmitter.fire(
 				t === entry
 					? { item: entry, result: this, reason: TestResultItemChangeReason.OwnStateChange, previous: previousOwnComputed }
@@ -524,7 +504,6 @@ export class LiveTestResult implements ITestResult {
 		id: this.id,
 		completedAt: this.completedAt!,
 		tasks: this.tasks,
-		name: this.name,
 		items: [...this.testById.values()].map(entry => ({
 			...entry,
 			retired: undefined,
@@ -565,11 +544,6 @@ export class HydratedTestResult implements ITestResult {
 		return this.testById.values();
 	}
 
-	/**
-	 * @inheritdoc
-	 */
-	public readonly name: string;
-
 	private readonly testById = new Map<string, TestResultItem>();
 
 	constructor(
@@ -580,7 +554,6 @@ export class HydratedTestResult implements ITestResult {
 		this.id = serialized.id;
 		this.completedAt = serialized.completedAt;
 		this.tasks = serialized.tasks;
-		this.name = serialized.name;
 
 		for (const item of serialized.items) {
 			const cast: TestResultItem = { ...item, retired: true };

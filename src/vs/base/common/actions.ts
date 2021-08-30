@@ -31,14 +31,14 @@ export interface IAction extends IDisposable {
 	enabled: boolean;
 	checked: boolean;
 	expanded: boolean | undefined; // {{SQL CARBON EDIT}}
-	run(event?: unknown): Promise<unknown>; // {{SQL CARBON EDIT}} Add promise
+	run(event?: unknown): Promise<unknown>;
 }
 
 export interface IActionRunner extends IDisposable {
 	readonly onDidRun: Event<IRunEvent>;
 	readonly onBeforeRun: Event<IRunEvent>;
 
-	run(action: IAction, context?: unknown): Promise<unknown>; // {{SQL CARBON EDIT}} Add promise
+	run(action: IAction, context?: unknown): Promise<unknown>;
 }
 
 export interface IActionChangeEvent {
@@ -62,9 +62,9 @@ export class Action extends Disposable implements IAction {
 	protected _enabled: boolean = true;
 	protected _checked: boolean = false;
 	protected _expanded: boolean = false; // {{SQL CARBON EDIT}}
-	protected readonly _actionCallback?: (event?: unknown) => Promise<unknown>; // {{SQL CARBON EDIT}} Add promise
+	protected readonly _actionCallback?: (event?: unknown) => Promise<unknown>;
 
-	constructor(id: string, label: string = '', cssClass: string = '', enabled: boolean = true, actionCallback?: (event?: unknown) => Promise<unknown>) { // {{SQL CARBON EDIT}} Add promise
+	constructor(id: string, label: string = '', cssClass: string = '', enabled: boolean = true, actionCallback?: (event?: unknown) => Promise<unknown>) {
 		super();
 		this._id = id;
 		this._label = label;
@@ -212,24 +212,6 @@ export class ActionRunner extends Disposable implements IActionRunner {
 
 export class Separator extends Action {
 
-	/**
-	 * Joins all non-empty lists of actions with separators.
-	 */
-	public static join(...actionLists: readonly IAction[][]) {
-		let out: IAction[] = [];
-		for (const list of actionLists) {
-			if (!list.length) {
-				// skip
-			} else if (out.length) {
-				out = [...out, new Separator(), ...list];
-			} else {
-				out = list;
-			}
-		}
-
-		return out;
-	}
-
 	static readonly ID = 'vs.actions.separator';
 
 	constructor(label?: string) {
@@ -275,7 +257,6 @@ export class SubmenuAction implements IAction {
 	}
 	protected _setExpanded(value: boolean): void {
 	}
-	// {{SQL CARBON EDIT}} - End
 }
 
 export class EmptySubmenuAction extends Action {

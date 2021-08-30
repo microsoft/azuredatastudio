@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as assert from 'assert';
@@ -49,7 +49,7 @@ suite('Notebook Outline', function () {
 
 	test('special characters in heading', async function () {
 		await withNotebookOutline([
-			['# Hellö & Hällo', 'md', CellKind.Markup]
+			['# Hellö & Hällo', 'md', CellKind.Markdown]
 		], outline => {
 			assert.ok(outline instanceof NotebookCellOutline);
 			assert.deepStrictEqual(outline.config.quickPickDataSource.getQuickPickElements().length, 1);
@@ -57,7 +57,7 @@ suite('Notebook Outline', function () {
 		});
 
 		await withNotebookOutline([
-			['# bo<i>ld</i>', 'md', CellKind.Markup]
+			['# bo<i>ld</i>', 'md', CellKind.Markdown]
 		], outline => {
 			assert.ok(outline instanceof NotebookCellOutline);
 			assert.deepStrictEqual(outline.config.quickPickDataSource.getQuickPickElements().length, 1);
@@ -67,7 +67,7 @@ suite('Notebook Outline', function () {
 
 	test('Heading text defines entry label', async function () {
 		return await withNotebookOutline([
-			['foo\n # h1', 'md', CellKind.Markup]
+			['foo\n # h1', 'md', CellKind.Markdown]
 		], outline => {
 			assert.ok(outline instanceof NotebookCellOutline);
 			assert.deepStrictEqual(outline.config.quickPickDataSource.getQuickPickElements().length, 1);
@@ -77,7 +77,7 @@ suite('Notebook Outline', function () {
 
 	test('Notebook outline ignores markdown headings #115200', async function () {
 		await withNotebookOutline([
-			['## h2 \n# h1', 'md', CellKind.Markup]
+			['## h2 \n# h1', 'md', CellKind.Markdown]
 		], outline => {
 			assert.ok(outline instanceof NotebookCellOutline);
 			assert.deepStrictEqual(outline.config.quickPickDataSource.getQuickPickElements().length, 2);
@@ -86,8 +86,8 @@ suite('Notebook Outline', function () {
 		});
 
 		await withNotebookOutline([
-			['## h2', 'md', CellKind.Markup],
-			['# h1', 'md', CellKind.Markup]
+			['## h2', 'md', CellKind.Markdown],
+			['# h1', 'md', CellKind.Markdown]
 		], outline => {
 			assert.ok(outline instanceof NotebookCellOutline);
 			assert.deepStrictEqual(outline.config.quickPickDataSource.getQuickPickElements().length, 2);

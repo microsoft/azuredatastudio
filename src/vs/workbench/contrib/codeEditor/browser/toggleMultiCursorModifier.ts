@@ -3,37 +3,37 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { localize } from 'vs/nls';
-import { isMacintosh } from 'vs/base/common/platform';
-import { Action2, MenuId, MenuRegistry, registerAction2 } from 'vs/platform/actions/common/actions';
+import * as nls from 'vs/nls';
+import { Action } from 'vs/base/common/actions';
+import * as platform from 'vs/base/common/platform';
+import { MenuId, MenuRegistry, SyncActionDescriptor } from 'vs/platform/actions/common/actions';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IContextKey, IContextKeyService, RawContextKey } from 'vs/platform/contextkey/common/contextkey';
 import { LifecyclePhase } from 'vs/workbench/services/lifecycle/common/lifecycle';
 import { Registry } from 'vs/platform/registry/common/platform';
+import { Extensions, IWorkbenchActionRegistry } from 'vs/workbench/common/actions';
 import { Extensions as WorkbenchExtensions, IWorkbenchContribution, IWorkbenchContributionsRegistry } from 'vs/workbench/common/contributions';
-import { ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
 
-export class ToggleMultiCursorModifierAction extends Action2 {
+export class ToggleMultiCursorModifierAction extends Action {
 
-	static readonly ID = 'workbench.action.toggleMultiCursorModifier';
+	public static readonly ID = 'workbench.action.toggleMultiCursorModifier';
+	public static readonly LABEL = nls.localize('toggleLocation', "Toggle Multi-Cursor Modifier");
 
 	private static readonly multiCursorModifierConfigurationKey = 'editor.multiCursorModifier';
 
-	constructor() {
-		super({
-			id: ToggleMultiCursorModifierAction.ID,
-			title: { value: localize('toggleLocation', "Toggle Multi-Cursor Modifier"), original: 'Toggle Multi-Cursor Modifier' },
-			f1: true
-		});
+	constructor(
+		id: string,
+		label: string,
+		@IConfigurationService private readonly configurationService: IConfigurationService
+	) {
+		super(id, label);
 	}
 
-	override run(accessor: ServicesAccessor): Promise<void> {
-		const configurationService = accessor.get(IConfigurationService);
-
-		const editorConf = configurationService.getValue<{ multiCursorModifier: 'ctrlCmd' | 'alt' }>('editor');
+	public override run(): Promise<any> {
+		const editorConf = this.configurationService.getValue<{ multiCursorModifier: 'ctrlCmd' | 'alt' }>('editor');
 		const newValue: 'ctrlCmd' | 'alt' = (editorConf.multiCursorModifier === 'ctrlCmd' ? 'alt' : 'ctrlCmd');
 
-		return configurationService.updateValue(ToggleMultiCursorModifierAction.multiCursorModifierConfigurationKey, newValue);
+		return this.configurationService.updateValue(ToggleMultiCursorModifierAction.multiCursorModifierConfigurationKey, newValue);
 	}
 }
 
@@ -66,13 +66,14 @@ class MultiCursorModifierContextKeyController implements IWorkbenchContribution 
 
 Registry.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench).registerWorkbenchContribution(MultiCursorModifierContextKeyController, LifecyclePhase.Restored);
 
-registerAction2(ToggleMultiCursorModifierAction);
 
+const registry = Registry.as<IWorkbenchActionRegistry>(Extensions.WorkbenchActions);
+registry.registerWorkbenchAction(SyncActionDescriptor.from(ToggleMultiCursorModifierAction), 'Toggle Multi-Cursor Modifier');
 MenuRegistry.appendMenuItem(MenuId.MenubarSelectionMenu, {
 	group: '4_config',
 	command: {
 		id: ToggleMultiCursorModifierAction.ID,
-		title: localize('miMultiCursorAlt', "Switch to Alt+Click for Multi-Cursor")
+		title: nls.localize('miMultiCursorAlt', "Switch to Alt+Click for Multi-Cursor")
 	},
 	when: multiCursorModifier.isEqualTo('ctrlCmd'),
 	order: 1
@@ -82,9 +83,9 @@ MenuRegistry.appendMenuItem(MenuId.MenubarSelectionMenu, {
 	command: {
 		id: ToggleMultiCursorModifierAction.ID,
 		title: (
-			isMacintosh
-				? localize('miMultiCursorCmd', "Switch to Cmd+Click for Multi-Cursor")
-				: localize('miMultiCursorCtrl', "Switch to Ctrl+Click for Multi-Cursor")
+			platform.isMacintosh
+				? nls.localize('miMultiCursorCmd', "Switch to Cmd+Click for Multi-Cursor")
+				: nls.localize('miMultiCursorCtrl', "Switch to Ctrl+Click for Multi-Cursor")
 		)
 	},
 	when: multiCursorModifier.isEqualTo('altKey'),

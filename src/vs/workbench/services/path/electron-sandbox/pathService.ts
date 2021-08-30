@@ -7,19 +7,18 @@ import { registerSingleton } from 'vs/platform/instantiation/common/extensions';
 import { IRemoteAgentService } from 'vs/workbench/services/remote/common/remoteAgentService';
 import { INativeWorkbenchEnvironmentService } from 'vs/workbench/services/environment/electron-sandbox/environmentService';
 import { IPathService, AbstractPathService } from 'vs/workbench/services/path/common/pathService';
-import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
+import { Schemas } from 'vs/base/common/network';
 
 export class NativePathService extends AbstractPathService {
 
+	readonly defaultUriScheme = this.environmentService.remoteAuthority ? Schemas.vscodeRemote : Schemas.file;
+
 	constructor(
 		@IRemoteAgentService remoteAgentService: IRemoteAgentService,
-		@INativeWorkbenchEnvironmentService environmentService: INativeWorkbenchEnvironmentService,
-		@IWorkspaceContextService contextService: IWorkspaceContextService
+		@INativeWorkbenchEnvironmentService private readonly environmentService: INativeWorkbenchEnvironmentService
 	) {
-		super(environmentService.userHome, remoteAgentService, environmentService, contextService);
+		super(environmentService.userHome, remoteAgentService);
 	}
 }
-
-
 
 registerSingleton(IPathService, NativePathService, true);

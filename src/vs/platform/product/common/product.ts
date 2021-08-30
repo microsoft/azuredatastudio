@@ -13,7 +13,7 @@ import { ISandboxConfiguration } from 'vs/base/parts/sandbox/common/sandboxTypes
 let product: IProductConfiguration;
 
 // Native sandbox environment
-if (typeof globals.vscode !== 'undefined' && typeof globals.vscode.context !== 'undefined') {
+if (typeof globals.vscode !== 'undefined') {
 	const configuration: ISandboxConfiguration | undefined = globals.vscode.context.configuration();
 	if (configuration) {
 		product = configuration.product;
@@ -67,10 +67,10 @@ else {
 			extensionAllowedProposedApi: [
 				'ms-vscode.vscode-js-profile-flame',
 				'ms-vscode.vscode-js-profile-table',
+				'ms-vscode.github-browser',
+				'ms-vscode.github-richnav',
 				'ms-vscode.remotehub',
-				'ms-vscode.remotehub-insiders',
-				'GitHub.remotehub',
-				'GitHub.remotehub-insiders'
+				'ms-vscode.remotehub-insiders'
 			],
 		});
 	}

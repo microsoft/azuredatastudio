@@ -36,9 +36,6 @@ export interface IpcRendererEvent extends Event {
 }
 
 export interface IpcRenderer {
-
-	// Docs: https://electronjs.org/docs/api/ipc-renderer
-
 	/**
 	 * Listens to `channel`, when a new message arrives `listener` would be called with
 	 * `listener(event, args...)`.
@@ -61,13 +58,9 @@ export interface IpcRenderer {
 	 * Sending Functions, Promises, Symbols, WeakMaps, or WeakSets will throw an
 	 * exception.
 	 *
-	 * > **NOTE:** Sending non-standard JavaScript types such as DOM objects or special
-	 * Electron objects will throw an exception.
-	 *
-	 * Since the main process does not have support for DOM objects such as
-	 * `ImageBitmap`, `File`, `DOMMatrix` and so on, such objects cannot be sent over
-	 * Electron's IPC to the main process, as the main process would have no way to
-	 * decode them. Attempting to send such objects over IPC will result in an error.
+	 * > **NOTE**: Sending non-standard JavaScript types such as DOM objects or special
+	 * Electron objects is deprecated, and will begin throwing an exception starting
+	 * with Electron 9.
 	 *
 	 * The main process handles it by listening for `channel` with the `ipcMain`
 	 * module.
@@ -88,13 +81,9 @@ export interface IpcRenderer {
 	 * included. Sending Functions, Promises, Symbols, WeakMaps, or WeakSets will throw
 	 * an exception.
 	 *
-	 * > **NOTE:** Sending non-standard JavaScript types such as DOM objects or special
-	 * Electron objects will throw an exception.
-	 *
-	 * Since the main process does not have support for DOM objects such as
-	 * `ImageBitmap`, `File`, `DOMMatrix` and so on, such objects cannot be sent over
-	 * Electron's IPC to the main process, as the main process would have no way to
-	 * decode them. Attempting to send such objects over IPC will result in an error.
+	 * > **NOTE**: Sending non-standard JavaScript types such as DOM objects or special
+	 * Electron objects is deprecated, and will begin throwing an exception starting
+	 * with Electron 9.
 	 *
 	 * The main process should listen for `channel` with `ipcMain.handle()`.
 	 *
@@ -122,7 +111,7 @@ export interface IpcRenderer {
 	//  * For more information on using `MessagePort` and `MessageChannel`, see the MDN
 	//  * documentation.
 	//  */
-	// postMessage(channel: string, message: any, transfer?: MessagePort[]): void;
+	// postMessage(channel: string, message: any): void;
 }
 
 export interface WebFrame {
@@ -130,11 +119,6 @@ export interface WebFrame {
 	 * Changes the zoom level to the specified level. The original size is 0 and each
 	 * increment above or below represents zooming 20% larger or smaller to default
 	 * limits of 300% and 50% of original size, respectively.
-	 *
-	 * > **NOTE**: The zoom policy at the Chromium level is same-origin, meaning that
-	 * the zoom level for a specific domain propagates across all instances of windows
-	 * with the same domain. Differentiating the window URLs will make zoom work
-	 * per-window.
 	 */
 	setZoomLevel(level: number): void;
 }
@@ -223,7 +207,7 @@ export interface CrashReporterStartOptions {
 	rateLimit?: boolean;
 	/**
 	 * If true, crash reports will be compressed and uploaded with `Content-Encoding:
-	 * gzip`. Default is `true`.
+	 * gzip`. Default is `false`.
 	 */
 	compress?: boolean;
 	/**

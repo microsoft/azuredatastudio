@@ -5,7 +5,7 @@
 
 import { localize } from 'vs/nls';
 import { IWorkbenchContribution } from 'vs/workbench/common/contributions';
-import { Dimension } from 'vs/base/browser/dom';
+import { toggleClass, Dimension } from 'vs/base/browser/dom';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
@@ -80,7 +80,7 @@ export class DataExplorerViewPaneContainer extends ViewPaneContainer {
 	}
 
 	override layout(dimension: Dimension): void {
-		this.root!.classList.toggle('narrow', dimension.width <= 300);
+		toggleClass(this.root!, 'narrow', dimension.width <= 300);
 		super.layout(new Dimension(dimension.width, dimension.height));
 	}
 

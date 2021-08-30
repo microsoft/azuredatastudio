@@ -127,9 +127,9 @@ export class FindWidget extends Widget implements IOverlayWidget, IVerticalSashL
 			if (FIND_WIDGET_INITIAL_WIDTH + 28 - MAX_MATCHES_COUNT_WIDTH >= editorWidth + 50) {
 				collapsedFindWidget = true;
 			}
-			this._domNode.classList.toggle('collapsed-find-widget', collapsedFindWidget);
-			this._domNode.classList.toggle('narrow-find-widget', narrowFindWidget);
-			this._domNode.classList.toggle('reduced-find-widget', reducedFindWidget);
+			dom.toggleClass(this._domNode, 'collapsed-find-widget', collapsedFindWidget);
+			dom.toggleClass(this._domNode, 'narrow-find-widget', narrowFindWidget);
+			dom.toggleClass(this._domNode, 'reduced-find-widget', reducedFindWidget);
 
 			if (!narrowFindWidget && !collapsedFindWidget) {
 				// the minimal left offset of findwidget is 15px.
@@ -204,7 +204,7 @@ export class FindWidget extends Widget implements IOverlayWidget, IVerticalSashL
 		}
 		if (e.searchString || e.matchesCount || e.matchesPosition) {
 			let showRedOutline = (this._state.searchString.length > 0 && this._state.matchesCount === 0);
-			this._domNode.classList.toggle('no-results', showRedOutline);
+			dom.toggleClass(this._domNode, 'no-results', showRedOutline);
 
 			this._updateMatchesCount();
 		}
@@ -552,7 +552,7 @@ class SimpleButton extends Widget {
 	}
 
 	public setEnabled(enabled: boolean): void {
-		this._domNode.classList.toggle('disabled', !enabled);
+		dom.toggleClass(this._domNode, 'disabled', !enabled);
 		this._domNode.setAttribute('aria-disabled', String(!enabled));
 		this._domNode.tabIndex = enabled ? 0 : -1;
 	}
@@ -562,6 +562,6 @@ class SimpleButton extends Widget {
 	}
 
 	public toggleClass(className: string, shouldHaveIt: boolean): void {
-		this._domNode.classList.toggle(className, shouldHaveIt);
+		dom.toggleClass(this._domNode, className, shouldHaveIt);
 	}
 }

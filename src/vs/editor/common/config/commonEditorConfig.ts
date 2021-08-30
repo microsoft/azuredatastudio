@@ -204,7 +204,6 @@ function migrateOptions(options: IEditorOptions): void {
 		mapping['method'] = 'showMethods';
 		mapping['function'] = 'showFunctions';
 		mapping['constructor'] = 'showConstructors';
-		mapping['deprecated'] = 'showDeprecated';
 		mapping['field'] = 'showFields';
 		mapping['variable'] = 'showVariables';
 		mapping['class'] = 'showClasses';

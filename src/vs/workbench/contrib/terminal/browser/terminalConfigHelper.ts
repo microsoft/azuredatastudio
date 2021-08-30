@@ -6,10 +6,10 @@
 import * as nls from 'vs/nls';
 import { EDITOR_FONT_DEFAULTS, IEditorOptions } from 'vs/editor/common/config/editorOptions';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { ITerminalConfiguration, TERMINAL_CONFIG_SECTION, DEFAULT_LETTER_SPACING, DEFAULT_LINE_HEIGHT, MINIMUM_LETTER_SPACING, MINIMUM_FONT_WEIGHT, MAXIMUM_FONT_WEIGHT, DEFAULT_FONT_WEIGHT, DEFAULT_BOLD_FONT_WEIGHT, FontWeight, ITerminalFont } from 'vs/workbench/contrib/terminal/common/terminal';
+import { ITerminalConfiguration, TERMINAL_CONFIG_SECTION, DEFAULT_LETTER_SPACING, DEFAULT_LINE_HEIGHT, MINIMUM_LETTER_SPACING, LinuxDistro, MINIMUM_FONT_WEIGHT, MAXIMUM_FONT_WEIGHT, DEFAULT_FONT_WEIGHT, DEFAULT_BOLD_FONT_WEIGHT, FontWeight, ITerminalFont } from 'vs/workbench/contrib/terminal/common/terminal';
 import Severity from 'vs/base/common/severity';
 import { INotificationService, NeverShowAgainScope } from 'vs/platform/notification/common/notification';
-import { IBrowserTerminalConfigHelper, LinuxDistro } from 'vs/workbench/contrib/terminal/browser/terminal';
+import { IBrowserTerminalConfigHelper } from 'vs/workbench/contrib/terminal/browser/terminal';
 import { Emitter, Event } from 'vs/base/common/event';
 import { basename } from 'vs/base/common/path';
 import { IExtensionManagementService } from 'vs/platform/extensionManagement/common/extensionManagement';
@@ -19,7 +19,7 @@ import { InstallRecommendedExtensionAction } from 'vs/workbench/contrib/extensio
 import { IProductService } from 'vs/platform/product/common/productService';
 import { XTermCore } from 'vs/workbench/contrib/terminal/browser/xterm-private';
 import { IShellLaunchConfig } from 'vs/platform/terminal/common/terminal';
-import { isLinux, isWindows } from 'vs/base/common/platform';
+import { isWindows } from 'vs/base/common/platform';
 
 const MINIMUM_FONT_SIZE = 6;
 const MAXIMUM_FONT_SIZE = 25;
@@ -29,23 +29,23 @@ const MAXIMUM_FONT_SIZE = 25;
  * specific test cases can be written.
  */
 export class TerminalConfigHelper implements IBrowserTerminalConfigHelper {
-	panelContainer: HTMLElement | undefined;
+	public panelContainer: HTMLElement | undefined;
 
 	private _charMeasureElement: HTMLElement | undefined;
 	private _lastFontMeasurement: ITerminalFont | undefined;
-	protected _linuxDistro: LinuxDistro = LinuxDistro.Unknown;
-	config!: ITerminalConfiguration;
+	private _linuxDistro: LinuxDistro = LinuxDistro.Unknown;
+	public config!: ITerminalConfiguration;
 
 	private readonly _onConfigChanged = new Emitter<void>();
-	get onConfigChanged(): Event<void> { return this._onConfigChanged.event; }
+	public get onConfigChanged(): Event<void> { return this._onConfigChanged.event; }
 
-	constructor(
+	public constructor(
 		@IConfigurationService private readonly _configurationService: IConfigurationService,
 		@IExtensionManagementService private readonly _extensionManagementService: IExtensionManagementService,
 		@INotificationService private readonly _notificationService: INotificationService,
-		@ITelemetryService private readonly _telemetryService: ITelemetryService,
-		@IInstantiationService private readonly _instantiationService: IInstantiationService,
-		@IProductService private readonly _productService: IProductService,
+		@ITelemetryService private readonly telemetryService: ITelemetryService,
+		@IInstantiationService private readonly instantiationService: IInstantiationService,
+		@IProductService private readonly productService: IProductService,
 	) {
 		this._updateConfig();
 		this._configurationService.onDidChangeConfiguration(e => {
@@ -53,13 +53,10 @@ export class TerminalConfigHelper implements IBrowserTerminalConfigHelper {
 				this._updateConfig();
 			}
 		});
-		if (isLinux) {
-			if (navigator.userAgent.includes('Ubuntu')) {
-				this._linuxDistro = LinuxDistro.Ubuntu;
-			} else if (navigator.userAgent.includes('Fedora')) {
-				this._linuxDistro = LinuxDistro.Fedora;
-			}
-		}
+	}
+
+	public setLinuxDistro(linuxDistro: LinuxDistro) {
+		this._linuxDistro = linuxDistro;
 	}
 
 	private _updateConfig(): void {
@@ -71,18 +68,18 @@ export class TerminalConfigHelper implements IBrowserTerminalConfigHelper {
 		this._onConfigChanged.fire();
 	}
 
-	configFontIsMonospace(): boolean {
+	public configFontIsMonospace(): boolean {
 		const fontSize = 15;
 		const fontFamily = this.config.fontFamily || this._configurationService.getValue<IEditorOptions>('editor').fontFamily || EDITOR_FONT_DEFAULTS.fontFamily;
-		const iRect = this._getBoundingRectFor('i', fontFamily, fontSize);
-		const wRect = this._getBoundingRectFor('w', fontFamily, fontSize);
+		const i_rect = this._getBoundingRectFor('i', fontFamily, fontSize);
+		const w_rect = this._getBoundingRectFor('w', fontFamily, fontSize);
 
 		// Check for invalid bounds, there is no reason to believe the font is not monospace
-		if (!iRect || !wRect || !iRect.width || !wRect.width) {
+		if (!i_rect || !w_rect || !i_rect.width || !w_rect.width) {
 			return true;
 		}
 
-		return iRect.width === wRect.width;
+		return i_rect.width === w_rect.width;
 	}
 
 	private _createCharMeasureElementIfNecessary(): HTMLElement {
@@ -154,7 +151,7 @@ export class TerminalConfigHelper implements IBrowserTerminalConfigHelper {
 	 * Gets the font information based on the terminal.integrated.fontFamily
 	 * terminal.integrated.fontSize, terminal.integrated.lineHeight configuration properties
 	 */
-	getFont(xtermCore?: XTermCore, excludeDimensions?: boolean): ITerminalFont {
+	public getFont(xtermCore?: XTermCore, excludeDimensions?: boolean): ITerminalFont {
 		const editorConfig = this._configurationService.getValue<IEditorOptions>('editor');
 
 		let fontFamily = this.config.fontFamily || editorConfig.fontFamily || EDITOR_FONT_DEFAULTS.fontFamily;
@@ -217,21 +214,21 @@ export class TerminalConfigHelper implements IBrowserTerminalConfigHelper {
 		return r;
 	}
 
-	private _recommendationsShown = false;
+	private recommendationsShown = false;
 
-	async showRecommendations(shellLaunchConfig: IShellLaunchConfig): Promise<void> {
-		if (this._recommendationsShown) {
+	public async showRecommendations(shellLaunchConfig: IShellLaunchConfig): Promise<void> {
+		if (this.recommendationsShown) {
 			return;
 		}
-		this._recommendationsShown = true;
+		this.recommendationsShown = true;
 
 		if (isWindows && shellLaunchConfig.executable && basename(shellLaunchConfig.executable).toLowerCase() === 'wsl.exe') {
-			const exeBasedExtensionTips = this._productService.exeBasedExtensionTips;
+			const exeBasedExtensionTips = this.productService.exeBasedExtensionTips;
 			if (!exeBasedExtensionTips || !exeBasedExtensionTips.wsl) {
 				return;
 			}
 			const extId = Object.keys(exeBasedExtensionTips.wsl.recommendations).find(extId => exeBasedExtensionTips.wsl.recommendations[extId].important);
-			if (extId && ! await this._isExtensionInstalled(extId)) {
+			if (extId && ! await this.isExtensionInstalled(extId)) {
 				this._notificationService.prompt(
 					Severity.Info,
 					nls.localize(
@@ -246,8 +243,8 @@ export class TerminalConfigHelper implements IBrowserTerminalConfigHelper {
 									"extensionId": { "classification": "PublicNonPersonalData", "purpose": "FeatureInsight" }
 								}
 								*/
-								this._telemetryService.publicLog('terminalLaunchRecommendation:popup', { userReaction: 'install', extId });
-								this._instantiationService.createInstance(InstallRecommendedExtensionAction, extId).run();
+								this.telemetryService.publicLog('terminalLaunchRecommendation:popup', { userReaction: 'install', extId });
+								this.instantiationService.createInstance(InstallRecommendedExtensionAction, extId).run();
 							}
 						}
 					],
@@ -260,7 +257,7 @@ export class TerminalConfigHelper implements IBrowserTerminalConfigHelper {
 									"userReaction" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
 								}
 							*/
-							this._telemetryService.publicLog('terminalLaunchRecommendation:popup', { userReaction: 'cancelled' });
+							this.telemetryService.publicLog('terminalLaunchRecommendation:popup', { userReaction: 'cancelled' });
 						}
 					}
 				);
@@ -268,7 +265,7 @@ export class TerminalConfigHelper implements IBrowserTerminalConfigHelper {
 		}
 	}
 
-	private async _isExtensionInstalled(id: string): Promise<boolean> {
+	private async isExtensionInstalled(id: string): Promise<boolean> {
 		const extensions = await this._extensionManagementService.getInstalled();
 		return extensions.some(e => e.identifier.id === id);
 	}

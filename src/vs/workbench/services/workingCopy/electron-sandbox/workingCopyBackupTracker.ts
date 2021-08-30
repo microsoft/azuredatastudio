@@ -8,7 +8,7 @@ import { IWorkingCopyBackupService } from 'vs/workbench/services/workingCopy/com
 import { IWorkbenchContribution } from 'vs/workbench/common/contributions';
 import { IFilesConfigurationService, AutoSaveMode } from 'vs/workbench/services/filesConfiguration/common/filesConfigurationService';
 import { IWorkingCopyService } from 'vs/workbench/services/workingCopy/common/workingCopyService';
-import { IWorkingCopy, IWorkingCopyIdentifier, WorkingCopyCapabilities } from 'vs/workbench/services/workingCopy/common/workingCopy';
+import { IWorkingCopy, WorkingCopyCapabilities } from 'vs/workbench/services/workingCopy/common/workingCopy';
 import { ILifecycleService, ShutdownReason } from 'vs/workbench/services/lifecycle/common/lifecycle';
 import { ConfirmResult, IFileDialogService, IDialogService, getFileNamesMessage } from 'vs/platform/dialogs/common/dialogs';
 import Severity from 'vs/base/common/severity';
@@ -24,6 +24,7 @@ import { IEnvironmentService } from 'vs/platform/environment/common/environment'
 import { CancellationToken, CancellationTokenSource } from 'vs/base/common/cancellation';
 import { IProgressService, ProgressLocation } from 'vs/platform/progress/common/progress';
 import { Promises, raceCancellation } from 'vs/base/common/async';
+import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
 import { IWorkingCopyEditorService } from 'vs/workbench/services/workingCopy/common/workingCopyEditorService';
 
 export class NativeWorkingCopyBackupTracker extends WorkingCopyBackupTracker implements IWorkbenchContribution {
@@ -40,6 +41,7 @@ export class NativeWorkingCopyBackupTracker extends WorkingCopyBackupTracker imp
 		@ILogService logService: ILogService,
 		@IEnvironmentService private readonly environmentService: IEnvironmentService,
 		@IProgressService private readonly progressService: IProgressService,
+		@IEditorGroupsService private readonly editorGroupService: IEditorGroupsService,
 		@IWorkingCopyEditorService workingCopyEditorService: IWorkingCopyEditorService,
 		@IEditorService editorService: IEditorService
 	) {
@@ -143,7 +145,7 @@ export class NativeWorkingCopyBackupTracker extends WorkingCopyBackupTracker imp
 			? getFileNamesMessage(dirtyWorkingCopies.map(x => x.name)) + '\n' + advice
 			: advice;
 
-		this.dialogService.show(Severity.Error, msg, undefined, { detail });
+		this.dialogService.show(Severity.Error, msg, [localize('ok', 'OK')], { detail });
 
 		this.logService.error(error ? `[backup tracker] ${msg}: ${error}` : `[backup tracker] ${msg}`);
 	}
@@ -222,10 +224,7 @@ export class NativeWorkingCopyBackupTracker extends WorkingCopyBackupTracker imp
 			} catch (backupError) {
 				error = backupError;
 			}
-		},
-			localize('backupBeforeShutdownMessage', "Backing up dirty editors is taking longer than expected..."),
-			localize('backupBeforeShutdownDetail', "Click 'Cancel' to stop waiting and to save or revert dirty editors.")
-		);
+		}, localize('backupBeforeShutdown', "Waiting for dirty editors to backup..."));
 
 		return { backups, error };
 	}
@@ -294,7 +293,7 @@ export class NativeWorkingCopyBackupTracker extends WorkingCopyBackupTracker imp
 			if (result !== false) {
 				await Promises.settled(dirtyWorkingCopies.map(workingCopy => workingCopy.isDirty() ? workingCopy.save(saveOptions) : Promise.resolve(true)));
 			}
-		}, localize('saveBeforeShutdown', "Saving dirty editors is taking longer than expected..."));
+		}, localize('saveBeforeShutdown', "Waiting for dirty editors to save..."));
 	}
 
 	private doRevertAllBeforeShutdown(dirtyWorkingCopies: IWorkingCopy[]): Promise<void> {
@@ -311,66 +310,52 @@ export class NativeWorkingCopyBackupTracker extends WorkingCopyBackupTracker imp
 			// If we still have dirty working copies, revert those directly
 			// unless the revert operation was not successful (e.g. cancelled)
 			await Promises.settled(dirtyWorkingCopies.map(workingCopy => workingCopy.isDirty() ? workingCopy.revert(revertOptions) : Promise.resolve()));
-		}, localize('revertBeforeShutdown', "Reverting dirty editors is taking longer than expected..."));
+		}, localize('revertBeforeShutdown', "Waiting for dirty editors to revert..."));
 	}
 
-	private withProgressAndCancellation(promiseFactory: (token: CancellationToken) => Promise<void>, title: string, detail?: string): Promise<void> {
+	private withProgressAndCancellation(promiseFactory: (token: CancellationToken) => Promise<void>, title: string): Promise<void> {
 		const cts = new CancellationTokenSource();
 
 		return this.progressService.withProgress({
-			location: ProgressLocation.Dialog, 	// use a dialog to prevent the user from making any more changes now (https://github.com/microsoft/vscode/issues/122774)
-			cancellable: true, 					// allow to cancel (https://github.com/microsoft/vscode/issues/112278)
-			delay: 800, 						// delay notification so that it only appears when operation takes a long time
-			title,
-			detail
+			location: ProgressLocation.Notification,
+			cancellable: true, // for issues such as https://github.com/microsoft/vscode/issues/112278
+			delay: 800, // delay notification so that it only appears when operation takes a long time
+			title
 		}, () => raceCancellation(promiseFactory(cts.token), cts.token), () => cts.dispose(true));
 	}
 
-	private async noVeto(backupsToDiscard: IWorkingCopyIdentifier[]): Promise<boolean> {
+	private noVeto(backupsToDiscard: IWorkingCopy[]): boolean | Promise<boolean> {
+		if (!this.editorGroupService.isRestored()) {
+			return false; // if editors have not restored, we are very likely not up to speed with backups and thus should not discard them
+		}
 
-		// Discard backups from working copies the
-		// user either saved or reverted
-		await this.discardBackupsBeforeShutdown(backupsToDiscard);
-
-		return false; // no veto (no dirty)
+		return Promises.settled(backupsToDiscard.map(workingCopy => this.workingCopyBackupService.discardBackup(workingCopy))).then(() => false, () => false);
 	}
 
 	private async onBeforeShutdownWithoutDirty(): Promise<boolean> {
 
-		// Discard all backups except those that
-		// were not restored
-		await this.discardBackupsBeforeShutdown({ except: Array.from(this.unrestoredBackups) });
-
-		return false; // no veto (no dirty)
-	}
-
-	private discardBackupsBeforeShutdown(backupsToDiscard: IWorkingCopyIdentifier[]): Promise<void>;
-	private discardBackupsBeforeShutdown(backupsToKeep: { except: IWorkingCopyIdentifier[] }): Promise<void>;
-	private async discardBackupsBeforeShutdown(arg1: IWorkingCopyIdentifier[] | { except: IWorkingCopyIdentifier[] }): Promise<void> {
-
-		// We never discard any backups before we are ready
-		// and have resolved all backups that exist. This
-		// is important to not loose backups that have not
-		// been handled.
-		if (!this.isReady) {
-			return;
-		}
-
-		// When we shutdown either with no dirty working copies left
-		// or with some handled, we start to discard these backups
-		// to free them up. This helps to get rid of stale backups
-		// as reported in https://github.com/microsoft/vscode/issues/92962
+		// If we have proceeded enough that editors and dirty state
+		// has restored, we make sure that no backups lure around
+		// given we have no known dirty working copy. This helps
+		// to clean up stale backups as for example reported in
+		// https://github.com/microsoft/vscode/issues/92962
 		//
 		// However, we never want to discard backups that we know
 		// were not restored in the session.
-		try {
-			if (Array.isArray(arg1)) {
-				await Promises.settled(arg1.map(workingCopy => this.workingCopyBackupService.discardBackup(workingCopy)));
-			} else {
-				await this.workingCopyBackupService.discardBackups(arg1);
+		if (this.editorGroupService.isRestored()) {
+			try {
+
+				// Backups without `typeId` are handed in the legacy backup
+				// restorer still and thus we explicitly don't want to keep
+				// them on shutdown, otherwise they would always come back.
+				// TODO@bpasero remove this check once typeId has been adopted.
+				const backupsToKeep = Array.from(this.unrestoredBackups).filter(unrestoredBackup => unrestoredBackup.typeId.length > 0);
+				await this.workingCopyBackupService.discardBackups(backupsToKeep);
+			} catch (error) {
+				this.logService.error(`[backup tracker] error discarding backups: ${error}`);
 			}
-		} catch (error) {
-			this.logService.error(`[backup tracker] error discarding backups: ${error}`);
 		}
+
+		return false; // no veto (no dirty)
 	}
 }

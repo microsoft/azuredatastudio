@@ -60,7 +60,8 @@ export class MainThreadWindow implements MainThreadWindowShape {
 	}
 
 	async $asExternalUri(uriComponents: UriComponents, options: IOpenUriOptions): Promise<UriComponents> {
-		const result = await this.openerService.resolveExternalUri(URI.revive(uriComponents), options);
+		const uri = URI.revive(uriComponents);
+		const result = await this.openerService.resolveExternalUri(uri, options);
 		return result.resolved;
 	}
 }

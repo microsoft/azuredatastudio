@@ -82,7 +82,6 @@ import { once } from 'vs/base/common/functional';
 import { ThemeIcon } from 'vs/platform/theme/common/themeService';
 import { IWorkspaceTrustManagementService, IWorkspaceTrustRequestService } from 'vs/platform/workspace/common/workspaceTrust';
 import { VirtualWorkspaceContext } from 'vs/workbench/browser/contextkeys';
-import { Schemas } from 'vs/base/common/network';
 
 // {{SQL CARBON EDIT}}
 // integration with tasks view panel
@@ -238,8 +237,6 @@ export abstract class AbstractTaskService extends Disposable implements ITaskSer
 	protected readonly _onDidStateChange: Emitter<TaskEvent>;
 	private _waitForSupportedExecutions: Promise<void>;
 	private _onDidRegisterSupportedExecutions: Emitter<void> = new Emitter();
-	private _onDidChangeTaskSystemInfo: Emitter<void> = new Emitter();
-	public onDidChangeTaskSystemInfo: Event<void> = this._onDidChangeTaskSystemInfo.event;
 
 	private lastRunTasksViewTask: TaskInfo; // {{SQL CARBON EDIT}}
 
@@ -287,6 +284,9 @@ export abstract class AbstractTaskService extends Disposable implements ITaskSer
 		this._providerTypes = new Map<number, string>();
 		this._taskSystemInfos = new Map<string, TaskSystemInfo>();
 		this._register(this.contextService.onDidChangeWorkspaceFolders(() => {
+			if (!this._taskSystem && !this._workspaceTasksPromise) {
+				return;
+			}
 			let folderSetup = this.computeWorkspaceFolderSetup();
 			if (this.executionEngine !== folderSetup[2]) {
 				this.disposeTaskSystemListeners();
@@ -561,14 +561,9 @@ export abstract class AbstractTaskService extends Disposable implements ITaskSer
 		};
 	}
 
-	get hasTaskSystemInfo(): boolean {
-		return this._taskSystemInfos.size > 0;
-	}
-
 	public registerTaskSystem(key: string, info: TaskSystemInfo): void {
 		if (!this._taskSystemInfos.has(key) || info.platform !== Platform.Platform.Web) {
 			this._taskSystemInfos.set(key, info);
-			this._onDidChangeTaskSystemInfo.fire();
 		}
 	}
 
@@ -1676,17 +1671,11 @@ export abstract class AbstractTaskService extends Disposable implements ITaskSer
 			this.contextService, this.environmentService,
 			AbstractTaskService.OutputChannelId, this.fileService, this.terminalProfileResolverService,
 			this.pathService, this.viewDescriptorService, this.logService, this.configurationService,
-			this,
 			(workspaceFolder: IWorkspaceFolder | undefined) => {
 				if (workspaceFolder) {
 					return this.getTaskSystemInfo(workspaceFolder.uri.scheme);
 				} else if (this._taskSystemInfos.size > 0) {
-					const infos = Array.from(this._taskSystemInfos.entries());
-					const notFile = infos.filter(info => info[0] !== Schemas.file);
-					if (notFile.length > 0) {
-						return notFile[0][1];
-					}
-					return infos[0][1];
+					return this._taskSystemInfos.values().next().value;
 				} else {
 					return undefined;
 				}
@@ -2500,6 +2489,7 @@ export abstract class AbstractTaskService extends Disposable implements ITaskSer
 	private async trust(): Promise<boolean> {
 		return (await this.workspaceTrustRequestService.requestWorkspaceTrust(
 			{
+				modal: true,
 				message: nls.localize('TaskService.requestTrust', "Listing and running tasks requires that some of the files in this workspace be executed as code.")
 			})) === true;
 	}
@@ -3210,24 +3200,11 @@ export abstract class AbstractTaskService extends Disposable implements ITaskSer
 		if (!this.canRunCommand()) {
 			return;
 		}
-		const activeTasksPromise: Promise<Task[]> = this.getActiveTasks();
-		const activeTasks: Task[] = await activeTasksPromise;
-		let group: string | undefined;
+		const activeTasks: Task[] = await this.getActiveTasks();
 		if (activeTasks.length === 1) {
 			this._taskSystem!.revealTask(activeTasks[0]);
-		} else if (activeTasks.every((task) => {
-			if (InMemoryTask.is(task)) {
-				return false;
-			}
-
-			if (!group) {
-				group = task.command.presentation?.group;
-			}
-			return task.command.presentation?.group && (task.command.presentation.group === group);
-		})) {
-			this._taskSystem!.revealTask(activeTasks[0]);
 		} else {
-			this.showQuickPick(activeTasksPromise,
+			this.showQuickPick(this.getActiveTasks(),
 				nls.localize('TaskService.pickShowTask', 'Select the task to show its output'),
 				{
 					label: nls.localize('TaskService.noTaskIsRunning', 'No task is running'),
@@ -3310,12 +3287,7 @@ export abstract class AbstractTaskService extends Disposable implements ITaskSer
 			return;
 		}
 
-		if (!this.workspaceTrustManagementService.isWorkpaceTrusted()) {
-			this._register(Event.once(this.workspaceTrustManagementService.onDidChangeTrust)(isTrusted => {
-				if (isTrusted) {
-					this.upgrade();
-				}
-			}));
+		if (!(await this.trust())) {
 			return;
 		}
 
@@ -3368,8 +3340,8 @@ export abstract class AbstractTaskService extends Disposable implements ITaskSer
 				run: async () => {
 					for (const upgrade of fileDiffs) {
 						await this.editorService.openEditor({
-							originalInput: { resource: upgrade[0] },
-							modifiedInput: { resource: upgrade[1] }
+							leftResource: upgrade[0],
+							rightResource: upgrade[1],
 						});
 					}
 				}

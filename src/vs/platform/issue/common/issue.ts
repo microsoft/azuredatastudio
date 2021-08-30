@@ -58,7 +58,6 @@ export interface IssueReporterData extends WindowData {
 	issueType?: IssueType;
 	extensionId?: string;
 	experiments?: string;
-	restrictedMode: boolean;
 	githubAccessToken: string;
 	readonly issueTitle?: string;
 	readonly issueBody?: string;
@@ -71,14 +70,8 @@ export interface ISettingSearchResult {
 }
 
 export interface ProcessExplorerStyles extends WindowStyles {
-	listHoverBackground?: string;
-	listHoverForeground?: string;
-	listFocusBackground?: string;
-	listFocusForeground?: string;
-	listFocusOutline?: string;
-	listActiveSelectionBackground?: string;
-	listActiveSelectionForeground?: string;
-	listHoverOutline?: string;
+	hoverBackground?: string;
+	hoverForeground?: string;
 }
 
 export interface ProcessExplorerData extends WindowData {

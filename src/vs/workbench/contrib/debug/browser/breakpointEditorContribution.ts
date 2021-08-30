@@ -46,7 +46,6 @@ interface IBreakpointDecoration {
 }
 
 const breakpointHelperDecoration: IModelDecorationOptions = {
-	description: 'breakpoint-helper-decoration',
 	glyphMarginClassName: ThemeIcon.asClassName(icons.debugBreakpointHint),
 	stickiness: TrackedRangeStickiness.NeverGrowsWhenTypingAtEdges
 };
@@ -95,7 +94,6 @@ function getBreakpointDecorationOptions(model: ITextModel, breakpoint: IBreakpoi
 
 	const renderInline = breakpoint.column && (breakpoint.column > model.getLineFirstNonWhitespaceColumn(breakpoint.lineNumber));
 	return {
-		description: 'breakpoint-decoration',
 		glyphMarginClassName: ThemeIcon.asClassName(icon),
 		glyphMarginHoverMessage,
 		stickiness: TrackedRangeStickiness.NeverGrowsWhenTypingAtEdges,
@@ -130,7 +128,6 @@ async function createCandidateDecorations(model: ITextModel, breakpointDecoratio
 						result.push({
 							range,
 							options: {
-								description: 'breakpoint-placeholder-decoration',
 								stickiness: TrackedRangeStickiness.NeverGrowsWhenTypingAtEdges,
 								beforeContentClassName: breakpointAtPosition ? undefined : `debug-breakpoint-placeholder`
 							},

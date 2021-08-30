@@ -4,13 +4,13 @@
  *--------------------------------------------------------------------------------------------*/
 
 import 'vs/css!./media/editordroptarget';
-import { LocalSelectionTransfer, DraggedEditorIdentifier, ResourcesDropHandler, DraggedEditorGroupIdentifier, DragAndDropObserver, containsDragType, extractEditorsDropData } from 'vs/workbench/browser/dnd';
+import { LocalSelectionTransfer, DraggedEditorIdentifier, ResourcesDropHandler, DraggedEditorGroupIdentifier, DragAndDropObserver, containsDragType, extractResources } from 'vs/workbench/browser/dnd';
 import { addDisposableListener, EventType, EventHelper, isAncestor } from 'vs/base/browser/dom';
 import { IEditorGroupsAccessor, IEditorGroupView, getActiveTextEditorOptions } from 'vs/workbench/browser/parts/editor/editor';
 import { EDITOR_DRAG_AND_DROP_BACKGROUND } from 'vs/workbench/common/theme';
 import { IThemeService, Themable } from 'vs/platform/theme/common/themeService';
 import { activeContrastBorder } from 'vs/platform/theme/common/colorRegistry';
-import { IEditorIdentifier, EditorInputCapabilities } from 'vs/workbench/common/editor';
+import { IEditorIdentifier, EditorInput, EditorOptions } from 'vs/workbench/common/editor';
 import { isMacintosh, isWeb } from 'vs/base/common/platform';
 import { GroupDirection, IEditorGroupsService, MergeGroupMode } from 'vs/workbench/services/editor/common/editorGroupsService';
 import { toDisposable } from 'vs/base/common/lifecycle';
@@ -18,12 +18,12 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { RunOnceScheduler } from 'vs/base/common/async';
 import { DataTransfers } from 'vs/base/browser/dnd';
 import { VSBuffer } from 'vs/base/common/buffer';
-import { IDialogService, IFileDialogService } from 'vs/platform/dialogs/common/dialogs';
+import { IFileDialogService } from 'vs/platform/dialogs/common/dialogs';
 import { URI } from 'vs/base/common/uri';
 import { joinPath } from 'vs/base/common/resources';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { assertIsDefined, assertAllDefined } from 'vs/base/common/types';
-import Severity from 'vs/base/common/severity';
+import { INotificationService } from 'vs/platform/notification/common/notification';
 import { localize } from 'vs/nls';
 import { ByteSize } from 'vs/platform/files/common/files';
 // {{SQL CARBON EDIT}}
@@ -59,7 +59,7 @@ class DropOverlay extends Themable {
 		@IInstantiationService private instantiationService: IInstantiationService,
 		@IFileDialogService private readonly fileDialogService: IFileDialogService,
 		@IEditorService private readonly editorService: IEditorService,
-		@IDialogService private readonly dialogService: IDialogService,
+		@INotificationService private readonly notificationService: INotificationService,
 		@IEditorGroupsService private readonly editorGroupService: IEditorGroupsService
 	) {
 		super(themeService);
@@ -285,10 +285,10 @@ class DropOverlay extends Themable {
 					}
 
 					// Open in target group
-					const options = getActiveTextEditorOptions(sourceGroup, draggedEditor.editor, {
+					const options = getActiveTextEditorOptions(sourceGroup, draggedEditor.editor, EditorOptions.create({
 						pinned: true,										// always pin dropped editor
 						sticky: sourceGroup.isSticky(draggedEditor.editor),	// preserve sticky state
-					});
+					}));
 
 					const copyEditor = this.isCopyOperation(event, draggedEditor);
 					if (!copyEditor) {
@@ -317,7 +317,7 @@ class DropOverlay extends Themable {
 
 						// Skip for very large files because this operation is unbuffered
 						if (file.size > DropOverlay.MAX_FILE_UPLOAD_SIZE) {
-							this.dialogService.show(Severity.Warning, localize('fileTooLarge', "File is too large to open as untitled editor. Please upload it first into the file explorer and then try again."));
+							this.notificationService.warn(localize('fileTooLarge', "File is too large to open as untitled editor. Please upload it first into the file explorer and then try again."));
 							continue;
 						}
 
@@ -336,16 +336,18 @@ class DropOverlay extends Themable {
 									proposedFilePath = joinPath(defaultFilePath, name);
 								}
 
+								// Open as untitled file with the provided contents
+								const untitledEditor = this.editorService.createEditorInput({
+									resource: proposedFilePath,
+									forceUntitled: true,
+									contents: VSBuffer.wrap(new Uint8Array(event.target.result)).toString()
+								});
+
 								if (!targetGroup) {
 									targetGroup = ensureTargetGroup();
 								}
 
-								// Open as untitled text file with the provided contents
-								await this.editorService.openEditor({
-									resource: proposedFilePath,
-									forceUntitled: true,
-									contents: VSBuffer.wrap(new Uint8Array(event.target.result)).toString()
-								}, targetGroup.id);
+								await targetGroup.openEditor(untitledEditor);
 							}
 						};
 					}
@@ -358,7 +360,7 @@ class DropOverlay extends Themable {
 			const dropHandler = this.instantiationService.createInstance(ResourcesDropHandler, { allowWorkspaceOpen: true /* open workspace instead of file if dropped */ });
 
 			// {{SQL CARBON EDIT}}
-			const untitledOrFileResources = extractEditorsDropData(event);
+			const untitledOrFileResources = extractResources(event);
 			if (!untitledOrFileResources.length) {
 				return;
 			}
@@ -371,12 +373,16 @@ class DropOverlay extends Themable {
 				return;
 			}
 
-			dropHandler.handleDrop(event, () => ensureTargetGroup(), targetGroup => targetGroup?.focus());
+			dropHandler.handleDrop(event, () => ensureTargetGroup(), targetGroup => {
+				if (targetGroup) {
+					targetGroup.focus();
+				}
+			});
 		}
 	}
 
 	private isCopyOperation(e: DragEvent, draggedEditor?: IEditorIdentifier): boolean {
-		if (draggedEditor?.editor.hasCapability(EditorInputCapabilities.Singleton)) {
+		if (draggedEditor?.editor instanceof EditorInput && !draggedEditor.editor.canSplit()) {
 			return false;
 		}
 

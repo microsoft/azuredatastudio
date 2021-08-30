@@ -80,7 +80,7 @@ suite('Workbench - TerminalDataBufferer', () => {
 	});
 
 	test('stop', async () => {
-		const terminalOnData = new Emitter<string>();
+		let terminalOnData = new Emitter<string>();
 
 		bufferer.startBuffering(1, terminalOnData.event, 0);
 

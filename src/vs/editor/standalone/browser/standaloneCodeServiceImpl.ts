@@ -12,13 +12,12 @@ import { IRange } from 'vs/editor/common/core/range';
 import { ScrollType } from 'vs/editor/common/editorCommon';
 import { ITextModel } from 'vs/editor/common/model';
 import { IContextKey, IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
-import { IResourceEditorInput, ITextResourceEditorInput } from 'vs/platform/editor/common/editor';
+import { IResourceEditorInput } from 'vs/platform/editor/common/editor';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 
 export class StandaloneCodeEditorServiceImpl extends CodeEditorServiceImpl {
 
 	private readonly _editorIsOpen: IContextKey<boolean>;
-	private _activeCodeEditor: ICodeEditor | null;
 
 	constructor(
 		styleSheet: GlobalStyleSheet | null,
@@ -29,7 +28,6 @@ export class StandaloneCodeEditorServiceImpl extends CodeEditorServiceImpl {
 		this.onCodeEditorAdd(() => this._checkContextKey());
 		this.onCodeEditorRemove(() => this._checkContextKey());
 		this._editorIsOpen = contextKeyService.createKey('editorIsOpen', false);
-		this._activeCodeEditor = null;
 	}
 
 	private _checkContextKey(): void {
@@ -43,12 +41,8 @@ export class StandaloneCodeEditorServiceImpl extends CodeEditorServiceImpl {
 		this._editorIsOpen.set(hasCodeEditor);
 	}
 
-	public setActiveCodeEditor(activeCodeEditor: ICodeEditor | null): void {
-		this._activeCodeEditor = activeCodeEditor;
-	}
-
 	public getActiveCodeEditor(): ICodeEditor | null {
-		return this._activeCodeEditor;
+		return null; // not supported in the standalone case
 	}
 
 	public openCodeEditor(input: IResourceEditorInput, source: ICodeEditor | null, sideBySide?: boolean): Promise<ICodeEditor | null> {
@@ -59,7 +53,7 @@ export class StandaloneCodeEditorServiceImpl extends CodeEditorServiceImpl {
 		return Promise.resolve(this.doOpenEditor(source, input));
 	}
 
-	private doOpenEditor(editor: ICodeEditor, input: ITextResourceEditorInput): ICodeEditor | null {
+	private doOpenEditor(editor: ICodeEditor, input: IResourceEditorInput): ICodeEditor | null {
 		const model = this.findModel(editor, input.resource);
 		if (!model) {
 			if (input.resource) {

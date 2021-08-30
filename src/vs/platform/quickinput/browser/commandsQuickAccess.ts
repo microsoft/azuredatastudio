@@ -19,8 +19,7 @@ import { ICommandService } from 'vs/platform/commands/common/commands';
 import { WorkbenchActionExecutedEvent, WorkbenchActionExecutedClassification } from 'vs/base/common/actions';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { isPromiseCanceledError } from 'vs/base/common/errors';
-import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
-import Severity from 'vs/base/common/severity';
+import { INotificationService } from 'vs/platform/notification/common/notification';
 import { toErrorMessage } from 'vs/base/common/errorMessage';
 
 export interface ICommandQuickPick extends IPickerQuickAccessItem {
@@ -48,14 +47,14 @@ export abstract class AbstractCommandsQuickAccessProvider extends PickerQuickAcc
 		@IKeybindingService private readonly keybindingService: IKeybindingService,
 		@ICommandService private readonly commandService: ICommandService,
 		@ITelemetryService private readonly telemetryService: ITelemetryService,
-		@IDialogService private readonly dialogService: IDialogService
+		@INotificationService private readonly notificationService: INotificationService
 	) {
 		super(AbstractCommandsQuickAccessProvider.PREFIX, options);
 
 		this.options = options;
 	}
 
-	protected async _getPicks(filter: string, disposables: DisposableStore, token: CancellationToken): Promise<Array<ICommandQuickPick | IQuickPickSeparator>> {
+	protected async getPicks(filter: string, disposables: DisposableStore, token: CancellationToken): Promise<Array<ICommandQuickPick | IQuickPickSeparator>> {
 
 		// Ask subclass for all command picks
 		const allCommandPicks = await this.getCommandPicks(disposables, token);
@@ -163,7 +162,7 @@ export abstract class AbstractCommandsQuickAccessProvider extends PickerQuickAcc
 						await this.commandService.executeCommand(commandPick.commandId);
 					} catch (error) {
 						if (!isPromiseCanceledError(error)) {
-							this.dialogService.show(Severity.Error, localize('canNotRun', "Command '{0}' resulted in an error ({1})", commandPick.label, toErrorMessage(error)));
+							this.notificationService.error(localize('canNotRun', "Command '{0}' resulted in an error ({1})", commandPick.label, toErrorMessage(error)));
 						}
 					}
 				}

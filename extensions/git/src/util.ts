@@ -353,7 +353,7 @@ export class Limiter<T> {
 	}
 
 	queue(factory: () => Promise<T>): Promise<T> {
-		return new Promise<T>((c, e) => {
+		return new Promise((c, e) => {
 			this.outstandingPromises.push({ factory, c, e });
 			this.consume();
 		});

@@ -10,7 +10,7 @@ import { DisposableStore } from 'vs/base/common/lifecycle';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import * as DOM from 'vs/base/browser/dom';
-import { IEditorOpenContext } from 'vs/workbench/common/editor';
+import { EditorOptions, IEditorOpenContext } from 'vs/workbench/common/editor';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
@@ -23,7 +23,6 @@ import { fillInActions } from 'vs/platform/actions/browser/menuEntryActionViewIt
 import { IMenuService, MenuId } from 'vs/platform/actions/common/actions';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
-import { IEditorOptions } from 'vs/platform/editor/common/editor';
 
 export type ContextMenuAnchor = HTMLElement | { x: number; y: number; width?: number; height?: number; };
 
@@ -89,7 +88,7 @@ export class ResourceViewerEditor extends EditorPane {
 		return this._input as ResourceViewerInput;
 	}
 
-	override async setInput(input: ResourceViewerInput, options: IEditorOptions | undefined, context: IEditorOpenContext, token: CancellationToken): Promise<void> {
+	override async setInput(input: ResourceViewerInput, options: EditorOptions | undefined, context: IEditorOpenContext, token: CancellationToken): Promise<void> {
 		await super.setInput(input, options, context, token);
 
 		this._resourceViewerTable.title = input.title;
@@ -106,9 +105,9 @@ export class ResourceViewerEditor extends EditorPane {
 		});
 
 		this._inputDisposables.add(input.onColumnsChanged(columns => {
-			this._resourceViewerTable.columns = columns as any; // Cast to any to fix strict type assertion error
+			this._resourceViewerTable.columns = columns;
 		}));
-		this._resourceViewerTable.columns = input.columns as any;
+		this._resourceViewerTable.columns = input.columns;
 
 		this._inputDisposables.add(input.onDataChanged(() => {
 			this._resourceViewerTable.data = input.data;

@@ -65,6 +65,7 @@ export class ProxyAuthHandler extends Disposable {
 	private sessionCredentials: Credentials | undefined = undefined;
 
 	constructor(
+		any,
 		@ILogService private readonly logService: ILogService,
 		@IWindowsMainService private readonly windowsMainService: IWindowsMainService,
 		@INativeHostMainService private readonly nativeHostMainService: INativeHostMainService,

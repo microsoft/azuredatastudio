@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { createMemoizer } from 'vs/base/common/decorators';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { EDITOR_FONT_DEFAULTS, IEditorOptions } from 'vs/editor/common/config/editorOptions';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
@@ -21,7 +22,8 @@ interface WebviewThemeData {
 
 export class WebviewThemeDataProvider extends Disposable {
 
-	private _cachedWebViewThemeData: WebviewThemeData | undefined = undefined;
+
+	private static readonly MEMOIZER = createMemoizer();
 
 	private readonly _onThemeDataChanged = this._register(new Emitter<void>());
 	public readonly onThemeDataChanged = this._onThemeDataChanged.event;
@@ -48,41 +50,38 @@ export class WebviewThemeDataProvider extends Disposable {
 		return this._themeService.getColorTheme();
 	}
 
+	@WebviewThemeDataProvider.MEMOIZER
 	public getWebviewThemeData(): WebviewThemeData {
-		if (!this._cachedWebViewThemeData) {
-			const configuration = this._configurationService.getValue<IEditorOptions>('editor');
-			const editorFontFamily = configuration.fontFamily || EDITOR_FONT_DEFAULTS.fontFamily;
-			const editorFontWeight = configuration.fontWeight || EDITOR_FONT_DEFAULTS.fontWeight;
-			const editorFontSize = configuration.fontSize || EDITOR_FONT_DEFAULTS.fontSize;
+		const configuration = this._configurationService.getValue<IEditorOptions>('editor');
+		const editorFontFamily = configuration.fontFamily || EDITOR_FONT_DEFAULTS.fontFamily;
+		const editorFontWeight = configuration.fontWeight || EDITOR_FONT_DEFAULTS.fontWeight;
+		const editorFontSize = configuration.fontSize || EDITOR_FONT_DEFAULTS.fontSize;
 
-			const theme = this._themeService.getColorTheme();
-			const exportedColors = colorRegistry.getColorRegistry().getColors().reduce((colors, entry) => {
-				const color = theme.getColor(entry.id);
-				if (color) {
-					colors['vscode-' + entry.id.replace('.', '-')] = color.toString();
-				}
-				return colors;
-			}, {} as { [key: string]: string; });
+		const theme = this._themeService.getColorTheme();
+		const exportedColors = colorRegistry.getColorRegistry().getColors().reduce((colors, entry) => {
+			const color = theme.getColor(entry.id);
+			if (color) {
+				colors['vscode-' + entry.id.replace('.', '-')] = color.toString();
+			}
+			return colors;
+		}, {} as { [key: string]: string; });
 
-			const styles = {
-				'vscode-font-family': DEFAULT_FONT_FAMILY,
-				'vscode-font-weight': 'normal',
-				'vscode-font-size': '13px',
-				'vscode-editor-font-family': editorFontFamily,
-				'vscode-editor-font-weight': editorFontWeight,
-				'vscode-editor-font-size': editorFontSize + 'px',
-				...exportedColors
-			};
+		const styles = {
+			'vscode-font-family': DEFAULT_FONT_FAMILY,
+			'vscode-font-weight': 'normal',
+			'vscode-font-size': '13px',
+			'vscode-editor-font-family': editorFontFamily,
+			'vscode-editor-font-weight': editorFontWeight,
+			'vscode-editor-font-size': editorFontSize + 'px',
+			...exportedColors
+		};
 
-			const activeTheme = ApiThemeClassName.fromTheme(theme);
-			this._cachedWebViewThemeData = { styles, activeTheme, themeLabel: theme.label, };
-		}
-
-		return this._cachedWebViewThemeData;
+		const activeTheme = ApiThemeClassName.fromTheme(theme);
+		return { styles, activeTheme, themeLabel: theme.label, };
 	}
 
 	private reset() {
-		this._cachedWebViewThemeData = undefined;
+		WebviewThemeDataProvider.MEMOIZER.clear();
 		this._onThemeDataChanged.fire();
 	}
 }

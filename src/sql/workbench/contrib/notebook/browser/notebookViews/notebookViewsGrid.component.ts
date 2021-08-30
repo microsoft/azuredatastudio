@@ -8,7 +8,7 @@ import { Component, OnInit, ViewChildren, QueryList, Input, Inject, forwardRef, 
 import { NotebookViewsCardComponent } from 'sql/workbench/contrib/notebook/browser/notebookViews/notebookViewsCard.component';
 import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
-import { GridItemHTMLElement, GridStack, GridStackEvent, GridStackNode } from 'gridstack';
+import { GridStack, GridStackEvent, GridStackNode } from 'gridstack';
 import { localize } from 'vs/nls';
 import { NotebookViewsExtension } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViewsExtension';
 import { CellChangeEvent, INotebookView, INotebookViewCell } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViews';
@@ -72,13 +72,9 @@ export class NotebookViewsGridComponent extends AngularDisposable implements OnI
 		this._loaded = true;
 		this.detectChanges();
 
-		let getGridStackItems = (items: GridStackNode[] | GridItemHTMLElement): GridStackNode[] => {
-			return Array.isArray(items) ? items : (items?.gridstackNode ? [items.gridstackNode] : []);
-		};
-
-		self._grid.on('added', function (e: Event, items: GridStackNode[] | GridItemHTMLElement) { if (self._gridEnabled) { self.persist('added', getGridStackItems(items), self._grid, self._items); } });
-		self._grid.on('removed', function (e: Event, items: GridStackNode[] | GridItemHTMLElement) { if (self._gridEnabled) { self.persist('removed', getGridStackItems(items), self._grid, self._items); } });
-		self._grid.on('change', function (e: Event, items: GridStackNode[] | GridItemHTMLElement) { if (self._gridEnabled) { self.persist('change', getGridStackItems(items), self._grid, self._items); } });
+		self._grid.on('added', function (e: Event, items: GridStackNode[]) { if (self._gridEnabled) { self.persist('added', items, self._grid, self._items); } });
+		self._grid.on('removed', function (e: Event, items: GridStackNode[]) { if (self._gridEnabled) { self.persist('removed', items, self._grid, self._items); } });
+		self._grid.on('change', function (e: Event, items: GridStackNode[]) { if (self._gridEnabled) { self.persist('change', items, self._grid, self._items); } });
 	}
 
 	ngAfterContentChecked() {

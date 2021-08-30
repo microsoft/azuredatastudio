@@ -206,15 +206,9 @@ export function isProgressMessage(p: ISearchProgressItem | ISerializedSearchProg
 	return !!(p as IProgressMessage).message;
 }
 
-export interface ITextSearchCompleteMessage {
-	text: string;
-	type: TextSearchCompleteMessageType;
-	trusted?: boolean;
-}
-
 export interface ISearchCompleteStats {
 	limitHit?: boolean;
-	messages: ITextSearchCompleteMessage[];
+	messages: { text: string, type: TextSearchCompleteMessageType }[];
 	stats?: IFileSearchStats | ITextSearchStats;
 }
 
@@ -514,13 +508,13 @@ export interface ISearchEngine<T> {
 export interface ISerializedSearchSuccess {
 	type: 'success';
 	limitHit: boolean;
-	messages: ITextSearchCompleteMessage[];
+	messages: { text: string, type: TextSearchCompleteMessageType }[];
 	stats?: IFileSearchStats | ITextSearchStats;
 }
 
 export interface ISearchEngineSuccess {
 	limitHit: boolean;
-	messages: ITextSearchCompleteMessage[];
+	messages: { text: string, type: TextSearchCompleteMessageType }[];
 	stats: ISearchEngineStats;
 }
 

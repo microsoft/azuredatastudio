@@ -622,13 +622,13 @@ export interface ICodeEditor extends editorCommon.IEditor {
 
 	/**
 	 * Get value of the current model attached to this editor.
-	 * @see {@link ITextModel.getValue}
+	 * @see `ITextModel.getValue`
 	 */
 	getValue(options?: { preserveBOM: boolean; lineEnding: string; }): string;
 
 	/**
 	 * Set the value of the current model attached to this editor.
-	 * @see {@link ITextModel.setValue}
+	 * @see `ITextModel.setValue`
 	 */
 	setValue(newValue: string): void;
 
@@ -726,14 +726,14 @@ export interface ICodeEditor extends editorCommon.IEditor {
 
 	/**
 	 * All decorations added through this call will get the ownerId of this editor.
-	 * @see {@link ITextModel.deltaDecorations}
+	 * @see `ITextModel.deltaDecorations`
 	 */
 	deltaDecorations(oldDecorations: string[], newDecorations: IModelDeltaDecoration[]): string[];
 
 	/**
 	 * @internal
 	 */
-	setDecorations(description: string, decorationTypeKey: string, ranges: editorCommon.IDecorationOptions[]): void;
+	setDecorations(decorationTypeKey: string, ranges: editorCommon.IDecorationOptions[]): void;
 
 	/**
 	 * @internal
@@ -975,7 +975,7 @@ export interface IDiffEditor extends editorCommon.IEditor {
 	readonly maxComputationTime: number;
 
 	/**
-	 * @see {@link ICodeEditor.getDomNode}
+	 * @see ICodeEditor.getDomNode
 	 */
 	getDomNode(): HTMLElement;
 

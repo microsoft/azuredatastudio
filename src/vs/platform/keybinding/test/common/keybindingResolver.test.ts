@@ -193,27 +193,16 @@ suite('KeybindingResolver', () => {
 	});
 
 	test('contextIsEntirelyIncluded', () => {
-		const toContextKeyExpression = (expr: ContextKeyExpression | string | null) => {
-			if (typeof expr === 'string' || !expr) {
-				return ContextKeyExpr.deserialize(expr as string); // {{SQL CARBON EDIT}} Cast to string
-			}
-			return expr;
+		const assertIsIncluded = (a: string | null, b: string | null) => {
+			assert.strictEqual(KeybindingResolver.whenIsEntirelyIncluded(ContextKeyExpr.deserialize(a), ContextKeyExpr.deserialize(b)), true);
 		};
-		const assertIsIncluded = (a: ContextKeyExpression | string | null, b: ContextKeyExpression | string | null) => {
-			assert.strictEqual(KeybindingResolver.whenIsEntirelyIncluded(toContextKeyExpression(a), toContextKeyExpression(b)), true);
-		};
-		const assertIsNotIncluded = (a: ContextKeyExpression | string | null, b: ContextKeyExpression | string | null) => {
-			assert.strictEqual(KeybindingResolver.whenIsEntirelyIncluded(toContextKeyExpression(a), toContextKeyExpression(b)), false);
+		const assertIsNotIncluded = (a: string | null, b: string | null) => {
+			assert.strictEqual(KeybindingResolver.whenIsEntirelyIncluded(ContextKeyExpr.deserialize(a), ContextKeyExpr.deserialize(b)), false);
 		};
 
-		assertIsIncluded(null, null);
-		assertIsIncluded(null, ContextKeyExpr.true());
-		assertIsIncluded(ContextKeyExpr.true(), null);
-		assertIsIncluded(ContextKeyExpr.true(), ContextKeyExpr.true());
 		assertIsIncluded('key1', null);
 		assertIsIncluded('key1', '');
 		assertIsIncluded('key1', 'key1');
-		assertIsIncluded('key1', ContextKeyExpr.true());
 		assertIsIncluded('!key1', '');
 		assertIsIncluded('!key1', '!key1');
 		assertIsIncluded('key2', '');

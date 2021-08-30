@@ -498,27 +498,20 @@ export class TernarySearchTree<K, V> {
 	}
 
 	private *_entries(node: TernarySearchTreeNode<K, V> | undefined): IterableIterator<[K, V]> {
-		// DFS
-		if (!node) {
-			return;
-		}
-		const stack = [node];
-		while (stack.length > 0) {
-			const node = stack.pop();
-			if (node) {
-				if (node.value) {
-					yield [node.key, node.value];
-				}
-				if (node.left) {
-					stack.push(node.left);
-				}
-				if (node.mid) {
-					stack.push(node.mid);
-				}
-				if (node.right) {
-					stack.push(node.right);
-				}
+		if (node) {
+			// left
+			yield* this._entries(node.left);
+
+			// node
+			if (node.value) {
+				// callback(node.value, this._iter.join(parts));
+				yield [node.key, node.value];
 			}
+			// mid
+			yield* this._entries(node.mid);
+
+			// right
+			yield* this._entries(node.right);
 		}
 	}
 }

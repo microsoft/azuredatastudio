@@ -327,15 +327,13 @@ export class URI implements UriComponents {
 	}
 
 	static from(components: { scheme: string; authority?: string; path?: string; query?: string; fragment?: string }): URI {
-		const result = new Uri(
+		return new Uri(
 			components.scheme,
 			components.authority,
 			components.path,
 			components.query,
 			components.fragment,
 		);
-		_validateUri(result, true);
-		return result;
 	}
 
 	/**

@@ -12,7 +12,7 @@ import { Schemas } from 'vs/base/common/network';
 import * as path from 'vs/base/common/path';
 import { isEqual, basename, relativePath, isAbsolutePath } from 'vs/base/common/resources';
 import * as strings from 'vs/base/common/strings';
-import { assertIsDefined, isDefined } from 'vs/base/common/types';
+import { assertIsDefined } from 'vs/base/common/types';
 import { URI, URI as uri } from 'vs/base/common/uri';
 import { isMultilineRegexSource } from 'vs/editor/common/model/textModelSearch';
 import * as nls from 'vs/nls';
@@ -415,33 +415,29 @@ export class QueryBuilder {
 		} else if (searchPath === './' || searchPath === '.\\') {
 			return []; // ./ or ./**/foo makes sense for single-folder but not multi-folder workspaces
 		} else {
-			const searchPathWithoutDotSlash = searchPath.replace(/^\.[\/\\]/, '');
-			const folders = this.workspaceContextService.getWorkspace().folders;
-			const folderMatches = folders.map(folder => {
-				const match = searchPathWithoutDotSlash.match(new RegExp(`^${folder.name}(?:/(.*))?`));
-				return match ? {
-					match,
-					folder
-				} : null;
-			}).filter(isDefined);
-
-			if (folderMatches.length) {
-				return folderMatches.map(match => {
-					const patternMatch = match.match[1];
-					return {
-						searchPath: match.folder.uri,
-						pattern: patternMatch && normalizeGlobPattern(patternMatch)
-					};
-				});
+			const relativeSearchPathMatch = searchPath.match(/\.[\/\\]([^\/\\]+)(?:[\/\\](.+))?/);
+			if (relativeSearchPathMatch) {
+				const searchPathRoot = relativeSearchPathMatch[1];
+				const matchingRoots = this.workspaceContextService.getWorkspace().folders.filter(folder => folder.name === searchPathRoot);
+				if (matchingRoots.length) {
+					return matchingRoots.map(root => {
+						const patternMatch = relativeSearchPathMatch[2];
+						return {
+							searchPath: root.uri,
+							pattern: patternMatch && normalizeGlobPattern(patternMatch)
+						};
+					});
+				} else {
+					// No root folder with name
+					const searchPathNotFoundError = nls.localize('search.noWorkspaceWithName', "Workspace folder does not exist: {0}", searchPathRoot);
+					throw new Error(searchPathNotFoundError);
+				}
 			} else {
-				const probableWorkspaceFolderNameMatch = searchPath.match(/\.[\/\\](.+)[\/\\]?/);
-				const probableWorkspaceFolderName = probableWorkspaceFolderNameMatch ? probableWorkspaceFolderNameMatch[1] : searchPath;
-
-				// No root folder with name
-				const searchPathNotFoundError = nls.localize('search.noWorkspaceWithName', "Workspace folder does not exist: {0}", probableWorkspaceFolderName);
-				throw new Error(searchPathNotFoundError);
+				// Malformed ./ search path, ignore
 			}
 		}
+
+		return [];
 	}
 
 	private resolveOneSearchPathPattern(oneExpandedResult: IOneSearchPathPattern, globPortion?: string): IOneSearchPathPattern[] {

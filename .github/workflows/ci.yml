@@ -243,6 +243,7 @@ jobs:
         with:
           path: "**/node_modules"
           key: ${{ runner.os }}-cacheNodeModules13-${{ steps.nodeModulesCacheKey.outputs.value }}
+          restore-keys: ${{ runner.os }}-cacheNodeModules13-
       - name: Get yarn cache directory path
         id: yarnCacheDirPath
         if: ${{ steps.cacheNodeModules.outputs.cache-hit != 'true' }}
@@ -277,9 +278,6 @@ jobs:
 
       # - name: Run Monaco Editor Checks {{SQL CARBON EDIT}} Remove Monaco checks
       #   run: yarn monaco-compile-check
-
-      - name: Compile /build/
-        run: yarn --cwd build compile
 
       - name: Run Trusted Types Checks
         run: yarn tsec-compile-check

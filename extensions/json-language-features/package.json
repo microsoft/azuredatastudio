@@ -26,6 +26,7 @@
   "scripts": {
     "compile": "gulp compile-extension:json-language-features-client compile-extension:json-language-features-server",
     "watch": "gulp watch-extension:json-language-features-client watch-extension:json-language-features-server",
+        "postinstall": "cd server && yarn install",
     "install-client-next": "yarn add vscode-languageclient@next"
   },
   "categories": [
@@ -140,7 +141,7 @@
     "vscode-nls": "^5.0.0"
   },
   "devDependencies": {
-    "@types/node": "14.x"
+    "@types/node": "^12.19.9"
   },
   "repository": {
     "type": "git",

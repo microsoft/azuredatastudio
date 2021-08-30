@@ -45,6 +45,7 @@ import { Memento, MementoObject } from 'vs/workbench/common/memento';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { entries } from 'sql/base/common/collections';
 import { values } from 'vs/base/common/collections';
+import { assign } from 'vs/base/common/objects';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
 import { toErrorMessage } from 'vs/base/common/errorMessage';
@@ -876,7 +877,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 
 	// Request Senders
 	private async sendConnectRequest(connection: interfaces.IConnectionProfile, uri: string): Promise<boolean> {
-		let connectionInfo = Object.assign({}, {
+		let connectionInfo = assign({}, {
 			options: connection.options
 		});
 

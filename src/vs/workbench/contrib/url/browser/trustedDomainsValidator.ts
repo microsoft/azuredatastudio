@@ -22,7 +22,6 @@ import { IdleValue } from 'vs/base/common/async';
 import { IAuthenticationService } from 'vs/workbench/services/authentication/browser/authenticationService';
 import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
 import { testUrlMatchesGlob } from 'vs/workbench/contrib/url/common/urlGlob';
-import { IWorkspaceTrustManagementService } from 'vs/platform/workspace/common/workspaceTrust';
 
 type TrustedDomainsDialogActionClassification = {
 	action: { classification: 'SystemMetaData', purpose: 'FeatureInsight' };
@@ -45,7 +44,6 @@ export class OpenerValidatorContributions implements IWorkbenchContribution {
 		@IInstantiationService private readonly _instantiationService: IInstantiationService,
 		@IAuthenticationService private readonly _authenticationService: IAuthenticationService,
 		@IWorkspaceContextService private readonly _workspaceContextService: IWorkspaceContextService,
-		@IWorkspaceTrustManagementService private readonly _workspaceTrustService: IWorkspaceTrustManagementService,
 	) {
 		this._openerService.registerValidator({ shouldOpen: r => this.validateLink(r) });
 
@@ -68,10 +66,6 @@ export class OpenerValidatorContributions implements IWorkbenchContribution {
 
 	async validateLink(resource: URI | string): Promise<boolean> {
 		if (!matchesScheme(resource, Schemas.http) && !matchesScheme(resource, Schemas.https)) {
-			return true;
-		}
-
-		if (this._workspaceTrustService.isWorkpaceTrusted()) {
 			return true;
 		}
 

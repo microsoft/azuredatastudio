@@ -30,7 +30,7 @@ export namespace Iterable {
 		return iterable[Symbol.iterator]().next().value;
 	}
 
-	export function some<T>(iterable: Iterable<T>, predicate: (t: T) => unknown): boolean {
+	export function some<T>(iterable: Iterable<T>, predicate: (t: T) => boolean): boolean {
 		for (const element of iterable) {
 			if (predicate(element)) {
 				return true;
@@ -61,10 +61,9 @@ export namespace Iterable {
 		}
 	}
 
-	export function* map<T, R>(iterable: Iterable<T>, fn: (t: T, index: number) => R): Iterable<R> {
-		let index = 0;
+	export function* map<T, R>(iterable: Iterable<T>, fn: (t: T) => R): Iterable<R> {
 		for (const element of iterable) {
-			yield fn(element, index++);
+			yield fn(element);
 		}
 	}
 

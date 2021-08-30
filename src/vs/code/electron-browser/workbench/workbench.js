@@ -44,7 +44,7 @@
 				};
 			},
 			canModifyDOM: function (windowConfig) {
-				showSplash(windowConfig);
+				showPartsSplash(windowConfig);
 			},
 			beforeLoaderConfig: function (loaderConfig) {
 				loaderConfig.recordStats = true;
@@ -90,20 +90,19 @@
 
 	/**
 	 * @typedef {import('../../../platform/windows/common/windows').INativeWindowConfiguration} INativeWindowConfiguration
-	 * @typedef {import('../../../platform/environment/common/argv').NativeParsedArgs} NativeParsedArgs
 	 *
 	 * @returns {{
 	 *   load: (
 	 *     modules: string[],
-	 *     resultCallback: (result, configuration: INativeWindowConfiguration & NativeParsedArgs) => unknown,
+	 *     resultCallback: (result, configuration: INativeWindowConfiguration) => unknown,
 	 *     options?: {
-	 *       configureDeveloperSettings?: (config: INativeWindowConfiguration & NativeParsedArgs) => {
+	 *       configureDeveloperSettings?: (config: INativeWindowConfiguration & object) => {
 	 * 			forceDisableShowDevtoolsOnError?: boolean,
 	 * 			forceEnableDeveloperKeybindings?: boolean,
 	 * 			disallowReloadKeybinding?: boolean,
 	 * 			removeDeveloperKeybindingsAfterLoad?: boolean
 	 * 		 },
-	 * 	     canModifyDOM?: (config: INativeWindowConfiguration & NativeParsedArgs) => void,
+	 * 	     canModifyDOM?: (config: INativeWindowConfiguration & object) => void,
 	 * 	     beforeLoaderConfig?: (loaderConfig: object) => void,
 	 *       beforeRequire?: () => void
 	 *     }
@@ -116,15 +115,28 @@
 	}
 
 	/**
-	 * @param {INativeWindowConfiguration & NativeParsedArgs} configuration
+	 * @param {{
+	 *	partsSplashPath?: string,
+	 *	colorScheme: ('light' | 'dark' | 'hc'),
+	 *	autoDetectHighContrast?: boolean,
+	 *	extensionDevelopmentPath?: string[],
+	 *	workspace?: import('../../../platform/workspaces/common/workspaces').IWorkspaceIdentifier | import('../../../platform/workspaces/common/workspaces').ISingleFolderWorkspaceIdentifier
+	 * }} configuration
 	 */
-	function showSplash(configuration) {
+	function showPartsSplash(configuration) {
 		performance.mark('code/willShowPartsSplash');
 
-		let data = configuration.partsSplash;
+		let data;
+		if (typeof configuration.partsSplashPath === 'string') {
+			try {
+				data = JSON.parse(require.__$__nodeRequire('fs').readFileSync(configuration.partsSplashPath, 'utf8'));
+			} catch (e) {
+				// ignore
+			}
+		}
 
 		// high contrast mode has been turned on from the outside, e.g. OS -> ignore stored colors and layouts
-		const isHighContrast = configuration.colorScheme.highContrast && configuration.autoDetectHighContrast;
+		const isHighContrast = configuration.colorScheme === 'hc' /* ColorScheme.HIGH_CONTRAST */ && configuration.autoDetectHighContrast;
 		if (data && isHighContrast && data.baseTheme !== 'hc-black') {
 			data = undefined;
 		}
@@ -149,18 +161,16 @@
 			shellBackground = '#1E1E1E';
 			shellForeground = '#CCCCCC';
 		}
-
 		const style = document.createElement('style');
 		style.className = 'initialShellColors';
 		document.head.appendChild(style);
 		style.textContent = `body { background-color: ${shellBackground}; color: ${shellForeground}; margin: 0; padding: 0; }`;
 
-		// restore parts if possible (we might not always store layout info)
-		if (data?.layoutInfo) {
-			const { layoutInfo, colorInfo } = data;
-
+		if (data && data.layoutInfo) {
+			// restore parts if possible (we might not always store layout info)
+			const { id, layoutInfo, colorInfo } = data;
 			const splash = document.createElement('div');
-			splash.id = 'monaco-parts-splash';
+			splash.id = id;
 			splash.className = baseTheme;
 
 			if (layoutInfo.windowBorder) {
@@ -189,8 +199,8 @@
 			splash.appendChild(activityDiv);
 
 			// part: side bar (only when opening workspace/folder)
-			// folder or workspace -> status bar color, sidebar
 			if (configuration.workspace) {
+				// folder or workspace -> status bar color, sidebar
 				const sideDiv = document.createElement('div');
 				sideDiv.setAttribute('style', `position: absolute; height: calc(100% - ${layoutInfo.titleBarHeight}px); top: ${layoutInfo.titleBarHeight}px; ${layoutInfo.sideBarSide}: ${layoutInfo.activityBarWidth}px; width: ${layoutInfo.sideBarWidth}px; background-color: ${colorInfo.sideBarBackground};`);
 				splash.appendChild(sideDiv);

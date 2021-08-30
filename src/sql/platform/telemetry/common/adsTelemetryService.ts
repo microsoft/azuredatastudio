@@ -7,6 +7,7 @@ import * as azdata from 'azdata';
 import { IAdsTelemetryService, ITelemetryInfo, ITelemetryEvent, ITelemetryEventMeasures, ITelemetryEventProperties } from 'sql/platform/telemetry/common/telemetry';
 import { ILogService } from 'vs/platform/log/common/log';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
+import { assign } from 'vs/base/common/objects';
 import { EventName } from 'sql/platform/telemetry/common/telemetryKeys';
 
 
@@ -35,17 +36,17 @@ class TelemetryEventImpl implements ITelemetryEvent {
 	}
 
 	public withAdditionalProperties(additionalProperties: ITelemetryEventProperties): ITelemetryEvent {
-		Object.assign(this._properties, additionalProperties);
+		assign(this._properties, additionalProperties);
 		return this;
 	}
 
 	public withAdditionalMeasurements(additionalMeasurements: ITelemetryEventMeasures): ITelemetryEvent {
-		Object.assign(this._measurements, additionalMeasurements);
+		assign(this._measurements, additionalMeasurements);
 		return this;
 	}
 
 	public withConnectionInfo(connectionInfo?: azdata.IConnectionProfile): ITelemetryEvent {
-		Object.assign(this._properties,
+		assign(this._properties,
 			{
 				authenticationType: connectionInfo?.authenticationType,
 				provider: connectionInfo?.providerName
@@ -54,7 +55,7 @@ class TelemetryEventImpl implements ITelemetryEvent {
 	}
 
 	public withServerInfo(serverInfo?: azdata.ServerInfo): ITelemetryEvent {
-		Object.assign(this._properties,
+		assign(this._properties,
 			{
 				connectionType: serverInfo?.isCloud !== undefined ? (serverInfo.isCloud ? 'Azure' : 'Standalone') : '',
 				serverVersion: serverInfo?.serverVersion ?? '',

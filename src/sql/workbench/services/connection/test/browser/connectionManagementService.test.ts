@@ -33,6 +33,7 @@ import { TestEnvironmentService, TestEditorService } from 'vs/workbench/test/bro
 import { TestNotificationService } from 'vs/platform/notification/test/common/testNotificationService';
 import { TestConfigurationService } from 'vs/platform/configuration/test/common/testConfigurationService';
 import { ILogService, NullLogService } from 'vs/platform/log/common/log';
+import { assign } from 'vs/base/common/objects';
 import { NullAdsTelemetryService } from 'sql/platform/telemetry/common/adsTelemetryService';
 import { TestStorageService } from 'vs/workbench/test/common/workbenchTestServices';
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
@@ -73,9 +74,9 @@ suite('SQL ConnectionManagementService tests', () => {
 		id: undefined
 	};
 	let connectionProfileWithEmptySavedPassword: IConnectionProfile =
-		Object.assign({}, connectionProfile, { password: '', serverName: connectionProfile.serverName + 1 });
+		assign({}, connectionProfile, { password: '', serverName: connectionProfile.serverName + 1 });
 	let connectionProfileWithEmptyUnsavedPassword: IConnectionProfile =
-		Object.assign({}, connectionProfile, { password: '', serverName: connectionProfile.serverName + 2, savePassword: false });
+		assign({}, connectionProfile, { password: '', serverName: connectionProfile.serverName + 2, savePassword: false });
 
 	let connectionManagementService: ConnectionManagementService;
 	let configResult: { [key: string]: any } = {};
@@ -481,7 +482,7 @@ suite('SQL ConnectionManagementService tests', () => {
 	});
 
 	test('changeGroupIdForconnection should change the groupId for a connection profile', async () => {
-		let profile = <ConnectionProfile>Object.assign({}, connectionProfile);
+		let profile = <ConnectionProfile>assign({}, connectionProfile);
 		profile.options = { password: profile.password };
 		profile.id = 'test_id';
 		let newGroupId = 'new_group_id';
@@ -503,7 +504,7 @@ suite('SQL ConnectionManagementService tests', () => {
 	});
 
 	test('findExistingConnection should find connection for connectionProfile with same info', async () => {
-		let profile = <ConnectionProfile>Object.assign({}, connectionProfile);
+		let profile = <ConnectionProfile>assign({}, connectionProfile);
 		let uri1 = 'connection:connectionId';
 		let options: IConnectionCompletionOptions = {
 			params: {
@@ -534,7 +535,7 @@ suite('SQL ConnectionManagementService tests', () => {
 	});
 
 	test('deleteConnection should delete the connection properly', async () => {
-		let profile = <ConnectionProfile>Object.assign({}, connectionProfile);
+		let profile = <ConnectionProfile>assign({}, connectionProfile);
 		let uri1 = 'connection:connectionId';
 		let options: IConnectionCompletionOptions = {
 			params: {
@@ -565,7 +566,7 @@ suite('SQL ConnectionManagementService tests', () => {
 	});
 
 	test('deleteConnectionGroup should delete connections in connection group', async () => {
-		let profile = <ConnectionProfile>Object.assign({}, connectionProfile);
+		let profile = <ConnectionProfile>assign({}, connectionProfile);
 		let profileGroup = createConnectionGroup('original_id');
 		profileGroup.addConnections([profile]);
 		let uri1 = 'connection:connectionId';
@@ -600,13 +601,13 @@ suite('SQL ConnectionManagementService tests', () => {
 		connectionStore.setup(x => x.canChangeConnectionConfig(TypeMoq.It.isAny(), TypeMoq.It.isAnyString())).returns(() => {
 			return true;
 		});
-		let profile = <ConnectionProfile>Object.assign({}, connectionProfile);
+		let profile = <ConnectionProfile>assign({}, connectionProfile);
 		let newGroupId = 'test_group_id';
 		assert(connectionManagementService.canChangeConnectionConfig(profile, newGroupId));
 	});
 
 	test('isProfileConnecting should return false for already connected profile', async () => {
-		let profile = <ConnectionProfile>Object.assign({}, connectionProfile);
+		let profile = <ConnectionProfile>assign({}, connectionProfile);
 		let uri = 'Editor Uri';
 		let options: IConnectionCompletionOptions = {
 			params: {
@@ -634,7 +635,7 @@ suite('SQL ConnectionManagementService tests', () => {
 	});
 
 	test('disconnect should disconnect the profile when given ConnectionProfile', async () => {
-		let profile = <ConnectionProfile>Object.assign({}, connectionProfile);
+		let profile = <ConnectionProfile>assign({}, connectionProfile);
 		let uri = 'connection:connectionId'; // must use default connection uri for test to work.
 		let options: IConnectionCompletionOptions = {
 			params: {
@@ -663,7 +664,7 @@ suite('SQL ConnectionManagementService tests', () => {
 	});
 
 	test('disconnect should disconnect the profile when given uri string', async () => {
-		let profile = <ConnectionProfile>Object.assign({}, connectionProfile);
+		let profile = <ConnectionProfile>assign({}, connectionProfile);
 		let uri = 'connection:connectionId'; // must use default connection uri for test to work.
 		let options: IConnectionCompletionOptions = {
 			params: {
@@ -692,7 +693,7 @@ suite('SQL ConnectionManagementService tests', () => {
 	});
 
 	test('cancelConnection should disconnect the profile', async () => {
-		let profile = <ConnectionProfile>Object.assign({}, connectionProfile);
+		let profile = <ConnectionProfile>assign({}, connectionProfile);
 		let uri = 'connection:connectionId'; // must use default connection uri for test to work.
 		let options: IConnectionCompletionOptions = {
 			params: {
@@ -750,7 +751,7 @@ suite('SQL ConnectionManagementService tests', () => {
 	});
 
 	test('getConnection should grab connection that is connected', async () => {
-		let profile = <ConnectionProfile>Object.assign({}, connectionProfile);
+		let profile = <ConnectionProfile>assign({}, connectionProfile);
 		let uri = 'connection:connectionId'; // must use default connection uri for test to work.
 		let badString = 'bad_string';
 		let options: IConnectionCompletionOptions = {
@@ -783,7 +784,7 @@ suite('SQL ConnectionManagementService tests', () => {
 	});
 
 	test('connectIfNotConnected should not try to connect with already connected profile', async () => {
-		let profile = <ConnectionProfile>Object.assign({}, connectionProfile);
+		let profile = <ConnectionProfile>assign({}, connectionProfile);
 		let uri = 'connection:connectionId'; // must use default connection uri for test to work.
 		let options: IConnectionCompletionOptions = {
 			params: {
@@ -817,7 +818,7 @@ suite('SQL ConnectionManagementService tests', () => {
 	});
 
 	test('getConnectionString should get connection string of connectionId', async () => {
-		let profile = <ConnectionProfile>Object.assign({}, connectionProfile);
+		let profile = <ConnectionProfile>assign({}, connectionProfile);
 		let uri = 'connection:connectionId'; // must use default connection uri for test to work.
 		let badString = 'bad_string';
 		let options: IConnectionCompletionOptions = {
@@ -857,7 +858,7 @@ suite('SQL ConnectionManagementService tests', () => {
 
 
 	test('rebuildIntellisenseCache should call rebuildIntelliSenseCache on provider', async () => {
-		let profile = <ConnectionProfile>Object.assign({}, connectionProfile);
+		let profile = <ConnectionProfile>assign({}, connectionProfile);
 		let uri = 'connection:connectionId'; // must use default connection uri for test to work.
 		let options: IConnectionCompletionOptions = {
 			params: {
@@ -892,7 +893,7 @@ suite('SQL ConnectionManagementService tests', () => {
 	});
 
 	test('buildConnectionInfo should get connection string of connectionId', async () => {
-		let profile = <ConnectionProfile>Object.assign({}, connectionProfile);
+		let profile = <ConnectionProfile>assign({}, connectionProfile);
 		let uri = 'connection:connectionId'; // must use default connection uri for test to work.
 		let options: IConnectionCompletionOptions = {
 			params: {
@@ -927,9 +928,9 @@ suite('SQL ConnectionManagementService tests', () => {
 	});
 
 	test('removeConnectionProfileCredentials should return connection profile without password', () => {
-		let profile = Object.assign({}, connectionProfile);
+		let profile = assign({}, connectionProfile);
 		connectionStore.setup(x => x.getProfileWithoutPassword(TypeMoq.It.isAny())).returns(() => {
-			let profileWithoutPass = Object.assign({}, connectionProfile);
+			let profileWithoutPass = assign({}, connectionProfile);
 			profileWithoutPass.password = undefined;
 			return <ConnectionProfile>profileWithoutPass;
 		});
@@ -938,7 +939,7 @@ suite('SQL ConnectionManagementService tests', () => {
 	});
 
 	test('getConnectionProfileById should return profile when given profileId', async () => {
-		let profile = <ConnectionProfile>Object.assign({}, connectionProfile);
+		let profile = <ConnectionProfile>assign({}, connectionProfile);
 		let uri = 'connection:connectionId'; // must use default connection uri for test to work.
 		let badString = 'bad_string';
 		let options: IConnectionCompletionOptions = {
@@ -972,7 +973,7 @@ suite('SQL ConnectionManagementService tests', () => {
 	});
 
 	test('Edit Connection - Changing connection profile name for same URI should persist after edit', async () => {
-		let profile = Object.assign({}, connectionProfile);
+		let profile = assign({}, connectionProfile);
 		let uri1 = 'test_uri1';
 		let newname = 'connection renamed';
 		let options: IConnectionCompletionOptions = {
@@ -997,7 +998,7 @@ suite('SQL ConnectionManagementService tests', () => {
 		};
 
 		await connect(uri1, options, true, profile);
-		let newProfile = Object.assign({}, connectionProfile);
+		let newProfile = assign({}, connectionProfile);
 		newProfile.connectionName = newname;
 		options.params.isEditConnection = true;
 		await connect(uri1, options, true, newProfile);
@@ -1007,7 +1008,7 @@ suite('SQL ConnectionManagementService tests', () => {
 	test('Edit Connection - Connecting a different URI with same profile via edit should not change profile ID.', async () => {
 		let uri1 = 'test_uri1';
 		let uri2 = 'test_uri2';
-		let profile = Object.assign({}, connectionProfile);
+		let profile = assign({}, connectionProfile);
 		profile.id = '0451';
 		let options: IConnectionCompletionOptions = {
 			params: {
@@ -1319,7 +1320,7 @@ suite('SQL ConnectionManagementService tests', () => {
 	});
 
 	test('registerIconProvider should register icon provider for connectionManagementService', async () => {
-		let profile = <ConnectionProfile>Object.assign({}, connectionProfile);
+		let profile = <ConnectionProfile>assign({}, connectionProfile);
 		let serverInfo: azdata.ServerInfo = {
 			serverMajorVersion: 0,
 			serverMinorVersion: 0,
@@ -1463,9 +1464,9 @@ suite('SQL ConnectionManagementService tests', () => {
 		let dbName = 'master';
 		let serverName = 'test_server';
 		let userName = 'test_user';
-		let connectionProfileWithoutDb: IConnectionProfile = Object.assign(connectionProfile,
+		let connectionProfileWithoutDb: IConnectionProfile = assign(connectionProfile,
 			{ serverName: serverName, databaseName: '', userName: userName, getOptionsKey: () => undefined });
-		let connectionProfileWithDb: IConnectionProfile = Object.assign(connectionProfileWithoutDb, { databaseName: dbName });
+		let connectionProfileWithDb: IConnectionProfile = assign(connectionProfileWithoutDb, { databaseName: dbName });
 		// Save the database with a URI that has the database name filled in, to mirror Carbon's behavior
 		let ownerUri = Utils.generateUri(connectionProfileWithDb);
 		await connect(ownerUri, undefined, false, connectionProfileWithoutDb);
@@ -1485,9 +1486,9 @@ suite('SQL ConnectionManagementService tests', () => {
 		let newDbName = 'renamed_master';
 		let serverName = 'test_server';
 		let userName = 'test_user';
-		let connectionProfileWithoutDb: IConnectionProfile = Object.assign(connectionProfile,
+		let connectionProfileWithoutDb: IConnectionProfile = assign(connectionProfile,
 			{ serverName: serverName, databaseName: '', userName: userName, getOptionsKey: () => undefined });
-		let connectionProfileWithDb: IConnectionProfile = Object.assign(connectionProfileWithoutDb, { databaseName: dbName });
+		let connectionProfileWithDb: IConnectionProfile = assign(connectionProfileWithoutDb, { databaseName: dbName });
 		// Save the database with a URI that has the database name filled in, to mirror Carbon's behavior
 		let ownerUri = Utils.generateUri(connectionProfileWithDb);
 		let listDatabasesThenable = (connectionUri: string) => {
@@ -1544,7 +1545,7 @@ suite('SQL ConnectionManagementService tests', () => {
 	});
 
 	test('getConnectionCredentials returns the credentials dictionary for an active connection profile', async () => {
-		let profile = Object.assign({}, connectionProfile);
+		let profile = assign({}, connectionProfile);
 		profile.options = { password: profile.password };
 		profile.id = 'test_id';
 		connectionStatusManager.addConnection(profile, 'test_uri');
@@ -1606,7 +1607,7 @@ suite('SQL ConnectionManagementService tests', () => {
 	});
 
 	test('getConnectionUriFromId returns a URI of an active connection with the given id', () => {
-		let profile = Object.assign({}, connectionProfile);
+		let profile = assign({}, connectionProfile);
 		profile.options = { password: profile.password };
 		profile.id = 'test_id';
 		let uri = 'test_initial_uri';
@@ -1625,7 +1626,7 @@ suite('SQL ConnectionManagementService tests', () => {
 	});
 
 	test('getConectionUriFromId returns undefined if the given connection is not active', () => {
-		let profile = Object.assign({}, connectionProfile);
+		let profile = assign({}, connectionProfile);
 		profile.options = { password: profile.password };
 		profile.id = 'test_id';
 		connectionStatusManager.addConnection(profile, Utils.generateUri(profile));

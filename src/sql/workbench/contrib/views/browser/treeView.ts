@@ -826,9 +826,9 @@ class TreeRenderer extends Disposable implements ITreeRenderer<ITreeItem, FuzzyS
 		if (iconUrl || sqlIcon) {
 			templateData.icon.className = 'custom-view-tree-node-item-icon';
 			if (sqlIcon) {
-				templateData.icon.classList.toggle(sqlIcon, !!sqlIcon);  // tracked change
+				DOM.toggleClass(templateData.icon, sqlIcon, !!sqlIcon);  // tracked change
 			}
-			templateData.icon.classList.toggle('icon', !!sqlIcon);
+			DOM.toggleClass(templateData.icon, 'icon', !!sqlIcon);
 			templateData.icon.style.backgroundImage = iconUrl ? DOM.asCSSUrl(iconUrl) : '';
 		} else {
 			let iconClass: string | undefined;
@@ -849,7 +849,7 @@ class TreeRenderer extends Disposable implements ITreeRenderer<ITreeItem, FuzzyS
 	}
 
 	private setAlignment(container: HTMLElement, treeItem: ITreeItem) {
-		container.parentElement!.classList.toggle('align-icon-with-twisty', this.aligner.alignIconWithTwisty(treeItem));
+		DOM.toggleClass(container.parentElement!, 'align-icon-with-twisty', this.aligner.alignIconWithTwisty(treeItem));
 	}
 
 	private isFileKindThemeIcon(icon: ThemeIcon | undefined): boolean {

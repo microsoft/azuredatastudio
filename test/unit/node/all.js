@@ -170,7 +170,6 @@ function main() {
 
 		// replace the default unexpected error handler to be useful during tests
 		loader(['vs/base/common/errors'], function (errors) {
-			// {{SQL CARBON EDIT}}
 			global.window.addEventListener('unhandledrejection', event => {
 				errors.onUnexpectedError(event.reason);
 				event.preventDefault();

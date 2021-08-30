@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { EditorModel } from 'vs/workbench/common/editor/editorModel';
+import { EditorModel } from 'vs/workbench/common/editor';
 import { URI } from 'vs/base/common/uri';
 import { IFileService } from 'vs/platform/files/common/files';
 import { MIME_BINARY } from 'vs/base/common/mime';
@@ -12,18 +12,20 @@ import { MIME_BINARY } from 'vs/base/common/mime';
  * An editor model that just represents a resource that can be loaded.
  */
 export class BinaryEditorModel extends EditorModel {
-
-	private readonly mime = MIME_BINARY;
-
 	private size: number | undefined;
 	private etag: string | undefined;
+	private readonly mime: string;
 
 	constructor(
-		readonly resource: URI,
+		public readonly resource: URI,
 		private readonly name: string,
 		@IFileService private readonly fileService: IFileService
 	) {
 		super();
+
+		this.resource = resource;
+		this.name = name;
+		this.mime = MIME_BINARY;
 	}
 
 	/**

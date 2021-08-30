@@ -554,12 +554,12 @@ suite('QueryBuilder', () => {
 	suite('parseSearchPaths', () => {
 		test('simple includes', () => {
 			function testSimpleIncludes(includePattern: string, expectedPatterns: string[]): void {
-				const result = queryBuilder.parseSearchPaths(includePattern);
 				assert.deepStrictEqual(
-					{ ...result.pattern },
-					patternsToIExpression(...expectedPatterns),
+					queryBuilder.parseSearchPaths(includePattern),
+					{
+						pattern: patternsToIExpression(...expectedPatterns)
+					},
 					includePattern);
-				assert.strictEqual(result.searchPaths, undefined);
 			}
 
 			[
@@ -573,15 +573,8 @@ suite('QueryBuilder', () => {
 		});
 
 		function testIncludes(includePattern: string, expectedResult: ISearchPathsInfo): void {
-			let actual: ISearchPathsInfo;
-			try {
-				actual = queryBuilder.parseSearchPaths(includePattern);
-			} catch (_) {
-				actual = { searchPaths: [] };
-			}
-
 			assertEqualSearchPathResults(
-				actual,
+				queryBuilder.parseSearchPaths(includePattern),
 				expectedResult,
 				includePattern);
 		}
@@ -800,42 +793,6 @@ suite('QueryBuilder', () => {
 							searchPath: ROOT_1_URI,
 							pattern: patternsToIExpression('foo', 'foo/**')
 						}]
-					}
-				]
-			];
-			cases.forEach(testIncludesDataItem);
-		});
-
-		test('folder with slash in the name', () => {
-			const ROOT_2 = '/project/root2';
-			const ROOT_2_URI = getUri(ROOT_2);
-			const ROOT_1_FOLDERNAME = 'folder/one';
-			const ROOT_2_FOLDERNAME = 'folder/two';
-			mockWorkspace.folders = toWorkspaceFolders([{ path: ROOT_1_URI.fsPath, name: ROOT_1_FOLDERNAME }, { path: ROOT_2_URI.fsPath, name: ROOT_2_FOLDERNAME }], WS_CONFIG_PATH, extUriBiasedIgnorePathCase);
-			mockWorkspace.configuration = uri.file(fixPath('config'));
-
-			const cases: [string, ISearchPathsInfo][] = [
-				[
-					'./folder/one',
-					{
-						searchPaths: [{
-							searchPath: ROOT_1_URI
-						}]
-					}
-				],
-				[
-					'./folder/two/foo/',
-					{
-						searchPaths: [{
-							searchPath: ROOT_2_URI,
-							pattern: patternsToIExpression('foo', 'foo/**')
-						}]
-					}
-				],
-				[
-					'./folder',
-					{
-						searchPaths: []
 					}
 				]
 			];
@@ -1070,18 +1027,18 @@ export function assertEqualQueries(actual: ITextQuery | IFileQuery, expected: IT
 	actual.excludePattern = normalizeExpression(actual.excludePattern);
 	cleanUndefinedQueryValues(actual);
 
-	assert.deepStrictEqual(actual, expected);
+	assert.deepEqual(actual, expected);
 }
 
 export function assertEqualSearchPathResults(actual: ISearchPathsInfo, expected: ISearchPathsInfo, message?: string): void {
 	cleanUndefinedQueryValues(actual);
-	assert.deepStrictEqual({ ...actual.pattern }, { ...expected.pattern }, message);
+	assert.deepStrictEqual(actual.pattern, expected.pattern, message);
 
 	assert.strictEqual(actual.searchPaths && actual.searchPaths.length, expected.searchPaths && expected.searchPaths.length);
 	if (actual.searchPaths) {
 		actual.searchPaths.forEach((searchPath, i) => {
 			const expectedSearchPath = expected.searchPaths![i];
-			assert.deepStrictEqual(searchPath.pattern && { ...searchPath.pattern }, expectedSearchPath.pattern);
+			assert.deepStrictEqual(searchPath.pattern, expectedSearchPath.pattern);
 			assert.strictEqual(searchPath.searchPath.toString(), expectedSearchPath.searchPath.toString());
 		});
 	}
@@ -1110,9 +1067,9 @@ export function globalGlob(pattern: string): string[] {
 	];
 }
 
-export function patternsToIExpression(...patterns: string[]): IExpression | undefined {
+export function patternsToIExpression(...patterns: string[]): IExpression {
 	return patterns.length ?
-		patterns.reduce((glob, cur) => { glob[cur] = true; return glob; }, {} as IExpression) :
+		patterns.reduce((glob, cur) => { glob[cur] = true; return glob; }, Object.create(null)) :
 		undefined;
 }
 
@@ -1133,7 +1090,7 @@ export function normalizeExpression(expression: IExpression | undefined): IExpre
 		return expression;
 	}
 
-	const normalized: IExpression = {};
+	const normalized = Object.create(null);
 	Object.keys(expression).forEach(key => {
 		normalized[key.replace(/\\/g, '/')] = expression[key];
 	});

@@ -136,7 +136,7 @@ export class ReplaceInput extends Widget {
 		const flexibleMaxHeight = options.flexibleMaxHeight;
 
 		this.domNode = document.createElement('div');
-		this.domNode.classList.add('monaco-findInput');
+		dom.addClass(this.domNode, 'monaco-findInput');
 
 		this.inputBox = this._register(new HistoryInputBox(this.domNode, this.contextViewProvider, {
 			ariaLabel: this.label || '',
@@ -234,13 +234,13 @@ export class ReplaceInput extends Widget {
 	}
 
 	public enable(): void {
-		this.domNode.classList.remove('disabled');
+		dom.removeClass(this.domNode, 'disabled');
 		this.inputBox.enable();
 		this.preserveCase.enable();
 	}
 
 	public disable(): void {
-		this.domNode.classList.add('disabled');
+		dom.addClass(this.domNode, 'disabled');
 		this.inputBox.disable();
 		this.preserveCase.disable();
 	}
@@ -347,9 +347,9 @@ export class ReplaceInput extends Widget {
 
 	private _lastHighlightFindOptions: number = 0;
 	public highlightFindOptions(): void {
-		this.domNode.classList.remove('highlight-' + (this._lastHighlightFindOptions));
+		dom.removeClass(this.domNode, 'highlight-' + (this._lastHighlightFindOptions));
 		this._lastHighlightFindOptions = 1 - this._lastHighlightFindOptions;
-		this.domNode.classList.add('highlight-' + (this._lastHighlightFindOptions));
+		dom.addClass(this.domNode, 'highlight-' + (this._lastHighlightFindOptions));
 	}
 
 	public validate(): void {

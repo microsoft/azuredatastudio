@@ -13,7 +13,7 @@ import { mock } from 'vs/base/test/common/mock';
 import { IModelAddedData, MainContext, MainThreadCommandsShape, MainThreadNotebookShape } from 'vs/workbench/api/common/extHost.protocol';
 import { ExtHostNotebookController } from 'vs/workbench/api/common/extHostNotebook';
 import { ExtHostNotebookDocument } from 'vs/workbench/api/common/extHostNotebookDocument';
-import { CellKind, CellUri, NotebookCellsChangeType } from 'vs/workbench/contrib/notebook/common/notebookCommon';
+import { CellKind, CellUri, NotebookCellExecutionState, NotebookCellsChangeType } from 'vs/workbench/contrib/notebook/common/notebookCommon';
 import { URI } from 'vs/base/common/uri';
 import { ExtHostDocuments } from 'vs/workbench/api/common/extHostDocuments';
 import { ExtHostCommands } from 'vs/workbench/api/common/extHostCommands';
@@ -22,7 +22,6 @@ import { isEqual } from 'vs/base/common/resources';
 import { IExtensionStoragePaths } from 'vs/workbench/api/common/extHostStoragePaths';
 import { generateUuid } from 'vs/base/common/uuid';
 import { Event } from 'vs/base/common/event';
-import { ExtHostNotebookDocuments } from 'vs/workbench/api/common/extHostNotebookDocuments';
 
 suite('NotebookCell#Document', function () {
 
@@ -32,8 +31,6 @@ suite('NotebookCell#Document', function () {
 	let extHostDocumentsAndEditors: ExtHostDocumentsAndEditors;
 	let extHostDocuments: ExtHostDocuments;
 	let extHostNotebooks: ExtHostNotebookController;
-	let extHostNotebookDocuments: ExtHostNotebookDocuments;
-
 	const notebookUri = URI.parse('test:///notebook.file');
 	const disposables = new DisposableStore();
 
@@ -57,9 +54,7 @@ suite('NotebookCell#Document', function () {
 				return URI.from({ scheme: 'test', path: generateUuid() });
 			}
 		};
-		extHostNotebooks = new ExtHostNotebookController(rpcProtocol, new ExtHostCommands(rpcProtocol, new NullLogService()), extHostDocumentsAndEditors, extHostDocuments, extHostStoragePaths);
-		extHostNotebookDocuments = new ExtHostNotebookDocuments(new NullLogService(), extHostNotebooks);
-
+		extHostNotebooks = new ExtHostNotebookController(rpcProtocol, new ExtHostCommands(rpcProtocol, new NullLogService()), extHostDocumentsAndEditors, extHostDocuments, new NullLogService(), extHostStoragePaths);
 		let reg = extHostNotebooks.registerNotebookContentProvider(nullExtensionDescription, 'test', new class extends mock<vscode.NotebookContentProvider>() {
 			// async openNotebook() { }
 		});
@@ -74,7 +69,7 @@ suite('NotebookCell#Document', function () {
 					source: ['### Heading'],
 					eol: '\n',
 					language: 'markdown',
-					cellKind: CellKind.Markup,
+					cellKind: CellKind.Markdown,
 					outputs: [],
 				}, {
 					handle: 1,
@@ -167,7 +162,7 @@ suite('NotebookCell#Document', function () {
 			});
 		});
 
-		extHostNotebookDocuments.$acceptModelChanged(notebookUri, {
+		extHostNotebooks.$acceptModelChanged(notebookUri, {
 			versionId: notebook.apiNotebook.version + 1,
 			rawEvents: [
 				{
@@ -243,7 +238,7 @@ suite('NotebookCell#Document', function () {
 		assert.strictEqual(notebook.apiNotebook.cellCount, 2);
 		const [cell1, cell2] = notebook.apiNotebook.getCells();
 
-		extHostNotebookDocuments.$acceptModelChanged(notebook.uri, {
+		extHostNotebooks.$acceptModelChanged(notebook.uri, {
 			versionId: 2,
 			rawEvents: [
 				{
@@ -274,7 +269,7 @@ suite('NotebookCell#Document', function () {
 		assert.strictEqual(second.index, 1);
 
 		// remove first cell
-		extHostNotebookDocuments.$acceptModelChanged(notebook.uri, {
+		extHostNotebooks.$acceptModelChanged(notebook.uri, {
 			versionId: notebook.apiNotebook.version + 1,
 			rawEvents: [{
 				kind: NotebookCellsChangeType.ModelChange,
@@ -285,7 +280,7 @@ suite('NotebookCell#Document', function () {
 		assert.strictEqual(notebook.apiNotebook.cellCount, 1);
 		assert.strictEqual(second.index, 0);
 
-		extHostNotebookDocuments.$acceptModelChanged(notebookUri, {
+		extHostNotebooks.$acceptModelChanged(notebookUri, {
 			versionId: notebook.apiNotebook.version + 1,
 			rawEvents: [{
 				kind: NotebookCellsChangeType.ModelChange,
@@ -320,7 +315,7 @@ suite('NotebookCell#Document', function () {
 		// DON'T call this, make sure the cell-documents have not been created yet
 		// assert.strictEqual(notebook.notebookDocument.cellCount, 2);
 
-		extHostNotebookDocuments.$acceptModelChanged(notebook.uri, {
+		extHostNotebooks.$acceptModelChanged(notebook.uri, {
 			versionId: 100,
 			rawEvents: [{
 				kind: NotebookCellsChangeType.ModelChange,
@@ -330,7 +325,7 @@ suite('NotebookCell#Document', function () {
 					source: ['### Heading'],
 					eol: '\n',
 					language: 'markdown',
-					cellKind: CellKind.Markup,
+					cellKind: CellKind.Markdown,
 					outputs: [],
 				}, {
 					handle: 4,
@@ -403,7 +398,7 @@ suite('NotebookCell#Document', function () {
 		const removed = Event.toPromise(extHostDocuments.onDidRemoveDocument);
 		const added = Event.toPromise(extHostDocuments.onDidAddDocument);
 
-		extHostNotebookDocuments.$acceptModelChanged(notebook.uri, {
+		extHostNotebooks.$acceptModelChanged(notebook.uri, {
 			versionId: 12, rawEvents: [{
 				kind: NotebookCellsChangeType.ChangeLanguage,
 				index: 0,
@@ -416,5 +411,31 @@ suite('NotebookCell#Document', function () {
 
 		assert.strictEqual(first.document.languageId, 'fooLang');
 		assert.ok(removedDoc === addedDoc);
+	});
+
+	test('change cell execution state does not trigger onDidChangeMetadata event', async function () {
+		let didFireOnDidChangeMetadata = false;
+		let e = extHostNotebooks.onDidChangeCellMetadata(() => {
+			didFireOnDidChangeMetadata = true;
+		});
+
+		const changeExeState = Event.toPromise(extHostNotebooks.onDidChangeNotebookCellExecutionState);
+
+		extHostNotebooks.$acceptModelChanged(notebook.uri, {
+			versionId: 12, rawEvents: [{
+				kind: NotebookCellsChangeType.ChangeCellMetadata,
+				index: 0,
+				metadata: {
+					...notebook.getCellFromIndex(0)?.internalMetadata,
+					...{
+						runState: NotebookCellExecutionState.Executing
+					}
+				}
+			}]
+		}, false);
+
+		await changeExeState;
+		assert.strictEqual(didFireOnDidChangeMetadata, false);
+		e.dispose();
 	});
 });

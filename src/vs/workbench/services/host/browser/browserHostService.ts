@@ -11,7 +11,7 @@ import { IEditorService } from 'vs/workbench/services/editor/common/editorServic
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IWindowSettings, IWindowOpenable, IOpenWindowOptions, isFolderToOpen, isWorkspaceToOpen, isFileToOpen, IOpenEmptyWindowOptions, IPathData, IFileToOpen } from 'vs/platform/windows/common/windows';
 import { pathsToEditors } from 'vs/workbench/common/editor';
-import { whenEditorClosed } from 'vs/workbench/browser/editor';
+import { whenTextEditorClosed } from 'vs/workbench/browser/editor';
 import { IFileService } from 'vs/platform/files/common/files';
 import { ILabelService } from 'vs/platform/label/common/label';
 import { IModifierKeyStatus, ModifierKeyEmitter, trackFocus } from 'vs/base/browser/dom';
@@ -256,8 +256,8 @@ export class BrowserHostService extends Disposable implements IHostService {
 					// Same Window: open via editor service in current window
 					if (this.shouldReuse(options, true /* file */)) {
 						editorService.openEditor({
-							originalInput: { resource: editors[0].resource },
-							modifiedInput: { resource: editors[1].resource },
+							leftResource: editors[0].resource,
+							rightResource: editors[1].resource,
 							options: { pinned: true }
 						});
 					}
@@ -292,7 +292,7 @@ export class BrowserHostService extends Disposable implements IHostService {
 								openables = [openable];
 							}
 
-							editorService.openEditors(await pathsToEditors(openables, this.fileService), undefined, { validateTrust: true });
+							editorService.openEditors(await pathsToEditors(openables, this.fileService));
 						}
 
 						// New Window: open into empty window
@@ -315,7 +315,7 @@ export class BrowserHostService extends Disposable implements IHostService {
 					(async () => {
 
 						// Wait for the resources to be closed in the text editor...
-						await this.instantiationService.invokeFunction(accessor => whenEditorClosed(accessor, fileOpenables.map(fileOpenable => fileOpenable.fileUri)));
+						await this.instantiationService.invokeFunction(accessor => whenTextEditorClosed(accessor, fileOpenables.map(fileOpenable => fileOpenable.fileUri)));
 
 						// ...before deleting the wait marker file
 						await this.fileService.del(waitMarkerFileURI);

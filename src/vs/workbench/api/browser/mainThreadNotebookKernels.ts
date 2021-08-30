@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { flatten, isNonEmptyArray } from 'vs/base/common/arrays';
@@ -44,7 +44,7 @@ abstract class MainThreadKernel implements INotebookKernel {
 
 	constructor(data: INotebookKernelDto2, private _modeService: IModeService) {
 		this.id = data.id;
-		this.viewType = data.notebookType;
+		this.viewType = data.viewType;
 		this.extension = data.extensionId;
 
 		this.implementsInterrupt = data.supportsInterrupt ?? false;
@@ -52,7 +52,7 @@ abstract class MainThreadKernel implements INotebookKernel {
 		this.description = data.description;
 		this.detail = data.detail;
 		this.supportedLanguages = isNonEmptyArray(data.supportedLanguages) ? data.supportedLanguages : _modeService.getRegisteredModes();
-		this.implementsExecutionOrder = data.supportsExecutionOrder ?? false;
+		this.implementsExecutionOrder = data.hasExecutionOrder ?? false;
 		this.localResourceRoot = URI.revive(data.extensionLocation);
 		this.preloads = data.preloads?.map(u => ({ uri: URI.revive(u.uri), provides: u.provides })) ?? [];
 	}
@@ -77,8 +77,8 @@ abstract class MainThreadKernel implements INotebookKernel {
 			this.supportedLanguages = isNonEmptyArray(data.supportedLanguages) ? data.supportedLanguages : this._modeService.getRegisteredModes();
 			event.supportedLanguages = true;
 		}
-		if (data.supportsExecutionOrder !== undefined) {
-			this.implementsExecutionOrder = data.supportsExecutionOrder;
+		if (data.hasExecutionOrder !== undefined) {
+			this.implementsExecutionOrder = data.hasExecutionOrder;
 			event.hasExecutionOrder = true;
 		}
 		this._onDidChange.fire(event);
@@ -122,6 +122,9 @@ export class MainThreadNotebookKernels implements MainThreadNotebookKernelsShape
 	private _onEditorAdd(editor: INotebookEditor) {
 
 		const ipcListener = editor.onDidReceiveMessage(e => {
+			if (e.forRenderer) {
+				return;
+			}
 			if (!editor.hasModel()) {
 				return;
 			}
@@ -131,7 +134,7 @@ export class MainThreadNotebookKernels implements MainThreadNotebookKernelsShape
 			}
 			for (let [handle, candidate] of this._kernels) {
 				if (candidate[0] === selected) {
-					this._proxy.$acceptKernelMessageFromRenderer(handle, editor.getId(), e.message);
+					this._proxy.$acceptRendererMessage(handle, editor.getId(), e.message);
 					break;
 				}
 			}
@@ -161,11 +164,11 @@ export class MainThreadNotebookKernels implements MainThreadNotebookKernelsShape
 			}
 			if (editorId === undefined) {
 				// all editors
-				editor.postMessage(message);
+				editor.postMessage(undefined, message);
 				didSend = true;
 			} else if (editor.getId() === editorId) {
 				// selected editors
-				editor.postMessage(message);
+				editor.postMessage(undefined, message);
 				didSend = true;
 				break;
 			}
@@ -185,16 +188,16 @@ export class MainThreadNotebookKernels implements MainThreadNotebookKernelsShape
 				await that._proxy.$cancelCells(handle, uri, handles);
 			}
 		}(data, this._modeService);
+		const registration = this._notebookKernelService.registerKernel(kernel);
 
 		const listener = this._notebookKernelService.onDidChangeNotebookKernelBinding(e => {
 			if (e.oldKernel === kernel.id) {
-				this._proxy.$acceptNotebookAssociation(handle, e.notebook, false);
+				this._proxy.$acceptSelection(handle, e.notebook, false);
 			} else if (e.newKernel === kernel.id) {
-				this._proxy.$acceptNotebookAssociation(handle, e.notebook, true);
+				this._proxy.$acceptSelection(handle, e.notebook, true);
 			}
 		});
 
-		const registration = this._notebookKernelService.registerKernel(kernel);
 		this._kernels.set(handle, [kernel, combinedDisposable(listener, registration)]);
 	}
 

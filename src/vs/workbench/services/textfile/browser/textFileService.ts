@@ -73,6 +73,14 @@ export abstract class AbstractTextFileService extends Disposable implements ITex
 		@IElevatedFileService private readonly elevatedFileService: IElevatedFileService
 	) {
 		super();
+
+		this.registerListeners();
+	}
+
+	protected registerListeners(): void {
+
+		// Lifecycle
+		this.lifecycleService.onDidShutdown(() => this.dispose());
 	}
 
 	//#region text file read / write / create
@@ -457,7 +465,7 @@ export abstract class AbstractTextFileService extends Disposable implements ITex
 		// Otherwise try to suggest a path that can be saved
 		let suggestedFilename: string | undefined = undefined;
 		if (resource.scheme === Schemas.untitled) {
-			const model = this.untitled.get(resource);
+			const model = this.untitledTextEditorService.get(resource);
 			if (model) {
 
 				// Untitled with associated file path

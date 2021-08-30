@@ -3,10 +3,9 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Event } from 'vs/base/common/event';
-import { Disposable } from 'vs/base/common/lifecycle';
 import { localize } from 'vs/nls';
 import { registerAction2 } from 'vs/platform/actions/common/actions';
+import { EditorOverride, ITextEditorOptions } from 'vs/platform/editor/common/editor';
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
 import { registerSingleton } from 'vs/platform/instantiation/common/extensions';
 import { Registry } from 'vs/platform/registry/common/platform';
@@ -14,6 +13,7 @@ import { EditorDescriptor, IEditorRegistry } from 'vs/workbench/browser/editor';
 import { Extensions as WorkbenchExtensions, IWorkbenchContribution, IWorkbenchContributionsRegistry } from 'vs/workbench/common/contributions';
 import { EditorExtensions, IEditorInput, IEditorInputFactoryRegistry } from 'vs/workbench/common/editor';
 import { IEditorGroup, IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
+import { IEditorService, IOpenEditorOverride } from 'vs/workbench/services/editor/common/editorService';
 import { LifecyclePhase } from 'vs/workbench/services/lifecycle/common/lifecycle';
 import { HideWebViewEditorFindCommand, ReloadWebviewAction, ShowWebViewEditorFindWidgetAction, WebViewEditorFindNextCommand, WebViewEditorFindPreviousCommand } from './webviewCommands';
 import { WebviewEditor } from './webviewEditor';
@@ -27,34 +27,21 @@ import { IWebviewWorkbenchService, WebviewEditorService } from './webviewWorkben
 	localize('webview.editor.label', "webview editor")),
 	[new SyncDescriptor(WebviewInput)]);
 
-class WebviewPanelContribution extends Disposable implements IWorkbenchContribution {
-
+class WebviewPanelContribution implements IWorkbenchContribution {
 	constructor(
+		@IEditorService private readonly editorService: IEditorService,
 		@IEditorGroupsService private readonly editorGroupService: IEditorGroupsService,
 	) {
-		super();
-
-		// Add all the initial groups to be listened to
-		this.editorGroupService.whenReady.then(() => this.editorGroupService.groups.forEach(group => {
-			this.registerGroupListener(group);
-		}));
-
-		// Additional groups added should also be listened to
-		this._register(this.editorGroupService.onDidAddGroup(group => this.registerGroupListener(group)));
-	}
-
-	private registerGroupListener(group: IEditorGroup): void {
-		const listener = group.onWillOpenEditor(e => this.onEditorOpening(e.editor, group));
-
-		Event.once(group.onWillDispose)(() => {
-			listener.dispose();
+		this.editorService.overrideOpenEditor({
+			open: (editor, options, group) => this.onEditorOpening(editor, options, group)
 		});
 	}
 
 	private onEditorOpening(
 		editor: IEditorInput,
+		options: ITextEditorOptions | undefined,
 		group: IEditorGroup
-	): void {
+	): IOpenEditorOverride | undefined {
 		if (!(editor instanceof WebviewInput) || editor.typeId !== WebviewInput.typeId) {
 			return undefined;
 		}
@@ -77,6 +64,10 @@ class WebviewPanelContribution extends Disposable implements IWorkbenchContribut
 		}
 
 		previousGroup.closeEditor(editor);
+
+		return {
+			override: this.editorService.openEditor(editor, { ...options, override: EditorOverride.DISABLED }, group)
+		};
 	}
 }
 
@@ -88,6 +79,7 @@ Registry.as<IEditorInputFactoryRegistry>(EditorExtensions.EditorInputFactories).
 	WebviewEditorInputSerializer);
 
 registerSingleton(IWebviewWorkbenchService, WebviewEditorService, true);
+
 
 registerAction2(ShowWebViewEditorFindWidgetAction);
 registerAction2(HideWebViewEditorFindCommand);

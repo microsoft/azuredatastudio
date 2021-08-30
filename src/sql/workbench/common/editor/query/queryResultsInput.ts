@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { localize } from 'vs/nls';
-import { EditorInput } from 'vs/workbench/common/editor/editorInput';
+import { EditorInput } from 'vs/workbench/common/editor';
 
 import { TopOperationsState } from 'sql/workbench/common/editor/query/topOperationsState';
 import { ChartState } from 'sql/workbench/common/editor/query/chartState';

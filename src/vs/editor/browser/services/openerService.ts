@@ -81,7 +81,7 @@ class EditorOpener implements IOpener {
 
 		await this._editorService.openCodeEditor(
 			{
-				resource: target as URI, // {{SQL CARBON EDIT}} Cast to URI to fix strict compiler error
+				resource: <any>target,
 				options: {
 					selection,
 					context: options?.fromUserGesture ? EditorOpenContext.USER : EditorOpenContext.API,
@@ -191,41 +191,31 @@ export class OpenerService implements IOpenerService {
 
 	async resolveExternalUri(resource: URI, options?: ResolveExternalUriOptions): Promise<IResolvedExternalUri> {
 		for (const resolver of this._resolvers) {
-			try {
-				const result = await resolver.resolveExternalUri(resource, options);
-				if (result) {
-					if (!this._resolvedUriTargets.has(result.resolved)) {
-						this._resolvedUriTargets.set(result.resolved, resource);
-					}
-					return result;
+			const result = await resolver.resolveExternalUri(resource, options);
+			if (result) {
+				if (!this._resolvedUriTargets.has(result.resolved)) {
+					this._resolvedUriTargets.set(result.resolved, resource);
 				}
-			} catch {
-				// noop
+				return result;
 			}
 		}
 
-		throw new Error('Could not resolve external URI: ' + resource.toString());
+		return { resolved: resource, dispose: () => { } };
 	}
 
 	private async _doOpenExternal(resource: URI | string, options: OpenOptions | undefined): Promise<boolean> {
 
 		//todo@jrieken IExternalUriResolver should support `uri: URI | string`
 		const uri = typeof resource === 'string' ? URI.parse(resource) : resource;
-		let externalUri: URI;
-
-		try {
-			externalUri = (await this.resolveExternalUri(uri, options)).resolved;
-		} catch {
-			externalUri = uri;
-		}
+		const { resolved } = await this.resolveExternalUri(uri, options);
 
 		let href: string;
-		if (typeof resource === 'string' && uri.toString() === externalUri.toString()) {
+		if (typeof resource === 'string' && uri.toString() === resolved.toString()) {
 			// open the url-string AS IS
 			href = resource;
 		} else {
 			// open URI using the toString(noEncode)+encodeURI-trick
-			href = encodeURI(externalUri.toString(true));
+			href = encodeURI(resolved.toString(true));
 		}
 
 		if (options?.allowContributedOpeners) {

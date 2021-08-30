@@ -7,9 +7,8 @@ import { DisposableStore, dispose, IDisposable } from 'vs/base/common/lifecycle'
 import { URI } from 'vs/base/common/uri';
 import { ExtHostContext, IExtHostEditorTabsShape, IExtHostContext, MainContext, IEditorTabDto } from 'vs/workbench/api/common/extHost.protocol';
 import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
-import { EditorResourceAccessor, Verbosity } from 'vs/workbench/common/editor';
+import { Verbosity } from 'vs/workbench/common/editor';
 import { GroupChangeKind, IEditorGroup, IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
-import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 
 export interface ITabInfo {
 	name: string;
@@ -28,12 +27,11 @@ export class MainThreadEditorTabs {
 	constructor(
 		extHostContext: IExtHostContext,
 		@IEditorGroupsService private readonly _editorGroupsService: IEditorGroupsService,
-		@IEditorService editorService: IEditorService
 	) {
 
 		this._proxy = extHostContext.getProxy(ExtHostContext.ExtHostEditorTabs);
 
-		this._editorGroupsService.whenReady.then(() => this._editorGroupsService.groups.forEach(this._subscribeToGroup, this));
+		this._editorGroupsService.groups.forEach(this._subscribeToGroup, this);
 		this._dispoables.add(_editorGroupsService.onDidAddGroup(this._subscribeToGroup, this));
 		this._dispoables.add(_editorGroupsService.onDidRemoveGroup(e => {
 			const subscription = this._groups.get(e);
@@ -43,7 +41,6 @@ export class MainThreadEditorTabs {
 				this._pushEditorTabs();
 			}
 		}));
-		this._dispoables.add(editorService.onDidActiveEditorChange(this._pushEditorTabs, this));
 		this._pushEditorTabs();
 	}
 
@@ -72,8 +69,7 @@ export class MainThreadEditorTabs {
 				tabs.push({
 					group: group.id,
 					name: editor.getTitle(Verbosity.SHORT) ?? '',
-					resource: EditorResourceAccessor.getOriginalUri(editor) ?? editor.resource,
-					isActive: (this._editorGroupsService.activeGroup === group) && group.isActive(editor)
+					resource: editor.resource
 				});
 			}
 		}

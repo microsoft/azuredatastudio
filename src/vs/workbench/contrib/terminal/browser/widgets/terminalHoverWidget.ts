@@ -12,8 +12,6 @@ import type { IViewportRange } from 'xterm';
 import { IHoverTarget, IHoverService } from 'vs/workbench/services/hover/browser/hover';
 import { registerThemingParticipant } from 'vs/platform/theme/common/themeService';
 import { editorHoverHighlight } from 'vs/platform/theme/common/colorRegistry';
-import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { TerminalSettingId } from 'vs/platform/terminal/common/terminal';
 
 const $ = dom.$;
 
@@ -32,8 +30,7 @@ export class TerminalHover extends Disposable implements ITerminalWidget {
 		private readonly _targetOptions: ILinkHoverTargetOptions,
 		private readonly _text: IMarkdownString,
 		private readonly _linkHandler: (url: string) => any,
-		@IHoverService private readonly _hoverService: IHoverService,
-		@IConfigurationService private readonly _configurationService: IConfigurationService
+		@IHoverService private readonly _hoverService: IHoverService
 	) {
 		super();
 	}
@@ -43,10 +40,6 @@ export class TerminalHover extends Disposable implements ITerminalWidget {
 	}
 
 	attach(container: HTMLElement): void {
-		const showLinkHover = this._configurationService.getValue(TerminalSettingId.ShowLinkHover);
-		if (!showLinkHover) {
-			return;
-		}
 		const target = new CellHoverTarget(container, this._targetOptions);
 		const hover = this._hoverService.showHover({
 			target,

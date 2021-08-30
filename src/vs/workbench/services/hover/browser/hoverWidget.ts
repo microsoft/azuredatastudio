@@ -18,7 +18,6 @@ import { IOpenerService } from 'vs/platform/opener/common/opener';
 import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { MarkdownRenderer } from 'vs/editor/browser/core/markdownRenderer';
-import { isString } from 'vs/base/common/types';
 
 const $ = dom.$;
 type TargetRect = {
@@ -67,7 +66,7 @@ export class HoverWidget extends Widget {
 	) {
 		super();
 
-		this._linkHandler = options.linkHandler || (url => this._openerService.open(url, { allowCommands: (!isString(options.text) && options.text.isTrusted) }));
+		this._linkHandler = options.linkHandler || this._openerService.open;
 
 		this._target = 'targetElements' in options.target ? options.target : new ElementHoverTarget(options.target);
 

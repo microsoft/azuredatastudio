@@ -47,9 +47,6 @@ if (args['nogpu']) { // {{SQL CARBON EDIT}}
 const userDataPath = getUserDataPath(args);
 app.setPath('userData', userDataPath);
 
-// Resolve code cache path
-const codeCachePath = getCodeCachePath();
-
 // Configure static command line arguments
 const argvConfig = configureCommandlineSwitchesSync(args);
 
@@ -80,6 +77,9 @@ protocol.registerSchemesAsPrivileged([
 
 // Global app listeners
 registerListeners();
+
+// Cached data
+const nodeCachedDataDir = getNodeCachedDir();
 
 /**
  * Support user defined locale: load it early before app('ready')
@@ -115,14 +115,14 @@ app.once('ready', function () {
 /**
  * Main startup routine
  *
- * @param {string | undefined} codeCachePath
+ * @param {string | undefined} cachedDataDir
  * @param {NLSConfiguration} nlsConfig
  */
-function startup(codeCachePath, nlsConfig) {
+function startup(cachedDataDir, nlsConfig) {
 	nlsConfig._languagePackSupport = true;
 
 	process.env['VSCODE_NLS_CONFIG'] = JSON.stringify(nlsConfig);
-	process.env['VSCODE_CODE_CACHE_PATH'] = codeCachePath || '';
+	process.env['VSCODE_NODE_CACHED_DATA_DIR'] = cachedDataDir || '';
 
 	// Load main in AMD
 	perf.mark('code/willLoadMainBundle');
@@ -135,9 +135,9 @@ async function onReady() {
 	perf.mark('code/mainAppReady');
 
 	try {
-		const [, nlsConfig] = await Promise.all([mkdirpIgnoreError(codeCachePath), resolveNlsConfiguration()]);
+		const [cachedDataDir, nlsConfig] = await Promise.all([nodeCachedDataDir.ensureExists(), resolveNlsConfiguration()]);
 
-		startup(codeCachePath, nlsConfig);
+		startup(cachedDataDir, nlsConfig);
 	} catch (error) {
 		console.error(error);
 	}
@@ -181,7 +181,7 @@ function configureCommandlineSwitchesSync(cliArgs) {
 	// Read argv config
 	const argvConfig = readArgvConfigSync();
 
-	let browserCodeLoadingStrategy = undefined; // {{SQL CARBON EDIT}} Set to undefined by default
+	let browserCodeLoadingStrategy = undefined;
 
 	Object.keys(argvConfig).forEach(argvKey => {
 		const argvValue = argvConfig[argvKey];
@@ -266,7 +266,7 @@ function readArgvConfigSync() {
 	// Fallback to default
 	if (!argvConfig) {
 		argvConfig = {
-			'disable-color-correct-rendering': true // Force pre-Chrome-60 color profile handling (for https://github.com/microsoft/vscode/issues/51791)
+			'disable-color-correct-rendering': true // Force pre-Chrome-60 color profile handling (for https://github.com/Microsoft/vscode/issues/51791)
 		};
 	}
 
@@ -300,7 +300,7 @@ function createDefaultArgvConfigSync(argvConfigPath) {
 			'	// "disable-hardware-acceleration": true,',
 			'',
 			'	// Enabled by default by VS Code to resolve color issues in the renderer',
-			'	// See https://github.com/microsoft/vscode/issues/51791 for details',
+			'	// See https://github.com/Microsoft/vscode/issues/51791 for details',
 			'	"disable-color-correct-rendering": true',
 			'}'
 		];
@@ -506,28 +506,46 @@ function registerListeners() {
 }
 
 /**
- * @returns {string | undefined} the location to use for the code cache
- * or `undefined` if disabled.
+ * @returns {{ ensureExists: () => Promise<string | undefined> }}
  */
-function getCodeCachePath() {
+function getNodeCachedDir() {
+	return new class {
 
-	// explicitly disabled via CLI args
-	if (process.argv.indexOf('--no-cached-data') > 0) {
-		return undefined;
-	}
+		constructor() {
+			this.value = this.compute();
+		}
 
-	// running out of sources
-	if (process.env['VSCODE_DEV']) {
-		return undefined;
-	}
+		async ensureExists() {
+			if (typeof this.value === 'string') {
+				try {
+					await mkdirp(this.value);
 
-	// require commit id
-	const commit = product.commit;
-	if (!commit) {
-		return undefined;
-	}
+					return this.value;
+				} catch (error) {
+					// ignore
+				}
+			}
+		}
 
-	return path.join(userDataPath, 'CachedData', commit);
+		compute() {
+			if (process.argv.indexOf('--no-cached-data') > 0) {
+				return undefined;
+			}
+
+			// IEnvironmentService.isBuilt
+			if (process.env['VSCODE_DEV']) {
+				return undefined;
+			}
+
+			// find commit id
+			const commit = product.commit;
+			if (!commit) {
+				return undefined;
+			}
+
+			return path.join(userDataPath, 'CachedData', commit);
+		}
+	};
 }
 
 /**
@@ -540,24 +558,6 @@ function mkdirp(dir) {
 	return new Promise((resolve, reject) => {
 		fs.mkdir(dir, { recursive: true }, err => (err && err.code !== 'EEXIST') ? reject(err) : resolve(dir));
 	});
-}
-
-/**
- * @param {string | undefined} dir
- * @returns {Promise<string | undefined>}
- */
-async function mkdirpIgnoreError(dir) {
-	if (typeof dir === 'string') {
-		try {
-			await mkdirp(dir);
-
-			return dir;
-		} catch (error) {
-			// ignore
-		}
-	}
-
-	return undefined;
 }
 
 //#region NLS Support

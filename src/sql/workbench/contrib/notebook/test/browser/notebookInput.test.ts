@@ -20,7 +20,6 @@ import { IExtensionService, NullExtensionService } from 'vs/workbench/services/e
 import { INotebookService, IProviderInfo } from 'sql/workbench/services/notebook/browser/notebookService';
 import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
 import { IUntitledTextEditorService } from 'vs/workbench/services/untitled/common/untitledTextEditorService';
-import { EditorInputCapabilities } from 'vs/workbench/common/editor';
 
 suite('Notebook Input', function (): void {
 	const instantiationService = workbenchInstantiationService();
@@ -65,13 +64,13 @@ suite('Notebook Input', function (): void {
 
 		let inputId = fileNotebookInput.typeId;
 		assert.strictEqual(inputId, FileNotebookInput.ID);
-		assert.strictEqual(fileNotebookInput.hasCapability(EditorInputCapabilities.Untitled), false, 'File Input should not be untitled');
+		assert.strictEqual(fileNotebookInput.isUntitled(), false, 'File Input should not be untitled');
 	});
 
 	test('Untitled Notebook Input', async function (): Promise<void> {
 		let inputId = untitledNotebookInput.typeId;
 		assert.strictEqual(inputId, UntitledNotebookInput.ID);
-		assert.ok(untitledNotebookInput.hasCapability(EditorInputCapabilities.Untitled), 'Untitled Input should be untitled');
+		assert.ok(untitledNotebookInput.isUntitled(), 'Untitled Input should be untitled');
 	});
 
 	test('Getters and Setters', async function (): Promise<void> {

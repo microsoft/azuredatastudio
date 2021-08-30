@@ -1,27 +1,24 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as assert from 'assert';
-import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { SCROLLABLE_ELEMENT_PADDING_TOP } from 'vs/workbench/contrib/notebook/browser/constants';
 import { CellKind } from 'vs/workbench/contrib/notebook/common/notebookCommon';
-import { NotebookOptions } from 'vs/workbench/contrib/notebook/common/notebookOptions';
 import { createNotebookCellList, setupInstantiationService, withTestNotebook } from 'vs/workbench/contrib/notebook/test/testNotebookEditor';
 
 suite('NotebookCellList', () => {
 	const instantiationService = setupInstantiationService();
-	const notebookDefaultOptions = new NotebookOptions(instantiationService.get(IConfigurationService));
-	const topInsertToolbarHeight = notebookDefaultOptions.computeTopInserToolbarHeight();
 
 	test('revealElementsInView: reveal fully visible cell should not scroll', async function () {
 		await withTestNotebook(
 			[
-				['# header a', 'markdown', CellKind.Markup, [], {}],
+				['# header a', 'markdown', CellKind.Markdown, [], {}],
 				['var b = 1;', 'javascript', CellKind.Code, [], {}],
-				['# header b', 'markdown', CellKind.Markup, [], {}],
+				['# header b', 'markdown', CellKind.Markdown, [], {}],
 				['var b = 2;', 'javascript', CellKind.Code, [], {}],
-				['# header c', 'markdown', CellKind.Markup, [], {}]
+				['# header c', 'markdown', CellKind.Markdown, [], {}]
 			],
 			async (editor) => {
 				const viewModel = editor.viewModel;
@@ -35,7 +32,7 @@ suite('NotebookCellList', () => {
 				cellList.attachViewModel(viewModel);
 
 				// render height 210, it can render 3 full cells and 1 partial cell
-				cellList.layout(210 + topInsertToolbarHeight, 100);
+				cellList.layout(210 + SCROLLABLE_ELEMENT_PADDING_TOP, 100);
 				// scroll a bit, scrollTop to bottom: 5, 215
 				cellList.scrollTop = 5;
 
@@ -62,11 +59,11 @@ suite('NotebookCellList', () => {
 	test('revealElementsInView: reveal partially visible cell', async function () {
 		await withTestNotebook(
 			[
-				['# header a', 'markdown', CellKind.Markup, [], {}],
+				['# header a', 'markdown', CellKind.Markdown, [], {}],
 				['var b = 1;', 'javascript', CellKind.Code, [], {}],
-				['# header b', 'markdown', CellKind.Markup, [], {}],
+				['# header b', 'markdown', CellKind.Markdown, [], {}],
 				['var b = 2;', 'javascript', CellKind.Code, [], {}],
-				['# header c', 'markdown', CellKind.Markup, [], {}]
+				['# header c', 'markdown', CellKind.Markdown, [], {}]
 			],
 			async (editor) => {
 				const viewModel = editor.viewModel;
@@ -80,7 +77,7 @@ suite('NotebookCellList', () => {
 				cellList.attachViewModel(viewModel);
 
 				// render height 210, it can render 3 full cells and 1 partial cell
-				cellList.layout(210 + topInsertToolbarHeight, 100);
+				cellList.layout(210 + SCROLLABLE_ELEMENT_PADDING_TOP, 100);
 
 				// init scrollTop and scrollBottom
 				assert.deepStrictEqual(cellList.scrollTop, 0);
@@ -104,11 +101,11 @@ suite('NotebookCellList', () => {
 	test('revealElementsInView: reveal cell out of viewport', async function () {
 		await withTestNotebook(
 			[
-				['# header a', 'markdown', CellKind.Markup, [], {}],
+				['# header a', 'markdown', CellKind.Markdown, [], {}],
 				['var b = 1;', 'javascript', CellKind.Code, [], {}],
-				['# header b', 'markdown', CellKind.Markup, [], {}],
+				['# header b', 'markdown', CellKind.Markdown, [], {}],
 				['var b = 2;', 'javascript', CellKind.Code, [], {}],
-				['# header c', 'markdown', CellKind.Markup, [], {}]
+				['# header c', 'markdown', CellKind.Markdown, [], {}]
 			],
 			async (editor) => {
 				const viewModel = editor.viewModel;
@@ -119,12 +116,12 @@ suite('NotebookCellList', () => {
 				});
 
 				const cellList = createNotebookCellList(instantiationService);
-				// without additionalscrollheight, the last 20 px will always be hidden due to `topInsertToolbarHeight`
+				// without additionalscrollheight, the last 20 px will always be hidden due to `SCROLLABLE_ELEMENT_PADDING_TOP`
 				cellList.updateOptions({ additionalScrollHeight: 100 });
 				cellList.attachViewModel(viewModel);
 
 				// render height 210, it can render 3 full cells and 1 partial cell
-				cellList.layout(210 + topInsertToolbarHeight, 100);
+				cellList.layout(210 + SCROLLABLE_ELEMENT_PADDING_TOP, 100);
 
 				// init scrollTop and scrollBottom
 				assert.deepStrictEqual(cellList.scrollTop, 0);
@@ -139,11 +136,11 @@ suite('NotebookCellList', () => {
 	test('updateElementHeight', async function () {
 		await withTestNotebook(
 			[
-				['# header a', 'markdown', CellKind.Markup, [], {}],
+				['# header a', 'markdown', CellKind.Markdown, [], {}],
 				['var b = 1;', 'javascript', CellKind.Code, [], {}],
-				['# header b', 'markdown', CellKind.Markup, [], {}],
+				['# header b', 'markdown', CellKind.Markdown, [], {}],
 				['var b = 2;', 'javascript', CellKind.Code, [], {}],
-				['# header c', 'markdown', CellKind.Markup, [], {}]
+				['# header c', 'markdown', CellKind.Markdown, [], {}]
 			],
 			async (editor) => {
 				const viewModel = editor.viewModel;
@@ -157,7 +154,7 @@ suite('NotebookCellList', () => {
 				cellList.attachViewModel(viewModel);
 
 				// render height 210, it can render 3 full cells and 1 partial cell
-				cellList.layout(210 + topInsertToolbarHeight, 100);
+				cellList.layout(210 + SCROLLABLE_ELEMENT_PADDING_TOP, 100);
 
 				// init scrollTop and scrollBottom
 				assert.deepStrictEqual(cellList.scrollTop, 0);
@@ -179,11 +176,11 @@ suite('NotebookCellList', () => {
 	test('updateElementHeight with anchor #121723', async function () {
 		await withTestNotebook(
 			[
-				['# header a', 'markdown', CellKind.Markup, [], {}],
+				['# header a', 'markdown', CellKind.Markdown, [], {}],
 				['var b = 1;', 'javascript', CellKind.Code, [], {}],
-				['# header b', 'markdown', CellKind.Markup, [], {}],
+				['# header b', 'markdown', CellKind.Markdown, [], {}],
 				['var b = 2;', 'javascript', CellKind.Code, [], {}],
-				['# header c', 'markdown', CellKind.Markup, [], {}]
+				['# header c', 'markdown', CellKind.Markdown, [], {}]
 			],
 			async (editor) => {
 				// await new Promise(c => setTimeout(c, 3000));
@@ -199,7 +196,7 @@ suite('NotebookCellList', () => {
 				cellList.attachViewModel(viewModel);
 
 				// render height 210, it can render 3 full cells and 1 partial cell
-				cellList.layout(210 + topInsertToolbarHeight, 100);
+				cellList.layout(210 + SCROLLABLE_ELEMENT_PADDING_TOP, 100);
 
 				// init scrollTop and scrollBottom
 				assert.deepStrictEqual(cellList.scrollTop, 0);
@@ -232,11 +229,11 @@ suite('NotebookCellList', () => {
 	test('updateElementHeight with anchor #121723: focus element out of viewport', async function () {
 		await withTestNotebook(
 			[
-				['# header a', 'markdown', CellKind.Markup, [], {}],
+				['# header a', 'markdown', CellKind.Markdown, [], {}],
 				['var b = 1;', 'javascript', CellKind.Code, [], {}],
-				['# header b', 'markdown', CellKind.Markup, [], {}],
+				['# header b', 'markdown', CellKind.Markdown, [], {}],
 				['var b = 2;', 'javascript', CellKind.Code, [], {}],
-				['# header c', 'markdown', CellKind.Markup, [], {}]
+				['# header c', 'markdown', CellKind.Markdown, [], {}]
 			],
 			async (editor) => {
 				// await new Promise(c => setTimeout(c, 3000));
@@ -252,7 +249,7 @@ suite('NotebookCellList', () => {
 				cellList.attachViewModel(viewModel);
 
 				// render height 210, it can render 3 full cells and 1 partial cell
-				cellList.layout(210 + topInsertToolbarHeight, 100);
+				cellList.layout(210 + SCROLLABLE_ELEMENT_PADDING_TOP, 100);
 
 				// init scrollTop and scrollBottom
 				assert.deepStrictEqual(cellList.scrollTop, 0);
@@ -268,11 +265,11 @@ suite('NotebookCellList', () => {
 	test('updateElementHeight of cells out of viewport should not trigger scroll #121140', async function () {
 		await withTestNotebook(
 			[
-				['# header a', 'markdown', CellKind.Markup, [], {}],
+				['# header a', 'markdown', CellKind.Markdown, [], {}],
 				['var b = 1;', 'javascript', CellKind.Code, [], {}],
-				['# header b', 'markdown', CellKind.Markup, [], {}],
+				['# header b', 'markdown', CellKind.Markdown, [], {}],
 				['var b = 2;', 'javascript', CellKind.Code, [], {}],
-				['# header c', 'markdown', CellKind.Markup, [], {}]
+				['# header c', 'markdown', CellKind.Markdown, [], {}]
 			],
 			async (editor) => {
 				const viewModel = editor.viewModel;
@@ -286,7 +283,7 @@ suite('NotebookCellList', () => {
 				cellList.attachViewModel(viewModel);
 
 				// render height 210, it can render 3 full cells and 1 partial cell
-				cellList.layout(210 + topInsertToolbarHeight, 100);
+				cellList.layout(210 + SCROLLABLE_ELEMENT_PADDING_TOP, 100);
 
 				// init scrollTop and scrollBottom
 				assert.deepStrictEqual(cellList.scrollTop, 0);

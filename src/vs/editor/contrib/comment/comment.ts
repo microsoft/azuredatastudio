@@ -12,7 +12,7 @@ import { ICommand } from 'vs/editor/common/editorCommon';
 import { EditorContextKeys } from 'vs/editor/common/editorContextKeys';
 import { BlockCommentCommand } from 'vs/editor/contrib/comment/blockCommentCommand';
 import { LineCommentCommand, Type } from 'vs/editor/contrib/comment/lineCommentCommand';
-// import { MenuId } from 'vs/platform/actions/common/actions'; {{SQL CARBON EDIT}}
+// import { MenuId } from 'vs/platform/actions/common/actions';
 import { EditorOption } from 'vs/editor/common/config/editorOptions';
 import { KeybindingWeight } from 'vs/platform/keybinding/common/keybindingsRegistry';
 

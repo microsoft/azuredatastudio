@@ -6,8 +6,9 @@
 import * as assert from 'assert';
 import * as path from 'vs/base/common/path';
 import { tmpdir } from 'os';
+import { promises } from 'fs';
 import { extract } from 'vs/base/node/zip';
-import { Promises } from 'vs/base/node/pfs';
+import { rimraf, exists } from 'vs/base/node/pfs';
 import { createCancelablePromise } from 'vs/base/common/async';
 import { getRandomTestPath, getPathFromAmdModule } from 'vs/base/test/node/testUtils';
 
@@ -18,11 +19,11 @@ suite('Zip', () => {
 	setup(() => {
 		testDir = getRandomTestPath(tmpdir(), 'vsctests', 'zip');
 
-		return Promises.mkdir(testDir, { recursive: true });
+		return promises.mkdir(testDir, { recursive: true });
 	});
 
 	teardown(() => {
-		return Promises.rm(testDir);
+		return rimraf(testDir);
 	});
 
 	test('extract should handle directories', async () => {
@@ -30,7 +31,7 @@ suite('Zip', () => {
 		const fixture = path.join(fixtures, 'extract.zip');
 
 		await createCancelablePromise(token => extract(fixture, testDir, {}, token));
-		const doesExist = await Promises.exists(path.join(testDir, 'extension'));
+		const doesExist = await exists(path.join(testDir, 'extension'));
 		assert(doesExist);
 	});
 });

@@ -40,7 +40,6 @@ import { KeyCode } from 'vs/base/common/keyCodes';
 class DecorationsManager implements IDisposable {
 
 	private static readonly DecorationOptions = ModelDecorationOptions.register({
-		description: 'reference-decoration',
 		stickiness: TrackedRangeStickiness.NeverGrowsWhenTypingAtEdges,
 		className: 'reference-decoration'
 	});

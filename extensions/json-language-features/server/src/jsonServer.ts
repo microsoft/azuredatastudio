@@ -6,7 +6,7 @@
 import {
 	Connection,
 	TextDocuments, InitializeParams, InitializeResult, NotificationType, RequestType,
-	DocumentRangeFormattingRequest, Disposable, ServerCapabilities, TextDocumentSyncKind, TextEdit, DocumentFormattingRequest, TextDocumentIdentifier, FormattingOptions
+	DocumentRangeFormattingRequest, Disposable, ServerCapabilities, TextDocumentSyncKind, TextEdit
 } from 'vscode-languageserver';
 
 import { formatError, runSafe, runSafeAsync } from './utils/runner';
@@ -138,7 +138,6 @@ export function startServer(connection: Connection, runtime: RuntimeEnvironment)
 			hoverProvider: true,
 			documentSymbolProvider: true,
 			documentRangeFormattingProvider: params.initializationOptions?.provideFormatter === true,
-			documentFormattingProvider: params.initializationOptions?.provideFormatter === true,
 			colorProvider: {},
 			foldingRangeProvider: true,
 			selectionRangeProvider: true,
@@ -207,7 +206,7 @@ export function startServer(connection: Connection, runtime: RuntimeEnvironment)
 
 	let jsonConfigurationSettings: JSONSchemaSettings[] | undefined = undefined;
 	let schemaAssociations: ISchemaAssociations | SchemaConfiguration[] | undefined = undefined;
-	let formatterRegistrations: Thenable<Disposable>[] | null = null;
+	let formatterRegistration: Thenable<Disposable> | null = null;
 
 	// The settings have changed. Is send on server activation as well.
 	connection.onDidChangeConfiguration((change) => {
@@ -225,16 +224,12 @@ export function startServer(connection: Connection, runtime: RuntimeEnvironment)
 		if (dynamicFormatterRegistration) {
 			const enableFormatter = settings && settings.json && settings.json.format && settings.json.format.enable;
 			if (enableFormatter) {
-				if (!formatterRegistrations) {
-					const documentSelector = [{ language: 'json' }, { language: 'jsonc' }];
-					formatterRegistrations = [
-						connection.client.register(DocumentRangeFormattingRequest.type, { documentSelector }),
-						connection.client.register(DocumentFormattingRequest.type, { documentSelector })
-					];
+				if (!formatterRegistration) {
+					formatterRegistration = connection.client.register(DocumentRangeFormattingRequest.type, { documentSelector: [{ language: 'json' }, { language: 'jsonc' }] });
 				}
-			} else if (formatterRegistrations) {
-				formatterRegistrations.forEach(p => p.then(r => r.dispose()));
-				formatterRegistrations = null;
+			} else if (formatterRegistration) {
+				formatterRegistration.then(r => r.dispose());
+				formatterRegistration = null;
 			}
 		}
 	});
@@ -425,25 +420,19 @@ export function startServer(connection: Connection, runtime: RuntimeEnvironment)
 		}, [], `Error while computing document symbols for ${documentSymbolParams.textDocument.uri}`, token);
 	});
 
-	function onFormat(textDocument: TextDocumentIdentifier, range: Range | undefined, options: FormattingOptions): TextEdit[] {
-		const document = documents.get(textDocument.uri);
-		if (document) {
-			const edits = languageService.format(document, range ?? getFullRange(document), options);
-			if (edits.length > formatterMaxNumberOfEdits) {
-				const newText = TextDocument.applyEdits(document, edits);
-				return [TextEdit.replace(getFullRange(document), newText)];
-			}
-			return edits;
-		}
-		return [];
-	}
-
 	connection.onDocumentRangeFormatting((formatParams, token) => {
-		return runSafe(() => onFormat(formatParams.textDocument, formatParams.range, formatParams.options), [], `Error while formatting range for ${formatParams.textDocument.uri}`, token);
-	});
-
-	connection.onDocumentFormatting((formatParams, token) => {
-		return runSafe(() => onFormat(formatParams.textDocument, undefined, formatParams.options), [], `Error while formatting ${formatParams.textDocument.uri}`, token);
+		return runSafe(() => {
+			const document = documents.get(formatParams.textDocument.uri);
+			if (document) {
+				const edits = languageService.format(document, formatParams.range, formatParams.options);
+				if (edits.length > formatterMaxNumberOfEdits) {
+					const newText = TextDocument.applyEdits(document, edits);
+					return [TextEdit.replace(Range.create(Position.create(0, 0), document.positionAt(document.getText().length)), newText)];
+				}
+				return edits;
+			}
+			return [];
+		}, [], `Error while formatting range for ${formatParams.textDocument.uri}`, token);
 	});
 
 	connection.onDocumentColor((params, token) => {
@@ -505,8 +494,4 @@ export function startServer(connection: Connection, runtime: RuntimeEnvironment)
 
 	// Listen on the connection
 	connection.listen();
-}
-
-function getFullRange(document: TextDocument): Range {
-	return Range.create(Position.create(0, 0), document.positionAt(document.getText().length));
 }

@@ -207,17 +207,7 @@ export interface IQuickInput extends IDisposable {
 	hide(): void;
 }
 
-export interface IQuickPickWillAcceptEvent {
-
-	/**
-	 * Allows to disable the default accept handling
-	 * of the picker. If `veto` is called, the picker
-	 * will not trigger the `onDidAccept` event.
-	 */
-	veto(): void;
-}
-
-export interface IQuickPickDidAcceptEvent {
+export interface IQuickPickAcceptEvent {
 
 	/**
 	 * Signals if the picker item is to be accepted
@@ -249,8 +239,7 @@ export interface IQuickPick<T extends IQuickPickItem> extends IQuickInput {
 
 	readonly onDidChangeValue: Event<string>;
 
-	readonly onWillAccept: Event<IQuickPickWillAcceptEvent>;
-	readonly onDidAccept: Event<IQuickPickDidAcceptEvent>;
+	readonly onDidAccept: Event<IQuickPickAcceptEvent>;
 
 	/**
 	 * If enabled, will fire the `onDidAccept` event when

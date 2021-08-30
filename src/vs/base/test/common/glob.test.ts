@@ -7,7 +7,6 @@ import * as assert from 'assert';
 import * as glob from 'vs/base/common/glob';
 import { sep } from 'vs/base/common/path';
 import { isWindows } from 'vs/base/common/platform';
-import { URI } from 'vs/base/common/uri';
 
 suite('Glob', () => {
 
@@ -1019,10 +1018,5 @@ suite('Glob', () => {
 			assertGlobMatch(p, '/DNXConsoleApp/foo/styles/style.css');
 			assertNoGlobMatch(p, '/DNXConsoleApp/foo/Program.cs');
 		}
-	});
-
-	test('URI match', () => {
-		let p = 'scheme:/**/*.md';
-		assertGlobMatch(p, URI.file('super/duper/long/some/file.md').with({ scheme: 'scheme' }).toString());
 	});
 });

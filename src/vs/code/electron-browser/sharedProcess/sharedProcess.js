@@ -46,7 +46,10 @@
 	 * 			forceEnableDeveloperKeybindings?: boolean,
 	 * 			disallowReloadKeybinding?: boolean,
 	 * 			removeDeveloperKeybindingsAfterLoad?: boolean
-	 * 		 }
+	 * 		 },
+	 * 	     canModifyDOM?: (config: ISandboxConfiguration) => void,
+	 * 	     beforeLoaderConfig?: (loaderConfig: object) => void,
+	 *       beforeRequire?: () => void
 	 *     }
 	 *   ) => Promise<unknown>
 	 * }}

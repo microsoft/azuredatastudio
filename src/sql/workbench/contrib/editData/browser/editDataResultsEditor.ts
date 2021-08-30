@@ -5,7 +5,7 @@
 
 import * as DOM from 'vs/base/browser/dom';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { IEditorOpenContext } from 'vs/workbench/common/editor';
+import { EditorOptions, IEditorOpenContext } from 'vs/workbench/common/editor';
 import { getZoomLevel } from 'vs/base/browser/browser';
 import { Configuration } from 'vs/editor/browser/config/configuration';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
@@ -20,7 +20,6 @@ import { EditDataGridPanel } from 'sql/workbench/contrib/editData/browser/editDa
 import { EditDataResultsInput } from 'sql/workbench/browser/editData/editDataResultsInput';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { IStorageService } from 'vs/platform/storage/common/storage';
-import { IEditorOptions } from 'vs/platform/editor/common/editor';
 
 export class EditDataResultsEditor extends EditorPane {
 
@@ -64,7 +63,7 @@ export class EditDataResultsEditor extends EditorPane {
 	public layout(dimension: DOM.Dimension): void {
 	}
 
-	public override setInput(input: EditDataResultsInput, options: IEditorOptions, context: IEditorOpenContext): Promise<void> {
+	public override setInput(input: EditDataResultsInput, options: EditorOptions, context: IEditorOpenContext): Promise<void> {
 		super.setInput(input, options, context, CancellationToken.None);
 		this._applySettings();
 		if (!input.hasBootstrapped) {

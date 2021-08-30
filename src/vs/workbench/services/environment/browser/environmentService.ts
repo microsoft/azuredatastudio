@@ -226,15 +226,25 @@ export class BrowserWorkbenchEnvironmentService implements IWorkbenchEnvironment
 
 	get disableExtensions() { return this.payload?.get('disableExtensions') === 'true'; }
 
+	private get webviewEndpoint(): string {
+		// TODO@matt: get fallback from product service
+		return this.options.webviewEndpoint || 'https://{{uuid}}.vscode-webview-test.com/{{commit}}';
+	}
+
 	@memoize
 	get webviewExternalEndpoint(): string {
-		const endpoint = this.options.webviewEndpoint
-			|| this.productService.webviewContentExternalBaseUrlTemplate
-			|| 'https://{{uuid}}.vscode-webview.net/{{quality}}/{{commit}}/out/vs/workbench/contrib/webview/browser/pre/';
+		return (this.webviewEndpoint).replace('{{commit}}', this.productService.commit || '23a2409675bc1bde94f3532bc7c5826a6e99e4b6');
+	}
 
-		return endpoint
-			.replace('{{commit}}', this.payload?.get('webviewExternalEndpointCommit') ?? this.productService.commit ?? '97740a7d253650f9f186c211de5247e2577ce9f7')
-			.replace('{{quality}}', this.productService.quality || 'insider');
+	@memoize
+	get webviewResourceRoot(): string {
+		return `${this.webviewExternalEndpoint}/vscode-resource/{{resource}}`;
+	}
+
+	@memoize
+	get webviewCspSource(): string {
+		const uri = URI.parse(this.webviewEndpoint.replace('{{uuid}}', '*'));
+		return `${uri.scheme}://${uri.authority}`;
 	}
 
 	@memoize
@@ -245,9 +255,6 @@ export class BrowserWorkbenchEnvironmentService implements IWorkbenchEnvironment
 	get logExtensionHostCommunication(): boolean { return this.payload?.get('logExtensionHostCommunication') === 'true'; }
 
 	get skipReleaseNotes(): boolean { return false; }
-
-	@memoize
-	get disableWorkspaceTrust(): boolean { return true; }
 
 	private payload: Map<string, string> | undefined;
 

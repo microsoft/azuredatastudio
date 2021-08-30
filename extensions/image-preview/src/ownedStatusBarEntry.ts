@@ -11,10 +11,9 @@ export abstract class PreviewStatusBarEntry extends Disposable {
 
 	protected readonly entry: vscode.StatusBarItem;
 
-	constructor(id: string, name: string, alignment: vscode.StatusBarAlignment, priority: number) {
+	constructor(options: vscode.StatusBarItemOptions) {
 		super();
-		this.entry = this._register(vscode.window.createStatusBarItem(id, alignment, priority));
-		this.entry.name = name;
+		this.entry = this._register(vscode.window.createStatusBarItem(options));
 	}
 
 	protected showItem(owner: string, text: string) {

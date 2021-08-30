@@ -8,7 +8,7 @@ import { IEditor } from 'vs/editor/common/editorCommon';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
-import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
+import { INotificationService } from 'vs/platform/notification/common/notification';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { stripIcons } from 'vs/base/common/iconLabels';
 
@@ -20,9 +20,9 @@ export abstract class AbstractEditorCommandsQuickAccessProvider extends Abstract
 		keybindingService: IKeybindingService,
 		commandService: ICommandService,
 		telemetryService: ITelemetryService,
-		dialogService: IDialogService
+		notificationService: INotificationService
 	) {
-		super(options, instantiationService, keybindingService, commandService, telemetryService, dialogService);
+		super(options, instantiationService, keybindingService, commandService, telemetryService, notificationService);
 	}
 
 	/**

@@ -6,7 +6,7 @@
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { ITableRenderer } from 'sql/base/browser/ui/table/highPerf/table';
 
-import { $ } from 'vs/base/browser/dom';
+import { $, removeClass } from 'vs/base/browser/dom';
 export interface ICell {
 	domNode: HTMLElement | null;
 	templateData: any;
@@ -64,7 +64,7 @@ export class CellCache<T> implements IDisposable {
 	release(cell: ICell) {
 		const { domNode, templateId } = cell;
 		if (domNode) {
-			domNode.classList.remove('scrolling');
+			removeClass(domNode, 'scrolling');
 			removeFromParent(domNode);
 		}
 

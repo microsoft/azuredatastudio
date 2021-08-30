@@ -8,7 +8,7 @@ import * as nls from 'vs/nls';
 import { Action, IAction, Separator } from 'vs/base/common/actions';
 import { EditorPane } from 'vs/workbench/browser/parts/editor/editorPane';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
-import { IInstantiationService, ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IExtensionsWorkbenchService, IExtension } from 'vs/workbench/contrib/extensions/common/extensions';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { IExtensionService, IExtensionsStatus, IExtensionHostProfile } from 'vs/workbench/services/extensions/common/extensions';
@@ -36,9 +36,6 @@ import { domEvent } from 'vs/base/browser/event';
 import { IListAccessibilityProvider } from 'vs/base/browser/ui/list/listWidget';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { RuntimeExtensionsInput } from 'vs/workbench/contrib/extensions/common/runtimeExtensionsInput';
-import { Action2 } from 'vs/platform/actions/common/actions';
-import { CATEGORIES } from 'vs/workbench/common/actions';
-import { DefaultIconPath } from 'vs/platform/extensionManagement/common/extensionManagement';
 
 interface IExtensionProfileInformation {
 	/**
@@ -57,7 +54,7 @@ interface IExtensionProfileInformation {
 export interface IRuntimeExtension {
 	originalIndex: number;
 	description: IExtensionDescription;
-	marketplaceInfo: IExtension | undefined;
+	marketplaceInfo: IExtension;
 	status: IExtensionsStatus;
 	profileInfo?: IExtensionProfileInformation;
 	unresponsiveProfile?: IExtensionHostProfile;
@@ -268,8 +265,8 @@ export abstract class AbstractRuntimeExtensionsEditor extends EditorPane {
 				data.root.classList.toggle('odd', index % 2 === 1);
 
 				const onError = Event.once(domEvent(data.icon, 'error'));
-				onError(() => data.icon.src = element.marketplaceInfo?.iconUrlFallback || DefaultIconPath, null, data.elementDisposables);
-				data.icon.src = element.marketplaceInfo?.iconUrl || DefaultIconPath;
+				onError(() => data.icon.src = element.marketplaceInfo.iconUrlFallback, null, data.elementDisposables);
+				data.icon.src = element.marketplaceInfo.iconUrl;
 
 				if (!data.icon.complete) {
 					data.icon.style.visibility = 'hidden';
@@ -277,7 +274,7 @@ export abstract class AbstractRuntimeExtensionsEditor extends EditorPane {
 				} else {
 					data.icon.style.visibility = 'inherit';
 				}
-				data.name.textContent = element.marketplaceInfo?.displayName || element.description.identifier.value;
+				data.name.textContent = element.marketplaceInfo.displayName;
 				data.version.textContent = element.description.version;
 
 				const activationTimes = element.status.activationTimes!;
@@ -430,10 +427,8 @@ export abstract class AbstractRuntimeExtensionsEditor extends EditorPane {
 				actions.push(new Separator());
 			}
 
-			if (e.element!.marketplaceInfo) {
-				actions.push(new Action('runtimeExtensionsEditor.action.disableWorkspace', nls.localize('disable workspace', "Disable (Workspace)"), undefined, true, () => this._extensionsWorkbenchService.setEnablement(e.element!.marketplaceInfo!, EnablementState.DisabledWorkspace)));
-				actions.push(new Action('runtimeExtensionsEditor.action.disable', nls.localize('disable', "Disable"), undefined, true, () => this._extensionsWorkbenchService.setEnablement(e.element!.marketplaceInfo!, EnablementState.DisabledGlobally)));
-			}
+			actions.push(new Action('runtimeExtensionsEditor.action.disableWorkspace', nls.localize('disable workspace', "Disable (Workspace)"), undefined, true, () => this._extensionsWorkbenchService.setEnablement(e.element!.marketplaceInfo, EnablementState.DisabledWorkspace)));
+			actions.push(new Action('runtimeExtensionsEditor.action.disable', nls.localize('disable', "Disable"), undefined, true, () => this._extensionsWorkbenchService.setEnablement(e.element!.marketplaceInfo, EnablementState.DisabledGlobally)));
 			actions.push(new Separator());
 
 			const profileAction = this._createProfileAction();
@@ -471,18 +466,18 @@ export abstract class AbstractRuntimeExtensionsEditor extends EditorPane {
 	protected abstract _createProfileAction(): Action | null;
 }
 
-export class ShowRuntimeExtensionsAction extends Action2 {
+export class ShowRuntimeExtensionsAction extends Action {
+	static readonly ID = 'workbench.action.showRuntimeExtensions';
+	static readonly LABEL = nls.localize('showRuntimeExtensions', "Show Running Extensions");
 
-	constructor() {
-		super({
-			id: 'workbench.action.showRuntimeExtensions',
-			title: { value: nls.localize('showRuntimeExtensions', "Show Running Extensions"), original: 'Show Running Extensions' },
-			category: CATEGORIES.Developer,
-			f1: true
-		});
+	constructor(
+		id: string, label: string,
+		@IEditorService private readonly _editorService: IEditorService
+	) {
+		super(id, label);
 	}
 
-	async run(accessor: ServicesAccessor): Promise<void> {
-		await accessor.get(IEditorService).openEditor(RuntimeExtensionsInput.instance, { revealIfOpened: true, pinned: true });
+	public override async run(e?: any): Promise<any> {
+		await this._editorService.openEditor(RuntimeExtensionsInput.instance, { revealIfOpened: true, pinned: true });
 	}
 }

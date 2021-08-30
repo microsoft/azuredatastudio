@@ -4,8 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Composite } from 'vs/workbench/browser/composite';
-import { IEditorPane, GroupIdentifier, IEditorMemento, IEditorOpenContext } from 'vs/workbench/common/editor';
-import { EditorInput } from 'vs/workbench/common/editor/editorInput';
+import { EditorInput, EditorOptions, IEditorPane, GroupIdentifier, IEditorMemento, IEditorOpenContext } from 'vs/workbench/common/editor';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { CancellationToken } from 'vs/base/common/cancellation';
@@ -21,7 +20,6 @@ import { joinPath, IExtUri, isEqual } from 'vs/base/common/resources';
 import { indexOfPath } from 'vs/base/common/extpath';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
-import { IEditorOptions } from 'vs/platform/editor/common/editor';
 
 /**
  * The base class of editors in the workbench. Editors register themselves for specific editor inputs.
@@ -58,8 +56,8 @@ export abstract class EditorPane extends Composite implements IEditorPane {
 	protected _input: EditorInput | undefined;
 	get input(): EditorInput | undefined { return this._input; }
 
-	protected _options: IEditorOptions | undefined;
-	get options(): IEditorOptions | undefined { return this._options; }
+	protected _options: EditorOptions | undefined;
+	get options(): EditorOptions | undefined { return this._options; }
 
 	private _group: IEditorGroup | undefined;
 	get group(): IEditorGroup | undefined { return this._group; }
@@ -104,7 +102,7 @@ export abstract class EditorPane extends Composite implements IEditorPane {
 	 * The provided cancellation token should be used to test if the operation
 	 * was cancelled.
 	 */
-	async setInput(input: EditorInput, options: IEditorOptions | undefined, context: IEditorOpenContext, token: CancellationToken): Promise<void> {
+	async setInput(input: EditorInput, options: EditorOptions | undefined, context: IEditorOpenContext, token: CancellationToken): Promise<void> {
 		this._input = input;
 		this._options = options;
 	}
@@ -131,7 +129,7 @@ export abstract class EditorPane extends Composite implements IEditorPane {
 	 * Sets the given options to the editor. Clients should apply the options
 	 * to the current input.
 	 */
-	setOptions(options: IEditorOptions | undefined): void {
+	setOptions(options: EditorOptions | undefined): void {
 		this._options = options;
 	}
 
@@ -195,7 +193,7 @@ export class EditorMemento<T> implements IEditorMemento<T> {
 	private editorDisposables: Map<EditorInput, IDisposable> | undefined;
 
 	constructor(
-		readonly id: string,
+		public readonly id: string,
 		private key: string,
 		private memento: MementoObject,
 		private limit: number,
@@ -231,7 +229,7 @@ export class EditorMemento<T> implements IEditorMemento<T> {
 	loadEditorState(group: IEditorGroup, resourceOrEditor: URI | EditorInput): T | undefined {
 		const resource = this.doGetResource(resourceOrEditor);
 		if (!resource || !group) {
-			return undefined; // we are not in a good state to load any state for a resource {{SQL CARBON EDIT}} Strict nulls
+			return undefined; // we are not in a good state to load any state for a resource
 		}
 
 		const cache = this.doLoad();
@@ -241,7 +239,7 @@ export class EditorMemento<T> implements IEditorMemento<T> {
 			return mementoForResource[group.id];
 		}
 
-		return undefined; // {{SQL CARBON EDIT}} Strict nulls
+		return undefined;
 	}
 
 	clearEditorState(resource: URI, group?: IEditorGroup): void;

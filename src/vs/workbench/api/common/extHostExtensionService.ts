@@ -7,10 +7,10 @@ import * as nls from 'vs/nls';
 import * as path from 'vs/base/common/path';
 import * as performance from 'vs/base/common/performance';
 import { originalFSPath, joinPath } from 'vs/base/common/resources';
-import { asPromise, Barrier, timeout } from 'vs/base/common/async';
+import { Barrier, timeout } from 'vs/base/common/async';
 import { dispose, toDisposable, DisposableStore, Disposable } from 'vs/base/common/lifecycle';
 import { TernarySearchTree } from 'vs/base/common/map';
-import { URI, UriComponents } from 'vs/base/common/uri';
+import { URI } from 'vs/base/common/uri';
 import { ILogService } from 'vs/platform/log/common/log';
 import { ExtHostExtensionServiceShape, IInitData, MainContext, MainThreadExtensionServiceShape, MainThreadTelemetryShape, MainThreadWorkspaceShape, IResolveAuthorityResult } from 'vs/workbench/api/common/extHost.protocol';
 import { ExtHostConfiguration, IExtHostConfiguration } from 'vs/workbench/api/common/extHostConfiguration';
@@ -292,19 +292,19 @@ export abstract class AbstractExtHostExtensionService extends Disposable impleme
 		try {
 			if (typeof extension.module.deactivate === 'function') {
 				result = Promise.resolve(extension.module.deactivate()).then(undefined, (err) => {
-					this._logService.error(err);
+					// TODO: Do something with err if this is not the shutdown case
 					return Promise.resolve(undefined);
 				});
 			}
 		} catch (err) {
-			this._logService.error(err);
+			// TODO: Do something with err if this is not the shutdown case
 		}
 
 		// clean up subscriptions
 		try {
 			dispose(extension.subscriptions);
 		} catch (err) {
-			this._logService.error(err);
+			// TODO: Do something with err if this is not the shutdown case
 		}
 
 		return result;
@@ -631,7 +631,7 @@ export abstract class AbstractExtHostExtensionService extends Disposable impleme
 
 	// -- called by main thread
 
-	private async _activateAndGetResolver(remoteAuthority: string): Promise<{ authorityPrefix: string; resolver: vscode.RemoteAuthorityResolver | undefined; }> {
+	public async $resolveAuthority(remoteAuthority: string, resolveAttempt: number): Promise<IResolveAuthorityResult> {
 		const authorityPlusIndex = remoteAuthority.indexOf('+');
 		if (authorityPlusIndex === -1) {
 			throw new Error(`Not an authority that can be resolved!`);
@@ -641,12 +641,7 @@ export abstract class AbstractExtHostExtensionService extends Disposable impleme
 		await this._almostReadyToRunExtensions.wait();
 		await this._activateByEvent(`onResolveRemoteAuthority:${authorityPrefix}`, false);
 
-		return { authorityPrefix, resolver: this._resolvers[authorityPrefix] };
-	}
-
-	public async $resolveAuthority(remoteAuthority: string, resolveAttempt: number): Promise<IResolveAuthorityResult> {
-
-		const { authorityPrefix, resolver } = await this._activateAndGetResolver(remoteAuthority);
+		const resolver = this._resolvers[authorityPrefix];
 		if (!resolver) {
 			return {
 				type: 'error',
@@ -673,7 +668,7 @@ export abstract class AbstractExtHostExtensionService extends Disposable impleme
 			};
 			const options: ResolvedOptions = {
 				extensionHostEnv: result.extensionHostEnv,
-				isTrusted: result.isTrusted
+				trust: result.trust
 			};
 
 			return {
@@ -698,28 +693,6 @@ export abstract class AbstractExtHostExtensionService extends Disposable impleme
 			}
 			throw err;
 		}
-	}
-
-	public async $getCanonicalURI(remoteAuthority: string, uriComponents: UriComponents): Promise<UriComponents> {
-
-		const { authorityPrefix, resolver } = await this._activateAndGetResolver(remoteAuthority);
-		if (!resolver) {
-			throw new Error(`Cannot get canonical URI because no remote extension is installed to resolve ${authorityPrefix}`);
-		}
-
-		const uri = URI.revive(uriComponents);
-
-		if (typeof resolver.getCanonicalURI === 'undefined') {
-			// resolver cannot compute canonical URI
-			return uri;
-		}
-
-		const result = await asPromise(() => resolver.getCanonicalURI!(uri));
-		if (!result) {
-			return uri;
-		}
-
-		return result;
 	}
 
 	public $startExtensionHost(enabledExtensionIds: ExtensionIdentifier[]): Promise<void> {

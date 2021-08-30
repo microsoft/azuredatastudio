@@ -156,18 +156,14 @@ async function getRemotes(fileService: IFileService, textFileService: ITextFileS
 	const domains = await Promise.race([
 		new Promise<string[][]>(resolve => setTimeout(() => resolve([]), 2000)),
 		Promise.all<string[]>(workspaceUris.map(async workspaceUri => {
-			try {
-				const path = workspaceUri.path;
-				const uri = workspaceUri.with({ path: `${path !== '/' ? path : ''}/.git/config` });
-				const exists = await fileService.exists(uri);
-				if (!exists) {
-					return [];
-				}
-				const gitConfig = (await (textFileService.read(uri, { acceptTextOnly: true }).catch(() => ({ value: '' })))).value;
-				return extractGitHubRemotesFromGitConfig(gitConfig);
-			} catch {
+			const path = workspaceUri.path;
+			const uri = workspaceUri.with({ path: `${path !== '/' ? path : ''}/.git/config` });
+			const exists = await fileService.exists(uri);
+			if (!exists) {
 				return [];
 			}
+			const gitConfig = (await (textFileService.read(uri, { acceptTextOnly: true }).catch(() => ({ value: '' })))).value;
+			return extractGitHubRemotesFromGitConfig(gitConfig);
 		}))]);
 
 	const set = domains.reduce((set, list) => list.reduce((set, item) => set.add(item), set), new Set<string>());

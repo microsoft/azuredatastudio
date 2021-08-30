@@ -58,11 +58,11 @@ suite('Local Content Manager', function (): void {
 			override async readFile(resource: URI, options?: IReadFileOptions | undefined): Promise<IFileContent> {
 				const content = await promisify(fs.readFile)(resource.fsPath);
 
-				return { name: ',', size: 0, etag: '', mtime: 0, value: VSBuffer.fromString(content.toString()), resource, ctime: 0, readonly: false };
+				return { name: ',', size: 0, etag: '', mtime: 0, value: VSBuffer.fromString(content.toString()), resource, ctime: 0 };
 			}
 			override async writeFile(resource: URI, bufferOrReadable: VSBuffer | VSBufferReadable, options?: IWriteFileOptions): Promise<IFileStatWithMetadata> {
-				await pfs.Promises.writeFile(resource.fsPath, bufferOrReadable.toString());
-				return { resource: resource, mtime: 0, etag: '', size: 0, name: '', isDirectory: false, ctime: 0, isFile: true, isSymbolicLink: false, readonly: false };
+				await pfs.writeFile(resource.fsPath, bufferOrReadable.toString());
+				return { resource: resource, mtime: 0, etag: '', size: 0, name: '', isDirectory: false, ctime: 0, isFile: true, isSymbolicLink: false };
 			}
 		};
 		instantiationService.set(IFileService, fileService);

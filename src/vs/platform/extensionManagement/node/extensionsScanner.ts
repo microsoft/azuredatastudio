@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import * as fs from 'fs';
 import * as semver from 'vs/base/common/semver/semver';
 import { Disposable } from 'vs/base/common/lifecycle';
 import * as pfs from 'vs/base/node/pfs';
@@ -106,10 +107,10 @@ export class ExtensionsScanner extends Disposable {
 		const extensionPath = path.join(this.extensionsPath, folderName);
 
 		try {
-			await pfs.Promises.rm(extensionPath);
+			await pfs.rimraf(extensionPath);
 		} catch (error) {
 			try {
-				await pfs.Promises.rm(extensionPath);
+				await pfs.rimraf(extensionPath);
 			} catch (e) { /* ignore */ }
 			throw new ExtensionManagementError(localize('errorDeleting', "Unable to delete the existing folder '{0}' while installing the extension '{1}'. Please delete the folder manually and try again", extensionPath, identifierWithVersion.id), INSTALL_ERROR_DELETING);
 		}
@@ -126,7 +127,7 @@ export class ExtensionsScanner extends Disposable {
 			this.logService.info('Renamed to', extensionPath);
 		} catch (error) {
 			try {
-				await pfs.Promises.rm(tempPath);
+				await pfs.rimraf(tempPath);
 			} catch (e) { /* ignore */ }
 			if (error.code === 'ENOTEMPTY') {
 				this.logService.info(`Rename failed because extension was installed by another source. So ignoring renaming.`, identifierWithVersion.id);
@@ -158,10 +159,10 @@ export class ExtensionsScanner extends Disposable {
 		storedMetadata.isBuiltin = storedMetadata.isBuiltin || undefined;
 		storedMetadata.installedTimestamp = storedMetadata.installedTimestamp || undefined;
 		const manifestPath = path.join(local.location.fsPath, 'package.json');
-		const raw = await pfs.Promises.readFile(manifestPath, 'utf8');
+		const raw = await fs.promises.readFile(manifestPath, 'utf8');
 		const { manifest } = await this.parseManifest(raw);
 		(manifest as ILocalExtensionManifest).__metadata = storedMetadata;
-		await pfs.Promises.writeFile(manifestPath, JSON.stringify(manifest, null, '\t'));
+		await pfs.writeFile(manifestPath, JSON.stringify(manifest, null, '\t'));
 		return local;
 	}
 
@@ -191,7 +192,7 @@ export class ExtensionsScanner extends Disposable {
 		return this.uninstalledFileLimiter.queue(async () => {
 			let raw: string | undefined;
 			try {
-				raw = await pfs.Promises.readFile(this.uninstalledPath, 'utf8');
+				raw = await fs.promises.readFile(this.uninstalledPath, 'utf8');
 			} catch (err) {
 				if (err.code !== 'ENOENT') {
 					throw err;
@@ -208,9 +209,9 @@ export class ExtensionsScanner extends Disposable {
 			if (updateFn) {
 				updateFn(uninstalled);
 				if (Object.keys(uninstalled).length) {
-					await pfs.Promises.writeFile(this.uninstalledPath, JSON.stringify(uninstalled));
+					await pfs.writeFile(this.uninstalledPath, JSON.stringify(uninstalled));
 				} else {
-					await pfs.Promises.rm(this.uninstalledPath);
+					await pfs.rimraf(this.uninstalledPath);
 				}
 			}
 
@@ -220,7 +221,7 @@ export class ExtensionsScanner extends Disposable {
 
 	async removeExtension(extension: ILocalExtension, type: string): Promise<void> {
 		this.logService.trace(`Deleting ${type} extension from disk`, extension.identifier.id, extension.location.fsPath);
-		await pfs.Promises.rm(extension.location.fsPath);
+		await pfs.rimraf(extension.location.fsPath);
 		this.logService.info('Deleted from disk', extension.identifier.id, extension.location.fsPath);
 	}
 
@@ -234,7 +235,7 @@ export class ExtensionsScanner extends Disposable {
 
 		// Clean the location
 		try {
-			await pfs.Promises.rm(location);
+			await pfs.rimraf(location);
 		} catch (e) {
 			throw new ExtensionManagementError(this.joinErrors(e).message, INSTALL_ERROR_DELETING);
 		}
@@ -243,14 +244,14 @@ export class ExtensionsScanner extends Disposable {
 			await extract(zipPath, location, { sourcePath: 'extension', overwrite: true }, token);
 			this.logService.info(`Extracted extension to ${location}:`, identifier.id);
 		} catch (e) {
-			try { await pfs.Promises.rm(location); } catch (e) { /* Ignore */ }
+			try { await pfs.rimraf(location); } catch (e) { /* Ignore */ }
 			throw new ExtensionManagementError(e.message, e instanceof ExtractError && e.type ? e.type : INSTALL_ERROR_EXTRACTING);
 		}
 	}
 
 	private async rename(identifier: IExtensionIdentifier, extractPath: string, renamePath: string, retryUntil: number): Promise<void> {
 		try {
-			await pfs.Promises.rename(extractPath, renamePath);
+			await fs.promises.rename(extractPath, renamePath);
 		} catch (error) {
 			if (isWindows && error && error.code === 'EPERM' && Date.now() < retryUntil) {
 				this.logService.info(`Failed renaming ${extractPath} to ${renamePath} with 'EPERM' error. Trying again...`, identifier.id);
@@ -392,9 +393,9 @@ export class ExtensionsScanner extends Disposable {
 
 	private async readManifest(extensionPath: string): Promise<{ manifest: IExtensionManifest; metadata: IStoredMetadata | null; }> {
 		const promises = [
-			pfs.Promises.readFile(path.join(extensionPath, 'package.json'), 'utf8')
+			fs.promises.readFile(path.join(extensionPath, 'package.json'), 'utf8')
 				.then(raw => this.parseManifest(raw)),
-			pfs.Promises.readFile(path.join(extensionPath, 'package.nls.json'), 'utf8')
+			fs.promises.readFile(path.join(extensionPath, 'package.nls.json'), 'utf8')
 				.then(undefined, err => err.code !== 'ENOENT' ? Promise.reject<string>(err) : '{}')
 				.then(raw => JSON.parse(raw))
 		];

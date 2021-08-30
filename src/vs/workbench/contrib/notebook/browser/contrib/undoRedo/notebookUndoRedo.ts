@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { Disposable } from 'vs/base/common/lifecycle';
@@ -9,7 +9,7 @@ import { Registry } from 'vs/platform/registry/common/platform';
 import { Extensions as WorkbenchExtensions, IWorkbenchContributionsRegistry } from 'vs/workbench/common/contributions';
 import { CellKind } from 'vs/workbench/contrib/notebook/common/notebookCommon';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
-import { CellEditState, getNotebookEditorFromEditorPane } from 'vs/workbench/contrib/notebook/browser/notebookBrowser';
+import { CellEditState, getNotebookEditorFromEditorPane, NotebookEditorOptions } from 'vs/workbench/contrib/notebook/browser/notebookBrowser';
 import { RedoCommand, UndoCommand } from 'vs/editor/browser/editorExtensions';
 
 class NotebookUndoRedoContribution extends Disposable {
@@ -24,12 +24,12 @@ class NotebookUndoRedoContribution extends Disposable {
 				return editor.viewModel.undo().then(cellResources => {
 					if (cellResources?.length) {
 						editor?.viewModel?.viewCells.forEach(cell => {
-							if (cell.cellKind === CellKind.Markup && cellResources.find(resource => resource.fragment === cell.model.uri.fragment)) {
+							if (cell.cellKind === CellKind.Markdown && cellResources.find(resource => resource.fragment === cell.model.uri.fragment)) {
 								cell.updateEditState(CellEditState.Editing, 'undo');
 							}
 						});
 
-						editor?.setOptions({ cellOptions: { resource: cellResources[0] }, preserveFocus: true });
+						editor?.setOptions(new NotebookEditorOptions({ cellOptions: { resource: cellResources[0] }, preserveFocus: true }));
 					}
 				});
 			}
@@ -43,12 +43,12 @@ class NotebookUndoRedoContribution extends Disposable {
 				return editor.viewModel.redo().then(cellResources => {
 					if (cellResources?.length) {
 						editor?.viewModel?.viewCells.forEach(cell => {
-							if (cell.cellKind === CellKind.Markup && cellResources.find(resource => resource.fragment === cell.model.uri.fragment)) {
+							if (cell.cellKind === CellKind.Markdown && cellResources.find(resource => resource.fragment === cell.model.uri.fragment)) {
 								cell.updateEditState(CellEditState.Editing, 'redo');
 							}
 						});
 
-						editor?.setOptions({ cellOptions: { resource: cellResources[0] }, preserveFocus: true });
+						editor?.setOptions(new NotebookEditorOptions({ cellOptions: { resource: cellResources[0] }, preserveFocus: true }));
 					}
 				});
 			}

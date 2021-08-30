@@ -8,7 +8,7 @@ import { Emitter, Event } from 'vs/base/common/event';
 import { Disposable, dispose, IDisposable } from 'vs/base/common/lifecycle';
 import { URI } from 'vs/base/common/uri';
 import { NotebookCellTextModel } from 'vs/workbench/contrib/notebook/common/model/notebookCellTextModel';
-import { INotebookTextModel, NotebookCellOutputsSplice, NotebookDocumentMetadata, NotebookCellMetadata, ICellEditOperation, CellEditType, CellUri, diff, NotebookCellsChangeType, ICellDto2, TransientOptions, NotebookTextModelChangedEvent, NotebookRawContentEvent, IOutputDto, ICellOutput, IOutputItemDto, ISelectionState, NullablePartialNotebookCellMetadata, NotebookCellInternalMetadata, NullablePartialNotebookCellInternalMetadata } from 'vs/workbench/contrib/notebook/common/notebookCommon';
+import { INotebookTextModel, NotebookCellOutputsSplice, NotebookDocumentMetadata, NotebookCellMetadata, ICellEditOperation, CellEditType, CellUri, notebookDocumentMetadataDefaults, diff, NotebookCellsChangeType, ICellDto2, TransientOptions, NotebookTextModelChangedEvent, NotebookRawContentEvent, IOutputDto, ICellOutput, IOutputItemDto, ISelectionState, NullablePartialNotebookCellMetadata } from 'vs/workbench/contrib/notebook/common/notebookCommon';
 import { IUndoRedoService, UndoRedoElementType, IUndoRedoElement, IResourceUndoRedoElement, UndoRedoGroup, IWorkspaceUndoRedoElement } from 'vs/platform/undoRedo/common/undoRedo';
 import { MoveCellEdit, SpliceCellsEdit, CellMetadataEdit } from 'vs/workbench/contrib/notebook/common/model/cellEdit';
 import { ISequence, LcsDiff } from 'vs/base/common/diff/diff';
@@ -197,7 +197,7 @@ export class NotebookTextModel extends Disposable implements INotebookTextModel 
 	private _cellListeners: Map<number, IDisposable> = new Map();
 	private _cells: NotebookCellTextModel[] = [];
 
-	metadata: NotebookDocumentMetadata = {};
+	metadata: NotebookDocumentMetadata = notebookDocumentMetadataDefaults;
 	transientOptions: TransientOptions = { transientCellMetadata: {}, transientDocumentMetadata: {}, transientOutputs: false };
 	private _versionId = 0;
 
@@ -284,12 +284,13 @@ export class NotebookTextModel extends Disposable implements INotebookTextModel 
 		const mainCells = cells.map(cell => {
 			const cellHandle = this._cellhandlePool++;
 			const cellUri = CellUri.generate(this.uri, cellHandle);
-			return new NotebookCellTextModel(cellUri, cellHandle, cell.source, cell.language, cell.cellKind, cell.outputs, cell.metadata, cell.internalMetadata, this.transientOptions, this._modeService);
+			return new NotebookCellTextModel(cellUri, cellHandle, cell.source, cell.language, cell.cellKind, cell.outputs || [], cell.metadata, this.transientOptions, this._modeService);
 		});
 
 		for (let i = 0; i < mainCells.length; i++) {
-			const dirtyStateListener = mainCells[i].onDidChangeContent((e) => {
-				this._bindCellContentHandler(mainCells[i], e);
+			const dirtyStateListener = mainCells[i].onDidChangeContent(() => {
+				this._increaseVersionIdForCellContentChange();
+				this._eventEmitter.emit({ kind: NotebookCellsChangeType.ChangeCellContent, transient: false }, true);
 			});
 
 			this._cellListeners.set(mainCells[i].handle, dirtyStateListener);
@@ -297,15 +298,6 @@ export class NotebookTextModel extends Disposable implements INotebookTextModel 
 
 		this._cells.splice(0, 0, ...mainCells);
 		this._alternativeVersionId = this._generateAlternativeId();
-	}
-
-	private _bindCellContentHandler(cell: NotebookCellTextModel, e: 'content' | 'language') {
-		this._increaseVersionId(e === 'content');
-		if (e === 'content') {
-			this._eventEmitter.emit({ kind: NotebookCellsChangeType.ChangeCellContent, transient: false }, true);
-		} else {
-			this._eventEmitter.emit({ kind: NotebookCellsChangeType.ChangeLanguage, index: this._getCellIndexByHandle(cell.handle), language: cell.language, transient: false }, true);
-		}
 	}
 
 	private _generateAlternativeId() {
@@ -475,10 +467,6 @@ export class NotebookTextModel extends Disposable implements INotebookTextModel 
 					this._assertIndex(cellIndex);
 					this._changeCellMetadataPartial(this._cells[cellIndex], edit.metadata, computeUndoRedo);
 					break;
-				case CellEditType.PartialInternalMetadata:
-					this._assertIndex(cellIndex);
-					this._changeCellInternalMetadataPartial(this._cells[cellIndex], edit.internalMetadata);
-					break;
 				case CellEditType.CellLanguage:
 					this._assertIndex(edit.index);
 					this._changeCellLanguage(this._cells[edit.index], edit.language, computeUndoRedo);
@@ -518,7 +506,7 @@ export class NotebookTextModel extends Disposable implements INotebookTextModel 
 			const cellUri = CellUri.generate(this.uri, cellHandle);
 			const cell = new NotebookCellTextModel(
 				cellUri, cellHandle,
-				cellDto.source, cellDto.language, cellDto.cellKind, cellDto.outputs || [], cellDto.metadata, cellDto.internalMetadata, this.transientOptions,
+				cellDto.source, cellDto.language, cellDto.cellKind, cellDto.outputs || [], cellDto.metadata, this.transientOptions,
 				this._modeService
 			);
 			const textModel = this._modelService.getModel(cellUri);
@@ -529,8 +517,9 @@ export class NotebookTextModel extends Disposable implements INotebookTextModel 
 					cell.textModel.setValue(cellDto.source);
 				}
 			}
-			const dirtyStateListener = cell.onDidChangeContent((e) => {
-				this._bindCellContentHandler(cell, e);
+			const dirtyStateListener = cell.onDidChangeContent(() => {
+				this._increaseVersionIdForCellContentChange();
+				this._eventEmitter.emit({ kind: NotebookCellsChangeType.ChangeCellContent, transient: false }, true);
 			});
 			this._cellListeners.set(cell.handle, dirtyStateListener);
 			return cell;
@@ -564,6 +553,11 @@ export class NotebookTextModel extends Disposable implements INotebookTextModel 
 			changes: diffs,
 			transient: false
 		}, synchronous);
+	}
+
+	private _increaseVersionIdForCellContentChange(): void {
+		this._versionId = this._versionId + 1;
+		this._alternativeVersionId = this._generateAlternativeId();
 	}
 
 	private _increaseVersionId(undoStackEmpty: boolean): void {
@@ -619,8 +613,9 @@ export class NotebookTextModel extends Disposable implements INotebookTextModel 
 
 	private _insertNewCell(index: number, cells: NotebookCellTextModel[], synchronous: boolean, endSelections: ISelectionState | undefined): void {
 		for (let i = 0; i < cells.length; i++) {
-			const dirtyStateListener = cells[i].onDidChangeContent((e) => {
-				this._bindCellContentHandler(cells[i], e);
+			const dirtyStateListener = cells[i].onDidChangeContent(() => {
+				this._increaseVersionIdForCellContentChange();
+				this._eventEmitter.emit({ kind: NotebookCellsChangeType.ChangeCellContent, transient: false }, true);
 			});
 
 			this._cellListeners.set(cells[i].handle, dirtyStateListener);
@@ -659,8 +654,9 @@ export class NotebookTextModel extends Disposable implements INotebookTextModel 
 		}
 
 		for (let i = 0; i < cells.length; i++) {
-			const dirtyStateListener = cells[i].onDidChangeContent((e) => {
-				this._bindCellContentHandler(cells[i], e);
+			const dirtyStateListener = cells[i].onDidChangeContent(() => {
+				this._increaseVersionIdForCellContentChange();
+				this._eventEmitter.emit({ kind: NotebookCellsChangeType.ChangeCellContent, transient: false }, true);
 			});
 
 			this._cellListeners.set(cells[i].handle, dirtyStateListener);
@@ -696,7 +692,14 @@ export class NotebookTextModel extends Disposable implements INotebookTextModel 
 	private _isCellMetadataChanged(a: NotebookCellMetadata, b: NotebookCellMetadata) {
 		const keys = new Set([...Object.keys(a || {}), ...Object.keys(b || {})]);
 		for (let key of keys) {
-			if (
+			if (key === 'custom') {
+				if (!this._customMetadataEqual(a[key], b[key])
+					&&
+					!(this.transientOptions.transientCellMetadata[key as keyof NotebookCellMetadata])
+				) {
+					return true;
+				}
+			} else if (
 				(a[key as keyof NotebookCellMetadata] !== b[key as keyof NotebookCellMetadata])
 				&&
 				!(this.transientOptions.transientCellMetadata[key as keyof NotebookCellMetadata])
@@ -742,7 +745,7 @@ export class NotebookTextModel extends Disposable implements INotebookTextModel 
 		let k: keyof NullablePartialNotebookCellMetadata;
 		for (k in metadata) {
 			const value = metadata[k] ?? undefined;
-			newMetadata[k] = value as any;
+			newMetadata[k] = value as any; // TS...
 		}
 
 		return this._changeCellMetadata(cell, newMetadata, computeUndoRedo);
@@ -760,7 +763,10 @@ export class NotebookTextModel extends Disposable implements INotebookTextModel 
 						if (!cell) {
 							return;
 						}
-						this._changeCellMetadata(cell, newMetadata, false);
+						this._changeCellMetadata(cell, {
+							...newMetadata,
+							runState: cell.metadata.runState
+						}, false);
 					}
 				}), undefined, undefined);
 			}
@@ -770,20 +776,6 @@ export class NotebookTextModel extends Disposable implements INotebookTextModel 
 		cell.metadata = metadata;
 
 		this._eventEmitter.emit({ kind: NotebookCellsChangeType.ChangeCellMetadata, index: this._cells.indexOf(cell), metadata: cell.metadata, transient: !triggerDirtyChange }, true);
-	}
-
-	private _changeCellInternalMetadataPartial(cell: NotebookCellTextModel, internalMetadata: NullablePartialNotebookCellInternalMetadata) {
-		const newInternalMetadata: NotebookCellInternalMetadata = {
-			...cell.internalMetadata
-		};
-		let k: keyof NotebookCellInternalMetadata;
-		for (k in internalMetadata) {
-			const value = internalMetadata[k] ?? undefined;
-			newInternalMetadata[k] = value as never; // {{SQL CARBON EDIT}} Cast to never to fix type assertion error
-		}
-
-		cell.internalMetadata = newInternalMetadata;
-		this._eventEmitter.emit({ kind: NotebookCellsChangeType.ChangeCellInternalMetadata, index: this._cells.indexOf(cell), internalMetadata: cell.internalMetadata, transient: true }, true);
 	}
 
 	private _changeCellLanguage(cell: NotebookCellTextModel, languageId: string, computeUndoRedo: boolean) {

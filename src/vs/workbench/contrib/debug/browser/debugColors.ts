@@ -135,23 +135,15 @@ export function registerColors() {
 			* Only visible when there are more active debug sessions/threads running.
 			*/
 			.debug-pane .debug-call-stack .thread > .state.label,
-			.debug-pane .debug-call-stack .session > .state.label {
+			.debug-pane .debug-call-stack .session > .state.label,
+			.debug-pane .monaco-list-row.selected .thread > .state.label,
+			.debug-pane .monaco-list-row.selected .session > .state.label {
 				background-color: ${debugViewStateLabelBackgroundColor};
 				color: ${debugViewStateLabelForegroundColor};
 			}
 
-			/* State "badge" displaying the active session's current state.
-			* Only visible when there are more active debug sessions/threads running
-			* and thread paused due to a thrown exception.
-			*/
-			.debug-pane .debug-call-stack .thread > .state.label.exception,
-			.debug-pane .debug-call-stack .session > .state.label.exception {
-				background-color: ${debugViewExceptionLabelBackgroundColor};
-				color: ${debugViewExceptionLabelForegroundColor};
-			}
-
 			/* Info "badge" shown when the debugger pauses due to a thrown exception. */
-			.debug-pane .call-stack-state-message > .label.exception {
+			.debug-pane .debug-call-stack-title > .pause-message > .label.exception {
 				background-color: ${debugViewExceptionLabelBackgroundColor};
 				color: ${debugViewExceptionLabelForegroundColor};
 			}

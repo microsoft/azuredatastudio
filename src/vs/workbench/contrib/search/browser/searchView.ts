@@ -19,7 +19,6 @@ import { Iterable } from 'vs/base/common/iterator';
 import { KeyCode, KeyMod } from 'vs/base/common/keyCodes';
 import { Disposable, DisposableStore, dispose } from 'vs/base/common/lifecycle';
 import { parseLinkedText } from 'vs/base/common/linkedText';
-import { Schemas } from 'vs/base/common/network';
 import * as env from 'vs/base/common/platform';
 import * as strings from 'vs/base/common/strings';
 import { URI } from 'vs/base/common/uri';
@@ -36,7 +35,6 @@ import * as nls from 'vs/nls';
 import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
 import { createAndFillInContextMenuActions } from 'vs/platform/actions/browser/menuEntryActionViewItem';
 import { IMenu, IMenuService, MenuId } from 'vs/platform/actions/common/actions';
-import { ICommandService } from 'vs/platform/commands/common/commands';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IContextKey, IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IContextMenuService, IContextViewService } from 'vs/platform/contextview/browser/contextView';
@@ -53,6 +51,7 @@ import { IProgress, IProgressService, IProgressStep } from 'vs/platform/progress
 import { IStorageService, StorageScope, StorageTarget } from 'vs/platform/storage/common/storage';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { diffInserted, diffInsertedOutline, diffRemoved, diffRemovedOutline, editorFindMatchHighlight, editorFindMatchHighlightBorder, foreground, listActiveSelectionForeground, textLinkActiveForeground, textLinkForeground, toolbarActiveBackground, toolbarHoverBackground } from 'vs/platform/theme/common/colorRegistry';
+import { attachLinkStyler } from 'vs/platform/theme/common/styler';
 import { IColorTheme, ICssStyleCollector, IThemeService, registerThemingParticipant, ThemeIcon } from 'vs/platform/theme/common/themeService';
 import { IWorkspaceContextService, WorkbenchState } from 'vs/platform/workspace/common/workspace';
 import { OpenFileFolderAction, OpenFolderAction } from 'vs/workbench/browser/actions/workspaceActions';
@@ -76,7 +75,6 @@ import { createEditorFromSearchResult } from 'vs/workbench/contrib/searchEditor/
 import { ACTIVE_GROUP, IEditorService, SIDE_GROUP } from 'vs/workbench/services/editor/common/editorService';
 import { IPreferencesService, ISettingsEditorOptions } from 'vs/workbench/services/preferences/common/preferences';
 import { IPatternInfo, ISearchComplete, ISearchConfiguration, ISearchConfigurationProperties, ITextQuery, SearchCompletionExitCode, SearchSortOrder, TextSearchCompleteMessageType } from 'vs/workbench/services/search/common/search';
-import { TextSearchCompleteMessage } from 'vs/workbench/services/search/common/searchExtTypes';
 import { ITextFileService } from 'vs/workbench/services/textfile/common/textfiles';
 
 const $ = dom.$;
@@ -162,7 +160,6 @@ export class SearchView extends ViewPane {
 		@IProgressService protected readonly progressService: IProgressService, // {{SQL CARBON EDIT}}
 		@INotificationService protected readonly notificationService: INotificationService, // {{SQL CARBON EDIT}}
 		@IDialogService protected readonly dialogService: IDialogService, // {{SQL CARBON EDIT}}
-		@ICommandService protected readonly commandService: ICommandService, // {{SQL CARBON EDIT}}
 		@IContextViewService protected readonly contextViewService: IContextViewService, // {{SQL CARBON EDIT}}
 		@IInstantiationService instantiationService: IInstantiationService,
 		@IViewDescriptorService viewDescriptorService: IViewDescriptorService,
@@ -909,7 +906,7 @@ export class SearchView extends ViewPane {
 
 	override focus(): void {
 		super.focus();
-		if (!env.isIOS && (this.lastFocusState === 'input' || !this.hasSearchResults())) {
+		if (this.lastFocusState === 'input' || !this.hasSearchResults()) {
 			const updatedText = this.searchConfig.seedOnFocus ? this.updateTextFromSelection({ allowSearchOnType: false }) : false;
 			this.searchWidget.focus(undefined, undefined, updatedText);
 		} else {
@@ -1534,7 +1531,7 @@ export class SearchView extends ViewPane {
 			if (completed && completed.messages) {
 				for (const message of completed.messages) {
 					if (message.type === TextSearchCompleteMessageType.Information) {
-						this.addMessage(message);
+						this.addMessage(message.text);
 					}
 					else if (message.type === TextSearchCompleteMessageType.Warning) {
 						warningMessage += (warningMessage ? ' - ' : '') + message.text;
@@ -1599,7 +1596,7 @@ export class SearchView extends ViewPane {
 			this.preferencesService.openGlobalSettings(undefined, options);
 	}
 
-	protected onLearnMore(): void { // {{SQL CARBON EDIT}}
+	protected onLearnMore(): void {
 		this.openerService.open(URI.parse('https://go.microsoft.com/fwlink/?linkid=853977'));
 	}
 
@@ -1657,8 +1654,8 @@ export class SearchView extends ViewPane {
 		}
 	}
 
-	private addMessage(message: TextSearchCompleteMessage) {
-		const linkedText = parseLinkedText(message.text);
+	private addMessage(message: string) {
+		const linkedText = parseLinkedText(message);
 
 		const messageBox = this.messagesElement.firstChild as HTMLDivElement;
 		if (!messageBox) {
@@ -1675,28 +1672,10 @@ export class SearchView extends ViewPane {
 			if (typeof node === 'string') {
 				dom.append(span, document.createTextNode(node));
 			} else {
-				const link = this.instantiationService.createInstance(Link, node, {
-					opener: async href => {
-						if (!message.trusted) { return; }
-						const parsed = URI.parse(href, true);
-						if (parsed.scheme === Schemas.command && message.trusted) {
-							const result = await this.commandService.executeCommand(parsed.path);
-							if ((result as any)?.triggerSearch) {
-								this.triggerQueryChange();
-							}
-						} else if (parsed.scheme === Schemas.https) {
-							this.openerService.open(parsed);
-						} else {
-							if (parsed.scheme === Schemas.command && !message.trusted) {
-								this.notificationService.error(nls.localize('unable to open trust', "Unable to open command link from untrusted source: {0}", href));
-							} else {
-								this.notificationService.error(nls.localize('unable to open', "Unable to open unknown link: {0}", href));
-							}
-						}
-					}
-				});
+				const link = this.instantiationService.createInstance(Link, node);
 				dom.append(span, link.el);
 				this.messageDisposables.add(link);
+				this.messageDisposables.add(attachLinkStyler(link, this.themeService));
 			}
 		}
 	}

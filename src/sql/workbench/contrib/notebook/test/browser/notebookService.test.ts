@@ -164,7 +164,7 @@ suite.skip('NotebookService:', function (): void {
 		notebookService = new NotebookService(lifecycleService, storageService, extensionServiceMock.object, extensionManagementService,
 			instantiationService, fileService, logServiceMock.object, queryManagementService, contextService, productService,
 			editorService, untitledTextEditorService, editorGroupsService, configurationService);
-		sandbox = sinon.createSandbox();
+		sandbox = sinon.sandbox.create();
 	});
 
 	teardown(() => {
@@ -412,7 +412,7 @@ suite.skip('NotebookService:', function (): void {
 				id: 'id1'
 			}
 		});
-		const targetMethodSpy = sandbox.spy(notebookService, methodName as keyof NotebookService);
+		const targetMethodSpy = sandbox.spy(notebookService, methodName);
 		didUninstallExtensionEmitter.fire(extensionIdentifier);
 		assert.ok(targetMethodSpy.calledWithExactly(extensionIdentifier.identifier, extensionServiceMock.object), `call arguments to ${methodName} should be ${extensionIdentifier.identifier} & ${extensionServiceMock.object}`);
 		assert.ok(targetMethodSpy.calledOnce, `${methodName} should be called exactly once`);
@@ -432,7 +432,7 @@ suite.skip('NotebookService:', function (): void {
 				id: 'id1'
 			}
 		});
-		const targetMethodSpy = sandbox.spy(notebookService, methodName as keyof NotebookService);
+		const targetMethodSpy = sandbox.spy(notebookService, methodName);
 		// the following call will encounter an exception internally with extensionService.getExtensions() returning undefined.
 		didUninstallExtensionEmitter.fire(extensionIdentifier);
 		assert.ok(targetMethodSpy.calledWithExactly(extensionIdentifier.identifier, extensionServiceMock.object), `call arguments to ${methodName} should be ${extensionIdentifier.identifier} & ${extensionServiceMock.object}`);

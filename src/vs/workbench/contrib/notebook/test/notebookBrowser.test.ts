@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as assert from 'assert';
@@ -28,8 +28,8 @@ suite('notebookBrowser', () => {
 
 		test('none code', function () {
 			const cells = [
-				{ cellKind: CellKind.Markup },
-				{ cellKind: CellKind.Markup },
+				{ cellKind: CellKind.Markdown },
+				{ cellKind: CellKind.Markdown },
 			];
 			assert.deepStrictEqual(getRanges(cells as ICellViewModel[], predicate), []);
 		});
@@ -37,7 +37,7 @@ suite('notebookBrowser', () => {
 		test('start code', function () {
 			const cells = [
 				{ cellKind: CellKind.Code },
-				{ cellKind: CellKind.Markup },
+				{ cellKind: CellKind.Markdown },
 			];
 			assert.deepStrictEqual(getRanges(cells as ICellViewModel[], predicate), [{ start: 0, end: 1 }]);
 		});
@@ -46,10 +46,10 @@ suite('notebookBrowser', () => {
 			const cells = [
 				{ cellKind: CellKind.Code },
 				{ cellKind: CellKind.Code },
-				{ cellKind: CellKind.Markup },
+				{ cellKind: CellKind.Markdown },
 				{ cellKind: CellKind.Code },
-				{ cellKind: CellKind.Markup },
-				{ cellKind: CellKind.Markup },
+				{ cellKind: CellKind.Markdown },
+				{ cellKind: CellKind.Markdown },
 				{ cellKind: CellKind.Code },
 			];
 			assert.deepStrictEqual(getRanges(cells as ICellViewModel[], predicate), [{ start: 0, end: 2 }, { start: 3, end: 4 }, { start: 6, end: 7 }]);

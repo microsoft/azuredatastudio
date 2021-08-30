@@ -2,31 +2,37 @@
   {
     "kind": 1,
     "language": "markdown",
-    "value": "#### Config"
+    "value": "#### Config",
+    "editable": true
   },
   {
     "kind": 2,
     "language": "github-issues",
-    "value": "$repo=repo:microsoft/vscode\n$milestone=milestone:\"June 2021\""
+    "value": "$repo=repo:microsoft/vscode\n$milestone=milestone:\"April 2021\"",
+    "editable": true
   },
   {
     "kind": 1,
     "language": "markdown",
-    "value": "### Finalization"
+    "value": "### Finalization",
+    "editable": true
   },
   {
     "kind": 2,
     "language": "github-issues",
-    "value": "$repo $milestone label:api-finalization"
+    "value": "$repo $milestone label:api-finalization",
+    "editable": true
   },
   {
     "kind": 1,
     "language": "markdown",
-    "value": "### Proposals"
+    "value": "### Proposals",
+    "editable": true
   },
   {
     "kind": 2,
     "language": "github-issues",
-    "value": "$repo $milestone is:open label:api-proposal "
+    "value": "$repo $milestone is:open label:api-proposal ",
+    "editable": true
   }
 ]

@@ -6,8 +6,8 @@
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
-import { ExtensionContext, workspace, window, Disposable, commands, OutputChannel } from 'vscode';
-import { findGit, Git } from './git';
+import { ExtensionContext, workspace, window, Disposable, commands, Uri, OutputChannel } from 'vscode';
+import { findGit, Git, IGit } from './git';
 import { Model } from './model';
 import { CommandCenter } from './commands';
 import { GitFileSystemProvider } from './fileSystemProvider';
@@ -18,7 +18,7 @@ import TelemetryReporter from 'vscode-extension-telemetry';
 import { GitExtension } from './api/git';
 import { GitProtocolHandler } from './protocolHandler';
 import { GitExtensionImpl } from './api/extension';
-// import * as path from 'path'; {{SQL CARBON EDIT}}
+// import * as path from 'path';
 // import * as fs from 'fs';
 import * as os from 'os';
 import { GitTimelineProvider } from './timelineProvider';
@@ -191,7 +191,6 @@ export async function activate(context: ExtensionContext): Promise<GitExtension>
 	return result;
 }
 
-/* {{SQL CARBON EDIT}}
 async function checkGitv1(info: IGit): Promise<void> {
 	const config = workspace.getConfiguration('git');
 	const shouldIgnore = config.get<boolean>('ignoreLegacyWarning') === true;
@@ -247,10 +246,11 @@ async function checkGitWindows(info: IGit): Promise<void> {
 	}
 }
 
+// @ts-expect-error
 async function checkGitVersion(info: IGit): Promise<void> {
 	await checkGitv1(info);
 
 	if (process.platform === 'win32') {
 		await checkGitWindows(info);
 	}
-}*/
+}

@@ -25,13 +25,6 @@ import { DisposableStore } from 'vs/base/common/lifecycle';
 
 export const IIssueMainService = createDecorator<IIssueMainService>('issueMainService');
 
-interface IBrowserWindowOptions {
-	backgroundColor: string | undefined;
-	title: string;
-	zoomLevel: number;
-	alwaysOnTop: boolean;
-}
-
 export interface IIssueMainService extends ICommonIssueService { }
 
 export class IssueMainService implements ICommonIssueService {
@@ -196,12 +189,7 @@ export class IssueMainService implements ICommonIssueService {
 				const issueReporterWindowConfigUrl = issueReporterDisposables.add(this.protocolMainService.createIPCObjectUrl<IssueReporterWindowConfiguration>());
 				const position = this.getWindowPosition(this.issueReporterParentWindow, 700, 800);
 
-				this.issueReporterWindow = this.createBrowserWindow(position, issueReporterWindowConfigUrl, {
-					backgroundColor: data.styles.backgroundColor,
-					title: localize('issueReporter', "Issue Reporter"),
-					zoomLevel: data.zoomLevel,
-					alwaysOnTop: false
-				});
+				this.issueReporterWindow = this.createBrowserWindow(position, issueReporterWindowConfigUrl, data.styles.backgroundColor, localize('issueReporter', "Issue Reporter"), data.zoomLevel);
 
 				// Store into config object URL
 				issueReporterWindowConfigUrl.update({
@@ -251,12 +239,7 @@ export class IssueMainService implements ICommonIssueService {
 				const processExplorerWindowConfigUrl = processExplorerDisposables.add(this.protocolMainService.createIPCObjectUrl<ProcessExplorerWindowConfiguration>());
 				const position = this.getWindowPosition(this.processExplorerParentWindow, 800, 500);
 
-				this.processExplorerWindow = this.createBrowserWindow(position, processExplorerWindowConfigUrl, {
-					backgroundColor: data.styles.backgroundColor,
-					title: localize('processExplorer', "Process Explorer"),
-					zoomLevel: data.zoomLevel,
-					alwaysOnTop: true
-				});
+				this.processExplorerWindow = this.createBrowserWindow(position, processExplorerWindowConfigUrl, data.styles.backgroundColor, localize('processExplorer', "Process Explorer"), data.zoomLevel);
 
 				// Store into config object URL
 				processExplorerWindowConfigUrl.update({
@@ -290,7 +273,7 @@ export class IssueMainService implements ICommonIssueService {
 		this.processExplorerWindow?.focus();
 	}
 
-	private createBrowserWindow<T>(position: IWindowState, ipcObjectUrl: IIPCObjectUrl<T>, options: IBrowserWindowOptions): BrowserWindow {
+	private createBrowserWindow<T>(position: IWindowState, ipcObjectUrl: IIPCObjectUrl<T>, backgroundColor: string | undefined, title: string, zoomLevel: number): BrowserWindow {
 		const window = new BrowserWindow({
 			fullscreen: false,
 			skipTaskbar: true,
@@ -301,20 +284,20 @@ export class IssueMainService implements ICommonIssueService {
 			minHeight: 200,
 			x: position.x,
 			y: position.y,
-			title: options.title,
-			backgroundColor: options.backgroundColor || IssueMainService.DEFAULT_BACKGROUND_COLOR,
+			title,
+			backgroundColor: backgroundColor || IssueMainService.DEFAULT_BACKGROUND_COLOR,
 			webPreferences: {
 				preload: FileAccess.asFileUri('vs/base/parts/sandbox/electron-browser/preload.js', require).fsPath,
 				additionalArguments: [`--vscode-window-config=${ipcObjectUrl.resource.toString()}`, '--context-isolation' /* TODO@bpasero: Use process.contextIsolateed when 13-x-y is adopted (https://github.com/electron/electron/pull/28030) */],
 				v8CacheOptions: browserCodeLoadingCacheStrategy,
 				enableWebSQL: false,
+				enableRemoteModule: false,
 				spellcheck: false,
 				nativeWindowOpen: true,
-				zoomFactor: zoomLevelToZoomFactor(options.zoomLevel),
+				zoomFactor: zoomLevelToZoomFactor(zoomLevel),
 				sandbox: true,
-				contextIsolation: true,
-			},
-			alwaysOnTop: options.alwaysOnTop
+				contextIsolation: true
+			}
 		});
 
 		window.setMenuBarVisibility(false);

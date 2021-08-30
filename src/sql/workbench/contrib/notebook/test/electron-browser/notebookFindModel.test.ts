@@ -79,8 +79,8 @@ suite('Notebook Find Model', function (): void {
 
 	setup(async () => {
 		sessionReady = new Deferred<void>();
-		notificationService = TypeMoq.Mock.ofType<INotificationService>(TestNotificationService, TypeMoq.MockBehavior.Loose);
-		capabilitiesService = TypeMoq.Mock.ofType<ICapabilitiesService>(TestCapabilitiesService);
+		notificationService = TypeMoq.Mock.ofType(TestNotificationService, TypeMoq.MockBehavior.Loose);
+		capabilitiesService = TypeMoq.Mock.ofType(TestCapabilitiesService);
 		memento = TypeMoq.Mock.ofType(Memento, TypeMoq.MockBehavior.Loose, '');
 		memento.setup(x => x.getMemento(TypeMoq.It.isAny(), TypeMoq.It.isAny()
 		)).returns(() => void 0);
@@ -102,7 +102,7 @@ suite('Notebook Find Model', function (): void {
 			layoutChanged: undefined,
 			capabilitiesService: capabilitiesService.object
 		};
-		mockClientSession = TypeMoq.Mock.ofType<IClientSession>(ClientSession, undefined, defaultModelOptions);
+		mockClientSession = TypeMoq.Mock.ofType(ClientSession, undefined, defaultModelOptions);
 		mockClientSession.setup(c => c.initialize()).returns(() => {
 			return Promise.resolve();
 		});

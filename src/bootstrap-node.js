@@ -11,7 +11,6 @@
 // -   Posix: allow to change the current working dir via `VSCODE_CWD` if defined
 // -  all OS: store the `process.cwd()` inside `VSCODE_CWD` for consistent lookups
 // TODO@bpasero revisit if chdir() on Windows is needed in the future still
-// (find all users of `chdir` in code, there are more locations)
 function setupCurrentWorkingDirectory() {
 	const path = require('path');
 

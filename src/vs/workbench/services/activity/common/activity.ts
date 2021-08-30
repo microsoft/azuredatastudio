@@ -46,7 +46,7 @@ export interface IBadge {
 
 class BaseBadge implements IBadge {
 
-	constructor(readonly descriptorFn: (arg: any) => string) {
+	constructor(public readonly descriptorFn: (arg: any) => string) {
 		this.descriptorFn = descriptorFn;
 	}
 
@@ -57,7 +57,7 @@ class BaseBadge implements IBadge {
 
 export class NumberBadge extends BaseBadge {
 
-	constructor(readonly number: number, descriptorFn: (num: number) => string) {
+	constructor(public readonly number: number, descriptorFn: (num: number) => string) {
 		super(descriptorFn);
 
 		this.number = number;
@@ -70,13 +70,13 @@ export class NumberBadge extends BaseBadge {
 
 export class TextBadge extends BaseBadge {
 
-	constructor(readonly text: string, descriptorFn: () => string) {
+	constructor(public readonly text: string, descriptorFn: () => string) {
 		super(descriptorFn);
 	}
 }
 
 export class IconBadge extends BaseBadge {
-	constructor(readonly icon: ThemeIcon, descriptorFn: () => string) {
+	constructor(public readonly icon: ThemeIcon, descriptorFn: () => string) {
 		super(descriptorFn);
 	}
 }

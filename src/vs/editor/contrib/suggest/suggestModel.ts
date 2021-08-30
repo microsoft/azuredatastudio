@@ -428,13 +428,13 @@ export class SuggestModel implements IDisposable {
 				break;
 		}
 
-		const { itemKind: itemKindFilter, showDeprecated } = SuggestModel._createSuggestFilter(this._editor);
+		const itemKindFilter = SuggestModel._createItemKindFilter(this._editor);
 		const wordDistance = WordDistance.create(this._editorWorkerService, this._editor);
 
 		const completions = provideSuggestionItems(
 			model,
 			this._editor.getPosition(),
-			new CompletionOptions(snippetSortOrder, itemKindFilter, onlyFrom, showDeprecated),
+			new CompletionOptions(snippetSortOrder, itemKindFilter, onlyFrom),
 			suggestCtx,
 			this._requestToken.token
 		);
@@ -502,7 +502,7 @@ export class SuggestModel implements IDisposable {
 		});
 	}
 
-	private static _createSuggestFilter(editor: ICodeEditor): { itemKind: Set<CompletionItemKind>; showDeprecated: boolean } {
+	private static _createItemKindFilter(editor: ICodeEditor): Set<CompletionItemKind> {
 		// kind filter and snippet sort rules
 		const result = new Set<CompletionItemKind>();
 
@@ -543,7 +543,7 @@ export class SuggestModel implements IDisposable {
 		if (!suggestOptions.showUsers) { result.add(CompletionItemKind.User); }
 		if (!suggestOptions.showIssues) { result.add(CompletionItemKind.Issue); }
 
-		return { itemKind: result, showDeprecated: suggestOptions.showDeprecated };
+		return result;
 	}
 
 	private _onNewContext(ctx: LineContext): void {

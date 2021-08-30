@@ -66,9 +66,6 @@ export interface IEnvironmentService {
 	extensionDevelopmentKind?: ExtensionKind[];
 	extensionTestsLocationURI?: URI;
 
-	// --- workspace trust
-	disableWorkspaceTrust: boolean;
-
 	// --- logging
 	logsPath: string;
 	logLevel?: string;

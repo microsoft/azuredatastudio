@@ -6,12 +6,12 @@
 import { Schemas } from 'vs/base/common/network';
 import { deepFreeze, equals } from 'vs/base/common/objects';
 import { URI } from 'vs/base/common/uri';
-import { INotebookDocumentPropertiesChangeData, MainThreadNotebookDocumentsShape } from 'vs/workbench/api/common/extHost.protocol';
+import { CellKind, INotebookDocumentPropertiesChangeData, MainThreadNotebookDocumentsShape } from 'vs/workbench/api/common/extHost.protocol';
 import { ExtHostDocuments } from 'vs/workbench/api/common/extHostDocuments';
 import { ExtHostDocumentsAndEditors, IExtHostModelAddedData } from 'vs/workbench/api/common/extHostDocumentsAndEditors';
 import * as extHostTypeConverters from 'vs/workbench/api/common/extHostTypeConverters';
 import * as extHostTypes from 'vs/workbench/api/common/extHostTypes';
-import { CellKind, IMainCellDto, IOutputDto, IOutputItemDto, NotebookCellInternalMetadata, NotebookCellMetadata, NotebookCellsChangedEventDto, NotebookCellsChangeType, NotebookCellsSplice2 } from 'vs/workbench/contrib/notebook/common/notebookCommon';
+import { IMainCellDto, IOutputDto, IOutputItemDto, NotebookCellMetadata, NotebookCellsChangedEventDto, NotebookCellsChangeType, NotebookCellsSplice2 } from 'vs/workbench/contrib/notebook/common/notebookCommon';
 import * as vscode from 'vscode';
 
 class RawContentChangeEvent {
@@ -44,19 +44,19 @@ export class ExtHostCell {
 		};
 	}
 
-	private _outputs: vscode.NotebookCellOutput[];
-	private _metadata: NotebookCellMetadata;
+	private _outputs: extHostTypes.NotebookCellOutput[];
+	private _metadata: extHostTypes.NotebookCellMetadata;
 	private _previousResult: vscode.NotebookCellExecutionSummary | undefined;
 
-	private _internalMetadata: NotebookCellInternalMetadata;
+	private _internalMetadata: NotebookCellMetadata;
 	readonly handle: number;
 	readonly uri: URI;
 	readonly cellKind: CellKind;
 
-	private _apiCell: vscode.NotebookCell | undefined;
+	private _cell: vscode.NotebookCell | undefined;
 
 	constructor(
-		readonly notebook: ExtHostNotebookDocument,
+		private readonly _notebook: ExtHostNotebookDocument,
 		private readonly _extHostDocument: ExtHostDocumentsAndEditors,
 		private readonly _cellData: IMainCellDto,
 	) {
@@ -64,33 +64,33 @@ export class ExtHostCell {
 		this.uri = URI.revive(_cellData.uri);
 		this.cellKind = _cellData.cellKind;
 		this._outputs = _cellData.outputs.map(extHostTypeConverters.NotebookCellOutput.to);
-		this._internalMetadata = _cellData.internalMetadata ?? {};
-		this._metadata = _cellData.metadata ?? {};
-		this._previousResult = extHostTypeConverters.NotebookCellExecutionSummary.to(_cellData.internalMetadata ?? {});
+		this._internalMetadata = _cellData.metadata ?? {};
+		this._metadata = extHostTypeConverters.NotebookCellMetadata.to(this._internalMetadata);
+		this._previousResult = extHostTypeConverters.NotebookCellPreviousExecutionResult.to(this._internalMetadata);
 	}
 
-	get internalMetadata(): NotebookCellInternalMetadata {
+	get internalMetadata(): NotebookCellMetadata {
 		return this._internalMetadata;
 	}
 
 	get apiCell(): vscode.NotebookCell {
-		if (!this._apiCell) {
+		if (!this._cell) {
 			const that = this;
 			const data = this._extHostDocument.getDocument(this.uri);
 			if (!data) {
 				throw new Error(`MISSING extHostDocument for notebook cell: ${this.uri}`);
 			}
-			this._apiCell = Object.freeze<vscode.NotebookCell>({
-				get index() { return that.notebook.getCellIndex(that); },
-				notebook: that.notebook.apiNotebook,
+			this._cell = Object.freeze<vscode.NotebookCell>({
+				get index() { return that._notebook.getCellIndex(that); },
+				notebook: that._notebook.apiNotebook,
 				kind: extHostTypeConverters.NotebookCellKind.to(this._cellData.cellKind),
 				document: data.document,
 				get outputs() { return that._outputs.slice(0); },
 				get metadata() { return that._metadata; },
-				get executionSummary() { return that._previousResult; }
+				get latestExecutionSummary() { return that._previousResult; }
 			});
 		}
-		return this._apiCell;
+		return this._cell;
 	}
 
 	setOutputs(newOutputs: IOutputDto[]): void {
@@ -102,19 +102,16 @@ export class ExtHostCell {
 		const output = this._outputs.find(op => op.id === outputId);
 		if (output) {
 			if (!append) {
-				output.items.length = 0;
+				output.outputs.length = 0;
 			}
-			output.items.push(...newItems);
+			output.outputs.push(...newItems);
 		}
 	}
 
 	setMetadata(newMetadata: NotebookCellMetadata): void {
-		this._metadata = newMetadata;
-	}
-
-	setInternalMetadata(newInternalMetadata: NotebookCellInternalMetadata): void {
-		this._internalMetadata = newInternalMetadata;
-		this._previousResult = extHostTypeConverters.NotebookCellExecutionSummary.to(newInternalMetadata);
+		this._internalMetadata = newMetadata;
+		this._metadata = extHostTypeConverters.NotebookCellMetadata.to(newMetadata);
+		this._previousResult = extHostTypeConverters.NotebookCellPreviousExecutionResult.to(newMetadata);
 	}
 }
 
@@ -144,8 +141,8 @@ export class ExtHostNotebookDocument {
 		private readonly _textDocumentsAndEditors: ExtHostDocumentsAndEditors,
 		private readonly _textDocuments: ExtHostDocuments,
 		private readonly _emitter: INotebookEventEmitter,
-		private readonly _notebookType: string,
-		private _metadata: Record<string, any>,
+		private readonly _viewType: string,
+		private _metadata: extHostTypes.NotebookDocumentMetadata,
 		readonly uri: URI,
 	) { }
 
@@ -159,7 +156,7 @@ export class ExtHostNotebookDocument {
 			this._notebook = {
 				get uri() { return that.uri; },
 				get version() { return that._versionId; },
-				get notebookType() { return that._notebookType; },
+				get viewType() { return that._viewType; },
 				get isDirty() { return that._isDirty; },
 				get isUntitled() { return that.uri.scheme === Schemas.untitled; },
 				get isClosed() { return that._disposed; },
@@ -193,7 +190,7 @@ export class ExtHostNotebookDocument {
 
 	acceptDocumentPropertiesChanged(data: INotebookDocumentPropertiesChangeData) {
 		if (data.metadata) {
-			this._metadata = { ...this._metadata, ...data.metadata };
+			this._metadata = this._metadata.with(data.metadata);
 		}
 	}
 
@@ -216,14 +213,11 @@ export class ExtHostNotebookDocument {
 				this._changeCellLanguage(rawEvent.index, rawEvent.language);
 			} else if (rawEvent.kind === NotebookCellsChangeType.ChangeCellMetadata) {
 				this._changeCellMetadata(rawEvent.index, rawEvent.metadata);
-			} else if (rawEvent.kind === NotebookCellsChangeType.ChangeCellInternalMetadata) {
-				this._changeCellInternalMetadata(rawEvent.index, rawEvent.internalMetadata);
 			}
 		}
 	}
 
 	private _validateIndex(index: number): number {
-		index = index | 0;
 		if (index < 0) {
 			return 0;
 		} else if (index >= this._cells.length) {
@@ -234,15 +228,13 @@ export class ExtHostNotebookDocument {
 	}
 
 	private _validateRange(range: vscode.NotebookRange): vscode.NotebookRange {
-		let start = range.start | 0;
-		let end = range.end | 0;
-		if (start < 0) {
-			start = 0;
+		if (range.start < 0) {
+			range = range.with({ start: 0 });
 		}
-		if (end > this._cells.length) {
-			end = this._cells.length;
+		if (range.end > this._cells.length) {
+			range = range.with({ end: this._cells.length });
 		}
-		return range.with({ start, end });
+		return range;
 	}
 
 	private _getCells(range: vscode.NotebookRange): ExtHostCell[] {
@@ -258,7 +250,7 @@ export class ExtHostNotebookDocument {
 		if (this._disposed) {
 			return Promise.reject(new Error('Notebook has been closed'));
 		}
-		return this._proxy.$trySaveNotebook(this.uri);
+		return this._proxy.$trySaveDocument(this.uri);
 	}
 
 	private _spliceNotebookCells(splices: NotebookCellsSplice2[], initialization: boolean): void {
@@ -283,7 +275,7 @@ export class ExtHostNotebookDocument {
 
 			const changeEvent = new RawContentChangeEvent(splice[0], splice[1], [], newCells);
 			const deletedItems = this._cells.splice(splice[0], splice[1], ...newCells);
-			for (const cell of deletedItems) {
+			for (let cell of deletedItems) {
 				removedCellDocuments.push(cell.uri);
 				changeEvent.deletedItems.push(cell.apiCell);
 			}
@@ -339,6 +331,7 @@ export class ExtHostNotebookDocument {
 	private _changeCellMetadata(index: number, newMetadata: NotebookCellMetadata): void {
 		const cell = this._cells[index];
 
+		const originalInternalMetadata = cell.internalMetadata;
 		const originalExtMetadata = cell.apiCell.metadata;
 		cell.setMetadata(newMetadata);
 		const newExtMetadata = cell.apiCell.metadata;
@@ -346,22 +339,11 @@ export class ExtHostNotebookDocument {
 		if (!equals(originalExtMetadata, newExtMetadata)) {
 			this._emitter.emitCellMetadataChange(deepFreeze({ document: this.apiNotebook, cell: cell.apiCell }));
 		}
-	}
 
-	private _changeCellInternalMetadata(index: number, newInternalMetadata: NotebookCellInternalMetadata): void {
-		const cell = this._cells[index];
-
-		const originalInternalMetadata = cell.internalMetadata;
-		cell.setInternalMetadata(newInternalMetadata);
-
-		if (originalInternalMetadata.runState !== newInternalMetadata.runState) {
-			const executionState = newInternalMetadata.runState ?? extHostTypes.NotebookCellExecutionState.Idle;
-			this._emitter.emitCellExecutionStateChange(deepFreeze({ document: this.apiNotebook, cell: cell.apiCell, state: executionState }));
+		if (originalInternalMetadata.runState !== newMetadata.runState) {
+			const executionState = newMetadata.runState ?? extHostTypes.NotebookCellExecutionState.Idle;
+			this._emitter.emitCellExecutionStateChange(deepFreeze({ document: this.apiNotebook, cell: cell.apiCell, executionState }));
 		}
-	}
-
-	getCellFromApiCell(apiCell: vscode.NotebookCell): ExtHostCell | undefined {
-		return this._cells.find(cell => cell.apiCell === apiCell);
 	}
 
 	getCellFromIndex(index: number): ExtHostCell | undefined {

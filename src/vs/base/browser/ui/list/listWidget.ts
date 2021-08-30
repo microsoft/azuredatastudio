@@ -660,15 +660,9 @@ export class MouseController<T> implements IDisposable {
 
 	private changeSelection(e: IListMouseEvent<T> | IListTouchEvent<T>): void {
 		const focus = e.index!;
-		let anchor = this.list.getAnchor();
+		const anchor = this.list.getAnchor();
 
-		if (this.isSelectionRangeChangeEvent(e)) {
-			if (typeof anchor === 'undefined') {
-				const currentFocus = this.list.getFocus()[0];
-				anchor = currentFocus ?? focus;
-				this.list.setAnchor(anchor);
-			}
-
+		if (this.isSelectionRangeChangeEvent(e) && typeof anchor === 'number') {
 			const min = Math.min(anchor, focus);
 			const max = Math.max(anchor, focus);
 			const rangeSelection = range(min, max + 1);
@@ -1207,7 +1201,7 @@ export class List<T> implements ISpliceable<T>, IThemable, IDisposable {
 
 		const fromMouse = Event.chain(this.view.onContextMenu)
 			.filter(_ => !didJustPressContextMenuKey)
-			.map(({ element, index, browserEvent }) => ({ element, index, anchor: { x: browserEvent.pageX + 1, y: browserEvent.pageY }, browserEvent }))
+			.map(({ element, index, browserEvent }) => ({ element, index, anchor: { x: browserEvent.clientX + 1, y: browserEvent.clientY }, browserEvent }))
 			.event;
 
 		return Event.any<IListContextMenuEvent<T>>(fromKeyDown, fromKeyUp, fromMouse);

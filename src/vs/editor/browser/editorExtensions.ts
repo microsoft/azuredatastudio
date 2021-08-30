@@ -61,14 +61,14 @@ export interface ICommandMenuOptions {
 export interface ICommandOptions {
 	id: string;
 	precondition: ContextKeyExpression | undefined;
-	kbOpts?: ICommandKeybindingsOptions | ICommandKeybindingsOptions[];
+	kbOpts?: ICommandKeybindingsOptions;
 	description?: ICommandHandlerDescription;
 	menuOpts?: ICommandMenuOptions | ICommandMenuOptions[];
 }
 export abstract class Command {
 	public readonly id: string;
 	public readonly precondition: ContextKeyExpression | undefined;
-	private readonly _kbOpts: ICommandKeybindingsOptions | ICommandKeybindingsOptions[] | undefined;
+	private readonly _kbOpts: ICommandKeybindingsOptions | undefined;
 	private readonly _menuOpts: ICommandMenuOptions | ICommandMenuOptions[] | undefined;
 	private readonly _description: ICommandHandlerDescription | undefined;
 
@@ -89,38 +89,37 @@ export abstract class Command {
 		}
 
 		if (this._kbOpts) {
-			const kbOptsArr = Array.isArray(this._kbOpts) ? this._kbOpts : [this._kbOpts];
-			for (const kbOpts of kbOptsArr) {
-				let kbWhen = kbOpts.kbExpr;
-				if (this.precondition) {
-					if (kbWhen) {
-						kbWhen = ContextKeyExpr.and(kbWhen, this.precondition);
-					} else {
-						kbWhen = this.precondition;
-					}
+			let kbWhen = this._kbOpts.kbExpr;
+			if (this.precondition) {
+				if (kbWhen) {
+					kbWhen = ContextKeyExpr.and(kbWhen, this.precondition);
+				} else {
+					kbWhen = this.precondition;
 				}
-
-				const desc = {
-					id: this.id,
-					weight: kbOpts.weight,
-					args: kbOpts.args,
-					when: kbWhen,
-					primary: kbOpts.primary,
-					secondary: kbOpts.secondary,
-					win: kbOpts.win,
-					linux: kbOpts.linux,
-					mac: kbOpts.mac,
-				};
-
-				KeybindingsRegistry.registerKeybindingRule(desc);
 			}
-		}
 
-		CommandsRegistry.registerCommand({
-			id: this.id,
-			handler: (accessor, args) => this.runCommand(accessor, args),
-			description: this._description
-		});
+			KeybindingsRegistry.registerCommandAndKeybindingRule({
+				id: this.id,
+				handler: (accessor, args) => this.runCommand(accessor, args),
+				weight: this._kbOpts.weight,
+				args: this._kbOpts.args,
+				when: kbWhen,
+				primary: this._kbOpts.primary,
+				secondary: this._kbOpts.secondary,
+				win: this._kbOpts.win,
+				linux: this._kbOpts.linux,
+				mac: this._kbOpts.mac,
+				description: this._description
+			});
+
+		} else {
+
+			CommandsRegistry.registerCommand({
+				id: this.id,
+				handler: (accessor, args) => this.runCommand(accessor, args),
+				description: this._description
+			});
+		}
 	}
 
 	private _registerMenuItem(item: ICommandMenuOptions): void {
@@ -349,16 +348,14 @@ export abstract class EditorAction extends EditorCommand {
 	public abstract run(accessor: ServicesAccessor, editor: ICodeEditor, args: any): void | Promise<void>;
 }
 
-export type EditorActionImplementation = (accessor: ServicesAccessor, editor: ICodeEditor, args: any) => boolean | Promise<void>;
-
 export class MultiEditorAction extends EditorAction {
 
-	private readonly _implementations: [number, EditorActionImplementation][] = [];
+	private readonly _implementations: [number, CommandImplementation][] = [];
 
 	/**
 	 * A higher priority gets to be looked at first
 	 */
-	public addImplementation(priority: number, implementation: EditorActionImplementation): IDisposable {
+	public addImplementation(priority: number, implementation: CommandImplementation): IDisposable {
 		this._implementations.push([priority, implementation]);
 		this._implementations.sort((a, b) => b[0] - a[0]);
 		return {
@@ -375,7 +372,7 @@ export class MultiEditorAction extends EditorAction {
 
 	public run(accessor: ServicesAccessor, editor: ICodeEditor, args: any): void | Promise<void> {
 		for (const impl of this._implementations) {
-			const result = impl[1](accessor, editor, args);
+			const result = impl[1](accessor, args);
 			if (result) {
 				if (typeof result === 'boolean') {
 					return;

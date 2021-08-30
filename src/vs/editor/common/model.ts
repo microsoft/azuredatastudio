@@ -74,11 +74,6 @@ export interface IModelDecorationMinimapOptions extends IDecorationOptions {
  */
 export interface IModelDecorationOptions {
 	/**
-	 * A debug description that can be used for inspecting model decorations.
-	 * @internal
-	 */
-	description: string;
-	/**
 	 * Customize the growing behavior of the decoration when typing at the edges of the decoration.
 	 * Defaults to TrackedRangeStickiness.AlwaysGrowsWhenTypingAtEdges
 	 */
@@ -1225,6 +1220,7 @@ export interface ITextModel {
 	/**
 	 * An event emitted when the model has been attached to the first editor or detached from the last editor.
 	 * @event
+	 * @internal
 	 */
 	onDidChangeAttached(listener: () => void): IDisposable;
 	/**
@@ -1251,6 +1247,7 @@ export interface ITextModel {
 
 	/**
 	 * Returns if this model is attached to an editor or not.
+	 * @internal
 	 */
 	isAttachedToEditor(): boolean;
 
@@ -1259,33 +1256,6 @@ export interface ITextModel {
 	 * @internal
 	 */
 	getAttachedEditorCount(): number;
-
-	/**
-	 * Among all positions that are projected to the same position in the underlying text model as
-	 * the given position, select a unique position as indicated by the affinity.
-	 * @internal
-	 */
-	normalizePosition(position: Position, affinity: PositionNormalizationAffinity): Position;
-
-	/**
-	 * Gets the column at which indentation stops at a given line.
-	 * @internal
-	*/
-	getLineIndentColumn(lineNumber: number): number;
-}
-
-/**
- * @internal
- */
-export const enum PositionNormalizationAffinity {
-	/**
-	 * Prefers the left most position.
-	*/
-	Left = 0,
-	/**
-	 * Prefers the right most position.
-	*/
-	Right = 1,
 }
 
 /**

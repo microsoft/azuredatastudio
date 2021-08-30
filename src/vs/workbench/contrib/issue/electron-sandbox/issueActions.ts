@@ -3,49 +3,41 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { localize } from 'vs/nls';
-import { Action2 } from 'vs/platform/actions/common/actions';
-import { ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
+import { Action } from 'vs/base/common/actions';
+import * as nls from 'vs/nls';
 import { IssueType } from 'vs/platform/issue/common/issue';
-import { CATEGORIES } from 'vs/workbench/common/actions';
 import { IWorkbenchIssueService } from 'vs/workbench/services/issue/common/issue';
 
-export class OpenProcessExplorer extends Action2 {
-
+export class OpenProcessExplorer extends Action {
 	static readonly ID = 'workbench.action.openProcessExplorer';
+	static readonly LABEL = nls.localize('openProcessExplorer', "Open Process Explorer");
 
-	constructor() {
-		super({
-			id: OpenProcessExplorer.ID,
-			title: { value: localize('openProcessExplorer', "Open Process Explorer"), original: 'Open Process Explorer' },
-			category: CATEGORIES.Developer,
-			f1: true
-		});
+	constructor(
+		id: string,
+		label: string,
+		@IWorkbenchIssueService private readonly issueService: IWorkbenchIssueService
+	) {
+		super(id, label);
 	}
 
-	override async run(accessor: ServicesAccessor): Promise<void> {
-		const issueService = accessor.get(IWorkbenchIssueService);
-
-		return issueService.openProcessExplorer();
+	override run(): Promise<void> {
+		return this.issueService.openProcessExplorer();
 	}
 }
 
-export class ReportPerformanceIssueUsingReporterAction extends Action2 {
-
+export class ReportPerformanceIssueUsingReporterAction extends Action {
 	static readonly ID = 'workbench.action.reportPerformanceIssueUsingReporter';
+	static readonly LABEL = nls.localize({ key: 'reportPerformanceIssue', comment: [`Here, 'issue' means problem or bug`] }, "Report Performance Issue");
 
-	constructor() {
-		super({
-			id: ReportPerformanceIssueUsingReporterAction.ID,
-			title: { value: localize({ key: 'reportPerformanceIssue', comment: [`Here, 'issue' means problem or bug`] }, "Report Performance Issue"), original: 'Report Performance Issue' },
-			category: CATEGORIES.Help,
-			f1: true
-		});
+	constructor(
+		id: string,
+		label: string,
+		@IWorkbenchIssueService private readonly issueService: IWorkbenchIssueService
+	) {
+		super(id, label);
 	}
 
-	override async run(accessor: ServicesAccessor): Promise<void> {
-		const issueService = accessor.get(IWorkbenchIssueService);
-
-		return issueService.openReporter({ issueType: IssueType.PerformanceIssue });
+	override run(): Promise<void> {
+		return this.issueService.openReporter({ issueType: IssueType.PerformanceIssue });
 	}
 }

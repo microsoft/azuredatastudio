@@ -24,6 +24,7 @@ import { ILanguageMagic } from 'sql/workbench/services/notebook/browser/notebook
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/textResourceConfigurationService';
 import { URI } from 'vs/base/common/uri';
 import { getUriPrefix, uriPrefixes } from 'sql/platform/connection/common/utils';
+import { startsWith } from 'vs/base/common/strings';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { FutureInternal, notebookConstants } from 'sql/workbench/services/notebook/browser/interfaces';
 import { tryMatchCellMagic } from 'sql/workbench/services/notebook/browser/utils';
@@ -356,7 +357,7 @@ class SqlKernel extends Disposable implements nb.IKernel {
 		let code = Array.isArray(content.code) ? content.code.join('') : content.code;
 		let firstLineEnd = code.indexOf(this.textResourcePropertiesService.getEOL(URI.file(this._path)));
 		let firstLine = code.substring(0, (firstLineEnd >= 0) ? firstLineEnd : 0).trimLeft();
-		if (firstLine.startsWith('%%')) {
+		if (startsWith(firstLine, '%%')) {
 			// Strip out the line
 			code = code.substring(firstLineEnd, code.length);
 			// Try and match to an external script magic. If we add more magics later, should handle transforms better

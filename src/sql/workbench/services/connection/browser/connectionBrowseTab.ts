@@ -674,9 +674,9 @@ class TreeItemRenderer extends Disposable implements ITreeRenderer<ITreeItemFrom
 		if (iconUrl || sqlIcon) {
 			templateData.icon.className = 'custom-view-tree-node-item-icon';
 			if (sqlIcon) {
-				templateData.icon.classList.toggle(sqlIcon, !!sqlIcon);  // tracked change
+				DOM.toggleClass(templateData.icon, sqlIcon, !!sqlIcon);  // tracked change
 			}
-			templateData.icon.classList.toggle('icon', !!sqlIcon);
+			DOM.toggleClass(templateData.icon, 'icon', !!sqlIcon);
 			templateData.icon.style.backgroundImage = iconUrl ? DOM.asCSSUrl(iconUrl) : '';
 		} else {
 			let iconClass: string | undefined;

@@ -17,7 +17,6 @@ import { FileAccess, RemoteAuthorities } from 'vs/base/common/network';
 import { BrowserFeatures } from 'vs/base/browser/canIUse';
 import { insane, InsaneOptions } from 'vs/base/common/insane/insane';
 import { KeyCode } from 'vs/base/common/keyCodes';
-import { withNullAsUndefined } from 'vs/base/common/types';
 
 export function clearNode(node: HTMLElement): void {
 	while (node.firstChild) {
@@ -26,11 +25,78 @@ export function clearNode(node: HTMLElement): void {
 }
 
 /**
- * @deprecated Use node.isConnected directly
+ * @deprecated use `node.remove()` instead
  */
+export function removeNode(node: HTMLElement): void {
+	if (node.parentNode) {
+		node.parentNode.removeChild(node);
+	}
+}
+
+export function trustedInnerHTML(node: Element, value: TrustedHTML): void {
+	// this is a workaround for innerHTML not allowing for "asymetric" accessors
+	// see https://github.com/microsoft/vscode/issues/106396#issuecomment-692625393
+	// and https://github.com/microsoft/TypeScript/issues/30024
+	node.innerHTML = value as unknown as string;
+}
+
 export function isInDOM(node: Node | null): boolean {
 	return node?.isConnected ?? false;
 }
+
+interface IDomClassList {
+	hasClass(node: HTMLElement | SVGElement, className: string): boolean;
+	addClass(node: HTMLElement | SVGElement, className: string): void;
+	addClasses(node: HTMLElement | SVGElement, ...classNames: string[]): void;
+	removeClass(node: HTMLElement | SVGElement, className: string): void;
+	removeClasses(node: HTMLElement | SVGElement, ...classNames: string[]): void;
+	toggleClass(node: HTMLElement | SVGElement, className: string, shouldHaveIt?: boolean): void;
+}
+
+const _classList: IDomClassList = new class implements IDomClassList {
+	hasClass(node: HTMLElement, className: string): boolean {
+		return Boolean(className) && node.classList && node.classList.contains(className);
+	}
+
+	addClasses(node: HTMLElement, ...classNames: string[]): void {
+		classNames.forEach(nameValue => nameValue.split(' ').forEach(name => this.addClass(node, name)));
+	}
+
+	addClass(node: HTMLElement, className: string): void {
+		if (className && node.classList) {
+			node.classList.add(className);
+		}
+	}
+
+	removeClass(node: HTMLElement, className: string): void {
+		if (className && node.classList) {
+			node.classList.remove(className);
+		}
+	}
+
+	removeClasses(node: HTMLElement, ...classNames: string[]): void {
+		classNames.forEach(nameValue => nameValue.split(' ').forEach(name => this.removeClass(node, name)));
+	}
+
+	toggleClass(node: HTMLElement, className: string, shouldHaveIt?: boolean): void {
+		if (node.classList) {
+			node.classList.toggle(className, shouldHaveIt);
+		}
+	}
+};
+
+/** @deprecated ES6 - use classList*/
+export function hasClass(node: HTMLElement | SVGElement, className: string): boolean { return _classList.hasClass(node, className); }
+/** @deprecated ES6 - use classList*/
+export function addClass(node: HTMLElement | SVGElement, className: string): void { return _classList.addClass(node, className); }
+/** @deprecated ES6 - use classList*/
+export function addClasses(node: HTMLElement | SVGElement, ...classNames: string[]): void { return _classList.addClasses(node, ...classNames); }
+/** @deprecated ES6 - use classList*/
+export function removeClass(node: HTMLElement | SVGElement, className: string): void { return _classList.removeClass(node, className); }
+/** @deprecated ES6 - use classList*/
+export function removeClasses(node: HTMLElement | SVGElement, ...classNames: string[]): void { return _classList.removeClasses(node, ...classNames); }
+/** @deprecated ES6 - use classList*/
+export function toggleClass(node: HTMLElement | SVGElement, className: string, shouldHaveIt?: boolean): void { return _classList.toggleClass(node, className, shouldHaveIt); }
 
 class DomListener implements IDisposable {
 
@@ -348,7 +414,16 @@ export function getClientArea(element: HTMLElement): Dimension {
 
 	// If visual view port exits and it's on mobile, it should be used instead of window innerWidth / innerHeight, or document.body.clientWidth / document.body.clientHeight
 	if (platform.isIOS && window.visualViewport) {
-		return new Dimension(window.visualViewport.width, window.visualViewport.height);
+		const width = window.visualViewport.width;
+		const height = window.visualViewport.height - (
+			browser.isStandalone
+				// in PWA mode, the visual viewport always includes the safe-area-inset-bottom (which is for the home indicator)
+				// even when you are using the onscreen monitor, the visual viewport will include the area between system statusbar and the onscreen keyboard
+				// plus the area between onscreen keyboard and the bottom bezel, which is 20px on iOS.
+				? (20 + 4) // + 4px for body margin
+				: 0
+		);
+		return new Dimension(width, height);
 	}
 
 	// Try innerWidth / innerHeight
@@ -1179,44 +1254,28 @@ export function computeScreenAwareSize(cssPx: number): number {
 }
 
 /**
- * Open safely a new window. This is the best way to do so, but you cannot tell
- * if the window was opened or if it was blocked by the brower's popup blocker.
- * If you want to tell if the browser blocked the new window, use `windowOpenNoOpenerWithSuccess`.
- *
  * See https://github.com/microsoft/monaco-editor/issues/601
  * To protect against malicious code in the linked site, particularly phishing attempts,
  * the window.opener should be set to null to prevent the linked site from having access
  * to change the location of the current page.
  * See https://mathiasbynens.github.io/rel-noopener/
  */
-export function windowOpenNoOpener(url: string): void {
-	// By using 'noopener' in the `windowFeatures` argument, the newly created window will
-	// not be able to use `window.opener` to reach back to the current page.
-	// See https://stackoverflow.com/a/46958731
-	// See https://developer.mozilla.org/en-US/docs/Web/API/Window/open#noopener
-	// However, this also doesn't allow us to realize if the browser blocked
-	// the creation of the window.
-	window.open(url, '_blank', 'noopener');
-}
-
-/**
- * Open safely a new window. This technique is not appropiate in certain contexts,
- * like for example when the JS context is executing inside a sandboxed iframe.
- * If it is not necessary to know if the browser blocked the new window, use
- * `windowOpenNoOpener`.
- *
- * See https://github.com/microsoft/monaco-editor/issues/601
- * See https://github.com/microsoft/monaco-editor/issues/2474
- * See https://mathiasbynens.github.io/rel-noopener/
- */
-export function windowOpenNoOpenerWithSuccess(url: string): boolean {
-	const newTab = window.open();
-	if (newTab) {
-		(newTab as any).opener = null;
-		newTab.location.href = url;
+export function windowOpenNoOpener(url: string): boolean {
+	if (browser.isElectron || browser.isEdgeLegacyWebView) {
+		// In VSCode, window.open() always returns null...
+		// The same is true for a WebView (see https://github.com/microsoft/monaco-editor/issues/628)
+		// Also call directly window.open in sandboxed Electron (see https://github.com/microsoft/monaco-editor/issues/2220)
+		window.open(url);
 		return true;
+	} else {
+		let newTab = window.open();
+		if (newTab) {
+			(newTab as any).opener = null;
+			newTab.location.href = url;
+			return true;
+		}
+		return false;
 	}
-	return false;
 }
 
 export function animate(fn: () => void): IDisposable {
@@ -1272,29 +1331,6 @@ export function triggerDownload(dataOrUri: Uint8Array | URI, name: string): void
 
 	// Ensure to remove the element from DOM eventually
 	setTimeout(() => document.body.removeChild(anchor));
-}
-
-export function triggerUpload(): Promise<FileList | undefined> {
-	return new Promise<FileList | undefined>(resolve => {
-
-		// In order to upload to the browser, create a
-		// input element of type `file` and click it
-		// to gather the selected files
-		const input = document.createElement('input');
-		document.body.appendChild(input);
-		input.type = 'file';
-		input.multiple = true;
-
-		// Resolve once the input event has fired once
-		Event.once(Event.fromDOMEventEmitter(input, 'input'))(() => {
-			resolve(withNullAsUndefined(input.files));
-		});
-
-		input.click();
-
-		// Ensure to remove the element from DOM eventually
-		setTimeout(() => document.body.removeChild(input));
-	});
 }
 
 export enum DetectedFullscreenMode {
@@ -1482,9 +1518,6 @@ export class ModifierKeyEmitter extends Emitter<IModifierKeyStatus> {
 		};
 
 		this._subscriptions.add(domEvent(window, 'keydown', true)(e => {
-			if (e.defaultPrevented) {
-				return;
-			}
 
 			const event = new StandardKeyboardEvent(e);
 			// If Alt-key keydown event is repeated, ignore it #112347
@@ -1519,10 +1552,6 @@ export class ModifierKeyEmitter extends Emitter<IModifierKeyStatus> {
 		}));
 
 		this._subscriptions.add(domEvent(window, 'keyup', true)(e => {
-			if (e.defaultPrevented) {
-				return;
-			}
-
 			if (!e.altKey && this._keyStatus.altKey) {
 				this._keyStatus.lastKeyReleased = 'alt';
 			} else if (!e.ctrlKey && this._keyStatus.ctrlKey) {
@@ -1612,14 +1641,4 @@ export function getCookieValue(name: string): string | undefined {
 	const match = document.cookie.match('(^|[^;]+)\\s*' + name + '\\s*=\\s*([^;]+)'); // See https://stackoverflow.com/a/25490531
 
 	return match ? match.pop() : undefined;
-}
-
-export function addMatchMediaChangeListener(query: string, callback: () => void): void {
-	const mediaQueryList = window.matchMedia(query);
-	if (typeof mediaQueryList.addEventListener === 'function') {
-		mediaQueryList.addEventListener('change', callback);
-	} else {
-		// Safari 13.x
-		mediaQueryList.addListener(callback);
-	}
 }

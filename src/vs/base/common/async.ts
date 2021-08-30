@@ -536,6 +536,7 @@ export class Limiter<T> {
 
 	get size(): number {
 		return this._size;
+		// return this.runningPromises + this.outstandingPromises.length;
 	}
 
 	queue(factory: ITask<Promise<T>>): Promise<T> {

@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import * as assert from 'assert';
@@ -12,8 +12,8 @@ suite('Notebook Undo/Redo', () => {
 	test('Basics', async function () {
 		await withTestNotebook(
 			[
-				['# header 1', 'markdown', CellKind.Markup, [], {}],
-				['body', 'markdown', CellKind.Markup, [], {}],
+				['# header 1', 'markdown', CellKind.Markdown, [], {}],
+				['body', 'markdown', CellKind.Markdown, [], {}],
 			],
 			async (editor, accessor) => {
 				const modeService = accessor.get(IModeService);
@@ -57,8 +57,8 @@ suite('Notebook Undo/Redo', () => {
 	test('Invalid replace count should not throw', async function () {
 		await withTestNotebook(
 			[
-				['# header 1', 'markdown', CellKind.Markup, [], {}],
-				['body', 'markdown', CellKind.Markup, [], {}],
+				['# header 1', 'markdown', CellKind.Markdown, [], {}],
+				['body', 'markdown', CellKind.Markdown, [], {}],
 			],
 			async (editor, accessor) => {
 				const modeService = accessor.get(IModeService);
@@ -81,8 +81,8 @@ suite('Notebook Undo/Redo', () => {
 	test('Replace beyond length', async function () {
 		await withTestNotebook(
 			[
-				['# header 1', 'markdown', CellKind.Markup, [], {}],
-				['body', 'markdown', CellKind.Markup, [], {}],
+				['# header 1', 'markdown', CellKind.Markdown, [], {}],
+				['body', 'markdown', CellKind.Markdown, [], {}],
 			],
 			async (editor) => {
 				const viewModel = editor.viewModel;
@@ -100,8 +100,8 @@ suite('Notebook Undo/Redo', () => {
 	test('Invalid replace count should not affect undo/redo', async function () {
 		await withTestNotebook(
 			[
-				['# header 1', 'markdown', CellKind.Markup, [], {}],
-				['body', 'markdown', CellKind.Markup, [], {}],
+				['# header 1', 'markdown', CellKind.Markdown, [], {}],
+				['body', 'markdown', CellKind.Markdown, [], {}],
 			],
 			async (editor, accessor) => {
 				const modeService = accessor.get(IModeService);

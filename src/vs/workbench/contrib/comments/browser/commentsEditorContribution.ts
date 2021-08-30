@@ -102,7 +102,6 @@ class CommentingRangeDecorator {
 
 	constructor() {
 		const decorationOptions: IModelDecorationOptions = {
-			description: 'commenting-range-decorator',
 			isWholeLine: true,
 			linesDecorationsClassName: 'comment-range-glyph comment-diff-added'
 		};
@@ -197,7 +196,7 @@ export class CommentController implements IEditorContribution {
 		}));
 
 		this.globalToDispose.add(this.editor.onDidChangeModel(e => this.onModelChanged(e)));
-		this.codeEditorService.registerDecorationType('comment-controller', COMMENTEDITOR_DECORATION_KEY, {});
+		this.codeEditorService.registerDecorationType(COMMENTEDITOR_DECORATION_KEY, {});
 		this.beginCompute();
 	}
 

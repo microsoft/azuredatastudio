@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { ipcRenderer } from 'vs/base/parts/sandbox/electron-sandbox/globals';
@@ -16,7 +16,7 @@ import { ITerminalService } from 'vs/workbench/contrib/terminal/browser/terminal
 import { IWorkbenchContribution } from 'vs/workbench/common/contributions';
 
 export class TerminalNativeContribution extends Disposable implements IWorkbenchContribution {
-	declare _serviceBrand: undefined;
+	public _serviceBrand: undefined;
 
 	constructor(
 		@IFileService private readonly _fileService: IFileService,

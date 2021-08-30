@@ -28,7 +28,6 @@ export class InitializingRangeProvider implements RangeProvider {
 						endColumn: editorModel.getLineLength(range.endLineNumber)
 					},
 					options: {
-						description: 'folding-initializing-range-provider',
 						stickiness: TrackedRangeStickiness.NeverGrowsWhenTypingAtEdges
 					}
 				};

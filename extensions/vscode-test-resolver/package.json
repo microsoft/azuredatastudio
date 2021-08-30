@@ -27,13 +27,7 @@
   ],
   "main": "./out/extension",
   "devDependencies": {
-    "@types/node": "14.x"
-  },
-  "capabilities": {
-    "untrustedWorkspaces": {
-      "supported": true
-    },
-    "virtualWorkspaces": true
+    "@types/node": "^12.19.9"
   },
   "contributes": {
     "resourceLabelFormatters": [
@@ -89,7 +83,7 @@
       "statusBar/remoteIndicator": [
         {
           "command": "vscode-testresolver.newWindow",
-          "when": "!remoteName && !virtualWorkspace",
+          "when": "!remoteName",
           "group": "remote_90_test_1_local@2"
         },
         {

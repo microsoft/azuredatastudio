@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { IDisposable } from 'vs/base/common/lifecycle';
@@ -34,8 +34,12 @@ export interface IProtocolMainService {
 	/**
 	 * Allows to make an object accessible to a renderer
 	 * via `ipcRenderer.invoke(resource.toString())`.
+	 *
+	 * @param obj the (optional) object to make accessible to the
+	 * renderer. Can be updated later via the `IObjectUrl#update`
+	 * method too.
 	 */
-	createIPCObjectUrl<T>(): IIPCObjectUrl<T>;
+	createIPCObjectUrl<T>(obj?: T): IIPCObjectUrl<T>;
 
 	/**
 	 * Adds a `URI` as root to the list of allowed

@@ -22,6 +22,7 @@ import { inputBackground, inputBorder } from 'vs/platform/theme/common/colorRegi
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import * as DOM from 'vs/base/browser/dom';
+import { assign } from 'vs/base/common/objects';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/platform/dashboard/browser/interfaces';
 import { isNumber } from 'vs/base/common/types';
 import { convertSize, convertSizeToNumber } from 'sql/base/browser/dom';
@@ -88,7 +89,7 @@ export default class InputBoxComponent extends ComponentBase<azdata.InputBoxProp
 			this.registerInput(this._input, () => !this.multiline);
 		}
 		if (this._textareaContainer) {
-			let textAreaInputOptions = Object.assign({}, inputOptions, { flexibleHeight: true, type: 'textarea' });
+			let textAreaInputOptions = assign({}, inputOptions, { flexibleHeight: true, type: 'textarea' });
 			this._textAreaInput = new InputBox(this._textareaContainer.nativeElement, this.contextViewService, textAreaInputOptions);
 			this.onkeydown(this._textAreaInput.inputElement, (e: StandardKeyboardEvent) => {
 				if (this.tryHandleKeyEvent(e)) {

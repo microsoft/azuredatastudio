@@ -46,7 +46,7 @@ export class WebviewFindWidget extends SimpleFindWidget {
 		this._delegate.focus();
 	}
 
-	public _onInputChanged() {
+	public onInputChanged() {
 		const val = this.inputValue;
 		if (val) {
 			this._delegate.startFind(val);
@@ -56,17 +56,17 @@ export class WebviewFindWidget extends SimpleFindWidget {
 		return false;
 	}
 
-	protected _onFocusTrackerFocus() {
+	protected onFocusTrackerFocus() {
 		this._findWidgetFocused.set(true);
 	}
 
-	protected _onFocusTrackerBlur() {
+	protected onFocusTrackerBlur() {
 		this._findWidgetFocused.reset();
 	}
 
-	protected _onFindInputFocusTrackerFocus() { }
+	protected onFindInputFocusTrackerFocus() { }
 
-	protected _onFindInputFocusTrackerBlur() { }
+	protected onFindInputFocusTrackerBlur() { }
 
 	protected findFirst() { }
 }

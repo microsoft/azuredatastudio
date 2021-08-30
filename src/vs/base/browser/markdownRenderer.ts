@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as DOM from 'vs/base/browser/dom';
+import * as DOM from 'vs/base/browser/dom'; // {{SQL CARBON EDIT}} added missing import to fix build break
 import { createElement, FormattedTextRenderOptions } from 'vs/base/browser/formattedTextRenderer';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { IMarkdownString, parseHrefAndDimensions, removeMarkdownEscapes } from 'vs/base/common/htmlContent';
@@ -180,6 +180,15 @@ export function renderMarkdown(markdown: IMarkdownString, options: MarkdownRende
 				});
 			});
 
+			// const promise = Promise.all([value, withInnerHTML]).then(values => {
+			// 	const span = <HTMLDivElement>element.querySelector(`div[data-code="${id}"]`);
+			// 	if (span) {
+			// 		DOM.reset(span, values[0]);
+			// 	}
+			// }).catch(_err => {
+			// 	// ignore
+			// });
+
 			if (options.asyncRenderCallback) {
 				promise.then(options.asyncRenderCallback);
 			}
@@ -316,14 +325,6 @@ function getInsaneOptions(options: { readonly isTrusted?: boolean }): InsaneOpti
 }
 
 /**
- * Strips all markdown from `string`, if it's an IMarkdownString. For example
- * `# Header` would be output as `Header`. If it's not, the string is returned.
- */
-export function renderStringAsPlaintext(string: IMarkdownString | string) {
-	return typeof string === 'string' ? string : renderMarkdownAsPlaintext(string);
-}
-
-/**
  * Strips all markdown from `markdown`. For example `# Header` would be output as `Header`.
  */
 export function renderMarkdownAsPlaintext(markdown: IMarkdownString) {
@@ -397,7 +398,6 @@ export function renderMarkdownAsPlaintext(markdown: IMarkdownString) {
 
 	const unescapeInfo = new Map<string, string>([
 		['&quot;', '"'],
-		['&nbsp;', ' '],
 		['&amp;', '&'],
 		['&#39;', '\''],
 		['&lt;', '<'],

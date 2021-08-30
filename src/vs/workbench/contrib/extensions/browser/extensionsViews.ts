@@ -37,7 +37,7 @@ import { alert } from 'vs/base/browser/ui/aria/aria';
 import { IListContextMenuEvent } from 'vs/base/browser/ui/list/list';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { IAction, Action, Separator, ActionRunner } from 'vs/base/common/actions';
-import { ExtensionIdentifier, ExtensionUntrustedWorkpaceSupportType, ExtensionVirtualWorkpaceSupportType, IExtensionDescription, isLanguagePackExtension, ExtensionType } from 'vs/platform/extensions/common/extensions'; // {{SQL CARBON EDIT}} Add ExtensionType
+import { ExtensionIdentifier, IExtensionDescription, isLanguagePackExtension, ExtensionType } from 'vs/platform/extensions/common/extensions'; // {{SQL CARBON EDIT}} Add ExtensionType
 import { CancelablePromise, createCancelablePromise } from 'vs/base/common/async';
 import { IProductService } from 'vs/platform/product/common/productService';
 import { SeverityIcon } from 'vs/platform/severityIcon/common/severityIcon';
@@ -50,8 +50,6 @@ import { IListAccessibilityProvider } from 'vs/base/browser/ui/list/listWidget';
 import { IStorageService, StorageScope, StorageTarget } from 'vs/platform/storage/common/storage';
 import { IExtensionManifestPropertiesService } from 'vs/workbench/services/extensions/common/extensionManifestPropertiesService';
 import * as locConstants from 'sql/base/common/locConstants'; // {{SQL CARBON EDIT}}
-import { isVirtualWorkspace } from 'vs/platform/remote/common/remoteHosts';
-import { IWorkspaceTrustManagementService } from 'vs/platform/workspace/common/workspaceTrust';
 
 // Extensions that are automatically classified as Programming Language extensions, but should be Feature extensions
 const FORCE_FEATURE_EXTENSIONS = ['vscode.git', 'vscode.search-result'];
@@ -124,14 +122,12 @@ export class ExtensionsListView extends ViewPane {
 		@IExtensionManagementServerService protected readonly extensionManagementServerService: IExtensionManagementServerService,
 		@IExtensionManifestPropertiesService private readonly extensionManifestPropertiesService: IExtensionManifestPropertiesService,
 		@IWorkbenchExtensionManagementService protected readonly extensionManagementService: IWorkbenchExtensionManagementService,
-		@IWorkspaceContextService protected readonly workspaceService: IWorkspaceContextService,
 		@IProductService protected readonly productService: IProductService,
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@IViewDescriptorService viewDescriptorService: IViewDescriptorService,
 		@IOpenerService openerService: IOpenerService,
 		@IPreferencesService private readonly preferencesService: IPreferencesService,
 		@IStorageService private readonly storageService: IStorageService,
-		@IWorkspaceTrustManagementService private readonly workspaceTrustManagementService: IWorkspaceTrustManagementService
 	) {
 		super({
 			...(viewletViewOptions as IViewPaneOptions),
@@ -399,8 +395,8 @@ export class ExtensionsListView extends ViewPane {
 			extensions = this.filterEnabledExtensions(local, runningExtensions, query, options);
 		}
 
-		else if (/@workspaceUnsupported/i.test(value)) {
-			extensions = this.filterWorkspaceUnsupportedExtensions(local, query, options);
+		else if (/@trustRequired/i.test(value)) {
+			extensions = this.filterTrustRequiredExtensions(local, query, options);
 		}
 
 		return { extensions, canIncludeInstalledExtensions };
@@ -553,44 +549,32 @@ export class ExtensionsListView extends ViewPane {
 		return this.sortExtensions(result, options);
 	}
 
-	private filterWorkspaceUnsupportedExtensions(local: IExtension[], query: Query, options: IQueryOptions): IExtension[] {
-
-		// shows local extensions which are restricted or disabled in the current workspace because of the extension's capability
-
-		const inVirtualWorkspace = isVirtualWorkspace(this.workspaceService.getWorkspace());
-		const inRestrictedWorkspace = !this.workspaceTrustManagementService.isWorkpaceTrusted();
-		if (!inVirtualWorkspace && !inRestrictedWorkspace) {
-			return [];
+	private filterTrustRequiredExtensions(local: IExtension[], query: Query, options: IQueryOptions): IExtension[] {
+		let value = query.value;
+		const onStartOnly = /@trustRequired:onStart/i.test(value);
+		if (onStartOnly) {
+			value = value.replace(/@trustRequired:onStart/g, '');
+		}
+		const onDemandOnly = /@trustRequired:onDemand/i.test(value);
+		if (onDemandOnly) {
+			value = value.replace(/@trustRequired:onDemand/g, '');
 		}
 
-		let queryString = query.value; // @sortby is already filtered out
+		value = value.replace(/@trustRequired/g, '').replace(/@sort:(\w+)(-\w*)?/g, '').trim().toLowerCase();
 
-		const match = queryString.match(/^\s*@workspaceUnsupported(?::(untrusted|virtual)(Partial)?)?(?:\s+([^\s]*))?/i);
-		if (!match) {
-			return [];
-		}
-		const type = match[1]?.toLowerCase();
-		const partial = !!match[2];
-		const nameFilter = match[3]?.toLowerCase();
+		const result = local.filter(extension => extension.local && this.extensionManifestPropertiesService.getExtensionUntrustedWorkspaceSupportType(extension.local.manifest) !== true && (extension.name.toLowerCase().indexOf(value) > -1 || extension.displayName.toLowerCase().indexOf(value) > -1));
 
-		if (nameFilter) {
-			local = local.filter(extension => extension.name.toLowerCase().indexOf(nameFilter) > -1 || extension.displayName.toLowerCase().indexOf(nameFilter) > -1);
+		if (onStartOnly) {
+			const onStartExtensions = result.filter(extension => extension.local && this.extensionManifestPropertiesService.getExtensionUntrustedWorkspaceSupportType(extension.local.manifest) === false);
+			return this.sortExtensions(onStartExtensions, options);
 		}
 
-		const hasVirtualSupportType = (extension: IExtension, supportType: ExtensionVirtualWorkpaceSupportType) => extension.local && this.extensionManifestPropertiesService.getExtensionVirtualWorkspaceSupportType(extension.local.manifest) === supportType;
-		const hasRestrictedSupportType = (extension: IExtension, supportType: ExtensionUntrustedWorkpaceSupportType) => extension.local && this.extensionManifestPropertiesService.getExtensionUntrustedWorkspaceSupportType(extension.local.manifest) === supportType;
-
-		if (type === 'virtual') {
-			// show limited and disabled extensions unless disabled because of a untrusted workspace
-			local = local.filter(extension => inVirtualWorkspace && hasVirtualSupportType(extension, partial ? 'limited' : false) && !(inRestrictedWorkspace && hasRestrictedSupportType(extension, false)));
-		} else if (type === 'untrusted') {
-			// show limited and disabled extensions unless disabled because of a virtual workspace
-			local = local.filter(extension => inRestrictedWorkspace && hasRestrictedSupportType(extension, partial ? 'limited' : false) && !(inVirtualWorkspace && hasVirtualSupportType(extension, false)));
-		} else {
-			// show extensions that are restricted or disabled in the current workspace
-			local = local.filter(extension => inVirtualWorkspace && !hasVirtualSupportType(extension, true) || inRestrictedWorkspace && !hasRestrictedSupportType(extension, true));
+		if (onDemandOnly) {
+			const onDemandExtensions = result.filter(extension => extension.local && this.extensionManifestPropertiesService.getExtensionUntrustedWorkspaceSupportType(extension.local.manifest) === 'limited');
+			return this.sortExtensions(onDemandExtensions, options);
 		}
-		return this.sortExtensions(local, options);
+
+		return this.sortExtensions(result, options);
 	}
 
 
@@ -741,7 +725,6 @@ export class ExtensionsListView extends ViewPane {
 	private isRecommendationsQuery(query: Query): boolean {
 		return ExtensionsListView.isWorkspaceRecommendedExtensionsQuery(query.value)
 			|| ExtensionsListView.isKeymapsRecommendedExtensionsQuery(query.value)
-			|| ExtensionsListView.isLanguageRecommendedExtensionsQuery(query.value)
 			|| ExtensionsListView.isExeRecommendedExtensionsQuery(query.value)
 			|| /@recommended:all/i.test(query.value)
 			|| ExtensionsListView.isSearchRecommendedExtensionsQuery(query.value)
@@ -823,11 +806,6 @@ export class ExtensionsListView extends ViewPane {
 			return this.getKeymapRecommendationsModel(query, options, token);
 		}
 
-		// Language recommendations
-		if (ExtensionsListView.isLanguageRecommendedExtensionsQuery(query.value)) {
-			return this.getLanguageRecommendationsModel(query, options, token);
-		}
-
 		// Exe recommendations
 		if (ExtensionsListView.isExeRecommendedExtensionsQuery(query.value)) {
 			return this.getExeRecommendationsModel(query, options, token);
@@ -888,14 +866,6 @@ export class ExtensionsListView extends ViewPane {
 		const value = query.value.replace(/@recommended:keymaps/g, '').trim().toLowerCase();
 		const recommendations = this.extensionRecommendationsService.getKeymapRecommendations();
 		const installableRecommendations = (await this.getInstallableRecommendations(recommendations, { ...options, source: 'recommendations-keymaps' }, token))
-			.filter(extension => extension.identifier.id.toLowerCase().indexOf(value) > -1);
-		return new PagedModel(installableRecommendations);
-	}
-
-	private async getLanguageRecommendationsModel(query: Query, options: IQueryOptions, token: CancellationToken): Promise<IPagedModel<IExtension>> {
-		const value = query.value.replace(/@recommended:languages/g, '').trim().toLowerCase();
-		const recommendations = this.extensionRecommendationsService.getLanguageRecommendations();
-		const installableRecommendations = (await this.getInstallableRecommendations(recommendations, { ...options, source: 'recommendations-languages' }, token))
 			.filter(extension => extension.identifier.id.toLowerCase().indexOf(value) > -1);
 		return new PagedModel(installableRecommendations);
 	}
@@ -1077,7 +1047,9 @@ export class ExtensionsListView extends ViewPane {
 			|| this.isBuiltInExtensionsQuery(query)
 			|| this.isSearchBuiltInExtensionsQuery(query)
 			|| this.isBuiltInGroupExtensionsQuery(query)
-			|| this.isSearchWorkspaceUnsupportedExtensionsQuery(query);
+			|| this.isSearchTrustRequiredExtensionsQuery(query)
+			|| this.isTrustRequiredExtensionsQuery(query)
+			|| this.isTrustRequiredGroupExtensionsQuery(query);
 	}
 
 	static isSearchBuiltInExtensionsQuery(query: string): boolean {
@@ -1092,8 +1064,16 @@ export class ExtensionsListView extends ViewPane {
 		return /^\s*@builtin:.+$/i.test(query.trim());
 	}
 
-	static isSearchWorkspaceUnsupportedExtensionsQuery(query: string): boolean {
-		return /^\s*@workspaceUnsupported(:(untrusted|virtual)(Partial)?)?(\s|$)/i.test(query);
+	static isSearchTrustRequiredExtensionsQuery(query: string): boolean {
+		return /@trustRequired\s.+/i.test(query);
+	}
+
+	static isTrustRequiredExtensionsQuery(query: string): boolean {
+		return /^\s*@trustRequired$/i.test(query.trim());
+	}
+
+	static isTrustRequiredGroupExtensionsQuery(query: string): boolean {
+		return /^\s*@trustRequired:.+$/i.test(query.trim());
 	}
 
 	static isInstalledExtensionsQuery(query: string): boolean {
@@ -1130,10 +1110,6 @@ export class ExtensionsListView extends ViewPane {
 
 	static isKeymapsRecommendedExtensionsQuery(query: string): boolean {
 		return /@recommended:keymaps/i.test(query);
-	}
-
-	static isLanguageRecommendedExtensionsQuery(query: string): boolean {
-		return /@recommended:languages/i.test(query);
 	}
 
 	override focus(): void {
@@ -1200,46 +1176,15 @@ export class BuiltInProgrammingLanguageExtensionsView extends ExtensionsListView
 	}
 }
 
-function toSpecificWorkspaceUnsupportedQuery(query: string, qualifier: string): string | undefined {
-	if (!query) {
-		return '@workspaceUnsupported:' + qualifier;
-	}
-	const match = query.match(new RegExp(`@workspaceUnsupported(:${qualifier})?(\\s|$)`, 'i'));
-	if (match) {
-		if (!match[1]) {
-			return query.replace(/@workspaceUnsupported/gi, '@workspaceUnsupported:' + qualifier);
-		}
-		return query;
-	}
-	return undefined;
-}
-
-
-export class UntrustedWorkspaceUnsupportedExtensionsView extends ExtensionsListView {
+export class TrustRequiredOnStartExtensionsView extends ExtensionsListView {
 	override async show(query: string): Promise<IPagedModel<IExtension>> {
-		const updatedQuery = toSpecificWorkspaceUnsupportedQuery(query, 'untrusted');
-		return updatedQuery ? super.show(updatedQuery) : this.showEmptyModel();
+		return (query && query.trim() !== '@trustRequired') ? this.showEmptyModel() : super.show('@trustRequired:onStart');
 	}
 }
 
-export class UntrustedWorkspacePartiallySupportedExtensionsView extends ExtensionsListView {
+export class TrustRequiredOnDemandExtensionsView extends ExtensionsListView {
 	override async show(query: string): Promise<IPagedModel<IExtension>> {
-		const updatedQuery = toSpecificWorkspaceUnsupportedQuery(query, 'untrustedPartial');
-		return updatedQuery ? super.show(updatedQuery) : this.showEmptyModel();
-	}
-}
-
-export class VirtualWorkspaceUnsupportedExtensionsView extends ExtensionsListView {
-	override async show(query: string): Promise<IPagedModel<IExtension>> {
-		const updatedQuery = toSpecificWorkspaceUnsupportedQuery(query, 'virtual');
-		return updatedQuery ? super.show(updatedQuery) : this.showEmptyModel();
-	}
-}
-
-export class VirtualWorkspacePartiallySupportedExtensionsView extends ExtensionsListView {
-	override async show(query: string): Promise<IPagedModel<IExtension>> {
-		const updatedQuery = toSpecificWorkspaceUnsupportedQuery(query, 'virtualPartial');
-		return updatedQuery ? super.show(updatedQuery) : this.showEmptyModel();
+		return (query && query.trim() !== '@trustRequired') ? this.showEmptyModel() : super.show('@trustRequired:onDemand');
 	}
 }
 

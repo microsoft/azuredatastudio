@@ -24,16 +24,14 @@ export function createAndFillInContextMenuActions(menu: IMenu, options: IMenuAct
 	const groups = menu.getActions(options);
 	const modifierKeyEmitter = ModifierKeyEmitter.getInstance();
 	const useAlternativeActions = modifierKeyEmitter.keyStatus.altKey || ((isWindows || isLinux) && modifierKeyEmitter.keyStatus.shiftKey);
-	fillInActions(groups, target, useAlternativeActions, primaryGroup ? actionGroup => actionGroup === primaryGroup : actionGroup => actionGroup === 'navigation');
+	fillInActions(groups, target, useAlternativeActions, primaryGroup);
 	return asDisposable(groups);
 }
 
-export function createAndFillInActionBarActions(menu: IMenu, options: IMenuActionOptions | undefined, target: IAction[] | { primary: IAction[]; secondary: IAction[]; }, primaryGroup?: string | ((actionGroup: string) => boolean), primaryMaxCount?: number, shouldInlineSubmenu?: (action: SubmenuAction, group: string, groupSize: number) => boolean, useSeparatorsInPrimaryActions?: boolean): IDisposable {
+export function createAndFillInActionBarActions(menu: IMenu, options: IMenuActionOptions | undefined, target: IAction[] | { primary: IAction[]; secondary: IAction[]; }, primaryGroup?: string, primaryMaxCount?: number, shouldInlineSubmenu?: (action: SubmenuAction, group: string, groupSize: number) => boolean): IDisposable {
 	const groups = menu.getActions(options);
-	const isPrimaryAction = typeof primaryGroup === 'string' ? (actionGroup: string) => actionGroup === primaryGroup : primaryGroup;
-
 	// Action bars handle alternative actions on their own so the alternative actions should be ignored
-	fillInActions(groups, target, false, isPrimaryAction, primaryMaxCount, shouldInlineSubmenu, useSeparatorsInPrimaryActions);
+	fillInActions(groups, target, false, primaryGroup, primaryMaxCount, shouldInlineSubmenu);
 	return asDisposable(groups);
 }
 
@@ -50,10 +48,9 @@ function asDisposable(groups: ReadonlyArray<[string, ReadonlyArray<MenuItemActio
 export function fillInActions( // {{SQL CARBON EDIT}} add export modifier
 	groups: ReadonlyArray<[string, ReadonlyArray<MenuItemAction | SubmenuItemAction>]>, target: IAction[] | { primary: IAction[]; secondary: IAction[]; },
 	useAlternativeActions: boolean,
-	isPrimaryAction: (actionGroup: string) => boolean = actionGroup => actionGroup === 'navigation',
+	primaryGroup = 'navigation',
 	primaryMaxCount: number = Number.MAX_SAFE_INTEGER,
-	shouldInlineSubmenu: (action: SubmenuAction, group: string, groupSize: number) => boolean = () => false,
-	useSeparatorsInPrimaryActions: boolean = false
+	shouldInlineSubmenu: (action: SubmenuAction, group: string, groupSize: number) => boolean = () => false
 ): void {
 
 	let primaryBucket: IAction[];
@@ -71,11 +68,8 @@ export function fillInActions( // {{SQL CARBON EDIT}} add export modifier
 	for (const [group, actions] of groups) {
 
 		let target: IAction[];
-		if (isPrimaryAction(group)) {
+		if (group === primaryGroup) {
 			target = primaryBucket;
-			if (target.length > 0 && useSeparatorsInPrimaryActions) {
-				target.push(new Separator());
-			}
 		} else {
 			target = secondaryBucket;
 			if (target.length > 0) {
@@ -98,7 +92,7 @@ export function fillInActions( // {{SQL CARBON EDIT}} add export modifier
 	// ask the outside if submenu should be inlined or not. only ask when
 	// there would be enough space
 	for (const { group, action, index } of submenuInfo) {
-		const target = isPrimaryAction(group) ? primaryBucket : secondaryBucket;
+		const target = group === primaryGroup ? primaryBucket : secondaryBucket;
 
 		// inlining submenus with length 0 or 1 is easy,
 		// larger submenus need to be checked with the overall limit
@@ -138,15 +132,13 @@ export class MenuEntryActionViewItem extends ActionViewItem {
 		return this._wantsAltCommand && this._menuItemAction.alt || this._menuItemAction;
 	}
 
-	override async onClick(event: MouseEvent): Promise<void> {
+	override onClick(event: MouseEvent): void {
 		event.preventDefault();
 		event.stopPropagation();
 
-		try {
-			await this.actionRunner.run(this._commandAction, this._context);
-		} catch (err) {
-			this._notificationService.error(err);
-		}
+		this.actionRunner
+			.run(this._commandAction, this._context)
+			.catch(err => this._notificationService.error(err));
 	}
 
 	override render(container: HTMLElement): void {

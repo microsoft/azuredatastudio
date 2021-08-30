@@ -59,7 +59,6 @@ export class ExtensionLinter {
 	private readmeQ = new Set<TextDocument>();
 	private timer: NodeJS.Timer | undefined;
 	private markdownIt: MarkdownItType.MarkdownIt | undefined;
-	private parse5: typeof import('parse5') | undefined;
 
 	constructor() {
 		this.disposables.push(
@@ -203,10 +202,8 @@ export class ExtensionLinter {
 			let svgStart: Diagnostic;
 			for (const tnp of tokensAndPositions) {
 				if (tnp.token.type === 'text' && tnp.token.content) {
-					if (!this.parse5) {
-						this.parse5 = await import('parse5');
-					}
-					const parser = new this.parse5.SAXParser({ locationInfo: true });
+					const parse5 = await import('parse5');
+					const parser = new parse5.SAXParser({ locationInfo: true });
 					parser.on('startTag', (name, attrs, _selfClosing, location) => {
 						if (name === 'img') {
 							const src = attrs.find(a => a.name === 'src');

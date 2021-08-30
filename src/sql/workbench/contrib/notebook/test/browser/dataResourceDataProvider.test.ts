@@ -15,7 +15,7 @@ import { DataResourceDataProvider } from '../../browser/outputs/gridOutput.compo
 import { IDataResource } from 'sql/workbench/services/notebook/browser/sql/sqlSessionManager';
 import { ResultSetSummary } from 'sql/workbench/services/query/common/query';
 import { TestNotificationService } from 'vs/platform/notification/test/common/testNotificationService';
-import { TestFileDialogService, TestEditorService, TestPathService } from 'vs/workbench/test/browser/workbenchTestServices';
+import { TestFileDialogService, TestEditorService } from 'vs/workbench/test/browser/workbenchTestServices';
 import { TestContextService } from 'vs/workbench/test/common/workbenchTestServices';
 import { SerializationService } from 'sql/platform/serialization/common/serializationService';
 import { SaveFormat, ResultSerializer } from 'sql/workbench/services/query/common/resultSerializer';
@@ -47,7 +47,7 @@ export class TestSerializationProvider implements azdata.SerializationProvider {
 }
 
 suite('Data Resource Data Provider', function () {
-	let fileDialogService: TestFileDialogService;
+	let fileDialogService: TypeMoq.Mock<TestFileDialogService>;
 	let serializer: ResultSerializer;
 	let notificationService: TestNotificationService;
 	let serializationService: SerializationService;
@@ -75,8 +75,7 @@ suite('Data Resource Data Provider', function () {
 		let editorService = TypeMoq.Mock.ofType(TestEditorService, TypeMoq.MockBehavior.Strict);
 		editorService.setup(x => x.openEditor(TypeMoq.It.isAny())).returns(() => Promise.resolve(undefined));
 		let contextService = new TestContextService();
-		let pathService = new TestPathService();
-		fileDialogService = new TestFileDialogService(pathService);
+		fileDialogService = TypeMoq.Mock.ofType(TestFileDialogService, TypeMoq.MockBehavior.Strict);
 		notificationService = new TestNotificationService();
 		serializationService = new SerializationService(undefined, undefined); //_connectionService _capabilitiesService
 		serializationService.registerProvider('testProviderId', new TestSerializationProvider());
@@ -85,7 +84,7 @@ suite('Data Resource Data Provider', function () {
 			undefined, // IConfigurationService
 			editorService.object,
 			contextService,
-			fileDialogService,
+			fileDialogService.object,
 			notificationService,
 			undefined // IOpenerService
 		);
@@ -109,15 +108,15 @@ suite('Data Resource Data Provider', function () {
 			instantiationService.object
 		);
 		let noHeadersFile = URI.file(path.join(tempFolderPath, 'result_noHeaders.csv'));
-		let fileDialogServiceStub = sinon.stub(fileDialogService, 'showSaveDialog').returns(Promise.resolve(noHeadersFile));
-		let serializerStub = sinon.stub(serializer, 'getBasicSaveParameters').returns(<azdata.SaveResultsRequestParams>{ resultFormat: SaveFormat.CSV as string, includeHeaders: false });
+		let fileDialogServiceStub = sinon.stub(fileDialogService.object, 'showSaveDialog').returns(Promise.resolve(noHeadersFile));
+		let serializerStub = sinon.stub(serializer, 'getBasicSaveParameters').returns({ resultFormat: SaveFormat.CSV as string, includeHeaders: false });
 		await dataResourceDataProvider.serializeResults(SaveFormat.CSV, undefined);
 		fileDialogServiceStub.restore();
 		serializerStub.restore();
 
 		let withHeadersFile = URI.file(path.join(tempFolderPath, 'result_withHeaders.csv'));
-		fileDialogServiceStub = sinon.stub(fileDialogService, 'showSaveDialog').returns(Promise.resolve(withHeadersFile));
-		serializerStub = sinon.stub(serializer, 'getBasicSaveParameters').returns(<azdata.SaveResultsRequestParams>{ resultFormat: SaveFormat.CSV as string, includeHeaders: true });
+		fileDialogServiceStub = sinon.stub(fileDialogService.object, 'showSaveDialog').returns(Promise.resolve(withHeadersFile));
+		serializerStub = sinon.stub(serializer, 'getBasicSaveParameters').returns({ resultFormat: SaveFormat.CSV as string, includeHeaders: true });
 		await dataResourceDataProvider.serializeResults(SaveFormat.CSV, undefined);
 		fileDialogServiceStub.restore();
 		serializerStub.restore();

@@ -6,10 +6,10 @@
 import type { Event } from 'vs/base/common/event';
 import type { IDisposable } from 'vs/base/common/lifecycle';
 import { RenderOutputType } from 'vs/workbench/contrib/notebook/browser/notebookBrowser';
-import type * as webviewMessages from 'vs/workbench/contrib/notebook/browser/view/renderers/webviewMessages';
+import { FromWebviewMessage, IBlurOutputMessage, ICellDropMessage, ICellDragMessage, ICellDragStartMessage, IClickedDataUrlMessage, ICustomRendererMessage, IDimensionMessage, IClickMarkdownPreviewMessage, IMouseEnterMarkdownPreviewMessage, IMouseEnterMessage, IMouseLeaveMarkdownPreviewMessage, IMouseLeaveMessage, IToggleMarkdownPreviewMessage, IWheelMessage, ToWebviewMessage, ICellDragEndMessage, IOutputFocusMessage, IOutputBlurMessage, DimensionUpdate, IContextMenuMarkdownPreviewMessage, ITelemetryFoundRenderedMarkdownMath, ITelemetryFoundUnrenderedMarkdownMath } from 'vs/workbench/contrib/notebook/browser/view/renderers/backLayerWebView';
 
 // !! IMPORTANT !! everything must be in-line within the webviewPreloads
-// function. Imports are not allowed. This is stringified and injected into
+// function. Imports are not allowed. This is stringifies and injected into
 // the webview.
 
 declare module globalThis {
@@ -26,6 +26,8 @@ declare class ResizeObserver {
 	disconnect(): void;
 }
 
+declare const __outputNodePadding__: number;
+declare const __outputNodeLeftPadding__: number;
 
 type Listener<T> = { fn: (evt: T) => void; thisArg: unknown; };
 
@@ -34,20 +36,7 @@ interface EmitterLike<T> {
 	event: Event<T>;
 }
 
-interface PreloadStyles {
-	readonly outputNodePadding: number;
-	readonly outputNodeLeftPadding: number;
-}
-
-export interface PreloadOptions {
-	dragAndDropEnabled: boolean;
-}
-
-declare function __import(path: string): Promise<any>;
-
-async function webviewPreloads(style: PreloadStyles, options: PreloadOptions, rendererData: readonly RendererMetadata[]) {
-	let currentOptions = options;
-
+async function webviewPreloads(markdownRendererModule: any, markdownDeps: any) {
 	const acquireVsCodeApi = globalThis.acquireVsCodeApi;
 	const vscode = acquireVsCodeApi();
 	delete (globalThis as any).acquireVsCodeApi;
@@ -71,7 +60,7 @@ async function webviewPreloads(style: PreloadStyles, options: PreloadOptions, re
 	};
 
 	const handleDataUrl = async (data: string | ArrayBuffer | null, downloadName: string) => {
-		postNotebookMessage<webviewMessages.IClickedDataUrlMessage>('clicked-data-url', {
+		postNotebookMessage<IClickedDataUrlMessage>('clicked-data-url', {
 			data,
 			downloadName
 		});
@@ -117,91 +106,34 @@ async function webviewPreloads(style: PreloadStyles, options: PreloadOptions, re
 		}
 	};
 
-	async function loadScriptSource(url: string, originalUri = url): Promise<string> {
-		const res = await fetch(url);
-		const text = await res.text();
-		if (!res.ok) {
-			throw new Error(`Unexpected ${res.status} requesting ${originalUri}: ${text || res.statusText}`);
+	const runScript = async (url: string, originalUri: string, globals: { [name: string]: unknown } = {}): Promise<() => (PreloadResult)> => {
+		let text: string;
+		try {
+			const res = await fetch(url);
+			text = await res.text();
+			if (!res.ok) {
+				throw new Error(`Unexpected ${res.status} requesting ${originalUri}: ${text || res.statusText}`);
+			}
+
+			globals.scriptUrl = url;
+		} catch (e) {
+			return () => ({ state: PreloadState.Error, error: e.message });
 		}
 
-		return text;
-	}
-
-	interface RendererContext {
-		getState<T>(): T | undefined;
-		setState<T>(newState: T): void;
-		getRenderer(id: string): Promise<any | undefined>;
-		postMessage?(message: unknown): void;
-		onDidReceiveMessage?: Event<unknown>;
-	}
-
-	interface ScriptModule {
-		activate(ctx?: RendererContext): Promise<RendererApi | undefined | any> | RendererApi | undefined | any;
-	}
-
-	const invokeSourceWithGlobals = (functionSrc: string, globals: { [name: string]: unknown }) => {
 		const args = Object.entries(globals);
-		return new Function(...args.map(([k]) => k), functionSrc)(...args.map(([, v]) => v));
-	};
-
-	const runPreload = async (url: string, originalUri: string): Promise<ScriptModule> => {
-		const text = await loadScriptSource(url, originalUri);
-		return {
-			activate: () => {
-				try {
-					return invokeSourceWithGlobals(text, { ...kernelPreloadGlobals, scriptUrl: url });
-				} catch (e) {
-					console.error(e);
-					throw e;
-				}
+		return () => {
+			try {
+				new Function(...args.map(([k]) => k), text)(...args.map(([, v]) => v));
+				return { state: PreloadState.Ok };
+			} catch (e) {
+				console.error(e);
+				return { state: PreloadState.Error, error: e.message };
 			}
 		};
 	};
 
-	const runRenderScript = async (url: string, rendererId: string): Promise<ScriptModule> => {
-		const text = await loadScriptSource(url);
-		// TODO: Support both the new module based renderers and the old style global renderers
-		const isModule = !text.includes('acquireNotebookRendererApi');
-		if (isModule) {
-			return __import(url);
-		} else {
-			return createBackCompatModule(rendererId, url, text);
-		}
-	};
-
-	const createBackCompatModule = (rendererId: string, scriptUrl: string, scriptText: string): ScriptModule => ({
-		activate: (): RendererApi => {
-			const onDidCreateOutput = createEmitter<IOutputItem>();
-			const onWillDestroyOutput = createEmitter<undefined | IDestroyCellInfo>();
-
-			const globals = {
-				scriptUrl,
-				acquireNotebookRendererApi: <T>(): GlobalNotebookRendererApi<T> => ({
-					onDidCreateOutput: onDidCreateOutput.event,
-					onWillDestroyOutput: onWillDestroyOutput.event,
-					setState: newState => vscode.setState({ ...vscode.getState(), [rendererId]: newState }),
-					getState: () => {
-						const state = vscode.getState();
-						return typeof state === 'object' && state ? state[rendererId] as T : undefined;
-					},
-				}),
-			};
-
-			invokeSourceWithGlobals(scriptText, globals);
-
-			return {
-				renderOutputItem(outputItem) {
-					onDidCreateOutput.fire({ ...outputItem, outputId: outputItem.id });
-				},
-				disposeOutputItem(id) {
-					onWillDestroyOutput.fire(id ? { outputId: id } : undefined);
-				}
-			};
-		}
-	});
-
 	const dimensionUpdater = new class {
-		private readonly pending = new Map<string, webviewMessages.DimensionUpdate>();
+		private readonly pending = new Map<string, DimensionUpdate>();
 
 		update(id: string, height: number, options: { init?: boolean; isOutput?: boolean }) {
 			if (!this.pending.size) {
@@ -221,7 +153,7 @@ async function webviewPreloads(style: PreloadStyles, options: PreloadOptions, re
 				return;
 			}
 
-			postNotebookMessage<webviewMessages.IDimensionMessage>('dimension', {
+			postNotebookMessage<IDimensionMessage>('dimension', {
 				updates: Array.from(this.pending.values())
 			});
 			this.pending.clear();
@@ -250,8 +182,8 @@ async function webviewPreloads(style: PreloadStyles, options: PreloadOptions, re
 						if (observedElementInfo.output) {
 							let height = 0;
 							if (entry.contentRect.height !== 0) {
-								entry.target.style.padding = `${style.outputNodePadding}px ${style.outputNodePadding}px ${style.outputNodePadding}px ${style.outputNodeLeftPadding}px`;
-								height = entry.contentRect.height + style.outputNodePadding * 2;
+								entry.target.style.padding = `${__outputNodePadding__}px ${__outputNodePadding__}px ${__outputNodePadding__}px ${__outputNodeLeftPadding__}px`;
+								height = entry.contentRect.height + __outputNodePadding__ * 2;
 							} else {
 								entry.target.style.padding = `0px`;
 							}
@@ -300,7 +232,7 @@ async function webviewPreloads(style: PreloadStyles, options: PreloadOptions, re
 		if (event.defaultPrevented || scrollWillGoToParent(event)) {
 			return;
 		}
-		postNotebookMessage<webviewMessages.IWheelMessage>('did-scroll-wheel', {
+		postNotebookMessage<IWheelMessage>('did-scroll-wheel', {
 			payload: {
 				deltaMode: event.deltaMode,
 				deltaX: event.deltaX,
@@ -324,7 +256,7 @@ async function webviewPreloads(style: PreloadStyles, options: PreloadOptions, re
 		const element = document.createElement('div');
 		element.tabIndex = 0;
 		element.addEventListener('focus', () => {
-			postNotebookMessage<webviewMessages.IBlurOutputMessage>('focus-editor', {
+			postNotebookMessage<IBlurOutputMessage>('focus-editor', {
 				id: outputId,
 				focusNext
 			});
@@ -335,12 +267,12 @@ async function webviewPreloads(style: PreloadStyles, options: PreloadOptions, re
 
 	function addMouseoverListeners(element: HTMLElement, outputId: string): void {
 		element.addEventListener('mouseenter', () => {
-			postNotebookMessage<webviewMessages.IMouseEnterMessage>('mouseenter', {
+			postNotebookMessage<IMouseEnterMessage>('mouseenter', {
 				id: outputId,
 			});
 		});
 		element.addEventListener('mouseleave', () => {
-			postNotebookMessage<webviewMessages.IMouseLeaveMessage>('mouseleave', {
+			postNotebookMessage<IMouseLeaveMessage>('mouseleave', {
 				id: outputId,
 			});
 		});
@@ -376,7 +308,7 @@ async function webviewPreloads(style: PreloadStyles, options: PreloadOptions, re
 			this._loosingFocus = false;
 			if (!this._hasFocus) {
 				this._hasFocus = true;
-				postNotebookMessage<webviewMessages.IOutputFocusMessage>('outputFocus', {
+				postNotebookMessage<IOutputFocusMessage>('outputFocus', {
 					id: this._outputId,
 				});
 			}
@@ -389,7 +321,7 @@ async function webviewPreloads(style: PreloadStyles, options: PreloadOptions, re
 					if (this._loosingFocus) {
 						this._loosingFocus = false;
 						this._hasFocus = false;
-						postNotebookMessage<webviewMessages.IOutputBlurMessage>('outputBlur', {
+						postNotebookMessage<IOutputBlurMessage>('outputBlur', {
 							id: this._outputId,
 						});
 					}
@@ -414,6 +346,8 @@ async function webviewPreloads(style: PreloadStyles, options: PreloadOptions, re
 
 		focusTrackers.set(outputId, new FocusTracker(element, outputId));
 	}
+
+	const dontEmit = Symbol('dontEmit');
 
 	function createEmitter<T>(listenerChange: (listeners: Set<Listener<T>>) => void = () => undefined): EmitterLike<T> {
 		const listeners = new Set<Listener<T>>();
@@ -446,115 +380,198 @@ async function webviewPreloads(style: PreloadStyles, options: PreloadOptions, re
 		};
 	}
 
-	function showPreloadErrors(outputNode: HTMLElement, ...errors: readonly Error[]) {
-		outputNode.innerText = `Error loading preloads:`;
-		const errList = document.createElement('ul');
-		for (const result of errors) {
-			console.error(result);
-			const item = document.createElement('li');
-			item.innerText = result.message;
-			errList.appendChild(item);
-		}
-		outputNode.appendChild(errList);
+	// Maps the events in the given emitter, invoking mapFn on each one. mapFn can return
+	// the dontEmit symbol to skip emission.
+	function mapEmitter<T, R>(emitter: EmitterLike<T>, mapFn: (data: T) => R | typeof dontEmit) {
+		let listener: IDisposable;
+		const mapped = createEmitter(listeners => {
+			if (listeners.size && !listener) {
+				listener = emitter.event(data => {
+					const v = mapFn(data);
+					if (v !== dontEmit) {
+						mapped.fire(v);
+					}
+				});
+			} else if (listener && !listeners.size) {
+				listener.dispose();
+			}
+		});
+
+		return mapped.event;
 	}
 
-	interface IOutputItem {
-		readonly id: string;
+	interface ICreateCellInfo {
+		element: HTMLElement;
+		outputId: string;
 
-		/** @deprecated */
-		readonly outputId?: string;
-
-		/** @deprecated */
-		readonly element: HTMLElement;
-
-		readonly mime: string;
+		mime: string;
+		value: unknown;
 		metadata: unknown;
-		metadata2: unknown;
-
-		text(): string;
-		json(): any;
-		data(): Uint8Array;
-		blob(): Blob;
-		/** @deprecated */
-		bytes(): Uint8Array;
 	}
 
 	interface IDestroyCellInfo {
 		outputId: string;
 	}
 
-	const onDidReceiveKernelMessage = createEmitter<unknown>();
+	const onWillDestroyOutput = createEmitter<[string | undefined /* namespace */, IDestroyCellInfo | undefined /* cell uri */]>();
+	const onDidCreateOutput = createEmitter<[string | undefined /* namespace */, ICreateCellInfo]>();
+	const onDidReceiveMessage = createEmitter<[string, unknown]>();
 
-	/** @deprecated */
-	interface GlobalNotebookRendererApi<T> {
-		setState: (newState: T) => void;
-		getState(): T | undefined;
-		readonly onWillDestroyOutput: Event<undefined | IDestroyCellInfo>;
-		readonly onDidCreateOutput: Event<IOutputItem>;
-	}
+	const matchesNs = (namespace: string, query: string | undefined) => namespace === '*' || query === namespace || query === 'undefined';
 
-	const kernelPreloadGlobals = {
-		acquireVsCodeApi,
-		onDidReceiveKernelMessage: onDidReceiveKernelMessage.event,
-		postKernelMessage: (data: unknown) => postNotebookMessage('customKernelMessage', { message: data }),
+	(window as any).acquireNotebookRendererApi = <T>(namespace: string) => {
+		if (!namespace || typeof namespace !== 'string') {
+			throw new Error(`acquireNotebookRendererApi should be called your renderer type as a string, got: ${namespace}.`);
+		}
+
+		return {
+			postMessage(message: unknown) {
+				postNotebookMessage<ICustomRendererMessage>('customRendererMessage', {
+					rendererId: namespace,
+					message,
+				});
+			},
+			setState(newState: T) {
+				vscode.setState({ ...vscode.getState(), [namespace]: newState });
+			},
+			getState(): T | undefined {
+				const state = vscode.getState();
+				return typeof state === 'object' && state ? state[namespace] as T : undefined;
+			},
+			onDidReceiveMessage: mapEmitter(onDidReceiveMessage, ([ns, data]) => ns === namespace ? data : dontEmit),
+			onWillDestroyOutput: mapEmitter(onWillDestroyOutput, ([ns, data]) => matchesNs(namespace, ns) ? data : dontEmit),
+			onDidCreateOutput: mapEmitter(onDidCreateOutput, ([ns, data]) => matchesNs(namespace, ns) ? data : dontEmit),
+		};
 	};
 
-	const ttPolicy = window.trustedTypes?.createPolicy('notebookRenderer', {
+	const enum PreloadState {
+		Ok,
+		Error
+	}
+
+	type PreloadResult = { state: PreloadState.Ok } | { state: PreloadState.Error, error: string };
+
+	/**
+	 * Map of preload resource URIs to promises that resolve one the resource
+	 * loads or errors.
+	 */
+	const preloadPromises = new Map<string, Promise<PreloadResult>>();
+	const queuedOuputActions = new Map<string, Promise<void>>();
+
+	/**
+	 * Enqueues an action that affects a output. This blocks behind renderer load
+	 * requests that affect the same output. This should be called whenever you
+	 * do something that affects output to ensure it runs in
+	 * the correct order.
+	 */
+	const enqueueOutputAction = <T extends { outputId: string; }>(event: T, fn: (event: T) => Promise<void> | void) => {
+		const queued = queuedOuputActions.get(event.outputId);
+		const maybePromise = queued ? queued.then(() => fn(event)) : fn(event);
+		if (typeof maybePromise === 'undefined') {
+			return; // a synchonrously-called function, we're done
+		}
+
+		const promise = maybePromise.then(() => {
+			if (queuedOuputActions.get(event.outputId) === promise) {
+				queuedOuputActions.delete(event.outputId);
+			}
+		});
+
+		queuedOuputActions.set(event.outputId, promise);
+	};
+
+	const ttPolicy = window.trustedTypes?.createPolicy('notebookOutputRenderer', {
 		createHTML: value => value,
 		createScript: value => value,
 	});
 
 	window.addEventListener('wheel', handleWheel);
 
-	window.addEventListener('message', async rawEvent => {
-		const event = rawEvent as ({ data: webviewMessages.ToWebviewMessage; });
+	window.addEventListener('message', rawEvent => {
+		const event = rawEvent as ({ data: ToWebviewMessage; });
 
 		switch (event.data.type) {
-			case 'initializeMarkup':
-				await notebookDocument.ensureMarkupCells(event.data.cells);
+			case 'initializeMarkdownPreview':
+				for (const cell of event.data.cells) {
+					createMarkdownPreview(cell.cellId, cell.content, cell.offset);
+
+					const cellContainer = document.getElementById(cell.cellId);
+					if (cellContainer) {
+						cellContainer.style.visibility = 'hidden';
+					}
+				}
+
 				dimensionUpdater.updateImmediately();
-				postNotebookMessage('initializedMarkup', {});
+				postNotebookMessage('initializedMarkdownPreview', {});
 				break;
-
-			case 'createMarkupCell':
-				notebookDocument.ensureMarkupCells([event.data.cell]);
+			case 'createMarkdownPreview':
+				createMarkdownPreview(event.data.id, event.data.content, event.data.top);
 				break;
+			case 'showMarkdownPreview':
+				{
+					const data = event.data;
 
-			case 'showMarkupCell':
-				notebookDocument.showMarkupCell(event.data.id, event.data.top, event.data.content);
-				break;
+					const cellContainer = document.getElementById(data.id);
+					if (cellContainer) {
+						cellContainer.style.visibility = 'visible';
+						cellContainer.style.top = `${data.top}px`;
+					}
 
-			case 'hideMarkupCells':
-				for (const id of event.data.ids) {
-					notebookDocument.hideMarkupCell(id);
+					updateMarkdownPreview(data.id, data.content);
 				}
 				break;
-
-			case 'unhideMarkupCells':
-				for (const id of event.data.ids) {
-					notebookDocument.unhideMarkupCell(id);
+			case 'hideMarkdownPreviews':
+				{
+					for (const id of event.data.ids) {
+						const cellContainer = document.getElementById(id);
+						if (cellContainer) {
+							cellContainer.style.visibility = 'hidden';
+						}
+					}
 				}
 				break;
-
-			case 'deleteMarkupCell':
-				for (const id of event.data.ids) {
-					notebookDocument.deleteMarkupCell(id);
+			case 'unhideMarkdownPreviews':
+				{
+					for (const id of event.data.ids) {
+						const cellContainer = document.getElementById(id);
+						if (cellContainer) {
+							cellContainer.style.visibility = 'visible';
+						}
+						updateMarkdownPreview(id, undefined);
+					}
 				}
 				break;
-
-			case 'updateSelectedMarkupCells':
-				notebookDocument.updateSelectedCells(event.data.selectedCellIds);
+			case 'deleteMarkdownPreview':
+				{
+					for (const id of event.data.ids) {
+						const cellContainer = document.getElementById(id);
+						cellContainer?.remove();
+					}
+				}
 				break;
+			case 'updateSelectedMarkdownPreviews':
+				{
+					const selectedCellIds = new Set<string>(event.data.selectedCellIds);
 
-			case 'html': {
-				const data = event.data;
-				outputs.enqueue(event.data.outputId, async (state) => {
-					const preloadsAndErrors = await Promise.all<unknown>([
-						data.rendererId ? renderers.load(data.rendererId) : undefined,
-						...data.requiredPreloads.map(p => kernelPreloads.waitFor(p.uri)),
-					].map(p => p?.catch(err => err)));
+					for (const oldSelected of document.querySelectorAll('.preview.selected')) {
+						const id = oldSelected.id;
+						if (!selectedCellIds.has(id)) {
+							oldSelected.classList.remove('selected');
+						}
+					}
 
-					if (state.cancelled) {
+					for (const newSelected of selectedCellIds) {
+						const previewContainer = document.getElementById(newSelected);
+						if (previewContainer) {
+							previewContainer.classList.add('selected');
+						}
+					}
+				}
+				break;
+			case 'html':
+				enqueueOutputAction(event.data, async data => {
+					const preloadResults = await Promise.all(data.requiredPreloads.map(p => preloadPromises.get(p.uri)));
+					if (!queuedOuputActions.has(data.outputId)) { // output was cleared while loading
 						return;
 					}
 
@@ -604,57 +621,62 @@ async function webviewPreloads(style: PreloadStyles, options: PreloadOptions, re
 					if (content.type === RenderOutputType.Html) {
 						const trustedHtml = ttPolicy?.createHTML(content.htmlContent) ?? content.htmlContent;
 						outputNode.innerHTML = trustedHtml as string;
+						cellOutputContainer.appendChild(outputContainer);
+						outputContainer.appendChild(outputNode);
 						domEval(outputNode);
-					} else if (preloadsAndErrors.some(e => e instanceof Error)) {
-						const errors = preloadsAndErrors.filter((e): e is Error => e instanceof Error);
-						showPreloadErrors(outputNode, ...errors);
-					} else {
-						const rendererApi = preloadsAndErrors[0] as RendererApi;
-						try {
-							rendererApi.renderOutputItem({
-								id: outputId,
-								element: outputNode,
-								mime: content.mimeType,
-								metadata: content.metadata,
-								metadata2: content.metadata2,
-								data() {
-									return content.valueBytes;
-								},
-								bytes() { return this.data(); },
-								text() {
-									return new TextDecoder().decode(content.valueBytes);
-								},
-								json() {
-									return JSON.parse(this.text());
-								},
-								blob() {
-									return new Blob([content.valueBytes], { type: content.mimeType });
-								}
-							}, outputNode);
-						} catch (e) {
-							showPreloadErrors(outputNode, e);
+					} else if (preloadResults.some(e => e?.state === PreloadState.Error)) {
+						outputNode.innerText = `Error loading preloads:`;
+						const errList = document.createElement('ul');
+						for (const result of preloadResults) {
+							if (result?.state === PreloadState.Error) {
+								const item = document.createElement('li');
+								item.innerText = result.error;
+								errList.appendChild(item);
+							}
 						}
+						outputNode.appendChild(errList);
+						cellOutputContainer.appendChild(outputContainer);
+						outputContainer.appendChild(outputNode);
+					} else {
+						const { metadata, mimeType, value } = content;
+						onDidCreateOutput.fire([data.apiNamespace, {
+							element: outputNode,
+							outputId,
+							mime: content.mimeType,
+							value: content.value,
+							metadata: content.metadata,
+
+							get mimeType() {
+								console.warn(`event.mimeType is deprecated, use 'mime' instead`);
+								return mimeType;
+							},
+
+							get output() {
+								console.warn(`event.output is deprecated, use properties directly instead`);
+								return {
+									metadata: { [mimeType]: metadata },
+									data: { [mimeType]: value },
+									outputId,
+								};
+							},
+						} as ICreateCellInfo]);
+						cellOutputContainer.appendChild(outputContainer);
+						outputContainer.appendChild(outputNode);
 					}
 
-					cellOutputContainer.appendChild(outputContainer);
-					outputContainer.appendChild(outputNode);
 					resizeObserver.observe(outputNode, outputId, true);
-
-					if (content.type === RenderOutputType.Html) {
-						domEval(outputNode);
-					}
 
 					const clientHeight = outputNode.clientHeight;
 					const cps = document.defaultView!.getComputedStyle(outputNode);
 					if (clientHeight !== 0 && cps.padding === '0px') {
 						// we set padding to zero if the output height is zero (then we can have a zero-height output DOM node)
 						// thus we need to ensure the padding is accounted when updating the init height of the output
-						dimensionUpdater.update(outputId, clientHeight + style.outputNodePadding * 2, {
+						dimensionUpdater.update(outputId, clientHeight + __outputNodePadding__ * 2, {
 							isOutput: true,
 							init: true,
 						});
 
-						outputNode.style.padding = `${style.outputNodePadding}px ${style.outputNodePadding}px ${style.outputNodePadding}px ${style.outputNodeLeftPadding}px`;
+						outputNode.style.padding = `${__outputNodePadding__}px ${__outputNodePadding__}px ${__outputNodePadding__}px ${__outputNodeLeftPadding__}px`;
 					} else {
 						dimensionUpdater.update(outputId, outputNode.clientHeight, {
 							isOutput: true,
@@ -666,7 +688,6 @@ async function webviewPreloads(style: PreloadStyles, options: PreloadOptions, re
 					cellOutputContainer.style.visibility = data.initiallyHidden ? 'hidden' : 'visible';
 				});
 				break;
-			}
 			case 'view-scroll':
 				{
 					// const date = new Date();
@@ -693,7 +714,8 @@ async function webviewPreloads(style: PreloadStyles, options: PreloadOptions, re
 					break;
 				}
 			case 'clear':
-				renderers.clearAll();
+				queuedOuputActions.clear(); // stop all loading outputs
+				onWillDestroyOutput.fire([undefined, undefined]);
 				document.getElementById('container')!.innerText = '';
 
 				focusTrackers.forEach(ft => {
@@ -701,33 +723,24 @@ async function webviewPreloads(style: PreloadStyles, options: PreloadOptions, re
 				});
 				focusTrackers.clear();
 				break;
-			case 'clearOutput': {
+			case 'clearOutput':
 				const output = document.getElementById(event.data.outputId);
-				const { rendererId, outputId } = event.data;
-
-				outputs.cancelOutput(outputId);
+				queuedOuputActions.delete(event.data.outputId); // stop any in-progress rendering
 				if (output && output.parentNode) {
-					if (rendererId) {
-						renderers.clearOutput(rendererId, outputId);
-					}
+					onWillDestroyOutput.fire([event.data.apiNamespace, { outputId: event.data.outputId }]);
 					output.parentNode.removeChild(output);
 				}
-
 				break;
-			}
-			case 'hideOutput': {
-				const { outputId } = event.data;
-				outputs.enqueue(event.data.outputId, () => {
+			case 'hideOutput':
+				enqueueOutputAction(event.data, ({ outputId }) => {
 					const container = document.getElementById(outputId)?.parentElement?.parentElement;
 					if (container) {
 						container.style.visibility = 'hidden';
 					}
 				});
 				break;
-			}
-			case 'showOutput': {
-				const { outputId, cellTop: top } = event.data;
-				outputs.enqueue(event.data.outputId, () => {
+			case 'showOutput':
+				enqueueOutputAction(event.data, ({ outputId, cellTop: top, }) => {
 					const output = document.getElementById(outputId);
 					if (output) {
 						output.parentElement!.parentElement!.style.visibility = 'visible';
@@ -739,7 +752,6 @@ async function webviewPreloads(style: PreloadStyles, options: PreloadOptions, re
 					}
 				});
 				break;
-			}
 			case 'ack-dimension':
 				{
 					const { outputId, height } = event.data;
@@ -752,8 +764,21 @@ async function webviewPreloads(style: PreloadStyles, options: PreloadOptions, re
 				}
 			case 'preload':
 				const resources = event.data.resources;
+				const globals = event.data.type === 'preload' ? { acquireVsCodeApi } : {};
+				let queue: Promise<PreloadResult> = Promise.resolve({ state: PreloadState.Ok });
 				for (const { uri, originalUri } of resources) {
-					kernelPreloads.load(uri, originalUri);
+					// create the promise so that the scripts download in parallel, but
+					// only invoke them in series within the queue
+					const promise = runScript(uri, originalUri, globals);
+					queue = queue.then(() => promise.then(fn => {
+						const result = fn();
+						if (result.state === PreloadState.Error) {
+							console.error(result.error);
+						}
+
+						return result;
+					}));
+					preloadPromises.set(uri, queue);
 				}
 				break;
 			case 'focus-output':
@@ -767,483 +792,95 @@ async function webviewPreloads(style: PreloadStyles, options: PreloadOptions, re
 				}
 
 				break;
-			case 'customKernelMessage':
-				onDidReceiveKernelMessage.fire(event.data.message);
-				break;
 			case 'customRendererMessage':
-				renderers.getRenderer(event.data.rendererId)?.receiveMessage(event.data.message);
-				break;
-			case 'notebookStyles':
-				const documentStyle = document.documentElement.style;
-
-				for (let i = documentStyle.length - 1; i >= 0; i--) {
-					const property = documentStyle[i];
-
-					// Don't remove properties that the webview might have added separately
-					if (property && property.startsWith('--notebook-')) {
-						documentStyle.removeProperty(property);
-					}
-				}
-
-				// Re-add new properties
-				for (const variable of Object.keys(event.data.styles)) {
-					documentStyle.setProperty(`--${variable}`, event.data.styles[variable]);
-				}
-				break;
-			case 'notebookOptions':
-				currentOptions = event.data.options;
-
-				// Update markdown previews
-				for (const markdownContainer of document.querySelectorAll('.preview')) {
-					setMarkupContainerDraggable(markdownContainer, currentOptions.dragAndDropEnabled);
-				}
-
+				onDidReceiveMessage.fire([event.data.rendererId, event.data.message]);
 				break;
 		}
 	});
 
-	interface RendererApi {
-		renderOutputItem: (outputItem: IOutputItem, element: HTMLElement) => void;
-		disposeOutputItem?: (id?: string) => void;
-	}
-
-	class Renderer {
-		constructor(
-			public readonly data: RendererMetadata,
-			private readonly loadExtension: (id: string) => Promise<void>,
-		) { }
-
-		private _onMessageEvent = createEmitter();
-		private _loadPromise?: Promise<RendererApi | undefined>;
-		private _api: RendererApi | undefined;
-
-		public get api() { return this._api; }
-
-		public load(): Promise<RendererApi | undefined> {
-			if (!this._loadPromise) {
-				this._loadPromise = this._load();
-			}
-
-			return this._loadPromise;
-		}
-
-		public receiveMessage(message: unknown) {
-			this._onMessageEvent.fire(message);
-		}
-
-		private createRendererContext(): RendererContext {
-			const { id, messaging } = this.data;
-			const context: RendererContext = {
-				setState: newState => vscode.setState({ ...vscode.getState(), [id]: newState }),
-				getState: <T>() => {
-					const state = vscode.getState();
-					return typeof state === 'object' && state ? state[id] as T : undefined;
-				},
-				// TODO: This is async so that we can return a promise to the API in the future.
-				// Currently the API is always resolved before we call `createRendererContext`.
-				getRenderer: async (id: string) => renderers.getRenderer(id)?.api,
-			};
-
-			if (messaging) {
-				context.onDidReceiveMessage = this._onMessageEvent.event;
-				context.postMessage = message => postNotebookMessage('customRendererMessage', { rendererId: id, message });
-			}
-
-			return context;
-		}
-
-		/** Inner function cached in the _loadPromise(). */
-		private async _load(): Promise<RendererApi | undefined> {
-			const module = await runRenderScript(this.data.entrypoint, this.data.id);
-			if (!module) {
-				return undefined; // {{SQL CARBON EDIT}} Strict nulls
-			}
-
-			const api = await module.activate(this.createRendererContext());
-			this._api = api;
-
-			// Squash any errors extends errors. They won't prevent the renderer
-			// itself from working, so just log them.
-			await Promise.all(rendererData
-				.filter(d => d.extends === this.data.id)
-				.map(d => this.loadExtension(d.id).catch(console.error)),
-			);
-
-			return api;
-		}
-	}
-
-	const kernelPreloads = new class {
-		private readonly preloads = new Map<string /* uri */, Promise<unknown>>();
-
-		/**
-		 * Returns a promise that resolves when the given preload is activated.
-		 */
-		public waitFor(uri: string) {
-			return this.preloads.get(uri) || Promise.resolve(new Error(`Preload not ready: ${uri}`));
-		}
-
-		/**
-		 * Loads a preload.
-		 * @param uri URI to load from
-		 * @param originalUri URI to show in an error message if the preload is invalid.
-		 */
-		public load(uri: string, originalUri: string) {
-			const promise = Promise.all([
-				runPreload(uri, originalUri),
-				this.waitForAllCurrent(),
-			]).then(([module]) => module.activate());
-
-			this.preloads.set(uri, promise);
-			return promise;
-		}
-
-		/**
-		 * Returns a promise that waits for all currently-registered preloads to
-		 * activate before resolving.
-		 */
-		private waitForAllCurrent() {
-			return Promise.all([...this.preloads.values()].map(p => p.catch(err => err)));
-		}
-	};
-
-	const outputs = new class {
-		private outputs = new Map<string, { cancelled: boolean; queue: Promise<unknown> }>();
-		/**
-		 * Pushes the action onto the list of actions for the given output ID,
-		 * ensuring that it's run in-order.
-		 */
-		public enqueue(outputId: string, action: (record: { cancelled: boolean }) => unknown) {
-			const record = this.outputs.get(outputId);
-			if (!record) {
-				this.outputs.set(outputId, { cancelled: false, queue: new Promise(r => r(action({ cancelled: false }))) });
-			} else {
-				record.queue = record.queue.then(r => !record.cancelled && action(record));
-			}
-		}
-
-		/**
-		 * Cancels the rendering of all outputs.
-		 */
-		public cancelAll() {
-			for (const record of this.outputs.values()) {
-				record.cancelled = true;
-			}
-			this.outputs.clear();
-		}
-
-		/**
-		 * Cancels any ongoing rendering out an output.
-		 */
-		public cancelOutput(outputId: string) {
-			const output = this.outputs.get(outputId);
-			if (output) {
-				output.cancelled = true;
-				this.outputs.delete(outputId);
-			}
-		}
-	};
-
-	const renderers = new class {
-		private readonly _renderers = new Map</* id */ string, Renderer>();
-
-		constructor() {
-			for (const renderer of rendererData) {
-				this._renderers.set(renderer.id, new Renderer(renderer, async (extensionId) => {
-					const ext = this._renderers.get(extensionId);
-					if (!ext) {
-						throw new Error(`Could not find extending renderer: ${extensionId}`);
-					}
-
-					await ext.load();
-				}));
-			}
-		}
-
-		public getRenderer(id: string) {
-			return this._renderers.get(id);
-		}
-
-		public async load(id: string) {
-			const renderer = this._renderers.get(id);
-			if (!renderer) {
-				throw new Error('Could not find renderer');
-			}
-
-			return renderer.load();
-		}
-
-
-		public clearAll() {
-			outputs.cancelAll();
-			for (const renderer of this._renderers.values()) {
-				renderer.api?.disposeOutputItem?.();
-			}
-		}
-
-		public clearOutput(rendererId: string, outputId: string) {
-			outputs.cancelOutput(outputId);
-			this._renderers.get(rendererId)?.api?.disposeOutputItem?.(outputId);
-		}
-
-		public async render(info: IOutputItem, element: HTMLElement) {
-			const renderers = Array.from(this._renderers.values())
-				.filter(renderer => renderer.data.mimeTypes.includes(info.mime) && !renderer.data.extends);
-
-			if (!renderers.length) {
-				throw new Error('Could not find renderer');
-			}
-
-			await Promise.all(renderers.map(x => x.load()));
-
-			renderers[0].api?.renderOutputItem(info, element);
-		}
-	}();
-
-	let hasPostedRenderedMathTelemetry = false;
-	const unsupportedKatexTermsRegex = /(\\(?:abovewithdelims|array|Arrowvert|arrowvert|atopwithdelims|bbox|bracevert|buildrel|cancelto|cases|class|cssId|ddddot|dddot|DeclareMathOperator|definecolor|displaylines|enclose|eqalign|eqalignno|eqref|hfil|hfill|idotsint|iiiint|label|leftarrowtail|leftroot|leqalignno|lower|mathtip|matrix|mbox|mit|mmlToken|moveleft|moveright|mspace|newenvironment|Newextarrow|notag|oldstyle|overparen|overwithdelims|pmatrix|raise|ref|renewenvironment|require|root|Rule|scr|shoveleft|shoveright|sideset|skew|Space|strut|style|texttip|Tiny|toggle|underparen|unicode|uproot)\b)/gi;
-
-	const notebookDocument = new class {
-
-		private readonly _markupCells = new Map<string, MarkupCell>();
-
-		private async createMarkupCell(init: webviewMessages.IMarkupCellInitialization, top: number): Promise<MarkupCell> {
-			const existing = this._markupCells.get(init.cellId);
-			if (existing) {
-				console.error(`Trying to create markup that already exists: ${init.cellId}`);
-				return existing;
-			}
-
-			const markdownCell = new MarkupCell(init.cellId, init.mime, init.content, top);
-			this._markupCells.set(init.cellId, markdownCell);
-
-			await markdownCell.ready;
-			return markdownCell;
-		}
-
-		public async ensureMarkupCells(update: readonly webviewMessages.IMarkupCellInitialization[]): Promise<void> {
-			await Promise.all(update.map(async info => {
-				let cell = this._markupCells.get(info.cellId);
-				if (cell) {
-					await cell.updateContentAndRender(info.content);
-				} else {
-					cell = await this.createMarkupCell(info, info.offset);
-				}
-				cell.element.style.visibility = info.visible ? 'visible' : 'hidden';
-			}));
-		}
-
-		public deleteMarkupCell(id: string) {
-			const cell = this.getExpectedMarkupCell(id);
-			if (cell) {
-				cell.element.remove();
-				this._markupCells.delete(id);
-			}
-		}
-
-		public async updateMarkupContent(id: string, newContent: string): Promise<void> {
-			const cell = this.getExpectedMarkupCell(id);
-			await cell?.updateContentAndRender(newContent);
-		}
-
-		public showMarkupCell(id: string, top: number, newContent: string | undefined): void {
-			const cell = this.getExpectedMarkupCell(id);
-			cell?.show(id, top, newContent);
-		}
-
-		public hideMarkupCell(id: string): void {
-			const cell = this.getExpectedMarkupCell(id);
-			cell?.hide();
-		}
-
-		public unhideMarkupCell(id: string): void {
-			const cell = this.getExpectedMarkupCell(id);
-			cell?.unhide();
-		}
-
-		private getExpectedMarkupCell(id: string): MarkupCell | undefined {
-			const cell = this._markupCells.get(id);
-			if (!cell) {
-				console.log(`Could not find markup cell '${id}'`);
-				return undefined;
-			}
-			return cell;
-		}
-
-		public updateSelectedCells(selectedCellIds: readonly string[]) {
-			const selectedCellSet = new Set<string>(selectedCellIds);
-			for (const cell of this._markupCells.values()) {
-				cell.setSelected(selectedCellSet.has(cell.id));
-			}
-		}
-	}();
-
-	class MarkupCell implements IOutputItem {
-
-		public readonly ready: Promise<void>;
-
-		/// Internal field that holds markdown text
-		private _content: string;
-
-		constructor(id: string, mime: string, content: string, top: number) {
-			this.id = id;
-			this.mime = mime;
-			this._content = content;
-
-			let resolveReady: () => void;
-			this.ready = new Promise<void>(r => resolveReady = r);
-
-			const root = document.getElementById('container')!;
-
-			this.element = document.createElement('div');
-			this.element.id = this.id;
-			this.element.classList.add('preview');
-			this.element.style.position = 'absolute';
-			this.element.style.top = top + 'px';
-			root.appendChild(this.element);
-
-			this.addEventListeners();
-
-			this.updateContentAndRender(this._content).then(() => {
-				resizeObserver.observe(this.element, this.id, false);
-				resolveReady();
-			});
-		}
-
-		//#region IOutputItem
-		public readonly id: string;
-		public readonly mime;
-		public readonly element: HTMLElement;
-
-		// deprecated fields
-		public readonly metadata = undefined;
-		public readonly metadata2 = undefined;
-		public readonly outputId?: string | undefined;
-
-		text() { return this._content; }
-		json() { return undefined; }
-		bytes() { return this.data(); }
-		data() { return new TextEncoder().encode(this._content); }
-		blob() { return new Blob([this.data()], { type: this.mime }); }
-		//#endregion
-
-		private addEventListeners() {
-			this.element.addEventListener('dblclick', () => {
-				postNotebookMessage<webviewMessages.IToggleMarkupPreviewMessage>('toggleMarkupPreview', { cellId: this.id });
-			});
-
-			this.element.addEventListener('click', e => {
-				postNotebookMessage<webviewMessages.IClickMarkupCellMessage>('clickMarkupCell', {
-					cellId: this.id,
-					altKey: e.altKey,
-					ctrlKey: e.ctrlKey,
-					metaKey: e.metaKey,
-					shiftKey: e.shiftKey,
-				});
-			});
-
-			this.element.addEventListener('contextmenu', e => {
-				postNotebookMessage<webviewMessages.IContextMenuMarkupCellMessage>('contextMenuMarkupCell', {
-					cellId: this.id,
-					clientX: e.clientX,
-					clientY: e.clientY,
-				});
-			});
-
-			this.element.addEventListener('mouseenter', () => {
-				postNotebookMessage<webviewMessages.IMouseEnterMarkupCellMessage>('mouseEnterMarkupCell', { cellId: this.id });
-			});
-
-			this.element.addEventListener('mouseleave', () => {
-				postNotebookMessage<webviewMessages.IMouseLeaveMarkupCellMessage>('mouseLeaveMarkupCell', { cellId: this.id });
-			});
-
-			setMarkupContainerDraggable(this.element, currentOptions.dragAndDropEnabled);
-
-			this.element.addEventListener('dragstart', e => {
-				markdownPreviewDragManager.startDrag(e, this.id);
-			});
-
-			this.element.addEventListener('drag', e => {
-				markdownPreviewDragManager.updateDrag(e, this.id);
-			});
-
-			this.element.addEventListener('dragend', e => {
-				markdownPreviewDragManager.endDrag(e, this.id);
-			});
-		}
-
-		public async updateContentAndRender(newContent: string): Promise<void> {
-			this._content = newContent;
-
-			await renderers.render(this, this.element);
-
-			if (!hasPostedRenderedMathTelemetry) {
-				const hasRenderedMath = this.element.querySelector('.katex');
-				if (hasRenderedMath) {
-					hasPostedRenderedMathTelemetry = true;
-					postNotebookMessage<webviewMessages.ITelemetryFoundRenderedMarkdownMath>('telemetryFoundRenderedMarkdownMath', {});
-				}
-			}
-
-			const matches = this.element.innerText.match(unsupportedKatexTermsRegex);
-			if (matches) {
-				postNotebookMessage<webviewMessages.ITelemetryFoundUnrenderedMarkdownMath>('telemetryFoundUnrenderedMarkdownMath', {
-					latexDirective: matches[0],
-				});
-			}
-
-			dimensionUpdater.update(this.id, this.element.clientHeight, {
-				isOutput: false
-			});
-		}
-
-		public show(id: string, top: number, newContent: string | undefined): void {
-			this.element.style.visibility = 'visible';
-			this.element.style.top = `${top}px`;
-			if (typeof newContent === 'string') {
-				this.updateContentAndRender(newContent);
-			} else {
-				this.updateMarkupDimensions();
-			}
-		}
-
-		public hide() {
-			this.element.style.visibility = 'hidden';
-		}
-
-		public unhide() {
-			this.element.style.visibility = 'visible';
-			this.updateMarkupDimensions();
-		}
-
-		private async updateMarkupDimensions() {
-			dimensionUpdater.update(this.id, this.element.clientHeight, {
-				isOutput: false
-			});
-		}
-
-		public setSelected(selected: boolean) {
-			this.element.classList.toggle('selected', selected);
-		}
-	}
+	const markdownRenderer: {
+		renderMarkup: (context: { element: HTMLElement, content: string }) => void,
+	} = await markdownRendererModule.activate(markdownDeps);
 
 	vscode.postMessage({
 		__vscode_notebook_message: true,
 		type: 'initialized'
 	});
 
-	function setMarkupContainerDraggable(element: Element, isDraggable: boolean) {
-		if (isDraggable) {
-			element.classList.add('draggable');
-			element.setAttribute('draggable', 'true');
-		} else {
-			element.classList.remove('draggable');
-			element.removeAttribute('draggable');
-		}
+	function createMarkdownPreview(cellId: string, content: string, top: number) {
+		const container = document.getElementById('container')!;
+		const cellContainer = document.createElement('div');
+		cellContainer.id = cellId;
+		cellContainer.classList.add('preview');
+
+		cellContainer.style.position = 'absolute';
+		cellContainer.style.top = top + 'px';
+		container.appendChild(cellContainer);
+
+		cellContainer.addEventListener('dblclick', () => {
+			postNotebookMessage<IToggleMarkdownPreviewMessage>('toggleMarkdownPreview', { cellId });
+		});
+
+		cellContainer.addEventListener('click', e => {
+			postNotebookMessage<IClickMarkdownPreviewMessage>('clickMarkdownPreview', {
+				cellId,
+				altKey: e.altKey,
+				ctrlKey: e.ctrlKey,
+				metaKey: e.metaKey,
+				shiftKey: e.shiftKey,
+			});
+		});
+
+		cellContainer.addEventListener('contextmenu', e => {
+			postNotebookMessage<IContextMenuMarkdownPreviewMessage>('contextMenuMarkdownPreview', {
+				cellId,
+				clientX: e.clientX,
+				clientY: e.clientY,
+			});
+		});
+
+		cellContainer.addEventListener('mouseenter', () => {
+			postNotebookMessage<IMouseEnterMarkdownPreviewMessage>('mouseEnterMarkdownPreview', { cellId });
+		});
+
+		cellContainer.addEventListener('mouseleave', () => {
+			postNotebookMessage<IMouseLeaveMarkdownPreviewMessage>('mouseLeaveMarkdownPreview', { cellId });
+		});
+
+		cellContainer.setAttribute('draggable', 'true');
+
+		cellContainer.addEventListener('dragstart', e => {
+			markdownPreviewDragManager.startDrag(e, cellId);
+		});
+
+		cellContainer.addEventListener('drag', e => {
+			markdownPreviewDragManager.updateDrag(e, cellId);
+		});
+
+		cellContainer.addEventListener('dragend', e => {
+			markdownPreviewDragManager.endDrag(e, cellId);
+		});
+
+		const previewRoot = cellContainer.attachShadow({ mode: 'open' });
+
+		// Add default webview style
+		const defaultStyles = document.getElementById('_defaultStyles') as HTMLStyleElement;
+		previewRoot.appendChild(defaultStyles.cloneNode(true));
+
+		// Add default preview style
+		const previewStyles = document.getElementById('preview-styles') as HTMLTemplateElement;
+		previewRoot.appendChild(previewStyles.content.cloneNode(true));
+
+		const previewNode = document.createElement('div');
+		previewNode.id = 'preview';
+		previewRoot.appendChild(previewNode);
+
+		updateMarkdownPreview(cellId, content);
+
+		resizeObserver.observe(cellContainer, cellId, false);
 	}
 
-	function postNotebookMessage<T extends webviewMessages.FromWebviewMessage>(
+	function postNotebookMessage<T extends FromWebviewMessage>(
 		type: T['type'],
 		properties: Omit<T, '__vscode_notebook_message' | 'type'>
 	) {
@@ -1251,6 +888,52 @@ async function webviewPreloads(style: PreloadStyles, options: PreloadOptions, re
 			__vscode_notebook_message: true,
 			type,
 			...properties
+		});
+	}
+
+	let hasPostedRenderedMathTelemetry = false;
+	const unsupportedKatexTermsRegex = /(\\(?:abovewithdelims|array|Arrowvert|arrowvert|atopwithdelims|bbox|bracevert|buildrel|cancelto|cases|class|cssId|ddddot|dddot|DeclareMathOperator|definecolor|displaylines|enclose|eqalign|eqalignno|eqref|hfil|hfill|idotsint|iiiint|label|leftarrowtail|leftroot|leqalignno|lower|mathtip|matrix|mbox|mit|mmlToken|moveleft|moveright|mspace|newenvironment|Newextarrow|notag|oldstyle|overparen|overwithdelims|pmatrix|raise|ref|renewenvironment|require|root|Rule|scr|shoveleft|shoveright|sideset|skew|Space|strut|style|texttip|Tiny|toggle|underparen|unicode|uproot)\b)/g;
+
+	function updateMarkdownPreview(cellId: string, content: string | undefined) {
+		const previewContainerNode = document.getElementById(cellId);
+		if (!previewContainerNode) {
+			return;
+		}
+
+		const previewRoot = previewContainerNode.shadowRoot;
+		const previewNode = previewRoot?.getElementById('preview') as HTMLElement;
+
+		// TODO: handle namespace
+		if (typeof content === 'string') {
+			if (content.trim().length === 0) {
+				previewContainerNode.classList.add('emptyMarkdownCell');
+				previewNode.innerText = '';
+			} else {
+				previewContainerNode.classList.remove('emptyMarkdownCell');
+				markdownRenderer.renderMarkup({
+					element: previewNode,
+					content: content
+				});
+
+				if (!hasPostedRenderedMathTelemetry) {
+					const hasRenderedMath = previewNode.querySelector('.katex');
+					if (hasRenderedMath) {
+						hasPostedRenderedMathTelemetry = true;
+						postNotebookMessage<ITelemetryFoundRenderedMarkdownMath>('telemetryFoundRenderedMarkdownMath', {});
+					}
+				}
+
+				const matches = previewNode.innerText.match(unsupportedKatexTermsRegex);
+				if (matches) {
+					postNotebookMessage<ITelemetryFoundUnrenderedMarkdownMath>('telemetryFoundUnrenderedMarkdownMath', {
+						latexDirective: matches[0],
+					});
+				}
+			}
+		}
+
+		dimensionUpdater.update(cellId, previewContainerNode.clientHeight, {
+			isOutput: false
 		});
 	}
 
@@ -1273,11 +956,11 @@ async function webviewPreloads(style: PreloadStyles, options: PreloadOptions, re
 				}
 
 				this.currentDrag = undefined;
-				postNotebookMessage<webviewMessages.ICellDropMessage>('cell-drop', {
+				postNotebookMessage<ICellDropMessage>('cell-drop', {
 					cellId: drag.cellId,
 					ctrlKey: e.ctrlKey,
 					altKey: e.altKey,
-					dragOffsetY: e.clientY,
+					position: { clientY: e.clientY },
 				});
 			});
 		}
@@ -1287,17 +970,13 @@ async function webviewPreloads(style: PreloadStyles, options: PreloadOptions, re
 				return;
 			}
 
-			if (!currentOptions.dragAndDropEnabled) {
-				return;
-			}
-
 			this.currentDrag = { cellId, clientY: e.clientY };
 
 			(e.target as HTMLElement).classList.add('dragging');
 
-			postNotebookMessage<webviewMessages.ICellDragStartMessage>('cell-drag-start', {
+			postNotebookMessage<ICellDragStartMessage>('cell-drag-start', {
 				cellId: cellId,
-				dragOffsetY: e.clientY,
+				position: { clientY: e.clientY },
 			});
 
 			// Continuously send updates while dragging instead of relying on `updateDrag`.
@@ -1307,9 +986,9 @@ async function webviewPreloads(style: PreloadStyles, options: PreloadOptions, re
 					return;
 				}
 
-				postNotebookMessage<webviewMessages.ICellDragMessage>('cell-drag', {
+				postNotebookMessage<ICellDragMessage>('cell-drag', {
 					cellId: cellId,
-					dragOffsetY: this.currentDrag.clientY,
+					position: { clientY: this.currentDrag.clientY },
 				});
 				requestAnimationFrame(trySendDragUpdate);
 			};
@@ -1326,29 +1005,27 @@ async function webviewPreloads(style: PreloadStyles, options: PreloadOptions, re
 		endDrag(e: DragEvent, cellId: string) {
 			this.currentDrag = undefined;
 			(e.target as HTMLElement).classList.remove('dragging');
-			postNotebookMessage<webviewMessages.ICellDragEndMessage>('cell-drag-end', {
+			postNotebookMessage<ICellDragEndMessage>('cell-drag-end', {
 				cellId: cellId
 			});
 		}
 	}();
 }
 
-export interface RendererMetadata {
-	readonly id: string;
-	readonly entrypoint: string;
-	readonly mimeTypes: readonly string[];
-	readonly extends: string | undefined;
-	readonly messaging: boolean;
-}
+export function preloadsScriptStr(styleValues: {
+	outputNodePadding: number;
+	outputNodeLeftPadding: number;
+}, markdownRenderer: {
+	entrypoint: string,
+	dependencies: Array<{ entrypoint: string }>,
+}) {
+	const markdownCtx = {
+		dependencies: markdownRenderer.dependencies,
+	};
 
-export function preloadsScriptStr(styleValues: PreloadStyles, options: PreloadOptions, renderers: readonly RendererMetadata[]) {
-	// TS will try compiling `import()` in webviePreloads, so use an helper function instead
-	// of using `import(...)` directly
 	return `
-		const __import = (x) => import(x);
-		(${webviewPreloads})(
-				JSON.parse(decodeURIComponent("${encodeURIComponent(JSON.stringify(styleValues))}")),
-				JSON.parse(decodeURIComponent("${encodeURIComponent(JSON.stringify(options))}")),
-				JSON.parse(decodeURIComponent("${encodeURIComponent(JSON.stringify(renderers))}"))
-			)\n//# sourceURL=notebookWebviewPreloads.js\n`;
+	import * as markdownRendererModule from "${markdownRenderer.entrypoint}";
+	(${webviewPreloads})(markdownRendererModule, JSON.parse(decodeURIComponent("${encodeURIComponent(JSON.stringify(markdownCtx))}")))`
+		.replace(/__outputNodePadding__/g, `${styleValues.outputNodePadding}`)
+		.replace(/__outputNodeLeftPadding__/g, `${styleValues.outputNodeLeftPadding}`);
 }

@@ -9,12 +9,9 @@ import ErrorTelemetry from 'vs/platform/telemetry/browser/errorTelemetry';
 import { NullAppender, ITelemetryAppender } from 'vs/platform/telemetry/common/telemetryUtils';
 import * as Errors from 'vs/base/common/errors';
 import * as sinon from 'sinon';
-import * as sinonTest from 'sinon-test';
 import { ITelemetryData } from 'vs/platform/telemetry/common/telemetry';
 import { TestConfigurationService } from 'vs/platform/configuration/test/common/testConfigurationService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-
-const sinonTestFn = sinonTest(sinon);
 
 class TestTelemetryAppender implements ITelemetryAppender {
 
@@ -88,7 +85,7 @@ class ErrorTestingSettings {
 
 suite('TelemetryService', () => {
 
-	test('Disposing', sinonTestFn(function () {
+	test('Disposing', sinon.test(function () {
 		let testAppender = new TestTelemetryAppender();
 		let service = new TelemetryService({ appender: testAppender }, undefined!);
 
@@ -101,7 +98,7 @@ suite('TelemetryService', () => {
 	}));
 
 	// event reporting
-	test('Simple event', sinonTestFn(function () {
+	test('Simple event', sinon.test(function () {
 		let testAppender = new TestTelemetryAppender();
 		let service = new TelemetryService({ appender: testAppender }, undefined!);
 
@@ -114,7 +111,7 @@ suite('TelemetryService', () => {
 		});
 	}));
 
-	test('Event with data', sinonTestFn(function () {
+	test('Event with data', sinon.test(function () {
 		let testAppender = new TestTelemetryAppender();
 		let service = new TelemetryService({ appender: testAppender }, undefined!);
 
@@ -196,7 +193,7 @@ suite('TelemetryService', () => {
 		});
 	});
 
-	test('enableTelemetry on by default', sinonTestFn(function () {
+	test('enableTelemetry on by default', sinon.test(function () {
 		let testAppender = new TestTelemetryAppender();
 		let service = new TelemetryService({ appender: testAppender }, undefined!);
 
@@ -227,7 +224,7 @@ suite('TelemetryService', () => {
 		}
 	}
 
-	test.skip('Error events', sinonTestFn(async function (this: any) { // {{SQL CARBON EDIT}} skip test
+	test.skip('Error events', sinon.test(async function (this: any) { // {{SQL CARBON EIDT}} skip test
 
 		let origErrorHandler = Errors.errorHandler.getUnexpectedErrorHandler();
 		Errors.setUnexpectedErrorHandler(() => { });
@@ -259,7 +256,7 @@ suite('TelemetryService', () => {
 		}
 	}));
 
-	// 	test('Unhandled Promise Error events', sinonTestFn(function() {
+	// 	test('Unhandled Promise Error events', sinon.test(function() {
 	//
 	// 		let origErrorHandler = Errors.errorHandler.getUnexpectedErrorHandler();
 	// 		Errors.setUnexpectedErrorHandler(() => {});
@@ -288,7 +285,7 @@ suite('TelemetryService', () => {
 	// 		}
 	// 	}));
 
-	test.skip('Handle global errors', sinonTestFn(async function (this: any) { // {{SQL CARBON EDIT}} skip test
+	test.skip('Handle global errors', sinon.test(async function (this: any) { // {{SQL CARBON EIDT}} skip test
 		let errorStub = sinon.stub();
 		window.onerror = errorStub;
 
@@ -316,7 +313,7 @@ suite('TelemetryService', () => {
 		service.dispose();
 	}));
 
-	test.skip('Error Telemetry removes PII from filename with spaces', sinonTestFn(async function (this: any) { // {{SQL CARBON EDIT}} skip test
+	test.skip('Error Telemetry removes PII from filename with spaces', sinon.test(async function (this: any) { // {{SQL CARBON EIDT}} skip test
 		let errorStub = sinon.stub();
 		window.onerror = errorStub;
 		let settings = new ErrorTestingSettings();
@@ -339,7 +336,7 @@ suite('TelemetryService', () => {
 		service.dispose();
 	}));
 
-	test.skip('Uncaught Error Telemetry removes PII from filename', sinonTestFn(function (this: any) { // {{SQL CARBON EDIT}} skip test
+	test.skip('Uncaught Error Telemetry removes PII from filename', sinon.test(function (this: any) { // {{SQL CARBON EIDT}} skip test
 		let clock = this.clock;
 		let errorStub = sinon.stub();
 		window.onerror = errorStub;
@@ -371,7 +368,7 @@ suite('TelemetryService', () => {
 		});
 	}));
 
-	test.skip('Unexpected Error Telemetry removes PII', sinonTestFn(async function (this: any) { // {{SQL CARBON EDIT}} skip test
+	test.skip('Unexpected Error Telemetry removes PII', sinon.test(async function (this: any) { // {{SQL CARBON EIDT}} skip test
 		let origErrorHandler = Errors.errorHandler.getUnexpectedErrorHandler();
 		Errors.setUnexpectedErrorHandler(() => { });
 		try {
@@ -402,7 +399,7 @@ suite('TelemetryService', () => {
 		}
 	}));
 
-	test.skip('Uncaught Error Telemetry removes PII', sinonTestFn(async function (this: any) { // {{SQL CARBON EDIT}} skip test
+	test.skip('Uncaught Error Telemetry removes PII', sinon.test(async function (this: any) { // {{SQL CARBON EIDT}} skip test
 		let errorStub = sinon.stub();
 		window.onerror = errorStub;
 		let settings = new ErrorTestingSettings();
@@ -429,7 +426,7 @@ suite('TelemetryService', () => {
 		service.dispose();
 	}));
 
-	test.skip('Unexpected Error Telemetry removes PII but preserves Code file path', sinonTestFn(async function (this: any) { // {{SQL CARBON EDIT}} skip test
+	test.skip('Unexpected Error Telemetry removes PII but preserves Code file path', sinon.test(async function (this: any) { // {{SQL CARBON EIDT}} skip test
 
 		let origErrorHandler = Errors.errorHandler.getUnexpectedErrorHandler();
 		Errors.setUnexpectedErrorHandler(() => { });
@@ -465,7 +462,7 @@ suite('TelemetryService', () => {
 		}
 	}));
 
-	test.skip('Uncaught Error Telemetry removes PII but preserves Code file path', sinonTestFn(async function (this: any) { // {{SQL CARBON EDIT}} skip test
+	test.skip('Uncaught Error Telemetry removes PII but preserves Code file path', sinon.test(async function (this: any) { // {{SQL CARBON EIDT}} skip test
 		let errorStub = sinon.stub();
 		window.onerror = errorStub;
 		let settings = new ErrorTestingSettings();
@@ -494,7 +491,7 @@ suite('TelemetryService', () => {
 		service.dispose();
 	}));
 
-	test.skip('Unexpected Error Telemetry removes PII but preserves Code file path with node modules', sinonTestFn(async function (this: any) { // {{SQL CARBON EDIT}} skip test
+	test.skip('Unexpected Error Telemetry removes PII but preserves Code file path with node modules', sinon.test(async function (this: any) { // {{SQL CARBON EIDT}} skip test
 
 		let origErrorHandler = Errors.errorHandler.getUnexpectedErrorHandler();
 		Errors.setUnexpectedErrorHandler(() => { });
@@ -526,7 +523,7 @@ suite('TelemetryService', () => {
 		}
 	}));
 
-	test.skip('Uncaught Error Telemetry removes PII but preserves Code file path', sinonTestFn(async function (this: any) { // {{SQL CARBON EDIT}} skip test
+	test.skip('Uncaught Error Telemetry removes PII but preserves Code file path', sinon.test(async function (this: any) { // {{SQL CARBON EIDT}} skip test
 		let errorStub = sinon.stub();
 		window.onerror = errorStub;
 		let settings = new ErrorTestingSettings();
@@ -552,7 +549,7 @@ suite('TelemetryService', () => {
 	}));
 
 
-	test.skip('Unexpected Error Telemetry removes PII but preserves Code file path when PIIPath is configured', sinonTestFn(async function (this: any) { // {{SQL CARBON EDIT}} skip test
+	test.skip('Unexpected Error Telemetry removes PII but preserves Code file path when PIIPath is configured', sinon.test(async function (this: any) { // {{SQL CARBON EIDT}} skip test
 
 		let origErrorHandler = Errors.errorHandler.getUnexpectedErrorHandler();
 		Errors.setUnexpectedErrorHandler(() => { });
@@ -588,7 +585,7 @@ suite('TelemetryService', () => {
 		}
 	}));
 
-	test.skip('Uncaught Error Telemetry removes PII but preserves Code file path when PIIPath is configured', sinonTestFn(async function (this: any) { // {{SQL CARBON EDIT}} skip test
+	test.skip('Uncaught Error Telemetry removes PII but preserves Code file path when PIIPath is configured', sinon.test(async function (this: any) { // {{SQL CARBON EIDT}} skip test
 		let errorStub = sinon.stub();
 		window.onerror = errorStub;
 		let settings = new ErrorTestingSettings();
@@ -617,7 +614,7 @@ suite('TelemetryService', () => {
 		service.dispose();
 	}));
 
-	test.skip('Unexpected Error Telemetry removes PII but preserves Missing Model error message', sinonTestFn(async function (this: any) { // {{SQL CARBON EDIT}} skip test
+	test.skip('Unexpected Error Telemetry removes PII but preserves Missing Model error message', sinon.test(async function (this: any) { // {{SQL CARBON EIDT}} skip test
 
 		let origErrorHandler = Errors.errorHandler.getUnexpectedErrorHandler();
 		Errors.setUnexpectedErrorHandler(() => { });
@@ -653,7 +650,7 @@ suite('TelemetryService', () => {
 		}
 	}));
 
-	test.skip('Uncaught Error Telemetry removes PII but preserves Missing Model error message', sinonTestFn(async function (this: any) { // {{SQL CARBON EDIT}} skip test
+	test.skip('Uncaught Error Telemetry removes PII but preserves Missing Model error message', sinon.test(async function (this: any) { // {{SQL CARBON EIDT}} skip test
 		let errorStub = sinon.stub();
 		window.onerror = errorStub;
 		let settings = new ErrorTestingSettings();
@@ -683,7 +680,7 @@ suite('TelemetryService', () => {
 		service.dispose();
 	}));
 
-	test.skip('Unexpected Error Telemetry removes PII but preserves No Such File error message', sinonTestFn(async function (this: any) { // {{SQL CARBON EDIT}} skip test
+	test.skip('Unexpected Error Telemetry removes PII but preserves No Such File error message', sinon.test(async function (this: any) { // {{SQL CARBON EIDT}} skip test
 
 		let origErrorHandler = Errors.errorHandler.getUnexpectedErrorHandler();
 		Errors.setUnexpectedErrorHandler(() => { });
@@ -718,8 +715,7 @@ suite('TelemetryService', () => {
 			Errors.setUnexpectedErrorHandler(origErrorHandler);
 		}
 	}));
-
-	test.skip('Uncaught Error Telemetry removes PII but preserves No Such File error message', sinonTestFn(async function (this: any) { // {{SQL CARBON EDIT}} skip test
+	test.skip('Uncaught Error Telemetry removes PII but preserves No Such File error message', sinon.test(async function (this: any) { // {{SQL CARBON EDIT}} skip tests
 		let origErrorHandler = Errors.errorHandler.getUnexpectedErrorHandler();
 		Errors.setUnexpectedErrorHandler(() => { });
 		try {
@@ -755,7 +751,7 @@ suite('TelemetryService', () => {
 		}
 	}));
 
-	test('Telemetry Service sends events when enableTelemetry is on', sinonTestFn(function () {
+	test('Telemetry Service sends events when enableTelemetry is on', sinon.test(function () {
 		let testAppender = new TestTelemetryAppender();
 		let service = new TelemetryService({ appender: testAppender }, undefined!);
 
