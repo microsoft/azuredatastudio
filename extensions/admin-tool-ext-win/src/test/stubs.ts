@@ -27,7 +27,7 @@ export class ExtHostObjectExplorerNodeStub implements azdata.objectexplorer.Obje
 	constructor(nodeName: string, nodeSchema: string, nodeType: string, parent: azdata.objectexplorer.ObjectExplorerNode) {
 		this.parent = parent;
 		this.nodeType = nodeType;
-		this.metadata = { metadataType: undefined, metadataTypeName: undefined, name: nodeName, schema: nodeSchema, urn: undefined, parentName: undefined, parentTypeName: undefined };
+		this.metadata = { metadataType: undefined, metadataTypeName: undefined, name: nodeName, schema: nodeSchema, urn: undefined };
 	}
 
 	isExpanded(): Thenable<boolean> {

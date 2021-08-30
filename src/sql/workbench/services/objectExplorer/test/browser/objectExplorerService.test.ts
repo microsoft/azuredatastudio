@@ -407,17 +407,15 @@ suite('SQL Object Explorer Service tests', () => {
 			metadataTypeName: 'Database',
 			urn: '//server/db1/',
 			name: 'Db1',
-			schema: undefined,
-			parentName: undefined,
-			parentTypeName: undefined
+			schema: null
 		};
-		const databaseNode = new TreeNode(NodeType.Database, 'Db1', false, 'testServerName\\Db1', '', '', undefined, databaseMetaData, undefined, undefined);
+		const databaseNode = new TreeNode(NodeType.Database, 'Db1', false, 'testServerName\\Db1', '', '', null, databaseMetaData, undefined, undefined);
 		databaseNode.connection = connection;
 		databaseNode.session = objectExplorerSession;
-		const tablesNode = new TreeNode(NodeType.Folder, 'Tables', false, 'testServerName\\Db1\\tables', '', '', databaseNode, undefined, undefined, undefined);
+		const tablesNode = new TreeNode(NodeType.Folder, 'Tables', false, 'testServerName\\Db1\\tables', '', '', databaseNode, null, undefined, undefined);
 		databaseNode.children = [tablesNode];
-		const table1Node = new TreeNode(NodeType.Table, 'dbo.Table1', false, 'testServerName\\Db1\\tables\\dbo.Table1', '', '', tablesNode, undefined, undefined, undefined);
-		const table2Node = new TreeNode(NodeType.Table, 'dbo.Table2', false, 'testServerName\\Db1\\tables\\dbo.Table2', '', '', tablesNode, undefined, undefined, undefined);
+		const table1Node = new TreeNode(NodeType.Table, 'dbo.Table1', false, 'testServerName\\Db1\\tables\\dbo.Table1', '', '', tablesNode, null, undefined, undefined);
+		const table2Node = new TreeNode(NodeType.Table, 'dbo.Table2', false, 'testServerName\\Db1\\tables\\dbo.Table2', '', '', tablesNode, null, undefined, undefined);
 		tablesNode.children = [table1Node, table2Node];
 		assert.equal(table1Node.getSession(), objectExplorerSession);
 		assert.equal(table1Node.getConnectionProfile(), connection);
@@ -453,9 +451,7 @@ suite('SQL Object Explorer Service tests', () => {
 			metadataTypeName: 'Database',
 			urn: '//server/db1/',
 			name: 'Db1',
-			schema: undefined,
-			parentName: undefined,
-			parentTypeName: undefined
+			schema: undefined
 		};
 		const databaseName = 'Db1';
 		const databaseNode = new TreeNode(NodeType.Database, databaseName, false, 'testServerName\\Db1', '', '', undefined, databaseMetadata, undefined, undefined);
