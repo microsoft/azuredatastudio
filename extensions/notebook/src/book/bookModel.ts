@@ -126,7 +126,7 @@ export class BookModel {
 		}
 
 		if (await fs.pathExists(this._tableOfContentsPath)) {
-			void vscode.commands.executeCommand('setContext', 'bookOpened', true);
+			vscode.commands.executeCommand('setContext', 'bookOpened', true);
 			this.watchTOC();
 		} else {
 			this._errorMessage = loc.missingTocError;
@@ -322,7 +322,7 @@ export class BookModel {
 					treeItems.push(markdown);
 				} else {
 					this._errorMessage = loc.missingFileError(sections[i].title, book.title);
-					void vscode.window.showErrorMessage(this._errorMessage);
+					vscode.window.showErrorMessage(this._errorMessage);
 				}
 			}
 		}

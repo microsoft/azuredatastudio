@@ -146,9 +146,9 @@ export async function activate(extensionContext: vscode.ExtensionContext): Promi
 
 	azdata.nb.onDidChangeActiveNotebookEditor(e => {
 		if (e.document.uri.scheme === 'untitled') {
-			void providedBookTreeViewProvider.revealDocumentInTreeView(e.document.uri, false, false);
+			providedBookTreeViewProvider.revealDocumentInTreeView(e.document.uri, false, false);
 		} else {
-			void bookTreeViewProvider.revealDocumentInTreeView(e.document.uri, false, false);
+			bookTreeViewProvider.revealDocumentInTreeView(e.document.uri, false, false);
 		}
 	});
 

@@ -106,7 +106,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	}
 
 	set _visitedNotebooks(value: string[]) {
-		void this._extensionContext.globalState.update(constants.visitedNotebooksMementoKey, value);
+		this._extensionContext.globalState.update(constants.visitedNotebooksMementoKey, value);
 	}
 
 	trustBook(bookTreeItem?: BookTreeItem): void {
@@ -125,9 +125,9 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 					});
 				}
 				TelemetryReporter.sendActionEvent(BookTelemetryView, NbTelemetryActions.TrustNotebook);
-				void vscode.window.showInformationMessage(loc.msgBookTrusted);
+				vscode.window.showInformationMessage(loc.msgBookTrusted);
 			} else {
-				void vscode.window.showInformationMessage(loc.msgBookAlreadyTrusted);
+				vscode.window.showInformationMessage(loc.msgBookAlreadyTrusted);
 			}
 		}
 	}
@@ -248,7 +248,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			if (index !== -1) {
 				this.books.splice(index, 1);
 			}
-			void vscode.window.showErrorMessage(loc.openFileError(bookPath, e instanceof Error ? e.message : e));
+			vscode.window.showErrorMessage(loc.openFileError(bookPath, e instanceof Error ? e.message : e));
 		}
 	}
 
@@ -303,7 +303,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			}
 			TelemetryReporter.sendActionEvent(BookTelemetryView, NbTelemetryActions.CloseBook);
 		} catch (e) {
-			void vscode.window.showErrorMessage(loc.closeBookError(book.root, e instanceof Error ? e.message : e));
+			vscode.window.showErrorMessage(loc.closeBookError(book.root, e instanceof Error ? e.message : e));
 		} finally {
 			// remove watch on toc file.
 			if (deletedBook && !deletedBook.isNotebook) {
@@ -388,7 +388,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			}
 			TelemetryReporter.sendActionEvent(BookTelemetryView, NbTelemetryActions.OpenNotebookFromBook);
 		} catch (e) {
-			void vscode.window.showErrorMessage(loc.openNotebookError(resource, e instanceof Error ? e.message : e));
+			vscode.window.showErrorMessage(loc.openNotebookError(resource, e instanceof Error ? e.message : e));
 		}
 	}
 
@@ -490,9 +490,9 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 
 	openMarkdown(resource: string): void {
 		try {
-			void vscode.commands.executeCommand('markdown.showPreview', vscode.Uri.file(resource));
+			vscode.commands.executeCommand('markdown.showPreview', vscode.Uri.file(resource));
 		} catch (e) {
-			void vscode.window.showErrorMessage(loc.openMarkdownError(resource, e instanceof Error ? e.message : e));
+			vscode.window.showErrorMessage(loc.openMarkdownError(resource, e instanceof Error ? e.message : e));
 		}
 	}
 
@@ -507,7 +507,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 				initialDirtyState: false
 			});
 		} catch (e) {
-			void vscode.window.showErrorMessage(loc.openUntitledNotebookError(resource, e instanceof Error ? e.message : e));
+			vscode.window.showErrorMessage(loc.openUntitledNotebookError(resource, e instanceof Error ? e.message : e));
 		}
 	}
 
@@ -547,7 +547,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 						this.books.splice(untitledBookIndex, 1);
 						this.currentBook = undefined;
 						this._onDidChangeTreeData.fire(undefined);
-						void vscode.commands.executeCommand('bookTreeView.openBook', destinationUri.fsPath, false, undefined);
+						vscode.commands.executeCommand('bookTreeView.openBook', destinationUri.fsPath, false, undefined);
 					}
 				}
 			}
@@ -561,12 +561,12 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		} else if (this.currentBook && !this.currentBook.isNotebook) {
 			folderToSearch = path.join(this.currentBook.contentFolderPath);
 		} else {
-			void vscode.window.showErrorMessage(loc.noBooksSelectedError);
+			vscode.window.showErrorMessage(loc.noBooksSelectedError);
 		}
 
 		if (folderToSearch) {
 			let filesToIncludeFiltered = path.join(folderToSearch, '**', '*.md') + ',' + path.join(folderToSearch, '**', '*.ipynb');
-			void vscode.commands.executeCommand('workbench.action.findInFiles', { filesToInclude: filesToIncludeFiltered, query: '' });
+			vscode.commands.executeCommand('workbench.action.findInFiles', { filesToInclude: filesToIncludeFiltered, query: '' });
 		}
 	}
 
@@ -659,7 +659,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		try {
 			await vscode.env.openExternal(vscode.Uri.parse(resource));
 		} catch (e) {
-			void vscode.window.showErrorMessage(loc.openExternalLinkError(resource, e instanceof Error ? e.message : e));
+			vscode.window.showErrorMessage(loc.openExternalLinkError(resource, e instanceof Error ? e.message : e));
 		}
 	}
 

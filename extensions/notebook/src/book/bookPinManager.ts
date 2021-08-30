@@ -26,9 +26,9 @@ export class BookPinManager implements IBookPinManager {
 
 	setPinnedSectionContext(): void {
 		if (getPinnedNotebooks().length > 0) {
-			void vscode.commands.executeCommand(constants.BuiltInCommands.SetContext, constants.showPinnedBooksContextKey, true);
+			vscode.commands.executeCommand(constants.BuiltInCommands.SetContext, constants.showPinnedBooksContextKey, true);
 		} else {
-			void vscode.commands.executeCommand(constants.BuiltInCommands.SetContext, constants.showPinnedBooksContextKey, false);
+			vscode.commands.executeCommand(constants.BuiltInCommands.SetContext, constants.showPinnedBooksContextKey, false);
 		}
 	}
 

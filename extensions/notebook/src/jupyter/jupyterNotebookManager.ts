@@ -44,7 +44,7 @@ export class JupyterNotebookManager implements nb.NotebookManager, vscode.Dispos
 
 	dispose() {
 		if (this._sessionManager) {
-			void this._sessionManager.shutdownAll().then(() => this._sessionManager.dispose());
+			this._sessionManager.shutdownAll().then(() => this._sessionManager.dispose());
 		}
 		if (this._serverManager) {
 			this._serverManager.stopServer().then(success => undefined, error => vscode.window.showErrorMessage(error));

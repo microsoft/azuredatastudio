@@ -49,7 +49,7 @@ export class NotebookUtils {
 				await azdata.nb.showNotebookDocument(file[0]);
 			}
 		} catch (err) {
-			void vscode.window.showErrorMessage(getErrorMessage(err));
+			vscode.window.showErrorMessage(getErrorMessage(err));
 		}
 	}
 
@@ -62,7 +62,7 @@ export class NotebookUtils {
 				throw new Error(noNotebookVisible);
 			}
 		} catch (err) {
-			void vscode.window.showErrorMessage(getErrorMessage(err));
+			vscode.window.showErrorMessage(getErrorMessage(err));
 		}
 	}
 
@@ -75,7 +75,7 @@ export class NotebookUtils {
 				throw new Error(noNotebookVisible);
 			}
 		} catch (err) {
-			void vscode.window.showErrorMessage(getErrorMessage(err));
+			vscode.window.showErrorMessage(getErrorMessage(err));
 		}
 	}
 
@@ -88,7 +88,7 @@ export class NotebookUtils {
 				throw new Error(noNotebookVisible);
 			}
 		} catch (err) {
-			void vscode.window.showErrorMessage(getErrorMessage(err));
+			vscode.window.showErrorMessage(getErrorMessage(err));
 		}
 	}
 
@@ -107,7 +107,7 @@ export class NotebookUtils {
 				throw new Error(noNotebookVisible);
 			}
 		} catch (err) {
-			void vscode.window.showErrorMessage(getErrorMessage(err));
+			vscode.window.showErrorMessage(getErrorMessage(err));
 		}
 	}
 

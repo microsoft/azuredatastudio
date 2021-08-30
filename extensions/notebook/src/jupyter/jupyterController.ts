@@ -123,7 +123,7 @@ export class JupyterController {
 			// Verify this is a .ipynb file since this isn't actually filtered on Mac/Linux
 			if (path.extname(fileUri.fsPath) !== '.ipynb') {
 				// in the future might want additional supported types
-				void vscode.window.showErrorMessage(localize('unsupportedFileType', "Only .ipynb Notebooks are supported"));
+				vscode.window.showErrorMessage(localize('unsupportedFileType', "Only .ipynb Notebooks are supported"));
 			} else {
 				await azdata.nb.showNotebookDocument(fileUri, {
 					connectionProfile: profile,
@@ -174,7 +174,7 @@ export class JupyterController {
 				await this._jupyterInstallation.startInstallProcess(true);
 			}
 		} catch (err) {
-			void vscode.window.showErrorMessage(utils.getErrorMessage(err));
+			vscode.window.showErrorMessage(utils.getErrorMessage(err));
 		}
 	}
 
@@ -202,7 +202,7 @@ export class JupyterController {
 			packagesDialog.showDialog();
 		} catch (error) {
 			let message = utils.getErrorMessage(error);
-			void vscode.window.showErrorMessage(message);
+			vscode.window.showErrorMessage(message);
 		}
 	}
 
@@ -236,10 +236,10 @@ export class JupyterController {
 	public doConfigurePython(jupyterInstaller: JupyterServerInstallation): void {
 		let pythonWizard = new ConfigurePythonWizard(jupyterInstaller);
 		pythonWizard.start().catch((err: any) => {
-			void vscode.window.showErrorMessage(utils.getErrorMessage(err));
+			vscode.window.showErrorMessage(utils.getErrorMessage(err));
 		});
 		pythonWizard.setupComplete.catch((err: any) => {
-			void vscode.window.showErrorMessage(utils.getErrorMessage(err));
+			vscode.window.showErrorMessage(utils.getErrorMessage(err));
 		});
 	}
 

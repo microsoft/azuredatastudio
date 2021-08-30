@@ -70,7 +70,7 @@ export class LocalJupyterServerManager implements nb.ServerManager, vscode.Dispo
 	public dispose(): void {
 		this.stopServer().catch(err => {
 			let msg = utils.getErrorMessage(err);
-			void vscode.window.showErrorMessage(localize('shutdownError', "Shutdown of Notebook server failed: {0}", msg));
+			vscode.window.showErrorMessage(localize('shutdownError', "Shutdown of Notebook server failed: {0}", msg));
 		});
 	}
 
@@ -105,7 +105,7 @@ export class LocalJupyterServerManager implements nb.ServerManager, vscode.Dispo
 	private async doStartServer(kernelSpec: nb.IKernelSpec): Promise<IServerInstance> { // We can't find or create servers until the installation is complete
 		let installation = this.options.jupyterInstallation;
 		await installation.promptForPythonInstall(kernelSpec.display_name);
-		void vscode.commands.executeCommand(BuiltInCommands.SetContext, CommandContext.NotebookPythonInstalled, true);
+		vscode.commands.executeCommand(BuiltInCommands.SetContext, CommandContext.NotebookPythonInstalled, true);
 
 		// Calculate the path to use as the notebook-dir for Jupyter based on the path of the uri of the
 		// notebook to open. This will be the workspace folder if the notebook uri is inside a workspace
