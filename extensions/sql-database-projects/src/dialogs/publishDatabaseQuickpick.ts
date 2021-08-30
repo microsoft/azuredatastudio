@@ -16,7 +16,7 @@ import { IDeploySettings } from '../models/IDeploySettings';
 /**
  * Create flow for Publishing a database using only VS Code-native APIs such as QuickPick
  */
-export async function launchPublishDatabaseQuickpick(project: Project, projectController: ProjectsController): Promise<void> {
+export async function getPublishDatabaseSettings(project: Project, promptForConnection: boolean = true): Promise<IDeploySettings | undefined> {
 
 	// 1. Select publish settings file (optional)
 	// Create custom quickpick so we can control stuff like displaying the loading indicator
@@ -74,43 +74,50 @@ export async function launchPublishDatabaseQuickpick(project: Project, projectCo
 	quickPick.hide(); // Hide the quickpick immediately so it isn't showing while the API loads
 
 	// 2. Select connection
-	const vscodeMssqlApi = await getVscodeMssqlApi();
+
 	let connectionProfile: IConnectionInfo | undefined = undefined;
-	let connectionUri: string = '';
 	let dbs: string[] | undefined = undefined;
-	while (!dbs) {
-		connectionProfile = await vscodeMssqlApi.promptForConnection(true);
-		if (!connectionProfile) {
-			// User cancelled
-			return;
+	let connectionUri: string | undefined;
+	if (promptForConnection) {
+		const vscodeMssqlApi = await getVscodeMssqlApi();
+		while (!dbs) {
+			connectionProfile = await vscodeMssqlApi.promptForConnection(true);
+			if (!connectionProfile) {
+				// User cancelled
+				return;
+			}
+			// Get the list of databases now to validate that the connection is valid and re-prompt them if it isn't
+			try {
+				connectionUri = await vscodeMssqlApi.connect(connectionProfile);
+				dbs = await vscodeMssqlApi.listDatabases(connectionUri);
+			} catch (err) {
+				// no-op, the mssql extension handles showing the error to the user. We'll just go
+				// back and prompt the user for a connection again
+			}
 		}
-		// Get the list of databases now to validate that the connection is valid and re-prompt them if it isn't
-		try {
-			connectionUri = await vscodeMssqlApi.connect(connectionProfile);
-			dbs = await vscodeMssqlApi.listDatabases(connectionUri);
-		} catch (err) {
-			// no-op, the mssql extension handles showing the error to the user. We'll just go
-			// back and prompt the user for a connection again
-		}
+	} else {
+		dbs = [];
 	}
 
 	// 3. Select database
-	const dbQuickpicks = dbs.map(db => {
-		return {
-			label: db,
-			dbName: db
-		} as vscode.QuickPickItem & { dbName: string, isCreateNew?: boolean };
-	});
+	const dbQuickpicks = dbs
+		.filter(db => !constants.systemDbs.includes(db))
+		.map(db => {
+			return {
+				label: db
+			} as vscode.QuickPickItem & { isCreateNew?: boolean };
+		});
+	// Add Create New at the top now so it'll show second to top below the suggested name of the current project
+	dbQuickpicks.unshift({ label: `$(add) ${constants.createNew}`, isCreateNew: true });
+
 	// Ensure the project name is an option, either adding it if it doesn't already exist or moving it to the top if it does
 	const projectNameIndex = dbs.findIndex(db => db === project.projectFileName);
 	if (projectNameIndex === -1) {
-		dbQuickpicks.unshift({ label: constants.newDatabaseTitle(project.projectFileName), dbName: project.projectFileName });
+		dbQuickpicks.unshift({ label: project.projectFileName, description: constants.newText });
 	} else {
 		dbQuickpicks.splice(projectNameIndex, 1);
-		dbQuickpicks.unshift({ label: project.projectFileName, dbName: project.projectFileName });
+		dbQuickpicks.unshift({ label: project.projectFileName });
 	}
-
-	dbQuickpicks.push({ label: constants.createNew, dbName: '', isCreateNew: true });
 
 	let databaseName: string | undefined = undefined;
 	while (!databaseName) {
@@ -121,7 +128,7 @@ export async function launchPublishDatabaseQuickpick(project: Project, projectCo
 			// User cancelled
 			return;
 		}
-		databaseName = selectedDatabase.dbName;
+		databaseName = selectedDatabase.label;
 		if (selectedDatabase.isCreateNew) {
 			databaseName = await vscode.window.showInputBox(
 				{
@@ -184,22 +191,33 @@ export async function launchPublishDatabaseQuickpick(project: Project, projectCo
 		}
 	}
 
-	// 5. Select action to take
-	const action = await vscode.window.showQuickPick(
-		[constants.generateScriptButtonText, constants.publish],
-		{ title: constants.chooseAction, ignoreFocusOut: true });
-	if (!action) {
-		return;
-	}
-
 	// 6. Generate script/publish
 	let settings: IDeploySettings = {
 		databaseName: databaseName,
-		serverName: connectionProfile!.server,
-		connectionUri: connectionUri,
+		serverName: connectionProfile?.server || '',
+		connectionUri: connectionUri || '',
 		sqlCmdVariables: sqlCmdVariables,
 		deploymentOptions: await getDefaultPublishDeploymentOptions(project),
 		profileUsed: !!publishProfile
 	};
-	await projectController.publishOrScriptProject(project, settings, action === constants.publish);
+	return settings;
 }
+
+/**
+* Create flow for Publishing a database using only VS Code-native APIs such as QuickPick
+*/
+export async function launchPublishDatabaseQuickpick(project: Project, projectController: ProjectsController): Promise<void> {
+	let settings: IDeploySettings | undefined = await getPublishDatabaseSettings(project);
+
+	if (settings) {
+		// 5. Select action to take
+		const action = await vscode.window.showQuickPick(
+			[constants.generateScriptButtonText, constants.publish],
+			{ title: constants.chooseAction, ignoreFocusOut: true });
+		if (!action) {
+			return;
+		}
+		await projectController.publishOrScriptProject(project, settings, action === constants.publish);
+	}
+}
+

@@ -38,8 +38,8 @@
     "commands": [
       {
         "command": "dacFx.start",
-        "title": "Data-tier Application wizard",
-        "category": "Data-tier Application"
+        "title": "%dacFx.startTitle%",
+        "category": "%dacFx.category%"
       }
     ],
     "menus": {

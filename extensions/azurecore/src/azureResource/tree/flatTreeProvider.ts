@@ -7,7 +7,6 @@ import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import { AppContext } from '../../appContext';
 import * as nls from 'vscode-nls';
-import { TokenCredentials } from '@azure/ms-rest-js';
 const localize = nls.loadMessageBundle();
 
 import { TreeNode } from '../treeNode';
@@ -123,9 +122,7 @@ class ResourceLoader {
 
 		for (const account of accounts) {
 			for (const tenant of account.properties.tenants) {
-				const token = await azdata.accounts.getAccountSecurityToken(account, tenant.id, azdata.AzureResource.ResourceManagement);
-
-				for (const subscription of await this.subscriptionService.getSubscriptions(account, new TokenCredentials(token.token, token.tokenType), tenant.id)) {
+				for (const subscription of await this.subscriptionService.getSubscriptions(account, [tenant.id])) {
 					for (const providerId of await this.resourceService.listResourceProviderIds()) {
 						for (const group of await this.resourceService.getRootChildren(providerId, account, subscription, subscription.tenant)) {
 							const children = await this.resourceService.getChildren(providerId, group.resourceNode);

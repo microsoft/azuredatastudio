@@ -9,7 +9,7 @@ import { FilterableColumn } from 'sql/base/browser/ui/table/interfaces';
 import { addDisposableListener, EventType, EventHelper, $, isAncestor, clearNode, append } from 'vs/base/browser/dom';
 import { DisposableStore, dispose, IDisposable } from 'vs/base/common/lifecycle';
 import { withNullAsUndefined } from 'vs/base/common/types';
-import { instanceOfIDisposableDataProvider } from 'sql/base/common/dataProvider';
+import { IDisposableDataProvider, instanceOfIDisposableDataProvider } from 'sql/base/common/dataProvider';
 import { IContextViewProvider } from 'vs/base/browser/ui/contextview/contextview';
 import { IInputBoxStyles, InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import { trapKeyboardNavigation } from 'sql/base/browser/dom';
@@ -34,7 +34,16 @@ export interface ITableFilterOptions {
 	 * The message to be displayed when the filter is disabled and the user tries to open the filter menu.
 	 */
 	disabledFilterMessage?: string;
+	/**
+	 * The columns are refreshed by default to add the filter menu button to the headers.
+	 * Set to false to prevent the grid from being re-drawn multiple times by different plugins.
+	 */
+	refreshColumns?: boolean;
 }
+
+const DefaultTableFilterOptions: ITableFilterOptions = {
+	refreshColumns: true
+};
 
 export interface ITableFilterStyles extends IButtonStyles, IInputBoxStyles, IListStyles, ICountBadgetyles {
 }
@@ -44,6 +53,8 @@ interface NotificationProvider {
 }
 
 const ShowFilterText: string = localize('headerFilter.showFilter', "Show Filter");
+
+export const FilterButtonWidth: number = 34;
 
 export class HeaderFilter<T extends Slick.SlickData> {
 
@@ -74,7 +85,7 @@ export class HeaderFilter<T extends Slick.SlickData> {
 	private columnButtonMapping: Map<string, HTMLElement> = new Map<string, HTMLElement>();
 	private previouslyFocusedElement: HTMLElement;
 
-	constructor(private readonly contextViewProvider: IContextViewProvider, private readonly notificationProvider?: NotificationProvider, private readonly options?: ITableFilterOptions) {
+	constructor(private readonly contextViewProvider: IContextViewProvider, private readonly notificationProvider?: NotificationProvider, private readonly options: ITableFilterOptions = DefaultTableFilterOptions) {
 	}
 
 	public init(grid: Slick.Grid<T>): void {
@@ -84,7 +95,10 @@ export class HeaderFilter<T extends Slick.SlickData> {
 			.subscribe(this.grid.onClick, (e: DOMEvent) => this.handleBodyMouseDown(e as MouseEvent))
 			.subscribe(this.grid.onColumnsResized, () => this.columnsResized())
 			.subscribe(this.grid.onKeyDown, async (e: DOMEvent) => { await this.handleGridKeyDown(e as KeyboardEvent); });
-		this.grid.setColumns(this.grid.getColumns());
+
+		if (this.options.refreshColumns !== false) {
+			this.grid.setColumns(this.grid.getColumns());
+		}
 
 		this.disposableStore.add(addDisposableListener(document.body, 'mousedown', e => this.handleBodyMouseDown(e), true));
 		this.disposableStore.add(addDisposableListener(document.body, 'keydown', e => this.handleKeyDown(e)));
@@ -228,7 +242,7 @@ export class HeaderFilter<T extends Slick.SlickData> {
 		let filterItems: Array<string>;
 		const dataView = this.grid.getData() as Slick.DataProvider<T>;
 		if (instanceOfIDisposableDataProvider(dataView)) {
-			filterItems = await dataView.getColumnValues(this.columnDef);
+			filterItems = await (dataView as IDisposableDataProvider<T>).getColumnValues(this.columnDef);
 		} else {
 			const filterApplied = this.grid.getColumns().findIndex((col) => {
 				const filterableColumn = col as FilterableColumn<T>;
@@ -453,7 +467,7 @@ export class HeaderFilter<T extends Slick.SlickData> {
 		this.hideMenu();
 		const dataView = this.grid.getData();
 		if (instanceOfIDisposableDataProvider(dataView)) {
-			await dataView.filter(this.grid.getColumns());
+			await (dataView as IDisposableDataProvider<T>).filter(this.grid.getColumns());
 			this.grid.invalidateAllRows();
 			this.grid.updateRowCount();
 			this.grid.render();

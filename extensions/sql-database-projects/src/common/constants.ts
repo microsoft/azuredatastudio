@@ -119,12 +119,59 @@ export const chooseAction = localize('chooseAction', "Choose action");
 export const chooseSqlcmdVarsToModify = localize('chooseSqlcmdVarsToModify', "Choose SQLCMD variables to modify");
 export const enterNewValueForVar = (varName: string) => localize('enterNewValueForVar', "Enter new value for variable '{0}'", varName);
 export const resetAllVars = localize('resetAllVars', "Reset all variables");
-export const createNew = localize('createNew', "<Create New>");
+export const createNew = localize('createNew', "Create New");
 export const enterNewDatabaseName = localize('enterNewDatabaseName', "Enter new database name");
-export const newDatabaseTitle = (name: string) => localize({ key: 'newDatabaseTitle', comment: ['Name is the name of a new database being created'] }, "{0} (new)", name);
+export const newText = localize('new', "New");
 export const selectDatabase = localize('selectDatabase', "Select database");
 export const done = localize('done', "Done");
 export const nameMustNotBeEmpty = localize('nameMustNotBeEmpty', "Name must not be empty");
+
+// Deploy
+export const selectDeployOption = localize('selectDeployOption', "Select where to deploy the project to");
+export const deployToExistingServer = localize('deployToExistingServer', "Deploy to existing server");
+export const deployToDockerContainer = localize('deployToDockerContainer', "Deploy to docker container");
+export const enterPortNumber = localize('enterPortNumber', "Enter port number or press enter to use the default value");
+export const enterConnectionStringEnvName = localize('enterConnectionStringEnvName', "Enter connection string environment variable name");
+export const enterConnectionStringTemplate = localize('enterConnectionStringTemplate', "Enter connection string template");
+export const enterPassword = localize('enterPassword', "Enter password or press enter to use the generated password");
+export const portMustBeNumber = localize('portMustNotBeNumber', "Port must a be number");
+export const valueCannotBeEmpty = localize('valueCannotBeEmpty', "Value cannot be empty");
+export const dockerImageLabelPrefix = 'source=sqldbproject';
+export const dockerImageNamePrefix = 'sqldbproject';
+export const connectionNamePrefix = 'SQLDbProject';
+export const dockerBaseImage = 'mcr.microsoft.com/azure-sql-edge:latest';
+export const commandsFolderName = 'commands';
+export const mssqlFolderName = '.mssql';
+export const dockerFileName = 'Dockerfile';
+export const startCommandName = 'start.sh';
+export const defaultPortNumber = '1433';
+export const defaultConnectionStringEnvVarName = 'SQLConnectionString';
+export const defaultConnectionStringTemplate = 'Data Source=@@SERVER@@,@@PORT@@;Initial Catalog=@@DATABASE@@;User id=@@USER@@;Password=@@SA_PASSWORD@@;';
+export const azureFunctionLocalSettingsFileName = 'local.settings.json';
+export const enterConnStringTemplateDescription = localize('enterConnStringTemplateDescription', "Enter a template for SQL connection string");
+export const appSettingPrompt = localize('appSettingPrompt', "Would you like to update Azure Function local.settings.json with the new connection string?");
+export const enterConnectionStringEnvNameDescription = localize('enterConnectionStringEnvNameDescription', "Enter environment variable for SQL connection string");
+export const deployDbTaskName = localize('deployDbTaskName', "Deploying SQL Db Project Locally");
+export const deployProjectSucceed = localize('deployProjectSucceed', "Database project deployed successfully");
+export const cleaningDockerImagesMessage = localize('cleaningDockerImagesMessage', "Cleaning existing deployments...");
+export const creatingDeploymentSettingsMessage = localize('creatingDeploymentSettingsMessage', "Creating deployment settings ...");
+export const runningDockerMessage = localize('runningDockerMessage', "Building and running the docker container ...");
+export const dockerContainerNotRunningErrorMessage = localize('dockerContainerNotRunningErrorMessage', "Docker container is not running");
+export const dockerContainerFailedToRunErrorMessage = localize('dockerContainerFailedToRunErrorMessage', "Failed to run the docker container");
+export const connectingToSqlServerOnDockerMessage = localize('connectingToSqlServerOnDockerMessage', "Connecting to SQL Server on Docker");
+export const deployProjectFailedMessage = localize('deployProjectFailedMessage', "Failed to open a connection to the deployed database'");
+export function taskFailedError(taskName: string, err: string): string { return localize('taskFailedError.error', "Failed to complete task '{0}'. Error: {1}", taskName, err); }
+export function deployProjectFailed(errorMessage: string) { return localize('deployProjectFailed', "Failed to deploy project. Check output pane for more details. {0}", errorMessage); }
+export function deployAppSettingUpdateFailed(appSetting: string) { return localize('deployAppSettingUpdateFailed', "Failed to update app setting '{0}'", appSetting); }
+export function deployAppSettingUpdating(appSetting: string) { return localize('deployAppSettingUpdating', "Updating app setting: '{0}'", appSetting); }
+export function connectionFailedError(error: string) { return localize('connectionFailedError', "Connection failed error: '{0}'", error); }
+export function dockerContainerCreatedMessage(id: string) { return localize('dockerContainerCreatedMessage', "Docker created id: '{0}'", id); }
+export function dockerLogMessage(log: string) { return localize('dockerLogMessage', "Docker logs: '{0}'", log); }
+export function retryWaitMessage(numberOfSeconds: number, name: string) { return localize('retryWaitMessage', "Waiting for {0} seconds before another attempt for operation '{1}'", numberOfSeconds, name); }
+export function retryRunMessage(attemptNumber: number, numberOfAttempts: number, name: string) { return localize('retryRunMessage', "Running operation '{2}' Attempt {0} of {1}", attemptNumber, numberOfAttempts, name); }
+export function retrySucceedMessage(name: string, result: string) { return localize('retrySucceedMessage', "Operation '{0}' completed successfully. Result: {1}", name, result); }
+export function retryFailedMessage(name: string, result: string, error: string) { return localize('retryFailedMessage', "Operation '{0}' failed. Re-trying... Current Result: {1}. Error: '{2}'", name, result, error); }
+export function retryMessage(name: string, error: string) { return localize('retryMessage', "Operation '{0}' failed. Re-trying... Error: '{1}'", name, error || ''); }
 
 // Add Database Reference dialog strings
 
@@ -170,6 +217,7 @@ export const selectFolderStructure = localize('selectFolderStructure', "Select f
 export const folderStructureLabel = localize('folderStructureLabel', "Folder structure");
 export const WorkspaceFileExtension = '.code-workspace';
 export const browseEllipsis = localize('browseEllipsis', "Browse...");
+export const browseEllipsisWithIcon = `$(folder) ${browseEllipsis}`;
 export const selectProjectLocation = localize('selectProjectLocation', "Select project location");
 export const ProjectParentDirectoryNotExistError = (location: string): string => { return localize('dataworkspace.projectParentDirectoryNotExistError', "The selected project location '{0}' does not exist or is not a directory.", location); };
 export const ProjectDirectoryAlreadyExistError = (projectName: string, location: string): string => { return localize('dataworkspace.projectDirectoryAlreadyExistError', "There is already a directory named '{0}' in the selected location: '{1}'.", projectName, location); };
@@ -215,7 +263,7 @@ export function invalidInput(input: string) { return localize('invalidInput', "I
 export function invalidProjectPropertyValue(propertyName: string) { return localize('invalidPropertyValue', "Invalid value specified for the property '{0}' in .sqlproj file", propertyName); }
 export function unableToCreatePublishConnection(input: string) { return localize('unableToCreatePublishConnection', "Unable to construct connection: {0}", input); }
 export function circularProjectReference(project1: string, project2: string) { return localize('cicularProjectReference', "Circular reference from project {0} to project {1}", project1, project2); }
-export function sqlToolsServiceNotFound(sqlToolsServiceDir: string) { return localize('mssqlNotFound', "Could not get SQL Tools Service install location at {0}", sqlToolsServiceDir); }
+export function errorFindingBuildFilesLocation(err: any) { return localize('errorFindingBuildFilesLocation', "Error finding build files location: {0}", utils.getErrorMessage(err)); }
 export function projBuildFailed(errorMessage: string) { return localize('projBuildFailed', "Build failed. Check output pane for more details. {0}", errorMessage); }
 export function unexpectedProjectContext(uri: string) { return localize('unexpectedProjectContext', "Unable to establish project context.  Command invoked from unexpected location: {0}", uri); }
 export function unableToPerformAction(action: string, uri: string) { return localize('unableToPerformAction', "Unable to locate '{0}' target: '{1}'", action, uri); }
@@ -396,7 +444,9 @@ export function getTargetPlatformFromVersion(version: string): string {
 
 // Insert SQL binding
 export const hostFileName = 'host.json';
+export const sqlExtensionPackageName = 'Microsoft.Azure.WebJobs.Extensions.Sql';
 export const placeHolderObject = '[dbo].[table1]';
+
 export const input = localize('input', "Input");
 export const output = localize('output', "Output");
 export const selectBindingType = localize('selectBindingType', "Select type of binding");
@@ -406,3 +456,5 @@ export const sqlTableToUpsert = localize('sqlTableToUpsert', "SQL table to upser
 export const connectionStringSetting = localize('connectionStringSetting', "Connection string setting name");
 export const connectionStringSettingPlaceholder = localize('connectionStringSettingPlaceholder', "Connection string setting specified in \"local.settings.json\"");
 export const noAzureFunctionsInFile = localize('noAzureFunctionsInFile', "No Azure functions in the current active file");
+export const noAzureFunctionsProjectsInWorkspace = localize('noAzureFunctionsProjectsInWorkspace', "No Azure functions projects found in the workspace");
+export const addPackage = localize('addPackage', "Add Package");

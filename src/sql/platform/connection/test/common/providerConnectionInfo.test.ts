@@ -9,7 +9,6 @@ import * as azdata from 'azdata';
 import * as assert from 'assert';
 import { TestCapabilitiesService } from 'sql/platform/capabilities/test/common/testCapabilitiesService';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
-import { assign } from 'vs/base/common/objects';
 
 suite('SQL ProviderConnectionInfo tests', () => {
 	let msSQLCapabilities: any;
@@ -202,7 +201,7 @@ suite('SQL ProviderConnectionInfo tests', () => {
 	test('constructor should initialize the options given a valid model with options', () => {
 		let options: { [key: string]: string } = {};
 		options['encrypt'] = 'test value';
-		let conn2 = assign({}, connectionProfile, { options: options });
+		let conn2 = Object.assign({}, connectionProfile, { options: options });
 		let conn = new ProviderConnectionInfo(capabilitiesService, conn2);
 
 		assert.equal(conn.connectionName, conn2.connectionName);
@@ -223,7 +222,7 @@ suite('SQL ProviderConnectionInfo tests', () => {
 
 	test('getOptionsKey should create different id for different server names', () => {
 		let conn = new ProviderConnectionInfo(capabilitiesService, connectionProfile);
-		let conn2 = new ProviderConnectionInfo(capabilitiesService, assign({}, connectionProfile, { serverName: connectionProfile.serverName + '1' }));
+		let conn2 = new ProviderConnectionInfo(capabilitiesService, Object.assign({}, connectionProfile, { serverName: connectionProfile.serverName + '1' }));
 
 		assert.notEqual(conn.getOptionsKey(), conn2.getOptionsKey());
 	});

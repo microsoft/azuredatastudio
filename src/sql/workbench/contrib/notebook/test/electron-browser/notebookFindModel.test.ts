@@ -31,7 +31,7 @@ import { NotebookRange } from 'sql/workbench/services/notebook/browser/notebookS
 import { NotebookMarkdownRenderer } from 'sql/workbench/contrib/notebook/browser/outputs/notebookMarkdown';
 import { NullAdsTelemetryService } from 'sql/platform/telemetry/common/adsTelemetryService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { TestConfigurationService } from 'vs/platform/configuration/test/common/testConfigurationService';
+import { TestConfigurationService } from 'sql/platform/connection/test/common/testConfigurationService';
 
 let expectedNotebookContent: nb.INotebookContents = {
 	cells: [{
@@ -74,13 +74,13 @@ suite('Notebook Find Model', function (): void {
 	let defaultModelOptions: INotebookModelOptions;
 	const logService = new NullLogService();
 	let model: NotebookModel;
-	let markdownRenderer: NotebookMarkdownRenderer = new NotebookMarkdownRenderer();
+	let markdownRenderer: NotebookMarkdownRenderer = new NotebookMarkdownRenderer(new TestConfigurationService());
 	let configurationService: IConfigurationService;
 
 	setup(async () => {
 		sessionReady = new Deferred<void>();
-		notificationService = TypeMoq.Mock.ofType(TestNotificationService, TypeMoq.MockBehavior.Loose);
-		capabilitiesService = TypeMoq.Mock.ofType(TestCapabilitiesService);
+		notificationService = TypeMoq.Mock.ofType<INotificationService>(TestNotificationService, TypeMoq.MockBehavior.Loose);
+		capabilitiesService = TypeMoq.Mock.ofType<ICapabilitiesService>(TestCapabilitiesService);
 		memento = TypeMoq.Mock.ofType(Memento, TypeMoq.MockBehavior.Loose, '');
 		memento.setup(x => x.getMemento(TypeMoq.It.isAny(), TypeMoq.It.isAny()
 		)).returns(() => void 0);
@@ -102,7 +102,7 @@ suite('Notebook Find Model', function (): void {
 			layoutChanged: undefined,
 			capabilitiesService: capabilitiesService.object
 		};
-		mockClientSession = TypeMoq.Mock.ofType(ClientSession, undefined, defaultModelOptions);
+		mockClientSession = TypeMoq.Mock.ofType<IClientSession>(ClientSession, undefined, defaultModelOptions);
 		mockClientSession.setup(c => c.initialize()).returns(() => {
 			return Promise.resolve();
 		});

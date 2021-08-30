@@ -238,7 +238,8 @@ suite('Assessment Actions', () => {
 				mtime: Date.now(),
 				name: '',
 				resource: fileUri,
-				size: 42
+				size: 42,
+				readonly: false
 			});
 		});
 

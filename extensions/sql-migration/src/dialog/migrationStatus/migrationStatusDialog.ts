@@ -6,7 +6,7 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { IconPathHelper } from '../../constants/iconPathHelper';
-import { MigrationContext, MigrationLocalStorage, MigrationStatus, ProvisioningState } from '../../models/migrationLocalStorage';
+import { MigrationContext, MigrationLocalStorage, MigrationStatus } from '../../models/migrationLocalStorage';
 import { MigrationCutoverDialog } from '../migrationCutover/migrationCutoverDialog';
 import { AdsMigrationStatus, MigrationStatusDialogModel } from './migrationStatusDialogModel';
 import * as loc from '../../constants/strings';
@@ -53,31 +53,11 @@ export class MigrationStatusDialog {
 		let tab = azdata.window.createTab('');
 		tab.registerContent(async (view: azdata.ModelView) => {
 			this._view = view;
-
-			this._statusDropdown = this._view.modelBuilder.dropDown().withProps({
-				ariaLabel: loc.MIGRATION_STATUS_FILTER,
-				values: this._model.statusDropdownValues,
-				width: '220px'
-			}).component();
-
-			this._disposables.push(this._statusDropdown.onValueChanged((value) => {
-				this.populateMigrationTable();
-			}));
-
-			if (this._filter) {
-				this._statusDropdown.value = (<azdata.CategoryValue[]>this._statusDropdown.values).find((value) => {
-					return value.name === this._filter;
-				});
-			}
-
 			this.registerCommands();
 			const formBuilder = view.modelBuilder.formContainer().withFormItems(
 				[
 					{
 						component: this.createSearchAndRefreshContainer()
-					},
-					{
-						component: this._statusDropdown
 					},
 					{
 						component: this.createStatusTable()
@@ -147,6 +127,29 @@ export class MigrationStatusDialog {
 
 		flexContainer.addItem(this._searchBox, {
 			flex: '0'
+		});
+
+		this._statusDropdown = this._view.modelBuilder.dropDown().withProps({
+			ariaLabel: loc.MIGRATION_STATUS_FILTER,
+			values: this._model.statusDropdownValues,
+			width: '220px'
+		}).component();
+
+		this._disposables.push(this._statusDropdown.onValueChanged((value) => {
+			this.populateMigrationTable();
+		}));
+
+		if (this._filter) {
+			this._statusDropdown.value = (<azdata.CategoryValue[]>this._statusDropdown.values).find((value) => {
+				return value.name === this._filter;
+			});
+		}
+
+		flexContainer.addItem(this._statusDropdown, {
+			flex: '0',
+			CSSStyles: {
+				'margin-left': '20px'
+			}
 		});
 
 		flexContainer.addItem(this._refresh, {
@@ -316,7 +319,7 @@ export class MigrationStatusDialog {
 				this._searchBox.value!);
 
 			migrations.sort((m1, m2) => {
-				return new Date(m1.migrationContext.properties.startedOn) > new Date(m2.migrationContext.properties.startedOn) ? -1 : 1;
+				return new Date(m1.migrationContext.properties?.startedOn) > new Date(m2.migrationContext.properties?.startedOn) ? -1 : 1;
 			});
 
 			const data: azdata.DeclarativeTableCellValue[][] = migrations.map((migration, index) => {
@@ -408,9 +411,6 @@ export class MigrationStatusDialog {
 	}
 
 	private _getMigrationMode(migration: MigrationContext): string {
-		if (migration.migrationContext.properties.provisioningState === ProvisioningState.Creating) {
-			return '---';
-		}
 		return migration.migrationContext.properties.autoCutoverConfiguration?.autoCutover?.valueOf() ? loc.OFFLINE : loc.ONLINE;
 	}
 

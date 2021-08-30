@@ -9,6 +9,10 @@ import { Dialog } from './dialog';
 const CONFIGURE_PYTHON_DIALOG_TITLE = 'Configure Python to run Python 3 kernel';
 
 export class ConfigurePythonDialog extends Dialog {
+	private static readonly dialogPageInView = '.modal .modal-body .dialogModal-pane:not(.dialogModal-hidden)';
+	private static readonly dialogButtonInView = '.modal .modal-footer .footer-button:not(.dialogModal-hidden)';
+	private static readonly nextButton = `${ConfigurePythonDialog.dialogButtonInView} a[aria-label="Next"][aria-disabled="false"]`;
+	private static readonly installButton = `${ConfigurePythonDialog.dialogButtonInView} a[aria-label="Install"][aria-disabled="false"]`;
 
 	constructor(code: Code) {
 		super(CONFIGURE_PYTHON_DIALOG_TITLE, code);
@@ -18,29 +22,28 @@ export class ConfigurePythonDialog extends Dialog {
 		await this.waitForNewDialog();
 	}
 
-	async installPython(): Promise<void> {
-		const dialogPageInView = '.modal .modal-body .dialogModal-pane:not(.dialogModal-hidden)';
-		const dialogButtonInView = '.modal .modal-footer .footer-button:not(.dialogModal-hidden)';
+	async waitForPageOneLoaded(): Promise<void> {
+		// Wait up to 1 minute for the python install location to be loaded.
+		const pythonInstallLocationDropdownValue = `${ConfigurePythonDialog.dialogPageInView} option[value*="/azuredatastudio-python (Default)"]`;
+		await this.code.waitForElement(pythonInstallLocationDropdownValue, undefined, 600);
 
-		const newPythonInstallation = `${dialogPageInView} input[aria-label="New Python installation"]`;
-		await this.code.waitAndClick(newPythonInstallation);
-
-		// Wait for the python install location to be loaded before clicking the next button.
-		// There may be a timing issue where the smoke test attempts to go to the next page before
-		// the contents are loaded, causing the test to fail.
-		const pythonInstallLocationDropdownValue = `${dialogPageInView} option[value*="/azuredatastudio-python (Default)"]`;
-		await this.code.waitForElement(pythonInstallLocationDropdownValue);
-
-		const loadingSpinner = `${dialogPageInView} .modelview-loadingComponent-content-loading`;
+		const loadingSpinner = `${ConfigurePythonDialog.dialogPageInView} .modelview-loadingComponent-content-loading`;
 		await this.code.waitForElementGone(loadingSpinner);
 
-		const nextButton = `${dialogButtonInView} a[aria-label="Next"][aria-disabled="false"]`;
-		await this.code.waitAndClick(nextButton);
+		await this.code.waitForElement(ConfigurePythonDialog.nextButton);
+	}
 
-		const installButton = `${dialogButtonInView} a[aria-label="Install"][aria-disabled="false"]`;
-		// wait up to 1 minute for the required kernel dependencies to load before clicking install button
-		await this.code.waitForElement(installButton, undefined, 600);
-		await this.code.waitAndClick(installButton);
+	async waitForPageTwoLoaded(): Promise<void> {
+		// Wait up to 1 minute for the required kernel dependencies to load before clicking install button
+		await this.code.waitForElement(ConfigurePythonDialog.installButton, undefined, 600);
+	}
+
+	async next(): Promise<void> {
+		await this.code.waitAndClick(ConfigurePythonDialog.nextButton);
+	}
+
+	async install(): Promise<void> {
+		await this.code.waitAndClick(ConfigurePythonDialog.installButton);
 
 		await this.waitForDialogGone();
 		return this._waitForInstallationComplete();

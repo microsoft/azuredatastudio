@@ -17,6 +17,7 @@ import { AzureResourceAccountTreeNode } from '../../../azureResource/tree/accoun
 import { AzureResourceAccountNotSignedInTreeNode } from '../../../azureResource/tree/accountNotSignedInTreeNode';
 import { AzureResourceServiceNames } from '../../../azureResource/constants';
 import { generateGuid } from '../../../azureResource/utils';
+import { AzureAccount } from 'azurecore';
 
 // Mock services
 let mockAppContext: AppContext;
@@ -25,7 +26,7 @@ let mockExtensionContext: TypeMoq.IMock<vscode.ExtensionContext>;
 let mockCacheService: TypeMoq.IMock<IAzureResourceCacheService>;
 
 // Mock test data
-const mockAccount1: azdata.Account = {
+const mockAccount1: AzureAccount = {
 	key: {
 		accountId: 'mock_account_1',
 		providerId: 'mock_provider'
@@ -39,7 +40,7 @@ const mockAccount1: azdata.Account = {
 	properties: undefined,
 	isStale: false
 };
-const mockAccount2: azdata.Account = {
+const mockAccount2: AzureAccount = {
 	key: {
 		accountId: 'mock_account_2',
 		providerId: 'mock_provider'

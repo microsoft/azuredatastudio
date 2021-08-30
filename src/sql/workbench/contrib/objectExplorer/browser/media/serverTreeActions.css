@@ -4,12 +4,12 @@
  *--------------------------------------------------------------------------------------------*/
 
 /* Icons for various registered servers actions */
-.monaco-workbench .dataExplorer-viewlet .actions-container .action-label.add-server-action {
+.monaco-workbench .actions-container .action-label.add-server-action {
 	background-image: url('add_server.svg') !important;
 }
 
-.monaco-workbench.vs-dark .dataExplorer-viewlet .actions-container .action-label.add-server-action,
-.monaco-workbench.hc-black .dataExplorer-viewlet .actions-container .action-label.add-server-action {
+.monaco-workbench.vs-dark .actions-container .action-label.add-server-action,
+.monaco-workbench.hc-black .actions-container .action-label.add-server-action {
 	background-image: url('add_server_inverse.svg') !important;
 }
 
@@ -17,25 +17,25 @@
 	background-image: url('new_servergroup.svg') !important;
 }
 
-.monaco-workbench.vs-dark .dataExplorer-viewlet .actions-container .action-label.add-server-group-action,
-.monaco-workbench.hc-black .dataExplorer-viewlet .actions-container .action-label.add-server-group-action {
+.monaco-workbench.vs-dark .actions-container .action-label.add-server-group-action,
+.monaco-workbench.hc-black .actions-container .action-label.add-server-group-action {
 	background-image: url('new_servergroup_inverse.svg') !important;
 }
 
-.monaco-workbench .dataExplorer-viewlet .actions-container .action-label.active-connections-action {
+.monaco-workbench .actions-container .action-label.active-connections-action {
 	background-image: url('connected_active_server.svg') !important;
 }
 
-.monaco-workbench.vs-dark .dataExplorer-viewlet .actions-container .action-label.active-connections-action,
-.monaco-workbench.hc-black .dataExplorer-viewlet .actions-container .action-label.active-connections-action {
+.monaco-workbench.vs-dark .actions-container .action-label.active-connections-action,
+.monaco-workbench.hc-black .actions-container .action-label.active-connections-action {
 	background-image: url('connected_active_server_inverse.svg') !important;
 }
 
-.monaco-workbench .dataExplorer-viewlet .actions-container .action-label.server-page {
+.monaco-workbench .actions-container .action-label.server-page {
 	background-image: url('server_page.svg') !important;
 }
 
-.monaco-workbench.vs-dark .dataExplorer-viewlet .actions-container .action-label.server-page,
-.monaco-workbench.hc-black .dataExplorer-viewlet .actions-container .action-label.server-page {
+.monaco-workbench.vs-dark .actions-container .action-label.server-page,
+.monaco-workbench.hc-black .actions-container .action-label.server-page {
 	background-image: url('server_page_inverse.svg') !important;
 }

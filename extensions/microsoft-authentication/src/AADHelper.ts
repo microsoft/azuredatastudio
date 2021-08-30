@@ -396,19 +396,19 @@ export class AzureActiveDirectoryService {
 	}
 
 	private getCallbackEnvironment(callbackUri: vscode.Uri): string {
-		if (callbackUri.authority.endsWith('.workspaces.github.com') || callbackUri.authority.endsWith('.github.dev')) {
-			return `${callbackUri.authority},`;
+		if (callbackUri.scheme !== 'https' && callbackUri.scheme !== 'http') {
+			return callbackUri.scheme;
 		}
 
 		switch (callbackUri.authority) {
 			case 'online.visualstudio.com':
-				return 'vso,';
+				return 'vso';
 			case 'online-ppe.core.vsengsaas.visualstudio.com':
-				return 'vsoppe,';
+				return 'vsoppe';
 			case 'online.dev.core.vsengsaas.visualstudio.com':
-				return 'vsodev,';
+				return 'vsodev';
 			default:
-				return `${callbackUri.scheme},`;
+				return callbackUri.authority;
 		}
 	}
 
@@ -417,7 +417,7 @@ export class AzureActiveDirectoryService {
 		const nonce = randomBytes(16).toString('base64');
 		const port = (callbackUri.authority.match(/:([0-9]*)$/) || [])[1] || (callbackUri.scheme === 'https' ? 443 : 80);
 		const callbackEnvironment = this.getCallbackEnvironment(callbackUri);
-		const state = `${callbackEnvironment}${port},${encodeURIComponent(nonce)},${encodeURIComponent(callbackUri.query)}`;
+		const state = `${callbackEnvironment},${port},${encodeURIComponent(nonce)},${encodeURIComponent(callbackUri.query)}`;
 		const signInUrl = `${loginEndpointUrl}${tenant}/oauth2/v2.0/authorize`;
 		let uri = vscode.Uri.parse(signInUrl);
 		const codeVerifier = toBase64UrlEncoding(randomBytes(32).toString('base64'));
@@ -566,7 +566,8 @@ export class AzureActiveDirectoryService {
 			});
 
 			const proxyEndpoints: { [providerId: string]: string } | undefined = await vscode.commands.executeCommand('workbench.getCodeExchangeProxyEndpoints');
-			const endpoint = proxyEndpoints && proxyEndpoints['microsoft'] || `${loginEndpointUrl}${tenant}/oauth2/v2.0/token`;
+			const endpointUrl = proxyEndpoints?.microsoft || loginEndpointUrl;
+			const endpoint = `${endpointUrl}${tenant}/oauth2/v2.0/token`;
 
 			const result = await fetch(endpoint, {
 				method: 'POST',
@@ -592,16 +593,20 @@ export class AzureActiveDirectoryService {
 	}
 
 	private async refreshToken(refreshToken: string, scope: string, sessionId: string): Promise<IToken> {
-		try {
-			Logger.info('Refreshing token...');
-			const postData = querystring.stringify({
-				refresh_token: refreshToken,
-				client_id: clientId,
-				grant_type: 'refresh_token',
-				scope: scope
-			});
+		Logger.info('Refreshing token...');
+		const postData = querystring.stringify({
+			refresh_token: refreshToken,
+			client_id: clientId,
+			grant_type: 'refresh_token',
+			scope: scope
+		});
 
-			const result = await fetch(`https://login.microsoftonline.com/${tenant}/oauth2/v2.0/token`, {
+		let result: Response;
+		try {
+			const proxyEndpoints: { [providerId: string]: string } | undefined = await vscode.commands.executeCommand('workbench.getCodeExchangeProxyEndpoints');
+			const endpointUrl = proxyEndpoints?.microsoft || loginEndpointUrl;
+			const endpoint = `${endpointUrl}${tenant}/oauth2/v2.0/token`;
+			result = await fetch(endpoint, {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/x-www-form-urlencoded',
@@ -609,7 +614,12 @@ export class AzureActiveDirectoryService {
 				},
 				body: postData
 			});
+		} catch (e) {
+			Logger.error('Refreshing token failed');
+			throw new Error(REFRESH_NETWORK_FAILURE);
+		}
 
+		try {
 			if (result.ok) {
 				const json = await result.json();
 				const token = this.getTokenFromResponse(json, scope, sessionId);
@@ -617,12 +627,12 @@ export class AzureActiveDirectoryService {
 				Logger.info('Token refresh success');
 				return token;
 			} else {
-				Logger.error('Refreshing token failed');
-				throw new Error('Refreshing token failed.');
+				throw new Error('Bad request.');
 			}
 		} catch (e) {
-			Logger.error('Refreshing token failed');
-			throw new Error(REFRESH_NETWORK_FAILURE);
+			vscode.window.showErrorMessage(localize('signOut', "You have been signed out because reading stored authentication information failed."));
+			Logger.error(`Refreshing token failed: ${result.statusText}`);
+			throw new Error('Refreshing token failed');
 		}
 	}
 

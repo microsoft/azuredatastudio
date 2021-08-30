@@ -1099,6 +1099,9 @@
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.noStringDefault" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[No (default)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[No (valor predeterminado)]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1234,6 +1237,9 @@
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.projectLocString" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Project]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Proyecto]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1312,6 +1318,9 @@
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.referenceType" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Reference type]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Tipo de referencia]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -1779,19 +1788,25 @@
       </Item>
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.updateProjectDatabaseReferencesForRoundTrip" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[To build this project, Azure Data Studio needs to update system database references. If the project is created in SSDT, it will continue to work in both tools. Do you want Azure Data Studio to update the project?]]></Val>
+          <Val><![CDATA[The system database references need to be updated to build this project. If the project is created in SSDT, it will continue to work in both tools. Do you want to update the project?]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Para compilar este proyecto, Azure Data Studio debe actualizar las referencias de base de datos del sistema. Si el proyecto se crea en SSDT, seguirá funcionando en ambas herramientas. ¿Quiere que Azure Data Studio actualice el proyecto?]]></Val>
+            <Val><![CDATA[Las referencias de base de datos del sistema deben actualizarse para compilar este proyecto. Si el proyecto se crea en SSDT, seguirá funcionando en ambas herramientas. ¿Desea actualizar el proyecto?]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[To build this project, Azure Data Studio needs to update system database references. If the project is created in SSDT, it will continue to work in both tools. Do you want Azure Data Studio to update the project?]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.updateProjectForRoundTrip" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[To build this project, Azure Data Studio needs to update targets, references, and system database references. If the project is created in SSDT, it will continue to work in both tools. Do you want Azure Data Studio to update the project?]]></Val>
+          <Val><![CDATA[The targets, references, and system database references need to be updated to build this project. If the project is created in SSDT, it will continue to work in both tools. Do you want to update the project?]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Para compilar este proyecto, Azure Data Studio debe actualizar los destinos, las referencias y las referencias de base de datos del sistema. Si el proyecto se crea en SSDT, seguirá funcionando en ambas herramientas. ¿Quiere que Azure Data Studio actualice el proyecto?]]></Val>
+            <Val><![CDATA[Los objetivos, las referencias y las referencias de base de datos del sistema deben actualizarse para compilar este proyecto. Si el proyecto se crea en SSDT, seguirá funcionando en ambas herramientas. ¿Desea actualizar el proyecto?]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[To build this project, Azure Data Studio needs to update targets, references, and system database references. If the project is created in SSDT, it will continue to work in both tools. Do you want Azure Data Studio to update the project?]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>

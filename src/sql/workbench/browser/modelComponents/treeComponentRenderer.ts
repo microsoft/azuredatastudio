@@ -144,7 +144,7 @@ export class TreeComponentRenderer extends Disposable implements IRenderer {
 		templateData.icon.style.backgroundImage = iconUri ? `url('${iconUri.toString(true)}')` : '';
 		templateData.icon.style.backgroundRepeat = 'no-repeat';
 		templateData.icon.style.backgroundPosition = 'center';
-		dom.toggleClass(templateData.icon, 'model-view-tree-node-item-icon', !!icon);
+		templateData.icon.classList.toggle('model-view-tree-node-item-icon', !!icon);
 		if (element) {
 			element.onCheckedChanged = (checked: boolean) => {
 				this._dataProvider.onNodeCheckedChanged(element.handle, checked);

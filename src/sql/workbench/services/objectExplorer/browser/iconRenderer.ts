@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { IconPath } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { createCSSRule, asCSSUrl } from 'vs/base/browser/dom';
 import { hash } from 'vs/base/common/hash';
 import { URI } from 'vs/base/common/uri';
@@ -10,10 +11,10 @@ import { URI } from 'vs/base/common/uri';
 class IconRenderer {
 	private iconRegistered: Set<string> = new Set<string>();
 
-	public registerIcon(path: URI | IconPath | undefined): string | undefined {
+	public registerIcon(path: IconPath | undefined): string | undefined {
 		if (!path) { return undefined; }
-		let iconPath: IconPath = this.toIconPath(path);
-		let iconUid: string | undefined = this.getIconUid(iconPath);
+		const iconPath: ThemedIconUri = this.toThemedIconUri(path);
+		const iconUid: string | undefined = this.getIconUid(iconPath);
 		if (iconUid && !this.iconRegistered.has(iconUid)) {
 			createCSSRule(`.icon#${iconUid}`, `background: ${asCSSUrl(iconPath.light || iconPath.dark)} center center no-repeat`);
 			createCSSRule(`.vs-dark .icon#${iconUid}, .hc-black .icon#${iconUid}`, `background: ${asCSSUrl(iconPath.dark)} center center no-repeat`);
@@ -22,22 +23,32 @@ class IconRenderer {
 		return iconUid;
 	}
 
-	public getIconUid(path: URI | IconPath): string | undefined {
+	public getIconUid(path: IconPath): string | undefined {
 		if (!path) { return undefined; }
-		let iconPath: IconPath = this.toIconPath(path);
+		const iconPath: ThemedIconUri = this.toThemedIconUri(path);
 		return `icon${hash(iconPath.light.toString() + iconPath.dark.toString())}`;
 	}
 
-	private toIconPath(path: URI | IconPath): IconPath {
-		if (URI.isUri(path)) {
-			let singlePath = path;
-			return { light: singlePath, dark: singlePath };
+	private toThemedIconUri(path: IconPath): ThemedIconUri {
+		let light, dark: string | URI;
+
+		if (URI.isUri(path) || (typeof (path) === 'string')) {
+			light = dark = path;
 		} else {
-			return path;
+			light = path.light;
+			dark = path.dark;
 		}
+		return {
+			light: this.toUri(light),
+			dark: this.toUri(dark)
+		};
 	}
 
-	public putIcon(element: HTMLElement, path: URI | IconPath | undefined): void {
+	private toUri(path: string | URI): URI {
+		return URI.isUri(path) ? path : URI.file(path);
+	}
+
+	public putIcon(element: HTMLElement, path: IconPath | undefined): void {
 		let iconUid: string | undefined = this.registerIcon(path);
 		element.id = iconUid ?? '';
 	}
@@ -130,7 +141,7 @@ class BadgeRenderer {
 
 export const badgeRenderer: BadgeRenderer = new BadgeRenderer();
 
-interface IconPath {
+interface ThemedIconUri {
 	light: URI;
 	dark: URI;
 }

@@ -7,7 +7,6 @@ import * as azdata from 'azdata';
 import { AppContext } from './appContext';
 import { AzureResourceServiceNames } from './azureResource/constants';
 import { IAzureResourceSubscriptionService } from './azureResource/interfaces';
-import { TokenCredentials } from '@azure/ms-rest-js';
 import { azureResource } from 'azureResource';
 import * as azureResourceUtils from './azureResource/utils';
 import * as constants from './constants';
@@ -36,12 +35,8 @@ export class AzureDataGridProvider implements azdata.DataGridProvider {
 		await Promise.all(accounts.map(async (account) => {
 			await Promise.all(account.properties.tenants.map(async (tenant: { id: string; }) => {
 				try {
-					const tokenResponse = await azdata.accounts.getAccountSecurityToken(account, tenant.id, azdata.AzureResource.ResourceManagement);
-					const token = tokenResponse.token;
-					const tokenType = tokenResponse.tokenType;
-					const credential = new TokenCredentials(token, tokenType);
 					const subscriptionService = this._appContext.getService<IAzureResourceSubscriptionService>(AzureResourceServiceNames.subscriptionService);
-					const subscriptions = await subscriptionService.getSubscriptions(account, credential, tenant.id);
+					const subscriptions = await subscriptionService.getSubscriptions(account, [tenant.id]);
 					try {
 						const newItems = (await azureResourceUtils.runResourceQuery(account, subscriptions, true, `where ${typesClause}`)).resources
 							.map(item => {

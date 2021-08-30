@@ -157,6 +157,7 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 
 		const subscriptionLabel = this._view.modelBuilder.text().withProps({
 			value: constants.SUBSCRIPTION,
+			requiredIndicator: true,
 			CSSStyles: {
 				'font-size': '13px',
 				'font-weight': 'bold',
@@ -164,11 +165,13 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 		}).component();
 		this._subscription = this._view.modelBuilder.inputBox().withProps({
 			enabled: false,
+			required: true,
 			width: WIZARD_INPUT_COMPONENT_WIDTH,
 		}).component();
 
 		const locationLabel = this._view.modelBuilder.text().withProps({
 			value: constants.LOCATION,
+			requiredIndicator: true,
 			CSSStyles: {
 				'font-size': '13px',
 				'font-weight': 'bold',
@@ -176,12 +179,13 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 		}).component();
 		this._location = this._view.modelBuilder.inputBox().withProps({
 			enabled: false,
+			required: true,
 			width: WIZARD_INPUT_COMPONENT_WIDTH,
 		}).component();
 
-
 		const resourceGroupLabel = this._view.modelBuilder.text().withProps({
 			value: constants.RESOURCE_GROUP,
+			requiredIndicator: true,
 			CSSStyles: {
 				'font-size': '13px',
 				'font-weight': 'bold',
@@ -191,9 +195,9 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 			ariaLabel: constants.RESOURCE_GROUP,
 			width: WIZARD_INPUT_COMPONENT_WIDTH,
 			editable: true,
+			required: true,
 			fireOnTextChange: true,
 		}).component();
-
 		this._disposables.push(this._resourceGroupDropdown.onValueChanged(async (value) => {
 			const selectedIndex = findDropDownItemIndex(this._resourceGroupDropdown, value);
 			this.migrationStateModel._sqlMigrationServiceResourceGroup = this.migrationStateModel.getAzureResourceGroup(selectedIndex).name;
@@ -204,19 +208,19 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 
 		const migrationServcieDropdownLabel = this._view.modelBuilder.text().withProps({
 			value: constants.IR_PAGE_TITLE,
+			requiredIndicator: true,
 			CSSStyles: {
 				'font-size': '13px',
 				'font-weight': 'bold',
 			}
 		}).component();
-
 		this._dmsDropdown = this._view.modelBuilder.dropDown().withProps({
 			ariaLabel: constants.IR_PAGE_TITLE,
 			width: WIZARD_INPUT_COMPONENT_WIDTH,
 			editable: true,
+			required: true,
 			fireOnTextChange: true,
 		}).component();
-
 		this._disposables.push(this._dmsDropdown.onValueChanged(async (value) => {
 			if (value && value !== constants.SQL_MIGRATION_SERVICE_NOT_FOUND_ERROR) {
 				if (this.migrationStateModel._databaseBackup.networkContainerType === NetworkContainerType.NETWORK_SHARE) {
@@ -533,4 +537,3 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 		}
 	}
 }
-

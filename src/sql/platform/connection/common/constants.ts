@@ -32,3 +32,7 @@ export const dstsAuth = 'dstsAuth';
 export const cmsProviderName = 'MSSQL-CMS';
 
 export const UNSAVED_GROUP_ID = 'unsaved';
+
+/* Server Type Constants */
+export const sqlDataWarehouse = 'Azure SQL Data Warehouse';
+export const gen3Version = 12;

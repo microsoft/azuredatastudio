@@ -246,7 +246,7 @@ export class AccountManagementService implements IAccountManagementService {
 	 * @param resource The resource to get the security token for
 	 * @return Promise to return the security token
 	 */
-	public getAccountSecurityToken(account: azdata.Account, tenant: string, resource: azdata.AzureResource): Promise<{ token: string, azureAccountTokenExpiresOn: number } | undefined> {
+	public getAccountSecurityToken(account: azdata.Account, tenant: string, resource: azdata.AzureResource): Promise<azdata.accounts.AccountSecurityToken | undefined> {
 		return this.doWithProvider(account.key.providerId, provider => {
 			return Promise.resolve(provider.provider.getAccountSecurityToken(account, tenant, resource));
 		});

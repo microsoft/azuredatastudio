@@ -25,7 +25,7 @@ export interface IAccountManagementService {
 	 * @deprecated
 	 */
 	getSecurityToken(account: azdata.Account, resource: azdata.AzureResource): Promise<{ [key: string]: { token: string } } | undefined>;
-	getAccountSecurityToken(account: azdata.Account, tenant: string, resource: azdata.AzureResource): Promise<{ token: string, azureAccountTokenExpiresOn: number } | undefined>;
+	getAccountSecurityToken(account: azdata.Account, tenant: string, resource: azdata.AzureResource): Promise<azdata.accounts.AccountSecurityToken | undefined>;
 	removeAccount(accountKey: azdata.AccountKey): Promise<boolean>;
 	removeAccounts(): Promise<boolean>;
 	refreshAccount(account: azdata.Account): Promise<azdata.Account>;
@@ -58,7 +58,9 @@ export enum AzureResource {
 	MicrosoftResourceManagement = 5,
 	AzureDevOps = 6,
 	MsGraph = 7,
-	AzureLogAnalytics = 8
+	AzureLogAnalytics = 8,
+	AzureStorage = 9,
+	AzureKusto = 10
 }
 
 export interface IAccountStore {

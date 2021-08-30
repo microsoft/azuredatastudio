@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { KeyCode, KeyMod } from 'vs/base/common/keyCodes';
@@ -68,7 +68,7 @@ registerAction2(class extends NotebookCellAction {
 			return;
 		}
 
-		const newFocusMode = newCell.cellKind === CellKind.Markdown && newCell.getEditState() === CellEditState.Preview ? 'container' : 'editor';
+		const newFocusMode = newCell.cellKind === CellKind.Markup && newCell.getEditState() === CellEditState.Preview ? 'container' : 'editor';
 		editor.focusNotebookCell(newCell, newFocusMode);
 		editor.cursorNavigationMode = true;
 	}
@@ -115,7 +115,7 @@ registerAction2(class extends NotebookCellAction {
 			return;
 		}
 
-		const newFocusMode = newCell.cellKind === CellKind.Markdown && newCell.getEditState() === CellEditState.Preview ? 'container' : 'editor';
+		const newFocusMode = newCell.cellKind === CellKind.Markup && newCell.getEditState() === CellEditState.Preview ? 'container' : 'editor';
 		editor.focusNotebookCell(newCell, newFocusMode);
 		editor.cursorNavigationMode = true;
 	}

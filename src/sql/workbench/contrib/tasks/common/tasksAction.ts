@@ -24,7 +24,7 @@ export class CancelAction extends Action {
 		super(id, label);
 	}
 	public override async run(element: TaskNode): Promise<void> {
-		if (element instanceof TaskNode && element.providerName) {
+		if (element instanceof TaskNode) {
 			try {
 				const result = await this._taskService.cancelTask(element.providerName, element.id);
 				if (!result) {

@@ -301,13 +301,6 @@
         "configuration": "./language-configuration.json"
       }
     ],
-    "grammars": [
-      {
-        "language": "notebook",
-        "scopeName": "source.notebook",
-        "path": "./syntaxes/notebook.tmLanguage.json"
-      }
-    ],
     "menus": {
       "commandPalette": [
         {

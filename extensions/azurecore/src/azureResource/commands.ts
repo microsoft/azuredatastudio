@@ -5,14 +5,12 @@
 
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
-import { TokenCredentials } from '@azure/ms-rest-js';
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
 import { AppContext } from '../appContext';
 import { azureResource } from 'azureResource';
 import { TreeNode } from './treeNode';
-import { AzureResourceCredentialError } from './errors';
 import { AzureResourceTreeProvider } from './tree/treeProvider';
 import { AzureResourceAccountTreeNode } from './tree/accountTreeNode';
 import { IAzureResourceSubscriptionService, IAzureResourceSubscriptionFilterService, IAzureTerminalService } from '../azureResource/interfaces';
@@ -20,6 +18,7 @@ import { AzureResourceServiceNames } from './constants';
 import { AzureAccount, Tenant } from 'azurecore';
 import { FlatAccountTreeNode } from './tree/flatAccountTreeNode';
 import { ConnectionDialogTreeProvider } from './tree/connectionDialogTreeProvider';
+import { AzureResourceErrorMessageUtil } from './utils';
 
 export function registerAzureResourceCommands(appContext: AppContext, azureViewTree: AzureResourceTreeProvider, connectionDialogTree: ConnectionDialogTreeProvider): void {
 	const trees = [azureViewTree, connectionDialogTree];
@@ -109,21 +108,14 @@ export function registerAzureResourceCommands(appContext: AppContext, azureViewT
 		const subscriptionService = appContext.getService<IAzureResourceSubscriptionService>(AzureResourceServiceNames.subscriptionService);
 		const subscriptionFilterService = appContext.getService<IAzureResourceSubscriptionFilterService>(AzureResourceServiceNames.subscriptionFilterService);
 
-		const subscriptions = [];
+		let subscriptions: azureResource.AzureResourceSubscription[] = [];
 		if (subscriptions.length === 0) {
 			try {
-
-				for (const tenant of account.properties.tenants) {
-					const response = await azdata.accounts.getAccountSecurityToken(account, tenant.id, azdata.AzureResource.ResourceManagement);
-
-					const token = response.token;
-					const tokenType = response.tokenType;
-
-					subscriptions.push(...await subscriptionService.getSubscriptions(account, new TokenCredentials(token, tokenType), tenant.id));
-				}
+				subscriptions = await subscriptionService.getSubscriptions(account);
 			} catch (error) {
 				account.isStale = true;
-				throw new AzureResourceCredentialError(localize('azure.resource.selectsubscriptions.credentialError', "Failed to get credential for account {0}. Please refresh the account.", account.displayInfo.displayName), error);
+				vscode.window.showErrorMessage(AzureResourceErrorMessageUtil.getErrorMessage(error));
+				return;
 			}
 		}
 

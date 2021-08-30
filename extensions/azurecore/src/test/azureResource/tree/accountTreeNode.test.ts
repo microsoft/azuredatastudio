@@ -9,7 +9,6 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as sinon from 'sinon';
 import 'mocha';
-import { TokenCredentials } from '@azure/ms-rest-js';
 import { AppContext } from '../../../appContext';
 
 import { azureResource } from 'azureResource';
@@ -24,6 +23,7 @@ import { AzureResourceSubscriptionTreeNode } from '../../../azureResource/tree/s
 import { AzureResourceItemType, AzureResourceServiceNames } from '../../../azureResource/constants';
 import { AzureResourceMessageTreeNode } from '../../../azureResource/messageTreeNode';
 import { generateGuid } from '../../../azureResource/utils';
+import { AzureAccount } from 'azurecore';
 
 // Mock services
 let mockExtensionContext: TypeMoq.IMock<vscode.ExtensionContext>;
@@ -31,13 +31,12 @@ let mockCacheService: TypeMoq.IMock<IAzureResourceCacheService>;
 let mockSubscriptionService: TypeMoq.IMock<IAzureResourceSubscriptionService>;
 let mockSubscriptionFilterService: TypeMoq.IMock<IAzureResourceSubscriptionFilterService>;
 let mockAppContext: AppContext;
-let getSecurityTokenStub: sinon.SinonStub;
 let mockTreeChangeHandler: TypeMoq.IMock<IAzureResourceTreeChangeHandler>;
 
 // Mock test data
 const mockTenantId = 'mock_tenant_id';
 
-const mockAccount: azdata.Account = {
+const mockAccount: AzureAccount = {
 	key: {
 		accountId: '97915f6d-84fa-4926-b60c-38db64327ad7',
 		providerId: 'mock_provider'
@@ -52,9 +51,16 @@ const mockAccount: azdata.Account = {
 	properties: {
 		tenants: [
 			{
-				id: mockTenantId
+				id: mockTenantId,
+				displayName: 'Mock Tenant'
 			}
-		]
+		],
+		providerSettings: {
+			settings: { },
+			id: 'azure',
+			displayName: 'Azure'
+		},
+		isMsAccount: true
 	},
 	isStale: false
 };
@@ -82,9 +88,6 @@ const mockToken = {
 	tokenType: 'Bearer'
 };
 
-
-const mockCredential = new TokenCredentials(mockToken.token, mockToken.tokenType);
-
 let mockSubscriptionCache: azureResource.AzureResourceSubscription[] = [];
 
 describe('AzureResourceAccountTreeNode.info', function (): void {
@@ -92,6 +95,7 @@ describe('AzureResourceAccountTreeNode.info', function (): void {
 		mockExtensionContext = TypeMoq.Mock.ofType<vscode.ExtensionContext>();
 		mockCacheService = TypeMoq.Mock.ofType<IAzureResourceCacheService>();
 		mockSubscriptionService = TypeMoq.Mock.ofType<IAzureResourceSubscriptionService>();
+		mockSubscriptionService.setup((o) => o.getSubscriptions(mockAccount, undefined)).returns(() => Promise.resolve(mockSubscriptions));
 		mockSubscriptionFilterService = TypeMoq.Mock.ofType<IAzureResourceSubscriptionFilterService>();
 
 		mockTreeChangeHandler = TypeMoq.Mock.ofType<IAzureResourceTreeChangeHandler>();
@@ -103,7 +107,6 @@ describe('AzureResourceAccountTreeNode.info', function (): void {
 		mockAppContext.registerService<IAzureResourceSubscriptionService>(AzureResourceServiceNames.subscriptionService, mockSubscriptionService.object);
 		mockAppContext.registerService<IAzureResourceSubscriptionFilterService>(AzureResourceServiceNames.subscriptionFilterService, mockSubscriptionFilterService.object);
 
-		getSecurityTokenStub = sinon.stub(azdata.accounts, 'getAccountSecurityToken').returns(Promise.resolve(mockToken));
 		mockCacheService.setup((o) => o.generateKey(TypeMoq.It.isAnyString())).returns(() => generateGuid());
 		mockCacheService.setup((o) => o.get(TypeMoq.It.isAnyString())).returns(() => mockSubscriptionCache);
 		mockCacheService.setup((o) => o.update(TypeMoq.It.isAnyString(), TypeMoq.It.isAny())).returns(() => mockSubscriptionCache = mockSubscriptions);
@@ -134,8 +137,9 @@ describe('AzureResourceAccountTreeNode.info', function (): void {
 	});
 
 	it('Should be correct when there are subscriptions listed.', async function (): Promise<void> {
-		mockSubscriptionService.setup((o) => o.getSubscriptions(mockAccount, mockCredential, mockTenantId)).returns(() => Promise.resolve(mockSubscriptions));
+		mockSubscriptionService.setup((o) => o.getSubscriptions(mockAccount, TypeMoq.It.isAny())).returns(() => Promise.resolve(mockSubscriptions));
 		mockSubscriptionFilterService.setup((o) => o.getSelectedSubscriptions(mockAccount)).returns(() => Promise.resolve(undefined));
+		sinon.stub(azdata.accounts, 'getAccountSecurityToken').resolves(mockToken);
 
 		const accountTreeNodeLabel = `${mockAccount.displayInfo.displayName} (${mockSubscriptions.length} / ${mockSubscriptions.length} subscriptions)`;
 
@@ -153,10 +157,30 @@ describe('AzureResourceAccountTreeNode.info', function (): void {
 		should(nodeInfo.label).equal(accountTreeNodeLabel);
 	});
 
-	it('Should be correct when there are subscriptions filtered.', async function (): Promise<void> {
-		mockSubscriptionService.setup((o) => o.getSubscriptions(mockAccount, mockCredential, mockTenantId)).returns(() => Promise.resolve(mockSubscriptions));
+	it('Should only show subscriptions with valid tokens.', async function (): Promise<void> {
+		mockSubscriptionService.setup((o) => o.getSubscriptions(mockAccount)).returns(() => Promise.resolve(mockSubscriptions));
 		mockSubscriptionFilterService.setup((o) => o.getSelectedSubscriptions(mockAccount)).returns(() => Promise.resolve(mockFilteredSubscriptions));
+		sinon.stub(azdata.accounts, 'getAccountSecurityToken').onFirstCall().resolves(mockToken);
+		const accountTreeNodeLabel = `${mockAccount.displayInfo.displayName} (${mockFilteredSubscriptions.length} / ${mockSubscriptions.length} subscriptions)`;
 
+		const accountTreeNode = new AzureResourceAccountTreeNode(mockAccount, mockAppContext, mockTreeChangeHandler.object);
+
+		const subscriptionNodes = await accountTreeNode.getChildren();
+
+		should(subscriptionNodes).Array();
+		should(subscriptionNodes.length).equal(1);
+
+		const treeItem = await accountTreeNode.getTreeItem();
+		should(treeItem.label).equal(accountTreeNodeLabel);
+
+		const nodeInfo = accountTreeNode.getNodeInfo();
+		should(nodeInfo.label).equal(accountTreeNodeLabel);
+	});
+
+	it('Should be correct when there are subscriptions filtered.', async function (): Promise<void> {
+		mockSubscriptionService.setup((o) => o.getSubscriptions(mockAccount)).returns(() => Promise.resolve(mockSubscriptions));
+		mockSubscriptionFilterService.setup((o) => o.getSelectedSubscriptions(mockAccount)).returns(() => Promise.resolve(mockFilteredSubscriptions));
+		sinon.stub(azdata.accounts, 'getAccountSecurityToken').resolves(mockToken);
 		const accountTreeNodeLabel = `${mockAccount.displayInfo.displayName} (${mockFilteredSubscriptions.length} / ${mockSubscriptions.length} subscriptions)`;
 
 		const accountTreeNode = new AzureResourceAccountTreeNode(mockAccount, mockAppContext, mockTreeChangeHandler.object);
@@ -190,7 +214,7 @@ describe('AzureResourceAccountTreeNode.getChildren', function (): void {
 		mockAppContext.registerService<IAzureResourceSubscriptionService>(AzureResourceServiceNames.subscriptionService, mockSubscriptionService.object);
 		mockAppContext.registerService<IAzureResourceSubscriptionFilterService>(AzureResourceServiceNames.subscriptionFilterService, mockSubscriptionFilterService.object);
 
-		sinon.stub(azdata.accounts, 'getAccountSecurityToken').returns(Promise.resolve(mockToken));
+		sinon.stub(azdata.accounts, 'getAccountSecurityToken').resolves(mockToken);
 		mockCacheService.setup((o) => o.generateKey(TypeMoq.It.isAnyString())).returns(() => generateGuid());
 		mockCacheService.setup((o) => o.get(TypeMoq.It.isAnyString())).returns(() => mockSubscriptionCache);
 		mockCacheService.setup((o) => o.update(TypeMoq.It.isAnyString(), TypeMoq.It.isAny())).returns(() => mockSubscriptionCache = mockSubscriptions);
@@ -201,14 +225,14 @@ describe('AzureResourceAccountTreeNode.getChildren', function (): void {
 	});
 
 	it('Should load subscriptions from scratch and update cache when it is clearing cache.', async function (): Promise<void> {
-		mockSubscriptionService.setup((o) => o.getSubscriptions(mockAccount, mockCredential, mockTenantId)).returns(() => Promise.resolve(mockSubscriptions));
+		mockSubscriptionService.setup((o) => o.getSubscriptions(mockAccount, TypeMoq.It.isAny())).returns(() => Promise.resolve(mockSubscriptions));
 		mockSubscriptionFilterService.setup((o) => o.getSelectedSubscriptions(mockAccount)).returns(() => Promise.resolve([]));
 
 		const accountTreeNode = new AzureResourceAccountTreeNode(mockAccount, mockAppContext, mockTreeChangeHandler.object);
 
 		const children = await accountTreeNode.getChildren();
 
-		mockSubscriptionService.verify((o) => o.getSubscriptions(mockAccount, mockCredential, mockTenantId), TypeMoq.Times.once());
+		mockSubscriptionService.verify((o) => o.getSubscriptions(mockAccount, TypeMoq.It.isAny()), TypeMoq.Times.once());
 		mockCacheService.verify((o) => o.get(TypeMoq.It.isAnyString()), TypeMoq.Times.exactly(0));
 		mockCacheService.verify((o) => o.update(TypeMoq.It.isAnyString(), TypeMoq.It.isAny()), TypeMoq.Times.once());
 		mockSubscriptionFilterService.verify((o) => o.getSelectedSubscriptions(mockAccount), TypeMoq.Times.once());
@@ -234,7 +258,7 @@ describe('AzureResourceAccountTreeNode.getChildren', function (): void {
 	});
 
 	it('Should load subscriptions from cache when it is not clearing cache.', async function (): Promise<void> {
-		mockSubscriptionService.setup((o) => o.getSubscriptions(mockAccount, mockCredential, mockTenantId)).returns(() => Promise.resolve(mockSubscriptions));
+		mockSubscriptionService.setup((o) => o.getSubscriptions(mockAccount, TypeMoq.It.isAny())).returns(() => Promise.resolve(mockSubscriptions));
 		mockSubscriptionFilterService.setup((o) => o.getSelectedSubscriptions(mockAccount)).returns(() => Promise.resolve(undefined));
 
 		const accountTreeNode = new AzureResourceAccountTreeNode(mockAccount, mockAppContext, mockTreeChangeHandler.object);
@@ -243,7 +267,7 @@ describe('AzureResourceAccountTreeNode.getChildren', function (): void {
 		const children = await accountTreeNode.getChildren();
 
 
-		mockSubscriptionService.verify((o) => o.getSubscriptions(mockAccount, mockCredential, mockTenantId), TypeMoq.Times.once());
+		mockSubscriptionService.verify((o) => o.getSubscriptions(mockAccount, TypeMoq.It.isAny()), TypeMoq.Times.once());
 		mockCacheService.verify((o) => o.get(TypeMoq.It.isAnyString()), TypeMoq.Times.once());
 		mockCacheService.verify((o) => o.update(TypeMoq.It.isAnyString(), TypeMoq.It.isAny()), TypeMoq.Times.once());
 
@@ -255,7 +279,7 @@ describe('AzureResourceAccountTreeNode.getChildren', function (): void {
 	});
 
 	it('Should handle when there is no subscriptions.', async function (): Promise<void> {
-		mockSubscriptionService.setup((o) => o.getSubscriptions(mockAccount, mockCredential, mockTenantId)).returns(() => Promise.resolve(undefined));
+		mockSubscriptionService.setup((o) => o.getSubscriptions(mockAccount, TypeMoq.It.isAny())).returns(() => Promise.resolve([]));
 
 		const accountTreeNode = new AzureResourceAccountTreeNode(mockAccount, mockAppContext, mockTreeChangeHandler.object);
 
@@ -271,7 +295,7 @@ describe('AzureResourceAccountTreeNode.getChildren', function (): void {
 	});
 
 	it('Should honor subscription filtering.', async function (): Promise<void> {
-		mockSubscriptionService.setup((o) => o.getSubscriptions(mockAccount, mockCredential, mockTenantId)).returns(() => Promise.resolve(mockSubscriptions));
+		mockSubscriptionService.setup((o) => o.getSubscriptions(mockAccount, TypeMoq.It.isAny())).returns(() => Promise.resolve(mockSubscriptions));
 		mockSubscriptionFilterService.setup((o) => o.getSelectedSubscriptions(mockAccount)).returns(() => Promise.resolve(mockFilteredSubscriptions));
 
 		const accountTreeNode = new AzureResourceAccountTreeNode(mockAccount, mockAppContext, mockTreeChangeHandler.object);
@@ -289,7 +313,7 @@ describe('AzureResourceAccountTreeNode.getChildren', function (): void {
 	});
 
 	it('Should handle errors.', async function (): Promise<void> {
-		mockSubscriptionService.setup((o) => o.getSubscriptions(mockAccount, mockCredential, mockTenantId)).returns(() => Promise.resolve(mockSubscriptions));
+		mockSubscriptionService.setup((o) => o.getSubscriptions(mockAccount, TypeMoq.It.isAny())).returns(() => Promise.resolve(mockSubscriptions));
 
 		const mockError = 'Test error';
 		mockSubscriptionFilterService.setup((o) => o.getSelectedSubscriptions(mockAccount)).returns(() => { throw new Error(mockError); });
@@ -298,8 +322,7 @@ describe('AzureResourceAccountTreeNode.getChildren', function (): void {
 
 		const children = await accountTreeNode.getChildren();
 
-		should(getSecurityTokenStub.calledTwice).be.true('getSecurityToken should have been called exactly twice - once per subscription');
-		mockSubscriptionService.verify((o) => o.getSubscriptions(mockAccount, mockCredential, mockTenantId), TypeMoq.Times.once());
+		mockSubscriptionService.verify((o) => o.getSubscriptions(mockAccount, TypeMoq.It.isAny()), TypeMoq.Times.once());
 		mockSubscriptionFilterService.verify((o) => o.getSelectedSubscriptions(mockAccount), TypeMoq.Times.once());
 		mockCacheService.verify((o) => o.get(TypeMoq.It.isAnyString()), TypeMoq.Times.never());
 		mockCacheService.verify((o) => o.update(TypeMoq.It.isAnyString(), TypeMoq.It.isAny()), TypeMoq.Times.once());

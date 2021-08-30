@@ -13,6 +13,7 @@ import { IResolvedTextEditorModel } from 'vs/editor/common/services/resolverServ
 import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
 import { IUntitledTextEditorModel } from 'vs/workbench/services/untitled/common/untitledTextEditorModel';
 import { EncodingMode, IEncodingSupport } from 'vs/workbench/services/textfile/common/textfiles';
+import { EditorInputCapabilities } from 'vs/workbench/common/editor';
 
 export class UntitledQueryEditorInput extends QueryEditorInput implements IEncodingSupport {
 
@@ -61,8 +62,8 @@ export class UntitledQueryEditorInput extends QueryEditorInput implements IEncod
 		return this.text.setEncoding(encoding, mode);
 	}
 
-	override isUntitled(): boolean {
+	override get capabilities(): EditorInputCapabilities {
 		// Subclasses need to explicitly opt-in to being untitled.
-		return true;
+		return EditorInputCapabilities.Untitled;
 	}
 }

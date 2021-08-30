@@ -185,3 +185,37 @@ export class TestFlatFileProvider implements FlatFileProvider {
 	}
 
 }
+
+export function getAzureAccounts(): azdata.Account[] {
+	return [
+		{
+			isStale: false,
+			key: {
+				providerId: 'account1Provider',
+				accountId: 'account1Id'
+			},
+			displayInfo: {
+				accountType: 'account1Type',
+				contextualDisplayName: 'account1ContextualDisplayName',
+				displayName: 'account1DisplayName',
+				userId: 'account1@microsoft.com'
+			},
+			properties: {}
+		},
+		{
+			isStale: false,
+			key: {
+				providerId: 'account2Provider',
+				accountId: 'account2Id'
+			},
+			displayInfo: {
+				accountType: 'account2Type',
+				contextualDisplayName: 'account2ContextualDisplayName',
+				displayName: 'account2DisplayName',
+				userId: 'account2@microsoft.com'
+			},
+			properties: {}
+		},
+	];
+}
+

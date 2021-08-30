@@ -104,7 +104,7 @@ export class ExtHostAccountManagement extends ExtHostAccountManagementShape {
 		});
 	}
 
-	public override $getAccountSecurityToken(account: azdata.Account, tenant: string, resource: azdata.AzureResource = AzureResource.ResourceManagement): Thenable<{ token: string, azureAccountTokenExpiresOn: number }> {
+	public override $getAccountSecurityToken(account: azdata.Account, tenant: string, resource: azdata.AzureResource = AzureResource.ResourceManagement): Thenable<azdata.accounts.AccountSecurityToken> {
 		return this.getAllProvidersAndAccounts().then(providerAndAccounts => {
 			const providerAndAccount = providerAndAccounts.find(providerAndAccount => providerAndAccount.account.key.accountId === account.key.accountId);
 			if (providerAndAccount) {

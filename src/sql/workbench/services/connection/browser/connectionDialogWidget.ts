@@ -318,10 +318,12 @@ export class ConnectionDialogWidget extends Modal {
 		const divContainer = DOM.append(recentConnectionContainer, DOM.$('.server-explorer-viewlet'));
 		const treeContainer = DOM.append(divContainer, DOM.$('.explorer-servers'));
 		const leftClick = (element: any, eventish: ICancelableEvent, origin: string) => {
-			// element will be a server group if the tree is clicked rather than a item
-			const isDoubleClick = origin === 'mouse' && (eventish as MouseEvent).detail === 2;
-			this._connectionSource = 'recent';
-			this.onConnectionClick(element, isDoubleClick);
+			// element will be a server group if the blank area of the tree is clicked, we should only proceed is a connection profile is selected.
+			if (element instanceof ConnectionProfile) {
+				const isDoubleClick = origin === 'mouse' && (eventish as MouseEvent).detail === 2;
+				this._connectionSource = 'recent';
+				this.onConnectionClick(element, isDoubleClick);
+			}
 		};
 		const actionProvider = this.instantiationService.createInstance(RecentConnectionActionsProvider);
 		const controller = new RecentConnectionTreeController(leftClick, actionProvider, this.connectionManagementService, this.contextMenuService);

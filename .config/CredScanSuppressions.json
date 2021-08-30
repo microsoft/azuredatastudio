@@ -16,6 +16,10 @@
         {
           "file": ".devcontainer\\devcontainer.json",
           "_justification": "Local development environment - not used in production"
+        },
+        {
+          "file": "extensions\\asde-deployment\\notebooks\\edge\\deploy-sql-edge-remote.ipynb",
+          "_justification": "Deployment Notebook - usernames/passwords are entered by user"
         }
     ]
 }

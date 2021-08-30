@@ -24,7 +24,8 @@ export interface IInputOptions extends vsIInputBoxOptions {
 	 * to run the base VS Input Box validation logic. See validate() override
 	 * for more info.
 	 */
-	requireForceValidations?: boolean
+	requireForceValidations?: boolean;
+	required?: boolean;
 }
 
 export class InputBox extends vsInputBox {
@@ -60,6 +61,7 @@ export class InputBox extends vsInputBox {
 		if (_sqlOptions && _sqlOptions.type === 'textarea') {
 			this._isTextAreaInput = true;
 		}
+		this.required = !!this._sqlOptions.required;
 	}
 
 	public override style(styles: IInputBoxStyles): void {
@@ -121,6 +123,14 @@ export class InputBox extends vsInputBox {
 
 	public isEnabled(): boolean {
 		return !this.inputElement.hasAttribute('disabled');
+	}
+
+	public get required(): boolean {
+		return this.inputElement.required;
+	}
+
+	public set required(v: boolean) {
+		this.inputElement.required = v;
 	}
 
 	public get hideErrors(): boolean {

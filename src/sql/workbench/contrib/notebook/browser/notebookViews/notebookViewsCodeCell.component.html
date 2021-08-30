@@ -6,11 +6,11 @@
 -->
 <div style="width: 100%; height: 100%; display: flex; flex-flow: column">
 	<div style="flex: 0 0 auto; width: 100%; height: 100%; display: block">
-		<output-area-component *ngIf="cellModel.outputs && cellModel.outputs.length > 0" [cellModel]="cellModel" [activeCellId]="activeCellId">
+		<output-area-component *ngIf="viewCellModel.outputs && viewCellModel.outputs.length > 0" [cellModel]="viewCellModel" [activeCellId]="activeCellId">
 		</output-area-component>
-		<div *ngIf="!cellModel.outputs || !cellModel.outputs.length">
+		<div *ngIf="(!viewCellModel.outputs || !viewCellModel.outputs.length) && !isStdInVisible">
 			{{emptyCellText}}
 		</div>
-		<stdin-component *ngIf="isStdInVisible" [onSendInput]="inputDeferred" [stdIn]="stdIn" [cellModel]="cellModel"></stdin-component>
+		<stdin-component *ngIf="isStdInVisible" [onSendInput]="inputDeferred" [stdIn]="stdIn" [cellModel]="viewCellModel"></stdin-component>
 	</div>
 </div>
