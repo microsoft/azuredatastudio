@@ -152,7 +152,7 @@ suite('MarkdownTextTransformer', () => {
 	});
 
 	test('Ensure notebook editor returns expected object', async () => {
-		assert.deepEqual(notebookEditor, markdownTextTransformer.notebookEditor, 'Notebook editor does not match expected value');
+		assert.deepStrictEqual(notebookEditor, markdownTextTransformer.notebookEditor, 'Notebook editor does not match expected value');
 		// Set markdown text transformer to not have a notebook editor passed in
 		markdownTextTransformer = new MarkdownTextTransformer(mockNotebookService.object, cellModel);
 		assert.strictEqual(markdownTextTransformer.notebookEditor, undefined, 'No notebook editor should be returned');

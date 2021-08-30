@@ -36,24 +36,24 @@ suite('Query Runner', () => {
 		// start batch
 		const batch: BatchSummary = { id: 0, hasError: false, range: rangeSelection, resultSetSummaries: [], executionStart: '' };
 		const returnBatch = await trigger(batch, arg => runner.handleBatchStart(arg), runner.onBatchStart);
-		assert.deepEqual(returnBatch, batch);
+		assert.deepStrictEqual(returnBatch, batch);
 		// we expect the query runner to create a message sense we sent a selection
 		assert(runner.messages.length === 1);
 		// start result set
 		const result1: ResultSetSummary = { batchId: 0, id: 0, complete: false, rowCount: 0, columnInfo: [{ columnName: 'column' }] };
 		const returnResult = await trigger(result1, arg => runner.handleResultSetAvailable(arg), runner.onResultSet);
-		assert.deepEqual(returnResult, result1);
-		assert.deepEqual(runner.batchSets[0].resultSetSummaries[0], result1);
+		assert.deepStrictEqual(returnResult, result1);
+		assert.deepStrictEqual(runner.batchSets[0].resultSetSummaries[0], result1);
 		// update result set
 		const result1Update: ResultSetSummary = { batchId: 0, id: 0, complete: true, rowCount: 100, columnInfo: [{ columnName: 'column' }] };
 		const returnResultUpdate = await trigger(result1Update, arg => runner.handleResultSetUpdated(arg), runner.onResultSetUpdate);
-		assert.deepEqual(returnResultUpdate, result1Update);
-		assert.deepEqual(runner.batchSets[0].resultSetSummaries[0], result1Update);
+		assert.deepStrictEqual(returnResultUpdate, result1Update);
+		assert.deepStrictEqual(runner.batchSets[0].resultSetSummaries[0], result1Update);
 		// post message
 		const message: IResultMessage = { message: 'some message', isError: false, batchId: 0 };
 		const messageReturn = await trigger([message], arg => runner.handleMessage(arg), runner.onMessage);
-		assert.deepEqual(messageReturn[0], message);
-		assert.deepEqual(runner.messages[1], message);
+		assert.deepStrictEqual(messageReturn[0], message);
+		assert.deepStrictEqual(runner.messages[1], message);
 		// get query rows
 		const rowResults: ResultSetSubset = { rowCount: 100, rows: range(100).map(r => range(1).map(c => ({ displayValue: `${r}${c}` }))) };
 		const getRowStub = sinon.stub().returns(Promise.resolve(rowResults));

@@ -160,10 +160,10 @@ suite('Notebook Find Model', function (): void {
 		await notebookFindModel.find('markdown', false, false, max_find_count);
 
 		let expectedFindRange1 = new NotebookRange(model.cells[0], 2, 13, 2, 21);
-		assert.deepEqual(notebookFindModel.findMatches[0].range, expectedFindRange1, 'Find in markdown range is wrong :\n' + JSON.stringify(expectedFindRange1) + '\n ' + JSON.stringify(notebookFindModel.findMatches[0].range));
+		assert.deepStrictEqual(notebookFindModel.findMatches[0].range, expectedFindRange1, 'Find in markdown range is wrong :\n' + JSON.stringify(expectedFindRange1) + '\n ' + JSON.stringify(notebookFindModel.findMatches[0].range));
 
 		let expectedFindRange2 = new NotebookRange(model.cells[1], 1, 6, 1, 14);
-		assert.deepEqual(notebookFindModel.findMatches[1].range, expectedFindRange2, 'Find in markdown range is wrong :\n' + JSON.stringify(expectedFindRange2) + '\n ' + JSON.stringify(notebookFindModel.findMatches[1].range));
+		assert.deepStrictEqual(notebookFindModel.findMatches[1].range, expectedFindRange2, 'Find in markdown range is wrong :\n' + JSON.stringify(expectedFindRange2) + '\n ' + JSON.stringify(notebookFindModel.findMatches[1].range));
 	});
 
 	test('Should set selection when find matches results', async function (): Promise<void> {
@@ -176,7 +176,7 @@ suite('Notebook Find Model', function (): void {
 
 		notebookFindModel.setSelection(notebookFindModel.findMatches[0].range);
 		let expectedFindRange1 = new NotebookRange(model.cells[0], 2, 13, 2, 21);
-		assert.deepEqual(notebookFindModel.currentMatch, expectedFindRange1, 'Find failed to set selection on finding results');
+		assert.deepStrictEqual(notebookFindModel.currentMatch, expectedFindRange1, 'Find failed to set selection on finding results');
 	});
 
 	test('Should ignore hyperlink markdown data and find correctly', async function (): Promise<void> {
@@ -208,7 +208,7 @@ suite('Notebook Find Model', function (): void {
 		assert.strictEqual(notebookFindModel.findMatches.length, 1, 'Find failed on markdown link');
 
 		let expectedFindRange1 = new NotebookRange(model.cells[0], 1, 21, 1, 25);
-		assert.deepEqual(notebookFindModel.findMatches[0].range, expectedFindRange1, 'Find in markdown range is wrong :\n' + JSON.stringify(expectedFindRange1) + '\n ' + JSON.stringify(notebookFindModel.findMatches[0].range));
+		assert.deepStrictEqual(notebookFindModel.findMatches[0].range, expectedFindRange1, 'Find in markdown range is wrong :\n' + JSON.stringify(expectedFindRange1) + '\n ' + JSON.stringify(notebookFindModel.findMatches[0].range));
 
 	});
 
@@ -264,13 +264,13 @@ suite('Notebook Find Model', function (): void {
 
 		assert.strictEqual(notebookFindModel.findMatches.length, 7, 'Find failed to find number of matches correctly');
 
-		assert.deepEqual(notebookFindModel.findMatches[0].range, new NotebookRange(model.cells[0], 1, 1, 1, 4));
-		assert.deepEqual(notebookFindModel.findMatches[1].range, new NotebookRange(model.cells[0], 1, 5, 1, 8));
-		assert.deepEqual(notebookFindModel.findMatches[2].range, new NotebookRange(model.cells[0], 1, 9, 1, 12));
-		assert.deepEqual(notebookFindModel.findMatches[3].range, new NotebookRange(model.cells[0], 1, 13, 1, 16));
-		assert.deepEqual(notebookFindModel.findMatches[4].range, new NotebookRange(model.cells[0], 1, 17, 1, 20));
-		assert.deepEqual(notebookFindModel.findMatches[5].range, new NotebookRange(model.cells[0], 1, 21, 1, 24));
-		assert.deepEqual(notebookFindModel.findMatches[6].range, new NotebookRange(model.cells[0], 1, 24, 1, 27));
+		assert.deepStrictEqual(notebookFindModel.findMatches[0].range, new NotebookRange(model.cells[0], 1, 1, 1, 4));
+		assert.deepStrictEqual(notebookFindModel.findMatches[1].range, new NotebookRange(model.cells[0], 1, 5, 1, 8));
+		assert.deepStrictEqual(notebookFindModel.findMatches[2].range, new NotebookRange(model.cells[0], 1, 9, 1, 12));
+		assert.deepStrictEqual(notebookFindModel.findMatches[3].range, new NotebookRange(model.cells[0], 1, 13, 1, 16));
+		assert.deepStrictEqual(notebookFindModel.findMatches[4].range, new NotebookRange(model.cells[0], 1, 17, 1, 20));
+		assert.deepStrictEqual(notebookFindModel.findMatches[5].range, new NotebookRange(model.cells[0], 1, 21, 1, 24));
+		assert.deepStrictEqual(notebookFindModel.findMatches[6].range, new NotebookRange(model.cells[0], 1, 24, 1, 27));
 	});
 
 

@@ -125,7 +125,7 @@ suite('ExtHostModelViewDialog Tests', () => {
 		extHostModelViewDialog.$onButtonClick(button1Handle);
 
 		// Then the clicks should have been handled by the expected handlers
-		assert.deepEqual(clickEvents, [1, 2, 2, 1]);
+		assert.deepStrictEqual(clickEvents, [1, 2, 2, 1]);
 	});
 
 	test('Creating a wizard returns a wizard with initialized buttons and the given title', () => {
@@ -137,7 +137,7 @@ suite('ExtHostModelViewDialog Tests', () => {
 		assert.strictEqual(wizard.cancelButton.enabled, true);
 		assert.strictEqual(wizard.nextButton.enabled, true);
 		assert.strictEqual(wizard.backButton.enabled, true);
-		assert.deepEqual(wizard.pages, []);
+		assert.deepStrictEqual(wizard.pages, []);
 	});
 
 	test('Opening a wizard updates its pages and buttons on the main thread', () => {

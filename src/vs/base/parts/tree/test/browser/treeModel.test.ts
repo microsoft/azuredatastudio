@@ -915,7 +915,7 @@ suite('TreeModel - Traits', () => {
 			assert(model.isSelected(SAMPLE.AB.children[2]));
 
 			model.setSelection([]);
-			assert.deepEqual(model.getSelection(), []);
+			assert.deepStrictEqual(model.getSelection(), []);
 			assert.strictEqual(model.getSelection().length, 0);
 			assert(!model.isSelected(SAMPLE.AB.children[0]));
 			assert(!model.isSelected(SAMPLE.AB.children[1]));

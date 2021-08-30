@@ -408,7 +408,7 @@ suite('ConnectionStore', () => {
 		expectedProfile.options['password'] = '';
 		expectedProfile = ConnectionProfile.fromIConnectionProfile(capabilitiesService, expectedProfile).toIConnectionProfile();
 		let profileWithoutCredentials = connectionStore.getProfileWithoutPassword(profile);
-		assert.deepEqual(profileWithoutCredentials.toIConnectionProfile(), expectedProfile);
+		assert.deepStrictEqual(profileWithoutCredentials.toIConnectionProfile(), expectedProfile);
 	});
 
 	test('addPassword gets the password from the credentials service', async () => {

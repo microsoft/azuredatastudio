@@ -95,18 +95,18 @@ suite('TableDataView', () => {
 		const dataView = new TableDataView(originalData, searchFn);
 
 		let findValue = await dataView.find('row 2');
-		assert.deepEqual(findValue, { row: 2, col: 0 });
+		assert.deepStrictEqual(findValue, { row: 2, col: 0 });
 		findValue = await dataView.findNext();
-		assert.deepEqual(findValue, { row: 2, col: 1 });
+		assert.deepStrictEqual(findValue, { row: 2, col: 1 });
 		findValue = await dataView.findNext();
-		assert.deepEqual(findValue, { row: 2, col: 2 });
+		assert.deepStrictEqual(findValue, { row: 2, col: 2 });
 		findValue = await dataView.findNext();
-		assert.deepEqual(findValue, { row: 2, col: 3 });
+		assert.deepStrictEqual(findValue, { row: 2, col: 3 });
 		findValue = await dataView.findNext();
-		assert.deepEqual(findValue, { row: 2, col: 4 });
+		assert.deepStrictEqual(findValue, { row: 2, col: 4 });
 		// find will loop around once it reaches the end
 		findValue = await dataView.findNext();
-		assert.deepEqual(findValue, { row: 2, col: 0 });
+		assert.deepStrictEqual(findValue, { row: 2, col: 0 });
 	});
 
 	test('Search fails correctly', async () => {
@@ -166,12 +166,12 @@ suite('TableDataView', () => {
 		const dataView = new TableDataView(originalData, searchFn);
 
 		let findValue = await dataView.find('row 2', 2);
-		assert.deepEqual(findValue, { row: 2, col: 0 });
+		assert.deepStrictEqual(findValue, { row: 2, col: 0 });
 		findValue = await dataView.findNext();
-		assert.deepEqual(findValue, { row: 2, col: 1 });
+		assert.deepStrictEqual(findValue, { row: 2, col: 1 });
 		// find will loop around once it reaches the end
 		findValue = await dataView.findNext();
-		assert.deepEqual(findValue, { row: 2, col: 0 });
+		assert.deepStrictEqual(findValue, { row: 2, col: 0 });
 	});
 });
 

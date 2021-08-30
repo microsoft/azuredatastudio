@@ -1777,7 +1777,7 @@ suite('SQL ConnectionManagementService tests', () => {
 
 		const verifyConnections = (actualConnections: ConnectionProfile[], expectedConnectionIds: string[], scenario: string) => {
 			assert.strictEqual(actualConnections.length, expectedConnectionIds.length, 'incorrect number of connections returned, ' + scenario);
-			assert.deepEqual(actualConnections.map(conn => conn.id).sort(), expectedConnectionIds.sort(), 'connections do not match expectation, ' + scenario);
+			assert.deepStrictEqual(actualConnections.map(conn => conn.id).sort(), expectedConnectionIds.sort(), 'connections do not match expectation, ' + scenario);
 		};
 
 		// no parameter - default to false

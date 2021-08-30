@@ -57,6 +57,6 @@ describe('Tools Service Tests', function (): void {
 			return tool!;
 		});
 		toolsService.toolsForCurrentProvider = iTools;
-		assert.deepEqual(iTools, toolsService.toolsForCurrentProvider, 'toolsForCurrentProvider did not return the value we set');
+		assert.deepStrictEqual(iTools, toolsService.toolsForCurrentProvider, 'toolsForCurrentProvider did not return the value we set');
 	});
 });

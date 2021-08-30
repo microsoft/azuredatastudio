@@ -210,7 +210,7 @@ suite('NotebookViewModel', function (): void {
 		let cellMeta = notebookViews.getCellMetadata(cell);
 
 		assert(!isUndefinedOrNull(cellMeta.views.find(v => v.guid === viewModel.guid)));
-		assert.deepEqual(viewModel.getCellMetadata(cell), cellMeta.views.find(v => v.guid === viewModel.guid));
+		assert.deepStrictEqual(viewModel.getCellMetadata(cell), cellMeta.views.find(v => v.guid === viewModel.guid));
 	});
 
 	test('delete', async function (): Promise<void> {

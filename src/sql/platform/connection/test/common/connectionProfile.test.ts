@@ -180,16 +180,16 @@ suite('SQL ConnectionProfileInfo tests', () => {
 		let savedProfile = storedProfile;
 		let connectionProfile = ConnectionProfile.createFromStoredProfile(savedProfile, capabilitiesService);
 		assert.strictEqual(savedProfile.groupId, connectionProfile.groupId);
-		assert.deepEqual(savedProfile.providerName, connectionProfile.providerName);
-		assert.deepEqual(savedProfile.savePassword, connectionProfile.savePassword);
-		assert.deepEqual(savedProfile.id, connectionProfile.id);
+		assert.deepStrictEqual(savedProfile.providerName, connectionProfile.providerName);
+		assert.deepStrictEqual(savedProfile.savePassword, connectionProfile.savePassword);
+		assert.deepStrictEqual(savedProfile.id, connectionProfile.id);
 	});
 
 	test('createFromStoredProfile should set the id to new guid if not set in stored profile', () => {
 		let savedProfile: IConnectionProfileStore = Object.assign({}, storedProfile, { id: undefined });
 		let connectionProfile = ConnectionProfile.createFromStoredProfile(savedProfile, capabilitiesService);
 		assert.strictEqual(savedProfile.groupId, connectionProfile.groupId);
-		assert.deepEqual(savedProfile.providerName, connectionProfile.providerName);
+		assert.deepStrictEqual(savedProfile.providerName, connectionProfile.providerName);
 		assert.strictEqual(savedProfile.savePassword, connectionProfile.savePassword);
 		assert.notStrictEqual(connectionProfile.id, undefined);
 		assert.strictEqual(savedProfile.id, undefined);

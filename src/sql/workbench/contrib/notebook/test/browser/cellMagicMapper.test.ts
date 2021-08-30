@@ -44,10 +44,10 @@ suite('Cell Magic Mapper', function (): void {
 	test('Should find magic when magic is passed into constructor', () => {
 		cellMagicMapper = new CellMagicMapper([sampleLanguageMagicWithKernel]);
 		magic = cellMagicMapper.toLanguageMagic('sampleMagic', 'kernel1');
-		assert.deepEqual(magic, sampleLanguageMagicWithKernel, 'cell magic should match sample magic when looking for first kernel');
+		assert.deepStrictEqual(magic, sampleLanguageMagicWithKernel, 'cell magic should match sample magic when looking for first kernel');
 
 		magic = cellMagicMapper.toLanguageMagic('sampleMagic', 'kernel2');
-		assert.deepEqual(magic, sampleLanguageMagicWithKernel, 'cell magic should match sample magic when looking for second kernel');
+		assert.deepStrictEqual(magic, sampleLanguageMagicWithKernel, 'cell magic should match sample magic when looking for second kernel');
 	});
 
 	test('Should not find magic when kernel does not match', () => {
@@ -77,7 +77,7 @@ suite('Cell Magic Mapper', function (): void {
 	test('Should find magic when kernel is not passed in', () => {
 		cellMagicMapper = new CellMagicMapper([sampleLanguageMagicWithoutKernel]);
 		magic = cellMagicMapper.toLanguageMagic('sampleMagicAllKernels', 'kernel1');
-		assert.deepEqual(magic, sampleLanguageMagicWithoutKernel, 'magic should have been found when no kernel was passed in');
+		assert.deepStrictEqual(magic, sampleLanguageMagicWithoutKernel, 'magic should have been found when no kernel was passed in');
 
 		magic = cellMagicMapper.toLanguageMagic('sampleMagic1', 'kernel1');
 		assert.strictEqual(magic, undefined, 'magic should not be found, since magic name does not match');
@@ -86,12 +86,12 @@ suite('Cell Magic Mapper', function (): void {
 	test('Should find magic multiple magics exist for same kernel', () => {
 		cellMagicMapper = new CellMagicMapper([sampleLanguageMagicWithoutKernel, sampleLanguageMagicWithKernel, otherLanguageMagicWithKernel]);
 		magic = cellMagicMapper.toLanguageMagic('sampleMagicAllKernels', 'kernel2');
-		assert.deepEqual(magic, sampleLanguageMagicWithoutKernel, 'magic should have been found when no kernel was passed in');
+		assert.deepStrictEqual(magic, sampleLanguageMagicWithoutKernel, 'magic should have been found when no kernel was passed in');
 
 		magic = cellMagicMapper.toLanguageMagic('sampleMagic', 'kernel2');
-		assert.deepEqual(magic, sampleLanguageMagicWithKernel, 'magic should have been found when kernel was passed in');
+		assert.deepStrictEqual(magic, sampleLanguageMagicWithKernel, 'magic should have been found when kernel was passed in');
 
 		magic = cellMagicMapper.toLanguageMagic('otherMagic', 'kernel2');
-		assert.deepEqual(magic, otherLanguageMagicWithKernel, 'magic should have been found for second magic with kernel passed in');
+		assert.deepStrictEqual(magic, otherLanguageMagicWithKernel, 'magic should have been found for second magic with kernel passed in');
 	});
 });

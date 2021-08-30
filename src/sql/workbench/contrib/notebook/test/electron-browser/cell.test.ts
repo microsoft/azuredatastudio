@@ -1054,10 +1054,10 @@ suite('Cell Model', function (): void {
 			attachments: cellAttachment
 		};
 		let model = factory.createCell(contents, { notebook: notebookModel, isTrusted: false });
-		assert.deepEqual(model.attachments, contents.attachments, 'Attachments do not match in cellModel');
+		assert.deepStrictEqual(model.attachments, contents.attachments, 'Attachments do not match in cellModel');
 
 		let serializedCell = model.toJSON();
-		assert.deepEqual(serializedCell.attachments, cellAttachment, 'Cell attachment from JSON is incorrect');
+		assert.deepStrictEqual(serializedCell.attachments, cellAttachment, 'Cell attachment from JSON is incorrect');
 	});
 
 	test('Should not include attachments in notebook json if no attachments exist', async function () {
@@ -1071,10 +1071,10 @@ suite('Cell Model', function (): void {
 			source: ''
 		};
 		let model = factory.createCell(contents, { notebook: notebookModel, isTrusted: false });
-		assert.deepEqual(model.attachments, undefined, 'Cell model attachments should return undefined if they do not exist');
+		assert.deepStrictEqual(model.attachments, undefined, 'Cell model attachments should return undefined if they do not exist');
 
 		let serializedCell = model.toJSON();
-		assert.deepEqual(serializedCell.attachments, undefined, 'JSON should not include attachments if attachments do not exist');
+		assert.deepStrictEqual(serializedCell.attachments, undefined, 'JSON should not include attachments if attachments do not exist');
 	});
 
 	test('Should not have cache chart data after new cell created', async function () {
@@ -1088,7 +1088,7 @@ suite('Cell Model', function (): void {
 			source: ''
 		};
 		let cellModel = factory.createCell(contents, { notebook: notebookModel, isTrusted: false }) as CellModel;
-		assert.deepEqual(cellModel.previousChartState, [], 'New cell should have no previous chart state');
+		assert.deepStrictEqual(cellModel.previousChartState, [], 'New cell should have no previous chart state');
 	});
 
 	test('Should not cache chart data after clear output', async function () {
@@ -1122,15 +1122,15 @@ suite('Cell Model', function (): void {
 
 		// When I create a cell
 		let cellModel = factory.createCell(contents, { notebook: notebookModel, isTrusted: false }) as CellModel;
-		assert.deepEqual(cellModel.previousChartState, [], 'New cell should have no previous chart state');
+		assert.deepStrictEqual(cellModel.previousChartState, [], 'New cell should have no previous chart state');
 
 		// When previous chart state exists
 		cellModel[<any>'_previousChartState'] = contents.outputs[0].metadata.azdata_chartOptions;
-		assert.deepEqual(cellModel.previousChartState, contents.outputs[0].metadata.azdata_chartOptions, 'Previous chart state should be returned as is');
+		assert.deepStrictEqual(cellModel.previousChartState, contents.outputs[0].metadata.azdata_chartOptions, 'Previous chart state should be returned as is');
 
 		// When cell outputs are cleared
 		cellModel.clearOutputs();
-		assert.deepEqual(cellModel.previousChartState, [], 'Previous chart state should be erased after clearing outputs');
+		assert.deepStrictEqual(cellModel.previousChartState, [], 'Previous chart state should be erased after clearing outputs');
 
 		// Put previous chart state back
 		cellModel[<any>'_previousChartState'] = contents.outputs[0].metadata.azdata_chartOptions;
@@ -1141,7 +1141,7 @@ suite('Cell Model', function (): void {
 		// When output is generated
 		cellModel.setFuture(future.object);
 		await onIopub.handle({ channel: 'iopub', content: { data: 'Hello' }, type: 'execute_reply', metadata: contents.outputs[0].metadata, header: { msg_type: 'execute_result' } });
-		assert.deepEqual(cellModel.previousChartState, [], 'Previous chart state should not exist after cell source change');
+		assert.deepStrictEqual(cellModel.previousChartState, [], 'Previous chart state should not exist after cell source change');
 
 		// Put previous chart state back
 		cellModel[<any>'_previousChartState'] = contents.outputs[0].metadata.azdata_chartOptions;
@@ -1149,7 +1149,7 @@ suite('Cell Model', function (): void {
 		// When output is generated
 		cellModel.setFuture(future.object);
 		await onIopub.handle({ channel: 'iopub', content: { data: 'Hello' }, type: 'execute_reply', metadata: contents.outputs[0].metadata, header: { msg_type: 'execute_result' } });
-		assert.deepEqual(cellModel.previousChartState, contents.outputs[0].metadata.azdata_chartOptions, 'Previous chart state should exist after output is generated');
+		assert.deepStrictEqual(cellModel.previousChartState, contents.outputs[0].metadata.azdata_chartOptions, 'Previous chart state should exist after output is generated');
 	});
 
 	test('Should read attachments from cell contents', async function () {
@@ -1187,10 +1187,10 @@ suite('Cell Model', function (): void {
 		};
 		let model = factory.createCell(contents, { notebook: notebookModel, isTrusted: false });
 		model.addAttachment('image/png', imageFilebase64Value, 'test.png');
-		assert.deepEqual(model.attachments, attachments);
+		assert.deepStrictEqual(model.attachments, attachments);
 		attachments = { 'test.png': testImageAttachment, 'test1.png': testImageAttachment };
 		model.addAttachment('image/png', imageFilebase64Value, 'test1.png');
-		assert.deepEqual(model.attachments, attachments, 'addAttachment should add unique images');
+		assert.deepStrictEqual(model.attachments, attachments, 'addAttachment should add unique images');
 	});
 
 	test('addAttachment should not add an invalid attachment to cell', async function () {
@@ -1227,8 +1227,8 @@ suite('Cell Model', function (): void {
 		};
 		let cellModel = factory.createCell(contents, { notebook: notebookModel, isTrusted: false });
 		cellModel.addAttachment('image/png', imageFilebase64Value, 'test.png');
-		assert.deepEqual(cellModel.attachments, attachments);
+		assert.deepStrictEqual(cellModel.attachments, attachments);
 		cellModel.addAttachment('image/png', imageFilebase64Value, 'test.png');
-		assert.deepEqual(cellModel.attachments, attachments, 'addAttachment should not add duplicate images');
+		assert.deepStrictEqual(cellModel.attachments, attachments, 'addAttachment should not add duplicate images');
 	});
 });

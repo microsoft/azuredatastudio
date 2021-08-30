@@ -255,8 +255,8 @@ suite('notebook model', function (): void {
 
 		// Then I expect all cells to be in the model
 		assert.strictEqual(model.cells.length, 2);
-		assert.deepEqual(model.cells[0].source, expectedNotebookContent.cells[0].source);
-		assert.deepEqual(model.cells[1].source, expectedNotebookContent.cells[1].source);
+		assert.deepStrictEqual(model.cells[0].source, expectedNotebookContent.cells[0].source);
+		assert.deepStrictEqual(model.cells[1].source, expectedNotebookContent.cells[1].source);
 	});
 
 	test('Should handle multiple notebook managers', async function (): Promise<void> {
@@ -332,34 +332,34 @@ suite('notebook model', function (): void {
 
 		// Set the first cell as active
 		model.updateActiveCell(model.cells[0]);
-		assert.deepEqual(model.activeCell, model.cells[0], 'Active cell does not match the first cell');
-		assert.deepEqual(model.activeCell, activeCellFromEvent, 'Active cell returned from the event does not match');
+		assert.deepStrictEqual(model.activeCell, model.cells[0], 'Active cell does not match the first cell');
+		assert.deepStrictEqual(model.activeCell, activeCellFromEvent, 'Active cell returned from the event does not match');
 		assert.strictEqual(activeCellChangeCount, 1, 'Active cell change count is incorrect');
 		assert(isUndefinedOrNull(notebookContentChange), 'Content change should be undefined');
 
 
 		// Set the second cell as active
 		model.updateActiveCell(model.cells[1]);
-		assert.deepEqual(model.activeCell, model.cells[1], 'Active cell does not match expected value');
-		assert.deepEqual(model.activeCell, activeCellFromEvent, 'Active cell returned from the event does not match (2nd)');
+		assert.deepStrictEqual(model.activeCell, model.cells[1], 'Active cell does not match expected value');
+		assert.deepStrictEqual(model.activeCell, activeCellFromEvent, 'Active cell returned from the event does not match (2nd)');
 		assert.strictEqual(activeCellChangeCount, 2, 'Active cell change count is incorrect; should be 2');
 
 		// Delete the active cell
 		model.deleteCell(model.cells[1]);
 		assert(isUndefinedOrNull(model.activeCell), 'Active cell should be undefined after active cell is deleted');
-		assert.deepEqual(model.activeCell, activeCellFromEvent, 'Active cell should match value from event');
+		assert.deepStrictEqual(model.activeCell, activeCellFromEvent, 'Active cell should match value from event');
 		assert.strictEqual(activeCellChangeCount, 3, 'Active cell change count is incorrect; should be 3');
 
 		// Set the remaining cell as active
 		model.updateActiveCell(model.cells[0]);
-		assert.deepEqual(model.activeCell, activeCellFromEvent, 'Active cell should match value from event');
+		assert.deepStrictEqual(model.activeCell, activeCellFromEvent, 'Active cell should match value from event');
 		assert.strictEqual(activeCellChangeCount, 4, 'Active cell change count is incorrect; should be 4');
 
 		// Add new cell
 		let newCell = model.addCell(CellTypes.Code, 0);
 
 		// Ensure new cell is active cell
-		assert.deepEqual(model.activeCell, newCell, 'Active cell does not match newly created cell');
+		assert.deepStrictEqual(model.activeCell, newCell, 'Active cell does not match newly created cell');
 		assert.strictEqual(activeCellChangeCount, 5, 'Active cell change count is incorrect; should be 5');
 	});
 
@@ -520,7 +520,7 @@ suite('notebook model', function (): void {
 		// Delete the first cell
 		model.deleteCell(model.cells[0]);
 		assert.strictEqual(model.cells.length, 1, 'Cell model length should be 1 after cell deletion');
-		assert.deepEqual(model.cells[0].source, expectedNotebookContent.cells[1].source, 'Expected cell source is incorrect');
+		assert.deepStrictEqual(model.cells[0].source, expectedNotebookContent.cells[1].source, 'Expected cell source is incorrect');
 		assert.strictEqual(model.findCellIndex(model.cells[0]), 0, 'findCellIndex returned wrong cell info for only remaining cell');
 		assert.strictEqual(notebookContentChange.changeType, NotebookChangeType.CellsModified, 'notebookContentChange changeType is incorrect');
 		assert.strictEqual(notebookContentChange.isDirty, true, 'notebookContentChange should set dirty flag');
@@ -585,12 +585,12 @@ suite('notebook model', function (): void {
 		model.convertCellType(firstCell);
 		assert.strictEqual(firstCell.cellType, CellTypes.Markdown, 'Failed to convert cell type after conversion');
 		assert.strictEqual(firstCell.language, 'markdown', 'Language should be markdown for text cells');
-		assert.deepEqual(newCell, firstCell);
+		assert.deepStrictEqual(newCell, firstCell);
 
 		model.convertCellType(secondCell);
 		assert.strictEqual(secondCell.cellType, CellTypes.Code, 'Failed to convert second cell type');
 		assert.strictEqual(secondCell.language, 'sql', 'Language should be sql again for second cell');
-		assert.deepEqual(newCell, secondCell);
+		assert.deepStrictEqual(newCell, secondCell);
 	});
 
 	test('Should load contents but then go to error state if client session startup fails', async function (): Promise<void> {
@@ -624,7 +624,7 @@ suite('notebook model', function (): void {
 
 		assert.strictEqual(model.inErrorState, false);
 		assert.strictEqual(model.notebookManagers.length, 1);
-		assert.deepEqual(model.clientSession, mockClientSession);
+		assert.deepStrictEqual(model.clientSession, mockClientSession);
 	});
 
 	test('Should notify on trust set', async function () {
@@ -926,7 +926,7 @@ suite('notebook model', function (): void {
 		// Then I expect load to succeed
 		assert(!isUndefinedOrNull(model.clientSession), 'clientSession should exist after session is started');
 
-		assert.deepEqual(actualSession, mockClientSession, 'session returned is not the expected object');
+		assert.deepStrictEqual(actualSession, mockClientSession, 'session returned is not the expected object');
 
 		// but on server load completion I expect error state to be set
 		// Note: do not expect serverLoad event to throw even if failed
