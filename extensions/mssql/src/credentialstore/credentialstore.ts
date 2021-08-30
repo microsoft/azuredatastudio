@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { SqlOpsDataClient, ClientOptions, SqlOpsFeature } from 'dataprotocol-client';
-import { IConfig } from '@microsoft/ads-service-downloader';
+import { IConfig, ServerProvider } from '@microsoft/ads-service-downloader';
 import { ServerOptions, RPCMessageType, ClientCapabilities, ServerCapabilities, TransportKind } from 'vscode-languageclient';
 import { Disposable } from 'vscode';
 import * as UUID from 'vscode-languageclient/lib/utils/uuid';
@@ -77,15 +77,17 @@ export class CredentialStore {
 		}
 	}
 
-	public async start(): Promise<void> {
+	public start() {
+		let serverdownloader = new ServerProvider(this._config);
 		let clientOptions: ClientOptions = {
 			providerId: Constants.providerId,
 			features: [CredentialsFeature]
 		};
-		const serverPath = await Utils.getOrDownloadServer(this._config);
-		const serverOptions = this.generateServerOptions(serverPath);
-		this._client = new SqlOpsDataClient(Constants.serviceName, serverOptions, clientOptions);
-		this._client.start();
+		return serverdownloader.getOrDownloadServer().then(e => {
+			let serverOptions = this.generateServerOptions(e);
+			this._client = new SqlOpsDataClient(Constants.serviceName, serverOptions, clientOptions);
+			this._client.start();
+		});
 	}
 
 	dispose() {
