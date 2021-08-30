@@ -23,7 +23,7 @@ export class GitHubRemoteBook extends RemoteBook {
 		this.setLocalPath();
 		this.outputChannel.appendLine(loc.msgDownloadLocation(this.localPath.fsPath));
 		this.outputChannel.appendLine(loc.msgRemoteBookDownloadProgress);
-		this.createDirectory();
+		await this.createDirectory();
 		let notebookConfig = vscode.workspace.getConfiguration(constants.notebookConfigKey);
 		let downloadTimeout = notebookConfig[constants.remoteBookDownloadTimeout];
 
