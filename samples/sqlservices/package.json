@@ -44,10 +44,6 @@
       {
         "command": "sqlservices.openModelViewDashboard",
         "title": "sqlservices.openModelViewDashboard"
-      },
-      {
-        "command": "sqlservices.updateObjectExplorerNode",
-        "title": "sqlservices.updateObjectExplorerNode"
       }
     ],
     "dashboard.tabs": [
@@ -197,8 +193,8 @@
     "menus": {
       "objectExplorer/item/context": [
         {
-          "command": "sqlservices.updateObjectExplorerNode",
-          "when": "connectionProvider == TESTPROVIDER"
+          "command": "sqlservices.openDialog",
+          "when": "nodeType =~ /^(Database|Server)$/ && connectionProvider == TESTPROVIDER"
         }
       ]
     }

@@ -87,10 +87,6 @@ export default class MainController implements vscode.Disposable {
 			dashboard.openModelViewDashboard(this.context);
 		});
 
-		vscode.commands.registerCommand('sqlservices.updateObjectExplorerNode', async (context: azdata.ObjectExplorerContext) => {
-			await objectExplorer.updateNode(context);
-		});
-
 		return Promise.resolve(true);
 	}
 
