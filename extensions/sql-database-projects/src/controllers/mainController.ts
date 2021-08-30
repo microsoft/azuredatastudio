@@ -16,7 +16,6 @@ import { WorkspaceTreeItem } from 'dataworkspace';
 import * as constants from '../common/constants';
 import { SqlDatabaseProjectProvider } from '../projectProvider/projectProvider';
 import { launchAddSqlBindingQuickpick } from '../dialogs/addSqlBindingQuickpick';
-import { PackageHelper } from '../tools/packageHelper';
 
 /**
  * The main controller class that initializes the extension
@@ -24,13 +23,11 @@ import { PackageHelper } from '../tools/packageHelper';
 export default class MainController implements vscode.Disposable {
 	protected projectsController: ProjectsController;
 	protected netcoreTool: NetCoreTool;
-	protected packageHelper: PackageHelper;
 	private _outputChannel: vscode.OutputChannel = vscode.window.createOutputChannel(constants.projectsOutputChannel);
 
 	public constructor(private context: vscode.ExtensionContext) {
 		this.projectsController = new ProjectsController(this._outputChannel);
 		this.netcoreTool = new NetCoreTool(this._outputChannel);
-		this.packageHelper = new PackageHelper(this._outputChannel);
 	}
 
 	public get extensionContext(): vscode.ExtensionContext {
@@ -77,7 +74,7 @@ export default class MainController implements vscode.Disposable {
 		vscode.commands.registerCommand('sqlDatabaseProjects.changeTargetPlatform', async (node: WorkspaceTreeItem) => { await this.projectsController.changeTargetPlatform(node); });
 		vscode.commands.registerCommand('sqlDatabaseProjects.validateExternalStreamingJob', async (node: WorkspaceTreeItem) => { await this.projectsController.validateExternalStreamingJob(node); });
 
-		vscode.commands.registerCommand('sqlDatabaseProjects.addSqlBinding', async (uri: vscode.Uri | undefined) => { await launchAddSqlBindingQuickpick(uri, this.packageHelper); });
+		vscode.commands.registerCommand('sqlDatabaseProjects.addSqlBinding', async (uri: vscode.Uri | undefined) => { await launchAddSqlBindingQuickpick(uri); });
 
 		IconPathHelper.setExtensionContext(this.extensionContext);
 
