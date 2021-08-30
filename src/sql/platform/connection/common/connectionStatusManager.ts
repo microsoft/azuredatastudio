@@ -56,7 +56,7 @@ export class ConnectionStatusManager {
 		}
 		info.ownerUri = newId;
 		if (this._connections[newId]) {
-			this._logService.error(`New URI : '${newId}' is already in the connections list, cannot add URI to connection list`);
+			this._logService.error(`New URI : '${newId}' is already in the connections list.`);
 		}
 		this._connections[newId] = info;
 		delete this._connections[oldId];
