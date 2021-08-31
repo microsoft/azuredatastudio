@@ -767,6 +767,13 @@ declare module 'azdata' {
 		delete?: boolean;
 	}
 
+	export enum CardType {
+		/**
+		 * Card with the icon as a background image
+		 */
+		Image = 'Image'
+	}
+
 	export namespace workspace {
 		/**
 		 * Creates and enters a workspace at the specified location

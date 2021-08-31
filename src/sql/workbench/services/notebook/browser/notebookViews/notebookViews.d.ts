@@ -26,8 +26,9 @@ export interface INotebookViews {
 export interface INotebookView {
 	readonly guid: string;
 	readonly onDeleted: Event<INotebookView>;
-	isNew: boolean;
+	readonly onCellVisibilityChanged: Event<ICellModel>;
 
+	isNew: boolean;
 	cells: Readonly<ICellModel[]>;
 	hiddenCells: Readonly<ICellModel[]>;
 	displayedCells: Readonly<ICellModel[]>;
