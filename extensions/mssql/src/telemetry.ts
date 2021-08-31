@@ -127,11 +127,11 @@ export class LanguageClientErrorHandler implements ErrorHandler {
 	 */
 	showOnErrorPrompt(): void {
 		Telemetry.sendTelemetryEvent(Constants.serviceName + 'Crash');
-		vscode.window.showErrorMessage(
+		void vscode.window.showErrorMessage(
 			localize('serviceCrashMessage', "{0} component exited unexpectedly. Please restart Azure Data Studio.", Constants.serviceName),
 			viewKnownIssuesAction).then(action => {
 				if (action && action === viewKnownIssuesAction) {
-					vscode.env.openExternal(vscode.Uri.parse(Constants.serviceCrashLink));
+					void vscode.env.openExternal(vscode.Uri.parse(Constants.serviceCrashLink));
 				}
 			});
 	}

@@ -34,7 +34,7 @@ export class HdfsModel {
 	public fileStatus: FileStatus;
 
 	constructor(private readonly fileSource: IFileSource, private readonly path: string) {
-		this.refresh();
+		this.refresh().catch(err => console.error('Error refreshing HDFS Model ', err));
 	}
 
 	/**
@@ -117,7 +117,7 @@ export class HdfsModel {
 			);
 		} catch (error) {
 			const errMsg = localize('mssql.recursivePermissionOpError', "Error applying permission changes: {0}", (error instanceof Error ? error.message : error));
-			vscode.window.showErrorMessage(errMsg);
+			void vscode.window.showErrorMessage(errMsg);
 			op.updateStatus(azdata.TaskStatus.Failed, errMsg);
 		}
 	}
