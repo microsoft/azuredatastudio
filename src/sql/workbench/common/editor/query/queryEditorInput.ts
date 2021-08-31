@@ -19,6 +19,7 @@ import { IRange } from 'vs/editor/common/core/range';
 import { AbstractTextResourceEditorInput } from 'vs/workbench/common/editor/textResourceEditorInput';
 import { IQueryEditorConfiguration } from 'sql/platform/query/common/query';
 import { EditorInput } from 'vs/workbench/common/editor/editorInput';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 const MAX_SIZE = 13;
 
@@ -133,7 +134,8 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 		protected _results: QueryResultsInput,
 		@IConnectionManagementService private readonly connectionManagementService: IConnectionManagementService,
 		@IQueryModelService private readonly queryModelService: IQueryModelService,
-		@IConfigurationService private readonly configurationService: IConfigurationService
+		@IConfigurationService private readonly configurationService: IConfigurationService,
+		@IInstantiationService protected readonly instantiationService: IInstantiationService
 	) {
 		super();
 
@@ -207,6 +209,7 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 	protected async changeConnectionUri(newUri: string): Promise<void> {
 		this.connectionManagementService.changeConnectionUri(newUri, this.uri);
 		await this.queryModelService.changeConnectionUri(newUri, this.uri);
+		this.connectionManagementService.changeUriToProviderUri(newUri, this.uri);
 	}
 
 	// Forwarding resource functions to the inline sql file editor

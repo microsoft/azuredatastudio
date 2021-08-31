@@ -125,6 +125,11 @@ export interface IConnectionManagementService {
 	changeConnectionUri(newUri: string, oldUri: string): void
 
 	/**
+	 * Replaces uri to provider olduri map with newuri.
+	 */
+	changeUriToProviderUri(newUri: string, oldUri: string): void
+
+	/**
 	 * Finds existing connection for given profile and purpose is any exists.
 	 * The purpose is connection by default
 	 */

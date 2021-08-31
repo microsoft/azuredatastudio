@@ -7,14 +7,14 @@ import { QueryEditorInput } from 'sql/workbench/common/editor/query/queryEditorI
 import { QueryResultsInput } from 'sql/workbench/common/editor/query/queryResultsInput';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { IQueryModelService } from 'sql/workbench/services/query/common/queryModel';
-
 import { FileEditorInput } from 'vs/workbench/contrib/files/browser/editors/fileEditorInput';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { IMoveResult, GroupIdentifier } from 'vs/workbench/common/editor';
+import { IMoveResult, GroupIdentifier, ISaveOptions, IEditorInput } from 'vs/workbench/common/editor';
 import { BinaryEditorModel } from 'vs/workbench/common/editor/binaryEditorModel';
 import { EncodingMode, ITextFileEditorModel } from 'vs/workbench/services/textfile/common/textfiles';
 import { URI } from 'vs/base/common/uri';
 import { FILE_QUERY_EDITOR_TYPEID } from 'sql/workbench/common/constants';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 export class FileQueryEditorInput extends QueryEditorInput {
 
@@ -26,9 +26,10 @@ export class FileQueryEditorInput extends QueryEditorInput {
 		results: QueryResultsInput,
 		@IConnectionManagementService connectionManagementService: IConnectionManagementService,
 		@IQueryModelService queryModelService: IQueryModelService,
-		@IConfigurationService configurationService: IConfigurationService
+		@IConfigurationService configurationService: IConfigurationService,
+		@IInstantiationService instantiationService: IInstantiationService
 	) {
-		super(description, text, results, connectionManagementService, queryModelService, configurationService);
+		super(description, text, results, connectionManagementService, queryModelService, configurationService, instantiationService);
 	}
 
 	public override resolve(): Promise<ITextFileEditorModel | BinaryEditorModel> {
@@ -85,5 +86,25 @@ export class FileQueryEditorInput extends QueryEditorInput {
 
 	public override rename(group: GroupIdentifier, target: URI): IMoveResult {
 		return this.text.rename(group, target);
+	}
+
+	override async saveAs(group: GroupIdentifier, options?: ISaveOptions): Promise<IEditorInput | undefined> {
+		// Create our own FileQueryEditorInput wrapper here so that the existing state (connection, results, etc) can be transferred from this input to the new input.
+		let newEditorInput = await this.text.saveAs(group, options);
+		if (newEditorInput.resource.toString(true) === this.uri) {
+			return newEditorInput;
+		}
+		else {
+			return this.createFileQueryEditorInput(newEditorInput);
+		}
+	}
+
+	private async createFileQueryEditorInput(fileEditorInput: IEditorInput): Promise<IEditorInput | undefined> {
+		let newUri = fileEditorInput.resource.toString(true);
+		this._results.uri = newUri;
+		await this.changeConnectionUri(newUri);
+		let newInput = this.instantiationService.createInstance(FileQueryEditorInput, '', (fileEditorInput as FileEditorInput), this.results);
+		newInput.state.setState(this.state);
+		return newInput;
 	}
 }

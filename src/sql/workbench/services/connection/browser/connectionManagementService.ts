@@ -1077,6 +1077,16 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	}
 
 	/**
+	 * Replaces uri to provider olduri map with newuri.
+	 */
+	public changeUriToProviderUri(newUri: string, oldUri: string) {
+		if (this._uriToProvider[oldUri]) {
+			this._uriToProvider[newUri] = this._uriToProvider[oldUri];
+			delete this._uriToProvider[oldUri];
+		}
+	}
+
+	/**
 	 * Functions to handle the connecting life cycle
 	 */
 

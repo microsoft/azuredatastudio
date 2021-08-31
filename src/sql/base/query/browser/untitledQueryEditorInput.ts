@@ -31,9 +31,9 @@ export class UntitledQueryEditorInput extends QueryEditorInput implements IUntit
 		@IConnectionManagementService connectionManagementService: IConnectionManagementService,
 		@IQueryModelService queryModelService: IQueryModelService,
 		@IConfigurationService configurationService: IConfigurationService,
-		@IInstantiationService private readonly instantiationService: IInstantiationService,
+		@IInstantiationService instantiationService: IInstantiationService,
 	) {
-		super(description, text, results, connectionManagementService, queryModelService, configurationService);
+		super(description, text, results, connectionManagementService, queryModelService, configurationService, instantiationService);
 	}
 
 	public override resolve(): Promise<IUntitledTextEditorModel & IResolvedTextEditorModel> {
