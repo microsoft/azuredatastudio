@@ -116,7 +116,6 @@ const extensionsFilter = filter([
 	'**/agent.xlf',
 	'**/arc.xlf',
 	'**/asde-deployment.xlf',
-	'**/azdata.xlf',
 	'**/azurecore.xlf',
 	'**/azurehybridtoolkit.xlf',
 	'**/big-data-cluster.xlf',
