@@ -92,20 +92,15 @@ export class FileQueryEditorInput extends QueryEditorInput {
 	override async saveAs(group: GroupIdentifier, options?: ISaveOptions): Promise<IEditorInput | undefined> {
 		// Create our own FileQueryEditorInput wrapper here so that the existing state (connection, results, etc) can be transferred from this input to the new input.
 		let newEditorInput = await this.text.saveAs(group, options);
-		if (newEditorInput.resource.toString(true) === this.uri) {
+		let newUri = newEditorInput.resource.toString(true);
+		if (newUri === this.uri) {
 			return newEditorInput;
 		}
 		else {
-			return this.createFileQueryEditorInput(newEditorInput);
+			this._results.uri = newUri;
+			await this.changeConnectionUri(newUri);
+			this._text = newEditorInput as FileEditorInput;
+			return this;
 		}
-	}
-
-	private async createFileQueryEditorInput(fileEditorInput: IEditorInput): Promise<IEditorInput | undefined> {
-		let newUri = fileEditorInput.resource.toString(true);
-		this._results.uri = newUri;
-		await this.changeConnectionUri(newUri);
-		let newInput = this.instantiationService.createInstance(FileQueryEditorInput, '', (fileEditorInput as FileEditorInput), this.results);
-		newInput.state.setState(this.state);
-		return newInput;
 	}
 }
