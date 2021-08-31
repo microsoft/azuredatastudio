@@ -7,26 +7,29 @@
 <ng-template #templateRef>
 	<div
 		*ngIf="visible"
-		class="grid-stack-item"
-		attr.data-cell-id="{{cell.cellGuid}}"
+		[ngClass]="'grid-stack-item'"
+		attr.data-card-id="{{metadata.guid}}"
 		attr.gs-w="{{width}}"
 		attr.gs-h="{{height}}"
 		attr.gs-x="{{x}}"
 		attr.gs-y="{{y}}"
-		(click)="selectCell(cell, $event)"
 	>
 		<div
 			#item
-			class="grid-stack-item-content notebook-cell"
-			[class.active]="cell.active"
+			class="grid-stack-item-content notebook-card"
 		>
-			<div #actionbar [style.display]="showActionBar ? 'block' : 'none'" class="actionbar"></div>
 			<div class="grid-stack-content-wrapper">
 				<div class="grid-stack-content-wrapper-inner">
-					<views-code-cell-component *ngIf="cell.cellType === 'code'" [cellModel]="cell" [model]="model" [activeCellId]="activeCellId" [visible]="visible">
-					</views-code-cell-component>
-					<text-cell-component *ngIf="cell.cellType === 'markdown'" [cellModel]="cell" [model]="model" [activeCellId]="activeCellId">
-					</text-cell-component>
+					CARD!
+					<div #container>
+						<view-card-tabs-component [tabTransfer]="tabTransfer"></view-card-tabs-component>
+					</div>
+					<!--
+					<ng-container *ngFor="let cell of cells">
+						<view-cell-component #wrapper [ready]="loaded" [activeView]="activeView" [meta]="cell.metadata" [cell]="cell" [model]="model" (onChange)="onCellChanged($event)"></view-cell-component>
+						<ng-content *ngTemplateOutlet='wrapper.templateRef'></ng-content>
+					</ng-container>
+					-->
 				</div>
 			</div>
 		</div>

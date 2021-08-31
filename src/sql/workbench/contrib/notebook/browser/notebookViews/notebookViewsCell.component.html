@@ -1,0 +1,27 @@
+<!--
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+-->
+<ng-template #templateRef>
+	<div
+		*ngIf="visible"
+		attr.data-cell-id="{{cell.cellGuid}}"
+		(click)="selectCell(cell, $event)"
+	>
+		<div
+			#item
+			class="notebook-cell"
+			[class.active]="cell.active"
+		>
+			<div #actionbar [style.display]="showActionBar ? 'block' : 'none'" class="actionbar"></div>
+			<div class="cell-content-wrapper">
+					<views-code-cell-component *ngIf="cell.cellType === 'code'" [cellModel]="cell" [model]="model" [activeCellId]="activeCellId" [visible]="visible">
+					</views-code-cell-component>
+					<text-cell-component *ngIf="cell.cellType === 'markdown'" [cellModel]="cell" [model]="model" [activeCellId]="activeCellId">
+					</text-cell-component>
+			</div>
+		</div>
+	</div>
+</ng-template>

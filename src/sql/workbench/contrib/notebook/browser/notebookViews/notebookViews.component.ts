@@ -357,7 +357,10 @@ export class NotebookViewComponent extends AngularDisposable implements INoteboo
 		return editors;
 	}
 
+	/**
+	 *
+	 */
 	public get cellsAwaitingInput(): ICellModel[] {
-		return this._gridstack.hiddenItems.filter(i => this._cellsAwaitingInput.includes(i.cell)).map(i => i.cell);
+		return [];// this._gridstack.hiddenItems.filter(i => this._cellsAwaitingInput.includes(i.cell)).map(i => i.cell);
 	}
 }

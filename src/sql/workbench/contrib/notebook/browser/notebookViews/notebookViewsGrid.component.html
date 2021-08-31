@@ -5,8 +5,8 @@
  *--------------------------------------------------------------------------------------------*/
 -->
 <div class="nb-grid-stack grid-stack">
-	<ng-container *ngFor="let cell of cells">
-		<view-card-component #wrapper [ready]="loaded" [activeView]="activeView" [meta]="cell.metadata" [cell]="cell" [model]="model" (onChange)="onCellChanged($event)"></view-card-component>
+	<ng-container *ngFor="let card of cards">
+		<view-card-component #wrapper [tabTransfer]="tabTransfer" [card]="card" [ready]="loaded" [activeView]="activeView" [cells]="cells" [model]="model"></view-card-component>
 		<ng-content *ngTemplateOutlet='wrapper.templateRef'></ng-content>
 	</ng-container>
 </div>

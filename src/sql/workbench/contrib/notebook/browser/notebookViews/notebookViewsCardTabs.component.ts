@@ -2,30 +2,28 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import 'vs/css!./cellToolbar';
+import 'vs/css!./notebookViewsCardTabs';
 import { ChangeDetectorRef, Component, ElementRef, forwardRef, Inject, Input, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { AngularDisposable } from 'sql/base/browser/lifecycle';
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
-import { INotebookView, INotebookViewCard } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViews';
+import { INotebookView } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViews';
 import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
-import { DEFAULT_VIEW_CARD_HEIGHT, DEFAULT_VIEW_CARD_WIDTH } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViewModel';
 import { NotebookViewsCardTabComponent } from 'sql/workbench/contrib/notebook/browser/notebookViews/notebookViewsCardTab.components';
 import { LocalSelectionTransfer } from 'vs/workbench/browser/dnd';
 
 @Component({
-	selector: 'view-card-component',
-	templateUrl: decodeURI(require.toUrl('./notebookViewsCard.component.html'))
+	selector: 'view-card-tabs-component',
+	templateUrl: decodeURI(require.toUrl('./notebookViewsCardTabs.component.html'))
 })
-export class NotebookViewsCardComponent extends AngularDisposable implements OnInit {
+export class NotebookViewsCardTabsComponent extends AngularDisposable implements OnInit {
 	@Input() model: NotebookModel;
 	@Input() activeView: INotebookView;
 	@Input() ready: boolean;
 	@Input() cells: ICellModel[];
-	@Input() card: INotebookViewCard;
 	@Input() tabTransfer: LocalSelectionTransfer<NotebookViewsCardTabComponent>;
 
 	@ViewChild('templateRef') templateRef: TemplateRef<any>;
-	@ViewChild('item', { read: ElementRef }) private _item: ElementRef;
+	@ViewChild('tabsContainer', { read: ElementRef }) private _tabsContainer: ElementRef;
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef
@@ -42,6 +40,32 @@ export class NotebookViewsCardComponent extends AngularDisposable implements OnI
 	}
 
 	public initialize(): void {
+		/*
+		// Drop support
+		this._register(new DragAndDropObserver(this._tabsContainer.nativeElement, {
+			onDragEnter: e => {
+
+				// Always enable support to scroll while dragging
+				this._tabsContainer.nativeElement.classList.add('scroll');
+				console.log('onDragEnter');
+			},
+
+			onDragLeave: e => {
+				console.log('onDragLeave');
+				this._tabsContainer.nativeElement.classList.remove('scroll');
+			},
+
+			onDragEnd: e => {
+				console.log('onDragEnd');
+				this._tabsContainer.nativeElement.classList.remove('scroll');
+			},
+
+			onDrop: e => {
+				console.log(e.target);
+				this._tabsContainer.nativeElement.classList.remove('scroll');
+			}
+		}));
+		*/
 		this.detectChanges();
 	}
 
@@ -54,37 +78,7 @@ export class NotebookViewsCardComponent extends AngularDisposable implements OnI
 	}
 
 	get elementRef(): ElementRef {
-		return this._item;
-	}
-
-	public get metadata(): INotebookViewCard {
-		return this.card;
-	}
-
-	public get width(): number {
-		return this.metadata?.width ? this.metadata.width : DEFAULT_VIEW_CARD_WIDTH;
-	}
-
-	public get height(): number {
-		return this.metadata?.height ? this.metadata.height : DEFAULT_VIEW_CARD_HEIGHT;
-	}
-
-	public get x(): number {
-		return this.metadata?.x;
-	}
-
-	public get y(): number {
-		return this.metadata?.y;
-	}
-
-	public get visible(): boolean {
-		if (!this.activeView) {
-			return true;
-		}
-		if (!this.metadata) { //Means not initialized
-			return false;
-		}
-		return true;
+		return this._tabsContainer;
 	}
 
 	public detectChanges() {

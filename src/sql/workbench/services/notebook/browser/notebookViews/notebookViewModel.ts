@@ -6,7 +6,7 @@ import { NotebookViewsExtension } from 'sql/workbench/services/notebook/browser/
 import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { Emitter } from 'vs/base/common/event';
 import { localize } from 'vs/nls';
-import { INotebookView, INotebookViewCell } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViews';
+import { INotebookView, INotebookViewCard, INotebookViewCell } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViews';
 import { generateUuid } from 'vs/base/common/uuid';
 
 export const DEFAULT_VIEW_CARD_HEIGHT = 4;
@@ -95,6 +95,16 @@ export class NotebookViewModel implements INotebookView {
 
 	public get hiddenCells(): Readonly<ICellModel[]> {
 		return this.cells.filter(cell => this.getCellMetadata(cell)?.hidden !== false);
+	}
+
+	public get cards(): INotebookViewCard[] {
+		return [{
+			guid: '123',
+			x: 0,
+			y: 0,
+			width: 12,
+			height: 3
+		}];
 	}
 
 	public get cells(): Readonly<ICellModel[]> {

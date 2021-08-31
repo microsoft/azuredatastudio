@@ -1,0 +1,8 @@
+<div class="tabs-and-actions-container">
+	<div class="tabs-container" role="tablist" draggable="true">
+		<view-card-tab-component #wrapper [tabTransfer]="tabTransfer" title="test"></view-card-tab-component>
+		<ng-content *ngTemplateOutlet='wrapper.templateRef'></ng-content>
+		<view-card-tab-component #wrapper2 [tabTransfer]="tabTransfer" title="test2"></view-card-tab-component>
+		<ng-content *ngTemplateOutlet='wrapper2.templateRef'></ng-content>
+	</div>
+</div>

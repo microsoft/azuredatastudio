@@ -35,10 +35,13 @@ import { CellToolbarComponent } from 'sql/workbench/contrib/notebook/browser/cel
 import { NotebookEditorComponent } from 'sql/workbench/contrib/notebook/browser/notebookEditor.component';
 import { NotebookViewComponent } from 'sql/workbench/contrib/notebook/browser/notebookViews/notebookViews.component';
 import { NotebookViewsCodeCellComponent } from 'sql/workbench/contrib/notebook/browser/notebookViews/notebookViewsCodeCell.component';
-import { NotebookViewsCardComponent } from 'sql/workbench/contrib/notebook/browser/notebookViews/notebookViewsCard.component';
+import { NotebookViewsCellComponent } from 'sql/workbench/contrib/notebook/browser/notebookViews/notebookViewsCell.component';
 import { NotebookViewsGridComponent } from 'sql/workbench/contrib/notebook/browser/notebookViews/notebookViewsGrid.component';
 import { TextCellComponent } from 'sql/workbench/contrib/notebook/browser/cellViews/textCell.component';
 import { NotebookViewsModalComponent } from 'sql/workbench/contrib/notebook/browser/notebookViews/notebookViewsModal.component';
+import { NotebookViewsCardComponent } from 'sql/workbench/contrib/notebook/browser/notebookViews/notebookViewsCard.component';
+import { NotebookViewsCardTabsComponent } from 'sql/workbench/contrib/notebook/browser/notebookViews/notebookViewsCardTabs.component';
+import { NotebookViewsCardTabComponent } from 'sql/workbench/contrib/notebook/browser/notebookViews/notebookViewsCardTab.components';
 
 const outputComponentRegistry = Registry.as<ICellComponentRegistry>(OutputComponentExtensions.CellComponentContributions);
 
@@ -62,7 +65,10 @@ export const NotebookModule = (params, selector: string, instantiationService: I
 			NotebookComponent,
 			NotebookEditorComponent,
 			NotebookViewComponent,
+			NotebookViewsCellComponent,
 			NotebookViewsCardComponent,
+			NotebookViewsCardTabComponent,
+			NotebookViewsCardTabsComponent,
 			NotebookViewsGridComponent,
 			NotebookViewsCodeCellComponent,
 			NotebookViewsModalComponent,
@@ -77,7 +83,7 @@ export const NotebookModule = (params, selector: string, instantiationService: I
 		entryComponents: [
 			NotebookEditorComponent,
 			TextCellComponent,
-			NotebookViewsCardComponent,
+			NotebookViewsCellComponent,
 			...outputComponents
 		],
 		imports: [
