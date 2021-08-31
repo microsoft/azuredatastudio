@@ -272,7 +272,7 @@ export class QueryManagementService implements IQueryManagementService {
 		let item = this._queryRunners.get(oldUri);
 		this._queryRunners.set(newUri, item);
 		this._queryRunners.delete(oldUri);
-		return this._runAction(oldUri, (runner) => {
+		return this._runAction(newUri, (runner) => {
 			return runner.connectionUriChanged(newUri, oldUri);
 		});
 	}
