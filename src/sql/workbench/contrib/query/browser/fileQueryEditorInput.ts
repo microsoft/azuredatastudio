@@ -90,7 +90,7 @@ export class FileQueryEditorInput extends QueryEditorInput {
 	}
 
 	override async saveAs(group: GroupIdentifier, options?: ISaveOptions): Promise<IEditorInput | undefined> {
-		// Create our own FileQueryEditorInput wrapper here so that the existing state (connection, results, etc) can be transferred from this input to the new input.
+		// Handle saveAs when new location URI is different from the current URI.
 		let newEditorInput = await this.text.saveAs(group, options);
 		let newUri = newEditorInput.resource.toString(true);
 		if (newUri === this.uri) {
@@ -99,8 +99,11 @@ export class FileQueryEditorInput extends QueryEditorInput {
 		else {
 			this._results.uri = newUri;
 			await this.changeConnectionUri(newUri);
-			this._text = newEditorInput as FileEditorInput;
-			return this;
+			// Create a new FileQueryEditorInput with current results and state in order to trigger a rename for editor tab name.
+			// (Tab name won't refresh automatically if current input is reused directly)
+			let newFileQueryInput = this.instantiationService.createInstance(FileQueryEditorInput, '', (newEditorInput as FileEditorInput), this.results);
+			newFileQueryInput.state.setState(this.state);
+			return newFileQueryInput;
 		}
 	}
 }
