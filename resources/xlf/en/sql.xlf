@@ -3202,8 +3202,8 @@ Error: {1}</source>
     <trans-unit id="insertCellsModal.Insert">
       <source xml:lang="en">Insert</source>
     </trans-unit>
-    <trans-unit id="insertCellsModal.selectCells">
-      <source xml:lang="en">Select cell sources</source>
+    <trans-unit id="insertCellsModal.cellTitle">
+      <source xml:lang="en">Cell {0}</source>
     </trans-unit>
     <trans-unit id="insertCellsModal.thumbnailError">
       <source xml:lang="en">Error: Unable to generate thumbnails.</source>

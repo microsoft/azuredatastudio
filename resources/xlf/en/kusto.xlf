@@ -169,6 +169,21 @@
     <trans-unit id="kusto.connectionOptions.failoverPartner.displayName">
       <source xml:lang="en">Failover partner</source>
     </trans-unit>
+    <trans-unit id="kusto.connectionOptions.groupName.connectionResiliency">
+      <source xml:lang="en">Connection Resiliency</source>
+    </trans-unit>
+    <trans-unit id="kusto.connectionOptions.groupName.context">
+      <source xml:lang="en">Context</source>
+    </trans-unit>
+    <trans-unit id="kusto.connectionOptions.groupName.initialization">
+      <source xml:lang="en">Initialization</source>
+    </trans-unit>
+    <trans-unit id="kusto.connectionOptions.groupName.security">
+      <source xml:lang="en">Security</source>
+    </trans-unit>
+    <trans-unit id="kusto.connectionOptions.groupName.source">
+      <source xml:lang="en">Source</source>
+    </trans-unit>
     <trans-unit id="kusto.connectionOptions.password.description">
       <source xml:lang="en">Indicates the password to be used when connecting to the data source</source>
     </trans-unit>

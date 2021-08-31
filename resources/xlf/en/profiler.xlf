@@ -29,4 +29,27 @@
       <source xml:lang="en">Start New Profiler Session</source>
     </trans-unit>
 </body></file>
+  <file original="extensions/profiler/package" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="description">
+      <source xml:lang="en">SQL Server Profiler for Azure Data Studio</source>
+    </trans-unit>
+    <trans-unit id="displayName">
+      <source xml:lang="en">SQL Server Profiler</source>
+    </trans-unit>
+    <trans-unit id="profiler.category">
+      <source xml:lang="en">Profiler</source>
+    </trans-unit>
+    <trans-unit id="profiler.contributes.title.newProfler">
+      <source xml:lang="en">Launch Profiler</source>
+    </trans-unit>
+    <trans-unit id="profiler.contributes.title.openCreateSessionDialog">
+      <source xml:lang="en">Create Profiler Season</source>
+    </trans-unit>
+    <trans-unit id="profiler.contributes.title.start">
+      <source xml:lang="en">Start</source>
+    </trans-unit>
+    <trans-unit id="profiler.contributes.title.stop">
+      <source xml:lang="en">Stop</source>
+    </trans-unit>
+</body></file>
 </xliff>
