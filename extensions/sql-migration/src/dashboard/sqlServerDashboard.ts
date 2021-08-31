@@ -79,7 +79,7 @@ export class DashboardWidget {
 				CSSStyles: {
 					'background-image': `
 						url(${vscode.Uri.file(<string>IconPathHelper.migrationDashboardHeaderBackground.light)}),
-						linear-gradient(360deg, rgba(127, 181, 239, 0.15) 0%, rgba(242, 242, 242, 0) 42.2%, rgba(242, 242, 242, 0.0572917) 42.2%)
+						linear-gradient(0deg, rgba(127, 181, 239, 0.15) 0%, rgba(242, 242, 242, 0.0572917) 42.2%)
 					`,
 					'background-repeat': 'no-repeat',
 					'background-position': '91.06% 100%'
