@@ -49,17 +49,19 @@ export class UntitledQueryEditorInput extends QueryEditorInput implements IUntit
 	}
 
 	override async save(group: GroupIdentifier, options?: ISaveOptions): Promise<IEditorInput | undefined> {
+		// Create our own FileQueryEditorInput wrapper here so that the existing state (connection, results, etc) can be transferred from this input to the new file input.
 		let newEditorInput = await this.text.save(group, options);
-		return this.saveProcess(newEditorInput);
+		return this.createFileQueryEditorInput(newEditorInput);
 
 	}
 
 	override async saveAs(group: GroupIdentifier, options?: ISaveOptions): Promise<IEditorInput | undefined> {
+		// Create our own FileQueryEditorInput wrapper here so that the existing state (connection, results, etc) can be transferred from this input to the new file input.
 		let newEditorInput = await this.text.saveAs(group, options);
-		return this.saveProcess(newEditorInput);
+		return this.createFileQueryEditorInput(newEditorInput);
 	}
 
-	private async saveProcess(fileEditorInput: IEditorInput): Promise<IEditorInput | undefined> {
+	private async createFileQueryEditorInput(fileEditorInput: IEditorInput): Promise<IEditorInput | undefined> {
 		let newUri = fileEditorInput.resource.toString(true);
 		this._results.uri = newUri;
 		await this.changeConnectionUri(newUri);
