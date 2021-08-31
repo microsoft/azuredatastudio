@@ -241,10 +241,6 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 		return this.text.save(group, options);
 	}
 
-	override saveAs(group: GroupIdentifier, options?: ISaveOptions): Promise<IEditorInput | undefined> {
-		return this.text.saveAs(group, options);
-	}
-
 	// Called to get the tooltip of the tab
 	public override getTitle(): string {
 		return this.getName(true);
