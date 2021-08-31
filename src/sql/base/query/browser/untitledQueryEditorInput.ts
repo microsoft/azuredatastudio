@@ -61,7 +61,7 @@ export class UntitledQueryEditorInput extends QueryEditorInput implements IUntit
 		return this.createFileQueryEditorInput(newEditorInput);
 	}
 
-	private async createFileQueryEditorInput(fileEditorInput: IEditorInput): Promise<IEditorInput | undefined> {
+	private async createFileQueryEditorInput(fileEditorInput: IEditorInput): Promise<IEditorInput> {
 		let newUri = fileEditorInput.resource.toString(true);
 		this._results.uri = newUri;
 		await this.changeConnectionUri(newUri);
