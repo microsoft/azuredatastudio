@@ -980,6 +980,7 @@ declare module 'azdata' {
 	export interface ExecutionPlanOptions {
 		displayEstimatedQueryPlan?: boolean | undefined;
 		displayActualQueryPlan?: boolean | undefined;
+		maxCharsToStore?: number | undefined;
 	}
 
 	export interface SimpleExecuteParams {

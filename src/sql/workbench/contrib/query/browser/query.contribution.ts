@@ -402,6 +402,11 @@ const queryEditorConfiguration: IConfigurationNode = {
 			'description': localize('queryEditor.results.openAfterSave', "Whether to open the file in Azure Data Studio after the result is saved."),
 			'default': true
 		},
+		'queryEditor.results.maxCharsToStore': {
+			'type': 'number',
+			'default': 65535,
+			'description': localize('queryEditor.results.maxCharsToStore', "Maximum characters to store when running a query")
+		},
 		'queryEditor.messages.showBatchTime': {
 			'type': 'boolean',
 			'description': localize('queryEditor.messages.showBatchTime', "Should execution time be shown for individual batches"),
