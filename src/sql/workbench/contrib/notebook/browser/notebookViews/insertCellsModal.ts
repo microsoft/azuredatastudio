@@ -149,7 +149,8 @@ export class InsertCellsModal extends Modal {
 			cellsAvailableToInsert.map(async (cell) => {
 				return {
 					id: cell.cellGuid,
-					path: await this.generateScreenshot(cell)
+					path: await this.generateScreenshot(cell),
+					title: localize("insertCellsModal.cellTitle", "Cell {0}", Number.parseInt(cell.id) + 1)
 				} as Thumbnail;
 			})
 		);

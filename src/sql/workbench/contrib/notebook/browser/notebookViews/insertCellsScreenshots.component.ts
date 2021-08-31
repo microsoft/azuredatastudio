@@ -8,7 +8,6 @@ import { IBootstrapParams } from 'sql/workbench/services/bootstrap/common/bootst
 import { IComponentEventArgs } from 'sql/platform/dashboard/browser/interfaces';
 import CardComponent, { CardType } from 'sql/workbench/browser/modelComponents/card.component';
 import { URI } from 'vs/base/common/uri';
-import { localize } from 'vs/nls';
 
 
 export interface LayoutRequestParams {
@@ -18,7 +17,8 @@ export interface LayoutRequestParams {
 
 export interface Thumbnail {
 	id: string,
-	path: string
+	path: string,
+	title: string
 }
 
 export interface InsertCellsComponentParams extends IBootstrapParams {
@@ -45,7 +45,7 @@ export class InsertCellsScreenshots implements AfterViewInit {
 			let cardComponentFactory = this._componentFactoryResolver.resolveComponentFactory(CardComponent);
 			let cardComponent = this._containerRef.createComponent(cardComponentFactory);
 
-			cardComponent.instance.setProperties({ iconPath: cellImageUri, label: localize("insertCellsScreenshots.cellTitle", "Cell {0}", idx + 1), value: thumbnail.id, cardType: CardType.Image });
+			cardComponent.instance.setProperties({ iconPath: cellImageUri, label: thumbnail.title, value: thumbnail.id, cardType: CardType.Image });
 
 			cardComponent.instance.enabled = true;
 			cardComponent.instance.registerEventHandler(e => this._params.onClick(e));
