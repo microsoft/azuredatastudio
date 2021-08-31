@@ -205,6 +205,6 @@ export function registerAzureResourceCommands(appContext: AppContext, azureViewT
 		}
 
 		const urlToOpen = `${connectionProfile.azurePortalEndpoint}//${connectionProfile.azureTenantId}/#resource/${connectionProfile.azureResourceId}`;
-		return vscode.env.openExternal(vscode.Uri.parse(urlToOpen));
+		await vscode.env.openExternal(vscode.Uri.parse(urlToOpen));
 	});
 }
