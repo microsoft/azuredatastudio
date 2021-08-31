@@ -914,16 +914,16 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 					let connectionResultPromise = this.connect(profile, uri);
 					this._uriToReconnectPromiseMap[uri] = connectionResultPromise;
 					let connectionResult = await connectionResultPromise;
-					delete this._uriToReconnectPromiseMap[uri];
 					if (!connectionResult || !connectionResult.connected) {
 						this._logService.error(`Failed to refresh connection ${profile.id} with uri ${uri}, result: ${connectionResult}`);
-						await this.disconnect(profile);
-						return false;
+						throw new Error(`Connection Result: ${connectionResult}, error msg: ${connectionResult.errorMessage}, error code: ${connectionResult.errorCode}`);
 					}
 					this._logService.info(`Successfully refreshed token for connection ${profile.id} with uri ${uri}, result: ${connectionResult.connected} ${connectionResult.connectionProfile}, isConnected: ${this.isConnected(uri)}, ${this._connectionStatusManager.getConnectionProfile(uri)}`);
 					return true;
 				} catch (err) {
 					return Promise.reject(err);
+				} finally {
+					delete this._uriToReconnectPromiseMap[uri];
 				}
 			}
 			this._logService.info(`No need to refresh Azure acccount token for connection ${profile.id} with uri ${uri}`);
