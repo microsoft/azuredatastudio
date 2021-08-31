@@ -95,40 +95,40 @@ suite('SQL ConnectionStatusManager tests', () => {
 		let id: string = 'invalid id';
 		let expected = undefined;
 		let actual = connections.findConnection(id);
-		assert.equal(actual, expected);
+		assert.strictEqual(actual, expected);
 	});
 
 	test('findConnection should return connection given valid id', () => {
 		let id: string = connection1Id;
 		let actual = connections.findConnection(id);
-		assert.equal(connectionProfileObject.matches(actual!.connectionProfile), true);
+		assert.strictEqual(connectionProfileObject.matches(actual!.connectionProfile), true);
 	});
 
 	test('getConnectionProfile should return undefined given invalid id', () => {
 		let id: string = 'invalid id';
 		let expected = undefined;
 		let actual = connections.getConnectionProfile(id);
-		assert.equal(actual, expected);
+		assert.strictEqual(actual, expected);
 	});
 
 	test('getConnectionProfile should return connection given valid id', () => {
 		let id: string = connection1Id;
 		let actual = connections.getConnectionProfile(id);
-		assert.equal(connectionProfileObject.matches(actual!), true);
+		assert.strictEqual(connectionProfileObject.matches(actual!), true);
 	});
 
 	test('hasConnection should return false given invalid id', () => {
 		let id: string = 'invalid id';
 		let expected = false;
 		let actual = connections.hasConnection(id);
-		assert.equal(actual, expected);
+		assert.strictEqual(actual, expected);
 	});
 
 	test('hasConnection should return true given valid id', () => {
 		let id: string = connection1Id;
 		let expected = true;
 		let actual = connections.hasConnection(id);
-		assert.equal(actual, expected);
+		assert.strictEqual(actual, expected);
 	});
 
 	test('addConnection should set connecting to true', () => {
@@ -144,7 +144,7 @@ suite('SQL ConnectionStatusManager tests', () => {
 		};
 		connections.onConnectionComplete(summary);
 		let actual = connections.addConnection(connectionProfile, connection1Id).connecting;
-		assert.equal(actual, expected);
+		assert.strictEqual(actual, expected);
 	});
 
 	test('onConnectionComplete should set connecting to false', () => {
@@ -160,9 +160,9 @@ suite('SQL ConnectionStatusManager tests', () => {
 		};
 		connections.onConnectionComplete(summary);
 		let actual = connections.findConnection(connection1Id)!.connecting;
-		assert.equal(actual, expected);
+		assert.strictEqual(actual, expected);
 		actual = connections.isConnecting(connection1Id);
-		assert.equal(actual, expected);
+		assert.strictEqual(actual, expected);
 	});
 
 	test('updateConnection should update the connection info', () => {
@@ -176,9 +176,9 @@ suite('SQL ConnectionStatusManager tests', () => {
 		let newId = Utils.generateUri(updatedConnection);
 		let actual = connections.getConnectionProfile(newId)!.groupId;
 		let actualConnectionId = connections.getConnectionProfile(newId)!.id;
-		assert.equal(actual, expected);
-		assert.equal(actualId, newId);
-		assert.equal(actualConnectionId, expectedConnectionId);
+		assert.strictEqual(actual, expected);
+		assert.strictEqual(actualId, newId);
+		assert.strictEqual(actualConnectionId, expectedConnectionId);
 	});
 
 	test('updateDatabaseName should update the database name in connection', () => {
@@ -204,7 +204,7 @@ suite('SQL ConnectionStatusManager tests', () => {
 		//Verify database name changed after connection is complete
 		connections.updateDatabaseName(summary);
 		connectionStatus = connections.findConnection(connection3Id);
-		assert.equal(connectionStatus!.connectionProfile.databaseName, dbName);
+		assert.strictEqual(connectionStatus!.connectionProfile.databaseName, dbName);
 	});
 
 	test('getOriginalOwnerUri should return the original uri given uri with db name', () => {
@@ -234,13 +234,13 @@ suite('SQL ConnectionStatusManager tests', () => {
 
 		//The uri assigned to connection without db name should be the original one
 		let connectionWitDbStatus = connections.getOriginalOwnerUri(ownerUriWithDbName);
-		assert.equal(connectionWitDbStatus, connection3Id);
+		assert.strictEqual(connectionWitDbStatus, connection3Id);
 	});
 
 	test('getOriginalOwnerUri should return given uri if the original uri is the same as the given uri', () => {
 
 		let connectionStatus = connections.getOriginalOwnerUri(connection2Id);
-		assert.equal(connectionStatus, connection2Id);
+		assert.strictEqual(connectionStatus, connection2Id);
 	});
 
 	test('getActiveConnectionProfiles should return a list of all the unique connections that the status manager knows about', () => {
@@ -254,7 +254,7 @@ suite('SQL ConnectionStatusManager tests', () => {
 
 		// Get the connections and verify that the duplicate is only returned once
 		let activeConnections = connections.getActiveConnectionProfiles();
-		assert.equal(activeConnections.length, 4);
-		assert.equal(activeConnections.filter(connection => connection.matches(newConnection)).length, 1, 'Did not find newConnection in active connections');
+		assert.strictEqual(activeConnections.length, 4);
+		assert.strictEqual(activeConnections.filter(connection => connection.matches(newConnection)).length, 1, 'Did not find newConnection in active connections');
 	});
 });

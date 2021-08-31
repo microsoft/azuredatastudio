@@ -41,12 +41,12 @@ let expectedNotebookContent: nb.INotebookContents = {
 let notebookContentString = JSON.stringify(expectedNotebookContent);
 
 function verifyMatchesExpectedNotebook(notebook: nb.INotebookContents): void {
-	assert.equal(notebook.cells.length, 1, 'Expected 1 cell');
-	assert.equal(notebook.cells[0].cell_type, CellTypes.Code);
-	assert.equal(notebook.cells[0].source, expectedNotebookContent.cells[0].source);
-	assert.equal(notebook.metadata.kernelspec.name, expectedNotebookContent.metadata.kernelspec.name);
-	assert.equal(notebook.nbformat, expectedNotebookContent.nbformat);
-	assert.equal(notebook.nbformat_minor, expectedNotebookContent.nbformat_minor);
+	assert.strictEqual(notebook.cells.length, 1, 'Expected 1 cell');
+	assert.strictEqual(notebook.cells[0].cell_type, CellTypes.Code);
+	assert.strictEqual(notebook.cells[0].source, expectedNotebookContent.cells[0].source);
+	assert.strictEqual(notebook.metadata.kernelspec.name, expectedNotebookContent.metadata.kernelspec.name);
+	assert.strictEqual(notebook.nbformat, expectedNotebookContent.nbformat);
+	assert.strictEqual(notebook.nbformat_minor, expectedNotebookContent.nbformat_minor);
 }
 
 suite('Local Content Manager', function (): void {
@@ -136,23 +136,23 @@ suite('Local Content Manager', function (): void {
 		let notebook = await contentManager.getNotebookContents(URI.file(localFile));
 		// then I expect output to have been normalized into a single string
 		let displayOutput = <nb.IDisplayData>notebook.cells[0].outputs[0];
-		assert.equal(displayOutput.data['text/html'], '<div></div>');
+		assert.strictEqual(displayOutput.data['text/html'], '<div></div>');
 	});
 
 	test('Should create a new empty notebook if content is undefined', async function (): Promise<void> {
 		// verify that when loading content from an empty string, a new notebook is created.
 		let content = await contentManager.loadFromContentString(undefined);
-		assert.equal(content.metadata, undefined, 'Verify that metadata is undefined');
+		assert.strictEqual(content.metadata, undefined, 'Verify that metadata is undefined');
 		// verify that the notebook is empty
-		assert.equal(content.cells.length, 0, 'Notebook should be empty, so the number of cells should be 0');
+		assert.strictEqual(content.cells.length, 0, 'Notebook should be empty, so the number of cells should be 0');
 	});
 
 	test('Should create a new empty notebook if content is an empty string', async function (): Promise<void> {
 		// verify that when loading content from an empty string, a new notebook is created.
 		let content = await contentManager.loadFromContentString('');
-		assert.equal(content.metadata, undefined, 'Verify that metadata is undefined');
+		assert.strictEqual(content.metadata, undefined, 'Verify that metadata is undefined');
 		// verify that the notebook is empty
-		assert.equal(content.cells.length, 0, 'Notebook should be empty, so the number of cells should be 0');
+		assert.strictEqual(content.cells.length, 0, 'Notebook should be empty, so the number of cells should be 0');
 	});
 
 	test('Should create a markdown cell', async function (): Promise<void> {
@@ -176,9 +176,9 @@ suite('Local Content Manager', function (): void {
 		let notebook = await contentManager.loadFromContentString(markdownNotebookContent);
 		// assert that markdown cell is supported by
 		// verifying the notebook matches the expectedNotebookMarkdownContent format
-		assert.equal(notebook.cells.length, 1, 'The number of cells should be equal to 1');
-		assert.equal(notebook.cells[0].cell_type, CellTypes.Markdown, 'The cell type should be markdown');
-		assert.equal(notebook.cells[0].source, expectedNotebookMarkdownContent.cells[0].source, 'The content of the cell must match the expectedNotebookMarkdownContent');
+		assert.strictEqual(notebook.cells.length, 1, 'The number of cells should be equal to 1');
+		assert.strictEqual(notebook.cells[0].cell_type, CellTypes.Markdown, 'The cell type should be markdown');
+		assert.strictEqual(notebook.cells[0].source, expectedNotebookMarkdownContent.cells[0].source, 'The content of the cell must match the expectedNotebookMarkdownContent');
 	});
 
 	test('Should allow stream for output types', async function (): Promise<void> {
@@ -208,7 +208,7 @@ suite('Local Content Manager', function (): void {
 		let streamOutputContent = JSON.stringify(expectedNotebookStreamOutputContent);
 		// Verify that the stream output type is supported
 		let notebook = await contentManager.loadFromContentString(streamOutputContent);
-		assert.equal(notebook.cells[0].outputs[0].output_type, 'stream', 'Cell output from notebook should be stream');
-		assert.equal(notebook.cells[0].cell_type, expectedNotebookStreamOutputContent.cells[0].cell_type, 'Cell type of notebook should match the expectedNotebookStreamOutputContent');
+		assert.strictEqual(notebook.cells[0].outputs[0].output_type, 'stream', 'Cell output from notebook should be stream');
+		assert.strictEqual(notebook.cells[0].cell_type, expectedNotebookStreamOutputContent.cells[0].cell_type, 'Cell type of notebook should match the expectedNotebookStreamOutputContent');
 	});
 });

@@ -263,7 +263,7 @@ suite('Test class NotebookEditor:', () => {
 			changeDecorationsCalled = true;
 			return returnObject;
 		});
-		assert.notEqual(changeDecorationsCalled, true, `changeDecorations callback should not have been called`);
+		assert.notStrictEqual(changeDecorationsCalled, true, `changeDecorations callback should not have been called`);
 		assert.notStrictEqual(result, returnObject, 'object returned by the callback given to changeDecorations() call must not be returned by it');
 		assert.strictEqual(result, null, 'return value of changeDecorations() call must be null when no input is set on notebookEditor object');
 	});

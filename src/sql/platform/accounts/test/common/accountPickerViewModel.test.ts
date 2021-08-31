@@ -61,7 +61,7 @@ suite('Account picker view model tests', () => {
 
 		// Then:
 		// ... The event for the view models should be properly initialized
-		assert.notEqual(vm.updateAccountListEvent, undefined);
+		assert.notStrictEqual(vm.updateAccountListEvent, undefined);
 
 		// ... The event should properly fire
 		let argUpdateAccounts: UpdateAccountListEventParams = { providerId: providers[0].id, accountList: accounts };
@@ -89,8 +89,8 @@ suite('Account picker view model tests', () => {
 
 				// ... The results that were returned should be an array of account
 				assert.ok(Array.isArray(results));
-				assert.equal(results.length, 2);
-				assert.equal(results, accounts);
+				assert.strictEqual(results.length, 2);
+				assert.strictEqual(results, accounts);
 			});
 	});
 
@@ -112,7 +112,7 @@ suite('Account picker view model tests', () => {
 
 				// ... The results should be an empty array
 				assert.ok(Array.isArray(result));
-				assert.equal(result.length, 0);
+				assert.strictEqual(result.length, 0);
 			});
 	});
 });
