@@ -124,6 +124,12 @@
           "OutputPath": "resources\\xlf"
         },
 		{
+          "SourceFile": "resources\\xlf\\en\\server-report.xlf",
+          "LclFile": "resources\\localization\\LCL\\{Lang}\\server-report.xlf.lcl",
+          "CopyOption": "LangIDOnPath",
+          "OutputPath": "resources\\xlf"
+        },
+		{
           "SourceFile": "resources\\xlf\\en\\sql-assessment.xlf",
           "LclFile": "resources\\localization\\LCL\\{Lang}\\sql-assessment.xlf.lcl",
           "CopyOption": "LangIDOnPath",
