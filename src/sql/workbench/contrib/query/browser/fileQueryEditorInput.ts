@@ -7,6 +7,7 @@ import { QueryEditorInput } from 'sql/workbench/common/editor/query/queryEditorI
 import { QueryResultsInput } from 'sql/workbench/common/editor/query/queryResultsInput';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { IQueryModelService } from 'sql/workbench/services/query/common/queryModel';
+
 import { FileEditorInput } from 'vs/workbench/contrib/files/browser/editors/fileEditorInput';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IMoveResult, GroupIdentifier, ISaveOptions, IEditorInput } from 'vs/workbench/common/editor';
