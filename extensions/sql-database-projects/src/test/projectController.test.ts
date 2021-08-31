@@ -572,6 +572,7 @@ describe('ProjectsController', function (): void {
 					{ systemDb: SystemDatabase.master, databaseName: 'master', suppressMissingDependenciesErrors: false },
 					{ treeDataProvider: new SqlDatabaseProjectTreeViewProvider(), element: undefined });
 			});
+			addDbReferenceDialog.setup(x => x.openDialog()).returns(() => Promise.resolve());
 
 			const projController = TypeMoq.Mock.ofType(ProjectsController);
 			projController.callBase = true;
