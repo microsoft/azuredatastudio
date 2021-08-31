@@ -21,8 +21,8 @@ export interface ILocalSettingsJson {
 
 /**
  * copied and modified from vscode-azurefunctions extension
- * @param localSettingsPath
- * @returns
+ * @param localSettingsPath full path to local.settings.json
+ * @returns settings in local.settings.json
  */
 export async function getLocalSettingsJson(localSettingsPath: string): Promise<ILocalSettingsJson> {
 	if (await fse.pathExists(localSettingsPath)) {
@@ -43,7 +43,7 @@ export async function getLocalSettingsJson(localSettingsPath: string): Promise<I
 }
 
 /**
- * Gets the Azure Functions project that contains the given file
+ * Gets the Azure Functions project that contains the given file if the project is open in one of the workspace folders
  * @param filePath file that the containing project needs to be found for
  * @returns filepath of project or undefined if project couldn't be found
  */
