@@ -15,7 +15,7 @@ import { MigrationLocalStorage } from './migrationLocalStorage';
 import * as nls from 'vscode-nls';
 import { v4 as uuidv4 } from 'uuid';
 import { sendSqlMigrationActionEvent, TelemetryAction, TelemetryViews } from '../telemtery';
-import { hashString } from '../api/utils';
+import { hashString, deepClone } from '../api/utils';
 const localize = nls.loadMessageBundle();
 
 export enum State {
@@ -97,6 +97,19 @@ export interface StateChangeEvent {
 	newState: State;
 }
 
+export interface SavedInfo {
+	closedPage: number;
+	serverAssessment: ServerAssessment | null;
+	azureAccount: azdata.Account | null;
+	selectedDatabases: azdata.DeclarativeTableCellValue[][];
+	migrationTargetType: MigrationTargetType | null;
+	migrationDatabases: azdata.DeclarativeTableCellValue[][];
+	subscription: azureResource.AzureResourceSubscription | null;
+	location: azureResource.AzureLocation | null;
+	resourceGroup: azureResource.AzureResourceResourceGroup | null;
+}
+
+
 export class MigrationStateModel implements Model, vscode.Disposable {
 	public _azureAccounts!: azdata.Account[];
 	public _azureAccount!: azdata.Account;
@@ -137,7 +150,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	private _gatheringInformationError: string | undefined;
 
 	private _skuRecommendations: SKURecommendations | undefined;
-	public _assessmentResults!: ServerAssessement;
+	public _assessmentResults!: ServerAssessment;
 	public _runAssessments: boolean = true;
 	private _assessmentApiResponse!: mssql.AssessmentResult;
 
@@ -146,6 +159,9 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	public _targetType!: MigrationTargetType;
 	public refreshDatabaseBackupPage!: boolean;
 
+	public resumeAssessment!: boolean;
+	public savedInfo!: SavedInfo;
+	public closedPage!: number;
 	public _sessionId: string = uuidv4();
 
 	public excludeDbs: string[] = [
@@ -154,9 +170,11 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		'msdb',
 		'model'
 	];
+	public serverName!: string;
+	public databaseSelectorTableValues!: azdata.DeclarativeTableCellValue[][];
 
 	constructor(
-		private readonly _extensionContext: vscode.ExtensionContext,
+		public extensionContext: vscode.ExtensionContext,
 		private readonly _sourceConnectionId: string,
 		public readonly migrationService: mssql.ISqlMigrationService
 	) {
@@ -185,7 +203,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		return finalResult;
 	}
 
-	public async getDatabaseAssessments(targetType: MigrationTargetType): Promise<ServerAssessement> {
+	public async getDatabaseAssessments(targetType: MigrationTargetType): Promise<ServerAssessment> {
 		const ownerUri = await azdata.connection.getUriForConnection(this.sourceConnectionId);
 		try {
 			const response = (await this.migrationService.getAssessments(ownerUri, this._databaseAssessment))!;
@@ -380,7 +398,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	}
 
 	public getExtensionPath(): string {
-		return this._extensionContext.extensionPath;
+		return this.extensionContext.extensionPath;
 	}
 
 	public async getAccountValues(): Promise<azdata.CategoryValue[]> {
@@ -961,9 +979,67 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			vscode.commands.executeCommand('sqlmigration.refreshMigrationTiles');
 		}
 	}
+
+	//TODO: code this method to save appropriate info for page
+	public saveInfo(serverName: string, currentPage: number): void {
+		let saveInfo: SavedInfo;
+		saveInfo = {
+			closedPage: currentPage,
+			serverAssessment: null,
+			azureAccount: null,
+			selectedDatabases: [],
+			migrationTargetType: null,
+			migrationDatabases: [],
+			subscription: null,
+			location: null,
+			resourceGroup: null
+		};
+		switch (currentPage) {
+			// Summary
+			case 6:
+				console.log('Saving assessment from page: Summary');
+
+			// Integration Runtime
+			case 5:
+				console.log('Saving assessment from page: Integration Runtime');
+
+			// Database Backup
+			case 4:
+				console.log('Saving assessment from page: Database Backup');
+
+			// Migration Mode
+			case 3:
+				console.log('Saving assessment from page: Migration Mode');
+			// Online or Offline Migration
+
+			// SKU Recommendation
+			case 2:
+				console.log('Saving assessment from page: SKU Recommendation');
+				saveInfo.migrationTargetType = this._targetType;
+
+				// Databases to migrate selection
+				saveInfo.subscription = this._targetSubscription;
+				saveInfo.location = this._location;
+				saveInfo.resourceGroup = this._resourceGroup;
+				saveInfo.serverAssessment = this._assessmentResults;
+				console.log(saveInfo);
+			// Database Selector
+			case 1:
+				console.log('Saving assessment from page: Database Selector');
+				saveInfo.selectedDatabases = this.databaseSelectorTableValues;
+			// Azure Account
+			case 0:
+				console.log('Saving assessment from page: Azure Account');
+				saveInfo.azureAccount = deepClone(this._azureAccount);
+				console.log(`Save Info: ${saveInfo}`);
+				this.extensionContext.globalState.update(`${constants.MEMENTO_STRING}.${serverName}`, saveInfo);
+		}
+
+	}
+
 }
 
-export interface ServerAssessement {
+export interface ServerAssessment {
 	issues: mssql.SqlMigrationAssessmentResultItem[];
 	databaseAssessments: {
 		name: string;

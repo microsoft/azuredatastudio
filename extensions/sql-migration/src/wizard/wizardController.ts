@@ -21,8 +21,8 @@ export const WIZARD_INPUT_COMPONENT_WIDTH = '600px';
 export class WizardController {
 	private _wizardObject!: azdata.window.Wizard;
 	private _model!: MigrationStateModel;
-	constructor(private readonly extensionContext: vscode.ExtensionContext) {
-
+	constructor(private readonly extensionContext: vscode.ExtensionContext, model: MigrationStateModel) {
+		this._model = model;
 	}
 
 	public async openWizard(connectionId: string): Promise<void> {
