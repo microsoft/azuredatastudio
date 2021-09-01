@@ -16,7 +16,7 @@ import { TelemetryReporter } from './telemetry';
 export class WorkspaceTreeDataProvider implements vscode.TreeDataProvider<WorkspaceTreeItem>{
 	constructor(private _workspaceService: IWorkspaceService) {
 		this._workspaceService.onDidWorkspaceProjectsChange(() => {
-			this.refresh();
+			return this.refresh();
 		});
 	}
 
@@ -77,7 +77,7 @@ export class WorkspaceTreeDataProvider implements vscode.TreeDataProvider<Worksp
 			}
 
 			if (errorCount > 0) {
-				vscode.window.showErrorMessage(ProjectsFailedToLoad);
+				void vscode.window.showErrorMessage(ProjectsFailedToLoad);
 			}
 
 			TelemetryReporter.sendMetricsEvent(typeMetric, 'OpenWorkspaceProjectTypes');
@@ -89,7 +89,7 @@ export class WorkspaceTreeDataProvider implements vscode.TreeDataProvider<Worksp
 				'OpenWorkspaceProjectsHandled');
 
 			if (unknownProjects.length > 0) {
-				vscode.window.showErrorMessage(UnknownProjectsError(unknownProjects));
+				void vscode.window.showErrorMessage(UnknownProjectsError(unknownProjects));
 			}
 
 			return treeItems;
