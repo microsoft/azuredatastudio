@@ -11,6 +11,7 @@ import * as constants from '../constants/strings';
 import { WIZARD_INPUT_COMPONENT_WIDTH } from './wizardController';
 import { deepClone, findDropDownItemIndex, selectDropDownIndex } from '../api/utils';
 import { getSubscriptions } from '../api/azure';
+import * as type from '../constants/typography';
 
 export class AccountsSelectionPage extends MigrationWizardPage {
 	private _azureAccountsDropdown!: azdata.DropDownComponent;
@@ -20,13 +21,24 @@ export class AccountsSelectionPage extends MigrationWizardPage {
 
 	constructor(wizard: azdata.window.Wizard, migrationStateModel: MigrationStateModel) {
 		super(wizard, azdata.window.createWizardPage(constants.ACCOUNTS_SELECTION_PAGE_TITLE), migrationStateModel);
-		this.wizardPage.description = constants.ACCOUNTS_SELECTION_PAGE_DESCRIPTION;
+		// this.wizardPage.description = constants.ACCOUNTS_SELECTION_PAGE_DESCRIPTION;
 	}
 
 	protected async registerContent(view: azdata.ModelView): Promise<void> {
+		const pageDescription = {
+			title: '',
+			component: view.modelBuilder.text().withProps({
+				value: constants.ACCOUNTS_SELECTION_PAGE_DESCRIPTION,
+				CSSStyles: {
+					...type.bodyCSSStyle
+				}
+			}).component()
+		};
+
 		const form = view.modelBuilder.formContainer()
 			.withFormItems(
 				[
+					pageDescription,
 					await this.createAzureAccountsDropdown(view),
 					await this.createAzureTenantContainer(view),
 				]
@@ -43,8 +55,7 @@ export class AccountsSelectionPage extends MigrationWizardPage {
 		const azureAccountLabel = view.modelBuilder.text().withProps({
 			value: constants.ACCOUNTS_SELECTION_PAGE_TITLE,
 			CSSStyles: {
-				'font-size': '13px',
-				'font-weight': 'bold',
+				...type.labelCSSStyle
 			}
 		}).component();
 
@@ -108,7 +119,7 @@ export class AccountsSelectionPage extends MigrationWizardPage {
 				label: constants.ACCOUNT_LINK_BUTTON_LABEL,
 				url: '',
 				CSSStyles: {
-					'font-size': '13px',
+					...type.bodyCSSStyle
 				}
 			})
 			.component();
@@ -144,8 +155,7 @@ export class AccountsSelectionPage extends MigrationWizardPage {
 		const azureTenantDropdownLabel = view.modelBuilder.text().withProps({
 			value: constants.AZURE_TENANT,
 			CSSStyles: {
-				'font-size': '13px',
-				'font-weight': 'bold'
+				...type.labelCSSStyle
 			}
 		}).component();
 

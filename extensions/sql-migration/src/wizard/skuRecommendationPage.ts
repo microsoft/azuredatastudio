@@ -13,6 +13,7 @@ import { EOL } from 'os';
 import { IconPath, IconPathHelper } from '../constants/iconPathHelper';
 import { WIZARD_INPUT_COMPONENT_WIDTH } from './wizardController';
 import { findDropDownItemIndex, selectDropDownIndex } from '../api/utils';
+import * as type from '../constants/typography';
 
 export interface Product {
 	type: MigrationTargetType;
@@ -73,10 +74,14 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			iconPath: IconPathHelper.completedMigration,
 			iconHeight: 17,
 			iconWidth: 17,
-			width: 17,
+			width: 20,
 			height: 20
 		}).component();
-		const igContainer = this._view.modelBuilder.flexContainer().component();
+		const igContainer = this._view.modelBuilder.flexContainer().withProps({
+			CSSStyles: {
+				'align-items': 'center'
+			}
+		}).component();
 		igContainer.addItem(this._assessmentStatusIcon, {
 			flex: '0 0 auto'
 		});
@@ -89,32 +94,31 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		const refreshAssessmentButton = this._view.modelBuilder.button().withProps({
 			iconPath: IconPathHelper.refresh,
 			label: constants.REFRESH_ASSESSMENT_BUTTON_LABEL,
-			width: 130
+			width: 160,
+			height: 24,
+			CSSStyles: {
+				...type.bodyCSSStyle,
+				'margin': '12px 0 4px 0'
+			}
 		}).component();
 
 		this._disposables.push(refreshAssessmentButton.onDidClick(() => {
 			this.constructDetails();
 		}));
 
-		const chooseYourTargetText = this._view.modelBuilder.text().withProps({
-			value: constants.SKU_RECOMMENDATION_CHOOSE_A_TARGET,
-			CSSStyles: {
-				'font-size': '13px',
-				'font-weight': 'bold',
-				'margin-top': '16px'
-			}
-		}).component();
-
 		const statusContainer = this._view.modelBuilder.flexContainer().withLayout({
-			flexFlow: 'column'
+			flexFlow: 'column',
 		}).withItems(
 			[
 				igContainer,
 				this._detailsComponent,
 				refreshAssessmentButton,
-				chooseYourTargetText
 			]
-		).component();
+		).withProps({
+			CSSStyles: {
+				'margin': '0'
+			}
+		}).component();
 		this._chooseTargetComponent = await this.createChooseTargetComponent(view);
 		this.assessmentGroupContainer = await this.createViewAssessmentsContainer();
 		this._targetContainer = this.createTargetDropdownContainer();
@@ -170,10 +174,8 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	private createStatusComponent(view: azdata.ModelView): azdata.TextComponent {
 		const component = view.modelBuilder.text().withProps({
 			CSSStyles: {
-				'font-size': '14px',
-				'margin': '0 0 0 8px',
-				'line-height': '20px',
-				'font-weight': 'bold'
+				...type.sectionHeaderCSSStyle,
+				'margin-left': '8px'
 			}
 		}).component();
 		return component;
@@ -182,13 +184,21 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	private createDetailsComponent(view: azdata.ModelView): azdata.TextComponent {
 		const component = view.modelBuilder.text().withProps({
 			CSSStyles: {
-				'font-size': '13px'
+				...type.bodyCSSStyle
 			}
 		}).component();
 		return component;
 	}
 
 	private async createChooseTargetComponent(view: azdata.ModelView): Promise<azdata.DivContainer> {
+
+		const chooseYourTargetText = this._view.modelBuilder.text().withProps({
+			value: constants.SKU_RECOMMENDATION_CHOOSE_A_TARGET,
+			CSSStyles: {
+				...type.sectionHeaderCSSStyle,
+				'margin': '0'
+			}
+		}).component();
 
 		this._rbg = this._view!.modelBuilder.radioCardGroup().withProps({
 			cards: [],
@@ -198,12 +208,12 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			cardHeight: '130px',
 			iconPosition: 'left',
 			CSSStyles: {
-				'margin-top': '0px'
+				'margin-top': '0px',
+				'margin-left': '-15px',
 			}
 		}).component();
 
 		this._supportedProducts.forEach((product) => {
-
 			this._rbg.cards.push({
 				id: product.type,
 				icon: product.icon,
@@ -211,14 +221,13 @@ export class SKURecommendationPage extends MigrationWizardPage {
 					{
 						textValue: product.name,
 						textStyles: {
-							'font-size': '14px',
-							'font-weight': 'bold'
+							...type.sectionHeaderCSSStyle
 						}
 					},
 					{
 						textValue: '',
 						textStyles: {
-							'font-size': '13px',
+							...type.bodyCSSStyle
 						}
 					}
 				]
@@ -238,6 +247,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 
 		const component = view.modelBuilder.divContainer().withItems(
 			[
+				chooseYourTargetText,
 				this._rbgLoader
 			]
 		).component();
@@ -248,15 +258,17 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		this._viewAssessmentsHelperText = this._view.modelBuilder.text().withProps({
 			value: constants.SKU_RECOMMENDATION_VIEW_ASSESSMENT_MI,
 			CSSStyles: {
-				'font-size': '13px',
-				'font-weight': 'bold',
+				...type.sectionHeaderCSSStyle
 			},
 			width: WIZARD_INPUT_COMPONENT_WIDTH
 		}).component();
 
 		const button = this._view.modelBuilder.button().withProps({
 			label: constants.VIEW_SELECT_BUTTON_LABEL,
-			width: 100
+			width: 100,
+			CSSStyles: {
+				'margin': '12px 0'
+			}
 		}).component();
 
 		const serverName = (await this.migrationStateModel.getSourceConnectionProfile()).serverName;
@@ -275,7 +287,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 
 		this._databaseSelectedHelperText = this._view.modelBuilder.text().withProps({
 			CSSStyles: {
-				'font-size': '13px',
+				...type.bodyCSSStyle,
 			}
 		}).component();
 
@@ -292,8 +304,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	private createTargetDropdownContainer(): azdata.FlexContainer {
 		this._azureSubscriptionText = this._view.modelBuilder.text().withProps({
 			CSSStyles: {
-				'font-size': '13px',
-				'line-height': '18px'
+				...type.sectionHeaderCSSStyle
 			}
 		}).component();
 
@@ -303,8 +314,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			width: WIZARD_INPUT_COMPONENT_WIDTH,
 			requiredIndicator: true,
 			CSSStyles: {
-				'font-size': '13px',
-				'font-weight': 'bold',
+				...type.labelCSSStyle,
 			}
 		}).component();
 		this._managedInstanceSubscriptionDropdown = this._view.modelBuilder.dropDown().withProps({
@@ -313,6 +323,9 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			editable: true,
 			required: true,
 			fireOnTextChange: true,
+			CSSStyles: {
+				'margin-top': '-1em'
+			},
 		}).component();
 		this._disposables.push(this._managedInstanceSubscriptionDropdown.onValueChanged(async (value) => {
 			const selectedIndex = findDropDownItemIndex(this._managedInstanceSubscriptionDropdown, value);
@@ -330,8 +343,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			width: WIZARD_INPUT_COMPONENT_WIDTH,
 			requiredIndicator: true,
 			CSSStyles: {
-				'font-size': '13px',
-				'font-weight': 'bold',
+				...type.labelCSSStyle
 			}
 		}).component();
 		this._azureLocationDropdown = this._view.modelBuilder.dropDown().withProps({
@@ -340,6 +352,9 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			editable: true,
 			required: true,
 			fireOnTextChange: true,
+			CSSStyles: {
+				'margin-top': '-1em'
+			},
 		}).component();
 		this._disposables.push(this._azureLocationDropdown.onValueChanged(async (value) => {
 			const selectedIndex = findDropDownItemIndex(this._azureLocationDropdown, value);
@@ -355,8 +370,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			width: WIZARD_INPUT_COMPONENT_WIDTH,
 			requiredIndicator: true,
 			CSSStyles: {
-				'font-size': '13px',
-				'font-weight': 'bold',
+				...type.labelCSSStyle
 			}
 		}).component();
 		this._azureResourceGroupDropdown = this._view.modelBuilder.dropDown().withProps({
@@ -365,6 +379,9 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			editable: true,
 			required: true,
 			fireOnTextChange: true,
+			CSSStyles: {
+				'margin-top': '-1em'
+			},
 		}).component();
 		this._disposables.push(this._azureResourceGroupDropdown.onValueChanged(async (value) => {
 			const selectedIndex = findDropDownItemIndex(this._azureResourceGroupDropdown, value);
@@ -380,8 +397,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			width: WIZARD_INPUT_COMPONENT_WIDTH,
 			requiredIndicator: true,
 			CSSStyles: {
-				'font-size': '13px',
-				'font-weight': 'bold',
+				...type.labelCSSStyle
 			}
 		}).component();
 		this._resourceDropdown = this._view.modelBuilder.dropDown().withProps({
@@ -390,6 +406,9 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			editable: true,
 			required: true,
 			fireOnTextChange: true,
+			CSSStyles: {
+				'margin-top': '-1em'
+			},
 		}).component();
 		this._disposables.push(this._resourceDropdown.onValueChanged(value => {
 			const selectedIndex = findDropDownItemIndex(this._resourceDropdown, value);
@@ -688,17 +707,12 @@ errorId: ${e.errorId}
 
 	private createAssessmentProgress(): azdata.FlexContainer {
 
-		this._assessmentLoader = this._view.modelBuilder.loadingComponent().withProps({
-			CSSStyles: {
-				'margin-top': '15px'
-			}
-		}).component();
+		this._assessmentLoader = this._view.modelBuilder.loadingComponent().component();
 
 		this._assessmentProgress = this._view.modelBuilder.text().withProps({
 			value: constants.ASSESSMENT_IN_PROGRESS,
 			CSSStyles: {
-				'font-size': '18px',
-				'line-height': '24px',
+				...type.pageTitleCSSStyles,
 				'margin-right': '20px'
 			}
 		}).component();
@@ -717,9 +731,7 @@ errorId: ${e.errorId}
 		this._assessmentInfo = this._view.modelBuilder.text().withProps({
 			value: constants.ASSESSMENT_IN_PROGRESS_CONTENT((await this.migrationStateModel.getSourceConnectionProfile()).serverName),
 			CSSStyles: {
-				'font-size': '13px',
-				'line-height': '18px',
-				'font-weight': '600',
+				...type.bodyCSSStyle
 			}
 		}).component();
 		return this._assessmentInfo;

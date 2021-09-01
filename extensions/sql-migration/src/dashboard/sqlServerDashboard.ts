@@ -169,7 +169,7 @@ export class DashboardWidget {
 			value: points,
 			CSSStyles: {
 				'padding-left': '16px',
-				'margin-bottom': '5px',
+				'margin-bottom': '4px',
 				'margin-top': '8px',
 				...type.smallNoteCSSStyle
 			}

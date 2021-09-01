@@ -14,6 +14,7 @@ import { IconPathHelper } from '../../constants/iconPathHelper';
 import { CreateResourceGroupDialog } from '../createResourceGroup/createResourceGroupDialog';
 import * as EventEmitter from 'events';
 import { clearDialogMessage } from '../../api/utils';
+import * as type from '../../constants/typography';
 
 export class CreateSqlMigrationServiceDialog {
 
@@ -208,7 +209,7 @@ export class CreateSqlMigrationServiceDialog {
 		const dialogDescription = this._view.modelBuilder.text().withProps({
 			value: constants.MIGRATION_SERVICE_DIALOG_DESCRIPTION,
 			CSSStyles: {
-				'font-size': '13px'
+				...type.bodyCSSStyle
 			}
 		}).component();
 
@@ -216,14 +217,16 @@ export class CreateSqlMigrationServiceDialog {
 			value: constants.SUBSCRIPTION,
 			description: constants.MIGRATION_SERVICE_SUBSCRIPTION_INFO,
 			CSSStyles: {
-				'font-size': '13px',
-				'font-weight': 'bold'
+				...type.labelCSSStyle
 			}
 		}).component();
 
 		this.migrationServiceSubscription = this._view.modelBuilder.inputBox().withProps({
 			required: true,
-			enabled: false
+			enabled: false,
+			CSSStyles: {
+				'margin-top': '-1em'
+			}
 		}).component();
 
 		const resourceGroupDropdownLabel = this._view.modelBuilder.text().withProps({
@@ -231,8 +234,7 @@ export class CreateSqlMigrationServiceDialog {
 			description: constants.MIGRATION_SERVICE_RESOURCE_GROUP_INFO,
 			requiredIndicator: true,
 			CSSStyles: {
-				'font-size': '13px',
-				'font-weight': 'bold'
+				...type.labelCSSStyle
 			}
 		}).component();
 
@@ -241,6 +243,9 @@ export class CreateSqlMigrationServiceDialog {
 			required: true,
 			editable: true,
 			fireOnTextChange: true,
+			CSSStyles: {
+				'margin-top': '-1em'
+			}
 		}).component();
 
 		const migrationServiceNameLabel = this._view.modelBuilder.text().withProps({
@@ -248,14 +253,16 @@ export class CreateSqlMigrationServiceDialog {
 			description: constants.MIGRATION_SERVICE_NAME_INFO,
 			requiredIndicator: true,
 			CSSStyles: {
-				'font-size': '13px',
-				'font-weight': 'bold'
+				...type.labelCSSStyle
 			}
 		}).component();
 
 		this._createResourceGroupLink = this._view.modelBuilder.hyperlink().withProps({
 			label: constants.CREATE_NEW,
-			url: ''
+			url: '',
+			CSSStyles: {
+				...type.bodyCSSStyle
+			}
 		}).component();
 
 		this._disposables.push(this._createResourceGroupLink.onDidClick(async e => {
@@ -276,35 +283,43 @@ export class CreateSqlMigrationServiceDialog {
 			}
 		}));
 
-		this.migrationServiceNameText = this._view.modelBuilder.inputBox().component();
+		this.migrationServiceNameText = this._view.modelBuilder.inputBox().withProps({
+			CSSStyles: {
+				'margin-top': '-1em'
+			}
+		}).component();
 
 		const locationDropdownLabel = this._view.modelBuilder.text().withProps({
 			value: constants.LOCATION,
 			description: constants.MIGRATION_SERVICE_LOCATION_INFO,
 			CSSStyles: {
-				'font-size': '13px',
-				'font-weight': 'bold'
+				...type.labelCSSStyle
 			}
 		}).component();
 
 		this.migrationServiceLocation = this._view.modelBuilder.inputBox().withProps({
 			required: true,
 			enabled: false,
-			value: await this._model.getLocationDisplayName(this._model._targetServerInstance.location)
+			value: await this._model.getLocationDisplayName(this._model._targetServerInstance.location),
+			CSSStyles: {
+				'margin-top': '-1em'
+			}
 		}).component();
 
-		const targetlabel = this._view.modelBuilder.text().withProps({
+		const targetLabel = this._view.modelBuilder.text().withProps({
 			value: constants.TARGET,
 			description: constants.MIGRATION_SERVICE_TARGET_INFO,
 			CSSStyles: {
-				'font-size': '13px',
-				'font-weight': 'bold'
+				...type.labelCSSStyle
 			}
 		}).component();
 
 		const targetText = this._view.modelBuilder.inputBox().withProps({
 			enabled: false,
-			value: constants.AZURE_SQL
+			value: constants.AZURE_SQL,
+			CSSStyles: {
+				'margin-top': '-1em'
+			}
 		}).component();
 
 		const flexContainer = this._view.modelBuilder.flexContainer().withItems([
@@ -318,7 +333,7 @@ export class CreateSqlMigrationServiceDialog {
 			this._createResourceGroupLink,
 			migrationServiceNameLabel,
 			this.migrationServiceNameText,
-			targetlabel,
+			targetLabel,
 			targetText
 		]).withLayout({
 			flexFlow: 'column'

@@ -8,6 +8,7 @@ import * as vscode from 'vscode';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
 import { MigrationMode, MigrationStateModel, StateChangeEvent } from '../models/stateMachine';
 import * as constants from '../constants/strings';
+import * as type from '../constants/typography';
 
 export class MigrationModePage extends MigrationWizardPage {
 	private _view!: azdata.ModelView;
@@ -16,14 +17,26 @@ export class MigrationModePage extends MigrationWizardPage {
 
 	constructor(wizard: azdata.window.Wizard, migrationStateModel: MigrationStateModel) {
 		super(wizard, azdata.window.createWizardPage(constants.DATABASE_BACKUP_MIGRATION_MODE_LABEL, 'MigrationModePage'), migrationStateModel);
-		this.wizardPage.description = constants.DATABASE_BACKUP_MIGRATION_MODE_DESCRIPTION;
+		// this.wizardPage.description = constants.DATABASE_BACKUP_MIGRATION_MODE_DESCRIPTION;
 	}
 
 	protected async registerContent(view: azdata.ModelView): Promise<void> {
 		this._view = view;
+
+		const pageDescription = {
+			title: '',
+			component: view.modelBuilder.text().withProps({
+				value: constants.DATABASE_BACKUP_MIGRATION_MODE_DESCRIPTION,
+				CSSStyles: {
+					...type.bodyCSSStyle
+				}
+			}).component()
+		};
+
 		const form = view.modelBuilder.formContainer()
 			.withFormItems(
 				[
+					pageDescription,
 					this.migrationModeContainer(),
 				]
 			);
@@ -56,12 +69,19 @@ export class MigrationModePage extends MigrationWizardPage {
 	private migrationModeContainer(): azdata.FormComponent {
 		const buttonGroup = 'cutoverContainer';
 
+		// const pageDescription = this._view.modelBuilder.text().withProps({
+		// 	value: constants.DATABASE_BACKUP_MIGRATION_MODE_DESCRIPTION,
+		// 	CSSStyles: {
+		// 		...type.bodyCSSStyle
+		// 	}
+		// }).component();
+
 		const onlineButton = this._view.modelBuilder.radioButton().withProps({
 			label: constants.DATABASE_BACKUP_MIGRATION_MODE_ONLINE_LABEL,
 			name: buttonGroup,
 			CSSStyles: {
-				'font-size': '13px',
-				'font-weight': 'bold'
+				...type.bodyCSSStyle,
+				'margin-top': '8px'
 			},
 			checked: true
 		}).component();
@@ -69,8 +89,8 @@ export class MigrationModePage extends MigrationWizardPage {
 		const onlineDescription = this._view.modelBuilder.text().withProps({
 			value: constants.DATABASE_BACKUP_MIGRATION_MODE_ONLINE_DESCRIPTION,
 			CSSStyles: {
-				'font-size': '13px',
-				'margin': '0 0 10px 20px'
+				...type.noteCSSStyle,
+				'margin-left': '20px'
 			}
 		}).component();
 
@@ -84,16 +104,15 @@ export class MigrationModePage extends MigrationWizardPage {
 			label: constants.DATABASE_BACKUP_MIGRATION_MODE_OFFLINE_LABEL,
 			name: buttonGroup,
 			CSSStyles: {
-				'font-size': '13px',
-				'font-weight': 'bold'
+				...type.bodyCSSStyle,
+				'margin-top': '8px'
 			},
 		}).component();
 
 		const offlineDescription = this._view.modelBuilder.text().withProps({
 			value: constants.DATABASE_BACKUP_MIGRATION_MODE_OFFLINE_DESCRIPTION,
 			CSSStyles: {
-				'font-size': '13px',
-				'margin': '0 0 10px 20px'
+				...type.noteCSSStyle
 			}
 		}).component();
 
@@ -106,6 +125,7 @@ export class MigrationModePage extends MigrationWizardPage {
 
 		const flexContainer = this._view.modelBuilder.flexContainer().withItems(
 			[
+				// pageDescription,
 				onlineButton,
 				onlineDescription,
 				offlineButton,

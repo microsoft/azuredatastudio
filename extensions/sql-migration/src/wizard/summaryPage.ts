@@ -11,6 +11,7 @@ import * as constants from '../constants/strings';
 import { createHeadingTextComponent, createInformationRow, createLabelTextComponent } from './wizardController';
 import { getResourceGroupFromId } from '../api/azure';
 import { TargetDatabaseSummaryDialog } from '../dialog/targetDatabaseSummary/targetDatabaseSummaryDialog';
+import * as type from '../constants/typography';
 
 export class SummaryPage extends MigrationWizardPage {
 	private _view!: azdata.ModelView;
@@ -49,10 +50,9 @@ export class SummaryPage extends MigrationWizardPage {
 			url: '',
 			label: this.migrationStateModel._migrationDbs.length.toString(),
 			CSSStyles: {
+				...type.bodyCSSStyle,
 				'margin': '0px',
 				'width': '300px',
-				'font-size': '13px',
-				'line-height': '24px'
 			}
 		}).component();
 
@@ -70,10 +70,8 @@ export class SummaryPage extends MigrationWizardPage {
 				[
 					createLabelTextComponent(this._view, constants.SUMMARY_DATABASE_COUNT_LABEL,
 						{
-							'margin': '0px',
+							...type.bodyCSSStyle,
 							'width': '300px',
-							'font-size': '13px',
-							'line-height': '24px'
 						}
 					),
 					targetDatabaseHyperlink
@@ -87,7 +85,7 @@ export class SummaryPage extends MigrationWizardPage {
 
 		this._flexContainer.addItems(
 			[
-				createHeadingTextComponent(this._view, constants.ACCOUNTS_SELECTION_PAGE_TITLE),
+				createHeadingTextComponent(this._view, constants.ACCOUNTS_SELECTION_PAGE_TITLE, true),
 				createInformationRow(this._view, constants.ACCOUNTS_SELECTION_PAGE_TITLE, this.migrationStateModel._azureAccount.displayInfo.displayName),
 
 				createHeadingTextComponent(this._view, constants.SOURCE_DATABASES),

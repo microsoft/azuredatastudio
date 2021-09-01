@@ -16,6 +16,7 @@ import { SummaryPage } from './summaryPage';
 import { MigrationModePage } from './migrationModePage';
 import { DatabaseSelectorPage } from './databaseSelectorPage';
 import { sendSqlMigrationActionEvent, TelemetryAction, TelemetryViews } from '../telemtery';
+import * as type from '../constants/typography';
 
 export const WIZARD_INPUT_COMPONENT_WIDTH = '600px';
 export class WizardController {
@@ -138,45 +139,37 @@ export function createInformationRow(view: azdata.ModelView, label: string, valu
 			[
 				createLabelTextComponent(view, label,
 					{
-						'margin': '0px',
+						...type.bodyCSSStyle,
+						'margin': '4px 0px',
 						'width': '300px',
-						'font-size': '13px',
-						'line-height': '24px'
+						'color': '#595959'
 					}
 				),
-				createTextCompononent(view, value,
+				createTextComponent(view, value,
 					{
-						'margin': '0px',
+						...type.bodyCSSStyle,
+						'margin': '4px 0px',
 						'width': '300px',
-						'font-size': '13px',
-						'line-height': '24px'
 					}
 				)
-			],
-			{
-				CSSStyles: {
-					'margin-right': '5px'
-				}
-			})
-		.component();
+			]).component();
 }
 
-export function createHeadingTextComponent(view: azdata.ModelView, value: string): azdata.TextComponent {
-	const component = createTextCompononent(view, value);
+export function createHeadingTextComponent(view: azdata.ModelView, value: string, firstElement: boolean = false): azdata.TextComponent {
+	const component = createTextComponent(view, value);
 	component.updateCssStyles({
-		'font-size': '13px',
-		'font-weight': 'bold',
+		...type.labelCSSStyle,
+		'margin-top': firstElement ? '0' : '20px'
 	});
 	return component;
 }
 
-
 export function createLabelTextComponent(view: azdata.ModelView, value: string, styles: { [key: string]: string; } = { 'width': '300px' }): azdata.TextComponent {
-	const component = createTextCompononent(view, value, styles);
+	const component = createTextComponent(view, value, styles);
 	return component;
 }
 
-export function createTextCompononent(view: azdata.ModelView, value: string, styles: { [key: string]: string; } = { 'width': '300px' }): azdata.TextComponent {
+export function createTextComponent(view: azdata.ModelView, value: string, styles: { [key: string]: string; } = { 'width': '300px' }): azdata.TextComponent {
 	return view.modelBuilder.text().withProps({
 		value: value,
 		CSSStyles: styles
