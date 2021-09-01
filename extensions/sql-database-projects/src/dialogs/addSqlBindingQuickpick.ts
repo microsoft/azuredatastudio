@@ -3,7 +3,7 @@ import * as path from 'path';
 import { BindingType } from 'vscode-mssql';
 import * as constants from '../common/constants';
 import * as utils from '../common/utils';
-import * as aFUtils from '../common/azureFunctionsUtils';
+import * as azureFunctionsUtils from '../common/azureFunctionsUtils';
 import { PackageHelper } from '../tools/packageHelper';
 
 export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined, packageHelper: PackageHelper): Promise<void> {
@@ -77,7 +77,7 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined, 
 	// 4. ask for connection string setting name
 	let project: string | undefined;
 	try {
-		project = await aFUtils.getAFProjectContainingFile(uri.fsPath);
+		project = await azureFunctionsUtils.getAFProjectContainingFile(uri.fsPath);
 	} catch (e) {
 		// continue even if there's no AF project found. The binding should still be able to be added as long as there was an azure function found in the file earlier
 	}
@@ -87,7 +87,7 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined, 
 	// show the settings from project's local.settings.json if there's an AF functions project
 	// TODO: allow new setting name to get added here and added to local.settings.json
 	if (project) {
-		const settings = await aFUtils.getLocalSettingsJson(path.join(path.dirname(project!), constants.azureFunctionLocalSettingsFileName));
+		const settings = await azureFunctionsUtils.getLocalSettingsJson(path.join(path.dirname(project!), constants.azureFunctionLocalSettingsFileName));
 		const existingSettings: string[] = settings.Values ? Object.keys(settings.Values) : [];
 
 		connectionStringSettingName = await vscode.window.showQuickPick(existingSettings, {

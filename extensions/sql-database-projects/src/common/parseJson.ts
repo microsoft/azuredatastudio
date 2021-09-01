@@ -6,7 +6,7 @@
 // copied from vscode-azurefunctions extension
 
 import * as jsonc from 'jsonc-parser';
-import { localize } from './constants';
+import * as constants from './constants';
 
 /**
  * Parses and returns JSON
@@ -21,7 +21,7 @@ export function parseJson<T extends object>(data: string): T {
 	const result: T = <T>jsonc.parse(data, errors, { allowTrailingComma: true });
 	if (errors.length > 0) {
 		const [line, column]: [number, number] = getLineAndColumnFromOffset(data, errors[0].offset);
-		throw new Error(localize('jsonParseError', '{0} near line "{1}", column "{2}"', jsonc.printParseErrorCode(errors[0].error), line, column));
+		throw new Error(constants.jsonParseError(jsonc.printParseErrorCode(errors[0].error), line, column));
 	} else {
 		return result;
 	}

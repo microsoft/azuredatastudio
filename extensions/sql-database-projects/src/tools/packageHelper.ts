@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 import * as vscode from 'vscode';
 import * as utils from '../common/utils';
-import * as aFUtils from '../common/azureFunctionsUtils';
+import * as azureFunctionsUtils from '../common/azureFunctionsUtils';
 import * as constants from '../common/constants';
 import { DotNetCommandOptions, NetCoreTool } from './netcoreTool';
 
@@ -56,7 +56,7 @@ export class PackageHelper {
 	 */
 	public async addPackageToAFProjectContainingFile(filePath: string, packageName: string, packageVersion?: string): Promise<void> {
 		try {
-			const project = await aFUtils.getAFProjectContainingFile(filePath);
+			const project = await azureFunctionsUtils.getAFProjectContainingFile(filePath);
 
 			// if no AF projects were found, an error gets thrown from getAFProjectContainingFile(). This check is temporary until
 			// multiple AF projects in the workspace is handled. That scenario returns undefined and shows an info message telling the

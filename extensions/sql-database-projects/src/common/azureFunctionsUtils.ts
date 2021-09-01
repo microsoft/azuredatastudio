@@ -22,7 +22,7 @@ export interface ILocalSettingsJson {
 /**
  * copied and modified from vscode-azurefunctions extension
  * @param localSettingsPath full path to local.settings.json
- * @returns settings in local.settings.json
+ * @returns settings in local.settings.json. If no settings are found, returns default "empty" settings
  */
 export async function getLocalSettingsJson(localSettingsPath: string): Promise<ILocalSettingsJson> {
 	if (await fse.pathExists(localSettingsPath)) {
@@ -31,8 +31,7 @@ export async function getLocalSettingsJson(localSettingsPath: string): Promise<I
 			try {
 				return parseJson(data);
 			} catch (error) {
-				const message: string = constants.localize('failedToParse', 'Failed to parse "{0}": {1}.', constants.azureFunctionLocalSettingsFileName, error.message);
-				throw new Error(message);
+				throw new Error(constants.failedToParse(error.message));
 			}
 		}
 	}
@@ -69,5 +68,5 @@ export async function getAFProjectContainingFile(filePath: string): Promise<stri
 // Use 'host.json' as an indicator that this is a functions project
 // copied from verifyIsproject.ts in vscode-azurefunctions extension
 export async function isFunctionProject(folderPath: string): Promise<boolean> {
-	return await fse.pathExists(path.join(folderPath, constants.hostFileName));
+	return fse.pathExists(path.join(folderPath, constants.hostFileName));
 }
