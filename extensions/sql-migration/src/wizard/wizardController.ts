@@ -16,7 +16,7 @@ import { SummaryPage } from './summaryPage';
 import { MigrationModePage } from './migrationModePage';
 import { DatabaseSelectorPage } from './databaseSelectorPage';
 import { sendSqlMigrationActionEvent, TelemetryAction, TelemetryViews } from '../telemtery';
-import * as type from '../constants/typography';
+import * as styles from '../constants/styles';
 
 export const WIZARD_INPUT_COMPONENT_WIDTH = '600px';
 export class WizardController {
@@ -139,15 +139,14 @@ export function createInformationRow(view: azdata.ModelView, label: string, valu
 			[
 				createLabelTextComponent(view, label,
 					{
-						...type.bodyCSSStyle,
+						...styles.lightLabelCSS,
 						'margin': '4px 0px',
 						'width': '300px',
-						'color': '#595959'
 					}
 				),
 				createTextComponent(view, value,
 					{
-						...type.bodyCSSStyle,
+						...styles.bodyCSS,
 						'margin': '4px 0px',
 						'width': '300px',
 					}
@@ -158,7 +157,7 @@ export function createInformationRow(view: azdata.ModelView, label: string, valu
 export function createHeadingTextComponent(view: azdata.ModelView, value: string, firstElement: boolean = false): azdata.TextComponent {
 	const component = createTextComponent(view, value);
 	component.updateCssStyles({
-		...type.labelCSSStyle,
+		...styles.labelCSS,
 		'margin-top': firstElement ? '0' : '20px'
 	});
 	return component;

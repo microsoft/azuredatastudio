@@ -8,7 +8,7 @@ import * as vscode from 'vscode';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
 import { MigrationMode, MigrationStateModel, StateChangeEvent } from '../models/stateMachine';
 import * as constants from '../constants/strings';
-import * as type from '../constants/typography';
+import * as styles from '../constants/styles';
 
 export class MigrationModePage extends MigrationWizardPage {
 	private _view!: azdata.ModelView;
@@ -28,7 +28,7 @@ export class MigrationModePage extends MigrationWizardPage {
 			component: view.modelBuilder.text().withProps({
 				value: constants.DATABASE_BACKUP_MIGRATION_MODE_DESCRIPTION,
 				CSSStyles: {
-					...type.bodyCSSStyle
+					...styles.bodyCSS
 				}
 			}).component()
 		};
@@ -72,7 +72,7 @@ export class MigrationModePage extends MigrationWizardPage {
 		// const pageDescription = this._view.modelBuilder.text().withProps({
 		// 	value: constants.DATABASE_BACKUP_MIGRATION_MODE_DESCRIPTION,
 		// 	CSSStyles: {
-		// 		...type.bodyCSSStyle
+		// 		...styles.bodyCSS
 		// 	}
 		// }).component();
 
@@ -80,7 +80,7 @@ export class MigrationModePage extends MigrationWizardPage {
 			label: constants.DATABASE_BACKUP_MIGRATION_MODE_ONLINE_LABEL,
 			name: buttonGroup,
 			CSSStyles: {
-				...type.bodyCSSStyle,
+				...styles.bodyCSS,
 				'margin-top': '8px'
 			},
 			checked: true
@@ -89,7 +89,7 @@ export class MigrationModePage extends MigrationWizardPage {
 		const onlineDescription = this._view.modelBuilder.text().withProps({
 			value: constants.DATABASE_BACKUP_MIGRATION_MODE_ONLINE_DESCRIPTION,
 			CSSStyles: {
-				...type.noteCSSStyle,
+				...styles.noteCSS,
 				'margin-left': '20px'
 			}
 		}).component();
@@ -104,7 +104,7 @@ export class MigrationModePage extends MigrationWizardPage {
 			label: constants.DATABASE_BACKUP_MIGRATION_MODE_OFFLINE_LABEL,
 			name: buttonGroup,
 			CSSStyles: {
-				...type.bodyCSSStyle,
+				...styles.bodyCSS,
 				'margin-top': '8px'
 			},
 		}).component();
@@ -112,7 +112,7 @@ export class MigrationModePage extends MigrationWizardPage {
 		const offlineDescription = this._view.modelBuilder.text().withProps({
 			value: constants.DATABASE_BACKUP_MIGRATION_MODE_OFFLINE_DESCRIPTION,
 			CSSStyles: {
-				...type.noteCSSStyle
+				...styles.noteCSS
 			}
 		}).component();
 

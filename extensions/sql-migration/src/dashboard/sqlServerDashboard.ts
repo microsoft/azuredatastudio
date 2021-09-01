@@ -11,7 +11,7 @@ import { IconPath, IconPathHelper } from '../constants/iconPathHelper';
 import { MigrationStatusDialog } from '../dialog/migrationStatus/migrationStatusDialog';
 import { AdsMigrationStatus } from '../dialog/migrationStatus/migrationStatusDialogModel';
 import { filterMigrations, SupportedAutoRefreshIntervals } from '../api/utils';
-import * as type from '../constants/typography';
+import * as styles from '../constants/styles';
 
 interface IActionMetadata {
 	title?: string,
@@ -118,14 +118,14 @@ export class DashboardWidget {
 			value: loc.DASHBOARD_TITLE,
 			width: '750px',
 			CSSStyles: {
-				...type.titleCSSStyles
+				...styles.dashboardTitleCSS
 			}
 		}).component();
 
 		const descriptionComponent = view.modelBuilder.text().withProps({
 			value: loc.DASHBOARD_DESCRIPTION,
 			CSSStyles: {
-				...type.noteCSSStyle
+				...styles.noteCSS
 			}
 		}).component();
 		header.addItems([titleComponent, descriptionComponent], {
@@ -153,7 +153,7 @@ export class DashboardWidget {
 		const preRequisiteListTitle = view.modelBuilder.text().withProps({
 			value: loc.PRE_REQ_TITLE,
 			CSSStyles: {
-				...type.bodyCSSStyle,
+				...styles.bodyCSS,
 				'padding-left': '16px',
 				'margin-bottom': '4px',
 			}
@@ -171,7 +171,7 @@ export class DashboardWidget {
 				'padding-left': '16px',
 				'margin-bottom': '4px',
 				'margin-top': '8px',
-				...type.smallNoteCSSStyle
+				...styles.smallNoteCSS
 			}
 		}).component();
 
@@ -350,7 +350,7 @@ export class DashboardWidget {
 
 		const cardTitleText = this._view.modelBuilder.text().withProps({ value: cardTitle }).withProps({
 			CSSStyles: {
-				...type.sectionHeaderCSSStyle,
+				...styles.sectionHeaderCSS,
 				'width': '240px'
 			}
 		}).component();
@@ -359,7 +359,7 @@ export class DashboardWidget {
 		const cardCount = this._view.modelBuilder.text().withProps({
 			value: '0',
 			CSSStyles: {
-				...type.countCSSStyle,
+				...styles.bigNumberCSS,
 				'margin': '0 0 0 8px',
 				'text-align': 'center',
 			}
@@ -379,7 +379,7 @@ export class DashboardWidget {
 			const warningDescription = '';
 			warningText = this._view.modelBuilder.text().withProps({ value: warningDescription }).withProps({
 				CSSStyles: {
-					...type.bodyCSSStyle,
+					...styles.bodyCSS,
 					'padding-left': '8px',
 				}
 			}).component();
@@ -461,7 +461,7 @@ export class DashboardWidget {
 		const statusContainerTitle = view.modelBuilder.text().withProps({
 			value: loc.DATABASE_MIGRATION_STATUS,
 			CSSStyles: {
-				...type.sectionHeaderCSSStyle
+				...styles.sectionHeaderCSS
 			}
 		}).component();
 
@@ -469,7 +469,7 @@ export class DashboardWidget {
 			label: loc.VIEW_ALL,
 			url: '',
 			CSSStyles: {
-				...type.bodyCSSStyle
+				...styles.bodyCSS
 			}
 		}).component();
 
@@ -483,7 +483,7 @@ export class DashboardWidget {
 			url: '',
 			ariaRole: 'button',
 			CSSStyles: {
-				...type.bodyCSSStyle,
+				...styles.bodyCSS,
 				'text-align': 'right',
 			}
 		}).component();
@@ -623,7 +623,7 @@ export class DashboardWidget {
 		const titleComponent = view.modelBuilder.text().withProps({
 			value: loc.HELP_TITLE,
 			CSSStyles: {
-				...type.sectionHeaderCSSStyle
+				...styles.sectionHeaderCSS
 			}
 		}).component();
 
@@ -677,7 +677,7 @@ export class DashboardWidget {
 			value: linkMetaData.description,
 			width: maxWidth,
 			CSSStyles: {
-				...type.noteCSSStyle
+				...styles.noteCSS
 			}
 		}).component();
 		const linkComponent = view.modelBuilder.hyperlink().withProps({
@@ -685,7 +685,7 @@ export class DashboardWidget {
 			url: linkMetaData.link!,
 			showLinkIcon: true,
 			CSSStyles: {
-				...type.bodyCSSStyle
+				...styles.bodyCSS
 			}
 		}).component();
 		linkContainer.addItem(linkComponent);
@@ -723,7 +723,7 @@ export class DashboardWidget {
 			width: maxWidth,
 			height: '50px',
 			CSSStyles: {
-				...type.bodyCSSStyle
+				...styles.bodyCSS
 			}
 		}).component();
 		this._disposables.push(video1Container.onDidClick(async () => {

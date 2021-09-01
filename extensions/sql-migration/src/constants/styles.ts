@@ -1,64 +1,71 @@
-export const titleCSSStyles = {
+export const gray = '#595959';
+
+export const dashboardTitleCSS = {
 	'font-size': '36px',
 	'line-height': '48px',
 	'margin': '16px 0 8px 0',
 };
 
-export const pageTitleCSSStyles = {
+export const pageTitleCSS = {
 	'font-size': '18px',
 	'line-height': '24px',
 	'font-weight': '600',
 	'margin': '0 0 4px 0',
 };
 
-export const pageSubtitleCSSStyles = {
+export const pageSubtitleCSS = {
 	'font-size': '15px',
 	'line-height': '19px',
 	'font-weight': '500',
 	'margin': '0 0 12px 0',
 };
 
-export const sectionHeaderCSSStyle = {
+export const sectionHeaderCSS = {
 	'font-size': '14px',
 	'line-height': '20px',
 	'font-weight': '600',
 	'margin': '4px 0',
 };
 
-export const bodyCSSStyle = {
+export const bodyCSS = {
 	'font-size': '13px',
 	'line-height': '18px',
 	'margin': '4px 0',
 };
 
-export const labelCSSStyle = {
+export const labelCSS = {
 	'font-size': '13px',
 	'line-height': '18px',
 	'font-weight': '600',
 	'margin': '0 0 0 4px',
 };
 
-export const noteCSSStyle = {
+export const noteCSS = {
 	'font-size': '12px',
 	'line-height': '16px',
 	'margin': '0',
 };
 
-export const boldNoteCSSStyle = {
+export const boldNoteCSS = {
 	'font-size': '12px',
 	'line-height': '16px',
 	'font-weight': '600',
 	'margin': '0',
 };
 
-export const smallNoteCSSStyle = {
+export const smallNoteCSS = {
 	'font-size': '10px',
 	'line-height': '14px',
 	'margin': '0',
 };
 
-export const countCSSStyle = {
+export const bigNumberCSS = {
 	'font-size': '28px',
 	'line-height': '36px',
 	'margin': '0',
+};
+
+export const lightLabelCSS = {
+	...bodyCSS,
+	'color': gray
 };

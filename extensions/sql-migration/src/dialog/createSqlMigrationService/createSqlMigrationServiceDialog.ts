@@ -14,7 +14,7 @@ import { IconPathHelper } from '../../constants/iconPathHelper';
 import { CreateResourceGroupDialog } from '../createResourceGroup/createResourceGroupDialog';
 import * as EventEmitter from 'events';
 import { clearDialogMessage } from '../../api/utils';
-import * as type from '../../constants/typography';
+import * as styles from '../../constants/styles';
 
 export class CreateSqlMigrationServiceDialog {
 
@@ -209,7 +209,7 @@ export class CreateSqlMigrationServiceDialog {
 		const dialogDescription = this._view.modelBuilder.text().withProps({
 			value: constants.MIGRATION_SERVICE_DIALOG_DESCRIPTION,
 			CSSStyles: {
-				...type.bodyCSSStyle
+				...styles.bodyCSS
 			}
 		}).component();
 
@@ -217,7 +217,7 @@ export class CreateSqlMigrationServiceDialog {
 			value: constants.SUBSCRIPTION,
 			description: constants.MIGRATION_SERVICE_SUBSCRIPTION_INFO,
 			CSSStyles: {
-				...type.labelCSSStyle
+				...styles.labelCSS
 			}
 		}).component();
 
@@ -234,7 +234,7 @@ export class CreateSqlMigrationServiceDialog {
 			description: constants.MIGRATION_SERVICE_RESOURCE_GROUP_INFO,
 			requiredIndicator: true,
 			CSSStyles: {
-				...type.labelCSSStyle
+				...styles.labelCSS
 			}
 		}).component();
 
@@ -253,7 +253,7 @@ export class CreateSqlMigrationServiceDialog {
 			description: constants.MIGRATION_SERVICE_NAME_INFO,
 			requiredIndicator: true,
 			CSSStyles: {
-				...type.labelCSSStyle
+				...styles.labelCSS
 			}
 		}).component();
 
@@ -261,7 +261,7 @@ export class CreateSqlMigrationServiceDialog {
 			label: constants.CREATE_NEW,
 			url: '',
 			CSSStyles: {
-				...type.bodyCSSStyle
+				...styles.bodyCSS
 			}
 		}).component();
 
@@ -293,7 +293,7 @@ export class CreateSqlMigrationServiceDialog {
 			value: constants.LOCATION,
 			description: constants.MIGRATION_SERVICE_LOCATION_INFO,
 			CSSStyles: {
-				...type.labelCSSStyle
+				...styles.labelCSS
 			}
 		}).component();
 
@@ -310,7 +310,7 @@ export class CreateSqlMigrationServiceDialog {
 			value: constants.TARGET,
 			description: constants.MIGRATION_SERVICE_TARGET_INFO,
 			CSSStyles: {
-				...type.labelCSSStyle
+				...styles.labelCSS
 			}
 		}).component();
 

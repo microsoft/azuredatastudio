@@ -13,7 +13,7 @@ import { EOL } from 'os';
 import { IconPath, IconPathHelper } from '../constants/iconPathHelper';
 import { WIZARD_INPUT_COMPONENT_WIDTH } from './wizardController';
 import { findDropDownItemIndex, selectDropDownIndex } from '../api/utils';
-import * as type from '../constants/typography';
+import * as styles from '../constants/styles';
 
 export interface Product {
 	type: MigrationTargetType;
@@ -97,7 +97,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			width: 160,
 			height: 24,
 			CSSStyles: {
-				...type.bodyCSSStyle,
+				...styles.bodyCSS,
 				'margin': '12px 0 4px 0'
 			}
 		}).component();
@@ -174,7 +174,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	private createStatusComponent(view: azdata.ModelView): azdata.TextComponent {
 		const component = view.modelBuilder.text().withProps({
 			CSSStyles: {
-				...type.sectionHeaderCSSStyle,
+				...styles.sectionHeaderCSS,
 				'margin-left': '8px'
 			}
 		}).component();
@@ -184,7 +184,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	private createDetailsComponent(view: azdata.ModelView): azdata.TextComponent {
 		const component = view.modelBuilder.text().withProps({
 			CSSStyles: {
-				...type.bodyCSSStyle
+				...styles.bodyCSS
 			}
 		}).component();
 		return component;
@@ -195,7 +195,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		const chooseYourTargetText = this._view.modelBuilder.text().withProps({
 			value: constants.SKU_RECOMMENDATION_CHOOSE_A_TARGET,
 			CSSStyles: {
-				...type.sectionHeaderCSSStyle,
+				...styles.sectionHeaderCSS,
 				'margin': '0'
 			}
 		}).component();
@@ -221,13 +221,13 @@ export class SKURecommendationPage extends MigrationWizardPage {
 					{
 						textValue: product.name,
 						textStyles: {
-							...type.sectionHeaderCSSStyle
+							...styles.sectionHeaderCSS
 						}
 					},
 					{
 						textValue: '',
 						textStyles: {
-							...type.bodyCSSStyle
+							...styles.bodyCSS
 						}
 					}
 				]
@@ -258,7 +258,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		this._viewAssessmentsHelperText = this._view.modelBuilder.text().withProps({
 			value: constants.SKU_RECOMMENDATION_VIEW_ASSESSMENT_MI,
 			CSSStyles: {
-				...type.sectionHeaderCSSStyle
+				...styles.sectionHeaderCSS
 			},
 			width: WIZARD_INPUT_COMPONENT_WIDTH
 		}).component();
@@ -287,7 +287,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 
 		this._databaseSelectedHelperText = this._view.modelBuilder.text().withProps({
 			CSSStyles: {
-				...type.bodyCSSStyle,
+				...styles.bodyCSS,
 			}
 		}).component();
 
@@ -304,7 +304,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	private createTargetDropdownContainer(): azdata.FlexContainer {
 		this._azureSubscriptionText = this._view.modelBuilder.text().withProps({
 			CSSStyles: {
-				...type.sectionHeaderCSSStyle
+				...styles.sectionHeaderCSS
 			}
 		}).component();
 
@@ -314,7 +314,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			width: WIZARD_INPUT_COMPONENT_WIDTH,
 			requiredIndicator: true,
 			CSSStyles: {
-				...type.labelCSSStyle,
+				...styles.labelCSS,
 			}
 		}).component();
 		this._managedInstanceSubscriptionDropdown = this._view.modelBuilder.dropDown().withProps({
@@ -343,7 +343,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			width: WIZARD_INPUT_COMPONENT_WIDTH,
 			requiredIndicator: true,
 			CSSStyles: {
-				...type.labelCSSStyle
+				...styles.labelCSS
 			}
 		}).component();
 		this._azureLocationDropdown = this._view.modelBuilder.dropDown().withProps({
@@ -370,7 +370,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			width: WIZARD_INPUT_COMPONENT_WIDTH,
 			requiredIndicator: true,
 			CSSStyles: {
-				...type.labelCSSStyle
+				...styles.labelCSS
 			}
 		}).component();
 		this._azureResourceGroupDropdown = this._view.modelBuilder.dropDown().withProps({
@@ -397,7 +397,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			width: WIZARD_INPUT_COMPONENT_WIDTH,
 			requiredIndicator: true,
 			CSSStyles: {
-				...type.labelCSSStyle
+				...styles.labelCSS
 			}
 		}).component();
 		this._resourceDropdown = this._view.modelBuilder.dropDown().withProps({
@@ -712,7 +712,7 @@ errorId: ${e.errorId}
 		this._assessmentProgress = this._view.modelBuilder.text().withProps({
 			value: constants.ASSESSMENT_IN_PROGRESS,
 			CSSStyles: {
-				...type.pageTitleCSSStyles,
+				...styles.pageTitleCSS,
 				'margin-right': '20px'
 			}
 		}).component();
@@ -731,7 +731,7 @@ errorId: ${e.errorId}
 		this._assessmentInfo = this._view.modelBuilder.text().withProps({
 			value: constants.ASSESSMENT_IN_PROGRESS_CONTENT((await this.migrationStateModel.getSourceConnectionProfile()).serverName),
 			CSSStyles: {
-				...type.bodyCSSStyle
+				...styles.bodyCSS
 			}
 		}).component();
 		return this._assessmentInfo;

@@ -11,7 +11,7 @@ import * as constants from '../constants/strings';
 import { createHeadingTextComponent, createInformationRow, createLabelTextComponent } from './wizardController';
 import { getResourceGroupFromId } from '../api/azure';
 import { TargetDatabaseSummaryDialog } from '../dialog/targetDatabaseSummary/targetDatabaseSummaryDialog';
-import * as type from '../constants/typography';
+import * as styles from '../constants/styles';
 
 export class SummaryPage extends MigrationWizardPage {
 	private _view!: azdata.ModelView;
@@ -50,7 +50,7 @@ export class SummaryPage extends MigrationWizardPage {
 			url: '',
 			label: this.migrationStateModel._migrationDbs.length.toString(),
 			CSSStyles: {
-				...type.bodyCSSStyle,
+				...styles.bodyCSS,
 				'margin': '0px',
 				'width': '300px',
 			}
@@ -70,7 +70,7 @@ export class SummaryPage extends MigrationWizardPage {
 				[
 					createLabelTextComponent(this._view, constants.SUMMARY_DATABASE_COUNT_LABEL,
 						{
-							...type.bodyCSSStyle,
+							...styles.bodyCSS,
 							'width': '300px',
 						}
 					),

@@ -13,7 +13,7 @@ import { WIZARD_INPUT_COMPONENT_WIDTH } from './wizardController';
 import { getLocationDisplayName, getSqlMigrationService, getSqlMigrationServiceAuthKeys, getSqlMigrationServiceMonitoringData, SqlManagedInstance } from '../api/azure';
 import { IconPathHelper } from '../constants/iconPathHelper';
 import { findDropDownItemIndex } from '../api/utils';
-import * as type from '../constants/typography';
+import * as styles from '../constants/styles';
 
 export class IntergrationRuntimePage extends MigrationWizardPage {
 
@@ -53,7 +53,7 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 			text: constants.DMS_PORTAL_INFO,
 			style: 'information',
 			CSSStyles: {
-				...type.bodyCSSStyle
+				...styles.bodyCSS
 			},
 			width: WIZARD_INPUT_COMPONENT_WIDTH
 		}).component();
@@ -132,7 +132,7 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 			value: constants.IR_PAGE_DESCRIPTION,
 			width: WIZARD_INPUT_COMPONENT_WIDTH,
 			CSSStyles: {
-				...type.bodyCSSStyle
+				...styles.bodyCSS
 			}
 		}).component();
 
@@ -140,7 +140,7 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 			value: constants.SUBSCRIPTION,
 			requiredIndicator: true,
 			CSSStyles: {
-				...type.labelCSSStyle
+				...styles.labelCSS
 			}
 		}).component();
 		this._subscription = this._view.modelBuilder.inputBox().withProps({
@@ -156,7 +156,7 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 			value: constants.LOCATION,
 			requiredIndicator: true,
 			CSSStyles: {
-				...type.labelCSSStyle
+				...styles.labelCSS
 			}
 		}).component();
 		this._location = this._view.modelBuilder.inputBox().withProps({
@@ -172,7 +172,7 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 			value: constants.RESOURCE_GROUP,
 			requiredIndicator: true,
 			CSSStyles: {
-				...type.labelCSSStyle
+				...styles.labelCSS
 			}
 		}).component();
 		this._resourceGroupDropdown = this._view.modelBuilder.dropDown().withProps({
@@ -197,7 +197,7 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 			value: constants.IR_PAGE_TITLE,
 			requiredIndicator: true,
 			CSSStyles: {
-				...type.labelCSSStyle
+				...styles.labelCSS
 			}
 		}).component();
 		this._dmsDropdown = this._view.modelBuilder.dropDown().withProps({
@@ -231,7 +231,7 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 			label: constants.CREATE_NEW,
 			url: '',
 			CSSStyles: {
-				...type.bodyCSSStyle
+				...styles.bodyCSS
 			}
 		}).component();
 
@@ -269,7 +269,7 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 		const connectionStatusLabel = this._view.modelBuilder.text().withProps({
 			value: constants.SERVICE_CONNECTION_STATUS,
 			CSSStyles: {
-				...type.labelCSSStyle,
+				...styles.labelCSS,
 				'width': '130px'
 			}
 		}).component();
@@ -316,14 +316,14 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 			style: 'error',
 			text: '',
 			CSSStyles: {
-				...type.bodyCSSStyle
+				...styles.bodyCSS
 			}
 		}).component();
 
 		const authenticationKeysLabel = this._view.modelBuilder.text().withProps({
 			value: constants.AUTHENTICATION_KEYS,
 			CSSStyles: {
-				...type.labelCSSStyle
+				...styles.labelCSS
 			}
 		}).component();
 
