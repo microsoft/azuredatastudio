@@ -54,6 +54,6 @@ suite('Data Explorer Viewlet', () => {
 		let retrieved = Platform.Registry.as<ViewletRegistry>(Extensions.Viewlets).getViewlet('dataExplorer-test-id');
 		assert(d === retrieved);
 		let newCount = Platform.Registry.as<ViewletRegistry>(Extensions.Viewlets).getViewlets().length;
-		assert.equal(oldCount + 1, newCount);
+		assert.strictEqual(oldCount + 1, newCount);
 	});
 });

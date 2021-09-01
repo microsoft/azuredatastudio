@@ -23,7 +23,7 @@ export class GitHubRemoteBook extends RemoteBook {
 		this.setLocalPath();
 		this.outputChannel.appendLine(loc.msgDownloadLocation(this.localPath.fsPath));
 		this.outputChannel.appendLine(loc.msgRemoteBookDownloadProgress);
-		this.createDirectory();
+		await this.createDirectory();
 		let notebookConfig = vscode.workspace.getConfiguration(constants.notebookConfigKey);
 		let downloadTimeout = notebookConfig[constants.remoteBookDownloadTimeout];
 
@@ -83,7 +83,7 @@ export class GitHubRemoteBook extends RemoteBook {
 			}
 			await fs.promises.unlink(remoteBookFullPath.fsPath);
 			this.outputChannel.appendLine(loc.msgRemoteBookDownloadComplete);
-			vscode.commands.executeCommand('notebook.command.openNotebookFolder', this.localPath.fsPath, undefined, true);
+			void vscode.commands.executeCommand('notebook.command.openNotebookFolder', this.localPath.fsPath, undefined, true);
 		}
 		catch (err) {
 			this.outputChannel.appendLine(loc.msgRemoteBookUnpackingError);

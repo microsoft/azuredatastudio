@@ -61,7 +61,7 @@ export class JupyterNotebookProvider implements nb.NotebookProvider {
 			let sessionManager = (manager.sessionManager as JupyterSessionManager);
 			let session = sessionManager.listRunning().find(e => e.path === notebookUri.fsPath);
 			if (session) {
-				manager.sessionManager.shutdown(session.id);
+				manager.sessionManager.shutdown(session.id).then(undefined, err => console.error('Error shutting down session after notebook closed ', err));
 			}
 			if (sessionManager.listRunning().length === 0) {
 				let notebookConfig: vscode.WorkspaceConfiguration = vscode.workspace.getConfiguration(constants.notebookConfigKey);

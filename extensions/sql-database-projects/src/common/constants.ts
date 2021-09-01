@@ -115,6 +115,7 @@ export const selectProfileToUse = localize('selectProfileToUse', "Select publish
 export const selectProfile = localize('selectProfile', "Select Profile");
 export const dontUseProfile = localize('dontUseProfile', "Don't use profile");
 export const browseForProfile = localize('browseForProfile', "Browse for profile");
+export const browseForProfileWithIcon = `$(folder) ${browseForProfile}`;
 export const chooseAction = localize('chooseAction', "Choose action");
 export const chooseSqlcmdVarsToModify = localize('chooseSqlcmdVarsToModify', "Choose SQLCMD variables to modify");
 export const enterNewValueForVar = (varName: string) => localize('enterNewValueForVar', "Enter new value for variable '{0}'", varName);
@@ -444,7 +445,9 @@ export function getTargetPlatformFromVersion(version: string): string {
 
 // Insert SQL binding
 export const hostFileName = 'host.json';
+export const sqlExtensionPackageName = 'Microsoft.Azure.WebJobs.Extensions.Sql';
 export const placeHolderObject = '[dbo].[table1]';
+
 export const input = localize('input', "Input");
 export const output = localize('output', "Output");
 export const selectBindingType = localize('selectBindingType', "Select type of binding");
@@ -454,3 +457,5 @@ export const sqlTableToUpsert = localize('sqlTableToUpsert', "SQL table to upser
 export const connectionStringSetting = localize('connectionStringSetting', "Connection string setting name");
 export const connectionStringSettingPlaceholder = localize('connectionStringSettingPlaceholder', "Connection string setting specified in \"local.settings.json\"");
 export const noAzureFunctionsInFile = localize('noAzureFunctionsInFile', "No Azure functions in the current active file");
+export const noAzureFunctionsProjectsInWorkspace = localize('noAzureFunctionsProjectsInWorkspace', "No Azure functions projects found in the workspace");
+export const addPackage = localize('addPackage', "Add Package");

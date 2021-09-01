@@ -2,8 +2,9 @@ import * as vscode from 'vscode';
 import { BindingType } from 'vscode-mssql';
 import * as constants from '../common/constants';
 import * as utils from '../common/utils';
+import { PackageHelper } from '../tools/packageHelper';
 
-export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined): Promise<void> {
+export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined, packageHelper: PackageHelper): Promise<void> {
 	if (!uri) {
 		// this command only shows in the command palette when the active editor is a .cs file, so we can safely assume that's the scenario
 		// when this is called without a uri
@@ -16,14 +17,14 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined):
 	try {
 		getAzureFunctionsResult = await azureFunctionsService.getAzureFunctions(uri.fsPath);
 	} catch (e) {
-		vscode.window.showErrorMessage(e);
+		void vscode.window.showErrorMessage(e);
 		return;
 	}
 
 	const azureFunctions = getAzureFunctionsResult.azureFunctions;
 
 	if (azureFunctions.length === 0) {
-		vscode.window.showErrorMessage(constants.noAzureFunctionsInFile);
+		void vscode.window.showErrorMessage(constants.noAzureFunctionsInFile);
 		return;
 	}
 
@@ -88,12 +89,15 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined):
 		const result = await azureFunctionsService.addSqlBinding(selectedBinding.type, uri.fsPath, azureFunctionName, objectName, connectionStringSetting);
 
 		if (!result.success) {
-			vscode.window.showErrorMessage(result.errorMessage);
+			void vscode.window.showErrorMessage(result.errorMessage);
 			return;
 		}
 	} catch (e) {
-		vscode.window.showErrorMessage(e);
+		void vscode.window.showErrorMessage(e);
 		return;
 	}
+
+	// 6. Add sql extension package reference to project. If the reference is already there, it doesn't get added again
+	await packageHelper.addPackageToAFProjectContainingFile(uri.fsPath, constants.sqlExtensionPackageName);
 }
 

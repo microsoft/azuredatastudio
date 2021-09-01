@@ -396,7 +396,8 @@ export enum DeclarativeDataType {
 export enum CardType {
 	VerticalButton = 'VerticalButton',
 	Details = 'Details',
-	ListItem = 'ListItem'
+	ListItem = 'ListItem',
+	Image = 'Image'
 }
 
 export enum Orientation {

@@ -123,7 +123,7 @@ export class JupyterController {
 			// Verify this is a .ipynb file since this isn't actually filtered on Mac/Linux
 			if (path.extname(fileUri.fsPath) !== '.ipynb') {
 				// in the future might want additional supported types
-				vscode.window.showErrorMessage(localize('unsupportedFileType', "Only .ipynb Notebooks are supported"));
+				void vscode.window.showErrorMessage(localize('unsupportedFileType', "Only .ipynb Notebooks are supported"));
 			} else {
 				await azdata.nb.showNotebookDocument(fileUri, {
 					connectionProfile: profile,
@@ -156,7 +156,7 @@ export class JupyterController {
 					+ os.EOL + '.option(\"header\", \"true\")' + os.EOL + '.csv(\'{0}\'))' + os.EOL + 'df.show(10)';
 				// TODO re-enable insert into document once APIs are finalized.
 				// editor.document.cells[0].source = [analyzeCommand.replace('{0}', hdfsPath)];
-				editor.edit(editBuilder => {
+				await editor.edit(editBuilder => {
 					editBuilder.replace(0, {
 						cell_type: 'code',
 						source: analyzeCommand.replace('{0}', hdfsPath)
@@ -174,7 +174,7 @@ export class JupyterController {
 				await this._jupyterInstallation.startInstallProcess(true);
 			}
 		} catch (err) {
-			vscode.window.showErrorMessage(utils.getErrorMessage(err));
+			void vscode.window.showErrorMessage(utils.getErrorMessage(err));
 		}
 	}
 
@@ -202,7 +202,7 @@ export class JupyterController {
 			packagesDialog.showDialog();
 		} catch (error) {
 			let message = utils.getErrorMessage(error);
-			vscode.window.showErrorMessage(message);
+			void vscode.window.showErrorMessage(message);
 		}
 	}
 
@@ -236,10 +236,10 @@ export class JupyterController {
 	public doConfigurePython(jupyterInstaller: JupyterServerInstallation): void {
 		let pythonWizard = new ConfigurePythonWizard(jupyterInstaller);
 		pythonWizard.start().catch((err: any) => {
-			vscode.window.showErrorMessage(utils.getErrorMessage(err));
+			void vscode.window.showErrorMessage(utils.getErrorMessage(err));
 		});
 		pythonWizard.setupComplete.catch((err: any) => {
-			vscode.window.showErrorMessage(utils.getErrorMessage(err));
+			void vscode.window.showErrorMessage(utils.getErrorMessage(err));
 		});
 	}
 

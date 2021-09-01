@@ -96,7 +96,11 @@ export function setup() {
 				const name = this.currentTest!.fullTitle().replace(/[^a-z0-9\-]/ig, '_');
 				await app.captureScreenshot(`${name} (screenshot before revertAndCloseActiveEditor action)`);
 			}
+
 			await app.workbench.quickaccess.runCommand('workbench.action.revertAndCloseActiveEditor');
+
+			// Close any open wizards
+			await app.code.dispatchKeybinding('escape');
 		});
 
 		describe('Notebook Toolbar Actions', async () => {

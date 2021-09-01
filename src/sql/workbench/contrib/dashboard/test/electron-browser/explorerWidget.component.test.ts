@@ -66,7 +66,7 @@ suite('Explorer Widget Tests', () => {
 
 		// Then the resulting list is sorted by type, with Table > View > Stored Procedures > Function, then by name
 		let expectedList = [testMetadata[1], testMetadata[4], testMetadata[0], testMetadata[2], testMetadata[3]];
-		expectedList.forEach((expectedWrapper, index) => assert.equal(sortedMetadata[index], expectedWrapper));
+		expectedList.forEach((expectedWrapper, index) => assert.strictEqual(sortedMetadata[index], expectedWrapper));
 	});
 
 	test('Filter is only performed on the specified properties', () => {
@@ -83,8 +83,8 @@ suite('Explorer Widget Tests', () => {
 		obj2[prop2] = 'Match';
 		obj2[prop3] = 'cd';
 		const result = filter.filter('ATc', [obj1, obj2]);
-		assert.equal(result.length, 1, 'filtered result set should container 1 item');
-		assert.equal(result[0], obj2, 'filtered result set does not match expectation');
+		assert.strictEqual(result.length, 1, 'filtered result set should container 1 item');
+		assert.strictEqual(result[0], obj2, 'filtered result set does not match expectation');
 	});
 
 	test('object type filter', () => {
@@ -137,41 +137,41 @@ suite('Explorer Widget Tests', () => {
 		].map(o => new ObjectMetadataWrapper(o));
 		const filter = new ExplorerFilter('database', ['name']);
 		let result = filter.filter('t:', testMetadata);
-		assert.equal(result.length, 1, 'table type filter should return only 1 item');
-		assert.equal(result[0]['name'], 'testTable', 'table type filter does not return correct data');
+		assert.strictEqual(result.length, 1, 'table type filter should return only 1 item');
+		assert.strictEqual(result[0]['name'], 'testTable', 'table type filter does not return correct data');
 		result = filter.filter('v:', testMetadata);
-		assert.equal(result.length, 2, 'view type filter should return only 1 item');
-		assert.equal(result[0]['name'], 'testView', 'view type filter does not return correct data');
-		assert.equal(result[1]['name'], 'firstView', 'view type filter does not return correct data');
+		assert.strictEqual(result.length, 2, 'view type filter should return only 1 item');
+		assert.strictEqual(result[0]['name'], 'testView', 'view type filter does not return correct data');
+		assert.strictEqual(result[1]['name'], 'firstView', 'view type filter does not return correct data');
 		result = filter.filter('sp:', testMetadata);
-		assert.equal(result.length, 1, 'stored proc type filter should return only 1 item');
-		assert.equal(result[0]['name'], 'testSProc', 'stored proc type filter does not return correct data');
+		assert.strictEqual(result.length, 1, 'stored proc type filter should return only 1 item');
+		assert.strictEqual(result[0]['name'], 'testSProc', 'stored proc type filter does not return correct data');
 		result = filter.filter('f:', testMetadata);
-		assert.equal(result.length, 1, 'function type filter should return only 1 item');
-		assert.equal(result[0]['name'], 'testFunction', 'function type filter does not return correct data');
+		assert.strictEqual(result.length, 1, 'function type filter should return only 1 item');
+		assert.strictEqual(result[0]['name'], 'testFunction', 'function type filter does not return correct data');
 		result = filter.filter('v:first', testMetadata);
-		assert.equal(result.length, 1, 'view type and name filter should return only 1 item');
-		assert.equal(result[0]['name'], 'firstView', 'view type and name filter does not return correct data');
+		assert.strictEqual(result.length, 1, 'view type and name filter should return only 1 item');
+		assert.strictEqual(result[0]['name'], 'firstView', 'view type and name filter does not return correct data');
 	});
 
 	test('Icon css class test', () => {
 		const serverView = new ExplorerView('server');
 		let icon = serverView.getIconClass({});
-		assert.equal(icon, 'database-colored');
+		assert.strictEqual(icon, 'database-colored');
 		const databaseView = new ExplorerView('database');
 		const obj = {};
 		obj['metadataType'] = MetadataType.Function;
 		icon = databaseView.getIconClass(obj);
-		assert.equal(icon, 'scalarvaluedfunction');
+		assert.strictEqual(icon, 'scalarvaluedfunction');
 		obj['metadataType'] = MetadataType.SProc;
 		icon = databaseView.getIconClass(obj);
-		assert.equal(icon, 'storedprocedure');
+		assert.strictEqual(icon, 'storedprocedure');
 		obj['metadataType'] = MetadataType.Table;
 		icon = databaseView.getIconClass(obj);
-		assert.equal(icon, 'table');
+		assert.strictEqual(icon, 'table');
 		obj['metadataType'] = MetadataType.View;
 		icon = databaseView.getIconClass(obj);
-		assert.equal(icon, 'view');
+		assert.strictEqual(icon, 'view');
 	});
 
 	test('explorer property list', () => {
@@ -201,19 +201,19 @@ suite('Explorer Widget Tests', () => {
 			}]
 		};
 		let propertyList = serverView.getPropertyList(emptyFlavor);
-		assert.equal(propertyList.length, 1, 'default database property list should contain 1 property');
-		assert.equal(propertyList[0].value, 'name', 'default database property list should contain name property');
+		assert.strictEqual(propertyList.length, 1, 'default database property list should contain 1 property');
+		assert.strictEqual(propertyList[0].value, 'name', 'default database property list should contain name property');
 		propertyList = serverView.getPropertyList(flavor);
-		assert.equal(propertyList.length, 1, 'database property list should contain 1 property');
-		assert.equal(propertyList[0].value, 'dbprop1', 'database property list should contain dbprop1 property');
+		assert.strictEqual(propertyList.length, 1, 'database property list should contain 1 property');
+		assert.strictEqual(propertyList[0].value, 'dbprop1', 'database property list should contain dbprop1 property');
 		const databaseView = new ExplorerView('database');
 		propertyList = databaseView.getPropertyList(emptyFlavor);
-		assert.equal(propertyList.length, 3, 'default object property list should contain 3 property');
-		assert.equal(propertyList[0].value, 'name', 'default object property list should contain name property');
-		assert.equal(propertyList[1].value, 'schema', 'default object property list should contain schema property');
-		assert.equal(propertyList[2].value, 'metadataTypeName', 'default object property list should contain metadataTypeName property');
+		assert.strictEqual(propertyList.length, 3, 'default object property list should contain 3 property');
+		assert.strictEqual(propertyList[0].value, 'name', 'default object property list should contain name property');
+		assert.strictEqual(propertyList[1].value, 'schema', 'default object property list should contain schema property');
+		assert.strictEqual(propertyList[2].value, 'metadataTypeName', 'default object property list should contain metadataTypeName property');
 		propertyList = databaseView.getPropertyList(flavor);
-		assert.equal(propertyList.length, 1, 'object property list should contain 1 property');
-		assert.equal(propertyList[0].value, 'objprop1', 'object property list should contain objprop1 property');
+		assert.strictEqual(propertyList.length, 1, 'object property list should contain 1 property');
+		assert.strictEqual(propertyList[0].value, 'objprop1', 'object property list should contain objprop1 property');
 	});
 });

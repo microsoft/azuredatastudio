@@ -70,7 +70,7 @@ suite('MainThreadNotebook Tests', () => {
 			mainThreadNotebook.$registerNotebookProvider(providerId, 1);
 			// Then I expect a provider implementation to be passed to the service
 			mockNotebookService.verify(s => s.registerProvider(TypeMoq.It.isAnyString(), TypeMoq.It.isAny()), TypeMoq.Times.once());
-			assert.equal(provider.providerId, providerId);
+			assert.strictEqual(provider.providerId, providerId);
 		});
 		test('should unregister in service', () => {
 			// Given we have a provider
@@ -118,7 +118,7 @@ suite('MainThreadNotebook Tests', () => {
 			// Then it should use the built-in content manager
 			assert.ok(manager.contentManager instanceof LocalContentManager);
 			// And it should not define a server manager
-			assert.equal(manager.serverManager, undefined);
+			assert.strictEqual(manager.serverManager, undefined);
 		});
 
 		test('should return manager with a content & server manager if extension host has these', async () => {
@@ -131,7 +131,7 @@ suite('MainThreadNotebook Tests', () => {
 
 			// Then it shouldn't have wrappers for the content or server manager
 			assert.ok(!(manager.contentManager instanceof LocalContentManager));
-			assert.notEqual(manager.serverManager, undefined);
+			assert.notStrictEqual(manager.serverManager, undefined);
 		});
 	});
 

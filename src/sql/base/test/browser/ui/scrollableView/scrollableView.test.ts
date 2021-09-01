@@ -59,7 +59,7 @@ suite.skip('ScrollableView', () => { // TODO chgagnon Fix these tests
 	test('creates empty view', () => {
 		const scrollableView = new ScrollableView(container);
 		scrollableView.layout(200, 200);
-		assert.equal(container.firstElementChild!.firstElementChild!.firstElementChild!.childElementCount, 0, 'view should be empty');
+		assert.strictEqual(container.firstElementChild!.firstElementChild!.firstElementChild!.childElementCount, 0, 'view should be empty');
 		scrollableView.dispose();
 	});
 
@@ -79,12 +79,12 @@ suite.skip('ScrollableView', () => { // TODO chgagnon Fix these tests
 		await waitForAnimation();
 
 		let viewQuery = getViewChildren(container);
-		assert.equal(viewQuery.length, 3, 'split view should have 3 views');
+		assert.strictEqual(viewQuery.length, 3, 'split view should have 3 views');
 
 		scrollableView.clear();
 
 		viewQuery = getViewChildren(container);
-		assert.equal(viewQuery.length, 0, 'split view should have no views');
+		assert.strictEqual(viewQuery.length, 0, 'split view should have no views');
 
 		view1.dispose();
 		view2.dispose();
@@ -104,22 +104,22 @@ suite.skip('ScrollableView', () => { // TODO chgagnon Fix these tests
 
 		await waitForAnimation();
 
-		assert.equal(view1.size, 200, 'view1 is entire size');
+		assert.strictEqual(view1.size, 200, 'view1 is entire size');
 
 		scrollableView.addView(view2);
 
 		await waitForAnimation();
 
-		assert.equal(view1.size, 100, 'view1 is half size');
-		assert.equal(view2.size, 100, 'view2 is half size');
+		assert.strictEqual(view1.size, 100, 'view1 is half size');
+		assert.strictEqual(view2.size, 100, 'view2 is half size');
 
 		scrollableView.addView(view3);
 
 		await waitForAnimation();
 
-		assert.equal(view1.size, 66, 'view1 is third size');
-		assert.equal(view2.size, 67, 'view2 is third size');
-		assert.equal(view3.size, 67, 'view3 is third size');
+		assert.strictEqual(view1.size, 66, 'view1 is third size');
+		assert.strictEqual(view2.size, 67, 'view2 is third size');
+		assert.strictEqual(view3.size, 67, 'view3 is third size');
 	});
 
 	test('honors minimum size', async () => {
@@ -134,9 +134,9 @@ suite.skip('ScrollableView', () => { // TODO chgagnon Fix these tests
 
 		await waitForAnimation();
 
-		assert.equal(view1.size, 100, 'view1 is minimum size');
-		assert.equal(view2.size, 100, 'view2 is minimum size');
-		assert.equal(view3.size, 0, 'view3 should not have been layout yet');
+		assert.strictEqual(view1.size, 100, 'view1 is minimum size');
+		assert.strictEqual(view2.size, 100, 'view2 is minimum size');
+		assert.strictEqual(view3.size, 0, 'view3 should not have been layout yet');
 	});
 
 	test('reacts to changes in views', async () => {
@@ -156,9 +156,9 @@ suite.skip('ScrollableView', () => { // TODO chgagnon Fix these tests
 
 		await waitForAnimation();
 
-		assert.equal(view1.size, 130, 'view1 should be 130');
-		assert.equal(view2.size, 100, 'view2 should still be minimum size');
-		assert.equal(view3.size, 0, 'view3 should not have been layout yet');
+		assert.strictEqual(view1.size, 130, 'view1 should be 130');
+		assert.strictEqual(view2.size, 100, 'view2 should still be minimum size');
+		assert.strictEqual(view3.size, 0, 'view3 should not have been layout yet');
 	});
 
 	test('programmatically scrolls', async () => {
@@ -173,18 +173,18 @@ suite.skip('ScrollableView', () => { // TODO chgagnon Fix these tests
 
 		await waitForAnimation();
 
-		assert.equal(view1.size, 100, 'view1 is minimum size');
-		assert.equal(view2.size, 100, 'view2 is minimum size');
-		assert.equal(view3.size, 0, 'view3 should not have been layout yet');
-		assert.equal(getViewChildren(container).length, 2, 'only 2 views are rendered');
+		assert.strictEqual(view1.size, 100, 'view1 is minimum size');
+		assert.strictEqual(view2.size, 100, 'view2 is minimum size');
+		assert.strictEqual(view3.size, 0, 'view3 should not have been layout yet');
+		assert.strictEqual(getViewChildren(container).length, 2, 'only 2 views are rendered');
 
 		scrollableView.setScrollTop(100);
 
 		await waitForAnimation();
 
-		assert.equal(view2.size, 100, 'view2 is minimum size');
-		assert.equal(view3.size, 100, 'view3 is minimum size');
-		assert.equal(getViewChildren(container).length, 2, 'only 2 views are rendered');
+		assert.strictEqual(view2.size, 100, 'view2 is minimum size');
+		assert.strictEqual(view3.size, 100, 'view3 is minimum size');
+		assert.strictEqual(getViewChildren(container).length, 2, 'only 2 views are rendered');
 	});
 });
 

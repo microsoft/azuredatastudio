@@ -30,7 +30,7 @@ export class NotebookUriHandler implements vscode.UriHandler {
 			case '/open':
 				return this.open(uri);
 			default:
-				vscode.window.showErrorMessage(localize('notebook.unsupportedAction', "Action {0} is not supported for this handler", uri.path));
+				void vscode.window.showErrorMessage(localize('notebook.unsupportedAction', "Action {0} is not supported for this handler", uri.path));
 		}
 	}
 	/**
@@ -84,7 +84,7 @@ export class NotebookUriHandler implements vscode.UriHandler {
 				case 'https':
 					break;
 				default:
-					vscode.window.showErrorMessage(localize('unsupportedScheme', "Cannot open link {0} as only HTTP, HTTPS, and File links are supported", url));
+					void vscode.window.showErrorMessage(localize('unsupportedScheme', "Cannot open link {0} as only HTTP, HTTPS, and File links are supported", url));
 					return;
 			}
 			let contents: string;
@@ -116,7 +116,7 @@ export class NotebookUriHandler implements vscode.UriHandler {
 				});
 			}
 		} catch (err) {
-			vscode.window.showErrorMessage(getErrorMessage(err));
+			void vscode.window.showErrorMessage(getErrorMessage(err));
 		}
 	}
 

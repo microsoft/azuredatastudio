@@ -12,12 +12,14 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { IResolvedTextEditorModel } from 'vs/editor/common/services/resolverService';
 import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/untitledTextEditorInput';
 import { IUntitledTextEditorModel } from 'vs/workbench/services/untitled/common/untitledTextEditorModel';
-import { EncodingMode, IEncodingSupport } from 'vs/workbench/services/textfile/common/textfiles';
+import { EncodingMode } from 'vs/workbench/services/textfile/common/textfiles';
 import { EditorInputCapabilities } from 'vs/workbench/common/editor';
+import { UNTITLED_QUERY_EDITOR_TYPEID } from 'sql/workbench/common/constants';
+import { IUntitledQueryEditorInput } from 'sql/base/query/common/untitledQueryEditorInput';
 
-export class UntitledQueryEditorInput extends QueryEditorInput implements IEncodingSupport {
+export class UntitledQueryEditorInput extends QueryEditorInput implements IUntitledQueryEditorInput {
 
-	public static readonly ID = 'workbench.editorInput.untitledQueryInput';
+	public static readonly ID = UNTITLED_QUERY_EDITOR_TYPEID;
 
 	constructor(
 		description: string | undefined,
