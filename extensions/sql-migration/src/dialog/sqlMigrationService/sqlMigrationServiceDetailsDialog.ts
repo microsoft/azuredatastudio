@@ -9,6 +9,7 @@ import { getSqlMigrationServiceAuthKeys, getSqlMigrationServiceMonitoringData, r
 import { IconPathHelper } from '../../constants/iconPathHelper';
 import * as constants from '../../constants/strings';
 import { MigrationContext } from '../../models/migrationLocalStorage';
+import * as styles from '../../constants/styles';
 
 const CONTROL_MARGIN = '10px';
 const COLUMN_WIDTH = '50px';
@@ -16,13 +17,8 @@ const STRETCH_WIDTH = '100%';
 const LABEL_MARGIN = '0 10px 0 10px';
 const VALUE_MARGIN = '0 10px 10px 10px';
 const INFO_VALUE_MARGIN = '0 10px 0 0';
-const NO_MARGIN = '0';
 const ICON_SIZE = '28px';
 const IMAGE_SIZE = '21px';
-const TITLE_FONT_SIZE = '14px';
-const DESCRIPTION_FONT_SIZE = '10px';
-const FONT_SIZE = '13px';
-const FONT_WEIGHT_BOLD = 'bold';
 const AUTH_KEY1 = 'authKey1';
 const AUTH_KEY2 = 'authKey2';
 
@@ -126,9 +122,7 @@ export class SqlMigrationServiceDetailsDialog {
 							.withProps({
 								value: migrationContext.controller.name,
 								CSSStyles: {
-									'font-size': TITLE_FONT_SIZE,
-									'font-weight': FONT_WEIGHT_BOLD,
-									'margin': NO_MARGIN,
+									...styles.sectionHeaderCSS
 								}
 							})
 							.component(),
@@ -137,8 +131,7 @@ export class SqlMigrationServiceDetailsDialog {
 							.withProps({
 								value: constants.SQL_MIGRATION_SERVICE_DETAILS_SUB_TITLE,
 								CSSStyles: {
-									'font-size': DESCRIPTION_FONT_SIZE,
-									'margin': NO_MARGIN,
+									...styles.smallNoteCSS
 								}
 							})
 							.component(),
@@ -165,7 +158,7 @@ export class SqlMigrationServiceDetailsDialog {
 				description: description,
 				title: value,
 				CSSStyles: {
-					'font-size': FONT_SIZE,
+					...styles.bodyCSS,
 					'margin': margin,
 				}
 			})
@@ -195,10 +188,11 @@ export class SqlMigrationServiceDetailsDialog {
 			valueType: valueType,
 			width: width,
 			isReadOnly: true,
-			rowCssStyles: { 'font-size': FONT_SIZE },
+			rowCssStyles: {
+				...styles.bodyCSS
+			},
 			headerCssStyles: {
-				'font-size': FONT_SIZE,
-				'font-weight': 'normal',
+				...styles.bodyCSS
 			},
 		};
 	}

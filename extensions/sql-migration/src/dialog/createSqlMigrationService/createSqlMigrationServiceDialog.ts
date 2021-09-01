@@ -386,28 +386,28 @@ export class CreateSqlMigrationServiceDialog {
 			value: constants.SERVICE_CONTAINER_HEADING,
 			CSSStyles: {
 				'font-weight': 'bold',
-				'font-size': '13px'
+				...styles.bodyCSS
 			}
 		}).component();
 
 		const setupIRdescription1 = this._view.modelBuilder.text().withProps({
 			value: constants.SERVICE_CONTAINER_DESCRIPTION1,
 			CSSStyles: {
-				'font-size': '13px'
+				...styles.bodyCSS
 			}
 		}).component();
 
 		const setupIRdescription2 = this._view.modelBuilder.text().withProps({
 			value: constants.SERVICE_CONTAINER_DESCRIPTION2,
 			CSSStyles: {
-				'font-size': '13px'
+				...styles.bodyCSS
 			}
 		}).component();
 
 		const irSetupStep1Text = this._view.modelBuilder.text().withProps({
 			value: constants.SERVICE_STEP1,
 			CSSStyles: {
-				'font-size': '13px'
+				...styles.bodyCSS
 			},
 			links: [
 				{
@@ -420,7 +420,7 @@ export class CreateSqlMigrationServiceDialog {
 		const irSetupStep2Text = this._view.modelBuilder.text().withProps({
 			value: constants.SERVICE_STEP2,
 			CSSStyles: {
-				'font-size': '13px'
+				...styles.bodyCSS
 			}
 		}).component();
 
@@ -429,7 +429,7 @@ export class CreateSqlMigrationServiceDialog {
 			CSSStyles: {
 				'margin-top': '10px',
 				'margin-bottom': '10px',
-				'font-size': '13px'
+				...styles.bodyCSS
 			}
 		}).component();
 
@@ -437,7 +437,7 @@ export class CreateSqlMigrationServiceDialog {
 			text: '',
 			style: 'error',
 			CSSStyles: {
-				'font-size': '13px'
+				...styles.bodyCSS
 			}
 		}).component();
 
@@ -448,7 +448,7 @@ export class CreateSqlMigrationServiceDialog {
 		this._refreshLoadingComponent = this._view.modelBuilder.loadingComponent().withProps({
 			loading: false,
 			CSSStyles: {
-				'font-size': '13px'
+				...styles.bodyCSS
 			}
 		}).component();
 
@@ -462,10 +462,10 @@ export class CreateSqlMigrationServiceDialog {
 					width: '50px',
 					isReadOnly: true,
 					rowCssStyles: {
-						'font-size': '13px'
+						...styles.bodyCSS
 					},
 					headerCssStyles: {
-						'font-size': '13px'
+						...styles.bodyCSS
 					}
 				},
 				{
@@ -474,10 +474,10 @@ export class CreateSqlMigrationServiceDialog {
 					width: '500px',
 					isReadOnly: true,
 					rowCssStyles: {
-						'font-size': '13px'
+						...styles.bodyCSS
 					},
 					headerCssStyles: {
-						'font-size': '13px'
+						...styles.bodyCSS
 					}
 				},
 				{
@@ -486,10 +486,10 @@ export class CreateSqlMigrationServiceDialog {
 					width: '30px',
 					isReadOnly: true,
 					rowCssStyles: {
-						'font-size': '13px'
+						...styles.bodyCSS
 					},
 					headerCssStyles: {
-						'font-size': '13px'
+						...styles.bodyCSS
 					}
 				}
 			],
@@ -557,7 +557,7 @@ export class CreateSqlMigrationServiceDialog {
 					text: constants.SERVICE_READY(this._createdMigrationService!.name, this.irNodes.join(', ')),
 					style: 'success',
 					CSSStyles: {
-						'font-size': '13px'
+						...styles.bodyCSS
 					}
 				});
 				this._dialogObject.okButton.enabled = true;
@@ -567,7 +567,7 @@ export class CreateSqlMigrationServiceDialog {
 					text: constants.SERVICE_NOT_READY(this._createdMigrationService!.name),
 					style: 'warning',
 					CSSStyles: {
-						'font-size': '13px'
+						...styles.bodyCSS
 					}
 				});
 				this._dialogObject.okButton.enabled = false;

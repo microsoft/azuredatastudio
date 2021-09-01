@@ -371,10 +371,10 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 					width: '50px',
 					isReadOnly: true,
 					rowCssStyles: {
-						'font-size': '13px'
+						...styles.bodyCSS
 					},
 					headerCssStyles: {
-						'font-size': '13px'
+						...styles.bodyCSS
 					}
 				},
 				{
@@ -383,11 +383,11 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 					width: '500px',
 					isReadOnly: true,
 					rowCssStyles: {
-						'font-size': '13px',
+						...styles.bodyCSS,
 
 					},
 					headerCssStyles: {
-						'font-size': '13px'
+						...styles.bodyCSS
 					}
 				},
 				{
@@ -396,10 +396,10 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 					width: '30px',
 					isReadOnly: true,
 					rowCssStyles: {
-						'font-size': '13px'
+						...styles.bodyCSS
 					},
 					headerCssStyles: {
-						'font-size': '13px'
+						...styles.bodyCSS
 					}
 				}
 			],
