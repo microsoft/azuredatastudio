@@ -98,14 +98,18 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 						component: this._networkShareStorageAccountDetails
 					}
 				]
-			);
+			).withProps({
+				CSSStyles: {
+					'padding-top': '0'
+				}
+			}).component();
 
 		this._disposables.push(this._view.onClosed(e => {
 			this._disposables.forEach(
 				d => { try { d.dispose(); } catch { } });
 		}));
 
-		await view.initializeModel(form.component());
+		await view.initializeModel(form);
 	}
 
 	private createBackupLocationComponent(): azdata.FlexContainer {
@@ -266,7 +270,6 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			validationErrorMessage: constants.INVALID_NETWORK_SHARE_LOCATION,
 			width: WIZARD_INPUT_COMPONENT_WIDTH,
 			CSSStyles: {
-				...styles.noteCSS,
 				'margin-top': '-1em'
 			}
 		}).withValidation((component) => {

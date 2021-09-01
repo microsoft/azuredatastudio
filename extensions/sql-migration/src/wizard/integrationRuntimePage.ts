@@ -18,7 +18,6 @@ import * as styles from '../constants/styles';
 export class IntergrationRuntimePage extends MigrationWizardPage {
 
 	private _view!: azdata.ModelView;
-	private _form!: azdata.FormBuilder;
 	private _statusLoadingComponent!: azdata.LoadingComponent;
 	private _subscription!: azdata.InputBoxComponent;
 	private _location!: azdata.InputBoxComponent;
@@ -58,7 +57,7 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 			width: WIZARD_INPUT_COMPONENT_WIDTH
 		}).component();
 
-		this._form = view.modelBuilder.formContainer()
+		const form = view.modelBuilder.formContainer()
 			.withFormItems(
 				[
 					{
@@ -70,16 +69,19 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 					{
 						component: this._dmsInfoContainer
 					}
-
 				]
-			);
+			).withProps({
+				CSSStyles: {
+					'padding-top': '0'
+				}
+			}).component();
 
 		this._disposables.push(this._view.onClosed(e => {
 			this._disposables.forEach(
 				d => { try { d.dispose(); } catch { } });
 		}));
 
-		await view.initializeModel(this._form.component());
+		await view.initializeModel(form);
 	}
 
 	public async onPageEnter(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {

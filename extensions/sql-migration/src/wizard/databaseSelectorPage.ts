@@ -295,7 +295,7 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 			height: '100%',
 		}).withProps({
 			CSSStyles: {
-				'margin': '0px  28px 0px 28px'
+				'margin': '0px 28px 0px 28px'
 			}
 		}).component();
 		flex.addItem(title, { flex: '0 0 auto' });

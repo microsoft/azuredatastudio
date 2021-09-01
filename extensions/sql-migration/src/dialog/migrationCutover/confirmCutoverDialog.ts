@@ -10,7 +10,7 @@ import * as constants from '../../constants/strings';
 import { SqlManagedInstance } from '../../api/azure';
 import { IconPathHelper } from '../../constants/iconPathHelper';
 import { convertByteSizeToReadableUnit, get12HourTime } from '../../api/utils';
-
+import * as styles from '../../constants/styles';
 export class ConfirmCutoverDialog {
 	private _dialogObject!: azdata.window.Dialog;
 	private _view!: azdata.ModelView;
@@ -29,17 +29,15 @@ export class ConfirmCutoverDialog {
 			const completeCutoverText = view.modelBuilder.text().withProps({
 				value: constants.COMPLETE_CUTOVER,
 				CSSStyles: {
-					'font-size': '20px',
-					'font-weight': 'bold',
-					'margin-bottom': '0px'
+					...styles.pageTitleCSS
 				}
 			}).component();
 
 			const sourceDatabaseText = view.modelBuilder.text().withProps({
 				value: this.migrationCutoverModel._migration.migrationContext.properties.sourceDatabaseName,
 				CSSStyles: {
-					'font-size': '10px',
-					'margin': '5px 0px 10px 0px'
+					...styles.smallNoteCSS,
+					'margin': '4px 0px 8px'
 				}
 			}).component();
 
@@ -48,24 +46,25 @@ export class ConfirmCutoverDialog {
 			const helpMainText = this._view.modelBuilder.text().withProps({
 				value: constants.CUTOVER_HELP_MAIN,
 				CSSStyles: {
-					'font-size': '13px',
+					...styles.bodyCSS
 				}
 			}).component();
 
 			const helpStepsText = this._view.modelBuilder.text().withProps({
 				value: this.migrationCutoverModel.confirmCutoverStepsString(),
 				CSSStyles: {
-					'font-size': '13px',
+					...styles.bodyCSS,
+					'padding': '8px'
 				}
 			}).component();
 
 
-			const fileContainer = this.migrationCutoverModel.isBlobMigration() ? this.createBlobFileContainer() : this.createNewtorkShareFileContainer();
+			const fileContainer = this.migrationCutoverModel.isBlobMigration() ? this.createBlobFileContainer() : this.createNetworkShareFileContainer();
 
 			const confirmCheckbox = this._view.modelBuilder.checkBox().withProps({
 				CSSStyles: {
-					'font-size': '13px',
-					'margin-bottom': '8px'
+					...styles.bodyCSS,
+					'margin-bottom': '12px'
 				},
 				label: constants.CONFIRM_CUTOVER_CHECKBOX,
 			}).component();
@@ -78,7 +77,7 @@ export class ConfirmCutoverDialog {
 				text: constants.COMPLETING_CUTOVER_WARNING,
 				style: 'warning',
 				CSSStyles: {
-					'font-size': '13px',
+					...styles.bodyCSS
 				}
 			}).component();
 
@@ -89,11 +88,11 @@ export class ConfirmCutoverDialog {
 				infoDisplay = 'inline';
 			}
 
-			const businessCriticalinfoBox = this._view.modelBuilder.infoBox().withProps({
+			const businessCriticalInfoBox = this._view.modelBuilder.infoBox().withProps({
 				text: constants.BUSINESS_CRITICAL_INFO,
 				style: 'information',
 				CSSStyles: {
-					'font-size': '13px',
+					...styles.bodyCSS,
 					'display': infoDisplay
 				}
 			}).component();
@@ -109,7 +108,7 @@ export class ConfirmCutoverDialog {
 				fileContainer,
 				confirmCheckbox,
 				cutoverWarning,
-				businessCriticalinfoBox
+				businessCriticalInfoBox
 			]).component();
 
 
@@ -144,15 +143,17 @@ export class ConfirmCutoverDialog {
 	}
 
 	private createBlobFileContainer(): azdata.FlexContainer {
-		const container = this._view.modelBuilder.flexContainer().component();
+		const container = this._view.modelBuilder.flexContainer().withProps({
+			CSSStyles: {
+				'margin': '8px 0'
+			}
+		}).component();
 
 		const containerHeading = this._view.modelBuilder.text().withProps({
 			value: constants.PENDING_BACKUPS(this.migrationCutoverModel.getPendingLogBackupsCount() ?? 0),
 			width: 250,
 			CSSStyles: {
-				'font-size': '13px',
-				'line-height': '18px',
-				'font-weight': 'bold'
+				...styles.labelCSS
 			}
 		}).component();
 
@@ -163,9 +164,6 @@ export class ConfirmCutoverDialog {
 			width: 70,
 			height: 20,
 			label: constants.REFRESH,
-			CSSStyles: {
-				'margin-top': '13px'
-			}
 		}).component();
 
 
@@ -195,8 +193,8 @@ export class ConfirmCutoverDialog {
 		const refreshLoader = this._view.modelBuilder.loadingComponent().withProps({
 			loading: false,
 			CSSStyles: {
-				'margin-top': '8px',
-				'margin-left': '5px'
+				'margin-top': '-4px',
+				'margin-left': '8px'
 			}
 		}).component();
 
@@ -206,7 +204,7 @@ export class ConfirmCutoverDialog {
 		return container;
 	}
 
-	private createNewtorkShareFileContainer(): azdata.FlexContainer {
+	private createNetworkShareFileContainer(): azdata.FlexContainer {
 		const container = this._view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'column'
 		}).component();
@@ -224,10 +222,8 @@ export class ConfirmCutoverDialog {
 			iconWidth: 8,
 			iconPath: IconPathHelper.expandButtonClosed,
 			CSSStyles: {
-				'font-size': '13px',
-				'line-height': '18px',
-				'font-weight': 'bold',
-				'margin': '16px 10px 0px 0px'
+				...styles.labelCSS,
+				'margin': '16px 8px 0px 0px'
 			}
 		}).component();
 
@@ -304,7 +300,7 @@ export class ConfirmCutoverDialog {
 		const lastScanCompleted = this._view.modelBuilder.text().withProps({
 			value: constants.LAST_SCAN_COMPLETED(get12HourTime(new Date())),
 			CSSStyles: {
-				'font-size': '12px',
+				...styles.noteCSS
 			}
 		}).component();
 
@@ -340,10 +336,10 @@ export class ConfirmCutoverDialog {
 		return container;
 	}
 
-	private refreshFileTable(filetable: azdata.TableComponent) {
-		const pendingFiles = this.migrationCutoverModel.getPendingfiles();
+	private refreshFileTable(fileTable: azdata.TableComponent) {
+		const pendingFiles = this.migrationCutoverModel.getPendingFiles();
 		if (pendingFiles.length > 0) {
-			filetable.data = pendingFiles.map(f => {
+			fileTable.data = pendingFiles.map(f => {
 				return [
 					f.fileName,
 					f.status,
@@ -351,7 +347,7 @@ export class ConfirmCutoverDialog {
 				];
 			});
 		} else {
-			filetable.data = [
+			fileTable.data = [
 				[constants.NO_PENDING_BACKUPS]
 			];
 		}

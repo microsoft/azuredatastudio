@@ -140,7 +140,8 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			]
 		).withProps({
 			CSSStyles: {
-				display: 'none'
+				'display': 'none',
+				'padding-top': '0',
 			}
 		});
 
@@ -731,7 +732,8 @@ errorId: ${e.errorId}
 		this._assessmentInfo = this._view.modelBuilder.text().withProps({
 			value: constants.ASSESSMENT_IN_PROGRESS_CONTENT((await this.migrationStateModel.getSourceConnectionProfile()).serverName),
 			CSSStyles: {
-				...styles.bodyCSS
+				...styles.bodyCSS,
+				'width': '660px'
 			}
 		}).component();
 		return this._assessmentInfo;

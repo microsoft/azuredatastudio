@@ -1,4 +1,5 @@
 export const gray = '#595959';
+export const secondaryText = '#605E5C';
 
 export const dashboardTitleCSS = {
 	'font-size': '36px',
@@ -16,7 +17,6 @@ export const pageTitleCSS = {
 export const pageSubtitleCSS = {
 	'font-size': '15px',
 	'line-height': '19px',
-	'font-weight': '500',
 	'margin': '0 0 12px 0',
 };
 
@@ -34,15 +34,20 @@ export const bodyCSS = {
 };
 
 export const labelCSS = {
-	'font-size': '13px',
-	'line-height': '18px',
+	...bodyCSS,
+	'margin': '0 0 4px 0',
 	'font-weight': '600',
-	'margin': '0 0 0 4px',
+};
+
+export const lightLabelCSS = {
+	...bodyCSS,
+	'color': secondaryText
 };
 
 export const noteCSS = {
 	'font-size': '12px',
 	'line-height': '16px',
+	'color': secondaryText,
 	'margin': '0',
 };
 
@@ -63,9 +68,4 @@ export const bigNumberCSS = {
 	'font-size': '28px',
 	'line-height': '36px',
 	'margin': '0',
-};
-
-export const lightLabelCSS = {
-	...bodyCSS,
-	'color': gray
 };

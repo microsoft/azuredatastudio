@@ -9,6 +9,7 @@ import { azureResource } from 'azureResource';
 import { EventEmitter } from 'events';
 import { createResourceGroup } from '../../api/azure';
 import * as constants from '../../constants/strings';
+import * as styles from '../../constants/styles';
 
 export class CreateResourceGroupDialog {
 	private _dialogObject!: azdata.window.Dialog;
@@ -42,15 +43,14 @@ export class CreateResourceGroupDialog {
 			const resourceGroupDescription = view.modelBuilder.text().withProps({
 				value: constants.RESOURCE_GROUP_DESCRIPTION,
 				CSSStyles: {
-					'font-size': '13px',
-					'margin-bottom': '10px'
+					...styles.bodyCSS,
+					'margin-bottom': '8px'
 				}
 			}).component();
 			const nameLabel = view.modelBuilder.text().withProps({
 				value: constants.NAME,
 				CSSStyles: {
-					'font-size': '13px',
-					'font-weight': 'bold',
+					...styles.labelCSS
 				}
 			}).component();
 

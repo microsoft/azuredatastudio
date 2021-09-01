@@ -12,6 +12,7 @@ import * as loc from '../../constants/strings';
 import { convertByteSizeToReadableUnit, convertIsoTimeToLocalTime, getSqlServerName, getMigrationStatusImage, SupportedAutoRefreshIntervals, clearDialogMessage } from '../../api/utils';
 import { EOL } from 'os';
 import { ConfirmCutoverDialog } from './confirmCutoverDialog';
+import * as styles from '../../constants/styles';
 
 const refreshFrequency: SupportedAutoRefreshIntervals = 30000;
 const statusImageSize: number = 14;
@@ -66,8 +67,7 @@ export class MigrationCutoverDialog {
 				this._fileCount = view.modelBuilder.text().withProps({
 					width: '500px',
 					CSSStyles: {
-						'font-size': '14px',
-						'font-weight': 'bold'
+						...styles.bodyCSS
 					}
 				}).component();
 
@@ -138,9 +138,9 @@ export class MigrationCutoverDialog {
 				const _emptyTableText = view.modelBuilder.text().withProps({
 					value: loc.EMPTY_TABLE_TEXT,
 					CSSStyles: {
+						...styles.noteCSS,
+						'margin-top': '8px',
 						'text-align': 'center',
-						'font-size': 'large',
-						'font-weight': 'bold',
 						'width': '300px'
 					}
 				}).component();
@@ -208,9 +208,7 @@ export class MigrationCutoverDialog {
 
 		this._databaseTitleName = this._view.modelBuilder.text().withProps({
 			CSSStyles: {
-				'font-size': '16px',
-				'font-weight': 'bold',
-				'margin': '0px'
+				...styles.pageTitleCSS
 			},
 			width: 950,
 			value: this._model._migration.migrationContext.properties.sourceDatabaseName
@@ -218,8 +216,7 @@ export class MigrationCutoverDialog {
 
 		const databaseSubTitle = this._view.modelBuilder.text().withProps({
 			CSSStyles: {
-				'font-size': '10px',
-				'margin': '5px 0px'
+				...styles.noteCSS
 			},
 			width: 950,
 			value: loc.DATABASE
@@ -265,7 +262,7 @@ export class MigrationCutoverDialog {
 			width: '150px',
 			enabled: false,
 			CSSStyles: {
-				'font-size': '13px',
+				...styles.bodyCSS,
 				'display': this._isOnlineMigration() ? 'inline' : 'none'
 			}
 		}).component();
@@ -290,7 +287,7 @@ export class MigrationCutoverDialog {
 			width: '150px',
 			enabled: false,
 			CSSStyles: {
-				'font-size': '13px'
+				...styles.bodyCSS,
 			}
 		}).component();
 
@@ -316,7 +313,7 @@ export class MigrationCutoverDialog {
 			height: '20px',
 			width: '100px',
 			CSSStyles: {
-				'font-size': '13px'
+				...styles.bodyCSS,
 			}
 		}).component();
 
@@ -335,7 +332,7 @@ export class MigrationCutoverDialog {
 			height: '20px',
 			width: '200px',
 			CSSStyles: {
-				'font-size': '13px'
+				...styles.bodyCSS,
 			}
 		}).component();
 
@@ -360,7 +357,10 @@ export class MigrationCutoverDialog {
 			iconHeight: '16px',
 			iconWidth: '16px',
 			height: '20px',
-			width: '140px',
+			width: '180px',
+			CSSStyles: {
+				...styles.bodyCSS,
+			}
 		}).component();
 
 		this._newSupportRequest.onDidClick(async (e) => {
@@ -701,9 +701,8 @@ export class MigrationCutoverDialog {
 		const labelComponent = this._view.modelBuilder.text().withProps({
 			value: label,
 			CSSStyles: {
-				'font-weight': 'bold',
+				...styles.lightLabelCSS,
 				'margin-bottom': '0',
-				'font-size': '12px'
 			}
 		}).component();
 		flexContainer.addItem(labelComponent);
@@ -711,12 +710,11 @@ export class MigrationCutoverDialog {
 		const textComponent = this._view.modelBuilder.text().withProps({
 			value: value,
 			CSSStyles: {
-				'margin-top': '5px',
-				'margin-bottom': '0',
+				...styles.bodyCSS,
+				'margin': '4px 0 12px',
 				'width': '100%',
 				'overflow': 'hidden',
-				'text-overflow': 'ellipses',
-				'font-size': '12px'
+				'text-overflow': 'ellipses'
 			}
 		}).component();
 

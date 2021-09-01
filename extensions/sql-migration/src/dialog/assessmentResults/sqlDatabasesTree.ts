@@ -477,7 +477,7 @@ export class SqlDatabaseTree {
 		const impactedObjectsTitle = this._view.modelBuilder.text().withProps({
 			value: constants.IMPACTED_OBJECTS,
 			CSSStyles: {
-				...styles.labelCSS,
+				...styles.lightLabelCSS,
 				'width': '280px',
 				'margin': '10px 0px 0px 0px',
 			}
@@ -536,7 +536,7 @@ export class SqlDatabaseTree {
 		const objectDetailsTitle = this._view.modelBuilder.text().withProps({
 			value: constants.OBJECT_DETAILS,
 			CSSStyles: {
-				...styles.labelCSS,
+				...styles.lightLabelCSS,
 				'margin': '12px 0px 0px 0px',
 			}
 		}).component();
@@ -569,14 +569,13 @@ export class SqlDatabaseTree {
 
 	private createDescription(): azdata.FlexContainer {
 		const labelCSS = {
-			...styles.labelCSS,
+			...styles.lightLabelCSS,
 			'width': '200px',
-			'margin': '10px 35px 0px 0px'
+			'margin': '12px 0 0'
 		};
 		const textStyle = {
 			...styles.bodyCSS,
 			'width': '200px',
-			'margin': '3px 35px 0px 0px',
 			'word-wrap': 'break-word'
 		};
 		const descriptionTitle = this._view.modelBuilder.text().withProps({
@@ -619,7 +618,7 @@ export class SqlDatabaseTree {
 			CSSStyles: {
 				...styles.labelCSS,
 				'margin-top': '12px',
-				'height': '40px',
+				'height': '48px',
 				'width': '540px',
 				'border-bottom': 'solid 1px'
 			}
@@ -655,7 +654,8 @@ export class SqlDatabaseTree {
 		this._dbName = this._view.modelBuilder.text().withProps({
 			CSSStyles: {
 				...styles.labelCSS,
-				'margin-bottom': '4px'
+				'margin-bottom': '8px',
+				'font-weight': '700'
 			}
 		}).component();
 

@@ -21,7 +21,6 @@ export class AccountsSelectionPage extends MigrationWizardPage {
 
 	constructor(wizard: azdata.window.Wizard, migrationStateModel: MigrationStateModel) {
 		super(wizard, azdata.window.createWizardPage(constants.ACCOUNTS_SELECTION_PAGE_TITLE), migrationStateModel);
-		// this.wizardPage.description = constants.ACCOUNTS_SELECTION_PAGE_DESCRIPTION;
 	}
 
 	protected async registerContent(view: azdata.ModelView): Promise<void> {
@@ -42,8 +41,12 @@ export class AccountsSelectionPage extends MigrationWizardPage {
 					await this.createAzureAccountsDropdown(view),
 					await this.createAzureTenantContainer(view),
 				]
-			);
-		await view.initializeModel(form.component());
+			).withProps({
+				CSSStyles: {
+					'padding-top': '0'
+				}
+			}).component();
+		await view.initializeModel(form);
 		await this.populateAzureAccountsDropdown();
 		this._disposables.push(view.onClosed(e =>
 			this._disposables.forEach(

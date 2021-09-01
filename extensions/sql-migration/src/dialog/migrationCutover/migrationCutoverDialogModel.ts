@@ -120,7 +120,7 @@ export class MigrationCutoverDialogModel {
 		return this.migrationStatus.properties.migrationStatusDetails?.pendingLogBackupsCount;
 	}
 
-	public getPendingfiles(): BackupFileInfo[] {
+	public getPendingFiles(): BackupFileInfo[] {
 		const files: BackupFileInfo[] = [];
 		this.migrationStatus.properties.migrationStatusDetails?.activeBackupSets?.forEach(abs => {
 			abs.listOfBackupFiles.forEach(f => {

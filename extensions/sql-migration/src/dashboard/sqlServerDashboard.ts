@@ -391,7 +391,7 @@ export class DashboardWidget {
 				flex: '0 0 auto'
 			}).withProps({
 				CSSStyles: {
-					'margin-top': '4px',
+					'align-items': 'center'
 				}
 			}).component();
 
@@ -529,11 +529,9 @@ export class DashboardWidget {
 			width: 198,
 			height: 34,
 			CSSStyles: {
-				'font-family': 'Segoe UI',
-				'font-size': '12px',
+				...styles.noteCSS,
 				'margin': 'auto',
 				'text-align': 'center',
-				'line-height': '16px',
 				'display': 'none'
 			}
 		}).component();
@@ -651,12 +649,7 @@ export class DashboardWidget {
 
 		statusContainer.addItem(addAccountImage, {});
 		statusContainer.addItem(addAccountText, {});
-
-		statusContainer.addItem(this._migrationStatusCardLoadingContainer, {
-			CSSStyles: {
-				'margin-top': '30px'
-			}
-		});
+		statusContainer.addItem(this._migrationStatusCardLoadingContainer, {});
 
 		return statusContainer;
 	}

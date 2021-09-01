@@ -17,7 +17,6 @@ export class MigrationModePage extends MigrationWizardPage {
 
 	constructor(wizard: azdata.window.Wizard, migrationStateModel: MigrationStateModel) {
 		super(wizard, azdata.window.createWizardPage(constants.DATABASE_BACKUP_MIGRATION_MODE_LABEL, 'MigrationModePage'), migrationStateModel);
-		// this.wizardPage.description = constants.DATABASE_BACKUP_MIGRATION_MODE_DESCRIPTION;
 	}
 
 	protected async registerContent(view: azdata.ModelView): Promise<void> {
@@ -28,7 +27,8 @@ export class MigrationModePage extends MigrationWizardPage {
 			component: view.modelBuilder.text().withProps({
 				value: constants.DATABASE_BACKUP_MIGRATION_MODE_DESCRIPTION,
 				CSSStyles: {
-					...styles.bodyCSS
+					...styles.bodyCSS,
+					'margin': '0'
 				}
 			}).component()
 		};
@@ -39,13 +39,17 @@ export class MigrationModePage extends MigrationWizardPage {
 					pageDescription,
 					this.migrationModeContainer(),
 				]
-			);
+			).withProps({
+				CSSStyles: {
+					'padding-top': '0'
+				}
+			}).component();
 
 		this._disposables.push(this._view.onClosed(e => {
 			this._disposables.forEach(
 				d => { try { d.dispose(); } catch { } });
 		}));
-		await view.initializeModel(form.component());
+		await view.initializeModel(form);
 	}
 
 	public async onPageEnter(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
@@ -68,13 +72,6 @@ export class MigrationModePage extends MigrationWizardPage {
 
 	private migrationModeContainer(): azdata.FormComponent {
 		const buttonGroup = 'cutoverContainer';
-
-		// const pageDescription = this._view.modelBuilder.text().withProps({
-		// 	value: constants.DATABASE_BACKUP_MIGRATION_MODE_DESCRIPTION,
-		// 	CSSStyles: {
-		// 		...styles.bodyCSS
-		// 	}
-		// }).component();
 
 		const onlineButton = this._view.modelBuilder.radioButton().withProps({
 			label: constants.DATABASE_BACKUP_MIGRATION_MODE_ONLINE_LABEL,
@@ -112,7 +109,8 @@ export class MigrationModePage extends MigrationWizardPage {
 		const offlineDescription = this._view.modelBuilder.text().withProps({
 			value: constants.DATABASE_BACKUP_MIGRATION_MODE_OFFLINE_DESCRIPTION,
 			CSSStyles: {
-				...styles.noteCSS
+				...styles.noteCSS,
+				'margin-left': '20px'
 			}
 		}).component();
 
@@ -125,7 +123,6 @@ export class MigrationModePage extends MigrationWizardPage {
 
 		const flexContainer = this._view.modelBuilder.flexContainer().withItems(
 			[
-				// pageDescription,
 				onlineButton,
 				onlineDescription,
 				offlineButton,
