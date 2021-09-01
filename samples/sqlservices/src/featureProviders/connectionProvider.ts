@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
+import { v4 as uuid } from 'uuid';
 
 export const ProviderId: string = 'TESTPROVIDER';
 
@@ -23,7 +24,7 @@ export class ConnectionProvider implements azdata.ConnectionProvider {
 
 	connect(connectionUri: string, connectionInfo: azdata.ConnectionInfo): Promise<boolean> {
 		this.onConnectionCompleteEmitter.fire({
-			connectionId: '123',
+			connectionId: uuid(),
 			ownerUri: connectionUri,
 			messages: '',
 			errorMessage: '',

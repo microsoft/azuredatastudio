@@ -165,9 +165,6 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 			this.createTabs(tempWidgets);
 		}
 
-		this.showToolbar = true;
-		this.createToolbar(this.toolbarContainer.nativeElement, this.homeTabId);
-
 		this._register(this.themeService.onDidColorThemeChange((event: IColorTheme) => {
 			this.updateTheme(event);
 		}));
@@ -534,8 +531,6 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 		if (tab.identifier === this.homeTabId || tabContent === WIDGETS_CONTAINER || tabContent === GRID_CONTAINER || tabContent === NAV_SECTION) {
 			this.showToolbar = true;
 			this.createToolbar(this.toolbarContainer.nativeElement, tab.identifier);
-		} else { // hide toolbar
-			this.showToolbar = false;
 		}
 
 		// control-host container has its own scroll management
