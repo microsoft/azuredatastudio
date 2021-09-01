@@ -294,16 +294,10 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 			}
 		}));
 
-		const connectionLabelContainer = this._view.modelBuilder.flexContainer().withProps({
-			CSSStyles: {
-				'margin-bottom': '13px'
-			}
-		}).component();
-
+		const connectionLabelContainer = this._view.modelBuilder.flexContainer().component();
 		connectionLabelContainer.addItem(connectionStatusLabel, {
 			flex: '0'
 		});
-
 		connectionLabelContainer.addItem(this._refreshButton, {
 			flex: '0',
 			CSSStyles: { 'margin-right': '10px' }
@@ -362,52 +356,8 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 			iconPath: IconPathHelper.refresh,
 			ariaLabel: constants.REFRESH_KEY2,
 		}).component();
-		this._authKeyTable = this._view.modelBuilder.declarativeTable().withProps({
-			ariaLabel: constants.DATABASE_MIGRATION_SERVICE_AUTHENTICATION_KEYS,
-			columns: [
-				{
-					displayName: constants.NAME,
-					valueType: azdata.DeclarativeDataType.string,
-					width: '50px',
-					isReadOnly: true,
-					rowCssStyles: {
-						...styles.bodyCSS
-					},
-					headerCssStyles: {
-						...styles.bodyCSS
-					}
-				},
-				{
-					displayName: constants.AUTH_KEY_COLUMN_HEADER,
-					valueType: azdata.DeclarativeDataType.string,
-					width: '500px',
-					isReadOnly: true,
-					rowCssStyles: {
-						...styles.bodyCSS,
 
-					},
-					headerCssStyles: {
-						...styles.bodyCSS
-					}
-				},
-				{
-					displayName: '',
-					valueType: azdata.DeclarativeDataType.component,
-					width: '30px',
-					isReadOnly: true,
-					rowCssStyles: {
-						...styles.bodyCSS
-					},
-					headerCssStyles: {
-						...styles.bodyCSS
-					}
-				}
-			],
-			CSSStyles: {
-				'margin-top': '5px',
-				'width': WIZARD_INPUT_COMPONENT_WIDTH
-			}
-		}).component();
+		this._authKeyTable = createAuthenticationKeyTable(this._view);
 
 		statusContainer.addItems([
 			this._dmsStatusInfoBox,
@@ -542,4 +492,56 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 			console.log(e);
 		}
 	}
+}
+
+export function createAuthenticationKeyTable(view: azdata.ModelView,): azdata.DeclarativeTableComponent {
+	const authKeyTable = view.modelBuilder.declarativeTable().withProps({
+		ariaLabel: constants.DATABASE_MIGRATION_SERVICE_AUTHENTICATION_KEYS,
+		columns: [
+			{
+				displayName: constants.NAME,
+				valueType: azdata.DeclarativeDataType.string,
+				width: '50px',
+				isReadOnly: true,
+				rowCssStyles: {
+					...styles.bodyCSS
+				},
+				headerCssStyles: {
+					...styles.bodyCSS,
+					'font-weight': '600'
+				}
+			},
+			{
+				displayName: constants.AUTH_KEY_COLUMN_HEADER,
+				valueType: azdata.DeclarativeDataType.string,
+				width: '500px',
+				isReadOnly: true,
+				rowCssStyles: {
+					...styles.bodyCSS,
+
+				},
+				headerCssStyles: {
+					...styles.bodyCSS,
+					'font-weight': '600'
+				}
+			},
+			{
+				displayName: '',
+				valueType: azdata.DeclarativeDataType.component,
+				width: '30px',
+				isReadOnly: true,
+				rowCssStyles: {
+					...styles.bodyCSS
+				},
+				headerCssStyles: {
+					...styles.bodyCSS
+				}
+			}
+		],
+		CSSStyles: {
+			'margin-top': '5px',
+			'width': WIZARD_INPUT_COMPONENT_WIDTH
+		}
+	}).component();
+	return authKeyTable;
 }

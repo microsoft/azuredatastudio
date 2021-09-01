@@ -1,4 +1,3 @@
-export const gray = '#595959';
 export const secondaryText = '#605E5C';
 
 export const dashboardTitleCSS = {

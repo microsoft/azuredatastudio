@@ -12,6 +12,7 @@ import * as os from 'os';
 import { azureResource } from 'azureResource';
 import { IconPathHelper } from '../../constants/iconPathHelper';
 import { CreateResourceGroupDialog } from '../createResourceGroup/createResourceGroupDialog';
+import { createAuthenticationKeyTable } from '../../wizard/integrationRuntimePage';
 import * as EventEmitter from 'events';
 import { clearDialogMessage } from '../../api/utils';
 import * as styles from '../../constants/styles';
@@ -385,8 +386,7 @@ export class CreateSqlMigrationServiceDialog {
 		const setupIRHeadingText = this._view.modelBuilder.text().withProps({
 			value: constants.SERVICE_CONTAINER_HEADING,
 			CSSStyles: {
-				'font-weight': 'bold',
-				...styles.bodyCSS
+				...styles.labelCSS
 			}
 		}).component();
 
@@ -452,51 +452,7 @@ export class CreateSqlMigrationServiceDialog {
 			}
 		}).component();
 
-
-		this.migrationServiceAuthKeyTable = this._view.modelBuilder.declarativeTable().withProps({
-			ariaLabel: constants.DATABASE_MIGRATION_SERVICE_AUTHENTICATION_KEYS,
-			columns: [
-				{
-					displayName: constants.NAME,
-					valueType: azdata.DeclarativeDataType.string,
-					width: '50px',
-					isReadOnly: true,
-					rowCssStyles: {
-						...styles.bodyCSS
-					},
-					headerCssStyles: {
-						...styles.bodyCSS
-					}
-				},
-				{
-					displayName: constants.AUTH_KEY_COLUMN_HEADER,
-					valueType: azdata.DeclarativeDataType.string,
-					width: '500px',
-					isReadOnly: true,
-					rowCssStyles: {
-						...styles.bodyCSS
-					},
-					headerCssStyles: {
-						...styles.bodyCSS
-					}
-				},
-				{
-					displayName: '',
-					valueType: azdata.DeclarativeDataType.component,
-					width: '30px',
-					isReadOnly: true,
-					rowCssStyles: {
-						...styles.bodyCSS
-					},
-					headerCssStyles: {
-						...styles.bodyCSS
-					}
-				}
-			],
-			CSSStyles: {
-				'margin-top': '5px'
-			}
-		}).component();
+		this.migrationServiceAuthKeyTable = createAuthenticationKeyTable(this._view);
 
 		this._setupContainer = this._view.modelBuilder.flexContainer().withItems(
 			[
