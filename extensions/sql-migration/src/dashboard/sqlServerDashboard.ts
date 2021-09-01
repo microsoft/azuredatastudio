@@ -609,13 +609,28 @@ export class DashboardWidget {
 
 		const addAccountImage = view.modelBuilder.image().withProps({
 			iconPath: IconPathHelper.addAzureAccount,
-			iconHeight: '200px',
-			iconWidth: '200px',
-			height: '200px',
-			width: '200px',
+			iconHeight: 100,
+			iconWidth: 100,
+			width: 96,
+			height: 96,
 			CSSStyles: {
-				'padding-top': '30%',
+				'opacity': '50%',
+				'margin': '20% auto 10% auto',
+				'filter': 'drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25))',
+				'display': 'none'
+			}
+		}).component();
+
+		const addAccountText = view.modelBuilder.text().withProps({
+			value: loc.ADD_ACCOUNT,
+			width: 198,
+			height: 34,
+			CSSStyles: {
+				'font-family': 'Segoe UI',
+				'font-size': '12px',
 				'margin': 'auto',
+				'text-align': 'center',
+				'line-height': '16px',
 				'display': 'none'
 			}
 		}).component();
@@ -637,8 +652,15 @@ export class DashboardWidget {
 			addAccountImage.updateCssStyles({
 				'display': 'block'
 			});
+			addAccountText.updateCssStyles({
+				'display': 'block'
+			});
 			this._migrationStatusCardsContainer.updateCssStyles({
 				'visibility': 'hidden'
+			});
+			buttonContainer.removeItem(this._viewAllMigrationsButton);
+			refreshButton.updateCssStyles({
+				'float': 'right'
 			});
 		}
 
@@ -728,9 +750,8 @@ export class DashboardWidget {
 		}
 		);
 
-		statusContainer.addItem(
-			addAccountImage, {}
-		);
+		statusContainer.addItem(addAccountImage, {});
+		statusContainer.addItem(addAccountText, {});
 
 		statusContainer.addItem(this._migrationStatusCardLoadingContainer, {
 			CSSStyles: {
