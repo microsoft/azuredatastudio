@@ -73,7 +73,7 @@ suite('Notebook Views Actions', function (): void {
 	let sandbox: sinon.SinonSandbox;
 
 	setup(() => {
-		sandbox = sinon.sandbox.create();
+		sandbox = sinon.createSandbox();
 		setupServices();
 	});
 
@@ -95,7 +95,7 @@ suite('Notebook Views Actions', function (): void {
 		assert.deepStrictEqual(notebookViews.getActiveView(), newView, 'Active view not set properly');
 
 		const deleteAction = new DeleteViewAction(notebookViews, dialogService, notificationService);
-		sandbox.stub(deleteAction, 'confirmDelete').withArgs(newView).returns(Promise.resolve(true));
+		sandbox.stub(deleteAction, 'confirmDelete' as keyof DeleteViewAction).withArgs(newView).returns(Promise.resolve(true));
 		await deleteAction.run();
 
 		assert.strictEqual(notebookViews.getViews().length, 0, 'View not deleted');
@@ -116,7 +116,7 @@ suite('Notebook Views Actions', function (): void {
 		assert.strictEqual(notebookViews.getActiveView(), newView, 'Active view not set properly');
 
 		const deleteAction = new DeleteViewAction(notebookViews, dialogService, notificationService);
-		sandbox.stub(deleteAction, 'confirmDelete').withArgs(newView).returns(Promise.resolve(false));
+		sandbox.stub(deleteAction, 'confirmDelete' as keyof DeleteViewAction).withArgs(newView).returns(Promise.resolve(false));
 		await deleteAction.run();
 
 		assert.strictEqual(notebookViews.getViews().length, 1, 'View should not have deleted');
@@ -165,8 +165,8 @@ suite('Notebook Views Actions', function (): void {
 	function setupServices() {
 		mockSessionManager = TypeMoq.Mock.ofType(SessionManager);
 		notebookManagers[0].sessionManager = mockSessionManager.object;
-		notificationService = TypeMoq.Mock.ofType(TestNotificationService, TypeMoq.MockBehavior.Loose);
-		capabilitiesService = TypeMoq.Mock.ofType(TestCapabilitiesService);
+		notificationService = TypeMoq.Mock.ofType<INotificationService>(TestNotificationService, TypeMoq.MockBehavior.Loose);
+		capabilitiesService = TypeMoq.Mock.ofType<ICapabilitiesService>(TestCapabilitiesService);
 		memento = TypeMoq.Mock.ofType(Memento, TypeMoq.MockBehavior.Loose, '');
 		memento.setup(x => x.getMemento(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => void 0);
 		queryConnectionService = TypeMoq.Mock.ofType(TestConnectionManagementService, TypeMoq.MockBehavior.Loose, memento.object, undefined, new TestStorageService());

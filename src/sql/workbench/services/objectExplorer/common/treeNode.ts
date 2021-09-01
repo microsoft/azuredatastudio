@@ -8,7 +8,7 @@ import { NodeType, SqlThemeIcon } from 'sql/workbench/services/objectExplorer/co
 import * as azdata from 'azdata';
 
 import * as UUID from 'vs/base/common/uuid';
-import { URI } from 'vs/base/common/uri';
+import { IconPath } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 export enum TreeItemCollapsibleState {
 	None = 0,
@@ -92,11 +92,12 @@ export class TreeNode {
 
 	public iconType?: string | SqlThemeIcon;
 
-	public iconPath?: URI | { light: URI, dark: URI };
+	public icon?: IconPath | SqlThemeIcon;
 
 	constructor(nodeTypeId: string, label: string, isAlwaysLeaf: boolean, nodePath: string,
 		nodeSubType: string, nodeStatus?: string, parent?: TreeNode, metadata?: azdata.ObjectMetadata,
 		iconType?: string | SqlThemeIcon,
+		icon?: IconPath | SqlThemeIcon,
 		private _objectExplorerCallbacks?: ObjectExplorerCallbacks) {
 		this.nodeTypeId = nodeTypeId;
 		this.label = label;
@@ -108,6 +109,7 @@ export class TreeNode {
 		this.id = UUID.generateUuid();
 		this.nodeSubType = nodeSubType;
 		this.nodeStatus = nodeStatus;
+		this.icon = icon;
 	}
 	public getConnectionProfile(): ConnectionProfile | undefined {
 		let currentNode: TreeNode = this;

@@ -7,8 +7,6 @@ import * as path from 'vs/base/common/path';
 import { nb, ServerInfo } from 'azdata';
 import { DEFAULT_NOTEBOOK_PROVIDER, DEFAULT_NOTEBOOK_FILETYPE, INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
 import { URI } from 'vs/base/common/uri';
-import { startsWith } from 'vs/base/common/strings';
-import { assign } from 'vs/base/common/objects';
 
 export const clusterEndpointsProperty = 'clusterEndpoints';
 export const hadoopEndpointNameGateway = 'gateway';
@@ -23,7 +21,7 @@ export function getProvidersForFileName(fileName: string, notebookService: INote
 	let fileExt = path.extname(fileName);
 	let providers: string[];
 	// First try to get provider for actual file type
-	if (fileExt && startsWith(fileExt, '.')) {
+	if (fileExt && fileExt.startsWith('.')) {
 		fileExt = fileExt.slice(1, fileExt.length);
 		providers = notebookService.getProvidersForFileType(fileExt);
 	}
@@ -44,7 +42,7 @@ export function getStandardKernelsForProvider(providerId: string, notebookServic
 	}
 	let standardKernels = notebookService.getStandardKernelsForProvider(providerId);
 	standardKernels.forEach(kernel => {
-		assign(<IStandardKernelWithProvider>kernel, {
+		Object.assign(<IStandardKernelWithProvider>kernel, {
 			name: kernel.name,
 			connectionProviderIds: kernel.connectionProviderIds,
 			notebookProvider: providerId

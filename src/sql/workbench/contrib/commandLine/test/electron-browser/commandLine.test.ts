@@ -30,8 +30,8 @@ import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { TestNotificationService } from 'vs/platform/notification/test/common/testNotificationService';
 import { isUndefinedOrNull } from 'vs/base/common/types';
-import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
-import { FileQueryEditorInput } from 'sql/workbench/contrib/query/common/fileQueryEditorInput';
+import { FileEditorInput } from 'vs/workbench/contrib/files/browser/editors/fileEditorInput';
+import { FileQueryEditorInput } from 'sql/workbench/contrib/query/browser/fileQueryEditorInput';
 import { TestDialogService } from 'vs/platform/dialogs/test/common/testDialogService';
 import { NativeParsedArgs } from 'vs/platform/environment/common/argv';
 
@@ -150,7 +150,7 @@ suite('commandLineService tests', () => {
 		let contribution = getCommandLineContribution(connectionManagementService.object, configurationService.object);
 		return contribution.processCommandLine(new TestParsedArgs()).then(() => {
 			connectionManagementService.verifyAll();
-		}, error => { assert.fail(error, null, 'processCommandLine rejected ' + error); });
+		}, error => { assert.fail('processCommandLine rejected ' + error); });
 	});
 
 	test('processCommandLine does nothing if no server name and command name is provided and the configuration \'workbench.showConnectDialogOnStartup\' is set to false, even if registered servers exist', async () => {
@@ -183,7 +183,7 @@ suite('commandLineService tests', () => {
 			await contribution.processCommandLine(new TestParsedArgs());
 			connectionManagementService.verifyAll();
 		} catch (error) {
-			assert.fail(error, null, 'processCommandLine rejected ' + error);
+			assert.fail('processCommandLine rejected ' + error);
 		}
 	});
 
@@ -275,7 +275,7 @@ suite('commandLineService tests', () => {
 		connectionManagementService.verifyAll();
 		commandService.verifyAll();
 		assert(!isUndefinedOrNull(actualProfile));
-		assert.equal(actualProfile.connectionProfile.serverName, args.server);
+		assert.strictEqual(actualProfile.connectionProfile.serverName, args.server);
 
 	});
 
@@ -394,7 +394,7 @@ suite('commandLineService tests', () => {
 		querymodelService.setup(c => c.onRunQueryComplete).returns(() => Event.None);
 		let uri = URI.file(args._[0]);
 		const workbenchinstantiationService = workbenchInstantiationService();
-		const editorInput = workbenchinstantiationService.createInstance(FileEditorInput, uri, undefined, undefined, undefined, undefined, undefined);
+		const editorInput = workbenchinstantiationService.createInstance(FileEditorInput, uri, undefined, undefined, undefined, undefined, undefined, undefined);
 		const queryInput = new FileQueryEditorInput(undefined, editorInput, undefined, connectionManagementService.object, querymodelService.object, configurationService.object);
 		queryInput.state.connected = true;
 		const editorService: TypeMoq.Mock<IEditorService> = TypeMoq.Mock.ofType<IEditorService>(TestEditorService, TypeMoq.MockBehavior.Strict);
@@ -433,7 +433,7 @@ suite('commandLineService tests', () => {
 			let result = await contribution.handleURL(uri);
 
 			// Then I expect connection management service to have been called
-			assert.equal(result, false, 'Expected URL to be ignored');
+			assert.strictEqual(result, false, 'Expected URL to be ignored');
 		});
 
 		test('handleUrl opens a new connection if a server name is passed', async () => {
@@ -463,7 +463,7 @@ suite('commandLineService tests', () => {
 			let result = await contribution.handleURL(uri);
 
 			// Then I expect connection management service to have been called
-			assert.equal(result, true, 'Expected URL to be handled');
+			assert.strictEqual(result, true, 'Expected URL to be handled');
 			connectionManagementService.verifyAll();
 		});
 
@@ -495,7 +495,7 @@ suite('commandLineService tests', () => {
 			let result = await contribution.handleURL(uri);
 
 			// Then I expect no connection, but the URL should still be handled
-			assert.equal(result, true, 'Expected URL to be handled');
+			assert.strictEqual(result, true, 'Expected URL to be handled');
 			connectionManagementService.verifyAll();
 		});
 
@@ -522,7 +522,7 @@ suite('commandLineService tests', () => {
 			let result = await contribution.handleURL(uri);
 
 			// Then command service should not have been called, and instead connection should be handled
-			assert.equal(result, true);
+			assert.strictEqual(result, true);
 			commandService.verifyAll();
 			notificationService.verifyAll();
 		});
@@ -559,7 +559,7 @@ suite('commandLineService tests', () => {
 			let result = await contribution.handleURL(uri);
 
 			// Then command service should not have been called, and instead connection should be handled
-			assert.equal(result, true);
+			assert.strictEqual(result, true);
 			commandService.verifyAll();
 			notificationService.verifyAll();
 			connectionManagementService.verifyAll();

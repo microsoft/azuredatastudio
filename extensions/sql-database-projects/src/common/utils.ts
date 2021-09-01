@@ -298,6 +298,16 @@ export async function getSchemaCompareService(): Promise<ISchemaCompareService> 
 	}
 }
 
+export async function getAzureFunctionService(): Promise<vscodeMssql.IAzureFunctionsService> {
+	if (getAzdataApi()) {
+		// this isn't supported in ADS
+		throw new Error('Azure Functions service is not supported in Azure Data Studio');
+	} else {
+		const api = await getVscodeMssqlApi();
+		return api.azureFunctions;
+	}
+}
+
 export async function getVscodeMssqlApi(): Promise<vscodeMssql.IExtension> {
 	const ext = vscode.extensions.getExtension(vscodeMssql.extension.name) as vscode.Extension<vscodeMssql.IExtension>;
 	return ext.activate();
@@ -477,4 +487,21 @@ export async function retry<T>(
 	}
 
 	return undefined;
+}
+
+/**
+ * Gets all the projects of the specified extension in the folder
+ * @param folder
+ * @param projectExtension project extension to filter on
+ * @returns array of project uris
+ */
+export async function getAllProjectsInFolder(folder: vscode.Uri, projectExtension: string): Promise<vscode.Uri[]> {
+	// path needs to use forward slashes for glob to work
+	const escapedPath = glob.escapePath(folder.fsPath.replace(/\\/g, '/'));
+
+	// filter for projects with the specified project extension
+	const projFilter = path.posix.join(escapedPath, '**', `*${projectExtension}`);
+
+	// glob will return an array of file paths with forward slashes, so they need to be converted back if on windows
+	return (await glob(projFilter)).map(p => vscode.Uri.file(path.resolve(p)));
 }

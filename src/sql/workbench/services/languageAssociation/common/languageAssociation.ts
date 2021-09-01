@@ -4,7 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Registry } from 'vs/platform/registry/common/platform';
-import { IEditorInput, EditorInput } from 'vs/workbench/common/editor';
+import { IEditorInput } from 'vs/workbench/common/editor';
+import { EditorInput } from 'vs/workbench/common/editor/editorInput';
 import { ServicesAccessor, IInstantiationService, BrandedService } from 'vs/platform/instantiation/common/instantiation';
 import { IDisposable, toDisposable } from 'vs/base/common/lifecycle';
 
@@ -13,11 +14,7 @@ export type BaseInputCreator = (activeEditor: IEditorInput) => IEditorInput;
 
 export interface ILanguageAssociation {
 	convertInput(activeEditor: IEditorInput): Promise<EditorInput | undefined> | EditorInput | undefined;
-	/**
-	 * Used for scenarios when we need to synchrounly create inputs, currently only for handling upgrades
-	 * and planned to be removed eventually
-	 */
-	syncConvertinput?(activeEditor: IEditorInput): EditorInput | undefined;
+	syncConvertInput?(activeEditor: IEditorInput): EditorInput | undefined;
 	createBase(activeEditor: IEditorInput): IEditorInput;
 }
 

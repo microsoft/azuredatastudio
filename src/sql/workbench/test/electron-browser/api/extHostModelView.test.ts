@@ -11,7 +11,6 @@ import { MainThreadModelViewShape } from 'sql/workbench/api/common/sqlExtHost.pr
 import { IMainContext } from 'vs/workbench/api/common/extHost.protocol';
 import { IComponentShape, IItemConfig, ComponentEventType, IComponentEventArgs, ModelComponentTypes, DeclarativeDataType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { TitledFormItemLayout } from 'sql/workbench/browser/modelComponents/formContainer.component';
-import { assign } from 'vs/base/common/objects';
 
 interface InternalItemConfig {
 	toIItemConfig(): IItemConfig;
@@ -79,14 +78,14 @@ suite('ExtHostModelView Validation Tests', () => {
 
 		test('The custom validation output of a component gets set when it is initialized', () => {
 			return extHostModelView.$runCustomValidations(handle, inputBox.id).then(valid => {
-				assert.equal(valid, false, 'Empty input box did not validate as false');
+				assert.strictEqual(valid, false, 'Empty input box did not validate as false');
 			});
 		});
 
 		test('The custom validation output of a component changes if its value changes', () => {
 			inputBox.value = validText;
 			return extHostModelView.$runCustomValidations(handle, inputBox.id).then(valid => {
-				assert.equal(valid, true, 'Valid input box did not validate as valid');
+				assert.strictEqual(valid, true, 'Valid input box did not validate as valid');
 			});
 		});
 
@@ -98,22 +97,22 @@ suite('ExtHostModelView Validation Tests', () => {
 				eventType: ComponentEventType.PropertiesChanged
 			} as IComponentEventArgs);
 			return extHostModelView.$runCustomValidations(handle, inputBox.id).then(valid => {
-				assert.equal(valid, true, 'Valid input box did not validate as valid after PropertiesChanged event');
+				assert.strictEqual(valid, true, 'Valid input box did not validate as valid after PropertiesChanged event');
 			});
 		});
 
 		test('The validity of a component is set by main thread validationChanged events', () => {
-			assert.equal(inputBox.valid, true, 'Component validity is true by default');
+			assert.strictEqual(inputBox.valid, true, 'Component validity is true by default');
 			extHostModelView.$handleEvent(handle, inputBox.id, {
 				eventType: ComponentEventType.validityChanged,
 				args: false
 			});
-			assert.equal(inputBox.valid, false, 'Input box did not update validity to false based on the validityChanged event');
+			assert.strictEqual(inputBox.valid, false, 'Input box did not update validity to false based on the validityChanged event');
 			extHostModelView.$handleEvent(handle, inputBox.id, {
 				eventType: ComponentEventType.validityChanged,
 				args: true
 			});
-			assert.equal(inputBox.valid, true, 'Input box did not update validity to true based on the validityChanged event');
+			assert.strictEqual(inputBox.valid, true, 'Input box did not update validity to true based on the validityChanged event');
 		});
 
 		test('Main thread validityChanged events cause component to fire validity changed events', () => {
@@ -123,7 +122,7 @@ suite('ExtHostModelView Validation Tests', () => {
 				eventType: ComponentEventType.validityChanged,
 				args: false
 			});
-			assert.equal(validityFromEvent, false, 'Main thread validityChanged event did not cause component to fire its own event');
+			assert.strictEqual(validityFromEvent, false, 'Main thread validityChanged event did not cause component to fire its own event');
 		});
 
 		test('Setting a form component as required initializes the model with the component required', () => {
@@ -178,7 +177,7 @@ suite('ExtHostModelView Validation Tests', () => {
 				topLevelInputFormComponent,
 				{
 					components: [
-						assign(groupInputFormComponent, { layout: groupInputLayout }),
+						Object.assign(groupInputFormComponent, { layout: groupInputLayout }),
 						groupDropdownFormComponent
 					],
 					title: groupTitle
@@ -187,26 +186,26 @@ suite('ExtHostModelView Validation Tests', () => {
 			modelView.initializeModel(formContainer);
 
 			// Then all the items plus a group label are added and have the correct layouts
-			assert.equal(rootComponent.itemConfigs.length, 4);
+			assert.strictEqual(rootComponent.itemConfigs.length, 4);
 			let listBoxConfig = rootComponent.itemConfigs[0];
 			let groupLabelConfig = rootComponent.itemConfigs[1];
 			let inputBoxConfig = rootComponent.itemConfigs[2];
 			let dropdownConfig = rootComponent.itemConfigs[3];
 
 			// Verify that the correct items were added
-			assert.equal(listBoxConfig.componentShape.type, ModelComponentTypes.ListBox, `Unexpected ModelComponentType. Expected ListBox but got ${ModelComponentTypes[listBoxConfig.componentShape.type]}`);
-			assert.equal(groupLabelConfig.componentShape.type, ModelComponentTypes.Text, `Unexpected ModelComponentType. Expected Text but got ${ModelComponentTypes[groupLabelConfig.componentShape.type]}`);
-			assert.equal(inputBoxConfig.componentShape.type, ModelComponentTypes.InputBox, `Unexpected ModelComponentType. Expected InputBox but got ${ModelComponentTypes[inputBoxConfig.componentShape.type]}`);
-			assert.equal(dropdownConfig.componentShape.type, ModelComponentTypes.DropDown, `Unexpected ModelComponentType. Expected DropDown but got ${ModelComponentTypes[dropdownConfig.componentShape.type]}`);
+			assert.strictEqual(listBoxConfig.componentShape.type, ModelComponentTypes.ListBox, `Unexpected ModelComponentType. Expected ListBox but got ${ModelComponentTypes[listBoxConfig.componentShape.type]}`);
+			assert.strictEqual(groupLabelConfig.componentShape.type, ModelComponentTypes.Text, `Unexpected ModelComponentType. Expected Text but got ${ModelComponentTypes[groupLabelConfig.componentShape.type]}`);
+			assert.strictEqual(inputBoxConfig.componentShape.type, ModelComponentTypes.InputBox, `Unexpected ModelComponentType. Expected InputBox but got ${ModelComponentTypes[inputBoxConfig.componentShape.type]}`);
+			assert.strictEqual(dropdownConfig.componentShape.type, ModelComponentTypes.DropDown, `Unexpected ModelComponentType. Expected DropDown but got ${ModelComponentTypes[dropdownConfig.componentShape.type]}`);
 
 			// Verify that the group title was set up correctly
-			assert.equal(groupLabelConfig.componentShape.properties['value'], groupTitle, `Unexpected title. Expected ${groupTitle} but got ${groupLabelConfig.componentShape.properties['value']}`);
-			assert.equal((groupLabelConfig.config as TitledFormItemLayout).isGroupLabel, true, `Unexpected value for isGroupLabel. Expected true but got ${(groupLabelConfig.config as TitledFormItemLayout).isGroupLabel}`);
+			assert.strictEqual(groupLabelConfig.componentShape.properties['value'], groupTitle, `Unexpected title. Expected ${groupTitle} but got ${groupLabelConfig.componentShape.properties['value']}`);
+			assert.strictEqual((groupLabelConfig.config as TitledFormItemLayout).isGroupLabel, true, `Unexpected value for isGroupLabel. Expected true but got ${(groupLabelConfig.config as TitledFormItemLayout).isGroupLabel}`);
 
 			// Verify that the components' layouts are correct
-			assert.equal((listBoxConfig.config as azdata.FormItemLayout).horizontal, defaultLayout.horizontal, `Unexpected layout for listBoxConfig. Expected defaultLayout.horizontal but got ${(listBoxConfig.config as azdata.FormItemLayout).horizontal}`);
-			assert.equal((inputBoxConfig.config as azdata.FormItemLayout).horizontal, groupInputLayout.horizontal, `Unexpected layout for inputBoxConfig. Expected groupInputLayout.horizontal but got ${(inputBoxConfig.config as azdata.FormItemLayout).horizontal}`);
-			assert.equal((dropdownConfig.config as azdata.FormItemLayout).horizontal, defaultLayout.horizontal, `Unexpected layout for dropdownConfig. Expected defaultLayout.horizontal but got ${(dropdownConfig.config as azdata.FormItemLayout).horizontal}`);
+			assert.strictEqual((listBoxConfig.config as azdata.FormItemLayout).horizontal, defaultLayout.horizontal, `Unexpected layout for listBoxConfig. Expected defaultLayout.horizontal but got ${(listBoxConfig.config as azdata.FormItemLayout).horizontal}`);
+			assert.strictEqual((inputBoxConfig.config as azdata.FormItemLayout).horizontal, groupInputLayout.horizontal, `Unexpected layout for inputBoxConfig. Expected groupInputLayout.horizontal but got ${(inputBoxConfig.config as azdata.FormItemLayout).horizontal}`);
+			assert.strictEqual((dropdownConfig.config as azdata.FormItemLayout).horizontal, defaultLayout.horizontal, `Unexpected layout for dropdownConfig. Expected defaultLayout.horizontal but got ${(dropdownConfig.config as azdata.FormItemLayout).horizontal}`);
 		});
 
 		test('Inserting and removing components from a container should work correctly', () => {
@@ -222,13 +221,13 @@ suite('ExtHostModelView Validation Tests', () => {
 			modelView.initializeModel(flex);
 
 			const itemConfigs: InternalItemConfig[] = (flex as IWithItemConfig).itemConfigs;
-			assert.equal(itemConfigs.length, 2, `Unexpected number of items in list. Expected 2, got ${itemConfigs.length} ${JSON.stringify(itemConfigs)}`);
+			assert.strictEqual(itemConfigs.length, 2, `Unexpected number of items in list. Expected 2, got ${itemConfigs.length} ${JSON.stringify(itemConfigs)}`);
 			flex.insertItem(dropDown, 1);
-			assert.equal(itemConfigs.length, 3, `Unexpected number of items in list. Expected 3, got ${itemConfigs.length} ${JSON.stringify(itemConfigs)}`);
-			assert.equal(itemConfigs[1].toIItemConfig().componentShape.type, ModelComponentTypes.DropDown, `Unexpected ModelComponentType. Expected DropDown but got ${ModelComponentTypes[itemConfigs[1].toIItemConfig().componentShape.type]}`);
+			assert.strictEqual(itemConfigs.length, 3, `Unexpected number of items in list. Expected 3, got ${itemConfigs.length} ${JSON.stringify(itemConfigs)}`);
+			assert.strictEqual(itemConfigs[1].toIItemConfig().componentShape.type, ModelComponentTypes.DropDown, `Unexpected ModelComponentType. Expected DropDown but got ${ModelComponentTypes[itemConfigs[1].toIItemConfig().componentShape.type]}`);
 			flex.removeItem(listBox);
-			assert.equal(itemConfigs.length, 2, `Unexpected number of items in list. Expected 2, got ${itemConfigs.length} ${JSON.stringify(itemConfigs)}`);
-			assert.equal(itemConfigs[0].toIItemConfig().componentShape.type, ModelComponentTypes.DropDown, `Unexpected ModelComponentType. Expected DropDown but got ${ModelComponentTypes[itemConfigs[0].toIItemConfig().componentShape.type]}`);
+			assert.strictEqual(itemConfigs.length, 2, `Unexpected number of items in list. Expected 2, got ${itemConfigs.length} ${JSON.stringify(itemConfigs)}`);
+			assert.strictEqual(itemConfigs[0].toIItemConfig().componentShape.type, ModelComponentTypes.DropDown, `Unexpected ModelComponentType. Expected DropDown but got ${ModelComponentTypes[itemConfigs[0].toIItemConfig().componentShape.type]}`);
 		});
 
 		test('Inserting component give negative number fails', () => {
@@ -245,7 +244,7 @@ suite('ExtHostModelView Validation Tests', () => {
 			modelView.initializeModel(flex);
 
 			const itemConfigs: InternalItemConfig[] = (flex as IWithItemConfig).itemConfigs;
-			assert.equal(itemConfigs.length, 2, `Unexpected number of items in list. Expected 2, got ${itemConfigs.length} ${JSON.stringify(itemConfigs)}`);
+			assert.strictEqual(itemConfigs.length, 2, `Unexpected number of items in list. Expected 2, got ${itemConfigs.length} ${JSON.stringify(itemConfigs)}`);
 			assert.throws(() => flex.insertItem(dropDown, -1), `Didn't get expected exception when calling insertItem with invalid index -1`);
 		});
 
@@ -263,7 +262,7 @@ suite('ExtHostModelView Validation Tests', () => {
 			modelView.initializeModel(flex);
 
 			const itemConfigs: InternalItemConfig[] = (flex as IWithItemConfig).itemConfigs;
-			assert.equal(itemConfigs.length, 2, `Unexpected number of items in list. Expected 2, got ${itemConfigs.length} ${JSON.stringify(itemConfigs)}`);
+			assert.strictEqual(itemConfigs.length, 2, `Unexpected number of items in list. Expected 2, got ${itemConfigs.length} ${JSON.stringify(itemConfigs)}`);
 			assert.throws(() => flex.insertItem(dropDown, 10), `Didn't get expected exception when calling insertItem with invalid index 10`);
 		});
 
@@ -281,9 +280,9 @@ suite('ExtHostModelView Validation Tests', () => {
 			modelView.initializeModel(flex);
 
 			const itemConfigs: InternalItemConfig[] = (flex as IWithItemConfig).itemConfigs;
-			assert.equal(itemConfigs.length, 2, `Unexpected number of items in list. Expected 2, got ${itemConfigs.length} ${JSON.stringify(itemConfigs)}`);
+			assert.strictEqual(itemConfigs.length, 2, `Unexpected number of items in list. Expected 2, got ${itemConfigs.length} ${JSON.stringify(itemConfigs)}`);
 			flex.insertItem(dropDown, 2);
-			assert.equal(itemConfigs.length, 3, `Unexpected number of items in list. Expected 3, got ${itemConfigs.length} ${JSON.stringify(itemConfigs)}`);
+			assert.strictEqual(itemConfigs.length, 3, `Unexpected number of items in list. Expected 3, got ${itemConfigs.length} ${JSON.stringify(itemConfigs)}`);
 		});
 
 		test('Removing a component that does not exist does not fail', () => {
@@ -301,9 +300,9 @@ suite('ExtHostModelView Validation Tests', () => {
 
 			const itemConfigs: InternalItemConfig[] = (flex as IWithItemConfig).itemConfigs;
 			let result = flex.removeItem(dropDown);
-			assert.equal(result, false);
-			assert.equal(itemConfigs.length, 2, `Unexpected number of items in list. Expected 2, got ${itemConfigs.length} ${JSON.stringify(itemConfigs)}`);
-			assert.equal(itemConfigs[0].toIItemConfig().componentShape.type, ModelComponentTypes.ListBox, `Unexpected ModelComponentType. Expected ListBox but got ${ModelComponentTypes[itemConfigs[0].toIItemConfig().componentShape.type]}`);
+			assert.strictEqual(result, false);
+			assert.strictEqual(itemConfigs.length, 2, `Unexpected number of items in list. Expected 2, got ${itemConfigs.length} ${JSON.stringify(itemConfigs)}`);
+			assert.strictEqual(itemConfigs[0].toIItemConfig().componentShape.type, ModelComponentTypes.ListBox, `Unexpected ModelComponentType. Expected ListBox but got ${ModelComponentTypes[itemConfigs[0].toIItemConfig().componentShape.type]}`);
 		});
 
 
@@ -343,19 +342,19 @@ suite('ExtHostModelView Validation Tests', () => {
 			modelView.initializeModel(formBuilder.component());
 
 			const itemConfigs: InternalItemConfig[] = (form as IWithItemConfig).itemConfigs;
-			assert.equal(itemConfigs.length, 1);
+			assert.strictEqual(itemConfigs.length, 1);
 			formBuilder.insertFormItem(inputBoxFormItem, 0);
-			assert.equal(itemConfigs.length, 2, `Unexpected number of items in list. Expected 2, got ${itemConfigs.length} ${JSON.stringify(itemConfigs)}`);
-			assert.equal(itemConfigs[0].toIItemConfig().componentShape.type, ModelComponentTypes.InputBox, `Unexpected ModelComponentType. Expected InputBox but got ${ModelComponentTypes[itemConfigs[0].toIItemConfig().componentShape.type]}`);
+			assert.strictEqual(itemConfigs.length, 2, `Unexpected number of items in list. Expected 2, got ${itemConfigs.length} ${JSON.stringify(itemConfigs)}`);
+			assert.strictEqual(itemConfigs[0].toIItemConfig().componentShape.type, ModelComponentTypes.InputBox, `Unexpected ModelComponentType. Expected InputBox but got ${ModelComponentTypes[itemConfigs[0].toIItemConfig().componentShape.type]}`);
 			formBuilder.insertFormItem(groupItems, 0);
-			assert.equal(itemConfigs.length, 5, `Unexpected number of items in list. Expected 5, got ${itemConfigs.length} ${JSON.stringify(itemConfigs)}`);
+			assert.strictEqual(itemConfigs.length, 5, `Unexpected number of items in list. Expected 5, got ${itemConfigs.length} ${JSON.stringify(itemConfigs)}`);
 			formBuilder.removeFormItem(listBoxFormItem);
-			assert.equal(itemConfigs.length, 4, `Unexpected number of items in list. Expected 4, got ${itemConfigs.length} ${JSON.stringify(itemConfigs)}`);
+			assert.strictEqual(itemConfigs.length, 4, `Unexpected number of items in list. Expected 4, got ${itemConfigs.length} ${JSON.stringify(itemConfigs)}`);
 			formBuilder.removeFormItem(groupItems);
-			assert.equal(itemConfigs.length, 1, `Unexpected number of items in list. Expected 1, got ${itemConfigs.length} ${JSON.stringify(itemConfigs)}`);
+			assert.strictEqual(itemConfigs.length, 1, `Unexpected number of items in list. Expected 1, got ${itemConfigs.length} ${JSON.stringify(itemConfigs)}`);
 			formBuilder.addFormItem(listBoxFormItem);
-			assert.equal(itemConfigs.length, 2, `Unexpected number of items in list. Expected 2, got ${itemConfigs.length} ${JSON.stringify(itemConfigs)}`);
-			assert.equal(itemConfigs[1].toIItemConfig().componentShape.type, ModelComponentTypes.ListBox, `Unexpected ModelComponentType. Expected ListBox but got ${ModelComponentTypes[itemConfigs[1].toIItemConfig().componentShape.type]}`);
+			assert.strictEqual(itemConfigs.length, 2, `Unexpected number of items in list. Expected 2, got ${itemConfigs.length} ${JSON.stringify(itemConfigs)}`);
+			assert.strictEqual(itemConfigs[1].toIItemConfig().componentShape.type, ModelComponentTypes.ListBox, `Unexpected ModelComponentType. Expected ListBox but got ${ModelComponentTypes[itemConfigs[1].toIItemConfig().componentShape.type]}`);
 		});
 	});
 

@@ -42,7 +42,7 @@ export default class MainController implements vscode.Disposable {
 	public activate(): Promise<boolean> {
 		const connectionProvider = new ConnectionProvider();
 		const iconProvider = new IconProvider();
-		const objectExplorer = new ObjectExplorerProvider();
+		const objectExplorer = new ObjectExplorerProvider(this.context);
 		azdata.dataprotocol.registerConnectionProvider(connectionProvider);
 		azdata.dataprotocol.registerIconProvider(iconProvider);
 		azdata.dataprotocol.registerObjectExplorerProvider(objectExplorer);
@@ -85,6 +85,10 @@ export default class MainController implements vscode.Disposable {
 
 		vscode.commands.registerCommand('sqlservices.openModelViewDashboard', () => {
 			dashboard.openModelViewDashboard(this.context);
+		});
+
+		vscode.commands.registerCommand('sqlservices.updateObjectExplorerNode', async (context: azdata.ObjectExplorerContext) => {
+			await objectExplorer.updateNode(context);
 		});
 
 		return Promise.resolve(true);

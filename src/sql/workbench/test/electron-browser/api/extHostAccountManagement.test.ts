@@ -65,7 +65,7 @@ suite('ExtHostAccountManagement', () => {
 		let extHost = new ExtHostAccountManagement(threadService);
 
 		// Then: There shouldn't be any account providers registered
-		assert.equal(extHost.getProviderCount(), 0);
+		assert.strictEqual(extHost.getProviderCount(), 0);
 	});
 
 	// REGISTER TESTS //////////////////////////////////////////////////////
@@ -78,7 +78,7 @@ suite('ExtHostAccountManagement', () => {
 		extHost.$registerAccountProvider(mockAccountMetadata, mockProvider.object);
 
 		// Then: The account provider should be registered
-		assert.equal(extHost.getProviderCount(), 1);
+		assert.strictEqual(extHost.getProviderCount(), 1);
 	});
 
 	test('Register Account Provider - Account Provider Already Registered', () => {
@@ -95,7 +95,7 @@ suite('ExtHostAccountManagement', () => {
 		});
 
 		// ... There should only be one account provider
-		assert.equal(extHost.getProviderCount(), 1);
+		assert.strictEqual(extHost.getProviderCount(), 1);
 	});
 
 	// TODO: Test for unregistering a provider
@@ -310,7 +310,7 @@ suite('ExtHostAccountManagement', () => {
 				);
 
 				assert.ok(Array.isArray(accounts));
-				assert.equal(accounts.length, expectedAccounts.length);
+				assert.strictEqual(accounts.length, expectedAccounts.length);
 				assert.deepStrictEqual(accounts, expectedAccounts);
 			});
 	});

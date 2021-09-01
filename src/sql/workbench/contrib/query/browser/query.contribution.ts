@@ -30,9 +30,9 @@ import { LifecyclePhase } from 'vs/workbench/services/lifecycle/common/lifecycle
 import { TimeElapsedStatusBarContributions, RowCountStatusBarContributions, QueryStatusStatusBarContributions, QueryResultSelectionSummaryStatusBarContribution } from 'sql/workbench/contrib/query/browser/statusBarItems';
 import { SqlFlavorStatusbarItem, ChangeFlavorAction } from 'sql/workbench/contrib/query/browser/flavorStatus';
 import { EditorExtensions, IEditorInputFactoryRegistry } from 'vs/workbench/common/editor';
-import { FileQueryEditorInput } from 'sql/workbench/contrib/query/common/fileQueryEditorInput';
+import { FileQueryEditorInput } from 'sql/workbench/contrib/query/browser/fileQueryEditorInput';
 import { FileQueryEditorInputSerializer, QueryEditorLanguageAssociation, UntitledQueryEditorInputSerializer } from 'sql/workbench/contrib/query/browser/queryInputFactory';
-import { UntitledQueryEditorInput } from 'sql/workbench/common/editor/query/untitledQueryEditorInput';
+import { UntitledQueryEditorInput } from 'sql/base/query/browser/untitledQueryEditorInput';
 import { ILanguageAssociationRegistry, Extensions as LanguageAssociationExtensions } from 'sql/workbench/services/languageAssociation/common/languageAssociation';
 import { NewQueryTask, OE_NEW_QUERY_ACTION_ID, DE_NEW_QUERY_COMMAND_ID } from 'sql/workbench/contrib/query/browser/queryActions';
 import { TreeNodeContextKey } from 'sql/workbench/services/objectExplorer/common/treeNodeContextKey';
@@ -43,7 +43,7 @@ import { ItemContextKey } from 'sql/workbench/contrib/dashboard/browser/widgets/
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { Disposable, DisposableStore } from 'vs/base/common/lifecycle';
 import { IModeService } from 'vs/editor/common/services/modeService';
-import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
+import { FileEditorInput } from 'vs/workbench/contrib/files/browser/editors/fileEditorInput';
 import { IEditorOverrideService, ContributedEditorPriority } from 'vs/workbench/services/editor/common/editorOverrideService';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { ILogService } from 'vs/platform/log/common/log';
@@ -392,11 +392,6 @@ const queryEditorConfiguration: IConfigurationNode = {
 			'description': localize('queryEditor.results.copyRemoveNewLine', "Configuration options for copying multi-line results from the Results View"),
 			'default': true
 		},
-		'queryEditor.results.optimizedTable': {
-			'type': 'boolean',
-			'description': localize('queryEditor.results.optimizedTable', "(Experimental) Use a optimized table in the results out. Some functionality might be missing and in the works."),
-			'default': false
-		},
 		'queryEditor.results.inMemoryDataProcessingThreshold': {
 			'type': 'number',
 			'default': 5000,
@@ -528,7 +523,7 @@ export class QueryEditorOverrideContribution extends Disposable implements IWork
 			// Create the selector from the list of all the language extensions we want to associate with the
 			// query editor (filtering out any languages which didn't have any extensions registered yet)
 			const selector = `*{${langExtensions.join(',')}}`;
-			this._registeredOverrides.add(this._editorOverrideService.registerContributionPoint(
+			this._registeredOverrides.add(this._editorOverrideService.registerEditor(
 				selector,
 				{
 					id: QueryEditor.ID,
@@ -542,7 +537,7 @@ export class QueryEditorOverrideContribution extends Disposable implements IWork
 						resource: resource
 					}) as FileEditorInput;
 					const langAssociation = languageAssociationRegistry.getAssociationForLanguage(lang);
-					const queryEditorInput = langAssociation?.syncConvertinput?.(fileInput);
+					const queryEditorInput = langAssociation?.syncConvertInput?.(fileInput);
 					if (!queryEditorInput) {
 						this._logService.warn('Unable to create input for overriding editor ', resource);
 						return undefined;

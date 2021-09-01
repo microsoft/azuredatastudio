@@ -24,7 +24,7 @@ export class EventVerifierSingle<T> {
 	public assertFired(expectedArgument?: T) {
 		assert.ok(this._eventFired);
 		if (expectedArgument) {
-			assert.equal(this._eventArgument, expectedArgument);
+			assert.strictEqual(this._eventArgument, expectedArgument);
 		}
 	}
 
@@ -34,7 +34,7 @@ export class EventVerifierSingle<T> {
 	}
 
 	public assertNotFired() {
-		assert.equal(this._eventFired, false);
+		assert.strictEqual(this._eventFired, false);
 	}
 
 	public get eventHandler(): (arg: T) => void {

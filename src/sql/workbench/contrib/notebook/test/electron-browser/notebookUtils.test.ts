@@ -151,20 +151,20 @@ suite('notebookUtils', function (): void {
 		assert.strictEqual(result, undefined);
 
 		result = extractCellMagicCommandPlusArgs('%%magic command', 'magic');
-		assert.equal(result.commandId, 'command');
-		assert.equal(result.args, '');
+		assert.strictEqual(result.commandId, 'command');
+		assert.strictEqual(result.args, '');
 
 		result = extractCellMagicCommandPlusArgs('%%magic command arg1', 'magic');
-		assert.equal(result.commandId, 'command');
-		assert.equal(result.args, 'arg1');
+		assert.strictEqual(result.commandId, 'command');
+		assert.strictEqual(result.args, 'arg1');
 
 		result = extractCellMagicCommandPlusArgs('%%magic command arg1 arg2', 'magic');
-		assert.equal(result.commandId, 'command');
-		assert.equal(result.args, 'arg1 arg2');
+		assert.strictEqual(result.commandId, 'command');
+		assert.strictEqual(result.args, 'arg1 arg2');
 
 		result = extractCellMagicCommandPlusArgs('%%magic command.id arg1 arg2 arg3', 'magic');
-		assert.equal(result.commandId, 'command.id');
-		assert.equal(result.args, 'arg1 arg2 arg3');
+		assert.strictEqual(result.commandId, 'command.id');
+		assert.strictEqual(result.args, 'arg1 arg2 arg3');
 	});
 
 	test('asyncForEach Test', async function (): Promise<void> {

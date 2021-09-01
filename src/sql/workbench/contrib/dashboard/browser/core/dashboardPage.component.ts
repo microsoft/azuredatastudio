@@ -181,7 +181,7 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 			let secondary: IAction[] = [];
 			const menu = this.menuService.createMenu(MenuId.DashboardToolbar, this.contextKeyService);
 			let groups = menu.getActions({ arg: this.connectionManagementService.connectionInfo.connectionProfile.toIConnectionProfile(), shouldForwardArgs: true });
-			fillInActions(groups, { primary, secondary }, false, '', Number.MAX_SAFE_INTEGER, (action: SubmenuAction, group: string, groupSize: number) => group === undefined || group === '');
+			fillInActions(groups, { primary, secondary }, false, g => g === '', Number.MAX_SAFE_INTEGER, (action: SubmenuAction, group: string, groupSize: number) => group === undefined || group === '');
 
 			primary.forEach(a => {
 				if (a instanceof MenuItemAction) {
@@ -504,7 +504,7 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 			return [this.propertiesWidget];
 		} else if (types.isArray(properties)) {
 			return properties.map((item) => {
-				const retVal = objects.assign({}, this.propertiesWidget);
+				const retVal = Object.assign({}, this.propertiesWidget);
 				retVal.edition = item.edition;
 				retVal.provider = item.provider;
 				retVal.widget = { 'properties-widget': { properties: item.properties } };

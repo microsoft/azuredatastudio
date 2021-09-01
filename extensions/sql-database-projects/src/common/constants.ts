@@ -115,13 +115,14 @@ export const selectProfileToUse = localize('selectProfileToUse', "Select publish
 export const selectProfile = localize('selectProfile', "Select Profile");
 export const dontUseProfile = localize('dontUseProfile', "Don't use profile");
 export const browseForProfile = localize('browseForProfile', "Browse for profile");
+export const browseForProfileWithIcon = `$(folder) ${browseForProfile}`;
 export const chooseAction = localize('chooseAction', "Choose action");
 export const chooseSqlcmdVarsToModify = localize('chooseSqlcmdVarsToModify', "Choose SQLCMD variables to modify");
 export const enterNewValueForVar = (varName: string) => localize('enterNewValueForVar', "Enter new value for variable '{0}'", varName);
 export const resetAllVars = localize('resetAllVars', "Reset all variables");
-export const createNew = localize('createNew', "<Create New>");
+export const createNew = localize('createNew', "Create New");
 export const enterNewDatabaseName = localize('enterNewDatabaseName', "Enter new database name");
-export const newDatabaseTitle = (name: string) => localize({ key: 'newDatabaseTitle', comment: ['Name is the name of a new database being created'] }, "{0} (new)", name);
+export const newText = localize('new', "New");
 export const selectDatabase = localize('selectDatabase', "Select database");
 export const done = localize('done', "Done");
 export const nameMustNotBeEmpty = localize('nameMustNotBeEmpty', "Name must not be empty");
@@ -217,6 +218,7 @@ export const selectFolderStructure = localize('selectFolderStructure', "Select f
 export const folderStructureLabel = localize('folderStructureLabel', "Folder structure");
 export const WorkspaceFileExtension = '.code-workspace';
 export const browseEllipsis = localize('browseEllipsis', "Browse...");
+export const browseEllipsisWithIcon = `$(folder) ${browseEllipsis}`;
 export const selectProjectLocation = localize('selectProjectLocation', "Select project location");
 export const ProjectParentDirectoryNotExistError = (location: string): string => { return localize('dataworkspace.projectParentDirectoryNotExistError', "The selected project location '{0}' does not exist or is not a directory.", location); };
 export const ProjectDirectoryAlreadyExistError = (projectName: string, location: string): string => { return localize('dataworkspace.projectDirectoryAlreadyExistError', "There is already a directory named '{0}' in the selected location: '{1}'.", projectName, location); };
@@ -443,7 +445,9 @@ export function getTargetPlatformFromVersion(version: string): string {
 
 // Insert SQL binding
 export const hostFileName = 'host.json';
+export const sqlExtensionPackageName = 'Microsoft.Azure.WebJobs.Extensions.Sql';
 export const placeHolderObject = '[dbo].[table1]';
+
 export const input = localize('input', "Input");
 export const output = localize('output', "Output");
 export const selectBindingType = localize('selectBindingType', "Select type of binding");
@@ -453,3 +457,5 @@ export const sqlTableToUpsert = localize('sqlTableToUpsert', "SQL table to upser
 export const connectionStringSetting = localize('connectionStringSetting', "Connection string setting name");
 export const connectionStringSettingPlaceholder = localize('connectionStringSettingPlaceholder', "Connection string setting specified in \"local.settings.json\"");
 export const noAzureFunctionsInFile = localize('noAzureFunctionsInFile', "No Azure functions in the current active file");
+export const noAzureFunctionsProjectsInWorkspace = localize('noAzureFunctionsProjectsInWorkspace', "No Azure functions projects found in the workspace");
+export const addPackage = localize('addPackage', "Add Package");

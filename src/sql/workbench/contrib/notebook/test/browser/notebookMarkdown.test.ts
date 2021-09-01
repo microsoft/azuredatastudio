@@ -7,9 +7,10 @@ import * as assert from 'assert';
 import * as marked from 'vs/base/common/marked/marked';
 import { NotebookMarkdownRenderer } from '../../browser/outputs/notebookMarkdown';
 import { URI } from 'vs/base/common/uri';
+import { TestConfigurationService } from 'sql/platform/connection/test/common/testConfigurationService';
 
 suite('NotebookMarkdownRenderer', () => {
-	let notebookMarkdownRenderer = new NotebookMarkdownRenderer();
+	let notebookMarkdownRenderer = new NotebookMarkdownRenderer(new TestConfigurationService({ user: { 'notebook': { 'useNewMarkdownRenderer': false } } }));
 	test('image rendering conforms to default', () => {
 		const markdown = { value: `![image](someimageurl 'caption')` };
 		const result: HTMLElement = notebookMarkdownRenderer.renderMarkdown(markdown);
@@ -102,6 +103,11 @@ suite('NotebookMarkdownRenderer', () => {
 
 		result = notebookMarkdownRenderer.renderMarkdown({ value: `![altText](attachment:ads.png)`, isTrusted: true }, { cellAttachments: JSON.parse('{"ads2.png":"image/png"}') });
 		assert.strictEqual(result.innerHTML, `<p><img src="attachment:ads.png" alt="altText"></p>`, 'Cell attachment no image data failed');
+	});
+
+	test('table followed by blank line with space and then header renders correctly (#16245)', function (): void {
+		let result: HTMLElement = notebookMarkdownRenderer.renderMarkdown({ value: '<table></table>\n \n### Hello', isTrusted: true });
+		assert.strictEqual(result.innerHTML, '<table></table>\n\n<h3 id="hello">Hello</h3>\n');
 	});
 
 	/**

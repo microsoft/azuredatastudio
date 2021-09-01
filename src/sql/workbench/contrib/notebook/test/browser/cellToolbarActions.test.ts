@@ -129,7 +129,7 @@ suite('CellToolbarActions', function (): void {
 			cellModelMock.setup(x => x.cellType).returns(() => 'code');
 			const action = new CellToggleMoreActions(instantiationService);
 			action.onInit(testContainer, contextMock.object);
-			assert.equal(action['_moreActions']['viewItems'][0]['_action']['_actions'].length, 18, 'Unexpected number of valid elements');
+			assert.strictEqual(action['_moreActions']['viewItems'][0]['_action']['_actions'].length, 18, 'Unexpected number of valid elements');
 		});
 
 		test('CellToggleMoreActions with Markdown CellType', function (): void {
@@ -138,7 +138,7 @@ suite('CellToolbarActions', function (): void {
 			const action = new CellToggleMoreActions(instantiationService);
 			action.onInit(testContainer, contextMock.object);
 			// Markdown elements don't show the code-cell related actions such as Run Cell
-			assert.equal(action['_moreActions']['viewItems'][0]['_action']['_actions'].length, 7, 'Unexpected number of valid elements');
+			assert.strictEqual(action['_moreActions']['viewItems'][0]['_action']['_actions'].length, 7, 'Unexpected number of valid elements');
 		});
 	});
 
@@ -154,29 +154,29 @@ suite('CellToolbarActions', function (): void {
 		test('No notebook model passed in', async function (): Promise<void> {
 			let cellModel = new CellModel({ cell_type: 'code', source: '' }, { isTrusted: true, notebook: undefined });
 			await convertCellAction.doRun({ cell: cellModel, model: undefined });
-			assert.equal(cellModel.cellType, 'code', 'Cell type should not be affected');
+			assert.strictEqual(cellModel.cellType, 'code', 'Cell type should not be affected');
 		});
 
 		test('Convert to code cell', async function (): Promise<void> {
 			await notebookModel.loadContents();
 			await convertCellAction.doRun({ model: notebookModel, cell: notebookModel.cells[0] });
-			assert.equal(notebookModel.cells[0].cellType, 'markdown', 'Cell was not converted correctly');
+			assert.strictEqual(notebookModel.cells[0].cellType, 'markdown', 'Cell was not converted correctly');
 		});
 
 		test('Convert to markdown cell', async function (): Promise<void> {
 			await notebookModel.loadContents();
 			notebookModel.cells[0].cellType = 'markdown';
 			await convertCellAction.doRun({ model: notebookModel, cell: notebookModel.cells[0] });
-			assert.equal(notebookModel.cells[0].cellType, 'code', 'Cell was not converted correctly');
+			assert.strictEqual(notebookModel.cells[0].cellType, 'code', 'Cell was not converted correctly');
 		});
 
 		test('Convert to code cell and back', async function (): Promise<void> {
 			await notebookModel.loadContents();
 			notebookModel.cells[0].cellType = 'markdown';
 			await convertCellAction.doRun({ model: notebookModel, cell: notebookModel.cells[0] });
-			assert.equal(notebookModel.cells[0].cellType, 'code', 'Cell was not converted correctly');
+			assert.strictEqual(notebookModel.cells[0].cellType, 'code', 'Cell was not converted correctly');
 			await convertCellAction.doRun({ model: notebookModel, cell: notebookModel.cells[0] });
-			assert.equal(notebookModel.cells[0].cellType, 'markdown', 'Cell was not converted correctly second time');
+			assert.strictEqual(notebookModel.cells[0].cellType, 'markdown', 'Cell was not converted correctly second time');
 		});
 	});
 });
