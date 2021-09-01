@@ -96,7 +96,7 @@ export class NewProjectDialog extends DialogBase {
 				.withAdditionalProperties({ projectFileExtension: this.model.projectFileExtension, projectTemplateId: this.model.projectTypeId, error: err?.message ? err.message : err })
 				.send();
 
-			vscode.window.showErrorMessage(err?.message ? err.message : err);
+			void vscode.window.showErrorMessage(err?.message ? err.message : err);
 		}
 	}
 
@@ -163,7 +163,7 @@ export class NewProjectDialog extends DialogBase {
 
 		this.register(projectNameTextBox.onTextChanged(() => {
 			this.model.name = projectNameTextBox.value!;
-			projectNameTextBox.updateProperty('title', projectNameTextBox.value);
+			return projectNameTextBox.updateProperty('title', projectNameTextBox.value);
 		}));
 
 		const locationTextBox = view.modelBuilder.inputBox().withProps({
@@ -175,7 +175,7 @@ export class NewProjectDialog extends DialogBase {
 
 		this.register(locationTextBox.onTextChanged(() => {
 			this.model.location = locationTextBox.value!;
-			locationTextBox.updateProperty('title', locationTextBox.value);
+			return locationTextBox.updateProperty('title', locationTextBox.value);
 		}));
 
 		const browseFolderButton = view.modelBuilder.button().withProps({
