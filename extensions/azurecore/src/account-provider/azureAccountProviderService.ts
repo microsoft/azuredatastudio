@@ -58,7 +58,7 @@ export class AzureAccountProviderService implements vscode.Disposable {
 			AzureAccountProviderService.CommandClearTokenCache,
 			() => { self._event.emit(AzureAccountProviderService.CommandClearTokenCache); }
 		));
-		this._event.on(AzureAccountProviderService.CommandClearTokenCache, () => { self.onClearTokenCache(); });
+		this._event.on(AzureAccountProviderService.CommandClearTokenCache, () => { void self.onClearTokenCache(); });
 
 		// 1) Get a credential provider
 		// 2a) Store the credential provider for use later
@@ -98,11 +98,11 @@ export class AzureAccountProviderService implements vscode.Disposable {
 			.then(
 				() => {
 					let message = localize('clearTokenCacheSuccess', "Token cache successfully cleared");
-					vscode.window.showInformationMessage(`${loc.extensionName}: ${message}`);
+					void vscode.window.showInformationMessage(`${loc.extensionName}: ${message}`);
 				},
 				err => {
 					let message = localize('clearTokenCacheFailure', "Failed to clear token cache");
-					vscode.window.showErrorMessage(`${loc.extensionName}: ${message}: ${err}`);
+					void vscode.window.showErrorMessage(`${loc.extensionName}: ${message}: ${err}`);
 				});
 	}
 

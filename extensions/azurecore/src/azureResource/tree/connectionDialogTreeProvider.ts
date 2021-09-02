@@ -70,9 +70,9 @@ export class ConnectionDialogTreeProvider implements vscode.TreeDataProvider<Tre
 			}
 			if (errorMessages.length > 0) {
 				const showAccountsAction = localize('azure.resource.tree.treeProvider.openAccountsDialog', "Show Azure accounts");
-				vscode.window.showErrorMessage(localize('azure.resource.tree.treeProvider.accountLoadError', "Failed to load some Azure accounts. {0}", errorMessages.join(',')), showAccountsAction).then(result => {
+				void vscode.window.showErrorMessage(localize('azure.resource.tree.treeProvider.accountLoadError', "Failed to load some Azure accounts. {0}", errorMessages.join(',')), showAccountsAction).then(result => {
 					if (result === showAccountsAction) {
-						vscode.commands.executeCommand('azure.resource.signin');
+						void vscode.commands.executeCommand('azure.resource.signin');
 					}
 				});
 			}
