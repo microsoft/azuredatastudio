@@ -19,6 +19,7 @@ import { UntitledTextEditorInput } from 'vs/workbench/services/untitled/common/u
 import { IWorkbenchContribution } from 'vs/workbench/common/contributions';
 import { NO_TYPE_ID } from 'vs/workbench/services/workingCopy/common/workingCopy';
 import { IWorkingCopyEditorService } from 'vs/workbench/services/workingCopy/common/workingCopyEditorService';
+import { UNTITLED_NOTEBOOK_TYPEID, UNTITLED_QUERY_EDITOR_TYPEID } from 'sql/workbench/common/constants'; // {{SQL CARBON EDIT}} Handle our untitled inputs as well
 
 interface ISerializedUntitledTextEditorInput {
 	resourceJSON: UriComponents;
@@ -101,7 +102,7 @@ export class UntitledTextEditorWorkingCopyEditorHandler extends Disposable imple
 	private installHandler(): void {
 		this._register(this.workingCopyEditorService.registerHandler({
 			handles: workingCopy => workingCopy.resource.scheme === Schemas.untitled && workingCopy.typeId === NO_TYPE_ID,
-			isOpen: (workingCopy, editor) => editor instanceof UntitledTextEditorInput && isEqual(workingCopy.resource, editor.resource),
+			isOpen: (workingCopy, editor) => (editor instanceof UntitledTextEditorInput || editor.typeId === UNTITLED_QUERY_EDITOR_TYPEID || editor.typeId === UNTITLED_NOTEBOOK_TYPEID) && isEqual(workingCopy.resource, editor.resource), // {{SQL CARBON EDIT}} Handle our untitled inputs as well. Notebook input can't be imported due to layering currently so just use the typeID for that
 			createEditor: workingCopy => {
 				let editorInputResource: URI;
 

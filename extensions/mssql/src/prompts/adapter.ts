@@ -64,7 +64,7 @@ export default class CodeAdapter implements IPrompter {
 				return undefined;
 			}
 
-			window.showErrorMessage(err.message);
+			void window.showErrorMessage(err.message);
 		});
 	}
 }

@@ -10,6 +10,7 @@ import { onUnexpectedError } from 'vs/base/common/errors';
 import { INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
 import { relative, resolve } from 'vs/base/common/path';
 import { IFileService } from 'vs/platform/files/common/files';
+import { isWeb } from 'vs/base/common/platform';
 
 const knownSchemes = new Set(['http', 'https', 'file', 'mailto', 'data', 'azuredatastudio', 'azuredatastudio-insiders', 'vscode', 'vscode-insiders', 'vscode-resource', 'onenote']);
 @Directive({
@@ -59,6 +60,16 @@ export class LinkHandlerDirective {
 			uri = URI.parse(content);
 		} catch {
 			// ignore
+		}
+		// Web mode linking to open files
+		if (isWeb) {
+			// only change scheme for file links (file links in web mode scheme are also http)
+			// therefore we will use the authority to understand if its a local file path
+			if (window.location.host === uri.authority) {
+				uri = uri.with({ scheme: 'vscode-remote' });
+				this.openerService.open(uri);
+				return;
+			}
 		}
 		if (uri && this.openerService && this.isSupportedLink(uri)) {
 			if (uri.fragment && uri.fragment.length > 0 && uri.fsPath === this.workbenchFilePath.fsPath) {

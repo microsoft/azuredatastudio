@@ -104,7 +104,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 				if (loginComplete) {
 					loginComplete.reject(ex);
 				} else {
-					vscode.window.showErrorMessage(ex.getPrintableString());
+					void vscode.window.showErrorMessage(ex.getPrintableString());
 				}
 			}
 			Logger.error(ex);
@@ -139,7 +139,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 			return await this.hydrateAccount(tokenResult, this.getTokenClaims(tokenResult.token));
 		} catch (ex) {
 			if (ex instanceof AzureAuthError) {
-				vscode.window.showErrorMessage(ex.getPrintableString());
+				void vscode.window.showErrorMessage(ex.getPrintableString());
 			}
 			Logger.error(ex);
 			account.isStale = true;
@@ -616,7 +616,7 @@ export abstract class AzureAuth implements vscode.Disposable {
 			return this.deleteAccountCache(account);
 		} catch (ex) {
 			const msg = localize('azure.cacheErrrorRemove', "Error when removing your account from the cache.");
-			vscode.window.showErrorMessage(msg);
+			void vscode.window.showErrorMessage(msg);
 			Logger.error('Error when removing tokens.', ex);
 		}
 	}

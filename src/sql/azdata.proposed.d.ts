@@ -767,6 +767,13 @@ declare module 'azdata' {
 		delete?: boolean;
 	}
 
+	export enum CardType {
+		/**
+		 * Card with the icon as a background image
+		 */
+		Image = 'Image'
+	}
+
 	export namespace workspace {
 		/**
 		 * Creates and enters a workspace at the specified location
@@ -927,5 +934,17 @@ declare module 'azdata' {
 		 * Specify the icon for the node. The value could the path to the icon or and ADS icon defined in {@link SqlThemeIcon}.
 		 */
 		icon?: IconPath | SqlThemeIcon;
+	}
+
+	export interface ObjectMetadata {
+		/*
+		 * Parent object name for subobjects such as triggers, indexes, etc.
+		 */
+		parentName?: string;
+
+		/*
+		 * Parent object type name, such as Table, View, etc.
+		 */
+		parentTypeName?: string;
 	}
 }

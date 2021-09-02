@@ -72,7 +72,7 @@ export async function activate(extensionContext: vscode.ExtensionContext): Promi
 
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.openRemoteBook', async () => {
 		let dialog = new RemoteBookDialog(remoteBookController);
-		dialog.createDialog();
+		return dialog.createDialog();
 	}));
 
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('_notebook.command.new', async (options?: azdata.nb.NotebookShowOptions) => {
@@ -147,9 +147,9 @@ export async function activate(extensionContext: vscode.ExtensionContext): Promi
 
 	azdata.nb.onDidChangeActiveNotebookEditor(e => {
 		if (e.document.uri.scheme === 'untitled') {
-			providedBookTreeViewProvider.revealDocumentInTreeView(e.document.uri, false, false);
+			void providedBookTreeViewProvider.revealDocumentInTreeView(e.document.uri, false, false);
 		} else {
-			bookTreeViewProvider.revealDocumentInTreeView(e.document.uri, false, false);
+			void bookTreeViewProvider.revealDocumentInTreeView(e.document.uri, false, false);
 		}
 	});
 

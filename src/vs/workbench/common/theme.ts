@@ -696,3 +696,17 @@ export const WINDOW_INACTIVE_BORDER = registerColor('window.inactiveBorder', {
 	light: null,
 	hc: contrastBorder
 }, localize('windowInactiveBorder', "The color used for the border of the window when it is inactive. Only supported in the desktop client when using the custom title bar."));
+
+
+// < --- Card --- >
+export const CARD_OVERLAY_FOREGROUND = registerColor('card.overlayForeground', {
+	dark: null,
+	light: null,
+	hc: null
+}, localize('cardOverlayForeground', "The card overlay foreground color."));
+
+export const CARD_OVERLAY_BACKGROUND = registerColor('card.overlayBackground', {
+	dark: '#252526',
+	light: '#F3F3F3',
+	hc: '#000000'
+}, localize('cardOverlayBackground', "The card overlay background color."));

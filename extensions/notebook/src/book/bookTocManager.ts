@@ -112,7 +112,7 @@ export class BookTocManager implements IBookTocManager {
 				}
 			}
 			catch (error) {
-				vscode.window.showWarningMessage(loc.msgCreateBookWarningMsg(content));
+				void vscode.window.showWarningMessage(loc.msgCreateBookWarningMsg(content));
 			}
 		}
 		return toc;
@@ -132,7 +132,7 @@ export class BookTocManager implements IBookTocManager {
 		}
 		this.movedFiles.set(src, path.join(newFileName.concat(' - ', counter.toString())).concat(path.parse(dest).ext));
 		await fs.move(src, path.join(newFileName.concat(' - ', counter.toString())).concat(path.parse(dest).ext), { overwrite: true });
-		vscode.window.showInformationMessage(loc.duplicateFileError(path.parse(dest).base, src, newFileName.concat(' - ', counter.toString())));
+		void vscode.window.showInformationMessage(loc.duplicateFileError(path.parse(dest).base, src, newFileName.concat(' - ', counter.toString())));
 		return newFileName.concat(' - ', counter.toString());
 	}
 
@@ -346,7 +346,7 @@ export class BookTocManager implements IBookTocManager {
 			const movedSections = await this.traverseSections(files);
 			this.newSection.sections = movedSections;
 			this._modifiedDirectory.add(path.dirname(section.book.contentPath));
-			this.cleanUp(path.dirname(section.book.contentPath));
+			await this.cleanUp(path.dirname(section.book.contentPath));
 		}
 
 		if (bookItem.book.version === BookVersion.v1) {
@@ -429,7 +429,7 @@ export class BookTocManager implements IBookTocManager {
 				}
 			} catch (e) {
 				await this.recovery();
-				vscode.window.showErrorMessage(loc.editBookError(element.book.contentPath, e instanceof Error ? e.message : e));
+				void vscode.window.showErrorMessage(loc.editBookError(element.book.contentPath, e instanceof Error ? e.message : e));
 			} finally {
 				try {
 					await this._targetBook.reinitializeContents();

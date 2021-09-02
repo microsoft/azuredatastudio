@@ -192,6 +192,7 @@ class TreeNodeTemplate extends Disposable {
 			this._icon.classList.add(iconLowerCaseName);
 		}
 
+		iconRenderer.removeIcon(this._icon);
 		if (element.icon && !instanceOfSqlThemeIcon(element.icon)) {
 			iconRenderer.putIcon(this._icon, element.icon);
 		}

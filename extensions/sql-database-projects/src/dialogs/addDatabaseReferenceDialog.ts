@@ -139,9 +139,9 @@ export class AddDatabaseReferenceDialog {
 			this.updateEnabledInputBoxes();
 
 			if (this.currentReferenceType === ReferenceType.project) {
-				this.projectRadioButton?.focus();
+				await this.projectRadioButton?.focus();
 			} else {
-				this.systemDatabaseRadioButton?.focus();
+				await this.systemDatabaseRadioButton?.focus();
 			}
 
 			this.initDialogComplete?.resolve();
@@ -559,7 +559,7 @@ export class AddDatabaseReferenceDialog {
 		}
 
 		this.exampleUsage!.value = newText;
-		this.exampleUsage?.updateCssStyles({ 'font-style': fontStyle });
+		void this.exampleUsage?.updateCssStyles({ 'font-style': fontStyle });
 	}
 
 	private validSqlCmdVariables(): boolean {
@@ -616,8 +616,9 @@ export class AddDatabaseReferenceDialog {
 }
 
 export function getSystemDbOptions(project: Project): string[] {
+	const projectTargetVersion = project.getProjectTargetVersion().toLowerCase();
 	// only master is a valid system db reference for projects targeting Azure and DW
-	if (project.getProjectTargetVersion().toLowerCase().includes('azure') || project.getProjectTargetVersion().toLowerCase().includes('dw')) {
+	if (projectTargetVersion.includes('azure') || projectTargetVersion.includes('dw')) {
 		return [constants.master];
 	}
 	return [constants.master, constants.msdb];

@@ -152,14 +152,14 @@ suite('MarkdownTextTransformer', () => {
 	});
 
 	test('Ensure notebook editor returns expected object', async () => {
-		assert.deepEqual(notebookEditor, markdownTextTransformer.notebookEditor, 'Notebook editor does not match expected value');
+		assert.deepStrictEqual(notebookEditor, markdownTextTransformer.notebookEditor, 'Notebook editor does not match expected value');
 		// Set markdown text transformer to not have a notebook editor passed in
 		markdownTextTransformer = new MarkdownTextTransformer(mockNotebookService.object, cellModel);
-		assert.equal(markdownTextTransformer.notebookEditor, undefined, 'No notebook editor should be returned');
+		assert.strictEqual(markdownTextTransformer.notebookEditor, undefined, 'No notebook editor should be returned');
 		// Even after text is attempted to be transformed, there should be no editor, and therefore nothing on the text model
 		await markdownTextTransformer.transformText(MarkdownButtonType.BOLD);
-		assert.equal(markdownTextTransformer.notebookEditor, undefined, 'Notebook model does not have a valid uri, so no editor should be returned');
-		assert.equal(textModel.getValue(), '', 'No text should exist on the textModel');
+		assert.strictEqual(markdownTextTransformer.notebookEditor, undefined, 'Notebook model does not have a valid uri, so no editor should be returned');
+		assert.strictEqual(textModel.getValue(), '', 'No text should exist on the textModel');
 	});
 
 	async function testWithNoSelection(type: MarkdownButtonType, expectedValue: string, setValue = false): Promise<void> {
@@ -167,7 +167,7 @@ suite('MarkdownTextTransformer', () => {
 			textModel.setValue('');
 		}
 		await markdownTextTransformer.transformText(type);
-		assert.equal(textModel.getValue(), expectedValue, `${MarkdownButtonType[type]} with no selection failed (setValue ${setValue})`);
+		assert.strictEqual(textModel.getValue(), expectedValue, `${MarkdownButtonType[type]} with no selection failed (setValue ${setValue})`);
 	}
 
 
@@ -176,7 +176,7 @@ suite('MarkdownTextTransformer', () => {
 			textModel.setValue('');
 		}
 		await insertFormattedMarkdown('[test](./URL)', widget);
-		assert.equal(textModel.getValue(), expectedValue, `${MarkdownButtonType[type]} with no selection and previously transformed md failed (setValue ${setValue})`);
+		assert.strictEqual(textModel.getValue(), expectedValue, `${MarkdownButtonType[type]} with no selection and previously transformed md failed (setValue ${setValue})`);
 	}
 
 	async function testWithSingleWordSelected(type: MarkdownButtonType, expectedValue: string): Promise<void> {
@@ -185,17 +185,17 @@ suite('MarkdownTextTransformer', () => {
 
 		// Test transformation (adding text)
 		widget.setSelection({ startColumn: 1, startLineNumber: 1, endColumn: value.length + 1, endLineNumber: 1 });
-		assert.equal(textModel.getValueInRange(widget.getSelection()), value, 'Expected selection is not found');
+		assert.strictEqual(textModel.getValueInRange(widget.getSelection()), value, 'Expected selection is not found');
 		await markdownTextTransformer.transformText(type);
 		const textModelValue = textModel.getValue();
-		assert.equal(textModelValue, expectedValue, `${MarkdownButtonType[type]} with single word selection failed`);
+		assert.strictEqual(textModelValue, expectedValue, `${MarkdownButtonType[type]} with single word selection failed`);
 
 		// Test undo (removing text)
 		const valueRange = getValueRange(textModel, value);
-		assert.notEqual(valueRange, undefined, 'Could not find value in model after transformation');
+		assert.notStrictEqual(valueRange, undefined, 'Could not find value in model after transformation');
 		widget.setSelection(valueRange);
 		await markdownTextTransformer.transformText(type);
-		assert.equal(textModel.getValue(), value, `Undo operation for ${MarkdownButtonType[type]} with single word selection failed`);
+		assert.strictEqual(textModel.getValue(), value, `Undo operation for ${MarkdownButtonType[type]} with single word selection failed`);
 	}
 
 	async function testPreviouslyTransformedWithSingleWordSelected(type: MarkdownButtonType, expectedValue: string): Promise<void> {
@@ -204,44 +204,44 @@ suite('MarkdownTextTransformer', () => {
 
 		// Test transformation (adding text)
 		widget.setSelection({ startColumn: 1, startLineNumber: 1, endColumn: value.length + 1, endLineNumber: 1 });
-		assert.equal(textModel.getValueInRange(widget.getSelection()), value, 'Expected selection is not found');
+		assert.strictEqual(textModel.getValueInRange(widget.getSelection()), value, 'Expected selection is not found');
 		await insertFormattedMarkdown('[SampleURL](https://aka.ms)', widget);
 		const textModelValue = textModel.getValue();
-		assert.equal(textModelValue, expectedValue, `${MarkdownButtonType[type]} with single word selection and previously transformed md failed`);
+		assert.strictEqual(textModelValue, expectedValue, `${MarkdownButtonType[type]} with single word selection and previously transformed md failed`);
 	}
 
 	async function testWithMultipleWordsSelected(type: MarkdownButtonType, expectedValue: string): Promise<void> {
 		let value = 'Multi Words';
 		textModel.setValue(value);
 		widget.setSelection({ startColumn: 1, startLineNumber: 1, endColumn: 12, endLineNumber: 1 });
-		assert.equal(textModel.getValueInRange(widget.getSelection()), value, 'Expected multi-word selection is not found');
+		assert.strictEqual(textModel.getValueInRange(widget.getSelection()), value, 'Expected multi-word selection is not found');
 		await markdownTextTransformer.transformText(type);
-		assert.equal(textModel.getValue(), expectedValue, `${MarkdownButtonType[type]} with multiple word selection failed`);
+		assert.strictEqual(textModel.getValue(), expectedValue, `${MarkdownButtonType[type]} with multiple word selection failed`);
 
 		// Test undo (removing text)
 		const valueRange = getValueRange(textModel, value);
-		assert.notEqual(valueRange, undefined, 'Could not find value in model after transformation');
+		assert.notStrictEqual(valueRange, undefined, 'Could not find value in model after transformation');
 		widget.setSelection(valueRange);
 		await markdownTextTransformer.transformText(type);
-		assert.equal(textModel.getValue(), value, `Undo operation for ${MarkdownButtonType[type]} with multiple word selection failed`);
+		assert.strictEqual(textModel.getValue(), value, `Undo operation for ${MarkdownButtonType[type]} with multiple word selection failed`);
 	}
 
 	async function testWithMultipleLinesSelected(type: MarkdownButtonType, expectedValue: string): Promise<void> {
 		let value = 'Multi\nLines\nSelected';
 		textModel.setValue(value);
 		widget.setSelection({ startColumn: 1, startLineNumber: 1, endColumn: 9, endLineNumber: 3 });
-		assert.equal(textModel.getValueInRange(widget.getSelection()), value, 'Expected multi-line selection is not found');
+		assert.strictEqual(textModel.getValueInRange(widget.getSelection()), value, 'Expected multi-line selection is not found');
 		await markdownTextTransformer.transformText(type);
-		assert.equal(textModel.getValue(), expectedValue, `${MarkdownButtonType[type]} with multiple line selection failed`);
+		assert.strictEqual(textModel.getValue(), expectedValue, `${MarkdownButtonType[type]} with multiple line selection failed`);
 
 		// Test undo (removing text)
 		let valueRange = getValueRange(textModel, 'Multi');
 		// Modify the range to include all the lines
 		valueRange = new Range(valueRange.startLineNumber, valueRange.startColumn, valueRange.endLineNumber + 2, 9);
-		assert.notEqual(valueRange, undefined, 'Could not find value in model after transformation');
+		assert.notStrictEqual(valueRange, undefined, 'Could not find value in model after transformation');
 		widget.setSelection(valueRange);
 		await markdownTextTransformer.transformText(type);
-		assert.equal(textModel.getValue(), value, `Undo operation for ${MarkdownButtonType[type]} with multiple line selection failed`);
+		assert.strictEqual(textModel.getValue(), value, `Undo operation for ${MarkdownButtonType[type]} with multiple line selection failed`);
 	}
 });
 
