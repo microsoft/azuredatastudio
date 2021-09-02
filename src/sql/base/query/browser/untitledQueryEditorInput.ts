@@ -49,18 +49,22 @@ export class UntitledQueryEditorInput extends QueryEditorInput implements IUntit
 	}
 
 	override async save(group: GroupIdentifier, options?: ISaveOptions): Promise<IEditorInput | undefined> {
-		// Create our own FileQueryEditorInput wrapper here so that the existing state (connection, results, etc) can be transferred from this input to the new file input.
-		let newEditorInput = await this.text.save(group, options);
-		return this.createFileQueryEditorInput(newEditorInput);
+		return this.createFileQueryEditorInput(group, options, true);
 	}
 
 	override async saveAs(group: GroupIdentifier, options?: ISaveOptions): Promise<IEditorInput | undefined> {
-		// Create our own FileQueryEditorInput wrapper here so that the existing state (connection, results, etc) can be transferred from this input to the new file input.
-		let newEditorInput = await this.text.saveAs(group, options);
-		return this.createFileQueryEditorInput(newEditorInput);
+		return this.createFileQueryEditorInput(group, options, false);
 	}
 
-	private async createFileQueryEditorInput(fileEditorInput: IEditorInput): Promise<IEditorInput> {
+	private async createFileQueryEditorInput(group: GroupIdentifier, options?: ISaveOptions, isRegularSave?: boolean): Promise<IEditorInput> {
+		// Create our own FileQueryEditorInput wrapper here so that the existing state (connection, results, etc) can be transferred from this input to the new file input.
+		let fileEditorInput: IEditorInput;
+		if (isRegularSave) {
+			fileEditorInput = await this.text.save(group, options);
+		}
+		else {
+			fileEditorInput = await this.text.saveAs(group, options);
+		}
 		let newUri = fileEditorInput.resource.toString(true);
 		this._results.uri = newUri;
 		await this.changeConnectionUri(newUri);

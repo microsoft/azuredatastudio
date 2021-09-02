@@ -50,19 +50,19 @@ export class ConnectionStatusManager {
 		return !!this.findConnection(id);
 	}
 
-	public changeConnectionUri(newId: string, oldId: string) {
-		let info = this.findConnection(oldId);
+	public changeConnectionUri(newUri: string, oldUri: string) {
+		let info = this.findConnection(oldUri);
 		if (!info) {
-			this._logService.error(`No connection found associated with old URI : '${oldId}'`);
-			throw new Error(nls.localize('connectionStatusManager.noConnectionForUri', 'Could not find connection with uri: {0}', oldId));
+			this._logService.error(`No connection found associated with old URI : '${oldUri}'`);
+			throw new Error(nls.localize('connectionStatusManager.noConnectionForUri', 'Could not find connection with uri: {0}', oldUri));
 		}
-		if (this._connections[newId]) {
-			this._logService.error(`New URI : '${newId}' is already in the connections list.`);
-			throw new Error(nls.localize('connectionStatusManager.uriAlreadyInConnectionsList', 'There is already a connection with uri: {0}', newId));
+		if (this._connections[newUri]) {
+			this._logService.error(`New URI : '${newUri}' is already in the connections list.`);
+			throw new Error(nls.localize('connectionStatusManager.uriAlreadyInConnectionsList', 'There is already a connection with uri: {0}', newUri));
 		}
-		info.ownerUri = newId;
-		this._connections[newId] = info;
-		delete this._connections[oldId];
+		info.ownerUri = newUri;
+		this._connections[newUri] = info;
+		delete this._connections[oldUri];
 	}
 
 	public deleteConnection(id: string): void {
