@@ -392,6 +392,19 @@ export function timeConversion(duration: number): string {
 	return portions.join(', ');
 }
 
+/**
+ * Map an error message into a short name for the type of error.
+ * @param msg The error message to map
+ */
+export function getTelemetryErrorType(msg: string): string {
+	if (msg && msg.indexOf('Object reference not set to an instance of an object') !== -1) {
+		return 'ObjectReferenceNotSet';
+	}
+	else {
+		return 'Other';
+	}
+}
+
 // Try to load the azdata API - but gracefully handle the failure in case we're running
 // in a context where the API doesn't exist (such as VS Code)
 let azdataApi: typeof azdataType | undefined = undefined;

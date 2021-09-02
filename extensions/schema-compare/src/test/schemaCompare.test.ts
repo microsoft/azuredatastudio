@@ -110,8 +110,7 @@ describe('SchemaCompareMainWindow.results @DacFx@', function (): void {
 
 	it('Should show error if publish changes fails', async function (): Promise<void> {
 		let service = createServiceMock();
-		service.setup(x => x.schemaComparePublishChanges(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve({
-			success: false,
+		service.setup(x => x.schemaComparePublishDatabaseChanges(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve({			success: false,
 			errorMessage: 'error1'
 		}));
 
@@ -131,7 +130,7 @@ describe('SchemaCompareMainWindow.results @DacFx@', function (): void {
 
 	it('Should show not error if publish changes succeed', async function (): Promise<void> {
 		let service = createServiceMock();
-		service.setup(x => x.schemaComparePublishChanges(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve({
+		service.setup(x => x.schemaComparePublishDatabaseChanges(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve({
 			success: true,
 			errorMessage: ''
 		}));
@@ -343,7 +342,7 @@ describe('SchemaCompareMainWindow.results @DacFx@', function (): void {
 
 	it('Should not show error if user does not want to publish', async function (): Promise<void> {
 		let service = createServiceMock();
-		service.setup(x => x.schemaComparePublishChanges(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve({
+		service.setup(x => x.schemaComparePublishDatabaseChanges(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => Promise.resolve({
 			success: true,
 			errorMessage: ''
 		}));

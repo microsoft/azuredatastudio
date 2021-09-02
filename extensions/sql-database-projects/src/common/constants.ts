@@ -212,6 +212,7 @@ export const targetProject = localize('targetProject', "Target project");
 export const createProjectSettings = localize('createProjectSettings', "Settings");
 export const projectNameLabel = localize('projectNameLabel', "Name");
 export const projectNamePlaceholderText = localize('projectNamePlaceholderText', "Enter project name");
+export const projectLocationLabel = localize('projectLocationLabel', "Location");
 export const projectLocationPlaceholderText = localize('projectLocationPlaceholderText', "Select location to create project");
 export const browseButtonText = localize('browseButtonText', "Browse folder");
 export const selectFolderStructure = localize('selectFolderStructure', "Select folder structure");
@@ -223,9 +224,28 @@ export const selectProjectLocation = localize('selectProjectLocation', "Select p
 export const ProjectParentDirectoryNotExistError = (location: string): string => { return localize('dataworkspace.projectParentDirectoryNotExistError', "The selected project location '{0}' does not exist or is not a directory.", location); };
 export const ProjectDirectoryAlreadyExistError = (projectName: string, location: string): string => { return localize('dataworkspace.projectDirectoryAlreadyExistError', "There is already a directory named '{0}' in the selected location: '{1}'.", projectName, location); };
 
+// Update Project From Database dialog strings
+
+export const updateProjectFromDatabaseDialogName = localize('updateProjectFromDatabaseDialogName', "Update project from database");
+export const updateProjectDialogOkButtonText = localize('updateProjectDialogOkButtonText', "Update");
+export const noSqlProjFile = localize('noSqlProjFile', "The selected project file does not exist");
+export const noSchemaCompareExtension = localize('noSchemaCompareExtension', "The schema-compare extension needs to be downloaded to a update a project from a database");
+export const projectToUpdatePlaceholderText = localize('projectToUpdatePlaceholderText', "Select project file");
+export const updateAction = localize('updateAction', "Update action");
+export const compareActionRadioButtonLabel = localize('compareActionRadiButtonLabel', "View changes in Schema Compare");
+export const updateActionRadioButtonLabel = localize('updateActionRadiButtonLabel', "Apply all changes");
+export const actionLabel = localize('actionLabel', "Action");
+
+// Update project from database
+
+export const applySuccess = localize('applySuccess', "Project was successfully updated");
+export const equalComparison = localize('equalComparison', "The project is already up to date with the database");
+export const applyError = localize('applyError', "There was an error updating the project");
+export const scmpTempFile = localize('scmpTempFile', ".temp.scmp");
 
 // Error messages
 
+export function compareErrorMessage(errorMessage: string): string { return localize('schemaCompare.compareErrorMessage', "Schema Compare failed: {0}", errorMessage ? errorMessage : 'Unknown'); }
 export const multipleSqlProjFiles = localize('multipleSqlProjFilesSelected', "Multiple .sqlproj files selected; please select only one.");
 export const noSqlProjFiles = localize('noSqlProjFilesSelected', "No .sqlproj file selected; please select one.");
 export const noDataSourcesFile = localize('noDataSourcesFile', "No {0} found", dataSourcesFileName);

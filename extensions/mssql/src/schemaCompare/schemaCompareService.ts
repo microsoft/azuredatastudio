@@ -36,7 +36,7 @@ export class SchemaCompareService implements mssql.ISchemaCompareService {
 		const params: contracts.SchemaCompareParams = { operationId: operationId, sourceEndpointInfo: sourceEndpointInfo, targetEndpointInfo: targetEndpointInfo, taskExecutionMode: taskExecutionMode, deploymentOptions: deploymentOptions };
 		return this.client.sendRequest(contracts.SchemaCompareRequest.type, params).then(
 			undefined,
-			e => {
+			(e: any) => {
 				this.client.logFailedRequest(contracts.SchemaCompareRequest.type, e);
 				return Promise.resolve(undefined);
 			}
@@ -47,19 +47,30 @@ export class SchemaCompareService implements mssql.ISchemaCompareService {
 		const params: contracts.SchemaCompareGenerateScriptParams = { operationId: operationId, targetServerName: targetServerName, targetDatabaseName: targetDatabaseName, taskExecutionMode: taskExecutionMode };
 		return this.client.sendRequest(contracts.SchemaCompareGenerateScriptRequest.type, params).then(
 			undefined,
-			e => {
+			(e: any) => {
 				this.client.logFailedRequest(contracts.SchemaCompareGenerateScriptRequest.type, e);
 				return Promise.resolve(undefined);
 			}
 		);
 	}
 
-	public schemaComparePublishChanges(operationId: string, targetServerName: string, targetDatabaseName: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.ResultStatus> {
-		const params: contracts.SchemaComparePublishChangesParams = { operationId: operationId, targetServerName: targetServerName, targetDatabaseName: targetDatabaseName, taskExecutionMode: taskExecutionMode };
-		return this.client.sendRequest(contracts.SchemaComparePublishChangesRequest.type, params).then(
+	public schemaComparePublishDatabaseChanges(operationId: string, targetServerName: string, targetDatabaseName: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.ResultStatus> {
+		const params: contracts.SchemaComparePublishDatabaseChangesParams = { operationId: operationId, targetServerName: targetServerName, targetDatabaseName: targetDatabaseName, taskExecutionMode: taskExecutionMode };
+		return this.client.sendRequest(contracts.SchemaComparePublishDatabaseChangesRequest.type, params).then(
 			undefined,
-			e => {
-				this.client.logFailedRequest(contracts.SchemaComparePublishChangesRequest.type, e);
+			(e: any) => {
+				this.client.logFailedRequest(contracts.SchemaComparePublishDatabaseChangesRequest.type, e);
+				return Promise.resolve(undefined);
+			}
+		);
+	}
+
+	public schemaComparePublishProjectChanges(operationId: string, targetProjectPath: string, targetFolderStructure: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<mssql.SchemaComparePublishProjectResult> {
+		const params: contracts.SchemaComparePublishProjectChangesParams = { operationId: operationId, targetProjectPath: targetProjectPath, targetFolderStructure: targetFolderStructure, taskExecutionMode: taskExecutionMode };
+		return this.client.sendRequest(contracts.SchemaComparePublishProjectChangesRequest.type, params).then(
+			undefined,
+			(e: any) => {
+				this.client.logFailedRequest(contracts.SchemaComparePublishProjectChangesRequest.type, e);
 				return Promise.resolve(undefined);
 			}
 		);
@@ -69,7 +80,7 @@ export class SchemaCompareService implements mssql.ISchemaCompareService {
 		const params: contracts.SchemaCompareGetOptionsParams = {};
 		return this.client.sendRequest(contracts.SchemaCompareGetDefaultOptionsRequest.type, params).then(
 			undefined,
-			e => {
+			(e: any) => {
 				this.client.logFailedRequest(contracts.SchemaCompareGetDefaultOptionsRequest.type, e);
 				return Promise.resolve(undefined);
 			}
@@ -80,7 +91,7 @@ export class SchemaCompareService implements mssql.ISchemaCompareService {
 		const params: contracts.SchemaCompareNodeParams = { operationId: operationId, diffEntry, includeRequest, taskExecutionMode: taskExecutionMode };
 		return this.client.sendRequest(contracts.SchemaCompareIncludeExcludeNodeRequest.type, params).then(
 			undefined,
-			e => {
+			(e: any) => {
 				this.client.logFailedRequest(contracts.SchemaCompareIncludeExcludeNodeRequest.type, e);
 				return Promise.resolve(undefined);
 			}
@@ -91,7 +102,7 @@ export class SchemaCompareService implements mssql.ISchemaCompareService {
 		const params: contracts.SchemaCompareOpenScmpParams = { filePath: filePath };
 		return this.client.sendRequest(contracts.SchemaCompareOpenScmpRequest.type, params).then(
 			undefined,
-			e => {
+			(e: any) => {
 				this.client.logFailedRequest(contracts.SchemaCompareOpenScmpRequest.type, e);
 				return Promise.resolve(undefined);
 			}
@@ -102,7 +113,7 @@ export class SchemaCompareService implements mssql.ISchemaCompareService {
 		const params: contracts.SchemaCompareSaveScmpParams = { sourceEndpointInfo: sourceEndpointInfo, targetEndpointInfo: targetEndpointInfo, taskExecutionMode: taskExecutionMode, deploymentOptions: deploymentOptions, scmpFilePath: scmpFilePath, excludedSourceObjects: excludedSourceObjects, excludedTargetObjects: excludedTargetObjects };
 		return this.client.sendRequest(contracts.SchemaCompareSaveScmpRequest.type, params).then(
 			undefined,
-			e => {
+			(e: any) => {
 				this.client.logFailedRequest(contracts.SchemaCompareSaveScmpRequest.type, e);
 				return Promise.resolve(undefined);
 			}
@@ -113,7 +124,7 @@ export class SchemaCompareService implements mssql.ISchemaCompareService {
 		const params: contracts.SchemaCompareCancelParams = { operationId: operationId };
 		return this.client.sendRequest(contracts.SchemaCompareCancellationRequest.type, params).then(
 			undefined,
-			e => {
+			(e: any) => {
 				this.client.logFailedRequest(contracts.SchemaCompareCancellationRequest.type, e);
 				return Promise.resolve(undefined);
 			}
