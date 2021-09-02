@@ -1078,10 +1078,6 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			this._logService.error(`No provider found for old URI : '${oldUri}'`);
 			throw new Error(nls.localize('connectionManagementService.noProviderForUri', 'Could not find provider for uri: {0}', oldUri));
 		}
-		if (this._uriToProvider[newUri]) {
-			this._logService.error(`New URI : '${newUri}' already has a provider, this should not happen.`);
-			throw new Error(nls.localize('connectionManagementService.uriAlreadyHasProvider', 'Uri: {0} unexpectedly already has a provider.', newUri));
-		}
 		this._uriToProvider[newUri] = this._uriToProvider[oldUri];
 		delete this._uriToProvider[oldUri];
 	}
