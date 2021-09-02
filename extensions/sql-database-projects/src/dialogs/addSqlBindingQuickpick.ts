@@ -3,8 +3,11 @@ import { BindingType } from 'vscode-mssql';
 import * as constants from '../common/constants';
 import * as utils from '../common/utils';
 import { PackageHelper } from '../tools/packageHelper';
+import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
 
 export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined, packageHelper: PackageHelper): Promise<void> {
+	TelemetryReporter.sendActionEvent(TelemetryViews.SqlBindingsQuickPick, TelemetryActions.sqlBindingsQuickPickStart);
+
 	if (!uri) {
 		// this command only shows in the command palette when the active editor is a .cs file, so we can safely assume that's the scenario
 		// when this is called without a uri
@@ -88,12 +91,17 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined, 
 	try {
 		const result = await azureFunctionsService.addSqlBinding(selectedBinding.type, uri.fsPath, azureFunctionName, objectName, connectionStringSetting);
 
+		TelemetryReporter.createActionEvent(TelemetryViews.SqlBindingsQuickPick, TelemetryActions.addSqlBinding)
+			.withAdditionalProperties({ bindingType: selectedBinding.label })
+			.send();
+
 		if (!result.success) {
 			void vscode.window.showErrorMessage(result.errorMessage);
 			return;
 		}
 	} catch (e) {
 		void vscode.window.showErrorMessage(e);
+		TelemetryReporter.sendErrorEvent(TelemetryViews.SqlBindingsQuickPick, TelemetryActions.addSqlBinding);
 		return;
 	}
 
