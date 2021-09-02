@@ -50,7 +50,7 @@ export class ConnectionStatusManager {
 		return !!this.findConnection(id);
 	}
 
-	public changeConnectionUri(newUri: string, oldUri: string) {
+	public changeConnectionUri(newUri: string, oldUri: string): void {
 		let info = this.findConnection(oldUri);
 		if (!info) {
 			this._logService.error(`No connection found associated with old URI : '${oldUri}'`);

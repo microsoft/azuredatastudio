@@ -208,7 +208,13 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 
 	protected async changeConnectionUri(newUri: string): Promise<void> {
 		this.connectionManagementService.changeConnectionUri(newUri, this.uri);
-		await this.queryModelService.changeConnectionUri(newUri, this.uri);
+		try {
+			await this.queryModelService.changeConnectionUri(newUri, this.uri);
+		}
+		catch (error) {
+			this.connectionManagementService.changeConnectionUri(this.uri, newUri);
+			throw error;
+		}
 	}
 
 	// Forwarding resource functions to the inline sql file editor
