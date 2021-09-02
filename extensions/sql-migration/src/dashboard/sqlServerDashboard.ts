@@ -622,7 +622,7 @@ export class DashboardWidget {
 		}).component();
 
 		const addAccountText = view.modelBuilder.text().withProps({
-			value: loc.ADD_ACCOUNT,
+			value: loc.ADD_ACCOUNT_MESSAGE,
 			width: 198,
 			height: 34,
 			CSSStyles: {
@@ -636,16 +636,18 @@ export class DashboardWidget {
 		}).component();
 
 		const addAccountButton = view.modelBuilder.button().withProps({
-			label: 'Add Account',
+			label: loc.ADD_ACCOUNT,
 			width: '100px',
 			enabled: true,
 			CSSStyles: {
-				'margin': 'auto'
+				'margin': '5% 40%',
+				'display': 'none'
 			}
 		}).component();
 
-		this._disposables.push(addAccountButton.onDidClick((e) => {
-			//Fill in here
+		this._disposables.push(addAccountButton.onDidClick(async (e) => {
+			await vscode.commands.executeCommand('workbench.actions.modal.linkedAccount');
+			this.refreshMigrations();
 		}));
 
 		const header = view.modelBuilder.flexContainer().withItems(
@@ -666,6 +668,9 @@ export class DashboardWidget {
 				'display': 'block'
 			});
 			addAccountText.updateCssStyles({
+				'display': 'block'
+			});
+			addAccountButton.updateCssStyles({
 				'display': 'block'
 			});
 			this._migrationStatusCardsContainer.updateCssStyles({
