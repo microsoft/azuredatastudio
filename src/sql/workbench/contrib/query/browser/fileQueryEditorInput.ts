@@ -90,13 +90,15 @@ export class FileQueryEditorInput extends QueryEditorInput {
 	}
 
 	override async saveAs(group: GroupIdentifier, options?: ISaveOptions): Promise<IEditorInput | undefined> {
-		// Handle saveAs when new location URI is different from the current URI.
 		let newEditorInput = await this.text.saveAs(group, options);
 		let newUri = newEditorInput.resource.toString(true);
 		if (newUri === this.uri) {
+			// URI is the same location, no need to change URI for the query in services, just return input.
 			return newEditorInput;
 		}
 		else {
+			// URI is different, need to update URI for the query in services to ensure we can keep the current results/view state
+			// without resetting and creating a brand new query.
 			this._results.uri = newUri;
 			await this.changeConnectionUri(newUri);
 			// Create a new FileQueryEditorInput with current results and state in order to trigger a rename for editor tab name.

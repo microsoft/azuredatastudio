@@ -15,6 +15,8 @@ import EditQueryRunner from 'sql/workbench/services/editData/common/editQueryRun
 import { IRange, Range } from 'vs/editor/common/core/range';
 import { ResultSetSubset } from 'sql/workbench/services/query/common/query';
 import { isUndefined } from 'vs/base/common/types';
+import { ILogService } from 'vs/platform/log/common/log';
+import * as nls from 'vs/nls';
 
 export const SERVICE_ID = 'queryManagementService';
 
@@ -116,7 +118,8 @@ export class QueryManagementService implements IQueryManagementService {
 
 	constructor(
 		@IConnectionManagementService private _connectionService: IConnectionManagementService,
-		@IAdsTelemetryService private _telemetryService: IAdsTelemetryService
+		@IAdsTelemetryService private _telemetryService: IAdsTelemetryService,
+		@ILogService private _logService: ILogService
 	) {
 	}
 
@@ -270,6 +273,14 @@ export class QueryManagementService implements IQueryManagementService {
 
 	public changeConnectionUri(newUri: string, oldUri: string): Promise<void> {
 		let item = this._queryRunners.get(oldUri);
+		if (!item) {
+			this._logService.error(`No query runner found for old URI : '${oldUri}'`);
+			throw new Error(nls.localize('queryManagement.noQueryRunnerForUri', 'Could not find Query Runner for uri: {0}', oldUri));
+		}
+		if (this._queryRunners.get(newUri)) {
+			this._logService.error(`New URI : '${newUri}' already has a query runner.`);
+			throw new Error(nls.localize('queryManagement.uriAlreadyHasQueryRunner', 'Uri: {0} unexpectedly already has a query runner.', newUri));
+		}
 		this._queryRunners.set(newUri, item);
 		this._queryRunners.delete(oldUri);
 		return this._runAction(newUri, (runner) => {
