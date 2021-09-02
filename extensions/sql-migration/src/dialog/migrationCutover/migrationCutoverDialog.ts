@@ -75,7 +75,8 @@ export class MigrationCutoverDialog {
 					'border': 'none',
 					'text-align': 'left',
 					'border-bottom': '1px solid',
-					'font-size': '12px'
+					'font-size': '12px',
+					'margin-left': '0px'
 				};
 
 				const headerCssStyles: azdata.CssStyles = {
@@ -160,6 +161,7 @@ export class MigrationCutoverDialog {
 					height: '300px',
 					CSSStyles: {
 						'display': 'none',
+						'margin-left': '0px'
 					}
 				}).component();
 
