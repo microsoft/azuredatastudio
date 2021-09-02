@@ -3,6 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+/* eslint-disable @typescript-eslint/no-floating-promises */
+
 import * as vscode from 'vscode';
 import * as mssql from '../../../mssql';
 import * as azdata from 'azdata';
@@ -88,7 +90,7 @@ export class UpdateProjectFromDatabaseDialog {
 	private initializeUpdateProjectFromDatabaseTab(): void {
 		this.updateProjectFromDatabaseTab.registerContent(async view => {
 
-			const connectionRow = await this.createServerRow(view);
+			const connectionRow = this.createServerRow(view);
 			const databaseRow = this.createDatabaseRow(view);
 			const sourceDatabaseFormSection = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column' }).component();
 			sourceDatabaseFormSection.addItems([connectionRow, databaseRow]);
@@ -139,13 +141,13 @@ export class UpdateProjectFromDatabaseDialog {
 
 			let formModel = this.formBuilder.component();
 			await view.initializeModel(formModel);
-			await this.connectionButton?.focus();
+			this.connectionButton?.focus();
 			this.initDialogComplete?.resolve();
 		});
 	}
 
-	private async createServerRow(view: azdata.ModelView): Promise<azdata.FlexContainer> {
-		await this.createServerComponent(view);
+	private createServerRow(view: azdata.ModelView): azdata.FlexContainer {
+		this.createServerComponent(view);
 
 		const serverLabel = view.modelBuilder.text().withProps({
 			value: constants.server,
@@ -173,7 +175,7 @@ export class UpdateProjectFromDatabaseDialog {
 		return databaseRow;
 	}
 
-	private async createServerComponent(view: azdata.ModelView) {
+	private createServerComponent(view: azdata.ModelView) {
 		this.serverDropdown = view.modelBuilder.dropDown().withProps({
 			editable: true,
 			fireOnTextChange: true,
@@ -186,7 +188,7 @@ export class UpdateProjectFromDatabaseDialog {
 			this.tryEnableUpdateButton();
 		});
 
-		await this.populateServerDropdown();
+		this.populateServerDropdown();
 	}
 
 	private createDatabaseComponent(view: azdata.ModelView) {
@@ -352,7 +354,7 @@ export class UpdateProjectFromDatabaseDialog {
 		let connection = await azdata.connection.openConnectionDialog();
 		if (connection) {
 			this.connectionId = connection.connectionId;
-			await this.populateServerDropdown();
+			this.populateServerDropdown();
 		}
 	}
 
@@ -368,8 +370,8 @@ export class UpdateProjectFromDatabaseDialog {
 			width: cssStyles.updateProjectFromDatabaseTextboxWidth
 		}).component();
 
-		this.projectFileTextBox.onTextChanged(async () => {
-			await this.projectFileTextBox!.updateProperty('title', this.projectFileTextBox!.value);
+		this.projectFileTextBox.onTextChanged(() => {
+			this.projectFileTextBox!.updateProperty('title', this.projectFileTextBox!.value);
 			this.tryEnableUpdateButton();
 		});
 
@@ -410,7 +412,7 @@ export class UpdateProjectFromDatabaseDialog {
 			}
 
 			this.projectFileTextBox!.value = fileUris[0].fsPath;
-			await this.projectFileTextBox!.updateProperty('title', fileUris[0].fsPath);
+			this.projectFileTextBox!.updateProperty('title', fileUris[0].fsPath);
 		});
 
 		return browseFolderButton;
