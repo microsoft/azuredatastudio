@@ -69,6 +69,12 @@ export class UntitledQueryEditorInput extends QueryEditorInput implements IUntit
 			return newInput;
 		}
 		catch (error) {
+			/**
+			 * We are saving over a file that is already open and connected, return the unaltered save editor input directly (to avoid side effects when changing connection).
+			 * This will replace the editor input in the already open window with that of the new one,
+			 * the connection will be undefined and the file appears to be disconnected even if its not, you can change the connection to fix this.
+			 * also the results shown will be the old results, until you press run again.
+			 */
 			return fileEditorInput;
 		}
 	}
