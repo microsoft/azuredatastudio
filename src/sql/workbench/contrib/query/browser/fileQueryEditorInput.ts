@@ -99,13 +99,18 @@ export class FileQueryEditorInput extends QueryEditorInput {
 		else {
 			// URI is different, need to update URI for the query in services to ensure we can keep the current results/view state
 			// without resetting and creating a brand new query.
-			await this.changeConnectionUri(newUri);
-			this._results.uri = newUri;
-			// Create a new FileQueryEditorInput with current results and state in order to trigger a rename for editor tab name.
-			// (Tab name won't refresh automatically if current input is reused directly)
-			let newFileQueryInput = this.instantiationService.createInstance(FileQueryEditorInput, '', (newEditorInput as FileEditorInput), this.results);
-			newFileQueryInput.state.setState(this.state);
-			return newFileQueryInput;
+			try {
+				await this.changeConnectionUri(newUri);
+				this._results.uri = newUri;
+				// Create a new FileQueryEditorInput with current results and state in order to trigger a rename for editor tab name.
+				// (Tab name won't refresh automatically if current input is reused directly)
+				let newFileQueryInput = this.instantiationService.createInstance(FileQueryEditorInput, '', (newEditorInput as FileEditorInput), this.results);
+				newFileQueryInput.state.setState(this.state);
+				return newFileQueryInput;
+			}
+			catch (error) {
+				return newEditorInput;
+			}
 		}
 	}
 }

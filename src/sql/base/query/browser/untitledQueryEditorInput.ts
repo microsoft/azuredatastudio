@@ -60,12 +60,17 @@ export class UntitledQueryEditorInput extends QueryEditorInput implements IUntit
 
 	private async createFileQueryEditorInput(fileEditorInput: IEditorInput): Promise<IEditorInput> {
 		// Create our own FileQueryEditorInput wrapper here so that the existing state (connection, results, etc) can be transferred from this input to the new file input.
-		let newUri = fileEditorInput.resource.toString(true);
-		await this.changeConnectionUri(newUri);
-		this._results.uri = newUri;
-		let newInput = this.instantiationService.createInstance(FileQueryEditorInput, '', (fileEditorInput as FileEditorInput), this.results);
-		newInput.state.setState(this.state);
-		return newInput;
+		try {
+			let newUri = fileEditorInput.resource.toString(true);
+			await this.changeConnectionUri(newUri);
+			this._results.uri = newUri;
+			let newInput = this.instantiationService.createInstance(FileQueryEditorInput, '', (fileEditorInput as FileEditorInput), this.results);
+			newInput.state.setState(this.state);
+			return newInput;
+		}
+		catch (error) {
+			return fileEditorInput;
+		}
 	}
 
 	public setMode(mode: string): void {
