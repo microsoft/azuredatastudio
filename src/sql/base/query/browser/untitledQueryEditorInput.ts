@@ -52,7 +52,6 @@ export class UntitledQueryEditorInput extends QueryEditorInput implements IUntit
 		// Create our own FileQueryEditorInput wrapper here so that the existing state (connection, results, etc) can be transferred from this input to the new file input.
 		let newEditorInput = await this.text.save(group, options);
 		return this.createFileQueryEditorInput(newEditorInput);
-
 	}
 
 	override async saveAs(group: GroupIdentifier, options?: ISaveOptions): Promise<IEditorInput | undefined> {
