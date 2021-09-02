@@ -498,7 +498,12 @@ export class ConnectionDialogService implements IConnectionDialogService {
 			}));
 
 		}
-		this._logService.error(message);
-		this._errorMessageService.showDialog(severity, headerTitle, message, messageDetails, actions);
+
+		let errorMessage = message;
+		if (message.includes('could not translate host name')) {
+			errorMessage = message.concat('\nCauses:\nUsing the wrong hostname or Problems with DNS resolution.\nSuggestions:\nCheck that the server address or hostname is the full address.');
+		}
+		this._logService.error(errorMessage);
+		this._errorMessageService.showDialog(severity, headerTitle, errorMessage, messageDetails, actions);
 	}
 }
