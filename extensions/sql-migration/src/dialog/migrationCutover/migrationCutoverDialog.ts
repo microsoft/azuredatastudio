@@ -75,8 +75,7 @@ export class MigrationCutoverDialog {
 					'border': 'none',
 					'text-align': 'left',
 					'border-bottom': '1px solid',
-					'font-size': '12px',
-					'margin-left': '0px'
+					'font-size': '12px'
 				};
 
 				const headerCssStyles: azdata.CssStyles = {
@@ -85,7 +84,8 @@ export class MigrationCutoverDialog {
 					'border-bottom': '1px solid',
 					'font-weight': 'bold',
 					'padding-left': '0px',
-					'padding-right': '0px'
+					'padding-right': '0px',
+					'font-size': '12px'
 				};
 
 				this._fileTable = view.modelBuilder.declarativeTable().withProps({
@@ -161,7 +161,7 @@ export class MigrationCutoverDialog {
 					height: '300px',
 					CSSStyles: {
 						'display': 'none',
-						'margin-left': '0px'
+						'padding-left': '0px'
 					}
 				}).component();
 
