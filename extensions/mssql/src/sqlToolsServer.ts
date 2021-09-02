@@ -54,7 +54,7 @@ export class SqlToolsServer {
 					statusView.hide();
 				}, 1500);
 				vscode.commands.registerCommand('mssql.loadCompletionExtension', (params: CompletionExtensionParams) => {
-					this.client.sendRequest(CompletionExtLoadRequest.type, params);
+					return this.client.sendRequest(CompletionExtLoadRequest.type, params);
 				});
 				Telemetry.sendTelemetryEvent('startup/LanguageClientStarted', {
 					installationTime: String(installationComplete - installationStart),
@@ -70,7 +70,7 @@ export class SqlToolsServer {
 			return this.client;
 		} catch (e) {
 			Telemetry.sendTelemetryEvent('ServiceInitializingFailed');
-			vscode.window.showErrorMessage(localize('failedToStartServiceErrorMsg', "Failed to start {0}", Constants.serviceName));
+			void vscode.window.showErrorMessage(localize('failedToStartServiceErrorMsg', "Failed to start {0}", Constants.serviceName));
 			throw e;
 		}
 	}
@@ -93,10 +93,10 @@ export class SqlToolsServer {
 		return Promise.all([credsStore.start(), resourceProvider.start()]).then();
 	}
 
-	dispose() {
+	async dispose(): Promise<void> {
 		this.disposables.forEach(d => d.dispose());
 		if (this.client) {
-			this.client.stop();
+			await this.client.stop();
 		}
 	}
 }

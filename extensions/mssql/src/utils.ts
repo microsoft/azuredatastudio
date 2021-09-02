@@ -328,7 +328,7 @@ export async function getOrDownloadServer(config: IConfig, handleServerEvent?: (
 					// Display message to the user so they know the override is active, but only once so we don't show too many
 					if (!overrideMessageDisplayed) {
 						overrideMessageDisplayed = true;
-						vscode.window.showInformationMessage(overrideMessage);
+						void vscode.window.showInformationMessage(overrideMessage);
 					}
 					console.log(overrideMessage);
 					return serverFullPath;

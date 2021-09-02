@@ -92,9 +92,9 @@ export class AzureResourceProvider {
 		this._client.start();
 	}
 
-	public dispose() {
+	public async dispose(): Promise<void> {
 		if (this._client) {
-			this._client.stop();
+			await this._client.stop();
 		}
 	}
 
