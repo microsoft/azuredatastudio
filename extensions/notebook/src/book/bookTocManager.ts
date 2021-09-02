@@ -366,6 +366,7 @@ export class BookTocManager implements IBookTocManager {
 		const filePath = path.parse(file.book.contentPath);
 		let fileName = undefined;
 		try {
+			// no op if the notebook is already in the dest location
 			if (file.book.contentPath !== path.join(rootPath, filePath.base)) {
 				this.movedFiles.set(file.book.contentPath, path.join(rootPath, filePath.base));
 				await fs.move(file.book.contentPath, path.join(rootPath, filePath.base), { overwrite: false });
