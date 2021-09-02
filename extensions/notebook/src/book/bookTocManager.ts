@@ -396,9 +396,9 @@ export class BookTocManager implements IBookTocManager {
 
 	/**
 	 * Moves the element to the target book's folder and adds it to the table of contents.
-	 * @param element Notebook, Markdown File, or section that will be added to the book.
-	 * @param targetBook Book that will be modified.
-	 * @param targetSection Book section that'll be modified.
+	 * @param sources The tree items that are been moved.
+	 * @param target Target tree item on which the sources will be added
+	 * @param section (Optional) book section that'll be modified. Not required when using drag and drop.
 	*/
 	public async updateBook(sources: BookTreeItem[], target: BookTreeItem, section?: JupyterBookSection): Promise<void> {
 		for (let element of sources) {

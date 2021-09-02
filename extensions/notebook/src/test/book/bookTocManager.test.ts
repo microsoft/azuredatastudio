@@ -526,9 +526,9 @@ describe('BookTocManagerTests', function () {
 					sinon.stub(BookTocManager.prototype, 'updateTOC').throws(new Error('Unexpected error.'));
 					const bookTreeViewProvider = new BookTreeViewProvider([], mockExtensionContext, false, 'bookTreeView', NavigationProviders.NotebooksNavigator);
 					bookTocManager = new BookTocManager(targetBookModel);
-					sinon.stub(bookTreeViewProvider, 'editBook').returns(Promise.resolve(bookTocManager.updateBook([notebook], targetBook)));
+					sinon.stub(bookTreeViewProvider, 'moveTreeItems').returns(Promise.resolve(bookTocManager.updateBook([notebook], targetBook)));
 					try {
-						await bookTreeViewProvider.editBook([notebook]);
+						await bookTreeViewProvider.moveTreeItems([notebook]);
 					} catch (error) {
 						should(recoverySpy.calledOnce).be.true('If unexpected error then recovery method is called.');
 					}
