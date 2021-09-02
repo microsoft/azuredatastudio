@@ -33,20 +33,20 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 	private _passwordText!: azdata.InputBoxComponent;
 	private _networkSharePath!: azdata.InputBoxComponent;
 	private _sourceHelpText!: azdata.TextComponent;
-	private _sqlSourceUsernameInput!: azdata.InputBoxComponent;
+	private _sqlSourceUsernameInput!: azdata.TextComponent;
 	private _sqlSourcepassword!: azdata.InputBoxComponent;
 
 	private _blobContainer!: azdata.FlexContainer;
-	private _blobContainerSubscription!: azdata.InputBoxComponent;
-	private _blobContainerLocation!: azdata.InputBoxComponent;
+	private _blobContainerSubscription!: azdata.TextComponent;
+	private _blobContainerLocation!: azdata.TextComponent;
 	private _blobContainerResourceGroupDropdowns!: azdata.DropDownComponent[];
 	private _blobContainerStorageAccountDropdowns!: azdata.DropDownComponent[];
 	private _blobContainerDropdowns!: azdata.DropDownComponent[];
 	private _blobContainerLastBackupFileDropdowns!: azdata.DropDownComponent[];
 
 	private _networkShareStorageAccountDetails!: azdata.FlexContainer;
-	private _networkShareContainerSubscription!: azdata.InputBoxComponent;
-	private _networkShareContainerLocation!: azdata.InputBoxComponent;
+	private _networkShareContainerSubscription!: azdata.TextComponent;
+	private _networkShareContainerLocation!: azdata.TextComponent;
 	private _networkShareStorageAccountResourceGroupDropdown!: azdata.DropDownComponent;
 	private _networkShareContainerStorageAccountDropdown!: azdata.DropDownComponent;
 	private _networkShareContainerStorageAccountRefreshButton!: azdata.ButtonComponent;
@@ -200,14 +200,18 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				'font-weight': 'bold',
 			}
 		}).component();
-		this._sqlSourceUsernameInput = this._view.modelBuilder.inputBox().withProps({
-			required: true,
+		this._sqlSourceUsernameInput = this._view.modelBuilder.text().withProps({
 			enabled: false,
-			width: WIZARD_INPUT_COMPONENT_WIDTH
+			value: this.migrationStateModel._sqlServerUsername,
+			width: WIZARD_INPUT_COMPONENT_WIDTH,
+			CSSStyles: {
+				'font-size': '13px',
+				'margin': '0px',
+			}
 		}).component();
-		this._disposables.push(this._sqlSourceUsernameInput.onTextChanged(value => {
-			this.migrationStateModel._sqlServerUsername = value;
-		}));
+		// this._disposables.push(this._sqlSourceUsernameInput.onTextChanged(value => {
+		// 	this.migrationStateModel._sqlServerUsername = value;
+		// }));
 
 		const sqlPasswordLabel = this._view.modelBuilder.text().withProps({
 			value: constants.DATABASE_BACKUP_NETWORK_SHARE_PASSWORD_LABEL,
@@ -394,9 +398,13 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 					'font-weight': 'bold'
 				}
 			}).component();
-		this._blobContainerSubscription = this._view.modelBuilder.inputBox()
+		this._blobContainerSubscription = this._view.modelBuilder.text()
 			.withProps({
-				enabled: false
+				enabled: false,
+				CSSStyles: {
+					'font-size': '13px',
+					'margin': '0px'
+				}
 			}).component();
 
 		const locationLabel = this._view.modelBuilder.text()
@@ -407,9 +415,13 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 					'font-weight': 'bold'
 				}
 			}).component();
-		this._blobContainerLocation = this._view.modelBuilder.inputBox()
+		this._blobContainerLocation = this._view.modelBuilder.text()
 			.withProps({
-				enabled: false
+				enabled: false,
+				CSSStyles: {
+					'font-size': '13px',
+					'margin': '0px 0px'
+				}
 			}).component();
 
 		const flexContainer = this._view.modelBuilder.flexContainer()
@@ -599,11 +611,14 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 					'font-weight': 'bold'
 				}
 			}).component();
-		this._networkShareContainerSubscription = this._view.modelBuilder.inputBox()
+		this._networkShareContainerSubscription = this._view.modelBuilder.text()
 			.withProps({
-				required: true,
 				enabled: false,
-				width: WIZARD_INPUT_COMPONENT_WIDTH
+				width: WIZARD_INPUT_COMPONENT_WIDTH,
+				CSSStyles: {
+					'font-size': '13px',
+					'margin': '0px 0px'
+				}
 			}).component();
 
 		const locationLabel = this._view.modelBuilder.text()
@@ -616,11 +631,14 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 					'font-weight': 'bold'
 				}
 			}).component();
-		this._networkShareContainerLocation = this._view.modelBuilder.inputBox()
+		this._networkShareContainerLocation = this._view.modelBuilder.text()
 			.withProps({
-				required: true,
 				enabled: false,
-				width: WIZARD_INPUT_COMPONENT_WIDTH
+				width: WIZARD_INPUT_COMPONENT_WIDTH,
+				CSSStyles: {
+					'font-size': '13px',
+					'margin': '0px 0px'
+				}
 			}).component();
 
 		const resourceGroupLabel = this._view.modelBuilder.text()
