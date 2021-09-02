@@ -6,7 +6,7 @@ import { PackageHelper } from '../tools/packageHelper';
 import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
 
 export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined, packageHelper: PackageHelper): Promise<void> {
-	TelemetryReporter.sendActionEvent(TelemetryViews.SqlBindingsQuickPick, TelemetryActions.sqlBindingsQuickPickStart);
+	TelemetryReporter.sendActionEvent(TelemetryViews.SqlBindingsQuickPick, TelemetryActions.startAddSqlBinding);
 
 	if (!uri) {
 		// this command only shows in the command palette when the active editor is a .cs file, so we can safely assume that's the scenario
@@ -91,17 +91,18 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined, 
 	try {
 		const result = await azureFunctionsService.addSqlBinding(selectedBinding.type, uri.fsPath, azureFunctionName, objectName, connectionStringSetting);
 
-		TelemetryReporter.createActionEvent(TelemetryViews.SqlBindingsQuickPick, TelemetryActions.addSqlBinding)
-			.withAdditionalProperties({ bindingType: selectedBinding.label })
-			.send();
-
 		if (!result.success) {
 			void vscode.window.showErrorMessage(result.errorMessage);
+			TelemetryReporter.sendErrorEvent(TelemetryViews.SqlBindingsQuickPick, TelemetryActions.finishAddSqlBinding);
 			return;
 		}
+
+		TelemetryReporter.createActionEvent(TelemetryViews.SqlBindingsQuickPick, TelemetryActions.finishAddSqlBinding)
+			.withAdditionalProperties({ bindingType: selectedBinding.label })
+			.send();
 	} catch (e) {
 		void vscode.window.showErrorMessage(e);
-		TelemetryReporter.sendErrorEvent(TelemetryViews.SqlBindingsQuickPick, TelemetryActions.addSqlBinding);
+		TelemetryReporter.sendErrorEvent(TelemetryViews.SqlBindingsQuickPick, TelemetryActions.finishAddSqlBinding);
 		return;
 	}
 

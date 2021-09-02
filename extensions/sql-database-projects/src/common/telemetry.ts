@@ -34,6 +34,6 @@ export enum TelemetryActions {
 	updateProjectForRoundtrip = 'updateProjectForRoundtrip',
 	changePlatformType = 'changePlatformType',
 	updateSystemDatabaseReferencesInProjFile = 'updateSystemDatabaseReferencesInProjFile',
-	sqlBindingsQuickPickStart = 'sqlBindingsQuickPickStart',
-	addSqlBinding = 'addSqlBinding'
+	startAddSqlBinding = 'startAddSqlBinding',
+	finishAddSqlBinding = 'finishAddSqlBinding'
 }
