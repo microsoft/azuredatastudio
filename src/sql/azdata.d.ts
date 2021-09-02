@@ -2187,10 +2187,6 @@ declare module 'azdata' {
 			 * What type of token this is (such as Bearer)
 			 */
 			tokenType?: string | undefined
-			/**
-			 * Access token expiry timestamp
-			 */
-			expiresOn?: number
 		}
 
 		/**

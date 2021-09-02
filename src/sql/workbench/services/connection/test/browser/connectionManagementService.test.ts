@@ -1699,24 +1699,24 @@ suite('SQL ConnectionManagementService tests', () => {
 	});
 
 	test('refreshAzureAccountTokenIfNecessary refreshes Azure access token if existing token is expired', async () => {
-		let uri: string = 'Editor Uri';
+		const uri: string = 'Editor Uri';
 		// Set up a connection profile that uses Azure
-		let azureConnectionProfile = ConnectionProfile.fromIConnectionProfile(capabilitiesService, connectionProfile);
+		const azureConnectionProfile = ConnectionProfile.fromIConnectionProfile(capabilitiesService, connectionProfile);
 		azureConnectionProfile.authenticationType = 'AzureMFA';
-		let username = 'testuser@microsoft.com';
+		const username = 'testuser@microsoft.com';
 		azureConnectionProfile.azureAccount = username;
-		let servername = 'test-database.database.windows.net';
+		const servername = 'test-database.database.windows.net';
 		azureConnectionProfile.serverName = servername;
-		let providerId = 'azure_PublicCloud';
+		const providerId = 'azure_PublicCloud';
 		azureConnectionProfile.azureTenantId = 'testTenant';
 
-		let expiredToken = {
+		const expiredToken = {
 			token: 'expiredToken',
 			tokenType: 'Bearer',
 			expiresOn: 0,
 		};
 
-		let freshToken = {
+		const freshToken = {
 			token: 'freshToken',
 			tokenType: 'Bearer',
 			expiresOn: new Date().getTime() / 1000 + 7200,
@@ -1752,21 +1752,21 @@ suite('SQL ConnectionManagementService tests', () => {
 		(connectionManagementService as any)._connectionStatusManager = connectionStatusManager;
 		await connect(uri, undefined, false, azureConnectionProfile);
 
-		let oldProfile = connectionStatusManager.getConnectionProfile(uri);
+		const oldProfile = connectionStatusManager.getConnectionProfile(uri);
 		assert.strictEqual(oldProfile.options['expiresOn'], expiredToken.expiresOn);
 
-		let refreshRes1 = await connectionManagementService.refreshAzureAccountTokenIfNecessary(uri);
+		const refreshRes1 = await connectionManagementService.refreshAzureAccountTokenIfNecessary(uri);
 		assert.strictEqual(refreshRes1, true);
 
 		// first refresh should give us the new token
-		let newProfile1 = connectionStatusManager.getConnectionProfile(uri);
+		const newProfile1 = connectionStatusManager.getConnectionProfile(uri);
 		assert.strictEqual(newProfile1.options['expiresOn'], freshToken.expiresOn);
 
-		let refreshRes2 = await connectionManagementService.refreshAzureAccountTokenIfNecessary(uri);
+		const refreshRes2 = await connectionManagementService.refreshAzureAccountTokenIfNecessary(uri);
 		assert.strictEqual(refreshRes2, true);
 
 		// second refresh should be a no-op
-		let newProfile2 = connectionStatusManager.getConnectionProfile(uri);
+		const newProfile2 = connectionStatusManager.getConnectionProfile(uri);
 		assert.strictEqual(newProfile2.options['expiresOn'], freshToken.expiresOn);
 	});
 
