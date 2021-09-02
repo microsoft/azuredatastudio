@@ -898,7 +898,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 					this._logService.info(`Previous pending reconnection for uri ${uri} succeeded.`);
 					return true;
 				}
-				this._logService.info(`Previous pending reconnection for uri ${uri} failed with error ${previousConnectionResult.errorMessage}, error code: ${previousConnectionResult.errorCode}.`);
+				this._logService.info(`Previous pending reconnection for uri ${uri} failed.`);
 			} catch (err) {
 				this._logService.info(`Previous pending reconnect promise for uri ${uri} is rejected with error ${err}, will attempt to reconnect if necessary.`);
 			}
@@ -914,13 +914,12 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 					const connectionResultPromise = this.connect(profile, uri);
 					this._uriToReconnectPromiseMap[uri] = connectionResultPromise;
 					const connectionResult = await connectionResultPromise;
-					if (!connectionResult || !connectionResult.connected) {
-						this._logService.error(`Failed to refresh connection ${profile.id} with uri ${uri},connection result: ` +
-							`${connectionResult
-								? connectionResult
-								: `{error code: ${connectionResult.errorCode}, error message: ${connectionResult.errorMessage}}`}`);
+					if (!connectionResult) {
+						this._logService.error(`Failed to refresh connection ${profile.id} with uri ${uri}, invalid connection result.`);
+						throw new Error(nls.localize('connection.invalidConnectionResult', "Connection result is invalid"));
+					} else if (!connectionResult.connected) {
+						this._logService.error(`Failed to refresh connection ${profile.id} with uri ${uri}, error code: ${connectionResult.errorCode}, error message: ${connectionResult.errorMessage}`);
 						throw new Error(nls.localize('connection.refreshAzureTokenFailure', "Failed to refresh Azure account token for connection"));
-
 					}
 					this._logService.info(`Successfully refreshed token for connection ${profile.id} with uri ${uri}, result: ${connectionResult.connected} ${connectionResult.connectionProfile}, isConnected: ${this.isConnected(uri)}, ${this._connectionStatusManager.getConnectionProfile(uri)}`);
 					return true;
