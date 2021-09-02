@@ -635,6 +635,19 @@ export class DashboardWidget {
 			}
 		}).component();
 
+		const addAccountButton = view.modelBuilder.button().withProps({
+			label: 'Add Account',
+			width: '100px',
+			enabled: true,
+			CSSStyles: {
+				'margin': 'auto'
+			}
+		}).component();
+
+		this._disposables.push(addAccountButton.onDidClick((e) => {
+			//Fill in here
+		}));
+
 		const header = view.modelBuilder.flexContainer().withItems(
 			[
 				statusContainerTitle,
@@ -752,6 +765,7 @@ export class DashboardWidget {
 
 		statusContainer.addItem(addAccountImage, {});
 		statusContainer.addItem(addAccountText, {});
+		statusContainer.addItem(addAccountButton, {});
 
 		statusContainer.addItem(this._migrationStatusCardLoadingContainer, {
 			CSSStyles: {
