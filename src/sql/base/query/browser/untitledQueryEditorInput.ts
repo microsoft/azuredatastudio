@@ -66,8 +66,8 @@ export class UntitledQueryEditorInput extends QueryEditorInput implements IUntit
 			fileEditorInput = await this.text.saveAs(group, options);
 		}
 		let newUri = fileEditorInput.resource.toString(true);
-		this._results.uri = newUri;
 		await this.changeConnectionUri(newUri);
+		this._results.uri = newUri;
 		let newInput = this.instantiationService.createInstance(FileQueryEditorInput, '', (fileEditorInput as FileEditorInput), this.results);
 		newInput.state.setState(this.state);
 		return newInput;
