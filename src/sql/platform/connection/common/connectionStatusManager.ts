@@ -58,7 +58,7 @@ export class ConnectionStatusManager {
 		}
 		if (this._connections[newUri]) {
 			this._logService.error(`New URI : '${newUri}' is already in the connections list.`);
-			throw new Error(nls.localize('connectionStatusManager.uriAlreadyInConnectionsList', 'There is already a connection with uri: {0}, \n Please close this window and return to the window with the file name and run again to see your changes.', newUri));
+			throw new Error(nls.localize('connectionStatusManager.uriAlreadyInConnectionsList', 'There is already a connection with uri: {0}', newUri));
 		}
 		info.ownerUri = newUri;
 		this._connections[newUri] = info;
