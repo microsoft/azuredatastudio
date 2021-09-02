@@ -56,6 +56,10 @@ export class ConnectionStatusManager {
 			this._logService.error(`No connection found associated with old URI : '${oldUri}'`);
 			throw new Error(nls.localize('connectionStatusManager.noConnectionForUri', 'Could not find connection with uri: {0}', oldUri));
 		}
+		if (this._connections[newUri]) {
+			this._logService.error(`New URI : '${newUri}' is already in the connections list.`);
+			throw new Error(nls.localize('connectionStatusManager.uriAlreadyInConnectionsList', 'There is already a connection with uri: {0}', newUri));
+		}
 		info.ownerUri = newUri;
 		this._connections[newUri] = info;
 		delete this._connections[oldUri];

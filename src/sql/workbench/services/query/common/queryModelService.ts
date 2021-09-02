@@ -423,6 +423,10 @@ export class QueryModelService implements IQueryModelService {
 			this._logService.error(`A Query and QueryRunner was not found for '${oldUri}'`);
 			throw new Error(nls.localize('queryModelService.noQueryFoundForUri', 'No Query found for {0}', oldUri));
 		}
+		else if (this._queryInfoMap.has(newUri)) {
+			this._logService.error(`New URI '${newUri}' already has query info associated with it.`);
+			throw new Error(nls.localize('queryModelService.uriAlreadyHasQuery', '{0} already has an existing query', newUri));
+		}
 
 		await queryRunner.changeConnectionUri(newUri, oldUri);
 
