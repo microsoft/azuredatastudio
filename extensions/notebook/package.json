@@ -470,24 +470,24 @@
         },
         {
           "command": "notebook.command.closeBook",
-          "when": "view == bookTreeView && viewItem == savedBook"
+          "when": "view == bookTreeView && viewItem == savedBook && listMultiSelection == false"
         },
         {
           "command": "notebook.command.closeNotebook",
-          "when": "view == bookTreeView && viewItem == savedNotebook"
+          "when": "view == bookTreeView && viewItem == savedNotebook && listMultiSelection == false"
         },
         {
           "command": "notebook.command.removeNotebook",
-          "when": "view == bookTreeView && viewItem == savedBookNotebook"
+          "when": "view == bookTreeView && viewItem == savedBookNotebook && listMultiSelection == false"
         },
         {
           "command": "notebook.command.addNotebook",
-          "when": "view == bookTreeView && viewItem == section || view == bookTreeView && viewItem == savedBook",
+          "when": "view == bookTreeView && viewItem == section && listMultiSelection == false || view == bookTreeView && viewItem == savedBook && listMultiSelection == false",
           "group": "newFile@1"
         },
         {
           "command": "notebook.command.addMarkdown",
-          "when": "view == bookTreeView && viewItem == section || view == bookTreeView && viewItem == savedBook",
+          "when": "view == bookTreeView && viewItem == section && listMultiSelection == false || view == bookTreeView && viewItem == savedBook && listMultiSelection == false",
           "group": "newFile@1"
         },
         {
