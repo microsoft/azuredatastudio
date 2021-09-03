@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
+import * as WorkbenchUtils from 'sql/workbench/common/sqlWorkbenchUtils';
 import { TreeNode } from 'sql/workbench/services/objectExplorer/common/treeNode';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
@@ -14,6 +15,7 @@ import { hash } from 'vs/base/common/hash';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { generateUuid } from 'vs/base/common/uuid';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';  //TODO: Needed?
 import { TreeItemCollapsibleState } from 'vs/workbench/common/views';
 import { localize } from 'vs/nls';
 import { NodeType } from 'sql/workbench/services/objectExplorer/common/nodeType';
@@ -24,7 +26,7 @@ export const IOEShimService = createDecorator<IOEShimService>(SERVICE_ID);
 
 export interface IOEShimService {
 	_serviceBrand: undefined;
-	getChildren(node: ITreeItem, viewId: string): Promise<ITreeItem[]>;
+	getChildren(node: ITreeItem, viewId: string, configurationService: IConfigurationService): Promise<ITreeItem[]>;
 	disconnectNode(viewId: string, node: ITreeItem): Promise<boolean>;
 	providerExists(providerId: string): boolean;
 	isNodeConnected(viewId: string, node: ITreeItem): boolean;
@@ -131,8 +133,12 @@ export class OEShimService extends Disposable implements IOEShimService {
 		return this.sessionMap.get(key)!;
 	}
 
-	public async getChildren(node: ITreeItem, viewId: string): Promise<ITreeItem[]> {
+	public async getChildren(node: ITreeItem, viewId: string, configurationService: IConfigurationService): Promise<ITreeItem[]> {
 		if (node.payload) {
+			if (node.payload.authenticationType !== undefined && node.payload.authenticationType === '') {
+				node.payload.authenticationType = this.getDefaultAuthenticationType(configurationService);  // we need to set auth type here, because it's value is part of the session key
+			}
+
 			const sessionId = await this.getOrCreateSession(viewId, node);
 			const requestHandle = this.nodeHandleMap.get(generateNodeMapKey(viewId, node)) || node.handle;
 			const treeNode = new TreeNode(undefined!, undefined!, undefined!, requestHandle, undefined!); // hack since this entire system is a hack anyways
@@ -221,6 +227,10 @@ export class OEShimService extends Disposable implements IOEShimService {
 			return this.nodeInfoMap.get(treeItem);
 		}
 		return undefined;
+	}
+
+	public getDefaultAuthenticationType(configurationService: IConfigurationService): string {
+		return WorkbenchUtils.getSqlConfigValue<string>(configurationService, 'defaultAuthenticationType');
 	}
 }
 
