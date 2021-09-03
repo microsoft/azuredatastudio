@@ -953,8 +953,8 @@ declare module 'azdata' {
 		 * Notify clients that the URI for a connection has been changed.
 		 */
 		connectionUriChanged(newUri: string, oldUri: string): Thenable<void>;
-  }
-  
+	}
+
 	export namespace accounts {
 		export interface AccountSecurityToken {
 			/**
