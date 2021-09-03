@@ -341,7 +341,7 @@ configurationRegistry.registerConfiguration({
 		},
 		[useNewMarkdownRendererKey]: {
 			'type': 'boolean',
-			default: false,
+			default: true,
 			'description': localize('notebook.useNewMarkdownRenderer', "Whether to use the newer version of the markdown renderer for Notebooks. This may result in markdown being rendered differently than previous versions.")
 		}
 	}
