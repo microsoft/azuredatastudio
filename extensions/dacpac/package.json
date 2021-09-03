@@ -2,7 +2,7 @@
   "name": "dacpac",
   "displayName": "SQL Server Dacpac",
   "description": "SQL Server Dacpac for Azure Data Studio.",
-  "version": "1.9.0",
+  "version": "1.9.1",
   "publisher": "Microsoft",
   "preview": false,
   "engines": {
