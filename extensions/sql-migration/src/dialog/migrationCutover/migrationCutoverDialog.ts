@@ -67,7 +67,7 @@ export class MigrationCutoverDialog {
 				this._fileCount = view.modelBuilder.text().withProps({
 					width: '500px',
 					CSSStyles: {
-						...styles.bodyCSS
+						...styles.BODY_CSS
 					}
 				}).component();
 
@@ -138,7 +138,7 @@ export class MigrationCutoverDialog {
 				const _emptyTableText = view.modelBuilder.text().withProps({
 					value: loc.EMPTY_TABLE_TEXT,
 					CSSStyles: {
-						...styles.noteCSS,
+						...styles.NOTE_CSS,
 						'margin-top': '8px',
 						'text-align': 'center',
 						'width': '300px'
@@ -208,7 +208,7 @@ export class MigrationCutoverDialog {
 
 		this._databaseTitleName = this._view.modelBuilder.text().withProps({
 			CSSStyles: {
-				...styles.pageTitleCSS
+				...styles.PAGE_TITLE_CSS
 			},
 			width: 950,
 			value: this._model._migration.migrationContext.properties.sourceDatabaseName
@@ -216,7 +216,7 @@ export class MigrationCutoverDialog {
 
 		const databaseSubTitle = this._view.modelBuilder.text().withProps({
 			CSSStyles: {
-				...styles.noteCSS
+				...styles.NOTE_CSS
 			},
 			width: 950,
 			value: loc.DATABASE
@@ -262,7 +262,7 @@ export class MigrationCutoverDialog {
 			width: '150px',
 			enabled: false,
 			CSSStyles: {
-				...styles.bodyCSS,
+				...styles.BODY_CSS,
 				'display': this._isOnlineMigration() ? 'inline' : 'none'
 			}
 		}).component();
@@ -287,7 +287,7 @@ export class MigrationCutoverDialog {
 			width: '150px',
 			enabled: false,
 			CSSStyles: {
-				...styles.bodyCSS,
+				...styles.BODY_CSS,
 			}
 		}).component();
 
@@ -313,7 +313,7 @@ export class MigrationCutoverDialog {
 			height: '20px',
 			width: '100px',
 			CSSStyles: {
-				...styles.bodyCSS,
+				...styles.BODY_CSS,
 			}
 		}).component();
 
@@ -332,7 +332,7 @@ export class MigrationCutoverDialog {
 			height: '20px',
 			width: '200px',
 			CSSStyles: {
-				...styles.bodyCSS,
+				...styles.BODY_CSS,
 			}
 		}).component();
 
@@ -359,7 +359,7 @@ export class MigrationCutoverDialog {
 			height: '20px',
 			width: '180px',
 			CSSStyles: {
-				...styles.bodyCSS,
+				...styles.BODY_CSS,
 			}
 		}).component();
 
@@ -701,7 +701,7 @@ export class MigrationCutoverDialog {
 		const labelComponent = this._view.modelBuilder.text().withProps({
 			value: label,
 			CSSStyles: {
-				...styles.lightLabelCSS,
+				...styles.LIGHT_LABEL_CSS,
 				'margin-bottom': '0',
 			}
 		}).component();
@@ -710,7 +710,7 @@ export class MigrationCutoverDialog {
 		const textComponent = this._view.modelBuilder.text().withProps({
 			value: value,
 			CSSStyles: {
-				...styles.bodyCSS,
+				...styles.BODY_CSS,
 				'margin': '4px 0 12px',
 				'width': '100%',
 				'overflow': 'hidden',

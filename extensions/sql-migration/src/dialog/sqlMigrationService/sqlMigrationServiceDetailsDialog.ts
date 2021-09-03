@@ -122,7 +122,7 @@ export class SqlMigrationServiceDetailsDialog {
 							.withProps({
 								value: migrationContext.controller.name,
 								CSSStyles: {
-									...styles.sectionHeaderCSS
+									...styles.SECTION_HEADER_CSS
 								}
 							})
 							.component(),
@@ -131,7 +131,7 @@ export class SqlMigrationServiceDetailsDialog {
 							.withProps({
 								value: constants.SQL_MIGRATION_SERVICE_DETAILS_SUB_TITLE,
 								CSSStyles: {
-									...styles.smallNoteCSS
+									...styles.SMALL_NOTE_CSS
 								}
 							})
 							.component(),
@@ -158,7 +158,7 @@ export class SqlMigrationServiceDetailsDialog {
 				description: description,
 				title: value,
 				CSSStyles: {
-					...styles.bodyCSS,
+					...styles.BODY_CSS,
 					'margin': margin,
 				}
 			})
@@ -189,10 +189,10 @@ export class SqlMigrationServiceDetailsDialog {
 			width: width,
 			isReadOnly: true,
 			rowCssStyles: {
-				...styles.bodyCSS
+				...styles.BODY_CSS
 			},
 			headerCssStyles: {
-				...styles.bodyCSS
+				...styles.BODY_CSS
 			},
 		};
 	}

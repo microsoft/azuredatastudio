@@ -27,7 +27,7 @@ export class MigrationModePage extends MigrationWizardPage {
 			component: view.modelBuilder.text().withProps({
 				value: constants.DATABASE_BACKUP_MIGRATION_MODE_DESCRIPTION,
 				CSSStyles: {
-					...styles.bodyCSS,
+					...styles.BODY_CSS,
 					'margin': '0'
 				}
 			}).component()
@@ -77,7 +77,7 @@ export class MigrationModePage extends MigrationWizardPage {
 			label: constants.DATABASE_BACKUP_MIGRATION_MODE_ONLINE_LABEL,
 			name: buttonGroup,
 			CSSStyles: {
-				...styles.bodyCSS,
+				...styles.LABEL_CSS,
 				'margin-top': '8px'
 			},
 			checked: true
@@ -86,7 +86,7 @@ export class MigrationModePage extends MigrationWizardPage {
 		const onlineDescription = this._view.modelBuilder.text().withProps({
 			value: constants.DATABASE_BACKUP_MIGRATION_MODE_ONLINE_DESCRIPTION,
 			CSSStyles: {
-				...styles.noteCSS,
+				...styles.NOTE_CSS,
 				'margin-left': '20px'
 			}
 		}).component();
@@ -101,7 +101,7 @@ export class MigrationModePage extends MigrationWizardPage {
 			label: constants.DATABASE_BACKUP_MIGRATION_MODE_OFFLINE_LABEL,
 			name: buttonGroup,
 			CSSStyles: {
-				...styles.bodyCSS,
+				...styles.LABEL_CSS,
 				'margin-top': '8px'
 			},
 		}).component();
@@ -109,7 +109,7 @@ export class MigrationModePage extends MigrationWizardPage {
 		const offlineDescription = this._view.modelBuilder.text().withProps({
 			value: constants.DATABASE_BACKUP_MIGRATION_MODE_OFFLINE_DESCRIPTION,
 			CSSStyles: {
-				...styles.noteCSS,
+				...styles.NOTE_CSS,
 				'margin-left': '20px'
 			}
 		}).component();

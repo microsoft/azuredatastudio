@@ -43,14 +43,14 @@ export class CreateResourceGroupDialog {
 			const resourceGroupDescription = view.modelBuilder.text().withProps({
 				value: constants.RESOURCE_GROUP_DESCRIPTION,
 				CSSStyles: {
-					...styles.bodyCSS,
+					...styles.BODY_CSS,
 					'margin-bottom': '8px'
 				}
 			}).component();
 			const nameLabel = view.modelBuilder.text().withProps({
 				value: constants.NAME,
 				CSSStyles: {
-					...styles.labelCSS
+					...styles.LABEL_CSS
 				}
 			}).component();
 

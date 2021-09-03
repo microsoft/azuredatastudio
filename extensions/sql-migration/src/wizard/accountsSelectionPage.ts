@@ -29,7 +29,7 @@ export class AccountsSelectionPage extends MigrationWizardPage {
 			component: view.modelBuilder.text().withProps({
 				value: constants.ACCOUNTS_SELECTION_PAGE_DESCRIPTION,
 				CSSStyles: {
-					...styles.bodyCSS
+					...styles.BODY_CSS
 				}
 			}).component()
 		};
@@ -58,7 +58,7 @@ export class AccountsSelectionPage extends MigrationWizardPage {
 		const azureAccountLabel = view.modelBuilder.text().withProps({
 			value: constants.ACCOUNTS_SELECTION_PAGE_TITLE,
 			CSSStyles: {
-				...styles.labelCSS
+				...styles.LABEL_CSS
 			}
 		}).component();
 
@@ -122,7 +122,7 @@ export class AccountsSelectionPage extends MigrationWizardPage {
 				label: constants.ACCOUNT_LINK_BUTTON_LABEL,
 				url: '',
 				CSSStyles: {
-					...styles.bodyCSS
+					...styles.BODY_CSS
 				}
 			})
 			.component();
@@ -158,7 +158,7 @@ export class AccountsSelectionPage extends MigrationWizardPage {
 		const azureTenantDropdownLabel = view.modelBuilder.text().withProps({
 			value: constants.AZURE_TENANT,
 			CSSStyles: {
-				...styles.labelCSS
+				...styles.LABEL_CSS
 			}
 		}).component();
 

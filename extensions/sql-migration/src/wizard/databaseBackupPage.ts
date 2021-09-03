@@ -118,7 +118,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 		const selectLocationText = this._view.modelBuilder.text().withProps({
 			value: constants.DATABASE_BACKUP_PAGE_DESCRIPTION,
 			CSSStyles: {
-				...styles.bodyCSS
+				...styles.BODY_CSS
 			}
 		}).component();
 
@@ -127,7 +127,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				name: buttonGroup,
 				label: constants.DATABASE_BACKUP_NC_NETWORK_SHARE_RADIO_LABEL,
 				CSSStyles: {
-					...styles.bodyCSS,
+					...styles.BODY_CSS,
 					'margin': '0'
 				}
 			}).component();
@@ -143,7 +143,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				name: buttonGroup,
 				label: constants.DATABASE_BACKUP_NC_BLOB_STORAGE_RADIO_LABEL,
 				CSSStyles: {
-					...styles.bodyCSS,
+					...styles.BODY_CSS,
 					'margin': '0'
 				}
 			}).component();
@@ -186,15 +186,15 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			value: constants.SOURCE_CREDENTIALS,
 			width: WIZARD_INPUT_COMPONENT_WIDTH,
 			CSSStyles: {
-				...styles.sectionHeaderCSS,
-				'margin-top': '20px'
+				...styles.SECTION_HEADER_CSS,
+				'margin-top': '4px'
 			}
 		}).component();
 
 		this._sourceHelpText = this._view.modelBuilder.text().withProps({
 			width: WIZARD_INPUT_COMPONENT_WIDTH,
 			CSSStyles: {
-				...styles.bodyCSS
+				...styles.BODY_CSS
 			}
 		}).component();
 
@@ -203,7 +203,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			width: WIZARD_INPUT_COMPONENT_WIDTH,
 			requiredIndicator: true,
 			CSSStyles: {
-				...styles.labelCSS
+				...styles.LABEL_CSS
 			}
 		}).component();
 		this._sqlSourceUsernameInput = this._view.modelBuilder.inputBox().withProps({
@@ -223,7 +223,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			width: WIZARD_INPUT_COMPONENT_WIDTH,
 			requiredIndicator: true,
 			CSSStyles: {
-				...styles.labelCSS
+				...styles.LABEL_CSS
 			}
 		}).component();
 		this._sqlSourcePassword = this._view.modelBuilder.inputBox().withProps({
@@ -243,7 +243,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			value: constants.DATABASE_BACKUP_NETWORK_SHARE_HEADER_TEXT,
 			width: WIZARD_INPUT_COMPONENT_WIDTH,
 			CSSStyles: {
-				...styles.sectionHeaderCSS,
+				...styles.SECTION_HEADER_CSS,
 				'margin-top': '24px'
 			}
 		}).component();
@@ -252,7 +252,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			value: constants.DATABASE_BACKUP_NC_NETWORK_SHARE_HELP_TEXT,
 			width: WIZARD_INPUT_COMPONENT_WIDTH,
 			CSSStyles: {
-				...styles.bodyCSS
+				...styles.BODY_CSS
 			}
 		}).component();
 
@@ -262,7 +262,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			width: WIZARD_INPUT_COMPONENT_WIDTH,
 			requiredIndicator: true,
 			CSSStyles: {
-				...styles.labelCSS
+				...styles.LABEL_CSS
 			}
 		}).component();
 		this._networkSharePath = this._view.modelBuilder.inputBox().withProps({
@@ -292,7 +292,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			style: 'information',
 			width: WIZARD_INPUT_COMPONENT_WIDTH,
 			CSSStyles: {
-				...styles.bodyCSS
+				...styles.BODY_CSS
 			}
 		}).component();
 
@@ -303,7 +303,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				width: WIZARD_INPUT_COMPONENT_WIDTH,
 				requiredIndicator: true,
 				CSSStyles: {
-					...styles.labelCSS
+					...styles.LABEL_CSS
 				}
 			}).component();
 		this._windowsUserAccountText = this._view.modelBuilder.inputBox()
@@ -313,7 +313,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				validationErrorMessage: constants.INVALID_USER_ACCOUNT,
 				width: WIZARD_INPUT_COMPONENT_WIDTH,
 				CSSStyles: {
-					...styles.bodyCSS,
+					...styles.BODY_CSS,
 					'margin-top': '-1em'
 				}
 			})
@@ -337,7 +337,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				width: WIZARD_INPUT_COMPONENT_WIDTH,
 				requiredIndicator: true,
 				CSSStyles: {
-					...styles.labelCSS,
+					...styles.LABEL_CSS,
 				}
 			}).component();
 		this._passwordText = this._view.modelBuilder.inputBox()
@@ -347,7 +347,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				required: true,
 				width: WIZARD_INPUT_COMPONENT_WIDTH,
 				CSSStyles: {
-					...styles.bodyCSS,
+					...styles.BODY_CSS,
 					'margin-top': '-1em'
 				}
 			}).component();
@@ -387,7 +387,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			value: constants.DATABASE_BACKUP_BLOB_STORAGE_HEADER_TEXT,
 			width: WIZARD_INPUT_COMPONENT_WIDTH,
 			CSSStyles: {
-				...styles.sectionHeaderCSS
+				...styles.SECTION_HEADER_CSS
 			}
 		}).component();
 
@@ -395,7 +395,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			value: constants.DATABASE_BACKUP_BLOB_STORAGE_HELP_TEXT,
 			width: WIZARD_INPUT_COMPONENT_WIDTH,
 			CSSStyles: {
-				...styles.bodyCSS,
+				...styles.BODY_CSS,
 				'margin-bottom': '12px'
 			}
 		}).component();
@@ -404,14 +404,14 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			.withProps({
 				value: constants.DATABASE_BACKUP_BLOB_STORAGE_SUBSCRIPTION_LABEL,
 				CSSStyles: {
-					...styles.labelCSS
+					...styles.LABEL_CSS
 				}
 			}).component();
 		this._blobContainerSubscription = this._view.modelBuilder.inputBox()
 			.withProps({
 				enabled: false,
 				CSSStyles: {
-					...styles.bodyCSS
+					...styles.BODY_CSS
 				}
 			}).component();
 
@@ -419,14 +419,14 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			.withProps({
 				value: constants.LOCATION,
 				CSSStyles: {
-					...styles.labelCSS
+					...styles.LABEL_CSS
 				}
 			}).component();
 		this._blobContainerLocation = this._view.modelBuilder.inputBox()
 			.withProps({
 				enabled: false,
 				CSSStyles: {
-					...styles.bodyCSS
+					...styles.BODY_CSS
 				}
 			}).component();
 
@@ -452,13 +452,13 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 
 	private createTargetDatabaseContainer(): azdata.FlexContainer {
 		const headerCssStyles: azdata.CssStyles = {
-			...styles.labelCSS,
+			...styles.LABEL_CSS,
 			'border': 'none',
 			'text-align': 'left',
 			'border-bottom': '1px solid',
 		};
 		const rowCssStyle: azdata.CssStyles = {
-			...styles.bodyCSS,
+			...styles.BODY_CSS,
 			'border': 'none',
 			'border-bottom': '1px solid',
 		};
@@ -467,7 +467,8 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			.withProps({
 				value: constants.DATABASE_BACKUP_NETWORK_SHARE_TABLE_HELP_TEXT,
 				CSSStyles: {
-					...styles.sectionHeaderCSS
+					...styles.SECTION_HEADER_CSS,
+					'margin-top': '8px'
 				}
 			}).component();
 
@@ -475,7 +476,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			.withProps({
 				value: constants.DATABASE_BACKUP_BLOB_STORAGE_TABLE_HELP_TEXT,
 				CSSStyles: {
-					...styles.sectionHeaderCSS
+					...styles.SECTION_HEADER_CSS
 				}
 			}).component();
 
@@ -563,7 +564,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			.withProps({
 				value: constants.ALL_FIELDS_REQUIRED,
 				CSSStyles: {
-					...styles.bodyCSS
+					...styles.BODY_CSS
 				}
 			}).component();
 
@@ -590,8 +591,8 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				value: constants.DATABASE_BACKUP_NETWORK_SHARE_AZURE_ACCOUNT_HEADER,
 				width: WIZARD_INPUT_COMPONENT_WIDTH,
 				CSSStyles: {
-					...styles.sectionHeaderCSS,
-					'margin-top': '20px'
+					...styles.SECTION_HEADER_CSS,
+					'margin-top': '12px'
 				}
 			}).component();
 
@@ -600,7 +601,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				value: constants.DATABASE_BACKUP_NETWORK_SHARE_AZURE_ACCOUNT_HELP,
 				width: WIZARD_INPUT_COMPONENT_WIDTH,
 				CSSStyles: {
-					...styles.bodyCSS
+					...styles.BODY_CSS
 				}
 			}).component();
 
@@ -610,7 +611,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				width: WIZARD_INPUT_COMPONENT_WIDTH,
 				requiredIndicator: true,
 				CSSStyles: {
-					...styles.labelCSS
+					...styles.LABEL_CSS
 				}
 			}).component();
 		this._networkShareContainerSubscription = this._view.modelBuilder.inputBox()
@@ -629,7 +630,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				width: WIZARD_INPUT_COMPONENT_WIDTH,
 				requiredIndicator: true,
 				CSSStyles: {
-					...styles.labelCSS
+					...styles.LABEL_CSS
 				}
 			}).component();
 		this._networkShareContainerLocation = this._view.modelBuilder.inputBox()
@@ -648,7 +649,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				width: WIZARD_INPUT_COMPONENT_WIDTH,
 				requiredIndicator: true,
 				CSSStyles: {
-					...styles.labelCSS
+					...styles.LABEL_CSS
 				}
 			}).component();
 		this._networkShareStorageAccountResourceGroupDropdown = this._view.modelBuilder.dropDown()
@@ -676,7 +677,7 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				width: WIZARD_INPUT_COMPONENT_WIDTH,
 				requiredIndicator: true,
 				CSSStyles: {
-					...styles.labelCSS
+					...styles.LABEL_CSS
 				}
 			}).component();
 		this._networkShareContainerStorageAccountDropdown = this._view.modelBuilder.dropDown()
@@ -686,9 +687,6 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 				width: WIZARD_INPUT_COMPONENT_WIDTH,
 				editable: true,
 				fireOnTextChange: true,
-				CSSStyles: {
-					'margin-top': '-1em'
-				},
 			}).component();
 		this._disposables.push(this._networkShareContainerStorageAccountDropdown.onValueChanged((value) => {
 			const selectedIndex = findDropDownItemIndex(this._networkShareContainerStorageAccountDropdown, value);
@@ -709,7 +707,12 @@ export class DatabaseBackupPage extends MigrationWizardPage {
 			await this.loadNetworkShareStorageDropdown();
 		}));
 
-		const storageAccountContainer = this._view.modelBuilder.flexContainer().component();
+		const storageAccountContainer = this._view.modelBuilder.flexContainer()
+			.withProps({
+				CSSStyles: {
+					'margin-top': '-1em'
+				}
+			}).component();
 
 		storageAccountContainer.addItem(this._networkShareContainerStorageAccountDropdown, {
 			flex: '0 0 auto'

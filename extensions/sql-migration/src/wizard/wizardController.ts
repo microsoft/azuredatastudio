@@ -139,14 +139,14 @@ export function createInformationRow(view: azdata.ModelView, label: string, valu
 			[
 				createLabelTextComponent(view, label,
 					{
-						...styles.lightLabelCSS,
+						...styles.LIGHT_LABEL_CSS,
 						'margin': '4px 0px',
 						'width': '300px',
 					}
 				),
 				createTextComponent(view, value,
 					{
-						...styles.bodyCSS,
+						...styles.BODY_CSS,
 						'margin': '4px 0px',
 						'width': '300px',
 					}
@@ -157,7 +157,7 @@ export function createInformationRow(view: azdata.ModelView, label: string, valu
 export function createHeadingTextComponent(view: azdata.ModelView, value: string, firstElement: boolean = false): azdata.TextComponent {
 	const component = createTextComponent(view, value);
 	component.updateCssStyles({
-		...styles.labelCSS,
+		...styles.LABEL_CSS,
 		'margin-top': firstElement ? '0' : '20px'
 	});
 	return component;

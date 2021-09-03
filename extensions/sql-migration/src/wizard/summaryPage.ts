@@ -50,7 +50,7 @@ export class SummaryPage extends MigrationWizardPage {
 			url: '',
 			label: this.migrationStateModel._migrationDbs.length.toString(),
 			CSSStyles: {
-				...styles.bodyCSS,
+				...styles.BODY_CSS,
 				'margin': '0px',
 				'width': '300px',
 			}
@@ -70,7 +70,7 @@ export class SummaryPage extends MigrationWizardPage {
 				[
 					createLabelTextComponent(this._view, constants.SUMMARY_DATABASE_COUNT_LABEL,
 						{
-							...styles.bodyCSS,
+							...styles.BODY_CSS,
 							'width': '300px',
 						}
 					),

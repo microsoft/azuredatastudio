@@ -214,7 +214,7 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 		const title = this._view.modelBuilder.text().withProps({
 			value: constants.DATABASE_FOR_MIGRATION,
 			CSSStyles: {
-				...styles.pageTitleCSS,
+				...styles.PAGE_TITLE_CSS,
 				'margin-bottom': '8px'
 			}
 		}).component();
@@ -222,14 +222,14 @@ export class DatabaseSelectorPage extends MigrationWizardPage {
 		const text = this._view.modelBuilder.text().withProps({
 			value: constants.DATABASE_MIGRATE_TEXT,
 			CSSStyles: {
-				...styles.bodyCSS
+				...styles.BODY_CSS
 			}
 		}).component();
 
 		this._dbCount = this._view.modelBuilder.text().withProps({
 			value: constants.DATABASES_SELECTED(this.selectedDbs.length, this._databaseTableValues.length),
 			CSSStyles: {
-				...styles.bodyCSS,
+				...styles.BODY_CSS,
 				'margin-top': '8px'
 			}
 		}).component();

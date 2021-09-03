@@ -210,7 +210,7 @@ export class CreateSqlMigrationServiceDialog {
 		const dialogDescription = this._view.modelBuilder.text().withProps({
 			value: constants.MIGRATION_SERVICE_DIALOG_DESCRIPTION,
 			CSSStyles: {
-				...styles.bodyCSS
+				...styles.BODY_CSS
 			}
 		}).component();
 
@@ -218,7 +218,7 @@ export class CreateSqlMigrationServiceDialog {
 			value: constants.SUBSCRIPTION,
 			description: constants.MIGRATION_SERVICE_SUBSCRIPTION_INFO,
 			CSSStyles: {
-				...styles.labelCSS
+				...styles.LABEL_CSS
 			}
 		}).component();
 
@@ -235,7 +235,7 @@ export class CreateSqlMigrationServiceDialog {
 			description: constants.MIGRATION_SERVICE_RESOURCE_GROUP_INFO,
 			requiredIndicator: true,
 			CSSStyles: {
-				...styles.labelCSS
+				...styles.LABEL_CSS
 			}
 		}).component();
 
@@ -254,7 +254,7 @@ export class CreateSqlMigrationServiceDialog {
 			description: constants.MIGRATION_SERVICE_NAME_INFO,
 			requiredIndicator: true,
 			CSSStyles: {
-				...styles.labelCSS
+				...styles.LABEL_CSS
 			}
 		}).component();
 
@@ -262,7 +262,7 @@ export class CreateSqlMigrationServiceDialog {
 			label: constants.CREATE_NEW,
 			url: '',
 			CSSStyles: {
-				...styles.bodyCSS
+				...styles.BODY_CSS
 			}
 		}).component();
 
@@ -294,7 +294,7 @@ export class CreateSqlMigrationServiceDialog {
 			value: constants.LOCATION,
 			description: constants.MIGRATION_SERVICE_LOCATION_INFO,
 			CSSStyles: {
-				...styles.labelCSS
+				...styles.LABEL_CSS
 			}
 		}).component();
 
@@ -311,7 +311,7 @@ export class CreateSqlMigrationServiceDialog {
 			value: constants.TARGET,
 			description: constants.MIGRATION_SERVICE_TARGET_INFO,
 			CSSStyles: {
-				...styles.labelCSS
+				...styles.LABEL_CSS
 			}
 		}).component();
 
@@ -386,28 +386,28 @@ export class CreateSqlMigrationServiceDialog {
 		const setupIRHeadingText = this._view.modelBuilder.text().withProps({
 			value: constants.SERVICE_CONTAINER_HEADING,
 			CSSStyles: {
-				...styles.labelCSS
+				...styles.LABEL_CSS
 			}
 		}).component();
 
 		const setupIRdescription1 = this._view.modelBuilder.text().withProps({
 			value: constants.SERVICE_CONTAINER_DESCRIPTION1,
 			CSSStyles: {
-				...styles.bodyCSS
+				...styles.BODY_CSS
 			}
 		}).component();
 
 		const setupIRdescription2 = this._view.modelBuilder.text().withProps({
 			value: constants.SERVICE_CONTAINER_DESCRIPTION2,
 			CSSStyles: {
-				...styles.bodyCSS
+				...styles.BODY_CSS
 			}
 		}).component();
 
 		const irSetupStep1Text = this._view.modelBuilder.text().withProps({
 			value: constants.SERVICE_STEP1,
 			CSSStyles: {
-				...styles.bodyCSS
+				...styles.BODY_CSS
 			},
 			links: [
 				{
@@ -420,7 +420,7 @@ export class CreateSqlMigrationServiceDialog {
 		const irSetupStep2Text = this._view.modelBuilder.text().withProps({
 			value: constants.SERVICE_STEP2,
 			CSSStyles: {
-				...styles.bodyCSS
+				...styles.BODY_CSS
 			}
 		}).component();
 
@@ -429,7 +429,7 @@ export class CreateSqlMigrationServiceDialog {
 			CSSStyles: {
 				'margin-top': '10px',
 				'margin-bottom': '10px',
-				...styles.bodyCSS
+				...styles.BODY_CSS
 			}
 		}).component();
 
@@ -437,7 +437,7 @@ export class CreateSqlMigrationServiceDialog {
 			text: '',
 			style: 'error',
 			CSSStyles: {
-				...styles.bodyCSS
+				...styles.BODY_CSS
 			}
 		}).component();
 
@@ -448,7 +448,7 @@ export class CreateSqlMigrationServiceDialog {
 		this._refreshLoadingComponent = this._view.modelBuilder.loadingComponent().withProps({
 			loading: false,
 			CSSStyles: {
-				...styles.bodyCSS
+				...styles.BODY_CSS
 			}
 		}).component();
 
@@ -513,7 +513,7 @@ export class CreateSqlMigrationServiceDialog {
 					text: constants.SERVICE_READY(this._createdMigrationService!.name, this.irNodes.join(', ')),
 					style: 'success',
 					CSSStyles: {
-						...styles.bodyCSS
+						...styles.BODY_CSS
 					}
 				});
 				this._dialogObject.okButton.enabled = true;
@@ -523,7 +523,7 @@ export class CreateSqlMigrationServiceDialog {
 					text: constants.SERVICE_NOT_READY(this._createdMigrationService!.name),
 					style: 'warning',
 					CSSStyles: {
-						...styles.bodyCSS
+						...styles.BODY_CSS
 					}
 				});
 				this._dialogObject.okButton.enabled = false;

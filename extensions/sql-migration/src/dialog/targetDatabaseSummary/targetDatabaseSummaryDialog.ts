@@ -37,7 +37,7 @@ export class TargetDatabaseSummaryDialog {
 			const databaseCount = this._view.modelBuilder.text().withProps({
 				value: constants.COUNT_DATABASES(this._model._migrationDbs.length),
 				CSSStyles: {
-					...styles.bodyCSS,
+					...styles.BODY_CSS,
 					'margin-bottom': '20px'
 				}
 			}).component();

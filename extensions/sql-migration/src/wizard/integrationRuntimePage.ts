@@ -52,7 +52,7 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 			text: constants.DMS_PORTAL_INFO,
 			style: 'information',
 			CSSStyles: {
-				...styles.bodyCSS
+				...styles.BODY_CSS
 			},
 			width: WIZARD_INPUT_COMPONENT_WIDTH
 		}).component();
@@ -134,7 +134,7 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 			value: constants.IR_PAGE_DESCRIPTION,
 			width: WIZARD_INPUT_COMPONENT_WIDTH,
 			CSSStyles: {
-				...styles.bodyCSS
+				...styles.BODY_CSS
 			}
 		}).component();
 
@@ -142,7 +142,7 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 			value: constants.SUBSCRIPTION,
 			requiredIndicator: true,
 			CSSStyles: {
-				...styles.labelCSS
+				...styles.LABEL_CSS
 			}
 		}).component();
 		this._subscription = this._view.modelBuilder.inputBox().withProps({
@@ -158,7 +158,7 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 			value: constants.LOCATION,
 			requiredIndicator: true,
 			CSSStyles: {
-				...styles.labelCSS
+				...styles.LABEL_CSS
 			}
 		}).component();
 		this._location = this._view.modelBuilder.inputBox().withProps({
@@ -174,7 +174,7 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 			value: constants.RESOURCE_GROUP,
 			requiredIndicator: true,
 			CSSStyles: {
-				...styles.labelCSS
+				...styles.LABEL_CSS
 			}
 		}).component();
 		this._resourceGroupDropdown = this._view.modelBuilder.dropDown().withProps({
@@ -199,7 +199,7 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 			value: constants.IR_PAGE_TITLE,
 			requiredIndicator: true,
 			CSSStyles: {
-				...styles.labelCSS
+				...styles.LABEL_CSS
 			}
 		}).component();
 		this._dmsDropdown = this._view.modelBuilder.dropDown().withProps({
@@ -233,7 +233,7 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 			label: constants.CREATE_NEW,
 			url: '',
 			CSSStyles: {
-				...styles.bodyCSS
+				...styles.BODY_CSS
 			}
 		}).component();
 
@@ -271,7 +271,7 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 		const connectionStatusLabel = this._view.modelBuilder.text().withProps({
 			value: constants.SERVICE_CONNECTION_STATUS,
 			CSSStyles: {
-				...styles.labelCSS,
+				...styles.LABEL_CSS,
 				'width': '130px'
 			}
 		}).component();
@@ -312,14 +312,14 @@ export class IntergrationRuntimePage extends MigrationWizardPage {
 			style: 'error',
 			text: '',
 			CSSStyles: {
-				...styles.bodyCSS
+				...styles.BODY_CSS
 			}
 		}).component();
 
 		const authenticationKeysLabel = this._view.modelBuilder.text().withProps({
 			value: constants.AUTHENTICATION_KEYS,
 			CSSStyles: {
-				...styles.labelCSS
+				...styles.LABEL_CSS
 			}
 		}).component();
 
@@ -504,10 +504,10 @@ export function createAuthenticationKeyTable(view: azdata.ModelView,): azdata.De
 				width: '50px',
 				isReadOnly: true,
 				rowCssStyles: {
-					...styles.bodyCSS
+					...styles.BODY_CSS
 				},
 				headerCssStyles: {
-					...styles.bodyCSS,
+					...styles.BODY_CSS,
 					'font-weight': '600'
 				}
 			},
@@ -517,11 +517,11 @@ export function createAuthenticationKeyTable(view: azdata.ModelView,): azdata.De
 				width: '500px',
 				isReadOnly: true,
 				rowCssStyles: {
-					...styles.bodyCSS,
+					...styles.BODY_CSS,
 
 				},
 				headerCssStyles: {
-					...styles.bodyCSS,
+					...styles.BODY_CSS,
 					'font-weight': '600'
 				}
 			},
@@ -531,10 +531,10 @@ export function createAuthenticationKeyTable(view: azdata.ModelView,): azdata.De
 				width: '30px',
 				isReadOnly: true,
 				rowCssStyles: {
-					...styles.bodyCSS
+					...styles.BODY_CSS
 				},
 				headerCssStyles: {
-					...styles.bodyCSS
+					...styles.BODY_CSS
 				}
 			}
 		],

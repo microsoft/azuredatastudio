@@ -97,7 +97,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			width: 160,
 			height: 24,
 			CSSStyles: {
-				...styles.bodyCSS,
+				...styles.BODY_CSS,
 				'margin': '12px 0 4px 0'
 			}
 		}).component();
@@ -175,7 +175,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	private createStatusComponent(view: azdata.ModelView): azdata.TextComponent {
 		const component = view.modelBuilder.text().withProps({
 			CSSStyles: {
-				...styles.sectionHeaderCSS,
+				...styles.SECTION_HEADER_CSS,
 				'margin-left': '8px'
 			}
 		}).component();
@@ -185,7 +185,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	private createDetailsComponent(view: azdata.ModelView): azdata.TextComponent {
 		const component = view.modelBuilder.text().withProps({
 			CSSStyles: {
-				...styles.bodyCSS
+				...styles.BODY_CSS
 			}
 		}).component();
 		return component;
@@ -196,7 +196,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		const chooseYourTargetText = this._view.modelBuilder.text().withProps({
 			value: constants.SKU_RECOMMENDATION_CHOOSE_A_TARGET,
 			CSSStyles: {
-				...styles.sectionHeaderCSS,
+				...styles.SECTION_HEADER_CSS,
 				'margin': '0'
 			}
 		}).component();
@@ -222,13 +222,13 @@ export class SKURecommendationPage extends MigrationWizardPage {
 					{
 						textValue: product.name,
 						textStyles: {
-							...styles.sectionHeaderCSS
+							...styles.SECTION_HEADER_CSS
 						}
 					},
 					{
 						textValue: '',
 						textStyles: {
-							...styles.bodyCSS
+							...styles.BODY_CSS
 						}
 					}
 				]
@@ -259,7 +259,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		this._viewAssessmentsHelperText = this._view.modelBuilder.text().withProps({
 			value: constants.SKU_RECOMMENDATION_VIEW_ASSESSMENT_MI,
 			CSSStyles: {
-				...styles.sectionHeaderCSS
+				...styles.SECTION_HEADER_CSS
 			},
 			width: WIZARD_INPUT_COMPONENT_WIDTH
 		}).component();
@@ -288,7 +288,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 
 		this._databaseSelectedHelperText = this._view.modelBuilder.text().withProps({
 			CSSStyles: {
-				...styles.bodyCSS,
+				...styles.BODY_CSS,
 			}
 		}).component();
 
@@ -305,7 +305,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	private createTargetDropdownContainer(): azdata.FlexContainer {
 		this._azureSubscriptionText = this._view.modelBuilder.text().withProps({
 			CSSStyles: {
-				...styles.sectionHeaderCSS
+				...styles.SECTION_HEADER_CSS
 			}
 		}).component();
 
@@ -315,7 +315,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			width: WIZARD_INPUT_COMPONENT_WIDTH,
 			requiredIndicator: true,
 			CSSStyles: {
-				...styles.labelCSS,
+				...styles.LABEL_CSS,
 			}
 		}).component();
 		this._managedInstanceSubscriptionDropdown = this._view.modelBuilder.dropDown().withProps({
@@ -344,7 +344,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			width: WIZARD_INPUT_COMPONENT_WIDTH,
 			requiredIndicator: true,
 			CSSStyles: {
-				...styles.labelCSS
+				...styles.LABEL_CSS
 			}
 		}).component();
 		this._azureLocationDropdown = this._view.modelBuilder.dropDown().withProps({
@@ -371,7 +371,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			width: WIZARD_INPUT_COMPONENT_WIDTH,
 			requiredIndicator: true,
 			CSSStyles: {
-				...styles.labelCSS
+				...styles.LABEL_CSS
 			}
 		}).component();
 		this._azureResourceGroupDropdown = this._view.modelBuilder.dropDown().withProps({
@@ -398,7 +398,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			width: WIZARD_INPUT_COMPONENT_WIDTH,
 			requiredIndicator: true,
 			CSSStyles: {
-				...styles.labelCSS
+				...styles.LABEL_CSS
 			}
 		}).component();
 		this._resourceDropdown = this._view.modelBuilder.dropDown().withProps({
@@ -713,7 +713,7 @@ errorId: ${e.errorId}
 		this._assessmentProgress = this._view.modelBuilder.text().withProps({
 			value: constants.ASSESSMENT_IN_PROGRESS,
 			CSSStyles: {
-				...styles.pageTitleCSS,
+				...styles.PAGE_TITLE_CSS,
 				'margin-right': '20px'
 			}
 		}).component();
@@ -732,7 +732,7 @@ errorId: ${e.errorId}
 		this._assessmentInfo = this._view.modelBuilder.text().withProps({
 			value: constants.ASSESSMENT_IN_PROGRESS_CONTENT((await this.migrationStateModel.getSourceConnectionProfile()).serverName),
 			CSSStyles: {
-				...styles.bodyCSS,
+				...styles.BODY_CSS,
 				'width': '660px'
 			}
 		}).component();

@@ -118,14 +118,14 @@ export class DashboardWidget {
 			value: loc.DASHBOARD_TITLE,
 			width: '750px',
 			CSSStyles: {
-				...styles.dashboardTitleCSS
+				...styles.DASHBOARD_TITLE_CSS
 			}
 		}).component();
 
 		const descriptionComponent = view.modelBuilder.text().withProps({
 			value: loc.DASHBOARD_DESCRIPTION,
 			CSSStyles: {
-				...styles.noteCSS
+				...styles.NOTE_CSS
 			}
 		}).component();
 		header.addItems([titleComponent, descriptionComponent], {
@@ -153,7 +153,7 @@ export class DashboardWidget {
 		const preRequisiteListTitle = view.modelBuilder.text().withProps({
 			value: loc.PRE_REQ_TITLE,
 			CSSStyles: {
-				...styles.bodyCSS,
+				...styles.BODY_CSS,
 				'padding-left': '16px',
 				'margin-bottom': '4px',
 			}
@@ -171,7 +171,7 @@ export class DashboardWidget {
 				'padding-left': '16px',
 				'margin-bottom': '4px',
 				'margin-top': '8px',
-				...styles.smallNoteCSS
+				...styles.SMALL_NOTE_CSS
 			}
 		}).component();
 
@@ -197,15 +197,9 @@ export class DashboardWidget {
 			}
 		});
 
-		tasksContainer.addItem(migrateButton, {
-			CSSStyles: {
-				// 'margin-top': '24px',
-				// 'padding': '8px'
-			}
-		});
+		tasksContainer.addItem(migrateButton, {});
 		tasksContainer.addItems([preReqContainer], {
 			CSSStyles: {
-				// 'padding': '8px'
 				'margin-left': '8px'
 			}
 		});
@@ -350,7 +344,7 @@ export class DashboardWidget {
 
 		const cardTitleText = this._view.modelBuilder.text().withProps({ value: cardTitle }).withProps({
 			CSSStyles: {
-				...styles.sectionHeaderCSS,
+				...styles.SECTION_HEADER_CSS,
 				'width': '240px'
 			}
 		}).component();
@@ -359,7 +353,7 @@ export class DashboardWidget {
 		const cardCount = this._view.modelBuilder.text().withProps({
 			value: '0',
 			CSSStyles: {
-				...styles.bigNumberCSS,
+				...styles.BIG_NUMBER_CSS,
 				'margin': '0 0 0 8px',
 				'text-align': 'center',
 			}
@@ -379,7 +373,7 @@ export class DashboardWidget {
 			const warningDescription = '';
 			warningText = this._view.modelBuilder.text().withProps({ value: warningDescription }).withProps({
 				CSSStyles: {
-					...styles.bodyCSS,
+					...styles.BODY_CSS,
 					'padding-left': '8px',
 				}
 			}).component();
@@ -460,7 +454,7 @@ export class DashboardWidget {
 		const statusContainerTitle = view.modelBuilder.text().withProps({
 			value: loc.DATABASE_MIGRATION_STATUS,
 			CSSStyles: {
-				...styles.sectionHeaderCSS
+				...styles.SECTION_HEADER_CSS
 			}
 		}).component();
 
@@ -468,7 +462,7 @@ export class DashboardWidget {
 			label: loc.VIEW_ALL,
 			url: '',
 			CSSStyles: {
-				...styles.bodyCSS
+				...styles.BODY_CSS
 			}
 		}).component();
 
@@ -482,7 +476,7 @@ export class DashboardWidget {
 			url: '',
 			ariaRole: 'button',
 			CSSStyles: {
-				...styles.bodyCSS,
+				...styles.BODY_CSS,
 				'text-align': 'right',
 			}
 		}).component();
@@ -529,7 +523,7 @@ export class DashboardWidget {
 			width: 198,
 			height: 34,
 			CSSStyles: {
-				...styles.noteCSS,
+				...styles.NOTE_CSS,
 				'margin': 'auto',
 				'text-align': 'center',
 				'display': 'none'
@@ -669,7 +663,7 @@ export class DashboardWidget {
 		const titleComponent = view.modelBuilder.text().withProps({
 			value: loc.HELP_TITLE,
 			CSSStyles: {
-				...styles.sectionHeaderCSS
+				...styles.SECTION_HEADER_CSS
 			}
 		}).component();
 
@@ -723,7 +717,7 @@ export class DashboardWidget {
 			value: linkMetaData.description,
 			width: maxWidth,
 			CSSStyles: {
-				...styles.noteCSS
+				...styles.NOTE_CSS
 			}
 		}).component();
 		const linkComponent = view.modelBuilder.hyperlink().withProps({
@@ -731,7 +725,7 @@ export class DashboardWidget {
 			url: linkMetaData.link!,
 			showLinkIcon: true,
 			CSSStyles: {
-				...styles.bodyCSS
+				...styles.BODY_CSS
 			}
 		}).component();
 		linkContainer.addItem(linkComponent);
@@ -769,7 +763,7 @@ export class DashboardWidget {
 			width: maxWidth,
 			height: '50px',
 			CSSStyles: {
-				...styles.bodyCSS
+				...styles.BODY_CSS
 			}
 		}).component();
 		this._disposables.push(video1Container.onDidClick(async () => {

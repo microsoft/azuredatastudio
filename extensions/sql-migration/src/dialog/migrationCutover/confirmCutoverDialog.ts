@@ -29,14 +29,14 @@ export class ConfirmCutoverDialog {
 			const completeCutoverText = view.modelBuilder.text().withProps({
 				value: constants.COMPLETE_CUTOVER,
 				CSSStyles: {
-					...styles.pageTitleCSS
+					...styles.PAGE_TITLE_CSS
 				}
 			}).component();
 
 			const sourceDatabaseText = view.modelBuilder.text().withProps({
 				value: this.migrationCutoverModel._migration.migrationContext.properties.sourceDatabaseName,
 				CSSStyles: {
-					...styles.smallNoteCSS,
+					...styles.SMALL_NOTE_CSS,
 					'margin': '4px 0px 8px'
 				}
 			}).component();
@@ -46,14 +46,14 @@ export class ConfirmCutoverDialog {
 			const helpMainText = this._view.modelBuilder.text().withProps({
 				value: constants.CUTOVER_HELP_MAIN,
 				CSSStyles: {
-					...styles.bodyCSS
+					...styles.BODY_CSS
 				}
 			}).component();
 
 			const helpStepsText = this._view.modelBuilder.text().withProps({
 				value: this.migrationCutoverModel.confirmCutoverStepsString(),
 				CSSStyles: {
-					...styles.bodyCSS,
+					...styles.BODY_CSS,
 					'padding': '8px'
 				}
 			}).component();
@@ -63,7 +63,7 @@ export class ConfirmCutoverDialog {
 
 			const confirmCheckbox = this._view.modelBuilder.checkBox().withProps({
 				CSSStyles: {
-					...styles.bodyCSS,
+					...styles.BODY_CSS,
 					'margin-bottom': '12px'
 				},
 				label: constants.CONFIRM_CUTOVER_CHECKBOX,
@@ -77,7 +77,7 @@ export class ConfirmCutoverDialog {
 				text: constants.COMPLETING_CUTOVER_WARNING,
 				style: 'warning',
 				CSSStyles: {
-					...styles.bodyCSS
+					...styles.BODY_CSS
 				}
 			}).component();
 
@@ -92,7 +92,7 @@ export class ConfirmCutoverDialog {
 				text: constants.BUSINESS_CRITICAL_INFO,
 				style: 'information',
 				CSSStyles: {
-					...styles.bodyCSS,
+					...styles.BODY_CSS,
 					'display': infoDisplay
 				}
 			}).component();
@@ -153,7 +153,7 @@ export class ConfirmCutoverDialog {
 			value: constants.PENDING_BACKUPS(this.migrationCutoverModel.getPendingLogBackupsCount() ?? 0),
 			width: 250,
 			CSSStyles: {
-				...styles.labelCSS
+				...styles.LABEL_CSS
 			}
 		}).component();
 
@@ -222,7 +222,7 @@ export class ConfirmCutoverDialog {
 			iconWidth: 8,
 			iconPath: IconPathHelper.expandButtonClosed,
 			CSSStyles: {
-				...styles.labelCSS,
+				...styles.LABEL_CSS,
 				'margin': '16px 8px 0px 0px'
 			}
 		}).component();
@@ -300,7 +300,7 @@ export class ConfirmCutoverDialog {
 		const lastScanCompleted = this._view.modelBuilder.text().withProps({
 			value: constants.LAST_SCAN_COMPLETED(get12HourTime(new Date())),
 			CSSStyles: {
-				...styles.noteCSS
+				...styles.NOTE_CSS
 			}
 		}).component();
 

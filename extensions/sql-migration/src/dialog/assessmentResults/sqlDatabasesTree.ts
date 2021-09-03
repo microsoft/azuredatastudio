@@ -142,7 +142,7 @@ export class SqlDatabaseTree {
 	private createDatabaseCount(): azdata.TextComponent {
 		this._databaseCount = this._view.modelBuilder.text().withProps({
 			CSSStyles: {
-				...styles.boldNoteCSS,
+				...styles.BOLD_NOTE_CSS,
 				'margin': '0px 15px 0px 15px'
 			},
 			value: constants.DATABASES(0, this._model._databaseAssessment.length)
@@ -397,14 +397,14 @@ export class SqlDatabaseTree {
 			message = this._view.modelBuilder.text().withProps({
 				value: constants.NO_ISSUES_FOUND_VM,
 				CSSStyles: {
-					...styles.bodyCSS
+					...styles.BODY_CSS
 				}
 			}).component();
 		} else {
 			message = this._view.modelBuilder.text().withProps({
 				value: constants.NO_ISSUES_FOUND_MI,
 				CSSStyles: {
-					...styles.bodyCSS
+					...styles.BODY_CSS
 				}
 			}).component();
 		}
@@ -424,7 +424,7 @@ export class SqlDatabaseTree {
 		const message = this._view.modelBuilder.text().withProps({
 			value: constants.SELECT_DB_PROMPT,
 			CSSStyles: {
-				...styles.bodyCSS,
+				...styles.BODY_CSS,
 				'width': '400px',
 				'margin': '10px 0px 0px 0px',
 				'text-align': 'left'
@@ -477,7 +477,7 @@ export class SqlDatabaseTree {
 		const impactedObjectsTitle = this._view.modelBuilder.text().withProps({
 			value: constants.IMPACTED_OBJECTS,
 			CSSStyles: {
-				...styles.lightLabelCSS,
+				...styles.LIGHT_LABEL_CSS,
 				'width': '280px',
 				'margin': '10px 0px 0px 0px',
 			}
@@ -536,12 +536,12 @@ export class SqlDatabaseTree {
 		const objectDetailsTitle = this._view.modelBuilder.text().withProps({
 			value: constants.OBJECT_DETAILS,
 			CSSStyles: {
-				...styles.lightLabelCSS,
+				...styles.LIGHT_LABEL_CSS,
 				'margin': '12px 0px 0px 0px',
 			}
 		}).component();
 		const objectDescriptionStyle = {
-			...styles.bodyCSS,
+			...styles.BODY_CSS,
 			'margin': '5px 0px 0px 0px',
 			'word-wrap': 'break-word'
 		};
@@ -568,19 +568,19 @@ export class SqlDatabaseTree {
 	}
 
 	private createDescription(): azdata.FlexContainer {
-		const labelCSS = {
-			...styles.lightLabelCSS,
+		const LABEL_CSS = {
+			...styles.LIGHT_LABEL_CSS,
 			'width': '200px',
 			'margin': '12px 0 0'
 		};
 		const textStyle = {
-			...styles.bodyCSS,
+			...styles.BODY_CSS,
 			'width': '200px',
 			'word-wrap': 'break-word'
 		};
 		const descriptionTitle = this._view.modelBuilder.text().withProps({
 			value: constants.DESCRIPTION,
-			CSSStyles: labelCSS
+			CSSStyles: LABEL_CSS
 		}).component();
 		this._descriptionText = this._view.modelBuilder.text().withProps({
 			CSSStyles: textStyle
@@ -588,14 +588,14 @@ export class SqlDatabaseTree {
 
 		const recommendationTitle = this._view.modelBuilder.text().withProps({
 			value: constants.RECOMMENDATION,
-			CSSStyles: labelCSS
+			CSSStyles: LABEL_CSS
 		}).component();
 		this._recommendationText = this._view.modelBuilder.text().withProps({
 			CSSStyles: textStyle
 		}).component();
 		const moreInfo = this._view.modelBuilder.text().withProps({
 			value: constants.MORE_INFO,
-			CSSStyles: labelCSS
+			CSSStyles: LABEL_CSS
 		}).component();
 		this._moreInfo = this._view.modelBuilder.hyperlink().withProps({
 			label: '',
@@ -616,7 +616,7 @@ export class SqlDatabaseTree {
 		this._assessmentTitle = this._view.modelBuilder.text().withProps({
 			value: '',
 			CSSStyles: {
-				...styles.labelCSS,
+				...styles.LABEL_CSS,
 				'margin-top': '12px',
 				'height': '48px',
 				'width': '540px',
@@ -631,7 +631,7 @@ export class SqlDatabaseTree {
 		const title = this._view.modelBuilder.text().withProps({
 			value: constants.TARGET_PLATFORM,
 			CSSStyles: {
-				...styles.bodyCSS,
+				...styles.BODY_CSS,
 				'margin': '0 0 4px 0'
 			}
 		});
@@ -643,7 +643,7 @@ export class SqlDatabaseTree {
 		const impact = this._view.modelBuilder.text().withProps({
 			value: (this._targetType === MigrationTargetType.SQLVM) ? constants.SUMMARY_VM_TYPE : constants.SUMMARY_MI_TYPE,
 			CSSStyles: {
-				...styles.pageSubtitleCSS
+				...styles.PAGE_SUBTITLE_CSS
 			}
 		});
 
@@ -653,7 +653,7 @@ export class SqlDatabaseTree {
 	private createRecommendationComponent(): azdata.TextComponent {
 		this._dbName = this._view.modelBuilder.text().withProps({
 			CSSStyles: {
-				...styles.labelCSS,
+				...styles.LABEL_CSS,
 				'margin-bottom': '8px',
 				'font-weight': '700'
 			}
@@ -666,7 +666,7 @@ export class SqlDatabaseTree {
 		this._recommendationTitle = this._view.modelBuilder.text().withProps({
 			value: constants.WARNINGS,
 			CSSStyles: {
-				...styles.labelCSS,
+				...styles.LABEL_CSS,
 				'margin': '0 8px 4px 0',
 				'width': '220px',
 			}
@@ -679,7 +679,7 @@ export class SqlDatabaseTree {
 		this._recommendation = this._view.modelBuilder.text().withProps({
 			value: constants.WARNINGS_DETAILS,
 			CSSStyles: {
-				...styles.labelCSS,
+				...styles.LABEL_CSS,
 				'margin': '0 0 4px 24px',
 				'width': '200px',
 			}
