@@ -109,17 +109,17 @@ suite('SQL QueryEditor Tests', () => {
 	test('setInput creates SQL components', (done) => {
 		let assertInput = function () {
 			// The taskbar SQL, and parent should be created
-			assert.equal(!!editor.taskbar, true);
-			assert.equal(!!editor.taskbarContainer, true);
-			assert.equal(!!editor.getContainer(), true);
-			assert.equal(!!editor.sqlEditor, true);
-			assert.equal(!!editor.sqlEditorContainer, true);
+			assert.strictEqual(!!editor.taskbar, true);
+			assert.strictEqual(!!editor.taskbarContainer, true);
+			assert.strictEqual(!!editor.getContainer(), true);
+			assert.strictEqual(!!editor.sqlEditor, true);
+			assert.strictEqual(!!editor.sqlEditorContainer, true);
 
 			// But the results componenets should not
-			assert.equal(!!editor.resultsEditor, false);
-			assert.equal(!!editor.resultsEditorContainer, false);
-			assert.equal(!!editor.sash, false);
-			assert.equal(!!editor._isResultsEditorVisible(), false);
+			assert.strictEqual(!!editor.resultsEditor, false);
+			assert.strictEqual(!!editor.resultsEditorContainer, false);
+			assert.strictEqual(!!editor.sash, false);
+			assert.strictEqual(!!editor._isResultsEditorVisible(), false);
 		};
 
 		// If I call create a QueryEditor
@@ -142,15 +142,15 @@ suite('SQL QueryEditor Tests', () => {
 
 		// Make the asserts thenable
 		let assertInput = function () {
-			assert.equal(!!editor.taskbar, true);
-			assert.equal(!!editor.taskbarContainer, true);
-			assert.equal(!!editor.getContainer(), true);
-			assert.equal(!!editor.sqlEditor, true);
-			assert.equal(!!editor.sqlEditorContainer, true);
-			assert.equal(!!editor.resultsEditor, true);
-			assert.equal(!!editor.resultsEditorContainer, true);
-			assert.equal(!!editor.sash, true);
-			assert.equal(!!editor._isResultsEditorVisible(), true);
+			assert.strictEqual(!!editor.taskbar, true);
+			assert.strictEqual(!!editor.taskbarContainer, true);
+			assert.strictEqual(!!editor.getContainer(), true);
+			assert.strictEqual(!!editor.sqlEditor, true);
+			assert.strictEqual(!!editor.sqlEditorContainer, true);
+			assert.strictEqual(!!editor.resultsEditor, true);
+			assert.strictEqual(!!editor.resultsEditorContainer, true);
+			assert.strictEqual(!!editor.sash, true);
+			assert.strictEqual(!!editor._isResultsEditorVisible(), true);
 			editorGroupService.verify(x => x.pinEditor(undefined, TypeMoq.It.isAny()), TypeMoq.Times.once());
 		};
 
@@ -191,7 +191,7 @@ suite('SQL QueryEditor Tests', () => {
 		};
 
 		let assertFirstInputIsSet = function () {
-			assert.notEqual(firstContainer.parentElement, undefined);
+			assert.notStrictEqual(firstContainer.parentElement, undefined);
 		};
 
 		let setSecondInput = function () {
@@ -205,16 +205,16 @@ suite('SQL QueryEditor Tests', () => {
 			secondContainer.id = secondContainerId;
 
 			// The inputs should not match
-			assert.notEqual(firstInput.getName(), secondInput.getName());
-			assert.notEqual(firstContainer.id, secondContainer.id);
-			assert.equal(firstContainer.id, firstContainerId);
+			assert.notStrictEqual(firstInput.getName(), secondInput.getName());
+			assert.notStrictEqual(firstContainer.id, secondContainer.id);
+			assert.strictEqual(firstContainer.id, firstContainerId);
 
 			// The first input should be disposed
-			assert.notEqual(firstContainer.parentElement, secondContainer.parentElement);
-			assert.equal(firstContainer.parentElement, undefined);
+			assert.notStrictEqual(firstContainer.parentElement, secondContainer.parentElement);
+			assert.strictEqual(firstContainer.parentElement, undefined);
 
 			// The second input should be added into the DOM
-			assert.notEqual(secondContainer.parentElement, undefined);
+			assert.notStrictEqual(secondContainer.parentElement, undefined);
 		};
 
 		let setFirstInputAgain = function () {
@@ -227,16 +227,16 @@ suite('SQL QueryEditor Tests', () => {
 			firstContainer = editor.sqlEditorContainer;
 
 			// The inputs should not match
-			assert.notEqual(firstInput.getName(), secondInput.getName());
-			assert.notEqual(firstContainer.id, secondContainer.id);
-			assert.equal(secondContainer.id, secondContainerId);
+			assert.notStrictEqual(firstInput.getName(), secondInput.getName());
+			assert.notStrictEqual(firstContainer.id, secondContainer.id);
+			assert.strictEqual(secondContainer.id, secondContainerId);
 
 			// The first input should be added into the DOM
-			assert.equal(secondContainer.parentElement, undefined);
+			assert.strictEqual(secondContainer.parentElement, undefined);
 
 			// The second input should be disposed
-			assert.notEqual(firstContainer.parentElement, secondContainer.parentElement);
-			assert.notEqual(firstContainer.parentElement, undefined);
+			assert.notStrictEqual(firstContainer.parentElement, secondContainer.parentElement);
+			assert.notStrictEqual(firstContainer.parentElement, undefined);
 		};
 
 		// If I create a QueryEditor
@@ -323,18 +323,18 @@ suite('SQL QueryEditor Tests', () => {
 			queryModelService.setup(x => x.isRunningQuery(TypeMoq.It.isAny())).returns(() => false);
 			// If I use the created QueryEditor with no changes since creation
 			// Buttons should be set as if disconnected
-			assert.equal(queryInput.state.connected, false, 'query state should be not connected');
-			assert.equal(queryInput.state.executing, false, 'query state should be not executing');
-			assert.equal(queryInput.state.connecting, false, 'query state should be not connecting');
+			assert.strictEqual(queryInput.state.connected, false, 'query state should be not connected');
+			assert.strictEqual(queryInput.state.executing, false, 'query state should be not executing');
+			assert.strictEqual(queryInput.state.connecting, false, 'query state should be not connecting');
 		});
 
 		test('Taskbar buttons are set correctly upon connect', () => {
 			let params: INewConnectionParams = { connectionType: ConnectionType.editor, runQueryOnCompletion: RunQueryOnConnectionMode.none };
 			queryModelService.setup(x => x.isRunningQuery(TypeMoq.It.isAny())).returns(() => false);
 			queryInput.onConnectSuccess(params);
-			assert.equal(queryInput.state.connected, true, 'query state should be not connected');
-			assert.equal(queryInput.state.executing, false, 'query state should be not executing');
-			assert.equal(queryInput.state.connecting, false, 'query state should be not connecting');
+			assert.strictEqual(queryInput.state.connected, true, 'query state should be not connected');
+			assert.strictEqual(queryInput.state.executing, false, 'query state should be not executing');
+			assert.strictEqual(queryInput.state.connecting, false, 'query state should be not connecting');
 		});
 		test('Test that we attempt to dispose query when the queryInput is disposed', () => {
 			let queryResultsInput = new QueryResultsInput('testUri');

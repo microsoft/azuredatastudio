@@ -21,10 +21,12 @@ function cellCollides(c1: INotebookViewCell, c2: INotebookViewCell): boolean {
 
 export class NotebookViewModel implements INotebookView {
 	private _onDeleted = new Emitter<INotebookView>();
+	private _onCellVisibilityChanged = new Emitter<ICellModel>();
 	private _isNew: boolean = false;
 
 	public readonly guid: string;
 	public readonly onDeleted = this._onDeleted.event;
+	public readonly onCellVisibilityChanged = this._onCellVisibilityChanged.event;
 
 	constructor(
 		protected _name: string,
@@ -119,10 +121,12 @@ export class NotebookViewModel implements INotebookView {
 
 	public insertCell(cell: ICellModel) {
 		this.updateCell(cell, this, { hidden: false });
+		this._onCellVisibilityChanged.fire(cell);
 	}
 
 	public hideCell(cell: ICellModel) {
 		this.updateCell(cell, this, { hidden: true });
+		this._onCellVisibilityChanged.fire(cell);
 	}
 
 	public moveCell(cell: ICellModel, x: number, y: number) {

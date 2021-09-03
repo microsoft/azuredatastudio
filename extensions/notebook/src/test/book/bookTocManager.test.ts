@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 import * as should from 'should';
 import * as path from 'path';
-import { BookTocManager, hasSections, quickPickResults } from '../../book/bookTocManager';
+import { BookTocManager, hasSections } from '../../book/bookTocManager';
 import { BookTreeItem, BookTreeItemFormat, BookTreeItemType } from '../../book/bookTreeItem';
 import * as sinon from 'sinon';
 import { IJupyterBookSectionV1, IJupyterBookSectionV2, JupyterBookSection } from '../../contracts/content';
@@ -18,7 +18,6 @@ import { BookModel } from '../../book/bookModel';
 import { MockExtensionContext } from '../common/stubs';
 import { BookTreeViewProvider } from '../../book/bookTreeView';
 import { NavigationProviders } from '../../common/constants';
-import * as loc from '../../common/localizedConstants';
 import { BookVersion } from '../../book/bookVersionHandler';
 import * as yaml from 'js-yaml';
 
@@ -461,7 +460,7 @@ describe('BookTocManagerTests', function () {
 
 				it('Add section to book', async () => {
 					bookTocManager = new BookTocManager(sourceBookModel, targetBookModel);
-					await bookTocManager.updateBook(sectionA, targetBook, undefined);
+					await bookTocManager.updateBook([sectionA], targetBook, undefined);
 					const listFiles = await fs.promises.readdir(path.join(run.targetBook.bookContentFolderPath, 'sectionA'));
 					const listSourceFiles = await fs.promises.readdir(path.join(run.sourceBook.bookContentFolderPath));
 					should(JSON.stringify(listSourceFiles).includes('sectionA')).be.false('The source book files should not contain the section A files');
@@ -470,7 +469,7 @@ describe('BookTocManagerTests', function () {
 
 				it('Add section to section', async () => {
 					bookTocManager = new BookTocManager(sourceBookModel, targetBookModel);
-					await bookTocManager.updateBook(sectionB, sectionC, {
+					await bookTocManager.updateBook([sectionB], sectionC, {
 						'title': 'Notebook 6',
 						'file': path.posix.join(path.posix.sep, 'sectionC', 'notebook6')
 					});
@@ -482,7 +481,7 @@ describe('BookTocManagerTests', function () {
 
 				it('Add notebook to book', async () => {
 					bookTocManager = new BookTocManager(undefined, targetBookModel);
-					await bookTocManager.updateBook(notebook, targetBook);
+					await bookTocManager.updateBook([notebook], targetBook);
 					const listFiles = await fs.promises.readdir(run.targetBook.bookContentFolderPath);
 					should(JSON.stringify(listFiles).includes('notebook5.ipynb')).be.true('Notebook 5 should be under the target book content folder');
 				});
@@ -514,8 +513,8 @@ describe('BookTocManagerTests', function () {
 
 				it('Add duplicated notebook to book', async () => {
 					bookTocManager = new BookTocManager(undefined, targetBookModel);
-					await bookTocManager.updateBook(notebook, targetBook);
-					await bookTocManager.updateBook(duplicatedNotebook, targetBook);
+					await bookTocManager.updateBook([notebook], targetBook);
+					await bookTocManager.updateBook([duplicatedNotebook], targetBook);
 					const listFiles = await fs.promises.readdir(run.targetBook.bookContentFolderPath);
 					should(JSON.stringify(listFiles).includes('notebook5 - 2.ipynb')).be.true('Should rename the notebook to notebook5 - 2.ipynb');
 					should(JSON.stringify(listFiles).includes('notebook5.ipynb')).be.true('Should keep notebook5.ipynb');
@@ -526,17 +525,10 @@ describe('BookTocManagerTests', function () {
 					const recoverySpy = sinon.spy(BookTocManager.prototype, 'recovery');
 					sinon.stub(BookTocManager.prototype, 'updateTOC').throws(new Error('Unexpected error.'));
 					const bookTreeViewProvider = new BookTreeViewProvider([], mockExtensionContext, false, 'bookTreeView', NavigationProviders.NotebooksNavigator);
-					const results: quickPickResults = {
-						book: targetBook,
-						quickPickSection: {
-							label: loc.labelAddToLevel,
-							description: undefined
-						}
-					};
 					bookTocManager = new BookTocManager(targetBookModel);
-					sinon.stub(bookTreeViewProvider, 'getSelectionQuickPick').returns(Promise.resolve(results));
+					sinon.stub(bookTreeViewProvider, 'moveTreeItems').returns(Promise.resolve(bookTocManager.updateBook([notebook], targetBook)));
 					try {
-						await bookTreeViewProvider.editBook(notebook);
+						await bookTreeViewProvider.moveTreeItems([notebook]);
 					} catch (error) {
 						should(recoverySpy.calledOnce).be.true('If unexpected error then recovery method is called.');
 					}

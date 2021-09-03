@@ -104,7 +104,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 			await vscode.env.openExternal(vscode.Uri.parse(`${portalEndpoint}/#resource/subscriptions/${subscriptionId}/resourceGroups/${resourceGroup}/providers/${type}/${name}`));
 		} else {
 			console.log(`Missing required values - subscriptionId : ${subscriptionId} resourceGroup : ${resourceGroup} type: ${type} name: ${name}`);
-			vscode.window.showErrorMessage(loc.unableToOpenAzureLink);
+			void vscode.window.showErrorMessage(loc.unableToOpenAzureLink);
 		}
 	});
 
@@ -140,7 +140,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 				return '';
 			}
 		}));
-	});
+	}).then(undefined, err => console.error('Error registering Azure ResourceDeployment value provider ', err));
 
 	return {
 		getSubscriptions(account?: azurecore.AzureAccount, ignoreErrors?: boolean, selectedOnly: boolean = false): Promise<azurecore.GetSubscriptionsResult> {

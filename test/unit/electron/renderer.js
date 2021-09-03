@@ -296,10 +296,9 @@ function runTests(opts) {
 	}
 
 	return loadTests(opts).then(() => {
-
 		if (opts.grep) {
-			// {{SQL CARBON EDIT}}
-			mocha.grep(new RegExp(opts.grep));
+			mocha.grep(opts.grep);
+			// {{SQL CARBON EDIT}} Add invert option
 			if (opts.invert) {
 				mocha.invert();
 			}

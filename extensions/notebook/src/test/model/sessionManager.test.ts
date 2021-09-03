@@ -65,7 +65,7 @@ describe('Jupyter Session Manager', function (): void {
 		sessionManager.ready.then(() => {
 			should(sessionManager.isReady).be.true();
 			done();
-		});
+		}).catch(err => done(err));
 	});
 
 	it('should passthrough the ready calls', function (done): void {
@@ -75,7 +75,7 @@ describe('Jupyter Session Manager', function (): void {
 
 		// When I wait on the ready method before completing
 		sessionManager.setJupyterSessionManager(mockJupyterManager.object);
-		sessionManager.ready.then(() => done());
+		sessionManager.ready.then(() => done()).catch(err => done(err));
 
 		// Then session manager should eventually resolve
 		deferred.resolve();

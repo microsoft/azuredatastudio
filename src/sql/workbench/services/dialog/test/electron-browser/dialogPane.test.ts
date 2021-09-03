@@ -37,14 +37,14 @@ suite('Dialog Pane Tests', () => {
 		let modelViewId = 'test_content';
 		let bootstrapCalls = 0;
 		setupBootstrap((collection, moduleType, container, selectorString, params: DialogComponentParams, input, callbackSetModule) => {
-			assert.equal(params.modelViewId, modelViewId);
+			assert.strictEqual(params.modelViewId, modelViewId);
 			bootstrapCalls++;
 		});
 		dialog.content = modelViewId;
 		const themeService = new TestThemeService();
 		let dialogPane = new DialogPane(dialog.title, dialog.content, () => undefined, workbenchInstantiationService(), themeService, undefined);
 		dialogPane.createBody(container);
-		assert.equal(bootstrapCalls, 1);
+		assert.strictEqual(bootstrapCalls, 1);
 	});
 
 	test('Creating a pane from content with a single tab initializes without showing tabs', () => {
@@ -52,14 +52,14 @@ suite('Dialog Pane Tests', () => {
 		let modelViewId = 'test_content';
 		let bootstrapCalls = 0;
 		setupBootstrap((collection, moduleType, container, selectorString, params: DialogComponentParams, input, callbackSetModule) => {
-			assert.equal(params.modelViewId, modelViewId);
+			assert.strictEqual(params.modelViewId, modelViewId);
 			bootstrapCalls++;
 		});
 		dialog.content = [new DialogTab('', modelViewId)];
 		const themeService = new TestThemeService();
 		let dialogPane = new DialogPane(dialog.title, dialog.content, () => undefined, workbenchInstantiationService(), themeService, false);
 		dialogPane.createBody(container);
-		assert.equal(bootstrapCalls, 1);
+		assert.strictEqual(bootstrapCalls, 1);
 	});
 
 	test('Dialog validation gets set based on the validity of the model view content', () => {
@@ -83,21 +83,21 @@ suite('Dialog Pane Tests', () => {
 		// If I set tab 2's validation to false
 		validationCallbacks[1](false);
 		// Then the whole dialog's validation is false
-		assert.equal(dialog.valid, false);
-		assert.equal(validityChanges.length, 1);
-		assert.equal(validityChanges[0], false);
+		assert.strictEqual(dialog.valid, false);
+		assert.strictEqual(validityChanges.length, 1);
+		assert.strictEqual(validityChanges[0], false);
 		// If I then set it back to true
 		validationCallbacks[1](true);
 		// Then the whole dialog's validation is true
-		assert.equal(dialog.valid, true);
-		assert.equal(validityChanges.length, 2);
-		assert.equal(validityChanges[1], true);
+		assert.strictEqual(dialog.valid, true);
+		assert.strictEqual(validityChanges.length, 2);
+		assert.strictEqual(validityChanges[1], true);
 		// If I set tab 1's validation to false
 		validationCallbacks[0](false);
 		// Then the whole dialog's validation is false
-		assert.equal(dialog.valid, false);
-		assert.equal(validityChanges.length, 3);
-		assert.equal(validityChanges[2], false);
+		assert.strictEqual(dialog.valid, false);
+		assert.strictEqual(validityChanges.length, 3);
+		assert.strictEqual(validityChanges[2], false);
 	});
 
 	teardown(() => {

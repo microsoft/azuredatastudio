@@ -767,6 +767,13 @@ declare module 'azdata' {
 		delete?: boolean;
 	}
 
+	export enum CardType {
+		/**
+		 * Card with the icon as a background image
+		 */
+		Image = 'Image'
+	}
+
 	export namespace workspace {
 		/**
 		 * Creates and enters a workspace at the specified location
@@ -946,5 +953,14 @@ declare module 'azdata' {
 		 * Notify clients that the URI for a connection has been changed.
 		 */
 		connectionUriChanged(newUri: string, oldUri: string): Thenable<void>;
+  }
+  
+	export namespace accounts {
+		export interface AccountSecurityToken {
+			/**
+			 * Access token expiry timestamp
+			 */
+			expiresOn?: number
+		}
 	}
 }

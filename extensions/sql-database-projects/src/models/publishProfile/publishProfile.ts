@@ -29,7 +29,7 @@ export async function readPublishProfile(profileUri: vscode.Uri): Promise<Publis
 		const profile = await load(profileUri, dacFxService);
 		return profile;
 	} catch (e) {
-		vscode.window.showErrorMessage(constants.profileReadError(e));
+		void vscode.window.showErrorMessage(constants.profileReadError(e));
 		throw e;
 	}
 }

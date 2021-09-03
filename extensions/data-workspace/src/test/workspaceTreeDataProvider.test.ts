@@ -29,9 +29,9 @@ suite('workspaceTreeDataProvider Tests', function (): void {
 		should.strictEqual(treeDataChangeHandler.calledOnce, true);
 	});
 
-	test('test getTreeItem()', () => {
+	test('test getTreeItem()', async function (): Promise<void> {
 		const getTreeItemStub = sinon.stub();
-		treeProvider.getTreeItem(({
+		await treeProvider.getTreeItem(({
 			treeDataProvider: ({
 				getTreeItem: (arg: WorkspaceTreeItem) => {
 					return getTreeItemStub(arg);

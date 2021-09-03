@@ -1,7 +1,9 @@
 import * as vscode from 'vscode';
+import * as path from 'path';
 import { BindingType } from 'vscode-mssql';
 import * as constants from '../common/constants';
 import * as utils from '../common/utils';
+import * as azureFunctionsUtils from '../common/azureFunctionsUtils';
 import { PackageHelper } from '../tools/packageHelper';
 
 export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined, packageHelper: PackageHelper): Promise<void> {
@@ -17,14 +19,14 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined, 
 	try {
 		getAzureFunctionsResult = await azureFunctionsService.getAzureFunctions(uri.fsPath);
 	} catch (e) {
-		vscode.window.showErrorMessage(e);
+		void vscode.window.showErrorMessage(e);
 		return;
 	}
 
 	const azureFunctions = getAzureFunctionsResult.azureFunctions;
 
 	if (azureFunctions.length === 0) {
-		vscode.window.showErrorMessage(constants.noAzureFunctionsInFile);
+		void vscode.window.showErrorMessage(constants.noAzureFunctionsInFile);
 		return;
 	}
 
@@ -73,27 +75,50 @@ export async function launchAddSqlBindingQuickpick(uri: vscode.Uri | undefined, 
 	}
 
 	// 4. ask for connection string setting name
-	// TODO: load local settings from local.settings.json like in LocalAppSettingListStep in vscode-azurefunctions repo
-	const connectionStringSetting = await vscode.window.showInputBox({
-		prompt: constants.connectionStringSetting,
-		placeHolder: constants.connectionStringSettingPlaceholder,
-		ignoreFocusOut: true
-	});
+	let project: string | undefined;
+	try {
+		project = await azureFunctionsUtils.getAFProjectContainingFile(uri.fsPath);
+	} catch (e) {
+		// continue even if there's no AF project found. The binding should still be able to be added as long as there was an azure function found in the file earlier
+	}
 
-	if (!connectionStringSetting) {
+	let connectionStringSettingName;
+
+	// show the settings from project's local.settings.json if there's an AF functions project
+	// TODO: allow new setting name to get added here and added to local.settings.json
+	if (project) {
+		const settings = await azureFunctionsUtils.getLocalSettingsJson(path.join(path.dirname(project!), constants.azureFunctionLocalSettingsFileName));
+		const existingSettings: string[] = settings.Values ? Object.keys(settings.Values) : [];
+
+		connectionStringSettingName = await vscode.window.showQuickPick(existingSettings, {
+			canPickMany: false,
+			title: constants.selectSetting,
+			ignoreFocusOut: true
+		});
+	} else {
+		// if no AF project was found or there's more than one AF functions project in the workspace,
+		// ask for the user to input the setting name
+		connectionStringSettingName = await vscode.window.showInputBox({
+			prompt: constants.connectionStringSetting,
+			placeHolder: constants.connectionStringSettingPlaceholder,
+			ignoreFocusOut: true
+		});
+	}
+
+	if (!connectionStringSettingName) {
 		return;
 	}
 
 	// 5. insert binding
 	try {
-		const result = await azureFunctionsService.addSqlBinding(selectedBinding.type, uri.fsPath, azureFunctionName, objectName, connectionStringSetting);
+		const result = await azureFunctionsService.addSqlBinding(selectedBinding.type, uri.fsPath, azureFunctionName, objectName, connectionStringSettingName);
 
 		if (!result.success) {
-			vscode.window.showErrorMessage(result.errorMessage);
+			void vscode.window.showErrorMessage(result.errorMessage);
 			return;
 		}
 	} catch (e) {
-		vscode.window.showErrorMessage(e);
+		void vscode.window.showErrorMessage(e);
 		return;
 	}
 
