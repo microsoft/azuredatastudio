@@ -55,7 +55,7 @@
 			"gitCloneError": "Git 克隆期间出错。请查看 git 输出以了解更多详细信息",
 			"gitCloneMessage": "正在克隆 Git 存储库“{0}”...",
 			"noPreviousData": "当前项目的前期 {0} 将在此处显示，请运行以查看结果。",
-			"openedProjectsUndefinedAfterRefresh": "List of opened projects should not be undefined after refresh from disk.",
+			"openedProjectsUndefinedAfterRefresh": "从磁盘刷新后，打开的项目列表应已被定义。",
 			"projectNameNull": "项目名为 null"
 		},
 		"package": {

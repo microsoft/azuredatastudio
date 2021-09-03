@@ -309,7 +309,7 @@
 			"mssql.connectionOptions.failoverPartner.description": "充当故障转移伙伴的 SQL Server 实例的名称或网络地址",
 			"mssql.connectionOptions.failoverPartner.displayName": "故障转移伙伴",
 			"mssql.connectionOptions.groupName.advanced": "高级",
-			"mssql.connectionOptions.groupName.connectionResiliency": "连接弹性",
+			"mssql.connectionOptions.groupName.connectionResiliency": "连接复原力",
 			"mssql.connectionOptions.groupName.context": "上下文",
 			"mssql.connectionOptions.groupName.initialization": "初始化",
 			"mssql.connectionOptions.groupName.pooling": "池",

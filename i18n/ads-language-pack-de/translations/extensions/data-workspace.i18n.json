@@ -55,7 +55,7 @@
 			"gitCloneError": "Fehler beim Git-Klonen. Weitere Details finden Sie in der Git-Ausgabe",
 			"gitCloneMessage": "Das Git-Repository \"{0}\" wird geklont ...",
 			"noPreviousData": "Vorherige \"{0}\" für das aktuelle Projekt werden hier angezeigt. Führen Sie die Ausführung aus, um die Ergebnisse anzuzeigen.",
-			"openedProjectsUndefinedAfterRefresh": "List of opened projects should not be undefined after refresh from disk.",
+			"openedProjectsUndefinedAfterRefresh": "Die Liste der geöffneten Projekte sollte nach der Aktualisierung vom Datenträger nicht undefiniert sein.",
 			"projectNameNull": "Projektname ist Null"
 		},
 		"package": {

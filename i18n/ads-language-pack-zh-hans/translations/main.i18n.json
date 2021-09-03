@@ -10888,9 +10888,9 @@
 			"notebook.splitViewModeDescription": "Markdown 显示在左侧，右侧是呈现的文本的预览。",
 			"notebook.sqlStopOnError": "SQL 内核: 在单元格中发生错误时停止笔记本执行。",
 			"notebook.useAbsoluteFilePaths": "链接到其他笔记本时使用绝对文件路径。",
-			"notebook.useNewMarkdownRenderer": "Whether to use the newer version of the markdown renderer for Notebooks. This may result in markdown being rendered differently than previous versions.",
-			"notebookViews": "Notebook Views",
-			"notebookViews.enabled": "(Preview) Enable Notebook Views",
+			"notebook.useNewMarkdownRenderer": "是否对 Notebook 使用较新版本的 Markdown 呈现器。这可能会导致 Markdown 的呈现方式与以前的版本不同。",
+			"notebookViews": "Notebook 视图",
+			"notebookViews.enabled": "(预览)启用笔记本视图",
 			"search.actionsPosition": "在搜索视图中控制操作栏的位置。",
 			"search.actionsPositionAuto": "当搜索视图较窄时将操作栏置于右侧，当搜索视图较宽时，将它紧接在内容之后。",
 			"search.actionsPositionRight": "始终将操作栏放置在右侧。",
@@ -10997,13 +10997,13 @@
 			"insertCellsModal.untitled": "无标题单元格: {0}"
 		},
 		"sql/workbench/contrib/notebook/browser/notebookViews/notebookViews.component": {
-			"cellAwaitingInputTitle": "Cell Awaiting Input",
+			"cellAwaitingInputTitle": "等待输入的单元格",
 			"cellNotFound": "未在此模型中找到具有 URI {0} 的单元格",
 			"cellRunFailed": "单元格运行失败 - 有关详细信息，请参阅当前所选单元格输出中的错误。",
 			"loading": "正在加载",
 			"runAllPreview": "全部运行",
-			"runningCell": "Running cell {0} of {1}",
-			"startingExecution": "Starting execution"
+			"runningCell": "正在运行单元格 {0} (共 {1} 个)",
+			"startingExecution": "正在开始执行"
 		},
 		"sql/workbench/contrib/notebook/browser/notebookViews/notebookViewsActions": {
 			"confirmDelete": "确定要删除视图“{0}”?",
@@ -11141,7 +11141,7 @@
 		},
 		"sql/workbench/contrib/query/browser/gridPanel": {
 			"resultsGrid": "结果网格",
-			"resultsGrid.maxRowCountExceeded": "Max row count for filtering/sorting has been exceeded. To update it, navigate to User Settings and change the setting: 'queryEditor.results.inMemoryDataProcessingThreshold'",
+			"resultsGrid.maxRowCountExceeded": "已超过筛选/排序的最大行计数。若要更新它，可以转到“用户设置”并更改设置: \"queryEditor.results.inMemoryDataProcessingThreshold\"",
 			"xmlShowplan": "XML 显示计划"
 		},
 		"sql/workbench/contrib/query/browser/keyboardQueryActions": {
@@ -11953,7 +11953,7 @@
 		},
 		"sql/workbench/update/electron-browser/gettingStarted": {
 			"miGettingStarted": "入门(&&S)",
-			"showReleaseNotes": "显示入门"
+			"showReleaseNotes": "显示入门指南"
 		}
 	}
 }

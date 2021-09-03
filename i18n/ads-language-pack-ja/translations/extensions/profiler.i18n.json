@@ -9,7 +9,7 @@
 	"version": "1.0.0",
 	"contents": {
 		"dist/dialogs/profilerCreateSessionDialog": {
-			"createSessionDialog.cancel": "キャンセル",
+			"createSessionDialog.cancel": "取り消し",
 			"createSessionDialog.create": "開始",
 			"createSessionDialog.createSessionFailed": "セッションを作成できませんでした",
 			"createSessionDialog.dialogOwnerInvalid": "ダイアログ所有者が無効です。ダイアログを開くことができません",
@@ -20,11 +20,11 @@
 			"createSessionDialog.title": "新しいプロファイラー セッションの開始"
 		},
 		"package": {
-			"description": "SQL Server Profiler for Azure Data Studio",
+			"description": "Azure Data Studio のSQL Server Profiler",
 			"displayName": "SQL Server Profiler",
 			"profiler.category": "プロファイラー",
-			"profiler.contributes.title.newProfler": "Profiler を起動",
-			"profiler.contributes.title.openCreateSessionDialog": "Create Profiler Season",
+			"profiler.contributes.title.newProfler": "プロファイラーを起動",
+			"profiler.contributes.title.openCreateSessionDialog": "プロファイラー シーズンの作成",
 			"profiler.contributes.title.start": "開始",
 			"profiler.contributes.title.stop": "停止"
 		}

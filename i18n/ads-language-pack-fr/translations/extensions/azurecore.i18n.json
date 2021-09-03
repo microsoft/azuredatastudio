@@ -66,7 +66,7 @@
 			"azure.startingCloudShell": "Démarrage de Cloud Shell..."
 		},
 		"dist/azureResource/errors": {
-			"azure.subscriptionError": "Failed to get subscriptions for account {0}. Please refresh the account."
+			"azure.subscriptionError": "Échec de l’obtention des abonnements pour le compte {0}. Actualisez le compte."
 		},
 		"dist/azureResource/providers/azuremonitor/azuremonitorTreeDataProvider": {
 			"azure.resource.providers.AzureMonitorContainerLabel": "Espace de travail Log Analytics"
@@ -96,7 +96,7 @@
 			"azure.resource.resourceTreeNode.noResourcesLabel": "Aucune ressource"
 		},
 		"dist/azureResource/services/subscriptionService": {
-			"azure.resource.tenantSubscriptionsError": "Failed to get subscriptions for account {0} (tenant '{1}'). {2}"
+			"azure.resource.tenantSubscriptionsError": "Échec de l’obtention des abonnements pour les {0} de compte (locataire «{1}»). {2}"
 		},
 		"dist/azureResource/services/terminalService": {
 			"azure.cloudShell": "Azure Cloud Shell (préversion) {0} ({1})",
@@ -112,7 +112,7 @@
 		},
 		"dist/azureResource/tree/accountTreeNode": {
 			"azure.resource.tree.accountTreeNode.noSubscriptionsLabel": "Aucun abonnement.",
-			"azure.unableToAccessSubscription": "Unable to access subscription {0} ({1}). Please [refresh the account](command:azure.resource.signin) to try again. {2}"
+			"azure.unableToAccessSubscription": "Impossible d’accéder à l’abonnement{0} ({1}). Veuillez [actualiser le compte](command:azure.resource.signin) pour réessayer. {2}"
 		},
 		"dist/azureResource/tree/connectionDialogTreeProvider": {
 			"azure.resource.tree.treeProvider.accountLoadError": "Le chargement de certains comptes Azure a échoué. {0}",
@@ -123,7 +123,7 @@
 			"azure.resource.throttleerror": "Les demandes de ce compte ont été limitées. Pour réessayer, sélectionnez un nombre plus petit d’abonnements.",
 			"azure.resource.tree.accountTreeNode.title": "{0} (abonnements {1}/{2})",
 			"azure.resource.tree.accountTreeNode.titleLoading": "{0} - Chargement...",
-			"azure.resource.tree.loadresourceerror": "An error occurred while loading Azure resources: {0}"
+			"azure.resource.tree.loadresourceerror": "Une erreur s’est produite lors du chargement des ressources Azure : {0}"
 		},
 		"dist/azureResource/tree/subscriptionTreeNode": {
 			"azure.resource.tree.subscriptionTreeNode.noResourcesLabel": "Aucune ressource."

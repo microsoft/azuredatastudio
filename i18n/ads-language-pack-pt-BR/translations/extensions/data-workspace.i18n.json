@@ -55,7 +55,7 @@
 			"gitCloneError": "Ocorreu um erro durante a clonagem do git. Exibir a saída do git para obter mais detalhes",
 			"gitCloneMessage": "Clonando o repositório git '{0}'...",
 			"noPreviousData": "Antes {0} para o projeto atual será exibido aqui, execute para visualizar os resultados.",
-			"openedProjectsUndefinedAfterRefresh": "List of opened projects should not be undefined after refresh from disk.",
+			"openedProjectsUndefinedAfterRefresh": "A lista de projetos abertos não deve estar indefinida após a atualização do disco.",
 			"projectNameNull": "O nome do projeto é nulo"
 		},
 		"package": {

@@ -76,7 +76,7 @@
 			"cms.connectionOptions.failoverPartner.description": "充当故障转移伙伴的 SQL Server 实例的名称或网络地址",
 			"cms.connectionOptions.failoverPartner.displayName": "故障转移伙伴",
 			"cms.connectionOptions.groupName.advanced": "高级",
-			"cms.connectionOptions.groupName.connectionResiliency": "连接弹性",
+			"cms.connectionOptions.groupName.connectionResiliency": "连接复原力",
 			"cms.connectionOptions.groupName.context": "上下文",
 			"cms.connectionOptions.groupName.initialization": "初始化",
 			"cms.connectionOptions.groupName.pooling": "池",

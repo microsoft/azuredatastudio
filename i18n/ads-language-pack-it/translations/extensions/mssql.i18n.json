@@ -308,7 +308,7 @@
 			"mssql.connectionOptions.encrypt.displayName": "Crittografa",
 			"mssql.connectionOptions.failoverPartner.description": "Nome o indirizzo di rete dell'istanza di SQL Server che funge da partner di failover",
 			"mssql.connectionOptions.failoverPartner.displayName": "Partner di failover",
-			"mssql.connectionOptions.groupName.advanced": "Avanzate",
+			"mssql.connectionOptions.groupName.advanced": "Avanzata",
 			"mssql.connectionOptions.groupName.connectionResiliency": "Resilienza connessione",
 			"mssql.connectionOptions.groupName.context": "Contesto",
 			"mssql.connectionOptions.groupName.initialization": "Inizializzazione",

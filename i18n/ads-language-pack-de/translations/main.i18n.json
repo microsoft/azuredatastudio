@@ -10888,9 +10888,9 @@
 			"notebook.splitViewModeDescription": "Auf der linken Seite wird ein Markdown mit einer Vorschau des gerenderten Texts auf der rechten Seite angezeigt.",
 			"notebook.sqlStopOnError": "SQL-Kernel: Notebook-Ausführung bei Fehler in Zelle beenden",
 			"notebook.useAbsoluteFilePaths": "Verwenden Sie absolute Dateipfade beim Verknüpfen mit anderen Notebooks.",
-			"notebook.useNewMarkdownRenderer": "Whether to use the newer version of the markdown renderer for Notebooks. This may result in markdown being rendered differently than previous versions.",
-			"notebookViews": "Notebook Views",
-			"notebookViews.enabled": "(Preview) Enable Notebook Views",
+			"notebook.useNewMarkdownRenderer": "Gibt an, ob die neuere Version des Markdownrenderers für Notebooks verwendet werden soll. Dies kann dazu führen, dass Markdown anders gerendert wird als frühere Versionen.",
+			"notebookViews": "Notizbuchansichten",
+			"notebookViews.enabled": "(Vorschau) Notebookansichten aktivieren",
 			"search.actionsPosition": "Steuert die Positionierung der Aktionsleiste auf Zeilen in der Suchansicht.",
 			"search.actionsPositionAuto": "Hiermit wird die Aktionsleiste auf der rechten Seite positioniert, wenn die Suchansicht schmal ist, und gleich hinter dem Inhalt, wenn die Suchansicht breit ist.",
 			"search.actionsPositionRight": "Hiermit wird die Aktionsleiste immer auf der rechten Seite positioniert.",
@@ -10997,13 +10997,13 @@
 			"insertCellsModal.untitled": "Zelle ohne Titel: {0}"
 		},
 		"sql/workbench/contrib/notebook/browser/notebookViews/notebookViews.component": {
-			"cellAwaitingInputTitle": "Cell Awaiting Input",
+			"cellAwaitingInputTitle": "Zelle wartet auf Eingabe",
 			"cellNotFound": "Die Zelle mit dem URI \"{0}\" wurde in diesem Modell nicht gefunden.",
 			"cellRunFailed": "Fehler beim Ausführen von Zellen: Weitere Informationen finden Sie im Fehler in der Ausgabe der aktuell ausgewählten Zelle.",
 			"loading": "Wird geladen",
 			"runAllPreview": "Alle ausführen",
-			"runningCell": "Running cell {0} of {1}",
-			"startingExecution": "Starting execution"
+			"runningCell": "Die Zelle {0} von {1} wird ausgeführt",
+			"startingExecution": "Ausführung wird gestartet"
 		},
 		"sql/workbench/contrib/notebook/browser/notebookViews/notebookViewsActions": {
 			"confirmDelete": "Möchten Sie die Ansicht \"{0}\" löschen?",
@@ -11141,7 +11141,7 @@
 		},
 		"sql/workbench/contrib/query/browser/gridPanel": {
 			"resultsGrid": "Ergebnisraster",
-			"resultsGrid.maxRowCountExceeded": "Max row count for filtering/sorting has been exceeded. To update it, navigate to User Settings and change the setting: 'queryEditor.results.inMemoryDataProcessingThreshold'",
+			"resultsGrid.maxRowCountExceeded": "Die maximale Zeilenanzahl für das Filtern/Sortieren wurde überschritten. Navigieren Sie zu \"Benutzereinstellungen\", und ändern Sie die Einstellung \"queryEditor.results.inMemoryDataProcessingThreshold\", um sie zu aktualisieren.",
 			"xmlShowplan": "XML-Showplan"
 		},
 		"sql/workbench/contrib/query/browser/keyboardQueryActions": {

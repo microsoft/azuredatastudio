@@ -66,7 +66,7 @@
 			"azure.startingCloudShell": "Cloud Shell を開始しています..."
 		},
 		"dist/azureResource/errors": {
-			"azure.subscriptionError": "Failed to get subscriptions for account {0}. Please refresh the account."
+			"azure.subscriptionError": "アカウント {0} のサブスクリプションを取得できませんでした。アカウントを更新してください。"
 		},
 		"dist/azureResource/providers/azuremonitor/azuremonitorTreeDataProvider": {
 			"azure.resource.providers.AzureMonitorContainerLabel": "Log Analytics ワークスペース"
@@ -96,7 +96,7 @@
 			"azure.resource.resourceTreeNode.noResourcesLabel": "リソースは見つかりませんでした"
 		},
 		"dist/azureResource/services/subscriptionService": {
-			"azure.resource.tenantSubscriptionsError": "Failed to get subscriptions for account {0} (tenant '{1}'). {2}"
+			"azure.resource.tenantSubscriptionsError": "アカウント {0} (テナント '{1}') のサブスクリプションを取得できませんでした。{2}"
 		},
 		"dist/azureResource/services/terminalService": {
 			"azure.cloudShell": "Azure Cloud Shell (プレビュー) {0} ({1})",
@@ -112,7 +112,7 @@
 		},
 		"dist/azureResource/tree/accountTreeNode": {
 			"azure.resource.tree.accountTreeNode.noSubscriptionsLabel": "サブスクリプションが見つかりません。",
-			"azure.unableToAccessSubscription": "Unable to access subscription {0} ({1}). Please [refresh the account](command:azure.resource.signin) to try again. {2}"
+			"azure.unableToAccessSubscription": "サブスクリプション {0} ({1}) にアクセスできません。再試行するには、[アカウントの更新] してください。(コマンド: azure.resource.signin) {2}"
 		},
 		"dist/azureResource/tree/connectionDialogTreeProvider": {
 			"azure.resource.tree.treeProvider.accountLoadError": "Azure アカウントを読み込めませんでした。{0} ",
@@ -123,7 +123,7 @@
 			"azure.resource.throttleerror": "このアカウントからの要求は抑えられています。再試行するには、より小さいサブスクリプション数を選択してください。",
 			"azure.resource.tree.accountTreeNode.title": "{0} ({1}/{2} サブスクリプション)",
 			"azure.resource.tree.accountTreeNode.titleLoading": "{0} - 読み込んでいます...",
-			"azure.resource.tree.loadresourceerror": "An error occurred while loading Azure resources: {0}"
+			"azure.resource.tree.loadresourceerror": "Azure リソースの読み込み中にエラーが発生しました: {0}"
 		},
 		"dist/azureResource/tree/subscriptionTreeNode": {
 			"azure.resource.tree.subscriptionTreeNode.noResourcesLabel": "リソースは見つかりませんでした。"

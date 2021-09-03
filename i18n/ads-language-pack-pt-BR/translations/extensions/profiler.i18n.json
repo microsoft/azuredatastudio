@@ -10,7 +10,7 @@
 	"contents": {
 		"dist/dialogs/profilerCreateSessionDialog": {
 			"createSessionDialog.cancel": "Cancelar",
-			"createSessionDialog.create": "Iníciar",
+			"createSessionDialog.create": "Iniciar",
 			"createSessionDialog.createSessionFailed": "Falha ao criar uma sessão",
 			"createSessionDialog.dialogOwnerInvalid": "Proprietário de caixa de diálogo inválido. Não é possível abrir a caixa de diálogo",
 			"createSessionDialog.enterSessionName": "Digite o nome da sessão:",
@@ -20,12 +20,12 @@
 			"createSessionDialog.title": "Iniciar Nova Sessão do Profiler"
 		},
 		"package": {
-			"description": "SQL Server Profiler for Azure Data Studio",
+			"description": "SQL Server Profiler para Azure Data Studio",
 			"displayName": "SQL Server Profiler",
 			"profiler.category": "Profiler",
 			"profiler.contributes.title.newProfler": "Iniciar Profiler",
-			"profiler.contributes.title.openCreateSessionDialog": "Create Profiler Season",
-			"profiler.contributes.title.start": "Iníciar",
+			"profiler.contributes.title.openCreateSessionDialog": "Criar Temporada do Profiler",
+			"profiler.contributes.title.start": "Iniciar",
 			"profiler.contributes.title.stop": "Parar"
 		}
 	}

@@ -10888,9 +10888,9 @@
 			"notebook.splitViewModeDescription": "マークダウンが左側に表示され、レンダリングされたテキストの右側にプレビューが表示されます。",
 			"notebook.sqlStopOnError": "SQL カーネル: セルでエラーが発生したときに Notebook の実行を停止します。",
 			"notebook.useAbsoluteFilePaths": "他のノートブックにリンクする場合は、絶対ファイル パスを使用します。",
-			"notebook.useNewMarkdownRenderer": "Whether to use the newer version of the markdown renderer for Notebooks. This may result in markdown being rendered differently than previous versions.",
-			"notebookViews": "Notebook Views",
-			"notebookViews.enabled": "(Preview) Enable Notebook Views",
+			"notebook.useNewMarkdownRenderer": "ノートブック用のマークダウン レンダラーの新しいバージョンを使用するかどうか。これにより、マークダウンが以前のバージョンとは異なる方法でレンダリングされる可能性があります。",
+			"notebookViews": "ノートブック ビュー",
+			"notebookViews.enabled": "(プレビュー) ノートブック ビューを有効にする",
 			"search.actionsPosition": "検索ビューの行内のアクションバーの位置を制御します。",
 			"search.actionsPositionAuto": "検索ビューが狭い場合はアクションバーを右に、検索ビューが広い場合はコンテンツの直後にアクションバーを配置します。",
 			"search.actionsPositionRight": "アクションバーを常に右側に表示します。",
@@ -10997,13 +10997,13 @@
 			"insertCellsModal.untitled": "無題のセル: {0}"
 		},
 		"sql/workbench/contrib/notebook/browser/notebookViews/notebookViews.component": {
-			"cellAwaitingInputTitle": "Cell Awaiting Input",
+			"cellAwaitingInputTitle": "入力を待機しているセル",
 			"cellNotFound": "URI {0} を含むセルは、このモデルには見つかりませんでした",
 			"cellRunFailed": "セルの実行に失敗しました。詳細については、現在選択されているセルの出力内のエラーをご覧ください。",
 			"loading": "読み込み中",
 			"runAllPreview": "すべて実行",
-			"runningCell": "Running cell {0} of {1}",
-			"startingExecution": "Starting execution"
+			"runningCell": "{0}/{1} セルを実行中",
+			"startingExecution": "実行を開始しています"
 		},
 		"sql/workbench/contrib/notebook/browser/notebookViews/notebookViewsActions": {
 			"confirmDelete": "ビュー \"{0}\" を削除しますか?",
@@ -11141,7 +11141,7 @@
 		},
 		"sql/workbench/contrib/query/browser/gridPanel": {
 			"resultsGrid": "結果グリッド",
-			"resultsGrid.maxRowCountExceeded": "Max row count for filtering/sorting has been exceeded. To update it, navigate to User Settings and change the setting: 'queryEditor.results.inMemoryDataProcessingThreshold'",
+			"resultsGrid.maxRowCountExceeded": "フィルター/並べ替えに使用する行の最大数を超えました。更新するには、[ユーザーの設定] に移動し、設定を変更します: 'queryEditor.results.inMemoryDataProcessingThreshold'",
 			"xmlShowplan": "XML プラン表示"
 		},
 		"sql/workbench/contrib/query/browser/keyboardQueryActions": {

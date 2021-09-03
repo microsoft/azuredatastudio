@@ -9,7 +9,7 @@
 	"version": "1.0.0",
 	"contents": {
 		"dist/dialogs/profilerCreateSessionDialog": {
-			"createSessionDialog.cancel": "Отмена",
+			"createSessionDialog.cancel": "Отменить",
 			"createSessionDialog.create": "Запустить",
 			"createSessionDialog.createSessionFailed": "Не удалось создать сеанс",
 			"createSessionDialog.dialogOwnerInvalid": "Недопустимый владелец диалогового окна, не удается открыть диалоговое окно",
@@ -20,11 +20,11 @@
 			"createSessionDialog.title": "Запустить новый сеанс профилировщика"
 		},
 		"package": {
-			"description": "SQL Server Profiler for Azure Data Studio",
+			"description": "Приложение SQL Server Profiler для Azure Data Studio",
 			"displayName": "Приложение SQL Server Profiler",
 			"profiler.category": "Профилировщик",
 			"profiler.contributes.title.newProfler": "Запустить профилировщик",
-			"profiler.contributes.title.openCreateSessionDialog": "Create Profiler Season",
+			"profiler.contributes.title.openCreateSessionDialog": "Создание сезона профилировщика",
 			"profiler.contributes.title.start": "Запустить",
 			"profiler.contributes.title.stop": "Остановить"
 		}

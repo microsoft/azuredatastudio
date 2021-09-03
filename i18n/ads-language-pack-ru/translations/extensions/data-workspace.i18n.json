@@ -55,7 +55,7 @@
 			"gitCloneError": "Ошибка во время клонирования Git. Просмотрите выходные данные Git, чтобы получить дополнительные сведения",
 			"gitCloneMessage": "Клонирование репозитория Git \"{0}\"...",
 			"noPreviousData": "Предыдущие {0} для текущего проекта будут отображаться здесь. Чтобы увидеть результаты, используйте запуск.",
-			"openedProjectsUndefinedAfterRefresh": "List of opened projects should not be undefined after refresh from disk.",
+			"openedProjectsUndefinedAfterRefresh": "Список открытых проектов не должен быть определен после обновления с диска.",
 			"projectNameNull": "Имя проекта имеет значение NULL"
 		},
 		"package": {

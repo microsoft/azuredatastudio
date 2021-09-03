@@ -55,7 +55,7 @@
 			"gitCloneError": "Erreur lors du Git Clone. Afficher la sortie git pour plus de détails",
 			"gitCloneMessage": "Clonage du dépôt Git '{0}'...",
 			"noPreviousData": "Les {0} antérieures pour le projet actif s’afficheront ici, exécutez pour voir les résultats.",
-			"openedProjectsUndefinedAfterRefresh": "List of opened projects should not be undefined after refresh from disk.",
+			"openedProjectsUndefinedAfterRefresh": "La liste des projets ouverts ne doit pas être indéfinie après l’actualisation à partir du disque.",
 			"projectNameNull": "Le nom de la feuille est Null"
 		},
 		"package": {

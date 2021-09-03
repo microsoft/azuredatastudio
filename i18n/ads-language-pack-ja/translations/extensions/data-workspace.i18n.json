@@ -55,7 +55,7 @@
 			"gitCloneError": "git の複製中にエラーが発生しました。詳細について git 出力を表示します",
 			"gitCloneMessage": "Git リポジトリ '{0}' をクローンしています...",
 			"noPreviousData": "現在のプロジェクトの前の {0} がここに表示されます。結果を確認するには、実行してください。",
-			"openedProjectsUndefinedAfterRefresh": "List of opened projects should not be undefined after refresh from disk.",
+			"openedProjectsUndefinedAfterRefresh": "ディスクから更新した後に、開いているプロジェクトの一覧を未定義にすることはできません。",
 			"projectNameNull": "プロジェクト名が NULL です"
 		},
 		"package": {

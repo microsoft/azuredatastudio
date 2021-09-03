@@ -75,7 +75,7 @@
 			"cms.connectionOptions.encrypt.displayName": "暗号化",
 			"cms.connectionOptions.failoverPartner.description": "フェールオーバー パートナーとして機能する SQL Server インスタンスの名前またはネットワーク アドレス",
 			"cms.connectionOptions.failoverPartner.displayName": "フェールオーバー パートナー",
-			"cms.connectionOptions.groupName.advanced": "詳細",
+			"cms.connectionOptions.groupName.advanced": "詳細設定",
 			"cms.connectionOptions.groupName.connectionResiliency": "接続の復元性",
 			"cms.connectionOptions.groupName.context": "コンテキスト",
 			"cms.connectionOptions.groupName.initialization": "初期化",

@@ -74,7 +74,7 @@
 			"dacFx.category": "DacFx",
 			"dacFx.defaultSaveLocation": "Caminho completo para a pasta em que se encontram os arquivos .DACPAC e .BACPAC são salvos por padrão",
 			"dacFx.settings": "Dacpac",
-			"dacFx.startTitle": "Assistente de Aplicativo em Camada de Dados"
+			"dacFx.startTitle": "Assistente de Aplicativo da Camada de Dados"
 		}
 	}
 }

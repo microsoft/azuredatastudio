@@ -10888,9 +10888,9 @@
 			"notebook.splitViewModeDescription": "Markdown отображается слева, а предварительный просмотр отрисованного текста — справа.",
 			"notebook.sqlStopOnError": "Ядро SQL: остановить выполнение записной книжки при возникновении ошибки в ячейке.",
 			"notebook.useAbsoluteFilePaths": "Используйте абсолютные пути к файлам при связывании с другими записными книжками.",
-			"notebook.useNewMarkdownRenderer": "Whether to use the newer version of the markdown renderer for Notebooks. This may result in markdown being rendered differently than previous versions.",
-			"notebookViews": "Notebook Views",
-			"notebookViews.enabled": "(Preview) Enable Notebook Views",
+			"notebook.useNewMarkdownRenderer": "Следует ли использовать более новую версию отрисовщика Markdown для записных книжек. Это может привести к тому, что Markdown отображается не так, как в предыдущих версиях.",
+			"notebookViews": "Представления записной книжки",
+			"notebookViews.enabled": "(Предварительная версия) Включить представления записной книжки",
 			"search.actionsPosition": "Управляет положением панели действий в строках в области поиска.",
 			"search.actionsPositionAuto": "Разместить панель действий справа, когда область поиска узкая, и сразу же после содержимого, когда область поиска широкая.",
 			"search.actionsPositionRight": "Всегда размещать панель действий справа.",
@@ -10997,13 +10997,13 @@
 			"insertCellsModal.untitled": "Ячейка без названия: {0}"
 		},
 		"sql/workbench/contrib/notebook/browser/notebookViews/notebookViews.component": {
-			"cellAwaitingInputTitle": "Cell Awaiting Input",
+			"cellAwaitingInputTitle": "Ячейка ожидает ввода",
 			"cellNotFound": "ячейка с URI {0} не найдена в этой модели",
 			"cellRunFailed": "Не удалось выполнить ячейки. Дополнительные сведения об ошибке см. в выходных данных текущей выбранной ячейки.",
 			"loading": "Загрузка",
 			"runAllPreview": "Выполнить все",
-			"runningCell": "Running cell {0} of {1}",
-			"startingExecution": "Starting execution"
+			"runningCell": "Выполняемая ячейка {0} из {1}",
+			"startingExecution": "Запуск выполнения"
 		},
 		"sql/workbench/contrib/notebook/browser/notebookViews/notebookViewsActions": {
 			"confirmDelete": "Вы действительно хотите удалить представление \"{0}\"?",
@@ -11141,7 +11141,7 @@
 		},
 		"sql/workbench/contrib/query/browser/gridPanel": {
 			"resultsGrid": "Сетка результатов",
-			"resultsGrid.maxRowCountExceeded": "Max row count for filtering/sorting has been exceeded. To update it, navigate to User Settings and change the setting: 'queryEditor.results.inMemoryDataProcessingThreshold'",
+			"resultsGrid.maxRowCountExceeded": "Превышено максимальное количество строк для фильтрации или сортировки. Чтобы обновить его, перейдите к параметрам пользователя и изменить параметр queryEditor.results.inMemoryDataProcessingThreshold",
 			"xmlShowplan": "XML Showplan"
 		},
 		"sql/workbench/contrib/query/browser/keyboardQueryActions": {
@@ -11952,8 +11952,8 @@
 			"taskService.yes": "Да"
 		},
 		"sql/workbench/update/electron-browser/gettingStarted": {
-			"miGettingStarted": "Приступая к р&&аботе",
-			"showReleaseNotes": "Показать раздел \"Приступая к работе\""
+			"miGettingStarted": "Начало р&&аботы",
+			"showReleaseNotes": "Показать раздел \"Начало работы\""
 		}
 	}
 }

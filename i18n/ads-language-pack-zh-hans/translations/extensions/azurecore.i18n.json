@@ -66,7 +66,7 @@
 			"azure.startingCloudShell": "正在启动 Cloud Shell…"
 		},
 		"dist/azureResource/errors": {
-			"azure.subscriptionError": "Failed to get subscriptions for account {0}. Please refresh the account."
+			"azure.subscriptionError": "无法获取帐户 {0} 的订阅。请刷新帐户。"
 		},
 		"dist/azureResource/providers/azuremonitor/azuremonitorTreeDataProvider": {
 			"azure.resource.providers.AzureMonitorContainerLabel": "Log Analytics 工作区"
@@ -96,7 +96,7 @@
 			"azure.resource.resourceTreeNode.noResourcesLabel": "未找到资源"
 		},
 		"dist/azureResource/services/subscriptionService": {
-			"azure.resource.tenantSubscriptionsError": "Failed to get subscriptions for account {0} (tenant '{1}'). {2}"
+			"azure.resource.tenantSubscriptionsError": "无法获取帐户{0} (租户 \"{1}\")的订阅。{2}"
 		},
 		"dist/azureResource/services/terminalService": {
 			"azure.cloudShell": "Azure Cloud Shell (预览) {0} ({1})",
@@ -112,7 +112,7 @@
 		},
 		"dist/azureResource/tree/accountTreeNode": {
 			"azure.resource.tree.accountTreeNode.noSubscriptionsLabel": "未找到订阅。",
-			"azure.unableToAccessSubscription": "Unable to access subscription {0} ({1}). Please [refresh the account](command:azure.resource.signin) to try again. {2}"
+			"azure.unableToAccessSubscription": "无法访问订阅 {0} ({1})。请[刷新帐户](command: azure.resource.signin)重试。{2}"
 		},
 		"dist/azureResource/tree/connectionDialogTreeProvider": {
 			"azure.resource.tree.treeProvider.accountLoadError": "未能加载部分 Azure 存储帐户。{0}",
@@ -123,7 +123,7 @@
 			"azure.resource.throttleerror": "已限制来自此帐户的请求。要重试，请选择少量订阅。",
 			"azure.resource.tree.accountTreeNode.title": "{0} ({1}/{2} 个订阅)",
 			"azure.resource.tree.accountTreeNode.titleLoading": "{0} - 正在加载...",
-			"azure.resource.tree.loadresourceerror": "An error occurred while loading Azure resources: {0}"
+			"azure.resource.tree.loadresourceerror": "加载 Azure 资源时出错: {0}"
 		},
 		"dist/azureResource/tree/subscriptionTreeNode": {
 			"azure.resource.tree.subscriptionTreeNode.noResourcesLabel": "未找到资源。"

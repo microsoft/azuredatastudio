@@ -315,7 +315,7 @@
 			"mssql.connectionOptions.groupName.pooling": "Pooling",
 			"mssql.connectionOptions.groupName.replication": "Replicação",
 			"mssql.connectionOptions.groupName.security": "Segurança",
-			"mssql.connectionOptions.groupName.source": "Fonte",
+			"mssql.connectionOptions.groupName.source": "Origem",
 			"mssql.connectionOptions.loadBalanceTimeout.description": "O período mínimo de tempo (em segundos) para que essa conexão exista no pool antes de ser destruída",
 			"mssql.connectionOptions.loadBalanceTimeout.displayName": "Tempo limite de balanceamento de carga",
 			"mssql.connectionOptions.maxPoolSize.description": "O número máximo de conexões permitidas no pool",

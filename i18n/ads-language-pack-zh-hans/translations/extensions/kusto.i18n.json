@@ -73,7 +73,7 @@
 			"kusto.connectionOptions.databaseName.displayName": "数据库",
 			"kusto.connectionOptions.failoverPartner.description": "充当故障转移伙伴的 Kusto Server 实例的名称或网络地址",
 			"kusto.connectionOptions.failoverPartner.displayName": "故障转移伙伴",
-			"kusto.connectionOptions.groupName.connectionResiliency": "连接弹性",
+			"kusto.connectionOptions.groupName.connectionResiliency": "连接复原力",
 			"kusto.connectionOptions.groupName.context": "上下文",
 			"kusto.connectionOptions.groupName.initialization": "初始化",
 			"kusto.connectionOptions.groupName.security": "安全性",

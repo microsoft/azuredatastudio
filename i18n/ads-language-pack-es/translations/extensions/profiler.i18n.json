@@ -20,11 +20,11 @@
 			"createSessionDialog.title": "Iniciar nueva sesión de Profiler"
 		},
 		"package": {
-			"description": "SQL Server Profiler for Azure Data Studio",
+			"description": "SQL Server Profiler para Azure Data Studio",
 			"displayName": "SQL Server Profiler",
 			"profiler.category": "Profiler",
 			"profiler.contributes.title.newProfler": "Iniciar Profiler",
-			"profiler.contributes.title.openCreateSessionDialog": "Create Profiler Season",
+			"profiler.contributes.title.openCreateSessionDialog": "Crear una temporada de Profiler",
 			"profiler.contributes.title.start": "Inicio",
 			"profiler.contributes.title.stop": "Detener"
 		}
