@@ -1,216 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
-  <file original="extensions/sql-database-projects/package" source-language="en" datatype="plaintext" target-language="es">
-    <body>
-      <trans-unit id="title.projectsView">
-        <source xml:lang="en">Projects</source>
-        <target state="translated">Proyectos</target>
-      </trans-unit>
-      <trans-unit id="sqlDatabaseProjects.displayName">
-        <source xml:lang="en">Database Projects</source>
-        <target state="translated">Proyectos de base de datos</target>
-      </trans-unit>
-      <trans-unit id="sqlDatabaseProjects.description">
-        <source xml:lang="en">Design and publish SQL database schemas</source>
-        <target state="translated">Diseñe y publique esquemas de base de datos SQL.</target>
-      </trans-unit>
-      <trans-unit id="sqlDatabaseProjects.new">
-        <source xml:lang="en">New Database Project</source>
-        <target state="translated">Nuevo proyecto de base de datos</target>
-      </trans-unit>
-      <trans-unit id="sqlDatabaseProjects.open">
-        <source xml:lang="en">Open Database Project</source>
-        <target state="translated">Abrir proyecto de base de datos</target>
-      </trans-unit>
-      <trans-unit id="sqlDatabaseProjects.close">
-        <source xml:lang="en">Close Database Project</source>
-        <target state="translated">Cerrar proyecto de base de datos</target>
-      </trans-unit>
-      <trans-unit id="sqlDatabaseProjects.build">
-        <source xml:lang="en">Build</source>
-        <target state="translated">Compilar</target>
-      </trans-unit>
-      <trans-unit id="sqlDatabaseProjects.publish">
-        <source xml:lang="en">Publish</source>
-        <target state="translated">Publicar</target>
-      </trans-unit>
-      <trans-unit id="sqlDatabaseProjects.createProjectFromDatabase">
-        <source xml:lang="en">Create Project From Database</source>
-        <target state="translated">Crear proyecto a partir de base de datos</target>
-      </trans-unit>
-      <trans-unit id="sqlDatabaseProjects.properties">
-        <source xml:lang="en">Properties</source>
-        <target state="translated">Propiedades</target>
-      </trans-unit>
-      <trans-unit id="sqlDatabaseProjects.schemaCompare">
-        <source xml:lang="en">Schema Compare</source>
-        <target state="translated">Comparar esquemas</target>
-      </trans-unit>
-      <trans-unit id="sqlDatabaseProjects.delete">
-        <source xml:lang="en">Delete</source>
-        <target state="translated">Eliminar</target>
-      </trans-unit>
-      <trans-unit id="sqlDatabaseProjects.exclude">
-        <source xml:lang="en">Exclude from project</source>
-        <target state="translated">Excluir del proyecto</target>
-      </trans-unit>
-      <trans-unit id="sqlDatabaseProjects.validateExternalStreamingJob">
-        <source xml:lang="en">Validate External Streaming Job</source>
-        <target state="translated">Validar trabajo de streaming externo</target>
-      </trans-unit>
-      <trans-unit id="sqlDatabaseProjects.newScript">
-        <source xml:lang="en">Add Script</source>
-        <target state="translated">Agregar script</target>
-      </trans-unit>
-      <trans-unit id="sqlDatabaseProjects.newPreDeploymentScript">
-        <source xml:lang="en">Add Pre-Deployment Script</source>
-        <target state="translated">Agregar script anterior a la implementación</target>
-      </trans-unit>
-      <trans-unit id="sqlDatabaseProjects.newPostDeploymentScript">
-        <source xml:lang="en">Add Post-Deployment Script</source>
-        <target state="translated">Agregar script posterior a la implementación</target>
-      </trans-unit>
-      <trans-unit id="sqlDatabaseProjects.newTable">
-        <source xml:lang="en">Add Table</source>
-        <target state="translated">Agregar tabla</target>
-      </trans-unit>
-      <trans-unit id="sqlDatabaseProjects.newView">
-        <source xml:lang="en">Add View</source>
-        <target state="translated">Agregar vista</target>
-      </trans-unit>
-      <trans-unit id="sqlDatabaseProjects.newStoredProcedure">
-        <source xml:lang="en">Add Stored Procedure</source>
-        <target state="translated">Agregar procedimiento almacenado</target>
-      </trans-unit>
-      <trans-unit id="sqlDatabaseProjects.newExternalStreamingJob">
-        <source xml:lang="en">Add External Streaming Job</source>
-        <target state="translated">Agregar trabajo de streaming externo</target>
-      </trans-unit>
-      <trans-unit id="sqlDatabaseProjects.newItem">
-        <source xml:lang="en">Add Item...</source>
-        <target state="translated">Agregar elemento...</target>
-      </trans-unit>
-      <trans-unit id="sqlDatabaseProjects.newFolder">
-        <source xml:lang="en">Add Folder</source>
-        <target state="translated">Agregar carpeta</target>
-      </trans-unit>
-      <trans-unit id="sqlDatabaseProjects.addDatabaseReference">
-        <source xml:lang="en">Add Database Reference</source>
-        <target state="translated">Agregar referencia de base de datos</target>
-      </trans-unit>
-      <trans-unit id="sqlDatabaseProjects.openContainingFolder">
-        <source xml:lang="en">Open Containing Folder</source>
-        <target state="translated">Abrir carpeta contenedora</target>
-      </trans-unit>
-      <trans-unit id="sqlDatabaseProjects.editProjectFile">
-        <source xml:lang="en">Edit .sqlproj File</source>
-        <target state="translated">Editar archivo. sqlproj</target>
-      </trans-unit>
-      <trans-unit id="sqlDatabaseProjects.changeTargetPlatform">
-        <source xml:lang="en">Change Target Platform</source>
-        <target state="translated">Cambiar plataforma de destino</target>
-      </trans-unit>
-      <trans-unit id="sqlDatabaseProjects.Settings">
-        <source xml:lang="en">Database Projects</source>
-        <target state="translated">Proyectos de base de datos</target>
-      </trans-unit>
-      <trans-unit id="sqlDatabaseProjects.netCoreInstallLocation">
-        <source xml:lang="en">Full path to .NET Core SDK on the machine.</source>
-        <target state="translated">Ruta de acceso completa a SDK de .NET Core en la máquina.</target>
-      </trans-unit>
-      <trans-unit id="sqlDatabaseProjects.netCoreDoNotAsk">
-        <source xml:lang="en">Whether to prompt the user to install .NET Core when not detected.</source>
-        <target state="translated">Indica si se pide al usuario que instale .NET Core cuando no se detecte.</target>
-      </trans-unit>
-      <trans-unit id="sqlDatabaseProjects.welcome">
-        <source xml:lang="en">No database projects currently open.
-[New Project](command:sqlDatabaseProjects.new)
-[Open Project](command:sqlDatabaseProjects.open)
-[Create Project From Database](command:sqlDatabaseProjects.importDatabase)</source>
-        <target state="translated">Actualmente, no hay ningún proyecto de base de datos abierto.
-[Nuevo proyecto](command:sqlDatabaseProjects.new)
-[Abrir proyecto](command:sqlDatabaseProjects.open)
-[Crear proyecto a partir de base de datos](command:sqlDatabaseProjects.importDatabase)</target>
-      </trans-unit>
-      <trans-unit id="sqlDatabaseProjects.addSqlBinding">
-        <source xml:lang="en">Add SQL Binding</source>
-        <target state="new">Add SQL Binding</target>
-      </trans-unit>
-    </body>
-  </file>
   <file original="extensions/sql-database-projects/dist/common/constants" source-language="en" datatype="plaintext" target-language="es">
     <body>
-      <trans-unit id="emptyProjectTypeDisplayName">
-        <source xml:lang="en">SQL Database</source>
-        <target state="translated">Base de datos SQL</target>
-      </trans-unit>
-      <trans-unit id="emptyProjectTypeDescription">
-        <source xml:lang="en">Develop and publish schemas for SQL databases starting from an empty project</source>
-        <target state="translated">Desarrolle y publique esquemas para bases de datos SQL a partir de un proyecto vacío.</target>
-      </trans-unit>
-      <trans-unit id="edgeProjectTypeDisplayName">
-        <source xml:lang="en">SQL Edge</source>
-        <target state="translated">SQL Edge</target>
-      </trans-unit>
-      <trans-unit id="edgeProjectTypeDescription">
-        <source xml:lang="en">Start with the core pieces to develop and publish schemas for SQL Edge</source>
-        <target state="translated">Comience con las partes principales para desarrollar y publicar esquemas para SQL Edge.</target>
-      </trans-unit>
-      <trans-unit id="addItemAction">
-        <source xml:lang="en">Add Item</source>
-        <target state="translated">Agregar elemento</target>
-      </trans-unit>
-      <trans-unit id="schemaCompareAction">
-        <source xml:lang="en">Schema Compare</source>
-        <target state="translated">Comparar esquemas</target>
-      </trans-unit>
-      <trans-unit id="buildAction">
-        <source xml:lang="en">Build</source>
-        <target state="translated">Compilar</target>
-      </trans-unit>
-      <trans-unit id="publishAction">
-        <source xml:lang="en">Publish</source>
-        <target state="translated">Publicar</target>
-      </trans-unit>
-      <trans-unit id="changeTargetPlatformAction">
-        <source xml:lang="en">Change Target Platform</source>
-        <target state="translated">Cambiar plataforma de destino</target>
-      </trans-unit>
-      <trans-unit id="Status">
-        <source xml:lang="en">Status</source>
-        <target state="translated">Estado</target>
-      </trans-unit>
-      <trans-unit id="Time">
-        <source xml:lang="en">Time</source>
-        <target state="translated">Hora</target>
-      </trans-unit>
-      <trans-unit id="Date">
-        <source xml:lang="en">Date</source>
-        <target state="translated">Fecha</target>
-      </trans-unit>
-      <trans-unit id="TargetPlatform">
-        <source xml:lang="en">Target Platform</source>
-        <target state="translated">Plataforma de destino</target>
-      </trans-unit>
-      <trans-unit id="TargetServer">
-        <source xml:lang="en">Target Server</source>
-        <target state="translated">Servidor de destino</target>
-      </trans-unit>
-      <trans-unit id="TargetDatabase">
-        <source xml:lang="en">Target Database</source>
-        <target state="translated">Base de datos de destino</target>
-      </trans-unit>
       <trans-unit id="BuildHistory">
         <source xml:lang="en">Build History</source>
         <target state="translated">Historial de compilación</target>
       </trans-unit>
-      <trans-unit id="PublishHistory">
-        <source xml:lang="en">Publish History</source>
-        <target state="translated">Historial de publicación</target>
-      </trans-unit>
-      <trans-unit id="Success">
-        <source xml:lang="en">Success</source>
-        <target state="translated">Correcto</target>
+      <trans-unit id="Date">
+        <source xml:lang="en">Date</source>
+        <target state="translated">Fecha</target>
       </trans-unit>
       <trans-unit id="Failed">
         <source xml:lang="en">Failed</source>
@@ -220,209 +18,93 @@
         <source xml:lang="en">In progress</source>
         <target state="translated">En curso</target>
       </trans-unit>
-      <trans-unit id="hr">
-        <source xml:lang="en">hr</source>
-        <target state="translated">h</target>
+      <trans-unit id="PublishHistory">
+        <source xml:lang="en">Publish History</source>
+        <target state="translated">Historial de publicación</target>
       </trans-unit>
-      <trans-unit id="min">
-        <source xml:lang="en">min</source>
-        <target state="translated">min</target>
+      <trans-unit id="Status">
+        <source xml:lang="en">Status</source>
+        <target state="translated">Estado</target>
       </trans-unit>
-      <trans-unit id="sec">
-        <source xml:lang="en">sec</source>
-        <target state="translated">s</target>
+      <trans-unit id="Success">
+        <source xml:lang="en">Success</source>
+        <target state="translated">Correcto</target>
       </trans-unit>
-      <trans-unit id="msec">
-        <source xml:lang="en">msec</source>
-        <target state="translated">ms</target>
+      <trans-unit id="TargetDatabase">
+        <source xml:lang="en">Target Database</source>
+        <target state="translated">Base de datos de destino</target>
+      </trans-unit>
+      <trans-unit id="TargetPlatform">
+        <source xml:lang="en">Target Platform</source>
+        <target state="translated">Plataforma de destino</target>
+      </trans-unit>
+      <trans-unit id="TargetServer">
+        <source xml:lang="en">Target Server</source>
+        <target state="translated">Servidor de destino</target>
+      </trans-unit>
+      <trans-unit id="Time">
+        <source xml:lang="en">Time</source>
+        <target state="translated">Hora</target>
+      </trans-unit>
+      <trans-unit id="addDatabaseReferenceOkButtonText">
+        <source xml:lang="en">Add reference</source>
+        <target state="translated">Agregar una referencia</target>
+      </trans-unit>
+      <trans-unit id="addDatabaseReferencedialogName">
+        <source xml:lang="en">Add database reference</source>
+        <target state="translated">Agregar referencia de base de datos</target>
+      </trans-unit>
+      <trans-unit id="addItemAction">
+        <source xml:lang="en">Add Item</source>
+        <target state="translated">Agregar elemento</target>
+      </trans-unit>
+      <trans-unit id="addPackage">
+        <source xml:lang="en">Add Package</source>
+        <target state="translated">Agregar paquete</target>
+      </trans-unit>
+      <trans-unit id="appSettingPrompt">
+        <source xml:lang="en">Would you like to update Azure Function local.settings.json with the new connection string?</source>
+        <target state="translated">¿Desea actualizar la función de Azure local.settings.json con la nueva cadena de conexión?</target>
       </trans-unit>
       <trans-unit id="at">
         <source xml:lang="en">at</source>
         <target state="translated">en</target>
       </trans-unit>
-      <trans-unit id="dataSourcesNodeName">
-        <source xml:lang="en">Data Sources</source>
-        <target state="translated">Orígenes de datos</target>
+      <trans-unit id="browseButtonText">
+        <source xml:lang="en">Browse folder</source>
+        <target state="translated">Examinar carpeta</target>
       </trans-unit>
-      <trans-unit id="databaseReferencesNodeName">
-        <source xml:lang="en">Database References</source>
-        <target state="translated">Referencias de base de datos</target>
+      <trans-unit id="browseEllipsis">
+        <source xml:lang="en">Browse...</source>
+        <target state="translated">Examine...</target>
       </trans-unit>
-      <trans-unit id="sqlConnectionStringFriendly">
-        <source xml:lang="en">SQL connection string</source>
-        <target state="translated">Cadena de conexión SQL</target>
+      <trans-unit id="browseForProfile">
+        <source xml:lang="en">Browse for profile</source>
+        <target state="translated">Buscar perfil</target>
       </trans-unit>
-      <trans-unit id="yesString">
-        <source xml:lang="en">Yes</source>
-        <target state="translated">Sí</target>
+      <trans-unit id="buildAction">
+        <source xml:lang="en">Build</source>
+        <target state="translated">Compilar</target>
       </trans-unit>
-      <trans-unit id="noString">
-        <source xml:lang="en">No</source>
-        <target state="translated">No</target>
-      </trans-unit>
-      <trans-unit id="okString">
-        <source xml:lang="en">Ok</source>
-        <target state="translated">Aceptar</target>
-      </trans-unit>
-      <trans-unit id="selectString">
-        <source xml:lang="en">Select</source>
-        <target state="translated">Seleccionar</target>
-      </trans-unit>
-      <trans-unit id="dacpacFiles">
-        <source xml:lang="en">dacpac Files</source>
-        <target state="translated">Archivos .dacpac</target>
-      </trans-unit>
-      <trans-unit id="publishSettingsFiles">
-        <source xml:lang="en">Publish Settings File</source>
-        <target state="translated">Archivo de configuración de publicación</target>
-      </trans-unit>
-      <trans-unit id="file">
-        <source xml:lang="en">File</source>
-        <target state="translated">Archivo</target>
-      </trans-unit>
-      <trans-unit id="flat">
-        <source xml:lang="en">Flat</source>
-        <target state="translated">Plano</target>
-      </trans-unit>
-      <trans-unit id="objectType">
-        <source xml:lang="en">Object Type</source>
-        <target state="translated">Tipo de objeto</target>
-      </trans-unit>
-      <trans-unit id="schema">
-        <source xml:lang="en">Schema</source>
-        <target state="translated">Esquema</target>
-      </trans-unit>
-      <trans-unit id="schemaObjectType">
-        <source xml:lang="en">Schema/Object Type</source>
-        <target state="translated">Tipo de esquema u objeto</target>
-      </trans-unit>
-      <trans-unit id="defaultProjectNameStarter">
-        <source xml:lang="en">DatabaseProject</source>
-        <target state="translated">DatabaseProject</target>
-      </trans-unit>
-      <trans-unit id="reloadProject">
-        <source xml:lang="en">Would you like to reload your database project?</source>
-        <target state="translated">¿Quiere volver a cargar el proyecto de base de datos?</target>
-      </trans-unit>
-      <trans-unit id="newObjectNamePrompt">
-        <source xml:lang="en">New {0} name:</source>
-        <target state="translated">Nuevo nombre de {0}:</target>
-      </trans-unit>
-      <trans-unit id="deleteConfirmation">
-        <source xml:lang="en">Are you sure you want to delete {0}?</source>
-        <target state="translated">¿Está seguro de que desea eliminar {0}?</target>
-      </trans-unit>
-      <trans-unit id="deleteConfirmationContents">
-        <source xml:lang="en">Are you sure you want to delete {0} and all of its contents?</source>
-        <target state="translated">¿Confirma que quiere eliminar {0} y todo su contenido?</target>
-      </trans-unit>
-      <trans-unit id="deleteReferenceConfirmation">
-        <source xml:lang="en">Are you sure you want to delete the reference to {0}?</source>
-        <target state="translated">¿Confirma que quiere eliminar la referencia {0}?</target>
-      </trans-unit>
-      <trans-unit id="selectTargetPlatform">
-        <source xml:lang="en">Current target platform: {0}. Select new target platform</source>
-        <target state="translated">Plataforma de destino actual: {0}. Seleccione una nueva plataforma de destino.</target>
-      </trans-unit>
-      <trans-unit id="currentTargetPlatform">
-        <source xml:lang="en">Target platform of the project {0} is now {1}</source>
-        <target state="translated">La plataforma de destino del proyecto {0} ahora es {1}.</target>
-      </trans-unit>
-      <trans-unit id="publishDialogName">
-        <source xml:lang="en">Publish project</source>
-        <target state="translated">Publicación del proyecto</target>
-      </trans-unit>
-      <trans-unit id="publish">
-        <source xml:lang="en">Publish</source>
-        <target state="translated">Publicar</target>
+      <trans-unit id="buildFailedCannotStartSchemaCompare">
+        <source xml:lang="en">Schema compare could not start because build failed</source>
+        <target state="translated">No se pudo iniciar la comparación de esquemas debido a un error de compilación.</target>
       </trans-unit>
       <trans-unit id="cancelButtonText">
         <source xml:lang="en">Cancel</source>
         <target state="translated">Cancelar</target>
       </trans-unit>
-      <trans-unit id="generateScriptButtonText">
-        <source xml:lang="en">Generate Script</source>
-        <target state="translated">Generar script</target>
+      <trans-unit id="cannotResolvePath">
+        <source xml:lang="en">Cannot resolve path {0}</source>
+        <target state="translated">No se puede resolver la ruta {0}.</target>
       </trans-unit>
-      <trans-unit id="databaseNameLabel">
-        <source xml:lang="en">Database</source>
-        <target state="translated">Base de datos</target>
+      <trans-unit id="cantAddCircularProjectReference">
+        <source xml:lang="en">A reference to project '{0}' cannot be added. Adding this project as a reference would cause a circular dependency</source>
+        <target state="translated">No se puede agregar una referencia al proyecto "{0}". Si se agrega este proyecto como una referencia, se dará lugar a una dependencia circular.</target>
       </trans-unit>
-      <trans-unit id="targetConnectionLabel">
-        <source xml:lang="en">Connection</source>
-        <target state="translated">Conexión</target>
-      </trans-unit>
-      <trans-unit id="dataSourceRadioButtonLabel">
-        <source xml:lang="en">Data sources</source>
-        <target state="translated">Orígenes de datos</target>
-      </trans-unit>
-      <trans-unit id="connectionRadioButtonLabel">
-        <source xml:lang="en">Connections</source>
-        <target state="translated">Conexiones</target>
-      </trans-unit>
-      <trans-unit id="dataSourceDropdownTitle">
-        <source xml:lang="en">Data source</source>
-        <target state="translated">Origen de datos</target>
-      </trans-unit>
-      <trans-unit id="noDataSourcesText">
-        <source xml:lang="en">No data sources in this project</source>
-        <target state="translated">No hay ningún origen de datos en este proyecto.</target>
-      </trans-unit>
-      <trans-unit id="loadProfilePlaceholderText">
-        <source xml:lang="en">Load profile...</source>
-        <target state="translated">Perfil de carga...</target>
-      </trans-unit>
-      <trans-unit id="profileReadError">
-        <source xml:lang="en">Error loading the publish profile. {0}</source>
-        <target state="translated">Error al cargar el perfil de publicación. {0}</target>
-      </trans-unit>
-      <trans-unit id="sqlCmdTableLabel">
-        <source xml:lang="en">SQLCMD Variables</source>
-        <target state="translated">Variables SQLCMD</target>
-      </trans-unit>
-      <trans-unit id="sqlCmdVariableColumn">
-        <source xml:lang="en">Name</source>
-        <target state="translated">Nombre</target>
-      </trans-unit>
-      <trans-unit id="sqlCmdValueColumn">
-        <source xml:lang="en">Value</source>
-        <target state="translated">Valor</target>
-      </trans-unit>
-      <trans-unit id="reloadValuesFromProjectButtonTitle">
-        <source xml:lang="en">Reload values from project</source>
-        <target state="translated">Recarga de los valores del proyecto</target>
-      </trans-unit>
-      <trans-unit id="profile">
-        <source xml:lang="en">Profile</source>
-        <target state="translated">Perfil</target>
-      </trans-unit>
-      <trans-unit id="selectConnection">
-        <source xml:lang="en">Select connection</source>
-        <target state="translated">Seleccionar conexión</target>
-      </trans-unit>
-      <trans-unit id="server">
-        <source xml:lang="en">Server</source>
-        <target state="translated">Servidor</target>
-      </trans-unit>
-      <trans-unit id="default">
-        <source xml:lang="en">default</source>
-        <target state="translated">Predeterminado</target>
-      </trans-unit>
-      <trans-unit id="selectProfileToUse">
-        <source xml:lang="en">Select publish profile to load</source>
-        <target state="translated">Seleccionar el perfil de publicación que se va a cargar.</target>
-      </trans-unit>
-      <trans-unit id="selectProfile">
-        <source xml:lang="en">Select Profile</source>
-        <target state="translated">Seleccionar perfil</target>
-      </trans-unit>
-      <trans-unit id="dontUseProfile">
-        <source xml:lang="en">Don't use profile</source>
-        <target state="translated">No usar perfil</target>
-      </trans-unit>
-      <trans-unit id="browseForProfile">
-        <source xml:lang="en">Browse for profile</source>
-        <target state="translated">Buscar perfil</target>
+      <trans-unit id="changeTargetPlatformAction">
+        <source xml:lang="en">Change Target Platform</source>
+        <target state="translated">Cambiar plataforma de destino</target>
       </trans-unit>
       <trans-unit id="chooseAction">
         <source xml:lang="en">Choose action</source>
@@ -432,114 +114,105 @@
         <source xml:lang="en">Choose SQLCMD variables to modify</source>
         <target state="translated">Elija las variables de SQLCMD que quiere modificar.</target>
       </trans-unit>
-      <trans-unit id="enterNewValueForVar">
-        <source xml:lang="en">Enter new value for variable '{0}'</source>
-        <target state="translated">Escriba un nuevo valor para la variable "{0}".</target>
+      <trans-unit id="cicularProjectReference">
+        <source xml:lang="en">Circular reference from project {0} to project {1}</source>
+        <target state="translated">Referencia circular del proyecto {0}al proyecto {1}</target>
       </trans-unit>
-      <trans-unit id="resetAllVars">
-        <source xml:lang="en">Reset all variables</source>
-        <target state="translated">Restablecer todas las variables</target>
+      <trans-unit id="cleaningDockerImagesMessage">
+        <source xml:lang="en">Cleaning existing deployments...</source>
+        <target state="translated">Limpiando las implementaciones existentes...</target>
+      </trans-unit>
+      <trans-unit id="connectingToSqlServerOnDockerMessage">
+        <source xml:lang="en">Connecting to SQL Server on Docker</source>
+        <target state="translated">Conexión a SQL Server en Docker</target>
+      </trans-unit>
+      <trans-unit id="connectionFailedError">
+        <source xml:lang="en">Connection failed error: '{0}'</source>
+        <target state="translated">Error en la conexión: "{0}"</target>
+      </trans-unit>
+      <trans-unit id="connectionRadioButtonLabel">
+        <source xml:lang="en">Connections</source>
+        <target state="translated">Conexiones</target>
+      </trans-unit>
+      <trans-unit id="connectionStringSetting">
+        <source xml:lang="en">Connection string setting name</source>
+        <target state="translated">Nombre de configuración de la cadena de conexión</target>
+      </trans-unit>
+      <trans-unit id="connectionStringSettingPlaceholder">
+        <source xml:lang="en">Connection string setting specified in "local.settings.json"</source>
+        <target state="translated">La configuración de cadena de conexión está especificada en "local.settings.json"</target>
       </trans-unit>
       <trans-unit id="createNew">
-        <source xml:lang="en">&lt;Create New&gt;</source>
-        <target state="translated">&lt;Crear nuevo&gt;</target>
+        <source xml:lang="en">Create New</source>
+        <target state="translated">Crear nuevo</target>
       </trans-unit>
-      <trans-unit id="enterNewDatabaseName">
-        <source xml:lang="en">Enter new database name</source>
-        <target state="translated">Escriba el nombre de la nueva base de datos.</target>
+      <trans-unit id="createProjectDialogOkButtonText">
+        <source xml:lang="en">Create</source>
+        <target state="translated">Crear</target>
       </trans-unit>
-      <trans-unit id="newDatabaseTitle">
-        <source xml:lang="en">{0} (new)</source>
-        <note>Name is the name of a new database being created</note>
-        <target state="translated">{0} (nuevo)</target>
+      <trans-unit id="createProjectFromDatabaseDialogName">
+        <source xml:lang="en">Create project from database</source>
+        <target state="translated">Creación de un proyecto a partir de una base de datos</target>
       </trans-unit>
-      <trans-unit id="selectDatabase">
-        <source xml:lang="en">Select database</source>
-        <target state="translated">Seleccionar base de datos</target>
+      <trans-unit id="createProjectSettings">
+        <source xml:lang="en">Settings</source>
+        <target state="translated">Configuración</target>
       </trans-unit>
-      <trans-unit id="done">
-        <source xml:lang="en">Done</source>
-        <target state="translated">Hecho</target>
+      <trans-unit id="creatingDeploymentSettingsMessage">
+        <source xml:lang="en">Creating deployment settings ...</source>
+        <target state="translated">Creando la configuración de implementación...</target>
       </trans-unit>
-      <trans-unit id="nameMustNotBeEmpty">
-        <source xml:lang="en">Name must not be empty</source>
-        <target state="translated">El nombre no puede estar en blanco</target>
+      <trans-unit id="currentTargetPlatform">
+        <source xml:lang="en">Target platform of the project {0} is now {1}</source>
+        <target state="translated">La plataforma de destino del proyecto {0} ahora es {1}.</target>
       </trans-unit>
-      <trans-unit id="addDatabaseReferencedialogName">
-        <source xml:lang="en">Add database reference</source>
-        <target state="translated">Agregar referencia de base de datos</target>
+      <trans-unit id="dacpacFileLocationRequired">
+        <source xml:lang="en">Dacpac file location is required for adding a reference to a database</source>
+        <target state="translated">La ubicación del archivo .dacpac es necesaria para agregar una referencia a una base de datos</target>
       </trans-unit>
-      <trans-unit id="addDatabaseReferenceOkButtonText">
-        <source xml:lang="en">Add reference</source>
-        <target state="translated">Agregar una referencia</target>
+      <trans-unit id="dacpacFiles">
+        <source xml:lang="en">dacpac Files</source>
+        <target state="translated">Archivos .dacpac</target>
       </trans-unit>
-      <trans-unit id="referenceRadioButtonsGroupTitle">
-        <source xml:lang="en">Type</source>
-        <target state="translated">Tipo</target>
-      </trans-unit>
-      <trans-unit id="projectRadioButtonTitle">
-        <source xml:lang="en">Project</source>
-        <target state="translated">Proyecto</target>
-      </trans-unit>
-      <trans-unit id="systemDatabaseRadioButtonTitle">
-        <source xml:lang="en">System database</source>
-        <target state="translated">Base de datos del sistema</target>
+      <trans-unit id="dacpacNotOnSameDrive">
+        <source xml:lang="en">Dacpac references need to be located on the same drive as the project file. The project file is located at {0}</source>
+        <target state="translated">Las referencias de DACPAC deben encontrarse en la misma unidad de disco que el archivo del proyecto. Este se encuentra en {0}.</target>
       </trans-unit>
       <trans-unit id="dacpacText">
         <source xml:lang="en">Data-tier application (.dacpac)</source>
         <target state="translated">Aplicación de capa de datos (.dacpac)</target>
       </trans-unit>
-      <trans-unit id="dacpacPlaceholder">
-        <source xml:lang="en">Select .dacpac</source>
-        <target state="translated">Seleccione .dacpac.</target>
+      <trans-unit id="dataSource">
+        <source xml:lang="en">Data Source</source>
+        <target state="translated">Origen de datos</target>
       </trans-unit>
-      <trans-unit id="loadDacpacButton">
-        <source xml:lang="en">Select .dacpac</source>
-        <target state="translated">Seleccione .dacpac.</target>
+      <trans-unit id="dataSourceDropdownTitle">
+        <source xml:lang="en">Data source</source>
+        <target state="translated">Origen de datos</target>
       </trans-unit>
-      <trans-unit id="locationDropdown">
-        <source xml:lang="en">Location</source>
-        <target state="translated">Ubicación</target>
+      <trans-unit id="dataSourceRadioButtonLabel">
+        <source xml:lang="en">Data sources</source>
+        <target state="translated">Orígenes de datos</target>
       </trans-unit>
-      <trans-unit id="sameDatabase">
-        <source xml:lang="en">Same database</source>
-        <target state="translated">Misma base de datos</target>
+      <trans-unit id="dataSourcesNodeName">
+        <source xml:lang="en">Data Sources</source>
+        <target state="translated">Orígenes de datos</target>
       </trans-unit>
-      <trans-unit id="differentDbSameServer">
-        <source xml:lang="en">Different database, same server</source>
-        <target state="translated">Base de datos diferente, mismo servidor</target>
-      </trans-unit>
-      <trans-unit id="differentDbDifferentServer">
-        <source xml:lang="en">Different database, different server</source>
-        <target state="translated">Base de datos diferente, servidor diferente</target>
+      <trans-unit id="databaseLocation">
+        <source xml:lang="en">Database location is required for adding a reference to a database</source>
+        <target state="translated">La ubicación de la base de datos es necesaria para agregar una referencia a una base de datos.</target>
       </trans-unit>
       <trans-unit id="databaseName">
         <source xml:lang="en">Database name</source>
         <target state="translated">Nombre de la base de datos</target>
       </trans-unit>
-      <trans-unit id="databaseVariable">
-        <source xml:lang="en">Database variable</source>
-        <target state="translated">Variable de base de datos</target>
+      <trans-unit id="databaseNameLabel">
+        <source xml:lang="en">Database</source>
+        <target state="translated">Base de datos</target>
       </trans-unit>
-      <trans-unit id="serverName">
-        <source xml:lang="en">Server name</source>
-        <target state="translated">Nombre del servidor</target>
-      </trans-unit>
-      <trans-unit id="serverVariable">
-        <source xml:lang="en">Server variable</source>
-        <target state="translated">Variable de servidor</target>
-      </trans-unit>
-      <trans-unit id="suppressMissingDependenciesErrors">
-        <source xml:lang="en">Suppress errors caused by unresolved references in the referenced project</source>
-        <target state="translated">Suprimir errores causados por referencias sin resolver en el proyecto al que se hace referencia</target>
-      </trans-unit>
-      <trans-unit id="exampleUsage">
-        <source xml:lang="en">Example Usage</source>
-        <target state="translated">Ejemplo de uso</target>
-      </trans-unit>
-      <trans-unit id="enterSystemDbName">
-        <source xml:lang="en">Enter a database name for this system database</source>
-        <target state="translated">Escriba un nombre para esta base de datos del sistema.</target>
+      <trans-unit id="databaseNameRequired">
+        <source xml:lang="en">Database name is required for adding a reference to a different database</source>
+        <target state="translated">El nombre de la base de datos es necesaria para agregar una referencia a otra base de datos.</target>
       </trans-unit>
       <trans-unit id="databaseNameRequiredVariableOptional">
         <source xml:lang="en">A database name is required. The database variable is optional.</source>
@@ -553,317 +226,189 @@
         <source xml:lang="en">Database project</source>
         <target state="translated">Proyecto de base de datos</target>
       </trans-unit>
-      <trans-unit id="dacpacNotOnSameDrive">
-        <source xml:lang="en">Dacpac references need to be located on the same drive as the project file. The project file is located at {0}</source>
-        <target state="translated">Las referencias de DACPAC deben encontrarse en la misma unidad de disco que el archivo del proyecto. Este se encuentra en {0}.</target>
-      </trans-unit>
-      <trans-unit id="createProjectFromDatabaseDialogName">
-        <source xml:lang="en">Create project from database</source>
-        <target state="translated">Creación de un proyecto a partir de una base de datos</target>
-      </trans-unit>
-      <trans-unit id="createProjectDialogOkButtonText">
-        <source xml:lang="en">Create</source>
-        <target state="translated">Crear</target>
-      </trans-unit>
-      <trans-unit id="sourceDatabase">
-        <source xml:lang="en">Source database</source>
-        <target state="translated">Base de datos de origen</target>
-      </trans-unit>
-      <trans-unit id="targetProject">
-        <source xml:lang="en">Target project</source>
-        <target state="translated">Proyecto de destino</target>
-      </trans-unit>
-      <trans-unit id="createProjectSettings">
-        <source xml:lang="en">Settings</source>
-        <target state="translated">Configuración</target>
-      </trans-unit>
-      <trans-unit id="projectNameLabel">
-        <source xml:lang="en">Name</source>
-        <target state="translated">Nombre</target>
-      </trans-unit>
-      <trans-unit id="projectNamePlaceholderText">
-        <source xml:lang="en">Enter project name</source>
-        <target state="translated">Escriba el nombre del proyecto.</target>
-      </trans-unit>
-      <trans-unit id="projectLocationLabel">
-        <source xml:lang="en">Location</source>
-        <target state="translated">Ubicación</target>
-      </trans-unit>
-      <trans-unit id="projectLocationPlaceholderText">
-        <source xml:lang="en">Select location to create project</source>
-        <target state="translated">Seleccione la ubicación para crear el proyecto.</target>
-      </trans-unit>
-      <trans-unit id="browseButtonText">
-        <source xml:lang="en">Browse folder</source>
-        <target state="translated">Examinar carpeta</target>
-      </trans-unit>
-      <trans-unit id="selectFolderStructure">
-        <source xml:lang="en">Select folder structure</source>
-        <target state="new">Select folder structure</target>
-      </trans-unit>
-      <trans-unit id="folderStructureLabel">
-        <source xml:lang="en">Folder structure</source>
-        <target state="translated">Estructura de carpetas</target>
-      </trans-unit>
-      <trans-unit id="browseEllipsis">
-        <source xml:lang="en">Browse...</source>
-        <target state="translated">Examinar...</target>
-      </trans-unit>
-      <trans-unit id="selectProjectLocation">
-        <source xml:lang="en">Select project location</source>
-        <target state="new">Select project location</target>
-      </trans-unit>
-      <trans-unit id="dataworkspace.projectParentDirectoryNotExistError">
-        <source xml:lang="en">The selected project location '{0}' does not exist or is not a directory.</source>
-        <target state="translated">La ubicación del proyecto seleccionado, "{0}", no existe o no es un directorio.</target>
-      </trans-unit>
-      <trans-unit id="dataworkspace.projectDirectoryAlreadyExistError">
-        <source xml:lang="en">There is already a directory named '{0}' in the selected location: '{1}'.</source>
-        <target state="translated">Ya hay un directorio llamado "{0}" en la ubicación seleccionada: "{1}".</target>
-      </trans-unit>
-      <trans-unit id="multipleSqlProjFilesSelected">
-        <source xml:lang="en">Multiple .sqlproj files selected; please select only one.</source>
-        <target state="translated">Se han seleccionado varios archivos .sqlproj; seleccione solo uno.</target>
-      </trans-unit>
-      <trans-unit id="noSqlProjFilesSelected">
-        <source xml:lang="en">No .sqlproj file selected; please select one.</source>
-        <target state="translated">No se ha seleccionado ningún archivo .sqlproj; seleccione uno.</target>
-      </trans-unit>
-      <trans-unit id="noDataSourcesFile">
-        <source xml:lang="en">No {0} found</source>
-        <target state="translated">No se ha encontrado ningún {0}.</target>
-      </trans-unit>
-      <trans-unit id="missingVersion">
-        <source xml:lang="en">Missing 'version' entry in {0}</source>
-        <target state="translated">Falta la entrada "version" en {0}.</target>
-      </trans-unit>
-      <trans-unit id="unrecognizedDataSourcesVersion">
-        <source xml:lang="en">Unrecognized version: </source>
-        <target state="translated">Versión no reconocida:</target>
-      </trans-unit>
-      <trans-unit id="unknownDataSourceType">
-        <source xml:lang="en">Unknown data source type: </source>
-        <target state="translated">Tipo de origen de datos desconocido:</target>
-      </trans-unit>
-      <trans-unit id="invalidSqlConnectionString">
-        <source xml:lang="en">Invalid SQL connection string</source>
-        <target state="translated">Cadena de conexión SQL no válida</target>
-      </trans-unit>
-      <trans-unit id="extractTargetRequired">
-        <source xml:lang="en">Target information for extract is required to create database project.</source>
-        <target state="translated">La información de destino para la extracción es necesaria para crear un proyecto de base de datos.</target>
-      </trans-unit>
-      <trans-unit id="schemaCompareNotInstalled">
-        <source xml:lang="en">Schema compare extension installation is required to run schema compare</source>
-        <target state="translated">Se requiere la instalación de la extensión de comparación de esquemas para ejecutar la comparación de esquemas.</target>
-      </trans-unit>
-      <trans-unit id="buildFailedCannotStartSchemaCompare">
-        <source xml:lang="en">Schema compare could not start because build failed</source>
-        <target state="translated">No se pudo iniciar la comparación de esquemas debido a un error de compilación.</target>
-      </trans-unit>
-      <trans-unit id="updateProjectForRoundTrip">
-        <source xml:lang="en">To build this project, Azure Data Studio needs to update targets, references, and system database references. If the project is created in SSDT, it will continue to work in both tools. Do you want Azure Data Studio to update the project?</source>
-        <target state="translated">Para compilar este proyecto, Azure Data Studio debe actualizar los destinos, las referencias y las referencias de base de datos del sistema. Si el proyecto se crea en SSDT, seguirá funcionando en ambas herramientas. ¿Quiere que Azure Data Studio actualice el proyecto?</target>
-      </trans-unit>
-      <trans-unit id="updateProjectDatabaseReferencesForRoundTrip">
-        <source xml:lang="en">To build this project, Azure Data Studio needs to update system database references. If the project is created in SSDT, it will continue to work in both tools. Do you want Azure Data Studio to update the project?</source>
-        <target state="translated">Para compilar este proyecto, Azure Data Studio debe actualizar las referencias de base de datos del sistema. Si el proyecto se crea en SSDT, seguirá funcionando en ambas herramientas. ¿Quiere que Azure Data Studio actualice el proyecto?</target>
+      <trans-unit id="databaseReferenceAlreadyExists">
+        <source xml:lang="en">A reference to this database already exists in this project</source>
+        <target state="translated">Ya existe una referencia a esta base de datos en este proyecto.</target>
       </trans-unit>
       <trans-unit id="databaseReferenceTypeRequired">
         <source xml:lang="en">Database reference type is required for adding a reference to a database</source>
         <target state="translated">El tipo de referencia de la base de datos es necesaria para agregar una referencia a una base de datos.</target>
       </trans-unit>
-      <trans-unit id="systemDatabaseReferenceRequired">
-        <source xml:lang="en">System database selection is required for adding a reference to a system database</source>
-        <target state="translated">La selección de la base de datos del sistema es necesaria para agregar una referencia a una base de datos del sistema.</target>
-      </trans-unit>
-      <trans-unit id="dacpacFileLocationRequired">
-        <source xml:lang="en">Dacpac file location is required for adding a reference to a database</source>
-        <target state="translated">La ubicación del archivo .dacpac es necesaria para agregar una referencia a una base de datos</target>
-      </trans-unit>
-      <trans-unit id="databaseLocation">
-        <source xml:lang="en">Database location is required for adding a reference to a database</source>
-        <target state="translated">La ubicación de la base de datos es necesaria para agregar una referencia a una base de datos.</target>
-      </trans-unit>
-      <trans-unit id="databaseNameRequired">
-        <source xml:lang="en">Database name is required for adding a reference to a different database</source>
-        <target state="translated">El nombre de la base de datos es necesaria para agregar una referencia a otra base de datos.</target>
-      </trans-unit>
-      <trans-unit id="invalidDataSchemaProvider">
-        <source xml:lang="en">Invalid DSP in .sqlproj file</source>
-        <target state="translated">Hay un DSP no válido en el archivo .sqlproj.</target>
-      </trans-unit>
-      <trans-unit id="invalidDatabaseReference">
-        <source xml:lang="en">Invalid database reference in .sqlproj file</source>
-        <target state="translated">Hay una referencia de base de datos no válida en el archivo .sqlproj.</target>
+      <trans-unit id="databaseReferencesNodeName">
+        <source xml:lang="en">Database References</source>
+        <target state="translated">Referencias de base de datos</target>
       </trans-unit>
       <trans-unit id="databaseSelectionRequired">
         <source xml:lang="en">Database selection is required to create a project from a database</source>
         <target state="translated">La selección de base de datos es necesaria para crear un proyecto a partir de una base de datos.</target>
       </trans-unit>
-      <trans-unit id="databaseReferenceAlreadyExists">
-        <source xml:lang="en">A reference to this database already exists in this project</source>
-        <target state="translated">Ya existe una referencia a esta base de datos en este proyecto.</target>
+      <trans-unit id="databaseVariable">
+        <source xml:lang="en">Database variable</source>
+        <target state="translated">Variable de base de datos</target>
       </trans-unit>
-      <trans-unit id="outsideFolderPath">
-        <source xml:lang="en">Items with absolute path outside project folder are not supported. Please make sure the paths in the project file are relative to project folder.</source>
-        <target state="translated">No se admiten elementos con ruta absolutas fuera de la carpeta del proyecto. Asegúrese de que las rutas del archivo de proyecto son relativas a la carpeta del proyecto.</target>
+      <trans-unit id="dataworkspace.projectDirectoryAlreadyExistError">
+        <source xml:lang="en">There is already a directory named '{0}' in the selected location: '{1}'.</source>
+        <target state="translated">Ya hay un directorio llamado "{0}" en la ubicación seleccionada: "{1}".</target>
       </trans-unit>
-      <trans-unit id="parentTreeItemUnknown">
-        <source xml:lang="en">Cannot access parent of provided tree item</source>
-        <target state="translated">No se puede acceder al elemento primario del elemento de árbol proporcionado.</target>
+      <trans-unit id="dataworkspace.projectParentDirectoryNotExistError">
+        <source xml:lang="en">The selected project location '{0}' does not exist or is not a directory.</source>
+        <target state="translated">La ubicación del proyecto seleccionado, "{0}", no existe o no es un directorio.</target>
       </trans-unit>
-      <trans-unit id="prePostDeployCount">
-        <source xml:lang="en">To successfully build, update the project to have one pre-deployment script and/or one post-deployment script</source>
-        <target state="translated">Para realizar una compilación correcta, actualice el proyecto para que tenga un script anterior a la implementación o un script posterior a la implementación.</target>
+      <trans-unit id="default">
+        <source xml:lang="en">default</source>
+        <target state="translated">Predeterminado</target>
       </trans-unit>
-      <trans-unit id="invalidProjectReload">
-        <source xml:lang="en">Cannot access provided database project. Only valid, open database projects can be reloaded.</source>
-        <target state="translated">No se puede acceder al proyecto de base de datos proporcionado. Solo se pueden volver a cargar los proyectos de base de datos abiertos válidos.</target>
-      </trans-unit>
-      <trans-unit id="externalStreamingJobValidationPassed">
-        <source xml:lang="en">Validation of external streaming job passed.</source>
-        <target state="translated">Se ha superado la validación del trabajo de streaming externo.</target>
-      </trans-unit>
-      <trans-unit id="projectAlreadyOpened">
-        <source xml:lang="en">Project '{0}' is already opened.</source>
-        <target state="translated">El proyecto "{0}" ya está abierto.</target>
-      </trans-unit>
-      <trans-unit id="projectAlreadyExists">
-        <source xml:lang="en">A project named {0} already exists in {1}.</source>
-        <target state="translated">Ya existe un proyecto con el nombre {0} en {1}.</target>
-      </trans-unit>
-      <trans-unit id="noFileExist">
-        <source xml:lang="en">File {0} doesn't exist</source>
-        <target state="translated">El archivo {0} no existe.</target>
-      </trans-unit>
-      <trans-unit id="fileOrFolderDoesNotExist">
-        <source xml:lang="en">File or directory '{0}' doesn't exist</source>
-        <target state="translated">El archivo o directorio "{0}" no existe.</target>
-      </trans-unit>
-      <trans-unit id="cannotResolvePath">
-        <source xml:lang="en">Cannot resolve path {0}</source>
-        <target state="translated">No se puede resolver la ruta {0}.</target>
-      </trans-unit>
-      <trans-unit id="fileAlreadyExists">
-        <source xml:lang="en">A file with the name '{0}' already exists on disk at this location. Please choose another name.</source>
-        <target state="translated">Ya existe un archivo con el nombre "{0}" en el disco en esta ubicación. Elija otro nombre.</target>
-      </trans-unit>
-      <trans-unit id="folderAlreadyExists">
-        <source xml:lang="en">A folder with the name '{0}' already exists on disk at this location. Please choose another name.</source>
-        <target state="translated">Ya existe una carpeta con el nombre "{0}" en el disco en esta ubicación. Elija otro nombre.</target>
-      </trans-unit>
-      <trans-unit id="folderAlreadyExistsChooseNewLocation">
-        <source xml:lang="en">A folder with the name '{0}' already exists on disk at this location. Please choose another location.</source>
-        <target state="new">A folder with the name '{0}' already exists on disk at this location. Please choose another location.</target>
-      </trans-unit>
-      <trans-unit id="invalidInput">
-        <source xml:lang="en">Invalid input: {0}</source>
-        <target state="translated">Entrada no válida: "{0}"</target>
-      </trans-unit>
-      <trans-unit id="invalidPropertyValue">
-        <source xml:lang="en">Invalid value specified for the property '{0}' in .sqlproj file</source>
-        <target state="translated">Se ha especificado un valor no válido para la propiedad "{0}" en el archivo .sqlproj.</target>
-      </trans-unit>
-      <trans-unit id="unableToCreatePublishConnection">
-        <source xml:lang="en">Unable to construct connection: {0}</source>
-        <target state="translated">No se puede construir la conexión: {0}.</target>
-      </trans-unit>
-      <trans-unit id="cicularProjectReference">
-        <source xml:lang="en">Circular reference from project {0} to project {1}</source>
-        <target state="translated">Referencia circular del proyecto {0}al proyecto {1}</target>
-      </trans-unit>
-      <trans-unit id="mssqlNotFound">
-        <source xml:lang="en">Could not get SQL Tools Service install location at {0}</source>
-        <target state="translated">No se pudo obtener la ubicación de instalación del servicio de herramientas SQL en {0}</target>
-      </trans-unit>
-      <trans-unit id="projBuildFailed">
-        <source xml:lang="en">Build failed. Check output pane for more details. {0}</source>
-        <target state="translated">Error de compilación. Compruebe el panel de salida para obtener más detalles. {0}</target>
-      </trans-unit>
-      <trans-unit id="unexpectedProjectContext">
-        <source xml:lang="en">Unable to establish project context.  Command invoked from unexpected location: {0}</source>
-        <target state="translated">No se puede establecer el contexto del proyecto. Comando invocado desde una ubicación inesperada: {0}</target>
-      </trans-unit>
-      <trans-unit id="unableToPerformAction">
-        <source xml:lang="en">Unable to locate '{0}' target: '{1}'</source>
-        <target state="translated">No se encuentra el destino "{0}": "{1}".</target>
-      </trans-unit>
-      <trans-unit id="unableToFindFile">
-        <source xml:lang="en">Unable to find {1} with path '{0}'</source>
-        <target state="translated">No se encuentra {1}con la ruta "{0}".</target>
-      </trans-unit>
-      <trans-unit id="deployScriptExists">
-        <source xml:lang="en">A {0} script already exists. The new script will not be included in build.</source>
-        <target state="translated">Ya existe un script {0}. El nuevo script no se incluirá en la compilación.</target>
-      </trans-unit>
-      <trans-unit id="notValidVariableName">
-        <source xml:lang="en">The variable name '{0}' is not valid.</source>
-        <target state="translated">El nombre de variable '{0}' no es válido.</target>
-      </trans-unit>
-      <trans-unit id="cantAddCircularProjectReference">
-        <source xml:lang="en">A reference to project '{0}' cannot be added. Adding this project as a reference would cause a circular dependency</source>
-        <target state="translated">No se puede agregar una referencia al proyecto "{0}". Si se agrega este proyecto como una referencia, se dará lugar a una dependencia circular.</target>
-      </trans-unit>
-      <trans-unit id="unableToFindSqlCmdVariable">
-        <source xml:lang="en">Unable to find SQLCMD variable '{0}'</source>
-        <target state="translated">No se encuentra la variable SQLCMD "{0}".</target>
-      </trans-unit>
-      <trans-unit id="unableToFindReference">
-        <source xml:lang="en">Unable to find database reference {0}</source>
-        <target state="translated">No se encuentra la referencia de base de datos {0}.</target>
-      </trans-unit>
-      <trans-unit id="invalidGuid">
-        <source xml:lang="en">Specified GUID is invalid: {0}</source>
-        <target state="translated">El GUID especificado no es válido: {0}</target>
-      </trans-unit>
-      <trans-unit id="invalidTargetPlatform">
-        <source xml:lang="en">Invalid target platform: {0}. Supported target platforms: {1}</source>
-        <target state="translated">Plataforma de destino no válida: {0}. Plataformas de destino admitidas: {1}</target>
+      <trans-unit id="defaultProjectNameStarter">
+        <source xml:lang="en">DatabaseProject</source>
+        <target state="translated">DatabaseProject</target>
       </trans-unit>
       <trans-unit id="deleteAction">
         <source xml:lang="en">Delete</source>
         <target state="translated">Eliminar</target>
       </trans-unit>
+      <trans-unit id="deleteConfirmation">
+        <source xml:lang="en">Are you sure you want to delete {0}?</source>
+        <target state="translated">¿Está seguro de que desea eliminar {0}?</target>
+      </trans-unit>
+      <trans-unit id="deleteConfirmationContents">
+        <source xml:lang="en">Are you sure you want to delete {0} and all of its contents?</source>
+        <target state="translated">¿Confirma que quiere eliminar {0} y todo su contenido?</target>
+      </trans-unit>
+      <trans-unit id="deleteReferenceConfirmation">
+        <source xml:lang="en">Are you sure you want to delete the reference to {0}?</source>
+        <target state="translated">¿Confirma que quiere eliminar la referencia {0}?</target>
+      </trans-unit>
+      <trans-unit id="deployAppSettingUpdateFailed">
+        <source xml:lang="en">Failed to update app setting '{0}'</source>
+        <target state="translated">No se pudo actualizar la configuración de la aplicación "{0}"</target>
+      </trans-unit>
+      <trans-unit id="deployAppSettingUpdating">
+        <source xml:lang="en">Updating app setting: '{0}'</source>
+        <target state="translated">Actualizando la configuración de la aplicación: "{0}"</target>
+      </trans-unit>
+      <trans-unit id="deployDbTaskName">
+        <source xml:lang="en">Deploying SQL Db Project Locally</source>
+        <target state="translated">Implementando el proyecto de base de datos SQL localmente</target>
+      </trans-unit>
+      <trans-unit id="deployProjectFailed">
+        <source xml:lang="en">Failed to deploy project. Check output pane for more details. {0}</source>
+        <target state="translated">No se pudo implementar el proyecto. Compruebe el panel de salida para obtener más detalles. {0}</target>
+      </trans-unit>
+      <trans-unit id="deployProjectFailedMessage">
+        <source xml:lang="en">Failed to open a connection to the deployed database'</source>
+        <target state="translated">No se pudo abrir una conexión a la base de datos implementada"</target>
+      </trans-unit>
+      <trans-unit id="deployProjectSucceed">
+        <source xml:lang="en">Database project deployed successfully</source>
+        <target state="translated">Proyecto de base de datos implementado correctamente</target>
+      </trans-unit>
+      <trans-unit id="deployScriptExists">
+        <source xml:lang="en">A {0} script already exists. The new script will not be included in build.</source>
+        <target state="translated">Ya existe un script {0}. El nuevo script no se incluirá en la compilación.</target>
+      </trans-unit>
+      <trans-unit id="deployToDockerContainer">
+        <source xml:lang="en">Deploy to docker container</source>
+        <target state="translated">Implementar en un contenedor de Docker</target>
+      </trans-unit>
+      <trans-unit id="deployToExistingServer">
+        <source xml:lang="en">Deploy to existing server</source>
+        <target state="translated">Implementar en el servidor existente</target>
+      </trans-unit>
+      <trans-unit id="differentDbDifferentServer">
+        <source xml:lang="en">Different database, different server</source>
+        <target state="translated">Base de datos diferente, servidor diferente</target>
+      </trans-unit>
+      <trans-unit id="differentDbSameServer">
+        <source xml:lang="en">Different database, same server</source>
+        <target state="translated">Base de datos diferente, mismo servidor</target>
+      </trans-unit>
+      <trans-unit id="dockerContainerCreatedMessage">
+        <source xml:lang="en">Docker created id: '{0}'</source>
+        <target state="translated">Identificador creado por el Docker: "{0}"</target>
+      </trans-unit>
+      <trans-unit id="dockerContainerFailedToRunErrorMessage">
+        <source xml:lang="en">Failed to run the docker container</source>
+        <target state="translated">Error al ejecutar el contenedor de Docker</target>
+      </trans-unit>
+      <trans-unit id="dockerContainerNotRunningErrorMessage">
+        <source xml:lang="en">Docker container is not running</source>
+        <target state="translated">El contenedor de Docker no se está ejecutando</target>
+      </trans-unit>
+      <trans-unit id="dockerLogMessage">
+        <source xml:lang="en">Docker logs: '{0}'</source>
+        <target state="translated">Registros de Docker: "{0}"</target>
+      </trans-unit>
+      <trans-unit id="done">
+        <source xml:lang="en">Done</source>
+        <target state="translated">Hecho</target>
+      </trans-unit>
+      <trans-unit id="dontUseProfile">
+        <source xml:lang="en">Don't use profile</source>
+        <target state="translated">No usar perfil</target>
+      </trans-unit>
+      <trans-unit id="edgeProjectTypeDescription">
+        <source xml:lang="en">Start with the core pieces to develop and publish schemas for SQL Edge</source>
+        <target state="translated">Comience con las partes principales para desarrollar y publicar esquemas para SQL Edge.</target>
+      </trans-unit>
+      <trans-unit id="edgeProjectTypeDisplayName">
+        <source xml:lang="en">SQL Edge</source>
+        <target state="translated">SQL Edge</target>
+      </trans-unit>
+      <trans-unit id="emptyProjectTypeDescription">
+        <source xml:lang="en">Develop and publish schemas for SQL databases starting from an empty project</source>
+        <target state="translated">Desarrolle y publique esquemas para bases de datos SQL a partir de un proyecto vacío.</target>
+      </trans-unit>
+      <trans-unit id="emptyProjectTypeDisplayName">
+        <source xml:lang="en">SQL Database</source>
+        <target state="translated">Base de datos SQL</target>
+      </trans-unit>
+      <trans-unit id="enterConnStringTemplateDescription">
+        <source xml:lang="en">Enter a template for SQL connection string</source>
+        <target state="translated">Escriba una plantilla para la cadena de conexión de SQL</target>
+      </trans-unit>
+      <trans-unit id="enterConnectionStringEnvName">
+        <source xml:lang="en">Enter connection string environment variable name</source>
+        <target state="translated">Escriba el nombre de variable de entorno de la cadena de conexión</target>
+      </trans-unit>
+      <trans-unit id="enterConnectionStringEnvNameDescription">
+        <source xml:lang="en">Enter environment variable for SQL connection string</source>
+        <target state="translated">Escriba la variable de entorno de la cadena de conexión SQL</target>
+      </trans-unit>
+      <trans-unit id="enterConnectionStringTemplate">
+        <source xml:lang="en">Enter connection string template</source>
+        <target state="translated">Escriba la plantilla de la cadena de conexión.</target>
+      </trans-unit>
+      <trans-unit id="enterNewDatabaseName">
+        <source xml:lang="en">Enter new database name</source>
+        <target state="translated">Escriba el nombre de la nueva base de datos.</target>
+      </trans-unit>
+      <trans-unit id="enterNewValueForVar">
+        <source xml:lang="en">Enter new value for variable '{0}'</source>
+        <target state="translated">Escriba un nuevo valor para la variable "{0}".</target>
+      </trans-unit>
+      <trans-unit id="enterPassword">
+        <source xml:lang="en">Enter password or press enter to use the generated password</source>
+        <target state="translated">Escriba la contraseña o presione Entrar para usar la contraseña generada</target>
+      </trans-unit>
+      <trans-unit id="enterPortNumber">
+        <source xml:lang="en">Enter port number or press enter to use the default value</source>
+        <target state="translated">Escriba el número de puerto o presione Entrar para usar el valor predeterminado</target>
+      </trans-unit>
+      <trans-unit id="enterSystemDbName">
+        <source xml:lang="en">Enter a database name for this system database</source>
+        <target state="translated">Escriba un nombre para esta base de datos del sistema.</target>
+      </trans-unit>
+      <trans-unit id="errorFindingBuildFilesLocation">
+        <source xml:lang="en">Error finding build files location: {0}</source>
+        <target state="translated">Error al buscar la ubicación de los archivos de compilación: {0}</target>
+      </trans-unit>
+      <trans-unit id="exampleUsage">
+        <source xml:lang="en">Example Usage</source>
+        <target state="translated">Ejemplo de uso</target>
+      </trans-unit>
       <trans-unit id="excludeAction">
         <source xml:lang="en">Exclude</source>
         <target state="translated">Excluir</target>
-      </trans-unit>
-      <trans-unit id="fileObject">
-        <source xml:lang="en">file</source>
-        <target state="translated">archivo</target>
-      </trans-unit>
-      <trans-unit id="folderObject">
-        <source xml:lang="en">folder</source>
-        <target state="translated">carpeta</target>
-      </trans-unit>
-      <trans-unit id="folderFriendlyName">
-        <source xml:lang="en">Folder</source>
-        <target state="translated">Carpeta</target>
-      </trans-unit>
-      <trans-unit id="scriptFriendlyName">
-        <source xml:lang="en">Script</source>
-        <target state="translated">Script</target>
-      </trans-unit>
-      <trans-unit id="tableFriendlyName">
-        <source xml:lang="en">Table</source>
-        <target state="translated">Tabla</target>
-      </trans-unit>
-      <trans-unit id="viewFriendlyName">
-        <source xml:lang="en">View</source>
-        <target state="translated">Ver</target>
-      </trans-unit>
-      <trans-unit id="storedProcedureFriendlyName">
-        <source xml:lang="en">Stored Procedure</source>
-        <target state="translated">Procedimiento almacenado</target>
-      </trans-unit>
-      <trans-unit id="dataSource">
-        <source xml:lang="en">Data Source</source>
-        <target state="translated">Origen de datos</target>
-      </trans-unit>
-      <trans-unit id="fileFormat">
-        <source xml:lang="en">File Format</source>
-        <target state="translated">Formato de archivo</target>
       </trans-unit>
       <trans-unit id="externalStream">
         <source xml:lang="en">External Stream</source>
@@ -873,73 +418,529 @@
         <source xml:lang="en">External Streaming Job</source>
         <target state="translated">Trabajo de streaming externo</target>
       </trans-unit>
-      <trans-unit id="preDeployScriptFriendlyName">
-        <source xml:lang="en">Script.PreDeployment</source>
-        <target state="translated">Script.PreDeployment</target>
+      <trans-unit id="externalStreamingJobValidationPassed">
+        <source xml:lang="en">Validation of external streaming job passed.</source>
+        <target state="translated">Se ha superado la validación del trabajo de streaming externo.</target>
+      </trans-unit>
+      <trans-unit id="extractTargetRequired">
+        <source xml:lang="en">Target information for extract is required to create database project.</source>
+        <target state="translated">La información de destino para la extracción es necesaria para crear un proyecto de base de datos.</target>
+      </trans-unit>
+      <trans-unit id="file">
+        <source xml:lang="en">File</source>
+        <target state="translated">Archivo</target>
+      </trans-unit>
+      <trans-unit id="fileAlreadyExists">
+        <source xml:lang="en">A file with the name '{0}' already exists on disk at this location. Please choose another name.</source>
+        <target state="translated">Ya existe un archivo con el nombre "{0}" en el disco en esta ubicación. Elija otro nombre.</target>
+      </trans-unit>
+      <trans-unit id="fileFormat">
+        <source xml:lang="en">File Format</source>
+        <target state="translated">Formato de archivo</target>
+      </trans-unit>
+      <trans-unit id="fileObject">
+        <source xml:lang="en">file</source>
+        <target state="translated">archivo</target>
+      </trans-unit>
+      <trans-unit id="fileOrFolderDoesNotExist">
+        <source xml:lang="en">File or directory '{0}' doesn't exist</source>
+        <target state="translated">El archivo o directorio "{0}" no existe.</target>
+      </trans-unit>
+      <trans-unit id="flat">
+        <source xml:lang="en">Flat</source>
+        <target state="translated">Plano</target>
+      </trans-unit>
+      <trans-unit id="folderAlreadyExists">
+        <source xml:lang="en">A folder with the name '{0}' already exists on disk at this location. Please choose another name.</source>
+        <target state="translated">Ya existe una carpeta con el nombre "{0}" en el disco en esta ubicación. Elija otro nombre.</target>
+      </trans-unit>
+      <trans-unit id="folderAlreadyExistsChooseNewLocation">
+        <source xml:lang="en">A folder with the name '{0}' already exists on disk at this location. Please choose another location.</source>
+        <target state="translated">Ya existe una carpeta con el nombre "{0}" en el disco en esta ubicación. Elija otra ubicación.</target>
+      </trans-unit>
+      <trans-unit id="folderFriendlyName">
+        <source xml:lang="en">Folder</source>
+        <target state="translated">Carpeta</target>
+      </trans-unit>
+      <trans-unit id="folderObject">
+        <source xml:lang="en">folder</source>
+        <target state="translated">carpeta</target>
+      </trans-unit>
+      <trans-unit id="folderStructureLabel">
+        <source xml:lang="en">Folder structure</source>
+        <target state="translated">Estructura de carpetas</target>
+      </trans-unit>
+      <trans-unit id="generateScriptButtonText">
+        <source xml:lang="en">Generate Script</source>
+        <target state="translated">Generar script</target>
+      </trans-unit>
+      <trans-unit id="hr">
+        <source xml:lang="en">hr</source>
+        <target state="translated">h</target>
+      </trans-unit>
+      <trans-unit id="input">
+        <source xml:lang="en">Input</source>
+        <target state="translated">Input</target>
+      </trans-unit>
+      <trans-unit id="invalidDataSchemaProvider">
+        <source xml:lang="en">Invalid DSP in .sqlproj file</source>
+        <target state="translated">Hay un DSP no válido en el archivo .sqlproj.</target>
+      </trans-unit>
+      <trans-unit id="invalidDatabaseReference">
+        <source xml:lang="en">Invalid database reference in .sqlproj file</source>
+        <target state="translated">Hay una referencia de base de datos no válida en el archivo .sqlproj.</target>
+      </trans-unit>
+      <trans-unit id="invalidGuid">
+        <source xml:lang="en">Specified GUID is invalid: {0}</source>
+        <target state="translated">El GUID especificado no es válido: {0}</target>
+      </trans-unit>
+      <trans-unit id="invalidInput">
+        <source xml:lang="en">Invalid input: {0}</source>
+        <target state="translated">Entrada no válida: "{0}"</target>
+      </trans-unit>
+      <trans-unit id="invalidProjectReload">
+        <source xml:lang="en">Cannot access provided database project. Only valid, open database projects can be reloaded.</source>
+        <target state="translated">No se puede acceder al proyecto de base de datos proporcionado. Solo se pueden volver a cargar los proyectos de base de datos abiertos válidos.</target>
+      </trans-unit>
+      <trans-unit id="invalidPropertyValue">
+        <source xml:lang="en">Invalid value specified for the property '{0}' in .sqlproj file</source>
+        <target state="translated">Se ha especificado un valor no válido para la propiedad "{0}" en el archivo .sqlproj.</target>
+      </trans-unit>
+      <trans-unit id="invalidSqlConnectionString">
+        <source xml:lang="en">Invalid SQL connection string</source>
+        <target state="translated">Cadena de conexión SQL no válida</target>
+      </trans-unit>
+      <trans-unit id="invalidTargetPlatform">
+        <source xml:lang="en">Invalid target platform: {0}. Supported target platforms: {1}</source>
+        <target state="translated">Plataforma de destino no válida: {0}. Plataformas de destino admitidas: {1}</target>
+      </trans-unit>
+      <trans-unit id="loadProfilePlaceholderText">
+        <source xml:lang="en">Load profile...</source>
+        <target state="translated">Perfil de carga...</target>
+      </trans-unit>
+      <trans-unit id="location">
+        <source xml:lang="en">Location</source>
+        <target state="translated">Ubicación</target>
+      </trans-unit>
+      <trans-unit id="min">
+        <source xml:lang="en">min</source>
+        <target state="translated">min</target>
+      </trans-unit>
+      <trans-unit id="missingVersion">
+        <source xml:lang="en">Missing 'version' entry in {0}</source>
+        <target state="translated">Falta la entrada "version" en {0}.</target>
+      </trans-unit>
+      <trans-unit id="msec">
+        <source xml:lang="en">msec</source>
+        <target state="translated">ms</target>
+      </trans-unit>
+      <trans-unit id="multipleSqlProjFilesSelected">
+        <source xml:lang="en">Multiple .sqlproj files selected; please select only one.</source>
+        <target state="translated">Se han seleccionado varios archivos .sqlproj; seleccione solo uno.</target>
+      </trans-unit>
+      <trans-unit id="nameMustNotBeEmpty">
+        <source xml:lang="en">Name must not be empty</source>
+        <target state="translated">El nombre no puede estar en blanco</target>
+      </trans-unit>
+      <trans-unit id="new">
+        <source xml:lang="en">New</source>
+        <target state="translated">Nuevo</target>
+      </trans-unit>
+      <trans-unit id="newObjectNamePrompt">
+        <source xml:lang="en">New {0} name:</source>
+        <target state="translated">Nuevo nombre de {0}:</target>
+      </trans-unit>
+      <trans-unit id="noAzureFunctionsInFile">
+        <source xml:lang="en">No Azure functions in the current active file</source>
+        <target state="translated">No hay funciones Azure en el archivo activo actual</target>
+      </trans-unit>
+      <trans-unit id="noAzureFunctionsProjectsInWorkspace">
+        <source xml:lang="en">No Azure functions projects found in the workspace</source>
+        <target state="translated">No se encontró ningún proyecto de Azure Functions en el área de trabajo</target>
+      </trans-unit>
+      <trans-unit id="noDataSourcesFile">
+        <source xml:lang="en">No {0} found</source>
+        <target state="translated">No se ha encontrado ningún {0}.</target>
+      </trans-unit>
+      <trans-unit id="noDataSourcesText">
+        <source xml:lang="en">No data sources in this project</source>
+        <target state="translated">No hay ningún origen de datos en este proyecto.</target>
+      </trans-unit>
+      <trans-unit id="noFileExist">
+        <source xml:lang="en">File {0} doesn't exist</source>
+        <target state="translated">El archivo {0} no existe.</target>
+      </trans-unit>
+      <trans-unit id="noSqlProjFilesSelected">
+        <source xml:lang="en">No .sqlproj file selected; please select one.</source>
+        <target state="translated">No se ha seleccionado ningún archivo .sqlproj; seleccione uno.</target>
+      </trans-unit>
+      <trans-unit id="noString">
+        <source xml:lang="en">No</source>
+        <target state="translated">No</target>
+      </trans-unit>
+      <trans-unit id="noStringDefault">
+        <source xml:lang="en">No (default)</source>
+        <target state="translated">No (valor predeterminado)</target>
+      </trans-unit>
+      <trans-unit id="notValidVariableName">
+        <source xml:lang="en">The variable name '{0}' is not valid.</source>
+        <target state="translated">El nombre de variable '{0}' no es válido.</target>
+      </trans-unit>
+      <trans-unit id="objectType">
+        <source xml:lang="en">Object Type</source>
+        <target state="translated">Tipo de objeto</target>
+      </trans-unit>
+      <trans-unit id="okString">
+        <source xml:lang="en">Ok</source>
+        <target state="translated">Aceptar</target>
+      </trans-unit>
+      <trans-unit id="output">
+        <source xml:lang="en">Output</source>
+        <target state="translated">Resultado</target>
+      </trans-unit>
+      <trans-unit id="outsideFolderPath">
+        <source xml:lang="en">Items with absolute path outside project folder are not supported. Please make sure the paths in the project file are relative to project folder.</source>
+        <target state="translated">No se admiten elementos con ruta absolutas fuera de la carpeta del proyecto. Asegúrese de que las rutas del archivo de proyecto son relativas a la carpeta del proyecto.</target>
+      </trans-unit>
+      <trans-unit id="parentTreeItemUnknown">
+        <source xml:lang="en">Cannot access parent of provided tree item</source>
+        <target state="translated">No se puede acceder al elemento primario del elemento de árbol proporcionado.</target>
+      </trans-unit>
+      <trans-unit id="portMustNotBeNumber">
+        <source xml:lang="en">Port must a be number</source>
+        <target state="translated">El puerto debe ser un número</target>
       </trans-unit>
       <trans-unit id="postDeployScriptFriendlyName">
         <source xml:lang="en">Script.PostDeployment</source>
         <target state="translated">Script.PostDeployment</target>
       </trans-unit>
-      <trans-unit id="sqlDatabaseProjects.NetCoreInstallationConfirmation">
-        <source xml:lang="en">The .NET Core SDK cannot be located. Project build will not work. Please install .NET Core SDK version 3.1 or update the .NET Core SDK location in settings if already installed.</source>
-        <target state="new">The .NET Core SDK cannot be located. Project build will not work. Please install .NET Core SDK version 3.1 or update the .NET Core SDK location in settings if already installed.</target>
+      <trans-unit id="preDeployScriptFriendlyName">
+        <source xml:lang="en">Script.PreDeployment</source>
+        <target state="translated">Script.PreDeployment</target>
       </trans-unit>
-      <trans-unit id="sqlDatabaseProjects.NetCoreSupportedVersionInstallationConfirmation">
-        <source xml:lang="en">Currently installed .NET Core SDK version is {0}, which is not supported. Project build will not work. Please install .NET Core SDK version 3.1 or update the .NET Core SDK supported version location in settings if already installed.</source>
-        <target state="new">Currently installed .NET Core SDK version is {0}, which is not supported. Project build will not work. Please install .NET Core SDK version 3.1 or update the .NET Core SDK supported version location in settings if already installed.</target>
+      <trans-unit id="prePostDeployCount">
+        <source xml:lang="en">To successfully build, update the project to have one pre-deployment script and/or one post-deployment script</source>
+        <target state="translated">Para realizar una compilación correcta, actualice el proyecto para que tenga un script anterior a la implementación o un script posterior a la implementación.</target>
       </trans-unit>
-      <trans-unit id="sqlDatabaseProjects.UpdateNetCoreLocation">
-        <source xml:lang="en">Update Location</source>
-        <target state="new">Update Location</target>
+      <trans-unit id="profile">
+        <source xml:lang="en">Profile</source>
+        <target state="translated">Perfil</target>
       </trans-unit>
-      <trans-unit id="sqlDatabaseProjects.InstallNetCore">
-        <source xml:lang="en">Install</source>
-        <target state="new">Install</target>
+      <trans-unit id="profileReadError">
+        <source xml:lang="en">Error loading the publish profile. {0}</source>
+        <target state="translated">Error al cargar el perfil de publicación. {0}</target>
       </trans-unit>
-      <trans-unit id="sqlDatabaseProjects.doNotAskAgain">
-        <source xml:lang="en">Don't Ask Again</source>
-        <target state="new">Don't Ask Again</target>
+      <trans-unit id="projBuildFailed">
+        <source xml:lang="en">Build failed. Check output pane for more details. {0}</source>
+        <target state="translated">Error de compilación. Compruebe el panel de salida para obtener más detalles. {0}</target>
       </trans-unit>
-      <trans-unit id="sqlDatabaseProjects.outputChannel">
-        <source xml:lang="en">Database Projects</source>
-        <target state="new">Database Projects</target>
+      <trans-unit id="projectAlreadyExists">
+        <source xml:lang="en">A project named {0} already exists in {1}.</source>
+        <target state="translated">Ya existe un proyecto con el nombre {0} en {1}.</target>
       </trans-unit>
-      <trans-unit id="input">
-        <source xml:lang="en">Input</source>
-        <target state="translated">Entrada</target>
+      <trans-unit id="projectAlreadyOpened">
+        <source xml:lang="en">Project '{0}' is already opened.</source>
+        <target state="translated">El proyecto "{0}" ya está abierto.</target>
       </trans-unit>
-      <trans-unit id="output">
-        <source xml:lang="en">Output</source>
-        <target state="translated">Salida</target>
+      <trans-unit id="projectLocString">
+        <source xml:lang="en">Project</source>
+        <target state="translated">Proyecto</target>
       </trans-unit>
-      <trans-unit id="selectBindingType">
-        <source xml:lang="en">Select type of binding</source>
-        <target state="new">Select type of binding</target>
+      <trans-unit id="projectLocationPlaceholderText">
+        <source xml:lang="en">Select location to create project</source>
+        <target state="translated">Seleccione la ubicación para crear el proyecto.</target>
+      </trans-unit>
+      <trans-unit id="projectNameLabel">
+        <source xml:lang="en">Name</source>
+        <target state="translated">Nombre</target>
+      </trans-unit>
+      <trans-unit id="projectNamePlaceholderText">
+        <source xml:lang="en">Enter project name</source>
+        <target state="translated">Escriba el nombre del proyecto.</target>
+      </trans-unit>
+      <trans-unit id="publish">
+        <source xml:lang="en">Publish</source>
+        <target state="translated">Publicar</target>
+      </trans-unit>
+      <trans-unit id="publishAction">
+        <source xml:lang="en">Publish</source>
+        <target state="translated">Publicar</target>
+      </trans-unit>
+      <trans-unit id="publishDialogName">
+        <source xml:lang="en">Publish project</source>
+        <target state="translated">Publicación del proyecto</target>
+      </trans-unit>
+      <trans-unit id="publishSettingsFiles">
+        <source xml:lang="en">Publish Settings File</source>
+        <target state="translated">Archivo de configuración de publicación</target>
+      </trans-unit>
+      <trans-unit id="referenceRadioButtonsGroupTitle">
+        <source xml:lang="en">Type</source>
+        <target state="translated">Tipo</target>
+      </trans-unit>
+      <trans-unit id="referenceType">
+        <source xml:lang="en">Reference type</source>
+        <target state="translated">Tipo de referencia</target>
+      </trans-unit>
+      <trans-unit id="reloadProject">
+        <source xml:lang="en">Would you like to reload your database project?</source>
+        <target state="translated">¿Quiere volver a cargar el proyecto de base de datos?</target>
+      </trans-unit>
+      <trans-unit id="reloadValuesFromProjectButtonTitle">
+        <source xml:lang="en">Reload values from project</source>
+        <target state="translated">Recarga de los valores del proyecto</target>
+      </trans-unit>
+      <trans-unit id="resetAllVars">
+        <source xml:lang="en">Reset all variables</source>
+        <target state="translated">Restablecer todas las variables</target>
+      </trans-unit>
+      <trans-unit id="retryFailedMessage">
+        <source xml:lang="en">Operation '{0}' failed. Re-trying... Current Result: {1}. Error: '{2}'</source>
+        <target state="translated">Error en la operación "{0}". Volviendo a intentarlo... Resultado actual: {1}. Error: "{2}"</target>
+      </trans-unit>
+      <trans-unit id="retryMessage">
+        <source xml:lang="en">Operation '{0}' failed. Re-trying... Error: '{1}'</source>
+        <target state="translated">Error en la operación "{0}". Volviendo a intentarlo... Error: "{1}"</target>
+      </trans-unit>
+      <trans-unit id="retryRunMessage">
+        <source xml:lang="en">Running operation '{2}' Attempt {0} of {1}</source>
+        <target state="translated">Se está ejecutando la operación "{2}". Intento {0} de {1}</target>
+      </trans-unit>
+      <trans-unit id="retrySucceedMessage">
+        <source xml:lang="en">Operation '{0}' completed successfully. Result: {1}</source>
+        <target state="translated">La operación "{0}" se completó correctamente. Resultado: {1}</target>
+      </trans-unit>
+      <trans-unit id="retryWaitMessage">
+        <source xml:lang="en">Waiting for {0} seconds before another attempt for operation '{1}'</source>
+        <target state="translated">Esperando {0} segundos antes de otro intento de la operación "{1}"</target>
+      </trans-unit>
+      <trans-unit id="runningDockerMessage">
+        <source xml:lang="en">Building and running the docker container ...</source>
+        <target state="translated">Compilando y ejecutando el contenedor de Docker...</target>
+      </trans-unit>
+      <trans-unit id="sameDatabase">
+        <source xml:lang="en">Same database</source>
+        <target state="translated">Misma base de datos</target>
+      </trans-unit>
+      <trans-unit id="schema">
+        <source xml:lang="en">Schema</source>
+        <target state="translated">Esquema</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareAction">
+        <source xml:lang="en">Schema Compare</source>
+        <target state="translated">Comparar esquemas</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareNotInstalled">
+        <source xml:lang="en">Schema compare extension installation is required to run schema compare</source>
+        <target state="translated">Se requiere la instalación de la extensión de comparación de esquemas para ejecutar la comparación de esquemas.</target>
+      </trans-unit>
+      <trans-unit id="schemaObjectType">
+        <source xml:lang="en">Schema/Object Type</source>
+        <target state="translated">Tipo de esquema u objeto</target>
+      </trans-unit>
+      <trans-unit id="scriptFriendlyName">
+        <source xml:lang="en">Script</source>
+        <target state="translated">Script</target>
+      </trans-unit>
+      <trans-unit id="sec">
+        <source xml:lang="en">sec</source>
+        <target state="translated">s</target>
       </trans-unit>
       <trans-unit id="selectAzureFunction">
         <source xml:lang="en">Select an Azure function in the current file to add SQL binding to</source>
-        <target state="new">Select an Azure function in the current file to add SQL binding to</target>
+        <target state="translated">Seleccione una función de Azure en el archivo actual a la que agregar el enlace de SQL.</target>
+      </trans-unit>
+      <trans-unit id="selectBindingType">
+        <source xml:lang="en">Select type of binding</source>
+        <target state="translated">Seleccione el tipo de enlace</target>
+      </trans-unit>
+      <trans-unit id="selectConnection">
+        <source xml:lang="en">Select connection</source>
+        <target state="translated">Seleccionar conexión</target>
+      </trans-unit>
+      <trans-unit id="selectDacpac">
+        <source xml:lang="en">Select .dacpac</source>
+        <target state="translated">Seleccione .dacpac.</target>
+      </trans-unit>
+      <trans-unit id="selectDatabase">
+        <source xml:lang="en">Select database</source>
+        <target state="translated">Seleccionar base de datos</target>
+      </trans-unit>
+      <trans-unit id="selectDeployOption">
+        <source xml:lang="en">Select where to deploy the project to</source>
+        <target state="translated">Seleccione dónde desea implementar el proyecto</target>
+      </trans-unit>
+      <trans-unit id="selectFolderStructure">
+        <source xml:lang="en">Select folder structure</source>
+        <target state="translated">Seleccione la estructura de carpetas</target>
+      </trans-unit>
+      <trans-unit id="selectProfile">
+        <source xml:lang="en">Select Profile</source>
+        <target state="translated">Seleccionar perfil</target>
+      </trans-unit>
+      <trans-unit id="selectProfileToUse">
+        <source xml:lang="en">Select publish profile to load</source>
+        <target state="translated">Seleccionar el perfil de publicación que se va a cargar.</target>
+      </trans-unit>
+      <trans-unit id="selectProjectLocation">
+        <source xml:lang="en">Select project location</source>
+        <target state="translated">Seleccione la ubicación del proyecto</target>
+      </trans-unit>
+      <trans-unit id="selectString">
+        <source xml:lang="en">Select</source>
+        <target state="translated">Seleccionar</target>
+      </trans-unit>
+      <trans-unit id="selectTargetPlatform">
+        <source xml:lang="en">Current target platform: {0}. Select new target platform</source>
+        <target state="translated">Plataforma de destino actual: {0}. Seleccione una nueva plataforma de destino.</target>
+      </trans-unit>
+      <trans-unit id="server">
+        <source xml:lang="en">Server</source>
+        <target state="translated">Servidor</target>
+      </trans-unit>
+      <trans-unit id="serverName">
+        <source xml:lang="en">Server name</source>
+        <target state="translated">Nombre del servidor</target>
+      </trans-unit>
+      <trans-unit id="serverVariable">
+        <source xml:lang="en">Server variable</source>
+        <target state="translated">Variable de servidor</target>
+      </trans-unit>
+      <trans-unit id="sourceDatabase">
+        <source xml:lang="en">Source database</source>
+        <target state="translated">Base de datos de origen</target>
+      </trans-unit>
+      <trans-unit id="sqlCmdTableLabel">
+        <source xml:lang="en">SQLCMD Variables</source>
+        <target state="translated">Variables SQLCMD</target>
+      </trans-unit>
+      <trans-unit id="sqlCmdValueColumn">
+        <source xml:lang="en">Value</source>
+        <target state="translated">Valor</target>
+      </trans-unit>
+      <trans-unit id="sqlCmdVariableColumn">
+        <source xml:lang="en">Name</source>
+        <target state="translated">Nombre</target>
+      </trans-unit>
+      <trans-unit id="sqlConnectionStringFriendly">
+        <source xml:lang="en">SQL connection string</source>
+        <target state="translated">Cadena de conexión SQL</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.InstallNetCore">
+        <source xml:lang="en">Install</source>
+        <target state="translated">Instalar</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.NetCoreInstallationConfirmation">
+        <source xml:lang="en">The .NET Core SDK cannot be located. Project build will not work. Please install .NET Core SDK version 3.1 or update the .NET Core SDK location in settings if already installed.</source>
+        <target state="translated">No se encuentra el SDK de .NET Core. La compilación del proyecto no funcionará. Instale la versión 3.1 de SDK de .NET Core o actualice la ubicación de la versión compatible de SDK de .NET Core en la configuración si ya está instalada.</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.NetCoreSupportedVersionInstallationConfirmation">
+        <source xml:lang="en">Currently installed .NET Core SDK version is {0}, which is not supported. Project build will not work. Please install .NET Core SDK version 3.1 or update the .NET Core SDK supported version location in settings if already installed.</source>
+        <target state="translated">La versión de SDK de .NET Core instalada actualmente es {0}, la cual no es compatible. La compilación del proyecto no funcionará. Instale la versión 3.1 de SDK de .NET Core o actualice la ubicación de la versión compatible de SDK de .NET Core en la configuración si ya está instalada.</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.UpdateNetCoreLocation">
+        <source xml:lang="en">Update Location</source>
+        <target state="translated">Actualizar ubicación</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.doNotAskAgain">
+        <source xml:lang="en">Don't Ask Again</source>
+        <target state="translated">No volver a preguntar</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.outputChannel">
+        <source xml:lang="en">Database Projects</source>
+        <target state="translated">Proyecto de base de datos</target>
       </trans-unit>
       <trans-unit id="sqlObjectToQuery">
         <source xml:lang="en">SQL object to query</source>
-        <target state="new">SQL object to query</target>
+        <target state="translated">Objeto SQL para consultar</target>
       </trans-unit>
       <trans-unit id="sqlTableToUpsert">
         <source xml:lang="en">SQL table to upsert into</source>
-        <target state="new">SQL table to upsert into</target>
+        <target state="translated">Tabla SQL para actualizar/insertar (upsert)</target>
       </trans-unit>
-      <trans-unit id="connectionStringSetting">
-        <source xml:lang="en">Connection string setting name</source>
-        <target state="new">Connection string setting name</target>
+      <trans-unit id="storedProcedureFriendlyName">
+        <source xml:lang="en">Stored Procedure</source>
+        <target state="translated">Procedimiento almacenado</target>
       </trans-unit>
-      <trans-unit id="connectionStringSettingPlaceholder">
-        <source xml:lang="en">Connection string setting specified in "local.settings.json"</source>
-        <target state="new">Connection string setting specified in "local.settings.json"</target>
+      <trans-unit id="suppressMissingDependenciesErrors">
+        <source xml:lang="en">Suppress errors caused by unresolved references in the referenced project</source>
+        <target state="translated">Suprimir errores causados por referencias sin resolver en el proyecto al que se hace referencia</target>
       </trans-unit>
-      <trans-unit id="noAzureFunctionsInFile">
-        <source xml:lang="en">No Azure functions in the current active file</source>
-        <target state="new">No Azure functions in the current active file</target>
+      <trans-unit id="systemDatabase">
+        <source xml:lang="en">System database</source>
+        <target state="translated">Base de datos del sistema</target>
+      </trans-unit>
+      <trans-unit id="systemDatabaseReferenceRequired">
+        <source xml:lang="en">System database selection is required for adding a reference to a system database</source>
+        <target state="translated">La selección de la base de datos del sistema es necesaria para agregar una referencia a una base de datos del sistema.</target>
+      </trans-unit>
+      <trans-unit id="tableFriendlyName">
+        <source xml:lang="en">Table</source>
+        <target state="translated">Tabla</target>
+      </trans-unit>
+      <trans-unit id="targetConnectionLabel">
+        <source xml:lang="en">Connection</source>
+        <target state="translated">Conexión</target>
+      </trans-unit>
+      <trans-unit id="targetProject">
+        <source xml:lang="en">Target project</source>
+        <target state="translated">Proyecto de destino</target>
+      </trans-unit>
+      <trans-unit id="taskFailedError.error">
+        <source xml:lang="en">Failed to complete task '{0}'. Error: {1}</source>
+        <target state="translated">No se pudo completar la tarea '{0}'. Error: {1}</target>
+      </trans-unit>
+      <trans-unit id="unableToCreatePublishConnection">
+        <source xml:lang="en">Unable to construct connection: {0}</source>
+        <target state="translated">No se puede construir la conexión: {0}.</target>
+      </trans-unit>
+      <trans-unit id="unableToFindFile">
+        <source xml:lang="en">Unable to find {1} with path '{0}'</source>
+        <target state="translated">No se encuentra {1}con la ruta "{0}".</target>
+      </trans-unit>
+      <trans-unit id="unableToFindReference">
+        <source xml:lang="en">Unable to find database reference {0}</source>
+        <target state="translated">No se encuentra la referencia de base de datos {0}.</target>
+      </trans-unit>
+      <trans-unit id="unableToFindSqlCmdVariable">
+        <source xml:lang="en">Unable to find SQLCMD variable '{0}'</source>
+        <target state="translated">No se encuentra la variable SQLCMD "{0}".</target>
+      </trans-unit>
+      <trans-unit id="unableToPerformAction">
+        <source xml:lang="en">Unable to locate '{0}' target: '{1}'</source>
+        <target state="translated">No se encuentra el destino "{0}": "{1}".</target>
+      </trans-unit>
+      <trans-unit id="unexpectedProjectContext">
+        <source xml:lang="en">Unable to establish project context.  Command invoked from unexpected location: {0}</source>
+        <target state="translated">No se puede establecer el contexto del proyecto. Comando invocado desde una ubicación inesperada: {0}</target>
+      </trans-unit>
+      <trans-unit id="unknownDataSourceType">
+        <source xml:lang="en">Unknown data source type: </source>
+        <target state="translated">Tipo de origen de datos desconocido:</target>
+      </trans-unit>
+      <trans-unit id="unrecognizedDataSourcesVersion">
+        <source xml:lang="en">Unrecognized version: </source>
+        <target state="translated">Versión no reconocida:</target>
+      </trans-unit>
+      <trans-unit id="updateProjectDatabaseReferencesForRoundTrip">
+        <source xml:lang="en">The system database references need to be updated to build this project. If the project is created in SSDT, it will continue to work in both tools. Do you want to update the project?</source>
+        <target state="translated">Las referencias de base de datos del sistema deben actualizarse para compilar este proyecto. Si el proyecto se crea en SSDT, seguirá funcionando en ambas herramientas. ¿Desea actualizar el proyecto?</target>
+      </trans-unit>
+      <trans-unit id="updateProjectForRoundTrip">
+        <source xml:lang="en">The targets, references, and system database references need to be updated to build this project. If the project is created in SSDT, it will continue to work in both tools. Do you want to update the project?</source>
+        <target state="translated">Los objetivos, las referencias y las referencias de base de datos del sistema deben actualizarse para compilar este proyecto. Si el proyecto se crea en SSDT, seguirá funcionando en ambas herramientas. ¿Desea actualizar el proyecto?</target>
+      </trans-unit>
+      <trans-unit id="valueCannotBeEmpty">
+        <source xml:lang="en">Value cannot be empty</source>
+        <target state="translated">El valor no puede estar vacío</target>
+      </trans-unit>
+      <trans-unit id="viewFriendlyName">
+        <source xml:lang="en">View</source>
+        <target state="translated">Ver</target>
+      </trans-unit>
+      <trans-unit id="yesString">
+        <source xml:lang="en">Yes</source>
+        <target state="translated">Sí</target>
       </trans-unit>
     </body>
   </file>
@@ -949,6 +950,14 @@
         <source xml:lang="en">	&gt;&gt;&gt; {0}   … errored out: {1}</source>
         <target state="translated">	&gt;&gt;&gt; {0}   … errores: {1}</target>
       </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.RunCommand.stderr">
+        <source xml:lang="en">    stderr: </source>
+        <target state="translated">    .stderr: </target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.RunCommand.stdout">
+        <source xml:lang="en">    stdout: </source>
+        <target state="translated">    .stdout:</target>
+      </trans-unit>
       <trans-unit id="sqlDatabaseProjects.RunStreamedCommand.ExitedWithCode">
         <source xml:lang="en">    &gt;&gt;&gt; {0}    … exited with code: {1}</source>
         <target state="translated">    &gt;&gt;&gt; {0}    … cerrado con el código {1}</target>
@@ -957,13 +966,147 @@
         <source xml:lang="en">    &gt;&gt;&gt; {0}   … exited with signal: {1}</source>
         <target state="translated">    &gt;&gt;&gt; {0}   … cerrado con la señal {1}</target>
       </trans-unit>
-      <trans-unit id="sqlDatabaseProjects.RunCommand.stdout">
-        <source xml:lang="en">    stdout: </source>
-        <target state="translated">    .stdout:</target>
+    </body>
+  </file>
+  <file original="extensions/sql-database-projects/package" source-language="en" datatype="plaintext" target-language="es">
+    <body>
+      <trans-unit id="sqlDatabaseProjects.Settings">
+        <source xml:lang="en">Database Projects</source>
+        <target state="translated">Proyectos de base de datos</target>
       </trans-unit>
-      <trans-unit id="sqlDatabaseProjects.RunCommand.stderr">
-        <source xml:lang="en">    stderr: </source>
-        <target state="translated">    .stderr: </target>
+      <trans-unit id="sqlDatabaseProjects.addDatabaseReference">
+        <source xml:lang="en">Add Database Reference</source>
+        <target state="translated">Agregar referencia de base de datos</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.addSqlBinding">
+        <source xml:lang="en">Add SQL Binding</source>
+        <target state="translated">Agregue el enlace SQL</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.build">
+        <source xml:lang="en">Build</source>
+        <target state="translated">Compilar</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.changeTargetPlatform">
+        <source xml:lang="en">Change Target Platform</source>
+        <target state="translated">Cambiar plataforma de destino</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.close">
+        <source xml:lang="en">Close Database Project</source>
+        <target state="translated">Cerrar proyecto de base de datos</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.createProjectFromDatabase">
+        <source xml:lang="en">Create Project From Database</source>
+        <target state="translated">Crear proyecto a partir de base de datos</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.delete">
+        <source xml:lang="en">Delete</source>
+        <target state="translated">Eliminar</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.deployLocal">
+        <source xml:lang="en">Deploy</source>
+        <target state="translated">Implementar</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.description">
+        <source xml:lang="en">Design and publish SQL database schemas</source>
+        <target state="translated">Diseñe y publique esquemas de base de datos SQL.</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.displayName">
+        <source xml:lang="en">Database Projects</source>
+        <target state="translated">Proyectos de base de datos</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.editProjectFile">
+        <source xml:lang="en">Edit .sqlproj File</source>
+        <target state="translated">Editar archivo. sqlproj</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.exclude">
+        <source xml:lang="en">Exclude from project</source>
+        <target state="translated">Excluir del proyecto</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.netCoreDoNotAsk">
+        <source xml:lang="en">Whether to prompt the user to install .NET Core when not detected.</source>
+        <target state="translated">Indica si se pide al usuario que instale .NET Core cuando no se detecte.</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.netCoreInstallLocation">
+        <source xml:lang="en">Full path to .NET Core SDK on the machine.</source>
+        <target state="translated">Ruta de acceso completa a SDK de .NET Core en la máquina.</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.new">
+        <source xml:lang="en">New Database Project</source>
+        <target state="translated">Nuevo proyecto de base de datos</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.newExternalStreamingJob">
+        <source xml:lang="en">Add External Streaming Job</source>
+        <target state="translated">Agregar trabajo de streaming externo</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.newFolder">
+        <source xml:lang="en">Add Folder</source>
+        <target state="translated">Agregar carpeta</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.newItem">
+        <source xml:lang="en">Add Item...</source>
+        <target state="translated">Agregar elemento...</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.newPostDeploymentScript">
+        <source xml:lang="en">Add Post-Deployment Script</source>
+        <target state="translated">Agregar script posterior a la implementación</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.newPreDeploymentScript">
+        <source xml:lang="en">Add Pre-Deployment Script</source>
+        <target state="translated">Agregar script anterior a la implementación</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.newScript">
+        <source xml:lang="en">Add Script</source>
+        <target state="translated">Agregar script</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.newStoredProcedure">
+        <source xml:lang="en">Add Stored Procedure</source>
+        <target state="translated">Agregar procedimiento almacenado</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.newTable">
+        <source xml:lang="en">Add Table</source>
+        <target state="translated">Agregar tabla</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.newView">
+        <source xml:lang="en">Add View</source>
+        <target state="translated">Agregar vista</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.open">
+        <source xml:lang="en">Open Database Project</source>
+        <target state="translated">Abrir proyecto de base de datos</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.openContainingFolder">
+        <source xml:lang="en">Open Containing Folder</source>
+        <target state="translated">Abrir carpeta contenedora</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.properties">
+        <source xml:lang="en">Properties</source>
+        <target state="translated">Propiedades</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.publish">
+        <source xml:lang="en">Publish</source>
+        <target state="translated">Publicar</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.schemaCompare">
+        <source xml:lang="en">Schema Compare</source>
+        <target state="translated">Comparar esquemas</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.validateExternalStreamingJob">
+        <source xml:lang="en">Validate External Streaming Job</source>
+        <target state="translated">Validar trabajo de streaming externo</target>
+      </trans-unit>
+      <trans-unit id="sqlDatabaseProjects.welcome">
+        <source xml:lang="en">No database projects currently open.
+[New Project](command:sqlDatabaseProjects.new)
+[Open Project](command:sqlDatabaseProjects.open)
+[Create Project From Database](command:sqlDatabaseProjects.importDatabase)</source>
+        <target state="translated">Actualmente, no hay ningún proyecto de base de datos abierto.
+[Nuevo proyecto](command:sqlDatabaseProjects.new)
+[Abrir proyecto](command:sqlDatabaseProjects.open)
+[Crear proyecto a partir de base de datos](command:sqlDatabaseProjects.importDatabase)</target>
+      </trans-unit>
+      <trans-unit id="title.projectsView">
+        <source xml:lang="en">Projects</source>
+        <target state="translated">Proyectos</target>
       </trans-unit>
     </body>
   </file>

@@ -1,48 +1,234 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file original="extensions/data-workspace/dist/common/constants" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="AllProjectTypes">
+        <source xml:lang="en">All Project Types</source>
+        <target state="translated">모든 프로젝트 형식</target>
+      </trans-unit>
+      <trans-unit id="SelectProjectFileActionName">
+        <source xml:lang="en">Select</source>
+        <target state="translated">선택</target>
+      </trans-unit>
+      <trans-unit id="UnknownProjectTypeError">
+        <source xml:lang="en">No provider was found for project type with id: '{0}'</source>
+        <target state="translated">ID가 '{0}'인 프로젝트 형식에 대한 공급자를 찾을 수 없습니다.</target>
+      </trans-unit>
+      <trans-unit id="UnknownProjectsError">
+        <source xml:lang="en">No provider was found for the following projects: {0}</source>
+        <target state="translated">다음 프로젝트에 대한 공급자를 찾을 수 없습니다. {0}</target>
+      </trans-unit>
+      <trans-unit id="activateExtensionFailed">
+        <source xml:lang="en">Failed to load the project provider extension '{0}'. Error message: {1}</source>
+        <target state="translated">프로젝트 공급자 확장 '{0}'을(를) 로드하지 못했습니다. 오류 메시지: {1}</target>
+      </trans-unit>
+      <trans-unit id="dataworksapce.local">
+        <source xml:lang="en">Local</source>
+        <target state="translated">로컬</target>
+      </trans-unit>
+      <trans-unit id="dataworksapce.refresh">
+        <source xml:lang="en">Refresh</source>
+        <target state="translated">새로 고침</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.NewProjectDialogTitle">
+        <source xml:lang="en">Create new project</source>
+        <target state="translated">새 프로젝트 만들기</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.Type">
+        <source xml:lang="en">Type</source>
+        <target state="translated">형식</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.browse">
+        <source xml:lang="en">Browse</source>
+        <target state="translated">찾아보기</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.browseEllipsis">
+        <source xml:lang="en">Browse...</source>
+        <target state="translated">찾아보기...</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.cloneParentDirectoryNotExistError">
+        <source xml:lang="en">The selected clone path '{0}' does not exist or is not a directory.</source>
+        <target state="translated">선택한 복제 경로 '{0}'이(가) 없거나 디렉터리가 아닙니다.</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.create">
+        <source xml:lang="en">Create</source>
+        <target state="translated">만들기</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.enterProjectName">
+        <source xml:lang="en">Enter Project Name</source>
+        <target state="translated">프로젝트 이름 입력</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.fileNotExistError">
+        <source xml:lang="en">The selected {0} file '{1}' does not exist or is not a file.</source>
+        <target state="translated">선택한 {0} 파일 '{1}'이(가) 없거나 파일이 아닙니다.</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.gitRepoUrlPlaceholder">
+        <source xml:lang="en">Enter remote git repository URL</source>
+        <target state="translated">원격 GIT 리포지토리 URL 입력</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.gitRepoUrlTitle">
+        <source xml:lang="en">Git repository URL</source>
+        <target state="translated">GIT 리포지토리 URL</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.localClonePathPlaceholder">
+        <source xml:lang="en">Select location to clone repository locally</source>
+        <target state="translated">리포지토리를 로컬로 복제할 위치 선택</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.localClonePathTitle">
+        <source xml:lang="en">Local clone path</source>
+        <target state="translated">로컬 복제 경로</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.locationSelectorTitle">
+        <source xml:lang="en">Location</source>
+        <target state="translated">위치</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.nameCannotBeEmpty">
+        <source xml:lang="en">Name cannot be empty</source>
+        <target state="translated">이름은 비워 둘 수 없습니다.</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.ok">
+        <source xml:lang="en">OK</source>
+        <target state="translated">확인</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.open">
+        <source xml:lang="en">Open</source>
+        <target state="translated">열기</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.openExistingDialogTitle">
+        <source xml:lang="en">Open Existing Project</source>
+        <target state="translated">기존 프로젝트 열기</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.project">
+        <source xml:lang="en">Project</source>
+        <target state="translated">Project</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.projectAlreadyOpened">
+        <source xml:lang="en">Project '{0}' is already opened.</source>
+        <target state="translated">프로젝트 '{0}'이(가) 이미 열려 있습니다.</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.projectDirectoryAlreadyExistError">
+        <source xml:lang="en">There is already a directory named '{0}' in the selected location: '{1}'.</source>
+        <target state="translated">선택한 위치 '{1}'에 '{0}'(이)라는 디렉터리가 이미 있습니다.</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.projectDirectoryAlreadyExistErrorShort">
+        <source xml:lang="en">Directory '{0}' already exists in the selected location, please choose another</source>
+        <target state="translated">디렉터리 '{0}'이(가) 선택한 위치에 이미 있습니다. 다른 디렉터리를 선택하세요.</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.projectFilePlaceholder">
+        <source xml:lang="en">Select project file</source>
+        <target state="translated">프로젝트 파일 선택</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.projectLocationPlaceholder">
+        <source xml:lang="en">Select location to create project</source>
+        <target state="translated">프로젝트를 만들 위치 선택</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.projectLocationTitle">
+        <source xml:lang="en">Location</source>
+        <target state="translated">위치</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.projectNamePlaceholder">
+        <source xml:lang="en">Enter project name</source>
+        <target state="translated">프로젝트 이름 입력</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.projectNameTitle">
+        <source xml:lang="en">Name</source>
+        <target state="translated">이름</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.projectParentDirectoryNotExistError">
+        <source xml:lang="en">The selected project location '{0}' does not exist or is not a directory.</source>
+        <target state="translated">선택한 프로젝트 위치 '{0}'이(가) 없거나 디렉터리가 아닙니다.</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.projectsFailedToLoad">
+        <source xml:lang="en">Some projects failed to load. To view more details, [open the developer console](command:workbench.action.toggleDevTools)</source>
+        <target state="translated">일부 프로젝트를 로드하지 못했습니다. 자세한 내용을 보려면 [개발자 콘솔 열기](command:workbench.action.toggleDevTools)</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.remoteGitRepo">
+        <source xml:lang="en">Remote git repository</source>
+        <target state="translated">원격 GIT 리포지토리</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.restartConfirmation">
+        <source xml:lang="en">Azure Data Studio needs to be restarted for the project to be created and added to the workspace, do this now?</source>
+        <target state="translated">프로젝트를 만들고 작업 영역에 추가하려면 Azure Data Studio를 다시 시작해야 합니다. 지금 다시 시작할까요?</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.select">
+        <source xml:lang="en">Select</source>
+        <target state="translated">선택</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.selectProjectLocation">
+        <source xml:lang="en">Select Project Location</source>
+        <target state="translated">프로젝트 위치 선택</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.selectProjectType">
+        <source xml:lang="en">Select Project Type</source>
+        <target state="translated">프로젝트 형식 선택</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.targetPlatform">
+        <source xml:lang="en">Target Platform</source>
+        <target state="translated">대상 플랫폼</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.workspacePlaceholder">
+        <source xml:lang="en">Select workspace ({0}) file</source>
+        <target state="translated">작업 영역({0}) 파일 선택</target>
+      </trans-unit>
+      <trans-unit id="fileDoesNotExist">
+        <source xml:lang="en">File '{0}' doesn't exist</source>
+        <target state="translated">파일 '{0}'이(가) 없습니다.</target>
+      </trans-unit>
+      <trans-unit id="gitCloneError">
+        <source xml:lang="en">Error during git clone. View git output for more details</source>
+        <target state="translated">GIT 복제 중 오류가 발생했습니다. GIT 출력 보기로 자세한 내용 확인</target>
+      </trans-unit>
+      <trans-unit id="gitCloneMessage">
+        <source xml:lang="en">Cloning git repository '{0}'...</source>
+        <target state="translated">Git 리포지토리 '{0}'을(를) 복제하는 중...</target>
+      </trans-unit>
+      <trans-unit id="noPreviousData">
+        <source xml:lang="en">Prior {0} for the current project will appear here, please run to see the results.</source>
+        <target state="translated">현재 프로젝트에 대한 이전 {0}이(가) 여기에 표시됩니다. 실행하여 결과를 확인하세요.</target>
+      </trans-unit>
+      <trans-unit id="openedProjectsUndefinedAfterRefresh">
+        <source xml:lang="en">List of opened projects should not be undefined after refresh from disk.</source>
+        <target state="translated">디스크에서 새로 고친 후에는 열린 프로젝트 목록을 정의하지 않아야 합니다.</target>
+      </trans-unit>
+      <trans-unit id="projectNameNull">
+        <source xml:lang="en">Project name is null</source>
+        <target state="translated">프로젝트 이름이 Null입니다.</target>
+      </trans-unit>
+    </body>
+  </file>
   <file original="extensions/data-workspace/package" source-language="en" datatype="plaintext" target-language="ko">
     <body>
-      <trans-unit id="extension-displayName">
-        <source xml:lang="en">Data workspace</source>
-        <target state="translated">데이터 작업 영역</target>
-      </trans-unit>
-      <trans-unit id="extension-description">
-        <source xml:lang="en">Data workspace</source>
-        <target state="translated">데이터 작업 영역</target>
+      <trans-unit id="close-workspace-command">
+        <source xml:lang="en">Close Workspace</source>
+        <target state="translated">작업 영역 닫기</target>
       </trans-unit>
       <trans-unit id="data-workspace-view-container-name">
         <source xml:lang="en">Projects</source>
         <target state="translated">프로젝트</target>
       </trans-unit>
+      <trans-unit id="extension-description">
+        <source xml:lang="en">Data workspace</source>
+        <target state="translated">데이터 작업 영역</target>
+      </trans-unit>
+      <trans-unit id="extension-displayName">
+        <source xml:lang="en">Data workspace</source>
+        <target state="translated">데이터 작업 영역</target>
+      </trans-unit>
       <trans-unit id="main-view-name">
         <source xml:lang="en">Projects</source>
         <target state="translated">프로젝트</target>
+      </trans-unit>
+      <trans-unit id="manage-project-command">
+        <source xml:lang="en">Manage</source>
+        <target state="translated">관리</target>
       </trans-unit>
       <trans-unit id="new-command">
         <source xml:lang="en">New</source>
         <target state="translated">새로 만들기</target>
       </trans-unit>
-      <trans-unit id="refresh-workspace-command">
-        <source xml:lang="en">Refresh</source>
-        <target state="translated">새로 고침</target>
-      </trans-unit>
-      <trans-unit id="close-workspace-command">
-        <source xml:lang="en">Close Workspace</source>
-        <target state="translated">작업 영역 닫기</target>
-      </trans-unit>
-      <trans-unit id="remove-project-command">
-        <source xml:lang="en">Remove Project</source>
-        <target state="translated">프로젝트 제거</target>
-      </trans-unit>
-      <trans-unit id="projects-view-no-workspace-content">
-        <source xml:lang="en">Create new or open existing to get started.
-[Create new](command:projects.new)
-[Open existing](command:projects.openExisting)
-To learn more about projects [read our docs](https://aka.ms/azuredatastudio-projects).</source>
-        <target state="translated">새 항목을 만들거나 기존 항목을 열어 시작합니다.
-[새로 만들기](command:projects.new)
-[기존 항목 열기](command:projects.openExisting)
-프로젝트에 대해 자세히 알아보려면 [문서를 읽어보세요](https://aka.ms/azuredatastudio-projects).</target>
+      <trans-unit id="open-existing-command">
+        <source xml:lang="en">Open existing</source>
+        <target state="translated">기존 항목 열기</target>
       </trans-unit>
       <trans-unit id="projects-view-no-project-content">
         <source xml:lang="en">No projects open in current workspace.
@@ -56,9 +242,15 @@ To learn more about projects [read our docs](https://aka.ms/azuredatastudio-proj
 프로젝트에 대해 자세히 알아보려면 [문서를 읽어보세요](https://aka.ms/azuredatastudio-projects).
 </target>
       </trans-unit>
-      <trans-unit id="open-existing-command">
-        <source xml:lang="en">Open existing</source>
-        <target state="translated">기존 항목 열기</target>
+      <trans-unit id="projects-view-no-workspace-content">
+        <source xml:lang="en">Create new or open existing to get started.
+[Create new](command:projects.new)
+[Open existing](command:projects.openExisting)
+To learn more about projects [read our docs](https://aka.ms/azuredatastudio-projects).</source>
+        <target state="translated">새 항목을 만들거나 기존 항목을 열어 시작합니다.
+[새로 만들기](command:projects.new)
+[기존 항목 열기](command:projects.openExisting)
+프로젝트에 대해 자세히 알아보려면 [문서를 읽어보세요](https://aka.ms/azuredatastudio-projects).</target>
       </trans-unit>
       <trans-unit id="projects.defaultProjectSaveLocation">
         <source xml:lang="en">Full path to folder where new projects are saved by default.</source>
@@ -68,201 +260,13 @@ To learn more about projects [read our docs](https://aka.ms/azuredatastudio-proj
         <source xml:lang="en">Always show information message when the current workspace folders contain projects that have not been added to the workspace's projects.</source>
         <target state="translated">현재 작업 영역 폴더에 작업 영역의 프로젝트에 추가되지 않은 프로젝트가 포함된 경우 항상 정보 메시지를 표시합니다.</target>
       </trans-unit>
-      <trans-unit id="manage-project-command">
-        <source xml:lang="en">Manage</source>
-        <target state="translated">관리</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/data-workspace/dist/common/constants" source-language="en" datatype="plaintext" target-language="ko">
-    <body>
-      <trans-unit id="activateExtensionFailed">
-        <source xml:lang="en">Failed to load the project provider extension '{0}'. Error message: {1}</source>
-        <target state="translated">프로젝트 공급자 확장 '{0}'을(를) 로드하지 못했습니다. 오류 메시지: {1}</target>
-      </trans-unit>
-      <trans-unit id="UnknownProjectsError">
-        <source xml:lang="en">No provider was found for the following projects: {0}</source>
-        <target state="translated">다음 프로젝트에 대한 공급자를 찾을 수 없습니다. {0}</target>
-      </trans-unit>
-      <trans-unit id="SelectProjectFileActionName">
-        <source xml:lang="en">Select</source>
-        <target state="translated">선택</target>
-      </trans-unit>
-      <trans-unit id="AllProjectTypes">
-        <source xml:lang="en">All Project Types</source>
-        <target state="translated">모든 프로젝트 형식</target>
-      </trans-unit>
-      <trans-unit id="UnknownProjectTypeError">
-        <source xml:lang="en">No provider was found for project type with id: '{0}'</source>
-        <target state="translated">ID가 '{0}'인 프로젝트 형식에 대한 공급자를 찾을 수 없습니다.</target>
-      </trans-unit>
-      <trans-unit id="dataworkspace.restartConfirmation">
-        <source xml:lang="en">Azure Data Studio needs to be restarted for the project to be created and added to the workspace, do this now?</source>
-        <target state="translated">프로젝트를 만들고 작업 영역에 추가하려면 Azure Data Studio를 다시 시작해야 합니다. 지금 다시 시작할까요?</target>
-      </trans-unit>
-      <trans-unit id="dataworkspace.projectsFailedToLoad">
-        <source xml:lang="en">Some projects failed to load. To view more details, [open the developer console](command:workbench.action.toggleDevTools)</source>
-        <target state="translated">일부 프로젝트를 로드하지 못했습니다. 자세한 내용을 보려면 [개발자 콘솔 열기](command:workbench.action.toggleDevTools)</target>
-      </trans-unit>
-      <trans-unit id="fileDoesNotExist">
-        <source xml:lang="en">File '{0}' doesn't exist</source>
-        <target state="translated">파일 '{0}'이(가) 없습니다.</target>
-      </trans-unit>
-      <trans-unit id="projectNameNull">
-        <source xml:lang="en">Project name is null</source>
-        <target state="translated">프로젝트 이름이 Null입니다.</target>
-      </trans-unit>
-      <trans-unit id="noPreviousData">
-        <source xml:lang="en">Prior {0} for the current project will appear here, please run to see the results.</source>
-        <target state="translated">현재 프로젝트에 대한 이전 {0}이(가) 여기에 표시됩니다. 실행하여 결과를 확인하세요.</target>
-      </trans-unit>
-      <trans-unit id="gitCloneMessage">
-        <source xml:lang="en">Cloning git repository '{0}'...</source>
-        <target state="translated">Git 리포지토리 '{0}'을(를) 복제하는 중...</target>
-      </trans-unit>
-      <trans-unit id="gitCloneError">
-        <source xml:lang="en">Error during git clone. View git output for more details</source>
-        <target state="translated">GIT 복제 중 오류가 발생했습니다. GIT 출력 보기로 자세한 내용 확인</target>
-      </trans-unit>
-      <trans-unit id="dataworkspace.ok">
-        <source xml:lang="en">OK</source>
-        <target state="translated">확인</target>
-      </trans-unit>
-      <trans-unit id="dataworkspace.browse">
-        <source xml:lang="en">Browse</source>
-        <target state="translated">찾아보기</target>
-      </trans-unit>
-      <trans-unit id="dataworkspace.browseEllipsis">
-        <source xml:lang="en">Browse...</source>
-        <target state="translated">찾아보기...</target>
-      </trans-unit>
-      <trans-unit id="dataworkspace.open">
-        <source xml:lang="en">Open</source>
-        <target state="translated">열기</target>
-      </trans-unit>
-      <trans-unit id="dataworkspace.create">
-        <source xml:lang="en">Create</source>
-        <target state="translated">만들기</target>
-      </trans-unit>
-      <trans-unit id="dataworkspace.select">
-        <source xml:lang="en">Select</source>
-        <target state="translated">선택</target>
-      </trans-unit>
-      <trans-unit id="dataworkspace.NewProjectDialogTitle">
-        <source xml:lang="en">Create new project</source>
-        <target state="translated">새 프로젝트 만들기</target>
-      </trans-unit>
-      <trans-unit id="dataworkspace.Type">
-        <source xml:lang="en">Type</source>
-        <target state="translated">형식</target>
-      </trans-unit>
-      <trans-unit id="dataworkspace.projectNameTitle">
-        <source xml:lang="en">Name</source>
-        <target state="translated">이름</target>
-      </trans-unit>
-      <trans-unit id="dataworkspace.projectNamePlaceholder">
-        <source xml:lang="en">Enter project name</source>
-        <target state="translated">프로젝트 이름 입력</target>
-      </trans-unit>
-      <trans-unit id="dataworkspace.enterProjectName">
-        <source xml:lang="en">Enter Project Name</source>
-        <target state="translated">프로젝트 이름 입력</target>
-      </trans-unit>
-      <trans-unit id="dataworkspace.projectLocationTitle">
-        <source xml:lang="en">Location</source>
-        <target state="translated">위치</target>
-      </trans-unit>
-      <trans-unit id="dataworkspace.projectLocationPlaceholder">
-        <source xml:lang="en">Select location to create project</source>
-        <target state="translated">프로젝트를 만들 위치 선택</target>
-      </trans-unit>
-      <trans-unit id="dataworkspace.projectParentDirectoryNotExistError">
-        <source xml:lang="en">The selected project location '{0}' does not exist or is not a directory.</source>
-        <target state="translated">선택한 프로젝트 위치 '{0}'이(가) 없거나 디렉터리가 아닙니다.</target>
-      </trans-unit>
-      <trans-unit id="dataworkspace.projectDirectoryAlreadyExistError">
-        <source xml:lang="en">There is already a directory named '{0}' in the selected location: '{1}'.</source>
-        <target state="translated">선택한 위치 '{1}'에 '{0}'(이)라는 디렉터리가 이미 있습니다.</target>
-      </trans-unit>
-      <trans-unit id="dataworkspace.projectDirectoryAlreadyExistErrorShort">
-        <source xml:lang="en">Directory '{0}' already exists in the selected location, please choose another</source>
-        <target state="translated">디렉터리 '{0}'이(가) 선택한 위치에 이미 있습니다. 다른 디렉터리를 선택하세요.</target>
-      </trans-unit>
-      <trans-unit id="dataworkspace.selectProjectType">
-        <source xml:lang="en">Select Project Type</source>
-        <target state="translated">프로젝트 형식 선택</target>
-      </trans-unit>
-      <trans-unit id="dataworkspace.selectProjectLocation">
-        <source xml:lang="en">Select Project Location</source>
-        <target state="translated">프로젝트 위치 선택</target>
-      </trans-unit>
-      <trans-unit id="dataworkspace.nameCannotBeEmpty">
-        <source xml:lang="en">Name cannot be empty</source>
-        <target state="translated">이름은 비워 둘 수 없습니다.</target>
-      </trans-unit>
-      <trans-unit id="dataworkspace.targetPlatform">
-        <source xml:lang="en">Target Platform</source>
-        <target state="translated">대상 플랫폼</target>
-      </trans-unit>
-      <trans-unit id="dataworkspace.openExistingDialogTitle">
-        <source xml:lang="en">Open Existing Project</source>
-        <target state="translated">기존 프로젝트 열기</target>
-      </trans-unit>
-      <trans-unit id="dataworkspace.fileNotExistError">
-        <source xml:lang="en">The selected {0} file '{1}' does not exist or is not a file.</source>
-        <target state="translated">선택한 {0} 파일 '{1}'이(가) 없거나 파일이 아닙니다.</target>
-      </trans-unit>
-      <trans-unit id="dataworkspace.cloneParentDirectoryNotExistError">
-        <source xml:lang="en">The selected clone path '{0}' does not exist or is not a directory.</source>
-        <target state="translated">선택한 복제 경로 '{0}'이(가) 없거나 디렉터리가 아닙니다.</target>
-      </trans-unit>
-      <trans-unit id="dataworkspace.project">
-        <source xml:lang="en">Project</source>
-        <target state="translated">Project</target>
-      </trans-unit>
-      <trans-unit id="dataworkspace.locationSelectorTitle">
-        <source xml:lang="en">Location</source>
-        <target state="translated">위치</target>
-      </trans-unit>
-      <trans-unit id="dataworkspace.projectFilePlaceholder">
-        <source xml:lang="en">Select project file</source>
-        <target state="translated">프로젝트 파일 선택</target>
-      </trans-unit>
-      <trans-unit id="dataworkspace.workspacePlaceholder">
-        <source xml:lang="en">Select workspace ({0}) file</source>
-        <target state="translated">작업 영역({0}) 파일 선택</target>
-      </trans-unit>
-      <trans-unit id="dataworkspace.projectAlreadyOpened">
-        <source xml:lang="en">Project '{0}' is already opened.</source>
-        <target state="translated">프로젝트 '{0}'이(가) 이미 열려 있습니다.</target>
-      </trans-unit>
-      <trans-unit id="dataworksapce.local">
-        <source xml:lang="en">Local</source>
-        <target state="translated">로컬</target>
-      </trans-unit>
-      <trans-unit id="dataworkspace.remoteGitRepo">
-        <source xml:lang="en">Remote git repository</source>
-        <target state="translated">원격 GIT 리포지토리</target>
-      </trans-unit>
-      <trans-unit id="dataworkspace.gitRepoUrlTitle">
-        <source xml:lang="en">Git repository URL</source>
-        <target state="translated">GIT 리포지토리 URL</target>
-      </trans-unit>
-      <trans-unit id="dataworkspace.gitRepoUrlPlaceholder">
-        <source xml:lang="en">Enter remote git repository URL</source>
-        <target state="translated">원격 GIT 리포지토리 URL 입력</target>
-      </trans-unit>
-      <trans-unit id="dataworkspace.localClonePathTitle">
-        <source xml:lang="en">Local clone path</source>
-        <target state="translated">로컬 복제 경로</target>
-      </trans-unit>
-      <trans-unit id="dataworkspace.localClonePathPlaceholder">
-        <source xml:lang="en">Select location to clone repository locally</source>
-        <target state="translated">리포지토리를 로컬로 복제할 위치 선택</target>
-      </trans-unit>
-      <trans-unit id="dataworksapce.refresh">
+      <trans-unit id="refresh-workspace-command">
         <source xml:lang="en">Refresh</source>
         <target state="translated">새로 고침</target>
+      </trans-unit>
+      <trans-unit id="remove-project-command">
+        <source xml:lang="en">Remove Project</source>
+        <target state="translated">프로젝트 제거</target>
       </trans-unit>
     </body>
   </file>
