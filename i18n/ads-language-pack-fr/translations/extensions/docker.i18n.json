@@ -9,8 +9,8 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"displayName": "Bases du langage Docker",
-			"description": "Fournit la coloration syntaxique et la correspondance des crochets dans les fichiers Docker."
+			"description": "Fournit la coloration syntaxique et la correspondance des crochets dans les fichiers Docker.",
+			"displayName": "Bases du langage Docker"
 		}
 	}
 }

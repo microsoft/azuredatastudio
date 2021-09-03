@@ -9,9 +9,9 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"queryHistory.displayName": "쿼리 기록",
-			"queryHistory.description": "이전에 실행한 쿼리 보기 및 실행",
 			"queryHistory.clear": "모든 기록 지우기",
+			"queryHistory.description": "이전에 실행한 쿼리 보기 및 실행",
+			"queryHistory.displayName": "쿼리 기록",
 			"queryHistory.toggleCapture": "쿼리 기록 캡처 설정/해제"
 		}
 	}

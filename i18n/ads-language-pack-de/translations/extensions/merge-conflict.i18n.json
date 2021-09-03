@@ -8,28 +8,46 @@
 	],
 	"version": "1.0.0",
 	"contents": {
+		"dist/codelensProvider": {
+			"acceptBothChanges": "Beide Änderungen akzeptieren",
+			"acceptCurrentChange": "Aktuelle Änderung akzeptieren",
+			"acceptIncomingChange": "Eingehende Änderung akzeptieren",
+			"compareChanges": "Änderungen vergleichen"
+		},
+		"dist/commandHandler": {
+			"compareChangesTitle": "{0}: Aktuelle Änderungen ⟷ Eingehende Änderungen",
+			"cursorNotInConflict": "Der Editor-Cursor ist nicht innerhalb eines Mergingkonflikts",
+			"cursorOnCommonAncestorsRange": "Der Editor-Cursor ist innerhalb des Blocks gemeinsamer Vorgänger, verschieben Sie ihn entweder in den Block \"aktuell\" oder \"eingehend\".",
+			"cursorOnSplitterRange": "Der Editor-Cursor ist innerhalb der Mergingkonfliktaufteilung, verschieben Sie ihn entweder in den Block \"aktuell\" oder \"eingehend\".",
+			"noConflicts": "Keine Merge-Konflikte in dieser Datei gefunden",
+			"noOtherConflictsInThisFile": "Keine weiteren Merge-Konflikte in dieser Datei"
+		},
+		"dist/mergeDecorator": {
+			"currentChange": "(Aktuelle Änderung)",
+			"incomingChange": "(Eingehende Änderung)"
+		},
 		"package": {
-			"displayName": "Merge-Konflikt",
-			"description": "Hervorhebung und Befehle für Inline-Mergingkonflikte.",
-			"command.category": "Merge-Konflikt",
+			"command.accept.all-both": "Alle beide akzeptieren",
 			"command.accept.all-current": "Alle aktuellen akzeptieren",
 			"command.accept.all-incoming": "Alle eingehenden akzeptieren",
-			"command.accept.all-both": "Alle beide akzeptieren",
+			"command.accept.both": "Beides akzeptieren",
 			"command.accept.current": "Aktuelles akzeptieren",
 			"command.accept.incoming": "Eingehendes akzeptieren",
 			"command.accept.selection": "Auswahl akzeptieren",
-			"command.accept.both": "Beides akzeptieren",
+			"command.category": "Merge-Konflikt",
+			"command.compare": "Aktuellen Konflikt vergleichen",
 			"command.next": "Nächster Konflikt",
 			"command.previous": "Vorheriger Konflikt",
-			"command.compare": "Aktuellen Konflikt vergleichen",
-			"config.title": "Merge-Konflikt",
 			"config.autoNavigateNextConflictEnabled": "Gibt an, ob automatisch zum nächsten Mergekonflikt navigiert werden soll, nachdem ein Mergekonflikt behoben wurde.",
 			"config.codeLensEnabled": "CodeLens für Mergingkonfliktblöcke im Editor erstellen.",
 			"config.decoratorsEnabled": "Decorator-Elemente für Mergingkonfliktblöcke im Editor erstellen.",
 			"config.diffViewPosition": "Steuert, wo die Vergleichsansicht beim Vergleich von Änderungen in Zusammenführungskonflikten geöffnet wird.",
-			"config.diffViewPosition.current": "Hiermit wird die Vergleichsansicht in der aktuellen Editorgruppe geöffnet.",
+			"config.diffViewPosition.below": "Hiermit wird die Vergleichsansicht unterhalb der aktuellen Editorgruppe geöffnet.",
 			"config.diffViewPosition.beside": "Hiermit öffnen Sie die Vergleichsansicht neben der aktuellen Editorgruppe.",
-			"config.diffViewPosition.below": "Hiermit wird die Vergleichsansicht unterhalb der aktuellen Editorgruppe geöffnet."
+			"config.diffViewPosition.current": "Hiermit wird die Vergleichsansicht in der aktuellen Editorgruppe geöffnet.",
+			"config.title": "Merge-Konflikt",
+			"description": "Hervorhebung und Befehle für Inline-Mergingkonflikte.",
+			"displayName": "Merge-Konflikt"
 		}
 	}
 }

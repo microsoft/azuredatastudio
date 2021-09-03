@@ -9,8 +9,8 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"displayName": "Tema Monokai Esmaecido",
 			"description": "Tema Monokai esmaecido do Visual Studio Code",
+			"displayName": "Tema Monokai Esmaecido",
 			"themeLabel": "Monokai Esmaecido"
 		}
 	}

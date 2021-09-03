@@ -9,8 +9,8 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"displayName": "노출 밝은 테마",
 			"description": "Visual Studio Code용 노출 밝은 테마",
+			"displayName": "노출 밝은 테마",
 			"themeLabel": "노출 밝은"
 		}
 	}

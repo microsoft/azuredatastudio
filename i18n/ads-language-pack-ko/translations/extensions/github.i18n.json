@@ -8,38 +8,36 @@
 	],
 	"version": "1.0.0",
 	"contents": {
-		"package": {
-			"displayName": "GitHub",
-			"description": "GitHub",
-			"config.gitAuthentication": "VS Code 내에서 Git 명령에 대해 자동 GitHub 인증을 사용하도록 설정할지 여부를 제어합니다.",
-			"welcome.publishFolder": "이 폴더를 GitHub 리포지토리에 직접 게시할 수도 있습니다. 게시된 후에는 Git 및 GitHub에서 제공하는 소스 제어 기능에 액세스할 수 있습니다.\r\n[$(github) GitHub에 게시](command:github.publish)",
-			"welcome.publishWorkspaceFolder": "작업 영역 폴더를 GitHub 리포지토리에 직접 게시할 수도 있습니다. 게시된 후에는 Git 및 GitHub에서 제공하는 소스 제어 기능에 액세스할 수 있습니다.\r\n[$(github) GitHub에 게시](command:github.publish)"
-		},
 		"dist/publish": {
-			"pick folder": "GitHub에 게시할 폴더 선택",
 			"ignore": "리포지토리에 포함할 파일을 선택합니다.",
+			"openingithub": "GitHub에서 열기",
+			"pick folder": "GitHub에 게시할 폴더 선택",
+			"publishing_done": "'{0}' 리포지토리를 GitHub에 게시했습니다.",
+			"publishing_firstcommit": "첫 번째 커밋을 만드는 중",
 			"publishing_private": "프라이빗 GitHub 리포지토리에 게시하는 중",
 			"publishing_public": "퍼블릭 GitHub 리포지토리에 게시하는 중",
-			"publishing_firstcommit": "첫 번째 커밋을 만드는 중",
-			"publishing_uploading": "파일을 업로드하는 중",
-			"openingithub": "GitHub에서 열기",
-			"publishing_done": "'{0}' 리포지토리를 GitHub에 게시했습니다."
+			"publishing_uploading": "파일을 업로드하는 중"
 		},
 		"dist/pushErrorHandler": {
-			"ok": "확인",
-			"fork unable": "GitHub의 '{0}/{1}'(으)로 푸시할 수 있는 권한이 없습니다.",
 			"create a fork": "포크 만들기",
-			"no": "아니요",
-			"fork": "GitHub의 '{0}/{1}'(으)로 푸시할 수 있는 권한이 없습니다. 대신 포크를 만들어 포크에 푸시하시겠습니까?",
 			"create fork": "GitHub 포크 만들기",
-			"forking": "'{0}/{1}'을(를) 포크하는 중...",
-			"forking_pushing": "변경 내용을 푸시하는 중...",
-			"openingithub": "GitHub에서 열기",
-			"createpr": "PR 만들기",
-			"forking_done": "GitHub에 '{0}' 포크를 만들었습니다.",
 			"createghpr": "GitHub 끌어오기 요청을 만드는 중...",
-			"openpr": "PR 열기",
-			"donepr": "GitHub에 PR '{0}/{1}#{2}'을(를) 만들었습니다."
+			"createpr": "PR 만들기",
+			"donepr": "GitHub에 PR '{0}/{1}#{2}'을(를) 만들었습니다.",
+			"fork": "GitHub의 '{0}/{1}'(으)로 푸시할 수 있는 권한이 없습니다. 대신 포크를 만들어 포크에 푸시하시겠습니까?",
+			"forking": "'{0}/{1}'을(를) 포크하는 중...",
+			"forking_done": "GitHub에 '{0}' 포크를 만들었습니다.",
+			"forking_pushing": "변경 내용을 푸시하는 중...",
+			"no": "아니요",
+			"openingithub": "GitHub에서 열기",
+			"openpr": "PR 열기"
+		},
+		"package": {
+			"config.gitAuthentication": "VS Code 내에서 Git 명령에 대해 자동 GitHub 인증을 사용하도록 설정할지 여부를 제어합니다.",
+			"description": "GitHub",
+			"displayName": "GitHub",
+			"welcome.publishFolder": "이 폴더를 GitHub 리포지토리에 직접 게시할 수도 있습니다. 게시된 후에는 Git 및 GitHub에서 제공하는 소스 제어 기능에 액세스할 수 있습니다.\r\n[$(github) GitHub에 게시](command:github.publish)",
+			"welcome.publishWorkspaceFolder": "작업 영역 폴더를 GitHub 리포지토리에 직접 게시할 수도 있습니다. 게시된 후에는 Git 및 GitHub에서 제공하는 소스 제어 기능에 액세스할 수 있습니다.\r\n[$(github) GitHub에 게시](command:github.publish)"
 		}
 	}
 }

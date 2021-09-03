@@ -9,8 +9,8 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"displayName": "Nozioni di base sul linguaggio JSON",
-			"description": "Fornisce l'evidenziazione della sintassi e la corrispondenza delle parentesi nei file JSON."
+			"description": "Fornisce l'evidenziazione della sintassi e la corrispondenza delle parentesi nei file JSON.",
+			"displayName": "Nozioni di base sul linguaggio JSON"
 		}
 	}
 }

@@ -8,20 +8,13 @@
 	],
 	"version": "1.0.0",
 	"contents": {
-		"package": {
-			"displayName": "图像预览",
-			"description": "提供 VS Code的内置图像预览",
-			"customEditors.displayName": "图像预览",
-			"command.zoomIn": "放大",
-			"command.zoomOut": "缩小"
-		},
 		"dist/binarySizeStatusBarEntry": {
 			"sizeB": "{0} B",
+			"sizeGB": "{0} GB",
 			"sizeKB": "{0} KB",
 			"sizeMB": "{0} MB",
-			"sizeGB": "{0} GB",
-			"sizeTB": "{0} TB",
-			"sizeStatusBar.name": "图像二进制文件大小"
+			"sizeStatusBar.name": "图像二进制文件大小",
+			"sizeTB": "{0} TB"
 		},
 		"dist/preview": {
 			"preview.imageLoadError": "加载图片出错。",
@@ -34,6 +27,13 @@
 			"zoomStatusBar.name": "图像缩放",
 			"zoomStatusBar.placeholder": "选择缩放级别",
 			"zoomStatusBar.wholeImageLabel": "整张图片"
+		},
+		"package": {
+			"command.zoomIn": "放大",
+			"command.zoomOut": "缩小",
+			"customEditors.displayName": "图像预览",
+			"description": "提供 VS Code的内置图像预览",
+			"displayName": "图像预览"
 		}
 	}
 }

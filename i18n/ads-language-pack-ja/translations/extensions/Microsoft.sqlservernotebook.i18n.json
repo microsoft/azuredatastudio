@@ -9,9 +9,9 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"title.sqlServerNotebooks": "SQL Server ノートブック",
+			"description.sqlserverNotebooks": "SQL Server の使用を開始し、トラブルシューティングを行うのに役立つノートブック",
 			"title.sqlServer2019Book": "SQL Server 2019 ガイド",
-			"description.sqlserverNotebooks": "SQL Server の使用を開始し、トラブルシューティングを行うのに役立つノートブック"
+			"title.sqlServerNotebooks": "SQL Server ノートブック"
 		}
 	}
 }

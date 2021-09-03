@@ -9,8 +9,8 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"displayName": "Red 主题",
 			"description": "适用于 Visual Studio Code 的 Red 主题",
+			"displayName": "Red 主题",
 			"themeLabel": "红色"
 		}
 	}

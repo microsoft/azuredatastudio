@@ -8,38 +8,36 @@
 	],
 	"version": "1.0.0",
 	"contents": {
-		"package": {
-			"displayName": "GitHub",
-			"description": "GitHub",
-			"config.gitAuthentication": "Controlla se abilitare l'autenticazione GitHub automatica per i comandi GIT all'interno di VS Code.",
-			"welcome.publishFolder": "È anche possibile pubblicare direttamente questa cartella in un repository GitHub. Dopo la pubblicazione sarà possibile accedere alle funzionalità di controllo del codice sorgente basate su GIT e GitHub.\r\n[$(github) Pubblica in GitHub](command:github.publish)",
-			"welcome.publishWorkspaceFolder": "È anche possibile pubblicare direttamente una cartella dell'area di lavoro in un repository GitHub. Dopo la pubblicazione sarà possibile accedere alle funzionalità di controllo del codice sorgente basate su GIT e GitHub.\r\n[$(github) Pubblica in GitHub](command:github.publish)"
-		},
 		"dist/publish": {
-			"pick folder": "Seleziona una cartella da pubblicare in GitHub",
 			"ignore": "Selezionare i file da includere nel repository.",
+			"openingithub": "Apri in GitHub",
+			"pick folder": "Seleziona una cartella da pubblicare in GitHub",
+			"publishing_done": "Il repository '{0}' è stato pubblicato in GitHub.",
+			"publishing_firstcommit": "Creazione del primo commit",
 			"publishing_private": "Pubblicazione in un repository GitHub privato",
 			"publishing_public": "Pubblicazione in un repository GitHub pubblico",
-			"publishing_firstcommit": "Creazione del primo commit",
-			"publishing_uploading": "Caricamento dei file",
-			"openingithub": "Apri in GitHub",
-			"publishing_done": "Il repository '{0}' è stato pubblicato in GitHub."
+			"publishing_uploading": "Caricamento dei file"
 		},
 		"dist/pushErrorHandler": {
-			"ok": "OK",
-			"fork unable": "Non si è autorizzati a eseguire il push in '{0}/{1}' in GitHub.",
 			"create a fork": "Crea fork",
-			"no": "No",
-			"fork": "Non si hanno le autorizzazioni per eseguire il push in '{0}/{1}' in GitHub. Creare un fork in cui eseguire il push?",
 			"create fork": "Crea fork GitHub",
-			"forking": "Creazione del fork per '{0}/{1}'...",
-			"forking_pushing": "Push delle modifiche...",
-			"openingithub": "Apri in GitHub",
-			"createpr": "Crea richiesta pull",
-			"forking_done": "Il fork '{0}' è stato creato in GitHub.",
 			"createghpr": "Creazione della richiesta pull GitHub...",
-			"openpr": "Apri richiesta pull",
-			"donepr": "La richiesta pull '{0}/{1}#{2}' è stata creata in GitHub."
+			"createpr": "Crea richiesta pull",
+			"donepr": "La richiesta pull '{0}/{1}#{2}' è stata creata in GitHub.",
+			"fork": "Non si hanno le autorizzazioni per eseguire il push in '{0}/{1}' in GitHub. Creare un fork in cui eseguire il push?",
+			"forking": "Creazione del fork per '{0}/{1}'...",
+			"forking_done": "Il fork '{0}' è stato creato in GitHub.",
+			"forking_pushing": "Push delle modifiche...",
+			"no": "No",
+			"openingithub": "Apri in GitHub",
+			"openpr": "Apri richiesta pull"
+		},
+		"package": {
+			"config.gitAuthentication": "Controlla se abilitare l'autenticazione GitHub automatica per i comandi GIT all'interno di VS Code.",
+			"description": "GitHub",
+			"displayName": "GitHub",
+			"welcome.publishFolder": "È anche possibile pubblicare direttamente questa cartella in un repository GitHub. Dopo la pubblicazione sarà possibile accedere alle funzionalità di controllo del codice sorgente basate su GIT e GitHub.\r\n[$(github) Pubblica in GitHub](command:github.publish)",
+			"welcome.publishWorkspaceFolder": "È anche possibile pubblicare direttamente una cartella dell'area di lavoro in un repository GitHub. Dopo la pubblicazione sarà possibile accedere alle funzionalità di controllo del codice sorgente basate su GIT e GitHub.\r\n[$(github) Pubblica in GitHub](command:github.publish)"
 		}
 	}
 }

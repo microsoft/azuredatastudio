@@ -8,20 +8,13 @@
 	],
 	"version": "1.0.0",
 	"contents": {
-		"package": {
-			"displayName": "Anteprima immagine",
-			"description": "Fornisce l'anteprima immagine predefinita di VS Code",
-			"customEditors.displayName": "Anteprima immagine",
-			"command.zoomIn": "Zoom avanti",
-			"command.zoomOut": "Zoom indietro"
-		},
 		"dist/binarySizeStatusBarEntry": {
 			"sizeB": "{0} B",
+			"sizeGB": "{0} GB",
 			"sizeKB": "{0} KB",
 			"sizeMB": "{0} MB",
-			"sizeGB": "{0} GB",
-			"sizeTB": "{0} TB",
-			"sizeStatusBar.name": "Dimensioni file binario dell'immagine"
+			"sizeStatusBar.name": "Dimensioni file binario dell'immagine",
+			"sizeTB": "{0} TB"
 		},
 		"dist/preview": {
 			"preview.imageLoadError": "Si è verificato un errore durante il caricamento dell'immagine.",
@@ -34,6 +27,13 @@
 			"zoomStatusBar.name": "Zoom immagine",
 			"zoomStatusBar.placeholder": "Selezionare il livello di zoom",
 			"zoomStatusBar.wholeImageLabel": "Immagine intera"
+		},
+		"package": {
+			"command.zoomIn": "Zoom avanti",
+			"command.zoomOut": "Zoom indietro",
+			"customEditors.displayName": "Anteprima immagine",
+			"description": "Fornisce l'anteprima immagine predefinita di VS Code",
+			"displayName": "Anteprima immagine"
 		}
 	}
 }

@@ -9,13 +9,13 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"displayName": "Temas por defecto",
-			"description": "Temas claro y oscuro predeterminados de Visual Studio",
-			"darkPlusColorThemeLabel": "Oscuro+ (oscuro predeterminado)",
-			"lightPlusColorThemeLabel": "Claro+ (claro predeterminado)",
 			"darkColorThemeLabel": "Oscuro (Visual Studio)",
-			"lightColorThemeLabel": "Claro (Visual Studio)",
+			"darkPlusColorThemeLabel": "Oscuro+ (oscuro predeterminado)",
+			"description": "Temas claro y oscuro predeterminados de Visual Studio",
+			"displayName": "Temas por defecto",
 			"hcColorThemeLabel": "Contraste alto",
+			"lightColorThemeLabel": "Claro (Visual Studio)",
+			"lightPlusColorThemeLabel": "Claro+ (claro predeterminado)",
 			"minimalIconThemeLabel": "Mínimo (Visual Studio Code)"
 		}
 	}

@@ -9,8 +9,8 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"displayName": "Синяя вечерняя тема",
 			"description": "Синяя вечерняя тема для Visual Studio Code",
+			"displayName": "Синяя вечерняя тема",
 			"themeLabel": "Синяя вечерняя"
 		}
 	}

@@ -9,8 +9,8 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"displayName": "Kimbie Dark 主题",
 			"description": "适用于 Visual Studio Code 的 Kimbie dark 主题",
+			"displayName": "Kimbie Dark 主题",
 			"themeLabel": "Kimbie Dark"
 		}
 	}

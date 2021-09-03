@@ -9,8 +9,8 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"displayName": "Conceptos básicos del lenguaje Markdown",
-			"description": "Proporciona fragmentos de código y resaltado de sintaxis para Markdown."
+			"description": "Proporciona fragmentos de código y resaltado de sintaxis para Markdown.",
+			"displayName": "Conceptos básicos del lenguaje Markdown"
 		}
 	}
 }
