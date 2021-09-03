@@ -126,7 +126,7 @@ export class SchemaCompareMainWindow {
 				connectionName: profile.connectionName,
 				projectFilePath: '',
 				targetScripts: [],
-				dsp: '',
+				dataSchemaProvider: '',
 				folderStructure: ''
 			};
 		} else if (sourceDacpac) {
@@ -140,7 +140,7 @@ export class SchemaCompareMainWindow {
 				connectionDetails: undefined,
 				projectFilePath: '',
 				targetScripts: [],
-				dsp: '',
+				dataSchemaProvider: '',
 				folderStructure: ''
 			};
 		} else if (sourceProject) {
@@ -154,7 +154,7 @@ export class SchemaCompareMainWindow {
 				connectionDetails: undefined,
 				projectFilePath: sourceProject,
 				targetScripts: [],
-				dsp: undefined,
+				dataSchemaProvider: undefined,
 				folderStructure: ''
 			};
 		}

@@ -57,7 +57,7 @@ suite('Schema compare integration test suite @DacFx@', () => {
 			projectFilePath: '',
 			folderStructure: '',
 			targetScripts: [],
-			dsp: '',
+			dataSchemaProvider: '',
 			connectionDetails: undefined
 		};
 		let target: mssql.SchemaCompareEndpointInfo = {
@@ -70,7 +70,7 @@ suite('Schema compare integration test suite @DacFx@', () => {
 			projectFilePath: '',
 			folderStructure: '',
 			targetScripts: [],
-			dsp: '',
+			dataSchemaProvider: '',
 			connectionDetails: undefined
 		};
 
@@ -125,7 +125,7 @@ suite('Schema compare integration test suite @DacFx@', () => {
 				projectFilePath: '',
 				folderStructure: '',
 				targetScripts: [],
-				dsp: '',
+				dataSchemaProvider: '',
 				connectionDetails: undefined
 			};
 			let target: mssql.SchemaCompareEndpointInfo = {
@@ -138,7 +138,7 @@ suite('Schema compare integration test suite @DacFx@', () => {
 				projectFilePath: '',
 				folderStructure: '',
 				targetScripts: [],
-				dsp: '',
+				dataSchemaProvider: '',
 				connectionDetails: undefined
 			};
 
@@ -198,7 +198,7 @@ suite('Schema compare integration test suite @DacFx@', () => {
 				projectFilePath: '',
 				folderStructure: '',
 				targetScripts: [],
-				dsp: '',
+				dataSchemaProvider: '',
 				connectionDetails: undefined
 			};
 			let target: mssql.SchemaCompareEndpointInfo = {
@@ -211,7 +211,7 @@ suite('Schema compare integration test suite @DacFx@', () => {
 				projectFilePath: '',
 				folderStructure: '',
 				targetScripts: [],
-				dsp: '',
+				dataSchemaProvider: '',
 				connectionDetails: undefined
 			};
 
@@ -258,7 +258,7 @@ suite('Schema compare integration test suite @DacFx@', () => {
 			projectFilePath: '',
 			folderStructure: '',
 			targetScripts: [],
-			dsp: '',
+			dataSchemaProvider: '',
 			connectionDetails: undefined
 		};
 		let target: mssql.SchemaCompareEndpointInfo = {
@@ -271,7 +271,7 @@ suite('Schema compare integration test suite @DacFx@', () => {
 			projectFilePath: '',
 			folderStructure: '',
 			targetScripts: [],
-			dsp: '',
+			dataSchemaProvider: '',
 			connectionDetails: undefined
 		};
 
@@ -332,7 +332,7 @@ suite('Schema compare integration test suite @DacFx@', () => {
 				projectFilePath: '',
 				folderStructure: '',
 				targetScripts: [],
-				dsp: '',
+				dataSchemaProvider: '',
 				connectionDetails: undefined
 			};
 			const target: mssql.SchemaCompareEndpointInfo = {
@@ -345,7 +345,7 @@ suite('Schema compare integration test suite @DacFx@', () => {
 				projectFilePath: '',
 				folderStructure: '',
 				targetScripts: [],
-				dsp: '',
+				dataSchemaProvider: '',
 				connectionDetails: undefined
 			};
 
@@ -415,7 +415,7 @@ suite('Schema compare integration test suite @DacFx@', () => {
 				projectFilePath: '',
 				folderStructure: '',
 				targetScripts: [],
-				dsp: '',
+				dataSchemaProvider: '',
 				connectionDetails: undefined
 			};
 			const target: mssql.SchemaCompareEndpointInfo = {
@@ -428,7 +428,7 @@ suite('Schema compare integration test suite @DacFx@', () => {
 				projectFilePath: '',
 				folderStructure: '',
 				targetScripts: [],
-				dsp: '',
+				dataSchemaProvider: '',
 				connectionDetails: undefined
 			};
 
@@ -486,7 +486,7 @@ suite('Schema compare integration test suite @DacFx@', () => {
 				projectFilePath: '',
 				folderStructure: '',
 				targetScripts: [],
-				dsp: '',
+				dataSchemaProvider: '',
 				connectionDetails: undefined
 			};
 			const target: mssql.SchemaCompareEndpointInfo = {
@@ -499,7 +499,7 @@ suite('Schema compare integration test suite @DacFx@', () => {
 				projectFilePath: '',
 				folderStructure: '',
 				targetScripts: [],
-				dsp: '',
+				dataSchemaProvider: '',
 				connectionDetails: undefined
 			};
 

@@ -277,7 +277,7 @@ export class SchemaCompareDialog {
 				targetScripts: [],
 				folderStructure: '',
 				packageFilePath: '',
-				dsp: '',
+				dataSchemaProvider: '',
 				connectionDetails: undefined,
 				connectionName: sourceServerDropdownValue.connection.options.connectionName
 			};
@@ -291,7 +291,7 @@ export class SchemaCompareDialog {
 				projectFilePath: '',
 				targetScripts: [],
 				folderStructure: '',
-				dsp: '',
+				dataSchemaProvider: '',
 				packageFilePath: this.sourceTextBox.value,
 				connectionDetails: undefined
 			};
@@ -300,7 +300,7 @@ export class SchemaCompareDialog {
 				endpointType: mssql.SchemaCompareEndpointType.Project,
 				projectFilePath: this.sourceTextBox.value,
 				targetScripts: await this.getTargetScripts(true),
-				dsp: await this.getDsp(true),
+				dataSchemaProvider: await this.getDsp(true),
 				folderStructure: '',
 				serverDisplayName: '',
 				serverName: '',
@@ -325,7 +325,7 @@ export class SchemaCompareDialog {
 				folderStructure: '',
 				targetScripts: [],
 				packageFilePath: '',
-				dsp: '',
+				dataSchemaProvider: '',
 				connectionDetails: undefined,
 				connectionName: targetServerDropdownValue.connection.options.connectionName
 			};
@@ -339,7 +339,7 @@ export class SchemaCompareDialog {
 				projectFilePath: '',
 				folderStructure: '',
 				targetScripts: [],
-				dsp: '',
+				dataSchemaProvider: '',
 				packageFilePath: this.targetTextBox.value,
 				connectionDetails: undefined
 			};
@@ -349,7 +349,7 @@ export class SchemaCompareDialog {
 				projectFilePath: this.targetTextBox.value,
 				folderStructure: this.targetStructureDropdown!.value as string,
 				targetScripts: await this.getTargetScripts(false),
-				dsp: await this.getDsp(false),
+				dataSchemaProvider: await this.getDsp(false),
 				serverDisplayName: '',
 				serverName: '',
 				databaseName: '',

@@ -42,6 +42,7 @@ import { DeployService } from '../models/deploy/deployService';
 import { SqlTargetPlatform } from 'sqldbproj';
 import { createNewProjectFromDatabaseWithQuickpick } from '../dialogs/createProjectFromDatabaseQuickpick';
 import { addDatabaseReferenceQuickpick } from '../dialogs/addDatabaseReferenceQuickpick';
+import { DacExtractTarget } from '../../../mssql/src/contracts';
 
 const maxTableLength = 10;
 
@@ -484,7 +485,26 @@ export class ProjectsController {
 
 		const projectPath = path.dirname(projectFilePath);
 
-		const result: mssql.SchemaComparePublishProjectResult = await service.schemaComparePublishProjectChanges(operationId, projectPath, folderStructure, utils.getAzdataApi()!.TaskExecutionMode.execute);
+		let fs: DacExtractTarget = DacExtractTarget.flat;
+		switch (folderStructure) {
+			case constants.file:
+				fs = DacExtractTarget.file;
+				break;
+			case constants.flat:
+				fs = DacExtractTarget.flat;
+				break;
+			case constants.objectType:
+				fs = DacExtractTarget.objectType;
+				break;
+			case constants.schema:
+				fs = DacExtractTarget.schema;
+				break;
+			case constants.schemaObjectType:
+				fs = DacExtractTarget.schemaObjectType;
+				break;
+		}
+
+		const result: mssql.SchemaComparePublishProjectResult = await service.schemaComparePublishProjectChanges(operationId, projectPath, fs, utils.getAzdataApi()!.TaskExecutionMode.execute);
 
 		const project = await Project.openProject(projectFilePath);
 
@@ -1106,7 +1126,7 @@ export class ProjectsController {
 		const operationId = this.generateComparisonGuid();
 
 		model.targetEndpointInfo.targetScripts = await this.schemaCompareGetTargetScripts(model.targetEndpointInfo.projectFilePath);
-		model.targetEndpointInfo.dsp = await this.schemaCompareGetDsp(model.targetEndpointInfo.projectFilePath);
+		model.targetEndpointInfo.dataSchemaProvider = await this.schemaCompareGetDsp(model.targetEndpointInfo.projectFilePath);
 
 		TelemetryReporter.sendActionEvent(TelemetryViews.ProjectController, 'SchemaComparisonStarted');
 

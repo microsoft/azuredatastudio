@@ -529,7 +529,7 @@ export class UpdateProjectFromDatabaseDialog {
 			projectFilePath: '',
 			folderStructure: '',
 			targetScripts: [],
-			dsp: '',
+			dataSchemaProvider: '',
 			packageFilePath: '',
 			connectionName: serverDropdownValue.connection.options.connectionName
 		};
@@ -539,7 +539,7 @@ export class UpdateProjectFromDatabaseDialog {
 			projectFilePath: this.projectFileTextBox!.value!,
 			folderStructure: this.folderStructureDropDown!.value as string,
 			targetScripts: [],
-			dsp: '',
+			dataSchemaProvider: '',
 			connectionDetails: connectionDetails,
 			databaseName: '',
 			serverDisplayName: '',

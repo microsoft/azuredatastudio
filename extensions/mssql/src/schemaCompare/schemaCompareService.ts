@@ -65,7 +65,7 @@ export class SchemaCompareService implements mssql.ISchemaCompareService {
 		);
 	}
 
-	public schemaComparePublishProjectChanges(operationId: string, targetProjectPath: string, targetFolderStructure: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<mssql.SchemaComparePublishProjectResult> {
+	public schemaComparePublishProjectChanges(operationId: string, targetProjectPath: string, targetFolderStructure: contracts.DacExtractTarget, taskExecutionMode: azdata.TaskExecutionMode): Thenable<mssql.SchemaComparePublishProjectResult> {
 		const params: contracts.SchemaComparePublishProjectChangesParams = { operationId: operationId, targetProjectPath: targetProjectPath, targetFolderStructure: targetFolderStructure, taskExecutionMode: taskExecutionMode };
 		return this.client.sendRequest(contracts.SchemaComparePublishProjectChangesRequest.type, params).then(
 			undefined,

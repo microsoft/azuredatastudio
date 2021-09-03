@@ -5,6 +5,7 @@
 
 import * as azdata from 'azdata';
 import * as mssql from '../../../mssql';
+import { DacExtractTarget } from '../../../mssql/src/contracts';
 
 export class SchemaCompareTestService implements mssql.ISchemaCompareService {
 
@@ -24,7 +25,7 @@ export class SchemaCompareTestService implements mssql.ISchemaCompareService {
 		throw new Error('Method not implemented.');
 	}
 
-	schemaComparePublishProjectChanges(operationId: string, targetProjectPath: string, targetDsp: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<mssql.SchemaComparePublishProjectResult> {
+	schemaComparePublishProjectChanges(operationId: string, targetProjectPath: string, targetFolderStructure: DacExtractTarget, taskExecutionMode: azdata.TaskExecutionMode): Thenable<mssql.SchemaComparePublishProjectResult> {
 		throw new Error('Method not implemented.');
 	}
 

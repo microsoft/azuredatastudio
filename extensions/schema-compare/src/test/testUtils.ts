@@ -96,7 +96,7 @@ export const mockDacpacEndpoint: mssql.SchemaCompareEndpointInfo = {
 	projectFilePath: '',
 	folderStructure: '',
 	targetScripts: [],
-	dsp: '',
+	dataSchemaProvider: '',
 	packageFilePath: mockFilePath,
 	connectionDetails: undefined
 };
@@ -110,7 +110,7 @@ export const mockDatabaseEndpoint: mssql.SchemaCompareEndpointInfo = {
 	projectFilePath: '',
 	folderStructure: '',
 	targetScripts: [],
-	dsp: '',
+	dataSchemaProvider: '',
 	packageFilePath: '',
 	connectionDetails: undefined
 };
