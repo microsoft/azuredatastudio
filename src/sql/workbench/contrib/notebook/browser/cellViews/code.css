@@ -120,8 +120,3 @@ code-component .parameter span {
 	padding: 3px 7px;
 	text-align: center;
 }
-
-code-component .invisible.scrollbar.horizontal.fade {
-	position: fixed !important;
-	opacity: 1 !important;
-}

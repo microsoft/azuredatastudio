@@ -264,7 +264,6 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 			}
 			this._layoutEmitter.fire();
 		}));
-
 		this.layout();
 
 		if (this._cellModel.isCollapsed) {
@@ -277,6 +276,21 @@ export class CodeComponent extends CellView implements OnInit, OnChanges {
 			DOM.getContentWidth(this.codeElement.nativeElement),
 			DOM.getContentHeight(this.codeElement.nativeElement)));
 		this._editor.setHeightToScrollHeight(false, this._cellModel.isCollapsed);
+		this.horizontalScrollbar();
+	}
+
+	public horizontalScrollbar(): void {
+		// Get Markdown View Horizontal Scrollbar
+		let horizontalScrollbar: Element = this.codeElement.nativeElement.querySelector('div.invisible.scrollbar.horizontal');
+		horizontalScrollbar.classList.add('markdownScrollbar');
+
+		// code-component - scrollable = size of the terminal window
+		let codeComponentHeight = this._editor.scrollHeight;
+		let scrollableHeight = document.getElementsByClassName('scrollable')[0].clientHeight;
+		let scrollbarHeight = codeComponentHeight - scrollableHeight;
+		//let leftStyle = this.codeElement.nativeElement.querySelector('div.margin').offsetWidth;
+
+		horizontalScrollbar.setAttribute('style', `bottom: ${scrollbarHeight}px; left: 60px; opacity: 1; position: fixed`);
 	}
 
 	protected initActionBar() {
