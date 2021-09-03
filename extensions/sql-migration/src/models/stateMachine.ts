@@ -101,12 +101,15 @@ export interface SavedInfo {
 	closedPage: number;
 	serverAssessment: ServerAssessment | null;
 	azureAccount: azdata.Account | null;
+	azureTenant: azurecore.Tenant | null;
 	selectedDatabases: azdata.DeclarativeTableCellValue[][];
 	migrationTargetType: MigrationTargetType | null;
 	migrationDatabases: azdata.DeclarativeTableCellValue[][];
 	subscription: azureResource.AzureResourceSubscription | null;
 	location: azureResource.AzureLocation | null;
 	resourceGroup: azureResource.AzureResourceResourceGroup | null;
+	targetServerInstance: azureResource.AzureSqlManagedInstance | SqlVMServer | null;
+	migrationMode: MigrationMode | null;
 }
 
 
@@ -114,6 +117,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	public _azureAccounts!: azdata.Account[];
 	public _azureAccount!: azdata.Account;
 	public _accountTenants!: azurecore.Tenant[];
+	public _azureTenant!: azurecore.Tenant;
 
 	public _connecionProfile!: azdata.connection.ConnectionProfile;
 	public _authenticationType!: MigrationSourceAuthenticationType;
@@ -159,6 +163,7 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 	public _targetType!: MigrationTargetType;
 	public refreshDatabaseBackupPage!: boolean;
 
+	public _databaseSelection!: azdata.DeclarativeTableCellValue[][];
 	public resumeAssessment!: boolean;
 	public savedInfo!: SavedInfo;
 	public closedPage!: number;
@@ -987,12 +992,15 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			closedPage: currentPage,
 			serverAssessment: null,
 			azureAccount: null,
+			azureTenant: null,
 			selectedDatabases: [],
 			migrationTargetType: null,
 			migrationDatabases: [],
 			subscription: null,
 			location: null,
-			resourceGroup: null
+			resourceGroup: null,
+			targetServerInstance: null,
+			migrationMode: null
 		};
 		switch (currentPage) {
 			// Summary
@@ -1010,18 +1018,19 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			// Migration Mode
 			case 3:
 				console.log('Saving assessment from page: Migration Mode');
-			// Online or Offline Migration
+				// Online or Offline Migration
+				saveInfo.migrationMode = this._databaseBackup.migrationMode;
 
 			// SKU Recommendation
 			case 2:
 				console.log('Saving assessment from page: SKU Recommendation');
 				saveInfo.migrationTargetType = this._targetType;
 
-				// Databases to migrate selection
+				saveInfo.migrationDatabases = this._databaseSelection;
 				saveInfo.subscription = this._targetSubscription;
 				saveInfo.location = this._location;
 				saveInfo.resourceGroup = this._resourceGroup;
-				saveInfo.serverAssessment = this._assessmentResults;
+				saveInfo.targetServerInstance = this._targetServerInstance;
 				console.log(saveInfo);
 			// Database Selector
 			case 1:
@@ -1032,9 +1041,9 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				console.log('Saving assessment from page: Azure Account');
 				saveInfo.azureAccount = deepClone(this._azureAccount);
 				console.log(`Save Info: ${saveInfo}`);
+				saveInfo.azureTenant = deepClone(this._azureTenant);
 				this.extensionContext.globalState.update(`${constants.MEMENTO_STRING}.${serverName}`, saveInfo);
 		}
-
 	}
 
 }

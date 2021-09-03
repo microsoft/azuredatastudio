@@ -259,7 +259,13 @@ export class SKURecommendationPage extends MigrationWizardPage {
 			width: 100
 		}).component();
 
-		const serverName = (await this.migrationStateModel.getSourceConnectionProfile()).serverName;
+		let serverName = '';
+		if (this.migrationStateModel.resumeAssessment && this.migrationStateModel.serverName) {
+			serverName = this.migrationStateModel.serverName;
+		} else {
+			serverName = (await this.migrationStateModel.getSourceConnectionProfile()).serverName;
+		}
+
 		let miDialog = new AssessmentResultsDialog('ownerUri', this.migrationStateModel, constants.ASSESSMENT_TILE(serverName), this, MigrationTargetType.SQLMI);
 		let vmDialog = new AssessmentResultsDialog('ownerUri', this.migrationStateModel, constants.ASSESSMENT_TILE(serverName), this, MigrationTargetType.SQLVM);
 

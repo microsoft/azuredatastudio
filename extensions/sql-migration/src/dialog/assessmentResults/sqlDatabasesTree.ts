@@ -777,6 +777,7 @@ export class SqlDatabaseTree {
 				result.push(this._dbNames[index]);
 			}
 		});
+		this._model._databaseSelection = <azdata.DeclarativeTableCellValue[][]>this._databaseTable.dataValues;
 		return result;
 	}
 
