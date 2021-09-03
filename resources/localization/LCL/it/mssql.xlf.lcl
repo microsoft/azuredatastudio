@@ -2401,7 +2401,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Advanced]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Avanzate]]></Val>
+            <Val><![CDATA[Avanzata]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />

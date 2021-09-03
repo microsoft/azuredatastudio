@@ -186,18 +186,6 @@
           <Disp Icon="Str" />
         </Item>
       </Item>
-      <Item ItemId=";@extensions/azurecore/dist/azureResource/tree/flatAccountTreeNode.azure.resource.tree.accountTreeNode.credentialEr" ItemType="0" PsrId="308" Leaf="false">
-        <Disp Icon="Dir" LocTbl="false" />
-        <Item ItemId=";(...) ror" ItemType="0" PsrId="308" Leaf="true">
-          <Str Cat="Text">
-            <Val><![CDATA[Failed to get credential for account {0}. Please go to the accounts dialog and refresh the account.]]></Val>
-            <Tgt Cat="Text" Stat="Loc" Orig="New">
-              <Val><![CDATA[Fehler beim Abrufen der Anmeldeinformationen für das Konto "{0}". Wechseln Sie zum Dialogfeld "Konten", und aktualisieren Sie das Konto.]]></Val>
-            </Tgt>
-          </Str>
-          <Disp Icon="Str" />
-        </Item>
-      </Item>
       <Item ItemId=";@extensions/azurecore/dist/azureResource/tree/subscriptionTreeNode.azure.resource.tree.subscriptionTreeNode.noReso" ItemType="0" PsrId="308" Leaf="false">
         <Disp Icon="Dir" LocTbl="false" />
         <Item ItemId=";(...) urcesLabel" ItemType="0" PsrId="308" Leaf="true">
@@ -585,15 +573,6 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/azurecore/dist/azureResource/commands.azure.resource.selectsubscriptions.credentialError" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Failed to get credential for account {0}. Please refresh the account.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Fehler beim Abrufen der Anmeldeinformationen für das Konto "{0}". Aktualisieren Sie das Konto.]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";extensions/azurecore/dist/azureResource/commands.azure.signIn" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Sign in]]></Val>
@@ -612,11 +591,29 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
+      <Item ItemId=";extensions/azurecore/dist/azureResource/errors.azure.subscriptionError" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Failed to get subscriptions for account {0}. Please refresh the account.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Fehler beim Abrufen von Abonnements für das Konto {0}. Aktualisieren Sie das Konto.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
       <Item ItemId=";extensions/azurecore/dist/azureResource/resourceTreeNode.azure.resource.resourceTreeNode.noResourcesLabel" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[No Resources found]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Keine Ressourcen gefunden.]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/azurecore/dist/azureResource/services/subscriptionService.azure.resource.tenantSubscriptionsError" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[Failed to get subscriptions for account {0} (tenant '{1}'). {2}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Fehler beim Abrufen von Abonnements für das Konto {0} (Mandant "{1}"). {2}]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -684,11 +681,11 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/azurecore/dist/azureResource/tree/accountTreeNode.azure.resource.tree.accountTreeNode.credentialError" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/azurecore/dist/azureResource/tree/accountTreeNode.azure.unableToAccessSubscription" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Failed to get credential for account {0}. Please refresh the account.]]></Val>
+          <Val><![CDATA[Unable to access subscription {0} ({1}). Please [refresh the account]5D;(command:azure.resource.signin) to try again. {2}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Fehler beim Abrufen der Anmeldeinformationen für das Konto "{0}". Aktualisieren Sie das Konto.]]></Val>
+            <Val><![CDATA[Auf abonnement {0} ({1}) kann nicht zugegriffen werden. [Aktualisieren Sie das Konto]5D;(command:azure.resource.signin), um es noch mal zu versuchen. {2}]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -722,10 +719,13 @@
       </Item>
       <Item ItemId=";extensions/azurecore/dist/azureResource/tree/flatAccountTreeNode.azure.resource.tree.loadresourceerror" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[An error occured while loading Azure resources: {0}]]></Val>
+          <Val><![CDATA[An error occurred while loading Azure resources: {0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Fehler beim Laden von Azure-Ressourcen: {0}]]></Val>
           </Tgt>
+          <Prev Cat="Text">
+            <Val><![CDATA[An error occured while loading Azure resources: {0}]]></Val>
+          </Prev>
         </Str>
         <Disp Icon="Str" />
       </Item>

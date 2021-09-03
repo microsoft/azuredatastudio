@@ -55,7 +55,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Enter session name:]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Entrez le nom de la session :]]></Val>
+            <Val><![CDATA[Entrez le nom de la session :]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -73,7 +73,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Select session template:]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Sélectionnez un modèle de session :]]></Val>
+            <Val><![CDATA[Sélectionnez un modèle de session :]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -99,6 +99,9 @@
       <Item ItemId=";extensions/profiler/package.description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[SQL Server Profiler for Azure Data Studio]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[SQL Server Profiler pour Azure Data Studio]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -132,6 +135,9 @@
       <Item ItemId=";extensions/profiler/package.profiler.contributes.title.openCreateSessionDialog" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Create Profiler Season]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Créer une saison de profileur]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
