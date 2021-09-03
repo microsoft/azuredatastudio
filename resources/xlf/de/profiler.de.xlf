@@ -44,7 +44,7 @@
     <body>
       <trans-unit id="description">
         <source xml:lang="en">SQL Server Profiler for Azure Data Studio</source>
-        <target state="new">SQL Server Profiler for Azure Data Studio</target>
+        <target state="translated">SQL Server Profiler für Azure Data Studio</target>
       </trans-unit>
       <trans-unit id="displayName">
         <source xml:lang="en">SQL Server Profiler</source>
@@ -60,7 +60,7 @@
       </trans-unit>
       <trans-unit id="profiler.contributes.title.openCreateSessionDialog">
         <source xml:lang="en">Create Profiler Season</source>
-        <target state="new">Create Profiler Season</target>
+        <target state="translated">Profiler-Staffel erstellen</target>
       </trans-unit>
       <trans-unit id="profiler.contributes.title.start">
         <source xml:lang="en">Start</source>

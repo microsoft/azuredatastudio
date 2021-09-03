@@ -60,11 +60,11 @@
       </trans-unit>
       <trans-unit id="addPackage">
         <source xml:lang="en">Add Package</source>
-        <target state="translated">Ajouter un paquet</target>
+        <target state="translated">Ajouter un package</target>
       </trans-unit>
       <trans-unit id="appSettingPrompt">
         <source xml:lang="en">Would you like to update Azure Function local.settings.json with the new connection string?</source>
-        <target state="new">Would you like to update Azure Function local.settings.json with the new connection string?</target>
+        <target state="translated">Voulez-vous mettre à jour Azure Function local.settings.json avec la nouvelle chaîne de connexion ?</target>
       </trans-unit>
       <trans-unit id="at">
         <source xml:lang="en">at</source>
@@ -120,15 +120,15 @@
       </trans-unit>
       <trans-unit id="cleaningDockerImagesMessage">
         <source xml:lang="en">Cleaning existing deployments...</source>
-        <target state="new">Cleaning existing deployments...</target>
+        <target state="translated">Nettoyage des déploiements existants...</target>
       </trans-unit>
       <trans-unit id="connectingToSqlServerOnDockerMessage">
         <source xml:lang="en">Connecting to SQL Server on Docker</source>
-        <target state="new">Connecting to SQL Server on Docker</target>
+        <target state="translated">Connexion à SQL Server sur Docker</target>
       </trans-unit>
       <trans-unit id="connectionFailedError">
         <source xml:lang="en">Connection failed error: '{0}'</source>
-        <target state="new">Connection failed error: '{0}'</target>
+        <target state="translated">Erreur d’échec de la connexion : «{0}»</target>
       </trans-unit>
       <trans-unit id="connectionRadioButtonLabel">
         <source xml:lang="en">Connections</source>
@@ -144,7 +144,7 @@
       </trans-unit>
       <trans-unit id="createNew">
         <source xml:lang="en">Create New</source>
-        <target state="translated">Créer</target>
+        <target state="translated">Créer un nouveau</target>
       </trans-unit>
       <trans-unit id="createProjectDialogOkButtonText">
         <source xml:lang="en">Create</source>
@@ -160,7 +160,7 @@
       </trans-unit>
       <trans-unit id="creatingDeploymentSettingsMessage">
         <source xml:lang="en">Creating deployment settings ...</source>
-        <target state="new">Creating deployment settings ...</target>
+        <target state="translated">Création des paramètres de déploiement...</target>
       </trans-unit>
       <trans-unit id="currentTargetPlatform">
         <source xml:lang="en">Target platform of the project {0} is now {1}</source>
@@ -280,27 +280,27 @@
       </trans-unit>
       <trans-unit id="deployAppSettingUpdateFailed">
         <source xml:lang="en">Failed to update app setting '{0}'</source>
-        <target state="new">Failed to update app setting '{0}'</target>
+        <target state="translated">Échec de la mise à jour du paramètre d’application «{0}»</target>
       </trans-unit>
       <trans-unit id="deployAppSettingUpdating">
         <source xml:lang="en">Updating app setting: '{0}'</source>
-        <target state="new">Updating app setting: '{0}'</target>
+        <target state="translated">Mise à jour du paramètre d’application : «{0}»</target>
       </trans-unit>
       <trans-unit id="deployDbTaskName">
         <source xml:lang="en">Deploying SQL Db Project Locally</source>
-        <target state="new">Deploying SQL Db Project Locally</target>
+        <target state="translated">Déploiement d’un projet de base de données SQL localement</target>
       </trans-unit>
       <trans-unit id="deployProjectFailed">
         <source xml:lang="en">Failed to deploy project. Check output pane for more details. {0}</source>
-        <target state="new">Failed to deploy project. Check output pane for more details. {0}</target>
+        <target state="translated">Échec du déploiement du projet. Pour plus d’informations, consultez le volet de sortie. {0}</target>
       </trans-unit>
       <trans-unit id="deployProjectFailedMessage">
         <source xml:lang="en">Failed to open a connection to the deployed database'</source>
-        <target state="new">Failed to open a connection to the deployed database'</target>
+        <target state="translated">Échec de l’ouverture d’une connexion à la base de données déployée »</target>
       </trans-unit>
       <trans-unit id="deployProjectSucceed">
         <source xml:lang="en">Database project deployed successfully</source>
-        <target state="new">Database project deployed successfully</target>
+        <target state="translated">Le projet de base de données a été déployé</target>
       </trans-unit>
       <trans-unit id="deployScriptExists">
         <source xml:lang="en">A {0} script already exists. The new script will not be included in build.</source>
@@ -308,11 +308,11 @@
       </trans-unit>
       <trans-unit id="deployToDockerContainer">
         <source xml:lang="en">Deploy to docker container</source>
-        <target state="new">Deploy to docker container</target>
+        <target state="translated">Déployer sur un conteneur Docker</target>
       </trans-unit>
       <trans-unit id="deployToExistingServer">
         <source xml:lang="en">Deploy to existing server</source>
-        <target state="new">Deploy to existing server</target>
+        <target state="translated">Déployer sur un serveur existant</target>
       </trans-unit>
       <trans-unit id="differentDbDifferentServer">
         <source xml:lang="en">Different database, different server</source>
@@ -324,19 +324,19 @@
       </trans-unit>
       <trans-unit id="dockerContainerCreatedMessage">
         <source xml:lang="en">Docker created id: '{0}'</source>
-        <target state="new">Docker created id: '{0}'</target>
+        <target state="translated">ID créé par Docker : «{0}»</target>
       </trans-unit>
       <trans-unit id="dockerContainerFailedToRunErrorMessage">
         <source xml:lang="en">Failed to run the docker container</source>
-        <target state="new">Failed to run the docker container</target>
+        <target state="translated">Échec de l’exécution du conteneur Docker</target>
       </trans-unit>
       <trans-unit id="dockerContainerNotRunningErrorMessage">
         <source xml:lang="en">Docker container is not running</source>
-        <target state="new">Docker container is not running</target>
+        <target state="translated">Le conteneur Docker n’est pas en cours d’exécution</target>
       </trans-unit>
       <trans-unit id="dockerLogMessage">
         <source xml:lang="en">Docker logs: '{0}'</source>
-        <target state="new">Docker logs: '{0}'</target>
+        <target state="translated">Journaux Docker : «{0}»</target>
       </trans-unit>
       <trans-unit id="done">
         <source xml:lang="en">Done</source>
@@ -364,19 +364,19 @@
       </trans-unit>
       <trans-unit id="enterConnStringTemplateDescription">
         <source xml:lang="en">Enter a template for SQL connection string</source>
-        <target state="new">Enter a template for SQL connection string</target>
+        <target state="translated">Entrer un modèle pour la chaîne de connexion SQL</target>
       </trans-unit>
       <trans-unit id="enterConnectionStringEnvName">
         <source xml:lang="en">Enter connection string environment variable name</source>
-        <target state="new">Enter connection string environment variable name</target>
+        <target state="translated">Entrer le nom de la variable d’environnement de chaîne de connexion</target>
       </trans-unit>
       <trans-unit id="enterConnectionStringEnvNameDescription">
         <source xml:lang="en">Enter environment variable for SQL connection string</source>
-        <target state="new">Enter environment variable for SQL connection string</target>
+        <target state="translated">Entrer la variable d’environnement pour la chaîne de connexion SQL</target>
       </trans-unit>
       <trans-unit id="enterConnectionStringTemplate">
         <source xml:lang="en">Enter connection string template</source>
-        <target state="new">Enter connection string template</target>
+        <target state="translated">Entrer un modèle de chaîne de connexion</target>
       </trans-unit>
       <trans-unit id="enterNewDatabaseName">
         <source xml:lang="en">Enter new database name</source>
@@ -388,11 +388,11 @@
       </trans-unit>
       <trans-unit id="enterPassword">
         <source xml:lang="en">Enter password or press enter to use the generated password</source>
-        <target state="new">Enter password or press enter to use the generated password</target>
+        <target state="translated">Entrez le mot de passe ou appuyez sur Entrée pour utiliser le mot de passe généré</target>
       </trans-unit>
       <trans-unit id="enterPortNumber">
         <source xml:lang="en">Enter port number or press enter to use the default value</source>
-        <target state="new">Enter port number or press enter to use the default value</target>
+        <target state="translated">Entrez le numéro de port ou appuyez sur Entrée pour utiliser la valeur par défaut</target>
       </trans-unit>
       <trans-unit id="enterSystemDbName">
         <source xml:lang="en">Enter a database name for this system database</source>
@@ -400,7 +400,7 @@
       </trans-unit>
       <trans-unit id="errorFindingBuildFilesLocation">
         <source xml:lang="en">Error finding build files location: {0}</source>
-        <target state="new">Error finding build files location: {0}</target>
+        <target state="translated">Erreur lors de la recherche de l’emplacement des fichiers de build : {0}</target>
       </trans-unit>
       <trans-unit id="exampleUsage">
         <source xml:lang="en">Example Usage</source>
@@ -556,7 +556,7 @@
       </trans-unit>
       <trans-unit id="noAzureFunctionsProjectsInWorkspace">
         <source xml:lang="en">No Azure functions projects found in the workspace</source>
-        <target state="new">No Azure functions projects found in the workspace</target>
+        <target state="translated">Aucun projet Azure Functions trouvé dans l’espace de travail</target>
       </trans-unit>
       <trans-unit id="noDataSourcesFile">
         <source xml:lang="en">No {0} found</source>
@@ -608,7 +608,7 @@
       </trans-unit>
       <trans-unit id="portMustNotBeNumber">
         <source xml:lang="en">Port must a be number</source>
-        <target state="new">Port must a be number</target>
+        <target state="translated">Le port doit être un numéro</target>
       </trans-unit>
       <trans-unit id="postDeployScriptFriendlyName">
         <source xml:lang="en">Script.PostDeployment</source>
@@ -696,27 +696,27 @@
       </trans-unit>
       <trans-unit id="retryFailedMessage">
         <source xml:lang="en">Operation '{0}' failed. Re-trying... Current Result: {1}. Error: '{2}'</source>
-        <target state="new">Operation '{0}' failed. Re-trying... Current Result: {1}. Error: '{2}'</target>
+        <target state="translated">Échec de l’opération «{0}». Nouvelle tentative... Résultat actuel : {1}. Erreur : «{2}»</target>
       </trans-unit>
       <trans-unit id="retryMessage">
         <source xml:lang="en">Operation '{0}' failed. Re-trying... Error: '{1}'</source>
-        <target state="new">Operation '{0}' failed. Re-trying... Error: '{1}'</target>
+        <target state="translated">Échec de l’opération «{0}». Nouvelle tentative... Erreur : «{1}»</target>
       </trans-unit>
       <trans-unit id="retryRunMessage">
         <source xml:lang="en">Running operation '{2}' Attempt {0} of {1}</source>
-        <target state="new">Running operation '{2}' Attempt {0} of {1}</target>
+        <target state="translated">Exécution de l’opération «{2}» tentative {0} de {1}</target>
       </trans-unit>
       <trans-unit id="retrySucceedMessage">
         <source xml:lang="en">Operation '{0}' completed successfully. Result: {1}</source>
-        <target state="new">Operation '{0}' completed successfully. Result: {1}</target>
+        <target state="translated">L’opération «{0}» s’est terminée correctement. Résultat : {1}</target>
       </trans-unit>
       <trans-unit id="retryWaitMessage">
         <source xml:lang="en">Waiting for {0} seconds before another attempt for operation '{1}'</source>
-        <target state="new">Waiting for {0} seconds before another attempt for operation '{1}'</target>
+        <target state="translated">En attente de {0} secondes avant une autre tentative d’opération «{1}»</target>
       </trans-unit>
       <trans-unit id="runningDockerMessage">
         <source xml:lang="en">Building and running the docker container ...</source>
-        <target state="new">Building and running the docker container ...</target>
+        <target state="translated">Génération et exécution du conteneur Docker...</target>
       </trans-unit>
       <trans-unit id="sameDatabase">
         <source xml:lang="en">Same database</source>
@@ -768,7 +768,7 @@
       </trans-unit>
       <trans-unit id="selectDeployOption">
         <source xml:lang="en">Select where to deploy the project to</source>
-        <target state="new">Select where to deploy the project to</target>
+        <target state="translated">Sélectionnez l’emplacement de déploiement du projet sur</target>
       </trans-unit>
       <trans-unit id="selectFolderStructure">
         <source xml:lang="en">Select folder structure</source>

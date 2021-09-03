@@ -4519,7 +4519,7 @@ Errore: {1}</target>
       </trans-unit>
       <trans-unit id="runningCell">
         <source xml:lang="en">Running cell {0} of {1}</source>
-        <target state="new">Running cell {0} of {1}</target>
+        <target state="translated">Esecuzione della cella {0} di {1}</target>
       </trans-unit>
       <trans-unit id="startingExecution">
         <source xml:lang="en">Starting execution</source>
@@ -4999,7 +4999,7 @@ Errore: {1}</target>
       </trans-unit>
       <trans-unit id="resultsGrid.maxRowCountExceeded">
         <source xml:lang="en">Max row count for filtering/sorting has been exceeded. To update it, navigate to User Settings and change the setting: 'queryEditor.results.inMemoryDataProcessingThreshold'</source>
-        <target state="new">Max row count for filtering/sorting has been exceeded. To update it, navigate to User Settings and change the setting: 'queryEditor.results.inMemoryDataProcessingThreshold'</target>
+        <target state="translated">È stato superato il numero massimo di righe per il filtraggio o l'ordinamento. Per aggiornarlo, passare alle impostazioni utente e modificare l'impostazione 'queryEditor.results.inMemoryDataProcessingThreshold'</target>
       </trans-unit>
       <trans-unit id="xmlShowplan">
         <source xml:lang="en">XML Showplan</source>

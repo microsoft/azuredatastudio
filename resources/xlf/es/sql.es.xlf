@@ -4091,15 +4091,15 @@ Error: {1}</target>
       </trans-unit>
       <trans-unit id="notebook.useNewMarkdownRenderer">
         <source xml:lang="en">Whether to use the newer version of the markdown renderer for Notebooks. This may result in markdown being rendered differently than previous versions.</source>
-        <target state="new">Whether to use the newer version of the markdown renderer for Notebooks. This may result in markdown being rendered differently than previous versions.</target>
+        <target state="translated">Indica si se debe usar la versión más reciente del representador Markdown para los blocs de notas. Esto puede dar lugar a que Markdown se represente de forma diferente que las versiones anteriores.</target>
       </trans-unit>
       <trans-unit id="notebookViews">
         <source xml:lang="en">Notebook Views</source>
-        <target state="new">Notebook Views</target>
+        <target state="translated">Vistas de Bloc de notas</target>
       </trans-unit>
       <trans-unit id="notebookViews.enabled">
         <source xml:lang="en">(Preview) Enable Notebook Views</source>
-        <target state="new">(Preview) Enable Notebook Views</target>
+        <target state="translated">(Versión preliminar) Habilitar vistas del bloc de notas</target>
       </trans-unit>
       <trans-unit id="search.actionsPosition">
         <source xml:lang="en">Controls the positioning of the actionbar on rows in the search view.</source>
@@ -4499,7 +4499,7 @@ Error: {1}</target>
     <body>
       <trans-unit id="cellAwaitingInputTitle">
         <source xml:lang="en">Cell Awaiting Input</source>
-        <target state="new">Cell Awaiting Input</target>
+        <target state="translated">Celda en espera de entrada</target>
       </trans-unit>
       <trans-unit id="cellNotFound">
         <source xml:lang="en">cell with URI {0} was not found in this model</source>
@@ -4519,11 +4519,11 @@ Error: {1}</target>
       </trans-unit>
       <trans-unit id="runningCell">
         <source xml:lang="en">Running cell {0} of {1}</source>
-        <target state="new">Running cell {0} of {1}</target>
+        <target state="translated">Ejecutando celda {0} de {1}</target>
       </trans-unit>
       <trans-unit id="startingExecution">
         <source xml:lang="en">Starting execution</source>
-        <target state="new">Starting execution</target>
+        <target state="translated">Iniciando ejecución</target>
       </trans-unit>
     </body>
   </file>
@@ -4999,7 +4999,7 @@ Error: {1}</target>
       </trans-unit>
       <trans-unit id="resultsGrid.maxRowCountExceeded">
         <source xml:lang="en">Max row count for filtering/sorting has been exceeded. To update it, navigate to User Settings and change the setting: 'queryEditor.results.inMemoryDataProcessingThreshold'</source>
-        <target state="new">Max row count for filtering/sorting has been exceeded. To update it, navigate to User Settings and change the setting: 'queryEditor.results.inMemoryDataProcessingThreshold'</target>
+        <target state="translated">Se ha superado el número máximo de filas para el filtrado y la ordenación. Para actualizarlo, vaya a Configuración de usuario y cambie la configuración: "queryEditor.results.inMemoryDataProcessingThreshold".</target>
       </trans-unit>
       <trans-unit id="xmlShowplan">
         <source xml:lang="en">XML Showplan</source>

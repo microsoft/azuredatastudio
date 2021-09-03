@@ -188,7 +188,7 @@
       </trans-unit>
       <trans-unit id="openedProjectsUndefinedAfterRefresh">
         <source xml:lang="en">List of opened projects should not be undefined after refresh from disk.</source>
-        <target state="new">List of opened projects should not be undefined after refresh from disk.</target>
+        <target state="translated">La liste des projets ouverts ne doit pas être indéfinie après l’actualisation à partir du disque.</target>
       </trans-unit>
       <trans-unit id="projectNameNull">
         <source xml:lang="en">Project name is null</source>

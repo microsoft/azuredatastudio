@@ -204,7 +204,7 @@
     <body>
       <trans-unit id="azure.subscriptionError">
         <source xml:lang="en">Failed to get subscriptions for account {0}. Please refresh the account.</source>
-        <target state="new">Failed to get subscriptions for account {0}. Please refresh the account.</target>
+        <target state="translated">Не удалось получить подписки для учетной записи {0}. Обновите ее.</target>
       </trans-unit>
     </body>
   </file>
@@ -284,7 +284,7 @@
     <body>
       <trans-unit id="azure.resource.tenantSubscriptionsError">
         <source xml:lang="en">Failed to get subscriptions for account {0} (tenant '{1}'). {2}</source>
-        <target state="new">Failed to get subscriptions for account {0} (tenant '{1}'). {2}</target>
+        <target state="translated">Не удалось получить подписки для учетной записи {0} (клиент "{1}"). {2}</target>
       </trans-unit>
     </body>
   </file>
@@ -338,7 +338,7 @@
       </trans-unit>
       <trans-unit id="azure.unableToAccessSubscription">
         <source xml:lang="en">Unable to access subscription {0} ({1}). Please [refresh the account](command:azure.resource.signin) to try again. {2}</source>
-        <target state="new">Unable to access subscription {0} ({1}). Please [refresh the account](command:azure.resource.signin) to try again. {2}</target>
+        <target state="translated">Не удается получить доступ к подписке {0} ({1}). [Обновите учетную запись](command:azure.resource.signin), чтобы повторить попытку. {2}</target>
       </trans-unit>
     </body>
   </file>
@@ -377,7 +377,7 @@
       </trans-unit>
       <trans-unit id="azure.resource.tree.loadresourceerror">
         <source xml:lang="en">An error occurred while loading Azure resources: {0}</source>
-        <target state="new">An error occurred while loading Azure resources: {0}</target>
+        <target state="translated">При загрузке ресурсов Azure произошла ошибка: {0}</target>
       </trans-unit>
     </body>
   </file>

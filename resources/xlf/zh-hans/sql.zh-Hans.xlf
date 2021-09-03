@@ -4091,15 +4091,15 @@ Error: {1}</source>
       </trans-unit>
       <trans-unit id="notebook.useNewMarkdownRenderer">
         <source xml:lang="en">Whether to use the newer version of the markdown renderer for Notebooks. This may result in markdown being rendered differently than previous versions.</source>
-        <target state="new">Whether to use the newer version of the markdown renderer for Notebooks. This may result in markdown being rendered differently than previous versions.</target>
+        <target state="translated">是否对 Notebook 使用较新版本的 Markdown 呈现器。这可能会导致 Markdown 的呈现方式与以前的版本不同。</target>
       </trans-unit>
       <trans-unit id="notebookViews">
         <source xml:lang="en">Notebook Views</source>
-        <target state="new">Notebook Views</target>
+        <target state="translated">Notebook 视图</target>
       </trans-unit>
       <trans-unit id="notebookViews.enabled">
         <source xml:lang="en">(Preview) Enable Notebook Views</source>
-        <target state="new">(Preview) Enable Notebook Views</target>
+        <target state="translated">(预览)启用笔记本视图</target>
       </trans-unit>
       <trans-unit id="search.actionsPosition">
         <source xml:lang="en">Controls the positioning of the actionbar on rows in the search view.</source>
@@ -4499,7 +4499,7 @@ Error: {1}</source>
     <body>
       <trans-unit id="cellAwaitingInputTitle">
         <source xml:lang="en">Cell Awaiting Input</source>
-        <target state="new">Cell Awaiting Input</target>
+        <target state="translated">等待输入的单元格</target>
       </trans-unit>
       <trans-unit id="cellNotFound">
         <source xml:lang="en">cell with URI {0} was not found in this model</source>
@@ -4519,11 +4519,11 @@ Error: {1}</source>
       </trans-unit>
       <trans-unit id="runningCell">
         <source xml:lang="en">Running cell {0} of {1}</source>
-        <target state="new">Running cell {0} of {1}</target>
+        <target state="translated">正在运行单元格 {0} (共 {1} 个)</target>
       </trans-unit>
       <trans-unit id="startingExecution">
         <source xml:lang="en">Starting execution</source>
-        <target state="new">Starting execution</target>
+        <target state="translated">正在开始执行</target>
       </trans-unit>
     </body>
   </file>
@@ -4999,7 +4999,7 @@ Error: {1}</source>
       </trans-unit>
       <trans-unit id="resultsGrid.maxRowCountExceeded">
         <source xml:lang="en">Max row count for filtering/sorting has been exceeded. To update it, navigate to User Settings and change the setting: 'queryEditor.results.inMemoryDataProcessingThreshold'</source>
-        <target state="new">Max row count for filtering/sorting has been exceeded. To update it, navigate to User Settings and change the setting: 'queryEditor.results.inMemoryDataProcessingThreshold'</target>
+        <target state="translated">已超过筛选/排序的最大行计数。若要更新它，可以转到“用户设置”并更改设置: "queryEditor.results.inMemoryDataProcessingThreshold"</target>
       </trans-unit>
       <trans-unit id="xmlShowplan">
         <source xml:lang="en">XML Showplan</source>
@@ -7845,7 +7845,7 @@ Error: {1}</source>
       </trans-unit>
       <trans-unit id="showReleaseNotes">
         <source xml:lang="en">Show Getting Started</source>
-        <target state="translated">显示入门</target>
+        <target state="translated">显示入门指南</target>
       </trans-unit>
     </body>
   </file>

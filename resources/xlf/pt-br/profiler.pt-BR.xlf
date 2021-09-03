@@ -8,7 +8,7 @@
       </trans-unit>
       <trans-unit id="createSessionDialog.create">
         <source xml:lang="en">Start</source>
-        <target state="translated">Iníciar</target>
+        <target state="translated">Iniciar</target>
       </trans-unit>
       <trans-unit id="createSessionDialog.createSessionFailed">
         <source xml:lang="en">Failed to create a session</source>
@@ -44,7 +44,7 @@
     <body>
       <trans-unit id="description">
         <source xml:lang="en">SQL Server Profiler for Azure Data Studio</source>
-        <target state="new">SQL Server Profiler for Azure Data Studio</target>
+        <target state="translated">SQL Server Profiler para Azure Data Studio</target>
       </trans-unit>
       <trans-unit id="displayName">
         <source xml:lang="en">SQL Server Profiler</source>
@@ -60,11 +60,11 @@
       </trans-unit>
       <trans-unit id="profiler.contributes.title.openCreateSessionDialog">
         <source xml:lang="en">Create Profiler Season</source>
-        <target state="new">Create Profiler Season</target>
+        <target state="translated">Criar Temporada do Profiler</target>
       </trans-unit>
       <trans-unit id="profiler.contributes.title.start">
         <source xml:lang="en">Start</source>
-        <target state="translated">Iníciar</target>
+        <target state="translated">Iniciar</target>
       </trans-unit>
       <trans-unit id="profiler.contributes.title.stop">
         <source xml:lang="en">Stop</source>
