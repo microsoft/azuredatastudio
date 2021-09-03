@@ -8,16 +8,18 @@
 	],
 	"version": "1.0.0",
 	"contents": {
-		"package": {
-			"displayName": "GitHub 認証",
-			"description": "GitHub 認証プロバイダー"
+		"dist/common/keychain": {
+			"keychainWriteError": "ログイン情報のキーチェーンへの書き込みが、エラー '{0}' で失敗しました。",
+			"troubleshooting": "トラブルシューティング ガイド"
 		},
 		"dist/githubServer": {
-			"signingIn": "$(mark-github) github.com にサインインしています..."
+			"signingIn": "$(mark-github) github.com にサインインしています...",
+			"signingInEnterprise": "$(mark-github) {0} にサインインしています...",
+			"status.git.signIn.name": "GitHub サインイン"
 		},
-		"dist/common/keychain": {
-			"troubleshooting": "トラブルシューティング ガイド",
-			"keychainWriteError": "ログイン情報のキーチェーンへの書き込みが、エラー '{0}' で失敗しました。"
+		"package": {
+			"description": "GitHub 認証プロバイダー",
+			"displayName": "GitHub 認証"
 		}
 	}
 }

@@ -9,8 +9,8 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"displayName": "Noções Básicas da Linguagem TypeScript",
-			"description": "Fornece snippets, realce de sintaxe, correspondência de colchetes e dobragem em arquivos TypeScript."
+			"description": "Fornece snippets, realce de sintaxe, correspondência de colchetes e dobragem em arquivos TypeScript.",
+			"displayName": "Noções Básicas da Linguagem TypeScript"
 		}
 	}
 }

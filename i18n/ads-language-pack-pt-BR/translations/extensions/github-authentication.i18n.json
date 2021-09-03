@@ -8,16 +8,18 @@
 	],
 	"version": "1.0.0",
 	"contents": {
-		"package": {
-			"displayName": "Autenticação do GitHub",
-			"description": "Provedor de Autenticação do GitHub"
+		"dist/common/keychain": {
+			"keychainWriteError": "Falha ao gravar informações de logon no conjunto de chaves com o erro '{0}'.",
+			"troubleshooting": "Guia de Solução de Problemas"
 		},
 		"dist/githubServer": {
-			"signingIn": "$(mark-github) Entrando no github.com..."
+			"signingIn": "$(mark-github) Entrando no github.com...",
+			"signingInEnterprise": "$(mark-github) Entrando no {0}...",
+			"status.git.signIn.name": "Entrada do GitHub"
 		},
-		"dist/common/keychain": {
-			"troubleshooting": "Guia de Solução de Problemas",
-			"keychainWriteError": "Falha ao gravar informações de logon no conjunto de chaves com o erro '{0}'."
+		"package": {
+			"description": "Provedor de Autenticação do GitHub",
+			"displayName": "Autenticação do GitHub"
 		}
 	}
 }

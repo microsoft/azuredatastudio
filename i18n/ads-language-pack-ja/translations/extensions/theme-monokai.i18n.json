@@ -9,8 +9,8 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"displayName": "Monokai テーマ",
 			"description": "Visual Studio Code の Monokai テーマ",
+			"displayName": "Monokai テーマ",
 			"themeLabel": "Monokai"
 		}
 	}

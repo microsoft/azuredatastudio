@@ -9,8 +9,8 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"displayName": "Seti File Icon テーマ",
 			"description": "Seti UI file icons を使用したファイル アイコンのテーマ",
+			"displayName": "Seti File Icon テーマ",
 			"themeLabel": "Seti (Visual Studio Code)"
 		}
 	}

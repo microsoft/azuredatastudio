@@ -11,13 +11,22 @@
 		"dist/dialogs/profilerCreateSessionDialog": {
 			"createSessionDialog.cancel": "取消",
 			"createSessionDialog.create": "开始",
-			"createSessionDialog.title": "启动新的探查器会话",
-			"createSessionDialog.templatesInvalid": "模板列表无效，无法打开对话",
+			"createSessionDialog.createSessionFailed": "未能创建会话",
 			"createSessionDialog.dialogOwnerInvalid": "对话所有者无效，无法打开对话",
+			"createSessionDialog.enterSessionName": "输入会话名称:",
 			"createSessionDialog.invalidProviderType": "提供程序类型无效，无法打开对话",
 			"createSessionDialog.selectTemplates": "选择会话模板:",
-			"createSessionDialog.enterSessionName": "输入会话名称:",
-			"createSessionDialog.createSessionFailed": "未能创建会话"
+			"createSessionDialog.templatesInvalid": "模板列表无效，无法打开对话",
+			"createSessionDialog.title": "启动新的探查器会话"
+		},
+		"package": {
+			"description": "SQL Server Profiler for Azure Data Studio",
+			"displayName": "SQL Server Profiler",
+			"profiler.category": "探查器",
+			"profiler.contributes.title.newProfler": "启动探查器",
+			"profiler.contributes.title.openCreateSessionDialog": "Create Profiler Season",
+			"profiler.contributes.title.start": "开始",
+			"profiler.contributes.title.stop": "停止"
 		}
 	}
 }

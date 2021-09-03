@@ -8,64 +8,65 @@
 	],
 	"version": "1.0.0",
 	"contents": {
+		"dist/features/documentLinkProvider": {
+			"documentLink.tooltip": "Seguir o link"
+		},
+		"dist/features/preview": {
+			"lockedPreviewTitle": "[Versão Prévia] {0}",
+			"onPreviewStyleLoadError": "Não foi possível carregar 'markdown.styles': {0}",
+			"preview.clickOpenFailed": "Não foi possível abrir {0}",
+			"previewTitle": "Visualizar {0}"
+		},
+		"dist/features/previewContentProvider": {
+			"preview.notFound": "{0} não encontrado",
+			"preview.securityMessage.label": "Aviso de Segurança Desabilitado para Conteúdo",
+			"preview.securityMessage.text": "Algum conteúdo foi desabilitado neste documento",
+			"preview.securityMessage.title": "Um conteúdo potencialmente não seguro foi desabilitado na visualização de Markdown. Altere a configuração de segurança da visualização de Markdown para permitir o conteúdo não seguro ou habilitar os scripts"
+		},
+		"dist/security": {
+			"disable.description": "Permitir a execução de todo o conteúdo e script. Não recomendado",
+			"disable.title": "Desabilitar",
+			"disableSecurityWarning.title": "Desabilitar aviso de segurança de visualização neste workspace",
+			"enableSecurityWarning.title": "Habilitar avisos de segurança de visualização neste workspace",
+			"insecureContent.description": "Habilitar carregamento de conteúdo via http",
+			"insecureContent.title": "Permitir conteúdo não seguro",
+			"insecureLocalContent.description": "Habilitar carregamento de conteúdo via http servido por localhost",
+			"insecureLocalContent.title": "Permitir conteúdo local não seguro",
+			"moreInfo.title": "Mais Informações",
+			"preview.showPreviewSecuritySelector.title": "Selecionar configurações de segurança para visualizações de Markdown neste workspace",
+			"strict.description": "Carregar somente conteúdo seguro",
+			"strict.title": "Estrito",
+			"toggleSecurityWarning.description": "Não afeta o nível de segurança do conteúdo"
+		},
 		"package": {
-			"displayName": "Recursos da Linguagem Markdown",
+			"configuration.markdown.links.openLocation.beside": "Abrir links ao lado do editor ativo.",
+			"configuration.markdown.links.openLocation.currentGroup": "Abrir links no grupo do editor ativo.",
+			"configuration.markdown.links.openLocation.description": "Controla se os links nos arquivos Markdown devem ser abertos.",
+			"configuration.markdown.preview.openMarkdownLinks.description": "Controla como os links para outros arquivos Markdown na visualização de Markdown devem ser abertos.",
+			"configuration.markdown.preview.openMarkdownLinks.inEditor": "Tentar abrir links no editor.",
+			"configuration.markdown.preview.openMarkdownLinks.inPreview": "Tentar abrir links na visualização de Markdown.",
 			"description": "Fornece suporte de linguagem avançada para Markdown.",
+			"displayName": "Recursos da Linguagem Markdown",
 			"markdown.preview.breaks.desc": "Define como as quebras de linha são renderizadas na visualização de Markdown. A definição desta opção como 'true' cria um <br> para novas linhas dentro de parágrafos.",
-			"markdown.preview.linkify": "Habilitar ou desabilitar a conversão de texto do tipo URL em links na visualização de Markdown.",
-			"markdown.preview.typographer": "Habilitar ou desabilitar algumas substituições com neutralidade de idioma e o aperfeiçoamento de citações na visualização de Markdown.",
 			"markdown.preview.doubleClickToSwitchToEditor.desc": "Clicar duas vezes na visualização de Markdown para mudar para o editor.",
 			"markdown.preview.fontFamily.desc": "Controla a família de fontes usada na visualização de Markdown.",
 			"markdown.preview.fontSize.desc": "Controla o tamanho da fonte em pixels usado na visualização de Markdown.",
 			"markdown.preview.lineHeight.desc": "Controla a altura da linha usada na visualização de Markdown. Este número é relativo ao tamanho da fonte.",
+			"markdown.preview.linkify": "Habilitar ou desabilitar a conversão de texto do tipo URL em links na visualização de Markdown.",
 			"markdown.preview.markEditorSelection.desc": "Marcar a seleção do editor atual na visualização de Markdown.",
+			"markdown.preview.refresh.title": "Atualizar Visualização",
 			"markdown.preview.scrollEditorWithPreview.desc": "Quando uma visualização de Markdown for rolada, atualizar a exibição do editor.",
 			"markdown.preview.scrollPreviewWithEditor.desc": "Quando um Markdown editor for rolado, atualizar a exibição da visualização.",
 			"markdown.preview.title": "Abrir Visualização",
+			"markdown.preview.toggleLock.title": "Ativar/Desativar Bloqueio de Visualização",
+			"markdown.preview.typographer": "Habilitar ou desabilitar algumas substituições com neutralidade de idioma e o aperfeiçoamento de citações na visualização de Markdown.",
 			"markdown.previewSide.title": "Abrir Visualização ao Lado",
 			"markdown.showLockedPreviewToSide.title": "Abrir Visualização Bloqueada ao Lado",
+			"markdown.showPreviewSecuritySelector.title": "Alterar Configurações de Segurança da Visualização",
 			"markdown.showSource.title": "Mostrar Origem",
 			"markdown.styles.dec": "Uma lista de URLs ou caminhos locais para folhas de estilos CSS a serem usadas na visualização de Markdown. Os caminhos relativos são interpretados em relação à pasta aberta no Explorador. Se não houver nenhuma pasta aberta, eles serão interpretados em relação à localização do arquivo Markdown. Todos os '\\' precisam ser escritos como '\\\\'.",
-			"markdown.showPreviewSecuritySelector.title": "Alterar Configurações de Segurança da Visualização",
 			"markdown.trace.desc": "Habilitar o registro em log da depuração para a extensão de Markdown.",
-			"markdown.preview.refresh.title": "Atualizar Visualização",
-			"markdown.preview.toggleLock.title": "Ativar/Desativar Bloqueio de Visualização",
-			"configuration.markdown.preview.openMarkdownLinks.description": "Controla como os links para outros arquivos Markdown na visualização de Markdown devem ser abertos.",
-			"configuration.markdown.preview.openMarkdownLinks.inEditor": "Tentar abrir links no editor.",
-			"configuration.markdown.preview.openMarkdownLinks.inPreview": "Tentar abrir links na visualização de Markdown.",
-			"configuration.markdown.links.openLocation.description": "Controla se os links nos arquivos Markdown devem ser abertos.",
-			"configuration.markdown.links.openLocation.currentGroup": "Abrir links no grupo do editor ativo.",
-			"configuration.markdown.links.openLocation.beside": "Abrir links ao lado do editor ativo."
-		},
-		"dist/features/documentLinkProvider": {
-			"documentLink.tooltip": "Seguir o link"
-		},
-		"dist/features/previewContentProvider": {
-			"preview.securityMessage.text": "Algum conteúdo foi desabilitado neste documento",
-			"preview.securityMessage.title": "Um conteúdo potencialmente não seguro foi desabilitado na visualização de Markdown. Altere a configuração de segurança da visualização de Markdown para permitir o conteúdo não seguro ou habilitar os scripts",
-			"preview.securityMessage.label": "Aviso de Segurança Desabilitado para Conteúdo",
-			"preview.notFound": "{0} não encontrado"
-		},
-		"dist/features/preview": {
-			"onPreviewStyleLoadError": "Não foi possível carregar 'markdown.styles': {0}",
-			"preview.clickOpenFailed": "Não foi possível abrir {0}",
-			"lockedPreviewTitle": "[Versão Prévia] {0}",
-			"previewTitle": "Visualizar {0}"
-		},
-		"dist/security": {
-			"strict.title": "Estrito",
-			"strict.description": "Carregar somente conteúdo seguro",
-			"insecureLocalContent.title": "Permitir conteúdo local não seguro",
-			"insecureLocalContent.description": "Habilitar carregamento de conteúdo via http servido por localhost",
-			"insecureContent.title": "Permitir conteúdo não seguro",
-			"insecureContent.description": "Habilitar carregamento de conteúdo via http",
-			"disable.title": "Desabilitar",
-			"disable.description": "Permitir a execução de todo o conteúdo e script. Não recomendado",
-			"moreInfo.title": "Mais Informações",
-			"enableSecurityWarning.title": "Habilitar avisos de segurança de visualização neste workspace",
-			"disableSecurityWarning.title": "Desabilitar aviso de segurança de visualização neste workspace",
-			"toggleSecurityWarning.description": "Não afeta o nível de segurança do conteúdo",
-			"preview.showPreviewSecuritySelector.title": "Selecionar configurações de segurança para visualizações de Markdown neste workspace"
+			"workspaceTrust": "Necessário para carregar estilos configurados no espaço de trabalho."
 		}
 	}
 }

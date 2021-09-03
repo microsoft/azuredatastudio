@@ -9,8 +9,8 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"displayName": "XML-Sprachfeatures",
-			"description": "Bietet umfangreiche Sprachunterstützung für XML."
+			"description": "Bietet umfangreiche Sprachunterstützung für XML.",
+			"displayName": "XML-Sprachfeatures"
 		}
 	}
 }

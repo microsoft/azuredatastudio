@@ -9,8 +9,8 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"displayName": "Tema Quiet Light",
 			"description": "Tema Quiet Light para Visual Studio Code",
+			"displayName": "Tema Quiet Light",
 			"themeLabel": "Quiet claro"
 		}
 	}

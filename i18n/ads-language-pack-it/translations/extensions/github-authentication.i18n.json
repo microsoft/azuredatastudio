@@ -8,16 +8,18 @@
 	],
 	"version": "1.0.0",
 	"contents": {
-		"package": {
-			"displayName": "Autenticazione GitHub",
-			"description": "Provider di autenticazione GitHub"
+		"dist/common/keychain": {
+			"keychainWriteError": "La scrittura delle informazioni di accesso al keychain non è riuscita. Errore: '{0}'.",
+			"troubleshooting": "Guida alla risoluzione dei problemi"
 		},
 		"dist/githubServer": {
-			"signingIn": "$(mark-github) Accesso a github.com..."
+			"signingIn": "$(mark-github) Accesso a github.com...",
+			"signingInEnterprise": "$(mark-github) Accesso a {0}...",
+			"status.git.signIn.name": "Accesso a GitHub"
 		},
-		"dist/common/keychain": {
-			"troubleshooting": "Guida alla risoluzione dei problemi",
-			"keychainWriteError": "La scrittura delle informazioni di accesso al keychain non è riuscita. Errore: '{0}'."
+		"package": {
+			"description": "Provider di autenticazione GitHub",
+			"displayName": "Autenticazione GitHub"
 		}
 	}
 }

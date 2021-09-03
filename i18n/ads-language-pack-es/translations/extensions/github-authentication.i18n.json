@@ -8,16 +8,18 @@
 	],
 	"version": "1.0.0",
 	"contents": {
-		"package": {
-			"displayName": "Autenticación de GitHub",
-			"description": "Proveedor de autenticación de GitHub"
+		"dist/common/keychain": {
+			"keychainWriteError": "Error al escribir la información de inicio de sesión en la cadena de claves: \"{0}\".",
+			"troubleshooting": "Guía para la solución de problemas"
 		},
 		"dist/githubServer": {
-			"signingIn": "$(mark-github) Iniciando sesión en github.com..."
+			"signingIn": "$(mark-github) Iniciando sesión en github.com...",
+			"signingInEnterprise": "$(mark-github) Iniciando sesión en {0}...",
+			"status.git.signIn.name": "Inicio de sesión en GitHub"
 		},
-		"dist/common/keychain": {
-			"troubleshooting": "Guía para la solución de problemas",
-			"keychainWriteError": "Error al escribir la información de inicio de sesión en la cadena de claves: \"{0}\"."
+		"package": {
+			"description": "Proveedor de autenticación de GitHub",
+			"displayName": "Autenticación de GitHub"
 		}
 	}
 }

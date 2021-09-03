@@ -9,8 +9,8 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"displayName": "Red テーマ",
 			"description": "Visual Studio Code の Red テーマ",
+			"displayName": "Red テーマ",
 			"themeLabel": "Red"
 		}
 	}

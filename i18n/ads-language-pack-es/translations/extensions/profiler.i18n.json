@@ -11,13 +11,22 @@
 		"dist/dialogs/profilerCreateSessionDialog": {
 			"createSessionDialog.cancel": "Cancelar",
 			"createSessionDialog.create": "Inicio",
-			"createSessionDialog.title": "Iniciar nueva sesión de Profiler",
-			"createSessionDialog.templatesInvalid": "Lista de plantillas no válida, no se puede abrir el cuadro de diálogo",
+			"createSessionDialog.createSessionFailed": "No se pudo crear una sesión",
 			"createSessionDialog.dialogOwnerInvalid": "Propietario de cuadro de diálogo no válido, no se puede abrir el cuadro de diálogo",
+			"createSessionDialog.enterSessionName": "Escriba el nombre de la sesión:",
 			"createSessionDialog.invalidProviderType": "Tipo de proveedor no válido, no se puede abrir el cuadro de diálogo",
 			"createSessionDialog.selectTemplates": "Seleccione plantilla de sesión:",
-			"createSessionDialog.enterSessionName": "Escriba el nombre de la sesión:",
-			"createSessionDialog.createSessionFailed": "No se pudo crear una sesión"
+			"createSessionDialog.templatesInvalid": "Lista de plantillas no válida, no se puede abrir el cuadro de diálogo",
+			"createSessionDialog.title": "Iniciar nueva sesión de Profiler"
+		},
+		"package": {
+			"description": "SQL Server Profiler for Azure Data Studio",
+			"displayName": "SQL Server Profiler",
+			"profiler.category": "Profiler",
+			"profiler.contributes.title.newProfler": "Iniciar Profiler",
+			"profiler.contributes.title.openCreateSessionDialog": "Create Profiler Season",
+			"profiler.contributes.title.start": "Inicio",
+			"profiler.contributes.title.stop": "Detener"
 		}
 	}
 }

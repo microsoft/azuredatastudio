@@ -8,52 +8,147 @@
 	],
 	"version": "1.0.0",
 	"contents": {
-		"package": {
-			"azure.displayName": "Azure (Core)",
-			"azure.description": "Durchsuchen und Arbeiten mit Azure-Ressourcen",
-			"azure.title": "Azure",
-			"azure.resource.config.title": "Konfiguration von Azure-Ressourcen",
-			"azure.resource.config.filter.description": "Der Ressourcenfilter, jedes Element besteht aus einer Konto-ID, einer Abonnement-ID und einem Namen (durch Schrägstriche getrennt)",
-			"azure.resource.explorer.title": "Azure",
-			"azure.resource.refreshall.title": "Azure: Alle Konten aktualisieren",
-			"azure.resource.refresh.title": "Aktualisieren",
-			"azure.resource.signin.title": "Azure: Anmelden",
-			"azure.resource.selectsubscriptions.title": "Abonnements auswählen",
-			"azure.resource.startterminal.title": "Cloud Shell starten",
-			"azure.resource.connectsqlserver.title": "Verbinden",
-			"azure.resource.connectsqldb.title": "Zu Servern hinzufügen",
-			"azure.resource.view.title": "Azure (Vorschau)",
-			"azure.tenant.config.filter.description": "Die Liste der Mandanten-IDs, die beim Abfragen von Azure-Ressourcen ignoriert werden sollen. Jedes Element ist eine Mandanten-ID.",
-			"accounts.clearTokenCache": "Tokencache für Azure-Konto löschen",
-			"azure.openInAzurePortal.title": "In Azure-Portal öffnen",
-			"config.azureAccountConfigurationSection": "Azure-Kontokonfiguration",
-			"config.enablePublicCloudDescription": "Hiermit wird festgelegt, ob die Integration der öffentlichen Azure-Cloud aktiviert werden soll.",
-			"config.enableUsGovCloudDescription": "Hiermit wird festgelegt, ob die Integration der Azure-Cloud für US-Behörden (Fairfax) aktiviert werden soll.",
-			"config.enableUsNatCloudDescription": "Hiermit wird festgelegt, ob die Integration der Azure-Cloud (USA, national) aktiviert werden soll.",
-			"config.enableChinaCloudDescription": "Hiermit wird festgelegt, ob die Azure China-Integration aktiviert werden soll.",
-			"config.enableGermanyCloudDescription": "Hiermit wird festgelegt, ob die Azure Deutschland-Integration aktiviert werden soll.",
-			"config.azureAuthMethodConfigurationSection": "Azure-Authentifizierungsmethode",
-			"config.azureCodeGrantMethod": "Gewährungsmethode über Code",
-			"config.azureDeviceCodeMethod": "Gewährungsmethode über Gerät",
-			"config.noSystemKeychain": "Hiermit wird die Keychain-Systemintegration deaktiviert. Die Anmeldeinformationen werden in einer Flatfile im Basisverzeichnis des Benutzers gespeichert.",
-			"config.piiLogging": "Hiermit wird festgelegt, ob personenbezogene Informationen (PII) lokal in der Konsolenansicht protokolliert werden sollen."
+		"dist/account-provider/auths/azureAuth": {
+			"azure.accessTokenEmpty": "Von Microsoft OAuth wurde kein Zugriffstoken zurückgegeben.",
+			"azure.cacheErrorAdd": "Fehler beim Hinzufügen Ihres Kontos zum Cache.",
+			"azure.cacheErrorGet": "Fehler beim Abrufen Ihres Kontos aus dem Cache.",
+			"azure.cacheErrorParse": "Fehler beim Analysieren Ihres Kontos aus dem Cache.",
+			"azure.cacheErrrorRemove": "Fehler beim Entfernen Ihres Kontos aus dem Cache.",
+			"azure.microsoftAccountDisplayName": "Microsoft-Konto",
+			"azure.microsoftCorpAccount": "Microsoft Corp",
+			"azure.noBaseToken": "Bei der Authentifizierung ist ein Fehler aufgetreten, oder Ihre Token wurden aus dem System gelöscht. Versuchen Sie erneut, Ihr Konto in Azure Data Studio hinzuzufügen.",
+			"azure.noUniqueIdentifier": "Der Benutzer wies in AAD keinen eindeutigen Bezeichner auf.",
+			"azure.responseError": "Fehler beim Tokenabruf. Öffnen Sie die Entwicklertools, um den Fehler anzuzeigen.",
+			"azure.tenantNotFound": "Der angegebene Mandant mit der ID \"{0}\" wurde nicht gefunden.",
+			"azureAuth.unidentifiedError": "Unbekannter Fehler bei der Azure-Authentifizierung.",
+			"azureWorkAccountDisplayName": "Geschäfts-, Schul- oder Unikonto",
+			"azurecore.consentDialog.body": "Für Ihren Mandanten \"{0} ({1})\" müssen Sie sich erneut authentifizieren, um auf {2}-Ressourcen zuzugreifen. Klicken Sie auf \"Öffnen\", um den Authentifizierungsvorgang zu starten.",
+			"azurecore.consentDialog.cancel": "Abbrechen",
+			"azurecore.consentDialog.ignore": "Mandanten ignorieren",
+			"azurecore.consentDialog.open": "Öffnen"
+		},
+		"dist/account-provider/auths/azureAuthCodeGrant": {
+			"azure.azureAuthCodeGrantName": "Azure-Authentifizierungscodezuweisung",
+			"azure.serverCouldNotStart": "Der Server konnte nicht gestartet werden. Möglicherweise handelt es sich um einen Berechtigungsfehler oder eine Inkompatibilität auf Ihrem System. Sie können versuchen, die Gerätecodeauthentifizierung über die Einstellungen zu aktivieren.",
+			"azureAuth.nonceError": "Fehler bei der Authentifizierung aufgrund eines Nonce-Konflikts. Schließen Sie Azure Data Studio, und versuchen Sie es noch mal.",
+			"azureAuth.stateError": "Fehler bei der Authentifizierung aufgrund eines Statuskonflikts. Schließen Sie ADS, und versuchen Sie es noch mal."
+		},
+		"dist/account-provider/auths/azureDeviceCode": {
+			"addAccount": "{0}-Konto hinzufügen",
+			"azure.azureDeviceCodeAuth": "Azure-Gerätecode",
+			"azure.deviceCodeCheckFail": "Fehler beim Prüfen auf Anmeldeergebnisse.",
+			"azure.timeoutDeviceCode": "Timeout beim Warten auf die Gerätecodeanmeldung."
+		},
+		"dist/account-provider/azureAccountProvider": {
+			"azure.NoAuthMethod.Available": "Es ist keine Azure-Authentifizierungsmethode verfügbar. Sie müssen die Authentifizierungsmethoden in der ADS-Konfiguration aktivieren.",
+			"azure.NoAuthMethod.Selected": "Es wurde keine Azure-Authentifizierungsmethode ausgewählt. Sie müssen die Art der Authentifizierung auswählen, die Sie verwenden möchten.",
+			"azure.deprecatedGetSecurityToken": "\"azdata.accounts.getSecurityToken\" wurde aufgerufen. Diese Methode ist veraltet und wird in zukünftigen Releases entfernt. Verwenden Sie stattdessen \"getAccountSecurityToken\"."
+		},
+		"dist/account-provider/azureAccountProviderService": {
+			"clearTokenCacheFailure": "Fehler beim Löschen des Tokencaches.",
+			"clearTokenCacheSuccess": "Der Tokencache wurde erfolgreich gelöscht."
+		},
+		"dist/account-provider/providerSettings": {
+			"chinaCloudDisplayName": "Azure (China)",
+			"germanyCloud": "Azure (Deutschland)",
+			"publicCloudDisplayName": "Azure",
+			"usGovCloudDisplayName": "Azure (US-Regierungsbehörden)",
+			"usNatCloudDisplayName": "Azure (USA, national)"
+		},
+		"dist/azureResource/commands": {
+			"azure.accountNotSelectedError": "Sie müssen ein Azure-Konto auswählen, damit dieses Feature funktioniert.",
+			"azure.cloudTerminalPreview": "Sie müssen die Vorschaufeatures aktivieren, um Azure Cloud Shell zu verwenden.",
+			"azure.mustPickTenant": "Sie müssen einen Mandanten auswählen, damit dieses Feature funktioniert.",
+			"azure.noAccountError": "Sie sind zurzeit nicht bei Azure-Konten angemeldet. Melden Sie sich an, und versuchen Sie es dann noch mal.",
+			"azure.noTenants": "Für dieses Feature ist ein Mandant erforderlich. Ihr Azure-Abonnement weist offenbar keine Mandanten auf.",
+			"azure.pickAnAzureAccount": "Azure-Konto auswählen",
+			"azure.signIn": "Anmelden",
+			"azure.startingCloudShell": "Cloud Shell wird gestartet…"
+		},
+		"dist/azureResource/errors": {
+			"azure.subscriptionError": "Failed to get subscriptions for account {0}. Please refresh the account."
+		},
+		"dist/azureResource/providers/azuremonitor/azuremonitorTreeDataProvider": {
+			"azure.resource.providers.AzureMonitorContainerLabel": "Log Analytics-Arbeitsbereich"
+		},
+		"dist/azureResource/providers/database/databaseTreeDataProvider": {
+			"azure.resource.providers.database.treeDataProvider.databaseContainerLabel": "SQL-Datenbank"
+		},
+		"dist/azureResource/providers/databaseServer/databaseServerTreeDataProvider": {
+			"azure.resource.providers.databaseServer.treeDataProvider.databaseServerContainerLabel": "SQL Server"
+		},
+		"dist/azureResource/providers/kusto/kustoTreeDataProvider": {
+			"azure.resource.providers.KustoContainerLabel": "Azure Data Explorer-Cluster"
+		},
+		"dist/azureResource/providers/postgresArcServer/postgresServerTreeDataProvider": {
+			"azure.resource.providers.postgresArcServer.treeDataProvider.postgresServerContainerLabel": "PostgreSQL Hyperscale – Azure Arc"
+		},
+		"dist/azureResource/providers/postgresServer/postgresServerTreeDataProvider": {
+			"azure.resource.providers.databaseServer.treeDataProvider.postgresServerContainerLabel": "Azure Database for PostgreSQL-Server"
+		},
+		"dist/azureResource/providers/sqlinstance/sqlInstanceTreeDataProvider": {
+			"azure.resource.providers.sqlInstanceContainerLabel": "Verwaltete Azure SQL-Datenbank-Instanz"
+		},
+		"dist/azureResource/providers/sqlinstanceArc/sqlInstanceArcTreeDataProvider": {
+			"azure.resource.providers.sqlInstanceArcContainerLabel": "SQL Managed Instance – Azure Arc"
+		},
+		"dist/azureResource/resourceTreeNode": {
+			"azure.resource.resourceTreeNode.noResourcesLabel": "Keine Ressourcen gefunden."
+		},
+		"dist/azureResource/services/subscriptionService": {
+			"azure.resource.tenantSubscriptionsError": "Failed to get subscriptions for account {0} (tenant '{1}'). {2}"
+		},
+		"dist/azureResource/services/terminalService": {
+			"azure.cloudShell": "Azure Cloud Shell (Vorschau) {0} ({1})",
+			"azure.cloudTerminal.ok": "OK",
+			"azure.cloudTerminal.openAzureShell": "Azure-Shell öffnen",
+			"azure.coudTerminal.neverUsed": "Wenn Sie Azure Cloud Shell noch nicht von diesem Konto aus gestartet haben, besuchen Sie zum Einstieg https://shell.azure.com/. Nach der Einrichtung können Sie Azure Cloud Shell direkt in Azure Data Studio verwenden.",
+			"azure.selectShellType": "Bash oder PowerShell für Azure Cloud Shell auswählen",
+			"azure.shellClosed": "Shell geschlossen.\r\n",
+			"azure.shellTypeRequired": "Sie müssen einen Shelltyp auswählen."
+		},
+		"dist/azureResource/tree/accountNotSignedInTreeNode": {
+			"azure.resource.tree.accountNotSignedInTreeNode.signInLabel": "Bei Azure anmelden..."
+		},
+		"dist/azureResource/tree/accountTreeNode": {
+			"azure.resource.tree.accountTreeNode.noSubscriptionsLabel": "Keine Abonnements gefunden.",
+			"azure.unableToAccessSubscription": "Unable to access subscription {0} ({1}). Please [refresh the account](command:azure.resource.signin) to try again. {2}"
+		},
+		"dist/azureResource/tree/connectionDialogTreeProvider": {
+			"azure.resource.tree.treeProvider.accountLoadError": "Fehler beim Laden einiger Azure-Konten. {0}",
+			"azure.resource.tree.treeProvider.loadingLabel": "Wird geladen...",
+			"azure.resource.tree.treeProvider.openAccountsDialog": "Azure-Konten anzeigen"
+		},
+		"dist/azureResource/tree/flatAccountTreeNode": {
+			"azure.resource.throttleerror": "Anforderungen von diesem Konto wurden gedrosselt. Wählen Sie eine geringere Anzahl von Abonnements aus, um den Vorgang zu wiederholen.",
+			"azure.resource.tree.accountTreeNode.title": "{0} ({1}/{2} Abonnements)",
+			"azure.resource.tree.accountTreeNode.titleLoading": "{0}: Wird geladen...",
+			"azure.resource.tree.loadresourceerror": "An error occurred while loading Azure resources: {0}"
+		},
+		"dist/azureResource/tree/subscriptionTreeNode": {
+			"azure.resource.tree.subscriptionTreeNode.noResourcesLabel": "Keine Ressourcen gefunden."
+		},
+		"dist/azureResource/tree/treeProvider": {
+			"azure.resource.tree.treeProvider.loadingLabel": "Wird geladen..."
 		},
 		"dist/azureResource/utils": {
-			"azure.resource.error": "Fehler: {0}",
-			"azure.accounts.getResourceGroups.queryError": "Fehler beim Abrufen von Ressourcengruppen für das Konto \"{0}\" ({1}), Abonnement \"{2}\" ({3}), Mandant \"{4}\": {5}",
 			"azure.accounts.getLocations.queryError": "Fehler beim Abrufen von Standorten für das Konto \"{0}\" ({1}), Abonnement \"{2}\" ({3}), Mandant \"{4}\": {5}",
-			"azure.accounts.runResourceQuery.errors.invalidQuery": "Ungültige Abfrage",
+			"azure.accounts.getResourceGroups.queryError": "Fehler beim Abrufen von Ressourcengruppen für das Konto \"{0}\" ({1}), Abonnement \"{2}\" ({3}), Mandant \"{4}\": {5}",
+			"azure.accounts.getSelectedSubscriptions.queryError": "Fehler beim Abrufen von Abonnements für das Konto \"{0}\": {1}",
 			"azure.accounts.getSubscriptions.queryError": "Fehler beim Abrufen von Abonnements für das Konto \"{0}\", Mandant \"{1}\": {2}",
-			"azure.accounts.getSelectedSubscriptions.queryError": "Fehler beim Abrufen von Abonnements für das Konto \"{0}\": {1}"
+			"azure.accounts.runResourceQuery.errors.invalidQuery": "Ungültige Abfrage",
+			"azure.resource.error": "Fehler: {0}"
 		},
 		"dist/localizedConstants": {
-			"azurecore.extensionName": "Azure-Konten",
-			"azurecore.requiresReload": "Bei Änderung dieser Einstellung muss das Fenster neu geladen werden, damit alle Änderungen wirksam werden.",
-			"azurecore.reload": "Neu laden",
+			"azure.azureResourcesGridTitle": "Azure-Ressourcen (Vorschau)",
+			"azure.unableToOpenAzureLink": "Der Link kann nicht geöffnet werden, weil erforderliche Werte fehlen.",
 			"azurecore.australiacentral": "Australien, Mitte",
 			"azurecore.australiacentral2": "Australien, Mitte 2",
 			"azurecore.australiaeast": "Australien, Osten",
 			"azurecore.australiasoutheast": "Australien, Südosten",
+			"azurecore.azureArcPostgres": "PostgreSQL Hyperscale mit Azure Arc-Unterstützung",
+			"azurecore.azureArcService": "Datendienst – Azure Arc",
+			"azurecore.azureArcsqlManagedInstance": "Verwaltete SQL-Instanz – Azure Arc",
 			"azurecore.brazilsouth": "Brasilien, Süden",
 			"azurecore.brazilsoutheast": "Brasilien, Südosten",
 			"azurecore.canadacentral": "Kanada, Mitte",
@@ -65,172 +160,81 @@
 			"azurecore.eastus": "USA, Osten",
 			"azurecore.eastus2": "USA, Osten 2",
 			"azurecore.eastus2euap": "USA, Osten 2 (EUAP)",
+			"azurecore.extensionName": "Azure-Konten",
 			"azurecore.francecentral": "Frankreich, Mitte",
 			"azurecore.francesouth": "Frankreich, Süden",
 			"azurecore.germanynorth": "Deutschland, Norden",
 			"azurecore.germanywestcentral": "Deutschland, Westen-Mitte",
+			"azurecore.invalidAzureAccount": "Ungültiges Konto.",
+			"azurecore.invalidTenant": "Ungültiger Mandant für Abonnement.",
 			"azurecore.japaneast": "Japan, Osten",
 			"azurecore.japanwest": "Japan, Westen",
 			"azurecore.koreacentral": "Südkorea, Mitte",
 			"azurecore.koreasouth": "Südkorea, Süden",
+			"azurecore.location": "Standort",
+			"azurecore.name": "Name",
 			"azurecore.northcentralus": "USA, Norden-Mitte",
 			"azurecore.northeurope": "Europa, Norden",
 			"azurecore.norwayeast": "Norwegen, Osten",
 			"azurecore.norwaywest": "Norwegen, Westen",
+			"azurecore.postgresServer": "Azure Database for PostgreSQL-Server",
+			"azurecore.reload": "Neu laden",
+			"azurecore.requiresReload": "Bei Änderung dieser Einstellung muss das Fenster neu geladen werden, damit alle Änderungen wirksam werden.",
+			"azurecore.resourceGroup": "Ressourcengruppe",
+			"azurecore.resourceType": "Ressourcentyp",
 			"azurecore.southafricanorth": "Südafrika, Norden",
 			"azurecore.southafricawest": "Südafrika, Westen",
 			"azurecore.southcentralus": "USA, Süden-Mitte",
 			"azurecore.southeastasia": "Asien, Südosten",
 			"azurecore.southindia": "Indien, Süden",
+			"azurecore.sqlDatabase": "SQL-Datenbank",
+			"azurecore.sqlManagedInstance": "Verwaltete SQL-Instanz",
+			"azurecore.sqlServer": "SQL Server",
+			"azurecore.sqlServerArc": "SQL Server – Azure Arc",
+			"azurecore.subscription": "Abonnement",
 			"azurecore.switzerlandnorth": "Schweiz, Norden",
 			"azurecore.switzerlandwest": "Schweiz, Westen",
+			"azurecore.typeIcon": "Typsymbol",
 			"azurecore.uaecentral": "VAE, Mitte",
 			"azurecore.uaenorth": "VAE, Norden",
 			"azurecore.uksouth": "Vereinigtes Königreich, Süden",
 			"azurecore.ukwest": "Vereinigtes Königreich, Westen",
+			"azurecore.unableToFetchToken": "Für den Mandanten \"{0}\" kann kein Token abgerufen werden.",
 			"azurecore.westcentralus": "USA, Westen-Mitte",
 			"azurecore.westeurope": "Europa, Westen",
 			"azurecore.westindia": "Indien, Westen",
 			"azurecore.westus": "USA, Westen",
-			"azurecore.westus2": "USA, Westen 2",
-			"azurecore.name": "Name",
-			"azurecore.resourceType": "Ressourcentyp",
-			"azurecore.resourceGroup": "Ressourcengruppe",
-			"azurecore.location": "Standort",
-			"azurecore.subscription": "Abonnement",
-			"azurecore.typeIcon": "Typsymbol",
-			"azurecore.sqlServer": "SQL Server",
-			"azurecore.sqlDatabase": "SQL-Datenbank",
-			"azurecore.postgresServer": "Azure Database for PostgreSQL-Server",
-			"azurecore.sqlManagedInstance": "Verwaltete SQL-Instanz",
-			"azurecore.azureArcsqlManagedInstance": "Verwaltete SQL-Instanz – Azure Arc",
-			"azurecore.azureArcService": "Datendienst – Azure Arc",
-			"azurecore.sqlServerArc": "SQL Server – Azure Arc",
-			"azurecore.azureArcPostgres": "PostgreSQL Hyperscale mit Azure Arc-Unterstützung",
-			"azure.unableToOpenAzureLink": "Der Link kann nicht geöffnet werden, weil erforderliche Werte fehlen.",
-			"azure.azureResourcesGridTitle": "Azure-Ressourcen (Vorschau)",
-			"azurecore.invalidAzureAccount": "Ungültiges Konto.",
-			"azurecore.invalidTenant": "Ungültiger Mandant für Abonnement.",
-			"azurecore.unableToFetchToken": "Für den Mandanten \"{0}\" kann kein Token abgerufen werden."
+			"azurecore.westus2": "USA, Westen 2"
 		},
-		"dist/account-provider/auths/azureAuth": {
-			"azureAuth.unidentifiedError": "Unbekannter Fehler bei der Azure-Authentifizierung.",
-			"azure.tenantNotFound": "Der angegebene Mandant mit der ID \"{0}\" wurde nicht gefunden.",
-			"azure.noBaseToken": "Bei der Authentifizierung ist ein Fehler aufgetreten, oder Ihre Token wurden aus dem System gelöscht. Versuchen Sie erneut, Ihr Konto in Azure Data Studio hinzuzufügen.",
-			"azure.responseError": "Fehler beim Tokenabruf. Öffnen Sie die Entwicklertools, um den Fehler anzuzeigen.",
-			"azure.accessTokenEmpty": "Von Microsoft OAuth wurde kein Zugriffstoken zurückgegeben.",
-			"azure.noUniqueIdentifier": "Der Benutzer wies in AAD keinen eindeutigen Bezeichner auf.",
-			"azureWorkAccountDisplayName": "Geschäfts-, Schul- oder Unikonto",
-			"azure.cacheErrorAdd": "Fehler beim Hinzufügen Ihres Kontos zum Cache.",
-			"azure.cacheErrorGet": "Fehler beim Abrufen Ihres Kontos aus dem Cache.",
-			"azure.cacheErrorParse": "Fehler beim Analysieren Ihres Kontos aus dem Cache.",
-			"azurecore.consentDialog.open": "Öffnen",
-			"azurecore.consentDialog.cancel": "Abbrechen",
-			"azurecore.consentDialog.ignore": "Mandanten ignorieren",
-			"azurecore.consentDialog.body": "Für Ihren Mandanten \"{0} ({1})\" müssen Sie sich erneut authentifizieren, um auf {2}-Ressourcen zuzugreifen. Klicken Sie auf \"Öffnen\", um den Authentifizierungsvorgang zu starten.",
-			"azure.microsoftCorpAccount": "Microsoft Corp",
-			"azure.microsoftAccountDisplayName": "Microsoft-Konto",
-			"azure.cacheErrrorRemove": "Fehler beim Entfernen Ihres Kontos aus dem Cache."
-		},
-		"dist/azureResource/tree/accountTreeNode": {
-			"azure.resource.tree.accountTreeNode.credentialError": "Fehler beim Abrufen der Anmeldeinformationen für das Konto \"{0}\". Aktualisieren Sie das Konto.",
-			"azure.resource.tree.accountTreeNode.noSubscriptionsLabel": "Keine Abonnements gefunden."
-		},
-		"dist/azureResource/resourceTreeNode": {
-			"azure.resource.resourceTreeNode.noResourcesLabel": "Keine Ressourcen gefunden."
-		},
-		"dist/azureResource/tree/flatAccountTreeNode": {
-			"azure.resource.tree.accountTreeNode.titleLoading": "{0}: Wird geladen...",
-			"azure.resource.tree.accountTreeNode.title": "{0} ({1}/{2} Abonnements)",
-			"azure.resource.tree.accountTreeNode.credentialError": "Fehler beim Abrufen der Anmeldeinformationen für das Konto \"{0}\". Wechseln Sie zum Dialogfeld \"Konten\", und aktualisieren Sie das Konto.",
-			"azure.resource.throttleerror": "Anforderungen von diesem Konto wurden gedrosselt. Wählen Sie eine geringere Anzahl von Abonnements aus, um den Vorgang zu wiederholen.",
-			"azure.resource.tree.loadresourceerror": "Fehler beim Laden von Azure-Ressourcen: {0}"
-		},
-		"dist/azureResource/tree/accountNotSignedInTreeNode": {
-			"azure.resource.tree.accountNotSignedInTreeNode.signInLabel": "Bei Azure anmelden..."
-		},
-		"dist/account-provider/azureAccountProviderService": {
-			"clearTokenCacheSuccess": "Der Tokencache wurde erfolgreich gelöscht.",
-			"clearTokenCacheFailure": "Fehler beim Löschen des Tokencaches."
-		},
-		"dist/account-provider/providerSettings": {
-			"publicCloudDisplayName": "Azure",
-			"usGovCloudDisplayName": "Azure (US-Regierungsbehörden)",
-			"usNatCloudDisplayName": "Azure (USA, national)",
-			"germanyCloud": "Azure (Deutschland)",
-			"chinaCloudDisplayName": "Azure (China)"
-		},
-		"dist/account-provider/azureAccountProvider": {
-			"azure.deprecatedGetSecurityToken": "\"azdata.accounts.getSecurityToken\" wurde aufgerufen. Diese Methode ist veraltet und wird in zukünftigen Releases entfernt. Verwenden Sie stattdessen \"getAccountSecurityToken\".",
-			"azure.NoAuthMethod.Selected": "Es wurde keine Azure-Authentifizierungsmethode ausgewählt. Sie müssen die Art der Authentifizierung auswählen, die Sie verwenden möchten.",
-			"azure.NoAuthMethod.Available": "Es ist keine Azure-Authentifizierungsmethode verfügbar. Sie müssen die Authentifizierungsmethoden in der ADS-Konfiguration aktivieren."
-		},
-		"dist/account-provider/auths/azureAuthCodeGrant": {
-			"azure.serverCouldNotStart": "Der Server konnte nicht gestartet werden. Möglicherweise handelt es sich um einen Berechtigungsfehler oder eine Inkompatibilität auf Ihrem System. Sie können versuchen, die Gerätecodeauthentifizierung über die Einstellungen zu aktivieren.",
-			"azureAuth.nonceError": "Fehler bei der Authentifizierung aufgrund eines Nonce-Konflikts. Schließen Sie Azure Data Studio, und versuchen Sie es noch mal.",
-			"azureAuth.stateError": "Fehler bei der Authentifizierung aufgrund eines Statuskonflikts. Schließen Sie ADS, und versuchen Sie es noch mal.",
-			"azure.azureAuthCodeGrantName": "Azure-Authentifizierungscodezuweisung"
-		},
-		"dist/account-provider/auths/azureDeviceCode": {
-			"addAccount": "{0}-Konto hinzufügen",
-			"azure.timeoutDeviceCode": "Timeout beim Warten auf die Gerätecodeanmeldung.",
-			"azure.deviceCodeCheckFail": "Fehler beim Prüfen auf Anmeldeergebnisse.",
-			"azure.azureDeviceCodeAuth": "Azure-Gerätecode"
-		},
-		"dist/azureResource/providers/databaseServer/databaseServerTreeDataProvider": {
-			"azure.resource.providers.databaseServer.treeDataProvider.databaseServerContainerLabel": "SQL Server"
-		},
-		"dist/azureResource/providers/database/databaseTreeDataProvider": {
-			"azure.resource.providers.database.treeDataProvider.databaseContainerLabel": "SQL-Datenbank"
-		},
-		"dist/azureResource/commands": {
-			"azure.cloudTerminalPreview": "Sie müssen die Vorschaufeatures aktivieren, um Azure Cloud Shell zu verwenden.",
-			"azure.signIn": "Anmelden",
-			"azure.noAccountError": "Sie sind zurzeit nicht bei Azure-Konten angemeldet. Melden Sie sich an, und versuchen Sie es dann noch mal.",
-			"azure.pickAnAzureAccount": "Azure-Konto auswählen",
-			"azure.accountNotSelectedError": "Sie müssen ein Azure-Konto auswählen, damit dieses Feature funktioniert.",
-			"azure.noTenants": "Für dieses Feature ist ein Mandant erforderlich. Ihr Azure-Abonnement weist offenbar keine Mandanten auf.",
-			"azure.startingCloudShell": "Cloud Shell wird gestartet…",
-			"azure.mustPickTenant": "Sie müssen einen Mandanten auswählen, damit dieses Feature funktioniert.",
-			"azure.resource.selectsubscriptions.credentialError": "Fehler beim Abrufen der Anmeldeinformationen für das Konto \"{0}\". Aktualisieren Sie das Konto."
-		},
-		"dist/azureResource/tree/subscriptionTreeNode": {
-			"azure.resource.tree.subscriptionTreeNode.noResourcesLabel": "Keine Ressourcen gefunden."
-		},
-		"dist/azureResource/tree/treeProvider": {
-			"azure.resource.tree.treeProvider.loadingLabel": "Wird geladen..."
-		},
-		"dist/azureResource/providers/sqlinstance/sqlInstanceTreeDataProvider": {
-			"azure.resource.providers.sqlInstanceContainerLabel": "Verwaltete Azure SQL-Datenbank-Instanz"
-		},
-		"dist/azureResource/providers/kusto/kustoTreeDataProvider": {
-			"azure.resource.providers.KustoContainerLabel": "Azure Data Explorer-Cluster"
-		},
-		"dist/azureResource/providers/azuremonitor/azuremonitorTreeDataProvider": {
-			"azure.resource.providers.AzureMonitorContainerLabel": "Log Analytics-Arbeitsbereich"
-		},
-		"dist/azureResource/providers/postgresServer/postgresServerTreeDataProvider": {
-			"azure.resource.providers.databaseServer.treeDataProvider.postgresServerContainerLabel": "Azure Database for PostgreSQL-Server"
-		},
-		"dist/azureResource/services/terminalService": {
-			"azure.coudTerminal.neverUsed": "Wenn Sie Azure Cloud Shell noch nicht von diesem Konto aus gestartet haben, besuchen Sie zum Einstieg https://shell.azure.com/. Nach der Einrichtung können Sie Azure Cloud Shell direkt in Azure Data Studio verwenden.",
-			"azure.cloudTerminal.openAzureShell": "Azure-Shell öffnen",
-			"azure.cloudTerminal.ok": "OK",
-			"azure.selectShellType": "Bash oder PowerShell für Azure Cloud Shell auswählen",
-			"azure.shellTypeRequired": "Sie müssen einen Shelltyp auswählen.",
-			"azure.cloudShell": "Azure Cloud Shell (Vorschau) {0} ({1})",
-			"azure.shellClosed": "Shell geschlossen.\r\n"
-		},
-		"dist/azureResource/providers/sqlinstanceArc/sqlInstanceArcTreeDataProvider": {
-			"azure.resource.providers.sqlInstanceArcContainerLabel": "SQL Managed Instance – Azure Arc"
-		},
-		"dist/azureResource/providers/postgresArcServer/postgresServerTreeDataProvider": {
-			"azure.resource.providers.postgresArcServer.treeDataProvider.postgresServerContainerLabel": "PostgreSQL Hyperscale – Azure Arc"
-		},
-		"dist/azureResource/tree/connectionDialogTreeProvider": {
-			"azure.resource.tree.treeProvider.loadingLabel": "Wird geladen...",
-			"azure.resource.tree.treeProvider.openAccountsDialog": "Azure-Konten anzeigen",
-			"azure.resource.tree.treeProvider.accountLoadError": "Fehler beim Laden einiger Azure-Konten. {0}"
+		"package": {
+			"accounts.clearTokenCache": "Tokencache für Azure-Konto löschen",
+			"azure.description": "Durchsuchen und Arbeiten mit Azure-Ressourcen",
+			"azure.displayName": "Azure (Core)",
+			"azure.openInAzurePortal.title": "In Azure-Portal öffnen",
+			"azure.resource.config.filter.description": "Der Ressourcenfilter, jedes Element besteht aus einer Konto-ID, einer Abonnement-ID und einem Namen (durch Schrägstriche getrennt)",
+			"azure.resource.config.title": "Konfiguration von Azure-Ressourcen",
+			"azure.resource.connectsqldb.title": "Zu Servern hinzufügen",
+			"azure.resource.connectsqlserver.title": "Verbinden",
+			"azure.resource.explorer.title": "Azure",
+			"azure.resource.refresh.title": "Aktualisieren",
+			"azure.resource.refreshall.title": "Azure: Alle Konten aktualisieren",
+			"azure.resource.selectsubscriptions.title": "Abonnements auswählen",
+			"azure.resource.signin.title": "Azure: Anmelden",
+			"azure.resource.startterminal.title": "Cloud Shell starten",
+			"azure.resource.view.title": "Azure (Vorschau)",
+			"azure.tenant.config.filter.description": "Die Liste der Mandanten-IDs, die beim Abfragen von Azure-Ressourcen ignoriert werden sollen. Jedes Element ist eine Mandanten-ID.",
+			"azure.title": "Azure",
+			"config.azureAccountConfigurationSection": "Azure-Kontokonfiguration",
+			"config.azureAuthMethodConfigurationSection": "Azure-Authentifizierungsmethode",
+			"config.azureCodeGrantMethod": "Gewährungsmethode über Code",
+			"config.azureDeviceCodeMethod": "Gewährungsmethode über Gerät",
+			"config.enableChinaCloudDescription": "Hiermit wird festgelegt, ob die Azure China-Integration aktiviert werden soll.",
+			"config.enableGermanyCloudDescription": "Hiermit wird festgelegt, ob die Azure Deutschland-Integration aktiviert werden soll.",
+			"config.enablePublicCloudDescription": "Hiermit wird festgelegt, ob die Integration der öffentlichen Azure-Cloud aktiviert werden soll.",
+			"config.enableUsGovCloudDescription": "Hiermit wird festgelegt, ob die Integration der Azure-Cloud für US-Behörden (Fairfax) aktiviert werden soll.",
+			"config.enableUsNatCloudDescription": "Hiermit wird festgelegt, ob die Integration der Azure-Cloud (USA, national) aktiviert werden soll.",
+			"config.noSystemKeychain": "Hiermit wird die Keychain-Systemintegration deaktiviert. Die Anmeldeinformationen werden in einer Flatfile im Basisverzeichnis des Benutzers gespeichert.",
+			"config.piiLogging": "Hiermit wird festgelegt, ob personenbezogene Informationen (PII) lokal in der Konsolenansicht protokolliert werden sollen."
 		}
 	}
 }

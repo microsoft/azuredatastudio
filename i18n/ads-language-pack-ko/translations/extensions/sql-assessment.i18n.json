@@ -8,68 +8,68 @@
 	],
 	"version": "1.0.0",
 	"contents": {
-		"package": {
-			"displayName": "SQL 평가",
-			"description": "Azure Data Studio에 대한 SQL 평가(미리 보기)는 모범 사례에 대한 SQL Server 구성을 평가하는 메커니즘을 제공합니다.",
-			"dashboard.tabName": "SQL 평가"
-		},
-		"dist/localized": {
-			"asmt.section.api.title": "정보",
-			"asmt.apiversion": "API 버전",
-			"asmt.rulesetversion": "기본 규칙 집합",
-			"asmt.section.instance.title": "SQL Server 인스턴스 세부 정보",
-			"asmt.serverversion": "버전",
-			"asmt.serveredition": "버전",
-			"asmt.instancename": "인스턴스 이름",
-			"asmt.osversion": "OS 버전",
-			"asmt.column.target": "대상",
-			"asmt.column.severity": "심각도",
-			"asmt.column.message": "메시지",
-			"asmt.column.checkId": "ID 확인",
-			"asmt.column.tags": "태그",
-			"asmt.learnMore": "자세한 정보",
-			"asmt.sqlReportTitle": "SQL 평가 보고서",
-			"asmt.sqlReport.resultForDatabase": "데이터베이스에 대한 결과",
-			"asmt.sqlReport.resultForInstance": "서버에 대한 결과",
-			"asmt.sqlReport.Error": "오류",
-			"asmt.sqlReport.Warning": "경고",
-			"asmt.sqlReport.Info": "정보",
-			"asmt.column.helpLink": "도움말 링크",
-			"asmt.sqlReport.severityMsg": "{0}: {1} 항목"
-		},
 		"dist/assessmentResultGrid": {
-			"databaseIconLabel": "데이터베이스",
-			"serverIconLabel": "서버",
 			"asmt.column.targetType": "대상 유형",
 			"asmt.details.clickHere": "여기를 클릭",
-			"asmt.details.toLearnMore": "자세히 알아봅니다.",
+			"asmt.details.recommendation": "권장 사항",
 			"asmt.details.ruleDescription": "규칙 설명",
-			"asmt.details.recommendation": "권장 사항"
+			"asmt.details.toLearnMore": "자세히 알아봅니다.",
+			"databaseIconLabel": "데이터베이스",
+			"serverIconLabel": "서버"
+		},
+		"dist/localized": {
+			"asmt.apiversion": "API 버전",
+			"asmt.column.checkId": "ID 확인",
+			"asmt.column.helpLink": "도움말 링크",
+			"asmt.column.message": "메시지",
+			"asmt.column.severity": "심각도",
+			"asmt.column.tags": "태그",
+			"asmt.column.target": "대상",
+			"asmt.instancename": "인스턴스 이름",
+			"asmt.learnMore": "자세한 정보",
+			"asmt.osversion": "OS 버전",
+			"asmt.rulesetversion": "기본 규칙 집합",
+			"asmt.section.api.title": "정보",
+			"asmt.section.instance.title": "SQL Server 인스턴스 세부 정보",
+			"asmt.serveredition": "버전",
+			"asmt.serverversion": "버전",
+			"asmt.sqlReport.Error": "오류",
+			"asmt.sqlReport.Info": "정보",
+			"asmt.sqlReport.Warning": "경고",
+			"asmt.sqlReport.resultForDatabase": "데이터베이스에 대한 결과",
+			"asmt.sqlReport.resultForInstance": "서버에 대한 결과",
+			"asmt.sqlReport.severityMsg": "{0}: {1} 항목",
+			"asmt.sqlReportTitle": "SQL 평가 보고서"
 		},
 		"dist/tabs/assessmentMainTab": {
-			"invokeAssessmentLabelServer": "평가 호출",
-			"getAssessmentItemsServer": "적용 가능한 규칙 보기",
-			"invokeAssessmentLabelDatabase": "{0}에 대한 평가 호출",
-			"getAssessmentItemsDatabase": "{0}에 적용 가능한 규칙 보기",
+			"asmtaction.label.cancel": "취소",
+			"asmtaction.label.open": "열기",
+			"asmtaction.openReport": "보고서가 저장되었습니다. 열어보시겠습니까?",
 			"btnExportAsScript": "스크립트로 내보내기",
 			"btnGeneratehtmlreport": "HTML 보고서 만들기",
-			"asmtaction.openReport": "보고서가 저장되었습니다. 열어보시겠습니까?",
-			"asmtaction.label.open": "열기",
-			"asmtaction.label.cancel": "취소",
-			"btnViewSamplesShort": "GitHub에서 모두 보기",
 			"btnViewSamples": "GitHub에서 모든 규칙 보기 및 자세히 알아보기",
+			"btnViewSamplesShort": "GitHub에서 모두 보기",
+			"getAssessmentItemsDatabase": "{0}에 적용 가능한 규칙 보기",
+			"getAssessmentItemsServer": "적용 가능한 규칙 보기",
+			"invokeAssessmentLabelDatabase": "{0}에 대한 평가 호출",
+			"invokeAssessmentLabelServer": "평가 호출",
 			"msgBoxAsmtInfo": "SQL 평가 정보",
+			"msgBoxCopied": "SQL 평가 정보 복사됨",
 			"msgBoxCopyBtn": "복사",
-			"ok": "확인",
-			"msgBoxCopied": "SQL 평가 정보 복사됨"
+			"ok": "확인"
 		},
 		"dist/tabs/historyTab": {
 			"asmt.history.back": "<< 뒤로",
 			"asmt.history.resultsTitle": "{0}의 평가 결과",
 			"asmt.history.summaryAsmtDate": "평가 날짜",
 			"asmt.history.summaryError": "오류",
-			"asmt.history.summaryWarning": "경고",
-			"asmt.history.summaryInfo": "정보"
+			"asmt.history.summaryInfo": "정보",
+			"asmt.history.summaryWarning": "경고"
+		},
+		"package": {
+			"dashboard.tabName": "SQL 평가",
+			"description": "Azure Data Studio에 대한 SQL 평가(미리 보기)는 모범 사례에 대한 SQL Server 구성을 평가하는 메커니즘을 제공합니다.",
+			"displayName": "SQL 평가"
 		}
 	}
 }

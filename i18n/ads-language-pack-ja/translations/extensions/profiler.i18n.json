@@ -11,13 +11,22 @@
 		"dist/dialogs/profilerCreateSessionDialog": {
 			"createSessionDialog.cancel": "キャンセル",
 			"createSessionDialog.create": "開始",
-			"createSessionDialog.title": "新しいプロファイラー セッションの開始",
-			"createSessionDialog.templatesInvalid": "テンプレート リストが無効です。ダイアログを開くことができません",
+			"createSessionDialog.createSessionFailed": "セッションを作成できませんでした",
 			"createSessionDialog.dialogOwnerInvalid": "ダイアログ所有者が無効です。ダイアログを開くことができません",
+			"createSessionDialog.enterSessionName": "セッション名を入力する:",
 			"createSessionDialog.invalidProviderType": "無効なプロバイダーの種類です。ダイアログを開くことができません",
 			"createSessionDialog.selectTemplates": "セッション テンプレートの選択:",
-			"createSessionDialog.enterSessionName": "セッション名を入力する:",
-			"createSessionDialog.createSessionFailed": "セッションを作成できませんでした"
+			"createSessionDialog.templatesInvalid": "テンプレート リストが無効です。ダイアログを開くことができません",
+			"createSessionDialog.title": "新しいプロファイラー セッションの開始"
+		},
+		"package": {
+			"description": "SQL Server Profiler for Azure Data Studio",
+			"displayName": "SQL Server Profiler",
+			"profiler.category": "プロファイラー",
+			"profiler.contributes.title.newProfler": "Profiler を起動",
+			"profiler.contributes.title.openCreateSessionDialog": "Create Profiler Season",
+			"profiler.contributes.title.start": "開始",
+			"profiler.contributes.title.stop": "停止"
 		}
 	}
 }

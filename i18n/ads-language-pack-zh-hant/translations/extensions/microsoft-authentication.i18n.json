@@ -8,18 +8,18 @@
 	],
 	"version": "1.0.0",
 	"contents": {
-		"package": {
-			"displayName": "Microsoft 帳戶",
-			"description": "Microsoft 驗證提供者",
-			"signIn": "登入",
-			"signOut": "登出"
-		},
 		"dist/AADHelper": {
 			"signOut": "因為讀取儲存的驗證資訊失敗，所以已將您登出。"
 		},
 		"dist/keychain": {
-			"troubleshooting": "疑難排解指南",
-			"keychainWriteError": "將登入資訊寫入 Keychain 失敗。錯誤: '{0}'。"
+			"keychainWriteError": "將登入資訊寫入 Keychain 失敗。錯誤: '{0}'。",
+			"troubleshooting": "疑難排解指南"
+		},
+		"package": {
+			"description": "Microsoft 驗證提供者",
+			"displayName": "Microsoft 帳戶",
+			"signIn": "登入",
+			"signOut": "登出"
 		}
 	}
 }
