@@ -670,7 +670,6 @@ class TreeDataSource implements IAsyncDataSource<ITreeItem, ITreeItem> {
 		private treeView: ITreeView,
 		private id: string,
 		private withProgress: <T>(task: Promise<T>) => Promise<T>,
-		@IConfigurationService private readonly configurationService: IConfigurationService,
 		@IOEShimService private objectExplorerService: IOEShimService
 	) {
 	}
@@ -685,7 +684,7 @@ class TreeDataSource implements IAsyncDataSource<ITreeItem, ITreeItem> {
 	async getChildren(node: ITreeItem): Promise<any[]> {
 		if (node.childProvider) {  // tracked change
 			try {
-				return await this.withProgress(this.objectExplorerService.getChildren(node, this.id, this.configurationService));
+				return await this.withProgress(this.objectExplorerService.getChildren(node, this.id));
 			} catch (err) {
 				// if some error is caused we assume something tangently happened
 				// i.e the user could retry if they wanted.

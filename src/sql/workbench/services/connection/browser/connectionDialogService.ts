@@ -31,7 +31,6 @@ import { CmsConnectionController } from 'sql/workbench/services/connection/brows
 import { entries } from 'sql/base/common/collections';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { ILogService } from 'vs/platform/log/common/log';
-//import { ConnectionOptionSpecialType } from 'azdata';  //TODO: Remove?
 
 export interface IConnectionValidateResult {
 	isValid: boolean;

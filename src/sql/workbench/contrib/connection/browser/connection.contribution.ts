@@ -183,10 +183,10 @@ configurationRegistry.registerConfiguration({
 			'enumDescriptions': [
 				localize('sql.defaultAuthenticationType.SqlAuth', "Sql Login"),
 				localize('sql.defaultAuthenticationType.AzureMFA', "Azure Active Directory - Universal with MFA support"),
-				localize('sql.defaultAuthenticationType.AzureMFAAndUser', ""),
+				localize('sql.defaultAuthenticationType.AzureMFAAndUser', "Azure Active Directory - Password"),
 				localize('sql.defaultAuthenticationType.Integrated', "Windows Authentication"),
 			],
-			'default': 'SqlLogin'
+			'default': 'AzureMFA'
 		},
 		'sql.defaultEngine': {
 			'type': 'string',
