@@ -1108,7 +1108,7 @@
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.groupName.advanced">
         <source xml:lang="en">Advanced</source>
-        <target state="translated">Avanzate</target>
+        <target state="translated">Avanzata</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.groupName.connectionResiliency">
         <source xml:lang="en">Connection Resiliency</source>

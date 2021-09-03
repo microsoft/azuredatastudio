@@ -4091,15 +4091,15 @@ Error: {1}</source>
       </trans-unit>
       <trans-unit id="notebook.useNewMarkdownRenderer">
         <source xml:lang="en">Whether to use the newer version of the markdown renderer for Notebooks. This may result in markdown being rendered differently than previous versions.</source>
-        <target state="new">Whether to use the newer version of the markdown renderer for Notebooks. This may result in markdown being rendered differently than previous versions.</target>
+        <target state="translated">Следует ли использовать более новую версию отрисовщика Markdown для записных книжек. Это может привести к тому, что Markdown отображается не так, как в предыдущих версиях.</target>
       </trans-unit>
       <trans-unit id="notebookViews">
         <source xml:lang="en">Notebook Views</source>
-        <target state="new">Notebook Views</target>
+        <target state="translated">Представления записной книжки</target>
       </trans-unit>
       <trans-unit id="notebookViews.enabled">
         <source xml:lang="en">(Preview) Enable Notebook Views</source>
-        <target state="new">(Preview) Enable Notebook Views</target>
+        <target state="translated">(Предварительная версия) Включить представления записной книжки</target>
       </trans-unit>
       <trans-unit id="search.actionsPosition">
         <source xml:lang="en">Controls the positioning of the actionbar on rows in the search view.</source>
@@ -4499,7 +4499,7 @@ Error: {1}</source>
     <body>
       <trans-unit id="cellAwaitingInputTitle">
         <source xml:lang="en">Cell Awaiting Input</source>
-        <target state="new">Cell Awaiting Input</target>
+        <target state="translated">Ячейка ожидает ввода</target>
       </trans-unit>
       <trans-unit id="cellNotFound">
         <source xml:lang="en">cell with URI {0} was not found in this model</source>
@@ -4519,11 +4519,11 @@ Error: {1}</source>
       </trans-unit>
       <trans-unit id="runningCell">
         <source xml:lang="en">Running cell {0} of {1}</source>
-        <target state="new">Running cell {0} of {1}</target>
+        <target state="translated">Выполняемая ячейка {0} из {1}</target>
       </trans-unit>
       <trans-unit id="startingExecution">
         <source xml:lang="en">Starting execution</source>
-        <target state="new">Starting execution</target>
+        <target state="translated">Запуск выполнения</target>
       </trans-unit>
     </body>
   </file>
@@ -4999,7 +4999,7 @@ Error: {1}</source>
       </trans-unit>
       <trans-unit id="resultsGrid.maxRowCountExceeded">
         <source xml:lang="en">Max row count for filtering/sorting has been exceeded. To update it, navigate to User Settings and change the setting: 'queryEditor.results.inMemoryDataProcessingThreshold'</source>
-        <target state="new">Max row count for filtering/sorting has been exceeded. To update it, navigate to User Settings and change the setting: 'queryEditor.results.inMemoryDataProcessingThreshold'</target>
+        <target state="translated">Превышено максимальное количество строк для фильтрации или сортировки. Чтобы обновить его, перейдите к параметрам пользователя и изменить параметр queryEditor.results.inMemoryDataProcessingThreshold</target>
       </trans-unit>
       <trans-unit id="xmlShowplan">
         <source xml:lang="en">XML Showplan</source>
@@ -7841,11 +7841,11 @@ Error: {1}</source>
       <trans-unit id="miGettingStarted">
         <source xml:lang="en">Getting &amp;&amp;Started</source>
         <note>&amp;&amp; denotes a mnemonic</note>
-        <target state="translated">Приступая к р&amp;&amp;аботе</target>
+        <target state="translated">Начало р&amp;&amp;аботы</target>
       </trans-unit>
       <trans-unit id="showReleaseNotes">
         <source xml:lang="en">Show Getting Started</source>
-        <target state="translated">Показать раздел "Приступая к работе"</target>
+        <target state="translated">Показать раздел "Начало работы"</target>
       </trans-unit>
     </body>
   </file>

@@ -248,7 +248,7 @@
       </trans-unit>
       <trans-unit id="cms.connectionOptions.groupName.advanced">
         <source xml:lang="en">Advanced</source>
-        <target state="translated">詳細</target>
+        <target state="translated">詳細設定</target>
       </trans-unit>
       <trans-unit id="cms.connectionOptions.groupName.connectionResiliency">
         <source xml:lang="en">Connection Resiliency</source>

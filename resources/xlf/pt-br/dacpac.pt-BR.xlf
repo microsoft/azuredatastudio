@@ -248,7 +248,7 @@
     <body>
       <trans-unit id="dacFx.category">
         <source xml:lang="en">DacFx</source>
-        <target state="new">DacFx</target>
+        <target state="translated">DacFx</target>
       </trans-unit>
       <trans-unit id="dacFx.defaultSaveLocation">
         <source xml:lang="en">Full path to folder where .DACPAC and .BACPAC files are saved by default</source>
@@ -260,7 +260,7 @@
       </trans-unit>
       <trans-unit id="dacFx.startTitle">
         <source xml:lang="en">Data-tier Application Wizard</source>
-        <target state="translated">Assistente de Aplicativo em Camada de Dados</target>
+        <target state="translated">Assistente de Aplicativo da Camada de Dados</target>
       </trans-unit>
     </body>
   </file>

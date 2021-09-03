@@ -1112,7 +1112,7 @@
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.groupName.connectionResiliency">
         <source xml:lang="en">Connection Resiliency</source>
-        <target state="translated">连接弹性</target>
+        <target state="translated">连接复原力</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.groupName.context">
         <source xml:lang="en">Context</source>

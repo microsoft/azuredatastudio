@@ -4,7 +4,7 @@
     <body>
       <trans-unit id="createSessionDialog.cancel">
         <source xml:lang="en">Cancel</source>
-        <target state="translated">Отмена</target>
+        <target state="translated">Отменить</target>
       </trans-unit>
       <trans-unit id="createSessionDialog.create">
         <source xml:lang="en">Start</source>
@@ -44,7 +44,7 @@
     <body>
       <trans-unit id="description">
         <source xml:lang="en">SQL Server Profiler for Azure Data Studio</source>
-        <target state="new">SQL Server Profiler for Azure Data Studio</target>
+        <target state="translated">Приложение SQL Server Profiler для Azure Data Studio</target>
       </trans-unit>
       <trans-unit id="displayName">
         <source xml:lang="en">SQL Server Profiler</source>
@@ -60,7 +60,7 @@
       </trans-unit>
       <trans-unit id="profiler.contributes.title.openCreateSessionDialog">
         <source xml:lang="en">Create Profiler Season</source>
-        <target state="new">Create Profiler Season</target>
+        <target state="translated">Создание сезона профилировщика</target>
       </trans-unit>
       <trans-unit id="profiler.contributes.title.start">
         <source xml:lang="en">Start</source>

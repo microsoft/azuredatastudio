@@ -248,7 +248,7 @@
     <body>
       <trans-unit id="dacFx.category">
         <source xml:lang="en">DacFx</source>
-        <target state="new">DacFx</target>
+        <target state="translated">DacFx</target>
       </trans-unit>
       <trans-unit id="dacFx.defaultSaveLocation">
         <source xml:lang="en">Full path to folder where .DACPAC and .BACPAC files are saved by default</source>
