@@ -8,18 +8,18 @@
 	],
 	"version": "1.0.0",
 	"contents": {
-		"package": {
-			"displayName": "Account Microsoft",
-			"description": "Provider di autenticazione Microsoft",
-			"signIn": "Accedi",
-			"signOut": "Disconnetti"
-		},
 		"dist/AADHelper": {
 			"signOut": "Si è stati disconnessi perché la lettura delle informazioni di autenticazione archiviate non è riuscita."
 		},
 		"dist/keychain": {
-			"troubleshooting": "Guida alla risoluzione dei problemi",
-			"keychainWriteError": "La scrittura delle informazioni di accesso al keychain non è riuscita. Errore: '{0}'."
+			"keychainWriteError": "La scrittura delle informazioni di accesso al keychain non è riuscita. Errore: '{0}'.",
+			"troubleshooting": "Guida alla risoluzione dei problemi"
+		},
+		"package": {
+			"description": "Provider di autenticazione Microsoft",
+			"displayName": "Account Microsoft",
+			"signIn": "Accedi",
+			"signOut": "Disconnetti"
 		}
 	}
 }

@@ -1,82 +1,110 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
-  <file original="extensions/sql-assessment/package" source-language="en" datatype="plaintext" target-language="ko">
+  <file original="extensions/sql-assessment/dist/assessmentResultGrid" source-language="en" datatype="plaintext" target-language="ko">
     <body>
-      <trans-unit id="displayName">
-        <source xml:lang="en">SQL Assessment</source>
-        <target state="translated">SQL 평가</target>
+      <trans-unit id="asmt.column.targetType">
+        <source xml:lang="en">Target Type</source>
+        <target state="translated">대상 유형</target>
       </trans-unit>
-      <trans-unit id="description">
-        <source xml:lang="en">SQL Assessment for Azure Data Studio (Preview) provides a mechanism to evaluate the configuration of SQL Server for best practices.</source>
-        <target state="translated">Azure Data Studio에 대한 SQL 평가(미리 보기)는 모범 사례에 대한 SQL Server 구성을 평가하는 메커니즘을 제공합니다.</target>
+      <trans-unit id="asmt.details.clickHere">
+        <source xml:lang="en">Click here</source>
+        <target state="translated">여기를 클릭</target>
       </trans-unit>
-      <trans-unit id="dashboard.tabName">
-        <source xml:lang="en">SQL Assessment</source>
-        <target state="translated">SQL 평가</target>
+      <trans-unit id="asmt.details.recommendation">
+        <source xml:lang="en">Recommendation</source>
+        <target state="translated">권장 사항</target>
+      </trans-unit>
+      <trans-unit id="asmt.details.ruleDescription">
+        <source xml:lang="en">Rule Description</source>
+        <target state="translated">규칙 설명</target>
+      </trans-unit>
+      <trans-unit id="asmt.details.toLearnMore">
+        <source xml:lang="en"> to learn more.</source>
+        <target state="translated">자세히 알아봅니다.</target>
+      </trans-unit>
+      <trans-unit id="databaseIconLabel">
+        <source xml:lang="en">Database</source>
+        <target state="translated">데이터베이스</target>
+      </trans-unit>
+      <trans-unit id="serverIconLabel">
+        <source xml:lang="en">Server</source>
+        <target state="translated">서버</target>
       </trans-unit>
     </body>
   </file>
   <file original="extensions/sql-assessment/dist/localized" source-language="en" datatype="plaintext" target-language="ko">
     <body>
-      <trans-unit id="asmt.section.api.title">
-        <source xml:lang="en">Info</source>
-        <target state="translated">정보</target>
-      </trans-unit>
       <trans-unit id="asmt.apiversion">
         <source xml:lang="en">API Version</source>
         <target state="translated">API 버전</target>
-      </trans-unit>
-      <trans-unit id="asmt.rulesetversion">
-        <source xml:lang="en">Default Ruleset</source>
-        <target state="translated">기본 규칙 집합</target>
-      </trans-unit>
-      <trans-unit id="asmt.section.instance.title">
-        <source xml:lang="en">SQL Server Instance Details</source>
-        <target state="translated">SQL Server 인스턴스 세부 정보</target>
-      </trans-unit>
-      <trans-unit id="asmt.serverversion">
-        <source xml:lang="en">Version</source>
-        <target state="translated">버전</target>
-      </trans-unit>
-      <trans-unit id="asmt.serveredition">
-        <source xml:lang="en">Edition</source>
-        <target state="translated">버전</target>
-      </trans-unit>
-      <trans-unit id="asmt.instancename">
-        <source xml:lang="en">Instance Name</source>
-        <target state="translated">인스턴스 이름</target>
-      </trans-unit>
-      <trans-unit id="asmt.osversion">
-        <source xml:lang="en">OS Version</source>
-        <target state="translated">OS 버전</target>
-      </trans-unit>
-      <trans-unit id="asmt.column.target">
-        <source xml:lang="en">Target</source>
-        <target state="translated">대상</target>
-      </trans-unit>
-      <trans-unit id="asmt.column.severity">
-        <source xml:lang="en">Severity</source>
-        <target state="translated">심각도</target>
-      </trans-unit>
-      <trans-unit id="asmt.column.message">
-        <source xml:lang="en">Message</source>
-        <target state="translated">메시지</target>
       </trans-unit>
       <trans-unit id="asmt.column.checkId">
         <source xml:lang="en">Check ID</source>
         <target state="translated">ID 확인</target>
       </trans-unit>
+      <trans-unit id="asmt.column.helpLink">
+        <source xml:lang="en">Help Link</source>
+        <target state="translated">도움말 링크</target>
+      </trans-unit>
+      <trans-unit id="asmt.column.message">
+        <source xml:lang="en">Message</source>
+        <target state="translated">메시지</target>
+      </trans-unit>
+      <trans-unit id="asmt.column.severity">
+        <source xml:lang="en">Severity</source>
+        <target state="translated">심각도</target>
+      </trans-unit>
       <trans-unit id="asmt.column.tags">
         <source xml:lang="en">Tags</source>
         <target state="translated">태그</target>
+      </trans-unit>
+      <trans-unit id="asmt.column.target">
+        <source xml:lang="en">Target</source>
+        <target state="translated">대상</target>
+      </trans-unit>
+      <trans-unit id="asmt.instancename">
+        <source xml:lang="en">Instance Name</source>
+        <target state="translated">인스턴스 이름</target>
       </trans-unit>
       <trans-unit id="asmt.learnMore">
         <source xml:lang="en">Learn More</source>
         <target state="translated">자세한 정보</target>
       </trans-unit>
-      <trans-unit id="asmt.sqlReportTitle">
-        <source xml:lang="en">SQL Assessment Report</source>
-        <target state="translated">SQL 평가 보고서</target>
+      <trans-unit id="asmt.osversion">
+        <source xml:lang="en">OS Version</source>
+        <target state="translated">OS 버전</target>
+      </trans-unit>
+      <trans-unit id="asmt.rulesetversion">
+        <source xml:lang="en">Default Ruleset</source>
+        <target state="translated">기본 규칙 집합</target>
+      </trans-unit>
+      <trans-unit id="asmt.section.api.title">
+        <source xml:lang="en">Info</source>
+        <target state="translated">정보</target>
+      </trans-unit>
+      <trans-unit id="asmt.section.instance.title">
+        <source xml:lang="en">SQL Server Instance Details</source>
+        <target state="translated">SQL Server 인스턴스 세부 정보</target>
+      </trans-unit>
+      <trans-unit id="asmt.serveredition">
+        <source xml:lang="en">Edition</source>
+        <target state="translated">버전</target>
+      </trans-unit>
+      <trans-unit id="asmt.serverversion">
+        <source xml:lang="en">Version</source>
+        <target state="translated">버전</target>
+      </trans-unit>
+      <trans-unit id="asmt.sqlReport.Error">
+        <source xml:lang="en">Error</source>
+        <target state="translated">오류</target>
+      </trans-unit>
+      <trans-unit id="asmt.sqlReport.Info">
+        <source xml:lang="en">Information</source>
+        <target state="translated">정보</target>
+      </trans-unit>
+      <trans-unit id="asmt.sqlReport.Warning">
+        <source xml:lang="en">Warning</source>
+        <target state="translated">경고</target>
       </trans-unit>
       <trans-unit id="asmt.sqlReport.resultForDatabase">
         <source xml:lang="en">Results for database</source>
@@ -86,77 +114,29 @@
         <source xml:lang="en">Results for server</source>
         <target state="translated">서버에 대한 결과</target>
       </trans-unit>
-      <trans-unit id="asmt.sqlReport.Error">
-        <source xml:lang="en">Error</source>
-        <target state="translated">오류</target>
-      </trans-unit>
-      <trans-unit id="asmt.sqlReport.Warning">
-        <source xml:lang="en">Warning</source>
-        <target state="translated">경고</target>
-      </trans-unit>
-      <trans-unit id="asmt.sqlReport.Info">
-        <source xml:lang="en">Information</source>
-        <target state="translated">정보</target>
-      </trans-unit>
-      <trans-unit id="asmt.column.helpLink">
-        <source xml:lang="en">Help Link</source>
-        <target state="translated">도움말 링크</target>
-      </trans-unit>
       <trans-unit id="asmt.sqlReport.severityMsg">
         <source xml:lang="en">{0}: {1} item(s)</source>
         <target state="translated">{0}: {1} 항목</target>
       </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/sql-assessment/dist/assessmentResultGrid" source-language="en" datatype="plaintext" target-language="ko">
-    <body>
-      <trans-unit id="databaseIconLabel">
-        <source xml:lang="en">Database</source>
-        <target state="translated">데이터베이스</target>
-      </trans-unit>
-      <trans-unit id="serverIconLabel">
-        <source xml:lang="en">Server</source>
-        <target state="translated">서버</target>
-      </trans-unit>
-      <trans-unit id="asmt.column.targetType">
-        <source xml:lang="en">Target Type</source>
-        <target state="translated">대상 유형</target>
-      </trans-unit>
-      <trans-unit id="asmt.details.clickHere">
-        <source xml:lang="en">Click here</source>
-        <target state="translated">여기를 클릭</target>
-      </trans-unit>
-      <trans-unit id="asmt.details.toLearnMore">
-        <source xml:lang="en"> to learn more.</source>
-        <target state="translated">자세히 알아봅니다.</target>
-      </trans-unit>
-      <trans-unit id="asmt.details.ruleDescription">
-        <source xml:lang="en">Rule Description</source>
-        <target state="translated">규칙 설명</target>
-      </trans-unit>
-      <trans-unit id="asmt.details.recommendation">
-        <source xml:lang="en">Recommendation</source>
-        <target state="translated">권장 사항</target>
+      <trans-unit id="asmt.sqlReportTitle">
+        <source xml:lang="en">SQL Assessment Report</source>
+        <target state="translated">SQL 평가 보고서</target>
       </trans-unit>
     </body>
   </file>
   <file original="extensions/sql-assessment/dist/tabs/assessmentMainTab" source-language="en" datatype="plaintext" target-language="ko">
     <body>
-      <trans-unit id="invokeAssessmentLabelServer">
-        <source xml:lang="en">Invoke assessment</source>
-        <target state="translated">평가 호출</target>
+      <trans-unit id="asmtaction.label.cancel">
+        <source xml:lang="en">Cancel</source>
+        <target state="translated">취소</target>
       </trans-unit>
-      <trans-unit id="getAssessmentItemsServer">
-        <source xml:lang="en">View applicable rules</source>
-        <target state="translated">적용 가능한 규칙 보기</target>
+      <trans-unit id="asmtaction.label.open">
+        <source xml:lang="en">Open</source>
+        <target state="translated">열기</target>
       </trans-unit>
-      <trans-unit id="invokeAssessmentLabelDatabase">
-        <source xml:lang="en">Invoke assessment for {0}</source>
-        <target state="translated">{0}에 대한 평가 호출</target>
-      </trans-unit>
-      <trans-unit id="getAssessmentItemsDatabase">
-        <source xml:lang="en">View applicable rules for {0}</source>
-        <target state="translated">{0}에 적용 가능한 규칙 보기</target>
+      <trans-unit id="asmtaction.openReport">
+        <source xml:lang="en">Report has been saved. Do you want to open it?</source>
+        <target state="translated">보고서가 저장되었습니다. 열어보시겠습니까?</target>
       </trans-unit>
       <trans-unit id="btnExportAsScript">
         <source xml:lang="en">Export as script</source>
@@ -166,29 +146,37 @@
         <source xml:lang="en">Create HTML Report</source>
         <target state="translated">HTML 보고서 만들기</target>
       </trans-unit>
-      <trans-unit id="asmtaction.openReport">
-        <source xml:lang="en">Report has been saved. Do you want to open it?</source>
-        <target state="translated">보고서가 저장되었습니다. 열어보시겠습니까?</target>
-      </trans-unit>
-      <trans-unit id="asmtaction.label.open">
-        <source xml:lang="en">Open</source>
-        <target state="translated">열기</target>
-      </trans-unit>
-      <trans-unit id="asmtaction.label.cancel">
-        <source xml:lang="en">Cancel</source>
-        <target state="translated">취소</target>
+      <trans-unit id="btnViewSamples">
+        <source xml:lang="en">View all rules and learn more on GitHub</source>
+        <target state="translated">GitHub에서 모든 규칙 보기 및 자세히 알아보기</target>
       </trans-unit>
       <trans-unit id="btnViewSamplesShort">
         <source xml:lang="en">View all on GitHub</source>
         <target state="translated">GitHub에서 모두 보기</target>
       </trans-unit>
-      <trans-unit id="btnViewSamples">
-        <source xml:lang="en">View all rules and learn more on GitHub</source>
-        <target state="translated">GitHub에서 모든 규칙 보기 및 자세히 알아보기</target>
+      <trans-unit id="getAssessmentItemsDatabase">
+        <source xml:lang="en">View applicable rules for {0}</source>
+        <target state="translated">{0}에 적용 가능한 규칙 보기</target>
+      </trans-unit>
+      <trans-unit id="getAssessmentItemsServer">
+        <source xml:lang="en">View applicable rules</source>
+        <target state="translated">적용 가능한 규칙 보기</target>
+      </trans-unit>
+      <trans-unit id="invokeAssessmentLabelDatabase">
+        <source xml:lang="en">Invoke assessment for {0}</source>
+        <target state="translated">{0}에 대한 평가 호출</target>
+      </trans-unit>
+      <trans-unit id="invokeAssessmentLabelServer">
+        <source xml:lang="en">Invoke assessment</source>
+        <target state="translated">평가 호출</target>
       </trans-unit>
       <trans-unit id="msgBoxAsmtInfo">
         <source xml:lang="en">SQL Assessment Information</source>
         <target state="translated">SQL 평가 정보</target>
+      </trans-unit>
+      <trans-unit id="msgBoxCopied">
+        <source xml:lang="en">SQL Assessment Information copied</source>
+        <target state="translated">SQL 평가 정보 복사됨</target>
       </trans-unit>
       <trans-unit id="msgBoxCopyBtn">
         <source xml:lang="en">Copy</source>
@@ -197,10 +185,6 @@
       <trans-unit id="ok">
         <source xml:lang="en">OK</source>
         <target state="translated">확인</target>
-      </trans-unit>
-      <trans-unit id="msgBoxCopied">
-        <source xml:lang="en">SQL Assessment Information copied</source>
-        <target state="translated">SQL 평가 정보 복사됨</target>
       </trans-unit>
     </body>
   </file>
@@ -222,13 +206,29 @@
         <source xml:lang="en">Error</source>
         <target state="translated">오류</target>
       </trans-unit>
+      <trans-unit id="asmt.history.summaryInfo">
+        <source xml:lang="en">Information</source>
+        <target state="translated">정보</target>
+      </trans-unit>
       <trans-unit id="asmt.history.summaryWarning">
         <source xml:lang="en">Warning</source>
         <target state="translated">경고</target>
       </trans-unit>
-      <trans-unit id="asmt.history.summaryInfo">
-        <source xml:lang="en">Information</source>
-        <target state="translated">정보</target>
+    </body>
+  </file>
+  <file original="extensions/sql-assessment/package" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="dashboard.tabName">
+        <source xml:lang="en">SQL Assessment</source>
+        <target state="translated">SQL 평가</target>
+      </trans-unit>
+      <trans-unit id="description">
+        <source xml:lang="en">SQL Assessment for Azure Data Studio (Preview) provides a mechanism to evaluate the configuration of SQL Server for best practices.</source>
+        <target state="translated">Azure Data Studio에 대한 SQL 평가(미리 보기)는 모범 사례에 대한 SQL Server 구성을 평가하는 메커니즘을 제공합니다.</target>
+      </trans-unit>
+      <trans-unit id="displayName">
+        <source xml:lang="en">SQL Assessment</source>
+        <target state="translated">SQL 평가</target>
       </trans-unit>
     </body>
   </file>

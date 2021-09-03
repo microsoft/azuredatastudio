@@ -9,8 +9,8 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"displayName": "Tema Claro Solar",
 			"description": "Tema claro solar do Visual Studio Code",
+			"displayName": "Tema Claro Solar",
 			"themeLabel": "Solar Claro"
 		}
 	}

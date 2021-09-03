@@ -8,64 +8,65 @@
 	],
 	"version": "1.0.0",
 	"contents": {
+		"dist/features/documentLinkProvider": {
+			"documentLink.tooltip": "Link folgen"
+		},
+		"dist/features/preview": {
+			"lockedPreviewTitle": "[Vorschau] {0}",
+			"onPreviewStyleLoadError": "'markdown.styles' konnte nicht geladen werden: {0}",
+			"preview.clickOpenFailed": "{0} konnte nicht geöffnet werden.",
+			"previewTitle": "Vorschau von {0}"
+		},
+		"dist/features/previewContentProvider": {
+			"preview.notFound": "{0} kann nicht gefunden werden.",
+			"preview.securityMessage.label": "Sicherheitswarnung – Inhalt deaktiviert",
+			"preview.securityMessage.text": "In diesem Dokument wurden einige Inhalte deaktiviert.",
+			"preview.securityMessage.title": "Potenziell unsichere Inhalte wurden in der Markdown-Vorschau deaktiviert. Ändern Sie die Sicherheitseinstellung der Markdown-Vorschau, um unsichere Inhalte zuzulassen oder Skripts zu aktivieren."
+		},
+		"dist/security": {
+			"disable.description": "Alle Inhalte und Skriptausführung zulassen. Nicht empfohlen.",
+			"disable.title": "Deaktivieren",
+			"disableSecurityWarning.title": "Vorschau von Sicherheitswarnungen in diesem Arbeitsbereich deaktivieren",
+			"enableSecurityWarning.title": "Vorschau von Sicherheitswarnungen in diesem Arbeitsbereich aktivieren",
+			"insecureContent.description": "Laden von Inhalten über HTTP aktivieren",
+			"insecureContent.title": "Unsicheren Inhalt zulassen",
+			"insecureLocalContent.description": "Laden von Inhalten über HTTP von localhost aktivieren",
+			"insecureLocalContent.title": "Unsichere lokale Inhalte zulassen",
+			"moreInfo.title": "Weitere Informationen",
+			"preview.showPreviewSecuritySelector.title": "Sicherheitseinstellungen für die Markdown-Vorschau in diesem Arbeitsbereich auswählen",
+			"strict.description": "Nur sicheren Inhalt laden",
+			"strict.title": "Strict",
+			"toggleSecurityWarning.description": "Hat keinen Einfluss auf die Inhaltssicherheitsebene"
+		},
 		"package": {
-			"displayName": "Markdown-Sprachfeatures",
+			"configuration.markdown.links.openLocation.beside": "Öffnen Sie die Links neben dem aktiven Editor.",
+			"configuration.markdown.links.openLocation.currentGroup": "Öffnen Sie Links in der aktiven Editor-Gruppe.",
+			"configuration.markdown.links.openLocation.description": "Steuert, wo Links in Markdowndateien geöffnet werden sollen.",
+			"configuration.markdown.preview.openMarkdownLinks.description": "Steuert, wie Links zu anderen Markdowndateien in der Markdown-Vorschau geöffnet werden sollen.",
+			"configuration.markdown.preview.openMarkdownLinks.inEditor": "Links im Editor öffnen",
+			"configuration.markdown.preview.openMarkdownLinks.inPreview": "Links in der Markdown-Vorschau öffnen",
 			"description": "Bietet umfangreiche Sprachunterstützung für Markdown.",
+			"displayName": "Markdown-Sprachfeatures",
 			"markdown.preview.breaks.desc": "Legt fest, wie Zeilenumbrüche in der Markdown-Vorschau gerendert werden. Durch eine Festlegung auf TRUE wird \"<br>\" für Zeilenumbrüche innerhalb von Absätzen erstellt.",
-			"markdown.preview.linkify": "Aktiviert oder deaktiviert die Konvertierung von URL-ähnlichem Text in Links in der Markdown-Vorschau.",
-			"markdown.preview.typographer": "Hiermit aktivieren oder deaktivieren Sie sprachneutrale Ersetzungen und die Anpassung von Anführungszeichen in der Markdown-Vorschau.",
 			"markdown.preview.doubleClickToSwitchToEditor.desc": "Doppelklicken Sie in die Markdown-Vorschau, um zum Editor zu wechseln.",
 			"markdown.preview.fontFamily.desc": "Steuert die Schriftfamilie, die in der Markdown-Vorschau verwendet wird.",
 			"markdown.preview.fontSize.desc": "Steuert den Schriftgrad in Pixeln, der in der Markdown-Vorschau verwendet wird.",
 			"markdown.preview.lineHeight.desc": "Steuert die Zeilenhöhe, die in der Markdown-Vorschau verwendet wird. Diese Zahl ist relativ zum Schriftgrad.",
+			"markdown.preview.linkify": "Aktiviert oder deaktiviert die Konvertierung von URL-ähnlichem Text in Links in der Markdown-Vorschau.",
 			"markdown.preview.markEditorSelection.desc": "Hiermit wird die aktuelle Editor-Auswahl in der Markdown-Vorschau markiert.",
+			"markdown.preview.refresh.title": "Vorschau aktualisieren",
 			"markdown.preview.scrollEditorWithPreview.desc": "Hiermit wird die Ansicht des Editors beim Scrollen in einer Markdown-Vorschau aktualisiert.",
 			"markdown.preview.scrollPreviewWithEditor.desc": "Hiermit wird die Ansicht der Vorschau beim Scrollen in einem Markdown-Editor aktualisiert.",
 			"markdown.preview.title": "Vorschau öffnen",
+			"markdown.preview.toggleLock.title": "Vorschausperre umschalten",
+			"markdown.preview.typographer": "Hiermit aktivieren oder deaktivieren Sie sprachneutrale Ersetzungen und die Anpassung von Anführungszeichen in der Markdown-Vorschau.",
 			"markdown.previewSide.title": "Vorschau an der Seite öffnen",
 			"markdown.showLockedPreviewToSide.title": "Gesperrte Vorschau an der Seite öffnen",
+			"markdown.showPreviewSecuritySelector.title": "Sicherheitseinstellungen für Vorschau ändern",
 			"markdown.showSource.title": "Quelle anzeigen",
 			"markdown.styles.dec": "Eine Liste von URLs oder lokalen Pfaden zu CSS (Cascading Stylesheets) aus der Markdown-Vorschau, die verwendet werden sollen. Relative Pfade werden relativ zu dem Ordner interpretiert, der im Explorer geöffnet ist. Wenn kein Ordner geöffnet ist, werden sie relativ zum Speicherort der Markdowndatei interpretiert. \"\\\" müssen grundsätzlich als \"\\\\\" geschrieben werden.",
-			"markdown.showPreviewSecuritySelector.title": "Sicherheitseinstellungen für Vorschau ändern",
 			"markdown.trace.desc": "Aktiviert die Debugprotokollierung für die Markdownerweiterung.",
-			"markdown.preview.refresh.title": "Vorschau aktualisieren",
-			"markdown.preview.toggleLock.title": "Vorschausperre umschalten",
-			"configuration.markdown.preview.openMarkdownLinks.description": "Steuert, wie Links zu anderen Markdowndateien in der Markdown-Vorschau geöffnet werden sollen.",
-			"configuration.markdown.preview.openMarkdownLinks.inEditor": "Links im Editor öffnen",
-			"configuration.markdown.preview.openMarkdownLinks.inPreview": "Links in der Markdown-Vorschau öffnen",
-			"configuration.markdown.links.openLocation.description": "Steuert, wo Links in Markdowndateien geöffnet werden sollen.",
-			"configuration.markdown.links.openLocation.currentGroup": "Öffnen Sie Links in der aktiven Editor-Gruppe.",
-			"configuration.markdown.links.openLocation.beside": "Öffnen Sie die Links neben dem aktiven Editor."
-		},
-		"dist/features/documentLinkProvider": {
-			"documentLink.tooltip": "Link folgen"
-		},
-		"dist/features/previewContentProvider": {
-			"preview.securityMessage.text": "In diesem Dokument wurden einige Inhalte deaktiviert.",
-			"preview.securityMessage.title": "Potenziell unsichere Inhalte wurden in der Markdown-Vorschau deaktiviert. Ändern Sie die Sicherheitseinstellung der Markdown-Vorschau, um unsichere Inhalte zuzulassen oder Skripts zu aktivieren.",
-			"preview.securityMessage.label": "Sicherheitswarnung – Inhalt deaktiviert",
-			"preview.notFound": "{0} kann nicht gefunden werden."
-		},
-		"dist/features/preview": {
-			"onPreviewStyleLoadError": "'markdown.styles' konnte nicht geladen werden: {0}",
-			"preview.clickOpenFailed": "{0} konnte nicht geöffnet werden.",
-			"lockedPreviewTitle": "[Vorschau] {0}",
-			"previewTitle": "Vorschau von {0}"
-		},
-		"dist/security": {
-			"strict.title": "Strict",
-			"strict.description": "Nur sicheren Inhalt laden",
-			"insecureLocalContent.title": "Unsichere lokale Inhalte zulassen",
-			"insecureLocalContent.description": "Laden von Inhalten über HTTP von localhost aktivieren",
-			"insecureContent.title": "Unsicheren Inhalt zulassen",
-			"insecureContent.description": "Laden von Inhalten über HTTP aktivieren",
-			"disable.title": "Deaktivieren",
-			"disable.description": "Alle Inhalte und Skriptausführung zulassen. Nicht empfohlen.",
-			"moreInfo.title": "Weitere Informationen",
-			"enableSecurityWarning.title": "Vorschau von Sicherheitswarnungen in diesem Arbeitsbereich aktivieren",
-			"disableSecurityWarning.title": "Vorschau von Sicherheitswarnungen in diesem Arbeitsbereich deaktivieren",
-			"toggleSecurityWarning.description": "Hat keinen Einfluss auf die Inhaltssicherheitsebene",
-			"preview.showPreviewSecuritySelector.title": "Sicherheitseinstellungen für die Markdown-Vorschau in diesem Arbeitsbereich auswählen"
+			"workspaceTrust": "Erforderlich, um Formatvorlagen zu laden, die im Arbeitsbereich konfiguriert sind."
 		}
 	}
 }

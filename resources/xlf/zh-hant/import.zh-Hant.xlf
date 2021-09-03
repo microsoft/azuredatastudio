@@ -1,114 +1,18 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
-  <file original="extensions/import/package" source-language="en" datatype="plaintext" target-language="zh-Hant">
-    <body>
-      <trans-unit id="flatfileimport.configuration.title">
-        <source xml:lang="en">Flat File Import configuration</source>
-        <target state="translated">一般檔案匯入設定</target>
-      </trans-unit>
-      <trans-unit id="flatfileimport.logDebugInfo">
-        <source xml:lang="en">[Optional] Log debug output to the console (View -&gt; Output) and then select appropriate output channel from the dropdown</source>
-        <target state="translated">[選用] 將偵錯記錄輸出至主控台 ([檢視] -&gt; [輸出])，並從下拉式清單選取適當的輸出通道</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/import/out/services/serviceClient" source-language="en" datatype="plaintext" target-language="zh-Hant">
-    <body>
-      <trans-unit id="serviceStarted">
-        <source xml:lang="en">{0} Started</source>
-        <target state="translated">已啟動 {0}</target>
-      </trans-unit>
-      <trans-unit id="serviceStarting">
-        <source xml:lang="en">Starting {0}</source>
-        <target state="translated">正在啟動 {0}</target>
-      </trans-unit>
-      <trans-unit id="flatFileImport.serviceStartFailed">
-        <source xml:lang="en">Failed to start {0}: {1}</source>
-        <target state="translated">無法啟動 {0}: {1}</target>
-      </trans-unit>
-      <trans-unit id="installingServiceDetailed">
-        <source xml:lang="en">Installing {0} to {1}</source>
-        <target state="translated">正在將 {0} 安裝到 {1}</target>
-      </trans-unit>
-      <trans-unit id="installingService">
-        <source xml:lang="en">Installing {0} Service</source>
-        <target state="translated">正在安裝 {0} 服務</target>
-      </trans-unit>
-      <trans-unit id="serviceInstalled">
-        <source xml:lang="en">Installed {0}</source>
-        <target state="translated">已安裝 {0}</target>
-      </trans-unit>
-      <trans-unit id="downloadingService">
-        <source xml:lang="en">Downloading {0}</source>
-        <target state="translated">正在下載 {0}</target>
-      </trans-unit>
-      <trans-unit id="downloadingServiceSize">
-        <source xml:lang="en">({0} KB)</source>
-        <target state="translated">({0} KB)</target>
-      </trans-unit>
-      <trans-unit id="downloadingServiceStatus">
-        <source xml:lang="en">Downloading {0}</source>
-        <target state="translated">正在下載 {0}</target>
-      </trans-unit>
-      <trans-unit id="downloadingServiceComplete">
-        <source xml:lang="en">Done downloading {0}</source>
-        <target state="translated">已完成下載 {0}</target>
-      </trans-unit>
-      <trans-unit id="entryExtractedChannelMsg">
-        <source xml:lang="en">Extracted {0} ({1}/{2})</source>
-        <target state="translated">已擷取 {0} ({1}/{2})</target>
-      </trans-unit>
-    </body>
-  </file>
   <file original="extensions/import/out/common/constants" source-language="en" datatype="plaintext" target-language="zh-Hant">
     <body>
-      <trans-unit id="import.serviceCrashButton">
-        <source xml:lang="en">Give Feedback</source>
-        <target state="translated">提供意見反應</target>
-      </trans-unit>
-      <trans-unit id="serviceCrashMessage">
-        <source xml:lang="en">service component could not start</source>
-        <target state="translated">服務元件無法啟動</target>
-      </trans-unit>
-      <trans-unit id="flatFileImport.serverDropdownTitle">
-        <source xml:lang="en">Server the database is in</source>
-        <target state="translated">資料庫所在的伺服器</target>
-      </trans-unit>
-      <trans-unit id="flatFileImport.databaseDropdownTitle">
-        <source xml:lang="en">Database the table is created in</source>
-        <target state="translated">資料表建立所在的資料庫</target>
-      </trans-unit>
       <trans-unit id="flatFile.InvalidFileLocation">
         <source xml:lang="en">Invalid file location. Please try a different input file</source>
         <target state="translated">無效的檔案位置。請嘗試其他輸入檔</target>
       </trans-unit>
+      <trans-unit id="flatFileImport.allowNulls">
+        <source xml:lang="en">Allow Nulls</source>
+        <target state="translated">允許 Null 值</target>
+      </trans-unit>
       <trans-unit id="flatFileImport.browseFiles">
         <source xml:lang="en">Browse</source>
         <target state="translated">瀏覽</target>
-      </trans-unit>
-      <trans-unit id="flatFileImport.openFile">
-        <source xml:lang="en">Open</source>
-        <target state="translated">開啟</target>
-      </trans-unit>
-      <trans-unit id="flatFileImport.fileTextboxTitle">
-        <source xml:lang="en">Location of the file to be imported</source>
-        <target state="translated">要匯入檔案的位置</target>
-      </trans-unit>
-      <trans-unit id="flatFileImport.tableTextboxTitle">
-        <source xml:lang="en">New table name</source>
-        <target state="translated">新增資料表名稱</target>
-      </trans-unit>
-      <trans-unit id="flatFileImport.schemaTextboxTitle">
-        <source xml:lang="en">Table schema</source>
-        <target state="translated">資料表結構描述</target>
-      </trans-unit>
-      <trans-unit id="flatFileImport.importData">
-        <source xml:lang="en">Import Data</source>
-        <target state="translated">匯入資料</target>
-      </trans-unit>
-      <trans-unit id="flatFileImport.next">
-        <source xml:lang="en">Next</source>
-        <target state="translated">下一個</target>
       </trans-unit>
       <trans-unit id="flatFileImport.columnName">
         <source xml:lang="en">Column Name</source>
@@ -118,69 +22,45 @@
         <source xml:lang="en">Data Type</source>
         <target state="translated">資料類型</target>
       </trans-unit>
-      <trans-unit id="flatFileImport.primaryKey">
-        <source xml:lang="en">Primary Key</source>
-        <target state="translated">主索引鍵</target>
-      </trans-unit>
-      <trans-unit id="flatFileImport.allowNulls">
-        <source xml:lang="en">Allow Nulls</source>
-        <target state="translated">允許 Null 值</target>
-      </trans-unit>
-      <trans-unit id="flatFileImport.prosePreviewMessage">
-        <source xml:lang="en">This operation analyzed the input file structure to generate the preview below for up to the first 50 rows.</source>
-        <target state="translated">這項作業分析了輸出檔案結構，並產生了以下最多包含前 50 列的預覽。</target>
-      </trans-unit>
-      <trans-unit id="flatFileImport.prosePreviewMessageFail">
-        <source xml:lang="en">This operation was unsuccessful. Please try a different input file.</source>
-        <target state="translated">這項作業不成功。請嘗試其他輸入檔案。</target>
-      </trans-unit>
-      <trans-unit id="flatFileImport.refresh">
-        <source xml:lang="en">Refresh</source>
-        <target state="translated">重新整理</target>
-      </trans-unit>
-      <trans-unit id="flatFileImport.importInformation">
-        <source xml:lang="en">Import information</source>
-        <target state="translated">匯入資訊</target>
-      </trans-unit>
-      <trans-unit id="flatFileImport.importStatus">
-        <source xml:lang="en">Import status</source>
-        <target state="translated">匯入狀態</target>
-      </trans-unit>
-      <trans-unit id="flatFileImport.serverName">
-        <source xml:lang="en">Server name</source>
-        <target state="translated">伺服器名稱</target>
+      <trans-unit id="flatFileImport.databaseDropdownTitle">
+        <source xml:lang="en">Database the table is created in</source>
+        <target state="translated">資料表建立所在的資料庫</target>
       </trans-unit>
       <trans-unit id="flatFileImport.databaseName">
         <source xml:lang="en">Database name</source>
         <target state="translated">資料庫名稱</target>
       </trans-unit>
-      <trans-unit id="flatFileImport.tableName">
-        <source xml:lang="en">Table name</source>
-        <target state="translated">資料表名稱</target>
-      </trans-unit>
-      <trans-unit id="flatFileImport.tableSchema">
-        <source xml:lang="en">Table schema</source>
-        <target state="translated">資料表結構描述</target>
-      </trans-unit>
       <trans-unit id="flatFileImport.fileImport">
         <source xml:lang="en">File to be imported</source>
         <target state="translated">要匯入的檔案</target>
       </trans-unit>
-      <trans-unit id="flatFileImport.success.norows">
-        <source xml:lang="en">✔ You have successfully inserted the data into a table.</source>
-        <target state="translated">✔ 您已成功將資料插入表中。</target>
+      <trans-unit id="flatFileImport.fileTextboxTitle">
+        <source xml:lang="en">Location of the file to be imported</source>
+        <target state="translated">要匯入檔案的位置</target>
       </trans-unit>
-      <trans-unit id="import.needConnection">
-        <source xml:lang="en">Please connect to a server before using this wizard.</source>
-        <target state="translated">請先連線至伺服器再使用本精靈。</target>
+      <trans-unit id="flatFileImport.importData">
+        <source xml:lang="en">Import Data</source>
+        <target state="translated">匯入資料</target>
       </trans-unit>
-      <trans-unit id="import.needSQLConnection">
-        <source xml:lang="en">SQL Server Import extension does not support this type of connection</source>
-        <target state="translated">SQL Server 匯入延伸不支援此類型的連線</target>
+      <trans-unit id="flatFileImport.importInformation">
+        <source xml:lang="en">Import information</source>
+        <target state="translated">匯入資訊</target>
       </trans-unit>
-      <trans-unit id="flatFileImport.wizardName">
-        <source xml:lang="en">Import flat file wizard</source>
-        <target state="translated">匯入一般檔案精靈</target>
+      <trans-unit id="flatFileImport.importNewFile">
+        <source xml:lang="en">Import new file</source>
+        <target state="translated">匯入新檔案</target>
+      </trans-unit>
+      <trans-unit id="flatFileImport.importStatus">
+        <source xml:lang="en">Import status</source>
+        <target state="translated">匯入狀態</target>
+      </trans-unit>
+      <trans-unit id="flatFileImport.next">
+        <source xml:lang="en">Next</source>
+        <target state="translated">下一個</target>
+      </trans-unit>
+      <trans-unit id="flatFileImport.openFile">
+        <source xml:lang="en">Open</source>
+        <target state="translated">開啟</target>
       </trans-unit>
       <trans-unit id="flatFileImport.page1Name">
         <source xml:lang="en">Specify Input File</source>
@@ -198,9 +78,129 @@
         <source xml:lang="en">Summary</source>
         <target state="translated">摘要</target>
       </trans-unit>
-      <trans-unit id="flatFileImport.importNewFile">
-        <source xml:lang="en">Import new file</source>
-        <target state="translated">匯入新檔案</target>
+      <trans-unit id="flatFileImport.primaryKey">
+        <source xml:lang="en">Primary Key</source>
+        <target state="translated">主索引鍵</target>
+      </trans-unit>
+      <trans-unit id="flatFileImport.prosePreviewMessage">
+        <source xml:lang="en">This operation analyzed the input file structure to generate the preview below for up to the first 50 rows.</source>
+        <target state="translated">這項作業分析了輸出檔案結構，並產生了以下最多包含前 50 列的預覽。</target>
+      </trans-unit>
+      <trans-unit id="flatFileImport.prosePreviewMessageFail">
+        <source xml:lang="en">This operation was unsuccessful. Please try a different input file.</source>
+        <target state="translated">這項作業不成功。請嘗試其他輸入檔案。</target>
+      </trans-unit>
+      <trans-unit id="flatFileImport.refresh">
+        <source xml:lang="en">Refresh</source>
+        <target state="translated">重新整理</target>
+      </trans-unit>
+      <trans-unit id="flatFileImport.schemaTextboxTitle">
+        <source xml:lang="en">Table schema</source>
+        <target state="translated">資料表結構描述</target>
+      </trans-unit>
+      <trans-unit id="flatFileImport.serverDropdownTitle">
+        <source xml:lang="en">Server the database is in</source>
+        <target state="translated">資料庫所在的伺服器</target>
+      </trans-unit>
+      <trans-unit id="flatFileImport.serverName">
+        <source xml:lang="en">Server name</source>
+        <target state="translated">伺服器名稱</target>
+      </trans-unit>
+      <trans-unit id="flatFileImport.success.norows">
+        <source xml:lang="en">✔ You have successfully inserted the data into a table.</source>
+        <target state="translated">✔ 您已成功將資料插入表中。</target>
+      </trans-unit>
+      <trans-unit id="flatFileImport.tableName">
+        <source xml:lang="en">Table name</source>
+        <target state="translated">資料表名稱</target>
+      </trans-unit>
+      <trans-unit id="flatFileImport.tableSchema">
+        <source xml:lang="en">Table schema</source>
+        <target state="translated">資料表結構描述</target>
+      </trans-unit>
+      <trans-unit id="flatFileImport.tableTextboxTitle">
+        <source xml:lang="en">New table name</source>
+        <target state="translated">新增資料表名稱</target>
+      </trans-unit>
+      <trans-unit id="flatFileImport.wizardName">
+        <source xml:lang="en">Import flat file wizard</source>
+        <target state="translated">匯入一般檔案精靈</target>
+      </trans-unit>
+      <trans-unit id="import.needConnection">
+        <source xml:lang="en">Please connect to a server before using this wizard.</source>
+        <target state="translated">請先連線至伺服器再使用本精靈。</target>
+      </trans-unit>
+      <trans-unit id="import.needSQLConnection">
+        <source xml:lang="en">SQL Server Import extension does not support this type of connection</source>
+        <target state="translated">SQL Server 匯入延伸不支援此類型的連線</target>
+      </trans-unit>
+      <trans-unit id="import.serviceCrashButton">
+        <source xml:lang="en">Give Feedback</source>
+        <target state="translated">提供意見反應</target>
+      </trans-unit>
+      <trans-unit id="serviceCrashMessage">
+        <source xml:lang="en">service component could not start</source>
+        <target state="translated">服務元件無法啟動</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/import/out/services/serviceClient" source-language="en" datatype="plaintext" target-language="zh-Hant">
+    <body>
+      <trans-unit id="downloadingService">
+        <source xml:lang="en">Downloading {0}</source>
+        <target state="translated">正在下載 {0}</target>
+      </trans-unit>
+      <trans-unit id="downloadingServiceComplete">
+        <source xml:lang="en">Done downloading {0}</source>
+        <target state="translated">已完成下載 {0}</target>
+      </trans-unit>
+      <trans-unit id="downloadingServiceSize">
+        <source xml:lang="en">({0} KB)</source>
+        <target state="translated">({0} KB)</target>
+      </trans-unit>
+      <trans-unit id="downloadingServiceStatus">
+        <source xml:lang="en">Downloading {0}</source>
+        <target state="translated">正在下載 {0}</target>
+      </trans-unit>
+      <trans-unit id="entryExtractedChannelMsg">
+        <source xml:lang="en">Extracted {0} ({1}/{2})</source>
+        <target state="translated">已擷取 {0} ({1}/{2})</target>
+      </trans-unit>
+      <trans-unit id="flatFileImport.serviceStartFailed">
+        <source xml:lang="en">Failed to start {0}: {1}</source>
+        <target state="translated">無法啟動 {0}: {1}</target>
+      </trans-unit>
+      <trans-unit id="installingService">
+        <source xml:lang="en">Installing {0} Service</source>
+        <target state="translated">正在安裝 {0} 服務</target>
+      </trans-unit>
+      <trans-unit id="installingServiceDetailed">
+        <source xml:lang="en">Installing {0} to {1}</source>
+        <target state="translated">正在將 {0} 安裝到 {1}</target>
+      </trans-unit>
+      <trans-unit id="serviceInstalled">
+        <source xml:lang="en">Installed {0}</source>
+        <target state="translated">已安裝 {0}</target>
+      </trans-unit>
+      <trans-unit id="serviceStarted">
+        <source xml:lang="en">{0} Started</source>
+        <target state="translated">已啟動 {0}</target>
+      </trans-unit>
+      <trans-unit id="serviceStarting">
+        <source xml:lang="en">Starting {0}</source>
+        <target state="translated">正在啟動 {0}</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/import/package" source-language="en" datatype="plaintext" target-language="zh-Hant">
+    <body>
+      <trans-unit id="flatfileimport.configuration.title">
+        <source xml:lang="en">Flat File Import configuration</source>
+        <target state="translated">一般檔案匯入設定</target>
+      </trans-unit>
+      <trans-unit id="flatfileimport.logDebugInfo">
+        <source xml:lang="en">[Optional] Log debug output to the console (View -&gt; Output) and then select appropriate output channel from the dropdown</source>
+        <target state="translated">[選用] 將偵錯記錄輸出至主控台 ([檢視] -&gt; [輸出])，並從下拉式清單選取適當的輸出通道</target>
       </trans-unit>
     </body>
   </file>

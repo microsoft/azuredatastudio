@@ -197,7 +197,8 @@ export class RunQueryAction extends QueryTaskbarAction {
 	constructor(
 		editor: QueryEditor,
 		@IQueryModelService protected readonly queryModelService: IQueryModelService,
-		@IConnectionManagementService connectionManagementService: IConnectionManagementService
+		@IConnectionManagementService connectionManagementService: IConnectionManagementService,
+		@ICommandService private readonly commandService?: ICommandService
 	) {
 		super(connectionManagementService, editor, RunQueryAction.ID, RunQueryAction.EnabledClass);
 		this.label = nls.localize('runQueryLabel', "Run");
@@ -205,6 +206,7 @@ export class RunQueryAction extends QueryTaskbarAction {
 
 	public override async run(): Promise<void> {
 		if (!this.editor.isSelectionEmpty()) {
+			await this.connectionManagementService.refreshAzureAccountTokenIfNecessary(this.editor.input.uri);
 			if (this.isConnected(this.editor)) {
 				// If we are already connected, run the query
 				this.runQuery(this.editor);
@@ -219,6 +221,7 @@ export class RunQueryAction extends QueryTaskbarAction {
 
 	public async runCurrent(): Promise<void> {
 		if (!this.editor.isSelectionEmpty()) {
+			await this.connectionManagementService.refreshAzureAccountTokenIfNecessary(this.editor.input.uri);
 			if (this.isConnected(this.editor)) {
 				// If we are already connected, run the query
 				this.runQuery(this.editor, true);
@@ -237,6 +240,8 @@ export class RunQueryAction extends QueryTaskbarAction {
 		}
 
 		if (this.isConnected(editor)) {
+			// Hide IntelliSense suggestions list when running query to match SSMS behavior
+			this.commandService?.executeCommand('hideSuggestWidget');
 			// if the selection isn't empty then execute the selection
 			// otherwise, either run the statement or the script depending on parameter
 			let selection = editor.getSelection(false);
@@ -304,6 +309,7 @@ export class EstimatedQueryPlanAction extends QueryTaskbarAction {
 
 	public override async run(): Promise<void> {
 		if (!this.editor.isSelectionEmpty()) {
+			await this.connectionManagementService.refreshAzureAccountTokenIfNecessary(this.editor.input.uri);
 			if (this.isConnected(this.editor)) {
 				// If we are already connected, run the query
 				this.runQuery(this.editor);
@@ -343,6 +349,7 @@ export class ActualQueryPlanAction extends QueryTaskbarAction {
 
 	public override async run(): Promise<void> {
 		if (!this.editor.isSelectionEmpty()) {
+			await this.connectionManagementService.refreshAzureAccountTokenIfNecessary(this.editor.input.uri);
 			if (this.isConnected(this.editor)) {
 				// If we are already connected, run the query
 				this.runQuery(this.editor);

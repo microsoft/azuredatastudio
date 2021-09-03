@@ -7,7 +7,7 @@ import * as nls from 'vscode-nls';
 import { SqlTargetPlatform } from 'sqldbproj';
 import * as utils from '../common/utils';
 
-const localize = nls.loadMessageBundle();
+export const localize = nls.loadMessageBundle();
 
 // Placeholder values
 export const dataSourcesFileName = 'datasources.json';
@@ -452,10 +452,13 @@ export const input = localize('input', "Input");
 export const output = localize('output', "Output");
 export const selectBindingType = localize('selectBindingType', "Select type of binding");
 export const selectAzureFunction = localize('selectAzureFunction', "Select an Azure function in the current file to add SQL binding to");
-export const sqlObjectToQuery = localize('sqlObjectToQuery', "SQL object to query");
+export const sqlTableOrViewToQuery = localize('sqlTableOrViewToQuery', "SQL table or view to query");
 export const sqlTableToUpsert = localize('sqlTableToUpsert', "SQL table to upsert into");
 export const connectionStringSetting = localize('connectionStringSetting', "Connection string setting name");
+export const selectSetting = localize('selectSetting', "Select SQL connection string setting from local.settings.json");
 export const connectionStringSettingPlaceholder = localize('connectionStringSettingPlaceholder', "Connection string setting specified in \"local.settings.json\"");
 export const noAzureFunctionsInFile = localize('noAzureFunctionsInFile', "No Azure functions in the current active file");
 export const noAzureFunctionsProjectsInWorkspace = localize('noAzureFunctionsProjectsInWorkspace', "No Azure functions projects found in the workspace");
 export const addPackage = localize('addPackage', "Add Package");
+export function failedToParse(errorMessage: string) { return localize('failedToParse', 'Failed to parse "{0}": {1}.', azureFunctionLocalSettingsFileName, errorMessage); }
+export function jsonParseError(error: string, line: number, column: number) { return localize('jsonParseError', '{0} near line "{1}", column "{2}"', error, line, column); }

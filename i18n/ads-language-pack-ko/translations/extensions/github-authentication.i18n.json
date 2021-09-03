@@ -8,16 +8,18 @@
 	],
 	"version": "1.0.0",
 	"contents": {
-		"package": {
-			"displayName": "GitHub 인증",
-			"description": "GitHub 인증 공급자"
+		"dist/common/keychain": {
+			"keychainWriteError": "키 집합에 로그인 정보를 작성하는 중 오류 '{0}'이(가) 발생하여 실패했습니다.",
+			"troubleshooting": "문제 해결 가이드"
 		},
 		"dist/githubServer": {
-			"signingIn": "$(mark-github) github.com에 로그인하는 중..."
+			"signingIn": "$(mark-github) github.com에 로그인하는 중...",
+			"signingInEnterprise": "$(mark-github) {0}에 로그인하는 중...",
+			"status.git.signIn.name": "GitHub 로그인"
 		},
-		"dist/common/keychain": {
-			"troubleshooting": "문제 해결 가이드",
-			"keychainWriteError": "키 집합에 로그인 정보를 작성하는 중 오류 '{0}'이(가) 발생하여 실패했습니다."
+		"package": {
+			"description": "GitHub 인증 공급자",
+			"displayName": "GitHub 인증"
 		}
 	}
 }

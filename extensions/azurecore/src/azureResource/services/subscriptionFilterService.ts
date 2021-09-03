@@ -45,7 +45,7 @@ export class AzureResourceSubscriptionFilterService implements IAzureResourceSub
 
 		selectedSubscriptionsCache[account.key.accountId] = selectedSubscriptions;
 
-		this._cacheService.update<AzureResourceSelectedSubscriptionsCache>(this._cacheKey, { selectedSubscriptions: selectedSubscriptionsCache });
+		await this._cacheService.update<AzureResourceSelectedSubscriptionsCache>(this._cacheKey, { selectedSubscriptions: selectedSubscriptionsCache });
 
 		const filters: string[] = [];
 		for (const accountId in selectedSubscriptionsCache) {

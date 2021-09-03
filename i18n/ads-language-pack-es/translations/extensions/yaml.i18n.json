@@ -9,8 +9,8 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"displayName": "Conceptos básicos del lenguaje YAML",
-			"description": "Proporciona resaltado de sintaxis y correspondencia de corchetes en archivos de YAML."
+			"description": "Proporciona resaltado de sintaxis y correspondencia de corchetes en archivos de YAML.",
+			"displayName": "Conceptos básicos del lenguaje YAML"
 		}
 	}
 }

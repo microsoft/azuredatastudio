@@ -9,8 +9,8 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"displayName": "Nozioni di base sul linguaggio Python",
-			"description": "Offre la sottolineatura delle sintassi, il match delle parentesi e il folding nei file Python."
+			"description": "Offre la sottolineatura delle sintassi, il match delle parentesi e il folding nei file Python.",
+			"displayName": "Nozioni di base sul linguaggio Python"
 		}
 	}
 }

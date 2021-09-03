@@ -17,6 +17,7 @@ import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { InstallRecommendedExtensionsByScenarioAction, ShowRecommendedExtensionsByScenarioAction } from 'sql/workbench/contrib/extensions/browser/extensionsActions';
 import { IExtensionsWorkbenchService } from 'vs/workbench/contrib/extensions/common/extensions';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
 const choiceNever = localize('neverShowAgain', "Don't Show Again");
 
@@ -32,7 +33,8 @@ export class ScenarioRecommendations extends ExtensionRecommendations {
 		@IStorageService private readonly storageService?: IStorageService,
 		@IExtensionManagementService protected readonly extensionManagementService?: IExtensionManagementService,
 		@IAdsTelemetryService private readonly adsTelemetryService?: IAdsTelemetryService,
-		@IExtensionsWorkbenchService protected readonly extensionsWorkbenchService?: IExtensionsWorkbenchService
+		@IExtensionsWorkbenchService protected readonly extensionsWorkbenchService?: IExtensionsWorkbenchService,
+		@IConfigurationService private readonly configurationService?: IConfigurationService
 
 	) {
 		super();
@@ -42,11 +44,15 @@ export class ScenarioRecommendations extends ExtensionRecommendations {
 		return;
 	}
 
-	// {{SQL CARBON EDIT}}
+	private ignoreRecommendations(): boolean {
+		const ignoreRecommendations = this.configurationService.getValue<boolean>('extensions.ignoreRecommendations');
+		return ignoreRecommendations;
+	}
+
 	promptRecommendedExtensionsByScenario(scenarioType: string): void {
 		const storageKey = 'extensionAssistant/RecommendationsIgnore/' + scenarioType;
 
-		if (this.storageService.getBoolean(storageKey, StorageScope.GLOBAL, false)) {
+		if (this.storageService.getBoolean(storageKey, StorageScope.GLOBAL, false) || this.ignoreRecommendations()) {
 			return;
 		}
 

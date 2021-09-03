@@ -9,11 +9,11 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"displayName": "Azure SQL Hybrid Cloud Toolkit",
+			"books-preview-category": "Jupyter Books",
 			"description": "Öffnet das Jupyter Book für Azure SQL Hybrid Cloud Toolkit.",
-			"title.openJupyterBook": "Jupyter Book für Azure SQL Hybrid Cloud Toolkit öffnen",
+			"displayName": "Azure SQL Hybrid Cloud Toolkit",
 			"title.cloudHybridBooks": "Azure SQL Hybrid Cloud Toolkit",
-			"books-preview-category": "Jupyter Books"
+			"title.openJupyterBook": "Jupyter Book für Azure SQL Hybrid Cloud Toolkit öffnen"
 		}
 	}
 }

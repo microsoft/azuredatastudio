@@ -10,17 +10,17 @@
         <source xml:lang="en">Start</source>
         <target state="translated">Démarrer</target>
       </trans-unit>
-      <trans-unit id="createSessionDialog.title">
-        <source xml:lang="en">Start New Profiler Session</source>
-        <target state="translated">Démarrer une nouvelle session Profiler</target>
-      </trans-unit>
-      <trans-unit id="createSessionDialog.templatesInvalid">
-        <source xml:lang="en">Invalid templates list, cannot open dialog</source>
-        <target state="translated">Liste de modèles non valide, impossible d'ouvrir la boîte de dialogue</target>
+      <trans-unit id="createSessionDialog.createSessionFailed">
+        <source xml:lang="en">Failed to create a session</source>
+        <target state="translated">La création de session a échoué</target>
       </trans-unit>
       <trans-unit id="createSessionDialog.dialogOwnerInvalid">
         <source xml:lang="en">Invalid dialog owner, cannot open dialog</source>
         <target state="translated">Propriétaire de boîte de dialogue non valide, impossible d'ouvrir la boîte de dialogue</target>
+      </trans-unit>
+      <trans-unit id="createSessionDialog.enterSessionName">
+        <source xml:lang="en">Enter session name:</source>
+        <target state="translated">Entrez le nom de la session :</target>
       </trans-unit>
       <trans-unit id="createSessionDialog.invalidProviderType">
         <source xml:lang="en">Invalid provider type, cannot open dialog</source>
@@ -28,15 +28,47 @@
       </trans-unit>
       <trans-unit id="createSessionDialog.selectTemplates">
         <source xml:lang="en">Select session template:</source>
-        <target state="translated">Sélectionnez un modèle de session :</target>
+        <target state="translated">Sélectionnez un modèle de session :</target>
       </trans-unit>
-      <trans-unit id="createSessionDialog.enterSessionName">
-        <source xml:lang="en">Enter session name:</source>
-        <target state="translated">Entrez le nom de la session :</target>
+      <trans-unit id="createSessionDialog.templatesInvalid">
+        <source xml:lang="en">Invalid templates list, cannot open dialog</source>
+        <target state="translated">Liste de modèles non valide, impossible d'ouvrir la boîte de dialogue</target>
       </trans-unit>
-      <trans-unit id="createSessionDialog.createSessionFailed">
-        <source xml:lang="en">Failed to create a session</source>
-        <target state="translated">La création de session a échoué</target>
+      <trans-unit id="createSessionDialog.title">
+        <source xml:lang="en">Start New Profiler Session</source>
+        <target state="translated">Démarrer une nouvelle session Profiler</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/profiler/package" source-language="en" datatype="plaintext" target-language="fr">
+    <body>
+      <trans-unit id="description">
+        <source xml:lang="en">SQL Server Profiler for Azure Data Studio</source>
+        <target state="translated">SQL Server Profiler pour Azure Data Studio</target>
+      </trans-unit>
+      <trans-unit id="displayName">
+        <source xml:lang="en">SQL Server Profiler</source>
+        <target state="translated">SQL Server Profiler</target>
+      </trans-unit>
+      <trans-unit id="profiler.category">
+        <source xml:lang="en">Profiler</source>
+        <target state="translated">Profileur</target>
+      </trans-unit>
+      <trans-unit id="profiler.contributes.title.newProfler">
+        <source xml:lang="en">Launch Profiler</source>
+        <target state="translated">Lancer Profiler</target>
+      </trans-unit>
+      <trans-unit id="profiler.contributes.title.openCreateSessionDialog">
+        <source xml:lang="en">Create Profiler Season</source>
+        <target state="translated">Créer une saison de profileur</target>
+      </trans-unit>
+      <trans-unit id="profiler.contributes.title.start">
+        <source xml:lang="en">Start</source>
+        <target state="translated">Démarrer</target>
+      </trans-unit>
+      <trans-unit id="profiler.contributes.title.stop">
+        <source xml:lang="en">Stop</source>
+        <target state="translated">Arrêter</target>
       </trans-unit>
     </body>
   </file>

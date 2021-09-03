@@ -78,9 +78,13 @@ export class DashboardWidget {
 			const header = this.createHeader(view);
 			container.addItem(header, {
 				CSSStyles: {
-					'background-image': `url(${vscode.Uri.file(<string>IconPathHelper.migrationDashboardHeaderBackground.light)})`,
-					'width': '870px',
-					'background-size': '100%',
+					'background-image': `
+						url(${vscode.Uri.file(<string>IconPathHelper.migrationDashboardHeaderBackground.light)}),
+						linear-gradient(0deg, rgba(0, 0, 0, 0.05) 0%, rgba(0, 0, 0, 0) 100%)
+					`,
+					'background-repeat': 'no-repeat',
+					'background-position': '91.06% 100%',
+					'margin-bottom': '20px'
 				}
 			});
 

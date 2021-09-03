@@ -24,6 +24,7 @@ import { URI } from 'vs/base/common/uri';
 import { IModelContentChangedEvent } from 'vs/editor/common/model/textModelEvents';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { TestNotificationService } from 'vs/platform/notification/test/common/testNotificationService';
+import { ICommandService, NullCommandService } from 'vs/platform/commands/common/commands';
 import { ControlType, IChartOption } from 'sql/workbench/contrib/charts/browser/chartOptions';
 import { CellModel } from 'sql/workbench/services/notebook/browser/models/cell';
 
@@ -31,6 +32,7 @@ let instantiationService: IInstantiationService;
 
 suite('Cell Model', function (): void {
 	let serviceCollection = new ServiceCollection();
+	serviceCollection.set(ICommandService, NullCommandService);
 	instantiationService = new InstantiationService(serviceCollection, true);
 
 	let factory = new ModelFactory(instantiationService);

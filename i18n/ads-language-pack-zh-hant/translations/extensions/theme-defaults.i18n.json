@@ -9,13 +9,13 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"displayName": "預設佈景主題",
-			"description": "預設的 Visual Studio 淺色與深色佈景主題",
-			"darkPlusColorThemeLabel": "深色+ (預設深色)",
-			"lightPlusColorThemeLabel": "淺色+ (預設淺色)",
 			"darkColorThemeLabel": "深色 (Visual Studio)",
-			"lightColorThemeLabel": "淺色 (Visual Studio)",
+			"darkPlusColorThemeLabel": "深色+ (預設深色)",
+			"description": "預設的 Visual Studio 淺色與深色佈景主題",
+			"displayName": "預設佈景主題",
 			"hcColorThemeLabel": "高對比",
+			"lightColorThemeLabel": "淺色 (Visual Studio)",
+			"lightPlusColorThemeLabel": "淺色+ (預設淺色)",
 			"minimalIconThemeLabel": "最小 (Visual Studio Code)"
 		}
 	}
