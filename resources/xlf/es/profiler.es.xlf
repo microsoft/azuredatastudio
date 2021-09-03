@@ -10,17 +10,17 @@
         <source xml:lang="en">Start</source>
         <target state="translated">Inicio</target>
       </trans-unit>
-      <trans-unit id="createSessionDialog.title">
-        <source xml:lang="en">Start New Profiler Session</source>
-        <target state="translated">Iniciar nueva sesión de Profiler</target>
-      </trans-unit>
-      <trans-unit id="createSessionDialog.templatesInvalid">
-        <source xml:lang="en">Invalid templates list, cannot open dialog</source>
-        <target state="translated">Lista de plantillas no válida, no se puede abrir el cuadro de diálogo</target>
+      <trans-unit id="createSessionDialog.createSessionFailed">
+        <source xml:lang="en">Failed to create a session</source>
+        <target state="translated">No se pudo crear una sesión</target>
       </trans-unit>
       <trans-unit id="createSessionDialog.dialogOwnerInvalid">
         <source xml:lang="en">Invalid dialog owner, cannot open dialog</source>
         <target state="translated">Propietario de cuadro de diálogo no válido, no se puede abrir el cuadro de diálogo</target>
+      </trans-unit>
+      <trans-unit id="createSessionDialog.enterSessionName">
+        <source xml:lang="en">Enter session name:</source>
+        <target state="translated">Escriba el nombre de la sesión:</target>
       </trans-unit>
       <trans-unit id="createSessionDialog.invalidProviderType">
         <source xml:lang="en">Invalid provider type, cannot open dialog</source>
@@ -30,13 +30,45 @@
         <source xml:lang="en">Select session template:</source>
         <target state="translated">Seleccione plantilla de sesión:</target>
       </trans-unit>
-      <trans-unit id="createSessionDialog.enterSessionName">
-        <source xml:lang="en">Enter session name:</source>
-        <target state="translated">Escriba el nombre de la sesión:</target>
+      <trans-unit id="createSessionDialog.templatesInvalid">
+        <source xml:lang="en">Invalid templates list, cannot open dialog</source>
+        <target state="translated">Lista de plantillas no válida, no se puede abrir el cuadro de diálogo</target>
       </trans-unit>
-      <trans-unit id="createSessionDialog.createSessionFailed">
-        <source xml:lang="en">Failed to create a session</source>
-        <target state="translated">No se pudo crear una sesión</target>
+      <trans-unit id="createSessionDialog.title">
+        <source xml:lang="en">Start New Profiler Session</source>
+        <target state="translated">Iniciar nueva sesión de Profiler</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/profiler/package" source-language="en" datatype="plaintext" target-language="es">
+    <body>
+      <trans-unit id="description">
+        <source xml:lang="en">SQL Server Profiler for Azure Data Studio</source>
+        <target state="new">SQL Server Profiler for Azure Data Studio</target>
+      </trans-unit>
+      <trans-unit id="displayName">
+        <source xml:lang="en">SQL Server Profiler</source>
+        <target state="translated">SQL Server Profiler</target>
+      </trans-unit>
+      <trans-unit id="profiler.category">
+        <source xml:lang="en">Profiler</source>
+        <target state="translated">Profiler</target>
+      </trans-unit>
+      <trans-unit id="profiler.contributes.title.newProfler">
+        <source xml:lang="en">Launch Profiler</source>
+        <target state="translated">Iniciar Profiler</target>
+      </trans-unit>
+      <trans-unit id="profiler.contributes.title.openCreateSessionDialog">
+        <source xml:lang="en">Create Profiler Season</source>
+        <target state="new">Create Profiler Season</target>
+      </trans-unit>
+      <trans-unit id="profiler.contributes.title.start">
+        <source xml:lang="en">Start</source>
+        <target state="translated">Inicio</target>
+      </trans-unit>
+      <trans-unit id="profiler.contributes.title.stop">
+        <source xml:lang="en">Stop</source>
+        <target state="translated">Detener</target>
       </trans-unit>
     </body>
   </file>

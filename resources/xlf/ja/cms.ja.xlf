@@ -1,66 +1,422 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file original="extensions/cms/dist/cmsResource/cmsResourceCommands" source-language="en" datatype="plaintext" target-language="ja">
+    <body>
+      <trans-unit id="cms.AddServerGroup">
+        <source xml:lang="en">Add Server Group</source>
+        <target state="translated">サーバー グループの追加</target>
+      </trans-unit>
+      <trans-unit id="cms.Cancel">
+        <source xml:lang="en">Cancel</source>
+        <target state="translated">キャンセル</target>
+      </trans-unit>
+      <trans-unit id="cms.OK">
+        <source xml:lang="en">OK</source>
+        <target state="translated">OK</target>
+      </trans-unit>
+      <trans-unit id="cms.ServerGroupDescription">
+        <source xml:lang="en">Server Group Description</source>
+        <target state="translated">サーバー グループの説明</target>
+      </trans-unit>
+      <trans-unit id="cms.ServerGroupName">
+        <source xml:lang="en">Server Group Name</source>
+        <target state="translated">サーバー グループ名</target>
+      </trans-unit>
+      <trans-unit id="cms.confirmDeleteGroup">
+        <source xml:lang="en">Are you sure you want to delete</source>
+        <target state="translated">削除しますか</target>
+      </trans-unit>
+      <trans-unit id="cms.confirmDeleteServer">
+        <source xml:lang="en">Are you sure you want to delete</source>
+        <target state="translated">削除しますか</target>
+      </trans-unit>
+      <trans-unit id="cms.errors.azureNotAllowed">
+        <source xml:lang="en">Azure SQL Servers cannot be used as Central Management Servers</source>
+        <target state="translated">Azure SQL サーバーは、Central Management Servers として使用できません</target>
+      </trans-unit>
+      <trans-unit id="cms.errors.sameCmsServerName">
+        <source xml:lang="en">Central Management Server Group already has a Registered Server with the name {0}</source>
+        <target state="translated">中央管理サーバー グループには、既に {0} という名前の登録済みサーバーがあります</target>
+      </trans-unit>
+      <trans-unit id="cms.errors.sameServerGroupName">
+        <source xml:lang="en">{0} already has a Server Group with the name {1}</source>
+        <target state="translated">{0} には既に {1} という名前のサーバー グループがあります</target>
+      </trans-unit>
+      <trans-unit id="cms.no">
+        <source xml:lang="en">No</source>
+        <target state="translated">いいえ</target>
+      </trans-unit>
+      <trans-unit id="cms.yes">
+        <source xml:lang="en">Yes</source>
+        <target state="translated">はい</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/cms/dist/cmsResource/tree/cmsResourceEmptyTreeNode" source-language="en" datatype="plaintext" target-language="ja">
+    <body>
+      <trans-unit id="cms.resource.tree.CmsTreeNode.addCmsServerLabel">
+        <source xml:lang="en">Add Central Management Server...</source>
+        <target state="translated">中央管理サーバーの追加...</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/cms/dist/cmsResource/tree/cmsResourceTreeNode" source-language="en" datatype="plaintext" target-language="ja">
+    <body>
+      <trans-unit id="cms.resource.cmsResourceTreeNode.noResourcesLabel">
+        <source xml:lang="en">No resources found</source>
+        <target state="translated">リソースは見つかりませんでした</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/cms/dist/cmsResource/tree/treeProvider" source-language="en" datatype="plaintext" target-language="ja">
+    <body>
+      <trans-unit id="cms.resource.tree.treeProvider.loadError">
+        <source xml:lang="en">Unexpected error occurred while loading saved servers {0}</source>
+        <target state="translated">保存されたサーバー {0} の読み込み中に予期しないエラーが発生しました。</target>
+      </trans-unit>
+      <trans-unit id="cms.resource.tree.treeProvider.loadingLabel">
+        <source xml:lang="en">Loading ...</source>
+        <target state="translated">読み込み中...</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/cms/dist/cmsUtils" source-language="en" datatype="plaintext" target-language="ja">
+    <body>
+      <trans-unit id="cms.errors.sameServerUnderCms">
+        <source xml:lang="en">You cannot add a shared registered server with the same name as the Configuration Server</source>
+        <target state="translated">構成サーバーと同じ名前の共有登録サーバーを追加することはできません</target>
+      </trans-unit>
+    </body>
+  </file>
   <file original="extensions/cms/package" source-language="en" datatype="plaintext" target-language="ja">
     <body>
-      <trans-unit id="cms.displayName">
-        <source xml:lang="en">SQL Server Central Management Servers</source>
-        <target state="translated">SQL Server Central Management Servers</target>
+      <trans-unit id="cloud.databaseProperties.azureEdition">
+        <source xml:lang="en">Edition</source>
+        <target state="translated">エディション</target>
       </trans-unit>
-      <trans-unit id="cms.description">
-        <source xml:lang="en">Support for managing SQL Server Central Management Servers</source>
-        <target state="translated">SQL Server Central Management Servers の管理のサポート</target>
+      <trans-unit id="cloud.databaseProperties.compatibilityLevel">
+        <source xml:lang="en">Compatibility Level</source>
+        <target state="translated">互換性レベル</target>
       </trans-unit>
-      <trans-unit id="cms.title">
-        <source xml:lang="en">Central Management Servers</source>
-        <target state="translated">Central Management Servers</target>
+      <trans-unit id="cloud.databaseProperties.owner">
+        <source xml:lang="en">Owner</source>
+        <target state="translated">所有者</target>
       </trans-unit>
-      <trans-unit id="cms.connectionProvider.displayName">
-        <source xml:lang="en">Microsoft SQL Server</source>
-        <target state="translated">Microsoft SQL Server</target>
+      <trans-unit id="cloud.databaseProperties.serviceLevelObjective">
+        <source xml:lang="en">Pricing Tier</source>
+        <target state="translated">価格レベル</target>
       </trans-unit>
-      <trans-unit id="cms.resource.explorer.title">
-        <source xml:lang="en">Central Management Servers</source>
-        <target state="translated">Central Management Servers</target>
+      <trans-unit id="cloud.serverProperties.serverEdition">
+        <source xml:lang="en">Type</source>
+        <target state="translated">種類</target>
       </trans-unit>
-      <trans-unit id="cms.resource.refresh.title">
-        <source xml:lang="en">Refresh</source>
-        <target state="translated">最新の情報に更新</target>
-      </trans-unit>
-      <trans-unit id="cms.resource.refreshServerGroup.title">
-        <source xml:lang="en">Refresh Server Group</source>
-        <target state="translated">サーバー グループの更新</target>
-      </trans-unit>
-      <trans-unit id="cms.resource.deleteRegisteredServer.title">
-        <source xml:lang="en">Delete</source>
-        <target state="translated">削除</target>
-      </trans-unit>
-      <trans-unit id="cms.resource.addRegisteredServer.title">
-        <source xml:lang="en">New Server Registration...</source>
-        <target state="translated">新しいサーバーの登録...</target>
-      </trans-unit>
-      <trans-unit id="cms.resource.deleteServerGroup.title">
-        <source xml:lang="en">Delete</source>
-        <target state="translated">削除</target>
-      </trans-unit>
-      <trans-unit id="cms.resource.addServerGroup.title">
-        <source xml:lang="en">New Server Group...</source>
-        <target state="translated">新しいサーバー グループ...</target>
-      </trans-unit>
-      <trans-unit id="cms.resource.registerCmsServer.title">
-        <source xml:lang="en">Add Central Management Server</source>
-        <target state="translated">中央管理サーバーの追加</target>
-      </trans-unit>
-      <trans-unit id="cms.resource.deleteCmsServer.title">
-        <source xml:lang="en">Delete</source>
-        <target state="translated">削除</target>
+      <trans-unit id="cloud.serverProperties.serverVersion">
+        <source xml:lang="en">Version</source>
+        <target state="translated">バージョン</target>
       </trans-unit>
       <trans-unit id="cms.configuration.title">
         <source xml:lang="en">MSSQL configuration</source>
         <target state="translated">MSSQL 構成</target>
       </trans-unit>
-      <trans-unit id="cms.query.displayBitAsNumber">
-        <source xml:lang="en">Should BIT columns be displayed as numbers (1 or 0)? If false, BIT columns will be displayed as 'true' or 'false'</source>
-        <target state="translated">ビット列を数値 (1 または 0) として表示するかどうか。False の場合、ビット列は 'true' または 'false' として表示されます</target>
+      <trans-unit id="cms.connectionOptions.applicationIntent.description">
+        <source xml:lang="en">Declares the application workload type when connecting to a server</source>
+        <target state="translated">サーバーに接続するときにアプリケーションのワークロードの種類を宣言します</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.applicationIntent.displayName">
+        <source xml:lang="en">Application intent</source>
+        <target state="translated">アプリケーションの意図</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.applicationName.description">
+        <source xml:lang="en">The name of the application</source>
+        <target state="translated">アプリケーションの名前</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.applicationName.displayName">
+        <source xml:lang="en">Application name</source>
+        <target state="translated">アプリケーション名</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.asynchronousProcessing.description">
+        <source xml:lang="en">When true, enables usage of the Asynchronous functionality in the .Net Framework Data Provider</source>
+        <target state="translated">True の場合は、.Net Framework Data Provider の非同期機能を使用できるようになります</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.asynchronousProcessing.displayName">
+        <source xml:lang="en">Asynchronous processing</source>
+        <target state="translated">非同期処理</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.attachDbFilename.displayName">
+        <source xml:lang="en">Attach DB filename</source>
+        <target state="translated">添付 DB ファイル名</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.attachedDBFileName.description">
+        <source xml:lang="en">The name of the primary file, including the full path name, of an attachable database</source>
+        <target state="translated">完全なパス名を含む、接続可能なデータベースのプライマリ ファイル名</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.attachedDBFileName.displayName">
+        <source xml:lang="en">Attached DB file name</source>
+        <target state="translated">添付された DB ファイルの名前</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.authType.categoryValues.azureMFA">
+        <source xml:lang="en">Azure Active Directory - Universal with MFA support</source>
+        <target state="translated">Azure Active Directory - MFA サポート付きユニバーサル</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.authType.categoryValues.integrated">
+        <source xml:lang="en">Windows Authentication</source>
+        <target state="translated">Windows 認証</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.authType.categoryValues.sqlLogin">
+        <source xml:lang="en">SQL Login</source>
+        <target state="translated">SQL ログイン</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.authType.description">
+        <source xml:lang="en">Specifies the method of authenticating with SQL Server</source>
+        <target state="translated">SQL Server での認証方法を指定します</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.authType.displayName">
+        <source xml:lang="en">Authentication type</source>
+        <target state="translated">認証の種類</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.columnEncryptionSetting.description">
+        <source xml:lang="en">Default column encryption setting for all the commands on the connection</source>
+        <target state="translated">接続上のすべてのコマンドの既定の列暗号化設定</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.columnEncryptionSetting.displayName">
+        <source xml:lang="en">Column encryption</source>
+        <target state="translated">列暗号化</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.connectRetryCount.description">
+        <source xml:lang="en">Number of attempts to restore connection</source>
+        <target state="translated">接続を復元するための試行回数</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.connectRetryCount.displayName">
+        <source xml:lang="en">Connect retry count</source>
+        <target state="translated">接続の再試行回数</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.connectRetryInterval.description">
+        <source xml:lang="en">Delay between attempts to restore connection</source>
+        <target state="translated">接続を復元するための試行間の遅延</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.connectRetryInterval.displayName">
+        <source xml:lang="en">Connect retry interval</source>
+        <target state="translated">接続の再試行間隔</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.connectTimeout.description">
+        <source xml:lang="en">The length of time (in seconds) to wait for a connection to the server before terminating the attempt and generating an error</source>
+        <target state="translated">サーバーへの接続が確立されるまでに待機する時間 (秒)。この時間が経過すると接続要求を終了し、エラーを生成します</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.connectTimeout.displayName">
+        <source xml:lang="en">Connect timeout</source>
+        <target state="translated">接続タイムアウト</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.connectionName.description">
+        <source xml:lang="en">Custom name of the connection</source>
+        <target state="translated">接続のカスタム名</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.connectionName.displayName">
+        <source xml:lang="en">Name (optional)</source>
+        <target state="translated">名前 (省略可能)</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.contextConnection.description">
+        <source xml:lang="en">When true, indicates the connection should be from the SQL server context. Available only when running in the SQL Server process</source>
+        <target state="translated">True の場合は、接続元が SQL Server のコンテキストであることを示します。SQL Server のプロセスで実行する場合のみ使用できます</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.contextConnection.displayName">
+        <source xml:lang="en">Context connection</source>
+        <target state="translated">コンテキスト接続</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.currentLanguage.description">
+        <source xml:lang="en">The SQL Server language record name</source>
+        <target state="translated">SQL Server 言語レコード名</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.currentLanguage.displayName">
+        <source xml:lang="en">Current language</source>
+        <target state="translated">現在の言語</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.encrypt.description">
+        <source xml:lang="en">When true, SQL Server uses SSL encryption for all data sent between the client and server if the server has a certificate installed</source>
+        <target state="translated">True の場合、SQL Server は、サーバーに証明書がインストールされている場合は、クライアントとサーバー間で送信されるすべてのデータに SSL 暗号化を使用します</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.encrypt.displayName">
+        <source xml:lang="en">Encrypt</source>
+        <target state="translated">暗号化</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.failoverPartner.description">
+        <source xml:lang="en">The name or network address of the instance of SQL Server that acts as a failover partner</source>
+        <target state="translated">フェールオーバー パートナーとして機能する SQL Server インスタンスの名前またはネットワーク アドレス</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.failoverPartner.displayName">
+        <source xml:lang="en">Failover partner</source>
+        <target state="translated">フェールオーバー パートナー</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.groupName.advanced">
+        <source xml:lang="en">Advanced</source>
+        <target state="translated">詳細</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.groupName.connectionResiliency">
+        <source xml:lang="en">Connection Resiliency</source>
+        <target state="translated">接続の復元性</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.groupName.context">
+        <source xml:lang="en">Context</source>
+        <target state="translated">コンテキスト</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.groupName.initialization">
+        <source xml:lang="en">Initialization</source>
+        <target state="translated">初期化</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.groupName.pooling">
+        <source xml:lang="en">Pooling</source>
+        <target state="translated">プーリング</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.groupName.replication">
+        <source xml:lang="en">Replication</source>
+        <target state="translated">レプリケーション</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.groupName.security">
+        <source xml:lang="en">Security</source>
+        <target state="translated">セキュリティ</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.groupName.source">
+        <source xml:lang="en">Source</source>
+        <target state="translated">ソース</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.loadBalanceTimeout.description">
+        <source xml:lang="en">The minimum amount of time (in seconds) for this connection to live in the pool before being destroyed</source>
+        <target state="translated">この接続が破棄される前にプールに存在する最小時間 (秒)</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.loadBalanceTimeout.displayName">
+        <source xml:lang="en">Load balance timeout</source>
+        <target state="translated">負荷分散タイムアウト</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.maxPoolSize.description">
+        <source xml:lang="en">The maximum number of connections allowed in the pool</source>
+        <target state="translated">プールに保持される接続の最大数</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.maxPoolSize.displayName">
+        <source xml:lang="en">Max pool size</source>
+        <target state="translated">最大プール サイズ</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.minPoolSize.description">
+        <source xml:lang="en">The minimum number of connections allowed in the pool</source>
+        <target state="translated">プールに保持される接続の最小数</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.minPoolSize.displayName">
+        <source xml:lang="en">Min pool size</source>
+        <target state="translated">最小プール サイズ</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.multiSubnetFailover.displayName">
+        <source xml:lang="en">Multi subnet failover</source>
+        <target state="translated">マルチ サブネット フェールオーバー</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.multipleActiveResultSets.description">
+        <source xml:lang="en">When true, multiple result sets can be returned and read from one connection</source>
+        <target state="translated">True の場合は、1 つの接続から複数の結果セットが返され、これらを読み取ることができます</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.multipleActiveResultSets.displayName">
+        <source xml:lang="en">Multiple active result sets</source>
+        <target state="translated">複数のアクティブな結果セット</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.packetSize.description">
+        <source xml:lang="en">Size in bytes of the network packets used to communicate with an instance of SQL Server</source>
+        <target state="translated">SQL Server インスタンスとの通信に使用されるネットワーク パケットのサイズ (バイト)</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.packetSize.displayName">
+        <source xml:lang="en">Packet size</source>
+        <target state="translated">パケット サイズ</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.password.description">
+        <source xml:lang="en">Indicates the password to be used when connecting to the data source</source>
+        <target state="translated">データ ソースへの接続時に使用するパスワードを示します</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.password.displayName">
+        <source xml:lang="en">Password</source>
+        <target state="translated">パスワード</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.persistSecurityInfo.description">
+        <source xml:lang="en">When false, security-sensitive information, such as the password, is not returned as part of the connection</source>
+        <target state="translated">False の場合、パスワードなどのセキュリティによる保護が要求される情報は、接続しても返されません</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.persistSecurityInfo.displayName">
+        <source xml:lang="en">Persist security info</source>
+        <target state="translated">セキュリティ情報を保持する</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.pooling.description">
+        <source xml:lang="en">When true, the connection object is drawn from the appropriate pool, or if necessary, is created and added to the appropriate pool</source>
+        <target state="translated">True の場合、接続オブジェクトが適切なプールから取得されるか、または、必要に応じて接続オブジェクトが作成され、適切なプールに追加されます</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.pooling.displayName">
+        <source xml:lang="en">Pooling</source>
+        <target state="translated">プーリング</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.port.displayName">
+        <source xml:lang="en">Port</source>
+        <target state="translated">ポート</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.replication.description">
+        <source xml:lang="en">Used by SQL Server in Replication</source>
+        <target state="translated">レプリケーション時に SQL Server によって使用されます</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.replication.displayName">
+        <source xml:lang="en">Replication</source>
+        <target state="translated">レプリケーション</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.serverDescription.description">
+        <source xml:lang="en">Description of the SQL Server instance</source>
+        <target state="translated">SQL Server インスタンスの説明</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.serverDescription.displayName">
+        <source xml:lang="en">Server Description</source>
+        <target state="translated">サーバーの説明</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.serverName.description">
+        <source xml:lang="en">Name of the SQL Server instance</source>
+        <target state="translated">SQL Server インスタンスの名前</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.serverName.displayName">
+        <source xml:lang="en">Server</source>
+        <target state="translated">サーバー</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.trustServerCertificate.description">
+        <source xml:lang="en">When true (and encrypt=true), SQL Server uses SSL encryption for all data sent between the client and server without validating the server certificate</source>
+        <target state="translated">True (および encrypt=true) の場合、SQL Server は、サーバー証明書を検証せずに、クライアントとサーバーの間で送信されるすべてのデータに対して SSL 暗号化を使用します</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.trustServerCertificate.displayName">
+        <source xml:lang="en">Trust server certificate</source>
+        <target state="translated">サーバー証明書を信頼する</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.typeSystemVersion.description">
+        <source xml:lang="en">Indicates which server type system then provider will expose through the DataReader</source>
+        <target state="translated">DataReader を通してプロバイダーが公開するサーバー タイプのシステムを示します</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.typeSystemVersion.displayName">
+        <source xml:lang="en">Type system version</source>
+        <target state="translated">タイプ システムのバージョン</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.userName.description">
+        <source xml:lang="en">Indicates the user ID to be used when connecting to the data source</source>
+        <target state="translated">データ ソースへの接続時に使用するユーザー ID を示します</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.userName.displayName">
+        <source xml:lang="en">User name</source>
+        <target state="translated">ユーザー名</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.workstationId.description">
+        <source xml:lang="en">The name of the workstation connecting to SQL Server</source>
+        <target state="translated">SQL Server に接続しているワークステーションの名前</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionOptions.workstationId.displayName">
+        <source xml:lang="en">Workstation Id</source>
+        <target state="translated">ワークステーション ID</target>
+      </trans-unit>
+      <trans-unit id="cms.connectionProvider.displayName">
+        <source xml:lang="en">Microsoft SQL Server</source>
+        <target state="translated">Microsoft SQL Server</target>
+      </trans-unit>
+      <trans-unit id="cms.description">
+        <source xml:lang="en">Support for managing SQL Server Central Management Servers</source>
+        <target state="translated">SQL Server Central Management Servers の管理のサポート</target>
+      </trans-unit>
+      <trans-unit id="cms.displayName">
+        <source xml:lang="en">SQL Server Central Management Servers</source>
+        <target state="translated">SQL Server Central Management Servers</target>
       </trans-unit>
       <trans-unit id="cms.format.alignColumnDefinitionsInColumns">
         <source xml:lang="en">Should column definitions be aligned?</source>
@@ -86,25 +442,73 @@
         <source xml:lang="en">[Optional] Log debug output to the console (View -&gt; Output) and then select appropriate output channel from the dropdown</source>
         <target state="translated">[省略可能] コンソールへのデバッグ出力をログに記録し ([表示] -&gt; [出力])、ドロップダウンから適切な出力チャネルを選択します</target>
       </trans-unit>
-      <trans-unit id="cms.tracingLevel">
-        <source xml:lang="en">[Optional] Log level for backend services. Azure Data Studio generates a file name every time it starts and if the file already exists the logs entries are appended to that file. For cleanup of old log files see logRetentionMinutes and logFilesRemovalLimit settings. The default tracingLevel does not log much. Changing verbosity could lead to extensive logging and disk space requirements for the logs. Error includes Critical, Warning includes Error, Information includes Warning and Verbose includes Information</source>
-        <target state="translated">[省略可能] バックエンド サービスのログ レベル。Azure Data Studio は開始のたびにファイル名を生成し、そのファイルが既に存在する場合にはログ エントリが対象ファイルに追加されます。古いログ ファイルのクリーンアップについては、logRetentionMinutes と logFilesRemovalLimit の設定を参照してください。既定の tracingLevel では、ログに記録される数は多くありません。詳細レベルを変更すると、詳細なログが記録され、ログのためのディスク容量が必要になる場合があります。エラーには重大が含まれ、警告にはエラーが含まれ、情報には警告が含まれ、詳細には情報が含まれます</target>
+      <trans-unit id="cms.logFilesRemovalLimit">
+        <source xml:lang="en">Maximum number of old files to remove upon startup that have expired mssql.logRetentionMinutes. Files that do not get cleaned up due to this limitation get cleaned up next time Azure Data Studio starts up.</source>
+        <target state="translated">mssql.logRetentionMinutes の有効期限が切れた、起動時に削除する古いファイルの最大数。この制限のためにクリーンアップされないファイルは、Azure Data Studio の次回の起動時にクリーンアップされます。</target>
       </trans-unit>
       <trans-unit id="cms.logRetentionMinutes">
         <source xml:lang="en">Number of minutes to retain log files for backend services. Default is 1 week.</source>
         <target state="translated">バックエンド サービスのログ ファイルを保持する分単位の時間。既定値は 1 週間です。</target>
       </trans-unit>
-      <trans-unit id="cms.logFilesRemovalLimit">
-        <source xml:lang="en">Maximum number of old files to remove upon startup that have expired mssql.logRetentionMinutes. Files that do not get cleaned up due to this limitation get cleaned up next time Azure Data Studio starts up.</source>
-        <target state="translated">mssql.logRetentionMinutes の有効期限が切れた、起動時に削除する古いファイルの最大数。この制限のためにクリーンアップされないファイルは、Azure Data Studio の次回の起動時にクリーンアップされます。</target>
+      <trans-unit id="cms.provider.displayName">
+        <source xml:lang="en">Microsoft SQL Server</source>
+        <target state="translated">Microsoft SQL Server</target>
+      </trans-unit>
+      <trans-unit id="cms.query.displayBitAsNumber">
+        <source xml:lang="en">Should BIT columns be displayed as numbers (1 or 0)? If false, BIT columns will be displayed as 'true' or 'false'</source>
+        <target state="translated">ビット列を数値 (1 または 0) として表示するかどうか。False の場合、ビット列は 'true' または 'false' として表示されます</target>
+      </trans-unit>
+      <trans-unit id="cms.resource.addRegisteredServer.title">
+        <source xml:lang="en">New Server Registration...</source>
+        <target state="translated">新しいサーバーの登録...</target>
+      </trans-unit>
+      <trans-unit id="cms.resource.addServerGroup.title">
+        <source xml:lang="en">New Server Group...</source>
+        <target state="translated">新しいサーバー グループ...</target>
+      </trans-unit>
+      <trans-unit id="cms.resource.deleteCmsServer.title">
+        <source xml:lang="en">Delete</source>
+        <target state="translated">削除</target>
+      </trans-unit>
+      <trans-unit id="cms.resource.deleteRegisteredServer.title">
+        <source xml:lang="en">Delete</source>
+        <target state="translated">削除</target>
+      </trans-unit>
+      <trans-unit id="cms.resource.deleteServerGroup.title">
+        <source xml:lang="en">Delete</source>
+        <target state="translated">削除</target>
+      </trans-unit>
+      <trans-unit id="cms.resource.explorer.title">
+        <source xml:lang="en">Central Management Servers</source>
+        <target state="translated">Central Management Servers</target>
+      </trans-unit>
+      <trans-unit id="cms.resource.refresh.title">
+        <source xml:lang="en">Refresh</source>
+        <target state="translated">最新の情報に更新</target>
+      </trans-unit>
+      <trans-unit id="cms.resource.refreshServerGroup.title">
+        <source xml:lang="en">Refresh Server Group</source>
+        <target state="translated">サーバー グループの更新</target>
+      </trans-unit>
+      <trans-unit id="cms.resource.registerCmsServer.title">
+        <source xml:lang="en">Add Central Management Server</source>
+        <target state="translated">中央管理サーバーの追加</target>
+      </trans-unit>
+      <trans-unit id="cms.title">
+        <source xml:lang="en">Central Management Servers</source>
+        <target state="translated">Central Management Servers</target>
+      </trans-unit>
+      <trans-unit id="cms.tracingLevel">
+        <source xml:lang="en">[Optional] Log level for backend services. Azure Data Studio generates a file name every time it starts and if the file already exists the logs entries are appended to that file. For cleanup of old log files see logRetentionMinutes and logFilesRemovalLimit settings. The default tracingLevel does not log much. Changing verbosity could lead to extensive logging and disk space requirements for the logs. Error includes Critical, Warning includes Error, Information includes Warning and Verbose includes Information</source>
+        <target state="translated">[省略可能] バックエンド サービスのログ レベル。Azure Data Studio は開始のたびにファイル名を生成し、そのファイルが既に存在する場合にはログ エントリが対象ファイルに追加されます。古いログ ファイルのクリーンアップについては、logRetentionMinutes と logFilesRemovalLimit の設定を参照してください。既定の tracingLevel では、ログに記録される数は多くありません。詳細レベルを変更すると、詳細なログが記録され、ログのためのディスク容量が必要になる場合があります。エラーには重大が含まれ、警告にはエラーが含まれ、情報には警告が含まれ、詳細には情報が含まれます</target>
       </trans-unit>
       <trans-unit id="ignorePlatformWarning">
         <source xml:lang="en">[Optional] Do not show unsupported platform warnings</source>
         <target state="translated">[省略可能] サポートされていないプラットフォームの警告を表示しない</target>
       </trans-unit>
-      <trans-unit id="onprem.databaseProperties.recoveryModel">
-        <source xml:lang="en">Recovery Model</source>
-        <target state="translated">復旧モデル</target>
+      <trans-unit id="onprem.databaseProperties.compatibilityLevel">
+        <source xml:lang="en">Compatibility Level</source>
+        <target state="translated">互換性レベル</target>
       </trans-unit>
       <trans-unit id="onprem.databaseProperties.lastBackupDate">
         <source xml:lang="en">Last Database Backup</source>
@@ -114,21 +518,13 @@
         <source xml:lang="en">Last Log Backup</source>
         <target state="translated">最終ログ バックアップ</target>
       </trans-unit>
-      <trans-unit id="onprem.databaseProperties.compatibilityLevel">
-        <source xml:lang="en">Compatibility Level</source>
-        <target state="translated">互換性レベル</target>
-      </trans-unit>
       <trans-unit id="onprem.databaseProperties.owner">
         <source xml:lang="en">Owner</source>
         <target state="translated">所有者</target>
       </trans-unit>
-      <trans-unit id="onprem.serverProperties.serverVersion">
-        <source xml:lang="en">Version</source>
-        <target state="translated">バージョン</target>
-      </trans-unit>
-      <trans-unit id="onprem.serverProperties.serverEdition">
-        <source xml:lang="en">Edition</source>
-        <target state="translated">エディション</target>
+      <trans-unit id="onprem.databaseProperties.recoveryModel">
+        <source xml:lang="en">Recovery Model</source>
+        <target state="translated">復旧モデル</target>
       </trans-unit>
       <trans-unit id="onprem.serverProperties.machineName">
         <source xml:lang="en">Computer Name</source>
@@ -138,377 +534,13 @@
         <source xml:lang="en">OS Version</source>
         <target state="translated">OS バージョン</target>
       </trans-unit>
-      <trans-unit id="cloud.databaseProperties.azureEdition">
+      <trans-unit id="onprem.serverProperties.serverEdition">
         <source xml:lang="en">Edition</source>
         <target state="translated">エディション</target>
       </trans-unit>
-      <trans-unit id="cloud.databaseProperties.serviceLevelObjective">
-        <source xml:lang="en">Pricing Tier</source>
-        <target state="translated">価格レベル</target>
-      </trans-unit>
-      <trans-unit id="cloud.databaseProperties.compatibilityLevel">
-        <source xml:lang="en">Compatibility Level</source>
-        <target state="translated">互換性レベル</target>
-      </trans-unit>
-      <trans-unit id="cloud.databaseProperties.owner">
-        <source xml:lang="en">Owner</source>
-        <target state="translated">所有者</target>
-      </trans-unit>
-      <trans-unit id="cloud.serverProperties.serverVersion">
+      <trans-unit id="onprem.serverProperties.serverVersion">
         <source xml:lang="en">Version</source>
         <target state="translated">バージョン</target>
-      </trans-unit>
-      <trans-unit id="cloud.serverProperties.serverEdition">
-        <source xml:lang="en">Type</source>
-        <target state="translated">種類</target>
-      </trans-unit>
-      <trans-unit id="cms.provider.displayName">
-        <source xml:lang="en">Microsoft SQL Server</source>
-        <target state="translated">Microsoft SQL Server</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.connectionName.displayName">
-        <source xml:lang="en">Name (optional)</source>
-        <target state="translated">名前 (省略可能)</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.connectionName.description">
-        <source xml:lang="en">Custom name of the connection</source>
-        <target state="translated">接続のカスタム名</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.serverName.displayName">
-        <source xml:lang="en">Server</source>
-        <target state="translated">サーバー</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.serverName.description">
-        <source xml:lang="en">Name of the SQL Server instance</source>
-        <target state="translated">SQL Server インスタンスの名前</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.serverDescription.displayName">
-        <source xml:lang="en">Server Description</source>
-        <target state="translated">サーバーの説明</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.serverDescription.description">
-        <source xml:lang="en">Description of the SQL Server instance</source>
-        <target state="translated">SQL Server インスタンスの説明</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.authType.displayName">
-        <source xml:lang="en">Authentication type</source>
-        <target state="translated">認証の種類</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.authType.description">
-        <source xml:lang="en">Specifies the method of authenticating with SQL Server</source>
-        <target state="translated">SQL Server での認証方法を指定します</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.authType.categoryValues.sqlLogin">
-        <source xml:lang="en">SQL Login</source>
-        <target state="translated">SQL ログイン</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.authType.categoryValues.integrated">
-        <source xml:lang="en">Windows Authentication</source>
-        <target state="translated">Windows 認証</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.authType.categoryValues.azureMFA">
-        <source xml:lang="en">Azure Active Directory - Universal with MFA support</source>
-        <target state="translated">Azure Active Directory - MFA サポート付きユニバーサル</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.userName.displayName">
-        <source xml:lang="en">User name</source>
-        <target state="translated">ユーザー名</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.userName.description">
-        <source xml:lang="en">Indicates the user ID to be used when connecting to the data source</source>
-        <target state="translated">データ ソースへの接続時に使用するユーザー ID を示します</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.password.displayName">
-        <source xml:lang="en">Password</source>
-        <target state="translated">パスワード</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.password.description">
-        <source xml:lang="en">Indicates the password to be used when connecting to the data source</source>
-        <target state="translated">データ ソースへの接続時に使用するパスワードを示します</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.applicationIntent.displayName">
-        <source xml:lang="en">Application intent</source>
-        <target state="translated">アプリケーションの意図</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.applicationIntent.description">
-        <source xml:lang="en">Declares the application workload type when connecting to a server</source>
-        <target state="translated">サーバーに接続するときにアプリケーションのワークロードの種類を宣言します</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.asynchronousProcessing.displayName">
-        <source xml:lang="en">Asynchronous processing</source>
-        <target state="translated">非同期処理</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.asynchronousProcessing.description">
-        <source xml:lang="en">When true, enables usage of the Asynchronous functionality in the .Net Framework Data Provider</source>
-        <target state="translated">True の場合は、.Net Framework Data Provider の非同期機能を使用できるようになります</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.connectTimeout.displayName">
-        <source xml:lang="en">Connect timeout</source>
-        <target state="translated">接続タイムアウト</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.connectTimeout.description">
-        <source xml:lang="en">The length of time (in seconds) to wait for a connection to the server before terminating the attempt and generating an error</source>
-        <target state="translated">サーバーへの接続が確立されるまでに待機する時間 (秒)。この時間が経過すると接続要求を終了し、エラーを生成します</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.currentLanguage.displayName">
-        <source xml:lang="en">Current language</source>
-        <target state="translated">現在の言語</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.currentLanguage.description">
-        <source xml:lang="en">The SQL Server language record name</source>
-        <target state="translated">SQL Server 言語レコード名</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.columnEncryptionSetting.displayName">
-        <source xml:lang="en">Column encryption</source>
-        <target state="translated">列暗号化</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.columnEncryptionSetting.description">
-        <source xml:lang="en">Default column encryption setting for all the commands on the connection</source>
-        <target state="translated">接続上のすべてのコマンドの既定の列暗号化設定</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.encrypt.displayName">
-        <source xml:lang="en">Encrypt</source>
-        <target state="translated">暗号化</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.encrypt.description">
-        <source xml:lang="en">When true, SQL Server uses SSL encryption for all data sent between the client and server if the server has a certificate installed</source>
-        <target state="translated">True の場合、SQL Server は、サーバーに証明書がインストールされている場合は、クライアントとサーバー間で送信されるすべてのデータに SSL 暗号化を使用します</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.persistSecurityInfo.displayName">
-        <source xml:lang="en">Persist security info</source>
-        <target state="translated">セキュリティ情報を保持する</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.persistSecurityInfo.description">
-        <source xml:lang="en">When false, security-sensitive information, such as the password, is not returned as part of the connection</source>
-        <target state="translated">False の場合、パスワードなどのセキュリティによる保護が要求される情報は、接続しても返されません</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.trustServerCertificate.displayName">
-        <source xml:lang="en">Trust server certificate</source>
-        <target state="translated">サーバー証明書を信頼する</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.trustServerCertificate.description">
-        <source xml:lang="en">When true (and encrypt=true), SQL Server uses SSL encryption for all data sent between the client and server without validating the server certificate</source>
-        <target state="translated">True (および encrypt=true) の場合、SQL Server は、サーバー証明書を検証せずに、クライアントとサーバーの間で送信されるすべてのデータに対して SSL 暗号化を使用します</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.attachedDBFileName.displayName">
-        <source xml:lang="en">Attached DB file name</source>
-        <target state="translated">添付された DB ファイルの名前</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.attachedDBFileName.description">
-        <source xml:lang="en">The name of the primary file, including the full path name, of an attachable database</source>
-        <target state="translated">完全なパス名を含む、接続可能なデータベースのプライマリ ファイル名</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.contextConnection.displayName">
-        <source xml:lang="en">Context connection</source>
-        <target state="translated">コンテキスト接続</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.contextConnection.description">
-        <source xml:lang="en">When true, indicates the connection should be from the SQL server context. Available only when running in the SQL Server process</source>
-        <target state="translated">True の場合は、接続元が SQL Server のコンテキストであることを示します。SQL Server のプロセスで実行する場合のみ使用できます</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.port.displayName">
-        <source xml:lang="en">Port</source>
-        <target state="translated">ポート</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.connectRetryCount.displayName">
-        <source xml:lang="en">Connect retry count</source>
-        <target state="translated">接続の再試行回数</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.connectRetryCount.description">
-        <source xml:lang="en">Number of attempts to restore connection</source>
-        <target state="translated">接続を復元するための試行回数</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.connectRetryInterval.displayName">
-        <source xml:lang="en">Connect retry interval</source>
-        <target state="translated">接続の再試行間隔</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.connectRetryInterval.description">
-        <source xml:lang="en">Delay between attempts to restore connection</source>
-        <target state="translated">接続を復元するための試行間の遅延</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.applicationName.displayName">
-        <source xml:lang="en">Application name</source>
-        <target state="translated">アプリケーション名</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.applicationName.description">
-        <source xml:lang="en">The name of the application</source>
-        <target state="translated">アプリケーションの名前</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.workstationId.displayName">
-        <source xml:lang="en">Workstation Id</source>
-        <target state="translated">ワークステーション ID</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.workstationId.description">
-        <source xml:lang="en">The name of the workstation connecting to SQL Server</source>
-        <target state="translated">SQL Server に接続しているワークステーションの名前</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.pooling.displayName">
-        <source xml:lang="en">Pooling</source>
-        <target state="translated">プーリング</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.pooling.description">
-        <source xml:lang="en">When true, the connection object is drawn from the appropriate pool, or if necessary, is created and added to the appropriate pool</source>
-        <target state="translated">True の場合、接続オブジェクトが適切なプールから取得されるか、または、必要に応じて接続オブジェクトが作成され、適切なプールに追加されます</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.maxPoolSize.displayName">
-        <source xml:lang="en">Max pool size</source>
-        <target state="translated">最大プール サイズ</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.maxPoolSize.description">
-        <source xml:lang="en">The maximum number of connections allowed in the pool</source>
-        <target state="translated">プールに保持される接続の最大数</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.minPoolSize.displayName">
-        <source xml:lang="en">Min pool size</source>
-        <target state="translated">最小プール サイズ</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.minPoolSize.description">
-        <source xml:lang="en">The minimum number of connections allowed in the pool</source>
-        <target state="translated">プールに保持される接続の最小数</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.loadBalanceTimeout.displayName">
-        <source xml:lang="en">Load balance timeout</source>
-        <target state="translated">負荷分散タイムアウト</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.loadBalanceTimeout.description">
-        <source xml:lang="en">The minimum amount of time (in seconds) for this connection to live in the pool before being destroyed</source>
-        <target state="translated">この接続が破棄される前にプールに存在する最小時間 (秒)</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.replication.displayName">
-        <source xml:lang="en">Replication</source>
-        <target state="translated">レプリケーション</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.replication.description">
-        <source xml:lang="en">Used by SQL Server in Replication</source>
-        <target state="translated">レプリケーション時に SQL Server によって使用されます</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.attachDbFilename.displayName">
-        <source xml:lang="en">Attach DB filename</source>
-        <target state="translated">添付 DB ファイル名</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.failoverPartner.displayName">
-        <source xml:lang="en">Failover partner</source>
-        <target state="translated">フェールオーバー パートナー</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.failoverPartner.description">
-        <source xml:lang="en">The name or network address of the instance of SQL Server that acts as a failover partner</source>
-        <target state="translated">フェールオーバー パートナーとして機能する SQL Server インスタンスの名前またはネットワーク アドレス</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.multiSubnetFailover.displayName">
-        <source xml:lang="en">Multi subnet failover</source>
-        <target state="translated">マルチ サブネット フェールオーバー</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.multipleActiveResultSets.displayName">
-        <source xml:lang="en">Multiple active result sets</source>
-        <target state="translated">複数のアクティブな結果セット</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.multipleActiveResultSets.description">
-        <source xml:lang="en">When true, multiple result sets can be returned and read from one connection</source>
-        <target state="translated">True の場合は、1 つの接続から複数の結果セットが返され、これらを読み取ることができます</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.packetSize.displayName">
-        <source xml:lang="en">Packet size</source>
-        <target state="translated">パケット サイズ</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.packetSize.description">
-        <source xml:lang="en">Size in bytes of the network packets used to communicate with an instance of SQL Server</source>
-        <target state="translated">SQL Server インスタンスとの通信に使用されるネットワーク パケットのサイズ (バイト)</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.typeSystemVersion.displayName">
-        <source xml:lang="en">Type system version</source>
-        <target state="translated">タイプ システムのバージョン</target>
-      </trans-unit>
-      <trans-unit id="cms.connectionOptions.typeSystemVersion.description">
-        <source xml:lang="en">Indicates which server type system then provider will expose through the DataReader</source>
-        <target state="translated">DataReader を通してプロバイダーが公開するサーバー タイプのシステムを示します</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/cms/dist/cmsResource/tree/cmsResourceTreeNode" source-language="en" datatype="plaintext" target-language="ja">
-    <body>
-      <trans-unit id="cms.resource.cmsResourceTreeNode.noResourcesLabel">
-        <source xml:lang="en">No resources found</source>
-        <target state="translated">リソースは見つかりませんでした</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/cms/dist/cmsResource/tree/cmsResourceEmptyTreeNode" source-language="en" datatype="plaintext" target-language="ja">
-    <body>
-      <trans-unit id="cms.resource.tree.CmsTreeNode.addCmsServerLabel">
-        <source xml:lang="en">Add Central Management Server...</source>
-        <target state="translated">中央管理サーバーの追加...</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/cms/dist/cmsResource/tree/treeProvider" source-language="en" datatype="plaintext" target-language="ja">
-    <body>
-      <trans-unit id="cms.resource.tree.treeProvider.loadError">
-        <source xml:lang="en">Unexpected error occurred while loading saved servers {0}</source>
-        <target state="translated">保存されたサーバー {0} の読み込み中に予期しないエラーが発生しました。</target>
-      </trans-unit>
-      <trans-unit id="cms.resource.tree.treeProvider.loadingLabel">
-        <source xml:lang="en">Loading ...</source>
-        <target state="translated">読み込み中...</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/cms/dist/cmsResource/cmsResourceCommands" source-language="en" datatype="plaintext" target-language="ja">
-    <body>
-      <trans-unit id="cms.errors.sameCmsServerName">
-        <source xml:lang="en">Central Management Server Group already has a Registered Server with the name {0}</source>
-        <target state="translated">中央管理サーバー グループには、既に {0} という名前の登録済みサーバーがあります</target>
-      </trans-unit>
-      <trans-unit id="cms.errors.azureNotAllowed">
-        <source xml:lang="en">Azure SQL Servers cannot be used as Central Management Servers</source>
-        <target state="translated">Azure SQL サーバーは、Central Management Servers として使用できません</target>
-      </trans-unit>
-      <trans-unit id="cms.confirmDeleteServer">
-        <source xml:lang="en">Are you sure you want to delete</source>
-        <target state="translated">削除しますか</target>
-      </trans-unit>
-      <trans-unit id="cms.yes">
-        <source xml:lang="en">Yes</source>
-        <target state="translated">はい</target>
-      </trans-unit>
-      <trans-unit id="cms.no">
-        <source xml:lang="en">No</source>
-        <target state="translated">いいえ</target>
-      </trans-unit>
-      <trans-unit id="cms.AddServerGroup">
-        <source xml:lang="en">Add Server Group</source>
-        <target state="translated">サーバー グループの追加</target>
-      </trans-unit>
-      <trans-unit id="cms.OK">
-        <source xml:lang="en">OK</source>
-        <target state="translated">OK</target>
-      </trans-unit>
-      <trans-unit id="cms.Cancel">
-        <source xml:lang="en">Cancel</source>
-        <target state="translated">キャンセル</target>
-      </trans-unit>
-      <trans-unit id="cms.ServerGroupName">
-        <source xml:lang="en">Server Group Name</source>
-        <target state="translated">サーバー グループ名</target>
-      </trans-unit>
-      <trans-unit id="cms.ServerGroupDescription">
-        <source xml:lang="en">Server Group Description</source>
-        <target state="translated">サーバー グループの説明</target>
-      </trans-unit>
-      <trans-unit id="cms.errors.sameServerGroupName">
-        <source xml:lang="en">{0} already has a Server Group with the name {1}</source>
-        <target state="translated">{0} には既に {1} という名前のサーバー グループがあります</target>
-      </trans-unit>
-      <trans-unit id="cms.confirmDeleteGroup">
-        <source xml:lang="en">Are you sure you want to delete</source>
-        <target state="translated">削除しますか</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/cms/dist/cmsUtils" source-language="en" datatype="plaintext" target-language="ja">
-    <body>
-      <trans-unit id="cms.errors.sameServerUnderCms">
-        <source xml:lang="en">You cannot add a shared registered server with the same name as the Configuration Server</source>
-        <target state="translated">構成サーバーと同じ名前の共有登録サーバーを追加することはできません</target>
       </trans-unit>
     </body>
   </file>

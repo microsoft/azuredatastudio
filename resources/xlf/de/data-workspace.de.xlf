@@ -1,48 +1,234 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file original="extensions/data-workspace/dist/common/constants" source-language="en" datatype="plaintext" target-language="de">
+    <body>
+      <trans-unit id="AllProjectTypes">
+        <source xml:lang="en">All Project Types</source>
+        <target state="translated">Alle Projekttypen</target>
+      </trans-unit>
+      <trans-unit id="SelectProjectFileActionName">
+        <source xml:lang="en">Select</source>
+        <target state="translated">Auswählen</target>
+      </trans-unit>
+      <trans-unit id="UnknownProjectTypeError">
+        <source xml:lang="en">No provider was found for project type with id: '{0}'</source>
+        <target state="translated">Für den Projekttyp mit der ID "{0}" wurde kein Anbieter gefunden</target>
+      </trans-unit>
+      <trans-unit id="UnknownProjectsError">
+        <source xml:lang="en">No provider was found for the following projects: {0}</source>
+        <target state="translated">Für die folgenden Projekte wurde kein Anbieter gefunden: {0}</target>
+      </trans-unit>
+      <trans-unit id="activateExtensionFailed">
+        <source xml:lang="en">Failed to load the project provider extension '{0}'. Error message: {1}</source>
+        <target state="translated">Fehler beim Laden der Projektanbietererweiterung "{0}". Fehlermeldung: {1}</target>
+      </trans-unit>
+      <trans-unit id="dataworksapce.local">
+        <source xml:lang="en">Local</source>
+        <target state="translated">Lokal</target>
+      </trans-unit>
+      <trans-unit id="dataworksapce.refresh">
+        <source xml:lang="en">Refresh</source>
+        <target state="translated">Aktualisieren</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.NewProjectDialogTitle">
+        <source xml:lang="en">Create new project</source>
+        <target state="translated">Neues Projekt erstellen</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.Type">
+        <source xml:lang="en">Type</source>
+        <target state="translated">Typ</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.browse">
+        <source xml:lang="en">Browse</source>
+        <target state="translated">Durchsuchen</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.browseEllipsis">
+        <source xml:lang="en">Browse...</source>
+        <target state="translated">Durchsuchen...</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.cloneParentDirectoryNotExistError">
+        <source xml:lang="en">The selected clone path '{0}' does not exist or is not a directory.</source>
+        <target state="translated">Der ausgewählte Klonpfad "{0}" ist nicht vorhanden oder kein Verzeichnis.</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.create">
+        <source xml:lang="en">Create</source>
+        <target state="translated">Erstellen</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.enterProjectName">
+        <source xml:lang="en">Enter Project Name</source>
+        <target state="translated">Geben Sie den Projektnamen ein</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.fileNotExistError">
+        <source xml:lang="en">The selected {0} file '{1}' does not exist or is not a file.</source>
+        <target state="translated">Die ausgewählte {0}-Datei "{1}" ist nicht vorhanden oder keine Datei.</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.gitRepoUrlPlaceholder">
+        <source xml:lang="en">Enter remote git repository URL</source>
+        <target state="translated">URL des Git-Remoterepositorys eingeben</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.gitRepoUrlTitle">
+        <source xml:lang="en">Git repository URL</source>
+        <target state="translated">Git-Repository-URL</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.localClonePathPlaceholder">
+        <source xml:lang="en">Select location to clone repository locally</source>
+        <target state="translated">Speicherort zum lokalen Klonen des Repositorys auswählen</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.localClonePathTitle">
+        <source xml:lang="en">Local clone path</source>
+        <target state="translated">Lokaler Klonpfad</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.locationSelectorTitle">
+        <source xml:lang="en">Location</source>
+        <target state="translated">Speicherort</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.nameCannotBeEmpty">
+        <source xml:lang="en">Name cannot be empty</source>
+        <target state="translated">Name darf nicht leer sein</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.ok">
+        <source xml:lang="en">OK</source>
+        <target state="translated">OK</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.open">
+        <source xml:lang="en">Open</source>
+        <target state="translated">Öffnen</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.openExistingDialogTitle">
+        <source xml:lang="en">Open Existing Project</source>
+        <target state="translated">Vorhandenes Projekt öffnen</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.project">
+        <source xml:lang="en">Project</source>
+        <target state="translated">Projekt</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.projectAlreadyOpened">
+        <source xml:lang="en">Project '{0}' is already opened.</source>
+        <target state="translated">Das Projekt "{0}" ist bereits geöffnet.</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.projectDirectoryAlreadyExistError">
+        <source xml:lang="en">There is already a directory named '{0}' in the selected location: '{1}'.</source>
+        <target state="translated">Es ist bereits ein Verzeichnis mit dem Namen "{0}" am ausgewählten Speicherort vorhanden: "{1}".</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.projectDirectoryAlreadyExistErrorShort">
+        <source xml:lang="en">Directory '{0}' already exists in the selected location, please choose another</source>
+        <target state="translated">Das Verzeichnis "{0}" ist bereits am ausgewählten Speicherort vorhanden, wählen Sie ein anderes aus</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.projectFilePlaceholder">
+        <source xml:lang="en">Select project file</source>
+        <target state="translated">Projektdatei auswählen</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.projectLocationPlaceholder">
+        <source xml:lang="en">Select location to create project</source>
+        <target state="translated">Speicherort zum Erstellen des Projekts auswählen</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.projectLocationTitle">
+        <source xml:lang="en">Location</source>
+        <target state="translated">Speicherort</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.projectNamePlaceholder">
+        <source xml:lang="en">Enter project name</source>
+        <target state="translated">Geben Sie den Projektnamen ein</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.projectNameTitle">
+        <source xml:lang="en">Name</source>
+        <target state="translated">Name</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.projectParentDirectoryNotExistError">
+        <source xml:lang="en">The selected project location '{0}' does not exist or is not a directory.</source>
+        <target state="translated">Der ausgewählte Projektspeicherort "{0}" ist nicht vorhanden oder kein Verzeichnis.</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.projectsFailedToLoad">
+        <source xml:lang="en">Some projects failed to load. To view more details, [open the developer console](command:workbench.action.toggleDevTools)</source>
+        <target state="translated">Einige Projekte konnten nicht geladen werden. Um weitere Details anzuzeigen, [Entwicklerkonsole öffnen](command:workbench.action.toggleDevTools)</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.remoteGitRepo">
+        <source xml:lang="en">Remote git repository</source>
+        <target state="translated">Git-Remoterepository</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.restartConfirmation">
+        <source xml:lang="en">Azure Data Studio needs to be restarted for the project to be created and added to the workspace, do this now?</source>
+        <target state="translated">Azure Data Studio muss neu gestartet werden, damit das Projekt erstellt und dem Arbeitsbereich hinzugefügt wird, jetzt ausführen?</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.select">
+        <source xml:lang="en">Select</source>
+        <target state="translated">Auswählen</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.selectProjectLocation">
+        <source xml:lang="en">Select Project Location</source>
+        <target state="translated">Projektspeicherort auswählen</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.selectProjectType">
+        <source xml:lang="en">Select Project Type</source>
+        <target state="translated">Projekttyp auswählen</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.targetPlatform">
+        <source xml:lang="en">Target Platform</source>
+        <target state="translated">Zielplattform</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.workspacePlaceholder">
+        <source xml:lang="en">Select workspace ({0}) file</source>
+        <target state="translated">Arbeitsbereichsdatei auswählen ({0})</target>
+      </trans-unit>
+      <trans-unit id="fileDoesNotExist">
+        <source xml:lang="en">File '{0}' doesn't exist</source>
+        <target state="translated">Die Datei "{0}" ist nicht vorhanden</target>
+      </trans-unit>
+      <trans-unit id="gitCloneError">
+        <source xml:lang="en">Error during git clone. View git output for more details</source>
+        <target state="translated">Fehler beim Git-Klonen. Weitere Details finden Sie in der Git-Ausgabe</target>
+      </trans-unit>
+      <trans-unit id="gitCloneMessage">
+        <source xml:lang="en">Cloning git repository '{0}'...</source>
+        <target state="translated">Das Git-Repository "{0}" wird geklont ...</target>
+      </trans-unit>
+      <trans-unit id="noPreviousData">
+        <source xml:lang="en">Prior {0} for the current project will appear here, please run to see the results.</source>
+        <target state="translated">Vorherige "{0}" für das aktuelle Projekt werden hier angezeigt. Führen Sie die Ausführung aus, um die Ergebnisse anzuzeigen.</target>
+      </trans-unit>
+      <trans-unit id="openedProjectsUndefinedAfterRefresh">
+        <source xml:lang="en">List of opened projects should not be undefined after refresh from disk.</source>
+        <target state="new">List of opened projects should not be undefined after refresh from disk.</target>
+      </trans-unit>
+      <trans-unit id="projectNameNull">
+        <source xml:lang="en">Project name is null</source>
+        <target state="translated">Projektname ist Null</target>
+      </trans-unit>
+    </body>
+  </file>
   <file original="extensions/data-workspace/package" source-language="en" datatype="plaintext" target-language="de">
     <body>
-      <trans-unit id="extension-displayName">
-        <source xml:lang="en">Data workspace</source>
-        <target state="translated">Datenarbeitsbereich</target>
-      </trans-unit>
-      <trans-unit id="extension-description">
-        <source xml:lang="en">Data workspace</source>
-        <target state="translated">Datenarbeitsbereich</target>
+      <trans-unit id="close-workspace-command">
+        <source xml:lang="en">Close Workspace</source>
+        <target state="translated">Arbeitsbereich schließen</target>
       </trans-unit>
       <trans-unit id="data-workspace-view-container-name">
         <source xml:lang="en">Projects</source>
         <target state="translated">Projekte</target>
       </trans-unit>
+      <trans-unit id="extension-description">
+        <source xml:lang="en">Data workspace</source>
+        <target state="translated">Datenarbeitsbereich</target>
+      </trans-unit>
+      <trans-unit id="extension-displayName">
+        <source xml:lang="en">Data workspace</source>
+        <target state="translated">Datenarbeitsbereich</target>
+      </trans-unit>
       <trans-unit id="main-view-name">
         <source xml:lang="en">Projects</source>
         <target state="translated">Projekte</target>
+      </trans-unit>
+      <trans-unit id="manage-project-command">
+        <source xml:lang="en">Manage</source>
+        <target state="translated">Verwalten</target>
       </trans-unit>
       <trans-unit id="new-command">
         <source xml:lang="en">New</source>
         <target state="translated">Neu</target>
       </trans-unit>
-      <trans-unit id="refresh-workspace-command">
-        <source xml:lang="en">Refresh</source>
-        <target state="translated">Aktualisieren</target>
-      </trans-unit>
-      <trans-unit id="close-workspace-command">
-        <source xml:lang="en">Close Workspace</source>
-        <target state="translated">Arbeitsbereich schließen</target>
-      </trans-unit>
-      <trans-unit id="remove-project-command">
-        <source xml:lang="en">Remove Project</source>
-        <target state="translated">Projekt entfernen</target>
-      </trans-unit>
-      <trans-unit id="projects-view-no-workspace-content">
-        <source xml:lang="en">Create new or open existing to get started.
-[Create new](command:projects.new)
-[Open existing](command:projects.openExisting)
-To learn more about projects [read our docs](https://aka.ms/azuredatastudio-projects).</source>
-        <target state="translated">Erstellen Sie ein neues oder öffnen Sie ein bestehendes, um loszulegen.
-[Neues erstellen](command:projects.new)
-[Bestehendes öffnen](command:projects.openExisting)
-Weitere Informationen zu Projekten [unsere Dokumentation lesen](https://aka.ms/azuredatastudio-projects).</target>
+      <trans-unit id="open-existing-command">
+        <source xml:lang="en">Open existing</source>
+        <target state="translated">Vorhandene öffnen</target>
       </trans-unit>
       <trans-unit id="projects-view-no-project-content">
         <source xml:lang="en">No projects open in current workspace.
@@ -56,9 +242,15 @@ To learn more about projects [read our docs](https://aka.ms/azuredatastudio-proj
 Weitere Informationen zu Projekten [unsere Dokumentation lesen](https://aka.ms/azuredatastudio-projects).
 </target>
       </trans-unit>
-      <trans-unit id="open-existing-command">
-        <source xml:lang="en">Open existing</source>
-        <target state="translated">Vorhandene öffnen</target>
+      <trans-unit id="projects-view-no-workspace-content">
+        <source xml:lang="en">Create new or open existing to get started.
+[Create new](command:projects.new)
+[Open existing](command:projects.openExisting)
+To learn more about projects [read our docs](https://aka.ms/azuredatastudio-projects).</source>
+        <target state="translated">Erstellen Sie ein neues oder öffnen Sie ein bestehendes, um loszulegen.
+[Neues erstellen](command:projects.new)
+[Bestehendes öffnen](command:projects.openExisting)
+Weitere Informationen zu Projekten [unsere Dokumentation lesen](https://aka.ms/azuredatastudio-projects).</target>
       </trans-unit>
       <trans-unit id="projects.defaultProjectSaveLocation">
         <source xml:lang="en">Full path to folder where new projects are saved by default.</source>
@@ -68,201 +260,13 @@ Weitere Informationen zu Projekten [unsere Dokumentation lesen](https://aka.ms/a
         <source xml:lang="en">Always show information message when the current workspace folders contain projects that have not been added to the workspace's projects.</source>
         <target state="translated">Informationsmeldung immer anzeigen, wenn die aktuellen Arbeitsbereichsordner Projekte enthalten, die nicht zu den Projekten des Arbeitsbereichs hinzugefügt wurden.</target>
       </trans-unit>
-      <trans-unit id="manage-project-command">
-        <source xml:lang="en">Manage</source>
-        <target state="translated">Verwalten</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/data-workspace/dist/common/constants" source-language="en" datatype="plaintext" target-language="de">
-    <body>
-      <trans-unit id="activateExtensionFailed">
-        <source xml:lang="en">Failed to load the project provider extension '{0}'. Error message: {1}</source>
-        <target state="translated">Fehler beim Laden der Projektanbietererweiterung "{0}". Fehlermeldung: {1}</target>
-      </trans-unit>
-      <trans-unit id="UnknownProjectsError">
-        <source xml:lang="en">No provider was found for the following projects: {0}</source>
-        <target state="translated">Für die folgenden Projekte wurde kein Anbieter gefunden: {0}</target>
-      </trans-unit>
-      <trans-unit id="SelectProjectFileActionName">
-        <source xml:lang="en">Select</source>
-        <target state="translated">Auswählen</target>
-      </trans-unit>
-      <trans-unit id="AllProjectTypes">
-        <source xml:lang="en">All Project Types</source>
-        <target state="translated">Alle Projekttypen</target>
-      </trans-unit>
-      <trans-unit id="UnknownProjectTypeError">
-        <source xml:lang="en">No provider was found for project type with id: '{0}'</source>
-        <target state="translated">Für den Projekttyp mit der ID "{0}" wurde kein Anbieter gefunden</target>
-      </trans-unit>
-      <trans-unit id="dataworkspace.restartConfirmation">
-        <source xml:lang="en">Azure Data Studio needs to be restarted for the project to be created and added to the workspace, do this now?</source>
-        <target state="translated">Azure Data Studio muss neu gestartet werden, damit das Projekt erstellt und dem Arbeitsbereich hinzugefügt wird, jetzt ausführen?</target>
-      </trans-unit>
-      <trans-unit id="dataworkspace.projectsFailedToLoad">
-        <source xml:lang="en">Some projects failed to load. To view more details, [open the developer console](command:workbench.action.toggleDevTools)</source>
-        <target state="translated">Einige Projekte konnten nicht geladen werden. Um weitere Details anzuzeigen, [Entwicklerkonsole öffnen](command:workbench.action.toggleDevTools)</target>
-      </trans-unit>
-      <trans-unit id="fileDoesNotExist">
-        <source xml:lang="en">File '{0}' doesn't exist</source>
-        <target state="translated">Die Datei "{0}" ist nicht vorhanden</target>
-      </trans-unit>
-      <trans-unit id="projectNameNull">
-        <source xml:lang="en">Project name is null</source>
-        <target state="translated">Projektname ist Null</target>
-      </trans-unit>
-      <trans-unit id="noPreviousData">
-        <source xml:lang="en">Prior {0} for the current project will appear here, please run to see the results.</source>
-        <target state="translated">Vorherige "{0}" für das aktuelle Projekt werden hier angezeigt. Führen Sie die Ausführung aus, um die Ergebnisse anzuzeigen.</target>
-      </trans-unit>
-      <trans-unit id="gitCloneMessage">
-        <source xml:lang="en">Cloning git repository '{0}'...</source>
-        <target state="translated">Das Git-Repository "{0}" wird geklont ...</target>
-      </trans-unit>
-      <trans-unit id="gitCloneError">
-        <source xml:lang="en">Error during git clone. View git output for more details</source>
-        <target state="translated">Fehler beim Git-Klonen. Weitere Details finden Sie in der Git-Ausgabe</target>
-      </trans-unit>
-      <trans-unit id="dataworkspace.ok">
-        <source xml:lang="en">OK</source>
-        <target state="translated">OK</target>
-      </trans-unit>
-      <trans-unit id="dataworkspace.browse">
-        <source xml:lang="en">Browse</source>
-        <target state="translated">Durchsuchen</target>
-      </trans-unit>
-      <trans-unit id="dataworkspace.browseEllipsis">
-        <source xml:lang="en">Browse...</source>
-        <target state="translated">Durchsuchen...</target>
-      </trans-unit>
-      <trans-unit id="dataworkspace.open">
-        <source xml:lang="en">Open</source>
-        <target state="translated">Öffnen</target>
-      </trans-unit>
-      <trans-unit id="dataworkspace.create">
-        <source xml:lang="en">Create</source>
-        <target state="translated">Erstellen</target>
-      </trans-unit>
-      <trans-unit id="dataworkspace.select">
-        <source xml:lang="en">Select</source>
-        <target state="translated">Auswählen</target>
-      </trans-unit>
-      <trans-unit id="dataworkspace.NewProjectDialogTitle">
-        <source xml:lang="en">Create new project</source>
-        <target state="translated">Neues Projekt erstellen</target>
-      </trans-unit>
-      <trans-unit id="dataworkspace.Type">
-        <source xml:lang="en">Type</source>
-        <target state="translated">Typ</target>
-      </trans-unit>
-      <trans-unit id="dataworkspace.projectNameTitle">
-        <source xml:lang="en">Name</source>
-        <target state="translated">Name</target>
-      </trans-unit>
-      <trans-unit id="dataworkspace.projectNamePlaceholder">
-        <source xml:lang="en">Enter project name</source>
-        <target state="translated">Geben Sie den Projektnamen ein</target>
-      </trans-unit>
-      <trans-unit id="dataworkspace.enterProjectName">
-        <source xml:lang="en">Enter Project Name</source>
-        <target state="translated">Geben Sie den Projektnamen ein</target>
-      </trans-unit>
-      <trans-unit id="dataworkspace.projectLocationTitle">
-        <source xml:lang="en">Location</source>
-        <target state="translated">Speicherort</target>
-      </trans-unit>
-      <trans-unit id="dataworkspace.projectLocationPlaceholder">
-        <source xml:lang="en">Select location to create project</source>
-        <target state="translated">Speicherort zum Erstellen des Projekts auswählen</target>
-      </trans-unit>
-      <trans-unit id="dataworkspace.projectParentDirectoryNotExistError">
-        <source xml:lang="en">The selected project location '{0}' does not exist or is not a directory.</source>
-        <target state="translated">Der ausgewählte Projektspeicherort "{0}" ist nicht vorhanden oder kein Verzeichnis.</target>
-      </trans-unit>
-      <trans-unit id="dataworkspace.projectDirectoryAlreadyExistError">
-        <source xml:lang="en">There is already a directory named '{0}' in the selected location: '{1}'.</source>
-        <target state="translated">Es ist bereits ein Verzeichnis mit dem Namen "{0}" am ausgewählten Speicherort vorhanden: "{1}".</target>
-      </trans-unit>
-      <trans-unit id="dataworkspace.projectDirectoryAlreadyExistErrorShort">
-        <source xml:lang="en">Directory '{0}' already exists in the selected location, please choose another</source>
-        <target state="translated">Das Verzeichnis "{0}" ist bereits am ausgewählten Speicherort vorhanden, wählen Sie ein anderes aus</target>
-      </trans-unit>
-      <trans-unit id="dataworkspace.selectProjectType">
-        <source xml:lang="en">Select Project Type</source>
-        <target state="translated">Projekttyp auswählen</target>
-      </trans-unit>
-      <trans-unit id="dataworkspace.selectProjectLocation">
-        <source xml:lang="en">Select Project Location</source>
-        <target state="translated">Projektspeicherort auswählen</target>
-      </trans-unit>
-      <trans-unit id="dataworkspace.nameCannotBeEmpty">
-        <source xml:lang="en">Name cannot be empty</source>
-        <target state="translated">Name darf nicht leer sein</target>
-      </trans-unit>
-      <trans-unit id="dataworkspace.targetPlatform">
-        <source xml:lang="en">Target Platform</source>
-        <target state="translated">Zielplattform</target>
-      </trans-unit>
-      <trans-unit id="dataworkspace.openExistingDialogTitle">
-        <source xml:lang="en">Open Existing Project</source>
-        <target state="translated">Vorhandenes Projekt öffnen</target>
-      </trans-unit>
-      <trans-unit id="dataworkspace.fileNotExistError">
-        <source xml:lang="en">The selected {0} file '{1}' does not exist or is not a file.</source>
-        <target state="translated">Die ausgewählte {0}-Datei "{1}" ist nicht vorhanden oder keine Datei.</target>
-      </trans-unit>
-      <trans-unit id="dataworkspace.cloneParentDirectoryNotExistError">
-        <source xml:lang="en">The selected clone path '{0}' does not exist or is not a directory.</source>
-        <target state="translated">Der ausgewählte Klonpfad "{0}" ist nicht vorhanden oder kein Verzeichnis.</target>
-      </trans-unit>
-      <trans-unit id="dataworkspace.project">
-        <source xml:lang="en">Project</source>
-        <target state="translated">Projekt</target>
-      </trans-unit>
-      <trans-unit id="dataworkspace.locationSelectorTitle">
-        <source xml:lang="en">Location</source>
-        <target state="translated">Speicherort</target>
-      </trans-unit>
-      <trans-unit id="dataworkspace.projectFilePlaceholder">
-        <source xml:lang="en">Select project file</source>
-        <target state="translated">Projektdatei auswählen</target>
-      </trans-unit>
-      <trans-unit id="dataworkspace.workspacePlaceholder">
-        <source xml:lang="en">Select workspace ({0}) file</source>
-        <target state="translated">Arbeitsbereichsdatei auswählen ({0})</target>
-      </trans-unit>
-      <trans-unit id="dataworkspace.projectAlreadyOpened">
-        <source xml:lang="en">Project '{0}' is already opened.</source>
-        <target state="translated">Das Projekt "{0}" ist bereits geöffnet.</target>
-      </trans-unit>
-      <trans-unit id="dataworksapce.local">
-        <source xml:lang="en">Local</source>
-        <target state="translated">Lokal</target>
-      </trans-unit>
-      <trans-unit id="dataworkspace.remoteGitRepo">
-        <source xml:lang="en">Remote git repository</source>
-        <target state="translated">Git-Remoterepository</target>
-      </trans-unit>
-      <trans-unit id="dataworkspace.gitRepoUrlTitle">
-        <source xml:lang="en">Git repository URL</source>
-        <target state="translated">Git-Repository-URL</target>
-      </trans-unit>
-      <trans-unit id="dataworkspace.gitRepoUrlPlaceholder">
-        <source xml:lang="en">Enter remote git repository URL</source>
-        <target state="translated">URL des Git-Remoterepositorys eingeben</target>
-      </trans-unit>
-      <trans-unit id="dataworkspace.localClonePathTitle">
-        <source xml:lang="en">Local clone path</source>
-        <target state="translated">Lokaler Klonpfad</target>
-      </trans-unit>
-      <trans-unit id="dataworkspace.localClonePathPlaceholder">
-        <source xml:lang="en">Select location to clone repository locally</source>
-        <target state="translated">Speicherort zum lokalen Klonen des Repositorys auswählen</target>
-      </trans-unit>
-      <trans-unit id="dataworksapce.refresh">
+      <trans-unit id="refresh-workspace-command">
         <source xml:lang="en">Refresh</source>
         <target state="translated">Aktualisieren</target>
+      </trans-unit>
+      <trans-unit id="remove-project-command">
+        <source xml:lang="en">Remove Project</source>
+        <target state="translated">Projekt entfernen</target>
       </trans-unit>
     </body>
   </file>

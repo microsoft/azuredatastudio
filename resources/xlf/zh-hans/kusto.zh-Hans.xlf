@@ -1,202 +1,62 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
-  <file original="extensions/kusto/package" source-language="en" datatype="plaintext" target-language="zh-Hans">
+  <file original="extensions/kusto/dist/features" source-language="en" datatype="plaintext" target-language="zh-Hans">
     <body>
-      <trans-unit id="notebook.command.new">
-        <source xml:lang="en">New Notebook</source>
-        <target state="translated">新建笔记本</target>
+      <trans-unit id="kusto.accountDoesNotExist">
+        <source xml:lang="en">Account does not exist.</source>
+        <target state="translated">帐户不存在。</target>
       </trans-unit>
-      <trans-unit id="notebook.command.open">
-        <source xml:lang="en">Open Notebook</source>
-        <target state="translated">打开笔记本</target>
+      <trans-unit id="kusto.insufficientlyPrivelagedAzureAccount">
+        <source xml:lang="en">The configured Azure account for {0} does not have sufficient permissions for Azure Key Vault to access a column master key for Always Encrypted.</source>
+        <target state="translated">为 {0} 配置的 Azure 帐户没有足够的权限让 Azure Key Vault 访问 Always Encrypted 的列主密钥。</target>
       </trans-unit>
-      <trans-unit id="cloud.databaseProperties.name">
-        <source xml:lang="en">Database Name</source>
-        <target state="translated">数据库名称</target>
-      </trans-unit>
-      <trans-unit id="cloud.databaseProperties.size">
-        <source xml:lang="en">Size (MB)</source>
-        <target state="translated">大小(MB)</target>
-      </trans-unit>
-      <trans-unit id="cloud.serverProperties.summary">
-        <source xml:lang="en">Status</source>
-        <target state="translated">状态</target>
-      </trans-unit>
-      <trans-unit id="cloud.serverProperties.machinesTotal">
-        <source xml:lang="en">Total Machines in the cluster</source>
-        <target state="translated">群集中的总计算机数</target>
-      </trans-unit>
-      <trans-unit id="cloud.serverProperties.diskCacheCapacity">
-        <source xml:lang="en">% of Cluster data capacity used</source>
-        <target state="translated">已使用的群集数据容量百分比</target>
-      </trans-unit>
-      <trans-unit id="databasesListProperties.name">
-        <source xml:lang="en">Name</source>
-        <target state="translated">名称</target>
-      </trans-unit>
-      <trans-unit id="databasesListProperties.size">
-        <source xml:lang="en">Size (MB)</source>
-        <target state="translated">大小(MB)</target>
-      </trans-unit>
-      <trans-unit id="objectsListProperties.name">
-        <source xml:lang="en">Name</source>
-        <target state="translated">名称</target>
-      </trans-unit>
-      <trans-unit id="objectsListProperties.metadataTypeName">
-        <source xml:lang="en">Type</source>
-        <target state="translated">类型</target>
-      </trans-unit>
-      <trans-unit id="kusto.configuration.title">
-        <source xml:lang="en">KUSTO configuration</source>
-        <target state="translated">KUSTO 配置</target>
-      </trans-unit>
-      <trans-unit id="kusto.query.displayBitAsNumber">
-        <source xml:lang="en">Should BIT columns be displayed as numbers (1 or 0)? If false, BIT columns will be displayed as 'true' or 'false'</source>
-        <target state="translated">是否应将 BIT 列显示为数字(1 或 0)? 若否，则 BIT 列将显示为 "true" 或 "false"</target>
-      </trans-unit>
-      <trans-unit id="kusto.format.alignColumnDefinitionsInColumns">
-        <source xml:lang="en">Should column definitions be aligned?</source>
-        <target state="translated">列定义是否应对齐?</target>
-      </trans-unit>
-      <trans-unit id="kusto.format.datatypeCasing">
-        <source xml:lang="en">Should data types be formatted as UPPERCASE, lowercase, or none (not formatted)</source>
-        <target state="translated">数据类型应格式化为大写、小写还是无(不格式化)</target>
-      </trans-unit>
-      <trans-unit id="kusto.format.keywordCasing">
-        <source xml:lang="en">Should keywords be formatted as UPPERCASE, lowercase, or none (not formatted)</source>
-        <target state="translated">关键字应格式化为大写、小写还是无(不格式化)</target>
-      </trans-unit>
-      <trans-unit id="kusto.logDebugInfo">
-        <source xml:lang="en">[Optional] Log debug output to the console (View -&gt; Output) and then select appropriate output channel from the dropdown</source>
-        <target state="translated">[可选] 将调试输出记录到控制台(“查看”-&gt;“输出”)，然后从下拉列表中选择相应的输出通道</target>
-      </trans-unit>
-      <trans-unit id="kusto.tracingLevel">
-        <source xml:lang="en">[Optional] Log level for backend services. Azure Data Studio generates a file name every time it starts and if the file already exists the logs entries are appended to that file. For cleanup of old log files see logRetentionMinutes and logFilesRemovalLimit settings. The default tracingLevel does not log much. Changing verbosity could lead to extensive logging and disk space requirements for the logs. Error includes Critical, Warning includes Error, Information includes Warning and Verbose includes Information</source>
-        <target state="translated">[可选] 后端服务的日志级别。Azure Data Studio 在每次启动时都会生成文件名；如果文件已存在，日志条目将追加到该文件。有关旧日志文件的清理，请参阅 logRetentionMinutes 和 logFilesRemovalLimit 设置。默认 tracingLevel 记录的内容很少。更改详细级别可能提升日志的记录和磁盘空间要求。“错误”包含“严重”，“警告”包含“错误”，“信息”包含“警告”，“详细级别”包含“信息”</target>
-      </trans-unit>
-      <trans-unit id="kusto.provider.displayName">
-        <source xml:lang="en">Azure Data Explorer (Kusto)</source>
-        <target state="translated">Azure 数据资源管理器(Kusto)</target>
-      </trans-unit>
-      <trans-unit id="kusto.connectionOptions.connectionName.displayName">
-        <source xml:lang="en">Name (optional)</source>
-        <target state="translated">名称(可选)</target>
-      </trans-unit>
-      <trans-unit id="kusto.connectionOptions.connectionName.description">
-        <source xml:lang="en">Custom name of the connection</source>
-        <target state="translated">连接的自定义名称</target>
-      </trans-unit>
-      <trans-unit id="kusto.connectionOptions.serverName.displayName">
-        <source xml:lang="en">Cluster</source>
-        <target state="translated">群集</target>
-      </trans-unit>
-      <trans-unit id="kusto.connectionOptions.serverName.description">
-        <source xml:lang="en">Kusto cluster name</source>
-        <target state="translated">Kusto 群集名称</target>
-      </trans-unit>
-      <trans-unit id="kusto.connectionOptions.databaseName.displayName">
-        <source xml:lang="en">Database</source>
-        <target state="translated">数据库</target>
-      </trans-unit>
-      <trans-unit id="kusto.connectionOptions.databaseName.description">
-        <source xml:lang="en">The name of the initial catalog or database in the data source</source>
-        <target state="translated">数据源中的初始目录或数据库的名称。</target>
-      </trans-unit>
-      <trans-unit id="kusto.connectionOptions.authType.displayName">
-        <source xml:lang="en">Authentication type</source>
-        <target state="translated">身份验证类型</target>
-      </trans-unit>
-      <trans-unit id="kusto.connectionOptions.authType.description">
-        <source xml:lang="en">Specifies the method of authenticating with Kusto Server</source>
-        <target state="translated">指定使用 Kusto Server 进行身份验证的方法</target>
-      </trans-unit>
-      <trans-unit id="kusto.connectionOptions.authType.categoryValues.azureMFA">
-        <source xml:lang="en">Azure Active Directory - Universal with MFA support</source>
-        <target state="translated">Azure Active Directory - 支持 MFA 的通用目录</target>
-      </trans-unit>
-      <trans-unit id="kusto.connectionOptions.authType.categoryValues.none">
-        <source xml:lang="en">No Authentication</source>
-        <target state="translated">无身份验证</target>
-      </trans-unit>
-      <trans-unit id="kusto.connectionOptions.authType.categoryValues.sqlLogin">
-        <source xml:lang="en">User Authentication</source>
-        <target state="translated">用户身份验证</target>
-      </trans-unit>
-      <trans-unit id="kusto.connectionOptions.userName.displayName">
-        <source xml:lang="en">User name</source>
-        <target state="translated">用户名</target>
-      </trans-unit>
-      <trans-unit id="kusto.connectionOptions.userName.description">
-        <source xml:lang="en">Indicates the user ID to be used when connecting to the data source</source>
-        <target state="translated">指示连接到数据源时使用的用户 ID</target>
-      </trans-unit>
-      <trans-unit id="kusto.connectionOptions.password.displayName">
-        <source xml:lang="en">Password</source>
-        <target state="translated">密码</target>
-      </trans-unit>
-      <trans-unit id="kusto.connectionOptions.password.description">
-        <source xml:lang="en">Indicates the password to be used when connecting to the data source</source>
-        <target state="translated">指示连接到数据源时使用的密码</target>
-      </trans-unit>
-      <trans-unit id="kusto.connectionOptions.connectTimeout.displayName">
-        <source xml:lang="en">Connect timeout</source>
-        <target state="translated">连接超时</target>
-      </trans-unit>
-      <trans-unit id="kusto.connectionOptions.connectTimeout.description">
-        <source xml:lang="en">The length of time (in seconds) to wait for a connection to the server before terminating the attempt and generating an error</source>
-        <target state="translated">在终止尝试并生成错误之前等待连接到服务器的时长(秒)</target>
-      </trans-unit>
-      <trans-unit id="kusto.connectionOptions.connectRetryCount.displayName">
-        <source xml:lang="en">Connect retry count</source>
-        <target state="translated">连接重试次数</target>
-      </trans-unit>
-      <trans-unit id="kusto.connectionOptions.connectRetryCount.description">
-        <source xml:lang="en">Number of attempts to restore connection</source>
-        <target state="translated">尝试还原连接的次数</target>
-      </trans-unit>
-      <trans-unit id="kusto.connectionOptions.connectRetryInterval.displayName">
-        <source xml:lang="en">Connect retry interval</source>
-        <target state="translated">连接重试间隔</target>
-      </trans-unit>
-      <trans-unit id="kusto.connectionOptions.connectRetryInterval.description">
-        <source xml:lang="en">Delay between attempts to restore connection</source>
-        <target state="translated">两次尝试恢复连接之间的延迟</target>
-      </trans-unit>
-      <trans-unit id="kusto.connectionOptions.applicationName.displayName">
-        <source xml:lang="en">Application name</source>
-        <target state="translated">应用程序名称</target>
-      </trans-unit>
-      <trans-unit id="kusto.connectionOptions.applicationName.description">
-        <source xml:lang="en">The name of the application</source>
-        <target state="translated">应用程序的名称</target>
-      </trans-unit>
-      <trans-unit id="kusto.connectionOptions.workstationId.displayName">
-        <source xml:lang="en">Workstation Id</source>
-        <target state="translated">工作站 ID</target>
-      </trans-unit>
-      <trans-unit id="kusto.connectionOptions.workstationId.description">
-        <source xml:lang="en">The name of the workstation connecting to Kusto Server</source>
-        <target state="translated">连接到 Kusto Server 的工作站的名称</target>
-      </trans-unit>
-      <trans-unit id="kusto.connectionOptions.failoverPartner.displayName">
-        <source xml:lang="en">Failover partner</source>
-        <target state="translated">故障转移伙伴</target>
-      </trans-unit>
-      <trans-unit id="kusto.connectionOptions.failoverPartner.description">
-        <source xml:lang="en">The name or network address of the instance of Kusto Server that acts as a failover partner</source>
-        <target state="translated">充当故障转移伙伴的 Kusto Server 实例的名称或网络地址</target>
+      <trans-unit id="kusto.missingLinkedAzureAccount">
+        <source xml:lang="en">Azure Data Studio needs to contact Azure Key Vault to access a column master key for Always Encrypted, but no linked Azure account is available. Please add a linked Azure account and retry the query.</source>
+        <target state="translated">Azure Data Studio 需要连接 Azure Key Vault 才能访问 Always Encrypted 的列主密钥，但没有可用的链接 Azure 帐户。请添加链接的 Azure 帐户，然后重试查询。</target>
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/kusto/dist/telemetry" source-language="en" datatype="plaintext" target-language="zh-Hans">
+  <file original="extensions/kusto/dist/kustoServer" source-language="en" datatype="plaintext" target-language="zh-Hans">
     <body>
-      <trans-unit id="viewKnownIssuesText">
-        <source xml:lang="en">View Known Issues</source>
-        <target state="translated">查看已知问题</target>
+      <trans-unit id="downloadServiceDoneChannelMsg">
+        <source xml:lang="en">Done installing {0}</source>
+        <target state="translated">已安装 {0}</target>
       </trans-unit>
-      <trans-unit id="serviceCrashMessage">
-        <source xml:lang="en">{0} component exited unexpectedly. Please restart Azure Data Studio.</source>
-        <target state="translated">{0} 个组件意外退出。请重启 Azure Data Studio。</target>
+      <trans-unit id="downloadingServiceChannelMsg">
+        <source xml:lang="en">Downloading {0}</source>
+        <target state="translated">正在下载 {0}</target>
+      </trans-unit>
+      <trans-unit id="downloadingServiceSizeChannelMsg">
+        <source xml:lang="en">({0} KB)</source>
+        <target state="translated">({0} KB)</target>
+      </trans-unit>
+      <trans-unit id="downloadingServiceStatusMsg">
+        <source xml:lang="en">Downloading {0}</source>
+        <target state="translated">正在下载 {0}</target>
+      </trans-unit>
+      <trans-unit id="failedToStartServiceErrorMsg">
+        <source xml:lang="en">Failed to start {0}</source>
+        <target state="translated">未能启动 {0}</target>
+      </trans-unit>
+      <trans-unit id="installedServiceChannelMsg">
+        <source xml:lang="en">Installed {0}</source>
+        <target state="translated">安装于 {0}</target>
+      </trans-unit>
+      <trans-unit id="installingServiceChannelMsg">
+        <source xml:lang="en">Installing {0} to {1}</source>
+        <target state="translated">正在将 {0} 安装到 {1}</target>
+      </trans-unit>
+      <trans-unit id="installingServiceStatusMsg">
+        <source xml:lang="en">Installing {0}</source>
+        <target state="translated">正在安装 {0}</target>
+      </trans-unit>
+      <trans-unit id="serviceStartedStatusMsg">
+        <source xml:lang="en">{0} Started</source>
+        <target state="translated">{0} 已启动</target>
+      </trans-unit>
+      <trans-unit id="startingServiceStatusMsg">
+        <source xml:lang="en">Starting {0}</source>
+        <target state="translated">正在启动 {0}</target>
       </trans-unit>
     </body>
   </file>
@@ -216,12 +76,28 @@
       </trans-unit>
     </body>
   </file>
+  <file original="extensions/kusto/dist/objectExplorerNodeProvider/command" source-language="en" datatype="plaintext" target-language="zh-Hans">
+    <body>
+      <trans-unit id="cancel">
+        <source xml:lang="en">Cancel operation?</source>
+        <target state="translated">是否取消操作?</target>
+      </trans-unit>
+      <trans-unit id="cancelTooltip">
+        <source xml:lang="en">Cancel</source>
+        <target state="translated">取消</target>
+      </trans-unit>
+      <trans-unit id="kusto.searchServers">
+        <source xml:lang="en">Search Server Names</source>
+        <target state="translated">搜索服务器名称</target>
+      </trans-unit>
+      <trans-unit id="progress">
+        <source xml:lang="en">$(sync~spin) {0}...</source>
+        <target state="translated">$(sync~spin) {0}...</target>
+      </trans-unit>
+    </body>
+  </file>
   <file original="extensions/kusto/dist/objectExplorerNodeProvider/objectExplorerNodeProvider" source-language="en" datatype="plaintext" target-language="zh-Hans">
     <body>
-      <trans-unit id="sessionNotFound">
-        <source xml:lang="en">Session for node {0} does not exist</source>
-        <target state="translated">节点 {0} 的会话不存在</target>
-      </trans-unit>
       <trans-unit id="notifyError">
         <source xml:lang="en">Error notifying of node change: {0}</source>
         <target state="translated">通知节点更改时出错: {0}</target>
@@ -230,85 +106,229 @@
         <source xml:lang="en">Root</source>
         <target state="translated">根</target>
       </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/kusto/dist/objectExplorerNodeProvider/command" source-language="en" datatype="plaintext" target-language="zh-Hans">
-    <body>
-      <trans-unit id="progress">
-        <source xml:lang="en">$(sync~spin) {0}...</source>
-        <target state="translated">$(sync~spin) {0}...</target>
-      </trans-unit>
-      <trans-unit id="cancelTooltip">
-        <source xml:lang="en">Cancel</source>
-        <target state="translated">取消</target>
-      </trans-unit>
-      <trans-unit id="cancel">
-        <source xml:lang="en">Cancel operation?</source>
-        <target state="translated">是否取消操作?</target>
-      </trans-unit>
-      <trans-unit id="kusto.searchServers">
-        <source xml:lang="en">Search Server Names</source>
-        <target state="translated">搜索服务器名称</target>
+      <trans-unit id="sessionNotFound">
+        <source xml:lang="en">Session for node {0} does not exist</source>
+        <target state="translated">节点 {0} 的会话不存在</target>
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/kusto/dist/kustoServer" source-language="en" datatype="plaintext" target-language="zh-Hans">
+  <file original="extensions/kusto/dist/telemetry" source-language="en" datatype="plaintext" target-language="zh-Hans">
     <body>
-      <trans-unit id="serviceStartedStatusMsg">
-        <source xml:lang="en">{0} Started</source>
-        <target state="translated">{0} 已启动</target>
+      <trans-unit id="serviceCrashMessage">
+        <source xml:lang="en">{0} component exited unexpectedly. Please restart Azure Data Studio.</source>
+        <target state="translated">{0} 个组件意外退出。请重启 Azure Data Studio。</target>
       </trans-unit>
-      <trans-unit id="startingServiceStatusMsg">
-        <source xml:lang="en">Starting {0}</source>
-        <target state="translated">正在启动 {0}</target>
-      </trans-unit>
-      <trans-unit id="failedToStartServiceErrorMsg">
-        <source xml:lang="en">Failed to start {0}</source>
-        <target state="translated">未能启动 {0}</target>
-      </trans-unit>
-      <trans-unit id="installingServiceChannelMsg">
-        <source xml:lang="en">Installing {0} to {1}</source>
-        <target state="translated">正在将 {0} 安装到 {1}</target>
-      </trans-unit>
-      <trans-unit id="installingServiceStatusMsg">
-        <source xml:lang="en">Installing {0}</source>
-        <target state="translated">正在安装 {0}</target>
-      </trans-unit>
-      <trans-unit id="installedServiceChannelMsg">
-        <source xml:lang="en">Installed {0}</source>
-        <target state="translated">安装于 {0}</target>
-      </trans-unit>
-      <trans-unit id="downloadingServiceChannelMsg">
-        <source xml:lang="en">Downloading {0}</source>
-        <target state="translated">正在下载 {0}</target>
-      </trans-unit>
-      <trans-unit id="downloadingServiceSizeChannelMsg">
-        <source xml:lang="en">({0} KB)</source>
-        <target state="translated">({0} KB)</target>
-      </trans-unit>
-      <trans-unit id="downloadingServiceStatusMsg">
-        <source xml:lang="en">Downloading {0}</source>
-        <target state="translated">正在下载 {0}</target>
-      </trans-unit>
-      <trans-unit id="downloadServiceDoneChannelMsg">
-        <source xml:lang="en">Done installing {0}</source>
-        <target state="translated">已安装 {0}</target>
+      <trans-unit id="viewKnownIssuesText">
+        <source xml:lang="en">View Known Issues</source>
+        <target state="translated">查看已知问题</target>
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/kusto/dist/features" source-language="en" datatype="plaintext" target-language="zh-Hans">
+  <file original="extensions/kusto/package" source-language="en" datatype="plaintext" target-language="zh-Hans">
     <body>
-      <trans-unit id="kusto.missingLinkedAzureAccount">
-        <source xml:lang="en">Azure Data Studio needs to contact Azure Key Vault to access a column master key for Always Encrypted, but no linked Azure account is available. Please add a linked Azure account and retry the query.</source>
-        <target state="translated">Azure Data Studio 需要连接 Azure Key Vault 才能访问 Always Encrypted 的列主密钥，但没有可用的链接 Azure 帐户。请添加链接的 Azure 帐户，然后重试查询。</target>
+      <trans-unit id="cloud.databaseProperties.name">
+        <source xml:lang="en">Database Name</source>
+        <target state="translated">数据库名称</target>
       </trans-unit>
-      <trans-unit id="kusto.accountDoesNotExist">
-        <source xml:lang="en">Account does not exist.</source>
-        <target state="translated">帐户不存在。</target>
+      <trans-unit id="cloud.databaseProperties.size">
+        <source xml:lang="en">Size (MB)</source>
+        <target state="translated">大小(MB)</target>
       </trans-unit>
-      <trans-unit id="kusto.insufficientlyPrivelagedAzureAccount">
-        <source xml:lang="en">The configured Azure account for {0} does not have sufficient permissions for Azure Key Vault to access a column master key for Always Encrypted.</source>
-        <target state="translated">为 {0} 配置的 Azure 帐户没有足够的权限让 Azure Key Vault 访问 Always Encrypted 的列主密钥。</target>
+      <trans-unit id="cloud.serverProperties.diskCacheCapacity">
+        <source xml:lang="en">% of Cluster data capacity used</source>
+        <target state="translated">已使用的群集数据容量百分比</target>
+      </trans-unit>
+      <trans-unit id="cloud.serverProperties.machinesTotal">
+        <source xml:lang="en">Total Machines in the cluster</source>
+        <target state="translated">群集中的总计算机数</target>
+      </trans-unit>
+      <trans-unit id="cloud.serverProperties.summary">
+        <source xml:lang="en">Status</source>
+        <target state="translated">状态</target>
+      </trans-unit>
+      <trans-unit id="databasesListProperties.name">
+        <source xml:lang="en">Name</source>
+        <target state="translated">名称</target>
+      </trans-unit>
+      <trans-unit id="databasesListProperties.size">
+        <source xml:lang="en">Size (MB)</source>
+        <target state="translated">大小(MB)</target>
+      </trans-unit>
+      <trans-unit id="kusto.configuration.title">
+        <source xml:lang="en">KUSTO configuration</source>
+        <target state="translated">KUSTO 配置</target>
+      </trans-unit>
+      <trans-unit id="kusto.connectionOptions.applicationName.description">
+        <source xml:lang="en">The name of the application</source>
+        <target state="translated">应用程序的名称</target>
+      </trans-unit>
+      <trans-unit id="kusto.connectionOptions.applicationName.displayName">
+        <source xml:lang="en">Application name</source>
+        <target state="translated">应用程序名称</target>
+      </trans-unit>
+      <trans-unit id="kusto.connectionOptions.authType.categoryValues.azureMFA">
+        <source xml:lang="en">Azure Active Directory - Universal with MFA support</source>
+        <target state="translated">Azure Active Directory - 支持 MFA 的通用目录</target>
+      </trans-unit>
+      <trans-unit id="kusto.connectionOptions.authType.categoryValues.none">
+        <source xml:lang="en">No Authentication</source>
+        <target state="translated">无身份验证</target>
+      </trans-unit>
+      <trans-unit id="kusto.connectionOptions.authType.categoryValues.sqlLogin">
+        <source xml:lang="en">User Authentication</source>
+        <target state="translated">用户身份验证</target>
+      </trans-unit>
+      <trans-unit id="kusto.connectionOptions.authType.description">
+        <source xml:lang="en">Specifies the method of authenticating with Kusto Server</source>
+        <target state="translated">指定使用 Kusto Server 进行身份验证的方法</target>
+      </trans-unit>
+      <trans-unit id="kusto.connectionOptions.authType.displayName">
+        <source xml:lang="en">Authentication type</source>
+        <target state="translated">身份验证类型</target>
+      </trans-unit>
+      <trans-unit id="kusto.connectionOptions.connectRetryCount.description">
+        <source xml:lang="en">Number of attempts to restore connection</source>
+        <target state="translated">尝试还原连接的次数</target>
+      </trans-unit>
+      <trans-unit id="kusto.connectionOptions.connectRetryCount.displayName">
+        <source xml:lang="en">Connect retry count</source>
+        <target state="translated">连接重试次数</target>
+      </trans-unit>
+      <trans-unit id="kusto.connectionOptions.connectRetryInterval.description">
+        <source xml:lang="en">Delay between attempts to restore connection</source>
+        <target state="translated">两次尝试恢复连接之间的延迟</target>
+      </trans-unit>
+      <trans-unit id="kusto.connectionOptions.connectRetryInterval.displayName">
+        <source xml:lang="en">Connect retry interval</source>
+        <target state="translated">连接重试间隔</target>
+      </trans-unit>
+      <trans-unit id="kusto.connectionOptions.connectTimeout.description">
+        <source xml:lang="en">The length of time (in seconds) to wait for a connection to the server before terminating the attempt and generating an error</source>
+        <target state="translated">在终止尝试并生成错误之前等待连接到服务器的时长(秒)</target>
+      </trans-unit>
+      <trans-unit id="kusto.connectionOptions.connectTimeout.displayName">
+        <source xml:lang="en">Connect timeout</source>
+        <target state="translated">连接超时</target>
+      </trans-unit>
+      <trans-unit id="kusto.connectionOptions.connectionName.description">
+        <source xml:lang="en">Custom name of the connection</source>
+        <target state="translated">连接的自定义名称</target>
+      </trans-unit>
+      <trans-unit id="kusto.connectionOptions.connectionName.displayName">
+        <source xml:lang="en">Name (optional)</source>
+        <target state="translated">名称(可选)</target>
+      </trans-unit>
+      <trans-unit id="kusto.connectionOptions.databaseName.description">
+        <source xml:lang="en">The name of the initial catalog or database in the data source</source>
+        <target state="translated">数据源中的初始目录或数据库的名称。</target>
+      </trans-unit>
+      <trans-unit id="kusto.connectionOptions.databaseName.displayName">
+        <source xml:lang="en">Database</source>
+        <target state="translated">数据库</target>
+      </trans-unit>
+      <trans-unit id="kusto.connectionOptions.failoverPartner.description">
+        <source xml:lang="en">The name or network address of the instance of Kusto Server that acts as a failover partner</source>
+        <target state="translated">充当故障转移伙伴的 Kusto Server 实例的名称或网络地址</target>
+      </trans-unit>
+      <trans-unit id="kusto.connectionOptions.failoverPartner.displayName">
+        <source xml:lang="en">Failover partner</source>
+        <target state="translated">故障转移伙伴</target>
+      </trans-unit>
+      <trans-unit id="kusto.connectionOptions.groupName.connectionResiliency">
+        <source xml:lang="en">Connection Resiliency</source>
+        <target state="translated">连接弹性</target>
+      </trans-unit>
+      <trans-unit id="kusto.connectionOptions.groupName.context">
+        <source xml:lang="en">Context</source>
+        <target state="translated">上下文</target>
+      </trans-unit>
+      <trans-unit id="kusto.connectionOptions.groupName.initialization">
+        <source xml:lang="en">Initialization</source>
+        <target state="translated">初始化</target>
+      </trans-unit>
+      <trans-unit id="kusto.connectionOptions.groupName.security">
+        <source xml:lang="en">Security</source>
+        <target state="translated">安全性</target>
+      </trans-unit>
+      <trans-unit id="kusto.connectionOptions.groupName.source">
+        <source xml:lang="en">Source</source>
+        <target state="translated">源</target>
+      </trans-unit>
+      <trans-unit id="kusto.connectionOptions.password.description">
+        <source xml:lang="en">Indicates the password to be used when connecting to the data source</source>
+        <target state="translated">指示连接到数据源时使用的密码</target>
+      </trans-unit>
+      <trans-unit id="kusto.connectionOptions.password.displayName">
+        <source xml:lang="en">Password</source>
+        <target state="translated">密码</target>
+      </trans-unit>
+      <trans-unit id="kusto.connectionOptions.serverName.description">
+        <source xml:lang="en">Kusto cluster name</source>
+        <target state="translated">Kusto 群集名称</target>
+      </trans-unit>
+      <trans-unit id="kusto.connectionOptions.serverName.displayName">
+        <source xml:lang="en">Cluster</source>
+        <target state="translated">群集</target>
+      </trans-unit>
+      <trans-unit id="kusto.connectionOptions.userName.description">
+        <source xml:lang="en">Indicates the user ID to be used when connecting to the data source</source>
+        <target state="translated">指示连接到数据源时使用的用户 ID</target>
+      </trans-unit>
+      <trans-unit id="kusto.connectionOptions.userName.displayName">
+        <source xml:lang="en">User name</source>
+        <target state="translated">用户名</target>
+      </trans-unit>
+      <trans-unit id="kusto.connectionOptions.workstationId.description">
+        <source xml:lang="en">The name of the workstation connecting to Kusto Server</source>
+        <target state="translated">连接到 Kusto Server 的工作站的名称</target>
+      </trans-unit>
+      <trans-unit id="kusto.connectionOptions.workstationId.displayName">
+        <source xml:lang="en">Workstation Id</source>
+        <target state="translated">工作站 ID</target>
+      </trans-unit>
+      <trans-unit id="kusto.format.alignColumnDefinitionsInColumns">
+        <source xml:lang="en">Should column definitions be aligned?</source>
+        <target state="translated">列定义是否应对齐?</target>
+      </trans-unit>
+      <trans-unit id="kusto.format.datatypeCasing">
+        <source xml:lang="en">Should data types be formatted as UPPERCASE, lowercase, or none (not formatted)</source>
+        <target state="translated">数据类型应格式化为大写、小写还是无(不格式化)</target>
+      </trans-unit>
+      <trans-unit id="kusto.format.keywordCasing">
+        <source xml:lang="en">Should keywords be formatted as UPPERCASE, lowercase, or none (not formatted)</source>
+        <target state="translated">关键字应格式化为大写、小写还是无(不格式化)</target>
+      </trans-unit>
+      <trans-unit id="kusto.logDebugInfo">
+        <source xml:lang="en">[Optional] Log debug output to the console (View -&gt; Output) and then select appropriate output channel from the dropdown</source>
+        <target state="translated">[可选] 将调试输出记录到控制台(“查看”-&gt;“输出”)，然后从下拉列表中选择相应的输出通道</target>
+      </trans-unit>
+      <trans-unit id="kusto.provider.displayName">
+        <source xml:lang="en">Azure Data Explorer (Kusto)</source>
+        <target state="translated">Azure 数据资源管理器(Kusto)</target>
+      </trans-unit>
+      <trans-unit id="kusto.query.displayBitAsNumber">
+        <source xml:lang="en">Should BIT columns be displayed as numbers (1 or 0)? If false, BIT columns will be displayed as 'true' or 'false'</source>
+        <target state="translated">是否应将 BIT 列显示为数字(1 或 0)? 若否，则 BIT 列将显示为 "true" 或 "false"</target>
+      </trans-unit>
+      <trans-unit id="kusto.tracingLevel">
+        <source xml:lang="en">[Optional] Log level for backend services. Azure Data Studio generates a file name every time it starts and if the file already exists the logs entries are appended to that file. For cleanup of old log files see logRetentionMinutes and logFilesRemovalLimit settings. The default tracingLevel does not log much. Changing verbosity could lead to extensive logging and disk space requirements for the logs. Error includes Critical, Warning includes Error, Information includes Warning and Verbose includes Information</source>
+        <target state="translated">[可选] 后端服务的日志级别。Azure Data Studio 在每次启动时都会生成文件名；如果文件已存在，日志条目将追加到该文件。有关旧日志文件的清理，请参阅 logRetentionMinutes 和 logFilesRemovalLimit 设置。默认 tracingLevel 记录的内容很少。更改详细级别可能提升日志的记录和磁盘空间要求。“错误”包含“严重”，“警告”包含“错误”，“信息”包含“警告”，“详细级别”包含“信息”</target>
+      </trans-unit>
+      <trans-unit id="notebook.command.new">
+        <source xml:lang="en">New Notebook</source>
+        <target state="translated">新建笔记本</target>
+      </trans-unit>
+      <trans-unit id="notebook.command.open">
+        <source xml:lang="en">Open Notebook</source>
+        <target state="translated">打开笔记本</target>
+      </trans-unit>
+      <trans-unit id="objectsListProperties.metadataTypeName">
+        <source xml:lang="en">Type</source>
+        <target state="translated">类型</target>
+      </trans-unit>
+      <trans-unit id="objectsListProperties.name">
+        <source xml:lang="en">Name</source>
+        <target state="translated">名称</target>
       </trans-unit>
     </body>
   </file>
