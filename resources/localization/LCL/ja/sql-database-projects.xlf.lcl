@@ -1129,8 +1129,8 @@
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.profileReadError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Error loading the publish profile. {0}]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[プロファイル ファイルを読み込めませんでした。]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[発行プロファイルの読み込みエラー。{0}]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Could not load the profile file.]]></Val>
@@ -1366,8 +1366,8 @@
       <Item ItemId=";extensions/sql-database-projects/dist/common/constants.selectProfile" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Select Profile]]></Val>
-          <Tgt Cat="Text" Stat="Update" Orig="New">
-            <Val><![CDATA[読み込む発行プロファイルを選択してください]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[プロファイルの選択]]></Val>
           </Tgt>
           <Prev Cat="Text">
             <Val><![CDATA[Select publish profile to load]]></Val>
