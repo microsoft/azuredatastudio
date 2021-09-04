@@ -20,7 +20,7 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/admin-tool-ext-win/out/main" source-language="en" datatype="plaintext" target-language="pt-BR">
+  <file original="extensions/admin-tool-ext-win/dist/main" source-language="en" datatype="plaintext" target-language="pt-BR">
     <body>
       <trans-unit id="adminToolExtWin.noConnectionContextForProp">
         <source xml:lang="en">No ConnectionContext provided for handleLaunchSsmsMinPropertiesDialogCommand</source>

@@ -16,27 +16,115 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/schema-compare/out/dialogs/schemaCompareOptionsDialog" source-language="en" datatype="plaintext" target-language="it">
+  <file original="extensions/schema-compare/dist/localizedConstants" source-language="en" datatype="plaintext" target-language="it">
     <body>
-      <trans-unit id="SchemaCompareOptionsDialog.Ok">
-        <source xml:lang="en">Ok</source>
+      <trans-unit id="schemaCompareDialog.ok">
+        <source xml:lang="en">OK</source>
         <target state="translated">OK</target>
       </trans-unit>
-      <trans-unit id="SchemaCompareOptionsDialog.Cancel">
+      <trans-unit id="schemaCompareDialog.cancel">
         <source xml:lang="en">Cancel</source>
         <target state="translated">Annulla</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.SourceTitle">
+        <source xml:lang="en">Source</source>
+        <target state="translated">Origine</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.TargetTitle">
+        <source xml:lang="en">Target</source>
+        <target state="translated">Destinazione</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.fileTextBoxLabel">
+        <source xml:lang="en">File</source>
+        <target state="translated">File</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.dacpacRadioButtonLabel">
+        <source xml:lang="en">Data-tier Application File (.dacpac)</source>
+        <target state="translated">File dell'applicazione livello dati (con estensione dacpac)</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.databaseButtonLabel">
+        <source xml:lang="en">Database</source>
+        <target state="translated">Database</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.radioButtonsLabel">
+        <source xml:lang="en">Type</source>
+        <target state="translated">Tipo</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.serverDropdownTitle">
+        <source xml:lang="en">Server</source>
+        <target state="translated">Server</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.databaseDropdownTitle">
+        <source xml:lang="en">Database</source>
+        <target state="translated">Database</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.dialogTitle">
+        <source xml:lang="en">Schema Compare</source>
+        <target state="translated">Confronto schemi</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.differentSourceMessage">
+        <source xml:lang="en">A different source schema has been selected. Compare to see the comparison?</source>
+        <target state="translated">È stato selezionato uno schema di origine diverso. Eseguire il confronto?</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.differentTargetMessage">
+        <source xml:lang="en">A different target schema has been selected. Compare to see the comparison?</source>
+        <target state="translated">È stato selezionato uno schema di destinazione diverso. Eseguire il confronto?</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.differentSourceTargetMessage">
+        <source xml:lang="en">Different source and target schemas have been selected. Compare to see the comparison?</source>
+        <target state="translated">Sono stati selezionati schemi di origine e di destinazione diversi. Eseguire il confronto?</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.Yes">
+        <source xml:lang="en">Yes</source>
+        <target state="translated">Sì</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.No">
+        <source xml:lang="en">No</source>
+        <target state="translated">No</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.sourceTextBox">
+        <source xml:lang="en">Source file</source>
+        <target state="translated">File di origine</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.targetTextBox">
+        <source xml:lang="en">Target file</source>
+        <target state="translated">File di destinazione</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.sourceDatabaseDropdown">
+        <source xml:lang="en">Source Database</source>
+        <target state="translated">Database di origine</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.targetDatabaseDropdown">
+        <source xml:lang="en">Target Database</source>
+        <target state="translated">Database di destinazione</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.sourceServerDropdown">
+        <source xml:lang="en">Source Server</source>
+        <target state="translated">Server di origine</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.targetServerDropdown">
+        <source xml:lang="en">Target Server</source>
+        <target state="translated">Server di destinazione</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.defaultUser">
+        <source xml:lang="en">default</source>
+        <target state="translated">predefinito</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.openFile">
+        <source xml:lang="en">Open</source>
+        <target state="translated">Apri</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.selectSourceFile">
+        <source xml:lang="en">Select source file</source>
+        <target state="translated">Selezionare file di origine</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.selectTargetFile">
+        <source xml:lang="en">Select target file</source>
+        <target state="translated">Selezionare il file di destinazione</target>
       </trans-unit>
       <trans-unit id="SchemaCompareOptionsDialog.Reset">
         <source xml:lang="en">Reset</source>
         <target state="translated">Reimposta</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompareOptionsDialog.Yes">
-        <source xml:lang="en">Yes</source>
-        <target state="translated">Sì</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompareOptionsDialog.No">
-        <source xml:lang="en">No</source>
-        <target state="translated">No</target>
       </trans-unit>
       <trans-unit id="schemaCompareOptions.RecompareMessage">
         <source xml:lang="en">Options have changed. Recompare to see the comparison?</source>
@@ -53,6 +141,174 @@
       <trans-unit id="SchemaCompare.ObjectTypesOptionsLabel">
         <source xml:lang="en">Include Object Types</source>
         <target state="translated">Includi tipi di oggetto</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.CompareDetailsTitle">
+        <source xml:lang="en">Compare Details</source>
+        <target state="translated">Dettagli confronto</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.ApplyConfirmation">
+        <source xml:lang="en">Are you sure you want to update the target?</source>
+        <target state="translated">Aggiornare la destinazione?</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.RecompareToRefresh">
+        <source xml:lang="en">Press Compare to refresh the comparison.</source>
+        <target state="translated">Fare clic su Confronta per aggiornare il confronto.</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.generateScriptEnabledButton">
+        <source xml:lang="en">Generate script to deploy changes to target</source>
+        <target state="translated">Genera script per distribuire le modifiche nella destinazione</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.generateScriptNoChanges">
+        <source xml:lang="en">No changes to script</source>
+        <target state="translated">Non sono presenti modifiche per cui generare lo script</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.applyButtonEnabledTitle">
+        <source xml:lang="en">Apply changes to target</source>
+        <target state="translated">Applica modifiche alla destinazione</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.applyNoChanges">
+        <source xml:lang="en">No changes to apply</source>
+        <target state="translated">Non sono presenti modifiche da applicare</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.includeExcludeInfoMessage">
+        <source xml:lang="en">Please note that include/exclude operations can take a moment to calculate affected dependencies</source>
+        <target state="translated">Tenere presente che le operazioni di inclusione/esclusione possono richiedere qualche minuto per calcolare le dipendenze interessate</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.deleteAction">
+        <source xml:lang="en">Delete</source>
+        <target state="translated">Elimina</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.changeAction">
+        <source xml:lang="en">Change</source>
+        <target state="translated">Modifica</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.addAction">
+        <source xml:lang="en">Add</source>
+        <target state="translated">Aggiungi</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.differencesTableTitle">
+        <source xml:lang="en">Comparison between Source and Target</source>
+        <target state="translated">Confronto tra origine e destinazione</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.waitText">
+        <source xml:lang="en">Initializing Comparison. This might take a moment.</source>
+        <target state="translated">Inizializzazione del confronto. L'operazione potrebbe richiedere qualche istante.</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.startText">
+        <source xml:lang="en">To compare two schemas, first select a source schema and target schema, then press Compare.</source>
+        <target state="translated">Per confrontare due schemi, selezionare lo schema di origine e quello di destinazione, quindi fare clic su Confronta.</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.noDifferences">
+        <source xml:lang="en">No schema differences were found.</source>
+        <target state="translated">Non sono state trovate differenze di schema.</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.typeColumn">
+        <source xml:lang="en">Type</source>
+        <target state="translated">Tipo</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.sourceNameColumn">
+        <source xml:lang="en">Source Name</source>
+        <target state="translated">Nome origine</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.includeColumnName">
+        <source xml:lang="en">Include</source>
+        <target state="translated">Includi</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.actionColumn">
+        <source xml:lang="en">Action</source>
+        <target state="translated">Azione</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.targetNameColumn">
+        <source xml:lang="en">Target Name</source>
+        <target state="translated">Nome destinazione</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.generateScriptButtonDisabledTitle">
+        <source xml:lang="en">Generate script is enabled when the target is a database</source>
+        <target state="translated">L'opzione Genera script è abilitata quando la destinazione è un database</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.applyButtonDisabledTitle">
+        <source xml:lang="en">Apply is enabled when the target is a database</source>
+        <target state="translated">L'opzione Applica è abilitata quando la destinazione è un database</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.cannotExcludeMessageWithDependent">
+        <source xml:lang="en">Cannot exclude {0}. Included dependents exist, such as {1}</source>
+        <target state="translated">Non è possibile escludere {0}. Esistono dipendenti inclusi, ad esempio {1}</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.cannotIncludeMessageWithDependent">
+        <source xml:lang="en">Cannot include {0}. Excluded dependents exist, such as {1}</source>
+        <target state="translated">Non è possibile includere {0}. Esistono dipendenti esclusi, ad esempio {1}</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.cannotExcludeMessage">
+        <source xml:lang="en">Cannot exclude {0}. Included dependents exist</source>
+        <target state="translated">Non è possibile escludere {0}. Esistono dipendenti inclusi</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.cannotIncludeMessage">
+        <source xml:lang="en">Cannot include {0}. Excluded dependents exist</source>
+        <target state="translated">Non è possibile includere {0}. Esistono dipendenti esclusi</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.compareButton">
+        <source xml:lang="en">Compare</source>
+        <target state="translated">Confronta</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.cancelCompareButton">
+        <source xml:lang="en">Stop</source>
+        <target state="translated">Arresta</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.generateScriptButton">
+        <source xml:lang="en">Generate script</source>
+        <target state="translated">Genera script</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.optionsButton">
+        <source xml:lang="en">Options</source>
+        <target state="translated">Opzioni</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.updateButton">
+        <source xml:lang="en">Apply</source>
+        <target state="translated">Applica</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.switchDirectionButton">
+        <source xml:lang="en">Switch direction</source>
+        <target state="translated">Cambia direzione</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.switchButtonTitle">
+        <source xml:lang="en">Switch source and target</source>
+        <target state="translated">Scambia origine e destinazione</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.sourceButtonTitle">
+        <source xml:lang="en">Select Source</source>
+        <target state="translated">Seleziona origine</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.targetButtonTitle">
+        <source xml:lang="en">Select Target</source>
+        <target state="translated">Seleziona destinazione</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.openScmpButton">
+        <source xml:lang="en">Open .scmp file</source>
+        <target state="translated">Apri file con estensione scmp</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.openScmpButtonTitle">
+        <source xml:lang="en">Load source, target, and options saved in an .scmp file</source>
+        <target state="translated">Carica origine, destinazione e opzioni salvate in un file con estensione scmp</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.saveScmpButton">
+        <source xml:lang="en">Save .scmp file</source>
+        <target state="translated">Salva file con estensione scmp</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.saveScmpButtonTitle">
+        <source xml:lang="en">Save source and target, options, and excluded elements</source>
+        <target state="translated">Salva origine e destinazione, opzioni ed elementi esclusi</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.saveFile">
+        <source xml:lang="en">Save</source>
+        <target state="translated">Salva</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.GetConnectionString">
+        <source xml:lang="en">Do you want to connect to {0}?</source>
+        <target state="translated">Si desidera connettersi a {0}?</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.selectConnection">
+        <source xml:lang="en">Select connection</source>
+        <target state="translated">Selezionare connessione</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.IgnoreTableOptions">
         <source xml:lang="en">Ignore Table Options</source>
@@ -407,7 +663,7 @@
         <target state="translated">Ruoli database</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.DatabaseTriggers">
-        <source xml:lang="en">DatabaseTriggers</source>
+        <source xml:lang="en">Database Triggers</source>
         <target state="translated">Trigger database</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.Defaults">
@@ -426,6 +682,14 @@
         <source xml:lang="en">External File Formats</source>
         <target state="translated">Formati di file esterni</target>
       </trans-unit>
+      <trans-unit id="SchemaCompare.ExternalStreams">
+        <source xml:lang="en">External Streams</source>
+        <target state="translated">Flussi esterni</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.ExternalStreamingJobs">
+        <source xml:lang="en">External Streaming Jobs</source>
+        <target state="translated">Processi di streaming esterni</target>
+      </trans-unit>
       <trans-unit id="SchemaCompare.ExternalTables">
         <source xml:lang="en">External Tables</source>
         <target state="translated">Tabelle esterne</target>
@@ -433,6 +697,10 @@
       <trans-unit id="SchemaCompare.Filegroups">
         <source xml:lang="en">Filegroups</source>
         <target state="translated">Filegroup</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Files">
+        <source xml:lang="en">Files</source>
+        <target state="translated">File</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.FileTables">
         <source xml:lang="en">File Tables</source>
@@ -503,11 +771,11 @@
         <target state="translated">Firme</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.StoredProcedures">
-        <source xml:lang="en">StoredProcedures</source>
+        <source xml:lang="en">Stored Procedures</source>
         <target state="translated">Stored procedure</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.SymmetricKeys">
-        <source xml:lang="en">SymmetricKeys</source>
+        <source xml:lang="en">Symmetric Keys</source>
         <target state="translated">Chiavi simmetriche</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.Synonyms">
@@ -926,285 +1194,29 @@
         <source xml:lang="en">Specifies whether differences in table column order should be ignored or updated when you publish to a database.</source>
         <target state="translated">Specifica se le differenze nell'ordine colonne della tabella devono essere ignorate o aggiornate durante la pubblicazione di un database.</target>
       </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/schema-compare/out/dialogs/schemaCompareDialog" source-language="en" datatype="plaintext" target-language="it">
-    <body>
-      <trans-unit id="schemaCompareDialog.ok">
-        <source xml:lang="en">Ok</source>
-        <target state="translated">OK</target>
-      </trans-unit>
-      <trans-unit id="schemaCompareDialog.cancel">
-        <source xml:lang="en">Cancel</source>
-        <target state="translated">Annulla</target>
-      </trans-unit>
-      <trans-unit id="schemaCompareDialog.SourceTitle">
-        <source xml:lang="en">Source</source>
-        <target state="translated">Origine</target>
-      </trans-unit>
-      <trans-unit id="schemaCompareDialog.TargetTitle">
-        <source xml:lang="en">Target</source>
-        <target state="translated">Destinazione</target>
-      </trans-unit>
-      <trans-unit id="schemaCompareDialog.fileTextBoxLabel">
-        <source xml:lang="en">File</source>
-        <target state="translated">File</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.dacpacRadioButtonLabel">
-        <source xml:lang="en">Data-tier Application File (.dacpac)</source>
-        <target state="translated">File dell'applicazione livello dati (con estensione dacpac)</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.databaseButtonLabel">
-        <source xml:lang="en">Database</source>
-        <target state="translated">Database</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.radioButtonsLabel">
-        <source xml:lang="en">Type</source>
-        <target state="translated">Tipo</target>
-      </trans-unit>
-      <trans-unit id="schemaCompareDialog.serverDropdownTitle">
-        <source xml:lang="en">Server</source>
-        <target state="translated">Server</target>
-      </trans-unit>
-      <trans-unit id="schemaCompareDialog.databaseDropdownTitle">
-        <source xml:lang="en">Database</source>
-        <target state="translated">Database</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.noActiveConnectionsText">
-        <source xml:lang="en">No active connections</source>
-        <target state="translated">Non ci sono connessioni attive</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.dialogTitle">
-        <source xml:lang="en">Schema Compare</source>
-        <target state="translated">Confronto schemi</target>
-      </trans-unit>
-      <trans-unit id="schemaCompareDialog.differentSourceMessage">
-        <source xml:lang="en">A different source schema has been selected. Compare to see the comparison?</source>
-        <target state="translated">È stato selezionato uno schema di origine diverso. Eseguire il confronto?</target>
-      </trans-unit>
-      <trans-unit id="schemaCompareDialog.differentTargetMessage">
-        <source xml:lang="en">A different target schema has been selected. Compare to see the comparison?</source>
-        <target state="translated">È stato selezionato uno schema di destinazione diverso. Eseguire il confronto?</target>
-      </trans-unit>
-      <trans-unit id="schemaCompareDialog.differentSourceTargetMessage">
-        <source xml:lang="en">Different source and target schemas have been selected. Compare to see the comparison?</source>
-        <target state="translated">Sono stati selezionati schemi di origine e di destinazione diversi. Eseguire il confronto?</target>
-      </trans-unit>
-      <trans-unit id="schemaCompareDialog.Yes">
-        <source xml:lang="en">Yes</source>
-        <target state="translated">Sì</target>
-      </trans-unit>
-      <trans-unit id="schemaCompareDialog.No">
-        <source xml:lang="en">No</source>
-        <target state="translated">No</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.openFile">
-        <source xml:lang="en">Open</source>
-        <target state="translated">Apri</target>
-      </trans-unit>
-      <trans-unit id="schemaCompareDialog.defaultUser">
-        <source xml:lang="en">default</source>
-        <target state="translated">predefinito</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/schema-compare/out/schemaCompareMainWindow" source-language="en" datatype="plaintext" target-language="it">
-    <body>
-      <trans-unit id="schemaCompare.CompareDetailsTitle">
-        <source xml:lang="en">Compare Details</source>
-        <target state="translated">Dettagli confronto</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.ApplyConfirmation">
-        <source xml:lang="en">Are you sure you want to update the target?</source>
-        <target state="translated">Aggiornare la destinazione?</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.RecompareToRefresh">
-        <source xml:lang="en">Press Compare to refresh the comparison.</source>
-        <target state="translated">Fare clic su Confronta per aggiornare il confronto.</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.generateScriptEnabledButton">
-        <source xml:lang="en">Generate script to deploy changes to target</source>
-        <target state="translated">Genera script per distribuire le modifiche nella destinazione</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.generateScriptNoChanges">
-        <source xml:lang="en">No changes to script</source>
-        <target state="translated">Non sono presenti modifiche per cui generare lo script</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.applyButtonEnabledTitle">
-        <source xml:lang="en">Apply changes to target</source>
-        <target state="translated">Applica modifiche alla destinazione</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.applyNoChanges">
-        <source xml:lang="en">No changes to apply</source>
-        <target state="translated">Non sono presenti modifiche da applicare</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.deleteAction">
-        <source xml:lang="en">Delete</source>
-        <target state="translated">Elimina</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.changeAction">
-        <source xml:lang="en">Change</source>
-        <target state="translated">Modifica</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.addAction">
-        <source xml:lang="en">Add</source>
-        <target state="translated">Aggiungi</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.Title">
-        <source xml:lang="en">Schema Compare</source>
-        <target state="translated">Confronto schemi</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.sourceLabel">
-        <source xml:lang="en">Source</source>
-        <target state="translated">Origine</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.targetLabel">
-        <source xml:lang="en">Target</source>
-        <target state="translated">Destinazione</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.switchLabel">
-        <source xml:lang="en">➔</source>
-        <target state="translated">➔</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.waitText">
-        <source xml:lang="en">Initializing Comparison. This might take a moment.</source>
-        <target state="translated">Inizializzazione del confronto. L'operazione potrebbe richiedere qualche istante.</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.startText">
-        <source xml:lang="en">To compare two schemas, first select a source schema and target schema, then press Compare.</source>
-        <target state="translated">Per confrontare due schemi, selezionare lo schema di origine e quello di destinazione, quindi fare clic su Confronta.</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.noDifferences">
-        <source xml:lang="en">No schema differences were found.</source>
-        <target state="translated">Non sono state trovate differenze di schema.</target>
-      </trans-unit>
       <trans-unit id="schemaCompare.compareErrorMessage">
         <source xml:lang="en">Schema Compare failed: {0}</source>
         <target state="translated">Il confronto schemi non è riuscito: {0}</target>
       </trans-unit>
-      <trans-unit id="schemaCompare.typeColumn">
-        <source xml:lang="en">Type</source>
-        <target state="translated">Tipo</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.sourceNameColumn">
-        <source xml:lang="en">Source Name</source>
-        <target state="translated">Nome origine</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.includeColumnName">
-        <source xml:lang="en">Include</source>
-        <target state="translated">Includi</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.actionColumn">
-        <source xml:lang="en">Action</source>
-        <target state="translated">Azione</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.targetNameColumn">
-        <source xml:lang="en">Target Name</source>
-        <target state="translated">Nome destinazione</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.generateScriptButtonDisabledTitle">
-        <source xml:lang="en">Generate script is enabled when the target is a database</source>
-        <target state="translated">L'opzione Genera script è abilitata quando la destinazione è un database</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.applyButtonDisabledTitle">
-        <source xml:lang="en">Apply is enabled when the target is a database</source>
-        <target state="translated">L'opzione Applica è abilitata quando la destinazione è un database</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.compareButton">
-        <source xml:lang="en">Compare</source>
-        <target state="translated">Confronta</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.compareButtonTitle">
-        <source xml:lang="en">Compare</source>
-        <target state="translated">Confronta</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.cancelCompareButton">
-        <source xml:lang="en">Stop</source>
-        <target state="translated">Arresta</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.cancelCompareButtonTitle">
-        <source xml:lang="en">Stop</source>
-        <target state="translated">Arresta</target>
+      <trans-unit id="schemaCompare.saveScmpErrorMessage">
+        <source xml:lang="en">Save scmp failed: '{0}'</source>
+        <target state="translated">Il salvataggio del file scmp non è riuscito: '{0}'</target>
       </trans-unit>
       <trans-unit id="schemaCompare.cancelErrorMessage">
         <source xml:lang="en">Cancel schema compare failed: '{0}'</source>
         <target state="translated">L'annullamento del confronto schemi non è riuscito: '{0}'</target>
       </trans-unit>
-      <trans-unit id="schemaCompare.generateScriptButton">
-        <source xml:lang="en">Generate script</source>
-        <target state="translated">Genera script</target>
-      </trans-unit>
       <trans-unit id="schemaCompare.generateScriptErrorMessage">
         <source xml:lang="en">Generate script failed: '{0}'</source>
         <target state="translated">La generazione dello script non è riuscita: '{0}'</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.optionsButton">
-        <source xml:lang="en">Options</source>
-        <target state="translated">Opzioni</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.optionsButtonTitle">
-        <source xml:lang="en">Options</source>
-        <target state="translated">Opzioni</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.updateButton">
-        <source xml:lang="en">Apply</source>
-        <target state="translated">Applica</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.ApplyYes">
-        <source xml:lang="en">Yes</source>
-        <target state="translated">Sì</target>
       </trans-unit>
       <trans-unit id="schemaCompare.updateErrorMessage">
         <source xml:lang="en">Schema Compare Apply failed '{0}'</source>
         <target state="translated">L'applicazione del confronto schemi non è riuscita: '{0}'</target>
       </trans-unit>
-      <trans-unit id="schemaCompare.switchDirectionButton">
-        <source xml:lang="en">Switch direction</source>
-        <target state="translated">Cambia direzione</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.switchButtonTitle">
-        <source xml:lang="en">Switch source and target</source>
-        <target state="translated">Scambia origine e destinazione</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.sourceButtonTitle">
-        <source xml:lang="en">Select Source</source>
-        <target state="translated">Seleziona origine</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.targetButtonTitle">
-        <source xml:lang="en">Select Target</source>
-        <target state="translated">Seleziona destinazione</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.openScmpButton">
-        <source xml:lang="en">Open .scmp file</source>
-        <target state="translated">Apri file con estensione scmp</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.openScmpButtonTitle">
-        <source xml:lang="en">Load source, target, and options saved in an .scmp file</source>
-        <target state="translated">Carica origine, destinazione e opzioni salvate in un file con estensione scmp</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.openFile">
-        <source xml:lang="en">Open</source>
-        <target state="translated">Apri</target>
-      </trans-unit>
       <trans-unit id="schemaCompare.openScmpErrorMessage">
         <source xml:lang="en">Open scmp failed: '{0}'</source>
         <target state="translated">L'apertura del file scmp non è riuscita: '{0}'</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.saveScmpButton">
-        <source xml:lang="en">Save .scmp file</source>
-        <target state="translated">Salva file con estensione scmp</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.saveScmpButtonTitle">
-        <source xml:lang="en">Save source and target, options, and excluded elements</source>
-        <target state="translated">Salva origine e destinazione, opzioni ed elementi esclusi</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.saveFile">
-        <source xml:lang="en">Save</source>
-        <target state="translated">Salva</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.saveScmpErrorMessage">
-        <source xml:lang="en">Save scmp failed: '{0}'</source>
-        <target state="translated">Il salvataggio del file scmp non è riuscito: '{0}'</target>
       </trans-unit>
     </body>
   </file>

@@ -26,14 +26,6 @@
         <source xml:lang="en">Run SQL Server container image with docker</source>
         <target state="translated">Docker を使用して SQL Server コンテナー イメージを実行する</target>
       </trans-unit>
-      <trans-unit id="resource-type-sql-bdc-display-name">
-        <source xml:lang="en">SQL Server Big Data Cluster</source>
-        <target state="translated">SQL Server ビッグ データ クラスター</target>
-      </trans-unit>
-      <trans-unit id="resource-type-sql-bdc-description">
-        <source xml:lang="en">SQL Server Big Data Cluster allows you to deploy scalable clusters of SQL Server, Spark, and HDFS containers running on Kubernetes</source>
-        <target state="translated">SQL Server ビッグ データ クラスターを使用すると、Kubernetes で実行されている SQL Server、Spark、および HDFS のコンテナーのスケーラブルなクラスターをデプロイできます。</target>
-      </trans-unit>
       <trans-unit id="version-display-name">
         <source xml:lang="en">Version</source>
         <target state="translated">バージョン</target>
@@ -45,34 +37,6 @@
       <trans-unit id="sql-2019-display-name">
         <source xml:lang="en">SQL Server 2019</source>
         <target state="translated">SQL Server 2019</target>
-      </trans-unit>
-      <trans-unit id="bdc-2019-display-name">
-        <source xml:lang="en">SQL Server 2019</source>
-        <target state="translated">SQL Server 2019</target>
-      </trans-unit>
-      <trans-unit id="bdc-deployment-target">
-        <source xml:lang="en">Deployment target</source>
-        <target state="translated">デプロイ ターゲット</target>
-      </trans-unit>
-      <trans-unit id="bdc-deployment-target-new-aks">
-        <source xml:lang="en">New Azure Kubernetes Service Cluster</source>
-        <target state="translated">新しい Azure Kubernetes Service クラスター</target>
-      </trans-unit>
-      <trans-unit id="bdc-deployment-target-existing-aks">
-        <source xml:lang="en">Existing Azure Kubernetes Service Cluster</source>
-        <target state="translated">既存の Azure Kubernetes Service クラスター</target>
-      </trans-unit>
-      <trans-unit id="bdc-deployment-target-existing-kubeadm">
-        <source xml:lang="en">Existing Kubernetes Cluster (kubeadm)</source>
-        <target state="translated">既存の Kubernetes クラスター (kubeadm)</target>
-      </trans-unit>
-      <trans-unit id="bdc-deployment-target-existing-aro">
-        <source xml:lang="en">Existing Azure Red Hat OpenShift cluster</source>
-        <target state="translated">既存の Azure Red Hat OpenShift クラスター</target>
-      </trans-unit>
-      <trans-unit id="bdc-deployment-target-existing-openshift">
-        <source xml:lang="en">Existing OpenShift cluster</source>
-        <target state="translated">既存の OpenShift クラスター</target>
       </trans-unit>
       <trans-unit id="docker-sql-2017-title">
         <source xml:lang="en">Deploy SQL Server 2017 container images</source>
@@ -98,70 +62,6 @@
         <source xml:lang="en">Port</source>
         <target state="translated">ポート</target>
       </trans-unit>
-      <trans-unit id="bdc-cluster-settings-section-title">
-        <source xml:lang="en">SQL Server Big Data Cluster settings</source>
-        <target state="translated">SQL Server ビッグ データ クラスターの設定</target>
-      </trans-unit>
-      <trans-unit id="bdc-cluster-name-field">
-        <source xml:lang="en">Cluster name</source>
-        <target state="translated">クラスター名</target>
-      </trans-unit>
-      <trans-unit id="bdc-controller-username-field">
-        <source xml:lang="en">Controller username</source>
-        <target state="translated">コントローラーのユーザー名</target>
-      </trans-unit>
-      <trans-unit id="bdc-password-field">
-        <source xml:lang="en">Password</source>
-        <target state="translated">パスワード</target>
-      </trans-unit>
-      <trans-unit id="bdc-confirm-password-field">
-        <source xml:lang="en">Confirm password</source>
-        <target state="translated">パスワードの確認</target>
-      </trans-unit>
-      <trans-unit id="bdc-azure-settings-section-title">
-        <source xml:lang="en">Azure settings</source>
-        <target state="translated">Azure の設定</target>
-      </trans-unit>
-      <trans-unit id="bdc-azure-subscription-id-field">
-        <source xml:lang="en">Subscription id</source>
-        <target state="translated">サブスクリプション ID</target>
-      </trans-unit>
-      <trans-unit id="bdc-azure-subscription-id-placeholder">
-        <source xml:lang="en">Use my default Azure subscription</source>
-        <target state="translated">既定の Azure サブスクリプションを使用する</target>
-      </trans-unit>
-      <trans-unit id="bdc-azure-resource-group-field">
-        <source xml:lang="en">Resource group name</source>
-        <target state="translated">リソース グループ名</target>
-      </trans-unit>
-      <trans-unit id="bdc-azure-region-field">
-        <source xml:lang="en">Region</source>
-        <target state="translated">リージョン</target>
-      </trans-unit>
-      <trans-unit id="bdc-azure-aks-name-field">
-        <source xml:lang="en">AKS cluster name</source>
-        <target state="translated">AKS クラスター名</target>
-      </trans-unit>
-      <trans-unit id="bdc-azure-vm-size-field">
-        <source xml:lang="en">VM size</source>
-        <target state="translated">VM サイズ</target>
-      </trans-unit>
-      <trans-unit id="bdc-azure-vm-count-field">
-        <source xml:lang="en">VM count</source>
-        <target state="translated">VM 数</target>
-      </trans-unit>
-      <trans-unit id="bdc-storage-class-field">
-        <source xml:lang="en">Storage class name</source>
-        <target state="translated">ストレージ クラス名</target>
-      </trans-unit>
-      <trans-unit id="bdc-data-size-field">
-        <source xml:lang="en">Capacity for data (GB)</source>
-        <target state="translated">データの容量 (GB)</target>
-      </trans-unit>
-      <trans-unit id="bdc-log-size-field">
-        <source xml:lang="en">Capacity for logs (GB)</source>
-        <target state="translated">ログの容量 (GB)</target>
-      </trans-unit>
       <trans-unit id="resource-type-sql-windows-setup-display-name">
         <source xml:lang="en">SQL Server on Windows</source>
         <target state="translated">SQL Server on Windows</target>
@@ -170,21 +70,9 @@
         <source xml:lang="en">Run SQL Server on Windows, select a version to get started.</source>
         <target state="translated">SQL Server on Windows を実行し、開始するバージョンを選択します。</target>
       </trans-unit>
-      <trans-unit id="bdc-agreement">
-        <source xml:lang="en">I accept {0}, {1} and {2}.</source>
-        <target state="translated">{0}、{1}、{2} に同意します。</target>
-      </trans-unit>
       <trans-unit id="microsoft-privacy-statement">
         <source xml:lang="en">Microsoft Privacy Statement</source>
         <target state="translated">Microsoft のプライバシーに関する声明</target>
-      </trans-unit>
-      <trans-unit id="bdc-agreement-azdata-eula">
-        <source xml:lang="en">azdata License Terms</source>
-        <target state="translated">azdata ライセンス条項</target>
-      </trans-unit>
-      <trans-unit id="bdc-agreement-bdc-eula">
-        <source xml:lang="en">SQL Server License Terms</source>
-        <target state="translated">SQL Server ライセンス条項</target>
       </trans-unit>
       <trans-unit id="deployment.configuration.title">
         <source xml:lang="en">Deployment configuration</source>
@@ -485,6 +373,22 @@
       <trans-unit id="deploymentDialog.RecheckEulaButton">
         <source xml:lang="en">Accept EULA &amp; Select</source>
         <target state="translated">EULA に同意して選択</target>
+      </trans-unit>
+      <trans-unit id="resourceDeployment.extensionRequiredPrompt">
+        <source xml:lang="en">The '{0}' extension is required to deploy this resource, do you want to install it now?</source>
+        <target state="translated">このリソースを展開するには、'{0}' の拡張機能が必要です。今すぐインストールしますか?</target>
+      </trans-unit>
+      <trans-unit id="resourceDeployment.install">
+        <source xml:lang="en">Install</source>
+        <target state="translated">インストール</target>
+      </trans-unit>
+      <trans-unit id="resourceDeployment.installingExtension">
+        <source xml:lang="en">Installing extension '{0}'...</source>
+        <target state="translated">拡張機能 '{0}' をインストールしています...</target>
+      </trans-unit>
+      <trans-unit id="resourceDeployment.unknownExtension">
+        <source xml:lang="en">Unknown extension '{0}'</source>
+        <target state="translated">不明な拡張機能 '{0}'</target>
       </trans-unit>
       <trans-unit id="resourceTypePickerDialog.title">
         <source xml:lang="en">Select the deployment options</source>
@@ -1096,10 +1000,6 @@
   </file>
   <file original="extensions/resource-deployment/dist/main" source-language="en" datatype="plaintext" target-language="ja">
     <body>
-      <trans-unit id="resourceDeployment.FailedToLoadExtension">
-        <source xml:lang="en">Failed to load extension: {0}, Error detected in the resource type definition in package.json, check debug console for details.</source>
-        <target state="translated">拡張機能を読み込めませんでした: {0}。package.json のリソースの種類の定義でエラーが検出されました。詳しくは、デバッグ コンソールを確認してください。</target>
-      </trans-unit>
       <trans-unit id="resourceDeployment.UnknownResourceType">
         <source xml:lang="en">The resource type: {0} is not defined</source>
         <target state="translated">リソースの種類: {0} が定義されていません</target>
@@ -2222,13 +2122,13 @@ Select a different subscription containing at least one server</source>
         <source xml:lang="en">Deployment pre-requisites</source>
         <target state="translated">デプロイの前提条件</target>
       </trans-unit>
-      <trans-unit id="deploymentDialog.FailedEulaValidation">
-        <source xml:lang="en">To proceed, you must accept the terms of the End User License Agreement(EULA)</source>
-        <target state="translated">進めるには、エンド ユーザー使用許諾契約 (EULA) の条件に同意する必要があります。</target>
-      </trans-unit>
       <trans-unit id="deploymentDialog.FailedToolsInstallation">
         <source xml:lang="en">Some tools were still not discovered. Please make sure that they are installed, running and discoverable</source>
         <target state="translated">一部のツールがまだ検出されていません。それらがインストールされており、実行中で検出可能であることを確認してください</target>
+      </trans-unit>
+      <trans-unit id="deploymentDialog.FailedEulaValidation">
+        <source xml:lang="en">To proceed, you must accept the terms of the End User License Agreement(EULA)</source>
+        <target state="translated">進めるには、エンド ユーザー使用許諾契約 (EULA) の条件に同意する必要があります。</target>
       </trans-unit>
       <trans-unit id="deploymentDialog.loadingRequiredToolsCompleted">
         <source xml:lang="en">Loading required tools information completed</source>
@@ -2378,6 +2278,10 @@ Select a different subscription containing at least one server</source>
         <source xml:lang="en">Azure Data CLI</source>
         <target state="translated">Azure Data CLI</target>
       </trans-unit>
+      <trans-unit id="deploy.azdataExtMissing">
+        <source xml:lang="en">The Azure Data CLI extension must be installed to deploy this resource. Please install it through the extension gallery and try again.</source>
+        <target state="translated">このリソースをデプロイするには、Azure Data CLI 拡張機能をインストールする必要があります。拡張機能ギャラリーを使用してインストールしてから、もう一度お試しください。</target>
+      </trans-unit>
       <trans-unit id="deployCluster.GetToolVersionErrorInformation">
         <source xml:lang="en">Error retrieving version information. See output channel '{0}' for more details</source>
         <target state="translated">バージョン情報の取得でエラーが発生しました。詳細については、出力チャネル '{0}' を参照してください</target>
@@ -2385,46 +2289,6 @@ Select a different subscription containing at least one server</source>
       <trans-unit id="deployCluster.GetToolVersionError">
         <source xml:lang="en">Error retrieving version information.{0}Invalid output received, get version command output: '{1}' </source>
         <target state="translated">バージョン情報の取得でエラーが発生しました。{0}無効な出力を受け取りました。バージョン取得コマンドの出力: '{1}'</target>
-      </trans-unit>
-      <trans-unit id="resourceDeployment.Azdata.DeletingPreviousAzdata.msi">
-        <source xml:lang="en">deleting previously downloaded Azdata.msi if one exists …</source>
-        <target state="translated">以前にダウンロードされた Azdata.msi が存在する場合にそれを削除しています...</target>
-      </trans-unit>
-      <trans-unit id="resourceDeployment.Azdata.DownloadingAndInstallingAzdata">
-        <source xml:lang="en">downloading Azdata.msi and installing azdata-cli …</source>
-        <target state="translated">Azdata.msi をダウンロードして、azdata cli をインストールしています...</target>
-      </trans-unit>
-      <trans-unit id="resourceDeployment.Azdata.DisplayingInstallationLog">
-        <source xml:lang="en">displaying the installation log …</source>
-        <target state="translated">インストール ログを表示しています...</target>
-      </trans-unit>
-      <trans-unit id="resourceDeployment.Azdata.TappingBrewRepository">
-        <source xml:lang="en">tapping into the brew repository for azdata-cli …</source>
-        <target state="translated">azdata-cli に brew リポジトリを利用しています...</target>
-      </trans-unit>
-      <trans-unit id="resourceDeployment.Azdata.UpdatingBrewRepository">
-        <source xml:lang="en">updating the brew repository for azdata-cli installation …</source>
-        <target state="translated">azdata-cli インストール用に brew リポジトリを更新しています...</target>
-      </trans-unit>
-      <trans-unit id="resourceDeployment.Azdata.InstallingAzdata">
-        <source xml:lang="en">installing azdata …</source>
-        <target state="translated">azdata をインストールしています...</target>
-      </trans-unit>
-      <trans-unit id="resourceDeployment.Azdata.AptGetUpdate">
-        <source xml:lang="en">updating repository information …</source>
-        <target state="translated">リポジトリ情報を更新しています...</target>
-      </trans-unit>
-      <trans-unit id="resourceDeployment.Azdata.AptGetPackages">
-        <source xml:lang="en">getting packages needed for azdata installation …</source>
-        <target state="translated">azdata インストールに必要なパッケージを取得しています...</target>
-      </trans-unit>
-      <trans-unit id="resourceDeployment.Azdata.DownloadAndInstallingSigningKey">
-        <source xml:lang="en">downloading and installing the signing key for azdata …</source>
-        <target state="translated">azdata の署名キーをダウンロードしてインストールしています...</target>
-      </trans-unit>
-      <trans-unit id="resourceDeployment.Azdata.AddingAzdataRepositoryInformation">
-        <source xml:lang="en">adding the azdata repository information …</source>
-        <target state="translated">azdata リポジトリ情報を追加しています...</target>
       </trans-unit>
     </body>
   </file>

@@ -22,6 +22,14 @@
         <source xml:lang="en">Local path to a preexisting python installation used by Notebooks.</source>
         <target state="translated">Локальный путь к существующей установке Python, используемой Записными книжками.</target>
       </trans-unit>
+      <trans-unit id="notebook.dontPromptPythonUpdate.description">
+        <source xml:lang="en">Do not show prompt to update Python.</source>
+        <target state="translated">Не показывать предложение обновить Python.</target>
+      </trans-unit>
+      <trans-unit id="notebook.jupyterServerShutdownTimeout.description">
+        <source xml:lang="en">The amount of time (in minutes) to wait before shutting down a server after all notebooks are closed. (Enter 0 to not shutdown)</source>
+        <target state="translated">Интервал времени (в минутах), по истечении которого производится завершение работы сервера после закрытия всех записных книжек. (Введите 0, чтобы не завершать работу)</target>
+      </trans-unit>
       <trans-unit id="notebook.overrideEditorTheming.description">
         <source xml:lang="en">Override editor default settings in the Notebook editor. Settings include background color, current line color and border</source>
         <target state="translated">Переопределите параметры редактора по умолчанию в редакторе Notebook. Параметры включают в себя цвет фона, цвет текущей строки и границу</target>
@@ -49,6 +57,10 @@
       <trans-unit id="notebook.pinnedNotebooks.description">
         <source xml:lang="en">Notebooks that are pinned by the user for the current workspace</source>
         <target state="translated">Записные книжки, закрепленные пользователем для текущей рабочей области</target>
+      </trans-unit>
+      <trans-unit id="notebook.allowRoot.description">
+        <source xml:lang="en">Allow Jupyter server to run as root user</source>
+        <target state="new">Allow Jupyter server to run as root user</target>
       </trans-unit>
       <trans-unit id="notebook.command.new">
         <source xml:lang="en">New Notebook</source>
@@ -139,24 +151,24 @@
         <target state="translated">Книги Jupyter</target>
       </trans-unit>
       <trans-unit id="title.saveJupyterBook">
-        <source xml:lang="en">Save Book</source>
-        <target state="translated">Сохранить книгу</target>
+        <source xml:lang="en">Save Jupyter Book</source>
+        <target state="translated">Сохранить книгу Jupyter</target>
       </trans-unit>
       <trans-unit id="title.trustBook">
-        <source xml:lang="en">Trust Book</source>
-        <target state="translated">Сделать книгу доверенной</target>
+        <source xml:lang="en">Trust Jupyter Book</source>
+        <target state="translated">Доверенные книги Jupyter</target>
       </trans-unit>
       <trans-unit id="title.searchJupyterBook">
-        <source xml:lang="en">Search Book</source>
-        <target state="translated">Поиск книги</target>
+        <source xml:lang="en">Search Jupyter Book</source>
+        <target state="translated">Искать книгу Jupyter</target>
       </trans-unit>
       <trans-unit id="title.SavedBooks">
         <source xml:lang="en">Notebooks</source>
         <target state="translated">Записные книжки</target>
       </trans-unit>
       <trans-unit id="title.ProvidedBooks">
-        <source xml:lang="en">Provided Books</source>
-        <target state="translated">Предоставленные книги</target>
+        <source xml:lang="en">Provided Jupyter Books</source>
+        <target state="translated">Указанные книги Jupyter</target>
       </trans-unit>
       <trans-unit id="title.PinnedBooks">
         <source xml:lang="en">Pinned notebooks</source>
@@ -174,17 +186,29 @@
         <source xml:lang="en">Close Jupyter Book</source>
         <target state="translated">Закрыть книгу Jupyter</target>
       </trans-unit>
-      <trans-unit id="title.closeJupyterNotebook">
-        <source xml:lang="en">Close Jupyter Notebook</source>
-        <target state="translated">Закрыть записную книжку Jupyter</target>
+      <trans-unit id="title.closeNotebook">
+        <source xml:lang="en">Close Notebook</source>
+        <target state="translated">Закрыть записную книжку</target>
+      </trans-unit>
+      <trans-unit id="title.removeNotebook">
+        <source xml:lang="en">Remove Notebook</source>
+        <target state="translated">Удалить записную книжку</target>
+      </trans-unit>
+      <trans-unit id="title.addNotebook">
+        <source xml:lang="en">Add Notebook</source>
+        <target state="translated">Добавить записную книжку</target>
+      </trans-unit>
+      <trans-unit id="title.addMarkdown">
+        <source xml:lang="en">Add Markdown File</source>
+        <target state="translated">Добавить файл Markdown</target>
       </trans-unit>
       <trans-unit id="title.revealInBooksViewlet">
         <source xml:lang="en">Reveal in Books</source>
         <target state="translated">Показать в книгах</target>
       </trans-unit>
       <trans-unit id="title.createJupyterBook">
-        <source xml:lang="en">Create Book (Preview)</source>
-        <target state="translated">Создание книги (предварительная версия)</target>
+        <source xml:lang="en">Create Jupyter Book</source>
+        <target state="translated">Создать книгу Jupyter</target>
       </trans-unit>
       <trans-unit id="title.openNotebookFolder">
         <source xml:lang="en">Open Notebooks in Folder</source>
@@ -263,8 +287,8 @@
         <target state="translated">Выбрать папку</target>
       </trans-unit>
       <trans-unit id="labelBookFolder">
-        <source xml:lang="en">Select Book</source>
-        <target state="translated">Выбрать книгу</target>
+        <source xml:lang="en">Select Jupyter Book</source>
+        <target state="translated">Выберите книгу Jupyter</target>
       </trans-unit>
       <trans-unit id="confirmReplace">
         <source xml:lang="en">Folder already exists. Are you sure you want to delete and replace this folder?</source>
@@ -283,40 +307,40 @@
         <target state="translated">Открыть внешнюю ссылку</target>
       </trans-unit>
       <trans-unit id="msgBookTrusted">
-        <source xml:lang="en">Book is now trusted in the workspace.</source>
-        <target state="translated">Книга сейчас является доверенной в рабочей области.</target>
+        <source xml:lang="en">Jupyter Book is now trusted in the workspace.</source>
+        <target state="translated">Книга Jupyter сейчас является доверенной в рабочей области.</target>
       </trans-unit>
       <trans-unit id="msgBookAlreadyTrusted">
-        <source xml:lang="en">Book is already trusted in this workspace.</source>
-        <target state="translated">Книга уже является доверенной в этой рабочей области.</target>
+        <source xml:lang="en">Jupyter Book is already trusted in this workspace.</source>
+        <target state="translated">Книга Jupyter уже является доверенной в этой рабочей области.</target>
       </trans-unit>
       <trans-unit id="msgBookUntrusted">
-        <source xml:lang="en">Book is no longer trusted in this workspace</source>
-        <target state="translated">Книга больше не является доверенной в этой рабочей области.</target>
+        <source xml:lang="en">Jupyter Book is no longer trusted in this workspace</source>
+        <target state="translated">Книга Jupyter больше не является доверенной в этой рабочей области.</target>
       </trans-unit>
       <trans-unit id="msgBookAlreadyUntrusted">
-        <source xml:lang="en">Book is already untrusted in this workspace.</source>
-        <target state="translated">Книга уже является недоверенной в этой рабочей области.</target>
+        <source xml:lang="en">Jupyter Book is already untrusted in this workspace.</source>
+        <target state="translated">Книга Jupyter уже является недоверенной в этой рабочей области.</target>
       </trans-unit>
       <trans-unit id="msgBookPinned">
-        <source xml:lang="en">Book {0} is now pinned in the workspace.</source>
-        <target state="translated">Книга {0} сейчас закреплена в рабочей области.</target>
+        <source xml:lang="en">Jupyter Book {0} is now pinned in the workspace.</source>
+        <target state="translated">Книга Jupyter {0} сейчас закреплена в рабочей области.</target>
       </trans-unit>
       <trans-unit id="msgBookUnpinned">
-        <source xml:lang="en">Book {0} is no longer pinned in this workspace</source>
-        <target state="translated">Книга {0} больше не закреплена в этой рабочей области.</target>
+        <source xml:lang="en">Jupyter Book {0} is no longer pinned in this workspace</source>
+        <target state="translated">Книга Jupyter {0} больше не закреплена в этой рабочей области</target>
       </trans-unit>
       <trans-unit id="bookInitializeFailed">
-        <source xml:lang="en">Failed to find a Table of Contents file in the specified book.</source>
-        <target state="translated">Не удалось найти файл содержания в указанной книге.</target>
+        <source xml:lang="en">Failed to find a Table of Contents file in the specified Jupyter Book.</source>
+        <target state="translated">Не удалось найти файл содержания в указанной книге Jupyter.</target>
       </trans-unit>
       <trans-unit id="noBooksSelected">
-        <source xml:lang="en">No books are currently selected in the viewlet.</source>
-        <target state="translated">Книги во вьюлете сейчас не выбраны.</target>
+        <source xml:lang="en">No Jupyter Books are currently selected in the viewlet.</source>
+        <target state="translated">В данный момент во viewlet не выбраны книги Jupyter.</target>
       </trans-unit>
       <trans-unit id="labelBookSection">
-        <source xml:lang="en">Select Book Section</source>
-        <target state="translated">Выбрать раздел книги</target>
+        <source xml:lang="en">Select Jupyter Book Section</source>
+        <target state="translated">Выберите раздел книги Jupyter</target>
       </trans-unit>
       <trans-unit id="labelAddToLevel">
         <source xml:lang="en">Add to this level</source>
@@ -339,12 +363,12 @@
         <target state="translated">Отсутствует файл конфигурации</target>
       </trans-unit>
       <trans-unit id="openBookError">
-        <source xml:lang="en">Open book {0} failed: {1}</source>
-        <target state="translated">Не удалось открыть книгу {0}: {1}</target>
+        <source xml:lang="en">Open Jupyter Book {0} failed: {1}</source>
+        <target state="translated">Не удалось открыть книгу Jupyter {0}: {1}</target>
       </trans-unit>
       <trans-unit id="readBookError">
-        <source xml:lang="en">Failed to read book {0}: {1}</source>
-        <target state="translated">Не удалось прочитать книгу {0}: {1}</target>
+        <source xml:lang="en">Failed to read Jupyter Book {0}: {1}</source>
+        <target state="translated">Не удалось прочитать книгу Jupyter {0}: {1}</target>
       </trans-unit>
       <trans-unit id="openNotebookError">
         <source xml:lang="en">Open notebook {0} failed: {1}</source>
@@ -363,8 +387,8 @@
         <target state="translated">Не удалось открыть ссылку {0}: {1}</target>
       </trans-unit>
       <trans-unit id="closeBookError">
-        <source xml:lang="en">Close book {0} failed: {1}</source>
-        <target state="translated">Не удалось закрыть книгу {0}: {1}</target>
+        <source xml:lang="en">Close Jupyter Book {0} failed: {1}</source>
+        <target state="translated">Не удалось закрыть книгу Jupyter {0}: {1}</target>
       </trans-unit>
       <trans-unit id="duplicateFileError">
         <source xml:lang="en">File {0} already exists in the destination folder {1} 
@@ -373,12 +397,16 @@
 Имя файла было изменено на {2} для предотвращения потери данных.</target>
       </trans-unit>
       <trans-unit id="editBookError">
-        <source xml:lang="en">Error while editing book {0}: {1}</source>
-        <target state="translated">Ошибка при редактировании книги {0}: {1}</target>
+        <source xml:lang="en">Error while editing Jupyter Book {0}: {1}</source>
+        <target state="translated">Ошибка при редактировании книги Jupyter {0}: {1}</target>
       </trans-unit>
       <trans-unit id="selectBookError">
-        <source xml:lang="en">Error while selecting a book or a section to edit: {0}</source>
-        <target state="translated">Ошибка при выборе книги или раздела для изменения: {0}</target>
+        <source xml:lang="en">Error while selecting a Jupyter Book or a section to edit: {0}</source>
+        <target state="translated">Ошибка при выборе книги Jupyter или раздела для изменения: {0}</target>
+      </trans-unit>
+      <trans-unit id="sectionNotFound">
+        <source xml:lang="en">Failed to find section {0} in {1}.</source>
+        <target state="translated">Не найден раздел {0} в {1}.</target>
       </trans-unit>
       <trans-unit id="url">
         <source xml:lang="en">URL</source>
@@ -393,8 +421,8 @@
         <target state="translated">Расположение</target>
       </trans-unit>
       <trans-unit id="addRemoteBook">
-        <source xml:lang="en">Add Remote Book</source>
-        <target state="translated">Добавить удаленную книгу</target>
+        <source xml:lang="en">Add Remote Jupyter Book</source>
+        <target state="translated">Добавить удаленную книгу Jupyter</target>
       </trans-unit>
       <trans-unit id="onGitHub">
         <source xml:lang="en">GitHub</source>
@@ -409,8 +437,8 @@
         <target state="translated">Выпуски</target>
       </trans-unit>
       <trans-unit id="book">
-        <source xml:lang="en">Book</source>
-        <target state="translated">Книга</target>
+        <source xml:lang="en">Jupyter Book</source>
+        <target state="translated">Книга Jupyter</target>
       </trans-unit>
       <trans-unit id="version">
         <source xml:lang="en">Version</source>
@@ -421,8 +449,8 @@
         <target state="translated">Язык</target>
       </trans-unit>
       <trans-unit id="booksNotFound">
-        <source xml:lang="en">No books are currently available on the provided link</source>
-        <target state="translated">По указанной ссылке отсутствуют доступные книги</target>
+        <source xml:lang="en">No Jupyter Books are currently available on the provided link</source>
+        <target state="translated">По указанной ссылке отсутствуют доступные книги Jupyter</target>
       </trans-unit>
       <trans-unit id="urlGithubError">
         <source xml:lang="en">The url provided is not a Github release url</source>
@@ -445,44 +473,44 @@
         <target state="translated">-</target>
       </trans-unit>
       <trans-unit id="msgRemoteBookDownloadProgress">
-        <source xml:lang="en">Remote Book download is in progress</source>
-        <target state="translated">Выполняется скачивание удаленной книги</target>
+        <source xml:lang="en">Remote Jupyter Book download is in progress</source>
+        <target state="translated">Сейчас выполняется скачивание удаленной книги Jupyter</target>
       </trans-unit>
       <trans-unit id="msgRemoteBookDownloadComplete">
-        <source xml:lang="en">Remote Book download is complete</source>
-        <target state="translated">Скачивание удаленной книги завершено</target>
+        <source xml:lang="en">Remote Jupyter Book download is complete</source>
+        <target state="translated">Скачивание удаленной книги Jupyter завершено</target>
       </trans-unit>
       <trans-unit id="msgRemoteBookDownloadError">
-        <source xml:lang="en">Error while downloading remote Book</source>
-        <target state="translated">Ошибка при скачивании удаленной книги</target>
+        <source xml:lang="en">Error while downloading remote Jupyter Book</source>
+        <target state="translated">Произошла ошибка во время скачивания удаленной книги Jupyter</target>
       </trans-unit>
       <trans-unit id="msgRemoteBookUnpackingError">
-        <source xml:lang="en">Error while decompressing remote Book</source>
-        <target state="translated">Ошибка при распаковке удаленной книги</target>
+        <source xml:lang="en">Error while decompressing remote Jupyter Book</source>
+        <target state="translated">Ошибка при распаковке удаленной книги Jupyter</target>
       </trans-unit>
       <trans-unit id="msgRemoteBookDirectoryError">
-        <source xml:lang="en">Error while creating remote Book directory</source>
-        <target state="translated">Ошибка при создании каталога удаленной книги</target>
+        <source xml:lang="en">Error while creating remote Jupyter Book directory</source>
+        <target state="translated">Ошибка при создании каталога удаленной книги Jupyter</target>
       </trans-unit>
       <trans-unit id="msgTaskName">
-        <source xml:lang="en">Downloading Remote Book</source>
-        <target state="translated">Выполняется скачивание удаленной книги</target>
+        <source xml:lang="en">Downloading Remote Jupyter Book</source>
+        <target state="translated">Выполняется скачивание удаленной книги Jupyter</target>
       </trans-unit>
       <trans-unit id="msgResourceNotFound">
         <source xml:lang="en">Resource not Found</source>
         <target state="translated">Ресурс не найден</target>
       </trans-unit>
       <trans-unit id="msgBookNotFound">
-        <source xml:lang="en">Books not Found</source>
-        <target state="translated">Книги не найдены</target>
+        <source xml:lang="en">Jupyter Books not Found</source>
+        <target state="translated">Книги Jupyter не найдены</target>
       </trans-unit>
       <trans-unit id="msgReleaseNotFound">
         <source xml:lang="en">Releases not Found</source>
         <target state="translated">Выпуски не найдены</target>
       </trans-unit>
       <trans-unit id="msgUndefinedAssetError">
-        <source xml:lang="en">The selected book is not valid</source>
-        <target state="translated">Выбранная книга является недопустимой</target>
+        <source xml:lang="en">The selected Jupyter Book is not valid</source>
+        <target state="translated">Выбранная книга Jupyter является недопустимой</target>
       </trans-unit>
       <trans-unit id="httpRequestError">
         <source xml:lang="en">Http Request failed with error: {0} {1}</source>
@@ -492,21 +520,21 @@
         <source xml:lang="en">Downloading to {0}</source>
         <target state="translated">Выполняется скачивание в {0}</target>
       </trans-unit>
-      <trans-unit id="newGroup">
-        <source xml:lang="en">New Group</source>
-        <target state="translated">Новая группа</target>
+      <trans-unit id="newBook">
+        <source xml:lang="en">New Jupyter Book (Preview)</source>
+        <target state="translated">Новая книга Jupyter (предварительный просмотр)</target>
       </trans-unit>
-      <trans-unit id="groupDescription">
-        <source xml:lang="en">Groups are used to organize Notebooks.</source>
-        <target state="translated">Группы используются для организации записных книжек.</target>
+      <trans-unit id="bookDescription">
+        <source xml:lang="en">Jupyter Books are used to organize Notebooks.</source>
+        <target state="translated">Для упорядочения записных книжек используется Jupyter Books.</target>
       </trans-unit>
-      <trans-unit id="locationBrowser">
-        <source xml:lang="en">Browse locations...</source>
-        <target state="translated">Обзор расположений…</target>
+      <trans-unit id="learnMore">
+        <source xml:lang="en">Learn more.</source>
+        <target state="translated">Подробнее.</target>
       </trans-unit>
-      <trans-unit id="selectContentFolder">
-        <source xml:lang="en">Select content folder</source>
-        <target state="translated">Выбрать папку содержимого</target>
+      <trans-unit id="contentFolder">
+        <source xml:lang="en">Content folder</source>
+        <target state="translated">Папка содержимого</target>
       </trans-unit>
       <trans-unit id="browse">
         <source xml:lang="en">Browse</source>
@@ -524,7 +552,7 @@
         <source xml:lang="en">Save location</source>
         <target state="translated">Расположение сохранения</target>
       </trans-unit>
-      <trans-unit id="contentFolder">
+      <trans-unit id="contentFolderOptional">
         <source xml:lang="en">Content folder (Optional)</source>
         <target state="translated">Папка содержимого (необязательно)</target>
       </trans-unit>
@@ -533,8 +561,44 @@
         <target state="translated">Путь к папке содержимого не существует</target>
       </trans-unit>
       <trans-unit id="msgSaveFolderError">
-        <source xml:lang="en">Save location path does not exist</source>
-        <target state="translated">Путь к расположению сохранения не существует</target>
+        <source xml:lang="en">Save location path does not exist.</source>
+        <target state="translated">Путь к расположению сохранения не существует.</target>
+      </trans-unit>
+      <trans-unit id="msgCreateBookWarningMsg">
+        <source xml:lang="en">Error while trying to access: {0}</source>
+        <target state="translated">Ошибка при попытке доступа: {0}</target>
+      </trans-unit>
+      <trans-unit id="newNotebook">
+        <source xml:lang="en">New Notebook (Preview)</source>
+        <target state="translated">Новая записная книжка (предварительный просмотр)</target>
+      </trans-unit>
+      <trans-unit id="newMarkdown">
+        <source xml:lang="en">New Markdown (Preview)</source>
+        <target state="translated">Новый файл Markdown (предварительный просмотр)</target>
+      </trans-unit>
+      <trans-unit id="fileExtension">
+        <source xml:lang="en">File Extension</source>
+        <target state="translated">Расширение файла</target>
+      </trans-unit>
+      <trans-unit id="confirmOverwrite">
+        <source xml:lang="en">File already exists. Are you sure you want to overwrite this file?</source>
+        <target state="translated">Файл уже существует. Перезаписать его?</target>
+      </trans-unit>
+      <trans-unit id="title">
+        <source xml:lang="en">Title</source>
+        <target state="translated">Название</target>
+      </trans-unit>
+      <trans-unit id="fileName">
+        <source xml:lang="en">File Name</source>
+        <target state="translated">Имя файла</target>
+      </trans-unit>
+      <trans-unit id="msgInvalidSaveFolder">
+        <source xml:lang="en">Save location path is not valid.</source>
+        <target state="translated">Недопустимый путь к расположению сохранения.</target>
+      </trans-unit>
+      <trans-unit id="msgDuplicadFileName">
+        <source xml:lang="en">File {0} already exists in the destination folder</source>
+        <target state="translated">Файл {0} уже существует в папке назначения</target>
       </trans-unit>
     </body>
   </file>
@@ -588,6 +652,18 @@
         <source xml:lang="en">Another Python installation is currently in progress. Waiting for it to complete.</source>
         <target state="translated">Сейчас выполняется другая установка Python. Дождитесь ее завершения.</target>
       </trans-unit>
+      <trans-unit id="msgShutdownNotebookSessions">
+        <source xml:lang="en">Active Python notebook sessions will be shutdown in order to update. Would you like to proceed now?</source>
+        <target state="translated">Сеансы активных записных книжек Python будут завершены, чтобы обновить их. Хотите продолжить?</target>
+      </trans-unit>
+      <trans-unit id="msgPythonVersionUpdatePrompt">
+        <source xml:lang="en">Python {0} is now available in Azure Data Studio. The current Python version (3.6.6) will be out of support in December 2021. Would you like to update to Python {0} now?</source>
+        <target state="translated">{0} Python доступна в Azure Data Studio. Текущая версия Python (3.6.6) не поддерживается в декабре 2021. Вы хотите обновить {0} Python сейчас?</target>
+      </trans-unit>
+      <trans-unit id="msgPythonVersionUpdateWarning">
+        <source xml:lang="en">Python {0} will be installed and will replace Python 3.6.6. Some packages may no longer be compatible with the new version or may need to be reinstalled. A notebook will be created to help you reinstall all pip packages. Would you like to continue with the update now?</source>
+        <target state="translated">Будет установлен {0} Python, который заменит 3.6.6 Python. Некоторые пакеты могут быть несовместимы с новой версией или требуют переустановки. Будет создана Записная книжка, которая поможет вам переустановить все пакеты PIP. Вы хотите продолжить обновление сейчас?</target>
+      </trans-unit>
       <trans-unit id="msgDependenciesInstallationFailed">
         <source xml:lang="en">Installing Notebook dependencies failed with error: {0}</source>
         <target state="translated">Установка зависимостей Notebook завершилась с ошибкой: {0}</target>
@@ -603,6 +679,18 @@
       <trans-unit id="msgGetPythonUserDirFailed">
         <source xml:lang="en">Encountered an error when getting Python user path: {0}</source>
         <target state="translated">Обнаружена ошибка при получении пути пользователя Python: {0}</target>
+      </trans-unit>
+      <trans-unit id="yes">
+        <source xml:lang="en">Yes</source>
+        <target state="translated">Да</target>
+      </trans-unit>
+      <trans-unit id="no">
+        <source xml:lang="en">No</source>
+        <target state="translated">Нет</target>
+      </trans-unit>
+      <trans-unit id="dontAskAgain">
+        <source xml:lang="en">Don't Ask Again</source>
+        <target state="translated">Больше не спрашивать</target>
       </trans-unit>
     </body>
   </file>
@@ -973,8 +1061,8 @@
         <target state="translated">Действие {0} не поддерживается для этого обработчика</target>
       </trans-unit>
       <trans-unit id="unsupportedScheme">
-        <source xml:lang="en">Cannot open link {0} as only HTTP and HTTPS links are supported</source>
-        <target state="translated">Не удается открыть ссылку {0}, так как поддерживаются только ссылки HTTP и HTTPS</target>
+        <source xml:lang="en">Cannot open link {0} as only HTTP, HTTPS, and File links are supported</source>
+        <target state="translated">Не удается открыть ссылку {0}, так как поддерживаются только ссылки HTTP, HTTPS и ссылки на файлы</target>
       </trans-unit>
       <trans-unit id="notebook.confirmOpen">
         <source xml:lang="en">Download and open '{0}'?</source>

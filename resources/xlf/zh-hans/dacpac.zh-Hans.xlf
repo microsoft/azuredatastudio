@@ -1,16 +1,84 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
-  <file original="extensions/dacpac/out/localizedConstants" source-language="en" datatype="plaintext" target-language="zh-Hans">
+  <file original="extensions/dacpac/package" source-language="en" datatype="plaintext" target-language="zh-Hans">
     <body>
+      <trans-unit id="dacFx.settings">
+        <source xml:lang="en">Dacpac</source>
+        <target state="translated">数据层应用程序包</target>
+      </trans-unit>
+      <trans-unit id="dacFx.defaultSaveLocation">
+        <source xml:lang="en">Full path to folder where .DACPAC and .BACPAC files are saved by default</source>
+        <target state="translated">文件夹的完整路径，其中已默认保存 .DACPAC 和 .BACPAC 文件</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/dacpac/dist/localizedConstants" source-language="en" datatype="plaintext" target-language="zh-Hans">
+    <body>
+      <trans-unit id="dacFx.targetServer">
+        <source xml:lang="en">Target Server</source>
+        <target state="translated">目标服务器</target>
+      </trans-unit>
+      <trans-unit id="dacFx.sourceServer">
+        <source xml:lang="en">Source Server</source>
+        <target state="translated">源服务器</target>
+      </trans-unit>
+      <trans-unit id="dacFx.sourceDatabase">
+        <source xml:lang="en">Source Database</source>
+        <target state="translated">源数据库</target>
+      </trans-unit>
+      <trans-unit id="dacFx.targetDatabase">
+        <source xml:lang="en">Target Database</source>
+        <target state="translated">目标数据库</target>
+      </trans-unit>
+      <trans-unit id="dacfx.fileLocation">
+        <source xml:lang="en">File Location</source>
+        <target state="translated">文件位置</target>
+      </trans-unit>
+      <trans-unit id="dacfx.selectFile">
+        <source xml:lang="en">Select file</source>
+        <target state="translated">选择文件</target>
+      </trans-unit>
+      <trans-unit id="dacfx.summaryTableTitle">
+        <source xml:lang="en">Summary of settings</source>
+        <target state="translated">设置摘要</target>
+      </trans-unit>
+      <trans-unit id="dacfx.version">
+        <source xml:lang="en">Version</source>
+        <target state="translated">版本</target>
+      </trans-unit>
+      <trans-unit id="dacfx.setting">
+        <source xml:lang="en">Setting</source>
+        <target state="translated">设置</target>
+      </trans-unit>
+      <trans-unit id="dacfx.value">
+        <source xml:lang="en">Value</source>
+        <target state="translated">值</target>
+      </trans-unit>
+      <trans-unit id="dacFx.databaseName">
+        <source xml:lang="en">Database Name</source>
+        <target state="translated">数据库名称</target>
+      </trans-unit>
+      <trans-unit id="dacFxDeploy.openFile">
+        <source xml:lang="en">Open</source>
+        <target state="translated">打开</target>
+      </trans-unit>
+      <trans-unit id="dacFx.upgradeExistingDatabase">
+        <source xml:lang="en">Upgrade Existing Database</source>
+        <target state="translated">升级现有数据库</target>
+      </trans-unit>
+      <trans-unit id="dacFx.newDatabase">
+        <source xml:lang="en">New Database</source>
+        <target state="translated">新建数据库</target>
+      </trans-unit>
       <trans-unit id="dacfx.dataLossTextWithCount">
         <source xml:lang="en">{0} of the deploy actions listed may result in data loss. Please ensure you have a backup or snapshot available in the event of an issue with the deployment.</source>
         <target state="translated">列出的部署操作中有 {0} 个可能导致数据丢失。请确保在部署出现问题时有备份或快照可用。</target>
       </trans-unit>
-      <trans-unit id="dacFx.dataLossCheckbox">
+      <trans-unit id="dacFx.proceedDataLoss">
         <source xml:lang="en">Proceed despite possible data loss</source>
         <target state="translated">尽管可能会丢失数据，仍要继续</target>
       </trans-unit>
-      <trans-unit id="dacfx.noDataLossText">
+      <trans-unit id="dacfx.noDataLoss">
         <source xml:lang="en">No data loss will occur from the listed deploy actions.</source>
         <target state="translated">列出的部署操作不会导致数据丢失。</target>
       </trans-unit>
@@ -54,19 +122,11 @@
         <source xml:lang="en">Save</source>
         <target state="translated">保存</target>
       </trans-unit>
-      <trans-unit id="dacfx.fileLocation">
-        <source xml:lang="en">File Location</source>
-        <target state="translated">文件位置</target>
-      </trans-unit>
-      <trans-unit id="dacFxExtract.versionText">
+      <trans-unit id="dacFx.versionText">
         <source xml:lang="en">Version (use x.x.x.x where x is a number)</source>
         <target state="translated">版本(采用 x.x.x.x 格式，x 表示数字)</target>
       </trans-unit>
-      <trans-unit id="dacFxDeploy.openFile">
-        <source xml:lang="en">Open</source>
-        <target state="translated">打开</target>
-      </trans-unit>
-      <trans-unit id="dacFx.deployDescrption">
+      <trans-unit id="dacFx.deployDescription">
         <source xml:lang="en">Deploy a data-tier application .dacpac file to an instance of SQL Server [Deploy Dacpac]</source>
         <target state="translated">将数据层应用程序 .dacpac 文件部署到 SQL Server 的实例 [部署 Dacpac]</target>
       </trans-unit>
@@ -82,49 +142,9 @@
         <source xml:lang="en">Export the schema and data from a database to the logical .bacpac file format [Export Bacpac]</source>
         <target state="translated">将架构和数据从数据库导出到逻辑 .bacpac 文件格式 [导出 Bacpac]</target>
       </trans-unit>
-      <trans-unit id="dacFx.databaseName">
-        <source xml:lang="en">Database Name</source>
-        <target state="translated">数据库名称</target>
-      </trans-unit>
-      <trans-unit id="dacFx.upgradeExistingDatabase">
-        <source xml:lang="en">Upgrade Existing Database</source>
-        <target state="translated">升级现有数据库</target>
-      </trans-unit>
-      <trans-unit id="dacFx.newDatabase">
-        <source xml:lang="en">New Database</source>
-        <target state="translated">新建数据库</target>
-      </trans-unit>
-      <trans-unit id="dacFx.targetDatabase">
-        <source xml:lang="en">Target Database</source>
-        <target state="translated">目标数据库</target>
-      </trans-unit>
-      <trans-unit id="dacFx.targetServer">
-        <source xml:lang="en">Target Server</source>
-        <target state="translated">目标服务器</target>
-      </trans-unit>
-      <trans-unit id="dacFx.sourceServer">
-        <source xml:lang="en">Source Server</source>
-        <target state="translated">源服务器</target>
-      </trans-unit>
-      <trans-unit id="dacFx.sourceDatabase">
-        <source xml:lang="en">Source Database</source>
-        <target state="translated">源数据库</target>
-      </trans-unit>
-      <trans-unit id="dacfx.version">
-        <source xml:lang="en">Version</source>
-        <target state="translated">版本</target>
-      </trans-unit>
-      <trans-unit id="dacfx.setting">
-        <source xml:lang="en">Setting</source>
-        <target state="translated">设置</target>
-      </trans-unit>
-      <trans-unit id="dacfx.value">
-        <source xml:lang="en">Value</source>
-        <target state="translated">值</target>
-      </trans-unit>
-      <trans-unit id="dacfx.default">
-        <source xml:lang="en">default</source>
-        <target state="translated">默认</target>
+      <trans-unit id="dacfx.wizardTitle">
+        <source xml:lang="en">Data-tier Application Wizard</source>
+        <target state="translated">数据层应用程序向导</target>
       </trans-unit>
       <trans-unit id="dacFx.selectOperationPageName">
         <source xml:lang="en">Select an Operation</source>
@@ -174,17 +194,65 @@
         <source xml:lang="en">Generate Script</source>
         <target state="translated">生成脚本</target>
       </trans-unit>
+      <trans-unit id="dacfx.scriptGeneratingMessage">
+        <source xml:lang="en">You can view the status of script generation in the Tasks View once the wizard is closed. The generated script will open when complete.</source>
+        <target state="translated">关闭向导后，可在任务视图中查看脚本生成的状态。生成的脚本将在完成后打开。</target>
+      </trans-unit>
+      <trans-unit id="dacfx.default">
+        <source xml:lang="en">default</source>
+        <target state="translated">默认</target>
+      </trans-unit>
+      <trans-unit id="dacfx.deployPlanTableTitle">
+        <source xml:lang="en">Deploy plan operations</source>
+        <target state="translated">部署计划操作</target>
+      </trans-unit>
+      <trans-unit id="dacfx.databaseNameExistsErrorMessage">
+        <source xml:lang="en">A database with the same name already exists on the instance of SQL Server</source>
+        <target state="translated">SQL Server 实例上已经存在同名数据库。</target>
+      </trans-unit>
+      <trans-unit id="dacfx.undefinedFilenameErrorMessage">
+        <source xml:lang="en">Undefined name</source>
+        <target state="translated">未定义名称</target>
+      </trans-unit>
+      <trans-unit id="dacfx.filenameEndingInPeriodErrorMessage">
+        <source xml:lang="en">File name cannot end with a period</source>
+        <target state="translated">文件名不能以句号结尾</target>
+      </trans-unit>
+      <trans-unit id="dacfx.whitespaceFilenameErrorMessage">
+        <source xml:lang="en">File name cannot be whitespace</source>
+        <target state="translated">文件名不能为空白</target>
+      </trans-unit>
+      <trans-unit id="dacfx.invalidFileCharsErrorMessage">
+        <source xml:lang="en">Invalid file characters</source>
+        <target state="translated">无效的文件字符</target>
+      </trans-unit>
+      <trans-unit id="dacfx.reservedWindowsFilenameErrorMessage">
+        <source xml:lang="en">This file name is reserved for use by Windows. Choose another name and try again</source>
+        <target state="translated">此文件名保留供 Windows 使用。请选择其他名称，然后重试</target>
+      </trans-unit>
+      <trans-unit id="dacfx.reservedValueErrorMessage">
+        <source xml:lang="en">Reserved file name. Choose another name and try again</source>
+        <target state="translated">文件名已保留。请选择其他名称，然后重试</target>
+      </trans-unit>
+      <trans-unit id="dacfx.trailingWhitespaceErrorMessage">
+        <source xml:lang="en">File name cannot end with a whitespace</source>
+        <target state="translated">文件名不能以空格结尾</target>
+      </trans-unit>
+      <trans-unit id="dacfx.tooLongFilenameErrorMessage">
+        <source xml:lang="en">File name is over 255 characters</source>
+        <target state="translated">文件名超过 255 个字符</target>
+      </trans-unit>
       <trans-unit id="dacfx.deployPlanErrorMessage">
         <source xml:lang="en">Generating deploy plan failed '{0}'</source>
         <target state="translated">生成部署计划失败“{0}”</target>
       </trans-unit>
+      <trans-unit id="dacfx.generateDeployErrorMessage">
+        <source xml:lang="en">Generating deploy script failed '{0}'</source>
+        <target state="translated">生成部署脚本失败 '{0}'</target>
+      </trans-unit>
       <trans-unit id="dacfx.operationErrorMessage">
         <source xml:lang="en">{0} operation failed '{1}'</source>
         <target state="translated">{0} 操作失败“{1}”</target>
-      </trans-unit>
-      <trans-unit id="dacfx.scriptGeneratingMessage">
-        <source xml:lang="en">You can view the status of script generation in the Tasks View once the wizard is closed. The generated script will open when complete.</source>
-        <target state="translated">关闭向导后，可在任务视图中查看脚本生成的状态。生成的脚本将在完成后打开。</target>
       </trans-unit>
     </body>
   </file>

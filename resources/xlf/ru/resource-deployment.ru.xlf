@@ -26,14 +26,6 @@
         <source xml:lang="en">Run SQL Server container image with docker</source>
         <target state="translated">Запустить образ контейнера SQL Server с помощью Docker</target>
       </trans-unit>
-      <trans-unit id="resource-type-sql-bdc-display-name">
-        <source xml:lang="en">SQL Server Big Data Cluster</source>
-        <target state="translated">Кластер больших данных SQL Server</target>
-      </trans-unit>
-      <trans-unit id="resource-type-sql-bdc-description">
-        <source xml:lang="en">SQL Server Big Data Cluster allows you to deploy scalable clusters of SQL Server, Spark, and HDFS containers running on Kubernetes</source>
-        <target state="translated">Кластер больших данных SQL Server позволяет развертывать масштабируемые кластеры контейнеров SQL Server, Spark и HDFS, работающие на базе Kubernetes</target>
-      </trans-unit>
       <trans-unit id="version-display-name">
         <source xml:lang="en">Version</source>
         <target state="translated">Версия</target>
@@ -45,34 +37,6 @@
       <trans-unit id="sql-2019-display-name">
         <source xml:lang="en">SQL Server 2019</source>
         <target state="translated">SQL Server 2019</target>
-      </trans-unit>
-      <trans-unit id="bdc-2019-display-name">
-        <source xml:lang="en">SQL Server 2019</source>
-        <target state="translated">SQL Server 2019</target>
-      </trans-unit>
-      <trans-unit id="bdc-deployment-target">
-        <source xml:lang="en">Deployment target</source>
-        <target state="translated">Целевой объект развертывания</target>
-      </trans-unit>
-      <trans-unit id="bdc-deployment-target-new-aks">
-        <source xml:lang="en">New Azure Kubernetes Service Cluster</source>
-        <target state="translated">Новый кластер Службы Azure Kubernetes</target>
-      </trans-unit>
-      <trans-unit id="bdc-deployment-target-existing-aks">
-        <source xml:lang="en">Existing Azure Kubernetes Service Cluster</source>
-        <target state="translated">Существующий кластер Службы Azure Kubernetes</target>
-      </trans-unit>
-      <trans-unit id="bdc-deployment-target-existing-kubeadm">
-        <source xml:lang="en">Existing Kubernetes Cluster (kubeadm)</source>
-        <target state="translated">Существующий кластер Kubernetes (kubeadm)</target>
-      </trans-unit>
-      <trans-unit id="bdc-deployment-target-existing-aro">
-        <source xml:lang="en">Existing Azure Red Hat OpenShift cluster</source>
-        <target state="translated">Существующий кластер Azure Red Hat OpenShift</target>
-      </trans-unit>
-      <trans-unit id="bdc-deployment-target-existing-openshift">
-        <source xml:lang="en">Existing OpenShift cluster</source>
-        <target state="translated">Существующий кластер OpenShift</target>
       </trans-unit>
       <trans-unit id="docker-sql-2017-title">
         <source xml:lang="en">Deploy SQL Server 2017 container images</source>
@@ -98,70 +62,6 @@
         <source xml:lang="en">Port</source>
         <target state="translated">Порт</target>
       </trans-unit>
-      <trans-unit id="bdc-cluster-settings-section-title">
-        <source xml:lang="en">SQL Server Big Data Cluster settings</source>
-        <target state="translated">Параметры кластера больших данных SQL Server</target>
-      </trans-unit>
-      <trans-unit id="bdc-cluster-name-field">
-        <source xml:lang="en">Cluster name</source>
-        <target state="translated">Имя кластера</target>
-      </trans-unit>
-      <trans-unit id="bdc-controller-username-field">
-        <source xml:lang="en">Controller username</source>
-        <target state="translated">Имя пользователя контроллера</target>
-      </trans-unit>
-      <trans-unit id="bdc-password-field">
-        <source xml:lang="en">Password</source>
-        <target state="translated">Пароль</target>
-      </trans-unit>
-      <trans-unit id="bdc-confirm-password-field">
-        <source xml:lang="en">Confirm password</source>
-        <target state="translated">Подтверждение пароля</target>
-      </trans-unit>
-      <trans-unit id="bdc-azure-settings-section-title">
-        <source xml:lang="en">Azure settings</source>
-        <target state="translated">Параметры Azure</target>
-      </trans-unit>
-      <trans-unit id="bdc-azure-subscription-id-field">
-        <source xml:lang="en">Subscription id</source>
-        <target state="translated">Идентификатор подписки</target>
-      </trans-unit>
-      <trans-unit id="bdc-azure-subscription-id-placeholder">
-        <source xml:lang="en">Use my default Azure subscription</source>
-        <target state="translated">Использовать мою подписку Azure по умолчанию</target>
-      </trans-unit>
-      <trans-unit id="bdc-azure-resource-group-field">
-        <source xml:lang="en">Resource group name</source>
-        <target state="translated">Имя группы ресурсов</target>
-      </trans-unit>
-      <trans-unit id="bdc-azure-region-field">
-        <source xml:lang="en">Region</source>
-        <target state="translated">Регион</target>
-      </trans-unit>
-      <trans-unit id="bdc-azure-aks-name-field">
-        <source xml:lang="en">AKS cluster name</source>
-        <target state="translated">Имя кластера AKS</target>
-      </trans-unit>
-      <trans-unit id="bdc-azure-vm-size-field">
-        <source xml:lang="en">VM size</source>
-        <target state="translated">Размер виртуальной машины</target>
-      </trans-unit>
-      <trans-unit id="bdc-azure-vm-count-field">
-        <source xml:lang="en">VM count</source>
-        <target state="translated">Число виртуальных машин</target>
-      </trans-unit>
-      <trans-unit id="bdc-storage-class-field">
-        <source xml:lang="en">Storage class name</source>
-        <target state="translated">Имя класса хранения</target>
-      </trans-unit>
-      <trans-unit id="bdc-data-size-field">
-        <source xml:lang="en">Capacity for data (GB)</source>
-        <target state="translated">Емкость данных (ГБ)</target>
-      </trans-unit>
-      <trans-unit id="bdc-log-size-field">
-        <source xml:lang="en">Capacity for logs (GB)</source>
-        <target state="translated">Емкость для журналов (ГБ)</target>
-      </trans-unit>
       <trans-unit id="resource-type-sql-windows-setup-display-name">
         <source xml:lang="en">SQL Server on Windows</source>
         <target state="translated">SQL Server в Windows</target>
@@ -170,21 +70,9 @@
         <source xml:lang="en">Run SQL Server on Windows, select a version to get started.</source>
         <target state="translated">Запустите SQL Server в Windows, выберите версию для начала работы.</target>
       </trans-unit>
-      <trans-unit id="bdc-agreement">
-        <source xml:lang="en">I accept {0}, {1} and {2}.</source>
-        <target state="translated">Я принимаю {0}, {1} и {2}.</target>
-      </trans-unit>
       <trans-unit id="microsoft-privacy-statement">
         <source xml:lang="en">Microsoft Privacy Statement</source>
         <target state="translated">Заявление о конфиденциальности Майкрософт</target>
-      </trans-unit>
-      <trans-unit id="bdc-agreement-azdata-eula">
-        <source xml:lang="en">azdata License Terms</source>
-        <target state="translated">Условия лицензии azdata</target>
-      </trans-unit>
-      <trans-unit id="bdc-agreement-bdc-eula">
-        <source xml:lang="en">SQL Server License Terms</source>
-        <target state="translated">Условия лицензии SQL Server</target>
       </trans-unit>
       <trans-unit id="deployment.configuration.title">
         <source xml:lang="en">Deployment configuration</source>
@@ -485,6 +373,22 @@
       <trans-unit id="deploymentDialog.RecheckEulaButton">
         <source xml:lang="en">Accept EULA &amp; Select</source>
         <target state="translated">Принять лицензионное соглашение и выбрать</target>
+      </trans-unit>
+      <trans-unit id="resourceDeployment.extensionRequiredPrompt">
+        <source xml:lang="en">The '{0}' extension is required to deploy this resource, do you want to install it now?</source>
+        <target state="translated">Для развертывания этого ресурса требуется расширение "{0}". Хотите ли вы установить его?</target>
+      </trans-unit>
+      <trans-unit id="resourceDeployment.install">
+        <source xml:lang="en">Install</source>
+        <target state="translated">Установить</target>
+      </trans-unit>
+      <trans-unit id="resourceDeployment.installingExtension">
+        <source xml:lang="en">Installing extension '{0}'...</source>
+        <target state="translated">Установка расширения "{0}"...</target>
+      </trans-unit>
+      <trans-unit id="resourceDeployment.unknownExtension">
+        <source xml:lang="en">Unknown extension '{0}'</source>
+        <target state="translated">Неизвестное расширение "{0}"</target>
       </trans-unit>
       <trans-unit id="resourceTypePickerDialog.title">
         <source xml:lang="en">Select the deployment options</source>
@@ -1096,10 +1000,6 @@
   </file>
   <file original="extensions/resource-deployment/dist/main" source-language="en" datatype="plaintext" target-language="ru">
     <body>
-      <trans-unit id="resourceDeployment.FailedToLoadExtension">
-        <source xml:lang="en">Failed to load extension: {0}, Error detected in the resource type definition in package.json, check debug console for details.</source>
-        <target state="translated">Сбой при загрузке расширения: {0}, обнаружена ошибка в определении типа ресурса в package.json, дополнительные сведения см. в консоли отладки.</target>
-      </trans-unit>
       <trans-unit id="resourceDeployment.UnknownResourceType">
         <source xml:lang="en">The resource type: {0} is not defined</source>
         <target state="translated">Тип ресурса: {0} не определен</target>
@@ -2222,13 +2122,13 @@ Select a different subscription containing at least one server</source>
         <source xml:lang="en">Deployment pre-requisites</source>
         <target state="translated">Предварительные требования к развертыванию</target>
       </trans-unit>
-      <trans-unit id="deploymentDialog.FailedEulaValidation">
-        <source xml:lang="en">To proceed, you must accept the terms of the End User License Agreement(EULA)</source>
-        <target state="translated">Чтобы продолжить, необходимо принять условия лицензионного соглашения (EULA)</target>
-      </trans-unit>
       <trans-unit id="deploymentDialog.FailedToolsInstallation">
         <source xml:lang="en">Some tools were still not discovered. Please make sure that they are installed, running and discoverable</source>
         <target state="translated">Некоторые инструменты еще не обнаружены. Убедитесь, что они установлены, запущены и могут быть обнаружены</target>
+      </trans-unit>
+      <trans-unit id="deploymentDialog.FailedEulaValidation">
+        <source xml:lang="en">To proceed, you must accept the terms of the End User License Agreement(EULA)</source>
+        <target state="translated">Чтобы продолжить, необходимо принять условия лицензионного соглашения (EULA)</target>
       </trans-unit>
       <trans-unit id="deploymentDialog.loadingRequiredToolsCompleted">
         <source xml:lang="en">Loading required tools information completed</source>
@@ -2378,6 +2278,10 @@ Select a different subscription containing at least one server</source>
         <source xml:lang="en">Azure Data CLI</source>
         <target state="translated">Azure Data CLI</target>
       </trans-unit>
+      <trans-unit id="deploy.azdataExtMissing">
+        <source xml:lang="en">The Azure Data CLI extension must be installed to deploy this resource. Please install it through the extension gallery and try again.</source>
+        <target state="translated">Для развертывания этого ресурса необходимо установить расширение Azure Data CLI. Установите его из коллекции расширений и повторите попытку.</target>
+      </trans-unit>
       <trans-unit id="deployCluster.GetToolVersionErrorInformation">
         <source xml:lang="en">Error retrieving version information. See output channel '{0}' for more details</source>
         <target state="translated">Ошибка при получении сведений о версии. Дополнительные сведения см. в канале вывода "{0}"</target>
@@ -2385,46 +2289,6 @@ Select a different subscription containing at least one server</source>
       <trans-unit id="deployCluster.GetToolVersionError">
         <source xml:lang="en">Error retrieving version information.{0}Invalid output received, get version command output: '{1}' </source>
         <target state="translated">Ошибка при получении сведений о версии.{0}Получены недопустимые выходные данные, выходные данные команды get version: "{1}" </target>
-      </trans-unit>
-      <trans-unit id="resourceDeployment.Azdata.DeletingPreviousAzdata.msi">
-        <source xml:lang="en">deleting previously downloaded Azdata.msi if one exists …</source>
-        <target state="translated">удаление ранее скачанного файла Azdata.msi, если он существует…</target>
-      </trans-unit>
-      <trans-unit id="resourceDeployment.Azdata.DownloadingAndInstallingAzdata">
-        <source xml:lang="en">downloading Azdata.msi and installing azdata-cli …</source>
-        <target state="translated">скачивание Azdata.msi и установка azdata-cli…</target>
-      </trans-unit>
-      <trans-unit id="resourceDeployment.Azdata.DisplayingInstallationLog">
-        <source xml:lang="en">displaying the installation log …</source>
-        <target state="translated">отображение журнала установки…</target>
-      </trans-unit>
-      <trans-unit id="resourceDeployment.Azdata.TappingBrewRepository">
-        <source xml:lang="en">tapping into the brew repository for azdata-cli …</source>
-        <target state="translated">получение доступа к репозиторию brew для azdata-cli…</target>
-      </trans-unit>
-      <trans-unit id="resourceDeployment.Azdata.UpdatingBrewRepository">
-        <source xml:lang="en">updating the brew repository for azdata-cli installation …</source>
-        <target state="translated">обновление репозитория brew для установки azdata-cli…</target>
-      </trans-unit>
-      <trans-unit id="resourceDeployment.Azdata.InstallingAzdata">
-        <source xml:lang="en">installing azdata …</source>
-        <target state="translated">установка azdata…</target>
-      </trans-unit>
-      <trans-unit id="resourceDeployment.Azdata.AptGetUpdate">
-        <source xml:lang="en">updating repository information …</source>
-        <target state="translated">обновление сведений в репозитории…</target>
-      </trans-unit>
-      <trans-unit id="resourceDeployment.Azdata.AptGetPackages">
-        <source xml:lang="en">getting packages needed for azdata installation …</source>
-        <target state="translated">получение пакетов, необходимых для установки azdata…</target>
-      </trans-unit>
-      <trans-unit id="resourceDeployment.Azdata.DownloadAndInstallingSigningKey">
-        <source xml:lang="en">downloading and installing the signing key for azdata …</source>
-        <target state="translated">скачивание и установка ключа подписывания для azdata…</target>
-      </trans-unit>
-      <trans-unit id="resourceDeployment.Azdata.AddingAzdataRepositoryInformation">
-        <source xml:lang="en">adding the azdata repository information …</source>
-        <target state="translated">добавление в репозиторий сведений для azdata…</target>
       </trans-unit>
     </body>
   </file>

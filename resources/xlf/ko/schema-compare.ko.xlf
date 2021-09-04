@@ -16,27 +16,115 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/schema-compare/out/dialogs/schemaCompareOptionsDialog" source-language="en" datatype="plaintext" target-language="ko">
+  <file original="extensions/schema-compare/dist/localizedConstants" source-language="en" datatype="plaintext" target-language="ko">
     <body>
-      <trans-unit id="SchemaCompareOptionsDialog.Ok">
-        <source xml:lang="en">Ok</source>
+      <trans-unit id="schemaCompareDialog.ok">
+        <source xml:lang="en">OK</source>
         <target state="translated">확인</target>
       </trans-unit>
-      <trans-unit id="SchemaCompareOptionsDialog.Cancel">
+      <trans-unit id="schemaCompareDialog.cancel">
         <source xml:lang="en">Cancel</source>
         <target state="translated">취소</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.SourceTitle">
+        <source xml:lang="en">Source</source>
+        <target state="translated">원본</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.TargetTitle">
+        <source xml:lang="en">Target</source>
+        <target state="translated">대상</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.fileTextBoxLabel">
+        <source xml:lang="en">File</source>
+        <target state="translated">파일</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.dacpacRadioButtonLabel">
+        <source xml:lang="en">Data-tier Application File (.dacpac)</source>
+        <target state="translated">데이터 계층 애플리케이션 파일(.dacpac)</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.databaseButtonLabel">
+        <source xml:lang="en">Database</source>
+        <target state="translated">데이터베이스</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.radioButtonsLabel">
+        <source xml:lang="en">Type</source>
+        <target state="translated">형식</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.serverDropdownTitle">
+        <source xml:lang="en">Server</source>
+        <target state="translated">서버</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.databaseDropdownTitle">
+        <source xml:lang="en">Database</source>
+        <target state="translated">데이터베이스</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.dialogTitle">
+        <source xml:lang="en">Schema Compare</source>
+        <target state="translated">스키마 비교</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.differentSourceMessage">
+        <source xml:lang="en">A different source schema has been selected. Compare to see the comparison?</source>
+        <target state="translated">다른 원본 스키마를 선택했습니다. 비교를 확인하려면 비교를 누르세요.</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.differentTargetMessage">
+        <source xml:lang="en">A different target schema has been selected. Compare to see the comparison?</source>
+        <target state="translated">다른 대상 스키마를 선택했습니다. 비교를 확인하려면 비교를 누르세요.</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.differentSourceTargetMessage">
+        <source xml:lang="en">Different source and target schemas have been selected. Compare to see the comparison?</source>
+        <target state="translated">다른 원본 및 대상 스키마를 선택했습니다. 비교를 확인하려면 비교를 누르세요.</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.Yes">
+        <source xml:lang="en">Yes</source>
+        <target state="translated">예</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.No">
+        <source xml:lang="en">No</source>
+        <target state="translated">아니요</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.sourceTextBox">
+        <source xml:lang="en">Source file</source>
+        <target state="translated">원본 파일</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.targetTextBox">
+        <source xml:lang="en">Target file</source>
+        <target state="translated">대상 파일</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.sourceDatabaseDropdown">
+        <source xml:lang="en">Source Database</source>
+        <target state="translated">원본 데이터베이스</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.targetDatabaseDropdown">
+        <source xml:lang="en">Target Database</source>
+        <target state="translated">대상 데이터베이스</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.sourceServerDropdown">
+        <source xml:lang="en">Source Server</source>
+        <target state="translated">원본 서버</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.targetServerDropdown">
+        <source xml:lang="en">Target Server</source>
+        <target state="translated">대상 서버</target>
+      </trans-unit>
+      <trans-unit id="schemaCompareDialog.defaultUser">
+        <source xml:lang="en">default</source>
+        <target state="translated">기본값</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.openFile">
+        <source xml:lang="en">Open</source>
+        <target state="translated">열기</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.selectSourceFile">
+        <source xml:lang="en">Select source file</source>
+        <target state="translated">원본 파일 선택</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.selectTargetFile">
+        <source xml:lang="en">Select target file</source>
+        <target state="translated">대상 파일 선택</target>
       </trans-unit>
       <trans-unit id="SchemaCompareOptionsDialog.Reset">
         <source xml:lang="en">Reset</source>
         <target state="translated">다시 설정</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompareOptionsDialog.Yes">
-        <source xml:lang="en">Yes</source>
-        <target state="translated">예</target>
-      </trans-unit>
-      <trans-unit id="SchemaCompareOptionsDialog.No">
-        <source xml:lang="en">No</source>
-        <target state="translated">아니요</target>
       </trans-unit>
       <trans-unit id="schemaCompareOptions.RecompareMessage">
         <source xml:lang="en">Options have changed. Recompare to see the comparison?</source>
@@ -53,6 +141,174 @@
       <trans-unit id="SchemaCompare.ObjectTypesOptionsLabel">
         <source xml:lang="en">Include Object Types</source>
         <target state="translated">개체 유형 포함</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.CompareDetailsTitle">
+        <source xml:lang="en">Compare Details</source>
+        <target state="translated">세부 정보 비교</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.ApplyConfirmation">
+        <source xml:lang="en">Are you sure you want to update the target?</source>
+        <target state="translated">대상을 업데이트하시겠습니까?</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.RecompareToRefresh">
+        <source xml:lang="en">Press Compare to refresh the comparison.</source>
+        <target state="translated">비교를 눌러 비교를 새로 고칩니다.</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.generateScriptEnabledButton">
+        <source xml:lang="en">Generate script to deploy changes to target</source>
+        <target state="translated">대상에 변경 내용을 배포하는 스크립트 생성</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.generateScriptNoChanges">
+        <source xml:lang="en">No changes to script</source>
+        <target state="translated">스크립트 변경 내용 없음</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.applyButtonEnabledTitle">
+        <source xml:lang="en">Apply changes to target</source>
+        <target state="translated">대상에 변경 내용 적용</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.applyNoChanges">
+        <source xml:lang="en">No changes to apply</source>
+        <target state="translated">적용할 변경 내용 없음</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.includeExcludeInfoMessage">
+        <source xml:lang="en">Please note that include/exclude operations can take a moment to calculate affected dependencies</source>
+        <target state="translated">포함/제외 작업은 영향을 받는 종속성을 계산하는 데 잠시 걸릴 수 있습니다.</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.deleteAction">
+        <source xml:lang="en">Delete</source>
+        <target state="translated">삭제</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.changeAction">
+        <source xml:lang="en">Change</source>
+        <target state="translated">변경</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.addAction">
+        <source xml:lang="en">Add</source>
+        <target state="translated">추가</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.differencesTableTitle">
+        <source xml:lang="en">Comparison between Source and Target</source>
+        <target state="translated">원본과 대상 간의 비교</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.waitText">
+        <source xml:lang="en">Initializing Comparison. This might take a moment.</source>
+        <target state="translated">비교를 초기화하는 중입니다. 시간이 약간 걸릴 수 있습니다.</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.startText">
+        <source xml:lang="en">To compare two schemas, first select a source schema and target schema, then press Compare.</source>
+        <target state="translated">두 스키마를 비교하려면 먼저 원본 스키마 및 대상 스키마를 선택한 다음, 비교를 누릅니다.</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.noDifferences">
+        <source xml:lang="en">No schema differences were found.</source>
+        <target state="translated">스키마 차이를 찾을 수 없습니다.</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.typeColumn">
+        <source xml:lang="en">Type</source>
+        <target state="translated">형식</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.sourceNameColumn">
+        <source xml:lang="en">Source Name</source>
+        <target state="translated">원본 이름</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.includeColumnName">
+        <source xml:lang="en">Include</source>
+        <target state="translated">포함</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.actionColumn">
+        <source xml:lang="en">Action</source>
+        <target state="translated">작업</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.targetNameColumn">
+        <source xml:lang="en">Target Name</source>
+        <target state="translated">대상 이름</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.generateScriptButtonDisabledTitle">
+        <source xml:lang="en">Generate script is enabled when the target is a database</source>
+        <target state="translated">대상이 데이터베이스이면 스크립트 생성이 사용하도록 설정됩니다.</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.applyButtonDisabledTitle">
+        <source xml:lang="en">Apply is enabled when the target is a database</source>
+        <target state="translated">대상이 데이터베이스이면 적용이 사용하도록 설정됩니다.</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.cannotExcludeMessageWithDependent">
+        <source xml:lang="en">Cannot exclude {0}. Included dependents exist, such as {1}</source>
+        <target state="translated">{0}을(를) 제외할 수 없습니다. {1} 같은 포함된 종속 항목이 있습니다.</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.cannotIncludeMessageWithDependent">
+        <source xml:lang="en">Cannot include {0}. Excluded dependents exist, such as {1}</source>
+        <target state="translated">{0}을(를) 포함할 수 없습니다. {1} 같은 제외된 종속 항목이 있습니다.</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.cannotExcludeMessage">
+        <source xml:lang="en">Cannot exclude {0}. Included dependents exist</source>
+        <target state="translated">{0}을(를) 제외할 수 없습니다. 포함된 종속 항목이 있습니다.</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.cannotIncludeMessage">
+        <source xml:lang="en">Cannot include {0}. Excluded dependents exist</source>
+        <target state="translated">{0}을(를) 포함할 수 없습니다. 제외된 종속 항목이 있습니다.</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.compareButton">
+        <source xml:lang="en">Compare</source>
+        <target state="translated">비교</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.cancelCompareButton">
+        <source xml:lang="en">Stop</source>
+        <target state="translated">중지</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.generateScriptButton">
+        <source xml:lang="en">Generate script</source>
+        <target state="translated">스크립트 생성</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.optionsButton">
+        <source xml:lang="en">Options</source>
+        <target state="translated">옵션</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.updateButton">
+        <source xml:lang="en">Apply</source>
+        <target state="translated">적용</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.switchDirectionButton">
+        <source xml:lang="en">Switch direction</source>
+        <target state="translated">방향 전환</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.switchButtonTitle">
+        <source xml:lang="en">Switch source and target</source>
+        <target state="translated">원본과 대상 전환</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.sourceButtonTitle">
+        <source xml:lang="en">Select Source</source>
+        <target state="translated">원본 선택</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.targetButtonTitle">
+        <source xml:lang="en">Select Target</source>
+        <target state="translated">대상 선택</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.openScmpButton">
+        <source xml:lang="en">Open .scmp file</source>
+        <target state="translated">.scmp 파일 열기</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.openScmpButtonTitle">
+        <source xml:lang="en">Load source, target, and options saved in an .scmp file</source>
+        <target state="translated">.scmp 파일에 저장된 원본, 대상 및 옵션 로드</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.saveScmpButton">
+        <source xml:lang="en">Save .scmp file</source>
+        <target state="translated">.scmp 파일 저장</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.saveScmpButtonTitle">
+        <source xml:lang="en">Save source and target, options, and excluded elements</source>
+        <target state="translated">원본 및 대상, 옵션 및 제외된 요소 저장</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.saveFile">
+        <source xml:lang="en">Save</source>
+        <target state="translated">저장</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.GetConnectionString">
+        <source xml:lang="en">Do you want to connect to {0}?</source>
+        <target state="translated">{0}에 연결하시겠습니까?</target>
+      </trans-unit>
+      <trans-unit id="schemaCompare.selectConnection">
+        <source xml:lang="en">Select connection</source>
+        <target state="translated">연결 선택</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.IgnoreTableOptions">
         <source xml:lang="en">Ignore Table Options</source>
@@ -407,7 +663,7 @@
         <target state="translated">데이터베이스 역할</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.DatabaseTriggers">
-        <source xml:lang="en">DatabaseTriggers</source>
+        <source xml:lang="en">Database Triggers</source>
         <target state="translated">데이터베이스 트리거</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.Defaults">
@@ -426,6 +682,14 @@
         <source xml:lang="en">External File Formats</source>
         <target state="translated">외부 파일 형식</target>
       </trans-unit>
+      <trans-unit id="SchemaCompare.ExternalStreams">
+        <source xml:lang="en">External Streams</source>
+        <target state="translated">외부 스트림</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.ExternalStreamingJobs">
+        <source xml:lang="en">External Streaming Jobs</source>
+        <target state="translated">외부 스트리밍 작업</target>
+      </trans-unit>
       <trans-unit id="SchemaCompare.ExternalTables">
         <source xml:lang="en">External Tables</source>
         <target state="translated">외부 테이블</target>
@@ -433,6 +697,10 @@
       <trans-unit id="SchemaCompare.Filegroups">
         <source xml:lang="en">Filegroups</source>
         <target state="translated">파일 그룹</target>
+      </trans-unit>
+      <trans-unit id="SchemaCompare.Files">
+        <source xml:lang="en">Files</source>
+        <target state="translated">파일</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.FileTables">
         <source xml:lang="en">File Tables</source>
@@ -503,12 +771,12 @@
         <target state="translated">시그니처</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.StoredProcedures">
-        <source xml:lang="en">StoredProcedures</source>
-        <target state="translated">StoredProcedures</target>
+        <source xml:lang="en">Stored Procedures</source>
+        <target state="translated">저장 프로시저</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.SymmetricKeys">
-        <source xml:lang="en">SymmetricKeys</source>
-        <target state="translated">SymmetricKeys</target>
+        <source xml:lang="en">Symmetric Keys</source>
+        <target state="translated">대칭 키</target>
       </trans-unit>
       <trans-unit id="SchemaCompare.Synonyms">
         <source xml:lang="en">Synonyms</source>
@@ -926,285 +1194,29 @@
         <source xml:lang="en">Specifies whether differences in table column order should be ignored or updated when you publish to a database.</source>
         <target state="translated">데이터베이스에 게시할 때 테이블 열 순서의 차이를 무시할지 또는 업데이트할지를 지정합니다.</target>
       </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/schema-compare/out/dialogs/schemaCompareDialog" source-language="en" datatype="plaintext" target-language="ko">
-    <body>
-      <trans-unit id="schemaCompareDialog.ok">
-        <source xml:lang="en">Ok</source>
-        <target state="translated">확인</target>
-      </trans-unit>
-      <trans-unit id="schemaCompareDialog.cancel">
-        <source xml:lang="en">Cancel</source>
-        <target state="translated">취소</target>
-      </trans-unit>
-      <trans-unit id="schemaCompareDialog.SourceTitle">
-        <source xml:lang="en">Source</source>
-        <target state="translated">원본</target>
-      </trans-unit>
-      <trans-unit id="schemaCompareDialog.TargetTitle">
-        <source xml:lang="en">Target</source>
-        <target state="translated">대상</target>
-      </trans-unit>
-      <trans-unit id="schemaCompareDialog.fileTextBoxLabel">
-        <source xml:lang="en">File</source>
-        <target state="translated">파일</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.dacpacRadioButtonLabel">
-        <source xml:lang="en">Data-tier Application File (.dacpac)</source>
-        <target state="translated">데이터 계층 애플리케이션 파일(.dacpac)</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.databaseButtonLabel">
-        <source xml:lang="en">Database</source>
-        <target state="translated">데이터베이스</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.radioButtonsLabel">
-        <source xml:lang="en">Type</source>
-        <target state="translated">형식</target>
-      </trans-unit>
-      <trans-unit id="schemaCompareDialog.serverDropdownTitle">
-        <source xml:lang="en">Server</source>
-        <target state="translated">서버</target>
-      </trans-unit>
-      <trans-unit id="schemaCompareDialog.databaseDropdownTitle">
-        <source xml:lang="en">Database</source>
-        <target state="translated">데이터베이스</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.noActiveConnectionsText">
-        <source xml:lang="en">No active connections</source>
-        <target state="translated">활성 연결 없음</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.dialogTitle">
-        <source xml:lang="en">Schema Compare</source>
-        <target state="translated">스키마 비교</target>
-      </trans-unit>
-      <trans-unit id="schemaCompareDialog.differentSourceMessage">
-        <source xml:lang="en">A different source schema has been selected. Compare to see the comparison?</source>
-        <target state="translated">다른 원본 스키마를 선택했습니다. 비교를 확인하려면 비교를 누르세요.</target>
-      </trans-unit>
-      <trans-unit id="schemaCompareDialog.differentTargetMessage">
-        <source xml:lang="en">A different target schema has been selected. Compare to see the comparison?</source>
-        <target state="translated">다른 대상 스키마를 선택했습니다. 비교를 확인하려면 비교를 누르세요.</target>
-      </trans-unit>
-      <trans-unit id="schemaCompareDialog.differentSourceTargetMessage">
-        <source xml:lang="en">Different source and target schemas have been selected. Compare to see the comparison?</source>
-        <target state="translated">다른 원본 및 대상 스키마를 선택했습니다. 비교를 확인하려면 비교를 누르세요.</target>
-      </trans-unit>
-      <trans-unit id="schemaCompareDialog.Yes">
-        <source xml:lang="en">Yes</source>
-        <target state="translated">예</target>
-      </trans-unit>
-      <trans-unit id="schemaCompareDialog.No">
-        <source xml:lang="en">No</source>
-        <target state="translated">아니요</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.openFile">
-        <source xml:lang="en">Open</source>
-        <target state="translated">열기</target>
-      </trans-unit>
-      <trans-unit id="schemaCompareDialog.defaultUser">
-        <source xml:lang="en">default</source>
-        <target state="translated">기본값</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/schema-compare/out/schemaCompareMainWindow" source-language="en" datatype="plaintext" target-language="ko">
-    <body>
-      <trans-unit id="schemaCompare.CompareDetailsTitle">
-        <source xml:lang="en">Compare Details</source>
-        <target state="translated">세부 정보 비교</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.ApplyConfirmation">
-        <source xml:lang="en">Are you sure you want to update the target?</source>
-        <target state="translated">대상을 업데이트하시겠습니까?</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.RecompareToRefresh">
-        <source xml:lang="en">Press Compare to refresh the comparison.</source>
-        <target state="translated">비교를 눌러 비교를 새로 고칩니다.</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.generateScriptEnabledButton">
-        <source xml:lang="en">Generate script to deploy changes to target</source>
-        <target state="translated">대상에 변경 내용을 배포하는 스크립트 생성</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.generateScriptNoChanges">
-        <source xml:lang="en">No changes to script</source>
-        <target state="translated">스크립트 변경 내용 없음</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.applyButtonEnabledTitle">
-        <source xml:lang="en">Apply changes to target</source>
-        <target state="translated">대상에 변경 내용 적용</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.applyNoChanges">
-        <source xml:lang="en">No changes to apply</source>
-        <target state="translated">적용할 변경 내용 없음</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.deleteAction">
-        <source xml:lang="en">Delete</source>
-        <target state="translated">삭제</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.changeAction">
-        <source xml:lang="en">Change</source>
-        <target state="translated">변경</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.addAction">
-        <source xml:lang="en">Add</source>
-        <target state="translated">추가</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.Title">
-        <source xml:lang="en">Schema Compare</source>
-        <target state="translated">스키마 비교</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.sourceLabel">
-        <source xml:lang="en">Source</source>
-        <target state="translated">원본</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.targetLabel">
-        <source xml:lang="en">Target</source>
-        <target state="translated">대상</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.switchLabel">
-        <source xml:lang="en">➔</source>
-        <target state="translated">➔</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.waitText">
-        <source xml:lang="en">Initializing Comparison. This might take a moment.</source>
-        <target state="translated">비교를 초기화하는 중입니다. 시간이 약간 걸릴 수 있습니다.</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.startText">
-        <source xml:lang="en">To compare two schemas, first select a source schema and target schema, then press Compare.</source>
-        <target state="translated">두 스키마를 비교하려면 먼저 원본 스키마 및 대상 스키마를 선택한 다음, 비교를 누릅니다.</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.noDifferences">
-        <source xml:lang="en">No schema differences were found.</source>
-        <target state="translated">스키마 차이를 찾을 수 없습니다.</target>
-      </trans-unit>
       <trans-unit id="schemaCompare.compareErrorMessage">
         <source xml:lang="en">Schema Compare failed: {0}</source>
         <target state="translated">스키마 비교 실패: {0}</target>
       </trans-unit>
-      <trans-unit id="schemaCompare.typeColumn">
-        <source xml:lang="en">Type</source>
-        <target state="translated">형식</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.sourceNameColumn">
-        <source xml:lang="en">Source Name</source>
-        <target state="translated">원본 이름</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.includeColumnName">
-        <source xml:lang="en">Include</source>
-        <target state="translated">포함</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.actionColumn">
-        <source xml:lang="en">Action</source>
-        <target state="translated">작업</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.targetNameColumn">
-        <source xml:lang="en">Target Name</source>
-        <target state="translated">대상 이름</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.generateScriptButtonDisabledTitle">
-        <source xml:lang="en">Generate script is enabled when the target is a database</source>
-        <target state="translated">대상이 데이터베이스이면 스크립트 생성이 사용하도록 설정됩니다.</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.applyButtonDisabledTitle">
-        <source xml:lang="en">Apply is enabled when the target is a database</source>
-        <target state="translated">대상이 데이터베이스이면 적용이 사용하도록 설정됩니다.</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.compareButton">
-        <source xml:lang="en">Compare</source>
-        <target state="translated">비교</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.compareButtonTitle">
-        <source xml:lang="en">Compare</source>
-        <target state="translated">비교</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.cancelCompareButton">
-        <source xml:lang="en">Stop</source>
-        <target state="translated">중지</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.cancelCompareButtonTitle">
-        <source xml:lang="en">Stop</source>
-        <target state="translated">중지</target>
+      <trans-unit id="schemaCompare.saveScmpErrorMessage">
+        <source xml:lang="en">Save scmp failed: '{0}'</source>
+        <target state="translated">scmp 저장 실패: '{0}'</target>
       </trans-unit>
       <trans-unit id="schemaCompare.cancelErrorMessage">
         <source xml:lang="en">Cancel schema compare failed: '{0}'</source>
         <target state="translated">스키마 비교 취소 실패: '{0}'</target>
       </trans-unit>
-      <trans-unit id="schemaCompare.generateScriptButton">
-        <source xml:lang="en">Generate script</source>
-        <target state="translated">스크립트 생성</target>
-      </trans-unit>
       <trans-unit id="schemaCompare.generateScriptErrorMessage">
         <source xml:lang="en">Generate script failed: '{0}'</source>
         <target state="translated">스크립트 생성 실패: '{0}'</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.optionsButton">
-        <source xml:lang="en">Options</source>
-        <target state="translated">옵션</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.optionsButtonTitle">
-        <source xml:lang="en">Options</source>
-        <target state="translated">옵션</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.updateButton">
-        <source xml:lang="en">Apply</source>
-        <target state="translated">적용</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.ApplyYes">
-        <source xml:lang="en">Yes</source>
-        <target state="translated">예</target>
       </trans-unit>
       <trans-unit id="schemaCompare.updateErrorMessage">
         <source xml:lang="en">Schema Compare Apply failed '{0}'</source>
         <target state="translated">스키마 비교 적용 실패 '{0}'</target>
       </trans-unit>
-      <trans-unit id="schemaCompare.switchDirectionButton">
-        <source xml:lang="en">Switch direction</source>
-        <target state="translated">방향 전환</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.switchButtonTitle">
-        <source xml:lang="en">Switch source and target</source>
-        <target state="translated">원본과 대상 전환</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.sourceButtonTitle">
-        <source xml:lang="en">Select Source</source>
-        <target state="translated">원본 선택</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.targetButtonTitle">
-        <source xml:lang="en">Select Target</source>
-        <target state="translated">대상 선택</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.openScmpButton">
-        <source xml:lang="en">Open .scmp file</source>
-        <target state="translated">.scmp 파일 열기</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.openScmpButtonTitle">
-        <source xml:lang="en">Load source, target, and options saved in an .scmp file</source>
-        <target state="translated">.scmp 파일에 저장된 원본, 대상 및 옵션 로드</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.openFile">
-        <source xml:lang="en">Open</source>
-        <target state="translated">열기</target>
-      </trans-unit>
       <trans-unit id="schemaCompare.openScmpErrorMessage">
         <source xml:lang="en">Open scmp failed: '{0}'</source>
         <target state="translated">scmp 열기 실패: '{0}'</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.saveScmpButton">
-        <source xml:lang="en">Save .scmp file</source>
-        <target state="translated">.scmp 파일 저장</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.saveScmpButtonTitle">
-        <source xml:lang="en">Save source and target, options, and excluded elements</source>
-        <target state="translated">원본 및 대상, 옵션 및 제외된 요소 저장</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.saveFile">
-        <source xml:lang="en">Save</source>
-        <target state="translated">저장</target>
-      </trans-unit>
-      <trans-unit id="schemaCompare.saveScmpErrorMessage">
-        <source xml:lang="en">Save scmp failed: '{0}'</source>
-        <target state="translated">scmp 저장 실패: '{0}'</target>
       </trans-unit>
     </body>
   </file>

@@ -126,6 +126,10 @@
         <source xml:lang="en">Error fetching resource groups for account {0} ({1}) subscription {2} ({3}) tenant {4} : {5}</source>
         <target state="translated">アカウント {0} ({1}) サブスクリプション {2} ({3}) テナント {4} のリソース グループの取り込みでエラーが発生しました: {5}</target>
       </trans-unit>
+      <trans-unit id="azure.accounts.getLocations.queryError">
+        <source xml:lang="en">Error fetching locations for account {0} ({1}) subscription {2} ({3}) tenant {4} : {5}</source>
+        <target state="translated">アカウント {0} ({1}) サブスクリプション {2} ({3}) テナント {4} の場所の取り込みでエラーが発生しました: {5}</target>
+      </trans-unit>
       <trans-unit id="azure.accounts.runResourceQuery.errors.invalidQuery">
         <source xml:lang="en">Invalid query</source>
         <target state="translated">無効なクエリ</target>
@@ -379,7 +383,7 @@
         <target state="translated">SQL Server - Azure Arc</target>
       </trans-unit>
       <trans-unit id="azurecore.azureArcPostgres">
-        <source xml:lang="en">Azure Arc enabled PostgreSQL Hyperscale</source>
+        <source xml:lang="en">Azure Arc-enabled PostgreSQL Hyperscale</source>
         <target state="translated">Azure Arc 対応 PostgreSQL Hyperscale</target>
       </trans-unit>
       <trans-unit id="azure.unableToOpenAzureLink">
@@ -411,7 +415,7 @@
         <target state="translated">Azure 認証で不明なエラーが発生しました</target>
       </trans-unit>
       <trans-unit id="azure.tenantNotFound">
-        <source xml:lang="en">Specifed tenant with ID '{0}' not found.</source>
+        <source xml:lang="en">Specified tenant with ID '{0}' not found.</source>
         <target state="translated">ID '{0}' の指定されたテナントが見つかりません。</target>
       </trans-unit>
       <trans-unit id="azure.noBaseToken">
@@ -419,7 +423,7 @@
         <target state="translated">認証で何かが失敗したか、またはトークンがシステムから削除されています。アカウントを Azure Data Studio にもう一度追加してください。</target>
       </trans-unit>
       <trans-unit id="azure.responseError">
-        <source xml:lang="en">Token retrival failed with an error. Open developer tools to view the error</source>
+        <source xml:lang="en">Token retrieval failed with an error. Open developer tools to view the error</source>
         <target state="translated">トークンの取得がエラーで失敗しました。開発者ツールを開いてエラーを表示してください</target>
       </trans-unit>
       <trans-unit id="azure.accessTokenEmpty">
@@ -512,6 +516,14 @@
       <trans-unit id="azure.resource.tree.accountTreeNode.credentialError">
         <source xml:lang="en">Failed to get credential for account {0}. Please go to the accounts dialog and refresh the account.</source>
         <target state="translated">アカウント {0} の資格情報を取得できませんでした。アカウント ダイアログに移動して、アカウントを更新してください。</target>
+      </trans-unit>
+      <trans-unit id="azure.resource.throttleerror">
+        <source xml:lang="en">Requests from this account have been throttled. To retry, please select a smaller number of subscriptions.</source>
+        <target state="translated">このアカウントからの要求は抑えられています。再試行するには、より小さいサブスクリプション数を選択してください。</target>
+      </trans-unit>
+      <trans-unit id="azure.resource.tree.loadresourceerror">
+        <source xml:lang="en">An error occured while loading Azure resources: {0}</source>
+        <target state="translated">Azure リソースの読み込み中にエラーが発生しました: {0}</target>
       </trans-unit>
     </body>
   </file>
@@ -700,6 +712,14 @@
       <trans-unit id="azure.resource.providers.KustoContainerLabel">
         <source xml:lang="en">Azure Data Explorer Cluster</source>
         <target state="translated">Azure Data Explorer クラスター</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/azurecore/dist/azureResource/providers/azuremonitor/azuremonitorTreeDataProvider" source-language="en" datatype="plaintext" target-language="ja">
+    <body>
+      <trans-unit id="azure.resource.providers.AzureMonitorContainerLabel">
+        <source xml:lang="en">Azure Monitor Workspace</source>
+        <target state="new">Azure Monitor Workspace</target>
       </trans-unit>
     </body>
   </file>
