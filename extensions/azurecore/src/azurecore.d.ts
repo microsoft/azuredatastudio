@@ -124,6 +124,11 @@ declare module 'azurecore' {
 		azureLogAnalyticsResource?: Resource;
 
 		/**
+		 * Information that describes the Azure Storage resourceI
+		 */
+		azureStorageResource?: Resource;
+
+		/**
 		 * A list of tenant IDs to authenticate against. If defined, then these IDs will be used
 		 * instead of querying the tenants endpoint of the armResource
 		 */
@@ -159,6 +164,11 @@ declare module 'azurecore' {
 		 * Endpoint url used to access the resource
 		 */
 		endpoint: string;
+
+		/**
+		 * Endpoint suffix used to access the resource
+		 */
+		endpointSuffix?: string;
 
 		/**
 		 * Resource ID for azdata

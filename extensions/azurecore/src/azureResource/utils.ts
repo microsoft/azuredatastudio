@@ -396,7 +396,7 @@ export async function makeHttpRequest(account: azdata.Account, subscription: azu
 	if (host) {
 		requestUrl = `${host}${path}`;
 	} else {
-		requestUrl = `https://management.azure.com${path}`;
+		requestUrl = `${account.properties.providerSettings.settings.armResource.endpoint}${path}`;
 	}
 
 	let response;
@@ -494,7 +494,7 @@ export async function getBlobs(account: azdata.Account, subscription: azureResou
 	try {
 		const sharedKeyCredential = new StorageSharedKeyCredential(storageAccount.name, storageKeys.keyName1);
 		const blobServiceClient = new BlobServiceClient(
-			`https://${storageAccount.name}.blob.core.windows.net`,
+			`https://${storageAccount.name}.blob${account.properties.providerSettings.settings.azureStorageResource.endpointSuffix}`,
 			sharedKeyCredential
 		);
 		const containerClient = blobServiceClient.getContainerClient(containerName);
