@@ -128,7 +128,7 @@ export class Notebook {
 	}
 
 	async waitForSuggestionResult(expectedResult: string): Promise<void> {
-		const expectedResultSelector = `div.editor-widget.suggest-widget div.monaco-list-row.show-file-icons.string-label.focused[aria-label="${expectedResult}"]`;
+		const expectedResultSelector = `div.editor-widget.suggest-widget div.monaco-list-row.focused[aria-label="${expectedResult}"]`;
 		await this.code.waitForElement(expectedResultSelector);
 	}
 
