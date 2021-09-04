@@ -4307,7 +4307,7 @@ Error: {1}</source>
     <body>
       <trans-unit id="notebookEditor.name">
         <source xml:lang="en">Notebook Editor</source>
-        <target state="new">Notebook Editor</target>
+        <target state="translated">Редактор записной книжки</target>
       </trans-unit>
     </body>
   </file>
@@ -5091,7 +5091,7 @@ Error: {1}</source>
     <body>
       <trans-unit id="queryEditor.name">
         <source xml:lang="en">Query Editor</source>
-        <target state="new">Query Editor</target>
+        <target state="translated">Редактор запросов</target>
       </trans-unit>
     </body>
   </file>
@@ -5289,7 +5289,7 @@ Error: {1}</source>
     <body>
       <trans-unit id="queryPlanEditor">
         <source xml:lang="en">Query Plan Editor</source>
-        <target state="new">Query Plan Editor</target>
+        <target state="translated">Редактор планов запросов</target>
       </trans-unit>
     </body>
   </file>

@@ -4307,7 +4307,7 @@ Errore: {1}</target>
     <body>
       <trans-unit id="notebookEditor.name">
         <source xml:lang="en">Notebook Editor</source>
-        <target state="new">Notebook Editor</target>
+        <target state="translated">Editor di notebook</target>
       </trans-unit>
     </body>
   </file>
@@ -5091,7 +5091,7 @@ Errore: {1}</target>
     <body>
       <trans-unit id="queryEditor.name">
         <source xml:lang="en">Query Editor</source>
-        <target state="new">Query Editor</target>
+        <target state="translated">Editor di query</target>
       </trans-unit>
     </body>
   </file>
