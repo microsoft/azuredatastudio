@@ -21,7 +21,7 @@ import { ILogService } from 'vs/platform/log/common/log';
 
 @Component({
 	selector: 'modelview-hyperlink',
-	template: `<a [href]="url" [title]="title" [attr.aria-label]="ariaLabel" target="blank" [ngStyle]="CSSStyles" [class]="cssClass">{{label}}</a>`
+	template: `<a [href]="url" [title]="title" [attr.aria-label]="ariaLabel" [attr.role]="ariaRole" target="blank" [ngStyle]="CSSStyles" [class]="cssClass">{{label}}</a>`
 })
 export default class HyperlinkComponent extends TitledComponent<azdata.HyperlinkComponentProperties> implements IComponent, OnDestroy, AfterViewInit {
 	@Input() descriptor: IComponentDescriptor;
