@@ -353,7 +353,7 @@ describe('BookTrustManagerTests', function () {
 					should(isNotebookTrusted).be.false('Notebook not should be trusted');
 				});
 
-				it('should trust notebook after book has been added to a folder', async () => {
+				it('should trust notebook after book has been added to a folder @UNSTABLE@', async () => {
 					let notebookUri = run.book2.notebook1;
 					let isNotebookTrustedBeforeChange = bookTrustManager.isNotebookTrustedByDefault(notebookUri);
 
