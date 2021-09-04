@@ -440,9 +440,6 @@ import 'sql/workbench/contrib/query/common/resultsGrid.contribution';
 import 'sql/workbench/contrib/dataExplorer/browser/dataExplorer.contribution';
 import 'sql/workbench/contrib/dataExplorer/browser/nodeActions.common.contribution';
 
-//editor replacement
-import 'sql/workbench/contrib/editorReplacement/common/editorReplacer.contribution';
-
 //configurationUpgrader replacement
 import 'sql/workbench/contrib/configuration/common/configurationUpgrader.contribution';
 

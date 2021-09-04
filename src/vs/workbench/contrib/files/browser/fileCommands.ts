@@ -46,6 +46,7 @@ import { isPromiseCanceledError } from 'vs/base/common/errors';
 import { toAction } from 'vs/base/common/actions';
 import { EditorOverride } from 'vs/platform/editor/common/editor';
 import { hash } from 'vs/base/common/hash';
+import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService'; // {{SQL CARBON EDIT}} New query command
 
 // Commands
 
@@ -677,16 +678,10 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 		]
 	},
 	handler: async (accessor, args?: { viewType: string }) => {
-		const editorService = accessor.get(IEditorService);
-
-		if (typeof args?.viewType === 'string') {
-			const editorGroupsService = accessor.get(IEditorGroupsService);
-
-			const group = editorGroupsService.activeGroup;
-			await editorService.openEditor({ options: { override: args.viewType, pinned: true } }, group);
-		} else {
-			await editorService.openEditor({ options: { pinned: true } }); // untitled are always pinned
-		}
+		// {{SQL CARBON EDIT}} Modify to open untitled query editor
+		// We don't use the viewType arg since we always want to open a query editor
+		const queryEditorService = accessor.get(IQueryEditorService);
+		await queryEditorService.newSqlEditor({ connectWithGlobal: true });
 	}
 });
 

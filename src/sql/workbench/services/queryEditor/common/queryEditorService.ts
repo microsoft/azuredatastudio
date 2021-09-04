@@ -32,6 +32,11 @@ export interface INewSqlEditorOptions {
 	 * use an existing resource, if this matches a resource already open that resource will be opened instead
 	 */
 	resource?: URI
+
+	/**
+	 * Whether to connect the editor using the current global connection
+	 */
+	connectWithGlobal?: boolean
 }
 
 export interface IQueryEditorService {

@@ -34,7 +34,7 @@ suite('Query Input Factory', () => {
 		return instantiationService.createInstance(FileEditorInput, resource, preferredResource, preferredName, preferredDescription, undefined, preferredMode);
 	}
 
-	test('sync query editor input is connected if global connection exists (OE)', () => {
+	test('sync query editor input is connected if global connection exists (OE)', async () => {
 		const editorService = new MockEditorService();
 		instantiationService = workbenchInstantiationService();
 		const connectionManagementService = new MockConnectionManagementService();
@@ -43,7 +43,7 @@ suite('Query Input Factory', () => {
 		instantiationService.stub(IEditorService, editorService);
 		const queryEditorLanguageAssociation = instantiationService.createInstance(QueryEditorLanguageAssociation);
 		const input = createFileInput(URI.file('/test/file.sql'), undefined, undefined, undefined);
-		queryEditorLanguageAssociation.convertInput(input);
+		await queryEditorLanguageAssociation.convertInput(input);
 		assert(connectionManagementService.numberConnects === 1, 'Convert input should have called connect when active OE connection exists');
 	});
 

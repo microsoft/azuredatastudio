@@ -30,7 +30,7 @@ export const InputBoxFocusedKey = new RawContextKey<boolean>('inputBoxFocus', fa
 export const SearchInputBoxFocusedKey = new RawContextKey<boolean>('searchInputBoxFocus', false);
 
 export const enum NotebookLanguage {
-	Notebook = 'notebook',
+	Notebook = 'Notebook',
 	Ipynb = 'ipynb'
 }
 export interface INotebookSearchConfigurationProperties {

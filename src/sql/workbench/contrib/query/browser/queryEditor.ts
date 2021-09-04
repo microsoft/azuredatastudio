@@ -5,6 +5,7 @@
 
 import 'vs/css!./media/queryEditor';
 
+import { localize } from 'vs/nls';
 import * as DOM from 'vs/base/browser/dom';
 import * as path from 'vs/base/common/path';
 import { EditorOptions, IEditorControl, IEditorMemento, IEditorOpenContext } from 'vs/workbench/common/editor';
@@ -54,6 +55,7 @@ interface IQueryEditorViewState {
 export class QueryEditor extends EditorPane {
 
 	public static ID: string = 'workbench.editor.queryEditor';
+	public static LABEL = localize('queryEditor.name', "Query Editor");
 
 	private dimension: DOM.Dimension = new DOM.Dimension(0, 0);
 
