@@ -291,19 +291,19 @@
                           "required": true
                         },
                         {
+                          "type": "options",
                           "label": "%arc.data.controller.infrastructure%",
                           "defaultValue": "azure",
+                          "required": true,
                           "variableName": "AZDATA_NB_VAR_ARC_INFRASTRUCTURE",
-                          "type": "infrastructure",
-                          "infrastructure": [
+                          "options": [
                             "azure",
                             "gcp",
                             "aws",
                             "alibaba",
                             "onpremises",
                             "other"
-                          ],
-                          "required": true
+                          ]
                         }
                       ]
                     },

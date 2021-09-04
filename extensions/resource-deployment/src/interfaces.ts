@@ -361,11 +361,6 @@ export interface AzureLocationsFieldInfo extends FieldInfo {
 	locations?: string[]
 }
 
-export interface InfrastructureFieldInfo extends FieldInfo {
-	infrastructureName?: string;
-	infrastructure?: string[]
-}
-
 export interface FilePickerFieldInfo extends FieldInfo {
 	filter: FilePickerFilter;
 }
@@ -401,7 +396,6 @@ export enum FieldType {
 	Checkbox = 'checkbox',
 	AzureAccount = 'azure_account',
 	AzureLocations = 'azure_locations',
-	Infrastructure = 'infrastructure',
 	FilePicker = 'file_picker',
 	KubeClusterContextPicker = 'kube_cluster_context_picker',
 	KubeStorageClass = 'kube_storage_class'
