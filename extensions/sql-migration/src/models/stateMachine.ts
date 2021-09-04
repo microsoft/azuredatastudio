@@ -110,6 +110,7 @@ export interface SavedInfo {
 	resourceGroup: azureResource.AzureResourceResourceGroup | null;
 	targetServerInstance: azureResource.AzureSqlManagedInstance | SqlVMServer | null;
 	migrationMode: MigrationMode | null;
+	databaseAssessment: string[] | null;
 }
 
 
@@ -1000,7 +1001,8 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 			location: null,
 			resourceGroup: null,
 			targetServerInstance: null,
-			migrationMode: null
+			migrationMode: null,
+			databaseAssessment: null
 		};
 		switch (currentPage) {
 			// Summary
@@ -1026,6 +1028,8 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				console.log('Saving assessment from page: SKU Recommendation');
 				saveInfo.migrationTargetType = this._targetType;
 
+				saveInfo.databaseAssessment = this._databaseAssessment;
+				saveInfo.serverAssessment = this._assessmentResults;
 				saveInfo.migrationDatabases = this._databaseSelection;
 				saveInfo.subscription = this._targetSubscription;
 				saveInfo.location = this._location;

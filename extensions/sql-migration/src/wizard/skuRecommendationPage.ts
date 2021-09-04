@@ -6,7 +6,7 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
-import { MigrationStateModel, MigrationTargetType, StateChangeEvent } from '../models/stateMachine';
+import { MigrationStateModel, MigrationTargetType, ServerAssessment, StateChangeEvent } from '../models/stateMachine';
 import { AssessmentResultsDialog } from '../dialog/assessmentResults/assessmentResultsDialog';
 import * as constants from '../constants/strings';
 import { EOL } from 'os';
@@ -473,7 +473,11 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		const serverName = (await this.migrationStateModel.getSourceConnectionProfile()).serverName;
 		this._igComponent.value = constants.ASSESSMENT_COMPLETED(serverName);
 		try {
-			await this.migrationStateModel.getDatabaseAssessments(MigrationTargetType.SQLMI);
+			if (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage) {
+				this.migrationStateModel._assessmentResults = <ServerAssessment>this.migrationStateModel.savedInfo.serverAssessment;
+			} else {
+				await this.migrationStateModel.getDatabaseAssessments(MigrationTargetType.SQLMI);
+			}
 			this._detailsComponent.value = constants.SKU_RECOMMENDATION_ALL_SUCCESSFUL(this.migrationStateModel._assessmentResults.databaseAssessments.length);
 
 			const errors: string[] = [];
@@ -512,17 +516,28 @@ errorId: ${e.errorId}
 	}
 
 	private async populateSubscriptionDropdown(): Promise<void> {
+		if (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= 0) {
+			this.migrationStateModel._azureAccount = <azdata.Account>this.migrationStateModel.savedInfo.azureAccount;
+		}
 		if (!this.migrationStateModel._targetSubscription) {
 			this._managedInstanceSubscriptionDropdown.loading = true;
 			this._resourceDropdown.loading = true;
 			try {
 				this._managedInstanceSubscriptionDropdown.values = await this.migrationStateModel.getSubscriptionsDropdownValues();
-				selectDropDownIndex(this._managedInstanceSubscriptionDropdown, 0);
 			} catch (e) {
 				console.log(e);
 			} finally {
 				this._managedInstanceSubscriptionDropdown.loading = false;
 				this._resourceDropdown.loading = false;
+			}
+			if (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= 2 && this._managedInstanceSubscriptionDropdown.values) {
+				this._managedInstanceSubscriptionDropdown.values.forEach((subscription, index) => {
+					if ((<azdata.CategoryValue>subscription).name === this.migrationStateModel.savedInfo?.subscription?.id) {
+						selectDropDownIndex(this._managedInstanceSubscriptionDropdown, index);
+					}
+				});
+			} else {
+				selectDropDownIndex(this._managedInstanceSubscriptionDropdown, 0);
 			}
 		}
 	}
@@ -532,9 +547,25 @@ errorId: ${e.errorId}
 		this._azureLocationDropdown.loading = true;
 		try {
 			this._azureResourceGroupDropdown.values = await this.migrationStateModel.getAzureResourceGroupDropdownValues(this.migrationStateModel._targetSubscription);
-			selectDropDownIndex(this._azureResourceGroupDropdown, 0);
+			if (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= 2 && this._azureResourceGroupDropdown.values) {
+				this._azureResourceGroupDropdown.values.forEach((resourceGroup, index) => {
+					if (resourceGroup.name === this.migrationStateModel.savedInfo?.resourceGroup?.id) {
+						selectDropDownIndex(this._azureResourceGroupDropdown, index);
+					}
+				});
+			} else {
+				selectDropDownIndex(this._azureResourceGroupDropdown, 0);
+			}
 			this._azureLocationDropdown.values = await this.migrationStateModel.getAzureLocationDropdownValues(this.migrationStateModel._targetSubscription);
-			selectDropDownIndex(this._azureLocationDropdown, 0);
+			if (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= 2 && this._azureLocationDropdown.values) {
+				this._azureLocationDropdown.values.forEach((location, index) => {
+					if (location.displayName === this.migrationStateModel.savedInfo?.location?.displayName) {
+						selectDropDownIndex(this._azureLocationDropdown, index);
+					}
+				});
+			} else {
+				selectDropDownIndex(this._azureLocationDropdown, 0);
+			}
 		} catch (e) {
 			console.log(e);
 		} finally {
@@ -561,8 +592,15 @@ errorId: ${e.errorId}
 					this.migrationStateModel._location,
 					this.migrationStateModel._resourceGroup);
 			}
-
-			selectDropDownIndex(this._resourceDropdown, 0);
+			if (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= 2 && this._resourceDropdown.values) {
+				this._resourceDropdown.values.forEach((resource, index) => {
+					if (resource.displayName === this.migrationStateModel.savedInfo?.targetServerInstance?.name) {
+						selectDropDownIndex(this._resourceDropdown, index);
+					}
+				});
+			} else {
+				selectDropDownIndex(this._resourceDropdown, 0);
+			}
 		} catch (e) {
 			console.log(e);
 		} finally {

@@ -193,6 +193,7 @@ export class SqlDatabaseTree {
 			this._databaseCount.updateProperties({
 				'value': constants.DATABASES(this.selectedDbs().length, this._model._databaseAssessment.length)
 			});
+			this._model._databaseSelection = <azdata.DeclarativeTableCellValue[][]>this._databaseTable.dataValues;
 		}));
 
 		this._disposables.push(this._databaseTable.onRowSelected(async (e) => {
@@ -777,7 +778,6 @@ export class SqlDatabaseTree {
 				result.push(this._dbNames[index]);
 			}
 		});
-		this._model._databaseSelection = <azdata.DeclarativeTableCellValue[][]>this._databaseTable.dataValues;
 		return result;
 	}
 
@@ -954,7 +954,11 @@ export class SqlDatabaseTree {
 			});
 		}
 		await this._instanceTable.setDataValues(instanceTableValues);
-		await this._databaseTable.setDataValues(this._databaseTableValues);
+		if (this._model.resumeAssessment && this._model.savedInfo.closedPage >= 2) {
+			this._databaseTable.setDataValues(this._model.savedInfo.migrationDatabases);
+		} else {
+			await this._databaseTable.setDataValues(this._databaseTableValues);
+		}
 	}
 
 	// undo when bug #16445 is fixed
