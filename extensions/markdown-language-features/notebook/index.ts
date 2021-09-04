@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 const MarkdownIt = require('markdown-it');
@@ -11,6 +11,7 @@ export function activate() {
 	});
 
 	const style = document.createElement('style');
+	style.classList.add('markdown-style');
 	style.textContent = `
 		.emptyMarkdownCell::before {
 			content: "${document.documentElement.style.getPropertyValue('--notebook-cell-markup-empty-content')}";
@@ -133,10 +134,7 @@ export function activate() {
 			white-space: pre-wrap;
 		}
 	`;
-	const template = document.createElement('template');
-	template.classList.add('markdown-style');
-	template.content.appendChild(style);
-	document.head.appendChild(template);
+	document.head.append(style);
 
 	return {
 		renderOutputItem: (outputInfo: { text(): string }, element: HTMLElement) => {
@@ -150,12 +148,8 @@ export function activate() {
 				previewRoot.appendChild(defaultStyles.cloneNode(true));
 
 				// And then contributed styles
-				for (const element of document.getElementsByClassName('markdown-style')) {
-					if (element instanceof HTMLTemplateElement) {
-						previewRoot.appendChild(element.content.cloneNode(true));
-					} else {
-						previewRoot.appendChild(element.cloneNode(true));
-					}
+				for (const markdownStyleNode of document.getElementsByClassName('markdown-style')) {
+					previewRoot.appendChild(markdownStyleNode.cloneNode(true));
 				}
 
 				previewNode = document.createElement('div');

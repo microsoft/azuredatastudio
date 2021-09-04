@@ -149,13 +149,6 @@ export class MarkdownEngine {
 		return tokens;
 	}
 
-	public async renderText(document: vscode.Uri, text: string): Promise<string> {	// {{SQL CARBON EDIT}} - Add renderText method
-		const config = this.getConfig(document);
-		const engine = await this.getEngine(config);
-		this.currentDocument = document;
-		return engine.render(text, config);
-	}
-
 	private tokenizeString(text: string, engine: MarkdownIt) {
 		this._slugCount = new Map<string, number>();
 
