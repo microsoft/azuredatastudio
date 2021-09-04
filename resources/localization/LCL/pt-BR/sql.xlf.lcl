@@ -10147,7 +10147,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Query Editor]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Editor da Consulta]]></Val>
+            <Val><![CDATA[Editor de Consultas]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -10506,6 +10506,9 @@
       <Item ItemId=";src/sql/workbench/contrib/queryPlan/browser/queryPlanEditor.queryPlanEditor" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Query Plan Editor]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Editor de Plano de Consulta]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
