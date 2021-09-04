@@ -3,7 +3,7 @@
 	"displayName": "%displayName%",
 	"description": "%description%",
 	"version": "1.0.0",
-	"publisher": "microsoft",
+	"publisher": "Microsoft",
 	"engines": {
 		"vscode": "^1.20.0"
 	},

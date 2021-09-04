@@ -285,7 +285,7 @@
       <source xml:lang="en">SQL Server - Azure Arc</source>
     </trans-unit>
     <trans-unit id="azurecore.azureArcPostgres">
-      <source xml:lang="en">Azure Arc enabled PostgreSQL Hyperscale</source>
+      <source xml:lang="en">Azure Arc-enabled PostgreSQL Hyperscale</source>
     </trans-unit>
     <trans-unit id="azure.unableToOpenAzureLink">
       <source xml:lang="en">Unable to open link, missing required values</source>

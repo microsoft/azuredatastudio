@@ -318,7 +318,7 @@
       <source xml:lang="en">Azure location</source>
     </trans-unit>
     <trans-unit id="arc.postgres.wizard.title">
-      <source xml:lang="en">Deploy an Azure Arc enabled PostgreSQL Hyperscale server group (Preview)</source>
+      <source xml:lang="en">Deploy an Azure Arc-enabled PostgreSQL Hyperscale server group (Preview)</source>
     </trans-unit>
     <trans-unit id="arc.postgres.wizard.page1.title">
       <source xml:lang="en">Provide Azure enabled PostgreSQL Hyperscale server group parameters</source>
@@ -326,8 +326,11 @@
     <trans-unit id="arc.postgres.settings.section.title">
       <source xml:lang="en">General settings</source>
     </trans-unit>
-    <trans-unit id="arc.postgres.settings.resource.title">
-      <source xml:lang="en">Resource settings</source>
+    <trans-unit id="arc.postgres.settings.resource.worker.title">
+      <source xml:lang="en">Worker Nodes Compute Configuration</source>
+    </trans-unit>
+    <trans-unit id="arc.postgres.settings.resource.coordinator.title">
+      <source xml:lang="en">Coordinator Node Compute Configuration</source>
     </trans-unit>
     <trans-unit id="arc.postgres.settings.storage.title">
       <source xml:lang="en">Storage settings</source>
@@ -374,29 +377,53 @@
     <trans-unit id="arc.postgres.server.group.volume.size.backups.description">
       <source xml:lang="en">The size of the storage volume to be used for backups in GB.</source>
     </trans-unit>
-    <trans-unit id="arc.postgres.server.group.cores.request.label">
+    <trans-unit id="arc.postgres.server.group.workers.cores.request.label">
       <source xml:lang="en">CPU request (cores per node)</source>
     </trans-unit>
-    <trans-unit id="arc.postgres.server.group.cores.request.description">
+    <trans-unit id="arc.postgres.server.group.workers.cores.request.description">
       <source xml:lang="en">The minimum number of CPU cores that must be available per node to schedule the service. Fractional cores are supported.</source>
     </trans-unit>
-    <trans-unit id="arc.postgres.server.group.cores.limit.label">
+    <trans-unit id="arc.postgres.server.group.workers.cores.limit.label">
       <source xml:lang="en">CPU limit (cores per node)</source>
     </trans-unit>
-    <trans-unit id="arc.postgres.server.group.cores.limit.description">
+    <trans-unit id="arc.postgres.server.group.workers.cores.limit.description">
       <source xml:lang="en">The maximum number of CPU cores for the Postgres instance that can be used per node. Fractional cores are supported.</source>
     </trans-unit>
-    <trans-unit id="arc.postgres.server.group.memory.request.label">
+    <trans-unit id="arc.postgres.server.group.workers.memory.request.label">
       <source xml:lang="en">Memory request (GB per node)</source>
     </trans-unit>
-    <trans-unit id="arc.postgres.server.group.memory.request.description">
+    <trans-unit id="arc.postgres.server.group.workers.memory.request.description">
       <source xml:lang="en">The memory request of the Postgres instance per node in GB.</source>
     </trans-unit>
-    <trans-unit id="arc.postgres.server.group.memory.limit.label">
+    <trans-unit id="arc.postgres.server.group.workers.memory.limit.label">
       <source xml:lang="en">Memory limit (GB per node)</source>
     </trans-unit>
-    <trans-unit id="arc.postgres.server.group.memory.limit.description">
+    <trans-unit id="arc.postgres.server.group.workers.memory.limit.description">
       <source xml:lang="en">The memory limit of the Postgres instance per node in GB.</source>
+    </trans-unit>
+    <trans-unit id="arc.postgres.server.group.coordinator.cores.request.label">
+      <source xml:lang="en">CPU request</source>
+    </trans-unit>
+    <trans-unit id="arc.postgres.server.group.coordinator.cores.request.description">
+      <source xml:lang="en">The minimum number of CPU cores that must be available on the coordinator node to schedule the service. Fractional cores are supported.</source>
+    </trans-unit>
+    <trans-unit id="arc.postgres.server.group.coordinator.cores.limit.label">
+      <source xml:lang="en">CPU limit</source>
+    </trans-unit>
+    <trans-unit id="arc.postgres.server.group.coordinator.cores.limit.description">
+      <source xml:lang="en">The maximum number of CPU cores for the Postgres instance that can be used on the coordinator node. Fractional cores are supported.</source>
+    </trans-unit>
+    <trans-unit id="arc.postgres.server.group.coordinator.memory.request.label">
+      <source xml:lang="en">Memory request (GB)</source>
+    </trans-unit>
+    <trans-unit id="arc.postgres.server.group.coordinator.memory.request.description">
+      <source xml:lang="en">The memory request of the Postgres instance on the coordinator node in GB.</source>
+    </trans-unit>
+    <trans-unit id="arc.postgres.server.group.coordinator.memory.limit.label">
+      <source xml:lang="en">Memory limit (GB)</source>
+    </trans-unit>
+    <trans-unit id="arc.postgres.server.group.coordinator.memory.limit.description">
+      <source xml:lang="en">The memory limit of the Postgres instance on the coordinator node in GB.</source>
     </trans-unit>
     <trans-unit id="arc.agreement">
       <source xml:lang="en">I accept {0} and {1}.</source>
@@ -405,7 +432,7 @@
       <source xml:lang="en">Azure SQL managed instance - Azure Arc terms and conditions</source>
     </trans-unit>
     <trans-unit id="arc.agreement.postgres.terms.conditions">
-      <source xml:lang="en">Azure Arc enabled PostgreSQL Hyperscale terms and conditions</source>
+      <source xml:lang="en">Azure Arc-enabled PostgreSQL Hyperscale terms and conditions</source>
     </trans-unit>
     <trans-unit id="should.be.integer">
       <source xml:lang="en">Value must be an integer</source>
@@ -457,6 +484,9 @@
     <trans-unit id="arc.connectionStrings">
       <source xml:lang="en">Connection Strings</source>
     </trans-unit>
+    <trans-unit id="arc.preloaded Extensions">
+      <source xml:lang="en">Preloaded Extensions</source>
+    </trans-unit>
     <trans-unit id="arc.networking">
       <source xml:lang="en">Networking</source>
     </trans-unit>
@@ -471,9 +501,6 @@
     </trans-unit>
     <trans-unit id="arc.computeAndStorage">
       <source xml:lang="en">Compute + Storage</source>
-    </trans-unit>
-    <trans-unit id="arc.nodeParameters">
-      <source xml:lang="en">Node Parameters</source>
     </trans-unit>
     <trans-unit id="arc.coordinatorNodeParameters">
       <source xml:lang="en">Coordinator Node Parameters</source>
@@ -511,6 +538,12 @@
     <trans-unit id="arc.delete">
       <source xml:lang="en">Delete</source>
     </trans-unit>
+    <trans-unit id="arc.learnMore">
+      <source xml:lang="en">Learn More.</source>
+    </trans-unit>
+    <trans-unit id="arc.drop">
+      <source xml:lang="en">Drop</source>
+    </trans-unit>
     <trans-unit id="arc.save">
       <source xml:lang="en">Save</source>
     </trans-unit>
@@ -519,6 +552,12 @@
     </trans-unit>
     <trans-unit id="arc.resetPassword">
       <source xml:lang="en">Reset Password</source>
+    </trans-unit>
+    <trans-unit id="arc.addExtensions">
+      <source xml:lang="en">Add extensions</source>
+    </trans-unit>
+    <trans-unit id="arc.dropExtension">
+      <source xml:lang="en">Drop extension</source>
     </trans-unit>
     <trans-unit id="arc.openInAzurePortal">
       <source xml:lang="en">Open in Azure Portal</source>
@@ -558,6 +597,33 @@
     </trans-unit>
     <trans-unit id="arc.controllerEndpoint">
       <source xml:lang="en">Controller endpoint</source>
+    </trans-unit>
+    <trans-unit id="arc.extensionName">
+      <source xml:lang="en">Extension name</source>
+    </trans-unit>
+    <trans-unit id="arc.extensionsDescription">
+      <source xml:lang="en">PostgreSQL provides the ability to extend the functionality of your database by using extensions. Extensions allow for bundling multiple related SQL objects together in a single package that can be loaded or removed from your database with a single command. After being loaded in the database, extensions can function like built-in features.</source>
+    </trans-unit>
+    <trans-unit id="arc.extensionsFunction">
+      <source xml:lang="en">Some extensions must be loaded into PostgreSQL at startup time before they can be used. These preloaded extensions can be viewed and edited  below.</source>
+    </trans-unit>
+    <trans-unit id="arc.extensionsLearnMore">
+      <source xml:lang="en">Learn more about PostgreSQL extensions.</source>
+    </trans-unit>
+    <trans-unit id="arc.extensionsTableLoading">
+      <source xml:lang="en">Table of preloaded extensions are loading.</source>
+    </trans-unit>
+    <trans-unit id="arc.extensionsTableLabel">
+      <source xml:lang="en">Table of preloaded extensions.</source>
+    </trans-unit>
+    <trans-unit id="arc.extensionsTableLoadingComplete">
+      <source xml:lang="en">Preloaded extensions can now be viewed.</source>
+    </trans-unit>
+    <trans-unit id="arc.extensionsAddList">
+      <source xml:lang="en">Extensions</source>
+    </trans-unit>
+    <trans-unit id="arc.extensionsAddDialog">
+      <source xml:lang="en">PostgreSQL provides the ability to extend the functionality of your database by using extensions.</source>
     </trans-unit>
     <trans-unit id="arc.dataController">
       <source xml:lang="en">Data controller</source>
@@ -611,7 +677,7 @@
       <source xml:lang="en">You can configure the number of CPU cores and storage size that will apply to the coordinator node. Adjust the number of CPU cores and memory settings for your server group. To reset the requests and/or limits, pass in empty value.</source>
     </trans-unit>
     <trans-unit id="arc.workerNodeInformation">
-      <source xml:lang="en">In preview it is not possible to reduce the number of worker nodes. Please refer to documentation linked above for more information.</source>
+      <source xml:lang="en">It is possible to scale in and out your server group by reducing or increasing the number of worker nodes.</source>
     </trans-unit>
     <trans-unit id="arc.vCores">
       <source xml:lang="en">vCores</source>
@@ -826,9 +892,6 @@
     <trans-unit id="arc.learnAboutPostgresClients">
       <source xml:lang="en">Learn more about Azure PostgreSQL Hyperscale client interfaces</source>
     </trans-unit>
-    <trans-unit id="arc.nodeParametersDescription">
-      <source xml:lang="en"> These server parameters of the Coordinator node and the Worker nodes can be set to custom (non-default) values. Search to find parameters.</source>
-    </trans-unit>
     <trans-unit id="arc.coordinatorNodeParametersDescription">
       <source xml:lang="en"> These server parameters of the Coordinator node can be set to custom (non-default) values. Search to find parameters.</source>
     </trans-unit>
@@ -836,7 +899,7 @@
       <source xml:lang="en"> These server parameters of the Worker nodes can be set to custom (non-default) values. Search to find parameters.</source>
     </trans-unit>
     <trans-unit id="arc.learnAboutNodeParameters">
-      <source xml:lang="en">Learn more about database engine settings for Azure Arc enabled PostgreSQL Hyperscale</source>
+      <source xml:lang="en">Learn more about database engine settings for Azure Arc-enabled PostgreSQL Hyperscale</source>
     </trans-unit>
     <trans-unit id="arc.noNodeParametersFound">
       <source xml:lang="en">No worker server parameters found...</source>
@@ -848,7 +911,7 @@
       <source xml:lang="en">scaling compute vCores and memory.</source>
     </trans-unit>
     <trans-unit id="arc.postgresComputeAndStorageDescriptionPartOne">
-      <source xml:lang="en">You can scale your Azure Arc enabled</source>
+      <source xml:lang="en">You can scale your Azure Arc-enabled</source>
     </trans-unit>
     <trans-unit id="arc.miaaComputeAndStorageDescriptionPartOne">
       <source xml:lang="en">You can scale your Azure SQL managed instance - Azure Arc by</source>
@@ -887,7 +950,7 @@
       <source xml:lang="en">storage per node</source>
     </trans-unit>
     <trans-unit id="arc.workerNodeCount">
-      <source xml:lang="en">Worker node count:</source>
+      <source xml:lang="en">Worker node count</source>
     </trans-unit>
     <trans-unit id="arc.configurationPerNode">
       <source xml:lang="en">Configuration (per node)</source>
@@ -896,16 +959,40 @@
       <source xml:lang="en">Configuration</source>
     </trans-unit>
     <trans-unit id="arc.coresLimit">
-      <source xml:lang="en">CPU limit:</source>
+      <source xml:lang="en">CPU limit</source>
+    </trans-unit>
+    <trans-unit id="arc.workerCoresLimit">
+      <source xml:lang="en">Worker Nodes CPU limit</source>
+    </trans-unit>
+    <trans-unit id="arc.coordinatorCoresLimit">
+      <source xml:lang="en">Coordinator Node CPU limit</source>
     </trans-unit>
     <trans-unit id="arc.coresRequest">
-      <source xml:lang="en">CPU request:</source>
+      <source xml:lang="en">CPU request</source>
+    </trans-unit>
+    <trans-unit id="arc.workerCoresRequest">
+      <source xml:lang="en">Worker Nodes CPU request</source>
+    </trans-unit>
+    <trans-unit id="arc.coordinatorCoresRequest">
+      <source xml:lang="en">Coordinator Node CPU request</source>
     </trans-unit>
     <trans-unit id="arc.memoryLimit">
-      <source xml:lang="en">Memory limit (in GB):</source>
+      <source xml:lang="en">Memory limit (in GB)</source>
+    </trans-unit>
+    <trans-unit id="arc.workerMemoryLimit">
+      <source xml:lang="en">Worker Nodes Memory limit (in GB)</source>
+    </trans-unit>
+    <trans-unit id="arc.coordinatorMemoryLimit">
+      <source xml:lang="en">Coordinator Node Memory limit (in GB)</source>
     </trans-unit>
     <trans-unit id="arc.memoryRequest">
-      <source xml:lang="en">Memory request (in GB):</source>
+      <source xml:lang="en">Memory request (in GB)</source>
+    </trans-unit>
+    <trans-unit id="arc.workerMemoryRequest">
+      <source xml:lang="en">Worker Nodes Memory request (in GB)</source>
+    </trans-unit>
+    <trans-unit id="arc.coordinatorMemoryRequest">
+      <source xml:lang="en">Coordinator Node Memory request (in GB)</source>
     </trans-unit>
     <trans-unit id="arc.arcResources">
       <source xml:lang="en">Azure Arc Resources</source>
@@ -930,6 +1017,9 @@
     </trans-unit>
     <trans-unit id="arc.noExternalEndpoint">
       <source xml:lang="en">No External Endpoint has been configured so this information isn't available.</source>
+    </trans-unit>
+    <trans-unit id="arc.noWorkerPods">
+      <source xml:lang="en">No worker pods in this configuration.</source>
     </trans-unit>
     <trans-unit id="arc.podsReady">
       <source xml:lang="en">pods ready</source>
@@ -964,6 +1054,9 @@
     <trans-unit id="arc.podScheduled">
       <source xml:lang="en">Pod is schedulable.</source>
     </trans-unit>
+    <trans-unit id="arc.loadingClusterContextCompleted">
+      <source xml:lang="en">Loading cluster contexts completed</source>
+    </trans-unit>
     <trans-unit id="arc.rangeSetting">
       <source xml:lang="en">Value is expected to be in the range {0} - {1}</source>
     </trans-unit>
@@ -987,6 +1080,12 @@
     </trans-unit>
     <trans-unit id="arc.instanceUpdated">
       <source xml:lang="en">Instance '{0}' updated</source>
+    </trans-unit>
+    <trans-unit id="arc.extensionDropped">
+      <source xml:lang="en">Extension '{0}' deleted</source>
+    </trans-unit>
+    <trans-unit id="arc.extensionsAdded">
+      <source xml:lang="en">Extensions '{0}' added</source>
     </trans-unit>
     <trans-unit id="arc.copiedToClipboard">
       <source xml:lang="en">{0} copied to clipboard</source>
@@ -1012,6 +1111,14 @@
     <trans-unit id="arc.updated">
       <source xml:lang="en">Updated {0}</source>
     </trans-unit>
+    <trans-unit id="arc.copyConnectionStringToClipboard">
+      <source xml:lang="en">Copy {0} Connection String to clipboard</source>
+      <note>{0} is the name of the type of connection string (e.g. Java)</note>
+    </trans-unit>
+    <trans-unit id="arc.copyValueToClipboard">
+      <source xml:lang="en">Copy {0} to clipboard</source>
+      <note>{0} is the name of the type of value being copied (e.g. Coordinator endpoint)</note>
+    </trans-unit>
     <trans-unit id="arc.pgConnectionRequired">
       <source xml:lang="en">A connection is required to show and set database engine settings.</source>
     </trans-unit>
@@ -1020,6 +1127,12 @@
     </trans-unit>
     <trans-unit id="arc.couldNotFindControllerRegistration">
       <source xml:lang="en">Could not find controller registration.</source>
+    </trans-unit>
+    <trans-unit id="arc.dropMultipleExtensions">
+      <source xml:lang="en">Currently dropping another extension, try again once that is completed.</source>
+    </trans-unit>
+    <trans-unit id="arc.updateExtensionsFailed">
+      <source xml:lang="en">Editing extensions failed. {0}</source>
     </trans-unit>
     <trans-unit id="arc.refreshFailed">
       <source xml:lang="en">Refresh failed. {0}</source>
@@ -1142,6 +1255,12 @@
       <source xml:lang="en">The cluster context information specified by config file: {0} and cluster context: {1} is no longer valid. Error is:
 	{2}
  Do you want to update this information?</source>
+    </trans-unit>
+    <trans-unit id="arc.invalidConfigPath">
+      <source xml:lang="en">Invalid config path</source>
+    </trans-unit>
+    <trans-unit id="arc.loadingClusterContextsError">
+      <source xml:lang="en">Error loading cluster contexts. {0}</source>
     </trans-unit>
   </body></file>
 </xliff>

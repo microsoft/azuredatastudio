@@ -14,7 +14,7 @@
       <source xml:lang="en">Generate Scripts...</source>
     </trans-unit>
   </body></file>
-  <file original="extensions/admin-tool-ext-win/out/main" source-language="en" datatype="plaintext"><body>
+  <file original="extensions/admin-tool-ext-win/dist/main" source-language="en" datatype="plaintext"><body>
     <trans-unit id="adminToolExtWin.noConnectionContextForProp">
       <source xml:lang="en">No ConnectionContext provided for handleLaunchSsmsMinPropertiesDialogCommand</source>
     </trans-unit>
