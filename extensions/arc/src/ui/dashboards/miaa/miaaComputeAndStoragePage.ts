@@ -5,7 +5,7 @@
 
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
-import * as azdataExt from 'azdata-ext';
+import * as azExt from 'az-ext';
 import * as loc from '../../../localizedConstants';
 import { IconPathHelper, cssStyles } from '../../../constants';
 import { DashboardPage } from '../../components/dashboardPage';
@@ -30,11 +30,11 @@ export class MiaaComputeAndStoragePage extends DashboardPage {
 		memoryRequest?: string
 	} = {};
 
-	private readonly _azdataApi: azdataExt.IExtension;
+	private readonly _azApi: azExt.IExtension;
 
 	constructor(modelView: azdata.ModelView, dashboard: azdata.window.ModelViewDashboard, private _miaaModel: MiaaModel) {
 		super(modelView, dashboard);
-		this._azdataApi = vscode.extensions.getExtension(azdataExt.extension.name)?.exports;
+		this._azApi = vscode.extensions.getExtension(azExt.extension.name)?.exports;
 
 		this.initializeConfigurationBoxes();
 
@@ -130,8 +130,8 @@ export class MiaaComputeAndStoragePage extends DashboardPage {
 						},
 						async (_progress, _token): Promise<void> => {
 							try {
-								await this._azdataApi.azdata.arc.sql.mi.edit(
-									this._miaaModel.info.name, this.saveArgs, this._miaaModel.controllerModel.azdataAdditionalEnvVars, this._miaaModel.controllerModel.controllerContext);
+								await this._azApi.az.sql.miarc.edit(
+									this._miaaModel.info.name, this.saveArgs, this._miaaModel.controllerModel.info.namespace, this._miaaModel.controllerModel.azAdditionalEnvVars);
 							} catch (err) {
 								this.saveButton!.enabled = true;
 								throw err;

@@ -5,7 +5,7 @@
 
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
-import * as azdataExt from 'azdata-ext';
+import * as azExt from 'az-ext';
 import * as loc from '../../../localizedConstants';
 import { IconPathHelper, cssStyles, iconSize } from '../../../constants';
 import { DashboardPage } from '../../components/dashboardPage';
@@ -35,11 +35,11 @@ export class PostgresOverviewPage extends DashboardPage {
 	private podStatusTable!: azdata.DeclarativeTableComponent;
 	private podStatusData: PodStatusModel[] = [];
 
-	private readonly _azdataApi: azdataExt.IExtension;
+	private readonly _azApi: azExt.IExtension;
 
 	constructor(modelView: azdata.ModelView, dashboard: azdata.window.ModelViewDashboard, private _controllerModel: ControllerModel, private _postgresModel: PostgresModel) {
 		super(modelView, dashboard);
-		this._azdataApi = vscode.extensions.getExtension(azdataExt.extension.name)?.exports;
+		this._azApi = vscode.extensions.getExtension(azExt.extension.name)?.exports;
 
 		this.disposables.push(
 			this._controllerModel.onRegistrationsUpdated(() => this.eventuallyRunOnInitialized(() => this.handleRegistrationsUpdated())),
@@ -223,13 +223,14 @@ export class PostgresOverviewPage extends DashboardPage {
 				try {
 					const password = await promptAndConfirmPassword(input => !input ? loc.enterANonEmptyPassword : '');
 					if (password) {
-						await this._azdataApi.azdata.arc.postgres.server.edit(
+						await this._azApi.az.postgres.arcserver.edit(
 							this._postgresModel.info.name,
 							{
 								adminPassword: true,
 								noWait: true
 							},
-							Object.assign({ 'AZDATA_PASSWORD': password }, this._controllerModel.azdataAdditionalEnvVars));
+							this._postgresModel.controllerModel.info.namespace,
+							Object.assign({ 'AZDATA_PASSWORD': password }, this._controllerModel.azAdditionalEnvVars));
 						vscode.window.showInformationMessage(loc.passwordReset);
 					}
 				} catch (error) {
@@ -257,7 +258,7 @@ export class PostgresOverviewPage extends DashboardPage {
 								cancellable: false
 							},
 							async (_progress, _token) => {
-								return await this._azdataApi.azdata.arc.postgres.server.delete(this._postgresModel.info.name, this._controllerModel.azdataAdditionalEnvVars, this._controllerModel.controllerContext);
+								return await this._azApi.az.postgres.arcserver.delete(this._postgresModel.info.name, this._postgresModel.controllerModel.info.namespace, this._controllerModel.azAdditionalEnvVars);
 							}
 						);
 						await this._controllerModel.refreshTreeNode();
@@ -294,7 +295,7 @@ export class PostgresOverviewPage extends DashboardPage {
 
 					await Promise.all([
 						this._postgresModel.refresh(),
-						this._controllerModel.refresh()
+						this._controllerModel.refresh(false, this._controllerModel.info.namespace)
 					]);
 				} catch (error) {
 					vscode.window.showErrorMessage(loc.refreshFailed(error));
@@ -351,7 +352,7 @@ export class PostgresOverviewPage extends DashboardPage {
 		let podModels: PodStatusModel[] = [];
 		const podStatus = this._postgresModel.config?.status.podsStatus;
 
-		podStatus?.forEach(p => {
+		podStatus?.forEach((p: { conditions: any[]; name: any; role: string; }) => {
 			// If a condition of the pod has a status of False, pod is not Ready
 			const status = p.conditions.find(c => c.status === 'False') ? loc.notReady : loc.ready;
 

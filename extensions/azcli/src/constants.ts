@@ -6,6 +6,7 @@
 // config setting keys
 export const azConfigSection: string = 'azcli';
 export const debugConfigKey = 'logDebugInfo';
+export const azRequiredUpdateKey: string = 'requiredUpdate';
 
 
 // context keys && memento keys

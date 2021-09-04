@@ -11,7 +11,7 @@ import { IOptionsSourceProvider } from 'resource-deployment';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import { getDateTimeString, getErrorMessage, isUserCancelledError, throwUnless } from '../common/utils';
-import { AzureAccountFieldInfo, AzureLocationsFieldInfo, ComponentCSSStyles, DialogInfoBase, FieldInfo, FieldType, FilePickerFieldInfo, InitialVariableValues, instanceOfDynamicEnablementInfo, IOptionsSource, KubeClusterContextFieldInfo, LabelPosition, NoteBookEnvironmentVariablePrefix, OptionsInfo, OptionsType, PageInfoBase, RowInfo, SectionInfo, TextCSSStyles } from '../interfaces';
+import { AzureAccountFieldInfo, AzureLocationsFieldInfo, ComponentCSSStyles, DialogInfoBase, FieldInfo, FieldType, FilePickerFieldInfo, InfrastructureFieldInfo, InitialVariableValues, instanceOfDynamicEnablementInfo, IOptionsSource, KubeClusterContextFieldInfo, LabelPosition, NoteBookEnvironmentVariablePrefix, OptionsInfo, OptionsType, PageInfoBase, RowInfo, SectionInfo, TextCSSStyles } from '../interfaces';
 import * as loc from '../localizedConstants';
 import { apiService } from '../services/apiService';
 import { valueProviderService } from '../services/valueProviderService';
@@ -110,6 +110,10 @@ interface KubeClusterContextFieldContext extends FieldContext {
 
 interface AzureLocationsFieldContext extends FieldContext {
 	fieldInfo: AzureLocationsFieldInfo;
+}
+
+interface InfrastructureFieldContext extends FieldContext {
+	fieldInfo: InfrastructureFieldInfo;
 }
 
 interface AzureAccountFieldContext extends FieldContext {
@@ -572,6 +576,9 @@ async function processField(context: FieldContext): Promise<void> {
 			break;
 		case FieldType.AzureLocations:
 			await processAzureLocationsField(context);
+			break;
+		case FieldType.Infrastructure:
+			await processInfrastructureField(context);
 			break;
 		case FieldType.FilePicker:
 			processFilePickerField(context);
@@ -1524,6 +1531,55 @@ async function processAzureLocationsField(context: AzureLocationsFieldContext): 
 	}
 	addLabelInputPairToContainer(context.view, context.components, label, locationInputInfo.component, context.fieldInfo);
 	return locationInputInfo.component;
+}
+
+/**
+ * An Infrastructure field consists of a dropdown field for infrastructure types
+ * @param context The context to use to create the field
+ */
+async function processInfrastructureField(context: InfrastructureFieldContext): Promise<void> {
+	const label = createLabel(context.view, {
+		text: context.fieldInfo.label || loc.infrastructure,
+		required: context.fieldInfo.required,
+		width: context.fieldInfo.labelWidth,
+		cssStyles: context.fieldInfo.labelCSSStyles
+	});
+	const defaultValue = context.initialVariableValues?.[context.fieldInfo.infrastructureName || '']?.toString() ?? (context.fieldInfo.required ? undefined : '');
+	let infrastructureInputInfo: InputComponentInfo<AzureComponent>;
+	// If we have an default value then we don't allow users to modify it - so use a disabled text input box instead
+	if (defaultValue) {
+		infrastructureInputInfo = createInputBoxInputInfo(context.view, {
+			type: 'text',
+			defaultValue: defaultValue,
+			ariaLabel: loc.infrastructure,
+			required: context.fieldInfo.required,
+			width: context.fieldInfo.inputWidth,
+			enabled: false
+		});
+	} else {
+		const infrastructureValues = context.fieldInfo.infrastructure;
+		infrastructureInputInfo = createDropdownInputInfo(context.view, {
+			defaultValue: infrastructureValues?.find(l => l === context.fieldInfo.defaultValue),
+			width: context.fieldInfo.inputWidth,
+			editable: false,
+			required: context.fieldInfo.required,
+			label: loc.infrastructure,
+			values: infrastructureValues
+		});
+		(<InputComponentInfo<azdata.DropDownComponent>>infrastructureInputInfo).component.fireOnTextChange = true;
+	}
+
+	infrastructureInputInfo.labelComponent = label;
+	context.fieldInfo.subFields = context.fieldInfo.subFields || [];
+	if (context.fieldInfo.infrastructureName) {
+		context.fieldInfo.subFields!.push({
+			label: label.value!,
+			variableName: context.fieldInfo.infrastructureName
+		});
+		context.onNewInputComponentCreated(context.fieldInfo.infrastructureName, infrastructureInputInfo);
+	}
+	context.onNewInputComponentCreated(context.fieldInfo.variableName || context.fieldInfo.label, infrastructureInputInfo);
+	addLabelInputPairToContainer(context.view, context.components, label, infrastructureInputInfo.component, context.fieldInfo);
 }
 
 export function isValidSQLPassword(password: string, userName: string = 'sa'): boolean {

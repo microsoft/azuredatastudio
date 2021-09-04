@@ -32,7 +32,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<arc.IE
 		dialog.showDialog();
 		const model = await dialog.waitForClose();
 		if (model) {
-			await treeDataProvider.addOrUpdateController(model.controllerModel, model.password);
+			await treeDataProvider.addOrUpdateController(model.controllerModel);
 		}
 	});
 
@@ -50,10 +50,10 @@ export async function activate(context: vscode.ExtensionContext): Promise<arc.IE
 
 	vscode.commands.registerCommand('arc.editConnection', async (treeNode: ControllerTreeNode) => {
 		const dialog = new ConnectToControllerDialog(treeDataProvider);
-		dialog.showDialog(treeNode.model.info, await treeDataProvider.getPassword(treeNode.model.info));
+		dialog.showDialog(treeNode.model.info);
 		const model = await dialog.waitForClose();
 		if (model) {
-			await treeDataProvider.addOrUpdateController(model.controllerModel, model.password, true);
+			await treeDataProvider.addOrUpdateController(model.controllerModel, true);
 		}
 	});
 

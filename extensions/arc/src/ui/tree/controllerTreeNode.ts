@@ -39,12 +39,12 @@ export class ControllerTreeNode extends TreeNode {
 
 	public override async getChildren(): Promise<TreeNode[]> {
 		try {
-			await this.model.refresh(false);
+			await this.model.refresh(false, this.model.info.namespace);
 			this.updateChildren(this.model.registrations);
 		} catch (err) {
 			vscode.window.showErrorMessage(loc.errorConnectingToController(err));
 			try {
-				await this.model.refresh(false);
+				await this.model.refresh(false, this.model.info.namespace);
 				this.updateChildren(this.model.registrations);
 			} catch (err) {
 				if (!(err instanceof UserCancelledError)) {

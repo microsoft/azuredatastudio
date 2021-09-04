@@ -7,5 +7,5 @@
 /// <reference path='../../../../src/sql/azdata.proposed.d.ts'/>
 /// <reference path='../../../azurecore/src/azurecore.d.ts'/>
 /// <reference path='../../../../src/vs/vscode.d.ts'/>
-/// <reference path='../../../azdata/src/typings/azdata-ext.d.ts'/>
+/// <reference path='../../../azcli/src/typings/az-ext.d.ts'/>
 /// <reference path='../../../resource-deployment/src/typings/resource-deployment.d.ts'/>

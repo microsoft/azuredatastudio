@@ -10,6 +10,8 @@ import { cssStyles } from '../../constants';
 import { InitializingComponent } from '../components/initializingComponent';
 import { PostgresModel } from '../../models/postgresModel';
 
+export const validExtensions = ['citus', 'pgaudit', 'pgautofailover', 'pg_cron', 'pg_partman', 'plv8', 'postgis', 'postgis_raster', 'postgis_sfcgal', 'postgis_tiger_geocoder', 'tdigest'];
+
 export class AddPGExtensionsDialog extends InitializingComponent {
 	protected modelBuilder!: azdata.ModelBuilder;
 
@@ -28,7 +30,7 @@ export class AddPGExtensionsDialog extends InitializingComponent {
 			this.modelBuilder = view.modelBuilder;
 
 			const info = this.modelBuilder.text().withProps({
-				value: loc.extensionsFunction,
+				value: loc.extensionsAddFunction(validExtensions.join(', ')),
 				CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
 			}).component();
 
@@ -45,7 +47,15 @@ export class AddPGExtensionsDialog extends InitializingComponent {
 				.withProps({
 					value: '',
 					ariaLabel: loc.extensionsAddList,
-					enabled: true
+					enabled: true,
+					validationErrorMessage: loc.extensionsAddErrorrMessage(validExtensions.join(','))
+				}).withValidation((component) => {
+					if (!component.value) {
+						return true;
+					}
+
+					let newExtensions = component.value.split(',');
+					return newExtensions.every(e => validExtensions.includes(e));
 				}).component();
 
 			let formModel = this.modelBuilder.formContainer()
@@ -56,7 +66,8 @@ export class AddPGExtensionsDialog extends InitializingComponent {
 						},
 						{
 							component: this.extensionsListInputBox,
-							title: loc.extensionsAddList
+							title: loc.extensionsAddList,
+							required: true
 						}
 					],
 					title: ''

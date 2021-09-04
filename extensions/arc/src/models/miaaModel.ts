@@ -5,7 +5,7 @@
 
 import { MiaaResourceInfo } from 'arc';
 import * as azdata from 'azdata';
-import * as azdataExt from 'azdata-ext';
+import * as azExt from 'az-ext';
 import * as vscode from 'vscode';
 import { UserCancelledError } from '../common/api';
 import { Deferred } from '../common/promise';
@@ -20,12 +20,12 @@ export type DatabaseModel = { name: string, status: string };
 
 export class MiaaModel extends ResourceModel {
 
-	private _config: azdataExt.SqlMiShowResult | undefined;
+	private _config: azExt.SqlMiShowResult | undefined;
 	private _databases: DatabaseModel[] = [];
 
-	private readonly _onConfigUpdated = new vscode.EventEmitter<azdataExt.SqlMiShowResult | undefined>();
+	private readonly _onConfigUpdated = new vscode.EventEmitter<azExt.SqlMiShowResult | undefined>();
 	private readonly _onDatabasesUpdated = new vscode.EventEmitter<DatabaseModel[]>();
-	private readonly _azdataApi: azdataExt.IExtension;
+	private readonly _azApi: azExt.IExtension;
 	public onConfigUpdated = this._onConfigUpdated.event;
 	public onDatabasesUpdated = this._onDatabasesUpdated.event;
 	public configLastUpdated: Date | undefined;
@@ -35,7 +35,7 @@ export class MiaaModel extends ResourceModel {
 
 	constructor(_controllerModel: ControllerModel, private _miaaInfo: MiaaResourceInfo, registration: Registration, private _treeDataProvider: AzureArcTreeDataProvider) {
 		super(_controllerModel, _miaaInfo, registration);
-		this._azdataApi = <azdataExt.IExtension>vscode.extensions.getExtension(azdataExt.extension.name)?.exports;
+		this._azApi = <azExt.IExtension>vscode.extensions.getExtension(azExt.extension.name)?.exports;
 	}
 
 	/**
@@ -48,7 +48,7 @@ export class MiaaModel extends ResourceModel {
 	/**
 	 * The status of this instance
 	 */
-	public get config(): azdataExt.SqlMiShowResult | undefined {
+	public get config(): azExt.SqlMiShowResult | undefined {
 		return this._config;
 	}
 
@@ -73,8 +73,8 @@ export class MiaaModel extends ResourceModel {
 		this._refreshPromise = new Deferred();
 		try {
 			try {
-				const result = await this._azdataApi.azdata.arc.sql.mi.show(this.info.name, this.controllerModel.azdataAdditionalEnvVars, this.controllerModel.controllerContext);
-				this._config = result.result;
+				const result = await this._azApi.az.sql.miarc.show(this.info.name, this.controllerModel.info.namespace, this.controllerModel.azAdditionalEnvVars);
+				this._config = result.stdout;
 				this.configLastUpdated = new Date();
 				this._onConfigUpdated.fire(this._config);
 			} catch (err) {

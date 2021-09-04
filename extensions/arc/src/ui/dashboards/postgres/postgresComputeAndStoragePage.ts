@@ -5,7 +5,7 @@
 
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
-import * as azdataExt from 'azdata-ext';
+import * as azExt from 'az-ext';
 import * as loc from '../../../localizedConstants';
 import { IconPathHelper, cssStyles } from '../../../constants';
 import { DashboardPage } from '../../components/dashboardPage';
@@ -45,11 +45,11 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 	private discardButton!: azdata.ButtonComponent;
 	private saveButton!: azdata.ButtonComponent;
 
-	private readonly _azdataApi: azdataExt.IExtension;
+	private readonly _azApi: azExt.IExtension;
 
 	constructor(modelView: azdata.ModelView, dashboard: azdata.window.ModelViewDashboard, private _postgresModel: PostgresModel) {
 		super(modelView, dashboard);
-		this._azdataApi = vscode.extensions.getExtension(azdataExt.extension.name)?.exports;
+		this._azApi = vscode.extensions.getExtension(azExt.extension.name)?.exports;
 
 		this.initializeConfigurationBoxes();
 
@@ -165,7 +165,7 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 						},
 						async (_progress, _token): Promise<void> => {
 							try {
-								await this._azdataApi.azdata.arc.postgres.server.edit(
+								await this._azApi.az.postgres.arcserver.edit(
 									this._postgresModel.info.name,
 									{
 										workers: this.saveArgs.workers,
@@ -174,7 +174,8 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 										memoryRequest: this.schedulingParamsToEdit(this.saveArgs.memoryRequest!),
 										memoryLimit: this.schedulingParamsToEdit(this.saveArgs.memoryLimit!)
 									},
-									this._postgresModel.controllerModel.azdataAdditionalEnvVars);
+									this._postgresModel.controllerModel.info.namespace,
+									this._postgresModel.controllerModel.azAdditionalEnvVars);
 							} catch (err) {
 								// If an error occurs while editing the instance then re-enable the save button since
 								// the edit wasn't successfully applied

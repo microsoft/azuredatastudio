@@ -4,18 +4,19 @@
  *--------------------------------------------------------------------------------------------*/
 
 import 'mocha';
-import assert = require('assert');
+import * as assert from 'assert';
 import * as TypeMoq from 'typemoq';
 import { ToolsService } from '../../services/toolsService';
 import { ITool, ToolType } from '../../interfaces';
 import { IPlatformService } from '../../services/platformService';
+import { AzdataToolName } from '../../services/tools/azdataToolOld';
 
 
 const tools: { name: string; type: ToolType }[] = [
 	{ name: 'azure-cli', type: ToolType.AzCli },
 	{ name: 'docker', type: ToolType.Docker },
 	{ name: 'kubectl', type: ToolType.KubeCtl },
-	{ name: 'azdata', type: ToolType.Azdata }
+	{ name: AzdataToolName, type: ToolType.Azdata }
 ];
 const mockPlatformService = TypeMoq.Mock.ofType<IPlatformService>();
 const toolsService = new ToolsService(mockPlatformService.object);
@@ -37,7 +38,7 @@ describe('Tools Service Tests', function (): void {
 		tools.forEach(toolInfo => {
 			const tool = toolsService.getToolByName(toolInfo.name);
 			assert(!!tool, `The tool: ${toolInfo.name} is not recognized`);
-			assert.equal(tool!.type, toolInfo.type, 'returned notebook name does not match expected value');
+			assert.equal(tool!.type, toolInfo.type, 'returned tool name does not match expected value');
 		});
 	});
 
