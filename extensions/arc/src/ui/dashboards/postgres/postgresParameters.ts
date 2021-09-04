@@ -551,8 +551,7 @@ export abstract class PostgresParametersPage extends DashboardPage {
 				iconPath: IconPathHelper.information,
 				width: '15px',
 				height: '15px',
-				enabled: false,
-				title: loc.rangeSetting(engineSetting.min!, engineSetting.max!)
+				description: loc.rangeSetting(engineSetting.min!, engineSetting.max!)
 			}).component();
 
 			return {

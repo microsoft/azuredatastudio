@@ -480,22 +480,13 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 		const keyComponent = this.modelView.modelBuilder.text().withProps({
 			value: loc.workerNodeCount,
 			requiredIndicator: true,
+			description: loc.workerNodesInformation,
 			CSSStyles: { ...cssStyles.text, 'margin-block-start': '0px', 'margin-block-end': '0px' }
 		}).component();
 
 		const keyContainer = this.modelView.modelBuilder.flexContainer().withLayout({ alignItems: 'center' }).component();
 		keyContainer.addItem(keyComponent, { CSSStyles: { 'margin-right': '0px', 'margin-bottom': '15px' } });
 
-		const information = this.modelView.modelBuilder.button().withProps({
-			iconPath: IconPathHelper.information,
-			title: loc.workerNodesInformation,
-			ariaLabel: loc.workerNodesInformation,
-			width: '15px',
-			height: '15px',
-			enabled: false
-		}).component();
-
-		keyContainer.addItem(information, { CSSStyles: { 'margin-left': '5px', 'margin-bottom': '15px' } });
 		flexContainer.addItem(keyContainer, keyFlex);
 
 		const inputContainer = this.modelView.modelBuilder.flexContainer().withLayout({ alignItems: 'center' }).component();
@@ -578,22 +569,13 @@ export class PostgresComputeAndStoragePage extends DashboardPage {
 
 		const titleComponent = this.modelView.modelBuilder.text().withProps({
 			value: title,
+			description: description,
 			CSSStyles: { ...cssStyles.title, 'font-weight': 'bold', 'margin-block-start': '0px', 'margin-block-end': '0px' }
 		}).component();
 
 		const titleContainer = this.modelView.modelBuilder.flexContainer().withLayout({ alignItems: 'center' }).component();
 		titleContainer.addItem(titleComponent, { CSSStyles: { 'margin-right': '0px', 'margin-bottom': '15px' } });
 
-		const information = this.modelView.modelBuilder.button().withProps({
-			iconPath: IconPathHelper.information,
-			title: description,
-			ariaLabel: description,
-			width: '15px',
-			height: '15px',
-			enabled: false
-		}).component();
-
-		titleContainer.addItem(information, { CSSStyles: { 'margin-left': '5px', 'margin-bottom': '15px' } });
 		flexContainer.addItem(titleContainer, titleFlex);
 
 		let configurationSection = this.modelView.modelBuilder.divContainer().component();
