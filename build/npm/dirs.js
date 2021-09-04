@@ -13,7 +13,7 @@ exports.dirs = [
 	'extensions/admin-tool-ext-win',
 	'extensions/agent',
 	'extensions/arc',
-	'extensions/azcli',
+	'extensions/azdata',
 	'extensions/azurecore',
 	'extensions/azurehybridtoolkit',
 	'extensions/azuremonitor',
