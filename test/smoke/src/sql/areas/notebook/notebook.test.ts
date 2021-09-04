@@ -28,7 +28,7 @@ export function setup() {
 			await app.workbench.sqlNotebook.waitForTextCellPreviewContent(sampleText, 'p', 'strong');
 		});
 
-		it.skip('can perform basic code cell functionality', async function () {
+		it('can perform basic code cell functionality', async function () {
 			const app = this.app as Application;
 			await app.workbench.sqlNotebook.newUntitledNotebook();
 			await app.workbench.sqlNotebook.notebookToolbar.waitForKernel('SQL');
@@ -55,7 +55,7 @@ export function setup() {
 
 		// Python Notebooks
 
-		it.skip('can open new notebook, configure Python, and execute one cell', async function () {
+		it('can open new notebook, configure Python, and execute one cell', async function () {
 			const app = this.app as Application;
 			await app.workbench.sqlNotebook.newUntitledNotebook();
 			await app.workbench.sqlNotebook.addCell('code');
