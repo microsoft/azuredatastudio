@@ -453,9 +453,10 @@ export class SqlDatabaseTree {
 		const impactedObjectsTitle = this._view.modelBuilder.text().withProps({
 			value: constants.IMPACTED_OBJECTS,
 			CSSStyles: {
-				'font-size': '14px',
+				'font-size': '13px',
 				'width': '280px',
-				'margin': '10px 0px 0px 0px'
+				'margin': '10px 0px 0px 0px',
+				'font-weight': 'bold'
 			}
 		}).component();
 
@@ -513,35 +514,30 @@ export class SqlDatabaseTree {
 			CSSStyles: {
 				'font-size': '13px',
 				'line-size': '18px',
-				'margin': '12px 0px 0px 0px'
+				'margin': '12px 0px 0px 0px',
+				'font-weight': 'bold'
 			}
 		}).component();
-
+		const objectDescriptionStyle = {
+			'font-size': '12px',
+			'line-size': '18px',
+			'margin': '5px 0px 0px 0px',
+			'text-align': 'justify',
+			'word-wrap': 'break-word'
+		};
 		this._objectDetailsType = this._view.modelBuilder.text().withProps({
 			value: constants.TYPES_LABEL,
-			CSSStyles: {
-				'font-size': '13px',
-				'line-size': '18px',
-				'margin': '5px 0px 0px 0px'
-			}
+			CSSStyles: objectDescriptionStyle
 		}).component();
 
 		this._objectDetailsName = this._view.modelBuilder.text().withProps({
 			value: constants.NAMES_LABEL,
-			CSSStyles: {
-				'font-size': '13px',
-				'line-size': '18px',
-				'margin': '5px 0px 0px 0px'
-			}
+			CSSStyles: objectDescriptionStyle
 		}).component();
 
 		this._objectDetailsSample = this._view.modelBuilder.text().withProps({
 			value: '',
-			CSSStyles: {
-				'font-size': '13px',
-				'line-size': '18px',
-				'margin': '5px 0px 0px 0px'
-			}
+			CSSStyles: objectDescriptionStyle
 		}).component();
 
 		const container = this._view.modelBuilder.flexContainer().withItems([impactedObjectsTitle, this._impactedObjectsTable, objectDetailsTitle, this._objectDetailsType, this._objectDetailsName, this._objectDetailsSample]).withLayout({
@@ -552,53 +548,42 @@ export class SqlDatabaseTree {
 	}
 
 	private createDescription(): azdata.FlexContainer {
+		const labelStyle = {
+			'font-size': '13px',
+			'width': '200px',
+			'font-weight': 'bold',
+			'margin': '10px 35px 0px 0px'
+		};
+		const textStyle = {
+			'font-size': '12px',
+			'width': '200px',
+			'margin': '3px 35px 0px 0px',
+			'text-align': 'justify',
+			'word-wrap': 'break-word'
+		};
 		const descriptionTitle = this._view.modelBuilder.text().withProps({
 			value: constants.DESCRIPTION,
-			CSSStyles: {
-				'font-size': '14px',
-				'width': '200px',
-				'margin': '10px 35px 0px 0px'
-			}
+			CSSStyles: labelStyle
 		}).component();
 		this._descriptionText = this._view.modelBuilder.text().withProps({
-			CSSStyles: {
-				'font-size': '12px',
-				'width': '200px',
-				'margin': '3px 35px 0px 0px'
-			}
+			CSSStyles: textStyle
 		}).component();
 
 		const recommendationTitle = this._view.modelBuilder.text().withProps({
 			value: constants.RECOMMENDATION,
-			CSSStyles: {
-				'font-size': '14px',
-				'width': '200px',
-				'margin': '12px 35px 0px 0px'
-			}
+			CSSStyles: labelStyle
 		}).component();
 		this._recommendationText = this._view.modelBuilder.text().withProps({
-			CSSStyles: {
-				'font-size': '12px',
-				'width': '200px',
-				'margin': '3px 35px 0px 0px'
-			}
+			CSSStyles: textStyle
 		}).component();
 		const moreInfo = this._view.modelBuilder.text().withProps({
 			value: constants.MORE_INFO,
-			CSSStyles: {
-				'font-size': '14px',
-				'width': '200px',
-				'margin': '15px 35px 0px 0px'
-			}
+			CSSStyles: labelStyle
 		}).component();
 		this._moreInfo = this._view.modelBuilder.hyperlink().withProps({
 			label: '',
 			url: '',
-			CSSStyles: {
-				'font-size': '12px',
-				'width': '200px',
-				'margin': '3px 35px 0px 0px'
-			},
+			CSSStyles: textStyle,
 			showLinkIcon: true
 		}).component();
 
@@ -705,7 +690,6 @@ export class SqlDatabaseTree {
 			'text-overflow': 'ellipsis',
 			'width': '200px',
 			'overflow': 'hidden',
-			'border-bottom': '1px solid'
 		};
 
 		this._assessmentResultsTable = this._view.modelBuilder.declarativeTable().withProps(
