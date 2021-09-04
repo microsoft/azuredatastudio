@@ -1355,7 +1355,7 @@
         <Str Cat="Text">
           <Val><![CDATA[There aren’t any known issues affecting this PostgreSQL Hyperscale instance.]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[No hay ningún problema conocido que afecte a esta instancia de hyperescala de PostgreSQL.]]></Val>
+            <Val><![CDATA[No hay ningún problema conocido que afecte a esta instancia de hiperescala de PostgreSQL.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
