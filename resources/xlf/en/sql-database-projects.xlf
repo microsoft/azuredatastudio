@@ -274,7 +274,7 @@
       <source xml:lang="en">Load profile...</source>
     </trans-unit>
     <trans-unit id="profileReadError">
-      <source xml:lang="en">Could not load the profile file.</source>
+      <source xml:lang="en">Error loading the publish profile. {0}</source>
     </trans-unit>
     <trans-unit id="sqlCmdTableLabel">
       <source xml:lang="en">SQLCMD Variables</source>
@@ -300,8 +300,11 @@
     <trans-unit id="default">
       <source xml:lang="en">default</source>
     </trans-unit>
-    <trans-unit id="selectProfile">
+    <trans-unit id="selectProfileToUse">
       <source xml:lang="en">Select publish profile to load</source>
+    </trans-unit>
+    <trans-unit id="selectProfile">
+      <source xml:lang="en">Select Profile</source>
     </trans-unit>
     <trans-unit id="dontUseProfile">
       <source xml:lang="en">Don't use profile</source>
