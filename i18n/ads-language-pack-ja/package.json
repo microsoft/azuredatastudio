@@ -2,7 +2,7 @@
 	"name": "ads-language-pack-ja",
 	"displayName": "Japanese Language Pack for Azure Data Studio",
 	"description": "Language pack extension for Japanese",
-	"version": "1.31.0",
+	"version": "1.32.0",
 	"publisher": "Microsoft",
 	"repository": {
 		"type": "git",

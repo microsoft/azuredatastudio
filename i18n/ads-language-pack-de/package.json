@@ -2,7 +2,7 @@
 	"name": "ads-language-pack-de",
 	"displayName": "German Language Pack for Azure Data Studio",
 	"description": "Language pack extension for German",
-	"version": "1.31.0",
+	"version": "1.32.0",
 	"publisher": "Microsoft",
 	"repository": {
 		"type": "git",
