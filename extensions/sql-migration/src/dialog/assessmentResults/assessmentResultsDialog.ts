@@ -44,7 +44,7 @@ export class AssessmentResultsDialog {
 						height: '100%',
 						width: '100%'
 					}).component();
-					flex.addItem(await this._tree.createRootContainer(view), { flex: '1 1 auto' });
+					flex.addItem(await this._tree.createRootContainer(dialog, view), { flex: '1 1 auto' });
 
 					this._disposables.push(view.onClosed(e => {
 						this._disposables.forEach(
