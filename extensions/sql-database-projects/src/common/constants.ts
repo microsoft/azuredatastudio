@@ -195,7 +195,7 @@ export const invalidDataSchemaProvider = localize('invalidDataSchemaProvider', "
 export const invalidDatabaseReference = localize('invalidDatabaseReference', "Invalid database reference in .sqlproj file");
 export const databaseSelectionRequired = localize('databaseSelectionRequired', "Database selection is required to create a project from a database");
 export const databaseReferenceAlreadyExists = localize('databaseReferenceAlreadyExists', "A reference to this database already exists in this project");
-export const ousiderFolderPath = localize('outsideFolderPath', "Items with absolute path outside project folder are not supported. Please make sure the paths in the project file are relative to project folder.");
+export const outsideFolderPath = localize('outsideFolderPath', "Items with absolute path outside project folder are not supported. Please make sure the paths in the project file are relative to project folder.");
 export const parentTreeItemUnknown = localize('parentTreeItemUnknown', "Cannot access parent of provided tree item");
 export const prePostDeployCount = localize('prePostDeployCount', "To successfully build, update the project to have one pre-deployment script and/or one post-deployment script");
 export const invalidProjectReload = localize('invalidProjectReload', "Cannot access provided database project. Only valid, open database projects can be reloaded.");
@@ -207,8 +207,6 @@ export function fileOrFolderDoesNotExist(name: string) { return localize('fileOr
 export function cannotResolvePath(path: string) { return localize('cannotResolvePath', "Cannot resolve path {0}", path); }
 export function fileAlreadyExists(filename: string) { return localize('fileAlreadyExists', "A file with the name '{0}' already exists on disk at this location. Please choose another name.", filename); }
 export function folderAlreadyExists(filename: string) { return localize('folderAlreadyExists', "A folder with the name '{0}' already exists on disk at this location. Please choose another name.", filename); }
-export function fileAlreadyAddedToProject(filepath: string) { return localize('fileAlreadyAddedToProject', "A file with the path '{0}' has already been added to the project", filepath); }
-export function folderAlreadyAddedToProject(folderpath: string) { return localize('folderAlreadyAddedToProject', "A folder with the path '{0}' has already been added to the project", folderpath); }
 export function invalidInput(input: string) { return localize('invalidInput', "Invalid input: {0}", input); }
 export function invalidProjectPropertyValue(propertyName: string) { return localize('invalidPropertyValue', "Invalid value specified for the property '{0}' in .sqlproj file", propertyName); }
 export function unableToCreatePublishConnection(input: string) { return localize('unableToCreatePublishConnection', "Unable to construct connection: {0}", input); }
@@ -311,6 +309,12 @@ export const ProjJsonToClean = '$(BaseIntermediateOutputPath)\\project.assets.js
 export const NETFrameworkAssembly = 'Microsoft.NETFramework.ReferenceAssemblies';
 export const VersionNumber = '1.0.0';
 export const All = 'All';
+
+/**
+ * Path separator to use within SqlProj file for `Include`, `Exclude`, etc. attributes.
+ * This matches Windows path separator, as expected by SSDT.
+ */
+export const SqlProjPathSeparator = '\\';
 
 // Profile XML names
 export const targetDatabaseName = 'TargetDatabaseName';
