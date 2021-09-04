@@ -41,7 +41,7 @@ export function setup() {
 
 			// check for completion suggestions
 			await app.workbench.sqlNotebook.waitForSuggestionWidget();
-			await app.workbench.sqlNotebook.waitForSuggestionResult('SELECT'); // TODO - lewissanchez: The query selector that SELECT is interpolated in is timing out because the element can't be found.
+			await app.workbench.sqlNotebook.waitForSuggestionResult('SELECT');
 			await app.code.dispatchKeybinding('tab');
 
 			const text2: string = ' * FROM employees';
