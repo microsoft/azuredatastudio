@@ -388,7 +388,7 @@ export class MigrationCutoverDialog {
 		}).component();
 
 		this._cancelButton.onDidClick((e) => {
-			vscode.window.showInformationMessage(loc.CANCEL_MIGRATION_CONFIRMATION, loc.YES, loc.NO).then(async (v) => {
+			vscode.window.showInformationMessage(loc.CANCEL_MIGRATION_CONFIRMATION, { modal: true }, loc.YES, loc.NO).then(async (v) => {
 				if (v === loc.YES) {
 					await this._model.cancelMigration();
 					await this.refreshStatus();
