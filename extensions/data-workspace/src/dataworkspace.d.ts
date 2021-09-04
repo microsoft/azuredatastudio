@@ -7,7 +7,8 @@ declare module 'dataworkspace' {
 	import * as azdata from 'azdata';
 	import * as vscode from 'vscode';
 	export const enum extension {
-		name = 'Microsoft.data-workspace'
+		name = 'Microsoft.data-workspace',
+		vscodeName = 'Microsoft.data-workspace-vscode'
 	}
 
 	/**
