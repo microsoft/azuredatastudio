@@ -325,9 +325,16 @@ export interface IDataSet {
 
 export interface IGridTableOptions {
 	actionOrientation: ActionsOrientation;
+	showActionBar?: boolean;
 	inMemoryDataProcessing: boolean;
 	inMemoryDataCountThreshold?: number;
 }
+
+const defaultGridTableOptions: IGridTableOptions = {
+	showActionBar: true,
+	inMemoryDataProcessing: false,
+	actionOrientation: ActionsOrientation.VERTICAL
+};
 
 export abstract class GridTableBase<T> extends Disposable implements IView {
 	private table: Table<T>;
@@ -375,10 +382,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 	constructor(
 		state: GridTableState,
 		protected _resultSet: ResultSetSummary,
-		private readonly options: IGridTableOptions = {
-			inMemoryDataProcessing: false,
-			actionOrientation: ActionsOrientation.VERTICAL
-		},
+		private readonly options: IGridTableOptions,
 		@IContextMenuService private readonly contextMenuService: IContextMenuService,
 		@IInstantiationService protected readonly instantiationService: IInstantiationService,
 		@IEditorService private readonly editorService: IEditorService,
@@ -390,6 +394,9 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		@INotificationService private readonly notificationService: INotificationService
 	) {
 		super();
+
+		this.options = { ...defaultGridTableOptions, ...options };
+
 		let config = this.configurationService.getValue<{ rowHeight: number }>('resultsGrid');
 		this.rowHeight = config && config.rowHeight ? config.rowHeight : ROW_HEIGHT;
 		this.state = state;
@@ -559,7 +566,6 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 			this.actionBar.context = this.generateContext();
 		});
 		this.rebuildActionBar();
-
 		this.selectionModel.onSelectedRangesChanged.subscribe(async e => {
 			if (this.state) {
 				this.state.selection = this.selectionModel.getSelectedRanges();
@@ -736,7 +742,20 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 	private rebuildActionBar() {
 		let actions = this.getCurrentActions();
 		this.actionBar.clear();
-		this.actionBar.push(actions, { icon: true, label: false });
+		if (this.options.showActionBar) {
+			this.actionBar.push(actions, { icon: true, label: false });
+		}
+	}
+
+	public get showActionBar(): boolean {
+		return this.options.showActionBar;
+	}
+
+	public set showActionBar(v: boolean) {
+		if (this.options.showActionBar !== v) {
+			this.options.showActionBar = v;
+			this.rebuildActionBar();
+		}
 	}
 
 	protected abstract getCurrentActions(): IAction[];
@@ -884,6 +903,7 @@ class GridTable<T> extends GridTableBase<T> {
 		super(state, resultSet, {
 			actionOrientation: ActionsOrientation.VERTICAL,
 			inMemoryDataProcessing: true,
+			showActionBar: true,
 			inMemoryDataCountThreshold: configurationService.getValue<IQueryEditorConfiguration>('queryEditor').results.inMemoryDataProcessingThreshold,
 		}, contextMenuService, instantiationService, editorService, untitledEditorService, configurationService, queryModelService, themeService, contextViewService, notificationService);
 		this._gridDataProvider = this.instantiationService.createInstance(QueryGridDataProvider, this._runner, resultSet.batchId, resultSet.id);
