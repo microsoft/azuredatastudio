@@ -16,7 +16,7 @@ import { azureResource } from 'azureResource';
 
 export class AzureMonitorTreeDataProvider extends ResourceTreeDataProviderBase<azureResource.AzureResourceDatabaseServer> {
 	private static readonly containerId = 'azure.resource.providers.AzureMonitorContainer';
-	private static readonly containerLabel = localize('azure.resource.providers.AzureMonitorContainerLabel', "Azure Monitor Workspace");
+	private static readonly containerLabel = localize('azure.resource.providers.AzureMonitorContainerLabel', "Azure Monitor Logs workspace");
 
 	public constructor(
 		databaseServerService: IAzureResourceService<azureResource.AzureResourceDatabaseServer>,
