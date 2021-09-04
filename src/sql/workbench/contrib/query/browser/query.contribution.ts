@@ -510,47 +510,47 @@ export class QueryEditorOverrideContribution extends Disposable implements IWork
 	) {
 		super();
 		this.registerEditorOverrides();
-	}
-
-	private registerEditorOverrides(): void {
 		// Refresh the editor overrides whenever the languages change so we ensure we always have
 		// the latest up to date list of extensions for each language
 		this._modeService.onLanguagesMaybeChanged(() => {
-			this._registeredOverrides.clear();
-			// List of language IDs to associate the query editor for. These are case sensitive.
-			QueryEditorLanguageAssociation.languages.map(lang => {
-				const langExtensions = this._modeService.getExtensions(lang);
-				if (langExtensions.length === 0) {
-					return;
-				}
-				// Create the selector from the list of all the language extensions we want to associate with the
-				// query editor (filtering out any languages which didn't have any extensions registered yet)
-				const selector = `*{${langExtensions.join(',')}}`;
-				this._registeredOverrides.add(this._editorOverrideService.registerContributionPoint(
-					selector,
-					{
-						id: QueryEditor.ID,
-						label: QueryEditor.LABEL,
-						describes: (currentEditor) => currentEditor instanceof FileQueryEditorInput,
-						priority: ContributedEditorPriority.builtin
-					},
-					{},
-					(resource, options, group) => {
-						const fileInput = this._editorService.createEditorInput({
-							resource: resource
-						}) as FileEditorInput;
-						const langAssociation = languageAssociationRegistry.getAssociationForLanguage(lang);
-						const queryEditorInput = langAssociation?.syncConvertinput?.(fileInput);
-						if (!queryEditorInput) {
-							this._logService.warn('Unable to create input for overriding editor ', resource);
-							return undefined;
-						}
-						return { editor: queryEditorInput, options: options, group: group };
+			this.registerEditorOverrides();
+		});
+	}
+
+	private registerEditorOverrides(): void {
+		this._registeredOverrides.clear();
+		// List of language IDs to associate the query editor for. These are case sensitive.
+		QueryEditorLanguageAssociation.languages.map(lang => {
+			const langExtensions = this._modeService.getExtensions(lang);
+			if (langExtensions.length === 0) {
+				return;
+			}
+			// Create the selector from the list of all the language extensions we want to associate with the
+			// query editor (filtering out any languages which didn't have any extensions registered yet)
+			const selector = `*{${langExtensions.join(',')}}`;
+			this._registeredOverrides.add(this._editorOverrideService.registerContributionPoint(
+				selector,
+				{
+					id: QueryEditor.ID,
+					label: QueryEditor.LABEL,
+					describes: (currentEditor) => currentEditor instanceof FileQueryEditorInput,
+					priority: ContributedEditorPriority.builtin
+				},
+				{},
+				(resource, options, group) => {
+					const fileInput = this._editorService.createEditorInput({
+						resource: resource
+					}) as FileEditorInput;
+					const langAssociation = languageAssociationRegistry.getAssociationForLanguage(lang);
+					const queryEditorInput = langAssociation?.syncConvertinput?.(fileInput);
+					if (!queryEditorInput) {
+						this._logService.warn('Unable to create input for overriding editor ', resource);
+						return undefined;
 					}
-				));
-			});
+					return { editor: queryEditorInput, options: options, group: group };
+				}
+			));
 		});
 	}
 }
-
-workbenchRegistry.registerWorkbenchContribution(QueryEditorOverrideContribution, LifecyclePhase.Restored);
+workbenchRegistry.registerWorkbenchContribution(QueryEditorOverrideContribution, LifecyclePhase.Starting);
