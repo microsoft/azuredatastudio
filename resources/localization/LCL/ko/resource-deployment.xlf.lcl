@@ -63,9 +63,9 @@
           <Disp Icon="Str" />
         </Item>
       </Item>
-      <Item ItemId=";@extensions/resource-deployment/dist/services/tools/azdataToolOld.resourceDeployment.Azdata.AddingAzdataRepository" ItemType="0" PsrId="308" Leaf="false">
+      <Item ItemId=";@extensions/resource-deployment/dist/services/tools/azdataTool.resourceDeployment.Azdata.AddingAzdataRepositoryInf" ItemType="0" PsrId="308" Leaf="false">
         <Disp Icon="Dir" LocTbl="false" />
-        <Item ItemId=";(...) Information" ItemType="0" PsrId="308" Leaf="true">
+        <Item ItemId=";(...) ormation" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[adding the azdata repository information …]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -75,33 +75,9 @@
           <Disp Icon="Str" />
         </Item>
       </Item>
-      <Item ItemId=";@extensions/resource-deployment/dist/services/tools/azdataToolOld.resourceDeployment.Azdata.DeletingPreviousAzdata" ItemType="0" PsrId="308" Leaf="false">
+      <Item ItemId=";@extensions/resource-deployment/dist/services/tools/azdataTool.resourceDeployment.Azdata.DownloadAndInstallingSign" ItemType="0" PsrId="308" Leaf="false">
         <Disp Icon="Dir" LocTbl="false" />
-        <Item ItemId=";(...) .msi" ItemType="0" PsrId="308" Leaf="true">
-          <Str Cat="Text">
-            <Val><![CDATA[deleting previously downloaded Azdata.msi if one exists …]]></Val>
-            <Tgt Cat="Text" Stat="Loc" Orig="New">
-              <Val><![CDATA[이전에 다운로드한 Azdata.msi를 삭제하는 중(있는 경우)...]]></Val>
-            </Tgt>
-          </Str>
-          <Disp Icon="Str" />
-        </Item>
-      </Item>
-      <Item ItemId=";@extensions/resource-deployment/dist/services/tools/azdataToolOld.resourceDeployment.Azdata.DisplayingInstallation" ItemType="0" PsrId="308" Leaf="false">
-        <Disp Icon="Dir" LocTbl="false" />
-        <Item ItemId=";(...) Log" ItemType="0" PsrId="308" Leaf="true">
-          <Str Cat="Text">
-            <Val><![CDATA[displaying the installation log …]]></Val>
-            <Tgt Cat="Text" Stat="Loc" Orig="New">
-              <Val><![CDATA[설치 로그를 표시하는 중...]]></Val>
-            </Tgt>
-          </Str>
-          <Disp Icon="Str" />
-        </Item>
-      </Item>
-      <Item ItemId=";@extensions/resource-deployment/dist/services/tools/azdataToolOld.resourceDeployment.Azdata.DownloadAndInstallingS" ItemType="0" PsrId="308" Leaf="false">
-        <Disp Icon="Dir" LocTbl="false" />
-        <Item ItemId=";(...) igningKey" ItemType="0" PsrId="308" Leaf="true">
+        <Item ItemId=";(...) ingKey" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[downloading and installing the signing key for azdata …]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -111,9 +87,9 @@
           <Disp Icon="Str" />
         </Item>
       </Item>
-      <Item ItemId=";@extensions/resource-deployment/dist/services/tools/azdataToolOld.resourceDeployment.Azdata.DownloadingAndInstalli" ItemType="0" PsrId="308" Leaf="false">
+      <Item ItemId=";@extensions/resource-deployment/dist/services/tools/azdataTool.resourceDeployment.Azdata.DownloadingAndInstallingA" ItemType="0" PsrId="308" Leaf="false">
         <Disp Icon="Dir" LocTbl="false" />
-        <Item ItemId=";(...) ngAzdata" ItemType="0" PsrId="308" Leaf="true">
+        <Item ItemId=";(...) zdata" ItemType="0" PsrId="308" Leaf="true">
           <Str Cat="Text">
             <Val><![CDATA[downloading Azdata.msi and installing azdata-cli …]]></Val>
             <Tgt Cat="Text" Stat="Loc" Orig="New">
@@ -2955,29 +2931,65 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/resource-deployment/dist/services/tools/azdataTool.deploy.azdataExtMissing" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/resource-deployment/dist/services/tools/azdataTool.resourceDeployment.Azdata.AptGetPackages" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[The Azure Data CLI extension must be installed to deploy this resource. Please install it through the extension gallery and try again.]]></Val>
+          <Val><![CDATA[getting packages needed for azdata installation …]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[이 리소스를 배포하려면 Azure Data CLI 확장을 설치해야 합니다. 확장 갤러리를 통해 설치한 후 다시 시도하세요.]]></Val>
+            <Val><![CDATA[azdata 설치에 필요한 패키지를 가져오는 중...]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/resource-deployment/dist/services/tools/azdataTool.deployCluster.GetToolVersionError" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/resource-deployment/dist/services/tools/azdataTool.resourceDeployment.Azdata.AptGetUpdate" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Error retrieving version information.{0}Invalid output received, get version command output: '{1}' ]]></Val>
+          <Val><![CDATA[updating repository information …]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[버전 정보를 검색하는 동안 오류가 발생했습니다. {0}잘못된 출력이 수신되었습니다. 버전 명령 출력 '{1}'을(를) 가져옵니다. ]]></Val>
+            <Val><![CDATA[리포지토리 정보를 업데이트하는 중...]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/resource-deployment/dist/services/tools/azdataTool.deployCluster.GetToolVersionErrorInformation" ItemType="0" PsrId="308" Leaf="true">
+      <Item ItemId=";extensions/resource-deployment/dist/services/tools/azdataTool.resourceDeployment.Azdata.DeletingPreviousAzdata.msi" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
-          <Val><![CDATA[Error retrieving version information. See output channel '{0}' for more details]]></Val>
+          <Val><![CDATA[deleting previously downloaded Azdata.msi if one exists …]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[버전 정보를 검색하는 동안 오류가 발생했습니다. 자세한 내용은 출력 채널 '{0}'을(를) 참조하세요.]]></Val>
+            <Val><![CDATA[이전에 다운로드한 Azdata.msi를 삭제하는 중(있는 경우)...]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/resource-deployment/dist/services/tools/azdataTool.resourceDeployment.Azdata.DisplayingInstallationLog" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[displaying the installation log …]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[설치 로그를 표시하는 중...]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/resource-deployment/dist/services/tools/azdataTool.resourceDeployment.Azdata.InstallingAzdata" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[installing azdata …]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[azdata를 설치하는 중...]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/resource-deployment/dist/services/tools/azdataTool.resourceDeployment.Azdata.TappingBrewRepository" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[tapping into the brew repository for azdata-cli …]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[azdata-cli의 brew 리포지토리를 활용하는 중...]]></Val>
+          </Tgt>
+        </Str>
+        <Disp Icon="Str" />
+      </Item>
+      <Item ItemId=";extensions/resource-deployment/dist/services/tools/azdataTool.resourceDeployment.Azdata.UpdatingBrewRepository" ItemType="0" PsrId="308" Leaf="true">
+        <Str Cat="Text">
+          <Val><![CDATA[updating the brew repository for azdata-cli installation …]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[azdata-cli 설치를 위해 brew 리포지토리를 업데이트하는 중...]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -3003,69 +3015,6 @@
           <Prev Cat="Text">
             <Val><![CDATA[azdata]]></Val>
           </Prev>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/resource-deployment/dist/services/tools/azdataToolOld.resourceDeployment.Azdata.AptGetPackages" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[getting packages needed for azdata installation …]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[azdata 설치에 필요한 패키지를 가져오는 중...]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/resource-deployment/dist/services/tools/azdataToolOld.resourceDeployment.Azdata.AptGetUpdate" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[updating repository information …]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[리포지토리 정보를 업데이트하는 중...]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/resource-deployment/dist/services/tools/azdataToolOld.resourceDeployment.Azdata.InstallingAzdata" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[installing azdata …]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[azdata를 설치하는 중...]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/resource-deployment/dist/services/tools/azdataToolOld.resourceDeployment.Azdata.TappingBrewRepository" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[tapping into the brew repository for azdata-cli …]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[azdata-cli의 brew 리포지토리를 활용하는 중...]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/resource-deployment/dist/services/tools/azdataToolOld.resourceDeployment.Azdata.UpdatingBrewRepository" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[updating the brew repository for azdata-cli installation …]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[azdata-cli 설치를 위해 brew 리포지토리를 업데이트하는 중...]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/resource-deployment/dist/services/tools/azdataToolOld.resourceDeployment.AzdataDescription" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Azure Data command line interface]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Azure 데이터 명령줄 인터페이스]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/resource-deployment/dist/services/tools/azdataToolOld.resourceDeployment.AzdataDisplayName" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[Azure Data CLI]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Azure Data CLI]]></Val>
-          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -3951,15 +3900,6 @@
         </Str>
         <Disp Icon="Str" />
       </Item>
-      <Item ItemId=";extensions/resource-deployment/dist/ui/deployClusterWizard/pages/clusterSettingsPage.deployCluster.ValidationError" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[There are some errors on this page, click 'Show Details' to view the errors.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[이 페이지에 오류가 있습니다. 오류를 보려면 '세부 정보 표시'를 클릭합니다.]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
       <Item ItemId=";extensions/resource-deployment/dist/ui/deployClusterWizard/pages/deploymentProfilePage.deployCluster.ServiceName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Service]]></Val>
@@ -4739,15 +4679,6 @@
           <Val><![CDATA[Unexpected error fetching available kubectl storage classes : {0}]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[사용 가능한 kubectl 스토리지 클래스를 가져오는 동안 예기치 않은 오류 발생: {0}]]></Val>
-          </Tgt>
-        </Str>
-        <Disp Icon="Str" />
-      </Item>
-      <Item ItemId=";extensions/resource-deployment/dist/ui/notebookWizard/notebookWizardPage.wizardPage.ValidationError" ItemType="0" PsrId="308" Leaf="true">
-        <Str Cat="Text">
-          <Val><![CDATA[There are some errors on this page, click 'Show Details' to view the errors.]]></Val>
-          <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[이 페이지에 오류가 있습니다. 오류를 보려면 '세부 정보 표시'를 클릭합니다.]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
