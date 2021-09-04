@@ -37,6 +37,10 @@
 		"dropdown.foreground": "#fffffe",
 		"dropdown.border": "#888888",
 
+		//badge
+		"badge.background": "#4A4A4A",
+		"badge.foreground": "#ffffff",
+
 		//Input Control
 		"input.background": "#212121",
 		"input.border": "#888888",
