@@ -98,9 +98,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 			// (they're left out for perf purposes)
 			const doc = vscode.workspace.textDocuments.find(doc => doc.uri.toString() === uri.toString());
 			const result = await appContext.getService<INotebookConvertService>(Constants.NotebookConvertService).convertNotebookToSql(doc.getText());
-
-			const sqlDoc = await vscode.workspace.openTextDocument({ language: 'sql', content: result.content });
-			await vscode.commands.executeCommand('vscode.open', sqlDoc.uri);
+			await azdata.queryeditor.openQueryDocument({ content: result.content });
 		} catch (err) {
 			vscode.window.showErrorMessage(localize('mssql.errorConvertingToSQL', "An error occurred converting the Notebook document to SQL. Error : {0}", err.toString()));
 		}

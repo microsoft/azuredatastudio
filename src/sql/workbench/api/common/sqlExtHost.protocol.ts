@@ -7,7 +7,7 @@ import {
 	createMainContextProxyIdentifier as createMainId,
 	createExtHostContextProxyIdentifier as createExtId
 } from 'vs/workbench/services/extensions/common/proxyIdentifier';
-import { UriComponents } from 'vs/base/common/uri';
+import { URI, UriComponents } from 'vs/base/common/uri';
 
 import { IDisposable } from 'vs/base/common/lifecycle';
 
@@ -847,6 +847,7 @@ export interface MainThreadQueryEditorShape extends IDisposable {
 	$setQueryExecutionOptions(fileUri: string, options: azdata.QueryExecutionOptions): Thenable<void>;
 	$registerQueryInfoListener(handle: number): void;
 	$unregisterQueryInfoListener(handle: number): void;
+	$createQueryDocument(options?: { content?: string }, providerId?: string): Promise<URI>;
 }
 
 export interface ExtHostNotebookShape {
