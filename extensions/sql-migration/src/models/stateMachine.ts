@@ -13,6 +13,9 @@ import { SKURecommendations } from './externalContract';
 import * as constants from '../constants/strings';
 import { MigrationLocalStorage } from './migrationLocalStorage';
 import * as nls from 'vscode-nls';
+import { v4 as uuidv4 } from 'uuid';
+import { sendSqlMigrationActionEvent, TelemetryAction, TelemetryViews } from '../telemtery';
+import { hashString } from '../api/utils';
 const localize = nls.loadMessageBundle();
 
 export enum State {
@@ -133,10 +136,14 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 	private _skuRecommendations: SKURecommendations | undefined;
 	public _assessmentResults!: ServerAssessement;
+	private _assessmentApiResponse!: mssql.AssessmentResult;
+
 	public _vmDbs: string[] = [];
 	public _miDbs: string[] = [];
 	public _targetType!: MigrationTargetType;
 	public refreshDatabaseBackupPage!: boolean;
+
+	public _sessionId: string = uuidv4();
 
 	public excludeDbs: string[] = [
 		'master',
@@ -177,27 +184,151 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 	public async getDatabaseAssessments(): Promise<ServerAssessement> {
 		const ownerUri = await azdata.connection.getUriForConnection(this.sourceConnectionId);
-		// stress test backend & dialog component
-		const assessmentResults = await this.migrationService.getAssessments(
-			ownerUri,
-			this._databaseAssessment
-		);
-		const dbAssessments = assessmentResults?.assessmentResult.databases.filter(d => !this.excludeDbs.includes(d.name)).map(d => {
-			return {
-				name: d.name,
-				issues: d.items.filter(i => i.appliesToMigrationTargetPlatform === MigrationTargetType.SQLMI) ?? []
-			};
-		});
+		this._assessmentApiResponse = (await this.migrationService.getAssessments(ownerUri, this._databaseAssessment))!;
 		this._assessmentResults = {
-			issues: assessmentResults?.assessmentResult.items?.filter(i => i.appliesToMigrationTargetPlatform === MigrationTargetType.SQLMI) ?? [],
-			databaseAssessments: dbAssessments! ?? []
+			issues: this._assessmentApiResponse.assessmentResult.items,
+			databaseAssessments: this._assessmentApiResponse.assessmentResult.databases.map(d => {
+				return {
+					name: d.name,
+					issues: d.items
+				};
+			})
 		};
 
+		// Generating all the telemetry asynchronously as we don't need to block the user for it.
+		this.generateAssessmentTelemetry().catch(e => console.error(e));
 		return this._assessmentResults;
 	}
 
-	public findDatabaseAssessments(databaseName: string): mssql.SqlMigrationAssessmentResultItem[] | undefined {
-		return this._assessmentResults.databaseAssessments.find(databaseAsssessment => databaseAsssessment.name === databaseName)?.issues;
+	private async generateAssessmentTelemetry(): Promise<void> {
+		try {
+
+			let serverIssues = this._assessmentResults.issues.map(i => {
+				return {
+					ruleId: i.ruleId,
+					count: i.impactedObjects.length
+				};
+			});
+
+			const serverAssessmentErrorsMap: Map<number, number> = new Map();
+			this._assessmentApiResponse.assessmentResult.errors.forEach(e => {
+				serverAssessmentErrorsMap.set(e.errorId, serverAssessmentErrorsMap.get(e.errorId) ?? 0 + 1);
+			});
+
+			let serverErrors: { errorId: number, count: number }[] = [];
+			serverAssessmentErrorsMap.forEach((v, k) => {
+				serverErrors.push(
+					{
+						errorId: k,
+						count: v
+					}
+				);
+			});
+
+			const startTime = new Date(this._assessmentApiResponse.startTime);
+			const endTime = new Date(this._assessmentApiResponse.endedTime);
+
+			sendSqlMigrationActionEvent(
+				TelemetryViews.MigrationWizardTargetSelectionPage,
+				TelemetryAction.ServerAssessment,
+				{
+					'sessionId': this._sessionId,
+					'tenantId': this._azureAccount.properties.tenants[0].id,
+					'hashedServerName': hashString(this._assessmentApiResponse.assessmentResult.name),
+					'startTime': startTime.toString(),
+					'endTime': endTime.toString(),
+					'serverVersion': this._assessmentApiResponse.assessmentResult.serverVersion,
+					'serverEdition': this._assessmentApiResponse.assessmentResult.serverEdition,
+					'platform': this._assessmentApiResponse.assessmentResult.serverHostPlatform,
+					'engineEdition': this._assessmentApiResponse.assessmentResult.serverEngineEdition,
+					'serverIssues': JSON.stringify(serverIssues),
+					'serverErrors': JSON.stringify(serverErrors)
+				},
+				{
+					'issuesCount': this._assessmentResults.issues.length,
+					'warningsCount': this._assessmentResults.databaseAssessments.reduce((count, d) => count + d.issues.length, 0),
+					'durationInMilliseconds': endTime.getTime() - startTime.getTime(),
+					'databaseCount': this._assessmentResults.databaseAssessments.length,
+					'serverHostCpuCount': this._assessmentApiResponse.assessmentResult.cpuCoreCount,
+					'serverHostPhysicalMemoryInBytes': this._assessmentApiResponse.assessmentResult.physicalServerMemory,
+					'serverDatabases': this._assessmentApiResponse.assessmentResult.numberOfUserDatabases,
+					'serverDatabasesReadyForMigration': this._assessmentApiResponse.assessmentResult.sqlManagedInstanceTargetReadiness.numberOfDatabasesReadyForMigration,
+					'offlineDatabases': this._assessmentApiResponse.assessmentResult.sqlManagedInstanceTargetReadiness.numberOfNonOnlineDatabases
+				}
+			);
+
+			const databaseWarningsMap: Map<string, number> = new Map();
+			const databaseErrorsMap: Map<number, number> = new Map();
+
+			this._assessmentApiResponse.assessmentResult.databases.forEach(d => {
+
+				sendSqlMigrationActionEvent(
+					TelemetryViews.MigrationWizardTargetSelectionPage,
+					TelemetryAction.DatabaseAssessment,
+					{
+						'sessionId': this._sessionId,
+						'hashedDatabaseName': hashString(d.name),
+						'compatibilityLevel': d.compatibilityLevel
+					},
+					{
+						'warningsCount': d.items.length,
+						'errorsCount': d.errors.length,
+						'assessmentTimeMs': d.assessmentTimeInMilliseconds,
+						'numberOfBlockerIssues': d.sqlManagedInstanceTargetReadiness.numOfBlockerIssues,
+						'databaseSizeInMb': d.databaseSize
+					}
+				);
+
+				d.items.forEach(i => {
+					databaseWarningsMap.set(i.ruleId, databaseWarningsMap.get(i.ruleId) ?? 0 + i.impactedObjects.length);
+				});
+
+				d.errors.forEach(e => {
+					databaseErrorsMap.set(e.errorId, databaseErrorsMap.get(e.errorId) ?? 0 + 1);
+				});
+
+			});
+
+			let databaseWarnings: { warningId: string, count: number }[] = [];
+
+			databaseWarningsMap.forEach((v, k) => {
+				databaseWarnings.push({
+					warningId: k,
+					count: v
+				});
+			});
+
+			sendSqlMigrationActionEvent(
+				TelemetryViews.MigrationWizardTargetSelectionPage,
+				TelemetryAction.DatabaseAssessmentWarning,
+				{
+					'sessionId': this._sessionId,
+					'warnings': JSON.stringify(databaseWarnings)
+				},
+				{}
+			);
+
+			let databaseErrors: { errorId: number, count: number }[] = [];
+			databaseErrorsMap.forEach((v, k) => {
+				databaseErrors.push({
+					errorId: k,
+					count: v
+				});
+			});
+
+			sendSqlMigrationActionEvent(
+				TelemetryViews.MigrationWizardTargetSelectionPage,
+				TelemetryAction.DatabaseAssessmentError,
+				{
+					'sessionId': this._sessionId,
+					'errors': JSON.stringify(databaseErrors)
+				},
+				{}
+			);
+
+		} catch (e) {
+			console.log(e);
+		}
 	}
 
 	public get gatheringInformationError(): string | undefined {
@@ -566,6 +697,15 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 
 	public async getBlobContainerValues(subscription: azureResource.AzureResourceSubscription, storageAccount: StorageAccount): Promise<azdata.CategoryValue[]> {
 		let blobContainerValues: azdata.CategoryValue[] = [];
+		if (!this._azureAccount || !subscription || !storageAccount) {
+			blobContainerValues = [
+				{
+					displayName: constants.NO_BLOBCONTAINERS_FOUND,
+					name: ''
+				}
+			];
+			return blobContainerValues;
+		}
 		try {
 			this._blobContainers = await getBlobContainers(this._azureAccount, subscription, storageAccount);
 			this._blobContainers.forEach((blobContainer) => {
@@ -704,6 +844,27 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				response.databaseMigration.properties.sourceDatabaseName = this._migrationDbs[i];
 				response.databaseMigration.properties.backupConfiguration = requestBody.properties.backupConfiguration!;
 				if (response.status === 201 || response.status === 200) {
+
+					sendSqlMigrationActionEvent(
+						TelemetryViews.MigrationWizardSummaryPage,
+						TelemetryAction.StartMigration,
+						{
+							'hashedServerName': hashString(this._assessmentApiResponse.assessmentResult.name),
+							'hashedDatabaseName': hashString(this._migrationDbs[i]),
+							'migrationMode': requestBody.properties.autoCutoverConfiguration ? 'online' : 'offline',
+							'sessionId': this._sessionId,
+							'migrationStartTime': new Date().toString(),
+							'targetDatabaseName': this._targetDatabaseNames[i],
+							'serverName': this._targetServerInstance.name,
+							'tenantId': this._azureAccount.properties.tenants[0].id,
+							'location': this._targetServerInstance.location,
+							'sqlMigrationServiceId': this._sqlMigrationService.id,
+							'irRegistered': (this._nodeNames.length > 0).toString()
+						},
+						{
+						}
+					);
+
 					MigrationLocalStorage.saveMigration(
 						currentConnection!,
 						response.databaseMigration,
@@ -711,7 +872,8 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 						this._azureAccount,
 						this._targetSubscription,
 						this._sqlMigrationService,
-						response.asyncUrl
+						response.asyncUrl,
+						this._sessionId
 					);
 					vscode.window.showInformationMessage(localize("sql.migration.starting.migration.message", 'Starting migration for database {0} to {1} - {2}', this._migrationDbs[i], this._targetServerInstance.name, this._targetDatabaseNames[i]));
 				}

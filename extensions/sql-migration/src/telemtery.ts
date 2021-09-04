@@ -6,22 +6,36 @@
 import AdsTelemetryReporter, { TelemetryEventMeasures, TelemetryEventProperties } from '@microsoft/ads-extension-telemetry';
 import { getPackageInfo } from './api/utils';
 const packageJson = require('../package.json');
-
 let packageInfo = getPackageInfo(packageJson)!;
 
 export const TelemetryReporter = new AdsTelemetryReporter(packageInfo.name, packageInfo.version, packageInfo.aiKey);
 
 export enum TelemetryViews {
 	SqlServerDashboard = 'SqlServerDashboard',
-	MigrationWizard = 'MigrationWizard',
 	CreateDataMigrationServiceDialog = 'CreateDataMigrationServiceDialog',
 	AssessmentsDialog = 'AssessmentsDialog',
 	MigrationCutoverDialog = 'MigrationCutoverDialog',
 	MigrationStatusDialog = 'MigrationStatusDialog',
-	AssessmentsPage = 'AssessmentsPage'
+	MigrationWizardAccountSelectionPage = 'MigrationWizardAccountSelectionPage',
+	MigrationWizardTargetSelectionPage = 'MigrationWizardTargetSelectionPage',
+	MigrationWizardSummaryPage = 'MigrationWizardSummaryPage',
+	StartMigrationService = 'StartMigrationSerivce'
 }
 
-export function sendSqlMigrationActionEvent(telemetryView: string, telemetryAction: string, additionalProps: TelemetryEventProperties, additionalMeasurements: TelemetryEventMeasures): void {
+export enum TelemetryAction {
+	ServerAssessment = 'ServerAssessment',
+	ServerAssessmentIssues = 'ServerAssessmentIssues',
+	ServerAssessmentError = 'ServerAssessmentError',
+	DatabaseAssessment = 'DatabaseAsssessment',
+	DatabaseAssessmentWarning = 'DatabaseAssessmentWarning',
+	DatabaseAssessmentError = 'DatabaseAssessmentError',
+	StartMigration = 'StartMigration',
+	CutoverMigration = 'CutoverMigration',
+	CancelMigration = 'CancelMigration',
+	MigrationStatus = 'MigrationStatus'
+}
+
+export function sendSqlMigrationActionEvent(telemetryView: TelemetryViews, telemetryAction: TelemetryAction, additionalProps: TelemetryEventProperties, additionalMeasurements: TelemetryEventMeasures): void {
 	TelemetryReporter.createActionEvent(telemetryView, telemetryAction)
 		.withAdditionalProperties(additionalProps)
 		.withAdditionalMeasurements(additionalMeasurements)
