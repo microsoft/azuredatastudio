@@ -142,7 +142,8 @@ export class ResourceTypePickerDialog extends DialogBase {
 				'margin-top': '35px'
 			},
 			options: items,
-			selectedOptionId: items[0].id
+			selectedOptionId: items[0].id,
+			ariaLabel: loc.resourceTypeCategoryListViewTitle
 		}).component();
 		this._toDispose.push(listView.onDidClick((e) => {
 			this._resourceSearchBox.value = '';
