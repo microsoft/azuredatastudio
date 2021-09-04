@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file original="extensions/xml-language-features/package" source-language="en" datatype="plaintext" target-language="ja">
+    <body>
+      <trans-unit id="displayName">
+        <source xml:lang="en">XML Language Features</source>
+        <target state="translated">XML の言語機能</target>
+      </trans-unit>
+      <trans-unit id="description">
+        <source xml:lang="en">Provides rich language support for XML.</source>
+        <target state="translated">XML に豊富な言語サポートを提供します。</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

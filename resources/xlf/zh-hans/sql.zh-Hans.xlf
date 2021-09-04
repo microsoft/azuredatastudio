@@ -4589,14 +4589,6 @@ Error: {1}</source>
         <source xml:lang="en">Are you sure you want to clear the data?</source>
         <target state="translated">是否确实要清除数据?</target>
       </trans-unit>
-      <trans-unit id="profiler.yes">
-        <source xml:lang="en">Yes</source>
-        <target state="translated">是</target>
-      </trans-unit>
-      <trans-unit id="profiler.no">
-        <source xml:lang="en">No</source>
-        <target state="translated">否</target>
-      </trans-unit>
       <trans-unit id="profilerAction.autoscrollOn">
         <source xml:lang="en">Auto Scroll: On</source>
         <target state="translated">自动滚动: 开</target>
@@ -5289,7 +5281,7 @@ Error: {1}</source>
     <body>
       <trans-unit id="queryPlanEditor">
         <source xml:lang="en">Query Plan Editor</source>
-        <target state="new">Query Plan Editor</target>
+        <target state="translated">查询计划编辑器</target>
       </trans-unit>
     </body>
   </file>
@@ -5358,6 +5350,14 @@ Error: {1}</source>
       <trans-unit id="topOperationsTitle">
         <source xml:lang="en">Top Operations</source>
         <target state="translated">热门的操作</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/sql/workbench/contrib/resourceDeployment/browser/resourceDeployment.contribution" source-language="en" datatype="plaintext" target-language="zh-Hans">
+    <body>
+      <trans-unit id="deployment.title">
+        <source xml:lang="en">New Deployment...</source>
+        <target state="translated">新建部署...</target>
       </trans-unit>
     </body>
   </file>

@@ -1,0 +1,1703 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file original="extensions/arc/package" source-language="en" datatype="plaintext" target-language="ja">
+    <body>
+      <trans-unit id="arc.displayName">
+        <source xml:lang="en">Azure Arc</source>
+        <target state="translated">Azure Arc</target>
+      </trans-unit>
+      <trans-unit id="arc.description">
+        <source xml:lang="en">Support for Azure Arc</source>
+        <target state="translated">Azure Arc 対応</target>
+      </trans-unit>
+      <trans-unit id="arc.configuration.title">
+        <source xml:lang="en">Azure Arc</source>
+        <target state="translated">Azure Arc</target>
+      </trans-unit>
+      <trans-unit id="arc.view.title">
+        <source xml:lang="en">Azure Arc Controllers</source>
+        <target state="translated">Azure Arc Controllers</target>
+      </trans-unit>
+      <trans-unit id="arc.view.welcome.connect">
+        <source xml:lang="en">No Azure Arc controllers registered. [Learn More](https://azure.microsoft.com/services/azure-arc/)
+[Connect Controller](command:arc.connectToController)</source>
+        <target state="translated">Azure Arc コントローラーが登録されていません。[詳細情報] (https://azure.microsoft.com/services/azure-arc/)
+[接続コントローラー] (command:arc.connect ToController)</target>
+      </trans-unit>
+      <trans-unit id="arc.view.welcome.loading">
+        <source xml:lang="en">Loading controllers...</source>
+        <target state="translated">コントローラーを読み込んでいます...</target>
+      </trans-unit>
+      <trans-unit id="command.createController.title">
+        <source xml:lang="en">Create New Azure Arc Controller</source>
+        <target state="translated">新しい Azure Arc コントローラーの作成</target>
+      </trans-unit>
+      <trans-unit id="command.connectToController.title">
+        <source xml:lang="en">Connect to Existing Azure Arc Controller</source>
+        <target state="translated">既存の Azure Arc Controller に接続する</target>
+      </trans-unit>
+      <trans-unit id="command.removeController.title">
+        <source xml:lang="en">Remove Controller</source>
+        <target state="translated">コントローラーの削除</target>
+      </trans-unit>
+      <trans-unit id="command.refresh.title">
+        <source xml:lang="en">Refresh</source>
+        <target state="translated">最新の情報に更新</target>
+      </trans-unit>
+      <trans-unit id="command.editConnection.title">
+        <source xml:lang="en">Edit Connection</source>
+        <target state="translated">接続の編集</target>
+      </trans-unit>
+      <trans-unit id="arc.openDashboard">
+        <source xml:lang="en">Manage</source>
+        <target state="translated">管理</target>
+      </trans-unit>
+      <trans-unit id="resource.type.azure.arc.display.name">
+        <source xml:lang="en">Azure Arc data controller (preview)</source>
+        <target state="translated">Azure Arc データ コントローラー (プレビュー)</target>
+      </trans-unit>
+      <trans-unit id="resource.type.azure.arc.description">
+        <source xml:lang="en">Creates an Azure Arc data controller</source>
+        <target state="translated">Azure Arc データ コントローラーの作成</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.new.wizard.title">
+        <source xml:lang="en">Create Azure Arc data controller</source>
+        <target state="translated">Azure Arc データ コントローラーの作成</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.cluster.environment.title">
+        <source xml:lang="en">What is your target existing Kubernetes cluster environment?</source>
+        <target state="translated">対象の既存の Kubernetes クラスター環境は何ですか?</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.select.cluster.title">
+        <source xml:lang="en">Select from existing Kubernetes clusters</source>
+        <target state="translated">既存の Kubernetes クラスターから選択する</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.kube.cluster.context">
+        <source xml:lang="en">Cluster context</source>
+        <target state="translated">クラスター コンテキスト</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.cluster.config.profile.title">
+        <source xml:lang="en">Choose the config profile</source>
+        <target state="translated">構成プロファイルを選択する</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.cluster.config.profile">
+        <source xml:lang="en">Config profile</source>
+        <target state="translated">構成プロファイル</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.cluster.config.profile.loading">
+        <source xml:lang="en">Loading config profiles</source>
+        <target state="translated">構成プロファイルの読み込み中</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.cluster.config.profile.loadingcompleted">
+        <source xml:lang="en">Loading config profiles complete</source>
+        <target state="translated">構成プロファイルの完了を読み込み中</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.create.azureconfig.title">
+        <source xml:lang="en">Azure Configuration</source>
+        <target state="translated">Azure の構成</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.create.controllerconfig.title">
+        <source xml:lang="en">Controller Configuration</source>
+        <target state="translated">コントローラーの構成</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.project.details.title">
+        <source xml:lang="en">Azure details</source>
+        <target state="translated">Azure の詳細</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.project.details.description">
+        <source xml:lang="en">Select the subscription to manage deployed resources and costs. Use resource groups like folders to organize and manage all your resources.</source>
+        <target state="translated">サブスクリプションを選択して、デプロイ済みのリソースとコストを管理します。フォルダーなどのリソース グループを使用して、すべてのリソースを整理して管理します。</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.details.title">
+        <source xml:lang="en">Data controller details</source>
+        <target state="translated">データ コントローラーの詳細</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.details.description">
+        <source xml:lang="en">Provide a namespace, name and storage class for your Azure Arc data controller. This name will be used to identify your Arc instance for remote management and monitoring.</source>
+        <target state="translated">Azure Arc データ コントローラーの名前空間、名前、およびストレージクラスを指定します。 この名前は、リモート管理および監視用の Arc インスタンスを識別するために使用されます。 </target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.namespace">
+        <source xml:lang="en">Data controller namespace</source>
+        <target state="translated">データ コントローラー名前空間</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.namespace.validation.description">
+        <source xml:lang="en">Namespace must consist of lower case alphanumeric characters or '-', start/end with an alphanumeric character, and be 63 characters or fewer in length.</source>
+        <target state="translated">名前空間は、小文字の英数字または '-' で構成され、先頭と末尾には英数字を使用し、63 文字以下にする必要があります。</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.name">
+        <source xml:lang="en">Data controller name</source>
+        <target state="translated">データ コントローラー名</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.name.validation.description">
+        <source xml:lang="en">Name must consist of lower case alphanumeric characters, '-' or '.', start/end with an alphanumeric character and be 253 characters or less in length.</source>
+        <target state="translated">名前は、小文字の英数字、'-'、または '.' で構成され、先頭と末尾には英数字を使用し、253 文字以下にする必要があります。</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.location">
+        <source xml:lang="en">Location</source>
+        <target state="translated">場所</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.admin.account.title">
+        <source xml:lang="en">Administrator account</source>
+        <target state="translated">管理者アカウント</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.admin.account.name">
+        <source xml:lang="en">Data controller login</source>
+        <target state="translated">データ コントローラーのログイン</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.admin.account.password">
+        <source xml:lang="en">Password</source>
+        <target state="translated">パスワード</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.admin.account.confirm.password">
+        <source xml:lang="en">Confirm password</source>
+        <target state="translated">パスワードの確認</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.create.summary.title">
+        <source xml:lang="en">Review your configuration</source>
+        <target state="translated">構成の確認</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.summary.arc.data.controller">
+        <source xml:lang="en">Azure Arc data controller</source>
+        <target state="translated">Azure Arc データ コントローラー</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.summary.estimated.cost.per.month">
+        <source xml:lang="en">Estimated cost per month</source>
+        <target state="translated">月ごとの推定コスト</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.summary.arc.by.microsoft">
+        <source xml:lang="en">by Microsoft</source>
+        <target state="translated">Microsoft 提供</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.summary.free">
+        <source xml:lang="en">Free</source>
+        <target state="translated">無料</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.summary.arc.terms.of.use">
+        <source xml:lang="en">Terms of use</source>
+        <target state="translated">使用条件</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.summary.arc.terms.separator">
+        <source xml:lang="en">|</source>
+        <target state="translated">|</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.summary.arc.terms.privacy.policy">
+        <source xml:lang="en">Privacy policy</source>
+        <target state="translated">プライバシー ポリシー</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.summary.terms">
+        <source xml:lang="en">Terms</source>
+        <target state="translated">使用条件</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.summary.terms.description">
+        <source xml:lang="en">By clicking 'Script to notebook', I (a) agree to the legal terms and privacy statement(s) associated with the Marketplace offering(s) listed above; (b) authorize Microsoft to bill my current payment method for the fees associated with the offering(s), with the same billing frequency as my Azure subscription; and (c) agree that Microsoft may share my contact, usage and transactional information with the provider(s) of the offering(s) for support, billing and other transactional activities. Microsoft does not provide rights for third-party offerings. For additional details see {0}.</source>
+        <target state="translated">[ノートブックへのスクリプト] をクリックすることで、お客様は (a) 上記の Marketplace のオファリングに関連する法律条項とプライバシーに関する声明に同意し、(b) Microsoft がそのオファリングに関連する料金を現在の支払い方法で Azure サブスクリプションと同じ請求頻度で請求することを認め、かつ、(c) Microsoft がお客様の連絡先、使用量および取引に関する情報を、サポート、請求、その他の取引上のアクティビティを目的として、オファリングのプロバイダーと共有する可能性があることに同意します。Microsoft は、サード パーティのオファリングに対する権利は提供しません。その他の詳細については、{0} を参照してください。</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.summary.terms.link.text">
+        <source xml:lang="en">Azure Marketplace Terms</source>
+        <target state="translated">Azure Marketplace の使用条件</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.summary.kubernetes">
+        <source xml:lang="en">Kubernetes</source>
+        <target state="translated">Kubernetes</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.summary.kube.config.file.path">
+        <source xml:lang="en">Kube config file path</source>
+        <target state="translated">Kube 構成のファイル パス</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.summary.cluster.context">
+        <source xml:lang="en">Cluster context</source>
+        <target state="translated">クラスター コンテキスト</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.summary.profile">
+        <source xml:lang="en">Config profile</source>
+        <target state="translated">構成プロファイル</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.summary.username">
+        <source xml:lang="en">Username</source>
+        <target state="translated">ユーザー名</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.summary.azure">
+        <source xml:lang="en">Azure</source>
+        <target state="translated">Azure</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.summary.subscription">
+        <source xml:lang="en">Subscription</source>
+        <target state="translated">サブスクリプション</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.summary.resource.group">
+        <source xml:lang="en">Resource group</source>
+        <target state="translated">リソース グループ</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.summary.data.controller.name">
+        <source xml:lang="en">Data controller name</source>
+        <target state="translated">データ コントローラー名</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.summary.data.controller.namespace">
+        <source xml:lang="en">Data controller namespace</source>
+        <target state="translated">データ コントローラー名前空間</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.summary.controller">
+        <source xml:lang="en">Controller</source>
+        <target state="translated">コントローラー</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.summary.location">
+        <source xml:lang="en">Location</source>
+        <target state="translated">場所</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.agreement">
+        <source xml:lang="en">I accept {0} and {1}.</source>
+        <target state="translated">{0} および {1} に同意します。</target>
+      </trans-unit>
+      <trans-unit id="arc.data.controller.readmore">
+        <source xml:lang="en">Read more</source>
+        <target state="translated">詳細情報</target>
+      </trans-unit>
+      <trans-unit id="microsoft.agreement.privacy.statement">
+        <source xml:lang="en">Microsoft Privacy Statement</source>
+        <target state="translated">Microsoft プライバシー ステートメント</target>
+      </trans-unit>
+      <trans-unit id="deploy.script.action">
+        <source xml:lang="en">Script to notebook</source>
+        <target state="translated">ノートブックへのスクリプト</target>
+      </trans-unit>
+      <trans-unit id="deploy.done.action">
+        <source xml:lang="en">Deploy</source>
+        <target state="translated">デプロイ</target>
+      </trans-unit>
+      <trans-unit id="resource.type.arc.sql.display.name">
+        <source xml:lang="en">Azure SQL managed instance - Azure Arc (preview)</source>
+        <target state="translated">Azure SQL Managed Instance - Azure Arc (プレビュー)</target>
+      </trans-unit>
+      <trans-unit id="resource.type.arc.postgres.display.name">
+        <source xml:lang="en">PostgreSQL Hyperscale server groups - Azure Arc (preview)</source>
+        <target state="translated">PostgreSQL Hyperscale サーバー グループ - Azure Arc (プレビュー) </target>
+      </trans-unit>
+      <trans-unit id="resource.type.arc.sql.description">
+        <source xml:lang="en">Managed SQL Instance service for app developers in a customer-managed environment</source>
+        <target state="translated">ユーザーが管理する環境内のアプリ開発者向けのマネージド SQL インスタンス サービス</target>
+      </trans-unit>
+      <trans-unit id="resource.type.arc.postgres.description">
+        <source xml:lang="en">Deploy PostgreSQL Hyperscale server groups into an Azure Arc environment</source>
+        <target state="translated">Azure Arc 環境に PostgreSQL Hyperscale サーバー グループを展開する</target>
+      </trans-unit>
+      <trans-unit id="arc.controller">
+        <source xml:lang="en">Target Azure Arc Controller</source>
+        <target state="translated">対象の Azure Arc コントローラー</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.wizard.title">
+        <source xml:lang="en">Deploy Azure SQL managed instance - Azure Arc (preview)</source>
+        <target state="translated">Azure SQL Managed Instance - Azure Arc を展開 - Azure Arc (プレビュー)</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.wizard.page1.title">
+        <source xml:lang="en">Provide Azure SQL managed instance parameters</source>
+        <target state="translated">Azure SQL Managed Instance のパラメーターを指定します</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.connection.settings.section.title">
+        <source xml:lang="en">SQL Connection information</source>
+        <target state="translated">SQL 接続情報</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.instance.settings.section.title">
+        <source xml:lang="en">SQL Instance settings</source>
+        <target state="translated">SQL インスタンスの設定</target>
+      </trans-unit>
+      <trans-unit id="arc.azure.section.title">
+        <source xml:lang="en">Azure information</source>
+        <target state="translated">Azure 情報</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.instance.name">
+        <source xml:lang="en">Instance name</source>
+        <target state="translated">インスタンス名</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.username">
+        <source xml:lang="en">Username</source>
+        <target state="translated">ユーザー名</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.invalid.username">
+        <source xml:lang="en">sa username is disabled, please choose another username</source>
+        <target state="translated">sa ユーザー名が無効です。別のユーザー名を選択してください</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.invalid.instance.name">
+        <source xml:lang="en">Instance name must consist of lower case alphanumeric characters or '-', start with a letter, end with an alphanumeric character, and be 13 characters or fewer in length.</source>
+        <target state="translated">インスタンス名は、小文字の英数字または '-' で構成され、先頭に文字を使用し、末尾に英数字を使用して、13 文字以下にする必要があります。</target>
+      </trans-unit>
+      <trans-unit id="arc.storage-class.dc.label">
+        <source xml:lang="en">Storage Class</source>
+        <target state="translated">ストレージ クラス</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.storage-class.dc.description">
+        <source xml:lang="en">The storage class to be used for all data and logs persistent volumes for all data controller pods that require them.</source>
+        <target state="translated">すべてのデータとログの永続ボリュームを必要とするすべてのデータ コントローラー ポッドに使用されるストレージ クラス。</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.replicas.label">
+        <source xml:lang="en">Replicas</source>
+        <target state="translated">レプリカ</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.replicas.description">
+        <source xml:lang="en">The number of SQL Managed Instance replicas that will be deployed in your Kubernetes cluster for high availability purposes</source>
+        <target state="translated">高可用性の目的で Kubernetes クラスターに展開される SQL Managed Instance のレプリカの数</target>
+      </trans-unit>
+      <trans-unit id="arc.storage-class.data.label">
+        <source xml:lang="en">Storage Class (Data)</source>
+        <target state="translated">ストレージ クラス (データ)</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.storage-class.data.description">
+        <source xml:lang="en">The storage class to be used for data (.mdf)</source>
+        <target state="translated">データ (.mdf) に使用されるストレージ クラス</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.storage-class.data.description">
+        <source xml:lang="en">The storage class to be used for data persistent volumes</source>
+        <target state="translated">データの継続的ボリュームのログに使用されるストレージ クラスです</target>
+      </trans-unit>
+      <trans-unit id="arc.storage-class.logs.label">
+        <source xml:lang="en">Storage Class (Logs)</source>
+        <target state="translated">ストレージ クラス (ログ)</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.storage-class.logs.description">
+        <source xml:lang="en">The storage class to be used for logs (/var/log)</source>
+        <target state="translated">ログ (/var/log) に使用されるストレージ クラス</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.storage-class.logs.description">
+        <source xml:lang="en">The storage class to be used for logs persistent volumes</source>
+        <target state="translated">ログの継続的ボリュームに使用されるストレージ クラス</target>
+      </trans-unit>
+      <trans-unit id="arc.storage-class.backups.label">
+        <source xml:lang="en">Storage Class (Backups)</source>
+        <target state="translated">ストレージ クラス (バックアップ)</target>
+      </trans-unit>
+      <trans-unit id="arc.cores-limit.label">
+        <source xml:lang="en">Cores Limit</source>
+        <target state="translated">コア制限</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.cores-limit.description">
+        <source xml:lang="en">The cores limit of the managed instance as an integer.</source>
+        <target state="translated">整数で表したマネージド インスタンスのコア数の上限。</target>
+      </trans-unit>
+      <trans-unit id="arc.cores-request.label">
+        <source xml:lang="en">Cores Request</source>
+        <target state="translated">コア要求</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.cores-request.description">
+        <source xml:lang="en">The request for cores of the managed instance as an integer.</source>
+        <target state="translated">整数として表したマネージド インスタンスのコアの要求。</target>
+      </trans-unit>
+      <trans-unit id="arc.memory-limit.label">
+        <source xml:lang="en">Memory Limit</source>
+        <target state="translated">メモリの制限</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.memory-limit.description">
+        <source xml:lang="en">The limit of the capacity of the managed instance as an integer.</source>
+        <target state="translated">整数で表したマネージド インスタンスの容量の上限。</target>
+      </trans-unit>
+      <trans-unit id="arc.memory-request.label">
+        <source xml:lang="en">Memory Request</source>
+        <target state="translated">メモリ要求</target>
+      </trans-unit>
+      <trans-unit id="arc.sql.memory-request.description">
+        <source xml:lang="en">The request for the capacity of the managed instance as an integer amount of memory in GBs.</source>
+        <target state="translated">マネージド インスタンスの容量を要求して、整数のメモリ量 (GB) で指定します。</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.storage-class.backups.description">
+        <source xml:lang="en">The storage class to be used for backup persistent volumes</source>
+        <target state="translated">バックアップの継続的ボリュームに使用されるストレージ クラスです。</target>
+      </trans-unit>
+      <trans-unit id="arc.password">
+        <source xml:lang="en">Password</source>
+        <target state="translated">パスワード</target>
+      </trans-unit>
+      <trans-unit id="arc.confirm.password">
+        <source xml:lang="en">Confirm password</source>
+        <target state="translated">パスワードの確認</target>
+      </trans-unit>
+      <trans-unit id="arc.azure.account">
+        <source xml:lang="en">Azure account</source>
+        <target state="translated">Azure アカウント</target>
+      </trans-unit>
+      <trans-unit id="arc.azure.subscription">
+        <source xml:lang="en">Azure subscription</source>
+        <target state="translated">Azure サブスクリプション</target>
+      </trans-unit>
+      <trans-unit id="arc.azure.resource.group">
+        <source xml:lang="en">Azure resource group</source>
+        <target state="translated">Azure リソース グループ</target>
+      </trans-unit>
+      <trans-unit id="arc.azure.location">
+        <source xml:lang="en">Azure location</source>
+        <target state="translated">Azure の場所</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.wizard.title">
+        <source xml:lang="en">Deploy an Azure Arc-enabled PostgreSQL Hyperscale server group (Preview)</source>
+        <target state="translated">Azure Arc 対応 PostgreSQL Hyperscale サーバー グループの展開 (プレビュー)</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.wizard.page1.title">
+        <source xml:lang="en">Provide Azure enabled PostgreSQL Hyperscale server group parameters</source>
+        <target state="translated">Azure enabled PostgreSQL Hyperscale サーバー グループのパラメーターを指定する</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.settings.section.title">
+        <source xml:lang="en">General settings</source>
+        <target state="translated">全般設定</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.settings.resource.worker.title">
+        <source xml:lang="en">Worker Nodes Compute Configuration</source>
+        <target state="translated">ワーカー ノード コンピューティングの構成</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.settings.resource.coordinator.title">
+        <source xml:lang="en">Coordinator Node Compute Configuration</source>
+        <target state="translated">コーディネーター ノード コンピューティングの構成</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.settings.storage.title">
+        <source xml:lang="en">Storage settings</source>
+        <target state="translated">ストレージ設定</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.server.group.name">
+        <source xml:lang="en">Server group name</source>
+        <target state="translated">サーバー グループ名</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.server.group.name.validation.description">
+        <source xml:lang="en">Server group name must consist of lower case alphanumeric characters or '-', start with a letter, end with an alphanumeric character, and be 11 characters or fewer in length.</source>
+        <target state="translated">サーバー グループ名は、小文字の英数字または '-' で構成され、先頭に文字を使用し、末尾に英数字を使用して、11 文字以下にする必要があります。</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.server.group.workers.label">
+        <source xml:lang="en">Number of workers</source>
+        <target state="translated">ワーカーの数</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.server.group.workers.description">
+        <source xml:lang="en">The number of worker nodes to provision in a sharded cluster, or zero (the default) for single-node Postgres.</source>
+        <target state="translated">シャード化されたクラスターでプロビジョニングするワーカー ノードの数、または単一ノード Postgres では 0 (既定値)。</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.server.group.port">
+        <source xml:lang="en">Port</source>
+        <target state="translated">ポート</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.server.group.engine.version">
+        <source xml:lang="en">Engine Version</source>
+        <target state="translated">エンジンのバージョン</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.server.group.extensions.label">
+        <source xml:lang="en">Extensions</source>
+        <target state="translated">拡張</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.server.group.extensions.description">
+        <source xml:lang="en">A comma-separated list of the Postgres extensions that should be loaded on startup. Please refer to the postgres documentation for supported values.</source>
+        <target state="translated">スタートアップ時に読み込まれる Postgres 拡張のコンマ区切りリストです。サポートされている値については postgres のドキュメントを参照してください。</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.server.group.volume.size.data.label">
+        <source xml:lang="en">Volume Size GB (Data)</source>
+        <target state="translated">ボリューム サイズ GB (データ)</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.server.group.volume.size.data.description">
+        <source xml:lang="en">The size of the storage volume to be used for data in GB.</source>
+        <target state="translated">データに使用するストレージ ボリュームのサイズ (GB)。</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.server.group.volume.size.logs.label">
+        <source xml:lang="en">Volume Size GB (Logs)</source>
+        <target state="translated">ボリュームサイズ GB (ログ)</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.server.group.volume.size.logs.description">
+        <source xml:lang="en">The size of the storage volume to be used for logs in GB.</source>
+        <target state="translated">ログに使用するストレージ ボリュームのサイズ (GB)。</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.server.group.volume.size.backups.label">
+        <source xml:lang="en">Volume Size GB (Backups)</source>
+        <target state="translated">ボリュームサイズ GB (バックアップ)</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.server.group.volume.size.backups.description">
+        <source xml:lang="en">The size of the storage volume to be used for backups in GB.</source>
+        <target state="translated">バックアップに使用するストレージ ボリュームのサイズ (GB)。</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.server.group.workers.cores.request.label">
+        <source xml:lang="en">CPU request (cores per node)</source>
+        <target state="translated">CPU 要求 (ノードあたりのコア数)</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.server.group.workers.cores.request.description">
+        <source xml:lang="en">The minimum number of CPU cores that must be available per node to schedule the service. Fractional cores are supported.</source>
+        <target state="translated">サービスをスケジュールするために、ノードごとに使用可能でなければならない CPU コアの最小数です。分数のコアがサポートされています。</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.server.group.workers.cores.limit.label">
+        <source xml:lang="en">CPU limit (cores per node)</source>
+        <target state="translated">CPU の制限 (ノードあたりのコア数)</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.server.group.workers.cores.limit.description">
+        <source xml:lang="en">The maximum number of CPU cores for the Postgres instance that can be used per node. Fractional cores are supported.</source>
+        <target state="translated">ノードごとに使用できる Postgres インスタンスの CPU コアの最大数。分数のコアがサポートされています。</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.server.group.workers.memory.request.label">
+        <source xml:lang="en">Memory request (GB per node)</source>
+        <target state="translated">メモリ要求 (ノードあたりの GB)</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.server.group.workers.memory.request.description">
+        <source xml:lang="en">The memory request of the Postgres instance per node in GB.</source>
+        <target state="translated">ノードごとの Postgres インスタンスのメモリ要求 (GB)。</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.server.group.workers.memory.limit.label">
+        <source xml:lang="en">Memory limit (GB per node)</source>
+        <target state="translated">メモリの制限 (ノードあたりの GB)</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.server.group.workers.memory.limit.description">
+        <source xml:lang="en">The memory limit of the Postgres instance per node in GB.</source>
+        <target state="translated">ノードごとの Postgres インスタンスのメモリ制限 (GB) 。</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.server.group.coordinator.cores.request.label">
+        <source xml:lang="en">CPU request</source>
+        <target state="translated">CPU 要求</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.server.group.coordinator.cores.request.description">
+        <source xml:lang="en">The minimum number of CPU cores that must be available on the coordinator node to schedule the service. Fractional cores are supported.</source>
+        <target state="translated">サービスをスケジュールするために、コーディネーター ノードにて使用可能でなければならない CPU コアの最小数です。分数のコアがサポートされています。</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.server.group.coordinator.cores.limit.label">
+        <source xml:lang="en">CPU limit</source>
+        <target state="translated">CPU の制限</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.server.group.coordinator.cores.limit.description">
+        <source xml:lang="en">The maximum number of CPU cores for the Postgres instance that can be used on the coordinator node. Fractional cores are supported.</source>
+        <target state="translated">ノードごとに使用できる Postgres インスタンスの CPU コアの最大数。分数のコアがサポートされています。</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.server.group.coordinator.memory.request.label">
+        <source xml:lang="en">Memory request (GB)</source>
+        <target state="translated">メモリ要求 (GB)</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.server.group.coordinator.memory.request.description">
+        <source xml:lang="en">The memory request of the Postgres instance on the coordinator node in GB.</source>
+        <target state="translated">コーディネーター ノードの Postgres インスタンスのメモリ要求 (GB)。</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.server.group.coordinator.memory.limit.label">
+        <source xml:lang="en">Memory limit (GB)</source>
+        <target state="translated">メモリの制限 (GB)</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.server.group.coordinator.memory.limit.description">
+        <source xml:lang="en">The memory limit of the Postgres instance on the coordinator node in GB.</source>
+        <target state="translated">コーディネーター ノードの Postgres インスタンスのメモリ制限 (GB)。</target>
+      </trans-unit>
+      <trans-unit id="arc.agreement">
+        <source xml:lang="en">I accept {0} and {1}.</source>
+        <target state="translated">{0} および {1} に同意します。</target>
+      </trans-unit>
+      <trans-unit id="arc.agreement.sql.terms.conditions">
+        <source xml:lang="en">Azure SQL managed instance - Azure Arc terms and conditions</source>
+        <target state="translated">Azure SQL マネージド インスタンス - Azure Arc のご契約条件</target>
+      </trans-unit>
+      <trans-unit id="arc.agreement.postgres.terms.conditions">
+        <source xml:lang="en">Azure Arc-enabled PostgreSQL Hyperscale terms and conditions</source>
+        <target state="translated">Azure Arc 対応 PostgreSQL Hyperscale のご契約条件</target>
+      </trans-unit>
+      <trans-unit id="should.be.integer">
+        <source xml:lang="en">Value must be an integer</source>
+        <target state="translated">値は整数でなければなりません</target>
+      </trans-unit>
+      <trans-unit id="worker.node.count.should.not.be.one">
+        <source xml:lang="en">Value of 1 is not supported.</source>
+        <target state="translated">1 の値はサポートされていません。</target>
+      </trans-unit>
+      <trans-unit id="requested.cores.less.than.or.equal.to.cores.limit">
+        <source xml:lang="en">Requested cores must be less than or equal to cores limit</source>
+        <target state="translated">要求されたコアは、コアの上限以下である必要があります</target>
+      </trans-unit>
+      <trans-unit id="cores.limit.greater.than.or.equal.to.requested.cores">
+        <source xml:lang="en">Cores limit must be greater than or equal to requested cores</source>
+        <target state="translated">コアの上限は要求されたコア以上でなければなりません</target>
+      </trans-unit>
+      <trans-unit id="requested.memory.less.than.or.equal.to.memory.limit">
+        <source xml:lang="en">Requested memory must be less than or equal to memory limit</source>
+        <target state="translated">要求されたメモリはメモリ制限以下でなければなりません</target>
+      </trans-unit>
+      <trans-unit id="memory.limit.greater.than.or.equal.to.requested.memory">
+        <source xml:lang="en">Memory limit must be greater than or equal to requested memory</source>
+        <target state="translated">メモリ制限は要求されたメモリ以上である必要があります</target>
+      </trans-unit>
+      <trans-unit id="arc.agreement.sql.help.text">
+        <source xml:lang="en">Azure Arc enabled Managed Instance provides SQL Server access and feature compatibility that can be deployed on the infrastructure of your choice. While this service is in preview, it has some feature limitations compared to SQL Managed Instance on Azure. {0}</source>
+        <target state="translated">Azure Arc 対応 Managed Instance により、選択したインフラストラクチャにデプロイ可能な SQL Server のアクセスと機能の互換性が得られます。このサービスはプレビュー版ですが、Azure 上の SQL Managed Instance と比較して、いくつかの機能制限があります。{0}</target>
+      </trans-unit>
+      <trans-unit id="arc.agreement.sql.help.text.learn.more">
+        <source xml:lang="en">Learn more</source>
+        <target state="translated">詳細情報</target>
+      </trans-unit>
+      <trans-unit id="arc.agreement.sql.help.text.learn.more.ariaLabel">
+        <source xml:lang="en">Learn more about Azure Arc enabled Managed Instance</source>
+        <target state="translated">Azure Arc 対応マネージド インスタンスに関する詳細情報</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/arc/dist/localizedConstants" source-language="en" datatype="plaintext" target-language="ja">
+    <body>
+      <trans-unit id="arc.arcDeploymentDeprecation">
+        <source xml:lang="en">The Arc Deployment extension has been replaced by the Arc extension and has been uninstalled.</source>
+        <target state="translated">Arc 展開拡張機能が Arc 拡張機能に置き換えられ、アンインストールされました。</target>
+      </trans-unit>
+      <trans-unit id="arc.controllerDashboard">
+        <source xml:lang="en">Azure Arc Data Controller Dashboard (Preview) - {0}</source>
+        <target state="translated">Azure Arc データ コントラクター ダッシュボード (プレビュー) -{0}</target>
+      </trans-unit>
+      <trans-unit id="arc.miaaDashboard">
+        <source xml:lang="en">SQL managed instance - Azure Arc Dashboard (Preview) - {0}</source>
+        <target state="translated">SQL Managed Instance - Azure Arc ダッシュボード (プレビュー) - {0}</target>
+      </trans-unit>
+      <trans-unit id="arc.postgresDashboard">
+        <source xml:lang="en">PostgreSQL Hyperscale - Azure Arc Dashboard (Preview) - {0}</source>
+        <target state="translated">PostgreSQL Hyperscale - Azure Arc ダッシュボード (プレビュー) - {0}</target>
+      </trans-unit>
+      <trans-unit id="arc.dataControllersType">
+        <source xml:lang="en">Azure Arc Data Controller</source>
+        <target state="translated">Azure Arc データ コントローラー</target>
+      </trans-unit>
+      <trans-unit id="arc.pgSqlType">
+        <source xml:lang="en">PostgreSQL Hyperscale - Azure Arc</source>
+        <target state="translated">PostgreSQL Hyperscale – Azure Arc</target>
+      </trans-unit>
+      <trans-unit id="arc.miaaType">
+        <source xml:lang="en">SQL managed instance - Azure Arc</source>
+        <target state="translated">SQL マネージド インスタンス - Azure Arc</target>
+      </trans-unit>
+      <trans-unit id="arc.overview">
+        <source xml:lang="en">Overview</source>
+        <target state="translated">概要</target>
+      </trans-unit>
+      <trans-unit id="arc.connectionStrings">
+        <source xml:lang="en">Connection Strings</source>
+        <target state="translated">接続文字列</target>
+      </trans-unit>
+      <trans-unit id="arc.preloaded Extensions">
+        <source xml:lang="en">Preloaded Extensions</source>
+        <target state="translated">事前読み込みの拡張機能</target>
+      </trans-unit>
+      <trans-unit id="arc.networking">
+        <source xml:lang="en">Networking</source>
+        <target state="translated">ネットワーク</target>
+      </trans-unit>
+      <trans-unit id="arc.properties">
+        <source xml:lang="en">Properties</source>
+        <target state="translated">プロパティ</target>
+      </trans-unit>
+      <trans-unit id="arc.settings">
+        <source xml:lang="en">Settings</source>
+        <target state="translated">設定</target>
+      </trans-unit>
+      <trans-unit id="arc.security">
+        <source xml:lang="en">Security</source>
+        <target state="translated">セキュリティ</target>
+      </trans-unit>
+      <trans-unit id="arc.computeAndStorage">
+        <source xml:lang="en">Compute + Storage</source>
+        <target state="translated">コンピューティングとストレージ</target>
+      </trans-unit>
+      <trans-unit id="arc.coordinatorNodeParameters">
+        <source xml:lang="en">Coordinator Node Parameters</source>
+        <target state="translated">コーディネーター ノードのパラメーター</target>
+      </trans-unit>
+      <trans-unit id="arc.workerNodeParameters">
+        <source xml:lang="en">Worker Node Parameters</source>
+        <target state="translated">ワーカー ノードのパラメーター</target>
+      </trans-unit>
+      <trans-unit id="arc.compute">
+        <source xml:lang="en">Compute</source>
+        <target state="translated">コンピューティング</target>
+      </trans-unit>
+      <trans-unit id="arc.backup">
+        <source xml:lang="en">Backup</source>
+        <target state="translated">バックアップ</target>
+      </trans-unit>
+      <trans-unit id="arc.newSupportRequest">
+        <source xml:lang="en">New support request</source>
+        <target state="translated">新しいサポート リクエスト</target>
+      </trans-unit>
+      <trans-unit id="arc.diagnoseAndSolveProblems">
+        <source xml:lang="en">Diagnose and solve problems</source>
+        <target state="translated">問題の診断と解決</target>
+      </trans-unit>
+      <trans-unit id="arc.supportAndTroubleshooting">
+        <source xml:lang="en">Support + troubleshooting</source>
+        <target state="translated">サポート + トラブルシューティング</target>
+      </trans-unit>
+      <trans-unit id="arc.resourceHealth">
+        <source xml:lang="en">Resource health</source>
+        <target state="translated">リソース正常性</target>
+      </trans-unit>
+      <trans-unit id="arc.parameterName">
+        <source xml:lang="en">Parameter Name</source>
+        <target state="translated">パラメーター名</target>
+      </trans-unit>
+      <trans-unit id="arc.value">
+        <source xml:lang="en">Value</source>
+        <target state="translated">値</target>
+      </trans-unit>
+      <trans-unit id="arc.createNew">
+        <source xml:lang="en">New Instance</source>
+        <target state="translated">新しいインスタンス</target>
+      </trans-unit>
+      <trans-unit id="arc.delete">
+        <source xml:lang="en">Delete</source>
+        <target state="translated">削除</target>
+      </trans-unit>
+      <trans-unit id="arc.learnMore">
+        <source xml:lang="en">Learn More.</source>
+        <target state="translated">詳細情報。</target>
+      </trans-unit>
+      <trans-unit id="arc.drop">
+        <source xml:lang="en">Drop</source>
+        <target state="translated">ドロップ</target>
+      </trans-unit>
+      <trans-unit id="arc.save">
+        <source xml:lang="en">Save</source>
+        <target state="translated">保存</target>
+      </trans-unit>
+      <trans-unit id="arc.discard">
+        <source xml:lang="en">Discard</source>
+        <target state="translated">破棄</target>
+      </trans-unit>
+      <trans-unit id="arc.resetPassword">
+        <source xml:lang="en">Reset Password</source>
+        <target state="translated">パスワードの再設定</target>
+      </trans-unit>
+      <trans-unit id="arc.addExtensions">
+        <source xml:lang="en">Add extensions</source>
+        <target state="translated">拡張機能の追加</target>
+      </trans-unit>
+      <trans-unit id="arc.dropExtensions">
+        <source xml:lang="en">Drop extensions</source>
+        <target state="translated">拡張機能の削除</target>
+      </trans-unit>
+      <trans-unit id="arc.openInAzurePortal">
+        <source xml:lang="en">Open in Azure Portal</source>
+        <target state="translated">Azure Portal で開きます</target>
+      </trans-unit>
+      <trans-unit id="arc.resourceGroup">
+        <source xml:lang="en">Resource Group</source>
+        <target state="translated">リソース グループ</target>
+      </trans-unit>
+      <trans-unit id="arc.region">
+        <source xml:lang="en">Region</source>
+        <target state="translated">リージョン</target>
+      </trans-unit>
+      <trans-unit id="arc.subscriptionId">
+        <source xml:lang="en">Subscription ID</source>
+        <target state="translated">サブスクリプション ID</target>
+      </trans-unit>
+      <trans-unit id="arc.state">
+        <source xml:lang="en">State</source>
+        <target state="translated">状態</target>
+      </trans-unit>
+      <trans-unit id="arc.connectionMode">
+        <source xml:lang="en">Connection Mode</source>
+        <target state="translated">接続モード</target>
+      </trans-unit>
+      <trans-unit id="arc.namespace">
+        <source xml:lang="en">Namespace</source>
+        <target state="translated">名前空間</target>
+      </trans-unit>
+      <trans-unit id="arc.externalEndpoint">
+        <source xml:lang="en">External Endpoint</source>
+        <target state="translated">外部エンドポイント</target>
+      </trans-unit>
+      <trans-unit id="arc.name">
+        <source xml:lang="en">Name</source>
+        <target state="translated">名前</target>
+      </trans-unit>
+      <trans-unit id="arc.type">
+        <source xml:lang="en">Type</source>
+        <target state="translated">種類</target>
+      </trans-unit>
+      <trans-unit id="arc.status">
+        <source xml:lang="en">Status</source>
+        <target state="translated">状態</target>
+      </trans-unit>
+      <trans-unit id="arc.miaaAdmin">
+        <source xml:lang="en">Managed instance admin</source>
+        <target state="translated">マネージド インスタンスの管理者</target>
+      </trans-unit>
+      <trans-unit id="arc.controllerEndpoint">
+        <source xml:lang="en">Controller endpoint</source>
+        <target state="translated">コントローラーのエンドポイント</target>
+      </trans-unit>
+      <trans-unit id="arc.extensionName">
+        <source xml:lang="en">Extension name</source>
+        <target state="translated">拡張機能名</target>
+      </trans-unit>
+      <trans-unit id="arc.extensionsDescription">
+        <source xml:lang="en">PostgreSQL provides the ability to extend the functionality of your database by using extensions. Extensions allow for bundling multiple related SQL objects together in a single package that can be loaded or removed from your database with a single command. After being loaded in the database, extensions can function like built-in features.</source>
+        <target state="translated">PostgreSQL には、拡張機能を使用してデータベースの機能を拡張する機能が用意されています。拡張機能により、複数の関連する SQL オブジェクトを1つのパッケージにまとめて、1つのコマンドでデータベースに読み込みまたは削除できます。データベースに読み込まれると、拡張機能は組み込み機能と同様に機能できます。</target>
+      </trans-unit>
+      <trans-unit id="arc.extensionsFunction">
+        <source xml:lang="en">Some extensions must be loaded into PostgreSQL at startup time before they can be used. These preloaded extensions can be viewed and edited  below.</source>
+        <target state="translated">一部の拡張機能は、使用する前に起動時に PostgreSQL に読み込む必要があります。これらの事前読み込み済みの拡張機能は以下で表示し、編集することができます。</target>
+      </trans-unit>
+      <trans-unit id="arc.extensionsLearnMore">
+        <source xml:lang="en">Learn more about PostgreSQL extensions.</source>
+        <target state="translated">PostgreSQL 拡張機能に関する詳細を説明します。</target>
+      </trans-unit>
+      <trans-unit id="arc.extensionsTableLoading">
+        <source xml:lang="en">Table of preloaded extensions are loading.</source>
+        <target state="translated">事前読み込みの拡張機能のテーブルを読み込んでいます。</target>
+      </trans-unit>
+      <trans-unit id="arc.extensionsTableLabel">
+        <source xml:lang="en">Table of preloaded extensions.</source>
+        <target state="translated">事前読み込みの拡張機能のテーブル。</target>
+      </trans-unit>
+      <trans-unit id="arc.extensionsTableLoadingComplete">
+        <source xml:lang="en">Preloaded extensions can now be viewed.</source>
+        <target state="translated">事前に読み込まれた拡張機能を表示できます。</target>
+      </trans-unit>
+      <trans-unit id="arc.extensionsAddList">
+        <source xml:lang="en">Extensions</source>
+        <target state="translated">拡張</target>
+      </trans-unit>
+      <trans-unit id="arc.extensionsAddDialog">
+        <source xml:lang="en">PostgreSQL provides the ability to extend the functionality of your database by using extensions.</source>
+        <target state="translated">PostgreSQL には、拡張機能を使用してデータベースの機能を拡張する機能が用意されています。</target>
+      </trans-unit>
+      <trans-unit id="arc.dataController">
+        <source xml:lang="en">Data controller</source>
+        <target state="translated">データ コントローラー</target>
+      </trans-unit>
+      <trans-unit id="arc.kibanaDashboard">
+        <source xml:lang="en">Kibana Dashboard</source>
+        <target state="translated">Kibana ダッシュボード</target>
+      </trans-unit>
+      <trans-unit id="arc.grafanaDashboard">
+        <source xml:lang="en">Grafana Dashboard</source>
+        <target state="translated">Grafana ダッシュボード</target>
+      </trans-unit>
+      <trans-unit id="arc.kibanaDashboardDescription">
+        <source xml:lang="en">Dashboard for viewing logs</source>
+        <target state="translated">ログを表示するためのダッシュボード</target>
+      </trans-unit>
+      <trans-unit id="arc.grafanaDashboardDescription">
+        <source xml:lang="en">Dashboard for viewing metrics</source>
+        <target state="translated">メトリックを表示するためのダッシュボード</target>
+      </trans-unit>
+      <trans-unit id="arc.serviceEndpoints">
+        <source xml:lang="en">Service endpoints</source>
+        <target state="translated">サービス エンドポイント</target>
+      </trans-unit>
+      <trans-unit id="arc.databases">
+        <source xml:lang="en">Databases</source>
+        <target state="translated">データベース</target>
+      </trans-unit>
+      <trans-unit id="arc.endpoint">
+        <source xml:lang="en">Endpoint</source>
+        <target state="translated">エンドポイント</target>
+      </trans-unit>
+      <trans-unit id="arc.description">
+        <source xml:lang="en">Description</source>
+        <target state="translated">説明</target>
+      </trans-unit>
+      <trans-unit id="arc.yes">
+        <source xml:lang="en">Yes</source>
+        <target state="translated">はい</target>
+      </trans-unit>
+      <trans-unit id="arc.no">
+        <source xml:lang="en">No</source>
+        <target state="translated">いいえ</target>
+      </trans-unit>
+      <trans-unit id="arc.feedback">
+        <source xml:lang="en">Feedback</source>
+        <target state="translated">フィードバック</target>
+      </trans-unit>
+      <trans-unit id="arc.selectConnectionString">
+        <source xml:lang="en">Select from available client connection strings below.</source>
+        <target state="translated">使用可能なクライアント接続文字列を以下から選択します。</target>
+      </trans-unit>
+      <trans-unit id="arc.addingWorkerNodes">
+        <source xml:lang="en">adding worker nodes</source>
+        <target state="translated">ワーカー ノードを追加しています</target>
+      </trans-unit>
+      <trans-unit id="arc.workerNodesDescription">
+        <source xml:lang="en">Expand your server group and scale your database by adding worker nodes.</source>
+        <target state="translated">サーバー グループを拡張し、ワーカー ノードを追加してデータベースを拡張します。</target>
+      </trans-unit>
+      <trans-unit id="arc.workerNodesConfigurationInformation">
+        <source xml:lang="en">You can configure the number of CPU cores and storage size that will apply to all worker nodes. Adjust the number of CPU cores and memory settings for your server group. To reset the requests and/or limits, pass in empty value.</source>
+        <target state="translated">すべてのワーカー ノードに適用される CPU コア数とストレージ サイズを構成することができます。サーバー グループに CPU コア数とメモリ設定を調整します。要求や制限をリセットするには、空の値を渡します。</target>
+      </trans-unit>
+      <trans-unit id="arc.coordinatorNodeConfigurationInformation">
+        <source xml:lang="en">You can configure the number of CPU cores and storage size that will apply to the coordinator node. Adjust the number of CPU cores and memory settings for your server group. To reset the requests and/or limits, pass in empty value.</source>
+        <target state="translated">すべてのコーディネーター ノードに適用される CPU コアの数とストレージ サイズを構成できます。サーバー グループの CPU コアの数とメモリの設定を調整します。要求または制限をリセットするには、空の値を渡してください。</target>
+      </trans-unit>
+      <trans-unit id="arc.workerNodeInformation">
+        <source xml:lang="en">It is possible to scale in and out your server group by reducing or increasing the number of worker nodes. The value must be 0 or greater than 1.</source>
+        <target state="translated">ワーカー ノードの数を減らしたり増やしたりすることで、サーバー グループをスケールインまたはスケールアウトすることができます。値は 0 または 1 より大きい値でなければなりません。</target>
+      </trans-unit>
+      <trans-unit id="arc.workerOneNodeValidationMessage">
+        <source xml:lang="en">Value of 1 is not supported.</source>
+        <target state="translated">1 の値はサポートされていません。</target>
+      </trans-unit>
+      <trans-unit id="arc.vCores">
+        <source xml:lang="en">vCores</source>
+        <target state="translated">仮想コア</target>
+      </trans-unit>
+      <trans-unit id="arc.ram">
+        <source xml:lang="en">RAM</source>
+        <target state="translated">RAM</target>
+      </trans-unit>
+      <trans-unit id="arc.refresh">
+        <source xml:lang="en">Refresh</source>
+        <target state="translated">最新の情報に更新</target>
+      </trans-unit>
+      <trans-unit id="arc.resetAllToDefault">
+        <source xml:lang="en">Reset all to default</source>
+        <target state="translated">すべてを既定にリセット</target>
+      </trans-unit>
+      <trans-unit id="arc.resetToDefault">
+        <source xml:lang="en">Reset to default</source>
+        <target state="translated">既定値にリセット</target>
+      </trans-unit>
+      <trans-unit id="arc.troubleshoot">
+        <source xml:lang="en">Troubleshoot</source>
+        <target state="translated">トラブルシューティング</target>
+      </trans-unit>
+      <trans-unit id="arc.clickTheNewSupportRequestButton">
+        <source xml:lang="en">Click the new support request button to file a support request in the Azure Portal.</source>
+        <target state="translated">[新しいサポートリクエスト] ボタンをクリックして、Azure Portal でサポート リクエストを作成します。</target>
+      </trans-unit>
+      <trans-unit id="arc.supportRequestNote">
+        <source xml:lang="en">Note that the resource configuration must have been uploaded to Azure first in order to open a support request.</source>
+        <target state="translated">サポート要求を開くには、リソース構成が最初に Azure にアップロードされている必要があることに注意してください。</target>
+      </trans-unit>
+      <trans-unit id="arc.running">
+        <source xml:lang="en">Running</source>
+        <target state="translated">実行中</target>
+      </trans-unit>
+      <trans-unit id="arc.ready">
+        <source xml:lang="en">Ready</source>
+        <target state="translated">準備完了</target>
+      </trans-unit>
+      <trans-unit id="arc.notReady">
+        <source xml:lang="en">Not Ready</source>
+        <target state="translated">準備ができていません</target>
+      </trans-unit>
+      <trans-unit id="arc.pending">
+        <source xml:lang="en">Pending</source>
+        <target state="translated">保留中</target>
+      </trans-unit>
+      <trans-unit id="arc.failed">
+        <source xml:lang="en">Failed</source>
+        <target state="translated">失敗</target>
+      </trans-unit>
+      <trans-unit id="arc.unknown">
+        <source xml:lang="en">Unknown</source>
+        <target state="translated">不明</target>
+      </trans-unit>
+      <trans-unit id="arc.direct">
+        <source xml:lang="en">Direct</source>
+        <target state="translated">直接</target>
+      </trans-unit>
+      <trans-unit id="arc.indirect">
+        <source xml:lang="en">Indirect</source>
+        <target state="translated">間接</target>
+      </trans-unit>
+      <trans-unit id="arc.loading">
+        <source xml:lang="en">Loading...</source>
+        <target state="translated">読み込んでいます...</target>
+      </trans-unit>
+      <trans-unit id="arc.refreshToEnterCredentials">
+        <source xml:lang="en">Refresh node to enter credentials</source>
+        <target state="translated">ノードを更新して資格情報を入力する</target>
+      </trans-unit>
+      <trans-unit id="arc.noInstancesAvailable">
+        <source xml:lang="en">No instances available</source>
+        <target state="translated">使用可能なインスタンスがありません</target>
+      </trans-unit>
+      <trans-unit id="arc.connecToServer">
+        <source xml:lang="en">Connect to Server</source>
+        <target state="translated">サーバーに接続</target>
+      </trans-unit>
+      <trans-unit id="arc.connectToController">
+        <source xml:lang="en">Connect to Existing Controller</source>
+        <target state="translated">既存のコントローラーに接続する</target>
+      </trans-unit>
+      <trans-unit id="arc.connectToMSSql">
+        <source xml:lang="en">Connect to SQL managed instance - Azure Arc ({0})</source>
+        <target state="translated">SQL Managed Instance - Azure Arc ({0})</target>
+      </trans-unit>
+      <trans-unit id="arc.connectToPGSql">
+        <source xml:lang="en">Connect to PostgreSQL Hyperscale - Azure Arc ({0})</source>
+        <target state="translated">PostgreSQL Hyperscale への接続 – Azure Arc ({0})</target>
+      </trans-unit>
+      <trans-unit id="arc.passwordToController">
+        <source xml:lang="en">Provide Password to Controller</source>
+        <target state="translated">コントローラーにパスワードを指定する</target>
+      </trans-unit>
+      <trans-unit id="arc.controllerUrl">
+        <source xml:lang="en">Controller URL</source>
+        <target state="translated">コントローラーの URL</target>
+      </trans-unit>
+      <trans-unit id="arc.controllerUrlPlaceholder">
+        <source xml:lang="en">https://&lt;IP or hostname&gt;:&lt;port&gt;</source>
+        <target state="translated">https://&lt;IP or hostname&gt;:&lt;port&gt;</target>
+      </trans-unit>
+      <trans-unit id="arc.controllerUrlDescription">
+        <source xml:lang="en">The Controller URL is necessary if there are multiple clusters with the same namespace - this should generally not be necessary.</source>
+        <target state="translated">コントローラー URL は、同じ名前空間を持つ複数のクラスターが存在する場合に必要ですが、通常は必要ありません。</target>
+      </trans-unit>
+      <trans-unit id="arc.serverEndpoint">
+        <source xml:lang="en">Server Endpoint</source>
+        <target state="translated">サーバー エンドポイント</target>
+      </trans-unit>
+      <trans-unit id="arc.controllerName">
+        <source xml:lang="en">Name</source>
+        <target state="translated">名前</target>
+      </trans-unit>
+      <trans-unit id="arc.controllerNameDescription">
+        <source xml:lang="en">The name to display in the tree view, this is not applied to the controller itself.</source>
+        <target state="translated">ツリービューに表示される名前です。これはコントローラー自体には適用されません。</target>
+      </trans-unit>
+      <trans-unit id="arc.controllerKubeConfig">
+        <source xml:lang="en">Kube Config File Path</source>
+        <target state="translated">Kube 構成のファイル パス</target>
+      </trans-unit>
+      <trans-unit id="arc.controllerClusterContext">
+        <source xml:lang="en">Cluster Context</source>
+        <target state="translated">クラスター コンテキスト</target>
+      </trans-unit>
+      <trans-unit id="arc.defaultControllerName">
+        <source xml:lang="en">arc-dc</source>
+        <target state="translated">ARC - dc</target>
+      </trans-unit>
+      <trans-unit id="arc.postgresProviderName">
+        <source xml:lang="en">PGSQL</source>
+        <target state="translated">PGSQL</target>
+      </trans-unit>
+      <trans-unit id="arc.miaaProviderName">
+        <source xml:lang="en">MSSQL</source>
+        <target state="translated">MSSQL</target>
+      </trans-unit>
+      <trans-unit id="arc.controllerUsername">
+        <source xml:lang="en">Controller Username</source>
+        <target state="translated">コントローラーのユーザー名</target>
+      </trans-unit>
+      <trans-unit id="arc.controllerPassword">
+        <source xml:lang="en">Controller Password</source>
+        <target state="translated">コントローラー パスワード</target>
+      </trans-unit>
+      <trans-unit id="arc.username">
+        <source xml:lang="en">Username</source>
+        <target state="translated">ユーザー名</target>
+      </trans-unit>
+      <trans-unit id="arc.password">
+        <source xml:lang="en">Password</source>
+        <target state="translated">パスワード</target>
+      </trans-unit>
+      <trans-unit id="arc.rememberPassword">
+        <source xml:lang="en">Remember Password</source>
+        <target state="translated">パスワードを記憶する</target>
+      </trans-unit>
+      <trans-unit id="arc.connect">
+        <source xml:lang="en">Connect</source>
+        <target state="translated">接続</target>
+      </trans-unit>
+      <trans-unit id="arc.cancel">
+        <source xml:lang="en">Cancel</source>
+        <target state="translated">キャンセル</target>
+      </trans-unit>
+      <trans-unit id="arc.ok">
+        <source xml:lang="en">Ok</source>
+        <target state="translated">OK</target>
+      </trans-unit>
+      <trans-unit id="arc.on">
+        <source xml:lang="en">On</source>
+        <target state="translated">オン</target>
+      </trans-unit>
+      <trans-unit id="arc.off">
+        <source xml:lang="en">Off</source>
+        <target state="translated">オフ</target>
+      </trans-unit>
+      <trans-unit id="arc.notConfigured">
+        <source xml:lang="en">Not Configured</source>
+        <target state="translated">構成されていません</target>
+      </trans-unit>
+      <trans-unit id="arc.online">
+        <source xml:lang="en">Online</source>
+        <target state="translated">オンライン</target>
+      </trans-unit>
+      <trans-unit id="arc.offline">
+        <source xml:lang="en">Offline</source>
+        <target state="translated">オフライン</target>
+      </trans-unit>
+      <trans-unit id="arc.restoring">
+        <source xml:lang="en">Restoring</source>
+        <target state="translated">復元しています</target>
+      </trans-unit>
+      <trans-unit id="arc.recovering">
+        <source xml:lang="en">Recovering</source>
+        <target state="translated">復旧しています</target>
+      </trans-unit>
+      <trans-unit id="arc.recoveringPending">
+        <source xml:lang="en">Recovery Pending</source>
+        <target state="translated">復旧待ち</target>
+      </trans-unit>
+      <trans-unit id="arc.suspect">
+        <source xml:lang="en">Suspect</source>
+        <target state="translated">未確認</target>
+      </trans-unit>
+      <trans-unit id="arc.emergency">
+        <source xml:lang="en">Emergency</source>
+        <target state="translated">緊急</target>
+      </trans-unit>
+      <trans-unit id="arc.coordinatorEndpoint">
+        <source xml:lang="en">Coordinator endpoint</source>
+        <target state="translated">コーディネーターのエンドポイント</target>
+      </trans-unit>
+      <trans-unit id="arc.postgresAdminUsername">
+        <source xml:lang="en">Admin username</source>
+        <target state="translated">管理者ユーザー名</target>
+      </trans-unit>
+      <trans-unit id="arc.nodeConfiguration">
+        <source xml:lang="en">Node configuration</source>
+        <target state="translated">ノード構成</target>
+      </trans-unit>
+      <trans-unit id="arc.postgresVersion">
+        <source xml:lang="en">PostgreSQL version</source>
+        <target state="translated">PostgreSQL のバージョン</target>
+      </trans-unit>
+      <trans-unit id="arc.serverGroupType">
+        <source xml:lang="en">Server group type</source>
+        <target state="translated">サーバー グループの種類</target>
+      </trans-unit>
+      <trans-unit id="arc.serverGroupNodes">
+        <source xml:lang="en">Server group nodes</source>
+        <target state="translated">サーバー グループ ノード</target>
+      </trans-unit>
+      <trans-unit id="arc.fullyQualifiedDomain">
+        <source xml:lang="en">Fully qualified domain</source>
+        <target state="translated">完全修飾ドメイン</target>
+      </trans-unit>
+      <trans-unit id="arc.postgresArcProductName">
+        <source xml:lang="en">Azure Database for PostgreSQL - Azure Arc</source>
+        <target state="translated">Azure Database for PostgreSQL - Azure Arc</target>
+      </trans-unit>
+      <trans-unit id="arc.coordinator">
+        <source xml:lang="en">Coordinator</source>
+        <target state="translated">コーディネーター</target>
+      </trans-unit>
+      <trans-unit id="arc.worker">
+        <source xml:lang="en">Worker</source>
+        <target state="translated">ワーカー</target>
+      </trans-unit>
+      <trans-unit id="arc.monitor">
+        <source xml:lang="en">Monitor</source>
+        <target state="translated">モニター</target>
+      </trans-unit>
+      <trans-unit id="arc.available">
+        <source xml:lang="en">Available</source>
+        <target state="translated">利用可能</target>
+      </trans-unit>
+      <trans-unit id="arc.issuesDetected">
+        <source xml:lang="en">Issues Detected</source>
+        <target state="translated">問題検出</target>
+      </trans-unit>
+      <trans-unit id="arc.newDatabase">
+        <source xml:lang="en">New Database</source>
+        <target state="translated">新しいデータベース</target>
+      </trans-unit>
+      <trans-unit id="arc.databaseName">
+        <source xml:lang="en">Database name</source>
+        <target state="translated">データベース名</target>
+      </trans-unit>
+      <trans-unit id="arc.enterNewPassword">
+        <source xml:lang="en">Enter a new password</source>
+        <target state="translated">新しいパスワードの入力</target>
+      </trans-unit>
+      <trans-unit id="arc.confirmNewPassword">
+        <source xml:lang="en">Confirm the new password</source>
+        <target state="translated">新しいパスワードを確認入力します</target>
+      </trans-unit>
+      <trans-unit id="arc.learnAboutPostgresClients">
+        <source xml:lang="en">Learn more about Azure PostgreSQL Hyperscale client interfaces</source>
+        <target state="translated">PostgreSQL Hyperscale クライアント インターフェースに関する詳細情報</target>
+      </trans-unit>
+      <trans-unit id="arc.coordinatorNodeParametersDescription">
+        <source xml:lang="en"> These server parameters of the Coordinator node can be set to custom (non-default) values. Search to find parameters.</source>
+        <target state="translated"> コーディネーター ノードのこれらのサーバー パラメーターは、カスタム (既定値以外) の値に設定することができます。検索してパラメーターを検出します。</target>
+      </trans-unit>
+      <trans-unit id="arc.workerNodesParametersDescription">
+        <source xml:lang="en"> These server parameters of the Worker nodes can be set to custom (non-default) values. Search to find parameters.</source>
+        <target state="translated"> ワーカー ノードのこれらのサーバー パラメーターは、カスタム (既定値以外) の値に設定することができます。検索してパラメーターを検出します。</target>
+      </trans-unit>
+      <trans-unit id="arc.learnAboutNodeParameters">
+        <source xml:lang="en">Learn more about database engine settings for Azure Arc-enabled PostgreSQL Hyperscale</source>
+        <target state="translated">Azure Arc を有効にした PostgreSQL Hyperscale のデータベース エンジンの設定に関する詳細情報</target>
+      </trans-unit>
+      <trans-unit id="arc.noNodeParametersFound">
+        <source xml:lang="en">No worker server parameters found...</source>
+        <target state="translated">ワーカー サーバー パラメーターが見つかりません...</target>
+      </trans-unit>
+      <trans-unit id="arc.searchToFilter">
+        <source xml:lang="en">Search to filter items...</source>
+        <target state="translated">項目の検索とフィルター...</target>
+      </trans-unit>
+      <trans-unit id="arc.scalingCompute">
+        <source xml:lang="en">scaling compute vCores and memory.</source>
+        <target state="translated">計算の仮想コアとメモリをスケーリングしています。</target>
+      </trans-unit>
+      <trans-unit id="arc.postgresComputeAndStorageDescriptionPartOne">
+        <source xml:lang="en">You can scale your Azure Arc-enabled</source>
+        <target state="translated">Azure Arc に対応した拡張ができます</target>
+      </trans-unit>
+      <trans-unit id="arc.miaaComputeAndStorageDescriptionPartOne">
+        <source xml:lang="en">You can scale your Azure SQL managed instance - Azure Arc by</source>
+        <target state="translated">Azure SQL Managed Instance - Azure Arc を拡張できます</target>
+      </trans-unit>
+      <trans-unit id="arc.postgres.computeAndStorageDescriptionPartTwo">
+        <source xml:lang="en">PostgreSQL Hyperscale server group by</source>
+        <target state="translated">PostgreSQL Hyperscale サーバー グループで</target>
+      </trans-unit>
+      <trans-unit id="arc.computeAndStorageDescriptionPartThree">
+        <source xml:lang="en">without downtime and by</source>
+        <target state="translated">ダウンタイムなしで</target>
+      </trans-unit>
+      <trans-unit id="arc.computeAndStorageDescriptionPartFour">
+        <source xml:lang="en">Before doing so, you need to ensure</source>
+        <target state="translated">それを行う前に、確認する必要があります</target>
+      </trans-unit>
+      <trans-unit id="arc.computeAndStorageDescriptionPartFive">
+        <source xml:lang="en">there are sufficient resources available</source>
+        <target state="translated">使用可能な十分なリソースがあります</target>
+      </trans-unit>
+      <trans-unit id="arc.resourceHealthDescription">
+        <source xml:lang="en">Resource health can tell you if your resource is running as expected.</source>
+        <target state="translated">リソース正常性では、リソースが予期したとおりに実行されているかどうか知ることができます。</target>
+      </trans-unit>
+      <trans-unit id="arc.computeAndStorageDescriptionPartSix">
+        <source xml:lang="en">in your Kubernetes cluster to honor this configuration.</source>
+        <target state="translated">Kubernetes クラスターでこの構成を有効にします。</target>
+      </trans-unit>
+      <trans-unit id="arc.node">
+        <source xml:lang="en">node</source>
+        <target state="translated">ノード</target>
+      </trans-unit>
+      <trans-unit id="arc.nodes">
+        <source xml:lang="en">nodes</source>
+        <target state="translated">ノード</target>
+      </trans-unit>
+      <trans-unit id="arc.workerNodes">
+        <source xml:lang="en">Worker Nodes</source>
+        <target state="translated">ワーカー ノード</target>
+      </trans-unit>
+      <trans-unit id="arc.coordinatorNode">
+        <source xml:lang="en">Coordinator Node</source>
+        <target state="translated">コーディネーター ノード</target>
+      </trans-unit>
+      <trans-unit id="arc.storagePerNode">
+        <source xml:lang="en">storage per node</source>
+        <target state="translated">ストレージ (ノードあたり)</target>
+      </trans-unit>
+      <trans-unit id="arc.workerNodeCount">
+        <source xml:lang="en">Worker node count</source>
+        <target state="translated">ワーカー ノードの数</target>
+      </trans-unit>
+      <trans-unit id="arc.configurationPerNode">
+        <source xml:lang="en">Configuration (per node)</source>
+        <target state="translated">構成 (ノードあたり)</target>
+      </trans-unit>
+      <trans-unit id="arc.configurationCoordinatorNode">
+        <source xml:lang="en">Configuration</source>
+        <target state="translated">構成</target>
+      </trans-unit>
+      <trans-unit id="arc.coresLimit">
+        <source xml:lang="en">CPU limit</source>
+        <target state="translated">CPU の制限</target>
+      </trans-unit>
+      <trans-unit id="arc.workerCoresLimit">
+        <source xml:lang="en">Worker Nodes CPU limit</source>
+        <target state="translated">ワーカー ノードの CPU 制限</target>
+      </trans-unit>
+      <trans-unit id="arc.coordinatorCoresLimit">
+        <source xml:lang="en">Coordinator Node CPU limit</source>
+        <target state="translated">コーディネーター ノード CPU の制限</target>
+      </trans-unit>
+      <trans-unit id="arc.coresRequest">
+        <source xml:lang="en">CPU request</source>
+        <target state="translated">CPU 要求</target>
+      </trans-unit>
+      <trans-unit id="arc.workerCoresRequest">
+        <source xml:lang="en">Worker Nodes CPU request</source>
+        <target state="translated">ワーカーノードの CPU 要求</target>
+      </trans-unit>
+      <trans-unit id="arc.coordinatorCoresRequest">
+        <source xml:lang="en">Coordinator Node CPU request</source>
+        <target state="translated">コーディネーター ノード CPU 要求</target>
+      </trans-unit>
+      <trans-unit id="arc.memoryLimit">
+        <source xml:lang="en">Memory limit (in GB)</source>
+        <target state="translated">メモリの制限 (GB)</target>
+      </trans-unit>
+      <trans-unit id="arc.workerMemoryLimit">
+        <source xml:lang="en">Worker Nodes Memory limit (in GB)</source>
+        <target state="translated">ワーカー ノードのメモリ制限 (GB)</target>
+      </trans-unit>
+      <trans-unit id="arc.coordinatorMemoryLimit">
+        <source xml:lang="en">Coordinator Node Memory limit (in GB)</source>
+        <target state="translated">コーディネーター ノードのメモリ制限 (GB)</target>
+      </trans-unit>
+      <trans-unit id="arc.memoryRequest">
+        <source xml:lang="en">Memory request (in GB)</source>
+        <target state="translated">メモリ要求 (GB)</target>
+      </trans-unit>
+      <trans-unit id="arc.workerMemoryRequest">
+        <source xml:lang="en">Worker Nodes Memory request (in GB)</source>
+        <target state="translated">ワーカー ノードのメモリ要求 (GB)</target>
+      </trans-unit>
+      <trans-unit id="arc.coordinatorMemoryRequest">
+        <source xml:lang="en">Coordinator Node Memory request (in GB)</source>
+        <target state="translated">コーディネーター ノードのメモリ要求 (GB)</target>
+      </trans-unit>
+      <trans-unit id="arc.arcResources">
+        <source xml:lang="en">Azure Arc Resources</source>
+        <target state="translated">Azure Arc リソース</target>
+      </trans-unit>
+      <trans-unit id="arc.enterANonEmptyPassword">
+        <source xml:lang="en">Enter a non empty password or press escape to exit.</source>
+        <target state="translated">空でないパスワードを入力するか、esc キーを押して終了してください。</target>
+      </trans-unit>
+      <trans-unit id="arc.thePasswordsDoNotMatch">
+        <source xml:lang="en">The passwords do not match. Confirm the password or press escape to exit.</source>
+        <target state="translated">パスワードが一致しません。パスワードを確認するか、Esc キーを押して終了します。</target>
+      </trans-unit>
+      <trans-unit id="arc.passwordReset">
+        <source xml:lang="en">Password reset successfully</source>
+        <target state="translated">パスワードのリセットに成功しました</target>
+      </trans-unit>
+      <trans-unit id="arc.condition">
+        <source xml:lang="en">Condition</source>
+        <target state="translated">条件</target>
+      </trans-unit>
+      <trans-unit id="arc.details">
+        <source xml:lang="en">Details</source>
+        <target state="translated">詳細</target>
+      </trans-unit>
+      <trans-unit id="arc.lastTransition">
+        <source xml:lang="en">Last transition</source>
+        <target state="translated">最終移行</target>
+      </trans-unit>
+      <trans-unit id="arc.noExternalEndpoint">
+        <source xml:lang="en">No External Endpoint has been configured so this information isn't available.</source>
+        <target state="translated">外部エンドポイントが構成されていないため、この情報は使用できません。</target>
+      </trans-unit>
+      <trans-unit id="arc.noWorkerPods">
+        <source xml:lang="en">No worker pods in this configuration.</source>
+        <target state="translated">この構成にはワーカー ポッドがありません。</target>
+      </trans-unit>
+      <trans-unit id="arc.podsReady">
+        <source xml:lang="en">pods ready</source>
+        <target state="translated">準備完了ポッド</target>
+      </trans-unit>
+      <trans-unit id="arc.podsPresent">
+        <source xml:lang="en">Pods Present</source>
+        <target state="translated">存在するポッド</target>
+      </trans-unit>
+      <trans-unit id="arc.podsUsedDescription">
+        <source xml:lang="en">Select a pod in the dropdown below for detailed health information.</source>
+        <target state="translated">正常性情報の詳細を参照するには、下のドロップダウンリストからポッドを選択してください。</target>
+      </trans-unit>
+      <trans-unit id="arc.connectToPostgresDescription">
+        <source xml:lang="en">A connection to the server is required to show and set database engine settings, which will require the PostgreSQL Extension to be installed.</source>
+        <target state="translated">データベース エンジンの設定を表示して設定するには、サーバーへの接続が必要であり、そのためにはPostgreSQL Extension のインストールが必要です。</target>
+      </trans-unit>
+      <trans-unit id="arc.postgresExtension">
+        <source xml:lang="en">microsoft.azuredatastudio-postgresql</source>
+        <target state="translated">microsoft.azuredatastudio-postgresql</target>
+      </trans-unit>
+      <trans-unit id="arc.podInitialized">
+        <source xml:lang="en">Pod is initialized.</source>
+        <target state="translated">ポッドが初期化されました。</target>
+      </trans-unit>
+      <trans-unit id="arc.podReady">
+        <source xml:lang="en">Pod is ready.</source>
+        <target state="translated">ポッドの準備ができました。</target>
+      </trans-unit>
+      <trans-unit id="arc.noPodIssuesDetected">
+        <source xml:lang="en">There aren’t any known issues affecting this PostgreSQL Hyperscale instance.</source>
+        <target state="translated">この PostgreSQL Hyperscale インスタンスに影響する既知の問題はありません。</target>
+      </trans-unit>
+      <trans-unit id="arc.podIssuesDetected">
+        <source xml:lang="en">The pods listed below are experiencing issues that may affect performance or availability.</source>
+        <target state="translated">以下のポッドでは、パフォーマンスや可用性に影響を与える可能性のある問題が発生しています。</target>
+      </trans-unit>
+      <trans-unit id="arc.containerReady">
+        <source xml:lang="en">Pod containers are ready.</source>
+        <target state="translated">ポッド コンテナーの準備が完了しました。</target>
+      </trans-unit>
+      <trans-unit id="arc.podScheduled">
+        <source xml:lang="en">Pod is schedulable.</source>
+        <target state="translated">ポッドがスケジュール可能です。</target>
+      </trans-unit>
+      <trans-unit id="arc.loadingClusterContextCompleted">
+        <source xml:lang="en">Loading cluster contexts completed</source>
+        <target state="translated">クラスター コンテキストの読み込みが完了しました</target>
+      </trans-unit>
+      <trans-unit id="arc.rangeSetting">
+        <source xml:lang="en">Value is expected to be in the range {0} - {1}</source>
+        <target state="translated">値は {0} から {1} の範囲内である必要があります</target>
+      </trans-unit>
+      <trans-unit id="arc.databaseCreated">
+        <source xml:lang="en">Database {0} created</source>
+        <target state="translated">{0} データベースが作成されました</target>
+      </trans-unit>
+      <trans-unit id="arc.deletingInstance">
+        <source xml:lang="en">Deleting instance '{0}'...</source>
+        <target state="translated">インスタンス '{0}' を削除しています...</target>
+      </trans-unit>
+      <trans-unit id="arc.installingExtension">
+        <source xml:lang="en">Installing extension '{0}'...</source>
+        <target state="translated">拡張機能 '{0}' をインストールしています...</target>
+      </trans-unit>
+      <trans-unit id="arc.extensionInstalled">
+        <source xml:lang="en">Extension '{0}' has been installed.</source>
+        <target state="translated">拡張機能 '{0}' がインストールされました。</target>
+      </trans-unit>
+      <trans-unit id="arc.updatingInstance">
+        <source xml:lang="en">Updating instance '{0}'...</source>
+        <target state="translated">インスタンス '{0}' を更新しています...</target>
+      </trans-unit>
+      <trans-unit id="arc.instanceDeleted">
+        <source xml:lang="en">Instance '{0}' deleted</source>
+        <target state="translated">インスタンス '{0}' が削除されました</target>
+      </trans-unit>
+      <trans-unit id="arc.instanceUpdated">
+        <source xml:lang="en">Instance '{0}' updated</source>
+        <target state="translated">インスタンス '{0}' が更新されました</target>
+      </trans-unit>
+      <trans-unit id="arc.extensionsDropped">
+        <source xml:lang="en">Extensions '{0}' dropped</source>
+        <target state="translated">拡張機能 '{0}' が削除されました</target>
+      </trans-unit>
+      <trans-unit id="arc.extensionsAdded">
+        <source xml:lang="en">Extensions '{0}' added</source>
+        <target state="translated">'{0}' 拡張機能が追加されました</target>
+      </trans-unit>
+      <trans-unit id="arc.copiedToClipboard">
+        <source xml:lang="en">{0} copied to clipboard</source>
+        <target state="translated">{0} はクリップボードにコピーされました</target>
+      </trans-unit>
+      <trans-unit id="arc.clickTheTroubleshootButton">
+        <source xml:lang="en">Click the troubleshoot button to open the Azure Arc {0} troubleshooting notebook.</source>
+        <target state="translated">[トラブルシューティング] ボタンをクリックして、Azure Arc {0} トラブルシューティング ノートブックを開きます。</target>
+      </trans-unit>
+      <trans-unit id="arc.dataStorage">
+        <source xml:lang="en">{0} data</source>
+        <target state="translated">{0} データ</target>
+      </trans-unit>
+      <trans-unit id="arc.logStorage">
+        <source xml:lang="en">{0} log</source>
+        <target state="translated">{0} ログ</target>
+      </trans-unit>
+      <trans-unit id="arc.backupsStorage">
+        <source xml:lang="en">{0} backups</source>
+        <target state="translated">{0} 個のバックアップ</target>
+      </trans-unit>
+      <trans-unit id="arc.numVCore">
+        <source xml:lang="en">{0} vCore</source>
+        <target state="translated">{0} 個の仮想コア</target>
+      </trans-unit>
+      <trans-unit id="arc.numVCores">
+        <source xml:lang="en">{0} vCores</source>
+        <target state="translated">{0} 個の仮想コア</target>
+      </trans-unit>
+      <trans-unit id="arc.updated">
+        <source xml:lang="en">Updated {0}</source>
+        <target state="translated">更新: {0}</target>
+      </trans-unit>
+      <trans-unit id="arc.copyConnectionStringToClipboard">
+        <source xml:lang="en">Copy {0} Connection String to clipboard</source>
+        <note>{0} is the name of the type of connection string (e.g. Java)</note>
+        <target state="translated">{0} 接続文字列をクリップボードにコピーする</target>
+      </trans-unit>
+      <trans-unit id="arc.copyValueToClipboard">
+        <source xml:lang="en">Copy {0} to clipboard</source>
+        <note>{0} is the name of the type of value being copied (e.g. Coordinator endpoint)</note>
+        <target state="translated">{0} をクリップボードにコピー</target>
+      </trans-unit>
+      <trans-unit id="arc.pgConnectionRequired">
+        <source xml:lang="en">A connection is required to show and set database engine settings.</source>
+        <target state="translated">データベース エンジンの設定を表示および設定するには接続する必要があります。</target>
+      </trans-unit>
+      <trans-unit id="arc.miaaConnectionRequired">
+        <source xml:lang="en">A connection is required to list the databases on this instance.</source>
+        <target state="translated">このインスタンスのデータベースを一覧表示するには接続する必要があります。</target>
+      </trans-unit>
+      <trans-unit id="arc.couldNotFindControllerRegistration">
+        <source xml:lang="en">Could not find controller registration.</source>
+        <target state="translated">コントローラーの登録が見つかりませんでした。</target>
+      </trans-unit>
+      <trans-unit id="arc.dropMultipleExtensions">
+        <source xml:lang="en">Currently dropping another extension, try again once that is completed.</source>
+        <target state="translated">現在、別の拡張機能を切断しています。完了してからもう一度お試しください。</target>
+      </trans-unit>
+      <trans-unit id="arc.updateExtensionsFailed">
+        <source xml:lang="en">Editing extensions failed. {0}</source>
+        <target state="translated">拡張機能の編集に失敗しました。{0}</target>
+      </trans-unit>
+      <trans-unit id="arc.refreshFailed">
+        <source xml:lang="en">Refresh failed. {0}</source>
+        <target state="translated">更新が失敗しました。{0}</target>
+      </trans-unit>
+      <trans-unit id="arc.resetFailed">
+        <source xml:lang="en">Reset failed. {0}</source>
+        <target state="translated">リセットに失敗しました。{0}</target>
+      </trans-unit>
+      <trans-unit id="arc.openDashboardFailed">
+        <source xml:lang="en">Error opening dashboard. {0}</source>
+        <target state="translated">ダッシュボードを開く際のエラー。 {0}</target>
+      </trans-unit>
+      <trans-unit id="arc.instanceDeletionFailed">
+        <source xml:lang="en">Failed to delete instance {0}. {1}</source>
+        <target state="translated">インスタンス {0} を削除できません。{1}</target>
+      </trans-unit>
+      <trans-unit id="arc.instanceUpdateFailed">
+        <source xml:lang="en">Failed to update instance {0}. {1}</source>
+        <target state="translated">インスタンス {0} を更新できませんでした。{1}</target>
+      </trans-unit>
+      <trans-unit id="arc.pageDiscardFailed">
+        <source xml:lang="en">Failed to discard user input. {0}</source>
+        <target state="translated">ユーザー入力を破棄できませんでした。{0}</target>
+      </trans-unit>
+      <trans-unit id="arc.databaseCreationFailed">
+        <source xml:lang="en">Failed to create database {0}. {1}</source>
+        <target state="translated">データベース {0} を作成できませんでした。{1}</target>
+      </trans-unit>
+      <trans-unit id="arc.connectToControllerFailed">
+        <source xml:lang="en">Could not connect to controller {0}. {1}</source>
+        <target state="translated">コントローラー {0} に接続できませんでした。{1}</target>
+      </trans-unit>
+      <trans-unit id="arc.connectToMSSqlFailed">
+        <source xml:lang="en">Could not connect to SQL managed instance - Azure Arc Instance {0}. {1}</source>
+        <target state="translated">SQL マネージド インスタンス - Azure Arc インスタンス {0} に接続できませんでした。{1}</target>
+      </trans-unit>
+      <trans-unit id="arc.connectToPGSqlFailed">
+        <source xml:lang="en">Could not connect to PostgreSQL Hyperscale - Azure Arc Instance {0}. {1}</source>
+        <target state="translated">PostgreSQL Hyperscale - Azure Arc インスタンス {0} に接続できませんでした。{1}</target>
+      </trans-unit>
+      <trans-unit id="arc.missingExtension">
+        <source xml:lang="en">The {0} extension is required to view engine settings. Do you wish to install it now?</source>
+        <target state="translated">エンジンの設定を表示するには、{0} 拡張機能が必要です。今すぐインストールしますか?</target>
+      </trans-unit>
+      <trans-unit id="arc.extensionInstallationFailed">
+        <source xml:lang="en">Failed to install extension {0}.</source>
+        <target state="translated">拡張機能 {0} のインストールが失敗しました。</target>
+      </trans-unit>
+      <trans-unit id="arc.fetchConfigFailed">
+        <source xml:lang="en">An unexpected error occurred retrieving the config for '{0}'. {1}</source>
+        <target state="translated">'{0}' の構成を取得中に予期しないエラーが発生しました。{1}</target>
+      </trans-unit>
+      <trans-unit id="arc.fetchEndpointsFailed">
+        <source xml:lang="en">An unexpected error occurred retrieving the endpoints for '{0}'. {1}</source>
+        <target state="translated">'{0}' のエンドポイントを取得中に予期しないエラーが発生しました。{1}</target>
+      </trans-unit>
+      <trans-unit id="arc.fetchRegistrationsFailed">
+        <source xml:lang="en">An unexpected error occurred retrieving the registrations for '{0}'. {1}</source>
+        <target state="translated">'{0}' の登録を取得中に予期しないエラーが発生しました。{1}</target>
+      </trans-unit>
+      <trans-unit id="arc.fetchDatabasesFailed">
+        <source xml:lang="en">An unexpected error occurred retrieving the databases for '{0}'. {1}</source>
+        <target state="translated">'{0}' のデータベースを取得中に予期しないエラーが発生しました。{1}</target>
+      </trans-unit>
+      <trans-unit id="arc.fetchEngineSettingsFailed">
+        <source xml:lang="en">An unexpected error occurred retrieving the engine settings for '{0}'. {1}</source>
+        <target state="translated">'{0}' のエンジン設定を取得中に予期しないエラーが発生しました。{1}</target>
+      </trans-unit>
+      <trans-unit id="arc.numberOfIssuesDetected">
+        <source xml:lang="en">• {0} ({1} issues)</source>
+        <target state="translated">• {0} ({1} 件の問題)</target>
+      </trans-unit>
+      <trans-unit id="arc.instanceDeletionWarning">
+        <source xml:lang="en">Warning! Deleting an instance is permanent and cannot be undone. To delete the instance '{0}' type the name '{0}' below to proceed.</source>
+        <target state="translated">警告!インスタンスの削除は永久的であり、元に戻すことはできません。インスタンス '{0}' を削除するには、下に名前 '{0}' を入力して続行します。</target>
+      </trans-unit>
+      <trans-unit id="arc.invalidInstanceDeletionName">
+        <source xml:lang="en">The value '{0}' does not match the instance name. Try again or press escape to exit</source>
+        <target state="translated">値 '{0}' がインスタンス名と一致しません。もう一度やり直すか、esc キーを押して終了してください</target>
+      </trans-unit>
+      <trans-unit id="arc.couldNotFindAzureResource">
+        <source xml:lang="en">Could not find Azure resource for {0}</source>
+        <target state="translated">{0} に Azure リソースが見つかりませんでした</target>
+      </trans-unit>
+      <trans-unit id="arc.passwordResetFailed">
+        <source xml:lang="en">Failed to reset password. {0}</source>
+        <target state="translated">パスワードをリセットできませんでした。{0}</target>
+      </trans-unit>
+      <trans-unit id="arc.errorConnectingToController">
+        <source xml:lang="en">Error connecting to controller. {0}</source>
+        <target state="translated">コントローラーへの接続中にエラーが発生しました。{0}</target>
+      </trans-unit>
+      <trans-unit id="arc.passwordAcquisitionFailed">
+        <source xml:lang="en">Failed to acquire password. {0}</source>
+        <target state="translated">パスワードを取得できませんでした。{0}</target>
+      </trans-unit>
+      <trans-unit id="arc.loginFailed">
+        <source xml:lang="en">Error logging into controller - wrong username or password</source>
+        <target state="translated">コントローラーへのログイン エラー - ユーザー名またはパスワードが間違っています</target>
+      </trans-unit>
+      <trans-unit id="arc.errorVerifyingPassword">
+        <source xml:lang="en">Error encountered while verifying password. {0}</source>
+        <target state="translated">パスワードの確認中にエラーが発生しました。{0}</target>
+      </trans-unit>
+      <trans-unit id="noControllersConnected">
+        <source xml:lang="en">No Azure Arc controllers are currently connected. Please run the command: 'Connect to Existing Azure Arc Controller' and then try again</source>
+        <target state="translated">現在、Azure Arc コントローラーが接続されていません。コマンド '既存の Azure Arc コントローラーに接続' を実行してから、もう一度お試しください。</target>
+      </trans-unit>
+      <trans-unit id="getVariableValue.unknownVariableName">
+        <source xml:lang="en">Attempt to get variable value for unknown variable:{0}</source>
+        <target state="translated">不明な変数 {0} の変数値の取得を試みます</target>
+      </trans-unit>
+      <trans-unit id="getIsPassword.unknownVariableName">
+        <source xml:lang="en">Attempt to get isPassword for unknown variable:{0}</source>
+        <target state="translated">不明な変数 {0} の isPassword の取得を試みます</target>
+      </trans-unit>
+      <trans-unit id="noControllerInfoFound">
+        <source xml:lang="en">Controller Info could not be found with name: {0}</source>
+        <target state="translated">名前を含むコントローラー情報が見つかりませんでした: {0}</target>
+      </trans-unit>
+      <trans-unit id="noPasswordFound">
+        <source xml:lang="en">Password could not be retrieved for controller: {0} and user did not provide a password. Please retry later.</source>
+        <target state="translated">コントローラーのパスワードを取得できませんでした: {0}　とユーザーはパスワードを指定しませんでした。後でもう一度お試しください。</target>
+      </trans-unit>
+      <trans-unit id="clusterContextNotFound">
+        <source xml:lang="en">Cluster Context with name: {0} not found in the Kube config file</source>
+        <target state="translated">名前を含むクラスター コンテキスト: Kube 構成ファイルで {0} が見つかりませんでした</target>
+      </trans-unit>
+      <trans-unit id="noCurrentClusterContext">
+        <source xml:lang="en">No current cluster context was found in the kube config file</source>
+        <target state="translated">Kube 構成ファイルで現在のクラスター コンテキストが見つかりませんでした</target>
+      </trans-unit>
+      <trans-unit id="filePicker.browse">
+        <source xml:lang="en">Browse</source>
+        <target state="translated">参照</target>
+      </trans-unit>
+      <trans-unit id="button.label">
+        <source xml:lang="en">Select</source>
+        <target state="translated">選択</target>
+      </trans-unit>
+      <trans-unit id="noContextFound">
+        <source xml:lang="en">No 'contexts' found in the config file: {0}</source>
+        <target state="translated">構成ファイルで 'コンテキスト' が見つかりませんでした: {0}</target>
+      </trans-unit>
+      <trans-unit id="noCurrentContextFound">
+        <source xml:lang="en">No context is marked as 'current-context' in the config file: {0}</source>
+        <target state="translated">構成ファイルでは、コンテキストが 'current-context' としてマークされていません: {0}</target>
+      </trans-unit>
+      <trans-unit id="noNameInContext">
+        <source xml:lang="en">No name field was found in a cluster context in the config file: {0}</source>
+        <target state="translated">構成ファイルのクラスター コンテキストに名前フィールドが見つかりませんでした: {0}</target>
+      </trans-unit>
+      <trans-unit id="arc.userCancelledError">
+        <source xml:lang="en">User cancelled the dialog</source>
+        <target state="translated">ユーザーがダイアログを取り消しました</target>
+      </trans-unit>
+      <trans-unit id="clusterContextConfigNoLongerValid">
+        <source xml:lang="en">The cluster context information specified by config file: {0} and cluster context: {1} is no longer valid. Error is:
+	{2}
+ Do you want to update this information?</source>
+        <target state="translated">構成ファイルで指定された {0} とクラスター・コンテキストのクラスター コンテキスト情報 {1} は有効ではありません。
+	{2}
+ のエラーがあります。この情報を更新しますか？</target>
+      </trans-unit>
+      <trans-unit id="arc.invalidConfigPath">
+        <source xml:lang="en">Invalid config path</source>
+        <target state="translated">無効な構成パス</target>
+      </trans-unit>
+      <trans-unit id="arc.loadingClusterContextsError">
+        <source xml:lang="en">Error loading cluster contexts. {0}</source>
+        <target state="translated">クラスター コンテキストの読み込み時のエラー。{0}</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

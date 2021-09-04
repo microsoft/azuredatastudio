@@ -60,7 +60,7 @@
       </trans-unit>
       <trans-unit id="notebook.allowRoot.description">
         <source xml:lang="en">Allow Jupyter server to run as root user</source>
-        <target state="new">Allow Jupyter server to run as root user</target>
+        <target state="translated">允许 Jupyter 服务器以根用户身份运行</target>
       </trans-unit>
       <trans-unit id="notebook.command.new">
         <source xml:lang="en">New Notebook</source>

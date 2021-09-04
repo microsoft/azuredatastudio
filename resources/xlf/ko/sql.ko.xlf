@@ -4589,14 +4589,6 @@ Error: {1}</source>
         <source xml:lang="en">Are you sure you want to clear the data?</source>
         <target state="translated">데이터를 지우시겠습니까?</target>
       </trans-unit>
-      <trans-unit id="profiler.yes">
-        <source xml:lang="en">Yes</source>
-        <target state="translated">예</target>
-      </trans-unit>
-      <trans-unit id="profiler.no">
-        <source xml:lang="en">No</source>
-        <target state="translated">아니요</target>
-      </trans-unit>
       <trans-unit id="profilerAction.autoscrollOn">
         <source xml:lang="en">Auto Scroll: On</source>
         <target state="translated">자동 스크롤: 켜기</target>
@@ -5358,6 +5350,14 @@ Error: {1}</source>
       <trans-unit id="topOperationsTitle">
         <source xml:lang="en">Top Operations</source>
         <target state="translated">상위 작업</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/sql/workbench/contrib/resourceDeployment/browser/resourceDeployment.contribution" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="deployment.title">
+        <source xml:lang="en">New Deployment...</source>
+        <target state="translated">새 배포...</target>
       </trans-unit>
     </body>
   </file>

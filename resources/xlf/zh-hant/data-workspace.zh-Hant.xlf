@@ -1,0 +1,269 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file original="extensions/data-workspace/package" source-language="en" datatype="plaintext" target-language="zh-Hant">
+    <body>
+      <trans-unit id="extension-displayName">
+        <source xml:lang="en">Data workspace</source>
+        <target state="translated">資料工作區</target>
+      </trans-unit>
+      <trans-unit id="extension-description">
+        <source xml:lang="en">Data workspace</source>
+        <target state="translated">資料工作區</target>
+      </trans-unit>
+      <trans-unit id="data-workspace-view-container-name">
+        <source xml:lang="en">Projects</source>
+        <target state="translated">專案</target>
+      </trans-unit>
+      <trans-unit id="main-view-name">
+        <source xml:lang="en">Projects</source>
+        <target state="translated">專案</target>
+      </trans-unit>
+      <trans-unit id="new-command">
+        <source xml:lang="en">New</source>
+        <target state="translated">新增</target>
+      </trans-unit>
+      <trans-unit id="refresh-workspace-command">
+        <source xml:lang="en">Refresh</source>
+        <target state="translated">重新整理</target>
+      </trans-unit>
+      <trans-unit id="close-workspace-command">
+        <source xml:lang="en">Close Workspace</source>
+        <target state="translated">關閉工作區</target>
+      </trans-unit>
+      <trans-unit id="remove-project-command">
+        <source xml:lang="en">Remove Project</source>
+        <target state="translated">移除專案</target>
+      </trans-unit>
+      <trans-unit id="projects-view-no-workspace-content">
+        <source xml:lang="en">Create new or open existing to get started.
+[Create new](command:projects.new)
+[Open existing](command:projects.openExisting)
+To learn more about projects [read our docs](https://aka.ms/azuredatastudio-projects).</source>
+        <target state="translated">建立新的或開啟現有的以開始使用。
+[建立新的] (command:projects.new)
+[開啟現有的](command:projects.openExisting)
+若要深入了解專案，請[閱讀我們的文件](https://aka.ms/azuredatastudio-projects)。</target>
+      </trans-unit>
+      <trans-unit id="projects-view-no-project-content">
+        <source xml:lang="en">No projects open in current workspace.
+[Create new](command:projects.new)
+[Open existing](command:projects.openExisting)
+To learn more about projects [read our docs](https://aka.ms/azuredatastudio-projects).
+</source>
+        <target state="translated">目前工作區未開啟任何專案。
+[建立新的] (command:projects.new)
+[開啟現有的](command:projects.openExisting)
+若要深入了解專案，請[閱讀我們的文件](https://aka.ms/azuredatastudio-projects)。
+</target>
+      </trans-unit>
+      <trans-unit id="open-existing-command">
+        <source xml:lang="en">Open existing</source>
+        <target state="translated">開啟現有項目</target>
+      </trans-unit>
+      <trans-unit id="projects.defaultProjectSaveLocation">
+        <source xml:lang="en">Full path to folder where new projects are saved by default.</source>
+        <target state="translated">預設儲存新專案之資料夾的完整路徑。</target>
+      </trans-unit>
+      <trans-unit id="projects.showNotAddedProjectsInWorkspacePrompt">
+        <source xml:lang="en">Always show information message when the current workspace folders contain projects that have not been added to the workspace's projects.</source>
+        <target state="translated">當目前的工作區資料夾包含尚未新增到工作區專案的專案時，永遠顯示資訊訊息。</target>
+      </trans-unit>
+      <trans-unit id="manage-project-command">
+        <source xml:lang="en">Manage</source>
+        <target state="translated">管理</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/data-workspace/dist/common/constants" source-language="en" datatype="plaintext" target-language="zh-Hant">
+    <body>
+      <trans-unit id="activateExtensionFailed">
+        <source xml:lang="en">Failed to load the project provider extension '{0}'. Error message: {1}</source>
+        <target state="translated">無法載入專案提供者延伸模組 '{0}'。錯誤訊息: {1}</target>
+      </trans-unit>
+      <trans-unit id="UnknownProjectsError">
+        <source xml:lang="en">No provider was found for the following projects: {0}</source>
+        <target state="translated">找不到下列專案的提供者: {0}</target>
+      </trans-unit>
+      <trans-unit id="SelectProjectFileActionName">
+        <source xml:lang="en">Select</source>
+        <target state="translated">選取</target>
+      </trans-unit>
+      <trans-unit id="AllProjectTypes">
+        <source xml:lang="en">All Project Types</source>
+        <target state="translated">所有專案類型</target>
+      </trans-unit>
+      <trans-unit id="UnknownProjectTypeError">
+        <source xml:lang="en">No provider was found for project type with id: '{0}'</source>
+        <target state="translated">找不到識別碼為 '{0}' 之專案類型的提供者</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.restartConfirmation">
+        <source xml:lang="en">Azure Data Studio needs to be restarted for the project to be created and added to the workspace, do this now?</source>
+        <target state="translated">必須將 Azure Data Studio 重新開機，才能建立專案並將其新增至工作區，立即執行此動作嗎?</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.projectsFailedToLoad">
+        <source xml:lang="en">Some projects failed to load. To view more details, [open the developer console](command:workbench.action.toggleDevTools)</source>
+        <target state="translated">無法載入部分專案。若要檢視更多詳細資料，請[開啟開發人員主控台](command:workbench.action.toggleDevTools)</target>
+      </trans-unit>
+      <trans-unit id="fileDoesNotExist">
+        <source xml:lang="en">File '{0}' doesn't exist</source>
+        <target state="translated">檔案 '{0}' 不存在</target>
+      </trans-unit>
+      <trans-unit id="projectNameNull">
+        <source xml:lang="en">Project name is null</source>
+        <target state="translated">專案名稱為 Null</target>
+      </trans-unit>
+      <trans-unit id="noPreviousData">
+        <source xml:lang="en">Prior {0} for the current project will appear here, please run to see the results.</source>
+        <target state="translated">目前專案的先前 {0} 會顯示在這裡，請執行以查看結果。</target>
+      </trans-unit>
+      <trans-unit id="gitCloneMessage">
+        <source xml:lang="en">Cloning git repository '{0}'...</source>
+        <target state="translated">正在複製 Git 儲存庫 '{0}'... </target>
+      </trans-unit>
+      <trans-unit id="gitCloneError">
+        <source xml:lang="en">Error during git clone. View git output for more details</source>
+        <target state="translated">Git 複製期間發生錯誤。如需更多詳細資料，請檢視 git 輸出</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.ok">
+        <source xml:lang="en">OK</source>
+        <target state="translated">確定</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.browse">
+        <source xml:lang="en">Browse</source>
+        <target state="translated">瀏覽</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.browseEllipsis">
+        <source xml:lang="en">Browse...</source>
+        <target state="translated">瀏覽...</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.open">
+        <source xml:lang="en">Open</source>
+        <target state="translated">開啟</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.create">
+        <source xml:lang="en">Create</source>
+        <target state="translated">建立</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.select">
+        <source xml:lang="en">Select</source>
+        <target state="translated">選取</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.NewProjectDialogTitle">
+        <source xml:lang="en">Create new project</source>
+        <target state="translated">建立新專案</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.Type">
+        <source xml:lang="en">Type</source>
+        <target state="translated">類型</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.projectNameTitle">
+        <source xml:lang="en">Name</source>
+        <target state="translated">名稱</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.projectNamePlaceholder">
+        <source xml:lang="en">Enter project name</source>
+        <target state="translated">輸入專案名稱</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.enterProjectName">
+        <source xml:lang="en">Enter Project Name</source>
+        <target state="translated">輸入專案名稱</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.projectLocationTitle">
+        <source xml:lang="en">Location</source>
+        <target state="translated">位置</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.projectLocationPlaceholder">
+        <source xml:lang="en">Select location to create project</source>
+        <target state="translated">選取要建立專案的位置</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.projectParentDirectoryNotExistError">
+        <source xml:lang="en">The selected project location '{0}' does not exist or is not a directory.</source>
+        <target state="translated">選取的專案位置 '{0}' 不存在或不是目錄。</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.projectDirectoryAlreadyExistError">
+        <source xml:lang="en">There is already a directory named '{0}' in the selected location: '{1}'.</source>
+        <target state="translated">選取的位置中已有名為 '{0}' 的目錄: '{1}'。</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.projectDirectoryAlreadyExistErrorShort">
+        <source xml:lang="en">Directory '{0}' already exists in the selected location, please choose another</source>
+        <target state="translated">選取的位置中已有目錄 '{0}'，請選擇另一個</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.selectProjectType">
+        <source xml:lang="en">Select Project Type</source>
+        <target state="translated">選取專案類型</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.selectProjectLocation">
+        <source xml:lang="en">Select Project Location</source>
+        <target state="translated">選取專案位置</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.nameCannotBeEmpty">
+        <source xml:lang="en">Name cannot be empty</source>
+        <target state="translated">名稱不可為空白</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.targetPlatform">
+        <source xml:lang="en">Target Platform</source>
+        <target state="translated">目標平台</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.openExistingDialogTitle">
+        <source xml:lang="en">Open Existing Project</source>
+        <target state="translated">開啟現有專案</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.fileNotExistError">
+        <source xml:lang="en">The selected {0} file '{1}' does not exist or is not a file.</source>
+        <target state="translated">選取的 {0} 檔案 '{1}' 不存在或不是檔案。</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.cloneParentDirectoryNotExistError">
+        <source xml:lang="en">The selected clone path '{0}' does not exist or is not a directory.</source>
+        <target state="translated">選取的複製路徑 '{0}' 不存在或不是目錄。</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.project">
+        <source xml:lang="en">Project</source>
+        <target state="translated">專案</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.locationSelectorTitle">
+        <source xml:lang="en">Location</source>
+        <target state="translated">位置</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.projectFilePlaceholder">
+        <source xml:lang="en">Select project file</source>
+        <target state="translated">選取專案檔</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.workspacePlaceholder">
+        <source xml:lang="en">Select workspace ({0}) file</source>
+        <target state="translated">選取工作區 ({0}) 檔案</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.projectAlreadyOpened">
+        <source xml:lang="en">Project '{0}' is already opened.</source>
+        <target state="translated">專案 '{0}' 已經開啟。</target>
+      </trans-unit>
+      <trans-unit id="dataworksapce.local">
+        <source xml:lang="en">Local</source>
+        <target state="translated">本機</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.remoteGitRepo">
+        <source xml:lang="en">Remote git repository</source>
+        <target state="translated">遠端 Git 存放庫</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.gitRepoUrlTitle">
+        <source xml:lang="en">Git repository URL</source>
+        <target state="translated">Git 存放庫 URL</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.gitRepoUrlPlaceholder">
+        <source xml:lang="en">Enter remote git repository URL</source>
+        <target state="translated">輸入遠端 git 存放庫 URL</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.localClonePathTitle">
+        <source xml:lang="en">Local clone path</source>
+        <target state="translated">本機複製路徑</target>
+      </trans-unit>
+      <trans-unit id="dataworkspace.localClonePathPlaceholder">
+        <source xml:lang="en">Select location to clone repository locally</source>
+        <target state="translated">選取要在本機複製存放庫的位置</target>
+      </trans-unit>
+      <trans-unit id="dataworksapce.refresh">
+        <source xml:lang="en">Refresh</source>
+        <target state="translated">重新整理</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

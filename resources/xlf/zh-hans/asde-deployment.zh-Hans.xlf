@@ -1,0 +1,215 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file original="extensions/asde-deployment/package" source-language="en" datatype="plaintext" target-language="zh-Hans">
+    <body>
+      <trans-unit id="extension-displayName">
+        <source xml:lang="en">Azure SQL Edge Deployment Extension</source>
+        <target state="translated">Azure SQL Edge 部署扩展</target>
+      </trans-unit>
+      <trans-unit id="extension-description">
+        <source xml:lang="en">Provides a notebook-based experience to deploy Azure SQL Edge</source>
+        <target state="translated">提供部署 Microsoft SQL Server 的基于笔记本的体验</target>
+      </trans-unit>
+      <trans-unit id="docker-container-name-field">
+        <source xml:lang="en">Container name</source>
+        <target state="translated">容器名称</target>
+      </trans-unit>
+      <trans-unit id="docker-sql-password-field">
+        <source xml:lang="en">Azure SQL Edge instance (sa) password</source>
+        <target state="translated">Azure SQL Edge 实例(sa)密码</target>
+      </trans-unit>
+      <trans-unit id="docker-confirm-sql-password-field">
+        <source xml:lang="en">Confirm password</source>
+        <target state="translated">确认密码</target>
+      </trans-unit>
+      <trans-unit id="docker-sql-port-field">
+        <source xml:lang="en">Azure SQL Edge Port</source>
+        <target state="translated">Azure SQL Edge 端口</target>
+      </trans-unit>
+      <trans-unit id="microsoft-privacy-statement">
+        <source xml:lang="en">Microsoft Privacy Statement</source>
+        <target state="translated">Microsoft 隐私声明</target>
+      </trans-unit>
+      <trans-unit id="resource-type-sql-edge-display-name">
+        <source xml:lang="en">Azure SQL Edge</source>
+        <target state="translated">Azure SQL Edge</target>
+      </trans-unit>
+      <trans-unit id="resource-type-sql-edge-description">
+        <source xml:lang="en">Azure SQL Edge (Preview) is an optimized relational database engine geared for IoT and IoT Edge deployments.</source>
+        <target state="translated">Azure SQL Edge (预览)是一个适合 IoT 和 IoT Edge 部署的优化关系数据库引擎。</target>
+      </trans-unit>
+      <trans-unit id="sql-edge-type-display-name">
+        <source xml:lang="en">Deployment target</source>
+        <target state="translated">部署目标</target>
+      </trans-unit>
+      <trans-unit id="sql-edge-local-display-name">
+        <source xml:lang="en">Local container instance</source>
+        <target state="translated">本地容器实例</target>
+      </trans-unit>
+      <trans-unit id="sql-edge-remote-display-name">
+        <source xml:lang="en">Remote container instance</source>
+        <target state="translated">远程容器实例</target>
+      </trans-unit>
+      <trans-unit id="sql-edge-local-title">
+        <source xml:lang="en">Deploy Azure SQL Edge container instance on local machine</source>
+        <target state="translated">在本地计算机上部署 Azure SQL Edge 容器实例</target>
+      </trans-unit>
+      <trans-unit id="docker-settings-section-title">
+        <source xml:lang="en">Docker settings</source>
+        <target state="translated">Docker 设置</target>
+      </trans-unit>
+      <trans-unit id="docker-registry-field">
+        <source xml:lang="en">Registry</source>
+        <target state="translated">注册表</target>
+      </trans-unit>
+      <trans-unit id="docker-repository-field">
+        <source xml:lang="en">Repository</source>
+        <target state="translated">存储库</target>
+      </trans-unit>
+      <trans-unit id="docker-imagetag-field">
+        <source xml:lang="en">Image tag</source>
+        <target state="translated">图像标记</target>
+      </trans-unit>
+      <trans-unit id="docker-username-field">
+        <source xml:lang="en">Username</source>
+        <target state="translated">用户名</target>
+      </trans-unit>
+      <trans-unit id="docker-password-field">
+        <source xml:lang="en">Password</source>
+        <target state="translated">密码</target>
+      </trans-unit>
+      <trans-unit id="edge-agreement">
+        <source xml:lang="en">I accept {0} and {1}.</source>
+        <target state="translated">我接受 {0} 和 {1}。</target>
+      </trans-unit>
+      <trans-unit id="edge-eula">
+        <source xml:lang="en">Microsoft Azure SQL Edge License Agreement</source>
+        <target state="translated">Microsoft Azure SQL Edge 许可协议</target>
+      </trans-unit>
+      <trans-unit id="sql-edge-remote-title">
+        <source xml:lang="en">Deploy Azure SQL Edge container instance on remote machine</source>
+        <target state="translated">在远程计算机上部署 Azure SQL Edge 容器实例</target>
+      </trans-unit>
+      <trans-unit id="remote-info-section-title">
+        <source xml:lang="en">Target machine information</source>
+        <target state="translated">目标计算机信息</target>
+      </trans-unit>
+      <trans-unit id="edge-remote-target-field">
+        <source xml:lang="en">Name or IP address</source>
+        <target state="translated">名称或 IP 地址</target>
+      </trans-unit>
+      <trans-unit id="edge-remote-username-field">
+        <source xml:lang="en">Username</source>
+        <target state="translated">用户名</target>
+      </trans-unit>
+      <trans-unit id="edge-remote-password-field">
+        <source xml:lang="en">Password</source>
+        <target state="translated">密码</target>
+      </trans-unit>
+      <trans-unit id="sql-edge-azure-display-name">
+        <source xml:lang="en">New Azure IoT Hub and VM (password authentication)</source>
+        <target state="translated">新建 Azure IoT 中心和虚拟机(密码身份验证)</target>
+      </trans-unit>
+      <trans-unit id="sql-edge-azure-sshkey-display-name">
+        <source xml:lang="en">New Azure IoT Hub and VM (ssh public key authentication)</source>
+        <target state="translated">新建 Azure IoT 中心和虚拟机(ssh 公钥身份验证)</target>
+      </trans-unit>
+      <trans-unit id="sql-edge-azure-title">
+        <source xml:lang="en">Deploy Azure SQL Edge to a new Azure VM via IoT hub</source>
+        <target state="translated">通过 IoT 中心将 Azure SQL Edge 部署到新的 Azure VM</target>
+      </trans-unit>
+      <trans-unit id="azure_subscription_id">
+        <source xml:lang="en">Subscription id</source>
+        <target state="translated">订阅 ID</target>
+      </trans-unit>
+      <trans-unit id="azure_resource_group">
+        <source xml:lang="en">Resource group</source>
+        <target state="translated">资源组</target>
+      </trans-unit>
+      <trans-unit id="azure_location">
+        <source xml:lang="en">Location</source>
+        <target state="translated">位置</target>
+      </trans-unit>
+      <trans-unit id="vm_admin">
+        <source xml:lang="en">VM admin username</source>
+        <target state="translated">虚拟机管理员用户名</target>
+      </trans-unit>
+      <trans-unit id="vm_password">
+        <source xml:lang="en">VM admin password</source>
+        <target state="translated">虚拟机管理员密码</target>
+      </trans-unit>
+      <trans-unit id="vm_password_confirm">
+        <source xml:lang="en">Confirm VM admin password</source>
+        <target state="translated">确认虚拟机管理员密码</target>
+      </trans-unit>
+      <trans-unit id="vm_password_validation_error_message">
+        <source xml:lang="en">VM password must be 12 to 123 characters in length and consists of upper case characters, lower case characters, numbers and special characters.</source>
+        <target state="translated">VM 密码的长度必须为 12 到 123 个字符，且包含大写字符、小写字符、数字、特殊字符。</target>
+      </trans-unit>
+      <trans-unit id="package_path">
+        <source xml:lang="en">Package file</source>
+        <target state="translated">包文件</target>
+      </trans-unit>
+      <trans-unit id="package_path_description">
+        <source xml:lang="en">Path of the SQL Server package file(dacpac, bacpac) or compressed package file.</source>
+        <target state="translated">SQL Server 包文件的路径(dacpac、bacpac)或压缩包文件。</target>
+      </trans-unit>
+      <trans-unit id="azure-info-section-title">
+        <source xml:lang="en">Azure information</source>
+        <target state="translated">Azure 信息</target>
+      </trans-unit>
+      <trans-unit id="sqlserver-info-section-title">
+        <source xml:lang="en">Azure SQL Edge information</source>
+        <target state="translated">Azure SQL Edge 信息</target>
+      </trans-unit>
+      <trans-unit id="package-files">
+        <source xml:lang="en">SQL Server Package files</source>
+        <target state="translated">SQL Server 包文件</target>
+      </trans-unit>
+      <trans-unit id="sql-edge-azure-single-device-display-name">
+        <source xml:lang="en">Existing device of an Azure IoT Hub</source>
+        <target state="translated">Azure IoT 中心的现有设备</target>
+      </trans-unit>
+      <trans-unit id="sql-edge-azure-single-device-title">
+        <source xml:lang="en">Deploy Azure SQL Edge to an existing device</source>
+        <target state="translated">将 Azure SQL Edge 部署到现有设备</target>
+      </trans-unit>
+      <trans-unit id="iot-hub-name">
+        <source xml:lang="en">IoT Hub name</source>
+        <target state="translated">IoT 中心名称</target>
+      </trans-unit>
+      <trans-unit id="device-id">
+        <source xml:lang="en">Device ID</source>
+        <target state="translated">设备 ID</target>
+      </trans-unit>
+      <trans-unit id="device-ip-address">
+        <source xml:lang="en">Device IP Address</source>
+        <target state="translated">设备 IP 地址</target>
+      </trans-unit>
+      <trans-unit id="device-ip-address-description">
+        <source xml:lang="en">Will be used to connect to the Azure SQL Edge instance after deployment</source>
+        <target state="translated">将用于在部署后连接到 Azure SQL Edge 实例</target>
+      </trans-unit>
+      <trans-unit id="sql-edge-azure-multi-device-display-name">
+        <source xml:lang="en">Multiple devices of an Azure IoT Hub</source>
+        <target state="translated">Azure IoT 中心的多个设备</target>
+      </trans-unit>
+      <trans-unit id="sql-edge-azure-multi-device-title">
+        <source xml:lang="en">Deploy Azure SQL Edge to multiple Azure IoT devices</source>
+        <target state="translated">将 Azure SQL Edge 部署到多个 Azure IoT 设备</target>
+      </trans-unit>
+      <trans-unit id="device-target-condition">
+        <source xml:lang="en">Target condition</source>
+        <target state="translated">目标条件</target>
+      </trans-unit>
+      <trans-unit id="device-target-condition-learn-more">
+        <source xml:lang="en">Learn more about target condition</source>
+        <target state="translated">详细了解目标状况。</target>
+      </trans-unit>
+      <trans-unit id="vm_ssh_public_key">
+        <source xml:lang="en">SSH public key</source>
+        <target state="translated">SSH 公钥</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

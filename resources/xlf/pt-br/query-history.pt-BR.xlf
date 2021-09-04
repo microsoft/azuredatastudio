@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file original="extensions/query-history/package" source-language="en" datatype="plaintext" target-language="pt-BR">
+    <body>
+      <trans-unit id="queryHistory.displayName">
+        <source xml:lang="en">Query History</source>
+        <target state="translated">Histórico de Consultas</target>
+      </trans-unit>
+      <trans-unit id="queryHistory.description">
+        <source xml:lang="en">View and run previously executed queries</source>
+        <target state="translated">Exibir e executar consultas executadas anteriormente</target>
+      </trans-unit>
+      <trans-unit id="queryHistory.clear">
+        <source xml:lang="en">Clear All History</source>
+        <target state="translated">Limpar todo o histórico</target>
+      </trans-unit>
+      <trans-unit id="queryHistory.toggleCapture">
+        <source xml:lang="en">Toggle Query History Capture</source>
+        <target state="translated">Ativar/desativar a captura de Histórico de Consultas</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

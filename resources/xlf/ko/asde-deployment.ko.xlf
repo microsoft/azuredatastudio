@@ -1,0 +1,215 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file original="extensions/asde-deployment/package" source-language="en" datatype="plaintext" target-language="ko">
+    <body>
+      <trans-unit id="extension-displayName">
+        <source xml:lang="en">Azure SQL Edge Deployment Extension</source>
+        <target state="translated">Azure SQL Edge 배포 확장</target>
+      </trans-unit>
+      <trans-unit id="extension-description">
+        <source xml:lang="en">Provides a notebook-based experience to deploy Azure SQL Edge</source>
+        <target state="translated">Azure SQL Edge를 배포하기 위한 Notebook 기반 환경을 제공합니다.</target>
+      </trans-unit>
+      <trans-unit id="docker-container-name-field">
+        <source xml:lang="en">Container name</source>
+        <target state="translated">컨테이너 이름</target>
+      </trans-unit>
+      <trans-unit id="docker-sql-password-field">
+        <source xml:lang="en">Azure SQL Edge instance (sa) password</source>
+        <target state="translated">Azure SQL Edge 인스턴스(sa) 암호</target>
+      </trans-unit>
+      <trans-unit id="docker-confirm-sql-password-field">
+        <source xml:lang="en">Confirm password</source>
+        <target state="translated">암호 확인</target>
+      </trans-unit>
+      <trans-unit id="docker-sql-port-field">
+        <source xml:lang="en">Azure SQL Edge Port</source>
+        <target state="translated">Azure SQL Edge 포트</target>
+      </trans-unit>
+      <trans-unit id="microsoft-privacy-statement">
+        <source xml:lang="en">Microsoft Privacy Statement</source>
+        <target state="translated">Microsoft 개인정보처리방침</target>
+      </trans-unit>
+      <trans-unit id="resource-type-sql-edge-display-name">
+        <source xml:lang="en">Azure SQL Edge</source>
+        <target state="translated">Azure SQL Edge</target>
+      </trans-unit>
+      <trans-unit id="resource-type-sql-edge-description">
+        <source xml:lang="en">Azure SQL Edge (Preview) is an optimized relational database engine geared for IoT and IoT Edge deployments.</source>
+        <target state="translated">Azure SQL Edge(미리 보기)는 IoT 및 IoT Edge 배포를 위한 최적화된 관계형 데이터베이스 엔진입니다.</target>
+      </trans-unit>
+      <trans-unit id="sql-edge-type-display-name">
+        <source xml:lang="en">Deployment target</source>
+        <target state="translated">배포 대상</target>
+      </trans-unit>
+      <trans-unit id="sql-edge-local-display-name">
+        <source xml:lang="en">Local container instance</source>
+        <target state="translated">로컬 컨테이너 인스턴스</target>
+      </trans-unit>
+      <trans-unit id="sql-edge-remote-display-name">
+        <source xml:lang="en">Remote container instance</source>
+        <target state="translated">원격 컨테이너 인스턴스</target>
+      </trans-unit>
+      <trans-unit id="sql-edge-local-title">
+        <source xml:lang="en">Deploy Azure SQL Edge container instance on local machine</source>
+        <target state="translated">로컬 컴퓨터에 Azure SQL Edge 컨테이너 인스턴스 배포</target>
+      </trans-unit>
+      <trans-unit id="docker-settings-section-title">
+        <source xml:lang="en">Docker settings</source>
+        <target state="translated">Docker 설정</target>
+      </trans-unit>
+      <trans-unit id="docker-registry-field">
+        <source xml:lang="en">Registry</source>
+        <target state="translated">레지스트리</target>
+      </trans-unit>
+      <trans-unit id="docker-repository-field">
+        <source xml:lang="en">Repository</source>
+        <target state="translated">리포지토리</target>
+      </trans-unit>
+      <trans-unit id="docker-imagetag-field">
+        <source xml:lang="en">Image tag</source>
+        <target state="translated">이미지 태그</target>
+      </trans-unit>
+      <trans-unit id="docker-username-field">
+        <source xml:lang="en">Username</source>
+        <target state="translated">사용자 이름</target>
+      </trans-unit>
+      <trans-unit id="docker-password-field">
+        <source xml:lang="en">Password</source>
+        <target state="translated">암호</target>
+      </trans-unit>
+      <trans-unit id="edge-agreement">
+        <source xml:lang="en">I accept {0} and {1}.</source>
+        <target state="translated">{0} 및 {1}에 동의합니다.</target>
+      </trans-unit>
+      <trans-unit id="edge-eula">
+        <source xml:lang="en">Microsoft Azure SQL Edge License Agreement</source>
+        <target state="translated">Microsoft Azure SQL Edge 사용권 계약</target>
+      </trans-unit>
+      <trans-unit id="sql-edge-remote-title">
+        <source xml:lang="en">Deploy Azure SQL Edge container instance on remote machine</source>
+        <target state="translated">원격 컴퓨터에 Azure SQL Edge 컨테이너 인스턴스 배포</target>
+      </trans-unit>
+      <trans-unit id="remote-info-section-title">
+        <source xml:lang="en">Target machine information</source>
+        <target state="translated">대상 컴퓨터 정보</target>
+      </trans-unit>
+      <trans-unit id="edge-remote-target-field">
+        <source xml:lang="en">Name or IP address</source>
+        <target state="translated">이름 또는 IP 주소</target>
+      </trans-unit>
+      <trans-unit id="edge-remote-username-field">
+        <source xml:lang="en">Username</source>
+        <target state="translated">사용자 이름</target>
+      </trans-unit>
+      <trans-unit id="edge-remote-password-field">
+        <source xml:lang="en">Password</source>
+        <target state="translated">암호</target>
+      </trans-unit>
+      <trans-unit id="sql-edge-azure-display-name">
+        <source xml:lang="en">New Azure IoT Hub and VM (password authentication)</source>
+        <target state="translated">새 Azure IoT Hub 및 VM(암호 인증)</target>
+      </trans-unit>
+      <trans-unit id="sql-edge-azure-sshkey-display-name">
+        <source xml:lang="en">New Azure IoT Hub and VM (ssh public key authentication)</source>
+        <target state="translated">새 Azure IoT Hub 및 VM(ssh 공개 키 인증)</target>
+      </trans-unit>
+      <trans-unit id="sql-edge-azure-title">
+        <source xml:lang="en">Deploy Azure SQL Edge to a new Azure VM via IoT hub</source>
+        <target state="translated">IoT Hub를 통해 Azure SQL Edge를 새 Azure VM에 배포</target>
+      </trans-unit>
+      <trans-unit id="azure_subscription_id">
+        <source xml:lang="en">Subscription id</source>
+        <target state="translated">구독 ID</target>
+      </trans-unit>
+      <trans-unit id="azure_resource_group">
+        <source xml:lang="en">Resource group</source>
+        <target state="translated">리소스 그룹</target>
+      </trans-unit>
+      <trans-unit id="azure_location">
+        <source xml:lang="en">Location</source>
+        <target state="translated">위치</target>
+      </trans-unit>
+      <trans-unit id="vm_admin">
+        <source xml:lang="en">VM admin username</source>
+        <target state="translated">VM 관리자 사용자 이름</target>
+      </trans-unit>
+      <trans-unit id="vm_password">
+        <source xml:lang="en">VM admin password</source>
+        <target state="translated">VM 관리자 암호</target>
+      </trans-unit>
+      <trans-unit id="vm_password_confirm">
+        <source xml:lang="en">Confirm VM admin password</source>
+        <target state="translated">VM 관리자 암호 확인</target>
+      </trans-unit>
+      <trans-unit id="vm_password_validation_error_message">
+        <source xml:lang="en">VM password must be 12 to 123 characters in length and consists of upper case characters, lower case characters, numbers and special characters.</source>
+        <target state="translated">VM 암호의 길이는 12~123자여야 하며 대문자, 소문자, 숫자 및 특수 문자로 구성되어야 합니다.</target>
+      </trans-unit>
+      <trans-unit id="package_path">
+        <source xml:lang="en">Package file</source>
+        <target state="translated">패키지 파일</target>
+      </trans-unit>
+      <trans-unit id="package_path_description">
+        <source xml:lang="en">Path of the SQL Server package file(dacpac, bacpac) or compressed package file.</source>
+        <target state="translated">SQL Server 패키지 파일(dacpac, bacpac) 또는 압축된 패키지 파일의 경로입니다.</target>
+      </trans-unit>
+      <trans-unit id="azure-info-section-title">
+        <source xml:lang="en">Azure information</source>
+        <target state="translated">Azure 정보</target>
+      </trans-unit>
+      <trans-unit id="sqlserver-info-section-title">
+        <source xml:lang="en">Azure SQL Edge information</source>
+        <target state="translated">Azure SQL Edge 정보</target>
+      </trans-unit>
+      <trans-unit id="package-files">
+        <source xml:lang="en">SQL Server Package files</source>
+        <target state="translated">SQL Server 패키지 파일</target>
+      </trans-unit>
+      <trans-unit id="sql-edge-azure-single-device-display-name">
+        <source xml:lang="en">Existing device of an Azure IoT Hub</source>
+        <target state="translated">Azure IoT Hub의 기존 장치</target>
+      </trans-unit>
+      <trans-unit id="sql-edge-azure-single-device-title">
+        <source xml:lang="en">Deploy Azure SQL Edge to an existing device</source>
+        <target state="translated">기존 장치에 Azure SQL Edge 배포</target>
+      </trans-unit>
+      <trans-unit id="iot-hub-name">
+        <source xml:lang="en">IoT Hub name</source>
+        <target state="translated">IoT Hub 이름</target>
+      </trans-unit>
+      <trans-unit id="device-id">
+        <source xml:lang="en">Device ID</source>
+        <target state="translated">장치 ID</target>
+      </trans-unit>
+      <trans-unit id="device-ip-address">
+        <source xml:lang="en">Device IP Address</source>
+        <target state="translated">장치 IP 주소</target>
+      </trans-unit>
+      <trans-unit id="device-ip-address-description">
+        <source xml:lang="en">Will be used to connect to the Azure SQL Edge instance after deployment</source>
+        <target state="translated">배포 후 Azure SQL Edge 인스턴스에 연결하는 데 사용됩니다.</target>
+      </trans-unit>
+      <trans-unit id="sql-edge-azure-multi-device-display-name">
+        <source xml:lang="en">Multiple devices of an Azure IoT Hub</source>
+        <target state="translated">Azure IoT Hub의 여러 장치</target>
+      </trans-unit>
+      <trans-unit id="sql-edge-azure-multi-device-title">
+        <source xml:lang="en">Deploy Azure SQL Edge to multiple Azure IoT devices</source>
+        <target state="translated">Azure SQL Edge를 여러 Azure IoT 장치에 배포</target>
+      </trans-unit>
+      <trans-unit id="device-target-condition">
+        <source xml:lang="en">Target condition</source>
+        <target state="translated">대상 조건</target>
+      </trans-unit>
+      <trans-unit id="device-target-condition-learn-more">
+        <source xml:lang="en">Learn more about target condition</source>
+        <target state="translated">대상 조건에 대한 자세한 정보</target>
+      </trans-unit>
+      <trans-unit id="vm_ssh_public_key">
+        <source xml:lang="en">SSH public key</source>
+        <target state="translated">SSH 공개 키</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

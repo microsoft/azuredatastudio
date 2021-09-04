@@ -4589,14 +4589,6 @@ Errore: {1}</target>
         <source xml:lang="en">Are you sure you want to clear the data?</source>
         <target state="translated">Cancellare i dati?</target>
       </trans-unit>
-      <trans-unit id="profiler.yes">
-        <source xml:lang="en">Yes</source>
-        <target state="translated">Sì</target>
-      </trans-unit>
-      <trans-unit id="profiler.no">
-        <source xml:lang="en">No</source>
-        <target state="translated">No</target>
-      </trans-unit>
       <trans-unit id="profilerAction.autoscrollOn">
         <source xml:lang="en">Auto Scroll: On</source>
         <target state="translated">Scorrimento automatico: attivato</target>
@@ -5289,7 +5281,7 @@ Errore: {1}</target>
     <body>
       <trans-unit id="queryPlanEditor">
         <source xml:lang="en">Query Plan Editor</source>
-        <target state="new">Query Plan Editor</target>
+        <target state="translated">Editor piano di query</target>
       </trans-unit>
     </body>
   </file>
@@ -5358,6 +5350,14 @@ Errore: {1}</target>
       <trans-unit id="topOperationsTitle">
         <source xml:lang="en">Top Operations</source>
         <target state="translated">Operazioni più frequenti</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="src/sql/workbench/contrib/resourceDeployment/browser/resourceDeployment.contribution" source-language="en" datatype="plaintext" target-language="it">
+    <body>
+      <trans-unit id="deployment.title">
+        <source xml:lang="en">New Deployment...</source>
+        <target state="translated">Nuova distribuzione...</target>
       </trans-unit>
     </body>
   </file>
