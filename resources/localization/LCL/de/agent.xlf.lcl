@@ -200,7 +200,7 @@
           <Val><![CDATA[Notebook update failed '{0}']]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
             <Val><![CDATA[Fehler beim Aktualisieren des Notizbuchs "{0}"]]></Val>
-          </Tgt
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
