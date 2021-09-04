@@ -19,7 +19,8 @@ export enum TelemetryViews {
 	MigrationWizardAccountSelectionPage = 'MigrationWizardAccountSelectionPage',
 	MigrationWizardTargetSelectionPage = 'MigrationWizardTargetSelectionPage',
 	MigrationWizardSummaryPage = 'MigrationWizardSummaryPage',
-	StartMigrationService = 'StartMigrationSerivce'
+	StartMigrationService = 'StartMigrationSerivce',
+	SqlMigrationWizard = 'SqlMigrationWizard'
 }
 
 export enum TelemetryAction {
@@ -32,7 +33,8 @@ export enum TelemetryAction {
 	StartMigration = 'StartMigration',
 	CutoverMigration = 'CutoverMigration',
 	CancelMigration = 'CancelMigration',
-	MigrationStatus = 'MigrationStatus'
+	MigrationStatus = 'MigrationStatus',
+	PageButtonClick = 'PageButtonClick'
 }
 
 export function sendSqlMigrationActionEvent(telemetryView: TelemetryViews, telemetryAction: TelemetryAction, additionalProps: TelemetryEventProperties, additionalMeasurements: TelemetryEventMeasures): void {

@@ -15,9 +15,12 @@ import { IntergrationRuntimePage } from './integrationRuntimePage';
 import { SummaryPage } from './summaryPage';
 import { MigrationModePage } from './migrationModePage';
 import { DatabaseSelectorPage } from './databaseSelectorPage';
+import { sendSqlMigrationActionEvent, TelemetryAction, TelemetryViews } from '../telemtery';
 
 export const WIZARD_INPUT_COMPONENT_WIDTH = '600px';
 export class WizardController {
+	private _wizardObject!: azdata.window.Wizard;
+	private _model!: MigrationStateModel;
 	constructor(private readonly extensionContext: vscode.ExtensionContext) {
 
 	}
@@ -25,24 +28,24 @@ export class WizardController {
 	public async openWizard(connectionId: string): Promise<void> {
 		const api = (await vscode.extensions.getExtension(mssql.extension.name)?.activate()) as mssql.IExtension;
 		if (api) {
-			const stateModel = new MigrationStateModel(this.extensionContext, connectionId, api.sqlMigration);
-			this.extensionContext.subscriptions.push(stateModel);
-			this.createWizard(stateModel);
+			this._model = new MigrationStateModel(this.extensionContext, connectionId, api.sqlMigration);
+			this.extensionContext.subscriptions.push(this._model);
+			this.createWizard(this._model);
 		}
 	}
 
 	private async createWizard(stateModel: MigrationStateModel): Promise<void> {
 		const serverName = (await stateModel.getSourceConnectionProfile()).serverName;
-		const wizard = azdata.window.createWizard(loc.WIZARD_TITLE(serverName), 'MigrationWizard', 'wide');
-		wizard.generateScriptButton.enabled = false;
-		wizard.generateScriptButton.hidden = true;
-		const skuRecommendationPage = new SKURecommendationPage(wizard, stateModel);
-		const migrationModePage = new MigrationModePage(wizard, stateModel);
-		const databaseSelectorPage = new DatabaseSelectorPage(wizard, stateModel);
-		const azureAccountsPage = new AccountsSelectionPage(wizard, stateModel);
-		const databaseBackupPage = new DatabaseBackupPage(wizard, stateModel);
-		const integrationRuntimePage = new IntergrationRuntimePage(wizard, stateModel);
-		const summaryPage = new SummaryPage(wizard, stateModel);
+		this._wizardObject = azdata.window.createWizard(loc.WIZARD_TITLE(serverName), 'MigrationWizard', 'wide');
+		this._wizardObject.generateScriptButton.enabled = false;
+		this._wizardObject.generateScriptButton.hidden = true;
+		const skuRecommendationPage = new SKURecommendationPage(this._wizardObject, stateModel);
+		const migrationModePage = new MigrationModePage(this._wizardObject, stateModel);
+		const databaseSelectorPage = new DatabaseSelectorPage(this._wizardObject, stateModel);
+		const azureAccountsPage = new AccountsSelectionPage(this._wizardObject, stateModel);
+		const databaseBackupPage = new DatabaseBackupPage(this._wizardObject, stateModel);
+		const integrationRuntimePage = new IntergrationRuntimePage(this._wizardObject, stateModel);
+		const summaryPage = new SummaryPage(this._wizardObject, stateModel);
 
 		const pages: MigrationWizardPage[] = [
 			azureAccountsPage,
@@ -54,21 +57,21 @@ export class WizardController {
 			summaryPage
 		];
 
-		wizard.pages = pages.map(p => p.getwizardPage());
+		this._wizardObject.pages = pages.map(p => p.getwizardPage());
 
 		const wizardSetupPromises: Thenable<void>[] = [];
 		wizardSetupPromises.push(...pages.map(p => p.registerWizardContent()));
-		wizardSetupPromises.push(wizard.open());
+		wizardSetupPromises.push(this._wizardObject.open());
 
-		this.extensionContext.subscriptions.push(wizard.onPageChanged(async (pageChangeInfo: azdata.window.WizardPageChangeInfo) => {
+		this.extensionContext.subscriptions.push(this._wizardObject.onPageChanged(async (pageChangeInfo: azdata.window.WizardPageChangeInfo) => {
 			const newPage = pageChangeInfo.newPage;
 			const lastPage = pageChangeInfo.lastPage;
-
+			this.sendPageButtonClickEvent(pageChangeInfo).catch(e => console.log(e));
 			await pages[lastPage]?.onPageLeave();
 			await pages[newPage]?.onPageEnter();
 		}));
 
-		wizard.registerNavigationValidator(async validator => {
+		this._wizardObject.registerNavigationValidator(async validator => {
 			// const lastPage = validator.lastPage;
 
 			// const canLeave = await pages[lastPage]?.canLeave() ?? true;
@@ -81,9 +84,44 @@ export class WizardController {
 		await Promise.all(wizardSetupPromises);
 		await pages[0].onPageEnter();
 
-		this.extensionContext.subscriptions.push(wizard.doneButton.onClick(async (e) => {
+		this.extensionContext.subscriptions.push(this._wizardObject.doneButton.onClick(async (e) => {
 			await stateModel.startMigration();
 		}));
+
+		this._wizardObject.cancelButton.onClick(e => {
+			sendSqlMigrationActionEvent(
+				TelemetryViews.SqlMigrationWizard,
+				TelemetryAction.PageButtonClick,
+				{
+					'sessionId': this._model._sessionId,
+					'buttonPressed': 'cancel',
+					'pageTitle': this._wizardObject.pages[this._wizardObject.currentPage].title
+				}, {});
+		});
+
+		this._wizardObject.doneButton.onClick(e => {
+			sendSqlMigrationActionEvent(
+				TelemetryViews.SqlMigrationWizard,
+				TelemetryAction.PageButtonClick,
+				{
+					'sessionId': this._model._sessionId,
+					'buttonPressed': 'done',
+					'pageTitle': this._wizardObject.pages[this._wizardObject.currentPage].title
+				}, {});
+		});
+	}
+
+	private async sendPageButtonClickEvent(pageChangeInfo: azdata.window.WizardPageChangeInfo) {
+		const buttonPressed = pageChangeInfo.newPage > pageChangeInfo.lastPage ? 'next' : 'prev';
+		const pageTitle = this._wizardObject.pages[pageChangeInfo.lastPage].title;
+		sendSqlMigrationActionEvent(
+			TelemetryViews.SqlMigrationWizard,
+			TelemetryAction.PageButtonClick,
+			{
+				'sessionId': this._model._sessionId,
+				'buttonPressed': buttonPressed,
+				'pageTitle': pageTitle
+			}, {});
 	}
 }
 
