@@ -9,11 +9,13 @@ import { IconPathHelper } from '../../constants/iconPathHelper';
 import { MigrationContext } from '../../models/migrationLocalStorage';
 import { MigrationCutoverDialogModel, MigrationStatus } from './migrationCutoverDialogModel';
 import * as loc from '../../constants/strings';
-import { convertByteSizeToReadableUnit, convertIsoTimeToLocalTime, getSqlServerName, SupportedAutoRefreshIntervals } from '../../api/utils';
+import { convertByteSizeToReadableUnit, convertIsoTimeToLocalTime, getSqlServerName, getMigrationStatusImage, SupportedAutoRefreshIntervals } from '../../api/utils';
 import { EOL } from 'os';
 import { ConfirmCutoverDialog } from './confirmCutoverDialog';
+import { MigrationMode } from '../../models/stateMachine';
 
 const refreshFrequency: SupportedAutoRefreshIntervals = 30000;
+const statusImageSize: number = 14;
 
 export class MigrationCutoverDialog {
 	private _dialogObject!: azdata.window.Dialog;
@@ -27,20 +29,21 @@ export class MigrationCutoverDialog {
 	private _refreshLoader!: azdata.LoadingComponent;
 	private _copyDatabaseMigrationDetails!: azdata.ButtonComponent;
 
-	private _serverName!: azdata.TextComponent;
-	private _serverVersion!: azdata.TextComponent;
-	private _sourceDatabase!: azdata.TextComponent;
-	private _targetDatabase!: azdata.TextComponent;
-	private _targetServer!: azdata.TextComponent;
-	private _targetVersion!: azdata.TextComponent;
-	private _migrationStatus!: azdata.TextComponent;
-	private _fullBackupFile!: azdata.TextComponent;
-	private _backupLocation!: azdata.TextComponent;
-	private _lastAppliedLSN!: azdata.TextComponent;
-	private _lastAppliedBackupFile!: azdata.TextComponent;
-	private _lastAppliedBackupTakenOn!: azdata.TextComponent;
+	private _sourceDatabaseInfoField!: InfoFieldSchema;
+	private _sourceDetailsInfoField!: InfoFieldSchema;
+	private _sourceVersionInfoField!: InfoFieldSchema;
+	private _targetDatabaseInfoField!: InfoFieldSchema;
+	private _targetServerInfoField!: InfoFieldSchema;
+	private _targetVersionInfoField!: InfoFieldSchema;
+	private _migrationStatusInfoField!: InfoFieldSchema;
+	private _fullBackupFileOnInfoField!: InfoFieldSchema;
+	private _backupLocationInfoField!: InfoFieldSchema;
+	private _lastLSNInfoField!: InfoFieldSchema;
+	private _lastAppliedBackupInfoField!: InfoFieldSchema;
+	private _lastAppliedBackupTakenOnInfoField!: InfoFieldSchema;
+
 	private _fileCount!: azdata.TextComponent;
-	private fileTable!: azdata.TableComponent;
+	private _fileTable!: azdata.TableComponent;
 	private _autoRefreshHandle!: any;
 	private _disposables: vscode.Disposable[] = [];
 
@@ -58,151 +61,6 @@ export class MigrationCutoverDialog {
 		tab.registerContent(async (view: azdata.ModelView) => {
 			try {
 				this._view = view;
-				const sourceDatabase = this.createInfoField(loc.SOURCE_DATABASE, '');
-				const sourceDetails = this.createInfoField(loc.SOURCE_SERVER, '');
-				const sourceVersion = this.createInfoField(loc.SOURCE_VERSION, '');
-
-				this._sourceDatabase = sourceDatabase.text;
-				this._serverName = sourceDetails.text;
-				this._serverVersion = sourceVersion.text;
-
-				const flexServer = view.modelBuilder.flexContainer().withLayout({
-					flexFlow: 'column'
-				}).component();
-
-				flexServer.addItem(sourceDatabase.flexContainer, {
-					CSSStyles: {
-						'width': this._infoFieldWidth
-					}
-				});
-				flexServer.addItem(sourceDetails.flexContainer, {
-					CSSStyles: {
-						'width': this._infoFieldWidth
-					}
-				});
-				flexServer.addItem(sourceVersion.flexContainer, {
-					CSSStyles: {
-						'width': this._infoFieldWidth
-					}
-				});
-
-				const targetDatabase = this.createInfoField(loc.TARGET_DATABASE_NAME, '');
-				const targetServer = this.createInfoField(loc.TARGET_SERVER, '');
-				const targetVersion = this.createInfoField(loc.TARGET_VERSION, '');
-
-				this._targetDatabase = targetDatabase.text;
-				this._targetServer = targetServer.text;
-				this._targetVersion = targetVersion.text;
-
-				const flexTarget = view.modelBuilder.flexContainer().withLayout({
-					flexFlow: 'column'
-				}).component();
-
-				flexTarget.addItem(targetDatabase.flexContainer, {
-					CSSStyles: {
-						'width': this._infoFieldWidth
-					}
-				});
-				flexTarget.addItem(targetServer.flexContainer, {
-					CSSStyles: {
-						'width': this._infoFieldWidth
-					}
-				});
-				flexTarget.addItem(targetVersion.flexContainer, {
-					CSSStyles: {
-						'width': this._infoFieldWidth
-					}
-				});
-
-				const migrationStatus = this.createInfoField(loc.MIGRATION_STATUS, '');
-				const fullBackupFileOn = this.createInfoField(loc.FULL_BACKUP_FILES, '');
-				const backupLocation = this.createInfoField(loc.BACKUP_LOCATION, '');
-
-				this._migrationStatus = migrationStatus.text;
-				this._fullBackupFile = fullBackupFileOn.text;
-				this._backupLocation = backupLocation.text;
-
-				const flexStatus = view.modelBuilder.flexContainer().withLayout({
-					flexFlow: 'column'
-				}).component();
-
-				flexStatus.addItem(migrationStatus.flexContainer, {
-					CSSStyles: {
-						'width': this._infoFieldWidth
-					}
-				});
-				flexStatus.addItem(fullBackupFileOn.flexContainer, {
-					CSSStyles: {
-						'width': this._infoFieldWidth
-					}
-				});
-				flexStatus.addItem(backupLocation.flexContainer, {
-					CSSStyles: {
-						'width': this._infoFieldWidth
-					}
-				});
-
-				const lastSSN = this.createInfoField(loc.LAST_APPLIED_LSN, '');
-				const lastAppliedBackup = this.createInfoField(loc.LAST_APPLIED_BACKUP_FILES, '');
-				const lastAppliedBackupOn = this.createInfoField(loc.LAST_APPLIED_BACKUP_FILES_TAKEN_ON, '');
-
-				this._lastAppliedLSN = lastSSN.text;
-				this._lastAppliedBackupFile = lastAppliedBackup.text;
-				this._lastAppliedBackupTakenOn = lastAppliedBackupOn.text;
-
-				const flexFile = view.modelBuilder.flexContainer().withLayout({
-					flexFlow: 'column'
-				}).component();
-				flexFile.addItem(lastSSN.flexContainer, {
-					CSSStyles: {
-						'width': this._infoFieldWidth
-					}
-				});
-				flexFile.addItem(lastAppliedBackup.flexContainer, {
-					CSSStyles: {
-						'width': this._infoFieldWidth
-					}
-				});
-				flexFile.addItem(lastAppliedBackupOn.flexContainer, {
-					CSSStyles: {
-						'width': this._infoFieldWidth
-					}
-				});
-				const flexInfo = view.modelBuilder.flexContainer().withProps({
-					width: 1000
-				}).component();
-
-				flexInfo.addItem(flexServer, {
-					flex: '0',
-					CSSStyles: {
-						'flex': '0',
-						'width': this._infoFieldWidth
-					}
-				});
-
-				flexInfo.addItem(flexTarget, {
-					flex: '0',
-					CSSStyles: {
-						'flex': '0',
-						'width': this._infoFieldWidth
-					}
-				});
-
-				flexInfo.addItem(flexStatus, {
-					flex: '0',
-					CSSStyles: {
-						'flex': '0',
-						'width': this._infoFieldWidth
-					}
-				});
-
-				flexInfo.addItem(flexFile, {
-					flex: '0',
-					CSSStyles: {
-						'flex': '0',
-						'width': this._infoFieldWidth
-					}
-				});
 
 				this._fileCount = view.modelBuilder.text().withProps({
 					width: '500px',
@@ -212,7 +70,7 @@ export class MigrationCutoverDialog {
 					}
 				}).component();
 
-				this.fileTable = view.modelBuilder.table().withProps({
+				this._fileTable = view.modelBuilder.table().withProps({
 					ariaLabel: loc.ACTIVE_BACKUP_FILES,
 					columns: [
 						{
@@ -259,18 +117,23 @@ export class MigrationCutoverDialog {
 					data: [],
 					width: '1100px',
 					height: '300px',
-					fontSize: '12px'
+					fontSize: '12px',
+					CSSStyles: {
+						'display': 'none',
+					}
 				}).component();
 
+				let formItems = [
+					{ component: this.migrationContainerHeader() },
+					{ component: this._view.modelBuilder.separator().withProps({ width: 1000 }).component() },
+					{ component: this.migrationInfoGrid() },
+					{ component: this._view.modelBuilder.separator().withProps({ width: 1000 }).component() },
+					{ component: this._fileCount },
+					{ component: this._fileTable }
+				];
+
 				const formBuilder = view.modelBuilder.formContainer().withFormItems(
-					[
-						{ component: this.migrationContainerHeader() },
-						{ component: this._view.modelBuilder.separator().withProps({ width: 1000 }).component() },
-						{ component: flexInfo },
-						{ component: this._view.modelBuilder.separator().withProps({ width: 1000 }).component() },
-						{ component: this._fileCount },
-						{ component: this.fileTable }
-					],
+					formItems,
 					{ horizontal: false }
 				);
 				const form = formBuilder.withLayout({ width: '100%' }).component();
@@ -367,7 +230,8 @@ export class MigrationCutoverDialog {
 			width: '150px',
 			enabled: false,
 			CSSStyles: {
-				'font-size': '13px'
+				'font-size': '13px',
+				'display': 'none'
 			}
 		}).component();
 
@@ -389,6 +253,7 @@ export class MigrationCutoverDialog {
 			label: loc.CANCEL_MIGRATION,
 			height: '20px',
 			width: '150px',
+			enabled: false,
 			CSSStyles: {
 				'font-size': '13px'
 			}
@@ -491,14 +356,84 @@ export class MigrationCutoverDialog {
 		return header;
 	}
 
-	private setAutoRefresh(interval: SupportedAutoRefreshIntervals): void {
-		const classVariable = this;
-		clearInterval(this._autoRefreshHandle);
-		if (interval !== -1) {
-			this._autoRefreshHandle = setInterval(async function () { await classVariable.refreshStatus(); }, interval);
-		}
+	private migrationInfoGrid(): azdata.FlexContainer {
+		const addInfoFieldToContainer = (infoField: InfoFieldSchema, container: azdata.FlexContainer): void => {
+			container.addItem(infoField.flexContainer, {
+				CSSStyles: {
+					width: this._infoFieldWidth,
+				}
+			});
+		};
+
+		const flexServer = this._view.modelBuilder.flexContainer().withLayout({
+			flexFlow: 'column'
+		}).component();
+		this._sourceDatabaseInfoField = this.createInfoField(loc.SOURCE_DATABASE, '');
+		this._sourceDetailsInfoField = this.createInfoField(loc.SOURCE_SERVER, '');
+		this._sourceVersionInfoField = this.createInfoField(loc.SOURCE_VERSION, '');
+		addInfoFieldToContainer(this._sourceDatabaseInfoField, flexServer);
+		addInfoFieldToContainer(this._sourceDetailsInfoField, flexServer);
+		addInfoFieldToContainer(this._sourceVersionInfoField, flexServer);
+
+		const flexTarget = this._view.modelBuilder.flexContainer().withLayout({
+			flexFlow: 'column'
+		}).component();
+		this._targetDatabaseInfoField = this.createInfoField(loc.TARGET_DATABASE_NAME, '');
+		this._targetServerInfoField = this.createInfoField(loc.TARGET_SERVER, '');
+		this._targetVersionInfoField = this.createInfoField(loc.TARGET_VERSION, '');
+		addInfoFieldToContainer(this._targetDatabaseInfoField, flexTarget);
+		addInfoFieldToContainer(this._targetServerInfoField, flexTarget);
+		addInfoFieldToContainer(this._targetVersionInfoField, flexTarget);
+
+		const flexStatus = this._view.modelBuilder.flexContainer().withLayout({
+			flexFlow: 'column'
+		}).component();
+		this._migrationStatusInfoField = this.createInfoField(loc.MIGRATION_STATUS, '', false, ' ');
+		this._fullBackupFileOnInfoField = this.createInfoField(loc.FULL_BACKUP_FILES, '', true);
+		this._backupLocationInfoField = this.createInfoField(loc.BACKUP_LOCATION, '');
+		addInfoFieldToContainer(this._migrationStatusInfoField, flexStatus);
+		addInfoFieldToContainer(this._fullBackupFileOnInfoField, flexStatus);
+		addInfoFieldToContainer(this._backupLocationInfoField, flexStatus);
+
+		const flexFile = this._view.modelBuilder.flexContainer().withLayout({
+			flexFlow: 'column'
+		}).component();
+		this._lastLSNInfoField = this.createInfoField(loc.LAST_APPLIED_LSN, '', true);
+		this._lastAppliedBackupInfoField = this.createInfoField(loc.LAST_APPLIED_BACKUP_FILES, '');
+		this._lastAppliedBackupTakenOnInfoField = this.createInfoField(loc.LAST_APPLIED_BACKUP_FILES_TAKEN_ON, '', true);
+		addInfoFieldToContainer(this._lastLSNInfoField, flexFile);
+		addInfoFieldToContainer(this._lastAppliedBackupInfoField, flexFile);
+		addInfoFieldToContainer(this._lastAppliedBackupTakenOnInfoField, flexFile);
+
+		const flexInfoProps = {
+			flex: '0',
+			CSSStyles: {
+				'flex': '0',
+				'width': this._infoFieldWidth
+			}
+		};
+
+		const flexInfo = this._view.modelBuilder.flexContainer().withProps({
+			width: 1000
+		}).component();
+		flexInfo.addItem(flexServer, flexInfoProps);
+		flexInfo.addItem(flexTarget, flexInfoProps);
+		flexInfo.addItem(flexStatus, flexInfoProps);
+		flexInfo.addItem(flexFile, flexInfoProps);
+
+		return flexInfo;
 	}
 
+	private setAutoRefresh(interval: SupportedAutoRefreshIntervals): void {
+		const shouldRefresh = (status: string | undefined) => !status || ['InProgress', 'Creating', 'Completing', 'Creating'].includes(status);
+		if (shouldRefresh(this.getMigrationStatus())) {
+			const classVariable = this;
+			clearInterval(this._autoRefreshHandle);
+			if (interval !== -1) {
+				this._autoRefreshHandle = setInterval(async function () { await classVariable.refreshStatus(); }, interval);
+			}
+		}
+	}
 
 	private async refreshStatus(): Promise<void> {
 		if (this.isRefreshing) {
@@ -506,10 +441,14 @@ export class MigrationCutoverDialog {
 		}
 
 		try {
+			if (this._isProvisioned() && this._isOnlineMigration()) {
+				this._cutoverButton.updateCssStyles({
+					'display': 'inline'
+				});
+			}
+
 			this.isRefreshing = true;
 			this._refreshLoader.loading = true;
-			this._cutoverButton.enabled = false;
-			this._cancelButton.enabled = false;
 			await this._model.fetchStatus();
 			const errors = [];
 			errors.push(this._model.migrationOpStatus.error?.message);
@@ -534,81 +473,92 @@ export class MigrationCutoverDialog {
 				targetServerVersion = loc.AZURE_SQL_DATABASE_VIRTUAL_MACHINE;
 			}
 
-			const migrationStatusTextValue = this._model.migrationStatus.properties.migrationStatus ? this._model.migrationStatus.properties.migrationStatus : this._model.migrationStatus.properties.provisioningState;
-
 			let lastAppliedSSN: string;
 			let lastAppliedBackupFileTakenOn: string;
-
 
 			const tableData: ActiveBackupFileSchema[] = [];
 
 			this._model.migrationStatus.properties.migrationStatusDetails?.activeBackupSets?.forEach((activeBackupSet) => {
 
-				tableData.push(
-					{
-						fileName: activeBackupSet.listOfBackupFiles[0].fileName,
-						type: activeBackupSet.backupType,
-						status: activeBackupSet.listOfBackupFiles[0].status,
-						dataUploaded: `${convertByteSizeToReadableUnit(activeBackupSet.listOfBackupFiles[0].dataWritten)}/ ${convertByteSizeToReadableUnit(activeBackupSet.listOfBackupFiles[0].totalSize)}`,
-						copyThroughput: (activeBackupSet.listOfBackupFiles[0].copyThroughput / 1024).toFixed(2),
-						backupStartTime: activeBackupSet.backupStartDate,
-						firstLSN: activeBackupSet.firstLSN,
-						lastLSN: activeBackupSet.lastLSN
+				if (this._shouldDisplayBackupFileTable()) {
+					tableData.push(
+						{
+							fileName: activeBackupSet.listOfBackupFiles[0].fileName,
+							type: activeBackupSet.backupType,
+							status: activeBackupSet.listOfBackupFiles[0].status,
+							dataUploaded: `${convertByteSizeToReadableUnit(activeBackupSet.listOfBackupFiles[0].dataWritten)}/ ${convertByteSizeToReadableUnit(activeBackupSet.listOfBackupFiles[0].totalSize)}`,
+							copyThroughput: (activeBackupSet.listOfBackupFiles[0].copyThroughput) ? (activeBackupSet.listOfBackupFiles[0].copyThroughput / 1024).toFixed(2) : '-',
+							backupStartTime: activeBackupSet.backupStartDate,
+							firstLSN: activeBackupSet.firstLSN,
+							lastLSN: activeBackupSet.lastLSN
 
-					}
-				);
+						}
+					);
+				}
+
 				if (activeBackupSet.listOfBackupFiles[0].fileName === this._model.migrationStatus.properties.migrationStatusDetails?.lastRestoredFilename) {
 					lastAppliedSSN = activeBackupSet.lastLSN;
 					lastAppliedBackupFileTakenOn = activeBackupSet.backupFinishDate;
 				}
 			});
 
-			this._sourceDatabase.value = sourceDatabaseName;
-			this._serverName.value = sqlServerName;
-			this._serverVersion.value = `${sqlServerVersion} ${sqlServerInfo.serverVersion}`;
+			this._sourceDatabaseInfoField.text.value = sourceDatabaseName;
+			this._sourceDetailsInfoField.text.value = sqlServerName;
+			this._sourceVersionInfoField.text.value = `${sqlServerVersion} ${sqlServerInfo.serverVersion}`;
 
-			this._targetDatabase.value = targetDatabaseName;
-			this._targetServer.value = targetServerName;
-			this._targetVersion.value = targetServerVersion;
+			this._targetDatabaseInfoField.text.value = targetDatabaseName;
+			this._targetServerInfoField.text.value = targetServerName;
+			this._targetVersionInfoField.text.value = targetServerVersion;
 
-			this._migrationStatus.value = migrationStatusTextValue ?? '---';
-			this._fullBackupFile.value = this._model.migrationStatus?.properties?.migrationStatusDetails?.fullBackupSetInfo?.listOfBackupFiles[0]?.fileName! ?? '-';
+			const migrationStatusTextValue = this.getMigrationStatus();
+			this._migrationStatusInfoField.text.value = migrationStatusTextValue ?? '-';
+			this._migrationStatusInfoField.icon!.iconPath = getMigrationStatusImage(migrationStatusTextValue);
+
+			this._fullBackupFileOnInfoField.text.value = this._model.migrationStatus?.properties?.migrationStatusDetails?.fullBackupSetInfo?.listOfBackupFiles[0]?.fileName! ?? '-';
+			this.showInfoField(this._fullBackupFileOnInfoField);
+
 			let backupLocation;
-
-			const isBlobMigration = this._model._migration.migrationContext.properties.backupConfiguration.sourceLocation?.azureBlob !== undefined;
+			const isBlobMigration = this._isBlobMigration();
 			// Displaying storage accounts and blob container for azure blob backups.
 			if (isBlobMigration) {
 				backupLocation = `${this._model._migration.migrationContext.properties.backupConfiguration.sourceLocation?.azureBlob?.storageAccountResourceId.split('/').pop()} - ${this._model._migration.migrationContext.properties.backupConfiguration.sourceLocation?.azureBlob?.blobContainerName}`;
-				this._fileCount.display = 'none';
-				this.fileTable.updateCssStyles({
-					'display': 'none'
-				});
 			} else {
 				backupLocation = this._model._migration.migrationContext.properties.backupConfiguration?.sourceLocation?.fileShare?.path! ?? '-';
 			}
-			this._backupLocation.value = backupLocation ?? '-';
+			this._backupLocationInfoField.text.value = backupLocation ?? '-';
 
-			this._lastAppliedLSN.value = lastAppliedSSN! ?? '-';
-			this._lastAppliedBackupFile.value = this._model.migrationStatus.properties.migrationStatusDetails?.lastRestoredFilename ?? '-';
-			this._lastAppliedBackupTakenOn.value = lastAppliedBackupFileTakenOn! ? convertIsoTimeToLocalTime(lastAppliedBackupFileTakenOn).toLocaleString() : '-';
+			this._lastLSNInfoField.text.value = lastAppliedSSN! ?? '-';
+			this._lastAppliedBackupInfoField.text.value = this._model.migrationStatus.properties.migrationStatusDetails?.lastRestoredFilename ?? '-';
+			this._lastAppliedBackupTakenOnInfoField.text.value = lastAppliedBackupFileTakenOn! ? convertIsoTimeToLocalTime(lastAppliedBackupFileTakenOn).toLocaleString() : '-';
+			this.showInfoField(this._lastLSNInfoField);
+			this.showInfoField(this._lastAppliedBackupTakenOnInfoField);
 
-			this._fileCount.value = loc.ACTIVE_BACKUP_FILES_ITEMS(tableData.length);
+			if (this._shouldDisplayBackupFileTable()) {
+				this._fileCount.updateCssStyles({
+					display: 'inline'
+				});
+				this._fileTable.updateCssStyles({
+					display: 'inline'
+				});
 
-			// Sorting files in descending order of backupStartTime
-			tableData.sort((file1, file2) => new Date(file1.backupStartTime) > new Date(file2.backupStartTime) ? - 1 : 1);
+				this._fileCount.value = loc.ACTIVE_BACKUP_FILES_ITEMS(tableData.length);
 
-			this.fileTable.data = tableData.map((row) => {
-				return [
-					row.fileName,
-					row.type,
-					row.status,
-					row.dataUploaded,
-					row.copyThroughput,
-					convertIsoTimeToLocalTime(row.backupStartTime).toLocaleString(),
-					row.firstLSN,
-					row.lastLSN
-				];
-			});
+				// Sorting files in descending order of backupStartTime
+				tableData.sort((file1, file2) => new Date(file1.backupStartTime) > new Date(file2.backupStartTime) ? - 1 : 1);
+
+				this._fileTable.data = tableData.map((row) => {
+					return [
+						row.fileName,
+						row.type,
+						row.status,
+						row.dataUploaded,
+						row.copyThroughput,
+						convertIsoTimeToLocalTime(row.backupStartTime).toLocaleString(),
+						row.firstLSN,
+						row.lastLSN
+					];
+				});
+			}
 
 			if (migrationStatusTextValue === MigrationStatus.InProgress) {
 				const restoredCount = (this._model.migrationStatus.properties.migrationStatusDetails?.activeBackupSets?.filter(a => a.listOfBackupFiles[0].status === 'Restored'))?.length ?? 0;
@@ -628,13 +578,20 @@ export class MigrationCutoverDialog {
 		}
 	}
 
-	private createInfoField(label: string, value: string): {
+	private createInfoField(label: string, value: string, defaultHidden: boolean = false, iconPath?: azdata.IconPath): {
 		flexContainer: azdata.FlexContainer,
-		text: azdata.TextComponent
+		text: azdata.TextComponent,
+		icon?: azdata.ImageComponent
 	} {
 		const flexContainer = this._view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'column'
 		}).component();
+
+		if (defaultHidden) {
+			flexContainer.updateCssStyles({
+				'display': 'none'
+			});
+		}
 
 		const labelComponent = this._view.modelBuilder.text().withProps({
 			value: label,
@@ -657,11 +614,78 @@ export class MigrationCutoverDialog {
 				'font-size': '12px'
 			}
 		}).component();
-		flexContainer.addItem(textComponent);
+
+		let iconComponent;
+		if (iconPath) {
+			iconComponent = this._view.modelBuilder.image().withProps({
+				iconPath: (iconPath === ' ') ? undefined : iconPath,
+				iconHeight: statusImageSize,
+				iconWidth: statusImageSize,
+				height: statusImageSize,
+				width: statusImageSize,
+				CSSStyles: {
+					'margin': '7px 3px 0 0',
+					'padding': '0'
+				}
+			}).component();
+
+			const iconTextComponent = this._view.modelBuilder.flexContainer()
+				.withItems([
+					iconComponent,
+					textComponent
+				]).withProps({
+					CSSStyles: {
+						'margin': '0',
+						'padding': '0'
+					},
+					display: 'inline-flex'
+				}).component();
+			flexContainer.addItem(iconTextComponent);
+		} else {
+			flexContainer.addItem(textComponent);
+		}
+
 		return {
 			flexContainer: flexContainer,
-			text: textComponent
+			text: textComponent,
+			icon: iconComponent
 		};
+	}
+
+	private showInfoField(infoField: InfoFieldSchema): void {
+		if (infoField.text.value !== '-') {
+			infoField.flexContainer.updateCssStyles({
+				'display': 'inline'
+			});
+		}
+	}
+
+	private _isProvisioned(): boolean {
+		const { migrationStatus, provisioningState } = this._model._migration.migrationContext.properties;
+		return provisioningState === 'Succeeded' || migrationStatus === 'Completing' || migrationStatus === 'Canceling';
+	}
+
+	private _isOnlineMigration(): boolean {
+		let migrationMode = null;
+		if (this._isProvisioned()) {
+			migrationMode = this._model._migration.migrationContext.properties.autoCutoverConfiguration?.autoCutover?.valueOf() ? MigrationMode.OFFLINE : MigrationMode.ONLINE;
+		}
+		return migrationMode === MigrationMode.ONLINE;
+	}
+
+	private _isBlobMigration(): boolean {
+		return this._model._migration.migrationContext.properties.backupConfiguration.sourceLocation?.azureBlob !== undefined;
+	}
+
+	private _shouldDisplayBackupFileTable(): boolean {
+		return this._isProvisioned() && this._isOnlineMigration() && !this._isBlobMigration();
+	}
+
+	private getMigrationStatus(): string {
+		if (this._model.migrationStatus) {
+			return this._model.migrationStatus.properties.migrationStatus ?? this._model.migrationStatus.properties.provisioningState;
+		}
+		return this._model._migration.migrationContext.properties.migrationStatus;
 	}
 }
 
@@ -674,4 +698,10 @@ interface ActiveBackupFileSchema {
 	backupStartTime: string,
 	firstLSN: string,
 	lastLSN: string
+}
+
+interface InfoFieldSchema {
+	flexContainer: azdata.FlexContainer,
+	text: azdata.TextComponent,
+	icon?: azdata.ImageComponent
 }

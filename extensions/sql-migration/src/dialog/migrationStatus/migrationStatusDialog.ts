@@ -10,7 +10,7 @@ import { MigrationContext, MigrationLocalStorage } from '../../models/migrationL
 import { MigrationCutoverDialog } from '../migrationCutover/migrationCutoverDialog';
 import { AdsMigrationStatus, MigrationStatusDialogModel } from './migrationStatusDialogModel';
 import * as loc from '../../constants/strings';
-import { convertTimeDifferenceToDuration, filterMigrations, SupportedAutoRefreshIntervals } from '../../api/utils';
+import { convertTimeDifferenceToDuration, filterMigrations, getMigrationStatusImage, SupportedAutoRefreshIntervals } from '../../api/utils';
 import { SqlMigrationServiceDetailsDialog } from '../sqlMigrationService/sqlMigrationServiceDetailsDialog';
 import { ConfirmCutoverDialog } from '../migrationCutover/confirmCutoverDialog';
 import { MigrationCutoverDialogModel } from '../migrationCutover/migrationCutoverDialogModel';
@@ -286,7 +286,7 @@ export class MigrationStatusDialog {
 				return [
 					{ value: this._getDatabaserHyperLink(migration) },
 					{ value: this._getMigrationStatus(migration) },
-					{ value: loc.ONLINE },
+					{ value: this._getMigrationMode(migration) },
 					{ value: this._getMigrationTargetType(migration) },
 					{ value: migration.targetManagedInstance.name },
 					{ value: migration.controller.name },
@@ -299,14 +299,7 @@ export class MigrationStatusDialog {
 					{ value: this._getMigrationTime(migration.migrationContext.properties.endedOn) },
 					{
 						value: {
-							commands: [
-								'sqlmigration.cutover',
-								'sqlmigration.view.database',
-								'sqlmigration.view.target',
-								'sqlmigration.view.service',
-								'sqlmigration.copy.migration',
-								'sqlmigration.cancel.migration',
-							],
+							commands: this._getMenuCommands(migration),
 							context: migration.migrationContext.id
 						},
 					}
@@ -377,6 +370,27 @@ export class MigrationStatusDialog {
 			: loc.SQL_VIRTUAL_MACHINE;
 	}
 
+	private _getMigrationMode(migration: MigrationContext): string {
+		if (migration.migrationContext.properties.provisioningState === 'Creating') {
+			return '---';
+		}
+		return migration.migrationContext.properties.autoCutoverConfiguration?.autoCutover?.valueOf() ? loc.OFFLINE : loc.ONLINE;
+	}
+
+	private _getMenuCommands(migration: MigrationContext): string[] {
+		let menuCommands = [
+			'sqlmigration.view.database',
+			'sqlmigration.view.target',
+			'sqlmigration.view.service',
+			'sqlmigration.copy.migration',
+			'sqlmigration.cancel.migration',
+		];
+		if (this._getMigrationMode(migration) === loc.ONLINE) {
+			menuCommands.unshift('sqlmigration.cutover');
+		}
+		return menuCommands;
+	}
+
 	private _getMigrationStatus(migration: MigrationContext): azdata.FlexContainer {
 		const properties = migration.migrationContext.properties;
 		const migrationStatus = properties.migrationStatus ?? properties.provisioningState;
@@ -404,7 +418,7 @@ export class MigrationStatusDialog {
 				// migration status icon
 				this._view.modelBuilder.image()
 					.withProps({
-						iconPath: this._statusImageMap(status),
+						iconPath: getMigrationStatusImage(status),
 						iconHeight: statusImageSize,
 						iconWidth: statusImageSize,
 						height: statusImageSize,
@@ -566,24 +580,6 @@ export class MigrationStatusDialog {
 			]
 		}).component();
 		return this._statusTable;
-	}
-
-	private _statusImageMap(status: string): azdata.IconPath {
-		switch (status) {
-			case 'InProgress':
-				return IconPathHelper.inProgressMigration;
-			case 'Succeeded':
-				return IconPathHelper.completedMigration;
-			case 'Creating':
-				return IconPathHelper.notStartedMigration;
-			case 'Completing':
-				return IconPathHelper.completingCutover;
-			case 'Canceling':
-				return IconPathHelper.cancel;
-			case 'Failed':
-			default:
-				return IconPathHelper.error;
-		}
 	}
 
 	private _statusInfoMap(status: string): azdata.IconPath {

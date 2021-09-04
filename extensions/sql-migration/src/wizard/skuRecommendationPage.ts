@@ -493,7 +493,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 	}
 
 
-	public async onPageEnter(): Promise<void> {
+	public async onPageEnter(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
 		this.wizard.registerNavigationValidator((pageChangeInfo) => {
 			const errors: string[] = [];
 			this.wizard.message = {
@@ -552,7 +552,7 @@ export class SKURecommendationPage extends MigrationWizardPage {
 		this.wizard.nextButton.enabled = true;
 	}
 
-	public async onPageLeave(): Promise<void> {
+	public async onPageLeave(pageChangeInfo: azdata.window.WizardPageChangeInfo): Promise<void> {
 		this.eventListener?.dispose();
 		this.wizard.message = {
 			text: '',

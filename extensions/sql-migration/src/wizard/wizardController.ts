@@ -67,8 +67,8 @@ export class WizardController {
 			const newPage = pageChangeInfo.newPage;
 			const lastPage = pageChangeInfo.lastPage;
 			this.sendPageButtonClickEvent(pageChangeInfo).catch(e => console.log(e));
-			await pages[lastPage]?.onPageLeave();
-			await pages[newPage]?.onPageEnter();
+			await pages[lastPage]?.onPageLeave(pageChangeInfo);
+			await pages[newPage]?.onPageEnter(pageChangeInfo);
 		}));
 
 		this._wizardObject.registerNavigationValidator(async validator => {
@@ -82,7 +82,9 @@ export class WizardController {
 		});
 
 		await Promise.all(wizardSetupPromises);
-		await pages[0].onPageEnter();
+		this.extensionContext.subscriptions.push(this._wizardObject.onPageChanged(async (pageChangeInfo: azdata.window.WizardPageChangeInfo) => {
+			await pages[0].onPageEnter(pageChangeInfo);
+		}));
 
 		this.extensionContext.subscriptions.push(this._wizardObject.doneButton.onClick(async (e) => {
 			await stateModel.startMigration();
