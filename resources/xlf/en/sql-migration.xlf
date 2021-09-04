@@ -25,6 +25,9 @@
     <trans-unit id="send-feedback-command">
       <source xml:lang="en">Feedback</source>
     </trans-unit>
+    <trans-unit id="new-support-request-command">
+      <source xml:lang="en">New support request</source>
+    </trans-unit>
     <trans-unit id="migration-context-menu-category">
       <source xml:lang="en">Migration Context Menu</source>
     </trans-unit>
@@ -614,6 +617,9 @@ This may take some time.</source>
     </trans-unit>
     <trans-unit id="sql.migration.copy.throughput">
       <source xml:lang="en">Copy Throughput (MBPS)</source>
+    </trans-unit>
+    <trans-unit id="sql.migration.newsupportrequest">
+      <source xml:lang="en">New support request</source>
     </trans-unit>
     <trans-unit id="sql.migration.summary.page.title">
       <source xml:lang="en">Summary</source>

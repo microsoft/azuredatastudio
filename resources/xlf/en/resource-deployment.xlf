@@ -204,9 +204,6 @@
     <trans-unit id="azure.account.location">
       <source xml:lang="en">Azure Location</source>
     </trans-unit>
-    <trans-unit id="azure.account.infrastructure">
-      <source xml:lang="en">Infrastructure</source>
-    </trans-unit>
     <trans-unit id="filePicker.browse">
       <source xml:lang="en">Browse</source>
     </trans-unit>
@@ -1664,7 +1661,7 @@ Select a different subscription containing at least one server</source>
       <source xml:lang="en">download and invoking script to install azure-cli …</source>
     </trans-unit>
   </body></file>
-  <file original="extensions/resource-deployment/dist/services/tools/azdataToolOld" source-language="en" datatype="plaintext"><body>
+  <file original="extensions/resource-deployment/dist/services/tools/azdataTool" source-language="en" datatype="plaintext"><body>
     <trans-unit id="resourceDeployment.AzdataDescription">
       <source xml:lang="en">Azure Data command line interface</source>
     </trans-unit>
