@@ -13,7 +13,9 @@ export enum AzureResourceItemType {
 	azureDataExplorerContainer = 'azure.resource.itemType.azureDataExplorerContainer',
 	azureDataExplorer = 'azure.resource.itemType.azureDataExplorer',
 	sqlInstance = 'azure.resource.itemType.sqlInstance',
-	message = 'azure.resource.itemType.message'
+	message = 'azure.resource.itemType.message',
+	azureMonitor = 'azure.resource.itemType.azureMonitor',
+	azureMonitorContainer = 'azure.resource.itemType.azureMonitorContainer',
 }
 
 export enum AzureResourceServiceNames {

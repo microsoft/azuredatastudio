@@ -29,6 +29,8 @@ import { SqlInstanceResourceService } from './azureResource/providers/sqlinstanc
 import { SqlInstanceProvider } from './azureResource/providers/sqlinstance/sqlInstanceProvider';
 import { KustoResourceService } from './azureResource/providers/kusto/kustoService';
 import { KustoProvider } from './azureResource/providers/kusto/kustoProvider';
+import { AzureMonitorResourceService } from './azureResource/providers/azuremonitor/azuremonitorService';
+import { AzureMonitorProvider } from './azureResource/providers/azuremonitor/azuremonitorProvider';
 import { PostgresServerProvider } from './azureResource/providers/postgresServer/postgresServerProvider';
 import { PostgresServerService } from './azureResource/providers/postgresServer/postgresServerService';
 import { AzureTerminalService } from './azureResource/services/terminalService';
@@ -156,6 +158,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<azurec
 			const arcFeaturedEnabled = vscode.workspace.getConfiguration(constants.extensionConfigSectionName).get('enableArcFeatures');
 			const providers: azureResource.IAzureResourceProvider[] = [
 				new KustoProvider(new KustoResourceService(), extensionContext),
+				new AzureMonitorProvider(new AzureMonitorResourceService(), extensionContext),
 				new AzureResourceDatabaseServerProvider(new AzureResourceDatabaseServerService(), extensionContext),
 				new AzureResourceDatabaseProvider(new AzureResourceDatabaseService(), extensionContext),
 				new SqlInstanceProvider(new SqlInstanceResourceService(), extensionContext),

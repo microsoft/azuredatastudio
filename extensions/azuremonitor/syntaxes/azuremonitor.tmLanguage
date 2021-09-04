@@ -1,0 +1,449 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+    <dict>
+        <key>scopeName</key>
+        <string>source.kusto</string>
+
+        <key>fileTypes</key>
+        <array>
+            <string>kql</string>
+            <string>kusto</string>
+			<string>csl</string>
+        </array>
+
+        <key>name</key>
+        <string>kusto file</string>
+
+        <key>patterns</key>
+        <!-- Kusto Query Language
+          -  https://docs.microsoft.com/en-us/azure/kusto/query/
+        -->
+        <array>
+            <dict>
+                <!-- Query statements
+                  -  https://docs.microsoft.com/en-us/azure/kusto/query/statements
+                -->
+                <key>match</key>
+                <string>\b(let|set|alias|declare|pattern|restrict|access|to|set)\b</string>
+                <key>name</key>
+                <string>keyword.control.kusto</string>
+            </dict>
+            <dict>
+                <!-- Special functions
+                  -  https://docs.microsoft.com/en-us/azure/kusto/query/clusterfunction
+                -->
+                <key>match</key>
+                <string>\b(cluster|database|materialize|table|toscalar)(?=\W*\()</string>
+                <key>name</key>
+                <string>support.function</string>
+            </dict>
+            <dict>
+                <!-- Scalar operators
+                  -  https://docs.microsoft.com/en-us/azure/kusto/query/binoperators
+                -->
+                <key>match</key>
+                <string>\b(and|or|!in|has|has_cs|hasprefix|hasprefix_cs|hassuffix|hassuffix_cs|contains|contains_cs|startswith|startswith_cs|endswith|endswith_cs|matches|regex|in|between)\b</string>
+                <key>name</key>
+                <string>keyword.operator.kusto</string>
+            </dict>
+            <!-- Scalar functions
+              -  https://docs.microsoft.com/en-us/azure/kusto/query/scalarfunctions
+            -->
+                <dict>
+                    <!-- Scalar function: Binary Functions
+                      -  https://docs.microsoft.com/en-us/azure/kusto/query/scalarfunctions#binary-functions
+                    -->
+                    <key>match</key>
+                    <string>\b(binary_and|binary_not|binary_or|binary_shift_left|binary_shift_right|binary_xor)(?=\W*\()</string>
+                    <key>name</key>
+                    <string>support.function</string>
+                </dict>
+                <dict>
+                    <!-- Scalar function: Conversion Functions
+                      -  https://docs.microsoft.com/en-us/azure/kusto/query/scalarfunctions#binary-functions
+                    -->
+                    <key>match</key>
+                    <string>\b(tobool|todatetime|todecimal|todouble|toguid|tohex|toreal|toint|tolong|tolower|toreal|tostring|totimespan|toupper|to_utf8|translate|treepath|trim|trim_end|trim_start|url_decode|url_encode|weekofyear|welch_test|zip)(?=\W*\()</string>
+                    <key>name</key>
+                    <string>support.function</string>
+                </dict>
+                <dict>
+                    <!-- timespan literals
+                    -  https://docs.microsoft.com/en-us/azure/kusto/query/scalar-data-types/timespan#timespan-literals
+					-->
+                    <key>match</key>
+                    <string>(?<=\.\d|\d|\d\W)(d|h|m|s|ms|microsecond|tick|seconds)\b</string>
+                    <key>name</key>
+                    <string>variable.language</string>
+                </dict>
+                <dict>
+                    <!-- Scalar function: DateTime/Timespan Functions
+                      -  https://docs.microsoft.com/en-us/azure/kusto/query/scalarfunctions#datetimetimespan-functions
+                    -->
+                    <key>match</key>
+                    <string>\b(ago|datetime_add|datetime_part|datetime_diff|dayofmonth|dayofweek|dayofyear|endofday|endofmonth|endofweek|endofyear|format_datetime|format_timespan|getmonth|getyear|hourofday|make_datetime|make_timespan|monthofyear|now|startofday|startofmonth|startofweek|startofyear|todatetime|totimespan|weekofyear)(?=\W*\()</string>
+                    <key>name</key>
+                    <string>support.function</string>
+                </dict>
+                <dict>
+                    <!-- Scalar function: Dynamic/Array Functions
+                      -  https://docs.microsoft.com/en-us/azure/kusto/query/scalarfunctions#dynamicarray-functions
+                    -->
+                    <key>match</key>
+                    <string>\b(array_concat|array_length|array_slice|array_split|array_strcat|bag_keys|pack|pack_all|pack_array|repeat|treepath|zip)(?=\W*\()</string>
+                    <key>name</key>
+                    <string>support.function</string>
+                </dict>
+                <dict>
+                    <!-- Scalar function: Window Scalar Functions
+                      -  https://docs.microsoft.com/en-us/azure/kusto/query/scalarfunctions#window-scalar-functions
+                    -->
+                    <key>match</key>
+                    <string>\b(next|prev|row_cumsum|row_number)(?=\W*\()</string>
+                    <key>name</key>
+                    <string>support.function</string>
+                </dict>
+                <dict>
+                    <!-- Scalar function: Flow Control Functions
+                      -  https://docs.microsoft.com/en-us/azure/kusto/query/scalarfunctions#flow-control-functions
+                    -->
+                    <key>match</key>
+                    <string>\b(toscalar)(?=\W*\()</string>
+                    <key>name</key>
+                    <string>support.function</string>
+                </dict>
+                <dict>
+                    <!-- Scalar function: Mathematical Functions
+                      -  https://docs.microsoft.com/en-us/azure/kusto/query/scalarfunctions#mathematical-functions
+                    -->
+                    <key>match</key>
+                    <string>\b(abs|acos|asin|atan|atan2|beta_cdf|beta_inv|beta_pdf|cos|cot|degrees|exp|exp100|exp2|gamma|hash|isfinite|isinf|isnan|log|log10|log2|loggamma|not|pi|pow|radians|rand|range|round|sign|sin|sqrt|tan|welch_test)(?=\W*\()</string>
+                    <key>name</key>
+                    <string>support.function</string>
+                </dict>
+                <dict>
+                    <!-- Scalar function: Metadata Functions
+                      -  https://docs.microsoft.com/en-us/azure/kusto/query/scalarfunctions#metadata-functions
+                    -->
+                    <key>match</key>
+                    <string>\b(column_ifexists|current_principal|cursor_after|extent_id|extent_tags|ingestion_time)(?=\W*\()</string>
+                    <key>name</key>
+                    <string>support.function</string>
+                </dict>
+                <dict>
+                    <!-- Scalar function: Rounding Functions
+                      -  https://docs.microsoft.com/en-us/azure/kusto/query/scalarfunctions#rounding-functions
+                    -->
+                    <key>match</key>
+                    <string>\b(bin|bin_at|ceiling|floor)(?=\W*\()</string>
+                    <key>name</key>
+                    <string>support.function</string>
+                </dict>
+                <dict>
+                    <!-- Scalar function: Conditional Functions
+                      -  https://docs.microsoft.com/en-us/azure/kusto/query/scalarfunctions#conditional-functions
+                    -->
+                    <key>match</key>
+                    <string>\b(case|coalesce|iif|iff|max_of|min_of)(?=\W*\()</string>
+                    <key>name</key>
+                    <string>support.function</string>
+                </dict>
+                <dict>
+                    <!-- Scalar function: Series Element-wise Functions
+                      -  https://docs.microsoft.com/en-us/azure/kusto/query/scalarfunctions#series-element-wise-functions
+                    -->
+                    <key>match</key>
+                    <string>\b(series_add|series_divide|series_equals|series_greater|series_greater_equals|series_less|series_less_equals|series_multiply|series_not_equals|series_subtract)(?=\W*\()</string>
+                    <key>name</key>
+                    <string>support.function</string>
+                </dict>
+                <dict>
+                    <!-- Scalar function: Series Processing Functions
+                      -  https://docs.microsoft.com/en-us/azure/kusto/query/scalarfunctions#series-processing-functions
+                    -->
+                    <key>match</key>
+                    <string>\b(series_decompose|series_decompose_anomalies|series_decompose_forecast|series_fill_backward|series_fill_const|series_fill_forward|series_fill_linear|series_fir|series_fit_2lines|series_fit_2lines_dynamic|series_fit_line|series_fit_line_dynamic|series_iir|series_outliers|series_periods_detect|series_periods_validate|series_seasonal|series_stats|series_stats_dynamic)(?=\W*\()</string>
+                    <key>name</key>
+                    <string>support.function</string>
+                </dict>
+                <dict>
+                    <!-- Scalar function: String Functions
+                      -  https://docs.microsoft.com/en-us/azure/kusto/query/scalarfunctions#string-functions
+                    -->
+                    <key>match</key>
+                    <string>\b(base64_decodestring|base64_encodestring|countof|extract|extract_all|extractjson|indexof|isempty|isnotempty|isnotnull|isnull|parse_ipv4|parse_json|parse_url|parse_urlquery|parse_version|replace|reverse|split|strcat|strcat_delim|strcmp|strlen|strrep|substring|toupper|translate|trim|trim_end|trim_start|url_decode|url_encode)(?=\W*\()</string>
+                    <key>name</key>
+                    <string>support.function</string>
+                </dict>
+                <dict>
+                    <!-- Scalar function: Type Functions
+                      -  https://docs.microsoft.com/en-us/azure/kusto/query/scalarfunctions#type-functions
+                    -->
+                    <key>match</key>
+                    <string>\b(gettype)(?=\W*\()</string>
+                    <key>name</key>
+                    <string>support.function</string>
+                </dict>
+                <dict>
+                    <!-- Scalar function: Scalar Aggregation Functions
+                      -  https://docs.microsoft.com/en-us/azure/kusto/query/scalarfunctions#scalar-aggregation-functions
+                    -->
+                    <key>match</key>
+                    <string>\b(dcount_hll|hll_merge|percentile_tdigest|percentrank_tdigest|rank_tdigest|tdigest_merge)(?=\W*\()</string>
+                    <key>name</key>
+                    <string>support.function</string>
+                </dict>
+            <dict>
+                <!-- Aggregation functions
+                    -  https://docs.microsoft.com/en-us/azure/kusto/query/any-aggfunction
+                -->
+                <key>match</key>
+                <string>\b(any|arg_max|arg_min|avg|avgif|buildschema|count|countif|dcount|dcountif|hll|hll_merge|make_bag|make_list|make_set|max|min|percentiles|stdev|stdevif|stdevp|sum|sumif|tdigest|tdigest_merge|variance|varianceif|variancep)(?=\W*\()</string>
+                <key>name</key>
+                <string>support.function</string>
+            </dict>
+            <dict>
+                <!-- Window functions
+                    -  https://docs.microsoft.com/en-us/azure/kusto/query/windowsfunctions
+                -->
+                <key>match</key>
+                <string>\b(next|prev|row_cumsum|row_number)(?=\W*\()</string>
+                <key>name</key>
+                <string>support.function</string>
+            </dict>
+            <dict>
+                <!-- User Analytics (evaluate plugins)
+                    -  https://docs.microsoft.com/en-us/azure/kusto/query/useranalytics
+                -->
+                <key>match</key>
+                <string>\b(activity_counts_metrics|sliding_window_counts|activity_metrics|new_activity_metrics|activity_engagement|active_users_count|session_count|funnel_sequence|funnel_sequence_completion)(?=\W*\()</string>
+                <key>name</key>
+                <string>support.function</string>
+            </dict>
+            <dict>
+                <!-- User-defined functions
+                    -  https://docs.microsoft.com/en-us/azure/kusto/query/functions/user-defined-functions
+                -->
+                <key>match</key>
+                <string>\.create-or-alter</string>
+                <key>name</key>
+                <string>keyword.control.kusto</string>
+            </dict>
+            <dict>
+                 <!-- User-defined functions
+                    -  https://docs.microsoft.com/en-us/azure/kusto/query/functions/user-defined-functions
+				-->
+                <key>match</key>
+                <string>(?<=let ).+(?=\W*=)</string>
+                <key>name</key>
+                <string>entity.function.name.lambda.kusto</string>
+            </dict>
+            <dict>
+                <!-- User-defined functions
+                    -  https://docs.microsoft.com/en-us/azure/kusto/query/functions/user-defined-functions
+                -->
+                <key>match</key>
+                <string>\b(with|folder|docstring|skipvalidation)\b</string>
+                <key>name</key>
+                <string>keyword.operator.kusto</string>
+            </dict>
+                <dict>
+                    <key>match</key>
+                    <string>\b(function)\b</string>
+                    <key>name</key>
+                    <string>variable.language</string>
+                </dict>
+
+            <dict>
+                <!-- Data types
+                  -  https://docs.microsoft.com/en-us/azure/kusto/query/scalar-data-types/
+                -->
+                <key>match</key>
+                <string>\b(bool|datetime|decimal|dynamic|guid|int|long|real|string|timespan)\b</string>
+                <key>name</key>
+                <string>storage.type</string>
+            </dict>
+
+            <dict>
+                <key>match</key>
+                <string>\b(datatable)(?=\W*\()</string>
+                <key>name</key>
+                <string>support.function</string>
+            </dict>
+
+            <!-- Tabular operators
+                -  https://docs.microsoft.com/en-us/azure/kusto/query/statements
+            -->
+            <dict>
+                <key>match</key>
+                <string>\b(as|consume|count|datatable|distinct|evaluate|extend|externaldata|facet|find|fork|getschema|invoke|join|limit|take|lookup|make-series|mv-expand|order|sort|project-away|project-rename|project|parse|partition|print|range|reduce|render|sample|sample-distinct|search|serialize|sort|summarize|take|top-nested|top|top-hitters|union|where)\b</string>
+                <key>name</key>
+                <string>keyword.operator.special.kusto</string>
+            </dict>
+                <dict>
+                    <!-- Tabular operators: evalute (plugins)
+                    -  https://docs.microsoft.com/en-us/azure/kusto/query/evaluateoperator
+                    -->
+                    <key>match</key>
+                    <string>\b(autocluster|bag_unpack|basket|dcount_intersect|diffpatterns|narrow|pivot|preview|rolling_percentile|sql_request)(?=\W*\()</string>
+                    <key>name</key>
+                    <string>support.function</string>
+                </dict>
+                <dict>
+                    <!-- Tabular operators: join
+                    -  https://docs.microsoft.com/en-us/azure/kusto/query/joinoperator
+                    - TODO $left, $right
+                    -->
+                    <key>match</key>
+                    <string>\b(on|kind|hint\.remote|hint\.strategy)\b</string>
+                    <key>name</key>
+                    <string>keyword.operator.kusto</string>
+                </dict>
+                    <dict>
+                        <!-- Tabular operators: join ($left, $right)
+                        -  https://docs.microsoft.com/en-us/azure/kusto/query/joinoperator
+                        -->
+                        <key>match</key>
+                        <string>(\$left|\$right)\b</string>
+                        <key>name</key>
+                        <string>keyword.other.kusto</string>
+                    </dict>
+                    <dict>
+                        <!-- Tabular operators: join (kinds, strategies)
+                        -  https://docs.microsoft.com/en-us/azure/kusto/query/joinoperator
+                        -->
+                        <key>match</key>
+                        <string>\b(innerunique|inner|leftouter|rightouter|fullouter|leftanti|anti|leftantisemi|rightanti|rightantisemi|leftsemi|rightsemi|shuffle|broadcast)\b</string>
+                        <key>name</key>
+                        <string>keyword.other.kusto</string>
+                    </dict>
+                <dict>
+                    <!-- Tabular operators: make-series (series analysis functions)
+                    -  https://docs.microsoft.com/en-us/azure/kusto/query/make-seriesoperator
+                    -->
+                    <key>match</key>
+                    <string>\b(series_fir|series_iir|series_fit_line|series_fit_line_dynamic|series_fit_2lines|series_fit_2lines_dynamic|series_outliers|series_periods_detect|series_periods_validate|series_stats_dynamic|series_stats)(?=\W*\()</string>
+                    <key>name</key>
+                    <string>support.function</string>
+                </dict>
+                <dict>
+                    <!-- Tabular operators: make-series (series interpolation functions)
+                    -  https://docs.microsoft.com/en-us/azure/kusto/query/make-seriesoperator
+                    -->
+                    <key>match</key>
+                    <string>\b(series_fill_backward|series_fill_const|series_fill_forward|series_fill_linear)(?=\W*\()</string>
+                    <key>name</key>
+                    <string>support.function</string>
+                </dict>
+                <dict>
+                    <!-- Tabular operators: mv-expand (bagexpand options)
+                    -  https://docs.microsoft.com/en-us/azure/kusto/query/mvexpandoperator
+                    -->
+                    <key>match</key>
+                    <string>\b(bag|array)\b</string>
+                    <key>name</key>
+                    <string>keyword.operator.kusto</string>
+                </dict>
+                <dict>
+                    <!-- Tabular operators: order
+                    -  https://docs.microsoft.com/en-us/azure/kusto/query/orderoperator
+                    -->
+                    <key>match</key>
+                    <string>\b(asc|desc|nulls first|nulls last)\b</string>
+                    <key>name</key>
+                    <string>keyword.other.kusto</string>
+                </dict>
+                <dict>
+                    <!-- Tabular operators: parse
+                    -  https://docs.microsoft.com/en-us/azure/kusto/query/parseoperator
+                    -->
+                    <key>match</key>
+                    <string>\b(regex|simple|relaxed)\b</string>
+                    <key>name</key>
+                    <string>keyword.other.kusto</string>
+                </dict>
+                <dict>
+                    <!-- Tabular operators: render
+                    -  https://docs.microsoft.com/en-us/azure/kusto/query/renderoperator
+                    -
+                    - TODO Properties (accumulate ... anomalycolumns)
+                    - TODO visualization kinds (areachart ... columnchart)
+                    - TODO ysplit
+                    -->
+                    <key>match</key>
+                    <string>\b(anomalychart|areachart|barchart|columnchart|ladderchart|linechart|piechart|pivotchart|scatterchart|stackedareachart|table|timechart|timepivot)\b</string>
+                    <key>name</key>
+                    <string>support.function</string>
+                </dict>
+                <dict>
+                    <!-- Tabular operators: common helper operators
+                    -  https://docs.microsoft.com/en-us/azure/kusto/query/evaluateoperator
+                    -->
+                    <key>match</key>
+                    <string>\b(by|from|in|of|to|step|with)\b</string>
+                    <key>name</key>
+                    <string>keyword.operator.word</string>
+                </dict>
+
+            <dict>
+                <!-- Strings
+                -->
+                <key>match</key>
+                <string>".*?"</string>
+                <key>name</key>
+                <string>string.quoted.double</string>
+            </dict>
+                <dict>
+                    <key>match</key>
+                    <string>\{.*?\}</string>
+                    <key>name</key>
+                    <string>string.variable</string>
+                </dict>
+                <dict>
+                    <key>match</key>
+                    <string>'.*?'</string>
+                    <key>name</key>
+                    <string>string.quoted.single</string>
+                </dict>
+            <dict>
+                <!-- Comments
+                -->
+                <key>match</key>
+                <string>//.*</string>
+                <key>name</key>
+                <string>comment.line</string>
+            </dict>
+            <dict>
+                <key>match</key>
+                <string>\b((0(x|X)[0-9a-fA-F]*)|(([0-9]+\.?[0-9]*+)|(\.[0-9]+))((e|E)(\+|-)?[0-9]+)?)(L|l|UL|ul|u|U|F|f|ll|LL|ull|ULL)?(?=\b|\w)</string>
+                <key>name</key>
+                <string>constant.numeric</string>
+            </dict>
+            <dict>
+                <key>match</key>
+                <string>\b(true|false)\b</string>
+                <key>name</key>
+                <string>constant.language</string>
+            </dict>
+            <dict>
+                <!-- Deprecated functions
+                -->
+                <key>match</key>
+                <string>\b(array_strcat|make_dictionary|makelist|makeset|mvexpand|todynamic)(?=\W*\(|\b)</string>
+                <key>name</key>
+                <string>invalid.deprecated</string>
+            </dict>
+            <dict>
+                <!-- Illegal keywords
+                -->
+                <key>match</key>
+                <string></string>
+                <key>name</key>
+                <string>invalid.illegal</string>
+            </dict>
+        </array>
+        <key>uuid</key>
+        <string>FF0550E0-3A29-11E3-AA6E-0800200C9B77</string>
+    </dict>
+</plist>
