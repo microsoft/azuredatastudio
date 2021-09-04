@@ -10,6 +10,7 @@ export interface ExtensionGlobalMemento extends vscode.Memento {
 }
 
 export class MockExtensionContext implements vscode.ExtensionContext {
+	extensionRuntime = 1;
 	logger: undefined;
 	logPath: './';
 	subscriptions: { dispose(): any; }[];

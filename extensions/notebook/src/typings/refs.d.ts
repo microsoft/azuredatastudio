@@ -6,5 +6,6 @@
 /// <reference path='../../../../src/sql/azdata.d.ts'/>
 /// <reference path='../../../../src/sql/azdata.proposed.d.ts'/>
 /// <reference path='../../../../src/vs/vscode.d.ts'/>
+/// <reference path='../../../../src/vs/vscode.proposed.d.ts' />
 /// <reference path='../../../big-data-cluster/src/bdc.d.ts'/>
 /// <reference types='@types/node'/>

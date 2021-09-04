@@ -628,6 +628,14 @@ export interface IViewDescriptorService {
 
 // Custom views
 
+export interface ITreeDataTransferItem {
+	asString(): Thenable<string>;
+}
+
+export interface ITreeDataTransfer {
+	items: Map<string, ITreeDataTransferItem>;
+}
+
 export interface ITreeView extends IDisposable {
 
 	dataProvider: ITreeViewDataProvider | undefined;
@@ -818,8 +826,9 @@ export interface ITreeViewDataProvider {
 	getChildren(element?: ITreeItem): Promise<ITreeItem[]>;
 }
 
+export const TREE_ITEM_DATA_TRANSFER_TYPE = 'text/treeitems';
 export interface ITreeViewDragAndDropController {
-	onDrop(elements: ITreeItem[], target: ITreeItem): Promise<void>;
+	onDrop(elements: ITreeDataTransfer, target: ITreeItem): Promise<void>;
 }
 
 export interface IEditableData {
