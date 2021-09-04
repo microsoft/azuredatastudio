@@ -88,16 +88,7 @@ export class AccountsSelectionPage extends MigrationWizardPage {
 				if (this.migrationStateModel._azureAccount.properties.tenants.length > 1) {
 					this.migrationStateModel._accountTenants = selectedAzureAccount.properties.tenants;
 					this._accountTenantDropdown.values = await this.migrationStateModel.getTenantValues();
-					// Choose tenant dropdown here
-					// if (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= 0) {
-					// 	this._accountTenantDropdown.values.forEach((account, index) => {
-					// 		if (account.name === this.migrationStateModel.savedInfo.azureAccount?.displayInfo.userId) {
-					// 			selectDropDownIndex(this._azureAccountsDropdown, index);
-					// 		}
-					// 	});
-					// } else {
 					selectDropDownIndex(this._accountTenantDropdown, 0);
-					// }
 					this._accountTenantFlexContainer.updateCssStyles({
 						'display': 'inline'
 					});
@@ -106,7 +97,6 @@ export class AccountsSelectionPage extends MigrationWizardPage {
 						'display': 'none'
 					});
 					if (this.migrationStateModel.resumeAssessment && this.migrationStateModel.savedInfo.closedPage >= 0) {
-						// choose account dropdon here
 						(<azdata.CategoryValue[]>this._azureAccountsDropdown.values)?.forEach((account, index) => {
 							if (account.name === this.migrationStateModel.savedInfo.azureAccount?.displayInfo.userId) {
 								selectDropDownIndex(this._azureAccountsDropdown, index);
@@ -190,7 +180,6 @@ export class AccountsSelectionPage extends MigrationWizardPage {
 				this.migrationStateModel._databaseBackup.subscription = undefined!;
 			}
 			const selectedAzureAccount = this.migrationStateModel.getAccount(selectedIndex);
-			// Making a clone of the account object to preserve the original tenants
 			this.migrationStateModel._azureAccount = deepClone(selectedAzureAccount);
 
 		}));

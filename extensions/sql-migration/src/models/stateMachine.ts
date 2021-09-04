@@ -1007,25 +1007,19 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 		switch (currentPage) {
 			// Summary
 			case 6:
-				console.log('Saving assessment from page: Summary');
 
 			// Integration Runtime
 			case 5:
-				console.log('Saving assessment from page: Integration Runtime');
 
 			// Database Backup
 			case 4:
-				console.log('Saving assessment from page: Database Backup');
 
 			// Migration Mode
 			case 3:
-				console.log('Saving assessment from page: Migration Mode');
-				// Online or Offline Migration
 				saveInfo.migrationMode = this._databaseBackup.migrationMode;
 
 			// SKU Recommendation
 			case 2:
-				console.log('Saving assessment from page: SKU Recommendation');
 				saveInfo.migrationTargetType = this._targetType;
 
 				saveInfo.databaseAssessment = this._databaseAssessment;
@@ -1035,16 +1029,12 @@ export class MigrationStateModel implements Model, vscode.Disposable {
 				saveInfo.location = this._location;
 				saveInfo.resourceGroup = this._resourceGroup;
 				saveInfo.targetServerInstance = this._targetServerInstance;
-				console.log(saveInfo);
 			// Database Selector
 			case 1:
-				console.log('Saving assessment from page: Database Selector');
 				saveInfo.selectedDatabases = this.databaseSelectorTableValues;
 			// Azure Account
 			case 0:
-				console.log('Saving assessment from page: Azure Account');
 				saveInfo.azureAccount = deepClone(this._azureAccount);
-				console.log(`Save Info: ${saveInfo}`);
 				saveInfo.azureTenant = deepClone(this._azureTenant);
 				this.extensionContext.globalState.update(`${constants.MEMENTO_STRING}.${serverName}`, saveInfo);
 		}
