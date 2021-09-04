@@ -7,10 +7,10 @@ import { localize } from 'vs/nls';
 import { GettingStartedInputSerializer, GettingStartedPage, inWelcomeContext } from 'vs/workbench/contrib/welcome/gettingStarted/browser/gettingStarted';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { EditorExtensions, IEditorInputFactoryRegistry } from 'vs/workbench/common/editor';
-import { MenuId, registerAction2, Action2 } from 'vs/platform/actions/common/actions';
+import { registerAction2, Action2, MenuId } from 'vs/platform/actions/common/actions';
 import { IInstantiationService, ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
 import { ContextKeyEqualsExpr } from 'vs/platform/contextkey/common/contextkey';
-import { IEditorService, SIDE_GROUP } from 'vs/workbench/services/editor/common/editorService';
+import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { KeybindingWeight } from 'vs/platform/keybinding/common/keybindingsRegistry';
 import { KeyCode, KeyMod } from 'vs/base/common/keyCodes';
 import { EditorDescriptor, IEditorRegistry } from 'vs/workbench/browser/editor';
@@ -21,67 +21,11 @@ import { Extensions as WorkbenchExtensions, IWorkbenchContributionsRegistry } fr
 import { LifecyclePhase } from 'vs/workbench/services/lifecycle/common/lifecycle';
 import { ConfigurationScope, Extensions as ConfigurationExtensions, IConfigurationRegistry } from 'vs/platform/configuration/common/configurationRegistry';
 import { workbenchConfigurationNodeBase } from 'vs/workbench/common/configuration';
-import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
-import { EditorOverride } from 'vs/platform/editor/common/editor';
 import { CommandsRegistry, ICommandService } from 'vs/platform/commands/common/commands';
 import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
 
 
 export * as icons from 'vs/workbench/contrib/welcome/gettingStarted/browser/gettingStartedIcons';
-
-registerAction2(class extends Action2 {
-	constructor() {
-		super({
-			id: 'workbench.action.openWalkthrough',
-			title: localize('Welcome', "Welcome"),
-			category: localize('help', "Help"),
-			f1: true,
-			menu: {
-				id: MenuId.MenubarHelpMenu,
-				group: '1_welcome',
-				order: 1,
-			}
-		});
-	}
-
-	public run(accessor: ServicesAccessor, walkthroughID: string | { category: string, step: string } | undefined, toSide: boolean | undefined) {
-		const editorGroupsService = accessor.get(IEditorGroupsService);
-		const instantiationService = accessor.get(IInstantiationService);
-		const editorService = accessor.get(IEditorService);
-
-		if (walkthroughID) {
-			const selectedCategory = typeof walkthroughID === 'string' ? walkthroughID : walkthroughID.category;
-			const selectedStep = typeof walkthroughID === 'string' ? undefined : walkthroughID.step;
-			// Try first to select the walkthrough on an active welcome page with no selected walkthrough
-			for (const group of editorGroupsService.groups) {
-				if (group.activeEditor instanceof GettingStartedInput) {
-					if (!group.activeEditor.selectedCategory) {
-						(group.activeEditorPane as GettingStartedPage).makeCategoryVisibleWhenAvailable(selectedCategory, selectedStep);
-						return;
-					}
-				}
-			}
-
-			// Otherwise, try to find a welcome input somewhere with no selected walkthrough, and open it to this one.
-			const result = editorService.findEditors({ typeId: GettingStartedInput.ID, editorId: undefined, resource: GettingStartedInput.RESOURCE });
-			for (const { editor, groupId } of result) {
-				if (editor instanceof GettingStartedInput) {
-					if (!editor.selectedCategory) {
-						editor.selectedCategory = selectedCategory;
-						editor.selectedStep = selectedStep;
-						editorService.openEditor(editor, { revealIfOpened: true, override: EditorOverride.DISABLED }, groupId);
-						return;
-					}
-				}
-			}
-
-			// Otherwise, just make a new one.
-			editorService.openEditor(instantiationService.createInstance(GettingStartedInput, { selectedCategory: selectedCategory, selectedStep: selectedStep }), {}, toSide ? SIDE_GROUP : undefined);
-		} else {
-			editorService.openEditor(new GettingStartedInput({}), {});
-		}
-	}
-});
 
 Registry.as<IEditorInputFactoryRegistry>(EditorExtensions.EditorInputFactories).registerEditorInputSerializer(GettingStartedInput.ID, GettingStartedInputSerializer);
 Registry.as<IEditorRegistry>(EditorExtensions.Editors).registerEditor(
