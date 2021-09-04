@@ -7,7 +7,7 @@ import type * as azdataType from 'azdata';
 import * as vscode from 'vscode';
 import { getAzdataApi } from '../common/utils';
 
-interface Deferred<T> {
+export interface Deferred<T> {
 	resolve: (result: T | Promise<T>) => void;
 	reject: (reason: any) => void;
 }
@@ -42,7 +42,7 @@ export abstract class DialogBase {
 		await this.initDialogPromise;
 	}
 
-	private onCancelButtonClicked(): void {
+	protected onCancelButtonClicked(): void {
 		this.dispose();
 	}
 

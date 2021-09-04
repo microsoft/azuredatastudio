@@ -9,6 +9,7 @@ import * as sqldbproj from 'sqldbproj';
 import * as vscode from 'vscode';
 import * as constants from '../common/constants';
 import { IconPathHelper } from '../common/iconHelper';
+import { getDataWorkspaceExtensionApi } from '../common/utils';
 import { SqlDatabaseProjectTreeViewProvider } from '../controllers/databaseProjectTreeViewProvider';
 import { ProjectsController } from '../controllers/projectController';
 import { Project } from '../models/project';
@@ -146,5 +147,25 @@ export class SqlDatabaseProjectProvider implements dataworkspace.IProjectProvide
 
 	get image(): ThemedIconPath {
 		return IconPathHelper.dashboardSqlProj;
+	}
+
+	async openSqlNewProjectDialog(allowedTargetPlatforms?: sqldbproj.SqlTargetPlatform[]): Promise<vscode.Uri | undefined> {
+		let targetPlatforms = Array.from(constants.targetPlatformToVersion.keys());
+		if (allowedTargetPlatforms) {
+			targetPlatforms = targetPlatforms.filter(p => allowedTargetPlatforms.toString().includes(p));
+		}
+
+		const projectType: dataworkspace.IProjectType = {
+			id: constants.emptySqlDatabaseProjectTypeId,
+			projectFileExtension: constants.sqlprojExtension.replace(/\./g, ''),
+			displayName: constants.emptyProjectTypeDisplayName,
+			description: constants.emptyProjectTypeDescription,
+			icon: IconPathHelper.colorfulSqlProject,
+			targetPlatforms: targetPlatforms,
+			defaultTargetPlatform: constants.defaultTargetPlatform
+		};
+
+		const projectUri = getDataWorkspaceExtensionApi().openSpecificProjectNewProjectDialog(projectType);
+		return projectUri;
 	}
 }

@@ -6,7 +6,7 @@
 import type * as azdataType from 'azdata';
 import * as vscode from 'vscode';
 import * as path from 'path';
-import { DialogBase } from './dialogBase';
+import { Deferred, DialogBase } from './dialogBase';
 import { IWorkspaceService } from '../common/interfaces';
 import * as constants from '../common/constants';
 import { IProjectType } from 'dataworkspace';
@@ -14,6 +14,7 @@ import { directoryExist } from '../common/utils';
 import { IconPathHelper } from '../common/iconHelper';
 import { defaultProjectSaveLocation } from '../common/projectLocationHelper';
 import { TelemetryActions, TelemetryReporter, TelemetryViews } from '../common/telemetry';
+import { WorkspaceService } from '../services/workspaceService';
 
 class NewProjectDialogModel {
 	projectTypeId: string = '';
@@ -23,12 +24,22 @@ class NewProjectDialogModel {
 	targetPlatform?: string;
 }
 
+export async function openSpecificProjectNewProjectDialog(projectType: IProjectType, workspaceService: WorkspaceService): Promise<vscode.Uri | undefined> {
+	const dialog = new NewProjectDialog(workspaceService, projectType);
+	await dialog.open();
+	await dialog.newDialogPromise;
+	return dialog.projectUri;
+}
+
 export class NewProjectDialog extends DialogBase {
 	public model: NewProjectDialogModel = new NewProjectDialogModel();
 	public formBuilder: azdataType.FormBuilder | undefined;
 	public targetPlatformDropdownFormComponent: azdataType.FormComponent | undefined;
+	public newProjectDialogComplete: Deferred<void> | undefined;
+	public newDialogPromise: Promise<void> = new Promise<void>((resolve, reject) => this.newProjectDialogComplete = { resolve, reject });
+	public projectUri: vscode.Uri | undefined;
 
-	constructor(private workspaceService: IWorkspaceService) {
+	constructor(private workspaceService: IWorkspaceService, private specificProjectType?: IProjectType) {
 		super(constants.NewProjectDialogTitle, 'NewProject', constants.CreateButtonText);
 
 		// dialog launched from Welcome message button (only visible when no current workspace) vs. "add project" button
@@ -64,6 +75,11 @@ export class NewProjectDialog extends DialogBase {
 		}
 	}
 
+	override onCancelButtonClicked(): void {
+		this.newProjectDialogComplete?.resolve();
+		this.dispose();
+	}
+
 	override async onComplete(): Promise<void> {
 		try {
 
@@ -71,7 +87,8 @@ export class NewProjectDialog extends DialogBase {
 				.withAdditionalProperties({ projectFileExtension: this.model.projectFileExtension, projectTemplateId: this.model.projectTypeId })
 				.send();
 
-			await this.workspaceService.createProject(this.model.name, vscode.Uri.file(this.model.location), this.model.projectTypeId, this.model.targetPlatform);
+			this.projectUri = await this.workspaceService.createProject(this.model.name, vscode.Uri.file(this.model.location), this.model.projectTypeId, this.model.targetPlatform);
+			this.newProjectDialogComplete?.resolve();
 		}
 		catch (err) {
 
@@ -84,7 +101,13 @@ export class NewProjectDialog extends DialogBase {
 	}
 
 	protected async initialize(view: azdataType.ModelView): Promise<void> {
-		const allProjectTypes = await this.workspaceService.getAllProjectTypes();
+		let allProjectTypes = await this.workspaceService.getAllProjectTypes();
+
+		// if a specific project type is specified, only show that one
+		if (this.specificProjectType && allProjectTypes.find(p => p.id === this.specificProjectType?.id)) {
+			allProjectTypes = [this.specificProjectType];
+		}
+
 		const projectTypeRadioCardGroup = view.modelBuilder.radioCardGroup().withProps({
 			cards: allProjectTypes.map((projectType: IProjectType) => {
 				return <azdataType.RadioCard>{
