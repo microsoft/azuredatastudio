@@ -363,9 +363,10 @@ function renameVscodeLangpacks() {
             console.log('vscode pack is not in ADS yet: ' + langId);
             continue;
         }
-        gulp.src(`i18n/ads-language-pack-${langId}/*.md`)
-            .pipe(vfs.dest(locVSCODEFolder, { overwrite: true }))
-            .end(function () {
+        gulp.src(path.join(locADSFolder, '*.md'))
+            .pipe(rename(filepath => filepath.dirname = ''))
+            .pipe(gulp.dest(locVSCODEFolder))
+            .on('end', () => {
             rimraf.sync(locADSFolder);
             fs.renameSync(locVSCODEFolder, locADSFolder);
         });
