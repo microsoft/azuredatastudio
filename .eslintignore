@@ -12,6 +12,8 @@
 **/vscode-api-tests/testWorkspace2/**
 **/extensions/**/out/**
 **/extensions/**/build/**
+**/big-data-cluster/src/bigDataCluster/controller/apiGenerated.ts
+**/big-data-cluster/src/bigDataCluster/controller/clusterApiGenerated2.ts
 **/extensions/markdown-language-features/media/**
 **/extensions/markdown-language-features/notebook-out/**
 **/extensions/typescript-basics/test/colorize-fixtures/**

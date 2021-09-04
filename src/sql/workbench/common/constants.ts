@@ -61,3 +61,8 @@ export interface INotebookSearchConfigurationProperties {
 	};
 	sortOrder: SearchSortOrder;
 }
+
+export const RESULTS_GRID_DEFAULTS = {
+	cellPadding: [5, 8, 4],
+	rowHeight: 24
+};

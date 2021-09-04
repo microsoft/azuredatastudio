@@ -50,16 +50,16 @@
 		"sql/workbench/contrib/query/browser/queryResultsEditor.ts",
 		"sql/workbench/services/objectExplorer/browser/iconRenderer.ts",
 		"sql/workbench/services/resourceProvider/browser/firewallRuleDialog.ts",
+		"sql/workbench/services/notebook/browser/outputs/renderers.ts",
 		"sql/workbench/contrib/welcome/page/browser/welcomePage.ts",
 		"sql/workbench/contrib/editData/browser/editDataResultsEditor.ts",
 		"sql/workbench/contrib/jobManagement/browser/jobHistoryTree.ts",
 		"sql/workbench/contrib/notebook/browser/outputs/mimeRenderer.component.ts",
 		"sql/workbench/contrib/notebook/browser/outputs/markdownOutput.component.ts",
-		"sql/workbench/contrib/notebook/browser/outputs/renderers.ts",
 		"vs/base/parts/tree/browser/treeDefaults.ts"
 	],
 	"ban-script-content-assignments": [
-		"sql/workbench/contrib/notebook/browser/outputs/renderers.ts"
+		"sql/workbench/services/notebook/browser/outputs/renderers.ts"
 	],
 	"ban-domparser-parsefromstring": [
 		"sql/workbench/contrib/queryPlan/browser/planXmlParser.ts"

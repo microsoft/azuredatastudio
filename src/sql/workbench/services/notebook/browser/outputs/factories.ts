@@ -3,7 +3,7 @@
 | Distributed under the terms of the Modified BSD License.
 |----------------------------------------------------------------------------*/
 
-import * as widgets from 'sql/workbench/contrib/notebook/browser/outputs/widgets';
+import * as widgets from 'sql/workbench/services/notebook/browser/outputs/widgets';
 import { ImageMimeTypes } from 'sql/workbench/services/notebook/common/contracts';
 import { IRenderMime } from './renderMimeInterfaces';
 
