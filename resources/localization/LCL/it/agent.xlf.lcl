@@ -196,7 +196,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Notebook '{0}' updated successfully]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Il notebook  '{0}' è stato aggiornato]]></Val>
+            <Val><![CDATA[Il notebook '{0}' è stato aggiornato]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
