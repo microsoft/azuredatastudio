@@ -10,6 +10,7 @@ export const developers: string[] = [
 	'abist',
 	'alanrenmsft',
 	'anjalia',
+	'anjaligoyal',
 	'anthonydresser',
 	'bnhoule',
 	'caohai',
