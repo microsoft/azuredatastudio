@@ -50,6 +50,10 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 
 	}
 
+	changeConnectionUri(newUri: string, oldUri: string): void {
+
+	}
+
 	showConnectionDialog(params?: INewConnectionParams, options?: IConnectionCompletionOptions, model?: IConnectionProfile, connectionResult?: IConnectionResult): Promise<void> {
 		return undefined!;
 	}
@@ -308,5 +312,9 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 
 	getConnection(uri: string): ConnectionProfile {
 		return undefined!;
+	}
+
+	refreshAzureAccountTokenIfNecessary(uri: string): Promise<boolean> {
+		return undefined;
 	}
 }

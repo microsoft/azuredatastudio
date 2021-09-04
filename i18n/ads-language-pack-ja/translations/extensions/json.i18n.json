@@ -9,8 +9,8 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"displayName": "JSON の基本言語サポート",
-			"description": "JSON ファイルで、構文の強調表示とかっこの対応付けを提供します。"
+			"description": "JSON ファイルで、構文の強調表示とかっこの対応付けを提供します。",
+			"displayName": "JSON の基本言語サポート"
 		}
 	}
 }

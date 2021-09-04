@@ -6,25 +6,24 @@
 import * as assert from 'assert';
 import { nb } from 'azdata';
 import * as op from 'sql/workbench/contrib/notebook/browser/models/outputProcessor';
-import { JSONObject } from 'sql/workbench/services/notebook/common/jsonext';
 import { nbformat as nbformat } from 'sql/workbench/services/notebook/common/nbformat';
 
 suite('OutputProcessor functions', function (): void {
 	const text = 'An arbitrary text input:!@#$%^&*()_+~`:;,.-_=';
 
-	const arbitraryMetadata = {
-		// arbitrarily construction chart options. It is any JSONObject
-		azdata_chartOptions: {
-			scale: true,
-			dataGrid: false,
-			arbitraryCharProperty: {
-				prop1: 'value1',
-				prop2: {
-					deepProp1: 3
-				}
+	const arbitraryMetadata = Object.create(null); // Use null prototype in order to pass strict deepEqual assertions
+	arbitraryMetadata['azdata_chartOptions'] = {
+		'scale': true,
+		'dataGrid': false,
+		'arbitraryCharProperty': {
+			'prop1': 'value1',
+			'prop2': {
+				'deepProp1': 3
 			}
 		}
 	};
+
+	const emptyMetadata = Object.create(null);
 
 	suite('getData', function (): void {
 		// data tests
@@ -79,9 +78,9 @@ suite('OutputProcessor functions', function (): void {
 				output.metadata = arbitraryMetadata;
 				const result = op.getMetadata(output);
 				if (nbformat.isExecuteResult(output) || nbformat.isDisplayData(output)) {
-					assert.deepEqual(result, output.metadata, `getMetadata should return the metadata object passed in the output object`);
+					assert.deepStrictEqual(result, output.metadata, `getMetadata should return the metadata object passed in the output object`);
 				} else {
-					assert.deepEqual(result, {}, `getMetadata should return an empty object when output_type is not IDisplayData or IExecuteResult`);
+					assert.deepStrictEqual(result, emptyMetadata, `getMetadata should return an empty object when output_type is not IDisplayData or IExecuteResult`);
 				}
 			});
 		}
@@ -105,7 +104,7 @@ suite('OutputProcessor functions', function (): void {
 						metadata: op.getMetadata(output),
 						trusted: trusted
 					};
-					assert.deepEqual(result, expected, `getBundleOptions should return an object that has data and metadata fields as returned by getData and getMetadata calls and a trusted field as the value of the 'trusted' field in options passed to it`);
+					assert.deepStrictEqual(result, expected, `getBundleOptions should return an object that has data and metadata fields as returned by getData and getMetadata calls and a trusted field as the value of the 'trusted' field in options passed to it`);
 				});
 			}
 		}
@@ -114,22 +113,24 @@ suite('OutputProcessor functions', function (): void {
 
 function verifyGetDataForDataOutput(output: nbformat.IExecuteResult | nbformat.IDisplayData | nbformat.IDisplayUpdate) {
 	const result = op.getData(output);
+	const expectedData = Object.create(null);
+	for (let key in output.data) {
+		expectedData[key] = output.data[key];
+	}
 	// getData just returns the data property object for ExecutionResults/DisplayData/DisplayUpdate Output object sent to it.
-	assert.deepEqual(result, output.data, `getData should return the expectedData:${output.data} object`);
+	assert.deepStrictEqual(result, expectedData, `getData should return the expectedData: '${JSON.stringify(expectedData)}' object`);
 }
 
 function verifyGetDataForStreamOutput(output: nbformat.IStream): void {
 	// expected return value is an object with a single property of 'application/vnd.jupyter.stderr' or 'application/vnd.jupyter.stdout'
 	// corresponding to the stream name. The value of this property is the value of the 'text' field of the output object that was sent into the getData call
-	const expectedData = output.name === 'stderr'
-		? {
-			'application/vnd.jupyter.stderr': output.text,
-		}
-		: {
-			'application/vnd.jupyter.stdout': output.text,
-		};
+	let expectedStdErr = Object.create(null);
+	expectedStdErr['application/vnd.jupyter.stderr'] = output.text;
+	let expectedStdOut = Object.create(null);
+	expectedStdOut['application/vnd.jupyter.stdout'] = output.text;
+	const expectedData = output.name === 'stderr' ? expectedStdErr : expectedStdOut;
 	const result = op.getData(output);
-	assert.deepEqual(result, expectedData, `getData should return the expectedData:${expectedData} object`);
+	assert.deepStrictEqual(result, expectedData, `getData should return the expectedData: '${JSON.stringify(expectedData)}' object`);
 }
 
 function verifyGetDataForErrorOutput(output: nbformat.IError): void {
@@ -139,25 +140,19 @@ function verifyGetDataForErrorOutput(output: nbformat.IError): void {
 	// this property is assigned to a '\n' delimited traceback data when it is present.
 	// when traceback is absent this property gets ename and evalue information with ': ' as delimiter unless
 	// ename is empty in which case it is just evalue information.
-	let expectedData: JSONObject = {
-		'application/vnd.jupyter.stderr': undefined
-	};
+	let expectedData = Object.create(null);
+	expectedData['application/vnd.jupyter.stderr'] = undefined;
+
 	if (tracedata) {
-		expectedData = {
-			'application/vnd.jupyter.stderr': tracedata
-		};
+		expectedData['application/vnd.jupyter.stderr'] = tracedata;
 	}
 	else if (output.evalue) {
 		if (output.ename !== undefined && output.ename !== '') {
-			expectedData = {
-				'application/vnd.jupyter.stderr': `${output.ename}: ${output.evalue}`
-			};
+			expectedData['application/vnd.jupyter.stderr'] = `${output.ename}: ${output.evalue}`;
 		}
 		else {
-			expectedData = {
-				'application/vnd.jupyter.stderr': `${output.evalue}`
-			};
+			expectedData['application/vnd.jupyter.stderr'] = `${output.evalue}`;
 		}
 	}
-	assert.deepEqual(result, <JSONObject>expectedData, `getData should return the expectedData:'${JSON.stringify(expectedData)}' object`);
+	assert.deepStrictEqual(result, expectedData, `getData should return the expectedData: '${JSON.stringify(expectedData)}' object`);
 }

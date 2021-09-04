@@ -30,7 +30,7 @@ suite('Client Session', function (): void {
 		notebookManager = new NotebookManagerStub();
 		notebookManager.serverManager = serverManager;
 		notebookManager.sessionManager = mockSessionManager.object;
-		notificationService = TypeMoq.Mock.ofType(TestNotificationService, TypeMoq.MockBehavior.Loose);
+		notificationService = TypeMoq.Mock.ofType<INotificationService>(TestNotificationService, TypeMoq.MockBehavior.Loose);
 
 		session = new ClientSession({
 			notebookManager: notebookManager,
@@ -44,12 +44,12 @@ suite('Client Session', function (): void {
 	});
 
 	test('Should set path, isReady and ready on construction', function (): void {
-		assert.equal(session.notebookUri, path);
+		assert.strictEqual(session.notebookUri, path);
 		assert(!isUndefinedOrNull(session.ready));
 		assert(!session.isReady);
-		assert.equal(session.status, 'starting');
+		assert.strictEqual(session.status, 'starting');
 		assert(!session.isInErrorState);
-		assert.equal(session.errorMessage, '');
+		assert.strictEqual(session.errorMessage, '');
 	});
 
 	test('Should call on serverManager startup if set', async function (): Promise<void> {
@@ -79,7 +79,7 @@ suite('Client Session', function (): void {
 		assert(session.isReady);
 		assert(serverManager.calledStart);
 		assert(session.isInErrorState);
-		assert.equal(session.errorMessage, 'error');
+		assert.strictEqual(session.errorMessage, 'error');
 	});
 
 	test('Should be ready when session manager is ready', async function (): Promise<void> {
@@ -130,7 +130,7 @@ suite('Client Session', function (): void {
 		// Then
 		assert(session.isReady);
 		assert(session.isInErrorState);
-		assert.equal(session.errorMessage, 'error');
+		assert.strictEqual(session.errorMessage, 'error');
 	});
 
 	test('Should start session automatically if kernel preference requests it', async function (): Promise<void> {
@@ -145,10 +145,10 @@ suite('Client Session', function (): void {
 		await session.initialize();
 
 		// Then
-		assert.equal(session.isReady, true, 'Session is not ready');
-		assert.equal(session.isInErrorState, false, 'Session should not be in error state');
-		assert.equal(startOptions.kernelName, 'python', 'Session not started with python by default');
-		assert.equal(startOptions.path, path.fsPath, 'Session start path is incorrect');
+		assert.strictEqual(session.isReady, true, 'Session is not ready');
+		assert.strictEqual(session.isInErrorState, false, 'Session should not be in error state');
+		assert.strictEqual(startOptions.kernelName, 'python', 'Session not started with python by default');
+		assert.strictEqual(startOptions.path, path.fsPath, 'Session start path is incorrect');
 	});
 
 	test('Should shutdown session even if no serverManager is set', async function (): Promise<void> {

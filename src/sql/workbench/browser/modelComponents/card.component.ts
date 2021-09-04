@@ -18,8 +18,9 @@ import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import * as DOM from 'vs/base/browser/dom';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/platform/dashboard/browser/interfaces';
-import { IColorTheme } from 'vs/platform/theme/common/themeService';
+import { IColorTheme, ICssStyleCollector, registerThemingParticipant } from 'vs/platform/theme/common/themeService';
 import { ILogService } from 'vs/platform/log/common/log';
+import { CARD_OVERLAY_BACKGROUND, CARD_OVERLAY_FOREGROUND } from 'vs/workbench/common/theme';
 
 export interface ActionDescriptor {
 	label: string;
@@ -52,7 +53,8 @@ export interface CardDescriptionItem {
 export enum CardType {
 	VerticalButton = 'VerticalButton',
 	Details = 'Details',
-	ListItem = 'ListItem'
+	ListItem = 'ListItem',
+	Image = 'Image'
 }
 
 @Component({
@@ -119,6 +121,11 @@ export default class CardComponent extends ComponentWithIconBase<azdata.CardProp
 
 	public getClass(): string {
 		let cardClass = this.isListItemCard ? 'model-card-list-item-legacy' : 'model-card-legacy';
+
+		if (this.cardType === 'Image') {
+			cardClass += ' image-card';
+		}
+
 		return (this.selectable && this.selected || this._hasFocus) ? `${cardClass} selected` :
 			`${cardClass} unselected`;
 	}
@@ -151,7 +158,7 @@ export default class CardComponent extends ComponentWithIconBase<azdata.CardProp
 	}
 
 	private get selectable(): boolean {
-		return this.enabled && (this.cardType === 'VerticalButton' || this.cardType === 'ListItem');
+		return this.enabled && (this.cardType === 'VerticalButton' || this.cardType === 'ListItem' || this.cardType === 'Image');
 	}
 
 	// CSS-bound properties
@@ -182,6 +189,10 @@ export default class CardComponent extends ComponentWithIconBase<azdata.CardProp
 
 	public get isListItemCard(): boolean {
 		return !this.cardType || this.cardType === 'ListItem';
+	}
+
+	public get isImageCard(): boolean {
+		return !this.cardType || this.cardType === 'Image';
 	}
 
 	public get isVerticalButton(): boolean {
@@ -236,3 +247,23 @@ export default class CardComponent extends ComponentWithIconBase<azdata.CardProp
 
 	}
 }
+
+registerThemingParticipant((theme: IColorTheme, collector: ICssStyleCollector) => {
+	const backgroundColor = theme.getColor(CARD_OVERLAY_BACKGROUND);
+	const foregroundColor = theme.getColor(CARD_OVERLAY_FOREGROUND);
+	if (backgroundColor) {
+		collector.addRule(`
+		.model-card-legacy .card-label-overlay {
+			background-color: ${backgroundColor.toString()};
+		}
+		`);
+	}
+
+	if (foregroundColor) {
+		collector.addRule(`
+		.model-card-legacy.image-card .card-label {
+			color: ${foregroundColor.toString()};
+		}
+		`);
+	}
+});

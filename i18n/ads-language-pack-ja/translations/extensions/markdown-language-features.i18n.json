@@ -8,64 +8,65 @@
 	],
 	"version": "1.0.0",
 	"contents": {
+		"dist/features/documentLinkProvider": {
+			"documentLink.tooltip": "リンク先を表示"
+		},
+		"dist/features/preview": {
+			"lockedPreviewTitle": "[プレビュー] {0}",
+			"onPreviewStyleLoadError": "'markdown.styles' を読み込むことができません: {0}",
+			"preview.clickOpenFailed": "{0} を開くことができません。",
+			"previewTitle": "プレビュー {0}"
+		},
+		"dist/features/previewContentProvider": {
+			"preview.notFound": "{0} が見つかりません",
+			"preview.securityMessage.label": "セキュリティが無効なコンテンツの警告",
+			"preview.securityMessage.text": "このドキュメントで一部のコンテンツが無効になっています",
+			"preview.securityMessage.title": "安全でない可能性があるか保護されていないコンテンツは、Markdown プレビューで無効化されています。保護されていないコンテンツを許可するかスクリプトを有効にするには、Markdown プレビューのセキュリティ設定を変更してください"
+		},
+		"dist/security": {
+			"disable.description": "すべてのコンテンツとスクリプトの実行を許可します。推奨されません。",
+			"disable.title": "無効にする",
+			"disableSecurityWarning.title": "このワークスペースでプレビューのセキュリティ警告を有効にする",
+			"enableSecurityWarning.title": "このワークスペースでプレビューのセキュリティ警告を有効にする",
+			"insecureContent.description": "HTTP を介したコンテンツの読み込みを有効にする",
+			"insecureContent.title": "セキュリティで保護されていないコンテンツを許可する",
+			"insecureLocalContent.description": "localhost から http で提供されるコンテンツの読み込みを有効にします",
+			"insecureLocalContent.title": "安全でないローカル コンテンツを許可する",
+			"moreInfo.title": "詳細情報",
+			"preview.showPreviewSecuritySelector.title": "ワークスペースのマークダウン プレビューに関するセキュリティ設定を選択",
+			"strict.description": "セキュリティで保護されたコンテンツのみを読み込む",
+			"strict.title": "高レベル",
+			"toggleSecurityWarning.description": "コンテンツのセキュリティ レベルに影響しません"
+		},
 		"package": {
-			"displayName": "Markdown 言語機能",
+			"configuration.markdown.links.openLocation.beside": "アクティブなエディターの横にあるリンクを開きます。",
+			"configuration.markdown.links.openLocation.currentGroup": "アクティブなエディター グループ内にリンクを開きます。",
+			"configuration.markdown.links.openLocation.description": "マークダウン ファイル内のリンクを開く場所を制御します。",
+			"configuration.markdown.preview.openMarkdownLinks.description": "Markdown プレビューで他のマークダウン ファイルへのリンクを開く方法を制御します。",
+			"configuration.markdown.preview.openMarkdownLinks.inEditor": "エディターでリンクを開こうとします。",
+			"configuration.markdown.preview.openMarkdownLinks.inPreview": "Markdown プレビューでリンクを開こうとします。",
 			"description": "Markdown に豊富な言語サポートを提供。",
+			"displayName": "Markdown 言語機能",
 			"markdown.preview.breaks.desc": "Markdown プレビューで改行を表現する方法を設定します。'true' に設定すると、段落内の改行に対して <br> が作成されます。",
-			"markdown.preview.linkify": "Markdown プレビューで URL 形式のテキストからリンクへの変換を有効または無効にします。",
-			"markdown.preview.typographer": "Markdown プレビューで、特定の言語に依存しない置換と引用符の美化を有効または無効にします。",
 			"markdown.preview.doubleClickToSwitchToEditor.desc": "Markdown プレビューでダブルクリックすると、エディターに切り替わります。",
 			"markdown.preview.fontFamily.desc": "Markdown プレビューで使用されるフォント ファミリを制御します。",
 			"markdown.preview.fontSize.desc": "Markdown プレビューで使用されるフォント サイズ (ピクセル単位) を制御します。",
 			"markdown.preview.lineHeight.desc": "Markdown プレビューで使用される行の高さを制御します。この数値はフォント サイズを基準とします。",
+			"markdown.preview.linkify": "Markdown プレビューで URL 形式のテキストからリンクへの変換を有効または無効にします。",
 			"markdown.preview.markEditorSelection.desc": "Markdown プレビューに、エディターの現在の選択範囲を示すマークが付きます。",
+			"markdown.preview.refresh.title": "プレビューを更新",
 			"markdown.preview.scrollEditorWithPreview.desc": "Markdown プレビューをスクロールすると、エディターのビューが更新されます。",
 			"markdown.preview.scrollPreviewWithEditor.desc": "Markdown エディターをスクロールすると、プレビューのビューが更新されます。",
 			"markdown.preview.title": "プレビューを開く",
+			"markdown.preview.toggleLock.title": "プレビュー ロックの切り替え",
+			"markdown.preview.typographer": "Markdown プレビューで、特定の言語に依存しない置換と引用符の美化を有効または無効にします。",
 			"markdown.previewSide.title": "プレビューを横に表示",
 			"markdown.showLockedPreviewToSide.title": "ロックされたプレビューを横に表示",
+			"markdown.showPreviewSecuritySelector.title": "プレビュー のセキュリティ設定を変更",
 			"markdown.showSource.title": "ソースの表示",
 			"markdown.styles.dec": "Markdown プレビューから使用する CSS スタイル シートの URL またはローカル パスの一覧。相対パスは、エクスプローラーで開かれているフォルダーへの絶対パスと解釈されます。開かれているフォルダーがない場合、マークダウン ファイルの場所を基準としていると解釈されます。'\\' はすべて '\\\\' と入力する必要があります。",
-			"markdown.showPreviewSecuritySelector.title": "プレビュー のセキュリティ設定を変更",
 			"markdown.trace.desc": "Markdown 拡張機能のデバッグ ログを有効にします。",
-			"markdown.preview.refresh.title": "プレビューを更新",
-			"markdown.preview.toggleLock.title": "プレビュー ロックの切り替え",
-			"configuration.markdown.preview.openMarkdownLinks.description": "Markdown プレビューで他のマークダウン ファイルへのリンクを開く方法を制御します。",
-			"configuration.markdown.preview.openMarkdownLinks.inEditor": "エディターでリンクを開こうとします。",
-			"configuration.markdown.preview.openMarkdownLinks.inPreview": "Markdown プレビューでリンクを開こうとします。",
-			"configuration.markdown.links.openLocation.description": "マークダウン ファイル内のリンクを開く場所を制御します。",
-			"configuration.markdown.links.openLocation.currentGroup": "アクティブなエディター グループ内にリンクを開きます。",
-			"configuration.markdown.links.openLocation.beside": "アクティブなエディターの横にあるリンクを開きます。"
-		},
-		"dist/features/documentLinkProvider": {
-			"documentLink.tooltip": "リンク先を表示"
-		},
-		"dist/features/previewContentProvider": {
-			"preview.securityMessage.text": "このドキュメントで一部のコンテンツが無効になっています",
-			"preview.securityMessage.title": "安全でない可能性があるか保護されていないコンテンツは、Markdown プレビューで無効化されています。保護されていないコンテンツを許可するかスクリプトを有効にするには、Markdown プレビューのセキュリティ設定を変更してください",
-			"preview.securityMessage.label": "セキュリティが無効なコンテンツの警告",
-			"preview.notFound": "{0} が見つかりません"
-		},
-		"dist/features/preview": {
-			"onPreviewStyleLoadError": "'markdown.styles' を読み込むことができません: {0}",
-			"preview.clickOpenFailed": "{0} を開くことができません。",
-			"lockedPreviewTitle": "[プレビュー] {0}",
-			"previewTitle": "プレビュー {0}"
-		},
-		"dist/security": {
-			"strict.title": "高レベル",
-			"strict.description": "セキュリティで保護されたコンテンツのみを読み込む",
-			"insecureLocalContent.title": "安全でないローカル コンテンツを許可する",
-			"insecureLocalContent.description": "localhost から http で提供されるコンテンツの読み込みを有効にします",
-			"insecureContent.title": "セキュリティで保護されていないコンテンツを許可する",
-			"insecureContent.description": "HTTP を介したコンテンツの読み込みを有効にする",
-			"disable.title": "無効にする",
-			"disable.description": "すべてのコンテンツとスクリプトの実行を許可します。推奨されません。",
-			"moreInfo.title": "詳細情報",
-			"enableSecurityWarning.title": "このワークスペースでプレビューのセキュリティ警告を有効にする",
-			"disableSecurityWarning.title": "このワークスペースでプレビューのセキュリティ警告を有効にする",
-			"toggleSecurityWarning.description": "コンテンツのセキュリティ レベルに影響しません",
-			"preview.showPreviewSecuritySelector.title": "ワークスペースのマークダウン プレビューに関するセキュリティ設定を選択"
+			"workspaceTrust": "ワークスペースに構成されているスタイルを読み込むのに必要です。"
 		}
 	}
 }

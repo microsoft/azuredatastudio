@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { EditorOptions, IEditorOpenContext } from 'vs/workbench/common/editor';
+import { IEditorOpenContext } from 'vs/workbench/common/editor';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { RawContextKey } from 'vs/platform/contextkey/common/contextkey';
 import { EditorPane } from 'vs/workbench/browser/parts/editor/editorPane';
@@ -20,6 +20,7 @@ import { QueryResultsView } from 'sql/workbench/contrib/query/browser/queryResul
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import { RESULTS_GRID_DEFAULTS } from 'sql/workbench/common/constants';
+import { IEditorOptions } from 'vs/platform/editor/common/editor';
 
 export const TextCompareEditorVisible = new RawContextKey<boolean>('textCompareEditorVisible', false);
 
@@ -130,7 +131,7 @@ export class QueryResultsEditor extends EditorPane {
 		this.resultsView.layout(dimension);
 	}
 
-	override setInput(input: QueryResultsInput, options: EditorOptions, context: IEditorOpenContext): Promise<void> {
+	override setInput(input: QueryResultsInput, options: IEditorOptions, context: IEditorOpenContext): Promise<void> {
 		super.setInput(input, options, context, CancellationToken.None);
 		this.resultsView.input = input;
 		return Promise.resolve<void>(null);

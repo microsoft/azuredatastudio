@@ -9,8 +9,8 @@
 	"version": "1.0.0",
 	"contents": {
 		"package": {
-			"displayName": "Noções Básicas da Linguagem Python",
-			"description": "Fornece realce de sintaxe, correspondência de colchetes e dobragem em arquivos Python."
+			"description": "Fornece realce de sintaxe, correspondência de colchetes e dobragem em arquivos Python.",
+			"displayName": "Noções Básicas da Linguagem Python"
 		}
 	}
 }

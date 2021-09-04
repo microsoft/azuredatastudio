@@ -8,16 +8,18 @@
 	],
 	"version": "1.0.0",
 	"contents": {
-		"package": {
-			"displayName": "Authentification GitHub",
-			"description": "Fournisseur d'authentification GitHub"
+		"dist/common/keychain": {
+			"keychainWriteError": "L'écriture des informations de connexion dans le fichier keychain a échoué avec l'erreur '{0}'.",
+			"troubleshooting": "Guide de résolution des problèmes"
 		},
 		"dist/githubServer": {
-			"signingIn": "$(mark-github) Connexion à github.com..."
+			"signingIn": "$(mark-github) Connexion à github.com...",
+			"signingInEnterprise": "$(mark-github) Connexion à {0} en cours...",
+			"status.git.signIn.name": "Connexion à GitHub"
 		},
-		"dist/common/keychain": {
-			"troubleshooting": "Guide de résolution des problèmes",
-			"keychainWriteError": "L'écriture des informations de connexion dans le fichier keychain a échoué avec l'erreur '{0}'."
+		"package": {
+			"description": "Fournisseur d'authentification GitHub",
+			"displayName": "Authentification GitHub"
 		}
 	}
 }

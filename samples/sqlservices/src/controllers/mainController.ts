@@ -13,6 +13,9 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { TreeNode, TreeDataProvider } from './treeDataProvider';
 import * as dashboard from './modelViewDashboard';
+import { ConnectionProvider } from '../featureProviders/connectionProvider';
+import { IconProvider } from '../featureProviders/iconProvider';
+import { ObjectExplorerProvider } from '../featureProviders/objectExplorerProvider';
 
 /**
  * The main controller class that initializes the extension
@@ -37,10 +40,18 @@ export default class MainController implements vscode.Disposable {
 	}
 
 	public activate(): Promise<boolean> {
+		const connectionProvider = new ConnectionProvider();
+		const iconProvider = new IconProvider();
+		const objectExplorer = new ObjectExplorerProvider(this.context);
+		azdata.dataprotocol.registerConnectionProvider(connectionProvider);
+		azdata.dataprotocol.registerIconProvider(iconProvider);
+		azdata.dataprotocol.registerObjectExplorerProvider(objectExplorer);
+
 		const buttonHtml = fs.readFileSync(path.join(__dirname, 'button.html')).toString();
 		const counterHtml = fs.readFileSync(path.join(__dirname, 'counter.html')).toString();
 		this.registerSqlServicesModelView();
 		this.registerSplitPanelModelView();
+		this.registerModelViewDashboardTab();
 
 		azdata.tasks.registerTask('sqlservices.clickTask', (profile) => {
 			vscode.window.showInformationMessage(`Clicked from profile ${profile.serverName}.${profile.databaseName}`);
@@ -75,6 +86,10 @@ export default class MainController implements vscode.Disposable {
 
 		vscode.commands.registerCommand('sqlservices.openModelViewDashboard', () => {
 			dashboard.openModelViewDashboard(this.context);
+		});
+
+		vscode.commands.registerCommand('sqlservices.updateObjectExplorerNode', async (context: azdata.ObjectExplorerContext) => {
+			await objectExplorer.updateNode(context);
 		});
 
 		return Promise.resolve(true);
@@ -722,6 +737,15 @@ export default class MainController implements vscode.Disposable {
 				], { flex: '1 1 50%' })
 				.component();
 			await view.initializeModel(flexModel);
+		});
+	}
+
+	private registerModelViewDashboardTab(): void {
+		azdata.ui.registerModelViewProvider('sqlservices-home', async (view) => {
+			const text = view.modelBuilder.text().withProps({
+				value: 'home tab content place holder'
+			}).component();
+			await view.initializeModel(text);
 		});
 	}
 

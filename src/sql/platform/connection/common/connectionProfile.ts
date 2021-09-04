@@ -66,6 +66,10 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 				if (model.options.registeredServerDescription) {
 					this.registeredServerDescription = model.options.registeredServerDescription;
 				}
+				const expiry = model.options.expiresOn;
+				if (typeof expiry === 'number' && !Number.isNaN(expiry)) {
+					this.options.expiresOn = model.options.expiresOn;
+				}
 			}
 		} else {
 			//Default for a new connection

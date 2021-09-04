@@ -9,6 +9,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { localize } from 'vs/nls';
 import { InsertCellsModal } from 'sql/workbench/contrib/notebook/browser/notebookViews/insertCellsModal';
 import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
+import { ComponentFactoryResolver, ViewContainerRef } from '@angular/core';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { CellExecutionState, ICellModel, ViewMode } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { CellActionBase, CellContext, IMultiStateData, MultiStateAction } from 'sql/workbench/contrib/notebook/browser/cellViews/codeActions';
@@ -91,13 +92,15 @@ export class InsertCellAction extends Action {
 	constructor(
 		private onInsert: (cell: ICellModel) => void,
 		private _context: NotebookViewsExtension,
+		private _containerRef: ViewContainerRef,
+		private _componentFactoryResolver: ComponentFactoryResolver,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 	) {
 		super(InsertCellAction.ID, InsertCellAction.LABEL, InsertCellAction.ICON);
 	}
 
 	override async run(): Promise<void> {
-		const optionsModal = this._instantiationService.createInstance(InsertCellsModal, this.onInsert, this._context);
+		const optionsModal = this._instantiationService.createInstance(InsertCellsModal, this.onInsert, this._context, this._containerRef, this._componentFactoryResolver);
 		optionsModal.render();
 		optionsModal.open();
 	}

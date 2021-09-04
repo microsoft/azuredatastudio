@@ -1,7 +1,7 @@
 {
 	"name": "profiler",
-	"displayName": "SQL Server Profiler",
-	"description": "SQL Server Profiler for Azure Data Studio",
+	"displayName": "%displayName%",
+	"description": "%description%",
 	"version": "0.12.0",
 	"publisher": "Microsoft",
 	"preview": true,
@@ -29,23 +29,23 @@
 		"commands": [
 			{
 				"command": "profiler.newProfiler",
-				"title": "Launch Profiler",
-				"category": "Profiler"
+				"title": "%profiler.contributes.title.newProfler%",
+				"category": "%profiler.category%"
 			},
 			{
 				"command": "profiler.start",
-				"title": "Start",
-				"category": "Profiler"
+				"title": "profiler.contributes.title.start",
+				"category": "%profiler.category%"
 			},
 			{
 				"command": "profiler.stop",
-				"title": "Stop",
-				"category": "Profiler"
+				"title": "profiler.contributes.title.stop",
+				"category": "%profiler.category%"
 			},
 			{
 				"command": "profiler.openCreateSessionDialog",
-				"title": "Create Profiler Session",
-				"category": "Profiler"
+				"title": "profiler.contributes.title.openCreateSessionDialog",
+				"category": "%profiler.category%"
 			}
 		],
 		"menus": {

@@ -43,7 +43,7 @@ export class MigrationCutoverDialog {
 	private _lastAppliedBackupTakenOnInfoField!: InfoFieldSchema;
 
 	private _fileCount!: azdata.TextComponent;
-	private _fileTable!: azdata.TableComponent;
+	private _fileTable!: azdata.DeclarativeTableComponent;
 	private _autoRefreshHandle!: any;
 	private _disposables: vscode.Disposable[] = [];
 	private _emptyTableFill!: azdata.FlexContainer;
@@ -71,56 +71,97 @@ export class MigrationCutoverDialog {
 					}
 				}).component();
 
-				this._fileTable = view.modelBuilder.table().withProps({
+				const rowCssStyle: azdata.CssStyles = {
+					'border': 'none',
+					'text-align': 'left',
+					'border-bottom': '1px solid',
+					'font-size': '12px'
+				};
+
+				const headerCssStyles: azdata.CssStyles = {
+					'border': 'none',
+					'text-align': 'left',
+					'border-bottom': '1px solid',
+					'font-weight': 'bold',
+					'padding-left': '0px',
+					'padding-right': '0px',
+					'font-size': '12px'
+				};
+
+				this._fileTable = view.modelBuilder.declarativeTable().withProps({
 					ariaLabel: loc.ACTIVE_BACKUP_FILES,
 					columns: [
 						{
-							value: loc.ACTIVE_BACKUP_FILES,
-							width: 230,
-							type: azdata.ColumnType.text,
+							displayName: loc.ACTIVE_BACKUP_FILES,
+							valueType: azdata.DeclarativeDataType.string,
+							width: '230px',
+							isReadOnly: true,
+							rowCssStyles: rowCssStyle,
+							headerCssStyles: headerCssStyles
 						},
 						{
-							value: loc.TYPE,
-							width: 90,
-							type: azdata.ColumnType.text
+							displayName: loc.TYPE,
+							valueType: azdata.DeclarativeDataType.string,
+							width: '90px',
+							isReadOnly: true,
+							rowCssStyles: rowCssStyle,
+							headerCssStyles: headerCssStyles
 						},
 						{
-							value: loc.STATUS,
-							width: 60,
-							type: azdata.ColumnType.text
+							displayName: loc.STATUS,
+							valueType: azdata.DeclarativeDataType.string,
+							width: '60px',
+							isReadOnly: true,
+							rowCssStyles: rowCssStyle,
+							headerCssStyles: headerCssStyles
 						},
 						{
-							value: loc.DATA_UPLOADED,
-							width: 120,
-							type: azdata.ColumnType.text
+							displayName: loc.DATA_UPLOADED,
+							valueType: azdata.DeclarativeDataType.string,
+							width: '120px',
+							isReadOnly: true,
+							rowCssStyles: rowCssStyle,
+							headerCssStyles: headerCssStyles
 						},
 						{
-							value: loc.COPY_THROUGHPUT,
-							width: 150,
-							type: azdata.ColumnType.text
+							displayName: loc.COPY_THROUGHPUT,
+							valueType: azdata.DeclarativeDataType.string,
+							width: '150px',
+							isReadOnly: true,
+							rowCssStyles: rowCssStyle,
+							headerCssStyles: headerCssStyles
 						},
 						{
-							value: loc.BACKUP_START_TIME,
-							width: 130,
-							type: azdata.ColumnType.text
+							displayName: loc.BACKUP_START_TIME,
+							valueType: azdata.DeclarativeDataType.string,
+							width: '130px',
+							isReadOnly: true,
+							rowCssStyles: rowCssStyle,
+							headerCssStyles: headerCssStyles
 						},
 						{
-							value: loc.FIRST_LSN,
-							width: 120,
-							type: azdata.ColumnType.text
+							displayName: loc.FIRST_LSN,
+							valueType: azdata.DeclarativeDataType.string,
+							width: '120px',
+							isReadOnly: true,
+							rowCssStyles: rowCssStyle,
+							headerCssStyles: headerCssStyles
 						},
 						{
-							value: loc.LAST_LSN,
-							width: 120,
-							type: azdata.ColumnType.text
+							displayName: loc.LAST_LSN,
+							valueType: azdata.DeclarativeDataType.string,
+							width: '120px',
+							isReadOnly: true,
+							rowCssStyles: rowCssStyle,
+							headerCssStyles: headerCssStyles
 						}
 					],
 					data: [],
 					width: '1100px',
 					height: '300px',
-					fontSize: '12px',
 					CSSStyles: {
 						'display': 'none',
+						'padding-left': '0px'
 					}
 				}).component();
 
@@ -667,7 +708,6 @@ export class MigrationCutoverDialog {
 			}
 
 			this._cancelButton.enabled =
-				migrationStatusTextValue === MigrationStatus.Canceling ||
 				migrationStatusTextValue === MigrationStatus.Creating ||
 				migrationStatusTextValue === MigrationStatus.InProgress;
 

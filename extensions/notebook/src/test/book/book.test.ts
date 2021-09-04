@@ -777,7 +777,7 @@ describe('BooksTreeViewTests', function () {
 					should(showPreviewSpy.calledOnce).be.true('Should have called showPreviewFile.');
 				});
 
-				it('should add book when bookPath contains special characters on openBook @UNSTABLE@', async () => {
+				it('should add book when bookPath contains special characters on openBook', async () => {
 					let rootFolderPath2 = path.join(os.tmpdir(), `BookTestData(1)_${uuid.v4()}`);
 					let dataFolderPath2 = path.join(rootFolderPath2, '_data');
 					let contentFolderPath2 = path.join(rootFolderPath2, 'content');
@@ -846,8 +846,7 @@ describe('BooksTreeViewTests', function () {
 				});
 
 				it('should remove book on closeBook', async () => {
-					await bookTreeViewProvider.openBook(rootFolderPath, undefined, true);
-					should(bookTreeViewProvider.books.length).equal(1, 'Failed to initialize the book on open');
+					await bookTreeViewProvider.openBook(rootFolderPath);
 					let length: number = bookTreeViewProvider.books.length;
 					await bookTreeViewProvider.closeBook(bookTreeViewProvider.books[0].bookItems[0]);
 					should(bookTreeViewProvider.books.length).equal(length - 1, 'Failed to remove the book on close');

@@ -767,6 +767,13 @@ declare module 'azdata' {
 		delete?: boolean;
 	}
 
+	export enum CardType {
+		/**
+		 * Card with the icon as a background image
+		 */
+		Image = 'Image'
+	}
+
 	export namespace workspace {
 		/**
 		 * Creates and enters a workspace at the specified location
@@ -920,5 +927,40 @@ declare module 'azdata' {
 		 * The physical memory of the host running the server.
 		 */
 		physicalMemoryInMb?: number;
+	}
+
+	export interface NodeInfo {
+		/**
+		 * Specify the icon for the node. The value could the path to the icon or and ADS icon defined in {@link SqlThemeIcon}.
+		 */
+		icon?: IconPath | SqlThemeIcon;
+	}
+
+	export interface ObjectMetadata {
+		/*
+		 * Parent object name for subobjects such as triggers, indexes, etc.
+		 */
+		parentName?: string;
+
+		/*
+		 * Parent object type name, such as Table, View, etc.
+		 */
+		parentTypeName?: string;
+	}
+
+	export interface QueryProvider {
+		/**
+		 * Notify clients that the URI for a connection has been changed.
+		 */
+		connectionUriChanged(newUri: string, oldUri: string): Thenable<void>;
+	}
+
+	export namespace accounts {
+		export interface AccountSecurityToken {
+			/**
+			 * Access token expiry timestamp
+			 */
+			expiresOn?: number
+		}
 	}
 }

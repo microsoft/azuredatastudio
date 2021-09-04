@@ -8,19 +8,19 @@
 	],
 	"version": "1.0.0",
 	"contents": {
-		"package": {
-			"adminToolExtWin.displayName": "Windows용 데이터베이스 관리 도구 확장",
-			"adminToolExtWin.description": "Azure Data Studio에 Windows 관련 추가 기능 추가",
-			"adminToolExtWin.propertiesMenuItem": "속성",
-			"adminToolExtWin.launchGswMenuItem": "스크립트 생성..."
-		},
 		"dist/main": {
-			"adminToolExtWin.noConnectionContextForProp": "handleLaunchSsmsMinPropertiesDialogCommand에 대한 ConnectionContext가 제공되지 않음",
-			"adminToolExtWin.noOENode": "connectionContext에서 개체 탐색기 노드를 확인할 수 없습니다. {0}",
-			"adminToolExtWin.noConnectionContextForGsw": "handleLaunchSsmsMinPropertiesDialogCommand에 대한 ConnectionContext가 제공되지 않음",
-			"adminToolExtWin.noConnectionProfile": "connectionContext에서 제공된 connectionProfile이 없습니다. {0}",
 			"adminToolExtWin.launchingDialogStatus": "대화 상자를 시작하는 중...",
+			"adminToolExtWin.noConnectionContextForGsw": "handleLaunchSsmsMinPropertiesDialogCommand에 대한 ConnectionContext가 제공되지 않음",
+			"adminToolExtWin.noConnectionContextForProp": "handleLaunchSsmsMinPropertiesDialogCommand에 대한 ConnectionContext가 제공되지 않음",
+			"adminToolExtWin.noConnectionProfile": "connectionContext에서 제공된 connectionProfile이 없습니다. {0}",
+			"adminToolExtWin.noOENode": "connectionContext에서 개체 탐색기 노드를 확인할 수 없습니다. {0}",
 			"adminToolExtWin.ssmsMinError": "'{0}' 인수로 SsmsMin을 호출하는 중 오류 발생 - {1}"
+		},
+		"package": {
+			"adminToolExtWin.description": "Azure Data Studio에 Windows 관련 추가 기능 추가",
+			"adminToolExtWin.displayName": "Windows용 데이터베이스 관리 도구 확장",
+			"adminToolExtWin.launchGswMenuItem": "스크립트 생성...",
+			"adminToolExtWin.propertiesMenuItem": "속성"
 		}
 	}
 }

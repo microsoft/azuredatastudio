@@ -1,466 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
-  <file original="extensions/schema-compare/package" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="displayName">
-      <source xml:lang="en">SQL Server Schema Compare</source>
-    </trans-unit>
-    <trans-unit id="description">
-      <source xml:lang="en">SQL Server Schema Compare for Azure Data Studio supports comparing the schemas of databases and dacpacs.</source>
-    </trans-unit>
-    <trans-unit id="schemaCompare.start">
-      <source xml:lang="en">Schema Compare</source>
-    </trans-unit>
-  </body></file>
   <file original="extensions/schema-compare/dist/localizedConstants" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="schemaCompareDialog.ok">
-      <source xml:lang="en">OK</source>
-    </trans-unit>
-    <trans-unit id="schemaCompareDialog.cancel">
-      <source xml:lang="en">Cancel</source>
-    </trans-unit>
-    <trans-unit id="schemaCompareDialog.SourceTitle">
-      <source xml:lang="en">Source</source>
-    </trans-unit>
-    <trans-unit id="schemaCompareDialog.TargetTitle">
-      <source xml:lang="en">Target</source>
-    </trans-unit>
-    <trans-unit id="schemaCompareDialog.fileTextBoxLabel">
-      <source xml:lang="en">File</source>
-    </trans-unit>
-    <trans-unit id="schemaCompare.dacpacRadioButtonLabel">
-      <source xml:lang="en">Data-tier Application File (.dacpac)</source>
-    </trans-unit>
-    <trans-unit id="schemaCompare.databaseButtonLabel">
-      <source xml:lang="en">Database</source>
-    </trans-unit>
-    <trans-unit id="schemaCompare.radioButtonsLabel">
-      <source xml:lang="en">Type</source>
-    </trans-unit>
-    <trans-unit id="schemaCompareDialog.serverDropdownTitle">
-      <source xml:lang="en">Server</source>
-    </trans-unit>
-    <trans-unit id="schemaCompareDialog.databaseDropdownTitle">
-      <source xml:lang="en">Database</source>
-    </trans-unit>
-    <trans-unit id="schemaCompare.dialogTitle">
-      <source xml:lang="en">Schema Compare</source>
-    </trans-unit>
-    <trans-unit id="schemaCompareDialog.differentSourceMessage">
-      <source xml:lang="en">A different source schema has been selected. Compare to see the comparison?</source>
-    </trans-unit>
-    <trans-unit id="schemaCompareDialog.differentTargetMessage">
-      <source xml:lang="en">A different target schema has been selected. Compare to see the comparison?</source>
-    </trans-unit>
-    <trans-unit id="schemaCompareDialog.differentSourceTargetMessage">
-      <source xml:lang="en">Different source and target schemas have been selected. Compare to see the comparison?</source>
-    </trans-unit>
-    <trans-unit id="schemaCompareDialog.Yes">
-      <source xml:lang="en">Yes</source>
-    </trans-unit>
-    <trans-unit id="schemaCompareDialog.No">
-      <source xml:lang="en">No</source>
-    </trans-unit>
-    <trans-unit id="schemaCompareDialog.sourceTextBox">
-      <source xml:lang="en">Source file</source>
-    </trans-unit>
-    <trans-unit id="schemaCompareDialog.targetTextBox">
-      <source xml:lang="en">Target file</source>
-    </trans-unit>
-    <trans-unit id="schemaCompareDialog.sourceDatabaseDropdown">
-      <source xml:lang="en">Source Database</source>
-    </trans-unit>
-    <trans-unit id="schemaCompareDialog.targetDatabaseDropdown">
-      <source xml:lang="en">Target Database</source>
-    </trans-unit>
-    <trans-unit id="schemaCompareDialog.sourceServerDropdown">
-      <source xml:lang="en">Source Server</source>
-    </trans-unit>
-    <trans-unit id="schemaCompareDialog.targetServerDropdown">
-      <source xml:lang="en">Target Server</source>
-    </trans-unit>
-    <trans-unit id="schemaCompareDialog.defaultUser">
-      <source xml:lang="en">default</source>
-    </trans-unit>
-    <trans-unit id="schemaCompare.openFile">
-      <source xml:lang="en">Open</source>
-    </trans-unit>
-    <trans-unit id="schemaCompare.selectSourceFile">
-      <source xml:lang="en">Select source file</source>
-    </trans-unit>
-    <trans-unit id="schemaCompare.selectTargetFile">
-      <source xml:lang="en">Select target file</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompareOptionsDialog.Reset">
-      <source xml:lang="en">Reset</source>
-    </trans-unit>
-    <trans-unit id="schemaCompareOptions.RecompareMessage">
-      <source xml:lang="en">Options have changed. Recompare to see the comparison?</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.SchemaCompareOptionsDialogLabel">
-      <source xml:lang="en">Schema Compare Options</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.GeneralOptionsLabel">
-      <source xml:lang="en">General Options</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.ObjectTypesOptionsLabel">
-      <source xml:lang="en">Include Object Types</source>
-    </trans-unit>
-    <trans-unit id="schemaCompare.CompareDetailsTitle">
-      <source xml:lang="en">Compare Details</source>
-    </trans-unit>
-    <trans-unit id="schemaCompare.ApplyConfirmation">
-      <source xml:lang="en">Are you sure you want to update the target?</source>
-    </trans-unit>
-    <trans-unit id="schemaCompare.RecompareToRefresh">
-      <source xml:lang="en">Press Compare to refresh the comparison.</source>
-    </trans-unit>
-    <trans-unit id="schemaCompare.generateScriptEnabledButton">
-      <source xml:lang="en">Generate script to deploy changes to target</source>
-    </trans-unit>
-    <trans-unit id="schemaCompare.generateScriptNoChanges">
-      <source xml:lang="en">No changes to script</source>
-    </trans-unit>
-    <trans-unit id="schemaCompare.applyButtonEnabledTitle">
-      <source xml:lang="en">Apply changes to target</source>
-    </trans-unit>
-    <trans-unit id="schemaCompare.applyNoChanges">
-      <source xml:lang="en">No changes to apply</source>
-    </trans-unit>
-    <trans-unit id="schemaCompare.includeExcludeInfoMessage">
-      <source xml:lang="en">Please note that include/exclude operations can take a moment to calculate affected dependencies</source>
-    </trans-unit>
-    <trans-unit id="schemaCompare.deleteAction">
-      <source xml:lang="en">Delete</source>
-    </trans-unit>
-    <trans-unit id="schemaCompare.changeAction">
-      <source xml:lang="en">Change</source>
-    </trans-unit>
-    <trans-unit id="schemaCompare.addAction">
-      <source xml:lang="en">Add</source>
-    </trans-unit>
-    <trans-unit id="schemaCompare.differencesTableTitle">
-      <source xml:lang="en">Comparison between Source and Target</source>
-    </trans-unit>
-    <trans-unit id="schemaCompare.waitText">
-      <source xml:lang="en">Initializing Comparison. This might take a moment.</source>
-    </trans-unit>
-    <trans-unit id="schemaCompare.startText">
-      <source xml:lang="en">To compare two schemas, first select a source schema and target schema, then press Compare.</source>
-    </trans-unit>
-    <trans-unit id="schemaCompare.noDifferences">
-      <source xml:lang="en">No schema differences were found.</source>
-    </trans-unit>
-    <trans-unit id="schemaCompare.typeColumn">
-      <source xml:lang="en">Type</source>
-    </trans-unit>
-    <trans-unit id="schemaCompare.sourceNameColumn">
-      <source xml:lang="en">Source Name</source>
-    </trans-unit>
-    <trans-unit id="schemaCompare.includeColumnName">
-      <source xml:lang="en">Include</source>
-    </trans-unit>
-    <trans-unit id="schemaCompare.actionColumn">
-      <source xml:lang="en">Action</source>
-    </trans-unit>
-    <trans-unit id="schemaCompare.targetNameColumn">
-      <source xml:lang="en">Target Name</source>
-    </trans-unit>
-    <trans-unit id="schemaCompare.generateScriptButtonDisabledTitle">
-      <source xml:lang="en">Generate script is enabled when the target is a database</source>
-    </trans-unit>
-    <trans-unit id="schemaCompare.applyButtonDisabledTitle">
-      <source xml:lang="en">Apply is enabled when the target is a database</source>
-    </trans-unit>
-    <trans-unit id="schemaCompare.cannotExcludeMessageWithDependent">
-      <source xml:lang="en">Cannot exclude {0}. Included dependents exist, such as {1}</source>
-    </trans-unit>
-    <trans-unit id="schemaCompare.cannotIncludeMessageWithDependent">
-      <source xml:lang="en">Cannot include {0}. Excluded dependents exist, such as {1}</source>
-    </trans-unit>
-    <trans-unit id="schemaCompare.cannotExcludeMessage">
-      <source xml:lang="en">Cannot exclude {0}. Included dependents exist</source>
-    </trans-unit>
-    <trans-unit id="schemaCompare.cannotIncludeMessage">
-      <source xml:lang="en">Cannot include {0}. Excluded dependents exist</source>
-    </trans-unit>
-    <trans-unit id="schemaCompare.compareButton">
-      <source xml:lang="en">Compare</source>
-    </trans-unit>
-    <trans-unit id="schemaCompare.cancelCompareButton">
-      <source xml:lang="en">Stop</source>
-    </trans-unit>
-    <trans-unit id="schemaCompare.generateScriptButton">
-      <source xml:lang="en">Generate script</source>
-    </trans-unit>
-    <trans-unit id="schemaCompare.optionsButton">
-      <source xml:lang="en">Options</source>
-    </trans-unit>
-    <trans-unit id="schemaCompare.updateButton">
-      <source xml:lang="en">Apply</source>
-    </trans-unit>
-    <trans-unit id="schemaCompare.switchDirectionButton">
-      <source xml:lang="en">Switch direction</source>
-    </trans-unit>
-    <trans-unit id="schemaCompare.switchButtonTitle">
-      <source xml:lang="en">Switch source and target</source>
-    </trans-unit>
-    <trans-unit id="schemaCompare.sourceButtonTitle">
-      <source xml:lang="en">Select Source</source>
-    </trans-unit>
-    <trans-unit id="schemaCompare.targetButtonTitle">
-      <source xml:lang="en">Select Target</source>
-    </trans-unit>
-    <trans-unit id="schemaCompare.openScmpButton">
-      <source xml:lang="en">Open .scmp file</source>
-    </trans-unit>
-    <trans-unit id="schemaCompare.openScmpButtonTitle">
-      <source xml:lang="en">Load source, target, and options saved in an .scmp file</source>
-    </trans-unit>
-    <trans-unit id="schemaCompare.saveScmpButton">
-      <source xml:lang="en">Save .scmp file</source>
-    </trans-unit>
-    <trans-unit id="schemaCompare.saveScmpButtonTitle">
-      <source xml:lang="en">Save source and target, options, and excluded elements</source>
-    </trans-unit>
-    <trans-unit id="schemaCompare.saveFile">
-      <source xml:lang="en">Save</source>
-    </trans-unit>
-    <trans-unit id="schemaCompare.GetConnectionString">
-      <source xml:lang="en">Do you want to connect to {0}?</source>
-    </trans-unit>
-    <trans-unit id="schemaCompare.selectConnection">
-      <source xml:lang="en">Select connection</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.IgnoreTableOptions">
-      <source xml:lang="en">Ignore Table Options</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.IgnoreSemicolonBetweenStatements">
-      <source xml:lang="en">Ignore Semicolon Between Statements</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.IgnoreRouteLifetime">
-      <source xml:lang="en">Ignore Route Lifetime</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.IgnoreRoleMembership">
-      <source xml:lang="en">Ignore Role Membership</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.IgnoreQuotedIdentifiers">
-      <source xml:lang="en">Ignore Quoted Identifiers</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.IgnorePermissions">
-      <source xml:lang="en">Ignore Permissions</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.IgnorePartitionSchemes">
-      <source xml:lang="en">Ignore Partition Schemes</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.IgnoreObjectPlacementOnPartitionScheme">
-      <source xml:lang="en">Ignore Object Placement On Partition Scheme</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.IgnoreNotForReplication">
-      <source xml:lang="en">Ignore Not For Replication</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.IgnoreLoginSids">
-      <source xml:lang="en">Ignore Login Sids</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.IgnoreLockHintsOnIndexes">
-      <source xml:lang="en">Ignore Lock Hints On Indexes</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.IgnoreKeywordCasing">
-      <source xml:lang="en">Ignore Keyword Casing</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.IgnoreIndexPadding">
-      <source xml:lang="en">Ignore Index Padding</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.IgnoreIndexOptions">
-      <source xml:lang="en">Ignore Index Options</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.IgnoreIncrement">
-      <source xml:lang="en">Ignore Increment</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.IgnoreIdentitySeed">
-      <source xml:lang="en">Ignore Identity Seed</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.IgnoreUserSettingsObjects">
-      <source xml:lang="en">Ignore User Settings Objects</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.IgnoreFullTextCatalogFilePath">
-      <source xml:lang="en">Ignore Full Text Catalog FilePath</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.IgnoreWhitespace">
-      <source xml:lang="en">Ignore Whitespace</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.IgnoreWithNocheckOnForeignKeys">
-      <source xml:lang="en">Ignore With Nocheck On ForeignKeys</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.VerifyCollationCompatibility">
-      <source xml:lang="en">Verify Collation Compatibility</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.UnmodifiableObjectWarnings">
-      <source xml:lang="en">Unmodifiable Object Warnings</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.TreatVerificationErrorsAsWarnings">
-      <source xml:lang="en">Treat Verification Errors As Warnings</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.ScriptRefreshModule">
-      <source xml:lang="en">Script Refresh Module</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.ScriptNewConstraintValidation">
-      <source xml:lang="en">Script New Constraint Validation</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.ScriptFileSize">
-      <source xml:lang="en">Script File Size</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.ScriptDeployStateChecks">
-      <source xml:lang="en">Script Deploy StateChecks</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.ScriptDatabaseOptions">
-      <source xml:lang="en">Script Database Options</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.ScriptDatabaseCompatibility">
-      <source xml:lang="en">Script Database Compatibility</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.ScriptDatabaseCollation">
-      <source xml:lang="en">Script Database Collation</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.RunDeploymentPlanExecutors">
-      <source xml:lang="en">Run Deployment Plan Executors</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.RegisterDataTierApplication">
-      <source xml:lang="en">Register DataTier Application</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.PopulateFilesOnFileGroups">
-      <source xml:lang="en">Populate Files On File Groups</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.NoAlterStatementsToChangeClrTypes">
-      <source xml:lang="en">No Alter Statements To Change Clr Types</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.IncludeTransactionalScripts">
-      <source xml:lang="en">Include Transactional Scripts</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.IncludeCompositeObjects">
-      <source xml:lang="en">Include Composite Objects</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.AllowUnsafeRowLevelSecurityDataMovement">
-      <source xml:lang="en">Allow Unsafe Row Level Security Data Movement</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.IgnoreWithNocheckOnCheckConstraints">
-      <source xml:lang="en">Ignore With No check On Check Constraints</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.IgnoreFillFactor">
-      <source xml:lang="en">Ignore Fill Factor</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.IgnoreFileSize">
-      <source xml:lang="en">Ignore File Size</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.IgnoreFilegroupPlacement">
-      <source xml:lang="en">Ignore Filegroup Placement</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.DoNotAlterReplicatedObjects">
-      <source xml:lang="en">Do Not Alter Replicated Objects</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.DoNotAlterChangeDataCaptureObjects">
-      <source xml:lang="en">Do Not Alter Change Data Capture Objects</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.DisableAndReenableDdlTriggers">
-      <source xml:lang="en">Disable And Reenable Ddl Triggers</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.DeployDatabaseInSingleUserMode">
-      <source xml:lang="en">Deploy Database In Single User Mode</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.CreateNewDatabase">
-      <source xml:lang="en">Create New Database</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.CompareUsingTargetCollation">
-      <source xml:lang="en">Compare Using Target Collation</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.CommentOutSetVarDeclarations">
-      <source xml:lang="en">Comment Out Set Var Declarations</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.BlockWhenDriftDetected">
-      <source xml:lang="en">Block When Drift Detected</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.BlockOnPossibleDataLoss">
-      <source xml:lang="en">Block On Possible Data Loss</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.BackupDatabaseBeforeChanges">
-      <source xml:lang="en">Backup Database Before Changes</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.AllowIncompatiblePlatform">
-      <source xml:lang="en">Allow Incompatible Platform</source>
+    <trans-unit id="SchemaCompare.Aggregates">
+      <source xml:lang="en">Aggregates</source>
     </trans-unit>
     <trans-unit id="SchemaCompare.AllowDropBlockingAssemblies">
       <source xml:lang="en">Allow Drop Blocking Assemblies</source>
     </trans-unit>
-    <trans-unit id="SchemaCompare.DropConstraintsNotInSource">
-      <source xml:lang="en">Drop Constraints Not In Source</source>
+    <trans-unit id="SchemaCompare.AllowIncompatiblePlatform">
+      <source xml:lang="en">Allow Incompatible Platform</source>
     </trans-unit>
-    <trans-unit id="SchemaCompare.DropDmlTriggersNotInSource">
-      <source xml:lang="en">Drop Dml Triggers Not In Source</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.DropExtendedPropertiesNotInSource">
-      <source xml:lang="en">Drop Extended Properties Not In Source</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.DropIndexesNotInSource">
-      <source xml:lang="en">Drop Indexes Not In Source</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.IgnoreFileAndLogFilePath">
-      <source xml:lang="en">Ignore File And Log File Path</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.IgnoreExtendedProperties">
-      <source xml:lang="en">Ignore Extended Properties</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.IgnoreDmlTriggerState">
-      <source xml:lang="en">Ignore Dml Trigger State</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.IgnoreDmlTriggerOrder">
-      <source xml:lang="en">Ignore Dml Trigger Order</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.IgnoreDefaultSchema">
-      <source xml:lang="en">Ignore Default Schema</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.IgnoreDdlTriggerState">
-      <source xml:lang="en">Ignore Ddl Trigger State</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.IgnoreDdlTriggerOrder">
-      <source xml:lang="en">Ignore Ddl Trigger Order</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.IgnoreCryptographicProviderFilePath">
-      <source xml:lang="en">Ignore Cryptographic Provider FilePath</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.VerifyDeployment">
-      <source xml:lang="en">Verify Deployment</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.IgnoreComments">
-      <source xml:lang="en">Ignore Comments</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.IgnoreColumnCollation">
-      <source xml:lang="en">Ignore Column Collation</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.IgnoreAuthorizer">
-      <source xml:lang="en">Ignore Authorizer</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.IgnoreAnsiNulls">
-      <source xml:lang="en">Ignore AnsiNulls</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.GenerateSmartDefaults">
-      <source xml:lang="en">Generate SmartDefaults</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.DropStatisticsNotInSource">
-      <source xml:lang="en">Drop Statistics Not In Source</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.DropRoleMembersNotInSource">
-      <source xml:lang="en">Drop Role Members Not In Source</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.DropPermissionsNotInSource">
-      <source xml:lang="en">Drop Permissions Not In Source</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.DropObjectsNotInSource">
-      <source xml:lang="en">Drop Objects Not In Source</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.IgnoreColumnOrder">
-      <source xml:lang="en">Ignore Column Order</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.Aggregates">
-      <source xml:lang="en">Aggregates</source>
+    <trans-unit id="SchemaCompare.AllowUnsafeRowLevelSecurityDataMovement">
+      <source xml:lang="en">Allow Unsafe Row Level Security Data Movement</source>
     </trans-unit>
     <trans-unit id="SchemaCompare.ApplicationRoles">
       <source xml:lang="en">Application Roles</source>
@@ -474,11 +25,26 @@
     <trans-unit id="SchemaCompare.AsymmetricKeys">
       <source xml:lang="en">Asymmetric Keys</source>
     </trans-unit>
+    <trans-unit id="SchemaCompare.Audits">
+      <source xml:lang="en">Audits</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.BackupDatabaseBeforeChanges">
+      <source xml:lang="en">Backup Database Before Changes</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.BlockOnPossibleDataLoss">
+      <source xml:lang="en">Block On Possible Data Loss</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.BlockWhenDriftDetected">
+      <source xml:lang="en">Block When Drift Detected</source>
+    </trans-unit>
     <trans-unit id="SchemaCompare.BrokerPriorities">
       <source xml:lang="en">Broker Priorities</source>
     </trans-unit>
     <trans-unit id="SchemaCompare.Certificates">
       <source xml:lang="en">Certificates</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.ClrUserDefinedTypes">
+      <source xml:lang="en">Clr User Defined Types</source>
     </trans-unit>
     <trans-unit id="SchemaCompare.ColumnEncryptionKeys">
       <source xml:lang="en">Column Encryption Keys</source>
@@ -486,8 +52,29 @@
     <trans-unit id="SchemaCompare.ColumnMasterKeys">
       <source xml:lang="en">Column Master Keys</source>
     </trans-unit>
+    <trans-unit id="SchemaCompare.CommentOutSetVarDeclarations">
+      <source xml:lang="en">Comment Out Set Var Declarations</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.CompareUsingTargetCollation">
+      <source xml:lang="en">Compare Using Target Collation</source>
+    </trans-unit>
     <trans-unit id="SchemaCompare.Contracts">
       <source xml:lang="en">Contracts</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.CreateNewDatabase">
+      <source xml:lang="en">Create New Database</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.Credentials">
+      <source xml:lang="en">Credentials</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.CryptographicProviders">
+      <source xml:lang="en">Cryptographic Providers</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.DatabaseAuditSpecifications">
+      <source xml:lang="en">Database Audit Specifications</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.DatabaseEncryptionKeys">
+      <source xml:lang="en">Database Encryption Keys</source>
     </trans-unit>
     <trans-unit id="SchemaCompare.DatabaseOptions">
       <source xml:lang="en">Database Options</source>
@@ -495,11 +82,290 @@
     <trans-unit id="SchemaCompare.DatabaseRoles">
       <source xml:lang="en">Database Roles</source>
     </trans-unit>
+    <trans-unit id="SchemaCompare.DatabaseScopedCredentials">
+      <source xml:lang="en">Database Scoped Credentials</source>
+    </trans-unit>
     <trans-unit id="SchemaCompare.DatabaseTriggers">
       <source xml:lang="en">Database Triggers</source>
     </trans-unit>
     <trans-unit id="SchemaCompare.Defaults">
       <source xml:lang="en">Defaults</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.DeployDatabaseInSingleUserMode">
+      <source xml:lang="en">Deploy Database In Single User Mode</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.Description.AllowDropBlockingAssemblies">
+      <source xml:lang="en">This property is used by SqlClr deployment to cause any blocking assemblies to be dropped as part of the deployment plan. By default, any blocking/referencing assemblies will block an assembly update if the referencing assembly needs to be dropped.</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.Description.AllowIncompatiblePlatform">
+      <source xml:lang="en">Specifies whether to attempt the action despite incompatible SQL Server platforms.</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.Description.AllowUnsafeRowLevelSecurityDataMovement">
+      <source xml:lang="en">Do not block data motion on a table which has Row Level Security if this property is set to true. Default is false.</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.Description.BackupDatabaseBeforeChanges">
+      <source xml:lang="en">Backups the database before deploying any changes.</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.Description.BlockOnPossibleDataLoss">
+      <source xml:lang="en">Specifies that the publish episode should be terminated if there is a possibility of data loss resulting from the publish operation.</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.Description.BlockWhenDriftDetected">
+      <source xml:lang="en">Specifies whether to block updating a database whose schema no longer matches its registration or is unregistered.</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.Description.CommentOutSetVarDeclarations">
+      <source xml:lang="en">Specifies whether the declaration of SETVAR variables should be commented out in the generated publish script. You might choose to do this if you plan to specify the values on the command line when you publish by using a tool such as SQLCMD.EXE.</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.Description.CompareUsingTargetCollation">
+      <source xml:lang="en">This setting dictates how the database's collation is handled during deployment; by default the target database's collation will be updated if it does not match the collation specified by the source.  When this option is set, the target database's (or server's) collation should be used.</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.Description.CreateNewDatabase">
+      <source xml:lang="en">Specifies whether the target database should be updated or whether it should be dropped and re-created when you publish to a database.</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.Description.DeployDatabaseInSingleUserMode">
+      <source xml:lang="en">If true, the database is set to Single User Mode before deploying.</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.Description.DisableAndReenableDdlTriggers">
+      <source xml:lang="en">Specifies whether Data Definition Language (DDL) triggers are disabled at the beginning of the publish process and re-enabled at the end of the publish action.</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.Description.DoNotAlterChangeDataCaptureObjects">
+      <source xml:lang="en">If true, Change Data Capture objects are not altered.</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.Description.DoNotAlterReplicatedObjects">
+      <source xml:lang="en">Specifies whether objects that are replicated are identified during verification.</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.Description.DropConstraintsNotInSource">
+      <source xml:lang="en">Specifies whether constraints that do not exist in the database snapshot (.dacpac) file will be dropped from the target database when you publish to a database.</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.Description.DropDmlTriggersNotInSource">
+      <source xml:lang="en">Specifies whether DML triggers that do not exist in the database snapshot (.dacpac) file will be dropped from the target database when you publish to a database.</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.Description.DropExtendedPropertiesNotInSource">
+      <source xml:lang="en">Specifies whether extended properties that do not exist in the database snapshot (.dacpac) file will be dropped from the target database when you publish to a database.</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.Description.DropIndexesNotInSource">
+      <source xml:lang="en">Specifies whether indexes that do not exist in the database snapshot (.dacpac) file will be dropped from the target database when you publish to a database.</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.Description.DropObjectsNotInSource">
+      <source xml:lang="en">Specifies whether objects that do not exist in the database snapshot (.dacpac) file will be dropped from the target database when you publish to a database.  This value takes precedence over DropExtendedProperties.</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.Description.DropPermissionsNotInSource">
+      <source xml:lang="en">Specifies whether permissions that do not exist in the database snapshot (.dacpac) file will be dropped from the target database when you publish updates to a database.</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.Description.DropRoleMembersNotInSource">
+      <source xml:lang="en">Specifies whether role members that are not defined in the database snapshot (.dacpac) file will be dropped from the target database when you publish updates to a database.&lt;/</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.Description.DropStatisticsNotInSource">
+      <source xml:lang="en">Specifies whether statistics that do not exist in the database snapshot (.dacpac) file will be dropped from the target database when you publish to a database.</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.Description.GenerateSmartDefaults">
+      <source xml:lang="en">Automatically provides a default value when updating a table that contains data with a column that does not allow null values.</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.Description.IgnoreAnsiNulls">
+      <source xml:lang="en">Specifies whether differences in the ANSI NULLS setting should be ignored or updated when you publish to a database.</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.Description.IgnoreAuthorizer">
+      <source xml:lang="en">Specifies whether differences in the Authorizer should be ignored or updated when you publish to a database.</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.Description.IgnoreColumnCollation">
+      <source xml:lang="en">Specifies whether differences in the column collations should be ignored or updated when you publish to a database.</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.Description.IgnoreColumnOrder">
+      <source xml:lang="en">Specifies whether differences in table column order should be ignored or updated when you publish to a database.</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.Description.IgnoreComments">
+      <source xml:lang="en">Specifies whether differences in the comments should be ignored or updated when you publish to a database.</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.Description.IgnoreCryptographicProviderFilePath">
+      <source xml:lang="en">Specifies whether differences in the file path for the cryptographic provider should be ignored or updated when you publish to a database.</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.Description.IgnoreDdlTriggerOrder">
+      <source xml:lang="en">Specifies whether differences in the order of Data Definition Language (DDL) triggers should be ignored or updated when you publish to a database or server.</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.Description.IgnoreDdlTriggerState">
+      <source xml:lang="en">Specifies whether differences in the enabled or disabled state of Data Definition Language (DDL) triggers should be ignored or updated when you publish to a database.</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.Description.IgnoreDefaultSchema">
+      <source xml:lang="en">Specifies whether differences in the default schema should be ignored or updated when you publish to a database.</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.Description.IgnoreDmlTriggerOrder">
+      <source xml:lang="en">Specifies whether differences in the order of Data Manipulation Language (DML) triggers should be ignored or updated when you publish to a database.</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.Description.IgnoreDmlTriggerState">
+      <source xml:lang="en">Specifies whether differences in the enabled or disabled state of DML triggers should be ignored or updated when you publish to a database.</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.Description.IgnoreExtendedProperties">
+      <source xml:lang="en">Specifies whether extended properties should be ignored.</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.Description.IgnoreFileAndLogFilePath">
+      <source xml:lang="en">Specifies whether differences in the paths for files and log files should be ignored or updated when you publish to a database.</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.Description.IgnoreFileSize">
+      <source xml:lang="en">Specifies whether differences in the file sizes should be ignored or whether a warning should be issued when you publish to a database.</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.Description.IgnoreFilegroupPlacement">
+      <source xml:lang="en">Specifies whether differences in the placement of objects in FILEGROUPs should be ignored or updated when you publish to a database.</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.Description.IgnoreFillFactor">
+      <source xml:lang="en">Specifies whether differences in the fill factor for index storage should be ignored or whether a warning should be issued when you publish to a database.</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.Description.IgnoreFullTextCatalogFilePath">
+      <source xml:lang="en">Specifies whether differences in the file path for the full-text catalog should be ignored or whether a warning should be issued when you publish to a database.</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.Description.IgnoreIdentitySeed">
+      <source xml:lang="en">Specifies whether differences in the seed for an identity column should be ignored or updated when you publish updates to a database.</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.Description.IgnoreIncrement">
+      <source xml:lang="en">Specifies whether differences in the increment for an identity column should be ignored or updated when you publish to a database.</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.Description.IgnoreIndexOptions">
+      <source xml:lang="en">Specifies whether differences in the index options should be ignored or updated when you publish to a database.</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.Description.IgnoreIndexPadding">
+      <source xml:lang="en">Specifies whether differences in the index padding should be ignored or updated when you publish to a database.</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.Description.IgnoreKeywordCasing">
+      <source xml:lang="en">Specifies whether differences in the casing of keywords should be ignored or updated when you publish to a database.</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.Description.IgnoreLockHintsOnIndexes">
+      <source xml:lang="en">Specifies whether differences in the lock hints on indexes should be ignored or updated when you publish to a database.</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.Description.IgnoreLoginSids">
+      <source xml:lang="en">Specifies whether differences in the security identification number (SID) should be ignored or updated when you publish to a database.</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.Description.IgnoreNotForReplication">
+      <source xml:lang="en">Specifies whether the not for replication settings should be ignored or updated when you publish to a database.</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.Description.IgnoreObjectPlacementOnPartitionScheme">
+      <source xml:lang="en">Specifies whether an object's placement on a partition scheme should be ignored or updated when you publish to a database.</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.Description.IgnorePartitionSchemes">
+      <source xml:lang="en">Specifies whether differences in partition schemes and functions should be ignored or updated when you publish to a database.</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.Description.IgnorePermissions">
+      <source xml:lang="en">Specifies whether permissions should be ignored.</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.Description.IgnoreQuotedIdentifiers">
+      <source xml:lang="en">Specifies whether differences in the quoted identifiers setting should be ignored or updated when you publish to a database.</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.Description.IgnoreRoleMembership">
+      <source xml:lang="en">Specifies whether differences in the role membership of logins should be ignored or updated when you publish to a database.</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.Description.IgnoreRouteLifetime">
+      <source xml:lang="en">Specifies whether differences in the amount of time that SQL Server retains the route in the routing table should be ignored or updated when you publish to a database.</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.Description.IgnoreSemicolonBetweenStatements">
+      <source xml:lang="en">Specifies whether differences in the semi-colons between T-SQL statements will be ignored or updated when you publish to a database.</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.Description.IgnoreTableOptions">
+      <source xml:lang="en">Specifies whether differences in the table options will be ignored or updated when you publish to a database.</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.Description.IgnoreUserSettingsObjects">
+      <source xml:lang="en">Specifies whether differences in the user settings objects will be ignored or updated when you publish to a database.</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.Description.IgnoreWhitespace">
+      <source xml:lang="en">Specifies whether differences in white space will be ignored or updated when you publish to a database.</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.Description.IgnoreWithNocheckOnCheckConstraints">
+      <source xml:lang="en">Specifies whether differences in the value of the WITH NOCHECK clause for check constraints will be ignored or updated when you publish to a database.</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.Description.IgnoreWithNocheckOnForeignKeys">
+      <source xml:lang="en">Specifies whether differences in the value of the WITH NOCHECK clause for foreign keys will be ignored or updated when you publish to a database.</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.Description.IncludeCompositeObjects">
+      <source xml:lang="en">Include all composite elements as part of a single publish operation.</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.Description.IncludeTransactionalScripts">
+      <source xml:lang="en">Specifies whether transactional statements should be used where possible when you publish to a database.</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.Description.NoAlterStatementsToChangeClrTypes">
+      <source xml:lang="en">Specifies that publish should always drop and re-create an assembly if there is a difference instead of issuing an ALTER ASSEMBLY statement</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.Description.PopulateFilesOnFileGroups">
+      <source xml:lang="en">Specifies whether a new file is also created when a new FileGroup is created in the target database.</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.Description.RegisterDataTierApplication">
+      <source xml:lang="en">Specifies whether the schema is registered with the database server.</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.Description.RunDeploymentPlanExecutors">
+      <source xml:lang="en">Specifies whether DeploymentPlanExecutor contributors should be run when other operations are executed.</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.Description.ScriptDatabaseCollation">
+      <source xml:lang="en">Specifies whether differences in the database collation should be ignored or updated when you publish to a database.</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.Description.ScriptDatabaseCompatibility">
+      <source xml:lang="en">Specifies whether differences in the database compatibility should be ignored or updated when you publish to a database.</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.Description.ScriptDatabaseOptions">
+      <source xml:lang="en">Specifies whether target database properties should be set or updated as part of the publish action.</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.Description.ScriptDeployStateChecks">
+      <source xml:lang="en">Specifies whether statements are generated in the publish script to verify that the database name and server name match the names specified in the database project.</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.Description.ScriptFileSize">
+      <source xml:lang="en">Controls whether size is specified when adding a file to a filegroup.</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.Description.ScriptNewConstraintValidation">
+      <source xml:lang="en">At the end of publish all of the constraints will be verified as one set, avoiding data errors caused by a check or foreign key constraint in the middle of publish. If set to False, your constraints will be published without checking the corresponding data.</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.Description.ScriptRefreshModule">
+      <source xml:lang="en">Include refresh statements at the end of the publish script.</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.Description.TreatVerificationErrorsAsWarnings">
+      <source xml:lang="en">Specifies whether errors encountered during publish verification should be treated as warnings. The check is performed against the generated deployment plan before the plan is executed against your target database. Plan verification detects problems such as the loss of target-only objects (such as indexes) that must be dropped to make a change. Verification will also detect situations where dependencies (such as a table or view) exist because of a reference to a composite project, but do not exist in the target database. You might choose to do this to get a complete list of all issues, instead of having the publish action stop on the first error.</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.Description.UnmodifiableObjectWarnings">
+      <source xml:lang="en">Specifies whether warnings should be generated when differences are found in objects that cannot be modified, for example, if the file size or file paths were different for a file.</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.Description.VerifyCollationCompatibility">
+      <source xml:lang="en">Specifies whether collation compatibility is verified.</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.Description.VerifyDeployment">
+      <source xml:lang="en">Specifies whether checks should be performed before publishing that will stop the publish action if issues are present that might block successful publishing. For example, your publish action might stop if you have foreign keys on the target database that do not exist in the database project, and that will cause errors when you publish.</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.DisableAndReenableDdlTriggers">
+      <source xml:lang="en">Disable And Reenable Ddl Triggers</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.DoNotAlterChangeDataCaptureObjects">
+      <source xml:lang="en">Do Not Alter Change Data Capture Objects</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.DoNotAlterReplicatedObjects">
+      <source xml:lang="en">Do Not Alter Replicated Objects</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.DropConstraintsNotInSource">
+      <source xml:lang="en">Drop Constraints Not In Source</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.DropDmlTriggersNotInSource">
+      <source xml:lang="en">Drop Dml Triggers Not In Source</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.DropExtendedPropertiesNotInSource">
+      <source xml:lang="en">Drop Extended Properties Not In Source</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.DropIndexesNotInSource">
+      <source xml:lang="en">Drop Indexes Not In Source</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.DropObjectsNotInSource">
+      <source xml:lang="en">Drop Objects Not In Source</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.DropPermissionsNotInSource">
+      <source xml:lang="en">Drop Permissions Not In Source</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.DropRoleMembersNotInSource">
+      <source xml:lang="en">Drop Role Members Not In Source</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.DropStatisticsNotInSource">
+      <source xml:lang="en">Drop Statistics Not In Source</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.Endpoints">
+      <source xml:lang="en">Endpoints</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.ErrorMessages">
+      <source xml:lang="en">Error Messages</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.EventNotifications">
+      <source xml:lang="en">Event Notifications</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.EventSessions">
+      <source xml:lang="en">Event Sessions</source>
     </trans-unit>
     <trans-unit id="SchemaCompare.ExtendedProperties">
       <source xml:lang="en">Extended Properties</source>
@@ -510,14 +376,17 @@
     <trans-unit id="SchemaCompare.ExternalFileFormats">
       <source xml:lang="en">External File Formats</source>
     </trans-unit>
-    <trans-unit id="SchemaCompare.ExternalStreams">
-      <source xml:lang="en">External Streams</source>
-    </trans-unit>
     <trans-unit id="SchemaCompare.ExternalStreamingJobs">
       <source xml:lang="en">External Streaming Jobs</source>
     </trans-unit>
+    <trans-unit id="SchemaCompare.ExternalStreams">
+      <source xml:lang="en">External Streams</source>
+    </trans-unit>
     <trans-unit id="SchemaCompare.ExternalTables">
       <source xml:lang="en">External Tables</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.FileTables">
+      <source xml:lang="en">File Tables</source>
     </trans-unit>
     <trans-unit id="SchemaCompare.Filegroups">
       <source xml:lang="en">Filegroups</source>
@@ -525,17 +394,155 @@
     <trans-unit id="SchemaCompare.Files">
       <source xml:lang="en">Files</source>
     </trans-unit>
-    <trans-unit id="SchemaCompare.FileTables">
-      <source xml:lang="en">File Tables</source>
-    </trans-unit>
     <trans-unit id="SchemaCompare.FullTextCatalogs">
       <source xml:lang="en">Full Text Catalogs</source>
     </trans-unit>
     <trans-unit id="SchemaCompare.FullTextStoplists">
       <source xml:lang="en">Full Text Stoplists</source>
     </trans-unit>
+    <trans-unit id="SchemaCompare.GeneralOptionsLabel">
+      <source xml:lang="en">General Options</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.GenerateSmartDefaults">
+      <source xml:lang="en">Generate SmartDefaults</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.IgnoreAnsiNulls">
+      <source xml:lang="en">Ignore AnsiNulls</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.IgnoreAuthorizer">
+      <source xml:lang="en">Ignore Authorizer</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.IgnoreColumnCollation">
+      <source xml:lang="en">Ignore Column Collation</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.IgnoreColumnOrder">
+      <source xml:lang="en">Ignore Column Order</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.IgnoreComments">
+      <source xml:lang="en">Ignore Comments</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.IgnoreCryptographicProviderFilePath">
+      <source xml:lang="en">Ignore Cryptographic Provider FilePath</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.IgnoreDdlTriggerOrder">
+      <source xml:lang="en">Ignore Ddl Trigger Order</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.IgnoreDdlTriggerState">
+      <source xml:lang="en">Ignore Ddl Trigger State</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.IgnoreDefaultSchema">
+      <source xml:lang="en">Ignore Default Schema</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.IgnoreDmlTriggerOrder">
+      <source xml:lang="en">Ignore Dml Trigger Order</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.IgnoreDmlTriggerState">
+      <source xml:lang="en">Ignore Dml Trigger State</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.IgnoreExtendedProperties">
+      <source xml:lang="en">Ignore Extended Properties</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.IgnoreFileAndLogFilePath">
+      <source xml:lang="en">Ignore File And Log File Path</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.IgnoreFileSize">
+      <source xml:lang="en">Ignore File Size</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.IgnoreFilegroupPlacement">
+      <source xml:lang="en">Ignore Filegroup Placement</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.IgnoreFillFactor">
+      <source xml:lang="en">Ignore Fill Factor</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.IgnoreFullTextCatalogFilePath">
+      <source xml:lang="en">Ignore Full Text Catalog FilePath</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.IgnoreIdentitySeed">
+      <source xml:lang="en">Ignore Identity Seed</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.IgnoreIncrement">
+      <source xml:lang="en">Ignore Increment</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.IgnoreIndexOptions">
+      <source xml:lang="en">Ignore Index Options</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.IgnoreIndexPadding">
+      <source xml:lang="en">Ignore Index Padding</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.IgnoreKeywordCasing">
+      <source xml:lang="en">Ignore Keyword Casing</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.IgnoreLockHintsOnIndexes">
+      <source xml:lang="en">Ignore Lock Hints On Indexes</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.IgnoreLoginSids">
+      <source xml:lang="en">Ignore Login Sids</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.IgnoreNotForReplication">
+      <source xml:lang="en">Ignore Not For Replication</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.IgnoreObjectPlacementOnPartitionScheme">
+      <source xml:lang="en">Ignore Object Placement On Partition Scheme</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.IgnorePartitionSchemes">
+      <source xml:lang="en">Ignore Partition Schemes</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.IgnorePermissions">
+      <source xml:lang="en">Ignore Permissions</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.IgnoreQuotedIdentifiers">
+      <source xml:lang="en">Ignore Quoted Identifiers</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.IgnoreRoleMembership">
+      <source xml:lang="en">Ignore Role Membership</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.IgnoreRouteLifetime">
+      <source xml:lang="en">Ignore Route Lifetime</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.IgnoreSemicolonBetweenStatements">
+      <source xml:lang="en">Ignore Semicolon Between Statements</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.IgnoreTableOptions">
+      <source xml:lang="en">Ignore Table Options</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.IgnoreUserSettingsObjects">
+      <source xml:lang="en">Ignore User Settings Objects</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.IgnoreWhitespace">
+      <source xml:lang="en">Ignore Whitespace</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.IgnoreWithNocheckOnCheckConstraints">
+      <source xml:lang="en">Ignore With No check On Check Constraints</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.IgnoreWithNocheckOnForeignKeys">
+      <source xml:lang="en">Ignore With Nocheck On ForeignKeys</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.IncludeCompositeObjects">
+      <source xml:lang="en">Include Composite Objects</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.IncludeTransactionalScripts">
+      <source xml:lang="en">Include Transactional Scripts</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.LinkedServerLogins">
+      <source xml:lang="en">Linked Server Logins</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.LinkedServers">
+      <source xml:lang="en">Linked Servers</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.Logins">
+      <source xml:lang="en">Logins</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.MasterKeys">
+      <source xml:lang="en">Master Keys</source>
+    </trans-unit>
     <trans-unit id="SchemaCompare.MessageTypes">
       <source xml:lang="en">Message Types</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.NoAlterStatementsToChangeClrTypes">
+      <source xml:lang="en">No Alter Statements To Change Clr Types</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.ObjectTypesOptionsLabel">
+      <source xml:lang="en">Include Object Types</source>
     </trans-unit>
     <trans-unit id="SchemaCompare.PartitionFunctions">
       <source xml:lang="en">Partition Functions</source>
@@ -546,8 +553,14 @@
     <trans-unit id="SchemaCompare.Permissions">
       <source xml:lang="en">Permissions</source>
     </trans-unit>
+    <trans-unit id="SchemaCompare.PopulateFilesOnFileGroups">
+      <source xml:lang="en">Populate Files On File Groups</source>
+    </trans-unit>
     <trans-unit id="SchemaCompare.Queues">
       <source xml:lang="en">Queues</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.RegisterDataTierApplication">
+      <source xml:lang="en">Register DataTier Application</source>
     </trans-unit>
     <trans-unit id="SchemaCompare.RemoteServiceBindings">
       <source xml:lang="en">Remote Service Bindings</source>
@@ -555,11 +568,41 @@
     <trans-unit id="SchemaCompare.RoleMembership">
       <source xml:lang="en">Role Membership</source>
     </trans-unit>
+    <trans-unit id="SchemaCompare.Routes">
+      <source xml:lang="en">Routes</source>
+    </trans-unit>
     <trans-unit id="SchemaCompare.Rules">
       <source xml:lang="en">Rules</source>
     </trans-unit>
+    <trans-unit id="SchemaCompare.RunDeploymentPlanExecutors">
+      <source xml:lang="en">Run Deployment Plan Executors</source>
+    </trans-unit>
     <trans-unit id="SchemaCompare.ScalarValuedFunctions">
       <source xml:lang="en">Scalar Valued Functions</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.SchemaCompareOptionsDialogLabel">
+      <source xml:lang="en">Schema Compare Options</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.ScriptDatabaseCollation">
+      <source xml:lang="en">Script Database Collation</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.ScriptDatabaseCompatibility">
+      <source xml:lang="en">Script Database Compatibility</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.ScriptDatabaseOptions">
+      <source xml:lang="en">Script Database Options</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.ScriptDeployStateChecks">
+      <source xml:lang="en">Script Deploy StateChecks</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.ScriptFileSize">
+      <source xml:lang="en">Script File Size</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.ScriptNewConstraintValidation">
+      <source xml:lang="en">Script New Constraint Validation</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.ScriptRefreshModule">
+      <source xml:lang="en">Script Refresh Module</source>
     </trans-unit>
     <trans-unit id="SchemaCompare.SearchPropertyLists">
       <source xml:lang="en">Search Property Lists</source>
@@ -569,6 +612,18 @@
     </trans-unit>
     <trans-unit id="SchemaCompare.Sequences">
       <source xml:lang="en">Sequences</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.ServerAuditSpecifications">
+      <source xml:lang="en">Server Audit Specifications</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.ServerRoleMembership">
+      <source xml:lang="en">Server Role Membership</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.ServerRoles">
+      <source xml:lang="en">Server Roles</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.ServerTriggers">
+      <source xml:lang="en">Server Triggers</source>
     </trans-unit>
     <trans-unit id="SchemaCompare.Services">
       <source xml:lang="en">Services</source>
@@ -585,11 +640,17 @@
     <trans-unit id="SchemaCompare.Synonyms">
       <source xml:lang="en">Synonyms</source>
     </trans-unit>
+    <trans-unit id="SchemaCompare.TableValuedFunctions">
+      <source xml:lang="en">Table Valued Functions</source>
+    </trans-unit>
     <trans-unit id="SchemaCompare.Tables">
       <source xml:lang="en">Tables</source>
     </trans-unit>
-    <trans-unit id="SchemaCompare.TableValuedFunctions">
-      <source xml:lang="en">Table Valued Functions</source>
+    <trans-unit id="SchemaCompare.TreatVerificationErrorsAsWarnings">
+      <source xml:lang="en">Treat Verification Errors As Warnings</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.UnmodifiableObjectWarnings">
+      <source xml:lang="en">Unmodifiable Object Warnings</source>
     </trans-unit>
     <trans-unit id="SchemaCompare.UserDefinedDataTypes">
       <source xml:lang="en">User Defined Data Types</source>
@@ -597,11 +658,14 @@
     <trans-unit id="SchemaCompare.UserDefinedTableTypes">
       <source xml:lang="en">User Defined Table Types</source>
     </trans-unit>
-    <trans-unit id="SchemaCompare.ClrUserDefinedTypes">
-      <source xml:lang="en">Clr User Defined Types</source>
-    </trans-unit>
     <trans-unit id="SchemaCompare.Users">
       <source xml:lang="en">Users</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.VerifyCollationCompatibility">
+      <source xml:lang="en">Verify Collation Compatibility</source>
+    </trans-unit>
+    <trans-unit id="SchemaCompare.VerifyDeployment">
+      <source xml:lang="en">Verify Deployment</source>
     </trans-unit>
     <trans-unit id="SchemaCompare.Views">
       <source xml:lang="en">Views</source>
@@ -609,308 +673,244 @@
     <trans-unit id="SchemaCompare.XmlSchemaCollections">
       <source xml:lang="en">Xml Schema Collections</source>
     </trans-unit>
-    <trans-unit id="SchemaCompare.Audits">
-      <source xml:lang="en">Audits</source>
+    <trans-unit id="SchemaCompareOptionsDialog.Reset">
+      <source xml:lang="en">Reset</source>
     </trans-unit>
-    <trans-unit id="SchemaCompare.Credentials">
-      <source xml:lang="en">Credentials</source>
+    <trans-unit id="schemaCompare.ApplyConfirmation">
+      <source xml:lang="en">Are you sure you want to update the target?</source>
     </trans-unit>
-    <trans-unit id="SchemaCompare.CryptographicProviders">
-      <source xml:lang="en">Cryptographic Providers</source>
+    <trans-unit id="schemaCompare.CompareDetailsTitle">
+      <source xml:lang="en">Compare Details</source>
     </trans-unit>
-    <trans-unit id="SchemaCompare.DatabaseAuditSpecifications">
-      <source xml:lang="en">Database Audit Specifications</source>
+    <trans-unit id="schemaCompare.GetConnectionString">
+      <source xml:lang="en">Do you want to connect to {0}?</source>
     </trans-unit>
-    <trans-unit id="SchemaCompare.DatabaseEncryptionKeys">
-      <source xml:lang="en">Database Encryption Keys</source>
+    <trans-unit id="schemaCompare.RecompareToRefresh">
+      <source xml:lang="en">Press Compare to refresh the comparison.</source>
     </trans-unit>
-    <trans-unit id="SchemaCompare.DatabaseScopedCredentials">
-      <source xml:lang="en">Database Scoped Credentials</source>
+    <trans-unit id="schemaCompare.actionColumn">
+      <source xml:lang="en">Action</source>
     </trans-unit>
-    <trans-unit id="SchemaCompare.Endpoints">
-      <source xml:lang="en">Endpoints</source>
+    <trans-unit id="schemaCompare.addAction">
+      <source xml:lang="en">Add</source>
     </trans-unit>
-    <trans-unit id="SchemaCompare.ErrorMessages">
-      <source xml:lang="en">Error Messages</source>
+    <trans-unit id="schemaCompare.applyButtonDisabledTitle">
+      <source xml:lang="en">Apply is enabled when the target is a database</source>
     </trans-unit>
-    <trans-unit id="SchemaCompare.EventNotifications">
-      <source xml:lang="en">Event Notifications</source>
+    <trans-unit id="schemaCompare.applyButtonEnabledTitle">
+      <source xml:lang="en">Apply changes to target</source>
     </trans-unit>
-    <trans-unit id="SchemaCompare.EventSessions">
-      <source xml:lang="en">Event Sessions</source>
+    <trans-unit id="schemaCompare.applyNoChanges">
+      <source xml:lang="en">No changes to apply</source>
     </trans-unit>
-    <trans-unit id="SchemaCompare.LinkedServerLogins">
-      <source xml:lang="en">Linked Server Logins</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.LinkedServers">
-      <source xml:lang="en">Linked Servers</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.Logins">
-      <source xml:lang="en">Logins</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.MasterKeys">
-      <source xml:lang="en">Master Keys</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.Routes">
-      <source xml:lang="en">Routes</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.ServerAuditSpecifications">
-      <source xml:lang="en">Server Audit Specifications</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.ServerRoleMembership">
-      <source xml:lang="en">Server Role Membership</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.ServerRoles">
-      <source xml:lang="en">Server Roles</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.ServerTriggers">
-      <source xml:lang="en">Server Triggers</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.Description.IgnoreTableOptions">
-      <source xml:lang="en">Specifies whether differences in the table options will be ignored or updated when you publish to a database.</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.Description.IgnoreSemicolonBetweenStatements">
-      <source xml:lang="en">Specifies whether differences in the semi-colons between T-SQL statements will be ignored or updated when you publish to a database.</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.Description.IgnoreRouteLifetime">
-      <source xml:lang="en">Specifies whether differences in the amount of time that SQL Server retains the route in the routing table should be ignored or updated when you publish to a database.</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.Description.IgnoreRoleMembership">
-      <source xml:lang="en">Specifies whether differences in the role membership of logins should be ignored or updated when you publish to a database.</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.Description.IgnoreQuotedIdentifiers">
-      <source xml:lang="en">Specifies whether differences in the quoted identifiers setting should be ignored or updated when you publish to a database.</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.Description.IgnorePermissions">
-      <source xml:lang="en">Specifies whether permissions should be ignored.</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.Description.IgnorePartitionSchemes">
-      <source xml:lang="en">Specifies whether differences in partition schemes and functions should be ignored or updated when you publish to a database.</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.Description.IgnoreObjectPlacementOnPartitionScheme">
-      <source xml:lang="en">Specifies whether an object's placement on a partition scheme should be ignored or updated when you publish to a database.</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.Description.IgnoreNotForReplication">
-      <source xml:lang="en">Specifies whether the not for replication settings should be ignored or updated when you publish to a database.</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.Description.IgnoreLoginSids">
-      <source xml:lang="en">Specifies whether differences in the security identification number (SID) should be ignored or updated when you publish to a database.</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.Description.IgnoreLockHintsOnIndexes">
-      <source xml:lang="en">Specifies whether differences in the lock hints on indexes should be ignored or updated when you publish to a database.</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.Description.IgnoreKeywordCasing">
-      <source xml:lang="en">Specifies whether differences in the casing of keywords should be ignored or updated when you publish to a database.</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.Description.IgnoreIndexPadding">
-      <source xml:lang="en">Specifies whether differences in the index padding should be ignored or updated when you publish to a database.</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.Description.IgnoreIndexOptions">
-      <source xml:lang="en">Specifies whether differences in the index options should be ignored or updated when you publish to a database.</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.Description.IgnoreIncrement">
-      <source xml:lang="en">Specifies whether differences in the increment for an identity column should be ignored or updated when you publish to a database.</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.Description.IgnoreIdentitySeed">
-      <source xml:lang="en">Specifies whether differences in the seed for an identity column should be ignored or updated when you publish updates to a database.</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.Description.IgnoreUserSettingsObjects">
-      <source xml:lang="en">Specifies whether differences in the user settings objects will be ignored or updated when you publish to a database.</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.Description.IgnoreFullTextCatalogFilePath">
-      <source xml:lang="en">Specifies whether differences in the file path for the full-text catalog should be ignored or whether a warning should be issued when you publish to a database.</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.Description.IgnoreWhitespace">
-      <source xml:lang="en">Specifies whether differences in white space will be ignored or updated when you publish to a database.</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.Description.IgnoreWithNocheckOnForeignKeys">
-      <source xml:lang="en">Specifies whether differences in the value of the WITH NOCHECK clause for foreign keys will be ignored or updated when you publish to a database.</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.Description.VerifyCollationCompatibility">
-      <source xml:lang="en">Specifies whether collation compatibility is verified.</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.Description.UnmodifiableObjectWarnings">
-      <source xml:lang="en">Specifies whether warnings should be generated when differences are found in objects that cannot be modified, for example, if the file size or file paths were different for a file.</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.Description.TreatVerificationErrorsAsWarnings">
-      <source xml:lang="en">Specifies whether errors encountered during publish verification should be treated as warnings. The check is performed against the generated deployment plan before the plan is executed against your target database. Plan verification detects problems such as the loss of target-only objects (such as indexes) that must be dropped to make a change. Verification will also detect situations where dependencies (such as a table or view) exist because of a reference to a composite project, but do not exist in the target database. You might choose to do this to get a complete list of all issues, instead of having the publish action stop on the first error.</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.Description.ScriptRefreshModule">
-      <source xml:lang="en">Include refresh statements at the end of the publish script.</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.Description.ScriptNewConstraintValidation">
-      <source xml:lang="en">At the end of publish all of the constraints will be verified as one set, avoiding data errors caused by a check or foreign key constraint in the middle of publish. If set to False, your constraints will be published without checking the corresponding data.</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.Description.ScriptFileSize">
-      <source xml:lang="en">Controls whether size is specified when adding a file to a filegroup.</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.Description.ScriptDeployStateChecks">
-      <source xml:lang="en">Specifies whether statements are generated in the publish script to verify that the database name and server name match the names specified in the database project.</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.Description.ScriptDatabaseOptions">
-      <source xml:lang="en">Specifies whether target database properties should be set or updated as part of the publish action.</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.Description.ScriptDatabaseCompatibility">
-      <source xml:lang="en">Specifies whether differences in the database compatibility should be ignored or updated when you publish to a database.</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.Description.ScriptDatabaseCollation">
-      <source xml:lang="en">Specifies whether differences in the database collation should be ignored or updated when you publish to a database.</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.Description.RunDeploymentPlanExecutors">
-      <source xml:lang="en">Specifies whether DeploymentPlanExecutor contributors should be run when other operations are executed.</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.Description.RegisterDataTierApplication">
-      <source xml:lang="en">Specifies whether the schema is registered with the database server.</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.Description.PopulateFilesOnFileGroups">
-      <source xml:lang="en">Specifies whether a new file is also created when a new FileGroup is created in the target database.</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.Description.NoAlterStatementsToChangeClrTypes">
-      <source xml:lang="en">Specifies that publish should always drop and re-create an assembly if there is a difference instead of issuing an ALTER ASSEMBLY statement</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.Description.IncludeTransactionalScripts">
-      <source xml:lang="en">Specifies whether transactional statements should be used where possible when you publish to a database.</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.Description.IncludeCompositeObjects">
-      <source xml:lang="en">Include all composite elements as part of a single publish operation.</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.Description.AllowUnsafeRowLevelSecurityDataMovement">
-      <source xml:lang="en">Do not block data motion on a table which has Row Level Security if this property is set to true. Default is false.</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.Description.IgnoreWithNocheckOnCheckConstraints">
-      <source xml:lang="en">Specifies whether differences in the value of the WITH NOCHECK clause for check constraints will be ignored or updated when you publish to a database.</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.Description.IgnoreFillFactor">
-      <source xml:lang="en">Specifies whether differences in the fill factor for index storage should be ignored or whether a warning should be issued when you publish to a database.</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.Description.IgnoreFileSize">
-      <source xml:lang="en">Specifies whether differences in the file sizes should be ignored or whether a warning should be issued when you publish to a database.</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.Description.IgnoreFilegroupPlacement">
-      <source xml:lang="en">Specifies whether differences in the placement of objects in FILEGROUPs should be ignored or updated when you publish to a database.</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.Description.DoNotAlterReplicatedObjects">
-      <source xml:lang="en">Specifies whether objects that are replicated are identified during verification.</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.Description.DoNotAlterChangeDataCaptureObjects">
-      <source xml:lang="en">If true, Change Data Capture objects are not altered.</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.Description.DisableAndReenableDdlTriggers">
-      <source xml:lang="en">Specifies whether Data Definition Language (DDL) triggers are disabled at the beginning of the publish process and re-enabled at the end of the publish action.</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.Description.DeployDatabaseInSingleUserMode">
-      <source xml:lang="en">If true, the database is set to Single User Mode before deploying.</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.Description.CreateNewDatabase">
-      <source xml:lang="en">Specifies whether the target database should be updated or whether it should be dropped and re-created when you publish to a database.</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.Description.CompareUsingTargetCollation">
-      <source xml:lang="en">This setting dictates how the database's collation is handled during deployment; by default the target database's collation will be updated if it does not match the collation specified by the source.  When this option is set, the target database's (or server's) collation should be used.</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.Description.CommentOutSetVarDeclarations">
-      <source xml:lang="en">Specifies whether the declaration of SETVAR variables should be commented out in the generated publish script. You might choose to do this if you plan to specify the values on the command line when you publish by using a tool such as SQLCMD.EXE.</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.Description.BlockWhenDriftDetected">
-      <source xml:lang="en">Specifies whether to block updating a database whose schema no longer matches its registration or is unregistered.</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.Description.BlockOnPossibleDataLoss">
-      <source xml:lang="en">Specifies that the publish episode should be terminated if there is a possibility of data loss resulting from the publish operation.</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.Description.BackupDatabaseBeforeChanges">
-      <source xml:lang="en">Backups the database before deploying any changes.</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.Description.AllowIncompatiblePlatform">
-      <source xml:lang="en">Specifies whether to attempt the action despite incompatible SQL Server platforms.</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.Description.AllowDropBlockingAssemblies">
-      <source xml:lang="en">This property is used by SqlClr deployment to cause any blocking assemblies to be dropped as part of the deployment plan. By default, any blocking/referencing assemblies will block an assembly update if the referencing assembly needs to be dropped.</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.Description.DropConstraintsNotInSource">
-      <source xml:lang="en">Specifies whether constraints that do not exist in the database snapshot (.dacpac) file will be dropped from the target database when you publish to a database.</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.Description.DropDmlTriggersNotInSource">
-      <source xml:lang="en">Specifies whether DML triggers that do not exist in the database snapshot (.dacpac) file will be dropped from the target database when you publish to a database.</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.Description.DropExtendedPropertiesNotInSource">
-      <source xml:lang="en">Specifies whether extended properties that do not exist in the database snapshot (.dacpac) file will be dropped from the target database when you publish to a database.</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.Description.DropIndexesNotInSource">
-      <source xml:lang="en">Specifies whether indexes that do not exist in the database snapshot (.dacpac) file will be dropped from the target database when you publish to a database.</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.Description.IgnoreFileAndLogFilePath">
-      <source xml:lang="en">Specifies whether differences in the paths for files and log files should be ignored or updated when you publish to a database.</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.Description.IgnoreExtendedProperties">
-      <source xml:lang="en">Specifies whether extended properties should be ignored.</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.Description.IgnoreDmlTriggerState">
-      <source xml:lang="en">Specifies whether differences in the enabled or disabled state of DML triggers should be ignored or updated when you publish to a database.</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.Description.IgnoreDmlTriggerOrder">
-      <source xml:lang="en">Specifies whether differences in the order of Data Manipulation Language (DML) triggers should be ignored or updated when you publish to a database.</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.Description.IgnoreDefaultSchema">
-      <source xml:lang="en">Specifies whether differences in the default schema should be ignored or updated when you publish to a database.</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.Description.IgnoreDdlTriggerState">
-      <source xml:lang="en">Specifies whether differences in the enabled or disabled state of Data Definition Language (DDL) triggers should be ignored or updated when you publish to a database.</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.Description.IgnoreDdlTriggerOrder">
-      <source xml:lang="en">Specifies whether differences in the order of Data Definition Language (DDL) triggers should be ignored or updated when you publish to a database or server.</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.Description.IgnoreCryptographicProviderFilePath">
-      <source xml:lang="en">Specifies whether differences in the file path for the cryptographic provider should be ignored or updated when you publish to a database.</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.Description.VerifyDeployment">
-      <source xml:lang="en">Specifies whether checks should be performed before publishing that will stop the publish action if issues are present that might block successful publishing. For example, your publish action might stop if you have foreign keys on the target database that do not exist in the database project, and that will cause errors when you publish.</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.Description.IgnoreComments">
-      <source xml:lang="en">Specifies whether differences in the comments should be ignored or updated when you publish to a database.</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.Description.IgnoreColumnCollation">
-      <source xml:lang="en">Specifies whether differences in the column collations should be ignored or updated when you publish to a database.</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.Description.IgnoreAuthorizer">
-      <source xml:lang="en">Specifies whether differences in the Authorizer should be ignored or updated when you publish to a database.</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.Description.IgnoreAnsiNulls">
-      <source xml:lang="en">Specifies whether differences in the ANSI NULLS setting should be ignored or updated when you publish to a database.</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.Description.GenerateSmartDefaults">
-      <source xml:lang="en">Automatically provides a default value when updating a table that contains data with a column that does not allow null values.</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.Description.DropStatisticsNotInSource">
-      <source xml:lang="en">Specifies whether statistics that do not exist in the database snapshot (.dacpac) file will be dropped from the target database when you publish to a database.</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.Description.DropRoleMembersNotInSource">
-      <source xml:lang="en">Specifies whether role members that are not defined in the database snapshot (.dacpac) file will be dropped from the target database when you publish updates to a database.&lt;/</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.Description.DropPermissionsNotInSource">
-      <source xml:lang="en">Specifies whether permissions that do not exist in the database snapshot (.dacpac) file will be dropped from the target database when you publish updates to a database.</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.Description.DropObjectsNotInSource">
-      <source xml:lang="en">Specifies whether objects that do not exist in the database snapshot (.dacpac) file will be dropped from the target database when you publish to a database.  This value takes precedence over DropExtendedProperties.</source>
-    </trans-unit>
-    <trans-unit id="SchemaCompare.Description.IgnoreColumnOrder">
-      <source xml:lang="en">Specifies whether differences in table column order should be ignored or updated when you publish to a database.</source>
-    </trans-unit>
-    <trans-unit id="schemaCompare.compareErrorMessage">
-      <source xml:lang="en">Schema Compare failed: {0}</source>
-    </trans-unit>
-    <trans-unit id="schemaCompare.saveScmpErrorMessage">
-      <source xml:lang="en">Save scmp failed: '{0}'</source>
+    <trans-unit id="schemaCompare.cancelCompareButton">
+      <source xml:lang="en">Stop</source>
     </trans-unit>
     <trans-unit id="schemaCompare.cancelErrorMessage">
       <source xml:lang="en">Cancel schema compare failed: '{0}'</source>
     </trans-unit>
+    <trans-unit id="schemaCompare.cannotExcludeMessage">
+      <source xml:lang="en">Cannot exclude {0}. Included dependents exist</source>
+    </trans-unit>
+    <trans-unit id="schemaCompare.cannotExcludeMessageWithDependent">
+      <source xml:lang="en">Cannot exclude {0}. Included dependents exist, such as {1}</source>
+    </trans-unit>
+    <trans-unit id="schemaCompare.cannotIncludeMessage">
+      <source xml:lang="en">Cannot include {0}. Excluded dependents exist</source>
+    </trans-unit>
+    <trans-unit id="schemaCompare.cannotIncludeMessageWithDependent">
+      <source xml:lang="en">Cannot include {0}. Excluded dependents exist, such as {1}</source>
+    </trans-unit>
+    <trans-unit id="schemaCompare.changeAction">
+      <source xml:lang="en">Change</source>
+    </trans-unit>
+    <trans-unit id="schemaCompare.compareButton">
+      <source xml:lang="en">Compare</source>
+    </trans-unit>
+    <trans-unit id="schemaCompare.compareErrorMessage">
+      <source xml:lang="en">Schema Compare failed: {0}</source>
+    </trans-unit>
+    <trans-unit id="schemaCompare.dacpacRadioButtonLabel">
+      <source xml:lang="en">Data-tier Application File (.dacpac)</source>
+    </trans-unit>
+    <trans-unit id="schemaCompare.databaseButtonLabel">
+      <source xml:lang="en">Database</source>
+    </trans-unit>
+    <trans-unit id="schemaCompare.deleteAction">
+      <source xml:lang="en">Delete</source>
+    </trans-unit>
+    <trans-unit id="schemaCompare.dialogTitle">
+      <source xml:lang="en">Schema Compare</source>
+    </trans-unit>
+    <trans-unit id="schemaCompare.differencesTableTitle">
+      <source xml:lang="en">Comparison between Source and Target</source>
+    </trans-unit>
+    <trans-unit id="schemaCompare.generateScriptButton">
+      <source xml:lang="en">Generate script</source>
+    </trans-unit>
+    <trans-unit id="schemaCompare.generateScriptButtonDisabledTitle">
+      <source xml:lang="en">Generate script is enabled when the target is a database</source>
+    </trans-unit>
+    <trans-unit id="schemaCompare.generateScriptEnabledButton">
+      <source xml:lang="en">Generate script to deploy changes to target</source>
+    </trans-unit>
     <trans-unit id="schemaCompare.generateScriptErrorMessage">
       <source xml:lang="en">Generate script failed: '{0}'</source>
     </trans-unit>
-    <trans-unit id="schemaCompare.updateErrorMessage">
-      <source xml:lang="en">Schema Compare Apply failed '{0}'</source>
+    <trans-unit id="schemaCompare.generateScriptNoChanges">
+      <source xml:lang="en">No changes to script</source>
+    </trans-unit>
+    <trans-unit id="schemaCompare.includeColumnName">
+      <source xml:lang="en">Include</source>
+    </trans-unit>
+    <trans-unit id="schemaCompare.includeExcludeInfoMessage">
+      <source xml:lang="en">Please note that include/exclude operations can take a moment to calculate affected dependencies</source>
+    </trans-unit>
+    <trans-unit id="schemaCompare.noDifferences">
+      <source xml:lang="en">No schema differences were found.</source>
+    </trans-unit>
+    <trans-unit id="schemaCompare.openFile">
+      <source xml:lang="en">Open</source>
+    </trans-unit>
+    <trans-unit id="schemaCompare.openScmpButton">
+      <source xml:lang="en">Open .scmp file</source>
+    </trans-unit>
+    <trans-unit id="schemaCompare.openScmpButtonTitle">
+      <source xml:lang="en">Load source, target, and options saved in an .scmp file</source>
     </trans-unit>
     <trans-unit id="schemaCompare.openScmpErrorMessage">
       <source xml:lang="en">Open scmp failed: '{0}'</source>
     </trans-unit>
-  </body></file>
+    <trans-unit id="schemaCompare.optionsButton">
+      <source xml:lang="en">Options</source>
+    </trans-unit>
+    <trans-unit id="schemaCompare.radioButtonsLabel">
+      <source xml:lang="en">Type</source>
+    </trans-unit>
+    <trans-unit id="schemaCompare.saveFile">
+      <source xml:lang="en">Save</source>
+    </trans-unit>
+    <trans-unit id="schemaCompare.saveScmpButton">
+      <source xml:lang="en">Save .scmp file</source>
+    </trans-unit>
+    <trans-unit id="schemaCompare.saveScmpButtonTitle">
+      <source xml:lang="en">Save source and target, options, and excluded elements</source>
+    </trans-unit>
+    <trans-unit id="schemaCompare.saveScmpErrorMessage">
+      <source xml:lang="en">Save scmp failed: '{0}'</source>
+    </trans-unit>
+    <trans-unit id="schemaCompare.selectConnection">
+      <source xml:lang="en">Select connection</source>
+    </trans-unit>
+    <trans-unit id="schemaCompare.selectSourceFile">
+      <source xml:lang="en">Select source file</source>
+    </trans-unit>
+    <trans-unit id="schemaCompare.selectTargetFile">
+      <source xml:lang="en">Select target file</source>
+    </trans-unit>
+    <trans-unit id="schemaCompare.sourceButtonTitle">
+      <source xml:lang="en">Select Source</source>
+    </trans-unit>
+    <trans-unit id="schemaCompare.sourceNameColumn">
+      <source xml:lang="en">Source Name</source>
+    </trans-unit>
+    <trans-unit id="schemaCompare.startText">
+      <source xml:lang="en">To compare two schemas, first select a source schema and target schema, then press Compare.</source>
+    </trans-unit>
+    <trans-unit id="schemaCompare.switchButtonTitle">
+      <source xml:lang="en">Switch source and target</source>
+    </trans-unit>
+    <trans-unit id="schemaCompare.switchDirectionButton">
+      <source xml:lang="en">Switch direction</source>
+    </trans-unit>
+    <trans-unit id="schemaCompare.targetButtonTitle">
+      <source xml:lang="en">Select Target</source>
+    </trans-unit>
+    <trans-unit id="schemaCompare.targetNameColumn">
+      <source xml:lang="en">Target Name</source>
+    </trans-unit>
+    <trans-unit id="schemaCompare.typeColumn">
+      <source xml:lang="en">Type</source>
+    </trans-unit>
+    <trans-unit id="schemaCompare.updateButton">
+      <source xml:lang="en">Apply</source>
+    </trans-unit>
+    <trans-unit id="schemaCompare.updateErrorMessage">
+      <source xml:lang="en">Schema Compare Apply failed '{0}'</source>
+    </trans-unit>
+    <trans-unit id="schemaCompare.waitText">
+      <source xml:lang="en">Initializing Comparison. This might take a moment.</source>
+    </trans-unit>
+    <trans-unit id="schemaCompareDialog.No">
+      <source xml:lang="en">No</source>
+    </trans-unit>
+    <trans-unit id="schemaCompareDialog.SourceTitle">
+      <source xml:lang="en">Source</source>
+    </trans-unit>
+    <trans-unit id="schemaCompareDialog.TargetTitle">
+      <source xml:lang="en">Target</source>
+    </trans-unit>
+    <trans-unit id="schemaCompareDialog.Yes">
+      <source xml:lang="en">Yes</source>
+    </trans-unit>
+    <trans-unit id="schemaCompareDialog.cancel">
+      <source xml:lang="en">Cancel</source>
+    </trans-unit>
+    <trans-unit id="schemaCompareDialog.databaseDropdownTitle">
+      <source xml:lang="en">Database</source>
+    </trans-unit>
+    <trans-unit id="schemaCompareDialog.defaultUser">
+      <source xml:lang="en">default</source>
+    </trans-unit>
+    <trans-unit id="schemaCompareDialog.differentSourceMessage">
+      <source xml:lang="en">A different source schema has been selected. Compare to see the comparison?</source>
+    </trans-unit>
+    <trans-unit id="schemaCompareDialog.differentSourceTargetMessage">
+      <source xml:lang="en">Different source and target schemas have been selected. Compare to see the comparison?</source>
+    </trans-unit>
+    <trans-unit id="schemaCompareDialog.differentTargetMessage">
+      <source xml:lang="en">A different target schema has been selected. Compare to see the comparison?</source>
+    </trans-unit>
+    <trans-unit id="schemaCompareDialog.fileTextBoxLabel">
+      <source xml:lang="en">File</source>
+    </trans-unit>
+    <trans-unit id="schemaCompareDialog.ok">
+      <source xml:lang="en">OK</source>
+    </trans-unit>
+    <trans-unit id="schemaCompareDialog.serverDropdownTitle">
+      <source xml:lang="en">Server</source>
+    </trans-unit>
+    <trans-unit id="schemaCompareDialog.sourceDatabaseDropdown">
+      <source xml:lang="en">Source Database</source>
+    </trans-unit>
+    <trans-unit id="schemaCompareDialog.sourceServerDropdown">
+      <source xml:lang="en">Source Server</source>
+    </trans-unit>
+    <trans-unit id="schemaCompareDialog.sourceTextBox">
+      <source xml:lang="en">Source file</source>
+    </trans-unit>
+    <trans-unit id="schemaCompareDialog.targetDatabaseDropdown">
+      <source xml:lang="en">Target Database</source>
+    </trans-unit>
+    <trans-unit id="schemaCompareDialog.targetServerDropdown">
+      <source xml:lang="en">Target Server</source>
+    </trans-unit>
+    <trans-unit id="schemaCompareDialog.targetTextBox">
+      <source xml:lang="en">Target file</source>
+    </trans-unit>
+    <trans-unit id="schemaCompareOptions.RecompareMessage">
+      <source xml:lang="en">Options have changed. Recompare to see the comparison?</source>
+    </trans-unit>
+</body></file>
+  <file original="extensions/schema-compare/package" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="description">
+      <source xml:lang="en">SQL Server Schema Compare for Azure Data Studio supports comparing the schemas of databases and dacpacs.</source>
+    </trans-unit>
+    <trans-unit id="displayName">
+      <source xml:lang="en">SQL Server Schema Compare</source>
+    </trans-unit>
+    <trans-unit id="schemaCompare.start">
+      <source xml:lang="en">Schema Compare</source>
+    </trans-unit>
+</body></file>
 </xliff>
