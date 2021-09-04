@@ -269,6 +269,7 @@ declare module 'azdata' {
 		rowCssStyles?: CssStyles;
 		ariaLabel?: string;
 		showCheckAll?: boolean;
+		hidden?: boolean;
 	}
 
 

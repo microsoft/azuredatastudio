@@ -466,4 +466,8 @@ export default class DeclarativeTableComponent extends ContainerBase<any, azdata
 			this.setPropertyFromUI<number>((properties, value) => { properties.selectedRow = value; }, row);
 		}
 	}
+
+	public showColumn(column: azdata.DeclarativeTableColumn): boolean {
+		return column.hidden === undefined || !column.hidden;
+	}
 }
