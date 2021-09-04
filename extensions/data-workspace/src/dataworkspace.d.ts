@@ -57,8 +57,9 @@ declare module 'dataworkspace' {
 		 * @param name Create a project
 		 * @param location the parent directory of the project
 		 * @param projectTypeId the identifier of the selected project type
+		 * @param projectTargetPlatform the target platform of the project
 		 */
-		createProject(name: string, location: vscode.Uri, projectTypeId: string): Promise<vscode.Uri>;
+		createProject(name: string, location: vscode.Uri, projectTypeId: string, projectTargetPlatform?: string): Promise<vscode.Uri>;
 
 		/**
 		 * Gets the project data corresponding to the project file, to be placed in the dashboard container
@@ -108,7 +109,17 @@ declare module 'dataworkspace' {
 		/**
 		 * Gets the icon path of the project type
 		 */
-		readonly icon: azdata.IconPath
+		readonly icon: azdata.IconPath;
+
+		/**
+		  * Gets the target platforms that can be selected when creating a new project
+		 */
+		readonly targetPlatforms?: string[];
+
+		/**
+		 * Gets the default target platform
+		 */
+		readonly defaultTargetPlatform?: string;
 	}
 
 	/**

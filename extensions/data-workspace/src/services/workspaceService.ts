@@ -139,10 +139,10 @@ export class WorkspaceService implements IWorkspaceService {
 		return ProjectProviderRegistry.getProviderByProjectExtension(projectType);
 	}
 
-	async createProject(name: string, location: vscode.Uri, projectTypeId: string, workspaceFile?: vscode.Uri): Promise<vscode.Uri> {
+	async createProject(name: string, location: vscode.Uri, projectTypeId: string, projectTargetVersion?: string): Promise<vscode.Uri> {
 		const provider = ProjectProviderRegistry.getProviderByProjectType(projectTypeId);
 		if (provider) {
-			const projectFile = await provider.createProject(name, location, projectTypeId);
+			const projectFile = await provider.createProject(name, location, projectTypeId, projectTargetVersion);
 			await this.addProjectsToWorkspace([projectFile]);
 			this._onDidWorkspaceProjectsChange.fire();
 			return projectFile;

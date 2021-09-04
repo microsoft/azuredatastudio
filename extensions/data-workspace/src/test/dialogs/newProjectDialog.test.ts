@@ -12,6 +12,7 @@ import { promises as fs } from 'fs';
 import { NewProjectDialog } from '../../dialogs/newProjectDialog';
 import { WorkspaceService } from '../../services/workspaceService';
 import { testProjectType } from '../testUtils';
+import { IProjectType } from 'dataworkspace';
 
 suite('New Project Dialog', function (): void {
 	this.afterEach(() => {
@@ -38,6 +39,55 @@ suite('New Project Dialog', function (): void {
 		// change project name to be unique
 		dialog.model.name = `TestProject_${new Date().getTime()}`;
 		should.equal(await dialog.validate(), true, 'Validation should pass because name is unique and parent directory exists');
+	});
+
+	test('Should select correct target platform if provided default', async function (): Promise<void> {
+		const projectTypeWithTargetPlatforms: IProjectType = {
+			id: 'tp2',
+			description: '',
+			projectFileExtension: 'testproj2',
+			icon: '',
+			displayName: 'test project 2',
+			targetPlatforms: ['platform1', 'platform2', 'platform3'],
+			defaultTargetPlatform: 'platform2'
+		};
+
+		const workspaceServiceMock = TypeMoq.Mock.ofType<WorkspaceService>();
+		workspaceServiceMock.setup(x => x.getAllProjectTypes()).returns(() => Promise.resolve([projectTypeWithTargetPlatforms]));
+
+		const dialog = new NewProjectDialog(workspaceServiceMock.object);
+		await dialog.open();
+		should.equal(dialog.model.targetPlatform, 'platform2', 'Target platform should be platform2');
+
+	});
+
+	test('Should handle invalid default target platform', async function (): Promise<void> {
+		const projectTypeWithTargetPlatforms: IProjectType = {
+			id: 'tp2',
+			description: '',
+			projectFileExtension: 'testproj2',
+			icon: '',
+			displayName: 'test project 2',
+			targetPlatforms: ['platform1', 'platform2', 'platform3'],
+			defaultTargetPlatform: 'invalid'
+		};
+
+		const workspaceServiceMock = TypeMoq.Mock.ofType<WorkspaceService>();
+		workspaceServiceMock.setup(x => x.getAllProjectTypes()).returns(() => Promise.resolve([projectTypeWithTargetPlatforms]));
+
+		const dialog = new NewProjectDialog(workspaceServiceMock.object);
+		await dialog.open();
+		should.equal(dialog.model.targetPlatform, 'platform1', 'Target platform should be platform1 (the first value in target platforms)');
+
+	});
+
+	test('Should handle no target platforms provided by project type', async function (): Promise<void> {
+		const workspaceServiceMock = TypeMoq.Mock.ofType<WorkspaceService>();
+		workspaceServiceMock.setup(x => x.getAllProjectTypes()).returns(() => Promise.resolve([testProjectType]));
+
+		const dialog = new NewProjectDialog(workspaceServiceMock.object);
+		await dialog.open();
+		should.equal(dialog.model.targetPlatform, undefined, 'Target platform should be undefined');
 	});
 });
 
