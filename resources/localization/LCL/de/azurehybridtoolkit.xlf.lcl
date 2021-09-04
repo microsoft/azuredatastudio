@@ -14,7 +14,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Jupyter Books]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Jupyter-Books]]></Val>
+            <Val><![CDATA[Jupyter Books]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -22,24 +22,36 @@
       <Item ItemId=";description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Opens up Azure SQL Hybrid Cloud Toolkit Jupyter Book]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Öffnet das Jupyter Book für Azure SQL Hybrid Cloud Toolkit.]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";displayName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Azure SQL Hybrid Cloud Toolkit]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Azure SQL Hybrid Cloud Toolkit]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";title.cloudHybridBooks" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Azure SQL Hybrid Cloud Toolkit]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Azure SQL Hybrid Cloud Toolkit]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";title.openJupyterBook" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Open Azure SQL Hybrid Cloud Toolkit Jupyter Book]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[Jupyter Book für Azure SQL Hybrid Cloud Toolkit öffnen]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>

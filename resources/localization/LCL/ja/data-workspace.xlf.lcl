@@ -31,18 +31,27 @@
       <Item ItemId=";extensions/data-workspace/dist/common/constants.UnknownProjectTypeError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[No provider was found for project type with id: '{0}']]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[ID: '{0}' のプロジェクトの種類のプロバイダーが見つかりませんでした]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/data-workspace/dist/common/constants.UnknownProjectsError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[No provider was found for the following projects: {0}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[次のプロジェクトのプロバイダーが見つかりませんでした: {0}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/data-workspace/dist/common/constants.activateExtensionFailed" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Failed to load the project provider extension '{0}'. Error message: {1}]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[プロジェクト プロバイダー拡張機能 '{0}' を読み込むことができませんでした。エラー メッセージ: {1}]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -103,6 +112,9 @@
       <Item ItemId=";extensions/data-workspace/dist/common/constants.dataworkspace.cloneParentDirectoryNotExistError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The selected clone path '{0}' does not exist or is not a directory.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[選択したパスのクローン '{0}' は存在しないか、ディレクトリではありません。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -118,18 +130,27 @@
       <Item ItemId=";extensions/data-workspace/dist/common/constants.dataworkspace.enterProjectName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Enter Project Name]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[プロジェクト名を入力してください]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/data-workspace/dist/common/constants.dataworkspace.fileNotExistError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The selected {0} file '{1}' does not exist or is not a file.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[選択した {0} ファイル '{1}' が存在しないか、ファイルではありません。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/data-workspace/dist/common/constants.dataworkspace.gitRepoUrlPlaceholder" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Enter remote git repository URL]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[リモート git リポジトリの URL を入力してください]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -145,12 +166,18 @@
       <Item ItemId=";extensions/data-workspace/dist/common/constants.dataworkspace.localClonePathPlaceholder" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Select location to clone repository locally]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[リポジトリをローカルに複製する場所を選択してください]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/data-workspace/dist/common/constants.dataworkspace.localClonePathTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Local clone path]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[ローカルの複製パス]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -193,6 +220,9 @@
       <Item ItemId=";extensions/data-workspace/dist/common/constants.dataworkspace.openExistingDialogTitle" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Open Existing Project]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[既存のプロジェクトを開く]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -200,7 +230,7 @@
         <Str Cat="Text">
           <Val><![CDATA[Project]]></Val>
           <Tgt Cat="Text" Stat="Loc" Orig="New">
-            <Val><![CDATA[Project]]></Val>
+            <Val><![CDATA[プロジェクト]]></Val>
           </Tgt>
         </Str>
         <Disp Icon="Str" />
@@ -208,30 +238,45 @@
       <Item ItemId=";extensions/data-workspace/dist/common/constants.dataworkspace.projectAlreadyOpened" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Project '{0}' is already opened.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[プロジェクト '{0}' は既に開かれています。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/data-workspace/dist/common/constants.dataworkspace.projectDirectoryAlreadyExistError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[There is already a directory named '{0}' in the selected location: '{1}'.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[選択した場所: '{1}' に、'{0}' という名前のディレクトリが既に存在します。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/data-workspace/dist/common/constants.dataworkspace.projectDirectoryAlreadyExistErrorShort" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Directory '{0}' already exists in the selected location, please choose another]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[ディレクトリ '{0}' は選択された場所に既に存在します。別の場所を選択してください]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/data-workspace/dist/common/constants.dataworkspace.projectFilePlaceholder" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Select project file]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[プロジェクト ファイルを選択]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/data-workspace/dist/common/constants.dataworkspace.projectLocationPlaceholder" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Select location to create project]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[プロジェクトを作成する場所の選択]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -265,24 +310,36 @@
       <Item ItemId=";extensions/data-workspace/dist/common/constants.dataworkspace.projectParentDirectoryNotExistError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[The selected project location '{0}' does not exist or is not a directory.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[選択したプロジェクトの場所 '{0}' は存在しないか、ディレクトリではありません。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/data-workspace/dist/common/constants.dataworkspace.projectsFailedToLoad" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Some projects failed to load. To view more details, [open the developer console]5D;(command:workbench.action.toggleDevTools)]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[一部のプロジェクトを読み込めませんでした。詳細を表示するには、[開発者コンソールを開く]5D; (command:workbench.action.toggleDevTools)]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/data-workspace/dist/common/constants.dataworkspace.remoteGitRepo" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Remote git repository]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[リモート git リポジトリ]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/data-workspace/dist/common/constants.dataworkspace.restartConfirmation" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Azure Data Studio needs to be restarted for the project to be created and added to the workspace, do this now?]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[プロジェクトを作成してワークスペースに追加するには、Azure Data Studio を再起動する必要があります。今すぐ実行しますか?]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -298,30 +355,45 @@
       <Item ItemId=";extensions/data-workspace/dist/common/constants.dataworkspace.selectProjectLocation" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Select Project Location]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[プロジェクトの場所を選択]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/data-workspace/dist/common/constants.dataworkspace.selectProjectType" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Select Project Type]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[プロジェクトの種類を選択します]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/data-workspace/dist/common/constants.dataworkspace.workspacePlaceholder" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Select workspace ({0}) file]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[ワークスペース ({0}) ファイルの選択]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/data-workspace/dist/common/constants.fileDoesNotExist" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[File '{0}' doesn't exist]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[ファイル '{0}' は存在しません]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/data-workspace/dist/common/constants.gitCloneError" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Error during git clone. View git output for more details]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[git の複製中にエラーが発生しました。詳細について git 出力を表示します]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -337,12 +409,18 @@
       <Item ItemId=";extensions/data-workspace/dist/common/constants.noPreviousData" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Prior {0} for the current project will appear here, please run to see the results.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[現在のプロジェクトの前の {0} がここに表示されます。結果を確認するには、実行してください。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/data-workspace/dist/common/constants.projectNameNull" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Project name is null]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[プロジェクト名が NULL です]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -367,12 +445,18 @@
       <Item ItemId=";extensions/data-workspace/package.extension-description" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Data workspace]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[データ ワークスペース]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/data-workspace/package.extension-displayName" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Data workspace]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[データ ワークスペース]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -406,30 +490,45 @@
       <Item ItemId=";extensions/data-workspace/package.open-existing-command" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Open existing]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[既存のものを開く]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/data-workspace/package.projects-view-no-project-content" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[No projects open in current workspace.]D;]A;[Create new]5D;(command:projects.new)]D;]A;[Open existing]5D;(command:projects.openExisting)]D;]A;To learn more about projects [read our docs]5D;(https://aka.ms/azuredatastudio-projects).]D;]A;]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[現在のワークスペースでプロジェクトが開かれていません。]D;]A;[新規作成]5D; (command:projects.new)]D;]A;[既存のものを開く]5D; (command:projects.openExisting)]D;]A;プロジェクトの詳細情報については、[ドキュメントを読む]5D; ( https://aka.ms/azuredatastudio-projects) をご覧ください。]D;]A;]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/data-workspace/package.projects-view-no-workspace-content" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Create new or open existing to get started.]D;]A;[Create new]5D;(command:projects.new)]D;]A;[Open existing]5D;(command:projects.openExisting)]D;]A;To learn more about projects [read our docs]5D;(https://aka.ms/azuredatastudio-projects).]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[新規作成するか、既存のものを開いて作業を開始します。]D;]A;[新規作成]5D; (command:projects.new)]D;]A;[既存のものを開く]5D; (command:projects.openExisting)]D;]A;プロジェクトの詳細情報については、[ドキュメントを読む]5D; ( https://aka.ms/azuredatastudio-projects) をご覧ください。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/data-workspace/package.projects.defaultProjectSaveLocation" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Full path to folder where new projects are saved by default.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[新しいプロジェクトがデフォルトで保存されるフォルダーへのフルパス。 ]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
       <Item ItemId=";extensions/data-workspace/package.projects.showNotAddedProjectsInWorkspacePrompt" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Always show information message when the current workspace folders contain projects that have not been added to the workspace's projects.]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[ワークスペースのプロジェクトにまだ追加されていないプロジェクトが現在のワークスペースフォルダーに含まれている場合は、情報メッセージを常に表示します。]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
@@ -445,6 +544,9 @@
       <Item ItemId=";extensions/data-workspace/package.remove-project-command" ItemType="0" PsrId="308" Leaf="true">
         <Str Cat="Text">
           <Val><![CDATA[Remove Project]]></Val>
+          <Tgt Cat="Text" Stat="Loc" Orig="New">
+            <Val><![CDATA[プロジェクトの削除]]></Val>
+          </Tgt>
         </Str>
         <Disp Icon="Str" />
       </Item>
