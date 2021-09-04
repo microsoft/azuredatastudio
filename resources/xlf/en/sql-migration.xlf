@@ -924,8 +924,8 @@ This may take some time.</source>
     <trans-unit id="sql.migration.status.completing">
       <source xml:lang="en">Completing</source>
     </trans-unit>
-    <trans-unit id="sql.migration.status.cancelling">
-      <source xml:lang="en">Cancelling</source>
+    <trans-unit id="sql.migration.status.canceling">
+      <source xml:lang="en">Canceling</source>
     </trans-unit>
     <trans-unit id="sql.migration.status.failed">
       <source xml:lang="en">Failed</source>
