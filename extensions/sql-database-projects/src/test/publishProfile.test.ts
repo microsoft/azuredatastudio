@@ -11,9 +11,8 @@ import * as TypeMoq from 'typemoq';
 import * as baselines from './baselines/baselines';
 import * as testUtils from './testUtils';
 import * as constants from '../common/constants';
-import { ProjectsController } from '../controllers/projectController';
 import { TestContext, createContext, mockDacFxOptionsResult } from './testContext';
-import { load } from '../models/publishProfile/publishProfile';
+import { load, readPublishProfile } from '../models/publishProfile/publishProfile';
 
 let testContext: TestContext;
 
@@ -81,10 +80,9 @@ describe('Publish profile tests', function (): void {
 	it('Should throw error when connecting does not work', async function (): Promise<void> {
 		await baselines.loadBaselines();
 		let profilePath = await testUtils.createTestFile(baselines.publishProfileIntegratedSecurityBaseline, 'publishProfile.publish.xml');
-		const projController = new ProjectsController();
 
 		sinon.stub(azdata.connection, 'connect').throws(new Error('Could not connect'));
 
-		await testUtils.shouldThrowSpecificError(async () => await projController.readPublishProfileCallback(vscode.Uri.file(profilePath)), constants.unableToCreatePublishConnection('Could not connect'));
+		await testUtils.shouldThrowSpecificError(async () => await readPublishProfile(vscode.Uri.file(profilePath)), constants.unableToCreatePublishConnection('Could not connect'));
 	});
 });

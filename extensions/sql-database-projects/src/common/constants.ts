@@ -5,6 +5,7 @@
 
 import * as nls from 'vscode-nls';
 import { SqlTargetPlatform } from 'sqldbproj';
+import * as utils from '../common/utils';
 
 const localize = nls.loadMessageBundle();
 
@@ -101,7 +102,7 @@ export const connectionRadioButtonLabel = localize('connectionRadioButtonLabel',
 export const dataSourceDropdownTitle = localize('dataSourceDropdownTitle', "Data source");
 export const noDataSourcesText = localize('noDataSourcesText', "No data sources in this project");
 export const loadProfilePlaceholderText = localize('loadProfilePlaceholderText', "Load profile...");
-export const profileReadError = localize('profileReadError', "Could not load the profile file.");
+export const profileReadError = (err: any) => localize('profileReadError', "Error loading the publish profile. {0}", utils.getErrorMessage(err));
 export const sqlCmdTableLabel = localize('sqlCmdTableLabel', "SQLCMD Variables");
 export const sqlCmdVariableColumn = localize('sqlCmdVariableColumn', "Name");
 export const sqlCmdValueColumn = localize('sqlCmdValueColumn', "Value");
@@ -110,7 +111,8 @@ export const profile = localize('profile', "Profile");
 export const selectConnection = localize('selectConnection', "Select connection");
 export const server = localize('server', "Server");
 export const defaultUser = localize('default', "default");
-export const selectProfile = localize('selectProfile', "Select publish profile to load");
+export const selectProfileToUse = localize('selectProfileToUse', "Select publish profile to load");
+export const selectProfile = localize('selectProfile', "Select Profile");
 export const dontUseProfile = localize('dontUseProfile', "Don't use profile");
 export const browseForProfile = localize('browseForProfile', "Browse for profile");
 export const chooseAction = localize('chooseAction', "Choose action");

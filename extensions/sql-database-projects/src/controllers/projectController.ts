@@ -26,7 +26,7 @@ import { ProjectRootTreeItem } from '../models/tree/projectTreeItem';
 import { ImportDataModel } from '../models/api/import';
 import { NetCoreTool, DotNetCommandOptions } from '../tools/netcoreTool';
 import { BuildHelper } from '../tools/buildHelper';
-import { PublishProfile, load } from '../models/publishProfile/publishProfile';
+import { readPublishProfile } from '../models/publishProfile/publishProfile';
 import { AddDatabaseReferenceDialog } from '../dialogs/addDatabaseReferenceDialog';
 import { ISystemDatabaseReferenceSettings, IDacpacReferenceSettings, IProjectReferenceSettings } from '../models/IDatabaseReferenceSettings';
 import { DatabaseReferenceTreeItem } from '../models/tree/databaseReferencesTreeItem';
@@ -38,8 +38,6 @@ import { SqlTargetPlatform } from 'sqldbproj';
 import { launchPublishDatabaseQuickpick } from '../dialogs/publishDatabaseQuickpick';
 
 const maxTableLength = 10;
-
-export type IDacFxService = mssql.IDacFxService | mssqlVscode.IDacFxService;
 
 /**
  * Controller for managing lifecycle of projects
@@ -242,9 +240,9 @@ export class ProjectsController {
 		if (utils.getAzdataApi()) {
 			let publishDatabaseDialog = this.getPublishDialog(project);
 
-			publishDatabaseDialog.publish = async (proj, prof) => await this.publishProjectCallback(proj, prof);
-			publishDatabaseDialog.generateScript = async (proj, prof) => await this.publishProjectCallback(proj, prof);
-			publishDatabaseDialog.readPublishProfile = async (profileUri) => await this.readPublishProfileCallback(profileUri);
+			publishDatabaseDialog.publish = async (proj, prof) => this.publishProjectCallback(proj, prof);
+			publishDatabaseDialog.generateScript = async (proj, prof) => this.publishProjectCallback(proj, prof);
+			publishDatabaseDialog.readPublishProfile = async (profileUri) => readPublishProfile(profileUri);
 
 			publishDatabaseDialog.openDialog();
 
@@ -279,7 +277,7 @@ export class ProjectsController {
 		const tempPath = path.join(os.tmpdir(), `${path.parse(dacpacPath).name}_${new Date().getTime()}${constants.sqlprojExtension}`);
 		await fs.copyFile(dacpacPath, tempPath);
 
-		const dacFxService = await this.getDaxFxService();
+		const dacFxService = await utils.getDacFxService();
 
 		let result: mssql.DacFxResult;
 		telemetryProps.profileUsed = (settings.profileUsed ?? false).toString();
@@ -347,17 +345,6 @@ export class ProjectsController {
 			.send();
 
 		return result;
-	}
-
-	public async readPublishProfileCallback(profileUri: vscode.Uri): Promise<PublishProfile> {
-		try {
-			const dacFxService = await this.getDaxFxService();
-			const profile = await load(profileUri, dacFxService);
-			return profile;
-		} catch (e) {
-			vscode.window.showErrorMessage(constants.profileReadError);
-			throw e;
-		}
 	}
 
 	public async schemaCompare(treeNode: dataworkspace.WorkspaceTreeItem): Promise<void> {
@@ -740,7 +727,7 @@ export class ProjectsController {
 
 		const streamingJobDefinition: string = (await fs.readFile(node.element.fileSystemUri.fsPath)).toString();
 
-		const dacFxService = await this.getDaxFxService();
+		const dacFxService = await utils.getDacFxService();
 		const actionStartTime = new Date().getTime();
 
 		const result: mssql.ValidateStreamingJobResult = await dacFxService.validateStreamingJob(dacpacPath, streamingJobDefinition);
@@ -830,21 +817,6 @@ export class ProjectsController {
 			throw new Error(constants.unexpectedProjectContext(context.projectUri.path));
 		}
 	}
-
-	public async getDaxFxService(): Promise<IDacFxService> {
-		if (utils.getAzdataApi()) {
-			const ext: vscode.Extension<mssql.IExtension> = vscode.extensions.getExtension(mssql.extension.name)!;
-			const extensionApi = await ext.activate();
-			return extensionApi.dacFx;
-		} else {
-			const ext: vscode.Extension<mssqlVscode.IExtension> = vscode.extensions.getExtension(mssql.extension.name)!;
-			const extensionApi = await ext.activate();
-			return extensionApi.dacFx;
-		}
-
-	}
-
-
 
 	private async promptForNewObjectName(itemType: templates.ProjectScriptType, _project: Project, folderPath: string, fileExtension?: string): Promise<string | undefined> {
 		const suggestedName = itemType.friendlyName.replace(/\s+/g, '');

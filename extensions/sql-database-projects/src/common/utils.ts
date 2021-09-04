@@ -11,6 +11,7 @@ import * as path from 'path';
 import * as glob from 'fast-glob';
 import * as dataworkspace from 'dataworkspace';
 import * as mssql from '../../../mssql';
+import * as vscodeMssql from 'vscode-mssql';
 import { promises as fs } from 'fs';
 
 /**
@@ -249,6 +250,20 @@ export function getSqlProjectsInWorkspace(): Promise<vscode.Uri[]> {
 export function getDataWorkspaceExtensionApi(): dataworkspace.IExtension {
 	const extension = vscode.extensions.getExtension(dataworkspace.extension.name)!;
 	return extension.exports;
+}
+
+export type IDacFxService = mssql.IDacFxService | vscodeMssql.IDacFxService;
+
+export async function getDacFxService(): Promise<IDacFxService> {
+	if (getAzdataApi()) {
+		let ext = vscode.extensions.getExtension(mssql.extension.name) as vscode.Extension<mssql.IExtension>;
+		const api = await ext.activate();
+		return api.dacFx;
+	} else {
+		let ext = vscode.extensions.getExtension(vscodeMssql.extension.name) as vscode.Extension<vscodeMssql.IExtension>;
+		const api = await ext.activate();
+		return api.dacFx;
+	}
 }
 
 /*

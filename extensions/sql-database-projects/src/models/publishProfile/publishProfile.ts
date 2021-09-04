@@ -8,11 +8,10 @@ import * as constants from '../../common/constants';
 import * as utils from '../../common/utils';
 import * as mssql from '../../../../mssql';
 import * as vscodeMssql from 'vscode-mssql';
+import * as vscode from 'vscode';
 
 import { promises as fs } from 'fs';
-import { Uri } from 'vscode';
 import { SqlConnectionDataSource } from '../dataSources/sqlConnectionStringSource';
-import { IDacFxService } from '../../controllers/projectController';
 
 // only reading db name, connection string, and SQLCMD vars from profile for now
 export interface PublishProfile {
@@ -24,10 +23,21 @@ export interface PublishProfile {
 	options?: mssql.DeploymentOptions | vscodeMssql.DeploymentOptions;
 }
 
+export async function readPublishProfile(profileUri: vscode.Uri): Promise<PublishProfile> {
+	try {
+		const dacFxService = await utils.getDacFxService();
+		const profile = await load(profileUri, dacFxService);
+		return profile;
+	} catch (e) {
+		vscode.window.showErrorMessage(constants.profileReadError(e));
+		throw e;
+	}
+}
+
 /**
  * parses the specified file to load publish settings
  */
-export async function load(profileUri: Uri, dacfxService: IDacFxService): Promise<PublishProfile> {
+export async function load(profileUri: vscode.Uri, dacfxService: utils.IDacFxService): Promise<PublishProfile> {
 	const profileText = await fs.readFile(profileUri.fsPath);
 	const profileXmlDoc = new xmldom.DOMParser().parseFromString(profileText.toString());
 
@@ -67,17 +77,26 @@ async function readConnectionString(xmlDoc: any): Promise<{ connectionId: string
 		const connectionProfile = dataSource.getConnectionProfile();
 
 		try {
+			const azdataApi = utils.getAzdataApi();
 			if (dataSource.integratedSecurity) {
-				const connection = await utils.getAzdataApi()!.connection.connect(connectionProfile, false, false);
-				connId = connection.connectionId;
+				if (azdataApi) {
+					const connection = await utils.getAzdataApi()!.connection.connect(connectionProfile, false, false);
+					connId = connection.connectionId;
+				} else {
+					// TODO@chgagnon - hook up VS Code MSSQL
+				}
 				server = dataSource.server;
 				username = constants.defaultUser;
 			}
 			else {
-				const connection = await utils.getAzdataApi()!.connection.openConnectionDialog(undefined, connectionProfile);
-				connId = connection.connectionId;
-				server = connection.options['server'];
-				username = connection.options['user'];
+				if (azdataApi) {
+					const connection = await utils.getAzdataApi()!.connection.openConnectionDialog(undefined, connectionProfile);
+					connId = connection.connectionId;
+					server = connection.options['server'];
+					username = connection.options['user'];
+				} else {
+					// TODO@chgagnon - hook up VS Code MSSQL
+				}
 			}
 
 			targetConnection = `${server} (${username})`;

@@ -13,7 +13,7 @@ declare module 'vscode-mssql' {
 
 
     export const enum extension {
-        name = 'Microsoft.mssql'
+        name = 'ms-mssql.mssql'
     }
 
     /**
@@ -45,7 +45,7 @@ declare module 'vscode-mssql' {
         validateStreamingJob(packageFilePath: string, createStreamingJobTsql: string): Thenable<ValidateStreamingJobResult>;
     }
 
-    export enum TaskExecutionMode {
+    export const enum TaskExecutionMode {
         execute = 0,
         script = 1,
         executeAndScript = 2
