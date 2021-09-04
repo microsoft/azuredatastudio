@@ -54,6 +54,11 @@
           "default": true,
           "description": "%notebook.overrideEditorTheming.description%"
         },
+        "notebook.allowRoot": {
+          "type": "boolean",
+          "default": false,
+          "description": "%notebook.allowRoot.description%"
+        },
         "notebook.maxTableRows": {
           "type": "number",
           "default": 5000,

@@ -24,6 +24,7 @@ export const pinnedBooksConfigKey = 'pinnedNotebooks';
 export const maxBookSearchDepth = 'maxBookSearchDepth';
 export const remoteBookDownloadTimeout = 'remoteBookDownloadTimeout';
 export const collapseBookItems = 'collapseBookItems';
+export const allowRoot = 'allowRoot';
 
 export const winPlatform = 'win32';
 export const macPlatform = 'darwin';
