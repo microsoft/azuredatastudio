@@ -154,6 +154,7 @@ export class SqlDatabaseTree {
 
 		this._databaseTable = this._view.modelBuilder.declarativeTable().withProps(
 			{
+				ariaLabel: constants.DATABASES_TABLE_TILE,
 				enableRowSelection: true,
 				width: 230,
 				CSSStyles: {
@@ -265,6 +266,7 @@ export class SqlDatabaseTree {
 	private createInstanceComponent(): azdata.DivContainer {
 		this._instanceTable = this._view.modelBuilder.declarativeTable().withProps(
 			{
+				ariaLabel: constants.SQL_SERVER_INSTANCE,
 				enableRowSelection: true,
 				width: 240,
 				CSSStyles: {
@@ -497,6 +499,7 @@ export class SqlDatabaseTree {
 
 		this._impactedObjectsTable = this._view.modelBuilder.declarativeTable().withProps(
 			{
+				ariaLabel: constants.IMPACTED_OBJECTS,
 				enableRowSelection: true,
 				width: '100%',
 				columns: [

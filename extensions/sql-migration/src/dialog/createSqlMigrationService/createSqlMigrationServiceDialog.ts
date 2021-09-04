@@ -433,6 +433,7 @@ export class CreateSqlMigrationServiceDialog {
 
 
 		this.migrationServiceAuthKeyTable = this._view.modelBuilder.declarativeTable().withProps({
+			ariaLabel: constants.DATABASE_MIGRATION_SERVICE_AUTHENTICATION_KEYS,
 			columns: [
 				{
 					displayName: constants.NAME,
