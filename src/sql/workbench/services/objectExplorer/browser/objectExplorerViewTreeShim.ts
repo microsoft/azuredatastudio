@@ -43,7 +43,8 @@ export class OEShimService extends Disposable implements IOEShimService {
 	constructor(
 		@IObjectExplorerService private oe: IObjectExplorerService,
 		@IConnectionManagementService private cm: IConnectionManagementService,
-		@ICapabilitiesService private capabilities: ICapabilitiesService
+		@ICapabilitiesService private capabilities: ICapabilitiesService,
+		@IConfigurationService private configurationService: IConfigurationService
 	) {
 		super();
 	}
@@ -133,10 +134,10 @@ export class OEShimService extends Disposable implements IOEShimService {
 		return this.sessionMap.get(key)!;
 	}
 
-	public async getChildren(node: ITreeItem, viewId: string, configurationService: IConfigurationService): Promise<ITreeItem[]> {
+	public async getChildren(node: ITreeItem, viewId: string): Promise<ITreeItem[]> {
 		if (node.payload) {
 			if (node.payload.authenticationType !== undefined && node.payload.authenticationType === '') {
-				node.payload.authenticationType = this.getDefaultAuthenticationType(configurationService);  // we need to set auth type here, because it's value is part of the session key
+				node.payload.authenticationType = this.getDefaultAuthenticationType(this.configurationService);  // we need to set auth type here, because it's value is part of the session key
 			}
 
 			const sessionId = await this.getOrCreateSession(viewId, node);
