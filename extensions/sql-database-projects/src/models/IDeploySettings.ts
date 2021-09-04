@@ -5,17 +5,7 @@
 
 import { DeploymentOptions } from '../../../mssql/src/mssql';
 
-export interface IPublishSettings {
-	databaseName: string;
-	serverName: string;
-	connectionUri: string;
-	upgradeExisting: boolean;
-	sqlCmdVariables?: Record<string, string>;
-	deploymentOptions?: DeploymentOptions;
-	profileUsed?: boolean;
-}
-
-export interface IGenerateScriptSettings {
+export interface IDeploySettings {
 	databaseName: string;
 	serverName: string;
 	connectionUri: string;

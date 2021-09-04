@@ -23,7 +23,6 @@ import { promises as fs } from 'fs';
 import { createContext, TestContext, mockDacFxResult, mockConnectionProfile } from './testContext';
 import { Project, reservedProjectFolders, SystemDatabase, FileProjectEntry, SystemDatabaseReferenceProjectEntry } from '../models/project';
 import { PublishDatabaseDialog } from '../dialogs/publishDatabaseDialog';
-import { IPublishSettings, IGenerateScriptSettings } from '../models/IPublishSettings';
 import { ProjectRootTreeItem } from '../models/tree/projectTreeItem';
 import { FolderNode, FileNode } from '../models/tree/fileFolderTreeItem';
 import { BaseProjectTreeItem } from '../models/tree/baseTreeItem';
@@ -386,12 +385,12 @@ describe('ProjectsController', function (): void {
 				let projController = TypeMoq.Mock.ofType(ProjectsController);
 				projController.callBase = true;
 				projController.setup(x => x.getPublishDialog(TypeMoq.It.isAny())).returns(() => publishDialog.object);
-				projController.setup(x => x.publishProjectCallback(TypeMoq.It.isAny(), TypeMoq.It.is((_): _ is IPublishSettings => true))).returns(() => {
+				projController.setup(x => x.publishOrScriptProject(TypeMoq.It.isAny(), TypeMoq.It.isAny(), true)).returns(() => {
 					holler = publishHoller;
 					return Promise.resolve(undefined);
 				});
 
-				projController.setup(x => x.publishProjectCallback(TypeMoq.It.isAny(), TypeMoq.It.is((_): _ is IGenerateScriptSettings => true))).returns(() => {
+				projController.setup(x => x.publishOrScriptProject(TypeMoq.It.isAny(), TypeMoq.It.isAny(), false)).returns(() => {
 					holler = generateHoller;
 					return Promise.resolve(undefined);
 				});
@@ -430,7 +429,7 @@ describe('ProjectsController', function (): void {
 
 				const proj = await testUtils.createTestProject(baselines.openProjectFileBaseline);
 
-				await projController.object.publishProjectCallback(proj, { connectionUri: '', databaseName: '' , serverName: ''});
+				await projController.object.publishOrScriptProject(proj, { connectionUri: '', databaseName: '' , serverName: ''}, false);
 
 				should(builtDacpacPath).not.equal('', 'built dacpac path should be set');
 				should(publishedDacpacPath).not.equal('', 'published dacpac path should be set');

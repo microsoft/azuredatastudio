@@ -15,7 +15,7 @@ import * as TypeMoq from 'typemoq';
 import { PublishDatabaseDialog } from '../../dialogs/publishDatabaseDialog';
 import { Project } from '../../models/project';
 import { ProjectsController } from '../../controllers/projectController';
-import { IPublishSettings, IGenerateScriptSettings } from '../../models/IPublishSettings';
+import { IDeploySettings } from '../../models/IDeploySettings';
 import { emptySqlDatabaseProjectTypeId } from '../../common/constants';
 import { mockDacFxOptionsResult } from '../testContext';
 
@@ -70,13 +70,12 @@ describe('Publish Database Dialog', () => {
 		dialog.setup(x => x.getServerName()).returns(() => 'MockServer');
 		dialog.callBase = true;
 
-		let profile: IPublishSettings | IGenerateScriptSettings | undefined;
+		let profile: IDeploySettings | undefined;
 
-		const expectedPublish: IPublishSettings = {
+		const expectedPublish: IDeploySettings = {
 			databaseName: 'MockDatabaseName',
 			serverName: 'MockServer',
 			connectionUri: 'Mock|Connection|Uri',
-			upgradeExisting: true,
 			sqlCmdVariables: {
 				'ProdDatabaseName': 'MyProdDatabase',
 				'BackupDatabaseName': 'MyBackupDatabase'
@@ -90,7 +89,7 @@ describe('Publish Database Dialog', () => {
 
 		should(profile).deepEqual(expectedPublish);
 
-		const expectedGenScript: IGenerateScriptSettings = {
+		const expectedGenScript: IDeploySettings = {
 			databaseName: 'MockDatabaseName',
 			serverName: 'MockServer',
 			connectionUri: 'Mock|Connection|Uri',
