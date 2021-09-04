@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 // config setting keys
-export const azdataConfigSection: string = 'azdata';
+export const azdataConfigSection: string = 'azcli';
 export const azdataAcceptEulaKey: string = 'acceptEula';
 export const azdataInstallKey: string = 'install';
 export const azdataUpdateKey: string = 'update';
@@ -13,8 +13,8 @@ export const debugConfigKey = 'logDebugInfo';
 
 
 // context keys && memento keys
-export const eulaAccepted = 'azdata.eulaAccepted';
-export const azdataFound = 'azdata.found';
+export const eulaAccepted = 'azcli.eulaAccepted';
+export const azdataFound = 'azcli.found';
 
 // other constants
 export const azdataHostname = 'https://aka.ms';

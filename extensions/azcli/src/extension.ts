@@ -4,28 +4,26 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdataExt from 'azdata-ext';
-import * as rd from 'resource-deployment';
 import * as vscode from 'vscode';
 import { getExtensionApi } from './api';
 import { checkAndInstallAzdata, checkAndUpdateAzdata, findAzdata, isEulaAccepted, promptForEula } from './azdata';
 import Logger from './common/logger';
 import * as constants from './constants';
 import * as loc from './localizedConstants';
-import { ArcControllerConfigProfilesOptionsSource } from './providers/arcControllerConfigProfilesOptionsSource';
 import { AzdataToolService } from './services/azdataToolService';
 
 export async function activate(context: vscode.ExtensionContext): Promise<azdataExt.IExtension> {
 	const azdataToolService = new AzdataToolService();
 	let eulaAccepted: boolean = false;
-	vscode.commands.registerCommand('azdata.acceptEula', async () => {
+	vscode.commands.registerCommand('azcli.acceptEula', async () => {
 		await promptForEula(context.globalState, true /* userRequested */);
 	});
 
-	vscode.commands.registerCommand('azdata.install', async () => {
+	vscode.commands.registerCommand('azcli.install', async () => {
 		azdataToolService.localAzdata = await checkAndInstallAzdata(true /* userRequested */);
 	});
 
-	vscode.commands.registerCommand('azdata.update', async () => {
+	vscode.commands.registerCommand('azcli.update', async () => {
 		if (await checkAndUpdateAzdata(azdataToolService.localAzdata, true /* userRequested */)) { // if an update was performed
 			azdataToolService.localAzdata = await findAzdata(); // find and save the currently installed azdata
 		}
@@ -64,8 +62,9 @@ export async function activate(context: vscode.ExtensionContext): Promise<azdata
 	const azdataApi = getExtensionApi(context.globalState, azdataToolService, localAzdataDiscovered);
 
 	// register option source(s)
-	const rdApi = <rd.IExtension>vscode.extensions.getExtension(rd.extension.name)?.exports;
-	context.subscriptions.push(rdApi.registerOptionsSourceProvider(new ArcControllerConfigProfilesOptionsSource(azdataApi)));
+	// TODO: Uncomment this once azdata extension is removed
+	// const rdApi = <rd.IExtension>vscode.extensions.getExtension(rd.extension.name)?.exports;
+	// context.subscriptions.push(rdApi.registerOptionsSourceProvider(new ArcControllerConfigProfilesOptionsSource(azdataApi)));
 
 	return azdataApi;
 }

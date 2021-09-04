@@ -1,8 +1,8 @@
 {
-  "name": "azdata",
+  "name": "azcli",
   "displayName": "%azdata.displayName%",
   "description": "%azdata.description%",
-  "version": "0.6.6",
+  "version": "0.1.0",
   "publisher": "Microsoft",
   "preview": true,
   "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/main/LICENSE.txt",
@@ -28,12 +28,12 @@
         "type": "object",
         "title": "%azdata.config.title%",
         "properties": {
-          "azdata.logDebugInfo": {
+          "azcli.logDebugInfo": {
             "type": "boolean",
             "default": false,
             "description": "%azdata.config.debug%"
           },
-          "azdata.acceptEula": {
+          "azcli.acceptEula": {
             "type": "string",
             "default": "prompt",
             "enum": [
@@ -46,7 +46,7 @@
             ],
             "description": "%azdata.acceptEula.description%"
           },
-          "azdata.install": {
+          "azcli.install": {
             "type": "string",
             "default": "prompt",
             "enum": [
@@ -59,7 +59,7 @@
             ],
             "description": "%azdata.install.description%"
           },
-          "azdata.update": {
+          "azcli.update": {
             "type": "string",
             "default": "prompt",
             "enum": [
@@ -72,7 +72,7 @@
             ],
             "description": "%azdata.update.description%"
           },
-          "azdata.requiredUpdate": {
+          "azcli.requiredUpdate": {
             "type": "string",
             "default": "prompt",
             "enum": [
@@ -90,17 +90,17 @@
     ],
     "commands": [
       {
-        "command": "azdata.acceptEula",
+        "command": "azcli.acceptEula",
         "title": "%azdata.acceptEula.command.name%",
         "category": "%command.category%"
       },
       {
-        "command": "azdata.install",
+        "command": "azcli.install",
         "title": "%azdata.install.command.name%",
         "category": "%command.category%"
       },
       {
-        "command": "azdata.update",
+        "command": "azcli.update",
         "title": "%azdata.update.command.name%",
         "category": "%command.category%"
       }
@@ -108,16 +108,16 @@
     "menus": {
       "commandPalette": [
         {
-          "command": "azdata.acceptEula",
-          "when": "!azdata.eulaAccepted"
+          "command": "azcli.acceptEula",
+          "when": "!azcli.eulaAccepted"
         },
         {
-          "command": "azdata.install",
-          "when": "!azdata.found"
+          "command": "azcli.install",
+          "when": "!azcli.found"
         },
         {
-          "command": "azdata.update",
-          "when": "azdata.found"
+          "command": "azcli.update",
+          "when": "azcli.found"
         }
       ]
     },
@@ -150,10 +150,5 @@
     "sinon": "^9.0.2",
     "typemoq": "^2.1.0",
     "vscodetestcover": "^1.1.0"
-  },
-  "__metadata": {
-    "id": "73",
-    "publisherDisplayName": "Microsoft",
-    "publisherId": "Microsoft"
   }
 }
