@@ -530,7 +530,11 @@ function createXlfFilesForCoreBundle() {
             if (file.isBuffer()) {
                 const xlfs = Object.create(null);
                 const json = JSON.parse(file.contents.toString('utf8'));
-                for (let coreModule in json.keys) {
+                // {{SQL CARBON EDIT}} - Must sort the keys for easier translation.
+                let sortedKeys = Object.keys(json.keys).sort();
+                for (let i = 0; i < sortedKeys.length; i++) {
+                    let coreModule = sortedKeys[i];
+                    // {{SQL CARBON EDIT}} - End
                     const projectResource = getResource(coreModule);
                     const resource = projectResource.name;
                     const project = projectResource.project;
