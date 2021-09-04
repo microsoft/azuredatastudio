@@ -6,6 +6,8 @@
 declare module 'azureResource' {
 	import { TreeDataProvider } from 'vscode';
 	import { DataProvider, Account, TreeItem } from 'azdata';
+	import { BlobItem } from '@azure/storage-blob';
+
 	export namespace azureResource {
 
 		/**
@@ -149,5 +151,7 @@ declare module 'azureResource' {
 		export interface BlobContainer extends AzureResource { }
 
 		export interface FileShare extends AzureResource { }
+
+		export interface Blob extends BlobItem { }
 	}
 }
