@@ -4,13 +4,13 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
+import * as vscode from 'vscode';
 import { IconPathHelper } from '../../constants/iconPathHelper';
 import { MigrationContext } from '../../models/migrationLocalStorage';
 import { MigrationCutoverDialogModel, MigrationStatus } from './migrationCutoverDialogModel';
 import * as loc from '../../constants/strings';
 import { convertByteSizeToReadableUnit, convertIsoTimeToLocalTime, getSqlServerName, SupportedAutoRefreshIntervals } from '../../api/utils';
 import { EOL } from 'os';
-import * as vscode from 'vscode';
 import { ConfirmCutoverDialog } from './confirmCutoverDialog';
 
 const refreshFrequency: SupportedAutoRefreshIntervals = 30000;
@@ -42,6 +42,7 @@ export class MigrationCutoverDialog {
 	private _fileCount!: azdata.TextComponent;
 	private fileTable!: azdata.TableComponent;
 	private _autoRefreshHandle!: any;
+	private _disposables: vscode.Disposable[] = [];
 
 	readonly _infoFieldWidth: string = '250px';
 
@@ -270,9 +271,12 @@ export class MigrationCutoverDialog {
 					{ horizontal: false }
 				);
 				const form = formBuilder.withLayout({ width: '100%' }).component();
-				this._view.onClosed(e => {
+
+				this._disposables.push(this._view.onClosed(e => {
 					clearInterval(this._autoRefreshHandle);
-				});
+					this._disposables.forEach(
+						d => { try { d.dispose(); } catch { } });
+				}));
 
 				return view.initializeModel(form).then((value) => {
 					this.refreshStatus();
@@ -286,9 +290,9 @@ export class MigrationCutoverDialog {
 		this._dialogObject.cancelButton.hidden = true;
 		this._dialogObject.okButton.label = loc.CLOSE;
 
-		this._dialogObject.okButton.onClick(e => {
+		this._disposables.push(this._dialogObject.okButton.onClick(e => {
 			clearInterval(this._autoRefreshHandle);
-		});
+		}));
 		azdata.window.openDialog(this._dialogObject);
 	}
 
@@ -364,12 +368,12 @@ export class MigrationCutoverDialog {
 			}
 		}).component();
 
-		this._cutoverButton.onDidClick(async (e) => {
+		this._disposables.push(this._cutoverButton.onDidClick(async (e) => {
 			await this.refreshStatus();
 			const dialog = new ConfirmCutoverDialog(this._model);
 			await dialog.initialize();
 			await this.refreshStatus();
-		});
+		}));
 
 		headerActions.addItem(this._cutoverButton, {
 			flex: '0'
@@ -387,14 +391,14 @@ export class MigrationCutoverDialog {
 			}
 		}).component();
 
-		this._cancelButton.onDidClick((e) => {
+		this._disposables.push(this._cancelButton.onDidClick((e) => {
 			vscode.window.showInformationMessage(loc.CANCEL_MIGRATION_CONFIRMATION, { modal: true }, loc.YES, loc.NO).then(async (v) => {
 				if (v === loc.YES) {
 					await this._model.cancelMigration();
 					await this.refreshStatus();
 				}
 			});
-		});
+		}));
 
 		headerActions.addItem(this._cancelButton, {
 			flex: '0'
@@ -413,8 +417,8 @@ export class MigrationCutoverDialog {
 			}
 		}).component();
 
-		this._refreshButton.onDidClick(
-			async (e) => await this.refreshStatus());
+		this._disposables.push(this._refreshButton.onDidClick(
+			async (e) => await this.refreshStatus()));
 
 		headerActions.addItem(this._refreshButton, {
 			flex: '0',
@@ -432,7 +436,7 @@ export class MigrationCutoverDialog {
 			}
 		}).component();
 
-		this._copyDatabaseMigrationDetails.onDidClick(async (e) => {
+		this._disposables.push(this._copyDatabaseMigrationDetails.onDidClick(async (e) => {
 			await this.refreshStatus();
 			if (this._model.migrationOpStatus) {
 				vscode.env.clipboard.writeText(JSON.stringify({
@@ -444,7 +448,7 @@ export class MigrationCutoverDialog {
 			}
 
 			vscode.window.showInformationMessage(loc.DETAILS_COPIED);
-		});
+		}));
 
 		headerActions.addItem(this._copyDatabaseMigrationDetails, {
 			flex: '0',

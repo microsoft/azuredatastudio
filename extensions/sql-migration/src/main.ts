@@ -36,7 +36,7 @@ class SQLMigration {
 
 				input.items = NotebookPathHelper.getAllMigrationNotebooks();
 
-				input.onDidAccept(async (e) => {
+				this.context.subscriptions.push(input.onDidAccept(async (e) => {
 					const selectedNotebook = input.selectedItems[0];
 					if (selectedNotebook) {
 						try {
@@ -50,7 +50,7 @@ class SQLMigration {
 						}
 						input.hide();
 					}
-				});
+				}));
 
 				input.show();
 			}),

@@ -16,6 +16,7 @@ export class AccountsSelectionPage extends MigrationWizardPage {
 	private _azureAccountsDropdown!: azdata.DropDownComponent;
 	private _accountTenantDropdown!: azdata.DropDownComponent;
 	private _accountTenantFlexContainer!: azdata.FlexContainer;
+	private _disposables: vscode.Disposable[] = [];
 
 	constructor(wizard: azdata.window.Wizard, migrationStateModel: MigrationStateModel) {
 		super(wizard, azdata.window.createWizardPage(constants.ACCOUNTS_SELECTION_PAGE_TITLE), migrationStateModel);
@@ -32,6 +33,9 @@ export class AccountsSelectionPage extends MigrationWizardPage {
 			);
 		await view.initializeModel(form.component());
 		await this.populateAzureAccountsDropdown();
+		this._disposables.push(view.onClosed(e =>
+			this._disposables.forEach(
+				d => { try { d.dispose(); } catch { } })));
 	}
 
 	private createAzureAccountsDropdown(view: azdata.ModelView): azdata.FormComponent {
@@ -74,7 +78,7 @@ export class AccountsSelectionPage extends MigrationWizardPage {
 				return false;
 			}).component();
 
-		this._azureAccountsDropdown.onValueChanged(async (value) => {
+		this._disposables.push(this._azureAccountsDropdown.onValueChanged(async (value) => {
 			const selectedIndex = findDropDownItemIndex(this._azureAccountsDropdown, value);
 			if (selectedIndex > -1) {
 				const selectedAzureAccount = this.migrationStateModel.getAccount(selectedIndex);
@@ -97,7 +101,7 @@ export class AccountsSelectionPage extends MigrationWizardPage {
 				this.migrationStateModel._databaseBackup.subscription = undefined!;
 				await this._azureAccountsDropdown.validate();
 			}
-		});
+		}));
 
 		const linkAccountButton = view.modelBuilder.hyperlink()
 			.withProps({
@@ -109,14 +113,14 @@ export class AccountsSelectionPage extends MigrationWizardPage {
 			})
 			.component();
 
-		linkAccountButton.onDidClick(async (event) => {
+		this._disposables.push(linkAccountButton.onDidClick(async (event) => {
 			await vscode.commands.executeCommand('workbench.actions.modal.linkedAccount');
 			await this.populateAzureAccountsDropdown();
 			this.wizard.message = {
 				text: ''
 			};
 			this._azureAccountsDropdown.validate();
-		});
+		}));
 
 		const flexContainer = view.modelBuilder.flexContainer()
 			.withLayout({
@@ -152,7 +156,7 @@ export class AccountsSelectionPage extends MigrationWizardPage {
 			fireOnTextChange: true,
 		}).component();
 
-		this._accountTenantDropdown.onValueChanged(value => {
+		this._disposables.push(this._accountTenantDropdown.onValueChanged(value => {
 			/**
 			 * Replacing all the tenants in azure account with the tenant user has selected.
 			 * All azure requests will only run on this tenant from now on
@@ -164,7 +168,7 @@ export class AccountsSelectionPage extends MigrationWizardPage {
 				this.migrationStateModel._targetSubscription = undefined!;
 				this.migrationStateModel._databaseBackup.subscription = undefined!;
 			}
-		});
+		}));
 
 		this._accountTenantFlexContainer = view.modelBuilder.flexContainer()
 			.withLayout({

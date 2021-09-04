@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
+import * as vscode from 'vscode';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
 import { MigrationMode, MigrationStateModel, MigrationTargetType, NetworkContainerType, StateChangeEvent } from '../models/stateMachine';
 import * as constants from '../constants/strings';
@@ -14,6 +15,7 @@ import { TargetDatabaseSummaryDialog } from '../dialog/targetDatabaseSummary/tar
 export class SummaryPage extends MigrationWizardPage {
 	private _view!: azdata.ModelView;
 	private _flexContainer!: azdata.FlexContainer;
+	private _disposables: vscode.Disposable[] = [];
 
 	constructor(wizard: azdata.window.Wizard, migrationStateModel: MigrationStateModel) {
 		super(wizard, azdata.window.createWizardPage(constants.SUMMARY_PAGE_TITLE), migrationStateModel);
@@ -32,6 +34,12 @@ export class SummaryPage extends MigrationWizardPage {
 					}
 				]
 			);
+
+		this._disposables.push(this._view.onClosed(e => {
+			this._disposables.forEach(
+				d => { try { d.dispose(); } catch { } });
+		}));
+
 		await view.initializeModel(form.component());
 	}
 
@@ -48,9 +56,9 @@ export class SummaryPage extends MigrationWizardPage {
 			}
 		}).component();
 
-		targetDatabaseHyperlink.onDidClick(e => {
+		this._disposables.push(targetDatabaseHyperlink.onDidClick(e => {
 			targetDatabaseSummary.initialize();
-		});
+		}));
 
 		const targetDatabaseRow = this._view.modelBuilder.flexContainer()
 			.withLayout(

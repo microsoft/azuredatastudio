@@ -11,6 +11,7 @@ import * as constants from '../constants/strings';
 
 export class MigrationModePage extends MigrationWizardPage {
 	private _view!: azdata.ModelView;
+	private _disposables: vscode.Disposable[] = [];
 
 	constructor(wizard: azdata.window.Wizard, migrationStateModel: MigrationStateModel) {
 		super(wizard, azdata.window.createWizardPage(constants.DATABASE_BACKUP_MIGRATION_MODE_LABEL, 'MigrationModePage'), migrationStateModel);
@@ -25,6 +26,11 @@ export class MigrationModePage extends MigrationWizardPage {
 					this.migrationModeContainer(),
 				]
 			);
+
+		this._disposables.push(this._view.onClosed(e => {
+			this._disposables.forEach(
+				d => { try { d.dispose(); } catch { } });
+		}));
 		await view.initializeModel(form.component());
 	}
 
@@ -64,11 +70,11 @@ export class MigrationModePage extends MigrationWizardPage {
 
 		this.migrationStateModel._databaseBackup.migrationMode = MigrationMode.ONLINE;
 
-		onlineButton.onDidChangeCheckedState((e) => {
+		this._disposables.push(onlineButton.onDidChangeCheckedState((e) => {
 			if (e) {
 				this.migrationStateModel._databaseBackup.migrationMode = MigrationMode.ONLINE;
 			}
-		});
+		}));
 
 		const offlineButton = this._view.modelBuilder.radioButton().withProps({
 			label: constants.DATABASE_BACKUP_MIGRATION_MODE_OFFLINE_LABEL,
@@ -88,13 +94,13 @@ export class MigrationModePage extends MigrationWizardPage {
 		}).component();
 
 
-		offlineButton.onDidChangeCheckedState((e) => {
+		this._disposables.push(offlineButton.onDidChangeCheckedState((e) => {
 			if (e) {
 				vscode.window.showInformationMessage('Feature coming soon');
 				onlineButton.checked = true;
 				//this.migrationStateModel._databaseBackup.migrationCutover = MigrationCutover.OFFLINE; TODO: Enable when offline mode is supported.
 			}
-		});
+		}));
 
 		const flexContainer = this._view.modelBuilder.flexContainer().withItems(
 			[

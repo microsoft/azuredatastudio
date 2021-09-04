@@ -47,6 +47,7 @@ export class CreateSqlMigrationServiceDialog {
 	private _isBlobContainerUsed: boolean = false;
 
 	private irNodes: string[] = [];
+	private _disposables: vscode.Disposable[] = [];
 
 	public async createNewDms(migrationStateModel: MigrationStateModel, resourceGroupPreset: string): Promise<CreateSqlMigrationServiceDialogResult> {
 		this._model = migrationStateModel;
@@ -64,7 +65,7 @@ export class CreateSqlMigrationServiceDialog {
 				width: '80px'
 			}).component();
 
-			this._formSubmitButton.onDidClick(async (e) => {
+			this._disposables.push(this._formSubmitButton.onDidClick(async (e) => {
 				this._dialogObject.message = {
 					text: ''
 				};
@@ -122,7 +123,7 @@ export class CreateSqlMigrationServiceDialog {
 					this.setFormEnabledState(true);
 					return;
 				}
-			});
+			}));
 
 			this._statusLoadingComponent = view.modelBuilder.loadingComponent().withProps({
 				loadingText: constants.LOADING_MIGRATION_SERVICES,
@@ -153,6 +154,11 @@ export class CreateSqlMigrationServiceDialog {
 
 			const form = formBuilder.withLayout({ width: '100%' }).component();
 
+			this._disposables.push(view.onClosed(e => {
+				this._disposables.forEach(
+					d => { try { d.dispose(); } catch { } });
+			}));
+
 			return view.initializeModel(form).then(() => {
 				this.populateSubscriptions();
 			});
@@ -160,7 +166,7 @@ export class CreateSqlMigrationServiceDialog {
 
 		this._testConnectionButton = azdata.window.createButton(constants.TEST_CONNECTION);
 		this._testConnectionButton.hidden = true;
-		this._testConnectionButton.onClick(async (e) => {
+		this._disposables.push(this._testConnectionButton.onClick(async (e) => {
 			this._refreshLoadingComponent.loading = true;
 			this._connectionStatus.updateCssStyles({
 				'display': 'none'
@@ -174,17 +180,16 @@ export class CreateSqlMigrationServiceDialog {
 				'display': 'inline'
 			});
 			this._refreshLoadingComponent.loading = false;
-		});
+		}));
 		this._dialogObject.customButtons = [this._testConnectionButton];
 
 		this._dialogObject.content = [tab];
 		this._dialogObject.okButton.enabled = false;
 		azdata.window.openDialog(this._dialogObject);
-		this._dialogObject.cancelButton.onClick((e) => {
-		});
-		this._dialogObject.okButton.onClick((e) => {
+		this._disposables.push(this._dialogObject.cancelButton.onClick((e) => { }));
+		this._disposables.push(this._dialogObject.okButton.onClick((e) => {
 			this._doneButtonEvent.emit('done', this._createdMigrationService, this._selectedResourceGroup);
-		});
+		}));
 
 		this._isBlobContainerUsed = this._model._databaseBackup.networkContainerType === NetworkContainerType.BLOB_CONTAINER;
 
@@ -249,7 +254,7 @@ export class CreateSqlMigrationServiceDialog {
 			url: ''
 		}).component();
 
-		this._createResourceGroupLink.onDidClick(async e => {
+		this._disposables.push(this._createResourceGroupLink.onDidClick(async e => {
 			const createResourceGroupDialog = new CreateResourceGroupDialog(this._model._azureAccount, this._model._targetSubscription, this._model._targetServerInstance.location);
 			const createdResourceGroup = await createResourceGroupDialog.initialize();
 			if (createdResourceGroup) {
@@ -265,7 +270,7 @@ export class CreateSqlMigrationServiceDialog {
 				this.migrationServiceResourceGroupDropdown.loading = false;
 				this.migrationServiceResourceGroupDropdown.focus();
 			}
-		});
+		}));
 
 		this.migrationServiceNameText = this._view.modelBuilder.inputBox().component();
 
@@ -549,10 +554,10 @@ export class CreateSqlMigrationServiceDialog {
 			ariaLabel: constants.COPY_KEY1,
 		}).component();
 
-		this._copyKey1Button.onDidClick((e) => {
+		this._disposables.push(this._copyKey1Button.onDidClick((e) => {
 			vscode.env.clipboard.writeText(<string>this.migrationServiceAuthKeyTable.dataValues![0][1].value);
 			vscode.window.showInformationMessage(constants.SERVICE_KEY1_COPIED_HELP);
-		});
+		}));
 
 		this._copyKey2Button = this._view.modelBuilder.button().withProps({
 			title: constants.COPY_KEY2,
@@ -560,10 +565,10 @@ export class CreateSqlMigrationServiceDialog {
 			ariaLabel: constants.COPY_KEY2,
 		}).component();
 
-		this._copyKey2Button.onDidClick((e) => {
+		this._disposables.push(this._copyKey2Button.onDidClick((e) => {
 			vscode.env.clipboard.writeText(<string>this.migrationServiceAuthKeyTable.dataValues![1][1].value);
 			vscode.window.showInformationMessage(constants.SERVICE_KEY2_COPIED_HELP);
-		});
+		}));
 
 		this._refreshKey1Button = this._view.modelBuilder.button().withProps({
 			title: constants.REFRESH_KEY1,
@@ -571,8 +576,9 @@ export class CreateSqlMigrationServiceDialog {
 			ariaLabel: constants.REFRESH_KEY1,
 		}).component();
 
-		this._refreshKey1Button.onDidClick((e) => {//TODO: add refresh logic
-		});
+		this._disposables.push(this._refreshKey1Button.onDidClick((e) => {
+			//TODO: add refresh logic
+		}));
 
 		this._refreshKey2Button = this._view.modelBuilder.button().withProps({
 			title: constants.REFRESH_KEY2,
@@ -580,8 +586,9 @@ export class CreateSqlMigrationServiceDialog {
 			ariaLabel: constants.REFRESH_KEY2,
 		}).component();
 
-		this._refreshKey2Button.onDidClick((e) => { //TODO: add refresh logic
-		});
+		this._disposables.push(this._refreshKey2Button.onDidClick((e) => {
+			//TODO: add refresh logic
+		}));
 
 		this.migrationServiceAuthKeyTable.updateProperties({
 			dataValues: [

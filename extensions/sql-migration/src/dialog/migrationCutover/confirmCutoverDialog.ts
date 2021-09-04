@@ -4,14 +4,15 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
+import * as vscode from 'vscode';
 import { MigrationCutoverDialogModel } from './migrationCutoverDialogModel';
 import * as constants from '../../constants/strings';
-import * as vscode from 'vscode';
 import { SqlManagedInstance } from '../../api/azure';
 
 export class ConfirmCutoverDialog {
 	private _dialogObject!: azdata.window.Dialog;
 	private _view!: azdata.ModelView;
+	private _disposables: vscode.Disposable[] = [];
 
 	constructor(private migrationCutoverModel: MigrationCutoverDialogModel) {
 		this._dialogObject = azdata.window.createModelViewDialog('', 'ConfirmCutoverDialog', 500);
@@ -74,9 +75,9 @@ export class ConfirmCutoverDialog {
 				label: constants.CONFIRM_CUTOVER_CHECKBOX,
 			}).component();
 
-			confirmCheckbox.onChanged(e => {
+			this._disposables.push(confirmCheckbox.onChanged(e => {
 				this._dialogObject.okButton.enabled = e;
-			});
+			}));
 
 			const cutoverWarning = this._view.modelBuilder.infoBox().withProps({
 				text: constants.COMPLETING_CUTOVER_WARNING,
@@ -119,10 +120,10 @@ export class ConfirmCutoverDialog {
 
 			this._dialogObject.okButton.enabled = false;
 			this._dialogObject.okButton.label = constants.COMPLETE_CUTOVER;
-			this._dialogObject.okButton.onClick((e) => {
+			this._disposables.push(this._dialogObject.okButton.onClick((e) => {
 				this.migrationCutoverModel.startCutover();
 				vscode.window.showInformationMessage(constants.CUTOVER_IN_PROGRESS(this.migrationCutoverModel._migration.migrationContext.properties.sourceDatabaseName));
-			});
+			}));
 
 			const formBuilder = view.modelBuilder.formContainer().withFormItems(
 				[
@@ -135,6 +136,12 @@ export class ConfirmCutoverDialog {
 				}
 			);
 			const form = formBuilder.withLayout({ width: '100%' }).component();
+
+			this._disposables.push(this._view.onClosed(e => {
+				this._disposables.forEach(
+					d => { try { d.dispose(); } catch { } });
+			}));
+
 			return view.initializeModel(form);
 		});
 		this._dialogObject.content = [tab];

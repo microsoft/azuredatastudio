@@ -395,10 +395,10 @@ export const FINISH_TIME = localize('sql.migration.finish.time', "Finish Time");
 
 export function STATUS_VALUE(status: string, count: number): string {
 	if (count > 0) {
-		return localize('sql.migration.status.error.count.some', "{0} (", StatusLookup[status]);
+		return localize('sql.migration.status.error.count.some', "{0} (", StatusLookup[status] ?? status);
 	}
 
-	return localize('sql.migration.status.error.count.none', "{0}", StatusLookup[status]);
+	return localize('sql.migration.status.error.count.none', "{0}", StatusLookup[status] ?? status);
 }
 
 export interface LookupTable<T> {
@@ -410,7 +410,7 @@ export const StatusLookup: LookupTable<string | undefined> = {
 	['Succeeded']: localize('sql.migration.status.succeeded', 'Succeeded'),
 	['Creating']: localize('sql.migration.status.creating', 'Creating'),
 	['Completing']: localize('sql.migration.status.completing', 'Completing'),
-	['Cancelling']: localize('sql.migration.status.cancelling', 'Cancelling'),
+	['Canceling']: localize('sql.migration.status.canceling', 'Canceling'),
 	['Failed']: localize('sql.migration.status.failed', 'Failed'),
 	default: undefined,
 };

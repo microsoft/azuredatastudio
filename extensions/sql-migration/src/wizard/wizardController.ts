@@ -9,7 +9,6 @@ import { MigrationStateModel } from '../models/stateMachine';
 import * as loc from '../constants/strings';
 import { MigrationWizardPage } from '../models/migrationWizardPage';
 import { SKURecommendationPage } from './skuRecommendationPage';
-// import { SubscriptionSelectionPage } from './subscriptionSelectionPage';
 import { DatabaseBackupPage } from './databaseBackupPage';
 import { AccountsSelectionPage } from './accountsSelectionPage';
 import { IntergrationRuntimePage } from './integrationRuntimePage';
@@ -61,13 +60,13 @@ export class WizardController {
 		wizardSetupPromises.push(...pages.map(p => p.registerWizardContent()));
 		wizardSetupPromises.push(wizard.open());
 
-		wizard.onPageChanged(async (pageChangeInfo: azdata.window.WizardPageChangeInfo) => {
+		this.extensionContext.subscriptions.push(wizard.onPageChanged(async (pageChangeInfo: azdata.window.WizardPageChangeInfo) => {
 			const newPage = pageChangeInfo.newPage;
 			const lastPage = pageChangeInfo.lastPage;
 
 			await pages[lastPage]?.onPageLeave();
 			await pages[newPage]?.onPageEnter();
-		});
+		}));
 
 		wizard.registerNavigationValidator(async validator => {
 			// const lastPage = validator.lastPage;
@@ -82,9 +81,9 @@ export class WizardController {
 		await Promise.all(wizardSetupPromises);
 		await pages[0].onPageEnter();
 
-		wizard.doneButton.onClick(async (e) => {
+		this.extensionContext.subscriptions.push(wizard.doneButton.onClick(async (e) => {
 			await stateModel.startMigration();
-		});
+		}));
 	}
 }
 
