@@ -30,7 +30,7 @@ export interface quickPickResults {
 const allowedFileExtensions: string[] = [FileExtension.Markdown, FileExtension.Notebook];
 
 export function hasSections(node: JupyterBookSection): boolean {
-	return node.sections !== undefined && node.sections.length > 0;
+	return node.sections?.length > 0;
 }
 
 export class BookTocManager implements IBookTocManager {
