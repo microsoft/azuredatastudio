@@ -392,17 +392,17 @@ export class HeaderFilter<T extends Slick.SlickData> {
 
 		const buttonGroupContainer = append(this.menu, $('.filter-menu-button-container'));
 		this.okButton = this.createButton(buttonGroupContainer, 'filter-ok-button', localize('headerFilter.ok', "OK"));
-		this.okButton.onDidClick(() => {
+		this.okButton.onDidClick(async () => {
 			this.columnDef.filterValues = this.listData.filter(element => element.checked).map(element => element.value);
 			this.setButtonImage($menuButton, this.columnDef.filterValues.length > 0);
-			this.handleApply(this.columnDef);
+			await this.handleApply(this.columnDef);
 		});
 
 		this.clearButton = this.createButton(buttonGroupContainer, 'filter-clear-button', localize('headerFilter.clear', "Clear"), { secondary: true });
-		this.clearButton.onDidClick(() => {
+		this.clearButton.onDidClick(async () => {
 			this.columnDef.filterValues!.length = 0;
 			this.setButtonImage($menuButton, false);
-			this.handleApply(this.columnDef);
+			await this.handleApply(this.columnDef);
 		});
 
 		this.cancelButton = this.createButton(buttonGroupContainer, 'filter-cancel-button', localize('headerFilter.cancel', "Cancel"), { secondary: true });
@@ -449,16 +449,17 @@ export class HeaderFilter<T extends Slick.SlickData> {
 		}
 	}
 
-	private handleApply(columnDef: Slick.Column<T>) {
+	private async handleApply(columnDef: Slick.Column<T>) {
 		this.hideMenu();
 		const dataView = this.grid.getData();
 		if (instanceOfIDisposableDataProvider(dataView)) {
-			dataView.filter(this.grid.getColumns());
+			await dataView.filter(this.grid.getColumns());
 			this.grid.invalidateAllRows();
 			this.grid.updateRowCount();
 			this.grid.render();
 		}
 		this.onFilterApplied.notify({ grid: this.grid, column: columnDef });
+		this.setFocusToColumn(columnDef);
 	}
 
 	private getFilterValues(dataView: Slick.DataProvider<T>, column: Slick.Column<T>): Array<any> {
@@ -507,6 +508,17 @@ export class HeaderFilter<T extends Slick.SlickData> {
 			column: columnDef,
 			command: command
 		});
+
+		this.setFocusToColumn(columnDef);
+	}
+
+	private setFocusToColumn(columnDef): void {
+		if (this.grid.getDataLength() > 0) {
+			const column = this.grid.getColumns().findIndex(col => col.id === columnDef.id);
+			if (column >= 0) {
+				this.grid.setActiveCell(0, column);
+			}
+		}
 	}
 }
 
