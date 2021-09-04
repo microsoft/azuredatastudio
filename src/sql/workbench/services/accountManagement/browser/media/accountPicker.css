@@ -9,6 +9,7 @@
 	padding: 6px;
 	display: flex;
 	align-items: flex-start;
+	width: 100%;
 }
 
 .selected-account-container .codicon {
