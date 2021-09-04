@@ -6,7 +6,7 @@
 import * as azdata from 'azdata';
 import * as path from 'vs/base/common/path';
 
-import { Action } from 'vs/base/common/actions';
+import { Action, IAction, Separator } from 'vs/base/common/actions';
 import { localize } from 'vs/nls';
 import { IContextViewProvider } from 'vs/base/browser/ui/contextview/contextview';
 import { INotificationService, Severity, INotificationActions } from 'vs/platform/notification/common/notification';
@@ -18,21 +18,25 @@ import { ConnectionProfile } from 'sql/platform/connection/common/connectionProf
 import { IConnectionDialogService } from 'sql/workbench/services/connection/common/connectionDialogService';
 import { NotebookModel } from 'sql/workbench/services/notebook/browser/models/notebookModel';
 import { ICommandService } from 'vs/platform/commands/common/commands';
-import { CellType } from 'sql/workbench/services/notebook/common/contracts';
+import { CellType, NotebookChangeType } from 'sql/workbench/services/notebook/common/contracts';
 import { getErrorMessage } from 'vs/base/common/errors';
 import { IEditorAction } from 'vs/editor/common/editorCommon';
 import { IFindNotebookController } from 'sql/workbench/contrib/notebook/browser/find/notebookFindWidget';
-import { INotebookModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
+import { INotebookModel, ViewMode } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import { TreeUpdateUtils } from 'sql/workbench/services/objectExplorer/browser/treeUpdateUtils';
 import { INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { CellContext } from 'sql/workbench/contrib/notebook/browser/cellViews/codeActions';
 import { URI } from 'vs/base/common/uri';
+import { Emitter, Event } from 'vs/base/common/event';
+import { IActionProvider } from 'vs/base/browser/ui/dropdown/dropdown';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
 import { KernelsLanguage } from 'sql/workbench/services/notebook/common/notebookConstants';
+import { INotebookViews } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViews';
 
 const msgLoading = localize('loading', "Loading kernels...");
 export const msgChanging = localize('changing', "Changing kernel...");
@@ -175,6 +179,148 @@ export abstract class ToggleableAction extends Action {
 	protected toggle(isOn: boolean): void {
 		this.state.isOn = isOn;
 		this.updateLabelAndIcon();
+	}
+}
+
+export class NotebookViewsActionProvider implements IActionProvider {
+	private _options: Action[] = [];
+	private views: INotebookViews;
+	private viewMode: ViewMode;
+	private readonly _optionsUpdated = new Emitter<boolean>();
+
+	constructor(
+		container: HTMLElement,
+		views: INotebookViews,
+		modelReady: Promise<INotebookModel>,
+		@INotebookService private _notebookService: INotebookService,
+		@INotificationService private _notificationService: INotificationService,
+		@IInstantiationService private instantiationService: IInstantiationService) {
+
+		modelReady?.then((model) => {
+			this.views = views;
+			this.viewMode = model.viewMode;
+			this.updateView();
+		})
+			.catch((err) => {
+				this._notificationService.error(getErrorMessage(err));
+			});
+	}
+
+	getActions(): IAction[] {
+		return this._options;
+	}
+
+	public get options(): Action[] {
+		return this._options;
+	}
+
+	/**
+	 * Update SelectBox values
+	 */
+	public updateView() {
+		const backToNotebookButton = this.instantiationService.createInstance(NotebookViewAction, 'notebookView.backToNotebook', localize('notebookViewLabel', 'Editor'), 'notebook-button');
+		const newViewButton = this.instantiationService.createInstance(CreateNotebookViewAction, 'notebookView.newView', localize('newViewLabel', 'Create New View'), 'notebook-button notebook-button-newview');
+
+		const views = this.views.getViews();
+		this._options = [];
+
+		this._options.push(backToNotebookButton);
+		this._options.push(newViewButton);
+
+		if (views.length) {
+			this._options.push(this.instantiationService.createInstance(Separator));
+		}
+
+		views.forEach((view) => {
+			const option = new DashboardViewAction(view.guid, view.name, 'button', this._notebookService, this._notificationService);
+			this._options.push(option);
+
+			if (this.viewMode === ViewMode.Views && this.views.getActiveView() === view) {
+				option.checked = true;
+				option.enabled = false;
+			}
+		});
+
+		if (this.viewMode === ViewMode.Notebook) {
+			backToNotebookButton.checked = true;
+			backToNotebookButton.enabled = false;
+		}
+
+		this._optionsUpdated.fire(true);
+	}
+
+	public get onUpdated(): Event<boolean> {
+		return this._optionsUpdated.event;
+	}
+
+	public optionSelected(displayName: string): void {
+		const view = this.views.getViews().find(view => view.name === displayName);
+		this.views.setActiveView(view);
+	}
+}
+
+/**
+ * Action to open a Notebook View
+ */
+export class DashboardViewAction extends Action {
+	constructor(
+		id: string, label: string, cssClass: string,
+		@INotebookService private _notebookService: INotebookService,
+		@INotificationService private _notificationService: INotificationService,
+	) {
+		super(id, label, cssClass);
+	}
+
+	public override async run(context: URI): Promise<void> {
+		if (context) {
+			const editor = this._notebookService.findNotebookEditor(context);
+			let views = editor.views;
+			const view = views.getViews().find(view => view.guid === this.id);
+
+			if (view) {
+				views.setActiveView(view);
+				editor.model.viewMode = ViewMode.Views;
+			} else {
+				this._notificationService.error(localize('viewNotFound', "Unable to find view: {0}", this.id));
+			}
+		}
+	}
+}
+
+/**
+ * Action to open enter the default notebook editor
+ */
+export class NotebookViewAction extends Action {
+	constructor(
+		id: string, label: string, cssClass: string,
+		@INotebookService private _notebookService: INotebookService
+	) {
+		super(id, label, cssClass);
+	}
+	public override async run(context: URI): Promise<void> {
+		const editor = this._notebookService.findNotebookEditor(context);
+		editor.model.viewMode = ViewMode.Notebook;
+	}
+}
+
+export class CreateNotebookViewAction extends Action {
+	constructor(
+		id: string, label: string, cssClass: string,
+		@INotebookService private _notebookService: INotebookService
+	) {
+		super(id, label, cssClass);
+	}
+	public override async run(context: URI): Promise<void> {
+		if (context) {
+			const editor = this._notebookService.findNotebookEditor(context);
+			const views = editor.views;
+
+			const newView = views.createNewView();
+			views.setActiveView(newView);
+
+			editor.model.viewMode = ViewMode.Views;
+			editor.model.serializationStateChanged(NotebookChangeType.MetadataChanged);
+		}
 	}
 }
 

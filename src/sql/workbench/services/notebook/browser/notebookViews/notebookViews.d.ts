@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ICellModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
+import { ICellModel, INotebookModel } from 'sql/workbench/services/notebook/browser/models/modelInterfaces';
 import { Event } from 'vs/base/common/event';
 
 export type CellChangeEventType = 'hide' | 'insert' | 'active';
@@ -61,4 +61,17 @@ export interface INotebookViewMetadata {
  */
 export interface INotebookViewCellMetadata {
 	views: INotebookViewCell[];
+}
+
+export interface INotebookViews {
+	onViewDeleted: Event<void>;
+	notebook: INotebookModel;
+
+	createNewView(name?: string): INotebookView;
+	removeView(guid: string): void;
+	generateDefaultViewName(): string;
+	getViews(): INotebookView[];
+	getActiveView(): INotebookView;
+	setActiveView(view: INotebookView): void;
+	viewNameIsTaken(name: string): boolean;
 }

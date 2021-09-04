@@ -20,6 +20,7 @@ import { Range } from 'vs/editor/common/core/range';
 import { IEditorPane } from 'vs/workbench/common/editor';
 import { INotebookInput } from 'sql/workbench/services/notebook/browser/interface';
 import { INotebookShowOptions } from 'sql/workbench/api/common/sqlExtHost.protocol';
+import { NotebookViewsExtension } from 'sql/workbench/services/notebook/browser/notebookViews/notebookViewsExtension';
 
 export const SERVICE_ID = 'sqlNotebookService';
 export const INotebookService = createDecorator<INotebookService>(SERVICE_ID);
@@ -210,6 +211,7 @@ export interface INotebookEditor {
 	readonly cellEditors: ICellEditorProvider[];
 	readonly modelReady: Promise<INotebookModel>;
 	readonly model: INotebookModel | null;
+	readonly views: NotebookViewsExtension | null;
 	isDirty(): boolean;
 	isActive(): boolean;
 	isVisible(): boolean;
